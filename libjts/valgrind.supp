@@ -1,0 +1,27 @@
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:thread_wrapper
+}
+
+{
+   <insert a suppression name here>
+   Memcheck:Cond
+   fun:GC_*
+}
+
+{
+   <insert a suppression name here>
+   Memcheck:Value4
+   fun:GC_*
+}
+
+{
+   <insert a suppression name here>
+   Memcheck:Param
+   sigaction(act)
+   fun:syscall
+   fun:initJTS
+   fun:do_all
+   fun:main
+}

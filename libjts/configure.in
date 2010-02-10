@@ -1,0 +1,43 @@
+dnl
+dnl (C) 2005 Sandro Santilli, strk@refractions.net
+dnl
+
+AC_INIT(jts_c.cpp)
+
+AC_SUBST(JTSCLASSES)
+
+dnl Search gcj and gcjh
+AC_PATH_PROG(GCJ, gcj, no)
+if test "$GCJ" = "no"; then
+	AC_MSG_ERROR(gcj is required to build libjts.so)
+fi
+AC_PATH_PROG(GCJH, gcjh, no)
+if test "$GCJH" = "no"; then
+	AC_MSG_ERROR(gcjh is required to generate jts headers)
+fi
+AC_PROG_CXX()
+if test "$CXX" = "no"; then
+	AC_MSG_ERROR(a C++ compiler is required to compile jts C wrapper)
+fi
+AC_PROG_CC()
+if test "$CC" = "no"; then
+	AC_MSG_ERROR(a C compiler is required to compile jtstest)
+fi
+
+AC_PATH_PROG(JAR, jar, no)
+if test "$JAR" = "no"; then
+	AC_PATH_PROG(FASTJAR, fastjar, no)
+	if test "$FASTJAR" = "no"; then
+		AC_MSG_ERROR(jar or fastjar is required to generate jts headers)
+	else
+		JAR=$FASTJAR
+	fi
+	
+fi
+
+AC_CHECK_SIZEOF(unsigned char)
+if test "$ac_cv_sizeof_unsigned_char" != "1"; then
+	AC_MSG_ERROR(sizeof(unsigned char) must be 1 for libgcj to work)
+fi
+
+AC_OUTPUT(Makefile jts-config)

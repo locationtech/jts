@@ -1,0 +1,32 @@
+Native build of JTS library
+---------------------------
+
+This directory contains scripts to build shared native
+libraries out of JTS code using GCJ (the GNU Java Compiler).
+
+We build two libraries: one is a direct mapping from Java
+code as produced by GCJ, the other is a wrapper library for
+non-OO languages (primarly C), using abstract types and function
+prefixes instead of classes and namespaces.
+
+The C wrapper is libjts_c.so and requires inclusion of jts_c.h
+(read the latter for usage informations). It does NOT provide
+all of JTS functionalities but does provide all geometry 
+operations.
+
+The C++ library is libjts.so and provides a bounch of headers
+layed out after package names (com/vividsolutions/....) plus
+an entry-point header including the inner ones for you: jts.h.
+
+Both libraries provide garbage collection (actually provided
+by libgcj.so linked by libjts.so linked by libjts_c.so).
+
+As a side-effect of producing the headers we also produce
+a .jar file, being an intermediate step. I didn't compare
+quality of GCJ-produced .jar file and the SUN's JAVAC produced
+one, might be worth trying...
+
+--strk;
+
+last modified: Mon Apr 11 11:38:27 CEST 2005
+

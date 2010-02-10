@@ -1,0 +1,113 @@
+#
+# (C) 2005 Sandro Santilli, strk@refractions.net
+#
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+libdir = @libdir@
+includedir = @includedir@
+bindir = @bindir@
+
+GCJ = @GCJ@
+GCJH = @GCJH@
+GCJFLAGS = -g -O2 -Wall
+CXX = @CXX@
+CXXFLAGS = @CXXFLAGS@
+CC = @CC@
+CFLAGS = @CFLAGS@
+JAR = @JAR@
+
+CXXFLAGS += -Wall -g 
+CFLAGS += -Wall -g 
+
+JTSSRCDIR = ../src
+JTSSRC = $(shell find $(JTSSRCDIR)/com/vividsolutions/jts/ -name '*.java')
+JTSPACKAGES = $(shell cd $(JTSSRCDIR); find com/vividsolutions/jts/ -type d)
+JTSCLASSES = $(shell echo $(JTSSRC) | sed -e 's/\.java//g' -e 's@$(JTSSRCDIR)/@@g' )
+
+all: libjts.so jts.h .jtsincludes libjts_c.so jtstest jts-config
+
+debug:
+	@echo "JTSSRCDIR = $(JTSSRCDIR)" > /tmp/DEBUG
+	@echo "JTSSRC = $(JTSSRC)" >> /tmp/DEBUG
+	@echo "JTSPACKAGES = $(JTSPACKAGES)" >> /tmp/DEBUG
+	@echo "JTSCLASSES = $(JTSCLASSES)" >> /tmp/DEBUG
+
+classes/build: $(JTSSRC) 
+	@mkdir -p classes/
+	@echo -n "Building .class files... "
+	@$(GCJ) $(GCJFLAGS) -d classes -C $(JTSSRC)
+	@touch classes/build
+	@echo "done."
+
+libjts.so: $(JTSSRC) 
+	@echo -n "Building shared library... "
+	@$(GCJ) $(GCJFLAGS) -shared -o libjts.so $(JTSSRC)
+	@echo "done."
+
+jts.jar: classes/build
+	@echo -n "Creating jts.jar... "
+	@{ cd classes; $(JAR) -cf ../jts.jar `find . -name '*.class'`; }
+	@echo "done."
+
+jts.h: jts.jar .jtsincludes
+	@echo -n "Creating jts.h... "
+	@$(GCJH) -I jts.jar \
+		-stub \
+		-o jts.h $(JTSCLASSES)
+	@printf '/cni.h/i\n#undef LITTLE_ENDIAN\n#undef BIG_ENDIAN\n.\nw\n' \
+		| ed jts.h  2> /dev/null
+	@echo "done."
+
+.jtsincludes: jts.jar 
+	@mkdir -p $(JTSPACKAGES)
+	@echo -n "Creating jts headers... "
+	@#############################################################
+	@# The use of xargs here is to workaround a bug in gcjh 3.4.3
+	@# choking on multiple arguments (produces invalid headers)
+	@#############################################################
+	@echo $(JTSCLASSES) | xargs -n 1 $(GCJH) -I jts.jar 
+	@touch .jtsincludes
+	@echo "done."
+
+libjts_c.so: jts_c.cpp jts.h
+	@echo -n "Building C wrapper library... "
+	@$(CXX) -I. $(CXXFLAGS) -shared -o libjts_c.so jts_c.cpp -L. -ljts
+	@echo "done."
+
+config.status:
+	./configure
+
+Makefile: Makefile.in configure config.status
+	./config.status
+
+jts-config: jts-config.in configure config.status
+	./config.status
+
+install: libjts.so jts.h .jtsincludes
+	mkdir -p $(libdir) $(includedir) $(bindir)
+	install -c libjts.so $(libdir)/libjts.so
+	install -c libjts_c.so $(libdir)/libjts_c.so
+	install -c jts.h $(includedir)/jts.h
+	install -c jts_c.h $(includedir)/jts_c.h
+	install -c -m 755 jts-config $(bindir)/jts-config
+	cp -R com $(includedir)/
+
+jtstest: jtstest.c libjts_c.so libjts.so 
+	@echo -n "Building C wrapper tester... "
+	@$(CC) $(CFLAGS) -o jtstest jtstest.c -Wl,-rpath,. -L. -ljts_c
+	@echo "done."
+
+clean:
+	@echo -n "Cleaning up... "
+	@rm -Rf classes com jts.h libjts.so jts.jar .jtsincludes \
+		libjts_c.so jtstest jts-config
+	@echo "done."
+
+distclean: clean
+	@echo -n "Removing extra-dist files... "
+	@rm -Rf Makefile autom4te.cache config.status config.log 
+	@echo "done."
+
+
+

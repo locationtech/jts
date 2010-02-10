@@ -1,0 +1,3 @@
+- jts version extraction for library and jar file naming
+- Memory leaks checks
+-[DONE] Memory management for JTSGeomToWKB and StringToChar results
