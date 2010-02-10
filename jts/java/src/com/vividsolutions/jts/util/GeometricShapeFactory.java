@@ -82,6 +82,11 @@ public class GeometricShapeFactory
     precModel = geomFact.getPrecisionModel();
   }
 
+  public void setEnvelope(Envelope env)
+  {
+  	dim.setEnvelope(env);
+  }
+  
   /**
    * Sets the location of the shape by specifying the base coordinate
    * (which in most cases is the
@@ -203,6 +208,72 @@ public class GeometricShapeFactory
     Polygon poly = geomFact.createPolygon(ring, null);
     return poly;
   }
+  /**
+   * Creates a squircular {@link Polygon}.
+   *
+   * @return a squircle
+   */
+  public Polygon createSquircle()
+  /**
+   * Creates a squircular {@link Polygon}.
+   *
+   * @return a squircle
+   */
+  {
+  	return createSupercircle(4);
+  }
+  
+  /**
+   * Creates a supercircular {@link Polygon}
+   * of a given positive power.
+   *
+   * @return a supercircle
+   */
+  public Polygon createSupercircle(double power)
+  {
+  	double recipPow = 1.0 / power;
+  	
+    Envelope env = dim.getEnvelope();
+
+    double radius = dim.getMinSize() / 2;
+    Coordinate centre = dim.getCentre();
+    
+    double r4 = Math.pow(radius, power);
+    double y0 = radius;
+    
+    double xyInt = Math.pow(r4 / 2, recipPow);
+    
+    int nSegsInOct = nPts / 8;
+    int totPts = nSegsInOct * 8 + 1;
+    Coordinate[] pts = new Coordinate[totPts];
+    double xInc = xyInt / nSegsInOct;
+    
+    for (int i = 0; i <= nSegsInOct; i++) {
+  		double x = 0.0;
+  		double y = y0;
+    	if (i != 0) {
+    		x = xInc * i;
+    		double x4 = Math.pow(x, power);
+    		y = Math.pow(r4 - x4, recipPow);
+    	}
+      pts[i] = createCoordTrans(x, y, centre);
+      pts[2 * nSegsInOct - i] = createCoordTrans(y, x, centre);
+      
+      pts[2 * nSegsInOct + i] = createCoordTrans(y, -x, centre);
+      pts[4 * nSegsInOct - i] = createCoordTrans(x, -y, centre);
+      
+      pts[4 * nSegsInOct + i] = createCoordTrans(-x, -y, centre);
+      pts[6 * nSegsInOct - i] = createCoordTrans(-y, -x, centre);
+      
+      pts[6 * nSegsInOct + i] = createCoordTrans(-y, x, centre);
+      pts[8 * nSegsInOct - i] = createCoordTrans(-x, y, centre);
+    }
+    pts[pts.length-1] = new Coordinate(pts[0]);
+
+    LinearRing ring = geomFact.createLinearRing(pts);
+    Polygon poly = geomFact.createPolygon(ring, null);
+    return poly;
+  }
 
    /**
     * Creates an elliptical arc, as a {@link LineString}.
@@ -288,6 +359,11 @@ public class GeometricShapeFactory
     return pt;
   }
   
+  protected Coordinate createCoordTrans(double x, double y, Coordinate trans)
+  {
+  	return createCoord(x + trans.x, y + trans.y);
+  }
+  
   protected class Dimensions
   {
     public Coordinate base;
@@ -296,16 +372,35 @@ public class GeometricShapeFactory
     public double height;
 
     public void setBase(Coordinate base)  {  this.base = base;    }
+    public Coordinate getBase() { return base; }
+    
     public void setCentre(Coordinate centre)  {  this.centre = centre;    }
+    public Coordinate getCentre() { return centre; }
+   
     public void setSize(double size)
     {
       height = size;
       width = size;
     }
 
+    public double getMinSize()
+    {
+    	return Math.min(width, height);
+    }
     public void setWidth(double width) { this.width = width; }
+    public double getWidth() { return width; }
+    public double getHeight() { return height; }
+    
     public void setHeight(double height) { this.height = height; }
 
+    public void setEnvelope(Envelope env)
+    {
+    	this.width = env.getWidth();
+    	this.height = env.getHeight();
+    	this.base = new Coordinate(env.getMinX(), env.getMinY());
+    	this.centre = new Coordinate(env.centre());
+    }
+    
     public Envelope getEnvelope() {
       if (base != null) {
         return new Envelope(base.x, base.x + width, base.y, base.y + height);
@@ -316,5 +411,6 @@ public class GeometricShapeFactory
       }
       return new Envelope(0, width, 0, height);
     }
+    
   }
 }

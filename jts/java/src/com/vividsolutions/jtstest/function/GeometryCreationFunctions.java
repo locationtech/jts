@@ -6,6 +6,7 @@ import java.util.List;
 import com.vividsolutions.jts.awt.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
+import com.vividsolutions.jts.util.GeometricShapeFactory;
 
 public class GeometryCreationFunctions {
 
@@ -170,4 +171,37 @@ public class GeometryCreationFunctions {
 		}
 		return geomFact.buildGeometry(geoms);
 	}
+	
+	public static Geometry supercircle3(Geometry g, int nPts)
+	{
+		return supercircle(g, nPts, 3);
+	}
+
+	public static Geometry squircle(Geometry g, int nPts)
+	{
+		return supercircle(g, nPts, 4);
+	}
+	
+	public static Geometry supercircle5(Geometry g, int nPts)
+	{
+		return supercircle(g, nPts, 5);
+	}
+
+	public static Geometry supercirclePoint5(Geometry g, int nPts)
+	{
+		return supercircle(g, nPts, 0.5);
+	}
+
+	
+	public static Geometry supercircle(Geometry g, int nPts, double pow)
+	{
+		GeometricShapeFactory gsf = new GeometricShapeFactory();
+		gsf.setNumPoints(nPts);
+		if (g != null)
+			gsf.setEnvelope(g.getEnvelopeInternal());
+		else
+			gsf.setEnvelope(new Envelope(0, 1, 0, 1));
+		return gsf.createSupercircle(pow);
+	}
+	
 }
