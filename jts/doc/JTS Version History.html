@@ -79,13 +79,17 @@ This document lists the change history of release versions of the JTS Topology S
 
 <h3>Functionality Improvements</h3>
 <ul>
-<li>Added new geometry functions
 <li>WKT input is cleaned automatically when loaded (illegal chars are removed)
 <li>Added WKT-Formatted option to Test Case View dialog
 <li>Many new geometry functions added
 <li>Geometry functions are displayed in tree
-<li>Geometry functions can now be specified as Java static methods, and loaded dynamically from command-line
+<li>Geometry functions can be implemented as Java static class methods.
+<li>Geometry function classes can be loaded dynamically from command-line
 <li>Improved handling of very large geometry inputs and results
+<li>Threaded rendering allows display of very large geometries without limiting usability
+<li>Added Drag-n-drop loading of .SHP files
+<li>Added Info tool to provide persistent display of geometry point/segment information
+<li>Added display of memory usage
 </ul>
 
 
