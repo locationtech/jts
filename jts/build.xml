@@ -35,7 +35,7 @@
   	
   	<property name="jtsio.basedir" value="${basedir}/../jtsio"/>
   	<property name="jtsio.lib" value="${jtsio.basedir}/lib"/>
-  	<property name="jtsio.build.classes" value="${basedir}/build/jtsio-classes"/>
+  	<property name="jtsio.build.classes" value="${build}/jtsio-classes"/>
   	
    </target>
 
