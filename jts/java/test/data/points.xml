@@ -1,0 +1,105 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<MultiGeometry>
+	
+	<Point>
+		<coordinates>24000.0,36000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>32000.0,36000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>40000.0,36000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>48000.0,36000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>56000.0,36000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>24000.0,48000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>32000.0,48000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>40000.0,48000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>48000.0,48000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>56000.0,48000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>24000.0,60000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>32000.0,60000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>40000.0,60000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>48000.0,60000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>56000.0,60000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>24000.0,72000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>32000.0,72000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>40000.0,72000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>48000.0,72000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>56000.0,72000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>24000.0,84000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>32000.0,84000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>40000.0,84000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>48000.0,84000.0 </coordinates>
+	</Point>
+	
+	<Point>
+		<coordinates>56000.0,84000.0 </coordinates>
+	</Point>
+	
+</MultiGeometry>

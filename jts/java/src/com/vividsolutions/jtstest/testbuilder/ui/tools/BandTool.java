@@ -1,0 +1,192 @@
+package com.vividsolutions.jtstest.testbuilder.ui.tools;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
+
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.geom.*;
+import java.awt.geom.Point2D;
+import com.vividsolutions.jts.geom.*;
+
+public abstract class BandTool extends BasicTool 
+{
+  private List coordinates = new ArrayList();
+  private Coordinate tentativeCoordinate;
+
+  // set this to true if rubber band should be closed
+  private boolean closeRing = false;
+  private int clickCountToFinish = 2; 
+  private boolean drawBandLines = true;
+  
+  public BandTool() {
+  }
+
+  protected void setCloseRing(boolean closeRing) {
+    this.closeRing = closeRing;
+  }
+
+  protected void setClickCountToFinishGesture(int clickCountToFinish)
+  {
+  	this.clickCountToFinish = clickCountToFinish;
+  }
+  
+  protected void setDrawBandLines(boolean drawBandLines)
+  {
+  	this.drawBandLines = drawBandLines;
+  }
+  
+  /**
+   * Will return an empty List once the shape is cleared.
+   * 
+   * @see BandTool#clearShape
+   */
+  public List getCoordinates() {
+    return Collections.unmodifiableList(coordinates);
+  }
+
+  public void mouseReleased(MouseEvent e) {
+    try {
+      // Can't assert that coordinates is not empty at this point
+      // because
+      // of the following situation: NClickTool, n=1, user
+      // double-clicks.
+      // Two events are generated: clickCount=1 and clickCount=2.
+      // When #mouseReleased is called with the clickCount=1 event,
+      // coordinates is not empty. But then #finishGesture is called and
+      // the
+      // coordinates are cleared. When #mouseReleased is then called
+      // with
+      // the clickCount=2 event, coordinates is empty! [Jon Aquino]
+
+      // Even though drawing is done in #mouseLocationChanged, call it
+      // here
+      // also so that #isGestureInProgress returns true on a mouse
+      // click.
+      // This is mainly for the benefit of OrCompositeTool, which
+      // calls #isGestureInProgress. [Jon Aquino]
+      // Can't do this in #mouseClicked because #finishGesture may be
+      // called
+      // by #mouseReleased (below), which happens before #mouseClicked,
+      // resulting in an IndexOutOfBoundsException in #redrawShape. 
+      if (e.getClickCount() == 1) {
+        // A double-click will generate two events: one with
+        // click-count = 1 and
+        // another with click-count = 2. Handle the click-count = 1
+        // event and
+        // ignore the rest. Otherwise, the following problem can
+        // occur:
+        // -- A click-count = 1 event is generated; #redrawShape is
+        // called
+        // -- #isFinishingClick returns true; #finishGesture is called
+        // -- #finishGesture clears the points
+        // -- A click-count = 2 event is generated; #redrawShape is
+        // called.
+        // An IndexOutOfBoundsException is thrown because points is
+        // empty.
+        tentativeCoordinate = snapInModel(e.getPoint());
+        redrawIndicator();
+      }
+
+      super.mouseReleased(e);
+
+      // Check for finish at #mouseReleased rather than #mouseClicked.
+      // #mouseReleased is a more general condition, as it applies to
+      // both
+      // drags and clicks. 
+      if (isFinishingRelease(e)) {
+        finishGesture();
+      }
+    } catch (Throwable t) {
+    }
+  }
+
+  protected void mouseLocationChanged(MouseEvent e) {
+    try {
+      if (coordinates.isEmpty()) {
+        return;
+      }
+      tentativeCoordinate = snapInModel(e.getPoint());
+      redrawIndicator();
+    } catch (Throwable t) {
+    }
+  }
+
+  public void mouseMoved(MouseEvent e) {
+    mouseLocationChanged(e);
+  }
+
+  public void mouseDragged(MouseEvent e) {
+    mouseLocationChanged(e);
+  }
+
+  protected void add(Coordinate c) {
+    coordinates.add(c);
+  }
+
+  public void mousePressed(MouseEvent e) {
+    try {
+      super.mousePressed(e);
+
+      // Don't add more than one point for double-clicks. A double-click
+      // will
+      // generate two events: one with click-count = 1 and another with
+      // click-count = 2. Handle the click-count = 1 event and ignore
+      // the rest.
+      // [Jon Aquino]
+      if (e.getClickCount() != 1) {
+        return;
+      }
+
+      add(snapInModel(e.getPoint()));
+    } catch (Throwable t) {
+      //              getPanel().getContext().handleThrowable(t);
+    }
+  }
+
+  protected Shape getShape() {
+    Point2D firstPoint = panel().getViewport().convert(
+        (Coordinate) coordinates.get(0));
+    GeneralPath path = new GeneralPath();
+    path.moveTo((float) firstPoint.getX(), (float) firstPoint.getY());
+    if (! drawBandLines)
+    	return path;
+    
+    for (int i = 1; i < coordinates.size(); i++) { 
+      Coordinate nextCoordinate = (Coordinate) coordinates.get(i);
+      Point2D nextPoint = panel().getViewport().convert(nextCoordinate);
+      path.lineTo((int) nextPoint.getX(), (int) nextPoint.getY());
+    }
+    Point2D tentativePoint = panel().getViewport().convert(tentativeCoordinate);
+    path.lineTo((int) tentativePoint.getX(), (int) tentativePoint.getY());
+    // close path (for rings only)
+    if (closeRing)
+      path.lineTo((int) firstPoint.getX(), (int) firstPoint.getY());
+
+    return path;
+  }
+
+  protected boolean isFinishingRelease(MouseEvent e) {
+    return e.getClickCount() == clickCountToFinish;
+  }
+
+  protected Coordinate[] toArray(List coordinates) {
+    return (Coordinate[]) coordinates.toArray(new Coordinate[] {});
+  }
+
+  protected void finishGesture() throws Exception {
+    clearIndicator();
+    try {
+      gestureFinished();
+    } finally {
+      coordinates.clear();
+    }
+  }
+
+  protected void gestureFinished() throws Exception
+  {
+    
+  }
+
+}

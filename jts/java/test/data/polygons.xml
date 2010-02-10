@@ -1,0 +1,2047 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<MultiGeometry>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,38666.666666666664
+					25567.427339446596,38157.37865166653
+					26536.150710120408,36824.04531833319
+					26536.15071012041,35175.95468166681
+					25567.427339446596,33842.62134833347
+					24000.0,33333.333333333336
+					22432.572660553404,33842.62134833347
+					21463.849289879592,35175.95468166681
+					21463.84928987959,36824.04531833319
+					22432.572660553404,38157.37865166653
+					24000.0,38666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,36000.0
+					25338.261212717716,37486.289650954786
+					24069.798993405002,37998.78165403819 24000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,36000.0
+					25997.25906950915,36104.67191248589
+					25462.707403238343,37363.996720125 24000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,36000.0
+					25486.28965095479,34661.73878728229
+					25998.78165403819,35930.201006595 24000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,36000.0
+					24104.67191248589,34002.74093049085
+					25363.996720124997,34537.29259676166 24000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,36000.0
+					22661.738787282284,34513.710349045214
+					23930.201006594998,34001.21834596181 24000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,36000.0
+					22002.74093049085,35895.32808751411
+					22537.292596761657,34636.003279875 24000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,36000.0
+					22513.710349045214,37338.26121271772
+					22001.21834596181,36069.798993405 24000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,36000.0
+					23895.328087514114,37997.25906950915
+					22636.003279875003,37462.70740323834 24000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,38666.666666666664
+					33567.42733944659,38157.37865166653
+					34536.15071012041,36824.04531833319
+					34536.15071012041,35175.95468166681
+					33567.42733944659,33842.62134833347
+					32000.0,33333.333333333336
+					30432.572660553404,33842.62134833347
+					29463.849289879592,35175.95468166681
+					29463.84928987959,36824.04531833319
+					30432.572660553404,38157.37865166653
+					32000.0,38666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,36000.0
+					33338.26121271772,37486.289650954786
+					32069.798993405002,37998.78165403819 32000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,36000.0
+					33997.25906950915,36104.67191248589
+					33462.70740323834,37363.996720125 32000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,36000.0
+					33486.289650954786,34661.73878728229
+					33998.78165403819,35930.201006595 32000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,36000.0
+					32104.67191248589,34002.74093049085
+					33363.996720125,34537.29259676166 32000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,36000.0
+					30661.738787282284,34513.710349045214
+					31930.201006594998,34001.21834596181 32000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,36000.0
+					30002.74093049085,35895.32808751411
+					30537.292596761657,34636.003279875 32000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,36000.0
+					30513.710349045214,37338.26121271772
+					30001.21834596181,36069.798993405 32000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,36000.0
+					31895.328087514114,37997.25906950915
+					30636.003279875003,37462.70740323834 32000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,38666.666666666664
+					41567.42733944659,38157.37865166653
+					42536.15071012041,36824.04531833319
+					42536.15071012041,35175.95468166681
+					41567.42733944659,33842.62134833347
+					40000.0,33333.333333333336
+					38432.57266055341,33842.62134833347
+					37463.84928987959,35175.95468166681
+					37463.84928987959,36824.04531833319
+					38432.57266055341,38157.37865166653
+					40000.0,38666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,36000.0
+					41338.26121271772,37486.289650954786
+					40069.798993405,37998.78165403819 40000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,36000.0
+					41997.25906950915,36104.67191248589
+					41462.70740323834,37363.996720125 40000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,36000.0
+					41486.289650954786,34661.73878728229
+					41998.78165403819,35930.201006595 40000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,36000.0
+					40104.67191248589,34002.74093049085
+					41363.996720125,34537.29259676166 40000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,36000.0
+					38661.73878728228,34513.710349045214
+					39930.201006595,34001.21834596181 40000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,36000.0
+					38002.74093049085,35895.32808751411
+					38537.29259676166,34636.003279875 40000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,36000.0
+					38513.710349045214,37338.26121271772
+					38001.21834596181,36069.798993405 40000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,36000.0
+					39895.32808751411,37997.25906950915
+					38636.003279875,37462.70740323834 40000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,38666.666666666664
+					49567.42733944659,38157.37865166653
+					50536.15071012041,36824.04531833319
+					50536.15071012041,35175.95468166681
+					49567.42733944659,33842.62134833347
+					48000.0,33333.333333333336
+					46432.57266055341,33842.62134833347
+					45463.84928987959,35175.95468166681
+					45463.84928987959,36824.04531833319
+					46432.57266055341,38157.37865166653
+					48000.0,38666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,36000.0
+					49338.26121271772,37486.289650954786
+					48069.798993405,37998.78165403819 48000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,36000.0
+					49997.25906950915,36104.67191248589
+					49462.70740323834,37363.996720125 48000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,36000.0
+					49486.289650954786,34661.73878728229
+					49998.78165403819,35930.201006595 48000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,36000.0
+					48104.67191248589,34002.74093049085
+					49363.996720125,34537.29259676166 48000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,36000.0
+					46661.73878728228,34513.710349045214
+					47930.201006595,34001.21834596181 48000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,36000.0
+					46002.74093049085,35895.32808751411
+					46537.29259676166,34636.003279875 48000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,36000.0
+					46513.710349045214,37338.26121271772
+					46001.21834596181,36069.798993405 48000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,36000.0
+					47895.32808751411,37997.25906950915
+					46636.003279875,37462.70740323834 48000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,38666.666666666664
+					57567.42733944659,38157.37865166653
+					58536.15071012041,36824.04531833319
+					58536.15071012041,35175.95468166681
+					57567.42733944659,33842.62134833347
+					56000.0,33333.333333333336
+					54432.57266055341,33842.62134833347
+					53463.84928987959,35175.95468166681
+					53463.84928987959,36824.04531833319
+					54432.57266055341,38157.37865166653
+					56000.0,38666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,36000.0
+					57338.26121271772,37486.289650954786
+					56069.798993405,37998.78165403819 56000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,36000.0
+					57997.25906950915,36104.67191248589
+					57462.70740323834,37363.996720125 56000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,36000.0
+					57486.289650954786,34661.73878728229
+					57998.78165403819,35930.201006595 56000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,36000.0
+					56104.67191248589,34002.74093049085
+					57363.996720125,34537.29259676166 56000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,36000.0
+					54661.73878728228,34513.710349045214
+					55930.201006595,34001.21834596181 56000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,36000.0
+					54002.74093049085,35895.32808751411
+					54537.29259676166,34636.003279875 56000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,36000.0
+					54513.710349045214,37338.26121271772
+					54001.21834596181,36069.798993405 56000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,36000.0
+					55895.32808751411,37997.25906950915
+					54636.003279875,37462.70740323834 56000.0,36000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,50666.666666666664
+					25567.427339446596,50157.37865166653
+					26536.150710120408,48824.04531833319
+					26536.15071012041,47175.95468166681
+					25567.427339446596,45842.62134833347
+					24000.0,45333.333333333336
+					22432.572660553404,45842.62134833347
+					21463.849289879592,47175.95468166681
+					21463.84928987959,48824.04531833319
+					22432.572660553404,50157.37865166653
+					24000.0,50666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,48000.0
+					25338.261212717716,49486.289650954786
+					24069.798993405002,49998.78165403819 24000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,48000.0
+					25997.25906950915,48104.67191248589
+					25462.707403238343,49363.996720125 24000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,48000.0
+					25486.28965095479,46661.73878728229
+					25998.78165403819,47930.201006595 24000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,48000.0
+					24104.67191248589,46002.74093049085
+					25363.996720124997,46537.29259676166 24000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,48000.0
+					22661.738787282284,46513.710349045214
+					23930.201006594998,46001.21834596181 24000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,48000.0
+					22002.74093049085,47895.32808751411
+					22537.292596761657,46636.003279875 24000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,48000.0
+					22513.710349045214,49338.26121271772
+					22001.21834596181,48069.798993405 24000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,48000.0
+					23895.328087514114,49997.25906950915
+					22636.003279875003,49462.70740323834 24000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,50666.666666666664
+					33567.42733944659,50157.37865166653
+					34536.15071012041,48824.04531833319
+					34536.15071012041,47175.95468166681
+					33567.42733944659,45842.62134833347
+					32000.0,45333.333333333336
+					30432.572660553404,45842.62134833347
+					29463.849289879592,47175.95468166681
+					29463.84928987959,48824.04531833319
+					30432.572660553404,50157.37865166653
+					32000.0,50666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,48000.0
+					33338.26121271772,49486.289650954786
+					32069.798993405002,49998.78165403819 32000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,48000.0
+					33997.25906950915,48104.67191248589
+					33462.70740323834,49363.996720125 32000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,48000.0
+					33486.289650954786,46661.73878728229
+					33998.78165403819,47930.201006595 32000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,48000.0
+					32104.67191248589,46002.74093049085
+					33363.996720125,46537.29259676166 32000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,48000.0
+					30661.738787282284,46513.710349045214
+					31930.201006594998,46001.21834596181 32000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,48000.0
+					30002.74093049085,47895.32808751411
+					30537.292596761657,46636.003279875 32000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,48000.0
+					30513.710349045214,49338.26121271772
+					30001.21834596181,48069.798993405 32000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,48000.0
+					31895.328087514114,49997.25906950915
+					30636.003279875003,49462.70740323834 32000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,50666.666666666664
+					41567.42733944659,50157.37865166653
+					42536.15071012041,48824.04531833319
+					42536.15071012041,47175.95468166681
+					41567.42733944659,45842.62134833347
+					40000.0,45333.333333333336
+					38432.57266055341,45842.62134833347
+					37463.84928987959,47175.95468166681
+					37463.84928987959,48824.04531833319
+					38432.57266055341,50157.37865166653
+					40000.0,50666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,48000.0
+					41338.26121271772,49486.289650954786
+					40069.798993405,49998.78165403819 40000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,48000.0
+					41997.25906950915,48104.67191248589
+					41462.70740323834,49363.996720125 40000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,48000.0
+					41486.289650954786,46661.73878728229
+					41998.78165403819,47930.201006595 40000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,48000.0
+					40104.67191248589,46002.74093049085
+					41363.996720125,46537.29259676166 40000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,48000.0
+					38661.73878728228,46513.710349045214
+					39930.201006595,46001.21834596181 40000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,48000.0
+					38002.74093049085,47895.32808751411
+					38537.29259676166,46636.003279875 40000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,48000.0
+					38513.710349045214,49338.26121271772
+					38001.21834596181,48069.798993405 40000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,48000.0
+					39895.32808751411,49997.25906950915
+					38636.003279875,49462.70740323834 40000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,50666.666666666664
+					49567.42733944659,50157.37865166653
+					50536.15071012041,48824.04531833319
+					50536.15071012041,47175.95468166681
+					49567.42733944659,45842.62134833347
+					48000.0,45333.333333333336
+					46432.57266055341,45842.62134833347
+					45463.84928987959,47175.95468166681
+					45463.84928987959,48824.04531833319
+					46432.57266055341,50157.37865166653
+					48000.0,50666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,48000.0
+					49338.26121271772,49486.289650954786
+					48069.798993405,49998.78165403819 48000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,48000.0
+					49997.25906950915,48104.67191248589
+					49462.70740323834,49363.996720125 48000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,48000.0
+					49486.289650954786,46661.73878728229
+					49998.78165403819,47930.201006595 48000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,48000.0
+					48104.67191248589,46002.74093049085
+					49363.996720125,46537.29259676166 48000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,48000.0
+					46661.73878728228,46513.710349045214
+					47930.201006595,46001.21834596181 48000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,48000.0
+					46002.74093049085,47895.32808751411
+					46537.29259676166,46636.003279875 48000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,48000.0
+					46513.710349045214,49338.26121271772
+					46001.21834596181,48069.798993405 48000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,48000.0
+					47895.32808751411,49997.25906950915
+					46636.003279875,49462.70740323834 48000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,50666.666666666664
+					57567.42733944659,50157.37865166653
+					58536.15071012041,48824.04531833319
+					58536.15071012041,47175.95468166681
+					57567.42733944659,45842.62134833347
+					56000.0,45333.333333333336
+					54432.57266055341,45842.62134833347
+					53463.84928987959,47175.95468166681
+					53463.84928987959,48824.04531833319
+					54432.57266055341,50157.37865166653
+					56000.0,50666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,48000.0
+					57338.26121271772,49486.289650954786
+					56069.798993405,49998.78165403819 56000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,48000.0
+					57997.25906950915,48104.67191248589
+					57462.70740323834,49363.996720125 56000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,48000.0
+					57486.289650954786,46661.73878728229
+					57998.78165403819,47930.201006595 56000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,48000.0
+					56104.67191248589,46002.74093049085
+					57363.996720125,46537.29259676166 56000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,48000.0
+					54661.73878728228,46513.710349045214
+					55930.201006595,46001.21834596181 56000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,48000.0
+					54002.74093049085,47895.32808751411
+					54537.29259676166,46636.003279875 56000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,48000.0
+					54513.710349045214,49338.26121271772
+					54001.21834596181,48069.798993405 56000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,48000.0
+					55895.32808751411,49997.25906950915
+					54636.003279875,49462.70740323834 56000.0,48000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,62666.666666666664
+					25567.427339446596,62157.37865166653
+					26536.150710120408,60824.04531833319
+					26536.15071012041,59175.95468166681
+					25567.427339446596,57842.62134833347
+					24000.0,57333.333333333336
+					22432.572660553404,57842.62134833347
+					21463.849289879592,59175.95468166681
+					21463.84928987959,60824.04531833319
+					22432.572660553404,62157.37865166653
+					24000.0,62666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,60000.0
+					25338.261212717716,61486.289650954786
+					24069.798993405002,61998.78165403819 24000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,60000.0
+					25997.25906950915,60104.67191248589
+					25462.707403238343,61363.996720125 24000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,60000.0
+					25486.28965095479,58661.73878728229
+					25998.78165403819,59930.201006595 24000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,60000.0
+					24104.67191248589,58002.74093049085
+					25363.996720124997,58537.29259676166 24000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,60000.0
+					22661.738787282284,58513.710349045214
+					23930.201006594998,58001.21834596181 24000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,60000.0
+					22002.74093049085,59895.32808751411
+					22537.292596761657,58636.003279875 24000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,60000.0
+					22513.710349045214,61338.26121271772
+					22001.21834596181,60069.798993405 24000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,60000.0
+					23895.328087514114,61997.25906950915
+					22636.003279875003,61462.70740323834 24000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,62666.666666666664
+					33567.42733944659,62157.37865166653
+					34536.15071012041,60824.04531833319
+					34536.15071012041,59175.95468166681
+					33567.42733944659,57842.62134833347
+					32000.0,57333.333333333336
+					30432.572660553404,57842.62134833347
+					29463.849289879592,59175.95468166681
+					29463.84928987959,60824.04531833319
+					30432.572660553404,62157.37865166653
+					32000.0,62666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,60000.0
+					33338.26121271772,61486.289650954786
+					32069.798993405002,61998.78165403819 32000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,60000.0
+					33997.25906950915,60104.67191248589
+					33462.70740323834,61363.996720125 32000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,60000.0
+					33486.289650954786,58661.73878728229
+					33998.78165403819,59930.201006595 32000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,60000.0
+					32104.67191248589,58002.74093049085
+					33363.996720125,58537.29259676166 32000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,60000.0
+					30661.738787282284,58513.710349045214
+					31930.201006594998,58001.21834596181 32000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,60000.0
+					30002.74093049085,59895.32808751411
+					30537.292596761657,58636.003279875 32000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,60000.0
+					30513.710349045214,61338.26121271772
+					30001.21834596181,60069.798993405 32000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,60000.0
+					31895.328087514114,61997.25906950915
+					30636.003279875003,61462.70740323834 32000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,62666.666666666664
+					41567.42733944659,62157.37865166653
+					42536.15071012041,60824.04531833319
+					42536.15071012041,59175.95468166681
+					41567.42733944659,57842.62134833347
+					40000.0,57333.333333333336
+					38432.57266055341,57842.62134833347
+					37463.84928987959,59175.95468166681
+					37463.84928987959,60824.04531833319
+					38432.57266055341,62157.37865166653
+					40000.0,62666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,60000.0
+					41338.26121271772,61486.289650954786
+					40069.798993405,61998.78165403819 40000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,60000.0
+					41997.25906950915,60104.67191248589
+					41462.70740323834,61363.996720125 40000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,60000.0
+					41486.289650954786,58661.73878728229
+					41998.78165403819,59930.201006595 40000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,60000.0
+					40104.67191248589,58002.74093049085
+					41363.996720125,58537.29259676166 40000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,60000.0
+					38661.73878728228,58513.710349045214
+					39930.201006595,58001.21834596181 40000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,60000.0
+					38002.74093049085,59895.32808751411
+					38537.29259676166,58636.003279875 40000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,60000.0
+					38513.710349045214,61338.26121271772
+					38001.21834596181,60069.798993405 40000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,60000.0
+					39895.32808751411,61997.25906950915
+					38636.003279875,61462.70740323834 40000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,62666.666666666664
+					49567.42733944659,62157.37865166653
+					50536.15071012041,60824.04531833319
+					50536.15071012041,59175.95468166681
+					49567.42733944659,57842.62134833347
+					48000.0,57333.333333333336
+					46432.57266055341,57842.62134833347
+					45463.84928987959,59175.95468166681
+					45463.84928987959,60824.04531833319
+					46432.57266055341,62157.37865166653
+					48000.0,62666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,60000.0
+					49338.26121271772,61486.289650954786
+					48069.798993405,61998.78165403819 48000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,60000.0
+					49997.25906950915,60104.67191248589
+					49462.70740323834,61363.996720125 48000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,60000.0
+					49486.289650954786,58661.73878728229
+					49998.78165403819,59930.201006595 48000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,60000.0
+					48104.67191248589,58002.74093049085
+					49363.996720125,58537.29259676166 48000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,60000.0
+					46661.73878728228,58513.710349045214
+					47930.201006595,58001.21834596181 48000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,60000.0
+					46002.74093049085,59895.32808751411
+					46537.29259676166,58636.003279875 48000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,60000.0
+					46513.710349045214,61338.26121271772
+					46001.21834596181,60069.798993405 48000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,60000.0
+					47895.32808751411,61997.25906950915
+					46636.003279875,61462.70740323834 48000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,62666.666666666664
+					57567.42733944659,62157.37865166653
+					58536.15071012041,60824.04531833319
+					58536.15071012041,59175.95468166681
+					57567.42733944659,57842.62134833347
+					56000.0,57333.333333333336
+					54432.57266055341,57842.62134833347
+					53463.84928987959,59175.95468166681
+					53463.84928987959,60824.04531833319
+					54432.57266055341,62157.37865166653
+					56000.0,62666.666666666664 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,60000.0
+					57338.26121271772,61486.289650954786
+					56069.798993405,61998.78165403819 56000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,60000.0
+					57997.25906950915,60104.67191248589
+					57462.70740323834,61363.996720125 56000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,60000.0
+					57486.289650954786,58661.73878728229
+					57998.78165403819,59930.201006595 56000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,60000.0
+					56104.67191248589,58002.74093049085
+					57363.996720125,58537.29259676166 56000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,60000.0
+					54661.73878728228,58513.710349045214
+					55930.201006595,58001.21834596181 56000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,60000.0
+					54002.74093049085,59895.32808751411
+					54537.29259676166,58636.003279875 56000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,60000.0
+					54513.710349045214,61338.26121271772
+					54001.21834596181,60069.798993405 56000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,60000.0
+					55895.32808751411,61997.25906950915
+					54636.003279875,61462.70740323834 56000.0,60000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,74666.66666666667
+					25567.427339446596,74157.37865166653
+					26536.150710120408,72824.0453183332
+					26536.15071012041,71175.9546816668
+					25567.427339446596,69842.62134833347
+					24000.0,69333.33333333333
+					22432.572660553404,69842.62134833347
+					21463.849289879592,71175.9546816668
+					21463.84928987959,72824.0453183332
+					22432.572660553404,74157.37865166653
+					24000.0,74666.66666666667 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,72000.0
+					25338.261212717716,73486.28965095479
+					24069.798993405002,73998.78165403819 24000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,72000.0
+					25997.25906950915,72104.6719124859
+					25462.707403238343,73363.996720125 24000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,72000.0
+					25486.28965095479,70661.73878728229
+					25998.78165403819,71930.201006595 24000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,72000.0
+					24104.67191248589,70002.74093049085
+					25363.996720124997,70537.29259676166 24000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,72000.0
+					22661.738787282284,70513.71034904521
+					23930.201006594998,70001.21834596181 24000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,72000.0
+					22002.74093049085,71895.3280875141
+					22537.292596761657,70636.003279875 24000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,72000.0
+					22513.710349045214,73338.26121271771
+					22001.21834596181,72069.798993405 24000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,72000.0
+					23895.328087514114,73997.25906950915
+					22636.003279875003,73462.70740323834 24000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,74666.66666666667
+					33567.42733944659,74157.37865166653
+					34536.15071012041,72824.0453183332
+					34536.15071012041,71175.9546816668
+					33567.42733944659,69842.62134833347 32000.0,69333.33333333333
+					30432.572660553404,69842.62134833347
+					29463.849289879592,71175.9546816668
+					29463.84928987959,72824.0453183332
+					30432.572660553404,74157.37865166653
+					32000.0,74666.66666666667 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,72000.0
+					33338.26121271772,73486.28965095479
+					32069.798993405002,73998.78165403819 32000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,72000.0
+					33997.25906950915,72104.6719124859
+					33462.70740323834,73363.996720125 32000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,72000.0
+					33486.289650954786,70661.73878728229
+					33998.78165403819,71930.201006595 32000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,72000.0
+					32104.67191248589,70002.74093049085
+					33363.996720125,70537.29259676166 32000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,72000.0
+					30661.738787282284,70513.71034904521
+					31930.201006594998,70001.21834596181 32000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,72000.0
+					30002.74093049085,71895.3280875141
+					30537.292596761657,70636.003279875 32000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,72000.0
+					30513.710349045214,73338.26121271771
+					30001.21834596181,72069.798993405 32000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,72000.0
+					31895.328087514114,73997.25906950915
+					30636.003279875003,73462.70740323834 32000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,74666.66666666667
+					41567.42733944659,74157.37865166653
+					42536.15071012041,72824.0453183332
+					42536.15071012041,71175.9546816668
+					41567.42733944659,69842.62134833347 40000.0,69333.33333333333
+					38432.57266055341,69842.62134833347
+					37463.84928987959,71175.9546816668
+					37463.84928987959,72824.0453183332
+					38432.57266055341,74157.37865166653 40000.0,74666.66666666667
+					</coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,72000.0
+					41338.26121271772,73486.28965095479
+					40069.798993405,73998.78165403819 40000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,72000.0
+					41997.25906950915,72104.6719124859
+					41462.70740323834,73363.996720125 40000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,72000.0
+					41486.289650954786,70661.73878728229
+					41998.78165403819,71930.201006595 40000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,72000.0
+					40104.67191248589,70002.74093049085
+					41363.996720125,70537.29259676166 40000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,72000.0
+					38661.73878728228,70513.71034904521
+					39930.201006595,70001.21834596181 40000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,72000.0
+					38002.74093049085,71895.3280875141
+					38537.29259676166,70636.003279875 40000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,72000.0
+					38513.710349045214,73338.26121271771
+					38001.21834596181,72069.798993405 40000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,72000.0
+					39895.32808751411,73997.25906950915
+					38636.003279875,73462.70740323834 40000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,74666.66666666667
+					49567.42733944659,74157.37865166653
+					50536.15071012041,72824.0453183332
+					50536.15071012041,71175.9546816668
+					49567.42733944659,69842.62134833347 48000.0,69333.33333333333
+					46432.57266055341,69842.62134833347
+					45463.84928987959,71175.9546816668
+					45463.84928987959,72824.0453183332
+					46432.57266055341,74157.37865166653 48000.0,74666.66666666667
+					</coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,72000.0
+					49338.26121271772,73486.28965095479
+					48069.798993405,73998.78165403819 48000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,72000.0
+					49997.25906950915,72104.6719124859
+					49462.70740323834,73363.996720125 48000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,72000.0
+					49486.289650954786,70661.73878728229
+					49998.78165403819,71930.201006595 48000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,72000.0
+					48104.67191248589,70002.74093049085
+					49363.996720125,70537.29259676166 48000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,72000.0
+					46661.73878728228,70513.71034904521
+					47930.201006595,70001.21834596181 48000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,72000.0
+					46002.74093049085,71895.3280875141
+					46537.29259676166,70636.003279875 48000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,72000.0
+					46513.710349045214,73338.26121271771
+					46001.21834596181,72069.798993405 48000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,72000.0
+					47895.32808751411,73997.25906950915
+					46636.003279875,73462.70740323834 48000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,74666.66666666667
+					57567.42733944659,74157.37865166653
+					58536.15071012041,72824.0453183332
+					58536.15071012041,71175.9546816668
+					57567.42733944659,69842.62134833347 56000.0,69333.33333333333
+					54432.57266055341,69842.62134833347
+					53463.84928987959,71175.9546816668
+					53463.84928987959,72824.0453183332
+					54432.57266055341,74157.37865166653 56000.0,74666.66666666667
+					</coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,72000.0
+					57338.26121271772,73486.28965095479
+					56069.798993405,73998.78165403819 56000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,72000.0
+					57997.25906950915,72104.6719124859
+					57462.70740323834,73363.996720125 56000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,72000.0
+					57486.289650954786,70661.73878728229
+					57998.78165403819,71930.201006595 56000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,72000.0
+					56104.67191248589,70002.74093049085
+					57363.996720125,70537.29259676166 56000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,72000.0
+					54661.73878728228,70513.71034904521
+					55930.201006595,70001.21834596181 56000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,72000.0
+					54002.74093049085,71895.3280875141
+					54537.29259676166,70636.003279875 56000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,72000.0
+					54513.710349045214,73338.26121271771
+					54001.21834596181,72069.798993405 56000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,72000.0
+					55895.32808751411,73997.25906950915
+					54636.003279875,73462.70740323834 56000.0,72000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,86666.66666666667
+					25567.427339446596,86157.37865166653
+					26536.150710120408,84824.0453183332
+					26536.15071012041,83175.9546816668
+					25567.427339446596,81842.62134833347
+					24000.0,81333.33333333333
+					22432.572660553404,81842.62134833347
+					21463.849289879592,83175.9546816668
+					21463.84928987959,84824.0453183332
+					22432.572660553404,86157.37865166653
+					24000.0,86666.66666666667 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,84000.0
+					25338.261212717716,85486.28965095479
+					24069.798993405002,85998.78165403819 24000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,84000.0
+					25997.25906950915,84104.6719124859
+					25462.707403238343,85363.996720125 24000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,84000.0
+					25486.28965095479,82661.73878728229
+					25998.78165403819,83930.201006595 24000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,84000.0
+					24104.67191248589,82002.74093049085
+					25363.996720124997,82537.29259676166 24000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,84000.0
+					22661.738787282284,82513.71034904521
+					23930.201006594998,82001.21834596181 24000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,84000.0
+					22002.74093049085,83895.3280875141
+					22537.292596761657,82636.003279875 24000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,84000.0
+					22513.710349045214,85338.26121271771
+					22001.21834596181,84069.798993405 24000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>24000.0,84000.0
+					23895.328087514114,85997.25906950915
+					22636.003279875003,85462.70740323834 24000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,86666.66666666667
+					33567.42733944659,86157.37865166653
+					34536.15071012041,84824.0453183332
+					34536.15071012041,83175.9546816668
+					33567.42733944659,81842.62134833347 32000.0,81333.33333333333
+					30432.572660553404,81842.62134833347
+					29463.849289879592,83175.9546816668
+					29463.84928987959,84824.0453183332
+					30432.572660553404,86157.37865166653
+					32000.0,86666.66666666667 </coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,84000.0
+					33338.26121271772,85486.28965095479
+					32069.798993405002,85998.78165403819 32000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,84000.0
+					33997.25906950915,84104.6719124859
+					33462.70740323834,85363.996720125 32000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,84000.0
+					33486.289650954786,82661.73878728229
+					33998.78165403819,83930.201006595 32000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,84000.0
+					32104.67191248589,82002.74093049085
+					33363.996720125,82537.29259676166 32000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,84000.0
+					30661.738787282284,82513.71034904521
+					31930.201006594998,82001.21834596181 32000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,84000.0
+					30002.74093049085,83895.3280875141
+					30537.292596761657,82636.003279875 32000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,84000.0
+					30513.710349045214,85338.26121271771
+					30001.21834596181,84069.798993405 32000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>32000.0,84000.0
+					31895.328087514114,85997.25906950915
+					30636.003279875003,85462.70740323834 32000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,86666.66666666667
+					41567.42733944659,86157.37865166653
+					42536.15071012041,84824.0453183332
+					42536.15071012041,83175.9546816668
+					41567.42733944659,81842.62134833347 40000.0,81333.33333333333
+					38432.57266055341,81842.62134833347
+					37463.84928987959,83175.9546816668
+					37463.84928987959,84824.0453183332
+					38432.57266055341,86157.37865166653 40000.0,86666.66666666667
+					</coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,84000.0
+					41338.26121271772,85486.28965095479
+					40069.798993405,85998.78165403819 40000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,84000.0
+					41997.25906950915,84104.6719124859
+					41462.70740323834,85363.996720125 40000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,84000.0
+					41486.289650954786,82661.73878728229
+					41998.78165403819,83930.201006595 40000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,84000.0
+					40104.67191248589,82002.74093049085
+					41363.996720125,82537.29259676166 40000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,84000.0
+					38661.73878728228,82513.71034904521
+					39930.201006595,82001.21834596181 40000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,84000.0
+					38002.74093049085,83895.3280875141
+					38537.29259676166,82636.003279875 40000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,84000.0
+					38513.710349045214,85338.26121271771
+					38001.21834596181,84069.798993405 40000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>40000.0,84000.0
+					39895.32808751411,85997.25906950915
+					38636.003279875,85462.70740323834 40000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,86666.66666666667
+					49567.42733944659,86157.37865166653
+					50536.15071012041,84824.0453183332
+					50536.15071012041,83175.9546816668
+					49567.42733944659,81842.62134833347 48000.0,81333.33333333333
+					46432.57266055341,81842.62134833347
+					45463.84928987959,83175.9546816668
+					45463.84928987959,84824.0453183332
+					46432.57266055341,86157.37865166653 48000.0,86666.66666666667
+					</coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,84000.0
+					49338.26121271772,85486.28965095479
+					48069.798993405,85998.78165403819 48000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,84000.0
+					49997.25906950915,84104.6719124859
+					49462.70740323834,85363.996720125 48000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,84000.0
+					49486.289650954786,82661.73878728229
+					49998.78165403819,83930.201006595 48000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,84000.0
+					48104.67191248589,82002.74093049085
+					49363.996720125,82537.29259676166 48000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,84000.0
+					46661.73878728228,82513.71034904521
+					47930.201006595,82001.21834596181 48000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,84000.0
+					46002.74093049085,83895.3280875141
+					46537.29259676166,82636.003279875 48000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,84000.0
+					46513.710349045214,85338.26121271771
+					46001.21834596181,84069.798993405 48000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>48000.0,84000.0
+					47895.32808751411,85997.25906950915
+					46636.003279875,85462.70740323834 48000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+	<Polygon>
+		<outerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,86666.66666666667
+					57567.42733944659,86157.37865166653
+					58536.15071012041,84824.0453183332
+					58536.15071012041,83175.9546816668
+					57567.42733944659,81842.62134833347 56000.0,81333.33333333333
+					54432.57266055341,81842.62134833347
+					53463.84928987959,83175.9546816668
+					53463.84928987959,84824.0453183332
+					54432.57266055341,86157.37865166653 56000.0,86666.66666666667
+					</coordinates>
+			</LinearRing>
+		</outerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,84000.0
+					57338.26121271772,85486.28965095479
+					56069.798993405,85998.78165403819 56000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,84000.0
+					57997.25906950915,84104.6719124859
+					57462.70740323834,85363.996720125 56000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,84000.0
+					57486.289650954786,82661.73878728229
+					57998.78165403819,83930.201006595 56000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,84000.0
+					56104.67191248589,82002.74093049085
+					57363.996720125,82537.29259676166 56000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,84000.0
+					54661.73878728228,82513.71034904521
+					55930.201006595,82001.21834596181 56000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,84000.0
+					54002.74093049085,83895.3280875141
+					54537.29259676166,82636.003279875 56000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,84000.0
+					54513.710349045214,85338.26121271771
+					54001.21834596181,84069.798993405 56000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+		<innerBoundaryIs>
+			<LinearRing>
+				<coordinates>56000.0,84000.0
+					55895.32808751411,85997.25906950915
+					54636.003279875,85462.70740323834 56000.0,84000.0
+					</coordinates>
+			</LinearRing>
+		</innerBoundaryIs>
+	</Polygon>
+	
+</MultiGeometry>

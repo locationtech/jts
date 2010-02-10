@@ -1,0 +1,87 @@
+package com.vividsolutions.jts.noding.snapround;
+
+import java.util.*;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.util.*;
+import com.vividsolutions.jts.noding.*;
+import com.vividsolutions.jts.noding.snapround.*;
+
+/**
+ * Nodes a list of {@link Geometry}s using Snap Rounding
+ * 
+ */
+public class GeometryNoder
+{
+  private GeometryFactory geomFact;
+  private PrecisionModel pm;
+  private boolean isValidityChecked = false;
+
+  public GeometryNoder(PrecisionModel pm) {
+    this.pm = pm;
+  }
+
+  public void setValidate(boolean isValidityChecked)
+  {
+  	this.isValidityChecked = isValidityChecked;
+  }
+  
+  /**
+   * Nodes the linework of a set of Geometrys using SnapRounding. 
+   * 
+   * @param geoms a Collection of Geometrys of any type
+   * @return a List of LineStrings representing the noded linework of the input
+   */
+  public List node(Collection geoms)
+  {
+    // get geometry factory
+    Geometry geom0 = (Geometry) geoms.iterator().next();
+    geomFact = geom0.getFactory();
+
+    List segStrings = toSegmentStrings(extractLines(geoms));
+    //Noder sr = new SimpleSnapRounder(pm);
+    Noder sr = new MCIndexSnapRounder(pm);
+    sr.computeNodes(segStrings);
+    Collection nodedLines = sr.getNodedSubstrings();
+
+    if (isValidityChecked) {
+    	NodingValidator nv = new NodingValidator(nodedLines);
+    	nv.checkValid();
+    }
+
+    return toLineStrings(nodedLines);
+  }
+
+  private List toLineStrings(Collection segStrings)
+  {
+    List lines = new ArrayList();
+    for (Iterator it = segStrings.iterator(); it.hasNext(); ) {
+      SegmentString ss = (SegmentString) it.next();
+      // skip collapsed lines
+      if (ss.size() < 2)
+      	continue;
+      lines.add(geomFact.createLineString(ss.getCoordinates()));
+    }
+    return lines;
+  }
+
+  private List extractLines(Collection geoms)
+  {
+    List lines = new ArrayList();
+    LinearComponentExtracter lce = new LinearComponentExtracter(lines);
+    for (Iterator it = geoms.iterator(); it.hasNext(); ) {
+      Geometry geom = (Geometry) it.next();
+      geom.apply(lce);
+    }
+    return lines;
+  }
+
+  private List toSegmentStrings(Collection lines)
+  {
+    List segStrings = new ArrayList();
+    for (Iterator it = lines.iterator(); it.hasNext(); ) {
+      LineString line = (LineString) it.next();
+      segStrings.add(new NodedSegmentString(line.getCoordinates(), null));
+    }
+    return segStrings;
+  }
+}

@@ -1,0 +1,240 @@
+<?xml version="1.0"?>
+<project name="JTS Buildfile" default="all" basedir=".">
+  <description>
+
+    This is an Ant build script for the JTS Topology Suite.
+
+  </description>
+
+  <!-- ================================================================== -->
+  <!-- Properties whose values could possibly be changed in the future -->
+  <!-- ================================================================== -->
+
+  <target name="props">
+  	<property file="${basedir}/build.properties"/>
+  	<property name="base.src" 	value="${basedir}/java/src"/>
+  	<property name="base.lib" 	value="${basedir}/java/lib"/>
+  	<property name="base.doc" 	value="${basedir}/doc"/>
+  	<property name="base.bin" 	value="${basedir}/bin"/>
+  	
+   	<property name="build" 		value="${basedir}/../build"/>
+ 	<property name="build.classes" 	value="${build}/classes"/>
+  	
+  	<property name="test" value="test"/>
+  	
+  	<property name="pre-zip" value="${build}/dist"/>
+  	<property name="pre-zip.src" value="${pre-zip}/src"/>
+  	<property name="pre-zip.lib" value="${pre-zip}/lib"/>
+  	<property name="pre-zip.doc" value="${pre-zip}/doc"/>
+  	<property name="pre-zip.javadoc" value="${pre-zip}/doc/javadoc"/>
+  	<property name="pre-zip.testxml" value="${pre-zip}/testxml"/>
+  	<property name="pre-zip.jtsio" value="${pre-zip}/jtsio"/>
+  	
+  	<property name="zipfile" value="jts-${jts.version}.zip"/>
+  	<property name="doc-dir" value="doc"/>
+  	
+  	<property name="jtsio.basedir" value="${basedir}/../jtsio"/>
+  	<property name="jtsio.lib" value="${jtsio.basedir}/lib"/>
+  	<property name="jtsio.build.classes" value="${basedir}/build/jtsio-classes"/>
+  	
+   </target>
+
+  <!-- ================================================================== -->
+  <!-- Targets -->
+  <!-- ================================================================== -->
+
+  <target name="copy-source"
+          description="Copy the source code and other files">
+    <delete dir="${pre-zip.src}"/>
+    <copy todir="${pre-zip.src}">
+      <fileset dir="${base.src}"
+               excludes="**/Doxyfile,**/test/**,**/jtstest/**,**/jtsplugin/**,**/jump*"/>
+    </copy>
+  	
+    <!-- clean & load the jars -->
+    <delete dir="${pre-zip.lib}"/>
+    <mkdir dir="${pre-zip.lib}"/>
+  	
+    <copy file="${base.lib}\jdom.jar"      tofile="${pre-zip.lib}\jdom.jar"   />
+    <copy file="${base.lib}\xerces.jar"    tofile="${pre-zip.lib}\xerces.jar" />
+    <copy file="${base.lib}\junit-3.7.jar" tofile="${pre-zip.lib}\junit.jar"  />
+    <copy file="${base.lib}\acme.jar"      tofile="${pre-zip.lib}\acme.jar"   />
+  	
+    <copy todir="${pre-zip.testxml}">
+      <fileset dir="${basedir}\testxml" />
+    </copy>
+   
+    <copy todir="${pre-zip.doc}">
+      <fileset dir="${base.doc}" />
+    </copy>
+   
+    <copy todir="${pre-zip}\bin">
+      <fileset dir="${base.bin}" />
+    </copy>
+   
+  </target>
+    
+  <target name="jts-jar" 
+          description="Builds jts.jar" depends="copy-source">
+    <delete dir="${build.classes}"/>
+    <mkdir dir="${build.classes}"/>
+    <javac srcdir="${base.src}"
+           debug="yes"
+	   includes="**/*.java"
+           excludes="**/test/**,**/com/vividsolutions/jtstest/**,**/jtsexample/**,**/jtsplugin/**"
+           destdir="${build.classes}">
+      <classpath>
+        <pathelement location="${pre-zip.lib}\jdom.jar"/>
+        <pathelement location="${pre-zip.lib}\xerces.jar"/>
+      </classpath>
+    </javac>
+    <delete file="${pre-zip.lib}/jts-*" failonerror="false"/>
+    <mkdir dir="${pre-zip.lib}"/>
+    <jar jarfile="${pre-zip.lib}\jts-${jts.version}.jar"
+         basedir="${build.classes}"/>
+  </target>
+
+  <target name="jts-test-jar" depends="copy-source"
+          description="Builds JTS_Test.jar">
+    <delete dir="${build.classes}"/>
+    <mkdir dir="${build.classes}"/>
+  	
+    <javac srcdir="${base.src}"
+	   includes="**/*.java"
+           excludes="**/test/**,**/com/vividsolutions/jts/**,**/jtsplugin/**"
+           destdir="${build.classes}">
+      <classpath>
+        <pathelement location="${pre-zip.lib}\jdom.jar"/>
+        <pathelement location="${pre-zip.lib}\xerces.jar"/>
+        <pathelement location="${pre-zip.lib}\acme.jar"/>
+        <pathelement location="${pre-zip.lib}\junit.jar"/>
+        <pathelement location="${pre-zip.lib}\jts-${jts.version}.jar"/>
+      </classpath>
+    </javac>
+    <copy todir="${build.classes}\com\vividsolutions\jtstest\testbuilder">
+      <fileset dir="${base.src}\com\vividsolutions\jtstest\testbuilder"
+               includes="*.gif,*.png"/>
+    </copy>
+    <jar jarfile="${pre-zip.lib}\JTS_Test.jar"
+         basedir="${build.classes}"/>
+  </target>
+
+  <target name="javadoc" depends="copy-source"
+          description="Generates the JavaDoc files">
+    <javadoc packagenames="com.vividsolutions.jts.*"
+             destdir="${pre-zip.javadoc}">
+      <sourcepath location="${pre-zip.src}"/>
+      <classpath>
+        <pathelement location="${pre-zip.lib}\jdom.jar"/>
+        <pathelement location="${pre-zip.lib}\xerces.jar"/>
+      </classpath>
+    </javadoc>
+  </target>
+
+<!-- ========================= JTS-IO =================================== -->
+    
+  <target name='copy-source-jtsio' depends='props'
+  	description='Copies JTS-IO files to distribution directory' >
+   <copy todir='${pre-zip.jtsio}'>
+     <fileset dir="${jtsio.basedir}" includes="src/**,test/**">
+        <!--<include name="src,test" />-->
+     </fileset>
+   </copy>    
+  </target>
+  
+  <target name='jtsio-jar' depends='props'>
+    <mkdir dir="${jtsio.build.classes}"/>
+    <javac srcdir="${jtsio.basedir}/src" 
+        	includes="**/*.java" listfiles="no"
+        	destdir="${jtsio.build.classes}" 
+        	classpath="${pre-zip.lib}/jts-${jts.version}.jar;${jtsio.lib}/classes12-${ora.version}.jar;${jtsio.lib}/jsde91_sdk.jar"/>
+    	
+    <jar destfile="${pre-zip.lib}/jtsio-${jts.version}.jar" basedir="${jtsio.build.classes}" />
+  </target>
+  
+  <target name="javadoc-jtsio" depends="copy-source-jtsio"
+          description="Generates the JTS-IO JavaDoc files">
+    <javadoc packagenames="com.vividsolutions.jts.*"
+             destdir="${pre-zip.jtsio}/doc/javadoc">
+      <sourcepath location="${pre-zip.jtsio}/src"/>
+      <classpath>
+        <pathelement location="${pre-zip.lib}\jdom.jar"/>
+        <pathelement location="${pre-zip.lib}\xerces.jar"/>
+      </classpath>
+    </javadoc>
+  </target>
+
+<!-- ============================================================ -->
+
+
+  <target name="junit"
+          description="Runs the JUnit tests">
+    <delete dir="${build.classes}"/>
+    <mkdir dir="${build.classes}"/>
+    <javac srcdir="${base.src}"
+	   includes="**/*.java"
+           excludes="**/com/vividsolutions/jts/**,**/com/vividsolutions/jtstest/**,**/jtsexample/**,**/jtsplugin/**"
+           destdir="${build.classes}">
+      <classpath>
+        <pathelement location="${pre-zip.lib}\jdom.jar"/>
+        <pathelement location="${pre-zip.lib}\xerces.jar"/>
+        <pathelement location="${pre-zip.lib}\jts-${version}.jar"/>
+        <pathelement location="${pre-zip.lib}\acme.jar"/>
+        <pathelement location="${pre-zip.lib}\junit.jar"/>
+      </classpath>
+    </javac>
+  	
+    	<taskdef name="junit"
+    	            classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+        	<classpath>
+    	      <pathelement path="${classpath}"/>
+    	      <pathelement location="${basedir}/lib/junit-3.7.jar"/>
+              <pathelement location="${ant.library.dir}/ant-junit.jar"/>
+    	    </classpath>
+        </taskdef>
+    	
+    	<property name="reports.tests" value="${build.classes}/test-reports"/>
+    	<mkdir dir="${reports.tests}"/>
+  	
+    <junit printsummary="on"
+           haltonerror="off"
+           haltonfailure="off">
+      <classpath>
+        <pathelement path="${build.classes}"/>
+        <pathelement location="${pre-zip.lib}\JTS_Test.jar"/>
+        <pathelement location="${pre-zip.lib}\jdom.jar"/>
+        <pathelement location="${pre-zip.lib}\xerces.jar"/>
+        <pathelement location="${pre-zip.lib}\jts-${version}.jar"/>
+        <pathelement location="${pre-zip.lib}\acme.jar"/>
+        <pathelement location="${pre-zip.lib}\junit.jar"/>
+      </classpath>
+      <formatter type="plain"
+                 usefile="false"/>
+      <batchtest todir="${reports.tests}">
+        <fileset dir="${build.classes}">
+          <include name="**/junit/**/*Test*.class"/>
+          <exclude name="**/MasterTester.class"/>
+        </fileset>
+      </batchtest>        
+    </junit>
+
+  </target>
+
+  <target name="makezip" depends="props"
+  	description="Zips all files into a delivery archive">
+    <zip destfile="${build}/jts-${jts.version}.zip" 
+    	basedir="${pre-zip}"  />
+  </target>
+  
+  <target name="run" depends="copy-source, jts-jar, jts-test-jar, javadoc" 
+          description="Cleans, compiles, builds jars, generates javadoc">
+  </target>
+
+  <target name="run-jtsio" depends="copy-source-jtsio, jtsio-jar, javadoc-jtsio" 
+          description="Cleans, builds, generates javadoc for JTS-IO">
+  </target>
+
+  <target name="all" depends="props, run, run-jtsio, makezip" 
+	          description="Compiles and builds the JTS delivery archive"/>
+
+</project>

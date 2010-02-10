@@ -1,0 +1,580 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<MultiGeometry>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>22000.0,33000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>26000.0,33000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>22000.0,39000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>26000.0,39000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>30000.0,33000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>34000.0,33000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>30000.0,39000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>34000.0,39000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>38000.0,33000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>42000.0,33000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>38000.0,39000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>42000.0,39000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>46000.0,33000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>50000.0,33000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>46000.0,39000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>50000.0,39000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>54000.0,33000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>58000.0,33000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>54000.0,39000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>58000.0,39000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>22000.0,45000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>26000.0,45000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>22000.0,51000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>26000.0,51000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>30000.0,45000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>34000.0,45000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>30000.0,51000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>34000.0,51000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>38000.0,45000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>42000.0,45000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>38000.0,51000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>42000.0,51000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>46000.0,45000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>50000.0,45000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>46000.0,51000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>50000.0,51000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>54000.0,45000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>58000.0,45000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>54000.0,51000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>58000.0,51000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>22000.0,57000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>26000.0,57000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>22000.0,63000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>26000.0,63000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>30000.0,57000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>34000.0,57000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>30000.0,63000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>34000.0,63000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>38000.0,57000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>42000.0,57000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>38000.0,63000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>42000.0,63000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>46000.0,57000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>50000.0,57000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>46000.0,63000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>50000.0,63000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>54000.0,57000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>58000.0,57000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>54000.0,63000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>58000.0,63000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>22000.0,69000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>26000.0,69000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>22000.0,75000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>26000.0,75000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>30000.0,69000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>34000.0,69000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>30000.0,75000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>34000.0,75000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>38000.0,69000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>42000.0,69000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>38000.0,75000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>42000.0,75000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>46000.0,69000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>50000.0,69000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>46000.0,75000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>50000.0,75000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>54000.0,69000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>58000.0,69000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>54000.0,75000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>58000.0,75000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>22000.0,81000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>26000.0,81000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>22000.0,87000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>26000.0,87000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>30000.0,81000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>34000.0,81000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>30000.0,87000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>34000.0,87000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>38000.0,81000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>42000.0,81000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>38000.0,87000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>42000.0,87000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>46000.0,81000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>50000.0,81000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>46000.0,87000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>50000.0,87000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+	<MultiPoint>
+		<pointMember>
+			<Point>
+				<coordinates>54000.0,81000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>58000.0,81000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>54000.0,87000.0 </coordinates>
+			</Point>
+		</pointMember>
+		<pointMember>
+			<Point>
+				<coordinates>58000.0,87000.0 </coordinates>
+			</Point>
+		</pointMember>
+	</MultiPoint>
+	
+</MultiGeometry>

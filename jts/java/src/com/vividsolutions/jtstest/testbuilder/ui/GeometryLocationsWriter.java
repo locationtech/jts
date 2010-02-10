@@ -1,0 +1,193 @@
+package com.vividsolutions.jtstest.testbuilder.ui;
+
+import java.awt.geom.*;
+import java.util.*;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jtstest.testbuilder.model.*;
+import com.vividsolutions.jtstest.testbuilder.geom.*;
+
+public class GeometryLocationsWriter 
+{
+  public static String writeLocation(LayerList layers,
+      Coordinate pt, double tolerance)
+  {
+    GeometryLocationsWriter writer = new GeometryLocationsWriter();
+    return writer.writeLocationString(layers, pt, tolerance);
+  }
+
+  private static final int MAX_ITEMS_TO_DISPLAY = 10;
+  
+  private boolean isHtmlFormatted = true;
+  private String eol = null;
+  private String highlightStart = null;
+  private String highlightEnd = null;
+  private String documentStart = null;
+  private String documentEnd = null;
+  
+  public GeometryLocationsWriter() {
+    setHtml(true);
+  }
+
+  public void setHtml(boolean isHtmlFormatted) 
+  {
+    this.isHtmlFormatted = isHtmlFormatted;
+    if (isHtmlFormatted) {
+      eol = "<br>";
+      highlightStart = "<b>";
+      highlightEnd = "</b>";
+      documentStart = "<html>";
+      documentEnd = "</html>";
+    }
+    else {
+      eol = "\n";
+      highlightStart = "";
+      highlightEnd = "";
+      documentStart = "";
+      documentEnd = "";     
+    }
+ }
+  
+  public String writeLocationString(LayerList layers,
+      Coordinate pt, double tolerance)
+  {
+    StringBuffer text = new StringBuffer();
+    for (int i = 0; i < layers.size(); i++) {
+
+      Layer lyr = layers.getLayer(i);
+      String locStr = writeLocation(lyr, pt, tolerance);
+      if (locStr == null) continue;
+      
+      if (i > 0 && text.length() > 0)
+        text.append(eol);
+
+      text.append(highlightStart + lyr.getName() + highlightEnd + eol);
+      text.append(locStr);
+    }
+    
+    if (text.length() > 0) {
+      return documentStart + text.toString() +documentEnd;
+    }
+    return null;
+  }
+    
+  public String writeSingleLocation(Layer lyr, Coordinate p, double tolerance)
+  {
+    Geometry geom = lyr.getGeometry();
+    if (geom == null) return null;
+    
+    VertexLocater locater = new VertexLocater(geom);
+    Coordinate coord = locater.getVertex(p, tolerance);
+    int index = locater.getIndex();
+    
+    if (coord == null) return null;
+    return "[" + index + "]: " 
+      + coord.x + ", " + coord.y;
+  }
+  
+  public String writeLocation(Layer lyr, Coordinate p, double tolerance)
+  {
+    Geometry geom = lyr.getGeometry();
+    if (geom == null) return null;
+    
+    String locStr = writeComponentLocation(geom, p, tolerance);
+    String facetStr = writeFacetLocation(geom, p, tolerance);
+    if (facetStr == null) 
+      return locStr;
+    return locStr + facetStr;   
+  }
+  
+  
+  public String writeComponentLocation(Geometry geom, Coordinate p, double tolerance)
+  {
+    ComponentLocater locater = new ComponentLocater(geom);
+    List locs = locater.getComponents(p, tolerance);
+    
+    StringBuffer buf = new StringBuffer();
+    int count = 0;
+    for (Iterator i = locs.iterator(); i.hasNext(); ) {
+    	
+    	GeometryLocation loc = (GeometryLocation) i.next();
+    	Geometry comp = loc.getComponent();
+    	
+    	buf.append("[" + loc.pathString() + "]  ");
+      buf.append(comp.getGeometryType().toUpperCase());
+      if (comp.getUserData() != null) {
+      	buf.append("  Data: ");
+      	buf.append(comp.getUserData().toString());
+      }
+      buf.append(eol);
+      
+      if (count++ > MAX_ITEMS_TO_DISPLAY) {
+        buf.append(" & more..." + eol);
+        break;
+      }
+    }
+    String locStr = buf.toString();
+    if (locStr.length() == 0)
+      return null;
+    return locStr;
+  }
+    
+  public String writeFacetLocation(Geometry geom, Coordinate p, double tolerance)
+  {
+    FacetLocater locater = new FacetLocater(geom);
+    List locs = locater.getLocations(p, tolerance);
+    List vertexLocs = FacetLocater.filterVertexLocations(locs);
+    
+    // only show vertices, if some are present
+    if (! vertexLocs.isEmpty()) 
+      return writeFacetLocations(vertexLocs);
+    // write 'em all
+    return writeFacetLocations(locs);
+  }
+    
+  private String writeFacetLocations(List locs)
+  {
+    if (locs.size() <= 0) return null;
+    
+    StringBuffer buf = new StringBuffer();
+    boolean isFirst = true;
+    int count = 0;
+    for (Iterator i = locs.iterator(); i.hasNext(); ) {
+    	GeometryLocation vertLoc = (GeometryLocation) i.next();
+
+    	if (! isFirst) {
+    		buf.append(eol);
+    	}
+
+    	isFirst = false;
+    	buf.append(vertLoc.toFacetString());
+      if (count++ > MAX_ITEMS_TO_DISPLAY) {
+        buf.append(eol + " & more..." + eol);
+        break;
+      }
+    }
+    return buf.toString();
+  }
+
+  public String OLDwriteLocation(Geometry geom, Coordinate p, double tolerance)
+  {
+    VertexLocater locater = new VertexLocater(geom);
+    List locs = locater.getLocations(p, tolerance);
+    
+    if (locs.size() <= 0) return null;
+    
+    StringBuffer buf = new StringBuffer();
+    boolean isFirst = true;
+    for (Iterator i = locs.iterator(); i.hasNext(); ) {
+    	VertexLocater.Location vertLoc = (VertexLocater.Location) i.next();
+    	int index = vertLoc.getIndices()[0];
+    	Coordinate pt = vertLoc.getCoordinate();
+    	if (! isFirst) {
+    		buf.append(eol + "--");
+    	}
+    	isFirst = false;
+    	String locStr = "[" + index + "]: " 
+    					+ pt.x + ", " + pt.y;
+    	buf.append(locStr);
+    }
+    
+    return buf.toString();
+  }
+
+}

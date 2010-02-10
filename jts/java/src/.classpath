@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="com/vividsolutions/jtsplugin/|srcex/|srcex/" path="" kind="src"/>
+	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
+	<classpathentry path="C:/data/martin/proj/jts/lib/xerces.jar" kind="lib"/>
+	<classpathentry path="C:/data/martin/proj/jts/lib/Acme.jar" kind="lib"/>
+	<classpathentry path="C:/data/martin/proj/jts/lib/jdom.jar" kind="lib"/>
+	<classpathentry path="C:/data/martin/proj/jts/lib/junit.jar" kind="lib"/>
+	<classpathentry path="srcex" kind="src"/>
+	<classpathentry path="C:/data/martin/proj/jts/libex/jump-core-1.2.jar" kind="lib"/>
+	<classpathentry path="classes" kind="output"/>
+</classpath>
