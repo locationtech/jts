@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!-- ====================================================================== 
+     Nov 7, 2005 5:09:19 PM                                                        
+
+     JTS - IO
+     
+     A set of interfaces to assist the user with data read / write exercises.
+                   
+	 David Zwiers, Vivid Solutions
+     ====================================================================== -->
+<project name="jtsio" default="default">
+    <description>
+            JTS Extension for to assist in read / write operations
+    </description>
+	
+    <property file="${basedir}/build.properties"/>
+    <property name="build.dir" value="${basedir}/build"/>
+    <property name="lib.dir" value="${basedir}/lib"/>
+    <property name="jtslib.dir" value="${basedir}/../build/dist/lib"/>
+
+
+    <!-- ================================= 
+          target: default              
+         ================================= -->
+    <target name="default" if="jtsio.version">
+    	<mkdir dir="${build.dir}/src"/>
+        <javac srcdir="${basedir}/src" 
+        	includes="**/*.java" listfiles="no"
+        	destdir="${build.dir}/src" 
+        	classpath="${jtslib.dir}/jts-${jts.version}.jar;${lib.dir}/classes12-${ora.version}.jar"/>
+
+    	<mkdir dir="${build.dir}/test"/>
+        <javac srcdir="${basedir}/test" 
+        	includes="**/*.java" listfiles="no"
+        	destdir="${build.dir}/test" 
+        	classpath="${build.dir}/src;${jtslib.dir}/jts-${jts.version}.jar;${lib.dir}/classes12-${ora.version}.jar;${lib.dir}/junit-3.7.jar"/>
+    	<copyfile dest="${build.dir}/test/com/vividsolutions/jts/io/oracle/connection.properties" src="${basedir}/test/com/vividsolutions/jts/io/oracle/connection.properties"/>
+    	
+    	<antcall target="jts_io_test"/>
+
+    	<mkdir dir="${build.dir}/javadoc"/>
+    	<javadoc sourcepath="${basedir}/src" packagenames="com.vividsolutions.*" destdir="${build.dir}/javadoc" classpath="${lib.dir}/jts-${jts.version}.jar;${lib.dir}/classes12-${ora.version}.jar;${lib.dir}/junit-3.7.jar"/>
+
+    	<mkdir dir="${build.dir}/dist"/>
+    	
+    	<delete dir="${build.dir}/dist/" includes="*.jar,*.zip"/>
+    	<jar destfile="${build.dir}/dist/jtsio-${jtsio.version}.jar" basedir="${build.dir}/src/"/>
+    	<zip destfile="${build.dir}/dist/jtsio-${jtsio.version}-src.zip">
+    		<zipfileset dir="${build.dir}/dist/" includes="jtsio-${jtsio.version}.jar" prefix="bin"/>
+    		<zipfileset dir="${build.dir}/javadoc" prefix="docs"/>
+    		<zipfileset dir="${build.dir}/src" prefix="src"/>
+    		<zipfileset dir="${build.dir}/test" prefix="test"/>
+    	</zip>
+
+    	<delete dir="${build.dir}/src"/>
+      	<delete dir="${build.dir}/test"/>
+    	<delete dir="${build.dir}/javadoc"/>
+    </target>
+	
+    <!-- - - - - - - - - - - - - - - - - - 
+          target: jts_io_test                      
+         - - - - - - - - - - - - - - - - - -->
+    <target name="jts_io_test">
+    	
+    	<taskdef name="junit"
+    	            classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+        	<classpath>
+    	      <pathelement path="${classpath}"/>
+    	      <pathelement location="${basedir}/lib/junit-3.7.jar"/>
+              <pathelement location="${ant.library.dir}/ant-junit.jar"/>
+    	    </classpath>
+        </taskdef>
+    	
+    	<property name="reports.tests" value="${build.dir}/test-reports"/>
+    	<mkdir dir="${reports.tests}"/>
+
+    	<junit printsummary="on" haltonfailure="no">
+    		<classpath>
+    			<pathelement path="${build.dir}/src"/>
+    			<pathelement path="${build.dir}/test"/>
+        		<pathelement location="${lib.dir}/jts-${jts.version}.jar"/>
+        		<pathelement location="${lib.dir}/classes12-${ora.version}.jar"/>
+    		</classpath>
+    		
+    		<formatter type="plain"/>
+    			
+	    	<batchtest fork="yes" todir="${reports.tests}">
+	    	    <fileset dir="${build.dir}/test/">
+	    	      <include name="**/Static*.class, **/GMLReaderTestCase.java"/>
+	    	      <exclude name="**/ConnectedTestCase.class"/>
+	    	    </fileset>
+	    	</batchtest>
+    	</junit>
+    </target>
+
+
+
+</project>
+
