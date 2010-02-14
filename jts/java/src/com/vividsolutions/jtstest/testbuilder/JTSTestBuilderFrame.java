@@ -66,30 +66,23 @@ import com.vividsolutions.jtstest.testbuilder.ui.SwingWorker;
 /**
  * @version 1.7
  */
-public class JTSTestBuilderFrame extends JFrame {
+public class JTSTestBuilderFrame extends JFrame 
+{
   private static JTSTestBuilderFrame singleton = null;
   private ResultController resultController = new ResultController(this);
+  private JTSTestBuilderMenuBar tbMenuBar = new JTSTestBuilderMenuBar(this);
+  private JTSTestBuilderToolBar tbToolBar = new JTSTestBuilderToolBar(this);
   //---------------------------------------------
   JPanel contentPane;
-  JMenuBar jMenuBar1 = new JMenuBar();
-  JMenu jMenuFile = new JMenu();
-  JMenu jMenuHelp = new JMenu();
-  JMenuItem jMenuHelpAbout = new JMenuItem();
   ImageIcon image1;
   ImageIcon image2;
   ImageIcon image3;
   BorderLayout borderLayout1 = new BorderLayout();
   Border border4;
-  JMenu jMenu1 = new JMenu();
   JSplitPane jSplitPane1 = new JSplitPane();
   JPanel jPanel1 = new JPanel();
   BorderLayout borderLayout2 = new BorderLayout();
   TestCasePanel testCasePanel = new TestCasePanel();
-  JMenuItem jMenuFileExit = new JMenuItem();
-  JMenu jMenu2 = new JMenu();
-  JMenuItem menuExchangeGeom = new JMenuItem();
-  JMenuItem menuTestText = new JMenuItem();
-  JMenuItem menuLoadXmlTestFile = new JMenuItem();
   JPanel jPanel2 = new JPanel();
   JTabbedPane inputTabbedPane = new JTabbedPane();
   BorderLayout borderLayout3 = new BorderLayout();
@@ -98,63 +91,11 @@ public class JTSTestBuilderFrame extends JFrame {
   TestListPanel testListPanel = new TestListPanel(this);
   GridBagLayout gridBagLayout2 = new GridBagLayout();
   GridLayout gridLayout1 = new GridLayout();
-  JMenuItem saveAsXmlMenuItem = new JMenuItem();
-  JToolBar jToolBar1 = new JToolBar();
-  JButton previousButton = new JButton();
-  JButton nextButton = new JButton();
-  JButton newButton = new JButton();
-  JButton copyButton = new JButton();
-  JButton deleteButton = new JButton();
-  JButton exchangeButton = new JButton();
-  Component component1;
-  Component component2;
-  Component component5;
   ResultWKTPanel resultWKTPanel = new ResultWKTPanel();
   ResultValuePanel resultValuePanel = new ResultValuePanel();
   StatsPanel statsPanel = new StatsPanel();
   InfoPanel infoPanel = new InfoPanel();
-  JMenuItem saveAsHtmlMenuItem = new JMenuItem();
-  JMenuItem saveAsPNGMenuItem = new JMenuItem();
-  JMenuItem saveToClipboardMenuItem = new JMenuItem();
-  Component component3;
-  JToggleButton drawPolygonButton = new JToggleButton();
-  JToggleButton drawLineStringButton = new JToggleButton();
-  JToggleButton drawPointButton = new JToggleButton();
-  JToggleButton zoomInButton = new JToggleButton();
-  JToggleButton infoButton = new JToggleButton();
-  JButton oneToOneButton = new JButton();
-  ButtonGroup buttonGroup = new ButtonGroup();
-  JButton zoomToFullExtentButton = new JButton();
-  JButton zoomToInputButton = new JButton();
-  Component component4;
-  JToggleButton panButton = new JToggleButton();
-  JMenuItem deleteAllTestCasesMenuItem = new JMenuItem();
-  JMenu jMenu3 = new JMenu();
-  JCheckBoxMenuItem showVerticesMenuItem = new JCheckBoxMenuItem();
-  JCheckBoxMenuItem showGridMenuItem = new JCheckBoxMenuItem();
-  JCheckBoxMenuItem showOrientationsMenuItem = new JCheckBoxMenuItem();
-  JCheckBoxMenuItem showVertexIndicesMenuItem = new JCheckBoxMenuItem();
-  JMenuItem menuLoadXmlTestFolder = new JMenuItem();
-  JMenuItem precisionModelMenuItem = new JMenuItem();
   private ZoomToClickTool zoomInTool;
-  private final ImageIcon leftIcon = new ImageIcon(this.getClass().getResource("Left.gif"));
-  private final ImageIcon rightIcon = new ImageIcon(this.getClass().getResource("Right.gif"));
-  private final ImageIcon plusIcon = new ImageIcon(this.getClass().getResource("Plus.gif"));
-  private final ImageIcon copyCaseIcon = new ImageIcon(this.getClass().getResource("CopyCase.gif"));
-  private final ImageIcon deleteIcon = new ImageIcon(this.getClass().getResource("Delete.gif"));
-  private final ImageIcon exchangeGeomsIcon = new ImageIcon(this.getClass().getResource("ExchangeGeoms.png"));
-  private final ImageIcon executeIcon = new ImageIcon(this.getClass().getResource("ExecuteProject.gif"));
-  private final ImageIcon zoomInIcon = new ImageIcon(this.getClass().getResource("MagnifyCursor.gif"));
-  private final ImageIcon drawPolygonIcon = new ImageIcon(this.getClass().getResource("DrawPolygon.png"));
-  private final ImageIcon drawLineStringIcon = new ImageIcon(this.getClass().getResource("DrawLineString.png"));
-  private final ImageIcon drawPointIcon = new ImageIcon(this.getClass().getResource("DrawPoint.png"));
-  private final ImageIcon infoIcon = new ImageIcon(this.getClass().getResource("Info.png"));
-  private final ImageIcon zoomOneToOneIcon = new ImageIcon(this.getClass().getResource("ZoomOneToOne.png"));
-  private final ImageIcon zoomToInputIcon = new ImageIcon(this.getClass().getResource("ZoomInput.png"));
-  private final ImageIcon zoomToFullExtentIcon = new ImageIcon(this.getClass().getResource("ZoomAll.png"));
-  private final ImageIcon selectIcon = new ImageIcon(this.getClass().getResource("Select.gif"));
-  private final ImageIcon moveVertexIcon = new ImageIcon(this.getClass().getResource("MoveVertex.png"));
-  private final ImageIcon panIcon = new ImageIcon(this.getClass().getResource("Hand.gif"));
   private final ImageIcon appIcon = new ImageIcon(this.getClass().getResource("app-icon.gif"));
 
   private JFileChooser fileChooser = new JFileChooser();
@@ -195,11 +136,6 @@ public class JTSTestBuilderFrame extends JFrame {
   
   private ArrayList wktABeforePMChange = new ArrayList();
   private ArrayList wktBBeforePMChange = new ArrayList();
-  JMenu jMenu4 = new JMenu();
-  JMenuItem removeDuplicatePoints = new JMenuItem();
-  JMenuItem changeToLines = new JMenuItem();
-  JToggleButton btnSelectPoint = new JToggleButton();
-  private JMenuItem generateExpectedValuesMenuItem = new JMenuItem();
   
   /**
    *  Construct the frame
@@ -699,15 +635,15 @@ public class JTSTestBuilderFrame extends JFrame {
   }
 
   void showVerticesMenuItem_actionPerformed(ActionEvent e) {
-    setShowingVertices(showVerticesMenuItem.isSelected());
+    setShowingVertices(tbMenuBar.showVerticesMenuItem.isSelected());
   }
 
   void showOrientationsMenuItem_actionPerformed(ActionEvent e) {
-    setShowingOrientations(showOrientationsMenuItem.isSelected());
+    setShowingOrientations(tbMenuBar.showOrientationsMenuItem.isSelected());
   }
 
   void showGridMenuItem_actionPerformed(ActionEvent e) {
-    testCasePanel.editPanel.setGridEnabled(showGridMenuItem.isSelected());
+    testCasePanel.editPanel.setGridEnabled(tbMenuBar.showGridMenuItem.isSelected());
     testCasePanel.editPanel.updateView();  }
 
   public void setShowingOrientations(boolean showingOrientations) {
@@ -797,11 +733,6 @@ public class JTSTestBuilderFrame extends JFrame {
    *  Component initialization
    */
   private void jbInit() throws Exception {
-    component1 = Box.createHorizontalStrut(8);
-    component2 = Box.createHorizontalStrut(8);
-    component3 = Box.createHorizontalStrut(8);
-    component4 = Box.createHorizontalStrut(8);
-    component5 = Box.createHorizontalStrut(8);
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     fileChooser.setMultiSelectionEnabled(false);
     fileAndDirectoryChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -831,17 +762,6 @@ public class JTSTestBuilderFrame extends JFrame {
     contentPane.setLayout(borderLayout1);
     this.setSize(new Dimension(800, 800));
     this.setTitle("JTS TestBuilder");
-    jMenuFile.setText("File");
-    jMenuHelp.setText("Help");
-    jMenuHelpAbout.setText("About");
-    jMenuHelpAbout.addActionListener(
-      new ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          jMenuHelpAbout_actionPerformed(e);
-        }
-      });
-    jMenu1.setText("View");
     
     /*
     testCasePanel.editPanel.addGeometryListener(
@@ -858,429 +778,16 @@ public class JTSTestBuilderFrame extends JFrame {
     jPanel1.setLayout(borderLayout2);
     jPanel1.setMinimumSize(new Dimension(431, 0));
     contentPane.setPreferredSize(new Dimension(601, 690));
-    jMenuFileExit.setText("Exit");
-    jMenuFileExit.addActionListener(
-      new ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          jMenuFileExit_actionPerformed(e);
-        }
-      });
-    jMenu2.setText("Edit");
-    menuExchangeGeom.setText("Exchange Geometries");
-    menuExchangeGeom.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          menuExchangeGeom_actionPerformed(e);
-        }
-      });
-    menuTestText.setText("Test Case Text...");
-    menuTestText.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          menuTestText_actionPerformed(e);
-        }
-      });
-    menuLoadXmlTestFile.setText("Open XML File(s)...");
-    menuLoadXmlTestFile.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          menuLoadXmlTestFile_actionPerformed(e);
-        }
-      });
     inputTabbedPane.setTabPlacement(JTabbedPane.LEFT);
     jPanel2.setLayout(borderLayout3);
     wktPanel.setMinimumSize(new Dimension(111, 0));
     wktPanel.setPreferredSize(new Dimension(600, 100));
     wktPanel.setToolTipText(AppStrings.TEXT_ENTRY_TIP);
-    previousButton.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          btnPrevCase_actionPerformed(e);
-        }
-      });
-    nextButton.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          btnNextCase_actionPerformed(e);
-        }
-      });
-    copyButton.addActionListener(
-        new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            btnCopyCase_actionPerformed(e);
-          }
-        });
-    deleteButton.addActionListener(
-        new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            btnDeleteCase_actionPerformed(e);
-          }
-        });
-    exchangeButton.addActionListener(
-        new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            btnExchangeGeoms_actionPerformed(e);
-          }
-        });
-    newButton.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          btnNewCase_actionPerformed(e);
-        }
-      });
     testPanel.setLayout(gridBagLayout2);
     gridLayout1.setRows(4);
     gridLayout1.setColumns(1);
-    saveAsXmlMenuItem.setText("Save As XML...");
-    saveAsXmlMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          menuSaveAsXml_actionPerformed(e);
-        }
-      });
-    previousButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    previousButton.setMaximumSize(new Dimension(30, 30));
-    previousButton.setMinimumSize(new Dimension(30, 30));
-    previousButton.setPreferredSize(new Dimension(30, 30));
-    previousButton.setToolTipText("Previous Case");
-    previousButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    previousButton.setIcon(leftIcon);
-    previousButton.setMargin(new Insets(0, 0, 0, 0));
-    previousButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    nextButton.setMargin(new Insets(0, 0, 0, 0));
-    nextButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    nextButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    nextButton.setMaximumSize(new Dimension(30, 30));
-    nextButton.setMinimumSize(new Dimension(30, 30));
-    nextButton.setPreferredSize(new Dimension(30, 30));
-    nextButton.setToolTipText("Next Case");
-    nextButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    nextButton.setIcon(rightIcon);
-    newButton.setMargin(new Insets(0, 0, 0, 0));
-    newButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    newButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    newButton.setMaximumSize(new Dimension(30, 30));
-    newButton.setMinimumSize(new Dimension(30, 30));
-    newButton.setPreferredSize(new Dimension(30, 30));
-    newButton.setToolTipText("New Case");
-    newButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    newButton.setIcon(plusIcon);
     
-    copyButton.setMargin(new Insets(0, 0, 0, 0));
-    copyButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    copyButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    copyButton.setMaximumSize(new Dimension(30, 30));
-    copyButton.setMinimumSize(new Dimension(30, 30));
-    copyButton.setPreferredSize(new Dimension(30, 30));
-    copyButton.setToolTipText("Copy Current Case");
-    copyButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    copyButton.setIcon(copyCaseIcon);
-    
-    deleteButton.setMargin(new Insets(0, 0, 0, 0));
-    deleteButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    deleteButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    deleteButton.setMaximumSize(new Dimension(30, 30));
-    deleteButton.setMinimumSize(new Dimension(30, 30));
-    deleteButton.setPreferredSize(new Dimension(30, 30));
-    deleteButton.setToolTipText("Delete Current Case");
-    deleteButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    deleteButton.setIcon(deleteIcon);
-    
-    exchangeButton.setMargin(new Insets(0, 0, 0, 0));
-    exchangeButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    exchangeButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    exchangeButton.setMaximumSize(new Dimension(30, 30));
-    exchangeButton.setMinimumSize(new Dimension(30, 30));
-    exchangeButton.setPreferredSize(new Dimension(30, 30));
-    exchangeButton.setToolTipText("Exchange A & B");
-    exchangeButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    exchangeButton.setIcon(exchangeGeomsIcon);
-    
-    saveAsHtmlMenuItem.setText("Save As HTML...");
-    saveAsHtmlMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          menuSaveAsHtml_actionPerformed(e);
-        }
-      });
-    saveAsPNGMenuItem.setText("Save As PNG...");
-    saveAsPNGMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          menuSaveAsPNG_actionPerformed(e);
-        }
-      });
-    saveToClipboardMenuItem.setText("Save Screen To Clipboard");
-    saveToClipboardMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-        	menuSaveScreenToClipboard_actionPerformed(e);
-        }
-      });
-    drawPolygonButton.setMargin(new Insets(0, 0, 0, 0));
-    drawPolygonButton.setPreferredSize(new Dimension(30, 30));
-    drawPolygonButton.setIcon(drawPolygonIcon);
-    drawPolygonButton.setMinimumSize(new Dimension(30, 30));
-    drawPolygonButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    drawPolygonButton.setSelected(true);
-    drawPolygonButton.setToolTipText("Draw Polyogn");
-    drawPolygonButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    drawPolygonButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    drawPolygonButton.setMaximumSize(new Dimension(30, 30));
-    drawPolygonButton.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          drawPolygonButton_actionPerformed(e);
-        }
-      });
-    drawLineStringButton.setMargin(new Insets(0, 0, 0, 0));
-    drawLineStringButton.setPreferredSize(new Dimension(30, 30));
-    drawLineStringButton.setIcon(drawLineStringIcon);
-    drawLineStringButton.setMinimumSize(new Dimension(30, 30));
-    drawLineStringButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    drawLineStringButton.setSelected(true);
-    drawLineStringButton.setToolTipText("Draw LineString");
-    drawLineStringButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    drawLineStringButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    drawLineStringButton.setMaximumSize(new Dimension(30, 30));
-    drawLineStringButton.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          drawLineStringButton_actionPerformed(e);
-        }
-      });
-    drawPointButton.setMargin(new Insets(0, 0, 0, 0));
-    drawPointButton.setPreferredSize(new Dimension(30, 30));
-    drawPointButton.setIcon(drawPointIcon);
-    drawPointButton.setMinimumSize(new Dimension(30, 30));
-    drawPointButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    drawPointButton.setSelected(true);
-    drawPointButton.setToolTipText("Draw Point");
-    drawPointButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    drawPointButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    drawPointButton.setMaximumSize(new Dimension(30, 30));
-    drawPointButton.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          drawPointButton_actionPerformed(e);
-        }
-      });
-    infoButton.setMargin(new Insets(0, 0, 0, 0));
-    infoButton.setPreferredSize(new Dimension(30, 30));
-    infoButton.setIcon(infoIcon);
-    infoButton.setMinimumSize(new Dimension(30, 30));
-    infoButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    infoButton.setSelected(false);
-    infoButton.setToolTipText("Info");
-    infoButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    infoButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    infoButton.setMaximumSize(new Dimension(30, 30));
-    infoButton.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          infoButton_actionPerformed(e);
-        }
-      });
-    zoomInButton.setMaximumSize(new Dimension(30, 30));
-    zoomInButton.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          zoomInButton_actionPerformed(e);
-        }
-      });
-    zoomInButton.setToolTipText("<html>Zoom In/Out<br><br>In = Left-Btn<br>Out = Right-Btn</html>");
-    zoomInButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    zoomInButton.setFont(new java.awt.Font("Serif", 0, 10));
-    zoomInButton.setMinimumSize(new Dimension(30, 30));
-    zoomInButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    zoomInButton.setPreferredSize(new Dimension(30, 30));
-    zoomInButton.setIcon(zoomInIcon);
-    zoomInButton.setMargin(new Insets(0, 0, 0, 0));
-    
-    oneToOneButton.setMargin(new Insets(0, 0, 0, 0));
-    oneToOneButton.setIcon(zoomOneToOneIcon);
-    oneToOneButton.setPreferredSize(new Dimension(30, 30));
-    oneToOneButton.setMinimumSize(new Dimension(30, 30));
-    oneToOneButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    oneToOneButton.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          oneToOneButton_actionPerformed(e);
-        }
-      });
-    oneToOneButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    oneToOneButton.setToolTipText("Zoom 1:1");
-    oneToOneButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    oneToOneButton.setMaximumSize(new Dimension(30, 30));
-    
-    zoomToInputButton.setMargin(new Insets(0, 0, 0, 0));
-    zoomToInputButton.setIcon(zoomToInputIcon);
-    zoomToInputButton.setPreferredSize(new Dimension(30, 30));
-    zoomToInputButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    zoomToInputButton.setMinimumSize(new Dimension(30, 30));
-    zoomToInputButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    zoomToInputButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    zoomToInputButton.setToolTipText("Zoom To Input");
-    zoomToInputButton.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          zoomToInputButton_actionPerformed(e);
-        }
-      });
-    zoomToInputButton.setMaximumSize(new Dimension(30, 30));
-    
-    zoomToFullExtentButton.setMargin(new Insets(0, 0, 0, 0));
-    zoomToFullExtentButton.setIcon(zoomToFullExtentIcon);
-    zoomToFullExtentButton.setPreferredSize(new Dimension(30, 30));
-    zoomToFullExtentButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    zoomToFullExtentButton.setMinimumSize(new Dimension(30, 30));
-    zoomToFullExtentButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    zoomToFullExtentButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    zoomToFullExtentButton.setToolTipText("Zoom To Full Extent");
-    zoomToFullExtentButton.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          zoomToFullExtentButton_actionPerformed(e);
-        }
-      });
-    zoomToFullExtentButton.setMaximumSize(new Dimension(30, 30));
-    
-    panButton.addActionListener(
-      new java.awt.event.ActionListener() {
-
-        public void actionPerformed(ActionEvent e) {
-          panButton_actionPerformed(e);
-        }
-      });
-    panButton.setMaximumSize(new Dimension(30, 30));
-    panButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-    panButton.setHorizontalTextPosition(SwingConstants.CENTER);
-    panButton.setToolTipText("Pan");
-    panButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-    panButton.setMinimumSize(new Dimension(30, 30));
-    panButton.setIcon(panIcon);
-    panButton.setPreferredSize(new Dimension(30, 30));
-    panButton.setMargin(new Insets(0, 0, 0, 0));
-    
-    btnSelectPoint.setMaximumSize(new Dimension(30, 30));
-    btnSelectPoint.setMinimumSize(new Dimension(30, 30));
-    btnSelectPoint.setToolTipText("<html>Move/Add/Delete Vertex<br><br>Move = Left-Btn<br>Add = Right-Btn<br>Delete = Ctl-Right-Btn</html>");
-    btnSelectPoint.setIcon(moveVertexIcon);
-    btnSelectPoint.setMargin(new Insets(0, 0, 0, 0));
-    btnSelectPoint.setMnemonic('0');
-    btnSelectPoint.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        btnSelectPoint_actionPerformed(e);
-      }
-    });
-    
-    deleteAllTestCasesMenuItem.setText("Delete All Test Cases");
-    deleteAllTestCasesMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          deleteAllTestCasesMenuItem_actionPerformed(e);
-        }
-      });
-    jMenu3.setText("Options");
-    showVerticesMenuItem.setText("Show Vertices");
-    showVerticesMenuItem.setSelected(true);
-    showVerticesMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          showVerticesMenuItem_actionPerformed(e);
-        }
-      });
-    showGridMenuItem.setText("Show Grid");
-    showGridMenuItem.setSelected(true);
-    showGridMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          showGridMenuItem_actionPerformed(e);
-        }
-      });
-    showOrientationsMenuItem.setText("Show Orientations");
-    showOrientationsMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          showOrientationsMenuItem_actionPerformed(e);
-        }
-      });
-    showVertexIndicesMenuItem.setText("Show Vertex Indices");
-    showVertexIndicesMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-        	showVertexIndicesMenuItem_actionPerformed(e);
-        }
-      });
-    menuLoadXmlTestFolder.setText("Open XML Folder(s)...");
-    menuLoadXmlTestFolder.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          menuLoadXmlTestFolder_actionPerformed(e);
-        }
-      });
-    precisionModelMenuItem.setText("Precision Model...");
-    precisionModelMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          precisionModelMenuItem_actionPerformed(e);
-        }
-      });
-    jMenu4.setText("Tools");
-    removeDuplicatePoints.setText("Remove Duplicate Points");
-    removeDuplicatePoints.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        menuRemoveDuplicatePoints_actionPerformed(e);
-      }
-    });
-    changeToLines.setText("Change to Lines");
-    changeToLines.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        menuChangeToLines_actionPerformed(e);
-      }
-    });
-    jToolBar1.setFloatable(false);
-    generateExpectedValuesMenuItem.setText("Generate Expected Values");
-    generateExpectedValuesMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        //generateExpectedValuesMenuItem_actionPerformed(e);
-      }
-    });
-    jMenuFile.add(menuLoadXmlTestFile);
-    jMenuFile.add(menuLoadXmlTestFolder);
-    jMenuFile.add(saveAsPNGMenuItem);
-    jMenuFile.add(saveToClipboardMenuItem);
-    jMenuFile.add(saveAsXmlMenuItem);
-    jMenuFile.add(saveAsHtmlMenuItem);
-
-    jMenuFile.addSeparator();
-    jMenuFile.add(generateExpectedValuesMenuItem);
-    jMenuFile.addSeparator();
-    jMenuFile.add(jMenuFileExit);
-    jMenuHelp.add(jMenuHelpAbout);
-    jMenuBar1.add(jMenuFile);
-    jMenuBar1.add(jMenu1);
-    jMenuBar1.add(jMenu2);
-    jMenuBar1.add(jMenu3);
-    jMenuBar1.add(jMenu4);
-    jMenuBar1.add(jMenuHelp);
-    this.setJMenuBar(jMenuBar1);
-    jMenu1.add(menuTestText);
+    this.setJMenuBar(tbMenuBar.getMenuBar());
     contentPane.add(jSplitPane1, BorderLayout.CENTER);
     jSplitPane1.add(jPanel1, JSplitPane.TOP);
     jPanel1.add(testCasePanel, BorderLayout.CENTER);
@@ -1306,44 +813,9 @@ public class JTSTestBuilderFrame extends JFrame {
         }  	
       }
     });
-    contentPane.add(jToolBar1, BorderLayout.NORTH);
-    jToolBar1.add(newButton, null);
-    jToolBar1.add(copyButton, null);
-    jToolBar1.add(deleteButton, null);
-    jToolBar1.add(component2, null);
-    jToolBar1.add(previousButton, null);
-    jToolBar1.add(nextButton, null);
-    jToolBar1.add(component1, null);
-
-    jToolBar1.add(exchangeButton, null);
-    jToolBar1.add(component5, null);
-//    jToolBar1.add(runAllTestsButton, null);
-//    jToolBar1.add(component3, null);
-    jToolBar1.add(zoomInButton, null);
-    jToolBar1.add(panButton, null);
-    jToolBar1.add(oneToOneButton, null);
-    jToolBar1.add(zoomToInputButton, null);
-    jToolBar1.add(zoomToFullExtentButton, null);
-    jToolBar1.add(component4, null);
-    jToolBar1.add(drawPolygonButton, null);
-    jToolBar1.add(drawLineStringButton, null);
-    jToolBar1.add(drawPointButton, null);
-    jToolBar1.add(btnSelectPoint, null);
-    jToolBar1.add(component4, null);
-    jToolBar1.add(infoButton, null);
     
-    jMenu2.add(deleteAllTestCasesMenuItem);
-    jMenu2.add(menuExchangeGeom);
-    jMenu2.addSeparator();
-    jMenu2.add(precisionModelMenuItem);
+    contentPane.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
     
-    jMenu3.add(showVerticesMenuItem);
-    jMenu3.add(showVertexIndicesMenuItem);
-    jMenu3.add(showOrientationsMenuItem);
-    jMenu3.add(showGridMenuItem);
-    
-    jMenu4.add(removeDuplicatePoints);
-    jMenu4.add(changeToLines);
     
     jSplitPane1.setDividerLocation(500);
     wktPanel.addActionListener(
@@ -1353,13 +825,6 @@ public class JTSTestBuilderFrame extends JFrame {
           wktPanel_actionPerformed(e);
         }
       });
-    buttonGroup.add(drawPolygonButton);
-    buttonGroup.add(drawLineStringButton);
-    buttonGroup.add(drawPointButton);
-    buttonGroup.add(panButton);
-    buttonGroup.add(zoomInButton);
-    buttonGroup.add(btnSelectPoint);
-    buttonGroup.add(infoButton);
   }
 
   private void updateGeometry() {
@@ -1496,7 +961,7 @@ public class JTSTestBuilderFrame extends JFrame {
     testCasePanel.setPrecisionModelDescription(tbModel.getPrecisionModel().toString());
   }
 
-  private void menuRemoveDuplicatePoints_actionPerformed(ActionEvent e) {
+  void menuRemoveDuplicatePoints_actionPerformed(ActionEvent e) {
     CleanDuplicatePoints clean = new CleanDuplicatePoints();
     Geometry cleanGeom = clean.clean(tbModel.getCurrentTestCaseEdit().getGeometry(0));
     tbModel.getCurrentTestCaseEdit().setGeometry(0, cleanGeom);
