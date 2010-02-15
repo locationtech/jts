@@ -72,6 +72,8 @@ This document lists the change history of release versions of the JTS Topology S
 <li>Fixed <tt>WKTWriter</tt> to emit correct syntax for MULTIPOINTs
 <li>Fixed <tt>WKTReader</tt> to accept correct syntax for MULTIPOINTs
 <li><tt>CGAlgorithms.isCCW</tt> now checks for too few points in the ring and throws an <tt>IllegalArgumentException</tt>
+<li>Fixed bug in <tt>AffineTransformation#eqals</tt> (logic bug)
+<li>Fixed bug in <tt>CoordinateList#closeRing</tt> (cloning closing Coordinate)
 </ul>
 
 <!------- TestBuilder -------------------->

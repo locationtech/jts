@@ -1006,7 +1006,7 @@ public class AffineTransformation
   */
   public boolean equals(Object obj)
   {
-    if (obj instanceof AffineTransformation)
+    if (! (obj instanceof AffineTransformation))
       return false;
     if (obj == null) return false;
     

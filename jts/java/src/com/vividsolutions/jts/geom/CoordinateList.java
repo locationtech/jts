@@ -219,7 +219,7 @@ public class CoordinateList
   public void closeRing()
   {
     if (size() > 0)
-      add(get(0), false);
+      add(new Coordinate((Coordinate) get(0)), false);
   }
 
   /** Returns the Coordinates in this collection.
