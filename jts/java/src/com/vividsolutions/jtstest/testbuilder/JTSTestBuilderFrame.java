@@ -53,17 +53,15 @@ import java.util.*;
 import java.util.List;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.FileFilter;
 
 import com.vividsolutions.jtstest.testbuilder.ui.*;
-import com.vividsolutions.jtstest.testbuilder.ui.SwingWorker;
-
-
 
 /**
+ * The main frame for the JTS Test Builder.
+ * 
  * @version 1.7
  */
 public class JTSTestBuilderFrame extends JFrame 
@@ -74,9 +72,6 @@ public class JTSTestBuilderFrame extends JFrame
   private JTSTestBuilderToolBar tbToolBar = new JTSTestBuilderToolBar(this);
   //---------------------------------------------
   JPanel contentPane;
-  ImageIcon image1;
-  ImageIcon image2;
-  ImageIcon image3;
   BorderLayout borderLayout1 = new BorderLayout();
   Border border4;
   JSplitPane jSplitPane1 = new JSplitPane();
