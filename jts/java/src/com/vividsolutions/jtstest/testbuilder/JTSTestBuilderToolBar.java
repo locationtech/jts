@@ -30,7 +30,7 @@ public class JTSTestBuilderToolBar {
   JButton zoomToInputButton = new JButton();
   Component component4;
   JToggleButton panButton = new JToggleButton();
-  JToggleButton btnSelectPoint = new JToggleButton();
+  JToggleButton btnEditVertex = new JToggleButton();
   Component component1;
   Component component2;
   Component component5;
@@ -91,7 +91,7 @@ public class JTSTestBuilderToolBar {
     jToolBar1.add(drawPolygonButton, null);
     jToolBar1.add(drawLineStringButton, null);
     jToolBar1.add(drawPointButton, null);
-    jToolBar1.add(btnSelectPoint, null);
+    jToolBar1.add(btnEditVertex, null);
     jToolBar1.add(component4, null);
     jToolBar1.add(infoButton, null);
 
@@ -341,15 +341,15 @@ public class JTSTestBuilderToolBar {
       panButton.setPreferredSize(new Dimension(30, 30));
       panButton.setMargin(new Insets(0, 0, 0, 0));
       
-      btnSelectPoint.setMaximumSize(new Dimension(30, 30));
-      btnSelectPoint.setMinimumSize(new Dimension(30, 30));
-      btnSelectPoint.setToolTipText("<html>Move/Add/Delete Vertex<br><br>Move = Left-Btn<br>Add = Right-Btn<br>Delete = Ctl-Right-Btn</html>");
-      btnSelectPoint.setIcon(moveVertexIcon);
-      btnSelectPoint.setMargin(new Insets(0, 0, 0, 0));
-      btnSelectPoint.setMnemonic('0');
-      btnSelectPoint.addActionListener(new java.awt.event.ActionListener() {
+      btnEditVertex.setMaximumSize(new Dimension(30, 30));
+      btnEditVertex.setMinimumSize(new Dimension(30, 30));
+      btnEditVertex.setToolTipText("<html>Move/Add/Delete Vertex<br><br>Move = Left-Btn<br>Add = Right-Btn<br>Delete = Ctl-Right-Btn</html>");
+      btnEditVertex.setIcon(moveVertexIcon);
+      btnEditVertex.setMargin(new Insets(0, 0, 0, 0));
+      btnEditVertex.setMnemonic('0');
+      btnEditVertex.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.btnSelectPoint_actionPerformed(e);
+          tbFrame.btnEditVertex_actionPerformed(e);
         }
       });
 
@@ -358,7 +358,7 @@ public class JTSTestBuilderToolBar {
       buttonGroup.add(drawPointButton);
       buttonGroup.add(panButton);
       buttonGroup.add(zoomInButton);
-      buttonGroup.add(btnSelectPoint);
+      buttonGroup.add(btnEditVertex);
       buttonGroup.add(infoButton);
 
       return jToolBar1;

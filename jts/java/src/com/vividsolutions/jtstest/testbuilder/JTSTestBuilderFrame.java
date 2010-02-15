@@ -787,7 +787,6 @@ public class JTSTestBuilderFrame extends JFrame
     gridLayout1.setRows(4);
     gridLayout1.setColumns(1);
     
-    this.setJMenuBar(tbMenuBar.getMenuBar());
     contentPane.add(jSplitPane1, BorderLayout.CENTER);
     jSplitPane1.add(jPanel1, JSplitPane.TOP);
     jPanel1.add(testCasePanel, BorderLayout.CENTER);
@@ -814,17 +813,15 @@ public class JTSTestBuilderFrame extends JFrame
       }
     });
     
-    contentPane.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
-    
-    
     jSplitPane1.setDividerLocation(500);
     wktPanel.addActionListener(
       new ActionListener() {
-
         public void actionPerformed(ActionEvent e) {
           wktPanel_actionPerformed(e);
         }
       });
+    this.setJMenuBar(tbMenuBar.getMenuBar());
+    contentPane.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
   }
 
   private void updateGeometry() {
@@ -975,7 +972,7 @@ public class JTSTestBuilderFrame extends JFrame
     updateGeometry();
   }
 
-  void btnSelectPoint_actionPerformed(ActionEvent e) {
+  void btnEditVertex_actionPerformed(ActionEvent e) {
     testCasePanel.getGeometryEditPanel().setCurrentTool(EditVertexTool.getInstance());
   }
 
