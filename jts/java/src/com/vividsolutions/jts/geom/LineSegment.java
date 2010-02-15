@@ -550,6 +550,23 @@ public class LineSegment
     return p0.equals(other.p0) && p1.equals(other.p1);
   }
 
+  /**
+   * Gets a hashcode for this object.
+   * 
+   * @return a hashcode for this object
+   */
+  public int hashCode() {
+    long bits0 = java.lang.Double.doubleToLongBits(p0.x);
+    bits0 ^= java.lang.Double.doubleToLongBits(p0.y) * 31;
+    int hash0 = (((int) bits0) ^ ((int) (bits0  >> 32)));
+    
+    long bits1 = java.lang.Double.doubleToLongBits(p1.x);
+    bits1 ^= java.lang.Double.doubleToLongBits(p1.y) * 31;
+    int hash1 = (((int) bits1) ^ ((int) (bits1  >> 32)));
+
+    // XOR is supposed to be a good way to combine hashcodes
+    return hash0 ^ hash1;
+  }
 
   /**
    *  Compares this object with the specified object for order.
