@@ -65,6 +65,7 @@ This document lists the change history of release versions of the JTS Topology S
 <li>Fixed Point.isValid() to check for invalid coordinates (ie with Nan ordinates)
 <li>Fixed <tt>Geometry.distance()</tt> and <tt>DistanceOp</tt> to return 0.0 for empty inputs
 <li>Fixed <tt>Buffer</tt> to handle degenerate polygons with too few distinct points correctly
+<li>Added illegal state check in <tt>LineSegment.pointAlongOffset()</tt>
 <li>Fixed exception strategy in <tt>BufferSubgraph</tt> to handle certain robustness failures correctly
 <li>Fixed robustness problem in <tt>OffsetCurveBuilder</tt> in computing mitred joins for nearly parallel segments
 <li>Fixed minor bug in <tt>BufferInputLineSimplifier</tt> which prevented simplification of some situations
