@@ -249,7 +249,8 @@ public class BufferValidator
         if (b.isEmpty()) {
           return true;
         }
-        return a.contains(b);
+        boolean isContained = a.contains(b);
+        return isContained;
       }
     });
   }
