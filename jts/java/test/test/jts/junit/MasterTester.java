@@ -41,11 +41,15 @@ import junit.framework.TestSuite;
 import test.jts.junit.geom.*;
 import test.jts.junit.geom.impl.BasicCoordinateSequenceTest;
 import test.jts.junit.algorithm.*;
+import test.jts.junit.linearref.LengthIndexedLineTestCase;
+import test.jts.junit.linearref.LocationIndexedLineTestCase;
 import test.jts.junit.operation.buffer.*;
 import test.jts.junit.operation.distance.DistanceTest;
 import test.jts.junit.operation.linemerge.LineMergerTest;
 import test.jts.junit.operation.polygonize.PolygonizeTest;
 import test.jts.junit.operation.relate.*;
+import test.jts.junit.operation.union.CascadedPolygonUnionTest;
+import test.jts.junit.operation.union.UnaryUnionTest;
 import test.jts.junit.operation.valid.*;
 import test.jts.junit.precision.SimpleGeometryPrecisionReducerTest;
 import test.jts.junit.index.IntervalTest;
@@ -112,6 +116,12 @@ public class MasterTester extends TestCase {
 
     result.addTest(new TestSuite(ComputeOrientationTest.class));
     result.addTest(new TestSuite(IsCCWTest.class));
+    
+    result.addTest(new TestSuite(UnaryUnionTest.class));
+    result.addTest(new TestSuite(CascadedPolygonUnionTest.class));
+
+    result.addTest(new TestSuite(LengthIndexedLineTestCase.class));
+    result.addTest(new TestSuite(LocationIndexedLineTestCase.class));
 
 
     return result;

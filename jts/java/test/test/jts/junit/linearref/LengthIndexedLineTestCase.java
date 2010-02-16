@@ -86,6 +86,18 @@ public class LengthIndexedLineTestCase
   }
 
   /**
+   * These tests work for LengthIndexedLine, but not LocationIndexedLine
+   *
+   */
+  public void testOffsetStartPointRepeatedPoint()
+  {
+    runOffsetTest("LINESTRING (0 0, 10 10, 10 10, 20 20)", "POINT(0 0)", 1.0, "POINT (-0.7071067811865475 0.7071067811865475)");
+    runOffsetTest("LINESTRING (0 0, 10 10, 10 10, 20 20)", "POINT(0 0)", -1.0, "POINT (0.7071067811865475 -0.7071067811865475)");
+    runOffsetTest("LINESTRING (0 0, 10 10, 10 10, 20 20)", "POINT(10 10)", 5.0, "POINT (6.464466094067262 13.535533905932738)");
+    runOffsetTest("LINESTRING (0 0, 10 10, 10 10, 20 20)", "POINT(10 10)", -5.0, "POINT (13.535533905932738 6.464466094067262)");
+  }
+
+  /**
    * Tests that z values are interpolated
    *
    */
