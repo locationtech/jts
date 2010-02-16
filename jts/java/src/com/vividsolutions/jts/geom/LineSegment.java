@@ -275,6 +275,8 @@ public class LineSegment
    * @param offsetDistance the distance the point is offset from the segment
    *    (positive is to the left, negative is to the right)
    * @return the point at that distance and offset
+   * 
+   * @throws IllegalStateException if the segment has zero length
    */
   public Coordinate pointAlongOffset(double segmentLengthFraction, double offsetDistance)
   {
@@ -285,9 +287,16 @@ public class LineSegment
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;
     double len = Math.sqrt(dx * dx + dy * dy);
-    // u is the vector that is the length of the offset, in the direction of the segment
-    double ux = offsetDistance * dx / len;
-    double uy = offsetDistance * dy / len;
+    double ux = 0.0;
+    double uy = 0.0;
+    if (offsetDistance != 0.0) {
+      if (len <= 0.0)
+        throw new IllegalStateException("Cannot compute offset from zero-length line segment");
+
+      // u is the vector that is the length of the offset, in the direction of the segment
+      ux = offsetDistance * dx / len;
+      uy = offsetDistance * dy / len;
+    }
     
     // the offset point is the seg point plus the offset vector rotated 90 degrees CCW
     double offsetx = segx - uy;
