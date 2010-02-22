@@ -58,15 +58,6 @@ public class ConstructionFunctions {
 
   public static Geometry densify(Geometry g, double distance) { return Densifier.densify(g, distance); }
   
-  public static Geometry polygonize(Geometry g)
-  {
-    List lines = LineStringExtracter.getLines(g);
-    Polygonizer polygonizer = new Polygonizer();
-    polygonizer.add(lines);
-    Collection polys = polygonizer.getPolygons();
-    Polygon[] polyArray = GeometryFactory.toPolygonArray(polys);
-    return g.getFactory().createGeometryCollection(polyArray);
-  }
   
   public static Geometry mergeLines(Geometry g)
   {
