@@ -587,6 +587,10 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
+  void drawRectangleButton_actionPerformed(ActionEvent e) {
+    testCasePanel.getGeometryEditPanel().setCurrentTool(RectangleTool.getInstance());
+  }
+
   void drawPolygonButton_actionPerformed(ActionEvent e) {
     testCasePanel.getGeometryEditPanel().setCurrentTool(PolygonTool.getInstance());
   }

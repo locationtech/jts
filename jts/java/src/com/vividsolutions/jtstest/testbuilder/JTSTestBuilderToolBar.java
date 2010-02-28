@@ -19,6 +19,7 @@ public class JTSTestBuilderToolBar {
   JButton deleteButton = new JButton();
   JButton exchangeButton = new JButton();
 
+  JToggleButton drawRectangleButton = new JToggleButton();
   JToggleButton drawPolygonButton = new JToggleButton();
   JToggleButton drawLineStringButton = new JToggleButton();
   JToggleButton drawPointButton = new JToggleButton();
@@ -28,13 +29,13 @@ public class JTSTestBuilderToolBar {
   ButtonGroup buttonGroup = new ButtonGroup();
   JButton zoomToFullExtentButton = new JButton();
   JButton zoomToInputButton = new JButton();
-  Component component4;
+  Component strut4;
   JToggleButton panButton = new JToggleButton();
   JToggleButton btnEditVertex = new JToggleButton();
-  Component component1;
-  Component component2;
-  Component component5;
-  Component component3;
+  Component strut1;
+  Component strut2;
+  Component strut5;
+  Component strut3;
 
   private final ImageIcon leftIcon = new ImageIcon(this.getClass().getResource("Left.gif"));
   private final ImageIcon rightIcon = new ImageIcon(this.getClass().getResource("Right.gif"));
@@ -44,6 +45,7 @@ public class JTSTestBuilderToolBar {
   private final ImageIcon exchangeGeomsIcon = new ImageIcon(this.getClass().getResource("ExchangeGeoms.png"));
   private final ImageIcon executeIcon = new ImageIcon(this.getClass().getResource("ExecuteProject.gif"));
   private final ImageIcon zoomInIcon = new ImageIcon(this.getClass().getResource("MagnifyCursor.gif"));
+  private final ImageIcon drawRectangleIcon = new ImageIcon(this.getClass().getResource("DrawRectangle.png"));
   private final ImageIcon drawPolygonIcon = new ImageIcon(this.getClass().getResource("DrawPolygon.png"));
   private final ImageIcon drawLineStringIcon = new ImageIcon(this.getClass().getResource("DrawLineString.png"));
   private final ImageIcon drawPointIcon = new ImageIcon(this.getClass().getResource("DrawPoint.png"));
@@ -64,22 +66,22 @@ public class JTSTestBuilderToolBar {
   {
     jToolBar1.setFloatable(false);
 
-    component1 = Box.createHorizontalStrut(8);
-    component2 = Box.createHorizontalStrut(8);
-    component3 = Box.createHorizontalStrut(8);
-    component4 = Box.createHorizontalStrut(8);
-    component5 = Box.createHorizontalStrut(8);
+    strut1 = Box.createHorizontalStrut(8);
+    strut2 = Box.createHorizontalStrut(8);
+    strut3 = Box.createHorizontalStrut(8);
+    strut4 = Box.createHorizontalStrut(28);
+    strut5 = Box.createHorizontalStrut(8);
 
     jToolBar1.add(newButton, null);
     jToolBar1.add(copyButton, null);
     jToolBar1.add(deleteButton, null);
-    jToolBar1.add(component2, null);
+    jToolBar1.add(strut1, null);
     jToolBar1.add(previousButton, null);
     jToolBar1.add(nextButton, null);
-    jToolBar1.add(component1, null);
+    jToolBar1.add(strut2, null);
 
     jToolBar1.add(exchangeButton, null);
-    jToolBar1.add(component5, null);
+    jToolBar1.add(strut3, null);
 //    jToolBar1.add(runAllTestsButton, null);
 //    jToolBar1.add(component3, null);
     jToolBar1.add(zoomInButton, null);
@@ -87,12 +89,13 @@ public class JTSTestBuilderToolBar {
     jToolBar1.add(oneToOneButton, null);
     jToolBar1.add(zoomToInputButton, null);
     jToolBar1.add(zoomToFullExtentButton, null);
-    jToolBar1.add(component4, null);
+    jToolBar1.add(strut4, null);
+    jToolBar1.add(drawRectangleButton, null);
     jToolBar1.add(drawPolygonButton, null);
     jToolBar1.add(drawLineStringButton, null);
     jToolBar1.add(drawPointButton, null);
     jToolBar1.add(btnEditVertex, null);
-    jToolBar1.add(component4, null);
+    jToolBar1.add(strut5, null);
     jToolBar1.add(infoButton, null);
 
     previousButton.addActionListener(
@@ -142,6 +145,7 @@ public class JTSTestBuilderToolBar {
       previousButton.setIcon(leftIcon);
       previousButton.setMargin(new Insets(0, 0, 0, 0));
       previousButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+      
       nextButton.setMargin(new Insets(0, 0, 0, 0));
       nextButton.setVerticalTextPosition(SwingConstants.BOTTOM);
       nextButton.setFont(new java.awt.Font("SansSerif", 0, 10));
@@ -151,6 +155,7 @@ public class JTSTestBuilderToolBar {
       nextButton.setToolTipText("Next Case");
       nextButton.setHorizontalTextPosition(SwingConstants.CENTER);
       nextButton.setIcon(rightIcon);
+      
       newButton.setMargin(new Insets(0, 0, 0, 0));
       newButton.setVerticalTextPosition(SwingConstants.BOTTOM);
       newButton.setFont(new java.awt.Font("SansSerif", 0, 10));
@@ -191,13 +196,31 @@ public class JTSTestBuilderToolBar {
       exchangeButton.setHorizontalTextPosition(SwingConstants.CENTER);
       exchangeButton.setIcon(exchangeGeomsIcon);
       
+      drawRectangleButton.setMargin(new Insets(0, 0, 0, 0));
+      drawRectangleButton.setPreferredSize(new Dimension(30, 30));
+      drawRectangleButton.setIcon(drawRectangleIcon);
+      drawRectangleButton.setMinimumSize(new Dimension(30, 30));
+      drawRectangleButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+      drawRectangleButton.setSelected(true);
+      drawRectangleButton.setToolTipText("Draw Rectangle");
+      drawRectangleButton.setHorizontalTextPosition(SwingConstants.CENTER);
+      drawRectangleButton.setFont(new java.awt.Font("SansSerif", 0, 10));
+      drawRectangleButton.setMaximumSize(new Dimension(30, 30));
+      drawRectangleButton.addActionListener(
+        new java.awt.event.ActionListener() {
+
+          public void actionPerformed(ActionEvent e) {
+            tbFrame.drawRectangleButton_actionPerformed(e);
+          }
+        });
+      
       drawPolygonButton.setMargin(new Insets(0, 0, 0, 0));
       drawPolygonButton.setPreferredSize(new Dimension(30, 30));
       drawPolygonButton.setIcon(drawPolygonIcon);
       drawPolygonButton.setMinimumSize(new Dimension(30, 30));
       drawPolygonButton.setVerticalTextPosition(SwingConstants.BOTTOM);
       drawPolygonButton.setSelected(true);
-      drawPolygonButton.setToolTipText("Draw Polyogn");
+      drawPolygonButton.setToolTipText("Draw Polygon");
       drawPolygonButton.setHorizontalTextPosition(SwingConstants.CENTER);
       drawPolygonButton.setFont(new java.awt.Font("SansSerif", 0, 10));
       drawPolygonButton.setMaximumSize(new Dimension(30, 30));
@@ -208,6 +231,7 @@ public class JTSTestBuilderToolBar {
             tbFrame.drawPolygonButton_actionPerformed(e);
           }
         });
+      
       drawLineStringButton.setMargin(new Insets(0, 0, 0, 0));
       drawLineStringButton.setPreferredSize(new Dimension(30, 30));
       drawLineStringButton.setIcon(drawLineStringIcon);
@@ -353,6 +377,7 @@ public class JTSTestBuilderToolBar {
         }
       });
 
+      buttonGroup.add(drawRectangleButton);
       buttonGroup.add(drawPolygonButton);
       buttonGroup.add(drawLineStringButton);
       buttonGroup.add(drawPointButton);
