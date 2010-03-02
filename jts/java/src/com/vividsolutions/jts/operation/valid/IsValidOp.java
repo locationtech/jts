@@ -95,7 +95,6 @@ public class IsValidOp
    * (the ESRI SDE model)
    */
   private boolean isSelfTouchingRingFormingHoleValid = false;
-  private boolean isChecked = false;
   private TopologyValidationError validErr;
 
   public IsValidOp(Geometry parentGeometry)
@@ -146,7 +145,6 @@ public class IsValidOp
 
   private void checkValid(Geometry g)
   {
-    if (isChecked) return;
     validErr = null;
 
     // empty geometries are always valid!
