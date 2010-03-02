@@ -29,7 +29,8 @@
   	<property name="pre-zip.javadoc" value="${pre-zip}/doc/javadoc"/>
   	<property name="pre-zip.testxml" value="${pre-zip}/testxml"/>
   	<property name="pre-zip.jtsio" value="${pre-zip}/jtsio"/>
-  	
+   	<property name="pre-zip.jts-jar" value="${pre-zip.lib}\jts-${jts.version}.jar" />
+ 	
   	<property name="zipfile" value="jts-${jts.version}.zip"/>
   	<property name="doc-dir" value="doc"/>
   	
@@ -155,9 +156,13 @@
   <target name="javadoc-jtsio" depends="copy-source-jtsio"
           description="Generates the JTS-IO JavaDoc files">
     <javadoc packagenames="com.vividsolutions.jts.*"
+    	     link="../../../doc/javadoc"
              destdir="${pre-zip.jtsio}/doc/javadoc">
       <sourcepath location="${pre-zip.jtsio}/src"/>
       <classpath>
+        <pathelement location="${pre-zip.jts-jar}"/>
+        <pathelement location="${jtsio.lib}/classes12-${ora.version}.jar"/>
+        <pathelement location="${jtsio.lib}/jsde91_sdk.jar"/>
         <pathelement location="${pre-zip.lib}\jdom.jar"/>
         <pathelement location="${pre-zip.lib}\xerces.jar"/>
       </classpath>
