@@ -70,7 +70,7 @@ import com.vividsolutions.jts.geom.*;
  * process must be run on the data to reduce its precision.
  * <p>
  * To use this class a suitable Oracle JDBC driver JAR must be present.
- * 
+ *
  * @version 9i
  * @author David Zwiers, Vivid Solutions.
  * @author Martin Davis
@@ -97,8 +97,8 @@ public class OraReader {
 	 * coordinates are <b>not</b> made precise.
 	 *
 	 * @param gf A non-null geometry factory for later use.
-	 * 
-	 * @throw NullPointerException when the geometry factory is null.
+	 *
+	 * @throws NullPointerException when the geometry factory is null.
 	 */
 	public OraReader(GeometryFactory gf) {
 		if (gf == null)
@@ -107,7 +107,7 @@ public class OraReader {
 	}
 	/**
 	 * Gets the number of coordinate dimensions which will be read.
-	 * 
+	 *
 	 * @return the dimension which will be read
 	 */
 	public int getDimension() {
@@ -116,13 +116,13 @@ public class OraReader {
 
 	/**
 	 * Sets the number of coordinate dimensions to read.
-	 * 
+	 *
 	 * @param dimension the dimension to read
 	 */
 	public void setDimension(int dimension) {
 		this.dimension = dimension;
 	}
-	
+
 	/**
 	 * This method will attempt to create a JTS Geometry for the MDSYS.GEOMETRY
 	 * provided. The Type of gemetry returned will depend on the input datum,
