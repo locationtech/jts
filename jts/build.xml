@@ -136,6 +136,8 @@
     
   <target name='copy-source-jtsio' depends='props'
   	description='Copies JTS-IO files to distribution directory' >
+   <delete dir="${pre-zip.jtsio}/src"/>
+   <delete dir="${pre-zip.jtsio}/test"/>
    <copy todir='${pre-zip.jtsio}'>
      <fileset dir="${jtsio.basedir}" includes="src/**,test/**">
         <!--<include name="src,test" />-->
@@ -144,6 +146,7 @@
   </target>
   
   <target name='jtsio-jar' depends='props'>
+    <delete dir="${jtsio.build.classes}"/>
     <mkdir dir="${jtsio.build.classes}"/>
     <javac srcdir="${jtsio.basedir}/src" 
         	includes="**/*.java" listfiles="no"
