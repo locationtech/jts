@@ -34,6 +34,10 @@
 
 package test.jts.junit;
 
+import com.vividsolutions.jts.triangulate.ConformingDelaunayTest;
+import com.vividsolutions.jts.triangulate.DelaunayTest;
+import com.vividsolutions.jts.triangulate.VoronoiTest;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -75,18 +79,25 @@ public class MasterTester extends TestCase {
     result.addTest(new TestSuite(BasicCoordinateSequenceTest.class));
     result.addTest(new TestSuite(BidirectionalComparatorTest.class));
     result.addTest(new TestSuite(BufferTest.class));
+    result.addTest(new TestSuite(CascadedPolygonUnionTest.class));
+    result.addTest(new TestSuite(ComputeOrientationTest.class));
+    result.addTest(new TestSuite(ConformingDelaunayTest.class));
     result.addTest(new TestSuite(ConvexHullTest.class));
     result.addTest(new TestSuite(CoordinateArraysTest.class));
+    result.addTest(new TestSuite(DelaunayTest.class));
     result.addTest(new TestSuite(DistanceTest.class));
     result.addTest(new TestSuite(EnvelopeTest.class));
     result.addTest(new TestSuite(GeometryCollectionImplTest.class));
     result.addTest(new TestSuite(GeometryImplTest.class));
     result.addTest(new TestSuite(IntersectionMatrixTest.class));
     result.addTest(new TestSuite(IntervalTest.class));
+    result.addTest(new TestSuite(IsCCWTest.class));
     result.addTest(new TestSuite(IsRectangleTest.class));
     result.addTest(new TestSuite(IsValidTest.class));
+    result.addTest(new TestSuite(LengthIndexedLineTestCase.class));
     result.addTest(new TestSuite(LineMergerTest.class));
     result.addTest(new TestSuite(LineStringImplTest.class));
+    result.addTest(new TestSuite(LocationIndexedLineTestCase.class));
     result.addTest(new TestSuite(MiscellaneousTest.class));
     result.addTest(new TestSuite(MiscellaneousTest2.class));
     result.addTest(new TestSuite(MultiPointImplTest.class));
@@ -108,22 +119,11 @@ public class MasterTester extends TestCase {
     result.addTest(new TestSuite(WKTReaderTest.class));
     result.addTest(new TestSuite(WKTWriterTest.class));
     result.addTest(new TestSuite(WKBTest.class));
+    result.addTest(new TestSuite(UnaryUnionTest.class));
     result.addTest(new TestSuite(ValidClosedRingTest.class));
     result.addTest(new TestSuite(ValidSelfTouchingRingFormingHoleTest.class));
-
-    result.addTest(new TestSuite(PredicateShortCircuitTest.class));
-    result.addTest(new TestSuite(IsRectangleTest.class));
-
-    result.addTest(new TestSuite(ComputeOrientationTest.class));
-    result.addTest(new TestSuite(IsCCWTest.class));
+    //result.addTest(new TestSuite(VoronoiTest.class));
     
-    result.addTest(new TestSuite(UnaryUnionTest.class));
-    result.addTest(new TestSuite(CascadedPolygonUnionTest.class));
-
-    result.addTest(new TestSuite(LengthIndexedLineTestCase.class));
-    result.addTest(new TestSuite(LocationIndexedLineTestCase.class));
-
-
     return result;
   }
 
