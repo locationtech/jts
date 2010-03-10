@@ -82,6 +82,32 @@ public class GeometryFunctions
 		return g.getGeometryN(i);
 	}
 
+	public static Geometry getPolygonShell(Geometry g)
+	{
+		if (g instanceof Polygon) {
+			LinearRing shell = (LinearRing) ((Polygon) g).getExteriorRing();
+			return g.getFactory().createPolygon(shell, null);
+		}
+		return null;
+	}
+
+	public static Geometry getPolygonHoleN(Geometry g, int i)
+	{
+		if (g instanceof Polygon) {
+			LinearRing ring = (LinearRing) ((Polygon) g).getInteriorRingN(i);
+			return ring;
+		}
+		return null;
+	}
+
+	public static Geometry convertToPolygon(Geometry g)
+	{
+		if (g instanceof Polygonal) return g;
+		// TODO: ensure ring is valid
+		LinearRing ring = g.getFactory().createLinearRing(g.getCoordinates());
+		return g.getFactory().createPolygon(ring, null);
+	}
+
 	public static Geometry getCoordinates(Geometry g)
 	{
 		Coordinate[] pts = g.getCoordinates();
