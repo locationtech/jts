@@ -73,12 +73,19 @@ public class ByteArrayInStream
 	 * @param buf the buffer to place the read bytes into
 	 */
 	public void read(final byte[] buf) {
-		int size = buf.length;
+		int numToRead = buf.length;
 		// don't try and copy past the end of the input
-		if ((position + size) > buffer.length) {
-			size = buffer.length - position;
+		if ((position + numToRead) > buffer.length) {
+			numToRead = buffer.length - position;
+			System.arraycopy(buffer, position, buf, 0, numToRead);
+			// zero out the unread bytes
+			for (int i = numToRead; i < buf.length; i++) {
+				buf[i] = 0;
+			}
 		}
-		System.arraycopy(buffer, position, buf, 0, size);
-		position += size;
+		else {
+			System.arraycopy(buffer, position, buf, 0, numToRead);			
+		}
+		position += numToRead;
 	}
 }
