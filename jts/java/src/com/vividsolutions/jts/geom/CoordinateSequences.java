@@ -122,7 +122,7 @@ public class CoordinateSequences {
   		return false;
   	// test if closed
   	return seq.getOrdinate(0, CoordinateSequence.X) == seq.getOrdinate(n-1, CoordinateSequence.X)
-  		&& seq.getOrdinate(0, CoordinateSequence.X) == seq.getOrdinate(n-1, CoordinateSequence.X);
+  		&& seq.getOrdinate(0, CoordinateSequence.Y) == seq.getOrdinate(n-1, CoordinateSequence.Y);
   }
   
   /**
@@ -146,7 +146,7 @@ public class CoordinateSequences {
   		return createClosedRing(fact, seq, 4);
   	
   	boolean isClosed = seq.getOrdinate(0, CoordinateSequence.X) == seq.getOrdinate(n-1, CoordinateSequence.X)
-		&& seq.getOrdinate(0, CoordinateSequence.X) == seq.getOrdinate(n-1, CoordinateSequence.X);
+		&& seq.getOrdinate(0, CoordinateSequence.Y) == seq.getOrdinate(n-1, CoordinateSequence.Y);
   	if (isClosed) return seq;
   	// make a new closed ring
   	return createClosedRing(fact, seq, n+1);
