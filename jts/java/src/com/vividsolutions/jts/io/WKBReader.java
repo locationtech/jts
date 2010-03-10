@@ -89,11 +89,13 @@ public class WKBReader
   = "Invalid geometry type encountered in ";
 
   private GeometryFactory factory;
+  private CoordinateSequenceFactory csFactory;
   private PrecisionModel precisionModel;
   // default dimension - will be set on read
   private int inputDimension = 2;
   private boolean hasSRID = false;
   private int SRID = 0;
+  private boolean isRepairRings = false;
   private ByteOrderDataInStream dis = new ByteOrderDataInStream();
   private double[] ordValues;
 
@@ -104,6 +106,7 @@ public class WKBReader
   public WKBReader(GeometryFactory geometryFactory) {
     this.factory = geometryFactory;
     precisionModel = factory.getPrecisionModel();
+    csFactory = factory.getCoordinateSequenceFactory();
   }
 
   /**
@@ -216,7 +219,7 @@ public class WKBReader
   private LinearRing readLinearRing() throws IOException
   {
     int size = dis.readInt();
-    CoordinateSequence pts = readCoordinateSequence(size);
+    CoordinateSequence pts = readCoordinateSequenceRing(size);
     return factory.createLinearRing(pts);
   }
 
@@ -285,7 +288,7 @@ public class WKBReader
 
   private CoordinateSequence readCoordinateSequence(int size) throws IOException
   {
-    CoordinateSequence seq = factory.getCoordinateSequenceFactory().create(size, inputDimension);
+    CoordinateSequence seq = csFactory.create(size, inputDimension);
     int targetDim = seq.getDimension();
     if (targetDim > inputDimension)
       targetDim = inputDimension;
@@ -296,6 +299,14 @@ public class WKBReader
       }
     }
     return seq;
+  }
+
+  private CoordinateSequence readCoordinateSequenceRing(int size) throws IOException
+  {
+  	CoordinateSequence seq = readCoordinateSequence(size);
+  	if (! isRepairRings) return seq;
+  	if (CoordinateSequences.isRing(seq)) return seq;
+  	return CoordinateSequences.ensureValidRing(csFactory, seq);
   }
 
   /**
