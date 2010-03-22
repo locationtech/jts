@@ -483,11 +483,12 @@ public class LineSegment
   }
 
   /**
-   * Computes an intersection point between two segments, if there is one.
+   * Computes an intersection point between two line segments, if there is one.
    * There may be 0, 1 or many intersection points between two segments.
-   * If there are 0, null is returned. If there is 1 or more, a single one
-   * is returned (chosen at the discretion of the algorithm).  If
-   * more information is required about the details of the intersection,
+   * If there are 0, null is returned. If there is 1 or more, 
+   * exactly one of them is returned 
+   * (chosen at the discretion of the algorithm).  
+   * If more information is required about the details of the intersection,
    * the {@link RobustLineIntersector} class should be used.
    *
    * @param line a line segment
