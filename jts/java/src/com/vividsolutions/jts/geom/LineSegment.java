@@ -505,8 +505,8 @@ public class LineSegment
   }
 
   /**
-   * Computes the intersection point of the lines defined
-   * by two segments, if there is one.
+   * Computes the intersection point of the lines of infinite extent defined
+   * by two line segments (if there is one).
    * There may be 0, 1 or an infinite number of intersection points 
    * between two lines.
    * If there is a unique intersection point, it is returned. 
@@ -514,9 +514,10 @@ public class LineSegment
    * If more information is required about the details of the intersection,
    * the {@link RobustLineIntersector} class should be used.
    *
-   * @param line a line segment defining a straight line
-   * @return an intersection point, or <code>null</code> if there is none
-   * or an infinite number
+   * @param line a line segment defining an straight line with infinite extent
+   * @return an intersection point, 
+   * or <code>null</code> if there is no point of intersection
+   * or an infinite number of intersection points
    * 
    * @see RobustLineIntersector
    */
