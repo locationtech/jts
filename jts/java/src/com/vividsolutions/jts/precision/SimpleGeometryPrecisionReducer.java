@@ -50,6 +50,8 @@ import com.vividsolutions.jts.geom.util.*;
  * The buffer algorithm does not depend on the validity of the input geometry.
  *
  * @version 1.7
+ * 
+ * @deprecated use GeometryPrecisionReducer
  */
 public class SimpleGeometryPrecisionReducer
 {

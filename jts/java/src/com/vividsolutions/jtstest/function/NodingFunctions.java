@@ -3,7 +3,7 @@ package com.vividsolutions.jtstest.function;
 import java.util.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.noding.snapround.GeometryNoder;
-import com.vividsolutions.jts.precision.SimpleGeometryPrecisionReducer;
+import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
 
 public class NodingFunctions 
 {
@@ -12,7 +12,7 @@ public class NodingFunctions
 	{
 		PrecisionModel pm = new PrecisionModel(scaleFactor);
 
-		Geometry roundedGeom = SimpleGeometryPrecisionReducer.reduce(geom, pm);
+		Geometry roundedGeom = GeometryPrecisionReducer.reducePointwise(geom, pm);
 
 		List geomList = new ArrayList();
 		geomList.add(roundedGeom);

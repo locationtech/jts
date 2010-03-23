@@ -40,7 +40,6 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
 
-
 /**
  * @version 1.12
  */
@@ -51,8 +50,6 @@ public class GeometryPrecisionReducerTest
   private PrecisionModel pmFixed1 = new PrecisionModel(1);
   private GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(pmFixed1);
   private GeometryPrecisionReducer reducerKeepCollapse
-  = new GeometryPrecisionReducer(pmFixed1);
-  private GeometryPrecisionReducer reducerPointwise
   = new GeometryPrecisionReducer(pmFixed1);
 
   private GeometryFactory gfFloat = new GeometryFactory(pmFloat, 0);
@@ -66,7 +63,6 @@ public class GeometryPrecisionReducerTest
   {
     super(name);
     reducerKeepCollapse.setRemoveCollapsedComponents(false);
-    reducerPointwise.setPointwise(true);
   }
 
   public void testSquare()
@@ -136,7 +132,7 @@ public class GeometryPrecisionReducerTest
   public void testPolgonWithCollapsedLinePointwise() throws Exception {
 		Geometry g  = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 10, 10 10))");
 		Geometry g2 = reader.read("POLYGON ((10 10, 100 100, 200 10,   300 10, 10 10))");
-		Geometry gReduce = reducerPointwise.reduce(g);
+		Geometry gReduce = GeometryPrecisionReducer.reducePointwise(g, pmFixed1);
 		assertTrue(gReduce.equalsExact(g2));
 	}
   
@@ -150,7 +146,7 @@ public class GeometryPrecisionReducerTest
   public void testPolgonWithCollapsedPointPointwise() throws Exception {
 		Geometry g  = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 100, 400 10, 10 10))");
 		Geometry g2 = reader.read("POLYGON ((10 10, 100 100, 200 10,   300 100, 400 10, 10 10))");
-		Geometry gReduce = reducerPointwise.reduce(g);
+		Geometry gReduce = GeometryPrecisionReducer.reducePointwise(g, pmFixed1);
 		assertTrue(gReduce.equalsExact(g2));
 	}
 

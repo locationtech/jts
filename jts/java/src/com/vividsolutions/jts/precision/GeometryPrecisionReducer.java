@@ -49,13 +49,28 @@ public class GeometryPrecisionReducer
 	 * Convenience method for doing precision reduction on a single geometry,
 	 * with collapses removed and keeping the geometry precision model the same.
 	 * 
-	 * @param g
-	 * @param precModel
+	 * @param g the geometry to reduce
+	 * @param precModel the precision model to use
 	 * @return the reduced geometry
 	 */
 	public static Geometry reduce(Geometry g, PrecisionModel precModel)
 	{
 		GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(precModel);
+		return reducer.reduce(g);
+	}
+	
+	/**
+	 * Convenience method for doing pointwise precision reduction on a single geometry,
+	 * with collapses removed and keeping the geometry precision model the same.
+	 * 
+	 * @param g the geometry to reduce
+	 * @param precModel the precision model to use
+	 * @return the reduced geometry
+	 */
+	public static Geometry reducePointwise(Geometry g, PrecisionModel precModel)
+	{
+		GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(precModel);
+		reducer.setPointwise(true);
 		return reducer.reduce(g);
 	}
 	
