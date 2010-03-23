@@ -62,6 +62,7 @@ public class GeometryPrecisionReducer
   private PrecisionModel targetPM;
   private boolean removeCollapsed = true;
   private boolean changePrecisionModel = false;
+  private boolean isPointwise = false;
 
   public GeometryPrecisionReducer(PrecisionModel pm)
   {
@@ -96,9 +97,26 @@ public class GeometryPrecisionReducer
     this.changePrecisionModel = changePrecisionModel;
   }
 
+  /**
+   * Sets whether the precision reduction will be done 
+   * in pointwise fashion only.  
+   * Pointwise precision reduction reduces the precision
+   * of the individual coordinates only, but does
+   * not attempt to recreate valid topology.
+   * This is only relevant for geometries containing polygonal components.
+   * 
+   * @param isPointwise if reduction should be done pointwise only
+   */
+  public void setPointwise(boolean isPointwise)
+  {
+    this.isPointwise = isPointwise;
+  }
+
   public Geometry reduce(Geometry geom)
   {
     Geometry reducePW = reducePointwise(geom);
+    if (isPointwise)
+    	return reducePW;
     
     //TODO: handle GeometryCollections containing polys
     if (! (reducePW instanceof Polygonal))

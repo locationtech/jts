@@ -51,7 +51,9 @@ public class GeometryPrecisionReducerTest
   private PrecisionModel pmFixed1 = new PrecisionModel(1);
   private GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(pmFixed1);
   private GeometryPrecisionReducer reducerKeepCollapse
-      = new GeometryPrecisionReducer(pmFixed1);
+  = new GeometryPrecisionReducer(pmFixed1);
+  private GeometryPrecisionReducer reducerPointwise
+  = new GeometryPrecisionReducer(pmFixed1);
 
   private GeometryFactory gfFloat = new GeometryFactory(pmFloat, 0);
   WKTReader reader = new WKTReader(gfFloat);
@@ -62,9 +64,9 @@ public class GeometryPrecisionReducerTest
 
   public GeometryPrecisionReducerTest(String name)
   {
-      super(name);
-      reducerKeepCollapse.setRemoveCollapsedComponents(false);
-
+    super(name);
+    reducerKeepCollapse.setRemoveCollapsedComponents(false);
+    reducerPointwise.setPointwise(true);
   }
 
   public void testSquare()
@@ -123,16 +125,32 @@ public class GeometryPrecisionReducerTest
     Geometry gReduce = reducerKeepCollapse.reduce(g);
     assertTrue(gReduce.equalsExact(g2));
   }
+  
   public void testPolgonWithCollapsedLine() throws Exception {
-		Geometry g = reader.read("POLYGON ((10 10, 100 100, 200 10, 300 10, 10 10))");
+		Geometry g  = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 10, 10 10))");
 		Geometry g2 = reader.read("POLYGON ((10 10, 100 100, 200 10, 10 10))");
 		Geometry gReduce = reducer.reduce(g);
 		assertTrue(gReduce.equalsExact(g2));
 	}
+  
+  public void testPolgonWithCollapsedLinePointwise() throws Exception {
+		Geometry g  = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 10, 10 10))");
+		Geometry g2 = reader.read("POLYGON ((10 10, 100 100, 200 10,   300 10, 10 10))");
+		Geometry gReduce = reducerPointwise.reduce(g);
+		assertTrue(gReduce.equalsExact(g2));
+	}
+  
   public void testPolgonWithCollapsedPoint() throws Exception {
 		Geometry g = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 100, 400 10, 10 10))");
 		Geometry g2 = reader.read("MULTIPOLYGON (((10 10, 100 100, 200 10, 10 10)), ((200 10, 300 100, 400 10, 200 10)))");
 		Geometry gReduce = reducer.reduce(g);
+		assertTrue(gReduce.equalsExact(g2));
+	}
+
+  public void testPolgonWithCollapsedPointPointwise() throws Exception {
+		Geometry g  = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 100, 400 10, 10 10))");
+		Geometry g2 = reader.read("POLYGON ((10 10, 100 100, 200 10,   300 100, 400 10, 10 10))");
+		Geometry gReduce = reducerPointwise.reduce(g);
 		assertTrue(gReduce.equalsExact(g2));
 	}
 
