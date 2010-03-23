@@ -393,8 +393,7 @@ public abstract class Geometry
    */
   public boolean isValid()
   {
-    IsValidOp isValidOp = new IsValidOp(this);
-    return isValidOp.isValid();
+  	return IsValidOp.isValid(this);
   }
 
   /**

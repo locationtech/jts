@@ -26,6 +26,14 @@
    </case>
 
    <case>
+      <desc>P - empty point</desc>
+      <a>
+    POINT EMPTY
+  </a>
+      <test>         <op name="isValid" arg1="A">    true  </op>      </test>
+   </case>
+
+   <case>
       <desc>P - point with invalid X ordinate</desc>
       <a>
     POINT(NaN 10)

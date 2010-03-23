@@ -41,7 +41,7 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.*;
 
 /**
- * Implements the algorithsm required to compute the <code>isValid()</code> method
+ * Implements the algorithms required to compute the <code>isValid()</code> method
  * for {@link Geometry}s.
  * See the documentation for the various geometry types for a specification of validity.
  *
@@ -49,6 +49,17 @@ import com.vividsolutions.jts.util.*;
  */
 public class IsValidOp
 {
+	/**
+	 * Tests whether a {@link Geometry} is valid.
+	 * @param geom the Geometry to test
+	 * @return true if the geometry is valid
+	 */
+	public static boolean isValid(Geometry geom)
+	{
+    IsValidOp isValidOp = new IsValidOp(geom);
+    return isValidOp.isValid();
+	}
+	
   /**
    * Checks whether a coordinate is valid for processing.
    * Coordinates are valid iff their x and y ordinates are in the
