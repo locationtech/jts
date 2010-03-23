@@ -57,7 +57,7 @@ import java.util.ArrayList;
  * <li>the coordinate lists may be changed
  *     (e.g. by adding or deleting coordinates).
  *     The modifed coordinate lists must be consistent with their original parent component
- *     (e.g. a LinearRing must always have at least 4 coordinates, and the first and last
+ *     (e.g. a <tt>LinearRing</tt> must always have at least 4 coordinates, and the first and last
  *     coordinate must be equal)
  * <li>components of the original geometry may be deleted
  * (   e.g. holes may be removed from a Polygon, or LineStrings removed from a MultiLineString).
@@ -236,6 +236,23 @@ public class GeometryEditor
     Geometry edit(Geometry geometry, GeometryFactory factory);
   }
 
+  /**
+   * A GeometryEditorOperation which does not modify
+   * the input geometry.
+   * This can be used for simple changes of 
+   * GeometryFactory (including PrecisionModel and SRID).
+   * 
+   * @author mbdavis
+   *
+   */
+  public static class NoOpGeometryOperation
+  implements GeometryEditorOperation
+  {
+  	public Geometry edit(Geometry geometry, GeometryFactory factory)
+  	{
+  		return geometry;
+  	}
+  }
   /**
    * A {@link GeometryEditorOperation} which modifies the coordinate list of a {@link Geometry}.
    * Operates on Geometry subclasses which contains a single coordinate list.

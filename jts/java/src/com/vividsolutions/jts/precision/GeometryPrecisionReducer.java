@@ -37,21 +37,13 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
 
 /**
- * Reduces the precision of the coordinates of a {@link Geometry}
- * according to the supplied {@link PrecisionModel}, without
- * attempting to preserve valid topology.
- * <p>
- * In the case of {@link Polygonal} geometries, 
- * the topology of the resulting geometry may be invalid if
- * topological collapse occurs due to coordinates being shifted.
- * It is up to the client to check this and handle it if necessary.
- * Collapses may not matter for some uses.  An example
- * is simplifying the input to the buffer algorithm.
- * The buffer algorithm does not depend on the validity of the input geometry.
+ * Reduces the precision of a {@link Geometry}
+ * according to the supplied {@link PrecisionModel},
+ * ensuring that the result is topologically valid.
  *
- * @version 1.7
+ * @version 1.12
  */
-public class SimpleGeometryPrecisionReducer
+public class GeometryPrecisionReducer
 {
 	/**
 	 * Convenience method for doing precision reduction on a single geometry,
@@ -63,17 +55,17 @@ public class SimpleGeometryPrecisionReducer
 	 */
 	public static Geometry reduce(Geometry g, PrecisionModel precModel)
 	{
-		SimpleGeometryPrecisionReducer reducer = new SimpleGeometryPrecisionReducer(precModel);
+		GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(precModel);
 		return reducer.reduce(g);
 	}
 	
-  private PrecisionModel newPrecisionModel;
+  private PrecisionModel targetPM;
   private boolean removeCollapsed = true;
   private boolean changePrecisionModel = false;
 
-  public SimpleGeometryPrecisionReducer(PrecisionModel pm)
+  public GeometryPrecisionReducer(PrecisionModel pm)
   {
-    newPrecisionModel = pm;
+    targetPM = pm;
   }
 
   /**
@@ -106,60 +98,89 @@ public class SimpleGeometryPrecisionReducer
 
   public Geometry reduce(Geometry geom)
   {
+    Geometry reducePW = reducePointwise(geom);
+    
+    //TODO: handle GeometryCollections containing polys
+    if (! (reducePW instanceof Polygonal))
+    	return reducePW;
+    
+    // Geometry is polygonal - test if topology needs to be fixed
+    if (reducePW.isValid()) return reducePW;
+    
+    // hack to fix topology.  
+    // TODO: implement snap-rounding and use that.
+    return fixPolygonalTopology(reducePW);
+  }
+
+  private Geometry reducePointwise(Geometry geom)
+  {
     GeometryEditor geomEdit;
     if (changePrecisionModel) {
-      GeometryFactory newFactory = new GeometryFactory(newPrecisionModel, geom.getFactory().getSRID());
+    	GeometryFactory newFactory = createFactory(geom.getFactory(), targetPM);
       geomEdit = new GeometryEditor(newFactory);
     }
     else
       // don't change geometry factory
       geomEdit = new GeometryEditor();
 
-    return geomEdit.edit(geom, new PrecisionReducerCoordinateOperation());
+    /**
+     * For polygonal geometries, collapses are always removed, in order
+     * to produce correct topology
+     */
+    boolean finalRemoveCollapsed = removeCollapsed;
+    if (geom.getDimension() >= 2)
+    	finalRemoveCollapsed = true;
+    
+    Geometry reduceGeom = geomEdit.edit(geom, 
+    		new PrecisionReducerCoordinateOperation(targetPM, finalRemoveCollapsed));
+    
+    return reduceGeom;
   }
-
-  private class PrecisionReducerCoordinateOperation
-      extends GeometryEditor.CoordinateOperation
+  
+  private Geometry fixPolygonalTopology(Geometry geom)
   {
-    public Coordinate[] edit(Coordinate[] coordinates, Geometry geom)
-    {
-      if (coordinates.length == 0) return null;
-
-      Coordinate[] reducedCoords = new Coordinate[coordinates.length];
-      // copy coordinates and reduce
-      for (int i = 0; i < coordinates.length; i++) {
-        Coordinate coord = new Coordinate(coordinates[i]);
-        newPrecisionModel.makePrecise(coord);
-        reducedCoords[i] = coord;
-      }
-      // remove repeated points, to simplify returned geometry as much as possible
-      CoordinateList noRepeatedCoordList = new CoordinateList(reducedCoords, false);
-      Coordinate[] noRepeatedCoords = noRepeatedCoordList.toCoordinateArray();
-
-      /**
-       * Check to see if the removal of repeated points
-       * collapsed the coordinate List to an invalid length
-       * for the type of the parent geometry.
-       * It is not necessary to check for Point collapses, since the coordinate list can
-       * never collapse to less than one point.
-       * If the length is invalid, return the full-length coordinate array
-       * first computed, or null if collapses are being removed.
-       * (This may create an invalid geometry - the client must handle this.)
-       */
-      int minLength = 0;
-      if (geom instanceof LineString) minLength = 2;
-      if (geom instanceof LinearRing) minLength = 4;
-
-      Coordinate[] collapsedCoords = reducedCoords;
-      if (removeCollapsed) collapsedCoords = null;
-
-      // return null or orginal length coordinate array
-      if (noRepeatedCoords.length < minLength) {
-          return collapsedCoords;
-      }
-
-      // ok to return shorter coordinate array
-      return noRepeatedCoords;
-    }
+  	/**
+  	 * If precision model was *not* changed, need to flip
+  	 * geometry to targetPM, buffer in that model, then flip back
+  	 */
+  	Geometry geomToBuffer = geom;
+  	if (! changePrecisionModel) {
+  		geomToBuffer = changePM(geom, targetPM);
+  	}
+  	
+  	Geometry bufGeom = geomToBuffer.buffer(0);
+  	
+  	Geometry finalGeom = bufGeom;
+  	if (! changePrecisionModel) {
+  		PrecisionModel originalPM = geom.getFactory().getPrecisionModel();
+  		finalGeom = changePM(bufGeom, originalPM);
+  	}
+  	return finalGeom;
   }
+  
+  private Geometry changePM(Geometry geom, PrecisionModel pm)
+  {
+  	GeometryEditor geomEditor = createEditor(geom.getFactory(), pm);
+  	return geomEditor.edit(geom, new GeometryEditor.NoOpGeometryOperation());
+  }
+  
+  private GeometryEditor createEditor(GeometryFactory geomFactory, PrecisionModel pm)
+  {
+  	if (geomFactory.getPrecisionModel() == pm)
+  		return new GeometryEditor();
+  	// otherwise create a geometry editor which changes PrecisionModel
+  	GeometryFactory newFactory = createFactory(geomFactory, targetPM);
+  	GeometryEditor geomEdit = new GeometryEditor(newFactory);
+    return geomEdit;
+  }
+  
+  private GeometryFactory createFactory(GeometryFactory inputFactory, PrecisionModel pm)
+  {
+    GeometryFactory newFactory 
+  	= new GeometryFactory(pm, 
+  			inputFactory.getSRID(),
+  			inputFactory.getCoordinateSequenceFactory());
+    return newFactory;
+  }
+  
 }
