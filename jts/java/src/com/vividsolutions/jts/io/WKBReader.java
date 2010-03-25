@@ -49,7 +49,7 @@ import com.vividsolutions.jts.geom.*;
  * geometries. This class is not thread-safe; each thread should create its own
  * instance.
  *
- * @see WKBWriter
+ * @see WKBWriter for a formal format specification
  */
 public class WKBReader
 {

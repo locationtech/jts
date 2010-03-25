@@ -62,7 +62,102 @@ import com.vividsolutions.jts.util.Assert;
  * This class is designed to support reuse of a single instance to read multiple
  * geometries. This class is not thread-safe; each thread should create its own
  * instance.
- *
+ * 
+ * <h3>Syntax</h3>
+ * The following syntax specification describes the version of Well-Known Binary
+ * supported by JTS.
+ * <p>
+ * <i>The specification uses a syntax language similar to that used in
+ * the C language.  Bitfields are specified from hi-order to lo-order bits.</i>
+ * <p>
+ * <blockquote><pre>
+ * 
+ * <b>byte</b> = 1 byte
+ * <b>uint32</b> = 32 bit unsigned integer (4 bytes)
+ * <b>double</b> = double precision number (8 bytes)
+ * 
+ * abstract Point { }
+ * 
+ * Point2D extends Point {
+ * 	<b>double</b> x;
+ * 	<b>double</b> y;
+ * }
+ * 
+ * Point3D extends Point {
+ * 	<b>double</b> x;
+ * 	<b>double</b> y;
+ * 	<b>double</b> z;
+ * }
+ * 
+ * LinearRing {
+ * 	<b>uint32</b> numPoints;
+ * 	Point points[numPoints];
+ * }
+ * 
+ * enum wkbGeometryType {
+ * 	wkbPoint = 1,
+ * 	wkbLineString = 2,
+ * 	wkbPolygon = 3,
+ * 	wkbMultiPoint = 4,
+ * 	wkbMultiLineString = 5,
+ * 	wkbMultiPolygon = 6,
+ * 	wkbGeometryCollection = 7
+ * }
+ * 
+ * enum byteOrder {
+ * 	wkbXDR = 0,	// Big Endian
+ * 	wkbNDR = 1 	// Little Endian
+ * }
+ * 
+ * WKBType {
+ * 	<b>uint32</b> is3D : 1; 	// 0 = 2D, 1 = 3D
+ * 	<b>uint32</b> noData1 : 1; 
+ * 	<b>uint32</b> hasSRID : 1;  	// 0, no, 1 = yes
+ * 	<b>uint32</b> noData2 : 21; 
+ * 	<b>uint32</b> wkbGeometryType : 8; // values from enum wkbGeometryType
+ * }
+ * 
+ * abstract WKBGeometry {
+ * 	<b>byte</b> byteOrder;		// values from enum byteOrder
+ * 	WKBType wkbType
+ * 	[ <b>uint32</b> srid; ] 	// only if hasSRID = yes
+ * }
+ * 
+ * WKBPoint extends WKBGeometry {
+ * 	Point point;
+ * }
+ * 
+ * WKBLineString extends WKBGeometry {
+ * 	<b>uint32</b> numCoords;
+ * 	Point points[numCoords];
+ * }
+ * 
+ * WKBPolygon extends WKBGeometry {
+ * 	<b>uint32</b> numRings;
+ * 	LinearRing rings[numRings];
+ * }
+ * 
+ * WKBMultiPoint extends WKBGeometry {
+ * 	<b>uint32</b> numElems;
+ * 	WKBPoint elems[numElems];
+ * }
+ * 
+ * WKBMultiLineString extends WKBGeometry {
+ * 	<b>uint32</b> numElems;
+ * 	WKBLineString elems[numElems];
+ * }
+ * 
+ * wkbMultiPolygon extends WKBGeometry {
+ * 	<b>uint32</b> numElems;
+ * 	WKBPolygon elems[numElems];
+ * }
+ * 
+ * WKBGeometryCollection extends WKBGeometry {
+ * 	<b>uint32</b> numElems;
+ * 	WKBGeometry elems[numElems];
+ * }
+ * 
+ * </pre></blockquote> 
  * @see WKBReader
  */
 public class WKBWriter
