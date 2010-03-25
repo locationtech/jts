@@ -68,4 +68,24 @@ public class PrecisionModelTest extends TestCase
    assertEquals(1, new PrecisionModel(PrecisionModel.FIXED).getMaximumSignificantDigits());
   }
 
+  public void testMakePrecise()
+  {
+  	PrecisionModel pm_10 = new PrecisionModel(0.1);
+  	
+  	preciseCoordinateTester(pm_10, 1200.4, 1240.4, 1200, 1240);
+  	preciseCoordinateTester(pm_10, 1209.4, 1240.4, 1210, 1240);
+  }
+  
+  private void preciseCoordinateTester(PrecisionModel pm, 
+  		double x1, double y1, 
+  		double x2, double y2)
+  {
+  	Coordinate p = new Coordinate(x1, y1);
+  	
+  	pm.makePrecise(p);
+  	
+  	Coordinate pPrecise = new Coordinate(x2, y2);
+  	assertTrue(p.equals2D(pPrecise));
+  }
+  
 }

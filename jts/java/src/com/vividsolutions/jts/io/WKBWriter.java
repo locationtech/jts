@@ -41,8 +41,8 @@ import com.vividsolutions.jts.util.Assert;
  * Supports use of an {@link OutStream}, which allows easy use
  * with arbitary byte stream sinks.
  * <p>
- * The WKB format is specified in the OGC Simple Features for SQL specification.
- * This implementation supports the extended WKB standard for representing
+ * The WKB format is specified in the OGC <i>Simple Features for SQL</i> specification.
+ * This implementation also supports the <b>Extended WKB</b> standard for representing
  * 3-dimensional coordinates.  The presence of 3D coordinates is signified
  * by setting the high bit of the wkbType word.
  * <p>

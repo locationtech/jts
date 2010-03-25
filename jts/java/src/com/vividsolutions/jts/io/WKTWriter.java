@@ -43,7 +43,8 @@ import java.text.DecimalFormatSymbols;
  * Writes the Well-Known Text representation of a {@link Geometry}.
  * The Well-Known Text format is defined in the
  * <A HREF="http://www.opengis.org/techno/specs.htm">
- * OGC Simple Features Specification for SQL</A>.
+ * <i>OGC Simple Features Specification for SQL</i></A>.
+ * See {@link WKTReader} for a formal specification of the format syntax.
  * <p>
  * The <code>WKTWriter</code> outputs coordinates rounded to the precision
  * model. Only the maximum number of decimal places 
@@ -53,7 +54,7 @@ import java.text.DecimalFormatSymbols;
  * The SFS WKT spec does not define a special tag for {@link LinearRing}s.
  * Under the spec, rings are output as <code>LINESTRING</code>s.
  * In order to allow precisely specifying constructed geometries, 
- * JTS supports a non-standard <code>LINEARRING</code> tag which is used 
+ * JTS also supports a non-standard <code>LINEARRING</code> tag which is used 
  * to output LinearRings.
  *
  * @version 1.7
