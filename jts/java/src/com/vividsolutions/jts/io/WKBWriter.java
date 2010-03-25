@@ -44,14 +44,19 @@ import com.vividsolutions.jts.util.Assert;
  * The WKB format is specified in the 
  * OGC <A HREF="http://www.opengis.org/techno/specs.htm"><i>Simple Features for SQL</i></a>
  * specification.
- * This implementation also partially supports the <b>Extended WKB</b> 
- * standard for representing
- * 3-dimensional coordinates.  The presence of 3D coordinates is signified
+ * This implementation also supports the <b>Extended WKB</b> 
+ * standard. Extended WKB allows writing 3-dimensional coordinates
+ * and including the geometry SRID value.  
+ * The presence of 3D coordinates is signified
  * by setting the high bit of the <tt>wkbType</tt> word.
+ * The presence of an SRID is signified 
+ * by setting the third bit of the <tt>wkbType</tt> word.
  * <p>
  * Empty Points cannot be represented in WKB; an
  * {@link IllegalArgumentException} will be thrown if one is
- * written. The WKB specification does not support representing {@link LinearRing}s;
+ * written. 
+ * <p>
+ * The WKB specification does not support representing {@link LinearRing}s;
  * they will be written as {@link LineString}s.
  * <p>
  * This class is designed to support reuse of a single instance to read multiple
@@ -103,6 +108,7 @@ public class WKBWriter
 
   private int outputDimension = 2;
   private int byteOrder;
+  private boolean includeSRID = false;
   private ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
   private OutStream byteArrayOutStream = new OutputStreamOutStream(byteArrayOS);
   // holds output data values
@@ -132,6 +138,22 @@ public class WKBWriter
   /**
    * Creates a writer that writes {@link Geometry}s with
    * the given dimension (2 or 3) for output coordinates
+   * and {@link BIG_ENDIAN} byte order. This constructor also
+   * takes a flag to control whether srid information will be
+   * written.
+   * If the input geometry has a small coordinate dimension,
+   * coordinates will be padded with {@link NULL_ORDINATE}.
+   *
+   * @param outputDimension the coordinate dimension to output (2 or 3)
+   * @param includeSRID indicates whether SRID should be written
+   */
+  public WKBWriter(int outputDimension, boolean includeSRID) {
+    this(outputDimension, ByteOrderValues.BIG_ENDIAN, includeSRID);
+  }
+  
+  /**
+   * Creates a writer that writes {@link Geometry}s with
+   * the given dimension (2 or 3) for output coordinates
    * and byte order
    * If the input geometry has a small coordinate dimension,
    * coordinates will be padded with {@link NULL_ORDINATE}.
@@ -140,13 +162,30 @@ public class WKBWriter
    * @param byteOrder the byte ordering to use
    */
   public WKBWriter(int outputDimension, int byteOrder) {
-    this.outputDimension = outputDimension;
-    this.byteOrder = byteOrder;
-
-    if (outputDimension < 2 || outputDimension > 3)
-      throw new IllegalArgumentException("Output dimension must be 2 or 3");
+      this(outputDimension, byteOrder, false);
   }
-
+  
+  /**
+   * Creates a writer that writes {@link Geometry}s with
+   * the given dimension (2 or 3) for output coordinates
+   * and byte order. This constructor also takes a flag to 
+   * control whether srid information will be written.
+   * If the input geometry has a small coordinate dimension,
+   * coordinates will be padded with {@link NULL_ORDINATE}.
+   *
+   * @param outputDimension the coordinate dimension to output (2 or 3)
+   * @param byteOrder the byte ordering to use
+   * @param includeSRID indicates whether SRID should be written
+   */
+  public WKBWriter(int outputDimension, int byteOrder, boolean includeSRID) {
+      this.outputDimension = outputDimension;
+      this.byteOrder = byteOrder;
+      this.includeSRID = includeSRID;
+      
+      if (outputDimension < 2 || outputDimension > 3)
+        throw new IllegalArgumentException("Output dimension must be 2 or 3");
+  }
+  
   /**
    * Writes a {@link Geometry} into a byte array.
    *
@@ -202,7 +241,7 @@ public class WKBWriter
     if (pt.getCoordinateSequence().size() == 0)
       throw new IllegalArgumentException("Empty Points cannot be represented in WKB");
     writeByteOrder(os);
-    writeGeometryType(WKBConstants.wkbPoint, os);
+    writeGeometryType(WKBConstants.wkbPoint, pt, os);
     writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
   }
 
@@ -210,14 +249,14 @@ public class WKBWriter
       throws IOException
   {
     writeByteOrder(os);
-    writeGeometryType(WKBConstants.wkbLineString, os);
+    writeGeometryType(WKBConstants.wkbLineString, line, os);
     writeCoordinateSequence(line.getCoordinateSequence(), true, os);
   }
 
   private void writePolygon(Polygon poly, OutStream os) throws IOException
   {
     writeByteOrder(os);
-    writeGeometryType(WKBConstants.wkbPolygon, os);
+    writeGeometryType(WKBConstants.wkbPolygon, poly, os);
     writeInt(poly.getNumInteriorRing() + 1, os);
     writeCoordinateSequence(poly.getExteriorRing().getCoordinateSequence(), true, os);
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
@@ -230,7 +269,7 @@ public class WKBWriter
       OutStream os) throws IOException
   {
     writeByteOrder(os);
-    writeGeometryType(geometryType, os);
+    writeGeometryType(geometryType, gc, os);
     writeInt(gc.getNumGeometries(), os);
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       write(gc.getGeometryN(i), os);
@@ -246,12 +285,16 @@ public class WKBWriter
     os.write(buf, 1);
   }
 
-  private void writeGeometryType(int geometryType, OutStream os)
+  private void writeGeometryType(int geometryType, Geometry g, OutStream os)
       throws IOException
   {
     int flag3D = (outputDimension == 3) ? 0x80000000 : 0;
     int typeInt = geometryType | flag3D;
+    typeInt |= includeSRID ? 0x20000000 : 0;
     writeInt(typeInt, os);
+    if (includeSRID) {
+        writeInt(g.getSRID(), os);
+    }
   }
 
   private void writeInt(int intValue, OutStream os) throws IOException
