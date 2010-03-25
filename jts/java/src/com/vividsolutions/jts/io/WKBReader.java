@@ -41,9 +41,9 @@ import com.vividsolutions.jts.geom.*;
  * with arbitary byte stream sources.
  * <p>
  * This class reads the format describe in {@link WKBWriter}.  
- * It also partiually handles
- * the <b>Extended WKB</b> format used by PostGIS, by parsing and storing 3D
- * coordinates and SRID values.
+ * It also partially handles
+ * the <b>Extended WKB</b> format used by PostGIS, 
+ * by parsing and storing SRID values.
  * <p>
  * This class is designed to support reuse of a single instance to read multiple
  * geometries. This class is not thread-safe; each thread should create its own

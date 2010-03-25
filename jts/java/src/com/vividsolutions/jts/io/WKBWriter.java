@@ -41,10 +41,13 @@ import com.vividsolutions.jts.util.Assert;
  * Supports use of an {@link OutStream}, which allows easy use
  * with arbitary byte stream sinks.
  * <p>
- * The WKB format is specified in the OGC <i>Simple Features for SQL</i> specification.
- * This implementation also supports the <b>Extended WKB</b> standard for representing
+ * The WKB format is specified in the 
+ * OGC <A HREF="http://www.opengis.org/techno/specs.htm"><i>Simple Features for SQL</i></a>
+ * specification.
+ * This implementation also partially supports the <b>Extended WKB</b> 
+ * standard for representing
  * 3-dimensional coordinates.  The presence of 3D coordinates is signified
- * by setting the high bit of the wkbType word.
+ * by setting the high bit of the <tt>wkbType</tt> word.
  * <p>
  * Empty Points cannot be represented in WKB; an
  * {@link IllegalArgumentException} will be thrown if one is

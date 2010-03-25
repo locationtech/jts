@@ -42,8 +42,8 @@ import java.text.DecimalFormatSymbols;
 /**
  * Writes the Well-Known Text representation of a {@link Geometry}.
  * The Well-Known Text format is defined in the
- * <A HREF="http://www.opengis.org/techno/specs.htm">
- * <i>OGC Simple Features Specification for SQL</i></A>.
+ * OGC <A HREF="http://www.opengis.org/techno/specs.htm">
+ * <i>Simple Features Specification for SQL</i></A>.
  * See {@link WKTReader} for a formal specification of the format syntax.
  * <p>
  * The <code>WKTWriter</code> outputs coordinates rounded to the precision
