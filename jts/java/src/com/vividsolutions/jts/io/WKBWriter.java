@@ -51,6 +51,7 @@ import com.vividsolutions.jts.util.Assert;
  * by setting the high bit of the <tt>wkbType</tt> word.
  * The presence of an SRID is signified 
  * by setting the third bit of the <tt>wkbType</tt> word.
+ * EWKB format is upward compatible with the original SFS WKB format.
  * <p>
  * Empty Points cannot be represented in WKB; an
  * {@link IllegalArgumentException} will be thrown if one is
@@ -110,6 +111,10 @@ import com.vividsolutions.jts.util.Assert;
  * }
  * 
  * WKBType {
+ * 	<b>uint32</b> wkbGeometryType : 8; // values from enum wkbGeometryType
+ * }
+ * 
+ * EWKBType {
  * 	<b>uint32</b> is3D : 1; 	// 0 = 2D, 1 = 3D
  * 	<b>uint32</b> noData1 : 1; 
  * 	<b>uint32</b> hasSRID : 1;  	// 0, no, 1 = yes
@@ -119,7 +124,7 @@ import com.vividsolutions.jts.util.Assert;
  * 
  * abstract WKBGeometry {
  * 	<b>byte</b> byteOrder;		// values from enum byteOrder
- * 	WKBType wkbType
+ * 	EWKBType wkbType
  * 	[ <b>uint32</b> srid; ] 	// only if hasSRID = yes
  * }
  * 
