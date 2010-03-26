@@ -142,7 +142,6 @@ public class WKBReader
   {
     dis.setInStream(is);
     Geometry g = readGeometry();
-    setSRID(g);
     return g;
   }
 
@@ -163,6 +162,7 @@ public class WKBReader
     // determine if SRIDs are present
     hasSRID = (typeInt & 0x20000000) != 0;
 
+    int SRID = 0;
     if (hasSRID) {
       SRID = dis.readInt();
     }
@@ -171,24 +171,34 @@ public class WKBReader
     if (ordValues == null || ordValues.length < inputDimension)
       ordValues = new double[inputDimension];
 
+    Geometry geom = null;
     switch (geometryType) {
       case WKBConstants.wkbPoint :
-        return readPoint();
+        geom = readPoint();
+        break;
       case WKBConstants.wkbLineString :
-        return readLineString();
-      case WKBConstants.wkbPolygon :
-        return readPolygon();
+        geom = readLineString();
+        break;
+     case WKBConstants.wkbPolygon :
+       geom = readPolygon();
+        break;
       case WKBConstants.wkbMultiPoint :
-        return readMultiPoint();
+        geom = readMultiPoint();
+        break;
       case WKBConstants.wkbMultiLineString :
-        return readMultiLineString();
-      case WKBConstants.wkbMultiPolygon :
-        return readMultiPolygon();
+        geom = readMultiLineString();
+        break;
+     case WKBConstants.wkbMultiPolygon :
+        geom = readMultiPolygon();
+        break;
       case WKBConstants.wkbGeometryCollection :
-        return readGeometryCollection();
+        geom = readGeometryCollection();
+        break;
+      default: 
+        throw new ParseException("Unknown WKB type " + geometryType);
     }
-    throw new ParseException("Unknown WKB type " + geometryType);
-    //return null;
+    setSRID(geom, SRID);
+    return geom;
   }
 
   /**
@@ -197,7 +207,7 @@ public class WKBReader
    * @param g the geometry to update
    * @return the geometry with an updated SRID value, if required
    */
-  private Geometry setSRID(Geometry g)
+  private Geometry setSRID(Geometry g, int SRID)
   {
     if (SRID != 0)
       g.setSRID(SRID);

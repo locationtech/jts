@@ -29,6 +29,12 @@ public class WKBTest
     super(name);
   }
 
+  public void testFirst()
+  throws IOException, ParseException
+  {
+    runWKBTest("MULTIPOINT ((0 0), (1 4), (100 200))");
+  }
+
 	public void testPointPCS() throws IOException, ParseException {
 		runWKBTestPackedCoordinate("POINT (1 2)");
 	}
@@ -151,13 +157,22 @@ public class WKBTest
 		runWKBTest(g, 3, false);
 	}
 
-  private void runWKBTest(Geometry g, int dimension, boolean toHex)
-      throws IOException, ParseException
-  {
-    setZ(g);
-    runGeometry(g, dimension, ByteOrderValues.BIG_ENDIAN, toHex);
-    runGeometry(g, dimension, ByteOrderValues.LITTLE_ENDIAN, toHex);
-  }
+	private void runWKBTest(Geometry g, int dimension, boolean toHex)
+	throws IOException, ParseException
+	{
+	  setZ(g);
+    runWKBTest(g, dimension, ByteOrderValues.LITTLE_ENDIAN, toHex);
+    runWKBTest(g, dimension, ByteOrderValues.BIG_ENDIAN, toHex);
+	}
+	
+	private void runWKBTest(Geometry g, int dimension, int byteOrder, boolean toHex)
+	throws IOException, ParseException
+	{
+    runGeometry(g, dimension, byteOrder, toHex, 100);
+    runGeometry(g, dimension, byteOrder, toHex, 0);
+    runGeometry(g, dimension, byteOrder, toHex, 101010);
+	  runGeometry(g, dimension, byteOrder, toHex, -1);
+	}
 
   private void setZ(Geometry g)
   {
@@ -170,10 +185,16 @@ public class WKBTest
   static CoordinateSequenceComparator comp2 = new CoordinateSequenceComparator(2);
   static CoordinateSequenceComparator comp3 = new CoordinateSequenceComparator(3);
 
-  void runGeometry(Geometry g, int dimension, int byteOrder, boolean toHex)
+  void runGeometry(Geometry g, int dimension, int byteOrder, boolean toHex, int srid)
       throws IOException, ParseException
   {
-    WKBWriter wkbWriter = new WKBWriter(dimension, byteOrder);
+    boolean includeSRID = false;
+    if (srid >= 0) {
+      includeSRID = true;
+      g.setSRID(srid);
+    }
+    
+    WKBWriter wkbWriter = new WKBWriter(dimension, byteOrder, includeSRID);
     byte[] wkb = wkbWriter.write(g);
     String wkbHex = null;
     if (toHex)
@@ -184,10 +205,14 @@ public class WKBTest
       wkb = WKBReader.hexToBytes(wkbHex);
     Geometry g2 = wkbReader.read(wkb);
 
-    
     CoordinateSequenceComparator comp = (dimension == 2) ? comp2 : comp3;
     boolean isEqual = (g.compareTo(g2, comp) == 0);
     assertTrue(isEqual);
+    
+    if (includeSRID) {
+      boolean isSRIDEqual = g.getSRID() == g2.getSRID();
+      assertTrue(isSRIDEqual);
+    }
   }
 }
 

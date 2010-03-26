@@ -321,7 +321,8 @@ public class WKBWriter
     else if (geom instanceof Polygon)
       writePolygon((Polygon) geom, os);
     else if (geom instanceof MultiPoint)
-      writeGeometryCollection(WKBConstants.wkbMultiPoint, (MultiPoint) geom, os);
+      writeGeometryCollection(WKBConstants.wkbMultiPoint, 
+          (MultiPoint) geom, os);
     else if (geom instanceof MultiLineString)
       writeGeometryCollection(WKBConstants.wkbMultiLineString,
           (MultiLineString) geom, os);
