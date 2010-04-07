@@ -93,6 +93,7 @@ public class JTSTestBuilder
     funcRegistry.add(CreateRandomGeometryFunctions.class);
     funcRegistry.add(JTSFunctions.class);
   	funcRegistry.add(OverlayFunctions.class);
+  	funcRegistry.add(SnappingFunctions.class);
   	funcRegistry.add(TriangulationFunctions.class);
     funcRegistry.add(TriangleFunctions.class);
   	

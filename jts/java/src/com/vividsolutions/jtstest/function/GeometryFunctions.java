@@ -32,20 +32,8 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.algorithm.distance.*;
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.*;
-import com.vividsolutions.jts.operation.distance.*;
-import com.vividsolutions.jts.simplify.*;
 import com.vividsolutions.jts.operation.overlay.snap.*;
-import com.vividsolutions.jts.operation.buffer.*;
-import com.vividsolutions.jts.operation.buffer.validate.BufferResultValidator;
-
-import java.util.*;
-
-import com.vividsolutions.jts.noding.*;
-
 
 /**
  * Implementations for various geometry functions.
@@ -70,12 +58,6 @@ public class GeometryFunctions
   	gNorm.normalize();
     return gNorm;
   }
-
-	public static Geometry snap(Geometry g, Geometry g2, double distance)	
-	{		      
-		Geometry[] snapped = GeometrySnapper.snap(g, g2, distance);
-		return snapped[0];
-	}
 
 	public static Geometry getGeometryN(Geometry g, int i)
 	{
