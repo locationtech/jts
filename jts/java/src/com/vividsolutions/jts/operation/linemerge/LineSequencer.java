@@ -49,7 +49,7 @@ import com.vividsolutions.jts.util.Assert;
  * The input linestrings may form one or more connected sets.
  * The input linestrings should be correctly noded, or the results may
  * not be what is expected.
- * The output of this method is a single MultiLineString containing the ordered
+ * The output of this method is a single {@link MultiLineString} containing the ordered
  * linestrings in the sequence.
  * <p>
  * The sequencing employs the classic <b>Eulerian path</b> graph algorithm.
@@ -78,6 +78,13 @@ import com.vividsolutions.jts.util.Assert;
  */
 public class LineSequencer
 {
+	public static Geometry sequence(Geometry geom)
+	{
+		LineSequencer sequencer = new LineSequencer();
+		sequencer.add(geom);
+		return sequencer.getSequencedLineStrings();
+	}
+	
   /**
    * Tests whether a {@link Geometry} is sequenced correctly.
    * {@link LineString}s are trivially sequenced.

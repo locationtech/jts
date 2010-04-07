@@ -40,22 +40,24 @@ import com.vividsolutions.jts.densify.*;
 import com.vividsolutions.jts.operation.polygonize.*;
 import com.vividsolutions.jts.operation.linemerge.*;
 
-public class ConstructionFunctions {
-  public static Geometry octagonalEnvelope(Geometry g) 
-  {      
-    OctagonalEnvelope octEnv = new OctagonalEnvelope(g);
-    return octEnv.toGeometry(g.getFactory());
+public class LineHandlingFunctions {
+	
+  public static Geometry mergeLines(Geometry g)
+  {
+    LineMerger merger = new LineMerger();
+    merger.add(g);
+    Collection lines = merger.getMergedLineStrings();
+    return g.getFactory().buildGeometry(lines);
   }
   
-  public static Geometry minimumDiameter(Geometry g) {      return (new MinimumDiameter(g)).getDiameter();  }
-  public static Geometry minimumRectangle(Geometry g) {      return (new MinimumDiameter(g)).getMinimumRectangle();  }
-  public static Geometry minimumBoundingCircle(Geometry g) {      return (new MinimumBoundingCircle(g)).getCircle();  }
+  public static Geometry sequenceLines(Geometry g)
+  {
+    return LineSequencer.sequence(g);
+  }
   
-  public static Geometry boundary(Geometry g) {      return g.getBoundary();  }
-  public static Geometry convexHull(Geometry g) {      return g.convexHull();  }
-  public static Geometry centroid(Geometry g) {      return g.getCentroid();  }
-  public static Geometry interiorPoint(Geometry g) {      return g.getInteriorPoint();  }
-
-  public static Geometry densify(Geometry g, double distance) { return Densifier.densify(g, distance); }
-  
+  public static Geometry extractLines(Geometry g)
+  {
+    List lines = LinearComponentExtracter.getLines(g);
+    return g.getFactory().buildGeometry(lines);
+  }
 }

@@ -82,6 +82,7 @@ public class JTSTestBuilder
   	funcRegistry.add(BufferFunctions.class);
     funcRegistry.add(ConstructionFunctions.class);
     funcRegistry.add(ConversionFunctions.class);
+  	funcRegistry.add(LineHandlingFunctions.class);
   	funcRegistry.add(NodingFunctions.class);
   	funcRegistry.add(PolygonizeFunctions.class);
   	funcRegistry.add(PrecisionFunctions.class);
