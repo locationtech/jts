@@ -49,7 +49,7 @@ import com.vividsolutions.jts.util.Assert;
  * The input linestrings may form one or more connected sets.
  * The input linestrings should be correctly noded, or the results may
  * not be what is expected.
- * The output of this method is a single {@link MultiLineString} containing the ordered
+ * The computed output is a single {@link MultiLineString} containing the ordered
  * linestrings in the sequence.
  * <p>
  * The sequencing employs the classic <b>Eulerian path</b> graph algorithm.
