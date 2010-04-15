@@ -435,9 +435,12 @@ limiting conditions:
 
   /**
    * Computes the signed area for a ring.      
-   * The signed area is positive if
-   * the ring is oriented CW, negative if the ring is oriented CCW,
-   * and zero if the ring is degenerate or flat. 
+   * The signed area is:
+   * <ul>
+   * <li>positive if the ring is oriented CW
+   * <li>negative if the ring is oriented CCW
+   * <li>zero if the ring is degenerate or flat
+   * </ul> 
    * 
    * @param ring the coordinates forming the ring
    * @return the signed area of the ring
@@ -446,17 +449,17 @@ limiting conditions:
   {
     int n = ring.size();
     if (n < 3) return 0.0;
-         double sum = 0.0;
+    double sum = 0.0;
     Coordinate p = new Coordinate();
     ring.getCoordinate(0, p);
     double bx = p.x;
     double by = p.y;
-         for (int i = 1; i < n; i++) {
+    for (int i = 1; i < n; i++) {
       ring.getCoordinate(i, p);
       double cx = p.x;
       double cy = p.y;
       sum += (bx + cx) * (cy - by);
-             bx = cx;
+      bx = cx;
       by = cy;
     }
     return -sum  / 2.0;
