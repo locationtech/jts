@@ -631,7 +631,7 @@ public class QuadEdgeSubdivision {
 			Coordinate c = triEdges[2].orig().getCoordinate();
 			
 			// TODO: choose the most accurate circumcentre based on the edges
-			Coordinate cc = Triangle.circumcentre(a, b, c);
+      Coordinate cc = Triangle.circumcentre(a, b, c);
 			Vertex ccVertex = new Vertex(cc);
 			// save the circumcentre as the origin for the dual edges originating in this triangle
 			for (int i = 0; i < 3; i++) {
@@ -933,6 +933,12 @@ public class QuadEdgeSubdivision {
     CoordinateList coordList = new CoordinateList();
     coordList.addAll(cellPts, false);
     coordList.closeRing();
+    
+    if (coordList.size() < 4) {
+      System.out.println(coordList);
+      coordList.add(coordList.get(coordList.size()-1), true);
+    }
+    
     Coordinate[] pts = coordList.toCoordinateArray();
     Polygon cellPoly = geomFact.createPolygon(geomFact.createLinearRing(pts), null);
     

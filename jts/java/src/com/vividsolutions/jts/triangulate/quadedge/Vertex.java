@@ -194,9 +194,9 @@ public class Vertex
 
   public boolean isInCircle(Vertex a, Vertex b, Vertex c) 
   {
-    //return TrianglePredicate.isInCircleRobust(a.p, b.p, c.p, this.p);
+    return TrianglePredicate.isInCircleRobust(a.p, b.p, c.p, this.p);
     // non-robust - best to not use
-    return TrianglePredicate.isInCircle(a.p, b.p, c.p, this.p);
+    //return TrianglePredicate.isInCircle(a.p, b.p, c.p, this.p);
   }
 
     /**

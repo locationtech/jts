@@ -25,13 +25,13 @@ public class DelaunayRobustTest
   
 	public void run()
 	{
-		run(1000000);
+		run(100000);
 	}
 	
 	final static GeometryFactory geomFact = new GeometryFactory();
 	
   final static double SIDE_LEN = 1.0;
-  final static double BASE_OFFSET = 0; //1.0e6;
+  final static double BASE_OFFSET = 1.0e7;
 	
 	public void run(int nPts)
 	{

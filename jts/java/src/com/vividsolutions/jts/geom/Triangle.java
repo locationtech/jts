@@ -97,6 +97,8 @@ public class Triangle
    * @param c a vertx of the triangle
    * @return the circumcentre of the triangle
    */
+  /*
+   // original non-robust algorithm
   public static Coordinate circumcentre(Coordinate a, Coordinate b, Coordinate c)
   {
     // compute the perpendicular bisector of chord ab
@@ -114,9 +116,67 @@ public class Triangle
       // Idea - can we condition which edges we choose?
       throw new IllegalStateException(ex.getMessage());
     }
+    
+    //System.out.println("Acc = " + a.distance(cc) + ", Bcc = " + b.distance(cc) + ", Ccc = " + c.distance(cc) );
+
     return cc;
   }
-
+  */
+  
+  /**
+   * Computes the circumcentre of a triangle.
+   * The circumcentre is the centre of the circumcircle,
+   * the smallest circle which encloses the triangle.
+   * It is also the common intersection point of the
+   * perpendicular bisectors of the sides of the triangle,
+   * and is the only point which has equal distance to all three
+   * vertices of the triangle.
+   * <p>
+   * This method uses an algorithm due to J.R.Shewchuk which
+   * uses offsetting to improve the precision of computation.
+   * (See <i>Lecture Notes on Geometric Robustness</i>, 
+   * Jonathan Richard Shewchuk, 1999).
+   *
+   * @param a a vertx of the triangle
+   * @param b a vertx of the triangle
+   * @param c a vertx of the triangle
+   * @return the circumcentre of the triangle
+   */
+  public static Coordinate circumcentre(Coordinate a, Coordinate b, Coordinate c)
+  {
+    double cx = c.x;
+    double cy = c.y;
+    double ax = a.x - cx;
+    double ay = a.y - cy;
+    double bx = b.x - cx;
+    double by = b.y - cy;
+    
+    double denom = 2 * det(ax, ay, bx, by);
+    double numx = det(ay, ax*ax + ay*ay, by, bx*bx + by*by);
+    double numy = det(ax, ax*ax + ay*ay, bx, bx*bx + by*by);
+    
+    double ccx = cx - numx / denom;
+    double ccy = cy + numy / denom;
+    
+    return new Coordinate(ccx, ccy);
+  }
+  
+  /**
+   * Computes the determinant of a 2x2 matrix.
+   * Uses standard double-precision arithmetic, 
+   * so is susceptible to round-off error.
+   * 
+   * @param m00 the [0,0] entry of the matrix
+   * @param m01 the [0,1] entry of the matrix
+   * @param m10 the [1,0] entry of the matrix
+   * @param m11 the [1,1] entry of the matrix
+   * @return the determinant
+   */
+  private static double det(double m00, double m01, double m10, double m11)
+  {
+    return m00 * m11 - m01 * m10;
+  }
+  
   /**
    * Computes the incentre of a triangle.
    * The <i>inCentre</i> of a triangle is the point which is equidistant
