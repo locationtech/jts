@@ -129,7 +129,7 @@ public class IncrementalDelaunayTriangulator
 		// is satisfied.
 		do {
 			QuadEdge t = e.oPrev();
-			if (t.dest().rightOf(e) && v.inCircle(e.orig(), t.dest(), e.dest())) {
+			if (t.dest().rightOf(e) && v.isInCircle(e.orig(), t.dest(), e.dest())) {
 				QuadEdge.swap(e);
 				e = e.oPrev();
 			} else if (e.oNext() == startEdge) {

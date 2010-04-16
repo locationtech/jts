@@ -34,6 +34,7 @@ package com.vividsolutions.jtstest.function;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.triangulate.*;
+import com.vividsolutions.jts.triangulate.quadedge.LocateFailureException;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import com.vividsolutions.jtstest.util.*;
 
@@ -43,20 +44,59 @@ public class TriangulationFunctions
 	
   public static Geometry delaunayEdges(Geometry geom)
   {
-  	DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
-  	builder.setSites(geom);
-  	builder.setTolerance(TRIANGULATION_TOLERANCE);
-  	Geometry edges = builder.getEdges(geom.getFactory());
-  	return edges;
+    DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
+    builder.setSites(geom);
+    builder.setTolerance(TRIANGULATION_TOLERANCE);
+    Geometry edges = builder.getEdges(geom.getFactory());
+    return edges;
   }
 
   public static Geometry delaunayTriangles(Geometry geom)
   {
-  	DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
-  	builder.setSites(geom);
-  	builder.setTolerance(TRIANGULATION_TOLERANCE);
-  	Geometry tris = builder.getTriangles(geom.getFactory());
-  	return tris;
+    DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
+    builder.setSites(geom);
+    builder.setTolerance(TRIANGULATION_TOLERANCE);
+    Geometry tris = builder.getTriangles(geom.getFactory());
+    return tris;
+  }
+
+  public static Geometry delaunayEdgesWithTolerance(Geometry geom, double tolerance)
+  {
+    DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
+    builder.setSites(geom);
+    builder.setTolerance(tolerance);
+    Geometry edges = builder.getEdges(geom.getFactory());
+    return edges;
+  }
+
+
+  public static Geometry delaunayTrianglesWithTolerance(Geometry geom, double tolerance)
+  {
+    DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
+    builder.setSites(geom);
+    builder.setTolerance(tolerance);
+    Geometry tris = builder.getTriangles(geom.getFactory());
+    return tris;
+  }
+
+  public static Geometry delaunayTrianglesWithToleranceNoError(Geometry geom, double tolerance)
+  {
+    DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
+    builder.setSites(geom);
+    builder.setTolerance(tolerance);
+    try {
+      Geometry tris = builder.getTriangles(geom.getFactory());
+      return tris;
+    }
+    catch (LocateFailureException ex) {
+      System.out.println(ex);
+      // ignore this exception and drop thru
+    }
+    /**
+     * Get the triangles created up until the error
+     */
+    Geometry tris = builder.getSubdivision().getTriangles(geom.getFactory());
+    return tris;      
   }
 
   public static Geometry voronoiDiagram(Geometry geom, Geometry g2)

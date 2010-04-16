@@ -33,9 +33,13 @@
 
 package com.vividsolutions.jts.triangulate.quadedge;
 
+
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Triangle;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.algorithm.NotRepresentableException;
+import com.vividsolutions.jts.algorithm.math.DoubleDouble;
 
 /**
  * Models a site (node) in a {@link QuadEdgeSubdivision}. 
@@ -188,53 +192,12 @@ public class Vertex
      * Geometric primitives /
      **********************************************************************************************/
 
-    /**
-     * Computes twice the area of the oriented triangle (a, b, c), i.e., the area is positive if the
-     * triangle is oriented counterclockwise.
-     */
-    private final double triArea(Vertex a, Vertex b, Vertex c) {
-        return (b.p.x - a.p.x) * (c.p.y - a.p.y) 
-             - (b.p.y - a.p.y) * (c.p.x - a.p.x);
-    }
-
-    /**
-     * Tests if this is inside the circle defined by the points a, b, c. This test uses simple
-     * double-precision arithmetic, and thus may not be robust.
-     * 
-     * @param a
-     * @param b
-     * @param c
-     * @return true if this point is inside the circle defined by the points a, b, c
-     */
-    public final boolean inCircle(Vertex a, Vertex b, Vertex c) {
-      Vertex d = this;
-      boolean isInCircle = 
-      	        (a.p.x * a.p.x + a.p.y * a.p.y) * triArea(b, c, d)
-              - (b.p.x * b.p.x + b.p.y * b.p.y) * triArea(a, c, d)
-              + (c.p.x * c.p.x + c.p.y * c.p.y) * triArea(a, b, d)
-              - (d.p.x * d.p.x + d.p.y * d.p.y) * triArea(a, b, c) 
-              > 0;
-      return isInCircle;
-    }
-    
-/*
-  public boolean OLDinCircle(Vertex a, Vertex b, Vertex c) {
-      Vertex d = this;
-      boolean isInCircle = (a.getX() * a.getX() + a.getY() * a.getY()) * triArea(b, c, d)
-              - (b.getX() * b.getX() + b.getY() * b.getY()) * triArea(a, c, d)
-              + (c.getX() * c.getX() + c.getY() * c.getY()) * triArea(a, b, d)
-              - (d.getX() * d.getX() + d.getY() * d.getY()) * triArea(a, b, c) 
-              > 0;
-
-      // boolean isInCircleRobust = checkRobustInCircle(a.p, b.p, c.p, p, isInCircle);
-
-      // if (! isInCircle)
-      // System.out.println(WKTWriter.toLineString(new CoordinateArraySequence(new Coordinate[] {
-      // a.p, b.p, c.p, p })));
-
-      return isInCircle;
+  public boolean isInCircle(Vertex a, Vertex b, Vertex c) 
+  {
+    //return TrianglePredicate.isInCircleRobust(a.p, b.p, c.p, this.p);
+    // non-robust - best to not use
+    return TrianglePredicate.isInCircle(a.p, b.p, c.p, this.p);
   }
-*/
 
     /**
      * Tests whether the triangle formed by this vertex and two
@@ -244,25 +207,27 @@ public class Vertex
      * @param c a vertex
      * @returns true if the triangle is oriented CCW
      */
-    public final boolean isCCW(Vertex b, Vertex c) 
-    {
+  public final boolean isCCW(Vertex b, Vertex c) 
+  {
+      /*
+      // test code used to check for robustness of triArea 
+      boolean isCCW = (b.p.x - p.x) * (c.p.y - p.y) 
+      - (b.p.y - p.y) * (c.p.x - p.x) > 0;
+     //boolean isCCW = triArea(this, b, c) > 0;
+     boolean isCCWRobust = CGAlgorithms.orientationIndex(p, b.p, c.p) == CGAlgorithms.COUNTERCLOCKWISE; 
+     if (isCCWRobust != isCCW)
+      System.out.println("CCW failure");
+     //*/
+
     	// is equal to the signed area of the triangle
     	
       return (b.p.x - p.x) * (c.p.y - p.y) 
-      - (b.p.y - p.y) * (c.p.x - p.x) > 0;
+           - (b.p.y - p.y) * (c.p.x - p.x) > 0;
       
       // original rolled code
       //boolean isCCW = triArea(this, b, c) > 0;
       //return isCCW;
       
-        /*
-         // MD - used to check for robustness of triArea 
-        boolean isCCW = triArea(this, b, c) > 0;
-        boolean isCCWRobust = CGAlgorithms.orientationIndex(p, b.p, c.p) == CGAlgorithms.COUNTERCLOCKWISE; 
-        if (isCCWRobust != isCCW)
-        	System.out.println("CCW failure");
-        return isCCW;
-        //*/
     }
 
     public final boolean rightOf(QuadEdge e) {
@@ -405,123 +370,10 @@ public class Vertex
         return pz;
     }
 
-    // /**
-    // * Checks if the computed value for isInCircle is correct, using double-double precision
-    // * arithmetic.
-    // *
-    // * @param a
-    // * @param b
-    // * @param c
-    // * @param p
-    // * @param nonRobustInCircle
-    // * @return the robust value
-    // */
-    // private boolean checkRobustInCircle(Coordinate a, Coordinate b, Coordinate c, Coordinate p,
-    // boolean nonRobustInCircle) {
-    // // *
-    // boolean isInCircleDD = inCircleDD(a, b, c, p);
-    // boolean isInCircleCC = inCircleCC(a, b, c, p);
-    //
-    // Coordinate circumCentre = Triangle.circumcentre(a, b, c);
-    // System.out.println("p radius diff a = "
-    // + (p.distance(circumCentre) - a.distance(circumCentre)) / a.distance(circumCentre));
-    //
-    // if (nonRobustInCircle != isInCircleDD || nonRobustInCircle != isInCircleCC) {
-    // System.out.println("inCircle robustness failure (double result = " + nonRobustInCircle
-    // + ", DD result = " + isInCircleDD + ", CC result = " + isInCircleCC + ")");
-    // System.out.println(WKTWriter.toLineString(new CoordinateArraySequence(new Coordinate[]{
-    // a,
-    // b,
-    // c,
-    // p})));
-    // System.out.println("Circumcentre = " + WKTWriter.toPoint(circumCentre)
-    // + " radius = " + a.distance(circumCentre));
-    // System.out.println("p radius diff a = "
-    // + (p.distance(circumCentre) - a.distance(circumCentre)));
-    // System.out.println("p radius diff b = "
-    // + (p.distance(circumCentre) - b.distance(circumCentre)));
-    // System.out.println("p radius diff c = "
-    // + (p.distance(circumCentre) - c.distance(circumCentre)));
-    // }
-    // return isInCircleDD;
-    // }
 
-    // /**
-    // * Computes the inCircle test using the circumcentre. In general this doesn't appear to be any
-    // * more robust than the standard calculation. However, there is at least one case where the
-    // test
-    // * point is far enough from the circumcircle that this test gives the correct answer.
-    // LINESTRING
-    // * (1507029.9878 518325.7547, 1507022.1120341457 518332.8225183258, 1507029.9833 518325.7458,
-    // * 1507029.9896965567 518325.744909031)
-    // *
-    // * @param a
-    // * @param b
-    // * @param c
-    // * @param p
-    // * @return
-    // */
-    // private static boolean inCircleCC(Coordinate a, Coordinate b, Coordinate c, Coordinate p) {
-    // Coordinate cc = Triangle.circumcentre(a, b, c);
-    // double ccRadius = a.distance(cc);
-    // double pRadiusDiff = p.distance(cc) - ccRadius;
-    // return pRadiusDiff <= 0;
-    // }
-    //
-    // private static boolean inCircleDD(Coordinate a, Coordinate b, Coordinate c, Coordinate p) {
-    // DoubleDouble px = new DoubleDouble(p.x);
-    // DoubleDouble py = new DoubleDouble(p.y);
-    // DoubleDouble ax = new DoubleDouble(a.x);
-    // DoubleDouble ay = new DoubleDouble(a.y);
-    // DoubleDouble bx = new DoubleDouble(b.x);
-    // DoubleDouble by = new DoubleDouble(b.y);
-    // DoubleDouble cx = new DoubleDouble(c.x);
-    // DoubleDouble cy = new DoubleDouble(c.y);
-    //
-    // DoubleDouble aTerm = (ax.multiply(ax).add(ay.multiply(ay))).multiply(triAreaDD(
-    // bx,
-    // by,
-    // cx,
-    // cy,
-    // px,
-    // py));
-    // DoubleDouble bTerm = (bx.multiply(bx).add(by.multiply(by))).multiply(triAreaDD(
-    // ax,
-    // ay,
-    // cx,
-    // cy,
-    // px,
-    // py));
-    // DoubleDouble cTerm = (cx.multiply(cx).add(cy.multiply(cy))).multiply(triAreaDD(
-    // ax,
-    // ay,
-    // bx,
-    // by,
-    // px,
-    // py));
-    // DoubleDouble pTerm = (px.multiply(px).add(py.multiply(py))).multiply(triAreaDD(
-    // ax,
-    // ay,
-    // bx,
-    // by,
-    // cx,
-    // cy));
-    //
-    // DoubleDouble sum = aTerm.subtract(bTerm).add(cTerm).subtract(pTerm);
-    // boolean isInCircle = sum.doubleValue() > 0;
-    //
-    // return isInCircle;
-    // }
 
-    // /**
-    // * Computes twice the area of the oriented triangle (a, b, c), i.e., the area is positive if
-    // the
-    // * triangle is oriented counterclockwise.
-    // */
-    // private static DoubleDouble triAreaDD(DoubleDouble ax, DoubleDouble ay, DoubleDouble bx,
-    // DoubleDouble by, DoubleDouble cx, DoubleDouble cy) {
-    // return (bx.subtract(ax).multiply(cy.subtract(ay)).subtract(by.subtract(ay).multiply(
-    // cx.subtract(ax))));
-    // }
+
+
+
 
 }
