@@ -38,6 +38,12 @@ The current and archived JTS distributions can be obtained at the
 <ul>
 </ul>
 
+<h3>Robustness Improvements</h3>
+<ul>
+<li>Delaunay triangulation uses extended precision arithmetic for the inCircle test
+<li>Voronoi computation now uses more robust algorithm for the circumcentre computation
+</ul>
+
 <h3>API Changes</h3>
 <ul>
 </ul>
@@ -47,10 +53,6 @@ The current and archived JTS distributions can be obtained at the
 <li>Updated <tt>MasterTester</tt> to include more unit tests
 <li>Fixed <tt>ByteArrayInStream</tt> to pad byte buffers with zeroes
 <li>Fixed <tt>Point.isValid()</tt> to validate POINT EMPTY correctly
-<li>Improved robustness of Delaunay triangulation
-by using extended precision arithmetic for the inCircle test
-<li>Improved robustness of Voronoi computation
-by using more robust algorithm for the circumcentre computation
 </ul>
 
 <!------- TestBuilder -------------------->
