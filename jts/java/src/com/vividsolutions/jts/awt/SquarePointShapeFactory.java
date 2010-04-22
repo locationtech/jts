@@ -42,7 +42,7 @@ import java.awt.geom.Rectangle2D;
  * @author Martin Davis
  *
  */
-public class SqarePointShapeFactory 
+public class SquarePointShapeFactory 
 implements PointShapeFactory
 {
 	/**
@@ -56,7 +56,7 @@ implements PointShapeFactory
 	 * Creates a new factory for squares with default size.
 	 *
 	 */
-	public SqarePointShapeFactory()
+	public SquarePointShapeFactory()
 	{
 	}
 	
@@ -65,7 +65,7 @@ implements PointShapeFactory
 	 * 
 	 * @param squareSize the length of the side of the square
 	 */
-	public SqarePointShapeFactory(double squareSize)
+	public SquarePointShapeFactory(double squareSize)
 	{
 		this.squareSize = squareSize;
 	}
