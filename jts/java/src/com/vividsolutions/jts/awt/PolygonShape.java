@@ -35,108 +35,101 @@ package com.vividsolutions.jts.awt;
 import java.awt.Rectangle;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * A Shape which represents a polygon which may contain holes.
+ * A {@link Shape} which represents a polygon which may contain holes.
  * Provided because the standard AWT Polygon class does not support holes.
  * 
  * @author Martin Davis
  *
  */
-public class PolygonShape implements Shape {
-    private java.awt.Polygon shell;
-    private ArrayList holes = new ArrayList();
+public class PolygonShape implements Shape 
+{
+  // use a GeneralPath with a winding rule, since it supports floating point coordinates
+    private GeneralPath poly;
 
     /**
-     * Creates a new polygon shape.
+     * Creates a new polygon {@link Shape}.
      * 
      * @param shellVertices the vertices of the shell 
      * @param holeVerticesCollection a collection of Coordinate[] for each hole
      */
     public PolygonShape(Coordinate[] shellVertices,
-        Collection holeVerticesCollection) {
-        shell = toPolygon(shellVertices);
+        Collection holeVerticesCollection) 
+    {
+        poly = toPath(shellVertices);
 
         for (Iterator i = holeVerticesCollection.iterator(); i.hasNext();) {
             Coordinate[] holeVertices = (Coordinate[]) i.next();
-            holes.add(toPolygon(holeVertices));
+            poly.append(toPath(holeVertices), false);
         }
     }
 
-    private java.awt.Polygon toPolygon(Coordinate[] coordinates) {
-        java.awt.Polygon polygon = new java.awt.Polygon();
+    /**
+     * Creates a GeneralPath representing a polygon ring 
+     * having the given coordinate sequence.
+     * Uses the GeneralPath.WIND_EVEN_ODD winding rule.
+     * 
+     * @param coordinates a coordinate sequence
+     * @return the path for the coordinate sequence
+     */
+    private GeneralPath toPath(Coordinate[] coordinates) {
+      GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, coordinates.length);
 
+      if (coordinates.length > 0) {
+        path.moveTo(coordinates[0].x, coordinates[0].y);
         for (int i = 0; i < coordinates.length; i++) {
-            polygon.addPoint((int) coordinates[i].x, (int) coordinates[i].y);
+          path.lineTo(coordinates[i].x, coordinates[i].y);
         }
-
-        return polygon;
-    }
+      }
+      return path;
+  }
 
     public Rectangle getBounds() {
-        /**@todo Implement this java.awt.Shape method*/
-        throw new java.lang.UnsupportedOperationException(
-            "Method getBounds() not yet implemented.");
+      return poly.getBounds();
     }
 
     public Rectangle2D getBounds2D() {
-        return shell.getBounds2D();
+        return poly.getBounds2D();
     }
 
     public boolean contains(double x, double y) {
-        /**@todo Implement this java.awt.Shape method*/
-        throw new java.lang.UnsupportedOperationException(
-            "Method contains() not yet implemented.");
+      return poly.contains(x, y);
     }
 
     public boolean contains(Point2D p) {
-        /**@todo Implement this java.awt.Shape method*/
-        throw new java.lang.UnsupportedOperationException(
-            "Method contains() not yet implemented.");
+      return poly.contains(p);
     }
 
     public boolean intersects(double x, double y, double w, double h) {
-        /**@todo Implement this java.awt.Shape method*/
-        throw new java.lang.UnsupportedOperationException(
-            "Method intersects() not yet implemented.");
+      return poly.intersects(x, y, w, h);
     }
 
     public boolean intersects(Rectangle2D r) {
-        /**@todo Implement this java.awt.Shape method*/
-        throw new java.lang.UnsupportedOperationException(
-            "Method intersects() not yet implemented.");
+      return poly.intersects(r);
     }
 
     public boolean contains(double x, double y, double w, double h) {
-        /**@todo Implement this java.awt.Shape method*/
-        throw new java.lang.UnsupportedOperationException(
-            "Method contains() not yet implemented.");
+      return poly.contains(x, y, w, h);
     }
 
     public boolean contains(Rectangle2D r) {
-        /**@todo Implement this java.awt.Shape method*/
-        throw new java.lang.UnsupportedOperationException(
-            "Method contains() not yet implemented.");
+      return poly.contains(r);
     }
 
     public PathIterator getPathIterator(AffineTransform at) {
-        ArrayList rings = new ArrayList();
-        rings.add(shell);
-        rings.addAll(holes);
-
-        return new ShapeCollectionPathIterator(rings, at);
+        return poly.getPathIterator(at);
     }
 
     public PathIterator getPathIterator(AffineTransform at, double flatness) {
-      // since Geomtery are linear, can simply delegate to the simple method
-    	return getPathIterator(at);
+    	return getPathIterator(at, flatness);
     }
 }
