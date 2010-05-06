@@ -329,7 +329,7 @@ extends JPanel
 
   private Object[] getFunctionParams()
   {
-  	// TODO: improve this, it is somewhat cheesy
+  	// TODO: improve this, it is cheesy
   	
     Class[] paramTypes = currentFunc.getParameterTypes();
     
@@ -358,6 +358,13 @@ extends JPanel
         && paramTypes[0] == Geometry.class
       && (paramTypes[1] == Integer.class || paramTypes[1] == int.class))
       return new Object[] { getGeometryB(), SwingUtil.getDouble(txtDistance, null) };
+    
+    if (paramTypes.length == 2 
+        && (paramTypes[0] == Integer.class || paramTypes[0] == int.class)
+      	&& (paramTypes[1] == Double.class || paramTypes[1] == double.class))
+      return new Object[] {  
+    		SwingUtil.getInteger(txtDistance, null), 
+    		SwingUtil.getDouble(txtQuadrantSegs, null) };
     
     if (paramTypes.length >= 2)
       return new Object[] { 
