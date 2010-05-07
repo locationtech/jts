@@ -363,8 +363,8 @@ extends JPanel
         && (paramTypes[0] == Integer.class || paramTypes[0] == int.class)
       	&& (paramTypes[1] == Double.class || paramTypes[1] == double.class))
       return new Object[] {  
-    		SwingUtil.getInteger(txtDistance, null), 
-    		SwingUtil.getDouble(txtQuadrantSegs, null) };
+    		SwingUtil.getInteger(txtDistance, 100), 
+    		SwingUtil.getDouble(txtQuadrantSegs, 0.0) };
     
     if (paramTypes.length >= 2)
       return new Object[] { 

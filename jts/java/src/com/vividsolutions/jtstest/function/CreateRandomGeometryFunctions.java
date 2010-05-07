@@ -11,34 +11,6 @@ import com.vividsolutions.jts.geom.util.RandomShapeFactory;
 
 public class CreateRandomGeometryFunctions {
 
-  public static Geometry randomPointsInGridWithGutter(Geometry g, int nPts, double gutterFraction) {
-    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
-    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
-
-    int nCell = (int) Math.sqrt(nPts) + 1;
-
-    double cellWidth = env.getWidth() / nCell;
-    double cellHeight = env.getHeight() / nCell;
-
-    double gutterSize = gutterFraction * Math.min(cellWidth, cellHeight);
-    double gutterOffset = gutterSize / 2;
-    double areaWidth = cellWidth - gutterSize;
-    if (areaWidth < 0) areaWidth = 0;
-    double areaHeight = cellHeight - gutterSize;
-    if (areaHeight < 0) areaHeight = 0;
-
-    List pts = new ArrayList();
-
-    for (int i = 0; i < nCell; i++) {
-      for (int j = 0; j < nCell; j++) {
-        double x = env.getMinX() + i * cellWidth + gutterOffset + areaWidth * Math.random();
-        double y = env.getMinY() + j * cellHeight + gutterOffset + areaHeight * Math.random();
-        pts.add(geomFact.createPoint(new Coordinate(x, y)));
-      }
-    }
-    return geomFact.buildGeometry(pts);
-  }
-
   public static Geometry randomPointsInGrid(Geometry g, int nPts) {
     Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
     GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
@@ -83,6 +55,35 @@ public class CreateRandomGeometryFunctions {
     return geomFact.buildGeometry(pts);
   }
 
+  public static Geometry randomPointsInGridWithGutter(Geometry g, int nPts, double gutterFraction) {
+    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
+    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
+
+    int nCell = (int) Math.sqrt(nPts) + 1;
+
+    double cellWidth = env.getWidth() / nCell;
+    double cellHeight = env.getHeight() / nCell;
+
+    double gutterSize = gutterFraction * Math.min(cellWidth, cellHeight);
+    double gutterOffset = gutterSize / 2;
+    double areaWidth = cellWidth - gutterSize;
+    if (areaWidth < 0) areaWidth = 0;
+    double areaHeight = cellHeight - gutterSize;
+    if (areaHeight < 0) areaHeight = 0;
+
+    List pts = new ArrayList();
+
+    for (int i = 0; i < nCell; i++) {
+      for (int j = 0; j < nCell; j++) {
+        double x = env.getMinX() + i * cellWidth + gutterOffset + areaWidth * Math.random();
+        double y = env.getMinY() + j * cellHeight + gutterOffset + areaHeight * Math.random();
+        pts.add(geomFact.createPoint(new Coordinate(x, y)));
+      }
+    }
+    return geomFact.buildGeometry(pts);
+  }
+
+
   public static Geometry randomPoints(Geometry g, int nPts) {
     Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
     GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
@@ -113,7 +114,10 @@ public class CreateRandomGeometryFunctions {
 
     for (int i = 0; i < nPts; i++) {
       double rand = Math.random();
+      // use rans^2 to accentuate radial distribution
       double r = rMax * rand * rand;
+      // produces even distribution
+      //double r = rMax * Math.sqrt(rand);
       double ang = 2 * Math.PI * Math.random();
       double x = centreX + r * Math.cos(ang);
       double y = centreY + r * Math.sin(ang);
@@ -239,8 +243,10 @@ public class CreateRandomGeometryFunctions {
   {
   	double rndAng = 2 * Math.PI * Math.random();
   	double rndRadius = Math.random();
-  	double rndX = width/2 * rndRadius * Math.cos(rndAng); 
-  	double rndY = height/2 * rndRadius * Math.sin(rndAng); 
+    // use square root of radius, since area is proportional to square of radius
+    double rndRadius2 = Math.sqrt(rndRadius);
+  	double rndX = width/2 * rndRadius2 * Math.cos(rndAng); 
+  	double rndY = height/2 * rndRadius2 * Math.sin(rndAng); 
   	
     double x0 = centre.x + rndX;
     double y0 = centre.y + rndY;
