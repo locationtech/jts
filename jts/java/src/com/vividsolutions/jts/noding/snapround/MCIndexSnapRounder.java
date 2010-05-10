@@ -43,9 +43,9 @@ import com.vividsolutions.jts.noding.*;
  * fully noded arrangement from a set of {@link SegmentString}s.
  * Implements the Snap Rounding technique described in 
  * papers by Hobby, Guibas & Marimont, and Goodrich et al.
- * Snap Rounding assumes that all vertices lie on a uniform grid
- * (hence the precision model of the input must be fixed precision,
- * and all the input vertices must be rounded to that precision).
+ * Snap Rounding assumes that all vertices lie on a uniform grid;
+ * hence the precision model of the input must be fixed precision,
+ * and all the input vertices must be rounded to that precision.
  * <p>
  * This implementation uses a monotone chains and a spatial index to
  * speed up the intersection tests.

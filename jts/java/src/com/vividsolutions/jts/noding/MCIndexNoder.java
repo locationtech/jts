@@ -43,7 +43,7 @@ import java.util.*;
  * on {@link MonotoneChain}s and a {@link SpatialIndex}.
  * The {@link SpatialIndex} used should be something that supports
  * envelope (range) queries efficiently (such as a {@link Quadtree}
- * or {@link STRtree}.
+ * or {@link STRtree} (which is the default index provided).
  *
  * @version 1.7
  */

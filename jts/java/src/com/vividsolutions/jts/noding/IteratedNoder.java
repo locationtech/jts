@@ -38,13 +38,14 @@ import com.vividsolutions.jts.geom.*;
 import java.util.*;
 
 /**
- * Nodes a set of SegmentStrings completely.
- * The set of segmentStrings is fully noded;
+ * Nodes a set of {@link NodedSegmentString}s completely.
+ * The set of segment strings is fully noded;
  * i.e. noding is repeated until no further
  * intersections are detected.
  * <p>
  * Iterated noding using a FLOATING precision model is not guaranteed to converge,
- * due to roundoff error.   This problem is detected and an exception is thrown.
+ * due to roundoff error.   
+ * This problem is detected and an exception is thrown.
  * Clients can choose to rerun the noding using a lower precision model.
  *
  * @version 1.7

@@ -100,6 +100,21 @@ public class CreateRandomGeometryFunctions {
     return geomFact.buildGeometry(pts);
   }
 
+  public static Geometry randomPointsInTriangle(Geometry g, int nPts) {
+    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
+    Coordinate[] gpts = g.getCoordinates();
+    Coordinate tri0 = gpts[0];
+    Coordinate tri1 = gpts[1];
+    Coordinate tri2 = gpts[2];
+    
+    List pts = new ArrayList();
+
+    for (int i = 0; i < nPts; i++) {
+      pts.add(geomFact.createPoint(randomPointInTriangle(tri0, tri1, tri2)));
+    }
+    return geomFact.buildGeometry(pts);
+  }
+
   public static Geometry randomRadialPoints(Geometry g, int nPts) {
     Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
     GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
@@ -253,4 +268,21 @@ public class CreateRandomGeometryFunctions {
     return new Coordinate(x0, y0);    
   }
 
+  private static Coordinate randomPointInTriangle(Coordinate p0, Coordinate p1, Coordinate p2)
+  {
+    double s = Math.random();
+    double t = Math.random();
+    if (s + t > 1) {
+      s = 1.0 - s;
+      t = 1.0 - t;
+    }
+    double a = 1 - (s + t);
+    double b = s;
+    double c = t;
+    
+    double rpx = a * p0.x + b * p1.x + c * p2.x; 
+    double rpy = a * p0.y + b * p1.y + c * p2.y; 
+    
+    return new Coordinate(rpx, rpy);
+  }
 }

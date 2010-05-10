@@ -41,13 +41,14 @@ import com.vividsolutions.jts.noding.*;
 /**
  * Uses Snap Rounding to compute a rounded,
  * fully noded arrangement from a set of {@link SegmentString}s.
- * Implements the Snap Rounding technique described in Hobby, Guibas & Marimont,
- * and Goodrich et al.
- * Snap Rounding assumes that all vertices lie on a uniform grid
- * (hence the precision model of the input must be fixed precision,
- * and all the input vertices must be rounded to that precision).
+ * Implements the Snap Rounding technique described in 
+ * the papers by Hobby, Guibas & Marimont, and Goodrich et al.
+ * Snap Rounding assumes that all vertices lie on a uniform grid;
+ * hence the precision model of the input must be fixed precision,
+ * and all the input vertices must be rounded to that precision.
  * <p>
  * This implementation uses simple iteration over the line segments.
+ * This is not the most efficient approach for large sets of segments.
  * <p>
  * This implementation appears to be fully robust using an integer precision model.
  * It will function with non-integer precision models, but the
