@@ -8,7 +8,18 @@ import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
 public class NodingFunctions 
 {
 
-	public static Geometry nodeWithPointwisePrecision(Geometry geom, double scaleFactor)
+  /**
+   * Reduces precision pointwise, then snap-rounds.
+   * Note that output set may not contain non-unique linework
+   * (and thus cannot be used as input to Polygonizer directly).
+   * UnaryUnion is one way to make the linework unique.
+   * 
+   * 
+   * @param geom
+   * @param scaleFactor
+   * @return
+   */
+	public static Geometry snapRoundWithPointwisePrecisionReduction(Geometry geom, double scaleFactor)
 	{
 		PrecisionModel pm = new PrecisionModel(scaleFactor);
 

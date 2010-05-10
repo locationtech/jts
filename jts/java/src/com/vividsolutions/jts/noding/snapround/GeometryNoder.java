@@ -7,7 +7,14 @@ import com.vividsolutions.jts.noding.*;
 import com.vividsolutions.jts.noding.snapround.*;
 
 /**
- * Nodes a list of {@link Geometry}s using Snap Rounding
+ * Nodes a list of {@link Geometry}s using Snap Rounding.
+ * <p>
+ * Note that this class does <b>not</b> dissolve the output linework,
+ * so there may be duplicate linestrings in the output.  
+ * Subsequent processing (e.g. polygonization) may require '
+ * the linework to be made unique.  UnaryUnion is one way
+ * to do this (albeit an inefficient one).
+ * 
  * 
  */
 public class GeometryNoder
