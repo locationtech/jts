@@ -7,12 +7,18 @@ import com.vividsolutions.jts.noding.*;
 import com.vividsolutions.jts.noding.snapround.*;
 
 /**
- * Nodes a list of {@link Geometry}s using Snap Rounding.
+ * Nodes the linework in a list of {@link Geometry}s using Snap-Rounding
+ * to a given {@link PrecisionModel}.
  * <p>
- * Note that this class does <b>not</b> dissolve the output linework,
+ * The input coordinates are expected to be rounded
+ * to the given precision model.
+ * This clas does not perform that function.
+ * {@link GeometryPrecisionReducer} may be used to do this.
+ * <p>
+ * This class does <b>not</b> dissolve the output linework,
  * so there may be duplicate linestrings in the output.  
  * Subsequent processing (e.g. polygonization) may require '
- * the linework to be made unique.  UnaryUnion is one way
+ * the linework to be made unique.  {@link UnaryUnion} is one way
  * to do this (albeit an inefficient one).
  * 
  * 
