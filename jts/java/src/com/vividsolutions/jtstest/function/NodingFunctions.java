@@ -15,9 +15,9 @@ public class NodingFunctions
    * UnaryUnion is one way to make the linework unique.
    * 
    * 
-   * @param geom
-   * @param scaleFactor
-   * @return
+   * @param geom a geometry containing linework to node
+   * @param scaleFactor the precision model scale factor to use
+   * @return the noded, snap-rounded linework
    */
 	public static Geometry snapRoundWithPointwisePrecisionReduction(Geometry geom, double scaleFactor)
 	{
