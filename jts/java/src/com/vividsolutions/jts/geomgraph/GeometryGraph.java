@@ -264,13 +264,18 @@ public class GeometryGraph
             Location.INTERIOR);
 
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
+    	LinearRing hole = (LinearRing) p.getInteriorRingN(i);
+    	
+    	// don't bother adding empty holes
+    	if (hole.isEmpty()) continue;
+    	
       // Holes are topologically labelled opposite to the shell, since
       // the interior of the polygon lies on their opposite side
       // (on the left, if the hole is oriented CW)
       addPolygonRing(
-            (LinearRing) p.getInteriorRingN(i),
-            Location.INTERIOR,
-            Location.EXTERIOR);
+      		hole,
+          Location.INTERIOR,
+          Location.EXTERIOR);
     }
   }
 

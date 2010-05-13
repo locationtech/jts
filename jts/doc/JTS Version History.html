@@ -52,11 +52,12 @@ The current and archived JTS distributions can be obtained at the
 
 <h3>Bug Fixes</h3>
 <ul>
-<li>Updated <tt>MasterTester</tt> to include more unit tests
-<li>Fixed <tt>ByteArrayInStream</tt> to pad byte buffers with zeroes
 <li>Fixed <tt>Point.isValid()</tt> to validate POINT EMPTY correctly
 <li>Fixed <tt>IsValidOp</tt> to handle reporting Not Closed errors on empty rings correctly
+<li>Fixed <tt>GeometryGraph</tt> to ignore empty hole rings when building graph
+<li>Fixed <tt>ByteArrayInStream</tt> to pad byte buffers with zeroes
 <li>Corrected spelling of <tt>SquarePointShapeFactory</tt>
+<li>Updated <tt>MasterTester</tt> to include more unit tests
 </ul>
 
 <!------- TestBuilder -------------------->
