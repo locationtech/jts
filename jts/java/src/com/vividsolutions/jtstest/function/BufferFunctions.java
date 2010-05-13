@@ -38,6 +38,9 @@ import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryCollectionIterator;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.noding.SegmentString;
@@ -64,6 +67,23 @@ public class BufferFunctions {
     if (mitreLimit != null) 	bufParams.setMitreLimit(mitreLimit.doubleValue());
     
     return BufferOp.bufferOp(g, dist, bufParams);
+	}
+	
+	public static Geometry bufferComponents(Geometry g, double distance)	
+	{		
+		List bufs = new ArrayList();
+		for (Iterator it = new GeometryCollectionIterator(g); it.hasNext(); ) {
+			Geometry comp = (Geometry) it.next();
+			if (comp instanceof GeometryCollection) continue;
+			bufs.add(comp.buffer(distance));
+		}
+    return FunctionsUtil.getFactoryOrDefault(g)
+    				.createGeometryCollection(GeometryFactory.toGeometryArray(bufs));
+	}
+	
+	public static Geometry bufferComponentsAndUnion(Geometry g, double distance)	
+	{
+		return bufferComponents(g, distance).union();
 	}
 	
 	public static Geometry bufferOffsetCurve(Geometry g, double distance)	
