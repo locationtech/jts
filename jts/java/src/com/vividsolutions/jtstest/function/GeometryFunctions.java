@@ -49,6 +49,11 @@ public class GeometryFunctions
 	public static boolean isSimple(Geometry g)		{		return g.isSimple();	}
 	public static boolean isValid(Geometry g)			{		return g.isValid();	}
 	public static boolean isRectangle(Geometry g)	{		return g.isRectangle();	}
+	public static boolean isClosed(Geometry g)	{
+		if (g instanceof LineString) return ((LineString) g).isClosed();
+		if (g instanceof MultiLineString) return ((MultiLineString) g).isClosed();
+		return false;	
+		}
 	
   public static Geometry envelope(Geometry g) 	{ return g.getEnvelope();  }
   public static Geometry reverse(Geometry g) {      return g.reverse();  }
