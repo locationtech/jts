@@ -323,10 +323,14 @@ public class IsValidOp
 
   private void checkClosedRing(LinearRing ring)
   {
-    if (! ring.isClosed() )
+    if (! ring.isClosed() ) {
+    	Coordinate pt = null;
+    	if (ring.getNumPoints() >= 1)
+    		pt = ring.getCoordinateN(0);
       validErr = new TopologyValidationError(
                         TopologyValidationError.RING_NOT_CLOSED,
-                        ring.getCoordinateN(0));
+                        pt);
+    }
   }
 
   private void checkTooFewPoints(GeometryGraph graph)
