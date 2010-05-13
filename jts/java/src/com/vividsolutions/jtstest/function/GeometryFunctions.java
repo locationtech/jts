@@ -52,7 +52,8 @@ public class GeometryFunctions
 	public static boolean isClosed(Geometry g)	{
 		if (g instanceof LineString) return ((LineString) g).isClosed();
 		if (g instanceof MultiLineString) return ((MultiLineString) g).isClosed();
-		return false;	
+		// other geometry types are defined to be closed
+		return true;	
 		}
 	
   public static Geometry envelope(Geometry g) 	{ return g.getEnvelope();  }
