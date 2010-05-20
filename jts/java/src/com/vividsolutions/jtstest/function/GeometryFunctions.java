@@ -53,6 +53,11 @@ public class GeometryFunctions
     if (g instanceof Polygon) {
       pts = ((Polygon) g).getExteriorRing().getCoordinates();
     } 
+    else if (g instanceof LineString
+        && ((LineString) g).isClosed()) {
+      pts = g.getCoordinates();
+    }
+    if (pts == null) return false;
     return CGAlgorithms.isCCW(pts);
   }
   
