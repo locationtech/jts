@@ -46,8 +46,11 @@ import com.vividsolutions.jts.geom.util.*;
 public class GeometryPrecisionReducer
 {
 	/**
-	 * Convenience method for doing precision reduction on a single geometry,
-	 * with collapses removed and keeping the geometry precision model the same.
+	 * Convenience method for doing precision reduction 
+   * on a single geometry,
+	 * with collapses removed 
+   * and keeping the geometry precision model the same,
+   * and preserving polygonal topology.
 	 * 
 	 * @param g the geometry to reduce
 	 * @param precModel the precision model to use
@@ -60,8 +63,11 @@ public class GeometryPrecisionReducer
 	}
 	
 	/**
-	 * Convenience method for doing pointwise precision reduction on a single geometry,
-	 * with collapses removed and keeping the geometry precision model the same.
+	 * Convenience method for doing pointwise precision reduction 
+   * on a single geometry,
+	 * with collapses removed 
+   * and keeping the geometry precision model the same,
+   * but NOT preserving valid polygonal topology.
 	 * 
 	 * @param g the geometry to reduce
 	 * @param precModel the precision model to use
