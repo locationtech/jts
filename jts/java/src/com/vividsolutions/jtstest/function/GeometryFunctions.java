@@ -32,6 +32,7 @@
  */
 package com.vividsolutions.jtstest.function;
 
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.operation.overlay.snap.*;
 
@@ -46,6 +47,15 @@ public class GeometryFunctions
 	public static double length(Geometry g)				{		return g.getLength();	}
 	public static double area(Geometry g)					{		return g.getArea();	}
 	
+  public static boolean isCCW(Geometry g)
+  {
+    Coordinate[] pts = null;
+    if (g instanceof Polygon) {
+      pts = ((Polygon) g).getExteriorRing().getCoordinates();
+    } 
+    return CGAlgorithms.isCCW(pts);
+  }
+  
 	public static boolean isSimple(Geometry g)		{		return g.isSimple();	}
 	public static boolean isValid(Geometry g)			{		return g.isValid();	}
 	public static boolean isRectangle(Geometry g)	{		return g.isRectangle();	}
