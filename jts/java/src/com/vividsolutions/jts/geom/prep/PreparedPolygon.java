@@ -40,6 +40,7 @@ import com.vividsolutions.jts.operation.predicate.*;
 
 /**
  * A prepared version for {@link Polygonal} geometries.
+ * This class supports both {@link Polygon}s and {@link MultiPolygon}s.
  * 
  * @author mbdavis
  *
