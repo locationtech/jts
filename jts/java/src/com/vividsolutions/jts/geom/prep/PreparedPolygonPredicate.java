@@ -14,7 +14,7 @@ import com.vividsolutions.jts.geom.util.*;
  * @author mbdavis
  *
  */
-public abstract class PreparedPolygonPredicate 
+abstract class PreparedPolygonPredicate 
 {
 	protected PreparedPolygon prepPoly;
   private PointOnGeometryLocator targetPointLocator;

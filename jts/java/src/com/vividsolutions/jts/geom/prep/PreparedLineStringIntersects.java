@@ -48,7 +48,7 @@ import com.vividsolutions.jts.geom.util.*;
  * @author Martin Davis
  *
  */
-public class PreparedLineStringIntersects 
+class PreparedLineStringIntersects 
 {
 	/**
 	 * Computes the intersects predicate between a {@link PreparedLineString}

@@ -41,6 +41,9 @@ import com.vividsolutions.jts.operation.predicate.*;
 /**
  * A prepared version for {@link Polygonal} geometries.
  * This class supports both {@link Polygon}s and {@link MultiPolygon}s.
+ * <p>
+ * This class does <b>not</b> support MultiPolygons which are non-valid 
+ * (e.g. with overlapping elements). 
  * 
  * @author mbdavis
  *

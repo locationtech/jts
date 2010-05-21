@@ -50,7 +50,7 @@ import com.vividsolutions.jts.geom.util.ComponentCoordinateExtracter;
  * @author Martin Davis
  *
  */
-public class BasicPreparedGeometry 
+class BasicPreparedGeometry 
   implements PreparedGeometry
 {
   private Geometry baseGeom;
