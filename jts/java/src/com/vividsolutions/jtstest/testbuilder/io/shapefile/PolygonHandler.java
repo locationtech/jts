@@ -211,7 +211,7 @@ public class PolygonHandler implements ShapeHandler{
             
             if (minShell == null)
             {
-                System.out.println("polygon found with a hole thats not inside a shell");
+                System.err.println("Shapefile PolygonHandler: Found polygon with a hole that is not inside a shell");
             }
             else
             {
