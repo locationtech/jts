@@ -73,10 +73,10 @@ public class PreparedGeometryExample
   		//System.out.println("Approximation to PI: " + (4.0 * inCount / (double) count));
   	}
   	double approxPi = 4.0 * inCount / (double) count;
-  	double approxDiff = 1.0 - approxPi/Math.PI;
+  	double approxDiffPct = 1.0 - approxPi/Math.PI;
   	
 		System.out.println("Approximation to PI: " + approxPi
-				+ "  (difference from actual = " + approxDiff
+				+ "  ( % difference from actual = " + 100 * approxDiffPct + " )"
 				); 
 
   }
