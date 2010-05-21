@@ -17,10 +17,11 @@ import com.vividsolutions.jts.io.WKTReader;
  * <li>may not preserve input coordinate precision in some cases
  * <li>only works for polygons
  * </ul>
+ * 
+ * @deprecated It is now recommended to use Geometry.union() (unary union) instead of this technique.
  *
  * @version 1.7
  */
-
 public class PolygonUnionUsingBuffer {
 
   public static void main(String[] args)
