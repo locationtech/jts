@@ -194,6 +194,18 @@ public abstract class LineIntersector
   }
 
   /**
+   * Gets an endpoint of an input segment.
+   * 
+   * @param segmentIndex the index of the input segment (0 or 1)
+   * @param ptIndex the index of the endpoint (0 or 1)
+   * @return the specified endpoint
+   */
+  public Coordinate getEndpoint(int segmentIndex, int ptIndex)
+  {
+    return inputLines[segmentIndex][ptIndex];
+  }
+  
+  /**
    * Compute the intersection of a point p and the line p1-p2.
    * This function computes the boolean value of the hasIntersection test.
    * The actual value of the intersection (if there is one)
@@ -368,13 +380,13 @@ public abstract class LineIntersector
   }
 
   /**
-   * Computes the index of the intIndex'th intersection point in the direction of
+   * Computes the index (order) of the intIndex'th intersection point in the direction of
    * a specified input line segment
    *
    * @param segmentIndex is 0 or 1
    * @param intIndex is 0 or 1
    *
-   * @return the index of the intersection point along the segment (0 or 1)
+   * @return the index of the intersection point along the input segment (0 or 1)
    */
   public int getIndexAlongSegment(int segmentIndex, int intIndex) {
     computeIntLineIndex();
