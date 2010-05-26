@@ -46,7 +46,7 @@ import com.vividsolutions.jts.geom.*;
  * @author Martin Davis
  *
  */
-public class PreparedPolygonCovers 
+class PreparedPolygonCovers 
 	extends AbstractPreparedPolygonContains
 {
 	/**

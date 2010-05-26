@@ -48,7 +48,7 @@ import com.vividsolutions.jts.geom.util.*;
  * @author Martin Davis
  *
  */
-public class PreparedPolygonIntersects 
+class PreparedPolygonIntersects 
 	extends PreparedPolygonPredicate
 {
 	/**

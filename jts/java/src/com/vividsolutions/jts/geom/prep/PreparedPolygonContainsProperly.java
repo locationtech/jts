@@ -57,7 +57,7 @@ import com.vividsolutions.jts.geom.util.*;
  * 
  * @author Martin Davis
  */
-public class PreparedPolygonContainsProperly 
+class PreparedPolygonContainsProperly 
 	extends PreparedPolygonPredicate
 {
 	/**
