@@ -150,7 +150,7 @@ public class ExtendedCoordinateSequence
       case CoordinateSequence.X:  return coordinates[index].x;
       case CoordinateSequence.Y:  return coordinates[index].y;
       case CoordinateSequence.Z:  return coordinates[index].z;
-      case 4:  return coordinates[index].getM();
+      case CoordinateSequence.M:  return coordinates[index].getM();
     }
     return Double.NaN;
   }
@@ -161,10 +161,18 @@ public class ExtendedCoordinateSequence
   public void setOrdinate(int index, int ordinateIndex, double value)
   {
     switch (ordinateIndex) {
-      case CoordinateSequence.X:  coordinates[index].x = value;
-      case CoordinateSequence.Y:  coordinates[index].y = value;
-      case CoordinateSequence.Z:  coordinates[index].z = value;
-      case 4:  coordinates[index].setM(value);
+      case CoordinateSequence.X:  
+        coordinates[index].x = value;
+        break;
+      case CoordinateSequence.Y:  
+        coordinates[index].y = value;
+        break;
+      case CoordinateSequence.Z:  
+        coordinates[index].z = value;
+        break;
+      case CoordinateSequence.M:  
+        coordinates[index].setM(value);
+        break;
     }
   }
 
