@@ -221,8 +221,8 @@ public class MiscellaneousTest extends TestCase {
     assertTrue(l.isSimple());
     assertEquals(null, l.getStartPoint());
     assertEquals(null, l.getEndPoint());
-    assertTrue(! l.isClosed());
-    assertTrue(! l.isRing());
+    assertTrue(l.isClosed());
+    assertTrue(l.isRing());
   }
 
   public void testEmptyPolygon() throws Exception {
