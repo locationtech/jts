@@ -130,6 +130,15 @@ public class LinearRing extends LineString
     return true;
   }
 
+  public boolean isClosed() {
+    if (isEmpty()) {
+    	// empty LinearRings are closed by definition
+      return true;
+    }
+    return super.isClosed();
+  }
+
+
   public String getGeometryType() {
     return "LinearRing";
   }
