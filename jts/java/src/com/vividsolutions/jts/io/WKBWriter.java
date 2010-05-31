@@ -425,7 +425,7 @@ public class WKBWriter
     
     // only write 3rd dim if caller has requested it for this writer
     if (outputDimension >= 3) {
-      // if 3rd dim is requested, only access and write it if the CS provides is
+      // if 3rd dim is requested, only write it if the CoordinateSequence provides it
     	double ordVal = Coordinate.NULL_ORDINATE;
     	if (seq.getDimension() >= 3)
     		ordVal = seq.getOrdinate(index, 2);

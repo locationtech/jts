@@ -42,7 +42,11 @@ import com.vividsolutions.jts.geomgraph.Quadrant;
 /**
  * MonotoneChains are a way of partitioning the segments of an edge to
  * allow for fast searching of intersections.
- * They have the following properties:
+ * Specifically, a sequence of contiguous line segments
+ * is a monotone chain iff all the vectors defined by the oriented segments
+ * lies in the same quadrant.
+ * <p>
+ * Monotone Chains have the following useful properties:
  * <ol>
  * <li>the segments within a monotone chain will never intersect each other
  * <li>the envelope of any contiguous subset of the segments in a monotone chain
