@@ -226,13 +226,20 @@ public class GeometryGraph
     Coordinate coord = p.getCoordinate();
     insertPoint(argIndex, coord, Location.INTERIOR);
   }
+  
   /**
+   * Adds a polygon ring to the graph.
+   * Empty rings are ignored.
+   * 
    * The left and right topological location arguments assume that the ring is oriented CW.
    * If the ring is in the opposite orientation,
    * the left and right locations must be interchanged.
    */
   private void addPolygonRing(LinearRing lr, int cwLeft, int cwRight)
   {
+  	// don't bother adding empty holes
+  	if (lr.isEmpty()) return;
+  	
     Coordinate[] coord = CoordinateArrays.removeRepeatedPoints(lr.getCoordinates());
 
     if (coord.length < 4) {
@@ -265,9 +272,6 @@ public class GeometryGraph
 
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
     	LinearRing hole = (LinearRing) p.getInteriorRingN(i);
-    	
-    	// don't bother adding empty holes
-    	if (hole.isEmpty()) continue;
     	
       // Holes are topologically labelled opposite to the shell, since
       // the interior of the polygon lies on their opposite side
