@@ -9,7 +9,7 @@ import com.vividsolutions.jts.algorithm.*;
  * This class is essentially just a container for the common
  * indexes used by {@link TaggedLineStringSimplifier}.
  */
-public class TaggedLinesSimplifier
+class TaggedLinesSimplifier
 {
   private LineSegmentIndex inputIndex = new LineSegmentIndex();
   private LineSegmentIndex outputIndex = new LineSegmentIndex();

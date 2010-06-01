@@ -11,7 +11,7 @@ import com.vividsolutions.jts.index.quadtree.Quadtree;
  *
  * @author Martin Davis
  */
-public class LineSegmentIndex
+class LineSegmentIndex
 {
   private Quadtree index = new Quadtree();
 

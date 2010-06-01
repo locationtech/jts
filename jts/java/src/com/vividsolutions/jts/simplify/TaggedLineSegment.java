@@ -7,7 +7,7 @@ import com.vividsolutions.jts.geom.*;
  * Used to index the segments in a geometry and recover the segment locations
  * from the index.
  */
-public class TaggedLineSegment
+class TaggedLineSegment
     extends LineSegment
 {
   private Geometry parent;

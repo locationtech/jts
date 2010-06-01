@@ -11,7 +11,7 @@ import com.vividsolutions.jts.geom.*;
  * 
  * @version 1.7
  */
-public class TaggedLineString
+class TaggedLineString
 {
 
   private LineString parentLine;

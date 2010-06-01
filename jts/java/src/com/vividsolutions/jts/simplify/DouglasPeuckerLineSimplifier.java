@@ -9,7 +9,7 @@ import com.vividsolutions.jts.geom.*;
  *
  * @version 1.7
  */
-public class DouglasPeuckerLineSimplifier
+class DouglasPeuckerLineSimplifier
 {
   public static Coordinate[] simplify(Coordinate[] pts, double distanceTolerance)
   {
