@@ -40,7 +40,9 @@ import java.util.TreeSet;
 import com.vividsolutions.jts.util.Assert;
 
 /**
- *  Basic implementation of <code>GeometryCollection</code>.
+ * Models a collection of {@link Geometry}s of
+ * arbitrary type and dimension.
+ * 
  *
  *@version 1.7
  */

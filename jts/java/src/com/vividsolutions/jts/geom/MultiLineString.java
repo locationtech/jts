@@ -35,7 +35,9 @@ package com.vividsolutions.jts.geom;
 import com.vividsolutions.jts.operation.BoundaryOp;
 
 /**
- *  Basic implementation of <code>MultiLineString</code>.
+ * Models a collection of (@link LineString}s.
+ * <p>
+ * Any collection of LineStrings is a valid MultiLineString.
  *
  *@version 1.7
  */

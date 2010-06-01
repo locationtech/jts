@@ -35,7 +35,9 @@
 package com.vividsolutions.jts.geom;
 
 /**
- *  Models a collection of <code>Point</code>s.
+ * Models a collection of {@link Point}s.
+ * <p>
+ * Any collection of Points is a valid MultiPoint.
  *
  *@version 1.7
  */
