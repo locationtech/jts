@@ -61,8 +61,9 @@ import java.util.ArrayList;
  *
  * <h3>Notes:</h3>
  * <ul>
+ * <li>Keywords are case-insensitive.
  * <li>The reader supports non-standard "LINEARRING" tags.
- * <li>The reader uses Double.parseDouble to perform the conversion of ASCII
+ * <li>The reader uses <tt>Double.parseDouble</tt> to perform the conversion of ASCII
  * numbers to floating point.  This means it supports the Java
  * syntax for floating point literals (including scientific notation).
  * </ul>
