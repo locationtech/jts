@@ -7,97 +7,46 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.util.RandomShapeFactory;
+import com.vividsolutions.jts.shape.random.RandomPointsBuilder;
+import com.vividsolutions.jts.shape.random.RandomPointsInGridBuilder;
 
-public class CreateRandomGeometryFunctions {
+public class CreateRandomShapeFunctions {
 
   public static Geometry randomPointsInGrid(Geometry g, int nPts) {
-    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
-    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
-
-    int nCell = (int) Math.sqrt(nPts) + 1;
-
-    double xLen = env.getWidth() / nCell;
-    double yLen = env.getHeight() / nCell;
-
-    List pts = new ArrayList();
-
-    for (int i = 0; i < nCell; i++) {
-      for (int j = 0; j < nCell; j++) {
-        double x = env.getMinX() + i * xLen + xLen * Math.random();
-        double y = env.getMinY() + j * yLen + yLen * Math.random();
-        pts.add(geomFact.createPoint(new Coordinate(x, y)));
-      }
-    }
-    return geomFact.buildGeometry(pts);
+  	RandomPointsInGridBuilder shapeBuilder = new RandomPointsInGridBuilder(FunctionsUtil.getFactoryOrDefault(g));
+  	shapeBuilder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
+  	shapeBuilder.setNumPoints(nPts);
+    return shapeBuilder.getGeometry();
   }
 
   public static Geometry randomPointsInGridCircles(Geometry g, int nPts) {
-    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
-    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
-
-    int nCell = (int) Math.sqrt(nPts) + 1;
-
-    double xLen = env.getWidth() / nCell;
-    double yLen = env.getHeight() / nCell;
-
-    List pts = new ArrayList();
-
-    for (int i = 0; i < nCell; i++) {
-      for (int j = 0; j < nCell; j++) {
-      	Coordinate centre = new Coordinate(
-      			env.getMinX() + i * xLen + xLen / 2, 
-      			env.getMinY() + j * yLen + yLen / 2);
-      	Coordinate pt = randomPtInEllipseAround(centre, xLen, yLen);
-        pts.add(geomFact.createPoint(pt));
-      }
-    }
-    return geomFact.buildGeometry(pts);
+  	RandomPointsInGridBuilder shapeBuilder = new RandomPointsInGridBuilder(FunctionsUtil.getFactoryOrDefault(g));
+  	shapeBuilder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
+  	shapeBuilder.setNumPoints(nPts);
+  	shapeBuilder.setConstrainedToCircle(true);
+    return shapeBuilder.getGeometry();
   }
 
   public static Geometry randomPointsInGridWithGutter(Geometry g, int nPts, double gutterFraction) {
-    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
-    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
-
-    int nCell = (int) Math.sqrt(nPts) + 1;
-
-    double cellWidth = env.getWidth() / nCell;
-    double cellHeight = env.getHeight() / nCell;
-
-    double gutterSize = gutterFraction * Math.min(cellWidth, cellHeight);
-    double gutterOffset = gutterSize / 2;
-    double areaWidth = cellWidth - gutterSize;
-    if (areaWidth < 0) areaWidth = 0;
-    double areaHeight = cellHeight - gutterSize;
-    if (areaHeight < 0) areaHeight = 0;
-
-    List pts = new ArrayList();
-
-    for (int i = 0; i < nCell; i++) {
-      for (int j = 0; j < nCell; j++) {
-        double x = env.getMinX() + i * cellWidth + gutterOffset + areaWidth * Math.random();
-        double y = env.getMinY() + j * cellHeight + gutterOffset + areaHeight * Math.random();
-        pts.add(geomFact.createPoint(new Coordinate(x, y)));
-      }
-    }
-    return geomFact.buildGeometry(pts);
+  	RandomPointsInGridBuilder shapeBuilder = new RandomPointsInGridBuilder(FunctionsUtil.getFactoryOrDefault(g));
+  	shapeBuilder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
+  	shapeBuilder.setNumPoints(nPts);
+  	shapeBuilder.setGutterFraction(gutterFraction);
+    return shapeBuilder.getGeometry();
   }
 
-
   public static Geometry randomPoints(Geometry g, int nPts) {
-    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
-    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
-    double xLen = env.getWidth();
-    double yLen = env.getHeight();
+  	RandomPointsBuilder shapeBuilder = new RandomPointsBuilder(FunctionsUtil.getFactoryOrDefault(g));
+  	shapeBuilder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
+  	shapeBuilder.setNumPoints(nPts);
+    return shapeBuilder.getGeometry();
+  }
 
-    List pts = new ArrayList();
-
-    for (int i = 0; i < nPts; i++) {
-      double x = env.getMinX() + xLen * Math.random();
-      double y = env.getMinY() + yLen * Math.random();
-      pts.add(geomFact.createPoint(new Coordinate(x, y)));
-    }
-    return geomFact.buildGeometry(pts);
+  public static Geometry randomPointsInPolygon(Geometry g, int nPts) {
+  	RandomPointsBuilder shapeBuilder = new RandomPointsBuilder(FunctionsUtil.getFactoryOrDefault(g));
+  	shapeBuilder.setExtent(g);
+  	shapeBuilder.setNumPoints(nPts);
+    return shapeBuilder.getGeometry();
   }
 
   public static Geometry randomPointsInTriangle(Geometry g, int nPts) {
@@ -113,6 +62,24 @@ public class CreateRandomGeometryFunctions {
       pts.add(geomFact.createPoint(randomPointInTriangle(tri0, tri1, tri2)));
     }
     return geomFact.buildGeometry(pts);
+  }
+
+  private static Coordinate randomPointInTriangle(Coordinate p0, Coordinate p1, Coordinate p2)
+  {
+    double s = Math.random();
+    double t = Math.random();
+    if (s + t > 1) {
+      s = 1.0 - s;
+      t = 1.0 - t;
+    }
+    double a = 1 - (s + t);
+    double b = s;
+    double c = t;
+    
+    double rpx = a * p0.x + b * p1.x + c * p2.x; 
+    double rpy = a * p0.y + b * p1.y + c * p2.y; 
+    
+    return new Coordinate(rpx, rpy);
   }
 
   public static Geometry randomRadialPoints(Geometry g, int nPts) {
@@ -233,12 +200,6 @@ public class CreateRandomGeometryFunctions {
     return geomFact.createLineString(pts);
   }
 
-  public static Geometry randomPointsInPolygon(Geometry g, int nPts) {
-  	RandomShapeFactory shapeFact = new RandomShapeFactory(FunctionsUtil.getFactoryOrDefault(g));
-  	shapeFact.setExtent(g);
-    return shapeFact.createPoints(nPts);
-  }
-
   private static int randomQuadrant(int exclude)
   {
     while (true) { 
@@ -254,35 +215,5 @@ public class CreateRandomGeometryFunctions {
     double y0 = centre.y + height * (Math.random() - 0.5);
     return new Coordinate(x0, y0);    
   }
-  private static Coordinate randomPtInEllipseAround(Coordinate centre, double width, double height)
-  {
-  	double rndAng = 2 * Math.PI * Math.random();
-  	double rndRadius = Math.random();
-    // use square root of radius, since area is proportional to square of radius
-    double rndRadius2 = Math.sqrt(rndRadius);
-  	double rndX = width/2 * rndRadius2 * Math.cos(rndAng); 
-  	double rndY = height/2 * rndRadius2 * Math.sin(rndAng); 
-  	
-    double x0 = centre.x + rndX;
-    double y0 = centre.y + rndY;
-    return new Coordinate(x0, y0);    
-  }
 
-  private static Coordinate randomPointInTriangle(Coordinate p0, Coordinate p1, Coordinate p2)
-  {
-    double s = Math.random();
-    double t = Math.random();
-    if (s + t > 1) {
-      s = 1.0 - s;
-      t = 1.0 - t;
-    }
-    double a = 1 - (s + t);
-    double b = s;
-    double c = t;
-    
-    double rpx = a * p0.x + b * p1.x + c * p2.x; 
-    double rpy = a * p0.y + b * p1.y + c * p2.y; 
-    
-    return new Coordinate(rpx, rpy);
-  }
 }

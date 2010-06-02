@@ -1,25 +1,30 @@
-package com.vividsolutions.jts.geom.util;
+package com.vividsolutions.jts.shape.random;
 
 import com.vividsolutions.jts.algorithm.locate.IndexedPointInAreaLocator;
 import com.vividsolutions.jts.algorithm.locate.PointOnGeometryLocator;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.shape.GeometricShapeBuilder;
 
-
-public class RandomShapeFactory 
+/**
+ * Creates random point sets contained in a 
+ * region defined by either a rectangular or a polygonal extent. 
+ * 
+ * @author mbdavis
+ *
+ */
+public class RandomPointsBuilder 
+extends GeometricShapeBuilder
 {
-  protected GeometryFactory geomFact;
-  protected PrecisionModel precModel = null;
-  protected Envelope extentEnv = new Envelope(0,1,0,1);
-  protected Geometry extentPoly = null;
+  protected Geometry maskPoly = null;
   private PointOnGeometryLocator extentLocator;
 
   /**
    * Create a shape factory which will create shapes using the default
    * {@link GeometryFactory}.
    */
-  public RandomShapeFactory()
+  public RandomPointsBuilder()
   {
-    this(new GeometryFactory());
+    super(new GeometryFactory());
   }
 
   /**
@@ -28,22 +33,11 @@ public class RandomShapeFactory
    *
    * @param geomFact the factory to use
    */
-  public RandomShapeFactory(GeometryFactory geomFact)
+  public RandomPointsBuilder(GeometryFactory geomFact)
   {
-    this.geomFact = geomFact;
-    precModel = geomFact.getPrecisionModel();
+  	super(geomFact);
   }
 
-  public void setExtent(Envelope extentEnv)
-  {
-  	this.extentEnv = extentEnv;
-  }
-  
-  public Envelope getEnvelope()
-  {
-  	return extentEnv;
-  }
-  
   /**
    * Sets a polygonal mask.
    * 
@@ -54,35 +48,35 @@ public class RandomShapeFactory
   {
   	if (! (mask instanceof Polygonal))
   		throw new IllegalArgumentException("Only polygonal extents are supported");
-  	this.extentPoly = mask;
+  	this.maskPoly = mask;
   	setExtent(mask.getEnvelopeInternal());
   	extentLocator = new IndexedPointInAreaLocator(mask);
   }
   
-  public Geometry createPoints(int n)
+  public Geometry getGeometry()
   {
-  	Coordinate[] pts = new Coordinate[n];
+  	Coordinate[] pts = new Coordinate[numPts];
   	int i = 0;
-  	while (i < n) {
-  		Coordinate p = createRandomCoord(getEnvelope());
+  	while (i < numPts) {
+  		Coordinate p = createRandomCoord(getExtent());
   		if (extentLocator != null && ! isInExtent(p))
   			continue;
   		pts[i++] = p;
   	}
-  	return geomFact.createMultiPoint(pts);
+  	return geomFactory.createMultiPoint(pts);
   }
   
   protected boolean isInExtent(Coordinate p)
   {
   	if (extentLocator != null) 
   		return extentLocator.locate(p) != Location.EXTERIOR;
-  	return extentEnv.contains(p);
+  	return getExtent().contains(p);
   }
   
   protected Coordinate createCoord(double x, double y)
   {
   	Coordinate pt = new Coordinate(x, y);
-    precModel.makePrecise(pt);
+  	geomFactory.getPrecisionModel().makePrecise(pt);
     return pt;
   }
   

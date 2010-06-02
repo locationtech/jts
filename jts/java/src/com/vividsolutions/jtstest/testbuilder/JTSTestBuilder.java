@@ -90,8 +90,9 @@ public class JTSTestBuilder
   	funcRegistry.add(SimplificationFunctions.class);
   	funcRegistry.add(AffineTransformationFunctions.class);
   	funcRegistry.add(DistanceFunctions.class);
-    funcRegistry.add(CreateGeometryFunctions.class);
-    funcRegistry.add(CreateRandomGeometryFunctions.class);
+    funcRegistry.add(CreateShapeFunctions.class);
+    funcRegistry.add(CreateFractalShapeFunctions.class);
+    funcRegistry.add(CreateRandomShapeFunctions.class);
     funcRegistry.add(JTSFunctions.class);
   	funcRegistry.add(OverlayFunctions.class);
   	funcRegistry.add(SnappingFunctions.class);

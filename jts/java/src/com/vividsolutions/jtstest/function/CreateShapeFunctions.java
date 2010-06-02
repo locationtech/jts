@@ -8,7 +8,7 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 
-public class CreateGeometryFunctions {
+public class CreateShapeFunctions {
 
   
 	private static final int DEFAULT_POINTSIZE = 100;
