@@ -34,9 +34,14 @@
 package com.vividsolutions.jts.algorithm;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.util.Assert;
 
 /**
- * Functions for performing vector mathematics.
+ * Functions for performing mathematics on vectors in the 2D plane. 
+ * Vectors are represented as single coordinates; 
+ * the implied vector is assumed to start at the origin.
+ * <p>
+ * Vector arithmetic is useful in computing various geometric constructions.
  * 
  * @author Martin Davis
  * @version 1.0
@@ -44,43 +49,124 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 public class VectorMath 
 {
+	/**
+	 * Normalizes a vector to have magnitude 1
+	 * @param v the vector to normalize
+	 * @return the normalized vector
+	 */
+    public static Coordinate normalize(Coordinate v) {
+      double absVal = Math.sqrt(v.x * v.x + v.y * v.y);
+      return new Coordinate(v.x / absVal, v.y / absVal);
+    }
+
+  	/**
+  	 * Normalizes a vector to have magnitude 1 in-place
+  	 * @param v the vector to normalize
+  	 */
+    public static void normalizeSelf(Coordinate v) {
+      double absVal = Math.sqrt(v.x * v.x + v.y * v.y);
+      v.x /= absVal;
+      v.y /= absVal;
+    }
+
     /**
-     * Computes the normal vector to the triangle p0-p1-p2. In order to compute the normal each
-     * triangle coordinate must have a Z value. If this is not the case, the returned Coordinate
-     * will have NaN values. The returned vector has unit length.
-     * 
-     * @param p0
-     * @param p1
-     * @param p2
-     * @return
+     * Computes the dot-product of two vectors
+     * @param v1 a vector
+     * @param v2 a vector
+     * @return the dot product of the vectors
      */
-    public static Coordinate normalToTriangle(Coordinate p0, Coordinate p1, Coordinate p2) {
-        Coordinate v1 = new Coordinate(p1.x - p0.x, p1.y - p0.y, p1.z - p0.z);
-        Coordinate v2 = new Coordinate(p2.x - p0.x, p2.y - p0.y, p2.z - p0.z);
-        Coordinate cp = crossProduct(v1, v2);
-        normalize(cp);
-        return cp;
-    }
-
-    public static void normalize(Coordinate v) {
-        double absVal = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
-        v.x /= absVal;
-        v.y /= absVal;
-        v.z /= absVal;
-    }
-
-    public static Coordinate crossProduct(Coordinate v1, Coordinate v2) {
-        double x = det(v1.y, v1.z, v2.y, v2.z);
-        double y = -det(v1.x, v1.z, v2.x, v2.z);
-        double z = det(v1.x, v1.y, v2.x, v2.y);
-        return new Coordinate(x, y, z);
-    }
-
     public static double dotProduct(Coordinate v1, Coordinate v2) {
-        return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+        return v1.x * v2.x + v1.y * v2.y;
     }
 
-    public static double det(double a1, double a2, double b1, double b2) {
-        return (a1 * b2) - (a2 * b1);
+    /**
+     * Computes the average of two vectors. 
+     * This is equivalent to computing the midpoint of the line segment
+     * joining the vector endpoints.
+     * 
+     * @param v0 a vector 
+     * @param v1 a vector
+     * @return the average of the vectors
+     */
+    public static Coordinate average(Coordinate v0, Coordinate v1)
+  	{
+      return new Coordinate( 
+      		(v0.x + v1.x) / 2,
+          (v0.y + v1.y) / 2);
+  	}
+  	
+    /**
+     * Computes a point a given fraction of length along
+     * the line joining the endpoints of two vectors.
+     * This is equivalent to computing the weighted sum
+     * of the two vectors.
+     * 
+     * @param v0 a vector
+     * @param v1 a vector
+     * @param lengthFraction the fraction of the length
+     * @return the vector to the computed point
+     */
+  	public static Coordinate pointAlong(Coordinate v0, Coordinate v1, double lengthFraction)
+    {
+      Coordinate coord = new Coordinate();
+      coord.x = v0.x + lengthFraction * (v1.x - v0.x);
+      coord.y = v0.y + lengthFraction * (v1.y - v0.y);
+      return coord;
     }
+    
+  	/**
+  	 * Computes the sum of two vectors.
+  	 * 
+     * @param v0 a vector
+     * @param v1 a vector
+  	 * @return the sum of the vectors
+  	 */
+  	public static Coordinate sum(Coordinate v0, Coordinate v1)
+    {
+    	return new Coordinate(v0.x + v1.x, v0.y + v1.y);
+    }
+
+  	/**
+  	 * Computes the difference of two vectors [v0 - v1].
+  	 * 
+     * @param v0 a vector
+     * @param v1 a vector
+  	 * @return the sum of the vectors
+  	 */
+  	public static Coordinate difference(Coordinate v0, Coordinate v1)
+    {
+    	return new Coordinate(v0.x - v1.x, v0.y - v1.y);
+    }
+
+  	/**
+  	 * Rotates a vector by a given number of quarter-circles
+  	 * (i.e. multiples of 90 degrees or Pi/2 radians).
+  	 * A positive number rotates counter-clockwise, 
+  	 * a negative number rotates clockwise.
+  	 * Under this operation the magnitude of the vector 
+  	 * and the absolute values 
+  	 * of the ordinates do not change, only their sign
+  	 * and ordinate index.
+  	 * 
+  	 * @param v the vector to rotate.
+  	 * @param numQuarters the number of quarter-circles to rotate by
+  	 * @return the rotated vector.
+  	 */
+  	public static Coordinate rotateByQuarterCircle(Coordinate p, int numQuarters)
+    {
+  		int nQuad = numQuarters % 4;
+  		if (numQuarters < 0 && nQuad != 0) {
+  			nQuad =  nQuad + 4;
+  		}
+  		switch (nQuad) {
+  		case 0: return new Coordinate(p.x, p.y);
+  		case 1: return new Coordinate(-p.y, p.x);
+  		case 2: return new Coordinate(-p.x, -p.y);
+  		case 3: return new Coordinate(p.y, -p.x);
+  		}
+    	Assert.shouldNeverReachHere();
+    	return null;
+    }
+
+
 }
