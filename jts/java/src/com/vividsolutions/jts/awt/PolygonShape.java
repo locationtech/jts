@@ -85,9 +85,9 @@ public class PolygonShape implements Shape
       GeneralPath path = new GeneralPath(GeneralPath.WIND_EVEN_ODD, coordinates.length);
 
       if (coordinates.length > 0) {
-        path.moveTo(coordinates[0].x, coordinates[0].y);
+        path.moveTo((float) coordinates[0].x, (float) coordinates[0].y);
         for (int i = 0; i < coordinates.length; i++) {
-          path.lineTo(coordinates[i].x, coordinates[i].y);
+          path.lineTo((float) coordinates[i].x, (float) coordinates[i].y);
         }
       }
       return path;
