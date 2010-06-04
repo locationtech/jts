@@ -46,7 +46,7 @@ import com.vividsolutions.jts.planargraph.*;
  *
  * @version 1.7
  */
-public class EdgeRing {
+class EdgeRing {
 
   /**
    * Find the innermost enclosing shell EdgeRing containing the argument EdgeRing, if any.

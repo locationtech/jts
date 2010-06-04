@@ -320,7 +320,8 @@ public class GeometryFactory
   }
 
   /**
-   * Creates a LinearRing using the given Coordinates; a null or empty array will
+   * Creates a {@link LinearRing} using the given {@link Coordinate}s.
+   * A null or empty array will
    * create an empty LinearRing. The points must form a closed and simple
    * linestring. Consecutive points must not be equal.
    * @param coordinates an array without null elements, or an empty array, or null
@@ -330,7 +331,8 @@ public class GeometryFactory
   }
 
   /**
-   * Creates a LinearRing using the given CoordinateSequence; a null or empty CoordinateSequence will
+   * Creates a {@link LinearRing} using the given {@link CoordinateSequence}. 
+   * A null or empty CoordinateSequence will
    * create an empty LinearRing. The points must form a closed and simple
    * linestring. Consecutive points must not be equal.
    * @param coordinates a CoordinateSequence possibly empty, or null
@@ -340,10 +342,10 @@ public class GeometryFactory
   }
 
   /**
-   * Creates a MultiPoint using the given Points.
+   * Creates a {@link MultiPoint} using the given {@link Point}s.
    * A null or empty array will create an empty MultiPoint.
    *
-   * @param coordinates an array (without null elements), or an empty array, or <code>null</code>
+   * @param point an array of Points (without null elements), or an empty array, or <code>null</code>
    * @return a MultiPoint object
    */
   public MultiPoint createMultiPoint(Point[] point) {

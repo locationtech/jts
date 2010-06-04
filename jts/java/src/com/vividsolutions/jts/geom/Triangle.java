@@ -281,7 +281,7 @@ public class Triangle
    * @param c a vertex of the triangle
    * @return the area of the triangle
    * 
-   * @see signedArea
+   * @see #signedArea(Coordinate, Coordinate, Coordinate)
    */
   public static double area(Coordinate a, Coordinate b, Coordinate c)
   {
@@ -296,7 +296,7 @@ public class Triangle
    * The signed area value can be used to determine point orientation, but 
    * the implementation in this method
    * is susceptible to round-off errors.  
-   * Use {@link CGAlgorithms#orientationIndex)} for robust orientation
+   * Use {@link CGAlgorithms#orientationIndex(Coordinate, Coordinate, Coordinate)} for robust orientation
    * calculation.
    *
    * @param a a vertex of the triangle
@@ -304,7 +304,7 @@ public class Triangle
    * @param c a vertex of the triangle
    * @return the signed 2D area of the triangle
    * 
-   * @see CGAlgorithms#orientationIndex
+   * @see CGAlgorithms#orientationIndex(Coordinate, Coordinate, Coordinate)
    */
   public static double signedArea(Coordinate a, Coordinate b, Coordinate c)
   {

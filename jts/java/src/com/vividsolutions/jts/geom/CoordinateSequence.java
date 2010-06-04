@@ -35,23 +35,28 @@ package com.vividsolutions.jts.geom;
 /**
  * The internal representation of a list of coordinates inside a Geometry.
  * <p>
- * There are some cases in which you might want Geometries to store their
- * points using something other than the JTS Coordinate class. For example, you
- * may want to experiment with another implementation, such as an array of x's
- * and an array of y's. Or you might want to use your own coordinate class, one
- * that supports extra attributes like M-values.
+ * This allows Geometries to store their
+ * points using something other than the JTS {@link Coordinate} class. 
+ * For example, a storage-efficient implementation
+ * might store coordinate sequences as an array of x's
+ * and an array of y's. 
+ * Or a custom coordinate class might support extra attributes like M-values.
  * <p>
- * You can do this by implementing the CoordinateSequence and
- * CoordinateSequenceFactory interfaces. You would then create a
- * GeometryFactory parameterized by your CoordinateSequenceFactory, and use
- * this GeometryFactory to create new Geometries. All of these new Geometries
- * will use your CoordinateSequence implementation.
+ * Implementing a custom coordinate storage structure
+ * requires implementing the {@link CoordinateSequence} and
+ * {@link CoordinateSequenceFactory} interfaces. 
+ * To use the custom CoordinateSequence, create a
+ * new {@link GeometryFactory} parameterized by the CoordinateSequenceFactory
+ * The {@link GeometryFactory} can then be used to create new {@link Geometry}s.
+ * The new Geometries
+ * will use the custom CoordinateSequence implementation.
  * <p>
  * For an example, see the code for
- * {@link com.vividsolutions.jtsexample.geom.TwoArrayCoordinateSequenceExample}.
+ * {@link ExtendedCoordinateExample}.
  *
- * @see DefaultCoordinateSequenceFactory
- * @see TwoArrayCoordinateSequenceFactory
+ * @see CoordinateArraySequenceFactory
+ * @see PackedCoordinateSequenceFactory
+ * @see ExtendedCoordinateExample
  *
  * @version 1.7
  */

@@ -84,7 +84,7 @@ public class CoordinateArrays {
    *
    * @param pts1
    * @param pts2
-   * @return
+   * @return an integer indicating the order
    */
   public static int compare(Coordinate[] pts1, Coordinate[] pts2) {
     int i = 0;
@@ -219,7 +219,7 @@ public class CoordinateArrays {
   }
 
   /**
-   * Creates a deep copy of the argument {@link Coordinate) array.
+   * Creates a deep copy of the argument {@link Coordinate} array.
    *
    * @param coordinates an array of Coordinates
    * @return a deep copy of the input
@@ -233,7 +233,7 @@ public class CoordinateArrays {
   }
 
   /**
-   * Creates a deep copy of a given section of a source {@link Coordinate) array
+   * Creates a deep copy of a given section of a source {@link Coordinate} array
    * into a destination Coordinate array.
    * The destination array must be an appropriate size to receive
    * the copied coordinates.

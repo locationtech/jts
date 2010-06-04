@@ -169,7 +169,7 @@ public class Envelope
   /**
    *  Creates an <code>Envelope</code> for a region defined by a single Coordinate.
    *
-   *@param  p1  the Coordinate
+   *@param  p  the Coordinate
    */
   public Envelope(Coordinate p)
   {
@@ -236,8 +236,7 @@ public class Envelope
   /**
    *  Initialize an <code>Envelope</code> to a region defined by a single Coordinate.
    *
-   *@param  p1  the first Coordinate
-   *@param  p2  the second Coordinate
+   *@param  p  the coordinate
    */
   public void init(Coordinate p)
   {
@@ -361,7 +360,6 @@ public class Envelope
    *  Has no effect if the point is already on or within the envelope.
    *
    *@param  p  the Coordinate to expand to include
-   *@param  y  the value to lower the minimum y to or to raise the maximum y to
    */
   public void expandToInclude(Coordinate p)
   {
@@ -373,7 +371,6 @@ public class Envelope
    * Both positive and negative distances are supported.
    *
    * @param distance the distance to expand the envelope
-   * @return this envelope
    */
   public void expandBy(double distance)
   {
@@ -541,7 +538,7 @@ public class Envelope
    *  Check if the point <code>p</code>
    *  overlaps (lies inside) the region of this <code>Envelope</code>.
    *
-   *@param  other  the <code>Coordinate</code> to be tested
+   *@param  p  the <code>Coordinate</code> to be tested
    *@return        <code>true</code> if the point overlaps this <code>Envelope</code>
    */
   public boolean intersects(Coordinate p) {
@@ -585,7 +582,7 @@ public class Envelope
    *@param  other the <code>Envelope</code> to check
    *@return true if <code>other</code> is contained in this <code>Envelope</code>
    *
-   *@see covers(Envelope)
+   *@see #covers(Envelope)
    */
   public boolean contains(Envelope other) {
   	return covers(other);
@@ -602,7 +599,7 @@ public class Envelope
    *@return    <code>true</code> if the point lies in the interior or
    *      on the boundary of this <code>Envelope</code>.
    *      
-   *@see covers(Coordinate)
+   *@see #covers(Coordinate)
    */
   public boolean contains(Coordinate p) {
     return covers(p);
@@ -621,7 +618,7 @@ public class Envelope
    *@return    <code>true</code> if <code>(x, y)</code> lies in the interior or
    *      on the boundary of this <code>Envelope</code>.
    *      
-   *@see covers(double, double)
+   *@see #covers(double, double)
    */
   public boolean contains(double x, double y) {
   	return covers(x, y);

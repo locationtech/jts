@@ -43,7 +43,7 @@ import java.util.Map;
  * In other words, specifies the grid of allowable
  *  points for all <code>Geometry</code>s.
  * <p>
- * The {@link makePrecise} method allows rounding a coordinate to
+ * The {@link #makePrecise(Coordinate)} method allows rounding a coordinate to
  * a "precise" value; that is, one whose
  *  precision is known exactly.
  *<p>
@@ -118,8 +118,10 @@ public class PrecisionModel implements Serializable, Comparable
     }
     private String name;
     public String toString() { return name; }
-    /**
-     * @see http://www.javaworld.com/javaworld/javatips/jw-javatip122.html
+    
+    
+    /*
+     * Ssee http://www.javaworld.com/javaworld/javatips/jw-javatip122.html
      */
     private Object readResolve() {
         return nameToTypeMap.get(name);
@@ -434,7 +436,7 @@ public class PrecisionModel implements Serializable, Comparable
    *  Compares this {@link PrecisionModel} object with the specified object for order.
    * A PrecisionModel is greater than another if it provides greater precision.
    * The comparison is based on the value returned by the
-   * {@link getMaximumSignificantDigits) method.
+   * {@link #getMaximumSignificantDigits} method.
    * This comparison is not strictly accurate when comparing floating precision models
    * to fixed models; however, it is correct when both models are either floating or fixed.
    *

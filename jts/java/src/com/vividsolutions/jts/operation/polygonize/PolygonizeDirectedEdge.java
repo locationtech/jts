@@ -44,7 +44,7 @@ import com.vividsolutions.jts.planargraph.Node;
  *
  * @version 1.7
  */
-public class PolygonizeDirectedEdge
+class PolygonizeDirectedEdge
     extends DirectedEdge
 {
 

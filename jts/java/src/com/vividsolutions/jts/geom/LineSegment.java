@@ -154,7 +154,7 @@ public class LineSegment
    * Determines the orientation index of a {@link Coordinate} relative to this segment.
    * The orientation index is as defined in {@link CGAlgorithms#computeOrientation}.
    *
-   * @param seg the LineSegment to compare
+   * @param p the coordinate to compare
    *
    * @return 1 if <code>p</code> is to the left of this segment
    * @return -1 if <code>p</code> is to the right of this segment
@@ -431,7 +431,8 @@ public class LineSegment
   }
   /**
    * Computes the closest points on two line segments.
-   * @param p the point to find the closest point to
+   * 
+   * @param line the segment to find the closest point to
    * @return a pair of Coordinates which are the closest points on the line segments
    */
   public Coordinate[] closestPoints(LineSegment line)
@@ -549,7 +550,7 @@ public class LineSegment
    *  Returns <code>true</code> if <code>other</code> has the same values for
    *  its points.
    *
-   *@param  other  a <code>LineSegment</code> with which to do the comparison.
+   *@param  o  a <code>LineSegment</code> with which to do the comparison.
    *@return        <code>true</code> if <code>other</code> is a <code>LineSegment</code>
    *      with the same values for the x and y ordinates.
    */

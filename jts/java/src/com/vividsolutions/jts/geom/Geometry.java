@@ -339,7 +339,7 @@ public abstract class Geometry
    *  {@link #geometryChanged} must be called afterwards.
    *
    *@return    the vertices of this <code>Geometry</code>
-   *@see geometryChanged
+   *@see #geometryChanged
    *@see CoordinateSequence#setOrdinate
    */
   public abstract Coordinate[] getCoordinates();
@@ -926,7 +926,7 @@ public abstract class Geometry
    *  For more information on the DE-9IM, see the <i>OpenGIS Simple Features
    *  Specification</i>.
    *
-   *@param  other                the <code>Geometry</code> with which to compare
+   *@param  g                the <code>Geometry</code> with which to compare
    *      this <code>Geometry</code>
    *@param  intersectionPattern  the pattern against which to check the
    *      intersection matrix for the two <code>Geometry</code>s
@@ -941,7 +941,7 @@ public abstract class Geometry
   /**
    *  Returns the DE-9IM {@link IntersectionMatrix} for the two <code>Geometry</code>s.
    *
-   *@param  other  the <code>Geometry</code> with which to compare this <code>Geometry</code>
+   *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        an {@link IntersectionMatrix} describing the intersections of the interiors,
    *      boundaries and exteriors of the two <code>Geometry</code>s
    */
@@ -964,7 +964,7 @@ public abstract class Geometry
    * <b>Note</b> that this method computes topologically equality, not structural or
    * vertex-wise equality.
    *
-   *@param  other  the <code>Geometry</code> with which to compare this <code>Geometry</code>
+   *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        <code>true</code> if the two <code>Geometry</code>s are equal
    */
   public boolean equals(Geometry g) {
@@ -1260,7 +1260,7 @@ public abstract class Geometry
 	 * which may return geometrys of lower dimension if a topology collapse occurred.
 	 * </ul>
 	 * 
-	 * @return
+	 * @return the union geometry
 	 * 
 	 * @see UnaryUnionOp
 	 */
@@ -1283,7 +1283,7 @@ public abstract class Geometry
    * <code>false</code>.
    *
    * @param  other  the <code>Geometry</code> with which to compare this <code>Geometry</code>
-   * @parm tolerance distance at or below which two <code>Coordinate</code>s
+   * @param tolerance distance at or below which two <code>Coordinate</code>s
    *   are considered equal
    * @return <code>true</code> if this and the other <code>Geometry</code>
    *   are of the same class and have equal internal data.
