@@ -79,7 +79,8 @@ public abstract class PlanarGraph
   /**
    * Adds a node to the map, replacing any that is already at that location.
    * Only subclasses can add Nodes, to ensure Nodes are of the right type.
-   * @return the added node
+   * 
+   * @param node the node to add
    */
   protected void add(Node node)
   {

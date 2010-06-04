@@ -173,13 +173,13 @@ public class TopologyValidationError {
    * Gets an error message describing this error.
    * The error message does not describe the location of the error.
    *
-   * @return
+   * @return the error message
    */
   public String getMessage() { return errMsg[errorType]; }
 
   /**
    * Gets a message describing the type and location of this error.
-   * @return
+   * @return the error message
    */
   public String toString()
   {
