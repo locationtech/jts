@@ -43,7 +43,7 @@ import com.vividsolutions.jts.geom.*;
 //import com.vividsolutions.jts.util.Debug;
 
 /**
- * A non-robust version of {@LineIntersector}.
+ * A non-robust version of {@link LineIntersector}.
  *
  * @version 1.7
  */

@@ -494,7 +494,7 @@ public class Envelope
   }
 
   /**
-   * Computes the intersection of two {@link Envelopes}
+   * Computes the intersection of two {@link Envelope}s.
    *
    * @param env the envelope to intersect with
    * @return a new Envelope representing the intersection of the envelopes (this will be

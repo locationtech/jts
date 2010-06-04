@@ -4,7 +4,7 @@ import java.util.*;
 import com.vividsolutions.jts.algorithm.*;
 
 /**
- * Finds if two sets of {@link SegmentStrings}s intersect.
+ * Finds if two sets of {@link SegmentString}s intersect.
  * Uses indexing for fast performance and to optimize repeated tests
  * against a target set of lines.
  * Short-circuited to return as soon an intersection is found.

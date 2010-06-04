@@ -42,7 +42,7 @@ import com.vividsolutions.jts.noding.SegmentIntersector;
 import com.vividsolutions.jts.noding.SegmentString;
 
 /**
- * Intersects two sets of {@link SegmentStrings} using a index based
+ * Intersects two sets of {@link SegmentString}s using a index based
  * on {@link MonotoneChain}s and a {@link SpatialIndex}.
  *
  * @version 1.7

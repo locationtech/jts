@@ -42,7 +42,7 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.Assert;
 
 /**
- * A robust version of {@LineIntersector}.
+ * A robust version of {@link LineIntersector}.
  *
  * @version 1.7
  * @see RobustDeterminant

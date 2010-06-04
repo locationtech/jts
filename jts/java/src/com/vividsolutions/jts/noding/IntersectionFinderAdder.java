@@ -66,7 +66,7 @@ public class IntersectionFinderAdder
   /**
    * This method is called by clients
    * of the {@link SegmentIntersector} class to process
-   * intersections for two segments of the {@link SegmentStrings} being intersected.
+   * intersections for two segments of the {@link SegmentString}s being intersected.
    * Note that some clients (such as {@link MonotoneChain}s) may optimize away
    * this call for segment pairs which they have determined do not intersect
    * (e.g. by an disjoint envelope test).

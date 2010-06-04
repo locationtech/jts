@@ -38,7 +38,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 
 
 /**
- * Intersects two sets of {@link SegmentStrings} using 
+ * Intersects two sets of {@link SegmentString}s using 
  * brute-force comparasion.
  *
  * @version 1.7

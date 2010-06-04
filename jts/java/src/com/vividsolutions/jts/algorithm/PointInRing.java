@@ -41,7 +41,7 @@ import com.vividsolutions.jts.geom.Coordinate;
  *
  * @version 1.7
  * 
- * @see PointOnGeometryLocator for more general functionality
+ * @see PointOnGeometryLocator
  */
 public interface PointInRing {
 

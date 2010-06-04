@@ -152,17 +152,17 @@ public class VectorMath
   	 * @param numQuarters the number of quarter-circles to rotate by
   	 * @return the rotated vector.
   	 */
-  	public static Coordinate rotateByQuarterCircle(Coordinate p, int numQuarters)
+  	public static Coordinate rotateByQuarterCircle(Coordinate v, int numQuarters)
     {
   		int nQuad = numQuarters % 4;
   		if (numQuarters < 0 && nQuad != 0) {
   			nQuad =  nQuad + 4;
   		}
   		switch (nQuad) {
-  		case 0: return new Coordinate(p.x, p.y);
-  		case 1: return new Coordinate(-p.y, p.x);
-  		case 2: return new Coordinate(-p.x, -p.y);
-  		case 3: return new Coordinate(p.y, -p.x);
+  		case 0: return new Coordinate(v.x, v.y);
+  		case 1: return new Coordinate(-v.y, v.x);
+  		case 2: return new Coordinate(-v.x, -v.y);
+  		case 3: return new Coordinate(v.y, -v.x);
   		}
     	Assert.shouldNeverReachHere();
     	return null;

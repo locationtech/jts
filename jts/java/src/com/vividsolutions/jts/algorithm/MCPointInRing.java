@@ -42,7 +42,7 @@ import com.vividsolutions.jts.index.bintree.*;
 
 /**
  * Implements {@link PointInRing}
- * using {@link MonotoneChain}s and a {@link BinTree} index to
+ * using {@link MonotoneChain}s and a {@link Bintree} index to
  * increase performance.
  *
  * @version 1.7

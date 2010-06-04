@@ -39,7 +39,7 @@ import com.vividsolutions.jts.index.strtree.*;
 import java.util.*;
 
 /**
- * Nodes a set of {@link SegmentStrings} using a index based
+ * Nodes a set of {@link SegmentString}s using a index based
  * on {@link MonotoneChain}s and a {@link SpatialIndex}.
  * The {@link SpatialIndex} used should be something that supports
  * envelope (range) queries efficiently (such as a {@link Quadtree}

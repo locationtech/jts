@@ -139,7 +139,7 @@ public class MCIndexSnapRounder
    * Computes nodes introduced as a result of
    * snapping segments to vertices of other segments
    *
-   * @param segStrings the list of segment strings to snap together
+   * @param edges the list of segment strings to snap together
    */
   public void computeVertexSnaps(Collection edges)
   {
