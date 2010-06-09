@@ -221,6 +221,8 @@ public class UnaryUnionOp
    * Due to the way the overlay operations 
    * are implemented, this is still efficient in the case of linear 
    * and puntal geometries.
+   * Uses robust version of overlay operation
+   * to ensure identical behaviour to the <tt>union(Geometry)</tt> operation.
    * 
    * @param g0 a geometry
    * @return the union of the input geometry
