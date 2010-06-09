@@ -61,6 +61,8 @@ The current and archived JTS distributions can be obtained at the
 <h3>Bug Fixes</h3>
 <ul>
 <li>Fixed <tt>LinearRing</tt> to have <tt>isClosed()</tt> return <tt>true</tt> for empty rings
+<li>Fixed <tt>Geometry.union()</tt> to use more robust union algorithm.
+    This provides behaviour consistent with <tt>union(Geometry)</tt>.
 <li>Fixed <tt>Point.isValid()</tt> to validate POINT EMPTY correctly
 <li>Fixed <tt>IsValidOp</tt> to handle reporting "Not Closed" errors on empty rings correctly
 <li>Fixed <tt>GeometryGraph</tt> to ignore empty hole rings when building graph
