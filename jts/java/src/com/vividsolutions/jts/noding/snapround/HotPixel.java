@@ -62,8 +62,9 @@ public class HotPixel
   public Coordinate getCoordinate() { return originalPt; }
 
   /**
-   * Returns a "safe" envelope that is guaranteed to contain the hot pixel
-   * @return
+   * Returns a "safe" envelope that is guaranteed to contain the hot pixel.
+   * 
+   * @return an envelope which contains the hot pixel
    */
   public Envelope getSafeEnvelope()
   {

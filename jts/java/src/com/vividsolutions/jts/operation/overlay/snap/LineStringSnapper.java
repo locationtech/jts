@@ -39,10 +39,15 @@ public class LineStringSnapper
   public LineStringSnapper(Coordinate[] srcPts, double snapTolerance)
   {
     this.srcPts = srcPts;
-    isClosed = srcPts[0].equals2D(srcPts[srcPts.length - 1]);
+    isClosed = isClosed(srcPts);
     this.snapTolerance = snapTolerance;
   }
 
+  private static boolean isClosed(Coordinate[] pts)
+  {
+    if (pts.length <= 1) return false;
+    return pts[0].equals2D(pts[pts.length - 1]);
+  }
   /**
    * Snaps the vertices and segments of the source LineString 
    * to the given set of target snap points.
@@ -109,6 +114,9 @@ public class LineStringSnapper
    */
   private void snapSegments(CoordinateList srcCoords, Coordinate[] snapPts)
   {
+    // guard against empty input
+    if (snapPts.length == 0) return;
+    
     int distinctPtCount = snapPts.length;
 
     // check for duplicate snap pts.  

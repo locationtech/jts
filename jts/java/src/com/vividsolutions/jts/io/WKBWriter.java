@@ -225,7 +225,7 @@ public class WKBWriter
   /**
    * Creates a writer that writes {@link Geometry}s with
    * the given dimension (2 or 3) for output coordinates
-   * and {@link BIG_ENDIAN} byte order.
+   * and {@link ByteOrderValues#BIG_ENDIAN} byte order.
    * If the input geometry has a small coordinate dimension,
    * coordinates will be padded with {@link NULL_ORDINATE}.
    *
@@ -238,7 +238,7 @@ public class WKBWriter
   /**
    * Creates a writer that writes {@link Geometry}s with
    * the given dimension (2 or 3) for output coordinates
-   * and {@link BIG_ENDIAN} byte order. This constructor also
+   * and {@link ByteOrderValues#BIG_ENDIAN} byte order. This constructor also
    * takes a flag to control whether srid information will be
    * written.
    * If the input geometry has a small coordinate dimension,

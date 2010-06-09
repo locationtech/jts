@@ -55,7 +55,7 @@ public interface SegmentIntersector
   /**
    * This method is called by clients
    * of the {@link SegmentIntersector} interface to process
-   * intersections for two segments of the {@link SegmentStrings} being intersected.
+   * intersections for two segments of the {@link SegmentString}s being intersected.
    */
   void processIntersections(
     SegmentString e0,  int segIndex0,

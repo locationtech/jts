@@ -37,6 +37,7 @@ import java.util.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
 import com.vividsolutions.jts.operation.overlay.OverlayOp;
+import com.vividsolutions.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
 
 /**
  * Unions a collection of Geometry or a single Geometry 
@@ -227,7 +228,7 @@ public class UnaryUnionOp
 	private Geometry unionNoOpt(Geometry g0)
 	{
     Geometry empty = geomFact.createPoint((Coordinate) null);
-		return OverlayOp.overlayOp(g0, empty, OverlayOp.UNION);
+		return SnapIfNeededOverlayOp.overlayOp(g0, empty, OverlayOp.UNION);
 	}
 	
 }
