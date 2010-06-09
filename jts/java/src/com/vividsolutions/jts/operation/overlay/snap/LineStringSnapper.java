@@ -5,6 +5,7 @@ import com.vividsolutions.jts.geom.*;
 /**
  * Snaps the vertices and segments of a {@link LineString} to a set of target snap vertices.
  * A snapping distance tolerance is used to control where snapping is performed.
+ * The class handles empty LineStrings and empty target snap sets.
  *
  * @author Martin Davis
  * @version 1.7
@@ -21,7 +22,7 @@ public class LineStringSnapper
    * Creates a new snapper using the points in the given {@link LineString}
    * as source snap points.
    * 
-   * @param srcLline a LineString to snap
+   * @param srcLine a LineString to snap (may be empty)
    * @param snapTolerance the snap tolerance to use
    */
   public LineStringSnapper(LineString srcLline, double snapTolerance)
