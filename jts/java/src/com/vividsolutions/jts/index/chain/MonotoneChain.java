@@ -133,7 +133,18 @@ public class MonotoneChain {
 
   /**
    * Determine all the line segments in the chain whose envelopes overlap
-   * the searchEnvelope, and process them
+   * the searchEnvelope, and process them.
+   * <p>
+   * The monotone chain search algorithm attempts to optimize 
+   * performance by not calling the select action on chain segments
+   * which it can determine are not in the search envelope.
+   * However, it *may* call the select action on segments
+   * which do not intersect the search envelope.
+   * This saves on the overhead of checking envelope intersection
+   * each time, since clients may be able to do this more efficiently.
+   * 
+   * @param searchEnv the search envelope
+   * @param mcs the select action to execute on selected segments
    */
   public void select(Envelope searchEnv, MonotoneChainSelectAction mcs)
   {
@@ -173,6 +184,20 @@ public class MonotoneChain {
     }
   }
 
+  /**
+   * Determine all the line segments in two chains which may overlap, and process them.
+   * <p>
+   * The monotone chain search algorithm attempts to optimize 
+   * performance by not calling the overlap action on chain segments
+   * which it can determine do not overlap.
+   * However, it *may* call the overlap action on segments
+   * which do not actually interact.
+   * This saves on the overhead of checking intersection
+   * each time, since clients may be able to do this more efficiently.
+   * 
+   * @param searchEnv the search envelope
+   * @param mco the overlap action to execute on selected segments
+   */
   public void computeOverlaps(MonotoneChain mc, MonotoneChainOverlapAction mco)
   {
     computeOverlaps(start, end, mc, mc.start, mc.end, mco);

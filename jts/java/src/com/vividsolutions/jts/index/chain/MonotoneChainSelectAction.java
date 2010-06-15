@@ -49,7 +49,7 @@ public class MonotoneChainSelectAction
   LineSegment selectedSegment = new LineSegment();
 
   /**
-   * This function can be overridden if the original chain is needed
+   * This function can be overridden if the original chain is needed.
    */
   public void select(MonotoneChain mc, int start)
   {
@@ -59,7 +59,8 @@ public class MonotoneChainSelectAction
 
   /**
    * This is a convenience function which can be overridden to obtain the actual
-   * line segment which is selected
+   * line segment which is selected.
+   * 
    * @param seg
    */
   public void select(LineSegment seg)
