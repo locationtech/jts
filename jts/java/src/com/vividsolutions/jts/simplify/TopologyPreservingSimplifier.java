@@ -22,7 +22,16 @@ import com.vividsolutions.jts.util.Debug;
  * (The key implication of this constraint is that the 
  * output will be topologically valid if the input was.) 
  * </ul>
- *
+ * <h3>KNOWN BUGS</h3>
+ * <ul>
+ * <li>If a small hole is very near an edge, it is possible for the edge to be moved by
+ * a relatively large tolerance value and end up with the hole outside the result shell.
+ * Similarly, it is possible for a small polygon component to end up inside
+ * a nearby larger polygon.
+ * A workaround is to test for this situation in post-processing and remove
+ * any invalid holes or polygons.
+ * </ul>
+ * 
  * @author Martin Davis
  * @see DouglasPeuckerSimplifier
  *
