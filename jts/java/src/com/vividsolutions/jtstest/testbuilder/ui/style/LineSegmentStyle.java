@@ -1,4 +1,4 @@
-package com.vividsolutions.jtstest.testbuilder.ui.render;
+package com.vividsolutions.jtstest.testbuilder.ui.style;
 
 import java.awt.*;
 import java.awt.geom.*;

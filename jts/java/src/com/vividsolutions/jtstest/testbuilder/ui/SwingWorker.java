@@ -64,6 +64,7 @@ public abstract class SwingWorker {
     public void interrupt() {
         Thread t = threadVar.get();
         if (t != null) {
+        	System.out.println("Interrupted!");
             t.interrupt();
         }
         threadVar.clear();

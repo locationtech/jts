@@ -1,7 +1,6 @@
 package com.vividsolutions.jtstest.testbuilder.model;
 
 import java.io.*;
-import java.io.IOException;
 import java.util.*;
 
 import com.vividsolutions.jts.geom.*;
@@ -9,7 +8,7 @@ import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.test.TestCaseList;
 import com.vividsolutions.jtstest.test.Testable;
-import com.vividsolutions.jtstest.testbuilder.ui.render.BasicStyle;
+import com.vividsolutions.jtstest.testbuilder.ui.style.BasicStyle;
 import com.vividsolutions.jtstest.testrunner.TestReader;
 import com.vividsolutions.jtstest.testrunner.TestRun;
 import com.vividsolutions.jtstest.util.*;

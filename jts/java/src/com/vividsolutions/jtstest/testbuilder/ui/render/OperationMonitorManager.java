@@ -49,7 +49,7 @@ public class OperationMonitorManager
   {
     Graphics2D g = (Graphics2D) panel.getGraphics();
     if (g == null) return;
-    GeometryRenderer.paint(indicator, viewport, g, Color.RED, null);
+    GeometryPainter.paint(indicator, viewport, g, Color.RED, null);
   }
 
 }

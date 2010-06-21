@@ -60,7 +60,10 @@ public class RenderManager
 		isDirty = false;
 
 		repaintTimer.stop();
-		
+	
+// MD - this appears not to work
+//		if (worker != null)
+//			worker.interrupt();
 		initImage();
 		worker = new RenderWorker((Renderable) panel, image);
 		worker.start();
@@ -133,9 +136,6 @@ class RenderWorker extends SwingWorker
   {
   	return isRendering;
   }
-  
-  public void finished() 
-  {
-  }
+
 
 }

@@ -5,6 +5,13 @@ import java.awt.*;
 import com.vividsolutions.jtstest.testbuilder.*;
 import com.vividsolutions.jtstest.testbuilder.geom.*;
 import com.vividsolutions.jtstest.testbuilder.ui.render.*;
+import com.vividsolutions.jtstest.testbuilder.ui.style.ArrowEndpointStyle;
+import com.vividsolutions.jtstest.testbuilder.ui.style.BasicStyle;
+import com.vividsolutions.jtstest.testbuilder.ui.style.CircleEndpointStyle;
+import com.vividsolutions.jtstest.testbuilder.ui.style.LineOrientationStyle;
+import com.vividsolutions.jtstest.testbuilder.ui.style.Style;
+import com.vividsolutions.jtstest.testbuilder.ui.style.StyleList;
+import com.vividsolutions.jtstest.testbuilder.ui.style.VertexStyle;
 import com.vividsolutions.jts.geom.*;
 
 public class Layer 

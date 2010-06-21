@@ -8,6 +8,7 @@ import com.vividsolutions.jtstest.testbuilder.AppColors;
 import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
+import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryPainter;
 import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryRenderer;
 
 public class FunctionsUtil {
@@ -32,7 +33,7 @@ public class FunctionsUtil {
     .getInstance().getTestCasePanel()
     .getGeometryEditPanel();
     Graphics2D gr = (Graphics2D) panel.getGraphics();
-    GeometryRenderer.paint(geom, panel.getViewport(), gr, 
+    GeometryPainter.paint(geom, panel.getViewport(), gr, 
         AppColors.INDICATOR_LINE_COLOR, 
         AppColors.INDICATOR_FILL_COLOR);
   }

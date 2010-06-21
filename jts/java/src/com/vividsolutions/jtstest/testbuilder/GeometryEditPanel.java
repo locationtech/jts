@@ -48,6 +48,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
+import com.vividsolutions.jtstest.testbuilder.ui.style.AWTUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.*;
 import com.vividsolutions.jtstest.testbuilder.ui.render.*;
 

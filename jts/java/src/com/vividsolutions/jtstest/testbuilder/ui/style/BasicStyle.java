@@ -1,8 +1,9 @@
-package com.vividsolutions.jtstest.testbuilder.ui.render;
+package com.vividsolutions.jtstest.testbuilder.ui.style;
 
 import java.awt.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jtstest.testbuilder.*;
+import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryPainter;
 
 public class BasicStyle implements Style
 {
@@ -19,7 +20,7 @@ public class BasicStyle implements Style
 
   public void paint(Geometry geom, Viewport viewport, Graphics2D g)
   {
-    GeometryRenderer.paint(geom, viewport, g, lineColor, fillColor);
+  	GeometryPainter.paint(geom, viewport, g, lineColor, fillColor);
   }
   
   public Color getLineColor() {
