@@ -3,19 +3,22 @@ package com.vividsolutions.jtstest.testbuilder.ui.render;
 import java.awt.Graphics2D;
 
 /**
- * A process object which renders a one or more objects to a graphics context
+ * A process object which renders a scene to a graphics context
  * and allows cancellation.
- * A Rendered may or may not respect cancellation.
- * The client is expected to ensure that 
- * cancelled rendering is not drawn to the screen
- * (e.g. by rendering to an image and only displaying
- * the most recently drawn image, possibly in multiple increments)
+ * A Renderer can be cancelled, which may allow it to 
+ * stop or short-circuit processing, thus saving cycles.
+ * A cancelled rendering will not be displayed.
  * 
  * @author mbdavis
  *
  */
 public interface Renderer 
 {
+	/**
+	 * Renders the scene to the graphics context.
+	 * 
+	 * @param g the graphics context to render to
+	 */
 	void render(Graphics2D g);
 	
 	/**
