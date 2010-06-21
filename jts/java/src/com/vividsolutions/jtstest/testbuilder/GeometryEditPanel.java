@@ -58,7 +58,6 @@ import com.vividsolutions.jtstest.testbuilder.ui.render.*;
  * @version 1.7
  */
 public class GeometryEditPanel extends JPanel 
-  implements Renderable
 {
   private static double HIGHLIGHT_SIZE = 50.0;
   private static Color HIGHLIGHT_COLOR = new Color(255, 192, 0, 150);
@@ -214,20 +213,12 @@ public class GeometryEditPanel extends JPanel
 
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
-    /*
-    Graphics2D g2 = (Graphics2D) g;
-    
-    // make this optional, for a performance boost?
-    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        RenderingHints.VALUE_ANTIALIAS_ON);
-    */
     renderMgr.render();
     renderMgr.copyImage(g);
-    
-    //getLayerList().paint(g2, getViewport());
-    //drawHighlight(g2);
   }
   
+  /*
+   // MD - obsolete
   public void render(Graphics g)
   {
     Graphics2D g2 = (Graphics2D) g;
@@ -237,6 +228,7 @@ public class GeometryEditPanel extends JPanel
     gridRenderer.paint(g2);
     getLayerList().paint((Graphics2D) g2, viewport);
   }
+  */
   
   private void drawHighlight(Graphics2D g) {
     if (highlightPoint == null)
@@ -359,4 +351,34 @@ public class GeometryEditPanel extends JPanel
         getViewport().getViewOriginY() - yDisplacement);
   }
 
+  public Renderer getRenderer()
+  {
+  	return new GeometryEditPanelRenderer();
+  }
+  
+  class GeometryEditPanelRenderer implements Renderer
+  {
+  	private Renderer layerListRenderer = null;
+  	
+    public void render(Graphics2D g)
+    {
+      Graphics2D g2 = (Graphics2D) g;
+      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+          RenderingHints.VALUE_ANTIALIAS_ON);
+      
+      gridRenderer.paint(g2);
+      layerListRenderer = getLayerList().getRenderer(viewport);
+      layerListRenderer.render((Graphics2D) g2);
+      drawHighlight(g2);
+    }
+    
+  	public void cancel()
+  	{
+  		if (layerListRenderer != null)
+  			layerListRenderer.cancel();
+  	}
+
+  }
 }
+
+

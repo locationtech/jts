@@ -1,9 +1,12 @@
 package com.vividsolutions.jtstest.testbuilder.model;
 
+import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.geom.*;
+import com.vividsolutions.jtstest.testbuilder.ui.render.Renderer;
 
 public class LayerList 
 {
@@ -34,5 +37,36 @@ public class LayerList
     layer[2].paint(g, viewport);
   }
   
+  public Renderer getRenderer(Viewport viewport)
+  {
+  	return new LayerListRenderer(viewport, layer);
+  }
+  
+  class LayerListRenderer implements Renderer
+  {
+  	private Renderer[] layerRenderer = null;
+  	
+  	public LayerListRenderer(Viewport viewport, Layer[] layer)
+  	{
+  		layerRenderer = new Renderer[layer.length];
+  		for (int i = 0; i < layer.length; i++) {
+  			layerRenderer[i] = layer[i].getRenderer(viewport);
+  		}
+  	}
+  	
+    public void render(Graphics2D g)
+    {
+  		for (int i = 0; i < layer.length; i++) {
+  			layerRenderer[i].render(g);
+  		}
+    }
+    
+  	public synchronized void cancel()
+  	{
+  		for (int i = 0; i < layerRenderer.length; i++) {
+  			layerRenderer[i].cancel();
+  		} 		
+  	}
+  }
   
 }

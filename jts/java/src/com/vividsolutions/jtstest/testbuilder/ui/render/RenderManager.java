@@ -8,12 +8,13 @@ import java.awt.image.*;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
 
 public class RenderManager 
 {
-	private JPanel panel;
-  private RenderWorker worker = null;
+	private GeometryEditPanel panel;
+  private RendererSwingWorker worker = null;
 	private Image image = null;
 	private boolean isDirty = true;
 	
@@ -29,7 +30,7 @@ public class RenderManager
 		}
 	});
 
-	public RenderManager(JPanel panel)
+	public RenderManager(GeometryEditPanel panel)
 	{
 		this.panel = panel;
 		// start with a short time cycle to give better appearance
@@ -62,10 +63,11 @@ public class RenderManager
 		repaintTimer.stop();
 	
 // MD - this appears not to work
-//		if (worker != null)
-//			worker.interrupt();
+		if (worker != null)
+			worker.cancel();
 		initImage();
-		worker = new RenderWorker((Renderable) panel, image);
+		//worker = new RenderSwingWorker((Renderable) panel, image);
+		worker = new RendererSwingWorker(panel.getRenderer(), image);
 		worker.start();
 		repaintTimer.start();
 	}
@@ -110,14 +112,14 @@ public class RenderManager
 }
 
 // TODO: create a single long-lived worker thread to handle rendering
-class RenderWorker extends SwingWorker
+class RenderSwingWorker extends SwingWorker
 {
 	private Image image = null;
 
   private Renderable renderable;
 	private boolean isRendering = true;
 	
-	public RenderWorker(Renderable renderable, Image image)
+	public RenderSwingWorker(Renderable renderable, Image image)
 	{
 		this.renderable = renderable;
 		this.image = image;
@@ -138,4 +140,36 @@ class RenderWorker extends SwingWorker
   }
 
 
+}
+class RendererSwingWorker extends SwingWorker
+{
+	private Image image = null;
+
+  private Renderer renderer;
+	private boolean isRendering = true;
+	
+	public RendererSwingWorker(Renderer renderable, Image image)
+	{
+		this.renderer = renderable;
+		this.image = image;
+	}
+	
+  public Object construct()
+  {
+  	isRendering = true;
+		Graphics2D gr = (Graphics2D) image.getGraphics();
+    renderer.render(gr);
+  	isRendering = false;
+    return new Boolean(true);
+  }
+  
+  public boolean isRendering()
+  {
+  	return isRendering;
+  }
+
+  public void cancel()
+  {
+  	renderer.cancel();
+  }
 }
