@@ -33,6 +33,7 @@
 package com.vividsolutions.jtstest.testbuilder;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.util.Iterator;
@@ -49,6 +50,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jtstest.test.Testable;
 import com.vividsolutions.jtstest.testbuilder.model.TestCaseEdit;
 
@@ -77,20 +79,7 @@ public class TestListPanel extends JPanel {
             boolean isSelected,
             boolean cellHasFocus) {
             Testable testCase = (Testable) value;
-            String name = testCase.getName();
-            if ((name == null || name.length() == 0) && testCase instanceof TestCaseEdit) {
-                name = ((TestCaseEdit) testCase).getDescription();
-            }
-            if (name == null || name.length() == 0) {
-                name = "";
-            }
-            int testSkey = 1 + JTSTestBuilderFrame.getInstance().getModel().getTestCases().indexOf(testCase);
-            if (name == "") {
-                name = "Test " + testSkey;
-            } else {
-                name = "Test " + testSkey + ": " + name;
-            }
-            setText(name);
+            setText(buildName(testCase));
             setOpaque(true);
             setIcon(testCase.isPassed() ? tickIcon : (testCase.isFailed() ? crossIcon : clearIcon));
             if (isSelected) {
@@ -103,6 +92,40 @@ public class TestListPanel extends JPanel {
             setEnabled(list.isEnabled());
             setFont(list.getFont());
             return this;
+        }
+        
+        private String buildName(Testable testCase)
+        {
+          String name = testCase.getName();
+          if ((name == null || name.length() == 0) && testCase instanceof TestCaseEdit) {
+              name = ((TestCaseEdit) testCase).getDescription();
+          }
+          if (name == null || name.length() == 0) {
+              name = "";
+          }
+          int testSkey = 1 + JTSTestBuilderFrame.getInstance().getModel().getTestCases().indexOf(testCase);
+          String nameFinal = "Test " + testSkey + " ( " + testCaseSignatureHTML(testCase) + " )";
+          if (name != "")
+          	nameFinal = nameFinal + " > " + name;
+          return "<html>" + nameFinal + "<html>";
+        }
+        
+        private String testCaseSignatureHTML(Testable testCase)
+        {
+        	return "<font color='blue'>" + geometrySignature(testCase.getGeometry(0)) + "</font>" 
+        	+ " : "
+        	+ "<font color='red'>" + geometrySignature(testCase.getGeometry(1)) + "</font>";
+        }
+        
+        private String geometrySignature(Geometry geom)
+        {
+        	if (geom == null) 
+        		return "";
+        	String sig = geom.getGeometryType();
+        	if (geom instanceof GeometryCollection) {
+        		sig = sig + "[" + geom.getNumGeometries() + "]";
+        	}
+        	return sig;
         }
     }
 
@@ -124,6 +147,7 @@ public class TestListPanel extends JPanel {
         setSize(200, 250);
         setLayout(borderLayout2);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        list.setSelectionBackground(Color.GRAY);
         add(jScrollPane1, BorderLayout.CENTER);
         jScrollPane1.getViewport().add(list, null);
     }
