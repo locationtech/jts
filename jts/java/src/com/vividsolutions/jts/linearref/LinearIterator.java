@@ -28,11 +28,12 @@ public class LinearIterator
     return loc.getSegmentIndex();
   }
 
-  private Geometry linear;
+  private Geometry linearGeom;
   private final int numLines;
 
   /**
    * Invariant: currentLine <> null if the iterator is pointing at a valid coordinate
+   * @throws IllegalArgumentException if linearGeom is not lineal
    */
   private LineString currentLine;
   private int componentIndex = 0;
@@ -42,6 +43,7 @@ public class LinearIterator
    * Creates an iterator initialized to the start of a linear {@link Geometry}
    *
    * @param linear the linear geometry to iterate over
+   * @throws IllegalArgumentException if linearGeom is not lineal
    */
   public LinearIterator(Geometry linear) {
     this(linear, 0, 0);
@@ -53,6 +55,7 @@ public class LinearIterator
    *
    * @param linear the linear geometry to iterate over
    * @param start the location to start at
+   * @throws IllegalArgumentException if linearGeom is not lineal
    */
   public LinearIterator(Geometry linear, LinearLocation start) {
     this(linear, start.getComponentIndex(), segmentEndVertexIndex(start));
@@ -60,15 +63,19 @@ public class LinearIterator
 
   /**
    * Creates an iterator starting at
-   * a component and vertex in a linear {@link Geometry}
+   * a specified component and vertex in a linear {@link Geometry}
    *
-   * @param linear the linear geometry to iterate over
+   * @param linearGeom the linear geometry to iterate over
    * @param componentIndex the component to start at
    * @param vertexIndex the vertex to start at
+   * @throws IllegalArgumentException if linearGeom is not lineal
    */
-  public LinearIterator(Geometry linear, int componentIndex, int vertexIndex) {
-    this.linear = linear;
-    numLines = linear.getNumGeometries();
+  public LinearIterator(Geometry linearGeom, int componentIndex, int vertexIndex) 
+  {
+  	if (! (linearGeom instanceof Lineal))
+  			throw new IllegalArgumentException("Lineal geometry is required");
+    this.linearGeom = linearGeom;
+    numLines = linearGeom.getNumGeometries();
     this.componentIndex = componentIndex;
     this.vertexIndex = vertexIndex;
     loadCurrentLine();
@@ -80,7 +87,7 @@ public class LinearIterator
       currentLine = null;
       return;
     }
-    currentLine = (LineString) linear.getGeometryN(componentIndex);
+    currentLine = (LineString) linearGeom.getGeometryN(componentIndex);
   }
 
   /**
