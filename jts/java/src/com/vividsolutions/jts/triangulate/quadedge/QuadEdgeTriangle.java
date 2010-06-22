@@ -46,14 +46,17 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
- * Models a triangle formed from {@link Quadedge}s in a {@link Subdivision}. Provides methods to
- * access the topological and geometric properties of the triangle. Triangle edges are oriented CCW.
+ * Models a triangle formed from {@link Quadedge}s in a {@link Subdivision}
+ * which forms a triangulation. 
+ * The class provides methods to access the topological and geometric properties of the triangle
+ * and its neighbours in the triangulation. 
+ * Triangle vertices are ordered in CCW orientation in the structure.
  * 
  * @author Martin Davis
  * @version 1.0
  */
-public class QuadEdgeTriangle {
-
+public class QuadEdgeTriangle 
+{
     /**
      * Tests whether the point pt is contained in the triangle defined by 3 {@link Vertex}es.
      * 
