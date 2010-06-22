@@ -6,6 +6,8 @@ public class FunctionParameters {
 
   public static String toString(Object[] param)
   {
+  	if (param == null) return "";
+  	
     StringBuffer buf = new StringBuffer();
     for (int i = 0; i < param.length; i++) {
       if (i > 0) buf.append(", ");
