@@ -175,6 +175,11 @@ extends JPanel
     }
   }
   
+  public String getOpName()
+  {
+    return opName;
+  }
+  
   public void setRunningTime(String time)
   {
     setExecutedTime(time);

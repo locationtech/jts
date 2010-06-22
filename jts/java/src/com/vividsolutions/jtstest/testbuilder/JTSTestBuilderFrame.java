@@ -386,7 +386,7 @@ public class JTSTestBuilderFrame extends JFrame
     Object currResult = resultWKTPanel.getResult();
     if (! (currResult instanceof Geometry))
       return;
-    tbModel.addCase(new Geometry[] { (Geometry) currResult, null });
+    tbModel.addCase(new Geometry[] { (Geometry) currResult, null }, resultWKTPanel.getOpName());
     refreshNavBar();
     testListPanel.populateList();  
   }

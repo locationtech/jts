@@ -43,6 +43,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Stopwatch;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
 import com.vividsolutions.jtstest.function.*;
+import com.vividsolutions.jtstest.testbuilder.model.FunctionParameters;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
 
 /**
@@ -387,7 +388,8 @@ extends JPanel
   public String getFullName() {
     if (currentFunc == null)
       return null;
-    return currentFunc.getCategory() + " - " + currentFunc.getName();
+    return currentFunc.getCategory() + " - " + currentFunc.getName()
+    + "(" + FunctionParameters.toString(getFunctionParams()) + ")";
   }
 
   public GeometryFunction getFunction() {

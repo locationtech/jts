@@ -412,8 +412,12 @@ public class TestBuilderModel
   }
 
   public void addCase(Geometry[] geoms) {
+    addCase(geoms, null);
+  }
+
+  public void addCase(Geometry[] geoms, String name) {
     TestCaseEdit copy = null;
-    copy = new TestCaseEdit(geoms);
+    copy = new TestCaseEdit(geoms, name);
     tcListi.add(copy);
     currTestCase = copy;
   }
