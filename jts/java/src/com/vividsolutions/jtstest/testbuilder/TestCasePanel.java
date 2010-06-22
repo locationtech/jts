@@ -222,9 +222,9 @@ public class TestCasePanel extends JPanel {
     if (initialized) {
       //avoid infinite loop
       if (isEdit)
-        JTSTestBuilderFrame.getInstance().showGeomsTab();
+        JTSTestBuilderFrame.instance().showGeomsTab();
       if (isFunction)
-        JTSTestBuilderFrame.getInstance().showResultWKTTab();
+        JTSTestBuilderFrame.instance().showResultWKTTab();
     }
   }
 

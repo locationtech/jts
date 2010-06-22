@@ -239,15 +239,15 @@ extends JPanel
   }
 
   private Geometry getGeometryA() {
-    return JTSTestBuilder.getInstance().getModel().getGeometryEditModel().getGeometry(0);
+    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(0);
   }
 
   private Geometry getGeometryB() {
-    return JTSTestBuilder.getInstance().getModel().getGeometryEditModel().getGeometry(1);
+    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(1);
   }
 
   private GeometryEditPanel getGeometryEditPanel() {
-    return JTSTestBuilderFrame.getInstance().getTestCasePanel().getGeometryEditPanel();
+    return JTSTestBuilderFrame.instance().getTestCasePanel().getGeometryEditPanel();
   }
 
   public void setCurrentFunction(GeometryFunction func) {

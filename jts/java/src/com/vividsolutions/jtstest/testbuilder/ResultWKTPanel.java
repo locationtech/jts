@@ -230,7 +230,7 @@ extends JPanel
   }
   
   void copyToTestButton_actionPerformed(ActionEvent e) {
-    JTSTestBuilderFrame.getInstance().copyResultToTest();
+    JTSTestBuilderFrame.instance().copyResultToTest();
   }
   
 }

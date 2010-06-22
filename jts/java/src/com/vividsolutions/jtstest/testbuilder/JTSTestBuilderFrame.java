@@ -196,7 +196,7 @@ public class JTSTestBuilderFrame extends JFrame
     });
   }
   
-  public static JTSTestBuilderFrame getInstance() {
+  public static JTSTestBuilderFrame instance() {
     if (singleton == null) {
       new JTSTestBuilderFrame();
     }
@@ -236,7 +236,7 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   public static void reportException(Exception e) {
-  	reportException(getInstance(), e);
+  	reportException(instance(), e);
   }
 
   public void setCurrentTestCase(TestCaseEdit testCase) {

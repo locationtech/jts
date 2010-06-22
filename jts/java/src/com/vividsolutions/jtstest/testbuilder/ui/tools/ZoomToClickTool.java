@@ -146,6 +146,6 @@ public class ZoomToClickTool extends BasicTool
   	g.drawRect(base.x, base.y, width, height);
   }
   
-  public GeometryEditPanel getPanel() { return JTSTestBuilderFrame.getInstance().getTestCasePanel().getGeometryEditPanel(); }
+  public GeometryEditPanel getPanel() { return JTSTestBuilderFrame.instance().getTestCasePanel().getGeometryEditPanel(); }
 }
 

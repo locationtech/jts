@@ -103,7 +103,7 @@ public class TestListPanel extends JPanel {
           if (name == null || name.length() == 0) {
               name = "";
           }
-          int testSkey = 1 + JTSTestBuilderFrame.getInstance().getModel().getTestCases().indexOf(testCase);
+          int testSkey = 1 + JTSTestBuilderFrame.instance().getModel().getTestCases().indexOf(testCase);
           String nameFinal = "Test " + testSkey + " ( " + testCaseSignatureHTML(testCase) + " )";
           if (name != "")
           	nameFinal = nameFinal + " > " + name;
@@ -158,7 +158,7 @@ public class TestListPanel extends JPanel {
             public void valueChanged(ListSelectionEvent e) {
                 if (list.getSelectedValue() == null)
                     return;
-                JTSTestBuilderFrame.getInstance().setCurrentTestCase(
+                JTSTestBuilderFrame.instance().setCurrentTestCase(
                     (TestCaseEdit) list.getSelectedValue());
             }
         });
@@ -166,7 +166,7 @@ public class TestListPanel extends JPanel {
 
     public void populateList() {
         listModel.clear();
-        for (Iterator i = JTSTestBuilderFrame.getInstance().getModel().getTestCases().iterator();
+        for (Iterator i = JTSTestBuilderFrame.instance().getModel().getTestCases().iterator();
             i.hasNext();
             ) {
             Testable testCase = (Testable) i.next();

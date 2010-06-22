@@ -58,12 +58,19 @@ import com.vividsolutions.jts.geom.*;
  */
 public class JTSTestBuilder
 {
+  public static JTSTestBuilder instance()
+  {
+  	return app;
+  }
+  
+  public static TestBuilderModel model() { return instance().tbModel; }
+
   public static Geometry getGeometryA() {
-    return JTSTestBuilder.getInstance().getModel().getGeometryEditModel().getGeometry(0);
+    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(0);
   }
 
   public static Geometry getGeometryB() {
-    return JTSTestBuilder.getInstance().getModel().getGeometryEditModel().getGeometry(1);
+    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(1);
   }
 
 // MD - no longer used
@@ -115,19 +122,14 @@ public class JTSTestBuilder
     return funcRegistry;
   }
 
-  public static JTSTestBuilder getInstance()
-  {
-  	return app;
-  }
-  
   public static PrecisionModel getPrecisionModel() 
   { 
-    return app.getModel().getPrecisionModel();
+    return model().getPrecisionModel();
   }
   
   public static GeometryFactory getGeometryFactory() 
   { 
-    return app.getModel().getGeometryFactory();
+    return model().getGeometryFactory();
   }
   
   private TestBuilderModel tbModel = new TestBuilderModel();
@@ -141,7 +143,7 @@ public class JTSTestBuilder
   private void initFrame()
   {
     JTSTestBuilderFrame frame = new JTSTestBuilderFrame();
-    frame.setModel(getModel());
+    frame.setModel(model());
     
     //Validate frames that have preset sizes
     //Pack frames that have useful preferred size info, e.g. from their layout
@@ -165,7 +167,6 @@ public class JTSTestBuilder
     frame.setVisible(true);
   }
 
-  public TestBuilderModel getModel() { return tbModel; }
   
   /**Main method*/
   public static void main(String[] args)

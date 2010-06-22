@@ -30,7 +30,7 @@ public class FunctionsUtil {
   public static void showIndicator(Geometry geom)
   {
     GeometryEditPanel panel = JTSTestBuilderFrame
-    .getInstance().getTestCasePanel()
+    .instance().getTestCasePanel()
     .getGeometryEditPanel();
     Graphics2D gr = (Graphics2D) panel.getGraphics();
     GeometryPainter.paint(geom, panel.getViewport(), gr, 

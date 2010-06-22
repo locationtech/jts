@@ -243,7 +243,7 @@ public class GeometryInputDialog extends JDialog {
         try {
             WKTReader rdr =
                 new WKTReader(
-                    new GeometryFactory(JTSTestBuilder.getInstance().getModel().getPrecisionModel(), 0));
+                    new GeometryFactory(JTSTestBuilder.model().getPrecisionModel(), 0));
             Geometry g = rdr.read(txt.getText());
             txtError.setText("");
             return g;

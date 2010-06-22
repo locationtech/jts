@@ -156,19 +156,19 @@ public abstract class BasicTool implements Tool, MouseListener, MouseMotionListe
   protected GeometryEditPanel panel()
   {
     // this should probably be passed in during setup
-    return JTSTestBuilderFrame.getInstance().getTestCasePanel().getGeometryEditPanel();
+    return JTSTestBuilderFrame.instance().getTestCasePanel().getGeometryEditPanel();
   }
   
   protected GeometryEditModel geomModel()
   {
     // this should probably be passed in during setup
-    return JTSTestBuilder.getInstance().getModel().getGeometryEditModel();
+    return JTSTestBuilder.model().getGeometryEditModel();
   }
   
   protected TestBuilderModel testBuilderModel()
   {
     // this should probably be passed in during setup
-    return JTSTestBuilder.getInstance().getModel();
+    return JTSTestBuilder.model();
   }
   
   protected Viewport getViewport()

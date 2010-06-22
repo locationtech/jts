@@ -208,7 +208,7 @@ public class TestReaderTest extends TestCase {
   }
 
   public void testGetWorkspaceXML() throws Exception {
-    JTSTestBuilderFrame.getInstance().openXmlFilesAndDirectories(new File[] {new File(
+    JTSTestBuilderFrame.instance().openXmlFilesAndDirectories(new File[] {new File(
         "\\\\pluto\\data\\jts\\testing\\testReader_getWorkspaceXML.xml")});
     String expectedXML =
         "<run>" +
@@ -225,7 +225,7 @@ public class TestReaderTest extends TestCase {
         "  </test>" +
         "  </case>" +
         "</run>";
-    assertEquals(normalize(expectedXML), normalize(JTSTestBuilderFrame.getInstance().getRunXml()));
+    assertEquals(normalize(expectedXML), normalize(JTSTestBuilderFrame.instance().getRunXml()));
   }
 
   public void testPrecisionModel_noType_scale() {
