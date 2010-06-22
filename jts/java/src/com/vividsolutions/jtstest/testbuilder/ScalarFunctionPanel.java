@@ -153,12 +153,12 @@ extends JPanel
     if (result == null)
     	return;
       */
-    fireFunctionChanged(new SpatialFunctionPanelEvent(this));
+    fireFunctionExecuted(new SpatialFunctionPanelEvent(this));
   }
 
-  public void setCurrentFunction(GeometryFunction func) {
+  private void setCurrentFunction(GeometryFunction func) {
     currentFunc = func;
-    fireFunctionChanged(new SpatialFunctionPanelEvent(this));
+    fireFunctionExecuted(new SpatialFunctionPanelEvent(this));
   }
 
   private void functionListValueChanged()
@@ -263,12 +263,12 @@ extends JPanel
     }
   }
 
-  protected void fireFunctionChanged(SpatialFunctionPanelEvent e) {
+  protected void fireFunctionExecuted(SpatialFunctionPanelEvent e) {
     if (spatialFunctionPanelListeners != null) {
       Vector listeners = spatialFunctionPanelListeners;
       int count = listeners.size();
       for (int i = 0; i < count; i++) {
-        ((SpatialFunctionPanelListener) listeners.elementAt(i)).functionChanged(e);
+        ((SpatialFunctionPanelListener) listeners.elementAt(i)).functionExecuted(e);
       }
     }
   }

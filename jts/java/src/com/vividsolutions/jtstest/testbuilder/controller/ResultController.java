@@ -9,6 +9,7 @@ import javax.swing.Timer;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Stopwatch;
 import com.vividsolutions.jtstest.function.GeometryFunction;
+import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 import com.vividsolutions.jtstest.testbuilder.SpatialFunctionPanelEvent;
 import com.vividsolutions.jtstest.testbuilder.model.TestBuilderModel;
@@ -17,28 +18,25 @@ import com.vividsolutions.jtstest.testbuilder.ui.SwingWorker;
 public class ResultController 
 {
 	JTSTestBuilderFrame frame;
-	//TestBuilderModel model = null;
+	TestBuilderModel model = null;
 	
 	public ResultController(JTSTestBuilderFrame frame)
 	{
 		this.frame = frame;
-		//model = frame.getModel();
+		model = JTSTestBuilder.model();
 	}
 	
   public void spatialFunctionPanel_functionChanged(SpatialFunctionPanelEvent e) 
   {
+    // don't run anything if function is null
   	if (! frame.getTestCasePanel().getSpatialFunctionPanel().isFunctionSelected())
   		return;
   	
     String opName = frame.getTestCasePanel().getSpatialFunctionPanel().getFunctionSignature();
-    frame.getModel().setOpName(opName);
-    frame.getResultWKTPanel().setOpName(frame.getModel().getOpName());
+    model.setOpName(opName);
+    frame.getResultWKTPanel().setOpName(model.getOpName());
     // initialize UI view
     clearResult();
-    // don't run anything if function is null
-    if (opName == null) {
-      return;
-    }
 
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     frame.getTestCasePanel().getSpatialFunctionPanel().enableExecuteControl(false);
@@ -55,7 +53,7 @@ public class ResultController
   	
   private void updateResult(Object result)
   {
-  	frame.getModel().setResult(result);
+  	model.setResult(result);
     frame.getResultWKTPanel().updateResult();
     frame.getTestCasePanel().getGeometryEditPanel().updateView();
   }
@@ -80,7 +78,7 @@ public class ResultController
         
         try {
         	timer = new Stopwatch();
-          result = currentFunc.invoke(frame.getModel().getGeometryEditModel().getGeometry(0), 
+          result = currentFunc.invoke(model.getGeometryEditModel().getGeometry(0), 
           		frame.getTestCasePanel().getSpatialFunctionPanel().getFunctionParams());
           timer.stop();
 //          result = currentState.getActualValue();

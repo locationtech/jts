@@ -156,13 +156,13 @@ public class JTSTestBuilderFrame extends JFrame
         });
       testCasePanel.spatialFunctionPanel.addSpatialFunctionPanelListener(
           new SpatialFunctionPanelListener() {
-            public void functionChanged(SpatialFunctionPanelEvent e) {
+            public void functionExecuted(SpatialFunctionPanelEvent e) {
             	resultController.spatialFunctionPanel_functionChanged(e);
             }
           });
       testCasePanel.scalarFunctionPanel.addSpatialFunctionPanelListener(
           new SpatialFunctionPanelListener() {
-            public void functionChanged(SpatialFunctionPanelEvent e) {
+            public void functionExecuted(SpatialFunctionPanelEvent e) {
             	resultController.scalarFunctionPanel_functionChanged(e);
             }
           });
