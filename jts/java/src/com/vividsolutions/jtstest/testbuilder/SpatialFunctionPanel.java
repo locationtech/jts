@@ -310,25 +310,7 @@ extends JPanel
     setCurrentFunction(null);
   }
 
-  public Object getResult() {
-    Object result = null;
-    if (currentFunc == null)
-      return null;
-    
-    try {
-      timer = new Stopwatch();
-      result = currentFunc.invoke(getGeometryA(), getFunctionParams());
-      timer.stop();
-//      result = currentState.getActualValue();
-    }
-    catch (Exception ex) {
-      ex.printStackTrace(System.out);
-      result = ex;
-    }
-    return result;
-  }
-
-  private Object[] getFunctionParams()
+  public Object[] getFunctionParams()
   {
   	// TODO: improve this, it is cheesy
   	
@@ -379,13 +361,12 @@ extends JPanel
     return null; 
   }
   
-  public String getOpName() {
-    if (currentFunc == null)
-      return null;
-    return currentFunc.getName();
+  public boolean isFunctionSelected()
+  {
+  	return currentFunc != null;
   }
-
-  public String getFullName() {
+  
+  public String getFunctionSignature() {
     if (currentFunc == null)
       return null;
     return currentFunc.getCategory() + " - " + currentFunc.getName()
@@ -396,11 +377,6 @@ extends JPanel
     return currentFunc;
   }
 
-  public Stopwatch getTimer()
-  {
-    return timer;
-  }
-  
   public synchronized void removeSpatialFunctionPanelListener(SpatialFunctionPanelListener l) {
     if (spatialFunctionPanelListeners != null && spatialFunctionPanelListeners.contains(l)) {
       Vector v = (Vector) spatialFunctionPanelListeners.clone();

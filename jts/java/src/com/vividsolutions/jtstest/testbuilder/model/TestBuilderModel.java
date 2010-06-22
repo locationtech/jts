@@ -1,5 +1,6 @@
 package com.vividsolutions.jtstest.testbuilder.model;
 
+import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 
@@ -48,7 +49,9 @@ public class TestBuilderModel
 	private GeometryEditModel geomEditModel;
   private LayerList layerList = new LayerList();
   private WKTWriter writer = new WKTWriter();
-  
+  private Object currResult = null;
+  private String opName = "";
+
 	public TestBuilderModel()
 	{
 		geomEditModel = new GeometryEditModel();
@@ -487,5 +490,38 @@ public class TestBuilderModel
       int a = 5;
     }
   }
+
+  public void setResult(Object result)
+  {
+  	currResult = result;
+    if (result == null || result instanceof Geometry) {
+    	getCurrentTestCaseEdit().setResult((Geometry) result);
+    }
+  }
+  
+  public Object getResult()
+  {
+  	return currResult;
+  }
+  public void setOpName(String opName)
+  {
+    if (opName == null) {
+      this.opName = "";
+    }
+    else { 
+      this.opName = StringUtil.capitalize(opName);
+    }
+  }
+  
+  public String getOpName()
+  {
+    return opName;
+  }
+  
+  public void copyResult(boolean isFormatted)
+  {
+    SwingUtil.copyToClipboard(currResult, isFormatted);
+  }
+
 
 }

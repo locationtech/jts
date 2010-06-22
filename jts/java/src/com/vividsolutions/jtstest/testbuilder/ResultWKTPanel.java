@@ -58,8 +58,7 @@ public class ResultWKTPanel
 extends JPanel 
 {
 	TestBuilderModel tbModel = null;
-  Object currResult = null;
-  String opName = "";
+	String opName;
 	
 	JScrollPane jScrollPane1 = new JScrollPane();
 	JTextArea txtResult = new JTextArea();
@@ -167,17 +166,7 @@ extends JPanel
 	
   public void setOpName(String opName)
   {
-    if (opName == null) {
-      this.opName = "";
-    }
-    else { 
-      this.opName = StringUtil.capitalize(opName);
-    }
-  }
-  
-  public String getOpName()
-  {
-    return opName;
+      this.opName = opName;
   }
   
   public void setRunningTime(String time)
@@ -192,9 +181,9 @@ extends JPanel
     memoryLabel.setText(Memory.usedTotalString());   
   }
   
-  public void setResult(Object o)
+  public void updateResult()
   {
-    currResult = o;
+  	Object o = tbModel.getResult();
     if (o == null) {
       setString("");
     }
@@ -211,14 +200,8 @@ extends JPanel
   
   public void clearResult()
   {
-    currResult = null;
     functionLabel.setText("");
     setString("");
-  }
-  
-  public Object getResult()
-  { 
-    return currResult;
   }
   
   private void setGeometry(Geometry g)
@@ -242,15 +225,10 @@ extends JPanel
   }
   
   void rCopyButton_actionPerformed(ActionEvent e) {
-  	copy(e);
+    boolean isFormatted = 0 != (e.getModifiers() & ActionEvent.CTRL_MASK);
+    tbModel.copyResult(isFormatted);
   }
   
-  void copy(ActionEvent e)
-  {
-    boolean isFormatted = 0 != (e.getModifiers() & ActionEvent.CTRL_MASK);
-    SwingUtil.copyToClipboard(currResult, isFormatted);
-  }
-
   void copyToTestButton_actionPerformed(ActionEvent e) {
     JTSTestBuilderFrame.getInstance().copyResultToTest();
   }

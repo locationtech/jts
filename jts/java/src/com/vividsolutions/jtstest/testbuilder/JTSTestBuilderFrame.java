@@ -392,10 +392,11 @@ public class JTSTestBuilderFrame extends JFrame
 
   public void copyResultToTest() 
   {
-    Object currResult = resultWKTPanel.getResult();
+    Object currResult = tbModel.getResult();
     if (! (currResult instanceof Geometry))
       return;
-    tbModel.addCase(new Geometry[] { (Geometry) currResult, null }, resultWKTPanel.getOpName());
+    tbModel.addCase(new Geometry[] { (Geometry) currResult, null }, 
+    		"Result of " + tbModel.getOpName());
     refreshNavBar();
     testListPanel.populateList();  
   }
