@@ -38,6 +38,7 @@ import com.vividsolutions.jts.util.*;
 import com.vividsolutions.jtstest.*;
 import com.vividsolutions.jtstest.clean.*;
 import com.vividsolutions.jtstest.test.*;
+import com.vividsolutions.jtstest.testbuilder.controller.ResultController;
 import com.vividsolutions.jtstest.testbuilder.geom.*;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.*;
@@ -245,6 +246,14 @@ public class JTSTestBuilderFrame extends JFrame
 
   public TestCasePanel getTestCasePanel() {
     return testCasePanel;
+  }
+
+  public ResultWKTPanel getResultWKTPanel() {
+    return resultWKTPanel;
+  }
+
+  public ResultValuePanel getResultValuePanel() {
+    return resultValuePanel;
   }
 
   public String getTestJava(TestCaseList tcList) {

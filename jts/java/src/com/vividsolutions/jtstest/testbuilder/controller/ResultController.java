@@ -1,4 +1,4 @@
-package com.vividsolutions.jtstest.testbuilder;
+package com.vividsolutions.jtstest.testbuilder.controller;
 
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
@@ -8,6 +8,8 @@ import javax.swing.Timer;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Stopwatch;
+import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
+import com.vividsolutions.jtstest.testbuilder.SpatialFunctionPanelEvent;
 import com.vividsolutions.jtstest.testbuilder.ui.SwingWorker;
 
 public class ResultController 
@@ -21,8 +23,8 @@ public class ResultController
 	
   public void spatialFunctionPanel_functionChanged(SpatialFunctionPanelEvent e) 
   {
-    String opName = frame.testCasePanel.getSpatialFunctionPanel().getFullName();
-    frame.resultWKTPanel.setOpName(opName);
+    String opName = frame.getTestCasePanel().getSpatialFunctionPanel().getFullName();
+    frame.getResultWKTPanel().setOpName(opName);
     // initialize UI view
     clearResult();
     // don't run anything if function is null
@@ -31,7 +33,7 @@ public class ResultController
     }
 
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-    frame.testCasePanel.getSpatialFunctionPanel().enableExecuteControl(false);
+    frame.getTestCasePanel().getSpatialFunctionPanel().enableExecuteControl(false);
     startFunctionMonitor();
     runFunctionWorker();
     frame.showResultWKTTab();
@@ -39,15 +41,15 @@ public class ResultController
 
   private void clearResult()
   {
-    frame.resultWKTPanel.clearResult();
+    frame.getResultWKTPanel().clearResult();
     updateResult(null);
   }
   	
   private void updateResult(Object result)
   {
-    frame.resultWKTPanel.setResult(result);
+    frame.getResultWKTPanel().setResult(result);
     if (result == null || result instanceof Geometry) {
-    	frame.tbModel.getCurrentTestCaseEdit().setResult((Geometry) result);
+    	frame.getModel().getCurrentTestCaseEdit().setResult((Geometry) result);
     }
 
     frame.getTestCasePanel().getGeometryEditPanel().updateView();
@@ -60,16 +62,16 @@ public class ResultController
     worker = new SwingWorker() {
       public Object construct()
       {
-        return frame.testCasePanel.getSpatialFunctionPanel().getResult();
+        return frame.getTestCasePanel().getSpatialFunctionPanel().getResult();
       }
       
       public void finished() {
         stopFunctionMonitor();
-        frame.testCasePanel.getSpatialFunctionPanel().enableExecuteControl(true);
+        frame.getTestCasePanel().getSpatialFunctionPanel().enableExecuteControl(true);
         Object result = getValue();
         frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        Stopwatch timer = frame.testCasePanel.getSpatialFunctionPanel().getTimer();
-        frame.resultWKTPanel.setExecutedTime(timer.getTimeString());
+        Stopwatch timer = frame.getTestCasePanel().getSpatialFunctionPanel().getTimer();
+        frame.getResultWKTPanel().setExecutedTime(timer.getTimeString());
         updateResult(result);
         worker = null;
       }
@@ -93,7 +95,7 @@ public class ResultController
       public void actionPerformed(ActionEvent e) {
 //        Stopwatch timer = testCasePanel.getSpatialFunctionPanel().getTimer();
         runMillis += DELAY_IN_MILLIS;
-        frame.resultWKTPanel.setRunningTime((runMillis/1000.0) + " s");
+        frame.getResultWKTPanel().setRunningTime((runMillis/1000.0) + " s");
       }
     });
     funcTimer.setInitialDelay(0);
@@ -107,16 +109,16 @@ public class ResultController
 
   public void scalarFunctionPanel_functionChanged(SpatialFunctionPanelEvent e) 
   {
-    String opName = frame.testCasePanel.getScalarFunctionPanel().getOpName();
+    String opName = frame.getTestCasePanel().getScalarFunctionPanel().getOpName();
     // initialize UI view
-    frame.resultValuePanel.setResult(opName, "", null);
+    frame.getResultValuePanel().setResult(opName, "", null);
     
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-    Object result = frame.testCasePanel.getScalarFunctionPanel().getResult();
-    Stopwatch timer = frame.testCasePanel.getScalarFunctionPanel().getTimer();
+    Object result = frame.getTestCasePanel().getScalarFunctionPanel().getResult();
+    Stopwatch timer = frame.getTestCasePanel().getScalarFunctionPanel().getTimer();
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     
-    frame.resultValuePanel.setResult(opName, timer.getTimeString(), result);
+    frame.getResultValuePanel().setResult(opName, timer.getTimeString(), result);
     frame.showResultValueTab();
   }
 
