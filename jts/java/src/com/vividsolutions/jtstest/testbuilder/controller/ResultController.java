@@ -26,17 +26,17 @@ public class ResultController
 		model = JTSTestBuilder.model();
 	}
 	
-  public void spatialFunctionPanel_functionChanged(SpatialFunctionPanelEvent e) 
+  public void spatialFunctionPanel_functionExecuted(SpatialFunctionPanelEvent e) 
   {
-    // don't run anything if function is null
-  	if (! frame.getTestCasePanel().getSpatialFunctionPanel().isFunctionSelected())
-  		return;
   	
-    String opName = frame.getTestCasePanel().getSpatialFunctionPanel().getFunctionSignature();
-    model.setOpName(opName);
+    model.setOpName(frame.getTestCasePanel().getSpatialFunctionPanel().getFunctionSignature());
     frame.getResultWKTPanel().setOpName(model.getOpName());
     // initialize UI view
     clearResult();
+    // don't run anything if function is null
+  	if (! frame.getTestCasePanel().getSpatialFunctionPanel().isFunctionSelected()) {
+  		return;
+  	}
 
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
     frame.getTestCasePanel().getSpatialFunctionPanel().enableExecuteControl(false);
@@ -48,14 +48,18 @@ public class ResultController
   private void clearResult()
   {
     frame.getResultWKTPanel().clearResult();
-    updateResult(null);
+    updateResult(null,null);
   }
   	
-  private void updateResult(Object result)
+  private void updateResult(Object result, Stopwatch timer)
   {
   	model.setResult(result);
+  	String timeString = timer != null ? timer.getTimeString() : "";
+    frame.getResultWKTPanel().setExecutedTime(timeString);
     frame.getResultWKTPanel().updateResult();
     frame.getTestCasePanel().getGeometryEditPanel().updateView();
+    frame.getTestCasePanel().getSpatialFunctionPanel().enableExecuteControl(true);
+    frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
   }
   
   private SwingWorker worker = null;
@@ -67,10 +71,10 @@ public class ResultController
     	
       public Object construct()
       {
-        return getResult();
+        return computeResult();
       }
       
-      private Object getResult() {
+      private Object computeResult() {
         Object result = null;
         GeometryFunction currentFunc = frame.getTestCasePanel().getSpatialFunctionPanel().getFunction();
         if (currentFunc == null)
@@ -92,12 +96,7 @@ public class ResultController
 
       public void finished() {
         stopFunctionMonitor();
-        frame.getTestCasePanel().getSpatialFunctionPanel().enableExecuteControl(true);
-        Object result = getValue();
-        frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        //Stopwatch timer = frame.getTestCasePanel().getSpatialFunctionPanel().getTimer();
-        frame.getResultWKTPanel().setExecutedTime(timer.getTimeString());
-        updateResult(result);
+         updateResult(getValue(), timer);
         worker = null;
       }
     };

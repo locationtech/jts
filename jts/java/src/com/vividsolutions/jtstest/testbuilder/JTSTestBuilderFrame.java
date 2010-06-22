@@ -157,7 +157,7 @@ public class JTSTestBuilderFrame extends JFrame
       testCasePanel.spatialFunctionPanel.addSpatialFunctionPanelListener(
           new SpatialFunctionPanelListener() {
             public void functionExecuted(SpatialFunctionPanelEvent e) {
-            	resultController.spatialFunctionPanel_functionChanged(e);
+            	resultController.spatialFunctionPanel_functionExecuted(e);
             }
           });
       testCasePanel.scalarFunctionPanel.addSpatialFunctionPanelListener(

@@ -175,7 +175,7 @@ extends JPanel
     btnClearResult.addActionListener(new java.awt.event.ActionListener() {
 
         public void actionPerformed(ActionEvent e) {
-          noneButton_actionPerformed(e);
+          clearResultButton_actionPerformed(e);
         }
       });
 
@@ -226,7 +226,7 @@ extends JPanel
   	execButton.setEnabled(isEnabled);
   }
   
-  void noneButton_actionPerformed(ActionEvent e) {
+  void clearResultButton_actionPerformed(ActionEvent e) {
     clearFunction();
   }
 
@@ -369,7 +369,7 @@ extends JPanel
   public String getFunctionSignature() {
     if (currentFunc == null)
       return null;
-    return currentFunc.getCategory() + " - " + currentFunc.getName()
+    return currentFunc.getCategory() + "." + currentFunc.getName()
     + "(" + FunctionParameters.toString(getFunctionParams()) + ")";
   }
 
