@@ -91,6 +91,14 @@ public class GeometryFunctions
 			LinearRing shell = (LinearRing) ((Polygon) g).getExteriorRing();
 			return g.getFactory().createPolygon(shell, null);
 		}
+		if (g instanceof MultiPolygon) {
+			Polygon[] poly = new Polygon[g.getNumGeometries()];
+			for (int i = 0; i < g.getNumGeometries(); i++) {
+				LinearRing shell = (LinearRing) ((Polygon) g.getGeometryN(i)).getExteriorRing();
+				poly[i] = g.getFactory().createPolygon(shell, null);
+			}
+			return g.getFactory().createMultiPolygon(poly);
+		}
 		return null;
 	}
 
