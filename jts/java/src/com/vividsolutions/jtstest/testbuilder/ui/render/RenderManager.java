@@ -62,11 +62,9 @@ public class RenderManager
 
 		repaintTimer.stop();
 	
-// MD - this appears not to work
 		if (worker != null)
 			worker.cancel();
 		initImage();
-		//worker = new RenderSwingWorker((Renderable) panel, image);
 		worker = new RendererSwingWorker(panel.getRenderer(), image);
 		worker.start();
 		repaintTimer.start();
@@ -111,36 +109,6 @@ public class RenderManager
 	}
 }
 
-// TODO: create a single long-lived worker thread to handle rendering
-class RenderSwingWorker extends SwingWorker
-{
-	private Image image = null;
-
-  private Renderable renderable;
-	private boolean isRendering = true;
-	
-	public RenderSwingWorker(Renderable renderable, Image image)
-	{
-		this.renderable = renderable;
-		this.image = image;
-	}
-	
-  public Object construct()
-  {
-  	isRendering = true;
-		Graphics2D gr = (Graphics2D) image.getGraphics();
-    renderable.render(gr);
-  	isRendering = false;
-    return new Boolean(true);
-  }
-  
-  public boolean isRendering()
-  {
-  	return isRendering;
-  }
-
-
-}
 class RendererSwingWorker extends SwingWorker
 {
 	private Image image = null;

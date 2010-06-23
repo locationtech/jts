@@ -85,7 +85,7 @@ public class GeometryEditPanel extends JPanel
   //----------------------------------------
   BorderLayout borderLayout1 = new BorderLayout();
   private RenderManager renderMgr;
-  private OperationMonitorManager opMonitor;
+  //private OperationMonitorManager opMonitor;
   
   public GeometryEditPanel() {
     gridRenderer = new GridRenderer(viewport, grid);

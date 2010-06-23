@@ -1,6 +1,5 @@
 package com.vividsolutions.jtstest.function;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 
 import com.vividsolutions.jts.geom.*;
@@ -9,7 +8,6 @@ import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryPainter;
-import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryRenderer;
 
 public class FunctionsUtil {
 
