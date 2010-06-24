@@ -12,7 +12,6 @@ import com.vividsolutions.jts.io.WKTWriter;
  * For some algorithms extended-precision
  * versions are provided, which are more robust
  * (i.e. they produce correct answers in more cases).
- * These are used in triangulation algorithms.
  * 
  * @author Martin Davis
  *
@@ -30,7 +29,7 @@ public class TrianglePredicate
    * @param P the point to test
    * @return true if this point is inside the circle defined by the points a, b, c
    */
-  public static boolean isInCircle(
+  public static boolean isInCircleNonRobust(
       Coordinate a, Coordinate b, Coordinate c, 
       Coordinate p) {
     boolean isInCircle = 
@@ -42,7 +41,23 @@ public class TrianglePredicate
     return isInCircle;
   }
   
-  public static boolean isInCircle2(
+  /**
+   * Tests if a point is inside the circle defined by the points a, b, c. 
+   * This test uses simple
+   * double-precision arithmetic, and thus is not 10% robust.
+   * However, by using normalization to the origin
+   * it provides improved robustness and increased performance.
+   * <p>
+   * Based on code by J.R.Shewchuk.
+   * 
+   * 
+   * @param a a vertex of the triangle
+   * @param b a vertex of the triangle
+   * @param c a vertex of the triangle
+   * @param P the point to test
+   * @return true if this point is inside the circle defined by the points a, b, c
+   */
+  public static boolean isInCircleNormalized(
       Coordinate a, Coordinate b, Coordinate c, 
       Coordinate p) {
     double adx = a.x - p.x;
@@ -91,7 +106,7 @@ public class TrianglePredicate
       Coordinate p) 
   {
     //checkRobustInCircle(a, b, c, p);
-    return isInCircle2(a, b, c, p);       
+    return isInCircleNormalized(a, b, c, p);       
   }
 
   /**
@@ -104,7 +119,7 @@ public class TrianglePredicate
    * @param P the point to test
    * @return true if this point is inside the circle defined by the points a, b, c
    */
-  public static boolean isInCircleDD(
+  public static boolean isInCircleDDSlow(
       Coordinate a, Coordinate b, Coordinate c,
       Coordinate p) {
     DoubleDouble px = new DoubleDouble(p.x);
@@ -117,13 +132,13 @@ public class TrianglePredicate
     DoubleDouble cy = new DoubleDouble(c.y);
 
     DoubleDouble aTerm = (ax.multiply(ax).add(ay.multiply(ay)))
-        .multiply(triAreaDD(bx, by, cx, cy, px, py));
+        .multiply(triAreaDDSlow(bx, by, cx, cy, px, py));
     DoubleDouble bTerm = (bx.multiply(bx).add(by.multiply(by)))
-        .multiply(triAreaDD(ax, ay, cx, cy, px, py));
+        .multiply(triAreaDDSlow(ax, ay, cx, cy, px, py));
     DoubleDouble cTerm = (cx.multiply(cx).add(cy.multiply(cy)))
-        .multiply(triAreaDD(ax, ay, bx, by, px, py));
+        .multiply(triAreaDDSlow(ax, ay, bx, by, px, py));
     DoubleDouble pTerm = (px.multiply(px).add(py.multiply(py)))
-        .multiply(triAreaDD(ax, ay, bx, by, cx, cy));
+        .multiply(triAreaDDSlow(ax, ay, bx, by, cx, cy));
 
     DoubleDouble sum = aTerm.subtract(bTerm).add(cTerm).subtract(pTerm);
     boolean isInCircle = sum.doubleValue() > 0;
@@ -143,23 +158,23 @@ public class TrianglePredicate
    * @param cx the x ordinate of a vertex of the triangle
    * @param cy the y ordinate of a vertex of the triangle
    */
-  public static DoubleDouble triAreaDD(DoubleDouble ax, DoubleDouble ay,
+  public static DoubleDouble triAreaDDSlow(DoubleDouble ax, DoubleDouble ay,
       DoubleDouble bx, DoubleDouble by, DoubleDouble cx, DoubleDouble cy) {
     return (bx.subtract(ax).multiply(cy.subtract(ay)).subtract(by.subtract(ay)
         .multiply(cx.subtract(ax))));
   }
 
-  public static boolean isInCircleDD2(
+  public static boolean isInCircleDDFast(
       Coordinate a, Coordinate b, Coordinate c,
       Coordinate p) {
     DoubleDouble aTerm = (DoubleDouble.sqr(a.x).selfAdd(DoubleDouble.sqr(a.y)))
-        .selfMultiply(triAreaDD2(b, c, p));
+        .selfMultiply(triAreaDDFast(b, c, p));
     DoubleDouble bTerm = (DoubleDouble.sqr(b.x).selfAdd(DoubleDouble.sqr(b.y)))
-        .selfMultiply(triAreaDD2(a, c, p));
+        .selfMultiply(triAreaDDFast(a, c, p));
     DoubleDouble cTerm = (DoubleDouble.sqr(c.x).selfAdd(DoubleDouble.sqr(c.y)))
-        .selfMultiply(triAreaDD2(a, b, p));
+        .selfMultiply(triAreaDDFast(a, b, p));
     DoubleDouble pTerm = (DoubleDouble.sqr(p.x).selfAdd(DoubleDouble.sqr(p.y)))
-        .selfMultiply(triAreaDD2(a, b, c));
+        .selfMultiply(triAreaDDFast(a, b, c));
 
     DoubleDouble sum = aTerm.selfSubtract(bTerm).selfAdd(cTerm).selfSubtract(pTerm);
     boolean isInCircle = sum.doubleValue() > 0;
@@ -167,7 +182,7 @@ public class TrianglePredicate
     return isInCircle;
   }
 
-  public static DoubleDouble triAreaDD2(
+  public static DoubleDouble triAreaDDFast(
       Coordinate a, Coordinate b, Coordinate c) {
     
     DoubleDouble t1 = DoubleDouble.valueOf(b.x).selfSubtract(a.x)
@@ -181,7 +196,7 @@ public class TrianglePredicate
     return t1.selfSubtract(t2);
   }
 
-  public static boolean isInCircleDD3(
+  public static boolean isInCircleDDNormalized(
       Coordinate a, Coordinate b, Coordinate c,
       Coordinate p) {
     DoubleDouble adx = DoubleDouble.valueOf(a.x).selfSubtract(p.x);
@@ -247,8 +262,8 @@ public class TrianglePredicate
 private static void checkRobustInCircle(Coordinate a, Coordinate b, Coordinate c,
     Coordinate p) 
 {
-  boolean nonRobustInCircle = isInCircle(a, b, c, p);
-  boolean isInCircleDD = TrianglePredicate.isInCircleDD(a, b, c, p);
+  boolean nonRobustInCircle = isInCircleNonRobust(a, b, c, p);
+  boolean isInCircleDD = TrianglePredicate.isInCircleDDSlow(a, b, c, p);
   boolean isInCircleCC = TrianglePredicate.isInCircleCC(a, b, c, p);
 
   Coordinate circumCentre = Triangle.circumcentre(a, b, c);
