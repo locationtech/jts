@@ -10,8 +10,11 @@ import com.vividsolutions.jts.io.WKTWriter;
  * Algorithms for computing values and predicates
  * associated with triangles.
  * For some algorithms extended-precision
- * versions are provided, which are more robust
+ * implementations are provided, which are more robust
  * (i.e. they produce correct answers in more cases).
+ * Also, some more robust formulations of
+ * some algorithms are provided, which utilize
+ * normalization to the origin.
  * 
  * @author Martin Davis
  *
@@ -93,7 +96,7 @@ public class TrianglePredicate
 
   /**
    * Tests if a point is inside the circle defined by the points a, b, c. 
-   * This test uses robust computation.
+   * This method uses more robust computation.
    * 
    * @param a a vertex of the triangle
    * @param b a vertex of the triangle

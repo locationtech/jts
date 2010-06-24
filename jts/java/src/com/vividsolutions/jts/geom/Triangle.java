@@ -133,7 +133,8 @@ public class Triangle
    * vertices of the triangle.
    * <p>
    * This method uses an algorithm due to J.R.Shewchuk which
-   * uses offsetting to improve the precision of computation.
+   * uses normalization to the origin
+   * to improve the accuracy of computation.
    * (See <i>Lecture Notes on Geometric Robustness</i>, 
    * Jonathan Richard Shewchuk, 1999).
    *
