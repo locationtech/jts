@@ -1,6 +1,6 @@
 package com.vividsolutions.jts.triangulate.quadedge;
 
-import com.vividsolutions.jts.algorithm.math.DoubleDouble;
+import com.vividsolutions.jts.algorithm.math.DD;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Triangle;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
@@ -109,12 +109,13 @@ public class TrianglePredicate
       Coordinate p) 
   {
     //checkRobustInCircle(a, b, c, p);
+//    return isInCircleNonRobust(a, b, c, p);       
     return isInCircleNormalized(a, b, c, p);       
   }
 
   /**
    * Tests if a point is inside the circle defined by the points a, b, c. 
-   * The computation uses {@link DoubleDouble} arithmetic for robustness.
+   * The computation uses {@link DD} arithmetic for robustness.
    * 
    * @param a a vertex of the triangle
    * @param b a vertex of the triangle
@@ -125,25 +126,25 @@ public class TrianglePredicate
   public static boolean isInCircleDDSlow(
       Coordinate a, Coordinate b, Coordinate c,
       Coordinate p) {
-    DoubleDouble px = new DoubleDouble(p.x);
-    DoubleDouble py = new DoubleDouble(p.y);
-    DoubleDouble ax = new DoubleDouble(a.x);
-    DoubleDouble ay = new DoubleDouble(a.y);
-    DoubleDouble bx = new DoubleDouble(b.x);
-    DoubleDouble by = new DoubleDouble(b.y);
-    DoubleDouble cx = new DoubleDouble(c.x);
-    DoubleDouble cy = new DoubleDouble(c.y);
+    DD px = DD.valueOf(p.x);
+    DD py = DD.valueOf(p.y);
+    DD ax = DD.valueOf(a.x);
+    DD ay = DD.valueOf(a.y);
+    DD bx = DD.valueOf(b.x);
+    DD by = DD.valueOf(b.y);
+    DD cx = DD.valueOf(c.x);
+    DD cy = DD.valueOf(c.y);
 
-    DoubleDouble aTerm = (ax.multiply(ax).add(ay.multiply(ay)))
+    DD aTerm = (ax.multiply(ax).add(ay.multiply(ay)))
         .multiply(triAreaDDSlow(bx, by, cx, cy, px, py));
-    DoubleDouble bTerm = (bx.multiply(bx).add(by.multiply(by)))
+    DD bTerm = (bx.multiply(bx).add(by.multiply(by)))
         .multiply(triAreaDDSlow(ax, ay, cx, cy, px, py));
-    DoubleDouble cTerm = (cx.multiply(cx).add(cy.multiply(cy)))
+    DD cTerm = (cx.multiply(cx).add(cy.multiply(cy)))
         .multiply(triAreaDDSlow(ax, ay, bx, by, px, py));
-    DoubleDouble pTerm = (px.multiply(px).add(py.multiply(py)))
+    DD pTerm = (px.multiply(px).add(py.multiply(py)))
         .multiply(triAreaDDSlow(ax, ay, bx, by, cx, cy));
 
-    DoubleDouble sum = aTerm.subtract(bTerm).add(cTerm).subtract(pTerm);
+    DD sum = aTerm.subtract(bTerm).add(cTerm).subtract(pTerm);
     boolean isInCircle = sum.doubleValue() > 0;
 
     return isInCircle;
@@ -152,7 +153,7 @@ public class TrianglePredicate
   /**
    * Computes twice the area of the oriented triangle (a, b, c), i.e., the area
    * is positive if the triangle is oriented counterclockwise.
-   * The computation uses {@link DoubleDouble} arithmetic for robustness.
+   * The computation uses {@link DD} arithmetic for robustness.
    * 
    * @param ax the x ordinate of a vertex of the triangle
    * @param ay the y ordinate of a vertex of the triangle
@@ -161,8 +162,8 @@ public class TrianglePredicate
    * @param cx the x ordinate of a vertex of the triangle
    * @param cy the y ordinate of a vertex of the triangle
    */
-  public static DoubleDouble triAreaDDSlow(DoubleDouble ax, DoubleDouble ay,
-      DoubleDouble bx, DoubleDouble by, DoubleDouble cx, DoubleDouble cy) {
+  public static DD triAreaDDSlow(DD ax, DD ay,
+      DD bx, DD by, DD cx, DD cy) {
     return (bx.subtract(ax).multiply(cy.subtract(ay)).subtract(by.subtract(ay)
         .multiply(cx.subtract(ax))));
   }
@@ -170,31 +171,31 @@ public class TrianglePredicate
   public static boolean isInCircleDDFast(
       Coordinate a, Coordinate b, Coordinate c,
       Coordinate p) {
-    DoubleDouble aTerm = (DoubleDouble.sqr(a.x).selfAdd(DoubleDouble.sqr(a.y)))
+    DD aTerm = (DD.sqr(a.x).selfAdd(DD.sqr(a.y)))
         .selfMultiply(triAreaDDFast(b, c, p));
-    DoubleDouble bTerm = (DoubleDouble.sqr(b.x).selfAdd(DoubleDouble.sqr(b.y)))
+    DD bTerm = (DD.sqr(b.x).selfAdd(DD.sqr(b.y)))
         .selfMultiply(triAreaDDFast(a, c, p));
-    DoubleDouble cTerm = (DoubleDouble.sqr(c.x).selfAdd(DoubleDouble.sqr(c.y)))
+    DD cTerm = (DD.sqr(c.x).selfAdd(DD.sqr(c.y)))
         .selfMultiply(triAreaDDFast(a, b, p));
-    DoubleDouble pTerm = (DoubleDouble.sqr(p.x).selfAdd(DoubleDouble.sqr(p.y)))
+    DD pTerm = (DD.sqr(p.x).selfAdd(DD.sqr(p.y)))
         .selfMultiply(triAreaDDFast(a, b, c));
 
-    DoubleDouble sum = aTerm.selfSubtract(bTerm).selfAdd(cTerm).selfSubtract(pTerm);
+    DD sum = aTerm.selfSubtract(bTerm).selfAdd(cTerm).selfSubtract(pTerm);
     boolean isInCircle = sum.doubleValue() > 0;
 
     return isInCircle;
   }
 
-  public static DoubleDouble triAreaDDFast(
+  public static DD triAreaDDFast(
       Coordinate a, Coordinate b, Coordinate c) {
     
-    DoubleDouble t1 = DoubleDouble.valueOf(b.x).selfSubtract(a.x)
+    DD t1 = DD.valueOf(b.x).selfSubtract(a.x)
           .selfMultiply(
-              DoubleDouble.valueOf(c.y).selfSubtract(a.y));
+              DD.valueOf(c.y).selfSubtract(a.y));
     
-    DoubleDouble t2 = DoubleDouble.valueOf(b.y).selfSubtract(a.y)
+    DD t2 = DD.valueOf(b.y).selfSubtract(a.y)
           .selfMultiply(
-              DoubleDouble.valueOf(c.x).selfSubtract(a.x));
+              DD.valueOf(c.x).selfSubtract(a.x));
     
     return t1.selfSubtract(t2);
   }
@@ -202,21 +203,21 @@ public class TrianglePredicate
   public static boolean isInCircleDDNormalized(
       Coordinate a, Coordinate b, Coordinate c,
       Coordinate p) {
-    DoubleDouble adx = DoubleDouble.valueOf(a.x).selfSubtract(p.x);
-    DoubleDouble ady = DoubleDouble.valueOf(a.y).selfSubtract(p.y);
-    DoubleDouble bdx = DoubleDouble.valueOf(b.x).selfSubtract(p.x);
-    DoubleDouble bdy = DoubleDouble.valueOf(b.y).selfSubtract(p.y);
-    DoubleDouble cdx = DoubleDouble.valueOf(c.x).selfSubtract(p.x);
-    DoubleDouble cdy = DoubleDouble.valueOf(c.y).selfSubtract(p.y);
+    DD adx = DD.valueOf(a.x).selfSubtract(p.x);
+    DD ady = DD.valueOf(a.y).selfSubtract(p.y);
+    DD bdx = DD.valueOf(b.x).selfSubtract(p.x);
+    DD bdy = DD.valueOf(b.y).selfSubtract(p.y);
+    DD cdx = DD.valueOf(c.x).selfSubtract(p.x);
+    DD cdy = DD.valueOf(c.y).selfSubtract(p.y);
 
-    DoubleDouble abdet = adx.multiply(bdy).selfSubtract(bdx.multiply(ady));
-    DoubleDouble bcdet = bdx.multiply(cdy).selfSubtract(cdx.multiply(bdy));
-    DoubleDouble cadet = cdx.multiply(ady).selfSubtract(adx.multiply(cdy));
-    DoubleDouble alift = adx.multiply(adx).selfAdd(ady.multiply(ady));
-    DoubleDouble blift = bdx.multiply(bdx).selfAdd(bdy.multiply(bdy));
-    DoubleDouble clift = cdx.multiply(cdx).selfAdd(cdy.multiply(cdy));
+    DD abdet = adx.multiply(bdy).selfSubtract(bdx.multiply(ady));
+    DD bcdet = bdx.multiply(cdy).selfSubtract(cdx.multiply(bdy));
+    DD cadet = cdx.multiply(ady).selfSubtract(adx.multiply(cdy));
+    DD alift = adx.multiply(adx).selfAdd(ady.multiply(ady));
+    DD blift = bdx.multiply(bdx).selfAdd(bdy.multiply(bdy));
+    DD clift = cdx.multiply(cdx).selfAdd(cdy.multiply(cdy));
 
-    DoubleDouble sum = alift.selfMultiply(bcdet)
+    DD sum = alift.selfMultiply(bcdet)
     .selfAdd(blift.selfMultiply(cadet))
     .selfAdd(clift.selfMultiply(abdet));
     
