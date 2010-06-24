@@ -7,7 +7,12 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.io.WKTWriter;
 
 /**
- * Implements predicates about triangles used in triangulation algorithms.
+ * Algorithms for computing values and predicates
+ * associated with triangles.
+ * For some algorithms extended-precision
+ * versions are provided, which are more robust
+ * (i.e. they produce correct answers in more cases).
+ * These are used in triangulation algorithms.
  * 
  * @author Martin Davis
  *
@@ -35,6 +40,27 @@ public class TrianglePredicate
             - (p.x * p.x + p.y * p.y) * triArea(a, b, c) 
             > 0;
     return isInCircle;
+  }
+  
+  public static boolean isInCircle2(
+      Coordinate a, Coordinate b, Coordinate c, 
+      Coordinate p) {
+    double adx = a.x - p.x;
+    double ady = a.y - p.y;
+    double bdx = b.x - p.x;
+    double bdy = b.y - p.y;
+    double cdx = c.x - p.x;
+    double cdy = c.y - p.y;
+
+    double abdet = adx * bdy - bdx * ady;
+    double bcdet = bdx * cdy - cdx * bdy;
+    double cadet = cdx * ady - adx * cdy;
+    double alift = adx * adx + ady * ady;
+    double blift = bdx * bdx + bdy * bdy;
+    double clift = cdx * cdx + cdy * cdy;
+
+    double disc = alift * bcdet + blift * cadet + clift * abdet;
+    return disc > 0;
   }
   
   /**
@@ -65,7 +91,7 @@ public class TrianglePredicate
       Coordinate p) 
   {
     //checkRobustInCircle(a, b, c, p);
-    return isInCircleDD(a, b, c, p);       
+    return isInCircle2(a, b, c, p);       
   }
 
   /**
@@ -121,6 +147,64 @@ public class TrianglePredicate
       DoubleDouble bx, DoubleDouble by, DoubleDouble cx, DoubleDouble cy) {
     return (bx.subtract(ax).multiply(cy.subtract(ay)).subtract(by.subtract(ay)
         .multiply(cx.subtract(ax))));
+  }
+
+  public static boolean isInCircleDD2(
+      Coordinate a, Coordinate b, Coordinate c,
+      Coordinate p) {
+    DoubleDouble aTerm = (DoubleDouble.sqr(a.x).selfAdd(DoubleDouble.sqr(a.y)))
+        .selfMultiply(triAreaDD2(b, c, p));
+    DoubleDouble bTerm = (DoubleDouble.sqr(b.x).selfAdd(DoubleDouble.sqr(b.y)))
+        .selfMultiply(triAreaDD2(a, c, p));
+    DoubleDouble cTerm = (DoubleDouble.sqr(c.x).selfAdd(DoubleDouble.sqr(c.y)))
+        .selfMultiply(triAreaDD2(a, b, p));
+    DoubleDouble pTerm = (DoubleDouble.sqr(p.x).selfAdd(DoubleDouble.sqr(p.y)))
+        .selfMultiply(triAreaDD2(a, b, c));
+
+    DoubleDouble sum = aTerm.selfSubtract(bTerm).selfAdd(cTerm).selfSubtract(pTerm);
+    boolean isInCircle = sum.doubleValue() > 0;
+
+    return isInCircle;
+  }
+
+  public static DoubleDouble triAreaDD2(
+      Coordinate a, Coordinate b, Coordinate c) {
+    
+    DoubleDouble t1 = DoubleDouble.valueOf(b.x).selfSubtract(a.x)
+          .selfMultiply(
+              DoubleDouble.valueOf(c.y).selfSubtract(a.y));
+    
+    DoubleDouble t2 = DoubleDouble.valueOf(b.y).selfSubtract(a.y)
+          .selfMultiply(
+              DoubleDouble.valueOf(c.x).selfSubtract(a.x));
+    
+    return t1.selfSubtract(t2);
+  }
+
+  public static boolean isInCircleDD3(
+      Coordinate a, Coordinate b, Coordinate c,
+      Coordinate p) {
+    DoubleDouble adx = DoubleDouble.valueOf(a.x).selfSubtract(p.x);
+    DoubleDouble ady = DoubleDouble.valueOf(a.y).selfSubtract(p.y);
+    DoubleDouble bdx = DoubleDouble.valueOf(b.x).selfSubtract(p.x);
+    DoubleDouble bdy = DoubleDouble.valueOf(b.y).selfSubtract(p.y);
+    DoubleDouble cdx = DoubleDouble.valueOf(c.x).selfSubtract(p.x);
+    DoubleDouble cdy = DoubleDouble.valueOf(c.y).selfSubtract(p.y);
+
+    DoubleDouble abdet = adx.multiply(bdy).selfSubtract(bdx.multiply(ady));
+    DoubleDouble bcdet = bdx.multiply(cdy).selfSubtract(cdx.multiply(bdy));
+    DoubleDouble cadet = cdx.multiply(ady).selfSubtract(adx.multiply(cdy));
+    DoubleDouble alift = adx.multiply(adx).selfAdd(ady.multiply(ady));
+    DoubleDouble blift = bdx.multiply(bdx).selfAdd(bdy.multiply(bdy));
+    DoubleDouble clift = cdx.multiply(cdx).selfAdd(cdy.multiply(cdy));
+
+    DoubleDouble sum = alift.selfMultiply(bcdet)
+    .selfAdd(blift.selfMultiply(cadet))
+    .selfAdd(clift.selfMultiply(abdet));
+    
+    boolean isInCircle = sum.doubleValue() > 0;
+
+    return isInCircle;
   }
 
   /**
