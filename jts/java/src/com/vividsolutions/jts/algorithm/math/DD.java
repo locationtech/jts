@@ -3,7 +3,7 @@ package com.vividsolutions.jts.algorithm.math;
 import java.io.*;
 
 /**
- * Immutable, extended-precision floating-point numbers 
+ * Implements extended-precision floating-point numbers 
  * which maintain 106 bits (approximately 30 decimal digits) of precision. 
  * <p>
  * A DoubleDouble uses a representation containing two double-precision values.
@@ -45,8 +45,9 @@ import java.io.*;
  * care to ensure that aliasing errors are not created
  * and constant values are not changed.
  * <p>
- * This implementation uses algorithms originally designed variously by Knuth, Kahan, Dekker, and
- * Linnainmaa.  Douglas Priest developed the first C implementation of these techniques. 
+ * This implementation uses algorithms originally designed variously by 
+ * Knuth, Kahan, Dekker, and Linnainmaa.  
+ * Douglas Priest developed the first C implementation of these techniques. 
  * Other more recent C++ implementation are due to Keith M. Briggs and David Bailey et al.
  * 
  * <h3>References</h3>
