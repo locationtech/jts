@@ -194,6 +194,8 @@ public class GeometryEditPanel extends JPanel
 //    if (event.getPoint().x < 100) return null;
     Coordinate pt = viewport.toModelCoordinate(event.getPoint());
     double toleranceInModel = EditVertexTool.TOLERANCE_PIXELS / getViewport().getScale();
+    // avoid wierd scale issues
+    if (toleranceInModel <= 0.0) return null;
     return GeometryLocationsWriter.writeLocation(getLayerList(), pt, toleranceInModel);
 //    return viewport.toModel(event.getPoint()).toString();
 //    return null;
@@ -316,6 +318,9 @@ public class GeometryEditPanel extends JPanel
     }
 
     double averageExtent = (zoomEnv.getWidth() + zoomEnv.getHeight()) / 2d;
+    // fix to allow zooming to points
+    if (averageExtent == 0.0)
+      averageExtent = 1.0;
     double buffer = averageExtent * 0.03;
     
     zoomEnv.expandToInclude(zoomEnv.getMaxX() + buffer,
