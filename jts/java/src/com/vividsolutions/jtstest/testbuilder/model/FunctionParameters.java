@@ -11,7 +11,7 @@ public class FunctionParameters {
     StringBuffer buf = new StringBuffer();
     for (int i = 0; i < param.length; i++) {
       if (i > 0) buf.append(", ");
-      buf.append(toString(param[i].toString()));
+      buf.append(toString(param[i]));
     }
     return buf.toString();
   }
