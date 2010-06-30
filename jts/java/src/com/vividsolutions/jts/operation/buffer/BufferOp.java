@@ -291,6 +291,7 @@ public class BufferOp
         bufferReducedPrecision(precDigits);
       }
       catch (TopologyException ex) {
+      	// update the saved exception to reflect the new input geometry
         saveException = ex;
         // don't propagate the exception - it will be detected by fact that resultGeometry is null
       }
@@ -312,7 +313,7 @@ public class BufferOp
       saveException = ex;
       // don't propagate the exception - it will be detected by fact that resultGeometry is null
 
-      // testing - propagate exception
+      // testing ONLY - propagate exception
       //throw ex;
     }
   }
