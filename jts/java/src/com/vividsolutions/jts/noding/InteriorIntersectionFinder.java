@@ -32,6 +32,9 @@
  */
 package com.vividsolutions.jts.noding;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.algorithm.LineIntersector;
 //import com.vividsolutions.jts.util.Debug;
@@ -45,10 +48,12 @@ import com.vividsolutions.jts.algorithm.LineIntersector;
 public class InteriorIntersectionFinder
     implements SegmentIntersector
 {
+	private boolean findAllIntersections = false;
 	private boolean isCheckEndSegmentsOnly = false;
   private LineIntersector li;
   private Coordinate interiorIntersection = null;
   private Coordinate[] intSegments = null;
+  private List intersections = new ArrayList();
 
   /**
    * Creates an intersection finder which finds an interior intersection
@@ -154,6 +159,8 @@ public class InteriorIntersectionFinder
       	intSegments[3] = p11;
       	
       	interiorIntersection = li.getIntersection(0);
+      	if (findAllIntersections)
+      		intersections.add(interiorIntersection);
       }
     }
   }
@@ -175,6 +182,7 @@ public class InteriorIntersectionFinder
   
   public boolean isDone()
   { 
+  	if (findAllIntersections) return false;
   	return interiorIntersection != null;
   }
 }

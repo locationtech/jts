@@ -56,6 +56,7 @@ public class ComponentLocater {
       }
       return;
     }
+    // TODO: make this robust - do not use Geometry.intersects()
     // atomic component - check for match
     if (aoi.intersects(geom))
       components.add(new GeometryLocation(parentGeom, geom, 

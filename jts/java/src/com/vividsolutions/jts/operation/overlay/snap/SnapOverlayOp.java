@@ -63,12 +63,22 @@ public class SnapOverlayOp
 
   public Geometry getResultGeometry(int opCode)
   {
-    Geometry[] prepGeom = snap();
+  	Geometry[] selfSnapGeom = new Geometry[] { selfSnap(geom[0]), selfSnap(geom[1])};
+    Geometry[] prepGeom = snap(selfSnapGeom);
     Geometry result = OverlayOp.overlayOp(prepGeom[0], prepGeom[1], opCode);
     return prepareResult(result);	
   }
   
-  private Geometry[] snap()
+  private Geometry selfSnap(Geometry geom)
+  {
+    GeometrySnapper snapper0 = new GeometrySnapper(geom);
+    Geometry snapGeom = snapper0.snapTo(geom, snapTolerance);
+    System.out.println("Self-snapped: " + snapGeom);
+    System.out.println();
+    return snapGeom;
+  }
+  
+  private Geometry[] snap(Geometry[] geom)
   {
     Geometry[] remGeom = removeCommonBits(geom);
   	

@@ -163,10 +163,13 @@ public class LineStringSnapper
       seg.p1 = (Coordinate) srcCoords.get(i + 1);
 
       /**
-       * If the snap pt is already in the src list, don't snap
+       * Check if the snap pt is equal to one of the segment endpoints.
+       * 
+       * If the snap pt is already in the src list, don't snap at all.
        */
       if (seg.p0.equals2D(snapPt) || seg.p1.equals2D(snapPt))
         return -1;
+      	//continue;
 
       double dist = seg.distance(snapPt);
       if (dist < snapTolerance && dist < minDist) {

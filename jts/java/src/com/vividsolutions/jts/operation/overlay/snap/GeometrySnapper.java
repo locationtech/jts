@@ -14,7 +14,7 @@ import com.vividsolutions.jts.geom.util.GeometryTransformer;
  */
 public class GeometrySnapper
 {
-  private static final double SNAP_PRECISION_FACTOR = 10e-10;
+  private static final double SNAP_PRECISION_FACTOR = 1e-4;
 
   /**
    * Estimates the snap tolerance for a Geometry, taking into account its precision model.
