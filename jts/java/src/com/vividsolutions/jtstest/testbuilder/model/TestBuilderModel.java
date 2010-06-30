@@ -145,6 +145,7 @@ public class TestBuilderModel
     Geometry g = IOUtil.readMultipleGeometriesFromFile(filename, getGeometryFactory());
     TestCaseEdit testCaseEdit = (TestCaseEdit) getCurrentTestCaseEdit();
     testCaseEdit.setGeometry(geomIndex, g);
+    testCaseEdit.setName(filename);
     getGeometryEditModel().setTestCase(testCaseEdit);
   }
   
