@@ -52,6 +52,9 @@ import com.vividsolutions.jts.operation.buffer.OffsetCurveSetBuilder;
 import com.vividsolutions.jts.operation.buffer.validate.BufferResultValidator;
 
 public class BufferFunctions {
+	
+	public static String bufferDescription = "Buffers a geometry by a distance";
+	
 	public static Geometry buffer(Geometry g, double distance)		{		return g.buffer(distance);	}
 	
 	public static Geometry bufferWithParams(Geometry g, Double distance, 

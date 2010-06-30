@@ -48,6 +48,10 @@ import com.vividsolutions.jtstest.util.*;
 public class StaticMethodGeometryFunction
 	extends BaseGeometryFunction
 {
+	private static final String FUNCTIONS_SUFFIX = "Functions";
+	private static final String PARAMETERS_SUFFIX = "Parameters";
+	private static final String DESCRIPTION_SUFFIX = "Description";
+	
 	public static StaticMethodGeometryFunction createFunction(Method method)
 	{
 		Assert.isTrue(Geometry.class.isAssignableFrom((method.getParameterTypes())[0]));
@@ -56,25 +60,49 @@ public class StaticMethodGeometryFunction
 		
 		String category = extractCategory(ClassUtil.getClassname(clz));
 		String funcName = method.getName();
+		String description = extractDescription(method);
 		String[] paramNames = extractParamNames(method);
 		Class[] paramTypes = extractParamTypes(method);
 		Class returnType = method.getReturnType();
-		return new StaticMethodGeometryFunction(category, funcName, paramNames, paramTypes,
+		
+		return new StaticMethodGeometryFunction(category, funcName, 
+				description,
+				paramNames, paramTypes,
 				returnType, method);    
 	}
 	
 	private static String extractCategory(String className)
 	{
-		String trim = StringUtil.removeFromEnd(className, "Functions");
+		String trim = StringUtil.removeFromEnd(className, FUNCTIONS_SUFFIX);
 		return trim;
 	}
 	
+	/**
+	 * Java doesn't permit accessing the original code parameter names, unfortunately.
+	 * 
+	 * @param method
+	 * @return
+	 */
 	private static String[] extractParamNames(Method method)
 	{
+		// try to get names from predefined ones first
+		String paramsName = method.getName() + PARAMETERS_SUFFIX;
+		String[] codeName = ClassUtil.getStringArrayClassField(method.getDeclaringClass(), paramsName);
+		if (codeName != null) return codeName;
+		
+		// Synthesize default names
 		String[] name = new String[method.getParameterTypes().length - 1];
+		// Skip first parameter - it is the target geometry
 		for (int i = 1; i < name.length; i++)
 			name[i] = "arg" + i;
 		return name;
+	}
+	
+	private static String extractDescription(Method method)
+	{
+		// try to get names from predefined ones first
+		String paramsName = method.getName() + DESCRIPTION_SUFFIX;
+		return ClassUtil.getStringClassField(method.getDeclaringClass(), paramsName);
 	}
 	
 	private static Class[] extractParamTypes(Method method)
@@ -91,12 +119,13 @@ public class StaticMethodGeometryFunction
 	public StaticMethodGeometryFunction(
 			String category,
 			String name, 
+			String description,
 			String[] parameterNames, 
 			Class[] parameterTypes, 
 			Class returnType,
 			Method method)
 	{
-		super(category, name, parameterNames, parameterTypes, returnType);
+		super(category, name, description, parameterNames, parameterTypes, returnType);
     this.method = method;
 	}
 	

@@ -56,6 +56,7 @@ implements GeometryFunction, Comparable
   
 	protected String category  = null;
 	protected String name;
+	protected String description;
 	protected String[] parameterNames;
 	protected Class[] parameterTypes;
 	protected Class returnType;
@@ -74,6 +75,22 @@ implements GeometryFunction, Comparable
 		this.returnType = returnType;
 	}
 	
+	public BaseGeometryFunction(
+			String category,
+			String name, 
+			String description,
+			String[] parameterNames, 
+			Class[] parameterTypes, 
+			Class returnType)
+	{
+		this.category = category;
+		this.name = name;
+		this.description = description;
+		this.parameterNames = parameterNames;
+		this.parameterTypes = parameterTypes;
+		this.returnType = returnType;
+	}
+	
 	public String getCategory()
 	{
 		return category;
@@ -82,6 +99,11 @@ implements GeometryFunction, Comparable
 	public String getName()
 	{
 		return name;
+	}
+	
+	public String getDescription()
+	{
+		return description;
 	}
 	
 	public String[] getParameterNames()

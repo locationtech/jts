@@ -60,6 +60,13 @@ public interface GeometryFunction
 	String getName();
 	
 	/**
+	 * Gets the description of this function
+	 * 
+	 * @return the name of the function
+	 */
+	String getDescription();
+	
+	/**
 	 * Gets the parameter names for this function
 	 * 
 	 * @return the names of the function parameters

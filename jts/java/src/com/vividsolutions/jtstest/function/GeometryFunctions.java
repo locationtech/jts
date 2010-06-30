@@ -44,6 +44,7 @@ import com.vividsolutions.jts.operation.overlay.snap.*;
  */
 public class GeometryFunctions 
 {
+	public static String lengthDescription = "Computes the length of perimeter of a Geometry";
 	public static double length(Geometry g)				{		return g.getLength();	}
 	public static double area(Geometry g)					{		return g.getArea();	}
 	

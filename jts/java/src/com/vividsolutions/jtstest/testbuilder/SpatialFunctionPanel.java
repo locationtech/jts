@@ -274,6 +274,17 @@ extends JPanel
   {
     currentFunc = func;
     updateParameterControls();
+    execButton.setToolTipText(functionDescription(func));
+  }
+  
+  private String functionDescription(GeometryFunction func)
+  {
+  	String txt = "<b>" + func.getSignature() + "</b>";
+  	String desc = func.getDescription();
+  	if (desc != null) {
+  		txt += "<br><br>" + desc;
+  	}
+  	return "<html>" + txt + "</html>";
   }
   
   private void updateParameterControls()
