@@ -36,6 +36,7 @@ public class HotPixel
   private double maxx;
   private double miny;
   private double maxy;
+  
   /**
    * The corners of the hot pixel, in the order:
    *  10
@@ -45,6 +46,13 @@ public class HotPixel
 
   private Envelope safeEnv = null;
 
+  /**
+   * Creates a new hot pixel.
+   * 
+   * @param pt the coordinate at the centre of the pixel
+   * @param scaleFactor the scaleFactor determining the pixel size
+   * @param li the intersector to use for testing intersection with line segments
+   */
   public HotPixel(Coordinate pt, double scaleFactor, LineIntersector li) {
     originalPt = pt;
     this.pt = pt;
@@ -59,17 +67,26 @@ public class HotPixel
     initCorners(this.pt);
   }
 
+  /**
+   * Gets the coordinate this hot pixel is based at.
+   * 
+   * @return the coordinate of the pixel
+   */
   public Coordinate getCoordinate() { return originalPt; }
 
+  private static final double SAFE_ENV_EXPANSION_FACTOR = 0.75;
+  
   /**
    * Returns a "safe" envelope that is guaranteed to contain the hot pixel.
+   * The envelope returned will be larger than the exact envelope of the 
+   * pixel.
    * 
    * @return an envelope which contains the hot pixel
    */
   public Envelope getSafeEnvelope()
   {
     if (safeEnv == null) {
-      double safeTolerance = .75 / scaleFactor;
+      double safeTolerance = SAFE_ENV_EXPANSION_FACTOR / scaleFactor;
       safeEnv = new Envelope(originalPt.x - safeTolerance,
                              originalPt.x + safeTolerance,
                              originalPt.y - safeTolerance,
@@ -98,6 +115,14 @@ public class HotPixel
     return (double) Math.round(val * scaleFactor);
   }
 
+  /**
+   * Tests whether the line segment (p0-p1) 
+   * intersects this hot pixel.
+   * 
+   * @param p0 the first coordinate of the line segment to test
+   * @param p1 the second coordinate of the line segment to test
+   * @return true if the line segment intersects this hot pixel
+   */
   public boolean intersects(Coordinate p0, Coordinate p1)
   {
     if (scaleFactor == 1.0)
@@ -114,7 +139,7 @@ public class HotPixel
     pScaled.y = scale(p.y);
   }
 
-  public boolean intersectsScaled(Coordinate p0, Coordinate p1)
+  private boolean intersectsScaled(Coordinate p0, Coordinate p1)
   {
     double segMinx = Math.min(p0.x, p1.x);
     double segMaxx = Math.max(p0.x, p1.x);
