@@ -104,7 +104,7 @@ public class TestListPanel extends JPanel {
               name = "";
           }
           int testSkey = 1 + JTSTestBuilderFrame.instance().getModel().getTestCases().indexOf(testCase);
-          String nameFinal = "Test " + testSkey + " ( " + testCaseSignatureHTML(testCase) + " )";
+          String nameFinal = "Test " + testSkey + " - " + testCaseSignatureHTML(testCase);
           if (name != "")
           	nameFinal = nameFinal + " > " + name;
           return "<html>" + nameFinal + "<html>";
@@ -113,7 +113,7 @@ public class TestListPanel extends JPanel {
         private String testCaseSignatureHTML(Testable testCase)
         {
         	return "<font color='blue'>" + geometrySignature(testCase.getGeometry(0)) + "</font>" 
-        	+ " : "
+        	+ " :: "
         	+ "<font color='red'>" + geometrySignature(testCase.getGeometry(1)) + "</font>";
         }
         
@@ -123,8 +123,11 @@ public class TestListPanel extends JPanel {
         		return "";
         	String sig = geom.getGeometryType();
         	if (geom instanceof GeometryCollection) {
-        		sig = sig + "[" + geom.getNumGeometries() + "]";
+        		sig += "[" + geom.getNumGeometries() + "]";
         	}
+          else {
+            sig += "(" + geom.getNumPoints() + ")";
+          }
         	return sig;
         }
     }
