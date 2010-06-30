@@ -57,6 +57,7 @@ public class SnapIfNeededOverlayOp
   {
     Geometry result = null;
     boolean isSuccess = false;
+    RuntimeException savedException = null;
     try {
       result = OverlayOp.overlayOp(geom[0], geom[1], opCode); 
       boolean isValid = true;
@@ -66,14 +67,24 @@ public class SnapIfNeededOverlayOp
       	isSuccess = true;
     
     }
-    catch (Exception ex) {
+    catch (RuntimeException ex) {
+    	savedException = ex;
     	// ignore this exception, since the operation will be rerun
 //    	System.out.println(ex.getMessage());
 //    	ex.printStackTrace();
+    	System.out.println(ex.getMessage());
+    	System.out.println("Geom 0: " + geom[0]);
+    	System.out.println("Geom 1: " + geom[1]);
     }
     if (! isSuccess) {
-    	// this may still throw an exception - just let it go if it does
-      result = SnapOverlayOp.overlayOp(geom[0], geom[1], opCode);
+    	// this may still throw an exception
+    	// if so, throw the original exception since it has the input coordinates
+    	try {
+    		result = SnapOverlayOp.overlayOp(geom[0], geom[1], opCode);
+    	}
+    	catch (RuntimeException ex) {
+    		throw savedException;
+    	}
     }
     return result;
   }
