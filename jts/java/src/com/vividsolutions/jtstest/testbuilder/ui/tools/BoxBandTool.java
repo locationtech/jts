@@ -127,6 +127,13 @@ public abstract class BoxBandTool extends BasicTool
     return new Envelope(start, end);
   }
 
+  /**
+   * Getes the coordinates for the rectangle
+   * starting with the lower left point.
+   * The coordinates are oriented CW.
+   * 
+   * @return the coordinates for the rectangle
+   */
   protected List getCoordinates()
   {
     Envelope env = getEnvelope();
@@ -137,6 +144,46 @@ public abstract class BoxBandTool extends BasicTool
     coords.add(new Coordinate(env.getMaxX(), env.getMaxY()));
     coords.add(new Coordinate(env.getMaxX(), env.getMinY()));
     coords.add(new Coordinate(env.getMinX(), env.getMinY()));
+    return coords;
+  }
+  
+  /**
+   * Gets the coordinates for the rectangle
+   * starting at the first point clicked.
+   * The coordinates are oriented CW.
+   * 
+   * @return the coordinates for the rectangle
+   */
+  protected List getCoordinatesFromStart()
+  {
+    Coordinate start = snapInModel(zoomBoxStart);
+    Coordinate end = snapInModel(zoomBoxEnd);
+    
+    boolean isCW = (start.x < end.x && start.y < end.y)
+    || (start.x > end.x && start.y > end.y);
+    
+    Coordinate mid1 = new Coordinate(start.x, end.y);
+    Coordinate mid2 = new Coordinate(end.x, start.y);
+    
+    /**
+     * Form rectangle starting at start point, 
+     * and oriented CW.
+     */
+    List coords = new ArrayList();
+    coords.add(new Coordinate(start));
+    if (isCW) 
+      coords.add(mid1);
+    else 
+      coords.add(mid2);
+    
+    coords.add(new Coordinate(end));
+    
+    if (isCW) 
+      coords.add(mid2);
+    else 
+      coords.add(mid1);
+
+    coords.add(new Coordinate(start));
     return coords;
   }
   

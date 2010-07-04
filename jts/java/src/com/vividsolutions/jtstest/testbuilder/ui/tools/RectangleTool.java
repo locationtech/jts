@@ -20,7 +20,7 @@ extends BoxBandTool
   protected void gestureFinished() throws Exception
   {      
     panel().getGeomModel().setGeometryType(GeometryType.POLYGON);
-    geomModel().addComponent(getCoordinates());
+    geomModel().addComponent(getCoordinatesFromStart());
     panel().updateGeom();
   }
 
