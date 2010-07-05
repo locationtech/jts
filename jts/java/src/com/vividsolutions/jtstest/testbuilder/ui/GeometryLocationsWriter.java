@@ -111,6 +111,12 @@ public class GeometryLocationsWriter
     	
     	buf.append("[" + loc.pathString() + "]  ");
       buf.append(comp.getGeometryType().toUpperCase());
+      if (comp instanceof GeometryCollection) {
+        buf.append("[" + comp.getNumGeometries() + "]");
+      }
+      else {
+        buf.append("(" + comp.getNumPoints() + ")");
+      }
       if (comp.getUserData() != null) {
       	buf.append("  Data: ");
       	buf.append(comp.getUserData().toString());
@@ -149,14 +155,15 @@ public class GeometryLocationsWriter
     boolean isFirst = true;
     int count = 0;
     for (Iterator i = locs.iterator(); i.hasNext(); ) {
-    	GeometryLocation vertLoc = (GeometryLocation) i.next();
+    	GeometryLocation loc = (GeometryLocation) i.next();
 
     	if (! isFirst) {
     		buf.append(eol);
     	}
 
     	isFirst = false;
-    	buf.append(vertLoc.toFacetString());
+      buf.append(loc.isVertex() ? "Vert: " : "Seg:  ");
+    	buf.append(loc.toFacetString());
       if (count++ > MAX_ITEMS_TO_DISPLAY) {
         buf.append(eol + " & more..." + eol);
         break;
