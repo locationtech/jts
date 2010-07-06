@@ -46,9 +46,14 @@ import com.vividsolutions.jts.planargraph.Node;
 import com.vividsolutions.jts.util.Assert;
 
 /**
- * Merges a set of fully noded LineStrings. Mergin stops at nodes of degree 1
- * or 3 or more. The exception is an isolated loop, which only has degree-2 nodes,
- * in which case one a node is chosen as a starting point. The direction of each
+ * Merges a collection of linear components to form maximal-length linestrings. 
+ * <p> 
+ * Merging stops at nodes of degree 1 or degree 3 or more.
+ * In other words, all nodes of degree 2 are merged together. 
+ * The exception is in the case of an isolated loop, which only has degree-2 nodes.
+ * In this case one of the nodes is chosen as a starting point.
+ * <p> 
+ * The direction of each
  * merged LineString will be that of the majority of the LineStrings from which it
  * was derived.
  * <p>
@@ -182,9 +187,9 @@ public class LineMerger
   }
   
   /**
-   * Returns the LineStrings built by the merging process.
+   * Gets the {@link LineString}s created by the merging process.
    * 
-   * @return the collection of merged lines
+   * @return the collection of merged LineStrings
    */
   public Collection getMergedLineStrings() {
     merge();

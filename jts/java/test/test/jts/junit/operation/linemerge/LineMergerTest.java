@@ -97,6 +97,12 @@ public class LineMergerTest extends TestCase {
       new String[]{});
   }  
 
+  public void testSingleUniquePoint() {
+    doTest(new String[]{"LINESTRING (10642 31441, 10642 31441)", "LINESTRING EMPTY"},
+      new String[]{});
+  }    
+  
+
   private void doTest(String[] inputWKT, String[] expectedOutputWKT) {
     doTest(inputWKT, expectedOutputWKT, true);
   }
