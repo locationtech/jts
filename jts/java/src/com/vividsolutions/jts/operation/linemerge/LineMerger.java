@@ -46,18 +46,19 @@ import com.vividsolutions.jts.planargraph.Node;
 import com.vividsolutions.jts.util.Assert;
 
 /**
- * Sews together a set of fully noded LineStrings. Sewing stops at nodes of degree 1
- * or 3 or more -- the exception is an isolated loop, which only has degree-2 nodes,
- * in which case a node is simply chosen as a starting point. The direction of each
+ * Merges a set of fully noded LineStrings. Mergin stops at nodes of degree 1
+ * or 3 or more. The exception is an isolated loop, which only has degree-2 nodes,
+ * in which case one a node is chosen as a starting point. The direction of each
  * merged LineString will be that of the majority of the LineStrings from which it
  * was derived.
  * <p>
- * Any dimension of Geometry is handled -- the constituent linework is extracted to 
+ * Any dimension of Geometry is handled - the constituent linework is extracted to 
  * form the edges. The edges must be correctly noded; that is, they must only meet
- * at their endpoints.  The LineMerger will still run on incorrectly noded input
- * but will not form polygons from incorrected noded edges.
+ * at their endpoints.  The LineMerger will accept non-noded input
+ * but will not merge non-noded edges.
  * <p>
- * <b>NOTE:</b>once merging has been performed, no more 
+ * Input lines which are empty or contain only a single unique coordinate are not included
+ * in the merging.
  *
  * @version 1.7
  */
@@ -68,9 +69,20 @@ public class LineMerger
   private GeometryFactory factory = null;
   
   /**
+   * Creates a new line merger.
+   *
+   */
+  public LineMerger()
+  {
+  	
+  }
+  
+  /**
    * Adds a Geometry to be processed. May be called multiple times.
    * Any dimension of Geometry may be added; the constituent linework will be
    * extracted.
+   * 
+   * @param a geometry to be line-merged
    */  
   public void add(Geometry geometry) {
     geometry.apply(new GeometryComponentFilter() {
@@ -85,6 +97,8 @@ public class LineMerger
    * Adds a collection of Geometries to be processed. May be called multiple times.
    * Any dimension of Geometry may be added; the constituent linework will be
    * extracted.
+   * 
+   * @param geometries the geometries to be line-merged
    */
   public void add(Collection geometries) 
   {
@@ -169,6 +183,8 @@ public class LineMerger
   
   /**
    * Returns the LineStrings built by the merging process.
+   * 
+   * @return the collection of merged lines
    */
   public Collection getMergedLineStrings() {
     merge();
