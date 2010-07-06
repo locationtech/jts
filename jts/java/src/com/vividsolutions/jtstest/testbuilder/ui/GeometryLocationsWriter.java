@@ -2,6 +2,8 @@ package com.vividsolutions.jtstest.testbuilder.ui;
 
 import java.awt.geom.*;
 import java.util.*;
+
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 import com.vividsolutions.jtstest.testbuilder.geom.*;
@@ -108,8 +110,11 @@ public class GeometryLocationsWriter
     	
     	GeometryLocation loc = (GeometryLocation) i.next();
     	Geometry comp = loc.getComponent();
-    	
-    	buf.append("[" + loc.pathString() + "]  ");
+      
+      String path = loc.pathString();
+      path = path.length() == 0 ? "" : path;
+    	buf.append("[" + path + "]  ");
+      
       buf.append(comp.getGeometryType().toUpperCase());
       if (comp instanceof GeometryCollection) {
         buf.append("[" + comp.getNumGeometries() + "]");
@@ -140,9 +145,10 @@ public class GeometryLocationsWriter
     List locs = locater.getLocations(p, tolerance);
     List vertexLocs = FacetLocater.filterVertexLocations(locs);
     
-    // only show vertices, if some are present
+    // only show vertices if some are present, to avoid confusing with segments
     if (! vertexLocs.isEmpty()) 
       return writeFacetLocations(vertexLocs);
+    
     // write 'em all
     return writeFacetLocations(locs);
   }
@@ -162,7 +168,22 @@ public class GeometryLocationsWriter
     	}
 
     	isFirst = false;
-      buf.append(loc.isVertex() ? "Vert: " : "Seg:  ");
+      
+      String compType = "";
+      if (loc.getComponent() instanceof LinearRing) {
+        boolean isCCW = CGAlgorithms.isCCW(loc.getComponent().getCoordinates());
+        compType = "Ring" 
+          + (isCCW ? "-CCW" : "-CW ")
+            + " ";
+      }
+      else if (loc.getComponent() instanceof LineString) { 
+        compType = "Line  ";
+      }
+      else if (loc.getComponent() instanceof Point) { 
+        compType = "Point ";
+      }
+      buf.append(compType);
+      buf.append(loc.isVertex() ? "Vert" : "Seg");
     	buf.append(loc.toFacetString());
       if (count++ > MAX_ITEMS_TO_DISPLAY) {
         buf.append(eol + " & more..." + eol);
