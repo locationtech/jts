@@ -67,6 +67,16 @@ public class InteriorIntersectionFinder
     interiorIntersection = null;
   }
 
+  public void setFindAllIntersections(boolean findAllIntersections)
+  {
+    this.findAllIntersections = findAllIntersections;
+  }
+  
+  public List getIntersections()
+  {
+    return intersections;
+  }
+  
   /**
    * Sets whether only end segments should be tested for interior intersection.
    * This is a performance optimization that may be used if
@@ -159,8 +169,7 @@ public class InteriorIntersectionFinder
       	intSegments[3] = p11;
       	
       	interiorIntersection = li.getIntersection(0);
-      	if (findAllIntersections)
-      		intersections.add(interiorIntersection);
+      	intersections.add(interiorIntersection);
       }
     }
   }

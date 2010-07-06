@@ -34,6 +34,7 @@
 package com.vividsolutions.jts.noding;
 
 import java.util.*;
+
 import com.vividsolutions.jts.algorithm.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.*;
@@ -42,15 +43,15 @@ import com.vividsolutions.jts.io.*;
 /**
  * Validates that a collection of {@link SegmentString}s is correctly noded.
  * Indexing is used to improve performance.
- * This class assumes that at least one round of noding has already been performed
- * (which may still leave intersections, due to rounding issues).
+ * In the most common use case, validation stops after a single 
+ * non-noded intersection is detected.
  * Does NOT check a-b-a collapse situations. 
- * Also does not check for endpt-interior vertex intersections.
+ * Also does not check for endpoint-interior vertex intersections.
  * This should not be a problem, since the noders should be
  * able to compute intersections between vertices correctly.
- * User may either test the valid condition, or request that a 
- * {@link TopologyException} 
- * be thrown.
+ * <p>
+ * The client may either test the {@link #isValid} condition, 
+ * or request that a suitable {@link TopologyException} be thrown.
  *
  * @version 1.7
  */
@@ -59,12 +60,28 @@ public class FastNodingValidator
   private LineIntersector li = new RobustLineIntersector();
 
   private Collection segStrings;
+  private boolean findAllIntersections = false;
   private InteriorIntersectionFinder segInt = null;
   private boolean isValid = true;
   
+  /**
+   * Creates a new noding validator for a given set of linework.
+   * 
+   * @param segStrings a collection of {@link SegmentString}s
+   */
   public FastNodingValidator(Collection segStrings)
   {
     this.segStrings = segStrings;
+  }
+
+  public void setFindAllIntersections(boolean findAllIntersections)
+  {
+    this.findAllIntersections = findAllIntersections;
+  }
+  
+  public List getIntersections()
+  {
+    return segInt.getIntersections();
   }
 
   /**
@@ -125,6 +142,7 @@ public class FastNodingValidator
   	 */
   	isValid = true;
   	segInt = new InteriorIntersectionFinder(li);
+    segInt.setFindAllIntersections(findAllIntersections);
   	MCIndexNoder noder = new MCIndexNoder();
   	noder.setSegmentIntersector(segInt);
   	noder.computeNodes(segStrings);

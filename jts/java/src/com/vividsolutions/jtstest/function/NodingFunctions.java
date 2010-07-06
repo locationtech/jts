@@ -2,6 +2,9 @@ package com.vividsolutions.jtstest.function;
 
 import java.util.*;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
+import com.vividsolutions.jts.noding.BasicSegmentString;
+import com.vividsolutions.jts.noding.FastNodingValidator;
 import com.vividsolutions.jts.noding.snapround.GeometryNoder;
 import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
 
@@ -34,4 +37,31 @@ public class NodingFunctions
     return FunctionsUtil.getFactoryOrDefault(geom).buildGeometry(lines);
 	}
 	
+  public static Geometry checkNoding(Geometry geom)
+  {
+    List segs = createSegmentStrings(geom);
+    FastNodingValidator nv = new FastNodingValidator(segs);
+    nv.setFindAllIntersections(true);
+    nv.isValid();
+    List intPts = nv.getIntersections();
+    Point[] pts = new Point[intPts.size()];
+    for (int i = 0; i < intPts.size(); i++) {
+      Coordinate coord = (Coordinate) intPts.get(i);
+      // use default factory in case intersections are not fixed
+      pts[i] = FunctionsUtil.getFactoryOrDefault(null).createPoint(coord);
+    }
+    return FunctionsUtil.getFactoryOrDefault(null).createMultiPoint(
+        pts);
+  }
+  
+  private static List createSegmentStrings(Geometry geom)
+  {
+    List segs = new ArrayList();
+    List lines = LinearComponentExtracter.getLines(geom);
+    for (Iterator i = lines.iterator(); i.hasNext(); ) {
+      LineString line = (LineString) i.next();
+      segs.add(new BasicSegmentString(line.getCoordinates(), null));
+    }
+    return segs;
+  }
 }
