@@ -49,14 +49,23 @@ import com.vividsolutions.jts.planargraph.PlanarGraph;
  *
  * @version 1.7
  */
-public class LineMergeGraph extends PlanarGraph {
+public class LineMergeGraph extends PlanarGraph 
+{
   /**
    * Adds an Edge, DirectedEdges, and Nodes for the given LineString representation
    * of an edge. 
+   * Empty lines or lines with all coordinates equal are not added.
+   * 
+   * @param lineString the linestring to add to the graph
    */
   public void addEdge(LineString lineString) {
     if (lineString.isEmpty()) { return; }
+    
     Coordinate[] coordinates = CoordinateArrays.removeRepeatedPoints(lineString.getCoordinates());
+    
+    // don't add lines with all coordinates equal
+    if (coordinates.length <= 1) return;
+    
     Coordinate startCoordinate = coordinates[0];
     Coordinate endCoordinate = coordinates[coordinates.length - 1];
     Node startNode = getNode(startCoordinate);
