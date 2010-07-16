@@ -225,7 +225,7 @@ public class JTSTestBuilderFrame extends JFrame
         });
     
     testListPanel.populateList();
-    refreshNavBar();
+    updateTestCaseView();
     updatePrecisionModelDescription();
   }
   
@@ -241,7 +241,7 @@ public class JTSTestBuilderFrame extends JFrame
 
   public void setCurrentTestCase(TestCaseEdit testCase) {
     tbModel.setCurrentTestCase(testCase);
-    refreshNavBar();
+    updateTestCaseView();
   }
 
   public TestCasePanel getTestCasePanel() {
@@ -320,7 +320,7 @@ public class JTSTestBuilderFrame extends JFrame
     }
     tbModel.openXmlFilesAndDirectories(files);
     reportProblemsParsingXmlTestFile(tbModel.getParsingProblems());
-    refreshNavBar();
+    updateTestCaseView();
     testListPanel.populateList();
     updatePrecisionModelDescription();
   }
@@ -363,30 +363,23 @@ public class JTSTestBuilderFrame extends JFrame
   void btnNewCase_actionPerformed(ActionEvent e) {
     tbModel.createNew();
     showGeomsTab();
-    refreshNavBar();
+    updateTestCaseView();
     testListPanel.populateList();
-  }
-
-  void refreshNavBar() {
-    testCasePanel.setTestCase(tbModel.getCurrentTestCaseEdit());
-    getTestCasePanel().setCurrentTestCaseIndex(tbModel.getCurrentTestIndex() + 1);
-    getTestCasePanel().setMaxTestCaseIndex(tbModel.getTestListSize());
-    updateWktPanel();
   }
 
   void btnPrevCase_actionPerformed(ActionEvent e) {
     tbModel.prevCase();
-    refreshNavBar();
+    updateTestCaseView();
   }
 
   void btnNextCase_actionPerformed(ActionEvent e) {
     tbModel.nextCase();
-     refreshNavBar();
+     updateTestCaseView();
   }
 
   void btnCopyCase_actionPerformed(ActionEvent e) {
     tbModel.copyCase();
-    refreshNavBar();
+    updateTestCaseView();
     testListPanel.populateList();
   }
 
@@ -397,7 +390,7 @@ public class JTSTestBuilderFrame extends JFrame
       return;
     tbModel.addCase(new Geometry[] { (Geometry) currResult, null }, 
     		"Result of " + tbModel.getOpName());
-    refreshNavBar();
+    updateTestCaseView();
     testListPanel.populateList();  
   }
   
@@ -408,7 +401,7 @@ public class JTSTestBuilderFrame extends JFrame
 
   void btnDeleteCase_actionPerformed(ActionEvent e) {
     tbModel.deleteCase();
-    refreshNavBar();
+    updateTestCaseView();
     testListPanel.populateList();
   }
 
@@ -639,7 +632,7 @@ public class JTSTestBuilderFrame extends JFrame
 
   void deleteAllTestCasesMenuItem_actionPerformed(ActionEvent e) {
     tbModel.initTestCaseList();
-    refreshNavBar();
+    updateTestCaseView();
     testListPanel.populateList();
   }
 
@@ -816,10 +809,8 @@ public class JTSTestBuilderFrame extends JFrame
     inputTabbedPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e)
       {
-        if (inputTabbedPane.getComponent(inputTabbedPane.getSelectedIndex()) == statsPanel) {
-          statsPanel.refresh();        	
-        }  	
-      }
+        updateStatsPanelIfVisible();
+        }
     });
     
     jSplitPane1.setDividerLocation(500);
@@ -833,6 +824,13 @@ public class JTSTestBuilderFrame extends JFrame
     contentPane.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
   }
 
+  private void updateStatsPanelIfVisible()
+  {
+    if (inputTabbedPane.getComponent(inputTabbedPane.getSelectedIndex()) == statsPanel) {
+      statsPanel.refresh();         
+    }   
+  }
+  
   private void updateGeometry() {
     testCasePanel.relatePanel.clearResults();
     testCasePanel.setTestCase(tbModel.getCurrentTestCaseEdit());
@@ -844,6 +842,18 @@ public class JTSTestBuilderFrame extends JFrame
     wktPanel.setText(g0, 0);
     Geometry g1 = tbModel.getGeometryEditModel().getGeometry(1);
     wktPanel.setText(g1, 1);
+  }
+
+  private void updatePrecisionModelDescription() {
+    testCasePanel.setPrecisionModelDescription(tbModel.getPrecisionModel().toString());
+  }
+
+  void updateTestCaseView() {
+    testCasePanel.setTestCase(tbModel.getCurrentTestCaseEdit());
+    getTestCasePanel().setCurrentTestCaseIndex(tbModel.getCurrentTestIndex() + 1);
+    getTestCasePanel().setMaxTestCaseIndex(tbModel.getTestListSize());
+    updateWktPanel();
+    updateStatsPanelIfVisible();
   }
 
   public void displayInfo(Coordinate modelPt)
@@ -962,10 +972,6 @@ public class JTSTestBuilderFrame extends JFrame
     tbModel.getGeometryEditModel().setTestCase(testCaseEdit);
   }
 
-
-  private void updatePrecisionModelDescription() {
-    testCasePanel.setPrecisionModelDescription(tbModel.getPrecisionModel().toString());
-  }
 
   void menuRemoveDuplicatePoints_actionPerformed(ActionEvent e) {
     CleanDuplicatePoints clean = new CleanDuplicatePoints();
