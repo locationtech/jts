@@ -149,6 +149,88 @@ public class TestBuilderModel
     getGeometryEditModel().setTestCase(testCaseEdit);
   }
   
+  public void loadGeometryText(String wktA, String wktB) throws ParseException, IOException {
+    MultiFormatReader reader = new MultiFormatReader(new GeometryFactory(getPrecisionModel(),0));
+    
+    // read geom A
+    Geometry g0 = null;
+    if (wktA.length() > 0) {
+      g0 = reader.read(wktA);
+    }
+    
+    // read geom B
+    Geometry g1 = null;
+    if (wktB.length() > 0) {
+      g1 = reader.read(wktB);
+    }
+    /*
+    if (moveToOrigin) {
+      Coordinate offset = pickOffset(g0, g1);
+      if (offset == null) { return; }
+      if (g0 != null) {
+        g0 = reader.read(offset(getGeometryTextA(), offset));
+      }
+      if (g1 != null) {
+        g1 = reader.read(offset(getGeometryTextB(), offset));
+      }
+    }
+    */
+    
+    TestCaseEdit testCaseEdit = (TestCaseEdit) getCurrentTestCaseEdit();
+    testCaseEdit.setGeometry(0, g0);
+    testCaseEdit.setGeometry(1, g1);
+    getGeometryEditModel().setTestCase(testCaseEdit);
+  }
+
+  private Coordinate pickOffset(Geometry a, Geometry b) {
+    if (a != null && ! a.isEmpty()) {
+      return a.getCoordinates()[0];
+    }
+    if (b != null && ! b.isEmpty()) {
+      return b.getCoordinates()[0];
+    }
+    return null;
+  }
+  
+  private String offset(String wellKnownText, Coordinate offset) throws IOException {
+    String offsetWellKnownText = "";
+    StreamTokenizer tokenizer = new StreamTokenizer(new StringReader(wellKnownText));
+    boolean xValue = false;
+    int type = tokenizer.nextToken();
+    while (type != StreamTokenizer.TT_EOF) {
+      offsetWellKnownText += " ";
+      switch (type) {
+        case StreamTokenizer.TT_EOL:
+          break;
+        case StreamTokenizer.TT_NUMBER:
+          xValue = ! xValue;
+          offsetWellKnownText += offsetNumber(tokenizer.nval, offset, xValue);
+          break;
+        case StreamTokenizer.TT_WORD:
+          offsetWellKnownText += tokenizer.sval;
+          break;
+        case '(':
+          offsetWellKnownText += "(";
+          break;
+        case ')':
+          offsetWellKnownText += ")";
+          break;
+        case ',':
+          offsetWellKnownText += ",";
+          break;
+        default:
+          Assert.shouldNeverReachHere();
+      }
+      type = tokenizer.nextToken();
+    }
+    return offsetWellKnownText;
+  }
+
+  private double offsetNumber(double number, Coordinate offset, boolean xValue) {
+    return number - (xValue ? offset.x : offset.y);
+  }
+
+
   /*
   public Geometry readMultipleGeometriesFromFile(String filename)
   throws Exception, IOException 

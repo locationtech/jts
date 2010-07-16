@@ -351,15 +351,6 @@ public class JTSTestBuilderFrame extends JFrame
 //    updateTestableGeometries();
   }
 
-  void wktPanel_actionPerformed(ActionEvent e) {
-    try {
-      loadGeometryText(false);
-    }
-    catch (Exception ex) {
-      reportException(this, ex);
-    }
-  }
-
   void btnNewCase_actionPerformed(ActionEvent e) {
     tbModel.createNew();
     showGeomsTab();
@@ -703,15 +694,6 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
-  void moveToOriginButton_actionPerformed(ActionEvent e) {
-    try {
-      loadGeometryText(true);
-    }
-    catch (Exception ex) {
-      reportException(this, ex);
-    }
-  }
-
     private String getRunJava(String className) {
     return
         "package com.vividsolutions.jtstest.testsuite;" + StringUtil.newLine
@@ -814,12 +796,6 @@ public class JTSTestBuilderFrame extends JFrame
     });
     
     jSplitPane1.setDividerLocation(500);
-    wktPanel.addActionListener(
-      new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          wktPanel_actionPerformed(e);
-        }
-      });
     this.setJMenuBar(tbMenuBar.getMenuBar());
     contentPane.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
   }
@@ -900,78 +876,6 @@ public class JTSTestBuilderFrame extends JFrame
       testable.setGeometry(1, wktB != null ? reader.read(wktB) : null);
     }
   }
-
-  private double offsetNumber(double number, Coordinate offset, boolean xValue) {
-    return number - (xValue ? offset.x : offset.y);
-  }
-
-  private String offset(String wellKnownText, Coordinate offset) throws IOException {
-    String offsetWellKnownText = "";
-    StreamTokenizer tokenizer = new StreamTokenizer(new StringReader(wellKnownText));
-    boolean xValue = false;
-    int type = tokenizer.nextToken();
-    while (type != StreamTokenizer.TT_EOF) {
-      offsetWellKnownText += " ";
-      switch (type) {
-        case StreamTokenizer.TT_EOL:
-          break;
-        case StreamTokenizer.TT_NUMBER:
-          xValue = ! xValue;
-          offsetWellKnownText += offsetNumber(tokenizer.nval, offset, xValue);
-          break;
-        case StreamTokenizer.TT_WORD:
-          offsetWellKnownText += tokenizer.sval;
-          break;
-        case '(':
-          offsetWellKnownText += "(";
-          break;
-        case ')':
-          offsetWellKnownText += ")";
-          break;
-        case ',':
-          offsetWellKnownText += ",";
-          break;
-        default:
-          Assert.shouldNeverReachHere();
-      }
-      type = tokenizer.nextToken();
-    }
-    return offsetWellKnownText;
-  }
-
-  private void loadGeometryText(boolean moveToOrigin) throws ParseException, IOException {
-  	MultiFormatReader reader = new MultiFormatReader(new GeometryFactory(tbModel.getPrecisionModel(),0));
-  	
-  	// read geom A
-    Geometry g0 = null;
-    String text0 = wktPanel.getGeometryTextClean(0);
-    if (text0.length() > 0) {
-      g0 = reader.read(text0);
-    }
-    
-    // read geom B
-    Geometry g1 = null;
-    String text1 = wktPanel.getGeometryTextClean(1);
-    if (text1.length() > 0) {
-      g1 = reader.read(text1);
-    }
-    
-    if (moveToOrigin) {
-      Coordinate offset = pickOffset(g0, g1);
-      if (offset == null) { return; }
-      if (g0 != null) {
-        g0 = reader.read(offset(wktPanel.getGeometryTextA(), offset));
-      }
-      if (g1 != null) {
-        g1 = reader.read(offset(wktPanel.getGeometryTextB(), offset));
-      }
-    }
-    TestCaseEdit testCaseEdit = (TestCaseEdit) tbModel.getCurrentTestCaseEdit();
-    testCaseEdit.setGeometry(0, g0);
-    testCaseEdit.setGeometry(1, g1);
-    tbModel.getGeometryEditModel().setTestCase(testCaseEdit);
-  }
-
 
   void menuRemoveDuplicatePoints_actionPerformed(ActionEvent e) {
     CleanDuplicatePoints clean = new CleanDuplicatePoints();

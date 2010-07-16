@@ -36,12 +36,19 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.io.StreamTokenizer;
+import java.io.StringReader;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import com.vividsolutions.jtstest.testbuilder.ui.dnd.FileDrop;
 import com.vividsolutions.jtstest.util.*;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
 
@@ -264,7 +271,13 @@ public class WKTPanel extends JPanel
                 0,
                 0));
         
-        aCopyButton.addActionListener(
+        loadButton.addActionListener(
+            new ActionListener() {
+              public void actionPerformed(ActionEvent e) {
+                loadButton_actionPerformed(e);
+              }
+            });
+       aCopyButton.addActionListener(
             new ActionListener() {
               public void actionPerformed(ActionEvent e) {
               	aCopyButton_actionPerformed(e);
@@ -360,6 +373,17 @@ public class WKTPanel extends JPanel
         loadButton.setEnabled(true);
     }
 
+    void loadButton_actionPerformed(ActionEvent e) {
+      try {
+        tbModel.loadGeometryText(
+            getGeometryTextClean(0), 
+            getGeometryTextClean(1));
+      }
+      catch (Exception ex) {
+        JTSTestBuilderFrame.reportException(this, ex);
+      }
+    }
+
     void aCopyButton_actionPerformed(ActionEvent e) {
       copy(e, 0);
     }
@@ -415,6 +439,5 @@ public class WKTPanel extends JPanel
         }
       });
     }
-    
-    
+  
 }
