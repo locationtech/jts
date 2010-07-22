@@ -136,7 +136,6 @@ public class TestListDialog extends JDialog {
 
     private void registerListSelectionListener() {
         list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
             public void valueChanged(ListSelectionEvent e) {
                 testBuilderFrame.setCurrentTestCase((TestCaseEdit) list.getSelectedValue());
             }

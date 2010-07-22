@@ -361,10 +361,6 @@ public class WKTPanel extends JPanel
     	return textClean;
     }
     
-    public void addActionListener(ActionListener l) {
-        loadButton.addActionListener(l);
-    }
-
     void aTextArea_keyTyped(KeyEvent e) {
         loadButton.setEnabled(true);
     }
