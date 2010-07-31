@@ -17,9 +17,9 @@ import com.vividsolutions.jts.noding.snapround.*;
  * <p>
  * This class does <b>not</b> dissolve the output linework,
  * so there may be duplicate linestrings in the output.  
- * Subsequent processing (e.g. polygonization) may require '
- * the linework to be made unique.  {@link UnaryUnion} is one way
- * to do this (albeit an inefficient one).
+ * Subsequent processing (e.g. polygonization) may require
+ * the linework to be unique.  {@link UnaryUnion} is one way
+ * to do this (although an inefficient one).
  * 
  * 
  */
@@ -29,10 +29,22 @@ public class GeometryNoder
   private PrecisionModel pm;
   private boolean isValidityChecked = false;
 
+  /**
+   * Creates a new noder which snap-rounds to a grid specified
+   * by the given
+   * {@link PrecisionModel).
+   * 
+   * @param pm the precision model for the grid to snap-round to
+   */
   public GeometryNoder(PrecisionModel pm) {
     this.pm = pm;
   }
 
+  /**
+   * Sets whether noding validity is checked after noding is performed.
+   * 
+   * @param isValidityChecked
+   */
   public void setValidate(boolean isValidityChecked)
   {
   	this.isValidityChecked = isValidityChecked;

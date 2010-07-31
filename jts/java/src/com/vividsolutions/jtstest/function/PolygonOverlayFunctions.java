@@ -12,7 +12,8 @@ import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.noding.snapround.GeometryNoder;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 
-public class PolygonOverlayFunctions {
+public class PolygonOverlayFunctions 
+{
 
   public static Geometry overlaySnapRounded(Geometry g1, Geometry g2, double precisionTol)
   {

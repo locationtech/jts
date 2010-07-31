@@ -5,9 +5,17 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.GeometryTransformer;
 
 /**
- * Snaps the vertices and segments of a {@link Geometry} to another Geometry's vertices.
- * Improves robustness for overlay operations, by eliminating
- * nearly parallel edges (which cause problems during noding and intersection calculation).
+ * Snaps the vertices and segments of a {@link Geometry} 
+ * to another Geometry's vertices, using a given distance tolerance.
+ * Snapping one geometry to another can improve 
+ * robustness for overlay operations by eliminating
+ * nearly-coincident edges 
+ * (which cause problems during noding and intersection calculation).
+ * Too much snapping can result in invalid topology 
+ * beging created, so the number and location of snapped vertices
+ * is decided using heuristics to determine when it 
+ * is safe to snap.
+ * This can result in some potential snaps being omitted, however.
  *
  * @author Martin Davis
  * @version 1.7
@@ -70,12 +78,12 @@ public class GeometrySnapper
     Geometry[] snapGeom = new Geometry[2];
     GeometrySnapper snapper0 = new GeometrySnapper(g0);
     snapGeom[0] = snapper0.snapTo(g1, snapTolerance);
-
-    GeometrySnapper snapper1 = new GeometrySnapper(g1);
+    
     /**
      * Snap the second geometry to the snapped first geometry
      * (this strategy minimizes the number of possible different points in the result)
      */
+    GeometrySnapper snapper1 = new GeometrySnapper(g1);
     snapGeom[1] = snapper1.snapTo(snapGeom[0], snapTolerance);
 
 //    System.out.println(snap[0]);
