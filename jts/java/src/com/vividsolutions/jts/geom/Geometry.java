@@ -652,11 +652,11 @@ public abstract class Geometry
    * <li>The geometries have at least one point in common, but their interiors do not intersect.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
    * at least one of the following patterns
-   * <ul>
-   * <li><code>[FT*******]</code>
-   * <li><code>[F**T*****]</code>
-   * <li><code>[F***T****]</code>
-   * </ul>
+   *  <ul>
+   *   <li><code>[FT*******]</code>
+   *   <li><code>[F**T*****]</code>
+   *   <li><code>[F***T****]</code>
+   *  </ul>
    * </ul>
    * If both geometries have dimension 0, this predicate returns <code>false</code>.
    * 
@@ -769,7 +769,7 @@ public abstract class Geometry
    * and the interiors of the two geometries have at least one point in common.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches 
    * <code>[T*F**F***]</code>
-   * <li><code>g.contains(this)</code>
+   * <li><code>g.contains(this) = true</code>
    * <br>(<code>within</code> is the converse of {@link #contains})
    * </ul>
    * An implication of the definition is that
@@ -782,9 +782,10 @@ public abstract class Geometry
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        <code>true</code> if this <code>Geometry</code> is within
-   *      <code>other</code>
+   *      <code>g</code>
    *
    * @see Geometry#contains
+   * @see Geometry#coveredBy
    */
   public boolean within(Geometry g) {
     return g.contains(this);
@@ -802,7 +803,7 @@ public abstract class Geometry
    * the pattern
    * <code>[T*****FF*]</code>
    * <li><code>g.within(this) = true</code>
-   * <br>(<code>contains</code> is the converse of <code>within</code>)
+   * <br>(<code>contains</code> is the converse of {@link #within} )
    * </ul>
    * An implication of the definition is that "Geometries do not
    * contain their boundary".  In other words, if a geometry A is a subset of
@@ -871,8 +872,8 @@ public abstract class Geometry
    *   <li><code>[***T**FF*]</code>
    *   <li><code>[****T*FF*]</code>
    *  </ul>
-   * <li><code>g.coveredBy(this)</code>
-   * <br>(<code>covers</code> is the converse of <code>coveredBy</code>)
+   * <li><code>g.coveredBy(this) = true</code>
+   * <br>(<code>covers</code> is the converse of {@link #coveredBy})
    * </ul>
    * If either geometry is empty, the value of this predicate is <tt>false</tt>.
    * <p>
@@ -917,7 +918,7 @@ public abstract class Geometry
    *   <li><code>[**FT*F***]</code>
    *   <li><code>[**F*TF***]</code>
    *  </ul>
-   * <li><code>g.covers(this)</code>
+   * <li><code>g.covers(this) = true</code>
    * <br>(<code>coveredBy</code> is the converse of {@link #covers})
    * </ul>
    * If either geometry is empty, the value of this predicate is <tt>false</tt>.
