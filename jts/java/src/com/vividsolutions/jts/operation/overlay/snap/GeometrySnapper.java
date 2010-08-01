@@ -6,7 +6,8 @@ import com.vividsolutions.jts.geom.util.GeometryTransformer;
 
 /**
  * Snaps the vertices and segments of a {@link Geometry} 
- * to another Geometry's vertices, using a given distance tolerance.
+ * to another Geometry's vertices.
+ * A snap distance tolerance is used to control where snapping is performed.
  * Snapping one geometry to another can improve 
  * robustness for overlay operations by eliminating
  * nearly-coincident edges 
@@ -90,6 +91,11 @@ public class GeometrySnapper
 //    System.out.println(snap[1]);
     return snapGeom;
   }
+  public static Geometry snapToSelf(Geometry g0, double snapTolerance, boolean cleanResult)
+  {
+    GeometrySnapper snapper0 = new GeometrySnapper(g0);
+    return snapper0.snapToSelf(snapTolerance, cleanResult);
+  }
   
   private Geometry srcGeom;
 
@@ -103,6 +109,56 @@ public class GeometrySnapper
     this.srcGeom = srcGeom;
   }
 
+
+  /**
+   * Snaps the vertices in the component {@link LineString}s
+   * of the source geometry
+   * to the vertices of the given snap geometry.
+   *
+   * @param snapGeom a geometry to snap the source to
+   * @return a new snapped Geometry
+   */
+  public Geometry snapTo(Geometry snapGeom, double snapTolerance)
+  {
+    Coordinate[] snapPts = extractTargetCoordinates(snapGeom);
+
+    SnapTransformer snapTrans = new SnapTransformer(snapTolerance, snapPts);
+    return snapTrans.transform(srcGeom);
+  }
+
+  /**
+   * Snaps the vertices in the component {@link LineString}s
+   * of the source geometry
+   * to the vertices of the given snap geometry.
+   *
+   * @param snapGeom a geometry to snap the source to
+   * @return a new snapped Geometry
+   */
+  public Geometry snapToSelf(double snapTolerance, boolean cleanResult)
+  {
+    Coordinate[] snapPts = extractTargetCoordinates(srcGeom);
+
+    SnapTransformer snapTrans = new SnapTransformer(snapTolerance, snapPts, true);
+    Geometry snappedGeom = snapTrans.transform(srcGeom);
+    Geometry result = snappedGeom;
+    if (cleanResult && result instanceof Polygonal) {
+      // TODO: use better cleaning approach
+      result = snappedGeom.buffer(0);
+    }
+    return result;
+  }
+
+  public Coordinate[] extractTargetCoordinates(Geometry g)
+  {
+    // TODO: should do this more efficiently.  Use CoordSeq filter to get points, KDTree for uniqueness & queries
+    Set ptSet = new TreeSet();
+    Coordinate[] pts = g.getCoordinates();
+    for (int i = 0; i < pts.length; i++) {
+      ptSet.add(pts[i]);
+    }
+    return (Coordinate[]) ptSet.toArray(new Coordinate[0]);
+  }
+  
   /**
    * Computes the snap tolerance based on the input geometries.
    *
@@ -128,44 +184,26 @@ public class GeometrySnapper
     return minSegLen;
   }
 
-  /**
-   * Snaps the vertices in the component {@link LineString}s
-   * of the source geometry
-   * to the vertices of the given snap geometry.
-   *
-   * @param snapGeom a geometry to snap the source to
-   * @return a new snapped Geometry
-   */
-  public Geometry snapTo(Geometry snapGeom, double snapTolerance)
-  {
-    Coordinate[] snapPts = extractTargetCoordinates(snapGeom);
-
-    SnapTransformer snapTrans = new SnapTransformer(snapTolerance, snapPts);
-    return snapTrans.transform(srcGeom);
-  }
-
-  public Coordinate[] extractTargetCoordinates(Geometry g)
-  {
-    // TODO: should do this more efficiently.  Use CoordSeq filter to get points, KDTree for uniqueness & queries
-    Set ptSet = new TreeSet();
-    Coordinate[] pts = g.getCoordinates();
-    for (int i = 0; i < pts.length; i++) {
-      ptSet.add(pts[i]);
-    }
-    return (Coordinate[]) ptSet.toArray(new Coordinate[0]);
-  }
 }
 
 class SnapTransformer
     extends GeometryTransformer
 {
-  double snapTolerance;
-  Coordinate[] snapPts;
+  private double snapTolerance;
+  private Coordinate[] snapPts;
+  private boolean isSelfSnap = false;
 
   SnapTransformer(double snapTolerance, Coordinate[] snapPts)
   {
     this.snapTolerance = snapTolerance;
     this.snapPts = snapPts;
+  }
+
+  SnapTransformer(double snapTolerance, Coordinate[] snapPts, boolean isSelfSnap)
+  {
+    this.snapTolerance = snapTolerance;
+    this.snapPts = snapPts;
+    this.isSelfSnap = isSelfSnap;
   }
 
   protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent)
@@ -178,6 +216,7 @@ class SnapTransformer
   private Coordinate[] snapLine(Coordinate[] srcPts, Coordinate[] snapPts)
   {
     LineStringSnapper snapper = new LineStringSnapper(srcPts, snapTolerance);
+    snapper.setAllowSnappingToSourceVertices(isSelfSnap);
     return snapper.snapTo(snapPts);
   }
 }
