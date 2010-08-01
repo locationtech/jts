@@ -679,13 +679,13 @@ public abstract class Geometry
    * <ul>
    * <li>The two geometries have at least one point in common
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
-   * one of the patterns
-   * <ul>
-   * <li><code>[T********]</code>
-   * <li><code>[*T*******]</code>
-   * <li><code>[***T*****]</code>
-   * <li><code>[****T****]</code>
-   * </ul>
+   * at least one of the patterns
+   *  <ul>
+   *   <li><code>[T********]</code>
+   *   <li><code>[*T*******]</code>
+   *   <li><code>[***T*****]</code>
+   *   <li><code>[****T****]</code>
+   *  </ul>
    * <li><code>! g.disjoint(this) = true</code>
    * <br>(<code>intersects</code> is the inverse of <code>disjoint</code>)
    * </ul>
@@ -736,6 +736,7 @@ public abstract class Geometry
    * <ul>
    * <li>The geometries have some but not all interior points in common.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
+   * one of the following patterns:
    *   <ul>
    *    <li><code>[T*T******]</code> (for P/L, P/A, and L/A situations)
    *    <li><code>[T*****T**]</code> (for L/P, A/P, and A/L situations)
@@ -745,8 +746,8 @@ public abstract class Geometry
    * For any other combination of dimensions this predicate returns <code>false</code>.
    * <p>
    * The SFS defined this predicate only for P/L, P/A, L/L, and L/A situations.
-   * JTS extends the definition to apply to L/P, A/P and A/L situations as well,
-   * in order to make the relation symmetric.
+   * In order to make the relation symmetric,
+   * JTS extends the definition to apply to L/P, A/P and A/L situations as well.
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        <code>true</code> if the two <code>Geometry</code>s cross.
@@ -863,13 +864,13 @@ public abstract class Geometry
    * <ul>
    * <li>Every point of the other geometry is a point of this geometry.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
-   * one of the following patterns:
-   * <ul> 
-   * <li><code>[T*****FF*]</code>
-   * <li><code>[*T****FF*]</code>
-   * <li><code>[***T**FF*]</code>
-   * <li><code>[****T*FF*]</code>
-   * </ul>
+   * at least one of the following patterns:
+   *  <ul> 
+   *   <li><code>[T*****FF*]</code>
+   *   <li><code>[*T****FF*]</code>
+   *   <li><code>[***T**FF*]</code>
+   *   <li><code>[****T*FF*]</code>
+   *  </ul>
    * <li><code>g.coveredBy(this)</code>
    * <br>(<code>covers</code> is the converse of <code>coveredBy</code>)
    * </ul>
@@ -909,13 +910,13 @@ public abstract class Geometry
    * <ul>
    * <li>Every point of this geometry is a point of the other geometry.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
-   * one of the following patterns:
-   * <ul>
-   * <li><code>[T*F**F***]</code>
-   * <li><code>[*TF**F***]</code>
-   * <li><code>[**FT*F***]</code>
-   * <li><code>[**F*TF***]</code>
-   * </ul>
+   * at least one of the following patterns:
+   *  <ul>
+   *   <li><code>[T*F**F***]</code>
+   *   <li><code>[*TF**F***]</code>
+   *   <li><code>[**FT*F***]</code>
+   *   <li><code>[**F*TF***]</code>
+   *  </ul>
    * <li><code>g.covers(this)</code>
    * <br>(<code>coveredBy</code> is the converse of {@link #covers})
    * </ul>
