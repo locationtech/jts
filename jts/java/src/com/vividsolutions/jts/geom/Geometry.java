@@ -622,15 +622,15 @@ public abstract class Geometry
   }
 
   /**
-   * Tests whether this geometry is disjoint from the specified geometry.
+   * Tests whether this geometry is disjoint from the argument geometry.
    * <p>
    * The <code>disjoint</code> predicate has the following equivalent definitions:
    * <ul>
    * <li>The two geometries have no point in common
    * <li>The DE-9IM Intersection Matrix for the two geometries matches 
    * <code>[FF*FF****]</code>
-   * <li><code>! g.intersects(this)</code>
-   * (<code>disjoint</code> is the inverse of <code>intersects</code>)
+   * <li><code>! g.intersects(this) = true</code>
+   * <br>(<code>disjoint</code> is the inverse of <code>intersects</code>)
    * </ul>
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
@@ -645,15 +645,21 @@ public abstract class Geometry
 
   /**
    * Tests whether this geometry touches the
-   * specified geometry.
+   * argument geometry.
    * <p>
    * The <code>touches</code> predicate has the following equivalent definitions:
    * <ul>
    * <li>The geometries have at least one point in common, but their interiors do not intersect.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
-   *   <code>[FT*******]</code> or <code>[F**T*****]</code> or <code>[F***T****]</code>
+   * at least one of the following patterns
+   * <ul>
+   * <li><code>[FT*******]</code>
+   * <li><code>[F**T*****]</code>
+   * <li><code>[F***T****]</code>
    * </ul>
-   * If both geometries have dimension 0, this predicate returns <code>false</code>
+   * </ul>
+   * If both geometries have dimension 0, this predicate returns <code>false</code>.
+   * 
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        <code>true</code> if the two <code>Geometry</code>s touch;
@@ -667,18 +673,21 @@ public abstract class Geometry
   }
 
   /**
-   * Tests whether this geometry intersects the specified geometry.
+   * Tests whether this geometry intersects the argument geometry.
    * <p>
    * The <code>intersects</code> predicate has the following equivalent definitions:
    * <ul>
    * <li>The two geometries have at least one point in common
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
-   *    <code>[T********]</code>
-   * or <code>[*T*******]</code>
-   * or <code>[***T*****]</code>
-   * or <code>[****T****]</code>
-   * <li><code>! g.disjoint(this)</code>
-   * (<code>intersects</code> is the inverse of <code>disjoint</code>)
+   * one of the patterns
+   * <ul>
+   * <li><code>[T********]</code>
+   * <li><code>[*T*******]</code>
+   * <li><code>[***T*****]</code>
+   * <li><code>[****T****]</code>
+   * </ul>
+   * <li><code>! g.disjoint(this) = true</code>
+   * <br>(<code>intersects</code> is the inverse of <code>disjoint</code>)
    * </ul>
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
@@ -721,7 +730,7 @@ public abstract class Geometry
 
   /**
    * Tests whether this geometry crosses the
-   * specified geometry.
+   * argument geometry.
    * <p>
    * The <code>crosses</code> predicate has the following equivalent definitions:
    * <ul>
@@ -760,12 +769,15 @@ public abstract class Geometry
    * <li>The DE-9IM Intersection Matrix for the two geometries matches 
    * <code>[T*F**F***]</code>
    * <li><code>g.contains(this)</code>
-   * (<code>within</code> is the converse of <code>contains</code>)
+   * <br>(<code>within</code> is the converse of {@link #contains})
    * </ul>
    * An implication of the definition is that
    * "The boundary of a Geometry is not within the Geometry".
    * In other words, if a geometry A is a subset of
    * the points in the boundary of a geomtry B, <code>A.within(B) = false</code>
+   * (As a concrete example, take A to be a LineString which lies in the boundary of a Polygon B.)
+   * For a predicate with similar behaviour but avoiding 
+   * this subtle limitation, see {@link #coveredBy}.
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        <code>true</code> if this <code>Geometry</code> is within
@@ -779,25 +791,30 @@ public abstract class Geometry
 
   /**
    * Tests whether this geometry contains the
-   * specified geometry.
+   * argument geometry.
    * <p>
    * The <code>contains</code> predicate has the following equivalent definitions:
    * <ul>
    * <li>Every point of the other geometry is a point of this geometry,
    * and the interiors of the two geometries have at least one point in common.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches 
+   * the pattern
    * <code>[T*****FF*]</code>
-   * <li><code>g.within(this)</code>
-   * (<code>contains</code> is the converse of <code>within</code>)
+   * <li><code>g.within(this) = true</code>
+   * <br>(<code>contains</code> is the converse of <code>within</code>)
    * </ul>
    * An implication of the definition is that "Geometries do not
    * contain their boundary".  In other words, if a geometry A is a subset of
-   * the points in the boundary of a geometry B, <code>B.contains(A) = false</code>
+   * the points in the boundary of a geometry B, <code>B.contains(A) = false</code>.
+   * (As a concrete example, take A to be a LineString which lies in the boundary of a Polygon B.)
+   * For a predicate with similar behaviour but avoiding 
+   * this subtle limitation, see {@link #covers}.
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        <code>true</code> if this <code>Geometry</code> contains <code>g</code>
    *
    * @see Geometry#within
+   * @see Geometry#covers
    */
   public boolean contains(Geometry g) {
     // short-circuit test
@@ -840,18 +857,21 @@ public abstract class Geometry
 
   /**
    * Tests whether this geometry covers the
-   * specified geometry.
+   * argument geometry.
    * <p>
    * The <code>covers</code> predicate has the following equivalent definitions:
    * <ul>
    * <li>Every point of the other geometry is a point of this geometry.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
-   *    <code>[T*****FF*]</code>
-   * or <code>[*T****FF*]</code>
-   * or <code>[***T**FF*]</code>
-   * or <code>[****T*FF*]</code>
+   * one of the following patterns:
+   * <ul> 
+   * <li><code>[T*****FF*]</code>
+   * <li><code>[*T****FF*]</code>
+   * <li><code>[***T**FF*]</code>
+   * <li><code>[****T*FF*]</code>
+   * </ul>
    * <li><code>g.coveredBy(this)</code>
-   * (<code>covers</code> is the converse of <code>coveredBy</code>)
+   * <br>(<code>covers</code> is the converse of <code>coveredBy</code>)
    * </ul>
    * If either geometry is empty, the value of this predicate is <tt>false</tt>.
    * <p>
@@ -883,18 +903,21 @@ public abstract class Geometry
 
   /**
    * Tests whether this geometry is covered by the
-   * specified geometry.
+   * argument geometry.
    * <p>
    * The <code>coveredBy</code> predicate has the following equivalent definitions:
    * <ul>
    * <li>Every point of this geometry is a point of the other geometry.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
-   *    <code>[T*F**F***]</code>
-   * or <code>[*TF**F***]</code>
-   * or <code>[**FT*F***]</code>
-   * or <code>[**F*TF***]</code>
+   * one of the following patterns:
+   * <ul>
+   * <li><code>[T*F**F***]</code>
+   * <li><code>[*TF**F***]</code>
+   * <li><code>[**FT*F***]</code>
+   * <li><code>[**F*TF***]</code>
+   * </ul>
    * <li><code>g.covers(this)</code>
-   * (<code>coveredBy</code> is the converse of <code>covers</code>)
+   * <br>(<code>coveredBy</code> is the converse of {@link #covers})
    * </ul>
    * If either geometry is empty, the value of this predicate is <tt>false</tt>.
    * <p>
@@ -953,13 +976,19 @@ public abstract class Geometry
 
   /**
    * Tests whether this geometry is equal to the
-   * specified geometry.
+   * argument geometry.
    * <p>
    * The <code>equals</code> predicate has the following equivalent definitions:
    * <ul>
    * <li>The two geometries have at least one point in common,
    * and no point of either geometry lies in the exterior of the other geometry.
-   * <li>The DE-9IM Intersection Matrix for the two geometries is T*F**FFF*
+   * <li>The DE-9IM Intersection Matrix for the two geometries matches
+   * the pattern <tt>T*F**FFF*</tt> 
+   * <pre>
+   * T*F
+   * **F
+   * FF*
+   * </pre>
    * </ul>
    * <b>Note</b> that this method computes topologically equality, not structural or
    * vertex-wise equality.
