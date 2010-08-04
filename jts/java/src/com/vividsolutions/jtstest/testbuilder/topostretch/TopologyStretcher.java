@@ -13,7 +13,7 @@ import com.vividsolutions.jts.geom.util.*;
  */
 public class TopologyStretcher 
 {
-	private double stretchDist = 0.1;
+	private double stretchDistance = 0.1;
 	
 	private Geometry[] inputGeoms;
 	private List linestrings;
@@ -31,12 +31,12 @@ public class TopologyStretcher
 		inputGeoms[1] = g2;
 	}
 	
-	public Geometry[] stretch(double closenessTol, double stretchDist)
+	public Geometry[] stretch(double nearnessTol, double stretchDistance)
 	{
-		this.stretchDist = stretchDist;
+		this.stretchDistance = stretchDistance;
 		linestrings = extractLineStrings(inputGeoms);
 		
-		List nearVerts = NearVertexFinder.findNear(linestrings, closenessTol);
+		List nearVerts = NearVertexFinder.findNear(linestrings, nearnessTol);
 		
 		Map coordinateMoves = getCoordinateMovesMap(nearVerts);
 		
@@ -68,7 +68,7 @@ public class TopologyStretcher
 		for (Iterator i = nearVerts.iterator(); i.hasNext(); ) {
 			NearVertex nv = (NearVertex) i.next();
 			// TODO: check if move would invalidate topology.  If yes, don't move
-			moves.put(nv.getVertexCoordinate(), nv.getStretchedVertex(stretchDist));
+			moves.put(nv.getVertexCoordinate(), nv.getStretchedVertex(stretchDistance));
 		}
 		return moves;
 	}

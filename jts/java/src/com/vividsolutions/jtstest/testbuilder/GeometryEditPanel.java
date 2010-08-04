@@ -36,8 +36,10 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -247,6 +249,32 @@ public class GeometryEditPanel extends JPanel
     g.draw(shape);
   }
 
+  /**
+   * Draws a mask surround to indicate that topology is being visually altered
+   * @param g
+   */
+  private void drawMask(Graphics2D g) {
+    double viewWidth = viewport.getWidthInView();
+    double viewHeight = viewport.getHeightInView();
+    
+    float minExtent = (float) Math.min(viewWidth, viewHeight);
+    float maskWidth = (float) (minExtent * AppConstants.MASK_WIDTH_FRAC / 2);
+    
+    Area mask = new Area(new Rectangle2D.Float(
+    		(float) 0, (float) 0, 
+    		(float) viewWidth, (float) viewHeight));
+    
+    Area maskHole = new Area(new Rectangle2D.Float(
+    		(float) maskWidth, 
+    		(float) maskWidth, 
+    		((float) viewWidth) - 2 * maskWidth, 
+    		((float) viewHeight) - 2 * maskWidth));
+    
+    mask.subtract(maskHole);
+    g.setColor(AppConstants.MASK_COLOR);
+    g.fill(mask);
+  }
+
 
   public Point2D snapToGrid(Point2D modelPoint) {
     return grid.snapToGrid(modelPoint);
@@ -375,6 +403,9 @@ public class GeometryEditPanel extends JPanel
       gridRenderer.paint(g2);
       renderLayers(g2);
       drawHighlight(g2);
+    	if (tbModel.isRevealingTopology()) {
+    		drawMask(g2);
+    	}
     }
     
     public void renderLayers(Graphics2D g)
