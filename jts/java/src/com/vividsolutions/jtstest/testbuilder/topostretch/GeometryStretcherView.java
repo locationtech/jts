@@ -1,5 +1,7 @@
 package com.vividsolutions.jtstest.testbuilder.topostretch;
 
+import java.util.List;
+
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jtstest.testbuilder.geom.EnvelopeUtil;
@@ -9,8 +11,9 @@ import com.vividsolutions.jtstest.testbuilder.model.GeometryEditModel;
 public class GeometryStretcherView 
 {
 	private GeometryEditModel geomModel;
-	private Geometry[] stretchCache = new Geometry[2];
-	private double stretchDistance = 5.0;
+	private Geometry[] stretchGeom = new Geometry[2];
+	private List[] stretchCoords;
+	private double stretchSize = 5.0;
 	
 	public GeometryStretcherView(GeometryEditModel geomEditModel)
 	{
@@ -22,15 +25,15 @@ public class GeometryStretcherView
 		return new StretchedGeometryContainer(i);
 	}
 	
-	public void setStretchDistance(double stretchDistance)
+	public void setStretchSize(double stretchSize)
 	{
-		this.stretchDistance = stretchDistance;
+		this.stretchSize = stretchSize;
 	}
 	
 	public void setEnvelope(Envelope viewEnv)
 	{
 		// clear cache
-		stretchCache = null;
+		stretchGeom = null;
 		// TODO: compute stretch distance from viewEnv
 		double size = EnvelopeUtil.minExtent(viewEnv);
 	}
@@ -38,7 +41,13 @@ public class GeometryStretcherView
 	private Geometry getStretchedGeometry(int index)
 	{
 		updateCache();
-		return stretchCache[index];
+		return stretchGeom[index];
+	}
+	
+	public List getStretchedVertices(int index)
+	{
+		updateCache();
+		return stretchCoords[index];
 	}
 	
 	private synchronized void updateCache()
@@ -48,18 +57,19 @@ public class GeometryStretcherView
 			Geometry g1 = geomModel.getGeometry(1);
 			TopologyStretcher stretcher = new TopologyStretcher(g0, g1);
 			// TODO: is the closeness tolerance right?
-			stretchCache = stretcher.stretch(stretchDistance/20, stretchDistance);
+			stretchGeom = stretcher.stretch(stretchSize / 20, stretchSize);
+			stretchCoords = stretcher.getModifiedCoordinates();
 		}
 	}
 	
 	private boolean isCacheValid()
 	{
-		if (stretchCache == null) {
-			stretchCache = new Geometry[2];
+		if (stretchGeom == null) {
+			stretchGeom = new Geometry[2];
 			return false;
 		}
-		if (geomModel.getGeometry(0) != stretchCache[0]) return false;
-		if (geomModel.getGeometry(1) != stretchCache[1]) return false;
+		if (geomModel.getGeometry(0) != stretchGeom[0]) return false;
+		if (geomModel.getGeometry(1) != stretchGeom[1]) return false;
 		return true;
 	}
 	

@@ -32,6 +32,8 @@
  */
 package com.vividsolutions.jtstest.testbuilder;
 
+import java.util.List;
+
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -235,6 +237,35 @@ public class GeometryEditPanel extends JPanel
   }
   */
   
+  private static int VERTEX_SIZE = AppConstants.GEOMETRY_VERTEX_SIZE + 1;
+  private static double VERTEX_SIZE_OVER_2 = VERTEX_SIZE / 2;
+  
+  private static int INNER_SIZE = VERTEX_SIZE  - 2;
+  private static double INNER_SIZE_OVER_2 = INNER_SIZE / 2;
+  
+  private void drawVertices(Graphics2D g, List coords, Color clr) {
+  	Rectangle2D rect = new Rectangle2D.Double();
+  	for (int i = 0; i < coords.size(); i++) {
+  		Coordinate pt = (Coordinate) coords.get(i);
+  		Point2D p = viewport.convert(pt);
+      rect.setFrame(
+          p.getX() - VERTEX_SIZE_OVER_2,
+          p.getY() - VERTEX_SIZE_OVER_2, 
+          VERTEX_SIZE, 
+          VERTEX_SIZE);
+    	g.setColor(clr);
+      g.fill(rect);
+      Rectangle2D rectInner = new Rectangle2D.Double(
+          p.getX() - INNER_SIZE_OVER_2,
+          p.getY() - INNER_SIZE_OVER_2, 
+          INNER_SIZE, 
+          INNER_SIZE);
+    	g.setColor(AppConstants.VERTEX_HIGHLIGHT_COLOR);
+      g.fill(rectInner);
+
+  	}
+  }
+
   private void drawHighlight(Graphics2D g) {
     if (highlightPoint == null)
       return;
@@ -250,7 +281,7 @@ public class GeometryEditPanel extends JPanel
   }
 
   /**
-   * Draws a mask surround to indicate that topology is being visually altered
+   * Draws a mask surround to indicate that geometry is being visually altered
    * @param g
    */
   private void drawMask(Graphics2D g) {
@@ -274,7 +305,6 @@ public class GeometryEditPanel extends JPanel
     g.setColor(AppConstants.MASK_COLOR);
     g.fill(mask);
   }
-
 
   public Point2D snapToGrid(Point2D modelPoint) {
     return grid.snapToGrid(modelPoint);
@@ -392,6 +422,7 @@ public class GeometryEditPanel extends JPanel
   
   class GeometryEditPanelRenderer implements Renderer
   {
+    private GeometryStretcherView stretcher = null;
   	private Renderer currentRenderer = null;
   	
     public void render(Graphics2D g)
@@ -402,7 +433,12 @@ public class GeometryEditPanel extends JPanel
       
       gridRenderer.paint(g2);
       renderLayers(g2);
+      
+      if (tbModel.isRevealingTopology()) {
+      	renderMovedVertices(g2);
+      }
       drawHighlight(g2);
+      
     	if (tbModel.isRevealingTopology()) {
     		drawMask(g2);
     	}
@@ -410,10 +446,9 @@ public class GeometryEditPanel extends JPanel
     
     public void renderLayers(Graphics2D g)
     {
-      GeometryStretcherView stretcher = null;
     	if (tbModel.isRevealingTopology()) {
     		stretcher = new GeometryStretcherView(geomModel);
-    		stretcher.setStretchDistance(viewport.getDistanceInModel(AppConstants.TOPO_STRETCH_VIEW_DIST));
+    		stretcher.setStretchSize(viewport.getDistanceInModel(AppConstants.TOPO_STRETCH_VIEW_DIST));
     		stretcher.setEnvelope(viewport.getModelEnv());
     	}
     	
@@ -429,6 +464,17 @@ public class GeometryEditPanel extends JPanel
     		currentRenderer.render(g);
     	}
     	currentRenderer = null;
+    }
+    
+    public void renderMovedVertices(Graphics2D g)
+    {
+    	for (int i = 0; i < 2; i++) {
+    		List stretchedVerts = stretcher.getStretchedVertices(i);
+    		if (stretchedVerts != null)
+	    		drawVertices(g, stretchedVerts, 
+	    				i == 0 ? GeometryDepiction.GEOM_A_HIGHLIGHT_CLR :
+	    					GeometryDepiction.GEOM_B_HIGHLIGHT_CLR);
+    	}
     }
     
   	public synchronized void cancel()

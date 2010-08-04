@@ -195,8 +195,8 @@ public class GeometryEditControlPanel extends JPanel
         btnSetPrecisionModel.setMnemonic('0');
         btnSetPrecisionModel.setText("Set Precision Model");
 
-        cbRevealTopo.setText("Reveal Topology");
-        cbRevealTopo.setToolTipText("Stretches geometries to reveal fine topological detail");
+        cbRevealTopo.setText("Magnify Topology");
+        cbRevealTopo.setToolTipText("Stretches portions of geometries to reveal fine topological detail");
         cbRevealTopo.addActionListener(new java.awt.event.ActionListener() {
 
           public void actionPerformed(ActionEvent e) {

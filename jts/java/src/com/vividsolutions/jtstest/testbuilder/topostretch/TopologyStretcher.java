@@ -17,6 +17,7 @@ public class TopologyStretcher
 	
 	private Geometry[] inputGeoms;
 	private List linestrings;
+	private List[] modifiedCoords;
 	
 	public TopologyStretcher(Geometry g)
 	{
@@ -38,17 +39,31 @@ public class TopologyStretcher
 		
 		List nearVerts = NearVertexFinder.findNear(linestrings, nearnessTol);
 		
-		Map coordinateMoves = getCoordinateMovesMap(nearVerts);
+		Map coordinateMoves = getCoordinateMoves(nearVerts);
 		
 		Geometry[] strGeoms = new Geometry[inputGeoms.length];
+		modifiedCoords = new List[inputGeoms.length];
+		
 		for (int i = 0; i < inputGeoms.length; i++) {
 			Geometry geom = (Geometry) inputGeoms[i];
 			if (geom != null) {
-				Geometry stretchedGeom = GeometryVerticesMover.move(geom, coordinateMoves);
+				GeometryVerticesMover mover = new GeometryVerticesMover(geom, coordinateMoves);
+				Geometry stretchedGeom = mover.move();
 				strGeoms[i] = stretchedGeom;
+				modifiedCoords[i] = mover.getModifiedCoordinates();
 			}
 		}
 		return strGeoms;
+	}
+	
+	/**
+	 * Gets the {@link Coordinate}s in each stretched geometry which were modified  (if any).
+	 * 
+	 * @return lists of Coordinates, one for each input geometry
+	 */
+	public List[] getModifiedCoordinates()
+	{
+		return modifiedCoords;
 	}
 	
 	private List extractLineStrings(Geometry[] geom)
@@ -62,13 +77,16 @@ public class TopologyStretcher
 		return lines;
 	}
 	
-	private Map getCoordinateMovesMap(List nearVerts)
+	private Map getCoordinateMoves(List nearVerts)
 	{
 		Map moves = new TreeMap();
 		for (Iterator i = nearVerts.iterator(); i.hasNext(); ) {
 			NearVertex nv = (NearVertex) i.next();
 			// TODO: check if move would invalidate topology.  If yes, don't move
-			moves.put(nv.getVertexCoordinate(), nv.getStretchedVertex(stretchDistance));
+			Coordinate src = nv.getVertexCoordinate();
+			Coordinate moved = nv.getStretchedVertex(stretchDistance);
+			if (! moved.equals2D(src))
+				moves.put(src, moved);
 		}
 		return moves;
 	}

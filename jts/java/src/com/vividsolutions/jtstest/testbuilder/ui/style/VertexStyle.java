@@ -7,8 +7,7 @@ import com.vividsolutions.jtstest.testbuilder.*;
 
 public class VertexStyle  implements Style
 {
-  private static final int size = 4;
-  private double sizeOver2 = size / 2d;;
+  private double sizeOver2 = AppConstants.GEOMETRY_VERTEX_SIZE / 2d;
   
   protected RectangularShape shape;
   private Color color;
@@ -39,7 +38,8 @@ public class VertexStyle  implements Style
       shape.setFrame(
           p.getX() - sizeOver2,
           p.getY() - sizeOver2, 
-          size, size);
+          AppConstants.GEOMETRY_VERTEX_SIZE, 
+          AppConstants.GEOMETRY_VERTEX_SIZE);
   }
 
 }
