@@ -15,9 +15,16 @@ public class NearVertexFinder
 	
 	private Collection linestrings;
 	private double tolerance = 0.0;
+	private Envelope limitEnv;
 	private List nearVerts = new ArrayList();
 	
 	public NearVertexFinder(Collection linestrings, double tolerance)
+	{
+		this.linestrings = linestrings;
+		this.tolerance = tolerance;
+	}
+	
+	public NearVertexFinder(Collection linestrings, double tolerance, Envelope limitEnv)
 	{
 		this.linestrings = linestrings;
 		this.tolerance = tolerance;

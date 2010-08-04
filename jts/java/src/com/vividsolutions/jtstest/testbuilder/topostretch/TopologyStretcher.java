@@ -13,50 +13,51 @@ import com.vividsolutions.jts.geom.util.*;
  */
 public class TopologyStretcher 
 {
-	private double closeTol = 1e-5;
 	private double stretchDist = 0.1;
 	
-	private List inputGeoms;
+	private Geometry[] inputGeoms;
 	private List linestrings;
 	
 	public TopologyStretcher(Geometry g)
 	{
-		inputGeoms = new ArrayList();
-		inputGeoms.add(g);
+		inputGeoms = new Geometry[1];
+		inputGeoms[0] = g;
 	}
 	
 	public TopologyStretcher(Geometry g1, Geometry g2)
 	{
-		inputGeoms = new ArrayList();
-		inputGeoms.add(g1);
-		inputGeoms.add(g2);
+		inputGeoms = new Geometry[2];
+		inputGeoms[0] = g1;
+		inputGeoms[1] = g2;
 	}
 	
-	public List stretch(double stretchDist)
+	public Geometry[] stretch(double closenessTol, double stretchDist)
 	{
 		this.stretchDist = stretchDist;
 		linestrings = extractLineStrings(inputGeoms);
 		
-		List nearVerts = NearVertexFinder.findNear(linestrings, closeTol);
+		List nearVerts = NearVertexFinder.findNear(linestrings, closenessTol);
 		
 		Map coordinateMoves = getCoordinateMovesMap(nearVerts);
 		
-		List strGeoms = new ArrayList();
-		for (int i = 0; i < inputGeoms.size(); i++) {
-			Geometry geom = (Geometry) inputGeoms.get(i);
-			Geometry stretchedGeom = GeometryVerticesMover.move(geom, coordinateMoves);
-			strGeoms.add(stretchedGeom);
+		Geometry[] strGeoms = new Geometry[inputGeoms.length];
+		for (int i = 0; i < inputGeoms.length; i++) {
+			Geometry geom = (Geometry) inputGeoms[i];
+			if (geom != null) {
+				Geometry stretchedGeom = GeometryVerticesMover.move(geom, coordinateMoves);
+				strGeoms[i] = stretchedGeom;
+			}
 		}
 		return strGeoms;
 	}
 	
-	private List extractLineStrings(List geoms)
+	private List extractLineStrings(Geometry[] geom)
 	{
 		List lines = new ArrayList();
 		LinearComponentExtracter lineExtracter = new LinearComponentExtracter(lines);
-		for (Iterator i = geoms.iterator(); i.hasNext(); ) {
-			Geometry g = (Geometry) i.next();
-			g.apply(lineExtracter);
+		for (int i = 0; i < geom.length; i++ ) {
+			if (geom[i] != null)
+				geom[i].apply(lineExtracter);
 		}
 		return lines;
 	}

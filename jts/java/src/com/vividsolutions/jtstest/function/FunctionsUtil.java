@@ -3,7 +3,7 @@ package com.vividsolutions.jtstest.function;
 import java.awt.Graphics2D;
 
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jtstest.testbuilder.AppColors;
+import com.vividsolutions.jtstest.testbuilder.AppConstants;
 import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
@@ -32,7 +32,7 @@ public class FunctionsUtil {
     .getGeometryEditPanel();
     Graphics2D gr = (Graphics2D) panel.getGraphics();
     GeometryPainter.paint(geom, panel.getViewport(), gr, 
-        AppColors.INDICATOR_LINE_COLOR, 
-        AppColors.INDICATOR_FILL_COLOR);
+        AppConstants.INDICATOR_LINE_COLOR, 
+        AppConstants.INDICATOR_FILL_COLOR);
   }
 }

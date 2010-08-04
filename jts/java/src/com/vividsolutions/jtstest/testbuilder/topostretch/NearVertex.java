@@ -67,7 +67,7 @@ public class NearVertex
 			// displace in direction of segment this pt lies on
 		}
 		else {
-			stretchedPt =  getDisplacedFromSeg(dist);
+			stretchedPt = getDisplacedFromSeg(dist);
 		}
 		return stretchedPt;
 	}

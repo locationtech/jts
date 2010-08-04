@@ -45,8 +45,8 @@ public class TestTopologyStretcher
 		Geometry g = reader.read(wkt);
 		TopologyStretcher stretcher = new TopologyStretcher(g);
 
-		List strGeoms = stretcher.stretch(offset);
-		Geometry strGeom = (Geometry) strGeoms.get(0);
+		Geometry[] strGeoms = stretcher.stretch(1e-3, offset);
+		Geometry strGeom = strGeoms[0];
 		System.out.println(strGeom);
 	}
 
@@ -55,10 +55,10 @@ public class TestTopologyStretcher
 		Geometry g2 = reader.read(wkt2);
 		TopologyStretcher stretcher = new TopologyStretcher(g1, g2);
 
-		List strGeoms = stretcher.stretch(10.0);
-		Geometry strGeom1 = (Geometry) strGeoms.get(0);
+		Geometry[] strGeoms = stretcher.stretch(1e-3, 10.0);
+		Geometry strGeom1 = (Geometry) strGeoms[0];
 		System.out.println(strGeom1);
-		Geometry strGeom2 = (Geometry) strGeoms.get(1);
+		Geometry strGeom2 = (Geometry) strGeoms[1];
 		System.out.println(strGeom2);
 	}
 }

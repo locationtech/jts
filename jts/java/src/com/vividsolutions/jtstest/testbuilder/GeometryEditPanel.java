@@ -47,6 +47,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.testbuilder.model.*;
+import com.vividsolutions.jtstest.testbuilder.topostretch.GeometryStretcherView;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.AWTUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.*;
@@ -59,16 +60,14 @@ import com.vividsolutions.jtstest.testbuilder.ui.render.*;
  */
 public class GeometryEditPanel extends JPanel 
 {
-  private static double HIGHLIGHT_SIZE = 50.0;
-  private static Color HIGHLIGHT_COLOR = new Color(255, 192, 0, 150);
-
+	
+	/*
   private static Color[] selectedPointColor = { new Color(0, 64, 128, 255),
       new Color(170, 64, 0, 255) };
+*/
 
-
-  private TestBuilderModel model;
+  private TestBuilderModel tbModel;
   private GeometryEditModel geomModel;
-  
   
   private DrawingGrid grid = new DrawingGrid();
   private GridRenderer gridRenderer;
@@ -82,10 +81,11 @@ public class GeometryEditPanel extends JPanel
 
   private Viewport viewport = new Viewport(this);
 
-  //----------------------------------------
-  BorderLayout borderLayout1 = new BorderLayout();
   private RenderManager renderMgr;
   //private OperationMonitorManager opMonitor;
+  
+  //----------------------------------------
+  BorderLayout borderLayout1 = new BorderLayout();
   
   public GeometryEditPanel() {
     gridRenderer = new GridRenderer(viewport, grid);
@@ -97,6 +97,7 @@ public class GeometryEditPanel extends JPanel
     renderMgr = new RenderManager(this);
     //opMonitor = new OperationMonitorManager(this, viewport);
 
+
     setToolTipText("");
     setBorder(BorderFactory.createEmptyBorder());
     setCurrentTool(RectangleTool.getInstance());
@@ -104,12 +105,12 @@ public class GeometryEditPanel extends JPanel
 
   
   public void setModel(TestBuilderModel model) {
-    this.model = model;
+    this.tbModel = model;
     geomModel = model.getGeometryEditModel();
   }
 
   public TestBuilderModel getModel() {
-    return model;
+    return tbModel;
   }
 
   public void setGridEnabled(boolean isEnabled) {
@@ -118,7 +119,7 @@ public class GeometryEditPanel extends JPanel
 
   public GeometryEditModel getGeomModel()
   {
-    return model.getGeometryEditModel();
+    return tbModel.getGeometryEditModel();
   }
   public Viewport getViewport() { return viewport; }
 
@@ -141,32 +142,32 @@ public class GeometryEditPanel extends JPanel
 
   private LayerList getLayerList()
   {
-    return model.getLayers();
+    return tbModel.getLayers();
   }
   
   public void setShowingInput(boolean isEnabled)
   {
-    if (model == null) return;
+    if (tbModel == null) return;
     getLayerList().getLayer(LayerList.LYR_A).setEnabled(isEnabled);
     getLayerList().getLayer(LayerList.LYR_B).setEnabled(isEnabled);
     forceRepaint();
   }
   
   public void setShowingGeometryA(boolean isEnabled) {
-    if (model == null) return;
+    if (tbModel == null) return;
     getLayerList().getLayer(LayerList.LYR_A).setEnabled(isEnabled);
     forceRepaint();
   }
 
   public void setShowingGeometryB(boolean isEnabled) {
-    if (model == null) return;
+    if (tbModel == null) return;
     getLayerList().getLayer(LayerList.LYR_B).setEnabled(isEnabled);
     forceRepaint();
   }
 
   public void setShowingResult(boolean isEnabled) 
   {
-    if (model == null) return;
+    if (tbModel == null) return;
     getLayerList().getLayer(LayerList.LYR_RESULT).setEnabled(isEnabled);
     forceRepaint();
   }
@@ -235,14 +236,14 @@ public class GeometryEditPanel extends JPanel
   private void drawHighlight(Graphics2D g) {
     if (highlightPoint == null)
       return;
-    double size = HIGHLIGHT_SIZE;
+    double size = AppConstants.HIGHLIGHT_SIZE;
     Point2D viewPt = viewport.convert(highlightPoint);
     double x = viewPt.getX();
     double y = viewPt.getY();
     Ellipse2D.Double shape = new Ellipse2D.Double(x - size / 2, y - size / 2,
         size, size);
     AWTUtil.setStroke(g, 4);
-    g.setColor(HIGHLIGHT_COLOR);
+    g.setColor(AppConstants.HIGHLIGHT_COLOR);
     g.draw(shape);
   }
 
@@ -363,7 +364,7 @@ public class GeometryEditPanel extends JPanel
   
   class GeometryEditPanelRenderer implements Renderer
   {
-  	private Renderer layerListRenderer = null;
+  	private Renderer currentRenderer = null;
   	
     public void render(Graphics2D g)
     {
@@ -372,15 +373,37 @@ public class GeometryEditPanel extends JPanel
           RenderingHints.VALUE_ANTIALIAS_ON);
       
       gridRenderer.paint(g2);
-      layerListRenderer = getLayerList().getRenderer(viewport);
-      layerListRenderer.render((Graphics2D) g2);
+      renderLayers(g2);
       drawHighlight(g2);
     }
     
-  	public void cancel()
+    public void renderLayers(Graphics2D g)
+    {
+      GeometryStretcherView stretcher = null;
+    	if (tbModel.isRevealingTopology()) {
+    		stretcher = new GeometryStretcherView(geomModel);
+    		stretcher.setStretchDistance(viewport.getDistanceInModel(AppConstants.TOPO_STRETCH_VIEW_DIST));
+    		stretcher.setEnvelope(viewport.getModelEnv());
+    	}
+    	
+    	LayerList layerList = getLayerList();
+    	int n = layerList.size();
+    	for (int i = 0; i < n; i++) {
+    		if (stretcher != null && i < 2)
+      		currentRenderer = new LayerRenderer(layerList.getLayer(i),
+      				stretcher.getContainer(i),
+      				viewport);
+    		else
+    			currentRenderer = new LayerRenderer(layerList.getLayer(i), viewport);
+    		currentRenderer.render(g);
+    	}
+    	currentRenderer = null;
+    }
+    
+  	public synchronized void cancel()
   	{
-  		if (layerListRenderer != null)
-  			layerListRenderer.cancel();
+  		if (currentRenderer != null)
+  			currentRenderer.cancel();
   	}
 
   }

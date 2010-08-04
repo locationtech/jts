@@ -9,11 +9,13 @@ import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.test.TestCaseList;
 import com.vividsolutions.jtstest.test.Testable;
+import com.vividsolutions.jtstest.testbuilder.topostretch.GeometryStretcherView;
 import com.vividsolutions.jtstest.testbuilder.ui.style.BasicStyle;
 import com.vividsolutions.jtstest.testrunner.TestReader;
 import com.vividsolutions.jtstest.testrunner.TestRun;
 import com.vividsolutions.jtstest.util.*;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
+import com.vividsolutions.jtstest.testbuilder.geom.GeometryContainer;
 import com.vividsolutions.jtstest.testbuilder.io.shapefile.Shapefile;
 
 public class TestBuilderModel 
@@ -24,7 +26,9 @@ public class TestBuilderModel
   protected static boolean showingOrientations = false;
   protected static boolean showingVertices = true;
   protected static boolean showingCoordinates = true;
+  protected static boolean isRevealingTopology = false;
 
+  
   public static boolean isShowingOrientations() {
     return showingOrientations;
   }
@@ -42,6 +46,12 @@ public class TestBuilderModel
   }
   public static void setShowingVertices(boolean show) {
     showingVertices = show;
+  }
+  public boolean isRevealingTopology() {
+    return isRevealingTopology;
+  }
+  public void setRevealingTopology(boolean show) {
+  	isRevealingTopology = show;
   }
   
   private PrecisionModel precisionModel = new PrecisionModel();
@@ -90,12 +100,20 @@ public class TestBuilderModel
   
   private void initLayers()
   {
-    layerList.getLayer(LayerList.LYR_A).setGeometry(
-        new IndexedGeometryContainer(geomEditModel, 0));
-    layerList.getLayer(LayerList.LYR_B).setGeometry(
-        new IndexedGeometryContainer(geomEditModel, 1));
+  	/*
+  	GeometryStretcherView stretcher = new GeometryStretcherView(geomEditModel);
+  	GeometryContainer geomCont0 = stretcher.getContainer(0);
+  	GeometryContainer geomCont1 = stretcher.getContainer(1);
+  	*/
+  	
+  	GeometryContainer geomCont0 = new IndexedGeometryContainer(geomEditModel, 0);
+  	GeometryContainer geomCont1 = new IndexedGeometryContainer(geomEditModel, 1);
+  	
+    layerList.getLayer(LayerList.LYR_A).setSource(geomCont0);
+    layerList.getLayer(LayerList.LYR_B).setSource(geomCont1);
+    
     if (geomEditModel != null)
-      layerList.getLayer(LayerList.LYR_RESULT).setGeometry(
+      layerList.getLayer(LayerList.LYR_RESULT).setSource(
           new ResultGeometryContainer(geomEditModel));
 
     Layer lyrA = layerList.getLayer(LayerList.LYR_A);

@@ -33,18 +33,13 @@
 package com.vividsolutions.jtstest.testbuilder;
 
 import java.awt.*;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -92,7 +87,9 @@ public class GeometryEditControlPanel extends JPanel
     private GridBagLayout gridBagLayout5 = new GridBagLayout();
     private JPanel jPanel8 = new JPanel();
     JButton btnSetPrecisionModel = new JButton();
-
+    
+    JPanel jPanel9 = new JPanel();
+    JCheckBox cbRevealTopo = new JCheckBox();
     
     public GeometryEditControlPanel() {
         //enableEvents(AWTEvent.WINDOW_EVENT_MASK);
@@ -198,6 +195,15 @@ public class GeometryEditControlPanel extends JPanel
         btnSetPrecisionModel.setMnemonic('0');
         btnSetPrecisionModel.setText("Set Precision Model");
 
+        cbRevealTopo.setText("Reveal Topology");
+        cbRevealTopo.setToolTipText("Stretches geometries to reveal fine topological detail");
+        cbRevealTopo.addActionListener(new java.awt.event.ActionListener() {
+
+          public void actionPerformed(ActionEvent e) {
+          	cbStretchTopo_actionPerformed(e);
+          }
+      });
+        
         this.add(jPanel3, BorderLayout.CENTER);
         jPanel3.add(
             jPanel1,
@@ -330,6 +336,9 @@ public class GeometryEditControlPanel extends JPanel
         jPanel8.setLayout(new FlowLayout());
         jPanel8.add(btnSetPrecisionModel);
         
+        jPanel9.setLayout(new FlowLayout());
+        jPanel9.add(cbRevealTopo);
+      
         jPanel3.add(
             jPanel4,
             new GridBagConstraints(
@@ -349,6 +358,20 @@ public class GeometryEditControlPanel extends JPanel
             new GridBagConstraints(
                 0,
                 5,
+                1,
+                1,
+                0.0,
+                1.0,
+                GridBagConstraints.CENTER,
+                GridBagConstraints.VERTICAL,
+                new Insets(0, 0, 0, 0),
+                0,
+                0));
+        jPanel3.add(
+            jPanel9,
+            new GridBagConstraints(
+                0,
+                6,
                 1,
                 1,
                 0.0,
@@ -379,7 +402,7 @@ public class GeometryEditControlPanel extends JPanel
 
     void setEditMode(int geomIndex) {
         geomModel.setReadOnly(false);
-        geomModel.setGeomIndex(geomIndex);
+        geomModel.setEditGeomIndex(geomIndex);
 //        setGeometryTypeState();
     }
 
@@ -387,8 +410,8 @@ public class GeometryEditControlPanel extends JPanel
       geomModel.setReadOnly(true);
     }
 
-    void editPanel_mouseClicked(MouseEvent e) {
-        updatePanel(e.getClickCount() > 1);
+    void cbStretchTopo_actionPerformed(ActionEvent e) {
+      
     }
 
     private void updatePanel(boolean partClosed) 

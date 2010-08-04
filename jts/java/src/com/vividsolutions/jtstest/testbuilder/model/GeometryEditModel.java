@@ -19,7 +19,7 @@ public class GeometryEditModel
 
   private boolean readOnly = true;
 
-  private int geomIndex = 0; // the index of the currently selected geometry
+  private int editGeomIndex = 0; // the index of the currently selected geometry
   
   private int geomType = GeometryType.POLYGON;  // from GeometryType
 
@@ -62,13 +62,12 @@ public class GeometryEditModel
   }
   
   public int getGeomIndex() {
-    return geomIndex;
+    return editGeomIndex;
   }
   
-  public void setGeomIndex(int index) {
-    geomIndex = index;
+  public void setEditGeomIndex(int index) {
+    editGeomIndex = index;
   }
-
 
   public boolean isReadOnly() {
     return readOnly;
@@ -128,7 +127,7 @@ public class GeometryEditModel
 
   public Geometry getGeometry()
   {
-    return getGeometry(geomIndex);
+    return getGeometry(editGeomIndex);
   }
   
   public Geometry getGeometry(int i)
@@ -144,7 +143,7 @@ public class GeometryEditModel
   
   public void setGeometry(Geometry g)
   {
-    setGeometry(geomIndex, g);
+    setGeometry(editGeomIndex, g);
     geomChanged();
   }
   

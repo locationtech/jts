@@ -45,6 +45,11 @@ public class Viewport implements PointTransformation
     this.panel = panel;
   }
 
+  public Envelope getModelEnv()
+  {
+  	return viewEnvInModel;
+  }
+  
   public double getScale() {
     return scale;
   }
@@ -174,6 +179,11 @@ public class Viewport implements PointTransformation
     return panel.getSize().getWidth();
   }
 
+  public double getDistanceInModel(double viewDist)
+  {
+  	return viewDist / scale;
+  }
+  
   private Envelope computeEnvelopeInModel() {
     double widthInModel = panel.getWidth() / scale;
     double heighInModel = panel.getHeight() / scale;

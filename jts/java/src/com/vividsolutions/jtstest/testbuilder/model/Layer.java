@@ -4,7 +4,6 @@ import java.awt.*;
 
 import com.vividsolutions.jtstest.testbuilder.*;
 import com.vividsolutions.jtstest.testbuilder.geom.*;
-import com.vividsolutions.jtstest.testbuilder.model.LayerList.LayerListRenderer;
 import com.vividsolutions.jtstest.testbuilder.ui.render.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.ArrowEndpointStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.BasicStyle;
@@ -60,11 +59,24 @@ public class Layer
     this.isEnabled = isEnabled;
   }
   
-  public void setGeometry(GeometryContainer geomCont)
+  public void setSource(GeometryContainer geomCont)
   {
     this.geomCont = geomCont;
   }
   
+  public GeometryContainer getSource()
+  {
+    return geomCont;
+  }
+  
+  public boolean isEnabled()
+  {
+  	return isEnabled;
+  }
+  public StyleList getStyles()
+  {
+  	return styleList;
+  }
   public void setStyle(BasicStyle style)
   {
     this.style = style;
@@ -102,82 +114,12 @@ public class Layer
       
       GeometryPainter.paint(g, viewport, geom, styleList);
       
-    } catch (Exception ex) {
-      System.out.println(ex);
-      // not much we can do about it - just carry on
+    } 
+    catch (Exception ex) {
+      // not much we can do about an exception while rendering, so just carry on
+      System.out.println("Exception in Layer.paint(): " + ex);
     }
   }
   
-  public Renderer getRenderer(Viewport viewport)
-  {
-  	return new LayerRenderer(viewport);
-  }
 
-  class LayerRenderer implements Renderer
-  {
-  	private Viewport viewport;
-  	private boolean isCancelled = false;
-
-  	public LayerRenderer(Viewport viewport)
-  	{
-  		this.viewport = viewport;
-  	}
-  	
-    public void render(Graphics2D g)
-    {
-      if (! isEnabled) return;
-      if (geomCont == null) return;
-      
-      try {
-        Geometry geom = geomCont.getGeometry();
-        if (geom == null) return;
-        
-        render(g, viewport, geom, styleList);
-        
-      } catch (Exception ex) {
-        System.out.println(ex);
-        // not much we can do about it - just carry on
-      }
-    	
-    }
-    
-    private void render(Graphics2D g, Viewport viewport, Geometry geometry, Style style)
-    throws Exception
-    {
-      // cull non-visible geometries
-    	// for maximum rendering speed this needs to be checked for each component
-      if (! viewport.intersectsInModel(geometry.getEnvelopeInternal())) 
-        return;
-      
-      if (geometry instanceof GeometryCollection) {
-      	renderGeometryCollection(g, viewport, (GeometryCollection) geometry, style);
-        return;
-      }
-      
-      style.paint(geometry, viewport, g);
-    }
-
-    private void renderGeometryCollection(Graphics2D g, Viewport viewport, 
-        GeometryCollection gc,
-        Style style
-        ) 
-    throws Exception
-    {
-      /**
-       * Render each element separately.
-       * Otherwise it is not possible to render both filled and non-filled
-       * (1D) elements correctly
-       */
-      for (int i = 0; i < gc.getNumGeometries(); i++) {
-      	render(g, viewport, gc.getGeometryN(i), style);
-        if (isCancelled) return;
-      }
-    }
-
-  	public void cancel()
-  	{
-  		isCancelled = true;
-  	}
-
-  }
 }

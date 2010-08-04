@@ -167,11 +167,17 @@ public class JTSTestBuilderFrame extends JFrame
             }
           });
       testCasePanel.editCtlPanel.btnSetPrecisionModel.addActionListener(
-        new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            precisionModelMenuItem_actionPerformed(e);
-          }
-        });
+          new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              precisionModelMenuItem_actionPerformed(e);
+            }
+          });
+      testCasePanel.editCtlPanel.cbRevealTopo.addActionListener(
+          new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+            	revealTopo_actionPerformed(e);
+            }
+          });
       Cursor zoomInCursor = Toolkit.getDefaultToolkit().createCustomCursor(
       		new ImageIcon(this.getClass().getResource("MagnifyCursor.gif")).getImage(),
           new java.awt.Point(16, 16), "Zoom In");
@@ -692,6 +698,10 @@ public class JTSTestBuilderFrame extends JFrame
     catch (ParseException pe) {
       reportException(this, pe);
     }
+  }
+  void revealTopo_actionPerformed(ActionEvent e) {
+  	tbModel.setRevealingTopology(testCasePanel.editCtlPanel.cbRevealTopo.isSelected());
+  	testCasePanel.editPanel.updateView();
   }
 
     private String getRunJava(String className) {
