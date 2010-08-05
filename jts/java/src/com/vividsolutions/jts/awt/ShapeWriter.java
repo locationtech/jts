@@ -53,7 +53,7 @@ public class ShapeWriter
 	/**
 	 * The point shape factory used by default.
 	 */
-	public static final PointShapeFactory DEFAULT_POINT_FACTORY = new SquarePointShapeFactory(3.0);
+	public static final PointShapeFactory DEFAULT_POINT_FACTORY = new PointShapeFactory.Square(3.0);
 	
 	private PointTransformation pointTransformer = DEFAULT_POINT_TRANSFORMATION;
 	private PointShapeFactory pointFactory = DEFAULT_POINT_FACTORY;
