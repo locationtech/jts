@@ -14,7 +14,7 @@ public abstract class BasicTool implements Tool, MouseListener, MouseMotionListe
   public static int TOLERANCE_PIXELS = 5;
 
 //  private Color color = Color.red;
-  private Color bandColor = AppConstants.BAND_COLOR;
+  private Color bandColor = AppConstants.BAND_CLR;
   
   private Stroke stroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT,
       BasicStroke.JOIN_MITER, 10.0f, new float[] { 2.0f, 2.0f } , 0.0f);

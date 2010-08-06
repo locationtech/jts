@@ -32,7 +32,7 @@ public class FunctionsUtil {
     .getGeometryEditPanel();
     Graphics2D gr = (Graphics2D) panel.getGraphics();
     GeometryPainter.paint(geom, panel.getViewport(), gr, 
-        AppConstants.INDICATOR_LINE_COLOR, 
-        AppConstants.INDICATOR_FILL_COLOR);
+        AppConstants.INDICATOR_LINE_CLR, 
+        AppConstants.INDICATOR_FILL_CLR);
   }
 }
