@@ -37,7 +37,7 @@ public class TopologyStretcher
 		this.stretchDistance = stretchDistance;
 		linestrings = extractLineStrings(inputGeoms);
 		
-		List nearVerts = NearVertexFinder.findNear(linestrings, nearnessTol);
+		List nearVerts = StretchedVertexFinder.findNear(linestrings, nearnessTol);
 		
 		Map coordinateMoves = getCoordinateMoves(nearVerts);
 		
@@ -81,7 +81,7 @@ public class TopologyStretcher
 	{
 		Map moves = new TreeMap();
 		for (Iterator i = nearVerts.iterator(); i.hasNext(); ) {
-			NearVertex nv = (NearVertex) i.next();
+			StretchedVertex nv = (StretchedVertex) i.next();
 			// TODO: check if move would invalidate topology.  If yes, don't move
 			Coordinate src = nv.getVertexCoordinate();
 			Coordinate moved = nv.getStretchedVertex(stretchDistance);

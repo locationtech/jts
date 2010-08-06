@@ -5,11 +5,11 @@ import com.vividsolutions.jts.algorithm.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
 
-public class NearVertexFinder 
+class StretchedVertexFinder 
 {
 	public static List findNear(Collection linestrings, double tolerance)
 	{
-		NearVertexFinder finder = new NearVertexFinder(linestrings, tolerance);
+		StretchedVertexFinder finder = new StretchedVertexFinder(linestrings, tolerance);
 		return finder.getNearVertices();
 	}
 	
@@ -18,13 +18,13 @@ public class NearVertexFinder
 	private Envelope limitEnv;
 	private List nearVerts = new ArrayList();
 	
-	public NearVertexFinder(Collection linestrings, double tolerance)
+	public StretchedVertexFinder(Collection linestrings, double tolerance)
 	{
 		this.linestrings = linestrings;
 		this.tolerance = tolerance;
 	}
 	
-	public NearVertexFinder(Collection linestrings, double tolerance, Envelope limitEnv)
+	public StretchedVertexFinder(Collection linestrings, double tolerance, Envelope limitEnv)
 	{
 		this.linestrings = linestrings;
 		this.tolerance = tolerance;
@@ -70,13 +70,13 @@ public class NearVertexFinder
 
 			Coordinate testPt = pts[i];
 			
-			NearVertex nearVert = null;
+			StretchedVertex nearVert = null;
 	
 			// is near to vertex?
 
 			double dist = testPt.distance(p);
 			if (dist <= tolerance && dist != 0.0) {
-				nearVert = new NearVertex(p, linePts, i, testPt);
+				nearVert = new StretchedVertex(p, linePts, i, testPt);
 			}
 			else if (i < pts.length - 1) {
 				// is near segment?
@@ -97,7 +97,7 @@ public class NearVertexFinder
 				// check if it is near the segment at all
 				double segDist = distanceToSeg(p, testPt, segEndPt);
 				if (segDist <= tolerance && segDist != 0.0) {
-					nearVert = new NearVertex(p, linePts, i, new LineSegment(testPt, pts[i + 1]));
+					nearVert = new StretchedVertex(p, linePts, i, new LineSegment(testPt, pts[i + 1]));
 				}
 			}
 			if (nearVert != null)

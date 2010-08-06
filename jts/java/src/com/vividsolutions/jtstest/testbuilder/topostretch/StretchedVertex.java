@@ -3,13 +3,24 @@ package com.vividsolutions.jtstest.testbuilder.topostretch;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.algorithm.*;
 
-public class NearVertex 
+/**
+ * Models a vertex of a Geometry which will be stretched
+ * due to being too near other segments and vertices.
+ * <p>
+ * Currently for simplicity a vertex is assumed to 
+ * be near only one segment or other vertex.
+ * This is sufficient for most cases.
+ * 
+ * @author Martin Davis
+ *
+ */
+public class StretchedVertex 
 {
 	// TODO: also provide information about the segments around the facet the vertex is near to, to allow smarter adjustment 
 	
 	private Coordinate vertexPt;
 	private Coordinate[] parentLine;
-	private int index;
+	private int parentIndex;
 	private Coordinate nearPt = null;
 	private LineSegment nearSeg = null;
 	private Coordinate stretchedPt = null; 
@@ -21,11 +32,11 @@ public class NearVertex
 	 * @param index
 	 * @param nearPt
 	 */
-	public NearVertex(Coordinate vertexPt, Coordinate[] parentLine, int index, Coordinate nearPt)
+	public StretchedVertex(Coordinate vertexPt, Coordinate[] parentLine, int parentIndex, Coordinate nearPt)
 	{
 		this.vertexPt = vertexPt;
 		this.parentLine = parentLine;
-		this.index = index;
+		this.parentIndex = parentIndex;
 		this.nearPt = nearPt;
 	}
 	
@@ -36,12 +47,12 @@ public class NearVertex
 	 * @param index
 	 * @param nearSeg
 	 */
-	public NearVertex(Coordinate vertexPt, Coordinate[] parentLine, int index, 
+	public StretchedVertex(Coordinate vertexPt, Coordinate[] parentLine, int parentIndex, 
 			LineSegment nearSeg)
 	{
 		this.vertexPt = vertexPt;
 		this.parentLine = parentLine;
-		this.index = index;
+		this.parentIndex = parentIndex;
 		this.nearSeg = nearSeg;
 	}
 	

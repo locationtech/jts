@@ -9,7 +9,6 @@ import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.test.TestCaseList;
 import com.vividsolutions.jtstest.test.Testable;
-import com.vividsolutions.jtstest.testbuilder.topostretch.GeometryStretcherView;
 import com.vividsolutions.jtstest.testbuilder.ui.style.BasicStyle;
 import com.vividsolutions.jtstest.testrunner.TestReader;
 import com.vividsolutions.jtstest.testrunner.TestRun;

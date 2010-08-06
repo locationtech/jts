@@ -51,7 +51,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.testbuilder.model.*;
-import com.vividsolutions.jtstest.testbuilder.topostretch.GeometryStretcherView;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.AWTUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.*;
@@ -237,35 +236,68 @@ public class GeometryEditPanel extends JPanel
   }
   */
   
-  private static int VERTEX_SIZE = AppConstants.GEOMETRY_VERTEX_SIZE + 1;
+  private static int VERTEX_SIZE = AppConstants.VERTEX_SIZE + 1;
   private static double VERTEX_SIZE_OVER_2 = VERTEX_SIZE / 2;
   
   private static int INNER_SIZE = VERTEX_SIZE  - 2;
   private static double INNER_SIZE_OVER_2 = INNER_SIZE / 2;
   
-  private void drawVertices(Graphics2D g, List coords, Color clr) {
-  	Rectangle2D rect = new Rectangle2D.Double();
-  	for (int i = 0; i < coords.size(); i++) {
-  		Coordinate pt = (Coordinate) coords.get(i);
-  		Point2D p = viewport.convert(pt);
+  private void drawHighlightedVertices(Graphics2D g, List coords, Color clr) {
+    Rectangle2D rect = new Rectangle2D.Double();
+    for (int i = 0; i < coords.size(); i++) {
+      Coordinate pt = (Coordinate) coords.get(i);
+      Point2D p = viewport.convert(pt);
       rect.setFrame(
           p.getX() - VERTEX_SIZE_OVER_2,
           p.getY() - VERTEX_SIZE_OVER_2, 
           VERTEX_SIZE, 
           VERTEX_SIZE);
-    	g.setColor(clr);
+      g.setColor(clr);
       g.fill(rect);
       Rectangle2D rectInner = new Rectangle2D.Double(
           p.getX() - INNER_SIZE_OVER_2,
           p.getY() - INNER_SIZE_OVER_2, 
           INNER_SIZE, 
           INNER_SIZE);
-    	g.setColor(AppConstants.VERTEX_HIGHLIGHT_COLOR);
+      g.setColor(AppConstants.VERTEX_HIGHLIGHT_CLR);
       g.fill(rectInner);
 
-  	}
+    }
   }
+  
+  private void drawHighlightedVertex(Graphics2D g, Coordinate pt, Color clr) {
+    Rectangle2D rect = new Rectangle2D.Double();
+    Point2D p = viewport.convert(pt);
+    rect.setFrame(
+        p.getX() - VERTEX_SIZE_OVER_2,
+        p.getY() - VERTEX_SIZE_OVER_2, 
+        VERTEX_SIZE, 
+        VERTEX_SIZE);
+    g.setColor(clr);
+    g.fill(rect);
+    Rectangle2D rectInner = new Rectangle2D.Double(
+        p.getX() - INNER_SIZE_OVER_2,
+        p.getY() - INNER_SIZE_OVER_2, 
+        INNER_SIZE, 
+        INNER_SIZE);
+    g.setColor(AppConstants.VERTEX_HIGHLIGHT_CLR);
+    g.fill(rectInner);
+  }
+  
+  private static double VERTEX_SHADOW_SIZE_OVER_2 = AppConstants.VERTEX_SHADOW_SIZE / 2;
 
+  private void drawVertexShadow(Graphics2D g, Coordinate pt, Color clr) {
+    Ellipse2D rect = new Ellipse2D.Double();
+    Point2D p = viewport.convert(pt);
+    rect.setFrame(
+        p.getX() - VERTEX_SHADOW_SIZE_OVER_2,
+        p.getY() - VERTEX_SHADOW_SIZE_OVER_2, 
+        AppConstants.VERTEX_SHADOW_SIZE, 
+        AppConstants.VERTEX_SHADOW_SIZE);
+    g.setColor(clr);
+    g.fill(rect);
+  }
+  
   private void drawHighlight(Graphics2D g) {
     if (highlightPoint == null)
       return;
@@ -276,7 +308,7 @@ public class GeometryEditPanel extends JPanel
     Ellipse2D.Double shape = new Ellipse2D.Double(x - size / 2, y - size / 2,
         size, size);
     AWTUtil.setStroke(g, 4);
-    g.setColor(AppConstants.HIGHLIGHT_COLOR);
+    g.setColor(AppConstants.HIGHLIGHT_CLR);
     g.draw(shape);
   }
 
@@ -284,7 +316,7 @@ public class GeometryEditPanel extends JPanel
    * Draws a mask surround to indicate that geometry is being visually altered
    * @param g
    */
-  private void drawMask(Graphics2D g) {
+  private void drawMagnifyMask(Graphics2D g) {
     double viewWidth = viewport.getWidthInView();
     double viewHeight = viewport.getHeightInView();
     
@@ -302,7 +334,7 @@ public class GeometryEditPanel extends JPanel
     		((float) viewHeight) - 2 * maskWidth));
     
     mask.subtract(maskHole);
-    g.setColor(AppConstants.MASK_COLOR);
+    g.setColor(AppConstants.MASK_CLR);
     g.fill(mask);
   }
 
@@ -427,30 +459,37 @@ public class GeometryEditPanel extends JPanel
   	
     public void render(Graphics2D g)
     {
+      if (tbModel.isRevealingTopology()) {
+        stretcher = new GeometryStretcherView(geomModel);
+        stretcher.setStretchSize(viewport.getDistanceInModel(AppConstants.TOPO_STRETCH_VIEW_DIST));
+        stretcher.setEnvelope(viewport.getModelEnv());
+      }
+
       Graphics2D g2 = (Graphics2D) g;
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
           RenderingHints.VALUE_ANTIALIAS_ON);
       
+      if (tbModel.isRevealingTopology()) {
+        //renderMagnifiedVertexShadows(g2);
+        renderMagnifiedVertexMask(g2);
+      }
+      
       gridRenderer.paint(g2);
+      
       renderLayers(g2);
       
       if (tbModel.isRevealingTopology()) {
-      	renderMovedVertices(g2);
+      	renderMagnifiedVertices(g2);
       }
       drawHighlight(g2);
       
     	if (tbModel.isRevealingTopology()) {
-    		drawMask(g2);
+    		//drawMagnifyMask(g2);
     	}
     }
     
     public void renderLayers(Graphics2D g)
     {
-    	if (tbModel.isRevealingTopology()) {
-    		stretcher = new GeometryStretcherView(geomModel);
-    		stretcher.setStretchSize(viewport.getDistanceInModel(AppConstants.TOPO_STRETCH_VIEW_DIST));
-    		stretcher.setEnvelope(viewport.getModelEnv());
-    	}
     	
     	LayerList layerList = getLayerList();
     	int n = layerList.size();
@@ -466,15 +505,56 @@ public class GeometryEditPanel extends JPanel
     	currentRenderer = null;
     }
     
-    public void renderMovedVertices(Graphics2D g)
+    public void renderMagnifiedVertices(Graphics2D g)
     {
-    	for (int i = 0; i < 2; i++) {
-    		List stretchedVerts = stretcher.getStretchedVertices(i);
-    		if (stretchedVerts != null)
-	    		drawVertices(g, stretchedVerts, 
-	    				i == 0 ? GeometryDepiction.GEOM_A_HIGHLIGHT_CLR :
-	    					GeometryDepiction.GEOM_B_HIGHLIGHT_CLR);
-    	}
+      for (int i = 0; i < 2; i++) {
+        List stretchedVerts = stretcher.getStretchedVertices(i);
+        if (stretchedVerts == null) continue;
+        for (int j = 0; j < stretchedVerts.size(); j++) {
+          Coordinate p = (Coordinate) stretchedVerts.get(j);
+          drawHighlightedVertex(g, p, 
+            i == 0 ? GeometryDepiction.GEOM_A_HIGHLIGHT_CLR :
+              GeometryDepiction.GEOM_B_HIGHLIGHT_CLR);
+        } 
+      }
+    }
+    
+    public void renderMagnifiedVertexShadows(Graphics2D g)
+    {
+      if (stretcher == null) return;
+      for (int i = 0; i < 2; i++) {
+        List stretchedVerts = stretcher.getStretchedVertices(i);
+        if (stretchedVerts == null) continue;
+        for (int j = 0; j < stretchedVerts.size(); j++) {
+          Coordinate p = (Coordinate) stretchedVerts.get(j);
+          drawVertexShadow(g, p, AppConstants.VERTEX_SHADOW_CLR);
+        }
+      }
+    }
+    
+    public void renderMagnifiedVertexMask(Graphics2D g)
+    {
+      if (stretcher == null) return;
+      
+      // render lowlight background
+      Rectangle2D rect = new Rectangle2D.Float();
+      rect.setFrame(
+          0,
+          0, 
+          viewport.getWidthInView(), 
+          viewport.getHeightInView());
+      g.setColor(AppConstants.MASK_CLR);
+      g.fill(rect);
+  
+      // highlight mag vertices
+      for (int i = 0; i < 2; i++) {
+        List stretchedVerts = stretcher.getStretchedVertices(i);
+        if (stretchedVerts == null) continue;
+        for (int j = 0; j < stretchedVerts.size(); j++) {
+          Coordinate p = (Coordinate) stretchedVerts.get(j);
+          drawVertexShadow(g, p, Color.WHITE);
+        }
+      }
     }
     
   	public synchronized void cancel()
