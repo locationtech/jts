@@ -454,15 +454,15 @@ public class GeometryEditPanel extends JPanel
   
   class GeometryEditPanelRenderer implements Renderer
   {
-    private GeometryStretcherView stretcher = null;
+    private GeometryStretcherView stretchView = null;
   	private Renderer currentRenderer = null;
   	
     public void render(Graphics2D g)
     {
       if (tbModel.isRevealingTopology()) {
-        stretcher = new GeometryStretcherView(geomModel);
-        stretcher.setStretchSize(viewport.getDistanceInModel(AppConstants.TOPO_STRETCH_VIEW_DIST));
-        stretcher.setEnvelope(viewport.getModelEnv());
+        stretchView = new GeometryStretcherView(geomModel);
+        stretchView.setStretchSize(viewport.getDistanceInModel(AppConstants.TOPO_STRETCH_VIEW_DIST));
+        stretchView.setEnvelope(viewport.getModelEnv());
       }
 
       Graphics2D g2 = (Graphics2D) g;
@@ -494,9 +494,9 @@ public class GeometryEditPanel extends JPanel
     	LayerList layerList = getLayerList();
     	int n = layerList.size();
     	for (int i = 0; i < n; i++) {
-    		if (stretcher != null && i < 2)
+    		if (stretchView != null && i < 2)
       		currentRenderer = new LayerRenderer(layerList.getLayer(i),
-      				stretcher.getContainer(i),
+      				stretchView.getContainer(i),
       				viewport);
     		else
     			currentRenderer = new LayerRenderer(layerList.getLayer(i), viewport);
@@ -508,7 +508,7 @@ public class GeometryEditPanel extends JPanel
     public void renderMagnifiedVertices(Graphics2D g)
     {
       for (int i = 0; i < 2; i++) {
-        List stretchedVerts = stretcher.getStretchedVertices(i);
+        List stretchedVerts = stretchView.getStretchedVertices(i);
         if (stretchedVerts == null) continue;
         for (int j = 0; j < stretchedVerts.size(); j++) {
           Coordinate p = (Coordinate) stretchedVerts.get(j);
@@ -521,9 +521,9 @@ public class GeometryEditPanel extends JPanel
     
     public void renderMagnifiedVertexShadows(Graphics2D g)
     {
-      if (stretcher == null) return;
+      if (stretchView == null) return;
       for (int i = 0; i < 2; i++) {
-        List stretchedVerts = stretcher.getStretchedVertices(i);
+        List stretchedVerts = stretchView.getStretchedVertices(i);
         if (stretchedVerts == null) continue;
         for (int j = 0; j < stretchedVerts.size(); j++) {
           Coordinate p = (Coordinate) stretchedVerts.get(j);
@@ -534,7 +534,7 @@ public class GeometryEditPanel extends JPanel
     
     public void renderMagnifiedVertexMask(Graphics2D g)
     {
-      if (stretcher == null) return;
+      if (stretchView == null) return;
       
       // render lowlight background
       Rectangle2D rect = new Rectangle2D.Float();
@@ -548,7 +548,7 @@ public class GeometryEditPanel extends JPanel
   
       // highlight mag vertices
       for (int i = 0; i < 2; i++) {
-        List stretchedVerts = stretcher.getStretchedVertices(i);
+        List stretchedVerts = stretchView.getStretchedVertices(i);
         if (stretchedVerts == null) continue;
         for (int j = 0; j < stretchedVerts.size(); j++) {
           Coordinate p = (Coordinate) stretchedVerts.get(j);

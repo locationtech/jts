@@ -31,10 +31,9 @@ public class LayerRenderer implements Renderer
   public void render(Graphics2D g)
   {
     if (! layer.isEnabled()) return;
-    if (geomCont == null) return;
     
     try {
-      Geometry geom = geomCont.getGeometry();
+    	Geometry geom = getGeometry();
       if (geom == null) return;
       
       render(g, viewport, geom, layer.getStyles());
@@ -43,7 +42,15 @@ public class LayerRenderer implements Renderer
       System.out.println(ex);
       // not much we can do about it - just carry on
     }
-  	
+  }
+  
+  private Geometry getGeometry()
+  {
+    if (geomCont == null) {
+    	return null;
+    }
+    Geometry geom = geomCont.getGeometry();
+    return geom;
   }
   
   private void render(Graphics2D g, Viewport viewport, Geometry geometry, Style style)
