@@ -45,75 +45,75 @@ class StretchedVertexFinder
 		
 	}
 	
-	private void findNearVertices(LineString line)
+	private void findNearVertices(LineString targetLine)
 	{
-		Coordinate[] pts = line.getCoordinates();
+		Coordinate[] pts = targetLine.getCoordinates();
 		for (int i = 0; i < pts.length; i++) {
-			findNearVertex(pts, i, pts[i]);
+			findNearVertex(pts, i);
 //				nearVerts.add(new NearVertex(pts, i));
 		}
 	}
 	
-	private void findNearVertex(Coordinate[] linePts, int index, Coordinate p)
+	private void findNearVertex(Coordinate[] linePts, int index)
 	{
 		for (Iterator i = linestrings.iterator(); i.hasNext(); ) {
-			LineString line = (LineString) i.next();
-			findNearVertex(linePts, index, p, line);
+			LineString testLine = (LineString) i.next();
+			findNearVertex(linePts, index, testLine);
 		}
-		
 	}
 
-	private void findNearVertex(Coordinate[] linePts, int index, Coordinate p, LineString testLine)
+  /**
+   * Finds a single near vertex.
+   * This is simply the first one found, not necessarily 
+   * the nearest.  
+   * This choice may sub-optimal, resulting 
+   * in odd result geometry.
+   * It's not clear that this can be done better, however.
+   * If there are several near points, the stretched
+   * geometry is likely to be distorted anyway.
+   * 
+   * @param targetPts
+   * @param index
+   * @param testLine
+   */
+	private void findNearVertex(Coordinate[] targetPts, int index, LineString testLine)
 	{
-		Coordinate[] pts = testLine.getCoordinates();
-		for (int i = 0; i < pts.length; i++) {
-
-			Coordinate testPt = pts[i];
-			
-			StretchedVertex nearVert = null;
+    Coordinate targetPt = targetPts[index];
+		Coordinate[] testPts = testLine.getCoordinates();
+		for (int i = 0; i < testPts.length; i++) {
+			Coordinate testPt = testPts[i];
+			StretchedVertex stretchVert = null;
 	
 			// is near to vertex?
-
-			double dist = testPt.distance(p);
+			double dist = testPt.distance(targetPt);
 			if (dist <= tolerance && dist != 0.0) {
-				nearVert = new StretchedVertex(p, linePts, i, testPt);
+				stretchVert = new StretchedVertex(targetPt, targetPts, index, testPt, testPts, i);
 			}
-			else if (i < pts.length - 1) {
-				// is near segment?
-				
-				Coordinate segEndPt = pts[i + 1];
+      // is near segment?
+			else if (i < testPts.length - 1) {
+				Coordinate segEndPt = testPts[i + 1];
 				
 				/**
 				 * Check whether pt is near or equal to other segment endpoint.
 				 * If near, it will be handled by the near vertex case code.
 				 * If equal, don't record it at all
 				 */
-				double distToOther = segEndPt.distance(p);
+				double distToOther = segEndPt.distance(targetPt);
 				if (distToOther <= tolerance)
 					// will be handled as a point-vertex case
 					continue;
 				
 				// here we know point is not near the segment endpoints
 				// check if it is near the segment at all
-				double segDist = distanceToSeg(p, testPt, segEndPt);
+				double segDist = distanceToSeg(targetPt, testPt, segEndPt);
 				if (segDist <= tolerance && segDist != 0.0) {
-					nearVert = new StretchedVertex(p, linePts, i, new LineSegment(testPt, pts[i + 1]));
+					stretchVert = new StretchedVertex(targetPt, targetPts, i, new LineSegment(testPt, testPts[i + 1]));
 				}
 			}
-			if (nearVert != null)
-				nearVerts.add(nearVert);
+			if (stretchVert != null)
+				nearVerts.add(stretchVert);
 		}
 	}
-
-	/*
-	private boolean isNear(Coordinate pt, Coordinate testPt)
-	{
-		double dist = testPt.distance(p);
-		if (dist <= tolerance && dist != 0.0) {
-			nearVert = new NearVertex(p, linePts, i, testPt);
-		}
-	}
-	*/
 	
 	private static LineSegment distSeg = new LineSegment();
 	

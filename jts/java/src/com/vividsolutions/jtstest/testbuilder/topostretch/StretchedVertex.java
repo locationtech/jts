@@ -22,29 +22,34 @@ public class StretchedVertex
 	private Coordinate[] parentLine;
 	private int parentIndex;
 	private Coordinate nearPt = null;
+  private Coordinate[] nearPts = null;
+  private int nearIndex = -1;
 	private LineSegment nearSeg = null;
 	private Coordinate stretchedPt = null; 
 	
 	/**
-	 * Creates a NearVertex for a point which lies near a vertex
+	 * Creates a vertex which lies near a vertex
 	 * @param vertexPt
 	 * @param parentLine
 	 * @param index
 	 * @param nearPt
 	 */
-	public StretchedVertex(Coordinate vertexPt, Coordinate[] parentLine, int parentIndex, Coordinate nearPt)
+	public StretchedVertex(Coordinate vertexPt, Coordinate[] parentLine, int parentIndex, 
+      Coordinate nearPt, Coordinate[] nearPts, int nearIndex)
 	{
 		this.vertexPt = vertexPt;
 		this.parentLine = parentLine;
 		this.parentIndex = parentIndex;
 		this.nearPt = nearPt;
+    this.nearPts = nearPts;
+    this.nearIndex = nearIndex;
 	}
 	
 	/**
-	 * Creates a NearVertex for a point which lies near a line segment
+	 * Creates a vertex for a point which lies near a line segment
 	 * @param vertexPt
 	 * @param parentLine
-	 * @param index
+	 * @param parentIndex
 	 * @param nearSeg
 	 */
 	public StretchedVertex(Coordinate vertexPt, Coordinate[] parentLine, int parentIndex, 
@@ -74,16 +79,16 @@ public class StretchedVertex
 			return stretchedPt;
 		
 		if (nearPt != null) {
-			stretchedPt = getDisplacedFromPoint(dist);
+			stretchedPt = displaceFromPoint(nearPt, dist);
 			// displace in direction of segment this pt lies on
 		}
 		else {
-			stretchedPt = getDisplacedFromSeg(dist);
+			stretchedPt = displaceFromSeg(nearSeg, dist);
 		}
 		return stretchedPt;
 	}
 	
-	private Coordinate getDisplacedFromPoint(double dist)
+	private Coordinate displaceFromPoint(Coordinate nearPt, double dist)
 	{
 		LineSegment seg = new LineSegment(nearPt, vertexPt);
 		
@@ -95,7 +100,7 @@ public class StretchedVertex
 		return strPt;
 	}
 	
-	private Coordinate getDisplacedFromSeg(double dist)
+	private Coordinate displaceFromSeg(LineSegment nearSeg, double dist)
 	{
 		double frac = nearSeg.projectionFactor(vertexPt);
 		
@@ -106,4 +111,37 @@ public class StretchedVertex
 		
 		return nearSeg.pointAlongOffset(frac, dist);
 	}
+  
+  private Coordinate displaceFromVertex(Coordinate nearPt, double dist)
+  {
+    // TODO: handle case of rings
+    if (nearIndex == 0 || nearIndex >= nearPts.length -1)
+      return displaceFromPoint(nearPt, dist);
+    
+    // analyze corner to see how to displace the vertex
+    // find corner points
+    Coordinate p1 = nearPts[nearIndex - 1];
+    Coordinate p2 = nearPts[nearIndex + 1];
+    Coordinate[] cornerPt = normalizeCorner(nearPt, p1, p2);
+    return null;
+    
+  }
+  
+  /**
+   * Returns an array of pts such that p0 - p[0] - [p1] is CW.
+   * 
+   * @param p0
+   * @param p1
+   * @param p2
+   * @return
+   */
+  private static Coordinate[] normalizeCorner(Coordinate p0, Coordinate p1, Coordinate p2)
+  {
+    if (CGAlgorithms.CLOCKWISE == CGAlgorithms.computeOrientation(p0, p1, p2)) {
+      return new Coordinate[] { p1, p2 };
+    }
+    return new Coordinate[] { p2, p1 };
+  }
+  
+
 }
