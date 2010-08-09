@@ -11,6 +11,7 @@ import com.vividsolutions.jtstest.testbuilder.topostretch.TopologyStretcher;
 public class GeometryStretcherView 
 {
 	private GeometryEditModel geomModel;
+	private Geometry[] srcGeom = new Geometry[2];
 	private Geometry[] stretchGeom = new Geometry[2];
 	private List[] stretchCoords;
 	private double stretchSize = 5.0;
@@ -68,8 +69,9 @@ public class GeometryStretcherView
 			stretchGeom = new Geometry[2];
 			return false;
 		}
-		if (geomModel.getGeometry(0) != stretchGeom[0]) return false;
-		if (geomModel.getGeometry(1) != stretchGeom[1]) return false;
+		// don't bother checking this any more, since stretchView is always created new
+		//if (geomModel.getGeometry(0) != stretchGeom[0]) return false;
+		//if (geomModel.getGeometry(1) != stretchGeom[1]) return false;
 		return true;
 	}
 	

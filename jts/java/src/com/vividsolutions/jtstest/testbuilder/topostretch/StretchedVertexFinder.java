@@ -103,10 +103,9 @@ class StretchedVertexFinder
 					// will be handled as a point-vertex case
 					continue;
 				
-				// here we know point is not near the segment endpoints
-				// check if it is near the segment at all
-				double segDist = distanceToSeg(targetPt, testPt, segEndPt);
-				if (segDist <= tolerance && segDist != 0.0) {
+				// Here we know point is not near the segment endpoints.
+				// Check if it is near the segment at all.
+				if (isPointNearButNotOnSeg(targetPt, testPt, segEndPt, tolerance)) {
 					stretchVert = new StretchedVertex(targetPt, targetPts, i, new LineSegment(testPt, testPts[i + 1]));
 				}
 			}
@@ -115,6 +114,22 @@ class StretchedVertexFinder
 		}
 	}
 	
+	private static boolean isPointNearButNotOnSeg(Coordinate p, Coordinate p0, Coordinate p1, double distTol)
+	{
+		// don't rely on segment distance algorithm to correctly compute zero distance
+		// on segment
+		if (CGAlgorithms.computeOrientation(p0, p1, p) == CGAlgorithms.COLLINEAR)
+			return false;
+
+		// compute actual distance
+		distSeg.p0 = p0;
+		distSeg.p1 = p1;
+		double segDist = distSeg.distance(p);
+		if (segDist > distTol)
+			return false;
+		return true;
+	}
+
 	private static LineSegment distSeg = new LineSegment();
 	
 	private static double distanceToSeg(Coordinate p, Coordinate p0, Coordinate p1)
