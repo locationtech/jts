@@ -94,6 +94,18 @@ public class VectorMath
       		(v0.x + v1.x) / 2,
           (v0.y + v1.y) / 2);
   	}
+    
+    /**
+     * Computes the product of a scalar and a vector.
+     * 
+     * @param s a scalar value
+     * @param v a vector
+     * @return the product of the scalar and the vector
+     */
+    public static Coordinate multiply(double s, Coordinate v)
+  	{
+      return new Coordinate(s * v.x, s * v.y);
+  	}
   	
     /**
      * Computes a point a given fraction of length along
