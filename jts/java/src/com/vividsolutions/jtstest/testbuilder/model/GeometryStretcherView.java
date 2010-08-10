@@ -10,6 +10,8 @@ import com.vividsolutions.jtstest.testbuilder.topostretch.TopologyStretcher;
 
 public class GeometryStretcherView 
 {
+  private static final  double TOPOLOGY_NEARNESS_FACTOR = 50.0;
+  
 	private GeometryEditModel geomModel;
 	private Geometry[] srcGeom = new Geometry[2];
 	private Geometry[] stretchGeom = new Geometry[2];
@@ -26,6 +28,12 @@ public class GeometryStretcherView
 		return new StretchedGeometryContainer(i);
 	}
 	
+  /**
+   * Sets the amount by which vertices will be stretched
+   * (in geometry units).
+   * 
+   * @param stretchSize
+   */
 	public void setStretchSize(double stretchSize)
 	{
 		this.stretchSize = stretchSize;
@@ -35,8 +43,6 @@ public class GeometryStretcherView
 	{
 		// clear cache
 		stretchGeom = null;
-		// TODO: compute stretch distance from viewEnv
-		double size = EnvelopeUtil.minExtent(viewEnv);
 	}
 	
 	private Geometry getStretchedGeometry(int index)
@@ -57,8 +63,8 @@ public class GeometryStretcherView
 			Geometry g0 = geomModel.getGeometry(0);
 			Geometry g1 = geomModel.getGeometry(1);
 			TopologyStretcher stretcher = new TopologyStretcher(g0, g1);
-			// TODO: is the closeness tolerance right?
-			stretchGeom = stretcher.stretch(stretchSize / 20, stretchSize);
+			// TODO: is the nearness tolerance right?
+			stretchGeom = stretcher.stretch(stretchSize / TOPOLOGY_NEARNESS_FACTOR, stretchSize);
 			stretchCoords = stretcher.getModifiedCoordinates();
 		}
 	}
