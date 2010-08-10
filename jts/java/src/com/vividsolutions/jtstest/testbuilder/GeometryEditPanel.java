@@ -461,7 +461,7 @@ public class GeometryEditPanel extends JPanel
     {
       if (tbModel.isRevealingTopology()) {
         stretchView = new GeometryStretcherView(geomModel);
-        stretchView.setStretchSize(viewport.getDistanceInModel(AppConstants.TOPO_STRETCH_VIEW_DIST));
+        stretchView.setStretchSize(viewport.getDistanceInModel(tbModel.getTopologyStretchSize()));
         stretchView.setEnvelope(viewport.getModelEnv());
       }
 

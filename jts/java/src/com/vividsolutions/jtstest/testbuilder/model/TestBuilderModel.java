@@ -9,6 +9,7 @@ import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.test.TestCaseList;
 import com.vividsolutions.jtstest.test.Testable;
+import com.vividsolutions.jtstest.testbuilder.AppConstants;
 import com.vividsolutions.jtstest.testbuilder.ui.style.BasicStyle;
 import com.vividsolutions.jtstest.testrunner.TestReader;
 import com.vividsolutions.jtstest.testrunner.TestRun;
@@ -26,7 +27,7 @@ public class TestBuilderModel
   protected static boolean showingVertices = true;
   protected static boolean showingCoordinates = true;
   protected static boolean isRevealingTopology = false;
-
+  protected static double topologyStretchSize = AppConstants.TOPO_STRETCH_VIEW_DIST;
   
   public static boolean isShowingOrientations() {
     return showingOrientations;
@@ -50,7 +51,13 @@ public class TestBuilderModel
     return isRevealingTopology;
   }
   public void setRevealingTopology(boolean show) {
-  	isRevealingTopology = show;
+    isRevealingTopology = show;
+  }
+  public void setTopologyStretchSize(double pixels) {
+    topologyStretchSize = pixels;
+  }
+  public double getTopologyStretchSize() {
+    return topologyStretchSize;
   }
   
   private PrecisionModel precisionModel = new PrecisionModel();

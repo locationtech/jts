@@ -175,9 +175,15 @@ public class JTSTestBuilderFrame extends JFrame
       testCasePanel.editCtlPanel.cbRevealTopo.addActionListener(
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            	revealTopo_actionPerformed(e);
+              revealTopo_actionPerformed();
             }
           });
+      testCasePanel.editCtlPanel.stretchDist.addChangeListener(new javax.swing.event.ChangeListener() {
+        public void stateChanged(javax.swing.event.ChangeEvent e) {
+          revealTopo_actionPerformed();
+        }
+      });
+
       Cursor zoomInCursor = Toolkit.getDefaultToolkit().createCustomCursor(
       		new ImageIcon(this.getClass().getResource("MagnifyCursor.gif")).getImage(),
           new java.awt.Point(16, 16), "Zoom In");
@@ -699,8 +705,9 @@ public class JTSTestBuilderFrame extends JFrame
       reportException(this, pe);
     }
   }
-  void revealTopo_actionPerformed(ActionEvent e) {
+  void revealTopo_actionPerformed() {
   	tbModel.setRevealingTopology(testCasePanel.editCtlPanel.cbRevealTopo.isSelected());
+    tbModel.setTopologyStretchSize(testCasePanel.editCtlPanel.getStretchSize());
   	testCasePanel.editPanel.updateView();
   }
 

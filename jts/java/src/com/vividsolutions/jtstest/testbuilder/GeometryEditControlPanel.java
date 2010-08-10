@@ -43,7 +43,9 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
@@ -90,6 +92,9 @@ public class GeometryEditControlPanel extends JPanel
     
     JPanel jPanel9 = new JPanel();
     JCheckBox cbRevealTopo = new JCheckBox();
+    
+    JPanel jPanel10 = new JPanel();
+    JSpinner stretchDist = new JSpinner(new SpinnerNumberModel(5, 0, 99999, 1));
     
     public GeometryEditControlPanel() {
         //enableEvents(AWTEvent.WINDOW_EVENT_MASK);
@@ -155,7 +160,6 @@ public class GeometryEditControlPanel extends JPanel
         rbA.setFont(new java.awt.Font("Dialog", 1, 14));
         rbA.setSelected(true);
         rbA.addActionListener(new java.awt.event.ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 rbA_actionPerformed(e);
             }
@@ -168,7 +172,6 @@ public class GeometryEditControlPanel extends JPanel
         btnEraseGeom.setMargin(new Insets(2, 2, 2, 2));
         btnEraseGeom.setText("Erase");
         btnEraseGeom.addActionListener(new java.awt.event.ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 btnEraseGeom_actionPerformed(e);
             }
@@ -181,7 +184,6 @@ public class GeometryEditControlPanel extends JPanel
         setGridSizeButton.setMnemonic('0');
         setGridSizeButton.setText("Set");
         setGridSizeButton.addActionListener(new java.awt.event.ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
                 setGridSizeButton_actionPerformed(e);
             }
@@ -193,16 +195,10 @@ public class GeometryEditControlPanel extends JPanel
         btnSetPrecisionModel.setToolTipText("Set the Precision Model used by all Test Cases");
         btnSetPrecisionModel.setMargin(new Insets(2, 2, 2, 2));
         btnSetPrecisionModel.setMnemonic('0');
-        btnSetPrecisionModel.setText("Set Precision Model");
+        btnSetPrecisionModel.setText("Set Precision Model...");
 
         cbRevealTopo.setText("Magnify Topology");
         cbRevealTopo.setToolTipText("Stretches portions of geometries to reveal fine topological detail");
-        cbRevealTopo.addActionListener(new java.awt.event.ActionListener() {
-
-          public void actionPerformed(ActionEvent e) {
-          	cbStretchTopo_actionPerformed(e);
-          }
-      });
         
         this.add(jPanel3, BorderLayout.CENTER);
         jPanel3.add(
@@ -339,6 +335,12 @@ public class GeometryEditControlPanel extends JPanel
         jPanel9.setLayout(new FlowLayout());
         jPanel9.add(cbRevealTopo);
       
+        jPanel10.setLayout(new GridLayout(2, 2, 10, 2));
+        jPanel10.add(cbRevealTopo);
+        jPanel10.add(new JLabel());
+        jPanel10.add(new JLabel("Stretch Distance"));
+        jPanel10.add(stretchDist);
+      
         jPanel3.add(
             jPanel4,
             new GridBagConstraints(
@@ -361,7 +363,21 @@ public class GeometryEditControlPanel extends JPanel
                 1,
                 1,
                 0.0,
-                1.0,
+                0.2,
+                GridBagConstraints.CENTER,
+                GridBagConstraints.CENTER,
+                new Insets(0, 0, 0, 0),
+                0,
+                0));
+        jPanel3.add(
+            jPanel10,
+            new GridBagConstraints(
+                0,
+                6,
+                1,
+                1,
+                0.0,
+                0.0,
                 GridBagConstraints.CENTER,
                 GridBagConstraints.VERTICAL,
                 new Insets(0, 0, 0, 0),
@@ -371,7 +387,7 @@ public class GeometryEditControlPanel extends JPanel
             jPanel9,
             new GridBagConstraints(
                 0,
-                6,
+                7,
                 1,
                 1,
                 0.0,
@@ -436,4 +452,10 @@ public class GeometryEditControlPanel extends JPanel
     }
 
     void setGridSizeButton_actionPerformed(ActionEvent e) {}
+    
+    public double getStretchSize()
+    {
+      Integer size = (Integer) stretchDist.getValue();
+      return size.intValue();
+    }
 }
