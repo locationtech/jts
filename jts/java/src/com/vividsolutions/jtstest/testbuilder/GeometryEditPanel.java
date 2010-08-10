@@ -50,6 +50,7 @@ import javax.swing.SwingUtilities;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jtstest.testbuilder.geom.StaticGeometryContainer;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.AWTUtil;
@@ -457,14 +458,17 @@ public class GeometryEditPanel extends JPanel
     private GeometryStretcherView stretchView = null;
   	private Renderer currentRenderer = null;
   	
-    public void render(Graphics2D g)
-    {
+  	public GeometryEditPanelRenderer()
+  	{
       if (tbModel.isRevealingTopology()) {
         stretchView = new GeometryStretcherView(geomModel);
         stretchView.setStretchSize(viewport.getDistanceInModel(tbModel.getTopologyStretchSize()));
         stretchView.setEnvelope(viewport.getModelEnv());
-      }
-
+      }  		
+  	}
+  	
+    public void render(Graphics2D g)
+    {
       Graphics2D g2 = (Graphics2D) g;
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
           RenderingHints.VALUE_ANTIALIAS_ON);
@@ -481,11 +485,9 @@ public class GeometryEditPanel extends JPanel
       if (tbModel.isRevealingTopology()) {
       	renderMagnifiedVertices(g2);
       }
+      
       drawHighlight(g2);
       
-    	if (tbModel.isRevealingTopology()) {
-    		//drawMagnifyMask(g2);
-    	}
     }
     
     public void renderLayers(Graphics2D g)
@@ -496,7 +498,8 @@ public class GeometryEditPanel extends JPanel
     	for (int i = 0; i < n; i++) {
     		if (stretchView != null && i < 2)
       		currentRenderer = new LayerRenderer(layerList.getLayer(i),
-      				stretchView.getContainer(i),
+      				//stretchView.getContainer(i),
+      				new StaticGeometryContainer(stretchView.getStretchedGeometry(i)),
       				viewport);
     		else
     			currentRenderer = new LayerRenderer(layerList.getLayer(i), viewport);

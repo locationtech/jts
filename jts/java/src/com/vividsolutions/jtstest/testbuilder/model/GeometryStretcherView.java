@@ -10,10 +10,9 @@ import com.vividsolutions.jtstest.testbuilder.topostretch.TopologyStretcher;
 
 public class GeometryStretcherView 
 {
-  private static final  double TOPOLOGY_NEARNESS_FACTOR = 50.0;
+  private static final  double TOPOLOGY_NEARNESS_FACTOR = 10.0;
   
 	private GeometryEditModel geomModel;
-	private Geometry[] srcGeom = new Geometry[2];
 	private Geometry[] stretchGeom = new Geometry[2];
 	private List[] stretchCoords;
 	private double stretchSize = 5.0;
@@ -45,7 +44,7 @@ public class GeometryStretcherView
 		stretchGeom = null;
 	}
 	
-	private Geometry getStretchedGeometry(int index)
+	public Geometry getStretchedGeometry(int index)
 	{
 		updateCache();
 		return stretchGeom[index];
