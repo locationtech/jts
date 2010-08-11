@@ -38,7 +38,7 @@ import com.vividsolutions.jts.util.Assert;
 
 /**
  * Functions for performing mathematics on vectors in the 2D plane. 
- * Vectors are represented as single coordinates; 
+ * Vectors are represented as single {@link Coordinate}s; 
  * the implied vector is assumed to start at the origin.
  * <p>
  * Vector arithmetic is useful in computing various geometric constructions.
@@ -46,7 +46,6 @@ import com.vividsolutions.jts.util.Assert;
  * @author Martin Davis
  * @version 1.0
  */
-
 public class VectorMath 
 {
 	/**
@@ -110,8 +109,12 @@ public class VectorMath
     /**
      * Computes a point a given fraction of length along
      * the line joining the endpoints of two vectors.
+     * <p>
      * This is equivalent to computing the weighted sum
-     * of the two vectors.
+     * of the two vectors:
+     * <pre>
+     *   ws = frac * v0 + (1 - frac) * v1
+     * </pre>
      * 
      * @param v0 a vector
      * @param v1 a vector

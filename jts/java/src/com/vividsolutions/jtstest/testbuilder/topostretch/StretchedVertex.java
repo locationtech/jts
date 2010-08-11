@@ -140,11 +140,11 @@ public class StretchedVertex
     // find quadrant of corner that vertex pt lies in
     int quadrant = quadrant(vertexPt, nearPt, corner);
     
-    Coordinate normOffset = normalizedOffset(nearPt, p1, p2);
-    Coordinate baseOffset = VectorMath.multiply(dist, normOffset);
-    Coordinate rotatedOffset = rotateToQuadrant(baseOffset, quadrant);
+    Vector2D normOffset = normalizedOffset(nearPt, p1, p2);
+    Vector2D baseOffset = normOffset.multiply(dist);
+    Vector2D rotatedOffset = baseOffset.rotateByQuarterCircle(quadrant);
     
-    return VectorMath.sum(vertexPt, rotatedOffset);
+    return rotatedOffset.translate(vertexPt);
     //return null;
     
   }
@@ -226,19 +226,19 @@ public class StretchedVertex
    * @param p2
    * @return
    */
-  private static Coordinate normalizedOffset(Coordinate p0, Coordinate p1, Coordinate p2)
+  private static Vector2D normalizedOffset(Coordinate p0, Coordinate p1, Coordinate p2)
   {
-  	Coordinate u1 = VectorMath.normalize(VectorMath.difference(p1, p0));
-  	Coordinate u2 = VectorMath.normalize(VectorMath.difference(p2, p0));
-    Coordinate offset = VectorMath.normalize(VectorMath.average(u1, u2));
+  	Vector2D u1 = Vector2D.create(p0, p1).normalize();
+  	Vector2D u2 = Vector2D.create(p0, p2).normalize();
+  	Vector2D offset = u1.add(u2).normalize();
     return offset;
   }
   
   private Coordinate displaceFromFlatCorner(Coordinate nearPt, Coordinate p1, Coordinate p2, double dist)
   {
   	// compute perpendicular bisector of p1-p2
-  	Coordinate bisecVec = VectorMath.rotateByQuarterCircle(VectorMath.difference(p1, p2), 1);
-  	Coordinate offset = VectorMath.multiply(dist, VectorMath.normalize(bisecVec));
-    return VectorMath.sum(vertexPt, offset);
+  	Vector2D bisecVec = Vector2D.create(p2, p1).rotateByQuarterCircle(1);
+  	Vector2D offset = bisecVec.normalize().multiply(dist);
+    return offset.translate(vertexPt);
   }
 }
