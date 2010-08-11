@@ -140,7 +140,8 @@ public class StretchedVertex
     // find quadrant of corner that vertex pt lies in
     int quadrant = quadrant(vertexPt, nearPt, corner);
     
-    Coordinate baseOffset = VectorMath.multiply(dist, normalizedOffset(nearPt, p1, p2));
+    Coordinate normOffset = normalizedOffset(nearPt, p1, p2);
+    Coordinate baseOffset = VectorMath.multiply(dist, normOffset);
     Coordinate rotatedOffset = rotateToQuadrant(baseOffset, quadrant);
     
     return VectorMath.sum(vertexPt, rotatedOffset);

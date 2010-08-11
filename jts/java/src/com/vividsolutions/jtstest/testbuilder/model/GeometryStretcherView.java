@@ -4,12 +4,19 @@ import java.util.List;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jtstest.testbuilder.geom.EnvelopeUtil;
 import com.vividsolutions.jtstest.testbuilder.geom.GeometryContainer;
 import com.vividsolutions.jtstest.testbuilder.topostretch.TopologyStretcher;
 
 public class GeometryStretcherView 
 {
+  /**
+   * This is chosen to be as large as possible
+   * (which minimizes change to geometries)
+   * but small enough that points which appear
+   * to be coincident at a given zoom level
+   * will be magnified appropriately.
+   * 
+   */
   private static final  double TOPOLOGY_NEARNESS_FACTOR = 10.0;
   
 	private GeometryEditModel geomModel;
@@ -62,7 +69,6 @@ public class GeometryStretcherView
 			Geometry g0 = geomModel.getGeometry(0);
 			Geometry g1 = geomModel.getGeometry(1);
 			TopologyStretcher stretcher = new TopologyStretcher(g0, g1);
-			// TODO: is the nearness tolerance right?
 			stretchGeom = stretcher.stretch(stretchSize / TOPOLOGY_NEARNESS_FACTOR, stretchSize);
 			stretchCoords = stretcher.getModifiedCoordinates();
 		}
