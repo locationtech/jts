@@ -90,6 +90,10 @@ public class Vector2D {
 		return create(x / d, y / d);
 	}
 
+	public Vector2D negate() {
+		return create(-x , -y);
+	}
+
 	public double length() {
 		return Math.sqrt(x * x + y * y);
 	}
@@ -127,6 +131,26 @@ public class Vector2D {
 		return x * v.x + y * v.y;
 	}
 
+	public double angle()
+	{
+		return Math.atan2(y, x);
+	}
+	
+	public double angle(Vector2D v)
+	{
+		return Angle.diff(v.angle(), angle());
+	}
+	
+	public Vector2D rotate(double angle)
+	{
+		double cos = Math.cos(angle);
+		double sin = Math.sin(angle);
+		return create(
+				x * cos - y * sin,
+				x * sin + y * cos
+				);
+	}
+	
 	/**
 	 * Rotates a vector by a given number of quarter-circles (i.e. multiples of 90
 	 * degrees or Pi/2 radians). A positive number rotates counter-clockwise, a
