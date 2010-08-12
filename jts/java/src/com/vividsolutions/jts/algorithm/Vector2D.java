@@ -105,6 +105,15 @@ public class Vector2D {
 		return create(0.0, 0.0);
 	}
 
+	public Vector2D average(Vector2D v) {
+		return weightedSum(v, 0.5);
+	}
+	public Vector2D weightedSum(Vector2D v, double frac) {
+		return create(
+				frac * x + (1.0 - frac) * v.x, 
+				frac * y + (1.0 - frac) * v.y);
+	}
+
 	/**
 	 * Computes the dot-product of two vectors
 	 * 

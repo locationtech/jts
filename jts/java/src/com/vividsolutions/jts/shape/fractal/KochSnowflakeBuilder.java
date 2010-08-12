@@ -1,5 +1,6 @@
 package com.vividsolutions.jts.shape.fractal;
 
+import com.vividsolutions.jts.algorithm.Vector2D;
 import com.vividsolutions.jts.algorithm.VectorMath;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.shape.*;
@@ -56,21 +57,20 @@ extends GeometricShapeBuilder
 		return coordList.toCoordinateArray();
 	}
 
-	
 	public void addSide(int level, Coordinate p0, Coordinate p1) {
 		if (level == 0)
 			addSegment(p0, p1);
 		else {
-			Coordinate midPt = VectorMath.average(p0, p1);
+			Vector2D base = Vector2D.create(p0, p1);
+			Coordinate midPt = base.multiply(0.5).translate(p0);
 			
-			Coordinate heightPt = VectorMath.pointAlong(p0, p1, THIRD_HEIGHT);
-			Coordinate heightVec = VectorMath.difference(heightPt, p0); 
-			Coordinate offsetVec = VectorMath.rotateByQuarterCircle(heightVec, 1);
-			Coordinate offsetPt = VectorMath.sum(midPt, offsetVec);
+			Vector2D heightVec = base.multiply(THIRD_HEIGHT);
+			Vector2D offsetVec = heightVec.rotateByQuarterCircle(1);
+			Coordinate offsetPt = offsetVec.translate(midPt);
 			
 			int n2 = level - 1;
-			Coordinate thirdPt = VectorMath.pointAlong(p0, p1, ONE_THIRD);
-			Coordinate twoThirdPt = VectorMath.pointAlong(p0, p1, TWO_THIRDS);
+			Coordinate thirdPt = base.multiply(ONE_THIRD).translate(p0);
+			Coordinate twoThirdPt = base.multiply(TWO_THIRDS).translate(p0);
 			
 			// construct sides recursively
 			addSide(n2, p0, thirdPt);
@@ -79,39 +79,10 @@ extends GeometricShapeBuilder
 			addSide(n2, twoThirdPt, p1);
 		}
 	}
-	
+		
 	private void addSegment(Coordinate p0, Coordinate p1)
 	{
 		coordList.add(p1);
 	}
 	
-	private static Coordinate midPoint(Coordinate p0, Coordinate p1)
-	{
-    return new Coordinate( 
-    		(p0.x + p1.x) / 2,
-        (p0.y + p1.y) / 2);
-	}
-	
-	private static Coordinate pointAlong(Coordinate p0, Coordinate p1, double segmentLengthFraction)
-  {
-    Coordinate coord = new Coordinate();
-    coord.x = p0.x + segmentLengthFraction * (p1.x - p0.x);
-    coord.y = p0.y + segmentLengthFraction * (p1.y - p0.y);
-    return coord;
-  }
-  
-	private static Coordinate vectorNormalize(Coordinate p0, Coordinate p1)
-  {
-  	return new Coordinate(p1.x - p0.x, p1.y - p0.y);
-  }
-
-	private static Coordinate vectorRotatePos90(Coordinate p)
-  {
-  	return new Coordinate(-p.y, p.x);
-  }
-
-	private static Coordinate add(Coordinate p0, Coordinate p1)
-  {
-  	return new Coordinate(p0.x + p1.x, p0.y + p1.y);
-  }
 }
