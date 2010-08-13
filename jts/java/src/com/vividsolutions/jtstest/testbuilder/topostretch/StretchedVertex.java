@@ -90,6 +90,11 @@ public class StretchedVertex
 		return stretchedPt;
 	}
 	
+  private boolean isNearRing()
+  {
+    return CoordinateArrays.isRing(nearPts);
+  }
+  
 	private Coordinate displaceFromPoint(Coordinate nearPt, double dist)
 	{
 		LineSegment seg = new LineSegment(nearPt, vertexPt);
@@ -114,17 +119,28 @@ public class StretchedVertex
 		return nearSeg.pointAlongOffset(frac, dist);
 	}
   
+  private Coordinate getNearRingPoint(int i)
+  {
+    int index = i;
+    if (i < 0) 
+      index = i + nearPts.length -1; 
+    else if (i >= nearPts.length - 1) 
+      index = i - (nearPts.length - 1); 
+    return nearPts[index];
+  }
+  
   private Coordinate displaceFromVertex(Coordinate nearPt, double dist)
   {
-    // TODO: handle case of rings
-  	// in the meantime, just do something simple
-    if (nearIndex == 0 || nearIndex >= nearPts.length -1)
+    // handle linestring endpoints - do simple displacement
+    if (! isNearRing() 
+        && nearIndex == 0 || nearIndex >= nearPts.length -1) {
       return displaceFromPoint(nearPt, dist);
-    
+    }
+      
     // analyze corner to see how to displace the vertex
     // find corner points
-    Coordinate p1 = nearPts[nearIndex - 1];
-    Coordinate p2 = nearPts[nearIndex + 1];
+    Coordinate p1 = getNearRingPoint(nearIndex - 1);
+    Coordinate p2 = getNearRingPoint(nearIndex + 1);
     
     // if vertexPt is identical to an arm of the corner, just displace the point
     if (p1.equals2D(vertexPt) || p2.equals2D(vertexPt))

@@ -45,10 +45,21 @@ class StretchedVertexFinder
 		
 	}
 	
+  private static int geomPointsLen(Coordinate[] pts)
+  {
+    int n = pts.length;
+    // don't process the last point of a ring twice
+    if (CoordinateArrays.isRing(pts))
+      n = pts.length - 1;
+    return n;
+  }
+  
 	private void findNearVertices(LineString targetLine)
 	{
 		Coordinate[] pts = targetLine.getCoordinates();
-		for (int i = 0; i < pts.length; i++) {
+    // don't process the last point of a ring twice
+    int n = geomPointsLen(pts);
+		for (int i = 0; i < n; i++) {
 			findNearVertex(pts, i);
 //				nearVerts.add(new NearVertex(pts, i));
 		}
@@ -80,7 +91,9 @@ class StretchedVertexFinder
 	{
     Coordinate targetPt = targetPts[index];
 		Coordinate[] testPts = testLine.getCoordinates();
-		for (int i = 0; i < testPts.length; i++) {
+    // don't process the last point of a ring twice
+    int n = geomPointsLen(testPts);
+		for (int i = 0; i < n; i++) {
 			Coordinate testPt = testPts[i];
 			StretchedVertex stretchVert = null;
 	

@@ -6,6 +6,14 @@ Test cases to demonstrate that the TestBuilder Magnify Topology function is work
 <run>
 
 <case>
+  <desc>Overlapping squares </desc>
+  <a>
+POLYGON ((0 0, 0 -100, -100 -100, -100 0, 0 0)) </a>
+  <b>
+POLYGON ((100 100, 100 0, -0.01 -0.01, 0 100, 100 100)) </b>
+</case>
+
+<case>
   <desc>Flat corner - Displaced in Quadrant 3 </desc>
   <a>
 LINESTRING (-10 0, 0 0, 10 0)  </a>
