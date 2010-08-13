@@ -17,12 +17,14 @@ public class GeometryStretcherView
    * will be magnified.
    * 
    */
-  private static final  double TOPOLOGY_NEARNESS_FACTOR = 5.0;
+  public static final  double NEARNESS_TOL_IN_VIEW = 1;
+  private static final  double TOPOLOGY_NEARNESS_TOLERANCE_FACTOR = 5.0;
   
 	private GeometryEditModel geomModel;
 	private Geometry[] stretchGeom = new Geometry[2];
 	private List[] stretchCoords;
 	private double stretchSize = 5.0;
+  private double nearnessTol = 0.5;
 	
 	public GeometryStretcherView(GeometryEditModel geomEditModel)
 	{
@@ -45,6 +47,10 @@ public class GeometryStretcherView
 		this.stretchSize = stretchSize;
 	}
 	
+  public void setNearnessTolerance(double nearnessTol)
+  {
+    this.nearnessTol = nearnessTol;
+  }
 	public void setEnvelope(Envelope viewEnv)
 	{
 		// clear cache
@@ -69,7 +75,9 @@ public class GeometryStretcherView
 			Geometry g0 = geomModel.getGeometry(0);
 			Geometry g1 = geomModel.getGeometry(1);
 			TopologyStretcher stretcher = new TopologyStretcher(g0, g1);
-			stretchGeom = stretcher.stretch(stretchSize / TOPOLOGY_NEARNESS_FACTOR, stretchSize);
+      // TODO: this probably should not be linked to the stretch size, but just be determined by zoom scale
+      //double nearnessTol = stretchSize / TOPOLOGY_NEARNESS_TOLERANCE_FACTOR;
+			stretchGeom = stretcher.stretch(nearnessTol, stretchSize);
 			stretchCoords = stretcher.getModifiedCoordinates();
 		}
 	}
