@@ -13,11 +13,11 @@ public class GeometryStretcherView
    * This is chosen to be as large as possible
    * (which minimizes change to geometries)
    * but small enough that points which appear
-   * to be coincident at a given zoom level
-   * will be magnified appropriately.
+   * to be coincident on the screen at a given zoom level
+   * will be magnified.
    * 
    */
-  private static final  double TOPOLOGY_NEARNESS_FACTOR = 10.0;
+  private static final  double TOPOLOGY_NEARNESS_FACTOR = 5.0;
   
 	private GeometryEditModel geomModel;
 	private Geometry[] stretchGeom = new Geometry[2];
