@@ -18,7 +18,6 @@ public class GeometryStretcherView
    * 
    */
   public static final  double NEARNESS_TOL_IN_VIEW = 1;
-  private static final  double TOPOLOGY_NEARNESS_TOLERANCE_FACTOR = 5.0;
   
 	private GeometryEditModel geomModel;
 	private Geometry[] stretchGeom = new Geometry[2];
@@ -75,8 +74,6 @@ public class GeometryStretcherView
 			Geometry g0 = geomModel.getGeometry(0);
 			Geometry g1 = geomModel.getGeometry(1);
 			TopologyStretcher stretcher = new TopologyStretcher(g0, g1);
-      // TODO: this probably should not be linked to the stretch size, but just be determined by zoom scale
-      //double nearnessTol = stretchSize / TOPOLOGY_NEARNESS_TOLERANCE_FACTOR;
 			stretchGeom = stretcher.stretch(nearnessTol, stretchSize);
 			stretchCoords = stretcher.getModifiedCoordinates();
 		}
