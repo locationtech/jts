@@ -136,11 +136,25 @@ public class Vector2D {
 		return Math.atan2(y, x);
 	}
 	
-	public double angle(Vector2D v)
-	{
-		return Angle.diff(v.angle(), angle());
-	}
-	
+  public double angle(Vector2D v)
+  {
+    return Angle.diff(v.angle(), angle());
+  }
+  
+  public double angleTo(Vector2D v)
+  {
+    double a1 = angle();
+    double a2 = v.angle();
+    double angDel = a2 - a1;
+    
+    // normalize, maintaining orientation
+    if (angDel <= -Math.PI)
+      return angDel + Angle.PI_TIMES_2;
+    if (angDel > Math.PI)
+      return angDel - Angle.PI_TIMES_2;
+    return angDel;
+  }
+  
 	public Vector2D rotate(double angle)
 	{
 		double cos = Math.cos(angle);

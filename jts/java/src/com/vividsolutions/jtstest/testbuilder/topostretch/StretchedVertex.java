@@ -1,6 +1,7 @@
 package com.vividsolutions.jtstest.testbuilder.topostretch;
 
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.util.MathUtil;
 import com.vividsolutions.jts.algorithm.*;
 
 /**
@@ -120,7 +121,6 @@ public class StretchedVertex
     if (nearIndex == 0 || nearIndex >= nearPts.length -1)
       return displaceFromPoint(nearPt, dist);
     
-    
     // analyze corner to see how to displace the vertex
     // find corner points
     Coordinate p1 = nearPts[nearIndex - 1];
@@ -130,6 +130,11 @@ public class StretchedVertex
     if (p1.equals2D(vertexPt) || p2.equals2D(vertexPt))
       return displaceFromPoint(nearPt, dist);
     
+    return displaceFromCornerAwayFromArms(nearPt, p1, p2, dist);
+  }
+  
+  private Coordinate displaceFromCornerOriginal(Coordinate nearPt, Coordinate p1, Coordinate p2, double dist)
+  {
     // if corner is nearly flat, just displace point
     // TODO: displace from vertex on appropriate side of flat line, with suitable angle
     if (isFlat(nearPt, p1, p2))
@@ -146,9 +151,75 @@ public class StretchedVertex
     
     return rotatedOffset.translate(vertexPt);
     //return null;
-    
+  }
+
+  private Coordinate displaceFromCorner(Coordinate nearPt, Coordinate p1, Coordinate p2, double dist)
+  {
+    Coordinate[] corner = orientCorner(nearPt, p1, p2);
+      // compute perpendicular bisector of p1-p2
+    Vector2D u1 = Vector2D.create(nearPt, corner[0]).normalize();
+    Vector2D u2 = Vector2D.create(nearPt, corner[1]).normalize();
+    double ang = u1.angle(u2);
+    Vector2D innerBisec = u2.rotate(ang / 2);
+        Vector2D offset = innerBisec.multiply(dist);
+    if (! isInsideCorner(vertexPt, nearPt, corner[0], corner[1])) {
+        offset = offset.multiply(-1);
+    }
+    return offset.translate(vertexPt);
+  }
+
+  private static final double MAX_ARM_NEARNESS_ANG = 20.0 / 180.0 * Math.PI;
+  
+  private static double maxAngleToBisector(double ang)
+  {
+    double relAng = ang / 2 - MAX_ARM_NEARNESS_ANG;
+    if (relAng < 0) return 0;
+    return relAng;
   }
   
+  /**
+   * Displaces a vertex from a corner,
+   * with angle limiting
+   * used to ensure that the displacement is not close to the arms of the corner.
+   * 
+   * @param nearPt
+   * @param p1
+   * @param p2
+   * @param dist
+   * @return
+   */
+  private Coordinate displaceFromCornerAwayFromArms(Coordinate nearPt, Coordinate p1, Coordinate p2, double dist)
+  {
+    Coordinate[] corner = orientCorner(nearPt, p1, p2);
+    boolean isInsideCorner = isInsideCorner(vertexPt, nearPt, corner[0], corner[1]);
+    
+    Vector2D u1 = Vector2D.create(nearPt, corner[0]).normalize();
+    Vector2D u2 = Vector2D.create(nearPt, corner[1]).normalize();
+    double cornerAng = u1.angle(u2);
+    
+    double maxAngToBisec = maxAngleToBisector(cornerAng);
+    
+    Vector2D bisec = u2.rotate(cornerAng / 2);
+    if (! isInsideCorner) {
+      bisec = bisec.multiply(-1);
+      double outerAng = 2 * Math.PI - cornerAng;
+      maxAngToBisec = maxAngleToBisector(outerAng);
+    }
+    
+    Vector2D pointwiseDisplacement = Vector2D.create(nearPt, vertexPt).normalize();
+    double stretchAng = pointwiseDisplacement.angleTo(bisec);
+    double stretchAngClamp = MathUtil.clamp(stretchAng, -maxAngToBisec, maxAngToBisec);
+    Vector2D cornerDisplacement = bisec.rotate(-stretchAngClamp).multiply(dist);
+ 
+    return cornerDisplacement.translate(vertexPt);
+  }
+
+  private boolean isInsideCorner(Coordinate queryPt, Coordinate base, Coordinate p1, Coordinate p2)
+  {
+      return CGAlgorithms.orientationIndex(base, p1, queryPt) == CGAlgorithms.CLOCKWISE
+              && CGAlgorithms.orientationIndex(base, p2, queryPt) == CGAlgorithms.COUNTERCLOCKWISE;
+  }
+
   private static final double POINT_LINE_FLATNESS_RATIO = 0.01;
   
   private static boolean isFlat(Coordinate p, Coordinate p1, Coordinate p2)
