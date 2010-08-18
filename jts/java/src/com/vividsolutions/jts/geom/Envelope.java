@@ -355,6 +355,34 @@ public class Envelope
   }
   
   /**
+   * Gets the minimum extent of this envelope across both dimensions.
+   * 
+   * @return the minimum extent of this envelope
+   */
+	public double minExtent()
+	{
+		if (isNull()) return 0.0;
+		double w = getWidth();
+		double h = getHeight();
+		if (w < h) return w;
+		return h;
+	}
+	
+  /**
+   * Gets the maximum extent of this envelope across both dimensions.
+   * 
+   * @return the maximum extent of this envelope
+   */
+	public double maxExtent()
+	{
+		if (isNull()) return 0.0;
+		double w = getWidth();
+		double h = getHeight();
+		if (w > h) return w;
+		return h;
+	}
+  
+  /**
    *  Enlarges this <code>Envelope</code> so that it contains
    *  the given {@link Coordinate}. 
    *  Has no effect if the point is already on or within the envelope.
