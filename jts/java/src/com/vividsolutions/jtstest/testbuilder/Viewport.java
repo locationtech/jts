@@ -50,6 +50,14 @@ public class Viewport implements PointTransformation
   	return viewEnvInModel;
   }
   
+  public Envelope getViewEnv() {
+    return new Envelope(
+        0,
+        getWidthInView(),
+        0,
+        getHeightInView());
+  }
+
   public double getScale() {
     return scale;
   }
@@ -182,6 +190,11 @@ public class Viewport implements PointTransformation
   public double getDistanceInModel(double viewDist)
   {
   	return viewDist / scale;
+  }
+  
+  public double getDistanceInView(double modelDist)
+  {
+  	return modelDist * scale;
   }
   
   private Envelope computeEnvelopeInModel() {

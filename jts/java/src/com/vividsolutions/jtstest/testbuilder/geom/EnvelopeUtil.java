@@ -11,4 +11,11 @@ public class EnvelopeUtil
 		if (w < h) return w;
 		return h;
 	}
+	public static double maxExtent(Envelope env)
+	{
+		double w = env.getWidth();
+		double h = env.getHeight();
+		if (w > h) return w;
+		return h;
+	}
 }

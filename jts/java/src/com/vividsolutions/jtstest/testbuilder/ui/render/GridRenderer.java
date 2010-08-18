@@ -68,8 +68,9 @@ public class GridRenderer {
     if (! isEnabled)
       return;
     if (isResolvable())
-      drawLines(g);
+      drawCells(g);
     drawAxes(g);
+    drawScaleMarks(g);
   }
 
   private boolean isResolvable() {
@@ -104,13 +105,13 @@ public class GridRenderer {
 
   }
 
-  private static final Coordinate modelOrigin = new Coordinate(0, 0);
+  private static final Coordinate MODEL_ORIGIN = new Coordinate(0, 0);
 
   public void drawAxes(Graphics2D g) {
     // draw XY axes
     g.setColor(axisColor);
 
-    Point2D viewOrigin = viewport.convert(modelOrigin);
+    Point2D viewOrigin = viewport.convert(MODEL_ORIGIN);
     double vOriginX = viewOrigin.getX();
     double vOriginY = viewOrigin.getY();
 
@@ -124,7 +125,7 @@ public class GridRenderer {
     }
   }
 
-  public void drawLines(Graphics2D g) {
+  public void drawCells(Graphics2D g) {
     // draw grid major lines
     g.setColor(gridMajorColor);
     
@@ -156,4 +157,57 @@ public class GridRenderer {
       g.draw(new Line2D.Double(0, y, viewWidth - 0, y));
     }
   }
+  
+  private int visibleMagnitude()
+  {
+  	double viewSizeInModel = Math.max(viewport.getHeightInModel(), viewport.getWidthInModel());
+  	// if input is bogus then just return something reasonable
+  	if (viewSizeInModel <= 0.0)
+  		return 1;
+  	double log10 = Math.log10(viewSizeInModel);
+  	return (int) log10;
+  }
+  
+  private static final int TICK_LEN = 5;
+  private static final int SCALE_TEXT_OFFSET_X = 40;
+  private static final int SCALE_TEXT_OFFSET_Y = 2;
+  
+  public void drawScaleMarks(Graphics2D g) 
+  {
+  	Envelope viewEnv = viewport.getViewEnv();
+  	
+  	int viewMag = visibleMagnitude();
+  	double tickIncModel = Math.pow(10.0, viewMag);
+  	double tickIncView = viewport.getDistanceInView(tickIncModel);
+  	
+  	// ensure at least 3 ticks are shown
+  	if (3 * tickIncView > viewEnv.maxExtent()) {
+  		tickIncView /= 10.0;
+  		viewMag -= 1;
+  	}
+  	
+    g.setColor(Color.BLACK);
+  	
+    // X axis
+  	double tickX = viewport.getWidthInView() - tickIncView;
+  	int viewHeight = (int) viewport.getHeightInView();
+  	while (tickX > 0) {
+  		g.draw(new Line2D.Double(tickX, viewHeight + 1, tickX, viewHeight - TICK_LEN));
+  		tickX -= tickIncView;
+  	}
+  	
+  	// Y axis
+  	double tickY = viewport.getHeightInView() - tickIncView;
+  	int viewWidth = (int) viewport.getWidthInView();
+  	while (tickY > 0) {
+  		g.draw(new Line2D.Double(viewWidth + 1, tickY, viewWidth - TICK_LEN, tickY));
+  		tickY -= tickIncView;
+  	}
+  	
+  	// Draw Scale magnitude
+  	g.drawString("10", viewWidth - 35, viewHeight - 1);
+  	g.drawString(viewMag+"", viewWidth - 20, viewHeight - 8);
+  }
+
+
 }
