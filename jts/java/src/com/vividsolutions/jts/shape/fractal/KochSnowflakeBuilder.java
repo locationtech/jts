@@ -1,7 +1,7 @@
 package com.vividsolutions.jts.shape.fractal;
 
-import com.vividsolutions.jts.algorithm.Vector2D;
-import com.vividsolutions.jts.algorithm.VectorMath;
+import com.vividsolutions.jts.algorithm.math.Vector2D;
+import com.vividsolutions.jts.algorithm.math.VectorMath;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.shape.*;
 
