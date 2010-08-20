@@ -6,6 +6,7 @@ import java.awt.geom.*;
 import com.vividsolutions.jts.awt.PointTransformation;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.util.Assert;
 
 
@@ -36,6 +37,7 @@ public class Viewport implements PointTransformation
    * is multiplied by to get view distance
    */
   private double scale = 1;
+  private PrecisionModel scalePM = new PrecisionModel(scale);
   private Envelope viewEnvInModel;
   private AffineTransform modelToViewTransform;
   private java.awt.geom.Point2D.Double srcPt = new java.awt.geom.Point2D.Double(0, 0);
@@ -62,8 +64,33 @@ public class Viewport implements PointTransformation
     return scale;
   }
 
+  /**
+     * Snaps scale to nearest multiple of 2, 5 or 10.
+     * This ensures that model coordinates entered
+     * via the geometry view
+     * don't carry more precision than the zoom level warrants.
+   * 
+   * @param scaleRaw
+   * @return
+   */
+  private static double snapScale(double scaleRaw)
+  {
+    double pow10 = Math.floor(Math.log10(scaleRaw));
+    double roundTo10 = Math.pow(10, pow10);
+    
+    double scale = roundTo10;
+    if (3.5 * roundTo10 <= scaleRaw)
+      scale = 5 * roundTo10;
+    else if (2 * roundTo10 <= scaleRaw)
+      scale = 2 * roundTo10;
+    
+    //System.out.println("requested scale = " + scaleRaw + "scale = " + scale  + "   Pow10 = " + pow10);
+    return scale;
+  }
+  
   public void setScale(double scale) {
-    this.scale = scale;
+    this.scale = snapScale(scale);
+    scalePM = new PrecisionModel(this.scale);    
     update();
   }
 
@@ -93,7 +120,13 @@ public class Viewport implements PointTransformation
     } catch (NoninvertibleTransformException ex) {
       Assert.shouldNeverReachHere();
     }
-    return new Point2D.Double(destPt.x, destPt.y);
+    
+    // snap to scale grid
+    double x = scalePM.makePrecise(destPt.x);
+    double y = scalePM.makePrecise(destPt.y);
+    
+    
+    return new Point2D.Double(x, y);
   }
 
   public Coordinate toModelCoordinate(Point2D viewPt) {
@@ -107,7 +140,7 @@ public class Viewport implements PointTransformation
     getModelToViewTransform().transform(point, point);
   }
 
-  public Point2D convert(Coordinate modelCoordinate)
+  public Point2D toView(Coordinate modelCoordinate)
   {
     Point2D.Double pt = new Point2D.Double();
     transform(modelCoordinate, pt);
@@ -147,16 +180,16 @@ public class Viewport implements PointTransformation
     setViewOrigin(INITIAL_VIEW_ORIGIN_X, INITIAL_VIEW_ORIGIN_Y);
   }
 
-  public void zoom(Envelope envelope) {
+  public void zoom(Envelope zoomEnv) {
     zoomToInitialExtent();
-    double xScale = getWidthInModel() / envelope.getWidth();
-    double yScale = getHeightInModel() / envelope.getHeight();
+    double xScale = getWidthInModel() / zoomEnv.getWidth();
+    double yScale = getHeightInModel() / zoomEnv.getHeight();
     setScale(Math.min(xScale, yScale));
-    double xCentering = (getWidthInModel() - envelope.getWidth()) / 2d;
-    double yCentering = (getHeightInModel() - envelope
+    double xCentering = (getWidthInModel() - zoomEnv.getWidth()) / 2d;
+    double yCentering = (getHeightInModel() - zoomEnv
         .getHeight()) / 2d;
-    setViewOrigin(envelope.getMinX() - xCentering, 
-        envelope.getMinY() - yCentering);
+    setViewOrigin(zoomEnv.getMinX() - xCentering, 
+        zoomEnv.getMinY() - yCentering);
   }
 
   public double getWidthInModel() {

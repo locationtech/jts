@@ -247,7 +247,7 @@ public class GeometryEditPanel extends JPanel
     Rectangle2D rect = new Rectangle2D.Double();
     for (int i = 0; i < coords.size(); i++) {
       Coordinate pt = (Coordinate) coords.get(i);
-      Point2D p = viewport.convert(pt);
+      Point2D p = viewport.toView(pt);
       rect.setFrame(
           p.getX() - VERTEX_SIZE_OVER_2,
           p.getY() - VERTEX_SIZE_OVER_2, 
@@ -268,7 +268,7 @@ public class GeometryEditPanel extends JPanel
   
   private void drawHighlightedVertex(Graphics2D g, Coordinate pt, Color clr) {
     Rectangle2D rect = new Rectangle2D.Double();
-    Point2D p = viewport.convert(pt);
+    Point2D p = viewport.toView(pt);
     rect.setFrame(
         p.getX() - VERTEX_SIZE_OVER_2,
         p.getY() - VERTEX_SIZE_OVER_2, 
@@ -289,7 +289,7 @@ public class GeometryEditPanel extends JPanel
 
   private void drawVertexShadow(Graphics2D g, Coordinate pt, Color clr) {
     Ellipse2D rect = new Ellipse2D.Double();
-    Point2D p = viewport.convert(pt);
+    Point2D p = viewport.toView(pt);
     rect.setFrame(
         p.getX() - VERTEX_SHADOW_SIZE_OVER_2,
         p.getY() - VERTEX_SHADOW_SIZE_OVER_2, 
@@ -303,7 +303,7 @@ public class GeometryEditPanel extends JPanel
     if (highlightPoint == null)
       return;
     double size = AppConstants.HIGHLIGHT_SIZE;
-    Point2D viewPt = viewport.convert(highlightPoint);
+    Point2D viewPt = viewport.toView(highlightPoint);
     double x = viewPt.getX();
     double y = viewPt.getY();
     Ellipse2D.Double shape = new Ellipse2D.Double(x - size / 2, y - size / 2,

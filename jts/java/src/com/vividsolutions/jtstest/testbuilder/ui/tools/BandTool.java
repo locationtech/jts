@@ -146,7 +146,7 @@ public abstract class BandTool extends BasicTool
   }
 
   protected Shape getShape() {
-    Point2D firstPoint = panel().getViewport().convert(
+    Point2D firstPoint = panel().getViewport().toView(
         (Coordinate) coordinates.get(0));
     GeneralPath path = new GeneralPath();
     path.moveTo((float) firstPoint.getX(), (float) firstPoint.getY());
@@ -155,10 +155,10 @@ public abstract class BandTool extends BasicTool
     
     for (int i = 1; i < coordinates.size(); i++) { 
       Coordinate nextCoordinate = (Coordinate) coordinates.get(i);
-      Point2D nextPoint = panel().getViewport().convert(nextCoordinate);
+      Point2D nextPoint = panel().getViewport().toView(nextCoordinate);
       path.lineTo((int) nextPoint.getX(), (int) nextPoint.getY());
     }
-    Point2D tentativePoint = panel().getViewport().convert(tentativeCoordinate);
+    Point2D tentativePoint = panel().getViewport().toView(tentativeCoordinate);
     path.lineTo((int) tentativePoint.getX(), (int) tentativePoint.getY());
     // close path (for rings only)
     if (closeRing)

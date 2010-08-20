@@ -111,7 +111,7 @@ public class GridRenderer {
     // draw XY axes
     g.setColor(axisColor);
 
-    Point2D viewOrigin = viewport.convert(MODEL_ORIGIN);
+    Point2D viewOrigin = viewport.toView(MODEL_ORIGIN);
     double vOriginX = viewOrigin.getX();
     double vOriginY = viewOrigin.getY();
 
@@ -142,7 +142,7 @@ public class GridRenderer {
     double viewWidth = viewport.getWidthInView();
     double viewHeight = viewport.getHeightInView();
     
-    Point2D minPtView = viewport.convert(new Coordinate(minx, miny));
+    Point2D minPtView = viewport.toView(new Coordinate(minx, miny));
 
     /**
      * Can't draw right to edges of panel, because

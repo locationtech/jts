@@ -178,7 +178,7 @@ public abstract class BasicTool implements Tool, MouseListener, MouseMotionListe
   
   Point2D toViewPoint(Coordinate modePt)
   {
-    return getViewport().convert(modePt);
+    return getViewport().toView(modePt);
   }
   
   Point2D toModelPoint(java.awt.Point viewPt)
