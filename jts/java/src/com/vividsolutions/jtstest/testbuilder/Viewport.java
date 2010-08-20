@@ -2,6 +2,7 @@ package com.vividsolutions.jtstest.testbuilder;
 
 import java.awt.*; 
 import java.awt.geom.*; 
+import java.text.NumberFormat;
 
 import com.vividsolutions.jts.awt.PointTransformation;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -38,6 +39,8 @@ public class Viewport implements PointTransformation
    */
   private double scale = 1;
   private PrecisionModel scalePM = new PrecisionModel(scale);
+  private NumberFormat scaleFormat;
+  
   private Envelope viewEnvInModel;
   private AffineTransform modelToViewTransform;
   private java.awt.geom.Point2D.Double srcPt = new java.awt.geom.Point2D.Double(0, 0);
@@ -45,6 +48,7 @@ public class Viewport implements PointTransformation
 
   public Viewport(GeometryEditPanel panel) {
     this.panel = panel;
+    setScaleNoUpdate(1.0);
   }
 
   public Envelope getModelEnv()
@@ -64,6 +68,28 @@ public class Viewport implements PointTransformation
     return scale;
   }
 
+  public void setScaleNoUpdate(double scale) {
+    this.scale = snapScale(scale);
+    scalePM = new PrecisionModel(this.scale);   
+    
+    scaleFormat = NumberFormat.getInstance();
+    int fracDigits = (int) (Math.log10(this.scale));
+    if (fracDigits < 0) fracDigits = 0;
+    //System.out.println("scale = " + this.scale);
+    //System.out.println("fracdigits = " + fracDigits);
+    scaleFormat.setMaximumFractionDigits(fracDigits);
+  }
+
+  public void setScale(double scale) {
+    setScaleNoUpdate(scale);
+    update();
+  }
+
+  public NumberFormat getScaleFormat()
+  {
+    return scaleFormat;
+  }
+  
   /**
      * Snaps scale to nearest multiple of 2, 5 or 10.
      * This ensures that model coordinates entered
@@ -88,11 +114,6 @@ public class Viewport implements PointTransformation
     return scale;
   }
   
-  public void setScale(double scale) {
-    this.scale = snapScale(scale);
-    scalePM = new PrecisionModel(this.scale);    
-    update();
-  }
 
   public double getViewOriginX() {
     return viewOriginInModel.getX();

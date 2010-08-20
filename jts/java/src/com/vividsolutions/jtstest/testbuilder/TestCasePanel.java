@@ -33,16 +33,11 @@
 package com.vividsolutions.jtstest.testbuilder;
 
 import java.awt.*;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -168,11 +163,9 @@ public class TestCasePanel extends JPanel {
 
   private static double LOG_10 = Math.log(10.0);
   
-  String cursorLocation(Point2D pView)
+  private String cursorLocation(Point2D pView)
   {
     Point2D p = editPanel.getViewport().toModel(pView);
-//  txtMousePos.setText((Math.round(p.getX())) + ", " + Math.round(p.getY()));
-//  txtMousePos.setText((Math.round(p.getX()*1000d)/1000d) + ", " + Math.round(p.getY()*1000d)/1000d);
   
     double width = editPanel.getViewport().getWidthInModel();
     double height = editPanel.getViewport().getHeightInModel();
@@ -182,9 +175,14 @@ public class TestCasePanel extends JPanel {
     double xRound = Math.round(p.getX() * precisionScale) / precisionScale;
     double yRound = Math.round(p.getY() * precisionScale) / precisionScale;
   
+    NumberFormat format = editPanel.getViewport().getScaleFormat();
+    
 //    System.out.println(precisionScale);
     
-    return xRound + ", " + yRound;
+    return format.format(p.getX()) 
+    + ", " 
+    + format.format(p.getY());
+    //return xRound + ", " + yRound;
   }
   
   void btnRunTests_actionPerformed(ActionEvent e) {
