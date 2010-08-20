@@ -3,6 +3,7 @@ package com.vividsolutions.jtstest.testbuilder.topostretch;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.MathUtil;
 import com.vividsolutions.jts.algorithm.*;
+import com.vividsolutions.jts.algorithm.math.Vector2D;
 
 /**
  * Models a vertex of a Geometry which will be stretched
@@ -95,6 +96,16 @@ public class StretchedVertex
     return CoordinateArrays.isRing(nearPts);
   }
   
+  private Coordinate getNearRingPoint(int i)
+  {
+    int index = i;
+    if (i < 0) 
+      index = i + nearPts.length -1; 
+    else if (i >= nearPts.length - 1) 
+      index = i - (nearPts.length - 1); 
+    return nearPts[index];
+  }
+  
 	private Coordinate displaceFromPoint(Coordinate nearPt, double dist)
 	{
 		LineSegment seg = new LineSegment(nearPt, vertexPt);
@@ -118,16 +129,6 @@ public class StretchedVertex
 		
 		return nearSeg.pointAlongOffset(frac, dist);
 	}
-  
-  private Coordinate getNearRingPoint(int i)
-  {
-    int index = i;
-    if (i < 0) 
-      index = i + nearPts.length -1; 
-    else if (i >= nearPts.length - 1) 
-      index = i - (nearPts.length - 1); 
-    return nearPts[index];
-  }
   
   private Coordinate displaceFromVertex(Coordinate nearPt, double dist)
   {
