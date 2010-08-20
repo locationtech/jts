@@ -158,7 +158,9 @@ public class TestCasePanel extends JPanel {
   }
 
   void editPanel_mouseMoved(MouseEvent e) {
-  	lblMousePos.setText(cursorLocation(e.getPoint()));
+    String cursorPos = cursorLocation(e.getPoint());
+  	lblMousePos.setText(cursorPos);
+//    System.out.println(cursorPos);
   }
 
   private static double LOG_10 = Math.log(10.0);
@@ -244,6 +246,9 @@ public class TestCasePanel extends JPanel {
       new java.awt.event.MouseMotionAdapter() {
 
         public void mouseMoved(MouseEvent e) {
+          editPanel_mouseMoved(e);
+        }
+        public void mouseDragged(MouseEvent e) {
           editPanel_mouseMoved(e);
         }
       });
