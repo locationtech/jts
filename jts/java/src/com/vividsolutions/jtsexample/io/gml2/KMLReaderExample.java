@@ -6,6 +6,7 @@ import java.util.*;
 import java.io.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * An example of using the {@link GMLHandler} class
@@ -38,7 +39,9 @@ class KMLReader
 	throws IOException, SAXException
 	{
     XMLReader xr; 
-    xr = new org.apache.xerces.parsers.SAXParser();
+    
+    xr = XMLReaderFactory.createXMLReader();
+    //xr = new org.apache.xerces.parsers.SAXParser();
     KMLHandler kmlHandler = new KMLHandler();
     xr.setContentHandler(kmlHandler);
     xr.setErrorHandler(kmlHandler);

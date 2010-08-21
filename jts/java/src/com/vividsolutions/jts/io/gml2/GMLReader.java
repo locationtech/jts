@@ -35,6 +35,7 @@ package com.vividsolutions.jts.io.gml2;
 import java.io.*;
 
 import javax.xml.parsers.*;
+
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
