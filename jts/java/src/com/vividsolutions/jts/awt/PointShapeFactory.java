@@ -161,16 +161,16 @@ public interface PointShapeFactory {
      */
     public Shape createPoint(Point2D point) {
       GeneralPath path = new GeneralPath();
-      path.moveTo(point.getX(), point.getY() - size/2);
-      path.lineTo(point.getX() + size * 1/8, point.getY() - size * 1/8);
-      path.lineTo(point.getX() + size/2, point.getY() - size * 1/8);
-      path.lineTo(point.getX() + size * 2/8, point.getY() + size * 1/8);
-      path.lineTo(point.getX() + size * 3/8, point.getY() + size/2);
-      path.lineTo(point.getX(), point.getY() + size * 2/8);
-      path.lineTo(point.getX() - size * 3/8, point.getY() + size/2);
-      path.lineTo(point.getX() - size * 2/8, point.getY() + size * 1/8);
-      path.lineTo(point.getX() - size/2, point.getY() - size * 1/8);
-      path.lineTo(point.getX() - size * 1/8, point.getY() - size * 1/8);
+      path.moveTo((float) point.getX(), (float) (point.getY() - size/2));
+      path.lineTo((float) (point.getX() + size * 1/8), (float) (point.getY() - size * 1/8));
+      path.lineTo((float) (point.getX() + size/2), (float) (point.getY() - size * 1/8));
+      path.lineTo((float) (point.getX() + size * 2/8), (float) (point.getY() + size * 1/8));
+      path.lineTo((float) (point.getX() + size * 3/8), (float) (point.getY() + size/2));
+      path.lineTo((float) (point.getX()), (float) (point.getY() + size * 2/8));
+      path.lineTo((float) (point.getX() - size * 3/8), (float) (point.getY() + size/2));
+      path.lineTo((float) (point.getX() - size * 2/8), (float) (point.getY() + size * 1/8));
+      path.lineTo((float) (point.getX() - size/2), (float) (point.getY() - size * 1/8));
+      path.lineTo((float) (point.getX() - size * 1/8), (float) (point.getY() - size * 1/8));
       path.closePath();
       return path;
     }
@@ -205,10 +205,10 @@ public interface PointShapeFactory {
     public Shape createPoint(Point2D point) {
 
       GeneralPath path = new GeneralPath();
-      path.moveTo(point.getX(), point.getY() - size / 2);
-      path.lineTo(point.getX() + size / 2, point.getY() + size / 2);
-      path.lineTo(point.getX() - size / 2, point.getY() + size / 2);
-      path.lineTo(point.getX(), point.getY() - size / 2);
+      path.moveTo((float) (point.getX()), (float) (point.getY() - size / 2));
+      path.lineTo((float) (point.getX() + size / 2), (float) (point.getY() + size / 2));
+      path.lineTo((float) (point.getX() - size / 2), (float) (point.getY() + size / 2));
+      path.lineTo((float) (point.getX()), (float) (point.getY() - size / 2));
 
       return path;
     }
@@ -339,18 +339,18 @@ public interface PointShapeFactory {
      */
     public Shape createPoint(Point2D point) {
       GeneralPath path = new GeneralPath();
-      path.moveTo(point.getX(), point.getY() - size * 1/8);
-      path.lineTo(point.getX() + size * 2/8, point.getY() - size/2);
-      path.lineTo(point.getX() + size/2, point.getY() - size/2);
-      path.lineTo(point.getX() + size * 1/8, point.getY());
-      path.lineTo(point.getX() + size/2, point.getY() + size/2);
-      path.lineTo(point.getX() + size * 2/8, point.getY() + size/2);
-      path.lineTo(point.getX(), point.getY() + size * 1/8);
-      path.lineTo(point.getX() - size * 2/8, point.getY() + size/2);
-      path.lineTo(point.getX() - size/2, point.getY() + size/2);
-      path.lineTo(point.getX() - size * 1/8, point.getY());
-      path.lineTo(point.getX() - size/2, point.getY() - size/2);
-      path.lineTo(point.getX() - size * 2/8, point.getY() - size/2);
+      path.moveTo((float) (point.getX()), (float) (point.getY() - size * 1/8));
+      path.lineTo((float) (point.getX() + size * 2/8), (float) (point.getY() - size/2));
+      path.lineTo((float) (point.getX() + size/2), (float) (point.getY() - size/2));
+      path.lineTo((float) (point.getX() + size * 1/8), (float) (point.getY()));
+      path.lineTo((float) (point.getX() + size/2), (float) (point.getY() + size/2));
+      path.lineTo((float) (point.getX() + size * 2/8), (float) (point.getY() + size/2));
+      path.lineTo((float) (point.getX()), (float) (point.getY() + size * 1/8));
+      path.lineTo((float) (point.getX() - size * 2/8), (float) (point.getY() + size/2));
+      path.lineTo((float) (point.getX() - size/2), (float) (point.getY() + size/2));
+      path.lineTo((float) (point.getX() - size * 1/8), (float) (point.getY()));
+      path.lineTo((float) (point.getX() - size/2), (float) (point.getY() - size/2));
+      path.lineTo((float) (point.getX() - size * 2/8), (float) (point.getY() - size/2));
       path.closePath();
       return path;
     }
