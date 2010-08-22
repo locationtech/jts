@@ -214,7 +214,7 @@ public class JTSTestBuilderMenuBar
     jMenuEdit.add(precisionModelMenuItem);
     
     jMenuOptions.add(showVerticesMenuItem);
-    jMenuOptions.add(showVertexIndicesMenuItem);
+    //jMenuOptions.add(showVertexIndicesMenuItem);
     jMenuOptions.add(showOrientationsMenuItem);
     jMenuOptions.add(showGridMenuItem);
     
