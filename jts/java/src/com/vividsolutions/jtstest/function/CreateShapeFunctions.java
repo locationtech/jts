@@ -49,21 +49,27 @@ public class CreateShapeFunctions {
 	
 	public static Geometry grid(Geometry g, int nCells)
 	{
-		List geoms = new ArrayList(); 
-	
 		Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
 		GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
 		
-		int nCellsOnSide = (int) Math.sqrt(nCells) + 1;
-		double delX = env.getWidth() / nCellsOnSide;
-		double delY = env.getHeight() / nCellsOnSide;
+		int nCellsOnSideY = (int) Math.sqrt(nCells);
+		int nCellsOnSideX = nCells / nCellsOnSideY;
 		
-		for (int i = 0; i < nCellsOnSide; i++) {
-			for (int j = 0; j < nCellsOnSide; j++) {
-				double x = env.getMinX() + i * delX;
-				double y = env.getMinY() + j * delY;
+		// alternate: make square cells, with varying grid width/height
+		//double extent = env.minExtent();
+		//double nCellsOnSide = Math.max(nCellsOnSideY, nCellsOnSideX);
+		
+		double cellSizeX = env.getWidth() / nCellsOnSideX;
+		double cellSizeY = env.getHeight() / nCellsOnSideY;
+		
+		List geoms = new ArrayList(); 
+
+		for (int i = 0; i < nCellsOnSideX; i++) {
+			for (int j = 0; j < nCellsOnSideY; j++) {
+				double x = env.getMinX() + i * cellSizeX;
+				double y = env.getMinY() + j * cellSizeY;
 			
-				Envelope cellEnv = new Envelope(x, x + delX, y, y + delY);
+				Envelope cellEnv = new Envelope(x, x + cellSizeX, y, y + cellSizeY);
 				geoms.add(geomFact.toGeometry(cellEnv));
 			}
 		}
