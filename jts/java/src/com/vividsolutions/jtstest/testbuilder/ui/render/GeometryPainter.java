@@ -13,6 +13,8 @@ import com.vividsolutions.jtstest.testbuilder.ui.style.Style;
 
 public class GeometryPainter 
 {
+	private static Stroke GEOMETRY_STROKE = new BasicStroke();
+	
   public static void paint(Graphics2D g, Viewport viewport, Geometry geometry, Style style)
   throws Exception
   {
@@ -79,6 +81,7 @@ public class GeometryPainter
 
 		Shape shape = converter.toShape(geometry);
     
+		g.setStroke(GEOMETRY_STROKE);
     // Test for a polygonal shape and fill it if required
 		if (!(shape instanceof GeneralPath) && fillColor != null) {
 			g.setPaint(fillColor);

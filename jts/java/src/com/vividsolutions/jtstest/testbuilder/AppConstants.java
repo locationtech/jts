@@ -25,4 +25,11 @@ public class AppConstants
 	//public static final Color INDICATOR_FILL_COLOR = new Color(255, 200, 200, 200);
 	public static final Color INDICATOR_LINE_CLR = GeometryDepiction.GEOM_RESULT_LINE_CLR;
 
+	public static final int AXIS_WIDTH = 3;
+	public static final Color AXIS_CLR = Color.lightGray;
+
+	public static final Color GRID_CLR = Color.lightGray;
+
+	public static final Color GRID_MAJOR_CLR = new Color(220, 220, 220);
+
 }

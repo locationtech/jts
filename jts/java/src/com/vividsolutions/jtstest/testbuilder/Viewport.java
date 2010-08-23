@@ -78,6 +78,8 @@ public class Viewport implements PointTransformation
     //System.out.println("scale = " + this.scale);
     //System.out.println("fracdigits = " + fracDigits);
     scaleFormat.setMaximumFractionDigits(fracDigits);
+    // don't show commas
+    scaleFormat.setGroupingUsed(false);
   }
 
   public void setScale(double scale) {
