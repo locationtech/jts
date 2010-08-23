@@ -47,7 +47,7 @@ public class GridRenderer {
 
   private static final Color gridColor = Color.lightGray;
 
-  private static final Color gridMajorColor = new Color(240, 240, 240);
+  private static final Color gridMajorColor = new Color(220, 220, 220);
 
   private Viewport viewport;
 
@@ -67,10 +67,13 @@ public class GridRenderer {
   public void paint(Graphics2D g) {
     if (! isEnabled)
       return;
+    /*
     if (isResolvable())
-      drawCells(g);
+      drawFixedGridCells(g);
+      */
+    drawScaleGrid(g);
     drawAxes(g);
-    drawScaleMarks(g);
+    //drawScaleMarks(g);
   }
 
   private boolean isResolvable() {
@@ -79,35 +82,9 @@ public class GridRenderer {
     return grid.isResolvable(p1, p2);
   }
 
-  /**
-   * No longer used - too slow.
-   * 
-   * @param g2
-   */
-  public void drawGridPoints(Graphics2D g2) {
-    double gridDX = grid.getGridSize();
-
-    Point2D ptLL = viewport.getLowerLeftCornerInModel();
-    Point2D ptUR = viewport.getUpperRightCornerInModel();
-    double minx = grid.snapToGrid(ptLL).getX();
-    double maxx = grid.snapToGrid(ptUR).getX();
-    double miny = grid.snapToGrid(ptLL).getY();
-    double maxy = grid.snapToGrid(ptUR).getY();
-
-    // draw grid points
-    g2.setColor(gridColor);
-    for (double x = minx; x < maxx; x += gridDX) {
-      for (double y = miny; y < maxy; y += gridDX) {
-        // draw points
-        g2.draw(new Line2D.Double(x, y, x, y));
-      }
-    }
-
-  }
-
   private static final Coordinate MODEL_ORIGIN = new Coordinate(0, 0);
 
-  public void drawAxes(Graphics2D g) {
+  private void drawAxes(Graphics2D g) {
     // draw XY axes
     g.setColor(axisColor);
 
@@ -125,34 +102,43 @@ public class GridRenderer {
     }
   }
 
-  public void drawCells(Graphics2D g) {
+  private void drawFixedGridCells(Graphics2D g) {
     // draw grid major lines
-    g.setColor(gridMajorColor);
     
     double gridSize = grid.getGridSize();
     double gridSizeInView = gridSize * viewport.getScale();
     //System.out.println(gridSizeInView);
-    
     
     Point2D ptLL = viewport.getLowerLeftCornerInModel();
 
     double minx = grid.snapToMajorGrid(ptLL).getX();
     double miny = grid.snapToMajorGrid(ptLL).getY();
 
+    Point2D minPtView = viewport.toView(new Coordinate(minx, miny));
+
+    g.setColor(gridMajorColor);
+    drawGrid(g, minPtView.getX(), minPtView.getY(), gridSizeInView);
+  }
+  
+  private void drawGrid(Graphics2D g, double minx, double maxy, double gridSizeInView)
+  {
     double viewWidth = viewport.getWidthInView();
     double viewHeight = viewport.getHeightInView();
     
-    Point2D minPtView = viewport.toView(new Coordinate(minx, miny));
+    //Point2D minPtView = viewport.toView(new Coordinate(minx, miny));
+
 
     /**
      * Can't draw right to edges of panel, because
      * Swing inset border occupies that space.
      */
-    for (double x = minPtView.getX(); x < viewWidth; x += gridSizeInView) {
+    for (double x = minx; x < viewWidth; x += gridSizeInView) {
+    	// don't draw grid line right next to panel border
       if (x < 2) continue;
       g.draw(new Line2D.Double(x, 0, x, viewHeight - 0));
     }
-    for (double y = minPtView.getY(); y > 0; y -= gridSizeInView) {
+    for (double y = maxy; y > 0; y -= gridSizeInView) {
+    	// don't draw grid line right next to panel border
       if (y < 2) continue;
       g.draw(new Line2D.Double(0, y, viewWidth - 0, y));
     }
@@ -160,11 +146,11 @@ public class GridRenderer {
   
   private int visibleMagnitude()
   {
-  	double viewSizeInModel = Math.max(viewport.getHeightInModel(), viewport.getWidthInModel());
+  	double visibleExtentModel = viewport.getModelEnv().maxExtent();
   	// if input is bogus then just return something reasonable
-  	if (viewSizeInModel <= 0.0)
+  	if (visibleExtentModel <= 0.0)
   		return 1;
-  	double log10 = Math.log10(viewSizeInModel);
+  	double log10 = Math.log10(visibleExtentModel);
   	return (int) log10;
   }
   
@@ -172,39 +158,75 @@ public class GridRenderer {
   private static final int SCALE_TEXT_OFFSET_X = 40;
   private static final int SCALE_TEXT_OFFSET_Y = 2;
   
-  public void drawScaleMarks(Graphics2D g) 
+  private void drawScaleGrid(Graphics2D g) 
+  {
+  	Envelope viewEnv = viewport.getViewEnv();
+  	Envelope modelEnv = viewport.getModelEnv();
+  	
+  	int gridMag = visibleMagnitude();
+  	double gridIncModel = Math.pow(10.0, gridMag);
+  	double gridIncView = viewport.getDistanceInView(gridIncModel);
+  	
+  	// ensure at least 3 ticks are shown
+  	if (3 * gridIncView > viewEnv.maxExtent()) {
+  		gridIncView /= 10.0;
+  		gridMag -= 1;
+  	}
+  	double gridSizeModel = Math.pow(10, gridMag);
+  	PrecisionModel pm = new PrecisionModel(1.0/gridSizeModel);
+  	double gridSizeView = viewport.getDistanceInView(gridSizeModel);
+
+  	double minxModel = pm.makePrecise(modelEnv.getMinX());
+  	double minyModel = pm.makePrecise(modelEnv.getMinY());
+  	
+    Point2D basePtView = viewport.toView(new Coordinate(minxModel, minyModel));
+
+    g.setColor(gridMajorColor);
+
+  	drawGrid(g, basePtView.getX(), basePtView.getY(), gridSizeView);
+  	
+    g.setColor(Color.BLUE);
+
+  	// draw Scale label
+  	int viewHeight = (int) viewport.getHeightInView();
+  	int viewWidth = (int) viewport.getWidthInView();
+  	g.drawString("10", viewWidth - 35, viewHeight - 1);
+  	g.drawString(gridMag + "", viewWidth - 20, viewHeight - 8);
+  }
+
+  private void drawScaleMarks(Graphics2D g) 
   {
   	Envelope viewEnv = viewport.getViewEnv();
   	
   	int viewMag = visibleMagnitude();
-  	double tickIncModel = Math.pow(10.0, viewMag);
-  	double tickIncView = viewport.getDistanceInView(tickIncModel);
+  	double gridIncModel = Math.pow(10.0, viewMag);
+  	double gridIncView = viewport.getDistanceInView(gridIncModel);
   	
   	// ensure at least 3 ticks are shown
-  	if (3 * tickIncView > viewEnv.maxExtent()) {
-  		tickIncView /= 10.0;
+  	if (3 * gridIncView > viewEnv.maxExtent()) {
+  		gridIncView /= 10.0;
   		viewMag -= 1;
   	}
   	
     g.setColor(Color.BLACK);
   	
-    // X axis
-  	double tickX = viewport.getWidthInView() - tickIncView;
+    // draw X axis ticks
+  	double tickX = viewport.getWidthInView() - gridIncView;
   	int viewHeight = (int) viewport.getHeightInView();
   	while (tickX > 0) {
   		g.draw(new Line2D.Double(tickX, viewHeight + 1, tickX, viewHeight - TICK_LEN));
-  		tickX -= tickIncView;
+  		tickX -= gridIncView;
   	}
   	
-  	// Y axis
-  	double tickY = viewport.getHeightInView() - tickIncView;
+  	// draw Y axis ticks
+  	double tickY = viewport.getHeightInView() - gridIncView;
   	int viewWidth = (int) viewport.getWidthInView();
   	while (tickY > 0) {
   		g.draw(new Line2D.Double(viewWidth + 1, tickY, viewWidth - TICK_LEN, tickY));
-  		tickY -= tickIncView;
+  		tickY -= gridIncView;
   	}
   	
-  	// Draw Scale magnitude
+  	// draw Scale magnitude
   	g.drawString("10", viewWidth - 35, viewHeight - 1);
   	g.drawString(viewMag+"", viewWidth - 20, viewHeight - 8);
   }
