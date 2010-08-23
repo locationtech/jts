@@ -55,12 +55,14 @@ public class GridRenderer {
 
   private boolean isEnabled = true;
   
-  private NumberFormat gridSizeFormat = NumberFormat.getInstance();
+  private NumberFormat gridSizeFormat;
 
 
   public GridRenderer(Viewport viewport, DrawingGrid grid) {
     this.viewport = viewport;
     this.grid = grid;
+    gridSizeFormat = NumberFormat.getInstance();
+    gridSizeFormat.setGroupingUsed(false);
   }
 
   public void setEnabled(boolean isEnabled) {
@@ -70,13 +72,8 @@ public class GridRenderer {
   public void paint(Graphics2D g) {
     if (! isEnabled)
       return;
-    /*
-    if (isResolvable())
-      drawFixedGridCells(g);
-      */
-    drawScaledGrid(g);
     drawAxes(g);
-    //drawScaleMarks(g);
+    drawScaledGrid(g);
   }
 
   private boolean isResolvable() {
@@ -124,11 +121,11 @@ public class GridRenderer {
   	
   	double gridSizeModel = Math.pow(10, minVisMag);
   	double gridSizeView = viewport.getDistanceInView(gridSizeModel);
-  	System.out.println("\ncand gridSizeView= " + gridSizeView);
+//  	System.out.println("\ncand gridSizeView= " + gridSizeView);
   	if (gridSizeView <= 2 )
   		minVisMag += 1;
   	
-  	System.out.println("pixelSize= " + pixelSize + "  pixelLog10= " + pixelSizeLog);
+//  	System.out.println("pixelSize= " + pixelSize + "  pixelLog10= " + pixelSizeLog);
   	return minVisMag;
   }
   
@@ -142,37 +139,7 @@ public class GridRenderer {
   	double gridSizeView = viewport.getDistanceInView(gridSizeModel);
   	
   	System.out.println("gridSizeView= " + gridSizeView);
-    g.setColor(AppConstants.GRID_MAJOR_CLR);
-  	if (gridSizeView >= 4) {
-  	/*
-  	if (gridSizeView < 10) {
-  		gridMag += 1;
-  		gridSizeModel = Math.pow(10, gridMag);
-  		gridSizeView = viewport.getDistanceInView(gridSizeModel);
-  	}
-  	*/
-  	
-  	PrecisionModel pmGrid = new PrecisionModel(1.0/gridSizeModel);
-  	double basexModel = pmGrid.makePrecise(modelEnv.getMinX());
-  	double baseyModel = pmGrid.makePrecise(modelEnv.getMinY());
-    Point2D basePtView = viewport.toView(new Coordinate(basexModel, baseyModel));
-
-  	/**
-  	 * Minor Grid
-  	 */
-    //*
-    g.setColor(AppConstants.GRID_MAJOR_CLR);
-    Stroke strokeMinor = new BasicStroke(1,                  // Width of stroke
-        BasicStroke.CAP_SQUARE,  // End cap style
-        BasicStroke.JOIN_MITER, // Join style
-        10,                  // Miter limit
-        new float[] {1, (float) gridSizeView}, // Dash pattern
-        0);                   // Dash phase 
-    g.setStroke(strokeMinor);
-    drawGridLines(g, basePtView.getX(), 0, gridSizeView);
-  	}
-//*/
-
+    
   	/**
   	 * Major Grid (10x)
   	 */
@@ -204,15 +171,40 @@ public class GridRenderer {
         BasicStroke.CAP_SQUARE,  // End cap style
         BasicStroke.JOIN_MITER, // Join style
         10,                  // Miter limit
-        new float[] {4, 4}, // Dash pattern
+        new float[] {4, 6}, // Dash pattern
         0);                   // Dash phase 
     g.setStroke(strokeMid);
     drawGridLines(g, 
     		basePt10View.getX() - gridSize10View/2, 
     		basePt10View.getY() + gridSize10View/2, 
     		gridSize10View);
+
+  	/**
+  	 * Minor Grid
+  	 */
+  	if (gridSizeView >= 4) {  	
+	  	PrecisionModel pmGrid = new PrecisionModel(1.0/gridSizeModel);
+	  	double basexModel = pmGrid.makePrecise(modelEnv.getMinX());
+	  	double baseyModel = pmGrid.makePrecise(modelEnv.getMinY());
+	    Point2D basePtView = viewport.toView(new Coordinate(basexModel, baseyModel));
+	
+	    g.setColor(AppConstants.GRID_MINOR_CLR);
 	    
-    drawGridSizeLabel(g, gridMagModel10);
+	    float dashOffset = ((int) basePtView.getY()) % (int) gridSizeView;
+	    dashOffset = (float) gridSizeView - dashOffset;
+	  	System.out.println("dashOffset= " + dashOffset);
+	    
+	    Stroke strokeMinor = new BasicStroke(1,                  // Width of stroke
+	        BasicStroke.CAP_SQUARE,  // End cap style
+	        BasicStroke.JOIN_MITER, // Join style
+	        10,                  // Miter limit
+	        new float[] {0, (float) (gridSizeView)}, // Dash pattern
+	        dashOffset);                   // Dash phase 
+	    g.setStroke(strokeMinor);
+	    drawGridLines(g, basePtView.getX(), 0, gridSizeView);
+  	}
+
+    drawGridSizeLabel(g, gridMagModel);
   }
 
   private void drawGridSizeLabel(Graphics2D g, int gridMagModel)
@@ -228,12 +220,12 @@ public class GridRenderer {
   	if (Math.abs(gridMagModel) <= 3) {
   		// display as number
   		double gridSize = Math.pow(10, gridMagModel);
-  		g.drawString(gridSizeFormat.format(gridSize), viewWidth - 35, viewHeight - 1);
+  		g.drawString(gridSizeFormat.format(gridSize), 2, viewHeight - 1);
   	}
   	else {
   		// display as exponent
-  		g.drawString("10", viewWidth - 35, viewHeight - 1);
-  		g.drawString(gridMagModel + "", viewWidth - 20, viewHeight - 8);
+  		g.drawString("10", 2, viewHeight - 1);
+  		g.drawString(gridMagModel + "", 20, viewHeight - 8);
   	}
   }
 
@@ -267,6 +259,7 @@ public class GridRenderer {
      * Can't draw right to edges of panel, because
      * Swing inset border occupies that space.
      */
+    // draw vertical grid lines
     for (double x = minx; x < viewWidth; x += gridSizeInView) {
     	// don't draw grid line right next to panel border
       if (x < 2) continue;

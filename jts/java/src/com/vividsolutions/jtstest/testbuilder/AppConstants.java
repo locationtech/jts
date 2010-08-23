@@ -31,5 +31,6 @@ public class AppConstants
 	public static final Color GRID_CLR = Color.lightGray;
 
 	public static final Color GRID_MAJOR_CLR = new Color(220, 220, 220);
+	public static final Color GRID_MINOR_CLR = Color.GRAY;
 
 }
