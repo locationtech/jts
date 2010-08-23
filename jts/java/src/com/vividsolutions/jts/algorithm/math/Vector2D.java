@@ -6,24 +6,52 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.util.Assert;
 
 /**
- * A 2-dimensional vector represented by double-precision X and Y components.
+ * A 2-dimensional mathematical vector represented by double-precision X and Y components.
  * 
  * @author mbdavis
  * 
  */
 public class Vector2D {
+  /**
+   * Creates a new vector with given X and Y components.
+   * 
+   * @param x the x component
+   * @param y the y component
+   * @return a new vector
+   */
 	public static Vector2D create(double x, double y) {
 		return new Vector2D(x, y);
 	}
 
+  /**
+   * Creates a new vector from an existing one.
+   * 
+   * @param v the vector to copy
+   * @return a new vector
+   */
 	public static Vector2D create(Vector2D v) {
 		return new Vector2D(v);
 	}
 
-	public static Vector2D create(Coordinate v) {
-		return new Vector2D(v);
+  /**
+   * Creates a vector from a {@link Coordinate}. 
+   * 
+   * @param coord the Coordinate to copy
+   * @return a new vector
+   */
+	public static Vector2D create(Coordinate coord) {
+		return new Vector2D(coord);
 	}
 
+  /**
+   * Creates a vector with the direction and magnitude
+   * of the difference between the 
+   * <tt>to</tt> and <tt>from</tt> {@link Coordinate}s.
+   * 
+   * @param from the origin Coordinate
+   * @param to the destination Coordinate
+   * @return a new vector
+   */
 	public static Vector2D create(Coordinate from, Coordinate to) {
 		return new Vector2D(from, to);
 	}
@@ -84,10 +112,22 @@ public class Vector2D {
 		return create(x - v.x, y - v.y);
 	}
 
+  /**
+   * Multiplies the vector by a scalar value.
+   * 
+   * @param d the value to multiply by
+   * @return a new vector with the value v * d
+   */
 	public Vector2D multiply(double d) {
 		return create(x * d, y * d);
 	}
 
+  /**
+   * Divides the vector by a scalar value.
+   * 
+   * @param d the value to divide by
+   * @return a new vector with the value v / d
+   */
 	public Vector2D divide(double d) {
 		return create(x / d, y / d);
 	}
@@ -225,11 +265,21 @@ public class Vector2D {
 		return new Coordinate(x, y);
 	}
 
+  /**
+   * Creates a copy of this vector
+   * 
+   * @return a copy of this vector
+   */
   public Object clone()
   {
     return new Vector2D(this);
   }
   
+  /**
+   * Gets a string representation of this vector
+   * 
+   * @return a string representing this vector
+   */
 	public String toString() {
 		return "[" + x + ", " + y + "]";
 	}
