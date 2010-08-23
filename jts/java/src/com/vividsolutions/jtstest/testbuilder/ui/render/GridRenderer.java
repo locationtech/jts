@@ -143,29 +143,43 @@ public class GridRenderer {
   	/**
   	 * Major Grid (10x)
   	 */
-  	double gridSize10Model = 10* gridSizeModel;
+  	double gridSize10Model = 10 * gridSizeModel;
   	PrecisionModel pmGrid10 = new PrecisionModel(1.0/gridSize10Model);
   	double basex10Model = pmGrid10.makePrecise(modelEnv.getMinX());
   	double basey10Model = pmGrid10.makePrecise(modelEnv.getMinY());
     Point2D basePt10View = viewport.toView(new Coordinate(basex10Model, basey10Model));
   	double gridSize10View = viewport.getDistanceInView(gridSize10Model);
 
-    g.setColor(AppConstants.GRID_MAJOR_CLR);
-    /*
-    Stroke strokeMajor = new BasicStroke(1,                  // Width of stroke
-        BasicStroke.CAP_SQUARE,  // End cap style
-        BasicStroke.JOIN_MITER, // Join style
-        10,                  // Miter limit
-        new float[] {1, (float) gridSizeView}, // Dash pattern
-        0);                   // Dash phase 
-    g.setStroke(strokeMajor);
-*/
     g.setStroke(new BasicStroke());
+    g.setColor(AppConstants.GRID_MAJOR_CLR);
     drawGridLines(g, basePt10View.getX(), basePt10View.getY(), gridSize10View);
     
   	/**
-  	 * Mid-Major grid (10x + 5) 
+  	 * Major-Major Grid (100x)
   	 */
+  	double gridSize100Model = 100 * gridSizeModel;
+  	PrecisionModel pmGrid100 = new PrecisionModel(1.0/gridSize100Model);
+  	double basex100Model = pmGrid100.makePrecise(modelEnv.getMinX());
+  	double basey100Model = pmGrid100.makePrecise(modelEnv.getMinY());
+    Point2D basePt100View = viewport.toView(new Coordinate(basex100Model, basey100Model));
+  	double gridSize100View = viewport.getDistanceInView(gridSize100Model);
+
+    Stroke strokeMajor2 = new BasicStroke(1,                  // Width of stroke
+        BasicStroke.CAP_SQUARE,  // End cap style
+        BasicStroke.JOIN_MITER, // Join style
+        10,                  // Miter limit
+        new float[] {4, 6}, // Dash pattern
+        0);                   // Dash phase 
+    g.setStroke(strokeMajor2);
+
+    g.setColor(AppConstants.GRID_MINOR_CLR);
+    drawGridLines(g, basePt100View.getX(), basePt100View.getY(), gridSize100View);
+    
+  	/**
+  	 * Semi-Major grid (10x + 5) 
+  	 */
+    /*
+    // disabled for now - a bit too many lines
     g.setColor(AppConstants.GRID_MAJOR_CLR);
     Stroke strokeMid = new BasicStroke(1,                  // Width of stroke
         BasicStroke.CAP_SQUARE,  // End cap style
@@ -174,11 +188,12 @@ public class GridRenderer {
         new float[] {4, 6}, // Dash pattern
         0);                   // Dash phase 
     g.setStroke(strokeMid);
+
     drawGridLines(g, 
     		basePt10View.getX() - gridSize10View/2, 
     		basePt10View.getY() + gridSize10View/2, 
     		gridSize10View);
-
+*/
   	/**
   	 * Minor Grid
   	 */
@@ -188,7 +203,6 @@ public class GridRenderer {
 	  	double baseyModel = pmGrid.makePrecise(modelEnv.getMinY());
 	    Point2D basePtView = viewport.toView(new Coordinate(basexModel, baseyModel));
 	
-	    g.setColor(AppConstants.GRID_MINOR_CLR);
 	    
 	    float dashOffset = ((int) basePtView.getY()) % (int) gridSizeView;
 	    dashOffset = (float) gridSizeView - dashOffset;
@@ -201,6 +215,7 @@ public class GridRenderer {
 	        new float[] {0, (float) (gridSizeView)}, // Dash pattern
 	        dashOffset);                   // Dash phase 
 	    g.setStroke(strokeMinor);
+	    g.setColor(AppConstants.GRID_MINOR_CLR);
 	    drawGridLines(g, basePtView.getX(), 0, gridSizeView);
   	}
 
