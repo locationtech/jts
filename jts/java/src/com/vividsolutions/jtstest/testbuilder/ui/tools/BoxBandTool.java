@@ -37,6 +37,7 @@ package com.vividsolutions.jtstest.testbuilder.ui.tools;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,37 +72,76 @@ public abstract class BoxBandTool extends BasicTool
   public void mousePressed(MouseEvent e)
   {
   	zoomBoxStart = e.getPoint();
-  	zoomBoxEnd= e.getPoint();
+  	zoomBoxEnd = null;
   }
   
   public void mouseReleased(MouseEvent e)
   {
+    clearIndicator();
   	// don't process this event if the mouse was clicked or dragged a very short distance
   	if (! isSignificantMouseMove())
   		return;
   	
-    try {
-      clearIndicator();
-      gestureFinished();
-    }
-    catch (Exception ex) {
-      // can't do anything, so just eat exception
-    }
+    gestureFinished();
   }
   
   public void mouseDragged(MouseEvent e)
   {
-  	Point currPoint = e.getPoint();
-  	Graphics g = panel().getGraphics();
-  	g.setColor(Color.RED);
-  	g.setXORMode(Color.white);
-  	// erase old rectangle
-  	drawRect(g);
-
-  	// draw new zoom box
-  	zoomBoxEnd = currPoint;
-  	drawRect(g);
+    zoomBoxEnd = e.getPoint();
+    redrawIndicator();
   }
+  
+  protected Shape getShape()
+  {
+    if (zoomBoxEnd == null) return null;
+    
+    Point base = new Point(Math.min(zoomBoxStart.x, zoomBoxEnd.x),
+        Math.min(zoomBoxStart.y, zoomBoxEnd.y));
+    int width = Math.abs(zoomBoxEnd.x - zoomBoxStart.x);
+    int height = Math.abs(zoomBoxEnd.y - zoomBoxStart.y);
+    return new Rectangle2D.Double(base.getX(), base.getY(), width, height);
+  }
+
+  private static final int MIN_MOVEMENT = 3;
+  
+  private boolean isSignificantMouseMove()
+  {
+    if (zoomBoxEnd == null) return false;
+
+    if (Math.abs(zoomBoxStart.x - zoomBoxEnd.x) < MIN_MOVEMENT)
+      return false;
+    if (Math.abs(zoomBoxStart.y - zoomBoxEnd.y) < MIN_MOVEMENT)
+      return false;
+    return true;
+  }
+
+  /*
+  public void OLDmouseDragged(MouseEvent e)
+  {
+    Point currPoint = e.getPoint();
+    Graphics g = panel().getGraphics();
+    g.setColor(Color.RED);
+    g.setXORMode(Color.white);
+    // erase old rectangle
+    drawRect(g);
+
+    // draw new zoom box
+    zoomBoxEnd = currPoint;
+    drawRect(g);
+  }
+  
+    public void drawRect(Graphics g)
+  {
+    Point base = new Point(Math.min(zoomBoxStart.x, zoomBoxEnd.x),
+        Math.min(zoomBoxStart.y, zoomBoxEnd.y));
+    int width = Math.abs(zoomBoxEnd.x - zoomBoxStart.x);
+    int height = Math.abs(zoomBoxEnd.y - zoomBoxStart.y);
+    g.drawRect(base.x, base.y, width, height);
+  }
+  
+
+  */
+  
   
   /**
    * Gets the envelope of the indicated rectangle,
@@ -175,27 +215,8 @@ public abstract class BoxBandTool extends BasicTool
     return coords;
   }
   
-  private static final int MIN_MOVEMENT = 3;
   
-  private boolean isSignificantMouseMove()
-  {
-  	if (Math.abs(zoomBoxStart.x - zoomBoxEnd.x) < MIN_MOVEMENT)
-  		return false;
-  	if (Math.abs(zoomBoxStart.y - zoomBoxEnd.y) < MIN_MOVEMENT)
-  		return false;
-  	return true;
-  }
-  
-  public void drawRect(Graphics g)
-  {
-  	Point base = new Point(Math.min(zoomBoxStart.x, zoomBoxEnd.x),
-  			Math.min(zoomBoxStart.y, zoomBoxEnd.y));
-  	int width = Math.abs(zoomBoxEnd.x - zoomBoxStart.x);
-  	int height = Math.abs(zoomBoxEnd.y - zoomBoxStart.y);
-  	g.drawRect(base.x, base.y, width, height);
-  }
-  
-  protected void gestureFinished() throws Exception
+  protected void gestureFinished() 
   {
     // basic tool does nothing.
     // Subclasses should override

@@ -17,7 +17,7 @@ extends BoxBandTool
     super();
   }
 
-  protected void gestureFinished() throws Exception
+  protected void gestureFinished() 
   {      
     panel().getGeomModel().setGeometryType(GeometryType.POLYGON);
     geomModel().addComponent(getCoordinatesFromStart());
