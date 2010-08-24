@@ -13,20 +13,15 @@ public abstract class BasicTool implements Tool, MouseListener, MouseMotionListe
 {
   public static int TOLERANCE_PIXELS = 5;
 
-//  private Color color = Color.red;
   private Color bandColor = AppConstants.BAND_CLR;
   
-  private Stroke stroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT,
-      BasicStroke.JOIN_MITER, 10.0f, new float[] { 2.0f, 2.0f } , 0.0f);
   private Shape lastShapeDrawn;
   private boolean shapeOnScreen = false;
   private Color originalColor;
   private Stroke originalStroke;
 
-
   public BasicTool() {
     super();
-    // TODO Auto-generated constructor stub
   }
 
   /**
@@ -49,7 +44,7 @@ public abstract class BasicTool implements Tool, MouseListener, MouseMotionListe
     if (!shapeOnScreen) {
       return;
     }
-    drawShapeXOR(lastShapeDrawn, graphics);
+    drawShapeXOR(graphics, lastShapeDrawn);
     setShapeOnScreen(false);
   }
 
@@ -64,21 +59,28 @@ public abstract class BasicTool implements Tool, MouseListener, MouseMotionListe
 
   protected void drawShapeXOR(Graphics2D g) throws Exception {
     Shape newShape = getShape();
-    drawShapeXOR(newShape, g);
+    drawShapeXOR(g, newShape);
     lastShapeDrawn = newShape;
   }
 
-  protected void drawShapeXOR(Shape shape, Graphics2D graphics) {
+  protected void drawShapeXOR(Graphics2D graphics, Shape shape) {
     setup(graphics);
-
     try {
       if (shape != null) {
           graphics.draw(shape);
-
       }
-    } finally {
+    } 
+    finally {
       cleanup(graphics);
     }
+  }
+
+  protected void setup(Graphics2D graphics) {
+    originalColor = graphics.getColor();
+    originalStroke = graphics.getStroke();
+    graphics.setColor(bandColor);
+    graphics.setXORMode(Color.white);
+//    graphics.setStroke(stroke);
   }
 
   protected void redrawIndicator() 
@@ -87,6 +89,7 @@ public abstract class BasicTool implements Tool, MouseListener, MouseMotionListe
       redrawShape(getGraphics2D());
     }
     catch (Exception ex) {
+      // no other way to handle exception
       ex.printStackTrace();
     }
   }
@@ -102,22 +105,16 @@ public abstract class BasicTool implements Tool, MouseListener, MouseMotionListe
     return null;
   }
 
+  /*
   protected void setStroke(Stroke stroke) {
     this.stroke = stroke;
   }
-
-  protected void setup(Graphics2D graphics) {
-    originalColor = graphics.getColor();
-    originalStroke = graphics.getStroke();
-    graphics.setColor(bandColor);
-    graphics.setXORMode(Color.white);
-//    graphics.setStroke(stroke);
-  }
-
-  private Graphics2D getGraphics2D() {
+*/
+  
+  protected Graphics2D getGraphics2D() {
     Graphics2D g = (Graphics2D) panel().getGraphics();
     if (g != null) {
-      //Not sure why g is null sometimes [Jon Aquino]
+      // guard against g == null
       g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
           RenderingHints.VALUE_ANTIALIAS_ON);
     }
@@ -176,12 +173,12 @@ public abstract class BasicTool implements Tool, MouseListener, MouseMotionListe
     return panel().getViewport();
   }
   
-  Point2D toViewPoint(Coordinate modePt)
+  Point2D toView(Coordinate modePt)
   {
     return getViewport().toView(modePt);
   }
   
-  Point2D toModelPoint(java.awt.Point viewPt)
+  Point2D toModel(java.awt.Point viewPt)
   {
     return getViewport().toModel(viewPt);
   }

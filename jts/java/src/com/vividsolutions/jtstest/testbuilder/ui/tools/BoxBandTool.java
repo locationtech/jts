@@ -80,19 +80,9 @@ public abstract class BoxBandTool extends BasicTool
   	if (! isSignificantMouseMove())
   		return;
   	
-    // zoom to extent box
-  	int centreX = (zoomBoxEnd.x + zoomBoxStart.x) / 2; 
-  	int centreY = (zoomBoxEnd.y + zoomBoxStart.y) / 2; 
-  	Point centre = new Point(centreX, centreY);
-  	
-  	int dx = Math.abs(zoomBoxEnd.x - zoomBoxStart.x);
-  	int dy = Math.abs(zoomBoxEnd.y - zoomBoxStart.y);
-  	// ensure deltas are valid
-  	if (dx <= 0) dx = 1;
-  	if (dy <= 0) dy = 1;
-    
     try {
-      finishGesture();
+      clearIndicator();
+      gestureFinished();
     }
     catch (Exception ex) {
       // can't do anything, so just eat exception
@@ -112,8 +102,6 @@ public abstract class BoxBandTool extends BasicTool
   	zoomBoxEnd = currPoint;
   	drawRect(g);
   }
-  
-  public void activate() { }
   
   /**
    * Gets the envelope of the indicated rectangle,
@@ -207,19 +195,10 @@ public abstract class BoxBandTool extends BasicTool
   	g.drawRect(base.x, base.y, width, height);
   }
   
-  protected void finishGesture() throws Exception {
-    clearIndicator();
-    try {
-      gestureFinished();
-    } 
-    finally {
-      //coordinates.clear();
-    }
-  }
-
   protected void gestureFinished() throws Exception
   {
-    
+    // basic tool does nothing.
+    // Subclasses should override
   }
 
 }

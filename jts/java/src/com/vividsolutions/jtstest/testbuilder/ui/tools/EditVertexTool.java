@@ -82,7 +82,7 @@ extends BasicTool
     selectedVertexLocation = geomModel().locateVertexPt(mousePtModel, tolModel);
     if (selectedVertexLocation != null) {
       adjVertices = geomModel().findAdjacentVertices(selectedVertexLocation);
-      currentIndicatorLoc = toViewPoint(selectedVertexLocation);
+      currentIndicatorLoc = toView(selectedVertexLocation);
       redrawIndicator();
     }
   }
@@ -137,7 +137,7 @@ extends BasicTool
   		for (int i = 0; i < adjVertices.length; i++) {
   	    GeneralPath line = new GeneralPath();
   	    line.moveTo((float) currentIndicatorLoc.getX(), (float) currentIndicatorLoc.getY());
-  	    Point2D pt = toViewPoint(adjVertices[i]);
+  	    Point2D pt = toView(adjVertices[i]);
   	    line.lineTo((float) pt.getX(), (float) pt.getY());
   	    ind.add(line);
   		}

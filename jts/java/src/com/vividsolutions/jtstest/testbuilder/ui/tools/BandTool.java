@@ -104,9 +104,6 @@ public abstract class BandTool extends BasicTool
 
   protected void mouseLocationChanged(MouseEvent e) {
     try {
-      if (coordinates.isEmpty()) {
-        return;
-      }
       tentativeCoordinate = snapInModel(e.getPoint());
       redrawIndicator();
     } catch (Throwable t) {
@@ -146,6 +143,9 @@ public abstract class BandTool extends BasicTool
   }
 
   protected Shape getShape() {
+    if (coordinates.isEmpty()) {
+      return null;
+    }
     Point2D firstPoint = panel().getViewport().toView(
         (Coordinate) coordinates.get(0));
     GeneralPath path = new GeneralPath();
