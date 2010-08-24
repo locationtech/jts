@@ -129,8 +129,6 @@ public class GeometryEditPanel extends JPanel
 
   public void updateView()
   {
-  	renderMgr.setDirty(true);
-
 //    fireGeometryChanged(new GeometryEvent(this));
     forceRepaint();
   }
