@@ -20,7 +20,7 @@ public abstract class IndicatorTool extends BasicTool
   private String lastLabelDrawn = null;
   private Point lastLabelLoc = null;
 
-  private boolean shapeOnScreen = false;
+  private boolean isIndicatorVisible = false;
   private Color originalColor;
   private Stroke originalStroke;
   private Font originalFont;
@@ -34,11 +34,11 @@ public abstract class IndicatorTool extends BasicTool
    * will return true between calls of #redrawShape and #clearShape.
    */
   public boolean isIndicatorVisible() {
-    return shapeOnScreen;
+    return isIndicatorVisible;
   }
 
-  private void setShapeOnScreen(boolean shapeOnScreen) {
-    this.shapeOnScreen = shapeOnScreen;
+  private void setIndicatorVisible(boolean isIndicatorVisible) {
+    this.isIndicatorVisible = isIndicatorVisible;
   }
 
   protected void clearIndicator() {
@@ -46,11 +46,11 @@ public abstract class IndicatorTool extends BasicTool
   }
 
   private void clearShape(Graphics2D graphics) {
-    if (!shapeOnScreen) {
+    if (!isIndicatorVisible) {
       return;
     }
     drawShapeXOR(graphics, lastShapeDrawn, lastLabelDrawn, lastLabelLoc);
-    setShapeOnScreen(false);
+    setIndicatorVisible(false);
   }
 
   private void redrawShape(Graphics2D graphics) throws Exception {
@@ -59,7 +59,7 @@ public abstract class IndicatorTool extends BasicTool
 
     //<<TODO:INVESTIGATE>> Race conditions on the shapeOnScreen field?
     //Might we need synchronization? [Jon Aquino]
-    setShapeOnScreen(true);
+    setIndicatorVisible(true);
   }
 
   private void drawShapeXOR(Graphics2D g) throws Exception {

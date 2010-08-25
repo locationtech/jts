@@ -40,6 +40,7 @@ import java.awt.geom.Point2D;
 
 import javax.swing.SwingUtilities;
 
+import com.vividsolutions.jtstest.testbuilder.AppConstants;
 import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 
@@ -113,7 +114,7 @@ public class ZoomToClickTool extends BasicTool
   {
   	Point currPoint = e.getPoint();
   	Graphics g = panel().getGraphics();
-  	g.setColor(Color.RED);
+  	g.setColor(AppConstants.BAND_CLR);
   	g.setXORMode(Color.white);
   	// erase old rectangle
   	drawRect(g);
