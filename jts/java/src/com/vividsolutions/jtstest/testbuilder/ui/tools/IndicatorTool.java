@@ -30,6 +30,17 @@ public abstract class IndicatorTool extends BasicTool
   }
 
   /**
+   * Gets the shape for displaying the current state of the action.
+   * Subclasses should override.
+   * 
+   * @return null if nothing should be drawn
+   */
+  protected Shape getShape()
+  {
+    return null;
+  }
+
+  /**
    * Important for XOR drawing. Even if #getShape returns null, this method
    * will return true between calls of #redrawShape and #clearShape.
    */
@@ -43,6 +54,17 @@ public abstract class IndicatorTool extends BasicTool
 
   protected void clearIndicator() {
     clearShape(getGraphics2D());
+  }
+
+  protected void redrawIndicator() 
+  {
+    try {
+      redrawShape(getGraphics2D());
+    }
+    catch (Exception ex) {
+      // no other way to handle exception
+      ex.printStackTrace();
+    }
   }
 
   private void clearShape(Graphics2D graphics) {
@@ -78,6 +100,7 @@ public abstract class IndicatorTool extends BasicTool
         graphics.draw(shape);
       }
       /*
+       // TODO: make this work
       if (label != null)
         graphics.drawString(label, labelLoc.x, labelLoc.y);
 */
@@ -97,26 +120,11 @@ public abstract class IndicatorTool extends BasicTool
 //    graphics.setStroke(stroke);
   }
 
-  protected void redrawIndicator() 
-  {
-    try {
-      redrawShape(getGraphics2D());
-    }
-    catch (Exception ex) {
-      // no other way to handle exception
-      ex.printStackTrace();
-    }
-  }
-
-  /**
-   * Gets the shape for displaying the current state of the action.
-   * Subclasses should override.
-   * 
-   * @return null if nothing should be drawn
-   */
-  protected Shape getShape()
-  {
-    return null;
+  private void cleanup(Graphics2D graphics) {
+    graphics.setPaintMode();
+    graphics.setColor(originalColor);
+    graphics.setStroke(originalStroke);
+    graphics.setFont(originalFont);
   }
 
   /*
@@ -125,23 +133,6 @@ public abstract class IndicatorTool extends BasicTool
   }
 */
   
-  protected Graphics2D getGraphics2D() {
-    Graphics2D g = (Graphics2D) panel().getGraphics();
-    if (g != null) {
-      // guard against g == null
-      g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-          RenderingHints.VALUE_ANTIALIAS_ON);
-    }
-    return g;
-  }
-
-  protected void cleanup(Graphics2D graphics) {
-    graphics.setPaintMode();
-    graphics.setColor(originalColor);
-    graphics.setStroke(originalStroke);
-    graphics.setFont(originalFont);
-  }
-
   private void recordLabel(Point p)
   {
     mousePoint = new Point(p.x + 5, p.y);
@@ -152,17 +143,8 @@ public abstract class IndicatorTool extends BasicTool
     if (mousePoint == null) return null;
     return mousePoint.x + "," + mousePoint.y;
   }
+  
 //  protected void gestureFinished() throws Exception;
-
-  public void mouseClicked(MouseEvent e) {}
-
-  public void mousePressed(MouseEvent e) {}
-
-  public void mouseReleased(MouseEvent e) {}
-
-  public void mouseEntered(MouseEvent e) {}
-
-  public void mouseExited(MouseEvent e) {}
 
   public void mouseDragged(MouseEvent e) 
   {
