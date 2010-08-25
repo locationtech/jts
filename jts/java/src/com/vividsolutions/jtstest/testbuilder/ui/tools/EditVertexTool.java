@@ -49,9 +49,6 @@ import com.vividsolutions.jtstest.testbuilder.geom.*;
 public class EditVertexTool 
 extends IndicatorTool 
 {
-  Point2D currentIndicatorLoc = null;
-  Coordinate currentVertexLoc = null;
-  
   private static EditVertexTool instance = null;
 
 //  private Cursor cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
@@ -59,6 +56,9 @@ extends IndicatorTool
   		IconLoader.icon("MoveVertexCursor.gif").getImage(),
       new java.awt.Point(16, 16), "MoveVertex");
 
+  //Point2D currentIndicatorLoc = null;
+  Coordinate currentVertexLoc = null;
+  
   private Coordinate selectedVertexLocation = null;
   private Coordinate[] adjVertices = null;
 
@@ -72,18 +72,18 @@ extends IndicatorTool
   }
 
   public void mousePressed(MouseEvent e) {
-    currentIndicatorLoc = null;
+  	currentVertexLoc = null;
     if (SwingUtilities.isRightMouseButton(e))
       return;
     
     // initiate moving a vertex
     Coordinate mousePtModel = toModelCoordinate(e.getPoint());
-    double tolModel = getModelTolerance();
+    double tolModel = getModelSnapTolerance();
 
     selectedVertexLocation = geomModel().locateVertexPt(mousePtModel, tolModel);
     if (selectedVertexLocation != null) {
       adjVertices = geomModel().findAdjacentVertices(selectedVertexLocation);
-      currentIndicatorLoc = toView(selectedVertexLocation);
+      currentVertexLoc = selectedVertexLocation;
       redrawIndicator();
     }
   }
@@ -95,13 +95,13 @@ extends IndicatorTool
     clearIndicator();
     // finish the move of the vertex
     if (selectedVertexLocation != null) {
-      Coordinate mousePt = toModelCoordinate(e.getPoint());
-      geomModel().moveVertex(selectedVertexLocation, mousePt);
+      Coordinate newLoc = toModelSnapped(e.getPoint());
+      geomModel().moveVertex(selectedVertexLocation, newLoc);
     }
   }
 
   public void mouseDragged(MouseEvent e) {
-    currentIndicatorLoc = e.getPoint();
+  	currentVertexLoc = toModelSnapped(e.getPoint());
     if (selectedVertexLocation != null)
       redrawIndicator();
   }
@@ -111,7 +111,7 @@ extends IndicatorTool
       return;
     
     Coordinate mousePtModel = toModelCoordinate(e.getPoint());
-    double tolModel = getModelTolerance();
+    double tolModel = getModelSnapTolerance();
 
     boolean isMove = ! e.isControlDown();
     if (isMove) {
@@ -133,6 +133,7 @@ extends IndicatorTool
   protected Shape getShape() 
   {
   	GeometryCollectionShape ind = new GeometryCollectionShape();
+  	Point2D currentIndicatorLoc = toView(currentVertexLoc);
   	ind.add(getIndicatorCircle(currentIndicatorLoc));
   	if (adjVertices != null) {
   		for (int i = 0; i < adjVertices.length; i++) {
@@ -159,7 +160,4 @@ extends IndicatorTool
     return cursor;
   }
 
-  public void activate() {
-    //do nothing
-  }
 }

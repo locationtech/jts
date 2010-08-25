@@ -56,6 +56,11 @@ public abstract class BasicTool implements Tool
     return Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
   }
 
+  /**
+   * Called when tool is activated.
+   * 
+   * If subclasses override this method they must call <tt>super.activate()</tt>.
+   */
   public void activate() 
   {
   	gridPM = getViewport().getGridPrecisionModel();
@@ -103,12 +108,17 @@ public abstract class BasicTool implements Tool
     return viewDist / getViewport().getScale();
   }
   
-  double getModelTolerance()
+  double getModelSnapTolerance()
   {
     return toModel(TOLERANCE_PIXELS);
   }
   
   protected Coordinate toModelSnapped(Point2D p)
+  {
+  	return toModelSnappedIfCloseToViewGrid(p);  
+  }
+  
+  protected Coordinate toModelSnappedToViewGrid(Point2D p)
   {
   	// snap to view grid
   	Coordinate pModel = getViewport().toModelCoordinate(p);
@@ -116,7 +126,20 @@ public abstract class BasicTool implements Tool
   	return pModel;
   }
   
-  protected Coordinate OLDtoModelSnapped(Point2D p)
+  protected Coordinate toModelSnappedIfCloseToViewGrid(Point2D p)
+  {
+  	// snap to view grid if close to view grid point
+  	Coordinate pModel = getViewport().toModelCoordinate(p);
+  	Coordinate pSnappedModel = new Coordinate(pModel);
+  	gridPM.makePrecise(pSnappedModel);
+  	
+  	double tol = getModelSnapTolerance();
+  	if (pModel.distance(pSnappedModel) <= tol)
+  		return pSnappedModel;
+  	return pModel;
+  }
+  
+  protected Coordinate toModelSnappedToDrawingGrid(Point2D p)
   {
     Point2D pt = panel().snapToGrid(getViewport().toModel(p));
     return new Coordinate(pt.getX(), pt.getY());

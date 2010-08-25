@@ -148,7 +148,6 @@ public class Viewport implements PointTransformation
     double x = scalePM.makePrecise(destPt.x);
     double y = scalePM.makePrecise(destPt.y);
     
-    
     return new Point2D.Double(x, y);
   }
 
