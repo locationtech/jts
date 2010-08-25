@@ -83,6 +83,11 @@ public abstract class BasicTool implements Tool
     return getViewport().toView(modePt);
   }
   
+  double toView(double distance)
+  {
+    return getViewport().getDistanceInView(distance);
+  }
+  
   Point2D toModel(java.awt.Point viewPt)
   {
     return getViewport().toModel(viewPt);

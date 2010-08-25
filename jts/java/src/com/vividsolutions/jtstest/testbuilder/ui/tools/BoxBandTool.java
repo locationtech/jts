@@ -96,10 +96,11 @@ public abstract class BoxBandTool extends IndicatorTool
   {
     if (zoomBoxEnd == null) return null;
     
-    Point base = new Point(Math.min(zoomBoxStart.x, zoomBoxEnd.x),
-        Math.min(zoomBoxStart.y, zoomBoxEnd.y));
-    int width = Math.abs(zoomBoxEnd.x - zoomBoxStart.x);
-    int height = Math.abs(zoomBoxEnd.y - zoomBoxStart.y);
+    Envelope envModel = getEnvelope();
+    
+    Point2D base = toView(new Coordinate(envModel.getMinX(), envModel.getMaxY()));
+    double width = toView(envModel.getWidth());
+    double height = toView(envModel.getHeight());
     return new Rectangle2D.Double(base.getX(), base.getY(), width, height);
   }
 
@@ -114,35 +115,7 @@ public abstract class BoxBandTool extends IndicatorTool
     if (Math.abs(zoomBoxStart.y - zoomBoxEnd.y) < MIN_MOVEMENT)
       return false;
     return true;
-  }
-
-  /*
-  public void OLDmouseDragged(MouseEvent e)
-  {
-    Point currPoint = e.getPoint();
-    Graphics g = panel().getGraphics();
-    g.setColor(Color.RED);
-    g.setXORMode(Color.white);
-    // erase old rectangle
-    drawRect(g);
-
-    // draw new zoom box
-    zoomBoxEnd = currPoint;
-    drawRect(g);
-  }
-  
-    public void drawRect(Graphics g)
-  {
-    Point base = new Point(Math.min(zoomBoxStart.x, zoomBoxEnd.x),
-        Math.min(zoomBoxStart.y, zoomBoxEnd.y));
-    int width = Math.abs(zoomBoxEnd.x - zoomBoxStart.x);
-    int height = Math.abs(zoomBoxEnd.y - zoomBoxStart.y);
-    g.drawRect(base.x, base.y, width, height);
-  }
-  
-
-  */
-  
+  }  
   
   /**
    * Gets the envelope of the indicated rectangle,
