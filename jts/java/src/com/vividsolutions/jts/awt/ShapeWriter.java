@@ -147,6 +147,7 @@ public class ShapeWriter
 	}
 	
 	/*
+	 // Obsolete (slower code)
 	private Shape OLDtoShape(Polygon p) 
 	{
 		ArrayList holeVertexCollection = new ArrayList();

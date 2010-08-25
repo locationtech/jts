@@ -122,7 +122,7 @@ public class GeometryCollectionShape implements Shape {
     }
 
     public PathIterator getPathIterator(AffineTransform at, double flatness) {
-        // since Geomtery are linear, can simply delegate to the simple method
+        // since Geometry is linear, can simply delegate to the simple method
         return getPathIterator(at);
     }
 }
