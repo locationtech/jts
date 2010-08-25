@@ -50,7 +50,8 @@ public class EditVertexTool
 extends IndicatorTool 
 {
   Point2D currentIndicatorLoc = null;
-
+  Coordinate currentVertexLoc = null;
+  
   private static EditVertexTool instance = null;
 
 //  private Cursor cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);

@@ -8,6 +8,7 @@ import java.awt.geom.Point2D;
 
 import com.vividsolutions.jts.awt.FontGlyphReader;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jtstest.testbuilder.*;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 
@@ -15,6 +16,8 @@ public abstract class BasicTool implements Tool
 {
   public static int TOLERANCE_PIXELS = 5;
 
+  private PrecisionModel gridPM;
+  
   public BasicTool() {
     super();
   }
@@ -53,7 +56,10 @@ public abstract class BasicTool implements Tool
     return Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
   }
 
-  public void activate() { }
+  public void activate() 
+  {
+  	gridPM = getViewport().getGridPrecisionModel();
+  }
   
   protected GeometryEditPanel panel()
   {
@@ -103,6 +109,14 @@ public abstract class BasicTool implements Tool
   }
   
   protected Coordinate toModelSnapped(Point2D p)
+  {
+  	// snap to view grid
+  	Coordinate pModel = getViewport().toModelCoordinate(p);
+  	gridPM.makePrecise(pModel);
+  	return pModel;
+  }
+  
+  protected Coordinate OLDtoModelSnapped(Point2D p)
   {
     Point2D pt = panel().snapToGrid(getViewport().toModel(p));
     return new Coordinate(pt.getX(), pt.getY());

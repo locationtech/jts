@@ -269,5 +269,30 @@ public class Viewport implements PointTransformation
     return viewEnvInModel.contains(p);
   }
 
+  private static final int MIN_GRID_RESOLUTION_PIXELS = 2;
+  
+  public int gridMagnitudeModel()
+  {
+  	double pixelSizeModel = toModel(1);
+  	double pixelSizeModelLog = Math.log10(pixelSizeModel);
+  	int gridMag = (int) Math.ceil(pixelSizeModelLog);
+  	
+  	/**
+  	 * Check if grid size is too small and if so increase it one magnitude
+  	 */
+  	double gridSizeModel = Math.pow(10, gridMag);
+  	double gridSizeView = toView(gridSizeModel);
+//  	System.out.println("\ncand gridSizeView= " + gridSizeView);
+  	if (gridSizeView <= MIN_GRID_RESOLUTION_PIXELS )
+  		gridMag += 1;
+  	
+//  	System.out.println("pixelSize= " + pixelSize + "  pixelLog10= " + pixelSizeLog);
+  	return gridMag;
+  }
 
+  public PrecisionModel getGridPrecisionModel()
+  {
+  	double gridSizeModel = Math.pow(10, gridMagnitudeModel());
+  	return new PrecisionModel(1.0/gridSizeModel);
+  }
 }

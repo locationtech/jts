@@ -104,7 +104,6 @@ public class GeometryEditPanel extends JPanel
 
     setToolTipText("");
     setBorder(BorderFactory.createEmptyBorder());
-    setCurrentTool(RectangleTool.getInstance());
   }
 
   

@@ -190,6 +190,7 @@ public class JTSTestBuilderFrame extends JFrame
       zoomInTool = new ZoomToClickTool(2, zoomInCursor);
       showGeomsTab();
       initFileDrop(testCasePanel);
+      testCasePanel.getGeometryEditPanel().setCurrentTool(RectangleTool.getInstance());
     }
     catch (Exception e) {
       e.printStackTrace();
