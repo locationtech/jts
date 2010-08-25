@@ -59,7 +59,7 @@ public abstract class AbstractDrawTool extends LineBandTool
       super.mouseClicked(e);
     }
 
-    protected void gestureFinished() throws Exception
+    protected void bandFinished() throws Exception
     {      
     	setType();
       geomModel().addComponent(getCoordinates());
@@ -76,13 +76,7 @@ public abstract class AbstractDrawTool extends LineBandTool
       panel().getGeomModel().setGeometryType(getGeometryType());
     }
     
-    public void activate() 
-    {
-    }
-    
     protected abstract int getGeometryType();
-
-    //public abstract void activate();
     
     private void setBandType()
     {

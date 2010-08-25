@@ -275,7 +275,7 @@ public class GeometryEditControlPanel extends JPanel
         
         
         gridLabel.setText("Grid Spacing");
-        txtGridSize.setText("20");
+        txtGridSize.setText(DrawingGrid.DEFAULT_GRID_SIZE+"");
         txtGridSize.setHorizontalAlignment(SwingConstants.RIGHT);
 
         jPanel4.setLayout(new GridLayout(1, 3));

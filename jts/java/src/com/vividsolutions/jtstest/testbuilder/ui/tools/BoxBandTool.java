@@ -124,8 +124,8 @@ public abstract class BoxBandTool extends IndicatorTool
    * @return
    */
   protected Envelope getEnvelope() {
-    Coordinate start = snapInModel(zoomBoxStart);
-    Coordinate end = snapInModel(zoomBoxEnd);
+    Coordinate start = toModelSnapped(zoomBoxStart);
+    Coordinate end = toModelSnapped(zoomBoxEnd);
     return new Envelope(start, end);
   }
 
@@ -158,8 +158,8 @@ public abstract class BoxBandTool extends IndicatorTool
    */
   protected List getCoordinates()
   {
-    Coordinate start = snapInModel(zoomBoxStart);
-    Coordinate end = snapInModel(zoomBoxEnd);
+    Coordinate start = toModelSnapped(zoomBoxStart);
+    Coordinate end = toModelSnapped(zoomBoxEnd);
     
     boolean isCW = (start.x < end.x && start.y < end.y)
     || (start.x > end.x && start.y > end.y);

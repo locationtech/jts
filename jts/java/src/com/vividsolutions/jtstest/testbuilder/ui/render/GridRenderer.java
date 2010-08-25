@@ -113,28 +113,30 @@ public class GridRenderer {
   	return (int) log10;
   }
   
-  private int minVisibleMagnitudeModel()
+  private static final int MIN_GRID_PIXELS = 2;
+  
+  private int gridMagnitudeModel()
   {
-  	double pixelSize = viewport.toModel(1);
-  	double pixelSizeLog = Math.log10(pixelSize);
-  	int minVisMag = (int) Math.ceil(pixelSizeLog);
+  	double pixelSizeModel = viewport.toModel(1);
+  	double pixelSizeModelLog = Math.log10(pixelSizeModel);
+  	int gridMag = (int) Math.ceil(pixelSizeModelLog);
   	
-  	double gridSizeModel = Math.pow(10, minVisMag);
+  	/**
+  	 * Check if grid size is too small and if so increase it one magnitude
+  	 */
+  	double gridSizeModel = Math.pow(10, gridMag);
   	double gridSizeView = viewport.toView(gridSizeModel);
 //  	System.out.println("\ncand gridSizeView= " + gridSizeView);
-  	if (gridSizeView <= 2 )
-  		minVisMag += 1;
+  	if (gridSizeView <= MIN_GRID_PIXELS )
+  		gridMag += 1;
   	
 //  	System.out.println("pixelSize= " + pixelSize + "  pixelLog10= " + pixelSizeLog);
-  	return minVisMag;
+  	return gridMag;
   }
   
   private void drawScaledGrid(Graphics2D g) 
   {
-  	Envelope modelEnv = viewport.getModelEnv();
-  	
-  	int gridMagModel = minVisibleMagnitudeModel();
-  	int gridMagModel10 = gridMagModel + 1;
+  	int gridMagModel = gridMagnitudeModel();
   	double gridSizeModel = Math.pow(10, gridMagModel);
   	double gridSizeView = viewport.toView(gridSizeModel);
   	
@@ -145,6 +147,7 @@ public class GridRenderer {
   	 */
   	double gridSize10Model = 10 * gridSizeModel;
   	PrecisionModel pmGrid10 = new PrecisionModel(1.0/gridSize10Model);
+  	Envelope modelEnv = viewport.getModelEnv();
   	double basex10Model = pmGrid10.makePrecise(modelEnv.getMinX());
   	double basey10Model = pmGrid10.makePrecise(modelEnv.getMinY());
     Point2D basePt10View = viewport.toView(new Coordinate(basex10Model, basey10Model));
@@ -200,6 +203,7 @@ public class GridRenderer {
 
   	/**
   	 * Minor Grid
+  	 * Only display if dots are sparse enough
   	 */
   	if (gridSizeView >= 4) {  	
     	PrecisionModel pmGrid = new PrecisionModel(1.0/gridSizeModel);

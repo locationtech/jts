@@ -102,7 +102,7 @@ public abstract class BasicTool implements Tool
     return toModel(TOLERANCE_PIXELS);
   }
   
-  protected Coordinate snapInModel(Point2D p)
+  protected Coordinate toModelSnapped(Point2D p)
   {
     Point2D pt = panel().snapToGrid(getViewport().toModel(p));
     return new Coordinate(pt.getX(), pt.getY());

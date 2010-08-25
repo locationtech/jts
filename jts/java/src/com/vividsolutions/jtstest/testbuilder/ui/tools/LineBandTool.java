@@ -85,7 +85,7 @@ public abstract class LineBandTool extends IndicatorTool
         // called.
         // An IndexOutOfBoundsException is thrown because points is
         // empty.
-        tentativeCoordinate = snapInModel(e.getPoint());
+        tentativeCoordinate = toModelSnapped(e.getPoint());
         redrawIndicator();
       }
 
@@ -104,7 +104,7 @@ public abstract class LineBandTool extends IndicatorTool
 
   protected void mouseLocationChanged(MouseEvent e) {
     try {
-      tentativeCoordinate = snapInModel(e.getPoint());
+      tentativeCoordinate = toModelSnapped(e.getPoint());
       redrawIndicator();
     } catch (Throwable t) {
     }
@@ -138,7 +138,7 @@ public abstract class LineBandTool extends IndicatorTool
         return;
       }
 
-      add(snapInModel(e.getPoint()));
+      add(toModelSnapped(e.getPoint()));
     } catch (Throwable t) {
       //              getPanel().getContext().handleThrowable(t);
     }
@@ -180,15 +180,13 @@ public abstract class LineBandTool extends IndicatorTool
   protected void finishGesture() throws Exception {
     clearIndicator();
     try {
-      gestureFinished();
-    } finally {
+      bandFinished();
+    } 
+    finally {
       coordinates.clear();
     }
   }
 
-  protected void gestureFinished() throws Exception
-  {
-    
-  }
+  protected abstract void bandFinished() throws Exception;
 
 }
