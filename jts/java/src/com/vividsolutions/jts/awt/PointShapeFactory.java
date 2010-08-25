@@ -60,24 +60,24 @@ public interface PointShapeFactory {
   public static abstract class BasePointShapeFactory implements
       PointShapeFactory {
     /**
-     * The default size of the triangle
+     * The default size of the shape
      */
     public static double DEFAULT_SIZE = 3.0;
 
     protected double size = DEFAULT_SIZE;
 
     /**
-     * Creates a new factory for triangles with default size.
+     * Creates a new factory for points with default size.
      * 
      */
     public BasePointShapeFactory() {
     }
 
     /**
-     * Creates a factory for triangles of given size.
+     * Creates a factory for points of given size.
      * 
      * @param size
-     *          the size of the triangle
+     *          the size of the points
      */
     public BasePointShapeFactory(double size) {
       this.size = size;
@@ -95,7 +95,7 @@ public interface PointShapeFactory {
 
   public static class Square extends BasePointShapeFactory {
     /**
-     * Creates a new factory for triangles with default size.
+     * Creates a new factory for squares with default size.
      * 
      */
     public Square() {
@@ -103,10 +103,10 @@ public interface PointShapeFactory {
     }
 
     /**
-     * Creates a factory for triangles of given size.
+     * Creates a factory for squares of given size.
      * 
      * @param size
-     *          the size of the triangle
+     *          the size of the points
      */
     public Square(double size) {
       super(size);
@@ -135,7 +135,7 @@ public interface PointShapeFactory {
   }
   public static class Star extends BasePointShapeFactory {
     /**
-     * Creates a new factory for triangles with default size.
+     * Creates a new factory for points with default size.
      * 
      */
     public Star() {
@@ -143,10 +143,10 @@ public interface PointShapeFactory {
     }
 
     /**
-     * Creates a factory for triangles of given size.
+     * Creates a factory for points of given size.
      * 
      * @param size
-     *          the size of the triangle
+     *          the size of the points
      */
     public Star(double size) {
       super(size);
@@ -178,7 +178,7 @@ public interface PointShapeFactory {
   
   public static class Triangle extends BasePointShapeFactory {
     /**
-     * Creates a new factory for triangles with default size.
+     * Creates a new factory for points with default size.
      * 
      */
     public Triangle() {
@@ -186,10 +186,10 @@ public interface PointShapeFactory {
     }
 
     /**
-     * Creates a factory for triangles of given size.
+     * Creates a factory for points of given size.
      * 
      * @param size
-     *          the size of the triangle
+     *          the size of the points
      */
     public Triangle(double size) {
       super(size);
@@ -216,7 +216,7 @@ public interface PointShapeFactory {
   }
   public static class Circle extends BasePointShapeFactory {
     /**
-     * Creates a new factory for triangles with default size.
+     * Creates a new factory for points with default size.
      * 
      */
     public Circle() {
@@ -224,10 +224,10 @@ public interface PointShapeFactory {
     }
 
     /**
-     * Creates a factory for triangles of given size.
+     * Creates a factory for points of given size.
      * 
      * @param size
-     *          the size of the triangle
+     *          the size of the points
      */
     public Circle(double size) {
       super(size);
@@ -256,7 +256,7 @@ public interface PointShapeFactory {
   }
   public static class Cross extends BasePointShapeFactory {
     /**
-     * Creates a new factory for triangles with default size.
+     * Creates a new factory for points with default size.
      * 
      */
     public Cross() {
@@ -264,10 +264,10 @@ public interface PointShapeFactory {
     }
 
     /**
-     * Creates a factory for triangles of given size.
+     * Creates a factory for points of given size.
      * 
      * @param size
-     *          the size of the triangle
+     *          the size of the points
      */
     public Cross(double size) {
       super(size);
@@ -313,7 +313,7 @@ public interface PointShapeFactory {
   }
   public static class X extends BasePointShapeFactory {
     /**
-     * Creates a new factory for triangles with default size.
+     * Creates a new factory for points with default size.
      * 
      */
     public X() {
@@ -321,10 +321,10 @@ public interface PointShapeFactory {
     }
 
     /**
-     * Creates a factory for triangles of given size.
+     * Creates a factory for points of given size.
      * 
      * @param size
-     *          the size of the triangle
+     *          the size of the points
      */
     public X(double size) {
       super(size);
