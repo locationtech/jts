@@ -6,6 +6,7 @@ import com.vividsolutions.jtstest.testbuilder.model.GeometryDepiction;
 
 public class AppConstants 
 {
+  public static final int POINT_SIZE = 5;
   public static final int VERTEX_SIZE = 4;
   public static double HIGHLIGHT_SIZE = 50.0;
   public static double VERTEX_SHADOW_SIZE = 100;

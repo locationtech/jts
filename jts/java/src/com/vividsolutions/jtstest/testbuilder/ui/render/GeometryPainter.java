@@ -1,12 +1,18 @@
 package com.vividsolutions.jtstest.testbuilder.ui.render;
 
-import java.awt.*;
+//import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
-import java.awt.geom.NoninvertibleTransformException;
 
+import com.vividsolutions.jts.awt.PointShapeFactory;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.Point;
 
 import com.vividsolutions.jtstest.testbuilder.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.Style;
@@ -14,6 +20,7 @@ import com.vividsolutions.jtstest.testbuilder.ui.style.Style;
 public class GeometryPainter 
 {
 	private static Stroke GEOMETRY_STROKE = new BasicStroke();
+	private static Stroke POINT_STROKE = new BasicStroke(AppConstants.POINT_SIZE);
 	
   public static void paint(Graphics2D g, Viewport viewport, Geometry geometry, Style style)
   throws Exception
@@ -49,6 +56,17 @@ public class GeometryPainter
     }
   }
 
+  static Viewport viewportCache;
+  static ShapeWriter converterCache;
+  
+  static ShapeWriter getConverter(Viewport viewport)
+  {
+  	if (viewportCache != viewport) {
+  		viewportCache = viewport;
+  		converterCache = new ShapeWriter(viewport, new PointShapeFactory.Point());
+  	}
+  	return converterCache;
+  }
   /**
    * Paints a geometry onto a graphics context,
    * using a given Viewport.
@@ -63,7 +81,8 @@ public class GeometryPainter
       Graphics2D g,
       Color lineColor, Color fillColor) 
   {
-    ShapeWriter converter = new ShapeWriter(viewport);
+  	ShapeWriter converter = getConverter(viewport);
+    //ShapeWriter converter = new ShapeWriter(viewport);
     paint(geometry, viewport, converter, g, lineColor, fillColor);
   }
   
@@ -81,7 +100,16 @@ public class GeometryPainter
 
 		Shape shape = converter.toShape(geometry);
     
+		// handle points in a special way for appearance and speed
+		if (geometry instanceof Point) {
+			g.setStroke(POINT_STROKE);
+		  g.setColor(lineColor);
+	    g.draw(shape);
+			return;
+		}
+
 		g.setStroke(GEOMETRY_STROKE);
+		
     // Test for a polygonal shape and fill it if required
 		if (!(shape instanceof GeneralPath) && fillColor != null) {
 			g.setPaint(fillColor);
