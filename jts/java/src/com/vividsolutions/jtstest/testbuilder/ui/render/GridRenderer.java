@@ -138,7 +138,7 @@ public class GridRenderer {
   	double gridSizeModel = Math.pow(10, gridMagModel);
   	double gridSizeView = viewport.getDistanceInView(gridSizeModel);
   	
-  	System.out.println("gridSizeView= " + gridSizeView);
+  	//System.out.println("gridSizeView= " + gridSizeView);
     
   	/**
   	 * Major Grid (10x)
@@ -209,7 +209,7 @@ public class GridRenderer {
       float dashOffset = ((int) basePtView.getY()) % (int) gridSizeView;
       dashOffset = (float) gridSizeView - dashOffset;
       	    
-	  	System.out.println("dashOffset= " + dashOffset);
+	  	//System.out.println("dashOffset= " + dashOffset);
 	    
 	    Stroke strokeMinor = new BasicStroke(1,                  // Width of stroke
 	        BasicStroke.CAP_SQUARE,  // End cap style
