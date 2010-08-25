@@ -77,7 +77,6 @@ public class ZoomToClickTool extends BasicTool
     panel().zoom(center, realZoomFactor);
   }
 
-  
   public void mousePressed(MouseEvent e)
   {
   	zoomBoxStart = e.getPoint();
@@ -101,7 +100,7 @@ public class ZoomToClickTool extends BasicTool
   	if (dx <= 0) dx = 1;
   	if (dy <= 0) dy = 1;
   	
-		GeometryEditPanel panel = getPanel();
+		GeometryEditPanel panel = panel();
 		double widthFactor = panel.getSize().width / dx;
 		double heightFactor = panel.getSize().height / dy;
 		double zoomFactor = Math.min(widthFactor, heightFactor);
@@ -113,7 +112,7 @@ public class ZoomToClickTool extends BasicTool
   public void mouseDragged(MouseEvent e)
   {
   	Point currPoint = e.getPoint();
-  	Graphics g = getPanel().getGraphics();
+  	Graphics g = panel().getGraphics();
   	g.setColor(Color.RED);
   	g.setXORMode(Color.white);
   	// erase old rectangle
@@ -146,6 +145,5 @@ public class ZoomToClickTool extends BasicTool
   	g.drawRect(base.x, base.y, width, height);
   }
   
-  public GeometryEditPanel getPanel() { return JTSTestBuilderFrame.instance().getTestCasePanel().getGeometryEditPanel(); }
 }
 

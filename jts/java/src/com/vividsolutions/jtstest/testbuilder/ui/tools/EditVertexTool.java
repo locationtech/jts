@@ -47,7 +47,7 @@ import com.vividsolutions.jtstest.testbuilder.geom.*;
  * @version 1.7
  */
 public class EditVertexTool 
-extends BasicTool 
+extends IndicatorTool 
 {
   Point2D currentIndicatorLoc = null;
 

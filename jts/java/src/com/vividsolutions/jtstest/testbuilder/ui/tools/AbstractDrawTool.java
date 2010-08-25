@@ -42,7 +42,7 @@ import com.vividsolutions.jtstest.testbuilder.model.*;
 /**
  * @version 1.7
  */
-public abstract class AbstractDrawTool extends BandTool 
+public abstract class AbstractDrawTool extends LineBandTool 
 {
   private Cursor cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
   /*

@@ -52,7 +52,7 @@ import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 /**
  * @version 1.7
  */
-public abstract class BoxBandTool extends BasicTool 
+public abstract class BoxBandTool extends IndicatorTool 
 {
   private Cursor cursor = Cursor.getDefaultCursor();
   private Point zoomBoxStart = null;
@@ -87,6 +87,7 @@ public abstract class BoxBandTool extends BasicTool
   
   public void mouseDragged(MouseEvent e)
   {
+    super.mouseDragged(e);
     zoomBoxEnd = e.getPoint();
     redrawIndicator();
   }

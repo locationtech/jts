@@ -10,17 +10,17 @@ import java.awt.geom.*;
 import java.awt.geom.Point2D;
 import com.vividsolutions.jts.geom.*;
 
-public abstract class BandTool extends BasicTool 
+public abstract class LineBandTool extends IndicatorTool 
 {
-  private List coordinates = new ArrayList();
+  private List coordinates = new ArrayList();  // in model space
   private Coordinate tentativeCoordinate;
 
-  // set this to true if rubber band should be closed
+  // set this to true if band should be closed
   private boolean closeRing = false;
   private int clickCountToFinish = 2; 
   private boolean drawBandLines = true;
   
-  public BandTool() {
+  public LineBandTool() {
   }
 
   protected void setCloseRing(boolean closeRing) {
@@ -40,7 +40,7 @@ public abstract class BandTool extends BasicTool
   /**
    * Will return an empty List once the shape is cleared.
    * 
-   * @see BandTool#clearShape
+   * @see LineBandTool#clearShape
    */
   public List getCoordinates() {
     return Collections.unmodifiableList(coordinates);
@@ -111,10 +111,12 @@ public abstract class BandTool extends BasicTool
   }
 
   public void mouseMoved(MouseEvent e) {
+    super.mouseMoved(e);
     mouseLocationChanged(e);
   }
 
   public void mouseDragged(MouseEvent e) {
+    super.mouseDragged(e);
     mouseLocationChanged(e);
   }
 
