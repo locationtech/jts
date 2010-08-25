@@ -136,7 +136,7 @@ public abstract class BoxBandTool extends IndicatorTool
    * 
    * @return the coordinates for the rectangle
    */
-  protected List getCoordinates()
+  protected List getCoordinatesOfEnvelope()
   {
     Envelope env = getEnvelope();
     
@@ -156,7 +156,7 @@ public abstract class BoxBandTool extends IndicatorTool
    * 
    * @return the coordinates for the rectangle
    */
-  protected List getCoordinatesFromStart()
+  protected List getCoordinates()
   {
     Coordinate start = snapInModel(zoomBoxStart);
     Coordinate end = snapInModel(zoomBoxEnd);
