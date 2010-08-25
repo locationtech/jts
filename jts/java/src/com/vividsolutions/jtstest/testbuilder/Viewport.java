@@ -171,7 +171,11 @@ public class Viewport implements PointTransformation
 
   public Point2D toView(Point2D modelPt)
   {
-    Point2D.Double viewPt = new Point2D.Double();
+    return toView(modelPt, new Point2D.Double());
+  }
+
+  public Point2D toView(Point2D modelPt, Point2D viewPt)
+  {
     return getModelToViewTransform().transform(modelPt, viewPt);
   }
 
