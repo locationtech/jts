@@ -59,6 +59,11 @@ public class ShapeWriter
 	private PointShapeFactory pointFactory = DEFAULT_POINT_FACTORY;
 
 	/**
+	 * Cache a Point2D object to use to transfer coordinates into shape
+	 */
+	private Point2D transPoint = new Point2D.Double();
+
+	/**
 	 * Creates a new ShapeWriter with a specified point transformation
 	 * and point shape factory.
 	 * 
@@ -122,6 +127,28 @@ public class ShapeWriter
 
 	private Shape toShape(Polygon p) 
 	{
+		PolygonShape poly = new PolygonShape();
+		
+		append(poly, p.getExteriorRing().getCoordinates());
+		for (int j = 0; j < p.getNumInteriorRing(); j++) {
+			append(poly, p.getInteriorRingN(j).getCoordinates());
+		}
+
+		return poly;
+	}
+
+	private void append(PolygonShape poly, Coordinate[] coords) 
+	{
+		for (int i = 0; i < coords.length; i++) {
+			transformPoint(coords[i], transPoint);
+			poly.addToRing(transPoint);
+		}
+		poly.endRing();
+	}
+	
+	/*
+	private Shape OLDtoShape(Polygon p) 
+	{
 		ArrayList holeVertexCollection = new ArrayList();
 
 		for (int j = 0; j < p.getNumInteriorRing(); j++) {
@@ -134,6 +161,7 @@ public class ShapeWriter
 			holeVertexCollection);
 	}
 
+	
 	private Coordinate[] toViewCoordinates(Coordinate[] modelCoordinates)
 	{
 		Coordinate[] viewCoordinates = new Coordinate[modelCoordinates.length];
@@ -145,16 +173,16 @@ public class ShapeWriter
 
 		return viewCoordinates;
 	}
-
+*/
+	
 	private Shape toShape(GeometryCollection gc)
 	{
 		GeometryCollectionShape shape = new GeometryCollectionShape();
-
+		// add components to GC shape
 		for (int i = 0; i < gc.getNumGeometries(); i++) {
 			Geometry g = (Geometry) gc.getGeometryN(i);
 			shape.add(toShape(g));
 		}
-
 		return shape;
 	}
 
@@ -172,32 +200,35 @@ public class ShapeWriter
 	private GeneralPath toShape(LineString lineString)
 	{
 		GeneralPath shape = new GeneralPath();
-		Point2D viewPoint = toPoint(lineString.getCoordinateN(0));
-		shape.moveTo((float) viewPoint.getX(), (float) viewPoint.getY());
+		
+		transformPoint(lineString.getCoordinateN(0), transPoint);
+		shape.moveTo((float) transPoint.getX(), (float) transPoint.getY());
 
 		for (int i = 1; i < lineString.getNumPoints(); i++) {
-			viewPoint = toPoint(lineString.getCoordinateN(i));
-			shape.lineTo((float) viewPoint.getX(), (float) viewPoint.getY());
+			transformPoint(lineString.getCoordinateN(i), transPoint);
+			shape.lineTo((float) transPoint.getX(), (float) transPoint.getY());
 		}
 		return shape;
 	}
 
 	private Shape toShape(Point point)
   {
-		Point2D viewPoint = toPoint(point.getCoordinate());
+		Point2D viewPoint = transformPoint(point.getCoordinate());
 		return pointFactory.createPoint(viewPoint);
 	}
 
-  private Point2D toPoint(Coordinate model)
-    {
-    Point2D view = new Point2D.Double();
-    pointTransformer.transform(model, view);
-    /**
-     * Do the rounding now instead of relying on Java 2D rounding.
-     * Java2D seems to do rounding differently for drawing and filling, resulting in the draw
-     * being a pixel off from the fill sometimes.
-     */
-    view.setLocation(Math.round(view.getX()), Math.round(view.getY()));
-    return view;
-  }
+  private Point2D transformPoint(Coordinate model) {
+		return transformPoint(model, new Point2D.Double());
+	}
+  
+  private Point2D transformPoint(Coordinate model, Point2D view) {
+		pointTransformer.transform(model, view);
+		/**
+		 * Do the rounding now instead of relying on Java 2D rounding. Java2D seems
+		 * to do rounding differently for drawing and filling, resulting in the draw
+		 * being a pixel off from the fill sometimes.
+		 */
+		view.setLocation(Math.round(view.getX()), Math.round(view.getY()));
+		return view;
+	}
 }

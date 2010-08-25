@@ -54,8 +54,9 @@ import com.vividsolutions.jts.geom.Coordinate;
 public class PolygonShape implements Shape 
 {
   // use a GeneralPath with a winding rule, since it supports floating point coordinates
-    private GeneralPath poly;
-
+    private GeneralPath polygonPath;
+    private GeneralPath ringPath;
+    
     /**
      * Creates a new polygon {@link Shape}.
      * 
@@ -65,14 +66,40 @@ public class PolygonShape implements Shape
     public PolygonShape(Coordinate[] shellVertices,
         Collection holeVerticesCollection) 
     {
-        poly = toPath(shellVertices);
+        polygonPath = toPath(shellVertices);
 
         for (Iterator i = holeVerticesCollection.iterator(); i.hasNext();) {
             Coordinate[] holeVertices = (Coordinate[]) i.next();
-            poly.append(toPath(holeVertices), false);
+            polygonPath.append(toPath(holeVertices), false);
         }
     }
 
+    public PolygonShape() 
+    {
+    }
+
+    void addToRing(Point2D p)
+    {
+    	if (ringPath == null) {
+    		ringPath = new GeneralPath(GeneralPath.WIND_EVEN_ODD);
+    		ringPath.moveTo((float) p.getX(), (float) p.getY());
+    	}
+    	else {
+    		ringPath.lineTo((float) p.getX(), (float) p.getY());
+    	}
+    }
+    
+    void endRing()
+    {
+    	if (polygonPath == null) {
+    		polygonPath = ringPath;
+    	}
+    	else {
+    		polygonPath.append(ringPath, false);
+    	}
+    	ringPath = null;
+    }
+    
     /**
      * Creates a GeneralPath representing a polygon ring 
      * having the given coordinate sequence.
@@ -94,39 +121,39 @@ public class PolygonShape implements Shape
   }
 
     public Rectangle getBounds() {
-      return poly.getBounds();
+      return polygonPath.getBounds();
     }
 
     public Rectangle2D getBounds2D() {
-        return poly.getBounds2D();
+        return polygonPath.getBounds2D();
     }
 
     public boolean contains(double x, double y) {
-      return poly.contains(x, y);
+      return polygonPath.contains(x, y);
     }
 
     public boolean contains(Point2D p) {
-      return poly.contains(p);
+      return polygonPath.contains(p);
     }
 
     public boolean intersects(double x, double y, double w, double h) {
-      return poly.intersects(x, y, w, h);
+      return polygonPath.intersects(x, y, w, h);
     }
 
     public boolean intersects(Rectangle2D r) {
-      return poly.intersects(r);
+      return polygonPath.intersects(r);
     }
 
     public boolean contains(double x, double y, double w, double h) {
-      return poly.contains(x, y, w, h);
+      return polygonPath.contains(x, y, w, h);
     }
 
     public boolean contains(Rectangle2D r) {
-      return poly.contains(r);
+      return polygonPath.contains(r);
     }
 
     public PathIterator getPathIterator(AffineTransform at) {
-        return poly.getPathIterator(at);
+        return polygonPath.getPathIterator(at);
     }
 
     public PathIterator getPathIterator(AffineTransform at, double flatness) {
