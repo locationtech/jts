@@ -35,52 +35,49 @@ package com.vividsolutions.jtstest.testbuilder.ui.tools;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
-import com.vividsolutions.jtstest.testbuilder.IconLoader;
+//import com.vividsolutions.jtstest.testbuilder.IconLoader;
 import com.vividsolutions.jtstest.testbuilder.model.*;
-
 
 /**
  * @version 1.7
  */
-public abstract class AbstractDrawTool extends LineBandTool 
-{
-  private Cursor cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
-  /*
-    private Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor(
-    		IconLoader.icon("DrawCursor.png").getImage(),
-        new java.awt.Point(4, 26), "Draw");
-*/
-  
-    protected AbstractDrawTool() {}
+public abstract class AbstractDrawTool extends LineBandTool {
+	private Cursor cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
 
-    public void mouseClicked(MouseEvent e) 
-    {
-      setBandType();
-      super.mouseClicked(e);
-    }
+	/*
+	 * private Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor(
+	 * IconLoader.icon("DrawCursor.png").getImage(), new java.awt.Point(4, 26),
+	 * "Draw");
+	 */
 
-    protected void bandFinished() throws Exception
-    {      
-    	setType();
-      geomModel().addComponent(getCoordinates());
-      panel().updateGeom();
-    }
+	protected AbstractDrawTool() {
+	}
 
-    public Cursor getCursor() {
-        return cursor;
-    }
+	protected abstract int getGeometryType();
 
-    private void setType()
-    {
-      if (panel().getModel() == null) return;
-      panel().getGeomModel().setGeometryType(getGeometryType());
-    }
-    
-    protected abstract int getGeometryType();
-    
-    private void setBandType()
-    {
-      int geomType = getGeometryType();
-      setCloseRing(geomType == GeometryType.POLYGON);
-    }
+	public void mouseClicked(MouseEvent e) {
+		setBandType();
+		super.mouseClicked(e);
+	}
+
+	protected void bandFinished() throws Exception {
+		setType();
+		geomModel().addComponent(getCoordinates());
+		panel().updateGeom();
+	}
+
+	public Cursor getCursor() {
+		return cursor;
+	}
+
+	private void setType() {
+		if (panel().getModel() == null)
+			return;
+		panel().getGeomModel().setGeometryType(getGeometryType());
+	}
+
+	private void setBandType() {
+		int geomType = getGeometryType();
+		setCloseRing(geomType == GeometryType.POLYGON);
+	}
 }
