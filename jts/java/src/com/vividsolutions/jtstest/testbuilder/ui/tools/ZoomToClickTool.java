@@ -52,8 +52,6 @@ public class ZoomToClickTool extends BasicTool
 {
   private double zoomFactor = 2;
   private Cursor cursor = Cursor.getDefaultCursor();
-  private Point pressedZoomBoxStart = null;
-  private Point pressedZoomBoxEnd = null;
   private Point zoomBoxStart = null;
   private Point zoomBoxEnd = null;
   
