@@ -67,13 +67,7 @@ public abstract class BasicTool implements Tool
     return JTSTestBuilder.model().getGeometryEditModel();
   }
   
-  protected TestBuilderModel testBuilderModel()
-  {
-    // this should probably be passed in during setup
-    return JTSTestBuilder.model();
-  }
-  
-  protected Viewport getViewport()
+  private Viewport getViewport()
   {
     return panel().getViewport();
   }
@@ -85,7 +79,7 @@ public abstract class BasicTool implements Tool
   
   double toView(double distance)
   {
-    return getViewport().getDistanceInView(distance);
+    return getViewport().toView(distance);
   }
   
   Point2D toModel(java.awt.Point viewPt)
@@ -98,14 +92,14 @@ public abstract class BasicTool implements Tool
     return getViewport().toModelCoordinate(viewPt);
   }
   
-  double toModelDistance(double viewDist)
+  double toModel(double viewDist)
   {
     return viewDist / getViewport().getScale();
   }
   
   double getModelTolerance()
   {
-    return toModelDistance(TOLERANCE_PIXELS);
+    return toModel(TOLERANCE_PIXELS);
   }
   
   protected Coordinate snapInModel(Point2D p)

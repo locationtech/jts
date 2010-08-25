@@ -115,12 +115,12 @@ public class GridRenderer {
   
   private int minVisibleMagnitudeModel()
   {
-  	double pixelSize = viewport.getDistanceInModel(1);
+  	double pixelSize = viewport.toModel(1);
   	double pixelSizeLog = Math.log10(pixelSize);
   	int minVisMag = (int) Math.ceil(pixelSizeLog);
   	
   	double gridSizeModel = Math.pow(10, minVisMag);
-  	double gridSizeView = viewport.getDistanceInView(gridSizeModel);
+  	double gridSizeView = viewport.toView(gridSizeModel);
 //  	System.out.println("\ncand gridSizeView= " + gridSizeView);
   	if (gridSizeView <= 2 )
   		minVisMag += 1;
@@ -136,7 +136,7 @@ public class GridRenderer {
   	int gridMagModel = minVisibleMagnitudeModel();
   	int gridMagModel10 = gridMagModel + 1;
   	double gridSizeModel = Math.pow(10, gridMagModel);
-  	double gridSizeView = viewport.getDistanceInView(gridSizeModel);
+  	double gridSizeView = viewport.toView(gridSizeModel);
   	
   	//System.out.println("gridSizeView= " + gridSizeView);
     
@@ -148,7 +148,7 @@ public class GridRenderer {
   	double basex10Model = pmGrid10.makePrecise(modelEnv.getMinX());
   	double basey10Model = pmGrid10.makePrecise(modelEnv.getMinY());
     Point2D basePt10View = viewport.toView(new Coordinate(basex10Model, basey10Model));
-  	double gridSize10View = viewport.getDistanceInView(gridSize10Model);
+  	double gridSize10View = viewport.toView(gridSize10Model);
 
     g.setStroke(new BasicStroke());
     g.setColor(AppConstants.GRID_MAJOR_CLR);
@@ -162,7 +162,7 @@ public class GridRenderer {
   	double basex100Model = pmGrid100.makePrecise(modelEnv.getMinX());
   	double basey100Model = pmGrid100.makePrecise(modelEnv.getMinY());
     Point2D basePt100View = viewport.toView(new Coordinate(basex100Model, basey100Model));
-  	double gridSize100View = viewport.getDistanceInView(gridSize100Model);
+  	double gridSize100View = viewport.toView(gridSize100Model);
 
     Stroke strokeMajor2 = new BasicStroke(1,                  // Width of stroke
         BasicStroke.CAP_SQUARE,  // End cap style
@@ -324,7 +324,7 @@ public class GridRenderer {
   	
   	int viewMag = maxVisibleMagnitude();
   	double gridIncModel = Math.pow(10.0, viewMag);
-  	double gridIncView = viewport.getDistanceInView(gridIncModel);
+  	double gridIncView = viewport.toView(gridIncModel);
   	
   	// ensure at least 3 ticks are shown
   	if (3 * gridIncView > viewEnv.maxExtent()) {
