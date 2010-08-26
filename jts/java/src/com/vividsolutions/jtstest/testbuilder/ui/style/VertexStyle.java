@@ -43,7 +43,4 @@ public class VertexStyle  implements Style
     }
   }
   
-  private void setShape(Point2D p) {
-  }
-
 }
