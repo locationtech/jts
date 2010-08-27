@@ -251,8 +251,8 @@ public class TestReader
 
     private GeometryResult toGeometryResult(String value, TestRun testRun) throws ParseException {
         GeometryFactory geometryFactory = new GeometryFactory(testRun.getPrecisionModel(), 0);
-        WKTReader wktReader = new WKTReader(geometryFactory);
-        return new GeometryResult(wktReader.read(value));
+        WKTOrWKBReader wktorbReader = new WKTOrWKBReader(geometryFactory);
+        return new GeometryResult(wktorbReader.read(value));
     }
 
     /**
