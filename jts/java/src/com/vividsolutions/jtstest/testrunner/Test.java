@@ -156,12 +156,26 @@ public class Test implements Runnable
   {
     Result actualResult = getActualResult();
     ResultMatcher matcher = testCase.getTestRun().getResultMatcher();
+    
+    // check that provided expected result geometry is valid
+    // MD - disable except for testing
+    //if (! isExpectedResultGeometryValid()) return false;
+    
     return matcher.isMatch(targetGeometry, operation, operationArgs, 
     		actualResult, expectedResult, 
     		tolerance);
 //    return expectedResult.equals(actualResult, tolerance);
   }
 
+  private boolean isExpectedResultGeometryValid()
+  {
+    if (expectedResult instanceof GeometryResult) {
+    	Geometry expectedGeom = ((GeometryResult) expectedResult).getGeometry();
+    	return expectedGeom.isValid();
+    }
+    return true;
+  }
+  
   /**
    * Computes the actual result and caches the result value.
    * 
