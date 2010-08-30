@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if test "x$JTS_LIB_DIR" = "x"; then
-        JTS_LIB_DIR=`dirname $0`/../lib/
+	JTS_LIB_DIR=`dirname $0`/../lib/
 fi
 
 #---------------------------------#
@@ -17,4 +17,4 @@ done
 # run the program           #
 #---------------------------#
 java -cp ".:${THE_CLASSPATH}" \
-com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
+com.vividsolutions.jtstest.testrunner.TopologyTestApp $@
