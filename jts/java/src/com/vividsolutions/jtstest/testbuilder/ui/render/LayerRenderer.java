@@ -78,7 +78,8 @@ public class LayerRenderer implements Renderer
     /**
      * Render each element separately.
      * Otherwise it is not possible to render both filled and non-filled
-     * (1D) elements correctly
+     * (1D) elements correctly.
+     * This also allows cancellation.
      */
     for (int i = 0; i < gc.getNumGeometries(); i++) {
     	render(g, viewport, gc.getGeometryN(i), style);
