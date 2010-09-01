@@ -79,7 +79,7 @@ public class TestListPanel extends JPanel {
             boolean isSelected,
             boolean cellHasFocus) {
             Testable testCase = (Testable) value;
-            setText(buildName(testCase));
+            setText(testName(testCase));
             setOpaque(true);
             setIcon(testCase.isPassed() ? tickIcon : (testCase.isFailed() ? crossIcon : clearIcon));
             if (isSelected) {
@@ -94,7 +94,7 @@ public class TestListPanel extends JPanel {
             return this;
         }
         
-        private String buildName(Testable testCase)
+        private String testName(Testable testCase)
         {
           String name = testCase.getName();
           if ((name == null || name.length() == 0) && testCase instanceof TestCaseEdit) {

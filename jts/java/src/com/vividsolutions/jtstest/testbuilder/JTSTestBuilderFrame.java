@@ -85,6 +85,7 @@ public class JTSTestBuilderFrame extends JFrame
   JPanel testPanel = new JPanel();
   WKTPanel wktPanel = new WKTPanel();
   TestListPanel testListPanel = new TestListPanel(this);
+  LayerListPanel layerListPanel = new LayerListPanel();
   GridBagLayout gridBagLayout2 = new GridBagLayout();
   GridLayout gridLayout1 = new GridLayout();
   ResultWKTPanel resultWKTPanel = new ResultWKTPanel();
@@ -238,6 +239,8 @@ public class JTSTestBuilderFrame extends JFrame
         });
     
     testListPanel.populateList();
+    //layerListPanel.init(getModel().getLayers());
+    layerListPanel.populateList();
     updateTestCaseView();
     updatePrecisionModelDescription();
   }
@@ -796,10 +799,14 @@ public class JTSTestBuilderFrame extends JFrame
     jPanel2.add(inputTabbedPane, BorderLayout.CENTER);
     jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
     jSplitPane1.setResizeWeight(0.5);
-    inputTabbedPane.add(testPanel, "Tests");
+    inputTabbedPane.add(testListPanel, "Tests");
+    inputTabbedPane.add(layerListPanel, "Layers");
+    /*
+    // not really needed
     testPanel.add(testListPanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,
         GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0,
         0, 0), 0, 0));
+        */
     inputTabbedPane.add(wktPanel,  "Input");
     inputTabbedPane.add(resultWKTPanel, "Result");
     inputTabbedPane.add(resultValuePanel, "Value");
