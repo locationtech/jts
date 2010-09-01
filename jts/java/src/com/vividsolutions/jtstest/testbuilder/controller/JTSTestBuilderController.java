@@ -5,7 +5,7 @@ import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 public class JTSTestBuilderController 
 {
 
-  public static void layerViewChanged()
+  public static void geometryViewChanged()
   {
     JTSTestBuilderFrame.instance().getTestCasePanel().getGeometryEditPanel().updateView();
   }

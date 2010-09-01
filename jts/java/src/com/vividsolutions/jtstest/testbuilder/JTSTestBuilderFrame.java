@@ -38,6 +38,7 @@ import com.vividsolutions.jts.util.*;
 import com.vividsolutions.jtstest.*;
 import com.vividsolutions.jtstest.clean.*;
 import com.vividsolutions.jtstest.test.*;
+import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 import com.vividsolutions.jtstest.testbuilder.controller.ResultController;
 import com.vividsolutions.jtstest.testbuilder.geom.*;
 import com.vividsolutions.jtstest.testbuilder.model.*;
@@ -362,7 +363,7 @@ public class JTSTestBuilderFrame extends JFrame
 
   void model_geometryChanged(GeometryEvent e) {
     //testCasePanel.relatePanel.clearResults();
-    testCasePanel.editPanel.updateView();
+    JTSTestBuilderController.geometryViewChanged();
     updateWktPanel();
 //    updateTestableGeometries();
   }
@@ -653,21 +654,22 @@ public class JTSTestBuilderFrame extends JFrame
 
   void showGridMenuItem_actionPerformed(ActionEvent e) {
     testCasePanel.editPanel.setGridEnabled(tbMenuBar.showGridMenuItem.isSelected());
-    testCasePanel.editPanel.updateView();  }
+    JTSTestBuilderController.geometryViewChanged();
+  }
 
   public void setShowingOrientations(boolean showingOrientations) {
     TestBuilderModel.setShowingOrientations(showingOrientations);
-    testCasePanel.editPanel.updateView();
+    JTSTestBuilderController.geometryViewChanged();
   }
 
   public void setShowVertexIndices(boolean showVertexIndices) {
     TestBuilderModel.setShowingOrientations(showVertexIndices);
-    testCasePanel.editPanel.updateView();
+    JTSTestBuilderController.geometryViewChanged();
   }
 
   public void setShowingVertices(boolean showingVertices) {
     TestBuilderModel.setShowingVertices(showingVertices);
-    testCasePanel.editPanel.updateView();
+    JTSTestBuilderController.geometryViewChanged();
   }
 
   void showVertexIndicesMenuItem_actionPerformed(ActionEvent e) {
@@ -712,7 +714,7 @@ public class JTSTestBuilderFrame extends JFrame
   void revealTopo_actionPerformed() {
   	tbModel.setRevealingTopology(testCasePanel.editCtlPanel.cbRevealTopo.isSelected());
     tbModel.setTopologyStretchSize(testCasePanel.editCtlPanel.getStretchSize());
-  	testCasePanel.editPanel.updateView();
+    JTSTestBuilderController.geometryViewChanged();
   }
 
     private String getRunJava(String className) {

@@ -57,7 +57,7 @@ public class ResultController
   	String timeString = timer != null ? timer.getTimeString() : "";
     frame.getResultWKTPanel().setExecutedTime(timeString);
     frame.getResultWKTPanel().updateResult();
-    frame.getTestCasePanel().getGeometryEditPanel().updateView();
+    JTSTestBuilderController.geometryViewChanged();
     frame.getTestCasePanel().getSpatialFunctionPanel().enableExecuteControl(true);
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
   }
