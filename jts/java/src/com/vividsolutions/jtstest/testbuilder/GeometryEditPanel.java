@@ -490,7 +490,6 @@ public class GeometryEditPanel extends JPanel
     
     public void renderLayers(Graphics2D g)
     {
-    	
     	LayerList layerList = getLayerList();
     	int n = layerList.size();
     	for (int i = 0; i < n; i++) {
@@ -508,7 +507,11 @@ public class GeometryEditPanel extends JPanel
     
     public void renderMagnifiedVertices(Graphics2D g)
     {
+      LayerList layerList = getLayerList();
       for (int i = 0; i < 2; i++) {
+        // respect layer visibility
+        if (! layerList.getLayer(i).isEnabled()) continue;
+        
         List stretchedVerts = stretchView.getStretchedVertices(i);
         if (stretchedVerts == null) continue;
         for (int j = 0; j < stretchedVerts.size(); j++) {
