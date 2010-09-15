@@ -1,15 +1,29 @@
 package test.jts.perf.operation.distance;
 
+import java.util.List;
+
 import com.vividsolutions.jts.densify.Densifier;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.operation.distance.IndexedFacetDistance;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 import com.vividsolutions.jts.geom.util.*;
+import com.vividsolutions.jts.io.WKTFileReader;
+import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.util.Stopwatch;
 import mdjts.operation.distance.*;
 
+/**
+ * Tests performance of {@link IndexedFacetDistance} versus standard 
+ * {@link DistanceOp}
+ * using a grid of points to a target set of lines 
+ * 
+ * @author Martin Davis
+ *
+ */
 public class TestPerfDistanceLinesPoints 
 {
+  static final boolean USE_INDEXED_DIST = true;
+  
   static GeometryFactory geomFact = new GeometryFactory();
   
   static final int MAX_ITER = 1;
@@ -20,7 +34,13 @@ public class TestPerfDistanceLinesPoints
 
   public static void main(String[] args) {
     TestPerfDistanceLinesPoints test = new TestPerfDistanceLinesPoints();
-    test.test();
+    try {
+      test.test();
+    }
+    catch (Exception ex)
+    {
+      ex.printStackTrace();
+    }
   }
 
   boolean verbose = true;
@@ -29,6 +49,7 @@ public class TestPerfDistanceLinesPoints
   }
 
   public void test()
+  throws Exception
   {
     
     
@@ -47,12 +68,20 @@ public class TestPerfDistanceLinesPoints
   }
   
   public void test(int num)
+  throws Exception
   {
     //Geometry lines = createLine(EXTENT, num);
-    Geometry target = createDiagonalCircles(EXTENT, NUM_TARGET_ITEMS);
-    Geometry[] pts = createPoints(EXTENT, num);
+    //Geometry target = createDiagonalCircles(EXTENT, NUM_TARGET_ITEMS);
     
-    if (verbose) System.out.println("Running with " + num * num + " points; target size = " + target.getNumPoints());
+    Geometry target = loadData("C:\\data\\martin\\proj\\jts\\testing\\distance\\bc_coast.wkt");
+    Envelope bcEnv_Albers = new Envelope(-45838, 1882064,
+        255756, 1733287);
+    
+    Geometry[] pts = createPoints(bcEnv_Albers, num);
+    //Geometry[] pts = createPoints(target.getEnvelopeInternal(), num);
+    
+    if (verbose) System.out.println("Query points = " + num * num 
+        + "     Target points = " + target.getNumPoints());
     if (! verbose) System.out.print(num + ", ");
     test(pts, target);
   }
@@ -66,7 +95,7 @@ public class TestPerfDistanceLinesPoints
     }
     if (! verbose) System.out.println(sw.getTimeString());
     if (verbose) {
-      System.out.println("Finished in " + sw.getTimeString());
+      System.out.println("Run time: " + sw.getTimeString());
       //System.out.println("       (Distance = " + dist + ")\n");
       System.out.println();
     }
@@ -74,10 +103,17 @@ public class TestPerfDistanceLinesPoints
 
   void computeDistance(Geometry[] pts, Geometry geom)
   {
-  IndexedFacetDistance bbd = new IndexedFacetDistance(geom);
+    IndexedFacetDistance bbd = null;
+    if (USE_INDEXED_DIST)
+      bbd = new IndexedFacetDistance(geom);
     for (int i = 0; i < pts.length; i++ ) {
-//       double dist = geom.distance(pts[i]);
-    double dist = bbd.getDistance(pts[i].getCoordinate());
+      if (USE_INDEXED_DIST) {
+        double dist = bbd.getDistance(pts[i].getCoordinate());
+      }
+      else { 
+       double dist = geom.distance(pts[i]);
+      }
+       
     }
   }
   
@@ -123,18 +159,36 @@ public class TestPerfDistanceLinesPoints
     return geomFact.createLineString(pts);
   }
   
-  Geometry[] createPoints(double extent, int nPtsSide)
+  Geometry[] createPoints(Envelope extent, int nPtsSide)
   {
     Geometry[] pts = new Geometry[nPtsSide * nPtsSide];
     int index = 0;
-    double inc = extent / nPtsSide;
+    double xinc = extent.getWidth() / nPtsSide;
+    double yinc = extent.getHeight() / nPtsSide;
     for (int i = 0; i < nPtsSide; i++) {
       for (int j = 0; j < nPtsSide; j++) {
-        pts[index++] = geomFact.createPoint(new Coordinate(i * inc, j * inc));
+        pts[index++] = geomFact.createPoint(
+            new Coordinate(
+                extent.getMinX() + i * xinc, 
+                extent.getMinY() + j * yinc));
       }
     }
     return pts;
   }
+  
+  Geometry loadData(String file) 
+  throws Exception 
+  {
+    List geoms = loadWKT(file);
+    return geomFact.buildGeometry(geoms);
+  }
+
+  List loadWKT(String filename) throws Exception {
+    WKTReader rdr = new WKTReader();
+    WKTFileReader fileRdr = new WKTFileReader(filename, rdr);
+    return fileRdr.read();
+  }
+
 }
   
   
