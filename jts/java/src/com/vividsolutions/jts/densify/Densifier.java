@@ -36,9 +36,10 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.GeometryTransformer;
 
 /**
- * Densifies a geometry by inserting extra vertices along the line segments
- * in the geometry. The densified geometry contains no line segment which
- * is longer than the given distance tolerance.
+ * Densifies a {@link Geometry} by inserting extra vertices along the line segments
+ * contained in the geometry. 
+ * All segments in the created densified geometry will be no longer than
+ * than the given distance tolerance.
  * Densified polygonal geometries are guaranteed to be topologically correct.
  * The coordinates created during densification respect the input geometry's
  * {@link PrecisionModel}.
