@@ -127,6 +127,8 @@ public class JTSTestBuilderFrame extends JFrame
   private TextViewDialog textViewDlg = new TextViewDialog(this, "", true);
   private TestCaseTextDialog testCaseTextDlg = new TestCaseTextDialog(this,
       "", true);
+  private GeometryInspectorDialog geomInspectorDlg = new GeometryInspectorDialog(this,
+      "", true);
   /*
   private LoadTestCasesDialog loadTestCasesDlg = new LoadTestCasesDialog(this,
       "Load Test Cases", true);
@@ -441,8 +443,10 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   void menuTestText_actionPerformed(ActionEvent e) {
-    testCaseTextDlg.setTestCase(tbModel.getCurrentTestCaseEdit());
-    testCaseTextDlg.show();
+    //testCaseTextDlg.setTestCase(tbModel.getCurrentTestCaseEdit());
+    //testCaseTextDlg.show();
+    geomInspectorDlg.setGeometry(tbModel.getCurrentTestCaseEdit().getGeometry(0));
+    geomInspectorDlg.show();
   }
 
   void menuLoadXmlTestFile_actionPerformed(ActionEvent e) {
