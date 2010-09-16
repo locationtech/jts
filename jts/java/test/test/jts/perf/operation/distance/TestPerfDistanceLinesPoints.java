@@ -10,7 +10,6 @@ import com.vividsolutions.jts.geom.util.*;
 import com.vividsolutions.jts.io.WKTFileReader;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.util.Stopwatch;
-import mdjts.operation.distance.*;
 
 /**
  * Tests performance of {@link IndexedFacetDistance} versus standard 

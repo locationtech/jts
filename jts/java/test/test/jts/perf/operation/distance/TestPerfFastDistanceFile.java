@@ -5,7 +5,6 @@ import java.util.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.util.Stopwatch;
-import mdjts.operation.distance.*;
 import com.vividsolutions.jump.feature.*;
 
 
@@ -117,8 +116,8 @@ public class TestPerfFastDistanceFile
       Geometry g1 = (Geometry) geoms.get(i);
       Geometry g2 = (Geometry) geoms.get(j);
 
-//      double dist = g1.distance(g2);
-      double dist = SortedBoundsFacetDistance.distance(g1, g2);
+      double dist = g1.distance(g2);
+//      double dist = SortedBoundsFacetDistance.distance(g1, g2);
 //      double dist = BranchAndBoundFacetDistance.distance(g1, g2);
     }
   }

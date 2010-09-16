@@ -4,7 +4,6 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 import com.vividsolutions.jts.geom.util.*;
 import com.vividsolutions.jts.util.Stopwatch;
-import mdjts.operation.distance.*;
 
 public class TestPerfDistanceGeomSet 
 {

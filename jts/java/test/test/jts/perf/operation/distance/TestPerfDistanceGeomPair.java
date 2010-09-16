@@ -5,7 +5,6 @@ import com.vividsolutions.jts.operation.distance.IndexedFacetDistance;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 import com.vividsolutions.jts.geom.util.*;
 import com.vividsolutions.jts.util.Stopwatch;
-import mdjts.operation.distance.*;
 
 public class TestPerfDistanceGeomPair 
 {
