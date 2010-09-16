@@ -44,6 +44,7 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jtstest.testbuilder.AppConstants;
 import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.model.DrawingGrid;
+import com.vividsolutions.jtstest.util.MathUtil;
 
 public class GridRenderer {
   private static final int MIN_VIEW_GRID_SIZE = 5;
@@ -109,7 +110,7 @@ public class GridRenderer {
   	// if input is bogus then just return something reasonable
   	if (visibleExtentModel <= 0.0)
   		return 1;
-  	double log10 = Math.log10(visibleExtentModel);
+  	double log10 = MathUtil.log10(visibleExtentModel);
   	return (int) log10;
   }
   

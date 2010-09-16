@@ -9,6 +9,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jtstest.util.MathUtil;
 
 
 /**
@@ -73,7 +74,7 @@ public class Viewport implements PointTransformation
     scalePM = new PrecisionModel(this.scale);   
     
     scaleFormat = NumberFormat.getInstance();
-    int fracDigits = (int) (Math.log10(this.scale));
+    int fracDigits = (int) (MathUtil.log10(this.scale));
     if (fracDigits < 0) fracDigits = 0;
     //System.out.println("scale = " + this.scale);
     //System.out.println("fracdigits = " + fracDigits);
@@ -103,7 +104,7 @@ public class Viewport implements PointTransformation
    */
   private static double snapScale(double scaleRaw)
   {
-    double pow10 = Math.floor(Math.log10(scaleRaw));
+    double pow10 = Math.floor(MathUtil.log10(scaleRaw));
     double roundTo10 = Math.pow(10, pow10);
     
     double scale = roundTo10;
@@ -277,7 +278,7 @@ public class Viewport implements PointTransformation
   public int gridMagnitudeModel()
   {
   	double pixelSizeModel = toModel(1);
-  	double pixelSizeModelLog = Math.log10(pixelSizeModel);
+  	double pixelSizeModelLog = MathUtil.log10(pixelSizeModel);
   	int gridMag = (int) Math.ceil(pixelSizeModelLog);
   	
   	/**
