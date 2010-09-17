@@ -442,9 +442,12 @@ public class JTSTestBuilderFrame extends JFrame
     testCasePanel.setTestCase(tbModel.getCurrentTestCaseEdit());
   }
 
-  void menuTestText_actionPerformed(ActionEvent e) {
-    //testCaseTextDlg.setTestCase(tbModel.getCurrentTestCaseEdit());
-    //testCaseTextDlg.show();
+  void menuViewText_actionPerformed(ActionEvent e) {
+    testCaseTextDlg.setTestCase(tbModel.getCurrentTestCaseEdit());
+    testCaseTextDlg.show();
+  }
+
+  void menuViewGeometry_actionPerformed(ActionEvent e) {
     geomInspectorDlg.setGeometry(tbModel.getCurrentTestCaseEdit().getGeometry(0));
     geomInspectorDlg.show();
   }

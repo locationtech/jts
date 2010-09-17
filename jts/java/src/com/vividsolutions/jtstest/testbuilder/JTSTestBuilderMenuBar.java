@@ -15,7 +15,8 @@ public class JTSTestBuilderMenuBar
   JMenuItem jMenuFileExit = new JMenuItem();
   JMenu jMenuEdit = new JMenu();
   JMenuItem menuExchangeGeom = new JMenuItem();
-  JMenuItem menuTestText = new JMenuItem();
+  JMenuItem menuViewText = new JMenuItem();
+  JMenuItem menuViewGeometry = new JMenuItem();
   JMenuItem menuLoadXmlTestFile = new JMenuItem();
   JMenuItem saveAsXmlMenuItem = new JMenuItem();
   JMenuItem saveAsHtmlMenuItem = new JMenuItem();
@@ -70,12 +71,20 @@ public class JTSTestBuilderMenuBar
           tbFrame.menuExchangeGeom_actionPerformed(e);
         }
       });
-    menuTestText.setText("Test Case Text...");
-    menuTestText.addActionListener(
+    menuViewText.setText("Test Case Text...");
+    menuViewText.addActionListener(
       new java.awt.event.ActionListener() {
 
         public void actionPerformed(ActionEvent e) {
-          tbFrame.menuTestText_actionPerformed(e);
+          tbFrame.menuViewText_actionPerformed(e);
+        }
+      });
+    menuViewGeometry.setText("Geometry...");
+    menuViewGeometry.addActionListener(
+      new java.awt.event.ActionListener() {
+
+        public void actionPerformed(ActionEvent e) {
+          tbFrame.menuViewGeometry_actionPerformed(e);
         }
       });
     menuLoadXmlTestFile.setText("Open XML File(s)...");
@@ -206,7 +215,8 @@ public class JTSTestBuilderMenuBar
     
     jMenuHelp.add(jMenuAbout);
     
-    jMenuView.add(menuTestText);
+    jMenuView.add(menuViewText);
+    jMenuView.add(menuViewGeometry);
     
     jMenuEdit.add(deleteAllTestCasesMenuItem);
     jMenuEdit.add(menuExchangeGeom);
