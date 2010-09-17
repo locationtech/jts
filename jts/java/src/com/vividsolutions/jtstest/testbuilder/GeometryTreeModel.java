@@ -282,7 +282,7 @@ class CoordinateNode extends GeometryNode
 {
 	public CoordinateNode(Coordinate coord)
 	{
-		super(coord.toString());
+		super(coord.x + ", " + coord.y);
 		isLeaf = true;
 	}
 }
