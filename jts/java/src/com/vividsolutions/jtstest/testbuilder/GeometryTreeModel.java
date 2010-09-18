@@ -98,7 +98,8 @@ abstract class GeometryNode
 		if (geom instanceof GeometryCollection) return new GeometryCollectionNode((GeometryCollection) geom);
 		if (geom instanceof Polygon) return new PolygonNode((Polygon) geom);
 		if (geom instanceof LineString) return new LineStringNode((LineString) geom);
-		if (geom instanceof LinearRing) return new LinearRingNode((LinearRing) geom);
+    if (geom instanceof LinearRing) return new LinearRingNode((LinearRing) geom);
+    if (geom instanceof Point) return new PointNode((Point) geom);
 		return null;
 	}
 	

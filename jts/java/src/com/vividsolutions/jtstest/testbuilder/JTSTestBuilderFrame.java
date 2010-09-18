@@ -448,7 +448,9 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   void menuViewGeometry_actionPerformed(ActionEvent e) {
-    geomInspectorDlg.setGeometry(tbModel.getCurrentTestCaseEdit().getGeometry(0));
+    geomInspectorDlg.setGeometry(
+        tbModel.getCurrentTestCaseEdit().getGeometry(0),
+        tbModel.getCurrentTestCaseEdit().getGeometry(1));
     geomInspectorDlg.show();
   }
 
