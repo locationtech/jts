@@ -277,8 +277,8 @@ public class CGAlgorithms
    */
   public static double distancePointLine(Coordinate p, Coordinate A, Coordinate B)
   {
-    // if start==end, then use pt distance
-    if (  A.equals(B) ) return p.distance(A);
+    // if start = end, then just compute distance to one of the endpoints
+    if (  A.x == B.x && A.y == B.y ) return p.distance(A);
 
     // otherwise use comp.graphics.algorithms Frequently Asked Questions method
     /*(1)     	      AC dot AB
