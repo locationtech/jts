@@ -28,6 +28,7 @@ class GeometryFacetBoundablePair
   private Boundable boundable1;
   private Boundable boundable2;
   private double minDistance;
+  //private double maxDistance = -1.0;
   
   public GeometryFacetBoundablePair(Boundable node1, Boundable node2)
   {
@@ -58,19 +59,30 @@ class GeometryFacetBoundablePair
     return (GeometryFacetSequence) ((ItemBoundable) b).getItem();
   }
 
+  /*
   public double getMaximumDistance()
+  {
+  	if (maxDistance < 0.0)
+  		maxDistance = maxDistance();
+  	return maxDistance;
+  }
+  */
+  
+  private double maxDistance()
   {
     return maximumDistance( 
         (Envelope) boundable1.getBounds(),
-        (Envelope) boundable2.getBounds());    
+        (Envelope) boundable2.getBounds());      	
   }
   
   private static double maximumDistance(Envelope env1, Envelope env2)
   {
-    Envelope env = new Envelope(env1);
-    env1.expandToInclude(env2);
-    Coordinate min = new Coordinate(env.getMinX(), env.getMinY());
-    Coordinate max = new Coordinate(env.getMaxX(), env.getMaxY());
+  	double minx = Math.min(env1.getMinX(), env2.getMinX());
+  	double miny = Math.min(env1.getMinY(), env2.getMinY());
+  	double maxx = Math.max(env1.getMaxX(), env2.getMaxX());
+  	double maxy = Math.max(env1.getMaxY(), env2.getMaxY());
+    Coordinate min = new Coordinate(minx, miny);
+    Coordinate max = new Coordinate(maxx, maxy);
     return min.distance(max);
   }
   
@@ -84,7 +96,7 @@ class GeometryFacetBoundablePair
    * 
    * @return the exact or lower bound distance for this pair
    */
-  public double getDistance() { return minDistance; }
+  public double getMinimumDistance() { return minDistance; }
   
   /**
    * Compares two pairs based on their minimum distances
@@ -207,15 +219,14 @@ class GeometryFacetBoundablePair
   private void expand(Boundable bndComposite, Boundable bndOther,
       PriorityQueue priQ, double minDistance)
   {
-    List expansion = new ArrayList();
     List children = ((AbstractNode) bndComposite).getChildBoundables();
     for (Iterator i = children.iterator(); i.hasNext(); ) {
       Boundable child = (Boundable) i.next();
       GeometryFacetBoundablePair bp = new GeometryFacetBoundablePair(child, bndOther);
       // only add to queue if this pair might contain the closest points
       // MD - it's actually faster to construct the object rather than called distance(child, bndOther)!
-      if (bp.getDistance() < minDistance) {
-       priQ.add(bp);
+      if (bp.getMinimumDistance() < minDistance) {
+        priQ.add(bp);
       }
     }
   }

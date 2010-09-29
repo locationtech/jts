@@ -50,51 +50,64 @@ public class TestPerfDistanceLinesPoints
   public void test()
   throws Exception
   {
-    
+  
+    //test(200);
+    //if (true) return;
     
 //    test(5000);
 //    test(8001);
 
-    test(50);
+    //test(50);
     test(100);
     test(200);
     test(500);
     test(1000);
-    test(5000);
-    test(10000);
-    test(50000);
-    test(100000);
+    //test(5000);
+    //test(10000);
+    //test(50000);
+    //test(100000);
+  }
+  
+  public void xtest(int num)
+  throws Exception
+  {
+    //Geometry lines = createLine(EXTENT, num);
+    Geometry target = createDiagonalCircles(EXTENT, NUM_TARGET_ITEMS);
+    Geometry[] pts = createPoints(target.getEnvelopeInternal(), num);
+    
+  	/*
+    Geometry target = loadData("C:\\data\\martin\\proj\\jts\\testing\\distance\\bc_coast.wkt");
+    Envelope bcEnv_Albers = new Envelope(-45838, 1882064, 255756, 1733287);
+    Geometry[] pts = createPoints(bcEnv_Albers, num);
+    */
+    test(pts, target);
   }
   
   public void test(int num)
   throws Exception
   {
-    //Geometry lines = createLine(EXTENT, num);
-    //Geometry target = createDiagonalCircles(EXTENT, NUM_TARGET_ITEMS);
-    
-    Geometry target = loadData("C:\\data\\martin\\proj\\jts\\testing\\distance\\bc_coast.wkt");
-    Envelope bcEnv_Albers = new Envelope(-45838, 1882064,
-        255756, 1733287);
-    
+    Geometry target = loadData("C:\\proj\\JTS\\test\\g2e\\ffmwdec08.wkt");
+    Envelope bcEnv_Albers = new Envelope(-45838, 1882064, 255756, 1733287);
     Geometry[] pts = createPoints(bcEnv_Albers, num);
-    //Geometry[] pts = createPoints(target.getEnvelopeInternal(), num);
     
-    if (verbose) System.out.println("Query points = " + num * num 
-        + "     Target points = " + target.getNumPoints());
-    if (! verbose) System.out.print(num + ", ");
     test(pts, target);
   }
   
-  public void test(Geometry[] pts, Geometry geom)
+  public void test(Geometry[] pts, Geometry target)
   {
+    if (verbose) System.out.println("Query points = " + pts.length 
+        + "     Target points = " + target.getNumPoints());
+//    if (! verbose) System.out.print(num + ", ");
+    
     Stopwatch sw = new Stopwatch();
     double dist = 0.0;
     for (int i = 0; i < MAX_ITER; i++) {
-      computeDistance(pts, geom);
+      computeDistance(pts, target);
     }
     if (! verbose) System.out.println(sw.getTimeString());
     if (verbose) {
-      System.out.println("Run time: " + sw.getTimeString());
+    	String name = USE_INDEXED_DIST ? "IndexedFacetDistance" : "Distance";
+      System.out.println(name + " - Run time: " + sw.getTimeString());
       //System.out.println("       (Distance = " + dist + ")\n");
       System.out.println();
     }
@@ -108,11 +121,11 @@ public class TestPerfDistanceLinesPoints
     for (int i = 0; i < pts.length; i++ ) {
       if (USE_INDEXED_DIST) {
         double dist = bbd.getDistance(pts[i].getCoordinate());
+//        double dist = bbd.getDistanceWithin(pts[i].getCoordinate(), 100000);
       }
       else { 
        double dist = geom.distance(pts[i]);
       }
-       
     }
   }
   

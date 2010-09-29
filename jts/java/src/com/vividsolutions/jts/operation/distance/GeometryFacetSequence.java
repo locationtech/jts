@@ -33,10 +33,6 @@ public class GeometryFacetSequence
     this.pts = pts;
     this.start = start;
     this.end = end;
-//  if (end - start == 1)  
-//  System.out.println(end - start);
-//  if (end == start)  
-//  System.out.println(end - start);
   }
   
   /**

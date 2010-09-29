@@ -13,7 +13,7 @@ import com.vividsolutions.jts.util.PriorityQueue;
  * Computes the distance between the facets (segments and vertices) 
  * of two {@link Geometry}s
  * using a Branch-and-Bound algorithm.
- * The BnB algorithm operates over a traversal of R-trees built
+ * The Branch-and-Bound algorithm operates over a traversal of R-trees built
  * on the target and possibly also the query geometries.
  * <p>
  * This approach provides the following benefits:
@@ -23,6 +23,9 @@ import com.vividsolutions.jts.util.PriorityQueue;
  * <li>The spatial index on the target geometry can be cached
  * to allow reuse in an incremental query situation.
  * </ul>
+ * Using this technique can be much more performant than using {@link #getDistance(Geometry)}.
+ * <p>
+ * This class is NOT thread-safe.
  * 
  * @author Martin Davis
  *
@@ -49,36 +52,91 @@ public class IndexedFacetDistance
   private STRtree tree1;
   
   private PriorityQueue priQ;
-  private double minDistance;
+  private double lastComputedDistance;
+  private double minimumDistanceFound;
   // storing this allows determining the nearest points
   private GeometryFacetBoundablePair minPair;
   
+  /**
+   * Creates a new distance-finding instance for a given target {@link Geometry}.
+   * <p>
+   * Distances will be computed to all facets of the input geometry.
+   * The facets of the geometry are the discrete segments and points 
+   * contained in its components.  
+   * In the case of {@link Lineal} and {@link Puntal} inputs,
+   * this is equivalent to computing the conventional distance.
+   * In the case of {@link Polygonal} inputs, this is equivalent 
+   * to computing the distance to the polygons boundaries. 
+   * 
+   * @param g1 a Geometry, which may be of any type.
+   */
   public IndexedFacetDistance(Geometry g1) {
     tree1 = computeFacetSequenceTree(g1);
   }
 
-  public double getDistance(Geometry g2)
+  public double getDistance(Geometry g)
   {
-    STRtree tree2 = computeFacetSequenceTree(g2);
-    double dist = findMinDistance(tree1, tree2);
+  	return getDistanceWithin(g, Double.MAX_VALUE);
+  }
+  
+  public double getDistanceWithin(Geometry g, double maximumDistance)
+  {
+    STRtree tree2 = computeFacetSequenceTree(g);
+    double dist = findMinDistance(tree1, tree2, maximumDistance);
     return dist;
+  }
+  
+  public boolean isWithinDistance(Geometry g, double maximumDistance)
+  {
+    STRtree tree2 = computeFacetSequenceTree(g);
+    findMinDistance(tree1, tree2, maximumDistance);
+    if (lastComputedDistance > minimumDistanceFound)
+    	return false;
+    return true;
   }
   
   /**
    * Computes the distance from the base geometry to 
    * the given coordinate.
-   * This is more efficient than using {@link #getDistance(Geometry)}.
    * 
    * @param p the coordinate to compute the distance to
    * @return the distance to the coordinate
    */
   public double getDistance(Coordinate p)
   {
+  	return getDistanceWithin(p, Double.MAX_VALUE);
+  }
+  
+  /**
+   * Computes the distance from the base geometry to 
+   * the given coordinate, up to and including a given 
+   * maximum distance.
+   * 
+   * @param p the coordinate to compute the distance to
+   * @param maxDistance the maximum distance to compute.
+   * 
+   * @return the distance to the coordinate
+   */
+  public double getDistanceWithin(Coordinate p, double maximumDistance)
+  {
+    findMinDistance(p, maximumDistance);
+    return minimumDistanceFound;
+  }
+  
+  public boolean isWithinDistance(Coordinate p, double maximumDistance)
+  {
+    findMinDistance(p, maximumDistance);
+    if (lastComputedDistance > minimumDistanceFound)
+    	return false;
+    return true;
+  }
+  
+  public void findMinDistance(Coordinate p, double maxDistance)
+  {
     GeometryFacetSequence fs = new GeometryFacetSequence(
         new CoordinateArraySequence(new Coordinate[] { p }), 0);
     Boundable bpt = new ItemBoundable(fs.getEnvelope(), fs);
-    double dist = findMinDistance(tree1.getRoot(), bpt);
-    return dist;
+    findMinDistance(tree1.getRoot(), bpt, maxDistance);
   }
   
   private STRtree computeFacetSequenceTree(Geometry g)
@@ -93,19 +151,19 @@ public class IndexedFacetDistance
     return tree;
   }
   
-  private double findMinDistance(STRtree tree1, STRtree tree2) 
+  private double findMinDistance(STRtree tree1, STRtree tree2, double maxDistance) 
   {
     // initialize queue
     Boundable b1 = tree1.getRoot();
     Boundable b2 = tree2.getRoot();
-    return findMinDistance(b1, b2);
+    return findMinDistance(b1, b2, maxDistance);
   }
   
-  private double findMinDistance(Boundable b1, Boundable b2) 
+  private double findMinDistance(Boundable b1, Boundable b2, double maxDistance) 
   {
     // initialize internal structures
     priQ = new PriorityQueue();
-    minDistance = Double.MAX_VALUE;
+    minimumDistanceFound = maxDistance;
 
     // initialize queue
     GeometryFacetBoundablePair bndPair = new GeometryFacetBoundablePair(b1, b2);
@@ -115,15 +173,15 @@ public class IndexedFacetDistance
     // testing - force recomputation of distance
     //double testdist = minPair.distance();
     
-    return minDistance;
+    return minimumDistanceFound;
   }
   
   private void runBranchAndBound()
   {
-    while (! priQ.isEmpty() && minDistance > 0.0) {
+    while (! priQ.isEmpty() && minimumDistanceFound > 0.0) {
       // pop head of queue and expand one side of pair
       GeometryFacetBoundablePair bndPair = (GeometryFacetBoundablePair) priQ.poll();
-      double dist = bndPair.getDistance();
+      lastComputedDistance = bndPair.getMinimumDistance();
       
       /**
        * If the distance for the first node in the queue
@@ -132,33 +190,31 @@ public class IndexedFacetDistance
        * So the current minDistance must be the true minimum,
        * and we are done.
        */
-      if (dist >= minDistance) return;  
-      
-      
+      if (lastComputedDistance >= minimumDistanceFound) return;  
+
       /**
        * If the pair is a leaf (e.g. both members are facets)
        * update the minimum distance to reflect their distance. 
        */
       if (bndPair.isLeaf()) {
         // assert: dist < minDistance
-        minDistance = dist;
+        minimumDistanceFound = lastComputedDistance;
         minPair = bndPair;
-
-        // testing - does allowing a tolerance improve speed?
-        // Ans: not by enough to matter
-        /*
-        double maxDist = bndPair.getMaximumDistance();
-        if (maxDist * .99 < minDistance) 
-          return;
-          */
       }
       else {
+        // testing - does allowing a tolerance improve speed?
+        // Ans: by only about 10% - not enough to matter
+        /*
+        double maxDist = bndPair.getMaximumDistance();
+        if (maxDist * .99 < lastComputedDistance) 
+          return;
+        //*/
+
         /**
          * Otherwise, expand one side of the pair, and 
          * insert the new pairs into the queue
          */
-        //addToQueue(bndPair.expand());
-        bndPair.expandToQueue(priQ, minDistance);
+        bndPair.expandToQueue(priQ, minimumDistanceFound);
       }
     }
   }
@@ -174,7 +230,7 @@ public class IndexedFacetDistance
   {
     for (Iterator i = boundablePairs.iterator(); i.hasNext(); ) {
       GeometryFacetBoundablePair bp = (GeometryFacetBoundablePair) i.next();
-      if (bp.getDistance() < minDistance)
+      if (bp.getMinimumDistance() < minimumDistanceFound)
         priQ.add(bp);
     }
 //    System.out.println("PriQ size = " + priQ.size());
