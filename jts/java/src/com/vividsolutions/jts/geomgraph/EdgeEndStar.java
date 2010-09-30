@@ -269,6 +269,7 @@ abstract public class EdgeEndStar
     // Since edges are stored in CCW order around the node,
     // As we move around the ring we move from the right to the left side of the edge
     int startLoc = Location.NONE ;
+    
     // initialize loc to location of last L side (if any)
 //System.out.println("finding start location");
     for (Iterator it = iterator(); it.hasNext(); ) {
@@ -277,6 +278,7 @@ abstract public class EdgeEndStar
       if (label.isArea(geomIndex) && label.getLocation(geomIndex, Position.LEFT) != Location.NONE)
         startLoc = label.getLocation(geomIndex, Position.LEFT);
     }
+    
     // no labelled sides found, so no labels to propagate
     if (startLoc == Location.NONE) return;
 
@@ -288,7 +290,6 @@ abstract public class EdgeEndStar
       if (label.getLocation(geomIndex, Position.ON) == Location.NONE)
           label.setLocation(geomIndex, Position.ON, currLoc);
       // set side labels (if any)
-//      if (label.isArea()) {   //ORIGINAL
       if (label.isArea(geomIndex)) {
         int leftLoc   = label.getLocation(geomIndex, Position.LEFT);
         int rightLoc  = label.getLocation(geomIndex, Position.RIGHT);
