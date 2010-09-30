@@ -196,8 +196,9 @@ public class OffsetCurveSetBuilder {
             Location.EXTERIOR);
     }
   }
+  
   /**
-   * Add an offset curve for a ring.
+   * Adds an offset curve for a polygon ring.
    * The side and left and right topological location arguments
    * assume that the ring is oriented CW.
    * If the ring is in the opposite orientation,
@@ -211,10 +212,14 @@ public class OffsetCurveSetBuilder {
    */
   private void addPolygonRing(Coordinate[] coord, double offsetDistance, int side, int cwLeftLoc, int cwRightLoc)
   {
-    //Coordinate[] coord = CoordinateArrays.removeRepeatedPoints(lr.getCoordinates());
+    // don't bother adding ring if it is "flat" and will disappear in the output
+    if (offsetDistance == 0.0 && coord.length < LinearRing.MINIMUM_VALID_SIZE)
+      return;
+    
     int leftLoc  = cwLeftLoc;
     int rightLoc = cwRightLoc;
-    if (CGAlgorithms.isCCW(coord)) {
+    if (coord.length >= LinearRing.MINIMUM_VALID_SIZE 
+        && CGAlgorithms.isCCW(coord)) {
       leftLoc = cwRightLoc;
       rightLoc = cwLeftLoc;
       side = Position.opposite(side);

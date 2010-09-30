@@ -69,6 +69,7 @@ The current and archived JTS distributions can be obtained at the
     This provides behaviour consistent with <tt>union(Geometry)</tt>.
 <li>Fixed <tt>Point.isValid()</tt> to validate POINT EMPTY correctly
 <li>Fixed <tt>SnapIfNeededOverlayOp</tt> to throw the originating exception,which contains meaningful coordinates
+<li>Fixed buffer OffsetCurveSetBuilder to handle "flat" rings correctly
 <li>Fixed <tt>IsValidOp</tt> to handle reporting "Not Closed" errors on empty rings correctly
 <li>Fixed <tt>GeometryGraph</tt> to ignore empty hole rings when building graph
 <li>Fixed <tt>LineMerger</tt> to skip lines with only a single unique coordinate
