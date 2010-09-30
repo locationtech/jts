@@ -233,10 +233,13 @@ class LineIntersectsVisitor
     if (! rectEnv.intersects(elementEnv))
       return;
     // check if general relate algorithm should be used, since it's faster for large inputs
+    /*
+    // Sep 30 2010 - disabled because using intersects() is not 100% robust  
     if (geom.getNumPoints() > RectangleIntersects.MAXIMUM_SCAN_SEGMENT_COUNT) {
       intersects = rectangle.relate(geom).isIntersects();
       return;
     }
+    */
     // if small enough, test for segment intersection directly
     computeSegmentIntersection(geom);
   }
