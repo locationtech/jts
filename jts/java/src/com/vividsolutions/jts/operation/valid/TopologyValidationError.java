@@ -112,8 +112,10 @@ public class TopologyValidationError {
    */
   public static final int RING_NOT_CLOSED      = 11;
 
-  // these messages must synch up with the indexes above
-  private static String[] errMsg = {
+  /**
+   * Messages corresponding to error codes
+   */
+  public static final String[] errMsg = {
     "Topology Validation Error",
     "Repeated Point",
     "Hole lies outside shell",
@@ -123,7 +125,7 @@ public class TopologyValidationError {
     "Ring Self-intersection",
     "Nested shells",
     "Duplicate Rings",
-    "Too few points in geometry component",
+    "Too few distinct points in geometry component",
     "Invalid Coordinate",
     "Ring is not closed"
   };
