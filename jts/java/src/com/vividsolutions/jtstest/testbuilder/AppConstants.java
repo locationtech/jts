@@ -19,7 +19,10 @@ public class AppConstants
 	
   public static final Color VERTEX_SHADOW_CLR = new Color(180,180,180);
   public static final Color VERTEX_HIGHLIGHT_CLR = new Color(255, 255, 0);
-	public static final Color HIGHLIGHT_CLR = new Color(255, 192, 0, 150);
+  
+  public static final Color HIGHLIGHT_CLR = new Color(255, 192, 0, 150);
+  public static final Color HIGHLIGHT_FILL_CLR = new Color(255, 240, 192, 200);
+  
 	public static final Color BAND_CLR = new Color(255, 0, 0, 255);
 	public static final Color INDICATOR_FILL_CLR = GeometryDepiction.GEOM_RESULT_FILL_CLR;
 	//public static final Color INDICATOR_LINE_COLOR = new Color(255, 0, 0, 255);

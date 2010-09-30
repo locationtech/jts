@@ -299,15 +299,59 @@ public class GeometryEditPanel extends JPanel
   private void drawHighlight(Graphics2D g) {
     if (highlightPoint == null)
       return;
-    double size = AppConstants.HIGHLIGHT_SIZE;
-    Point2D viewPt = viewport.toView(highlightPoint);
-    double x = viewPt.getX();
-    double y = viewPt.getY();
-    Ellipse2D.Double shape = new Ellipse2D.Double(x - size / 2, y - size / 2,
-        size, size);
+    
+    String markLabel = highlightPoint.x + ",  " + highlightPoint.y;
+    int strWidth = g.getFontMetrics().stringWidth(markLabel);
+
+    double markSize = AppConstants.HIGHLIGHT_SIZE;
+    Point2D highlightPointView = viewport.toView(highlightPoint);
+    double markX = highlightPointView.getX();
+    double markY = highlightPointView.getY();
+    Ellipse2D.Double shape = new Ellipse2D.Double(
+        markX - markSize / 2, 
+        markY - markSize / 2,
+        markSize, markSize);
     AWTUtil.setStroke(g, 4);
     g.setColor(AppConstants.HIGHLIGHT_CLR);
     g.draw(shape);
+    
+    // draw label box
+    Envelope viewEnv = viewport.getViewEnv();
+    
+    int bottomOffset = 10;
+    int boxHgt = 20;
+    int boxPadX = 20;
+    int boxWidth = strWidth + 2 * boxPadX;
+    int arrowWidth = 10;
+    int labelOffsetY = 5;
+    
+    int bottom = (int) viewEnv.getMaxY() - bottomOffset;
+    int centreX = (int) (viewEnv.getMinX() + viewEnv.getMaxX()) / 2;
+    
+    int boxMinX = centreX - boxWidth/2;
+    int boxMaxX = centreX + boxWidth/2;
+    int boxMinY = bottom - boxHgt;
+    int boxMaxY = bottom;
+    
+    int[] xpts = new int[] { 
+        boxMinX, centreX - arrowWidth/2, (int) markX, centreX + arrowWidth/2,
+        boxMaxX, boxMaxX,   boxMinX };
+    int[] ypts = new int[] {  
+        boxMinY, boxMinY, (int) (markY + markSize/2), boxMinY,
+        boxMinY, boxMaxY, boxMaxY };
+    
+    Polygon poly = new Polygon(xpts, ypts, xpts.length);
+    
+    g.setColor(AppConstants.HIGHLIGHT_FILL_CLR);
+    g.fill(poly);
+    AWTUtil.setStroke(g, 2);
+    g.setColor(AppConstants.HIGHLIGHT_CLR);
+    g.draw(poly);
+
+    // draw mark point label
+    g.setColor(Color.BLACK);
+    g.drawString(markLabel, centreX - strWidth/2, boxMaxY - labelOffsetY);
+
   }
 
   /**
