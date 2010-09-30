@@ -23,7 +23,12 @@ import com.vividsolutions.jts.util.PriorityQueue;
  * <li>The spatial index on the target geometry can be cached
  * to allow reuse in an incremental query situation.
  * </ul>
- * Using this technique can be much more performant than using {@link #getDistance(Geometry)}.
+ * Using this technique can be much more performant 
+ * than using {@link #getDistance(Geometry)} 
+ * when one or both
+ * input geometries are large, 
+ * or when evaluating many distance computations against 
+ * a single geometry.
  * <p>
  * This class is NOT thread-safe.
  * 
@@ -32,21 +37,27 @@ import com.vividsolutions.jts.util.PriorityQueue;
  */
 public class IndexedFacetDistance 
 {
+  /**
+   * Computes the distance between two geometries using
+   * the indexed approach.
+   * <p>
+   * For geometries with many segments or points, 
+   * this can be faster than using a simple distance
+   * algorithm.
+   * 
+   * @param g1 a geometry
+   * @param g2 a geometry
+   * @return the distance between the two geometries
+   */
   public static double distance(Geometry g1, Geometry g2)
   {
     IndexedFacetDistance dist = new IndexedFacetDistance(g1);
     return dist.getDistance(g2);
   }
   
-  public static double distance(Geometry g1, Coordinate p)
-  {
-    IndexedFacetDistance dist = new IndexedFacetDistance(g1);
-    return dist.getDistance(p);
-  }
-  
   // 6 seems to be a good facet sequence size
   private static final int FACET_SEQUENCE_SIZE = 6;
-  // Seesm to be better to use a minimum node capacity
+  // Seems to be better to use a minimum node capacity
   private static final int STR_TREE_NODE_CAPACITY = 4;
 
   private STRtree tree1;
@@ -74,11 +85,30 @@ public class IndexedFacetDistance
     tree1 = computeFacetSequenceTree(g1);
   }
 
+  /**
+   * Computes the distance from the base geometry to 
+   * the given geometry.
+   *  
+   * @param g the geometry to compute the distance to
+   * 
+   * @return the computed distance
+   */
   public double getDistance(Geometry g)
   {
   	return getDistanceWithin(g, Double.MAX_VALUE);
   }
   
+  /**
+   * Computes the distance from the base geometry to 
+   * the given geometry, up to and including a given 
+   * maximum distance.
+   * 
+   * @param g the geometry to compute the distance to
+   * @param maximumDistance the maximum distance to compute.
+   * 
+   * @return the computed distance,
+   *    or <tt>maximumDistance</tt> if the true distance is determined to be greater
+   */
   public double getDistanceWithin(Geometry g, double maximumDistance)
   {
     STRtree tree2 = computeFacetSequenceTree(g);
@@ -86,21 +116,12 @@ public class IndexedFacetDistance
     return dist;
   }
   
-  public boolean isWithinDistance(Geometry g, double maximumDistance)
-  {
-    STRtree tree2 = computeFacetSequenceTree(g);
-    findMinDistance(tree1, tree2, maximumDistance);
-    if (lastComputedDistance > minimumDistanceFound)
-    	return false;
-    return true;
-  }
-  
   /**
    * Computes the distance from the base geometry to 
    * the given coordinate.
    * 
    * @param p the coordinate to compute the distance to
-   * @return the distance to the coordinate
+   * @return the computed distance
    */
   public double getDistance(Coordinate p)
   {
@@ -113,9 +134,10 @@ public class IndexedFacetDistance
    * maximum distance.
    * 
    * @param p the coordinate to compute the distance to
-   * @param maxDistance the maximum distance to compute.
+   * @param maximumDistance the maximum distance to compute.
    * 
-   * @return the distance to the coordinate
+   * @return the computed distance,
+   *    or <tt>maximumDistance</tt> if the true distance is determined to be greater
    */
   public double getDistanceWithin(Coordinate p, double maximumDistance)
   {
@@ -123,6 +145,31 @@ public class IndexedFacetDistance
     return minimumDistanceFound;
   }
   
+  /**
+   * Tests whether the base geometry lies within
+   * a specified distance of the given geometry.
+   * 
+   * @param g the geomtry to test
+   * @param maximumDistance the maximum distance to test
+   * @return true if the geometry lies with the specified distance
+   */
+  public boolean isWithinDistance(Geometry g, double maximumDistance)
+  {
+    STRtree tree2 = computeFacetSequenceTree(g);
+    findMinDistance(tree1, tree2, maximumDistance);
+    if (lastComputedDistance > minimumDistanceFound)
+      return false;
+    return true;
+  }
+  
+  /**
+   * Tests whether the base geometry lies within
+   * a specified distance of the given Coordinate.
+   * 
+   * @param p the coordinate to test
+   * @param maximumDistance the maximum distance to test
+   * @return true if the coordinate lies with the specified distance
+   */
   public boolean isWithinDistance(Coordinate p, double maximumDistance)
   {
     findMinDistance(p, maximumDistance);
@@ -131,7 +178,7 @@ public class IndexedFacetDistance
     return true;
   }
   
-  public void findMinDistance(Coordinate p, double maxDistance)
+  private void findMinDistance(Coordinate p, double maxDistance)
   {
     GeometryFacetSequence fs = new GeometryFacetSequence(
         new CoordinateArraySequence(new Coordinate[] { p }), 0);
