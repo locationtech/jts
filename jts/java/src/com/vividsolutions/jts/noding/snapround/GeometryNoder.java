@@ -12,14 +12,14 @@ import com.vividsolutions.jts.noding.snapround.*;
  * <p>
  * The input coordinates are expected to be rounded
  * to the given precision model.
- * This clas does not perform that function.
+ * This class does not perform that function.
  * {@link GeometryPrecisionReducer} may be used to do this.
  * <p>
  * This class does <b>not</b> dissolve the output linework,
  * so there may be duplicate linestrings in the output.  
  * Subsequent processing (e.g. polygonization) may require
- * the linework to be unique.  {@link UnaryUnion} is one way
- * to do this (although an inefficient one).
+ * the linework to be unique.  Using {@link UnaryUnion} is one way
+ * to do this (although this is an inefficient approach).
  * 
  * 
  */
