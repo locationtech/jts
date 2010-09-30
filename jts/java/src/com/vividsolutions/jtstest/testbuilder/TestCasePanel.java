@@ -216,7 +216,8 @@ public class TestCasePanel extends JPanel {
          || spatialFunctionPanel.shouldShowGeometryB());
 
     editPanel.setHighlightPoint(null);
-    if (jTabbedPane1.getSelectedComponent() == validPanel) {
+    if (jTabbedPane1.getSelectedComponent() == validPanel
+        || jTabbedPane1.getSelectedComponent() == editCtlPanel) {
       editPanel.setHighlightPoint(validPanel.getHighlightPoint());
     }
     if (initialized) {
@@ -317,8 +318,8 @@ public class TestCasePanel extends JPanel {
     
     add(jTabbedPane1, BorderLayout.WEST);
     jTabbedPane1.add(editCtlPanel, "Edit");
+    jTabbedPane1.add(validPanel, "Valid/Mask");
     jTabbedPane1.add(relateTabPanel, "Predicates");
-    jTabbedPane1.add(validPanel, "Valid");
     jTabbedPane1.add(spatialFunctionPanel,  "Geometry Functions");
     jTabbedPane1.add(scalarFunctionPanel,   "Scalar Functions");
     relateTabPanel.add(relatePanel, BorderLayout.CENTER);

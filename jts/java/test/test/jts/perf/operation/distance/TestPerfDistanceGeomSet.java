@@ -7,12 +7,10 @@ import com.vividsolutions.jts.util.Stopwatch;
 
 public class TestPerfDistanceGeomSet 
 {
-  
   static final int MAX_ITER = 1;
   static final int NUM_GEOM = 100;
   static final double GEOM_SIZE = 1;
   static final double MAX_X = 100;
-
 
   public static void main(String[] args) {
     TestPerfDistanceGeomSet test = new TestPerfDistanceGeomSet();
@@ -135,7 +133,6 @@ public class TestPerfDistanceGeomSet
 //    Geometry g = gsf.createSineStar();
     
     return g;
-    
   }
   
   Coordinate randomLocation()
