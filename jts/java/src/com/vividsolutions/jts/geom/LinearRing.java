@@ -51,6 +51,10 @@ package com.vividsolutions.jts.geom;
  */
 public class LinearRing extends LineString
 {
+  /**
+   * The minimum number of vertices allowed in a valid non-empty ring (= 4).
+   * Empty rings with 0 vertices are also valid.
+   */
   public static final int MINIMUM_VALID_SIZE = 4;
   
   private static final long serialVersionUID = -4261142084085851829L;
