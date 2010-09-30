@@ -51,6 +51,8 @@ package com.vividsolutions.jts.geom;
  */
 public class LinearRing extends LineString
 {
+  public static final int MINIMUM_VALID_SIZE = 4;
+  
   private static final long serialVersionUID = -4261142084085851829L;
 
   /**
@@ -104,7 +106,7 @@ public class LinearRing extends LineString
     if (!isEmpty() && ! super.isClosed()) {
       throw new IllegalArgumentException("Points of LinearRing do not form a closed linestring");
     }
-    if (getCoordinateSequence().size() >= 1 && getCoordinateSequence().size() <= 3) {
+    if (getCoordinateSequence().size() >= 1 && getCoordinateSequence().size() < MINIMUM_VALID_SIZE) {
       throw new IllegalArgumentException("Invalid number of points in LinearRing (found " 
       		+ getCoordinateSequence().size() + " - must be 0 or >= 4)");
     }
