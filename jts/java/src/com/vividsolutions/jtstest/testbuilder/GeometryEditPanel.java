@@ -337,7 +337,7 @@ public class GeometryEditPanel extends JPanel
         boxMinX, centreX - arrowWidth/2, (int) markX, centreX + arrowWidth/2,
         boxMaxX, boxMaxX,   boxMinX };
     int[] ypts = new int[] {  
-        boxMinY, boxMinY, (int) (markY + markSize/2), boxMinY,
+        boxMinY, boxMinY, (int) (markY + markSize/8), boxMinY,
         boxMinY, boxMaxY, boxMaxY };
     
     Polygon poly = new Polygon(xpts, ypts, xpts.length);
