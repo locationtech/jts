@@ -103,6 +103,16 @@ abstract class GeometryNode
 		return null;
 	}
 	
+  protected static String indexString(int index)
+  {
+    return "[" + index + "]";
+  }
+  
+  protected static String sizeString(int size)
+  {
+    return "(" + size + ")";
+  }
+  
 	protected boolean isLeaf = false;
 	protected int index = -1;
 	protected String text = "";;
@@ -120,25 +130,26 @@ abstract class GeometryNode
 	
 	public GeometryNode(Geometry geom, int size, String tag)
 	{
-		text = "";
+    StringBuilder buf = new StringBuilder();
 		if (tag != null && tag.length() > 0) {
-			text += tag + " : ";
+      buf.append(tag + " : ");
 		}
-		text += geom.getGeometryType();
+    buf.append(geom.getGeometryType());
 		if (geom.isEmpty()) {
 			isLeaf = true;
-			text = text + " EMPTY";
+      buf.append(" EMPTY");
 		}
 		else {
 			if (size > 0) {
-				text += " [ " + size + " ]";
+        buf.append(sizeString(size));
 			}
 		}
+    text = buf.toString();
 	}
 	
 	public GeometryNode(Geometry geom, int size, int index)
 	{
-		this(geom, size, "[ " + index + " ]");
+		this(geom, size, indexString(index));
 	}
 	
 	public void setIndex(int index)
@@ -169,10 +180,11 @@ abstract class GeometryNode
 	public String getText()
 	{
 		if (index >= 0) {
-			return "[" + index + "] : " + text; 
+			return indexString(index) + " : " + text; 
 		}
 		return text;
 	}
+  
 	protected void populateChildren()
 	{
 		if (children != null) return;
@@ -199,7 +211,7 @@ class PolygonNode extends GeometryNode
 	
 	PolygonNode(Polygon poly)
 	{
-		super(poly, 0, null);
+		super(poly, poly.getNumPoints(), null);
 		this.poly = poly;
 	}
 	protected void populateChildren()
@@ -233,9 +245,9 @@ class LineStringNode extends GeometryNode
 
 class LinearRingNode extends LineStringNode 
 {
-	public LinearRingNode(LinearRing line)
+	public LinearRingNode(LinearRing ring)
 	{
-		super(line);
+		super(ring);
 	}
 	public LinearRingNode(LinearRing ring, String tag)
 	{
