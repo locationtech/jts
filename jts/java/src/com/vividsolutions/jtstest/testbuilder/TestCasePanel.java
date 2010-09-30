@@ -196,7 +196,7 @@ public class TestCasePanel extends JPanel {
 //    scalarFunctionPanel.clearResults();
   }
   void validPanel_setHighlightPerformed(ValidPanelEvent e) {
-    editPanel.setHighlightPoint(validPanel.getHighlightPoint());
+    editPanel.setHighlightPoint(validPanel.getMarkPoint());
     editPanel.forceRepaint();
   }
 
@@ -218,7 +218,7 @@ public class TestCasePanel extends JPanel {
     editPanel.setHighlightPoint(null);
     if (jTabbedPane1.getSelectedComponent() == validPanel
         || jTabbedPane1.getSelectedComponent() == editCtlPanel) {
-      editPanel.setHighlightPoint(validPanel.getHighlightPoint());
+      editPanel.setHighlightPoint(validPanel.getMarkPoint());
     }
     if (initialized) {
       //avoid infinite loop

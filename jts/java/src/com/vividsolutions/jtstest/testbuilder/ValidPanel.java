@@ -33,6 +33,7 @@
  */
 package com.vividsolutions.jtstest.testbuilder;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -63,7 +64,7 @@ import com.vividsolutions.jtstest.testbuilder.model.TestCaseEdit;
  */
 public class ValidPanel extends JPanel {
   TestCaseEdit testCase;
-  Coordinate highlightPoint = null;
+  private Coordinate markPoint = null;
 //===========================================
   JButton btnValidate = new JButton();
   JButton btnSimple = new JButton();
@@ -74,13 +75,13 @@ public class ValidPanel extends JPanel {
   GridBagLayout gridBagLayout2 = new GridBagLayout();
   private transient Vector validPanelListeners;
   GridLayout gridLayout1 = new GridLayout();
-  JPanel jPanel2 = new JPanel();
+  JPanel markPanel = new JPanel();
+  JPanel markSquishPanel = new JPanel();
   JPanel jPanel3 = new JPanel();
-  JTextField txtX = new JTextField();
-  JTextField txtY = new JTextField();
+  JPanel markBtnPanel = new JPanel();
+  JTextField txtMark = new JTextField();
   GridBagLayout gridBagLayout1 = new GridBagLayout();
-  JLabel jLabel2 = new JLabel();
-  JLabel jLabel3 = new JLabel();
+  JLabel markLabel = new JLabel();
   JButton btnClearMark = new JButton();
   JButton btnSetMark = new JButton();
 
@@ -122,11 +123,8 @@ public class ValidPanel extends JPanel {
     jLabel1.setText("Valid / Simple ");
     jPanel1.setLayout(gridBagLayout2);
     gridLayout1.setRows(2);
-    jPanel2.setLayout(gridBagLayout1);
-    jLabel2.setToolTipText("");
-    jLabel2.setText("X ");
-    jLabel3.setToolTipText("");
-    jLabel3.setText("Y ");
+    markLabel.setToolTipText("");
+    markLabel.setText("Mark Point ( X Y ) ");
     btnClearMark.setToolTipText("");
     btnClearMark.setText("Clear Mark");
     btnClearMark.addActionListener(new java.awt.event.ActionListener() {
@@ -141,7 +139,6 @@ public class ValidPanel extends JPanel {
         btnSetMark_actionPerformed(e);
       }
     });
-    txtX.setToolTipText("");
     jPanel3.add(btnValidate);
     jPanel3.add(btnSimple);
     jPanel1.add(jPanel3, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
@@ -153,26 +150,41 @@ public class ValidPanel extends JPanel {
     jPanel1.add(jLabel1, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
             ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 4, 0, 4), 0, 0));
     this.add(jPanel1, null);
-    jPanel2.add(txtY, new GridBagConstraints(1, 1, 2, 1, 0.5, 0.0
+    markPanel.setLayout(new BorderLayout());
+    /*
+    markPanel.setLayout(gridBagLayout1);
+    markPanel.add(jLabel2, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
+        ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+//    jPanel2.add(jLabel3, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+//        ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+    markPanel.add(txtMark, new GridBagConstraints(1, 1, 2, 1, 0.5, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 20), 0, 0));
-    jPanel2.add(txtX, new GridBagConstraints(1, 0, 2, 1, 0.5, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 20), 0, 0));
-    jPanel2.add(jLabel2, new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    jPanel2.add(jLabel3, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    jPanel2.add(btnSetMark, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
+//    jPanel2.add(txtX, new GridBagConstraints(1, 0, 2, 1, 0.5, 0.0
+//           ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 20), 0, 0));
+    */
+    
+    markBtnPanel.add(btnSetMark);
+    markBtnPanel.add(btnClearMark);
+    markPanel.add(markLabel, BorderLayout.NORTH);
+    markPanel.add(txtMark, BorderLayout.CENTER);
+    markPanel.add(markBtnPanel, BorderLayout.SOUTH);
+    
+    markSquishPanel.setLayout(new BorderLayout());
+    markSquishPanel.add(markPanel, BorderLayout.NORTH);
+    /*
+    markPanel.add(btnSetMark, new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(4, 0, 4, 10), 0, 0));
-    jPanel2.add(btnClearMark, new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0
+    markPanel.add(btnClearMark, new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(4, 10, 4, 10), 0, 0));
-    this.add(jPanel2, null);
+            */
+    this.add(markSquishPanel, null);
   }
 
   public void setTestCase(TestCaseEdit testCase) {
     this.testCase = testCase;
   }
 
-  public Coordinate getHighlightPoint()   { return highlightPoint; }
+  public Coordinate getMarkPoint()   { return markPoint; }
 
   void btnValidate_actionPerformed(ActionEvent e) 
   {
@@ -191,7 +203,7 @@ public class ValidPanel extends JPanel {
     }
     taInvalidMsg.setText(msg);
     txtIsValid.setText(isValid ? "Y" : "N");
-    setHighlightPoint(invalidPoint);
+    setMarkPoint(invalidPoint);
   }
   void btnSimple_actionPerformed(ActionEvent e) 
   {
@@ -207,19 +219,16 @@ public class ValidPanel extends JPanel {
     		: "Self-intersection at " + WKTWriter.toPoint(nonSimpleLoc);
     taInvalidMsg.setText(msg);
     txtIsValid.setText(isSimple ? "Y" : "N");
-    setHighlightPoint(nonSimpleLoc);
+    setMarkPoint(nonSimpleLoc);
   }
-  private void setHighlightPoint(Coordinate coord)
+  private void setMarkPoint(Coordinate coord)
   {
-    highlightPoint = coord;
-    if (highlightPoint != null) {
-      txtX.setText(Double.toString(coord.x));
-      txtY.setText(Double.toString(coord.y));
+    markPoint = coord;
+    String markText = "";
+    if (markPoint != null) {
+      markText = " " + coord.x + "  " + coord.y + " ";
     }
-    else {
-      txtX.setText("");
-      txtY.setText("");
-    }
+    txtMark.setText(markText);
     fireSetHighlightPerformed(new ValidPanelEvent(this));
   }
   public synchronized void removeValidPanelListener(ValidPanelListener l) {
@@ -247,14 +256,33 @@ public class ValidPanel extends JPanel {
   }
 
   void btnSetMark_actionPerformed(ActionEvent e) {
-    double x = Double.parseDouble(txtX.getText());
-    double y = Double.parseDouble(txtY.getText());
-    setHighlightPoint(new Coordinate(x,y));
+    String xyStr = txtMark.getText();
+    setMarkPoint(parseXY(xyStr));
   }
 
   void btnClearMark_actionPerformed(ActionEvent e) {
-    setHighlightPoint(null);
+    setMarkPoint(null);
   }
 
+  Coordinate parseXY(String xyStr)
+  {
+    String[] xy = xyStr.trim().split("\\s+");
+    double x = parseNumber(xy, 0);
+    double y = parseNumber(xy, 1);
+    return new Coordinate(x, y);
+  }
 
+  double parseNumber(String[] xy, int index)
+  {
+    if (xy.length <= index) return 0.0;
+    String s = xy[index];
+    try {
+      return Double.parseDouble(s);
+    } 
+    catch (NumberFormatException ex)
+    {
+      // just eat it - not much we can do
+    }
+    return 0.0;
+  }
 }

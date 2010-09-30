@@ -78,7 +78,7 @@ public class GeometryEditPanel extends JPanel
 
   boolean stateAddingPoints = false;
 
-  Coordinate highlightPoint;
+  Coordinate markPoint;
   Point2D lastPt = new Point2D.Double();
 
   private Tool currentTool = null;  //PolygonTool.getInstance();
@@ -179,7 +179,7 @@ public class GeometryEditPanel extends JPanel
   }
 
   public void setHighlightPoint(Coordinate pt) {
-    highlightPoint = pt;
+    markPoint = pt;
   }
 
   public boolean isAddingPoints() {
@@ -296,15 +296,15 @@ public class GeometryEditPanel extends JPanel
     g.fill(rect);
   }
   
-  private void drawHighlight(Graphics2D g) {
-    if (highlightPoint == null)
+  private void drawMark(Graphics2D g) {
+    if (markPoint == null)
       return;
     
-    String markLabel = highlightPoint.x + ",  " + highlightPoint.y;
+    String markLabel = markPoint.x + ",  " + markPoint.y;
     int strWidth = g.getFontMetrics().stringWidth(markLabel);
 
     double markSize = AppConstants.HIGHLIGHT_SIZE;
-    Point2D highlightPointView = viewport.toView(highlightPoint);
+    Point2D highlightPointView = viewport.toView(markPoint);
     double markX = highlightPointView.getX();
     double markY = highlightPointView.getY();
     Ellipse2D.Double shape = new Ellipse2D.Double(
@@ -323,6 +323,7 @@ public class GeometryEditPanel extends JPanel
     int boxPadX = 20;
     int boxWidth = strWidth + 2 * boxPadX;
     int arrowWidth = 10;
+    int arrowOffset = 2;
     int labelOffsetY = 5;
     
     int bottom = (int) viewEnv.getMaxY() - bottomOffset;
@@ -337,15 +338,15 @@ public class GeometryEditPanel extends JPanel
         boxMinX, centreX - arrowWidth/2, (int) markX, centreX + arrowWidth/2,
         boxMaxX, boxMaxX,   boxMinX };
     int[] ypts = new int[] {  
-        boxMinY, boxMinY, (int) (markY + markSize/8), boxMinY,
+        boxMinY, boxMinY, (int) (markY + arrowOffset), boxMinY,
         boxMinY, boxMaxY, boxMaxY };
     
     Polygon poly = new Polygon(xpts, ypts, xpts.length);
     
     g.setColor(AppConstants.HIGHLIGHT_FILL_CLR);
     g.fill(poly);
-    AWTUtil.setStroke(g, 2);
-    g.setColor(AppConstants.HIGHLIGHT_CLR);
+    AWTUtil.setStroke(g, 1);
+    g.setColor(ColorUtil.opaque(AppConstants.HIGHLIGHT_CLR));
     g.draw(poly);
 
     // draw mark point label
@@ -528,7 +529,7 @@ public class GeometryEditPanel extends JPanel
       	renderMagnifiedVertices(g2);
       }
       
-      drawHighlight(g2);
+      drawMark(g2);
       
     }
     
