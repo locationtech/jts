@@ -499,7 +499,9 @@ public class GeometryEditPanel extends JPanel
   {
     private GeometryStretcherView stretchView = null;
   	private Renderer currentRenderer = null;
-  	
+    private boolean isRenderingStretchView = false; 
+    private boolean isRenderingStretchVertices = false; 
+    
   	public GeometryEditPanelRenderer()
   	{
       if (tbModel.isRevealingTopology()) {
@@ -507,6 +509,8 @@ public class GeometryEditPanel extends JPanel
         stretchView.setStretchSize(viewport.toModel(tbModel.getTopologyStretchSize()));
         stretchView.setNearnessTolerance(viewport.toModel(GeometryStretcherView.NEARNESS_TOL_IN_VIEW));
         stretchView.setEnvelope(viewport.getModelEnv());
+        isRenderingStretchView = tbModel.isRevealingTopology();
+        isRenderingStretchVertices = stretchView.isValidView();
       }  		
   	}
   	
@@ -516,7 +520,7 @@ public class GeometryEditPanel extends JPanel
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
           RenderingHints.VALUE_ANTIALIAS_ON);
       
-      if (tbModel.isRevealingTopology()) {
+      if (isRenderingStretchView && isRenderingStretchVertices) {
         //renderMagnifiedVertexShadows(g2);
         renderMagnifiedVertexMask(g2);
       }
@@ -525,7 +529,7 @@ public class GeometryEditPanel extends JPanel
       
       renderLayers(g2);
       
-      if (tbModel.isRevealingTopology()) {
+      if (isRenderingStretchView && isRenderingStretchVertices) {
       	renderMagnifiedVertices(g2);
       }
       
@@ -538,13 +542,16 @@ public class GeometryEditPanel extends JPanel
     	LayerList layerList = getLayerList();
     	int n = layerList.size();
     	for (int i = 0; i < n; i++) {
-    		if (stretchView != null && i < 2)
+    		if (isRenderingStretchView && isRenderingStretchVertices
+            && stretchView != null && i < 2) {
+          System.out.println("rendering stretch verts");
       		currentRenderer = new LayerRenderer(layerList.getLayer(i),
-      				//stretchView.getContainer(i),
       				new StaticGeometryContainer(stretchView.getStretchedGeometry(i)),
       				viewport);
-    		else
+        }
+    		else {
     			currentRenderer = new LayerRenderer(layerList.getLayer(i), viewport);
+        }
     		currentRenderer.render(g);
     	}
     	currentRenderer = null;

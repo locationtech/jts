@@ -7,15 +7,15 @@ import com.vividsolutions.jts.geom.util.*;
 
 class StretchedVertexFinder 
 {
-	public static List findNear(Collection linestrings, double tolerance)
+	public static List findNear(Collection linestrings, double tolerance, Envelope mask)
 	{
-		StretchedVertexFinder finder = new StretchedVertexFinder(linestrings, tolerance);
+		StretchedVertexFinder finder = new StretchedVertexFinder(linestrings, tolerance, mask);
 		return finder.getNearVertices();
 	}
 	
 	private Collection linestrings;
 	private double tolerance = 0.0;
-	private Envelope limitEnv;
+	private Envelope limitEnv = null;
 	private List nearVerts = new ArrayList();
 	
 	public StretchedVertexFinder(Collection linestrings, double tolerance)
@@ -26,8 +26,8 @@ class StretchedVertexFinder
 	
 	public StretchedVertexFinder(Collection linestrings, double tolerance, Envelope limitEnv)
 	{
-		this.linestrings = linestrings;
-		this.tolerance = tolerance;
+		this(linestrings, tolerance);
+		this.limitEnv = limitEnv;
 	}
 	
 	public List getNearVertices()
@@ -60,8 +60,8 @@ class StretchedVertexFinder
     // don't process the last point of a ring twice
     int n = geomPointsLen(pts);
 		for (int i = 0; i < n; i++) {
-			findNearVertex(pts, i);
-//				nearVerts.add(new NearVertex(pts, i));
+      if (limitEnv.intersects(pts[i]))
+        findNearVertex(pts, i);
 		}
 	}
 	
@@ -95,6 +95,7 @@ class StretchedVertexFinder
     int n = geomPointsLen(testPts);
 		for (int i = 0; i < n; i++) {
 			Coordinate testPt = testPts[i];
+      
 			StretchedVertex stretchVert = null;
 	
 			// is near to vertex?
@@ -127,6 +128,13 @@ class StretchedVertexFinder
 		}
 	}
 	
+  private static boolean contains(Envelope env, Coordinate p0, Coordinate p1)
+  {
+    if (! env.contains(p0)) return false;
+    if (! env.contains(p1)) return false;
+    return true;
+  }
+  
 	private static boolean isPointNearButNotOnSeg(Coordinate p, Coordinate p0, Coordinate p1, double distTol)
 	{
 		// don't rely on segment distance algorithm to correctly compute zero distance

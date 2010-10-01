@@ -9,6 +9,8 @@ import com.vividsolutions.jtstest.testbuilder.topostretch.TopologyStretcher;
 
 public class GeometryStretcherView 
 {
+  private static final int MAX_VIEW_VERTICES = 500;
+  
   /**
    * This is chosen to be as large as possible
    * (which minimizes change to geometries)
@@ -22,6 +24,8 @@ public class GeometryStretcherView
 	private GeometryEditModel geomModel;
 	private Geometry[] stretchGeom = new Geometry[2];
 	private List[] stretchCoords;
+  private boolean isValidView = false;
+  private Envelope maskEnv = null;
 	private double stretchSize = 5.0;
   private double nearnessTol = 0.5;
 	
@@ -50,12 +54,19 @@ public class GeometryStretcherView
   {
     this.nearnessTol = nearnessTol;
   }
-	public void setEnvelope(Envelope viewEnv)
+	public void setEnvelope(Envelope maskEnv)
 	{
+    this.maskEnv = maskEnv;
 		// clear cache
 		stretchGeom = null;
 	}
 	
+  public boolean isValidView()
+  {
+    updateCache();
+    return isValidView;
+
+  }
 	public Geometry getStretchedGeometry(int index)
 	{
 		updateCache();
@@ -73,8 +84,12 @@ public class GeometryStretcherView
 		if (! isCacheValid()) {
 			Geometry g0 = geomModel.getGeometry(0);
 			Geometry g1 = geomModel.getGeometry(1);
+    
 			TopologyStretcher stretcher = new TopologyStretcher(g0, g1);
-			stretchGeom = stretcher.stretch(nearnessTol, stretchSize);
+      isValidView = stretcher.numVerticesInMask(maskEnv) < MAX_VIEW_VERTICES;
+      if (! isValidView)
+        return;
+			stretchGeom = stretcher.stretch(nearnessTol, stretchSize, maskEnv);
 			stretchCoords = stretcher.getModifiedCoordinates();
 		}
 	}

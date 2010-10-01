@@ -32,12 +32,25 @@ public class TopologyStretcher
 		inputGeoms[1] = g2;
 	}
 	
-	public Geometry[] stretch(double nearnessTol, double stretchDistance)
-	{
+  public int numVerticesInMask(Envelope mask)
+  {
+    VertexInMaskCountCoordinateFilter filter = new VertexInMaskCountCoordinateFilter(mask);
+    if (inputGeoms[0] != null) inputGeoms[0].apply(filter);
+    if (inputGeoms[1] != null) inputGeoms[1].apply(filter);
+    return filter.getCount();
+  }
+  
+  public Geometry[] stretch(double nearnessTol, double stretchDistance)
+  {
+    return stretch(nearnessTol, stretchDistance, null);
+  }
+  
+  public Geometry[] stretch(double nearnessTol, double stretchDistance, Envelope mask)
+  {
 		this.stretchDistance = stretchDistance;
-		linestrings = extractLineStrings(inputGeoms);
+		linestrings = extractLineStrings(inputGeoms, mask);
 		
-		List nearVerts = StretchedVertexFinder.findNear(linestrings, nearnessTol);
+		List nearVerts = StretchedVertexFinder.findNear(linestrings, nearnessTol, mask);
 		
 		Map coordinateMoves = getCoordinateMoves(nearVerts);
 		
@@ -66,14 +79,27 @@ public class TopologyStretcher
 		return modifiedCoords;
 	}
 	
-	private List extractLineStrings(Geometry[] geom)
+	private List extractLineStrings(Geometry[] geom, Envelope mask)
 	{
 		List lines = new ArrayList();
 		LinearComponentExtracter lineExtracter = new LinearComponentExtracter(lines);
 		for (int i = 0; i < geom.length; i++ ) {
-			if (geom[i] != null)
-				geom[i].apply(lineExtracter);
+      if (geom[i] == null) continue;
+      
+      if (mask != null && ! mask.intersects(geom[i].getEnvelopeInternal()))
+        continue;
+      
+			geom[i].apply(lineExtracter);
 		}
+    if (mask != null) {
+      List masked = new ArrayList();
+      for (Iterator i = lines.iterator(); i.hasNext(); ) {
+        LineString line = (LineString) i.next();
+        if (mask.intersects(line.getEnvelopeInternal()))
+          masked.add(line);
+      }
+      return masked;
+    }
 		return lines;
 	}
 	
@@ -91,5 +117,23 @@ public class TopologyStretcher
 		return moves;
 	}
 	
-	
+	private static class VertexInMaskCountCoordinateFilter
+  implements CoordinateFilter
+  {
+    private Envelope mask;
+    private int count = 0;
+    
+    public VertexInMaskCountCoordinateFilter(Envelope mask)
+    {
+      this.mask = mask;
+    }
+    
+    public void filter(Coordinate coord)
+    {
+      if (mask.contains(coord))
+        count++;
+    }
+    
+    public int getCount() { return count; }
+  }
 }
