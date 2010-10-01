@@ -40,6 +40,7 @@ import java.awt.event.MouseEvent;
 
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
@@ -499,18 +500,18 @@ public class GeometryEditPanel extends JPanel
   {
     private GeometryStretcherView stretchView = null;
   	private Renderer currentRenderer = null;
-    private boolean isRenderingStretchView = false; 
+    private boolean isMagnifyingTopology = false; 
     private boolean isRenderingStretchVertices = false; 
     
   	public GeometryEditPanelRenderer()
   	{
-      if (tbModel.isRevealingTopology()) {
+      if (tbModel.isMagnifyingTopology()) {
         stretchView = new GeometryStretcherView(geomModel);
         stretchView.setStretchSize(viewport.toModel(tbModel.getTopologyStretchSize()));
         stretchView.setNearnessTolerance(viewport.toModel(GeometryStretcherView.NEARNESS_TOL_IN_VIEW));
         stretchView.setEnvelope(viewport.getModelEnv());
-        isRenderingStretchView = tbModel.isRevealingTopology();
-        isRenderingStretchVertices = stretchView.isValidView();
+        isMagnifyingTopology = tbModel.isMagnifyingTopology();
+        isRenderingStretchVertices = stretchView.isViewPerformant();
       }  		
   	}
   	
@@ -520,16 +521,22 @@ public class GeometryEditPanel extends JPanel
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
           RenderingHints.VALUE_ANTIALIAS_ON);
       
-      if (isRenderingStretchView && isRenderingStretchVertices) {
-        //renderMagnifiedVertexShadows(g2);
-        renderMagnifiedVertexMask(g2);
+      if (isMagnifyingTopology) {
+        if (isRenderingStretchVertices) {
+          //renderMagnifiedVertexShadows(g2);
+          renderMagnifiedVertexMask(g2);
+        }
+        else {
+          // render indicator that shows stretched view is non-performant
+          renderMagnifyWarning(g2);
+        }
       }
       
       gridRenderer.paint(g2);
       
       renderLayers(g2);
       
-      if (isRenderingStretchView && isRenderingStretchVertices) {
+      if (isMagnifyingTopology && isRenderingStretchVertices) {
       	renderMagnifiedVertices(g2);
       }
       
@@ -542,7 +549,7 @@ public class GeometryEditPanel extends JPanel
     	LayerList layerList = getLayerList();
     	int n = layerList.size();
     	for (int i = 0; i < n; i++) {
-    		if (isRenderingStretchView && isRenderingStretchVertices
+    		if (isMagnifyingTopology && isRenderingStretchVertices
             && stretchView != null && i < 2) {
           System.out.println("rendering stretch verts");
       		currentRenderer = new LayerRenderer(layerList.getLayer(i),
@@ -611,6 +618,24 @@ public class GeometryEditPanel extends JPanel
           drawVertexShadow(g, p, Color.WHITE);
         }
       }
+    }
+    
+    public void renderMagnifyWarning(Graphics2D g)
+    {
+      if (stretchView == null) return;
+      
+      float maxx = (float) viewport.getWidthInView();
+      float maxy = (float) viewport.getHeightInView();
+      GeneralPath path = new GeneralPath();
+      path.moveTo(0, 0);
+      path.lineTo(maxx, maxy);
+      path.moveTo(0, maxy);
+      path.lineTo(maxx, 0);
+      // render lowlight background
+      g.setColor(AppConstants.MASK_CLR);
+      g.setStroke(new BasicStroke(30));
+      g.draw(path);
+  
     }
     
   	public synchronized void cancel()

@@ -91,7 +91,7 @@ public class GeometryEditControlPanel extends JPanel
     JButton btnSetPrecisionModel = new JButton();
     
     JPanel jPanel9 = new JPanel();
-    JCheckBox cbRevealTopo = new JCheckBox();
+    JCheckBox cbMagnifyTopo = new JCheckBox();
     
     JPanel jPanel10 = new JPanel();
     JSpinner stretchDist = new JSpinner(new SpinnerNumberModel(5, 0, 99999, 1));
@@ -197,8 +197,8 @@ public class GeometryEditControlPanel extends JPanel
         btnSetPrecisionModel.setMnemonic('0');
         btnSetPrecisionModel.setText("Set Precision Model...");
 
-        cbRevealTopo.setText("Magnify Topology");
-        cbRevealTopo.setToolTipText("Stretches portions of geometries to reveal fine topological detail");
+        cbMagnifyTopo.setText("Magnify Topology");
+        cbMagnifyTopo.setToolTipText("Stretches portions of geometries to reveal fine topological detail");
         
         this.add(jPanel3, BorderLayout.CENTER);
         jPanel3.add(
@@ -333,10 +333,10 @@ public class GeometryEditControlPanel extends JPanel
         jPanel8.add(btnSetPrecisionModel);
         
         jPanel9.setLayout(new FlowLayout());
-        jPanel9.add(cbRevealTopo);
+        jPanel9.add(cbMagnifyTopo);
       
         jPanel10.setLayout(new GridLayout(2, 2, 10, 2));
-        jPanel10.add(cbRevealTopo);
+        jPanel10.add(cbMagnifyTopo);
         jPanel10.add(new JLabel());
         jPanel10.add(new JLabel("Stretch Distance"));
         jPanel10.add(stretchDist);

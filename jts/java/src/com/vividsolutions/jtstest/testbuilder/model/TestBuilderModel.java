@@ -26,7 +26,7 @@ public class TestBuilderModel
   protected static boolean showingOrientations = false;
   protected static boolean showingVertices = true;
   protected static boolean showingCoordinates = true;
-  protected static boolean isRevealingTopology = false;
+  protected static boolean isMagnifyingTopology = false;
   protected static double topologyStretchSize = AppConstants.TOPO_STRETCH_VIEW_DIST;
   
   public static boolean isShowingOrientations() {
@@ -47,11 +47,11 @@ public class TestBuilderModel
   public static void setShowingVertices(boolean show) {
     showingVertices = show;
   }
-  public boolean isRevealingTopology() {
-    return isRevealingTopology;
+  public boolean isMagnifyingTopology() {
+    return isMagnifyingTopology;
   }
-  public void setRevealingTopology(boolean show) {
-    isRevealingTopology = show;
+  public void setMagnifyingTopology(boolean show) {
+    isMagnifyingTopology = show;
   }
   public void setTopologyStretchSize(double pixels) {
     topologyStretchSize = pixels;

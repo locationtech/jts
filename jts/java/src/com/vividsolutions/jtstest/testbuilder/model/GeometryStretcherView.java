@@ -9,9 +9,14 @@ import com.vividsolutions.jtstest.testbuilder.topostretch.TopologyStretcher;
 
 public class GeometryStretcherView 
 {
-  private static final int MAX_VIEW_VERTICES = 500;
+  /**
+   * The maximum number of vertices which can be shown.
+   * This is chosen to ensure reasonable performance for rendering.
+   */
+  private static final int MAX_VERTICES_IN_MASK = 500;
   
   /**
+   * The nearness tolerance in view pixels.
    * This is chosen to be as large as possible
    * (which minimizes change to geometries)
    * but small enough that points which appear
@@ -24,7 +29,7 @@ public class GeometryStretcherView
 	private GeometryEditModel geomModel;
 	private Geometry[] stretchGeom = new Geometry[2];
 	private List[] stretchCoords;
-  private boolean isValidView = false;
+  private boolean isViewPerformant = true;
   private Envelope maskEnv = null;
 	private double stretchSize = 5.0;
   private double nearnessTol = 0.5;
@@ -61,10 +66,10 @@ public class GeometryStretcherView
 		stretchGeom = null;
 	}
 	
-  public boolean isValidView()
+  public boolean isViewPerformant()
   {
     updateCache();
-    return isValidView;
+    return isViewPerformant;
 
   }
 	public Geometry getStretchedGeometry(int index)
@@ -86,9 +91,14 @@ public class GeometryStretcherView
 			Geometry g1 = geomModel.getGeometry(1);
     
 			TopologyStretcher stretcher = new TopologyStretcher(g0, g1);
-      isValidView = stretcher.numVerticesInMask(maskEnv) < MAX_VIEW_VERTICES;
-      if (! isValidView)
+      
+      // check if view is valid (performant enough)  to render
+      if (maskEnv != null) {
+        isViewPerformant = stretcher.numVerticesInMask(maskEnv) < MAX_VERTICES_IN_MASK;
+      }
+      if (! isViewPerformant)
         return;
+
 			stretchGeom = stretcher.stretch(nearnessTol, stretchSize, maskEnv);
 			stretchCoords = stretcher.getModifiedCoordinates();
 		}
