@@ -128,6 +128,7 @@ extends JPanel
 //    functionLabel.setBorder(BorderFactory.createLoweredBevelBorder());
     functionLabel.setToolTipText("Result Info");
 
+    timeLabel.setFont(new Font("SanSerif", Font.BOLD, 16));
     timeLabel.setText(" ");
     timeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
     timeLabel.setBorder(BorderFactory.createLoweredBevelBorder());

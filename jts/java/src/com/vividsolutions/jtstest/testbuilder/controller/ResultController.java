@@ -3,6 +3,7 @@ package com.vividsolutions.jtstest.testbuilder.controller;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.NumberFormat;
 
 import javax.swing.Timer;
 
@@ -17,6 +18,12 @@ import com.vividsolutions.jtstest.testbuilder.ui.SwingWorker;
 
 public class ResultController 
 {
+  private static NumberFormat timeFmt;
+  static {
+    timeFmt = NumberFormat.getNumberInstance();
+    timeFmt.setMinimumFractionDigits(3);
+  }
+
 	JTSTestBuilderFrame frame;
 	TestBuilderModel model = null;
 	
@@ -110,16 +117,23 @@ public class ResultController
   
   private Timer funcTimer;
   private long runMillis = 0;
-  private static final int DELAY_IN_MILLIS = 100;
+  private static final int TIMER_DELAY_IN_MILLIS = 10;
   
   private void startFunctionMonitor()
   {
     runMillis = 0;
-    funcTimer = new Timer(DELAY_IN_MILLIS, new ActionListener() {
+    funcTimer = new Timer(TIMER_DELAY_IN_MILLIS, new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 //        Stopwatch timer = testCasePanel.getSpatialFunctionPanel().getTimer();
-        runMillis += DELAY_IN_MILLIS;
-        frame.getResultWKTPanel().setRunningTime((runMillis/1000.0) + " s");
+        runMillis += TIMER_DELAY_IN_MILLIS;
+        String timeStr = "";
+        if (runMillis < 10000) {
+          timeStr = runMillis + " ms";
+        }
+        else {
+          timeStr = timeFmt.format(runMillis/1000.0) + " s";
+        }
+        frame.getResultWKTPanel().setRunningTime(timeStr);
       }
     });
     funcTimer.setInitialDelay(0);
