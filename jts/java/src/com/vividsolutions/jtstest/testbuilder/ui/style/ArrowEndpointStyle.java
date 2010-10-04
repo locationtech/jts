@@ -9,8 +9,8 @@ import com.vividsolutions.jtstest.testbuilder.Viewport;
 public class ArrowEndpointStyle 
   extends LineStringEndpointStyle {
 
-  private final static double ANGLE = 20;
-  private final static double LENGTH = 12;
+  private final static double ANGLE = 15;
+  private final static double LENGTH = 10;
   private boolean filled = true;
 
   // default in case colour is not set

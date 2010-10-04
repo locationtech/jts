@@ -8,7 +8,7 @@ import com.vividsolutions.jtstest.testbuilder.ui.render.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.ArrowEndpointStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.BasicStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.CircleEndpointStyle;
-import com.vividsolutions.jtstest.testbuilder.ui.style.LineOrientationStyle;
+import com.vividsolutions.jtstest.testbuilder.ui.style.OffsetArrowLineStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.Style;
 import com.vividsolutions.jtstest.testbuilder.ui.style.StyleList;
 import com.vividsolutions.jtstest.testbuilder.ui.style.VertexStyle;
@@ -22,7 +22,7 @@ public class Layer
   
   private BasicStyle style = new BasicStyle();
   private VertexStyle vertexStyle;
-  private LineOrientationStyle segArrowStyle;
+  private OffsetArrowLineStyle segArrowStyle;
   private ArrowEndpointStyle lineArrowStyle;
   private CircleEndpointStyle lineCircleStyle;
   
@@ -81,7 +81,7 @@ public class Layer
   {
     this.style = style;
     vertexStyle = new VertexStyle(style.getLineColor());
-    segArrowStyle = new LineOrientationStyle(lighter(style.getLineColor()));
+    segArrowStyle = new OffsetArrowLineStyle(lighter(style.getLineColor()));
     lineArrowStyle = new ArrowEndpointStyle(lighter(style.getLineColor()), false, true);
     lineCircleStyle = new CircleEndpointStyle(lighter(style.getLineColor()), true, false);
     
