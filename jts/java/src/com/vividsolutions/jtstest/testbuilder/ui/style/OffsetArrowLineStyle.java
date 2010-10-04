@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.geom.*;
 
 import com.vividsolutions.jtstest.testbuilder.Viewport;
+import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
 
 public class OffsetArrowLineStyle 
   extends SegmentStyle
@@ -12,6 +13,13 @@ public class OffsetArrowLineStyle
   private final static double HEAD_LENGTH = 10;
 
   private Color color = Color.RED;
+
+  private static Stroke dashStroke = new BasicStroke(1,                  // Width of stroke
+      BasicStroke.CAP_SQUARE,  // End cap style
+      BasicStroke.JOIN_MITER, // Join style
+      10,                  // Miter limit
+      new float[] {2, 2}, // Dash pattern
+      0);                   // Dash phase 
 
   public OffsetArrowLineStyle(Color color) {
     this.color = color;
@@ -42,6 +50,7 @@ public class OffsetArrowLineStyle
     }
     graphics.setColor(color);
     //      graphics.setStroke(1.0);
+    graphics.setStroke(dashStroke);
     
     double dx = p1.getX() - p0.getX();
     double dy = p1.getY() - p0.getY();

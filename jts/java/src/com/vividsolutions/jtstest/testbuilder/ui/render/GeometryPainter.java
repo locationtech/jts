@@ -13,6 +13,7 @@ import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 import com.vividsolutions.jtstest.testbuilder.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.Style;
@@ -59,7 +60,7 @@ public class GeometryPainter
   static Viewport viewportCache;
   static ShapeWriter converterCache;
   
-  static ShapeWriter getConverter(Viewport viewport)
+  public static ShapeWriter getConverter(Viewport viewport)
   {
   	if (viewportCache != viewport) {
   		viewportCache = viewport;
@@ -67,6 +68,7 @@ public class GeometryPainter
   	}
   	return converterCache;
   }
+  
   /**
    * Paints a geometry onto a graphics context,
    * using a given Viewport.
@@ -111,14 +113,27 @@ public class GeometryPainter
 		g.setStroke(GEOMETRY_STROKE);
 		
     // Test for a polygonal shape and fill it if required
-		if (!(shape instanceof GeneralPath) && fillColor != null) {
+		if (geometry instanceof Polygon && fillColor != null) {
+		  // if (!(shape instanceof GeneralPath) && fillColor != null) {
 			g.setPaint(fillColor);
 			g.fill(shape);
 		}
+		
+		
 		if (lineColor != null) {
 		  g.setColor(lineColor);
 		  try {
 		    g.draw(shape);
+		    
+				// draw polygon boundaries twice, to discriminate them
+		    // MD - this isn't very obvious.  Perhaps a dashed line instead?
+		    /*
+				if (geometry instanceof Polygon) {
+					Shape polyShell = converter.toShape( ((Polygon)geometry).getExteriorRing());
+					g.setStroke(new BasicStroke(2));
+					g.draw(polyShell);
+				}
+*/
 		  } 
 		  catch (Throwable ex) {
 		    System.out.println(ex);

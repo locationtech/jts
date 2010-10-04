@@ -4,11 +4,13 @@ import java.awt.*;
 
 import com.vividsolutions.jtstest.testbuilder.*;
 import com.vividsolutions.jtstest.testbuilder.geom.*;
+import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.render.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.ArrowEndpointStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.BasicStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.CircleEndpointStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.OffsetArrowLineStyle;
+import com.vividsolutions.jtstest.testbuilder.ui.style.PolygonStructureStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.Style;
 import com.vividsolutions.jtstest.testbuilder.ui.style.StyleList;
 import com.vividsolutions.jtstest.testbuilder.ui.style.VertexStyle;
@@ -39,15 +41,7 @@ public class Layer
   		return ! TestBuilderModel.isShowingOrientations();
   	}
   };
-  
-  private static Color lighter(Color clr)
-  {
-    float[] hsb = new float[3];
-    Color.RGBtoHSB(clr.getRed(), clr.getGreen(), clr.getBlue(), hsb);
-    hsb[1] *= 0.4;
-    return Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
-  }
-  
+    
   public Layer(String name) {
     this.name = name;
   }
@@ -81,9 +75,10 @@ public class Layer
   {
     this.style = style;
     vertexStyle = new VertexStyle(style.getLineColor());
-    segArrowStyle = new OffsetArrowLineStyle(lighter(style.getLineColor()));
-    lineArrowStyle = new ArrowEndpointStyle(lighter(style.getLineColor()), false, true);
-    lineCircleStyle = new CircleEndpointStyle(lighter(style.getLineColor()), true, false);
+    segArrowStyle = new OffsetArrowLineStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
+    lineArrowStyle = new ArrowEndpointStyle(ColorUtil.lighter(style.getLineColor()), false, true);
+    lineCircleStyle = new CircleEndpointStyle(ColorUtil.lighter(style.getLineColor()), true, false);
+    PolygonStructureStyle polyStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
     
     styleList = new StyleList();
     styleList.add(style);
@@ -91,6 +86,7 @@ public class Layer
     styleList.add(segArrowStyle, decorationFilter);
     styleList.add(lineArrowStyle, decorationFilter);
     styleList.add(lineCircleStyle, decorationFilter);
+    styleList.add(polyStyle, decorationFilter);
   }
   
   public Geometry getGeometry()
