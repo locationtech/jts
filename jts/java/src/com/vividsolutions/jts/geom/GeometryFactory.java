@@ -303,8 +303,6 @@ public class GeometryFactory
   	return new GeometryCollection(geometries, this);
   }
 
-
-
   /**
    * Creates a MultiPolygon using the given Polygons; a null or empty array
    * will create an empty Polygon. The polygons must conform to the
@@ -335,7 +333,9 @@ public class GeometryFactory
    * A null or empty CoordinateSequence will
    * create an empty LinearRing. The points must form a closed and simple
    * linestring. Consecutive points must not be equal.
+   * 
    * @param coordinates a CoordinateSequence possibly empty, or null
+   * @throws IllegalArgumentException if the ring is not closed, or has too few points
    */
   public LinearRing createLinearRing(CoordinateSequence coordinates) {
     return new LinearRing(coordinates, this);
@@ -395,6 +395,7 @@ public class GeometryFactory
    *            the inner boundaries of the new <code>Polygon</code>, or
    *            <code>null</code> or empty <code>LinearRing</code> s if
    *            the empty geometry is to be created.
+   * @throws IllegalArgumentException if a ring is invalid
    */
   public Polygon createPolygon(LinearRing shell, LinearRing[] holes) {
     return new Polygon(shell, holes, this);
