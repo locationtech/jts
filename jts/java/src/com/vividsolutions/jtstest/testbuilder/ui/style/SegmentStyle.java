@@ -19,14 +19,14 @@ extends LineStringStyle
     for (int i = 0; i < lineString.getNumPoints() - 1; i++) {
       paint(lineString.getCoordinateN(i),
             lineString.getCoordinateN(i + 1),
-            viewport, graphics);
+            lineType, viewport, graphics);
     }
   }
 
-  protected void paint(Coordinate p0, Coordinate p1, Viewport viewport, Graphics2D g
+  protected void paint(Coordinate p0, Coordinate p1, int lineType, Viewport viewport, Graphics2D g
       ) throws Exception {
       paint(viewport.toView(new Point2D.Double(p0.x, p0.y)),
-          viewport.toView(new Point2D.Double(p1.x, p1.y)), viewport, g);
+          viewport.toView(new Point2D.Double(p1.x, p1.y)), lineType, viewport, g);
   }
 
   /**
@@ -38,6 +38,6 @@ extends LineStringStyle
    * @throws Exception
    */
   protected abstract void paint(Point2D p0, Point2D p1,
-      Viewport viewport, Graphics2D graphics) throws Exception;
+  		int lineType, Viewport viewport, Graphics2D graphics) throws Exception;
 
 }

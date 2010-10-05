@@ -6,11 +6,11 @@ import java.awt.geom.*;
 import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
 
-public class OffsetArrowLineStyle 
+public class ArrowLineStyle 
   extends SegmentStyle
 {
   private final static double HEAD_ANGLE = 30;
-  private final static double HEAD_LENGTH = 10;
+  private final static double HEAD_LENGTH = 6;
 
   private Color color = Color.RED;
 
@@ -21,14 +21,33 @@ public class OffsetArrowLineStyle
       new float[] {2, 2}, // Dash pattern
       0);                   // Dash phase 
 
-  public OffsetArrowLineStyle(Color color) {
+  public ArrowLineStyle(Color color) {
     this.color = color;
   }
 
-  protected void paint(Point2D p0, Point2D p1, Viewport vp, Graphics2D gr)
+  protected void paint(Point2D p0, Point2D p1, int lineType, Viewport vp, Graphics2D gr)
   throws Exception
   {
-  	paintOffsetArrow(p0, p1, vp, gr);
+  	if (lineType == LINE)
+  		paintMidpointArrow(p0, p1, vp, gr);
+  	else
+  		paintOffsetArrow(p0, p1, vp, gr);
+  }
+
+  protected void paintMidpointArrow(Point2D p0, Point2D p1, Viewport viewport,
+      Graphics2D graphics) throws NoninvertibleTransformException 
+  {
+    // can't compute valid arrow for zero-length segments
+    if (p0.equals(p1)) {
+      return;
+    }
+    graphics.setColor(color);
+    //      graphics.setStroke(1.0);
+    Point2D mid = new Point2D.Float((float) ((p0.getX() + p1.getX()) / 2),
+        (float) ((p0.getY() + p1.getY()) / 2));
+    GeneralPath arrowhead = ArrowEndpointStyle.arrowheadPath(p0, p1, mid,
+    		HEAD_LENGTH, HEAD_ANGLE);
+    graphics.draw(arrowhead);
   }
 
   private static final double LINE_OFFSET = 4;
@@ -37,7 +56,7 @@ public class OffsetArrowLineStyle
   private static final double HEAD_ANGLE_RAD = (HEAD_ANGLE - 180 ) /180.0 * Math.PI;
   private static final double HEAD_COS = Math.cos(HEAD_ANGLE_RAD);
   private static final double HEAD_SIN = Math.sin(HEAD_ANGLE_RAD);
-  private static final double HEAD_LEN = 6;
+  //private static final double HEAD_LEN = 6;
   
   private static final double MIN_VISIBLE_LEN = 2 * ENDPOINT_OFFSET + 4;
   
@@ -68,8 +87,8 @@ public class OffsetArrowLineStyle
     double off1x = p1.getX() - ENDPOINT_OFFSET * vx + LINE_OFFSET * vy;
     double off1y = p1.getY() - ENDPOINT_OFFSET * vy + LINE_OFFSET * -vx;
     
-    double headx = off1x + HEAD_LEN * (HEAD_COS * vx - HEAD_SIN * vy);
-    double heady = off1y + HEAD_LEN * (HEAD_SIN * vx + HEAD_COS * vy);
+    double headx = off1x + HEAD_LENGTH * (HEAD_COS * vx - HEAD_SIN * vy);
+    double heady = off1y + HEAD_LENGTH * (HEAD_SIN * vx + HEAD_COS * vy);
     
     GeneralPath arrowhead = new GeneralPath();
     arrowhead.moveTo((float) off0x, (float) off0y);

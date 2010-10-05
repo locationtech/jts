@@ -9,7 +9,7 @@ import com.vividsolutions.jtstest.testbuilder.ui.render.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.ArrowEndpointStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.BasicStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.CircleEndpointStyle;
-import com.vividsolutions.jtstest.testbuilder.ui.style.OffsetArrowLineStyle;
+import com.vividsolutions.jtstest.testbuilder.ui.style.ArrowLineStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.PolygonStructureStyle;
 import com.vividsolutions.jtstest.testbuilder.ui.style.Style;
 import com.vividsolutions.jtstest.testbuilder.ui.style.StyleList;
@@ -23,10 +23,6 @@ public class Layer
   private boolean isEnabled = true;
   
   private BasicStyle style = new BasicStyle();
-  private VertexStyle vertexStyle;
-  private OffsetArrowLineStyle segArrowStyle;
-  private ArrowEndpointStyle lineArrowStyle;
-  private CircleEndpointStyle lineCircleStyle;
   
   private StyleList styleList;
   
@@ -74,10 +70,10 @@ public class Layer
   public void setStyle(BasicStyle style)
   {
     this.style = style;
-    vertexStyle = new VertexStyle(style.getLineColor());
-    segArrowStyle = new OffsetArrowLineStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
-    lineArrowStyle = new ArrowEndpointStyle(ColorUtil.lighter(style.getLineColor()), false, true);
-    lineCircleStyle = new CircleEndpointStyle(ColorUtil.lighter(style.getLineColor()), true, false);
+    VertexStyle vertexStyle = new VertexStyle(style.getLineColor());
+    ArrowLineStyle segArrowStyle = new ArrowLineStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
+    ArrowEndpointStyle lineArrowStyle = new ArrowEndpointStyle(ColorUtil.lighter(style.getLineColor()), false, true);
+    CircleEndpointStyle lineCircleStyle = new CircleEndpointStyle(ColorUtil.lighter(style.getLineColor()), true, false);
     PolygonStructureStyle polyStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
     
     styleList = new StyleList();

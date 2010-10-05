@@ -17,7 +17,7 @@ public class MidArrowLineStyle
     this.color = color;
   }
 
-  protected void paint(Point2D p0, Point2D p1, Viewport vp, Graphics2D gr)
+  protected void paint(Point2D p0, Point2D p1, int lineType, Viewport vp, Graphics2D gr)
   throws Exception
   {
   	paintMidpointArrow(p0, p1, vp, gr);
