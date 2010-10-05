@@ -15,7 +15,7 @@ extends LineStringStyle
     // TODO Auto-generated constructor stub
   }
 
-  protected void paintLineString(LineString lineString, Viewport viewport, Graphics2D graphics) throws Exception {
+  protected void paintLineString(LineString lineString, int lineType, Viewport viewport, Graphics2D graphics) throws Exception {
     for (int i = 0; i < lineString.getNumPoints() - 1; i++) {
       paint(lineString.getCoordinateN(i),
             lineString.getCoordinateN(i + 1),

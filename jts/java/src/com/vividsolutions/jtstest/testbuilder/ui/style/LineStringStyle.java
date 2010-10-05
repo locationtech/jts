@@ -8,7 +8,10 @@ import com.vividsolutions.jtstest.testbuilder.Viewport;
 public abstract class LineStringStyle
   implements Style
 {
-
+	public static final int LINE = 1;
+	public static final int POLY_SHELL = 2;
+	public static final int POLY_HOLE = 2;
+	
   public LineStringStyle() {
   }
 
@@ -24,7 +27,7 @@ public abstract class LineStringStyle
       if (lineString.getNumPoints() < 2) {
         return;
       }
-      paintLineString(lineString, viewport, g);
+      paintLineString(lineString, LINE, viewport, g);
     }
     
     if (geom instanceof Point)
@@ -41,15 +44,26 @@ public abstract class LineStringStyle
     }
     if (geom instanceof Polygon) {
       Polygon polygon = (Polygon) geom;
-      paint(polygon.getExteriorRing(), viewport, g);
+      paint(polygon.getExteriorRing(), POLY_SHELL, viewport, g);
       for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-          paint(polygon.getInteriorRingN(i), viewport, g);
+          paint(polygon.getInteriorRingN(i), POLY_HOLE, viewport, g);
       }
       return;
     }
   }
 
+  public void paint(LineString line, int lineType, Viewport viewport, Graphics2D g) 
+  throws Exception
+  {
+    // cull non-visible geometries
+    if (! viewport.intersectsInModel(line.getEnvelopeInternal())) 
+      return;
+    
+    paintLineString(line, lineType, viewport, g);
+  }
+  
   protected abstract void paintLineString(LineString lineString,
+  		int lineType,
       Viewport viewport, Graphics2D graphics)
   throws Exception;
 

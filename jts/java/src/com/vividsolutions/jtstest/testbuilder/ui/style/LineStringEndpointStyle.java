@@ -13,7 +13,7 @@ public abstract class LineStringEndpointStyle extends LineStringStyle  {
         this.start = start;
     }    
 
-    protected void paintLineString(LineString lineString, Viewport viewport, Graphics2D graphics
+    protected void paintLineString(LineString lineString, int lineType, Viewport viewport, Graphics2D graphics
         ) throws Exception {
         if (lineString.isEmpty()) {
             return;
