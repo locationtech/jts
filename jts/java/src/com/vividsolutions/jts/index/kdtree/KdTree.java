@@ -127,7 +127,7 @@ public class KdTree
 			}
 			// test if point is already a node
 			if (currentNode != null) {
-				boolean isInTolerance = p.distance(currentNode.getCoordinate()) < tolerance;
+				boolean isInTolerance = p.distance(currentNode.getCoordinate()) <= tolerance;
 
 				// if (isInTolerance && ! p.equals2D(currentNode.getCoordinate())) {
 				// System.out.println("KDTree: Snapped!");
