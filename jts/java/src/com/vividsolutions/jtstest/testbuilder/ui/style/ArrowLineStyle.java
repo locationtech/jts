@@ -56,7 +56,6 @@ public class ArrowLineStyle
   private static final double HEAD_ANGLE_RAD = (HEAD_ANGLE - 180 ) /180.0 * Math.PI;
   private static final double HEAD_COS = Math.cos(HEAD_ANGLE_RAD);
   private static final double HEAD_SIN = Math.sin(HEAD_ANGLE_RAD);
-  //private static final double HEAD_LEN = 6;
   
   private static final double MIN_VISIBLE_LEN = 2 * ENDPOINT_OFFSET + 4;
   
