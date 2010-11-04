@@ -140,38 +140,5 @@ public class BufferFunctions {
 		return buf;
 	}
 
-	public static Geometry bufferComponents(Geometry g, double distance)	
-	{		
-		List bufs = new ArrayList();
-		for (Iterator it = new GeometryCollectionIterator(g); it.hasNext(); ) {
-			Geometry comp = (Geometry) it.next();
-			if (comp instanceof GeometryCollection) continue;
-			bufs.add(comp.buffer(distance));
-		}
-    return FunctionsUtil.getFactoryOrDefault(g)
-    				.createGeometryCollection(GeometryFactory.toGeometryArray(bufs));
-	}
-	
-	public static Geometry bufferComponentsAndUnion(Geometry g, double distance)	
-	{
-		return bufferComponents(g, distance).union();
-	}
-	
-	/**
-	 * Buffer polygons by buffering the individual boundary segments and
-	 * either unioning or differencing them.
-	 * 
-	 * @param g
-	 * @param distance
-	 * @return
-	 */
-	public static Geometry bufferBySegments(Geometry g, double distance)
-	{
-		Geometry segs = LineHandlingFunctions.extractSegments(g);
-		double posDist = Math.abs(distance);
-		Geometry segBuf = bufferComponentsAndUnion(segs, posDist);
-		if (distance < 0.0) 
-			return g.difference(segBuf);
-		return g.union(segBuf);
-	}
+
 }

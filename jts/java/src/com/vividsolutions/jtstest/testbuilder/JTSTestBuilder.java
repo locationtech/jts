@@ -86,7 +86,8 @@ public class JTSTestBuilder
   	GeometryFunctionRegistry funcRegistry = new GeometryFunctionRegistry();
   	
     funcRegistry.add(GeometryFunctions.class);
-  	funcRegistry.add(BufferFunctions.class);
+    funcRegistry.add(BufferFunctions.class);
+    funcRegistry.add(BufferByUnionFunctions.class);
     funcRegistry.add(ConstructionFunctions.class);
     funcRegistry.add(ConversionFunctions.class);
   	funcRegistry.add(LineHandlingFunctions.class);

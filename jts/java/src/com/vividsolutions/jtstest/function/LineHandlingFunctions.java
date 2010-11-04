@@ -65,14 +65,39 @@ public class LineHandlingFunctions {
     List lines = LinearComponentExtracter.getLines(g);
     List segments = new ArrayList();
     for (Iterator it = lines.iterator(); it.hasNext(); ) {
-    	LineString line = (LineString) it.next();
-    	for (int i = 1; i < line.getNumPoints(); i++) {
-    		LineString seg = g.getFactory().createLineString(
-    				new Coordinate[] { line.getCoordinateN(i-1), line.getCoordinateN(i) } 			
-    			);
-    		segments.add(seg);
-    	}
+      LineString line = (LineString) it.next();
+      for (int i = 1; i < line.getNumPoints(); i++) {
+        LineString seg = g.getFactory().createLineString(
+            new Coordinate[] { line.getCoordinateN(i-1), line.getCoordinateN(i) }       
+          );
+        segments.add(seg);
+      }
     }
     return g.getFactory().buildGeometry(segments);
+  }
+  public static Geometry extractChains(Geometry g, int maxChainSize)
+  {
+    List lines = LinearComponentExtracter.getLines(g);
+    List chains = new ArrayList();
+    for (Iterator it = lines.iterator(); it.hasNext(); ) {
+      LineString line = (LineString) it.next();
+      for (int i = 0; i < line.getNumPoints() - 1; i += maxChainSize) {
+        LineString chain = extractChain(line, i, maxChainSize);
+        chains.add(chain);
+      }
+    }
+    return g.getFactory().buildGeometry(chains);
+  }
+  
+  private static LineString extractChain(LineString line, int index, int maxChainSize)
+  {
+    int size = maxChainSize + 1;
+    if (index + size > line.getNumPoints()) 
+      size = line.getNumPoints() - index;
+    Coordinate[] pts = new Coordinate[size];
+    for (int i = 0; i < size; i++) {
+      pts[i] = line.getCoordinateN(index + i);
+    }
+    return line.getFactory().createLineString(pts);
   }
 }
