@@ -653,26 +653,23 @@ public class JTSTestBuilderFrame extends JFrame
     testListPanel.populateList();
   }
 
-  void showVerticesMenuItem_actionPerformed(ActionEvent e) {
-    setShowingVertices(tbMenuBar.showVerticesMenuItem.isSelected());
+  public void setShowingGrid(boolean showGrid) {
+    testCasePanel.editPanel.setGridEnabled(showGrid);
+    JTSTestBuilderController.geometryViewChanged();
   }
 
-  void showOrientationsMenuItem_actionPerformed(ActionEvent e) {
-    setShowingOrientations(tbMenuBar.showOrientationsMenuItem.isSelected());
-  }
-
-  void showGridMenuItem_actionPerformed(ActionEvent e) {
-    testCasePanel.editPanel.setGridEnabled(tbMenuBar.showGridMenuItem.isSelected());
+  public void setShowingStructure(boolean showStructure) {
+    TestBuilderModel.setShowingStructure(showStructure);
     JTSTestBuilderController.geometryViewChanged();
   }
 
   public void setShowingOrientations(boolean showingOrientations) {
-    TestBuilderModel.setShowingOrientations(showingOrientations);
+    TestBuilderModel.setShowingOrientation(showingOrientations);
     JTSTestBuilderController.geometryViewChanged();
   }
 
   public void setShowVertexIndices(boolean showVertexIndices) {
-    TestBuilderModel.setShowingOrientations(showVertexIndices);
+    TestBuilderModel.setShowingOrientation(showVertexIndices);
     JTSTestBuilderController.geometryViewChanged();
   }
 

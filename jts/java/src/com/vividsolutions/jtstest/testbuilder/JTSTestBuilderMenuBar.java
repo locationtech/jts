@@ -27,6 +27,7 @@ public class JTSTestBuilderMenuBar
   JCheckBoxMenuItem showVerticesMenuItem = new JCheckBoxMenuItem();
   JCheckBoxMenuItem showGridMenuItem = new JCheckBoxMenuItem();
   JCheckBoxMenuItem showOrientationsMenuItem = new JCheckBoxMenuItem();
+  JCheckBoxMenuItem showStructureMenuItem = new JCheckBoxMenuItem();
   JCheckBoxMenuItem showVertexIndicesMenuItem = new JCheckBoxMenuItem();
   JMenuItem menuLoadXmlTestFolder = new JMenuItem();
   JMenuItem precisionModelMenuItem = new JMenuItem();
@@ -140,7 +141,7 @@ public class JTSTestBuilderMenuBar
     showVerticesMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.showVerticesMenuItem_actionPerformed(e);
+          tbFrame.setShowingVertices(showVerticesMenuItem.isSelected());
         }
       });
     showGridMenuItem.setText("Show Grid");
@@ -148,21 +149,28 @@ public class JTSTestBuilderMenuBar
     showGridMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.showGridMenuItem_actionPerformed(e);
+          tbFrame.setShowingGrid(showGridMenuItem.isSelected());
+        }
+      });
+    showStructureMenuItem.setText("Show Structure");
+    showStructureMenuItem.addActionListener(
+      new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          tbFrame.setShowingStructure(showStructureMenuItem.isSelected());
         }
       });
     showOrientationsMenuItem.setText("Show Orientations");
     showOrientationsMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.showOrientationsMenuItem_actionPerformed(e);
+          tbFrame.setShowingOrientations(showOrientationsMenuItem.isSelected());
         }
       });
     showVertexIndicesMenuItem.setText("Show Vertex Indices");
     showVertexIndicesMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.showVertexIndicesMenuItem_actionPerformed(e);
+          tbFrame.setShowingVertices(showVerticesMenuItem.isSelected());
         }
       });
     menuLoadXmlTestFolder.setText("Open XML Folder(s)...");
@@ -224,7 +232,9 @@ public class JTSTestBuilderMenuBar
     jMenuEdit.add(precisionModelMenuItem);
     
     jMenuOptions.add(showVerticesMenuItem);
+    
     //jMenuOptions.add(showVertexIndicesMenuItem);
+    jMenuOptions.add(showStructureMenuItem);
     jMenuOptions.add(showOrientationsMenuItem);
     jMenuOptions.add(showGridMenuItem);
     

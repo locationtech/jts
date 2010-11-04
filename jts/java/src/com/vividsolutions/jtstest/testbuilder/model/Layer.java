@@ -33,9 +33,15 @@ public class Layer
   };
   
   private StyleList.StyleFilter decorationFilter = new StyleList.StyleFilter() {
-  	public boolean isFiltered(Style style) {
-  		return ! TestBuilderModel.isShowingOrientations();
-  	}
+    public boolean isFiltered(Style style) {
+      return ! TestBuilderModel.isShowingOrientation();
+    }
+  };
+    
+  private StyleList.StyleFilter structureFilter = new StyleList.StyleFilter() {
+    public boolean isFiltered(Style style) {
+      return ! TestBuilderModel.isShowingStructure();
+    }
   };
     
   public Layer(String name) {
@@ -82,7 +88,7 @@ public class Layer
     styleList.add(segArrowStyle, decorationFilter);
     styleList.add(lineArrowStyle, decorationFilter);
     styleList.add(lineCircleStyle, decorationFilter);
-    styleList.add(polyStyle, decorationFilter);
+    styleList.add(polyStyle, structureFilter);
   }
   
   public Geometry getGeometry()

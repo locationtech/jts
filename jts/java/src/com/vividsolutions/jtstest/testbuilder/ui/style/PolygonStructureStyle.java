@@ -23,7 +23,7 @@ public class PolygonStructureStyle
   protected void paintComponent(Geometry geom, Viewport viewport, Graphics2D gr)
   throws Exception
   {
-    Color dashClr = new Color(0, 0, 0);
+    Color dashClr = color.darker(); //new Color(0, 0, 0);
   	Graphics2D gr2 = (Graphics2D) gr.create();
   	gr2.setColor(dashClr);
   	

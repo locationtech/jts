@@ -1,6 +1,5 @@
 package com.vividsolutions.jtstest.testbuilder.model;
 
-import java.awt.event.ActionEvent;
 import java.io.*;
 import java.util.*;
 
@@ -16,24 +15,30 @@ import com.vividsolutions.jtstest.testrunner.TestRun;
 import com.vividsolutions.jtstest.util.*;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
 import com.vividsolutions.jtstest.testbuilder.geom.GeometryContainer;
-import com.vividsolutions.jtstest.testbuilder.io.shapefile.Shapefile;
 
 public class TestBuilderModel 
 {
   public static int MAX_DISPLAY_POINTS = 2000;
 
   protected static boolean showingGrid = true;
-  protected static boolean showingOrientations = false;
+  protected static boolean showingStructure = false;
+  protected static boolean showingOrientation = false;
   protected static boolean showingVertices = true;
   protected static boolean showingCoordinates = true;
   protected static boolean isMagnifyingTopology = false;
   protected static double topologyStretchSize = AppConstants.TOPO_STRETCH_VIEW_DIST;
   
-  public static boolean isShowingOrientations() {
-    return showingOrientations;
+  public static boolean isShowingStructure() {
+    return showingStructure;
   }
-  public static void setShowingOrientations(boolean show) {
-    showingOrientations = show;
+  public static void setShowingStructure(boolean show) {
+    showingStructure = show;
+  }
+  public static boolean isShowingOrientation() {
+    return showingOrientation;
+  }
+  public static void setShowingOrientation(boolean show) {
+    showingOrientation = show;
   }
   public static boolean isShowingGrid() {
     return showingGrid;
