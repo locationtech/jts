@@ -2,6 +2,8 @@ package com.vividsolutions.jtstest.testbuilder.ui;
 
 import java.awt.Color;
 
+import com.vividsolutions.jts.util.MathUtil;
+
 public class ColorUtil {
 
   public static Color opaque(Color clr)
@@ -22,6 +24,14 @@ public class ColorUtil {
     float[] hsb = new float[3];
     Color.RGBtoHSB(clr.getRed(), clr.getGreen(), clr.getBlue(), hsb);
     hsb[1] *= saturationFraction;
+    return Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
+  }
+  
+  public static Color saturate(Color clr, double saturation)
+  {
+    float[] hsb = new float[3];
+    Color.RGBtoHSB(clr.getRed(), clr.getGreen(), clr.getBlue(), hsb);
+    hsb[1] = (float) MathUtil.clamp(saturation, 0, 1);;
     return Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
   }
 

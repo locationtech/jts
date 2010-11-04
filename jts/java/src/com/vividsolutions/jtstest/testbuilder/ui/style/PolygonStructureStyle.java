@@ -7,6 +7,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jtstest.testbuilder.Viewport;
+import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryPainter;
 
 public class PolygonStructureStyle 
@@ -15,17 +16,18 @@ public class PolygonStructureStyle
   private Color color = Color.BLACK;
 
   public PolygonStructureStyle(Color color) {
-    this.color = new Color(255, 255, 255, 160);
-    //this.color = color;
+    //this.color = new Color(255, 255, 255, 160);
+    this.color = color;
   }
 
   protected void paintComponent(Geometry geom, Viewport viewport, Graphics2D gr)
   throws Exception
   {
+    Color dashClr = new Color(0, 0, 0);
   	Graphics2D gr2 = (Graphics2D) gr.create();
-  	gr2.setColor(color);
+  	gr2.setColor(dashClr);
   	
-    Stroke dashStroke = new BasicStroke(2,                  // Width of stroke
+    Stroke dashStroke = new BasicStroke((float) 1.2,                  // Width of stroke
         BasicStroke.CAP_SQUARE,  // End cap style
         BasicStroke.JOIN_MITER, // Join style
         10,                  // Miter limit
@@ -35,11 +37,15 @@ public class PolygonStructureStyle
 
     if (geom instanceof Polygon) {
       Polygon polygon = (Polygon) geom;
-      //paintRing(polygon.getExteriorRing(), true, viewport, gr2);
       
       for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
       	paintRing(polygon.getInteriorRingN(i), false, viewport, gr2);
       }
+      
+      //Color shellClr = ColorUtil.saturate(color, 0.9);
+      //gr2.setColor(shellClr);
+      //paintRing(polygon.getExteriorRing(), true, viewport, gr2);
+
       return;
     }
   }

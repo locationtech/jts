@@ -41,10 +41,10 @@ import java.awt.geom.*;
 import java.text.NumberFormat;
 
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.util.MathUtil;
 import com.vividsolutions.jtstest.testbuilder.AppConstants;
 import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.model.DrawingGrid;
-import com.vividsolutions.jtstest.util.MathUtil;
 
 public class GridRenderer {
   private static final int MIN_VIEW_GRID_SIZE = 5;

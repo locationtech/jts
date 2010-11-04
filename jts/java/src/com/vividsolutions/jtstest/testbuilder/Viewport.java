@@ -9,7 +9,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jtstest.util.MathUtil;
+import com.vividsolutions.jts.util.MathUtil;
 
 
 /**
