@@ -3,6 +3,7 @@ package com.vividsolutions.jtstest.testbuilder;
 import java.awt.Color;
 
 import com.vividsolutions.jtstest.testbuilder.model.GeometryDepiction;
+import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
 
 public class AppConstants 
 {
@@ -34,7 +35,7 @@ public class AppConstants
 
 	public static final Color GRID_CLR = Color.lightGray;
 
-	public static final Color GRID_MAJOR_CLR = new Color(220, 220, 220);
-	public static final Color GRID_MINOR_CLR = Color.GRAY;
+	public static final Color GRID_MAJOR_CLR = ColorUtil.gray(240);
+	public static final Color GRID_MINOR_CLR = ColorUtil.gray(190);
 
 }

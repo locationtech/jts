@@ -6,6 +6,11 @@ import com.vividsolutions.jts.util.MathUtil;
 
 public class ColorUtil {
 
+  public static Color gray(int grayVal)
+  {
+    return new Color(grayVal, grayVal, grayVal);
+  }
+  
   public static Color opaque(Color clr)
   {
     return new Color(clr.getRed(), clr.getGreen(), clr.getBlue());
