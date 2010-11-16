@@ -295,11 +295,14 @@ public class BufferParameters
   /**
    * Sets whether the computed buffer should be single-sided.
    * A single-sided buffer is constructed on only one side of each input line.
+   * <b>
    * The side used is determined by the sign of the buffer distance:
    * <ul>
    * <li>a positive distance indicates the right-hand side
    * <li>a negative distance indicates the left-hand side
    * </ul>
+   * The single-sided buffer of point geometries is 
+   * the same as the regular buffer.
    * 
    * @param isSingleSided true if a single-sided buffer should be constructed
    */
@@ -309,9 +312,9 @@ public class BufferParameters
   }
 
   /**
-   * Tests whether the buffer will be computed on a single side only.
+   * Tests whether the buffer is to be generated on a single side only.
    * 
-   * @return true if the computed buffer is single-sided
+   * @return true if the generated buffer is to be single-sided
    */
   public boolean isSingleSided() {
     return isSingleSided;
