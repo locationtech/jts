@@ -77,9 +77,23 @@ public class OffsetCurveVertexList
     precisionModel.makePrecise(bufPt);
     // don't add duplicate (or near-duplicate) points
     if (isDuplicate(bufPt))
-    		return;
+        return;
     ptList.add(bufPt);
 //System.out.println(bufPt);
+  }
+  
+  public void addPts(Coordinate[] pt, boolean isForward)
+  {
+    if (isForward) {
+      for (int i = 0; i < pt.length; i++) {
+        addPt(pt[i]);
+      }
+    }
+    else {
+      for (int i = pt.length - 1; i >= 0; i--) {
+        addPt(pt[i]);
+      }     
+    }
   }
   
   /**
@@ -114,12 +128,14 @@ public class OffsetCurveVertexList
 
   public Coordinate[] getCoordinates()
   {
-    // check that points are a ring - add the startpoint again if they are not
-    if (ptList.size() > 1) {
+    /*
+     // check that points are a ring - add the startpoint again if they are not
+   if (ptList.size() > 1) {
       Coordinate start  = (Coordinate) ptList.get(0);
       Coordinate end    = (Coordinate) ptList.get(ptList.size() - 1);
       if (! start.equals(end) ) addPt(start);
     }
+    */
     Coordinate[] coord = (Coordinate[]) ptList.toArray(COORDINATE_ARRAY_TYPE);
     return coord;
   }

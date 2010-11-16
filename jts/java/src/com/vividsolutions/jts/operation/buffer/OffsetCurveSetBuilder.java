@@ -141,9 +141,10 @@ public class OffsetCurveSetBuilder {
     List lineList = curveBuilder.getLineCurve(coord, distance);
     addCurves(lineList, Location.EXTERIOR, Location.INTERIOR);
   }
+  
   private void addLineString(LineString line)
   {
-    if (distance <= 0.0) return;
+    if (distance <= 0.0 && ! curveBuilder.getBufferParameters().isSingleSided()) return;
     Coordinate[] coord = CoordinateArrays.removeRepeatedPoints(line.getCoordinates());
     List lineList = curveBuilder.getLineCurve(coord, distance);
     addCurves(lineList, Location.EXTERIOR, Location.INTERIOR);

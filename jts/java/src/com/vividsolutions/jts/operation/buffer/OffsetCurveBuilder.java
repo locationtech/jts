@@ -84,7 +84,6 @@ public class OffsetCurveBuilder
   
   private double distance = 0.0;
   private PrecisionModel precisionModel;
-  
   private BufferParameters bufParams;
   
   /**
@@ -130,6 +129,10 @@ public class OffsetCurveBuilder
       closingSegFactor = MAX_CLOSING_SEG_FRACTION;
   }
 
+  public BufferParameters getBufferParameters()
+  {
+    return bufParams;
+  }
   /**
    * This method handles single points as well as lines.
    * Lines are assumed to <b>not</b> be closed (the function will not
@@ -141,9 +144,11 @@ public class OffsetCurveBuilder
   {
     List lineList = new ArrayList();
     // a zero or negative width buffer of a line/point is empty
-    if (distance <= 0.0) return lineList;
+    if (distance <= 0.0 && ! bufParams.isSingleSided()) return lineList;
 
-    init(distance);
+    boolean isRightSide = distance > 0.0;
+    
+    init(Math.abs(distance));
     if (inputPts.length <= 1) {
       switch (bufParams.getEndCapStyle()) {
         case BufferParameters.CAP_ROUND:
@@ -155,8 +160,13 @@ public class OffsetCurveBuilder
           // default is for buffer to be empty (e.g. for a butt line cap);
       }
     }
-    else
-      computeLineBufferCurve(inputPts);
+    else {
+      if (bufParams.isSingleSided())
+        computeSingleSidedBufferCurve(inputPts, isRightSide);     
+      else
+        computeLineBufferCurve(inputPts);
+    }
+      
     
 //System.out.println(vertexList);
     
@@ -241,8 +251,6 @@ public class OffsetCurveBuilder
 //    Coordinate[] simp1 = inputPts;
     
     int n1 = simp1.length - 1;
-
-
     initSideSegments(simp1[0], simp1[1], Position.LEFT);
     for (int i = 2; i <= n1; i++) {
       addNextSegment(simp1[i], true);
@@ -294,6 +302,49 @@ public class OffsetCurveBuilder
 
     vertexList.closeRing();
   }
+  
+  private void computeSingleSidedBufferCurve(Coordinate[] inputPts, boolean isRightSide)
+  {
+    double distTol = simplifyTolerance(distance);
+    
+    if (isRightSide) {
+      // add original line
+      vertexList.addPts(inputPts, true);
+      
+      //---------- compute points for right side of line
+      // Simplify the appropriate side of the line before generating
+      Coordinate[] simp2 = BufferInputLineSimplifier.simplify(inputPts, -distTol);
+      // MD - used for testing only (to eliminate simplification)
+  //    Coordinate[] simp2 = inputPts;
+      int n2 = simp2.length - 1;
+     
+      // since we are traversing line in opposite order, offset position is still LEFT
+      initSideSegments(simp2[n2], simp2[n2 - 1], Position.LEFT);
+      addFirstSegment();
+      for (int i = n2 - 2; i >= 0; i--) {
+        addNextSegment(simp2[i], true);
+      }
+    }
+    else {
+      // add original line
+      vertexList.addPts(inputPts, false);
+      
+      //--------- compute points for left side of line
+      // Simplify the appropriate side of the line before generating
+      Coordinate[] simp1 = BufferInputLineSimplifier.simplify(inputPts, distTol);
+      // MD - used for testing only (to eliminate simplification)
+//      Coordinate[] simp1 = inputPts;
+      
+      int n1 = simp1.length - 1;
+      initSideSegments(simp1[0], simp1[1], Position.LEFT);
+      addFirstSegment();
+      for (int i = 2; i <= n1; i++) {
+        addNextSegment(simp1[i], true);
+      }
+    }
+    addLastSegment();
+    vertexList.closeRing();
+  }
 
   private void computeRingBufferCurve(Coordinate[] inputPts, int side)
   {
@@ -330,7 +381,20 @@ public class OffsetCurveBuilder
     computeOffsetSegment(seg1, side, distance, offset1);
   }
 
-  private static double MAX_CLOSING_SEG_LEN = 3.0;
+  private void addFirstSegment()
+  {
+    vertexList.addPt(offset1.p0);
+  }
+  
+  /**
+   * Add last offset point
+   */
+  private void addLastSegment()
+  {
+    vertexList.addPt(offset1.p1);
+  }
+
+  //private static double MAX_CLOSING_SEG_LEN = 3.0;
 
   private void addNextSegment(Coordinate p, boolean addStartPoint)
   {
@@ -461,7 +525,7 @@ public class OffsetCurveBuilder
        * In complex buffer cases the closing segment may cut across many other
        * segments in the generated offset curve.  In order to improve the 
        * performance of the noding, the closing segment should be kept as short as possible.
-       * (But not too short, since that would defeat it's purpose).
+       * (But not too short, since that would defeat its purpose).
        * This is the purpose of the closingSegFactor heuristic value.
        */ 
     	
@@ -507,13 +571,6 @@ public class OffsetCurveBuilder
     }
   }
   
-  /**
-   * Add last offset point
-   */
-  private void addLastSegment()
-  {
-  	vertexList.addPt(offset1.p1);
-  }
 
   /**
    * Compute an offset segment for an input segment on a given side and at a given distance.

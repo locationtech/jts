@@ -45,11 +45,13 @@ import com.vividsolutions.jts.noding.snapround.*;
 /**
  * Computes the buffer of a geometry, for both positive and negative buffer distances.
  * <p>
- * In GIS, the positive buffer of a geometry is defined as
- * the Minkowski sum or difference of the geometry
+ * In GIS, the positive (or negative) buffer of a geometry is defined as
+ * the Minkowski sum (or difference) of the geometry
  * with a circle of radius equal to the absolute value of the buffer distance.
  * In the CAD/CAM world buffers are known as </i>offset curves</i>.
- * In morphological analysis they are known as <i>erosion</i> and <i>dilation</i>
+ * In morphological analysis the 
+ * operation of postive and negative buffering 
+ * is referred to as <i>erosion</i> and <i>dilation</i>
  * <p>
  * The buffer operation always returns a polygonal result.
  * The negative or zero-distance buffer of lines and points is always an empty {@link Polygon}.

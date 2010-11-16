@@ -86,7 +86,8 @@ public class BufferParameters
   private int endCapStyle = CAP_ROUND;
   private int joinStyle = JOIN_ROUND;
   private double mitreLimit = DEFAULT_MITRE_LIMIT;
-
+  private boolean isSingleSided = false;
+  
   /**
    * Creates a default set of parameters
    *
@@ -291,4 +292,28 @@ public class BufferParameters
     this.mitreLimit = mitreLimit;
   }
 
+  /**
+   * Sets whether the computed buffer should be single-sided.
+   * A single-sided buffer is constructed on only one side of each input line.
+   * The side used is determined by the sign of the buffer distance:
+   * <ul>
+   * <li>a positive distance indicates the right-hand side
+   * <li>a negative distance indicates the left-hand side
+   * </ul>
+   * 
+   * @param isSingleSided true if a single-sided buffer should be constructed
+   */
+  public void setSingleSided(boolean isSingleSided)
+  {
+    this.isSingleSided = isSingleSided;
+  }
+
+  /**
+   * Tests whether the buffer will be computed on a single side only.
+   * 
+   * @return true if the computed buffer is single-sided
+   */
+  public boolean isSingleSided() {
+    return isSingleSided;
+  }
 }
