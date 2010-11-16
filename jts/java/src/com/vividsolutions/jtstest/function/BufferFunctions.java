@@ -72,12 +72,12 @@ public class BufferFunctions {
     return BufferOp.bufferOp(g, dist, bufParams);
 	}
 	
-	public static Geometry bufferOffsetCurve(Geometry g, double distance)	
+	public static Geometry bufferCurve(Geometry g, double distance)	
 	{		
     return buildCurveSet(g, distance, new BufferParameters());
 	}
 	
-	public static Geometry bufferOffsetCurveWithParams(Geometry g, Double distance, 
+	public static Geometry bufferCurveWithParams(Geometry g, Double distance, 
 			Integer quadrantSegments, Integer capStyle, Integer joinStyle, Double mitreLimit)	
 	{
     double dist = 0;
@@ -140,5 +140,22 @@ public class BufferFunctions {
 		return buf;
 	}
 
+  public static Geometry singleSidedBufferCurve(Geometry geom, double distance) {
+    BufferParameters bufParam = new BufferParameters();
+    bufParam.setSingleSided(true);
+    OffsetCurveBuilder ocb = new OffsetCurveBuilder(
+        geom.getFactory().getPrecisionModel(), bufParam
+        );
+     List lines = ocb.getLineCurve(geom.getCoordinates(), distance);
+     Coordinate[] pts = (Coordinate[]) lines.get(0);
+     Geometry curve = geom.getFactory().createLineString(pts);
+     return curve;
+  }
+  
+  public static Geometry singleSidedBuffer(Geometry geom, double distance) {
+    BufferParameters bufParams = new BufferParameters();
+    bufParams.setSingleSided(true);
+    return BufferOp.bufferOp(geom, distance, bufParams);
+  }
 
 }

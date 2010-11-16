@@ -143,26 +143,28 @@ public class OffsetCurveBuilder
   public List getLineCurve(Coordinate[] inputPts, double distance)
   {
     List lineList = new ArrayList();
+    
     // a zero or negative width buffer of a line/point is empty
     if (distance <= 0.0 && ! bufParams.isSingleSided()) return lineList;
 
-    boolean isRightSide = distance > 0.0;
-    
-    init(Math.abs(distance));
+    double posDistance = Math.abs(distance);
+    init(posDistance);
     if (inputPts.length <= 1) {
       switch (bufParams.getEndCapStyle()) {
         case BufferParameters.CAP_ROUND:
-          addCircle(inputPts[0], distance);
+          addCircle(inputPts[0], posDistance);
           break;
         case BufferParameters.CAP_SQUARE:
-          addSquare(inputPts[0], distance);
+          addSquare(inputPts[0], posDistance);
           break;
           // default is for buffer to be empty (e.g. for a butt line cap);
       }
     }
     else {
-      if (bufParams.isSingleSided())
-        computeSingleSidedBufferCurve(inputPts, isRightSide);     
+      if (bufParams.isSingleSided()) {
+        boolean isRightSide = distance > 0.0;
+        computeSingleSidedBufferCurve(inputPts, isRightSide);
+      }
       else
         computeLineBufferCurve(inputPts);
     }
@@ -840,6 +842,7 @@ public class OffsetCurveBuilder
     Coordinate pt = new Coordinate(p.x + distance, p.y);
     vertexList.addPt(pt);
     addFillet(p, 0.0, 2.0 * Math.PI, -1, distance);
+    vertexList.closeRing();
   }
 
   /**
