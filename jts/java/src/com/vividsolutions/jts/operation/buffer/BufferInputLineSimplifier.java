@@ -50,16 +50,19 @@ import com.vividsolutions.jts.geom.*;
  * A key aspect of the simplification is that it
  * affects inside (concave or inward) corners only.  
  * Convex (outward) corners are preserved, since they
- * are required to ensure that the eventual buffer curve
+ * are required to ensure that the generated buffer curve
  * lies at the correct distance from the input geometry.
  * <p>
  * Another important heuristic used is that the end segments
  * of the input are never simplified.  This ensures that
- * the client buffer code is able to generate end caps consistently.
+ * the client buffer code is able to generate end caps faithfully.
  * <p>
  * No attempt is made to avoid self-intersections in the output.
- * This is acceptable for use for generating a buffer offset curve, 
- * but means that this cannot be used as a general-purpose polygon simplification algorithm.
+ * This is acceptable for use for generating a buffer offset curve,
+ * since the buffer algorithm is insensitive to invalid polygonal
+ * geometry.  However, 
+ * this means that this algorithm
+ * cannot be used as a general-purpose polygon simplification technique.
  * 
  * @author Martin Davis
  *

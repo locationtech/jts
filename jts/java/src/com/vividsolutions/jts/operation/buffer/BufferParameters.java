@@ -303,6 +303,10 @@ public class BufferParameters
    * </ul>
    * The single-sided buffer of point geometries is 
    * the same as the regular buffer.
+   * <p>
+   * The End Cap Style for single-sided buffers is 
+   * always ignored, 
+   * and forced to the equivalent of <tt>CAP_FLAT</tt>. 
    * 
    * @param isSingleSided true if a single-sided buffer should be constructed
    */
