@@ -83,8 +83,9 @@ public class LineStringSnapper
   private void snapVertices(CoordinateList srcCoords, Coordinate[] snapPts)
   {
     // try snapping vertices
-    // assume src list has a closing point (is a ring)
-    for (int i = 0; i < srcCoords.size() - 1; i++) {
+    // if src is a ring then don't snap final vertex
+    int end = isClosed ? srcCoords.size() - 1 : srcCoords.size();
+    for (int i = 0; i < end; i++) {
       Coordinate srcPt = (Coordinate) srcCoords.get(i);
       Coordinate snapVert = findSnapForVertex(srcPt, snapPts);
       if (snapVert != null) {
