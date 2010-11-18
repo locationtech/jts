@@ -1,4 +1,4 @@
-package com.vividsolutions.jts.algorithm.math;
+package com.vividsolutions.jts.math;
 
 import java.io.*;
 

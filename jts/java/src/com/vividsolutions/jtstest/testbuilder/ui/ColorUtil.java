@@ -2,7 +2,7 @@ package com.vividsolutions.jtstest.testbuilder.ui;
 
 import java.awt.Color;
 
-import com.vividsolutions.jts.util.MathUtil;
+import com.vividsolutions.jts.math.MathUtil;
 
 public class ColorUtil {
 

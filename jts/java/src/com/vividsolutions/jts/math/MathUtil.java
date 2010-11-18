@@ -1,4 +1,4 @@
-package com.vividsolutions.jts.util;
+package com.vividsolutions.jts.math;
 
 /**
  * Various utility functions for mathematical and numerical operations.

@@ -1,8 +1,8 @@
 package com.vividsolutions.jts.shape.fractal;
 
-import com.vividsolutions.jts.algorithm.math.Vector2D;
-import com.vividsolutions.jts.algorithm.math.VectorMath;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.math.Vector2D;
+import com.vividsolutions.jts.math.VectorMath;
 import com.vividsolutions.jts.shape.*;
 
 public class KochSnowflakeBuilder 

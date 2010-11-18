@@ -1,9 +1,9 @@
 package com.vividsolutions.jtstest.testbuilder.topostretch;
 
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.MathUtil;
+import com.vividsolutions.jts.math.MathUtil;
+import com.vividsolutions.jts.math.Vector2D;
 import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.algorithm.math.Vector2D;
 
 /**
  * Models a vertex of a Geometry which will be stretched

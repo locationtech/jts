@@ -1,4 +1,4 @@
-package com.vividsolutions.jts.algorithm.math;
+package com.vividsolutions.jts.math;
 
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.algorithm.RobustDeterminant;

@@ -31,7 +31,7 @@
  *     www.vividsolutions.com
  */
 
-package com.vividsolutions.jts.algorithm.math;
+package com.vividsolutions.jts.math;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.util.Assert;

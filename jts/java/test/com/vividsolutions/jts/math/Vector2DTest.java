@@ -1,6 +1,4 @@
-package com.vividsolutions.jts.algorithm.math;
-
-import com.vividsolutions.jts.geom.Coordinate;
+package com.vividsolutions.jts.math;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
