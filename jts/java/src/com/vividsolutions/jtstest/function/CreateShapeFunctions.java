@@ -108,4 +108,25 @@ public class CreateShapeFunctions {
 		return gsf.createSupercircle(pow);
 	}
 	
+  public static Geometry ellipse(Geometry g, int nPts)
+  {
+    GeometricShapeFactory gsf = new GeometricShapeFactory();
+    gsf.setNumPoints(nPts);
+    if (g != null)
+      gsf.setEnvelope(g.getEnvelopeInternal());
+    else
+      gsf.setEnvelope(new Envelope(0, 1, 0, 1));
+    return gsf.createCircle();
+  }
+  public static Geometry ellipseRotate(Geometry g, int nPts, double ang)
+  {
+    GeometricShapeFactory gsf = new GeometricShapeFactory();
+    gsf.setNumPoints(nPts);
+    gsf.setRotation(ang);
+    if (g != null)
+      gsf.setEnvelope(g.getEnvelopeInternal());
+    else
+      gsf.setEnvelope(new Envelope(0, 1, 0, 1));
+    return gsf.createCircle();
+  }
 }

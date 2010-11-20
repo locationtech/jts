@@ -37,6 +37,7 @@ package com.vividsolutions.jts.util;
  * Methods to create various geometry shapes
  */
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.util.AffineTransformation;
 
 /**
  * Computes various kinds of common geometric shapes.
@@ -60,6 +61,7 @@ public class GeometricShapeFactory
   protected PrecisionModel precModel = null;
   protected Dimensions dim = new Dimensions();
   protected int nPts = 100;
+  protected double rotationAngle = 0.0;
 
   /**
    * Create a shape factory which will create shapes using the default
@@ -132,6 +134,27 @@ public class GeometricShapeFactory
   public void setHeight(double height) { dim.setHeight(height); }
 
   /**
+   * Sets the rotation angle to use for the shape.
+   * The rotation is applied based at the centre of the shape.
+   * 
+   * @param radians the rotation angle in radians.
+   */
+  public void setRotation(double radians)
+  {
+    rotationAngle = radians;
+  }
+  
+  protected Geometry rotate(Geometry geom)
+  {
+    if (rotationAngle != 0.0) {
+      AffineTransformation trans = AffineTransformation.rotationInstance(rotationAngle, 
+          dim.getCentre().x, dim.getCentre().y);
+      geom.apply(trans);
+    }
+    return geom;
+  }
+  
+  /**
    * Creates a rectangular {@link Polygon}.
    *
    * @return a rectangular Polygon
@@ -149,40 +172,40 @@ public class GeometricShapeFactory
     Coordinate[] pts = new Coordinate[4 * nSide + 1];
     Envelope env = dim.getEnvelope();
 
-    double maxx = env.getMinX() + nSide * XsegLen;
-    double maxy = env.getMinY() + nSide * XsegLen;
+    //double maxx = env.getMinX() + nSide * XsegLen;
+    //double maxy = env.getMinY() + nSide * XsegLen;
 
     for (i = 0; i < nSide; i++) {
       double x = env.getMinX() + i * XsegLen;
       double y = env.getMinY();
-      pts[ipt++] = createCoord(x, y);
+      pts[ipt++] = coord(x, y);
     }
     for (i = 0; i < nSide; i++) {
       double x = env.getMaxX();
       double y = env.getMinY() + i * YsegLen;
-      pts[ipt++] = createCoord(x, y);
+      pts[ipt++] = coord(x, y);
     }
     for (i = 0; i < nSide; i++) {
       double x = env.getMaxX() - i * XsegLen;
       double y = env.getMaxY();
-      pts[ipt++] = createCoord(x, y);
+      pts[ipt++] = coord(x, y);
     }
     for (i = 0; i < nSide; i++) {
       double x = env.getMinX();
       double y = env.getMaxY() - i * YsegLen;
-      pts[ipt++] = createCoord(x, y);
+      pts[ipt++] = coord(x, y);
     }
     pts[ipt++] = new Coordinate(pts[0]);
 
     LinearRing ring = geomFact.createLinearRing(pts);
     Polygon poly = geomFact.createPolygon(ring, null);
-    return poly;
+    return (Polygon) rotate(poly);
   }
 
   /**
-   * Creates a circular {@link Polygon}.
+   * Creates a circular or elliptical {@link Polygon}.
    *
-   * @return a circle
+   * @return a circle or ellipse
    */
   public Polygon createCircle()
   {
@@ -200,13 +223,13 @@ public class GeometricShapeFactory
         double ang = i * (2 * Math.PI / nPts);
         double x = xRadius * Math.cos(ang) + centreX;
         double y = yRadius * Math.sin(ang) + centreY;
-        pts[iPt++] = createCoord(x, y);
+        pts[iPt++] = coord(x, y);
     }
     pts[iPt] = new Coordinate(pts[0]);
 
     LinearRing ring = geomFact.createLinearRing(pts);
     Polygon poly = geomFact.createPolygon(ring, null);
-    return poly;
+    return (Polygon) rotate(poly);
   }
   /**
    * Creates a squircular {@link Polygon}.
@@ -233,8 +256,6 @@ public class GeometricShapeFactory
   {
   	double recipPow = 1.0 / power;
   	
-    Envelope env = dim.getEnvelope();
-
     double radius = dim.getMinSize() / 2;
     Coordinate centre = dim.getCentre();
     
@@ -256,23 +277,23 @@ public class GeometricShapeFactory
     		double x4 = Math.pow(x, power);
     		y = Math.pow(r4 - x4, recipPow);
     	}
-      pts[i] = createCoordTrans(x, y, centre);
-      pts[2 * nSegsInOct - i] = createCoordTrans(y, x, centre);
+      pts[i] = coordTrans(x, y, centre);
+      pts[2 * nSegsInOct - i] = coordTrans(y, x, centre);
       
-      pts[2 * nSegsInOct + i] = createCoordTrans(y, -x, centre);
-      pts[4 * nSegsInOct - i] = createCoordTrans(x, -y, centre);
+      pts[2 * nSegsInOct + i] = coordTrans(y, -x, centre);
+      pts[4 * nSegsInOct - i] = coordTrans(x, -y, centre);
       
-      pts[4 * nSegsInOct + i] = createCoordTrans(-x, -y, centre);
-      pts[6 * nSegsInOct - i] = createCoordTrans(-y, -x, centre);
+      pts[4 * nSegsInOct + i] = coordTrans(-x, -y, centre);
+      pts[6 * nSegsInOct - i] = coordTrans(-y, -x, centre);
       
-      pts[6 * nSegsInOct + i] = createCoordTrans(-y, x, centre);
-      pts[8 * nSegsInOct - i] = createCoordTrans(-x, y, centre);
+      pts[6 * nSegsInOct + i] = coordTrans(-y, x, centre);
+      pts[8 * nSegsInOct - i] = coordTrans(-x, y, centre);
     }
     pts[pts.length-1] = new Coordinate(pts[0]);
 
     LinearRing ring = geomFact.createLinearRing(pts);
     Polygon poly = geomFact.createPolygon(ring, null);
-    return poly;
+    return (Polygon) rotate(poly);
   }
 
    /**
@@ -305,10 +326,10 @@ public class GeometricShapeFactory
          double ang = startAng + i * angInc;
          double x = xRadius * Math.cos(ang) + centreX;
          double y = yRadius * Math.sin(ang) + centreY;
-         pts[iPt++] = createCoord(x, y);
+         pts[iPt++] = coord(x, y);
      }
      LineString line = geomFact.createLineString(pts);
-     return line;
+     return (LineString) rotate(line);
    }
 
   /**
@@ -338,30 +359,30 @@ public class GeometricShapeFactory
     Coordinate[] pts = new Coordinate[nPts + 2];
 
     int iPt = 0;
-    pts[iPt++] = createCoord(centreX, centreY);
+    pts[iPt++] = coord(centreX, centreY);
     for (int i = 0; i < nPts; i++) {
       double ang = startAng + angInc * i;
 
       double x = xRadius * Math.cos(ang) + centreX;
       double y = yRadius * Math.sin(ang) + centreY;
-      pts[iPt++] = createCoord(x, y);
+      pts[iPt++] = coord(x, y);
     }
-    pts[iPt++] = createCoord(centreX, centreY);
+    pts[iPt++] = coord(centreX, centreY);
     LinearRing ring = geomFact.createLinearRing(pts);
-    Polygon geom = geomFact.createPolygon(ring, null);
-    return geom;
+    Polygon poly = geomFact.createPolygon(ring, null);
+    return (Polygon) rotate(poly);
   }
 
-  protected Coordinate createCoord(double x, double y)
+  protected Coordinate coord(double x, double y)
   {
   	Coordinate pt = new Coordinate(x, y);
     precModel.makePrecise(pt);
     return pt;
   }
   
-  protected Coordinate createCoordTrans(double x, double y, Coordinate trans)
+  protected Coordinate coordTrans(double x, double y, Coordinate trans)
   {
-  	return createCoord(x + trans.x, y + trans.y);
+  	return coord(x + trans.x, y + trans.y);
   }
   
   protected class Dimensions

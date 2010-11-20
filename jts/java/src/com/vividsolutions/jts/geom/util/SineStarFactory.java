@@ -104,7 +104,7 @@ public class SineStarFactory
       double ang = i * (2 * Math.PI / nPts);
       double x = curveRadius * Math.cos(ang) + centreX;
       double y = curveRadius * Math.sin(ang) + centreY;
-      pts[iPt++] = createCoord(x, y);
+      pts[iPt++] = coord(x, y);
     }
     pts[iPt] = new Coordinate(pts[0]);
 

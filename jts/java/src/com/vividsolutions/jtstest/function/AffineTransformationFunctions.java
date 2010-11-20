@@ -66,7 +66,7 @@ public class AffineTransformationFunctions
     return trans.transform(g);    
   }
   
-  public static Geometry rotateByPi(Geometry g, double multipleOfPi)
+  public static Geometry rotateByPiMultiple(Geometry g, double multipleOfPi)
   {
     Coordinate centre = envelopeCentre(g);
     AffineTransformation trans = AffineTransformation.rotationInstance(multipleOfPi * Math.PI, centre.x, centre.y);
