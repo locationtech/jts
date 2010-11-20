@@ -31,18 +31,22 @@ import com.vividsolutions.jts.util.*;
  * | y' |        | y |
  * | 1  |        | 1 |
  * </pre></blockquote>
+ * <h3>Transformation Composition</h3>
  * Affine transformations can be composed using the {@link #compose} method.
- * The composition of transformations is in general not commutative.
- * transformation matrices as follows:
+ * Composition is computed via multiplication of the 
+ * transformation matrices, and is defined as:
  * <blockquote><pre>
  * A.compose(B) = T<sub>B</sub> x T<sub>A</sub>
  * </pre></blockquote>
  * This produces a transformation whose effect is that of A followed by B.
- * Composition is computed via multiplication of the 
- * The methods {@link #reflect}, {@link #rotate}, {@link #scale}, {@link #shear}, and {@link #translate} 
+ * The methods {@link #reflect}, {@link #rotate}, 
+ * {@link #scale}, {@link #shear}, and {@link #translate} 
  * have the effect of composing a transformation of that type with
  * the transformation they are invoked on.  
  * <p>
+ * The composition of transformations is in general <i>not</i> commutative.
+ * 
+ * <h3>Transformation Inversion</h3>
  * Affine transformations may be invertible or non-invertible.  
  * If a transformation is invertible, then there exists 
  * an inverse transformation which when composed produces 
