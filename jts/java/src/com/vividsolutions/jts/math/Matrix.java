@@ -1,4 +1,4 @@
-package com.vividsolutions.jts.geom.util;
+package com.vividsolutions.jts.math;
 
 /**
  * Implements some 2D matrix operations 
