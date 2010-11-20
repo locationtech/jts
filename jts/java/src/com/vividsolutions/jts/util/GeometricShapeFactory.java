@@ -1,4 +1,3 @@
-
 /*
  * The JTS Topology Suite is a collection of Java classes that
  * implement the fundamental operations required to validate a given
@@ -33,23 +32,22 @@
  */
 package com.vividsolutions.jts.util;
 
-/**
- * Methods to create various geometry shapes
- */
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 
 /**
  * Computes various kinds of common geometric shapes.
- * Allows various ways of specifying the location and extent of the shapes,
+ * Provides various ways of specifying the location and extent
+ * and rotations of the generated shapes,
  * as well as number of line segments used to form them.
  * <p>
- * Example:
+ * <b>Example of usage:</b>
  * <pre>
  *  GeometricShapeFactory gsf = new GeometricShapeFactory();
  *  gsf.setSize(100);
  *  gsf.setNumPoints(100);
- *  gsf.setBase(new Coordinate(0, 0));
+ *  gsf.setBase(new Coordinate(100, 100));
+ *  gsf.setRotation(0.5);
  *  Polygon rect = gsf.createRectangle();
  * </pre>
  *
@@ -299,6 +297,8 @@ public class GeometricShapeFactory
    /**
     * Creates an elliptical arc, as a {@link LineString}.
     * The arc is always created in a counter-clockwise direction.
+    * This can easily be reversed if required by using 
+    * {#link LineString.reverse()}
     *
     * @param startAng start angle in radians
     * @param angExtent size of angle in radians
