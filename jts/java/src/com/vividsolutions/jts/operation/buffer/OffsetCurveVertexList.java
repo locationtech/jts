@@ -36,8 +36,9 @@ import java.util.*;
 import com.vividsolutions.jts.geom.*;
 
 /**
- * A list of the vertices in a constructed offset curve.
- * Automatically removes close adjacent vertices.
+ * A dynamic list of the vertices in a constructed offset curve.
+ * Automatically removes adjacent vertices
+ * which are closer than a given tolerance.
  * 
  * @author Martin Davis
  *

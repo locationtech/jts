@@ -80,14 +80,14 @@ public class OffsetCurveBuilder
   /**
    * Factor which determines how short closing segs can be for round buffers
    */
-  private static final int MAX_CLOSING_SEG_FRACTION = 80;
+  private static final int MAX_CLOSING_SEG_LEN_FACTOR = 80;
   
   private double distance = 0.0;
   private PrecisionModel precisionModel;
   private BufferParameters bufParams;
   
   /**
-   * The Closing Segment Factor controls how long
+   * The Closing Segment Length Factor controls how long
    * "closing segments" are.  Closing segments are added
    * at the middle of inside corners to ensure a smoother
    * boundary for the buffer offset curve. 
@@ -102,7 +102,7 @@ public class OffsetCurveBuilder
    * and quadrantSegs >= 8)
    * 
    */
-  private int closingSegFactor = 1;
+  private int closingSegLengthFactor = 1;
   private OffsetCurveVertexList vertexList;
   private LineIntersector li;
   
@@ -126,7 +126,7 @@ public class OffsetCurveBuilder
      */
     if (bufParams.getQuadrantSegments() >= 8 
         && bufParams.getJoinStyle() == BufferParameters.JOIN_ROUND)
-      closingSegFactor = MAX_CLOSING_SEG_FRACTION;
+      closingSegLengthFactor = MAX_CLOSING_SEG_LEN_FACTOR;
   }
 
   public BufferParameters getBufferParameters()
@@ -237,7 +237,7 @@ public class OffsetCurveBuilder
    * @param distance the buffer distance
    * @return the simplification tolerance
    */
-  private double simplifyTolerance(double bufDistance)
+  private static double simplifyTolerance(double bufDistance)
   {
     return bufDistance / SIMPLIFY_FACTOR;
   }
@@ -280,6 +280,7 @@ public class OffsetCurveBuilder
     vertexList.closeRing();
   }
 
+  /*
   private void OLDcomputeLineBufferCurve(Coordinate[] inputPts)
   {
     int n = inputPts.length - 1;
@@ -304,6 +305,7 @@ public class OffsetCurveBuilder
 
     vertexList.closeRing();
   }
+  */
   
   private void computeSingleSidedBufferCurve(Coordinate[] inputPts, boolean isRightSide)
   {
@@ -549,12 +551,12 @@ public class OffsetCurveBuilder
         /**
          * Add "closing segment" of required length.
          */
-        if (closingSegFactor > 0) {
-          Coordinate mid0 = new Coordinate((closingSegFactor * offset0.p1.x + s1.x)/(closingSegFactor + 1), 
-              (closingSegFactor*offset0.p1.y + s1.y)/(closingSegFactor + 1));
+        if (closingSegLengthFactor > 0) {
+          Coordinate mid0 = new Coordinate((closingSegLengthFactor * offset0.p1.x + s1.x)/(closingSegLengthFactor + 1), 
+              (closingSegLengthFactor*offset0.p1.y + s1.y)/(closingSegLengthFactor + 1));
           vertexList.addPt(mid0);
-          Coordinate mid1 = new Coordinate((closingSegFactor*offset1.p0.x + s1.x)/(closingSegFactor + 1), 
-             (closingSegFactor*offset1.p0.y + s1.y)/(closingSegFactor + 1));
+          Coordinate mid1 = new Coordinate((closingSegLengthFactor*offset1.p0.x + s1.x)/(closingSegLengthFactor + 1), 
+             (closingSegLengthFactor*offset1.p0.y + s1.y)/(closingSegLengthFactor + 1));
           vertexList.addPt(mid1);
         }
         else {
