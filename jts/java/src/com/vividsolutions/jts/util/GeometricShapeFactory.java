@@ -59,6 +59,10 @@ public class GeometricShapeFactory
   protected PrecisionModel precModel = null;
   protected Dimensions dim = new Dimensions();
   protected int nPts = 100;
+  
+  /**
+   * Default is no rotation.
+   */
   protected double rotationAngle = 0.0;
 
   /**
@@ -133,7 +137,7 @@ public class GeometricShapeFactory
 
   /**
    * Sets the rotation angle to use for the shape.
-   * The rotation is applied based at the centre of the shape.
+   * The rotation is applied relative to the centre of the shape.
    * 
    * @param radians the rotation angle in radians.
    */
@@ -200,12 +204,25 @@ public class GeometricShapeFactory
     return (Polygon) rotate(poly);
   }
 
+//* @deprecated use {@link createEllipse} instead
   /**
    * Creates a circular or elliptical {@link Polygon}.
    *
    * @return a circle or ellipse
    */
   public Polygon createCircle()
+  {
+    return createEllipse();
+  }
+  
+  /**
+   * Creates an elliptical {@link Polygon}.
+   * If the supplied envelope is square the 
+   * result will be a circle. 
+   *
+   * @return an ellipse or circle
+   */
+  public Polygon createEllipse()
   {
 
     Envelope env = dim.getEnvelope();
