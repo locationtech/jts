@@ -47,7 +47,6 @@ import com.vividsolutions.jts.noding.SegmentString;
 import com.vividsolutions.jts.operation.buffer.BufferInputLineSimplifier;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import com.vividsolutions.jts.operation.buffer.OffsetCurveBuilder;
 import com.vividsolutions.jts.operation.buffer.OffsetCurveSetBuilder;
 import com.vividsolutions.jts.operation.buffer.validate.BufferResultValidator;
 

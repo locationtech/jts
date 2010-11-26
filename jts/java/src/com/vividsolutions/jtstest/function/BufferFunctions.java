@@ -38,9 +38,6 @@ import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryCollectionIterator;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.noding.SegmentString;
@@ -146,10 +143,9 @@ public class BufferFunctions {
     OffsetCurveBuilder ocb = new OffsetCurveBuilder(
         geom.getFactory().getPrecisionModel(), bufParam
         );
-     List lines = ocb.getLineCurve(geom.getCoordinates(), distance);
-     Coordinate[] pts = (Coordinate[]) lines.get(0);
-     Geometry curve = geom.getFactory().createLineString(pts);
-     return curve;
+    Coordinate[] pts = ocb.getLineCurve(geom.getCoordinates(), distance);
+    Geometry curve = geom.getFactory().createLineString(pts);
+    return curve;
   }
   
   public static Geometry singleSidedBuffer(Geometry geom, double distance) {

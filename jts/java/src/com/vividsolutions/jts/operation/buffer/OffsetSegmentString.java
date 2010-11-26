@@ -43,7 +43,7 @@ import com.vividsolutions.jts.geom.*;
  * @author Martin Davis
  *
  */
-public class OffsetCurveVertexList 
+class OffsetSegmentString 
 {
   private static final Coordinate[] COORDINATE_ARRAY_TYPE = new Coordinate[0];
 
@@ -57,7 +57,7 @@ public class OffsetCurveVertexList
    */
   private double minimimVertexDistance = 0.0;
 
-  public OffsetCurveVertexList()
+  public OffsetSegmentString()
   {
   	ptList = new ArrayList();
   }
@@ -77,7 +77,7 @@ public class OffsetCurveVertexList
     Coordinate bufPt = new Coordinate(pt);
     precisionModel.makePrecise(bufPt);
     // don't add duplicate (or near-duplicate) points
-    if (isDuplicate(bufPt))
+    if (isRedundant(bufPt))
         return;
     ptList.add(bufPt);
 //System.out.println(bufPt);
@@ -98,13 +98,14 @@ public class OffsetCurveVertexList
   }
   
   /**
-   * Tests whether the given point duplicates the previous
-   * point in the list (up to tolerance)
+   * Tests whether the given point is redundant
+   * relative to the previous
+   * point in the list (up to tolerance).
    * 
    * @param pt
-   * @return true if the point duplicates the previous point
+   * @return true if the point is redundant
    */
-  private boolean isDuplicate(Coordinate pt)
+  private boolean isRedundant(Coordinate pt)
   {
     if (ptList.size() < 1)
     	return false;

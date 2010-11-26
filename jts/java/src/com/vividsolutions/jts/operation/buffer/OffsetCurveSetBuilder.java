@@ -82,14 +82,6 @@ public class OffsetCurveSetBuilder {
     return curveList;
   }
 
-  private void addCurves(List lineList, int leftLoc, int rightLoc)
-  {
-    for (Iterator i = lineList.iterator(); i.hasNext(); ) {
-      Coordinate[] coords = (Coordinate[]) i.next();
-      addCurve(coords, leftLoc, rightLoc);
-    }
-  }
-
   /**
    * Creates a {@link SegmentString} for a coordinate list which is a raw offset curve,
    * and adds it to the list of buffer curves.
@@ -101,8 +93,8 @@ public class OffsetCurveSetBuilder {
    */
   private void addCurve(Coordinate[] coord, int leftLoc, int rightLoc)
   {
-    // don't add null curves!
-    if (coord.length < 2) return;
+    // don't add null or trivial curves
+    if (coord == null || coord.length < 2) return;
     // add the edge for a coordinate list which is a raw offset curve
     SegmentString e = new NodedSegmentString(coord,
                         new Label(0, Location.BOUNDARY, leftLoc, rightLoc));
@@ -136,18 +128,22 @@ public class OffsetCurveSetBuilder {
    */
   private void addPoint(Point p)
   {
-    if (distance <= 0.0) return;
+    // a zero or negative width buffer of a line/point is empty
+    if (distance <= 0.0) 
+      return;
     Coordinate[] coord = p.getCoordinates();
-    List lineList = curveBuilder.getLineCurve(coord, distance);
-    addCurves(lineList, Location.EXTERIOR, Location.INTERIOR);
+    Coordinate[] curve = curveBuilder.getLineCurve(coord, distance);
+    addCurve(curve, Location.EXTERIOR, Location.INTERIOR);
   }
   
   private void addLineString(LineString line)
   {
-    if (distance <= 0.0 && ! curveBuilder.getBufferParameters().isSingleSided()) return;
+    // a zero or negative width buffer of a line/point is empty
+    if (distance <= 0.0 && ! curveBuilder.getBufferParameters().isSingleSided()) 
+      return;
     Coordinate[] coord = CoordinateArrays.removeRepeatedPoints(line.getCoordinates());
-    List lineList = curveBuilder.getLineCurve(coord, distance);
-    addCurves(lineList, Location.EXTERIOR, Location.INTERIOR);
+    Coordinate[] curve = curveBuilder.getLineCurve(coord, distance);
+    addCurve(curve, Location.EXTERIOR, Location.INTERIOR);
   }
 
   private void addPolygon(Polygon p)
@@ -225,8 +221,8 @@ public class OffsetCurveSetBuilder {
       rightLoc = cwLeftLoc;
       side = Position.opposite(side);
     }
-    List lineList = curveBuilder.getRingCurve(coord, side, offsetDistance);
-    addCurves(lineList, leftLoc, rightLoc);
+    Coordinate[] curve = curveBuilder.getRingCurve(coord, side, offsetDistance);
+    addCurve(curve, leftLoc, rightLoc);
   }
 
   /**

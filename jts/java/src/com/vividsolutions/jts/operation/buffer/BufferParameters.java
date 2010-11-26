@@ -298,8 +298,8 @@ public class BufferParameters
    * <b>
    * The side used is determined by the sign of the buffer distance:
    * <ul>
-   * <li>a positive distance indicates the right-hand side
-   * <li>a negative distance indicates the left-hand side
+   * <li>a positive distance indicates the left-hand side
+   * <li>a negative distance indicates the right-hand side
    * </ul>
    * The single-sided buffer of point geometries is 
    * the same as the regular buffer.

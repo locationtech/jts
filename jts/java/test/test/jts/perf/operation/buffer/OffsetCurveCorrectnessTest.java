@@ -33,8 +33,6 @@
  */
 package test.jts.perf.operation.buffer;
 
-import java.util.List;
-
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.operation.buffer.*;
@@ -70,6 +68,7 @@ public class OffsetCurveCorrectnessTest
   	Geometry g = rdr.read(wkt);
   	Geometry curve = bufferOffsetCurve(g, 15);
   	System.out.println(curve);
+    //assert(curve.isValid());
   }
   
 	public static Geometry bufferOffsetCurve(Geometry g, double distance)	
@@ -78,14 +77,13 @@ public class OffsetCurveCorrectnessTest
         g.getFactory().getPrecisionModel(),
         new BufferParameters());
     Coordinate[] pts = g.getCoordinates();
-    List curveList = null;
+    Coordinate[] curvePts = null;
     if (g instanceof Polygonal) {
-      curveList = ocb.getRingCurve(pts, 1, distance);
+      curvePts = ocb.getRingCurve(pts, 1, distance);
     }
     else {
-      curveList = ocb.getLineCurve(pts, distance);
+      curvePts = ocb.getLineCurve(pts, distance);
     }
-    Coordinate[] curvePts = (Coordinate[]) curveList.get(0);
     Geometry curve = g.getFactory().createLineString(curvePts);
     return curve;
 	}
