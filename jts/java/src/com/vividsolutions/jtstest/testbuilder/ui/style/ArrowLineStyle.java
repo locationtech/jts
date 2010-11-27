@@ -10,7 +10,7 @@ public class ArrowLineStyle
   extends SegmentStyle
 {
   private final static double HEAD_ANGLE = 30;
-  private final static double HEAD_LENGTH = 6;
+  private final static double HEAD_LENGTH = 8;
 
   private Color color = Color.RED;
 
