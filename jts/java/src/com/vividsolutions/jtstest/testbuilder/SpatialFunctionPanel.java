@@ -86,6 +86,7 @@ extends JPanel
   FlowLayout flowLayout1 = new FlowLayout();
   
   JButton execButton = new JButton();
+  JButton execToNewButton = new JButton();
   
   private final ImageIcon clearIcon = new ImageIcon(this.getClass().getResource("clear.gif"));
 
@@ -201,7 +202,16 @@ extends JPanel
       }
     });
     
+    execToNewButton.setText("Compute To New");
+    execToNewButton.addActionListener(new java.awt.event.ActionListener() {
+
+      public void actionPerformed(ActionEvent e) {
+        execToNewButton_actionPerformed(e);
+      }
+    });
+    
     panelExec.add(execButton);
+    panelExec.add(execToNewButton);
     
     panelExecParam.add(panelExec, BorderLayout.NORTH);
     panelExecParam.add(panelParam, BorderLayout.CENTER);
@@ -231,7 +241,11 @@ extends JPanel
   }
 
   void execButton_actionPerformed(ActionEvent e) {
-  	execFunction(geomFuncPanel.getFunction());
+    execFunction(geomFuncPanel.getFunction());
+  }
+
+  void execToNewButton_actionPerformed(ActionEvent e) {
+    execFunction(geomFuncPanel.getFunction());
   }
 
   void displayAAndBCheckBox_actionPerformed(ActionEvent e) {
@@ -250,23 +264,15 @@ extends JPanel
     return JTSTestBuilderFrame.instance().getTestCasePanel().getGeometryEditPanel();
   }
 
-  public void setCurrentFunction(GeometryFunction func) {
+  private void setCurrentFunction(GeometryFunction func) {
     currentFunc = func;
-//    getGeometryEditPanel().forceRepaint();
     fireFunctionExecuted(new SpatialFunctionPanelEvent(this));
   }
 
-  private void functionListValueChanged()
-  {
-    currentFunc = geomFuncPanel.getFunction();
-    updateParameterControls();
-  }
-  
   public void execFunction(GeometryFunction func) {
     currentFunc = func;
     if (currentFunc == null)
       return;
-//    getGeometryEditPanel().forceRepaint();
     fireFunctionExecuted(new SpatialFunctionPanelEvent(this));
   }
 
@@ -274,7 +280,7 @@ extends JPanel
   {
     currentFunc = func;
     updateParameterControls();
-    execButton.setToolTipText(functionDescription(func));
+    execButton.setToolTipText("Compute " + functionDescription(func));
   }
   
   private String functionDescription(GeometryFunction func)

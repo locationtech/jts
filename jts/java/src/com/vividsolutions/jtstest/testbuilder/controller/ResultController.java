@@ -35,7 +35,6 @@ public class ResultController
 	
   public void spatialFunctionPanel_functionExecuted(SpatialFunctionPanelEvent e) 
   {
-  	
     model.setOpName(frame.getTestCasePanel().getSpatialFunctionPanel().getFunctionSignature());
     frame.getResultWKTPanel().setOpName(model.getOpName());
     // initialize UI view
@@ -103,7 +102,7 @@ public class ResultController
 
       public void finished() {
         stopFunctionMonitor();
-         updateResult(getValue(), timer);
+        updateResult(getValue(), timer);
         worker = null;
       }
     };

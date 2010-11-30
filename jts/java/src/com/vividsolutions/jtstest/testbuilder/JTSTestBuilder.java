@@ -103,7 +103,8 @@ public class JTSTestBuilder
     funcRegistry.add(CreateFractalShapeFunctions.class);
     funcRegistry.add(CreateRandomShapeFunctions.class);
     funcRegistry.add(JTSFunctions.class);
-  	funcRegistry.add(OverlayFunctions.class);
+    funcRegistry.add(OffsetCurveFunctions.class);
+    funcRegistry.add(OverlayFunctions.class);
   	//funcRegistry.add(OverlayEnhancedPrecisionFunctions.class);
   	//funcRegistry.add(OverlayCommonBitsRemovedFunctions.class);
   	funcRegistry.add(SnappingFunctions.class);
