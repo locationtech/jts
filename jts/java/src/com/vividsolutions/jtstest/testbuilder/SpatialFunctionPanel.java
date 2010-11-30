@@ -211,7 +211,8 @@ extends JPanel
     });
     
     panelExec.add(execButton);
-    panelExec.add(execToNewButton);
+    // disabled until behaviour is worked out
+    //panelExec.add(execToNewButton);
     
     panelExecParam.add(panelExec, BorderLayout.NORTH);
     panelExecParam.add(panelParam, BorderLayout.CENTER);
