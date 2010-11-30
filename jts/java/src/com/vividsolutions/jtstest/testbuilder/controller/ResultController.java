@@ -35,7 +35,7 @@ public class ResultController
 	
   public void spatialFunctionPanel_functionExecuted(SpatialFunctionPanelEvent e) 
   {
-    model.setOpName(frame.getTestCasePanel().getSpatialFunctionPanel().getFunctionSignature());
+    model.setOpName(frame.getTestCasePanel().getSpatialFunctionPanel().getFunctionCall());
     frame.getResultWKTPanel().setOpName(model.getOpName());
     // initialize UI view
     clearResult();
@@ -144,8 +144,12 @@ public class ResultController
     funcTimer.stop();
   }
 
-  public void scalarFunctionPanel_functionChanged(SpatialFunctionPanelEvent e) 
+  public void scalarFunctionPanel_functionExecuted(SpatialFunctionPanelEvent e) 
   {
+    /**
+     * For now scalar functions are executed on the calling thread.
+     * They are expected to be of short duration
+     */
     String opName = frame.getTestCasePanel().getScalarFunctionPanel().getOpName();
     // initialize UI view
     frame.getResultValuePanel().setResult(opName, "", null);

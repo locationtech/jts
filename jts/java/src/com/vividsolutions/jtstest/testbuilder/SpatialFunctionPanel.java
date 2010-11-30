@@ -393,7 +393,7 @@ extends JPanel
   	return currentFunc != null;
   }
   
-  public String getFunctionSignature() {
+  public String getFunctionCall() {
     if (currentFunc == null)
       return null;
     return currentFunc.getCategory() + "." + currentFunc.getName()
