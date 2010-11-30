@@ -79,6 +79,9 @@ public class OffsetCurveBuilder
    * LineStrings are assumed <b>not</b> to be closed (the function will not
    * fail for closed lines, but will generate superfluous line caps).
    *
+   * @param inputPts the vertices of the line to offset
+   * @param distance the offset distance
+   * 
    * @return a Coordinate array representing the curve
    * @return null if the curve is empty
    */
@@ -128,6 +131,29 @@ public class OffsetCurveBuilder
     OffsetSegmentGenerator segGen = getSegGen(distance);
     computeRingBufferCurve(inputPts, side, segGen);
     return segGen.getCoordinates();
+  }
+
+  public Coordinate[] getOffsetCurve(Coordinate[] inputPts, double distance)
+  {
+    this.distance = distance;
+    
+    // a zero width offset curve is empty
+    if (distance == 0.0) return null;
+
+    boolean isRightSide = distance < 0.0;
+    double posDistance = Math.abs(distance);
+    OffsetSegmentGenerator segGen = getSegGen(posDistance);
+    if (inputPts.length <= 1) {
+      computePointCurve(inputPts[0], segGen);
+    }
+    else {
+      computeOffsetCurve(inputPts, isRightSide, segGen);
+    }
+    Coordinate[] curvePts = segGen.getCoordinates();
+    // for right side line is traversed in reverse direction, so have to reverse generated line
+    if (isRightSide) 
+      CoordinateArrays.reverse(curvePts);
+    return curvePts;
   }
 
   private static Coordinate[] copyCoordinates(Coordinate[] pts)
@@ -283,6 +309,42 @@ public class OffsetCurveBuilder
     }
     segGen.addLastSegment();
     segGen.closeRing();
+  }
+
+  private void computeOffsetCurve(Coordinate[] inputPts, boolean isRightSide, OffsetSegmentGenerator segGen)
+  {
+    double distTol = simplifyTolerance(distance);
+    
+    if (isRightSide) {
+      //---------- compute points for right side of line
+      // Simplify the appropriate side of the line before generating
+      Coordinate[] simp2 = BufferInputLineSimplifier.simplify(inputPts, -distTol);
+      // MD - used for testing only (to eliminate simplification)
+  //    Coordinate[] simp2 = inputPts;
+      int n2 = simp2.length - 1;
+     
+      // since we are traversing line in opposite order, offset position is still LEFT
+      segGen.initSideSegments(simp2[n2], simp2[n2 - 1], Position.LEFT);
+      segGen.addFirstSegment();
+      for (int i = n2 - 2; i >= 0; i--) {
+        segGen.addNextSegment(simp2[i], true);
+      }
+    }
+    else {
+      //--------- compute points for left side of line
+      // Simplify the appropriate side of the line before generating
+      Coordinate[] simp1 = BufferInputLineSimplifier.simplify(inputPts, distTol);
+      // MD - used for testing only (to eliminate simplification)
+//      Coordinate[] simp1 = inputPts;
+      
+      int n1 = simp1.length - 1;
+      segGen.initSideSegments(simp1[0], simp1[1], Position.LEFT);
+      segGen.addFirstSegment();
+      for (int i = 2; i <= n1; i++) {
+        segGen.addNextSegment(simp1[i], true);
+      }
+    }
+    segGen.addLastSegment();
   }
 
   private void computeRingBufferCurve(Coordinate[] inputPts, int side, OffsetSegmentGenerator segGen)

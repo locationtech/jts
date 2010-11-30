@@ -128,6 +128,11 @@ class OffsetSegmentString
     ptList.add(startPt);
   }
 
+  public void reverse()
+  {
+    
+  }
+  
   public Coordinate[] getCoordinates()
   {
     /*
