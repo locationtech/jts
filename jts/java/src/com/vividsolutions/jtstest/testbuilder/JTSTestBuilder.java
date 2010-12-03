@@ -77,42 +77,10 @@ public class JTSTestBuilder
 //  private static final String OPT_GEOMOP = "geomop";
   private static final String OPT_GEOMFUNC = "geomfunc";
 
-  private static GeometryFunctionRegistry funcRegistry = createFunctionRegistry();
+  private static GeometryFunctionRegistry funcRegistry = GeometryFunctionRegistry.createTestBuilderRegistry();
   private static CommandLine commandLine = createCmdLine();
   public static JTSTestBuilder app;
   
-  private static GeometryFunctionRegistry createFunctionRegistry()
-  {
-  	GeometryFunctionRegistry funcRegistry = new GeometryFunctionRegistry();
-  	
-    funcRegistry.add(GeometryFunctions.class);
-    funcRegistry.add(BufferFunctions.class);
-    funcRegistry.add(BufferByUnionFunctions.class);
-    funcRegistry.add(ConstructionFunctions.class);
-    funcRegistry.add(ConversionFunctions.class);
-  	funcRegistry.add(LineHandlingFunctions.class);
-  	funcRegistry.add(NodingFunctions.class);
-    funcRegistry.add(PolygonizeFunctions.class);
-    funcRegistry.add(PolygonOverlayFunctions.class);
-  	funcRegistry.add(PrecisionFunctions.class);
-  	funcRegistry.add(SelectionFunctions.class);
-  	funcRegistry.add(SimplificationFunctions.class);
-  	funcRegistry.add(AffineTransformationFunctions.class);
-  	funcRegistry.add(DistanceFunctions.class);
-    funcRegistry.add(CreateShapeFunctions.class);
-    funcRegistry.add(CreateFractalShapeFunctions.class);
-    funcRegistry.add(CreateRandomShapeFunctions.class);
-    funcRegistry.add(JTSFunctions.class);
-    funcRegistry.add(OffsetCurveFunctions.class);
-    funcRegistry.add(OverlayFunctions.class);
-  	//funcRegistry.add(OverlayEnhancedPrecisionFunctions.class);
-  	//funcRegistry.add(OverlayCommonBitsRemovedFunctions.class);
-  	funcRegistry.add(SnappingFunctions.class);
-  	funcRegistry.add(TriangulationFunctions.class);
-    funcRegistry.add(TriangleFunctions.class);
-  	
-  	return funcRegistry;
-  }
   private static CommandLine createCmdLine() {
     commandLine = new CommandLine('-');
 
