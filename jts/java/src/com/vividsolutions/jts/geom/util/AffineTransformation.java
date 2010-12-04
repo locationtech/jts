@@ -1010,9 +1010,9 @@ public class AffineTransformation
   */
   public boolean equals(Object obj)
   {
+    if (obj == null) return false;
     if (! (obj instanceof AffineTransformation))
       return false;
-    if (obj == null) return false;
     
     AffineTransformation trans = (AffineTransformation) obj;
     return m00 == trans.m00
