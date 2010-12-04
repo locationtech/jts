@@ -49,7 +49,7 @@ public class LinearComponentExtracter
    * Extracts the linear components from a single {@link Geometry}
    * and adds them to the provided {@link Collection}.
    *
-   * @param geoms the Collection of geometries from which to extract linear components
+   * @param geoms the collection of geometries from which to extract linear components
    * @param lines the collection to add the extracted linear components to
    * @return the collection of linear components (LineStrings or LinearRings)
    */
@@ -68,6 +68,7 @@ public class LinearComponentExtracter
    *
    * @param geoms the Collection of geometries from which to extract linear components
    * @param lines the collection to add the extracted linear components to
+   * @param forceToLineString true if LinearRings should be converted to LineStrings
    * @return the collection of linear components (LineStrings or LinearRings)
    */
   public static Collection getLines(Collection geoms, Collection lines, boolean forceToLineString)
@@ -104,6 +105,7 @@ public class LinearComponentExtracter
    *
    * @param geom the geometry from which to extract linear components
    * @param lines the Collection to add the extracted linear components to
+   * @param forceToLineString true if LinearRings should be converted to LineStrings
    * @return the Collection of linear components (LineStrings or LinearRings)
    */
   public static Collection getLines(Geometry geom, Collection lines, boolean forceToLineString)
@@ -123,8 +125,23 @@ public class LinearComponentExtracter
    */
   public static List getLines(Geometry geom)
   {
+    return getLines(geom, false);
+  }
+
+  /**
+   * Extracts the linear components from a single geometry.
+   * If more than one geometry is to be processed, it is more
+   * efficient to create a single {@link LineExtracterFilter} instance
+   * and pass it to multiple geometries.
+   *
+   * @param geom the geometry from which to extract linear components
+   * @param forceToLineString true if LinearRings should be converted to LineStrings
+   * @return the list of linear components
+   */
+  public static List getLines(Geometry geom, boolean forceToLineString)
+  {
     List lines = new ArrayList();
-    geom.apply(new LinearComponentExtracter(lines));
+    geom.apply(new LinearComponentExtracter(lines, forceToLineString));
     return lines;
   }
 
@@ -148,6 +165,12 @@ public class LinearComponentExtracter
     this.isForcedToLineString = isForcedToLineString;
   }
 
+  /**
+   * Indicates that LinearRing components should be 
+   * converted to pure LineStrings.
+   * 
+   * @param isForcedToLineString true if LinearRings should be converted to LineStrings
+   */
   public void setForceToLineString(boolean isForcedToLineString)
   {
   	this.isForcedToLineString = isForcedToLineString;
