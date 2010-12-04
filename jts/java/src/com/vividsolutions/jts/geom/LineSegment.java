@@ -156,9 +156,9 @@ public class LineSegment
    *
    * @param p the coordinate to compare
    *
-   * @return 1 if <code>p</code> is to the left of this segment
-   * @return -1 if <code>p</code> is to the right of this segment
-   * @return 0 if <code>p</code> is collinear with this segment
+   * @return 1 (LEFT) if <code>p</code> is to the left of this segment
+   * @return -1 (RIGHT) if <code>p</code> is to the right of this segment
+   * @return 0 (COLLINEAR) if <code>p</code> is collinear with this segment
    * 
    * @see CGAlgorithms#computeOrientation(Coordinate, Coordinate, Coordinate)
    */
