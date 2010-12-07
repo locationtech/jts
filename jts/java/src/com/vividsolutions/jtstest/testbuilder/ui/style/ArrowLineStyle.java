@@ -10,7 +10,7 @@ public class ArrowLineStyle
   extends SegmentStyle
 {
   private final static double HEAD_ANGLE = 30;
-  private final static double HEAD_LENGTH = 8;
+  private final static double HEAD_LENGTH = 6;
 
   private Color color = Color.RED;
 
@@ -37,10 +37,7 @@ public class ArrowLineStyle
   protected void paintMidpointArrow(Point2D p0, Point2D p1, Viewport viewport,
       Graphics2D graphics) throws NoninvertibleTransformException 
   {
-    // can't compute valid arrow for zero-length segments
-    if (p0.equals(p1)) {
-      return;
-    }
+    if (isTooSmallToRender(p0, p1)) return;
     graphics.setColor(color);
     //      graphics.setStroke(1.0);
     Point2D mid = new Point2D.Float((float) ((p0.getX() + p1.getX()) / 2),
@@ -57,25 +54,22 @@ public class ArrowLineStyle
   private static final double HEAD_COS = Math.cos(HEAD_ANGLE_RAD);
   private static final double HEAD_SIN = Math.sin(HEAD_ANGLE_RAD);
   
-  private static final double MIN_VISIBLE_LEN = 2 * ENDPOINT_OFFSET + 4;
-  
+  public static final double MIN_VISIBLE_LEN = 2 * ENDPOINT_OFFSET + 4;
+
   protected void paintOffsetArrow(Point2D p0, Point2D p1, Viewport viewport,
       Graphics2D graphics) throws NoninvertibleTransformException 
   {
-    // can't compute valid arrow for zero-length segments
-    if (p0.equals(p1)) {
-      return;
-    }
+    if (isTooSmallToRender(p0, p1)) return;
+    
     graphics.setColor(color);
     //      graphics.setStroke(1.0);
     graphics.setStroke(dashStroke);
+    
     
     double dx = p1.getX() - p0.getX();
     double dy = p1.getY() - p0.getY();
     
     double len = Math.sqrt(dx * dx + dy * dy);
-    
-    if (len < MIN_VISIBLE_LEN) return;
     
     double vy = dy / len;
     double vx = dx / len;
@@ -97,5 +91,17 @@ public class ArrowLineStyle
     graphics.draw(arrowhead);
   }
 
+  private boolean isTooSmallToRender(Point2D p0, Point2D p1)
+  {
+    if (p0.equals(p1)) {
+      return true;
+    }
+    double dx = p1.getX() - p0.getX();
+    double dy = p1.getY() - p0.getY();
+    
+    double len = Math.sqrt(dx * dx + dy * dy);
+    
+    return len < MIN_VISIBLE_LEN;
 
+  }
 }
