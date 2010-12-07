@@ -143,8 +143,10 @@ public class DirectedEdgeStar
     return -1;
   }
   /**
-   * Returns the remainder when i is divided by the number of edges in this
-   * DirectedEdgeStar. 
+   * Returns value of i modulo the number of edges in this DirectedEdgeStar
+   * (i.e. the remainder when i is divided by the number of edges)
+   * 
+   * @param i an integer (positive, negative or zero)
    */
   public int getIndex(int i)
   {
@@ -155,12 +157,24 @@ public class DirectedEdgeStar
   }
 
   /**
-   * Returns the DirectedEdge on the left-hand side of the given DirectedEdge (which
-   * must be a member of this DirectedEdgeStar). 
+   * Returns the {@link DirectedEdge} on the left-hand (CCW) 
+   * side of the given {@link DirectedEdge} 
+   * (which must be a member of this DirectedEdgeStar). 
    */
   public DirectedEdge getNextEdge(DirectedEdge dirEdge)
   {
     int i = getIndex(dirEdge);
     return (DirectedEdge) outEdges.get(getIndex(i + 1));
+  }
+  
+  /**
+   * Returns the {@link DirectedEdge} on the right-hand (CW) 
+   * side of the given {@link DirectedEdge} 
+   * (which must be a member of this DirectedEdgeStar). 
+   */
+  public DirectedEdge getNextCWEdge(DirectedEdge dirEdge)
+  {
+    int i = getIndex(dirEdge);
+    return (DirectedEdge) outEdges.get(getIndex(i - 1));
   }
 }
