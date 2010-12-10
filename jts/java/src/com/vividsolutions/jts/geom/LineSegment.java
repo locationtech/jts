@@ -208,6 +208,16 @@ public class LineSegment
    */
   public Coordinate midPoint()
   {
+    return midPoint(p0, p1);
+  }
+
+  /**
+   * Computes the midpoint of a segment
+   *
+   * @return the midpoint of the segment
+   */
+  public static Coordinate midPoint(Coordinate p0, Coordinate p1)
+  {
     return new Coordinate( (p0.x + p1.x) / 2,
                            (p0.y + p1.y) / 2);
   }

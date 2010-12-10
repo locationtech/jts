@@ -36,6 +36,8 @@ package com.vividsolutions.jts.geom;
 
 import java.util.*;
 
+import com.vividsolutions.jts.math.MathUtil;
+
 /**
  * Useful utility functions for handling Coordinate arrays
  *
@@ -403,6 +405,9 @@ public class CoordinateArrays {
    * Extracts a subsequence of the input {@link Coordinate} array
    * from indices <code>start</code> to
    * <code>end</code> (inclusive).
+   * The input indices are clamped to the array size;
+   * If the end index is less than the start index,
+   * the extracted array will be empty.
    *
    * @param pts the input array
    * @param start the index of the start of the subsequence to extract
@@ -411,8 +416,17 @@ public class CoordinateArrays {
    */
   public static Coordinate[] extract(Coordinate[] pts, int start, int end)
   {
-    int len = end - start + 1;
-    Coordinate[] extractPts = new Coordinate[len];
+    start = MathUtil.clamp(start, 0, pts.length);
+    end = MathUtil.clamp(end, -1, pts.length);
+    
+    int npts = end - start + 1;
+    if (end < 0) npts = 0;
+    if (start >= pts.length) npts = 0;
+    if (end < start) npts = 0;
+    
+    Coordinate[] extractPts = new Coordinate[npts];
+    if (npts == 0) return extractPts;
+    
     int iPts = 0;
     for (int i = start; i <= end; i++) {
       extractPts[iPts++] = pts[i];
