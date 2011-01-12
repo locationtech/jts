@@ -51,7 +51,7 @@ import com.vividsolutions.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jts.util.Assert;
 
 /**
- * The base class for all geometric objects.
+ * A representation of a planar, linear vector geometry.
  * <P>
  *
  *  <H3>Binary Predicates</H3>

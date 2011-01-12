@@ -518,7 +518,7 @@ public class AffineTransformation
    * is computed by:
    * <blockquote><pre>
    * d = sqrt(x<sup>2</sup> + y<sup>2</sup>)  
-   * sin = x / d;
+   * sin = y / d;
    * cos = x / d;
    * 
    * T<sub>ref</sub> = T<sub>rot(sin, cos)</sub> x T<sub>scale(1, -1)</sub> x T<sub>rot(-sin, cos)</sub  
