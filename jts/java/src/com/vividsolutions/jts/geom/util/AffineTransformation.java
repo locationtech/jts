@@ -533,6 +533,21 @@ public class AffineTransformation
     if (x == 0.0 && y == 0.0) {
       throw new IllegalArgumentException("Reflection vector must be non-zero");
     }
+    
+    /**
+     * Handle special case - x = y.
+     * This case is specified explicitly to avoid roundoff error.
+     */
+    if (x == y) {
+      m00 = 0.0;
+      m01 = 1.0;
+      m02 = 0.0;
+      m10 = 1.0;
+      m11 = 0.0;
+      m12 = 0.0;
+      return this;
+    }
+    
     // rotate vector to positive x axis direction
     double d = Math.sqrt(x * x + y * y);
     double sin = y / d;
