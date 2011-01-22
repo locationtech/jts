@@ -9,6 +9,7 @@ import java.util.List;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKTFileReader;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jtstest.testbuilder.io.shapefile.Shapefile;
@@ -21,6 +22,8 @@ public class IOUtil
     String ext = FileUtil.extension(filename);
     if (ext.equalsIgnoreCase(".shp"))
       return readMultipleGeometriesFromShapefile(filename, geomFact);
+    if (ext.equalsIgnoreCase(".wkb"))
+      return readMultipleGeometriesFromWKBHex(filename, geomFact);
     return readMultipleGeometryFromWKT(filename, geomFact);
   }
     
@@ -38,6 +41,25 @@ public class IOUtil
     } while (true);
     
     return geomFact.createGeometryCollection(GeometryFactory.toGeometryArray(geomList));
+  }
+  
+  private static Geometry readMultipleGeometriesFromWKBHex(String filename, GeometryFactory geomFact)
+  throws ParseException, IOException 
+  {
+    return readGeometryFromWKBHexString(FileUtil.readText(filename), geomFact);
+  }
+  
+  private static Geometry readGeometryFromWKBHexString(String wkbHexFile, GeometryFactory geomFact)
+  throws ParseException, IOException 
+  {
+    WKBReader reader = new WKBReader(geomFact);
+    String wkbHex = cleanHex(wkbHexFile);
+    return reader.read(WKBReader.hexToBytes(wkbHex));
+  }
+
+  private static String cleanHex(String hexStuff)
+  {
+    return hexStuff.replaceAll("[^0123456789ABCDEFabcdef]", "");
   }
   
   private static Geometry readMultipleGeometryFromWKT(String filename, GeometryFactory geomFact)
