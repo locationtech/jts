@@ -977,10 +977,31 @@ public abstract class Geometry
   }
 
   /**
-   * Tests whether this geometry is equal to the
-   * argument geometry.
+  * Tests whether this geometry is 
+  * topologically equal to the argument geometry.
    * <p>
-   * The <code>equals</code> predicate has the following equivalent definitions:
+   * This method is included for backward compatibility reasons.
+   * It has been superseded by the {@link #equalsTopo(Geometry)} method,
+   * which has been named to clearly denote its functionality.
+   * <p>
+   * This method should NOT be confused with the method 
+   * {@link #equals(Object)}, which implements 
+   * an exact equality comparison.
+   *
+   *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
+   *@return true if the two <code>Geometry</code>s are topologically equal
+   *
+   *@see #equalsTopo(Geometry)
+   */
+  public boolean equals(Geometry g) {
+    return equalsTopo(g);
+  }
+
+  /**
+   * Tests whether this geometry is topologically equal to the argument geometry
+   * as defined by the SFS <tt>equals</tt> predicate.
+   * <p>
+   * The SFS <code>equals</code> predicate has the following equivalent definitions:
    * <ul>
    * <li>The two geometries have at least one point in common,
    * and no point of either geometry lies in the exterior of the other geometry.
@@ -992,19 +1013,62 @@ public abstract class Geometry
    * FF*
    * </pre>
    * </ul>
-   * <b>Note</b> that this method computes topologically equality, not structural or
-   * vertex-wise equality.
+   * <b>Note</b> that this method computes <b>topologically equality</b>. 
+   * For structural equality, see {@link #equalsExact(Geometry)}.
    *
-   *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
-   *@return        <code>true</code> if the two <code>Geometry</code>s are equal
+   *@param g the <code>Geometry</code> with which to compare this <code>Geometry</code>
+   *@return <code>true</code> if the two <code>Geometry</code>s are topologically equal
+   *
+   *@see #equalsExact(Geometry) 
    */
-  public boolean equals(Geometry g) {
+  public boolean equalsTopo(Geometry g)
+  {
     // short-circuit test
     if (! getEnvelopeInternal().equals(g.getEnvelopeInternal()))
       return false;
     return relate(g).isEquals(getDimension(), g.getDimension());
   }
-
+  
+  /**
+   * Tests whether this geometry is structurally and numerically equal
+   * to a given <tt>Object</tt>.
+   * If the argument <tt>Object</tt> is not a <tt>Geometry</tt>, the result is <tt>false</tt>.
+   * Otherwise, the result is computed using
+   * {@link #equalsExact(Geometry)}.
+   * <p>
+   * This method is provided to fulfill the Java contract
+   * for value-based object equality. 
+   * In conjunction with {@link #hashCode()} 
+   * it provides semantics which are most useful 
+   * for using
+   * <tt>Geometry</tt>s as keys and values in Java collections.
+   * <p>
+   * Note that to produce the expected result the input geometries
+   * should be in normal form.  It is the caller's 
+   * responsibility to perform this where required
+   * (using {@link Geometry#norm()
+   * or {@link #normalize()} as appropriate).
+   * 
+   * @param o the Object to compare
+   * @return true if this geometry is exactly equal to the argument 
+   * 
+   * @see #equalsExact(Geometry)
+   * @see #hashCode()
+   * @see #norm()
+   * @see #normalize()
+   */
+  public boolean equals(Object o)
+  {
+    if (! (o instanceof Geometry)) return false;
+    Geometry g = (Geometry) o;
+    return equalsExact(g);
+  }
+  
+  public int hashCode()
+  {
+    return getEnvelopeInternal().hashCode();
+  }
+  
   public String toString() {
     return toText();
   }
@@ -1322,25 +1386,51 @@ public abstract class Geometry
   public abstract boolean equalsExact(Geometry other, double tolerance);
 
   /**
-   *  Returns true if the two <code>Geometry</code>s are exactly equal.
+   * Returns true if the two <code>Geometry</code>s are exactly equal.
    * Two Geometries are exactly equal iff:
    * <ul>
    * <li>they have the same class
    * <li>they have the same values of Coordinates in their internal
    * Coordinate lists, in exactly the same order.
    * </ul>
+   * To properly test equality between arbitrary geometries,
+   * it is usually necessary to {@link #normalize()} them first.
+   * <p>
    * If this and the other <code>Geometry</code>s are
-   *  composites and any children are not <code>Geometry</code>s, returns
-   *  false.
+   * composites and any children are not <code>Geometry</code>s, 
+   * returns <tt>false</tt>.
    * <p>
    *  This provides a stricter test of equality than
-   *  <code>equals</code>.
+   *  <code>equalsTopo</code>, which is more useful
+   *  in certain circumstances.
    *
    *@param  other  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        <code>true</code> if this and the other <code>Geometry</code>
    *      are of the same class and have equal internal data.
+   *      
+   * @see #normalize()
    */
   public boolean equalsExact(Geometry other) { return equalsExact(other, 0); }
+
+  /**
+   * Tests whether two geometries are exactly equal
+   * in their normalized forms.
+   * This is a convenience method which creates normalized
+   * versions of both geometries before computing
+   * {@link #equalsExact(Geometry)}.
+   * For maximum performance, the client 
+   * should perform normalization itself
+   * at an appropriate point during execution.
+   * 
+   * @param g a Geometry
+   * @return true if the input geometries are exactly equal in their normalized form
+   */
+  public boolean equalsNorm(Geometry g)
+  {
+    if (g == null) return false;
+    return norm().equalsExact(g.norm());
+  }
+  
 
   /**
    *  Performs an operation with or on this <code>Geometry</code>'s
@@ -1418,9 +1508,27 @@ public abstract class Geometry
    *  form use the standard lexicographical ordering for coordinates. "Sorted in
    *  order of coordinates" means the obvious extension of this ordering to
    *  sequences of coordinates.
+   *  <p>
+   *  NOTE that this method mutates the value of this geometry in-place.
+   *  If this is not safe and/or wanted, the geometry should be
+   *  cloned prior to normalization.
    */
   public abstract void normalize();
 
+  /**
+   * Creates a new Geometry which is a normalized
+   * copy of this Geometry. 
+   * 
+   * @return a normalized copy of this geometry.
+   * @see #normalize()
+   */
+  public Geometry norm()
+  {
+    Geometry copy = (Geometry) clone();
+    copy.normalize();
+    return copy;
+  }
+  
   /**
    *  Returns whether this <code>Geometry</code> is greater than, equal to,
    *  or less than another <code>Geometry</code>. <P>
