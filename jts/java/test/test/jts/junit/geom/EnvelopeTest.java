@@ -242,7 +242,7 @@ public class EnvelopeTest extends TestCase {
 		
 		Envelope env = input.getEnvelopeInternal();
 		Geometry envGeomActual = geometryFactory.toGeometry(env);
-		boolean isEqual = envGeomActual.equals(envGeomExpected);
+		boolean isEqual = envGeomActual.equalsNorm(envGeomExpected);
 		assertTrue(isEqual);
 	}
 }

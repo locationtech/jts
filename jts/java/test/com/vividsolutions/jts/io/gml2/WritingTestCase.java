@@ -93,6 +93,6 @@ public abstract class WritingTestCase extends TestCase
 		// System.out.println((pt==null?"NULL":pt.toString()));
 		// System.out.println((pt2==null?"NULL":pt2.toString()));
 		assertTrue("The input Geometry is not the same as the output Geometry", g
-				.equals(g2));
+				.equalsExact(g2));
 	}
 }

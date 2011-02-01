@@ -29,7 +29,7 @@ public class WKBWriterTest extends TestCase {
         WKBReader r = new WKBReader(gf);
         Point p2 = (Point) r.read(wkb);
         
-        assertTrue(p1.equals(p2));
+        assertTrue(p1.equalsExact(p2));
         assertEquals(0, p2.getSRID());
         
         //not write out with srid set
@@ -49,7 +49,7 @@ public class WKBWriterTest extends TestCase {
         p2 = (Point) r.read(wkb);
         
         //read the geometry back in
-        assertTrue(p1.equals(p2));
+        assertTrue(p1.equalsExact(p2));
         assertEquals(1234, p2.getSRID());
     }
 }

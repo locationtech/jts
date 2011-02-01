@@ -117,8 +117,8 @@ public class GeometryImplTest extends TestCase {
                 "POLYGON ((0 0, 0 50, 50 50, 50 -99, 0 0))");
         Geometry differentSecond = reader.read(
                 "POLYGON ((0 0, 0 99, 50 50, 50 0, 0 0))");
-        doTestEquals(g, same, true, false, true, false);
-        doTestEquals(g, differentStart, true, false, false, false);
+        doTestEquals(g, same, true, true, true, true);
+        doTestEquals(g, differentStart, true, false, false, true);
         doTestEquals(g, differentFourth, false, false, false, false);
         doTestEquals(g, differentSecond, false, false, false, false);
     }

@@ -364,7 +364,7 @@ public class MiscellaneousTest extends TestCase {
     Geometry b = reader.read("MULTILINESTRING("
           + "(0 0, 40 0, 40 40, 0 40, 0 0),"
           + "(10 10, 30 10, 30 30, 10 30, 10 10))");
-    assertTrue(b.equals(g.getBoundary()));
+    assertTrue(b.equalsExact(g.getBoundary()));
   }
 
   public void testMultiPolygonGetBoundary1() throws Exception {
@@ -376,7 +376,7 @@ public class MiscellaneousTest extends TestCase {
           + "(0 0, 40 0, 40 40, 0 40, 0 0),"
           + "(10 10, 30 10, 30 30, 10 30, 10 10),"
           + "(200 200, 210 200, 210 210, 200 200))");
-    assertTrue(b.equals(g.getBoundary()));
+    assertTrue(b.equalsExact(g.getBoundary()));
   }
 
   public void testMultiPolygonIsSimple2() throws Exception {
@@ -425,7 +425,7 @@ public class MiscellaneousTest extends TestCase {
           + "(0 0,  100 0, 50 50),"
           + "(50 50, 50 -50))");
     Geometry m = reader.read("MULTIPOINT(0 0, 50 -50)");
-    assertTrue(m.equals(g.getBoundary()));
+    assertTrue(m.equalsExact(g.getBoundary()));
   }
 
   public void testMultiLineStringGetBoundary2() throws Exception {
@@ -433,7 +433,7 @@ public class MiscellaneousTest extends TestCase {
           + "(0 0,  100 0, 50 50),"
           + "(50 50, 50 0))");
     Geometry m = reader.read("MULTIPOINT(0 0, 50 0)");
-    assertTrue(m.equals(g.getBoundary()));
+    assertTrue(m.equalsExact(g.getBoundary()));
   }
 
 //  public void testGeometryCollectionGetBoundary1() throws Exception {

@@ -130,7 +130,7 @@ public class LineMergerTest extends TestCase {
       if (exact && element.equalsExact(g)) {
         return true;
       }
-      if (!exact && element.equals(g)) {
+      if (!exact && element.equalsTopo(g)) {
         return true;
       }      
     }
