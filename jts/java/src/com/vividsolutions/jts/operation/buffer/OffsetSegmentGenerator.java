@@ -119,6 +119,7 @@ class OffsetSegmentGenerator
   private LineSegment offset0 = new LineSegment();
   private LineSegment offset1 = new LineSegment();
   private int side = 0;
+  private boolean hasNarrowConcaveAngle = false;
 
   public OffsetSegmentGenerator(PrecisionModel precisionModel,
       BufferParameters bufParams, double distance) {
@@ -141,6 +142,23 @@ class OffsetSegmentGenerator
     init(distance);
   }
 
+  /**
+   * Tests whether the input has a narrow concave angle
+   * (relative to the offset distance).
+   * In this case the generated offset curve will contain self-intersections
+   * and heuristic closing segments.
+   * This is expected behaviour in the case of buffer curves. 
+   * For pure offset curves,
+   * the output needs to be further treated 
+   * before it can be used. 
+   * 
+   * @return true if the input has a narrow concave angle
+   */
+  public boolean hasNarrowConcaveAngle()
+  {
+    return hasNarrowConcaveAngle;
+  }
+  
   private void init(double distance)
   {
     this.distance = distance;
@@ -309,8 +327,10 @@ class OffsetSegmentGenerator
     }
     else {
       /**
-       * If no intersection is detected, it means the angle is so small and/or the offset so
-       * large that the offsets segments don't intersect. In this case we must
+       * If no intersection is detected, 
+       * it means the angle is so small and/or the offset so
+       * large that the offsets segments don't intersect. 
+       * In this case we must
        * add a "closing segment" to make sure the buffer curve is continuous,
        * fairly smooth (e.g. no sharp reversals in direction)
        * and tracks the buffer correctly around the corner. The curve connects
@@ -334,6 +354,8 @@ class OffsetSegmentGenerator
        * close, don't add closing segments but simply use one of the offset
        * points
        */
+      hasNarrowConcaveAngle = true;
+      //System.out.println("NARROW ANGLE - distance = " + distance);
       if (offset0.p1.distance(offset1.p0) < distance
           * INSIDE_TURN_VERTEX_SNAP_DISTANCE_FACTOR) {
         segList.addPt(offset0.p1);
