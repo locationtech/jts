@@ -808,7 +808,6 @@ public class JTSTestBuilderFrame extends JFrame
     jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
     jSplitPane1.setResizeWeight(0.5);
     inputTabbedPane.add(testListPanel, "Tests");
-    inputTabbedPane.add(layerListPanel, "Layers");
     /*
     // not really needed
     testPanel.add(testListPanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,
@@ -820,6 +819,7 @@ public class JTSTestBuilderFrame extends JFrame
     inputTabbedPane.add(resultValuePanel, "Value");
     inputTabbedPane.add(statsPanel, "Stats");
     inputTabbedPane.add(infoPanel, "Info");
+    inputTabbedPane.add(layerListPanel, "Layers");
     inputTabbedPane.setSelectedIndex(1);
     inputTabbedPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e)
