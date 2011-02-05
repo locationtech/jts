@@ -123,9 +123,49 @@ import com.vividsolutions.jts.util.Assert;
  *  analysis methods, it will throw an exception. If possible the exception will
  *  report the location of the collapse. <P>
  *
- *  #equals(Object) and #hashCode are not overridden, so that when two
- *  topologically equal Geometries are added to HashMaps and HashSets, they
- *  remain distinct. This behaviour is desired in many cases.
+ * <h3>Geometry Equality</h3>
+ * 
+ * JTS provides two ways of comparing geometries for equality: 
+ * <b>structural equality</b> and <b>topological equality</b>.
+ * 
+ * <h4>Structural Equality</h4>
+ *
+ * Structural Equality is provided by the 
+ * {@link #equalsExact(Geometry)} method.  
+ * This implements a comparison based on exact, structural pointwise
+ * equality. 
+ * The {@link #equals(Object)} is a synonym for this method, 
+ * to provide structural equality semantics for
+ * use in Java collections.
+ * It is important to note that structural pointwise equality
+ * is easily affected by things like
+ * ring order and component order.  In many situations
+ * it will be desirable to normalize geometries before
+ * comparing them (using the {@link #norm()} 
+ * or {@link #normalize()} methods).
+ * {@link #equalsNorm(Geometry)} is provided
+ * as a convenience method to compute equality over
+ * normalized geometries, but it is expensive to use.
+ * Finally, {@link #equalsExact(Geometry, double)}
+ * allows using a tolerance value for point comparison.
+ * 
+ * 
+ * <h4>Topological Equality</h4>
+ * 
+ * Topological Equality 
+ * implements the SFS definition of point-set equality
+ * defined in terms of the DE-9IM matrix.
+ * It is is provided by the 
+ * {@link #equalsTopo(Geometry)}
+ * method.  
+ * To support the SFS naming convention, the method
+ *  {@link #equals(Geometry)} is also provided as a synonym.  
+ *  However, due to the potential for confusion with {@link #equals(Geometry)}
+ *  its use is discouraged.
+ * <p>
+ *  Since #equals(Object) and #hashCode are overridden, 
+ *  Geometries can be used effectively in 
+ *  Java collections.
  *
  *@version 1.7
  */

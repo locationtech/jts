@@ -29,6 +29,15 @@ The current and archived JTS distributions can be obtained at the
 
 <h3>Functionality Improvements</h3>
 <ul>
+<li>Added new names for methods for computing <tt>Geometry</tt> equality:
+<ul>
+<li><tt>equals(Object)</tt> is a synonym for <tt>equalsExact(Geometry)</tt>
+<li><tt>equalsNorm(Geometry)</tt> automatically normalizes the operands
+<li><tt>equalsTopo(Geometry)</tt> computes topological equality,
+and is a synonym for the original <tt>equals(Geometry)</tt>
+</ul>
+<li>Added <tt>Geometry.norm()</tt> to provide non-mutating normalization
+<li>Added <tt>Geometry.hashCode()</tt> to fulfill Java conventions
 <li>Added <tt>LineIntersector.getEndpoint()</tt> method
 <li>Added methods to <tt>CoordinateSequences</tt> to test for and create valid rings
 <li>Added <tt>minExtent</tt> and <tt>maxExtent</tt> to <tt>Envelope</tt>
