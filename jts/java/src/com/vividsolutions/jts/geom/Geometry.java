@@ -1072,7 +1072,8 @@ public abstract class Geometry
   /**
    * Tests whether this geometry is structurally and numerically equal
    * to a given <tt>Object</tt>.
-   * If the argument <tt>Object</tt> is not a <tt>Geometry</tt>, the result is <tt>false</tt>.
+   * If the argument <tt>Object</tt> is not a <tt>Geometry</tt>, 
+   * the result is <tt>false</tt>.
    * Otherwise, the result is computed using
    * {@link #equalsExact(Geometry)}.
    * <p>
@@ -1409,19 +1410,26 @@ public abstract class Geometry
    * Two Geometries are exactly equal within a distance tolerance
    * if and only if:
    * <ul>
-   * <li>they have the same class
+   * <li>they have the same structure
    * <li>they have the same values for their vertices,
    * within the given tolerance distance, in exactly the same order.
    * </ul>
-   * If this and the other <code>Geometry</code>s are
-   * composites and any children are not <code>Geometry</code>s, returns
-   * <code>false</code>.
+   * This method does <i>not</i>
+   * test the values of the <tt>GeometryFactory</tt>, the <tt>SRID</tt>, 
+   * or the <tt>userData</tt> fields.
+   * <p>
+   * To properly test equality between different geometries,
+   * it is usually necessary to {@link #normalize()} them first.
    *
-   * @param  other  the <code>Geometry</code> with which to compare this <code>Geometry</code>
+   * @param other the <code>Geometry</code> with which to compare this <code>Geometry</code>
    * @param tolerance distance at or below which two <code>Coordinate</code>s
    *   are considered equal
    * @return <code>true</code> if this and the other <code>Geometry</code>
-   *   are of the same class and have equal internal data.
+   *   have identical structure and point values, up to the distance tolerance.
+   *   
+   * @see #equalsExact(Geometry)
+   * @see #normalize()
+   * @see #norm()
    */
   public abstract boolean equalsExact(Geometry other, double tolerance);
 
@@ -1429,26 +1437,29 @@ public abstract class Geometry
    * Returns true if the two <code>Geometry</code>s are exactly equal.
    * Two Geometries are exactly equal iff:
    * <ul>
-   * <li>they have the same class
-   * <li>they have the same values of Coordinates in their internal
-   * Coordinate lists, in exactly the same order.
+   * <li>they have the same structure
+   * <li>they have the same values for their vertices,
+   * in exactly the same order.
    * </ul>
-   * To properly test equality between arbitrary geometries,
+   * This provides a stricter test of equality than
+   * {@link #equalsTopo(Geometry)}, which is more useful
+   * in certain situations
+   * (such as using geometries as keys in collections).
+   * <p>
+   * This method does <i>not</i>
+   * test the values of the <tt>GeometryFactory</tt>, the <tt>SRID</tt>, 
+   * or the <tt>userData</tt> fields.
+   * <p>
+   * To properly test equality between different geometries,
    * it is usually necessary to {@link #normalize()} them first.
-   * <p>
-   * If this and the other <code>Geometry</code>s are
-   * composites and any children are not <code>Geometry</code>s, 
-   * returns <tt>false</tt>.
-   * <p>
-   *  This provides a stricter test of equality than
-   *  <code>equalsTopo</code>, which is more useful
-   *  in certain circumstances.
    *
    *@param  other  the <code>Geometry</code> with which to compare this <code>Geometry</code>
-   *@return        <code>true</code> if this and the other <code>Geometry</code>
-   *      are of the same class and have equal internal data.
+   *@return <code>true</code> if this and the other <code>Geometry</code>
+   *      have identical structure and point values.
    *      
+   * @see #equalsExact(Geometry, double)
    * @see #normalize()
+   * @see #norm()
    */
   public boolean equalsExact(Geometry other) { return equalsExact(other, 0); }
 
@@ -1458,8 +1469,9 @@ public abstract class Geometry
    * This is a convenience method which creates normalized
    * versions of both geometries before computing
    * {@link #equalsExact(Geometry)}.
+   * This method is relatively expensive to compute.  
    * For maximum performance, the client 
-   * should perform normalization itself
+   * should instead perform normalization itself
    * at an appropriate point during execution.
    * 
    * @param g a Geometry
