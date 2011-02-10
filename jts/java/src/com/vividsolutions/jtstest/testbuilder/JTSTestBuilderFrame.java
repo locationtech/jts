@@ -643,6 +643,14 @@ public class JTSTestBuilderFrame extends JFrame
     testCasePanel.getGeometryEditPanel().zoomToInput();
   }
 
+  void zoomToInputA_actionPerformed(ActionEvent e) {
+    testCasePanel.getGeometryEditPanel().zoomToGeometry(0);
+  }
+
+  void zoomToInputB_actionPerformed(ActionEvent e) {
+    testCasePanel.getGeometryEditPanel().zoomToGeometry(1);
+  }
+
   void panButton_actionPerformed(ActionEvent e) {
     testCasePanel.getGeometryEditPanel().setCurrentTool(PanTool.getInstance());
   }

@@ -435,6 +435,10 @@ public class GeometryEditPanel extends JPanel
     addMouseMotionListener(currentTool);
   }
 
+  public void zoomToGeometry(int i) {
+    zoom(geomModel.getGeometry(i).getEnvelopeInternal());
+  }
+
   public void zoomToInput() {
     zoom(geomModel.getEnvelope());
   }
@@ -551,7 +555,7 @@ public class GeometryEditPanel extends JPanel
     	for (int i = 0; i < n; i++) {
     		if (isMagnifyingTopology && isRenderingStretchVertices
             && stretchView != null && i < 2) {
-          System.out.println("rendering stretch verts");
+          //System.out.println("rendering stretch verts");
       		currentRenderer = new LayerRenderer(layerList.getLayer(i),
       				new StaticGeometryContainer(stretchView.getStretchedGeometry(i)),
       				viewport);

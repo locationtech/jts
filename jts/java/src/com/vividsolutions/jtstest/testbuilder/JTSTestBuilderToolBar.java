@@ -29,6 +29,8 @@ public class JTSTestBuilderToolBar {
   ButtonGroup buttonGroup = new ButtonGroup();
   JButton zoomToFullExtentButton = new JButton();
   JButton zoomToInputButton = new JButton();
+  JButton zoomToInputAButton = new JButton();
+  JButton zoomToInputBButton = new JButton();
   Component strut4;
   JToggleButton panButton = new JToggleButton();
   JToggleButton btnEditVertex = new JToggleButton();
@@ -52,6 +54,8 @@ public class JTSTestBuilderToolBar {
   private final ImageIcon infoIcon = new ImageIcon(this.getClass().getResource("Info.png"));
   private final ImageIcon zoomOneToOneIcon = new ImageIcon(this.getClass().getResource("ZoomOneToOne.png"));
   private final ImageIcon zoomToInputIcon = new ImageIcon(this.getClass().getResource("ZoomInput.png"));
+  private final ImageIcon zoomToInputAIcon = new ImageIcon(this.getClass().getResource("ZoomInputA.png"));
+  private final ImageIcon zoomToInputBIcon = new ImageIcon(this.getClass().getResource("ZoomInputB.png"));
   private final ImageIcon zoomToFullExtentIcon = new ImageIcon(this.getClass().getResource("ZoomAll.png"));
   private final ImageIcon selectIcon = new ImageIcon(this.getClass().getResource("Select.gif"));
   private final ImageIcon moveVertexIcon = new ImageIcon(this.getClass().getResource("MoveVertex.png"));
@@ -87,6 +91,8 @@ public class JTSTestBuilderToolBar {
     jToolBar1.add(zoomInButton, null);
     jToolBar1.add(panButton, null);
     jToolBar1.add(oneToOneButton, null);
+    jToolBar1.add(zoomToInputAButton, null);
+    jToolBar1.add(zoomToInputBButton, null);
     jToolBar1.add(zoomToInputButton, null);
     jToolBar1.add(zoomToFullExtentButton, null);
     jToolBar1.add(strut4, null);
@@ -317,6 +323,7 @@ public class JTSTestBuilderToolBar {
       zoomToInputButton.setMargin(new Insets(0, 0, 0, 0));
       zoomToInputButton.setIcon(zoomToInputIcon);
       zoomToInputButton.setPreferredSize(new Dimension(30, 30));
+      zoomToInputButton.setMaximumSize(new Dimension(30, 30));
       zoomToInputButton.setVerticalTextPosition(SwingConstants.BOTTOM);
       zoomToInputButton.setMinimumSize(new Dimension(30, 30));
       zoomToInputButton.setFont(new java.awt.Font("SansSerif", 0, 10));
@@ -327,6 +334,40 @@ public class JTSTestBuilderToolBar {
 
           public void actionPerformed(ActionEvent e) {
             tbFrame.zoomToInputButton_actionPerformed(e);
+          }
+        });
+
+      zoomToInputAButton.setMargin(new Insets(0, 0, 0, 0));
+      zoomToInputAButton.setIcon(zoomToInputAIcon);
+      zoomToInputAButton.setPreferredSize(new Dimension(30, 30));
+      zoomToInputAButton.setMaximumSize(new Dimension(30, 30));
+      zoomToInputAButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+      zoomToInputAButton.setMinimumSize(new Dimension(30, 30));
+      zoomToInputAButton.setFont(new java.awt.Font("SansSerif", 0, 10));
+      zoomToInputAButton.setHorizontalTextPosition(SwingConstants.CENTER);
+      zoomToInputAButton.setToolTipText("Zoom To A");
+      zoomToInputAButton.addActionListener(
+        new java.awt.event.ActionListener() {
+
+          public void actionPerformed(ActionEvent e) {
+            tbFrame.zoomToInputA_actionPerformed(e);
+          }
+        });
+      
+      zoomToInputBButton.setMargin(new Insets(0, 0, 0, 0));
+      zoomToInputBButton.setIcon(zoomToInputBIcon);
+      zoomToInputBButton.setPreferredSize(new Dimension(30, 30));
+      zoomToInputBButton.setMaximumSize(new Dimension(30, 30));
+      zoomToInputBButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+      zoomToInputBButton.setMinimumSize(new Dimension(30, 30));
+      zoomToInputBButton.setFont(new java.awt.Font("SansSerif", 0, 10));
+      zoomToInputBButton.setHorizontalTextPosition(SwingConstants.CENTER);
+      zoomToInputBButton.setToolTipText("Zoom To B");
+      zoomToInputBButton.addActionListener(
+        new java.awt.event.ActionListener() {
+
+          public void actionPerformed(ActionEvent e) {
+            tbFrame.zoomToInputB_actionPerformed(e);
           }
         });
       zoomToInputButton.setMaximumSize(new Dimension(30, 30));
