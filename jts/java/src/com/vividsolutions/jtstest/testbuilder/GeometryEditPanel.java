@@ -50,6 +50,7 @@ import javax.swing.SwingUtilities;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.testbuilder.geom.StaticGeometryContainer;
 import com.vividsolutions.jtstest.testbuilder.model.*;
@@ -58,6 +59,7 @@ import com.vividsolutions.jtstest.testbuilder.ui.style.AWTUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.*;
 import com.vividsolutions.jtstest.testbuilder.ui.render.*;
 
+import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryPainter;
 /**
  * Panel which displays rendered geometries.
  * 
@@ -382,6 +384,22 @@ public class GeometryEditPanel extends JPanel
     g.fill(mask);
   }
 
+  public void flash(Geometry g)
+  {
+    Graphics2D gr = (Graphics2D) getGraphics();
+    gr.setXORMode(Color.white);
+    Stroke stroke = new BasicStroke(5);
+    try {
+      GeometryPainter.paint(g, viewport, gr, Color.RED, null, stroke);
+      Thread.sleep(200);
+      GeometryPainter.paint(g, viewport, gr, Color.RED, null, stroke);
+    }
+    catch (Exception ex) { 
+      // nothing we can do
+    }
+    gr.setPaintMode();
+  }
+    
   public Point2D snapToGrid(Point2D modelPoint) {
     return grid.snapToGrid(modelPoint);
   }

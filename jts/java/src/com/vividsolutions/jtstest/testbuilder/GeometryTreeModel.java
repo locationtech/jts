@@ -1,16 +1,21 @@
 package com.vividsolutions.jtstest.testbuilder;
 
-import javax.swing.event.TreeModelEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
 
 public class GeometryTreeModel implements TreeModel {
     private Vector treeModelListeners =
@@ -152,6 +157,8 @@ abstract class GeometryNode
 		this(geom, size, indexString(index));
 	}
 	
+	public abstract Geometry getGeometry();
+	
 	public void setIndex(int index)
 	{
 		this.index = index;
@@ -214,6 +221,7 @@ class PolygonNode extends GeometryNode
 		super(poly, poly.getNumPoints(), null);
 		this.poly = poly;
 	}
+	public Geometry getGeometry() { return poly; }
 	protected void populateChildren()
 	{
 		children = new ArrayList();
@@ -237,6 +245,7 @@ class LineStringNode extends GeometryNode
 		super(line, line.getNumPoints(), tag);
 		this.line = line;
 	}
+  public Geometry getGeometry() { return line; }
 	protected void populateChildren()
 	{
 		populateChildren(line.getCoordinates());
@@ -263,6 +272,7 @@ class PointNode extends GeometryNode
 		super(p);
 		pt = p;
 	}
+  public Geometry getGeometry() { return pt; }
 	protected void populateChildren()
 	{
 		children = new ArrayList();
@@ -280,6 +290,7 @@ class GeometryCollectionNode extends GeometryNode
 		super(coll, coll.getNumGeometries(), null);
 		this.coll = coll;
 	}
+  public Geometry getGeometry() { return coll; }
 	protected void populateChildren()
 	{
 		children = new ArrayList();
@@ -293,10 +304,17 @@ class GeometryCollectionNode extends GeometryNode
 
 class CoordinateNode extends GeometryNode 
 {
+  Coordinate coord;
 	public CoordinateNode(Coordinate coord)
 	{
 		super(coord.x + ", " + coord.y);
 		isLeaf = true;
+		this.coord = coord;
 	}
+  public Geometry getGeometry() 
+  { 
+    GeometryFactory geomFact = new GeometryFactory();
+    return geomFact.createPoint(coord);
+  }
 }
 

@@ -78,9 +78,6 @@ public abstract class IndicatorTool extends BasicTool
   private void redrawShape(Graphics2D graphics) throws Exception {
     clearShape(graphics);
     drawShapeXOR(graphics);
-
-    //<<TODO:INVESTIGATE>> Race conditions on the shapeOnScreen field?
-    //Might we need synchronization? [Jon Aquino]
     setIndicatorVisible(true);
   }
 
@@ -117,7 +114,6 @@ public abstract class IndicatorTool extends BasicTool
     graphics.setFont(new Font(FontGlyphReader.FONT_SANSERIF, Font.PLAIN, 14));
     graphics.setColor(bandColor);
     graphics.setXORMode(Color.white);
-//    graphics.setStroke(stroke);
   }
 
   private void cleanup(Graphics2D graphics) {

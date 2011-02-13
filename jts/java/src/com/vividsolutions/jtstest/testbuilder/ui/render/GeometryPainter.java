@@ -34,7 +34,15 @@ public class GeometryPainter
       return;
 
     if (geometry instanceof GeometryCollection) {
-      paintGeometryCollection(g, viewport, (GeometryCollection) geometry, style);
+      GeometryCollection gc = (GeometryCollection) geometry;
+      /**
+       * Render each element separately.
+       * Otherwise it is not possible to render both filled and non-filled
+       * (1D) elements correctly
+       */
+      for (int i = 0; i < gc.getNumGeometries(); i++) {
+        paint(g, viewport, gc.getGeometryN(i), style);
+      }
       return;
     }
     
@@ -47,14 +55,6 @@ public class GeometryPainter
       ) 
   throws Exception
   {
-    /**
-     * Render each element separately.
-     * Otherwise it is not possible to render both filled and non-filled
-     * (1D) elements correctly
-     */
-    for (int i = 0; i < gc.getNumGeometries(); i++) {
-      paint(g, viewport, gc.getGeometryN(i), style);
-    }
   }
 
   static Viewport viewportCache;
@@ -83,20 +83,40 @@ public class GeometryPainter
       Graphics2D g,
       Color lineColor, Color fillColor) 
   {
-  	ShapeWriter converter = getConverter(viewport);
-    //ShapeWriter converter = new ShapeWriter(viewport);
-    paint(geometry, viewport, converter, g, lineColor, fillColor);
+    paint(geometry, viewport, g, lineColor, fillColor, null);
   }
   
-  public static void paint(Geometry geometry, Viewport viewport, ShapeWriter converter, Graphics2D g,
+  public static void paint(Geometry geometry, Viewport viewport, 
+      Graphics2D g,
+      Color lineColor, Color fillColor, Stroke stroke) 
+  {
+    ShapeWriter converter = getConverter(viewport);
+    //ShapeWriter converter = new ShapeWriter(viewport);
+    paint(geometry, converter, g, lineColor, fillColor, stroke);
+  }
+  
+  private static void paint(Geometry geometry, ShapeWriter converter, Graphics2D g,
       Color lineColor, Color fillColor) 
+  {
+    paint(geometry, converter, g, lineColor, fillColor, null);
+  }
+  
+  private static void paint(Geometry geometry, ShapeWriter converter, Graphics2D g,
+      Color lineColor, Color fillColor, Stroke stroke) 
   {
     if (geometry == null)
 			return;
 
     if (geometry instanceof GeometryCollection) {
-      paintGeometryCollection((GeometryCollection) geometry, viewport, converter, g,
-          lineColor, fillColor);
+      GeometryCollection gc = (GeometryCollection) geometry;
+      /**
+       * Render each element separately.
+       * Otherwise it is not possible to render both filled and non-filled
+       * (1D) elements correctly
+       */
+      for (int i = 0; i < gc.getNumGeometries(); i++) {
+        paint(gc.getGeometryN(i), converter, g, lineColor, fillColor, stroke);
+      }
       return;
     }
 
@@ -110,7 +130,10 @@ public class GeometryPainter
 			return;
 		}
 
-		g.setStroke(GEOMETRY_STROKE);
+		if (stroke == null)
+		  g.setStroke(GEOMETRY_STROKE);
+		else
+		  g.setStroke(stroke);
 		
     // Test for a polygonal shape and fill it if required
 		if (geometry instanceof Polygon && fillColor != null) {
@@ -118,7 +141,6 @@ public class GeometryPainter
 			g.setPaint(fillColor);
 			g.fill(shape);
 		}
-		
 		
 		if (lineColor != null) {
 		  g.setColor(lineColor);
@@ -142,19 +164,6 @@ public class GeometryPainter
 		}
 	}
 
-  private static void paintGeometryCollection(GeometryCollection gc,
-      Viewport viewport, ShapeWriter converter,
-      Graphics2D g, Color lineColor, Color fillColor) 
-  {
-    /**
-     * Render each element separately.
-     * Otherwise it is not possible to render both filled and non-filled
-     * (1D) elements correctly
-     */
-    for (int i = 0; i < gc.getNumGeometries(); i++) {
-      paint(gc.getGeometryN(i), viewport, converter, g, lineColor, fillColor);
-    }
-  }
 
 
 }

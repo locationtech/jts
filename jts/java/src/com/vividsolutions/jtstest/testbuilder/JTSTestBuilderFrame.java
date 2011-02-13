@@ -127,8 +127,7 @@ public class JTSTestBuilderFrame extends JFrame
   private TextViewDialog textViewDlg = new TextViewDialog(this, "", true);
   private TestCaseTextDialog testCaseTextDlg = new TestCaseTextDialog(this,
       "", true);
-  private GeometryInspectorDialog geomInspectorDlg = new GeometryInspectorDialog(this,
-      "", true);
+  private GeometryInspectorDialog geomInspectorDlg = new GeometryInspectorDialog(this);
   /*
   private LoadTestCasesDialog loadTestCasesDlg = new LoadTestCasesDialog(this,
       "Load Test Cases", true);
@@ -220,6 +219,10 @@ public class JTSTestBuilderFrame extends JFrame
     return singleton;
   }
 
+  public static GeometryEditPanel getGeometryEditPanel()
+  {
+    return instance().getTestCasePanel().getGeometryEditPanel();
+  }
   public TestBuilderModel getModel()
   {
     return tbModel;

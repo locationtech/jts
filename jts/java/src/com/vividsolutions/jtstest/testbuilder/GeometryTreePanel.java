@@ -50,31 +50,14 @@ import com.vividsolutions.jtstest.util.*;
  * @version 1.7
  */
 public class GeometryTreePanel extends JPanel implements TreeWillExpandListener {
-	JScrollPane jScrollPane = new JScrollPane();
 
+
+  JScrollPane jScrollPane = new JScrollPane();
 	JTree tree = new JTree();
-
 	BorderLayout borderLayout = new BorderLayout();
-
 	Border border1;
 
-	private static GeometryFunction getFunctionFromNode(Object value) {
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-		if (node == null)
-			return null;
-		Object nodeValue = node.getUserObject();
-		if (nodeValue instanceof GeometryFunction)
-			return (GeometryFunction) nodeValue;
-		return null;
-	}
-
 	private class GeometryTreeCellRenderer extends DefaultTreeCellRenderer {
-		private final ImageIcon binaryIcon = new ImageIcon(this.getClass()
-				.getResource("BinaryGeomFunction.png"));
-
-		private final ImageIcon unaryIcon = new ImageIcon(this.getClass()
-				.getResource("UnaryGeomFunction.png"));
-
 		public GeometryTreeCellRenderer() {
 		}
 
@@ -87,20 +70,10 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener 
 				return this;
 			
 			GeometryNode o = (GeometryNode) value;
-				//setIcon(isBinaryFunc ? binaryIcon : unaryIcon);
-				setText(o.getText());
-				//setToolTipText(func.getSignature() + func.getDescription()); // no tool tip
-			
-				return this;
-		}
-
-		String createText(Object value) {
-			Object o = value; //tree.getLastSelectedPathComponent();
-			if (o instanceof Geometry) {
-				Geometry g = (Geometry) o;
-				return g.getGeometryType();
-			}
-			return "";
+			setText(o.getText());
+			//setIcon(isBinaryFunc ? binaryIcon : unaryIcon);
+			//setToolTipText(func.getSignature() + func.getDescription()); // no tool tip
+			return this;
 		}
 	}
 
@@ -128,7 +101,8 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener 
 
 		tree.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
+				if (e.getClickCount() == 1) {
+				  JTSTestBuilderFrame.getGeometryEditPanel().flash(getGeometry());
 					//GeometryFunction fun = getFunction();
 					//if (fun != null)
 						//fireFunctionInvoked(new GeometryFunctionEvent(fun));
@@ -144,10 +118,24 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener 
 			}
 		});
 	}
+  public Geometry getGeometry() {
+    return getGeometryFromNode(tree.getLastSelectedPathComponent());
+  }
+  private static Geometry xxgetGeometryFromNode(Object value) {
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+    if (node == null)
+      return null;
+    Object nodeValue = node.getUserObject();
+    if (nodeValue instanceof GeometryNode)
+      return ((GeometryNode) nodeValue).getGeometry();
+    return null;
+  }
 
-	public GeometryFunction getFunction() {
-		return getFunctionFromNode(tree.getLastSelectedPathComponent());
-	}
+  private static Geometry getGeometryFromNode(Object value) {
+      return ((GeometryNode) value).getGeometry();
+
+  }
+
 
 	public void populate(Geometry geom) {
 		tree.setModel(new GeometryTreeModel(geom));

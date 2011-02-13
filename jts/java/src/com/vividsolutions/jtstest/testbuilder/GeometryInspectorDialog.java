@@ -40,6 +40,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.EmptyBorder;
@@ -52,16 +53,23 @@ import com.vividsolutions.jtstest.testbuilder.model.TestCaseEdit;
  * @version 1.7
  */
 public class GeometryInspectorDialog extends JDialog {
-    private TestCaseEdit test;
     //----------------------------------
     JPanel dialogPanel = new JPanel();
     BorderLayout borderLayout1 = new BorderLayout();
     GeometryTreePanel geomTreeA = new GeometryTreePanel();
     GeometryTreePanel geomTreeB = new GeometryTreePanel();
-    JPanel jPanel1 = new JPanel();
+    JPanel cmdBtnSurroundPanel = new JPanel();
     JPanel cmdButtonPanel = new JPanel();
     BorderLayout borderLayout2 = new BorderLayout();
     BorderLayout borderLayout3 = new BorderLayout();
+    
+    JPanel aPanel = new JPanel();
+    BorderLayout aPanelLayout = new BorderLayout();
+    JPanel bPanel = new JPanel();
+    BorderLayout bPanelLayout = new BorderLayout();
+    JLabel aLabel = new JLabel();
+    JLabel bLabel = new JLabel();
+    
     JButton btnCopy = new JButton();
     JButton btnOk = new JButton();
     JSplitPane jSplitPane1 = new JSplitPane();
@@ -77,11 +85,15 @@ public class GeometryInspectorDialog extends JDialog {
     }
 
     public GeometryInspectorDialog() {
-        this(null, "", false);
-    }
+      this(null, "", false);
+  }
+
+    public GeometryInspectorDialog(Frame frame) {
+      this(null, "Geometry Inspector", false);
+  }
 
     void jbInit() throws Exception {
-        jPanel1.setLayout(borderLayout2);
+        cmdBtnSurroundPanel.setLayout(borderLayout2);
         
         btnCopy.setEnabled(true);
         btnCopy.setText("Copy");
@@ -94,22 +106,34 @@ public class GeometryInspectorDialog extends JDialog {
         });
         //cmdButtonPanel.add(btnCopy, null);
         cmdButtonPanel.add(btnOk, null);
-        jPanel1.add(cmdButtonPanel, BorderLayout.SOUTH);
+        cmdBtnSurroundPanel.add(cmdButtonPanel, BorderLayout.SOUTH);
         
         dialogPanel.setLayout(borderLayout1);
         geomTreeA.setPreferredSize(new Dimension(500, 300));
 
+        aPanel.setLayout(aPanelLayout);
+        aLabel.setText("A");
+        aLabel.setHorizontalAlignment(JLabel.CENTER);
+        aPanel.add(aLabel, BorderLayout.NORTH);
+        aPanel.add(geomTreeA, BorderLayout.CENTER);
+        
+        bPanel.setLayout(bPanelLayout);
+        bLabel.setText("B");
+        bLabel.setHorizontalAlignment(JLabel.CENTER);
+        bPanel.add(bLabel, BorderLayout.NORTH);
+        bPanel.add(geomTreeB, BorderLayout.CENTER);
+        
         jSplitPane1.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
         jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
         jSplitPane1.setResizeWeight(0.5);
         
-        jSplitPane1.add(geomTreeA, JSplitPane.LEFT);
+        jSplitPane1.add(aPanel, JSplitPane.LEFT);
         //jPanel1.add(testCasePanel, BorderLayout.CENTER);
-        jSplitPane1.add(geomTreeB, JSplitPane.RIGHT);
+        jSplitPane1.add(bPanel, JSplitPane.RIGHT);
         //jPanel2.add(inputTabbedPane, BorderLayout.CENTER);
 
         dialogPanel.add(jSplitPane1, BorderLayout.CENTER);
-        dialogPanel.add(jPanel1, BorderLayout.SOUTH);
+        dialogPanel.add(cmdBtnSurroundPanel, BorderLayout.SOUTH);
         getContentPane().add(dialogPanel);
     }
 
@@ -121,6 +145,4 @@ public class GeometryInspectorDialog extends JDialog {
     void btnOk_actionPerformed(ActionEvent e) {
         setVisible(false);
     }
-
-
 }

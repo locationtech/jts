@@ -80,7 +80,7 @@ public class JTSTestBuilderMenuBar
           tbFrame.menuViewText_actionPerformed(e);
         }
       });
-    menuViewGeometry.setText("Inspect Geometry...");
+    menuViewGeometry.setText("Geometry Inspector...");
     menuViewGeometry.addActionListener(
       new java.awt.event.ActionListener() {
 
