@@ -48,7 +48,6 @@ public class JTSTestBuilderMenuBar
     jMenuAbout.setText("About");
     jMenuAbout.addActionListener(
       new ActionListener() {
-
         public void actionPerformed(ActionEvent e) {
           tbFrame.jMenuHelpAbout_actionPerformed(e);
         }
@@ -58,7 +57,6 @@ public class JTSTestBuilderMenuBar
     jMenuFileExit.setText("Exit");
     jMenuFileExit.addActionListener(
       new ActionListener() {
-
         public void actionPerformed(ActionEvent e) {
           tbFrame.jMenuFileExit_actionPerformed(e);
         }
@@ -67,7 +65,6 @@ public class JTSTestBuilderMenuBar
     menuExchangeGeom.setText("Exchange Geometries");
     menuExchangeGeom.addActionListener(
       new java.awt.event.ActionListener() {
-
         public void actionPerformed(ActionEvent e) {
           tbFrame.menuExchangeGeom_actionPerformed(e);
         }
@@ -75,7 +72,6 @@ public class JTSTestBuilderMenuBar
     menuViewText.setText("Test Case Text...");
     menuViewText.addActionListener(
       new java.awt.event.ActionListener() {
-
         public void actionPerformed(ActionEvent e) {
           tbFrame.menuViewText_actionPerformed(e);
         }
@@ -83,7 +79,6 @@ public class JTSTestBuilderMenuBar
     menuViewGeometry.setText("Geometry Inspector...");
     menuViewGeometry.addActionListener(
       new java.awt.event.ActionListener() {
-
         public void actionPerformed(ActionEvent e) {
           tbFrame.menuViewGeometry_actionPerformed(e);
         }
@@ -91,7 +86,6 @@ public class JTSTestBuilderMenuBar
     menuLoadXmlTestFile.setText("Open XML File(s)...");
     menuLoadXmlTestFile.addActionListener(
       new java.awt.event.ActionListener() {
-
         public void actionPerformed(ActionEvent e) {
           tbFrame.menuLoadXmlTestFile_actionPerformed(e);
         }
@@ -99,7 +93,6 @@ public class JTSTestBuilderMenuBar
     saveAsXmlMenuItem.setText("Save As XML...");
     saveAsXmlMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
-
         public void actionPerformed(ActionEvent e) {
           tbFrame.menuSaveAsXml_actionPerformed(e);
         }
@@ -107,7 +100,6 @@ public class JTSTestBuilderMenuBar
     saveAsHtmlMenuItem.setText("Save As HTML...");
     saveAsHtmlMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
-
         public void actionPerformed(ActionEvent e) {
           tbFrame.menuSaveAsHtml_actionPerformed(e);
         }
@@ -115,7 +107,6 @@ public class JTSTestBuilderMenuBar
     saveAsPNGMenuItem.setText("Save As PNG...");
     saveAsPNGMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
-
         public void actionPerformed(ActionEvent e) {
           tbFrame.menuSaveAsPNG_actionPerformed(e);
         }
@@ -123,7 +114,6 @@ public class JTSTestBuilderMenuBar
     saveToClipboardMenuItem.setText("Save Screen To Clipboard");
     saveToClipboardMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
-
         public void actionPerformed(ActionEvent e) {
           tbFrame.menuSaveScreenToClipboard_actionPerformed(e);
         }

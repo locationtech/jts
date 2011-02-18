@@ -114,6 +114,8 @@ public class GeometryLocation
 	public String toFacetString()
 	{
 		StringBuffer buf = new StringBuffer();
+		
+		// facet index
 		buf.append("[");
 		for (int i = 0; i < componentPath.length; i++) {
 			if (i > 0) {
@@ -121,14 +123,16 @@ public class GeometryLocation
       }
 			buf.append(componentPath[i]);
 		}
-		
 		buf.append(" ");
 		buf.append(index);
 		if (! isVertex()) {
 			buf.append("-" + (index + 1));
 		}
-
 		buf.append("]  ");
+		
+		// facet value
+    buf.append(isVertex() ? "POINT " : "LINESTRING ");
+
     buf.append("( ");
 		buf.append(pt.x);
 		buf.append(" ");

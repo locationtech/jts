@@ -49,9 +49,8 @@ import com.vividsolutions.jtstest.util.*;
 /**
  * @version 1.7
  */
-public class GeometryTreePanel extends JPanel implements TreeWillExpandListener {
-
-
+public class GeometryTreePanel extends JPanel implements TreeWillExpandListener 
+{
   JScrollPane jScrollPane = new JScrollPane();
 	JTree tree = new JTree();
 	BorderLayout borderLayout = new BorderLayout();
@@ -98,16 +97,18 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener 
 		tree.setCellRenderer(new GeometryTreeCellRenderer());
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
+		// stop expansion with double-click
+		tree.setToggleClickCount(0);
+
 
 		tree.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 1) {
-				  JTSTestBuilderFrame.getGeometryEditPanel().flash(getGeometry());
-					//GeometryFunction fun = getFunction();
-					//if (fun != null)
-						//fireFunctionInvoked(new GeometryFunctionEvent(fun));
-				}
-
+        if (e.getClickCount() == 1) {
+          JTSTestBuilderFrame.getGeometryEditPanel().flash(getSelectedGeometry());
+        }
+        else if (e.getClickCount() == 2) {
+          JTSTestBuilderFrame.getGeometryEditPanel().zoom(getSelectedGeometry().getEnvelopeInternal());
+        }
 			}
 		});
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
@@ -118,24 +119,13 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener 
 			}
 		});
 	}
-  public Geometry getGeometry() {
+  public Geometry getSelectedGeometry() {
     return getGeometryFromNode(tree.getLastSelectedPathComponent());
-  }
-  private static Geometry xxgetGeometryFromNode(Object value) {
-    DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-    if (node == null)
-      return null;
-    Object nodeValue = node.getUserObject();
-    if (nodeValue instanceof GeometryNode)
-      return ((GeometryNode) nodeValue).getGeometry();
-    return null;
   }
 
   private static Geometry getGeometryFromNode(Object value) {
       return ((GeometryNode) value).getGeometry();
-
   }
-
 
 	public void populate(Geometry geom) {
 		tree.setModel(new GeometryTreeModel(geom));

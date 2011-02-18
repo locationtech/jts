@@ -59,9 +59,11 @@ public class GeometryLocationsWriter
       String locStr = writeLocation(lyr, pt, tolerance);
       if (locStr == null) continue;
       
-      if (i > 0 && text.length() > 0)
+      if (i > 0 && text.length() > 0) {
         text.append(eol);
-
+        text.append(eol);
+      }
+      
       text.append(highlightStart + lyr.getName() + highlightEnd + eol);
       text.append(locStr);
     }
