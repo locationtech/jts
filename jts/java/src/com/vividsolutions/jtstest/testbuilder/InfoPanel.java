@@ -96,6 +96,12 @@ extends JPanel
   
   public void setInfo(String s)
   {
+    if (s == null || s.length() == 0) s = "";
+    txtInfo.setText(s);
+  }
+
+  public void addInfo(String s)
+  {
     if (s == null || s.length() == 0) return;
     
     if (text.length() != 0) {

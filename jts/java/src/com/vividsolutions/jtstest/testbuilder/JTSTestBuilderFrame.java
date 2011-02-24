@@ -890,7 +890,7 @@ public class JTSTestBuilderFrame extends JFrame
   
   public void displayInfo(String s, boolean showTab)
   {
-    infoPanel.setInfo(s);
+    infoPanel.addInfo(s);
     if (showTab) showInfoTab();
   }
   
