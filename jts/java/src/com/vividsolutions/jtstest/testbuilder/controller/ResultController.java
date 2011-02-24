@@ -57,6 +57,12 @@ public class ResultController
     updateResult(null,null);
   }
   	
+  /**
+   * If result is null, clears result info.
+   * 
+   * @param result
+   * @param timer
+   */
   private void updateResult(Object result, Stopwatch timer)
   {
   	model.setResult(result);
@@ -66,6 +72,13 @@ public class ResultController
     JTSTestBuilderController.geometryViewChanged();
     frame.getTestCasePanel().getSpatialFunctionPanel().enableExecuteControl(true);
     frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    // log it
+    if (result != null) {
+    JTSTestBuilderFrame.instance().displayInfo(
+        frame.getTestCasePanel().getSpatialFunctionPanel().getFunctionCall()
+        + " : " + timeString,
+        false);
+    }
   }
   
   private SwingWorker worker = null;

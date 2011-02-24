@@ -878,10 +878,20 @@ public class JTSTestBuilderFrame extends JFrame
 
   public void displayInfo(Coordinate modelPt)
   {
-    infoPanel.setInfo(
+    displayInfo(
         testCasePanel.getGeometryEditPanel().getInfo(modelPt)
         );
-    showInfoTab();
+  }
+  
+  public void displayInfo(String s)
+  {
+    displayInfo(s, true);
+  }
+  
+  public void displayInfo(String s, boolean showTab)
+  {
+    infoPanel.setInfo(s);
+    if (showTab) showInfoTab();
   }
   
   private void reportProblemsParsingXmlTestFile(List parsingProblems) {

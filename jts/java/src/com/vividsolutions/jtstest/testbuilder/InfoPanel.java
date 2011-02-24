@@ -57,6 +57,8 @@ extends JPanel
 	JScrollPane jScrollPane1 = new JScrollPane();
 	JTextArea txtInfo = new JTextArea();
   BorderLayout tabPanelLayout = new BorderLayout();
+  
+  StringBuffer text = new StringBuffer();
 	
 	public InfoPanel() {
 		try {
@@ -85,9 +87,24 @@ extends JPanel
 		this.tbModel = tbModel;
 	}
 	
-  public void setInfo(String s)
+  public void OLDsetInfo(String s)
   {
     txtInfo.setText(s);
+  }
+  
+  private static final String LOG_SEP = "-------------------------------------------------";
+  
+  public void setInfo(String s)
+  {
+    if (s == null || s.length() == 0) return;
+    
+    if (text.length() != 0) {
+      text.append("\n");
+      text.append(LOG_SEP);
+      text.append("\n");
+    }
+    text.append(s);
+    txtInfo.setText(text.toString());
   }
 
   
