@@ -133,7 +133,7 @@ public class BufferFunctions {
 		Geometry buf = g.buffer(distance);
 		String errMsg = BufferResultValidator.isValidMsg(g, distance, buf);
 		if (errMsg != null)
-			throw new IllegalStateException(errMsg);
+			throw new IllegalStateException("Buffer Validation error: " + errMsg);
 		return buf;
 	}
 
