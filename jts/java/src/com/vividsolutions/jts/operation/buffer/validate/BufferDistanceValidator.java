@@ -76,6 +76,7 @@ public class BufferDistanceValidator
   private boolean isValid = true;
   private String errMsg = null;
   private Coordinate errorLocation = null;
+  private Geometry errorIndicator = null;
   
   public BufferDistanceValidator(Geometry input, double bufDistance, Geometry result)
   {
@@ -118,7 +119,21 @@ public class BufferDistanceValidator
   
   public Coordinate getErrorLocation()
   {
-  	return errorLocation;
+    return errorLocation;
+  }
+  
+  /**
+   * Gets a geometry which indicates the location and nature of a validation failure.
+   * <p>
+   * The indicator is a line segment showing the location and size
+   * of the distance discrepancy.
+   * 
+   * @return a geometric error indicator
+   * @return null if no error was found
+   */
+  public Geometry getErrorIndicator()
+  {
+    return errorIndicator;
   }
   
   private void checkPositiveValid()
@@ -177,6 +192,7 @@ public class BufferDistanceValidator
   		isValid = false;
   		Coordinate[] pts = distOp.nearestPoints();
   		errorLocation = distOp.nearestPoints()[1];
+  		errorIndicator = g1.getFactory().createLineString(pts);
   		errMsg = "Distance between buffer curve and input is too small "
   			+ "(" + minDistanceFound
   			+ " at " + WKTWriter.toLineString(pts[0], pts[1]) +" )";
@@ -207,6 +223,7 @@ public class BufferDistanceValidator
       isValid = false;
       Coordinate[] pts = haus.getCoordinates();
       errorLocation = pts[1];
+      errorIndicator = input.getFactory().createLineString(pts);
       errMsg = "Distance between buffer curve and input is too large "
         + "(" + maxDistanceFound
         + " at " + WKTWriter.toLineString(pts[0], pts[1]) +")";

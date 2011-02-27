@@ -128,14 +128,22 @@ public class BufferFunctions {
     return simpGeom;
   }
 
-	public static Geometry bufferValidated(Geometry g, double distance)
-	{
-		Geometry buf = g.buffer(distance);
-		String errMsg = BufferResultValidator.isValidMsg(g, distance, buf);
-		if (errMsg != null)
-			throw new IllegalStateException("Buffer Validation error: " + errMsg);
-		return buf;
-	}
+  public static Geometry bufferValidated(Geometry g, double distance)
+  {
+    Geometry buf = g.buffer(distance);
+    String errMsg = BufferResultValidator.isValidMsg(g, distance, buf);
+    if (errMsg != null)
+      throw new IllegalStateException("Buffer Validation error: " + errMsg);
+    return buf;
+  }
+
+  public static Geometry bufferValidatedGeom(Geometry g, double distance)
+  {
+    Geometry buf = g.buffer(distance);
+    BufferResultValidator validator = new BufferResultValidator(g, distance, buf);    
+    boolean isValid = validator.isValid();
+    return validator.getErrorIndicator();
+  }
 
   public static Geometry singleSidedBufferCurve(Geometry geom, double distance) {
     BufferParameters bufParam = new BufferParameters();

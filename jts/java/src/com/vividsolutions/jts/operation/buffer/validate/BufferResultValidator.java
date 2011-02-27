@@ -91,6 +91,7 @@ public class BufferResultValidator
   private boolean isValid = true;
   private String errorMsg = null;
   private Coordinate errorLocation = null;
+  private Geometry errorIndicator = null;
   
   public BufferResultValidator(Geometry input, double distance, Geometry result)
   {
@@ -123,6 +124,21 @@ public class BufferResultValidator
   	return errorLocation;
   }
   
+  /**
+   * Gets a geometry which indicates the location and nature of a validation failure.
+   * <p>
+   * If the failure is due to the buffer curve being too far or too close 
+   * to the input, the indicator is a line segment showing the location and size
+   * of the discrepancy.
+   * 
+   * @return a geometric error indicator
+   * @return null if no error was found
+   */
+  public Geometry getErrorIndicator()
+  {
+    return errorIndicator;
+  }
+  
   private void report(String checkName)
   {
     if (! VERBOSE) return;
@@ -136,6 +152,7 @@ public class BufferResultValidator
   			|| result instanceof MultiPolygon))
   	isValid = false;
   	errorMsg = "Result is not polygonal";
+    errorIndicator = result;
     report("Polygonal");
   }
   
@@ -150,6 +167,7 @@ public class BufferResultValidator
   	if (! result.isEmpty()) {
   		isValid = false;
   		errorMsg = "Result is non-empty";
+      errorIndicator = result;
   	}
     report("ExpectedEmpty");
   }
@@ -170,6 +188,7 @@ public class BufferResultValidator
   	if (! bufEnv.contains(expectedEnv)) {
   		isValid = false;
   		errorMsg = "Buffer envelope is incorrect";
+  		errorIndicator = input.getFactory().toGeometry(bufEnv);
   	}
     report("Envelope");
   }
@@ -183,11 +202,13 @@ public class BufferResultValidator
   			&& inputArea > resultArea) {
   		isValid = false;
   		errorMsg = "Area of positive buffer is smaller than input";
+      errorIndicator = result;
   	}
   	if (distance < 0.0
   			&& inputArea < resultArea) {
   		isValid = false;
   		errorMsg = "Area of negative buffer is larger than input";
+  		errorIndicator = result;
   	}
     report("Area");
   }
@@ -199,6 +220,7 @@ public class BufferResultValidator
   		isValid = false;
   		errorMsg = distValid.getErrorMessage();
   		errorLocation = distValid.getErrorLocation();
+  		errorIndicator = distValid.getErrorIndicator();
   	}
     report("Distance");
   }
