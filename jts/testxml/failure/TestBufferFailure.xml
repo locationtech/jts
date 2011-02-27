@@ -9,6 +9,7 @@
   <desc>
   	Discovered on Feb 25, 2011.  An incorrect hole is generated
   	Result provided is correct output.
+  	The test works correctly for slightly smaller (0.7) and larger (1.1) distance values.
   </desc>
   <a>
 POLYGON ((1676334.370908338 4847442.47738721, 1676334.381771572 4847442.672985536, 1676334.430559768 4847442.86271278, 1676334.515400594 4847443.039287834, 1676336.265400594 4847445.919287834, 
