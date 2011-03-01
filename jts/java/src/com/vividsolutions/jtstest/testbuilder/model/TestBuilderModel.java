@@ -538,7 +538,12 @@ public class TestBuilderModel
   }
 
   public void deleteCase() {
+    // corner case - handle case where list has only one element
+    if (tcList.getList().size() == 1) {
+      tcListi.previous();
+    }
     tcListi.remove();
+    
     if (tcListi.hasNext()) {
       currTestCase = (TestCaseEdit) tcListi.next();
     }
