@@ -94,6 +94,7 @@ public class Viewport implements PointTransformation
   }
   
   private static final double ROUND_ERROR_REMOVAL = 0.00000001;
+  
   /**
      * Snaps scale to nearest multiple of 2, 5 or 10.
      * This ensures that model coordinates entered
@@ -104,6 +105,33 @@ public class Viewport implements PointTransformation
    * @return
    */
   private static double snapScale(double scaleRaw)
+  {
+    double scale = snapScaleToSingleDigitPrecision(scaleRaw);
+    //System.out.println("requested scale = " + scaleRaw + " scale = " + scale  + "   Pow10 = " + pow10);
+    return scale;
+  }
+  
+  private static double snapScaleToSingleDigitPrecision(double scaleRaw)
+  {
+    // if the rounding error is not nudged, snapping can "stick" at some values
+    double pow10 = Math.floor(MathUtil.log10(scaleRaw) + ROUND_ERROR_REMOVAL);
+    double nearestLowerPow10 = Math.pow(10, pow10);
+    
+    int scaleDigit = (int) (scaleRaw / nearestLowerPow10);
+    double scale = scaleDigit * nearestLowerPow10;
+    
+    //System.out.println("requested scale = " + scaleRaw + " scale = " + scale  + "   Pow10 = " + pow10);
+    return scale;
+  }
+  
+  /**
+   * Not used - scaling to multiples of 10,5,2 is too coarse.
+   *  
+   * 
+   * @param scaleRaw
+   * @return
+   */
+  private static double snapScaleTo_10_2_5(double scaleRaw)
   {
     // if the rounding error is not nudged, snapping can "stick" at some values
     double pow10 = Math.floor(MathUtil.log10(scaleRaw) + ROUND_ERROR_REMOVAL);
