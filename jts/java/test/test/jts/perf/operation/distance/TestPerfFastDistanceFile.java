@@ -47,7 +47,7 @@ public class TestPerfFastDistanceFile
   testAllDistances(geoms, 50);
 }
 
-  List loadWKT(String filename) throws Exception {
+  static List loadWKT(String filename) throws Exception {
     WKTReader rdr = new WKTReader();
     WKTFileReader fileRdr = new WKTFileReader(filename, rdr);
     return fileRdr.read();
