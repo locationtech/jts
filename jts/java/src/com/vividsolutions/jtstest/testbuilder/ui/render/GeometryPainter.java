@@ -60,13 +60,21 @@ public class GeometryPainter
   static Viewport viewportCache;
   static ShapeWriter converterCache;
   
+  // TODO: does not work, has a race condition 
+  public static ShapeWriter BADgetConverter(Viewport viewport)
+  {
+    if (viewportCache != viewport) {
+      viewportCache = viewport;
+      converterCache = new ShapeWriter(viewport, new PointShapeFactory.Point());
+    }
+    return converterCache;
+  }
+  
+  // TODO: is this a performance problem?
+  // probably not - only called once for each geom painted
   public static ShapeWriter getConverter(Viewport viewport)
   {
-  	if (viewportCache != viewport) {
-  		viewportCache = viewport;
-  		converterCache = new ShapeWriter(viewport, new PointShapeFactory.Point());
-  	}
-  	return converterCache;
+    return new ShapeWriter(viewport, new PointShapeFactory.Point());
   }
   
   /**
