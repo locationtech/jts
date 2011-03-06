@@ -60,6 +60,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(PolygonizeFunctions.class);
     funcRegistry.add(PolygonOverlayFunctions.class);
     funcRegistry.add(PrecisionFunctions.class);
+    funcRegistry.add(PreparedGeometryFunctions.class);
     funcRegistry.add(SelectionFunctions.class);
     funcRegistry.add(SimplificationFunctions.class);
     funcRegistry.add(AffineTransformationFunctions.class);
