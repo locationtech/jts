@@ -171,11 +171,15 @@ class ContainsPointVisitor
 
   protected void visit(Geometry geom)
   {
+    // if test geometry is not polygonal this check is not needed
     if (! (geom instanceof Polygon))
       return;
+    
+    // skip if envelopes do not intersect
     Envelope elementEnv = geom.getEnvelopeInternal();
     if (! rectEnv.intersects(elementEnv))
       return;
+    
     // test each corner of rectangle for inclusion
     Coordinate rectPt = new Coordinate();
     for (int i = 0; i < 4; i++) {
@@ -206,15 +210,13 @@ class ContainsPointVisitor
 class LineIntersectsVisitor
     extends ShortCircuitedGeometryVisitor
 {
-  private Polygon rectangle;
-  private CoordinateSequence rectSeq;
+  private LineString rectLine;
   private Envelope rectEnv;
   private boolean intersects = false;
 
   public LineIntersectsVisitor(Polygon rectangle)
   {
-    this.rectangle = rectangle;
-    this.rectSeq = rectangle.getExteriorRing().getCoordinateSequence();
+    this.rectLine = rectangle.getExteriorRing();
     rectEnv = rectangle.getEnvelopeInternal();
   }
 
@@ -230,18 +232,23 @@ class LineIntersectsVisitor
   protected void visit(Geometry geom)
   {
     Envelope elementEnv = geom.getEnvelopeInternal();
+    
+    // check for envelope intersection
     if (! rectEnv.intersects(elementEnv))
       return;
+    
+    computeSegmentIntersection(geom);
+    
     // check if general relate algorithm should be used, since it's faster for large inputs
     /*
-    // Sep 30 2010 - disabled because using intersects() is not 100% robust  
+    // Sep 30 2010 - disabled because using intersects() is not 100% robust 
+    // AND relate is NOT faster, in the general case
+      
     if (geom.getNumPoints() > RectangleIntersects.MAXIMUM_SCAN_SEGMENT_COUNT) {
       intersects = rectangle.relate(geom).isIntersects();
       return;
     }
     */
-    // if small enough, test for segment intersection directly
-    computeSegmentIntersection(geom);
   }
 
   private void computeSegmentIntersection(Geometry geom)
@@ -250,7 +257,7 @@ class LineIntersectsVisitor
     // get all lines from geom (e.g. if it's a multi-ring polygon)
     List lines = LinearComponentExtracter.getLines(geom);
     SegmentIntersectionTester si = new SegmentIntersectionTester();
-    boolean hasIntersection = si.hasIntersectionWithLineStrings(rectSeq, lines);
+    boolean hasIntersection = si.hasIntersectionWithLineStrings(rectLine, lines);
     if (hasIntersection) {
       intersects = true;
       return;
