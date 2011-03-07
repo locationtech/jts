@@ -31,13 +31,14 @@ public class SegmentIntersectionTester {
     for (Iterator i = lines.iterator(); i.hasNext(); ) {
       LineString testLine = (LineString) i.next();
       hasIntersection(line, testLine);
+      //hasIntersectionWithEnvelopeTest(line, testLine);
       if (hasIntersection)
         break;
     }
     return hasIntersection;
   }
 
-  public boolean hasIntersection(LineString line, LineString testLine) {
+  private boolean hasIntersectionWithEnvelopeTest(LineString line, LineString testLine) {
     CoordinateSequence seq0 = line.getCoordinateSequence();
     CoordinateSequence seq1 = testLine.getCoordinateSequence();
     Envelope lineEnv = line.getEnvelopeInternal();
@@ -61,4 +62,23 @@ public class SegmentIntersectionTester {
     }
     return hasIntersection;
   }
+  
+  private boolean hasIntersection(LineString line, LineString testLine) {
+    CoordinateSequence seq0 = line.getCoordinateSequence();
+    CoordinateSequence seq1 = testLine.getCoordinateSequence();
+    for (int i = 1; i < seq0.size() && ! hasIntersection; i++) {
+      seq0.getCoordinate(i - 1, pt00);
+      seq0.getCoordinate(i, pt01);
+      for (int j = 1; j < seq1.size() && ! hasIntersection; j++) {
+        seq1.getCoordinate(j - 1, pt10);
+        seq1.getCoordinate(j, pt11);
+
+        li.computeIntersection(pt00, pt01, pt10, pt11);
+        if (li.hasIntersection())
+          hasIntersection = true;
+      }
+    }
+    return hasIntersection;
+  }
+
 }
