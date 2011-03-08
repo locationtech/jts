@@ -20,7 +20,6 @@ public class RectangleContains {
     return rc.contains(b);
   }
 
-  private Polygon rectangle;
   private Envelope rectEnv;
 
   /**
@@ -29,7 +28,6 @@ public class RectangleContains {
    * @param rectangle a rectangular geometry
    */
   public RectangleContains(Polygon rectangle) {
-    this.rectangle = rectangle;
     rectEnv = rectangle.getEnvelopeInternal();
   }
 
