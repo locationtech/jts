@@ -30,15 +30,29 @@ public class SegmentIntersectionTester {
   {
     for (Iterator i = lines.iterator(); i.hasNext(); ) {
       LineString testLine = (LineString) i.next();
-      hasIntersection(line, testLine);
-      //hasIntersectionWithEnvelopeTest(line, testLine);
+      //hasIntersection(line, testLine);
+      hasIntersectionWithEnvelopeFilter(line, testLine);
       if (hasIntersection)
         break;
     }
     return hasIntersection;
   }
 
-  private boolean hasIntersectionWithEnvelopeTest(LineString line, LineString testLine) {
+  /**
+   * Tests the segments of a LineString against the segs in 
+   * another LineString for intersection.
+   * Uses the envelope of the query LineString
+   * to filter before testing segments directly.
+   * This is optimized for the case when the query
+   * LineString is a rectangle.
+   * 
+   * Testing shows this is somewhat faster than not checking the envelope.
+   * 
+   * @param line
+   * @param testLine
+   * @return
+   */
+  private boolean hasIntersectionWithEnvelopeFilter(LineString line, LineString testLine) {
     CoordinateSequence seq0 = line.getCoordinateSequence();
     CoordinateSequence seq1 = testLine.getCoordinateSequence();
     Envelope lineEnv = line.getEnvelopeInternal();
