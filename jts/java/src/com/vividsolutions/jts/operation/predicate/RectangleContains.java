@@ -3,17 +3,27 @@ package com.vividsolutions.jts.operation.predicate;
 import com.vividsolutions.jts.geom.*;
 
 /**
- * Optimized implementation of spatial predicate "contains"
+ * Optimized implementation of the <tt>contains</tt> spatial predicate 
  * for cases where the first {@link Geometry} is a rectangle.
+ * This class works for all input geometries, including
+ * {@link GeometryCollection}s.
  * <p>
  * As a further optimization,
- * this class can be used directly to test many geometries against a single
- * rectangle.
+ * this class can be used to test 
+ * many geometries against a single
+ * rectangle in a slightly more efficient way.
  *
  * @version 1.7
  */
 public class RectangleContains {
 
+  /**
+   * Tests whether a rectangle contains a given geometry.
+   * 
+   * @param rectangle a rectangular Polygon
+   * @param b a Geometry of any type
+   * @return true if the geometries intersect
+   */
   public static boolean contains(Polygon rectangle, Geometry b)
   {
     RectangleContains rc = new RectangleContains(rectangle);

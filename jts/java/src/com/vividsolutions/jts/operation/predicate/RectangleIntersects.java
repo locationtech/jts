@@ -7,25 +7,27 @@ import com.vividsolutions.jts.algorithm.locate.SimplePointInAreaLocator;
 import com.vividsolutions.jts.geom.util.*;
 
 /**
- * Optimized implementation of spatial predicate "intersects"
- * for cases where the first {@link Geometry} is a rectangle.
+ * Optimized implementation of the <tt>intersects</tt> spatial predicate 
+ * for cases where one {@link Geometry} is a rectangle.
+ * This class works for all input geometries, including
+ * {@link GeometryCollection}s.
  * <p>
  * As a further optimization,
- * this class can be used directly to test many geometries against a single
- * rectangle.
+ * this class can be used to test 
+ * many geometries against a single
+ * rectangle in a slightly more efficient way.
  *
  * @version 1.7
  */
-public class RectangleIntersects {
-
+public class RectangleIntersects 
+{
   /**
-   * Crossover size at which brute-force intersection scanning
-   * is slower than indexed intersection detection.
-   * Must be determined empirically.  Should err on the
-   * safe side by making value smaller rather than larger.
+   * Tests whether a rectangle intersects a given geometry.
+   * 
+   * @param rectangle a rectangular Polygon
+   * @param b a Geometry of any type
+   * @return true if the geometries intersect
    */
-  public static final int MAXIMUM_SCAN_SEGMENT_COUNT = 200;
-
   public static boolean intersects(Polygon rectangle, Geometry b)
   {
     RectangleIntersects rp = new RectangleIntersects(rectangle);
@@ -238,17 +240,6 @@ class LineIntersectsVisitor
       return;
     
     computeSegmentIntersection(geom);
-    
-    // check if general relate algorithm should be used, since it's faster for large inputs
-    /*
-    // Sep 30 2010 - disabled because using intersects() is not 100% robust 
-    // AND relate is NOT faster, in the general case
-      
-    if (geom.getNumPoints() > RectangleIntersects.MAXIMUM_SCAN_SEGMENT_COUNT) {
-      intersects = rectangle.relate(geom).isIntersects();
-      return;
-    }
-    */
   }
 
   private void computeSegmentIntersection(Geometry geom)
