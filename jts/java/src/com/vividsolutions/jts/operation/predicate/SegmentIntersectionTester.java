@@ -5,16 +5,18 @@ import com.vividsolutions.jts.algorithm.*;
 import com.vividsolutions.jts.geom.*;
 
 /**
- * Tests if any line segments in two sets of {@link CoordinateSequence}s intersect.
+ * Tests if any of the segments in a
+ * {@link LineString} intersect any segment in a set of {@link LineString}s.
+ * <p>
  * The algorithm is optimized for use when the first input has smaller extent
  * than the set of test lines.
  * The code is short-circuited to return as soon an intersection is found.
  *
  * @version 1.7
  */
-public class SegmentIntersectionTester {
-
-  // for purposes of intersection testing, don't need to set precision model
+public class SegmentIntersectionTester 
+{
+  // for intersection testing, don't need to set precision model
   private LineIntersector li = new RobustLineIntersector();
 
   private boolean hasIntersection = false;
