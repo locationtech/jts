@@ -35,13 +35,20 @@ package com.vividsolutions.jtstest.function;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
+import com.vividsolutions.jts.precision.RobustnessParameter;
 import com.vividsolutions.jts.densify.*;
 
 /**
  * Geometry functions which
  * augment the existing methods on {@link Geometry},
  * for use in XML Test files.
- * These should be named differently to the Geometry methods.
+ * This is the default used in the TestRunner, 
+ * and thus all the operations 
+ * in this class should be named differently to the Geometry methods
+ * (otherwise they will shadow the real Geometry methods).
+ * <p>
+ * If replacing a Geometry method is desired, this
+ * can be done via the -geomfunc argument to the TestRunner.
  * 
  * @author Martin Davis
  *
@@ -56,9 +63,19 @@ public class TestCaseGeometryFunctions
     return BufferOp.bufferOp(g, distance, bufParams);
 	}
 
-	public static Geometry densify(Geometry g, double distance)	
-	{
-		return Densifier.densify(g, distance);
-	}
+  public static Geometry densify(Geometry g, double distance) 
+  {
+    return Densifier.densify(g, distance);
+  }
+
+  public static double robustnessParameter(Geometry g) 
+  {
+    return RobustnessParameter.getParameter(g);
+  }
+
+  public static Geometry robustnessGeom(Geometry g) 
+  {
+    return RobustnessParameter.getGeometry(g);
+  }
 
 }

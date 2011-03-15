@@ -29,4 +29,13 @@ public class PrecisionFunctions
 		return reducedGeom;
 	}
 	
+  public static Geometry robustnessGeom(Geometry g)
+  {
+    return RobustnessParameter.getGeometry(g);
+  }
+  
+  public static double robustnessParameter(Geometry g)
+  {
+    return RobustnessParameter.getParameter(g);
+  }
 }
