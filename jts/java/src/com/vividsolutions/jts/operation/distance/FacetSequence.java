@@ -6,12 +6,12 @@ import com.vividsolutions.jts.geom.*;
 /**
  * Represents a sequence of facets (points or line segments)
  * of a {@link Geometry}
- * specified by a subsection of a {@link CoordinateSequence}.
+ * specified by a subsequence of a {@link CoordinateSequence}.
  * 
  * @author Martin Davis
  *
  */
-public class GeometryFacetSequence
+public class FacetSequence
 {
   private CoordinateSequence pts;
   private int start;
@@ -19,7 +19,7 @@ public class GeometryFacetSequence
   
   // temporary Coordinates to materialize points from the CoordinateSequence
   private Coordinate pt = new Coordinate();
-  private Coordinate sectPt = new Coordinate();
+  private Coordinate seqPt = new Coordinate();
   
   /**
    * Creates a new section based on a CoordinateSequence.
@@ -28,7 +28,7 @@ public class GeometryFacetSequence
    * @param start the index of the start point
    * @param end the index of the end point + 1
    */
-  public GeometryFacetSequence(CoordinateSequence pts, int start, int end) 
+  public FacetSequence(CoordinateSequence pts, int start, int end) 
   {
     this.pts = pts;
     this.start = start;
@@ -41,7 +41,7 @@ public class GeometryFacetSequence
    * @param pts the sequence holding the points in the facet sequence
    * @param start the index of the point
    */
-  public GeometryFacetSequence(CoordinateSequence pts, int start) 
+  public FacetSequence(CoordinateSequence pts, int start) 
   {
     this.pts = pts;
     this.start = start;
@@ -63,25 +63,25 @@ public class GeometryFacetSequence
   }
   
 
-  public double distance(GeometryFacetSequence sect)
+  public double distance(FacetSequence facetSeq)
   {
     boolean isPoint = isPoint();
-    boolean isPointOther = sect.isPoint();
+    boolean isPointOther = facetSeq.isPoint();
     
     if (isPoint && isPointOther) {
       pts.getCoordinate(start, pt);
-      sect.pts.getCoordinate(sect.start, sectPt);
-      return pt.distance(sectPt);
+      facetSeq.pts.getCoordinate(facetSeq.start, seqPt);
+      return pt.distance(seqPt);
     }
     else if (isPoint) {
       pts.getCoordinate(start, pt);      
-      return computePointLineDistance(pt, sect);
+      return computePointLineDistance(pt, facetSeq);
     }
     else if (isPointOther) {
-      sect.pts.getCoordinate(sect.start, sectPt);
-      return computePointLineDistance(sectPt, this);
+      facetSeq.pts.getCoordinate(facetSeq.start, seqPt);
+      return computePointLineDistance(seqPt, this);
     }
-    return computeLineLineDistance(sect);
+    return computeLineLineDistance(facetSeq);
     
   }
   
@@ -91,17 +91,17 @@ public class GeometryFacetSequence
   private Coordinate q0 = new Coordinate();
   private Coordinate q1 = new Coordinate();
 
-  private double computeLineLineDistance(GeometryFacetSequence sect)
+  private double computeLineLineDistance(FacetSequence gfSeq)
   {
     // both linear - compute minimum segment-segment distance
     double minDistance = Double.MAX_VALUE;
 
     for (int i = start; i < end - 1; i++) {
-      for (int j = sect.start; j < sect.end - 1; j++) {
+      for (int j = gfSeq.start; j < gfSeq.end - 1; j++) {
         pts.getCoordinate(i, p0);
         pts.getCoordinate(i + 1, p1);
-        sect.pts.getCoordinate(j, q0);
-        sect.pts.getCoordinate(j + 1, q1);
+        gfSeq.pts.getCoordinate(j, q0);
+        gfSeq.pts.getCoordinate(j + 1, q1);
         
         double dist = CGAlgorithms.distanceLineLine(p0, p1, q0, q1);
         if (dist == 0.0) 
@@ -114,13 +114,13 @@ public class GeometryFacetSequence
     return minDistance;
   }
 
-  private double computePointLineDistance(Coordinate pt, GeometryFacetSequence sect) 
+  private double computePointLineDistance(Coordinate pt, FacetSequence gfSeq) 
   {
     double minDistance = Double.MAX_VALUE;
 
-    for (int i = sect.start; i < sect.end - 1; i++) {
-      sect.pts.getCoordinate(i, q0);
-      sect.pts.getCoordinate(i + 1, q1);
+    for (int i = gfSeq.start; i < gfSeq.end - 1; i++) {
+      gfSeq.pts.getCoordinate(i, q0);
+      gfSeq.pts.getCoordinate(i + 1, q1);
       double dist = CGAlgorithms.distancePointLine(pt, q0, q1);
       if (dist == 0.0) return 0.0;
       if (dist < minDistance) {

@@ -14,7 +14,7 @@ import com.vividsolutions.jts.util.PriorityQueue;
 /**
  * A pair of {@link Boundable}s, one from each
  * indexed geometry, whose leaf items are 
- * {@link GeometryFacetSequence}s.
+ * {@link FacetSequence}s.
  * Used to compute the distance between the members,
  * and to expand a member relative to the other
  * in order to produce new branches of the evaluation tree.
@@ -23,7 +23,7 @@ import com.vividsolutions.jts.util.PriorityQueue;
  * @author Martin Davis
  *
  */
-class GeometryFacetBoundablePair
+class FacetBoundablePair
   implements Comparable
 {
   private Boundable boundable1;
@@ -31,7 +31,7 @@ class GeometryFacetBoundablePair
   private double minDistance;
   //private double maxDistance = -1.0;
   
-  public GeometryFacetBoundablePair(Boundable node1, Boundable node2)
+  public FacetBoundablePair(Boundable node1, Boundable node2)
   {
     this.boundable1 = node1;
     this.boundable2 = node2;
@@ -46,8 +46,8 @@ class GeometryFacetBoundablePair
   {
     // if items, compute exact distance
     if (boundable1 instanceof ItemBoundable && boundable2 instanceof ItemBoundable) {
-      GeometryFacetSequence gf1 = getLeafItem(boundable1);
-      GeometryFacetSequence gf2 = getLeafItem(boundable2);
+      FacetSequence gf1 = getLeafItem(boundable1);
+      FacetSequence gf2 = getLeafItem(boundable2);
       return gf1.distance(gf2);
     }
     // otherwise compute distance between bounds of items
@@ -55,9 +55,9 @@ class GeometryFacetBoundablePair
         ((Envelope) boundable2.getBounds()));
   }
 
-  private static GeometryFacetSequence getLeafItem(Boundable b)
+  private static FacetSequence getLeafItem(Boundable b)
   {
-    return (GeometryFacetSequence) ((ItemBoundable) b).getItem();
+    return (FacetSequence) ((ItemBoundable) b).getItem();
   }
 
   /*
@@ -104,7 +104,7 @@ class GeometryFacetBoundablePair
    */
   public int compareTo(Object o)
   {
-    GeometryFacetBoundablePair nd = (GeometryFacetBoundablePair) o;
+    FacetBoundablePair nd = (FacetBoundablePair) o;
     if (minDistance < nd.minDistance) return -1;
     if (minDistance > nd.minDistance) return 1;
     return 0;
@@ -172,7 +172,7 @@ class GeometryFacetBoundablePair
     List children = ((AbstractNode) bndComposite).getChildBoundables();
     for (Iterator i = children.iterator(); i.hasNext(); ) {
       Boundable child = (Boundable) i.next();
-      expansion.add(new GeometryFacetBoundablePair(child, bndOther));
+      expansion.add(new FacetBoundablePair(child, bndOther));
     }
     return expansion;
   }
@@ -223,7 +223,7 @@ class GeometryFacetBoundablePair
     List children = ((AbstractNode) bndComposite).getChildBoundables();
     for (Iterator i = children.iterator(); i.hasNext(); ) {
       Boundable child = (Boundable) i.next();
-      GeometryFacetBoundablePair bp = new GeometryFacetBoundablePair(child, bndOther);
+      FacetBoundablePair bp = new FacetBoundablePair(child, bndOther);
       // only add to queue if this pair might contain the closest points
       // MD - it's actually faster to construct the object rather than called distance(child, bndOther)!
       if (bp.getMinimumDistance() < minDistance) {

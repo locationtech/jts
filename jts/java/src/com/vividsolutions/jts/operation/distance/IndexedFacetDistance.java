@@ -66,7 +66,7 @@ public class IndexedFacetDistance
   private double lastComputedDistance;
   private double minimumDistanceFound;
   // storing this allows determining the nearest points
-  private GeometryFacetBoundablePair minPair;
+  private FacetBoundablePair minPair;
   
   /**
    * Creates a new distance-finding instance for a given target {@link Geometry}.
@@ -180,7 +180,7 @@ public class IndexedFacetDistance
   
   private void findMinDistance(Coordinate p, double maxDistance)
   {
-    GeometryFacetSequence fs = new GeometryFacetSequence(
+    FacetSequence fs = new FacetSequence(
         new CoordinateArraySequence(new Coordinate[] { p }), 0);
     Boundable bpt = new ItemBoundable(fs.getEnvelope(), fs);
     findMinDistance(tree1.getRoot(), bpt, maxDistance);
@@ -191,7 +191,7 @@ public class IndexedFacetDistance
     STRtree tree = new STRtree(STR_TREE_NODE_CAPACITY);
     List sections = computeFacetSequences(g);
     for (Iterator i = sections.iterator(); i.hasNext(); ) {
-      GeometryFacetSequence section = (GeometryFacetSequence) i.next();
+      FacetSequence section = (FacetSequence) i.next();
       tree.insert(section.getEnvelope(), section);
     }
     tree.build();
@@ -213,7 +213,7 @@ public class IndexedFacetDistance
     minimumDistanceFound = maxDistance;
 
     // initialize queue
-    GeometryFacetBoundablePair bndPair = new GeometryFacetBoundablePair(b1, b2);
+    FacetBoundablePair bndPair = new FacetBoundablePair(b1, b2);
     priQ.add(bndPair);
    
     runBranchAndBound();
@@ -227,7 +227,7 @@ public class IndexedFacetDistance
   {
     while (! priQ.isEmpty() && minimumDistanceFound > 0.0) {
       // pop head of queue and expand one side of pair
-      GeometryFacetBoundablePair bndPair = (GeometryFacetBoundablePair) priQ.poll();
+      FacetBoundablePair bndPair = (FacetBoundablePair) priQ.poll();
       lastComputedDistance = bndPair.getMinimumDistance();
       
       /**
@@ -276,7 +276,7 @@ public class IndexedFacetDistance
   private void addToQueue(Collection boundablePairs)
   {
     for (Iterator i = boundablePairs.iterator(); i.hasNext(); ) {
-      GeometryFacetBoundablePair bp = (GeometryFacetBoundablePair) i.next();
+      FacetBoundablePair bp = (FacetBoundablePair) i.next();
       if (bp.getMinimumDistance() < minimumDistanceFound)
         priQ.add(bp);
     }
@@ -310,7 +310,7 @@ public class IndexedFacetDistance
       // if only one point remains after this section, include it in this section
       if (end >= size - 1)
         end = size;
-      GeometryFacetSequence sect = new GeometryFacetSequence(pts, i, end);
+      FacetSequence sect = new FacetSequence(pts, i, end);
       sections.add(sect);
       i = i + FACET_SEQUENCE_SIZE;
     }
