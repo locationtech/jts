@@ -13,11 +13,12 @@ import com.vividsolutions.jts.util.PriorityQueue;
 
 /**
  * A pair of {@link Boundable}s, one from each
- * indexed geometry.
+ * indexed geometry, whose leaf items are 
+ * {@link GeometryFacetSequence}s.
  * Used to compute the distance between the members,
  * and to expand a member relative to the other
  * in order to produce new branches of the evaluation tree.
- * Comparable by the distance between the members.
+ * Provides an ordering based on the distance between the members.
  * 
  * @author Martin Davis
  *
