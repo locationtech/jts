@@ -30,7 +30,7 @@ import com.vividsolutions.jts.util.PriorityQueue;
  * or when evaluating many distance computations against 
  * a single geometry.
  * <p>
- * This class is NOT thread-safe.
+ * This class is not thread-safe.
  * 
  * @author Martin Davis
  *
