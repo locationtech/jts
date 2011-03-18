@@ -29,13 +29,13 @@ public class PrecisionFunctions
 		return reducedGeom;
 	}
 	
-  public static Geometry robustnessGeom(Geometry g)
+  public static Geometry minClearanceLine(Geometry g)
   {
-    return RobustnessParameter.getGeometry(g);
+    return MinimumClearance.getLine(g);
   }
   
-  public static double robustnessParameter(Geometry g)
+  public static double minClearance(Geometry g)
   {
-    return RobustnessParameter.getParameter(g);
+    return MinimumClearance.getDistance(g);
   }
 }

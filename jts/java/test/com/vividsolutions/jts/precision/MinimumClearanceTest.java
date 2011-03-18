@@ -8,15 +8,15 @@ import com.vividsolutions.jts.io.WKTReader;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
-public class RobustnessParameterTest extends TestCase {
+public class MinimumClearanceTest extends TestCase {
   public static void main(String args[]) {
-    TestRunner.run(RobustnessParameterTest.class);
+    TestRunner.run(MinimumClearanceTest.class);
   }
   
   private GeometryFactory geomFact = new GeometryFactory();
   private WKTReader reader = new WKTReader();
 
-  public RobustnessParameterTest(String name) { super(name); }
+  public MinimumClearanceTest(String name) { super(name); }
 
   public void testTriangle()
   throws ParseException
@@ -28,7 +28,7 @@ public class RobustnessParameterTest extends TestCase {
   throws ParseException
   {
     Geometry g = reader.read(wkt);
-    double rp = RobustnessParameter.getParameter(g);
+    double rp = MinimumClearance.getDistance(g);
     assertEquals(rp, expectedValue);
   }
 }

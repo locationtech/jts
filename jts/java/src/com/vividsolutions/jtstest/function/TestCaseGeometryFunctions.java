@@ -35,7 +35,7 @@ package com.vividsolutions.jtstest.function;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import com.vividsolutions.jts.precision.RobustnessParameter;
+import com.vividsolutions.jts.precision.MinimumClearance;
 import com.vividsolutions.jts.densify.*;
 
 /**
@@ -68,14 +68,14 @@ public class TestCaseGeometryFunctions
     return Densifier.densify(g, distance);
   }
 
-  public static double robustnessParameter(Geometry g) 
+  public static double minClearance(Geometry g) 
   {
-    return RobustnessParameter.getParameter(g);
+    return MinimumClearance.getDistance(g);
   }
 
-  public static Geometry robustnessGeom(Geometry g) 
+  public static Geometry minClearanceLine(Geometry g) 
   {
-    return RobustnessParameter.getGeometry(g);
+    return MinimumClearance.getLine(g);
   }
 
 }

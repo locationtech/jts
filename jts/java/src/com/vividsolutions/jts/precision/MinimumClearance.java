@@ -10,16 +10,16 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 
 /**
- * Computes the robustness parameter of a geometry or 
+ * Computes the minimum clearance of a geometry or 
  * set of geometries.
  * <p>
- * The <b>Robustness Parameter</b> is a measure of
+ * The <b>Minimum Clearance</b> is a measure of
  * what magnitude of perturbation of its vertices can be tolerated
  * by a geometry before it becomes topologically invalid.
  * The concept was introduced by Thompson and Van Oosterom
  * [TV06], based on earlier work by Milenkovic [Mi88].
  * <p>
- * The Robustness Parameter of a geometry G 
+ * The Minimum Clearance of a geometry G 
  * is defined to be the value <i>r</i>
  * such that "the movement of all points by a distance
  * of <i>r</i> in any direction will 
@@ -32,11 +32,12 @@ import com.vividsolutions.jts.geom.LineString;
  * of which the vertex is not an endpoint
  * </ol>
  * If G has only a single vertex (i.e. is a
- * {@link Point}), the value of the parameter 
+ * {@link Point}), the value of the minimum clearance 
  * is {@link Double.MAX_VALUE}.
- * If G is a {@link Lineal} geometry, in fact no amount of perturbation
+ * If G is a {@link Lineal} geometry, 
+ * then in fact no amount of perturbation
  * will render the geometry invalid.  However, 
- * in this case the Robustness Parameter is still computed
+ * in this case the Minimum Clearance is still computed
  * according to the constructive definition.
  * 
  * <h3>References</h3>
@@ -53,66 +54,66 @@ import com.vividsolutions.jts.geom.LineString;
  * @author Martin Davis
  *
  */
-public class RobustnessParameter 
+public class MinimumClearance 
 {
-  public static double getParameter(Geometry g)
+  public static double getDistance(Geometry g)
   {
-    RobustnessParameter rp = new RobustnessParameter(g);
-    return rp.getParameter();
+    MinimumClearance rp = new MinimumClearance(g);
+    return rp.getDistance();
   }
   
-  public static Geometry getGeometry(Geometry g)
+  public static Geometry getLine(Geometry g)
   {
-    RobustnessParameter rp = new RobustnessParameter(g);
-    return rp.getGeometry();
+    MinimumClearance rp = new MinimumClearance(g);
+    return rp.getLine();
   }
   
   private Geometry inputGeom;
-  private double robustnessParam;
-  private Coordinate[] robustnessPts;
+  private double minClearance;
+  private Coordinate[] minClearancePts;
   
-  public RobustnessParameter(Geometry geom)
+  public MinimumClearance(Geometry geom)
   {
     inputGeom = geom;
   }
   
-  public double getParameter()
+  public double getDistance()
   {
     compute();
-    return robustnessParam;
+    return minClearance;
   }
   
-  public LineString getGeometry()
+  public LineString getLine()
   {
     compute();
-    return inputGeom.getFactory().createLineString(robustnessPts);
+    return inputGeom.getFactory().createLineString(minClearancePts);
   }
   
   private void compute()
   {
-    if (robustnessPts != null) return;
-    robustnessPts = new Coordinate[2];
-    robustnessParam = Double.MAX_VALUE;
+    if (minClearancePts != null) return;
+    minClearancePts = new Coordinate[2];
+    minClearance = Double.MAX_VALUE;
     inputGeom.apply(new VertexCoordinateFilter());
   }
   
   private void updateParameter(double candidateValue, Coordinate p0, Coordinate p1)
   {
-    if (candidateValue < robustnessParam) {
-      robustnessParam = candidateValue;
-      robustnessPts[0] = new Coordinate(p0);
-      robustnessPts[1] = new Coordinate(p1);
+    if (candidateValue < minClearance) {
+      minClearance = candidateValue;
+      minClearancePts[0] = new Coordinate(p0);
+      minClearancePts[1] = new Coordinate(p1);
     }
   }
   
   private void updateParameter(double candidateValue, Coordinate p, 
       Coordinate seg0, Coordinate seg1)
   {
-    if (candidateValue < robustnessParam) {
-      robustnessParam = candidateValue;
-      robustnessPts[0] = new Coordinate(p);
+    if (candidateValue < minClearance) {
+      minClearance = candidateValue;
+      minClearancePts[0] = new Coordinate(p);
       LineSegment seg = new LineSegment(seg0, seg1);
-      robustnessPts[1] = new Coordinate(seg.closestPoint(p));
+      minClearancePts[1] = new Coordinate(seg.closestPoint(p));
     }
   }
   
@@ -125,16 +126,16 @@ public class RobustnessParameter
     }
     
     public void filter(Coordinate coord) {
-      inputGeom.apply(new ComputeRPCoordinateSequenceFilter(coord));
+      inputGeom.apply(new ComputeMCCoordinateSequenceFilter(coord));
     }
   }
   
-  private class ComputeRPCoordinateSequenceFilter 
+  private class ComputeMCCoordinateSequenceFilter 
   implements CoordinateSequenceFilter 
   {
     private Coordinate queryPt;
     
-    public ComputeRPCoordinateSequenceFilter(Coordinate queryPt)
+    public ComputeMCCoordinateSequenceFilter(Coordinate queryPt)
     {
       this.queryPt = queryPt;
     }
