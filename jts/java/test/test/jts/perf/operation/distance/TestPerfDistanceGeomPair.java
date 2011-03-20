@@ -9,7 +9,7 @@ import com.vividsolutions.jts.util.Stopwatch;
 public class TestPerfDistanceGeomPair 
 {
 
-  static final int MAX_ITER = 1000;
+  static final int MAX_ITER = 100;
 
   public static void main(String[] args) {
     TestPerfDistanceGeomPair test = new TestPerfDistanceGeomPair();
@@ -18,7 +18,7 @@ public class TestPerfDistanceGeomPair
   }
 
   boolean testFailed = false;
-  boolean verbose = false;
+  boolean verbose = true;
 
   public TestPerfDistanceGeomPair() {
   }
@@ -60,7 +60,7 @@ public class TestPerfDistanceGeomPair
     Geometry[] geom = createSineStars(nPts);
     
     if (verbose) System.out.println("Running with " + nPts + " points");
-    if (! verbose) System.out.print(nPts + ", ");
+    if (! verbose) System.out.print(nPts + ": ");
     test(geom);
   }
   
@@ -95,9 +95,10 @@ public class TestPerfDistanceGeomPair
     for (int i = 0; i < pts.length; i++) {
       Coordinate p = pts[i];
       
-//      dist = geom[0].distance(geom[1].getFactory().createPoint(p));
+      // slow N^2 distance
+      dist = geom[0].distance(geom[1].getFactory().createPoint(p));
       
-      dist2 = fastDist.getDistance(p);
+//      dist2 = fastDist.getDistance(geom[1].getFactory().createPoint(p));
       
 //      if (dist != dist2) System.out.println("distance discrepancy found!");
     }

@@ -18,6 +18,18 @@ public class MinimumClearanceTest extends TestCase {
 
   public MinimumClearanceTest(String name) { super(name); }
 
+  public void test2IdenticalPoints()
+  throws ParseException
+  {
+    runTest("MULTIPOINT ((100 100), (100 100))", 1.7976931348623157E308);
+  }
+  
+  public void test3Points()
+  throws ParseException
+  {
+    runTest("MULTIPOINT ((100 100), (10 100), (30 100))", 20);
+  }
+  
   public void testTriangle()
   throws ParseException
   {
@@ -29,6 +41,6 @@ public class MinimumClearanceTest extends TestCase {
   {
     Geometry g = reader.read(wkt);
     double rp = MinimumClearance.getDistance(g);
-    assertEquals(rp, expectedValue);
+    assertEquals(expectedValue, rp);
   }
 }

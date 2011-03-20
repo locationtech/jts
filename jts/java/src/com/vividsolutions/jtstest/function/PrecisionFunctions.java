@@ -38,4 +38,14 @@ public class PrecisionFunctions
   {
     return MinimumClearance.getDistance(g);
   }
+  
+  public static Geometry minClearanceSimpleLine(Geometry g)
+  {
+    return SimpleMinimumClearance.getLine(g);
+  }
+  
+  public static double minClearanceSimple(Geometry g)
+  {
+    return SimpleMinimumClearance.getDistance(g);
+  }
 }

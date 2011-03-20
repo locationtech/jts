@@ -57,6 +57,16 @@ public class FacetSequence
     return env;
   }
   
+  public int size()
+  {
+    return end - start;
+  }
+  
+  public Coordinate getCoordinate(int index)
+  {
+    return pts.getCoordinate(start + index);
+  }
+  
   public boolean isPoint()
   {
     return end - start == 1;
@@ -91,17 +101,17 @@ public class FacetSequence
   private Coordinate q0 = new Coordinate();
   private Coordinate q1 = new Coordinate();
 
-  private double computeLineLineDistance(FacetSequence gfSeq)
+  private double computeLineLineDistance(FacetSequence facetSeq)
   {
     // both linear - compute minimum segment-segment distance
     double minDistance = Double.MAX_VALUE;
 
     for (int i = start; i < end - 1; i++) {
-      for (int j = gfSeq.start; j < gfSeq.end - 1; j++) {
+      for (int j = facetSeq.start; j < facetSeq.end - 1; j++) {
         pts.getCoordinate(i, p0);
         pts.getCoordinate(i + 1, p1);
-        gfSeq.pts.getCoordinate(j, q0);
-        gfSeq.pts.getCoordinate(j + 1, q1);
+        facetSeq.pts.getCoordinate(j, q0);
+        facetSeq.pts.getCoordinate(j + 1, q1);
         
         double dist = CGAlgorithms.distanceLineLine(p0, p1, q0, q1);
         if (dist == 0.0) 
@@ -114,13 +124,13 @@ public class FacetSequence
     return minDistance;
   }
 
-  private double computePointLineDistance(Coordinate pt, FacetSequence gfSeq) 
+  private double computePointLineDistance(Coordinate pt, FacetSequence facetSeq) 
   {
     double minDistance = Double.MAX_VALUE;
 
-    for (int i = gfSeq.start; i < gfSeq.end - 1; i++) {
-      gfSeq.pts.getCoordinate(i, q0);
-      gfSeq.pts.getCoordinate(i + 1, q1);
+    for (int i = facetSeq.start; i < facetSeq.end - 1; i++) {
+      facetSeq.pts.getCoordinate(i, q0);
+      facetSeq.pts.getCoordinate(i + 1, q1);
       double dist = CGAlgorithms.distancePointLine(pt, q0, q1);
       if (dist == 0.0) return 0.0;
       if (dist < minDistance) {
