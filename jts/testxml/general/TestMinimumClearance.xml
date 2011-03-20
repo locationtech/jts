@@ -2,10 +2,31 @@
   <precisionModel type="FLOATING" />
 
 <case>
+  <desc>P - empty point</desc>
+  <a>    POINT EMPTY </a>
+<test><op name="minClearance" arg1='A' >  1.7976931348623157E308	</op></test>
+<test><op name="minClearanceLine" arg1='A' >  LINESTRING EMPTY </op></test>
+</case>
+
+<case>
+  <desc>P - single point</desc>
+  <a>    POINT (100 100) </a>
+<test><op name="minClearance" arg1='A' >  1.7976931348623157E308	</op></test>
+<test><op name="minClearanceLine" arg1='A' >  LINESTRING EMPTY </op></test>
+</case>
+
+<case>
   <desc>mP - points</desc>
   <a>    MULTIPOINT ( (100 100), (10 100) ) </a>
 <test><op name="minClearance" arg1='A' >  90	</op></test>
 <test><op name="minClearanceLine" arg1='A' >  LINESTRING (100 100, 10 100) </op></test>
+</case>
+
+<case>
+  <desc>mP - two identical points</desc>
+  <a>    MULTIPOINT ( (100 100), (100 100) ) </a>
+<test><op name="minClearance" arg1='A' >  1.7976931348623157E308	</op></test>
+<test><op name="minClearanceLine" arg1='A' >  LINESTRING EMPTY </op></test>
 </case>
 
 <case>
@@ -23,11 +44,25 @@
 </case>
 
 <case>
+  <desc>L - empty linestring</desc>
+  <a>    LINESTRING EMPTY </a>
+<test><op name="minClearance" arg1='A' >  1.7976931348623157E308	</op></test>
+<test><op name="minClearanceLine" arg1='A' >  LINESTRING EMPTY	</op></test>
+</case>
+
+<case>
   <desc>ML - linestring</desc>
   <a>    MULTILINESTRING ((100 100, 200 100, 200 200, 150 150), 
   (100 200, 150 170)) </a>
 <test><op name="minClearance" arg1='A' >  14.142135623730951	</op></test>
 <test><op name="minClearanceLine" arg1='A' >  LINESTRING (150 170, 160 160) </op></test>
+</case>
+
+<case>
+  <desc>A - empty polygon</desc>
+  <a>    POLYGON EMPTY </a>
+<test><op name="minClearance" arg1='A' >  1.7976931348623157E308	</op></test>
+<test><op name="minClearanceLine" arg1='A' >  LINESTRING EMPTY </op></test>
 </case>
 
 <case>
