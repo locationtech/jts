@@ -454,7 +454,9 @@ public class GeometryEditPanel extends JPanel
   }
 
   public void zoomToGeometry(int i) {
-    zoom(geomModel.getGeometry(i).getEnvelopeInternal());
+    Geometry g = geomModel.getGeometry(i);
+    if (g == null) return;
+    zoom(g.getEnvelopeInternal());
   }
 
   public void zoomToInput() {
