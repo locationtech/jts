@@ -37,6 +37,7 @@ import com.vividsolutions.jts.index.strtree.AbstractSTRtree;
 import java.util.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.*;
+import com.vividsolutions.jts.util.PriorityQueue;
 import com.vividsolutions.jts.index.*;
 
 /**
@@ -241,6 +242,122 @@ public class STRtree extends AbstractSTRtree implements SpatialIndex {
 
   protected Comparator getComparator() {
     return yComparator;
+  }
+
+  /**
+   * Finds the nearest items in the tree, 
+   * using {@link ItemDistance} as the distance metric.
+   * Uses a Branch-and-Bound tree traversal for
+   * efficient search
+   * 
+   * @param itemDist the distance metric class
+   * @return the pair of the nearest items
+   */
+  public Object[] nearestNeighbours(ItemDistance itemDist)
+  {
+    BoundablePair bp = new BoundablePair(this.getRoot(), this.getRoot(), itemDist);
+    return nearestNeighbours(bp);
+  }
+  
+  /**
+   * Finds the nearest item to the given object, 
+   * using {@link ItemDistance} as the distance metric.
+   * Uses a Branch-and-Bound tree traversal for
+   * efficient search
+   * 
+   * @param env the envelope of the query object
+   * @param item the item to query
+   * @param itemDist the distance metric class
+   * @return the pair of the nearest items
+   */
+  public Object[] nearestNeighbours(Envelope env, Object item, ItemDistance itemDist)
+  {
+    Boundable bnd = new ItemBoundable(env, item);
+    BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
+    return nearestNeighbours(bp);
+  }
+  
+  /**
+   * Finds the nearest items between the two trees,
+   * using {@link ItemDistance} as the distance metric.
+   * Uses a Branch-and-Bound tree traversal for
+   * efficient search
+   * 
+   * @param tree another tree
+   * @param itemDist the distance metric class
+   * @return the pair of the nearest items
+   */
+  public Object[] nearestNeighbours(STRtree tree, ItemDistance itemDist)
+  {
+    BoundablePair bp = new BoundablePair(this.getRoot(), tree.getRoot(), itemDist);
+    return nearestNeighbours(bp);
+  }
+  
+  private Object[] nearestNeighbours(BoundablePair initBndPair) 
+  {
+    return nearestNeighbours(initBndPair, Double.POSITIVE_INFINITY);
+  }
+  
+  private Object[] nearestNeighbours(BoundablePair initBndPair, double maxDistance) 
+  {
+    double distanceLowerBound = maxDistance;
+    BoundablePair minPair = null;
+    
+    // initialize internal structures
+    PriorityQueue priQ = new PriorityQueue();
+
+    // initialize queue
+    priQ.add(initBndPair);
+
+    while (! priQ.isEmpty() && distanceLowerBound > 0.0) {
+      // pop head of queue and expand one side of pair
+      BoundablePair bndPair = (BoundablePair) priQ.poll();
+      double currentDistance = bndPair.getDistance();
+      
+      /**
+       * If the distance for the first node in the queue
+       * is >= the current minimum distance, all other nodes
+       * in the queue must also have a greater distance.
+       * So the current minDistance must be the true minimum,
+       * and we are done.
+       */
+      if (currentDistance >= distanceLowerBound) 
+        break;  
+
+      /**
+       * If the pair members are leaves
+       * then their distance is the exact lower bound.
+       * Update the distanceLowerBound to reflect this
+       * (which must be smaller, due to the test 
+       * immediately prior to this). 
+       */
+      if (bndPair.isLeaves()) {
+        // assert: currentDistance < minimumDistanceFound
+        distanceLowerBound = currentDistance;
+        minPair = bndPair;
+      }
+      else {
+        // testing - does allowing a tolerance improve speed?
+        // Ans: by only about 10% - not enough to matter
+        /*
+        double maxDist = bndPair.getMaximumDistance();
+        if (maxDist * .99 < lastComputedDistance) 
+          return;
+        //*/
+
+        /**
+         * Otherwise, expand one side of the pair,
+         * (the choice of which side to expand is heuristically determined) 
+         * and insert the new expanded pairs into the queue
+         */
+        bndPair.expandToQueue(priQ, distanceLowerBound);
+      }
+    }
+    // done - return items with min distance
+    return new Object[] {    
+          ((ItemBoundable) minPair.getBoundable(0)).getItem(),
+          ((ItemBoundable) minPair.getBoundable(1)).getItem()
+      };
   }
 
 }
