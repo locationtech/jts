@@ -56,7 +56,17 @@ public class GeometryEditModel
       env.expandToInclude(getGeometry(1).getEnvelopeInternal());
     }
     if (getResult() != null) {
-      env.expandToInclude(getResult().getEnvelopeInternal());    	
+      env.expandToInclude(getResult().getEnvelopeInternal());     
+    }
+    return env;
+  }
+  
+  public Envelope getEnvelopeResult()
+  {
+    Envelope env = new Envelope();
+
+    if (getResult() != null) {
+      env.expandToInclude(getResult().getEnvelopeInternal());     
     }
     return env;
   }

@@ -642,6 +642,10 @@ public class JTSTestBuilderFrame extends JFrame
     testCasePanel.getGeometryEditPanel().zoomToFullExtent();
   }
 
+  void zoomToResult_actionPerformed(ActionEvent e) {
+    testCasePanel.getGeometryEditPanel().zoomToResult();
+  }
+
   void zoomToInputButton_actionPerformed(ActionEvent e) {
     testCasePanel.getGeometryEditPanel().zoomToInput();
   }

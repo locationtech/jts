@@ -31,6 +31,7 @@ public class JTSTestBuilderToolBar {
   JButton zoomToInputButton = new JButton();
   JButton zoomToInputAButton = new JButton();
   JButton zoomToInputBButton = new JButton();
+  JButton zoomToResultButton = new JButton();
   Component strut4;
   JToggleButton panButton = new JToggleButton();
   JToggleButton btnEditVertex = new JToggleButton();
@@ -56,6 +57,7 @@ public class JTSTestBuilderToolBar {
   private final ImageIcon zoomToInputIcon = new ImageIcon(this.getClass().getResource("ZoomInput.png"));
   private final ImageIcon zoomToInputAIcon = new ImageIcon(this.getClass().getResource("ZoomInputA.png"));
   private final ImageIcon zoomToInputBIcon = new ImageIcon(this.getClass().getResource("ZoomInputB.png"));
+  private final ImageIcon zoomToResultIcon = new ImageIcon(this.getClass().getResource("ZoomResult.png"));
   private final ImageIcon zoomToFullExtentIcon = new ImageIcon(this.getClass().getResource("ZoomAll.png"));
   private final ImageIcon selectIcon = new ImageIcon(this.getClass().getResource("Select.gif"));
   private final ImageIcon moveVertexIcon = new ImageIcon(this.getClass().getResource("MoveVertex.png"));
@@ -94,6 +96,7 @@ public class JTSTestBuilderToolBar {
     jToolBar1.add(zoomToInputAButton, null);
     jToolBar1.add(zoomToInputBButton, null);
     jToolBar1.add(zoomToInputButton, null);
+    jToolBar1.add(zoomToResultButton, null);
     jToolBar1.add(zoomToFullExtentButton, null);
     jToolBar1.add(strut4, null);
     jToolBar1.add(drawRectangleButton, null);
@@ -371,6 +374,24 @@ public class JTSTestBuilderToolBar {
           }
         });
       zoomToInputButton.setMaximumSize(new Dimension(30, 30));
+      
+      zoomToResultButton.setMargin(new Insets(0, 0, 0, 0));
+      zoomToResultButton.setIcon(zoomToResultIcon);
+      zoomToResultButton.setPreferredSize(new Dimension(30, 30));
+      zoomToResultButton.setMaximumSize(new Dimension(30, 30));
+      zoomToResultButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+      zoomToResultButton.setMinimumSize(new Dimension(30, 30));
+      zoomToResultButton.setFont(new java.awt.Font("SansSerif", 0, 10));
+      zoomToResultButton.setHorizontalTextPosition(SwingConstants.CENTER);
+      zoomToResultButton.setToolTipText("Zoom To Result");
+      zoomToResultButton.addActionListener(
+        new java.awt.event.ActionListener() {
+
+          public void actionPerformed(ActionEvent e) {
+            tbFrame.zoomToResult_actionPerformed(e);
+          }
+        });
+      zoomToResultButton.setMaximumSize(new Dimension(30, 30));
       
       zoomToFullExtentButton.setMargin(new Insets(0, 0, 0, 0));
       zoomToFullExtentButton.setIcon(zoomToFullExtentIcon);
