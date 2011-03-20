@@ -1,12 +1,12 @@
 package com.vividsolutions.jts.operation.distance;
 
-import java.util.*;
-//import java.util.PriorityQueue;
-
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import com.vividsolutions.jts.index.strtree.*;
-import com.vividsolutions.jts.util.PriorityQueue;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Lineal;
+import com.vividsolutions.jts.geom.Polygonal;
+import com.vividsolutions.jts.geom.Puntal;
+import com.vividsolutions.jts.index.strtree.ItemBoundable;
+import com.vividsolutions.jts.index.strtree.ItemDistance;
+import com.vividsolutions.jts.index.strtree.STRtree;
 
 /**
  * Computes the distance between the facets (segments and vertices) 
@@ -91,6 +91,13 @@ public class IndexedFacetDistance
     return facetDistance(obj);
   }
   
+  private static double facetDistance(Object[] obj)
+  {
+    Object o1 = obj[0];
+    Object o2 = obj[1];
+    return ((FacetSequence) o1).distance((FacetSequence) o2);
+  }
+  
   /**
    * Computes the distance from the base geometry to 
    * the given geometry, up to and including a given 
@@ -102,6 +109,7 @@ public class IndexedFacetDistance
    * @return the computed distance,
    *    or <tt>maximumDistance</tt> if the true distance is determined to be greater
    */
+  // TODO: implement this
   /*
   public double getDistanceWithin(Geometry g, double maximumDistance)
   {
@@ -111,13 +119,8 @@ public class IndexedFacetDistance
     return facetDistance(obj);
   }
   */
-  private static double facetDistance(Object[] obj)
-  {
-    Object o1 = obj[0];
-    Object o2 = obj[1];
-    return ((FacetSequence) o1).distance((FacetSequence) o2);
-  }
   
+
   /**
    * Tests whether the base geometry lies within
    * a specified distance of the given geometry.
@@ -126,6 +129,7 @@ public class IndexedFacetDistance
    * @param maximumDistance the maximum distance to test
    * @return true if the geometry lies with the specified distance
    */
+  // TODO: implement this
   /*
   public boolean isWithinDistance(Geometry g, double maximumDistance)
   {
