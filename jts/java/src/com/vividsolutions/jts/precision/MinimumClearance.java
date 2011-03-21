@@ -14,12 +14,16 @@ import com.vividsolutions.jts.operation.distance.FacetSequence;
 import com.vividsolutions.jts.operation.distance.FacetSequenceTreeBuilder;
 
 /**
- * Computes the minimum clearance of a geometry or 
+ * Computes the Minimum Clearance of a geometry or 
  * set of geometries.
  * <p>
  * The <b>Minimum Clearance</b> is a measure of
  * what magnitude of perturbation of its vertices can be tolerated
  * by a geometry before it becomes topologically invalid.
+ * The smaller the Minimum Clearance distance, 
+ * the less vertex pertubation the geometry can tolerate
+ * before becoming invalid.
+ * <p>
  * The concept was introduced by Thompson and Van Oosterom
  * [TV06], based on earlier work by Milenkovic [Mi88].
  * <p>
@@ -47,9 +51,11 @@ import com.vividsolutions.jts.operation.distance.FacetSequenceTreeBuilder;
  * It is possible for no Minimum Clearance distance to exist.
  * For instance, a <tt>MultiPoint</tt> with all members identical
  * has no Minimum Clearance distance
- * (i.e. no amount of perturbation will cause the points to become non-identical).
+ * (i.e. no amount of perturbation will cause 
+ * the member points to become non-identical).
  * Empty geometries also have no such distance.
- * This case is detected and suitable 
+ * The lack of a meaningful MinimumClearance distance is detected
+ * and suitable 
  * values are returned by {@link #getDistance()} and {@link #getLine()}.
  *
  * <h3>References</h3>
@@ -68,12 +74,28 @@ import com.vividsolutions.jts.operation.distance.FacetSequenceTreeBuilder;
  */
 public class MinimumClearance 
 {
+  /**
+   * Computes the Minimum Clearance distance for 
+   * the given Geometry.
+   * 
+   * @param g the input geometry
+   * @return the Minimum Clearance distance
+   */
   public static double getDistance(Geometry g)
   {
     MinimumClearance rp = new MinimumClearance(g);
     return rp.getDistance();
   }
   
+  /**
+   * Gets a LineString containing two points
+   * which are at the Minimum Clearance distance
+   * for the given Geometry.
+   * 
+   * @param g the input geometry
+   * @return the value of the minimum clearance distance
+   * @return <tt>LINESTRING EMPTY</tt> if no Minimum Clearance distance exists
+   */
   public static Geometry getLine(Geometry g)
   {
     MinimumClearance rp = new MinimumClearance(g);
@@ -85,9 +107,10 @@ public class MinimumClearance
   private Coordinate[] minClearancePts;
   
   /**
-   * Creates a new MinimumClearance object for the given Geometry
+   * Creates an object to compute the Minimum Clearance
+   * for the given Geometry
    * 
-   * @param geom
+   * @param geom the input geometry
    */
   public MinimumClearance(Geometry geom)
   {
@@ -112,7 +135,7 @@ public class MinimumClearance
   
   /**
    * Gets a LineString containing two points
-   * which are at the MinimumClearance distance.
+   * which are at the Minimum Clearance distance.
    * <p>
    * If no distance could be found 
    * (e.g. in the case of two identical points)
