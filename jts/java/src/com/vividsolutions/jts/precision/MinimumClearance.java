@@ -14,12 +14,12 @@ import com.vividsolutions.jts.operation.distance.FacetSequence;
 import com.vividsolutions.jts.operation.distance.FacetSequenceTreeBuilder;
 
 /**
- * Computes the Minimum Clearance of a geometry or 
- * set of geometries.
+ * Computes the Minimum Clearance of a {@link Geometry}.
  * <p>
  * The <b>Minimum Clearance</b> is a measure of
- * what magnitude of perturbation of its vertices can be tolerated
- * by a geometry before it becomes topologically invalid.
+ * what magnitude of perturbation of
+ * the vertices of a geometry can be tolerated
+ * before the geometry becomes topologically invalid.
  * The smaller the Minimum Clearance distance, 
  * the less vertex pertubation the geometry can tolerate
  * before becoming invalid.
@@ -39,24 +39,40 @@ import com.vividsolutions.jts.operation.distance.FacetSequenceTreeBuilder;
  * <li>No vertex of G is closer than <i>r</i> to an edge of G
  * of which the vertex is not an endpoint
  * </ol>
+ * The following image shows an example of the Minimum Clearance
+ * of a simple polygon.
+ * <p>
+ * <center><img src='doc-files/minClearance.png'></center>
+ * <p>
  * If G has only a single vertex (i.e. is a
  * {@link Point}), the value of the minimum clearance 
  * is {@link Double.MAX_VALUE}.
- * If G is a {@link Lineal} geometry, 
+ * <p>
+ * If G is a {@link Puntal} or {@link Lineal} geometry, 
  * then in fact no amount of perturbation
- * will render the geometry invalid.  However, 
- * in this case the Minimum Clearance is still computed
+ * will render the geometry invalid.  
+ * In this case a Minimum Clearance is still computed
+ * based on the vertex and segment distances
  * according to the constructive definition.
  * <p>
- * It is possible for no Minimum Clearance distance to exist.
- * For instance, a <tt>MultiPoint</tt> with all members identical
- * has no Minimum Clearance distance
+ * It is possible for no Minimum Clearance to exist.
+ * For instance, a {@link MultiPoint} with all members identical
+ * has no Minimum Clearance
  * (i.e. no amount of perturbation will cause 
  * the member points to become non-identical).
  * Empty geometries also have no such distance.
  * The lack of a meaningful MinimumClearance distance is detected
- * and suitable 
- * values are returned by {@link #getDistance()} and {@link #getLine()}.
+ * and suitable values are returned by 
+ * {@link #getDistance()} and {@link #getLine()}.
+ * <p>
+ * The computation of Minimum Clearance utilizes 
+ * the {@link STRtree#nearestNeighbours(ItemDistance)}
+ * method to provide good performance even for
+ * large inputs.
+ * <p>
+ * An interesting note is that for the case of {@link MultiPoint}s, 
+ * the computed Minimum Clearance line
+ * effectively determines the Nearest Neighbours in the collection. 
  *
  * <h3>References</h3>
  * <ul>
