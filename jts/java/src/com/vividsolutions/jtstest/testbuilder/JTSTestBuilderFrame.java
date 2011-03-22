@@ -151,12 +151,6 @@ public class JTSTestBuilderFrame extends JFrame
  //     initList(tcList);
       //loadEditList(testpp);
 //      testCasePanel.setModel(tbModel);
-      testCasePanel.editCtlPanel.setGridSizeButton.addActionListener(
-        new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            setGridSizeButton_actionPerformed(e);
-          }
-        });
       testCasePanel.spatialFunctionPanel.addSpatialFunctionPanelListener(
           new SpatialFunctionPanelListener() {
             public void functionExecuted(SpatialFunctionPanelEvent e) {
@@ -354,15 +348,6 @@ public class JTSTestBuilderFrame extends JFrame
     super.processWindowEvent(e);
     if (e.getID() == WindowEvent.WINDOW_CLOSING) {
       jMenuFileExit_actionPerformed(null);
-    }
-  }
-
-  void setGridSizeButton_actionPerformed(ActionEvent e) {
-    try {
-      testCasePanel.editPanel.setGridSize(Double.parseDouble(testCasePanel.editCtlPanel.txtGridSize.getText()));
-    }
-    catch (Exception x) {
-      JTSTestBuilderFrame.reportException(this, x);
     }
   }
 

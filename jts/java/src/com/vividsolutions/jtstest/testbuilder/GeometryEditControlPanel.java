@@ -76,16 +76,13 @@ public class GeometryEditControlPanel extends JPanel
     GridBagLayout gridBagLayout1 = new GridBagLayout();
     ButtonGroup editMode = new ButtonGroup();
     JPanel jPanel4 = new JPanel();
-    JLabel gridLabel = new JLabel();
     GridBagLayout gridBagLayout2 = new GridBagLayout();
     Border border3;
     GridBagLayout gridBagLayout4 = new GridBagLayout();
-    JTextField txtGridSize = new JTextField();
     GridLayout gridLayout1 = new GridLayout();
     JButton btnEraseGeom = new JButton();
     JPanel jPanel7 = new JPanel();
     GridLayout gridLayout2 = new GridLayout();
-    JButton setGridSizeButton = new JButton();
     private GridBagLayout gridBagLayout5 = new GridBagLayout();
     private JPanel jPanel8 = new JPanel();
     JButton btnSetPrecisionModel = new JButton();
@@ -177,17 +174,6 @@ public class GeometryEditControlPanel extends JPanel
             }
         });
         jPanel7.setLayout(gridLayout2);
-        setGridSizeButton.setMaximumSize(new Dimension(29, 21));
-        setGridSizeButton.setMinimumSize(new Dimension(29, 21));
-        setGridSizeButton.setPreferredSize(new Dimension(29, 21));
-        setGridSizeButton.setMargin(new Insets(2, 2, 2, 2));
-        setGridSizeButton.setMnemonic('0');
-        setGridSizeButton.setText("Set");
-        setGridSizeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setGridSizeButton_actionPerformed(e);
-            }
-        });
         
 //        btnSetPrecisionModel.setMaximumSize(new Dimension(30, 27));
         btnSetPrecisionModel.setMinimumSize(new Dimension(120, 27));
@@ -274,60 +260,6 @@ public class GeometryEditControlPanel extends JPanel
                 0));
         
         
-        gridLabel.setText("Grid Spacing");
-        txtGridSize.setText(DrawingGrid.DEFAULT_GRID_SIZE+"");
-        txtGridSize.setHorizontalAlignment(SwingConstants.RIGHT);
-
-        jPanel4.setLayout(new GridLayout(1, 3));
-        jPanel4.add(gridLabel);
-        jPanel4.add(txtGridSize);
-        jPanel4.add(setGridSizeButton);
-        
-//      jPanel4.setLayout(gridBagLayout2);
-        /*
-        jPanel4.add(
-            gridLabel,
-            new GridBagConstraints(
-                0,
-                0,
-                1,
-                1,
-                0.2,
-                0.0,
-                GridBagConstraints.EAST,
-                GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2),
-                0,
-                0));
-        jPanel4.add(
-            txtGridSize,
-            new GridBagConstraints(
-                2,
-                0,
-                1,
-                1,
-                0.5,
-                0.0,
-                GridBagConstraints.CENTER,
-                GridBagConstraints.HORIZONTAL,
-                new Insets(2, 2, 2, 2),
-                0,
-                0));
-        jPanel4.add(
-            setGridSizeButton,
-            new GridBagConstraints(
-                10,
-                0,
-                1,
-                1,
-                0.0,
-                0.0,
-                GridBagConstraints.CENTER,
-                GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2),
-                0,
-                0));
-                */
         
         jPanel8.setLayout(new FlowLayout());
         jPanel8.add(btnSetPrecisionModel);
@@ -341,20 +273,6 @@ public class GeometryEditControlPanel extends JPanel
         jPanel10.add(new JLabel("Stretch Distance"));
         jPanel10.add(stretchDist);
       
-        jPanel3.add(
-            jPanel4,
-            new GridBagConstraints(
-                0,
-                4,
-                1,
-                1,
-                0.0,
-                0.0,
-                GridBagConstraints.CENTER,
-                GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0),
-                0,
-                0));
         jPanel3.add(
             jPanel8,
             new GridBagConstraints(
