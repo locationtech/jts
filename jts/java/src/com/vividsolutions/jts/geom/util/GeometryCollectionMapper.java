@@ -3,6 +3,14 @@ package com.vividsolutions.jts.geom.util;
 import java.util.*;
 import com.vividsolutions.jts.geom.*;
 
+/**
+ * Maps the members of a {@link GeometryCollection}
+ * into another <tt>GeometryCollection</tt> via a defined
+ * mapping function.
+ * 
+ * @author Martin Davis
+ *
+ */
 public class GeometryCollectionMapper 
 {
   public static GeometryCollection map(GeometryCollection gc, MapOp op)

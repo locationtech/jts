@@ -132,6 +132,8 @@ public class Triangle
    * and is the only point which has equal distance to all three
    * vertices of the triangle.
    * <p>
+   * The circumcentre does not necessarily lie within the triangle.
+   * <p>
    * This method uses an algorithm due to J.R.Shewchuk which
    * uses normalization to the origin
    * to improve the accuracy of computation.
@@ -186,6 +188,8 @@ public class Triangle
    * of the triangle's angles meet.
    * It is the centre of the triangle's <i>incircle</i>,
    * which is the unique circle that is tangent to each of the triangle's three sides.
+   * <p>
+   * The incentre always lies within the triangle.
     *
    * @param a a vertx of the triangle
    * @param b a vertx of the triangle
@@ -211,6 +215,7 @@ public class Triangle
    * medians intersect (a triangle median is the segment from a vertex of the triangle to the
    * midpoint of the opposite side).
    * The centroid divides each median in a ratio of 2:1.
+   * <p>
    * The centroid always lies within the triangle.
    *
    *
