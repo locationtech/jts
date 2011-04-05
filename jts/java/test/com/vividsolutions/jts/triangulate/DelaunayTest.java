@@ -52,6 +52,16 @@ public class DelaunayTest extends TestCase {
 
   public DelaunayTest(String name) { super(name); }
 
+  public void testTriangle()
+  throws ParseException
+  {
+    String wkt = "MULTIPOINT ((10 10 1), (10 20 2), (20 20 3))";
+    String expected = "MULTILINESTRING ((10 20, 20 20), (10 10, 10 20), (10 10, 20 20))";
+    runDelaunayEdges(wkt, expected);
+    String expectedTri = "GEOMETRYCOLLECTION (POLYGON ((10 20, 10 10, 20 20, 10 20)))";
+    runDelaunay(wkt, true, expectedTri);
+  }
+  
   public void testRandom()
   throws ParseException
   {
@@ -112,9 +122,9 @@ public class DelaunayTest extends TestCase {
   	}
   	System.out.println(result);
   	
-  	Geometry expectedEdges = reader.read(expectedWKT);
+  	Geometry expected = reader.read(expectedWKT);
   	result.normalize();
-  	expectedEdges.normalize();
-  	assertTrue(expectedEdges.equalsExact(result, COMPARISON_TOLERANCE));
+  	expected.normalize();
+  	assertTrue(expected.equalsExact(result, COMPARISON_TOLERANCE));
   }
 }

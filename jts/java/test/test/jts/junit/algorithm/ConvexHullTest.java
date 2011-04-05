@@ -69,6 +69,17 @@ public class ConvexHullTest extends TestCase {
 
   public static Test suite() { return new TestSuite(ConvexHullTest.class); }
 
+  public void testManyIdenticalPoints() throws Exception {
+    Coordinate[] pts = new Coordinate[100];
+    for (int i = 0; i < 99; i++)
+      pts[i] = new Coordinate(0,0);
+    pts[99] = new Coordinate(1,1);
+    ConvexHull ch = new ConvexHull(pts, geometryFactory);
+    Geometry actualGeometry = ch.getConvexHull();
+    Geometry expectedGeometry = reader.read("POLYGON ((0 0, 5 1, 10 0, 0 0))");
+    assertEquals(expectedGeometry.toString(), actualGeometry.toString());
+  }
+
   public void test1() throws Exception {
     WKTReader reader = new WKTReader(new GeometryFactory(new PrecisionModel(1), 0));
     LineString lineString = (LineString) reader.read("LINESTRING (30 220, 240 220, 240 220)");
