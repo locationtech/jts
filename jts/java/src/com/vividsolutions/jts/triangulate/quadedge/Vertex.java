@@ -186,11 +186,20 @@ public class Vertex
         return (new Vertex(p.y, -p.x));
     }
 
-    /** ************************************************************* */
-    /***********************************************************************************************
-     * Geometric primitives /
-     **********************************************************************************************/
+  /** ************************************************************* */
+  /***********************************************************************************************
+   * Geometric primitives /
+   **********************************************************************************************/
 
+  /**
+   * Tests if the vertex is inside the circle defined by 
+   * the triangle with vertices a, b, c (oriented counter-clockwise). 
+   * 
+   * @param a a vertex of the triangle
+   * @param b a vertex of the triangle
+   * @param c a vertex of the triangle
+   * @return true if this vertex is in the circumcircle of (a,b,c)
+   */
   public boolean isInCircle(Vertex a, Vertex b, Vertex c) 
   {
     return TrianglePredicate.isInCircleRobust(a.p, b.p, c.p, this.p);
@@ -198,14 +207,14 @@ public class Vertex
     //return TrianglePredicate.isInCircle(a.p, b.p, c.p, this.p);
   }
 
-    /**
-     * Tests whether the triangle formed by this vertex and two
-     * other vertices is in CCW orientation.
-     * 
-     * @param b a vertex
-     * @param c a vertex
-     * @returns true if the triangle is oriented CCW
-     */
+  /**
+   * Tests whether the triangle formed by this vertex and two
+   * other vertices is in CCW orientation.
+   * 
+   * @param b a vertex
+   * @param c a vertex
+   * @returns true if the triangle is oriented CCW
+   */
   public final boolean isCCW(Vertex b, Vertex c) 
   {
       /*

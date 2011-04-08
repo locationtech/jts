@@ -22,7 +22,8 @@ import com.vividsolutions.jts.math.DD;
 public class TrianglePredicate 
 {
   /**
-   * Tests if a point is inside the circle defined by the points a, b, c. 
+   * Tests if a point is inside the circle defined by 
+   * the triangle with vertices a, b, c (oriented counter-clockwise). 
    * This test uses simple
    * double-precision arithmetic, and thus may not be robust.
    * 
@@ -45,7 +46,8 @@ public class TrianglePredicate
   }
   
   /**
-   * Tests if a point is inside the circle defined by the points a, b, c. 
+   * Tests if a point is inside the circle defined by 
+   * the triangle with vertices a, b, c (oriented counter-clockwise). 
    * This test uses simple
    * double-precision arithmetic, and thus is not 10% robust.
    * However, by using normalization to the origin
@@ -95,7 +97,8 @@ public class TrianglePredicate
   }
 
   /**
-   * Tests if a point is inside the circle defined by the points a, b, c. 
+   * Tests if a point is inside the circle defined by 
+   * the triangle with vertices a, b, c (oriented counter-clockwise). 
    * This method uses more robust computation.
    * 
    * @param a a vertex of the triangle
@@ -114,7 +117,8 @@ public class TrianglePredicate
   }
 
   /**
-   * Tests if a point is inside the circle defined by the points a, b, c. 
+   * Tests if a point is inside the circle defined by 
+   * the triangle with vertices a, b, c (oriented counter-clockwise). 
    * The computation uses {@link DD} arithmetic for robustness.
    * 
    * @param a a vertex of the triangle
