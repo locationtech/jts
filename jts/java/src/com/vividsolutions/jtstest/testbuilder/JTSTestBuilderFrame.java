@@ -258,13 +258,6 @@ public class JTSTestBuilderFrame extends JFrame
     return resultValuePanel;
   }
 
-  public String getTestJava(TestCaseList tcList) {
-    StringBuffer java = new StringBuffer();
-    for (int i = 0; i < tcList.getList().size(); i++) {
-      java.append((new JavaTestWriter()).write((Testable) tcList.getList().get(i)));
-    }
-    return java.toString();
-  }
 
   /*
   public String getRunXml() {
@@ -483,7 +476,7 @@ public class JTSTestBuilderFrame extends JFrame
           className = className.substring(0, extensionIndex);
         }
         ;
-        FileUtil.setContents(fileChooser.getSelectedFile().getPath(), getRunJava(className));
+        FileUtil.setContents(fileChooser.getSelectedFile().getPath(), JavaTestWriter.getRunJava(className, tbModel));
       }
     }
     catch (Exception x) {
@@ -710,24 +703,6 @@ public class JTSTestBuilderFrame extends JFrame
   	tbModel.setMagnifyingTopology(testCasePanel.editCtlPanel.cbMagnifyTopo.isSelected());
     tbModel.setTopologyStretchSize(testCasePanel.editCtlPanel.getStretchSize());
     JTSTestBuilderController.geometryViewChanged();
-  }
-
-    private String getRunJava(String className) {
-    return
-        "package com.vividsolutions.jtstest.testsuite;" + StringUtil.newLine
-         + "" + StringUtil.newLine
-         + "import com.vividsolutions.jtstest.test.*;" + StringUtil.newLine
-         + "" + StringUtil.newLine
-         + "public class " + className + " extends TestCaseList {" + StringUtil.newLine
-         + "  public static void main(String[] args) {" + StringUtil.newLine
-         + "    " + className + " test = new " + className + "();" + StringUtil.newLine
-         + "    test.run();" + StringUtil.newLine
-         + "  }" + StringUtil.newLine
-         + "" + StringUtil.newLine
-         + "  public " + className + "() {" + StringUtil.newLine
-         + getTestJava(tbModel.getTestCaseList())
-         + "  }" + StringUtil.newLine
-         + "}";
   }
 
 

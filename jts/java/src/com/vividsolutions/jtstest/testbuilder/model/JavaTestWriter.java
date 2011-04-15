@@ -34,13 +34,42 @@ package com.vividsolutions.jtstest.testbuilder.model;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
+import com.vividsolutions.jtstest.test.TestCaseList;
 import com.vividsolutions.jtstest.test.Testable;
+import com.vividsolutions.jtstest.util.StringUtil;
 
 
 /**
  * @version 1.7
  */
 public class JavaTestWriter {
+  public static String getRunJava(String className, TestBuilderModel tbModel) {
+    return
+        "package com.vividsolutions.jtstest.testsuite;" + StringUtil.newLine
+         + "" + StringUtil.newLine
+         + "import com.vividsolutions.jtstest.test.*;" + StringUtil.newLine
+         + "" + StringUtil.newLine
+         + "public class " + className + " extends TestCaseList {" + StringUtil.newLine
+         + "  public static void main(String[] args) {" + StringUtil.newLine
+         + "    " + className + " test = new " + className + "();" + StringUtil.newLine
+         + "    test.run();" + StringUtil.newLine
+         + "  }" + StringUtil.newLine
+         + "" + StringUtil.newLine
+         + "  public " + className + "() {" + StringUtil.newLine
+         + getTestJava(tbModel.getTestCaseList())
+         + "  }" + StringUtil.newLine
+         + "}";
+  }
+
+    public static String getTestJava(TestCaseList tcList) {
+      StringBuffer java = new StringBuffer();
+      for (int i = 0; i < tcList.getList().size(); i++) {
+        java.append((new JavaTestWriter()).write((Testable) tcList.getList().get(i)));
+      }
+      return java.toString();
+    }
+
+
     private WKTWriter writer = new WKTWriter();
 
     public JavaTestWriter() {}
