@@ -257,18 +257,6 @@ public class JTSTestBuilderFrame extends JFrame
   public ResultValuePanel getResultValuePanel() {
     return resultValuePanel;
   }
-
-
-  /*
-  public String getRunXml() {
-    String runXML = "<run>" + StringUtil.newLine;
-    runXML += getRunDescription(tcList);
-    runXML += getRunWorkspace(tcList);
-    runXML += xml(tbModel.getPrecisionModel()) + StringUtil.newLine;
-    runXML += (new XMLTestWriter()).getTestXML(tcList) + "</run>";
-    return runXML;
-  }
-*/
   
   /**
    *  File | Exit action performed
