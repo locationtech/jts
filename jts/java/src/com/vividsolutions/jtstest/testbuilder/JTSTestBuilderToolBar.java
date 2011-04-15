@@ -229,7 +229,7 @@ public class JTSTestBuilderToolBar {
       drawPolygonButton.setMinimumSize(new Dimension(30, 30));
       drawPolygonButton.setVerticalTextPosition(SwingConstants.BOTTOM);
       drawPolygonButton.setSelected(true);
-      drawPolygonButton.setToolTipText("Draw Polygon");
+      drawPolygonButton.setToolTipText("<html>Draw Polygon<br><br>Add Pt = Left-Click<br>Stream = Left-Drag</html>");
       drawPolygonButton.setHorizontalTextPosition(SwingConstants.CENTER);
       drawPolygonButton.setFont(new java.awt.Font("SansSerif", 0, 10));
       drawPolygonButton.setMaximumSize(new Dimension(30, 30));
@@ -247,7 +247,7 @@ public class JTSTestBuilderToolBar {
       drawLineStringButton.setMinimumSize(new Dimension(30, 30));
       drawLineStringButton.setVerticalTextPosition(SwingConstants.BOTTOM);
       drawLineStringButton.setSelected(true);
-      drawLineStringButton.setToolTipText("Draw LineString");
+      drawLineStringButton.setToolTipText("<html>Draw LineString<br><br>Add Pt = Left-Click<br>Stream = Left-Drag</html>");
       drawLineStringButton.setHorizontalTextPosition(SwingConstants.CENTER);
       drawLineStringButton.setFont(new java.awt.Font("SansSerif", 0, 10));
       drawLineStringButton.setMaximumSize(new Dimension(30, 30));

@@ -564,14 +564,6 @@ public class JTSTestBuilderFrame extends JFrame
         File file = pngFileChooser.getSelectedFile();
         if (! SwingUtil.confirmOverwrite(this, file)) return;
         String fullFileName = pngFileChooser.getSelectedFile().toString();
-        /*
-        int extensionIndex = className.lastIndexOf(".");
-        if (extensionIndex > 0) {
-          className = className.substring(0, extensionIndex);
-        }
-        ;
-        */
-        //String filenameWithPath = directory.getPath() + "\\" + "geoms";
         ImageUtil.writeImage(testCasePanel.getGeometryEditPanel(), 
             fullFileName,
             ImageUtil.IMAGE_FORMAT_NAME_PNG);
