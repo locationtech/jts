@@ -97,6 +97,7 @@ public class JTSTestBuilderFrame extends JFrame
   private final ImageIcon appIcon = new ImageIcon(this.getClass().getResource("app-icon.gif"));
 
   private JFileChooser fileChooser = new JFileChooser();
+  private JFileChooser pngFileChooser;
   private JFileChooser fileAndDirectoryChooser = new JFileChooser();
   private JFileChooser directoryChooser = new JFileChooser();
   
@@ -104,24 +105,29 @@ public class JTSTestBuilderFrame extends JFrame
   
   private FileFilter xmlFileFilter =
     new FileFilter() {
-
       public String getDescription() {
         return "JTS Test XML File (*.xml)";
       }
-
       public boolean accept(File f) {
         return f.isDirectory() || f.toString().toLowerCase().endsWith(".xml");
       }
     };
   private FileFilter javaFileFilter =
     new FileFilter() {
-
       public String getDescription() {
         return "Java File (*.java)";
       }
-
       public boolean accept(File f) {
         return f.isDirectory() || f.toString().toLowerCase().endsWith(".java");
+      }
+    };
+  private FileFilter pngFileFilter =
+    new FileFilter() {
+      public String getDescription() {
+        return "PNG File (*.png)";
+      }
+      public boolean accept(File f) {
+        return f.isDirectory() || f.toString().toLowerCase().endsWith(".png");
       }
     };
   private TextViewDialog textViewDlg = new TextViewDialog(this, "", true);
@@ -205,7 +211,14 @@ public class JTSTestBuilderFrame extends JFrame
       }
     });
   }
-  
+  private void initFileChoosers() {
+    if (pngFileChooser == null) {
+      pngFileChooser = new JFileChooser();
+      pngFileChooser.addChoosableFileFilter(pngFileFilter);
+      pngFileChooser.setDialogTitle("Save PNG");
+      pngFileChooser.setSelectedFile(new File("geoms.png"));
+    }
+  }
   public static JTSTestBuilderFrame instance() {
     if (singleton == null) {
       new JTSTestBuilderFrame();
@@ -561,7 +574,7 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
-  void menuSaveAsPNG_actionPerformed(ActionEvent e) {
+  void OLDmenuSaveAsPNG_actionPerformed(ActionEvent e) {
     try {
       directoryChooser.setDialogTitle("Select Folder In Which To Save PNG");
       if (JFileChooser.APPROVE_OPTION == directoryChooser.showSaveDialog(this)) {
@@ -574,10 +587,48 @@ public class JTSTestBuilderFrame extends JFrame
         final File directory = directoryChooser.getSelectedFile();
         String filenameWithPath = directory.getPath() + "\\" + "geoms";
         ImageUtil.writeImage(testCasePanel.getGeometryEditPanel(), 
-        		filenameWithPath + ".png",
-        		ImageUtil.IMAGE_FORMAT_NAME_PNG);
+            filenameWithPath + ".png",
+            ImageUtil.IMAGE_FORMAT_NAME_PNG);
         
         //saveImageToClipboard(testCasePanel.getGeometryEditPanel(), filenameWithPath);
+      }
+    }
+    catch (Exception x) {
+      reportException(this, x);
+    }
+  }
+
+  private boolean confirmOverwrite(File file)
+  {
+    if (file.exists()) {
+      int decision = JOptionPane.showConfirmDialog(this, file.getName()
+           + " exists. Overwrite?", "Confirmation", JOptionPane.YES_NO_OPTION,
+          JOptionPane.WARNING_MESSAGE);
+      if (decision == JOptionPane.NO_OPTION) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
+  void menuSaveAsPNG_actionPerformed(ActionEvent e) {
+    try {
+      initFileChoosers();
+      if (JFileChooser.APPROVE_OPTION == pngFileChooser.showSaveDialog(this)) {
+        File file = fileChooser.getSelectedFile();
+        if (! confirmOverwrite(file)) return;
+        String fullFileName = pngFileChooser.getSelectedFile().toString();
+        /*
+        int extensionIndex = className.lastIndexOf(".");
+        if (extensionIndex > 0) {
+          className = className.substring(0, extensionIndex);
+        }
+        ;
+        */
+        //String filenameWithPath = directory.getPath() + "\\" + "geoms";
+        ImageUtil.writeImage(testCasePanel.getGeometryEditPanel(), 
+            fullFileName,
+            ImageUtil.IMAGE_FORMAT_NAME_PNG);
       }
     }
     catch (Exception x) {
@@ -600,7 +651,7 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   void drawPolygonButton_actionPerformed(ActionEvent e) {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(PolygonTool.getInstance());
+    testCasePanel.getGeometryEditPanel().setCurrentTool(StreamPolygonTool.getInstance());
   }
 
   void drawLineStringButton_actionPerformed(ActionEvent e) {
