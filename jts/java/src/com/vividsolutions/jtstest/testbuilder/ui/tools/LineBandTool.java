@@ -13,7 +13,7 @@ import com.vividsolutions.jts.geom.*;
 public abstract class LineBandTool extends IndicatorTool 
 {
   private List coordinates = new ArrayList();  // in model space
-  private Coordinate tentativeCoordinate;
+  protected Coordinate tentativeCoordinate;
 
   // set this to true if band should be closed
   private boolean closeRing = false;
@@ -38,7 +38,7 @@ public abstract class LineBandTool extends IndicatorTool
   }
   
   /**
-   * Will return an empty List once the shape is cleared.
+   * Returns an empty List once the shape is cleared.
    * 
    * @see LineBandTool#clearShape
    */
@@ -46,6 +46,12 @@ public abstract class LineBandTool extends IndicatorTool
     return Collections.unmodifiableList(coordinates);
   }
 
+  public Coordinate lastCoordinate()
+  {
+    if (coordinates.size() <= 0) return null;
+    return (Coordinate) coordinates.get(coordinates.size()-1);
+  }
+  
   public void mouseReleased(MouseEvent e) {
     try {
       // Can't assert that coordinates is not empty at this point
@@ -58,14 +64,14 @@ public abstract class LineBandTool extends IndicatorTool
       // the
       // coordinates are cleared. When #mouseReleased is then called
       // with
-      // the clickCount=2 event, coordinates is empty! [Jon Aquino]
+      // the clickCount=2 event, coordinates is empty! 
 
       // Even though drawing is done in #mouseLocationChanged, call it
       // here
       // also so that #isGestureInProgress returns true on a mouse
       // click.
       // This is mainly for the benefit of OrCompositeTool, which
-      // calls #isGestureInProgress. [Jon Aquino]
+      // calls #isGestureInProgress. 
       // Can't do this in #mouseClicked because #finishGesture may be
       // called
       // by #mouseReleased (below), which happens before #mouseClicked,
@@ -121,6 +127,9 @@ public abstract class LineBandTool extends IndicatorTool
   }
 
   protected void add(Coordinate c) {
+    // don't add repeated coords
+    if (coordinates.size() > 0 && c.equals2D((Coordinate) coordinates.get(coordinates.size()-1)))
+      return;
     coordinates.add(c);
   }
 
@@ -133,7 +142,6 @@ public abstract class LineBandTool extends IndicatorTool
       // generate two events: one with click-count = 1 and another with
       // click-count = 2. Handle the click-count = 1 event and ignore
       // the rest.
-      // [Jon Aquino]
       if (e.getClickCount() != 1) {
         return;
       }

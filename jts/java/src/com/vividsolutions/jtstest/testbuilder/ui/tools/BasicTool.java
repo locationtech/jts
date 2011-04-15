@@ -139,9 +139,16 @@ public abstract class BasicTool implements Tool
   	return pModel;
   }
   
+  protected double gridSize()
+  {
+    return getViewport().getGridSizeModel();
+  }
+  
+  /*
   protected Coordinate toModelSnappedToDrawingGrid(Point2D p)
   {
     Point2D pt = panel().snapToGrid(getViewport().toModel(p));
     return new Coordinate(pt.getX(), pt.getY());
   }
+  */
 }

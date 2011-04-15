@@ -38,7 +38,7 @@ import com.vividsolutions.jtstest.testbuilder.model.*;
 /**
  * @version 1.7
  */
-public class LineStringTool extends AbstractDrawTool 
+public class LineStringTool extends AbstractStreamDrawTool 
 {
     private static LineStringTool singleton = null;
 

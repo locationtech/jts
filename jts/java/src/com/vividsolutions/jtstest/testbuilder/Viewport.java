@@ -308,6 +308,12 @@ public class Viewport implements PointTransformation
 
   private static final int MIN_GRID_RESOLUTION_PIXELS = 2;
   
+  /**
+   * Gets the magnitude (power of 10)
+   * for the basic grid size.
+   * 
+   * @return
+   */
   public int gridMagnitudeModel()
   {
   	double pixelSizeModel = toModel(1);
@@ -327,9 +333,19 @@ public class Viewport implements PointTransformation
   	return gridMag;
   }
 
+  /**
+   * Gets a PrecisionModel corresponding to the grid size.
+   * 
+   * @return
+   */
   public PrecisionModel getGridPrecisionModel()
   {
-  	double gridSizeModel = Math.pow(10, gridMagnitudeModel());
+  	double gridSizeModel = getGridSizeModel();
   	return new PrecisionModel(1.0/gridSizeModel);
+  }
+  
+  public double getGridSizeModel()
+  {
+    return Math.pow(10, gridMagnitudeModel());
   }
 }
