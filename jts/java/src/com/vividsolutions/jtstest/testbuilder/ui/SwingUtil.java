@@ -5,13 +5,62 @@ import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.util.Collection;
 import java.awt.datatransfer.*;
+import java.io.File;
+
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileFilter;
+
 import com.vividsolutions.jts.geom.*;
 
 import com.vividsolutions.jtstest.testbuilder.model.GeometryTransferable;
 
 public class SwingUtil {
+
+  public static FileFilter xmlFileFilter =
+    new FileFilter() {
+      public String getDescription() {
+        return "JTS Test XML File (*.xml)";
+      }
+      public boolean accept(File f) {
+        return f.isDirectory() || f.toString().toLowerCase().endsWith(".xml");
+      }
+    };
+    
+  public static  FileFilter javaFileFilter =
+    new FileFilter() {
+      public String getDescription() {
+        return "Java File (*.java)";
+      }
+      public boolean accept(File f) {
+        return f.isDirectory() || f.toString().toLowerCase().endsWith(".java");
+      }
+    };
+    
+  public static  FileFilter pngFileFilter =
+    new FileFilter() {
+      public String getDescription() {
+        return "PNG File (*.png)";
+      }
+      public boolean accept(File f) {
+        return f.isDirectory() || f.toString().toLowerCase().endsWith(".png");
+      }
+    };
+
+  public static boolean confirmOverwrite(Component comp, File file)
+  {
+    if (file.exists()) {
+      int decision = JOptionPane.showConfirmDialog(comp, file.getName()
+           + " exists. Overwrite?", "Confirmation", JOptionPane.YES_NO_OPTION,
+          JOptionPane.WARNING_MESSAGE);
+      if (decision == JOptionPane.NO_OPTION) {
+        return false;
+      }
+    }
+    return true;
+  }
+    
 
   public static void setEnabled(Component comp, boolean isEnabled)
   {

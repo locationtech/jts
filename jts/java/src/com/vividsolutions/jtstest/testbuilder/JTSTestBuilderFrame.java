@@ -103,33 +103,6 @@ public class JTSTestBuilderFrame extends JFrame
   
   TestBuilderModel tbModel;
   
-  private FileFilter xmlFileFilter =
-    new FileFilter() {
-      public String getDescription() {
-        return "JTS Test XML File (*.xml)";
-      }
-      public boolean accept(File f) {
-        return f.isDirectory() || f.toString().toLowerCase().endsWith(".xml");
-      }
-    };
-  private FileFilter javaFileFilter =
-    new FileFilter() {
-      public String getDescription() {
-        return "Java File (*.java)";
-      }
-      public boolean accept(File f) {
-        return f.isDirectory() || f.toString().toLowerCase().endsWith(".java");
-      }
-    };
-  private FileFilter pngFileFilter =
-    new FileFilter() {
-      public String getDescription() {
-        return "PNG File (*.png)";
-      }
-      public boolean accept(File f) {
-        return f.isDirectory() || f.toString().toLowerCase().endsWith(".png");
-      }
-    };
   private TextViewDialog textViewDlg = new TextViewDialog(this, "", true);
   private TestCaseTextDialog testCaseTextDlg = new TestCaseTextDialog(this,
       "", true);
@@ -214,7 +187,7 @@ public class JTSTestBuilderFrame extends JFrame
   private void initFileChoosers() {
     if (pngFileChooser == null) {
       pngFileChooser = new JFileChooser();
-      pngFileChooser.addChoosableFileFilter(pngFileFilter);
+      pngFileChooser.addChoosableFileFilter(SwingUtil.pngFileFilter);
       pngFileChooser.setDialogTitle("Save PNG");
       pngFileChooser.setSelectedFile(new File("geoms.png"));
     }
@@ -457,8 +430,8 @@ public class JTSTestBuilderFrame extends JFrame
 
   void menuLoadXmlTestFile_actionPerformed(ActionEvent e) {
     try {
-      fileChooser.removeChoosableFileFilter(javaFileFilter);
-      fileChooser.addChoosableFileFilter(xmlFileFilter);
+      fileChooser.removeChoosableFileFilter(SwingUtil.javaFileFilter);
+      fileChooser.addChoosableFileFilter(SwingUtil.xmlFileFilter);
       fileChooser.setDialogTitle("Open XML Test File(s)");
       fileChooser.setMultiSelectionEnabled(true);
       if (JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog(this)) {
@@ -476,19 +449,12 @@ public class JTSTestBuilderFrame extends JFrame
 
   void menuSaveAsXml_actionPerformed(ActionEvent e) {
     try {
-      fileChooser.removeChoosableFileFilter(javaFileFilter);
-      fileChooser.addChoosableFileFilter(xmlFileFilter);
+      fileChooser.removeChoosableFileFilter(SwingUtil.javaFileFilter);
+      fileChooser.addChoosableFileFilter(SwingUtil.xmlFileFilter);
       fileChooser.setDialogTitle("Save XML Test File");
       if (JFileChooser.APPROVE_OPTION == fileChooser.showSaveDialog(this)) {
         File file = fileChooser.getSelectedFile();
-        if (file.exists()) {
-          int decision = JOptionPane.showConfirmDialog(this, file.getName()
-               + " exists. Overwrite?", "Confirmation", JOptionPane.YES_NO_OPTION,
-              JOptionPane.WARNING_MESSAGE);
-          if (decision == JOptionPane.NO_OPTION) {
-            return;
-          }
-        }
+        if (! SwingUtil.confirmOverwrite(this, file)) return;
         FileUtil.setContents(fileChooser.getSelectedFile().getPath(), 
         		XMLTestWriter.getRunXml(tbModel.getTestCaseList(), tbModel.getPrecisionModel()) );
       }
@@ -505,19 +471,12 @@ public class JTSTestBuilderFrame extends JFrame
   
   void menuSaveAsJava_actionPerformed(ActionEvent e) {
     try {
-      fileChooser.removeChoosableFileFilter(xmlFileFilter);
-      fileChooser.addChoosableFileFilter(javaFileFilter);
+      fileChooser.removeChoosableFileFilter(SwingUtil.xmlFileFilter);
+      fileChooser.addChoosableFileFilter(SwingUtil.javaFileFilter);
       fileChooser.setDialogTitle("Save Java File");
       if (JFileChooser.APPROVE_OPTION == fileChooser.showSaveDialog(this)) {
         File file = fileChooser.getSelectedFile();
-        if (file.exists()) {
-          int decision = JOptionPane.showConfirmDialog(this, file.getName()
-               + " exists. Overwrite?", "Confirmation", JOptionPane.YES_NO_OPTION,
-              JOptionPane.WARNING_MESSAGE);
-          if (decision == JOptionPane.NO_OPTION) {
-            return;
-          }
-        }
+        if (! SwingUtil.confirmOverwrite(this, file)) return;
         String className = fileChooser.getSelectedFile().getName();
         int extensionIndex = className.lastIndexOf(".");
         if (extensionIndex > 0) {
@@ -598,25 +557,12 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
-  private boolean confirmOverwrite(File file)
-  {
-    if (file.exists()) {
-      int decision = JOptionPane.showConfirmDialog(this, file.getName()
-           + " exists. Overwrite?", "Confirmation", JOptionPane.YES_NO_OPTION,
-          JOptionPane.WARNING_MESSAGE);
-      if (decision == JOptionPane.NO_OPTION) {
-        return false;
-      }
-    }
-    return true;
-  }
-  
   void menuSaveAsPNG_actionPerformed(ActionEvent e) {
     try {
       initFileChoosers();
       if (JFileChooser.APPROVE_OPTION == pngFileChooser.showSaveDialog(this)) {
-        File file = fileChooser.getSelectedFile();
-        if (! confirmOverwrite(file)) return;
+        File file = pngFileChooser.getSelectedFile();
+        if (! SwingUtil.confirmOverwrite(this, file)) return;
         String fullFileName = pngFileChooser.getSelectedFile().toString();
         /*
         int extensionIndex = className.lastIndexOf(".");
@@ -735,7 +681,7 @@ public class JTSTestBuilderFrame extends JFrame
 
   void menuLoadXmlTestFolder_actionPerformed(ActionEvent e) {
     try {
-      directoryChooser.removeChoosableFileFilter(javaFileFilter);
+      directoryChooser.removeChoosableFileFilter(SwingUtil.javaFileFilter);
       directoryChooser.setDialogTitle("Open Folder(s) Containing XML Test Files");
       directoryChooser.setMultiSelectionEnabled(true);
       if (JFileChooser.APPROVE_OPTION == directoryChooser.showOpenDialog(this)) {
