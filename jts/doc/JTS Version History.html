@@ -237,7 +237,7 @@ and JTS_LIB_DIR environment variable (thanks to strk)
 <li>Improved performance for <code>ByteArrayInStream</code> (by avoiding use of <tt>java.io.ByteArrayInputStream</tt>)
 <li>Unrolled intersection computation in <tt>HCoordinate</tt> to avoid object allocation
 <li>Improved performance for buffering via better offset curve generation and simplification.
-<li>Improved performance for <tt>IsValipOp</tt> by switching to use <tt>STRtree</tt> for nested hole checking
+<li>Improved performance for <tt>IsValidOp</tt> by switching to use <tt>STRtree</tt> for nested hole checking
 </ul>
 
 <h3>Bug Fixes</h3>
@@ -282,6 +282,7 @@ simplified using <tt>TopologyPreservingSimplifier</tt> to be invalid in certain 
 <li>Added Stats panel
 <li>Added Scalar functions panel, with extensible function list
 <li>Added <b>Save as PNG...</b>
+<li>Added stream digitizing to Polygon and Line Draw tools
 </ul>
 
 <!------- TestRunner -------------------->
