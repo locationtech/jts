@@ -58,8 +58,8 @@ public abstract class AbstractNode implements Boundable {
   }
 
   /**
-   * Returns either child {@link AbstractNodes}, or if this is a leaf node, real data (wrapped
-   * in {@link ItemBoundables}).
+   * Returns either child {@link AbstractNode}s, or if this is a leaf node, real data (wrapped
+   * in {@link ItemBoundable}s).
    */
   public List getChildBoundables() {
     return childBoundables;

@@ -77,7 +77,7 @@ public abstract class SinglePassNoder
   public abstract void computeNodes(Collection segStrings);
 
   /**
-   * Returns a {@link Collection} of fully noded {@link SegmentStrings}.
+   * Returns a {@link Collection} of fully noded {@link SegmentString}s.
    * The SegmentStrings have the same context as their parent.
    *
    * @return a Collection of SegmentStrings

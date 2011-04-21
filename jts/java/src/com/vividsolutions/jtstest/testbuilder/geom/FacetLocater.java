@@ -15,7 +15,7 @@ import com.vividsolutions.jts.geom.*;
 public class FacetLocater 
 {
 	/**
-	 * Creates a list containing all the vertex {@link FacetLocation}s
+	 * Creates a list containing all the vertex {@link GeometryLocation}s
 	 * in the input collection.
 	 * 
 	 * @param locations the source collection

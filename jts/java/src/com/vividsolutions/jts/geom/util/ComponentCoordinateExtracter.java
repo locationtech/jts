@@ -49,7 +49,7 @@ public class ComponentCoordinateExtracter
   /**
    * Extracts the linear components from a single geometry.
    * If more than one geometry is to be processed, it is more
-   * efficient to create a single {@link LineExtracterFilter} instance
+   * efficient to create a single {@link ComponentCoordinateExtracter} instance
    * and pass it to multiple geometries.
    *
    * @param geom the Geometry from which to extract

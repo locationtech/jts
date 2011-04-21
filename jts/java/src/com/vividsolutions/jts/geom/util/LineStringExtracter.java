@@ -51,7 +51,6 @@ public class LineStringExtracter
    * 
    * @param geom the geometry from which to extract
    * @param lines the list to add the extracted LineStrings to
-   * @param list the list to add the extracted elements to
    */
   public static List getLines(Geometry geom, List lines)
   {

@@ -84,7 +84,7 @@ public class IteratedNoder
   public Collection getNodedSubstrings()  {    return nodedSegStrings;  }
 
   /**
-   * Fully nodes a list of {@link SegmentStrings}, i.e. peforms noding iteratively
+   * Fully nodes a list of {@link SegmentString}s, i.e. peforms noding iteratively
    * until no intersections are found between segments.
    * Maintains labelling of edges correctly through
    * the noding.

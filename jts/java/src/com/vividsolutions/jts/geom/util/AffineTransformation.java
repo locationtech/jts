@@ -464,11 +464,11 @@ public class AffineTransformation
   
   /**
    * Explicitly computes the math for a reflection.  May not work.
-   * @param x0
-   * @param y0
-   * @param x1
-   * @param y1
-   * @return
+   * @param x0 the X ordinate of one point on the reflection line
+   * @param y0 the Y ordinate of one point on the reflection line
+   * @param x1 the X ordinate of another point on the reflection line
+   * @param y1 the Y ordinate of another point on the reflection line
+   * @return this transformation, with an updated matrix
    */
   public AffineTransformation setToReflectionBasic(double x0, double y0, double x1, double y1)
   {
@@ -487,6 +487,16 @@ public class AffineTransformation
     return this;
   }
   
+  /**
+   * Sets this transformation to be a reflection 
+   * about the line defined by a line <tt>(x0,y0) - (x1,y1)</tt>.
+   * 
+   * @param x0 the X ordinate of one point on the reflection line
+   * @param y0 the Y ordinate of one point on the reflection line
+   * @param x1 the X ordinate of another point on the reflection line
+   * @param y1 the Y ordinate of another point on the reflection line
+   * @return this transformation, with an updated matrix
+   */
   public AffineTransformation setToReflection(double x0, double y0, double x1, double y1)
   {
     if (x0 == x1 && y0 == y1) {

@@ -38,6 +38,8 @@
   	<property name="jtsio.lib" value="${jtsio.basedir}/lib"/>
   	<property name="jtsio.build.classes" value="${build}/jtsio-classes"/>
   	
+  	<property name="javadoc.title" value="JTS Topology Suite - v ${jts.version}"/>
+  	
    </target>
 
   <!-- ================================================================== -->
@@ -120,9 +122,11 @@
          basedir="${build.classes}"/>
   </target>
 
-  <target name="javadoc" depends="copy-source"
+  <target name="javadoc" depends="props, copy-source"
           description="Generates the JavaDoc files">
     <javadoc packagenames="com.vividsolutions.jts.*"
+    		WindowTitle="${javadoc.title}"
+    		Header="<b>${javadoc.title}</b>"
              destdir="${pre-zip.javadoc}">
       <sourcepath location="${pre-zip.src}"/>
       <classpath>

@@ -65,6 +65,24 @@ public class RobustDeterminant {
 
   //public static int callCount = 0; // debugging only
 
+  /*
+  public static int signOfDet2x2(double x1, double y1, double x2, double y2) 
+  {
+    if (x1 > x2) {
+      return -signOfDet2x2ordX(x2, y2, x1, y1);
+    }
+    return signOfDet2x2ordX(x1, y1, x2, y2);
+  }
+    
+  private static int signOfDet2x2ordX(double x1, double y1, double x2, double y2) 
+  {
+    if (y1 > y2) {
+      return -originalSignOfDet2x2(y1, x1, y2, x2);
+    }
+    return originalSignOfDet2x2(x1, y1, x2, y2);
+  }
+    */
+  
   /**
    * Computes the sign of the determinant of the 2x2 matrix
    * with the given entries, in a robust way.
@@ -73,10 +91,11 @@ public class RobustDeterminant {
    * @return  1 if the determinant is positive,
    * @return  0 if the determinant is 0.
    */
-  public static int signOfDet2x2(double x1, double y1, double x2, double y2) {
+   //private static int originalSignOfDet2x2(double x1, double y1, double x2, double y2) {
+   public static int signOfDet2x2(double x1, double y1, double x2, double y2) {
     // returns -1 if the determinant is negative,
     // returns  1 if the determinant is positive,
-    // retunrs  0 if the determinant is null.
+    // returns  0 if the determinant is null.
     int sign;
     double swap;
     double k;

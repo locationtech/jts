@@ -172,7 +172,7 @@ public class QuadEdgeSubdivision {
 	}
 
 	/**
-	 * Gets the collection of base {@link Quadedge}s (one for every pair of
+	 * Gets the collection of base {@link QuadEdge}s (one for every pair of
 	 * vertices which is connected).
 	 * 
 	 * @return a collection of QuadEdges

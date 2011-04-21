@@ -63,7 +63,7 @@ public class GeometryLocation
   /**
    * Constructs a GeometryLocation specifying a point on a geometry, as well as the 
    * segment that the point is on 
-   * (or {@link INSIDE_AREA} if the point is not on a segment).
+   * (or {@link #INSIDE_AREA} if the point is not on a segment).
    * 
    * @param component the component of the geometry containing the point
    * @param segIndex the segment index of the location, or INSIDE_AREA

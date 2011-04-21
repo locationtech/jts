@@ -32,6 +32,8 @@
  */
 package com.vividsolutions.jts.algorithm;
 
+import com.vividsolutions.jts.geom.*;
+
 /**
  * An interface for rules which determine whether node points
  * which are in boundaries of {@link Lineal} geometry components

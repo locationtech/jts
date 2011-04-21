@@ -256,7 +256,7 @@ public class WKBWriter
    * the given dimension (2 or 3) for output coordinates
    * and byte order
    * If the input geometry has a small coordinate dimension,
-   * coordinates will be padded with {@link NULL_ORDINATE}.
+   * coordinates will be padded with {@link Coordinate#NULL_ORDINATE}.
    *
    * @param outputDimension the coordinate dimension to output (2 or 3)
    * @param byteOrder the byte ordering to use
@@ -271,7 +271,7 @@ public class WKBWriter
    * and byte order. This constructor also takes a flag to 
    * control whether srid information will be written.
    * If the input geometry has a small coordinate dimension,
-   * coordinates will be padded with {@link NULL_ORDINATE}.
+   * coordinates will be padded with {@link Coordinate#NULL_ORDINATE}.
    *
    * @param outputDimension the coordinate dimension to output (2 or 3)
    * @param byteOrder the byte ordering to use

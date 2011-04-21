@@ -167,6 +167,7 @@ public class RayCrossingCounter
 				xIntSign = -xIntSign;
 			// xsave = xInt;
 
+      //System.out.println("xIntSign(" + x1 + ", " + y1 + ", " + x2 + ", " + y2 + " = " + xIntSign);
 			// The segment crosses the ray if the sign is strictly positive.
 			if (xIntSign > 0.0) {
 				crossingCount++;

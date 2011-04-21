@@ -68,7 +68,7 @@ import java.util.ArrayList;
  * If changing the structure is required, use a {@link GeometryTransformer}.
  * <p>
  * This class supports the case where an edited Geometry needs to
- * be created under a new GeometryFactory, via the {@link GeometryEditor(GeometryFactory)}
+ * be created under a new GeometryFactory, via the {@link #GeometryEditor(GeometryFactory)}
  * constructor.  
  * Examples of situations where this is required is if the geometry is 
  * transformed to a new SRID and/or a new PrecisionModel.

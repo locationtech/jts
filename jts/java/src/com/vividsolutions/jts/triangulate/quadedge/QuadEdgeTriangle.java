@@ -45,7 +45,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
- * Models a triangle formed from {@link Quadedge}s in a {@link QuadEdgeSubdivision}
+ * Models a triangle formed from {@link QuadEdge}s in a {@link QuadEdgeSubdivision}
  * which forms a triangulation. The class provides methods to access the
  * topological and geometric properties of the triangle and its neighbours in
  * the triangulation. Triangle vertices are ordered in CCW orientation in the
