@@ -64,7 +64,7 @@ public class Matrix
    * In order to avoid overhead the algorithm runs in-place
    * on A - if A should not be modified the client must supply a copy.
    * 
-   * @param A an nxn matrix in row/column order )modified by this method)
+   * @param a an nxn matrix in row/column order )modified by this method)
    * @param b a vector of length n
    * 
    * @return a vector containing the solution (if any)

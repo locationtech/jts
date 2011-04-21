@@ -19,7 +19,7 @@ import com.vividsolutions.jts.geom.*;
  * A typically usage would be a transformation class that transforms <tt>Polygons</tt> into
  * <tt>Polygons</tt>, <tt>LineStrings</tt> or <tt>Points</tt>, depending on the geometry of the input
  * (For instance, a simplification operation).  
- * This class would likely need to override the {@link transformMultiPolygon}
+ * This class would likely need to override the {@link #transformMultiPolygon(MultiPolygon, Geometry)transformMultiPolygon}
  * method to ensure that if input Polygons change type the result is a <tt>GeometryCollection</tt>,
  * not a <tt>MultiPolygon</tt>.
  * <p>
@@ -33,7 +33,7 @@ import com.vividsolutions.jts.geom.*;
  * geometry - if they cannot do this they should return <code>null</code>
  * (for instance, it may not be possible for a transformLineString implementation
  * to return at least two points - in this case, it should return <code>null</code>).
- * The {@link transform} method itself will always
+ * The {@link #transform(Geometry)transform} method itself will always
  * return a non-null Geometry object (but this may be empty).
  *
  * @version 1.7
