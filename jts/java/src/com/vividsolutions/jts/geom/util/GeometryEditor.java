@@ -46,7 +46,7 @@ import java.util.ArrayList;
  * Geometry objects are intended to be treated as immutable.
  * This class "modifies" Geometrys
  * by traversing them, applying a user-defined
- * {@link GeometryEditOperation} or {@link CoordinateOperation}  
+ * {@link GeometryEditorOperation} or {@link CoordinateOperation}  
  * and creating new Geometrys with the same structure but
  * (possibly) modified components.
  * <p>
@@ -75,7 +75,7 @@ import java.util.ArrayList;
  * <p>
  * The resulting Geometry is not checked for validity.
  * If validity needs to be enforced, the new Geometry's 
- * {@link #isValid} method should be called.
+ * {@link Geometry#isValid} method should be called.
  *
  * @see GeometryTransformer
  * @see Geometry#isValid

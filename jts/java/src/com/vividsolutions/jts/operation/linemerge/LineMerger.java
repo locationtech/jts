@@ -87,7 +87,7 @@ public class LineMerger
    * Any dimension of Geometry may be added; the constituent linework will be
    * extracted.
    * 
-   * @param a geometry to be line-merged
+   * @param geometry geometry to be line-merged
    */  
   public void add(Geometry geometry) {
     geometry.apply(new GeometryComponentFilter() {

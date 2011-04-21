@@ -101,7 +101,7 @@ public class FileUtil
     /**
      * Gets the contents of a text file as a single String
      * @param file
-     * @return
+     * @return text file contents
      * @throws IOException
      */
  public static String readText(File file) 

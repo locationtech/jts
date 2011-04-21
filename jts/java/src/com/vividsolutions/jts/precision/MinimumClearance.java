@@ -33,7 +33,7 @@
 package com.vividsolutions.jts.precision;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
@@ -78,7 +78,7 @@ import com.vividsolutions.jts.operation.distance.FacetSequenceTreeBuilder;
  * <p>
  * If G has only a single vertex (i.e. is a
  * {@link Point}), the value of the minimum clearance 
- * is {@link Double.MAX_VALUE}.
+ * is {@link Double#MAX_VALUE}.
  * <p>
  * If G is a {@link Puntal} or {@link Lineal} geometry, 
  * then in fact no amount of perturbation

@@ -67,7 +67,7 @@ public class GeometryLocation
    * 
    * @param component the component of the geometry containing the point
    * @param segIndex the segment index of the location, or INSIDE_AREA
-   * @param the coordinate of the location
+   * @param pt the coordinate of the location
    */
   public GeometryLocation(Geometry component, int segIndex, Coordinate pt)
   {
@@ -80,7 +80,7 @@ public class GeometryLocation
    * Constructs a GeometryLocation specifying a point inside an area geometry.
    * 
    * @param component the component of the geometry containing the point
-   * @param the coordinate of the location
+   * @param pt the coordinate of the location
    */  
   public GeometryLocation(Geometry component,Coordinate pt)
   {
@@ -94,7 +94,7 @@ public class GeometryLocation
   
   /**
    * Returns the segment index for this location. If the location is inside an
-   * area, the index will have the value {@link INSIDE_AREA};
+   * area, the index will have the value {@link #INSIDE_AREA};
    *
    * @return the segment index for the location, or INSIDE_AREA
    */

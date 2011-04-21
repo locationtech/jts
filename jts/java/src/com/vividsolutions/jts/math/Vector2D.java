@@ -208,10 +208,7 @@ public class Vector2D {
 	/**
 	 * Computes the dot-product of two vectors
 	 * 
-	 * @param v1
-	 *          a vector
-	 * @param v2
-	 *          a vector
+	 * @param v a vector
 	 * @return the dot product of the vectors
 	 */
 	public double dot(Vector2D v) {
@@ -259,8 +256,6 @@ public class Vector2D {
 	 * the vector and the absolute values of the ordinates do not change, only
 	 * their sign and ordinate index.
 	 * 
-	 * @param v
-	 *          the vector to rotate.
 	 * @param numQuarters
 	 *          the number of quarter-circles to rotate by
 	 * @return the rotated vector.

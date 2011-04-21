@@ -181,7 +181,7 @@ public class DistanceOp
   
   /**
    * 
-   * @return
+   * @return a pair of {@link Coordinate}s of the nearest points
    * @deprecated renamed to nearestPoints
    */
   public Coordinate[] closestPoints()
@@ -203,7 +203,7 @@ public class DistanceOp
 
   /**
    * 
-   * @return
+   * @return a pair of {@link GeometryLocation}s for the nearest points
    * @deprecated renamed to nearestLocations
    */
   public GeometryLocation[] closestLocations()

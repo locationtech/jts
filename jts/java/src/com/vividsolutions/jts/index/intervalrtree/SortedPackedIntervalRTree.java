@@ -70,7 +70,7 @@ public class SortedPackedIntervalRTree
    * @param max the upper bound of the item interval
    * @param item the item to insert
    * 
-   * @throw IllegalStateException if the index has already been queried
+   * @throws IllegalStateException if the index has already been queried
    */
 	public void insert(double min, double max, Object item)
 	{

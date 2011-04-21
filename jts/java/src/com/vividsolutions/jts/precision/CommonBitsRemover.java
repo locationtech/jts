@@ -93,7 +93,6 @@ public class CommonBitsRemover
    * The coordinates of the Geometry are changed.
    *
    * @param geom the Geometry to which to add the common coordinate bits
-   * @return the shifted Geometry
    */
   public void addCommonBits(Geometry geom)
   {
