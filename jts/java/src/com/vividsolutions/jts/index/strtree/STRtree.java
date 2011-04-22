@@ -245,60 +245,65 @@ public class STRtree extends AbstractSTRtree implements SpatialIndex {
   }
 
   /**
-   * Finds the nearest items in the tree, 
+   * Finds the two nearest items in the tree, 
    * using {@link ItemDistance} as the distance metric.
-   * Uses a Branch-and-Bound tree traversal for
-   * efficient search
+   * A Branch-and-Bound tree traversal algorithm is used
+   * to provide an efficient search.
    * 
-   * @param itemDist the distance metric class
+   * @param itemDist a distance metric applicable to the items in this tree
    * @return the pair of the nearest items
    */
-  public Object[] nearestNeighbours(ItemDistance itemDist)
+  public Object[] nearestNeighbour(ItemDistance itemDist)
   {
     BoundablePair bp = new BoundablePair(this.getRoot(), this.getRoot(), itemDist);
-    return nearestNeighbours(bp);
+    return nearestNeighbour(bp);
   }
   
   /**
-   * Finds the nearest item to the given object, 
+   * Finds the nearest item to the given object
+   * in this tree, 
    * using {@link ItemDistance} as the distance metric.
-   * Uses a Branch-and-Bound tree traversal for
-   * efficient search
+   * A Branch-and-Bound tree traversal algorithm is used
+   * to provide an efficient search.
    * 
-   * @param env the envelope of the query object
-   * @param item the item to query
-   * @param itemDist the distance metric class
-   * @return the pair of the nearest items
+   * @param env the envelope of the query item
+   * @param item the item to find the nearest neighbour of
+   * @param itemDist a distance metric applicable to the items in this tree and the query item
+   * @return the nearest item in this tree
    */
-  public Object[] nearestNeighbours(Envelope env, Object item, ItemDistance itemDist)
+  public Object nearestNeighbour(Envelope env, Object item, ItemDistance itemDist)
   {
     Boundable bnd = new ItemBoundable(env, item);
     BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
-    return nearestNeighbours(bp);
+    return nearestNeighbour(bp)[0];
   }
   
   /**
-   * Finds the nearest items between the two trees,
+   * Finds the two nearest items from this tree 
+   * and another tree,
    * using {@link ItemDistance} as the distance metric.
-   * Uses a Branch-and-Bound tree traversal for
-   * efficient search
+   * A Branch-and-Bound tree traversal algorithm is used
+   * to provide an efficient search.
+   * The result value is a pair of items, 
+   * the first from this tree and the second
+   * from the argument tree.
    * 
    * @param tree another tree
-   * @param itemDist the distance metric class
-   * @return the pair of the nearest items
+   * @param itemDist a distance metric applicable to the items in the trees
+   * @return the pair of the nearest items, one from each tree
    */
-  public Object[] nearestNeighbours(STRtree tree, ItemDistance itemDist)
+  public Object[] nearestNeighbour(STRtree tree, ItemDistance itemDist)
   {
     BoundablePair bp = new BoundablePair(this.getRoot(), tree.getRoot(), itemDist);
-    return nearestNeighbours(bp);
+    return nearestNeighbour(bp);
   }
   
-  private Object[] nearestNeighbours(BoundablePair initBndPair) 
+  private Object[] nearestNeighbour(BoundablePair initBndPair) 
   {
-    return nearestNeighbours(initBndPair, Double.POSITIVE_INFINITY);
+    return nearestNeighbour(initBndPair, Double.POSITIVE_INFINITY);
   }
   
-  private Object[] nearestNeighbours(BoundablePair initBndPair, double maxDistance) 
+  private Object[] nearestNeighbour(BoundablePair initBndPair, double maxDistance) 
   {
     double distanceLowerBound = maxDistance;
     BoundablePair minPair = null;

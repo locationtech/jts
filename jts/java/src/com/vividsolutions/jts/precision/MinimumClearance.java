@@ -98,7 +98,7 @@ import com.vividsolutions.jts.operation.distance.FacetSequenceTreeBuilder;
  * {@link #getDistance()} and {@link #getLine()}.
  * <p>
  * The computation of Minimum Clearance utilizes 
- * the {@link STRtree#nearestNeighbours(ItemDistance)}
+ * the {@link STRtree#nearestNeighbour(ItemDistance)}
  * method to provide good performance even for
  * large inputs.
  * <p>
@@ -217,7 +217,7 @@ public class MinimumClearance
     
     STRtree geomTree = FacetSequenceTreeBuilder.build(inputGeom);
     
-    Object[] nearest = geomTree.nearestNeighbours(new MinClearanceDistance());
+    Object[] nearest = geomTree.nearestNeighbour(new MinClearanceDistance());
     MinClearanceDistance mcd = new MinClearanceDistance();
     minClearance = mcd.distance(
         (FacetSequence) nearest[0],
