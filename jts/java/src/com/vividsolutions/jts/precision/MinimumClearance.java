@@ -113,7 +113,7 @@ import com.vividsolutions.jts.operation.distance.FacetSequenceTreeBuilder;
  * using finite precision arithmetic</i>.
  * in Artificial Intelligence, 377-401. 1988
  * <li>[TV06] Thompson, Rod and van Oosterom, Peter,
- * <i>Interchange of Spatial Data – Inhibiting Factors</i>,
+ * <i>Interchange of Spatial Data-Inhibiting Factors</i>,
  * Agile 2006, Visegrad, Hungary. 2006
  * </ul>
  * 
