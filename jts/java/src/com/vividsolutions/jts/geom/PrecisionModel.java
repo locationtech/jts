@@ -248,7 +248,7 @@ public class PrecisionModel implements Serializable, Comparable
     } else if (modelType == FLOATING_SINGLE) {
       maxSigDigits = 6;
     } else if (modelType == FIXED) {
-      maxSigDigits = (int) Math.ceil(Math.log(getScale()) / Math.log(10));
+      maxSigDigits = 1 + (int) Math.ceil(Math.log(getScale()) / Math.log(10));
     }
     return maxSigDigits;
   }
