@@ -66,6 +66,7 @@ public class PrecisionModelTest extends TestCase
    assertEquals(16, new PrecisionModel(PrecisionModel.FLOATING).getMaximumSignificantDigits());
    assertEquals(6, new PrecisionModel(PrecisionModel.FLOATING_SINGLE).getMaximumSignificantDigits());
    assertEquals(1, new PrecisionModel(PrecisionModel.FIXED).getMaximumSignificantDigits());
+   assertEquals(4, new PrecisionModel(1000).getMaximumSignificantDigits());
   }
 
   public void testMakePrecise()

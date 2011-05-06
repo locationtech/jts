@@ -130,8 +130,9 @@ public class WKTWriter
     // specify decimal separator explicitly to avoid problems in other locales
     DecimalFormatSymbols symbols = new DecimalFormatSymbols();
     symbols.setDecimalSeparator('.');
-    return new DecimalFormat("0" + (decimalPlaces > 0 ? "." : "")
-                 +  stringOfChar('#', decimalPlaces), symbols);
+    String fmtString = "0" + (decimalPlaces > 0 ? "." : "")
+                 +  stringOfChar('#', decimalPlaces);
+    return new DecimalFormat(fmtString, symbols);
   }
 
   /**

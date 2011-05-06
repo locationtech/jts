@@ -126,7 +126,7 @@
           description="Generates the JavaDoc files">
     <javadoc packagenames="com.vividsolutions.jts.*"
     		WindowTitle="${javadoc.title}"
-    		Header="<b>${javadoc.title}</b>"
+    		Header="${javadoc.title}"
              destdir="${pre-zip.javadoc}">
       <sourcepath location="${pre-zip.src}"/>
       <classpath>
