@@ -237,7 +237,21 @@ public class PrecisionModel implements Serializable, Comparable
   /**
    * Returns the maximum number of significant digits provided by this
    * precision model.
-   * Intended for use by routines which need to print out precise values.
+   * Intended for use by routines which need to print out 
+   * decimal representations of precise values (such as {@link WKTWriter}).
+   * <p>
+   * This method would be more correctly called
+   * <tt>getMinimumDecimalPlaces</tt>, 
+   * since it actually computes the number of decimal places
+   * that is required to correctly display the full
+   * precision of an ordinate value.
+   * <p>
+   * Also, since it is difficult to compute the required number of
+   * decimal places for scale factors which are not powers of 10,
+   * the algorithm uses a very rough approximation in this case.
+   * This has the side effect that for scale factors which are
+   * powers of 10 the value returned is 1 greater than the true value.
+   * 
    *
    * @return the maximum number of decimal places provided by this precision model
    */
