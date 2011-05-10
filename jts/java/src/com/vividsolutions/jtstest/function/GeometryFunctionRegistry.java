@@ -71,6 +71,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(JTSFunctions.class);
     funcRegistry.add(OffsetCurveFunctions.class);
     funcRegistry.add(OverlayFunctions.class);
+    funcRegistry.add(OverlayNoSnapFunctions.class);
     //funcRegistry.add(OverlayEnhancedPrecisionFunctions.class);
     //funcRegistry.add(OverlayCommonBitsRemovedFunctions.class);
     funcRegistry.add(SnappingFunctions.class);
