@@ -94,6 +94,7 @@ in <tt>com.vividsolutions.jts.operation.buffer</tt> package
 <li>Fixed <tt>GeometrySnapper</tt> to allow final vertices of LineStrings to snap correctly
 <li>Fixed buffer (<tt>OffsetCurveSetBuilder</tt>) to handle "flat" rings correctly
 <li>Fixed <tt>IsValidOp</tt> to handle reporting "Not Closed" errors on empty rings correctly
+<li>Fixed <tt>ConvexHull</tt> to handle large geometries with fewer than 3 unique points
 <li>Fixed <tt>GeometryGraph</tt> to ignore empty hole rings when building graph
 <li>Fixed <tt>LineMerger</tt> to skip lines with only a single unique coordinate
 <li>Fixed <tt>ByteArrayInStream</tt> to pad byte buffers with zeroes

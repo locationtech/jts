@@ -76,7 +76,7 @@ public class ConvexHullTest extends TestCase {
     pts[99] = new Coordinate(1,1);
     ConvexHull ch = new ConvexHull(pts, geometryFactory);
     Geometry actualGeometry = ch.getConvexHull();
-    Geometry expectedGeometry = reader.read("POLYGON ((0 0, 5 1, 10 0, 0 0))");
+    Geometry expectedGeometry = reader.read("LINESTRING (0 0, 1 1)");
     assertEquals(expectedGeometry.toString(), actualGeometry.toString());
   }
 

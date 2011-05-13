@@ -131,7 +131,6 @@ public class ConvexHull
     return coordinates;
   }
 
-
   /**
    * Uses a heuristic to reduce the number of points scanned
    * to compute the hull.
@@ -144,9 +143,12 @@ public class ConvexHull
    * <p>
    * Note that even if the method used to determine the polygon vertices
    * is not 100% robust, this does not affect the robustness of the convex hull.
+   * <p>
+   * To satisfy the requirements of the Graham Scan algorithm, 
+   * the returned array has at least 3 entries.
    *
-   * @param pts
-   * @return
+   * @param pts the points to reduce
+   * @return the reduced list of points (at least 3)
    */
   private Coordinate[] reduce(Coordinate[] inputPts)
   {
@@ -178,9 +180,26 @@ public class ConvexHull
       }
     }
     Coordinate[] reducedPts = CoordinateArrays.toCoordinateArray(reducedSet);
+    
+    // ensure that computed array has at least 3 points (not necessarily unique)  
+    if (reducedPts.length < 3)
+      return padArray3(reducedPts); 
     return reducedPts;
   }
 
+  private Coordinate[] padArray3(Coordinate[] pts)
+  {
+    Coordinate[] pad = new Coordinate[3];
+    for (int i = 0; i < pad.length; i++) {
+      if (i < pts.length) {
+        pad[i] = pts[i];
+      }
+      else
+        pad[i] = pts[0];
+    }
+    return pad;
+  }
+    
   private Coordinate[] preSort(Coordinate[] pts) {
     Coordinate t;
 
@@ -202,6 +221,12 @@ public class ConvexHull
     return pts;
   }
 
+  /**
+   * Uses the Graham Scan algorithm to compute the convex hull vertices.
+   * 
+   * @param c a list of points, with at least 3 entries
+   * @return a Stack containing the ordered points of the convex hull ring
+   */
   private Stack grahamScan(Coordinate[] c) {
     Coordinate p;
     Stack ps = new Stack();
