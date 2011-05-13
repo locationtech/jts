@@ -147,7 +147,7 @@ public class LineStringImplTest extends TestCase {
 
     LinearRing r = geometryFactory.createLinearRing((CoordinateSequence)null);
     assertTrue(r.isEmpty());
-    assertTrue(! r.isClosed());
+    assertTrue(r.isClosed());
 
     MultiLineString m = geometryFactory.createMultiLineString(
           new LineString[] {l, r});
