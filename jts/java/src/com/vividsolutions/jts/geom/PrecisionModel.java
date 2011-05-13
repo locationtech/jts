@@ -246,7 +246,7 @@ public class PrecisionModel implements Serializable, Comparable
    * that is required to correctly display the full
    * precision of an ordinate value.
    * <p>
-   * Also, since it is difficult to compute the required number of
+   * Since it is difficult to compute the required number of
    * decimal places for scale factors which are not powers of 10,
    * the algorithm uses a very rough approximation in this case.
    * This has the side effect that for scale factors which are
