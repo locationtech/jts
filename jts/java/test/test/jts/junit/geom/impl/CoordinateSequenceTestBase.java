@@ -61,7 +61,6 @@ public class CoordinateSequenceTestBase
       Coordinate p = seq.getCoordinate(i);
       assertTrue(Double.isNaN(p.z));
     }
-   
   }
 
   public void testCreateByInit()
@@ -101,19 +100,38 @@ public class CoordinateSequenceTestBase
     return true;
   }
 
+  /**
+   * Tests for equality using all supported accessors,
+   * to provides test coverage for them.
+   * 
+   * @param seq
+   * @param coords
+   * @return
+   */
   boolean isEqual(CoordinateSequence seq, Coordinate[] coords)
   {
     if (seq.size() != coords.length) return false;
 
+    Coordinate p = new Coordinate();
+    
     for (int i = 0; i < seq.size(); i++) {
       if (! coords[i].equals(seq.getCoordinate(i)))  return false;
 
+      // Ordinate named getters
       if (coords[i].x != seq.getX(i))  return false;
       if (coords[i].y != seq.getY(i))  return false;
 
+      // Ordinate indexed getters
       if (coords[i].x != seq.getOrdinate(i, CoordinateSequence.X))  return false;
       if (coords[i].y != seq.getOrdinate(i, CoordinateSequence.Y))  return false;
       if (coords[i].z != seq.getOrdinate(i, CoordinateSequence.Z))  return false;
+      
+      // Coordinate getter
+      seq.getCoordinate(i, p);
+      if (coords[i].x != p.x) return false;
+      if (coords[i].y != p.y)  return false;
+      if (coords[i].z != p.z)  return false;
+      
     }
     return true;
   }

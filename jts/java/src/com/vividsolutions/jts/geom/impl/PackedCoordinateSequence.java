@@ -93,6 +93,7 @@ public abstract class PackedCoordinateSequence
   public void getCoordinate(int i, Coordinate coord) {
     coord.x = getOrdinate(i, 0);
     coord.y = getOrdinate(i, 1);
+    if (dimension > 2) coord.z = getOrdinate(i, 2);
   }
 
   /**

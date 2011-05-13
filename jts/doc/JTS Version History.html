@@ -85,6 +85,7 @@ in <tt>com.vividsolutions.jts.operation.buffer</tt> package
 
 <h3>Bug Fixes</h3>
 <ul>
+<li>Fixed <tt>CoordinateArraySequence</tt> and <tt>PackedCoordinateSequence</tt> to correctly handle Z ordinate in <tt>getCoordinate(int, Coordinate)</tt>
 <li>Fixed <tt>LinearRing</tt> to have <tt>isClosed()</tt> return <tt>true</tt> for empty rings
 <li>Fixed <tt>Geometry.union()</tt> to use more robust union algorithm.
     This provides behaviour consistent with <tt>union(Geometry)</tt>.

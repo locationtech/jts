@@ -126,6 +126,7 @@ public class CoordinateArraySequence
   public void getCoordinate(int index, Coordinate coord) {
     coord.x = coordinates[index].x;
     coord.y = coordinates[index].y;
+    coord.z = coordinates[index].z;
   }
 
   /**
