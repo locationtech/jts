@@ -40,6 +40,13 @@ public class OverlayFunctions {
 	public static Geometry symDifference(Geometry a, Geometry b)	{		return a.symDifference(b);	}
 	public static Geometry difference(Geometry a, Geometry b)			{		return a.difference(b);	}
 	public static Geometry differenceBA(Geometry a, Geometry b)		{		return b.difference(a);	}
-	public static Geometry unaryUnion(Geometry a)									{		return a.union();	}
+  public static Geometry unaryUnion(Geometry a)                 {   return a.union(); }
+  
+  public static Geometry unionGC(Geometry a, Geometry b)                 
+  {   
+    Geometry gc = a.getFactory().createGeometryCollection(
+        new Geometry[] { a, b});
+    return gc.union(); 
+  }
 
 }
