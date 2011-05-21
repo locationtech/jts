@@ -41,6 +41,7 @@ import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jts.operation.*;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.distance.DistanceOp;
+import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.overlay.OverlayOp;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import com.vividsolutions.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
@@ -62,9 +63,9 @@ import com.vividsolutions.jts.util.Assert;
  *  predicates (other than <code>convexHull</code>) or the <code>relate</code>
  *  method.
  *
- *  <H3>Set-Theoretic Methods</H3>
+ *  <H3>Overlay Methods</H3>
  *
- *  The spatial analysis methods will
+ *  The overlay methods 
  *  return the most specific class possible to represent the result. If the
  *  result is homogeneous, a <code>Point</code>, <code>LineString</code>, or
  *  <code>Polygon</code> will be returned if the result contains a single
@@ -1272,15 +1273,21 @@ public abstract class Geometry
   /**
    * Computes a <code>Geometry</code> representing the points shared by this
    * <code>Geometry</code> and <code>other</code>.
-   * {@link GeometryCollection}s support intersection with 
-   * homogeneous collection types, with the semantics that
-   * the result is a {@link GeometryCollection} of the
+   * <p>
+   * Intersection of {@link GeometryCollection}s is supported
+   * only for homogeneous collection types.
+   * The result is a {@link GeometryCollection} of the
    * intersection of each element of the target with the argument. 
+   * <p>
+   * The intersection of two geometries of different dimension produces a result
+   * geometry of dimension equal to the minimum dimension of the input
+   * geometries. The result geometry is always a homogeneous
+   * {@link GeometryCollection}.
    *
    * @param  other the <code>Geometry</code> with which to compute the intersection
-   * @return the points common to the two <code>Geometry</code>s
+   * @return the point-set common to the two <code>Geometry</code>s
    * @throws TopologyException if a robustness error occurs
-   * @throws IllegalArgumentException if the argument is a non-empty GeometryCollection
+   * @throws IllegalArgumentException if the argument is a non-empty heterogeneous GeometryCollection
    */
   public Geometry intersection(Geometry other)
   {
@@ -1311,14 +1318,35 @@ public abstract class Geometry
   }
 
   /**
-   *  Computes a <code>Geometry</code> representing all the points in this <code>Geometry</code>
-   *  and <code>other</code>.
-   *
-   *@param  other  the <code>Geometry</code> with which to compute the union
-   *@return        a set combining the points of this <code>Geometry</code> and
-   *      the points of <code>other</code>
-   * @throws TopologyException if a robustness error occurs
-   * @throws IllegalArgumentException if either input is a non-empty GeometryCollection
+   * Computes a <tt>Geometry</tt> representing all the points in this
+   * <tt>Geometry</tt> and <tt>other</tt>.
+   * <p>
+   * The method may be used on arguments of different dimension, but it does not
+   * support {@link GeometryCollection} arguments.
+   * <p>
+   * The union of two geometries of different dimension produces a result
+   * geometry of dimension equal to the maximum dimension of the input
+   * geometries. The result geometry may be a heterogenous
+   * {@link GeometryCollection}.
+   * <p>
+   * Unioning {@link LineString}s has the effect of
+   * <b>noding</b> and <b>dissolving</b> the input linework. In this context
+   * "noding" means that there will be a node or endpoint in the result for
+   * every endpoint or line segment crossing in the input. "Dissolving" means
+   * that any duplicate (i.e. coincident) line segments or portions of line
+   * segments will be reduced to a single line segment in the result. 
+   * If <b>merged</b> linework is required, the {@link LineMerger}
+   * class can be used.
+   * 
+   * @param other
+   *          the <code>Geometry</code> with which to compute the union
+   * @return a point-set combining the points of this <code>Geometry</code> and the
+   *         points of <code>other</code>
+   * @throws TopologyException
+   *           if a robustness error occurs
+   * @throws IllegalArgumentException
+   *           if either input is a non-empty GeometryCollection
+   * @see LineMerger
    */
   public Geometry union(Geometry other)
   {

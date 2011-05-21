@@ -52,18 +52,18 @@ import com.vividsolutions.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
  * merging the areas (i.e. the same effect as 
  * iteratively unioning all individual polygons together).
  * 
- * <li>Unioning a set of {@link LineString}s has the effect of <b>fully noding</b> 
+ * <li>Unioning a set of {@link LineString}s has the effect of <b>noding</b> 
  * and <b>dissolving</b> the input linework.
- * In this context "fully noded" means that there will be a node or endpoint in the output 
+ * In this context "fully noded" means that there will be a node or endpoint in the result 
  * for every endpoint or line segment crossing in the input.
- * "Dissolved" means that any duplicate (e.g. coincident) line segments or portions
- * of line segments will be reduced to a single line segment in the output.  
+ * "Dissolved" means that any duplicate (i.e. coincident) line segments or portions
+ * of line segments will be reduced to a single line segment in the result.  
  * This is consistent with the semantics of the 
  * {@link Geometry#union(Geometry)} operation.
  * If <b>merged</b> linework is required, the {@link LineMerger} class can be used.
  * 
  * <li>Unioning a set of {@link Points}s has the effect of merging
- * al identical points (producing a set with no duplicates).
+ * all identical points (producing a set with no duplicates).
  * </ul>
  * 
  * <tt>UnaryUnion</tt> always operates on the individual components of MultiGeometries.
