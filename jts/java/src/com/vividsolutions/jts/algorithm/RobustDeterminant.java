@@ -66,6 +66,17 @@ public class RobustDeterminant {
   //public static int callCount = 0; // debugging only
 
   /*
+  // test point to allow injecting test code
+  public static int signOfDet2x2(double x1, double y1, double x2, double y2) 
+  {
+    int d1 = originalSignOfDet2x2(x1, y1, x2, y2); 
+    int d2 = -originalSignOfDet2x2(y1, x1, x2, y2); 
+    assert d1 == -d2;
+    return d1;
+  }
+   */
+  
+  /*
   public static int signOfDet2x2(double x1, double y1, double x2, double y2) 
   {
     if (x1 > x2) {
@@ -81,7 +92,7 @@ public class RobustDeterminant {
     }
     return originalSignOfDet2x2(x1, y1, x2, y2);
   }
-    */
+  //  */
   
   /**
    * Computes the sign of the determinant of the 2x2 matrix
