@@ -85,7 +85,8 @@ in <tt>com.vividsolutions.jts.operation.buffer</tt> package
 
 <h3>Bug Fixes</h3>
 <ul>
-<li>Fixed <tt>CoordinateArraySequence</tt> and <tt>PackedCoordinateSequence</tt> to correctly handle Z ordinate in <tt>getCoordinate(int, Coordinate)</tt>
+<li>Fixed <tt>CoordinateArraySequence</tt> and <tt>PackedCoordinateSequence</tt>
+to correctly handle Z ordinate in <tt>getCoordinate(int, Coordinate)</tt>
 <li>Fixed <tt>LinearRing</tt> to have <tt>isClosed()</tt> return <tt>true</tt> for empty rings
 <li>Fixed <tt>Geometry.union()</tt> to use more robust union algorithm.
     This provides behaviour consistent with <tt>union(Geometry)</tt>.
@@ -94,6 +95,8 @@ in <tt>com.vividsolutions.jts.operation.buffer</tt> package
 <li>Fixed <tt>GeometrySnapper</tt> to allow final vertices of LineStrings to snap correctly
 <li>Fixed buffer (<tt>OffsetCurveSetBuilder</tt>) to handle "flat" rings correctly
 <li>Fixed <tt>IsValidOp</tt> to handle reporting "Not Closed" errors on empty rings correctly
+<li>Fixed <tt>NestedRingTester</tt> (used by <tt>IsValidOp</tt>)
+to correctly handle the case where a hole touches all the vertices of another hole (which is invalid)
 <li>Fixed <tt>ConvexHull</tt> to handle large geometries with fewer than 3 unique points
 <li>Fixed <tt>GeometryGraph</tt> to ignore empty hole rings when building graph
 <li>Fixed <tt>LineMerger</tt> to skip lines with only a single unique coordinate
