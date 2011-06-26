@@ -137,7 +137,10 @@ POLYGON EMPTY
     
     Lowering the precision slightly works.
     
-http://sourceforge.net/mailarchive/forum.php?thread_name=4DD83610.70607%40telus.net&forum_name=jts-topo-suite-user    
+    Possibly due to ordering issues in RobustDeterminant?
+    Or due to robustness issue with ordering points along line segments?
+    
+http://sourceforge.net/mailarchive/forum.php?thread_name=4DD83610.70607%40telus.net&amp;forum_name=jts-topo-suite-user    
   </desc>
 <a>
 
@@ -149,18 +152,21 @@ POLYGON ((-76.23310243744803 -100.58620689655172, 70 -7, -100 -90, -76.233102437
 	<op name="union" arg1="A" arg2="B">
 POLYGON ((-100 -90, -76.23310243744803 -100.58620689655172, 100 -30, 30 90, -59.62241169305726 -70.28623629719854, -100 -90))
 	</op>
-	<op name="union" arg1="B" arg2="A">
-POLYGON ((-100 -90, -76.23310243744803 -100.58620689655172, 100 -30, 30 90, -59.62241169305726 -70.28623629719854, -100 -90))
-	</op>
 </test>
 </case>
 
 <case>
   <desc>A.intersection(B) fails, since it computes a result equal to A
    
-   This is a  case which exhibits a (luckily VERY rare) issue with the RobustDeterminant code in JTS.  This code is sensitive to the order of the input coordinates, in some cases.  Due to the way JTS computes topology, this can cause an inconsistency in the evaluation of how two polygons intersect. 
+   This is a  case which exhibits a (luckily VERY rare) issue 
+   with the RobustDeterminant code in JTS.  
+   This code is sensitive to the order of the input coordinates, in some cases.  
+   Due to the way JTS computes topology, 
+   this can cause an inconsistency in the evaluation of how two polygons intersect. 
    
-   As a demonstration of this, notice that if the triangle in the example is reversed, the intersection computation produces a more reasonable result:
+   As a demonstration of this, 
+   notice that if the triangle in the example is reversed, 
+   the intersection computation produces a more reasonable result:
    
    polyA = POLYGON ((0 0, 40 0, 40 10.883854, 15.552673 10.883854, 15.552673 20.540905, 0 20.540905, 0 0))
    
@@ -168,16 +174,20 @@ POLYGON ((-100 -90, -76.23310243744803 -100.58620689655172, 100 -30, 30 90, -59.
    
    polyA.intersection(tri) = POINT (0 0)
    
-   I have noticed this once before, but wasn't sure of the best way to address this issue.  It may be best to always force a standard ordering of the inputs to the RobustDeterminant calculation, in order to at least be consistent.  Hopefully if this proves out I can address this in a future version of JTS.
+   I have noticed this once before, 
+   but wasn't sure of the best way to address this issue.  
+   It may be best to always force a standard ordering of the inputs to 
+   the RobustDeterminant calculation, in order to at least be consistent.  
+   Hopefully if this proves out I can address this in a future version of JTS.
 
-http://sourceforge.net/mailarchive/forum.php?thread_name=BANLkTi%3D0UrBPmBSg%3Duy4M0ng9Pdptm%2BaYQ%40mail.gmail.com&forum_name=jts-topo-suite-user
+http://sourceforge.net/mailarchive/forum.php?thread_name=BANLkTi%3D0UrBPmBSg%3Duy4M0ng9Pdptm%2BaYQ%40mail.gmail.com&amp;forum_name=jts-topo-suite-user
 </desc>
 <a>
-
 POLYGON ((0 0, 40 0, 40 10.883854, 15.552673 10.883854, 15.552673 20.540905, 0 20.540905, 0 0))
 </a>
 <b>
-POLYGON ((-20.43142161511487 -186.3790522565901, 279.56857838488514 -186.3790522565901, -20.43142161511487 13.620947743409914, -20.43142161511487 -186.3790522565901))</b>
+POLYGON ((-20.43142161511487 -186.3790522565901, 279.56857838488514 -186.3790522565901, -20.43142161511487 13.620947743409914, -20.43142161511487 -186.3790522565901))
+</b>
 <test>
 <op name="intersection" arg1="A" arg2="B">
 GEOMETRYCOLLECTION EMPTY	
