@@ -42,7 +42,7 @@ public class OverlayFunctions {
 	public static Geometry differenceBA(Geometry a, Geometry b)		{		return b.difference(a);	}
   public static Geometry unaryUnion(Geometry a)                 {   return a.union(); }
   
-  public static Geometry unionGC(Geometry a, Geometry b)                 
+  public static Geometry unionUsingGeometryCollection(Geometry a, Geometry b)                 
   {   
     Geometry gc = a.getFactory().createGeometryCollection(
         new Geometry[] { a, b});
