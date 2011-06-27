@@ -33,8 +33,17 @@
 package com.vividsolutions.jts.operation.buffer;
 
 /**
- * Contains the parameters which 
- * describe how a buffer should be constructed.
+ * A value class containing the parameters which 
+ * specify how a buffer should be constructed.
+ * <p>
+ * The parameters allow control over:
+ * <ul>
+ * <li>Quadrant segments (accuracy of approximation for circular arcs)
+ * <li>End Cap style
+ * <li>Join style
+ * <li>Mitre limit
+ * <li>whether the buffer is single-sided
+ * </ul>
  * 
  * @author Martin Davis
  *
