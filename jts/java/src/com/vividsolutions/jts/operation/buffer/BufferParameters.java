@@ -295,7 +295,7 @@ public class BufferParameters
   /**
    * Sets whether the computed buffer should be single-sided.
    * A single-sided buffer is constructed on only one side of each input line.
-   * <b>
+   * <p>
    * The side used is determined by the sign of the buffer distance:
    * <ul>
    * <li>a positive distance indicates the left-hand side
