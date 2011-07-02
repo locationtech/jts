@@ -260,11 +260,15 @@ public class STRtree extends AbstractSTRtree implements SpatialIndex {
   }
   
   /**
-   * Finds the nearest item to the given object
-   * in this tree, 
+   * Finds the item in this tree which is nearest to the given {@link Object}, 
    * using {@link ItemDistance} as the distance metric.
    * A Branch-and-Bound tree traversal algorithm is used
    * to provide an efficient search.
+   * <p>
+   * The query <tt>object</tt> does <b>not</b> have to be 
+   * contained in the tree, but it does 
+   * have to be compatible with the <tt>itemDist</tt> 
+   * distance metric. 
    * 
    * @param env the envelope of the query item
    * @param item the item to find the nearest neighbour of
