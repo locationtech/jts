@@ -1,5 +1,4 @@
 <run>
-  <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/>
 
 <case>
   <desc>Several points collinear and overlapping</desc>
@@ -168,6 +167,18 @@
   <op name="convexhull" arg1="A">
     POLYGON(
       (50 120, 50 320, 140 320, 210 180, 210 120, 50 120))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>Almost collinear points, which caused robustness failure in JTS 1.12</desc>
+  <a>
+LINESTRING (0 0, -140.8859438214298 140.88594382142983, -57.309236848216706 57.30923684821671, -190.9188309203678 190.91883092036784, -60 300)
+</a>
+<test>
+  <op name="convexhull" arg1="A">
+    POLYGON ((0 0, -190.9188309203678 190.91883092036784, -60 300, 0 0))
   </op>
 </test>
 </case>

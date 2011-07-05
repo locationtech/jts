@@ -235,7 +235,10 @@ public class ConvexHull
     p = (Coordinate) ps.push(c[2]);
     for (int i = 3; i < c.length; i++) {
       p = (Coordinate) ps.pop();
-      while (CGAlgorithms.computeOrientation((Coordinate) ps.peek(), p, c[i]) > 0) {
+      // check for empty stack to guard against robustness problems
+      while (
+          ! ps.empty() && 
+          CGAlgorithms.computeOrientation((Coordinate) ps.peek(), p, c[i]) > 0) {
         p = (Coordinate) ps.pop();
       }
       p = (Coordinate) ps.push(p);
