@@ -38,7 +38,7 @@
   	<property name="jtsio.lib" value="${jtsio.basedir}/lib"/>
   	<property name="jtsio.build.classes" value="${build}/jtsio-classes"/>
   	
-  	<property name="javadoc.title" value="JTS Topology Suite - v ${jts.version}"/>
+  	<property name="javadoc.title" value="JTS Topology Suite version ${jts.version}"/>
   	
    </target>
 
