@@ -136,6 +136,8 @@ public class Node
    */
   public void setLabelBoundary(int argIndex)
   {
+    if (label == null) return;
+
     // determine the current location for the point (if any)
     int loc = Location.NONE;
     if (label != null)
