@@ -57,9 +57,13 @@ public abstract class NodeBase {
 //(for example, Root). [Jon Aquino]
 
 //DEBUG private static int itemCount = 0;  // debugging
+  
   /**
-   * Returns the index of the subquad that wholly contains the given envelope.
+   * Gets the index of the subquad that wholly contains the given envelope.
    * If none does, returns -1.
+   * 
+   * @return the index of the subquad that wholly contains the given envelope
+   * @return -1 if no subquad wholly contains the envelope
    */
   public static int getSubnodeIndex(Envelope env, Coordinate centre)
   {

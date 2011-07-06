@@ -1106,6 +1106,11 @@ public abstract class Geometry
     return equalsExact(g);
   }
   
+  /**
+   * Gets a hash code for the Geometry.
+   * 
+   * @return an integer value suitable for use as a hashcode
+   */
   public int hashCode()
   {
     return getEnvelopeInternal().hashCode();
