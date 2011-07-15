@@ -759,7 +759,7 @@ public class JTSTestBuilderFrame extends JFrame
     jPanel2.add(inputTabbedPane, BorderLayout.CENTER);
     jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
     jSplitPane1.setResizeWeight(0.5);
-    inputTabbedPane.add(testListPanel, "Tests");
+    inputTabbedPane.add(testListPanel, "Cases");
     /*
     // not really needed
     testPanel.add(testListPanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,

@@ -104,7 +104,7 @@ public class TestListPanel extends JPanel {
               name = "";
           }
           int testSkey = 1 + JTSTestBuilderFrame.instance().getModel().getTestCases().indexOf(testCase);
-          String nameFinal = "Test " + testSkey + " - " + testCaseSignatureHTML(testCase);
+          String nameFinal = "# " + testSkey + " - " + testCaseSignatureHTML(testCase);
           if (name != "")
           	nameFinal = nameFinal + " --- " + name;
           return "<html>" + nameFinal + "<html>";
