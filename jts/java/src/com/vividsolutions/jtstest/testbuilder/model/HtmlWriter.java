@@ -58,6 +58,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.test.TestCaseList;
 import com.vividsolutions.jtstest.test.Testable;
+import com.vividsolutions.jtstest.testbuilder.AppStrings;
 import com.vividsolutions.jtstest.testbuilder.BusyDialog;
 import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 import com.vividsolutions.jtstest.testrunner.BooleanResult;
@@ -126,7 +127,7 @@ public class HtmlWriter {
           busyDialog.setDescription("Saving .html and .gif files: " + caseSkey
                + " of " + testCaseList.getList().size() + " tests");
         }
-        createHtmlFile("Run" + runSkey + "Case" + caseSkey + ".html", html(testable, runSkey, caseSkey));
+        createHtmlFile("Run" + runSkey + AppStrings.LABEL_TEST_CASE + caseSkey + ".html", html(testable, runSkey, caseSkey));
       }
     }
   }
@@ -175,7 +176,7 @@ public class HtmlWriter {
     try {
       Geometry actualResult = (Geometry) actualResult(testCaseEdit, geometryOpName,
           first, second);
-      String filenameNoPath = "Run" + runSkey + "Case" + caseSkey + geometryOpName + "Actual";
+      String filenameNoPath = "Run" + runSkey + AppStrings.LABEL_TEST_CASE + caseSkey + geometryOpName + "Actual";
       if (first != null) {
         filenameNoPath += first;
       }
@@ -306,10 +307,10 @@ public class HtmlWriter {
     String html = StringUtil.newLine
          + "<TABLE BORDER=0>" + StringUtil.newLine
          + "  <TR>" + StringUtil.newLine
-         + htmlImageHtmlTextTable("Run" + runSkey + "Case" + caseSkey + ".gif", wktHtml, 0)
+         + htmlImageHtmlTextTable("Run" + runSkey + AppStrings.LABEL_TEST_CASE + caseSkey + ".gif", wktHtml, 0)
          + "  </TR>" + StringUtil.newLine
          + "</TABLE>" + StringUtil.newLine;
-    createGifFile("Run" + runSkey + "Case" + caseSkey + ".gif", testCaseEdit.getGeometry(0),
+    createGifFile("Run" + runSkey + AppStrings.LABEL_TEST_CASE + caseSkey + ".gif", testCaseEdit.getGeometry(0),
         testCaseEdit.getGeometry(1), null, true, IMAGE_WIDTH, IMAGE_HEIGHT, true);
     return html;
   }
@@ -333,11 +334,12 @@ public class HtmlWriter {
     if ((name == null || name.length() == 0) && testable instanceof TestCaseEdit) {
       name = ((TestCaseEdit) testable).getDescription();
     }
+    String testTag = AppStrings.LABEL_TEST_CASE + " ";
     if (name == null || name.length() == 0) {
-      name = "Case " + caseSkey;
+      name = testTag + caseSkey;
     }
     else {
-      name = "Case " + caseSkey + ": " + name;
+      name = testTag + caseSkey + ": " + name;
     }
     return name;
   }

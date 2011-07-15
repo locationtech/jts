@@ -106,7 +106,7 @@ public class TestListPanel extends JPanel {
           int testSkey = 1 + JTSTestBuilderFrame.instance().getModel().getTestCases().indexOf(testCase);
           String nameFinal = "Test " + testSkey + " - " + testCaseSignatureHTML(testCase);
           if (name != "")
-          	nameFinal = nameFinal + " > " + name;
+          	nameFinal = nameFinal + " --- " + name;
           return "<html>" + nameFinal + "<html>";
         }
         
@@ -119,8 +119,10 @@ public class TestListPanel extends JPanel {
         
         private String geometrySignature(Geometry geom)
         {
+          // visual indication of null geometry
         	if (geom == null) 
-        		return "";
+        		return "_"; 
+        	
         	String sig = geom.getGeometryType();
         	if (geom instanceof GeometryCollection) {
         		sig += "[" + geom.getNumGeometries() + "]";

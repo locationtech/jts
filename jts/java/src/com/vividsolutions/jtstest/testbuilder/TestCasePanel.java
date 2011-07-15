@@ -328,7 +328,7 @@ public class TestCasePanel extends JPanel {
   }
 
   private void updateTestCaseIndexLabel() {
-    testCaseIndexLabel.setText("Case " + currentTestCaseIndex + " of " + maxTestCaseIndex);
+    testCaseIndexLabel.setText(AppStrings.LABEL_TEST_CASE + " " + currentTestCaseIndex + " of " + maxTestCaseIndex);
   }
 }
 
