@@ -125,7 +125,7 @@
       <fileset dir="${base.src}\com\vividsolutions\jtstest\testbuilder"
                includes="*.gif,*.png"/>
     </copy>
-    <jar jarfile="${pre-zip.lib}\JTS_Test.jar"
+    <jar jarfile="${pre-zip.jtstest-jar}"
          basedir="${build.classes}"/>
   </target>
 
@@ -184,6 +184,7 @@
   </target>
 
 <!-- =======================  JUnit  ========================= -->
+<!-- NOTE: also depends on JTS distro being built first -->
 
   <target name="junit" depends="props"
           description="Runs the JUnit tests">
