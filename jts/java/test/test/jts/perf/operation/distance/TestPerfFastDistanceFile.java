@@ -5,8 +5,6 @@ import java.util.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.util.Stopwatch;
-import com.vividsolutions.jump.feature.*;
-
 
 public class TestPerfFastDistanceFile 
 {
@@ -53,18 +51,6 @@ public class TestPerfFastDistanceFile
     return fileRdr.read();
   }
 
-  
-  private List extractGeometry(FeatureCollection fc)
-  {
-    List geoms = new ArrayList();
-    for (Iterator i = fc.iterator(); i.hasNext(); ) {
-      Feature f = (Feature) i .next();
-      geoms.add(f.getGeometry());
-    }
-    return geoms;
-  }
-  
-  
   void testAllDistances(List geoms, int maxToScan)
   {
     Stopwatch sw = new Stopwatch();

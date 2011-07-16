@@ -32,6 +32,7 @@
  */
 package test.jts.junit.algorithm;
 
+import test.jts.perf.algorithm.PointInAreaStressTester;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
