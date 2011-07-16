@@ -74,10 +74,16 @@ public class GridRenderer {
   public void paint(Graphics2D g) {
     if (! isEnabled)
       return;
+    try {
     drawAxes(g);
     drawLinedGrid(g);
 //    drawDottedGrid(g);
     drawGridSizeLabel(g, viewport.gridMagnitudeModel());
+    }
+    // guards against crazy data causing problems
+    catch (ArithmeticException ex) {
+      return;
+    }
   }
 
   private boolean isResolvable() {

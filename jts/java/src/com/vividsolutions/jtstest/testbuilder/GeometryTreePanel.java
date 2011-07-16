@@ -103,11 +103,14 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
 
 		tree.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
+			  Geometry geom = getSelectedGeometry();
+			  if (geom == null) return;
+			  
         if (e.getClickCount() == 1) {
-          JTSTestBuilderFrame.getGeometryEditPanel().flash(getSelectedGeometry());
+          JTSTestBuilderFrame.getGeometryEditPanel().flash(geom);
         }
         else if (e.getClickCount() == 2) {
-          JTSTestBuilderFrame.getGeometryEditPanel().zoom(getSelectedGeometry().getEnvelopeInternal());
+          JTSTestBuilderFrame.getGeometryEditPanel().zoom(geom.getEnvelopeInternal());
         }
 			}
 		});
@@ -124,7 +127,9 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
   }
 
   private static Geometry getGeometryFromNode(Object value) {
-      return ((GeometryNode) value).getGeometry();
+    if (value == null) 
+      return null;
+    return ((GeometryNode) value).getGeometry();
   }
 
 	public void populate(Geometry geom) {

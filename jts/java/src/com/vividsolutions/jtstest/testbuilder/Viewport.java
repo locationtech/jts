@@ -175,7 +175,8 @@ public class Viewport implements PointTransformation
     try {
     	getModelToViewTransform().inverseTransform(srcPt, destPt);
     } catch (NoninvertibleTransformException ex) {
-      Assert.shouldNeverReachHere();
+      return new Point2D.Double(0, 0);
+      //Assert.shouldNeverReachHere();
     }
     
     // snap to scale grid
