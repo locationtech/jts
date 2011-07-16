@@ -13,6 +13,7 @@
   <target name="props">
   	<property file="${basedir}/build.properties"/>
   	<property name="base.src" 	value="${basedir}/java/src"/>
+  	<property name="base.test" 	value="${basedir}/java/test"/>
   	<property name="base.lib" 	value="${basedir}/java/lib"/>
   	<property name="base.doc" 	value="${basedir}/doc"/>
   	<property name="base.bin" 	value="${basedir}/bin"/>
@@ -29,7 +30,9 @@
   	<property name="pre-zip.javadoc" value="${pre-zip}/doc/javadoc"/>
   	<property name="pre-zip.testxml" value="${pre-zip}/testxml"/>
   	<property name="pre-zip.jtsio" value="${pre-zip}/jtsio"/>
+  	
    	<property name="pre-zip.jts-jar" value="${pre-zip.lib}\jts-${jts.version}.jar" />
+   	<property name="pre-zip.jtstest-jar" value="${pre-zip.lib}\JTS_Test.jar" />
  	
   	<property name="zipfile" value="jts-${jts.version}.zip"/>
   	<property name="doc-dir" value="doc"/>
@@ -77,6 +80,8 @@
    
   </target>
     
+<!-- ========================= JTS jar =================================== -->
+
   <target name="jts-jar" 
           description="Builds jts.jar" depends="copy-source">
     <delete dir="${build.classes}"/>
@@ -93,9 +98,11 @@
     </javac>
     <delete file="${pre-zip.lib}/jts-*" failonerror="false"/>
     <mkdir dir="${pre-zip.lib}"/>
-    <jar jarfile="${pre-zip.lib}\jts-${jts.version}.jar"
+    <jar jarfile="${pre-zip.jts-jar}"
          basedir="${build.classes}"/>
   </target>
+
+<!-- ========================= JTS_Test jar =================================== -->
 
   <target name="jts-test-jar" depends="copy-source"
           description="Builds JTS_Test.jar">
@@ -176,21 +183,20 @@
     </javadoc>
   </target>
 
-<!-- ============================================================ -->
+<!-- =======================  JUnit  ========================= -->
 
-
-  <target name="junit"
+  <target name="junit" depends="props"
           description="Runs the JUnit tests">
     <delete dir="${build.classes}"/>
     <mkdir dir="${build.classes}"/>
-    <javac srcdir="${base.src}"
+    <javac srcdir="${base.test}"
 	   includes="**/*.java"
-           excludes="**/com/vividsolutions/jts/**,**/com/vividsolutions/jtstest/**,**/jtsexample/**,**/jtsplugin/**"
            destdir="${build.classes}">
       <classpath>
+        <pathelement location="${pre-zip.jts-jar}"/>
+        <pathelement location="${pre-zip.jtstest-jar}"/>
         <pathelement location="${pre-zip.lib}\jdom.jar"/>
         <pathelement location="${pre-zip.lib}\xerces.jar"/>
-        <pathelement location="${pre-zip.lib}\jts-${version}.jar"/>
         <pathelement location="${pre-zip.lib}\acme.jar"/>
         <pathelement location="${pre-zip.lib}\junit.jar"/>
       </classpath>
@@ -213,10 +219,10 @@
            haltonfailure="off">
       <classpath>
         <pathelement path="${build.classes}"/>
-        <pathelement location="${pre-zip.lib}\JTS_Test.jar"/>
+        <pathelement location="${pre-zip.jts-jar}"/>
+        <pathelement location="${pre-zip.jtstest-jar}"/>
         <pathelement location="${pre-zip.lib}\jdom.jar"/>
         <pathelement location="${pre-zip.lib}\xerces.jar"/>
-        <pathelement location="${pre-zip.lib}\jts-${version}.jar"/>
         <pathelement location="${pre-zip.lib}\acme.jar"/>
         <pathelement location="${pre-zip.lib}\junit.jar"/>
       </classpath>
@@ -231,6 +237,8 @@
     </junit>
 
   </target>
+
+<!-- =======================  Archive  ========================= -->
 
   <target name="makezip" depends="props"
   	description="Zips all files into a delivery archive">
