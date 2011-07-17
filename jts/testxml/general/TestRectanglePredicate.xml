@@ -12,7 +12,7 @@
       (100 200, 100 140, 180 140, 180 200, 100 200))
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   false   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   false   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   false   </op> </test>
 </case>
 
 <case>
@@ -24,7 +24,7 @@
     POLYGON((10 10, 10 90, 90 90, 90 10, 10 10))
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   true   </op> </test>
 </case>
 
 <case>
@@ -36,7 +36,7 @@
     POLYGON ((60 180, -100 120, -140 60, -40 20, -100 -80, 40 -20, 140 -100, 140 40, 260 160, 80 120, 60 180))
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   false   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   false  </op> </test>
 </case>
 
 <case>
@@ -49,10 +49,10 @@
   	((20 280, 0 180, 180 160, 200 280, 20 280)))
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   false   </op> </test>
-<test>  <op name="within" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   false   </op> </test>
-<test>  <op name="coveredBy" arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   false  </op> </test>
+<test>  <op name="within"     arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B">   false  </op> </test>
+<test>  <op name="coveredBy"  arg1="A" arg2="B">   true   </op> </test>
 </case>
 
 <case>
@@ -74,9 +74,74 @@
   <b>
     LINESTRING(10 10, 10 2000)
   </b>
-<test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   false   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   false   </op> </test>
+<test>  <op name="intersects" arg1="A" arg2="B"> true  </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B"> false </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B"> false </op> </test>
+</case>
+
+<case>
+  <desc>L on upward diagonal crosses</desc>
+  <a>
+    POLYGON((0 0, 100 0, 100 100, 0 100, 0 0))
+  </a>
+  <b>
+    LINESTRING (60 120, -20 20)
+  </b>
+<test>  <op name="intersects" arg1="A" arg2="B"> true  </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B"> false </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B"> false </op> </test>
+</case>
+
+<case>
+  <desc>L on downward diagonal crosses</desc>
+  <a>
+    POLYGON((0 0, 100 0, 100 100, 0 100, 0 0))
+  </a>
+  <b>
+    LINESTRING (50 120, 120 50)
+  </b>
+<test>  <op name="intersects" arg1="A" arg2="B"> true  </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B"> false </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B"> false </op> </test>
+</case>
+
+<case>
+  <desc>L on downward diagonal does not intersect</desc>
+  <a>
+    POLYGON((0 0, 100 0, 100 100, 0 100, 0 0))
+  </a>
+  <b>
+    LINESTRING (70 140, 150 50)
+  </b>
+<test>  <op name="intersects" arg1="A" arg2="B"> false </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B"> false </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B"> false </op> </test>
+</case>
+
+<case>
+  <desc>L with many segments crosses</desc>
+  <a>
+    POLYGON((0 0, 100 0, 100 100, 0 100, 0 0))
+  </a>
+  <b>
+    LINESTRING (110 160, 150 70, 110 -20, 130 80, 90 150, 60 -20, 38 128)
+  </b>
+<test>  <op name="intersects" arg1="A" arg2="B"> true  </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B"> false </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B"> false </op> </test>
+</case>
+
+<case>
+  <desc>L with many segments does not intersect</desc>
+  <a>
+    POLYGON((0 0, 100 0, 100 100, 0 100, 0 0))
+  </a>
+  <b>
+    LINESTRING (110 160, 150 70, 110 -20, 130 80, 90 150, 90 110, 38 128)
+  </b>
+<test>  <op name="intersects" arg1="A" arg2="B"> false </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B"> false </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B"> false </op> </test>
 </case>
 
 <case>
@@ -87,8 +152,8 @@
   <b>
     LINESTRING( 10 10, -10 -20 )
   </b>
-<test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   false   </op> </test>
+<test>  <op name="intersects" arg1="A" arg2="B"> true  </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B"> false </op> </test>
 </case>
 
 <case>
@@ -100,9 +165,9 @@
     LINESTRING( 10 0, 90 0 )
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   false   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="coveredBy" arg1="B" arg2="A">   true   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   false  </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="coveredBy"  arg1="B" arg2="A">   true   </op> </test>
 </case>
 
 <case>
@@ -114,9 +179,9 @@
     LINESTRING( 10 0, 100 0, 100 50 )
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   false   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="coveredBy" arg1="B" arg2="A">   true   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   false  </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="coveredBy"  arg1="B" arg2="A">   true   </op> </test>
 </case>
 
 <case>
@@ -128,9 +193,9 @@
     LINESTRING( 10 0, 100 0, 100 100, 50 100 )
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   false   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="coveredBy" arg1="B" arg2="A">   true   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   false  </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="coveredBy"  arg1="B" arg2="A">   true   </op> </test>
 </case>
 
 <case>
@@ -142,9 +207,9 @@
     MULTILINESTRING( (10 0, 20 0), (10 10, 20 20) )
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="coveredBy" arg1="B" arg2="A">   true   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="coveredBy"  arg1="B" arg2="A">   true   </op> </test>
 </case>
 
 <case>
@@ -156,7 +221,7 @@
     MULTILINESTRING( (10 10, 10 20), (200 10, 200 20) )
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   false   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   false   </op> </test>
 </case>
 
 <case>
@@ -168,9 +233,9 @@
     POINT(100 50) 
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   false   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="coveredBy" arg1="B" arg2="A">   true   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   false  </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="coveredBy"  arg1="B" arg2="A">   true   </op> </test>
 </case>
 
 <case>
@@ -182,9 +247,9 @@
     POINT(50 100) 
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   false   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="coveredBy" arg1="B" arg2="A">   true   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   false  </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="coveredBy"  arg1="B" arg2="A">   true   </op> </test>
 </case>
 
 <case>
@@ -196,9 +261,9 @@
     POINT(60 60) 
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="coveredBy" arg1="B" arg2="A">   true   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="coveredBy"  arg1="B" arg2="A">   true   </op> </test>
 </case>
 
 <case>
@@ -210,9 +275,9 @@
     MULTIPOINT((50 100), (60 60)) 
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="coveredBy" arg1="B" arg2="A">   true   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="coveredBy"  arg1="B" arg2="A">   true   </op> </test>
 </case>
 
 <case>
@@ -228,9 +293,9 @@
   )
   </b>
 <test>  <op name="intersects" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="contains" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="covers" arg1="A" arg2="B">   true   </op> </test>
-<test>  <op name="coveredBy" arg1="B" arg2="A">   true   </op> </test>
+<test>  <op name="contains"   arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="covers"     arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="coveredBy"  arg1="B" arg2="A">   true   </op> </test>
 </case>
 
 
