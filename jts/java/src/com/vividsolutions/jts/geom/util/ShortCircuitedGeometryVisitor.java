@@ -3,8 +3,8 @@ package com.vividsolutions.jts.geom.util;
 import com.vividsolutions.jts.geom.*;
 
 /**
- * A visitor to {@link Geometry} elements which can
- * be short-circuited by a given condition
+ * A visitor to {@link Geometry} componets, which 
+ * allows short-circuiting when a defined condition holds.
  *
  * @version 1.7
  */
