@@ -89,6 +89,8 @@ public class BufferByUnionFunctions {
   
   public static Geometry bufferByChains(Geometry g, double distance, int maxChainSize)
   {
+    if (maxChainSize <= 0)
+      throw new IllegalArgumentException("Maximum Chain Size must be specified as an input parameter");
     Geometry segs = LineHandlingFunctions.extractChains(g, maxChainSize);
     double posDist = Math.abs(distance);
     Geometry segBuf = bufferByComponents(segs, posDist);
