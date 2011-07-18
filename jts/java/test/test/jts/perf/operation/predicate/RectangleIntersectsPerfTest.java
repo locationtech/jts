@@ -102,7 +102,7 @@ public class RectangleIntersectsPerfTest
     Geometry rect = createRectangle(origin, 5);
 //    System.out.println(target);
     //System.out.println("Running with " + nPts + " points");
-    testRectangles(target, 30, 5);
+    testRectangles(target, 100, 5);
   }
 
   void testRectangles(Geometry target, int nRect, double rectSize)
@@ -114,6 +114,7 @@ public class RectangleIntersectsPerfTest
   void test(Geometry[] rect, Geometry g)
   {
     System.out.println("Target # pts: " + g.getNumPoints()
+        + "  -- # Rectangles: " + rect.length
         );
 
     int maxCount = MAX_ITER;
@@ -126,8 +127,20 @@ public class RectangleIntersectsPerfTest
       }
     }
     System.out.println("Finished in " + sw.getTimeString());
+    System.out.println();
   }
 
+  /**
+   * Creates a set of rectangular Polygons which 
+   * cover the given envelope.
+   * The rectangles   
+   * At least nRect rectangles are created.
+   * 
+   * @param env
+   * @param nRect
+   * @param rectSize
+   * @return
+   */
   Geometry[] createRectangles(Envelope env, int nRect, double rectSize )
   {
     int nSide =  1 + (int)Math.sqrt((double) nRect);

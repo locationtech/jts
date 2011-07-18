@@ -27,6 +27,12 @@ The current and archived JTS distributions can be obtained at the
 
 <i>Release Date:  ????</i>
 
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added <tt>RectangleLineIntersector</tt> to provide efficient rectangle-line intersection testing
+<li>Simplified <tt>RectangleIntersects</tt> by using new <tt>RectangleLineIntersector</tt>
+</ul>
+
 <h3>Robustness Improvements</h3>
 <ul>
 <li>Fixed robustness issue causing <tt>Empty Stack</tt> failure
@@ -47,7 +53,6 @@ in <tt>ConvexHull</tt> for some nearly collinear inputs
 <h3>Functionality Improvements</h3>
 <ul>
 <li>Added new names for methods for computing <tt>Geometry</tt> equality:
-<ul>
 <li><tt>equals(Object)</tt> is a synonym for <tt>equalsExact(Geometry)</tt>
 <li><tt>equalsNorm(Geometry)</tt> automatically normalizes the operands
 <li><tt>equalsTopo(Geometry)</tt> computes topological equality,
