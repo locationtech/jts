@@ -100,10 +100,11 @@ public class CGAlgorithms
   	 * 
   	 */
   	/*
-  	 // normalize orientation of vector to ensure consistent result
+  	// Normalize orientation of vector to provide consistent results
+    // This produces repeatable results for single cases, but does not fully solve robustness issues
  	   if (p2.x < p1.x || (p2.x == p1.x && p2.y < p1.y))
 			return -orientationIndex(p2, p1, q);
-	*/
+	  //*/
     double dx1 = p2.x - p1.x;
     double dy1 = p2.y - p1.y;
     double dx2 = q.x - p2.x;

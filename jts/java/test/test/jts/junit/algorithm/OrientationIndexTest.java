@@ -35,6 +35,7 @@ package test.jts.junit.algorithm;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import com.vividsolutions.jts.io.*;
+import com.vividsolutions.jts.math.DD;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.algorithm.*;
 
@@ -42,23 +43,26 @@ import com.vividsolutions.jts.algorithm.*;
  * Tests CGAlgorithms.computeOrientation
  * @version 1.7
  */
-public class ComputeOrientationTest
+public class OrientationIndexTest
     extends TestCase
 {
 
-  private WKTReader reader = new WKTReader();
+  private static WKTReader reader = new WKTReader();
   //private CGAlgorithms rcga = new CGAlgorithms();
 
   public static void main(String args[]) {
-    TestRunner.run(ComputeOrientationTest.class);
+    TestRunner.run(OrientationIndexTest.class);
   }
 
-  public ComputeOrientationTest(String name) { super(name); }
+  public OrientationIndexTest(String name) { super(name); }
 
   public void testCCW() throws Exception
   {
     assertTrue(isAllOrientationsEqual(getCoordinates("LINESTRING ( 0 0, 0 1, 1 1)")));
-
+  }
+  
+  public void testCCW2() throws Exception
+  {
     // experimental case - can't make it fail
     Coordinate[] pts2 = {
       new Coordinate(1.0000000000004998, -7.989685402102996),
@@ -68,30 +72,41 @@ public class ComputeOrientationTest
     assertTrue(isAllOrientationsEqual(pts2));
   }
   
-  // MD - deliberately disabled
-  public void XtestBadCCW() throws Exception
-  {
-    // this case fails because subtraction of small from large loses precision
-    Coordinate[] pts1 = {
-      new Coordinate(1.4540766091864998, -7.989685402102996),
-      new Coordinate(23.131039116367354, -7.004368924503866),
-      new Coordinate(1.4540766091865, -7.989685402102996),
-    };
-    assertTrue(isAllOrientationsEqual(pts1));
-  }
-
-  private boolean isAllOrientationsEqual(Coordinate[] pts)
+  /**
+   * Tests whether the orientations around a triangle of points
+   * are all equal (as is expected if the orientation predicate is correct)
+   * 
+   * @param pts an array of three points
+   * @return true if all the orientations around the triangle are equal
+   */
+  public static boolean isAllOrientationsEqual(Coordinate[] pts)
   {
     int[] orient = new int[3];
-    orient[0] = CGAlgorithms.computeOrientation(pts[0], pts[1], pts[2]);
-    orient[1] = CGAlgorithms.computeOrientation(pts[1], pts[2], pts[0]);
-    orient[2] = CGAlgorithms.computeOrientation(pts[2], pts[0], pts[1]);
+    orient[0] = CGAlgorithms.orientationIndex(pts[0], pts[1], pts[2]);
+    orient[1] = CGAlgorithms.orientationIndex(pts[1], pts[2], pts[0]);
+    orient[2] = CGAlgorithms.orientationIndex(pts[2], pts[0], pts[1]);
     return orient[0] == orient[1] && orient[0] == orient[2];
   }
-  private Coordinate[] getCoordinates(String wkt)
+  
+  public static boolean isAllOrientationsEqual(
+      double p0x, double p0y,
+      double p1x, double p1y,
+      double p2x, double p2y)
+  {
+    Coordinate[] pts = {
+        new Coordinate(p0x, p0y),
+        new Coordinate(p1x, p1y),
+        new Coordinate(p2x, p2y)
+    };
+    return isAllOrientationsEqual(pts);
+  }
+  
+  public static Coordinate[] getCoordinates(String wkt)
       throws ParseException
   {
     Geometry geom = reader.read(wkt);
     return geom.getCoordinates();
   }
+  
+
 }

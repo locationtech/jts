@@ -80,7 +80,7 @@ public class MasterTester extends TestCase {
     result.addTest(new TestSuite(BidirectionalComparatorTest.class));
     result.addTest(new TestSuite(BufferTest.class));
     result.addTest(new TestSuite(CascadedPolygonUnionTest.class));
-    result.addTest(new TestSuite(ComputeOrientationTest.class));
+    result.addTest(new TestSuite(OrientationIndexTest.class));
     result.addTest(new TestSuite(ConformingDelaunayTest.class));
     result.addTest(new TestSuite(ConvexHullTest.class));
     result.addTest(new TestSuite(CoordinateArraysTest.class));

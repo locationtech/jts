@@ -77,6 +77,10 @@ public class RobustDeterminant {
    */
   
   /*
+   * Test code to force a standard ordering of input ordinates.
+   * A possible fix for a rare problem where evaluation is order-dependent.
+   */
+  /*
   public static int signOfDet2x2(double x1, double y1, double x2, double y2) 
   {
     if (x1 > x2) {

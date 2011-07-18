@@ -2,13 +2,11 @@ package com.vividsolutions.jts.algorithm;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import test.jts.junit.algorithm.ComputeOrientationFailureTest;
 
 import com.vividsolutions.jts.algorithm.LineIntersector;
 import com.vividsolutions.jts.algorithm.RectangleLineIntersector;
 import com.vividsolutions.jts.algorithm.RobustLineIntersector;
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.Stopwatch;
 
 public class RectangleLineIntersectorTest
 extends TestCase
