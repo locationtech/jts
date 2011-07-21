@@ -46,12 +46,20 @@ import com.vividsolutions.jts.operation.GeometryGraphOperation;
 import java.util.*;
 
 /**
- * Implements the SFS <tt>relate()</tt> operation on two {@link Geometry}s.
- * This class supports specifying a custom {@link BoundaryNodeRule}
+ * Implements the SFS <tt>relate()</tt> generalized spatial predicate on two {@link Geometry}s.
+ * <b>
+ * The class supports specifying a custom {@link BoundaryNodeRule}
  * to be used during the relate computation.
  * <p>
+ * If named spatial predicates are used on the result {@link IntersectionMatrix}
+ * of the RelateOp, the result may or not be affected by the 
+ * choice of <tt>BoundaryNodeRule</tt>, depending on the exact nature of the pattern.
+ * For instance, {@link IntersectionMatrix#isIntersects()} is insensitive 
+ * to the choice of <tt>BoundaryNodeRule</tt>, 
+ * whereas {@link IntersectionMatrix#isTouches(int, int)} is affected by the rule chosen.
+ * <p>
  * <b>Note:</b> custom Boundary Node Rules do not (currently)
- * affect the results of other Geometry methods (such
+ * affect the results of other {@link Geometry} methods (such
  * as {@link Geometry#getBoundary}.  The results of
  * these methods may not be consistent with the relationship computed by
  * a custom Boundary Node Rule.

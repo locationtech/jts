@@ -43,13 +43,30 @@ import com.vividsolutions.jts.geom.*;
  * However, other kinds of Boundary Node Rules are appropriate
  * in specific situations (for instance, linear network topology
  * usually follows the {@link EndPointBoundaryNodeRule}.)
- * Some JTS operations allow the BoundaryNodeRule to be specified,
- * and respect this rule when computing the results of the operation.
+ * Some JTS operations 
+ * (such as {@link RelateOp}, {@link BoundaryOp} and {@link IsSimpleOp})
+ * allow the BoundaryNodeRule to be specified,
+ * and respect the supplied rule when computing the results of the operation.
+ * <p>
+ * An example use case for a non-SFS-standard Boundary Node Rule is
+ * that of checking that a set of {@link LineString}s have 
+ * valid linear network topology, when turn-arounds are represented
+ * as closed rings.  In this situation, the entry road to the
+ * turn-around is only valid when it touches the turn-around ring
+ * at the single (common) endpoint.  This is equivalent 
+ * to requiring the set of <tt>LineString</tt>s to be 
+ * <b>simple</b> under the {@link EndPointBoundaryNodeRule}.
+ * The SFS-standard {@link Mod2BoundaryNodeRule} is not 
+ * sufficient to perform this test, since it
+ * states that closed rings have <b>no</b> boundary points.
+ * <p>
+ * This interface and its subclasses follow the <tt>Strategy</tt> design pattern.
  *
  * @author Martin Davis
  * @version 1.7
  *
  * @see RelateOp
+ * @see BoundaryOp
  * @see IsSimpleOp
  * @see PointLocator
  */
