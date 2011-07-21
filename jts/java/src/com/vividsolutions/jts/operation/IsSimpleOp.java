@@ -48,25 +48,27 @@ import com.vividsolutions.jts.geomgraph.index.SegmentIntersector;
  *    <li> A Geometry is simple if and only if the only self-intersections are at
  *    boundary points.
  * </ul>
- * This definition relies on the definition of boundary points.
- * The SFS uses the Mod-2 rule to determine which points are on the boundary of
- * lineal geometries, but this class supports
- * using other {@link BoundaryNodeRule}s as well.
+ * For {@link Lineal} geometries the evaluation of simplicity  
+ * can be customized by supplying a {@link BoundaryNodeRule} 
+ * to define how boundary points are determined.
+ * The default is the SFS-standard {@link BoundaryNodeRule#MOD2_BOUNDARY_RULE}.
  * <p>
- * Simplicity is defined for each {@link Geometry} subclass as follows:
+ * Simplicity is defined for each {@link Geometry} type as follows:
  * <ul>
- * <li>Valid polygonal geometries are simple by definition, so
+ * <li><b><tt>Polygonal</tt></b> geometries are simple by definition, so
  * <code>isSimple</code> trivially returns true.
- * (Hint: in order to check if a polygonal geometry has self-intersections,
+ * (Note: this means that <tt>isSimple</tt> cannot be used to test 
+ * for (invalid) self-intersections in <tt>Polygon</tt>s.  
+ * In order to check if a <tt>Polygonal</tt> geometry has self-intersections,
  * use {@link Geometry#isValid}).
- * <li>Linear geometries are simple iff they do not self-intersect at points
+ * <li><b>Linear</b> geometries are simple iff they do not self-intersect at points
  * other than boundary points. 
- * (Using the Mod-2 rule, this means that closed linestrings
- * cannot be touched at their endpoints, since these are
+ * (Note that under the <tt>Mod-2</tt> rule, closed <tt>LineString</tt>s
+ * can never satisfy the SFS <tt>touches</tt> predicate at their endpoints, since these are
  * interior points, not boundary points).
- * <li>Zero-dimensional geometries (points) are simple iff they have no
+ * <li><b>Zero-dimensional (point)</b> geometries are simple if and only if they have no
  * repeated points.
- * <li>Empty <code>Geometry</code>s are always simple
+ * <li><b>Empty</b> geometries are <i>always</i> simple, by definition
  * </ul>
  *
  * @see BoundaryNodeRule
