@@ -143,11 +143,11 @@ public class OffsetCurveSetBuilder {
       return;
     Coordinate[] coord = CoordinateArrays.removeRepeatedPoints(line.getCoordinates());
     Coordinate[] curve = curveBuilder.getLineCurve(coord, distance);
+    addCurve(curve, Location.EXTERIOR, Location.INTERIOR);
 
     // TESTING
-    Coordinate[] curveTrim = BufferCurveLoopPruner.prune(curve);
-    
-    addCurve(curveTrim, Location.EXTERIOR, Location.INTERIOR);
+    //Coordinate[] curveTrim = BufferCurveLoopPruner.prune(curve); 
+    //addCurve(curveTrim, Location.EXTERIOR, Location.INTERIOR);
   }
 
   private void addPolygon(Polygon p)
