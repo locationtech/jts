@@ -103,10 +103,7 @@ public class BufferFunctions {
     for (Iterator i = curves.iterator(); i.hasNext(); ) {
     	SegmentString ss = (SegmentString) i.next();
     	Coordinate[] pts = ss.getCoordinates();
-    	
-    	Coordinate[] ptsTrim = BufferCurveLoopPruner.prune(pts);
-    	
-    	lines.add(g.getFactory().createLineString(ptsTrim));
+    	lines.add(g.getFactory().createLineString(pts));
     }
     Geometry curve = g.getFactory().buildGeometry(lines);
     return curve;
