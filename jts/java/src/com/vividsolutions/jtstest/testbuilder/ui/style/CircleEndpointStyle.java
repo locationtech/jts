@@ -10,7 +10,7 @@ public class CircleEndpointStyle
   extends LineStringEndpointStyle 
 {
 
-  private final static double DIAMETER = 8;
+  private final static double DIAMETER = 10;
   private boolean filled = true;
 
   // default in case colour is not set

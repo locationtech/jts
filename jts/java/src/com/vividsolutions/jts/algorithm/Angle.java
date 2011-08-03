@@ -161,9 +161,11 @@ public class Angle
   /**
    * Returns the oriented smallest angle between two vectors.
    * The computed angle will be in the range (-Pi, Pi].
-   * A positive result corresponds to a counterclockwise rotation
+   * A positive result corresponds to a counterclockwise
+   * (CCW) rotation
    * from v1 to v2;
-   * a negative result corresponds to a clockwise rotation.
+   * a negative result corresponds to a clockwise (CW) rotation;
+   * a zero result corresponds to no rotation.
    *
    * @param tip1 the tip of v1
    * @param tail the tail of each vector

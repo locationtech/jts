@@ -79,16 +79,16 @@ public class Layer
     VertexStyle vertexStyle = new VertexStyle(style.getLineColor());
     ArrowLineStyle segArrowStyle = new ArrowLineStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
     ArrowEndpointStyle lineArrowStyle = new ArrowEndpointStyle(ColorUtil.lighter(style.getLineColor()), false, true);
-    CircleEndpointStyle lineCircleStyle = new CircleEndpointStyle(ColorUtil.lighter(style.getLineColor()), true, false);
+    CircleEndpointStyle lineCircleStyle = new CircleEndpointStyle(style.getLineColor(), true, false);
     PolygonStructureStyle polyStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
     
     styleList = new StyleList();
-    styleList.add(style);
     styleList.add(vertexStyle, vertexFilter);
     styleList.add(segArrowStyle, decorationFilter);
     styleList.add(lineArrowStyle, decorationFilter);
     styleList.add(lineCircleStyle, decorationFilter);
     styleList.add(polyStyle, structureFilter);
+    styleList.add(style);
   }
   
   public Geometry getGeometry()

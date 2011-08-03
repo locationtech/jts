@@ -10,6 +10,13 @@ import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryPainter;
 
+/**
+ * Shows polygon structure (shells versus holes)
+ * by symbolizing the rings differently.
+ * 
+ * @author Martin Davis
+ *
+ */
 public class PolygonStructureStyle 
   extends ComponentStyle
 {
@@ -23,7 +30,7 @@ public class PolygonStructureStyle
   protected void paintComponent(Geometry geom, Viewport viewport, Graphics2D gr)
   throws Exception
   {
-    Color dashClr = color.darker(); //new Color(0, 0, 0);
+    Color dashClr = color.darker().darker(); //new Color(0, 0, 0);
   	Graphics2D gr2 = (Graphics2D) gr.create();
   	gr2.setColor(dashClr);
   	
@@ -31,7 +38,7 @@ public class PolygonStructureStyle
         BasicStroke.CAP_SQUARE,  // End cap style
         BasicStroke.JOIN_MITER, // Join style
         10,                  // Miter limit
-        new float[] {2, 10}, // Dash pattern
+        new float[] {3, 6}, // Dash pattern
         0);                   // Dash phase 
     gr2.setStroke(dashStroke);
 
