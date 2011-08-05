@@ -10,7 +10,7 @@ public abstract class LineStringStyle
 {
 	public static final int LINE = 1;
 	public static final int POLY_SHELL = 2;
-	public static final int POLY_HOLE = 2;
+	public static final int POLY_HOLE = 3;
 	
   public LineStringStyle() {
   }
