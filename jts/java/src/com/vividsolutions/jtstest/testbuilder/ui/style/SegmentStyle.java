@@ -17,15 +17,16 @@ extends LineStringStyle
 
   protected void paintLineString(LineString lineString, int lineType, Viewport viewport, Graphics2D graphics) throws Exception {
     for (int i = 0; i < lineString.getNumPoints() - 1; i++) {
-      paint(lineString.getCoordinateN(i),
-            lineString.getCoordinateN(i + 1),
-            lineType, viewport, graphics);
+      paint(i, 
+          lineString.getCoordinateN(i),
+          lineString.getCoordinateN(i + 1),
+          lineType, viewport, graphics);
     }
   }
 
-  protected void paint(Coordinate p0, Coordinate p1, int lineType, Viewport viewport, Graphics2D g
+  protected void paint(int index, Coordinate p0, Coordinate p1, int lineType, Viewport viewport, Graphics2D g
       ) throws Exception {
-      paint(viewport.toView(new Point2D.Double(p0.x, p0.y)),
+      paint(index, viewport.toView(new Point2D.Double(p0.x, p0.y)),
           viewport.toView(new Point2D.Double(p1.x, p1.y)), lineType, viewport, g);
   }
 
@@ -37,7 +38,7 @@ extends LineStringStyle
    * @param graphics
    * @throws Exception
    */
-  protected abstract void paint(Point2D p0, Point2D p1,
+  protected abstract void paint(int index, Point2D p0, Point2D p1,
   		int lineType, Viewport viewport, Graphics2D graphics) throws Exception;
 
 }

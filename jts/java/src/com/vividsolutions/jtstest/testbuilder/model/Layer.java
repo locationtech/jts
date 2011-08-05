@@ -6,14 +6,8 @@ import com.vividsolutions.jtstest.testbuilder.*;
 import com.vividsolutions.jtstest.testbuilder.geom.*;
 import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.render.*;
-import com.vividsolutions.jtstest.testbuilder.ui.style.ArrowEndpointStyle;
-import com.vividsolutions.jtstest.testbuilder.ui.style.BasicStyle;
-import com.vividsolutions.jtstest.testbuilder.ui.style.CircleEndpointStyle;
-import com.vividsolutions.jtstest.testbuilder.ui.style.ArrowLineStyle;
-import com.vividsolutions.jtstest.testbuilder.ui.style.PolygonStructureStyle;
-import com.vividsolutions.jtstest.testbuilder.ui.style.Style;
-import com.vividsolutions.jtstest.testbuilder.ui.style.StyleList;
-import com.vividsolutions.jtstest.testbuilder.ui.style.VertexStyle;
+import com.vividsolutions.jtstest.testbuilder.ui.style.*;
+
 import com.vividsolutions.jts.geom.*;
 
 public class Layer 
@@ -81,14 +75,17 @@ public class Layer
     ArrowEndpointStyle lineArrowStyle = new ArrowEndpointStyle(ColorUtil.lighter(style.getLineColor()), false, true);
     CircleEndpointStyle lineCircleStyle = new CircleEndpointStyle(style.getLineColor(), true, false);
     PolygonStructureStyle polyStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
+    SegmentIndexStyle indexStyle = new SegmentIndexStyle(ColorUtil.opaque(style.getLineColor().darker()));
     
+    // order is important here
     styleList = new StyleList();
     styleList.add(vertexStyle, vertexFilter);
     styleList.add(segArrowStyle, decorationFilter);
     styleList.add(lineArrowStyle, decorationFilter);
     styleList.add(lineCircleStyle, decorationFilter);
-    styleList.add(polyStyle, structureFilter);
     styleList.add(style);
+    styleList.add(polyStyle, structureFilter);
+    styleList.add(indexStyle, structureFilter);
   }
   
   public Geometry getGeometry()
