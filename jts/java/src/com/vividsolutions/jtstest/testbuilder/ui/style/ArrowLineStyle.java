@@ -10,7 +10,7 @@ public class ArrowLineStyle
   extends SegmentStyle
 {
   private final static double HEAD_ANGLE = 30;
-  private final static double HEAD_LENGTH = 6;
+  private final static double HEAD_LENGTH = 8;
 
   private Color color = Color.RED;
 
@@ -25,7 +25,7 @@ public class ArrowLineStyle
     this.color = color;
   }
 
-  protected void paint(Point2D p0, Point2D p1, int lineType, Viewport vp, Graphics2D gr)
+  protected void paint(int index, Point2D p0, Point2D p1, int lineType, Viewport vp, Graphics2D gr)
   throws Exception
   {
   	if (lineType == LINE)
@@ -48,7 +48,7 @@ public class ArrowLineStyle
   }
 
   private static final double LINE_OFFSET = 4;
-  private static final double ENDPOINT_OFFSET = 10;
+  private static final double ENDPOINT_OFFSET = 15;
   
   private static final double HEAD_ANGLE_RAD = (HEAD_ANGLE - 180 ) /180.0 * Math.PI;
   private static final double HEAD_COS = Math.cos(HEAD_ANGLE_RAD);
