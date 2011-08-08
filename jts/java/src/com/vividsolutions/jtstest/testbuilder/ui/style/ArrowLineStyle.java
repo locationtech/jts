@@ -20,7 +20,8 @@ public class ArrowLineStyle
       10,                  // Miter limit
       new float[] {2, 2}, // Dash pattern
       0);                   // Dash phase 
-
+  private static Stroke MID_ARROW_STROKE = new BasicStroke(1);
+  
   public ArrowLineStyle(Color color) {
     this.color = color;
   }
@@ -39,7 +40,7 @@ public class ArrowLineStyle
   {
     if (isTooSmallToRender(p0, p1)) return;
     graphics.setColor(color);
-    //      graphics.setStroke(1.0);
+    graphics.setStroke(MID_ARROW_STROKE);
     Point2D mid = new Point2D.Float((float) ((p0.getX() + p1.getX()) / 2),
         (float) ((p0.getY() + p1.getY()) / 2));
     GeneralPath arrowhead = ArrowEndpointStyle.arrowheadPath(p0, p1, mid,
