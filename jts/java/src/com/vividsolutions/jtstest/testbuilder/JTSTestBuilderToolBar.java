@@ -479,7 +479,8 @@ public class JTSTestBuilderToolBar {
       return jToolBar1;
   }
   
-  private JButton createButton(ImageIcon icon, String toolTipText,
+  private JButton createButton(String toolTipText, 
+      ImageIcon icon, 
       java.awt.event.ActionListener actionListener)
   {
     JButton btn = new JButton();
