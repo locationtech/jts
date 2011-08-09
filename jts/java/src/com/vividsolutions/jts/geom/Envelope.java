@@ -83,8 +83,10 @@ public class Envelope
   }
 
   /**
-   * Test the envelope defined by p1-p2 for intersection
-   * with the envelope defined by q1-q2
+   * Tests whether the envelope defined by p1-p2
+   * and the envelope defined by q1-q2
+   * intersect.
+   * 
    * @param p1 one extremal point of the envelope P
    * @param p2 another extremal point of the envelope P
    * @param q1 one extremal point of the envelope Q

@@ -11,7 +11,7 @@ import com.vividsolutions.jts.geom.*;
  * <p>
  * This class can be used in conjunction with {@link VoronoiDiagramBuilder}
  * to transfer data objects from the input site geometries
- * to the constructed Voronou polygons.
+ * to the constructed Voronoi polygons.
  * 
  * @author Martin Davis
  * @see VoronoiDiagramBuilder
