@@ -32,6 +32,7 @@ public class JTSTestBuilderToolBar {
   JButton zoomToInputAButton = new JButton();
   JButton zoomToInputBButton = new JButton();
   JButton zoomToResultButton = new JButton();
+  JButton inspectGeometryButton = new JButton();
   Component strut4;
   JToggleButton panButton = new JToggleButton();
   JToggleButton btnEditVertex = new JToggleButton();
@@ -53,6 +54,7 @@ public class JTSTestBuilderToolBar {
   private final ImageIcon drawLineStringIcon = new ImageIcon(this.getClass().getResource("DrawLineString.png"));
   private final ImageIcon drawPointIcon = new ImageIcon(this.getClass().getResource("DrawPoint.png"));
   private final ImageIcon infoIcon = new ImageIcon(this.getClass().getResource("Info.png"));
+  private final ImageIcon inspectGeometryIcon = new ImageIcon(this.getClass().getResource("InspectGeometry.png"));
   private final ImageIcon zoomOneToOneIcon = new ImageIcon(this.getClass().getResource("ZoomOneToOne.png"));
   private final ImageIcon zoomToInputIcon = new ImageIcon(this.getClass().getResource("ZoomInput.png"));
   private final ImageIcon zoomToInputAIcon = new ImageIcon(this.getClass().getResource("ZoomInputA.png"));
@@ -77,6 +79,14 @@ public class JTSTestBuilderToolBar {
     strut3 = Box.createHorizontalStrut(8);
     strut4 = Box.createHorizontalStrut(28);
     strut5 = Box.createHorizontalStrut(8);
+
+    inspectGeometryButton = createButton(inspectGeometryIcon,
+        "Inspect Geometry",
+        new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        tbFrame.actionInspectGeometry();
+      }
+    });
 
     jToolBar1.add(newButton, null);
     jToolBar1.add(copyButton, null);
@@ -106,10 +116,10 @@ public class JTSTestBuilderToolBar {
     jToolBar1.add(btnEditVertex, null);
     jToolBar1.add(strut5, null);
     jToolBar1.add(infoButton, null);
+    jToolBar1.add(inspectGeometryButton, null);
 
     previousButton.addActionListener(
         new java.awt.event.ActionListener() {
-
           public void actionPerformed(ActionEvent e) {
             tbFrame.btnPrevCase_actionPerformed(e);
           }
@@ -289,6 +299,24 @@ public class JTSTestBuilderToolBar {
             tbFrame.infoButton_actionPerformed(e);
           }
         });
+      /*
+      inspectGeometryButton.setMargin(new Insets(0, 0, 0, 0));
+      inspectGeometryButton.setPreferredSize(new Dimension(30, 30));
+      inspectGeometryButton.setIcon(inspectGeometryIcon);
+      inspectGeometryButton.setMinimumSize(new Dimension(30, 30));
+      inspectGeometryButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+      inspectGeometryButton.setSelected(false);
+      inspectGeometryButton.setToolTipText("Inspect Geometry");
+      inspectGeometryButton.setHorizontalTextPosition(SwingConstants.CENTER);
+      inspectGeometryButton.setFont(new java.awt.Font("SansSerif", 0, 10));
+      inspectGeometryButton.setMaximumSize(new Dimension(30, 30));
+      inspectGeometryButton.addActionListener(
+        new java.awt.event.ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            tbFrame.actionInspectGeometry();
+          }
+        });
+        */
       zoomInButton.setMaximumSize(new Dimension(30, 30));
       zoomInButton.addActionListener(
         new java.awt.event.ActionListener() {
@@ -449,5 +477,23 @@ public class JTSTestBuilderToolBar {
       buttonGroup.add(infoButton);
 
       return jToolBar1;
+  }
+  
+  private JButton createButton(ImageIcon icon, String toolTipText,
+      java.awt.event.ActionListener actionListener)
+  {
+    JButton btn = new JButton();
+    btn.setMargin(new Insets(0, 0, 0, 0));
+    btn.setPreferredSize(new Dimension(30, 30));
+    btn.setIcon(icon);
+    btn.setMinimumSize(new Dimension(30, 30));
+    btn.setVerticalTextPosition(SwingConstants.BOTTOM);
+    btn.setSelected(false);
+    btn.setToolTipText(toolTipText);
+    btn.setHorizontalTextPosition(SwingConstants.CENTER);
+    btn.setFont(new java.awt.Font("SansSerif", 0, 10));
+    btn.setMaximumSize(new Dimension(30, 30));
+    btn.addActionListener(actionListener);
+    return btn;
   }
 }
