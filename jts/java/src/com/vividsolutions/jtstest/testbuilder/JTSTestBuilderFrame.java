@@ -203,6 +203,7 @@ public class JTSTestBuilderFrame extends JFrame
   {
     return instance().getTestCasePanel().getGeometryEditPanel();
   }
+  
   public TestBuilderModel getModel()
   {
     return tbModel;

@@ -46,103 +46,164 @@ import javax.swing.JSplitPane;
 import javax.swing.border.EmptyBorder;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jtstest.testbuilder.model.TestBuilderModel;
 import com.vividsolutions.jtstest.testbuilder.model.TestCaseEdit;
-
+import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 
 /**
  * @version 1.7
  */
-public class GeometryInspectorDialog extends JDialog {
-    //----------------------------------
-    JPanel dialogPanel = new JPanel();
-    BorderLayout borderLayout1 = new BorderLayout();
-    GeometryTreePanel geomTreeA = new GeometryTreePanel();
-    GeometryTreePanel geomTreeB = new GeometryTreePanel();
-    JPanel cmdBtnSurroundPanel = new JPanel();
-    JPanel cmdButtonPanel = new JPanel();
-    BorderLayout borderLayout2 = new BorderLayout();
-    BorderLayout borderLayout3 = new BorderLayout();
-    
-    JPanel aPanel = new JPanel();
-    BorderLayout aPanelLayout = new BorderLayout();
-    JPanel bPanel = new JPanel();
-    BorderLayout bPanelLayout = new BorderLayout();
-    JLabel aLabel = new JLabel();
-    JLabel bLabel = new JLabel();
-    
-    JButton btnCopy = new JButton();
-    JButton btnOk = new JButton();
-    JSplitPane jSplitPane1 = new JSplitPane();
+public class GeometryInspectorDialog extends JDialog
+{
+  JTSTestBuilderFrame tbFrame;
+  TestBuilderModel tbModel;
 
-    public GeometryInspectorDialog(Frame frame, String title, boolean modal) {
-        super(frame, title, modal);
-        try {
-            jbInit();
-            pack();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
+  // ----------------------------------
+  JPanel dialogPanel = new JPanel();
+
+  BorderLayout borderLayout1 = new BorderLayout();
+
+  GeometryTreePanel geomTreeA = new GeometryTreePanel();
+
+  GeometryTreePanel geomTreeB = new GeometryTreePanel();
+
+  JPanel cmdBtnSurroundPanel = new JPanel();
+
+  JPanel cmdButtonPanel = new JPanel();
+
+  BorderLayout borderLayout2 = new BorderLayout();
+
+  BorderLayout borderLayout3 = new BorderLayout();
+
+  JPanel aPanel = new JPanel();
+
+  BorderLayout aPanelLayout = new BorderLayout();
+
+  JPanel bPanel = new JPanel();
+
+  BorderLayout bPanelLayout = new BorderLayout();
+
+  JLabel aLabel = new JLabel();
+
+  JLabel bLabel = new JLabel();
+
+  JButton btnZoom = new JButton();
+
+  JButton btnCopy = new JButton();
+
+  JButton btnClose = new JButton();
+
+  JSplitPane jSplitPane1 = new JSplitPane();
+
+  public GeometryInspectorDialog(Frame frame, String title, boolean modal)
+  {
+    super(frame, title, modal);
+    try {
+      jbInit();
+      pack();
     }
-
-    public GeometryInspectorDialog() {
-      this(null, "", false);
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
   }
 
-    public GeometryInspectorDialog(Frame frame) {
-      this(null, "Geometry Inspector", false);
+  public GeometryInspectorDialog()
+  {
+    this(null, "", false);
   }
 
-    void jbInit() throws Exception {
-        cmdBtnSurroundPanel.setLayout(borderLayout2);
-        
-        btnCopy.setEnabled(true);
-        btnCopy.setText("Copy");
-        btnOk.setToolTipText("");
-        btnOk.setText("Close");
-        btnOk.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                btnOk_actionPerformed(e);
-            }
-        });
-        //cmdButtonPanel.add(btnCopy, null);
-        cmdButtonPanel.add(btnOk, null);
-        cmdBtnSurroundPanel.add(cmdButtonPanel, BorderLayout.SOUTH);
-        
-        dialogPanel.setLayout(borderLayout1);
-        geomTreeA.setPreferredSize(new Dimension(500, 300));
+  public GeometryInspectorDialog(Frame frame)
+  {
+    this(null, "Geometry Inspector", false);
+  }
 
-        aPanel.setLayout(aPanelLayout);
-        aLabel.setText("A");
-        aLabel.setHorizontalAlignment(JLabel.CENTER);
-        aPanel.add(aLabel, BorderLayout.NORTH);
-        aPanel.add(geomTreeA, BorderLayout.CENTER);
-        
-        bPanel.setLayout(bPanelLayout);
-        bLabel.setText("B");
-        bLabel.setHorizontalAlignment(JLabel.CENTER);
-        bPanel.add(bLabel, BorderLayout.NORTH);
-        bPanel.add(geomTreeB, BorderLayout.CENTER);
-        
-        jSplitPane1.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
-        jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
-        jSplitPane1.setResizeWeight(0.5);
-        
-        jSplitPane1.add(aPanel, JSplitPane.LEFT);
-        //jPanel1.add(testCasePanel, BorderLayout.CENTER);
-        jSplitPane1.add(bPanel, JSplitPane.RIGHT);
-        //jPanel2.add(inputTabbedPane, BorderLayout.CENTER);
+  void jbInit() throws Exception
+  {
+    cmdBtnSurroundPanel.setLayout(borderLayout2);
 
-        dialogPanel.add(jSplitPane1, BorderLayout.CENTER);
-        dialogPanel.add(cmdBtnSurroundPanel, BorderLayout.SOUTH);
-        getContentPane().add(dialogPanel);
-    }
+    btnZoom.setEnabled(true);
+    btnZoom.setText("Zoom");
+    btnZoom.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e)
+      {
+        btnZoom_actionPerformed(e);
+      }
+    });
+    btnCopy.setEnabled(true);
+    btnCopy.setText("Copy");
+    btnCopy.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e)
+      {
+        btnCopy_actionPerformed(e);
+      }
+    });
+    btnClose.setToolTipText("");
+    btnClose.setText("Close");
+    btnClose.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e)
+      {
+        btnOk_actionPerformed(e);
+      }
+    });
+    // cmdButtonPanel.add(btnCopy, null);
+    cmdButtonPanel.add(btnZoom, null);
+    cmdButtonPanel.add(btnCopy, null);
+    cmdButtonPanel.add(btnClose, null);
+    cmdBtnSurroundPanel.add(cmdButtonPanel, BorderLayout.SOUTH);
 
-    public void setGeometry(Geometry a, Geometry b) {
-      geomTreeA.populate(a);
-      geomTreeB.populate(b);
-    }
+    dialogPanel.setLayout(borderLayout1);
+    geomTreeA.setPreferredSize(new Dimension(500, 300));
 
-    void btnOk_actionPerformed(ActionEvent e) {
-        setVisible(false);
-    }
+    aPanel.setLayout(aPanelLayout);
+    aLabel.setText("A");
+    aLabel.setHorizontalAlignment(JLabel.CENTER);
+    aPanel.add(aLabel, BorderLayout.NORTH);
+    aPanel.add(geomTreeA, BorderLayout.CENTER);
+
+    bPanel.setLayout(bPanelLayout);
+    bLabel.setText("B");
+    bLabel.setHorizontalAlignment(JLabel.CENTER);
+    bPanel.add(bLabel, BorderLayout.NORTH);
+    bPanel.add(geomTreeB, BorderLayout.CENTER);
+
+    jSplitPane1.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+    jSplitPane1.setBorder(new EmptyBorder(2, 2, 2, 2));
+    jSplitPane1.setResizeWeight(0.5);
+
+    jSplitPane1.add(aPanel, JSplitPane.LEFT);
+    // jPanel1.add(testCasePanel, BorderLayout.CENTER);
+    jSplitPane1.add(bPanel, JSplitPane.RIGHT);
+    // jPanel2.add(inputTabbedPane, BorderLayout.CENTER);
+
+    dialogPanel.add(jSplitPane1, BorderLayout.CENTER);
+    dialogPanel.add(cmdBtnSurroundPanel, BorderLayout.SOUTH);
+    getContentPane().add(dialogPanel);
+  }
+
+  public void setModel(TestBuilderModel tbModel)
+  {
+    this.tbModel = tbModel;
+  }
+
+  public void setGeometry(Geometry a, Geometry b)
+  {
+    geomTreeA.populate(a);
+    geomTreeB.populate(b);
+  }
+
+  void btnOk_actionPerformed(ActionEvent e)
+  {
+    setVisible(false);
+  }
+
+  void btnCopy_actionPerformed(ActionEvent e)
+  {
+    boolean isFormatted = 0 != (e.getModifiers() & ActionEvent.CTRL_MASK);
+    SwingUtil.copyToClipboard(geomTreeA.getSelectedGeometry(), isFormatted);
+  }
+  
+  void btnZoom_actionPerformed(ActionEvent e)
+  {
+    JTSTestBuilderFrame.getGeometryEditPanel().zoom(geomTreeA.getSelectedGeometry());
+  }
 }

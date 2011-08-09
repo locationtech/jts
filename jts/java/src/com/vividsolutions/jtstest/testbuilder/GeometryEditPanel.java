@@ -471,6 +471,11 @@ public class GeometryEditPanel extends JPanel
     zoom(geomModel.getEnvelopeAll());
   }
 
+  public void zoom(Geometry geom) 
+  {
+    zoom(geom.getEnvelopeInternal());
+  }
+  
   public void zoom(Envelope zoomEnv) 
   {
     if (zoomEnv == null) return;
