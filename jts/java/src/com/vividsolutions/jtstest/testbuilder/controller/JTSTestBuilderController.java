@@ -7,7 +7,7 @@ public class JTSTestBuilderController
 
   public static void geometryViewChanged()
   {
-    JTSTestBuilderFrame.instance().getTestCasePanel().getGeometryEditPanel().updateView();
+    JTSTestBuilderFrame.getGeometryEditPanel().updateView();
   }
 
 }

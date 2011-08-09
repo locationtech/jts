@@ -80,7 +80,7 @@ public class JTSTestBuilderMenuBar
     menuViewGeometry.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.menuViewGeometry_actionPerformed(e);
+          tbFrame.actionInspectGeometry();
         }
       });
     menuLoadXmlTestFile.setText("Open XML File(s)...");

@@ -152,7 +152,7 @@ public class GeometryInspectorDialog extends JDialog
     cmdBtnSurroundPanel.add(cmdButtonPanel, BorderLayout.SOUTH);
 
     dialogPanel.setLayout(borderLayout1);
-    geomTreeA.setPreferredSize(new Dimension(500, 300));
+    geomTreeA.setPreferredSize(new Dimension(300, 500));
 
     aPanel.setLayout(aPanelLayout);
     aLabel.setText("A");
@@ -160,6 +160,7 @@ public class GeometryInspectorDialog extends JDialog
     aPanel.add(aLabel, BorderLayout.NORTH);
     aPanel.add(geomTreeA, BorderLayout.CENTER);
 
+    /*
     bPanel.setLayout(bPanelLayout);
     bLabel.setText("B");
     bLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -174,8 +175,8 @@ public class GeometryInspectorDialog extends JDialog
     // jPanel1.add(testCasePanel, BorderLayout.CENTER);
     jSplitPane1.add(bPanel, JSplitPane.RIGHT);
     // jPanel2.add(inputTabbedPane, BorderLayout.CENTER);
-
-    dialogPanel.add(jSplitPane1, BorderLayout.CENTER);
+*/
+    dialogPanel.add(aPanel, BorderLayout.CENTER);
     dialogPanel.add(cmdBtnSurroundPanel, BorderLayout.SOUTH);
     getContentPane().add(dialogPanel);
   }
@@ -185,10 +186,10 @@ public class GeometryInspectorDialog extends JDialog
     this.tbModel = tbModel;
   }
 
-  public void setGeometry(Geometry a, Geometry b)
+  public void setGeometry(String tag, Geometry a)
   {
+    aLabel.setText(tag);
     geomTreeA.populate(a);
-    geomTreeB.populate(b);
   }
 
   void btnOk_actionPerformed(ActionEvent e)

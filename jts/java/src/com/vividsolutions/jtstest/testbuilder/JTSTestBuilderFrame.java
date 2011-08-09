@@ -277,7 +277,7 @@ public class JTSTestBuilderFrame extends JFrame
     dlg.setLocation((frmSize.width - dlgSize.width) / 2 + loc.x, (frmSize.height
          - dlgSize.height) / 2 + loc.y);
     dlg.setModal(true);
-    dlg.show();
+    dlg.setVisible(true);
   }
 
   public void showGeomsTab()
@@ -400,14 +400,15 @@ public class JTSTestBuilderFrame extends JFrame
 
   void menuViewText_actionPerformed(ActionEvent e) {
     testCaseTextDlg.setTestCase(tbModel.getCurrentTestCaseEdit());
-    testCaseTextDlg.show();
+    testCaseTextDlg.setVisible(true);
   }
 
-  void menuViewGeometry_actionPerformed(ActionEvent e) {
+  void actionInspectGeometry() {
+    int geomIndex = tbModel.getGeometryEditModel().getGeomIndex();
     geomInspectorDlg.setGeometry(
-        tbModel.getCurrentTestCaseEdit().getGeometry(0),
-        tbModel.getCurrentTestCaseEdit().getGeometry(1));
-    geomInspectorDlg.show();
+        geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B,
+        tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex));
+    geomInspectorDlg.setVisible(true);
   }
 
   void menuLoadXmlTestFile_actionPerformed(ActionEvent e) {
