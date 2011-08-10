@@ -32,6 +32,8 @@
  */
 package com.vividsolutions.jtstest.util;
 
+import java.io.IOException;
+
 import javax.xml.parsers.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.*;
@@ -105,12 +107,13 @@ public class MultiFormatReader
 
   public MultiFormatReader(GeometryFactory geomFactory)
   {
+    this.geomFactory = geomFactory;
     wktReader = new WKTReader(geomFactory);
     wkbReader = new WKBReader(geomFactory);
   }
 
   public Geometry read(String geomStr)
-      throws ParseException
+      throws ParseException, IOException
   {
     String trimStr = geomStr.trim();
     if (isWKB(trimStr))
@@ -118,7 +121,8 @@ public class MultiFormatReader
     if (isGML(trimStr))
     	return readGML(trimStr);
     	
-    return wktReader.read(trimStr);
+    //return wktReader.read(trimStr);
+    return IOUtil.readGeometriesFromWKTString(trimStr, geomFactory);
   }
   
   private Geometry readGML(String str) 
