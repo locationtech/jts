@@ -63,9 +63,7 @@ public class GeometryInspectorDialog extends JDialog
 
   BorderLayout borderLayout1 = new BorderLayout();
 
-  GeometryTreePanel geomTreeA = new GeometryTreePanel();
-
-  GeometryTreePanel geomTreeB = new GeometryTreePanel();
+  GeometryTreePanel geomTreePanel = new GeometryTreePanel();
 
   JPanel cmdBtnSurroundPanel = new JPanel();
 
@@ -83,9 +81,7 @@ public class GeometryInspectorDialog extends JDialog
 
   BorderLayout bPanelLayout = new BorderLayout();
 
-  JLabel aLabel = new JLabel();
-
-  JLabel bLabel = new JLabel();
+  JLabel geomLabel = new JLabel();
 
   JButton btnZoom = new JButton();
 
@@ -152,13 +148,13 @@ public class GeometryInspectorDialog extends JDialog
     cmdBtnSurroundPanel.add(cmdButtonPanel, BorderLayout.SOUTH);
 
     dialogPanel.setLayout(borderLayout1);
-    geomTreeA.setPreferredSize(new Dimension(300, 500));
+    geomTreePanel.setPreferredSize(new Dimension(300, 500));
 
     aPanel.setLayout(aPanelLayout);
-    aLabel.setText("A");
-    aLabel.setHorizontalAlignment(JLabel.CENTER);
-    aPanel.add(aLabel, BorderLayout.NORTH);
-    aPanel.add(geomTreeA, BorderLayout.CENTER);
+    geomLabel.setText("A");
+    geomLabel.setHorizontalAlignment(JLabel.CENTER);
+    aPanel.add(geomLabel, BorderLayout.NORTH);
+    aPanel.add(geomTreePanel, BorderLayout.CENTER);
 
     /*
     bPanel.setLayout(bPanelLayout);
@@ -188,8 +184,8 @@ public class GeometryInspectorDialog extends JDialog
 
   public void setGeometry(String tag, Geometry a)
   {
-    aLabel.setText(tag);
-    geomTreeA.populate(a);
+    geomLabel.setText(tag);
+    geomTreePanel.populate(a);
   }
 
   void btnOk_actionPerformed(ActionEvent e)
@@ -200,11 +196,11 @@ public class GeometryInspectorDialog extends JDialog
   void btnCopy_actionPerformed(ActionEvent e)
   {
     boolean isFormatted = 0 != (e.getModifiers() & ActionEvent.CTRL_MASK);
-    SwingUtil.copyToClipboard(geomTreeA.getSelectedGeometry(), isFormatted);
+    SwingUtil.copyToClipboard(geomTreePanel.getSelectedGeometry(), isFormatted);
   }
   
   void btnZoom_actionPerformed(ActionEvent e)
   {
-    JTSTestBuilderFrame.getGeometryEditPanel().zoom(geomTreeA.getSelectedGeometry());
+    JTSTestBuilderFrame.getGeometryEditPanel().zoom(geomTreePanel.getSelectedGeometry());
   }
 }

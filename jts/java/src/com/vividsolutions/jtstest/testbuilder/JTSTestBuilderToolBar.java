@@ -32,12 +32,11 @@ public class JTSTestBuilderToolBar {
   JButton zoomToInputAButton = new JButton();
   JButton zoomToInputBButton = new JButton();
   JButton zoomToResultButton = new JButton();
-  JButton inspectGeometryButton = new JButton();
-  Component strut4;
   JToggleButton panButton = new JToggleButton();
   JToggleButton btnEditVertex = new JToggleButton();
   Component strut1;
   Component strut2;
+  Component strut4;
   Component strut5;
   Component strut3;
 
@@ -80,13 +79,13 @@ public class JTSTestBuilderToolBar {
     strut4 = Box.createHorizontalStrut(28);
     strut5 = Box.createHorizontalStrut(8);
 
-    inspectGeometryButton = createButton(inspectGeometryIcon,
-        "Inspect Geometry",
-        new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        tbFrame.actionInspectGeometry();
-      }
-    });
+    JButton inspectGeometryButton = createButton("Inspect Geometry",
+        inspectGeometryIcon, new java.awt.event.ActionListener() {
+          public void actionPerformed(ActionEvent e)
+          {
+            tbFrame.actionInspectGeometry();
+          }
+        });
 
     jToolBar1.add(newButton, null);
     jToolBar1.add(copyButton, null);
