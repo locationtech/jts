@@ -137,7 +137,7 @@ extends JPanel
     
     displayAAndBCheckBox.setSelected(true);
     displayAAndBCheckBox.setToolTipText("");
-    displayAAndBCheckBox.setText("Display Input Geometries");
+    displayAAndBCheckBox.setText("Display Input");
     displayAAndBCheckBox.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
           displayAAndBCheckBox_actionPerformed(e);
