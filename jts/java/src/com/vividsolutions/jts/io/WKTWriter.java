@@ -63,7 +63,8 @@ import java.text.DecimalFormatSymbols;
 public class WKTWriter
 {
   /**
-   * Generates the WKT for a <code>Point</code>.
+   * Generates the WKT for a <tt>POINT</tt>
+   * specified by a {@link Coordinate}.
    *
    * @param p0 the point coordinate
    *
@@ -75,11 +76,12 @@ public class WKTWriter
   }
 
   /**
-   * Generates the WKT for a N-point <code>LineString</code>.
+   * Generates the WKT for a <tt>LINESTRING</tt>
+   * specified by a {@link CoordinateSequence}.
    *
-   * @param seq the sequence to outpout
+   * @param seq the sequence to write
    *
-   * @return the WKT
+   * @return the WKT string
    */
   public static String toLineString(CoordinateSequence seq)
   {
@@ -100,7 +102,8 @@ public class WKTWriter
   }
 
   /**
-   * Generates the WKT for a 2-point <code>LineString</code>.
+   * Generates the WKT for a <tt>LINESTRING</tt>
+   * specified by two {@link Coordinate}s.
    *
    * @param p0 the first coordinate
    * @param p1 the second coordinate
