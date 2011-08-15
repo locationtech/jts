@@ -92,7 +92,7 @@ public class JTSTestBuilderFrame extends JFrame
   ResultWKTPanel resultWKTPanel = new ResultWKTPanel();
   ResultValuePanel resultValuePanel = new ResultValuePanel();
   StatsPanel statsPanel = new StatsPanel();
-  InfoPanel infoPanel = new InfoPanel();
+  InfoPanel logPanel = new InfoPanel();
   private ZoomToClickTool zoomInTool;
   private final ImageIcon appIcon = new ImageIcon(this.getClass().getResource("app-icon.gif"));
 
@@ -772,7 +772,7 @@ public class JTSTestBuilderFrame extends JFrame
     inputTabbedPane.add(resultWKTPanel, "Result");
     inputTabbedPane.add(resultValuePanel, "Value");
     inputTabbedPane.add(statsPanel, "Stats");
-    inputTabbedPane.add(infoPanel, "Info");
+    inputTabbedPane.add(logPanel, "Log");
     inputTabbedPane.add(layerListPanel, "Layers");
     inputTabbedPane.setSelectedIndex(1);
     inputTabbedPane.addChangeListener(new ChangeListener() {
@@ -833,7 +833,7 @@ public class JTSTestBuilderFrame extends JFrame
   
   public void displayInfo(String s, boolean showTab)
   {
-    infoPanel.addInfo(s);
+    logPanel.addInfo(s);
     if (showTab) showInfoTab();
   }
   
