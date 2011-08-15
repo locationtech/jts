@@ -13,7 +13,9 @@ for %%i in (..\lib\*.*) do (
  call :setclass
 )  
 
-start javaw com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
+set MEMSIZE=256
+
+start javaw -Xmx%MEMSIZE%M com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
 
 goto :eof
 
