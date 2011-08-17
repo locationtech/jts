@@ -63,7 +63,8 @@ public class DelaunayTriangulationBuilder
 	
 	public static CoordinateList unique(Coordinate[] coords)
 	{
-		Arrays.sort(coords);
+	  Coordinate[] coordsCopy = CoordinateArrays.copyDeep(coords);
+		Arrays.sort(coordsCopy);
 		CoordinateList coordList = new CoordinateList(coords, false);
 		return coordList;
 	}
