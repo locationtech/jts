@@ -106,7 +106,6 @@ public class ConformingDelaunayTriangulationBuilder
 
 		Envelope siteEnv = DelaunayTriangulationBuilder.envelope(siteCoords);
 		
-		
 		List segments = new ArrayList();
 		if (constraintLines != null) {
 			siteEnv.expandToInclude(constraintLines.getEnvelopeInternal());
