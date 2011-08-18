@@ -53,7 +53,7 @@ public class ConformingDelaunayTriangulationBuilder
 	private double tolerance = 0.0;
 	private QuadEdgeSubdivision subdiv = null;
 
-	private Map vertexMap = new TreeMap();
+	private Map constraintVertexMap = new TreeMap();
 	
 	public ConformingDelaunayTriangulationBuilder()
 	{
@@ -62,6 +62,10 @@ public class ConformingDelaunayTriangulationBuilder
 	/**
 	 * Sets the sites (point or vertices) which will be triangulated.
 	 * All vertices of the given geometry will be used as sites.
+	 * The site vertices do not have to contain the constraint
+	 * vertices as well; any site vertices which are 
+	 * identical to a constraint vertex will be removed
+	 * from the site vertex set.
 	 * 
 	 * @param geom the geometry from which the sites will be extracted.
 	 */
@@ -73,6 +77,8 @@ public class ConformingDelaunayTriangulationBuilder
 	/**
 	 * Sets the linear constraints to be conformed to.
 	 * All linear components in the input will be used as constraints.
+	 * The constraint vertices do not have to be disjoint from 
+	 * the site vertices.
 	 * 
 	 * @param constraintLines the lines to constraint to
 	 */
@@ -100,7 +106,6 @@ public class ConformingDelaunayTriangulationBuilder
 
 		Envelope siteEnv = DelaunayTriangulationBuilder.envelope(siteCoords);
 		
-		List sites = createConstraintVertices(siteCoords);
 		
 		List segments = new ArrayList();
 		if (constraintLines != null) {
@@ -108,21 +113,24 @@ public class ConformingDelaunayTriangulationBuilder
 			createVertices(constraintLines);
 			segments = createConstraintSegments(constraintLines);
 		}
-		
+    List sites = createSiteVertices(siteCoords);
+
 		ConformingDelaunayTriangulator cdt = new ConformingDelaunayTriangulator(sites, tolerance);
 		
-		cdt.setConstraints(segments, new ArrayList(vertexMap.values()));
+		cdt.setConstraints(segments, new ArrayList(constraintVertexMap.values()));
 		
 		cdt.formInitialDelaunay();
 		cdt.enforceConstraints();
 		subdiv = cdt.getSubdivision();
 	}
 	
-	private static List createConstraintVertices(Collection coords)
+	private List createSiteVertices(Collection coords)
 	{
 		List verts = new ArrayList();
 		for (Iterator i = coords.iterator(); i.hasNext(); ) {
 			Coordinate coord = (Coordinate) i.next();
+			if (constraintVertexMap.containsKey(coord)) 
+			  continue;
 			verts.add(new ConstraintVertex(coord));
 		}
 		return verts;
@@ -133,7 +141,7 @@ public class ConformingDelaunayTriangulationBuilder
 		Coordinate[] coords = geom.getCoordinates();
 		for (int i = 0; i < coords.length; i++) {
 			Vertex v = new ConstraintVertex(coords[i]);
-			vertexMap.put(coords[i], v);
+			constraintVertexMap.put(coords[i], v);
 		}
 	}
 	
