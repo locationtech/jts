@@ -141,18 +141,18 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
    * The supported values for the index are 
    * {@link X}, {@link Y}, and {@link Z}.
    * 
-   * @param ordIndex the ordinate index
+   * @param ordinateIndex the ordinate index
    * @return the value of the ordinate
    * @throws IllegalArgumentException if the index is not valid
    */
-  public double getOrdinate(int ordIndex)
+  public double getOrdinate(int ordinateIndex)
   {
-    switch (ordIndex) {
+    switch (ordinateIndex) {
     case X: return x;
     case Y: return y;
     case Z: return z;
     }
-    throw new IllegalArgumentException("Invalid ordinate index: " + ordIndex);
+    throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
   }
   
   /**
@@ -161,7 +161,7 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
    * The supported values for the index are 
    * {@link X}, {@link Y}, and {@link Z}.
    * 
-   * @param ordIndex the ordinate index
+   * @param ordinateIndex the ordinate index
    * @param value the value to set
    * @throws IllegalArgumentException if the index is not valid
    */
