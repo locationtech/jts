@@ -64,6 +64,14 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
    * greater than the defined dimension of a coordinate.
    */
   public static final double NULL_ORDINATE = Double.NaN;
+  
+  /**
+   * Standard ordinate index values
+   */
+  public static final int X = 0;
+  public static final int Y = 1;
+  public static final int Z = 2;
+
   /**
    *  The x-coordinate.
    */
@@ -117,8 +125,6 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
     this(x, y, NULL_ORDINATE);
   }
 
-
-
   /**
    *  Sets this <code>Coordinate</code>s (x,y,z) values to that of <code>other</code>.
    *
@@ -128,6 +134,52 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
     x = other.x;
     y = other.y;
     z = other.z;
+  }
+
+  /**
+   * Gets the ordinate value for the given index.
+   * The supported values for the index are 
+   * {@link X}, {@link Y}, and {@link Z}.
+   * 
+   * @param ordIndex the ordinate index
+   * @return the value of the ordinate
+   * @throws IllegalArgumentException if the index is not valid
+   */
+  public double getOrdinate(int ordIndex)
+  {
+    switch (ordIndex) {
+    case X: return x;
+    case Y: return y;
+    case Z: return z;
+    }
+    throw new IllegalArgumentException("Invalid ordinate index: " + ordIndex);
+  }
+  
+  /**
+   * Sets the ordinate for the given index
+   * to a given value.
+   * The supported values for the index are 
+   * {@link X}, {@link Y}, and {@link Z}.
+   * 
+   * @param ordIndex the ordinate index
+   * @param value the value to set
+   * @throws IllegalArgumentException if the index is not valid
+   */
+  public void setOrdinate(int ordinateIndex, double value)
+  {
+    switch (ordinateIndex) {
+      case X:
+        x = value;
+        break;
+      case Y:
+        y = value;
+        break;
+      case Z:
+        z = value;
+        break;
+      default:
+          throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
+    }
   }
 
   /**
