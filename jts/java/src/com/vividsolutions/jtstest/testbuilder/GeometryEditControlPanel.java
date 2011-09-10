@@ -36,6 +36,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -183,6 +184,7 @@ public class GeometryEditControlPanel extends JPanel
         btnSetPrecisionModel.setMnemonic('0');
         btnSetPrecisionModel.setText("Set Precision Model...");
 
+        cbMagnifyTopo.setHorizontalTextPosition(AbstractButton.LEADING);
         cbMagnifyTopo.setText("Magnify Topology");
         cbMagnifyTopo.setToolTipText("Stretches portions of geometries to reveal fine topological detail");
         
