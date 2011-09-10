@@ -178,7 +178,7 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
         z = value;
         break;
       default:
-          throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
+        throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
     }
   }
 
