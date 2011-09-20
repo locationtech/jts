@@ -42,19 +42,43 @@ extends GeometricShapeBuilder
   	super(geomFact);
   }
 
+  /**
+   * Sets whether generated points are constrained to lie
+   * within a circle contained within each grid cell.
+   * This provides greater separation between points
+   * in adjacent cells.
+   * <p>
+   * The default is to not be constrained to a circle.
+   * @param isConstrainedToCircle
+   */
   public void setConstrainedToCircle(boolean isConstrainedToCircle)
   {
   	this.isConstrainedToCircle = isConstrainedToCircle;
   }
   
+  /**
+   * Sets the fraction of the grid cell side which will be treated as
+   * a gutter, in which no points will be created.
+   * The provided value is clamped to the range [0.0, 1.0].
+   * 
+   * @param gutterFraction
+   */
   public void setGutterFraction(double gutterFraction)
   {
   	this.gutterFraction = gutterFraction;
   }
   
+  /**
+   * Gets the {@link MultiPoint} containing the generated point
+   * 
+   * @return a MultiPoint
+   */
   public Geometry getGeometry()
   {
-    int nCells = (int) Math.sqrt(numPts) + 1;
+    int nCells = (int) Math.sqrt(numPts);
+    // ensure that at least numPts points are generated
+    if (nCells * nCells < numPts)
+      nCells += 1;
 
     double gridDX = getExtent().getWidth() / nCells;
     double gridDY = getExtent().getHeight() / nCells;
@@ -66,22 +90,22 @@ extends GeometricShapeBuilder
     double cellDX = cellFrac * gridDX;
     double cellDY = cellFrac * gridDY;
     	
-    List pts = new ArrayList();
-
+    Coordinate[] pts = new Coordinate[nCells * nCells];
+    int index = 0;
     for (int i = 0; i < nCells; i++) {
       for (int j = 0; j < nCells; j++) {
       	double orgX = getExtent().getMinX() + i * gridDX + gutterOffsetX;
       	double orgY = getExtent().getMinY() + j * gridDY + gutterOffsetY;
-        pts.add(randomPointInCell(orgX, orgY, cellDX, cellDY));
+        pts[index++] = randomPointInCell(orgX, orgY, cellDX, cellDY);
       }
     }
-    return geomFactory.createMultiPoint(CoordinateArrays.toCoordinateArray(pts));
+    return geomFactory.createMultiPoint(pts);
   }
   
   private Coordinate randomPointInCell(double orgX, double orgY, double xLen, double yLen)
   {
   	if (isConstrainedToCircle) {
-  		randomPointInCircle(
+  		return randomPointInCircle(
   				orgX, 
   				orgY, 
   				xLen, yLen);
@@ -99,7 +123,7 @@ extends GeometricShapeBuilder
   private static Coordinate randomPointInCircle(double orgX, double orgY, double width, double height)
   {
   	double centreX = orgX + width/2;
-  	double centreY = orgX + height/2;
+  	double centreY = orgY + height/2;
   		
   	double rndAng = 2 * Math.PI * Math.random();
   	double rndRadius = Math.random();

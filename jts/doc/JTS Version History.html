@@ -36,6 +36,7 @@ The current and archived JTS distributions can be obtained at the
 <h3>Performance Improvements</h3>
 <ul>
 <li>Simplified & improved performance of <tt>RectangleIntersects</tt> by using new <tt>RectangleLineIntersector</tt>
+<li>In <tt>RandomPointsInGridBuilder</tt> eliminated redundant <tt>ArrayList</tt> usage
 </ul>
 
 <h3>Robustness Improvements</h3>
@@ -51,6 +52,7 @@ in <tt>ConvexHull</tt> for some nearly collinear inputs
 to avoid mutating the vertex order of the input Geometry
 <li>Fixed <tt>ConformingDelaunayTriangulationBuilder</tt> to allow
 non-disjoint site and constraint vertex sets
+<li>Fixed <tt>RandomPointsInGridBuilder</tt> point generation to use circle constraint correctly
 </ul>
 
 <h3>Testing</h3>
