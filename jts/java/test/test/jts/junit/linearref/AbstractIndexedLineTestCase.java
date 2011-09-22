@@ -136,7 +136,11 @@ public abstract class AbstractIndexedLineTestCase extends TestCase {
   protected void checkExpected(Geometry result, String expected)
   {
     Geometry subLine = read(expected);
-    assertTrue(result.equalsExact(subLine, 1.0e-5));
+    boolean isEqual = result.equalsExact(subLine, 1.0e-5);
+    if (! isEqual) {
+      System.out.println("Computed result is: " + result);
+    }
+    assertTrue(isEqual);
   }
 
   protected abstract Geometry indicesOfThenExtract(Geometry input, Geometry subLine);

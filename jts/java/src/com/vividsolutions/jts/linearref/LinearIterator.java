@@ -33,7 +33,7 @@ public class LinearIterator
 
   /**
    * Invariant: currentLine <> null if the iterator is pointing at a valid coordinate
-   * @throws IllegalArgumentException if linearGeom is not lineal
+   * @throws IllegalArgumentException if linearGeom is not {@link Lineal}
    */
   private LineString currentLine;
   private int componentIndex = 0;
@@ -120,7 +120,7 @@ public class LinearIterator
 
   /**
    * Checks whether the iterator cursor is pointing to the
-   * endpoint of a linestring.
+   * endpoint of a component {@link LineString}.
    *
    * @return <code>true</true> if the iterator is at an endpoint
    */

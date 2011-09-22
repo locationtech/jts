@@ -218,7 +218,7 @@ public class LinearLocation
    * given linear {@link Geometry} which is
    * referenced by this location.
    *
-   * @param linearGeom a linear geometry
+   * @param linearGeom the linear geometry referenced by this location
    * @return the <tt>Coordinate</tt> at the location
    */
   public Coordinate getCoordinate(Geometry linearGeom)
@@ -371,6 +371,22 @@ public class LinearLocation
   }
 
   /**
+   * Tests whether this location is an endpoint of
+   * the linear component it refers to.
+   * 
+   * @param linearGeom the linear geometry referenced by this location
+   * @return true if the location is a component endpoint
+   */
+  public boolean isEndpoint(Geometry linearGeom)
+  {
+    LineString lineComp = (LineString) linearGeom.getGeometryN(componentIndex);
+    // check for endpoint
+    int nseg = lineComp.getNumPoints() - 1;
+    return segmentIndex >= nseg
+        || (segmentIndex == nseg && segmentFraction >= 1.0);
+  }
+    
+  /**
    * Copies this location
    *
    * @return a copy of this location
@@ -378,5 +394,13 @@ public class LinearLocation
   public Object clone()
   {
     return new LinearLocation(componentIndex, segmentIndex, segmentFraction);
+  }
+  
+  public String toString()
+  {
+    return "LinearLoc[" 
+    + componentIndex + ", "
+    + segmentIndex + ", "
+    + segmentFraction + "]";
   }
 }

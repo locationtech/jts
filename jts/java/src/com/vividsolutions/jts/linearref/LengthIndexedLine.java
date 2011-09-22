@@ -78,14 +78,25 @@ public class LengthIndexedLine
   public Geometry extractLine(double startIndex, double endIndex)
   {
     LocationIndexedLine lil = new LocationIndexedLine(linearGeom);
-    LinearLocation startLoc = locationOf(startIndex);
-    LinearLocation endLoc = locationOf(endIndex);
+    double startIndex2 = clampIndex(startIndex);
+    double endIndex2 = clampIndex(endIndex);
+    // if extracted line is zero-length, resolve start lower as well to ensure they are equal
+    boolean resolveStartLower = startIndex2 == endIndex2;
+    LinearLocation startLoc = locationOf(startIndex2, resolveStartLower);
+//    LinearLocation endLoc = locationOf(endIndex2, true);
+//    LinearLocation startLoc = locationOf(startIndex2);
+    LinearLocation endLoc = locationOf(endIndex2);
     return ExtractLineByLocation.extract(linearGeom, startLoc, endLoc);
   }
 
   private LinearLocation locationOf(double index)
   {
     return LengthLocationMap.getLocation(linearGeom, index);
+  }
+
+  private LinearLocation locationOf(double index, boolean resolveLower)
+  {
+    return LengthLocationMap.getLocation(linearGeom, index, resolveLower);
   }
 
   /**
@@ -209,12 +220,19 @@ public class LengthIndexedLine
    */
   public double clampIndex(double index)
   {
+    double posIndex = positiveIndex(index);
     double startIndex = getStartIndex();
-    if (index < startIndex) return startIndex;
+    if (posIndex < startIndex) return startIndex;
 
     double endIndex = getEndIndex();
-    if (index > endIndex) return endIndex;
+    if (posIndex > endIndex) return endIndex;
 
-    return index;
+    return posIndex;
+  }
+  
+  private double positiveIndex(double index)
+  {
+    if (index >= 0.0) return index;
+    return linearGeom.getLength() + index;
   }
 }

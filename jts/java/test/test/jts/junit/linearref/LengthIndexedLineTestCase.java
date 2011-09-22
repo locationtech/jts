@@ -22,6 +22,13 @@ public class LengthIndexedLineTestCase
     super(name);
   }
 
+  public void testExtractLineBothIndicesAtEndpointXXX()
+  {
+    checkExtractLine("MULTILINESTRING ((0 0, 10 0), (20 0, 25 0, 30 0))",
+        -10, 10, "LINESTRING (10 0, 10 0)");
+  }
+
+
   public void testExtractLineBeyondRange()
   {
     checkExtractLine("LINESTRING (0 0, 10 10)", -100, 100, "LINESTRING (0 0, 10 10)");
@@ -54,16 +61,32 @@ public class LengthIndexedLineTestCase
                      10, -1, "LINESTRING (20 0, 25 0, 29 0)");
   }
 
+  /**
+   * Tests that leading and trailing zero-length sublines are trimmed in the computed result,
+   * and that zero-length extracts return the lowest extracted zero-length line
+   */
+  public void testExtractLineIndexAtEndpointWithZeroLenComponents()
+  {
+    checkExtractLine("MULTILINESTRING ((0 0, 10 0), (10 0, 10 0), (20 0, 25 0, 30 0))",
+        10, -1, "LINESTRING (20 0, 25 0, 29 0)");
+    checkExtractLine("MULTILINESTRING ((0 0, 10 0), (10 0, 10 0), (20 0, 25 0, 30 0))",
+        5, 10, "LINESTRING (5 0, 10 0)");
+    checkExtractLine("MULTILINESTRING ((0 0, 10 0), (10 0, 10 0), (10 0, 10 0), (20 0, 25 0, 30 0))",
+        10, 10, "LINESTRING (10 0, 10 0)");
+    checkExtractLine("MULTILINESTRING ((0 0, 10 0), (10 0, 10 0), (10 0, 10 0), (10 0, 10 0), (20 0, 25 0, 30 0))",
+        10, -10, "LINESTRING (10 0, 10 0)");
+  }
+
   public void testExtractLineBothIndicesAtEndpoint()
   {
     checkExtractLine("MULTILINESTRING ((0 0, 10 0), (20 0, 25 0, 30 0))",
-                     10, 10, "LINESTRING (20 0, 20 0)");
+                     10, 10, "LINESTRING (10 0, 10 0)");
   }
 
   public void testExtractLineBothIndicesAtEndpointNegative()
   {
     checkExtractLine("MULTILINESTRING ((0 0, 10 0), (20 0, 25 0, 30 0))",
-                     -10, 10, "LINESTRING (20 0, 20 0)");
+                     -10, 10, "LINESTRING (10 0, 10 0)");
   }
 
   public void testExtractPointBeyondRange()
