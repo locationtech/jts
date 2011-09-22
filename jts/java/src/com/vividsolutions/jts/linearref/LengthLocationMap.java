@@ -28,6 +28,17 @@ public class LengthLocationMap
     return locater.getLocation(length);
   }
 
+  /**
+   * Computes the {@link LinearLocation} for a
+   * given length along a linear {@link Geometry},
+   * with control over how the location
+   * is resolved at component endpoints.
+   *
+   * @param line the linear geometry to use
+   * @param length the length index of the location
+   * @param resolveLower if true lengths are resolved to the lowest possible index
+   * @return the {@link LinearLocation} for the length
+   */
   public static LinearLocation getLocation(Geometry linearGeom, double length, boolean resolveLower)
   {
     LengthLocationMap locater = new LengthLocationMap(linearGeom);

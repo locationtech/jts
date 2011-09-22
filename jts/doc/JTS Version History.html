@@ -53,6 +53,8 @@ to avoid mutating the vertex order of the input Geometry
 <li>Fixed <tt>ConformingDelaunayTriangulationBuilder</tt> to allow
 non-disjoint site and constraint vertex sets
 <li>Fixed <tt>RandomPointsInGridBuilder</tt> point generation to use circle constraint correctly
+<li>Fixed Linear Referencing API to handle MultiLineStrings consistently,
+by always using the lowest possible index value, and by trimming zero-length components from results
 </ul>
 
 <h3>Testing</h3>
