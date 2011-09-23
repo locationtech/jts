@@ -89,6 +89,18 @@ public class LengthIndexedLineTestCase
                      -10, 10, "LINESTRING (10 0, 10 0)");
   }
 
+  /**
+   * From GEOS Ticket #323
+   */
+  public void testProjectExtractPoint()
+  {
+    Geometry linearGeom = read("MULTILINESTRING ((0 2, 0 0), (-1 1, 1 1))");
+    LengthIndexedLine indexedLine = new LengthIndexedLine(linearGeom);
+    double index = indexedLine.project(new Coordinate(1, 0));
+    Coordinate pt = indexedLine.extractPoint(index);
+    assertTrue(pt.equals(new Coordinate(0, 0)));
+  }
+
   public void testExtractPointBeyondRange()
   {
     Geometry linearGeom = read("LINESTRING (0 0, 10 10)");
