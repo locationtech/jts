@@ -37,6 +37,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import junit.framework.TestCase;
+
 import test.jts.index.STRtreeDemo;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -44,6 +46,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.SpatialIndex;
+import com.vividsolutions.jts.index.quadtree.Quadtree;
 import com.vividsolutions.jts.index.strtree.AbstractNode;
 import com.vividsolutions.jts.index.strtree.ItemBoundable;
 import com.vividsolutions.jts.index.strtree.STRtree;
@@ -53,7 +56,7 @@ import com.vividsolutions.jts.util.AssertionFailedException;
 /**
  * @version 1.7
  */
-public class STRtreeTestCase extends SpatialIndexTestCase {
+public class STRtreeTestCase extends TestCase {
   private GeometryFactory factory = new GeometryFactory();
 
   public STRtreeTestCase(String Name_) {
@@ -71,8 +74,14 @@ public class STRtreeTestCase extends SpatialIndexTestCase {
     doTestCreateParentsFromVerticalSlice(5, 2, 2, 1);
   }
 
-  protected SpatialIndex createSpatialIndex() {
-    return new STRtree(4);
+  public void testSpatialIndex()
+  throws Exception
+  {
+    SpatialIndexTester tester = new SpatialIndexTester();
+    tester.setSpatialIndex(new STRtree(4));
+    tester.init();
+    tester.run();
+    assertTrue(tester.isSuccess());
   }
 
   public void testDisallowedInserts() {

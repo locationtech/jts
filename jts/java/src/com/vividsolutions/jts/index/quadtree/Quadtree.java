@@ -33,6 +33,7 @@
  */
 package com.vividsolutions.jts.index.quadtree;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import com.vividsolutions.jts.geom.Envelope;
@@ -62,8 +63,10 @@ import com.vividsolutions.jts.index.*;
  * @version 1.7
  */
 public class Quadtree
-    implements SpatialIndex
+    implements SpatialIndex, Serializable
 {
+  private static final long serialVersionUID = -7461163625812743604L;
+
   /**
    * Ensure that the envelope for the inserted item has non-zero extents.
    * Use the current minExtent to pad the envelope, if necessary

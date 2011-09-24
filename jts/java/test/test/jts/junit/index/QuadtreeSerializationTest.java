@@ -33,33 +33,56 @@
  */
 package test.jts.junit.index;
 
+import java.io.*;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
-
 
 /**
  * @version 1.7
  */
-public class QuadtreeTestCase extends TestCase {
+public class QuadtreeSerializationTest extends TestCase {
 
-  public QuadtreeTestCase(String Name_) {
+  public QuadtreeSerializationTest(String Name_) {
     super(Name_);
   }
 
   public static void main(String[] args) {
-    String[] testCaseName = {QuadtreeTestCase.class.getName()};
+    String[] testCaseName = {QuadtreeSerializationTest.class.getName()};
     junit.textui.TestRunner.main(testCaseName);
   }
 
-  public void testSpatialIndex()
+  public void testSerialization()
   throws Exception
   {
     SpatialIndexTester tester = new SpatialIndexTester();
     tester.setSpatialIndex(new Quadtree());
     tester.init();
+    Quadtree tree = (Quadtree) tester.getSpatialIndex();
+    byte[] data = serialize(tree);
+    tree = (Quadtree) deserialize(data);
     tester.run();
     assertTrue(tester.isSuccess());
+  }
+  
+  private static byte[] serialize(Object obj) throws IOException
+  {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    ObjectOutputStream out = new ObjectOutputStream(bos);
+    out.writeObject(obj);
+    out.close();
+    byte[] treeBytes = bos.toByteArray();
+    return treeBytes;
+  }
+
+  private static Object deserialize(byte[] data) 
+    throws IOException, ClassNotFoundException
+  {
+    // deserialize tree
+    ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(data));
+    return in.readObject();
   }
 }

@@ -36,8 +36,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.index.SpatialIndex;
 
@@ -45,33 +43,46 @@ import com.vividsolutions.jts.index.SpatialIndex;
 /**
  * @version 1.7
  */
-public abstract class SpatialIndexTestCase extends TestCase {
-
-  public SpatialIndexTestCase(String Name_) {
-    super(Name_);
+public class SpatialIndexTester 
+{
+  private SpatialIndex index;
+  private ArrayList sourceData;
+  private boolean isSuccess = true;
+  
+  public SpatialIndexTester() {
   }
 
-  public static void main(String[] args) {
-    String[] testCaseName = {SpatialIndexTestCase.class.getName()};
-    junit.textui.TestRunner.main(testCaseName);
+  public boolean isSuccess()
+  {
+    return isSuccess;
+  }
+  
+  public void setSpatialIndex(SpatialIndex index)
+  {
+    this.index = index;
   }
 
-  protected abstract SpatialIndex createSpatialIndex();
+  public SpatialIndex getSpatialIndex()
+  {
+    return index;
+  }
 
-  public void testSpatialIndex() {
+  public void init() {
     System.out.println("===============================");
-    System.out.println("Spatial-Index Test: " + getClass());
     System.out.println("Grid Extent: " + (CELL_EXTENT * CELLS_PER_GRID_SIDE));
     System.out.println("Cell Extent: " + CELL_EXTENT);
     System.out.println("Feature Extent: " + FEATURE_EXTENT);
     System.out.println("Cells Per Grid Side: " + CELLS_PER_GRID_SIDE);
     System.out.println("Offset For 2nd Set Of Features: " + OFFSET);
-    SpatialIndex index = createSpatialIndex();
-    ArrayList sourceData = new ArrayList();
+    sourceData = new ArrayList();
     addSourceData(0, sourceData);
     addSourceData(OFFSET, sourceData);
     System.out.println("Feature Count: " + sourceData.size());
     insert(sourceData, index);
+  }
+  
+  public void run()
+  {
     doTest(index, QUERY_ENVELOPE_EXTENT_1, sourceData);
     doTest(index, QUERY_ENVELOPE_EXTENT_2, sourceData);
   }
@@ -115,7 +126,10 @@ public abstract class SpatialIndexTestCase extends TestCase {
         Envelope queryEnvelope = new Envelope(x, x+queryEnvelopeExtent, y, y+queryEnvelopeExtent);
         List expectedMatches = intersectingEnvelopes(queryEnvelope, sourceData);
         List actualMatches = index.query(queryEnvelope);
-        assertTrue(expectedMatches.size() <= actualMatches.size());
+        // since index returns candidates only, it may return more than the expected value
+        if (expectedMatches.size() > actualMatches.size()) {
+          isSuccess = false;
+        }
         extraMatchCount += (actualMatches.size() - expectedMatches.size());
         expectedMatchCount += expectedMatches.size();
         actualMatchCount += actualMatches.size();
@@ -145,7 +159,8 @@ public abstract class SpatialIndexTestCase extends TestCase {
           break;
         }
       }
-      assertTrue(found);
+      if (! found)
+        isSuccess = false;
     }
   }
 

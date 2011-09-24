@@ -33,6 +33,7 @@
  */
 package com.vividsolutions.jts.index.quadtree;
 
+import java.io.Serializable;
 import java.util.*;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -44,17 +45,7 @@ import com.vividsolutions.jts.index.*;
  *
  * @version 1.7
  */
-public abstract class NodeBase {
-
-//<<TODO:REFACTOR?>> Several classes in the various tree packages have the
-//same name and duplicate code. This suggests that there should be a generic
-//tree package containing the code that is duplicated, perhaps in abstract
-//base classes. [Jon Aquino]
-
-//<<TODO:RENAME?>> This little class hierarchy has some naming/conceptual
-//problems. A root node is conceptually a kind of node, yet a Root is not a Node.
-//NodeBase begs to be called BaseNode, but not all BaseNodes would be Nodes
-//(for example, Root). [Jon Aquino]
+public abstract class NodeBase implements Serializable {
 
 //DEBUG private static int itemCount = 0;  // debugging
   
