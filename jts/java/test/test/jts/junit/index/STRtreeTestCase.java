@@ -51,6 +51,7 @@ import com.vividsolutions.jts.index.strtree.AbstractNode;
 import com.vividsolutions.jts.index.strtree.ItemBoundable;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.util.AssertionFailedException;
+import com.vividsolutions.jtstest.util.SerializationUtil;
 
 
 /**
@@ -80,6 +81,19 @@ public class STRtreeTestCase extends TestCase {
     SpatialIndexTester tester = new SpatialIndexTester();
     tester.setSpatialIndex(new STRtree(4));
     tester.init();
+    tester.run();
+    assertTrue(tester.isSuccess());
+  }
+
+  public void testSerialization()
+  throws Exception
+  {
+    SpatialIndexTester tester = new SpatialIndexTester();
+    tester.setSpatialIndex(new STRtree(4));
+    tester.init();
+    STRtree tree = (STRtree) tester.getSpatialIndex();
+    byte[] data = SerializationUtil.serialize(tree);
+    tree = (STRtree) SerializationUtil.deserialize(data);
     tester.run();
     assertTrue(tester.isSuccess());
   }

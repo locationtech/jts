@@ -75,9 +75,21 @@ public abstract class AbstractSTRtree {
   private ArrayList itemBoundables = new ArrayList();
   private int nodeCapacity;
 
+  private static final int DEFAULT_NODE_CAPACITY = 10;
+
+  /**
+   * Constructs an AbstractSTRtree with the 
+   * default node capacity.
+   */
+  public AbstractSTRtree() {
+    this(DEFAULT_NODE_CAPACITY);
+  }
+
   /**
    * Constructs an AbstractSTRtree with the specified maximum number of child
    * nodes that a node may have
+   * 
+   * @param nodeCapacity the maximum number of child nodes in a node
    */
   public AbstractSTRtree(int nodeCapacity) {
     Assert.isTrue(nodeCapacity > 1, "Node capacity must be greater than 1");
@@ -124,7 +136,7 @@ public abstract class AbstractSTRtree {
     return (AbstractNode) nodes.get(nodes.size() - 1);
   }
 
-  protected int compareDoubles(double a, double b) {
+  protected static int compareDoubles(double a, double b) {
     return a > b ? 1
          : a < b ? -1
          : 0;

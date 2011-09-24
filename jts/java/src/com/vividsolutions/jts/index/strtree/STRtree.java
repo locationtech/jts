@@ -34,6 +34,8 @@
 package com.vividsolutions.jts.index.strtree;
 
 import com.vividsolutions.jts.index.strtree.AbstractSTRtree;
+
+import java.io.Serializable;
 import java.util.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.*;
@@ -56,9 +58,11 @@ import com.vividsolutions.jts.index.*;
  *
  * @version 1.7
  */
-public class STRtree extends AbstractSTRtree implements SpatialIndex {
+public class STRtree extends AbstractSTRtree 
+implements SpatialIndex, Serializable 
+{
 
-  private Comparator xComparator =
+  private static Comparator xComparator =
     new Comparator() {
       public int compare(Object o1, Object o2) {
         return compareDoubles(
@@ -66,7 +70,7 @@ public class STRtree extends AbstractSTRtree implements SpatialIndex {
             centreX((Envelope)((Boundable)o2).getBounds()));
       }
     };
-  private Comparator yComparator =
+  private static Comparator yComparator =
     new Comparator() {
       public int compare(Object o1, Object o2) {
         return compareDoubles(
@@ -75,17 +79,17 @@ public class STRtree extends AbstractSTRtree implements SpatialIndex {
       }
     };
 
-  private double centreX(Envelope e) {
+  private static double centreX(Envelope e) {
     return avg(e.getMinX(), e.getMaxX());
   }
 
-  private double avg(double a, double b) { return (a + b) / 2d; }
-
-  private double centreY(Envelope e) {
+  private static double centreY(Envelope e) {
     return avg(e.getMinY(), e.getMaxY());
   }
 
-  private IntersectsOp intersectsOp = new IntersectsOp() {
+  private static double avg(double a, double b) { return (a + b) / 2d; }
+
+  private static IntersectsOp intersectsOp = new IntersectsOp() {
     public boolean intersects(Object aBounds, Object bBounds) {
       return ((Envelope)aBounds).intersects((Envelope)bBounds);
     }
@@ -142,6 +146,7 @@ public class STRtree extends AbstractSTRtree implements SpatialIndex {
   }
 
   private static final int DEFAULT_NODE_CAPACITY = 10;
+  
   /**
    * Constructs an STRtree with the default node capacity.
    */
