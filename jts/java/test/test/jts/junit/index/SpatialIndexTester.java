@@ -154,7 +154,7 @@ public class SpatialIndexTester
       boolean found = false;
       for (Iterator j = actualEnvelopes.iterator(); j.hasNext(); ) {
         Envelope actual = (Envelope) j.next();
-        if (actual == expected) {
+        if (actual.equals(expected)) {
           found = true;
           break;
         }

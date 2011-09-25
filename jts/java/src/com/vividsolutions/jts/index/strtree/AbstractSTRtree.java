@@ -35,8 +35,9 @@ package com.vividsolutions.jts.index.strtree;
 
 import com.vividsolutions.jts.index.ItemVisitor;
 import com.vividsolutions.jts.util.*;
+
+import java.io.Serializable;
 import java.util.*;
-import java.util.List;
 
 /**
  * Base class for STRtree and SIRtree. STR-packed R-trees are described in:
@@ -52,7 +53,12 @@ import java.util.List;
  *
  * @version 1.7
  */
-public abstract class AbstractSTRtree {
+public abstract class AbstractSTRtree implements Serializable {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -3886435814360241337L;
 
   /**
    * A test for intersection between two bounds, necessary because subclasses

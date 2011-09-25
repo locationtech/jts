@@ -73,6 +73,7 @@ public class QuadtreeTestCase extends TestCase {
     Quadtree tree = (Quadtree) tester.getSpatialIndex();
     byte[] data = SerializationUtil.serialize(tree);
     tree = (Quadtree) SerializationUtil.deserialize(data);
+    tester.setSpatialIndex(tree);
     tester.run();
     assertTrue(tester.isSuccess());
   }

@@ -62,6 +62,11 @@ public class STRtree extends AbstractSTRtree
 implements SpatialIndex, Serializable 
 {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 259274702368956900L;
+  
   private static Comparator xComparator =
     new Comparator() {
       public int compare(Object o1, Object o2) {

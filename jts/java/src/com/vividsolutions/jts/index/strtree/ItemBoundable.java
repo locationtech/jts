@@ -33,13 +33,15 @@
  */
 package com.vividsolutions.jts.index.strtree;
 
+import java.io.Serializable;
+
 /**
  * Boundable wrapper for a non-Boundable spatial object. Used internally by
  * AbstractSTRtree.
  *
  * @version 1.7
  */
-public class ItemBoundable implements Boundable {
+public class ItemBoundable implements Boundable, Serializable {
   private Object bounds;
   private Object item;
 

@@ -91,9 +91,15 @@ public class STRtreeTestCase extends TestCase {
     SpatialIndexTester tester = new SpatialIndexTester();
     tester.setSpatialIndex(new STRtree(4));
     tester.init();
+
     STRtree tree = (STRtree) tester.getSpatialIndex();
+    // create the index before serialization
+    tree.query(new Envelope());
+    
     byte[] data = SerializationUtil.serialize(tree);
     tree = (STRtree) SerializationUtil.deserialize(data);
+    
+    tester.setSpatialIndex(tree);
     tester.run();
     assertTrue(tester.isSuccess());
   }

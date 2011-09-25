@@ -34,6 +34,7 @@
 package com.vividsolutions.jts.index.strtree;
 import com.vividsolutions.jts.util.*;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -43,10 +44,21 @@ import java.util.*;
  *
  * @version 1.7
  */
-public abstract class AbstractNode implements Boundable {
+public abstract class AbstractNode implements Boundable, Serializable {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 6493722185909573708L;
+  
   private ArrayList childBoundables = new ArrayList();
   private Object bounds = null;
   private int level;
+
+  /**
+   * Default constructor required for serialization.
+   */
+  public AbstractNode() {
+  }
 
   /**
    * Constructs an AbstractNode at the given level in the tree
