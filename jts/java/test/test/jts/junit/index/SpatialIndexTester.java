@@ -45,6 +45,8 @@ import com.vividsolutions.jts.index.SpatialIndex;
  */
 public class SpatialIndexTester 
 {
+  private static boolean VERBOSE = false;
+  
   private SpatialIndex index;
   private ArrayList sourceData;
   private boolean isSuccess = true;
@@ -68,16 +70,18 @@ public class SpatialIndexTester
   }
 
   public void init() {
-    System.out.println("===============================");
-    System.out.println("Grid Extent: " + (CELL_EXTENT * CELLS_PER_GRID_SIDE));
-    System.out.println("Cell Extent: " + CELL_EXTENT);
-    System.out.println("Feature Extent: " + FEATURE_EXTENT);
-    System.out.println("Cells Per Grid Side: " + CELLS_PER_GRID_SIDE);
-    System.out.println("Offset For 2nd Set Of Features: " + OFFSET);
     sourceData = new ArrayList();
     addSourceData(0, sourceData);
     addSourceData(OFFSET, sourceData);
-    System.out.println("Feature Count: " + sourceData.size());
+    if (VERBOSE) {
+      System.out.println("===============================");
+      System.out.println("Grid Extent: " + (CELL_EXTENT * CELLS_PER_GRID_SIDE));
+      System.out.println("Cell Extent: " + CELL_EXTENT);
+      System.out.println("Feature Extent: " + FEATURE_EXTENT);
+      System.out.println("Cells Per Grid Side: " + CELLS_PER_GRID_SIDE);
+      System.out.println("Offset For 2nd Set Of Features: " + OFFSET);
+      System.out.println("Feature Count: " + sourceData.size());
+    }
     insert(sourceData, index);
   }
   
@@ -115,9 +119,7 @@ public class SpatialIndexTester
   }
 
   private void doTest(SpatialIndex index, double queryEnvelopeExtent, List sourceData) {
-    System.out.println("---------------");
-    System.out.println("Envelope Extent: " + queryEnvelopeExtent);
-    int extraMatchCount = 0;
+   int extraMatchCount = 0;
     int expectedMatchCount = 0;
     int actualMatchCount = 0;
     int queryCount = 0;
@@ -137,13 +139,17 @@ public class SpatialIndexTester
         queryCount++;
       }
     }
-    System.out.println("Expected Matches: " + expectedMatchCount);
-    System.out.println("Actual Matches: " + actualMatchCount);
-    System.out.println("Extra Matches: " + extraMatchCount);
-    System.out.println("Query Count: " + queryCount);
-    System.out.println("Average Expected Matches: " + (expectedMatchCount/(double)queryCount));
-    System.out.println("Average Actual Matches: " + (actualMatchCount/(double)queryCount));
-    System.out.println("Average Extra Matches: " + (extraMatchCount/(double)queryCount));
+    if (VERBOSE) {
+      System.out.println("---------------");
+      System.out.println("Envelope Extent: " + queryEnvelopeExtent);
+      System.out.println("Expected Matches: " + expectedMatchCount);
+      System.out.println("Actual Matches: " + actualMatchCount);
+      System.out.println("Extra Matches: " + extraMatchCount);
+      System.out.println("Query Count: " + queryCount);
+      System.out.println("Average Expected Matches: " + (expectedMatchCount/(double)queryCount));
+      System.out.println("Average Actual Matches: " + (actualMatchCount/(double)queryCount));
+      System.out.println("Average Extra Matches: " + (extraMatchCount/(double)queryCount));
+    }
   }
 
   private void compare(List expectedEnvelopes, List actualEnvelopes) {
