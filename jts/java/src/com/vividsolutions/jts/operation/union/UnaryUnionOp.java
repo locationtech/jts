@@ -54,7 +54,8 @@ import com.vividsolutions.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
  * 
  * <li>Unioning a set of {@link LineString}s has the effect of <b>noding</b> 
  * and <b>dissolving</b> the input linework.
- * In this context "fully noded" means that there will be a node or endpoint in the result 
+ * In this context "fully noded" means that there will be 
+ * an endpoint or node in the result 
  * for every endpoint or line segment crossing in the input.
  * "Dissolved" means that any duplicate (i.e. coincident) line segments or portions
  * of line segments will be reduced to a single line segment in the result.  

@@ -32,6 +32,13 @@ public class UnaryUnionTest extends TestCase
     doTest(new String[]{ "POINT (1 1)", "POINT (2 2)"}, "MULTIPOINT ((1 1), (2 2))");
   }
 
+  public void testLineNoding()
+  throws Exception
+  {
+    doTest(new String[]{ "LINESTRING (0 0, 10 0, 5 -5, 5 5)"}, 
+        "MULTILINESTRING ((0 0, 5 0), (5 0, 10 0, 5 -5, 5 0), (5 0, 5 5))");
+  }
+
   public void testAll()
   throws Exception
   {

@@ -27,6 +27,18 @@
 </case>
 
 <case>
+  <desc>L - LineString (showing noding)</desc>
+  <a>
+    LINESTRING (0 0, 10 0, 5 -5, 5 5)
+  </a>
+<test>
+  <op name="union" arg1="A">
+    MULTILINESTRING ((0 0, 5 0), (5 0, 10 0, 5 -5, 5 0), (5 0, 5 5))
+  </op>
+</test>
+</case>
+
+<case>
   <desc>mL - multiLineString (showing noding)</desc>
   <a>
     MULTILINESTRING((0 0, 10 10), (0 10, 10 0))
