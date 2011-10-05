@@ -31,8 +31,8 @@ The current and archived JTS distributions can be obtained at the
 <ul>
 <li>Added <tt>RectangleLineIntersector</tt> to provide efficient rectangle-line intersection testing
 <li>Added <tt>getOrdinate</tt> and <tt>setOrdinate</tt> to <tt>Coordinate</tt>
-<li><tt>Quadtree</tt> has been made <tt>Serializable</tt>
-<li><tt>STRtree</tt> has been made <tt>Serializable</tt>
+<li><tt>Quadtree</tt> is <tt>Serializable</tt>
+<li><tt>STRtree</tt> is <tt>Serializable</tt>
 </ul>
 
 <h3>Performance Improvements</h3>
@@ -45,6 +45,7 @@ The current and archived JTS distributions can be obtained at the
 <ul>
 <li>Fixed robustness issue causing <tt>Empty Stack</tt> failure
 in <tt>ConvexHull</tt> for some nearly collinear inputs
+<li><tt>CGAlgorithms.signedArea()</tt> uses a more accurate algorithm
 </ul>
 
 <h3>Bug Fixes</h3>
@@ -74,6 +75,11 @@ and <tt>PerformanceTestCase</tt>)
 <li>Added segment index visualization styling
 <li>Improved <b>Geometry Inspector</b>
 <li>Added stream digitizing for Polygon and LineString tools
+</ul>
+
+<h3>Contributors</h3>
+<ul>
+<li>Peter Hopfgartner - improved area computation
 </ul>
 
 <!-- ================================================================ -->
