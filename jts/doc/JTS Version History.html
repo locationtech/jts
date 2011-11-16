@@ -58,6 +58,7 @@ non-disjoint site and constraint vertex sets
 <li>Fixed <tt>RandomPointsInGridBuilder</tt> point generation to use circle constraint correctly
 <li>Fixed Linear Referencing API to handle MultiLineStrings consistently,
 by always using the lowest possible index value, and by trimming zero-length components from results
+<li>Fixed bug in STRtree.query(Envelope, ItemVisitor) causing an NPE when tree is empty
 </ul>
 
 <h3>Testing</h3>

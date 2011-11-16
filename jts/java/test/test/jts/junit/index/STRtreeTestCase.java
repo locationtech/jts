@@ -45,6 +45,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.index.ItemVisitor;
 import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import com.vividsolutions.jts.index.strtree.AbstractNode;
@@ -145,6 +146,23 @@ public class STRtreeTestCase extends TestCase {
     }
   }
 
+  public void testEmptyTreeUsingListQuery()  
+  {
+    STRtree tree = new STRtree();
+    List list = tree.query(new Envelope(0, 0, 1, 1));
+    assertTrue(list.isEmpty());
+  }
+  
+  public void testEmptyTreeUsingItemVisitorQuery()  
+  {
+    STRtree tree = new STRtree();
+    tree.query(new Envelope(0,0,1,1), new ItemVisitor() {
+      public void visitItem(Object item) {
+        assertTrue("Should never reach here", true);
+      }
+    });  
+  }
+  
   public void testVerticalSlices() {
     doTestVerticalSlices(3, 2, 2, 1);
     doTestVerticalSlices(4, 2, 2, 2);

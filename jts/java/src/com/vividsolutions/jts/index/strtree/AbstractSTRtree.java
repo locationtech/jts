@@ -236,7 +236,7 @@ public abstract class AbstractSTRtree implements Serializable {
     if (!built) { build(); }
     ArrayList matches = new ArrayList();
     if (itemBoundables.isEmpty()) {
-      Assert.isTrue(root.getBounds() == null);
+      //Assert.isTrue(root.getBounds() == null);
       return matches;
     }
     if (getIntersectsOp().intersects(root.getBounds(), searchBounds)) {
@@ -251,7 +251,9 @@ public abstract class AbstractSTRtree implements Serializable {
   protected void query(Object searchBounds, ItemVisitor visitor) {
     if (!built) { build(); }
     if (itemBoundables.isEmpty()) {
-      Assert.isTrue(root.getBounds() == null);
+      // nothing in tree, so return
+      //Assert.isTrue(root.getBounds() == null);
+      return;
     }
     if (getIntersectsOp().intersects(root.getBounds(), searchBounds)) {
       query(searchBounds, root, visitor);
