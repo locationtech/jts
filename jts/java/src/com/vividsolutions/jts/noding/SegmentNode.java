@@ -57,6 +57,16 @@ public class SegmentNode
     isInterior = ! coord.equals2D(segString.getCoordinate(segmentIndex));
   }
 
+  /**
+   * Gets the {@link Coordinate} giving the location of this node.
+   * 
+   * @return the coordinate of the node
+   */
+  public Coordinate getCoordinate() 
+  {
+    return coord;
+  }
+  
   public boolean isInterior() { return isInterior; }
 
   public boolean isEndPoint(int maxSegmentIndex)

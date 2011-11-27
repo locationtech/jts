@@ -198,7 +198,7 @@ public class SegmentNodeList
   }
 
   /**
-   * Checks the correctness of the set of split edges corresponding to this edge
+   * Checks the correctness of the set of split edges corresponding to this edge.
    *
    * @param splitEdges the split edges for this edge (in order)
    */

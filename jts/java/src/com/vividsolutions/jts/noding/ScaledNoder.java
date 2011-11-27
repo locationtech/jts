@@ -11,6 +11,11 @@ import com.vividsolutions.jts.util.*;
  * This is intended for use with Snap-Rounding noders,
  * which typically are only intended to work in the integer domain.
  * Offsets can be provided to increase the number of digits of available precision.
+ * <p>
+ * Clients should be aware that rescaling can involve loss of precision,
+ * which can cause zero-length line segments to be created.
+ * These in turn can cause problems when used to build a planar graph.
+ * This situation should be checked for and collapsed segments removed if necessary.
  *
  * @version 1.7
  */
@@ -95,9 +100,21 @@ public class ScaledNoder
 
   private void rescale(Coordinate[] pts)
   {
+    Coordinate p0 = null;
+    Coordinate p1 = null;
+    
+    if (pts.length == 2) {
+      p0 = new Coordinate(pts[0]);
+      p1 = new Coordinate(pts[1]);
+    }
+
     for (int i = 0; i < pts.length; i++) {
       pts[i].x = pts[i].x / scaleFactor + offsetX;
       pts[i].y = pts[i].y / scaleFactor + offsetY;
+    }
+    
+    if (pts.length == 2 && pts[0].equals2D(pts[1])) {
+      System.out.println(pts);
     }
   }
 

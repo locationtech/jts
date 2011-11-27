@@ -33,6 +33,7 @@ The current and archived JTS distributions can be obtained at the
 <li>Added <tt>getOrdinate</tt> and <tt>setOrdinate</tt> to <tt>Coordinate</tt>
 <li><tt>Quadtree</tt> is <tt>Serializable</tt>
 <li><tt>STRtree</tt> is <tt>Serializable</tt>
+<li>Added <tt>max</tt>, <tt>average</tt> and <tt>wrap</tt> functions to </tt>MathUtil</tt>
 </ul>
 
 <h3>Performance Improvements</h3>
@@ -59,6 +60,9 @@ non-disjoint site and constraint vertex sets
 <li>Fixed Linear Referencing API to handle MultiLineStrings consistently,
 by always using the lowest possible index value, and by trimming zero-length components from results
 <li>Fixed bug in STRtree.query(Envelope, ItemVisitor) causing an NPE when tree is empty
+<li>Fixed issue with creating zero-length edges during buffer topology building under fixed precision, by:
+adding filter to remove zero-length edges;
+using a better estimate of scale factor for reducing to fixed precision after initial failure.
 </ul>
 
 <h3>Testing</h3>

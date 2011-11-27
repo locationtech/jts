@@ -192,6 +192,15 @@ public class BufferBuilder
 
     for (Iterator i = nodedSegStrings.iterator(); i.hasNext(); ) {
       SegmentString segStr = (SegmentString) i.next();
+      
+      /**
+       * Discard edges which have zero length, 
+       * since they carry no information and cause problems with topology building
+       */
+      Coordinate[] pts = segStr.getCoordinates();
+      if (pts.length == 2 && pts[0].equals2D(pts[1]))
+        continue;
+
       Label oldLabel = (Label) segStr.getData();
       Edge edge = new Edge(segStr.getCoordinates(), new Label(oldLabel));
       insertUniqueEdge(edge);

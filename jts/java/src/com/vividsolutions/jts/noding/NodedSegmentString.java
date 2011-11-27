@@ -55,6 +55,7 @@ public class NodedSegmentString
 	implements NodableSegmentString
 {
 	/**
+	 * Gets the {@link SegmentString}s which result from splitting this string at node points.
 	 * 
 	 * @param segStrings a Collection of NodedSegmentStrings
 	 * @return a Collection of NodedSegmentStrings representing the substrings
@@ -67,6 +68,7 @@ public class NodedSegmentString
   }
 
 	/**
+	 * Adds the noded {@link SegmentString}s which result from splitting this string at node points.
 	 * 
 	 * @param segStrings a Collection of NodedSegmentStrings
 	 * @param resultEdgelist a List which will collect the NodedSegmentStrings representing the substrings
