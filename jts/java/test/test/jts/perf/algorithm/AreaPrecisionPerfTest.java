@@ -29,9 +29,9 @@ public class AreaPrecisionPerfTest
       LinearRing[] holes = new LinearRing[] {};
       Polygon polygon = (Polygon) new GeometryFactory().createPolygon(
           (LinearRing) g1, holes);
-      //System.out.println(polygon);
+      System.out.println(polygon);
       
-      double area = polygon.getArea();
+      double area = originalSignedArea(coordinates);
       double area2 = accurateSignedArea(coordinates);
       double exactArea = 0.5 * nrVertices * Math.sin(2 * Math.PI / nrVertices);
       
