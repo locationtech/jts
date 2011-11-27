@@ -4,15 +4,15 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.*;
 
 /**
- * Computes the Minimum Bounding Circle (MBC)
+ * Computes the <b>Minimum Bounding Circle</b> (MBC)
  * for the points in a {@link Geometry}.
- * The MBC is the smallest circle which contains
+ * The MBC is the smallest circle which <tt>cover</tt>s
  * all the input points 
- * (this is sometimes known as the Smallest Enclosing Circle).
+ * (this is also known as the <b>Smallest Enclosing Circle</b>).
  * This is equivalent to computing the Maximum Diameter 
  * of the input point set.
  * <p>
- * The geometric circle can be specified in two equivalent ways,
+ * The computed circle can be specified in two equivalent ways,
  * both of which are provide as output by this class:
  * <ul>
  * <li>As a centre point and a radius
@@ -20,15 +20,19 @@ import com.vividsolutions.jts.util.*;
  * Depending on the number of points in the input
  * and their relative positions, this
  * will be specified by anywhere from 0 to 3 points. 
- * 0 or 1 points indicate an empty or trivial input point arrangment.
- * 2 or 3 points define a circle which contains 
+ * <ul>
+ * <li>0 or 1 points indicate an empty or trivial input point arrangement.
+ * <li>2 or 3 points define a circle which contains 
  * all the input points.
  * </ul>
- * The class also provides a Geometry which approximates the
+ * </ul>
+ * The class can also output a {@link Geometry} which approximates the
  * shape of the MBC (although as an approximation 
  * it is <b>not</b> guaranteed to <tt>cover</tt> all the input points.)
  * 
  * @author Martin Davis
+ * 
+ * @see MinimumDiameter
  *
  */
 public class MinimumBoundingCircle 
