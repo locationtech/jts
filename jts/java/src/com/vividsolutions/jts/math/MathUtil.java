@@ -89,5 +89,47 @@ public class MathUtil
     return ln / LOG_10;
   }
   
+  /**
+   * Computes an index which wraps around a given maximum value.
+   * For values >= 0, this is equals to <tt>val % max</tt>.
+   * For values < 0, this is equal to <tt>max - (-val) % max</tt> 
+   * 
+   * @param index the value to wrap
+   * @param max the maximum value (or modulus)
+   * @return the wrapped index
+   */
+  public static int wrap(int index, int max)
+  {
+    if (index < 0) {
+      return max - ((-index) % max);
+    }
+    return index % max;
+  }
 
+  /**
+   * Computes the average of two numbers.
+   * 
+   * @param x1 a number
+   * @param x2 a number
+   * @return the average of the inputs
+   */
+  public static double average(double x1, double x2)
+  {
+    return (x1 + x2) / 2.0;
+  }
+  
+  public static double max(double v1, double v2, double v3)
+  {
+    if (v1 > v2) {
+      if (v1 > v3) return v1;
+      return v3;
+    }
+    if (v2 > v3) return v2;
+    return v3;
+  }
+  
+  public static double max(double v1, double v2, double v3, double v4)
+  {
+    return Math.max(v1, max(v2, v3, v4));
+  }
 }
