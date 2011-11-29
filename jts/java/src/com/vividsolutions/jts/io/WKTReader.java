@@ -295,12 +295,12 @@ public class WKTReader
 	          return Double.parseDouble(tokenizer.sval);
 	        }
 	        catch (NumberFormatException ex) {
-	          throw new ParseException("Invalid number: " + tokenizer.sval);
+	          parseErrorWithLine("Invalid number: " + tokenizer.sval);
 	        }
       	}
       }
     }
-    parseError("number");
+    parseErrorExpected("number");
     return 0.0;
   }
   /**
@@ -318,7 +318,7 @@ public class WKTReader
     if (nextWord.equals(EMPTY) || nextWord.equals(L_PAREN)) {
       return nextWord;
     }
-    parseError(EMPTY + " or " + L_PAREN);
+    parseErrorExpected(EMPTY + " or " + L_PAREN);
     return null;
   }
 
@@ -336,7 +336,7 @@ public class WKTReader
     if (nextWord.equals(COMMA) || nextWord.equals(R_PAREN)) {
       return nextWord;
     }
-    parseError(COMMA + " or " + R_PAREN);
+    parseErrorExpected(COMMA + " or " + R_PAREN);
     return null;
   }
 
@@ -354,7 +354,7 @@ public class WKTReader
     if (nextWord.equals(R_PAREN)) {
       return nextWord;
     }
-    parseError(R_PAREN);
+    parseErrorExpected(R_PAREN);
     return null;
   }
 
@@ -381,7 +381,7 @@ public class WKTReader
     case ')': return R_PAREN;
     case ',': return COMMA;
     }
-    parseError("word");
+    parseErrorExpected("word");
     return null;
   }
 
@@ -401,13 +401,14 @@ public class WKTReader
   }
 
   /**
-   * Throws a formatted ParseException for the current token.
+   * Throws a formatted ParseException reporting that the current token
+   * was unexpected.
    *
    * @param expected a description of what was expected
    * @throws ParseException
    * @throws AssertionFailedException if an invalid token is encountered
    */
-  private void parseError(String expected)
+  private void parseErrorExpected(String expected)
       throws ParseException
   {
     // throws Asserts for tokens that should never be seen
@@ -417,9 +418,15 @@ public class WKTReader
       Assert.shouldNeverReachHere("Unexpected EOL token");
 
     String tokenStr = tokenString();
-    throw new ParseException("Expected " + expected + " but found " + tokenStr);
+    parseErrorWithLine("Expected " + expected + " but found " + tokenStr);
   }
 
+  private void parseErrorWithLine(String msg)
+  throws ParseException
+  {
+    throw new ParseException(msg + " (line " + tokenizer.lineno() + ")");
+  }
+  
   /**
    * Gets a description of the current token
    *
@@ -485,7 +492,9 @@ public class WKTReader
     else if (type.equalsIgnoreCase("GEOMETRYCOLLECTION")) {
       return readGeometryCollectionText();
     }
-    throw new ParseException("Unknown geometry type: " + type);
+    parseErrorWithLine("Unknown geometry type: " + type);
+    // should never reach here
+    return null;
   }
 
   /**
