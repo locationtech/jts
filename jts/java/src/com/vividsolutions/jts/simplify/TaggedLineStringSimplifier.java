@@ -15,7 +15,7 @@ import com.vividsolutions.jts.util.Debug;
  */
 class TaggedLineStringSimplifier
 {
-  private static LineIntersector li = new RobustLineIntersector();
+  private LineIntersector li = new RobustLineIntersector();
   private LineSegmentIndex inputIndex = new LineSegmentIndex();
   private LineSegmentIndex outputIndex = new LineSegmentIndex();
   private TaggedLineString line;
