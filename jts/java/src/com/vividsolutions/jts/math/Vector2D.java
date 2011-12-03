@@ -179,7 +179,7 @@ public class Vector2D {
 	public Vector2D normalize() {
 		double length = length();
 		if (length > 0.0)
-			return divide(length());
+			return divide(length);
 		return create(0.0, 0.0);
 	}
 
