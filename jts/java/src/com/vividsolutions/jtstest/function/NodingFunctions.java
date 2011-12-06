@@ -1,11 +1,16 @@
 package com.vividsolutions.jtstest.function;
 
 import java.util.*;
+
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.noding.BasicSegmentString;
 import com.vividsolutions.jts.noding.FastNodingValidator;
+import com.vividsolutions.jts.noding.Noder;
+import com.vividsolutions.jts.noding.ScaledNoder;
+import com.vividsolutions.jts.noding.SegmentString;
 import com.vividsolutions.jts.noding.snapround.GeometryNoder;
+import com.vividsolutions.jts.noding.snapround.MCIndexSnapRounder;
 import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
 
 public class NodingFunctions 
@@ -53,7 +58,25 @@ public class NodingFunctions
     return FunctionsUtil.getFactoryOrDefault(null).createMultiPoint(
         pts);
   }
-  
+  /**
+   * Runs a ScaledNoder on input.
+   * Input vertices should be rounded to precision model.
+   * 
+   * @param geom
+   * @param scaleFactor
+   * @return
+   */
+  public static Geometry scaledNoding(Geometry geom, double scaleFactor)
+  {
+    List segs = createSegmentStrings(geom);
+    PrecisionModel fixedPM = new PrecisionModel(scaleFactor);
+    Noder noder = new ScaledNoder(new MCIndexSnapRounder(new PrecisionModel(1.0)),
+        fixedPM.getScale());
+    noder.computeNodes(segs);
+    Collection nodedSegStrings = noder.getNodedSubstrings();
+    return fromSegmentStrings(nodedSegStrings);
+  }
+
   private static List createSegmentStrings(Geometry geom)
   {
     List segs = new ArrayList();
@@ -64,4 +87,17 @@ public class NodingFunctions
     }
     return segs;
   }
+  
+  private static Geometry fromSegmentStrings(Collection segStrings)
+  {
+    LineString[] lines = new LineString[segStrings.size()];
+    int index = 0;
+    for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
+      SegmentString ss = (SegmentString) i.next();
+      LineString line = FunctionsUtil.getFactoryOrDefault(null).createLineString(ss.getCoordinates());
+      lines[index++] = line;
+    }
+    return FunctionsUtil.getFactoryOrDefault(null).createMultiLineString(lines);
+  }
+  
 }
