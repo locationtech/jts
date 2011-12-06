@@ -19,11 +19,9 @@ public class MCIndexPointSnapper
 {
   public static int nSnaps = 0;
 
-  private Collection monoChains;
   private STRtree index;
 
-  public MCIndexPointSnapper(Collection monoChains, SpatialIndex index) {
-    this.monoChains = monoChains;
+  public MCIndexPointSnapper(SpatialIndex index) {
     this.index = (STRtree) index;
   }
 

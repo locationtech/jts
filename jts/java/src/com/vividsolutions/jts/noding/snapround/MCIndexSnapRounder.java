@@ -82,7 +82,7 @@ public class MCIndexSnapRounder
   {
     this.nodedSegStrings = inputSegmentStrings;
     noder = new MCIndexNoder();
-    pointSnapper = new MCIndexPointSnapper(noder.getMonotoneChains(), noder.getIndex());
+    pointSnapper = new MCIndexPointSnapper(noder.getIndex());
     snapRound(inputSegmentStrings, li);
 
     // testing purposes only - remove in final version
