@@ -197,9 +197,9 @@ public class CascadedPolygonUnion
    * Unions a section of a list using a recursive binary union on each half
    * of the section.
    * 
-   * @param geoms
-   * @param start
-   * @param end
+   * @param geoms the list of geometries containing the section to union
+   * @param start the start index of the section
+   * @param end the index after the end of the section
    * @return the union of the list section
    */
   private Geometry binaryUnion(List geoms, int start, int end)
@@ -220,6 +220,15 @@ public class CascadedPolygonUnion
   	}
   }
   
+  /**
+   * Gets the element at a given list index, or
+   * null if the index is out of range.
+   * 
+   * @param list
+   * @param index
+   * @return the geometry at the given index
+   * @return null if the index is out of range
+   */
   private static Geometry getGeometry(List list, int index)
   {
   	if (index >= list.size()) return null;
@@ -252,7 +261,7 @@ public class CascadedPolygonUnion
   
   /**
    * Computes the union of two geometries, 
-   * either of both of which may be null.
+   * either or both of which may be null.
    * 
    * @param g0 a Geometry
    * @param g1 a Geometry
@@ -268,8 +277,6 @@ public class CascadedPolygonUnion
   		return (Geometry) g1.clone();
   	if (g1 == null)
   		return (Geometry) g0.clone();
-  	
-  	// what if both are null?  Maybe return empty GC?
   	
   	return unionOptimized(g0, g1);
   }
@@ -304,7 +311,8 @@ public class CascadedPolygonUnion
   
   
   /**
-   * Unions two polygonal geometries.
+   * Unions two polygonal geometries, restricting computation 
+   * to the envelope intersection where possible.
    * The case of MultiPolygons is optimized to union only 
    * the polygons which lie in the intersection of the two geometry's envelopes.
    * Polygons outside this region can simply be combined with the union result,
@@ -366,6 +374,30 @@ public class CascadedPolygonUnion
   	*/
   	
   	//return bufferUnion(g0, g1);
-  	return g0.union(g1);
+  	return restrictToPolygons(g0.union(g1));
+  }
+  
+  /**
+   * Computes a {@link Geometry} containing only {@link Polygonal} components.
+   * Extracts the {@link Polygon}s from the input 
+   * and returns them as an appropriate {@link Polygonal} geometry.
+   * <p>
+   * If the input is already <tt>Polygonal</tt>, it is returned unchanged.
+   * <p>
+   * A particular use case is to filter out non-polygonal components
+   * returned from an overlay operation.  
+   * 
+   * @param g the geometry to filter
+   * @return a Polygonal geometry
+   */
+  private static Geometry restrictToPolygons(Geometry g)
+  {
+    if (g instanceof Polygonal) {
+      return g;
+    }
+    List polygons = PolygonExtracter.getPolygons(g);
+    if (polygons.size() == 1) 
+      return (Polygon) polygons.get(0);
+    return g.getFactory().createMultiPolygon(GeometryFactory.toPolygonArray(polygons));
   }
 }

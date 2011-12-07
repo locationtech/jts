@@ -151,8 +151,7 @@
   </a>
   <test>
     <op name="union" arg1="A">
-    	GEOMETRYCOLLECTION (LINESTRING (0 0, 20 0), 
-  POLYGON ((150 0, 20 0, 20 100, 180 100, 180 0, 150 0)))
+  POLYGON ((150 0, 20 0, 20 100, 180 100, 180 0, 150 0))
     </op>
   </test>
 </case>
