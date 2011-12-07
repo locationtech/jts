@@ -5,21 +5,29 @@ import com.vividsolutions.jts.geom.*;
 
 public class ConversionFunctions 
 {
-  public static Geometry toGeometryCollection(Geometry g)
+  public static Geometry toGeometryCollection(Geometry g, Geometry g2)
   {
-    if (! (g instanceof GeometryCollection)) {
-      return g.getFactory().createGeometryCollection(new Geometry[] { g} );
-    }
     
     List atomicGeoms = new ArrayList();
-    GeometryCollectionIterator it = new GeometryCollectionIterator(g);
-    while (it.hasNext()) {
-      Geometry g2 = (Geometry) it.next();
-      if (! (g2 instanceof GeometryCollection))
-        atomicGeoms.add(g2);
-    }
+    if (g != null) addComponents(g, atomicGeoms);
+    if (g2 != null) addComponents(g2, atomicGeoms);
     return g.getFactory().createGeometryCollection(
         GeometryFactory.toGeometryArray(atomicGeoms));
+  }
+
+  private static void addComponents(Geometry g, List atomicGeoms)
+  {
+    if (! (g instanceof GeometryCollection)) {
+      atomicGeoms.add(g);
+      return;
+    }
+
+    GeometryCollectionIterator it = new GeometryCollectionIterator(g);
+    while (it.hasNext()) {
+      Geometry gi = (Geometry) it.next();
+      if (! (gi instanceof GeometryCollection))
+        atomicGeoms.add(gi);
+    }
   }
 
 }
