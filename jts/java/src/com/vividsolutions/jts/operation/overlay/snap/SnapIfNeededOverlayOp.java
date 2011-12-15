@@ -59,13 +59,13 @@ public class SnapIfNeededOverlayOp
     boolean isSuccess = false;
     RuntimeException savedException = null;
     try {
+      // try basic operation with input geometries
       result = OverlayOp.overlayOp(geom[0], geom[1], opCode); 
       boolean isValid = true;
       // not needed if noding validation is used
 //      boolean isValid = OverlayResultValidator.isValid(geom[0], geom[1], OverlayOp.INTERSECTION, result);
       if (isValid)
       	isSuccess = true;
-    
     }
     catch (RuntimeException ex) {
     	savedException = ex;
