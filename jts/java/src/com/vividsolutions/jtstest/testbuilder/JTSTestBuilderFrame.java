@@ -68,6 +68,8 @@ import com.vividsolutions.jtstest.testbuilder.ui.*;
  */
 public class JTSTestBuilderFrame extends JFrame 
 {
+  private static String LOG_TAB_LABEL = "Log";
+    
   private static JTSTestBuilderFrame singleton = null;
   private ResultController resultController = new ResultController(this);
   private JTSTestBuilderMenuBar tbMenuBar = new JTSTestBuilderMenuBar(this);
@@ -293,9 +295,10 @@ public class JTSTestBuilderFrame extends JFrame
   {
     inputTabbedPane.setSelectedIndex(inputTabbedPane.indexOfTab("Value"));
   }
+  
   public void showInfoTab()
   {
-    inputTabbedPane.setSelectedIndex(inputTabbedPane.indexOfTab("Info"));
+    inputTabbedPane.setSelectedIndex(inputTabbedPane.indexOfTab(LOG_TAB_LABEL));
   }
   
   public void openXmlFilesAndDirectories(File[] files) throws Exception {
@@ -772,7 +775,7 @@ public class JTSTestBuilderFrame extends JFrame
     inputTabbedPane.add(resultWKTPanel, "Result");
     inputTabbedPane.add(resultValuePanel, "Value");
     inputTabbedPane.add(statsPanel, "Stats");
-    inputTabbedPane.add(logPanel, "Log");
+    inputTabbedPane.add(logPanel, LOG_TAB_LABEL);
     inputTabbedPane.add(layerListPanel, "Layers");
     inputTabbedPane.setSelectedIndex(1);
     inputTabbedPane.addChangeListener(new ChangeListener() {
@@ -789,7 +792,9 @@ public class JTSTestBuilderFrame extends JFrame
 
   private void updateStatsPanelIfVisible()
   {
-    if (inputTabbedPane.getComponent(inputTabbedPane.getSelectedIndex()) == statsPanel) {
+    int index = inputTabbedPane.getSelectedIndex();
+    if (index < 0) return;
+    if (inputTabbedPane.getComponent(index) == statsPanel) {
       statsPanel.refresh();         
     }   
   }
