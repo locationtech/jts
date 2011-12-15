@@ -36,6 +36,7 @@ import java.io.File;
 import java.util.Iterator;
 
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.WKBWriter;
 import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.test.TestCase;
@@ -58,6 +59,7 @@ public class XMLTestWriter
   }
 
   private WKTWriter wktWriter = new WKTWriter();
+  private WKBWriter wkbWriter = new WKBWriter();
 
   public XMLTestWriter() {
   }
@@ -140,32 +142,37 @@ public class XMLTestWriter
     return adapter.getTestRunnerTestCase().toXml();
   }
 
-  public String getTestXML(Testable testable) {
+  public String getTestXML(Testable testable, boolean useWKT) {
     if (testable instanceof TestCase) {
-      return getTestXML((TestCase)testable);
+      return getTestXML((TestCase)testable, useWKT);
     }
     if (testable instanceof TestCaseEdit) {
-      return getTestXML(((TestCaseEdit)testable).getTestable());
+      return getTestXML(((TestCaseEdit)testable).getTestable(), useWKT);
     }
     if (testable instanceof TestRunnerTestCaseAdapter) {
-      return getTestXML((TestRunnerTestCaseAdapter)testable);
+      return getTestXML((TestRunnerTestCaseAdapter)testable, useWKT);
     }
     Assert.shouldNeverReachHere();
     return null;
   }
 
-  public String getTestXML(TestCase testCase) {
+  public String getTestXML(Testable testCase)
+  {
+    return getTestXML(testCase, true);
+  }
+  
+  private String getTestXML(TestCase testCase, boolean useWKT) {
     Geometry[] geom = testCase.getGeometries();
     StringBuffer xml = new StringBuffer();
     xml.append("<case>\n");
     xml.append(getDescriptionForXml(testCase));
     if (geom[0] != null) {
-      String wkt0 = wktWriter.writeFormatted(geom[0]);
-      xml.append("  <a> " + wkt0 + "\n    </a>\n");
+      String wkt0 = getWKTorWKB(geom[0], useWKT);
+      xml.append("  <a>\n" + wkt0 + "\n    </a>\n");
     }
     if (geom[1] != null) {
-      String wkt1 = wktWriter.writeFormatted(geom[1]);
-      xml.append("  <b> " + wkt1 + "\n    </b>\n");
+      String wkt1 = getWKTorWKB(geom[1], useWKT);
+      xml.append("  <b>n" + wkt1 + "\n    </b>\n");
     }
     if (testCase.getExpectedIntersectionMatrix() != null) {
       xml.append("  <test>\n");
@@ -194,6 +201,13 @@ public class XMLTestWriter
     return xml.toString();
   }
 
+  private String getWKTorWKB(Geometry g, boolean useWKT)
+  {
+    if (useWKT)
+      return wktWriter.writeFormatted(g);
+    return WKBWriter.toHex(wkbWriter.write(g));
+  }
+  
   public String getTestXML(TestCaseList tcList) {
     StringBuffer xml = new StringBuffer();
     for (int i = 0; i < tcList.getList().size(); i++) {

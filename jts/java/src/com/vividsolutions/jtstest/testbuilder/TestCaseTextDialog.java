@@ -72,6 +72,7 @@ public class TestCaseTextDialog extends JDialog {
     JPanel functionsPanel = new JPanel();
     BoxLayout boxLayout1 = new BoxLayout(functionsPanel, BoxLayout.Y_AXIS);
     JRadioButton rbXML = new JRadioButton();
+    JRadioButton rbXMLWKB = new JRadioButton();
     JRadioButton rbTestCaseJava = new JRadioButton();
     JRadioButton rbJTSJava = new JRadioButton();
     JRadioButton rbWKB = new JRadioButton();
@@ -125,6 +126,15 @@ public class TestCaseTextDialog extends JDialog {
                 rbXML_actionPerformed(e);
             }
         });
+        rbXMLWKB.setText("Test XML - WKB");
+        rbXMLWKB.setToolTipText("");
+        rbXMLWKB.addActionListener(new java.awt.event.ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                rbXMLWKB_actionPerformed(e);
+            }
+        });
+        
         rbTestCaseJava.setText("TestCase Java");
         rbTestCaseJava.setToolTipText("");
         rbTestCaseJava.addActionListener(new java.awt.event.ActionListener() {
@@ -173,6 +183,7 @@ public class TestCaseTextDialog extends JDialog {
         textFormatPanel.add(rbGML, null);
         textFormatPanel.add(rbTestCaseJava, null);
         textFormatPanel.add(rbXML, null);
+        textFormatPanel.add(rbXMLWKB, null);
         textFormatPanel.add(rbJTSJava, null);
         jScrollPane1.getViewport().add(txtGeomView, null);
         
@@ -187,6 +198,7 @@ public class TestCaseTextDialog extends JDialog {
         textFormatGroup.add(rbJTSJava);
         textFormatGroup.add(rbTestCaseJava);
         textFormatGroup.add(rbXML);
+        textFormatGroup.add(rbXMLWKB);
         textFormatGroup.add(rbWKT);
         textFormatGroup.add(rbWKTFormatted);
         textFormatGroup.add(rbWKB);
@@ -215,6 +227,10 @@ public class TestCaseTextDialog extends JDialog {
 
     void rbXML_actionPerformed(ActionEvent e) {
       txtGeomView.setText((new XMLTestWriter()).getTestXML(test));
+  }
+    
+    void rbXMLWKB_actionPerformed(ActionEvent e) {
+      txtGeomView.setText((new XMLTestWriter()).getTestXML(test, false));
   }
     
     void rbWKB_actionPerformed(ActionEvent e) {
