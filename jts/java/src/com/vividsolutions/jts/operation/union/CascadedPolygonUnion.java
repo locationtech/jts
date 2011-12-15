@@ -41,18 +41,25 @@ import com.vividsolutions.jts.index.strtree.STRtree;
 /**
  * Provides an efficient method of unioning a collection of 
  * {@link Polygonal} geometrys.
- * This algorithm is faster and likely more robust than
+ * The geometries are indexed using a spatial index, 
+ * and unioned recursively in index order.
+ * For geometries with a high degree of overlap,
+ * this has the effect of reducing the number of vertices
+ * early in the process, which increases speed
+ * and robustness.
+ * <p>
+ * This algorithm is faster and more robust than
  * the simple iterated approach of 
  * repeatedly unioning each polygon to a result geometry.
  * <p>
  * The <tt>buffer(0)</tt> trick is sometimes faster, but can be less robust and 
- * can sometimes take an exceptionally long time to complete.
+ * can sometimes take a long time to complete.
  * This is particularly the case where there is a high degree of overlap
  * between the polygons.  In this case, <tt>buffer(0)</tt> is forced to compute
  * with <i>all</i> line segments from the outset, 
  * whereas cascading can eliminate many segments
  * at each stage of processing.
- * The best case for buffer(0) is the trivial case
+ * The best situation for using <tt>buffer(0)</tt> is the trivial case
  * where there is <i>no</i> overlap between the input geometries. 
  * However, this case is likely rare in practice.
  * 
