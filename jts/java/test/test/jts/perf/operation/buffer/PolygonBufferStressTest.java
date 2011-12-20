@@ -5,6 +5,20 @@ import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.noding.snapround.*;
 import com.vividsolutions.jts.util.*;
 
+/**
+ * Stress-tests buffering by repeatedly buffering a geometry
+ * using alternate positive and negative distances.
+ * 
+ * In older versions of JTS this used to quickly cause failure due to robustness
+ * issues (bad noding causing topology failures).
+ * However by ver 1.13 (at least) this test should pass perfectly.
+ * This is due to the many heuristics introduced to improve buffer
+ * robustnesss.
+ * 
+ * 
+ * @author Martin Davis
+ *
+ */
 public class PolygonBufferStressTest {
 
   static final int MAX_ITER = 50;
