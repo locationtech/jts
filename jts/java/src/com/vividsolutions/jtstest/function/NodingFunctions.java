@@ -6,7 +6,11 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.noding.BasicSegmentString;
 import com.vividsolutions.jts.noding.FastNodingValidator;
+import com.vividsolutions.jts.noding.IntersectionAdder;
+import com.vividsolutions.jts.noding.MCIndexNoder;
+import com.vividsolutions.jts.noding.NodedSegmentString;
 import com.vividsolutions.jts.noding.Noder;
+import com.vividsolutions.jts.algorithm.RobustLineIntersector;
 import com.vividsolutions.jts.noding.ScaledNoder;
 import com.vividsolutions.jts.noding.SegmentString;
 import com.vividsolutions.jts.noding.snapround.GeometryNoder;
@@ -58,6 +62,17 @@ public class NodingFunctions
     return FunctionsUtil.getFactoryOrDefault(null).createMultiPoint(
         pts);
   }
+  
+  public static Geometry MCIndexNoding(Geometry geom, double scaleFactor)
+  {
+    List segs = createNodedSegmentStrings(geom);
+    PrecisionModel fixedPM = new PrecisionModel(scaleFactor);
+    Noder noder = new MCIndexNoder(new IntersectionAdder(new RobustLineIntersector()));
+    noder.computeNodes(segs);
+    Collection nodedSegStrings = noder.getNodedSubstrings();
+    return fromSegmentStrings(nodedSegStrings);
+  }
+
   /**
    * Runs a ScaledNoder on input.
    * Input vertices should be rounded to precision model.
@@ -88,6 +103,17 @@ public class NodingFunctions
     return segs;
   }
   
+  private static List createNodedSegmentStrings(Geometry geom)
+  {
+    List segs = new ArrayList();
+    List lines = LinearComponentExtracter.getLines(geom);
+    for (Iterator i = lines.iterator(); i.hasNext(); ) {
+      LineString line = (LineString) i.next();
+      segs.add(new NodedSegmentString(line.getCoordinates(), null));
+    }
+    return segs;
+  }
+  
   private static Geometry fromSegmentStrings(Collection segStrings)
   {
     LineString[] lines = new LineString[segStrings.size()];
@@ -99,5 +125,6 @@ public class NodingFunctions
     }
     return FunctionsUtil.getFactoryOrDefault(null).createMultiLineString(lines);
   }
+  
   
 }
