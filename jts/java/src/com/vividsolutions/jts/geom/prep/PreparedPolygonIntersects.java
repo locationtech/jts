@@ -96,9 +96,12 @@ class PreparedPolygonIntersects
 		 * If any segments intersect, result is true
 		 */
     List lineSegStr = SegmentStringUtil.extractSegmentStrings(geom);
-		boolean segsIntersect = prepPoly.getIntersectionFinder().intersects(lineSegStr);
-		if (segsIntersect) 
-      return true;
+    // only request intersection finder if there are segments (ie NOT for point inputs)
+    if (lineSegStr.size() > 0) {
+      boolean segsIntersect = prepPoly.getIntersectionFinder().intersects(lineSegStr);
+      if (segsIntersect) 
+        return true;
+    }
 		
 		/**
 		 * If the test has dimension = 2 as well, it is necessary to

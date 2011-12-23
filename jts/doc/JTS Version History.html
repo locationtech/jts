@@ -42,6 +42,8 @@ The current and archived JTS distributions can be obtained at the
 <ul>
 <li>Simplified & improved performance of <tt>RectangleIntersects</tt> by using new <tt>RectangleLineIntersector</tt>
 <li>In <tt>RandomPointsInGridBuilder</tt> eliminated redundant <tt>ArrayList</tt> usage
+<li>In <tt>PreparedPolygonIntersects</tt> and <tt>PreparedLineStringIntersects</tt> added check
+to avoid creating segment index if all test inputs are points
 </ul>
 
 <h3>Robustness Improvements</h3>
