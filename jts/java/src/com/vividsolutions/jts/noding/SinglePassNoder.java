@@ -53,6 +53,10 @@ public abstract class SinglePassNoder
   public SinglePassNoder() {
   }
 
+  public SinglePassNoder(SegmentIntersector segInt) {
+    setSegmentIntersector(segInt);
+  }
+
   /**
    * Sets the SegmentIntersector to use with this noder.
    * A SegmentIntersector will normally add intersection nodes

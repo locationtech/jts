@@ -60,6 +60,10 @@ public class MCIndexNoder
   public MCIndexNoder()
   {
   }
+  public MCIndexNoder(SegmentIntersector si)
+  {
+    super(si);
+  }
 
   public List getMonotoneChains() { return monoChains; }
 
