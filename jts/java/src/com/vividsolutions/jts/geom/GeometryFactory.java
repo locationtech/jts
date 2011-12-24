@@ -402,6 +402,45 @@ public class GeometryFactory
   }
 
   /**
+   * Constructs a <code>Polygon</code> with the given exterior boundary.
+   *
+   * @param shell
+   *            the outer boundary of the new <code>Polygon</code>, or
+   *            <code>null</code> or an empty <code>LinearRing</code> if
+   *            the empty geometry is to be created.
+   * @throws IllegalArgumentException if the boundary ring is invalid
+   */
+  public Polygon createPolygon(CoordinateSequence coordinates) {
+    return createPolygon(createLinearRing(coordinates));
+  }
+
+  /**
+   * Constructs a <code>Polygon</code> with the given exterior boundary.
+   *
+   * @param shell
+   *            the outer boundary of the new <code>Polygon</code>, or
+   *            <code>null</code> or an empty <code>LinearRing</code> if
+   *            the empty geometry is to be created.
+   * @throws IllegalArgumentException if the boundary ring is invalid
+   */
+  public Polygon createPolygon(Coordinate[] coordinates) {
+    return createPolygon(createLinearRing(coordinates));
+  }
+
+  /**
+   * Constructs a <code>Polygon</code> with the given exterior boundary.
+   *
+   * @param shell
+   *            the outer boundary of the new <code>Polygon</code>, or
+   *            <code>null</code> or an empty <code>LinearRing</code> if
+   *            the empty geometry is to be created.
+   * @throws IllegalArgumentException if the boundary ring is invalid
+   */
+  public Polygon createPolygon(LinearRing shell) {
+    return createPolygon(shell, null);
+  }
+
+  /**
    *  Build an appropriate <code>Geometry</code>, <code>MultiGeometry</code>, or
    *  <code>GeometryCollection</code> to contain the <code>Geometry</code>s in
    *  it.
