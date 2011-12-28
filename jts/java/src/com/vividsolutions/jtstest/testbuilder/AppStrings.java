@@ -8,4 +8,7 @@ public class AppStrings {
 
   public static final String GEOM_LABEL_A = "A";
   public static final String GEOM_LABEL_B = "B";
+  
+  public static final String LOG_TAB_LABEL = "Log";
+
 }
