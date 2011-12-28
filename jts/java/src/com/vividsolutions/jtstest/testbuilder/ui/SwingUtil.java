@@ -84,8 +84,7 @@ public class SwingUtil {
     return true;
   }
     
-
-  public static void setEnabled(Component comp, boolean isEnabled)
+  public static void setEnabledBackground(Component comp, boolean isEnabled)
   {
     comp.setEnabled(isEnabled);
     if (isEnabled)
@@ -94,7 +93,6 @@ public class SwingUtil {
       comp.setBackground(SystemColor.control);
   }
   
-
   public static Integer getInteger(JTextField txt, Integer defaultVal) {
     String str = txt.getText();
     if (str.trim().length() <= 0)
