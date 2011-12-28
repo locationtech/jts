@@ -32,34 +32,63 @@
  */
 package com.vividsolutions.jtstest.testbuilder;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.util.*;
-import com.vividsolutions.jtstest.*;
-import com.vividsolutions.jtstest.clean.*;
-import com.vividsolutions.jtstest.test.*;
-import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
-import com.vividsolutions.jtstest.testbuilder.controller.ResultController;
-import com.vividsolutions.jtstest.testbuilder.geom.*;
-import com.vividsolutions.jtstest.testbuilder.model.*;
-import com.vividsolutions.jtstest.testbuilder.ui.tools.*;
-import com.vividsolutions.jtstest.testbuilder.ui.dnd.*;
-import com.vividsolutions.jtstest.testrunner.*;
-import com.vividsolutions.jtstest.util.*;
-
-import java.awt.*;
+import java.awt.AWTEvent;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.event.*;
-import java.io.*;
-import java.util.*;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.util.Iterator;
 import java.util.List;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.filechooser.FileFilter;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-import com.vividsolutions.jtstest.testbuilder.ui.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jtstest.clean.CleanDuplicatePoints;
+import com.vividsolutions.jtstest.clean.LineStringExtracter;
+import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
+import com.vividsolutions.jtstest.testbuilder.controller.ResultController;
+import com.vividsolutions.jtstest.testbuilder.model.GeometryEvent;
+import com.vividsolutions.jtstest.testbuilder.model.HtmlWriter;
+import com.vividsolutions.jtstest.testbuilder.model.JavaTestWriter;
+import com.vividsolutions.jtstest.testbuilder.model.TestBuilderModel;
+import com.vividsolutions.jtstest.testbuilder.model.TestCaseEdit;
+import com.vividsolutions.jtstest.testbuilder.model.XMLTestWriter;
+import com.vividsolutions.jtstest.testbuilder.ui.ImageUtil;
+import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
+import com.vividsolutions.jtstest.testbuilder.ui.dnd.FileDrop;
+import com.vividsolutions.jtstest.testbuilder.ui.tools.EditVertexTool;
+import com.vividsolutions.jtstest.testbuilder.ui.tools.InfoTool;
+import com.vividsolutions.jtstest.testbuilder.ui.tools.LineStringTool;
+import com.vividsolutions.jtstest.testbuilder.ui.tools.PanTool;
+import com.vividsolutions.jtstest.testbuilder.ui.tools.PointTool;
+import com.vividsolutions.jtstest.testbuilder.ui.tools.RectangleTool;
+import com.vividsolutions.jtstest.testbuilder.ui.tools.StreamPolygonTool;
+import com.vividsolutions.jtstest.testbuilder.ui.tools.ZoomToClickTool;
+import com.vividsolutions.jtstest.testrunner.GuiUtil;
+import com.vividsolutions.jtstest.util.FileUtil;
+import com.vividsolutions.jtstest.util.StringUtil;
 
 /**
  * The main frame for the JTS Test Builder.
@@ -728,12 +757,6 @@ public class JTSTestBuilderFrame extends JFrame
     jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
     jSplitPane1.setResizeWeight(0.5);
     inputTabbedPane.add(testListPanel, "Cases");
-    /*
-    // not really needed
-    testPanel.add(testListPanel, new GridBagConstraints(0, 0, 1, 1, 1.0, 1.0,
-        GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0,
-        0, 0), 0, 0));
-        */
     inputTabbedPane.add(wktPanel,  "Input");
     inputTabbedPane.add(resultWKTPanel, "Result");
     inputTabbedPane.add(resultValuePanel, "Value");
