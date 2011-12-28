@@ -8,6 +8,7 @@ import java.awt.datatransfer.*;
 import java.io.File;
 
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
@@ -15,6 +16,7 @@ import javax.swing.filechooser.FileFilter;
 import com.vividsolutions.jts.geom.*;
 
 import com.vividsolutions.jtstest.testbuilder.model.GeometryTransferable;
+import com.vividsolutions.jtstest.util.StringUtil;
 
 public class SwingUtil {
 
@@ -45,6 +47,29 @@ public class SwingUtil {
       };
       return ff;
     }
+
+    /**
+     * 
+     * @param comp
+     * @param fileChooser
+     * @return filename chosen
+     * @return null if choose was cancelled for some reason
+     */
+    public static String chooseFilenameWithConfirm(Component comp, JFileChooser fileChooser) {
+      try {
+        if (JFileChooser.APPROVE_OPTION == fileChooser.showSaveDialog(comp)) {
+          File file = fileChooser.getSelectedFile();
+          if (! SwingUtil.confirmOverwrite(comp, file)) return null;
+          String fullFileName = fileChooser.getSelectedFile().toString();
+          return fullFileName;
+        }
+      }
+      catch (Exception x) {
+        SwingUtil.reportException(comp, x);
+      }
+      return null;
+    }
+
 
   public static boolean confirmOverwrite(Component comp, File file)
   {
@@ -139,6 +164,12 @@ public class SwingUtil {
     } catch (Throwable t) {
         return null;
     }
+  }
+
+  public static void reportException(Component c, Exception e) {
+    JOptionPane.showMessageDialog(c, StringUtil.wrap(e.toString(), 80), "Exception",
+        JOptionPane.ERROR_MESSAGE);
+    e.printStackTrace(System.out);
   }
 
 }

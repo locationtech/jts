@@ -376,7 +376,7 @@ public class WKTPanel extends JPanel
             getGeometryTextClean(1));
       }
       catch (Exception ex) {
-        JTSTestBuilderFrame.reportException(this, ex);
+        SwingUtil.reportException(this, ex);
       }
     }
 
@@ -430,7 +430,7 @@ public class WKTPanel extends JPanel
             tbModel.loadMultipleGeometriesFromFile(geomIndex, files[0].getCanonicalPath());
             //(textArea).setText(FileUtil.readText(files[0]));
           } catch (Exception ex) {
-            JTSTestBuilderFrame.reportException(null, ex);
+            SwingUtil.reportException(null, ex);
           }
         }
       });

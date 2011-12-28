@@ -180,7 +180,7 @@ public class JTSTestBuilderFrame extends JFrame
         try {
           openXmlFilesAndDirectories(files);
         } catch (Exception ex) {
-          reportException(null, ex);
+          SwingUtil.reportException(null, ex);
         }
       }
     });
@@ -234,14 +234,8 @@ public class JTSTestBuilderFrame extends JFrame
     updatePrecisionModelDescription();
   }
   
-  public static void reportException(Component c, Exception e) {
-    JOptionPane.showMessageDialog(c, StringUtil.wrap(e.toString(), 80), "Exception",
-        JOptionPane.ERROR_MESSAGE);
-    e.printStackTrace(System.out);
-  }
-
   public static void reportException(Exception e) {
-  	reportException(instance(), e);
+  	SwingUtil.reportException(instance(), e);
   }
 
   public void setCurrentTestCase(TestCaseEdit testCase) {
@@ -429,7 +423,7 @@ public class JTSTestBuilderFrame extends JFrame
       }
     }
     catch (Exception x) {
-      reportException(this, x);
+      SwingUtil.reportException(this, x);
     }
   }
 
@@ -446,7 +440,7 @@ public class JTSTestBuilderFrame extends JFrame
       }
     }
     catch (Exception x) {
-      reportException(this, x);
+      SwingUtil.reportException(this, x);
     }
   }
 
@@ -473,7 +467,7 @@ public class JTSTestBuilderFrame extends JFrame
       }
     }
     catch (Exception x) {
-      reportException(this, x);
+      SwingUtil.reportException(this, x);
     }
   }
 
@@ -515,11 +509,11 @@ public class JTSTestBuilderFrame extends JFrame
       }
     }
     catch (Exception x) {
-      reportException(this, x);
+      SwingUtil.reportException(this, x);
     }
   }
 
-  void menuSaveAsPNG_actionPerformed(ActionEvent e) {
+  void OLDmenuSaveAsPNG_actionPerformed(ActionEvent e) {
     try {
       initFileChoosers();
       if (JFileChooser.APPROVE_OPTION == pngFileChooser.showSaveDialog(this)) {
@@ -532,7 +526,21 @@ public class JTSTestBuilderFrame extends JFrame
       }
     }
     catch (Exception x) {
-      reportException(this, x);
+      SwingUtil.reportException(this, x);
+    }
+  }
+
+  void menuSaveAsPNG_actionPerformed(ActionEvent e) {
+    initFileChoosers();
+    try {
+      String fullFileName = SwingUtil.chooseFilenameWithConfirm(this, pngFileChooser);  
+      if (fullFileName == null) return;
+        ImageUtil.writeImage(testCasePanel.getGeometryEditPanel(), 
+            fullFileName,
+            ImageUtil.IMAGE_FORMAT_NAME_PNG);
+    }
+    catch (Exception x) {
+      SwingUtil.reportException(this, x);
     }
   }
 
@@ -542,7 +550,7 @@ public class JTSTestBuilderFrame extends JFrame
         		ImageUtil.IMAGE_FORMAT_NAME_PNG);
     }
     catch (Exception x) {
-      reportException(this, x);
+      SwingUtil.reportException(this, x);
     }
   }
 
@@ -647,7 +655,7 @@ public class JTSTestBuilderFrame extends JFrame
       }
     }
     catch (Exception x) {
-      reportException(this, x);
+      SwingUtil.reportException(this, x);
     }
   }
 
@@ -665,7 +673,7 @@ public class JTSTestBuilderFrame extends JFrame
       updateGeometry();
     }
     catch (ParseException pe) {
-      reportException(this, pe);
+      SwingUtil.reportException(this, pe);
     }
   }
   void revealTopo_actionPerformed() {

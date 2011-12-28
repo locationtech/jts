@@ -55,6 +55,7 @@ import javax.swing.event.ListSelectionListener;
 
 import com.vividsolutions.jtstest.test.Testable;
 import com.vividsolutions.jtstest.testbuilder.model.TestCaseEdit;
+import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 
 
 /**
@@ -193,7 +194,7 @@ public class TestListDialog extends JDialog {
             testBuilderFrame.testCasePanel.relatePanel.runTests();
             list.repaint();
         } catch (Exception x) {
-            JTSTestBuilderFrame.reportException(this, x);
+            SwingUtil.reportException(this, x);
         }
     }
 }
