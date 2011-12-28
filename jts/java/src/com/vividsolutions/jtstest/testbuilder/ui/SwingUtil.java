@@ -84,7 +84,7 @@ public class SwingUtil {
     return true;
   }
     
-  public static void setEnabledBackground(Component comp, boolean isEnabled)
+  public static void setEnabledWithBackground(Component comp, boolean isEnabled)
   {
     comp.setEnabled(isEnabled);
     if (isEnabled)

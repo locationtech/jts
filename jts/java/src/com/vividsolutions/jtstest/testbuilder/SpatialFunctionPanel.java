@@ -298,11 +298,11 @@ extends JPanel
   {
     int numNonGeomParams = numNonGeomParams(currentFunc);
     // TODO: this is a bit of a hack, and should be made smarter
-    SwingUtil.setEnabledBackground(txtDistance, numNonGeomParams >= 1);
-    SwingUtil.setEnabledBackground(txtQuadrantSegs, numNonGeomParams >= 2);
-    SwingUtil.setEnabledBackground(cbCapStyle, numNonGeomParams >= 3);
-    SwingUtil.setEnabledBackground(cbJoinStyle, numNonGeomParams >= 4);
-    SwingUtil.setEnabledBackground(txtMitreLimit, numNonGeomParams >= 5);
+    SwingUtil.setEnabledWithBackground(txtDistance, numNonGeomParams >= 1);
+    SwingUtil.setEnabledWithBackground(txtQuadrantSegs, numNonGeomParams >= 2);
+    SwingUtil.setEnabledWithBackground(cbCapStyle, numNonGeomParams >= 3);
+    SwingUtil.setEnabledWithBackground(cbJoinStyle, numNonGeomParams >= 4);
+    SwingUtil.setEnabledWithBackground(txtMitreLimit, numNonGeomParams >= 5);
   }
   
   private static int numNonGeomParams(GeometryFunction func)
