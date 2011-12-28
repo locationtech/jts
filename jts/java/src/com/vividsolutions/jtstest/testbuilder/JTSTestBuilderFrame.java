@@ -189,11 +189,12 @@ public class JTSTestBuilderFrame extends JFrame
   private void initFileChoosers() {
     if (pngFileChooser == null) {
       pngFileChooser = new JFileChooser();
-      pngFileChooser.addChoosableFileFilter(SwingUtil.pngFileFilter);
+      pngFileChooser.addChoosableFileFilter(SwingUtil.PNG_FILE_FILTER);
       pngFileChooser.setDialogTitle("Save PNG");
       pngFileChooser.setSelectedFile(new File("geoms.png"));
     }
   }
+  
   public static JTSTestBuilderFrame instance() {
     if (singleton == null) {
       new JTSTestBuilderFrame();
@@ -416,8 +417,8 @@ public class JTSTestBuilderFrame extends JFrame
 
   void menuLoadXmlTestFile_actionPerformed(ActionEvent e) {
     try {
-      fileChooser.removeChoosableFileFilter(SwingUtil.javaFileFilter);
-      fileChooser.addChoosableFileFilter(SwingUtil.xmlFileFilter);
+      fileChooser.removeChoosableFileFilter(SwingUtil.JAVA_FILE_FILTER);
+      fileChooser.addChoosableFileFilter(SwingUtil.XML_FILE_FILTER);
       fileChooser.setDialogTitle("Open XML Test File(s)");
       fileChooser.setMultiSelectionEnabled(true);
       if (JFileChooser.APPROVE_OPTION == fileChooser.showOpenDialog(this)) {
@@ -435,8 +436,8 @@ public class JTSTestBuilderFrame extends JFrame
 
   void menuSaveAsXml_actionPerformed(ActionEvent e) {
     try {
-      fileChooser.removeChoosableFileFilter(SwingUtil.javaFileFilter);
-      fileChooser.addChoosableFileFilter(SwingUtil.xmlFileFilter);
+      fileChooser.removeChoosableFileFilter(SwingUtil.JAVA_FILE_FILTER);
+      fileChooser.addChoosableFileFilter(SwingUtil.XML_FILE_FILTER);
       fileChooser.setDialogTitle("Save XML Test File");
       if (JFileChooser.APPROVE_OPTION == fileChooser.showSaveDialog(this)) {
         File file = fileChooser.getSelectedFile();
@@ -457,8 +458,8 @@ public class JTSTestBuilderFrame extends JFrame
   
   void menuSaveAsJava_actionPerformed(ActionEvent e) {
     try {
-      fileChooser.removeChoosableFileFilter(SwingUtil.xmlFileFilter);
-      fileChooser.addChoosableFileFilter(SwingUtil.javaFileFilter);
+      fileChooser.removeChoosableFileFilter(SwingUtil.XML_FILE_FILTER);
+      fileChooser.addChoosableFileFilter(SwingUtil.JAVA_FILE_FILTER);
       fileChooser.setDialogTitle("Save Java File");
       if (JFileChooser.APPROVE_OPTION == fileChooser.showSaveDialog(this)) {
         File file = fileChooser.getSelectedFile();
@@ -512,30 +513,6 @@ public class JTSTestBuilderFrame extends JFrame
         //          System.out.println(busyDialog.getStackTrace());
         //          throw e2;
         //        }
-      }
-    }
-    catch (Exception x) {
-      reportException(this, x);
-    }
-  }
-
-  void OLDmenuSaveAsPNG_actionPerformed(ActionEvent e) {
-    try {
-      directoryChooser.setDialogTitle("Select Folder In Which To Save PNG");
-      if (JFileChooser.APPROVE_OPTION == directoryChooser.showSaveDialog(this)) {
-        /*
-        final PNGWriter writer = new PNGWriter();
-        final File directory = directoryChooser.getSelectedFile();
-        Assert.isTrue(directory.exists());
-        writer.write(directory, tbModel.getCurrentTestCaseEdit(), tbModel.getPrecisionModel());
-        */
-        final File directory = directoryChooser.getSelectedFile();
-        String filenameWithPath = directory.getPath() + "\\" + "geoms";
-        ImageUtil.writeImage(testCasePanel.getGeometryEditPanel(), 
-            filenameWithPath + ".png",
-            ImageUtil.IMAGE_FORMAT_NAME_PNG);
-        
-        //saveImageToClipboard(testCasePanel.getGeometryEditPanel(), filenameWithPath);
       }
     }
     catch (Exception x) {
@@ -659,7 +636,7 @@ public class JTSTestBuilderFrame extends JFrame
 
   void menuLoadXmlTestFolder_actionPerformed(ActionEvent e) {
     try {
-      directoryChooser.removeChoosableFileFilter(SwingUtil.javaFileFilter);
+      directoryChooser.removeChoosableFileFilter(SwingUtil.JAVA_FILE_FILTER);
       directoryChooser.setDialogTitle("Open Folder(s) Containing XML Test Files");
       directoryChooser.setMultiSelectionEnabled(true);
       if (JFileChooser.APPROVE_OPTION == directoryChooser.showOpenDialog(this)) {

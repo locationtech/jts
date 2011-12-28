@@ -18,35 +18,33 @@ import com.vividsolutions.jtstest.testbuilder.model.GeometryTransferable;
 
 public class SwingUtil {
 
-  public static FileFilter xmlFileFilter =
-    new FileFilter() {
-      public String getDescription() {
-        return "JTS Test XML File (*.xml)";
-      }
-      public boolean accept(File f) {
-        return f.isDirectory() || f.toString().toLowerCase().endsWith(".xml");
-      }
-    };
-    
-  public static  FileFilter javaFileFilter =
-    new FileFilter() {
-      public String getDescription() {
-        return "Java File (*.java)";
-      }
-      public boolean accept(File f) {
-        return f.isDirectory() || f.toString().toLowerCase().endsWith(".java");
-      }
-    };
-    
-  public static  FileFilter pngFileFilter =
-    new FileFilter() {
-      public String getDescription() {
-        return "PNG File (*.png)";
-      }
-      public boolean accept(File f) {
-        return f.isDirectory() || f.toString().toLowerCase().endsWith(".png");
-      }
-    };
+  public static FileFilter XML_FILE_FILTER = createFileFilter("JTS Test XML File (*.xml)", ".xml");
+  public static  FileFilter JAVA_FILE_FILTER = createFileFilter("Java File (*.java)", ".java");
+  public static  FileFilter PNG_FILE_FILTER = createFileFilter("PNG File (*.png)", ".png");
+
+    /**
+     * 
+     * Example usage:
+     * <pre>
+     * SwingUtil.createFileFilter("JEQL script (*.jql)", "jql")
+     * </pre>
+     * @param description
+     * @param extension
+     * @return
+     */
+    public static FileFilter createFileFilter(final String description, String extension)
+    {
+      final String dotExt = extension.startsWith(".") ? extension : "." + extension;
+      FileFilter ff =  new FileFilter() {
+        public String getDescription() {
+          return description;
+        }
+        public boolean accept(File f) {
+          return f.isDirectory() || f.toString().toLowerCase().endsWith(dotExt);
+        }
+      };
+      return ff;
+    }
 
   public static boolean confirmOverwrite(Component comp, File file)
   {
