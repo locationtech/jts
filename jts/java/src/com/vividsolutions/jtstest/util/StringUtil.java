@@ -367,10 +367,10 @@ public class StringUtil
     }
 
     /**
-     *  Line-wraps s by inserting CR-LF instead of the first space after the nth
-     *  column.
+     *  Line-wraps a string s by inserting CR-LF instead of the first space after the nth
+     *  columns.
      */
-    public static String split(String s, int n) {
+    public static String wrap(String s, int n) {
         StringBuffer b = new StringBuffer();
         boolean wrapPending = false;
         for (int i = 0; i < s.length(); i++) {

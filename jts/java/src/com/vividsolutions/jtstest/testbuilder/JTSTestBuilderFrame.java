@@ -235,7 +235,7 @@ public class JTSTestBuilderFrame extends JFrame
   }
   
   public static void reportException(Component c, Exception e) {
-    JOptionPane.showMessageDialog(c, StringUtil.split(e.toString(), 80), "Exception",
+    JOptionPane.showMessageDialog(c, StringUtil.wrap(e.toString(), 80), "Exception",
         JOptionPane.ERROR_MESSAGE);
     e.printStackTrace(System.out);
   }
@@ -826,7 +826,7 @@ public class JTSTestBuilderFrame extends JFrame
       String problem = (String) i.next();
       System.out.println(problem);
     }
-    JOptionPane.showMessageDialog(this, StringUtil.split(parsingProblems.size()
+    JOptionPane.showMessageDialog(this, StringUtil.wrap(parsingProblems.size()
          + " problems occurred parsing the XML test file."
          + " The first problem was: " + parsingProblems.get(0), 80),
         "Error", JOptionPane.ERROR_MESSAGE);

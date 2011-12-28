@@ -159,7 +159,7 @@ public class GuiUtil {
             return;
         if (tip.toLowerCase().indexOf("<html>") > -1)
             return;
-        tip = StringUtil.split(tip, 50);
+        tip = StringUtil.wrap(tip, 50);
         tip = StringUtil.replaceAll(tip, "\n", "<p>");
         tip = "<html>" + tip + "</html>";
         jcomponent.setToolTipText(tip);
