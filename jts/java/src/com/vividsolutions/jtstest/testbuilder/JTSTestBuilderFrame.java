@@ -113,8 +113,6 @@ public class JTSTestBuilderFrame extends JFrame
       "Load Test Cases", true);
 */
   
-  private ArrayList wktABeforePMChange = new ArrayList();
-  private ArrayList wktBBeforePMChange = new ArrayList();
   
   /**
    *  Construct the frame
@@ -513,23 +511,6 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
-  void OLDmenuSaveAsPNG_actionPerformed(ActionEvent e) {
-    try {
-      initFileChoosers();
-      if (JFileChooser.APPROVE_OPTION == pngFileChooser.showSaveDialog(this)) {
-        File file = pngFileChooser.getSelectedFile();
-        if (! SwingUtil.confirmOverwrite(this, file)) return;
-        String fullFileName = pngFileChooser.getSelectedFile().toString();
-        ImageUtil.writeImage(testCasePanel.getGeometryEditPanel(), 
-            fullFileName,
-            ImageUtil.IMAGE_FORMAT_NAME_PNG);
-      }
-    }
-    catch (Exception x) {
-      SwingUtil.reportException(this, x);
-    }
-  }
-
   void menuSaveAsPNG_actionPerformed(ActionEvent e) {
     initFileChoosers();
     try {
@@ -666,9 +647,7 @@ public class JTSTestBuilderFrame extends JFrame
       GuiUtil.center(precisionModelDialog, this);
       precisionModelDialog.setPrecisionModel(tbModel.getPrecisionModel());
       precisionModelDialog.setVisible(true);
-      saveWKTBeforePMChange();
-      tbModel.setPrecisionModel(precisionModelDialog.getPrecisionModel());
-      loadWKTAfterPMChange();
+      tbModel.changePrecisionModel(precisionModelDialog.getPrecisionModel());
       updatePrecisionModelDescription();
       updateGeometry();
     }
@@ -840,28 +819,6 @@ public class JTSTestBuilderFrame extends JFrame
         "Error", JOptionPane.ERROR_MESSAGE);
   }
 
-  private void saveWKTBeforePMChange() {
-    wktABeforePMChange.clear();
-    wktBBeforePMChange.clear();
-    for (Iterator i = tbModel.getTestCaseList().getList().iterator(); i.hasNext(); ) {
-      Testable testable = (Testable) i.next();
-      Geometry a = testable.getGeometry(0);
-      Geometry b = testable.getGeometry(1);
-      wktABeforePMChange.add(a != null ? a.toText() : null);
-      wktBBeforePMChange.add(b != null ? b.toText() : null);
-    }
-  }
-
-  private void loadWKTAfterPMChange() throws ParseException {
-    WKTReader reader = new WKTReader(new GeometryFactory(tbModel.getPrecisionModel(), 0));
-    for (int i = 0; i < tbModel.getTestCaseList().getList().size(); i++) {
-      Testable testable = (Testable) tbModel.getTestCaseList().getList().get(i);
-      String wktA = (String) wktABeforePMChange.get(i);
-      String wktB = (String) wktBBeforePMChange.get(i);
-      testable.setGeometry(0, wktA != null ? reader.read(wktA) : null);
-      testable.setGeometry(1, wktB != null ? reader.read(wktB) : null);
-    }
-  }
 
   void menuRemoveDuplicatePoints_actionPerformed(ActionEvent e) {
     CleanDuplicatePoints clean = new CleanDuplicatePoints();

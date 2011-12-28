@@ -84,12 +84,12 @@ public class TestBuilderModel
 	
 	public PrecisionModel getPrecisionModel() { return precisionModel; }
 	
-	public void setPrecisionModel(PrecisionModel precisionModel)
-	{
-		this.precisionModel = precisionModel;
+  public void setPrecisionModel(PrecisionModel precisionModel)
+  {
+    this.precisionModel = precisionModel;
     geometryFactory = null;
-	}
-	
+  }
+  
   public GeometryFactory getGeometryFactory()
   {
     if (geometryFactory == null)
@@ -638,6 +638,40 @@ public class TestBuilderModel
   public void copyResult(boolean isFormatted)
   {
     SwingUtil.copyToClipboard(currResult, isFormatted);
+  }
+
+  private ArrayList wktABeforePMChange = new ArrayList();
+  private ArrayList wktBBeforePMChange = new ArrayList();
+
+  public void changePrecisionModel(PrecisionModel precisionModel)
+  throws ParseException
+  {
+    saveWKTBeforePMChange();
+    setPrecisionModel(precisionModel);
+    loadWKTAfterPMChange();
+  }
+  
+  private void saveWKTBeforePMChange() {
+    wktABeforePMChange.clear();
+    wktBBeforePMChange.clear();
+    for (Iterator i = getTestCaseList().getList().iterator(); i.hasNext(); ) {
+      Testable testable = (Testable) i.next();
+      Geometry a = testable.getGeometry(0);
+      Geometry b = testable.getGeometry(1);
+      wktABeforePMChange.add(a != null ? a.toText() : null);
+      wktBBeforePMChange.add(b != null ? b.toText() : null);
+    }
+  }
+
+  private void loadWKTAfterPMChange() throws ParseException {
+    WKTReader reader = new WKTReader(new GeometryFactory(getPrecisionModel(), 0));
+    for (int i = 0; i < getTestCaseList().getList().size(); i++) {
+      Testable testable = (Testable) getTestCaseList().getList().get(i);
+      String wktA = (String) wktABeforePMChange.get(i);
+      String wktB = (String) wktBBeforePMChange.get(i);
+      testable.setGeometry(0, wktA != null ? reader.read(wktA) : null);
+      testable.setGeometry(1, wktB != null ? reader.read(wktB) : null);
+    }
   }
 
 
