@@ -38,9 +38,13 @@ import java.io.Serializable;
 import java.util.*;
 
 /**
- * A node of the STR tree. The children of this node are either more nodes
- * (AbstractNodes) or real data (ItemBoundables). If this node contains real data
- * (rather than nodes), then we say that this node is a "leaf node".
+ * A node of an {@link AbstractSTRtree}. A node is one of:
+ * <ul>
+ * <li>empty
+ * <li>an <i>interior node</i> containing child {@link AbstractNode}s
+ * <li>a <i>leaf node</i> containing data items ({@link ItemBoundable}s). 
+ * </ul>
+ * A node stores the bounds of its children, and its level within the index tree.
  *
  * @version 1.7
  */
@@ -89,6 +93,11 @@ public abstract class AbstractNode implements Boundable, Serializable {
    */
   protected abstract Object computeBounds();
 
+  /**
+   * Gets the bounds of this node
+   * 
+   * @return the object representing bounds in this index
+   */
   public Object getBounds() {
     if (bounds == null) {
       bounds = computeBounds();
@@ -104,6 +113,26 @@ public abstract class AbstractNode implements Boundable, Serializable {
     return level;
   }
 
+  /**
+   * Gets the count of the {@link Boundable}s at this node.
+   * 
+   * @return the count of boundables at this node
+   */
+  public int size()
+  {
+    return childBoundables.size();
+  }
+  
+  /**
+   * Tests whether there are any {@link Boundable}s at this node.
+   * 
+   * @return true if there are boundables at this node
+   */
+  public boolean isEmpty()
+  {
+    return childBoundables.isEmpty();
+  }
+  
   /**
    * Adds either an AbstractNode, or if this is a leaf node, a data object
    * (wrapped in an ItemBoundable)

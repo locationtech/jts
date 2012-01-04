@@ -41,12 +41,12 @@ import java.util.*;
 
 /**
  * Base class for STRtree and SIRtree. STR-packed R-trees are described in:
- * P. Rigaux, Michel Scholl and Agnes Voisard. Spatial Databases With
- * Application To GIS. Morgan Kaufmann, San Francisco, 2002.
+ * P. Rigaux, Michel Scholl and Agnes Voisard. <i>Spatial Databases With
+ * Application To GIS.</i> Morgan Kaufmann, San Francisco, 2002.
  * <p>
- * This implementation is based on Boundables rather than just AbstractNodes,
+ * This implementation is based on {@link Boundable}s rather than {@link AbstractNode}s,
  * because the STR algorithm operates on both nodes and
- * data, both of which are treated here as Boundables.
+ * data, both of which are treated as Boundables.
  *
  * @see STRtree
  * @see SIRtree
@@ -78,7 +78,11 @@ public abstract class AbstractSTRtree implements Serializable {
   protected AbstractNode root;
 
   private boolean built = false;
+  /**
+   * Set to <tt>null</tt> when index is built, to avoid retaining memory.
+   */
   private ArrayList itemBoundables = new ArrayList();
+  
   private int nodeCapacity;
 
   private static final int DEFAULT_NODE_CAPACITY = 10;
@@ -109,10 +113,12 @@ public abstract class AbstractSTRtree implements Serializable {
    * inserted into the tree.
    */
   public void build() {
-    Assert.isTrue(!built);
+    if (built) return;
     root = itemBoundables.isEmpty()
-           ?createNode(0)
-           :createHigherLevels(itemBoundables, -1);
+           ? createNode(0)
+           : createHigherLevels(itemBoundables, -1);
+    // the item list is no longer needed
+    itemBoundables = null;
     built = true;
   }
 
@@ -169,7 +175,7 @@ public abstract class AbstractSTRtree implements Serializable {
 
   public AbstractNode getRoot() 
   {
-    if (! built) build();
+    build();
     return root; 
   }
 
@@ -178,11 +184,24 @@ public abstract class AbstractSTRtree implements Serializable {
    */
   public int getNodeCapacity() { return nodeCapacity; }
 
+  /**
+   * Tests whether this index contains any items.
+   * This method does not build the index,
+   * so items can still be inserted after it has been called.
+   * 
+   * @return true if the index does not contain any items
+   */
+  public boolean isEmpty()
+  {
+    if (! built) return itemBoundables.isEmpty();
+    return root.isEmpty();
+  }
+  
   protected int size() {
-    if (!built) { build(); }
-    if (itemBoundables.isEmpty()) {
+    if (isEmpty()) {
       return 0;
     }
+    build();
     return size(root);
   }
 
@@ -202,10 +221,10 @@ public abstract class AbstractSTRtree implements Serializable {
   }
 
   protected int depth() {
-    if (!built) { build(); }
-    if (itemBoundables.isEmpty()) {
+    if (isEmpty()) {
       return 0;
     }
+    build();
     return depth(root);
   }
 
@@ -233,9 +252,9 @@ public abstract class AbstractSTRtree implements Serializable {
    *  Also builds the tree, if necessary.
    */
   protected List query(Object searchBounds) {
-    if (!built) { build(); }
+    build();
     ArrayList matches = new ArrayList();
-    if (itemBoundables.isEmpty()) {
+    if (isEmpty()) {
       //Assert.isTrue(root.getBounds() == null);
       return matches;
     }
@@ -249,8 +268,8 @@ public abstract class AbstractSTRtree implements Serializable {
    *  Also builds the tree, if necessary.
    */
   protected void query(Object searchBounds, ItemVisitor visitor) {
-    if (!built) { build(); }
-    if (itemBoundables.isEmpty()) {
+    build();
+    if (isEmpty()) {
       // nothing in tree, so return
       //Assert.isTrue(root.getBounds() == null);
       return;
@@ -319,7 +338,7 @@ public abstract class AbstractSTRtree implements Serializable {
    */
   public List itemsTree()
   {
-    if (!built) { build(); }
+    build();
 
     List valuesTree = itemsTree(root);
     if (valuesTree == null)
@@ -355,7 +374,7 @@ public abstract class AbstractSTRtree implements Serializable {
    * (Builds the tree, if necessary.)
    */
   protected boolean remove(Object searchBounds, Object item) {
-    if (!built) { build(); }
+    build();
     if (itemBoundables.isEmpty()) {
       Assert.isTrue(root.getBounds() == null);
     }

@@ -37,6 +37,7 @@ The current and archived JTS distributions can be obtained at the
 <li>Added <tt>max</tt>, <tt>average</tt> and <tt>wrap</tt> functions to </tt>MathUtil</tt>
 <li>Improved <tt>WKTReader</tt> parse error reporting to report input line of error
 <li>Made <tt>TopologyPreservingSimplifier</tt> thread-safe
+<li>Added <tt>AbstractSTRtree.isEmpty()</tt> method
 </ul>
 
 <h3>Performance Improvements</h3>
@@ -46,6 +47,7 @@ The current and archived JTS distributions can be obtained at the
 <li>In <tt>PreparedPolygonIntersects</tt> and <tt>PreparedLineStringIntersects</tt> added check
 to avoid creating segment index if all test inputs are points
 <li>In <tt>AbstractSTRtree</tt> switched to using indexed list access for better performance than using iterators
+<li>In <tt>AbstractSTRtree</tt> freed inserted item array after index is built
 </ul>
 
 <h3>Robustness Improvements</h3>

@@ -70,6 +70,23 @@ public class STRtreeTestCase extends TestCase {
     junit.textui.TestRunner.main(testCaseName);
   }
 
+  public void testEmptyTreeUsingListQuery()  
+  {
+    STRtree tree = new STRtree();
+    List list = tree.query(new Envelope(0, 0, 1, 1));
+    assertTrue(list.isEmpty());
+  }
+  
+  public void testEmptyTreeUsingItemVisitorQuery()  
+  {
+    STRtree tree = new STRtree();
+    tree.query(new Envelope(0,0,1,1), new ItemVisitor() {
+      public void visitItem(Object item) {
+        assertTrue("Should never reach here", true);
+      }
+    });  
+  }
+  
   public void testCreateParentsFromVerticalSlice() {
     doTestCreateParentsFromVerticalSlice(3, 2, 2, 1);
     doTestCreateParentsFromVerticalSlice(4, 2, 2, 2);
@@ -146,23 +163,6 @@ public class STRtreeTestCase extends TestCase {
     }
   }
 
-  public void testEmptyTreeUsingListQuery()  
-  {
-    STRtree tree = new STRtree();
-    List list = tree.query(new Envelope(0, 0, 1, 1));
-    assertTrue(list.isEmpty());
-  }
-  
-  public void testEmptyTreeUsingItemVisitorQuery()  
-  {
-    STRtree tree = new STRtree();
-    tree.query(new Envelope(0,0,1,1), new ItemVisitor() {
-      public void visitItem(Object item) {
-        assertTrue("Should never reach here", true);
-      }
-    });  
-  }
-  
   public void testVerticalSlices() {
     doTestVerticalSlices(3, 2, 2, 1);
     doTestVerticalSlices(4, 2, 2, 2);
