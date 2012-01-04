@@ -79,6 +79,17 @@ public class KdTree
 		this.tolerance = tolerance;
 	}
 
+  /**
+   * Tests whether the index contains any items.
+   * 
+   * @return true if the index does not contain any items
+   */
+  public boolean isEmpty()
+  {
+    if (root == null) return true;
+    return false;
+  }
+  
 	/**
 	 * Inserts a new point in the kd-tree, with no data.
 	 * 
