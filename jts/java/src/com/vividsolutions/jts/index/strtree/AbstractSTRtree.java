@@ -268,9 +268,10 @@ public abstract class AbstractSTRtree implements Serializable {
   protected abstract IntersectsOp getIntersectsOp();
 
   private void query(Object searchBounds, AbstractNode node, List matches) {
-    for (Iterator i = node.getChildBoundables().iterator(); i.hasNext(); ) {
-      Boundable childBoundable = (Boundable) i.next();
-      if (!getIntersectsOp().intersects(childBoundable.getBounds(), searchBounds)) {
+    List childBoundables = node.getChildBoundables();
+    for (int i = 0; i < childBoundables.size(); i++) {
+      Boundable childBoundable = (Boundable) childBoundables.get(i);
+      if (! getIntersectsOp().intersects(childBoundable.getBounds(), searchBounds)) {
         continue;
       }
       if (childBoundable instanceof AbstractNode) {
@@ -286,9 +287,10 @@ public abstract class AbstractSTRtree implements Serializable {
   }
 
   private void query(Object searchBounds, AbstractNode node, ItemVisitor visitor) {
-    for (Iterator i = node.getChildBoundables().iterator(); i.hasNext(); ) {
-      Boundable childBoundable = (Boundable) i.next();
-      if (!getIntersectsOp().intersects(childBoundable.getBounds(), searchBounds)) {
+    List childBoundables = node.getChildBoundables();
+    for (int i = 0; i < childBoundables.size(); i++) {
+      Boundable childBoundable = (Boundable) childBoundables.get(i);
+      if (! getIntersectsOp().intersects(childBoundable.getBounds(), searchBounds)) {
         continue;
       }
       if (childBoundable instanceof AbstractNode) {
