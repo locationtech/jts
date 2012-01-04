@@ -185,7 +185,7 @@ public abstract class AbstractSTRtree implements Serializable {
   public int getNodeCapacity() { return nodeCapacity; }
 
   /**
-   * Tests whether this index contains any items.
+   * Tests whether the index contains any items.
    * This method does not build the index,
    * so items can still be inserted after it has been called.
    * 
