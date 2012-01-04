@@ -36,7 +36,7 @@ import com.vividsolutions.jts.geom.*;
 
 /**
  * Computes whether a rectangle intersects line segments.
- * 
+ * <p>
  * Rectangles contain a large amount of inherent symmetry
  * (or to put it another way, although they contain four
  * coordinates they only actually contain 4 ordinates
@@ -71,8 +71,11 @@ public class RectangleLineIntersector
   public RectangleLineIntersector(Envelope rectEnv)
   {
     this.rectEnv = rectEnv;
+    
     /**
-     * Up and Down are relative to the Left side of the rectangle.
+     * Up and Down are the diagonal orientations
+     * relative to the Left side of the rectangle.
+     * Index 0 is the left side, 1 is the right side.
      */
     diagUp0 = new Coordinate(rectEnv.getMinX(), rectEnv.getMinY());
     diagUp1 = new Coordinate(rectEnv.getMaxX(), rectEnv.getMaxY());
