@@ -77,11 +77,22 @@ adding filter to remove zero-length edges;
 using a better estimate of scale factor for reducing to fixed precision after initial failure.
 </ul>
 
+<h3>API Changes</h3>
+<ul>
+<li>Changed visibility of <tt>TaggedLineStringSimplifier</tt> back to <tt>public</tt> due to user demand
+</ul>
+
 <h3>Testing</h3>
 <ul>
 <li>Added Performance Testing framework (<tt>PerformanceTestRunner</tt>
 and <tt>PerformanceTestCase</tt>)
 </ul>
+
+<h3>Contributors</h3>
+<ul>
+<li>Peter Hopfgartner - improved area computation
+</ul>
+
 
 <!------- TestBuilder -------------------->
 <hr size='0' color='darkblue'>
@@ -93,11 +104,6 @@ and <tt>PerformanceTestCase</tt>)
 <li>Improved <b>Geometry Inspector</b>
 <li>Added stream digitizing for Polygon and LineString tools
 <li>Added output of Test Case XML with WKB
-</ul>
-
-<h3>Contributors</h3>
-<ul>
-<li>Peter Hopfgartner - improved area computation
 </ul>
 
 <!-- ================================================================ -->
