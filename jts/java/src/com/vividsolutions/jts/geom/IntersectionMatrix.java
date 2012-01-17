@@ -458,25 +458,25 @@ public class IntersectionMatrix implements Cloneable {
   }
 
   /**
-   *  Returns <code>true</code> if this <code>IntersectionMatrix</code> is
-   *  T*F**FFF*.
+   *  Tests whether the argument dimensions are equal and 
+   *  this <code>IntersectionMatrix</code> matches
+   *  the pattern <tt>T*F**FFF*</tt>.
    *
    *@param  dimensionOfGeometryA  the dimension of the first <code>Geometry</code>
    *@param  dimensionOfGeometryB  the dimension of the second <code>Geometry</code>
-   *@return                       <code>true</code> if the two <code>Geometry</code>
-   *      s related by this <code>IntersectionMatrix</code> are equal; the
-   *      <code>Geometry</code>s must have the same dimension for this function
-   *      to return <code>true</code>
+   *@return                       <code>true</code> if the two <code>Geometry</code>s
+   *      related by this <code>IntersectionMatrix</code> are equal; the
+   *      <code>Geometry</code>s must have the same dimension to be equal
    */
   public boolean isEquals(int dimensionOfGeometryA, int dimensionOfGeometryB) {
     if (dimensionOfGeometryA != dimensionOfGeometryB) {
       return false;
     }
     return matches(matrix[Location.INTERIOR][Location.INTERIOR], 'T') &&
-        matrix[Location.EXTERIOR][Location.INTERIOR] == Dimension.FALSE &&
         matrix[Location.INTERIOR][Location.EXTERIOR] == Dimension.FALSE &&
-        matrix[Location.EXTERIOR][Location.BOUNDARY] == Dimension.FALSE &&
-        matrix[Location.BOUNDARY][Location.EXTERIOR] == Dimension.FALSE;
+        matrix[Location.BOUNDARY][Location.EXTERIOR] == Dimension.FALSE &&
+        matrix[Location.EXTERIOR][Location.INTERIOR] == Dimension.FALSE &&
+        matrix[Location.EXTERIOR][Location.BOUNDARY] == Dimension.FALSE;
   }
 
   /**
