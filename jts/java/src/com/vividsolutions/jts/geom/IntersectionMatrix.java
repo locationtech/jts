@@ -129,42 +129,57 @@ public class IntersectionMatrix implements Cloneable {
   }
 
   /**
-   *  Returns true if the dimension value satisfies the dimension symbol.
+   *  Tests if the dimension value matches <tt>TRUE</tt>
+   *  (i.e.  has value 0, 1, 2 or TRUE).
+   *
+   *@param  actualDimensionValue     a number that can be stored in the <code>IntersectionMatrix</code>
+   *      . Possible values are <code>{TRUE, FALSE, DONTCARE, 0, 1, 2}</code>.
+   *@return true if the dimension value matches TRUE
+   */
+  public static boolean isTrue(int actualDimensionValue) {
+    if (actualDimensionValue >= 0 || actualDimensionValue  == Dimension.TRUE) {
+      return true;
+    }
+    return false;
+  }
+  
+  /**
+   *  Tests if the dimension value satisfies the dimension symbol.
    *
    *@param  actualDimensionValue     a number that can be stored in the <code>IntersectionMatrix</code>
    *      . Possible values are <code>{TRUE, FALSE, DONTCARE, 0, 1, 2}</code>.
    *@param  requiredDimensionSymbol  a character used in the string
    *      representation of an <code>IntersectionMatrix</code>. Possible values
    *      are <code>{T, F, * , 0, 1, 2}</code>.
-   *@return                          true if the dimension symbol encompasses
+   *@return                          true if the dimension symbol matches
    *      the dimension value
    */
   public static boolean matches(int actualDimensionValue, char requiredDimensionSymbol) {
-    if (requiredDimensionSymbol == '*') {
+    if (requiredDimensionSymbol == Dimension.SYM_DONTCARE) {
       return true;
     }
-    if (requiredDimensionSymbol == 'T' && (actualDimensionValue >= 0 || actualDimensionValue
+    if (requiredDimensionSymbol == Dimension.SYM_TRUE && (actualDimensionValue >= 0 || actualDimensionValue
          == Dimension.TRUE)) {
       return true;
     }
-    if (requiredDimensionSymbol == 'F' && actualDimensionValue == Dimension.FALSE) {
+    if (requiredDimensionSymbol == Dimension.SYM_FALSE && actualDimensionValue == Dimension.FALSE) {
       return true;
     }
-    if (requiredDimensionSymbol == '0' && actualDimensionValue == Dimension.P) {
+    if (requiredDimensionSymbol == Dimension.SYM_P && actualDimensionValue == Dimension.P) {
       return true;
     }
-    if (requiredDimensionSymbol == '1' && actualDimensionValue == Dimension.L) {
+    if (requiredDimensionSymbol == Dimension.SYM_L && actualDimensionValue == Dimension.L) {
       return true;
     }
-    if (requiredDimensionSymbol == '2' && actualDimensionValue == Dimension.A) {
+    if (requiredDimensionSymbol == Dimension.SYM_A && actualDimensionValue == Dimension.A) {
       return true;
     }
     return false;
   }
 
   /**
-   *  Returns true if each of the actual dimension symbols satisfies the
-   *  corresponding required dimension symbol.
+   *  Tests if each of the actual dimension symbols in a matrix string satisfies the
+   *  corresponding required dimension symbol in a pattern string.
    *
    *@param  actualDimensionSymbols    nine dimension symbols to validate.
    *      Possible values are <code>{T, F, * , 0, 1, 2}</code>.
@@ -341,9 +356,9 @@ public class IntersectionMatrix implements Cloneable {
         (dimensionOfGeometryA == Dimension.P && dimensionOfGeometryB == Dimension.A) ||
         (dimensionOfGeometryA == Dimension.P && dimensionOfGeometryB == Dimension.L)) {
       return matrix[Location.INTERIOR][Location.INTERIOR] == Dimension.FALSE &&
-          (matches(matrix[Location.INTERIOR][Location.BOUNDARY], 'T')
-           || matches(matrix[Location.BOUNDARY][Location.INTERIOR], 'T')
-           || matches(matrix[Location.BOUNDARY][Location.BOUNDARY], 'T'));
+          (isTrue(matrix[Location.INTERIOR][Location.BOUNDARY])
+           || isTrue(matrix[Location.BOUNDARY][Location.INTERIOR])
+           || isTrue(matrix[Location.BOUNDARY][Location.BOUNDARY]));
     }
     return false;
   }
@@ -377,14 +392,14 @@ public class IntersectionMatrix implements Cloneable {
     if ((dimensionOfGeometryA == Dimension.P && dimensionOfGeometryB == Dimension.L) ||
         (dimensionOfGeometryA == Dimension.P && dimensionOfGeometryB == Dimension.A) ||
         (dimensionOfGeometryA == Dimension.L && dimensionOfGeometryB == Dimension.A)) {
-      return matches(matrix[Location.INTERIOR][Location.INTERIOR], 'T') &&
-          matches(matrix[Location.INTERIOR][Location.EXTERIOR], 'T');
+      return isTrue(matrix[Location.INTERIOR][Location.INTERIOR]) &&
+      isTrue(matrix[Location.INTERIOR][Location.EXTERIOR]);
     }
     if ((dimensionOfGeometryA == Dimension.L && dimensionOfGeometryB == Dimension.P) ||
         (dimensionOfGeometryA == Dimension.A && dimensionOfGeometryB == Dimension.P) ||
         (dimensionOfGeometryA == Dimension.A && dimensionOfGeometryB == Dimension.L)) {
-      return matches(matrix[Location.INTERIOR][Location.INTERIOR], 'T') &&
-          matches(matrix[Location.EXTERIOR][Location.INTERIOR], 'T');
+      return isTrue(matrix[Location.INTERIOR][Location.INTERIOR]) &&
+      isTrue(matrix[Location.EXTERIOR][Location.INTERIOR]);
     }
     if (dimensionOfGeometryA == Dimension.L && dimensionOfGeometryB == Dimension.L) {
       return matrix[Location.INTERIOR][Location.INTERIOR] == 0;
@@ -400,7 +415,7 @@ public class IntersectionMatrix implements Cloneable {
    *      the second
    */
   public boolean isWithin() {
-    return matches(matrix[Location.INTERIOR][Location.INTERIOR], 'T') &&
+    return isTrue(matrix[Location.INTERIOR][Location.INTERIOR]) &&
         matrix[Location.INTERIOR][Location.EXTERIOR] == Dimension.FALSE &&
         matrix[Location.BOUNDARY][Location.EXTERIOR] == Dimension.FALSE;
   }
@@ -413,7 +428,7 @@ public class IntersectionMatrix implements Cloneable {
    *      second
    */
   public boolean isContains() {
-    return matches(matrix[Location.INTERIOR][Location.INTERIOR], 'T') &&
+    return isTrue(matrix[Location.INTERIOR][Location.INTERIOR]) &&
         matrix[Location.EXTERIOR][Location.INTERIOR] == Dimension.FALSE &&
         matrix[Location.EXTERIOR][Location.BOUNDARY] == Dimension.FALSE;
   }
@@ -430,10 +445,10 @@ public class IntersectionMatrix implements Cloneable {
    */
   public boolean isCovers() {
     boolean hasPointInCommon =
-        matches(matrix[Location.INTERIOR][Location.INTERIOR], 'T')
-        || matches(matrix[Location.INTERIOR][Location.BOUNDARY], 'T')
-        || matches(matrix[Location.BOUNDARY][Location.INTERIOR], 'T')
-        || matches(matrix[Location.BOUNDARY][Location.BOUNDARY], 'T');
+        isTrue(matrix[Location.INTERIOR][Location.INTERIOR])
+        || isTrue(matrix[Location.INTERIOR][Location.BOUNDARY])
+        || isTrue(matrix[Location.BOUNDARY][Location.INTERIOR])
+        || isTrue(matrix[Location.BOUNDARY][Location.BOUNDARY]);
 
     return hasPointInCommon &&
         matrix[Location.EXTERIOR][Location.INTERIOR] == Dimension.FALSE &&
@@ -452,10 +467,10 @@ public class IntersectionMatrix implements Cloneable {
    */
   public boolean isCoveredBy() {
     boolean hasPointInCommon =
-        matches(matrix[Location.INTERIOR][Location.INTERIOR], 'T')
-        || matches(matrix[Location.INTERIOR][Location.BOUNDARY], 'T')
-        || matches(matrix[Location.BOUNDARY][Location.INTERIOR], 'T')
-        || matches(matrix[Location.BOUNDARY][Location.BOUNDARY], 'T');
+        isTrue(matrix[Location.INTERIOR][Location.INTERIOR])
+        || isTrue(matrix[Location.INTERIOR][Location.BOUNDARY])
+        || isTrue(matrix[Location.BOUNDARY][Location.INTERIOR])
+        || isTrue(matrix[Location.BOUNDARY][Location.BOUNDARY]);
 
     return hasPointInCommon &&
         matrix[Location.INTERIOR][Location.EXTERIOR] == Dimension.FALSE &&
@@ -484,7 +499,7 @@ public class IntersectionMatrix implements Cloneable {
     if (dimensionOfGeometryA != dimensionOfGeometryB) {
       return false;
     }
-    return matches(matrix[Location.INTERIOR][Location.INTERIOR], 'T') &&
+    return isTrue(matrix[Location.INTERIOR][Location.INTERIOR]) &&
         matrix[Location.INTERIOR][Location.EXTERIOR] == Dimension.FALSE &&
         matrix[Location.BOUNDARY][Location.EXTERIOR] == Dimension.FALSE &&
         matrix[Location.EXTERIOR][Location.INTERIOR] == Dimension.FALSE &&
@@ -508,14 +523,14 @@ public class IntersectionMatrix implements Cloneable {
   public boolean isOverlaps(int dimensionOfGeometryA, int dimensionOfGeometryB) {
     if ((dimensionOfGeometryA == Dimension.P && dimensionOfGeometryB == Dimension.P) ||
         (dimensionOfGeometryA == Dimension.A && dimensionOfGeometryB == Dimension.A)) {
-      return matches(matrix[Location.INTERIOR][Location.INTERIOR], 'T') &&
-          matches(matrix[Location.INTERIOR][Location.EXTERIOR], 'T') && matches(matrix[Location.EXTERIOR][Location.INTERIOR],
-          'T');
+      return isTrue(matrix[Location.INTERIOR][Location.INTERIOR]) 
+          && isTrue(matrix[Location.INTERIOR][Location.EXTERIOR]) 
+          && isTrue(matrix[Location.EXTERIOR][Location.INTERIOR]);
     }
     if (dimensionOfGeometryA == Dimension.L && dimensionOfGeometryB == Dimension.L) {
-      return matrix[Location.INTERIOR][Location.INTERIOR] == 1 &&
-          matches(matrix[Location.INTERIOR][Location.EXTERIOR], 'T') &&
-          matches(matrix[Location.EXTERIOR][Location.INTERIOR], 'T');
+      return matrix[Location.INTERIOR][Location.INTERIOR] == 1 
+         && isTrue(matrix[Location.INTERIOR][Location.EXTERIOR]) 
+         && isTrue(matrix[Location.EXTERIOR][Location.INTERIOR]);
     }
     return false;
   }
