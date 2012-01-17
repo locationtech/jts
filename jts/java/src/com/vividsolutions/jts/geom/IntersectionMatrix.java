@@ -35,11 +35,11 @@
 package com.vividsolutions.jts.geom;
 
 /**
- * Models a Dimensionally Extended Nine-Intersection Model (DE-9IM) matrix. 
- * This class is used to represent intersection matrices (such as "212FF1FF2")
- * capturing the topological relationship between two {@link Geometry}s. 
- * It can also be represent patterns (such as "T*T******")for matching 
- * existing matrices.
+ * Models a <b>Dimensionally Extended Nine-Intersection Model (DE-9IM)</b> matrix. 
+ * DE-9IM matrices (such as "212FF1FF2")
+ * specify the topological relationship between two {@link Geometry}s. 
+ * This class can also represent matrix patterns (such as "T*T******")
+ * which are used for matching instances of DE-9IM matrices.
  *
  *  Methods are provided to:
  *  <UL>
