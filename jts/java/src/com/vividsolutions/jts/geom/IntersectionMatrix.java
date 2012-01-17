@@ -52,7 +52,7 @@ package com.vividsolutions.jts.geom;
  *
  *  For a description of the DE-9IM and the spatial predicates derived from it, 
  *  see the <i><A
- *  HREF="http://www.opengis.org/techno/specs.htm">OpenGIS Simple Features
+ *  HREF="http://www.opengis.org/techno/specs.htm">OGC 99-049 OpenGIS Simple Features
  *  Specification for SQL</A></i>, as well as
  *  <i>OGC 06-103r4 OpenGIS 
  *  Implementation Standard for Geographic information - 
