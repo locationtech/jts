@@ -50,10 +50,15 @@ package com.vividsolutions.jts.geom;
  *  </UL>
  *  <P>
  *
- *  For a description of the DE-9IM, see the <A
+ *  For a description of the DE-9IM and the spatial predicates derived from it, 
+ *  see the <i><A
  *  HREF="http://www.opengis.org/techno/specs.htm">OpenGIS Simple Features
- *  Specification for SQL</A>.
- *  
+ *  Specification for SQL</A></i>, as well as
+ *  <i>OGC 06-103r4 OpenGIS 
+ *  Implementation Standard for Geographic information - 
+ *  Simple feature access - Part 1: Common architecture</i>
+ *  (which provides some further details on certain predicate specifications).
+ * <p>
  * The entries of the matrix are defined by the constants in the {@link Dimension} class.
  * The indices of the matrix represent the topological locations 
  * that occur in a geometry (Interior, Boundary, Exterior).  
@@ -461,6 +466,13 @@ public class IntersectionMatrix implements Cloneable {
    *  Tests whether the argument dimensions are equal and 
    *  this <code>IntersectionMatrix</code> matches
    *  the pattern <tt>T*F**FFF*</tt>.
+   *  <p>
+   *  <b>Note:</b> This pattern differs from the one stated in 
+   *  <i>Simple feature access - Part 1: Common architecture</i>.
+   *  That document states the pattern as <tt>TFFFTFFFT</tt>.  This would
+   *  specify that
+   *  two identical <tt>POINT</tt>s are not equal, which is not desirable behaviour.
+   *  The pattern used here has been corrected to compute equality in this situation.
    *
    *@param  dimensionOfGeometryA  the dimension of the first <code>Geometry</code>
    *@param  dimensionOfGeometryB  the dimension of the second <code>Geometry</code>
