@@ -303,9 +303,12 @@ public class GeometryImplTest extends TestCase {
             anotherSameClassButEmpty, collectionFactory);
     }
 
-    private void doTestEqualsExact(Geometry x, Geometry somethingExactlyEqual,
-        Geometry somethingNotEqualButSameClass, Geometry sameClassButEmpty,
-        Geometry anotherSameClassButEmpty, CollectionFactory collectionFactory)
+    private void doTestEqualsExact(Geometry x, 
+        Geometry somethingExactlyEqual,
+        Geometry somethingNotEqualButSameClass, 
+        Geometry sameClassButEmpty,
+        Geometry anotherSameClassButEmpty, 
+        CollectionFactory collectionFactory)
         throws Exception {
         Geometry emptyDifferentClass;
 
@@ -318,11 +321,20 @@ public class GeometryImplTest extends TestCase {
         Geometry somethingEqualButNotExactly = geometryFactory.createGeometryCollection(new Geometry[] {
                     x
                 });
+        
         doTestEqualsExact(x, somethingExactlyEqual,
             collectionFactory.createCollection(new Geometry[] { x }),
             somethingNotEqualButSameClass);
+        
         doTestEqualsExact(sameClassButEmpty, anotherSameClassButEmpty,
             emptyDifferentClass, x);
+        
+        /**
+         * Test comparison of non-empty versus empty.
+         */
+        doTestEqualsExact(x, somethingExactlyEqual,
+            sameClassButEmpty, sameClassButEmpty);
+        
         doTestEqualsExact(collectionFactory.createCollection(
                 new Geometry[] { x, x }),
             collectionFactory.createCollection(
@@ -332,7 +344,8 @@ public class GeometryImplTest extends TestCase {
                 new Geometry[] { x, somethingNotEqualButSameClass }));
     }
 
-    private void doTestEqualsExact(Geometry x, Geometry somethingExactlyEqual,
+    private void doTestEqualsExact(Geometry x, 
+        Geometry somethingExactlyEqual,
         Geometry somethingEqualButNotExactly,
         Geometry somethingNotEqualButSameClass) throws Exception {
         Geometry differentClass;

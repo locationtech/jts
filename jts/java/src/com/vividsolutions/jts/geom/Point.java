@@ -168,6 +168,9 @@ public class Point
     if (isEmpty() && other.isEmpty()) {
       return true;
     }
+    if (isEmpty() != other.isEmpty()) {
+      return false;
+    }
     return equal(((Point) other).getCoordinate(), this.getCoordinate(), tolerance);
   }
 

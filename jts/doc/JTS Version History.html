@@ -62,6 +62,7 @@ in <tt>ConvexHull</tt> for some nearly collinear inputs
 
 <h3>Bug Fixes</h3>
 <ul>
+<li>Fixed <tt>Geometry.equalsExact()</tt> to avoid NPE when comparing empty and non-empty <tt>Point</tt>s
 <li>Fixed <tt>CascadedPolygonUnion</tt> to discard non-polygonal components created during unioning,
 to avoid failures and provide more desirable behaviour
 <li>Fixed <tt>CentralEndpointIntersector</tt> to initialize result correctly
