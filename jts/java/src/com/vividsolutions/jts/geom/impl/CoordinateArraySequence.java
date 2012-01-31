@@ -77,10 +77,9 @@ public class CoordinateArraySequence
   }
 
   /**
-   * Constructs a sequence based on the given array (the
-   * array is not copied).
+   * Creates a new sequence based on a deep copy of the given {@link CoordinateSequence}.
    *
-   * @param coordinates the coordinate array that will be referenced.
+   * @param coordSeq the coordinate sequence that will be copied.
    */
   public CoordinateArraySequence(CoordinateSequence coordSeq)
   {
