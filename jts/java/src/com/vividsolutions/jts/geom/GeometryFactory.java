@@ -543,8 +543,13 @@ public class GeometryFactory
    * <p>
    * This is a convenient way to change the <tt>CoordinateSequence</tt>
    * used to represent a geometry.
+   * <p>
+   * {@link Geometry#clone()} can also be used to make a deep copy,
+   * but it does not allow changing the CoordinateSequence type.
    * 
-   * @return a deep copy of the input geometry
+   * @return a deep copy of the input geometry, using the CoordinateSequence type of this factory
+   * 
+   * @see Geometry#clone() 
    */
   public Geometry createGeometry(Geometry g)
   {
