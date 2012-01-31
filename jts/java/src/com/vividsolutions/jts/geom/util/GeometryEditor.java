@@ -253,8 +253,9 @@ public class GeometryEditor
   		return geometry;
   	}
   }
+  
   /**
-   * A {@link GeometryEditorOperation} which modifies the coordinate list of a {@link Geometry}.
+   * A {@link GeometryEditorOperation} which edits the coordinate list of a {@link Geometry}.
    * Operates on Geometry subclasses which contains a single coordinate list.
    */
   public abstract static class CoordinateOperation
@@ -294,6 +295,47 @@ public class GeometryEditor
      * @return an edited coordinate array (which may be the same as the input)
      */
     public abstract Coordinate[] edit(Coordinate[] coordinates,
+                                      Geometry geometry);
+  }
+  
+  /**
+   * A {@link GeometryEditorOperation} which edits the {@link CoordinateSequence}
+   * of a {@link Geometry}.
+   * Operates on Geometry subclasses which contains a single coordinate list.
+   */
+  public abstract static class CoordinateSequenceOperation
+      implements GeometryEditorOperation
+  {
+    public final Geometry edit(Geometry geometry, GeometryFactory factory) {
+      if (geometry instanceof LinearRing) {
+        return factory.createLinearRing(edit(
+            ((LinearRing)geometry).getCoordinateSequence(),
+            geometry));
+      }
+
+      if (geometry instanceof LineString) {
+        return factory.createLineString(edit(
+            ((LineString)geometry).getCoordinateSequence(),
+            geometry));
+      }
+
+      if (geometry instanceof Point) {
+        return factory.createPoint(edit(
+            ((Point)geometry).getCoordinateSequence(),
+            geometry));
+      }
+
+      return geometry;
+    }
+
+    /**
+     * Edits a {@link CoordinateSequence} from a {@link Geometry}.
+     *
+     * @param coordseq the coordinate array to operate on
+     * @param geometry the geometry containing the coordinate list
+     * @return an edited coordinate sequence (which may be the same as the input)
+     */
+    public abstract CoordinateSequence edit(CoordinateSequence coordSeq,
                                       Geometry geometry);
   }
 }

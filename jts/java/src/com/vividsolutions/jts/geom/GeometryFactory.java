@@ -536,12 +536,28 @@ public class GeometryFactory
   }
 
   /**
-   * @return a clone of g based on a CoordinateSequence created by this
-   * GeometryFactory's CoordinateSequenceFactory
+   * Creates a deep copy of the input {@link Geometry}.
+   * The {@link CoordinateSequenceFactory} defined for this factory
+   * is used to copy the {@link CoordinateSequence}s
+   * of the input geometry.
+   * <p>
+   * This is a convenient way to change the <tt>CoordinateSequence</tt>
+   * used to represent a geometry.
+   * 
+   * @return a deep copy of the input geometry
    */
   public Geometry createGeometry(Geometry g)
   {
-    // could this be cached to make this more efficient? Or maybe it isn't enough overhead to bother
+    GeometryEditor editor = new GeometryEditor(this);
+    return editor.edit(g, new GeometryEditor.CoordinateSequenceOperation() {
+      public CoordinateSequence edit(CoordinateSequence coordSeq, Geometry geometry) {
+                  return coordinateSequenceFactory.create(coordSeq);
+          }
+    });
+  }
+  /*
+  public Geometry OLDcreateGeometry(Geometry g)
+  {
     GeometryEditor editor = new GeometryEditor(this);
     return editor.edit(g, new GeometryEditor.CoordinateOperation() {
       public Coordinate[] edit(Coordinate[] coordinates, Geometry geometry) {
@@ -549,7 +565,7 @@ public class GeometryFactory
           }
     });
   }
-
+*/
 
   public int getSRID() {
     return SRID;

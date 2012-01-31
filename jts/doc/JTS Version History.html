@@ -29,6 +29,9 @@ The current and archived JTS distributions can be obtained at the
 
 <h3>Functionality Improvements</h3>
 <ul>
+<li>Changed <tt>GeometryFactory.createGeometry()</tt> to make a deep copy of the arg Geometry,
+using the CoordinateSequenceFactory of the factory
+<li>Added <tt>GeometryEditor.CoordinateSequenceOperation</tt> to allow easy editing of constituent CoordinateSequences
 <li>Added <tt>Geometry.createPolygon</tt> convenience methods
 <li>Added <tt>RectangleLineIntersector</tt> to provide efficient rectangle-line intersection testing
 <li>Added <tt>getOrdinate</tt> and <tt>setOrdinate</tt> to <tt>Coordinate</tt>
