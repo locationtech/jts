@@ -13,6 +13,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">true</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">false</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -27,6 +37,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">true</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">false</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -41,6 +61,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">true</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">false</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -55,6 +85,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">true</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">false</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -69,6 +109,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">true</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">false</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -83,6 +133,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -97,6 +157,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -111,6 +181,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -125,6 +205,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="0FFFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">true</op></test>
 </case>
 
 <case>
@@ -140,6 +230,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">true</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">false</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -155,6 +255,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">true</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">false</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -170,6 +280,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -185,6 +305,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -200,6 +330,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -215,6 +355,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -230,6 +380,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -245,6 +405,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -260,6 +430,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="0FFFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">true</op></test>
 </case>
 
 <case>
@@ -276,6 +456,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -292,6 +482,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -306,6 +506,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">true</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">false</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -320,6 +530,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F00FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -334,6 +554,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F00FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -348,6 +578,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F00FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -362,6 +602,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F00FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -376,6 +626,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -390,6 +650,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -404,6 +674,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="000FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">true</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -418,6 +698,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="000FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">true</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -432,6 +722,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="000FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">true</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -446,6 +746,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="0F0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">true</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -460,6 +770,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="000FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">true</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -474,6 +794,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="0FFFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">true</op></test>
 </case>
 
 <case>
@@ -488,6 +818,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="00FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">true</op></test>
 </case>
 
 <case>
@@ -503,6 +843,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">true</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">false</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -518,6 +868,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">true</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">false</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -533,6 +893,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="FF0FFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">true</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">false</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -550,6 +920,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -567,6 +947,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -584,6 +974,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 <case>
@@ -603,6 +1003,16 @@
   <test>
     <op name="relate" arg1="A" arg2="B" arg3="F0FFFF212">true</op>
   </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">true</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">true</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
 </case>
 
 </run>
