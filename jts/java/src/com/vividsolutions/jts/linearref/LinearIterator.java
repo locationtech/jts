@@ -92,6 +92,10 @@ public class LinearIterator
 
   /**
    * Tests whether there are any vertices left to iterator over.
+   * Specifically, hasNext() return <tt>true</tt> if the
+   * current state of the iterator represents a valid location
+   * on the linear geometry. 
+   * 
    * @return <code>true</code> if there are more vertices to scan
    */
   public boolean hasNext()
