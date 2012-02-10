@@ -8,6 +8,8 @@ import com.vividsolutions.jts.geom.util.*;
  * Simplifies a {@link Geometry} using the standard Douglas-Peucker algorithm.
  * Ensures that any polygonal geometries returned are valid.
  * Simple lines are not guaranteed to remain simple after simplification.
+ * All geometry types are handled. 
+ * Empty and point geometries are returned unchanged.
  * <p>
  * Note that in general D-P does not preserve topology -
  * e.g. polygons can be split, collapse to lines or disappear

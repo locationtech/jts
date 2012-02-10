@@ -29,6 +29,17 @@ public class TopologyPreservingSimplifierTest
         .test();
   }
 
+  public void testPoint() throws Exception {
+    String geomStr = "POINT (10 10)";
+    new GeometryOperationValidator(
+        TPSimplifierResult.getResult(
+        geomStr,
+        1))
+        .setExpectedResult(geomStr)
+        .test();
+  }
+
+
   /**
    * Test is from http://postgis.refractions.net/pipermail/postgis-users/2008-April/019327.html
    * @throws Exception
@@ -106,12 +117,15 @@ public class TopologyPreservingSimplifierTest
         .test();
   }
   public void testMultiPoint() throws Exception {
+    String geomStr = "MULTIPOINT(80 200, 240 200, 240 60, 80 60, 80 200, 140 199, 120 120)";
     new GeometryOperationValidator(
         TPSimplifierResult.getResult(
-      "MULTIPOINT(80 200, 240 200, 240 60, 80 60, 80 200, 140 199, 120 120)",
+            geomStr,
         10.0))
+        .setExpectedResult(geomStr)
         .test();
   }
+  
   public void testMultiLineString() throws Exception {
     new GeometryOperationValidator(
         TPSimplifierResult.getResult(

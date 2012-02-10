@@ -29,6 +29,16 @@ public class DouglasPeuckerSimplifierTest
         .test();
   }
 
+  public void testPoint() throws Exception {
+    String geomStr = "POINT (10 10)";
+    new GeometryOperationValidator(
+        DPSimplifierResult.getResult(
+        geomStr,
+        1))
+        .setExpectedResult(geomStr)
+        .test();
+  }
+
 
   public void testPolygonNoReduction() throws Exception {
     new GeometryOperationValidator(
@@ -88,10 +98,12 @@ public class DouglasPeuckerSimplifierTest
         .test();
   }
   public void testMultiPoint() throws Exception {
+    String geomStr = "MULTIPOINT(80 200, 240 200, 240 60, 80 60, 80 200, 140 199, 120 120)";
     new GeometryOperationValidator(
-        DPSimplifierResult.getResult(
-      "MULTIPOINT(80 200, 240 200, 240 60, 80 60, 80 200, 140 199, 120 120)",
+        TPSimplifierResult.getResult(
+            geomStr,
         10.0))
+        .setExpectedResult(geomStr)
         .test();
   }
   public void testMultiLineString() throws Exception {

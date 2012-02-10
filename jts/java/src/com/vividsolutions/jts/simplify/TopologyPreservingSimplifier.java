@@ -6,22 +6,26 @@ import com.vividsolutions.jts.geom.util.*;
 import com.vividsolutions.jts.util.Debug;
 
 /**
- * Simplifies a geometry, ensuring that
+ * Simplifies a geometry and ensures that
  * the result is a valid geometry having the
  * same dimension and number of components as the input.
- * The simplification uses a maximum distance difference algorithm
- * similar to the one used in the Douglas-Peucker algorithm.
  * <p>
  * In particular, if the input is an areal geometry
  * ( {@link Polygon} or {@link MultiPolygon} ):
  * <ul>
- * <li>The result has the same number of shells and holes (rings) as the input,
+ * <li>The result has the same number of shells and holes as the input,
  * in the same order
  * <li>The result rings touch at <b>no more</b> than the number of touching point in the input
  * (although they may touch at fewer points).  
- * (The key implication of this constraint is that the 
- * output will be topologically valid if the input was.) 
+ * The key implication of this statement is that the 
+ * output is topologically valid if the input is. 
  * </ul>
+ * All geometry types are handled. 
+ * Empty and point geometries are returned unchanged.
+ * <p>
+ * The simplification uses a maximum-distance difference algorithm
+ * similar to the Douglas-Peucker algorithm.
+ *
  * <h3>KNOWN BUGS</h3>
  * <ul>
  * <li>If a small hole is very near an edge, it is possible for the edge to be moved by
