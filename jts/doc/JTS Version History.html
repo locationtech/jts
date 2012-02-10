@@ -76,10 +76,14 @@ non-disjoint site and constraint vertex sets
 <li>Fixed <tt>RandomPointsInGridBuilder</tt> point generation to use circle constraint correctly
 <li>Fixed Linear Referencing API to handle MultiLineStrings consistently,
 by always using the lowest possible index value, and by trimming zero-length components from results
-<li>Fixed bug in STRtree.query(Envelope, ItemVisitor) causing an NPE when tree is empty
+<li>Fixed bug in <tt>LocationIndexedLine</tt> and <tt>LengthIndexLine</tt> which was
+causing an assertion failure when the indexOfAfter() method was called with a constraint location
+which is at the end of the line
+<li>Fixed bug in <tt>STRtree.query(Envelope, ItemVisitor)</tt> causing an NPE when tree is empty
 <li>Fixed issue with creating zero-length edges during buffer topology building under fixed precision, by:
 adding filter to remove zero-length edges;
 using a better estimate of scale factor for reducing to fixed precision after initial failure.
+<li>Fixed <tt>TopologyPreservingSimplifier</tt> to return an empty result for an empty input
 </ul>
 
 <h3>API Changes</h3>

@@ -19,6 +19,15 @@ public class TopologyPreservingSimplifierTest
     junit.textui.TestRunner.run(TopologyPreservingSimplifierTest.class);
   }
 
+  public void testEmptyPolygon() throws Exception {
+    String geomStr = "POLYGON(EMPTY)";
+    new GeometryOperationValidator(
+        TPSimplifierResult.getResult(
+        geomStr,
+        1))
+        .test();
+  }
+
   /**
    * Test is from http://postgis.refractions.net/pipermail/postgis-users/2008-April/019327.html
    * @throws Exception

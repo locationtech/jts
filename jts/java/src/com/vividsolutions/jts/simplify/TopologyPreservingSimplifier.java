@@ -69,7 +69,11 @@ public class TopologyPreservingSimplifier
     lineSimplifier.setDistanceTolerance(distanceTolerance);
   }
 
-  public Geometry getResultGeometry() {
+  public Geometry getResultGeometry() 
+  {
+    // empty input produces an empty result
+    if (inputGeom.isEmpty()) return (Geometry) inputGeom.clone();
+    
     linestringMap = new HashMap();
     inputGeom.apply(new LineStringMapBuilderFilter());
     lineSimplifier.simplify(linestringMap.values());
