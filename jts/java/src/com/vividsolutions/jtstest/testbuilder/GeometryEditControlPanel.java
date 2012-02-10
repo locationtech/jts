@@ -97,7 +97,7 @@ public class GeometryEditControlPanel extends JPanel
     public GeometryEditControlPanel() {
         //enableEvents(AWTEvent.WINDOW_EVENT_MASK);
         try {
-            jbInit();
+            uiInit();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -106,10 +106,8 @@ public class GeometryEditControlPanel extends JPanel
     public void setModel(TestBuilderModel model) {
       this.model = model;
       geomModel = model.getGeometryEditModel();
-      
       geomModel
       .addGeometryListener(new com.vividsolutions.jtstest.testbuilder.model.GeometryListener() {
-
       public void geometryChanged(GeometryEvent e) {
           editPanel_geometryChanged(e);
       }
@@ -117,9 +115,8 @@ public class GeometryEditControlPanel extends JPanel
 
     }
 
-
     /**Component initialization*/
-    private void jbInit() throws Exception {
+    private void uiInit() throws Exception {
         titledBorder2 =
             new TitledBorder(BorderFactory.createLineBorder(Color.gray, 1), "Edit Mode");
         this.setLayout(borderLayout1);
@@ -182,11 +179,13 @@ public class GeometryEditControlPanel extends JPanel
         btnSetPrecisionModel.setToolTipText("Set the Precision Model used by all Test Cases");
         btnSetPrecisionModel.setMargin(new Insets(2, 2, 2, 2));
         btnSetPrecisionModel.setMnemonic('0');
-        btnSetPrecisionModel.setText("Set Precision Model...");
+        btnSetPrecisionModel.setText("Precision Model...");
 
-        cbMagnifyTopo.setHorizontalTextPosition(AbstractButton.LEADING);
+        // put box ahead of text
+        //cbMagnifyTopo.setHorizontalTextPosition(AbstractButton.LEADING);
         cbMagnifyTopo.setText("Magnify Topology");
         cbMagnifyTopo.setToolTipText("Stretches portions of geometries to reveal fine topological detail");
+        stretchDist.setToolTipText("Stretch Distance");
         
         this.add(jPanel3, BorderLayout.CENTER);
         jPanel3.add(
@@ -269,11 +268,11 @@ public class GeometryEditControlPanel extends JPanel
         jPanel9.setLayout(new FlowLayout());
         jPanel9.add(cbMagnifyTopo);
       
-        jPanel10.setLayout(new GridLayout(2, 2, 10, 2));
+        jPanel10.setLayout(new GridLayout(1, 2, 10, 2));
         jPanel10.add(cbMagnifyTopo);
-        jPanel10.add(new JLabel());
-        jPanel10.add(new JLabel("Stretch Distance"));
         jPanel10.add(stretchDist);
+        //jPanel10.add(new JLabel());
+        //jPanel10.add(new JLabel("Stretch Distance"));
       
         jPanel3.add(
             jPanel8,
