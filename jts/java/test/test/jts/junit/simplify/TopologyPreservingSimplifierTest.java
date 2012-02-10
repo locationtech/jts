@@ -25,6 +25,7 @@ public class TopologyPreservingSimplifierTest
         TPSimplifierResult.getResult(
         geomStr,
         1))
+        .setExpectedResult(geomStr)
         .test();
   }
 
