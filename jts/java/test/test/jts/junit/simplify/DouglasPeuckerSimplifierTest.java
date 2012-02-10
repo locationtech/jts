@@ -19,6 +19,17 @@ public class DouglasPeuckerSimplifierTest
     junit.textui.TestRunner.run(DouglasPeuckerSimplifierTest.class);
   }
 
+  public void testEmptyPolygon() throws Exception {
+    String geomStr = "POLYGON(EMPTY)";
+    new GeometryOperationValidator(
+        DPSimplifierResult.getResult(
+        geomStr,
+        1))
+        .setExpectedResult(geomStr)
+        .test();
+  }
+
+
   public void testPolygonNoReduction() throws Exception {
     new GeometryOperationValidator(
         DPSimplifierResult.getResult(
