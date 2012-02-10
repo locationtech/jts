@@ -85,13 +85,13 @@ public class GeometryEditControlPanel extends JPanel
     JPanel jPanel7 = new JPanel();
     GridLayout gridLayout2 = new GridLayout();
     private GridBagLayout gridBagLayout5 = new GridBagLayout();
-    private JPanel jPanel8 = new JPanel();
+    private JPanel jPanelPM = new JPanel();
     JButton btnSetPrecisionModel = new JButton();
     
     JPanel jPanel9 = new JPanel();
     JCheckBox cbMagnifyTopo = new JCheckBox();
     
-    JPanel jPanel10 = new JPanel();
+    JPanel jPanelMagnify = new JPanel();
     JSpinner stretchDist = new JSpinner(new SpinnerNumberModel(5, 0, 99999, 1));
     
     public GeometryEditControlPanel() {
@@ -160,7 +160,6 @@ public class GeometryEditControlPanel extends JPanel
             }
         });
 
-        jPanel3.setLayout(gridBagLayout5);
         jPanel1.setBorder(titledBorder2);
 
         btnEraseGeom.setPreferredSize(new Dimension(43, 20));
@@ -187,21 +186,6 @@ public class GeometryEditControlPanel extends JPanel
         cbMagnifyTopo.setToolTipText("Stretches portions of geometries to reveal fine topological detail");
         stretchDist.setToolTipText("Stretch Distance");
         
-        this.add(jPanel3, BorderLayout.CENTER);
-        jPanel3.add(
-            jPanel1,
-            new GridBagConstraints(
-                0,
-                0,
-                1,
-                1,
-                1.0,
-                0.0,
-                GridBagConstraints.CENTER,
-                GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0),
-                0,
-                0));
         
         jPanel1.add(
             rbNoEdit,
@@ -262,62 +246,28 @@ public class GeometryEditControlPanel extends JPanel
         
         
         
-        jPanel8.setLayout(new FlowLayout());
-        jPanel8.add(btnSetPrecisionModel);
+        jPanelPM.setLayout(new FlowLayout());
+        jPanelPM.add(btnSetPrecisionModel);
         
-        jPanel9.setLayout(new FlowLayout());
-        jPanel9.add(cbMagnifyTopo);
+        //jPanel9.setLayout(new FlowLayout());
+       // jPanel9.add(cbMagnifyTopo);
       
-        jPanel10.setLayout(new GridLayout(1, 2, 10, 2));
-        jPanel10.add(cbMagnifyTopo);
-        jPanel10.add(stretchDist);
+        jPanelMagnify.setLayout(new FlowLayout());
+        jPanelMagnify.add(cbMagnifyTopo);
+        jPanelMagnify.add(stretchDist);
         //jPanel10.add(new JLabel());
         //jPanel10.add(new JLabel("Stretch Distance"));
       
-        jPanel3.add(
-            jPanel8,
-            new GridBagConstraints(
-                0,
-                5,
-                1,
-                1,
-                0.0,
-                0.2,
-                GridBagConstraints.CENTER,
-                GridBagConstraints.CENTER,
-                new Insets(0, 0, 0, 0),
-                0,
-                0));
-        jPanel3.add(
-            jPanel10,
-            new GridBagConstraints(
-                0,
-                6,
-                1,
-                1,
-                0.0,
-                0.0,
-                GridBagConstraints.CENTER,
-                GridBagConstraints.VERTICAL,
-                new Insets(0, 0, 0, 0),
-                0,
-                0));
-        jPanel3.add(
-            jPanel9,
-            new GridBagConstraints(
-                0,
-                7,
-                1,
-                1,
-                0.0,
-                1.0,
-                GridBagConstraints.CENTER,
-                GridBagConstraints.VERTICAL,
-                new Insets(0, 0, 0, 0),
-                0,
-                0));
+        //jPanel3.setLayout(gridBagLayout5);
+        jPanel3.setLayout(new GridLayout(2, 1, 10, 2));
+        jPanel3.add(jPanelPM);
+        jPanel3.add(jPanelMagnify);
+        this.add(jPanel1, BorderLayout.NORTH);
+        this.add(jPanel3, BorderLayout.SOUTH);
 //        this.add(jPanel7, BorderLayout.SOUTH);
 //        jPanel7.add(lblAction, null);
+        
+        
         editMode.add(rbNoEdit);
         editMode.add(rbA);
         editMode.add(rbB);
