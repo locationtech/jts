@@ -40,6 +40,12 @@ public class TaggedLineStringSimplifier
     this.distanceTolerance = distanceTolerance;
   }
 
+  /**
+   * Simplifies the given {@link TaggedLineString}
+   * using the distance tolerance specified.
+   * 
+   * @param line the linestring to simplify
+   */
   public void simplify(TaggedLineString line)
   {
     this.line = line;

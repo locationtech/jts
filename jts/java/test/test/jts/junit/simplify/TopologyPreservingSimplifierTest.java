@@ -116,6 +116,17 @@ public class TopologyPreservingSimplifierTest
         10.0))
         .test();
   }
+  
+  public void testTinyClosedLineString() throws Exception {
+    String geomStr = "LINESTRING (0 0, 5 0, 5 5, 0 0)";
+    new GeometryOperationValidator(
+        TPSimplifierResult.getResult(
+        geomStr,
+        10))
+        .setExpectedResult(geomStr)
+        .test();
+  }
+  
   public void testMultiPoint() throws Exception {
     String geomStr = "MULTIPOINT(80 200, 240 200, 240 60, 80 60, 80 200, 140 199, 120 120)";
     new GeometryOperationValidator(

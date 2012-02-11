@@ -100,18 +100,33 @@ public class TopologyPreservingSimplifier
     }
   }
 
+  /**
+   * A filter to add linear geometries to the linestring map 
+   * with the appropriate minimum size constraint.
+   * Closed {@link LineString}s (including {@link LinearRing}s
+   * have a minimum output size constraint of 4, 
+   * to ensure the output is valid.
+   * For all other linestrings, the minimum size is 2 points.
+   * 
+   * @author Martin Davis
+   *
+   */
   class LineStringMapBuilderFilter
       implements GeometryComponentFilter
   {
+    /**
+     * Filters linear geometries.
+     * 
+     * geom a geometry of any type 
+     */
     public void filter(Geometry geom)
     {
-      if (geom instanceof LinearRing) {
-        TaggedLineString taggedLine = new TaggedLineString((LineString) geom, 4);
-        linestringMap.put(geom, taggedLine);
-      }
-      else if (geom instanceof LineString) {
-        TaggedLineString taggedLine = new TaggedLineString((LineString) geom, 2);
-        linestringMap.put(geom, taggedLine);
+      if (geom instanceof LineString) {
+        LineString line = (LineString) geom;
+        int minSize = ((LineString) line).isClosed() ? 4 : 2;
+        
+        TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize);
+        linestringMap.put(line, taggedLine);
       }
     }
   }

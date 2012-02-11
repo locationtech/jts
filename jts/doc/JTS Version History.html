@@ -83,6 +83,8 @@ which is at the end of the line
 <li>Fixed issue with creating zero-length edges during buffer topology building under fixed precision, by:
 adding filter to remove zero-length edges;
 using a better estimate of scale factor for reducing to fixed precision after initial failure.
+<li>Fixed <tt>TopologyPreservingSimplifier</tt> to return a valid result
+for closed <tt>LineString</tt>s with large distance tolerances
 <li>Fixed <tt>TopologyPreservingSimplifier</tt> to return an empty result for an empty input
 <li>Fixed <tt>DouglasPeuckerSimplifier</tt> to return an empty result for an empty input
 </ul>
