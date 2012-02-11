@@ -8,18 +8,30 @@ import com.vividsolutions.jts.util.Debug;
 /**
  * Simplifies a geometry and ensures that
  * the result is a valid geometry having the
- * same dimension and number of components as the input.
+ * same dimension and number of components as the input,
+ * and with the components having the same topological 
+ * relationship.
  * <p>
- * In particular, if the input is an areal geometry
+ * If the input is a polygonal geometry
  * ( {@link Polygon} or {@link MultiPolygon} ):
  * <ul>
  * <li>The result has the same number of shells and holes as the input,
- * in the same order
- * <li>The result rings touch at <b>no more</b> than the number of touching point in the input
+ * with the same topological structure
+ * <li>The result rings touch at <b>no more</b> than the number of touching points in the input
  * (although they may touch at fewer points).  
- * The key implication of this statement is that the 
- * output is topologically valid if the input is. 
+ * The key implication of this statement is that if the 
+ * input is topologically valid, so is the simplified output. 
  * </ul>
+ * For linear geometries, if the input does not contain
+ * any intersecting line segments, this property
+ * will be preserved in the output.
+ * <p>
+ * For all geometry types, the result will contain 
+ * enough vertices to ensure validity.  For polygons
+ * and closed linear geometries, the result will have at
+ * least 4 vertices; for open linestrings the result
+ * will have at least 2 vertices.
+ * <p>
  * All geometry types are handled. 
  * Empty and point geometries are returned unchanged.
  * <p>
