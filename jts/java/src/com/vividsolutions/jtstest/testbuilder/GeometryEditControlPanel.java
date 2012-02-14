@@ -87,6 +87,7 @@ public class GeometryEditControlPanel extends JPanel
     private GridBagLayout gridBagLayout5 = new GridBagLayout();
     private JPanel jPanelPM = new JPanel();
     JButton btnSetPrecisionModel = new JButton();
+    //LayerControlList layerList = new LayerControlList();
     
     JPanel jPanel9 = new JPanel();
     JCheckBox cbMagnifyTopo = new JCheckBox();
@@ -120,7 +121,7 @@ public class GeometryEditControlPanel extends JPanel
         titledBorder2 =
             new TitledBorder(BorderFactory.createLineBorder(Color.gray, 1), "Edit Mode");
         this.setLayout(borderLayout1);
-        this.setSize(new Dimension(194, 464));
+        //this.setSize(new Dimension(194, 300));
         rbNoEdit.setMargin(new Insets(0, 0, 0, 0));
         rbNoEdit.setPreferredSize(new Dimension(61, 16));
         rbNoEdit.setText("No Edit");
@@ -185,7 +186,6 @@ public class GeometryEditControlPanel extends JPanel
         cbMagnifyTopo.setText("Magnify Topology");
         cbMagnifyTopo.setToolTipText("Stretches portions of geometries to reveal fine topological detail");
         stretchDist.setToolTipText("Stretch Distance");
-        
         
         jPanel1.add(
             rbNoEdit,
@@ -262,12 +262,12 @@ public class GeometryEditControlPanel extends JPanel
         jPanel3.setLayout(new GridLayout(2, 1, 10, 2));
         jPanel3.add(jPanelPM);
         jPanel3.add(jPanelMagnify);
+        
+        
         this.add(jPanel1, BorderLayout.NORTH);
         this.add(jPanel3, BorderLayout.SOUTH);
-//        this.add(jPanel7, BorderLayout.SOUTH);
-//        jPanel7.add(lblAction, null);
-        
-        
+        //this.add(layerList, BorderLayout.CENTER);
+       
         editMode.add(rbNoEdit);
         editMode.add(rbA);
         editMode.add(rbB);

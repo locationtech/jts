@@ -35,6 +35,7 @@ package com.vividsolutions.jtstest.testbuilder;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.util.Iterator;
 
@@ -57,7 +58,6 @@ import com.vividsolutions.jtstest.testbuilder.model.Layer;
 import com.vividsolutions.jtstest.testbuilder.model.LayerList;
 import com.vividsolutions.jtstest.testbuilder.model.TestCaseEdit;
 
-
 /**
  * @version 1.7
  */
@@ -70,16 +70,17 @@ public class LayerListPanel extends JPanel {
 
     public LayerListPanel() {
         try {
-            jbInit();
+            uiInit();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         registerListSelectionListener();
     }
 
-    private void jbInit() throws Exception {
+    private void uiInit() throws Exception {
         setSize(200, 250);
         setLayout(borderLayout2);
+        list.setBackground(SystemColor.control);
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setSelectionBackground(Color.GRAY);
         add(jScrollPane1, BorderLayout.CENTER);
@@ -88,7 +89,6 @@ public class LayerListPanel extends JPanel {
 
     private void registerListSelectionListener() {
         list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
             public void valueChanged(ListSelectionEvent e) {
                 if (list.getSelectedValue() == null)
                     return;

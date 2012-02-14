@@ -116,6 +116,7 @@ public class JTSTestBuilderFrame extends JFrame
   JPanel testPanel = new JPanel();
   WKTPanel wktPanel = new WKTPanel();
   TestListPanel testListPanel = new TestListPanel(this);
+  //LayerListPanel layerListPanel = new LayerListPanel();
   LayerListPanel layerListPanel = new LayerListPanel();
   GridBagLayout gridBagLayout2 = new GridBagLayout();
   GridLayout gridLayout1 = new GridLayout();
