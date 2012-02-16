@@ -153,7 +153,7 @@ public class MinimumBoundingCircle
 	
 	private void computeCirclePoints()
 	{
-		// handle degenerate cases
+		// handle degenerate or trivial cases
 		if (input.isEmpty()) {
 			extremalPts = new Coordinate[0];
 			return;
@@ -164,13 +164,12 @@ public class MinimumBoundingCircle
 			return;
 		}
 		
+		/**
+		 * The problem is simplified by reducing to the convex hull.
+		 * Computing the convex hull also has the useful effect of eliminating duplicate points
+		 */
 		Geometry convexHull = input.convexHull();
 		
-		/**
-		 * Computing the convex hull also have the effect of eliminating duplicate points
-		 */
-		
-		// check for degenerate or trivial cases
 		Coordinate[] hullPts = convexHull.getCoordinates();
 		
 		// strip duplicate final point, if any
@@ -180,7 +179,10 @@ public class MinimumBoundingCircle
 			CoordinateArrays.copyDeep(hullPts, 0, pts, 0, hullPts.length - 1);
 		}
 		
-		if (pts.length <= 3) {
+		/**
+		 * Optimization for the trivial case where the CH has fewer than 3 points
+		 */
+		if (pts.length <= 2) {
 			extremalPts = CoordinateArrays.copyDeep(pts);
 			return;
 		}
@@ -220,7 +222,7 @@ public class MinimumBoundingCircle
 			extremalPts = new Coordinate[] { new Coordinate(P), new Coordinate(Q), new Coordinate(R) };
 			return;
 		}
-		Assert.shouldNeverReachHere("Logic failure in Minimum Bounding Circle algorithm"); 
+		Assert.shouldNeverReachHere("Logic failure in Minimum Bounding Circle algorithm!"); 
 	}
 	
 	private static Coordinate lowestPoint(Coordinate[] pts)

@@ -78,9 +78,14 @@ public class MinimumBoundingCircleTest extends TestCase {
   			new Coordinate(15, 15), 7.0710678118654755);
   }
 
+  public void testObtuseTriangle() throws Exception {
+    doMinimumBoundingCircleTest("POLYGON ((100 100, 200 100, 150 90, 100 100))", "MULTIPOINT ((100 100), (200 100))",
+        new Coordinate(150, 100), 50);
+  }
+
   public void testTriangleWithMiddlePoint() throws Exception {
-  	doMinimumBoundingCircleTest("MULTIPOINT ((10 10), (20 20), (10 20), (15 19))", "MULTIPOINT ((10 10), (20 20), (10 20))",
-  			new Coordinate(15, 15), 7.0710678118654755);
+    doMinimumBoundingCircleTest("MULTIPOINT ((10 10), (20 20), (10 20), (15 19))", "MULTIPOINT ((10 10), (20 20), (10 20))",
+        new Coordinate(15, 15), 7.0710678118654755);
   }
 
   static final double TOLERANCE = 1.0e-5;
@@ -108,6 +113,9 @@ public class MinimumBoundingCircleTest extends TestCase {
   	// need this hack because apparently equals does not work for MULTIPOINT EMPTY
   	if (actual.isEmpty() && expected.isEmpty())
   		isEqual = true;
+  	if (!isEqual) {
+  	  System.out.println("Actual = " + actual + ", Expected = " + expected);
+  	}
   	assertTrue(isEqual);
   	
   	if (expectedCentre != null) {

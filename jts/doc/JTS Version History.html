@@ -87,6 +87,7 @@ using a better estimate of scale factor for reducing to fixed precision after in
 for closed <tt>LineString</tt>s with large distance tolerances
 <li>Fixed <tt>TopologyPreservingSimplifier</tt> to return an empty result for an empty input
 <li>Fixed <tt>DouglasPeuckerSimplifier</tt> to return an empty result for an empty input
+<li>Fixed bug in <tt>MinimumBoundingCircle</tt> which computed an incorrect circle for obtuse triangles.
 </ul>
 
 <h3>API Changes</h3>
