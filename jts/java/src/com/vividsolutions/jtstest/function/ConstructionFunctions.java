@@ -52,6 +52,8 @@ public class ConstructionFunctions {
 
   public static Geometry minimumRectangle(Geometry g) {      return (new MinimumDiameter(g)).getMinimumRectangle();  }
   public static Geometry minimumBoundingCircle(Geometry g) {      return (new MinimumBoundingCircle(g)).getCircle();  }
+  public static Geometry minimumBoundingCirclePoints(Geometry g) {      return 
+    g.getFactory().createLineString((new MinimumBoundingCircle(g)).getExtremalPoints());  }
   public static double maximumDiameter(Geometry g) {      return 2 * (new MinimumBoundingCircle(g)).getRadius();  }
   
   public static Geometry boundary(Geometry g) {      return g.getBoundary();  }
