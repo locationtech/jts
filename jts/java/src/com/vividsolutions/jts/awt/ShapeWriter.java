@@ -42,6 +42,20 @@ import com.vividsolutions.jts.geom.*;
 
 /**
  * Writes {@link Geometry}s into Java2D {@link Shape} objects
+ * of the appropriate type.
+ * This supports rendering geometries using Java2D.
+ * <p>
+ * The writer supports removing duplicate consecutive points
+ * (via the {@link #setRemoveDuplicatePoints(boolean)} method) 
+ * as well as true <b>decimation</b>
+ * (via the {@link #setDecimation(double)} method. 
+ * Enabling one of these strategies can substantially improve 
+ * rendering speed for large geometries.
+ * Using decimation is preferred, but this requires 
+ * determining a distance below which input geometry vertices
+ * can be considered unique (which may not always be feasible).
+ * <p>
+ * 
  */
 public class ShapeWriter 
 {
@@ -63,6 +77,15 @@ public class ShapeWriter
 	 */
 	private Point2D transPoint = new Point2D.Double();
 
+	/**
+	 * If true, decimation will be used to reduce the number of vertices
+	 * by removing consecutive duplicates.
+	 * 
+	 */
+	private boolean doRemoveDuplicatePoints = false;
+	
+	private double decimationDistance = 0;
+	
 	/**
 	 * Creates a new ShapeWriter with a specified point transformation
 	 * and point shape factory.
@@ -97,6 +120,40 @@ public class ShapeWriter
 	}
 
 	/**
+	 * Sets whether duplicate consecutive points should be eliminated.
+	 * This can reduce the size of the generated Shapes
+	 * and improve rendering speed, especially in situations
+	 * where a transform reduces the extent of the geometry.
+	 * <p>
+	 * The default is <tt>false</tt>.
+	 * 
+	 * @param doDecimation whether decimation is to be used
+	 */
+  public void setRemoveDuplicatePoints(boolean doRemoveDuplicatePoints)
+  {
+    this.doRemoveDuplicatePoints = doRemoveDuplicatePoints;
+  }
+  
+  /**
+   * Sets the decimation distance used to determine
+   * whether vertices of the input geometry are 
+   * considered to be duplicate and thus removed.
+   * The distance is axis distance, not Euclidean distance.
+   * <p>
+   * When rendering to a screen image, a suitably small distance should be used
+   * to avoid obvious rendering defects.  
+   * A distance equivalent to 2 pixels or less is recommended.
+   * <p>
+   * The default distance is 0.0, which disables decimation.
+   * 
+   * @param decimationDistance the distance below which vertices are considered to be duplicates
+   */
+  public void setDecimation(double decimationDistance)
+  {
+    this.decimationDistance = decimationDistance;
+  }
+  
+	/**
 	 * Creates a {@link Shape} representing a {@link Geometry}, 
 	 * according to the specified PointTransformation
 	 * and PointShapeFactory (if relevant).
@@ -129,52 +186,46 @@ public class ShapeWriter
 	{
 		PolygonShape poly = new PolygonShape();
 		
-		append(poly, p.getExteriorRing().getCoordinates());
+		appendRing(poly, p.getExteriorRing().getCoordinates());
 		for (int j = 0; j < p.getNumInteriorRing(); j++) {
-			append(poly, p.getInteriorRingN(j).getCoordinates());
+		  appendRing(poly, p.getInteriorRingN(j).getCoordinates());
 		}
 
 		return poly;
 	}
 
-	private void append(PolygonShape poly, Coordinate[] coords) 
+	private void appendRing(PolygonShape poly, Coordinate[] coords) 
 	{
-		for (int i = 0; i < coords.length; i++) {
+    double prevx = Double.NaN;
+    double prevy = Double.NaN;
+    Coordinate prev = null;
+    
+    int n = coords.length - 1;
+		for (int i = 0; i <= n; i++) {
+		  
+		  if (decimationDistance > 0.0) {
+		    boolean isDecimated = prev != null 
+		      && Math.abs(coords[i].x - prev.x) < decimationDistance
+		      && Math.abs(coords[i].y - prev.y) < decimationDistance;
+		    if (isDecimated) 
+		      continue;
+		    prev = coords[i];
+		  }
+		  
 			transformPoint(coords[i], transPoint);
+			
+			if (doRemoveDuplicatePoints) {
+        // skip duplicate points (except the last point)
+			  boolean isDup = transPoint.getX() == prevx && transPoint.getY() == prevy;
+        if (i < n && isDup)
+          continue;
+        prevx = transPoint.getX();
+        prevy = transPoint.getY();
+			}
 			poly.addToRing(transPoint);
 		}
 		poly.endRing();
 	}
-	
-	/*
-	 // Obsolete (slower code)
-	private Shape OLDtoShape(Polygon p) 
-	{
-		ArrayList holeVertexCollection = new ArrayList();
-
-		for (int j = 0; j < p.getNumInteriorRing(); j++) {
-			holeVertexCollection.add(
-				toViewCoordinates(p.getInteriorRingN(j).getCoordinates()));
-		}
-
-		return new PolygonShape(
-			toViewCoordinates(p.getExteriorRing().getCoordinates()),
-			holeVertexCollection);
-	}
-
-	
-	private Coordinate[] toViewCoordinates(Coordinate[] modelCoordinates)
-	{
-		Coordinate[] viewCoordinates = new Coordinate[modelCoordinates.length];
-
-		for (int i = 0; i < modelCoordinates.length; i++) {
-			Point2D point2D = toPoint(modelCoordinates[i]);
-			viewCoordinates[i] = new Coordinate(point2D.getX(), point2D.getY());
-		}
-
-		return viewCoordinates;
-	}
-*/
 	
 	private Shape toShape(GeometryCollection gc)
 	{
@@ -205,10 +256,26 @@ public class ShapeWriter
 		transformPoint(lineString.getCoordinateN(0), transPoint);
 		shape.moveTo((float) transPoint.getX(), (float) transPoint.getY());
 
-		for (int i = 1; i < lineString.getNumPoints(); i++) {
+    double prevx = (double) transPoint.getX();
+    double prevy = (double) transPoint.getY();
+    
+    int n = lineString.getNumPoints() - 1;
+    //int count = 0;
+		for (int i = 1; i <= n; i++) {
 			transformPoint(lineString.getCoordinateN(i), transPoint);
+
+			if (doRemoveDuplicatePoints) {
+  			// skip duplicate points (except the last point)
+			  boolean isDup = transPoint.getX() == prevx && transPoint.getY() == prevy;
+  			if (i < n && isDup)
+  			  continue;
+  			prevx = transPoint.getX();
+  			prevy = transPoint.getY();
+  			//count++;
+			}
 			shape.lineTo((float) transPoint.getX(), (float) transPoint.getY());
 		}
+		//System.out.println(count);
 		return shape;
 	}
 

@@ -43,6 +43,7 @@ using the CoordinateSequenceFactory of the factory
 <li>Added <tt>AbstractSTRtree.isEmpty()</tt> method
 <li>Added <tt>QuadTree.isEmpty()</tt> method
 <li>Added <tt>KdTree.isEmpty()</tt> method
+<li>Added decimation and duplicate point removal to </tt>ShapeWriter<tt>.
 </ul>
 
 <h3>Performance Improvements</h3>
@@ -118,6 +119,11 @@ and <tt>PerformanceTestCase</tt>)
 <li>Improved <b>Geometry Inspector</b>
 <li>Added stream digitizing for Polygon and LineString tools
 <li>Added output of Test Case XML with WKB
+</ul>
+
+<h3>Performance Improvements</h3>
+<ul>
+<li>Using decimation substantially improves rendering time for large geometries.
 </ul>
 
 <!-- ================================================================ -->

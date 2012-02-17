@@ -281,11 +281,23 @@ public class Viewport implements PointTransformation
     return panel.getSize().getWidth();
   }
 
+  /**
+   * Converts a distance in the view to a distance in the model.
+   * 
+   * @param viewDist
+   * @return
+   */
   public double toModel(double viewDist)
   {
   	return viewDist / scale;
   }
   
+  /**
+   * Converts a distance in the model to a distance in the view.
+   * 
+   * @param modelDist
+   * @return
+   */
   public double toView(double modelDist)
   {
   	return modelDist * scale;

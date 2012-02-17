@@ -74,7 +74,10 @@ public class GeometryPainter
   // probably not - only called once for each geom painted
   public static ShapeWriter getConverter(Viewport viewport)
   {
-    return new ShapeWriter(viewport, new PointShapeFactory.Point());
+    ShapeWriter sw = new ShapeWriter(viewport, new PointShapeFactory.Point());
+    //sw.setRemoveDuplicatePoints(true);
+    sw.setDecimation(viewport.toModel(2));
+    return sw;
   }
   
   /**
