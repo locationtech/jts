@@ -51,9 +51,13 @@ import com.vividsolutions.jts.geom.*;
  * (via the {@link #setDecimation(double)} method. 
  * Enabling one of these strategies can substantially improve 
  * rendering speed for large geometries.
+ * It is only necessary to enable one strategy.
  * Using decimation is preferred, but this requires 
  * determining a distance below which input geometry vertices
  * can be considered unique (which may not always be feasible).
+ * If neither strategy is enabled, all vertices
+ * of the input <tt>Geometry</tt>
+ * will be represented in the output <tt>Shape</tt>.
  * <p>
  * 
  */
