@@ -139,6 +139,8 @@ public class ShapeWriter
    * whether vertices of the input geometry are 
    * considered to be duplicate and thus removed.
    * The distance is axis distance, not Euclidean distance.
+   * The distance is specified in the input geometry coordinate system
+   * (NOT the transformed output coordinate system).
    * <p>
    * When rendering to a screen image, a suitably small distance should be used
    * to avoid obvious rendering defects.  
