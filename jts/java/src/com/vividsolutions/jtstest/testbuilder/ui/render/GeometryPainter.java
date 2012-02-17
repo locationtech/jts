@@ -70,13 +70,18 @@ public class GeometryPainter
     return converterCache;
   }
   
+  /**
+   * Choose a fairly conservative decimation distance to avoid visual artifacts
+   */
+  private static final double DECIMATION_DISTANCE = 1.3;
+  
   // TODO: is this a performance problem?
   // probably not - only called once for each geom painted
   public static ShapeWriter getConverter(Viewport viewport)
   {
     ShapeWriter sw = new ShapeWriter(viewport, new PointShapeFactory.Point());
     //sw.setRemoveDuplicatePoints(true);
-    sw.setDecimation(viewport.toModel(2));
+    sw.setDecimation(viewport.toModel(DECIMATION_DISTANCE));
     return sw;
   }
   
