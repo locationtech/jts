@@ -144,7 +144,8 @@ public class ShapeWriter
    * <p>
    * When rendering to a screen image, a suitably small distance should be used
    * to avoid obvious rendering defects.  
-   * A distance equivalent to 2 pixels or less is recommended.
+   * A distance equivalent to 2 pixels or less is recommended
+   * (and perhaps even smaller to avoid any chance of visible artifacts).
    * <p>
    * The default distance is 0.0, which disables decimation.
    * 
