@@ -91,6 +91,7 @@ public class PolygonShape implements Shape
     
     void endRing()
     {
+      ringPath.closePath();
     	if (polygonPath == null) {
     		polygonPath = ringPath;
     	}

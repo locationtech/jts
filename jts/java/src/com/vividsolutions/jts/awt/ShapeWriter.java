@@ -44,6 +44,10 @@ import com.vividsolutions.jts.geom.*;
  * Writes {@link Geometry}s into Java2D {@link Shape} objects
  * of the appropriate type.
  * This supports rendering geometries using Java2D.
+ * The ShapeWriter allows supplying a {@link PointTransformation}
+ * class, to transform coordinates from model space into view space.
+ * This is useful if a client is providing its own transformation
+ * logic, rather than relying on Java2D <tt>AffineTransform</tt>s.
  * <p>
  * The writer supports removing duplicate consecutive points
  * (via the {@link #setRemoveDuplicatePoints(boolean)} method) 
@@ -148,7 +152,7 @@ public class ShapeWriter
    * <p>
    * When rendering to a screen image, a suitably small distance should be used
    * to avoid obvious rendering defects.  
-   * A distance equivalent to 2 pixels or less is recommended
+   * A distance equivalent to the equivalent of 1.5 pixels or less is recommended
    * (and perhaps even smaller to avoid any chance of visible artifacts).
    * <p>
    * The default distance is 0.0, which disables decimation.
@@ -208,13 +212,18 @@ public class ShapeWriter
     Coordinate prev = null;
     
     int n = coords.length - 1;
-		for (int i = 0; i <= n; i++) {
+    /**
+     * Don't include closing point.
+     * Ring path will be closed explicitly, which provides a 
+     * more accurate path representation.
+     */
+		for (int i = 0; i < n; i++) {
 		  
 		  if (decimationDistance > 0.0) {
 		    boolean isDecimated = prev != null 
 		      && Math.abs(coords[i].x - prev.x) < decimationDistance
 		      && Math.abs(coords[i].y - prev.y) < decimationDistance;
-		    if (isDecimated) 
+		    if (i < n && isDecimated) 
 		      continue;
 		    prev = coords[i];
 		  }
@@ -231,6 +240,7 @@ public class ShapeWriter
 			}
 			poly.addToRing(transPoint);
 		}
+		// handle closing point
 		poly.endRing();
 	}
 	
@@ -298,12 +308,6 @@ public class ShapeWriter
   
   private Point2D transformPoint(Coordinate model, Point2D view) {
 		pointTransformer.transform(model, view);
-		/**
-		 * Do the rounding now instead of relying on Java 2D rounding. Java2D seems
-		 * to do rounding differently for drawing and filling, resulting in the draw
-		 * being a pixel off from the fill sometimes.
-		 */
-		view.setLocation(Math.round(view.getX()), Math.round(view.getY()));
 		return view;
 	}
 }
