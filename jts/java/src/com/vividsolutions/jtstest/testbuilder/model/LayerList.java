@@ -52,4 +52,22 @@ public class LayerList
     }
     return null;
   }
+  
+  public Geometry[] getComponents(Geometry aoi)
+  {
+    Geometry comp[] = new Geometry[2];
+    for (int i = 0; i < 2; i++) {
+
+      Layer lyr = getLayer(i);
+      Geometry geom = lyr.getGeometry();
+      if (geom == null) continue;
+      ComponentLocater locater = new ComponentLocater(geom);
+      List locs = locater.getComponents(aoi);
+      if (locs.size() > 0) {
+        GeometryLocation loc = (GeometryLocation) locs.get(0);
+        comp[i] = loc.getComponent();
+      }
+    }
+    return comp;
+  }
 }

@@ -24,7 +24,7 @@ public class GeometryPopupMenu extends JPopupMenu
     extractComponentItem.addActionListener(
           new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              JTSTestBuilderController.extractComponentToTest(clickCoord);
+              JTSTestBuilderController.extractComponentsToTestCase(clickCoord);
             }
           });
     add(extractComponentItem);

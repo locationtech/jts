@@ -33,15 +33,18 @@
 package com.vividsolutions.jtstest.testbuilder.ui.tools;
 
 import java.awt.event.MouseEvent;
+import java.util.List;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jtstest.testbuilder.*;
 import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
+import com.vividsolutions.jtstest.testbuilder.model.GeometryType;
 
 /**
  * Extracts a component of a geometry to a new Test Case
  * @version 1.7
  */
-public class ExtractComponentTool extends BasicTool {
+public class ExtractComponentTool extends BoxBandTool {
   private static ExtractComponentTool singleton = null;
 
   public static ExtractComponentTool getInstance() {
@@ -51,11 +54,13 @@ public class ExtractComponentTool extends BasicTool {
   }
 
   private ExtractComponentTool() {
+    super();
   }
 
-  public void mousePressed(MouseEvent e) 
-  {
-    JTSTestBuilderController.extractComponentToTest(toModelCoordinate(e.getPoint()));
+  protected void gestureFinished() 
+  {      
+    JTSTestBuilderController.extractComponentsToTestCase(getBox());  
   }
+
 
 }

@@ -15,8 +15,6 @@ public class ComponentLocater {
 
   private Geometry parentGeom;
   private List components = new ArrayList();
-  private Coordinate queryPt;
-  private double tolerance = 0.0; 
   private Geometry aoi;
 
   public ComponentLocater(Geometry parentGeom) {
@@ -31,9 +29,17 @@ public class ComponentLocater {
    */
   public List getComponents(Coordinate queryPt, double tolerance)
   {
-    this.queryPt = queryPt;
-    this.tolerance = tolerance;
+    //Coordinate queryPt = queryPt;
+    //this.tolerance = tolerance;
     aoi = createAOI(queryPt, tolerance);
+    return getComponents(aoi);
+  }
+
+  public List getComponents(Geometry aoi)
+  {
+    //Coordinate queryPt = queryPt;
+    //this.tolerance = tolerance;
+    this.aoi = aoi;
     findComponents(new Stack(), parentGeom, components);
     return components;
   }

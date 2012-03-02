@@ -14,7 +14,7 @@ public class JTSTestBuilderController
     JTSTestBuilderFrame.getGeometryEditPanel().updateView();
   }
 
-  public static void extractComponentToTest(Coordinate pt)
+  public static void extractComponentsToTestCase(Coordinate pt)
   {
     double toleranceInModel = JTSTestBuilderFrame.getGeometryEditPanel().getToleranceInModel();
     LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
@@ -22,6 +22,17 @@ public class JTSTestBuilderController
     if (comp == null) 
       return;
     JTSTestBuilderFrame.instance().getModel().addCase(new Geometry[] { comp, null });
+    JTSTestBuilderFrame.instance().updateTestCases();
+  }
+  
+  public static void extractComponentsToTestCase(Geometry aoi)
+  {
+    double toleranceInModel = JTSTestBuilderFrame.getGeometryEditPanel().getToleranceInModel();
+    LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
+    Geometry[] comp = lyrList.getComponents(aoi);
+    if (comp == null) 
+      return;
+    JTSTestBuilderFrame.instance().getModel().addCase(comp);
     JTSTestBuilderFrame.instance().updateTestCases();
   }
   

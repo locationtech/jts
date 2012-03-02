@@ -45,7 +45,9 @@ import javax.swing.SwingUtilities;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
+import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 
 
@@ -129,6 +131,11 @@ public abstract class BoxBandTool extends IndicatorTool
     return new Envelope(start, end);
   }
 
+  protected Geometry getBox()
+  {
+    return JTSTestBuilder.getGeometryFactory().toGeometry(getEnvelope());
+  }
+  
   /**
    * Getes the coordinates for the rectangle
    * starting with the lower left point.
