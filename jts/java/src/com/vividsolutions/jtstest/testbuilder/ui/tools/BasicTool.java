@@ -14,8 +14,6 @@ import com.vividsolutions.jtstest.testbuilder.model.*;
 
 public abstract class BasicTool implements Tool
 {
-  public static int TOLERANCE_PIXELS = 5;
-
   private PrecisionModel gridPM;
   
   public BasicTool() {
@@ -110,7 +108,7 @@ public abstract class BasicTool implements Tool
   
   double getModelSnapTolerance()
   {
-    return toModel(TOLERANCE_PIXELS);
+    return toModel(AppConstants.TOLERANCE_PIXELS);
   }
   
   protected Coordinate toModelSnapped(Point2D p)

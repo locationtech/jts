@@ -198,7 +198,7 @@ public class GeometryEditPanel extends JPanel
   public String getToolTipText(MouseEvent event) {
 //    if (event.getPoint().x < 100) return null;
     Coordinate pt = viewport.toModelCoordinate(event.getPoint());
-    double toleranceInModel = EditVertexTool.TOLERANCE_PIXELS / getViewport().getScale();
+    double toleranceInModel = AppConstants.TOLERANCE_PIXELS / getViewport().getScale();
     // avoid wierd scale issues
     if (toleranceInModel <= 0.0) return null;
     return GeometryLocationsWriter.writeLocation(getLayerList(), pt, toleranceInModel);
@@ -206,9 +206,14 @@ public class GeometryEditPanel extends JPanel
 //    return null;
   }
 
+  public double getToleranceInModel()
+  {
+    return AppConstants.TOLERANCE_PIXELS / getViewport().getScale();
+  }
+  
   public String getInfo(Coordinate pt)
   {
-    double toleranceInModel = EditVertexTool.TOLERANCE_PIXELS / getViewport().getScale();
+    double toleranceInModel = AppConstants.TOLERANCE_PIXELS / getViewport().getScale();
     GeometryLocationsWriter writer = new GeometryLocationsWriter();
     writer.setHtml(false);
     return writer.writeLocationString(getLayerList(), pt, toleranceInModel);

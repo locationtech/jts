@@ -79,6 +79,7 @@ import com.vividsolutions.jtstest.testbuilder.ui.ImageUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.dnd.FileDrop;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.EditVertexTool;
+import com.vividsolutions.jtstest.testbuilder.ui.tools.ExtractComponentTool;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.InfoTool;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.LineStringTool;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.PanTool;
@@ -354,8 +355,7 @@ public class JTSTestBuilderFrame extends JFrame
   void btnNewCase_actionPerformed(ActionEvent e) {
     tbModel.createNew();
     showGeomsTab();
-    updateTestCaseView();
-    testListPanel.populateList();
+    updateTestCases();
   }
 
   void btnPrevCase_actionPerformed(ActionEvent e) {
@@ -368,12 +368,17 @@ public class JTSTestBuilderFrame extends JFrame
      updateTestCaseView();
   }
 
-  void btnCopyCase_actionPerformed(ActionEvent e) {
+  void btnCopyCase_actionPerformed() {
     tbModel.copyCase();
-    updateTestCaseView();
-    testListPanel.populateList();
+    updateTestCases();
   }
 
+  public void updateTestCases()
+  {
+    testListPanel.populateList();    
+    updateTestCaseView();
+  }
+  
   public void copyResultToTest() 
   {
     Object currResult = tbModel.getResult();
@@ -583,6 +588,10 @@ public class JTSTestBuilderFrame extends JFrame
 
   void infoButton_actionPerformed(ActionEvent e) {
     testCasePanel.getGeometryEditPanel().setCurrentTool(InfoTool.getInstance());
+  }
+
+  void actionExtractComponentButton() {
+    testCasePanel.getGeometryEditPanel().setCurrentTool(ExtractComponentTool.getInstance());
   }
 
   void zoomInButton_actionPerformed(ActionEvent e) {
@@ -803,7 +812,7 @@ public class JTSTestBuilderFrame extends JFrame
     testCasePanel.setPrecisionModelDescription(tbModel.getPrecisionModel().toString());
   }
 
-  void updateTestCaseView() {
+  public void updateTestCaseView() {
     testCasePanel.setTestCase(tbModel.getCurrentTestCaseEdit());
     getTestCasePanel().setCurrentTestCaseIndex(tbModel.getCurrentTestIndex() + 1);
     getTestCasePanel().setMaxTestCaseIndex(tbModel.getTestListSize());

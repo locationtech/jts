@@ -87,18 +87,31 @@ public class JTSTestBuilderToolBar {
           }
         });
 
+    JButton extractComponentButton = createButton("Extract Component",
+        new ImageIcon(this.getClass().getResource("ExtractComponent.png")), 
+        new java.awt.event.ActionListener() {
+          public void actionPerformed(ActionEvent e)
+          {
+            tbFrame.actionExtractComponentButton();
+          }
+        });
+
     jToolBar1.add(newButton, null);
     jToolBar1.add(copyButton, null);
+    jToolBar1.add(extractComponentButton, null);
     jToolBar1.add(deleteButton, null);
+    
     jToolBar1.add(strut1, null);
+    
     jToolBar1.add(previousButton, null);
     jToolBar1.add(nextButton, null);
+    
     jToolBar1.add(strut2, null);
 
     jToolBar1.add(exchangeButton, null);
+    
     jToolBar1.add(strut3, null);
-//    jToolBar1.add(runAllTestsButton, null);
-//    jToolBar1.add(component3, null);
+    
     jToolBar1.add(zoomInButton, null);
     jToolBar1.add(panButton, null);
     jToolBar1.add(oneToOneButton, null);
@@ -107,13 +120,17 @@ public class JTSTestBuilderToolBar {
     jToolBar1.add(zoomToInputButton, null);
     jToolBar1.add(zoomToResultButton, null);
     jToolBar1.add(zoomToFullExtentButton, null);
+    
     jToolBar1.add(strut4, null);
+    
     jToolBar1.add(drawRectangleButton, null);
     jToolBar1.add(drawPolygonButton, null);
     jToolBar1.add(drawLineStringButton, null);
     jToolBar1.add(drawPointButton, null);
     jToolBar1.add(btnEditVertex, null);
+    
     jToolBar1.add(strut5, null);
+    
     jToolBar1.add(infoButton, null);
     jToolBar1.add(inspectGeometryButton, null);
 
@@ -132,7 +149,7 @@ public class JTSTestBuilderToolBar {
       copyButton.addActionListener(
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              tbFrame.btnCopyCase_actionPerformed(e);
+              tbFrame.btnCopyCase_actionPerformed();
             }
           });
       deleteButton.addActionListener(
