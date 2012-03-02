@@ -70,6 +70,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(CreateFractalShapeFunctions.class);
     funcRegistry.add(CreateRandomShapeFunctions.class);
     funcRegistry.add(JTSFunctions.class);
+    funcRegistry.add(MemoryFunctions.class);
     funcRegistry.add(OffsetCurveFunctions.class);
     funcRegistry.add(OverlayFunctions.class);
     funcRegistry.add(OverlayNoSnapFunctions.class);
@@ -78,6 +79,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(SnappingFunctions.class);
     funcRegistry.add(TriangulationFunctions.class);
     funcRegistry.add(TriangleFunctions.class);
+    funcRegistry.add(ValidationFunctions.class);
     
     return funcRegistry;
   }
