@@ -142,12 +142,26 @@ public class IsValidOp
     isSelfTouchingRingFormingHoleValid = isValid;
   }
 
+  /**
+   * Computes the validity of the geometry,
+   * and returns <tt>true</tt> if it is valid.
+   * 
+   * @return true if the geometry is valid
+   */
   public boolean isValid()
   {
     checkValid(parentGeometry);
     return validErr == null;
   }
 
+  /**
+   * Computes the validity of the geometry,
+   * and if not valid returns the validation error for the geometry,
+   * or null if the geometry is valid.
+   * 
+   * @return the validation error, if the geometry is invalid
+   * @return null if the geometry is valid
+   */
   public TopologyValidationError getValidationError()
   {
     checkValid(parentGeometry);
