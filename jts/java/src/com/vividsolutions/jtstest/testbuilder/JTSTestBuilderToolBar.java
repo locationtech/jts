@@ -26,7 +26,7 @@ public class JTSTestBuilderToolBar {
   JToggleButton zoomInButton = new JToggleButton();
   JToggleButton infoButton = new JToggleButton();
   JButton oneToOneButton = new JButton();
-  ButtonGroup buttonGroup = new ButtonGroup();
+  ButtonGroup toolButtonGroup = new ButtonGroup();
   JButton zoomToFullExtentButton = new JButton();
   JButton zoomToInputButton = new JButton();
   JButton zoomToInputAButton = new JButton();
@@ -66,103 +66,10 @@ public class JTSTestBuilderToolBar {
   {
     jToolBar1.setFloatable(false);
 
-    JButton inspectGeometryButton = createButton("Inspect Geometry",
-        new ImageIcon(this.getClass().getResource("InspectGeometry.png")), 
-        new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e)
-          {
-            tbFrame.actionInspectGeometry();
-          }
-        });
-
-    JButton extractComponentButton = createButton("Extract Component",
-        new ImageIcon(this.getClass().getResource("ExtractComponent.png")), 
-        new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e)
-          {
-            tbFrame.actionExtractComponentButton();
-          }
-        });
-
-    jToolBar1.add(newButton, null);
-    jToolBar1.add(copyButton, null);
-    jToolBar1.add(extractComponentButton, null);
-    jToolBar1.add(deleteButton, null);
-    
-    jToolBar1.add(Box.createHorizontalStrut(8), null);
-    
-    jToolBar1.add(previousButton, null);
-    jToolBar1.add(nextButton, null);
-    
-    jToolBar1.add(Box.createHorizontalStrut(8), null);
-
-    jToolBar1.add(exchangeButton, null);
-    
-    jToolBar1.add(Box.createHorizontalStrut(8), null);
-    
-    jToolBar1.add(zoomInButton, null);
-    jToolBar1.add(panButton, null);
-    jToolBar1.add(oneToOneButton, null);
-    jToolBar1.add(zoomToInputAButton, null);
-    jToolBar1.add(zoomToInputBButton, null);
-    jToolBar1.add(zoomToInputButton, null);
-    jToolBar1.add(zoomToResultButton, null);
-    jToolBar1.add(zoomToFullExtentButton, null);
-    
-    jToolBar1.add(Box.createHorizontalStrut(28), null);
-    
-    jToolBar1.add(drawRectangleButton, null);
-    jToolBar1.add(drawPolygonButton, null);
-    jToolBar1.add(drawLineStringButton, null);
-    jToolBar1.add(drawPointButton, null);
-    jToolBar1.add(btnEditVertex, null);
-    
-    jToolBar1.add(Box.createHorizontalStrut(8), null);
-    
-    jToolBar1.add(infoButton, null);
-    jToolBar1.add(inspectGeometryButton, null);
-
     /**--------------------------------------------------
      * Buttons
      * --------------------------------------------------
      */
-    previousButton.addActionListener(
-        new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            tbFrame.btnPrevCase_actionPerformed(e);
-          }
-        });
-      nextButton.addActionListener(
-        new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            tbFrame.btnNextCase_actionPerformed(e);
-          }
-        });
-      copyButton.addActionListener(
-          new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-              tbFrame.btnCopyCase_actionPerformed();
-            }
-          });
-      deleteButton.addActionListener(
-          new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-              tbFrame.btnDeleteCase_actionPerformed(e);
-            }
-          });
-      exchangeButton.addActionListener(
-          new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-              tbFrame.btnExchangeGeoms_actionPerformed(e);
-            }
-          });
-      newButton.addActionListener(
-        new java.awt.event.ActionListener() {
-
-          public void actionPerformed(ActionEvent e) {
-            tbFrame.btnNewCase_actionPerformed(e);
-          }
-        });
       previousButton.setFont(new java.awt.Font("SansSerif", 0, 10));
       previousButton.setMaximumSize(new Dimension(30, 30));
       previousButton.setMinimumSize(new Dimension(30, 30));
@@ -172,6 +79,12 @@ public class JTSTestBuilderToolBar {
       previousButton.setIcon(leftIcon);
       previousButton.setMargin(new Insets(0, 0, 0, 0));
       previousButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+      previousButton.addActionListener(
+          new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              tbFrame.btnPrevCase_actionPerformed(e);
+            }
+          });
       
       nextButton.setMargin(new Insets(0, 0, 0, 0));
       nextButton.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -182,6 +95,12 @@ public class JTSTestBuilderToolBar {
       nextButton.setToolTipText("Next Case");
       nextButton.setHorizontalTextPosition(SwingConstants.CENTER);
       nextButton.setIcon(rightIcon);
+      nextButton.addActionListener(
+          new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              tbFrame.btnNextCase_actionPerformed(e);
+            }
+          });
       
       newButton.setMargin(new Insets(0, 0, 0, 0));
       newButton.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -192,6 +111,13 @@ public class JTSTestBuilderToolBar {
       newButton.setToolTipText("New Case");
       newButton.setHorizontalTextPosition(SwingConstants.CENTER);
       newButton.setIcon(plusIcon);
+      newButton.addActionListener(
+          new java.awt.event.ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+              tbFrame.btnNewCase_actionPerformed(e);
+            }
+          });
       
       copyButton.setMargin(new Insets(0, 0, 0, 0));
       copyButton.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -202,6 +128,12 @@ public class JTSTestBuilderToolBar {
       copyButton.setToolTipText("Copy Current Case");
       copyButton.setHorizontalTextPosition(SwingConstants.CENTER);
       copyButton.setIcon(copyCaseIcon);
+      copyButton.addActionListener(
+          new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              tbFrame.btnCopyCase_actionPerformed();
+            }
+          });
       
       deleteButton.setMargin(new Insets(0, 0, 0, 0));
       deleteButton.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -212,6 +144,12 @@ public class JTSTestBuilderToolBar {
       deleteButton.setToolTipText("Delete Current Case");
       deleteButton.setHorizontalTextPosition(SwingConstants.CENTER);
       deleteButton.setIcon(deleteIcon);
+      deleteButton.addActionListener(
+          new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              tbFrame.btnDeleteCase_actionPerformed(e);
+            }
+          });
       
       exchangeButton.setMargin(new Insets(0, 0, 0, 0));
       exchangeButton.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -222,6 +160,12 @@ public class JTSTestBuilderToolBar {
       exchangeButton.setToolTipText("Exchange A & B");
       exchangeButton.setHorizontalTextPosition(SwingConstants.CENTER);
       exchangeButton.setIcon(exchangeGeomsIcon);
+      exchangeButton.addActionListener(
+          new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+              tbFrame.btnExchangeGeoms_actionPerformed(e);
+            }
+          });
       
       drawRectangleButton.setMargin(new Insets(0, 0, 0, 0));
       drawRectangleButton.setPreferredSize(new Dimension(30, 30));
@@ -457,16 +401,96 @@ public class JTSTestBuilderToolBar {
         }
       });
 
-      buttonGroup.add(drawRectangleButton);
-      buttonGroup.add(drawPolygonButton);
-      buttonGroup.add(drawLineStringButton);
-      buttonGroup.add(drawPointButton);
-      buttonGroup.add(panButton);
-      buttonGroup.add(zoomInButton);
-      buttonGroup.add(btnEditVertex);
-      buttonGroup.add(infoButton);
+      JButton inspectGeometryButton = createButton("Inspect Geometry",
+          new ImageIcon(this.getClass().getResource("InspectGeometry.png")), 
+          new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+              tbFrame.actionInspectGeometry();
+            }
+          });
+
+      JToggleButton extractComponentButton = createToggleButton("Extract Component",
+          new ImageIcon(this.getClass().getResource("ExtractComponent.png")), 
+          new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+              tbFrame.actionExtractComponentButton();
+            }
+          });
+
+      toolButtonGroup.add(drawRectangleButton);
+      toolButtonGroup.add(drawPolygonButton);
+      toolButtonGroup.add(drawLineStringButton);
+      toolButtonGroup.add(drawPointButton);
+      toolButtonGroup.add(panButton);
+      toolButtonGroup.add(zoomInButton);
+      toolButtonGroup.add(btnEditVertex);
+      toolButtonGroup.add(infoButton);
+      toolButtonGroup.add(extractComponentButton);
+
+
+      jToolBar1.add(newButton, null);
+      jToolBar1.add(copyButton, null);
+      jToolBar1.add(deleteButton, null);
+      
+      jToolBar1.add(Box.createHorizontalStrut(8), null);
+      
+      jToolBar1.add(previousButton, null);
+      jToolBar1.add(nextButton, null);
+      
+      jToolBar1.add(Box.createHorizontalStrut(8), null);
+
+      jToolBar1.add(exchangeButton, null);
+      
+      jToolBar1.add(Box.createHorizontalStrut(8), null);
+      
+      jToolBar1.add(zoomInButton, null);
+      jToolBar1.add(panButton, null);
+      jToolBar1.add(oneToOneButton, null);
+      jToolBar1.add(zoomToInputAButton, null);
+      jToolBar1.add(zoomToInputBButton, null);
+      jToolBar1.add(zoomToInputButton, null);
+      jToolBar1.add(zoomToResultButton, null);
+      jToolBar1.add(zoomToFullExtentButton, null);
+      
+      jToolBar1.add(Box.createHorizontalStrut(28), null);
+      
+      jToolBar1.add(drawRectangleButton, null);
+      jToolBar1.add(drawPolygonButton, null);
+      jToolBar1.add(drawLineStringButton, null);
+      jToolBar1.add(drawPointButton, null);
+      jToolBar1.add(btnEditVertex, null);
+      
+      jToolBar1.add(Box.createHorizontalStrut(8), null);
+      
+      jToolBar1.add(infoButton, null);
+      jToolBar1.add(extractComponentButton, null);
+      
+      jToolBar1.add(Box.createHorizontalStrut(28), null);
+      
+      jToolBar1.add(inspectGeometryButton, null);
 
       return jToolBar1;
+  }
+  
+  private JToggleButton createToggleButton(String toolTipText, 
+      ImageIcon icon, 
+      java.awt.event.ActionListener actionListener)
+  {
+    JToggleButton btn = new JToggleButton();
+    btn.setMargin(new Insets(0, 0, 0, 0));
+    btn.setPreferredSize(new Dimension(30, 30));
+    btn.setIcon(icon);
+    btn.setMinimumSize(new Dimension(30, 30));
+    btn.setVerticalTextPosition(SwingConstants.BOTTOM);
+    btn.setSelected(false);
+    btn.setToolTipText(toolTipText);
+    btn.setHorizontalTextPosition(SwingConstants.CENTER);
+    btn.setFont(new java.awt.Font("SansSerif", 0, 10));
+    btn.setMaximumSize(new Dimension(30, 30));
+    btn.addActionListener(actionListener);
+    return btn;
   }
   
   private JButton createButton(String toolTipText, 
