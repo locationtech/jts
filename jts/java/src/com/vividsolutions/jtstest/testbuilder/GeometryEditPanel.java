@@ -95,41 +95,52 @@ public class GeometryEditPanel extends JPanel
   //----------------------------------------
   BorderLayout borderLayout1 = new BorderLayout();
   
+  GeometryPopupMenu menu = new GeometryPopupMenu();
+
   public GeometryEditPanel() {
     gridRenderer = new GridRenderer(viewport, grid);
     try {
-      jbInit();
+      initUI();
     } catch (Exception ex) {
       ex.printStackTrace();
     }
     renderMgr = new RenderManager(this);
     //opMonitor = new OperationMonitorManager(this, viewport);
-
-
-    setToolTipText("");
-    setBorder(BorderFactory.createEmptyBorder());
-    addMouseListener(new PopClickListener());
   }
 
-  
-  class PopClickListener extends MouseAdapter
+  void initUI() throws Exception {
+    this.addComponentListener(new java.awt.event.ComponentAdapter() {
+
+      public void componentResized(ComponentEvent e) {
+        this_componentResized(e);
+      }
+    });
+    this.setBackground(Color.white);
+    this.setBorder(BorderFactory.createLoweredBevelBorder());
+    this.setLayout(borderLayout1);
+    
+    setToolTipText("");
+    setBorder(BorderFactory.createEmptyBorder());
+    
+    // deactivate for now, since it interferes with right-click zoom-out
+    //addMouseListener(new PopupClickListener());
+  }
+
+  class PopupClickListener extends MouseAdapter
   {
     public void mousePressed(MouseEvent e)
     {
       if (e.isPopupTrigger())
-        doPop(e);
+        doPopUp(e);
     }
-
     public void mouseReleased(MouseEvent e)
     {
       if (e.isPopupTrigger())
-        doPop(e);
+        doPopUp(e);
     }
-
-    private void doPop(MouseEvent e)
+    private void doPopUp(MouseEvent e)
     {
-      GeometryPopupMenu menu = new GeometryPopupMenu();
-      menu.show(e.getComponent(), e.getX(), e.getY());
+        menu.show(e.getComponent(), e.getX(), e.getY());
     }
   }
 
@@ -433,49 +444,15 @@ public class GeometryEditPanel extends JPanel
     return grid.snapToGrid(modelPoint);
   }
 
-  void jbInit() throws Exception {
-    this.addComponentListener(new java.awt.event.ComponentAdapter() {
-
-      public void componentResized(ComponentEvent e) {
-        this_componentResized(e);
-      }
-    });
-    this.setBackground(Color.white);
-    this.setBorder(BorderFactory.createLoweredBevelBorder());
-    this.setLayout(borderLayout1);
-    /*
-    this.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
-
-      public void mouseMoved(MouseEvent e) {
-        this_mouseMoved(e);
-      }
-    });
-    this.addMouseListener(new java.awt.event.MouseAdapter() {
-
-      public void mouseClicked(MouseEvent e) {
-        this_mouseClicked(e);
-      }
-    });
-    */
-  }
-
-  /*
-  void this_mouseClicked(MouseEvent e) {
-  }
-
-  void this_mouseMoved(MouseEvent e) {
-  }
-*/
-  
   void this_componentResized(ComponentEvent e) {
   	renderMgr.componentResized();
     viewport.update();
   }
 
-  public void setCurrentTool(Tool currentTool) {
-    removeMouseListener(this.currentTool);
-    removeMouseMotionListener(this.currentTool);
-    this.currentTool = currentTool;
+  public void setCurrentTool(Tool newTool) {
+    removeMouseListener(currentTool);
+    removeMouseMotionListener(currentTool);
+    currentTool = newTool;
     currentTool.activate();
     setCursor(currentTool.getCursor());
     addMouseListener(currentTool);
