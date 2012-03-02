@@ -36,6 +36,7 @@ import java.util.List;
 
 import java.awt.*;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import java.awt.geom.Area;
@@ -107,9 +108,32 @@ public class GeometryEditPanel extends JPanel
 
     setToolTipText("");
     setBorder(BorderFactory.createEmptyBorder());
+    addMouseListener(new PopClickListener());
   }
 
   
+  class PopClickListener extends MouseAdapter
+  {
+    public void mousePressed(MouseEvent e)
+    {
+      if (e.isPopupTrigger())
+        doPop(e);
+    }
+
+    public void mouseReleased(MouseEvent e)
+    {
+      if (e.isPopupTrigger())
+        doPop(e);
+    }
+
+    private void doPop(MouseEvent e)
+    {
+      GeometryPopupMenu menu = new GeometryPopupMenu();
+      menu.show(e.getComponent(), e.getX(), e.getY());
+    }
+  }
+
+
   public void setModel(TestBuilderModel model) {
     this.tbModel = model;
     geomModel = model.getGeometryEditModel();

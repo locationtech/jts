@@ -465,7 +465,8 @@ public class JTSTestBuilderToolBar {
       jToolBar1.add(Box.createHorizontalStrut(8), null);
       
       jToolBar1.add(infoButton, null);
-      jToolBar1.add(extractComponentButton, null);
+      // TODO: remove this button (moved to right-click menu)
+//      jToolBar1.add(extractComponentButton, null);
       
       jToolBar1.add(Box.createHorizontalStrut(28), null);
       
