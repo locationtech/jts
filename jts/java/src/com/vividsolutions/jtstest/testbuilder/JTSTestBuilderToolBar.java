@@ -34,11 +34,6 @@ public class JTSTestBuilderToolBar {
   JButton zoomToResultButton = new JButton();
   JToggleButton panButton = new JToggleButton();
   JToggleButton btnEditVertex = new JToggleButton();
-  Component strut1;
-  Component strut2;
-  Component strut4;
-  Component strut5;
-  Component strut3;
 
   private final ImageIcon leftIcon = new ImageIcon(this.getClass().getResource("Left.gif"));
   private final ImageIcon rightIcon = new ImageIcon(this.getClass().getResource("Right.gif"));
@@ -46,14 +41,12 @@ public class JTSTestBuilderToolBar {
   private final ImageIcon copyCaseIcon = new ImageIcon(this.getClass().getResource("CopyCase.gif"));
   private final ImageIcon deleteIcon = new ImageIcon(this.getClass().getResource("Delete.gif"));
   private final ImageIcon exchangeGeomsIcon = new ImageIcon(this.getClass().getResource("ExchangeGeoms.png"));
-  private final ImageIcon executeIcon = new ImageIcon(this.getClass().getResource("ExecuteProject.gif"));
   private final ImageIcon zoomInIcon = new ImageIcon(this.getClass().getResource("MagnifyCursor.gif"));
   private final ImageIcon drawRectangleIcon = new ImageIcon(this.getClass().getResource("DrawRectangle.png"));
   private final ImageIcon drawPolygonIcon = new ImageIcon(this.getClass().getResource("DrawPolygon.png"));
   private final ImageIcon drawLineStringIcon = new ImageIcon(this.getClass().getResource("DrawLineString.png"));
   private final ImageIcon drawPointIcon = new ImageIcon(this.getClass().getResource("DrawPoint.png"));
   private final ImageIcon infoIcon = new ImageIcon(this.getClass().getResource("Info.png"));
-  private final ImageIcon inspectGeometryIcon = new ImageIcon(this.getClass().getResource("InspectGeometry.png"));
   private final ImageIcon zoomOneToOneIcon = new ImageIcon(this.getClass().getResource("ZoomOneToOne.png"));
   private final ImageIcon zoomToInputIcon = new ImageIcon(this.getClass().getResource("ZoomInput.png"));
   private final ImageIcon zoomToInputAIcon = new ImageIcon(this.getClass().getResource("ZoomInputA.png"));
@@ -73,14 +66,9 @@ public class JTSTestBuilderToolBar {
   {
     jToolBar1.setFloatable(false);
 
-    strut1 = Box.createHorizontalStrut(8);
-    strut2 = Box.createHorizontalStrut(8);
-    strut3 = Box.createHorizontalStrut(8);
-    strut4 = Box.createHorizontalStrut(28);
-    strut5 = Box.createHorizontalStrut(8);
-
     JButton inspectGeometryButton = createButton("Inspect Geometry",
-        inspectGeometryIcon, new java.awt.event.ActionListener() {
+        new ImageIcon(this.getClass().getResource("InspectGeometry.png")), 
+        new java.awt.event.ActionListener() {
           public void actionPerformed(ActionEvent e)
           {
             tbFrame.actionInspectGeometry();
@@ -101,16 +89,16 @@ public class JTSTestBuilderToolBar {
     jToolBar1.add(extractComponentButton, null);
     jToolBar1.add(deleteButton, null);
     
-    jToolBar1.add(strut1, null);
+    jToolBar1.add(Box.createHorizontalStrut(8), null);
     
     jToolBar1.add(previousButton, null);
     jToolBar1.add(nextButton, null);
     
-    jToolBar1.add(strut2, null);
+    jToolBar1.add(Box.createHorizontalStrut(8), null);
 
     jToolBar1.add(exchangeButton, null);
     
-    jToolBar1.add(strut3, null);
+    jToolBar1.add(Box.createHorizontalStrut(8), null);
     
     jToolBar1.add(zoomInButton, null);
     jToolBar1.add(panButton, null);
@@ -121,7 +109,7 @@ public class JTSTestBuilderToolBar {
     jToolBar1.add(zoomToResultButton, null);
     jToolBar1.add(zoomToFullExtentButton, null);
     
-    jToolBar1.add(strut4, null);
+    jToolBar1.add(Box.createHorizontalStrut(28), null);
     
     jToolBar1.add(drawRectangleButton, null);
     jToolBar1.add(drawPolygonButton, null);
@@ -129,11 +117,15 @@ public class JTSTestBuilderToolBar {
     jToolBar1.add(drawPointButton, null);
     jToolBar1.add(btnEditVertex, null);
     
-    jToolBar1.add(strut5, null);
+    jToolBar1.add(Box.createHorizontalStrut(8), null);
     
     jToolBar1.add(infoButton, null);
     jToolBar1.add(inspectGeometryButton, null);
 
+    /**--------------------------------------------------
+     * Buttons
+     * --------------------------------------------------
+     */
     previousButton.addActionListener(
         new java.awt.event.ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -315,24 +307,6 @@ public class JTSTestBuilderToolBar {
             tbFrame.infoButton_actionPerformed(e);
           }
         });
-      /*
-      inspectGeometryButton.setMargin(new Insets(0, 0, 0, 0));
-      inspectGeometryButton.setPreferredSize(new Dimension(30, 30));
-      inspectGeometryButton.setIcon(inspectGeometryIcon);
-      inspectGeometryButton.setMinimumSize(new Dimension(30, 30));
-      inspectGeometryButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-      inspectGeometryButton.setSelected(false);
-      inspectGeometryButton.setToolTipText("Inspect Geometry");
-      inspectGeometryButton.setHorizontalTextPosition(SwingConstants.CENTER);
-      inspectGeometryButton.setFont(new java.awt.Font("SansSerif", 0, 10));
-      inspectGeometryButton.setMaximumSize(new Dimension(30, 30));
-      inspectGeometryButton.addActionListener(
-        new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            tbFrame.actionInspectGeometry();
-          }
-        });
-        */
       zoomInButton.setMaximumSize(new Dimension(30, 30));
       zoomInButton.addActionListener(
         new java.awt.event.ActionListener() {
