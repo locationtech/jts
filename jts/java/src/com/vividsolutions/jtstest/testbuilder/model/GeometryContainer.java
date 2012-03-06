@@ -1,4 +1,4 @@
-package com.vividsolutions.jtstest.testbuilder.geom;
+package com.vividsolutions.jtstest.testbuilder.model;
 
 import com.vividsolutions.jts.geom.*;
 

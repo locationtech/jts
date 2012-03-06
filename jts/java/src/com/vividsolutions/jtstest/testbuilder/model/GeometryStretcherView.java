@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jtstest.testbuilder.geom.GeometryContainer;
 import com.vividsolutions.jtstest.testbuilder.topostretch.TopologyStretcher;
 
 public class GeometryStretcherView 

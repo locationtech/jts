@@ -14,7 +14,6 @@ import com.vividsolutions.jtstest.testrunner.TestReader;
 import com.vividsolutions.jtstest.testrunner.TestRun;
 import com.vividsolutions.jtstest.util.*;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
-import com.vividsolutions.jtstest.testbuilder.geom.GeometryContainer;
 
 public class TestBuilderModel 
 {

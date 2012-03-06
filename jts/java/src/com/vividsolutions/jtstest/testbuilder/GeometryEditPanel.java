@@ -53,7 +53,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jtstest.testbuilder.geom.StaticGeometryContainer;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.AWTUtil;
