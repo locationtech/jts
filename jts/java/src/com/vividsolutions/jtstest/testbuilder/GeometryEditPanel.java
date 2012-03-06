@@ -74,7 +74,6 @@ public class GeometryEditPanel extends JPanel
 */
 
   private TestBuilderModel tbModel;
-  private GeometryEditModel geomModel;
   
   private DrawingGrid grid = new DrawingGrid();
   private GridRenderer gridRenderer;
@@ -146,21 +145,20 @@ public class GeometryEditPanel extends JPanel
 
   public void setModel(TestBuilderModel model) {
     this.tbModel = model;
-    geomModel = model.getGeometryEditModel();
   }
 
   public TestBuilderModel getModel() {
     return tbModel;
+  }
+  public GeometryEditModel getGeomModel()
+  {
+    return tbModel.getGeometryEditModel();
   }
 
   public void setGridEnabled(boolean isEnabled) {
     gridRenderer.setEnabled(isEnabled);
   }
 
-  public GeometryEditModel getGeomModel()
-  {
-    return tbModel.getGeometryEditModel();
-  }
   public Viewport getViewport() { return viewport; }
 
   public void updateView()
@@ -226,7 +224,7 @@ public class GeometryEditPanel extends JPanel
   public void updateGeom()
   {
   	renderMgr.setDirty(true);
-    geomModel.geomChanged();
+    getGeomModel().geomChanged();
   }
   
   public String getToolTipText(MouseEvent event) {
@@ -459,21 +457,21 @@ public class GeometryEditPanel extends JPanel
   }
 
   public void zoomToGeometry(int i) {
-    Geometry g = geomModel.getGeometry(i);
+    Geometry g = getGeomModel().getGeometry(i);
     if (g == null) return;
     zoom(g.getEnvelopeInternal());
   }
 
   public void zoomToInput() {
-    zoom(geomModel.getEnvelope());
+    zoom(getGeomModel().getEnvelope());
   }
 
   public void zoomToResult() {
-    zoom(geomModel.getEnvelopeResult());
+    zoom(getGeomModel().getEnvelopeResult());
   }
 
   public void zoomToFullExtent() {
-    zoom(geomModel.getEnvelopeAll());
+    zoom(getGeomModel().getEnvelopeAll());
   }
 
   public void zoom(Geometry geom) 
@@ -546,7 +544,7 @@ public class GeometryEditPanel extends JPanel
   	public GeometryEditPanelRenderer()
   	{
       if (tbModel.isMagnifyingTopology()) {
-        stretchView = new GeometryStretcherView(geomModel);
+        stretchView = new GeometryStretcherView(getGeomModel());
         stretchView.setStretchSize(viewport.toModel(tbModel.getTopologyStretchSize()));
         stretchView.setNearnessTolerance(viewport.toModel(GeometryStretcherView.NEARNESS_TOL_IN_VIEW));
         stretchView.setEnvelope(viewport.getModelEnv());
