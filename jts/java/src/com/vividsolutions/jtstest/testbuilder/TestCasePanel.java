@@ -36,8 +36,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
-import java.text.NumberFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -158,35 +156,11 @@ public class TestCasePanel extends JPanel {
   }
 
   void editPanel_mouseMoved(MouseEvent e) {
-    String cursorPos = cursorLocation(e.getPoint());
+    String cursorPos = editPanel.cursorLocationString(e.getPoint());
   	lblMousePos.setText(cursorPos);
 //    System.out.println(cursorPos);
   }
 
-  private static double LOG_10 = Math.log(10.0);
-  
-  private String cursorLocation(Point2D pView)
-  {
-    Point2D p = editPanel.getViewport().toModel(pView);
-  
-    double width = editPanel.getViewport().getWidthInModel();
-    double height = editPanel.getViewport().getHeightInModel();
-    double extent = Math.min(width, height);
-    double precisionDigits = -Math.floor(Math.log(extent)/Math.log(10.0)) + 3;
-    double precisionScale = Math.pow(10.0, precisionDigits);
-    double xRound = Math.round(p.getX() * precisionScale) / precisionScale;
-    double yRound = Math.round(p.getY() * precisionScale) / precisionScale;
-  
-    NumberFormat format = editPanel.getViewport().getScaleFormat();
-    
-//    System.out.println(precisionScale);
-    
-    return format.format(p.getX()) 
-    + ", " 
-    + format.format(p.getY());
-    //return xRound + ", " + yRound;
-  }
-  
   void btnRunTests_actionPerformed(ActionEvent e) {
     relatePanel.runTests();
   }

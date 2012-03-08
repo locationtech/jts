@@ -32,6 +32,7 @@
  */
 package com.vividsolutions.jtstest.testbuilder;
 
+import java.text.NumberFormat;
 import java.util.List;
 
 import java.awt.*;
@@ -529,9 +530,30 @@ public class GeometryEditPanel extends JPanel
         getViewport().getViewOriginY() - yDisplacement);
   }
 
+  public String cursorLocationString(Point2D pView)
+  {
+    Point2D p = getViewport().toModel(pView);
+    NumberFormat format = getViewport().getScaleFormat();
+    return format.format(p.getX()) 
+    + ", " 
+    + format.format(p.getY());
+  
+    /*
+    double width = getViewport().getWidthInModel();
+    double height = getViewport().getHeightInModel();
+    double extent = Math.min(width, height);
+    double precisionDigits = -Math.floor(Math.log(extent)/Math.log(10.0)) + 3;
+    double precisionScale = Math.pow(10.0, precisionDigits);
+    double xRound = Math.round(p.getX() * precisionScale) / precisionScale;
+    double yRound = Math.round(p.getY() * precisionScale) / precisionScale;
+  //    System.out.println(precisionScale);
+    //return xRound + ", " + yRound;
+  */
+  }
+
   public Renderer getRenderer()
   {
-  	return new GeometryEditPanelRenderer();
+    return new GeometryEditPanelRenderer();
   }
   
   class GeometryEditPanelRenderer implements Renderer
