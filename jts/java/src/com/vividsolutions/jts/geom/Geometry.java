@@ -614,32 +614,46 @@ public abstract class Geometry
   public abstract int getBoundaryDimension();
 
   /**
-   *  Returns this <code>Geometry</code>s bounding box. If this <code>Geometry</code>
-   *  is the empty geometry, returns an empty <code>Point</code>. If the <code>Geometry</code>
-   *  is a point, returns a non-empty <code>Point</code>. Otherwise, returns a
-   *  <code>Polygon</code> whose points are (minx, miny), (maxx, miny), (maxx,
-   *  maxy), (minx, maxy), (minx, miny).
+   *  Gets a Geometry representing the envelope (bounding box) of 
+   *  this <code>Geometry</code>. 
+   *  <p>
+   *  If this <code>Geometry</code> is:
+   *  <ul>
+   *  <li>empty, returns an empty <tt>Point</tt>. 
+   *  <li>a point, returns a <tt>Point</tt>.
+   *  <li>a line parallel to an axis, a two-vertex <tt>LineString</tt> 
+   *  <li>otherwise, returns a
+   *  <tt>Polygon</tt> whose vertices are (minx miny, maxx miny, 
+   *  maxx maxy, minx maxy, minx miny).
+   *  </ul>
    *
-   *@return    an empty <code>Point</code> (for empty <code>Geometry</code>s), a
-   *      <code>Point</code> (for <code>Point</code>s) or a <code>Polygon</code>
-   *      (in all other cases)
+   *@return a Geometry representing the envelope of this Geometry
+   *      
+   * @see GeometryFactory#toGeometry(Envelope) 
    */
   public Geometry getEnvelope() {
     return getFactory().toGeometry(getEnvelopeInternal());
   }
 
   /**
-   *  Returns the minimum and maximum x and y values in this <code>Geometry</code>
-   *  , or a null <code>Envelope</code> if this <code>Geometry</code> is empty.
+   * Gets an {@link Envelope} containing 
+   * the minimum and maximum x and y values in this <tt>Geometry</tt>.
+   * If the geometry is empty, an empty <tt>Envelope</tt> 
+   * is returned.
+   * <p>
+   * The returned object is a copy of the one maintained internally,
+   * to avoid aliasing issues.  
+   * For best performance, clients which access this
+   * envelope frequently should cache the return value.
    *
-   *@return    this <code>Geometry</code>s bounding box; if the <code>Geometry</code>
-   *      is empty, <code>Envelope#isNull</code> will return <code>true</code>
+   *@return the envelope of this <code>Geometry</code>.
+   *@return an empty Envelope if this Geometry is empty
    */
   public Envelope getEnvelopeInternal() {
     if (envelope == null) {
       envelope = computeEnvelopeInternal();
     }
-    return envelope;
+    return new Envelope(envelope);
   }
 
   /**
