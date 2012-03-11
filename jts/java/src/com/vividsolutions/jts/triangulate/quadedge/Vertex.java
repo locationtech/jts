@@ -330,7 +330,7 @@ public class Vertex
     }
 
     /**
-     * For this vertex enclosed in a triangle defined by three verticies v0, v1 and v2, interpolate
+     * For this vertex enclosed in a triangle defined by three vertices v0, v1 and v2, interpolate
      * a z value from the surrounding vertices.
      */
     public double interpolateZValue(Vertex v0, Vertex v1, Vertex v2) {
@@ -350,7 +350,17 @@ public class Vertex
     }
 
     /**
-     * Interpolates the Z value of a point enclosed in a 3D triangle.
+     * Interpolates the Z-value (height) of a point enclosed in a triangle
+     * whose vertices all have Z values.
+     * The containing triangle must not be degenerate
+     * (in other words, the three vertices must enclose a 
+     * non-zero area).
+     * 
+     * @param p the point to interpolate the Z value of
+     * @param v0 a vertex of a triangle containing the p
+     * @param v1 a vertex of a triangle containing the p
+     * @param v2 a vertex of a triangle containing the p
+     * @return the interpolated Z-value (height) of the point  
      */
     public static double interpolateZ(Coordinate p, Coordinate v0, Coordinate v1, Coordinate v2) {
         double x0 = v0.x;

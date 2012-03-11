@@ -187,6 +187,21 @@ public class Vector2D {
 		return weightedSum(v, 0.5);
 	}
   
+	/**
+	 * Computes the weighted sum of this vector
+	 * with another vector,
+	 * with this vector contributing a fraction
+	 * of <tt>frac</tt> to the total.
+	 * <p>
+	 * In other words, 
+	 * <pre>
+	 * sum = frac * this + (1 - frac) * v
+	 * </pre>
+	 * 
+	 * @param v the vector to sum
+	 * @param frac the fraction of the total contributed by this vector
+	 * @return the weighted sum of the two vectors
+	 */
 	public Vector2D weightedSum(Vector2D v, double frac) {
 		return create(
 				frac * x + (1.0 - frac) * v.x, 
