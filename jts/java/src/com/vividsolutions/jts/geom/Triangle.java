@@ -362,6 +362,41 @@ public class Triangle
 		return area3D;
 	}
 	
+  /**
+   * Computes the Z-value (elevation) of an XY point 
+   * on a three-dimensional plane defined by a triangle
+   * whose vertices have Z-values.
+   * The defining triangle must not be degenerate
+   * (in other words, the triangle must enclose a 
+   * non-zero area),
+   * and must not be parallel to the Z-axis.
+   * <p>
+   * This method can be used to interpolate
+   * the Z-value of a point inside a triangle
+   * (for example, of a TIN facet with elevations on the vertices).
+   * 
+   * @param p the point to compute the Z-value of
+   * @param v0 a vertex of a triangle, with a Z ordinate
+   * @param v1 a vertex of a triangle, with a Z ordinate
+   * @param v2 a vertex of a triangle, with a Z ordinate
+   * @return the computed Z-value (elevation) of the point  
+   */
+  public static double interpolateZ(Coordinate p, Coordinate v0, Coordinate v1, Coordinate v2) {
+      double x0 = v0.x;
+      double y0 = v0.y;
+      double a = v1.x - x0;
+      double b = v2.x - x0;
+      double c = v1.y - y0;
+      double d = v2.y - y0;
+      double det = a * d - b * c;
+      double dx = p.x - x0;
+      double dy = p.y - y0;
+      double t = (d * dx - b * dy) / det;
+      double u = (-c * dx + a * dy) / det;
+      double z = v0.z + t * (v1.z - v0.z) + u * (v2.z - v0.z);
+      return z;
+  }
+
 	/**
 	 * The coordinates of the vertices of the triangle
 	 */
