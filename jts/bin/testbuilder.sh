@@ -1,5 +1,8 @@
 #!/bin/sh
 
+JAVA_OPTS="-Xms256M -Xmx1024M"
+APP_OPTS=""
+
 if test "x$JTS_LIB_DIR" = "x"; then
         JTS_LIB_DIR=`dirname $0`/../lib/
 fi
@@ -7,14 +10,14 @@ fi
 #---------------------------------#
 # dynamically build the classpath #
 #---------------------------------#
-THE_CLASSPATH=
+CP=
 for i in `ls ${JTS_LIB_DIR}/*.jar`
 do
-  THE_CLASSPATH=${THE_CLASSPATH}:${i}
+  CP=${CP}:${i}
 done
 
 #---------------------------#
 # run the program           #
 #---------------------------#
-java -cp ".:${THE_CLASSPATH}" \
-com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
+MAIN=com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
+java -cp ".:${CP}" $JAVA_OPTS $MAIN $APP_OPTS

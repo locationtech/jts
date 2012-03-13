@@ -147,7 +147,13 @@ public class JTSTestBuilder
     try {
     	readArgs(args);
     	
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    	// set the look and feel, using user-defined LAF if present
+      String laf = System.getProperty("swing.defaultlaf");
+      if (laf == null) {
+        laf = UIManager.getSystemLookAndFeelClassName();
+      }
+      UIManager.setLookAndFeel(laf);
+
       app = new JTSTestBuilder();
       app.initFrame();
       
