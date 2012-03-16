@@ -33,7 +33,7 @@
 package com.vividsolutions.jts.util;
 
 /**
- * Utility functions to report memory usage.
+ * Utility functions to report JVM memory usage.
  * 
  * @author mbdavis
  *
