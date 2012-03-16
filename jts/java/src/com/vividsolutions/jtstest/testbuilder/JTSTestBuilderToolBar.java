@@ -179,7 +179,6 @@ public class JTSTestBuilderToolBar {
       drawRectangleButton.setMaximumSize(new Dimension(30, 30));
       drawRectangleButton.addActionListener(
         new java.awt.event.ActionListener() {
-
           public void actionPerformed(ActionEvent e) {
             tbFrame.drawRectangleButton_actionPerformed(e);
           }
