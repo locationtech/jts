@@ -65,18 +65,22 @@ public class TriangleTest extends TestCase
 
   public void testInterpolateZ() throws Exception
   {
-    checkZ("LINESTRING(1 1 0, 2 1 0, 1 2 10)", new Coordinate(1.5, 1.5), 5);
-    checkZ("LINESTRING(1 1 0, 2 1 0, 1 2 10)", new Coordinate(1.2, 1.2), 2);
-    checkZ("LINESTRING(1 1 0, 2 1 0, 1 2 10)", new Coordinate(0, 0), -10);
+    checkInterpolateZ("LINESTRING(1 1 0, 2 1 0, 1 2 10)", new Coordinate(1.5,
+        1.5), 5);
+    checkInterpolateZ("LINESTRING(1 1 0, 2 1 0, 1 2 10)", new Coordinate(1.2,
+        1.2), 2);
+    checkInterpolateZ("LINESTRING(1 1 0, 2 1 0, 1 2 10)", new Coordinate(0, 0),
+        -10);
   }
 
-  public void checkZ(String wkt, Coordinate p, double expectedValue)
+  public void checkInterpolateZ(String wkt, Coordinate p, double expectedValue)
       throws Exception
   {
     Geometry g = reader.read(wkt);
     Coordinate[] pt = g.getCoordinates();
 
-    double z = Triangle.interpolateZ(p, pt[0], pt[1], pt[2]);
+    Triangle t = new Triangle(pt[0], pt[1], pt[2]);
+    double z = t.interpolateZ(p);
     System.out.println("Z = " + z);
     assertEquals(expectedValue, z, 0.000001);
   }
@@ -93,7 +97,8 @@ public class TriangleTest extends TestCase
   {
     Geometry g = reader.read(wkt);
     Coordinate[] pt = g.getCoordinates();
-    double area3D = Triangle.area3D(pt[0], pt[1], pt[2]);
+    Triangle t = new Triangle(pt[0], pt[1], pt[2]);
+    double area3D = t.area3D();
     // System.out.println("area3D = " + area3D);
     assertEquals(expectedValue, area3D, TOLERANCE);
   }
@@ -115,11 +120,12 @@ public class TriangleTest extends TestCase
     Geometry g = reader.read(wkt);
     Coordinate[] pt = g.getCoordinates();
 
-    double signedArea = Triangle.signedArea(pt[0], pt[1], pt[2]);
+    Triangle t = new Triangle(pt[0], pt[1], pt[2]);
+    double signedArea = t.signedArea();
     System.out.println("signed area = " + signedArea);
     assertEquals(expectedValue, signedArea, TOLERANCE);
 
-    double area = Triangle.area(pt[0], pt[1], pt[2]);
+    double area = t.area();
     assertEquals(Math.abs(expectedValue), area, TOLERANCE);
 
   }
@@ -139,10 +145,103 @@ public class TriangleTest extends TestCase
     Geometry g = reader.read(wkt);
     Coordinate[] pt = g.getCoordinates();
 
-    boolean isAcute = Triangle.isAcute(pt[0], pt[1], pt[2]);
+    Triangle t = new Triangle(pt[0], pt[1], pt[2]);
+    boolean isAcute = t.isAcute();
     System.out.println("isAcute = " + isAcute);
     assertEquals(expectedValue, isAcute);
   }
 
+  public void testCircumCentre() throws Exception
+  {
+    // right triangle
+    checkCircumCentre("POLYGON((10 10, 20 20, 20 10, 10 10))", new Coordinate(
+        15.0, 15.0));
+    // CCW right tri
+    checkCircumCentre("POLYGON((10 10, 20 10, 20 20, 10 10))", new Coordinate(
+        15.0, 15.0));
+    // acute
+    checkCircumCentre("POLYGON((10 10, 20 10, 15 20, 10 10))", new Coordinate(
+        15.0, 13.75));
+  }
+
+  public void testCentroid() throws Exception
+  {
+    // right triangle
+    checkCentroid("POLYGON((10 10, 20 20, 20 10, 10 10))", new Coordinate(
+        (10.0 + 20.0 + 20.0) / 3.0, (10.0 + 20.0 + 10.0) / 3.0));
+    // CCW right tri
+    checkCentroid("POLYGON((10 10, 20 10, 20 20, 10 10))", new Coordinate(
+        (10.0 + 20.0 + 20.0) / 3.0, (10.0 + 10.0 + 20.0) / 3.0));
+    // acute
+    checkCentroid("POLYGON((10 10, 20 10, 15 20, 10 10))", new Coordinate(
+        (10.0 + 20.0 + 15.0) / 3.0, (10.0 + 10.0 + 20.0) / 3.0));
+  }
+
+  public void checkCentroid(String wkt, Coordinate expectedValue)
+      throws Exception
+  {
+    Geometry g = reader.read(wkt);
+    Coordinate[] pt = g.getCoordinates();
+
+    Coordinate centroid = Triangle.centroid(pt[0], pt[1], pt[2]);
+    System.out.println("(Static) centroid = " + centroid);
+    assertEquals(expectedValue.toString(), centroid.toString());
+
+    // Test Instance version
+    //
+    Triangle t = new Triangle(pt[0], pt[1], pt[2]);
+    centroid = t.centroid();
+    System.out.println("(Instance) centroid = " + centroid.toString());
+    assertEquals(expectedValue.toString(), centroid.toString());
+  }
+
+  public void checkCircumCentre(String wkt, Coordinate expectedValue)
+      throws Exception
+  {
+    Geometry g = reader.read(wkt);
+    Coordinate[] pt = g.getCoordinates();
+
+    Coordinate circumcentre = Triangle.circumcentre(pt[0], pt[1], pt[2]);
+    System.out.println("(Static) circumcentre = " + circumcentre);
+    assertEquals(expectedValue.toString(), circumcentre.toString());
+
+    // Test Instance version
+    //
+    Triangle t = new Triangle(pt[0], pt[1], pt[2]);
+    circumcentre = t.circumcentre();
+    System.out.println("(Instance) circumcentre = " + circumcentre.toString());
+    assertEquals(expectedValue.toString(), circumcentre.toString());
+  }
+
+  public void testLongestSideLength() throws Exception
+  {
+    // right triangle
+    checkLongestSideLength("POLYGON((10 10 1, 20 20 2, 20 10 3, 10 10 1))",
+        14.142135623730951);
+    // CCW right tri
+    checkLongestSideLength("POLYGON((10 10 1, 20 10 2, 20 20 3, 10 10 1))",
+        14.142135623730951);
+    // acute
+    checkLongestSideLength("POLYGON((10 10 1, 20 10 2, 15 20 3, 10 10 1))",
+        11.180339887498949);
+  }
+
+  public void checkLongestSideLength(String wkt, double expectedValue)
+      throws Exception
+  {
+    Geometry g = reader.read(wkt);
+    Coordinate[] pt = g.getCoordinates();
+
+    double length = Triangle.longestSideLength(pt[0], pt[1], pt[2]);
+    System.out.println("(Static) longestSideLength = " + length);
+    assertEquals(expectedValue, length, 0.00000001); 
+
+    // Test Instance version
+    //
+    Triangle t = new Triangle(pt[0], pt[1], pt[2]);
+    length = t.longestSideLength();
+    System.out.println("(Instance) longestSideLength = " + length);
+    assertEquals(expectedValue, length, 0.00000001);
+  }
 
 }
