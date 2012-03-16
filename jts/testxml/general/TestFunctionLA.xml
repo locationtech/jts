@@ -212,7 +212,7 @@
 </test>
 <test>
   <op name="intersection" pattern="FFFFFFFFF" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION EMPTY
+    LINESTRING EMPTY
   </op>
 </test>
 </case>

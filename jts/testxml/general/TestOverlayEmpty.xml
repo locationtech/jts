@@ -1,0 +1,1021 @@
+<run>
+  <desc>  Test type of empty results from overlay operations  </desc>
+
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> POINT (1 1) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT EMPTY </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> POINT (1 1) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING EMPTY </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> POINT (1 1) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON EMPTY </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> POINT (1 1) </b>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POINT (1 1) </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> POINT (1 1) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> LINESTRING (5 5, 6 6) </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> POINT (1 1) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> POINT (1 1) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT EMPTY </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> POINT (1 1) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING EMPTY </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> POINT (1 1) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='union'         arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON EMPTY </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> POINT (1 1) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='difference'    arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOINT ((2 2), (3 3)) </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> POINT (1 1) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='difference'    arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> POINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> LINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> POLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> POINT (1 1) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> LINESTRING (5 5, 6 6) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> MULTIPOINT EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> MULTILINESTRING EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> MULTIPOLYGON EMPTY </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> MULTIPOINT ((2 2), (3 3)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  POINT EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> MULTILINESTRING ((7 7, 8 8), (9 9, 10 10)) </b>
+<test> <op name='intersection'  arg1='A' arg2='B'>  LINESTRING EMPTY   </op> </test>
+</case>
+
+<case>
+  <a> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </a>
+  <b> MULTIPOLYGON (((50 50, 50 60, 60 60, 60 50, 50 50)), ((70 70, 70 80, 80 80, 80 70, 70 70))) </b>
+<test> <op name='difference'    arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+<test> <op name='symDifference' arg1='A' arg2='B'>  POLYGON EMPTY   </op> </test>
+</case>
+
+
+</run>
+

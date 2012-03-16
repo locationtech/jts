@@ -26,7 +26,7 @@
   </b>
 <test>
   <op name="intersection" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION EMPTY
+    POINT EMPTY
   </op>
 </test>
 <test>
@@ -66,7 +66,7 @@
 </test>
 <test>
   <op name="difference" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION EMPTY
+    POINT EMPTY
   </op>
 </test>
 <test>
@@ -136,12 +136,12 @@
 </test>
 <test>
   <op name="difference" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION EMPTY
+    POINT EMPTY
   </op>
 </test>
 <test>
   <op name="symdifference" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION EMPTY
+    POINT EMPTY
   </op>
 </test>
 </case>
@@ -166,7 +166,7 @@
 </test>
 <test>
   <op name="intersection" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION EMPTY
+    POINT EMPTY
   </op>
 </test>
 <test>
@@ -206,7 +206,7 @@
 </test>
 <test>
   <op name="intersection" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION EMPTY
+    POINT EMPTY
   </op>
 </test>
 <test>
@@ -246,7 +246,7 @@
 </test>
 <test>
   <op name="intersection" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION EMPTY
+    POINT EMPTY
   </op>
 </test>
 <test>

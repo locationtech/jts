@@ -544,19 +544,40 @@ public class OverlayOp
     geomList.addAll(resultLineList);
     geomList.addAll(resultPolyList);
     
-    /*
+    //*
     if (geomList.isEmpty())
-    	return createEmptyResult(opcode);
-    */
+    	return createEmptyResult(opcode, arg[0].getGeometry(), arg[1].getGeometry(), geomFact);
+    //*/
     
     // build the most specific geometry possible
     return geomFact.buildGeometry(geomList);
   }
 
-  private Geometry createEmptyResult(int opCode)
+  /**
+   * Creates an empty result geometry of the appropriate dimension,
+   * based on the dimensions of the inputs.
+   * The created geometry is always an atomic geometry, 
+   * not a collection.
+   * <p>
+   * Implements the following rules:
+   * <ul>
+   * <li><code>intersection</code> - result has the dimension of the lowest input dimension
+   * <li><code>union</code> - result has the dimension of the highest input dimension
+   * <li><code>difference</code> - result has the dimension of the left-hand input
+   * <li><code>symDifference</code> - result has the dimension of the highest input dimension
+   * (since symDifference is the union of the differences).
+   * <li>
+   * 
+   * @param opCode the overlay operation being performed
+   * @param a an input geometry
+   * @param b an input geometry
+   * @param geomFact the geometry factory being used for the operation
+   * @return an empty atomic geometry of the appropriate dimension
+   */
+  public static Geometry createEmptyResult(int opCode, Geometry a, Geometry b, GeometryFactory geomFact)
   {
   	Geometry result = null;
-  	switch (resultDimension(opCode, arg[0].getGeometry(), arg[1].getGeometry())) {
+  	switch (resultDimension(opCode, a, b)) {
   	case -1:
   		result = geomFact.createGeometryCollection(new Geometry[0]);
   		break;
@@ -573,7 +594,7 @@ public class OverlayOp
 		return result;
   }
   
-  private int resultDimension(int opCode, Geometry g0, Geometry g1)
+  private static int resultDimension(int opCode, Geometry g0, Geometry g1)
   {
   	int dim0 = g0.getDimension();
   	int dim1 = g1.getDimension();
@@ -590,6 +611,13 @@ public class OverlayOp
   		resultDimension = dim0;
   		break;
   	case SYMDIFFERENCE: 
+  	  /**
+  	   * This result is chosen because
+  	   * <pre>
+  	   * SymDiff = Union(Diff(A, B), Diff(B, A)
+  	   * </pre>
+  	   * and Union has the dimension of the highest-dimension argument.
+  	   */
   		resultDimension = Math.max(dim0, dim1);
   		break;
   	}
