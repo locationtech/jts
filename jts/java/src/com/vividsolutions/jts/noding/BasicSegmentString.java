@@ -36,6 +36,8 @@ package com.vividsolutions.jts.noding;
 import java.util.*;
 import com.vividsolutions.jts.algorithm.LineIntersector;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * Represents a list of contiguous line segments,
@@ -103,4 +105,8 @@ public class BasicSegmentString
     return Octant.octant(getCoordinate(index), getCoordinate(index + 1));
   }
 
+  public String toString()
+  {
+    return WKTWriter.toLineString(new CoordinateArraySequence(pts));
+  }
 }
