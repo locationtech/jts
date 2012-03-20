@@ -195,4 +195,31 @@ GEOMETRYCOLLECTION EMPTY
 </test>
 </case>
 
+<case>
+  <desc>
+  JTS list - March 19 2012.
+  Union of two partially-overlapping polygons returns an incorrect result equal to one of inputs (with node added).
+  
+  This is definitely a robustness error, and a particularly insidious one.  At least part of the problem is that while mathematically the point
+	
+	POINT (42.975 -92.25)
+	
+	lies exactly on the line segment
+	
+	LINESTRING (126 -184.5, -9 -34.5)
+	
+the algorithms that JTS uses report that the point lies off the line (and that's with 2 completely different procedures).  This makes me think that possibly the Java text-to-floating point conversion is not converting the numbers precisely (although there may well be something else causing this - I hesitate to blame the core Java library, which must be pretty well tested by now!).
+
+Correct expected result is computed by hand.
+  </desc>
+<a>
+POLYGON ((42.975 -92.25, 100 0, -200 0, 126 -184.5, 42.975 -92.25))</a>
+<b>
+POLYGON ((126 -184.5, -9 -34.5, -200 -300, 126 -184.5))</b>
+<test>
+<op name="intersection" arg1="A" arg2="B">
+POLYGON ((-46.626 -86.802, -200 0, 100 0, 42.975 -92.25, 126 -184.5, -200 -300, -46.626 -86.802))</op>
+</test>
+</case>
+
 </run>
