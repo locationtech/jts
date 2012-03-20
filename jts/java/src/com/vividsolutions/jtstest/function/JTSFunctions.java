@@ -8,7 +8,7 @@ import com.vividsolutions.jts.util.*;
 
 public class JTSFunctions 
 {
-  public static String version(Geometry g)
+  public static String jtsVersion(Geometry g)
   {
     return JTSVersion.CURRENT_VERSION.toString();
   }
