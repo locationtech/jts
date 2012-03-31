@@ -77,6 +77,22 @@ public class PolygonizeTest extends TestCase {
     });
   }
 
+  public void test3() {
+    doTest(new String[]{
+        "LINESTRING (0 0, 4 0)",
+        "LINESTRING (4 0, 5 3)",
+"LINESTRING (5 3, 4 6, 6 6, 5 3)",
+"LINESTRING (5 3, 6 0)",
+"LINESTRING (6 0, 10 0, 5 10, 0 0)",
+"LINESTRING (4 0, 6 0)"
+    },
+    new String[]{
+"POLYGON ((5 3, 4 0, 0 0, 5 10, 10 0, 6 0, 5 3), (5 3, 6 6, 4 6, 5 3))",
+"POLYGON ((5 3, 4 6, 6 6, 5 3))",
+"POLYGON ((4 0, 5 3, 6 0, 4 0))"
+    });
+  }
+
 /*
   public void test2() {
     doTest(new String[]{
@@ -103,11 +119,13 @@ public class PolygonizeTest extends TestCase {
 
   private void compare(Collection expectedGeometries,
     Collection actualGeometries) {
-    assertEquals("Geometry count, " + actualGeometries,
+    assertEquals("Geometry count - expected " + expectedGeometries.size()
+        + " but actual was " + actualGeometries.size()
+        + " in " + actualGeometries,
       expectedGeometries.size(), actualGeometries.size());
     for (Iterator i = expectedGeometries.iterator(); i.hasNext();) {
       Geometry expectedGeometry = (Geometry) i.next();
-      assertTrue("Not found: " + expectedGeometry + ", " + actualGeometries,
+      assertTrue("Expected to find: " + expectedGeometry + " in Actual result:" + actualGeometries,
         contains(actualGeometries, expectedGeometry));
     }
   }
@@ -115,7 +133,7 @@ public class PolygonizeTest extends TestCase {
   private boolean contains(Collection geometries, Geometry g) {
     for (Iterator i = geometries.iterator(); i.hasNext();) {
       Geometry element = (Geometry) i.next();
-      if (element.equalsExact(g)) {
+      if (element.equalsNorm(g)) {
         return true;
       }
     }
