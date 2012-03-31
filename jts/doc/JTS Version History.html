@@ -48,6 +48,7 @@ using the CoordinateSequenceFactory of the factory
 <li>Added decimation and duplicate point removal to </tt>ShapeWriter<tt>.
 <li><tt>ScaledNoder</tt> now preserves Z values of input
 <li>Added instance methods for all <t>Triangle</tt> static methods
+<li>Added <tt>CGAlgorithmsDD</tt> containing high-precision versions of some basic CG algorithms
 </ul>
 
 <h3>Performance Improvements</h3>
@@ -92,7 +93,8 @@ using a better estimate of scale factor for reducing to fixed precision after in
 for closed <tt>LineString</tt>s with large distance tolerances
 <li>Fixed <tt>TopologyPreservingSimplifier</tt> to return an empty result for an empty input
 <li>Fixed <tt>DouglasPeuckerSimplifier</tt> to return an empty result for an empty input
-<li>Fixed bug in <tt>MinimumBoundingCircle</tt> which computed an incorrect circle for obtuse triangles.
+<li>Fixed <tt>MinimumBoundingCircle</tt> to correctly compute circle for obtuse triangles.
+<li>Fixd <tt>GeometryPrecisionReducer</tt> to use input GeometryFactory when polygon topology is fixed
 </ul>
 
 <h3>API Changes</h3>
