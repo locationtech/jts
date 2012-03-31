@@ -191,24 +191,34 @@ public class GeometryPrecisionReducer
   	
   	Geometry finalGeom = bufGeom;
   	if (! changePrecisionModel) {
-  		PrecisionModel originalPM = geom.getFactory().getPrecisionModel();
-  		finalGeom = changePM(bufGeom, originalPM);
+  	  // a slick way to copy the geometry with the original precision factory
+  		finalGeom = geom.getFactory().createGeometry(bufGeom);
   	}
   	return finalGeom;
   }
   
-  private Geometry changePM(Geometry geom, PrecisionModel pm)
+  /**
+   * Duplicates a geometry to one that uses a different PrecisionModel,
+   * without changing any coordinate values.
+   * 
+   * @param geom the geometry to duplicate
+   * @param newPM the precision model to use
+   * @return the geometry value with a new precision model
+   */
+  private Geometry changePM(Geometry geom, PrecisionModel newPM)
   {
-  	GeometryEditor geomEditor = createEditor(geom.getFactory(), pm);
+  	GeometryEditor geomEditor = createEditor(geom.getFactory(), newPM);
+  	// this operation changes the PM for the entire geometry tree
   	return geomEditor.edit(geom, new GeometryEditor.NoOpGeometryOperation());
   }
   
-  private GeometryEditor createEditor(GeometryFactory geomFactory, PrecisionModel pm)
+  private GeometryEditor createEditor(GeometryFactory geomFactory, PrecisionModel newPM)
   {
-  	if (geomFactory.getPrecisionModel() == pm)
+    // no need to change if precision model is the same
+  	if (geomFactory.getPrecisionModel() == newPM)
   		return new GeometryEditor();
   	// otherwise create a geometry editor which changes PrecisionModel
-  	GeometryFactory newFactory = createFactory(geomFactory, targetPM);
+  	GeometryFactory newFactory = createFactory(geomFactory, newPM);
   	GeometryEditor geomEdit = new GeometryEditor(newFactory);
     return geomEdit;
   }

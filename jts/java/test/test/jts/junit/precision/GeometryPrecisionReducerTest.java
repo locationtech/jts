@@ -71,7 +71,7 @@ public class GeometryPrecisionReducerTest
     Geometry g = reader.read("POLYGON (( 0 0, 0 1.4, 1.4 1.4, 1.4 0, 0 0 ))");
     Geometry g2 = reader.read("POLYGON (( 0 0, 0 1, 1 1, 1 0, 0 0 ))");
     Geometry gReduce = reducer.reduce(g);
-    assertTrue(gReduce.equalsExact(g2));
+    assertEqualsExactAndHasSameFactory(gReduce, g2);
   }
   public void testTinySquareCollapse()
       throws Exception
@@ -79,77 +79,87 @@ public class GeometryPrecisionReducerTest
     Geometry g = reader.read("POLYGON (( 0 0, 0 .4, .4 .4, .4 0, 0 0 ))");
     Geometry g2 = reader.read("POLYGON EMPTY");
     Geometry gReduce = reducer.reduce(g);
-    assertTrue(gReduce.equalsExact(g2));
+    assertEqualsExactAndHasSameFactory(gReduce, g2);
   }
+  
   public void testSquareCollapse()
       throws Exception
   {
     Geometry g = reader.read("POLYGON (( 0 0, 0 1.4, .4 .4, .4 0, 0 0 ))");
     Geometry g2 = reader.read("POLYGON EMPTY");
     Geometry gReduce = reducer.reduce(g);
-    assertTrue(gReduce.equalsExact(g2));
+    assertEqualsExactAndHasSameFactory(gReduce, g2);
   }
+  
   public void testSquareKeepCollapse()
       throws Exception
   {
     Geometry g = reader.read("POLYGON (( 0 0, 0 1.4, .4 .4, .4 0, 0 0 ))");
     Geometry g2 = reader.read("POLYGON EMPTY");
     Geometry gReduce = reducerKeepCollapse.reduce(g);
-    assertTrue(gReduce.equalsExact(g2));
+    assertEqualsExactAndHasSameFactory(gReduce, g2);
   }
+  
   public void testLine()
       throws Exception
   {
     Geometry g = reader.read("LINESTRING ( 0 0, 0 1.4 )");
     Geometry g2 = reader.read("LINESTRING (0 0, 0 1)");
     Geometry gReduce = reducer.reduce(g);
-    assertTrue(gReduce.equalsExact(g2));
+    assertEqualsExactAndHasSameFactory(gReduce, g2);
   }
+  
   public void testLineRemoveCollapse()
       throws Exception
   {
     Geometry g = reader.read("LINESTRING ( 0 0, 0 .4 )");
     Geometry g2 = reader.read("LINESTRING EMPTY");
     Geometry gReduce = reducer.reduce(g);
-    assertTrue(gReduce.equalsExact(g2));
+    assertEqualsExactAndHasSameFactory(gReduce, g2);
   }
+  
   public void testLineKeepCollapse()
       throws Exception
   {
     Geometry g = reader.read("LINESTRING ( 0 0, 0 .4 )");
     Geometry g2 = reader.read("LINESTRING ( 0 0, 0 0 )");
     Geometry gReduce = reducerKeepCollapse.reduce(g);
-    assertTrue(gReduce.equalsExact(g2));
+    assertEqualsExactAndHasSameFactory(gReduce, g2);
   }
   
   public void testPolgonWithCollapsedLine() throws Exception {
 		Geometry g  = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 10, 10 10))");
 		Geometry g2 = reader.read("POLYGON ((10 10, 100 100, 200 10, 10 10))");
 		Geometry gReduce = reducer.reduce(g);
-		assertTrue(gReduce.equalsExact(g2));
+    assertEqualsExactAndHasSameFactory(gReduce, g2);
 	}
   
   public void testPolgonWithCollapsedLinePointwise() throws Exception {
 		Geometry g  = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 10, 10 10))");
 		Geometry g2 = reader.read("POLYGON ((10 10, 100 100, 200 10,   300 10, 10 10))");
 		Geometry gReduce = GeometryPrecisionReducer.reducePointwise(g, pmFixed1);
-		assertTrue(gReduce.equalsExact(g2));
+    assertEqualsExactAndHasSameFactory(gReduce, g2);
 	}
   
   public void testPolgonWithCollapsedPoint() throws Exception {
 		Geometry g = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 100, 400 10, 10 10))");
 		Geometry g2 = reader.read("MULTIPOLYGON (((10 10, 100 100, 200 10, 10 10)), ((200 10, 300 100, 400 10, 200 10)))");
 		Geometry gReduce = reducer.reduce(g);
-		assertTrue(gReduce.equalsExact(g2));
+    assertEqualsExactAndHasSameFactory(gReduce, g2);
 	}
 
   public void testPolgonWithCollapsedPointPointwise() throws Exception {
 		Geometry g  = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 100, 400 10, 10 10))");
 		Geometry g2 = reader.read("POLYGON ((10 10, 100 100, 200 10,   300 100, 400 10, 10 10))");
 		Geometry gReduce = GeometryPrecisionReducer.reducePointwise(g, pmFixed1);
-		assertTrue(gReduce.equalsExact(g2));
+    assertEqualsExactAndHasSameFactory(gReduce, g2);
 	}
 
+  private void assertEqualsExactAndHasSameFactory(Geometry a, Geometry b)
+  {
+    assertTrue(a.equalsExact(b));
+    assertTrue(a.getFactory() == b.getFactory());
+  }
 
 
 }

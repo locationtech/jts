@@ -542,7 +542,8 @@ public class GeometryFactory
    * of the input geometry.
    * <p>
    * This is a convenient way to change the <tt>CoordinateSequence</tt>
-   * used to represent a geometry.
+   * used to represent a geometry, or to change the 
+   * factory used for a geometry.
    * <p>
    * {@link Geometry#clone()} can also be used to make a deep copy,
    * but it does not allow changing the CoordinateSequence type.
