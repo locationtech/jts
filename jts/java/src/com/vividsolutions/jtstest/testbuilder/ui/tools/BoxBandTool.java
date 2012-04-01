@@ -56,7 +56,7 @@ import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
  */
 public abstract class BoxBandTool extends IndicatorTool 
 {
-  private Cursor cursor = Cursor.getDefaultCursor();
+  
   private Point zoomBoxStart = null;
   private Point zoomBoxEnd = null;
   
@@ -67,10 +67,6 @@ public abstract class BoxBandTool extends IndicatorTool
     this.cursor = cursor;
   }
 
-  public Cursor getCursor() {
-    return cursor;
-  }
-  
   public void mousePressed(MouseEvent e)
   {
   	zoomBoxStart = e.getPoint();

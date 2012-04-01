@@ -44,7 +44,6 @@ import com.vividsolutions.jtstest.testbuilder.model.*;
  * @version 1.7
  */
 public abstract class AbstractStreamDrawTool extends LineBandTool {
-	private Cursor cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
 
 	/*
 	 * private Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor(
@@ -53,6 +52,8 @@ public abstract class AbstractStreamDrawTool extends LineBandTool {
 	 */
 
 	protected AbstractStreamDrawTool() {
+	  super();
+	  cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
 	}
 
 	protected abstract int getGeometryType();
@@ -83,10 +84,6 @@ public abstract class AbstractStreamDrawTool extends LineBandTool {
 		setType();
 		geomModel().addComponent(getCoordinates());
 		panel().updateGeom();
-	}
-
-	public Cursor getCursor() {
-		return cursor;
 	}
 
 	private void setType() {

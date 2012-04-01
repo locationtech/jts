@@ -14,6 +14,8 @@ import com.vividsolutions.jtstest.testbuilder.model.*;
 
 public abstract class BasicTool implements Tool
 {
+  protected Cursor cursor = Cursor.getDefaultCursor();
+
   private PrecisionModel gridPM;
   
   public BasicTool() {
@@ -51,7 +53,7 @@ public abstract class BasicTool implements Tool
 
   public Cursor getCursor()
   {
-    return Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+    return cursor;
   }
 
   /**

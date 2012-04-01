@@ -1,5 +1,7 @@
 package com.vividsolutions.jtstest.testbuilder.ui.tools;
 
+import java.awt.Cursor;
+
 import com.vividsolutions.jtstest.testbuilder.model.GeometryType;
 
 public class RectangleTool
@@ -15,6 +17,7 @@ extends BoxBandTool
 
   public RectangleTool() {
     super();
+    cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
   }
 
   protected void gestureFinished() 
