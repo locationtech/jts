@@ -40,6 +40,7 @@ import javax.swing.SwingUtilities;
 
 import com.vividsolutions.jts.awt.GeometryCollectionShape;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jtstest.testbuilder.AppCursors;
 import com.vividsolutions.jtstest.testbuilder.IconLoader;
 import com.vividsolutions.jtstest.testbuilder.geom.*;
 
@@ -50,11 +51,6 @@ public class EditVertexTool
 extends IndicatorTool 
 {
   private static EditVertexTool instance = null;
-
-//  private Cursor cursor = Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR);
-  private Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor(
-  		IconLoader.icon("MoveVertexCursor.gif").getImage(),
-      new java.awt.Point(16, 16), "MoveVertex");
 
   //Point2D currentIndicatorLoc = null;
   Coordinate currentVertexLoc = null;
@@ -69,6 +65,8 @@ extends IndicatorTool
   }
 
   private EditVertexTool() {
+    super();
+    cursor = AppCursors.EDIT_VERTEX;
   }
 
   public void mousePressed(MouseEvent e) {
@@ -154,10 +152,6 @@ extends IndicatorTool
   protected Shape getIndicatorCircle(Point2D p) {
     return new Ellipse2D.Double(p.getX() - (IND_CIRCLE_RADIUS / 2), p.getY()
         - (IND_CIRCLE_RADIUS / 2), IND_CIRCLE_RADIUS, IND_CIRCLE_RADIUS);
-  }
-
-  public Cursor getCursor() {
-    return cursor;
   }
 
 }

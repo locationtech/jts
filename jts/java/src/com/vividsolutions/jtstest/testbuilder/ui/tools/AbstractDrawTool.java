@@ -36,21 +36,18 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 //import com.vividsolutions.jtstest.testbuilder.IconLoader;
+import com.vividsolutions.jtstest.testbuilder.AppCursors;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 
 /**
  * @version 1.7
  */
 public abstract class AbstractDrawTool extends LineBandTool {
-	private Cursor cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
-
-	/*
-	 * private Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor(
-	 * IconLoader.icon("DrawCursor.png").getImage(), new java.awt.Point(4, 26),
-	 * "Draw");
-	 */
+	//private Cursor cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
 
 	protected AbstractDrawTool() {
+	  super();
+    cursor = AppCursors.DRAW_GEOM;
 	}
 
 	protected abstract int getGeometryType();
@@ -64,10 +61,6 @@ public abstract class AbstractDrawTool extends LineBandTool {
 		setType();
 		geomModel().addComponent(getCoordinates());
 		panel().updateGeom();
-	}
-
-	public Cursor getCursor() {
-		return cursor;
 	}
 
 	private void setType() {

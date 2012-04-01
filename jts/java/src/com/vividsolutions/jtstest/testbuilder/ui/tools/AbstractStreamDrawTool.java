@@ -32,28 +32,23 @@
  */
 package com.vividsolutions.jtstest.testbuilder.ui.tools;
 
-import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 
-//import com.vividsolutions.jtstest.testbuilder.IconLoader;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jtstest.testbuilder.model.*;
+import com.vividsolutions.jtstest.testbuilder.AppCursors;
+import com.vividsolutions.jtstest.testbuilder.model.GeometryType;
 
 /**
  * @version 1.7
  */
 public abstract class AbstractStreamDrawTool extends LineBandTool {
 
-	/*
-	 * private Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor(
-	 * IconLoader.icon("DrawCursor.png").getImage(), new java.awt.Point(4, 26),
-	 * "Draw");
-	 */
-
 	protected AbstractStreamDrawTool() {
 	  super();
-	  cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    //cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    cursor = AppCursors.DRAW_GEOM;
+
 	}
 
 	protected abstract int getGeometryType();

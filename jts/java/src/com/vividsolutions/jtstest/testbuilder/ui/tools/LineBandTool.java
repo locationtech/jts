@@ -21,6 +21,7 @@ public abstract class LineBandTool extends IndicatorTool
   private boolean drawBandLines = true;
   
   public LineBandTool() {
+    super();
   }
 
   protected void setCloseRing(boolean closeRing) {
