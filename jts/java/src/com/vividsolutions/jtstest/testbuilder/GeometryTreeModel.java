@@ -21,7 +21,7 @@ public class GeometryTreeModel implements TreeModel
 {
   private Vector<TreeModelListener> treeModelListeners = new Vector<TreeModelListener>();
 
-  private GeometryNode rootGeom;
+  private GeometricObjectNode rootGeom;
 
   public GeometryTreeModel(Geometry geom)
   {
@@ -43,7 +43,7 @@ public class GeometryTreeModel implements TreeModel
    */
   public Object getChild(Object parent, int index)
   {
-    GeometryNode gn = (GeometryNode) parent;
+    GeometricObjectNode gn = (GeometricObjectNode) parent;
     return gn.getChildAt(index);
   }
 
@@ -52,7 +52,7 @@ public class GeometryTreeModel implements TreeModel
    */
   public int getChildCount(Object parent)
   {
-    GeometryNode gn = (GeometryNode) parent;
+    GeometricObjectNode gn = (GeometricObjectNode) parent;
     return gn.getChildCount();
   }
 
@@ -61,8 +61,8 @@ public class GeometryTreeModel implements TreeModel
    */
   public int getIndexOfChild(Object parent, Object child)
   {
-    GeometryNode gn = (GeometryNode) parent;
-    return gn.getIndexOfChild((GeometryNode) child);
+    GeometricObjectNode gn = (GeometricObjectNode) parent;
+    return gn.getIndexOfChild((GeometricObjectNode) child);
   }
 
   /**
@@ -78,7 +78,7 @@ public class GeometryTreeModel implements TreeModel
    */
   public boolean isLeaf(Object node)
   {
-    GeometryNode gn = (GeometryNode) node;
+    GeometricObjectNode gn = (GeometricObjectNode) node;
     return gn.isLeaf();
   }
 
@@ -101,18 +101,54 @@ public class GeometryTreeModel implements TreeModel
   }
 }
 
-abstract class GeometryNode
+abstract class GeometricObjectNode
 {
-  public static GeometryNode create(Coordinate p)
+  protected static String indexString(int index)
   {
-    return new CoordinateNode(p);
+    return "[" + index + "]";
   }
 
-  public static GeometryNode create(Coordinate p, int i)
+  protected static String sizeString(int size)
   {
-    return new CoordinateNode(p, i);
+    return "(" + size + ")";
   }
 
+  protected int index = -1;
+
+  protected String text = "";;
+
+  public GeometricObjectNode(String text)
+  {
+    this.text = text;
+  }
+
+  public void setIndex(int index)
+  {
+    this.index = index;
+  }
+
+  public String getText()
+  {
+    if (index >= 0) {
+      return indexString(index) + " : " + text;
+    }
+    return text;
+  }
+  
+  public abstract Geometry getGeometry();
+
+  public abstract boolean isLeaf();
+
+  public abstract GeometricObjectNode getChildAt(int index);
+
+  public abstract int getChildCount();
+
+  public abstract int getIndexOfChild(GeometricObjectNode child);
+
+}
+
+abstract class GeometryNode extends GeometricObjectNode
+{
   public static GeometryNode create(Geometry geom)
   {
     if (geom instanceof GeometryCollection)
@@ -128,28 +164,8 @@ abstract class GeometryNode
     return null;
   }
 
-  protected static String indexString(int index)
-  {
-    return "[" + index + "]";
-  }
-
-  protected static String sizeString(int size)
-  {
-    return "(" + size + ")";
-  }
-
-  protected boolean isLeaf = false;
-
-  protected int index = -1;
-
-  protected String text = "";;
-
-  protected List<GeometryNode> children = null;
-
-  public GeometryNode(String text)
-  {
-    this.text = text;
-  }
+  private boolean isLeaf;
+  protected List<GeometricObjectNode> children = null;
 
   public GeometryNode(Geometry geom)
   {
@@ -158,13 +174,20 @@ abstract class GeometryNode
 
   public GeometryNode(Geometry geom, int size, String tag)
   {
+    super(geometryText(geom, size, tag));
+    if (geom.isEmpty()) {
+      isLeaf = true;
+    }
+  }
+
+  private static String geometryText(Geometry geom, int size, String tag)
+  {
     StringBuilder buf = new StringBuilder();
     if (tag != null && tag.length() > 0) {
       buf.append(tag + " : ");
     }
     buf.append(geom.getGeometryType());
     if (geom.isEmpty()) {
-      isLeaf = true;
       buf.append(" EMPTY");
     }
     else {
@@ -172,32 +195,19 @@ abstract class GeometryNode
         buf.append(sizeString(size));
       }
     }
-    text = buf.toString();
+    return buf.toString();
   }
-
-  public GeometryNode(Geometry geom, int size, int index)
-  {
-    this(geom, size, indexString(index));
-  }
-
-  public abstract Geometry getGeometry();
-
-  public void setIndex(int index)
-  {
-    this.index = index;
-  }
-
   public boolean isLeaf()
   {
     return isLeaf;
   }
 
-  public GeometryNode getChildAt(int index)
+  public GeometricObjectNode getChildAt(int index)
   {
     if (isLeaf)
       return null;
     populateChildren();
-    return (GeometryNode) children.get(index);
+    return (GeometricObjectNode) children.get(index);
   }
 
   public int getChildCount()
@@ -208,20 +218,12 @@ abstract class GeometryNode
     return children.size();
   }
 
-  public int getIndexOfChild(GeometryNode child)
+  public int getIndexOfChild(GeometricObjectNode child)
   {
     if (isLeaf)
       return -1;
     populateChildren();
     return children.indexOf(child);
-  }
-
-  public String getText()
-  {
-    if (index >= 0) {
-      return indexString(index) + " : " + text;
-    }
-    return text;
   }
 
   /**
@@ -233,12 +235,13 @@ abstract class GeometryNode
     if (children != null)
       return;
 
-    children = new ArrayList<GeometryNode>();
+    children = new ArrayList<GeometricObjectNode>();
     fillChildren();
   }
 
   protected abstract void fillChildren();
 }
+
 
 class PolygonNode extends GeometryNode
 {
@@ -295,7 +298,7 @@ class LineStringNode extends GeometryNode
   private void populateChildren(Coordinate[] pt)
   {
     for (int i = 0; i < pt.length; i++) {
-      GeometryNode node = create(pt[i], i);
+      GeometricObjectNode node = CoordinateNode.create(pt[i], i);
       children.add(node);
     }
   }
@@ -331,9 +334,8 @@ class PointNode extends GeometryNode
 
   protected void fillChildren()
   {
-    children.add(create(pt.getCoordinate()));
+    children.add(CoordinateNode.create(pt.getCoordinate()));
   }
-
 }
 
 class GeometryCollectionNode extends GeometryNode
@@ -361,21 +363,35 @@ class GeometryCollectionNode extends GeometryNode
   }
 }
 
-class CoordinateNode extends GeometryNode
+/**
+ * Coordinate is the only leaf node now, but could be 
+ * refactored into a LeafNode class.
+ * 
+ * @author Martin Davis
+ *
+ */
+class CoordinateNode extends GeometricObjectNode
 {
+  public static CoordinateNode create(Coordinate p)
+  {
+    return new CoordinateNode(p);
+  }
+
+  public static CoordinateNode create(Coordinate p, int i)
+  {
+    return new CoordinateNode(p, i);
+  }
+
   Coordinate coord;
 
   public CoordinateNode(Coordinate coord)
   {
-    super(coord.x + ", " + coord.y);
-    isLeaf = true;
-    this.coord = coord;
+    this(coord, 0);
   }
 
   public CoordinateNode(Coordinate coord, int i)
   {
     super(coord.x + ", " + coord.y);
-    isLeaf = true;
     this.coord = coord;
     this.index = i;
   }
@@ -386,9 +402,27 @@ class CoordinateNode extends GeometryNode
     return geomFact.createPoint(coord);
   }
 
-  protected void fillChildren()
+  @Override
+  public boolean isLeaf()
   {
-    // do nothing here, since this is a leaf node
-    // no need to create children array, since it will never be accessed
+    return true;
+  }
+
+  @Override
+  public GeometricObjectNode getChildAt(int index)
+  {
+    throw new IllegalStateException("should not be here");
+  }
+
+  @Override
+  public int getChildCount()
+  {
+    return 0;
+  }
+
+  @Override
+  public int getIndexOfChild(GeometricObjectNode child)
+  {
+    throw new IllegalStateException("should not be here");
   }
 }

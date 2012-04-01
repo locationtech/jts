@@ -65,10 +65,10 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
 
 			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row,
 					hasFocus);
-			if (! (value instanceof GeometryNode))
+			if (! (value instanceof GeometricObjectNode))
 				return this;
 			
-			GeometryNode o = (GeometryNode) value;
+			GeometricObjectNode o = (GeometricObjectNode) value;
 			setText(o.getText());
 			//setIcon(isBinaryFunc ? binaryIcon : unaryIcon);
 			//setToolTipText(func.getSignature() + func.getDescription()); // no tool tip
@@ -129,7 +129,7 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
   private static Geometry getGeometryFromNode(Object value) {
     if (value == null) 
       return null;
-    return ((GeometryNode) value).getGeometry();
+    return ((GeometricObjectNode) value).getGeometry();
   }
 
 	public void populate(Geometry geom) {
