@@ -144,7 +144,7 @@ public class GeometryInspectorDialog extends JDialog
     // cmdButtonPanel.add(btnCopy, null);
     cmdButtonPanel.add(btnZoom, null);
     cmdButtonPanel.add(btnCopy, null);
-    cmdButtonPanel.add(btnClose, null);
+    //cmdButtonPanel.add(btnClose, null);
     cmdBtnSurroundPanel.add(cmdButtonPanel, BorderLayout.SOUTH);
 
     dialogPanel.setLayout(borderLayout1);
@@ -173,7 +173,7 @@ public class GeometryInspectorDialog extends JDialog
     // jPanel2.add(inputTabbedPane, BorderLayout.CENTER);
 */
     dialogPanel.add(aPanel, BorderLayout.CENTER);
-    dialogPanel.add(cmdBtnSurroundPanel, BorderLayout.SOUTH);
+    dialogPanel.add(cmdBtnSurroundPanel, BorderLayout.NORTH);
     getContentPane().add(dialogPanel);
   }
 
@@ -196,7 +196,9 @@ public class GeometryInspectorDialog extends JDialog
   void btnCopy_actionPerformed(ActionEvent e)
   {
     boolean isFormatted = 0 != (e.getModifiers() & ActionEvent.CTRL_MASK);
-    SwingUtil.copyToClipboard(geomTreePanel.getSelectedGeometry(), isFormatted);
+    Geometry geom = geomTreePanel.getSelectedGeometry();
+    if (geom == null) return;
+    SwingUtil.copyToClipboard(geom, isFormatted);
   }
   
   void btnZoom_actionPerformed(ActionEvent e)

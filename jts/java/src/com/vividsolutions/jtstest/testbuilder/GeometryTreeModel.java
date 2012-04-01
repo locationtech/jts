@@ -1,5 +1,7 @@
 package com.vividsolutions.jtstest.testbuilder;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -382,6 +384,8 @@ class CoordinateNode extends GeometricObjectNode
     return new CoordinateNode(p, i);
   }
 
+  private static DecimalFormat fmt = new DecimalFormat("0.#", new DecimalFormatSymbols());
+  
   Coordinate coord;
 
   public CoordinateNode(Coordinate coord)
@@ -391,7 +395,7 @@ class CoordinateNode extends GeometricObjectNode
 
   public CoordinateNode(Coordinate coord, int i)
   {
-    super(coord.x + ", " + coord.y);
+    super(fmt.format(coord.x) + "   " + fmt.format(coord.y));
     this.coord = coord;
     this.index = i;
   }
