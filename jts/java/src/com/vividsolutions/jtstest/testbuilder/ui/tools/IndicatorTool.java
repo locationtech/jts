@@ -103,7 +103,7 @@ public abstract class IndicatorTool extends BasicTool
 */
     } 
     finally {
-      cleanup(graphics);
+      teardown(graphics);
     }
   }
 
@@ -116,7 +116,7 @@ public abstract class IndicatorTool extends BasicTool
     graphics.setXORMode(Color.white);
   }
 
-  private void cleanup(Graphics2D graphics) {
+  private void teardown(Graphics2D graphics) {
     graphics.setPaintMode();
     graphics.setColor(originalColor);
     graphics.setStroke(originalStroke);

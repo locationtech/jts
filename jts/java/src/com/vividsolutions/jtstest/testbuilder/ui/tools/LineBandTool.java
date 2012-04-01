@@ -175,9 +175,25 @@ public abstract class LineBandTool extends IndicatorTool
     if (closeRing)
       path.lineTo((int) firstPoint.getX(), (int) firstPoint.getY());
 
+    drawVertices(path);
+    
     return path;
   }
 
+  private void drawVertices(GeneralPath path)
+  {
+    for (int i = 0; i < coordinates.size(); i++) { 
+      Coordinate coord = (Coordinate) coordinates.get(i);
+      Point2D p = toView(coord);
+      path.moveTo((int) p.getX()-2, (int) p.getY()-2);
+      path.lineTo((int) p.getX()+2, (int) p.getY()-2);
+      path.lineTo((int) p.getX()+2, (int) p.getY()+2);
+      path.lineTo((int) p.getX()-2, (int) p.getY()+2);
+      path.lineTo((int) p.getX()-2, (int) p.getY()-2);
+    }
+
+  }
+  
   protected boolean isFinishingRelease(MouseEvent e) {
     return e.getClickCount() == clickCountToFinish;
   }
