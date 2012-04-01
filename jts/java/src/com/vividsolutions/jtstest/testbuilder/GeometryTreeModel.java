@@ -108,6 +108,11 @@ abstract class GeometryNode
     return new CoordinateNode(p);
   }
 
+  public static GeometryNode create(Coordinate p, int i)
+  {
+    return new CoordinateNode(p, i);
+  }
+
   public static GeometryNode create(Geometry geom)
   {
     if (geom instanceof GeometryCollection)
@@ -219,6 +224,9 @@ abstract class GeometryNode
     return text;
   }
 
+  /**
+   * Lazily creates child nodes
+   */
   private void populateChildren()
   {
     // already initialized
@@ -287,8 +295,7 @@ class LineStringNode extends GeometryNode
   private void populateChildren(Coordinate[] pt)
   {
     for (int i = 0; i < pt.length; i++) {
-      GeometryNode node = create(pt[i]);
-      node.setIndex(i);
+      GeometryNode node = create(pt[i], i);
       children.add(node);
     }
   }
@@ -363,6 +370,14 @@ class CoordinateNode extends GeometryNode
     super(coord.x + ", " + coord.y);
     isLeaf = true;
     this.coord = coord;
+  }
+
+  public CoordinateNode(Coordinate coord, int i)
+  {
+    super(coord.x + ", " + coord.y);
+    isLeaf = true;
+    this.coord = coord;
+    this.index = i;
   }
 
   public Geometry getGeometry()
