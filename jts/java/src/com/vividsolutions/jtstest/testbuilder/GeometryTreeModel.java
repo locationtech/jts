@@ -18,8 +18,8 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class GeometryTreeModel implements TreeModel {
-    private Vector treeModelListeners =
-        new Vector();
+    private Vector<TreeModelListener> treeModelListeners =
+        new Vector<TreeModelListener>();
     private GeometryNode rootGeom;
 
     public GeometryTreeModel(Geometry geom) {
@@ -121,7 +121,7 @@ abstract class GeometryNode
 	protected boolean isLeaf = false;
 	protected int index = -1;
 	protected String text = "";;
-	protected List children = null;
+	protected List<GeometryNode> children = null;
 	
 	public GeometryNode(String text)
 	{
@@ -165,6 +165,11 @@ abstract class GeometryNode
 	}
 	public boolean isLeaf() { return isLeaf; }
 	
+	protected void createChildren()
+	{
+    children = new ArrayList<GeometryNode>();	  
+	}
+	
 	public GeometryNode getChildAt(int index) 
 	{
 		if (isLeaf) return null;
@@ -192,24 +197,8 @@ abstract class GeometryNode
 		return text;
 	}
   
-	protected void populateChildren()
-	{
-		if (children != null) return;
-		createChildren();
-	}
-	private void createChildren()
-	{
-		children = new ArrayList();
-	}
-	protected void populateChildren(Coordinate[] pt)
-	{
-		createChildren();
-		for (int i = 0; i < pt.length; i++) {
-			GeometryNode node = create(pt[i]);
-			node.setIndex(i);
-			children.add(node);
-		}
-	}
+	protected abstract void populateChildren();
+	
 }
 
 class PolygonNode extends GeometryNode 
@@ -221,10 +210,12 @@ class PolygonNode extends GeometryNode
 		super(poly, poly.getNumPoints(), null);
 		this.poly = poly;
 	}
+	
 	public Geometry getGeometry() { return poly; }
+	
 	protected void populateChildren()
 	{
-		children = new ArrayList();
+	  createChildren();
 		children.add(new LinearRingNode((LinearRing) poly.getExteriorRing(), "Shell"));
 		for (int i = 0; i < poly.getNumInteriorRing(); i++) {
 			children.add(new LinearRingNode((LinearRing) poly.getInteriorRingN(i), "Hole " + i ));
@@ -246,10 +237,24 @@ class LineStringNode extends GeometryNode
 		this.line = line;
 	}
   public Geometry getGeometry() { return line; }
+  
 	protected void populateChildren()
 	{
 		populateChildren(line.getCoordinates());
 	}
+	
+   protected void populateChildren(Coordinate[] pt)
+    {
+      // already initialized
+      if (children != null) return;
+      
+      createChildren();
+      for (int i = 0; i < pt.length; i++) {
+        GeometryNode node = create(pt[i]);
+        node.setIndex(i);
+        children.add(node);
+      }
+    }
 }
 
 class LinearRingNode extends LineStringNode 
@@ -275,7 +280,7 @@ class PointNode extends GeometryNode
   public Geometry getGeometry() { return pt; }
 	protected void populateChildren()
 	{
-		children = new ArrayList();
+    createChildren();
 		children.add(create(pt.getCoordinate()));
 	}
 
@@ -290,10 +295,12 @@ class GeometryCollectionNode extends GeometryNode
 		super(coll, coll.getNumGeometries(), null);
 		this.coll = coll;
 	}
+	
   public Geometry getGeometry() { return coll; }
+  
 	protected void populateChildren()
 	{
-		children = new ArrayList();
+    createChildren();
 		for (int i = 0; i < coll.getNumGeometries(); i++) {
 			GeometryNode node = create(coll.getGeometryN(i));
 			node.setIndex(i);
@@ -315,6 +322,11 @@ class CoordinateNode extends GeometryNode
   { 
     GeometryFactory geomFact = new GeometryFactory();
     return geomFact.createPoint(coord);
+  }
+  protected void populateChildren()
+  {
+    // do nothing here, since this is a leaf node
+    // no need to create children array, since it will never be accessed
   }
 }
 

@@ -78,13 +78,13 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
 
 	public GeometryTreePanel() {
 		try {
-			jbInit();
+			initUI();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	private void jbInit() throws Exception {
+	private void initUI() throws Exception {
 		setSize(200, 250);
 		border1 = BorderFactory.createEmptyBorder(4, 4, 4, 4);
 		setLayout(borderLayout);
