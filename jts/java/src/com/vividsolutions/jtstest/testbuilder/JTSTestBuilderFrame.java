@@ -190,10 +190,7 @@ public class JTSTestBuilderFrame extends JFrame
         }
       });
 
-      Cursor zoomInCursor = Toolkit.getDefaultToolkit().createCustomCursor(
-      		new ImageIcon(this.getClass().getResource("MagnifyCursor.gif")).getImage(),
-          new java.awt.Point(16, 16), "Zoom In");
-      zoomInTool = new ZoomToClickTool(2, zoomInCursor);
+      zoomInTool = new ZoomToClickTool(2, AppCursors.ZOOM);
       showGeomsTab();
       initFileDrop(testCasePanel);
       testCasePanel.getGeometryEditPanel().setCurrentTool(RectangleTool.getInstance());

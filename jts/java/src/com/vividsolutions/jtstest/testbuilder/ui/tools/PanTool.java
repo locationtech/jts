@@ -53,14 +53,11 @@ public class PanTool extends BasicTool {
 
   private Point2D source;
 
-  private Cursor cursorHand = Toolkit.getDefaultToolkit().createCustomCursor(
-      IconLoader.icon("Hand.gif").getImage(), new java.awt.Point(7, 7), "Pan");
-
   private PanTool() {
   }
 
   public Cursor getCursor() {
-    return cursorHand;
+    return AppCursors.HAND;
   }
 
   public void activate() {
