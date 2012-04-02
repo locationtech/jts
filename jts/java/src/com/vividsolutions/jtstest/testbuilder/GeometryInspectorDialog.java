@@ -153,7 +153,7 @@ public class GeometryInspectorDialog extends JDialog
     aPanel.setLayout(aPanelLayout);
     geomLabel.setText("A");
     geomLabel.setHorizontalAlignment(JLabel.CENTER);
-    aPanel.add(geomLabel, BorderLayout.NORTH);
+    //aPanel.add(geomLabel, BorderLayout.NORTH);
     aPanel.add(geomTreePanel, BorderLayout.CENTER);
 
     /*
