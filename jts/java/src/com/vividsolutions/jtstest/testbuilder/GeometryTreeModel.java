@@ -11,6 +11,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -194,9 +195,14 @@ abstract class GeometryNode extends GeometricObjectNode
     }
     else {
       if (size > 0) {
-        buf.append(sizeString(size));
+        buf.append(" " + sizeString(size));
       }
     }
+    
+    buf.append(" --     Len: " + geom.getLength());
+    if (geom.getDimension() >= 2) 
+      buf.append("      Area: " + geom.getArea());
+    
     return buf.toString();
   }
   public boolean isLeaf()
@@ -274,7 +280,7 @@ class PolygonNode extends GeometryNode
 
 class LineStringNode extends GeometryNode
 {
-  LineString line;
+  private LineString line;
 
   public LineStringNode(LineString line)
   {
@@ -299,8 +305,13 @@ class LineStringNode extends GeometryNode
 
   private void populateChildren(Coordinate[] pt)
   {
+    Envelope env = line.getEnvelopeInternal();
+    
+    
     for (int i = 0; i < pt.length; i++) {
-      GeometricObjectNode node = CoordinateNode.create(pt[i], i);
+      double dist = Double.NaN;
+      if (i < pt.length - 1) dist = pt[i].distance(pt[i + 1]);
+      GeometricObjectNode node = CoordinateNode.create(pt[i], i, dist);
       children.add(node);
     }
   }
@@ -379,23 +390,33 @@ class CoordinateNode extends GeometricObjectNode
     return new CoordinateNode(p);
   }
 
-  public static CoordinateNode create(Coordinate p, int i)
+  public static CoordinateNode create(Coordinate p, int i, double distPrev)
   {
-    return new CoordinateNode(p, i);
+    return new CoordinateNode(p, i, distPrev);
   }
 
-  private static DecimalFormat fmt = new DecimalFormat("0.#", new DecimalFormatSymbols());
+  private static DecimalFormat fmt = new DecimalFormat("0.#################", new DecimalFormatSymbols());
   
+  private static String label(Coordinate coord, int i, double distPrev)
+  {
+    String lbl = fmt.format(coord.x) + "   " + fmt.format(coord.y);
+    if (! Double.isNaN(distPrev)) {
+      lbl += "  --  dist: " + distPrev;
+    }
+    return lbl;
+  }
+  
+
   Coordinate coord;
 
   public CoordinateNode(Coordinate coord)
   {
-    this(coord, 0);
+    this(coord, 0, Double.NaN);
   }
 
-  public CoordinateNode(Coordinate coord, int i)
+  public CoordinateNode(Coordinate coord, int i, double distPrev)
   {
-    super(fmt.format(coord.x) + "   " + fmt.format(coord.y));
+    super(label(coord, i, distPrev));
     this.coord = coord;
     this.index = i;
   }
