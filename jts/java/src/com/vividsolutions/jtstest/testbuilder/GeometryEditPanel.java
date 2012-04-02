@@ -427,10 +427,15 @@ public class GeometryEditPanel extends JPanel
     Graphics2D gr = (Graphics2D) getGraphics();
     gr.setXORMode(Color.white);
     Stroke stroke = new BasicStroke(5);
+    
+    Geometry flashGeom = g;
+    if (g instanceof com.vividsolutions.jts.geom.Point)
+      flashGeom = flashPointGeom(g);
+    
     try {
-      GeometryPainter.paint(g, viewport, gr, Color.RED, null, stroke);
+      GeometryPainter.paint(flashGeom, viewport, gr, Color.RED, null, stroke);
       Thread.sleep(200);
-      GeometryPainter.paint(g, viewport, gr, Color.RED, null, stroke);
+      GeometryPainter.paint(flashGeom, viewport, gr, Color.RED, null, stroke);
     }
     catch (Exception ex) { 
       // nothing we can do
@@ -438,6 +443,13 @@ public class GeometryEditPanel extends JPanel
     gr.setPaintMode();
   }
     
+  private Geometry flashPointGeom(Geometry g)
+  {
+    double ptRadius = viewport.toModel(4);
+    return g.buffer(ptRadius);
+  }
+  
+  
   public Point2D snapToGrid(Point2D modelPoint) {
     return grid.snapToGrid(modelPoint);
   }
