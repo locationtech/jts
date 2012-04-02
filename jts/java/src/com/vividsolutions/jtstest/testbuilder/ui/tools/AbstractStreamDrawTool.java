@@ -48,7 +48,6 @@ public abstract class AbstractStreamDrawTool extends LineBandTool {
 	  super();
     //cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
     cursor = AppCursors.DRAW_GEOM;
-
 	}
 
 	protected abstract int getGeometryType();
@@ -69,6 +68,12 @@ public abstract class AbstractStreamDrawTool extends LineBandTool {
     } catch (Throwable t) {
     }
   }
+
+  public void mousePressed(MouseEvent e) {
+    setBandType();
+    super.mousePressed(e);
+  }
+
 
 	public void mouseClicked(MouseEvent e) {
 		setBandType();
