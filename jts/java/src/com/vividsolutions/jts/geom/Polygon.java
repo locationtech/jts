@@ -308,9 +308,6 @@ public class Polygon
     if (holes.length != otherPolygon.holes.length) {
       return false;
     }
-    if (holes.length != otherPolygon.holes.length) {
-      return false;
-    }
     for (int i = 0; i < holes.length; i++) {
       if (!((Geometry) holes[i]).equalsExact(otherPolygon.holes[i], tolerance)) {
         return false;
