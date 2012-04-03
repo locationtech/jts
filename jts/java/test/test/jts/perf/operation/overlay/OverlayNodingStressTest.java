@@ -1,4 +1,4 @@
-package test.jts.junit.operation.overlay;
+package test.jts.perf.operation.overlay;
 
 import java.util.*;
 

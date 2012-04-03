@@ -1,4 +1,4 @@
-package test.jts.junit.algorithm;
+package test.jts.perf.algorithm;
 
 import com.vividsolutions.jts.algorithm.*;
 import com.vividsolutions.jts.geom.*;
@@ -18,6 +18,11 @@ public class MinimumBoundingCircleStressTest
   
   }
 
+  public MinimumBoundingCircleStressTest()
+  {
+    
+  }
+  
   void run()
   {
   	while (true) {
