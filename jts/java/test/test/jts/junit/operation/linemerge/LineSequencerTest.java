@@ -198,7 +198,12 @@ public class LineSequencerTest
     else {
       Geometry expected = rdr.read(expectedWKT);
       Geometry result = sequencer.getSequencedLineStrings();
-      assertTrue(expected.equalsExact(result));
+      boolean isOK = expected.equalsNorm(result);
+      if (! isOK) {
+        System.out.println("ERROR - Expected: " + expected);
+        System.out.println("          Actual: " + result);
+      }
+      assertTrue(isOK);
 
       boolean isSequenced = LineSequencer.isSequenced(result);
       assertTrue(isSequenced);

@@ -192,7 +192,8 @@
     <mkdir dir="${build.classes}"/>
     <javac srcdir="${base.test}"
 	   includes="**/*.java"
-           destdir="${build.classes}">
+           destdir="${build.classes}"
+           debug="true">
       <classpath>
         <pathelement location="${pre-zip.jts-jar}"/>
         <pathelement location="${pre-zip.jtstest-jar}"/>
@@ -232,7 +233,9 @@
                  usefile="false"/>
       <batchtest todir="${reports.tests}">
         <fileset dir="${build.classes}">
-          <include name="**/junit/**/*Test*.class"/>
+          <include name="**/junit/**/*Test.class"/>
+          <exclude name="**/junit/**/*$*.class"/>
+          <exclude name="**/junit/**/Abstract*.class"/>
           <exclude name="**/MasterTester.class"/>
         </fileset>
       </batchtest>        

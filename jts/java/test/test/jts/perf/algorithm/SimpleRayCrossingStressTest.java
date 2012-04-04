@@ -30,9 +30,9 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.algorithm;
+package test.jts.perf.algorithm;
 
-import test.jts.perf.algorithm.PointInAreaStressTester;
+import test.jts.junit.algorithm.PerturbedGridPolygonBuilder;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 

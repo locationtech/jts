@@ -123,7 +123,7 @@ public class ConvexHullTest extends TestCase {
   }
 
   public void testToArray() throws Exception {
-    TestConvexHull convexHull = new TestConvexHull(geometryFactory.createGeometryCollection(null));
+    ConvexHullEx convexHull = new ConvexHullEx(geometryFactory.createGeometryCollection(null));
     Stack stack = new Stack();
     stack.push(new Coordinate(0, 0));
     stack.push(new Coordinate(1, 1));
@@ -136,12 +136,12 @@ public class ConvexHullTest extends TestCase {
     assertTrue(!array1[0].equals(array1[1]));
   }
 
-  private static class TestConvexHull extends ConvexHull {
+  private static class ConvexHullEx extends ConvexHull {
+    public ConvexHullEx(Geometry geometry) {
+      super(geometry);
+    }
     protected Coordinate[] toCoordinateArray(Stack stack) {
       return super.toCoordinateArray(stack);
-    }
-    public TestConvexHull(Geometry geometry) {
-      super(geometry);
     }
   }
 
