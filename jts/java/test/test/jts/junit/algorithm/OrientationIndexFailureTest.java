@@ -77,7 +77,7 @@ public class OrientationIndexFailureTest
     // this should succeed
     assertTrue(isAllOrientationsEqualDD(pts));
     // this is expected to fail
-    assertTrue(OrientationIndexTest.isAllOrientationsEqual(pts));
+    assertTrue(! OrientationIndexTest.isAllOrientationsEqual(pts));
   }
 
   public void testBadCCW2() throws Exception
@@ -91,7 +91,7 @@ public class OrientationIndexFailureTest
     // this should succeed
     assertTrue(isAllOrientationsEqualDD(pts));
     // this is expected to fail
-    assertTrue(OrientationIndexTest.isAllOrientationsEqual(pts));
+    assertTrue(! OrientationIndexTest.isAllOrientationsEqual(pts));
   }
 
   public void testBadCCW3() throws Exception
@@ -105,7 +105,7 @@ public class OrientationIndexFailureTest
     // this should succeed
     assertTrue(isAllOrientationsEqualDD(pts));
     // this is expected to fail
-    assertTrue(OrientationIndexTest.isAllOrientationsEqual(pts));
+    assertTrue(! OrientationIndexTest.isAllOrientationsEqual(pts));
   }
 
   public static boolean isAllOrientationsEqual(
