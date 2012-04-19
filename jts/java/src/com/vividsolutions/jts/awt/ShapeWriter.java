@@ -270,7 +270,8 @@ public class ShapeWriter
 	{
 		GeneralPath shape = new GeneralPath();
 		
-		transformPoint(lineString.getCoordinateN(0), transPoint);
+    Coordinate prev = lineString.getCoordinateN(0);
+    transformPoint(prev, transPoint);
 		shape.moveTo((float) transPoint.getX(), (float) transPoint.getY());
 
     double prevx = (double) transPoint.getX();
@@ -279,7 +280,18 @@ public class ShapeWriter
     int n = lineString.getNumPoints() - 1;
     //int count = 0;
 		for (int i = 1; i <= n; i++) {
-			transformPoint(lineString.getCoordinateN(i), transPoint);
+      Coordinate currentCoord = lineString.getCoordinateN(i);
+      if (decimationDistance > 0.0) {
+              boolean isDecimated = prev != null
+                      && Math.abs(currentCoord.x - prev.x) < decimationDistance
+                      && Math.abs(currentCoord.y - prev.y) < decimationDistance;
+              if (i < n && isDecimated) {
+                      continue;
+              }
+              prev = currentCoord;
+      }
+
+      transformPoint(currentCoord, transPoint);
 
 			if (doRemoveDuplicatePoints) {
   			// skip duplicate points (except the last point)
