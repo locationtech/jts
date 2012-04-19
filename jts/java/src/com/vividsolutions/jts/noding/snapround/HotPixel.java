@@ -47,11 +47,13 @@ public class HotPixel
   private Envelope safeEnv = null;
 
   /**
-   * Creates a new hot pixel.
+   * Creates a new hot pixel, using a given scale factor.
+   * The scale factor must be strictly positive (non-zero).
    * 
    * @param pt the coordinate at the centre of the pixel
-   * @param scaleFactor the scaleFactor determining the pixel size
+   * @param scaleFactor the scaleFactor determining the pixel size.  Must be > 0
    * @param li the intersector to use for testing intersection with line segments
+   * 
    */
   public HotPixel(Coordinate pt, double scaleFactor, LineIntersector li) {
     originalPt = pt;
