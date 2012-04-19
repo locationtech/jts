@@ -59,6 +59,8 @@ public class HotPixel
     this.scaleFactor = scaleFactor;
     this.li = li;
     //tolerance = 0.5;
+    if (scaleFactor <= 0) 
+      throw new IllegalArgumentException("Scale factor must be non-zero");
     if (scaleFactor != 1.0) {
       this.pt = new Coordinate(scale(pt.x), scale(pt.y));
       p0Scaled = new Coordinate();
