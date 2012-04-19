@@ -175,71 +175,98 @@ public class PolygonHandler implements ShapeHandler{
             }
         }
         
-        //now we have a list of all shells and all holes
-        ArrayList holesForShells = new ArrayList(shells.size());
-        for(int i=0;i<shells.size();i++){
-            holesForShells.add(new ArrayList());
-        }
-        
-        //find homes
-        for(int i=0;i<holes.size();i++){
-            LinearRing testRing = (LinearRing)holes.get(i);
-            LinearRing minShell = null;
-            Envelope minEnv = null;
-            Envelope testEnv = testRing.getEnvelopeInternal();
-            Coordinate testPt = testRing.getCoordinateN(0);
-            LinearRing tryRing;
-            for(int j=0;j<shells.size();j++){
-                tryRing = (LinearRing) shells.get(j);
-                Envelope tryEnv = tryRing.getEnvelopeInternal();
-                if (minShell != null) minEnv = minShell.getEnvelopeInternal();
-                boolean isContained = false;
-                Coordinate[] coordList = tryRing.getCoordinates() ;
-                
-                if (tryEnv.contains(testEnv)
-                        && (cga.isPointInRing(testPt,coordList ) || (pointInList(testPt, coordList)))
-                   )
-                    isContained = true;
-                // check if this new containing ring is smaller than the current minimum ring
-                if (isContained) {
-                    if (minShell == null
-                    || minEnv.contains(tryEnv)) {
-                        minShell = tryRing;
-                    }
-                }
-            }
-            
-            if (minShell == null)
-            {
-                System.err.println("Shapefile PolygonHandler: Found polygon with a hole that is not inside a shell");
-            }
-            else
-            {
-              ((ArrayList)holesForShells.get(shells.indexOf(minShell))).add(testRing);
-            }
-        }
-        
+        ArrayList holesForShells = assignHolesToShells(shells, holes);
+
         Polygon[] polygons = new Polygon[shells.size()];
-        for(int i=0;i<shells.size();i++){
-            polygons[i]=geometryFactory.createPolygon((LinearRing)shells.get(i),(LinearRing[])((ArrayList)holesForShells.get(i)).toArray(new LinearRing[0]));
+        for (int i = 0; i < shells.size(); i++) {
+          polygons[i] = geometryFactory.createPolygon((LinearRing) shells.get(i),
+              (LinearRing[]) ((ArrayList) holesForShells.get(i))
+                  .toArray(new LinearRing[0]));
         }
-        
-        if(polygons.length==1){
-            return polygons[0];
+
+        if (polygons.length == 1) {
+          return polygons[0];
         }
-        
+
         holesForShells = null;
         shells = null;
         holes = null;
-        //its a multi part
-        
+        // its a multi part
 
-        Geometry result =  geometryFactory.createMultiPolygon(polygons);
-     //   if (!(result.isValid()  ))
-     //   	System.out.println("geom isnt valid");
-        return result;        
-    }
-    
+        Geometry result = geometryFactory.createMultiPolygon(polygons);
+        // if (!(result.isValid() ))
+        // System.out.println("geom isnt valid");
+        return result;
+      }
+
+      private ArrayList assignHolesToShells(ArrayList shells, ArrayList holes)
+      {
+        // now we have a list of all shells and all holes
+        ArrayList holesForShells = new ArrayList(shells.size());
+        for (int i = 0; i < shells.size(); i++) {
+          holesForShells.add(new ArrayList());
+        }
+
+        // find homes
+        for (int i = 0; i < holes.size(); i++) {
+          LinearRing testHole = (LinearRing) holes.get(i);
+          LinearRing minShell = null;
+          Envelope minEnv = null;
+          Envelope testHoleEnv = testHole.getEnvelopeInternal();
+          Coordinate testHolePt = testHole.getCoordinateN(0);
+          LinearRing tryShell;
+          int nShells = shells.size();
+          for (int j = 0; j < nShells; j++) {
+            tryShell = (LinearRing) shells.get(j);
+            Envelope tryShellEnv = tryShell.getEnvelopeInternal();
+            if (! tryShellEnv.contains(testHoleEnv)) continue;
+            
+            boolean isContained = false;
+            Coordinate[] coordList = tryShell.getCoordinates();
+
+            if (nShells <= 1 
+                || CGAlgorithms.isPointInRing(testHolePt, coordList) 
+                || pointInList(testHolePt, coordList))
+              isContained = true;
+            
+            // check if new containing ring is smaller than the current minimum ring
+            if (minShell != null)
+              minEnv = minShell.getEnvelopeInternal();
+            if (isContained) {
+              if (minShell == null || minEnv.contains(tryShellEnv)) {
+                minShell = tryShell;
+              }
+            }
+          }
+
+          if (minShell == null) {
+            System.err.println("Found polygon with a hole not inside a shell");
+          }
+          else {
+            // ((ArrayList)holesForShells.get(shells.indexOf(minShell))).add(testRing);
+            ((ArrayList) holesForShells.get(findIndex(shells, minShell)))
+                .add(testHole);
+          }
+        }
+        return holesForShells;
+      }
+
+      /**
+       * Finds a object in a list. Should be much faster than indexof
+       * 
+       * @param list
+       * @param o
+       * @return
+       */
+      private static int findIndex(ArrayList list, Object o)
+      {
+        int n = list.size();
+        for (int i = 0; i < n; i++) {
+          if (list.get(i) == o)
+            return i;
+        }
+        return -1;
+      }
     
     
     public int getShapeType(){
