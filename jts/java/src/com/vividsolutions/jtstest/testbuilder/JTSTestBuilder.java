@@ -148,6 +148,7 @@ public class JTSTestBuilder
     	readArgs(args);
     	
     	// set the look and feel, using user-defined LAF if present
+    	// eg. Metal - -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel
       String laf = System.getProperty("swing.defaultlaf");
       if (laf == null) {
         laf = UIManager.getSystemLookAndFeelClassName();
