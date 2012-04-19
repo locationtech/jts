@@ -279,16 +279,16 @@ public class ShapeWriter
     
     int n = lineString.getNumPoints() - 1;
     //int count = 0;
-		for (int i = 1; i <= n; i++) {
+    for (int i = 1; i <= n; i++) {
       Coordinate currentCoord = lineString.getCoordinateN(i);
       if (decimationDistance > 0.0) {
-              boolean isDecimated = prev != null
-                      && Math.abs(currentCoord.x - prev.x) < decimationDistance
-                      && Math.abs(currentCoord.y - prev.y) < decimationDistance;
-              if (i < n && isDecimated) {
-                      continue;
-              }
-              prev = currentCoord;
+        boolean isDecimated = prev != null
+            && Math.abs(currentCoord.x - prev.x) < decimationDistance
+            && Math.abs(currentCoord.y - prev.y) < decimationDistance;
+        if (i < n && isDecimated) {
+          continue;
+        }
+        prev = currentCoord;
       }
 
       transformPoint(currentCoord, transPoint);
