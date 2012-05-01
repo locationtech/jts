@@ -36,10 +36,15 @@ import java.io.Serializable;
 import com.vividsolutions.jts.geom.*;
 
 /**
- * The {@link CoordinateSequence} implementation that {@link Geometry}s use by default.
- * In this implementation, Coordinates returned by #toArray and #getCoordinate are live --
+ * A {@link CoordinateSequence} backed by an array of {@link Coordinates}.
+ * This is the implementation that {@link Geometry}s use by default.
+ * Coordinates returned by #toArray and #getCoordinate are live --
  * modifications to them are actually changing the
  * CoordinateSequence's underlying data.
+ * A dimension may be specified for the coordinates in the sequence,
+ * which may be 2 or 3.
+ * The actual coordinates will always have 3 ordinates,
+ * but the dimension is useful as metadata in some situations. 
  *
  * @version 1.7
  */
@@ -49,16 +54,37 @@ public class CoordinateArraySequence
   //With contributions from Markus Schaber [schabios@logi-track.com] 2004-03-26
   private static final long serialVersionUID = -915438501601840650L;
 
+  /**
+   * The actual dimension of the coordinates in the sequence.
+   * Allowable values are 2 or 3.
+   */
+  private int dimension = 3;
+  
   private Coordinate[] coordinates;
 
   /**
-   * Constructs a sequence based on the given array (the
+   * Constructs a sequence based on the given array
+   * of {@link Coordinate}s (the
    * array is not copied).
+   * The coordinate dimension defaults to 3.
    *
    * @param coordinates the coordinate array that will be referenced.
    */
   public CoordinateArraySequence(Coordinate[] coordinates) {
+    this(coordinates, 3);
+  }
+
+  /**
+   * Constructs a sequence based on the given array 
+   * of {@link Coordinate}s (the
+   * array is not copied).
+   *
+   * @param coordinates the coordinate array that will be referenced.
+   * @param the dimension of the coordinates
+   */
+  public CoordinateArraySequence(Coordinate[] coordinates, int dimension) {
     this.coordinates = coordinates;
+    this.dimension = dimension;
     if (coordinates == null)
       this.coordinates = new Coordinate[0];
   }
@@ -77,12 +103,29 @@ public class CoordinateArraySequence
   }
 
   /**
+   * Constructs a sequence of a given size, populated
+   * with new {@link Coordinate}s.
+   *
+   * @param size the size of the sequence to create
+   * @param the dimension of the coordinates
+   */
+  public CoordinateArraySequence(int size, int dimension) {
+    coordinates = new Coordinate[size];
+    this.dimension = dimension;
+    for (int i = 0; i < size; i++) {
+      coordinates[i] = new Coordinate();
+    }
+  }
+
+  /**
    * Creates a new sequence based on a deep copy of the given {@link CoordinateSequence}.
+   * The coordinate dimension is set to equal the dimension of the input.
    *
    * @param coordSeq the coordinate sequence that will be copied.
    */
   public CoordinateArraySequence(CoordinateSequence coordSeq)
   {
+    dimension = coordSeq.getDimension();
     if (coordSeq != null)
       coordinates = new Coordinate[coordSeq.size()];
     else
@@ -96,7 +139,7 @@ public class CoordinateArraySequence
   /**
    * @see com.vividsolutions.jts.geom.CoordinateSequence#getDimension()
    */
-  public int getDimension() { return 3; }
+  public int getDimension() { return dimension; }
 
   /**
    * Get the Coordinate with index i.
