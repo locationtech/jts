@@ -96,6 +96,7 @@ for closed <tt>LineString</tt>s with large distance tolerances
 <li>Fixed <tt>DouglasPeuckerSimplifier</tt> to return an empty result for an empty input
 <li>Fixed <tt>MinimumBoundingCircle</tt> to correctly compute circle for obtuse triangles.
 <li>Fixd <tt>GeometryPrecisionReducer</tt> to use input GeometryFactory when polygon topology is fixed
+<li>Fixed <tt>GeometryNoder</tt> bug that was failing to snap to end vertices of lines
 </ul>
 
 <h3>API Changes</h3>

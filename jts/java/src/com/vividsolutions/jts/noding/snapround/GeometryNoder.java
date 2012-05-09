@@ -68,6 +68,7 @@ public class GeometryNoder
     sr.computeNodes(segStrings);
     Collection nodedLines = sr.getNodedSubstrings();
 
+    //TODO: improve this to check for full snap-rounded correctness
     if (isValidityChecked) {
     	NodingValidator nv = new NodingValidator(nodedLines);
     	nv.checkValid();

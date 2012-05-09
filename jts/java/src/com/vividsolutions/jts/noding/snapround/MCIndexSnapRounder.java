@@ -124,7 +124,7 @@ public class MCIndexSnapRounder
   }
 
   /**
-   * Computes nodes introduced as a result of snapping segments to snap points (hot pixels)
+   * Snaps segments to nodes created by segment intersections.
    */
   private void computeIntersectionSnaps(Collection snapPts)
   {
@@ -136,8 +136,7 @@ public class MCIndexSnapRounder
   }
 
   /**
-   * Computes nodes introduced as a result of
-   * snapping segments to vertices of other segments
+   * Snaps segments to all vertices.
    *
    * @param edges the list of segment strings to snap together
    */
@@ -150,13 +149,12 @@ public class MCIndexSnapRounder
   }
 
   /**
-   * Performs a brute-force comparison of every segment in each {@link SegmentString}.
-   * This has n^2 performance.
+   * Snaps segments to the vertices of a Segment String.  
    */
   private void computeVertexSnaps(NodedSegmentString e)
   {
     Coordinate[] pts0 = e.getCoordinates();
-    for (int i = 0; i < pts0.length - 1; i++) {
+    for (int i = 0; i < pts0.length ; i++) {
       HotPixel hotPixel = new HotPixel(pts0[i], scaleFactor, li);
       boolean isNodeAdded = pointSnapper.snap(hotPixel, e, i);
       // if a node is created for a vertex, that vertex must be noded too

@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 import java.util.*;
+
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.*;
@@ -30,6 +31,14 @@ public class SnapRoundingTest  extends TestCase {
       "POLYGON ((20 0, 20 160, 140 1, 160 160, 160 1, 20 0))"
     };
     runRounding(polyWithCloseNode);
+  }
+
+  public void testLineStringLongShort() {
+    String[] geoms = {
+        "LINESTRING (0 0, 2 0)",
+        "LINESTRING (0 0, 10 -1)"
+    };
+    runRounding(geoms);
   }
 
   public void testBadLines1() {
@@ -75,17 +84,21 @@ public class SnapRoundingTest  extends TestCase {
     runRounding(badNoding1ExtractShift);
   }
 
+  static final double SNAP_TOLERANCE = 1.0;
+  
   void runRounding(String[] wkt)
   {
     List geoms = fromWKT(wkt);
-    PrecisionModel pm = new PrecisionModel(1.0);
+    PrecisionModel pm = new PrecisionModel(SNAP_TOLERANCE);
     GeometryNoder noder = new GeometryNoder(pm);
+    noder.setValidate(true);
     List nodedLines = noder.node(geoms);
 /*
     for (Iterator it = nodedLines.iterator(); it.hasNext(); ) {
       System.out.println(it.next());
     }
     */
+    assertTrue(isSnapped(nodedLines, SNAP_TOLERANCE));
   }
 
   List fromWKT(String[] wkts)
@@ -102,4 +115,41 @@ public class SnapRoundingTest  extends TestCase {
     return geomList;
   }
 
+  boolean isSnapped(List lines, double tol)
+  {
+    for (int i = 0; i < lines.size(); i++) {
+      LineString line = (LineString) lines.get(i);
+      for (int j = 0; j < line.getNumPoints(); j++) {
+        Coordinate v = line.getCoordinateN(j);
+          if (! isSnapped(v, lines)) return false;
+        
+      }
+    }
+    return true;
+  }
+
+  private boolean isSnapped(Coordinate v, List lines)
+  {
+    for (int i = 0; i < lines.size(); i++) {
+      LineString line = (LineString) lines.get(i);
+      for (int j = 0; j < line.getNumPoints() - 1; j++) {
+        Coordinate p0 = line.getCoordinateN(j);
+        Coordinate p1 = line.getCoordinateN(j);
+        if (! isSnapped(v, p0, p1)) return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean isSnapped(Coordinate v, Coordinate p0, Coordinate p1)
+  {
+    if (v.equals2D(p0)) return true;
+    if (v.equals2D(p1)) return true;
+    LineSegment seg = new LineSegment(p0, p1);
+    double dist = seg.distance(v);
+    if (dist < SNAP_TOLERANCE / 2.05) return false;
+    return true;
+  }
+  
+  
 }
