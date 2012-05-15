@@ -805,6 +805,42 @@ public strictfp final class DD
     return s;
   }
   
+  
+  /*------------------------------------------------------------
+   *   Ordering Functions
+   *------------------------------------------------------------
+   */
+
+  /**
+   * Computes the minimum of this and another DD number.
+   * 
+   * @param x a DD number
+   * @return the minimum of the two numbers
+   */
+  public DD min(DD x) {
+    if (this.le(x)) {
+      return this;
+    }
+    else {
+      return x;
+    }
+  }
+  
+  /**
+   * Computes the maximum of this and another DD number.
+   * 
+   * @param x a DD number
+   * @return the maximum of the two numbers
+   */
+  public DD max(DD x) {
+    if (this.ge(x)) {
+      return this;
+    }
+    else {
+      return x;
+    }
+  }
+
   /*------------------------------------------------------------
    *   Conversion Functions
    *------------------------------------------------------------
