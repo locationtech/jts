@@ -50,6 +50,7 @@ using the CoordinateSequenceFactory of the factory
 <li><tt>ScaledNoder</tt> now preserves Z values of input
 <li>Added instance methods for all <t>Triangle</tt> static methods
 <li>Added <tt>CGAlgorithmsDD</tt> containing high-precision versions of some basic CG algorithms
+<li>Added <tt>IntersectionMatrix.isTrue()</tt> method for testing IM pattern matches
 </ul>
 
 <h3>Performance Improvements</h3>
@@ -60,7 +61,7 @@ using the CoordinateSequenceFactory of the factory
 to avoid creating segment index if all test inputs are points
 <li>In <tt>AbstractSTRtree</tt> switched to using indexed list access for better performance than using iterators
 <li>In <tt>AbstractSTRtree</tt> freed inserted item array after index is built
-<li>Added <tt>IntersectionMatrix.isTrue()</tt> method for testing IM pattern matches
+<li>Improved performance of <tt>Polygonizer</tt> for cases with many potential holes
 </ul>
 
 <h3>Robustness Improvements</h3>
