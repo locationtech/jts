@@ -99,30 +99,30 @@ public class TriangulationFunctions
     return tris;      
   }
 
-  public static Geometry voronoiDiagram(Geometry geom, Geometry g2)
+  public static Geometry voronoiDiagram(Geometry sitesGeom, Geometry clipGeom)
   {
     VoronoiDiagramBuilder builder = new VoronoiDiagramBuilder();
-    builder.setSites(geom);
-    if (g2 != null)
-    	builder.setClipEnvelope(g2.getEnvelopeInternal());
+    builder.setSites(sitesGeom);
+    if (clipGeom != null)
+    	builder.setClipEnvelope(clipGeom.getEnvelopeInternal());
     builder.setTolerance(TRIANGULATION_TOLERANCE);
-    Geometry diagram = builder.getDiagram(geom.getFactory()); 
+    Geometry diagram = builder.getDiagram(sitesGeom.getFactory()); 
     return diagram;
   }
 
-  public static Geometry voronoiDiagramWithData(Geometry geom, Geometry g2)
+  public static Geometry voronoiDiagramWithData(Geometry sitesGeom, Geometry clipGeom)
   {
-  	GeometryDataUtil.setComponentDataToIndex(geom);
+  	GeometryDataUtil.setComponentDataToIndex(sitesGeom);
   	
   	VertexTaggedGeometryDataMapper mapper = new VertexTaggedGeometryDataMapper();
-  	mapper.loadSourceGeometries(geom);
+  	mapper.loadSourceGeometries(sitesGeom);
   	
     VoronoiDiagramBuilder builder = new VoronoiDiagramBuilder();
     builder.setSites(mapper.getCoordinates());
-    if (g2 != null)
-    	builder.setClipEnvelope(g2.getEnvelopeInternal());
+    if (clipGeom != null)
+    	builder.setClipEnvelope(clipGeom.getEnvelopeInternal());
     builder.setTolerance(TRIANGULATION_TOLERANCE);
-    Geometry diagram = builder.getDiagram(geom.getFactory()); 
+    Geometry diagram = builder.getDiagram(sitesGeom.getFactory()); 
     mapper.transferData(diagram);
     return diagram;
   }
