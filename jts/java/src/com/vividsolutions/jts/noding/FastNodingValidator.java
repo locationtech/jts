@@ -44,10 +44,14 @@ import com.vividsolutions.jts.io.*;
  * Validates that a collection of {@link SegmentString}s is correctly noded.
  * Indexing is used to improve performance.
  * In the most common use case, validation stops after a single 
- * non-noded intersection is detected.
- * Does NOT check a-b-a collapse situations. 
- * Also does not check for endpoint-interior vertex intersections.
- * This should not be a problem, since the noders should be
+ * non-noded intersection is detected, 
+ * but the class can be requested to detect all intersections
+ * by using the {@link #setFindAllIntersections(boolean)} method.
+ * <p>
+ * The validator does not check for a-b-a topology collapse situations.
+ * <p> 
+ * The validator does not check for endpoint-interior vertex intersections.
+ * This should not be a problem, since the JTS noders should be
  * able to compute intersections between vertices correctly.
  * <p>
  * The client may either test the {@link #isValid} condition, 
