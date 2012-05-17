@@ -48,7 +48,6 @@ public class OrientationIndexFailureTest
 {
 
   private WKTReader reader = new WKTReader();
-  //private CGAlgorithms rcga = new CGAlgorithms();
 
   public static void main(String args[]) {
     TestRunner.run(OrientationIndexFailureTest.class);
@@ -74,10 +73,7 @@ public class OrientationIndexFailureTest
       new Coordinate(23.131039116367354, -7.004368924503866),
       new Coordinate(1.4540766091865, -7.989685402102996),
     };
-    // this should succeed
-    assertTrue(isAllOrientationsEqualDD(pts));
-    // this is expected to fail
-    assertTrue(! OrientationIndexTest.isAllOrientationsEqual(pts));
+    checkOrientation(pts);
   }
 
   public void testBadCCW2() throws Exception
@@ -88,10 +84,7 @@ public class OrientationIndexFailureTest
       new Coordinate(168.9018919682399, -5.713787599646864),
       new Coordinate(186.80814046338352, 46.28973405831556),
     };
-    // this should succeed
-    assertTrue(isAllOrientationsEqualDD(pts));
-    // this is expected to fail
-    assertTrue(! OrientationIndexTest.isAllOrientationsEqual(pts));
+    checkOrientation(pts);
   }
 
   public void testBadCCW3() throws Exception
@@ -102,12 +95,28 @@ public class OrientationIndexFailureTest
         new Coordinate(-20.43142161511487, 13.620947743409914),
         new Coordinate(0, 0)
     };
+    checkOrientation(pts);
+  }
+
+  public void testBadCCW4() throws Exception
+  {
+    // this case fails because subtraction of small from large loses precision
+    Coordinate[] pts = {
+        new Coordinate(-26.2, 188.7),
+        new Coordinate(37.0, 290.7),
+        new Coordinate(21.2, 265.2)
+    };
+    checkOrientation(pts);
+  }
+
+  void checkOrientation(Coordinate[] pts)
+  {
     // this should succeed
     assertTrue(isAllOrientationsEqualDD(pts));
     // this is expected to fail
     assertTrue(! OrientationIndexTest.isAllOrientationsEqual(pts));
   }
-
+  
   public static boolean isAllOrientationsEqual(
       double p0x, double p0y,
       double p1x, double p1y,
@@ -125,31 +134,10 @@ public class OrientationIndexFailureTest
 
   public static boolean isAllOrientationsEqualDD(Coordinate[] pts)
   {
-    int[] orient = new int[3];
-    orient[0] = orientationIndexDD(pts[0], pts[1], pts[2]);
-    orient[1] = orientationIndexDD(pts[1], pts[2], pts[0]);
-    orient[2] = orientationIndexDD(pts[2], pts[0], pts[1]);
-    return orient[0] == orient[1] && orient[0] == orient[2];
+    int orient0 = CGAlgorithmsDD.orientationIndex(pts[0], pts[1], pts[2]);
+    int orient1 = CGAlgorithmsDD.orientationIndex(pts[1], pts[2], pts[0]);
+    int orient2 = CGAlgorithmsDD.orientationIndex(pts[2], pts[0], pts[1]);
+    return orient0 == orient1 && orient0 == orient2;
   }
   
-  private static int orientationIndexDD(Coordinate p1, Coordinate p2, Coordinate q)
-  {
-    DD dx1 = DD.valueOf(p2.x).selfSubtract(p1.x);
-    DD dy1 = DD.valueOf(p2.y).selfSubtract(p1.y);
-    DD dx2 = DD.valueOf(q.x).selfSubtract(p2.x);
-    DD dy2 = DD.valueOf(q.y).selfSubtract(p2.y);
-
-    return signOfDet2x2DD(dx1, dy1, dx2, dy2);
-  }
-  
-  private static int signOfDet2x2DD(DD x1, DD y1, DD x2, DD y2)
-  {
-    DD det = x1.multiply(y2).subtract(y1.multiply(x2));
-    if (det.isZero())
-      return 0;
-    if (det.isNegative())
-      return -1;
-    return 1;
-
-  }
 }
