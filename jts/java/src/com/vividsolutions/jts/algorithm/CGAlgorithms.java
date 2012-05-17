@@ -51,6 +51,9 @@ public class CGAlgorithms
    */
   public static final int CLOCKWISE = -1;
 
+  /**
+   * A value that indicates an orientation of clockwise, or a right turn.
+   */
   public static final int RIGHT = CLOCKWISE;
 
   /**
@@ -58,6 +61,9 @@ public class CGAlgorithms
    */
   public static final int COUNTERCLOCKWISE = 1;
 
+  /**
+   * A value that indicates an orientation of counterclockwise, or a left turn.
+   */
   public static final int LEFT = COUNTERCLOCKWISE;
 
   /**
@@ -65,6 +71,9 @@ public class CGAlgorithms
    */
   public static final int COLLINEAR = 0;
 
+  /**
+   * A value that indicates an orientation of collinear, or no turn (straight).
+   */
   public static final int STRAIGHT = COLLINEAR;
 
   /**
