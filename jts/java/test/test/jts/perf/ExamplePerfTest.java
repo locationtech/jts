@@ -1,9 +1,5 @@
 package test.jts.perf;
 
-import junit.textui.TestRunner;
-import test.jts.junit.algorithm.AngleTest;
-import test.jts.perf.*;
-
 public class ExamplePerfTest
 extends PerformanceTestCase
 {
@@ -32,7 +28,13 @@ extends PerformanceTestCase
   
   private int iter = 0;
   
-  public void runExample()
+  public void runExample1()
+  {
+    System.out.println("Iter # " + iter++);
+    // do test work here
+  }
+  
+  public void runExample2()
   {
     System.out.println("Iter # " + iter++);
     // do test work here

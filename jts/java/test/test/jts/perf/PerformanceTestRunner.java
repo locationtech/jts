@@ -5,6 +5,14 @@ import java.util.*;
 
 import com.vividsolutions.jts.util.Stopwatch;
 
+/**
+ * Runs {@link PerformanceTestCase} classes which contain performance tests.
+ * 
+ * 
+ * 
+ * @author Martin Davis
+ *
+ */
 public class PerformanceTestRunner
 {
   private static final String RUN_PREFIX = "run";
@@ -35,6 +43,7 @@ public class PerformanceTestRunner
       test.setUp();
       for (int runNum = 0; runNum < runSize.length; runNum++)
       {
+        
         int size = runSize[runNum];
         test.startRun(size);
         for (int i = 0; i < runMethod.length; i++) {
