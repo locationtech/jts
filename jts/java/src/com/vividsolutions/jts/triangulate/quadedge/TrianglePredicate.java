@@ -49,7 +49,7 @@ public class TrianglePredicate
    * Tests if a point is inside the circle defined by 
    * the triangle with vertices a, b, c (oriented counter-clockwise). 
    * This test uses simple
-   * double-precision arithmetic, and thus is not 10% robust.
+   * double-precision arithmetic, and thus is not 100% robust.
    * However, by using normalization to the origin
    * it provides improved robustness and increased performance.
    * <p>
