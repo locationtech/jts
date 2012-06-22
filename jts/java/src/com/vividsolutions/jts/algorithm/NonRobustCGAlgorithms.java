@@ -168,7 +168,36 @@ public class NonRobustCGAlgorithms
     }
   }
 
+  /**
+   * Computes the orientation of a point q to the directed line segment p1-p2.
+   * The orientation of a point relative to a directed line segment indicates
+   * which way you turn to get to q after travelling from p1 to p2.
+   * 
+   * @return 1 if q is counter-clockwise from p1-p2
+   * @return -1 if q is clockwise from p1-p2
+   * @return 0 if q is collinear with p1-p2
+   */
   public static int computeOrientation(Coordinate p1, Coordinate p2, Coordinate q) {
+    return orientationIndex(p1, p2, q);
+  }
+  
+  /**
+   * Returns the index of the direction of the point <code>q</code> relative to
+   * a vector specified by <code>p1-p2</code>.
+   * 
+   * @param p1
+   *          the origin point of the vector
+   * @param p2
+   *          the final point of the vector
+   * @param q
+   *          the point to compute the direction to
+   * 
+   * @return 1 if q is counter-clockwise (left) from p1-p2
+   * @return -1 if q is clockwise (right) from p1-p2
+   * @return 0 if q is collinear with p1-p2
+   */
+  public static int orientationIndex(Coordinate p1, Coordinate p2, Coordinate q)
+  {
         double dx1 = p2.x - p1.x;
         double dy1 = p2.y - p1.y;
         double dx2 = q.x - p2.x;
