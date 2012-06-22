@@ -518,13 +518,16 @@ public abstract class Geometry
    * The centroid
    * is equal to the centroid of the set of component Geometries of highest
    * dimension (since the lower-dimension geometries contribute zero
-   * "weight" to the centroid)
+   * "weight" to the centroid).
+   * <p>
+   * The centroid of an empty geometry is <code>POINT EMPTY</code>.
    *
    * @return a {@link Point} which is the centroid of this Geometry
    */
   public Point getCentroid()
   {
-    if (isEmpty()) { return null; }
+    if (isEmpty()) 
+      return factory.createPoint((Coordinate) null);
     Coordinate centPt = null;
     int dim = getDimension();
     if (dim == 0) {
@@ -551,11 +554,15 @@ public abstract class Geometry
    * An interior point is guaranteed to lie in the interior of the Geometry,
    * if it possible to calculate such a point exactly. Otherwise,
    * the point may lie on the boundary of the geometry.
+   * <p>
+   * The interior point of an empty geometry is <code>POINT EMPTY</code>.
    *
    * @return a {@link Point} which is in the interior of this Geometry
    */
   public Point getInteriorPoint()
   {
+    if (isEmpty()) 
+      return factory.createPoint((Coordinate) null);
     Coordinate interiorPt = null;
     int dim = getDimension();
     if (dim == 0) {

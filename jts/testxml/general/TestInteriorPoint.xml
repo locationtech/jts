@@ -2,6 +2,12 @@
   <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/>
 
 <case>
+  <desc>P - empty</desc>
+  <a>    POINT EMPTY  </a>
+<test><op name="getInteriorPoint" arg1="A" >    POINT EMPTY   </op></test>
+</case>
+
+<case>
   <desc>P - single point</desc>
   <a>    POINT(10 10)  </a>
 <test><op name="getInteriorPoint" arg1="A" >    POINT(10 10)   </op></test>
