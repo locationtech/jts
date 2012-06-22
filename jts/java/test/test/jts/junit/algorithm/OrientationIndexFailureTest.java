@@ -100,11 +100,23 @@ public class OrientationIndexFailureTest
 
   public void testBadCCW4() throws Exception
   {
-    // this case fails because subtraction of small from large loses precision
+    // from JTS list - 5/15/2012  strange case for the GeometryNoder
     Coordinate[] pts = {
         new Coordinate(-26.2, 188.7),
         new Coordinate(37.0, 290.7),
         new Coordinate(21.2, 265.2)
+    };
+    checkOrientation(pts);
+  }
+
+  public void testBadCCW5() throws Exception
+  {
+    // from JTS list - 6/15/2012  another strange case from Tomas Fa
+    Coordinate[] pts = {
+        new Coordinate(-5.9, 163.1),
+        new Coordinate(76.1, 250.7),
+        new Coordinate(14.6, 185)
+        //new Coordinate(96.6, 272.6)
     };
     checkOrientation(pts);
   }
