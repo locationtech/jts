@@ -1,5 +1,5 @@
 <run>
-  <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/>
+  <!-- <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/> -->
 
 <case>
   <desc>P - empty</desc>
@@ -41,7 +41,7 @@
   <desc>L - elongated horseshoe</desc>
   <a>    LINESTRING (80 0, 80 120, 120 120, 120 0))
 	</a>
-<test><op name="getCentroid" arg1="A" >    POINT (100 69)   </op></test>
+<test><op name="getCentroid" arg1="A" >    POINT (100 68.57142857142857)   </op></test>
 </case>
 
 
@@ -82,7 +82,7 @@
 <case>
   <desc>A - box with hole</desc>
   <a>    POLYGON ((0 200, 200 200, 200 0, 0 0, 0 200), (20 180, 80 180, 80 20, 20 20, 20 180)) </a>
-<test><op name="getCentroid" arg1="A" >    POINT (116 100)   </op></test>
+<test><op name="getCentroid" arg1="A" >    POINT (115.78947368421052 100)  </op></test>
 </case>
 
 <case>
@@ -90,7 +90,7 @@
   <a>    POLYGON ((0 0, 0 200, 200 200, 200 0, 0 0), 
   (60 180, 20 180, 20 140, 60 140, 60 180))
 	 </a>
-<test><op name="getCentroid" arg1="A" >    POINT (103 98)   </op></test>
+<test><op name="getCentroid" arg1="A" >    POINT (102.5 97.5)  </op></test>
 </case>
 
 <case>
@@ -115,7 +115,7 @@
   <a>    GEOMETRYCOLLECTION (POLYGON ((0 200, 20 180, 20 140, 60 140, 200 0, 0 0, 0 200)), 
   POLYGON ((200 200, 0 200, 20 180, 60 180, 60 140, 200 0, 200 200))) 
 	</a>
-<test><op name="getCentroid" arg1="A" >    POINT (103 98)   </op></test>
+<test><op name="getCentroid" arg1="A" >    POINT (102.5 97.5)   </op></test>
 </case>
 
 <case>
@@ -123,7 +123,7 @@
   <a>    GEOMETRYCOLLECTION (LINESTRING (80 0, 80 120, 120 120, 120 0), 
   MULTIPOINT ((20 60), (40 80), (60 60)))
 	</a>
-<test><op name="getCentroid" arg1="A" >    POINT (100 69)   </op></test>
+<test><op name="getCentroid" arg1="A" >    POINT (100 68.57142857142857)   </op></test>
 </case>
 
 <case>
@@ -167,7 +167,18 @@
   <desc>A - empty</desc>
   <a>    POLYGON EMPTY
 	</a>
-<test><op name="getInteriorPoint" arg1="A" >    POINT EMPTY   </op></test>
+<test><op name="getCentroid" arg1="A" >    POINT EMPTY   </op></test>
+</case>
+
+<case>
+  <desc>A - almost degenerate triangle</desc>
+  <a>    POLYGON((
+56.528666666700 25.2101666667,
+56.529000000000 25.2105000000,
+56.528833333300 25.2103333333,
+56.528666666700 25.2101666667))
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (56.52883333335 25.21033333335)  </op></test>
 </case>
 
 

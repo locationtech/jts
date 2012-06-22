@@ -50,6 +50,13 @@
 </case>
 
 <case>
+  <desc>A - empty</desc>
+  <a>    POLYGON EMPTY
+	</a>
+<test><op name="getInteriorPoint" arg1="A" >    POINT EMPTY   </op></test>
+</case>
+
+<case>
   <desc>mA - polygons with holes</desc>
   <a>    MULTIPOLYGON (((60 320, 240 340, 260 100, 20 60, 120 180, 60 320), 
   (200 280, 140 260, 180 160, 240 140, 200 280)), 
