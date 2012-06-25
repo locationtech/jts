@@ -649,8 +649,10 @@ public strictfp final class DD
    */
   public int signum()
   {
-    if (isPositive()) return 1;
-    if (isNegative()) return -1;
+    if (hi > 0) return 1;
+    if (hi < 0) return -1;
+    if (lo > 0) return 1;
+    if (lo < 0) return -1;
     return 0;
   }
   
