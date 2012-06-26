@@ -62,6 +62,8 @@ to avoid creating segment index if all test inputs are points
 <li>In <tt>AbstractSTRtree</tt> switched to using indexed list access for better performance than using iterators
 <li>In <tt>AbstractSTRtree</tt> freed inserted item array after index is built
 <li>Improved performance of <tt>Polygonizer</tt> for cases with many potential holes
+<li>Improved performance for some <tt>DD</tt> methods by making them <tt>final</tt>
+<li>Added fast filter for <tt>CGAlgorithmsDD.orientationIndex</tt>, and switched to self-operations for DD determinant
 </ul>
 
 <h3>Robustness Improvements</h3>
