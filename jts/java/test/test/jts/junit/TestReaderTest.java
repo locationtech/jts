@@ -55,6 +55,7 @@ import com.vividsolutions.jtstest.util.StringUtil;
 /**
  * @version 1.7
  */
+// MD - all tests disabled for now, since input data is missing
 public class TestReaderTest extends TestCase {
 
   public TestReaderTest(String Name_) {
@@ -66,7 +67,12 @@ public class TestReaderTest extends TestCase {
     junit.textui.TestRunner.main(testCaseName);
   }
 
-  public void testWktFile() {
+  public void testDummy()
+  {
+    
+  }
+  
+  public void XtestWktFile() {
     TestReader testReader = new TestReader();
     TestRun testRun = testReader.createTestRun(new File(
         "\\\\pluto\\data\\jts\\testing\\testreader_wktfile.xml"), 0);
@@ -113,7 +119,7 @@ public class TestReaderTest extends TestCase {
     assertEquals(normalize(expectedXML), normalize(xmlTestWriter.getTestXML(new TestRunnerTestCaseAdapter(testCase))));
   }
 
-  public void testWktFileWorkspace() {
+  public void XtestWktFileWorkspace() {
     TestReader testReader = new TestReader();
     TestRun testRun = testReader.createTestRun(new File(
         "\\\\pluto\\data\\jts\\testing\\testReader_wktFileWorkspace.xml"), 0);
@@ -160,7 +166,7 @@ public class TestReaderTest extends TestCase {
     assertEquals(normalize(expectedXML), normalize(xmlTestWriter.getTestXML(new TestRunnerTestCaseAdapter(testCase))));
   }
 
-  public void testWktFileWorkspace2() {
+  public void XtestWktFileWorkspace2() {
     TestReader testReader = new TestReader();
     TestRun testRun = testReader.createTestRun(new File(
         "\\\\pluto\\data\\jts\\testing\\testReader_wktFileWorkspace2.xml"), 0);
@@ -207,7 +213,7 @@ public class TestReaderTest extends TestCase {
     assertEquals(normalize(expectedXML), normalize(xmlTestWriter.getTestXML(new TestRunnerTestCaseAdapter(testCase))));
   }
 
-  public void testGetWorkspaceXML() throws Exception {
+  public void XtestGetWorkspaceXML() throws Exception {
     JTSTestBuilderFrame.instance().openXmlFilesAndDirectories(new File[] {new File(
         "\\\\pluto\\data\\jts\\testing\\testReader_getWorkspaceXML.xml")});
     String expectedXML =
@@ -228,7 +234,7 @@ public class TestReaderTest extends TestCase {
     assertEquals(normalize(expectedXML), normalize(JTSTestBuilderFrame.instance().getRunXml()));
   }
 
-  public void testPrecisionModel_noType_scale() {
+  public void XtestPrecisionModel_noType_scale() {
     TestReader testReader = new TestReader();
     TestRun testRun = testReader.createTestRun(new File(
         "\\\\pluto\\data\\jts\\testing\\precisionModel_noType_scale.xml"), 0);
@@ -237,7 +243,7 @@ public class TestReaderTest extends TestCase {
     assertEquals(1, testRun.getPrecisionModel().getScale(), 1E-15);
   }
 
-  public void testPrecisionModel_noType_noScale() {
+  public void XtestPrecisionModel_noType_noScale() {
     TestReader testReader = new TestReader();
     TestRun testRun = testReader.createTestRun(new File(
         "\\\\pluto\\data\\jts\\testing\\precisionModel_noType_noScale.xml"), 0);
@@ -245,7 +251,7 @@ public class TestReaderTest extends TestCase {
     assertTrue(testReader.getParsingProblems().get(0).toString().indexOf("Missing type attribute in <precisionModel>") > -1);
   }
 
-  public void testPrecisionModel_fixed_scale() {
+  public void XtestPrecisionModel_fixed_scale() {
     TestReader testReader = new TestReader();
     TestRun testRun = testReader.createTestRun(new File(
         "\\\\pluto\\data\\jts\\testing\\precisionModel_fixed_scale.xml"), 0);
@@ -254,7 +260,7 @@ public class TestReaderTest extends TestCase {
     assertEquals(1, testRun.getPrecisionModel().getScale(), 1E-15);
   }
 
-  public void testPrecisionModel_fixed_noScale() {
+  public void XtestPrecisionModel_fixed_noScale() {
     TestReader testReader = new TestReader();
     TestRun testRun = testReader.createTestRun(new File(
         "\\\\pluto\\data\\jts\\testing\\precisionModel_fixed_noScale.xml"), 0);
@@ -262,7 +268,7 @@ public class TestReaderTest extends TestCase {
     assertTrue(testReader.getParsingProblems().get(0).toString().indexOf("Missing scale attribute in <precisionModel>") > -1);
   }
 
-  public void testPrecisionModel_floating_scale() {
+  public void XtestPrecisionModel_floating_scale() {
     TestReader testReader = new TestReader();
     TestRun testRun = testReader.createTestRun(new File(
         "\\\\pluto\\data\\jts\\testing\\precisionModel_floating_scale.xml"), 0);
@@ -270,7 +276,7 @@ public class TestReaderTest extends TestCase {
     assertTrue(testReader.getParsingProblems().get(0).toString().indexOf("scale attribute not allowed in floating <precisionModel>") > -1);
   }
 
-  public void testPrecisionModel_floating_noScale() {
+  public void XtestPrecisionModel_floating_noScale() {
     TestReader testReader = new TestReader();
     TestRun testRun = testReader.createTestRun(new File(
         "\\\\pluto\\data\\jts\\testing\\precisionModel_floating_noScale.xml"), 0);

@@ -31,8 +31,12 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.operation.buffer;
+package test.jts.perf.operation.buffer;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -64,13 +68,19 @@ public class FileBufferResultValidatorTest extends TestCase {
   public void testAfrica() throws Exception 
   {
 //    runTest(TestFiles.DATA_DIR + "world.wkt");
-    runTest(TestFiles.DATA_DIR + "africa.wkt");
+    runTest("../../../../../data/africa.wkt");
   }
   
-  void runTest(String filename)
+  void runTest(String resource) 
   throws Exception
   {
-    WKTFileReader fileRdr = new WKTFileReader(filename, rdr);
+    InputStream is = this.getClass().getResourceAsStream(resource);
+    runTest(new WKTFileReader(new InputStreamReader(is), rdr));
+  }
+
+  void runTest(WKTFileReader fileRdr)
+  throws Exception
+  {
     List polys = fileRdr.read();
     
     runAll(polys, 0.01);

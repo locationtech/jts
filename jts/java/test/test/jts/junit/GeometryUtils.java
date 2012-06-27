@@ -1,6 +1,7 @@
 package test.jts.junit;
 
 import java.io.IOException;
+import java.io.Reader;
 import java.util.*;
 
 import com.vividsolutions.jts.geom.*;
@@ -32,6 +33,14 @@ public class GeometryUtils
   throws IOException, ParseException
   {
     WKTFileReader fileRdr = new WKTFileReader(filename, reader);
+    List geoms = fileRdr.read();
+    return geoms;
+  }
+  
+  public static Collection readWKTFile(Reader rdr) 
+  throws IOException, ParseException
+  {
+    WKTFileReader fileRdr = new WKTFileReader(rdr, reader);
     List geoms = fileRdr.read();
     return geoms;
   }
