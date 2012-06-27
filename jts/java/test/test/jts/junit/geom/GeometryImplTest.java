@@ -71,14 +71,14 @@ public class GeometryImplTest extends TestCase {
     }
     
     public void testEmptyGeometryCentroid() throws Exception {
-        assertNull(reader.read("POINT EMPTY").getCentroid());
-        assertNull(reader.read("POLYGON EMPTY").getCentroid());
-        assertNull(reader.read("LINESTRING EMPTY").getCentroid());
-        assertNull(reader.read("GEOMETRYCOLLECTION EMPTY").getCentroid());
-        assertNull(reader.read("GEOMETRYCOLLECTION(GEOMETRYCOLLECTION EMPTY, GEOMETRYCOLLECTION EMPTY)").getCentroid());
-        assertNull(reader.read("MULTIPOLYGON EMPTY").getCentroid());
-        assertNull(reader.read("MULTILINESTRING EMPTY").getCentroid());
-        assertNull(reader.read("MULTIPOINT EMPTY").getCentroid());
+      assertTrue(reader.read("POINT EMPTY").getCentroid().isEmpty());
+      assertTrue(reader.read("POLYGON EMPTY").getCentroid().isEmpty());
+      assertTrue(reader.read("LINESTRING EMPTY").getCentroid().isEmpty());
+      assertTrue(reader.read("GEOMETRYCOLLECTION EMPTY").getCentroid().isEmpty());
+      assertTrue(reader.read("GEOMETRYCOLLECTION(GEOMETRYCOLLECTION EMPTY, GEOMETRYCOLLECTION EMPTY)").getCentroid().isEmpty());
+      assertTrue(reader.read("MULTIPOLYGON EMPTY").getCentroid().isEmpty());
+      assertTrue(reader.read("MULTILINESTRING EMPTY").getCentroid().isEmpty());
+      assertTrue(reader.read("MULTIPOINT EMPTY").getCentroid().isEmpty());
     }
 
     public void testNoOutgoingDirEdgeFound() throws Exception {
