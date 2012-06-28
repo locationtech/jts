@@ -34,6 +34,8 @@
  */
 package com.vividsolutions.jts.algorithm;
 
+import com.vividsolutions.jts.geom.Coordinate;
+
 /**
  * @version 1.7
  */
@@ -378,5 +380,45 @@ public class RobustDeterminant {
     }
 
   }
+
+   /**
+    * Returns the index of the direction of the point <code>q</code> relative to
+    * a vector specified by <code>p1-p2</code>.
+    * 
+    * @param p1 the origin point of the vector
+    * @param p2 the final point of the vector
+    * @param q the point to compute the direction to
+    * 
+    * @return 1 if q is counter-clockwise (left) from p1-p2
+    * @return -1 if q is clockwise (right) from p1-p2
+    * @return 0 if q is collinear with p1-p2
+    */
+   public static int orientationIndex(Coordinate p1, Coordinate p2, Coordinate q)
+   {
+     /**
+      * MD - 9 Aug 2010 It seems that the basic algorithm is slightly orientation
+      * dependent, when computing the orientation of a point very close to a
+      * line. This is possibly due to the arithmetic in the translation to the
+      * origin.
+      * 
+      * For instance, the following situation produces identical results in spite
+      * of the inverse orientation of the line segment:
+      * 
+      * Coordinate p0 = new Coordinate(219.3649559090992, 140.84159161824724);
+      * Coordinate p1 = new Coordinate(168.9018919682399, -5.713787599646864);
+      * 
+      * Coordinate p = new Coordinate(186.80814046338352, 46.28973405831556); int
+      * orient = orientationIndex(p0, p1, p); int orientInv =
+      * orientationIndex(p1, p0, p);
+      * 
+      * 
+      */
+     
+     double dx1 = p2.x - p1.x;
+     double dy1 = p2.y - p1.y;
+     double dx2 = q.x - p2.x;
+     double dy2 = q.y - p2.y;
+     return signOfDet2x2(dx1, dy1, dx2, dy2);
+   }
 
 }

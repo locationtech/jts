@@ -46,9 +46,6 @@ import com.vividsolutions.jts.algorithm.*;
 public class OrientationIndexFailureTest
     extends TestCase
 {
-
-  private WKTReader reader = new WKTReader();
-
   public static void main(String args[]) {
     TestRunner.run(OrientationIndexFailureTest.class);
   }
@@ -111,7 +108,7 @@ public class OrientationIndexFailureTest
 
   public void testBadCCW5() throws Exception
   {
-    // from JTS list - 6/15/2012  another strange case from Tomas Fa
+    // from JTS list - 6/15/2012  another case from Tomas Fa
     Coordinate[] pts = {
         new Coordinate(-5.9, 163.1),
         new Coordinate(76.1, 250.7),
@@ -121,12 +118,73 @@ public class OrientationIndexFailureTest
     checkOrientation(pts);
   }
 
+  public void testBadCCW7() throws Exception
+  {
+    // from JTS list - 6/26/2012  another case from Tomas Fa
+    Coordinate[] pts = {
+        new Coordinate(-0.9575, 0.4511),
+        new Coordinate(-0.9295, 0.3291),
+        new Coordinate(-0.8945, 0.1766)
+    };
+    checkDD(pts, true);
+    checkShewchuk(pts, false);
+    checkOriginalJTS(pts, false);
+  }
+
+  public void testBadCCW7_2() throws Exception
+  {
+    // from JTS list - 6/26/2012  another case from Tomas Fa
+    // scale to integers - all methods work on this
+    Coordinate[] pts = {
+        new Coordinate(-9575, 4511),
+        new Coordinate(-9295, 3291),
+        new Coordinate(-8945, 1766)
+    };
+    checkDD(pts, true);
+    checkShewchuk(pts, true);
+    checkOriginalJTS(pts, true);
+  }
+
+
+  public void testBadCCW6() throws Exception
+  {
+    // from JTS Convex Hull "Almost collinear" unit test
+    Coordinate[] pts = {
+        new Coordinate(-140.8859438214298, 140.88594382142983),
+        new Coordinate(-57.309236848216706, 57.30923684821671),
+        new Coordinate(-190.9188309203678, 190.91883092036784)
+    };
+    checkOrientation(pts);
+  }
+  
+  /**
+   * Shorthand method for most common case,
+   * where the high-precision methods work but JTS Robust algorithm fails.
+   * @param pts
+   */
   void checkOrientation(Coordinate[] pts)
   {
     // this should succeed
-    assertTrue(isAllOrientationsEqualDD(pts));
+    checkDD(pts, true);
+    checkShewchuk(pts, true);
+    
     // this is expected to fail
-    assertTrue(! OrientationIndexTest.isAllOrientationsEqual(pts));
+    checkOriginalJTS(pts, false);
+  }
+
+  private void checkShewchuk(Coordinate[] pts, boolean expected)
+  {
+    assertTrue("Shewchuk", expected == isAllOrientationsEqualSD(pts));
+  }
+
+  private void checkOriginalJTS(Coordinate[] pts, boolean expected)
+  {
+    assertTrue("JTS Robust FAIL", expected == OrientationIndexTest.isAllOrientationsEqual(pts));
+  }
+
+  private void checkDD(Coordinate[] pts, boolean expected)
+  {
+    assertTrue("DD", expected == isAllOrientationsEqualDD(pts));
   }
   
   public static boolean isAllOrientationsEqual(
@@ -149,6 +207,14 @@ public class OrientationIndexFailureTest
     int orient0 = CGAlgorithmsDD.orientationIndex(pts[0], pts[1], pts[2]);
     int orient1 = CGAlgorithmsDD.orientationIndex(pts[1], pts[2], pts[0]);
     int orient2 = CGAlgorithmsDD.orientationIndex(pts[2], pts[0], pts[1]);
+    return orient0 == orient1 && orient0 == orient2;
+  }
+  
+  public static boolean isAllOrientationsEqualSD(Coordinate[] pts)
+  {
+    int orient0 = ShewchuksDeterminant.orientationIndex(pts[0], pts[1], pts[2]);
+    int orient1 = ShewchuksDeterminant.orientationIndex(pts[1], pts[2], pts[0]);
+    int orient2 = ShewchuksDeterminant.orientationIndex(pts[2], pts[0], pts[1]);
     return orient0 == orient1 && orient0 == orient2;
   }
   

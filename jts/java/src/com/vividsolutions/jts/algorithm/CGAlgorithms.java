@@ -80,12 +80,9 @@ public class CGAlgorithms
    * Returns the index of the direction of the point <code>q</code> relative to
    * a vector specified by <code>p1-p2</code>.
    * 
-   * @param p1
-   *          the origin point of the vector
-   * @param p2
-   *          the final point of the vector
-   * @param q
-   *          the point to compute the direction to
+   * @param p1 the origin point of the vector
+   * @param p2 the final point of the vector
+   * @param q the point to compute the direction to
    * 
    * @return 1 if q is counter-clockwise (left) from p1-p2
    * @return -1 if q is clockwise (right) from p1-p2
@@ -115,17 +112,10 @@ public class CGAlgorithms
      * clear this is an appropriate patch.
      * 
      */
-    /*
-     * // Normalize orientation of vector to provide consistent results // This
-     * produces repeatable results for single cases, but does not fully solve
-     * robustness issues if (p2.x < p1.x || (p2.x == p1.x && p2.y < p1.y))
-     * return -orientationIndex(p2, p1, q); //
-     */
-    double dx1 = p2.x - p1.x;
-    double dy1 = p2.y - p1.y;
-    double dx2 = q.x - p2.x;
-    double dy2 = q.y - p2.y;
-    return RobustDeterminant.signOfDet2x2(dx1, dy1, dx2, dy2);
+    //return ShewchuksDeterminant.orientationIndex(p1, p2, q);
+    return CGAlgorithmsDD.orientationIndex(p1, p2, q);
+    //return RobustDeterminant.orientationIndex(p1, p2, q);
+    
   }
 
   public CGAlgorithms()
