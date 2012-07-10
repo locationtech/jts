@@ -10,15 +10,15 @@ import junit.framework.TestCase;
 /**
  * Tests the {@link LengthIndexedLine} class
  */
-public class LengthIndexedLineTestCase
-    extends AbstractIndexedLineTestCase
+public class LengthIndexedLineTest
+    extends AbstractIndexedLineTest
 {
 
   public static void main(String[] args) {
-      junit.textui.TestRunner.run(LengthIndexedLineTestCase.class);
+      junit.textui.TestRunner.run(LengthIndexedLineTest.class);
   }
 
-  public LengthIndexedLineTestCase(String name) {
+  public LengthIndexedLineTest(String name) {
     super(name);
   }
 
@@ -189,6 +189,18 @@ public class LengthIndexedLineTestCase
     Coordinate pt2 = indexedLine.extractPoint(loc2);
     if (! pt1.equals2D(testPt)) return false;
     if (! pt2.equals2D(testPt)) return false;
+    
+    return true;
+  }
+
+  protected boolean indexOfAfterCheck(Geometry linearGeom, Coordinate testPt, Coordinate checkPt)
+  {
+    LengthIndexedLine indexedLine = new LengthIndexedLine(linearGeom);
+    
+    // check that computed location is after check location
+    double checkLoc = indexedLine.indexOf(checkPt);
+    double testLoc = indexedLine.indexOfAfter(testPt, checkLoc);
+    if (testLoc < checkLoc) return false;
     
     return true;
   }

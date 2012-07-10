@@ -34,33 +34,55 @@
 
 package test.jts.junit;
 
-import com.vividsolutions.jts.triangulate.ConformingDelaunayTest;
-import com.vividsolutions.jts.triangulate.DelaunayTest;
-import com.vividsolutions.jts.triangulate.VoronoiTest;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import test.jts.junit.geom.*;
+import test.jts.junit.algorithm.AngleTest;
+import test.jts.junit.algorithm.ConvexHullTest;
+import test.jts.junit.algorithm.IsCCWTest;
+import test.jts.junit.algorithm.NonRobustLineIntersectorTest;
+import test.jts.junit.algorithm.OrientationIndexTest;
+import test.jts.junit.algorithm.RobustLineIntersectorTest;
+import test.jts.junit.geom.AreaLengthTest;
+import test.jts.junit.geom.BidirectionalComparatorTest;
+import test.jts.junit.geom.CoordinateArraysTest;
+import test.jts.junit.geom.EnvelopeTest;
+import test.jts.junit.geom.GeometryCollectionImplTest;
+import test.jts.junit.geom.GeometryImplTest;
+import test.jts.junit.geom.IntersectionMatrixTest;
+import test.jts.junit.geom.IsRectangleTest;
+import test.jts.junit.geom.LineStringImplTest;
+import test.jts.junit.geom.MultiPointImplTest;
+import test.jts.junit.geom.NormalizeTest;
+import test.jts.junit.geom.PointImplTest;
+import test.jts.junit.geom.PrecisionModelTest;
+import test.jts.junit.geom.PredicateShortCircuitTest;
+import test.jts.junit.geom.RectanglePredicateSyntheticTest;
+import test.jts.junit.geom.RectanglePredicateTest;
 import test.jts.junit.geom.impl.BasicCoordinateSequenceTest;
-import test.jts.junit.algorithm.*;
-import test.jts.junit.linearref.LengthIndexedLineTestCase;
-import test.jts.junit.linearref.LocationIndexedLineTestCase;
-import test.jts.junit.operation.buffer.*;
-import test.jts.junit.operation.distance.DistanceTest;
-import test.jts.junit.operation.linemerge.LineMergerTest;
-import test.jts.junit.operation.polygonize.PolygonizeTest;
-import test.jts.junit.operation.relate.*;
-import test.jts.junit.operation.union.CascadedPolygonUnionTest;
-import test.jts.junit.operation.union.UnaryUnionTest;
-import test.jts.junit.operation.valid.*;
-import test.jts.junit.precision.SimpleGeometryPrecisionReducerTest;
 import test.jts.junit.index.IntervalTest;
 import test.jts.junit.index.QuadtreeTestCase;
 import test.jts.junit.index.SIRtreeTestCase;
 import test.jts.junit.index.STRtreeTestCase;
-import test.jts.junit.io.*;
+import test.jts.junit.io.WKBTest;
+import test.jts.junit.io.WKTReaderTest;
+import test.jts.junit.io.WKTWriterTest;
+import test.jts.junit.linearref.LengthIndexedLineTest;
+import test.jts.junit.linearref.LocationIndexedLineTest;
+import test.jts.junit.operation.buffer.BufferTest;
+import test.jts.junit.operation.distance.DistanceTest;
+import test.jts.junit.operation.linemerge.LineMergerTest;
+import test.jts.junit.operation.polygonize.PolygonizeTest;
+import test.jts.junit.operation.relate.RelateBoundaryNodeRuleTest;
+import test.jts.junit.operation.union.CascadedPolygonUnionTest;
+import test.jts.junit.operation.union.UnaryUnionTest;
+import test.jts.junit.operation.valid.IsValidTest;
+import test.jts.junit.operation.valid.ValidClosedRingTest;
+import test.jts.junit.operation.valid.ValidSelfTouchingRingFormingHoleTest;
+import test.jts.junit.precision.SimpleGeometryPrecisionReducerTest;
+
+import com.vividsolutions.jts.triangulate.ConformingDelaunayTest;
+import com.vividsolutions.jts.triangulate.DelaunayTest;
 /**
  * A collection of all the tests.
  *
@@ -94,10 +116,10 @@ public class MasterTester extends TestCase {
     result.addTest(new TestSuite(IsCCWTest.class));
     result.addTest(new TestSuite(IsRectangleTest.class));
     result.addTest(new TestSuite(IsValidTest.class));
-    result.addTest(new TestSuite(LengthIndexedLineTestCase.class));
+    result.addTest(new TestSuite(LengthIndexedLineTest.class));
     result.addTest(new TestSuite(LineMergerTest.class));
     result.addTest(new TestSuite(LineStringImplTest.class));
-    result.addTest(new TestSuite(LocationIndexedLineTestCase.class));
+    result.addTest(new TestSuite(LocationIndexedLineTest.class));
     result.addTest(new TestSuite(MiscellaneousTest.class));
     result.addTest(new TestSuite(MiscellaneousTest2.class));
     result.addTest(new TestSuite(MultiPointImplTest.class));

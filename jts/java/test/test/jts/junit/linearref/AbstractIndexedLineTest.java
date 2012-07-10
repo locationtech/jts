@@ -9,12 +9,18 @@ import junit.framework.TestCase;
 /**
  * Tests the {@link LocationIndexedLine} class
  */
-public abstract class AbstractIndexedLineTestCase extends TestCase {
+public abstract class AbstractIndexedLineTest extends TestCase {
 
   private WKTReader reader = new WKTReader();
 
-  public AbstractIndexedLineTestCase(String name) {
+  public AbstractIndexedLineTest(String name) {
     super(name);
+  }
+
+  public void testFirst()
+  {
+    runIndexOfAfterTest("LINESTRING (0 0, 0 60, 50 60, 50 20, -20 20)", 
+        "POINT (-30 20)", "POINT (-20 20)");
   }
 
   public void testML()
@@ -92,8 +98,16 @@ public abstract class AbstractIndexedLineTestCase extends TestCase {
   
   public void testIndexOfAfterRibbon()
   {
-  	runIndexOfAfterTest("LINESTRING (0 0, 0 60, 50 60, 50 20, -20 20)", 
-  			"POINT (0 20)");
+    runIndexOfAfterTest("LINESTRING (0 0, 0 60, 50 60, 50 20, -20 20)", 
+    "POINT (0 20)");
+    runIndexOfAfterTest("LINESTRING (0 0, 0 60, 50 60, 50 20, -20 20)", 
+        "POINT (0 20)", "POINT (30 60)");
+  }
+  
+  public void testIndexOfAfterBeyondEndRibbon()
+  {
+    runIndexOfAfterTest("LINESTRING (0 0, 0 60, 50 60, 50 20, -20 20)", 
+        "POINT (-30 20)", "POINT (-20 20)");
   }
   
   public void testOffsetStartPoint()
@@ -167,7 +181,32 @@ public abstract class AbstractIndexedLineTestCase extends TestCase {
       assertTrue(resultOK);
     }
   
+  protected void runIndexOfAfterTest(String inputStr,
+      String testPtWKT, String afterPtWKT)
+//        throws Exception
+    {
+      Geometry input = read(inputStr);
+      Geometry testPoint = read(testPtWKT);
+      Coordinate testPt = testPoint.getCoordinate();
+      Geometry afterPoint = read(afterPtWKT);
+      Coordinate afterPt = afterPoint.getCoordinate();
+      boolean resultOK = indexOfAfterCheck(input, testPt, afterPt);
+      assertTrue(resultOK);
+    }
+  
+  /**
+   * Checks that the point computed by <tt>indexOfAfter</tt>
+   * is the same as the input point.
+   * (This should be the case for all except pathological cases, 
+   * such as the input test point being beyond the end of the line). 
+   * 
+   * @param input
+   * @param testPt
+   * @return true if the result of indexOfAfter is the same as the input point
+   */
   protected abstract boolean indexOfAfterCheck(Geometry input, Coordinate testPt);
+  
+  protected abstract boolean indexOfAfterCheck(Geometry input, Coordinate testPt, Coordinate afterPt);
 
   static final double TOLERANCE_DIST = 0.001;
   
