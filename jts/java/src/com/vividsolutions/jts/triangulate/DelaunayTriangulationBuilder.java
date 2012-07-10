@@ -65,7 +65,7 @@ public class DelaunayTriangulationBuilder
 	{
 	  Coordinate[] coordsCopy = CoordinateArrays.copyDeep(coords);
 		Arrays.sort(coordsCopy);
-		CoordinateList coordList = new CoordinateList(coords, false);
+		CoordinateList coordList = new CoordinateList(coordsCopy, false);
 		return coordList;
 	}
 	

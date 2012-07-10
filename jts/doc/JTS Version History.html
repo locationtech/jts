@@ -102,6 +102,7 @@ for closed <tt>LineString</tt>s with large distance tolerances
 <li>Fixd <tt>GeometryPrecisionReducer</tt> to use input GeometryFactory when polygon topology is fixed
 <li>Fixed <tt>GeometryNoder</tt> bug that was failing to snap to end vertices of lines
 <li>Fixed <tt>Geometry.getCentroid()</tt> and <tt>Geometry.getInteriorPoint()</tt> to return <tt>POINT EMPTY</tt> for empty inputs
+<li>Fixed <tt>DelaunayTriangulationBuilder</tt> to correctly extract unique points
 </ul>
 
 <h3>API Changes</h3>
