@@ -123,9 +123,25 @@ public class KdTree
 		boolean isOddLevel = true;
 		boolean isLessThan = true;
 
-		// traverse the tree first cutting the plane left-right the top-bottom
+		/**
+		 * Traverse the tree,
+		 * first cutting the plane left-right (by X ordinate)
+		 * then top-bottom (by Y ordinate)
+		 */
 		while (currentNode != last) {
-			if (isOddLevel) {
+      // test if point is already a node
+      if (currentNode != null) {
+        boolean isInTolerance = p.distance(currentNode.getCoordinate()) <= tolerance;
+
+        // check if point is already in tree (up to tolerance) and if so simply
+        // return existing node
+        if (isInTolerance) {
+          currentNode.increment();
+          return currentNode;
+        }
+      }
+
+      if (isOddLevel) {
 				isLessThan = p.x < currentNode.getX();
 			} else {
 				isLessThan = p.y < currentNode.getY();
@@ -136,23 +152,7 @@ public class KdTree
 			} else {
 				currentNode = currentNode.getRight();
 			}
-			// test if point is already a node
-			if (currentNode != null) {
-				boolean isInTolerance = p.distance(currentNode.getCoordinate()) <= tolerance;
-
-				// if (isInTolerance && ! p.equals2D(currentNode.getCoordinate())) {
-				// System.out.println("KDTree: Snapped!");
-				// System.out.println(WKTWriter.toPoint(p));
-				// }
-
-				// check if point is already in tree (up to tolerance) and if so simply
-				// return
-				// existing node
-				if (isInTolerance) {
-					currentNode.increment();
-					return currentNode;
-				}
-			}
+			
 			isOddLevel = !isOddLevel;
 		}
 

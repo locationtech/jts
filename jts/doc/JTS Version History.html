@@ -103,6 +103,7 @@ for closed <tt>LineString</tt>s with large distance tolerances
 <li>Fixed <tt>GeometryNoder</tt> bug that was failing to snap to end vertices of lines
 <li>Fixed <tt>Geometry.getCentroid()</tt> and <tt>Geometry.getInteriorPoint()</tt> to return <tt>POINT EMPTY</tt> for empty inputs
 <li>Fixed <tt>DelaunayTriangulationBuilder</tt> to correctly extract unique points
+<li>Fixed <tt>KdTree</tt> to correctly handle inserting duplicate points into an empty tree
 </ul>
 
 <h3>API Changes</h3>
