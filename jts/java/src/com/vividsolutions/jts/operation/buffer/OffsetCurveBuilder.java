@@ -32,10 +32,11 @@
  */
 package com.vividsolutions.jts.operation.buffer;
 
-import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geomgraph.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateArrays;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.geomgraph.Position;
 
 /**
  * Computes the raw offset curve for a

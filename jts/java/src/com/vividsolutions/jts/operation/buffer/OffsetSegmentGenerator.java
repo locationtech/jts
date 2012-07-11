@@ -42,12 +42,13 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geomgraph.Position;
+import com.vividsolutions.jts.util.Debug;
 
 /**
  * Generates segments which form an offset curve.
  * Supports all end cap and join options 
  * provided for buffering.
- * Implements various heuristics to 
+ * This algorithm implements various heuristics to 
  * produce smoother, simpler curves which are
  * still within a reasonable tolerance of the 
  * true curve.
@@ -147,8 +148,8 @@ class OffsetSegmentGenerator
    * (relative to the offset distance).
    * In this case the generated offset curve will contain self-intersections
    * and heuristic closing segments.
-   * This is expected behaviour in the case of buffer curves. 
-   * For pure offset curves,
+   * This is expected behaviour in the case of Buffer curves. 
+   * For pure Offset Curves,
    * the output needs to be further treated 
    * before it can be used. 
    * 
@@ -183,7 +184,8 @@ class OffsetSegmentGenerator
 
   public Coordinate[] getCoordinates()
   {
-    return segList.getCoordinates();
+    Coordinate[] pts = segList.getCoordinates();
+    return pts;
   }
   
   public void closeRing()
