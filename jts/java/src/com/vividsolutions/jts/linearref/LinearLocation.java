@@ -170,9 +170,9 @@ public class LinearLocation
 
   /**
    * Sets the value of this location to
-   * refer the end of a linear geometry
+   * refer to the end of a linear geometry.
    *
-   * @param linear the linear geometry to set
+   * @param linear the linear geometry to use to set the end
    */
   public void setToEnd(Geometry linear)
   {
