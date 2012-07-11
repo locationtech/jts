@@ -345,9 +345,13 @@ public class LineSegment
         */
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;
-    double len2 = dx * dx + dy * dy;
+    double len = dx * dx + dy * dy;
+    
+    // handle zero-length segments
+    if (len <= 0.0) return Double.POSITIVE_INFINITY;
+    
     double r = ( (p.x - p0.x) * dx + (p.y - p0.y) * dy )
-              / len2;
+              / len;
     return r;
   }
 

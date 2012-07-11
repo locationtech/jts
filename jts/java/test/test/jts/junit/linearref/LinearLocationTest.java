@@ -25,6 +25,22 @@ public class LinearLocationTest
 
   public LinearLocationTest(String name) { super(name); }
 
+  public void testZeroLengthLineString() throws Exception
+  {
+    Geometry line = reader.read("LINESTRING (10 0, 10 0)");
+    LocationIndexedLine indexedLine = new LocationIndexedLine(line);
+    LinearLocation loc0 = indexedLine.indexOf(new Coordinate(11, 0));
+    assertTrue(loc0.compareTo(new LinearLocation(1, 0.0)) == 0);
+  }
+  
+  public void testRepeatedCoordsLineString() throws Exception
+  {
+    Geometry line = reader.read("LINESTRING (10 0, 10 0, 20 0)");
+    LocationIndexedLine indexedLine = new LocationIndexedLine(line);
+    LinearLocation loc0 = indexedLine.indexOf(new Coordinate(11, 0));
+    assertTrue(loc0.compareTo(new LinearLocation(1, 0.1)) == 0);
+  }
+  
   public void testSameSegmentLineString() throws Exception
   {
     Geometry line = reader.read("LINESTRING (0 0, 10 0, 20 0, 30 0)");

@@ -56,6 +56,17 @@ public class LineSegmentTest extends TestCase {
 
   private static double ROOT2 = Math.sqrt(2);
   
+  public void testProjectionFactor()
+  {
+    // zero-length line
+    LineSegment seg = new LineSegment(10, 0, 10, 0);
+    assertTrue(seg.projectionFactor(new Coordinate(11, 0)) == Double.POSITIVE_INFINITY);
+    
+    LineSegment seg2 = new LineSegment(10, 0, 20, 0);
+    assertTrue(seg2.projectionFactor(new Coordinate(11, 0)) == 0.1);
+    
+  }
+  
   public void testOffset() throws Exception
   {
     checkOffset(0, 0, 10, 10, 0.0, ROOT2, -1, 1);
