@@ -191,6 +191,10 @@ public class SegmentNodeList
     while (it.hasNext()) {
       SegmentNode ei = (SegmentNode) it.next();
       SegmentString newEdge = createSplitEdge(eiPrev, ei);
+      /*
+      if (newEdge.size() < 2)
+        throw new RuntimeException("created single point edge: " + newEdge.toString());
+      */
       edgeList.add(newEdge);
       eiPrev = ei;
     }
