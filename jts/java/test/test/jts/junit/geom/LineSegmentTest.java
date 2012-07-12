@@ -60,7 +60,7 @@ public class LineSegmentTest extends TestCase {
   {
     // zero-length line
     LineSegment seg = new LineSegment(10, 0, 10, 0);
-    assertTrue(seg.projectionFactor(new Coordinate(11, 0)) == Double.POSITIVE_INFINITY);
+    assertTrue(Double.isNaN(seg.projectionFactor(new Coordinate(11, 0))));
     
     LineSegment seg2 = new LineSegment(10, 0, 20, 0);
     assertTrue(seg2.projectionFactor(new Coordinate(11, 0)) == 0.1);

@@ -323,7 +323,8 @@ public class LineSegment
    * equal the vector for the projection of <tt>p<//t> on the line
    * defined by this segment.
    * <p>
-   * The projection factor returned will be in the range <tt>(-inf, +inf)</tt>.
+   * The projection factor will lie in the range <tt>(-inf, +inf)</tt>,
+   * or be <code>NaN</code> if the line segment has zero length..
    * 
    * @param p the point to compute the factor for
    * @return the projection factor for the point
@@ -348,7 +349,7 @@ public class LineSegment
     double len = dx * dx + dy * dy;
     
     // handle zero-length segments
-    if (len <= 0.0) return Double.POSITIVE_INFINITY;
+    if (len <= 0.0) return Double.NaN;
     
     double r = ( (p.x - p0.x) * dx + (p.y - p0.y) * dy )
               / len;
@@ -363,6 +364,7 @@ public class LineSegment
    * <p>
    * Essentially, this is the {@link #projectionFactor} clamped to 
    * the range <tt>[0.0, 1.0]</tt>.
+   * If the segment has zero length, 1.0 is returned.
    *  
    * @param inputPt the point
    * @return the fraction along the line segment the projection of the point occurs
@@ -373,7 +375,7 @@ public class LineSegment
     double segFrac = projectionFactor(inputPt);
     if (segFrac < 0.0)
       segFrac = 0.0;
-    else if (segFrac > 1.0)
+    else if (segFrac > 1.0 || Double.isNaN(segFrac))
       segFrac = 1.0;
     return segFrac;
   }
