@@ -106,6 +106,7 @@ for closed <tt>LineString</tt>s with large distance tolerances
 <li>Fixed <tt>KdTree</tt> to correctly handle inserting duplicate points into an empty tree
 <li>Fixed <tt>LineSegment.projectionFactor()</tt> to handle zero-length lines (by returning Double.POSITIVE_INFINITY)
 <li>Fixed <tt>LocationIndexedLine</tt> to handle locations on zero-length lines
+<li>Fixed <code>WKBReader</code> to handle successive geometrys with different endianness
 </ul>
 
 <h3>API Changes</h3>

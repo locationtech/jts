@@ -149,11 +149,11 @@ public class WKBReader
   throws IOException, ParseException
   {
     // determine byte order
-    byte byteOrder = dis.readByte();
-    // default is big endian
-    if (byteOrder == WKBConstants.wkbNDR)
-      dis.setOrder(ByteOrderValues.LITTLE_ENDIAN);
-
+    byte byteOrderWKB = dis.readByte();
+    // always set byte order, since it may change from geometry to geometry
+    int byteOrder = byteOrderWKB == WKBConstants.wkbNDR ? ByteOrderValues.LITTLE_ENDIAN : ByteOrderValues.BIG_ENDIAN;
+    dis.setOrder(byteOrder);
+    
     int typeInt = dis.readInt();
     int geometryType = typeInt & 0xff;
     // determine if Z values are present

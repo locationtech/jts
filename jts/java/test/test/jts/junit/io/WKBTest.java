@@ -185,6 +185,11 @@ public class WKBTest
   static CoordinateSequenceComparator comp2 = new CoordinateSequenceComparator(2);
   static CoordinateSequenceComparator comp3 = new CoordinateSequenceComparator(3);
 
+  /**
+   * Use single WKB reader, to ensure it can be used for multiple input geometries
+   */
+  WKBReader wkbReader = new WKBReader(geomFactory);
+
   void runGeometry(Geometry g, int dimension, int byteOrder, boolean toHex, int srid)
       throws IOException, ParseException
   {
@@ -200,7 +205,6 @@ public class WKBTest
     if (toHex)
       wkbHex = WKBWriter.toHex(wkb);
 
-    WKBReader wkbReader = new WKBReader(geomFactory);
     if (toHex)
       wkb = WKBReader.hexToBytes(wkbHex);
     Geometry g2 = wkbReader.read(wkb);
