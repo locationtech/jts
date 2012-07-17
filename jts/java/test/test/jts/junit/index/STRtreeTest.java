@@ -58,15 +58,15 @@ import com.vividsolutions.jtstest.util.SerializationUtil;
 /**
  * @version 1.7
  */
-public class STRtreeTestCase extends TestCase {
+public class STRtreeTest extends TestCase {
   private GeometryFactory factory = new GeometryFactory();
 
-  public STRtreeTestCase(String Name_) {
+  public STRtreeTest(String Name_) {
     super(Name_);
   }
 
   public static void main(String[] args) {
-    String[] testCaseName = {STRtreeTestCase.class.getName()};
+    String[] testCaseName = {STRtreeTest.class.getName()};
     junit.textui.TestRunner.main(testCaseName);
   }
 

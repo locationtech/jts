@@ -43,14 +43,14 @@ import com.vividsolutions.jtstest.util.SerializationUtil;
 /**
  * @version 1.7
  */
-public class QuadtreeTestCase extends TestCase {
+public class QuadtreeTest extends TestCase {
 
-  public QuadtreeTestCase(String Name_) {
+  public QuadtreeTest(String Name_) {
     super(Name_);
   }
 
   public static void main(String[] args) {
-    String[] testCaseName = {QuadtreeTestCase.class.getName()};
+    String[] testCaseName = {QuadtreeTest.class.getName()};
     junit.textui.TestRunner.main(testCaseName);
   }
 

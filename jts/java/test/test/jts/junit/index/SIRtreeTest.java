@@ -43,13 +43,13 @@ import com.vividsolutions.jts.index.strtree.SIRtree;
 /**
  * @version 1.7
  */
-public class SIRtreeTestCase extends TestCase {
-  public SIRtreeTestCase(String Name_) {
+public class SIRtreeTest extends TestCase {
+  public SIRtreeTest(String Name_) {
     super(Name_);
   }
 
   public static void main(String[] args) {
-    String[] testCaseName = {SIRtreeTestCase.class.getName()};
+    String[] testCaseName = {SIRtreeTest.class.getName()};
     junit.textui.TestRunner.main(testCaseName);
   }
 
