@@ -62,6 +62,28 @@ public class STRtree extends AbstractSTRtree
 implements SpatialIndex, Serializable 
 {
 
+  private static final class STRtreeNode extends AbstractNode
+  {
+    private STRtreeNode(int level)
+    {
+      super(level);
+    }
+
+    protected Object computeBounds() {
+      Envelope bounds = null;
+      for (Iterator i = getChildBoundables().iterator(); i.hasNext(); ) {
+        Boundable childBoundable = (Boundable) i.next();
+        if (bounds == null) {
+          bounds = new Envelope((Envelope)childBoundable.getBounds());
+        }
+        else {
+          bounds.expandToInclude((Envelope)childBoundable.getBounds());
+        }
+      }
+      return bounds;
+    }
+  }
+
   /**
    * 
    */
@@ -172,21 +194,7 @@ implements SpatialIndex, Serializable
   }
 
   protected AbstractNode createNode(int level) {
-    return new AbstractNode(level) {
-      protected Object computeBounds() {
-        Envelope bounds = null;
-        for (Iterator i = getChildBoundables().iterator(); i.hasNext(); ) {
-          Boundable childBoundable = (Boundable) i.next();
-          if (bounds == null) {
-            bounds = new Envelope((Envelope)childBoundable.getBounds());
-          }
-          else {
-            bounds.expandToInclude((Envelope)childBoundable.getBounds());
-          }
-        }
-        return bounds;
-      }
-    };
+    return new STRtreeNode(level);
   }
 
   protected IntersectsOp getIntersectsOp() {
