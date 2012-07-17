@@ -59,7 +59,7 @@ public class Root
    */
   public void insert(Envelope itemEnv, Object item)
   {
-    int index = getSubnodeIndex(itemEnv, origin);
+    int index = getSubnodeIndex(itemEnv, origin.x, origin.y);
     // if index is -1, itemEnv must cross the X or Y axis.
     if (index == -1) {
       add(item);

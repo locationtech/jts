@@ -34,11 +34,12 @@
 package com.vividsolutions.jts.index.quadtree;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.index.*;
+import com.vividsolutions.jts.index.ItemVisitor;
 
 /**
  * The base class for nodes in a {@link Quadtree}.
@@ -56,16 +57,16 @@ public abstract class NodeBase implements Serializable {
    * @return the index of the subquad that wholly contains the given envelope
    * @return -1 if no subquad wholly contains the envelope
    */
-  public static int getSubnodeIndex(Envelope env, Coordinate centre)
+  public static int getSubnodeIndex(Envelope env, double centrex, double centrey)
   {
     int subnodeIndex = -1;
-    if (env.getMinX() >= centre.x) {
-      if (env.getMinY() >= centre.y) subnodeIndex = 3;
-      if (env.getMaxY() <= centre.y) subnodeIndex = 1;
+    if (env.getMinX() >= centrex) {
+      if (env.getMinY() >= centrey) subnodeIndex = 3;
+      if (env.getMaxY() <= centrey) subnodeIndex = 1;
     }
-    if (env.getMaxX() <= centre.x) {
-      if (env.getMinY() >= centre.y) subnodeIndex = 2;
-      if (env.getMaxY() <= centre.y) subnodeIndex = 0;
+    if (env.getMaxX() <= centrex) {
+      if (env.getMinY() >= centrey) subnodeIndex = 2;
+      if (env.getMaxY() <= centrey) subnodeIndex = 0;
     }
     return subnodeIndex;
   }

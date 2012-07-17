@@ -33,7 +33,6 @@
  */
 package com.vividsolutions.jts.index.quadtree;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.util.Assert;
 
@@ -65,7 +64,8 @@ public class Node
   }
 
   private Envelope env;
-  private Coordinate centre;
+  private double centrex;
+  private double centrey;
   private int level;
 
   public Node(Envelope env, int level)
@@ -73,9 +73,8 @@ public class Node
     //this.parent = parent;
     this.env = env;
     this.level = level;
-    centre = new Coordinate();
-    centre.x = (env.getMinX() + env.getMaxX()) / 2;
-    centre.y = (env.getMinY() + env.getMaxY()) / 2;
+    centrex = (env.getMinX() + env.getMaxX()) / 2;
+    centrey = (env.getMinY() + env.getMaxY()) / 2;
   }
 
   public Envelope getEnvelope() { return env; }
@@ -94,7 +93,7 @@ public class Node
    */
   public Node getNode(Envelope searchEnv)
   {
-    int subnodeIndex = getSubnodeIndex(searchEnv, centre);
+    int subnodeIndex = getSubnodeIndex(searchEnv, centrex, centrey);
     // if subquadIndex is -1 searchEnv is not contained in a subquad
     if (subnodeIndex != -1) {
       // create the quad if it does not exist
@@ -113,7 +112,7 @@ public class Node
    */
   public NodeBase find(Envelope searchEnv)
   {
-    int subnodeIndex = getSubnodeIndex(searchEnv, centre);
+    int subnodeIndex = getSubnodeIndex(searchEnv, centrex, centrey);
     if (subnodeIndex == -1)
       return this;
     if (subnode[subnodeIndex] != null) {
@@ -130,7 +129,7 @@ public class Node
     Assert.isTrue(env == null || env.contains(node.env));
 //System.out.println(env);
 //System.out.println(quad.env);
-    int index = getSubnodeIndex(node.env, centre);
+    int index = getSubnodeIndex(node.env, centrex, centrey);
 //System.out.println(index);
     if (node.level == level - 1) {
       subnode[index] = node;
@@ -169,26 +168,26 @@ public class Node
       switch (index) {
       case 0:
         minx = env.getMinX();
-        maxx = centre.x;
+        maxx = centrex;
         miny = env.getMinY();
-        maxy = centre.y;
+        maxy = centrey;
         break;
       case 1:
-        minx = centre.x;
+        minx = centrex;
         maxx = env.getMaxX();
         miny = env.getMinY();
-        maxy = centre.y;
+        maxy = centrey;
         break;
       case 2:
         minx = env.getMinX();
-        maxx = centre.x;
-        miny = centre.y;
+        maxx = centrex;
+        miny = centrey;
         maxy = env.getMaxY();
         break;
       case 3:
-        minx = centre.x;
+        minx = centrex;
         maxx = env.getMaxX();
-        miny = centre.y;
+        miny = centrey;
         maxy = env.getMaxY();
         break;
       }
