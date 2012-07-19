@@ -295,6 +295,16 @@ public abstract class PackedCoordinateSequence
     }
 
     /**
+     * Gets the underlying array containing the coordinate values.
+     * 
+     * @return the array of coordinate values
+     */
+    public double[] getRawCoordinates()
+    {
+      return coords;
+    }
+    
+    /**
      * @see com.vividsolutions.jts.geom.CoordinateSequence#size()
      */
     public int size() {
@@ -420,6 +430,16 @@ public abstract class PackedCoordinateSequence
       return new Coordinate(x, y, z);
     }
 
+    /**
+     * Gets the underlying array containing the coordinate values.
+     * 
+     * @return the array of coordinate values
+     */
+    public float[] getRawCoordinates()
+    {
+      return coords;
+    }
+    
     /**
      * @see com.vividsolutions.jts.geom.CoordinateSequence#size()
      */
