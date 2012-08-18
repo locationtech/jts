@@ -25,12 +25,12 @@ public class PerformanceTestRunner
     runner.runInternal(clz);
   }
 
-  PerformanceTestRunner()
+  private PerformanceTestRunner()
   {
     
   }
   
-  public void runInternal(Class clz)
+  private void runInternal(Class clz)
   {
     try {
       Constructor ctor = clz.getConstructor(String.class);

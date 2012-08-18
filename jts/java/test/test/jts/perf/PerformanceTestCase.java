@@ -4,11 +4,12 @@ package test.jts.perf;
  * A base class for classes implementing performance tests
  * to be run by the {@link PerformanceTestRunner}.
  * <p>
- * All public methods in a class which start with "run" are 
+ * In a subclass of this class,
+ * all public methods which start with <code>run</code> are 
  * executed as performance tests.
  * <p>
  * Multiple test runs with different run sizes may be made.
- * Within each run, each run method is executed 
+ * Within each run, each <code>run</code> method is executed 
  * the specified number of iterations.
  * The time to run the method is printed for each one.
  * 
@@ -31,6 +32,11 @@ public abstract class PerformanceTestCase
     return name;
   }
   
+  /**
+   * Sets the size(s) for the runs of the test.
+   * 
+   * @param runSize a list of the sizes for the test runs
+   */
   protected void setRunSize(int[] runSize)
   {
     this.runSize = runSize;
@@ -41,6 +47,11 @@ public abstract class PerformanceTestCase
     return runSize;
   }
   
+  /**
+   * Sets the number of iterations to execute the test methods in each test run.
+   * 
+   * @param runIter the number of iterations to execute.
+   */
   protected void setRunIterations(int runIter)
   {
     this.runIter = runIter;

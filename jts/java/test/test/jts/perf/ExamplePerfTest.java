@@ -1,5 +1,11 @@
 package test.jts.perf;
 
+/**
+ * An example of the usage of the {@PerformanceTestRunner}.
+ * 
+ * @author Martin Davis
+ *
+ */
 public class ExamplePerfTest
 extends PerformanceTestCase
 {
