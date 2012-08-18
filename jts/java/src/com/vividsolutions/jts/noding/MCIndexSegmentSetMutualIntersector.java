@@ -50,7 +50,6 @@ import com.vividsolutions.jts.noding.SegmentString;
 public class MCIndexSegmentSetMutualIntersector
     extends SegmentSetMutualIntersector
 {
-  private List monoChains = new ArrayList();
   /*
   * The {@link SpatialIndex} used should be something that supports
   * envelope (range) queries efficiently (such as a {@link Quadtree}
@@ -65,8 +64,6 @@ public class MCIndexSegmentSetMutualIntersector
   public MCIndexSegmentSetMutualIntersector()
   {
   }
-
-  public List getMonotoneChains() { return monoChains; }
 
   public SpatialIndex getIndex() { return index; }
 
@@ -92,16 +89,16 @@ public class MCIndexSegmentSetMutualIntersector
   {
   	processCounter = indexCounter + 1;
   	nOverlaps = 0;
-  	monoChains.clear();
+  	List monoChains = new ArrayList();
     for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
-      addToMonoChains((SegmentString) i.next());
+      addToMonoChains((SegmentString) i.next(), monoChains);
     }
-    intersectChains();
+    intersectChains(monoChains);
 //    System.out.println("MCIndexBichromaticIntersector: # chain overlaps = " + nOverlaps);
 //    System.out.println("MCIndexBichromaticIntersector: # oct chain overlaps = " + nOctOverlaps);
   }
 
-  private void intersectChains()
+  private void intersectChains(List monoChains)
   {
     MonotoneChainOverlapAction overlapAction = new SegmentOverlapAction(segInt);
 
@@ -117,7 +114,7 @@ public class MCIndexSegmentSetMutualIntersector
     }
   }
 
-  private void addToMonoChains(SegmentString segStr)
+  private void addToMonoChains(SegmentString segStr, List monoChains)
   {
     List segChains = MonotoneChainBuilder.getChains(segStr.getCoordinates(), segStr);
     for (Iterator i = segChains.iterator(); i.hasNext(); ) {

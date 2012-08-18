@@ -46,6 +46,10 @@ import com.vividsolutions.jts.geom.*;
  * and delegate others. 
  * See the implementing classes for documentation about which methods and situations
  * they optimize.
+ * <p>
+ * Subclasses are intended to be thread-safe, to allow <code>PreparedGeometry</code>
+ * to be used in a multi-threaded context 
+ * (which allows extracting maximum benefit from the prepared state).
  * 
  * @author Martin Davis
  *
