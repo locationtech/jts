@@ -336,4 +336,17 @@ abstract public class EdgeEndStar
       e.print(out);
     }
   }
+  
+  public String toString()
+  {
+    StringBuffer buf = new StringBuffer();
+    buf.append("EdgeEndStar:   " + getCoordinate());
+    buf.append("\n");
+    for (Iterator it = iterator(); it.hasNext(); ) {
+      EdgeEnd e = (EdgeEnd) it.next();
+      buf.append(e);
+      buf.append("\n");
+    }
+    return buf.toString();
+  }
 }

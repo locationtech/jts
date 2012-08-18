@@ -100,4 +100,8 @@ public class EdgeIntersection
     out.print(" seg # = " + segmentIndex);
     out.println(" dist = " + dist);
   }
+  public String toString()
+  {
+    return coord + " seg # = " + segmentIndex + " dist = " + dist;
+  }
 }

@@ -139,4 +139,12 @@ public class EdgeEnd
     String name = className.substring(lastDotPos + 1);
     out.print("  " + name + ": " + p0 + " - " + p1 + " " + quadrant + ":" + angle + "   " + label);
   }
+  public String toString()
+  {
+    double angle = Math.atan2(dy, dx);
+    String className = getClass().getName();
+    int lastDotPos = className.lastIndexOf('.');
+    String name = className.substring(lastDotPos + 1);
+    return "  " + name + ": " + p0 + " - " + p1 + " " + quadrant + ":" + angle + "   " + label;
+  }
 }

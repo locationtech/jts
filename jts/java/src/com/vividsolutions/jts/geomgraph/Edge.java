@@ -257,6 +257,18 @@ public class Edge
     return true;
   }
 
+  public String toString()
+  {
+    StringBuffer buf = new StringBuffer();
+    buf.append("edge " + name + ": ");
+    buf.append("LINESTRING (");
+    for (int i = 0; i < pts.length; i++) {
+      if (i > 0) buf.append(",");
+      buf.append(pts[i].x + " " + pts[i].y);
+    }
+    buf.append(")  " + label + " " + depthDelta);
+    return buf.toString();
+  }
   public void print(PrintStream out)
   {
     out.print("edge " + name + ": ");
