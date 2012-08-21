@@ -312,8 +312,9 @@ public class CGAlgorithms
      * forward extension of AB 0<r<1 P is interior to AB
      */
 
+    double len2 = (B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y);
     double r = ((p.x - A.x) * (B.x - A.x) + (p.y - A.y) * (B.y - A.y))
-        / ((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y));
+        / len2;
 
     if (r <= 0.0)
       return p.distance(A);
@@ -324,13 +325,13 @@ public class CGAlgorithms
      * (2) (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay) s = ----------------------------- L^2
      * 
      * Then the distance from C to P = |s|*L.
+     * 
+     * This is the same calculation as {@link #distancePointLinePerpendicular}.
+     * Unrolled here for performance.
      */
-
     double s = ((A.y - p.y) * (B.x - A.x) - (A.x - p.x) * (B.y - A.y))
-        / ((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y));
-
-    return Math.abs(s)
-        * Math.sqrt(((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y)));
+        / len2;
+    return Math.abs(s) * Math.sqrt(len2);
   }
 
   /**
@@ -354,12 +355,11 @@ public class CGAlgorithms
      * 
      * Then the distance from C to P = |s|*L.
      */
-
+    double len2 = (B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y);
     double s = ((A.y - p.y) * (B.x - A.x) - (A.x - p.x) * (B.y - A.y))
-        / ((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y));
+        / len2;
 
-    return Math.abs(s)
-        * Math.sqrt(((B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y)));
+    return Math.abs(s) * Math.sqrt(len2);
   }
 
   /**
