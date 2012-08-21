@@ -1,6 +1,3 @@
-
-
-
 /*
  * The JTS Topology Suite is a collection of Java classes that
  * implement the fundamental operations required to validate a given
@@ -43,13 +40,30 @@ import com.vividsolutions.jts.util.*;
 import com.vividsolutions.jts.io.WKTWriter;
 
 /**
- * A LineIntersector is an algorithm that can both test whether
- * two line segments intersect and compute the intersection point
+ * A <code>LineIntersector</code> is an algorithm that can both test whether
+ * two line segments intersect and compute the intersection point(s)
  * if they do.
- * The intersection point may be computed in a precise or non-precise manner.
- * Computing it precisely involves rounding it to an integer.  (This assumes
- * that the input coordinates have been made precise by scaling them to
- * an integer grid.)
+ * <p>
+ * There are three possible outcomes when determining whether two line segments intersect:
+ * <ul>
+ * <li>{@link #NO_INTERSECTION} - the segments do not intersect
+ * <li>{@link #POINT_INTERSECTION - the segments intersect in a single point
+ * <li>{@link #COLLINEAR_INTERSECTION - the segments are collinear and they intersect in a line segment
+ * </ul>
+ * For segments which intersect in a single point, the point may be either an endpoint
+ * or in the interior of each segment.  
+ * If the point lies in the interior of both segments, 
+ * this is termed a <i>proper intersection</i>.
+ * The method {@link #isProper()} test for this situation.
+ * <p>
+ * The intersection point(s) may be computed in a precise or non-precise manner.
+ * Computing an intersection point precisely involves rounding it 
+ * via a supplied {@link PrecisionModel}.  
+ * <p>
+ * LineIntersectors do not perform an initial envelope intersection test 
+ * to determine if the segments are disjoint.
+ * This is because this class is likely to be used in a context where 
+ * envelope overlap is already known to occur (or be likely).
  *
  * @version 1.7
  */
@@ -280,6 +294,8 @@ public abstract class LineIntersector
 
   /**
    * Returns the number of intersection points found.  This will be either 0, 1 or 2.
+   * 
+   * @return the number of intersection points found (0, 1, or 2)
    */
   public int getIntersectionNum() { return result; }
 
