@@ -307,9 +307,16 @@ public class CGAlgorithms
 
     // otherwise use comp.graphics.algorithms Frequently Asked Questions method
     /*
-     * (1) AC dot AB r = --------- ||AB||^2 r has the following meaning: r=0 P =
-     * A r=1 P = B r<0 P is on the backward extension of AB r>1 P is on the
-     * forward extension of AB 0<r<1 P is interior to AB
+     * (1) r = AC dot AB 
+     *         --------- 
+     *         ||AB||^2 
+     *         
+     * r has the following meaning: 
+     *   r=0 P = A 
+     *   r=1 P = B 
+     *   r<0 P is on the backward extension of AB 
+     *   r>1 P is on the forward extension of AB 
+     *   0<r<1 P is interior to AB
      */
 
     double len2 = (B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y);
@@ -322,7 +329,9 @@ public class CGAlgorithms
       return p.distance(B);
 
     /*
-     * (2) (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay) s = ----------------------------- L^2
+     * (2) s = (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay) 
+     *         ----------------------------- 
+     *                    L^2
      * 
      * Then the distance from C to P = |s|*L.
      * 
@@ -351,7 +360,9 @@ public class CGAlgorithms
   {
     // use comp.graphics.algorithms Frequently Asked Questions method
     /*
-     * (2) (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay) s = ----------------------------- L^2
+     * (2) s = (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay) 
+     *         ----------------------------- 
+     *                    L^2
      * 
      * Then the distance from C to P = |s|*L.
      */
