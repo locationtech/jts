@@ -57,6 +57,12 @@ public class DistanceTest extends TestCase {
 
   public DistanceTest(String name) { super(name); }
 
+  public void testDisjointCollinearSegments() throws Exception {
+    Geometry g1 = reader.read("LINESTRING (0.0 0.0, 9.9 1.4)");
+    Geometry g2 = reader.read("LINESTRING (11.88 1.68, 21.78 3.08)");
+    assertEquals(2.23606, g1.distance(g2), 0.0001);
+  }
+
   public void testEverything() throws Exception {
     Geometry g1 = reader.read("POLYGON ((40 320, 200 380, 320 80, 40 40, 40 320),  (180 280, 80 280, 100 100, 220 140, 180 280))");
     Geometry g2 = reader.read("POLYGON ((160 240, 120 240, 120 160, 160 140, 160 240))");
@@ -75,7 +81,7 @@ public class DistanceTest extends TestCase {
     Geometry g2 = reader.read("POLYGON EMPTY");
     assertEquals(0.0, g1.distance(g2), 0.0);
   }
-  
+
   public void testClosestPoints1() throws Exception {
     doNearestPointsTest("POLYGON ((200 180, 60 140, 60 260, 200 180))", "POINT (140 280)", 57.05597791103589, new Coordinate(111.6923076923077, 230.46153846153845), new Coordinate(140, 280));
   }

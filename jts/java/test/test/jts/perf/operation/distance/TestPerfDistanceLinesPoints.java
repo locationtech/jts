@@ -68,7 +68,7 @@ public class TestPerfDistanceLinesPoints
     //test(100000);
   }
   
-  public void xtest(int num)
+  public void test(int num)
   throws Exception
   {
     //Geometry lines = createLine(EXTENT, num);
@@ -83,7 +83,7 @@ public class TestPerfDistanceLinesPoints
     test(pts, target);
   }
   
-  public void test(int num)
+  public void xtest(int num)
   throws Exception
   {
     Geometry target = loadData("C:\\proj\\JTS\\test\\g2e\\ffmwdec08.wkt");

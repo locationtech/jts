@@ -34,7 +34,9 @@ package com.vividsolutions.jts.algorithm;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Location;
+import com.vividsolutions.jts.math.MathUtil;
 
 /**
  * Specifies and implements various fundamental Computational Geometric
@@ -425,48 +427,60 @@ public class CGAlgorithms
     /*
      * from comp.graphics.algo
      * 
-     * Solving the above for r and s yields (Ay-Cy)(Dx-Cx)-(Ax-Cx)(Dy-Cy) r =
-     * ----------------------------- (eqn 1) (Bx-Ax)(Dy-Cy)-(By-Ay)(Dx-Cx)
+     * Solving the above for r and s yields 
      * 
-     * (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay) s = ----------------------------- (eqn 2)
-     * (Bx-Ax)(Dy-Cy)-(By-Ay)(Dx-Cx) Let P be the position vector of the
-     * intersection point, then P=A+r(B-A) or Px=Ax+r(Bx-Ax) Py=Ay+r(By-Ay) By
-     * examining the values of r & s, you can also determine some other limiting
-     * conditions: If 0<=r<=1 & 0<=s<=1, intersection exists r<0 or r>1 or s<0
-     * or s>1 line segments do not intersect If the denominator in eqn 1 is
-     * zero, AB & CD are parallel If the numerator in eqn 1 is also zero, AB &
-     * CD are collinear.
+     *     (Ay-Cy)(Dx-Cx)-(Ax-Cx)(Dy-Cy) 
+     * r = ----------------------------- (eqn 1) 
+     *     (Bx-Ax)(Dy-Cy)-(By-Ay)(Dx-Cx)
+     * 
+     *     (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay)  
+     * s = ----------------------------- (eqn 2)
+     *     (Bx-Ax)(Dy-Cy)-(By-Ay)(Dx-Cx) 
+     *     
+     * Let P be the position vector of the
+     * intersection point, then 
+     *   P=A+r(B-A) or 
+     *   Px=Ax+r(Bx-Ax) 
+     *   Py=Ay+r(By-Ay) 
+     * By examining the values of r & s, you can also determine some other limiting
+     * conditions: 
+     *   If 0<=r<=1 & 0<=s<=1, intersection exists 
+     *      r<0 or r>1 or s<0 or s>1 line segments do not intersect 
+     *   If the denominator in eqn 1 is zero, AB & CD are parallel 
+     *   If the numerator in eqn 1 is also zero, AB & CD are collinear.
      */
-    double r_top = (A.y - C.y) * (D.x - C.x) - (A.x - C.x) * (D.y - C.y);
-    double r_bot = (B.x - A.x) * (D.y - C.y) - (B.y - A.y) * (D.x - C.x);
 
-    double s_top = (A.y - C.y) * (B.x - A.x) - (A.x - C.x) * (B.y - A.y);
-    double s_bot = (B.x - A.x) * (D.y - C.y) - (B.y - A.y) * (D.x - C.x);
-
-    if ((r_bot == 0) || (s_bot == 0)) {
-      return Math
-          .min(
-              distancePointLine(A, C, D),
-              Math.min(
-                  distancePointLine(B, C, D),
-                  Math.min(distancePointLine(C, A, B),
-                      distancePointLine(D, A, B))));
-
+    boolean noIntersection = false;
+    if (! Envelope.intersects(A, B, C, D)) {
+      noIntersection = true;
     }
-    double s = s_top / s_bot;
-    double r = r_top / r_bot;
-
-    if ((r < 0) || (r > 1) || (s < 0) || (s > 1)) {
-      // no intersection
-      return Math
-          .min(
-              distancePointLine(A, C, D),
-              Math.min(
-                  distancePointLine(B, C, D),
-                  Math.min(distancePointLine(C, A, B),
-                      distancePointLine(D, A, B))));
+    else {
+      double denom = (B.x - A.x) * (D.y - C.y) - (B.y - A.y) * (D.x - C.x);
+      
+      if (denom == 0) {
+        noIntersection = true;
+      }
+      else {
+        double r_num = (A.y - C.y) * (D.x - C.x) - (A.x - C.x) * (D.y - C.y);
+        double s_num = (A.y - C.y) * (B.x - A.x) - (A.x - C.x) * (B.y - A.y);
+        
+        double s = s_num / denom;
+        double r = r_num / denom;
+  
+        if ((r < 0) || (r > 1) || (s < 0) || (s > 1)) {
+          noIntersection = true;
+        }
+      }
     }
-    return 0.0; // intersection exists
+    if (noIntersection) {
+      return MathUtil.min(
+            distancePointLine(A, C, D),
+            distancePointLine(B, C, D),
+            distancePointLine(C, A, B),
+            distancePointLine(D, A, B));
+    }
+    // segments intersect
+    return 0.0; 
   }
 
   /**
