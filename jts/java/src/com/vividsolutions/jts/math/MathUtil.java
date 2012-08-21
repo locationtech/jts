@@ -120,16 +120,27 @@ public class MathUtil
   
   public static double max(double v1, double v2, double v3)
   {
-    if (v1 > v2) {
-      if (v1 > v3) return v1;
-      return v3;
-    }
-    if (v2 > v3) return v2;
-    return v3;
+    double max = v1;
+    if (v2 > max) max = v2;
+    if (v3 > max) max = v3;
+    return max;
   }
   
   public static double max(double v1, double v2, double v3, double v4)
   {
-    return Math.max(v1, max(v2, v3, v4));
+    double max = v1;
+    if (v2 > max) max = v2;
+    if (v3 > max) max = v3;
+    if (v4 > max) max = v4;
+    return max;
+  }
+  
+  public static double min(double v1, double v2, double v3, double v4)
+  {
+    double min = v1;
+    if (v2 < min) min = v2;
+    if (v3 < min) min = v3;
+    if (v4 < min) min = v4;
+    return min;
   }
 }
