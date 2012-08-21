@@ -208,4 +208,75 @@ public class NonRobustCGAlgorithms
         return 0;
   }
 
+  /**
+   * Computes the distance from a line segment AB to a line segment CD
+   * 
+   * Note: NON-ROBUST!
+   * 
+   * @param A
+   *          a point of one line
+   * @param B
+   *          the second point of (must be different to A)
+   * @param C
+   *          one point of the line
+   * @param D
+   *          another point of the line (must be different to A)
+   */
+  public static double distanceLineLine(Coordinate A, Coordinate B,
+      Coordinate C, Coordinate D)
+  {
+    // check for zero-length segments
+    if (A.equals(B))
+      return distancePointLine(A, C, D);
+    if (C.equals(D))
+      return distancePointLine(D, A, B);
+
+    // AB and CD are line segments
+    /*
+     * from comp.graphics.algo
+     * 
+     * Solving the above for r and s yields (Ay-Cy)(Dx-Cx)-(Ax-Cx)(Dy-Cy) r =
+     * ----------------------------- (eqn 1) (Bx-Ax)(Dy-Cy)-(By-Ay)(Dx-Cx)
+     * 
+     * (Ay-Cy)(Bx-Ax)-(Ax-Cx)(By-Ay) s = ----------------------------- (eqn 2)
+     * (Bx-Ax)(Dy-Cy)-(By-Ay)(Dx-Cx) Let P be the position vector of the
+     * intersection point, then P=A+r(B-A) or Px=Ax+r(Bx-Ax) Py=Ay+r(By-Ay) By
+     * examining the values of r & s, you can also determine some other limiting
+     * conditions: If 0<=r<=1 & 0<=s<=1, intersection exists r<0 or r>1 or s<0
+     * or s>1 line segments do not intersect If the denominator in eqn 1 is
+     * zero, AB & CD are parallel If the numerator in eqn 1 is also zero, AB &
+     * CD are collinear.
+     */
+    double r_top = (A.y - C.y) * (D.x - C.x) - (A.x - C.x) * (D.y - C.y);
+    double r_bot = (B.x - A.x) * (D.y - C.y) - (B.y - A.y) * (D.x - C.x);
+
+    double s_top = (A.y - C.y) * (B.x - A.x) - (A.x - C.x) * (B.y - A.y);
+    double s_bot = (B.x - A.x) * (D.y - C.y) - (B.y - A.y) * (D.x - C.x);
+
+    if ((r_bot == 0) || (s_bot == 0)) {
+      return Math
+          .min(
+              distancePointLine(A, C, D),
+              Math.min(
+                  distancePointLine(B, C, D),
+                  Math.min(distancePointLine(C, A, B),
+                      distancePointLine(D, A, B))));
+
+    }
+    double s = s_top / s_bot;
+    double r = r_top / r_bot;
+
+    if ((r < 0) || (r > 1) || (s < 0) || (s > 1)) {
+      // no intersection
+      return Math
+          .min(
+              distancePointLine(A, C, D),
+              Math.min(
+                  distancePointLine(B, C, D),
+                  Math.min(distancePointLine(C, A, B),
+                      distancePointLine(D, A, B))));
+    }
+    return 0.0; // intersection exists
+  }
+
 }
