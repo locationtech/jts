@@ -38,11 +38,12 @@ import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jts.operation.valid.*;
 
 /**
- *  Implementation of <code>Point</code>.
+ * Represents a single point.
  *
- * A Point is valid iff:
+ * A <code>Point</code> is topologically valid if and only if:
  * <ul>
- * <li>the coordinate which defines it is a valid coordinate (i.e does not have an NaN X or Y ordinate)
+ * <li>the coordinate which defines it (if any) is a valid coordinate 
+ * (i.e does not have an <code>NaN</code> X or Y ordinate)
  * </ul>
  * 
  *@version 1.7

@@ -39,6 +39,8 @@ import com.vividsolutions.jts.geom.*;
 
 /**
  * Extracts all the 1-dimensional ({@link LineString}) components from a {@link Geometry}.
+ * For polygonal geometries, this will extract all the component {@link LinearRing}s.
+ * If desired, <code>LinearRing</code>s can be forced to be returned as <code>LineString</code>s.
  *
  * @version 1.7
  */

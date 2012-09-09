@@ -58,25 +58,25 @@ import com.vividsolutions.jts.util.Assert;
  *  <H3>Binary Predicates</H3>
  * Because it is not clear at this time
  * what semantics for spatial
- *  analysis methods involving <code>GeometryCollection</code>s would be useful,
- *  <code>GeometryCollection</code>s are not supported as arguments to binary
- *  predicates (other than <code>convexHull</code>) or the <code>relate</code>
- *  method.
+ * analysis methods involving <code>GeometryCollection</code>s would be useful,
+ * <code>GeometryCollection</code>s are not supported as arguments to binary
+ * predicates or the <code>relate</code>
+ * method.
  *
- *  <H3>Overlay Methods</H3>
+ * <H3>Overlay Methods</H3>
  *
- *  The overlay methods 
- *  return the most specific class possible to represent the result. If the
- *  result is homogeneous, a <code>Point</code>, <code>LineString</code>, or
- *  <code>Polygon</code> will be returned if the result contains a single
- *  element; otherwise, a <code>MultiPoint</code>, <code>MultiLineString</code>,
- *  or <code>MultiPolygon</code> will be returned. If the result is
- *  heterogeneous a <code>GeometryCollection</code> will be returned. <P>
+ * The overlay methods 
+ * return the most specific class possible to represent the result. If the
+ * result is homogeneous, a <code>Point</code>, <code>LineString</code>, or
+ * <code>Polygon</code> will be returned if the result contains a single
+ * element; otherwise, a <code>MultiPoint</code>, <code>MultiLineString</code>,
+ * or <code>MultiPolygon</code> will be returned. If the result is
+ * heterogeneous a <code>GeometryCollection</code> will be returned. <P>
  *
- *  Because it is not clear at this time what semantics for set-theoretic
- *  methods involving <code>GeometryCollection</code>s would be useful,
+ * Because it is not clear at this time what semantics for set-theoretic
+ * methods involving <code>GeometryCollection</code>s would be useful,
  * <code>GeometryCollections</code>
- *  are not supported as arguments to the set-theoretic methods.
+ * are not supported as arguments to the set-theoretic methods.
  *
  *  <H4>Representation of Computed Geometries </H4>
  *
@@ -126,7 +126,7 @@ import com.vividsolutions.jts.util.Assert;
  *
  * <h3>Geometry Equality</h3>
  * 
- * JTS provides two ways of comparing geometries for equality: 
+ * There are two ways of comparing geometries for equality: 
  * <b>structural equality</b> and <b>topological equality</b>.
  * 
  * <h4>Structural Equality</h4>
@@ -153,20 +153,17 @@ import com.vividsolutions.jts.util.Assert;
  * 
  * <h4>Topological Equality</h4>
  * 
- * Topological Equality 
- * implements the SFS definition of point-set equality
+ * Topological Equality is provided by the 
+ * {@link #equalsTopo(Geometry)} method. 
+ * It implements the SFS definition of point-set equality
  * defined in terms of the DE-9IM matrix.
- * It is is provided by the 
- * {@link #equalsTopo(Geometry)}
- * method.  
  * To support the SFS naming convention, the method
- *  {@link #equals(Geometry)} is also provided as a synonym.  
- *  However, due to the potential for confusion with {@link #equals(Geometry)}
- *  its use is discouraged.
+ * {@link #equals(Geometry)} is also provided as a synonym.  
+ * However, due to the potential for confusion with {@link #equals(Object)}
+ * its use is discouraged.
  * <p>
- *  Since #equals(Object) and #hashCode are overridden, 
- *  Geometries can be used effectively in 
- *  Java collections.
+ * Since {@link #equals(Object)} and {@link #hashCode()} are overridden, 
+ * Geometries can be used effectively in Java collections.
  *
  *@version 1.7
  */
@@ -423,10 +420,12 @@ public abstract class Geometry
   }
 
   /**
-   *  Tests the validity of this <code>Geometry</code>.
-   *  Subclasses provide their own definition of "valid".
+   * Tests whether this <code>Geometry</code>
+   * is topologically valid, according to the OGC SFS specification.
+   * <p>
+   * For validity rules see the Javadoc for the specific Geometry subclass.
    *
-   *@return    <code>true</code> if this <code>Geometry</code> is valid
+   *@return <code>true</code> if this <code>Geometry</code> is valid
    *
    * @see IsValidOp
    */
@@ -436,19 +435,18 @@ public abstract class Geometry
   }
 
   /**
-   *  Returns whether or not the set of points in this <code>Geometry</code> is
-   *  empty.
+   * Tests whether the set of points covered by this <code>Geometry</code> is
+   * empty.
    *
-   *@return    <code>true</code> if this <code>Geometry</code> equals the empty
-   *      geometry
+   *@return <code>true</code> if this <code>Geometry</code> does not cover any points
    */
   public abstract boolean isEmpty();
 
   /**
    *  Returns the minimum distance between this <code>Geometry</code>
-   *  and the <code>Geometry</code> g
+   *  and another <code>Geometry</code>.
    *
-   * @param  g  the <code>Geometry</code> from which to compute the distance
+   * @param  g the <code>Geometry</code> from which to compute the distance
    * @return the distance between the geometries
    * @return 0 if either input geometry is empty
    * @throws IllegalArgumentException if g is null

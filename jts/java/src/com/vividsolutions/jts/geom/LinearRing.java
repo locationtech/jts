@@ -36,7 +36,7 @@ package com.vividsolutions.jts.geom;
 
 /**
  * Models an OGC SFS <code>LinearRing</code>.
- * A LinearRing is a LineString which is both closed and simple.
+ * A <code>LinearRing</code> is a {@link LineString} which is both closed and simple.
  * In other words,
  * the first and last coordinate in the ring must be equal,
  * and the interior of the ring must not self-intersect.
