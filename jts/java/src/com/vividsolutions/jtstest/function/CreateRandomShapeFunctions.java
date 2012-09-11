@@ -96,7 +96,7 @@ public class CreateRandomShapeFunctions {
 
     for (int i = 0; i < nPts; i++) {
       double rand = Math.random();
-      // use rans^2 to accentuate radial distribution
+      // use rand^2 to accentuate radial distribution
       double r = rMax * rand * rand;
       // produces even distribution
       //double r = rMax * Math.sqrt(rand);
@@ -108,6 +108,41 @@ public class CreateRandomShapeFunctions {
     return geomFact.buildGeometry(pts);
   }
 
+  public static Geometry haltonPoints(Geometry g, int nPts)
+  {
+    return haltonPointsWithBases(g, nPts, 2, 3);
+  }
+  
+  public static Geometry haltonPoints57(Geometry g, int nPts)
+  {
+    return haltonPointsWithBases(g, nPts, 5, 7);
+  }
+  
+  public static Geometry haltonPointsWithBases(Geometry g, int nPts, int basei, int basej)
+  {
+    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
+    Coordinate[] pts = new Coordinate[nPts];
+    for (int i = 0; i < nPts; i++) {
+      double x = env.getWidth() * haltonOrdinate(i + 1, basei);
+      double y = env.getHeight() * haltonOrdinate(i + 1, basej);
+      pts[i] = new Coordinate(x, y);
+    }
+    return FunctionsUtil.getFactoryOrDefault(g).createMultiPoint(pts);
+  }
+  
+  private static double haltonOrdinate(int index, int base)
+  {
+    double result = 0;
+    double f = 1.0 / base;
+    int i = index;
+    while (i > 0) {
+        result = result + f * (i % base);
+        i = (int) Math.floor(i / (double) base);
+        f = f / base;
+    }
+    return result;
+  }
+  
   public static Geometry randomSegments(Geometry g, int nPts) {
     Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
     GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);

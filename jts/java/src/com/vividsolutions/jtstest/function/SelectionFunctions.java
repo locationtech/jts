@@ -1,6 +1,7 @@
 package com.vividsolutions.jtstest.function;
 
 import java.util.*;
+
 import com.vividsolutions.jts.geom.*;
 
 
@@ -102,6 +103,15 @@ public class SelectionFunctions
     }
     return geom.getFactory().buildGeometry(selected);
 
+  }
+  
+  public static Geometry firstNComponents(Geometry g, int n)
+  {
+    List comp = new ArrayList();
+    for (int i = 0; i < g.getNumGeometries() && i < n; i++) {
+      comp.add(g.getGeometryN(i));
+    }
+    return g.getFactory().buildGeometry(comp);
   }
 }
 
