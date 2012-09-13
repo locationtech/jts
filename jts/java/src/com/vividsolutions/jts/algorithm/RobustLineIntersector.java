@@ -221,9 +221,15 @@ public class RobustLineIntersector
     Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2)
   {
     Coordinate intPt = intersectionWithNormalization(p1, p2, q1, q2);
-  	// testing only
-//    Coordinate intPt = safeHCoordinateIntersection(p1, p2, q1, q2);
-
+    
+    /*
+    // TESTING ONLY
+    Coordinate intPtDD = CGAlgorithmsDD.intersection(p1, p2, q1, q2);
+    double dist = intPt.distance(intPtDD);
+    System.out.println(intPt + " - " + intPtDD + " dist = " + dist);
+    //intPt = intPtDD;
+    */
+    
     /**
      * Due to rounding it can happen that the computed intersection is
      * outside the envelopes of the input segments.  Clearly this

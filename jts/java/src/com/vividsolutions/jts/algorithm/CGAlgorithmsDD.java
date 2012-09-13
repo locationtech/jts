@@ -155,4 +155,52 @@ public class CGAlgorithmsDD
     return 0;
   }
 
+  /**
+   * Computes an intersection point between two lines
+   * using DD arithmetic.
+   * Currently does not handle case of parallel lines.
+   * 
+   * @param p1
+   * @param p2
+   * @param q1
+   * @param q2
+   * @return
+   */
+  public static Coordinate intersection(
+      Coordinate p1, Coordinate p2,
+      Coordinate q1, Coordinate q2)
+  {
+    DD denom1 = DD.valueOf(q2.y).selfSubtract(q1.y)
+    .selfMultiply(DD.valueOf(p2.x).selfSubtract(p1.x));
+    DD denom2 = DD.valueOf(q2.x).selfSubtract(q1.x)
+    .selfMultiply(DD.valueOf(p2.y).selfSubtract(p1.y));
+    DD denom = denom1.subtract(denom2);
+    
+    /**
+     * Cases:
+     * - denom is 0 if lines are parallel
+     * - intersection point lies within line segment p if fracP is between 0 and 1
+     * - intersection point lies within line segment q if fracQ is between 0 and 1
+     */
+    
+    DD numx1 = DD.valueOf(q2.x).selfSubtract(q1.x)
+    .selfMultiply(DD.valueOf(p1.y).selfSubtract(q1.y));
+    DD numx2 = DD.valueOf(q2.y).selfSubtract(q1.y)
+    .selfMultiply(DD.valueOf(p1.x).selfSubtract(q1.x));
+    DD numx = numx1.subtract(numx2);
+    double fracP = numx.selfDivide(denom).doubleValue();
+    
+    double x = DD.valueOf(p1.x).selfAdd(DD.valueOf(p2.x).selfSubtract(p1.x).selfMultiply(fracP)).doubleValue();
+    
+    DD numy1 = DD.valueOf(p2.x).selfSubtract(p1.x)
+    .selfMultiply(DD.valueOf(p1.y).selfSubtract(q1.y));
+    DD numy2 = DD.valueOf(p2.y).selfSubtract(p1.y)
+    .selfMultiply(DD.valueOf(p1.x).selfSubtract(q1.x));
+    DD numy = numy1.subtract(numy2);
+    double fracQ = numy.selfDivide(denom).doubleValue();
+    
+    double y = DD.valueOf(p1.y).selfAdd(DD.valueOf(p2.y).selfSubtract(p1.y).selfMultiply(fracQ)).doubleValue();
+
+    return new Coordinate(x,y);
+  }
 }
