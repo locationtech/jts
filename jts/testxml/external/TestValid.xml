@@ -2,7 +2,11 @@
   <precisionModel type="FLOATING"/>
 
 <case>
-<desc>http://trac.osgeo.org/geos/ticket/588</desc>
+<desc>Robustness issue when validating polygon with nearly parallel edges separated by small distance
+(self-intersection).  
+Fixed by extended-precision determinant.
+http://trac.osgeo.org/geos/ticket/588
+</desc>
 <a>
 POLYGON ((
  -86.3958130146539250 114.3482370100377900,
