@@ -36,6 +36,7 @@ package com.vividsolutions.jts.operation;
 
 import java.util.*;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.geomgraph.*;
 import com.vividsolutions.jts.algorithm.*;
 import com.vividsolutions.jts.geomgraph.index.SegmentIntersector;
@@ -77,7 +78,7 @@ import com.vividsolutions.jts.geomgraph.index.SegmentIntersector;
  */
 public class IsSimpleOp
 {
-  private Geometry geom;
+  private Geometry inputGeom;
   private boolean isClosedEndpointsInInterior = true;
   private Coordinate nonSimpleLocation = null;
 
@@ -95,7 +96,7 @@ public class IsSimpleOp
    * @param geom the geometry to test
    */
   public IsSimpleOp(Geometry geom) {
-    this.geom = geom;
+    this.inputGeom = geom;
   }
 
   /**
@@ -106,7 +107,7 @@ public class IsSimpleOp
    */
   public IsSimpleOp(Geometry geom, BoundaryNodeRule boundaryNodeRule)
   {
-    this.geom = geom;
+    this.inputGeom = geom;
     isClosedEndpointsInInterior = ! boundaryNodeRule.isInBoundary(2);
   }
 
@@ -118,9 +119,17 @@ public class IsSimpleOp
   public boolean isSimple()
   {
     nonSimpleLocation = null;
+    return computeSimple(inputGeom);
+  }
+  
+  private boolean computeSimple(Geometry geom)
+  {
+    nonSimpleLocation = null;
     if (geom instanceof LineString) return isSimpleLinearGeometry(geom);
     if (geom instanceof MultiLineString) return isSimpleLinearGeometry(geom);
     if (geom instanceof MultiPoint) return isSimpleMultiPoint((MultiPoint) geom);
+    if (geom instanceof Polygonal) return isSimplePolygonal(geom);
+    if (geom instanceof GeometryCollection) return isSimpleGeometryCollection(geom);
     // all other geometry types are simple by definition
     return true;
   }
@@ -188,6 +197,42 @@ public class IsSimpleOp
     return true;
   }
 
+  /**
+   * Computes simplicity for polygonal geometries.
+   * Polygonal geometries are simple if and only if
+   * all of their component rings are simple.
+   * 
+   * @param geom a Polygonal geometry
+   * @return true if the geometry is simple
+   */
+  private boolean isSimplePolygonal(Geometry geom)
+  {
+    List rings = LinearComponentExtracter.getLines(geom);
+    for (Iterator i = rings.iterator(); i.hasNext(); ) {
+      LinearRing ring = (LinearRing) i.next();
+      if (! isSimpleLinearGeometry(ring))
+        return false;
+    }
+    return true;
+  }
+  
+  /**
+   * Semantics for GeometryCollection is 
+   * simple iff all components are simple.
+   * 
+   * @param geom
+   * @return true if the geometry is simple
+   */
+  private boolean isSimpleGeometryCollection(Geometry geom)
+  {
+    for (int i = 0; i < geom.getNumGeometries(); i++ ) {
+      Geometry comp = geom.getGeometryN(i);
+      if (! computeSimple(comp))
+        return false;
+    }
+    return true;
+  }
+  
   private boolean isSimpleLinearGeometry(Geometry geom)
   {
     if (geom.isEmpty()) return true;

@@ -99,10 +99,12 @@ public class MultiPolygon
     return "MultiPolygon";
   }
 
+  /*
   public boolean isSimple() {
     return true;
   }
-
+*/
+  
   /**
    * Computes the boundary of this geometry
    *

@@ -127,15 +127,11 @@ public class LinearRing extends LineString
   }
 
   /**
-   * Returns <code>true</code>, since by definition LinearRings are always simple.
-   * @return <code>true</code>
-   *
-   * @see Geometry#isSimple
+   * Tests whether this ring is closed.
+   * Empty rings are closed by definition.
+   * 
+   * @return true if this ring is closed
    */
-  public boolean isSimple() {
-    return true;
-  }
-
   public boolean isClosed() {
     if (isEmpty()) {
     	// empty LinearRings are closed by definition

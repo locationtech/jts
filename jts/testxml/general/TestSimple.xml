@@ -242,9 +242,9 @@
 </case>
 
 <case>
-  <desc>A</desc>
+  <desc>LR - valid ring</desc>
   <a>
-    POLYGON ((180 260, 80 300, 40 180, 160 120, 180 260))
+    LINEARRING (100 300, 200 300, 200 200, 100 200, 100 300)
   </a>
 <test>
   <op name="isSimple" arg1="A">
@@ -252,6 +252,39 @@
   </op>
 </test>
 </case>
+
+<case>
+  <desc>LR - ring with self-intersection</desc>
+  <a>
+    LINEARRING (100 300, 200 300, 100 200, 200 200, 100 300)
+  </a>
+<test>
+  <op name="isSimple" arg1="A">
+    false
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>A - valid polygon</desc>
+  <a>
+    POLYGON ((180 260, 80 300, 40 180, 160 120, 180 260))
+  </a>
+<test>
+  <op name="isSimple" arg1="A"> true </op>
+</test>
+</case>
+
+<case>
+  <desc>A - invalid bowtie polygon</desc>
+  <a>
+    POLYGON ((100 100, 100 200, 200 100, 200 200, 100 100))
+  </a>
+<test>
+  <op name="isSimple" arg1="A"> false </op>
+</test>
+</case>
+
 
 <case>
   <desc>A - empty</desc>
@@ -259,23 +292,19 @@
     POLYGON EMPTY
   </a>
 <test>
-  <op name="isSimple" arg1="A">
-    true
-  </op>
+  <op name="isSimple" arg1="A"> true </op>
 </test>
 </case>
 
 <case>
-  <desc>mA</desc>
+  <desc>mA - valid polygon</desc>
   <a>
     MULTIPOLYGON (((240 160, 140 220, 80 60, 220 40, 240 160)), 
   ((160 380, 100 240, 20 380, 160 380), 
     (120 340, 60 360, 80 320, 120 340)))
   </a>
 <test>
-  <op name="isSimple" arg1="A">
-    true
-  </op>
+  <op name="isSimple" arg1="A"> true </op>
 </test>
 </case>
 
@@ -287,9 +316,41 @@
     (120 340, 60 360, 80 320, 120 340)))
   </a>
 <test>
-  <op name="isSimple" arg1="A">
-    true
-  </op>
+  <op name="isSimple" arg1="A"> true </op>
+</test>
+</case>
+
+<case>
+  <desc>mA - with an invalid bowtie element</desc>
+  <a>
+MULTIPOLYGON (((100 100, 100 200, 200 100, 200 200, 100 100)), ((100 400, 200 400, 200 300, 100 300, 100 400)))
+</a>
+<test>
+  <op name="isSimple" arg1="A"> false </op>
+</test>
+</case>
+
+<case>
+  <desc>GC - all components simple</desc>
+  <a>
+GEOMETRYCOLLECTION (POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200)), 
+  LINESTRING (100 300, 200 250), 
+  POINT (250 250), 
+  POINT (250 150))</a>
+<test>
+  <op name="isSimple" arg1="A"> true </op>
+</test>
+</case>
+
+<case>
+  <desc>GC - one non-simple component</desc>
+  <a>
+GEOMETRYCOLLECTION (POLYGON ((100 100, 100 200, 200 100, 200 200, 100 100)), 
+  LINESTRING (100 300, 200 250), 
+  POINT (250 250), 
+  POINT (250 150))</a>
+<test>
+  <op name="isSimple" arg1="A"> false </op>
 </test>
 </case>
 

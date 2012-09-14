@@ -414,7 +414,6 @@ public abstract class Geometry
    */
   public boolean isSimple()
   {
-    checkNotGeometryCollection(this);
     IsSimpleOp op = new IsSimpleOp(this);
     return op.isSimple();
   }

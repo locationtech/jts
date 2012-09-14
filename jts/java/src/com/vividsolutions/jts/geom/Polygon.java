@@ -200,10 +200,12 @@ public class Polygon
    *
    * @return <code>true</code>
    */
+  /*
   public boolean isSimple() {
     return true;
   }
-
+*/
+  
   public boolean isRectangle()
   {
     if (getNumInteriorRing() != 0) return false;
