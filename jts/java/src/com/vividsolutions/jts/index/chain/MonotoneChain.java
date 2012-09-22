@@ -112,6 +112,12 @@ public class MonotoneChain {
   public int getStartIndex()  { return start; }
   public int getEndIndex()    { return end; }
 
+  /**
+   * Gets the line segment starting at <code>index</code>
+   * 
+   * @param index index of segment
+   * @param ls line segment to extract into
+   */
   public void getLineSegment(int index, LineSegment ls)
   {
     ls.p0 = pts[index];

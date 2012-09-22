@@ -49,16 +49,22 @@ public class MonotoneChainSelectAction
   LineSegment selectedSegment = new LineSegment();
 
   /**
-   * This function can be overridden if the original chain is needed.
+   * This method is overridden 
+   * to process a segment 
+   * in the context of the parent chain.
+   * 
+   * @param mc the parent chain
+   * @param startIndex the index of the start vertex of the segment being processed
    */
-  public void select(MonotoneChain mc, int start)
+  public void select(MonotoneChain mc, int startIndex)
   {
-    mc.getLineSegment(start, selectedSegment);
+    mc.getLineSegment(startIndex, selectedSegment);
+    // call this routine in case select(segmenet) was overridden
     select(selectedSegment);
   }
 
   /**
-   * This is a convenience function which can be overridden to obtain the actual
+   * This is a convenience method which can be overridden to obtain the actual
    * line segment which is selected.
    * 
    * @param seg
