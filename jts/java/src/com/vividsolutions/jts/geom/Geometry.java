@@ -391,25 +391,25 @@ public abstract class Geometry
 
   /**
    * Tests whether this {@link Geometry} is simple.
-   * In general, the SFS specification of simplicity
-   * follows the rule:
-   *  <UL>
-   *    <LI> A Geometry is simple iff the only self-intersections are at
-   *    boundary points.
-   *  </UL>
+   * The SFS definition of simplicity
+   * follows the general rule that a Geometry is simple if it has no points of
+   * self-tangency, self-intersection or other anomalous points.
+   * <p>
    * Simplicity is defined for each {@link Geometry} subclass as follows:
    * <ul>
-   * <li>Valid polygonal geometries are simple by definition, so
-   * <code>isSimple</code> trivially returns true.
+   * <li>Valid polygonal geometries are simple, since their rings
+   * must not self-intersect.  <code>isSimple</code>
+   * tests for this condition and reports <code>false</code> if it is not met.
+   * (This is a looser test than checking for validity).
+   * <li>Linear rings have the same semantics.
    * <li>Linear geometries are simple iff they do not self-intersect at points
    * other than boundary points.
    * <li>Zero-dimensional geometries (points) are simple iff they have no
    * repeated points.
-   * <li>Empty <code>Geometry</code>s are always simple
+   * <li>Empty <code>Geometry</code>s are always simple.
    * <ul>
    *
-   * @return    <code>true</code> if this <code>Geometry</code> has any points of
-   *      self-tangency, self-intersection or other anomalous points
+   * @return <code>true</code> if this <code>Geometry</code> is simple
    * @see #isValid
    */
   public boolean isSimple()

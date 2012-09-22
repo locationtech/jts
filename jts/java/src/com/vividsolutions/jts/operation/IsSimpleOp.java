@@ -125,6 +125,7 @@ public class IsSimpleOp
   private boolean computeSimple(Geometry geom)
   {
     nonSimpleLocation = null;
+    if (geom.isEmpty()) return true;
     if (geom instanceof LineString) return isSimpleLinearGeometry(geom);
     if (geom instanceof MultiLineString) return isSimpleLinearGeometry(geom);
     if (geom instanceof MultiPoint) return isSimpleMultiPoint((MultiPoint) geom);
