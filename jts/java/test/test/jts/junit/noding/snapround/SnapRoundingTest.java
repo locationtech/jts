@@ -60,6 +60,13 @@ public class SnapRoundingTest  extends TestCase {
     runRounding(collapse1);
   }
 
+  public void testCollapse2() {
+    String[] collapse2 = {
+      "LINESTRING ( 393 175, 391 173, 390 175, 391 174, 391 173 )"
+    };
+    runRounding(collapse2);
+  }
+  
   public void testBadNoding1() {
     String[] badNoding1 = {
       "LINESTRING ( 76 47, 81 52, 81 53, 85 57, 88 62, 89 64, 57 80, 82 55, 101 74, 76 99, 92 67, 94 68, 99 71, 103 75, 139 111 )"
@@ -134,7 +141,7 @@ public class SnapRoundingTest  extends TestCase {
       LineString line = (LineString) lines.get(i);
       for (int j = 0; j < line.getNumPoints() - 1; j++) {
         Coordinate p0 = line.getCoordinateN(j);
-        Coordinate p1 = line.getCoordinateN(j);
+        Coordinate p1 = line.getCoordinateN(j+1);
         if (! isSnapped(v, p0, p1)) return false;
       }
     }

@@ -90,11 +90,11 @@ public class MCIndexPointSnapper
       if (parentEdge != null) {
         if (ss == parentEdge && 
             (startIndex == hotPixelVertexIndex
-//                || startIndex+1 == hotPixelVertexIndex
+                || startIndex+1 == hotPixelVertexIndex
                 ))
           return;
       }
-      isNodeAdded = hotPixel.addSnappedNode(ss, startIndex);
+      isNodeAdded = isNodeAdded || hotPixel.addSnappedNode(ss, startIndex);
     }
 
   }
