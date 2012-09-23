@@ -32,6 +32,9 @@
  */
 package com.vividsolutions.jtstest.function;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.vividsolutions.jts.geom.Geometry;
 
 public class OverlayFunctions {
@@ -49,4 +52,15 @@ public class OverlayFunctions {
     return gc.union(); 
   }
 
+  public static Geometry clip(Geometry a, Geometry mask)
+  {
+    List geoms = new ArrayList();
+    for (int i = 0; i < a.getNumGeometries(); i++) {
+      Geometry clip = a.getGeometryN(i).intersection(mask);
+      geoms.add(clip);
+    }
+    return FunctionsUtil.buildGeometry(geoms, a);
+  }
+  
+  
 }
