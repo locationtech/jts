@@ -27,7 +27,7 @@ public class JTSTestBuilderController
   
   public static void extractComponentsToTestCase(Geometry aoi)
   {
-    double toleranceInModel = JTSTestBuilderFrame.getGeometryEditPanel().getToleranceInModel();
+    //double toleranceInModel = JTSTestBuilderFrame.getGeometryEditPanel().getToleranceInModel();
     LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
     Geometry[] comp = lyrList.getComponents(aoi);
     if (comp == null) 
