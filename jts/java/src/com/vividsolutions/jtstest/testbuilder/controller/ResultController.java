@@ -54,6 +54,8 @@ public class ResultController
   private void clearResult()
   {
     frame.getResultWKTPanel().clearResult();
+    // for good measure do a GC
+    System.gc();
     updateResult(null,null);
   }
   	
