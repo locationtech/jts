@@ -505,7 +505,7 @@ public class CGAlgorithms
     for (int i = 1; i < ring.length - 1; i++) {
       double x = ring[i].x - x0;
       double y1 = ring[i + 1].y;
-      double y2 = ring[i == 0 ? ring.length - 1 : i - 1].y;
+      double y2 = ring[i - 1].y;
       sum += x * (y2 - y1);
     }
     return sum / 2.0;
