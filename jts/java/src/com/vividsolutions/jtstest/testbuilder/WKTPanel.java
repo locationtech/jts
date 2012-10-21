@@ -391,7 +391,9 @@ public class WKTPanel extends JPanel
     void copy(ActionEvent e, int geomIndex)
     {
       boolean isFormatted = 0 != (e.getModifiers() & ActionEvent.CTRL_MASK);
-      SwingUtil.copyToClipboard(tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex), isFormatted);
+      Geometry g = tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex);
+      if (g != null)
+        SwingUtil.copyToClipboard(g, isFormatted);
     }
     
     void aPasteButton_actionPerformed(ActionEvent e)
