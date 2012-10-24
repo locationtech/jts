@@ -1324,11 +1324,11 @@ public abstract class Geometry
       return OverlayOp.createEmptyResult(OverlayOp.INTERSECTION, this, other, factory);
 
     // compute for GCs
-    if (isGeometryCollection(this)) {
+    if (this.isGeometryCollection()) {
       final Geometry g2 = other;
       return GeometryCollectionMapper.map(
           (GeometryCollection) this,
-          new GeometryCollectionMapper.MapOp() {
+          new GeometryMapper.MapOp() {
         public Geometry map(Geometry g) {
           return g.intersection(g2);
         }
@@ -1783,9 +1783,15 @@ public abstract class Geometry
     }
   }
 
-  protected boolean isGeometryCollection(Geometry g)
+  /**
+   * Tests whether this is an instance of a general {@link GeometryCollection},
+   * rather than a homogeneous subclass.
+   * 
+   * @return true if this is a hetereogeneous GeometryCollection
+   */
+  protected boolean isGeometryCollection()
   {
-    return g.getClass().equals(com.vividsolutions.jts.geom.GeometryCollection.class);
+    return getClass().equals(com.vividsolutions.jts.geom.GeometryCollection.class);
   }
 
   /**

@@ -2,6 +2,7 @@ package com.vividsolutions.jts.geom.util;
 
 import java.util.*;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.util.GeometryMapper.MapOp;
 
 /**
  * Maps the members of a {@link GeometryCollection}
@@ -35,9 +36,5 @@ public class GeometryCollectionMapper
     }
     return gc.getFactory().createGeometryCollection(
         GeometryFactory.toGeometryArray(mapped));
-  }
-  
-  public interface MapOp {
-    Geometry map(Geometry g);
   }
 }
