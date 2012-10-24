@@ -2,9 +2,20 @@ package com.vividsolutions.jtstest.function;
 
 import java.util.*;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 
 public class ConversionFunctions 
 {
+  public static Geometry toPoints(Geometry g)
+  {
+    return g.getFactory().createMultiPoint(g.getCoordinates());
+  }
+
+  public static Geometry toLines(Geometry g)
+  {
+    return g.getFactory().buildGeometry(LinearComponentExtracter.getLines(g));
+  }
+
   public static Geometry toGeometryCollection(Geometry g, Geometry g2)
   {
     

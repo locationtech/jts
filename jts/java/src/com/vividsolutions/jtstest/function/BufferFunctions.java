@@ -39,6 +39,8 @@ import java.util.List;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.util.GeometryMapper;
+import com.vividsolutions.jts.geom.util.GeometryMapper.MapOp;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.noding.SegmentString;
 import com.vividsolutions.jts.operation.buffer.BufferInputLineSimplifier;
@@ -160,6 +162,18 @@ public class BufferFunctions {
     BufferParameters bufParams = new BufferParameters();
     bufParams.setSingleSided(true);
     return BufferOp.bufferOp(geom, distance, bufParams);
+  }
+  
+  public static Geometry bufferEach(Geometry g, final double distance)
+  {
+    return GeometryMapper.map(g, new MapOp() {
+
+      public Geometry map(Geometry g)
+      {
+        return g.buffer(distance);
+      }
+      
+    });
   }
 
 }
