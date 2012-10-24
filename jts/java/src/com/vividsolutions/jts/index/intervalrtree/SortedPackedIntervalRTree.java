@@ -82,11 +82,18 @@ public class SortedPackedIntervalRTree
   private void init()
   {
     if (root != null) return;
+    buildRoot();
+  }
+  
+  private synchronized void buildRoot() 
+  {
+    if (root != null) return;
     root = buildTree();
   }
   
-	private IntervalRTreeNode buildTree()
+	private  IntervalRTreeNode buildTree()
 	{
+	  
     // sort the leaf nodes
     Collections.sort(leaves, new IntervalRTreeNode.NodeComparator());
     

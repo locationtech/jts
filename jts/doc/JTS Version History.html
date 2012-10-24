@@ -29,7 +29,7 @@ The current and archived JTS distributions can be obtained at the
 
 <h3>Functionality Improvements</h3>
 <ul>
-<li>Changed <tt>GeometryFactory.createGeometry()</tt> to make a deep copy of the arg Geometry,
+<li>Changed <tt>GeometryFactory.createGeometry()</tt> to make a deep copy of the argument Geometry,
 using the CoordinateSequenceFactory of the factory
 <li>Added ability to specify a dimension in <tt>CoordinateArraySequence</tt>
 <li>Changed <tt>Geometry.getEnvelopeInternal()</tt> to return a copy of the cached envelope, to prevent modification
@@ -71,6 +71,7 @@ to avoid creating segment index if all test inputs are points
 <li>Changed <code>STRtree.createNode()</code> to use a static class for nodes
 <li>Changed <code>QuadTree Node</code> to use scalar x and y variables rather than a <code>Coordinate</code> to reduce memory allocation
 <li>Fixed <code>PreparedGeometry</code> so that it is thread-safe.
+<li>Fixed <code>SortedPackedIntervalRTree</code> so that it is thread-safe.
 </ul>
 
 <h3>Robustness Improvements</h3>
@@ -208,7 +209,7 @@ and is a synonym for the original <tt>equals(Geometry)</tt>
 <ul>
 <li>Delaunay triangulation uses more robust formulation for the inCircle test
 <li>Voronoi computation now uses more robust formulation for the circumcentre computation
-<li>Force RectangleIntersects to always use segment-scanning to improve robustness
+<li>Force <code>RectangleIntersects</code> to always use segment-scanning to improve robustness
 </ul>
 
 <h3>API Changes</h3>
