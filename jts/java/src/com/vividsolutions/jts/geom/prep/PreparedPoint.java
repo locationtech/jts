@@ -37,6 +37,8 @@ import com.vividsolutions.jts.geom.*;
 
 /**
  * A prepared version for {@link Puntal} geometries.
+ * <p>
+ * Instances of this class are thread-safe.
  * 
  * @author Martin Davis
  *

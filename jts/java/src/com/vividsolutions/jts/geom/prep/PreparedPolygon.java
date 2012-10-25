@@ -44,6 +44,8 @@ import com.vividsolutions.jts.operation.predicate.*;
  * <p>
  * This class does <b>not</b> support MultiPolygons which are non-valid 
  * (e.g. with overlapping elements). 
+ * <p>
+ * Instances of this class are thread-safe.
  * 
  * @author mbdavis
  *
@@ -61,7 +63,12 @@ public class PreparedPolygon
     isRectangle = getGeometry().isRectangle();
   }
 
-  public FastSegmentSetIntersectionFinder getIntersectionFinder()
+  /**
+   * Gets the indexed intersection finder for this geometry.
+   * 
+   * @return the intersection finder
+   */
+  public synchronized FastSegmentSetIntersectionFinder getIntersectionFinder()
   {
   	/**
   	 * MD - Another option would be to use a simple scan for 
@@ -74,7 +81,7 @@ public class PreparedPolygon
    return segIntFinder;
   }
   
-  public PointOnGeometryLocator getPointLocator()
+  public synchronized PointOnGeometryLocator getPointLocator()
   {
   	if (pia == null)
       pia = new IndexedPointInAreaLocator(getGeometry());

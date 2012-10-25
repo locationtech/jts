@@ -37,6 +37,8 @@ import com.vividsolutions.jts.noding.*;
 
 /**
  * A prepared version for {@link Lineal} geometries.
+ * <p>
+ * Instances of this class are thread-safe.
  * 
  * @author mbdavis
  *
@@ -50,7 +52,7 @@ public class PreparedLineString
     super((Geometry) line);
   }
 
-  public FastSegmentSetIntersectionFinder getIntersectionFinder()
+  public synchronized FastSegmentSetIntersectionFinder getIntersectionFinder()
   {
   	/**
   	 * MD - Another option would be to use a simple scan for 
