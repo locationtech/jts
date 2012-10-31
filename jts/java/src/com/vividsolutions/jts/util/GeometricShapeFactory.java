@@ -413,7 +413,13 @@ public class GeometricShapeFactory
     public Coordinate getBase() { return base; }
     
     public void setCentre(Coordinate centre)  {  this.centre = centre;    }
-    public Coordinate getCentre() { return centre; }
+    public Coordinate getCentre() 
+    { 
+      if (centre == null) {
+        centre = new Coordinate(base.x + width/2, base.y + height/2);
+      }
+      return centre; 
+    }
    
     public void setSize(double size)
     {
