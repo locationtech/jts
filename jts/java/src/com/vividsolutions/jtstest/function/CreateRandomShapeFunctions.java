@@ -122,10 +122,17 @@ public class CreateRandomShapeFunctions {
   {
     Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
     Coordinate[] pts = new Coordinate[nPts];
-    for (int i = 0; i < nPts; i++) {
-      double x = env.getWidth() * haltonOrdinate(i + 1, basei);
-      double y = env.getHeight() * haltonOrdinate(i + 1, basej);
-      pts[i] = new Coordinate(x, y);
+    double baseX = env.getMinX();
+    double baseY = env.getMinY();
+    
+    int i = 0;
+    while (i < nPts) {
+      double x = baseX + env.getWidth() * haltonOrdinate(i + 1, basei);
+      double y = baseY + env.getHeight() * haltonOrdinate(i + 1, basej);
+      Coordinate p = new Coordinate(x, y);
+      if (! env.contains(p))
+        continue;
+      pts[i++] = p;
     }
     return FunctionsUtil.getFactoryOrDefault(g).createMultiPoint(pts);
   }
