@@ -172,7 +172,7 @@ public class XMLTestWriter
     }
     if (geom[1] != null) {
       String wkt1 = getWKTorWKB(geom[1], useWKT);
-      xml.append("  <b>n" + wkt1 + "\n    </b>\n");
+      xml.append("  <b>\n" + wkt1 + "\n    </b>\n");
     }
     if (testCase.getExpectedIntersectionMatrix() != null) {
       xml.append("  <test>\n");
