@@ -40,8 +40,7 @@ import java.util.ArrayList;
 
 
 /**
- * A class which supports 
- * creating new {@link Geometry}s 
+ * A class which supports creating new {@link Geometry}s 
  * which are modifications of existing ones.
  * Geometry objects are intended to be treated as immutable.
  * This class "modifies" Geometrys
@@ -116,7 +115,7 @@ public class GeometryEditor
    *
    * @param geometry the Geometry to edit
    * @param operation the edit operation to carry out
-   * @return a new {@link Geometry} which is the result of the editing
+   * @return a new {@link Geometry} which is the result of the editing (which may be empty)
    */
   public Geometry edit(Geometry geometry, GeometryEditorOperation operation)
   {
@@ -151,30 +150,26 @@ public class GeometryEditor
   private Polygon editPolygon(Polygon polygon,
                               GeometryEditorOperation operation) {
     Polygon newPolygon = (Polygon) operation.edit(polygon, factory);
-
+    // create one if needed
+    if (newPolygon == null)
+      newPolygon = factory.createPolygon((CoordinateSequence) null);
     if (newPolygon.isEmpty()) {
       //RemoveSelectedPlugIn relies on this behaviour. [Jon Aquino]
       return newPolygon;
     }
 
-    LinearRing shell = (LinearRing) edit(newPolygon.getExteriorRing(),
-        operation);
-
-    if (shell.isEmpty()) {
+    LinearRing shell = (LinearRing) edit(newPolygon.getExteriorRing(), operation);
+    if (shell == null || shell.isEmpty()) {
       //RemoveSelectedPlugIn relies on this behaviour. [Jon Aquino]
       return factory.createPolygon(null, null);
     }
 
     ArrayList holes = new ArrayList();
-
     for (int i = 0; i < newPolygon.getNumInteriorRing(); i++) {
-      LinearRing hole = (LinearRing) edit(newPolygon.getInteriorRingN(i),
-      operation);
-
-      if (hole.isEmpty()) {
+      LinearRing hole = (LinearRing) edit(newPolygon.getInteriorRingN(i), operation);
+      if (hole == null || hole.isEmpty()) {
         continue;
       }
-
       holes.add(hole);
     }
 
@@ -184,35 +179,33 @@ public class GeometryEditor
 
   private GeometryCollection editGeometryCollection(
       GeometryCollection collection, GeometryEditorOperation operation) {
-    GeometryCollection newCollection = (GeometryCollection) operation.edit(collection,
+    // first edit the entire collection
+    // MD - not sure why this is done - could just check original collection?
+    GeometryCollection collectionForType = (GeometryCollection) operation.edit(collection,
         factory);
+    
+    // edit the component geometries
     ArrayList geometries = new ArrayList();
-
-    for (int i = 0; i < newCollection.getNumGeometries(); i++) {
-      Geometry geometry = edit(newCollection.getGeometryN(i), operation);
-
-      if (geometry.isEmpty()) {
+    for (int i = 0; i < collectionForType.getNumGeometries(); i++) {
+      Geometry geometry = edit(collectionForType.getGeometryN(i), operation);
+      if (geometry == null || geometry.isEmpty()) {
         continue;
       }
-
       geometries.add(geometry);
     }
 
-    if (newCollection.getClass() == MultiPoint.class) {
+    if (collectionForType.getClass() == MultiPoint.class) {
       return factory.createMultiPoint((Point[]) geometries.toArray(
             new Point[] {  }));
     }
-
-    if (newCollection.getClass() == MultiLineString.class) {
+    if (collectionForType.getClass() == MultiLineString.class) {
       return factory.createMultiLineString((LineString[]) geometries.toArray(
             new LineString[] {  }));
     }
-
-    if (newCollection.getClass() == MultiPolygon.class) {
+    if (collectionForType.getClass() == MultiPolygon.class) {
       return factory.createMultiPolygon((Polygon[]) geometries.toArray(
             new Polygon[] {  }));
     }
-
     return factory.createGeometryCollection((Geometry[]) geometries.toArray(
           new Geometry[] {  }));
   }
@@ -232,6 +225,7 @@ public class GeometryEditor
      * @param factory the factory with which to construct the modified Geometry
      * (may be different to the factory of the input geometry)
      * @return a new Geometry which is a modification of the input Geometry
+     * @return null if the Geometry is to be deleted completely
      */
     Geometry edit(Geometry geometry, GeometryFactory factory);
   }
