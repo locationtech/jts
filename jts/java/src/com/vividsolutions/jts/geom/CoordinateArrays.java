@@ -296,6 +296,29 @@ public class CoordinateArrays {
   }
 
   /**
+   * Collapses a coordinate array to remove all null elements.
+   * 
+   * @param coord the coordinate array to collapse
+   * @return an array containing only non-null elements
+   */
+  public static Coordinate[] removeNull(Coordinate[] coord)
+  {
+    int nonNull = 0;
+    for (int i = 0; i < coord.length; i++) {
+      if (coord[i] != null) nonNull++;
+    }
+    Coordinate[] newCoord = new Coordinate[nonNull];
+    // empty case
+    if (nonNull == 0) return newCoord;
+    
+    int j = 0;
+    for (int i = 0; i < coord.length; i++) {
+      if (coord[i] != null) newCoord[j++] = coord[i];
+    }
+    return newCoord;
+  }
+  
+  /**
    * Reverses the coordinates in an array in-place.
    */
   public static void reverse(Coordinate[] coord)
