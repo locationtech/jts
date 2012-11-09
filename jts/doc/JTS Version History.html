@@ -55,6 +55,8 @@ using the CoordinateSequenceFactory of the factory
 <li>Modified <code>Geometry.isSimple()</code> to explicity check for simplicity for all types,
 and support <code>GeometryCollections</code>
 <li>Improved <code>MCIndexSnapRounder</code> to add nodes only where they are necessary
+<li>Added <code>CoordinateArrays.removeNull()</code> method
+<li>Enhanced <code>GeometryEditor</code> to handle null geometries returned from operation
 </ul>
 
 <h3>Performance Improvements</h3>
@@ -149,6 +151,7 @@ and <tt>PerformanceTestCase</tt>)
 <li>Added stream digitizing for Polygon and LineString tools
 <li>Added output of Test Case XML with WKB
 <li>Added Extract Component tool
+<li>Added Delete Vertices Or Components tool
 <li>Added Geometry Edit Panel pop-up menu, with operations
 <li>Added Halton sequence functions
 <li>Added sorting functions

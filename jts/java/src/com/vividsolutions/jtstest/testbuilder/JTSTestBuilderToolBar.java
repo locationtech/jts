@@ -418,6 +418,15 @@ public class JTSTestBuilderToolBar {
             }
           });
 
+      JToggleButton deleteVertexButton = createToggleButton("Delete Vertices or Components",
+          new ImageIcon(this.getClass().getResource("DeleteVertex.png")), 
+          new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+              tbFrame.actionDeleteVertexButton();
+            }
+          });
+
       toolButtonGroup.add(drawRectangleButton);
       toolButtonGroup.add(drawPolygonButton);
       toolButtonGroup.add(drawLineStringButton);
@@ -425,6 +434,7 @@ public class JTSTestBuilderToolBar {
       toolButtonGroup.add(panButton);
       toolButtonGroup.add(zoomInButton);
       toolButtonGroup.add(btnEditVertex);
+      toolButtonGroup.add(deleteVertexButton);
       toolButtonGroup.add(infoButton);
       toolButtonGroup.add(extractComponentButton);
 
@@ -460,6 +470,7 @@ public class JTSTestBuilderToolBar {
       jToolBar1.add(drawLineStringButton, null);
       jToolBar1.add(drawPointButton, null);
       jToolBar1.add(btnEditVertex, null);
+      jToolBar1.add(deleteVertexButton, null);
       
       jToolBar1.add(Box.createHorizontalStrut(8), null);
       

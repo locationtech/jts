@@ -78,6 +78,7 @@ import com.vividsolutions.jtstest.testbuilder.model.XMLTestWriter;
 import com.vividsolutions.jtstest.testbuilder.ui.ImageUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.dnd.FileDrop;
+import com.vividsolutions.jtstest.testbuilder.ui.tools.DeleteVertexTool;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.EditVertexTool;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.ExtractComponentTool;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.InfoTool;
@@ -589,6 +590,10 @@ public class JTSTestBuilderFrame extends JFrame
 
   void actionExtractComponentButton() {
     testCasePanel.getGeometryEditPanel().setCurrentTool(ExtractComponentTool.getInstance());
+  }
+
+  void actionDeleteVertexButton() {
+    testCasePanel.getGeometryEditPanel().setCurrentTool(DeleteVertexTool.getInstance());
   }
 
   void zoomInButton_actionPerformed(ActionEvent e) {

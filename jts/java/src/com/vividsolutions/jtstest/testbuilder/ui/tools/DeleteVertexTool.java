@@ -32,28 +32,33 @@
  */
 package com.vividsolutions.jtstest.testbuilder.ui.tools;
 
-import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jtstest.testbuilder.geom.GeometryVertexBoxDeleter;
 
 /**
- * Extracts a component of a geometry to a new Test Case
+ * Deletes vertices within a selection box from a geometry component
  * @version 1.7
  */
-public class ExtractComponentTool extends BoxBandTool {
-  private static ExtractComponentTool singleton = null;
+public class DeleteVertexTool extends BoxBandTool {
+  private static DeleteVertexTool singleton = null;
 
-  public static ExtractComponentTool getInstance() {
+  public static DeleteVertexTool getInstance() {
     if (singleton == null)
-      singleton = new ExtractComponentTool();
+      singleton = new DeleteVertexTool();
     return singleton;
   }
 
-  private ExtractComponentTool() {
+  private DeleteVertexTool() {
     super();
   }
 
   protected void gestureFinished() 
   {      
-    JTSTestBuilderController.extractComponentsToTestCase(getBox());  
+    Envelope env = getBox().getEnvelopeInternal();
+    Geometry g = geomModel().getGeometry();
+    Geometry edit = GeometryVertexBoxDeleter.delete(g, env);
+    geomModel().setGeometry(edit);
   }
 
 
