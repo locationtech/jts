@@ -75,7 +75,7 @@ public class CentralEndpointIntersector
 	private void compute() 
 	{
 		Coordinate centroid = average(pts);
-		intPt = findNearestPoint(centroid, pts);
+		intPt = new Coordinate(findNearestPoint(centroid, pts));
 	}
 
 	public Coordinate getIntersection() {
