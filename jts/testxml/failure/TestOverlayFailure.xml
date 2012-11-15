@@ -240,4 +240,22 @@ GEOMETRYCOLLECTION EMPTY</op>
 </test>
 </case>
 
+<case>
+  <desc>
+  http://trac.osgeo.org/postgis/ticket/2055
+  
+  A triangle which has a segment crossing a segment of a hole very near one end.
+  Computed intersection causes a topology failure.
+  </desc>
+<a>
+POLYGON ((184315 319325, 184315 319290, 184276 319290, 184276 319325, 184315 319325), (184311.5625999868 319321, 184304.75 319308.59379998595, 184295.64059999958 319292.90599998087, 184304.75 319308.5937999822, 184311.5625999868 319321))
+</a>
+<b>
+POLYGON ((184299.5210452684 319312.2400717032, 184311.5626000017 319321, 184306.59797855775 319312.2400717032, 184299.5210452684 319312.2400717032))
+</b><test>
+<op name="intersection" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY</op>
+</test>
+</case>
+
 </run>
