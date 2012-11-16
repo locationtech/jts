@@ -116,12 +116,12 @@ public class MultiFormatReader
       throws ParseException, IOException
   {
     String trimStr = geomStr.trim();
-    if (isWKB(trimStr))
-      return wkbReader.read(WKBReader.hexToBytes(trimStr));
+    if (isWKB(trimStr)) {
+      return IOUtil.readGeometriesFromWKBHexString(trimStr, geomFactory);
+    }
     if (isGML(trimStr))
     	return readGML(trimStr);
     	
-    //return wktReader.read(trimStr);
     return IOUtil.readGeometriesFromWKTString(trimStr, geomFactory);
   }
   

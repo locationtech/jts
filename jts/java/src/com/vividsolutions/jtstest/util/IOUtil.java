@@ -9,6 +9,7 @@ import java.util.List;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKBHexFileReader;
 import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKTFileReader;
 import com.vividsolutions.jts.io.WKTReader;
@@ -68,6 +69,15 @@ public class IOUtil
     return readGeometriesFromWKTString(FileUtil.readText(filename), geomFact);
   }
   
+  /**
+   * Reads one or more WKT geometries from a string.
+   * 
+   * @param wkt
+   * @param geomFact
+   * @return
+   * @throws ParseException
+   * @throws IOException
+   */
   public static Geometry readGeometriesFromWKTString(String wkt, GeometryFactory geomFact)
   throws ParseException, IOException 
   {
@@ -78,8 +88,19 @@ public class IOUtil
     if (geomList.size() == 1)
       return (Geometry) geomList.get(0);
     
-    // TODO: turn polygons into a GC   
-    //return geomFact.buildGeometry(geomList);
+    return geomFact.createGeometryCollection(GeometryFactory.toGeometryArray(geomList));
+  }
+  
+  public static Geometry readGeometriesFromWKBHexString(String wkb, GeometryFactory geomFact)
+  throws ParseException, IOException 
+  {
+    WKBReader reader = new WKBReader(geomFact);
+    WKBHexFileReader fileReader = new WKBHexFileReader(new StringReader(wkb), reader);
+    List geomList = fileReader.read();
+    
+    if (geomList.size() == 1)
+      return (Geometry) geomList.get(0);
+    
     return geomFact.createGeometryCollection(GeometryFactory.toGeometryArray(geomList));
   }
   
