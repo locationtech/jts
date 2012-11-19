@@ -34,7 +34,7 @@ package com.vividsolutions.jtstest.testbuilder.ui.tools;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jtstest.testbuilder.geom.GeometryVertexBoxDeleter;
+import com.vividsolutions.jtstest.testbuilder.geom.GeometryBoxDeleter;
 
 /**
  * Deletes vertices within a selection box from a geometry component
@@ -57,7 +57,7 @@ public class DeleteVertexTool extends BoxBandTool {
   {      
     Envelope env = getBox().getEnvelopeInternal();
     Geometry g = geomModel().getGeometry();
-    Geometry edit = GeometryVertexBoxDeleter.delete(g, env);
+    Geometry edit = GeometryBoxDeleter.delete(g, env);
     geomModel().setGeometry(edit);
   }
 

@@ -6,19 +6,23 @@ import com.vividsolutions.jts.geom.util.*;
 
 /**
  * Deletes vertices or components inside a given box from a geometry.
+ * If the box completely contains one or more components
+ * (including polygon holes), those components are deleted
+ * and the operation stops.
+ * Otherwise if the box contains a subset of vertices 
+ * from a component, those vertices are deleted. 
  * When deleting vertices only <i>one</i> component of the geometry
- * is modified
- * (the first one found which has vertices in the box).
+ * is modified (the first one found which has vertices in the box).
  * 
  * @author Martin Davis
  *
  */
-public class GeometryVertexBoxDeleter 
+public class GeometryBoxDeleter 
 {
   public static Geometry delete(Geometry geom, 
       Envelope env)
   {
-    Geometry gComp = deleteComponent(geom, env);
+    Geometry gComp = deleteComponents(geom, env);
     if (gComp != null) return gComp;
     
     // otherwise, try and edit vertices
@@ -29,7 +33,7 @@ public class GeometryVertexBoxDeleter
     return geom;
   }
   
-  private static Geometry deleteComponent(Geometry geom, Envelope env)
+  private static Geometry deleteComponents(Geometry geom, Envelope env)
   {
     GeometryEditor editor = new GeometryEditor();
     BoxDeleteComponentOperation compOp = new BoxDeleteComponentOperation(env);
