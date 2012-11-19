@@ -5,7 +5,8 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
 
 /**
- * Deletes vertices or components inside a given box from a geometry.
+ * Deletes vertices or components from a geometry
+ * which lie inside a given box.
  * If the box completely contains one or more components
  * (including polygon holes), those components are deleted
  * and the operation stops.
