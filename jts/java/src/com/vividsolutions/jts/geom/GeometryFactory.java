@@ -366,11 +366,12 @@ public class GeometryFactory
   }
 
   /**
-   * Creates a MultiPoint using the given CoordinateSequence.
-   * A a null or empty CoordinateSequence will create an empty MultiPoint.
+   * Creates a {@link MultiPoint} using the 
+   * points in the given {@link CoordinateSequence}.
+   * A <code>null</code> or empty CoordinateSequence creates an empty MultiPoint.
    *
    * @param coordinates a CoordinateSequence (possibly empty), or <code>null</code>
-   * @return a MultiPoint object
+   * @return a MultiPoint geometry
    */
   public MultiPoint createMultiPoint(CoordinateSequence coordinates) {
     if (coordinates == null) {
@@ -378,7 +379,10 @@ public class GeometryFactory
     }
     Point[] points = new Point[coordinates.size()];
     for (int i = 0; i < coordinates.size(); i++) {
-      points[i] = createPoint(coordinates.getCoordinate(i));
+      CoordinateSequence ptSeq = getCoordinateSequenceFactory()
+        .create(1, coordinates.getDimension());
+      CoordinateSequences.copy(coordinates, i, ptSeq, 0, 1);
+      points[i] = createPoint(ptSeq);
     }
     return createMultiPoint(points);
   }

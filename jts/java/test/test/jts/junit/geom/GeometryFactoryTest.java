@@ -33,13 +33,16 @@
 
 package test.jts.junit.geom;
 
-import test.jts.*;
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
@@ -78,6 +81,22 @@ public class GeometryFactoryTest extends TestCase {
     Geometry g2 = geometryFactory.createGeometry(g);
     g.getCoordinateSequence().setOrdinate(0, 0, 99);
     assertTrue(! g.equalsExact(g2));
+  }
+  
+  public void testMultiPointCS()
+  {
+    GeometryFactory gf = new GeometryFactory(new PackedCoordinateSequenceFactory());
+    CoordinateSequence mpSeq = gf.getCoordinateSequenceFactory().create(1, 4);
+    mpSeq.setOrdinate(0, 0, 50);
+    mpSeq.setOrdinate(0, 1, -2);
+    mpSeq.setOrdinate(0, 2, 10);
+    mpSeq.setOrdinate(0, 3, 20);
+    
+    MultiPoint mp = gf.createMultiPoint(mpSeq);
+    CoordinateSequence pSeq = ((Point)mp.getGeometryN(0)).getCoordinateSequence();
+    assertEquals(4, pSeq.getDimension());
+    for (int i = 0; i < 4; i++)
+      assertEquals(mpSeq.getOrdinate(0, i), pSeq.getOrdinate(0, i));
   }
   
   private void checkCreateGeometryExact(String wkt) throws ParseException
