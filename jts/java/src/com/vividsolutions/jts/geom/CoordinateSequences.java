@@ -140,6 +140,7 @@ public class CoordinateSequences {
   public static CoordinateSequence ensureValidRing(CoordinateSequenceFactory fact, CoordinateSequence seq)
   {
   	int n = seq.size();
+  	// empty sequence is valid
   	if (n == 0) return seq; 
   	// too short - make a new one
   	if (n <= 3) 
