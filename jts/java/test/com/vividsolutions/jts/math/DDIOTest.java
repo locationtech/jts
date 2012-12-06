@@ -147,8 +147,7 @@ public class DDIOTest extends TestCase {
 		int count = 0;
 		while (xdd.doubleValue() > 1e-300) {
 			count++;
-			if (count == 100)
-				count = count;
+
 			double x = xdd.doubleValue();
 			DD xSqrt = xdd.sqrt();
 			String s = xSqrt.toString();
