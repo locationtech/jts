@@ -236,12 +236,7 @@ public class MiscellaneousTest extends TestCase {
     GeometryCollection g = geometryFactory.createGeometryCollection(null);
     assertEquals(-1, g.getDimension());
     assertEquals(new Envelope(), g.getEnvelopeInternal());
-    try {
-      g.isSimple();
-      assertTrue(false);
-    }
-    catch (IllegalArgumentException e) {
-    }
+    assertTrue(g.isSimple());
   }
 
   public void testEmptyMultiPoint() throws Exception {

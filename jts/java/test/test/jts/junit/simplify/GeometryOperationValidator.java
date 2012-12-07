@@ -31,12 +31,26 @@ public class GeometryOperationValidator
     return this;
   }
 
+  public boolean isAllTestsPassed()
+  {
+    try {
+      test();
+    }
+    catch (Throwable e) {
+      return false;
+    }
+    return true;
+  }
+  /**
+   * Tests if the result is valid.
+   * Throws an exception if result is not valid.
+   * This allows chaining multiple tests together.
+   * 
+   * @throws Exception if the result is not valid.
+   */
   public void test()
       throws Exception
   {
-//    inputGeom = rdr.read(wkt);
-//    simplifiedGeom = TopologyPreservingSimplifier.simplify(inputGeom, tolerance);
-//    System.out.println(simplifiedGeom);
     testSameStructure();
     testValid();
     testExpectedResult();

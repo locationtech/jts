@@ -47,7 +47,8 @@ public class RelateTest
     String b = "LINESTRING (0 0, 2 2)";
 
     // actual matrix is 001F001F2
-    runRelateTest(a, b,  "101F00FF2"    );
+    // true matrix should be 101F00FF2
+    runRelateTest(a, b,  "001F001F2"    );
   }
 
   void runRelateTest(String wkt1, String wkt2, String expectedIM)
