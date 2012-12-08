@@ -13,7 +13,7 @@ for %%i in (..\lib\*.*) do (
  call :setclass
 )  
 
-java com.vividsolutions.jtstest.testrunner.TopologyTestApp -Files ..\testxml\stmlf -geomop com.vividsolutions.jtstest.testrunner.geomop.OverlayValidatedGeometryOperation
+java com.vividsolutions.jtstest.testrunner.TopologyTestApp -Files ..\testxml\stmlf -geomop com.vividsolutions.jtstest.geomop.OverlayValidatedGeometryOperation
 pause
 
 goto :eof
