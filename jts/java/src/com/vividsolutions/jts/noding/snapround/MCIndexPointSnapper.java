@@ -1,13 +1,13 @@
 package com.vividsolutions.jts.noding.snapround;
 
-import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.noding.*;
-import com.vividsolutions.jts.algorithm.LineIntersector;
-import com.vividsolutions.jts.index.chain.*;
-import com.vividsolutions.jts.index.*;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.index.ItemVisitor;
+import com.vividsolutions.jts.index.SpatialIndex;
+import com.vividsolutions.jts.index.chain.MonotoneChain;
+import com.vividsolutions.jts.index.chain.MonotoneChainSelectAction;
 import com.vividsolutions.jts.index.strtree.STRtree;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
+import com.vividsolutions.jts.noding.NodedSegmentString;
+import com.vividsolutions.jts.noding.SegmentString;
 
 /**
  * "Snaps" all {@link SegmentString}s in a {@link SpatialIndex} containing
@@ -90,11 +90,10 @@ public class MCIndexPointSnapper
       if (parentEdge != null) {
         if (ss == parentEdge && 
             (startIndex == hotPixelVertexIndex
-                || startIndex+1 == hotPixelVertexIndex
                 ))
           return;
       }
-      isNodeAdded = isNodeAdded || hotPixel.addSnappedNode(ss, startIndex);
+      isNodeAdded = hotPixel.addSnappedNode(ss, startIndex);
     }
 
   }
