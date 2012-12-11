@@ -171,7 +171,7 @@ public class WKBWriter
    * Converts a byte array to a hexadecimal string.
    * 
    * @param bytes
-   * @return
+   * @return a string of hexadecimal digits
    * 
    * @deprecated
    */
@@ -227,7 +227,7 @@ public class WKBWriter
    * the given dimension (2 or 3) for output coordinates
    * and {@link ByteOrderValues#BIG_ENDIAN} byte order.
    * If the input geometry has a small coordinate dimension,
-   * coordinates will be padded with {@link NULL_ORDINATE}.
+   * coordinates will be padded with {@link Coordinate#NULL_ORDINATE}.
    *
    * @param outputDimension the coordinate dimension to output (2 or 3)
    */
@@ -241,8 +241,8 @@ public class WKBWriter
    * and {@link ByteOrderValues#BIG_ENDIAN} byte order. This constructor also
    * takes a flag to control whether srid information will be
    * written.
-   * If the input geometry has a small coordinate dimension,
-   * coordinates will be padded with {@link NULL_ORDINATE}.
+   * If the input geometry has a smaller coordinate dimension,
+   * coordinates will be padded with {@link Coordinate#NULL_ORDINATE}.
    *
    * @param outputDimension the coordinate dimension to output (2 or 3)
    * @param includeSRID indicates whether SRID should be written

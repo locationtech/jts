@@ -1,7 +1,7 @@
 package com.vividsolutions.jts.simplify;
 
-import java.util.*;
-import com.vividsolutions.jts.algorithm.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Simplifies a collection of {@link TaggedLineString}s, preserving topology
