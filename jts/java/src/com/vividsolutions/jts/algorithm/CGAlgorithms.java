@@ -114,8 +114,10 @@ public class CGAlgorithms
      * clear this is an appropriate patch.
      * 
      */
-    //return ShewchuksDeterminant.orientationIndex(p1, p2, q);
     return CGAlgorithmsDD.orientationIndex(p1, p2, q);
+    // testing only
+    //return ShewchuksDeterminant.orientationIndex(p1, p2, q);
+    // previous implementation - not quite fully robust
     //return RobustDeterminant.orientationIndex(p1, p2, q);
     
   }
