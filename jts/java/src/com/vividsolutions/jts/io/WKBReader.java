@@ -38,12 +38,16 @@ import com.vividsolutions.jts.geom.*;
 /**
  * Reads a {@link Geometry}from a byte stream in Well-Known Binary format.
  * Supports use of an {@link InStream}, which allows easy use
- * with arbitary byte stream sources.
+ * with arbitrary byte stream sources.
  * <p>
  * This class reads the format describe in {@link WKBWriter}.  
  * It also partially handles
  * the <b>Extended WKB</b> format used by PostGIS, 
  * by parsing and storing SRID values.
+ * The reader repairs structurally-invalid input
+ * (specifically, LineStrings and LinearRings which contain
+ * too few points have vertices added,
+ * and non-closed rings are closed).
  * <p>
  * This class is designed to support reuse of a single instance to read multiple
  * geometries. This class is not thread-safe; each thread should create its own
@@ -96,7 +100,11 @@ public class WKBReader
   private int inputDimension = 2;
   private boolean hasSRID = false;
   private int SRID = 0;
-  private boolean isRepairRings = false;
+  /**
+   * true if structurally invalid input should be reported rather than repaired.
+   * At some point this could be made client-controllable.
+   */
+  private boolean isStrict = false;
   private ByteOrderDataInStream dis = new ByteOrderDataInStream();
   private double[] ordValues;
 
@@ -223,7 +231,7 @@ public class WKBReader
   private LineString readLineString() throws IOException
   {
     int size = dis.readInt();
-    CoordinateSequence pts = readCoordinateSequence(size);
+    CoordinateSequence pts = readCoordinateSequenceLineString(size);
     return factory.createLineString(pts);
   }
 
@@ -312,12 +320,20 @@ public class WKBReader
     return seq;
   }
 
+  private CoordinateSequence readCoordinateSequenceLineString(int size) throws IOException
+  {
+    CoordinateSequence seq = readCoordinateSequence(size);
+    if (isStrict) return seq;
+    if (seq.size() == 0 || seq.size() >= 2) return seq;
+    return CoordinateSequences.extend(csFactory, seq, 2);
+  }
+  
   private CoordinateSequence readCoordinateSequenceRing(int size) throws IOException
   {
-  	CoordinateSequence seq = readCoordinateSequence(size);
-  	if (! isRepairRings) return seq;
-  	if (CoordinateSequences.isRing(seq)) return seq;
-  	return CoordinateSequences.ensureValidRing(csFactory, seq);
+    CoordinateSequence seq = readCoordinateSequence(size);
+    if (isStrict) return seq;
+    if (CoordinateSequences.isRing(seq)) return seq;
+    return CoordinateSequences.ensureValidRing(csFactory, seq);
   }
 
   /**

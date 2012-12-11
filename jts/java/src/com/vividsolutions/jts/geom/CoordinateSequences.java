@@ -155,13 +155,26 @@ public class CoordinateSequences {
   
   private static CoordinateSequence createClosedRing(CoordinateSequenceFactory fact, CoordinateSequence seq, int size)
   {
-  	CoordinateSequence newseq = fact.create(size, seq.getDimension());
-  	int n = seq.size();
-  	copy(seq, 0, newseq, 0, n);
-  	// fill remaining coordinates with start point
-  	for (int i = n; i < size; i++)
-  		copy(seq, 0, newseq, i, 1);
-  	return newseq;
+    CoordinateSequence newseq = fact.create(size, seq.getDimension());
+    int n = seq.size();
+    copy(seq, 0, newseq, 0, n);
+    // fill remaining coordinates with start point
+    for (int i = n; i < size; i++)
+      copy(seq, 0, newseq, i, 1);
+    return newseq;
+  }
+  
+  public static CoordinateSequence extend(CoordinateSequenceFactory fact, CoordinateSequence seq, int size)
+  {
+    CoordinateSequence newseq = fact.create(size, seq.getDimension());
+    int n = seq.size();
+    copy(seq, 0, newseq, 0, n);
+    // fill remaining coordinates with end point, if it exists
+    if (n > 0) {
+      for (int i = n; i < size; i++)
+        copy(seq, n-1, newseq, i, 1);
+    }
+    return newseq;
   }
   
 }
