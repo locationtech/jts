@@ -76,6 +76,18 @@ public class LinearLocation
   }
 
   /**
+   * Creates a new location equal to a given one.
+   * 
+   * @param loc a LinearLocation
+   */
+  public LinearLocation(LinearLocation loc)
+  {
+    this.componentIndex = loc.componentIndex;
+    this.segmentIndex = loc.segmentIndex;
+    this.segmentFraction = loc.segmentFraction;
+  }
+
+  /**
    * Ensures the individual values are locally valid.
    * Does <b>not</b> ensure that the indexes are valid for
    * a particular linear geometry.

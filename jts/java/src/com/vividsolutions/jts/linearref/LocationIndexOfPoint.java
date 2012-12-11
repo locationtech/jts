@@ -109,6 +109,11 @@ class LocationIndexOfPoint
         }
       }
     }
+    if (minDistance == Double.MAX_VALUE) {
+      // no minimum was found past minLocation, so return it
+      return new LinearLocation(minIndex);
+    }
+    // otherwise, return computed location
     LinearLocation loc = new LinearLocation(minComponentIndex, minSegmentIndex, minFrac);
     return loc;
   }

@@ -68,9 +68,8 @@ class LengthIndexOfPoint
     double closestAfter = indexOfFromStart(inputPt, minIndex);
     /**
      * Return the minDistanceLocation found.
-     * This will not be null, since it was initialized to minLocation
      */
-    Assert.isTrue(closestAfter > minIndex,
+    Assert.isTrue(closestAfter >= minIndex,
                   "computed index is before specified minimum index");
     return closestAfter;
   }
