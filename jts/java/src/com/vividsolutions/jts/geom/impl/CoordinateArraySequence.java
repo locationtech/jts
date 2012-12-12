@@ -125,9 +125,10 @@ public class CoordinateArraySequence
    */
   public CoordinateArraySequence(CoordinateSequence coordSeq)
   {
-    dimension = coordSeq.getDimension();
-    if (coordSeq != null)
+    if (coordSeq != null) {
+      dimension = coordSeq.getDimension();
       coordinates = new Coordinate[coordSeq.size()];
+    }
     else
       coordinates = new Coordinate[0];
 
