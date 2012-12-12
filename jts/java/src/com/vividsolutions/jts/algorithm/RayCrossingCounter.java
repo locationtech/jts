@@ -84,6 +84,30 @@ public class RayCrossingCounter
     return counter.getLocation();
 	}
 	
+	 /**
+   * Determines the {@link Location} of a point in a ring. 
+   * 
+   * @param p
+   *            the point to test
+   * @param ring
+   *            a coordinate sequence forming a ring
+   * @return the location of the point in the ring
+   */
+  public static int locatePointInRing(Coordinate p, CoordinateSequence ring) {
+    RayCrossingCounter counter = new RayCrossingCounter(p);
+
+    Coordinate p1 = new Coordinate();
+    Coordinate p2 = new Coordinate();
+    for (int i = 1; i < ring.size(); i++) {
+      ring.getCoordinate(i, p1);
+      ring.getCoordinate(i - 1, p2);
+      counter.countSegment(p1, p2);
+      if (counter.isOnSegment())
+        return counter.getLocation();
+    }
+    return counter.getLocation();
+  }
+
 	private Coordinate p;
 	private int crossingCount = 0;
 	// true if the test point lies on an input segment
