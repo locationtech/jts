@@ -79,7 +79,7 @@ public class VoronoiDiagramBuilder
 	 * Sets the sites (point or vertices) which will be diagrammed
 	 * from a collection of {@link Coordinate}s.
 	 * 
-	 * @param geom a collection of Coordinates.
+	 * @param coords a collection of Coordinates.
 	 */
 	public void setSites(Collection coords)
 	{

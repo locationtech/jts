@@ -183,8 +183,8 @@ public class ShewchuksDeterminant
    * @param pa a coordinate
    * @param pb a coordinate
    * @param pc a coordinate
-   * @return the orientation index if it can be computed safely
-   * @return i > 1 if the orientation index cannot be computed safely
+   * @return the orientation index if it can be computed safely, or
+   * i > 1 if the orientation index cannot be computed safely
    */
   public static int orientationIndexFilter(Coordinate pa, Coordinate pb, Coordinate pc)
   {
@@ -242,9 +242,9 @@ public class ShewchuksDeterminant
    * @param q
    *          the point to compute the direction to
    * 
-   * @return 1 if q is counter-clockwise (left) from p1-p2
-   * @return -1 if q is clockwise (right) from p1-p2
-   * @return 0 if q is collinear with p1-p2
+   * @return 1 if q is counter-clockwise (left) from p1-p2;
+   * -1 if q is clockwise (right) from p1-p2;
+   * 0 if q is collinear with p1-p2
    */
   public static int orientationIndex(Coordinate p1, Coordinate p2, Coordinate q)
   {

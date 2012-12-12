@@ -46,7 +46,7 @@ public class TaggedLineStringSimplifier
    * 
    * @param line the linestring to simplify
    */
-  public void simplify(TaggedLineString line)
+  void simplify(TaggedLineString line)
   {
     this.line = line;
     linePts = line.getParentCoordinates();

@@ -131,7 +131,8 @@ public class GeometrySnapper
    * of the source geometry
    * to the vertices of the given snap geometry.
    *
-   * @param snapGeom a geometry to snap the source to
+   *@param snapTolerance the snapping tolerance
+   *@param cleanResult whether the result should be made valid
    * @return a new snapped Geometry
    */
   public Geometry snapToSelf(double snapTolerance, boolean cleanResult)

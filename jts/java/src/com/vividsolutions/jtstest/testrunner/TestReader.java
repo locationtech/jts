@@ -429,8 +429,8 @@ public class TestReader
 		 * The default is to leave this unspecified .
 		 * 
 		 * @param runElement
-		 * @return an instance of the GeometryOperation class, if specified
-		 * @return null if no geometry operation was specified
+		 * @return an instance of the GeometryOperation class, if specified, or
+		 * null if no geometry operation was specified
 		 * @throws TestParseException if a parsing error was encountered
 		 */
     private GeometryOperation parseGeometryOperation(Element runElement)
@@ -453,8 +453,8 @@ public class TestReader
 		 * The default is to leave this unspecified .
 		 * 
 		 * @param runElement
-		 * @return an instance of the ResultMatcher class, if specified
-		 * @return null if no result matcher was specified
+		 * @return an instance of the ResultMatcher class, if specified, or
+		 *  null if no result matcher was specified
 		 * @throws TestParseException if a parsing error was encountered
 		 */
     private ResultMatcher parseResultMatcher(Element runElement)
@@ -509,8 +509,8 @@ public class TestReader
    * Gets an instance of a class with the given name, 
    * and ensures that the class is assignable to a specified baseClass.
    * 
-   * @return an instance of the class, if it is assignment-compatible
-   * @return null if the requested class is not assigment-compatible
+   * @return an instance of the class, if it is assignment-compatible, or
+   *  null if the requested class is not assigment-compatible
    */
 	private Object getInstance(String classname, Class baseClass) {
 		Object o = null;

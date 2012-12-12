@@ -90,7 +90,6 @@ public class IteratedNoder
    * the noding.
    *
    * @param segStrings a collection of SegmentStrings to be noded
-   * @return a collection of the noded SegmentStrings
    * @throws TopologyException if the iterated noding fails to converge.
    */
   public void computeNodes(Collection segStrings)

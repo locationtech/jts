@@ -148,7 +148,7 @@ public class IsSimpleOp
    * {@link #isSimple} must be called before this method is called.
    *
    * @return a coordinate for the location of the non-boundary self-intersection
-   * @return null if the geometry is simple
+   * or null if the geometry is simple
    */
   public Coordinate getNonSimpleLocation()
   {

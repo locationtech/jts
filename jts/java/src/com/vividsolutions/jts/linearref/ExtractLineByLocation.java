@@ -11,7 +11,7 @@ class ExtractLineByLocation
 {
   /**
    * Computes the subline of a {@link LineString} between
-   * two {@link LineStringLocation}s on the line.
+   * two {@link LinearLocation}s on the line.
    * If the start location is after the end location,
    * the computed geometry is reversed.
    *

@@ -74,9 +74,9 @@ public class ByteOrderDataInStream
   }
 
   /**
+   * Reads a byte value
    *
-   *
-   * @return
+   * @return the byte read
    */
   public byte readByte()
   	throws IOException

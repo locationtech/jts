@@ -39,7 +39,7 @@ import com.vividsolutions.jtstest.testrunner.Result;
  * A {@link GeometryOperation} which logs
  * the input and output from another 
  * {@link GeometryOperation}.
- * The log is sent to {@link System.out}.
+ * The log is sent to {@link System#out}.
  * 
  * @author mbdavis
  *

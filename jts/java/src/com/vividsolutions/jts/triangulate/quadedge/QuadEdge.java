@@ -222,7 +222,7 @@ public class QuadEdge
     /**
      * Sets the connected edge
      * 
-     * @param nextEdge edge
+     * @param next edge
      */
     public void setNext(QuadEdge next) {
         this.next = next;

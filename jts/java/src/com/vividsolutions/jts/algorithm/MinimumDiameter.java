@@ -196,7 +196,6 @@ public class MinimumDiameter
    * Leaves the width information in the instance variables.
    *
    * @param pts
-   * @return
    */
   private void computeConvexRingMinDiameter(Coordinate[] pts)
   {

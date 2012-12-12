@@ -55,7 +55,7 @@ public abstract class NodeBase implements Serializable {
    * If none does, returns -1.
    * 
    * @return the index of the subquad that wholly contains the given envelope
-   * @return -1 if no subquad wholly contains the envelope
+   * or -1 if no subquad wholly contains the envelope
    */
   public static int getSubnodeIndex(Envelope env, double centrex, double centrey)
   {

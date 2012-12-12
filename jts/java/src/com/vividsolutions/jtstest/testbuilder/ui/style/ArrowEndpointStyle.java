@@ -16,10 +16,6 @@ public class ArrowEndpointStyle
   // default in case colour is not set
   private Color color = Color.RED;
 
-  /**
-   * @param finAngle degrees
-   * @param finLength pixels
-   */
   public ArrowEndpointStyle(Color color, boolean start, boolean filled) {
       super(start);
       this.color = color;
@@ -46,8 +42,6 @@ public class ArrowEndpointStyle
   }
 
   /**
-   * @param tail
-   *          the tail of the whole arrow; just used to determine angle
    * @param finLength
    *          required distance from the tip to each fin's tip
    */

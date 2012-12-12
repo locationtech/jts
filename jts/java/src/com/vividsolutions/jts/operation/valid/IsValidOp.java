@@ -160,7 +160,7 @@ public class IsValidOp
    * or null if the geometry is valid.
    * 
    * @return the validation error, if the geometry is invalid
-   * @return null if the geometry is valid
+   * or null if the geometry is valid
    */
   public TopologyValidationError getValidationError()
   {

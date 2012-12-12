@@ -197,7 +197,7 @@ public class QuadEdgeSubdivision {
 	 * 
 	 * @param o
 	 * @param d
-	 * @return
+	 * @return a new quadedge
 	 */
 	public QuadEdge makeEdge(Vertex o, Vertex d) {
 		QuadEdge q = QuadEdge.makeEdge(o, d);
@@ -212,7 +212,7 @@ public class QuadEdgeSubdivision {
 	 * 
 	 * @param a
 	 * @param b
-	 * @return
+	 * @return a quadedge
 	 */
 	public QuadEdge connect(QuadEdge a, QuadEdge b) {
 		QuadEdge q = QuadEdge.connect(a, b);
@@ -312,9 +312,9 @@ public class QuadEdgeSubdivision {
 	 * Finds a quadedge of a triangle containing a location 
 	 * specified by a {@link Vertex}, if one exists.
 	 * 
-	 * @param x the vertex to locate
+	 * @param v the vertex to locate
 	 * @return a quadedge on the edge of a triangle which touches or contains the location
-	 * @return null if no such triangle exists
+	 * or null if no such triangle exists
 	 */
 	public QuadEdge locate(Vertex v) {
 		return locator.locate(v);
@@ -326,7 +326,7 @@ public class QuadEdgeSubdivision {
 	 * 
 	 * @param p the Coordinate to locate
 	 * @return a quadedge on the edge of a triangle which touches or contains the location
-	 * @return null if no such triangle exists
+	 * or null if no such triangle exists
 	 */
 	public QuadEdge locate(Coordinate p) {
 		return locator.locate(new Vertex(p));
@@ -339,7 +339,7 @@ public class QuadEdgeSubdivision {
 	 * @param p0 a coordinate
 	 * @param p1 another coordinate
 	 * @return the edge joining the coordinates, if present
-	 * @return null if no such edge exists
+	 * or null if no such edge exists
 	 */
 	public QuadEdge locate(Coordinate p0, Coordinate p1) {
 		// find an edge containing one of the points
@@ -536,7 +536,7 @@ public class QuadEdgeSubdivision {
    * Returning a quadedge for each vertex
    * is more efficient than 
    * the alternative of finding the actual vertices
-   * using {@link #getVertices) and then locating 
+   * using {@link #getVertices} and then locating 
    * quadedges attached to them.
    * 
    * @param includeFrame true if the frame vertices should be included
@@ -681,7 +681,7 @@ public class QuadEdgeSubdivision {
 	 * @param edgeStack
 	 * @param includeFrame
 	 * @return the visited triangle edges
-	 * @return null if the triangle should not be visited (for instance, if it is
+	 * or null if the triangle should not be visited (for instance, if it is
 	 *         outer)
 	 */
 	private QuadEdge[] fetchTriangleToVisit(QuadEdge edge, Stack edgeStack,
@@ -865,7 +865,7 @@ public class QuadEdgeSubdivision {
 	 * Gets the cells in the Voronoi diagram for this triangulation.
 	 * The cells are returned as a {@link GeometryCollection} of {@link Polygon}s
    * <p>
-   * The userData of each polygon is set to be the {@link Coordinate)
+   * The userData of each polygon is set to be the {@link Coordinate}
    * of the cell site.  This allows easily associating external 
    * data associated with the sites to the cells.
 	 * 
@@ -882,7 +882,7 @@ public class QuadEdgeSubdivision {
 	 * Gets a List of {@link Polygon}s for the Voronoi cells 
 	 * of this triangulation.
    * <p>
-   * The userData of each polygon is set to be the {@link Coordinate)
+   * The userData of each polygon is set to be the {@link Coordinate}
    * of the cell site.  This allows easily associating external 
    * data associated with the sites to the cells.
 	 * 
@@ -912,7 +912,7 @@ public class QuadEdgeSubdivision {
    * Gets the Voronoi cell around a site specified
    * by the origin of a QuadEdge.
    * <p>
-   * The userData of the polygon is set to be the {@link Coordinate)
+   * The userData of the polygon is set to be the {@link Coordinate}
    * of the site.  This allows attaching external 
    * data associated with the site to this cell polygon.
    * 

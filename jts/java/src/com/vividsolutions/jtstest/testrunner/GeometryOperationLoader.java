@@ -12,7 +12,8 @@ public class GeometryOperationLoader
 {
   /**
    * If anything bad happens while creating the geometry operation, just print a message and fail
-   * @param classname
+   * @param classLoader
+   * @param geomOpClassname
    */
   public static GeometryOperation createGeometryOperation(ClassLoader classLoader, String geomOpClassname)
   {

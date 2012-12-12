@@ -76,7 +76,7 @@ import com.vividsolutions.jts.util.Assert;
  * For a connected set of edges in a graph,
  * <i>Euler's Theorem</i> states that there is a sequence containing each edge once
  * <b>if and only if</b> there are no more than 2 nodes of odd degree.
- * If it is not possible to find a sequence, the {@link #isSequenceable} method
+ * If it is not possible to find a sequence, the {@link #isSequenceable()} method
  * will return <code>false</code>.
  *
  * @version 1.7

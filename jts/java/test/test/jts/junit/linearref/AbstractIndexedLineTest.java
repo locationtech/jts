@@ -3,11 +3,12 @@ package test.jts.junit.linearref;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.linearref.LocationIndexedLine;
 
 import junit.framework.TestCase;
 
 /**
- * Tests the {@link LocationIndexedLine} class
+ * Base class for linear referencing class unit tests.
  */
 public abstract class AbstractIndexedLineTest extends TestCase {
 
@@ -43,8 +44,6 @@ public abstract class AbstractIndexedLineTest extends TestCase {
 
   /**
    * Tests that duplicate coordinates are handled correctly.
-   *
-   * @throws Exception
    */
   public void testPartOfSegmentContainingDuplicateCoords()
   {

@@ -32,7 +32,7 @@ public class SwingUtil {
      * </pre>
      * @param description
      * @param extension
-     * @return
+     * @return the file filter
      */
     public static FileFilter createFileFilter(final String description, String extension)
     {
@@ -52,8 +52,8 @@ public class SwingUtil {
      * 
      * @param comp
      * @param fileChooser
-     * @return filename chosen
-     * @return null if choose was cancelled for some reason
+     * @return filename chosen, or
+     * null if choose was cancelled for some reason
      */
     public static String chooseFilenameWithConfirm(Component comp, JFileChooser fileChooser) {
       try {

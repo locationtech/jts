@@ -69,7 +69,7 @@ public abstract class PlanarGraph
    *
    * @param pt the location to query
    * @return the node found
-   * @return <code>null</code> if this graph contains no node at the location
+   * or <code>null</code> if this graph contains no node at the location
    */
   public Node findNode(Coordinate pt)
   {

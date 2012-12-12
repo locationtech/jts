@@ -5,7 +5,6 @@ import com.vividsolutions.jts.geom.*;
 
 /**
  * Represents a {@link LineString} which can be modified to a simplified shape.  
- * Every line segment in the parent LineString is represented as a {@link TaggedLineSegment}.
  * This class provides an attribute which specifies the minimum allowable length
  * for the modified result.
  * 

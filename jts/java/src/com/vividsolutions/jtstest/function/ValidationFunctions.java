@@ -14,7 +14,7 @@ public class ValidationFunctions
    * Errors are returned as points at the invalid location
    * 
    * @param g
-   * @return
+   * @return the invalid locations, if any
    */
   public static Geometry invalidLocations(Geometry g)
   {

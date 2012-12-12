@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.vividsolutions.jts.densify.Densifier;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.operation.distance.DistanceOp;
 import com.vividsolutions.jts.operation.distance.IndexedFacetDistance;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
 import com.vividsolutions.jts.geom.util.*;

@@ -27,7 +27,7 @@ public class TriPredicate
    * @param a a vertex of the triangle
    * @param b a vertex of the triangle
    * @param c a vertex of the triangle
-   * @param P the point to test
+   * @param p the point to test
    * @return true if this point is inside the circle defined by the points a, b, c
    */
   public static boolean isInCircle(
@@ -62,7 +62,7 @@ public class TriPredicate
    * @param a a vertex of the triangle
    * @param b a vertex of the triangle
    * @param c a vertex of the triangle
-   * @param P the point to test
+   * @param p the point to test
    * @return true if this point is inside the circle defined by the points a, b, c
    */
   public static boolean isInCircleRobust(
@@ -80,7 +80,7 @@ public class TriPredicate
    * @param a a vertex of the triangle
    * @param b a vertex of the triangle
    * @param c a vertex of the triangle
-   * @param P the point to test
+   * @param p the point to test
    * @return true if this point is inside the circle defined by the points a, b, c
    */
   public static boolean isInCircleDD(

@@ -404,7 +404,7 @@ class PolygonizeGraph
    * In order to handle large recursion depths efficiently,
    * an explicit recursion stack is used
    *
-   * @return a List containing the {@link LineStrings} that formed dangles
+   * @return a List containing the {@link LineString}s that formed dangles
    */
   public Collection deleteDangles()
   {

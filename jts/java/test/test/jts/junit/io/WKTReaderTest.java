@@ -48,7 +48,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 
 /**
- * Test for {@link WKTReaderImpl}
+ * Test for {@link WKTReader}
  *
  * @version 1.7
  */

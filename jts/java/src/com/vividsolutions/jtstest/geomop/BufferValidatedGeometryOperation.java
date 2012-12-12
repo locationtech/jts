@@ -91,7 +91,7 @@ implements GeometryOperation
    * @param opName
    * @param geometry
    * @param args
-   * @return
+   * @return the result
    * @throws Exception
    * @see GeometryOperation#invoke
    */

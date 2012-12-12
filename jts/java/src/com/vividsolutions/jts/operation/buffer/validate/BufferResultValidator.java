@@ -75,7 +75,7 @@ public class BufferResultValidator
    * @param distance
    * @param result
    * @return an appropriate error message
-   * @return null if the buffer is valid
+   * or null if the buffer is valid
    */
   public static String isValidMsg(Geometry g, double distance, Geometry result)
   {
@@ -132,7 +132,7 @@ public class BufferResultValidator
    * of the discrepancy.
    * 
    * @return a geometric error indicator
-   * @return null if no error was found
+   * or null if no error was found
    */
   public Geometry getErrorIndicator()
   {

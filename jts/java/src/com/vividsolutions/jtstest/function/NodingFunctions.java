@@ -79,7 +79,7 @@ public class NodingFunctions
    * 
    * @param geom
    * @param scaleFactor
-   * @return
+   * @return the noded geometry
    */
   public static Geometry scaledNoding(Geometry geom, double scaleFactor)
   {

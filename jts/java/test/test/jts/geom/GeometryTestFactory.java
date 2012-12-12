@@ -92,8 +92,8 @@ public class GeometryTestFactory {
 
   /**
    * Creates a circle
-   * @param x the centre x coord
-   * @param y the centre y coord
+   * @param basex the centre x coord
+   * @param basey the centre y coord
    * @param size the size of the envelope of the star
    * @param nPts the number of points in the star
    */
@@ -133,10 +133,10 @@ public class GeometryTestFactory {
 
   /**
    * Creates a star from a "circular" sine wave
-   * @param x the centre x coord
-   * @param y the centre y coord
+   * @param basex the centre x coord
+   * @param basey the centre y coord
    * @param size the size of the envelope of the star
-   * @param pointLen the length of an arm of the star
+   * @param armLen the length of an arm of the star
    * @param nArms the number of arms of the star
    * @param nPts the number of points in the star
    */

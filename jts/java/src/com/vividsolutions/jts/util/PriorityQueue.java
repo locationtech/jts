@@ -115,8 +115,7 @@ public class PriorityQueue
 
   /**
    * Remove the smallest item from the priority queue.
-   * @return the smallest item.
-   * @return null if empty
+   * @return the smallest item, or null if empty
    */
   public Object poll() 
   {

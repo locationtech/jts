@@ -243,8 +243,6 @@ public class WKTWriter
    *  Converts a <code>Geometry</code> to its Well-known Text representation.
    *
    *@param  geometry  a <code>Geometry</code> to process
-   *@return           a <Geometry Tagged Text> string (see the OpenGIS Simple
-   *      Features Specification)
    */
   public void write(Geometry geometry, Writer writer)
     throws IOException
@@ -276,8 +274,6 @@ public class WKTWriter
    *  well-known text more readable.
    *
    *@param  geometry  a <code>Geometry</code> to process
-   *@return           a <Geometry Tagged Text> string (see the OpenGIS Simple
-   *      Features Specification), with newlines and spaces
    */
   public void writeFormatted(Geometry geometry, Writer writer)
     throws IOException
@@ -288,8 +284,6 @@ public class WKTWriter
    *  Converts a <code>Geometry</code> to its Well-known Text representation.
    *
    *@param  geometry  a <code>Geometry</code> to process
-   *@return           a <Geometry Tagged Text> string (see the OpenGIS Simple
-   *      Features Specification)
    */
   private void writeFormatted(Geometry geometry, boolean useFormatting, Writer writer)
     throws IOException

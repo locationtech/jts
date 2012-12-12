@@ -134,7 +134,7 @@ public class GMLWriter {
 	 * opening tag of geometries.  Useful in XML-aware environments which 
 	 * parse the geometries before use, such as XSLT.
 	 * 
-	 * @param namespaceMode true if the GML namespace prefix declaration 
+	 * @param emitNamespace true if the GML namespace prefix declaration 
 	 * should be written in the root geometry element
 	 */
 	public void setNamespace(boolean emitNamespace) {
@@ -161,7 +161,7 @@ public class GMLWriter {
 	/**
 	 * Sets the starting column index for pretty printing
 	 * 
-	 * @param arg
+	 * @param indent
 	 */
 	public void setStartingIndentIndex(int indent) {
 		if (indent < 0)
@@ -172,7 +172,7 @@ public class GMLWriter {
 	/**
 	 * Sets the number of coordinates printed per line. 
 	 * 
-	 * @param arg
+	 * @param num
 	 */
 	public void setMaxCoordinatesPerLine(int num) {
 		if (num < 1)
@@ -186,7 +186,6 @@ public class GMLWriter {
 	 * 
 	 * @param geom
 	 * @return String GML2 Encoded Geometry
-	 * @throws IOException 
 	 */
 	public String write(Geometry geom) 
 	{

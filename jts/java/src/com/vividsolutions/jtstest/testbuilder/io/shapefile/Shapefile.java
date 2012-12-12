@@ -94,7 +94,6 @@ public class Shapefile
     /**
      * Initialises a shapefile from disk.
      * Use Shapefile(String) if you don't want to use LEDataInputStream directly (recomened)
-     * @param file A LEDataInputStream that conects to the shapefile to read
      */
     public GeometryCollection read(GeometryFactory geometryFactory) throws IOException,ShapefileException,Exception{
        EndianDataInputStream file = getInputStream();
@@ -145,7 +144,6 @@ public class Shapefile
     /**
      * Initialises a shapefile from disk.
      * Use Shapefile(String) if you don't want to use LEDataInputStream directly (recomened)
-     * @param file A LEDataInputStream that conects to the shapefile to read
      */
     public void readStream(GeometryFactory geometryFactory)
         throws IOException,ShapefileException,Exception

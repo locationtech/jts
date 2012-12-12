@@ -18,7 +18,7 @@ public class LengthLocationMap
    * Computes the {@link LinearLocation} for a
    * given length along a linear {@link Geometry}.
    *
-   * @param line the linear geometry to use
+   * @param linearGeom the linear geometry to use
    * @param length the length index of the location
    * @return the {@link LinearLocation} for the length
    */
@@ -34,7 +34,7 @@ public class LengthLocationMap
    * with control over how the location
    * is resolved at component endpoints.
    *
-   * @param line the linear geometry to use
+   * @param linearGeom the linear geometry to use
    * @param length the length index of the location
    * @param resolveLower if true lengths are resolved to the lowest possible index
    * @return the {@link LinearLocation} for the length
@@ -49,7 +49,7 @@ public class LengthLocationMap
    * Computes the length for a given {@link LinearLocation}
    * on a linear {@link Geometry}.
    *
-   * @param line the linear geometry to use
+   * @param linearGeom the linear geometry to use
    * @param loc the {@link LinearLocation} index of the location
    * @return the length for the {@link LinearLocation}
    */

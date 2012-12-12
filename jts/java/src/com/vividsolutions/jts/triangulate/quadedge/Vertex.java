@@ -52,7 +52,7 @@ import com.vividsolutions.jts.algorithm.*;
  * It is common to want to attach user-defined data to 
  * the vertices of a subdivision.  
  * One way to do this is to subclass <tt>Vertex</tt>
- * to carry any desired information (see {@link ConstraintVertex}.
+ * to carry any desired information.
  * 
  * @author David Skea
  * @author Martin Davis
@@ -155,7 +155,7 @@ public class Vertex
     /**
      * Computes the inner or dot product
      * 
-     * @param v, a vertex
+     * @param v a vertex
      * @return returns the dot product u.v
      */
     double dot(Vertex v) {
@@ -165,7 +165,7 @@ public class Vertex
     /**
      * Computes the scalar product c(v)
      * 
-     * @param v, a vertex
+     * @param v a vertex
      * @return returns the scaled vector
      */
     Vertex times(double c) {
@@ -384,7 +384,7 @@ public class Vertex
      * @param p
      * @param p0
      * @param p1
-     * @return
+     * @return the interpolated Z value
      */
     public static double interpolateZ(Coordinate p, Coordinate p0, Coordinate p1) {
         double segLen = p0.distance(p1);

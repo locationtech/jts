@@ -46,7 +46,6 @@ public interface Boundable {
    * on the subclass of AbstractSTRtree.
    * @return an Envelope (for STRtrees), an Interval (for SIRtrees), or other object
    * (for other subclasses of AbstractSTRtree)
-   * @see AbstractSTRtree.IntersectsOp
    */
   Object getBounds();
 }

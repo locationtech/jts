@@ -65,7 +65,7 @@ public class OrientedCoordinateArray
    *
    * @param pts the array to test
    * @return <code>true</code> if the points are oriented forwards
-   * @return <code>false</code if the points are oriented in reverse
+   * or <code>false</code if the points are oriented in reverse
    */
   private static boolean orientation(Coordinate[] pts)
   {
@@ -75,9 +75,9 @@ public class OrientedCoordinateArray
   /**
    * Compares two {@link OrientedCoordinateArray}s for their relative order
    *
-   * @return -1 this one is smaller
-   * @return 0 the two objects are equal
-   * @return 1 this one is greater
+   * @return -1 this one is smaller;
+   * 0 the two objects are equal;
+   * 1 this one is greater
    */
 
   public int compareTo(Object o1) {

@@ -138,7 +138,7 @@ public class WKBReader
   }
 
   /**
-   * Reads a {@link Geometry} in binary WKB format from an {@link InStream).
+   * Reads a {@link Geometry} in binary WKB format from an {@link InStream}.
    *
    * @param is the stream to read from
    * @return the Geometry read

@@ -114,7 +114,7 @@ public class LengthIndexedLine
    * @param pt a point on the line
    * @return the minimum index of the point
    *
-   * @see project
+   * @see #project(Coordinate)
    */
   public double indexOf(Coordinate pt)
   {
@@ -141,7 +141,7 @@ public class LengthIndexedLine
    * @param minIndex the value the returned index must be greater than
    * @return the index of the point greater than the given minimum index
    *
-   * @see project
+   * @see #project(Coordinate)
    */
   public double indexOfAfter(Coordinate pt, double minIndex)
   {
@@ -203,7 +203,7 @@ public class LengthIndexedLine
   /**
    * Tests whether an index is in the valid index range for the line.
    *
-   * @param length the index to test
+   * @param index the index to test
    * @return <code>true</code> if the index is in the valid range
    */
   public boolean isValidIndex(double index)

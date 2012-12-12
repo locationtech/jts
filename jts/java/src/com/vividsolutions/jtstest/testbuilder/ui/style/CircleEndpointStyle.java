@@ -16,10 +16,6 @@ public class CircleEndpointStyle
   // default in case colour is not set
   private Color color = Color.RED;
 
-  /**
-   * @param finAngle degrees
-   * @param finLength pixels
-   */
   public CircleEndpointStyle(Color color, boolean start, boolean filled) {
       super(start);
       this.color = color;

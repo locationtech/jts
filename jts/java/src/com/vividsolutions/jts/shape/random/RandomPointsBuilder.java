@@ -42,7 +42,7 @@ extends GeometricShapeBuilder
    * Sets a polygonal mask.
    * 
    * @param mask
-   * @ throws IllegalArgumentException if the mask is not polygonal
+   * @throws IllegalArgumentException if the mask is not polygonal
    */
   public void setExtent(Geometry mask)
   {

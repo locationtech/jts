@@ -84,7 +84,7 @@ public class OffsetCurveBuilder
    * @param distance the offset distance
    * 
    * @return a Coordinate array representing the curve
-   * @return null if the curve is empty
+   * or null if the curve is empty
    */
   public Coordinate[] getLineCurve(Coordinate[] inputPts, double distance)
   {
@@ -117,7 +117,7 @@ public class OffsetCurveBuilder
    * as well as rings.
    *
    * @return a Coordinate array representing the curve
-   * @return null if the curve is empty
+   * or null if the curve is empty
    */
   public Coordinate[] getRingCurve(Coordinate[] inputPts, int side, double distance)
   {

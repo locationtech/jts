@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
- * Simplifies a collection of {@link TaggedLineString}s, preserving topology
+ * Simplifies a collection of TaggedLineStrings, preserving topology
  * (in the sense that no new intersections are introduced).
  * This class is essentially just a container for the common
  * indexes used by {@link TaggedLineStringSimplifier}.
@@ -32,7 +32,7 @@ class TaggedLinesSimplifier
   }
 
   /**
-   * Simplify a collection of {@link TaggedLineString}s
+   * Simplify a collection of TaggedLineStrings
    *
    * @param taggedLines the collection of lines to simplify
    */

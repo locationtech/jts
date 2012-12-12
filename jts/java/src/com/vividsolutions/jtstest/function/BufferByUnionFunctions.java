@@ -75,7 +75,7 @@ public class BufferByUnionFunctions {
 	 * 
 	 * @param g
 	 * @param distance
-	 * @return
+	 * @return the buffer geometry
 	 */
   public static Geometry bufferBySegments(Geometry g, double distance)
   {

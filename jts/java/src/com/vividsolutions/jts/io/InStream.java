@@ -36,7 +36,7 @@ import java.io.IOException;
 
 /**
  * A interface for classes providing an input stream of bytes.
- * This interface is similar to the Java {@link InputStream},
+ * This interface is similar to the Java <code>InputStream</code>,
  * but with a narrower interface to make it easier to implement.
  *
  */

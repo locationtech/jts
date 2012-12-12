@@ -181,7 +181,6 @@ class BoundablePair
    * computes a list of new pairs 
    * from the expansion of the larger boundable.
    * 
-   * @return a List of new pairs
    */
   public void expandToQueue(PriorityQueue priQ, double minDistance)
   {

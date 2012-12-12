@@ -36,8 +36,7 @@ public class LayerList
    * 
    * @param pt
    * @param tolerance
-   * @return component found
-   * @return null if no component found
+   * @return component found, or null
    */
   public Geometry getComponent(Coordinate pt, double tolerance)
   {

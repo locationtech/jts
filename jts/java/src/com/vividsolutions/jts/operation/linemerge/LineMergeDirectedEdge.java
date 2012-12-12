@@ -64,7 +64,7 @@ public class LineMergeDirectedEdge extends DirectedEdge {
   /**
    * Returns the directed edge that starts at this directed edge's end point, or null
    * if there are zero or multiple directed edges starting there.  
-   * @return
+   * @return the directed edge
    */
   public LineMergeDirectedEdge getNext() {
     if (getToNode().getDegree() != 2) {

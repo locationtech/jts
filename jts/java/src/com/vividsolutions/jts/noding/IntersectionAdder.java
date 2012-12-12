@@ -41,7 +41,7 @@ import com.vividsolutions.jts.util.Debug;
  * Computes the intersections between two line segments in {@link SegmentString}s
  * and adds them to each string.
  * The {@link SegmentIntersector} is passed to a {@link Noder}.
- * The {@link addIntersections} method is called whenever the {@link Noder}
+ * The {@link SegmentIntersector#processIntersections(SegmentString, int, SegmentString, int)} method is called whenever the {@link Noder}
  * detects that two SegmentStrings <i>might</i> intersect.
  * This class is an example of the <i>Strategy</i> pattern.
  *
@@ -137,7 +137,7 @@ public class IntersectionAdder
    * This method is called by clients
    * of the {@link SegmentIntersector} class to process
    * intersections for two segments of the {@link SegmentString}s being intersected.
-   * Note that some clients (such as {@link MonotoneChain}s) may optimize away
+   * Note that some clients (such as <code>MonotoneChain</code>s) may optimize away
    * this call for segment pairs which they have determined do not intersect
    * (e.g. by an disjoint envelope test).
    */

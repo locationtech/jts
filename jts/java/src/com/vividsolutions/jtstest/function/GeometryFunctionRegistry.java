@@ -237,8 +237,7 @@ public class GeometryFunctionRegistry
    * 
    * @param name
    * @param paramTypes
-   * @return a matching function
-   * @return null if no matching function was found
+   * @return a matching function, or null
    */
   public GeometryFunction find(String name, Class[] paramTypes)
   {
@@ -249,8 +248,7 @@ public class GeometryFunctionRegistry
    * Finds the first function which matches the given name and argument count.
    * 
    * @param name
-   * @return a matching function
-   * @return null if no matching function was found
+   * @return a matching function, or null
    */
   public GeometryFunction find(String name, int argCount)
   {
@@ -267,8 +265,7 @@ public class GeometryFunctionRegistry
    * Finds the first function which matches the given name.
    * 
    * @param name
-   * @return a matching function
-   * @return null if no matching function was found
+   * @return a matching function, or null
    */
   public GeometryFunction find(String name)
   {

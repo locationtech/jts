@@ -33,7 +33,6 @@ public class LinearIterator
 
   /**
    * Invariant: currentLine <> null if the iterator is pointing at a valid coordinate
-   * @throws IllegalArgumentException if linearGeom is not {@link Lineal}
    */
   private LineString currentLine;
   private int componentIndex = 0;

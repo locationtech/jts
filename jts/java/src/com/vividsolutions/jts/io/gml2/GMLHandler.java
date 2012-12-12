@@ -151,10 +151,10 @@ public class GMLHandler extends DefaultHandler {
 	/**
 	 * Tests whether this handler has completed parsing 
 	 * a geometry.
-	 * If this is the case, {@link getGeometry()} can be called
+	 * If this is the case, {@link #getGeometry()} can be called
 	 * to get the value of the parsed geometry.
 	 * 
-	 * @return
+	 * @return if the parsing of the geometry is complete
 	 */
 	public boolean isGeometryComplete()
 	{

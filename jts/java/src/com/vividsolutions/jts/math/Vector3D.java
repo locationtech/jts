@@ -17,7 +17,7 @@ public class Vector3D {
 	 * @param B
 	 * @param C
 	 * @param D
-	 * @return
+	 * @return the dot product
 	 */
 	public static double dot(Coordinate A, Coordinate B, Coordinate C, Coordinate D)
 	{
@@ -65,8 +65,8 @@ public class Vector3D {
 	/**
 	 * Computes the 3D dot-product of two {@link Coordinate}s.
 	 * 
-	 * @param v
-	 *            a vector
+   * @param v1 the first vector
+   * @param v2 the second vector
 	 * @return the dot product of the vectors
 	 */
 	public static double dot(Coordinate v1, Coordinate v2) {

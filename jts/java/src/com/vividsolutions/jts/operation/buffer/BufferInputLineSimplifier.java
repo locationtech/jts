@@ -171,7 +171,7 @@ public class BufferInputLineSimplifier
    * Finds the next non-deleted index, or the end of the point array if none
    * @param index
    * @return the next non-deleted index, if any
-   * @return inputLine.length if there are no more non-deleted indices
+   * or inputLine.length if there are no more non-deleted indices
    */
   private int findNextNonDeletedIndex(int index)
   {

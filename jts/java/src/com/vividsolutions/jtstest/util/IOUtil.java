@@ -74,7 +74,7 @@ public class IOUtil
    * 
    * @param wkt
    * @param geomFact
-   * @return
+   * @return the geometry read
    * @throws ParseException
    * @throws IOException
    */

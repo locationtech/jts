@@ -129,7 +129,7 @@ public class BufferDistanceValidator
    * of the distance discrepancy.
    * 
    * @return a geometric error indicator
-   * @return null if no error was found
+   * or null if no error was found
    */
   public Geometry getErrorIndicator()
   {

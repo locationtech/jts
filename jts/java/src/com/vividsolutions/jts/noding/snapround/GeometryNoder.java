@@ -13,12 +13,12 @@ import com.vividsolutions.jts.noding.snapround.*;
  * The input coordinates are expected to be rounded
  * to the given precision model.
  * This class does not perform that function.
- * {@link GeometryPrecisionReducer} may be used to do this.
+ * <code>GeometryPrecisionReducer</code> may be used to do this.
  * <p>
  * This class does <b>not</b> dissolve the output linework,
  * so there may be duplicate linestrings in the output.  
  * Subsequent processing (e.g. polygonization) may require
- * the linework to be unique.  Using {@link UnaryUnion} is one way
+ * the linework to be unique.  Using <code>UnaryUnion</code> is one way
  * to do this (although this is an inefficient approach).
  * 
  * 
@@ -31,8 +31,7 @@ public class GeometryNoder
 
   /**
    * Creates a new noder which snap-rounds to a grid specified
-   * by the given
-   * {@link PrecisionModel).
+   * by the given {@link PrecisionModel}.
    * 
    * @param pm the precision model for the grid to snap-round to
    */

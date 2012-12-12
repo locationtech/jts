@@ -28,9 +28,9 @@ public class LineStringSnapper
    * @param srcLine a LineString to snap (may be empty)
    * @param snapTolerance the snap tolerance to use
    */
-  public LineStringSnapper(LineString srcLline, double snapTolerance)
+  public LineStringSnapper(LineString srcLine, double snapTolerance)
   {
-    this(srcLline.getCoordinates(), snapTolerance);
+    this(srcLine.getCoordinates(), snapTolerance);
   }
 
   /**
@@ -169,7 +169,7 @@ public class LineStringSnapper
    * @param snapPt the point to snap to
    * @param srcCoords the source segment coordinates
    * @return the index of the snapped segment
-   * @return -1 if no segment snaps to the snap point
+   * or -1 if no segment snaps to the snap point
    */
   private int findSegmentIndexToSnap(Coordinate snapPt, CoordinateList srcCoords)
   {

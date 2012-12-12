@@ -36,7 +36,7 @@ public class LocationIndexedLine
    * The Z-ordinate of the computed point will be interpolated from
    * the Z-ordinates of the line segment containing it, if they exist.
    *
-   * @param length the index of the desired point
+   * @param index the index of the desired point
    * @return the Coordinate at the given index
    */
   public Coordinate extractPoint(LinearLocation index)
@@ -89,7 +89,7 @@ public class LocationIndexedLine
    *
    * @param pt a point on the line
    * @return the index of the point
-   * @see project
+   * @see #project(Coordinate)
    */
   public LinearLocation indexOf(Coordinate pt)
   {
@@ -116,7 +116,7 @@ public class LocationIndexedLine
    * @param minIndex the value the returned index must be greater than
    * @return the index of the point greater than the given minimum index
    *
-   * @see project
+   * @see #project(Coordinate)
    */
   public LinearLocation indexOfAfter(Coordinate pt, LinearLocation minIndex)
   {
@@ -154,7 +154,7 @@ public class LocationIndexedLine
 
   /**
    * Returns the index of the start of the line
-   * @return
+   * @return the location index
    */
   public LinearLocation getStartIndex()
   {
@@ -163,7 +163,7 @@ public class LocationIndexedLine
 
   /**
    * Returns the index of the end of the line
-   * @return
+   * @return the location index
    */
   public LinearLocation getEndIndex()
   {
@@ -173,7 +173,7 @@ public class LocationIndexedLine
   /**
    * Tests whether an index is in the valid index range for the line.
    *
-   * @param length the index to test
+   * @param index the index to test
    * @return <code>true</code> if the index is in the valid range
    */
   public boolean isValidIndex(LinearLocation index)

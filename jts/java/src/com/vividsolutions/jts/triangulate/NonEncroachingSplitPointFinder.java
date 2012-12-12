@@ -84,7 +84,7 @@ public class NonEncroachingSplitPointFinder implements ConstraintSplitPointFinde
      * 
      * @param seg
      * @param encroachPt
-     * @return
+     * @return a split point on the segment
      */
     public static Coordinate projectedSplitPoint(Segment seg, Coordinate encroachPt) {
         LineSegment lineSeg = seg.getLineSegment();

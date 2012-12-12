@@ -28,7 +28,7 @@ public class LinearGeometryBuilder
    * Allows invalid lines to be ignored rather than causing Exceptions.
    * An invalid line is one which has only one unique point.
    *
-   * @param ignoreShortLines <code>true</code> if short lines are to be ignored
+   * @param ignoreInvalidLines <code>true</code> if short lines are to be ignored
    */
   public void setIgnoreInvalidLines(boolean ignoreInvalidLines)
   {
@@ -39,7 +39,7 @@ public class LinearGeometryBuilder
    * Allows invalid lines to be ignored rather than causing Exceptions.
    * An invalid line is one which has only one unique point.
    *
-   * @param ignoreShortLines <code>true</code> if short lines are to be ignored
+   * @param fixInvalidLines <code>true</code> if short lines are to be ignored
    */
   public void setFixInvalidLines(boolean fixInvalidLines)
   {

@@ -115,7 +115,7 @@ implements GeometryFunction, Comparable
 	 * Gets the types of the other function arguments,
 	 * if any.
 	 * 
-	 * @return 
+	 * @return the types
 	 */
 	public Class[] getParameterTypes()
 	{

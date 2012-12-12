@@ -208,7 +208,7 @@ public class PreparedPolygonIntersectsPerfTest
    *  
    * @param g
    * @param lines
-   * @return
+   * @return the count
    */
   public int testPrepGeomNotCached(Geometry g, List lines)
   { 

@@ -28,7 +28,7 @@ public class WKBHexFileReader
    * and a <tt>WKTReader</tt> to use to parse the geometries.
    * 
    * @param file the <tt>File</tt> to read from
-   * @param wktReader the geometry reader to use
+   * @param wkbReader the geometry reader to use
    */
 	public WKBHexFileReader(File file, WKBReader wkbReader)
 	{
@@ -40,7 +40,7 @@ public class WKBHexFileReader
    * Creates a new <tt>WKBHexFileReader</tt>, given the name of the file to read from.
    * 
    * @param filename the name of the file to read from
-   * @param wktReader the geometry reader to use
+   * @param wkbReader the geometry reader to use
    */
   public WKBHexFileReader(String filename, WKBReader wkbReader)
   {
@@ -51,7 +51,7 @@ public class WKBHexFileReader
    * Creates a new <tt>WKBHexFileReader</tt>, given a {@link Reader} to read from.
    * 
    * @param reader the reader to read from
-   * @param wktReader the geometry reader to use
+   * @param wkbReader the geometry reader to use
    */
   public WKBHexFileReader(Reader reader, WKBReader wkbReader)
   {

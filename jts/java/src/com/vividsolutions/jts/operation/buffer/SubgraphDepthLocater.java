@@ -192,7 +192,7 @@ public class SubgraphDepthLocater
      * </pre>
      *
      * @param obj
-     * @return
+     * @return the comparison value
      */
     public int compareTo(Object obj)
     {

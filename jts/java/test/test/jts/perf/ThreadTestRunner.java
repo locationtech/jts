@@ -1,7 +1,7 @@
 package test.jts.perf;
 
 /**
- * Runs a {@link ThreadedTestCase}.
+ * Runs a {@link ThreadTestCase}.
  * 
  * @author Martin Davis
  *

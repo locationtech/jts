@@ -87,7 +87,7 @@ public class CascadedPolygonUnion
 	 * Creates a new instance to union
 	 * the given collection of {@link Geometry}s.
 	 * 
-	 * @param geoms a collection of {@link Polygonal} {@link Geometry}s
+	 * @param polys a collection of {@link Polygonal} {@link Geometry}s
 	 */
 	public CascadedPolygonUnion(Collection polys)
 	{
@@ -107,7 +107,7 @@ public class CascadedPolygonUnion
 	 * Computes the union of the input geometries.
 	 * 
 	 * @return the union of the input geometries
-	 * @return null if no input geometries were provided
+	 * or null if no input geometries were provided
 	 */
 	public Geometry union()
 	{
@@ -234,7 +234,7 @@ public class CascadedPolygonUnion
    * @param list
    * @param index
    * @return the geometry at the given index
-   * @return null if the index is out of range
+   * or null if the index is out of range
    */
   private static Geometry getGeometry(List list, int index)
   {
@@ -273,7 +273,7 @@ public class CascadedPolygonUnion
    * @param g0 a Geometry
    * @param g1 a Geometry
    * @return the union of the input(s)
-   * @return null if both inputs are null
+   * or null if both inputs are null
    */
   private Geometry unionSafe(Geometry g0, Geometry g1)
   {

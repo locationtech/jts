@@ -149,7 +149,7 @@ public class DistanceOp
    * Report the distance between the nearest points on the input geometries.
    *
    * @return the distance between the geometries
-   * @return 0 if either input geometry is empty
+   * or 0 if either input geometry is empty
    * @throws IllegalArgumentException if either input geometry is null
    */
   public double distance()

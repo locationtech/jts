@@ -54,7 +54,7 @@ import com.vividsolutions.jts.io.*;
  * This should not be a problem, since the JTS noders should be
  * able to compute intersections between vertices correctly.
  * <p>
- * The client may either test the {@link #isValid} condition, 
+ * The client may either test the {@link #isValid()} condition, 
  * or request that a suitable {@link TopologyException} be thrown.
  *
  * @version 1.7

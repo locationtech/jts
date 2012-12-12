@@ -128,7 +128,7 @@ public class DelaunayTriangulationBuilder
 	 * Sets the sites (vertices) which will be triangulated
 	 * from a collection of {@link Coordinate}s.
 	 * 
-	 * @param geom a collection of Coordinates.
+	 * @param coords a collection of Coordinates.
 	 */
 	public void setSites(Collection coords)
 	{

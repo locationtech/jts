@@ -68,7 +68,7 @@ public class Matrix
    * @param b a vector of length n
    * 
    * @return a vector containing the solution (if any)
-   * @return null if the system has no or no unique solution
+   * or null if the system has no or no unique solution
    * 
    * @throws IllegalArgumentException if the matrix is the wrong size 
    */

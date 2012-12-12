@@ -144,7 +144,7 @@ public class PolygonBuilder {
    * no shell is returned.
    *
    * @return the shell EdgeRing, if there is one
-   * @return null, if all the rings are holes
+   * or null, if all the rings are holes
    */
   private EdgeRing findShell(List minEdgeRings)
   {
@@ -240,7 +240,7 @@ public class PolygonBuilder {
    * (which is guaranteed to be the case if the hole does not touch its shell)
    *
    * @return containing EdgeRing, if there is one
-   * @return null if no containing EdgeRing is found
+   * or null if no containing EdgeRing is found
    */
   private EdgeRing findEdgeRingContaining(EdgeRing testEr, List shellList)
   {

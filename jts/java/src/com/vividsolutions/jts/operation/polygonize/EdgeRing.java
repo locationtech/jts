@@ -60,7 +60,7 @@ class EdgeRing {
    * (which is guaranteed to be the case if the hole does not touch its shell)
    *
    * @return containing EdgeRing, if there is one
-   * @return null if no containing EdgeRing is found
+   * or null if no containing EdgeRing is found
    */
   public static EdgeRing findEdgeRingContaining(EdgeRing testEr, List shellList)
   {
@@ -102,7 +102,7 @@ class EdgeRing {
    * @param testPts the {@link Coordinate}s to test
    * @param pts an array of {@link Coordinate}s to test the input points against
    * @return a {@link Coordinate} from <code>testPts</code> which is not in <code>pts</code>,
-   * @return null if there is no coordinate not in the list
+   * or null if there is no coordinate not in the list
    * 
    * @deprecated Use CoordinateArrays.ptNotInList instead
    */

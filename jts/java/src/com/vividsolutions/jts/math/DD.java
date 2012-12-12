@@ -1214,7 +1214,7 @@ public strictfp final class DD
    * (E.g. NaN or 0.0)
    * 
    * @return the string for this special number
-   * @return null if the number is not a special number
+   * or null if the number is not a special number
    */
   private String getSpecialNumberString()
   {

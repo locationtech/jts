@@ -142,7 +142,7 @@ public class MinimumClearance
    * 
    * @param g the input geometry
    * @return the value of the minimum clearance distance
-   * @return <tt>LINESTRING EMPTY</tt> if no Minimum Clearance distance exists
+   * or <tt>LINESTRING EMPTY</tt> if no Minimum Clearance distance exists
    */
   public static Geometry getLine(Geometry g)
   {
@@ -173,7 +173,7 @@ public class MinimumClearance
    * <tt>Double.MAX_VALUE</tt> is returned.
    * 
    * @return the value of the minimum clearance distance
-   * @return <tt>Double.MAX_VALUE</tt> if no Minimum Clearance distance exists
+   * or <tt>Double.MAX_VALUE</tt> if no Minimum Clearance distance exists
    */
   public double getDistance()
   {
@@ -190,7 +190,7 @@ public class MinimumClearance
    * <tt>LINESTRING EMPTY</tt> is returned.
    * 
    * @return the value of the minimum clearance distance
-   * @return <tt>LINESTRING EMPTY</tt> if no Minimum Clearance distance exists
+   * or <tt>LINESTRING EMPTY</tt> if no Minimum Clearance distance exists
    */
   public LineString getLine()
   {

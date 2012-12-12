@@ -77,9 +77,9 @@ public class SegmentNode
   }
 
   /**
-   * @return -1 this SegmentNode is located before the argument location
-   * @return 0 this SegmentNode is at the argument location
-   * @return 1 this SegmentNode is located after the argument location
+   * @return -1 this SegmentNode is located before the argument location;
+   * 0 this SegmentNode is at the argument location;
+   * 1 this SegmentNode is located after the argument location
    */
   public int compareTo(Object obj)
   {

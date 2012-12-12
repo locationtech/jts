@@ -117,7 +117,7 @@ class EnvelopeIntersectsVisitor extends ShortCircuitedGeometryVisitor
    * or whether further testing is required.
    * 
    * @return true if an intersection must occur 
-   * @return false if no conclusion about intersection can be made
+   * or false if no conclusion about intersection can be made
    */
   public boolean intersects()
   {
@@ -191,7 +191,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
    * contained in the geometry, or whether further testing is required.
    * 
    * @return true if a corner point is contained 
-   * @return false if no conclusion about intersection can be made
+   * or false if no conclusion about intersection can be made
    */
   public boolean containsPoint()
   {
@@ -264,7 +264,7 @@ class RectangleIntersectsSegmentVisitor extends ShortCircuitedGeometryVisitor
    * Reports whether any segment intersection exists.
    * 
    * @return true if a segment intersection exists
-   * @return false if no segment intersection exists
+   * or false if no segment intersection exists
    */
   public boolean intersects()
   {

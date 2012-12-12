@@ -31,10 +31,6 @@ public class StretchedVertex
 	
 	/**
 	 * Creates a vertex which lies near a vertex
-	 * @param vertexPt
-	 * @param parentLine
-	 * @param index
-	 * @param nearPt
 	 */
 	public StretchedVertex(Coordinate vertexPt, Coordinate[] parentLine, int parentIndex, 
       Coordinate nearPt, Coordinate[] nearPts, int nearIndex)

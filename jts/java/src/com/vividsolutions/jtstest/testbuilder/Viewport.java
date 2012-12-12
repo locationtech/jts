@@ -285,7 +285,7 @@ public class Viewport implements PointTransformation
    * Converts a distance in the view to a distance in the model.
    * 
    * @param viewDist
-   * @return
+   * @return the model distance
    */
   public double toModel(double viewDist)
   {
@@ -296,7 +296,7 @@ public class Viewport implements PointTransformation
    * Converts a distance in the model to a distance in the view.
    * 
    * @param modelDist
-   * @return
+   * @return the view distance
    */
   public double toView(double modelDist)
   {
@@ -325,7 +325,7 @@ public class Viewport implements PointTransformation
    * Gets the magnitude (power of 10)
    * for the basic grid size.
    * 
-   * @return
+   * @return the magnitude
    */
   public int gridMagnitudeModel()
   {
@@ -349,7 +349,7 @@ public class Viewport implements PointTransformation
   /**
    * Gets a PrecisionModel corresponding to the grid size.
    * 
-   * @return
+   * @return the precision model
    */
   public PrecisionModel getGridPrecisionModel()
   {

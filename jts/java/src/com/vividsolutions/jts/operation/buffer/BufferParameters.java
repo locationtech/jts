@@ -180,7 +180,7 @@ public class BufferParameters
    * (in other words, the computed buffer curve is always inside the true
    * curve).
    * 
-   * @param quadrantSegments the number of segments in a fillet for a quadrant
+   * @param quadSegs the number of segments in a fillet for a quadrant
    */
   public void setQuadrantSegments(int quadSegs)
   {
@@ -241,7 +241,7 @@ public class BufferParameters
   
   /**
    * Specifies the end cap style of the generated buffer.
-   * The styles supported are {@link #CAP_ROUND}, {@link #CAP_BUTT}, and {@link #CAP_SQUARE}.
+   * The styles supported are {@link #CAP_ROUND}, {@link #CAP_FLAT}, and {@link #CAP_SQUARE}.
    * The default is CAP_ROUND.
    *
    * @param endCapStyle the end cap style to specify
@@ -263,8 +263,8 @@ public class BufferParameters
   
   /**
    * Sets the join style for outside (reflex) corners between line segments.
-   * Allowable values are {@link JOIN_ROUND} (which is the default),
-   * {@link JOIN_MITRE} and {link JOIN_BEVEL}.
+   * Allowable values are {@link #JOIN_ROUND} (which is the default),
+   * {@link #JOIN_MITRE} and {link JOIN_BEVEL}.
    * 
    * @param joinStyle the code for the join style
    */

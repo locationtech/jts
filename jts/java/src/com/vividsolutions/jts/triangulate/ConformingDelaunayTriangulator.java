@@ -174,7 +174,7 @@ public class ConformingDelaunayTriangulator
 	/**
 	 * Gets the <tt>ConstraintVertexFactory</tt> used to create new constraint vertices at split points.
 	 * 
-	 * @return
+	 * @return a new constraint vertex
 	 */
 	public ConstraintVertexFactory getVertexFactory() {
 		return vertexFactory;
@@ -521,7 +521,7 @@ public class ConformingDelaunayTriangulator
 	 * @param q
 	 *          end of the line segment
 	 * @return a point which is non-Gabriel
-	 * @return null if no point is non-Gabriel
+	 * or null if no point is non-Gabriel
 	 */
 	private Coordinate findNonGabrielPoint(Segment seg) {
 		Coordinate p = seg.getStart();

@@ -96,7 +96,7 @@ public class OverlayValidatedGeometryOperation
    * @param opName
    * @param geometry
    * @param args
-   * @return
+   * @return the result
    * @throws Exception
    * @see GeometryOperation#invoke
    */
@@ -119,7 +119,7 @@ public class OverlayValidatedGeometryOperation
    * @param opCode
    * @param g0
    * @param args
-   * @return
+   * @return the result
    * @throws Exception
    */
   public Result invokeValidatedOverlayOp(int opCode, Geometry g0, Object[] args)

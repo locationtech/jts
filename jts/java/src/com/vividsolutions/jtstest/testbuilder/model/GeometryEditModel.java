@@ -173,7 +173,7 @@ public class GeometryEditModel
    * Adds a geometry component of the currently selected type,
    * to the currently selected geometry.
    * 
-   * @param coords
+   * @param coordList
    */
   public void addComponent(List coordList)
   {
@@ -223,8 +223,8 @@ public class GeometryEditModel
    * 
    * @param testPt
    * @param tolerance
-   * @return the location found
-   * @return null if no non-vertex point was within tolerance
+   * @return the location found, or
+   * null if no non-vertex point was within tolerance
    */
   public GeometryLocation locateNonVertexPoint(Coordinate testPt, double tolerance)
   {
@@ -240,8 +240,8 @@ public class GeometryEditModel
    * 
    * @param testPt
    * @param tolerance
-   * @return the location of the vertex found
-   * @return null if no vertex was within tolerance
+   * @return the location of the vertex found, or
+   * null if no vertex was within tolerance
    */
   public GeometryLocation locateVertex(Coordinate testPt, double tolerance)
   {

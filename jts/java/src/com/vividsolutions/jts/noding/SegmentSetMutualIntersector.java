@@ -63,14 +63,14 @@ public abstract class SegmentSetMutualIntersector
 
   /**
    * 
-   * @param segStrings0 a collection of {@link SegmentString}s to node
+   * @param segStrings a collection of {@link SegmentString}s to node
    */
   public abstract void setBaseSegments(Collection segStrings);
   
   /**
    * Computes the intersections for two collections of {@link SegmentString}s.
    *
-  * @param segStrings1 a collection of {@link SegmentString}s to node
+  * @param segStrings a collection of {@link SegmentString}s to node
    */
   public abstract void process(Collection segStrings);
 }

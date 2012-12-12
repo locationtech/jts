@@ -20,9 +20,9 @@ public class SegmentPointComparator {
    * Compares two {@link Coordinate}s for their relative position along a segment
    * lying in the specified {@link Octant}.
    *
-   * @return -1 node0 occurs first
-   * @return 0 the two nodes are equal
-   * @return 1 node1 occurs first
+   * @return -1 node0 occurs first;
+   * 0 the two nodes are equal;
+   * 1 node1 occurs first
    */
   public static int compare(int octant, Coordinate p0, Coordinate p1)
   {

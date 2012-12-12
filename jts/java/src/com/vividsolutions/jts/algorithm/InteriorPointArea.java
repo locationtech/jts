@@ -99,8 +99,6 @@ public class InteriorPointArea {
   /**
    * Finds a reasonable point at which to label a Geometry.
    * @param geometry the geometry to analyze
-   * @return the midpoint of the largest intersection between the geometry and
-   * a line halfway down its envelope
    */
   public void addPolygon(Geometry geometry) {
       LineString bisector = horizontalBisector(geometry);

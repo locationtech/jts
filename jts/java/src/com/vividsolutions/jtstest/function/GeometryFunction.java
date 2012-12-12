@@ -77,7 +77,7 @@ public interface GeometryFunction
 	 * Gets the types of the other function arguments,
 	 * if any.
 	 * 
-	 * @return 
+	 * @return the types
 	 */
 	Class[] getParameterTypes();
 	
@@ -98,7 +98,7 @@ public interface GeometryFunction
 	/**
 	 * Invokes this function.
 	 * Note that any exceptions returned must be 
-	 * {@link RuntimeExceptions}.
+	 * {@link RuntimeException}s.
 	 * 
 	 * @param geom the target geometry 
 	 * @param args the other arguments to the function

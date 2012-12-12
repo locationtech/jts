@@ -7,6 +7,7 @@ import junit.textui.TestRunner;
 
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.CoordinateArrays.BidirectionalComparator;
 
 /**
  * Tests {@link BidirectionalComparator}.

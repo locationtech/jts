@@ -148,8 +148,7 @@ public class Distance3DOp {
 	/**
 	 * Report the distance between the nearest points on the input geometries.
 	 * 
-	 * @return the distance between the geometries
-	 * @return 0 if either input geometry is empty
+	 * @return the distance between the geometries, or 0 if either input geometry is empty
 	 * @throws IllegalArgumentException
 	 *             if either input geometry is null
 	 */

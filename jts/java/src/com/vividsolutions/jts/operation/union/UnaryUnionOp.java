@@ -36,6 +36,7 @@ package com.vividsolutions.jts.operation.union;
 import java.util.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
+import com.vividsolutions.jts.operation.linemerge.LineMerger;
 import com.vividsolutions.jts.operation.overlay.OverlayOp;
 import com.vividsolutions.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
 
@@ -48,7 +49,7 @@ import com.vividsolutions.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
  * <p>
  * The result obeys the following contract:
  * <ul>
- * <li>Unioning a set of overlapping {@link Polygons}s has the effect of
+ * <li>Unioning a set of overlapping {@link Polygon}s has the effect of
  * merging the areas (i.e. the same effect as 
  * iteratively unioning all individual polygons together).
  * 
@@ -63,7 +64,7 @@ import com.vividsolutions.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
  * {@link Geometry#union(Geometry)} operation.
  * If <b>merged</b> linework is required, the {@link LineMerger} class can be used.
  * 
- * <li>Unioning a set of {@link Points}s has the effect of merging
+ * <li>Unioning a set of {@link Point}s has the effect of merging
  * all identical points (producing a set with no duplicates).
  * </ul>
  * 
@@ -144,7 +145,7 @@ public class UnaryUnionOp
 	 * If no input geometries were provided, a POINT EMPTY is returned.
 	 * 
 	 * @return a Geometry containing the union
-	 * @return an empty GEOMETRYCOLLECTION if no geometries were provided in the input
+	 * or an empty GEOMETRYCOLLECTION if no geometries were provided in the input
 	 */
 	public Geometry union()
 	{
@@ -201,7 +202,7 @@ public class UnaryUnionOp
    * @param g0 a Geometry
    * @param g1 a Geometry
    * @return the union of the input(s)
-   * @return null if both inputs are null
+   * or null if both inputs are null
    */
   private Geometry unionWithNull(Geometry g0, Geometry g1)
   {

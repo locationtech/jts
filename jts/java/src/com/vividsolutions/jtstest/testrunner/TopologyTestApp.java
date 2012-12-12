@@ -133,7 +133,7 @@ public class TopologyTestApp extends JFrame {
 
   /**
    * Tests whether a GeometryOperation was specified on the command line
-   * @return
+   * @return true if a geometry operation was specified
    */
   public static boolean isGeometryOperationSpecified()
   {
@@ -148,8 +148,8 @@ public class TopologyTestApp extends JFrame {
     return resultMatcher;
   }
   /**
-   * Tests whether a {@link GeometryOperation} was specified on the command line
-   * @return
+   * Tests whether a {@link ResultMatcher} was specified on the command line
+   * @return true if a matcher was specified
    */
   public static boolean isResultMatcherSpecified()
   {
