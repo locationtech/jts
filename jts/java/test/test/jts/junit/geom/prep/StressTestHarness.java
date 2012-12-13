@@ -126,7 +126,7 @@ public abstract class StressTestHarness
       
 //      System.out.println("Test # " + count);
 //  		System.out.println(line);
-  		System.out.println("Test[" + count + "] " + target.getClass() + "/" + test.getClass());
+//  		System.out.println("Test[" + count + "] " + target.getClass() + "/" + test.getClass());
   		boolean isResultCorrect = checkResult(target, test);
   		if (! isResultCorrect) {
   			throw new RuntimeException("Invalid result found");
