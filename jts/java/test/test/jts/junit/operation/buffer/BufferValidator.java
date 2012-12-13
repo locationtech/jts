@@ -96,19 +96,25 @@ public class BufferValidator
 
 
   public BufferValidator(double bufferDistance, String wkt)
-      throws ParseException {
-  	// SRID = 888 is to test that SRID is preserved in computed buffers
+  throws ParseException {
+    this(bufferDistance, wkt, true);
+  }
+
+  public BufferValidator(double bufferDistance, String wkt, boolean addContainsTest)
+  throws ParseException {
+    // SRID = 888 is to test that SRID is preserved in computed buffers
     setFactory(new PrecisionModel(), 888);
     this.bufferDistance = bufferDistance;
     this.wkt = wkt;
-    addContainsTest();
-//    addBufferResultValidatorTest();
+    if (addContainsTest) addContainsTest();
+    //addBufferResultValidatorTest();
   }
 
 
   public void test() throws Exception {
     try {
-      for (Iterator i = new TreeSet(nameToTestMap.values()).iterator();
+      Collection tests = nameToTestMap.values();
+      for (Iterator i = tests.iterator();
         i.hasNext();
         ) {
         Test test = (Test) i.next();

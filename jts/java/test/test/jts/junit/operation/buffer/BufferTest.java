@@ -52,6 +52,11 @@ public class BufferTest extends TestCase {
     junit.textui.TestRunner.run(BufferTest.class);
   }
 
+  public void testFirst() throws Exception
+  {
+    testMultiLineString_separateBuffers_floatingSingle();
+  }
+  
   public void testMultiLineString_depthFailure() throws Exception {
     new BufferValidator(
       15,
@@ -93,18 +98,22 @@ public class BufferTest extends TestCase {
   }
 
   public void testMultiLineString_separateBuffers_floatingSingle() throws Exception {
-    new BufferValidator(
+    BufferValidator bv = new BufferValidator(
       0.01,
-      "MULTILINESTRING (( 635074.5418406526 6184832.4888257105, 635074.5681951842 6184832.571842485, 635074.6472587794 6184832.575795664 ), ( 635074.6657069515 6184832.53889932, 635074.6933792098 6184832.451929366, 635074.5642420045 6184832.474330718 ))")
-      .setBufferHolesExpected(false)
-      .setEmptyBufferExpected(true)
-      .setPrecisionModel(new PrecisionModel(PrecisionModel.FLOATING_SINGLE))
-      .test();
+      "MULTILINESTRING (( 635074.5418406526 6184832.4888257105, 635074.5681951842 6184832.571842485, 635074.6472587794 6184832.575795664 ), ( 635074.6657069515 6184832.53889932, 635074.6933792098 6184832.451929366, 635074.5642420045 6184832.474330718 ))",
+      false);
+    
+      bv.setBufferHolesExpected(false);
+      bv.setEmptyBufferExpected(true);
+      bv.setPrecisionModel(new PrecisionModel(PrecisionModel.FLOATING_SINGLE));
+      bv.test();
   }
+  
   public void testMultiLineString2_buffersTouchToMakeHole_floatingSingle() throws Exception {
     new BufferValidator(
       0.037,
-      "MULTILINESTRING (( 635074.5418406526 6184832.4888257105, 635074.5681951842 6184832.571842485, 635074.6472587794 6184832.575795664 ), ( 635074.6657069515 6184832.53889932, 635074.6933792098 6184832.451929366, 635074.5642420045 6184832.474330718 ))")
+      "MULTILINESTRING (( 635074.5418406526 6184832.4888257105, 635074.5681951842 6184832.571842485, 635074.6472587794 6184832.575795664 ), ( 635074.6657069515 6184832.53889932, 635074.6933792098 6184832.451929366, 635074.5642420045 6184832.474330718 ))",
+      false)
       .setBufferHolesExpected(false)
       .setEmptyBufferExpected(true)
       .setPrecisionModel(new PrecisionModel(PrecisionModel.FLOATING_SINGLE))
@@ -113,7 +122,8 @@ public class BufferTest extends TestCase {
   public void testMultiLineString3_holeVanishes_floatingSingle() throws Exception {
     new BufferValidator(
       0.16,
-      "MULTILINESTRING (( 635074.5418406526 6184832.4888257105, 635074.5681951842 6184832.571842485, 635074.6472587794 6184832.575795664 ), ( 635074.6657069515 6184832.53889932, 635074.6933792098 6184832.451929366, 635074.5642420045 6184832.474330718 ))")
+      "MULTILINESTRING (( 635074.5418406526 6184832.4888257105, 635074.5681951842 6184832.571842485, 635074.6472587794 6184832.575795664 ), ( 635074.6657069515 6184832.53889932, 635074.6933792098 6184832.451929366, 635074.5642420045 6184832.474330718 ))",
+      false)
       .setBufferHolesExpected(false)
       .setEmptyBufferExpected(true)
       .setPrecisionModel(new PrecisionModel(PrecisionModel.FLOATING_SINGLE))
