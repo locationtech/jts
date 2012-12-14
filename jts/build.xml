@@ -32,6 +32,7 @@
   	<property name="pre-zip.jtsio" value="${pre-zip}/jtsio"/>
   	
    	<property name="pre-zip.jts-jar" value="${pre-zip.lib}\jts-${jts.version}.jar" />
+   	<property name="pre-zip.jts-sources-jar" value="${pre-zip}\jts-${jts.version}-sources.jar" />
    	<property name="pre-zip.jtstest-jar" value="${pre-zip.lib}\JTS_Test.jar" />
  	
   	<property name="zipfile" value="jts-${jts.version}.zip"/>
@@ -91,6 +92,7 @@
 	   includes="**/*.java"
            excludes="**/test/**,**/com/vividsolutions/jtstest/**,**/jtsexample/**,**/jtsplugin/**"
            destdir="${build.classes}">
+           <compilerarg value="-Xlint:deprecation"/>
       <classpath>
         <pathelement location="${pre-zip.lib}\jdom.jar"/>
         <pathelement location="${pre-zip.lib}\xerces.jar"/>
@@ -100,6 +102,12 @@
     <mkdir dir="${pre-zip.lib}"/>
     <jar jarfile="${pre-zip.jts-jar}"
          basedir="${build.classes}"/>
+    <!-- Sources JAR -->
+    <jar jarfile="${pre-zip.jts-sources-jar}"
+             basedir="${base.src}"
+             includes="**/*.java"
+             excludes="**/jtstest/ **/jtsplugin/"
+      />
   </target>
 
 <!-- ========================= JTS_Test jar =================================== -->
@@ -150,8 +158,7 @@
    <delete dir="${pre-zip.jtsio}/src"/>
    <delete dir="${pre-zip.jtsio}/test"/>
    <copy todir='${pre-zip.jtsio}'>
-     <fileset dir="${jtsio.basedir}" includes="src/**,test/**">
-        <!--<include name="src,test" />-->
+     <fileset dir="${jtsio.basedir}" includes="src/**">
      </fileset>
    </copy>    
   </target>
@@ -165,6 +172,12 @@
         	classpath="${pre-zip.lib}/jts-${jts.version}.jar;${jtsio.lib}/classes12-${ora.version}.jar;${jtsio.lib}/jsde91_sdk.jar"/>
     	
     <jar destfile="${pre-zip.lib}/jtsio-${jts.version}.jar" basedir="${jtsio.build.classes}" />
+    <!-- Sources JAR -->
+    <jar jarfile="${pre-zip}/jtsio-${jts.version}-sources.jar"
+             basedir="${jtsio.basedir}/src"
+             includes="**/*.java"
+             excludes="**/jtstest/ **/jtsplugin/"
+             />
   </target>
   
   <target name="javadoc-jtsio" depends="copy-source-jtsio"
@@ -184,7 +197,7 @@
   </target>
 
 <!-- =======================  JUnit  ========================= -->
-<!-- NOTE: also depends on JTS distro being built first -->
+<!-- NOTE: implicitly depends on JTS distro being built first -->
 
   <target name="junit" depends="props"
           description="Runs the JUnit tests">
@@ -249,18 +262,20 @@
   <target name="makezip" depends="props"
   	description="Zips all files into a delivery archive">
     <zip destfile="${build}/jts-${jts.version}.zip" 
-    	basedir="${pre-zip}"  />
+    	basedir="${pre-zip}"
+    	excludes="**/src/**"
+    	/>
   </target>
   
-  <target name="run" depends="copy-source, jts-jar, jts-test-jar, javadoc" 
+  <target name="build-jts" depends="copy-source, jts-jar, jts-test-jar, javadoc" 
           description="Cleans, compiles, builds jars, generates javadoc">
   </target>
 
-  <target name="run-jtsio" depends="copy-source-jtsio, jtsio-jar, javadoc-jtsio" 
+  <target name="build-jtsio" depends="copy-source-jtsio, jtsio-jar, javadoc-jtsio" 
           description="Cleans, builds, generates javadoc for JTS-IO">
   </target>
 
-  <target name="all" depends="props, run, run-jtsio, makezip" 
+  <target name="all" depends="props, build-jts, build-jtsio, makezip" 
 	          description="Compiles and builds the JTS delivery archive"/>
 
 </project>
