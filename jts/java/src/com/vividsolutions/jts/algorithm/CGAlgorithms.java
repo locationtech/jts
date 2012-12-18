@@ -203,7 +203,7 @@ public class CGAlgorithms
    *          an array of Coordinates forming a ring
    * @return true if the ring is oriented counter-clockwise.
    * @throws IllegalArgumentException
-   *           if there are too few points to determine orientation (< 3)
+   *           if there are too few points to determine orientation (< 4)
    */
   public static boolean isCCW(Coordinate[] ring)
   {
@@ -212,7 +212,7 @@ public class CGAlgorithms
     // sanity check
     if (nPts < 3)
       throw new IllegalArgumentException(
-          "Ring has fewer than 3 points, so orientation cannot be determined");
+          "Ring has fewer than 4 points, so orientation cannot be determined");
 
     // find highest point
     Coordinate hiPt = ring[0];
