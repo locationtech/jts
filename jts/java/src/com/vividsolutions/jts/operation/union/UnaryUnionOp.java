@@ -41,15 +41,15 @@ import com.vividsolutions.jts.operation.overlay.OverlayOp;
 import com.vividsolutions.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
 
 /**
- * Unions a collection of Geometry or a single Geometry 
- * (which may be a collection) together.
+ * Unions a <code>Collection</code> of {@link Geometry}s or a single Geometry 
+ * (which may be a {@link GeoometryCollection}) together.
  * By using this special-purpose operation over a collection of geometries
  * it is possible to take advantage of various optimizations to improve performance.
  * Heterogeneous {@link GeometryCollection}s are fully supported.
  * <p>
  * The result obeys the following contract:
  * <ul>
- * <li>Unioning a set of overlapping {@link Polygon}s has the effect of
+ * <li>Unioning a set of {@link Polygon}s has the effect of
  * merging the areas (i.e. the same effect as 
  * iteratively unioning all individual polygons together).
  * 
@@ -77,18 +77,44 @@ import com.vividsolutions.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
  */
 public class UnaryUnionOp 
 {
+	/**
+	 * Computes the geometric union of a {@link Collection} 
+	 * of {@link Geometry}s.
+	 * 
+	 * @param geoms a collection of geometries
+	 * @return the union of the geometries
+	 */
 	public static Geometry union(Collection geoms)
 	{
 		UnaryUnionOp op = new UnaryUnionOp(geoms);
 		return op.union();
 	}
 	
+	/**
+	 * Computes the geometric union of a {@link Collection} 
+	 * of {@link Geometry}s.
+	 * 
+	 * If no input geometries were provided but a {@link GeometryFactory} was provided, 
+	 * an empty {@link GeometryCollection} is returned.
+	 * Otherwise, the return value is <code>null</code>.
+     *
+	 * @param geoms a collection of geometries
+	 * @param geomFact the geometry factory to use if the collection is empty
+	 * @return the union of the geometries
+	 */
 	public static Geometry union(Collection geoms, GeometryFactory geomFact)
 	{
 		UnaryUnionOp op = new UnaryUnionOp(geoms, geomFact);
 		return op.union();
 	}
 	
+	/**
+	 * Constructs a unary union operation for a {@link Geometry}
+	 * (which may be a {@link GeometryCollection}).
+	 * 
+	 * @param geom a geometry to union
+	 * @return the union of the elements of the geometry
+	 */
 	public static Geometry union(Geometry geom)
 	{
 		UnaryUnionOp op = new UnaryUnionOp(geom);
@@ -101,17 +127,36 @@ public class UnaryUnionOp
 	
 	private GeometryFactory geomFact = null;
 	
+	/**
+	 * Constructs a unary union operation for a {@link Collection} 
+	 * of {@link Geometry}s.
+	 * 
+	 * @param geoms a collection of geometries
+	 * @param geomFact the geometry factory to use if the collection is empty
+	 */
 	public UnaryUnionOp(Collection geoms, GeometryFactory geomFact)
 	{
 		this.geomFact = geomFact;
 		extract(geoms);
 	}
 	
+	/**
+	 * Constructs a unary union operation for a {@link Collection} 
+	 * of {@link Geometry}s, using the {@link GeometryFactory}
+	 * of the input geometries.
+	 * 
+	 * @param geoms a collection of geometries
+	 */
 	public UnaryUnionOp(Collection geoms)
 	{
 		extract(geoms);
 	}
 	
+	/**
+	 * Constructs a unary union operation for a {@link Geometry}
+	 * (which may be a {@link GeometryCollection}).
+	 * @param geom
+	 */
 	public UnaryUnionOp(Geometry geom)
 	{
 		extract(geom);
@@ -142,10 +187,13 @@ public class UnaryUnionOp
 
 	/**
 	 * Gets the union of the input geometries.
-	 * If no input geometries were provided, a POINT EMPTY is returned.
+	 * If no input geometries were provided but a {@link GeometryFactory} was provided, 
+	 * an empty {@link GeometryCollection} is returned.
+	 * Otherwise, the return value is <code>null</code>.
 	 * 
-	 * @return a Geometry containing the union
-	 * or an empty GEOMETRYCOLLECTION if no geometries were provided in the input
+	 * @return a Geometry containing the union,
+	 * or an empty GEOMETRYCOLLECTION if no geometries were provided in the input,
+	 * or <code>null</code> if no GeometryFactory was provided
 	 */
 	public Geometry union()
 	{

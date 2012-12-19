@@ -1462,7 +1462,7 @@ public abstract class Geometry
 	/**
 	 * Computes the union of all the elements of this geometry. 
 	 * <p>
-	 * <code>union()</code> supports
+	 * This method supports
 	 * {@link GeometryCollection}s 
 	 * (which the other overlay operations currently do not).
 	 * <p>
@@ -1470,13 +1470,13 @@ public abstract class Geometry
 	 * <ul>
 	 * <li>Unioning a set of {@link LineString}s has the effect of fully noding
 	 * and dissolving the linework.
-	 * <li>Unioning a set of {@link Polygon}s will always 
-	 * return a {@link Polygonal} geometry (unlike {@link #union(Geometry)},
-	 * which may return geometrys of lower dimension if a topology collapse occurred.
+	 * <li>Unioning a set of {@link Polygon}s always 
+	 * returns a {@link Polygonal} geometry (unlike {@link #union(Geometry)},
+	 * which may return geometries of lower dimension if a topology collapse occurred).
 	 * </ul>
 	 * 
 	 * @return the union geometry
-   * @throws TopologyException if a robustness error occurs
+     * @throws TopologyException if a robustness error occurs
 	 * 
 	 * @see UnaryUnionOp
 	 */
