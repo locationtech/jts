@@ -543,7 +543,6 @@ public abstract class Geometry
       centPt = cent.getCentroid();
     }
     return createPointFromInternalCoord(centPt, this);
-
   }
 
   /**
