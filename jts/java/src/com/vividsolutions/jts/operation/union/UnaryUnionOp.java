@@ -82,7 +82,8 @@ public class UnaryUnionOp
 	 * of {@link Geometry}s.
 	 * 
 	 * @param geoms a collection of geometries
-	 * @return the union of the geometries
+	 * @return the union of the geometries, 
+	 * or <code>null</code> if the input is empty
 	 */
 	public static Geometry union(Collection geoms)
 	{
@@ -96,11 +97,11 @@ public class UnaryUnionOp
 	 * 
 	 * If no input geometries were provided but a {@link GeometryFactory} was provided, 
 	 * an empty {@link GeometryCollection} is returned.
-	 * Otherwise, the return value is <code>null</code>.
      *
 	 * @param geoms a collection of geometries
 	 * @param geomFact the geometry factory to use if the collection is empty
-	 * @return the union of the geometries
+	 * @return the union of the geometries,
+	 * or an empty GEOMETRYCOLLECTION
 	 */
 	public static Geometry union(Collection geoms, GeometryFactory geomFact)
 	{
@@ -114,6 +115,7 @@ public class UnaryUnionOp
 	 * 
 	 * @param geom a geometry to union
 	 * @return the union of the elements of the geometry
+	 * or an empty GEOMETRYCOLLECTION
 	 */
 	public static Geometry union(Geometry geom)
 	{
