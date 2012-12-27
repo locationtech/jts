@@ -224,8 +224,7 @@ abstract class AbstractPreparedPolygonContains
 	{
     List lineSegStr = SegmentStringUtil.extractSegmentStrings(geom);
     
-	  LineIntersector li = new RobustLineIntersector();
-		SegmentIntersectionDetector intDetector = new SegmentIntersectionDetector(li);
+		SegmentIntersectionDetector intDetector = new SegmentIntersectionDetector();
 		intDetector.setFindAllIntersectionTypes(true);
 		prepPoly.getIntersectionFinder().intersects(lineSegStr, intDetector);
 			

@@ -32,16 +32,14 @@
  */
 package com.vividsolutions.jts.noding;
 
-
-import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.algorithm.LineIntersector;
-import com.vividsolutions.jts.noding.*;;
-//import com.vividsolutions.jts.util.Debug;
+import com.vividsolutions.jts.algorithm.RobustLineIntersector;
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
  * Detects and records an intersection between two {@link SegmentString}s,
  * if one exists.  Only a single intersection is recorded.
- * This strategy can be configured to search for proper intersections.
+ * This strategy can be configured to search for <b>proper intersections>/b>.
  * In this case, the presence of <i>any</i> kind of intersection will still be recorded,
  * but searching will continue until either a proper intersection has been found
  * or no intersections are detected.
@@ -63,20 +61,38 @@ public class SegmentIntersectionDetector
   private Coordinate[] intSegments = null;
 
   /**
-   * Creates an intersection finder 
+   * Creates an intersection finder using a {@link RobustLineIntersector}.
+   */
+  public SegmentIntersectionDetector()
+  {
+    this(new RobustLineIntersector());
+  }
+
+  /**
+   * Creates an intersection finder using a given LineIntersector.
    *
    * @param li the LineIntersector to use
    */
   public SegmentIntersectionDetector(LineIntersector li)
   {
     this.li = li;
-   }
+  }
 
+  /**
+   * Sets whether processing must continue until a proper intersection is found.
+   * 
+   * @param findProper true if processing should continue until a proper intersection is found
+   */
   public void setFindProper(boolean findProper)
   {
     this.findProper = findProper;
   }
   
+  /**
+   * Sets whether processing can terminate once any intersection is found.
+   * 
+   * @param findAllTypes true if processing can terminate once any intersection is found.
+   */
   public void setFindAllIntersectionTypes(boolean findAllTypes)
   {
     this.findAllTypes = findAllTypes;
@@ -193,6 +209,13 @@ public class SegmentIntersectionDetector
 		}
   }
   
+  /**
+   * Tests whether processing can terminate,
+   * because all required information has been obtained
+   * (e.g. an intersection of the desired type has been detected).
+   * 
+   * @return true if processing can terminate
+   */
   public boolean isDone()
   { 
     /**

@@ -53,12 +53,12 @@ import com.vividsolutions.jts.geom.util.ComponentCoordinateExtracter;
 class BasicPreparedGeometry 
   implements PreparedGeometry
 {
-  private Geometry baseGeom;
-  private List representativePts;  // List<Coordinate>
+  private final Geometry baseGeom;
+  private final List representativePts;  // List<Coordinate>
 
   public BasicPreparedGeometry(Geometry geom) 
   {
-    this.baseGeom = geom;
+    baseGeom = geom;
     representativePts = ComponentCoordinateExtracter.getCoordinates(geom);
   }
 
@@ -67,12 +67,15 @@ class BasicPreparedGeometry
   /**
    * Gets the list of representative points for this geometry.
    * One vertex is included for every component of the geometry
-   * (i.e. including one for every ring of polygonal geometries) 
+   * (i.e. including one for every ring of polygonal geometries).
+   * 
+   * Do not modify the returned list!
    * 
    * @return a List of Coordinate
    */
   public List getRepresentativePoints()
   {
+	//TODO wrap in unmodifiable?
     return representativePts;
   }
   

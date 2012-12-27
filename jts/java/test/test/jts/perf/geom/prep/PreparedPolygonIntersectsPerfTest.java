@@ -47,8 +47,8 @@ public class PreparedPolygonIntersectsPerfTest
   static final int MAX_ITER = 1;
   
   static final int NUM_AOI_PTS = 2000;
-  static final int NUM_LINES = 5000;
-  static final int NUM_LINE_PTS = 1000;
+  static final int NUM_LINES = 500;
+  static final int NUM_LINE_PTS = 100;
   
   static PrecisionModel pm = new PrecisionModel();
   static GeometryFactory fact = new GeometryFactory(pm, 0);

@@ -45,7 +45,7 @@ import com.vividsolutions.jts.operation.predicate.*;
  * This class does <b>not</b> support MultiPolygons which are non-valid 
  * (e.g. with overlapping elements). 
  * <p>
- * Instances of this class are thread-safe.
+ * Instances of this class are thread-safe and immutable.
  * 
  * @author mbdavis
  *
@@ -53,10 +53,10 @@ import com.vividsolutions.jts.operation.predicate.*;
 public class PreparedPolygon
   extends BasicPreparedGeometry
 {
-	private boolean isRectangle = false;
+	private final boolean isRectangle;
 	// create these lazily, since they are expensive
-  private FastSegmentSetIntersectionFinder segIntFinder = null;
-  private PointOnGeometryLocator pia = null;
+	private FastSegmentSetIntersectionFinder segIntFinder = null;
+	private PointOnGeometryLocator pia = null;
 
   public PreparedPolygon(Polygonal poly) {
     super((Geometry) poly);
@@ -78,7 +78,7 @@ public class PreparedPolygon
   	 */
   	if (segIntFinder == null)
   		segIntFinder = new FastSegmentSetIntersectionFinder(SegmentStringUtil.extractSegmentStrings(getGeometry()));
-   return segIntFinder;
+  	return segIntFinder;
   }
   
   public synchronized PointOnGeometryLocator getPointLocator()

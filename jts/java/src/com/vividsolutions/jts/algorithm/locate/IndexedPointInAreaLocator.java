@@ -46,13 +46,15 @@ import com.vividsolutions.jts.index.intervalrtree.*;
  * This algorithm is suitable for use in cases where
  * many points will be tested against a given area.
  * 
+ * Thread-safe and immutable.
+ *
  * @author Martin Davis
  *
  */
 public class IndexedPointInAreaLocator 
   implements PointOnGeometryLocator
 {
-  private IntervalIndexedGeometry index;
+  private final IntervalIndexedGeometry index;
   
   /**
    * Creates a new locator for a given {@link Geometry}
@@ -62,11 +64,6 @@ public class IndexedPointInAreaLocator
   {
     if (! (g instanceof Polygonal))
       throw new IllegalArgumentException("Argument must be Polygonal");
-    buildIndex(g);
-  }
-  
-  private void buildIndex(Geometry g)
-  {
     index = new IntervalIndexedGeometry(g);
   }
     
@@ -111,7 +108,7 @@ public class IndexedPointInAreaLocator
   
   private static class IntervalIndexedGeometry
   {
-    private SortedPackedIntervalRTree index= new SortedPackedIntervalRTree();
+    private final SortedPackedIntervalRTree index= new SortedPackedIntervalRTree();
 
     public IntervalIndexedGeometry(Geometry geom)
     {

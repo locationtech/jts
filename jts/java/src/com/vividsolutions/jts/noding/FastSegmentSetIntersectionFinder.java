@@ -34,7 +34,6 @@
 package com.vividsolutions.jts.noding;
 
 import java.util.*;
-import com.vividsolutions.jts.algorithm.*;
 
 /**
  * Finds if two sets of {@link SegmentString}s intersect.
@@ -42,28 +41,26 @@ import com.vividsolutions.jts.algorithm.*;
  * against a target set of lines.
  * Short-circuited to return as soon an intersection is found.
  *
+ * Immutable and thread-safe.
+ *
  * @version 1.7
  */
 public class FastSegmentSetIntersectionFinder 
 {
-	private SegmentSetMutualIntersector segSetMutInt; 
+	private final SegmentSetMutualIntersector segSetMutInt; 
 	// for testing purposes
-//	private SimpleSegmentSetMutualIntersector mci;  
+	// private SimpleSegmentSetMutualIntersector mci;  
 
+	/**
+	 * Creates an intersection finder against a given set of segment strings.
+	 * 
+	 * @param baseSegStrings the segment strings to search for intersections
+	 */
 	public FastSegmentSetIntersectionFinder(Collection baseSegStrings)
 	{
-		init(baseSegStrings);
+	    segSetMutInt = new MCIndexSegmentSetMutualIntersector(baseSegStrings);
 	}
-	
-	private void init(Collection baseSegStrings)
-	{
-    segSetMutInt = new MCIndexSegmentSetMutualIntersector();
-//    segSetMutInt = new MCIndexIntersectionSegmentSetMutualIntersector();
-    
-//		mci = new SimpleSegmentSetMutualIntersector();
-		segSetMutInt.setBaseSegments(baseSegStrings);
-	}
-	
+		
 	/**
 	 * Gets the segment set intersector used by this class.
 	 * This allows other uses of the same underlying indexed structure.
@@ -75,22 +72,29 @@ public class FastSegmentSetIntersectionFinder
 		return segSetMutInt;
 	}
 	
-  private static LineIntersector li = new RobustLineIntersector();
-
+	/**
+	 * Tests for intersections with a given set of target {@link SegmentString}s.
+	 * 
+	 * @param segStrings the SegmentStrings to test
+	 * @return true if an intersection is found
+	 */
 	public boolean intersects(Collection segStrings)
 	{
-		SegmentIntersectionDetector intFinder = new SegmentIntersectionDetector(li);
-		segSetMutInt.setSegmentIntersector(intFinder);
-
-		segSetMutInt.process(segStrings);
-		return intFinder.hasIntersection();
+		SegmentIntersectionDetector intFinder = new SegmentIntersectionDetector();
+		return intersects(segStrings, intFinder);
 	}
 	
+	/**
+	 * Tests for intersections with a given set of target {@link SegmentString}s.
+	 * using a given SegmentIntersectionDetector.
+	 * 
+	 * @param segStrings the SegmentStrings to test
+	 * @param intDetector the intersection detector to use
+	 * @return true if the detector reports intersections
+	 */
 	public boolean intersects(Collection segStrings, SegmentIntersectionDetector intDetector)
 	{
-		segSetMutInt.setSegmentIntersector(intDetector);
-
-		segSetMutInt.process(segStrings);
-		return intDetector.hasIntersection();
+		segSetMutInt.process(segStrings, intDetector);
+ 		return intDetector.hasIntersection();
 	}
 }

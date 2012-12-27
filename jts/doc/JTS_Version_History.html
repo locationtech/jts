@@ -27,10 +27,22 @@ The current and archived JTS distributions can be obtained at the
 
 <i>Release Date:  ???</i>
 
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Fixed <code>SegmentSetMutualIntersector</code> classes to be thread-safe</li>
+<li>Fixed <code>PreparedGeometry</code> classes to be thread-safe</li>
+</ul>
+
 <h3>Bug Fixes</h3>
 <ul>
 <li>Fixed <tt>Geometry.interiorPoint()</tt> to compute a true interior point in certain cases
 </ul>
+
+<h3>API Changes</h3>
+<ul>
+<li>Changed interface of <code>SegmentSetMutualIntersector</code> to support thread-safety by removing state
+</ul>
+
 
 <!-- ================================================================ -->
 <hr size='4' color='darkblue'>

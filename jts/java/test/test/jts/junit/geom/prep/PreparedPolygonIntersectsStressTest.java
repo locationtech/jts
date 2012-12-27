@@ -44,9 +44,10 @@ import com.vividsolutions.jts.util.GeometricShapeFactory;
 import com.vividsolutions.jts.util.Stopwatch;
 
 /**
- * Stress tests fast intersector to confirm it find intersections correctly.
+ * Stress tests {@link PreparedPolygon#intersects(Geometry)}
+ * to confirm it finds intersections correctly.
  * 
- * @author Owner
+ * @author Martin Davis
  *
  */
 public class PreparedPolygonIntersectsStressTest extends TestCase

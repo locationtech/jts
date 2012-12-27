@@ -44,7 +44,11 @@ import com.vividsolutions.jts.util.GeometricShapeFactory;
 import com.vividsolutions.jts.util.Stopwatch;
 
 /**
- * Stress tests {@link PreparedPolygon} for contains operation.
+ * Stress tests {@link PreparedPolygon} for 
+ * correctness of 
+ * {@link PreparedPolygon#contains(Geometry)}
+ * and {@link PreparedPolygon#intersects(Geometry)}
+ * operations.
  * 
  * @author Owner
  *
@@ -80,32 +84,32 @@ public class PreparedPolygonPredicateStressTest extends TestCase
   
   public boolean checkContains(Geometry target, Geometry test) 
   {
-		boolean expectedResult = target.contains(test);
+	boolean expectedResult = target.contains(test);
 
     PreparedGeometryFactory pgFact = new PreparedGeometryFactory();
     PreparedGeometry prepGeom = pgFact.create(target);
     
-		boolean prepResult = prepGeom.contains(test);
+	boolean prepResult = prepGeom.contains(test);
 
-		if (prepResult != expectedResult) {
-			return false;
-		}
-		return true;
-	} 
+	if (prepResult != expectedResult) {
+		return false;
+	}
+	return true;
+  } 
 
   public boolean checkIntersects(Geometry target, Geometry test) 
   {
-		boolean expectedResult = target.intersects(test);
-
-    PreparedGeometryFactory pgFact = new PreparedGeometryFactory();
-    PreparedGeometry prepGeom = pgFact.create(target);
-    
-		boolean prepResult = prepGeom.intersects(test);
-
-		if (prepResult != expectedResult) {
-			return false;
-		}
-		return true;
-	} 
+	boolean expectedResult = target.intersects(test);
+	
+	PreparedGeometryFactory pgFact = new PreparedGeometryFactory();
+	PreparedGeometry prepGeom = pgFact.create(target);
+	
+	boolean prepResult = prepGeom.intersects(test);
+	
+	if (prepResult != expectedResult) {
+		return false;
+	}
+	return true;
+  } 
 
 }
