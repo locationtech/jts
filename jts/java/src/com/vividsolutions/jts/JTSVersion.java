@@ -57,7 +57,7 @@ public class JTSVersion {
   /**
    * The minor version number.
    */
-  public static final int MINOR = 13;
+  public static final int MINOR = 14;
 
   /**
    * The patch version number.
