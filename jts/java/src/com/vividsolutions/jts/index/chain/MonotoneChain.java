@@ -70,11 +70,12 @@ import com.vividsolutions.jts.geom.*;
  * </ul>
  *
  * This implementation of MonotoneChains uses the concept of internal iterators
- * to return the resultsets for the above queries.
+ * ({@link MonotoneChainSelectAction} and {@link MonotoneChainOverlapAction})
+ * to return the results for queries.
  * This has time and space advantages, since it
  * is not necessary to build lists of instantiated objects to represent the segments
  * returned by the query.
- * However, it does mean that the queries are not thread-safe.
+ * Queries made in this manner are thread-safe.
  *
  * @version 1.7
  */
