@@ -56,7 +56,7 @@ public class MCIndexSegmentSetMutualIntersector implements SegmentSetMutualInter
   * {@link com.vividsolutions.jts.index.quadtree.Quadtree}
   * or {@link STRtree}.
   */
-  private SpatialIndex index = new STRtree();
+  private STRtree index = new STRtree();
 
   /**
    * Constructs a new intersector for a given set of {@link SegmentStrings}.
@@ -82,6 +82,8 @@ public class MCIndexSegmentSetMutualIntersector implements SegmentSetMutualInter
     for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
       addToIndex((SegmentString) i.next());
     }
+    // build index to ensure thread-safety
+    index.build();
   }
   
   private void addToIndex(SegmentString segStr)
