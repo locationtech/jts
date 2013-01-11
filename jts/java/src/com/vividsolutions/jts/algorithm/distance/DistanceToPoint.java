@@ -35,13 +35,11 @@ package com.vividsolutions.jts.algorithm.distance;
 import com.vividsolutions.jts.geom.*;
 
 /**
- * Computes the Euclidean distance (L2 metric) from a Point to a Geometry.
- * Also computes two points which are separated by the distance.
+ * Computes the Euclidean distance (L2 metric) from a {@link Coordinate} to a {@link Geometry}.
+ * Also computes two points on the geometry which are separated by the distance found.
  */
-public class DistanceToPoint {
-
-  // used for point-line distance calculation
-  private static LineSegment tempSegment = new LineSegment();
+public class DistanceToPoint 
+{
 
   public DistanceToPoint() {
   }
@@ -65,8 +63,10 @@ public class DistanceToPoint {
       ptDist.setMinimum(geom.getCoordinate(), pt);
     }
   }
+  
   public static void computeDistance(LineString line, Coordinate pt, PointPairDistance ptDist)
   {
+    LineSegment tempSegment = new LineSegment();
     Coordinate[] coords = line.getCoordinates();
     for (int i = 0; i < coords.length - 1; i++) {
       tempSegment.setCoordinates(coords[i], coords[i + 1]);
