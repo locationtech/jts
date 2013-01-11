@@ -118,16 +118,27 @@ public class InteriorPointArea {
    * @param geometry the geometry to analyze
    */
   private void addPolygon(Geometry geometry) {
-      LineString bisector = horizontalBisector(geometry);
-
+    if (geometry.isEmpty())
+      return;
+    
+    Coordinate intPt;
+    double width = 0;
+    
+    LineString bisector = horizontalBisector(geometry);
+    if (bisector.getLength() == 0.0) {
+      width = 0;
+      intPt = bisector.getCoordinate();
+    }
+    else {
       Geometry intersections = bisector.intersection(geometry);
       Geometry widestIntersection = widestGeometry(intersections);
-
-      double width = widestIntersection.getEnvelopeInternal().getWidth();
-      if (interiorPoint == null || width > maxWidth) {
-        interiorPoint = centre(widestIntersection.getEnvelopeInternal());
-        maxWidth = width;
-      }
+      width = widestIntersection.getEnvelopeInternal().getWidth();
+      intPt = centre(widestIntersection.getEnvelopeInternal());
+    }
+    if (interiorPoint == null || width > maxWidth) {
+      interiorPoint = intPt;
+      maxWidth = width;
+    }
   }
 
   //@return if geometry is a collection, the widest sub-geometry; otherwise,
@@ -210,7 +221,10 @@ public class InteriorPointArea {
 	  public SafeBisectorFinder(Polygon poly) {
 		  this.poly = poly;
 		  
-		  centreY = avg(poly.getEnvelopeInternal().getMinY(), poly.getEnvelopeInternal().getMaxY());
+		  // initialize using extremal values
+		  hiY = poly.getEnvelopeInternal().getMinY();
+		  loY = poly.getEnvelopeInternal().getMaxY();
+		  centreY = avg(loY, hiY);
 	  }
 	  
 	  public double getBisectorY()
