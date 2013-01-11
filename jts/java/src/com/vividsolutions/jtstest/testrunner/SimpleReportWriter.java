@@ -187,7 +187,7 @@ public class SimpleReportWriter implements ReportWriter
         + "  --  ");
     reportBuf.write(engine.getPassedCount()
          + " passed, " + engine.getFailedCount() + " failed, " + engine.getExceptionCount()
-         + " threw exceptions");
+         + " exceptions");
     if (engine.getParseExceptionCount() + engine.getFailedCount() + engine.getExceptionCount() > 0) {
       reportBuf.write("\n\n*******  ERRORS ENCOUNTERED IN RUN  ********\n");
     }
