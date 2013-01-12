@@ -42,6 +42,7 @@ import com.vividsolutions.jts.geom.*;
  * of all line segments weighted by the segment length.
  *
  * @version 1.7
+ * @deprecated use Centroid instead
  */
 public class CentroidLine
 {

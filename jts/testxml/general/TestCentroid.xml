@@ -32,6 +32,18 @@
 </case>
 
 <case>
+  <desc>L - zero length line</desc>
+  <a>    LINESTRING (10 10, 10 10)  </a>
+<test><op name="getCentroid" arg1="A" >    POINT (10 10)   </op></test>
+</case>
+
+<case>
+  <desc>mL - zero length lines</desc>
+  <a>    MULTILINESTRING ((10 10, 10 10), (20 20, 20 20))  </a>
+<test><op name="getCentroid" arg1="A" >    POINT (15 15)   </op></test>
+</case>
+
+<case>
   <desc>L - two segments</desc>
   <a>    LINESTRING (60 180, 120 100, 180 180)  </a>
 <test><op name="getCentroid" arg1="A" >    POINT (120 140)   </op></test>
@@ -135,12 +147,55 @@
 </case>
 
 <case>
-  <desc>GC - heterogeneous collection of polygons, lines, points</desc>
+  <desc>GC - collection of polygons, lines, points</desc>
   <a>    GEOMETRYCOLLECTION (POLYGON ((0 40, 40 40, 40 0, 0 0, 0 40)), 
   LINESTRING (80 0, 80 80, 120 40), 
   MULTIPOINT ((20 60), (40 80), (60 60)))
 	</a>
 <test><op name="getCentroid" arg1="A" >    POINT (20 20)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection of zero-area polygons and lines</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
+  LINESTRING (20 20, 30 30))
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (25 25)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection of zero-area polygons and zero-length lines</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
+  LINESTRING (20 20, 20 20))
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (15 15)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection of zero-area polygons, zero-length lines, and points</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
+  LINESTRING (20 20, 20 20),
+  MULTIPOINT ((20 10), (10 20)) )
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (15 15)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection of zero-area polygons, zero-length lines, and points</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
+  LINESTRING (20 20, 20 20),
+  POINT EMPTY )
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (15 15)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection of zero-area polygons, zero-length lines, and points</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
+  LINESTRING EMPTY,
+  POINT EMPTY )
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (10 10)   </op></test>
 </case>
 
 <case>

@@ -36,48 +36,80 @@ package com.vividsolutions.jts.algorithm;
 import com.vividsolutions.jts.geom.*;
 
 /**
- * Computes the centroid of an area geometry.
+ * Computes the centroid of a {@link Geometry} of any dimension.
+ * If the geometry is nomimally of higher dimension, but contains only components
+ * having a lower effective dimension (i.e. zero length or area), 
+ * the centroid will be computed appropriately.
+ * 
  * <h2>Algorithm</h2>
- * Based on the usual algorithm for calculating
+ * <ul>
+ * <li><b>Dimension = 2</b> - Based on the usual algorithm for calculating
  * the centroid as a weighted sum of the centroids
  * of a decomposition of the area into (possibly overlapping) triangles.
  * The algorithm has been extended to handle holes and multi-polygons.
  * See <code>http://www.faqs.org/faqs/graphics/algorithms-faq/</code>
  * for further details of the basic approach.
- * The code has also be extended to handle degenerate (zero-area) polygons.
- * In this case, the centroid of the line segments in the polygon 
- * will be returned.
- *
+ * <li><b>Dimension = 1</b> - Computes the average of the midpoints
+ * of all line segments weighted by the segment length.
+ * <li><b>Dimension = 0</b> - Compute the average coordinate over all points.
+ * </ul>
+ * If the input geometries are empty, a
+ * <code>null</code> Coordinate is returned.
+ * 
  * @version 1.7
- * @deprecated use Centroid instead
  */
-public class CentroidArea
+public class Centroid
 {
-  private Coordinate basePt = null;// the point all triangles are based at
+  /**
+   * Computes the centroid point of a geometry.
+   * 
+   * @param geom the geometry to use
+   * @return the centroid point, or null if the geometry is empty
+   */
+  public static Coordinate getCentroid(Geometry geom)
+  {
+    Centroid cent = new Centroid(geom);
+    return cent.getCentroid();
+  }
+  
+  private Coordinate areaBasePt = null;// the point all triangles are based at
   private Coordinate triangleCent3 = new Coordinate();// temporary variable to hold centroid of triangle
   private double  areasum2 = 0;        /* Partial area sum */
   private Coordinate cg3 = new Coordinate(); // partial centroid sum
   
   // data for linear centroid computation, if needed
-  private Coordinate centSum = new Coordinate();
+  private Coordinate lineCentSum = new Coordinate();
   private double totalLength = 0.0;
 
-  public CentroidArea()
+  private int ptCount = 0;
+  private Coordinate ptCentSum = new Coordinate();
+
+  /**
+   * Creates a new instance for computing the centroid of a geometry
+   */
+  public Centroid(Geometry geom)
   {
-    basePt = null;
+    areaBasePt = null;
+    add(geom);
   }
 
   /**
-   * Adds the area defined by a Geometry to the centroid total.
-   * If the geometry has no area it does not contribute to the centroid.
+   * Adds a Geometry to the centroid total.
    *
    * @param geom the geometry to add
    */
-  public void add(Geometry geom)
+  private void add(Geometry geom)
   {
-    if (geom instanceof Polygon) {
+    if (geom.isEmpty())
+      return;
+    if (geom instanceof Point) {
+      addPoint(geom.getCoordinate());
+    }
+    else if (geom instanceof LineString) {
+      addLineSegments(geom.getCoordinates());
+    }
+    else if (geom instanceof Polygon) {
       Polygon poly = (Polygon) geom;
-      setBasePoint(poly.getExteriorRing().getCoordinateN(0));
       add(poly);
     }
     else if (geom instanceof GeometryCollection) {
@@ -89,17 +121,10 @@ public class CentroidArea
   }
 
   /**
-   * Adds the area defined by an array of
-   * coordinates.  The array must be a ring;
-   * i.e. end with the same coordinate as it starts with.
-   * @param ring an array of {@link Coordinate}s
+   * Gets the computed centroid.
+   * 
+   * @return the computed centroid, or null if the input is empty
    */
-  public void add(Coordinate[] ring)
-  {
-    setBasePoint(ring[0]);
-    addShell(ring);
-  }
-
   public Coordinate getCentroid()
   {
     Coordinate cent = new Coordinate();
@@ -107,18 +132,25 @@ public class CentroidArea
     	cent.x = cg3.x / 3 / areasum2;
     	cent.y = cg3.y / 3 / areasum2;
     }
-    else {
+    else if (totalLength > 0.0) {
     	// if polygon was degenerate, compute linear centroid instead
-      cent.x = centSum.x / totalLength;
-      cent.y = centSum.y / totalLength;   	
+      cent.x = lineCentSum.x / totalLength;
+      cent.y = lineCentSum.y / totalLength;   	
+    }
+    else if (ptCount > 0){
+      cent.x = ptCentSum.x / ptCount;
+      cent.y = ptCentSum.y / ptCount;
+    }
+    else {
+      return null;
     }
     return cent;
   }
 
   private void setBasePoint(Coordinate basePt)
   {
-    if (this.basePt == null)
-      this.basePt = basePt;
+    if (this.areaBasePt == null)
+      this.areaBasePt = basePt;
   }
   
   private void add(Polygon poly)
@@ -131,19 +163,22 @@ public class CentroidArea
 
   private void addShell(Coordinate[] pts)
   {
+    if (pts.length > 0) 
+      setBasePoint(pts[0]);
     boolean isPositiveArea = ! CGAlgorithms.isCCW(pts);
     for (int i = 0; i < pts.length - 1; i++) {
-      addTriangle(basePt, pts[i], pts[i+1], isPositiveArea);
+      addTriangle(areaBasePt, pts[i], pts[i+1], isPositiveArea);
     }
-    addLinearSegments(pts);
+    addLineSegments(pts);
   }
+  
   private void addHole(Coordinate[] pts)
   {
     boolean isPositiveArea = CGAlgorithms.isCCW(pts);
     for (int i = 0; i < pts.length - 1; i++) {
-      addTriangle(basePt, pts[i], pts[i+1], isPositiveArea);
+      addTriangle(areaBasePt, pts[i], pts[i+1], isPositiveArea);
     }
-    addLinearSegments(pts);
+    addLineSegments(pts);
   }
   private void addTriangle(Coordinate p0, Coordinate p1, Coordinate p2, boolean isPositiveArea)
   {
@@ -155,7 +190,7 @@ public class CentroidArea
     areasum2 += sign * area2;
   }
   /**
-   * Returns three times the centroid of the triangle p1-p2-p3.
+   * Computes three times the centroid of the triangle p1-p2-p3.
    * The factor of 3 is
    * left in to permit division to be avoided until later.
    */
@@ -167,8 +202,8 @@ public class CentroidArea
   }
 
   /**
-   * Returns twice the signed area of the triangle p1-p2-p3,
-   * positive if a,b,c are oriented ccw, and negative if cw.
+   * Returns twice the signed area of the triangle p1-p2-p3.
+   * The area is positive if the triangle is oriented CCW, and negative if CW.
    */
   private static double area2( Coordinate p1, Coordinate p2, Coordinate p3 )
   {
@@ -178,24 +213,40 @@ public class CentroidArea
   }
 
   /**
-   * Adds the linear segments defined by an array of coordinates
+   * Adds the line segments defined by an array of coordinates
    * to the linear centroid accumulators.
-   * This is done in case the polygon(s) have zero-area, 
-   * in which case the linear centroid is computed instead.
    * 
    * @param pts an array of {@link Coordinate}s
    */
-  private void addLinearSegments(Coordinate[] pts)
+  private void addLineSegments(Coordinate[] pts)
   {
+    double lineLen = 0.0;
     for (int i = 0; i < pts.length - 1; i++) {
       double segmentLen = pts[i].distance(pts[i + 1]);
-      totalLength += segmentLen;
+      if (segmentLen == 0.0)
+        continue;
+      
+      lineLen += segmentLen;
 
       double midx = (pts[i].x + pts[i + 1].x) / 2;
-      centSum.x += segmentLen * midx;
+      lineCentSum.x += segmentLen * midx;
       double midy = (pts[i].y + pts[i + 1].y) / 2;
-      centSum.y += segmentLen * midy;
+      lineCentSum.y += segmentLen * midy;
     }
+    totalLength += lineLen;
+    if (lineLen == 0.0 && pts.length > 0)
+      addPoint(pts[0]);
+  }
+
+  /**
+   * Adds a point to the point centroid accumulator.
+   * @param pt a {@link Coordinate}
+   */
+  private void addPoint(Coordinate pt)
+  {
+    ptCount += 1;
+    ptCentSum.x += pt.x;
+    ptCentSum.y += pt.y;
   }
 
 

@@ -88,8 +88,8 @@ import com.vividsolutions.jts.util.Assert;
  *
  *  The SFS does not specify an unambiguous representation of a given point set
  *  returned from a spatial analysis method. One goal of JTS is to make this
- *  specification precise and unambiguous. JTS will use a canonical form for
- *  <code>Geometry</code>s returned from spatial analysis methods. The canonical
+ *  specification precise and unambiguous. JTS uses a canonical form for
+ *  <code>Geometry</code>s returned from overlay methods. The canonical
  *  form is a <code>Geometry</code> which is simple and noded:
  *  <UL>
  *    <LI> Simple means that the Geometry returned will be simple according to
@@ -525,23 +525,7 @@ public abstract class Geometry
   {
     if (isEmpty()) 
       return factory.createPoint((Coordinate) null);
-    Coordinate centPt = null;
-    int dim = getDimension();
-    if (dim == 0) {
-      CentroidPoint cent = new CentroidPoint();
-      cent.add(this);
-      centPt = cent.getCentroid();
-    }
-    else if (dim == 1) {
-      CentroidLine cent = new CentroidLine();
-      cent.add(this);
-      centPt = cent.getCentroid();
-    }
-    else {
-      CentroidArea cent = new CentroidArea();
-      cent.add(this);
-      centPt = cent.getCentroid();
-    }
+    Coordinate centPt = Centroid.getCentroid(this);
     return createPointFromInternalCoord(centPt, this);
   }
 
