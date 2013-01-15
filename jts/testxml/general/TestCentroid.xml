@@ -26,6 +26,12 @@
 </case>
 
 <case>
+  <desc>mP - repeated points</desc>
+  <a>    MULTIPOINT((10 10), (10 10), (10 10), (18 18))  </a>
+<test><op name="getCentroid" arg1="A" >    POINT(12 12)   </op></test>
+</case>
+
+<case>
   <desc>L - single segment</desc>
   <a>    LINESTRING(10 10, 20 20)  </a>
 <test><op name="getCentroid" arg1="A" >    POINT(15 15)   </op></test>

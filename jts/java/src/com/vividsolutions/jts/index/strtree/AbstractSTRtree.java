@@ -112,7 +112,7 @@ public abstract class AbstractSTRtree implements Serializable {
    * called once, and thus can be called only after all of the data has been
    * inserted into the tree.
    */
-  public void build() {
+  public synchronized void build() {
     if (built) return;
     root = itemBoundables.isEmpty()
            ? createNode(0)
