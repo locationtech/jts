@@ -222,8 +222,8 @@ public class InteriorPointArea {
 		  this.poly = poly;
 		  
 		  // initialize using extremal values
-		  hiY = poly.getEnvelopeInternal().getMinY();
-		  loY = poly.getEnvelopeInternal().getMaxY();
+		  hiY = poly.getEnvelopeInternal().getMaxY();
+		  loY = poly.getEnvelopeInternal().getMinY();
 		  centreY = avg(loY, hiY);
 	  }
 	  

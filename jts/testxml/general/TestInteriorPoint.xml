@@ -72,7 +72,7 @@
   <desc>A - polygon with horizontal segment at centre (L shape)</desc>
   <a>    POLYGON ((0 2, 0 4, 6 4, 6 0, 2 0, 2 2, 0 2))
 	</a>
-<test><op name="getInteriorPoint" arg1="A" >    POINT (4 2)   </op></test>
+<test><op name="getInteriorPoint" arg1="A" >    POINT (3 3)   </op></test>
 </case>
 
 <case>
