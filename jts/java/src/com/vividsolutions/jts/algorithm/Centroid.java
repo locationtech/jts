@@ -37,24 +37,30 @@ import com.vividsolutions.jts.geom.*;
 
 /**
  * Computes the centroid of a {@link Geometry} of any dimension.
- * If the geometry is nomimally of higher dimension, but contains only components
- * having a lower effective dimension (i.e. zero length or area), 
- * the centroid will be computed appropriately.
+ * If the geometry is nominally of higher dimension, 
+ * but has lower <i>effective</i> dimension 
+ * (i.e. contains only components
+ * having zero length or area), 
+ * the centroid will be computed as for the equivalent lower-dimension geometry.
+ * If the input geometry is empty, a
+ * <code>null</code> Coordinate is returned.
  * 
  * <h2>Algorithm</h2>
  * <ul>
- * <li><b>Dimension = 2</b> - Based on the usual algorithm for calculating
- * the centroid as a weighted sum of the centroids
+ * <li><b>Dimension 2</b> - the centroid is computed 
+ * as the weighted sum of the centroids
  * of a decomposition of the area into (possibly overlapping) triangles.
- * The algorithm has been extended to handle holes and multi-polygons.
+ * Holes and multipolygons are handled correctly.
  * See <code>http://www.faqs.org/faqs/graphics/algorithms-faq/</code>
  * for further details of the basic approach.
- * <li><b>Dimension = 1</b> - Computes the average of the midpoints
+ * 
+ * <li><b>Dimension 1</b> - Computes the average of the midpoints
  * of all line segments weighted by the segment length.
- * <li><b>Dimension = 0</b> - Compute the average coordinate over all points.
+ * Zero-length lines are treated as points.
+ * 
+ * <li><b>Dimension 0</b> - Compute the average coordinate for all points.
+ * Repeated points are all included in the average.
  * </ul>
- * If the input geometries are empty, a
- * <code>null</code> Coordinate is returned.
  * 
  * @version 1.7
  */

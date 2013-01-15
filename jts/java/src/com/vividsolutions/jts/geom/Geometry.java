@@ -691,7 +691,8 @@ public abstract class Geometry
    * <p>
    * The <code>touches</code> predicate has the following equivalent definitions:
    * <ul>
-   * <li>The geometries have at least one point in common, but their interiors do not intersect.
+   * <li>The geometries have at least one point in common, 
+   * but their interiors do not intersect.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
    * at least one of the following patterns
    *  <ul>
@@ -700,7 +701,9 @@ public abstract class Geometry
    *   <li><code>[F***T****]</code>
    *  </ul>
    * </ul>
-   * If both geometries have dimension 0, this predicate returns <code>false</code>.
+   * If both geometries have dimension 0, the predicate returns <code>false</code>,
+   * since points have only interiors.
+   * This predicate is symmetric.
    * 
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
@@ -888,6 +891,7 @@ public abstract class Geometry
    *   or <code>[1*T***T**]</code> (for two curves)
    * </ul>
    * If the geometries are of different dimension this predicate returns <code>false</code>.
+   * This predicate is symmetric.
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        <code>true</code> if the two <code>Geometry</code>s overlap.
