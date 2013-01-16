@@ -76,6 +76,13 @@
 </case>
 
 <case>
+  <desc>A - polygon with horizontal segment at centre (narrower L shape)</desc>
+  <a>    POLYGON ((0 2, 0 4, 3 4, 3 0, 2 0, 2 2, 0 2))
+	</a>
+<test><op name="getInteriorPoint" arg1="A" >    POINT (2 3)   </op></test>
+</case>
+
+<case>
   <desc>mA - polygons with holes</desc>
   <a>    MULTIPOLYGON (((50 260, 240 340, 260 100, 20 60, 90 140, 50 260), (200 280, 140 240, 180 160, 240 140, 200 280)), ((380 280, 300 260, 340 100, 440 80, 380 280), (380 220, 340 200, 400 100, 380 220)))
 	</a>
