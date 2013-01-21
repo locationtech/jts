@@ -279,9 +279,12 @@ public class CGAlgorithms
    * The orientation of a point relative to a directed line segment indicates
    * which way you turn to get to q after travelling from p1 to p2.
    * 
-   * @return 1 if q is counter-clockwise from p1-p2
-   * @return -1 if q is clockwise from p1-p2
-   * @return 0 if q is collinear with p1-p2
+   * @param p1 the first vertex of the line segment
+   * @param p2 the second vertex of the line segment
+   * @param q the point to compute the relative orientation of
+   * @return 1 if q is counter-clockwise from p1-p2,
+   * or -1 if q is clockwise from p1-p2,
+   * or 0 if q is collinear with p1-p2
    */
   public static int computeOrientation(Coordinate p1, Coordinate p2,
       Coordinate q)
