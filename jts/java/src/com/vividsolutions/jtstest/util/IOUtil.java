@@ -47,7 +47,7 @@ public class IOUtil
   private static Geometry readGeometryFromWKBHexFile(String filename, GeometryFactory geomFact)
   throws ParseException, IOException 
   {
-    return readGeometryFromWKBHexString(FileUtil.readText(filename), geomFact);
+    return readGeometriesFromWKBHexString(FileUtil.readText(filename), geomFact);
   }
   
   private static Geometry readGeometryFromWKBHexString(String wkbHexFile, GeometryFactory geomFact)
