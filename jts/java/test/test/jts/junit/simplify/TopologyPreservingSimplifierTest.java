@@ -148,6 +148,20 @@ public class TopologyPreservingSimplifierTest
         10.0))
         .test();
   }
+  public void testMultiLineStringWithEmpty() throws Exception {
+    new GeometryOperationValidator(
+        TPSimplifierResult.getResult(
+      "MULTILINESTRING(EMPTY,  (0 0, 50 0, 70 0, 80 0, 100 0), (0 0, 50 1, 60 1, 100 0) )",
+        10.0))
+        .test();
+  }
+  public void testMultiPolygonWithEmpty() throws Exception {
+    new GeometryOperationValidator(
+        DPSimplifierResult.getResult(
+      "MULTIPOLYGON (EMPTY, ((-36 91.5, 4.5 91.5, 4.5 57.5, -36 57.5, -36 91.5)), ((25.5 57.5, 61.5 57.5, 61.5 23.5, 25.5 23.5, 25.5 57.5)))",
+        10.0))
+        .test();
+  }
   public void testGeometryCollection() throws Exception {
     new GeometryOperationValidator(
         TPSimplifierResult.getResult(

@@ -67,6 +67,7 @@ import com.vividsolutions.jts.util.Debug;
  * <p>
  * All geometry types are handled. 
  * Empty and point geometries are returned unchanged.
+ * Empty geometry components are deleted.
  * <p>
  * The simplification uses a maximum-distance difference algorithm
  * similar to the Douglas-Peucker algorithm.
@@ -135,6 +136,7 @@ public class TopologyPreservingSimplifier
   {
     protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent)
     {
+      if (coords.size() == 0) return null;
     	// for linear components (including rings), simplify the linestring
       if (parent instanceof LineString) {
         TaggedLineString taggedLine = (TaggedLineString) linestringMap.get(parent);
@@ -168,8 +170,10 @@ public class TopologyPreservingSimplifier
     {
       if (geom instanceof LineString) {
         LineString line = (LineString) geom;
-        int minSize = ((LineString) line).isClosed() ? 4 : 2;
+        // skip empty geometries
+        if (line.isEmpty()) return;
         
+        int minSize = ((LineString) line).isClosed() ? 4 : 2;
         TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize);
         linestringMap.put(line, taggedLine);
       }

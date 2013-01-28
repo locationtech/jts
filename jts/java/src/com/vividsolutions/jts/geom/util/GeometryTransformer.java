@@ -236,7 +236,7 @@ public class GeometryTransformer
 
   protected Geometry transformMultiLineString(MultiLineString geom, Geometry parent) {
     List transGeomList = new ArrayList();
-    for (int i = 0; i < geom.getNumGeometries(); i++) {
+    for (int i = 0; i < geom.getNumGeometries(); i++) {  
       Geometry transformGeom = transformLineString((LineString) geom.getGeometryN(i), geom);
       if (transformGeom == null) continue;
       if (transformGeom.isEmpty()) continue;

@@ -43,6 +43,7 @@ import com.vividsolutions.jts.geom.util.*;
  * Simple lines are not guaranteed to remain simple after simplification.
  * All geometry types are handled. 
  * Empty and point geometries are returned unchanged.
+ * Empty geometry components are deleted.
  * <p>
  * Note that in general D-P does not preserve topology -
  * e.g. polygons can be split, collapse to lines or disappear
@@ -52,6 +53,7 @@ import com.vividsolutions.jts.geom.util.*;
  * (However, using D-P is significantly faster).
  *
  * @version 1.7
+ * @see TopologyPreservingSimplifier
  */
 public class DouglasPeuckerSimplifier
 {
@@ -126,7 +128,13 @@ class DPTransformer
   protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent)
   {
     Coordinate[] inputPts = coords.toCoordinateArray();
-    Coordinate[] newPts = DouglasPeuckerLineSimplifier.simplify(inputPts, distanceTolerance);
+    Coordinate[] newPts = null;
+    if (inputPts.length == 0) {
+      newPts = new Coordinate[0];
+    }
+    else {
+      newPts = DouglasPeuckerLineSimplifier.simplify(inputPts, distanceTolerance);
+    }
     return factory.getCoordinateSequenceFactory().create(newPts);
   }
 
@@ -134,6 +142,9 @@ class DPTransformer
    * Simplifies a polygon, fixing it if required.
    */
   protected Geometry transformPolygon(Polygon geom, Geometry parent) {
+    // empty geometries are simply removed
+    if (geom.isEmpty())
+      return null;
     Geometry rawGeom = super.transformPolygon(geom, parent);
     // don't try and correct if the parent is going to do this
     if (parent instanceof MultiPolygon) {
