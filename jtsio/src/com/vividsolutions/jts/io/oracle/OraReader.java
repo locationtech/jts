@@ -154,19 +154,19 @@ public class OraReader {
 	}
 
 	/**
-     * Decode geometry from provided SDO encoded information.
-     *
-     * <p></p>
-     *
-     * @param gf Used to construct returned Geometry
-     * @param gType SDO_GTEMPLATE represents dimension, LRS, and geometry type
-     * @param point
-     * @param elemInfo
-     * @param ordinates
-     *
-     * @return Geometry as encoded
-     */
-    private Geometry create(GeometryFactory gf, int gType,
+   * Decode geometry from provided SDO encoded information.
+   *
+   * <p></p>
+   *
+   * @param gf Used to construct returned Geometry
+   * @param gType SDO_GTEMPLATE represents dimension, LRS, and geometry type
+   * @param point
+   * @param elemInfo
+   * @param ordinates
+   *
+   * @return Geometry as encoded
+   */
+	Geometry create(GeometryFactory gf, int gType,
         double[] point, int[] elemInfo, double[] ordinates) {
 
         int lrs = (gType%1000)/100;
@@ -175,11 +175,15 @@ public class OraReader {
         int dim = 0;
         if(dimension != NULL_DIMENSION){
         	dim = dimension;
-        }else{
-        	dim = Math.min(gType/1000,gf.getCoordinateSequenceFactory().create(0,0).getDimension()) ;
+        }
+        else {
+          int gTypeDim = gType/1000;
+          dim = gTypeDim;
+          // MD - Jan 2013 - this no longer works, and appears wrong anyway
+        	//dim = Math.min(gType/1000,gf.getCoordinateSequenceFactory().create(0,0).getDimension()) ;
         }
 
-        if(dim<2){
+        if(dim < 2){
         	throw new IllegalArgumentException("Dimension D:" + dim + " is not valid for JTS. " +
         			"Either specify a dimension or use Oracle Locator Version 9i or later");
         }
@@ -323,8 +327,9 @@ public class OraReader {
 
             switch (etype) {
             case -1:
-                cont = false; // We are the of the list - get out of here
-
+                cont = false; // We are at the end of the list - get out of here
+                continue;
+                
             case Constants.SDO_ETYPE.POINT:
 
                 if (interpretation == 1) {
@@ -666,7 +671,7 @@ public class OraReader {
         int etype = eType(elemInfo, elemIndex);
         int interpretation = interpretation(elemInfo, elemIndex);
 
-		if (!(sOffset >= 1) || !(sOffset <= coords.size()))
+		if (!(sOffset >= 1) || !(sOffset <= coords.size() * dim))
 		    throw new IllegalArgumentException("ELEM_INFO STARTING_OFFSET "+sOffset+" inconsistent with ORDINATES length "+coords.size());
 		if (etype != Constants.SDO_ETYPE.POINT)
 		    throw new IllegalArgumentException("ETYPE "+etype+" inconsistent with expected POINT");
