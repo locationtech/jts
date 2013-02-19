@@ -44,7 +44,7 @@ public final class CoordinateArraySequenceFactory
     implements CoordinateSequenceFactory, Serializable
 {
   private static final long serialVersionUID = -4099577099607551657L;
-  private static CoordinateArraySequenceFactory instanceObject = new CoordinateArraySequenceFactory();
+  private static final CoordinateArraySequenceFactory instanceObject = new CoordinateArraySequenceFactory();
 
   private CoordinateArraySequenceFactory() {
   }

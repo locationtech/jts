@@ -115,7 +115,7 @@ public class WKTWriter
     return "LINESTRING ( " + p0.x + " " + p0.y + ", " + p1.x + " " + p1.y + " )";
   }
 
-  private static int INDENT = 2;
+  private static final int INDENT = 2;
 
   /**
    *  Creates the <code>DecimalFormat</code> used to write <code>double</code>s

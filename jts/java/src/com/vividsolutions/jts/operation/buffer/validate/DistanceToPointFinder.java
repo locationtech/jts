@@ -40,9 +40,6 @@ import com.vividsolutions.jts.geom.*;
  */
 public class DistanceToPointFinder {
 
-  // used for point-line distance calculation
-  private static LineSegment tempSegment = new LineSegment();
-
   public DistanceToPointFinder() {
   }
 
@@ -68,6 +65,7 @@ public class DistanceToPointFinder {
   public static void computeDistance(LineString line, Coordinate pt, PointPairDistance ptDist)
   {
     Coordinate[] coords = line.getCoordinates();
+    LineSegment tempSegment = new LineSegment();
     for (int i = 0; i < coords.length - 1; i++) {
       tempSegment.setCoordinates(coords[i], coords[i + 1]);
       // this is somewhat inefficient - could do better

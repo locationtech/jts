@@ -60,7 +60,7 @@ import com.vividsolutions.jts.geom.*;
  */
 public class ShapeReader 
 {
-  private static AffineTransform INVERT_Y = AffineTransform.getScaleInstance(1, -1);
+  private static final AffineTransform INVERT_Y = AffineTransform.getScaleInstance(1, -1);
 
   /**
    * Converts a flat path to a {@link Geometry}.

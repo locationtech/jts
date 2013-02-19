@@ -50,7 +50,7 @@ import com.vividsolutions.jts.noding.SegmentString;
  */
 public class MCIndexPointSnapper
 {
-  public static int nSnaps = 0;
+  //public static final int nSnaps = 0;
 
   private STRtree index;
 

@@ -172,7 +172,15 @@ public abstract class Geometry
 {
   private static final long serialVersionUID = 8763622679187376702L;
     
-  private static Class[] sortedClasses;  
+  private static final Class[] sortedClasses = new Class[] { 
+    Point.class, 
+    MultiPoint.class,
+    LineString.class, 
+    LinearRing.class, 
+    MultiLineString.class,
+    Polygon.class, 
+    MultiPolygon.class, 
+    GeometryCollection.class };  
   
   private final static GeometryComponentFilter geometryChangedFilter = new GeometryComponentFilter() {
     public void filter(Geometry geom) {
@@ -1858,9 +1866,6 @@ public abstract class Geometry
   }
 
   private int getClassSortIndex() {
-		if (sortedClasses == null)
-			initSortedClasses();
-
 		for (int i = 0; i < sortedClasses.length; i++) {
 			if (sortedClasses[i].isInstance(this))
 				return i;
@@ -1869,19 +1874,6 @@ public abstract class Geometry
 		return -1;
 	}
 
-  private static void initSortedClasses()
-  {
-		sortedClasses = new Class[] { 
-					Point.class, 
-					MultiPoint.class,
-					LineString.class, 
-					LinearRing.class, 
-					MultiLineString.class,
-					Polygon.class, 
-					MultiPolygon.class, 
-					GeometryCollection.class };
-  }
-  
   private Point createPointFromInternalCoord(Coordinate coord, Geometry exemplar)
   {
     exemplar.getPrecisionModel().makePrecise(coord);

@@ -63,7 +63,7 @@ public interface PointShapeFactory {
     /**
      * The default size of the shape
      */
-    public static double DEFAULT_SIZE = 3.0;
+    public static final double DEFAULT_SIZE = 3.0;
 
     protected double size = DEFAULT_SIZE;
 

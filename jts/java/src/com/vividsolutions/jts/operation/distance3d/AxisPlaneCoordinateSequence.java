@@ -87,9 +87,9 @@ public class AxisPlaneCoordinateSequence implements CoordinateSequence {
 		return new AxisPlaneCoordinateSequence(seq, YZ_INDEX);
 	}
 	
-	private static int[] XY_INDEX = new int[] { 0,1 };
-	private static int[] XZ_INDEX = new int[] { 0,2 };
-	private static int[] YZ_INDEX = new int[] { 1,2 };
+	private static final int[] XY_INDEX = new int[] { 0,1 };
+	private static final int[] XZ_INDEX = new int[] { 0,2 };
+	private static final int[] YZ_INDEX = new int[] { 1,2 };
 	
 	private CoordinateSequence seq;
 	private int[] indexMap;

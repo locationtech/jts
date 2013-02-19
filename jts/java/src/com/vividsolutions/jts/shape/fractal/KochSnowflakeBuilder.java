@@ -66,7 +66,7 @@ extends GeometricShapeBuilder
 	/**
 	 * The height of an equilateral triangle of side one
 	 */
-	private static double HEIGHT_FACTOR = Math.sin(Math.PI / 3.0);
+	private static final double HEIGHT_FACTOR = Math.sin(Math.PI / 3.0);
 	private static final double ONE_THIRD = 1.0/3.0;
 	private static final double THIRD_HEIGHT = HEIGHT_FACTOR/3.0;
 	private static final double TWO_THIRDS = 2.0/3.0;
