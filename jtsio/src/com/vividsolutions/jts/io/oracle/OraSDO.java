@@ -131,6 +131,20 @@ class OraSDO {
 		public static final int MULTIPOLYGON  = 07;
 	}
 
+	static final class INTERP {
+		
+		public static final int POINT       	= 1;
+		
+		public static final int MULTI      		= 2;  // also all higher values
+		
+		public static final int LINESTRING    	= 1;  // also all higher values
+		
+		public static final int POLYGON      	= 1;  // also all higher values
+		
+		public static final int RECTANGLE      	= 3;  // also all higher values
+				
+	}
+	
 	/**
 	 * Extracts the SDO_ELEM_INFO ETYPE value for a given triplet.
 	 * <p>

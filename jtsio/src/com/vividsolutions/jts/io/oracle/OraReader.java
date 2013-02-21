@@ -337,7 +337,7 @@ public class OraReader {
                 
             case OraSDO.ETYPE.POINT:
 
-                if (interpretation == 1) {
+                if (interpretation == OraSDO.INTERP.POINT) {
                     geom = createPoint(gf, dim, lrs, elemInfo, i, coords);
                 } else if (interpretation > 1) {
                     geom = createMultiPoint(gf, dim, lrs, elemInfo, i, coords);
@@ -400,7 +400,7 @@ public class OraReader {
 		    throw new IllegalArgumentException("ELEM_INFO STARTING_OFFSET "+sOffset+" inconsistent with ORDINATES length "+coords.size());
 		if(!(etype == OraSDO.ETYPE.POLYGON) && !(etype == OraSDO.ETYPE.POLYGON_EXTERIOR))
 		    throw new IllegalArgumentException("ETYPE "+etype+" inconsistent with expected POLYGON or POLYGON_EXTERIOR");
-		if (interpretation != 1 && interpretation != 3){
+		if (! (interpretation == OraSDO.INTERP.POLYGON || interpretation == OraSDO.INTERP.RECTANGLE)) {
 			return null;
 		}
 
@@ -448,7 +448,7 @@ public class OraReader {
 		    throw new IllegalArgumentException("ELEM_INFO STARTING_OFFSET "+sOffset+" inconsistent with ORDINATES length "+coords.size());
 		if(!(etype == OraSDO.ETYPE.LINE))
 		    throw new IllegalArgumentException("ETYPE "+etype+" inconsistent with expected LINE");
-		if (!(interpretation == 1)){
+		if (!(interpretation == OraSDO.INTERP.LINESTRING)){
             // we cannot represent INTERPRETATION > 1
 			return null;
 		}
@@ -492,7 +492,7 @@ public class OraReader {
 		    throw new IllegalArgumentException("ELEM_INFO STARTING_OFFSET "+sOffset+" inconsistent with ORDINATES length "+coords.size());
 		if(!(etype == OraSDO.ETYPE.POINT))
 		    throw new IllegalArgumentException("ETYPE "+etype+" inconsistent with expected POINT");
-		if (!(interpretation > 1)){
+		if (!(interpretation > OraSDO.INTERP.POINT)){
 			return null;
 		}
 
@@ -535,7 +535,7 @@ public class OraReader {
 		if(!(etype == OraSDO.ETYPE.POLYGON) && !(etype == OraSDO.ETYPE.POLYGON_EXTERIOR)){
 			throw new IllegalArgumentException("ETYPE "+etype+" inconsistent with expected POLYGON or POLYGON_EXTERIOR");
 		}
-		if (!(interpretation == 1) && !(interpretation == 3)){
+		if (! (interpretation == OraSDO.INTERP.POLYGON || interpretation == OraSDO.INTERP.RECTANGLE)) {
 			return null;
 		}
 
@@ -591,7 +591,7 @@ public class OraReader {
 		if(!(etype == OraSDO.ETYPE.POLYGON) && !(etype == OraSDO.ETYPE.POLYGON_EXTERIOR) && !(etype == OraSDO.ETYPE.POLYGON_INTERIOR)){
 		    throw new IllegalArgumentException("ETYPE "+etype+" inconsistent with expected POLYGON, POLYGON_EXTERIOR or POLYGON_INTERIOR");
 		}
-		if (!(interpretation == 1) && !(interpretation == 3)){
+		if (! (interpretation == OraSDO.INTERP.POLYGON || interpretation == OraSDO.INTERP.RECTANGLE)) {
 			return null;
 		}
         LinearRing ring;
@@ -602,9 +602,9 @@ public class OraReader {
 		int eOffset = OraSDO.startingOffset(elemInfo, elemIndex+1); // -1 for end
         int end = (eOffset != -1) ? ((eOffset - 1) / len) : coords.size();
 
-        if (interpretation == 1) {
+        if (interpretation == OraSDO.INTERP.POLYGON) {
             ring = gf.createLinearRing(subList(gf.getCoordinateSequenceFactory(),coords, start,end));
-        } else { // interpretation == 3
+        } else { // interpretation == OraSDO.INTERP.RECTANGLE
             // rectangle does not maintain measures
             //
             CoordinateSequence ext = subList(gf.getCoordinateSequenceFactory(),coords, start,end);
@@ -639,7 +639,7 @@ public class OraReader {
 		if (etype != OraSDO.ETYPE.LINE)
 			return null;
 
-        if (interpretation != 1) {
+        if (interpretation != OraSDO.INTERP.LINESTRING) {
             throw new IllegalArgumentException("ELEM_INFO INTERPRETATION "
                 + interpretation + " not supported"
                 + "by JTS LineString.  Straight edges"
@@ -677,7 +677,7 @@ public class OraReader {
 		    throw new IllegalArgumentException("ELEM_INFO STARTING_OFFSET "+sOffset+" inconsistent with ORDINATES length "+coords.size());
 		if (etype != OraSDO.ETYPE.POINT)
 		    throw new IllegalArgumentException("ETYPE "+etype+" inconsistent with expected POINT");
-		if (interpretation != 1){
+		if (interpretation != OraSDO.INTERP.POINT){
 			return null;
 		}
 
