@@ -4,8 +4,9 @@ public class OraGeom
 {
 
   public int gType;
-  public int[] elemInfo;
-  public double[] ordinates;
+  public double[] ptType = null;
+  public int[] elemInfo = null;
+  public double[] ordinates = null;
 
   public OraGeom(int gType, int[] elemInfo, double[] ordinates)
   {
@@ -14,9 +15,20 @@ public class OraGeom
     this.ordinates = ordinates;
   }
 
-  public static OraGeom sdo_geometry(int gType, int null1, int null2,
-      int[] elemInfo, double[] ordinates)
+  public OraGeom(int gType, double[] ptType)
   {
-    return new OraGeom(gType, elemInfo, ordinates);
+    this.gType = gType;
+    this.ptType = ptType;
   }
+
+  public static OraGeom sdo_geometry(int gType, int srid, int ptType,
+	      int[] elemInfo, double[] ordinates)
+	  {
+	    return new OraGeom(gType, elemInfo, ordinates);
+	  }
+  public static OraGeom sdo_geometry(int gType, int srid, double[] ptType,
+	      int elemInfo, int ordinates)
+	  {
+	    return new OraGeom(gType, ptType);
+	  }
 }
