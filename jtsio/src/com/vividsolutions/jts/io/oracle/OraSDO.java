@@ -48,13 +48,18 @@
  */
 package com.vividsolutions.jts.io.oracle;
 
+import java.sql.SQLException;
+
+import oracle.sql.ARRAY;
+import oracle.sql.Datum;
+
 /**
  * Set of constants used to interact with MDSYS.GEOMETRY and JTS Geometries. 
  * 
  *
  * @author David Zwiers, Vivid Solutions.
  */
-class Constants {
+class OraSDO {
 	
 	/**
 	 * Null SRID
@@ -63,14 +68,15 @@ class Constants {
 	
 	/**
 	 * 
-	 * Extracted from the Oracle Documentation for SDO_ETYPE
+	 * Extracted from the Oracle Documentation for SDO_ETYPE.
+	 * This code indicates the type of element denoted by an SDO_ELEM_INFO triplet.
 	 * 
 	 * This list may need to be expanded in the future to handle additional Geometry Types.
 	 *
 	 * @author David Zwiers, Vivid Solutions.
 	 * @author Jody Garnett, Refractions Research, Inc.
 	 */
-	static final class SDO_ETYPE{
+	static final class ETYPE{
 
 	    /** <code>ETYPE</code> code representing Point */
 	    public static final int POINT = 1;
@@ -98,7 +104,10 @@ class Constants {
 	 * @author David Zwiers, Vivid Solutions.
 	 * @author Brent Owens, The Open Planning Project.
 	 */
-	static final class SDO_GEOM_TYPE {
+	static final class GEOM_TYPE {
+	
+		/** <code>TT</code> code representing Unknown type */
+		public static final int UNKNOWN       = 00;
 	
 		/** <code>TT</code> code representing Point */
 		public static final int POINT         = 01;
@@ -112,13 +121,95 @@ class Constants {
 		/** <code>TT</code> code representing Collection */
 		public static final int COLLECTION    = 04;   
 	
-		/** <code>TT</code> code representing Multpoint */
+		/** <code>TT</code> code representing MultiPoint */
 		public static final int MULTIPOINT    = 05;       
 	
-		/** <code>TT</code> code representing Multiline (or Multicurve) */
+		/** <code>TT</code> code representing MultiLine (or MultiCurve) */
 		public static final int MULTILINE     = 06;
 	
 		/** <code>TT</code> code representing MULTIPOLYGON */
 		public static final int MULTIPOLYGON  = 07;
 	}
+
+	/**
+	 * Extracts the SDO_ELEM_INFO ETYPE value for a given triplet.
+	 * <p>
+	 * @see ETYPE for an indication of possible values
+	 *
+	 * @param elemInfo the SDO_ELEM_INFO array
+	 * @param tripletIndex index of the triplet to read
+	 * @return ETYPE for indicated triplet, or -1 if an error occurred
+	 */
+	static int eType(int[] elemInfo, int tripletIndex) {
+	    if (((tripletIndex * 3) + 1) >= elemInfo.length) {
+	        return -1;
+	    }
+	    return elemInfo[(tripletIndex * 3) + 1];
+	}
+
+	/**
+	 * Extracts the SDO_ELEM_INFO interpretation value (SDO_INTERPRETATION) for a given triplet.
+	 *
+	 * JTS valid interpretation values are: 1 for straight edges, 3 for rectangle
+	 *
+	 * Other interpretation value include: 2 for arcs, 4 for circles
+	 *
+	 * @param elemInfo the SDO_ELEM_INFO array
+	 * @param tripletIndex index of the triplet to read
+	 * @return interpretation value, or -1 if an error occurred
+	 */
+	static int interpretation(int[] elemInfo, int tripletIndex) {
+	    if (((tripletIndex * 3) + 2) >= elemInfo.length) {
+	        return -1;
+	    }
+	    return elemInfo[(tripletIndex * 3) + 2];
+	}
+
+	/**
+	 * Extracts the SDO_ELEM_INFO start index (SDO_STARTING_OFFSET) in the ordinate array for a given triplet.
+	 *
+	 * @param elemInfo the SDO_ELEM_INFO array
+	 * @param tripletIndex index of the triplet to read
+	 * @return Starting Offset, or -1 if an error occurred
+	 */
+	static int startingOffset(int[] elemInfo, int tripletIndex) {
+	    if (((tripletIndex * 3) + 0) >= elemInfo.length) {
+	        return -1;
+	    }
+	    return elemInfo[(tripletIndex * 3) + 0];
+	}
+
+	/**
+	 * Extracts the GEOM_TYPE code from an SDO_GTYPE code.
+	 * 
+	 * @param gType an SDO_GTYPE code
+	 * @return the GEOM_TYPE code
+	 */
+	static int gTypeGeomType(int gType) {
+		return gType % 100;
+	}
+
+	/**
+	 * Extracts the coordinate dimension from an SDO_GTYPE code.
+	 * 
+	 * @param gType an SDO_GTYPE code
+	 * @return the coordinate dimension
+	 */
+	static int gTypeDim(int gType) {
+		return gType/1000;
+	}
+
+	/**
+	 * Extracts the coordinate dimension containing the Measure value from 
+	 * an SDO_GTYPE code.
+	 * For a measured geometry this is 0, 3 or 4.  0 indicates that the last dimension is the measure dimension
+	 * For an non-measured geometry this is 0.
+	 * 
+	 * @param gType an SDO_GTYPE code
+	 * @return the Measure dimension
+	 */
+	static int gTypeMeasureDim(int gType) {
+		return (gType%1000)/100;
+	}
+
 }
