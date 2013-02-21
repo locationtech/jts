@@ -225,13 +225,13 @@ public class OraWriter {
     private void coordinates(List list, Geometry geom) {
         switch (template(geom)) {
 
-        case Constants.SDO_GTEMPLATE.POINT:
+        case Constants.SDO_GEOM_TYPE.POINT:
             addCoordinates(list, ((Point)geom).getCoordinateSequence());
             return;
-        case Constants.SDO_GTEMPLATE.LINE:
+        case Constants.SDO_GEOM_TYPE.LINE:
             addCoordinates(list, ((LineString)geom).getCoordinateSequence());
             return;
-        case Constants.SDO_GTEMPLATE.POLYGON:
+        case Constants.SDO_GEOM_TYPE.POLYGON:
             switch (elemInfoInterpretation(geom,Constants.SDO_ETYPE.POLYGON_EXTERIOR)) {
             case 3:
                 Envelope e = geom.getEnvelopeInternal();
@@ -261,10 +261,10 @@ public class OraWriter {
                 return;
             }
             break; // interpretations 2,4 not supported
-        case Constants.SDO_GTEMPLATE.MULTIPOINT:
-        case Constants.SDO_GTEMPLATE.MULTILINE:
-        case Constants.SDO_GTEMPLATE.MULTIPOLYGON:
-        case Constants.SDO_GTEMPLATE.COLLECTION:
+        case Constants.SDO_GEOM_TYPE.MULTIPOINT:
+        case Constants.SDO_GEOM_TYPE.MULTILINE:
+        case Constants.SDO_GEOM_TYPE.MULTIPOLYGON:
+        case Constants.SDO_GEOM_TYPE.COLLECTION:
             for (int i = 0; i < geom.getNumGeometries(); i++) {
                 coordinates(list,geom.getGeometryN(i));
             }
@@ -349,14 +349,14 @@ public class OraWriter {
     private void elemInfo(List elemInfoList, Geometry geom, int sOffSet, int gtype) {
 
         switch (gtype - (gtype/100) * 100) { // removes right two digits
-        case Constants.SDO_GTEMPLATE.POINT:
+        case Constants.SDO_GEOM_TYPE.POINT:
             addInt(elemInfoList, sOffSet);
             addInt(elemInfoList, Constants.SDO_ETYPE.POINT);
             addInt(elemInfoList, 1); // INTERPRETATION single point
 
             return;
 
-        case Constants.SDO_GTEMPLATE.MULTIPOINT:
+        case Constants.SDO_GEOM_TYPE.MULTIPOINT:
             MultiPoint points = (MultiPoint) geom;
 
             addInt(elemInfoList, sOffSet);
@@ -365,14 +365,14 @@ public class OraWriter {
 
             return;
 
-        case Constants.SDO_GTEMPLATE.LINE:
+        case Constants.SDO_GEOM_TYPE.LINE:
             addInt(elemInfoList, sOffSet);
             addInt(elemInfoList, Constants.SDO_ETYPE.LINE);
             addInt(elemInfoList, 1); // INTERPRETATION straight edges    
 
             return;
 
-        case Constants.SDO_GTEMPLATE.MULTILINE:
+        case Constants.SDO_GEOM_TYPE.MULTILINE:
         	MultiLineString lines = (MultiLineString) geom;
             LineString line;
             int offset = sOffSet;
@@ -389,7 +389,7 @@ public class OraWriter {
 
             return;
 
-        case Constants.SDO_GTEMPLATE.POLYGON:
+        case Constants.SDO_GEOM_TYPE.POLYGON:
         	Polygon polygon = (Polygon)geom;
             int holes = polygon.getNumInteriorRing();
 
@@ -421,7 +421,7 @@ public class OraWriter {
 
             return;
 
-        case Constants.SDO_GTEMPLATE.MULTIPOLYGON:
+        case Constants.SDO_GEOM_TYPE.MULTIPOLYGON:
         	MultiPolygon polys = (MultiPolygon) geom;
             Polygon poly;
             offset = sOffSet;
@@ -442,7 +442,7 @@ public class OraWriter {
 
             return;
 
-        case Constants.SDO_GTEMPLATE.COLLECTION:
+        case Constants.SDO_GEOM_TYPE.COLLECTION:
         	GeometryCollection geoms = (GeometryCollection) geom;
             offset = sOffSet;
             dim = gtype/1000;
@@ -566,13 +566,13 @@ public class OraWriter {
     private int elemInfoEType(Geometry geom) {
         switch (template(geom)) {
 
-        case Constants.SDO_GTEMPLATE.POINT:
+        case Constants.SDO_GEOM_TYPE.POINT:
             return Constants.SDO_ETYPE.POINT;
 
-        case Constants.SDO_GTEMPLATE.LINE:
+        case Constants.SDO_GEOM_TYPE.LINE:
             return Constants.SDO_ETYPE.LINE;
 
-        case Constants.SDO_GTEMPLATE.POLYGON:
+        case Constants.SDO_GEOM_TYPE.POLYGON:
         	// jts convention
             return Constants.SDO_ETYPE.POLYGON_EXTERIOR; // cc order
 
@@ -712,7 +712,7 @@ public class OraWriter {
     /**
      * Return TT as defined by SDO_GTEMPLATE (represents geometry type).
      * 
-     * @see Constants.SDO_GTEMPLATE
+     * @see Constants.SDO_GEOM_TYPE
      *
      * @param geom
      *
@@ -722,19 +722,19 @@ public class OraWriter {
         if (geom == null) {
             return -1; // UNKNOWN
         } else if (geom instanceof Point) {
-            return Constants.SDO_GTEMPLATE.POINT;
+            return Constants.SDO_GEOM_TYPE.POINT;
         } else if (geom instanceof LineString) {
-            return Constants.SDO_GTEMPLATE.LINE;
+            return Constants.SDO_GEOM_TYPE.LINE;
         } else if (geom instanceof Polygon) {
-            return Constants.SDO_GTEMPLATE.POLYGON;
+            return Constants.SDO_GEOM_TYPE.POLYGON;
         } else if (geom instanceof MultiPoint) {
-            return Constants.SDO_GTEMPLATE.MULTIPOINT;
+            return Constants.SDO_GEOM_TYPE.MULTIPOINT;
         } else if (geom instanceof MultiLineString) {
-            return Constants.SDO_GTEMPLATE.MULTILINE;
+            return Constants.SDO_GEOM_TYPE.MULTILINE;
         } else if (geom instanceof MultiPolygon) {
-            return Constants.SDO_GTEMPLATE.MULTIPOLYGON;
+            return Constants.SDO_GEOM_TYPE.MULTIPOLYGON;
         } else if (geom instanceof GeometryCollection) {
-            return Constants.SDO_GTEMPLATE.COLLECTION;
+            return Constants.SDO_GEOM_TYPE.COLLECTION;
         }
 
         throw new IllegalArgumentException("Cannot encode JTS "

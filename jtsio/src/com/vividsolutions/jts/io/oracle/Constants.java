@@ -90,14 +90,15 @@ class Constants {
     
 	/**
 	 * Extracted from the Oracle Documentation for SDO_GTYPE.
-	 * This represents the last two digits in a GTYPE, where the first id dimension and the second if LRS
+	 * This represents the last two digits in a GTYPE value,
+	 * which specifies the geometry type.
 	 * 
 	 * This list may need to be expanded in the future to handle additional Geometry Types.
 	 *
 	 * @author David Zwiers, Vivid Solutions.
 	 * @author Brent Owens, The Open Planning Project.
 	 */
-	static final class SDO_GTEMPLATE{
+	static final class SDO_GEOM_TYPE {
 	
 		/** <code>TT</code> code representing Point */
 		public static final int POINT         = 01;
