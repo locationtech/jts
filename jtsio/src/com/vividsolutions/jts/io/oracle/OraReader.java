@@ -259,7 +259,7 @@ public class OraReader {
                 });
         }
 
-        int len = dim + lrs;
+        int len = dim;
 
         if ((len == 0 && ordinates.length!=0 ) || (len != 0 && ((ordinates.length % len) != 0))){
             throw new IllegalArgumentException("Dimension D:" + dim + " and L:"
@@ -494,7 +494,7 @@ public class OraReader {
 			return null;
 		}
 
-        int len = dim + lrs;
+        int len = dim;
 
         int start = (sOffset - 1) / len;
         int end = start + interpretation;
@@ -595,7 +595,7 @@ public class OraReader {
         LinearRing ring;
 
 
-		int len = (dim+lrs);
+		int len = dim;
 		int start = (sOffset - 1) / len;
 		int eOffset = StartingOffset(elemInfo, elemIndex+1); // -1 for end
         int end = (eOffset != -1) ? ((eOffset - 1) / len) : coords.size();
@@ -638,13 +638,13 @@ public class OraReader {
 			return null;
 
         if (interpretation != 1) {
-            throw new IllegalArgumentException("ELEM_INFO INTERPRETAION "
+            throw new IllegalArgumentException("ELEM_INFO INTERPRETATION "
                 + interpretation + " not supported"
                 + "by JTS LineString.  Straight edges"
-                + "( ELEM_INFO INTERPRETAION 1) is supported");
+                + "( ELEM_INFO INTERPRETATION 1) is supported");
         }
 
-		int len = (dim+lrs);
+		int len = dim;
 		int start = (sOffset - 1) / len;
 		int eOffset = StartingOffset(elemInfo, elemIndex+1); // -1 for end
         int end = (eOffset != -1) ? ((eOffset - 1) / len) : coords.size();
@@ -679,7 +679,7 @@ public class OraReader {
 			return null;
 		}
 
-		int len = (dim+lrs);
+		int len = dim;
 		int start = (sOffset - 1) / len;
 		int eOffset = StartingOffset(elemInfo, elemIndex+1); // -1 for end
 
