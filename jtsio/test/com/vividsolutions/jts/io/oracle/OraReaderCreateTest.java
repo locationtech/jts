@@ -76,7 +76,7 @@ public class OraReaderCreateTest extends TestCase
 	    checkOracleValue(oraGeom, 3, "POINT (50 50)");
   }
 
-  public void testPoint2() throws Exception {
+  public void testPointType() throws Exception {
 	    OraGeom oraGeom = OraGeom.sdo_geometry(3001,NULL,SDO_POINT_TYPE(50,50,100),NULL,NULL);
 	    checkOracleValue(oraGeom, "POINT (50 50)");
   }
@@ -86,9 +86,33 @@ public class OraReaderCreateTest extends TestCase
     checkOracleValue(oraGeom, "MULTIPOINT ((50 50), (100 200))");
   }
 
+  public void testLineStringXY() throws Exception {
+	    OraGeom oraGeom = OraGeom.
+	    		sdo_geometry(2002,NULL,NULL,SDO_ELEM_INFO_ARRAY(1,2,1),SDO_ORDINATE_ARRAY(0,0,50,50));
+	    checkOracleValue(oraGeom, "LINESTRING (0 0, 50 50)");
+}
+
+  public void testLineStringXYZ() throws Exception {
+	    OraGeom oraGeom = OraGeom.
+	    		sdo_geometry(3002,NULL,NULL,SDO_ELEM_INFO_ARRAY(1,2,1),SDO_ORDINATE_ARRAY(0,0,0,50,50,100));
+	    checkOracleValue(oraGeom, "LINESTRING (0 0, 50 50)");
+  }
+
   public void testLineStringXYM() throws Exception {
 	    OraGeom oraGeom = OraGeom.sdo_geometry(3302,NULL,NULL,SDO_ELEM_INFO_ARRAY(1, 2, 1),SDO_ORDINATE_ARRAY(1, 1, 20, 2, 2, 30));
 	    checkOracleValue(oraGeom, "LINESTRING (1 1, 2 2)");
+}
+
+  public void testLineStringXYMZ() throws Exception {
+	    OraGeom oraGeom = OraGeom.
+	    		sdo_geometry(4302,8307,NULL,SDO_ELEM_INFO_ARRAY(1,2,1),SDO_ORDINATE_ARRAY(0,0,2,3,50,50,100,200));
+	    checkOracleValue(oraGeom, "LINESTRING (0 0, 50 50)");
+}
+
+  public void testMultiLineStringXYMZ() throws Exception {
+	    OraGeom oraGeom = OraGeom.
+	    		sdo_geometry(4306,8307,NULL,SDO_ELEM_INFO_ARRAY(1,2,1,9,2,1),SDO_ORDINATE_ARRAY(0,0,2,3,50,50,100,200,10,10,12,13,150,150,110,210));
+	    checkOracleValue(oraGeom, "MULTILINESTRING ((0 0, 50 50), (10 10, 150 150))");
   }
 
   public void testPolygonXY() throws Exception {
@@ -112,20 +136,22 @@ public class OraReaderCreateTest extends TestCase
 	    OraGeom oraGeom = OraGeom.
 	    		sdo_geometry(2003,NULL,NULL,SDO_ELEM_INFO_ARRAY(1,1003,3,5,2003,3),SDO_ORDINATE_ARRAY(0,0,50,50,40,40,20,20));
 	    checkOracleValue(oraGeom, "POLYGON ((0 0, 50 0, 50 50, 0 50, 0 0), (40 40, 20 40, 20 20, 40 20, 40 40))");
-  }
+}
 
-  
-  
-  
-  
-  
-  
+
+  //====================================================================================
   
   private static double[] SDO_POINT_TYPE(int x, int y, int z) {
 	// TODO Auto-generated method stub
 	return new double[] { x, y, z};
   }
 
+
+  private static double[] SDO_ORDINATE_ARRAY(double i, double j)
+  {
+    return new double[] { i, j };
+  }
+  
   private static double[] SDO_ORDINATE_ARRAY(double i0, double i1, double i2, double i3)
   {
     // TODO Auto-generated method stub
@@ -159,10 +185,14 @@ public class OraReaderCreateTest extends TestCase
     return new double[] { i0, i1, i2, i3, i4, i5, i6, i7 };
   }
 
-  private static double[] SDO_ORDINATE_ARRAY(double i, double j)
+  private static double[] SDO_ORDINATE_ARRAY(double i0, double i1, double i2, double i3, double i4, double i5, 
+		  double i6, double i7, double i8, double i9, double i10, double i11,
+		  double i12, double i13, double i14, double i15)
   {
-    return new double[] { i, j };
+    // TODO Auto-generated method stub
+    return new double[] { i0, i1, i2, i3, i4, i5, i6, i7, i8, i9, i10, i11, i12, i13, i14, i15 };
   }
+
 
   private static int[] SDO_ELEM_INFO_ARRAY(int t11, int t12, int t13)
   {
