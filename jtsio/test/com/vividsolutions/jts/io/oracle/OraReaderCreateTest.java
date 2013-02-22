@@ -71,9 +71,9 @@ public class OraReaderCreateTest extends TestCase
     checkOracleValue(oraGeom, "POINT (50 50)");
   }
 
-  public void XXtestPointXYZM() throws Exception {
+  public void testPointXYZM() throws Exception {
 	    OraGeom oraGeom = OraGeom.sdo_geometry(4001,NULL,NULL,SDO_ELEM_INFO_ARRAY(1,1,1),SDO_ORDINATE_ARRAY(50,50,100,200));
-	    checkOracleValue(oraGeom, "POINT (50 50)");
+	    checkOracleValue(oraGeom, 3, "POINT (50 50)");
   }
 
   public void testPoint2() throws Exception {
@@ -232,6 +232,11 @@ public class OraReaderCreateTest extends TestCase
 
   void checkOracleValue(OraGeom oraGeom, String wkt)
   {
+	  checkOracleValue(oraGeom, -1, wkt);
+  }
+  
+  void checkOracleValue(OraGeom oraGeom, int targetDim, String wkt)
+  {
     Geometry expected = null;
     try {
       expected = wktRdr.read(wkt);
@@ -242,6 +247,7 @@ public class OraReaderCreateTest extends TestCase
     
     final GeometryFactory geometryFactory = new GeometryFactory();
     final OraReader oraReader = new OraReader(geometryFactory);
+    if (targetDim > -1) oraReader.setDimension(targetDim);
 
     final Geometry actual = oraReader.create(geometryFactory, oraGeom.gType, oraGeom.ptType, oraGeom.elemInfo, oraGeom.ordinates);
     
