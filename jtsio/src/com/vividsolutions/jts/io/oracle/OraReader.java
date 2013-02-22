@@ -237,18 +237,23 @@ public class OraReader {
     }
 
 	/**
-     * Construct CoordinateList as described by GTYPE.
+     * Construct coordinate sequence as described by the GTYPE.
      *
-     * The number of ordinates per coordinate is given by dim.
-     * The number of ordinates should be a multiple of this value.
+     * The number of ordinates read per coordinate is given by outputDim.
+     * The number of ordinates for each input point is given by ordDim.
+     * The ordinate array length must be a multiple of this value.
 
-     * In the Special case of GTYPE 2001 and a three ordinates are interpreted
-     * as a single Coordinate rather than an error.
+     * In the special case of GTYPE=2001 and an ordinate array of length 3,
+     * a single Coordinate is created, rather than throwing an error.
      *
-     * @param csFactory CoordinateSequenceFactory used to encode ordiantes for JTS
+     * @param csFactory CoordinateSequenceFactory used to encode ordinates for JTS
+     * @param outputDim dimension of target coordinate sequence
+     * @param ordDim dimension of input coordinates
+     * @param lrsDim the index of the dimension containing the measure value (if any)
+     * @param geomType the geometry type of the input
      * @param ordinates
      *
-     * @return protected
+     * @return a coordinate sequence representing all the read ordinates
      *
      * @throws IllegalArgumentException if the ordinate array has an invalid length
      */
@@ -300,10 +305,10 @@ public class OraReader {
     }
 
     /**
-     * Create MultiGeometry as specified by elemInfo.
+     * Create a {@link GeometryCollection} as specified by elemInfo.
      *
      * @param gf Used to construct MultiLineString
-     * @param elemInfo Interpretation of coords
+     * @param ordDim dimension of input coordinates
      * @param elemIndex Triplet in elemInfo to process as a Polygon
      * @param coords Coordinates to interpret using elemInfo
      * @param numGeom Number of triplets (or -1 for rest)
