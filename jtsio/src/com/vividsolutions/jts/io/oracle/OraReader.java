@@ -147,11 +147,11 @@ public class OraReader {
 			return null;
 
 		Datum data[] = struct.getOracleAttributes();
-		int gType = asInteger(data[0], 0);
-		int SRID = asInteger(data[1], OraSDO.SRID_NULL);
-		double point[] = asDoubleArray((STRUCT) data[2], Double.NaN);
-		int elemInfo[] = asIntArray((ARRAY) data[3], 0);
-		double ordinates[] = asDoubleArray((ARRAY) data[4], Double.NaN);
+		int gType = OraUtil.asInteger(data[0], 0);
+		int SRID = OraUtil.asInteger(data[1], OraSDO.SRID_NULL);
+		double point[] = OraUtil.asDoubleArray((STRUCT) data[2], Double.NaN);
+		int elemInfo[] = OraUtil.asIntArray((ARRAY) data[3], 0);
+		double ordinates[] = OraUtil.asDoubleArray((ARRAY) data[4], Double.NaN);
 		
 		/*
 		 // MD - creating new GFs is bad practice, so is removed 
@@ -740,72 +740,5 @@ public class OraReader {
 
         return factory.create(array);
     }
-
-    /** Presents datum as an int */
-	static int asInteger(Datum datum, final int DEFAULT)
-			throws SQLException {
-		if (datum == null)
-			return DEFAULT;
-		return ((NUMBER) datum).intValue();
-	}
-
-	/** Presents datum as a double */
-	static double asDouble(Datum datum, final double DEFAULT) {
-		if (datum == null)
-			return DEFAULT;
-		return ((NUMBER) datum).doubleValue();
-	}
-
-	/** Presents struct as a double[] */
-	private static double[] asDoubleArray(STRUCT struct, final double DEFAULT)
-			throws SQLException {
-		if (struct == null)
-			return null;
-		return asDoubleArray(struct.getOracleAttributes(), DEFAULT);
-	}
-
-	/** Presents array as a double[] */
-	private static  double[] asDoubleArray(ARRAY array, final double DEFAULT)
-			throws SQLException {
-		if (array == null)
-			return null;
-		if (DEFAULT == 0)
-			return array.getDoubleArray();
-
-		return asDoubleArray(array.getOracleArray(), DEFAULT);
-	}
-
-	/** Presents Datum[] as a int[] */
-	static int[] asIntArray(Datum data[], final int DEFAULT)
-			throws SQLException {
-		if (data == null)
-			return null;
-		int array[] = new int[data.length];
-		for (int i = 0; i < data.length; i++) {
-			array[i] = OraReader.asInteger(data[i], DEFAULT);
-		}
-		return array;
-	}
-
-	static int[] asIntArray(ARRAY array, int DEFAULT)
-			throws SQLException {
-		if (array == null)
-			return null;
-		if (DEFAULT == 0)
-			return array.getIntArray();
-	
-		return asIntArray(array.getOracleArray(), DEFAULT);
-	}
-
-	/** Presents Datum[] as a double[] */
-	static double[] asDoubleArray(Datum data[], final double DEFAULT) {
-		if (data == null)
-			return null;
-		double array[] = new double[data.length];
-		for (int i = 0; i < data.length; i++) {
-			array[i] = OraReader.asDouble(data[i], DEFAULT);
-		}
-		return array;
-	}
 
 }

@@ -50,6 +50,15 @@ package com.vividsolutions.jts.io.oracle;
 
 import java.sql.SQLException;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+
 import oracle.sql.ARRAY;
 import oracle.sql.Datum;
 
@@ -59,8 +68,14 @@ import oracle.sql.Datum;
  *
  * @author David Zwiers, Vivid Solutions.
  */
-class OraSDO {
+class OraSDO 
+{
 	
+  public static final String TYPE_POINT_TYPE = "MDSYS.SDO_POINT_TYPE";
+  public static final String TYPE_ORDINATE_ARRAY = "MDSYS.SDO_ORDINATE_ARRAY";
+  public static final String TYPE_ELEM_INFO_ARRAY = "MDSYS.SDO_ELEM_INFO_ARRAY";
+  public static final String TYPE_GEOMETRY = "MDSYS.SDO_GEOMETRY";
+
 	/**
 	 * Null SRID
 	 */
@@ -225,5 +240,40 @@ class OraSDO {
 	static int gTypeMeasureDim(int gType) {
 		return (gType%1000)/100;
 	}
+
+  /**
+   * Returns the GTYPE GEOM_TYPE code
+   * corresponding to the geometry type.
+   * 
+   * @see GEOM_TYPE
+   *
+   * @param geom
+   * @return geom type code
+   */
+  static int geomType(Geometry geom) {
+      if (geom == null) {
+          return -1; // UNKNOWN
+      } else if (geom instanceof Point) {
+          return GEOM_TYPE.POINT;
+      } else if (geom instanceof LineString) {
+          return GEOM_TYPE.LINE;
+      } else if (geom instanceof Polygon) {
+          return GEOM_TYPE.POLYGON;
+      } else if (geom instanceof MultiPoint) {
+          return GEOM_TYPE.MULTIPOINT;
+      } else if (geom instanceof MultiLineString) {
+          return GEOM_TYPE.MULTILINE;
+      } else if (geom instanceof MultiPolygon) {
+          return GEOM_TYPE.MULTIPOLYGON;
+      } else if (geom instanceof GeometryCollection) {
+          return GEOM_TYPE.COLLECTION;
+      }
+  
+      throw new IllegalArgumentException("Cannot encode JTS "
+          + geom.getGeometryType() + " as SDO_GTEMPLATE "
+          + "(Limitied to Point, Line, Polygon, GeometryCollection, MultiPoint,"
+          + " MultiLineString and MultiPolygon)");
+  }
+
 
 }

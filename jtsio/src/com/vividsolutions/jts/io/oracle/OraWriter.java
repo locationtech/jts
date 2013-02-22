@@ -67,12 +67,12 @@ import oracle.sql.*;
  * @version 9i
  * @author David Zwiers, Vivid Solutions.
  */
-public class OraWriter {
+public class OraWriter 
+{
 	private OracleConnection connection;
 	private int dimension = 2;
 	private int srid = OraSDO.SRID_NULL;
 	
-	private String DATATYPE = "MDSYS.SDO_GEOMETRY";
 	
 	/**
 	 * Initialize the Oracle MDSYS.GEOMETRY Encoder with a valid oracle connection. 
@@ -142,14 +142,14 @@ public class OraWriter {
 //		if( geom == null) return toSTRUCT( null, DATATYPE );
 		
 		//works fro 9i
-		if( geom == null) return toSTRUCT( new Datum[5], DATATYPE );
+		if( geom == null) return OraUtil.toSTRUCT( new Datum[5], OraSDO.TYPE_GEOMETRY, connection );
 		
 		// does not work for 9i
 //		if( geom == null) return null;
 		
 		//empty geom
 		if( geom.isEmpty() || geom.getCoordinate() == null) 
-			return toSTRUCT( new Datum[5], DATATYPE );
+			return OraUtil.toSTRUCT( new Datum[5], OraSDO.TYPE_GEOMETRY, connection );
         
         int gtype = gType( geom);
         NUMBER SDO_GTYPE = new NUMBER( gtype );
@@ -171,8 +171,8 @@ public class OraWriter {
             List list = new ArrayList();
             coordinates(list, geom);
                         
-            int dim = gtype / 1000;
-            int lrs = (gtype - dim*1000)/100;
+            int dim = OraSDO.gTypeDim(gtype);
+            int lrs = OraSDO.gTypeMeasureDim(gtype);
             int len = dim+lrs; // size per coordinate
             double[] ordinates = new double[list.size()*len];
             
@@ -191,16 +191,16 @@ public class OraWriter {
             list = null;
             
             SDO_POINT = null;
-            SDO_ELEM_INFO = toARRAY( elemInfo, "MDSYS.SDO_ELEM_INFO_ARRAY" );
-            SDO_ORDINATES = toARRAY( ordinates, "MDSYS.SDO_ORDINATE_ARRAY" );                        
+            SDO_ELEM_INFO = OraUtil.toARRAY( elemInfo, OraSDO.TYPE_ELEM_INFO_ARRAY, connection );
+            SDO_ORDINATES = OraUtil.toARRAY( ordinates, OraSDO.TYPE_ORDINATE_ARRAY, connection );                        
         }
         else { // Point Optimization
             Datum data[] = new Datum[]{
-                toNUMBER( point[0] ),
-                toNUMBER( point[1] ),
-                toNUMBER( point[2] ),
+                OraUtil.toNUMBER( point[0] ),
+                OraUtil.toNUMBER( point[1] ),
+                OraUtil.toNUMBER( point[2] ),
             };
-            SDO_POINT = toSTRUCT( data, "MDSYS.SDO_POINT_TYPE"  );
+            SDO_POINT = OraUtil.toSTRUCT( data, OraSDO.TYPE_POINT_TYPE, connection  );
             SDO_ELEM_INFO = null;
             SDO_ORDINATES = null;
         }                
@@ -211,7 +211,7 @@ public class OraWriter {
             SDO_ELEM_INFO,
             SDO_ORDINATES
         };
-        return toSTRUCT( attributes, DATATYPE );      
+        return OraUtil.toSTRUCT( attributes, OraSDO.TYPE_GEOMETRY, connection );      
 	}
 
 	/**
@@ -223,7 +223,7 @@ public class OraWriter {
      * @throws IllegalArgumentException If geometry cannot be encoded
      */
     private void coordinates(List list, Geometry geom) {
-        switch (template(geom)) {
+        switch (OraSDO.geomType(geom)) {
 
         case OraSDO.GEOM_TYPE.POINT:
             addCoordinates(list, ((Point)geom).getCoordinateSequence());
@@ -233,12 +233,12 @@ public class OraWriter {
             return;
         case OraSDO.GEOM_TYPE.POLYGON:
             switch (elemInfoInterpretation(geom,OraSDO.ETYPE.POLYGON_EXTERIOR)) {
-            case 3:
+            case OraSDO.INTERP.RECTANGLE:
                 Envelope e = geom.getEnvelopeInternal();
                 list.add(new double[] { e.getMinX(), e.getMinY() });
                 list.add(new double[] { e.getMaxX(), e.getMaxY() });
                 return;
-            case 1:
+            case OraSDO.INTERP.POLYGON:
             	Polygon polygon = (Polygon) geom;
                 int holes = polygon.getNumInteriorRing();
                 
@@ -322,20 +322,20 @@ public class OraWriter {
      *
      * @return Descriptionof Ordinates representation
      */
-	private int[] elemInfo(Geometry geom, int gtype) {
-		List list = new LinkedList();
-
-        elemInfo(list, geom, 1, gtype);
-        
-        int[] array = new int[list.size()];
-        int offset = 0;
-
-        for (Iterator i = list.iterator(); i.hasNext(); offset++) {
-            array[offset] = ((Number) i.next()).intValue();
-        }
-
-        return array;
-    }
+  	private int[] elemInfo(Geometry geom, int gtype) {
+  		List list = new LinkedList();
+  
+          elemInfo(list, geom, 1, gtype);
+          
+          int[] array = new int[list.size()];
+          int offset = 0;
+  
+          for (Iterator i = list.iterator(); i.hasNext(); offset++) {
+              array[offset] = ((Number) i.next()).intValue();
+          }
+  
+          return array;
+      }
 	
     /**
      * Add to SDO_ELEM_INFO list for geometry and GTYPE.
@@ -352,7 +352,7 @@ public class OraWriter {
         case OraSDO.GEOM_TYPE.POINT:
             addInt(elemInfoList, sOffSet);
             addInt(elemInfoList, OraSDO.ETYPE.POINT);
-            addInt(elemInfoList, 1); // INTERPRETATION single point
+            addInt(elemInfoList, OraSDO.INTERP.POINT); // INTERPRETATION single point
 
             return;
 
@@ -368,7 +368,7 @@ public class OraWriter {
         case OraSDO.GEOM_TYPE.LINE:
             addInt(elemInfoList, sOffSet);
             addInt(elemInfoList, OraSDO.ETYPE.LINE);
-            addInt(elemInfoList, 1); // INTERPRETATION straight edges    
+            addInt(elemInfoList, OraSDO.INTERP.LINESTRING); // INTERPRETATION straight edges    
 
             return;
 
@@ -383,7 +383,7 @@ public class OraWriter {
                 line = (LineString) lines.getGeometryN(i);
                 addInt(elemInfoList, offset);
                 addInt(elemInfoList, OraSDO.ETYPE.LINE);
-                addInt(elemInfoList, 1); // INTERPRETATION straight edges  
+                addInt(elemInfoList, OraSDO.INTERP.LINESTRING); // INTERPRETATION straight edges  
                 offset += (line.getNumPoints() * len);
             }
 
@@ -465,11 +465,11 @@ public class OraWriter {
 
         throw new IllegalArgumentException("Cannot encode JTS "
             + geom.getGeometryType() + " as SDO_ELEM_INFO "
-            + "(Limitied to Point, Line, Polygon, GeometryCollection, MultiPoint,"
+            + "(Limited to Point, Line, Polygon, GeometryCollection, MultiPoint,"
             + " MultiLineString and MultiPolygon)");
     }
 
-    private void addInt(List list, int i) {
+    private static void addInt(List list, int i) {
         list.add(new Integer(i));
     }
 
@@ -564,7 +564,7 @@ public class OraWriter {
      * @throws IllegalArgumentException
      */
     private int elemInfoEType(Geometry geom) {
-        switch (template(geom)) {
+        switch (OraSDO.geomType(geom)) {
 
         case OraSDO.GEOM_TYPE.POINT:
             return OraSDO.ETYPE.POINT;
@@ -678,7 +678,7 @@ public class OraWriter {
 	private int gType(Geometry geom) {
         int d = dimension(geom) * 1000;
         int l = lrs(geom) * 100;
-        int tt = template(geom);
+        int tt = OraSDO.geomType(geom);
 
         return d + l + tt;
     }
@@ -710,93 +710,6 @@ public class OraWriter {
     }
     
     /**
-     * Return TT as defined by SDO_GTEMPLATE (represents geometry type).
-     * 
-     * @see OraSDO.GEOM_TYPE
-     *
-     * @param geom
-     *
-     * @return template code
-     */
-    private int template(Geometry geom) {
-        if (geom == null) {
-            return -1; // UNKNOWN
-        } else if (geom instanceof Point) {
-            return OraSDO.GEOM_TYPE.POINT;
-        } else if (geom instanceof LineString) {
-            return OraSDO.GEOM_TYPE.LINE;
-        } else if (geom instanceof Polygon) {
-            return OraSDO.GEOM_TYPE.POLYGON;
-        } else if (geom instanceof MultiPoint) {
-            return OraSDO.GEOM_TYPE.MULTIPOINT;
-        } else if (geom instanceof MultiLineString) {
-            return OraSDO.GEOM_TYPE.MULTILINE;
-        } else if (geom instanceof MultiPolygon) {
-            return OraSDO.GEOM_TYPE.MULTIPOLYGON;
-        } else if (geom instanceof GeometryCollection) {
-            return OraSDO.GEOM_TYPE.COLLECTION;
-        }
-
-        throw new IllegalArgumentException("Cannot encode JTS "
-            + geom.getGeometryType() + " as SDO_GTEMPLATE "
-            + "(Limitied to Point, Line, Polygon, GeometryCollection, MultiPoint,"
-            + " MultiLineString and MultiPolygon)");
-    }
-	
-    /** Convience method for STRUCT construction. */
-    private STRUCT toSTRUCT( Datum attributes[], String dataType )
-            throws SQLException
-    {
-    	if( dataType.startsWith("*.")){
-    		dataType = "DRA."+dataType.substring(2);//TODO here
-    	}
-        StructDescriptor descriptor =
-            StructDescriptor.createDescriptor( dataType, connection );
-    
-         return new STRUCT( descriptor, connection, attributes );
-    }
-    
-    /** 
-     * Convience method for ARRAY construction.
-     * <p>
-     * Compare and contrast with toORDINATE - which treats <code>Double.NaN</code>
-     * as<code>NULL</code></p>
-     */
-    private ARRAY toARRAY( double doubles[], String dataType )
-            throws SQLException
-    {
-        ArrayDescriptor descriptor =
-            ArrayDescriptor.createDescriptor( dataType, connection );
-        
-         return new ARRAY( descriptor, connection, doubles );
-    }
-    
-    /** 
-     * Convience method for ARRAY construction.
-     */
-    private ARRAY toARRAY( int ints[], String dataType )
-        throws SQLException
-    {
-        ArrayDescriptor descriptor =
-            ArrayDescriptor.createDescriptor( dataType, connection );
-            
-         return new ARRAY( descriptor, connection, ints );
-    }
-
-    /** 
-     * Convience method for NUMBER construction.
-     * <p>
-     * Double.NaN is represented as <code>NULL</code> to agree
-     * with JTS use.</p>
-     */
-    private NUMBER toNUMBER( double number ) throws SQLException{
-        if( Double.isNaN( number )){
-            return null;
-        }
-        return new NUMBER( number );
-    }
-
-    /**
      * reverses the coordinate order
      *
      * @param factory
@@ -810,10 +723,10 @@ public class OraWriter {
         return factory.create(list.toCoordinateArray());
     }
 
-	/**
-	 * @param dimension The dimension to set.
-	 */
-	public void setDimension(int dimension) {
-		this.dimension = dimension;
-	}
+  	/**
+  	 * @param dimension The dimension to set.
+  	 */
+  	public void setDimension(int dimension) {
+  		this.dimension = dimension;
+  	}
 }
