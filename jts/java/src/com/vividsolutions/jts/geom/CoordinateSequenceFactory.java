@@ -65,6 +65,10 @@ public interface CoordinateSequenceFactory
    * Creates a {@link CoordinateSequence} of the specified size and dimension.
    * For this to be useful, the {@link CoordinateSequence} implementation must
    * be mutable.
+   * <p>
+   * If the requested dimension is larger than the CoordinateSequence implementation
+   * can provide, then a sequence of maximum possible dimension should be created.
+   * An error should not be thrown.
    *
    * @param size the number of coordinates in the sequence
    * @param dimension the dimension of the coordinates in the sequence (if user-specifiable,

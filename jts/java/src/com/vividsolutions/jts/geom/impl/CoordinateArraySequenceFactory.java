@@ -81,13 +81,15 @@ public final class CoordinateArraySequenceFactory
   }
 
   /**
+   * The created sequence dimension is clamped to be <= 3. 
+   * 
    * @see com.vividsolutions.jts.geom.CoordinateSequenceFactory#create(int, int)
    *
-   * @throws IllegalArgumentException if the dimension is > 3
    */
   public CoordinateSequence create(int size, int dimension) {
     if (dimension > 3)
-      throw new IllegalArgumentException("dimension must be <= 3");
+      dimension = 3;
+      //throw new IllegalArgumentException("dimension must be <= 3");
     // handle bogus dimension
     if (dimension < 2)
       return new CoordinateArraySequence(size);
