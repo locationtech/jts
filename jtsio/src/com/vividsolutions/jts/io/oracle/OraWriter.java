@@ -70,16 +70,16 @@ import oracle.sql.*;
 public class OraWriter 
 {
 	private OracleConnection connection;
-	private int dimension = 2;
+	private int maxOutputDimension = 2;
 	private int srid = OraSDO.SRID_NULL;
 	
 	
 	/**
 	 * Initialize the Oracle MDSYS.GEOMETRY Encoder with a valid oracle connection. 
 	 * 
-	 * The connection should have sufficient priveledges to view the description of the MDSYS.GEOMETRY type.
+	 * The connection should have sufficient privileges to view the description of the MDSYS.GEOMETRY type.
 	 * 
-	 * The dimension is set to 2
+	 * The maximum output dimension is set to 2
 	 * 
 	 * @param con
 	 */
@@ -90,16 +90,25 @@ public class OraWriter
 	/**
 	 * Initialize the Oracle MDSYS.GEOMETRY Encoder with a valid oracle connection. 
 	 * 
-	 * The connection should have sufficient priveledges to view the description of the MDSYS.GEOMETRY type.
+	 * The connection should have sufficient privileges to view the description of the MDSYS.GEOMETRY type.
 	 * 
 	 * @param con
-	 * @param dimension 
+	 * @param dimension the maximum output dimension
 	 */
 	public OraWriter(OracleConnection con, int dimension){
 		this.connection = con;
-		this.dimension = dimension;
+		this.maxOutputDimension = dimension;
 	}
 	
+  /**
+   * Sets the maximum output dimension.
+   * 
+   * @param dimension The dimension to set.
+   */
+  public void setDimension(int dimension) {
+    this.maxOutputDimension = dimension;
+  }
+
 	/**
 	 * Provides the oppotunity to force all geometries written using this writter to be written using the 
 	 * specified srid. This is useful in two cases: 1) when you do not want the geometry's srid to be 
@@ -675,16 +684,14 @@ public class OraWriter
      *
      * @return SDO_GTEMPLATE
      */
-	private int gType(Geometry geom) {
-        int d = dimension(geom) * 1000;
-        int l = lrs(geom) * 100;
-        int tt = OraSDO.geomType(geom);
-
-        return d + l + tt;
+    private int gType(Geometry geom)
+    {
+      return OraSDO.gType(dimension(geom), lrs(geom), OraSDO.geomType(geom));
     }
 
     /**
-     * Return dimensions as defined by SDO_GTEMPLATE (either 2,3 or 4).
+     * Return dimensions as defined by SDO_GTEMPLATE (either 2,3 or 4), 
+     * and clamped to the maximum output dimension (if any).
      * 
      *
      * @param geom
@@ -692,8 +699,8 @@ public class OraWriter
      * @return num dimensions
      */
     private int dimension(Geometry geom) {
-    	int d = Double.isNaN(geom.getCoordinate().z)?2:3;
-		return d<dimension?d:dimension;
+    	int d = Double.isNaN(geom.getCoordinate().z) ? 2 : 3;
+		return d < maxOutputDimension ? d : maxOutputDimension;
     }
 
     /**
@@ -723,10 +730,4 @@ public class OraWriter
         return factory.create(list.toCoordinateArray());
     }
 
-  	/**
-  	 * @param dimension The dimension to set.
-  	 */
-  	public void setDimension(int dimension) {
-  		this.dimension = dimension;
-  	}
 }

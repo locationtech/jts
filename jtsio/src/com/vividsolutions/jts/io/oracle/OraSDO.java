@@ -275,5 +275,18 @@ class OraSDO
           + " MultiLineString and MultiPolygon)");
   }
 
+  /**
+   * Computes the SDO_GTYPE code for the given D, L, and TT components.
+   * 
+   * @param dim the coordinate dimension
+   * @param lrsDim the measure dimension
+   * @param geomType the geometry type code
+   * @return the SDO_GTYPE code
+   */
+  public static int gType(int dim, int lrsDim, int geomType)
+  {
+    return dim * 1000 + lrsDim * 100 + geomType;
+  }
+
 
 }
