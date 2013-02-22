@@ -184,19 +184,19 @@ public class OraReader {
 	Geometry create(GeometryFactory gf, int gType,
         double[] point, int[] elemInfo, double[] ordinates) {
 
+        int ordDim = OraSDO.gTypeDim(gType);
+        if (ordDim < 2) {
+        	throw new IllegalArgumentException("Dimension D = " + ordDim + " is not supported by JTS. " +
+        			"Either specify a valid dimension or use Oracle Locator Version 9i or later");
+        }
         int lrsDim = OraSDO.gTypeMeasureDim(gType);
 
         // The actual dimension to read is the smaller of the explicit dimension and the input dimension
-        int outputDim = 0;
+        int outputDim = ordDim;
         if(dimension != NULL_DIMENSION){
         	outputDim = dimension;
         }
         
-        int ordDim = OraSDO.gTypeDim(gType);
-        if (ordDim < 2) {
-        	throw new IllegalArgumentException("Dimension D = " + outputDim + " is not supported by JTS. " +
-        			"Either specify a valid dimension or use Oracle Locator Version 9i or later");
-        }
         int geomType = OraSDO.gTypeGeomType(gType); 
 
         CoordinateSequence coords = null;
