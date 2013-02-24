@@ -19,18 +19,6 @@ import oracle.sql.StructDescriptor;
 public class OraUtil
 {
 
-  /** Presents Datum[] as a double[] */
-  public static double[] asDoubleArray(Datum data[], final double defaultValue)
-  {
-    if (data == null)
-      return null;
-    double array[] = new double[data.length];
-    for (int i = 0; i < data.length; i++) {
-      array[i] = OraUtil.asDouble(data[i], defaultValue);
-    }
-    return array;
-  }
-
   public static int[] asIntArray(ARRAY array, int defaultValue) throws SQLException
   {
     if (array == null)
@@ -38,7 +26,7 @@ public class OraUtil
     if (defaultValue == 0)
       return array.getIntArray();
 
-    return OraUtil.asIntArray(array.getOracleArray(), defaultValue);
+    return asIntArray(array.getOracleArray(), defaultValue);
   }
 
   /** Presents Datum[] as a int[] */
@@ -49,7 +37,19 @@ public class OraUtil
       return null;
     int array[] = new int[data.length];
     for (int i = 0; i < data.length; i++) {
-      array[i] = OraUtil.asInteger(data[i], defaultValue);
+      array[i] = asInteger(data[i], defaultValue);
+    }
+    return array;
+  }
+
+  /** Presents Datum[] as a double[] */
+  public static double[] asDoubleArray(Datum[] data, final double defaultValue)
+  {
+    if (data == null)
+      return null;
+    double array[] = new double[data.length];
+    for (int i = 0; i < data.length; i++) {
+      array[i] = asDouble(data[i], defaultValue);
     }
     return array;
   }
@@ -93,7 +93,7 @@ public class OraUtil
   }
 
   /**
-   * Convience method for NUMBER construction.
+   * Convenience method for NUMBER construction.
    * <p>
    * Double.NaN is represented as <code>NULL</code> to agree with JTS use.
    * </p>
@@ -108,42 +108,37 @@ public class OraUtil
 
   /**
    * Convience method for ARRAY construction.
-   * <p>
-   * Compare and contrast with toORDINATE - which treats <code>Double.NaN</code>
-   * as<code>NULL</code>
    * </p>
    */
-  public static ARRAY toARRAY(double doubles[], String dataType,
+  public static ARRAY toARRAY(double[] doubles, String dataType,
       OracleConnection connection) throws SQLException
   {
     ArrayDescriptor descriptor = ArrayDescriptor.createDescriptor(dataType,
         connection);
-
     return new ARRAY(descriptor, connection, doubles);
   }
 
   /**
    * Convience method for ARRAY construction.
    */
-  public static ARRAY toARRAY(int ints[], String dataType,
+  public static ARRAY toARRAY(int[] ints, String dataType,
       OracleConnection connection) throws SQLException
   {
     ArrayDescriptor descriptor = ArrayDescriptor.createDescriptor(dataType,
         connection);
-
     return new ARRAY(descriptor, connection, ints);
   }
 
   /** Convenience method for STRUCT construction. */
-  public static STRUCT toSTRUCT(Datum attributes[], String dataType,
+  public static STRUCT toSTRUCT(Datum[] attributes, String dataType,
       OracleConnection connection) throws SQLException
   {
+    //TODO: fix this to be more generic
     if (dataType.startsWith("*.")) {
-      dataType = "DRA." + dataType.substring(2);// TODO here
+      dataType = "DRA." + dataType.substring(2);
     }
     StructDescriptor descriptor = StructDescriptor.createDescriptor(dataType,
         connection);
-
     return new STRUCT(descriptor, connection, attributes);
   }
 

@@ -110,118 +110,125 @@ public class OraWriter
   }
 
 	/**
-	 * Provides the oppotunity to force all geometries written using this writter to be written using the 
-	 * specified srid. This is useful in two cases: 1) when you do not want the geometry's srid to be 
-	 * over-written or 2) when you want to ensure an entire layer is always written using a constant srid.
+	 * Forces geometries to be written using the specified SRID. 
+	 * This is useful in two cases: 
+	 * <ul>
+	 * <li>to avoid using the native geometry's SRID
+	 * <li>to ensure an entire table is written using a fixed SRID.
+	 * </ul>
 	 * 
-	 * @param srid
+	 * @param srid the srid to use
 	 */
 	public void setSRID(int srid){
 		this.srid = srid;
 	}
 
-	/**
-	 * This routine will translate the JTS Geometry into an Oracle MDSYS.GEOMETRY STRUCT.
-	 * 
-	 * Although invalid geometries may be encoded, and inserted into an Oracle DB, this is 
-	 * not recomended. It is the responsibility of the user to ensure the geometry is valid 
-	 * prior to calling this method. The user should also ensure the the geometry's SRID 
-	 * field contains the correct value, if an SRID is desired. An incorrect SRID value may 
-	 * cause index exceptions during an insert or update. 
-	 * 
-	 * When a null Geometry is passed in, a non-null, empty STRUCT is returned. Therefore, 
-	 * inserting the the result of calling this method directly into a table will never result 
-	 * in null insertions. 
-	 * (March 2006)
-	 * 
-	 * To pass a NULL Geometry into an oracle geometry parameter using jdbc, use 
-	 * java.sql.CallableStatement.setNull(index,java.sql.Types.STRUCT,"MDSYS.SDO_GEOMETRY")
-	 * (April 2006)
-	 * 
-	 * @param geom JTS Geometry to encode
-	 * @return Oracle MDSYS.GEOMETRY STRUCT
-	 * @throws SQLException 
-	 */
-	public STRUCT write(Geometry geom) throws SQLException{
-		
-		// this line may be problematic ... for v9i and later 
-		// need to revisit.
-		
-		// was this ... does not work for 9i
-//		if( geom == null) return toSTRUCT( null, DATATYPE );
-		
-		//works fro 9i
-		if( geom == null) return OraUtil.toSTRUCT( new Datum[5], OraSDO.TYPE_GEOMETRY, connection );
-		
-		// does not work for 9i
-//		if( geom == null) return null;
-		
-		//empty geom
-		if( geom.isEmpty() || geom.getCoordinate() == null) 
-			return OraUtil.toSTRUCT( new Datum[5], OraSDO.TYPE_GEOMETRY, connection );
-        
-        int gtype = gType( geom);
-        NUMBER SDO_GTYPE = new NUMBER( gtype );
+  /**
+   * Converts a {@link Geometry} into an Oracle MDSYS.GEOMETRY STRUCT.
+   * 
+   * Although invalid geometries may be encoded, and inserted into an Oracle DB,
+   * this is not recommended. It is the responsibility of the user to ensure the
+   * geometry is valid prior to calling this method. The user should also ensure
+   * the the geometry's SRID field contains the correct value, if an SRID is
+   * desired. An incorrect SRID value may cause index exceptions during an
+   * insert or update.
+   * 
+   * When a null Geometry is passed in, a non-null, empty STRUCT is returned.
+   * Therefore, inserting the the result of calling this method directly into a
+   * table will never result in null insertions. (March 2006)
+   * 
+   * To pass a NULL Geometry into an oracle geometry parameter using jdbc, use
+   * java.sql.CallableStatement.setNull(index,java.sql.Types.STRUCT,
+   * "MDSYS.SDO_GEOMETRY") (April 2006)
+   * 
+   * @param geom JTS Geometry to encode
+   * @return Oracle MDSYS.GEOMETRY STRUCT
+   * @throws SQLException if an encoding error was encountered
+   */
+  public STRUCT write(Geometry geom) throws SQLException
+  {
+    // this line may be problematic ... for v9i and later
+    // need to revisit.
 
-        //int srid = geom.getFactory().getSRID();
-        int srid = this.srid == OraSDO.SRID_NULL? geom.getSRID() : this.srid;
-        NUMBER SDO_SRID = srid == OraSDO.SRID_NULL ? null : new NUMBER( srid );
-        
-        double[] point = point( geom );
-        
-        STRUCT SDO_POINT;
-        
-        ARRAY SDO_ELEM_INFO;
-        ARRAY SDO_ORDINATES;
-        
-        if( point == null ){
-            int elemInfo[] = elemInfo( geom , gtype);
-            
-            List list = new ArrayList();
-            coordinates(list, geom);
-                        
-            int dim = OraSDO.gTypeDim(gtype);
-            int lrs = OraSDO.gTypeMeasureDim(gtype);
-            int len = dim+lrs; // size per coordinate
-            double[] ordinates = new double[list.size()*len];
-            
-            int k=0;
-            for(int i=0;i<list.size() && k<ordinates.length;i++){
-            	int j=0;
-            	double[] ords = (double[]) list.get(i);
-            	for(;j<len && j<ords.length;j++){
-            		ordinates[k++] = ords[j];
-            	}
-            	for(;j<len;j++){ // mostly safety
-            		ordinates[k++] = Double.NaN;
-            	}
-            }
-            
-            list = null;
-            
-            SDO_POINT = null;
-            SDO_ELEM_INFO = OraUtil.toARRAY( elemInfo, OraSDO.TYPE_ELEM_INFO_ARRAY, connection );
-            SDO_ORDINATES = OraUtil.toARRAY( ordinates, OraSDO.TYPE_ORDINATE_ARRAY, connection );                        
-        }
-        else { // Point Optimization
-            Datum data[] = new Datum[]{
-                OraUtil.toNUMBER( point[0] ),
-                OraUtil.toNUMBER( point[1] ),
-                OraUtil.toNUMBER( point[2] ),
-            };
-            SDO_POINT = OraUtil.toSTRUCT( data, OraSDO.TYPE_POINT_TYPE, connection  );
-            SDO_ELEM_INFO = null;
-            SDO_ORDINATES = null;
-        }                
-        Datum attributes[] = new Datum[]{
-            SDO_GTYPE,
-            SDO_SRID,
-            SDO_POINT,
-            SDO_ELEM_INFO,
-            SDO_ORDINATES
-        };
-        return OraUtil.toSTRUCT( attributes, OraSDO.TYPE_GEOMETRY, connection );      
-	}
+    // was this ... does not work for 9i
+    // if( geom == null) return toSTRUCT( null, DATATYPE );
+
+    // works fro 9i
+    if (geom == null)
+      return OraUtil.toSTRUCT(new Datum[5], OraSDO.TYPE_GEOMETRY, connection);
+
+    // does not work for 9i
+    // if( geom == null) return null;
+
+    // empty geom
+    if (geom.isEmpty() || geom.getCoordinate() == null)
+      return OraUtil.toSTRUCT(new Datum[5], OraSDO.TYPE_GEOMETRY, connection);
+
+    int gtype = gType(geom);
+    NUMBER SDO_GTYPE = new NUMBER(gtype);
+
+    // int srid = geom.getFactory().getSRID();
+    int srid = this.srid == OraSDO.SRID_NULL ? geom.getSRID() : this.srid;
+    NUMBER SDO_SRID = srid == OraSDO.SRID_NULL ? null : new NUMBER(srid);
+
+    STRUCT SDO_POINT = null;
+    ARRAY SDO_ELEM_INFO = null;
+    ARRAY SDO_ORDINATES = null;
+
+    double[] point = point(geom);
+    if (point == null) {
+      int elemInfo[] = elemInfo(geom, gtype);
+
+      List list = new ArrayList();
+      coordinates(list, geom);
+
+      int dim = OraSDO.gTypeDim(gtype);
+      int lrs = OraSDO.gTypeMeasureDim(gtype);
+      // MD - BUG????  Should be simply dim ????
+      int ordDim = dim + lrs; // size per coordinate
+      
+      double[] ordinates = buildOrdinates(list, ordDim);
+      // free the list
+      list = null;
+
+      SDO_ELEM_INFO = OraUtil.toARRAY(elemInfo, OraSDO.TYPE_ELEM_INFO_ARRAY,
+          connection);
+      SDO_ORDINATES = OraUtil.toARRAY(ordinates, OraSDO.TYPE_ORDINATE_ARRAY,
+          connection);
+    }
+    else { // Point Optimization
+      Datum data[] = new Datum[] { 
+          OraUtil.toNUMBER(point[0]),
+          OraUtil.toNUMBER(point[1]), 
+          OraUtil.toNUMBER(point[2]), };
+      SDO_POINT = OraUtil.toSTRUCT(data, OraSDO.TYPE_POINT_TYPE, connection);
+    }
+    Datum attributes[] = new Datum[] { 
+        SDO_GTYPE, 
+        SDO_SRID, 
+        SDO_POINT,
+        SDO_ELEM_INFO, 
+        SDO_ORDINATES };
+    return OraUtil.toSTRUCT(attributes, OraSDO.TYPE_GEOMETRY, connection);
+  }
+
+  private double[] buildOrdinates(List list, int ordDim)
+  {
+    double[] ordinates = new double[list.size() * ordDim];
+
+    int k = 0;
+    for (int i = 0; i < list.size() && k < ordinates.length; i++) {
+      int j = 0;
+      double[] ords = (double[]) list.get(i);
+      for (; j < ordDim && j < ords.length; j++) {
+        ordinates[k++] = ords[j];
+      }
+      for (; j < ordDim; j++) { // mostly safety
+        ordinates[k++] = Double.NaN;
+      }
+    }
+    return ordinates;
+  }
 
 	/**
      * Encode Geometry as described by GTYPE and ELEM_INFO
@@ -253,7 +260,7 @@ public class OraWriter
                 
                 // check outer ring's direction
                 CoordinateSequence ring = polygon.getExteriorRing().getCoordinateSequence();
-                if (!CGAlgorithms.isCCW(ring.toCoordinateArray())) {
+                if (! CGAlgorithms.isCCW(ring.toCoordinateArray())) {
                     ring = reverse(polygon.getFactory().getCoordinateSequenceFactory(), ring); 
                 }
                 addCoordinates(list,ring);
@@ -264,7 +271,6 @@ public class OraWriter
                 	if (CGAlgorithms.isCCW(ring.toCoordinateArray())) {
                         ring = reverse(polygon.getFactory().getCoordinateSequenceFactory(), ring); 
                     }
-                    
                     addCoordinates(list,ring);
                 }
                 return;
@@ -275,7 +281,7 @@ public class OraWriter
         case OraSDO.GEOM_TYPE.MULTIPOLYGON:
         case OraSDO.GEOM_TYPE.COLLECTION:
             for (int i = 0; i < geom.getNumGeometries(); i++) {
-                coordinates(list,geom.getGeometryN(i));
+                coordinates(list, geom.getGeometryN(i));
             }
             return;
         }
@@ -644,30 +650,27 @@ public class OraWriter
     }
 	
     /**
-     * Return SDO_POINT_TYPE for geometry
-     * 
-     * Will return non null for Point objects. <code>null</code> is returned
-     * for all non point objects.
+     * Extracts ordinate data for SDO_POINT_TYPE for Point geometries.
+     * <code>null</code> is returned
+     * for all non-Point geometries, or for LRS points.
 
-     * You cannot use this with LRS Coordiantes
+     * This cannot be used for LRS coordinates.
      * Subclasses may wish to repress this method and force Points to be
      * represented using SDO_ORDINATES.
      *
-     * @param geom
-     *
-     * @return double[]
+     * @param geom the geometry providing the ordinates
+     * @return double[] the point ordinates
      */
-	private double[] point(Geometry geom) {
-        if (geom instanceof Point && (lrs(geom) == 0)) {
-            Point point = (Point) geom;
-            Coordinate coord = point.getCoordinate();
-
-            return new double[] { coord.x, coord.y, coord.z };
-        }
-
-        // SDO_POINT_TYPE only used for non LRS Points
-        return null;
+  private double[] point(Geometry geom)
+  {
+    if (geom instanceof Point && (lrs(geom) == 0)) {
+      Point point = (Point) geom;
+      Coordinate coord = point.getCoordinate();
+      return new double[] { coord.x, coord.y, coord.z };
     }
+    // Geometry type is not appropriate for SDO_POINT_TYPE
+    return null;
+  }
 
     /**
      * Produce SDO_GTEMPLATE representing provided Geometry.

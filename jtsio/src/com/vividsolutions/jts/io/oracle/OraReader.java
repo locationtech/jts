@@ -57,7 +57,7 @@ import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.*;
 
 /**
- * Reads a {@link Geometry} from an Oracle <tt>MDSYS.GEOMETRY</tt> STRUCT object.
+ * Reads a {@link Geometry} from an Oracle <code>MDSYS.GEOMETRY</code> <code>STRUCT</code> object.
  *
  * A {@link GeometryFactory} may be provided, otherwise a default one will be used.
  * The provided GeometryFactory will be used.
@@ -69,13 +69,14 @@ import com.vividsolutions.jts.geom.*;
  * If a lower precision for the data is required, a subsequent
  * process must be run on the data to reduce its precision.
  * <p>
- * To use this class a suitable Oracle JDBC driver JAR must be present.
+ * To use this class a suitable Oracle JDBC JAR must be present in the classpath.
  * 
  * <h3>LIMITATIONS</h3>
  * <ul>
- * <li>4-dimensional (XYZM) Oracle geometries are not handled
+ * <li>4-dimensional (XYZM) Oracle geometries are not supported
  * <li>Oracle geometries with a GTYPE of <code>43xx</code> (XYMZ) are not supported.
- * <li>It is not possible to read a sequence of geometries with mixed dimension
+ * <li>The number of dimension read is limited by the number supported
+ * by the provided {@link CoordinateSequenceFactory}
  * </ul>
  *
  * @author David Zwiers, Vivid Solutions.
@@ -113,6 +114,7 @@ public class OraReader {
 			throw new NullPointerException("Geometry Factory may not be Null");
 		this.geometryFactory = gf;
 	}
+	
 	/**
 	 * Gets the number of coordinate dimensions which will be read.
 	 *
@@ -135,14 +137,15 @@ public class OraReader {
 	 * Creates a JTS {@link Geometry} representing the MDSYS.GEOMETRY
 	 * provided in the STRUCT. The type of geometry created depends on the input data,
 	 * since the Geometry type is specified within the STRUCT.
+	 * The SRID of the created geometry is set to be the same as the input SRID.
 	 *
 	 * @param struct The MDSYS.GEOMETRY Object to decode
 	 * @return A JTS Geometry if one could be created, null otherwise
 	 * @throws SQLException if a read error occurs while accessing the struct
 	 */
-	public Geometry read(STRUCT struct) throws SQLException {
-
-		// Note Returning null for null Datum
+	public Geometry read(STRUCT struct) throws SQLException 
+	{
+		// Return null for null input
 		if (struct == null)
 			return null;
 
@@ -161,8 +164,9 @@ public class OraReader {
 			gf = new GeometryFactory(geometryFactory.getPrecisionModel(),SRID,geometryFactory.getCoordinateSequenceFactory());
 		}
 		 */
-		
 		Geometry geom = create(geometryFactory, gType, point, elemInfo, ordinates);
+		
+		// Set SRID of created Geometry to be the same as input (regardless of geomFactory SRID)
 		if (geom != null)
 			geom.setSRID(SRID);
 		return geom;
@@ -626,41 +630,46 @@ public class OraReader {
         return ring;
     }
 
-    /**
-     * Create LineString as encoded.
-     *
-     * @param gf
-     * @param elemInfo
-     * @param coords
-     *
-     * @return LineString
-     *
-     * @throws IllegalArgumentException If asked to create a curve
-     */
-    private LineString createLine(GeometryFactory gf, int ordDim, int lrs, int[] elemInfo, int elemIndex, CoordinateSequence coords) {
+  /**
+   * Create LineString as encoded.
+   * 
+   * @param gf
+   * @param elemInfo
+   * @param coords
+   * 
+   * @return LineString
+   * 
+   * @throws IllegalArgumentException
+   *           If asked to create a curve
+   */
+  private LineString createLine(GeometryFactory gf, int ordDim, int lrs,
+      int[] elemInfo, int elemIndex, CoordinateSequence coords)
+  {
 
-    	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
-        int etype = OraSDO.eType(elemInfo, elemIndex);
-        int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
+    int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
+    int etype = OraSDO.eType(elemInfo, elemIndex);
+    int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
 
-		if (etype != OraSDO.ETYPE.LINE)
-			return null;
+    if (etype != OraSDO.ETYPE.LINE)
+      return null;
 
-        if (interpretation != OraSDO.INTERP.LINESTRING) {
-            throw new IllegalArgumentException("ELEM_INFO INTERPRETATION "
-                + interpretation + " not supported by JTS LineString. "
-                + "Only straight line edges (ELEM_INFO INTERPRETATION=1) are supported");
-        }
-
-		int start = (sOffset - 1) / ordDim;
-		int eOffset = OraSDO.startingOffset(elemInfo, elemIndex+1); // -1 for end
-        int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
-
-
-        LineString line = gf.createLineString(subList(gf.getCoordinateSequenceFactory(),coords, start,end));
-
-        return line;
+    if (interpretation != OraSDO.INTERP.LINESTRING) {
+      throw new IllegalArgumentException(
+          "ELEM_INFO INTERPRETATION "
+              + interpretation
+              + " not supported by JTS LineString. "
+              + "Only straight line edges (ELEM_INFO INTERPRETATION=1) are supported");
     }
+
+    int start = (sOffset - 1) / ordDim;
+    int eOffset = OraSDO.startingOffset(elemInfo, elemIndex + 1); // -1 for end
+    int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
+
+    LineString line = gf.createLineString(subList(
+        gf.getCoordinateSequenceFactory(), coords, start, end));
+
+    return line;
+  }
 
     /**
      * Create Point as encoded.
@@ -720,24 +729,18 @@ public class OraReader {
         if ((start == 0) && (end == coords.size())) {
             return coords;
         }
-
         if (coords instanceof List) {
             List sublist = ((List) coords).subList(start, end);
-
             if (sublist instanceof CoordinateSequence) {
                 return (CoordinateSequence) sublist;
             }
         }
-
         CoordinateList list = new CoordinateList(coords.toCoordinateArray());
-
         Coordinate[] array = new Coordinate[end - start];
         int index = 0;
-
         for (Iterator i = list.subList(start, end).iterator(); i.hasNext(); index++) {
             array[index] = (Coordinate) i.next();
         }
-
         return factory.create(array);
     }
 
