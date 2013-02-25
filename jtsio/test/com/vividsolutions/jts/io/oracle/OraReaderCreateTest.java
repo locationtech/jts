@@ -139,81 +139,68 @@ public class OraReaderCreateTest extends BaseOraTestCase
   // Tests from Oracle documentation
   
   public void testDocPoint() throws Exception {
-	  checkValue(
-			  MDSYS.SDO_GEOMETRY(2001, NULL, MDSYS.SDO_POINT_TYPE(-79, 37, NULL), NULL, NULL),
+	  checkValue( MDSYS.SDO_GEOMETRY(2001, NULL, MDSYS.SDO_POINT_TYPE(-79, 37, NULL), NULL, NULL),
 					  "POINT (-79 37)");
   }
   public void testDocRectangle() throws Exception {
-	  checkValue(
-			  MDSYS.SDO_GEOMETRY(
-					    2003, 
-					    NULL,
-					    NULL,
+	  checkValue( MDSYS.SDO_GEOMETRY(2003, NULL, NULL,
 					    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3),
-					    MDSYS.SDO_ORDINATE_ARRAY(1,1, 5,7) 
-					  ),
+					    MDSYS.SDO_ORDINATE_ARRAY(1,1, 5,7) ),
 					  "POLYGON ((1 1, 5 1, 5 7, 1 7, 1 1))");
   }
   public void testDocPolygonWithHole() throws Exception {
-	  checkValue(
-			  MDSYS.SDO_GEOMETRY(
-					   2003,  
-					    NULL,
-					    NULL,
-					    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1, 19,2003,1), 
-					    MDSYS.SDO_ORDINATE_ARRAY(2,4, 4,3, 10,3, 13,5, 13,9, 11,13, 5,13, 2,11, 2,4,
-					        7,5, 7,10, 10,10, 10,5, 7,5)
-					  ),
-					  "POLYGON ((2 4, 4 3, 10 3, 13 5, 13 9, 11 13, 5 13, 2 11, 2 4), (7 5, 7 10, 10 10, 10 5, 7 5))");
+	  checkValue( MDSYS.SDO_GEOMETRY(2003,  NULL,  NULL,
+				    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1, 19,2003,1), 
+				    MDSYS.SDO_ORDINATE_ARRAY(2,4, 4,3, 10,3, 13,5, 13,9, 11,13, 5,13, 2,11, 2,4,
+				        7,5, 7,10, 10,10, 10,5, 7,5) ),
+				        "POLYGON ((2 4, 4 3, 10 3, 13 5, 13 9, 11 13, 5 13, 2 11, 2 4), (7 5, 7 10, 10 10, 10 5, 7 5))");
   }
   public void testDocGeometryCollection() throws Exception {
-	  checkValue(
-			  MDSYS.SDO_GEOMETRY(
-			       2004, NULL, NULL,
+	  checkValue(  MDSYS.SDO_GEOMETRY(2004, NULL, NULL,
 			        MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1, 3,2,1, 7,1003,1, 17,1003,1, 25,2003,1),
 			        MDSYS.SDO_ORDINATE_ARRAY(
 			              1,1,
 			              1,2, 2,1,
 			              2,2, 3,2, 3,3, 2,3, 2,2,
 			              5,1, 5,5, 9,5, 5,1,
-			              5,3, 6,4, 6,3, 5,3
-			        )
-			      ), 
+			              5,3, 6,4, 6,3, 5,3 ) ), 
 	    		"GEOMETRYCOLLECTION (POINT (1 1), LINESTRING (1 2, 2 1), POLYGON ((2 2, 3 2, 3 3, 2 3, 2 2)), POLYGON ((5 1, 5 5, 9 5, 5 1), (5 3, 6 4, 6 3, 5 3)))");
   }
   
   //====================================================================================
   // Tests from GeoTools
 
-  public void testDocTriangle() throws Exception {
-	  checkValue(
-			  MDSYS.SDO_GEOMETRY(
-					       2003,
-					       NULL,
-					       NULL,
-					       MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),
-					       MDSYS.SDO_ORDINATE_ARRAY(9,5, 13,5, 11,8, 9,5)),
+  public void testGTLineString() throws Exception {
+	  checkValue(  MDSYS.SDO_GEOMETRY(2002, NULL, NULL,
+			        MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),
+			        MDSYS.SDO_ORDINATE_ARRAY(1,2, 2,1, 3,1, 4,2, 4,7)),
+	    		"LINESTRING (1 2, 2 1, 3 1, 4 2, 4 7)");
+  }
+
+  public void testGTMultiLineString() throws Exception {
+	  checkValue(  MDSYS.SDO_GEOMETRY(2006, NULL, NULL,
+			        MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1,11,2,1),
+			        MDSYS.SDO_ORDINATE_ARRAY(1,2, 2,1, 3,1, 4,2, 4,7, 2,7, 4,7, 5,7)),
+	    		"MULTILINESTRING ((1 2, 2 1, 3 1, 4 2, 4 7), (2 7, 4 7, 5 7))");
+  }
+
+  public void testGTTriangle() throws Exception {
+	  checkValue(MDSYS.SDO_GEOMETRY(2003, NULL,  NULL,
+			       MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),
+			       MDSYS.SDO_ORDINATE_ARRAY(9,5, 13,5, 11,8, 9,5)),
 	    		"POLYGON ((9 5, 13 5, 11 8, 9 5))");
   }
 
-  public void testDocMultiPolygon() throws Exception {
-	  checkValue(
-			  MDSYS.SDO_GEOMETRY(
-					2007,
-					       NULL,
-					       NULL,
-					       MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1, 11,1003,1),
-					       MDSYS.SDO_ORDINATE_ARRAY(2,3, 7,3, 7,9, 2,9, 2,3,
-					             9,5, 13,5, 11,5, 9,5)			      ), 
+  public void testGTMultiPolygon() throws Exception {
+	  checkValue(  MDSYS.SDO_GEOMETRY(2007, NULL,  NULL,
+			       MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1, 11,1003,1),
+			       MDSYS.SDO_ORDINATE_ARRAY(2,3, 7,3, 7,9, 2,9, 2,3,
+			             9,5, 13,5, 11,5, 9,5)			      ), 
 	    		"MULTIPOLYGON (((2 3, 7 3, 7 9, 2 9, 2 3)), ((9 5, 13 5, 11 5, 9 5)))");
   }
 
-  public void testDocMultiPolygonHole() throws Exception {
-	  checkValue(
-			  MDSYS.SDO_GEOMETRY(
-					2007,
-			        NULL,
-			        NULL,
+  public void testGTMultiPolygonHole() throws Exception {
+	  checkValue(  MDSYS.SDO_GEOMETRY(2007, NULL, NULL,
 			        MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1,11,2003,1,19,1003,1),
 			        MDSYS.SDO_ORDINATE_ARRAY(2,3, 7,3, 7,9, 2,9, 2,3,
 			              3,4, 3,8, 6,8, 3,4, 

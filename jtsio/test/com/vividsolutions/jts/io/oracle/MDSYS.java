@@ -1,5 +1,12 @@
 package com.vividsolutions.jts.io.oracle;
 
+/**
+ * Mimics Oracle MDSYS functions for building geometries.
+ * Useful for creating test objects.
+ * 
+ * @author mbdavis
+ *
+ */
 public class MDSYS {
 
 	public static OraGeom SDO_GEOMETRY(int gType, int srid, int ptType,
@@ -16,12 +23,13 @@ public class MDSYS {
 		return new double[] { x, y, z };
 	}
 
+	public static int[] SDO_ELEM_INFO_ARRAY(int... i) {
+		return i;
+	}
+	
 	public static double[] SDO_ORDINATE_ARRAY(double... d) {
 		return d;
 	}
 
-	public static int[] SDO_ELEM_INFO_ARRAY(int... i) {
-		return i;
-	}
 
 }
