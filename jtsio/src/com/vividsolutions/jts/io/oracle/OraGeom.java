@@ -65,17 +65,14 @@ public class OraGeom
     this(gType, srid, ptType, null, null);
   }
 
-  public static OraGeom sdo_geometry(int gType, int srid, int ptType,
-	      int[] elemInfo, double[] ordinates)
-	  {
-	    return new OraGeom(gType, srid, elemInfo, ordinates);
-	  }
+  /*
   public static OraGeom sdo_geometry(int gType, int srid, double[] ptType,
 	      int elemInfo, int ordinates)
 	  {
 	    return new OraGeom(gType, srid, ptType);
 	  }
-
+*/
+  
   public boolean isEqual(OraGeom og)
   {
     if (gType != og.gType) return false;
