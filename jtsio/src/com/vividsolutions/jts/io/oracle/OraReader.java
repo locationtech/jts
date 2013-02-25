@@ -150,11 +150,11 @@ public class OraReader {
 			return null;
 
 		Datum data[] = struct.getOracleAttributes();
-		int gType = OraUtil.asInteger(data[0], 0);
-		int SRID = OraUtil.asInteger(data[1], OraSDO.SRID_NULL);
-		double point[] = OraUtil.asDoubleArray((STRUCT) data[2], Double.NaN);
-		int elemInfo[] = OraUtil.asIntArray((ARRAY) data[3], 0);
-		double ordinates[] = OraUtil.asDoubleArray((ARRAY) data[4], Double.NaN);
+		int gType = OraUtil.toInteger(data[0], 0);
+		int SRID = OraUtil.toInteger(data[1], OraSDO.SRID_NULL);
+		double point[] = OraUtil.toDoubleArray((STRUCT) data[2], Double.NaN);
+		int elemInfo[] = OraUtil.toIntArray((ARRAY) data[3], 0);
+		double ordinates[] = OraUtil.toDoubleArray((ARRAY) data[4], Double.NaN);
 		
 		/*
 		 // MD - creating new GFs is bad practice, so is removed 

@@ -40,33 +40,59 @@ package com.vividsolutions.jts.io.oracle;
  */
 public class OraGeom
 {
-
   public int gType;
+  public int srid;
   public double[] ptType = null;
   public int[] elemInfo = null;
   public double[] ordinates = null;
 
-  public OraGeom(int gType, int[] elemInfo, double[] ordinates)
+  public OraGeom(int gType, int srid, double[] ptType, int[] elemInfo, double[] ordinates)
   {
     this.gType = gType;
+    this.srid = srid;
+    this.ptType = ptType;
     this.elemInfo = elemInfo;
     this.ordinates = ordinates;
   }
 
-  public OraGeom(int gType, double[] ptType)
+  public OraGeom(int gType, int srid, int[] elemInfo, double[] ordinates)
   {
-    this.gType = gType;
-    this.ptType = ptType;
+    this(gType, srid, null, elemInfo, ordinates);
+  }
+
+  public OraGeom(int gType, int srid, double[] ptType)
+  {
+    this(gType, srid, ptType, null, null);
   }
 
   public static OraGeom sdo_geometry(int gType, int srid, int ptType,
 	      int[] elemInfo, double[] ordinates)
 	  {
-	    return new OraGeom(gType, elemInfo, ordinates);
+	    return new OraGeom(gType, srid, elemInfo, ordinates);
 	  }
   public static OraGeom sdo_geometry(int gType, int srid, double[] ptType,
 	      int elemInfo, int ordinates)
 	  {
-	    return new OraGeom(gType, ptType);
+	    return new OraGeom(gType, srid, ptType);
 	  }
+
+  public boolean isEqual(OraGeom og)
+  {
+    if (gType != og.gType) return false;
+//    if (srid != og.srid) return false;
+    if (ptType != null) {
+      return isEqual(ptType, og.ptType);
+    }
+    return true;
+  }
+
+  private boolean isEqual(double[] a1, double[] a2)
+  {
+    if (a2 == null) return false;
+    if (a1.length != a2.length) return false;
+    for (int i = 0; i < a1.length; i++) {
+      if (a1[i] != a2[i]) return false;
+    }
+    return false;
+  }
 }

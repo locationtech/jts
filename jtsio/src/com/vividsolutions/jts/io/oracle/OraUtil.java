@@ -18,44 +18,69 @@ import oracle.sql.StructDescriptor;
  */
 public class OraUtil
 {
+  /**
+   * Converts an Oracle <code>Datum</code> into an <code>int</code> value, 
+   * with a default value used if the datum is NULL.
+   * 
+   * @param datum the Oracle Datum
+   * @param defaultValue the value to use for NULLs
+   * @return an integer value
+   * @throws SQLException if an error occurs
+   */
+  public static int toInteger(Datum datum, final int defaultValue)
+      throws SQLException
+  {
+    if (datum == null)
+      return defaultValue;
+    return ((NUMBER) datum).intValue();
+  }
 
-  public static int[] asIntArray(ARRAY array, int defaultValue) throws SQLException
+  /**
+   * Converts an Oracle <code>ARRAY</code> into a <code>int</code> array, 
+   * with a default value used to represent NULL values.
+   * 
+   * @param array an Oracle ARRAY of integer values
+   * @param defaultValue the value to use for NULL values
+   * @return an array of ints
+   * @throws SQLException if an error was encountered
+   */
+  public static int[] toIntArray(ARRAY array, int defaultValue) throws SQLException
   {
     if (array == null)
       return null;
     if (defaultValue == 0)
       return array.getIntArray();
 
-    return asIntArray(array.getOracleArray(), defaultValue);
+    return toIntArray(array.getOracleArray(), defaultValue);
   }
 
   /** Presents Datum[] as a int[] */
-  public static int[] asIntArray(Datum data[], final int defaultValue)
+  public static int[] toIntArray(Datum data[], final int defaultValue)
       throws SQLException
   {
     if (data == null)
       return null;
     int array[] = new int[data.length];
     for (int i = 0; i < data.length; i++) {
-      array[i] = asInteger(data[i], defaultValue);
+      array[i] = toInteger(data[i], defaultValue);
     }
     return array;
   }
 
   /** Presents Datum[] as a double[] */
-  public static double[] asDoubleArray(Datum[] data, final double defaultValue)
+  public static double[] toDoubleArray(Datum[] data, final double defaultValue)
   {
     if (data == null)
       return null;
     double array[] = new double[data.length];
     for (int i = 0; i < data.length; i++) {
-      array[i] = asDouble(data[i], defaultValue);
+      array[i] = toDouble(data[i], defaultValue);
     }
     return array;
   }
 
   /** Presents array as a double[] */
-  public static double[] asDoubleArray(ARRAY array, final double defaultValue)
+  public static double[] toDoubleArray(ARRAY array, final double defaultValue)
       throws SQLException
   {
     if (array == null)
@@ -63,33 +88,24 @@ public class OraUtil
     if (defaultValue == 0)
       return array.getDoubleArray();
 
-    return asDoubleArray(array.getOracleArray(), defaultValue);
+    return toDoubleArray(array.getOracleArray(), defaultValue);
   }
 
   /** Presents struct as a double[] */
-  public static double[] asDoubleArray(STRUCT struct, final double defaultValue)
+  public static double[] toDoubleArray(STRUCT struct, final double defaultValue)
       throws SQLException
   {
     if (struct == null)
       return null;
-    return asDoubleArray(struct.getOracleAttributes(), defaultValue);
+    return toDoubleArray(struct.getOracleAttributes(), defaultValue);
   }
 
   /** Presents datum as a double */
-  public static double asDouble(Datum datum, final double defaultValue)
+  public static double toDouble(Datum datum, final double defaultValue)
   {
     if (datum == null)
       return defaultValue;
     return ((NUMBER) datum).doubleValue();
-  }
-
-  /** Presents datum as an int */
-  public static int asInteger(Datum datum, final int defaultValue)
-      throws SQLException
-  {
-    if (datum == null)
-      return defaultValue;
-    return ((NUMBER) datum).intValue();
   }
 
   /**

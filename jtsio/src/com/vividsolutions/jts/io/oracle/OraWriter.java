@@ -95,18 +95,19 @@ public class OraWriter
 	 * @param con
 	 * @param dimension the maximum output dimension
 	 */
-	public OraWriter(OracleConnection con, int dimension){
+	public OraWriter(OracleConnection con, int maxOutputDimension){
 		this.connection = con;
-		this.maxOutputDimension = dimension;
+		this.maxOutputDimension = maxOutputDimension;
 	}
 	
   /**
-   * Sets the maximum output dimension.
+   * Sets the maximum output dimension for the created Oracle geometries.
+   * 
    * 
    * @param dimension The dimension to set.
    */
-  public void setDimension(int dimension) {
-    this.maxOutputDimension = dimension;
+  public void setDimension(int maxOutputDimension) {
+    this.maxOutputDimension = maxOutputDimension;
   }
 
 	/**
@@ -125,21 +126,24 @@ public class OraWriter
 
   /**
    * Converts a {@link Geometry} into an Oracle MDSYS.GEOMETRY STRUCT.
-   * 
+   * <p>
    * Although invalid geometries may be encoded, and inserted into an Oracle DB,
    * this is not recommended. It is the responsibility of the user to ensure the
-   * geometry is valid prior to calling this method. The user should also ensure
-   * the the geometry's SRID field contains the correct value, if an SRID is
-   * desired. An incorrect SRID value may cause index exceptions during an
+   * geometry is valid prior to calling this method. 
+   * <p>
+   * The SRID of the created geometry is the SRID defined for the writer, 
+   * if any; otherwise it is the SRID of the input geometry. 
+   * The caller should ensure the the geometry's SRID field contains a valid value. 
+   * An incorrect SRID value may cause index exceptions during an
    * insert or update.
-   * 
+   * <p>
    * When a null Geometry is passed in, a non-null, empty STRUCT is returned.
-   * Therefore, inserting the the result of calling this method directly into a
+   * Therefore, inserting the result of this method into a
    * table will never result in null insertions. (March 2006)
-   * 
-   * To pass a NULL Geometry into an oracle geometry parameter using jdbc, use
-   * java.sql.CallableStatement.setNull(index,java.sql.Types.STRUCT,
-   * "MDSYS.SDO_GEOMETRY") (April 2006)
+   * To pass a NULL Geometry into an Oracle SDO_GEOMETRY-valued parameter using JDBC, use
+   * <pre>
+   * java.sql.CallableStatement.setNull(index, java.sql.Types.STRUCT, "MDSYS.SDO_GEOMETRY"). 
+   * </pre>
    * 
    * @param geom JTS Geometry to encode
    * @return Oracle MDSYS.GEOMETRY STRUCT
@@ -153,7 +157,7 @@ public class OraWriter
     // was this ... does not work for 9i
     // if( geom == null) return toSTRUCT( null, DATATYPE );
 
-    // works fro 9i
+    // works for 9i
     if (geom == null)
       return OraUtil.toSTRUCT(new Datum[5], OraSDO.TYPE_GEOMETRY, connection);
 
@@ -164,20 +168,55 @@ public class OraWriter
     if (geom.isEmpty() || geom.getCoordinate() == null)
       return OraUtil.toSTRUCT(new Datum[5], OraSDO.TYPE_GEOMETRY, connection);
 
-    int gtype = gType(geom);
-    NUMBER SDO_GTYPE = new NUMBER(gtype);
-
-    // int srid = geom.getFactory().getSRID();
-    int srid = this.srid == OraSDO.SRID_NULL ? geom.getSRID() : this.srid;
-    NUMBER SDO_SRID = srid == OraSDO.SRID_NULL ? null : new NUMBER(srid);
-
+    OraGeom oraGeom = createOraGeom(geom);
+    
     STRUCT SDO_POINT = null;
     ARRAY SDO_ELEM_INFO = null;
     ARRAY SDO_ORDINATES = null;
+    if (oraGeom.ptType == null) {
+      SDO_ELEM_INFO = OraUtil.toARRAY(oraGeom.elemInfo, OraSDO.TYPE_ELEM_INFO_ARRAY,
+          connection);
+      SDO_ORDINATES = OraUtil.toARRAY(oraGeom.ordinates, OraSDO.TYPE_ORDINATE_ARRAY,
+          connection);
+    }
+    else { // Point Optimization
+      Datum data[] = new Datum[] { 
+          OraUtil.toNUMBER(oraGeom.ptType[0]),
+          OraUtil.toNUMBER(oraGeom.ptType[1]), 
+          OraUtil.toNUMBER(oraGeom.ptType[2]), };
+      SDO_POINT = OraUtil.toSTRUCT(data, OraSDO.TYPE_POINT_TYPE, connection);
+    }
+    
+    NUMBER SDO_GTYPE = new NUMBER(oraGeom.gType);
+    NUMBER SDO_SRID = oraGeom.srid == OraSDO.SRID_NULL ? null : new NUMBER(oraGeom.srid);
+    
+    Datum sdoGeometryComponents[] = new Datum[] { 
+        SDO_GTYPE, 
+        SDO_SRID, 
+        SDO_POINT,
+        SDO_ELEM_INFO, 
+        SDO_ORDINATES };
+    return OraUtil.toSTRUCT(sdoGeometryComponents, OraSDO.TYPE_GEOMETRY, connection);
+  }
 
-    double[] point = point(geom);
+  /**
+   * Creates an OraGeom structure corresponding to the Oracle SDO_GEOMETRY
+   * values representing the given Geometry.
+   * This allows disconnected testing.
+   * 
+   * @param geom the non-null, non-empty Geometry to write
+   * @return an OraGeom structure
+   */
+  OraGeom createOraGeom(Geometry geom)
+  {
+    int gtype = gType(geom);
+    int srid = this.srid == OraSDO.SRID_NULL ? geom.getSRID() : this.srid;
+    double[] point = pointOrdinates(geom);
+    int elemInfo[] = null;
+    double[] ordinates = null;
+    
     if (point == null) {
-      int elemInfo[] = elemInfo(geom, gtype);
+      elemInfo = elemInfo(geom, gtype);
 
       List list = new ArrayList();
       coordinates(list, geom);
@@ -185,31 +224,14 @@ public class OraWriter
       int dim = OraSDO.gTypeDim(gtype);
       int lrs = OraSDO.gTypeMeasureDim(gtype);
       // MD - BUG????  Should be simply dim ????
-      int ordDim = dim + lrs; // size per coordinate
+      int ordDim = dim; // size per coordinate
       
-      double[] ordinates = buildOrdinates(list, ordDim);
-      // free the list
+      ordinates = buildOrdinates(list, ordDim);
+      // free the list of coordinates
       list = null;
-
-      SDO_ELEM_INFO = OraUtil.toARRAY(elemInfo, OraSDO.TYPE_ELEM_INFO_ARRAY,
-          connection);
-      SDO_ORDINATES = OraUtil.toARRAY(ordinates, OraSDO.TYPE_ORDINATE_ARRAY,
-          connection);
     }
-    else { // Point Optimization
-      Datum data[] = new Datum[] { 
-          OraUtil.toNUMBER(point[0]),
-          OraUtil.toNUMBER(point[1]), 
-          OraUtil.toNUMBER(point[2]), };
-      SDO_POINT = OraUtil.toSTRUCT(data, OraSDO.TYPE_POINT_TYPE, connection);
-    }
-    Datum attributes[] = new Datum[] { 
-        SDO_GTYPE, 
-        SDO_SRID, 
-        SDO_POINT,
-        SDO_ELEM_INFO, 
-        SDO_ORDINATES };
-    return OraUtil.toSTRUCT(attributes, OraSDO.TYPE_GEOMETRY, connection);
+    OraGeom oraGeom = new OraGeom(gtype, srid, point, elemInfo, ordinates);
+    return oraGeom;
   }
 
   private double[] buildOrdinates(List list, int ordDim)
@@ -506,7 +528,7 @@ public class OraWriter
             return false;
         }
 
-        if (lrs(polygon) != 0) {
+        if (lrsDim(polygon) != 0) {
             // cannot support LRS on a rectangle
             return false;
         }
@@ -661,9 +683,9 @@ public class OraWriter
      * @param geom the geometry providing the ordinates
      * @return double[] the point ordinates
      */
-  private double[] point(Geometry geom)
+  private double[] pointOrdinates(Geometry geom)
   {
-    if (geom instanceof Point && (lrs(geom) == 0)) {
+    if (geom instanceof Point && (lrsDim(geom) == 0)) {
       Point point = (Point) geom;
       Coordinate coord = point.getCoordinate();
       return new double[] { coord.x, coord.y, coord.z };
@@ -689,7 +711,7 @@ public class OraWriter
      */
     private int gType(Geometry geom)
     {
-      return OraSDO.gType(dimension(geom), lrs(geom), OraSDO.geomType(geom));
+      return OraSDO.gType(dimension(geom), lrsDim(geom), OraSDO.geomType(geom));
     }
 
     /**
@@ -707,30 +729,32 @@ public class OraWriter
     }
 
     /**
-     * Return LRS as defined by SDO_GTEMPLATE (either 3,4 or 0).
+     * Return LRS dimension as defined by SDO_GTYPE (either 3,4 or 0).
      * 
      * @param geom
      *
      * @return <code>0</code>
      */
-    private int lrs(Geometry geom) {
+    private int lrsDim(Geometry geom) {
         // when measures are supported this may change
     	// until then ... 
     	return 0;
     }
     
-    /**
-     * reverses the coordinate order
-     *
-     * @param factory
-     * @param sequence
-     *
-     * @return CoordinateSequence reversed sequence
-     */
-    private CoordinateSequence reverse(CoordinateSequenceFactory factory, CoordinateSequence sequence) {
-    	CoordinateList list = new CoordinateList(sequence.toCoordinateArray());
-        Collections.reverse(list);
-        return factory.create(list.toCoordinateArray());
-    }
+  /**
+   * reverses the coordinate order
+   * 
+   * @param factory
+   * @param sequence
+   * 
+   * @return CoordinateSequence reversed sequence
+   */
+  private CoordinateSequence reverse(CoordinateSequenceFactory factory,
+      CoordinateSequence sequence)
+  {
+    CoordinateList list = new CoordinateList(sequence.toCoordinateArray());
+    Collections.reverse(list);
+    return factory.create(list.toCoordinateArray());
+  }
 
 }
