@@ -280,13 +280,9 @@ public class OraReader {
                 });
         }
 
-        //int len = dim;
-
         if ((ordDim == 0 && ordinates.length != 0 ) || (ordDim != 0 && ((ordinates.length % ordDim) != 0))){
-            throw new IllegalArgumentException("Dimension D:" + ordDim + " and L:"
-                + lrsDim + " denote Coordinates " + "of " + ordDim
-                + " ordinates. This cannot be resolved with"
-                + "an ordinate array of length " + ordinates.length);
+            throw new IllegalArgumentException("SDO_GTYPE Dimension " + ordDim
+                + "is inconsistent with SDO_ORDINATES length " + ordinates.length);
         }
 
         int nCoord = (ordDim == 0 ? 0 : ordinates.length / ordDim);
@@ -327,23 +323,18 @@ public class OraReader {
     private GeometryCollection createCollection(GeometryFactory gf, int ordDim, int lrs, int[] elemInfo, int elemIndex, CoordinateSequence coords, int numGeom) {
 
     	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
+        int ordLength = coords.size()*ordDim;
 
-        int length = coords.size()*ordDim;
-
-		if (!(sOffset <= length))
-		    throw new IllegalArgumentException("ELEM_INFO STARTING_OFFSET "+sOffset+" inconsistent with ORDINATES length "+coords.size());
+	   	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "GeometryCollection");
 
         int endTriplet = (numGeom != -1) ? elemIndex + numGeom : elemInfo.length / 3 + 1;
 
-        List list = new LinkedList();
-        int etype;
-        int interpretation;
-        Geometry geom;
-
+        List geomList = new ArrayList();
         boolean cont = true;
         for (int i = elemIndex; cont && i < endTriplet; i++) {
-            etype = OraSDO.eType(elemInfo, i);
-            interpretation = OraSDO.interpretation(elemInfo, i);
+            int etype = OraSDO.eType(elemInfo, i);
+            int interpretation = OraSDO.interpretation(elemInfo, i);
+            Geometry geom;
 
             switch (etype) {
             case -1:
@@ -383,11 +374,10 @@ public class OraReader {
                     + "(Custom and Compound Straight and Curved Geometries not supported)");
             }
 
-            list.add(geom);
+            geomList.add(geom);
         }
 
-        GeometryCollection geoms = gf.createGeometryCollection((Geometry[]) list.toArray(new Geometry[list.size()]));
-
+        GeometryCollection geoms = gf.createGeometryCollection(GeometryFactory.toGeometryArray(geomList));
         return geoms;
     }
 
@@ -408,16 +398,11 @@ public class OraReader {
     	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
         int etype = OraSDO.eType(elemInfo, elemIndex);
         int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
+        int ordLength = coords.size()*ordDim;
 
-        int length = coords.size()*ordDim;
-
-		if (!(sOffset >= 1) || !(sOffset <= length))
-		    throw new IllegalArgumentException("ELEM_INFO STARTING_OFFSET "+sOffset+" inconsistent with ORDINATES length "+coords.size());
-		if(!(etype == OraSDO.ETYPE.POLYGON) && !(etype == OraSDO.ETYPE.POLYGON_EXTERIOR))
-		    throw new IllegalArgumentException("ETYPE "+etype+" inconsistent with expected POLYGON or POLYGON_EXTERIOR");
-		if (! (interpretation == OraSDO.INTERP.POLYGON || interpretation == OraSDO.INTERP.RECTANGLE)) {
-			return null;
-		}
+	   	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Polygon");
+    	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR, "Polygon");
+    	checkIntepretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
 
         int endTriplet = (numGeom != -1) ? elemIndex + numGeom : (elemInfo.length / 3) + 1;
 
@@ -456,17 +441,11 @@ public class OraReader {
     	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
         int etype = OraSDO.eType(elemInfo, elemIndex);
         int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
+        int ordLength = coords.size()*ordDim;
 
-        int length = coords.size()*ordDim;
-
-		if (!(sOffset >= 1) || !(sOffset <= length))
-		    throw new IllegalArgumentException("ELEM_INFO STARTING_OFFSET "+sOffset+" inconsistent with ORDINATES length "+coords.size());
-		if(!(etype == OraSDO.ETYPE.LINE))
-			throw new IllegalArgumentException("ETYPE "+ etype +" is not supported in LineStrings");
-		if (!(interpretation == OraSDO.INTERP.LINESTRING)){
-            // we cannot represent INTERPRETATION > 1
-			return null;
-		}
+	   	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "MultiLineString");
+		checkETYPE(etype,OraSDO.ETYPE.LINE, "MultiLineString");
+		checkIntepretation(interpretation, OraSDO.INTERP.LINESTRING, "MultiLineString");
 
         int endTriplet = (numGeom != -1) ? (elemIndex + numGeom) : (elemInfo.length / 3);
 
@@ -502,15 +481,15 @@ public class OraReader {
     	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
         int etype = OraSDO.eType(elemInfo, elemIndex);
         int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
+        int ordLength = coords.size()*ordDim;
 
-		if (!(sOffset >= 1) || !(sOffset <= coords.size()))
-		    throw new IllegalArgumentException("ELEM_INFO STARTING_OFFSET "+sOffset+" inconsistent with ORDINATES length "+coords.size());
-		if(!(etype == OraSDO.ETYPE.POINT))
-			throw new IllegalArgumentException("ETYPE "+ etype +" is not supported in Points");
-		if (!(interpretation > OraSDO.INTERP.POINT)){
-			return null;
+    	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "MultiPoint");
+		checkETYPE(etype,OraSDO.ETYPE.POINT, "MultiPoint");
+		// MultiPoints have a unique interpretation code
+		if (! (interpretation > 1)){
+			errorInterpretation(interpretation, "MultiPoint");
 		}
-
+		
         int start = (sOffset - 1) / ordDim;
         int end = start + interpretation;
 
@@ -538,19 +517,11 @@ public class OraReader {
     	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
         int etype = OraSDO.eType(elemInfo, elemIndex);
         int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
+        int ordLength = coords.size()*ordDim;
 
-        if(! (1 <= sOffset && sOffset <= (coords.size() * ordDim))){
-            throw new IllegalArgumentException(
-                    "ELEM_INFO STARTING_OFFSET "+sOffset+
-                    "inconsistent with ORDINATES length "+(coords.size() * ordDim) );
-        }
-
-		if(! (etype == OraSDO.ETYPE.POLYGON || etype == OraSDO.ETYPE.POLYGON_EXTERIOR)){
-			throw new IllegalArgumentException("ETYPE "+ etype +" is not supported in Polygons");
-		}
-		if (! (interpretation == OraSDO.INTERP.POLYGON || interpretation == OraSDO.INTERP.RECTANGLE)) {
-			throw new IllegalArgumentException("Interpretation "+ interpretation +" is not supported");
-		}
+    	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Polygon");
+    	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR, "Polygon");
+    	checkIntepretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
 
         LinearRing exteriorRing = createLinearRing(gf, ordDim, lrs, elemInfo, elemIndex, coords);
 
@@ -597,25 +568,17 @@ public class OraReader {
     	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
         int etype = OraSDO.eType(elemInfo, elemIndex);
         int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
-        int length = coords.size()*ordDim;
+        int ordLength = coords.size()*ordDim;
 
-		if (! (sOffset <= length))
-		    throw new IllegalArgumentException("ELEM_INFO STARTING_OFFSET "+sOffset+" inconsistent with ORDINATES length "+coords.size());
-		if(!(etype == OraSDO.ETYPE.POLYGON 
-				||etype == OraSDO.ETYPE.POLYGON_EXTERIOR 
-				|| etype == OraSDO.ETYPE.POLYGON_INTERIOR)) {
-			throw new IllegalArgumentException("ETYPE "+ etype +" is not supported when reading a Polygon");
-		}
-		if (! (interpretation == OraSDO.INTERP.POLYGON || interpretation == OraSDO.INTERP.RECTANGLE)) {
-			throw new IllegalArgumentException("Interpretation "+ interpretation +" is not supported");
-		}
-        LinearRing ring;
-
+    	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Polygon");
+    	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR,  OraSDO.ETYPE.POLYGON_INTERIOR, "Polygon");
+    	checkIntepretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
 
 		int start = (sOffset - 1) / ordDim;
 		int eOffset = OraSDO.startingOffset(elemInfo, elemIndex+1); // -1 for end
         int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
 
+    	LinearRing ring;
         if (interpretation == OraSDO.INTERP.POLYGON) {
             ring = gf.createLinearRing(subList(gf.getCoordinateSequenceFactory(),coords, start,end));
         } 
@@ -653,18 +616,25 @@ public class OraReader {
     int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
     int etype = OraSDO.eType(elemInfo, elemIndex);
     int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
+    int ordLength = coords.size() * ordDim;
 
+	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "LineString");
+	checkETYPE(etype,OraSDO.ETYPE.LINE, "LineString");
+	checkIntepretation(interpretation, OraSDO.INTERP.LINESTRING, "LineString");
+	
+	/*
     if (etype != OraSDO.ETYPE.LINE)
-		throw new IllegalArgumentException("ETYPE "+ etype +" is not supported when reading a LineString");
+		throw new IllegalArgumentException("SDO_ETYPE "+ etype +" is not supported when reading a LineString");
 
     if (interpretation != OraSDO.INTERP.LINESTRING) {
       throw new IllegalArgumentException(
-          "ELEM_INFO INTERPRETATION "
+          "SDO_INTERPRETATION "
               + interpretation
-              + " not supported by JTS LineString. "
+              + " not supported when reading LineStrings. "
               + "Only straight line edges (ELEM_INFO INTERPRETATION=1) are supported");
     }
-
+*/
+	
     int start = (sOffset - 1) / ordDim;
     int eOffset = OraSDO.startingOffset(elemInfo, elemIndex + 1); // -1 for end
     int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
@@ -690,14 +660,11 @@ public class OraReader {
     	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
         int etype = OraSDO.eType(elemInfo, elemIndex);
         int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
+        int ordLength = coords.size() * ordDim;
 
-		if (!(sOffset >= 1) || !(sOffset <= coords.size() * ordDim))
-		    throw new IllegalArgumentException("ELEM_INFO STARTING_OFFSET "+sOffset+" inconsistent with ORDINATES length "+coords.size());
-		if (etype != OraSDO.ETYPE.POINT)
-			throw new IllegalArgumentException("ETYPE "+ etype +" is not supported in Points");
-		if (interpretation != OraSDO.INTERP.POINT){
-			return null;
-		}
+		checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Point");
+		checkETYPE(etype,OraSDO.ETYPE.POINT, "Point");
+		checkIntepretation(interpretation, OraSDO.INTERP.POINT, "Point");
 
 		int start = (sOffset - 1) / ordDim;
 		int eOffset = OraSDO.startingOffset(elemInfo, elemIndex+1); // -1 for end
@@ -710,12 +677,12 @@ public class OraReader {
 	        int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
 	        point = gf.createPoint(subList(gf.getCoordinateSequenceFactory(),coords,start,end));
         }
-
         return point;
     }
 
 
-    /**
+
+	/**
      * Version of List.subList() that returns a CoordinateSequence.
      *
      * <p>
@@ -747,5 +714,45 @@ public class OraReader {
         }
         return factory.create(array);
     }
+
+    private static void checkETYPE(int eType, int val1, String geomType)
+    {
+    	checkETYPE(eType,val1, -1, -1, geomType);
+    }
+    
+    private static void checkETYPE(int eType, int val1, int val2, String geomType)
+    {
+    	checkETYPE(eType,val1, val2, -1, geomType);
+    }
+    
+    private static void checkETYPE(int eType, int val1, int val2, int val3, String geomType)
+    {
+    	if (eType == val1) return;
+    	if (val2 >= 0 && eType == val2) return;
+    	if (val3 >= 0 && eType == val3) return;
+    	throw new IllegalArgumentException("SDO_ETYPE "+ eType +" is not supported when reading a " + geomType);
+    }
+    
+    private static void checkIntepretation(int interpretation, int val1, String geomType) {
+    	checkIntepretation(interpretation, val1, -1, geomType);
+    }
+    
+    private static void checkIntepretation(int interpretation, int val1, int val2, String geomType) {
+		if (interpretation == val1) return;
+	   	if (val2 >= 0 && interpretation == val2) return;
+	   	errorInterpretation(interpretation, geomType);
+	}
+
+	private static void errorInterpretation(int interpretation, String geomType) {
+		throw new IllegalArgumentException("SDO_INTERPRETATION "+ interpretation +" is not supported when reading a " + geomType);
+	}
+
+    private static void checkOrdinates(int[] elemInfo, int index, int startOffset, int ordLen, String geomType)
+    {
+		if (startOffset > ordLen)
+		    throw new IllegalArgumentException("STARTING_OFFSET " + startOffset + " inconsistent with ORDINATES length " + ordLen
+		    		+ " (Element " + index + " in SDO_ELEM_INFO " + Arrays.toString(elemInfo) + ")");
+    }
+    
 
 }
