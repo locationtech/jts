@@ -47,6 +47,6 @@ public class BaseOraTestCase extends TestCase
     super(name);
   }
 
-  int NULL = -1;
+  protected static final int NULL = -1;
 
 }

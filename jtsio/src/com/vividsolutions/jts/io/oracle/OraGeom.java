@@ -80,6 +80,11 @@ public class OraGeom
     if (ptType != null) {
       return isEqual(ptType, og.ptType);
     }
+    // assume is defined by elemInfo and ordinates
+    if (! isEqual(elemInfo, og.elemInfo)) 
+      return false;
+    if (! isEqual(ordinates, og.ordinates)) 
+      return false;
     return true;
   }
 
@@ -88,8 +93,19 @@ public class OraGeom
     if (a2 == null) return false;
     if (a1.length != a2.length) return false;
     for (int i = 0; i < a1.length; i++) {
+      // check NaN == NaN
+      if (Double.isNaN(a1[i]) && Double.isNaN(a2[i])) continue;
       if (a1[i] != a2[i]) return false;
     }
-    return false;
+    return true;
+  }
+  private boolean isEqual(int[] a1, int[] a2)
+  {
+    if (a2 == null) return false;
+    if (a1.length != a2.length) return false;
+    for (int i = 0; i < a1.length; i++) {
+      if (a1[i] != a2[i]) return false;
+    }
+    return true;
   }
 }

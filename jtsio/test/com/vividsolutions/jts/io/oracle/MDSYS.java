@@ -9,6 +9,8 @@ package com.vividsolutions.jts.io.oracle;
  */
 public class MDSYS {
 
+  protected static final int NULL = -1;
+
 	public static OraGeom SDO_GEOMETRY(int gType, int srid, int ptType,
 			int[] elemInfo, double[] ordinates) {
 		return new OraGeom(gType, srid, elemInfo, ordinates);
@@ -19,7 +21,8 @@ public class MDSYS {
 		return new OraGeom(gType, srid, ptType);
 	}
 
-	public static double[] SDO_POINT_TYPE(int x, int y, int z) {
+	public static double[] SDO_POINT_TYPE(double x, double y, double z) {
+	  if (z == NULL) z = Double.NaN;
 		return new double[] { x, y, z };
 	}
 
