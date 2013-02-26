@@ -80,6 +80,16 @@ public class OraReaderCreateTest extends BaseOraTestCase
 	    checkValue(oraGeom, "POINT (50 50 100)");
   }
 
+  public void testXY_OrientedPoint() throws Exception {
+	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2001,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1, 3,1,0),MDSYS.SDO_ORDINATE_ARRAY(12,14, 0.3,0.2));
+	    checkValue(oraGeom, "POINT (12 14)");
+	  }
+
+  public void testXYZ_OrientedPoint() throws Exception {
+	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2001,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1, 3,1,0),MDSYS.SDO_ORDINATE_ARRAY(12,14, 0.3,0.2));
+	    checkValue(oraGeom, "POINT (12 14)");
+  }
+  
   public void testXYZ_MultiPoint() throws Exception {
     OraGeom oraGeom = MDSYS.SDO_GEOMETRY(3005,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,2),
     		MDSYS.SDO_ORDINATE_ARRAY(50,50,5, 100,200,300));
@@ -213,7 +223,45 @@ public class OraReaderCreateTest extends BaseOraTestCase
 	    		"MULTIPOLYGON (((2 3, 7 3, 7 9, 2 9, 2 3), (3 4, 3 8, 6 8, 3 4)), ((9 5, 13 5, 11 8, 9 5)))");
   }
 
+  //====================================================================================
+  // Unsupported Geometry types
   
+  public void testFAIL_CompoundPolygon() throws Exception {
+      OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2003,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1005,2, 1,2,1, 5,2,2),MDSYS.SDO_ORDINATE_ARRAY(6,10, 10,1, 14,10, 10,14, 6,10));
+      checkFailure(oraGeom, "CURVEPOLYGON ((-10.355339059327378 25.0, 25.0 -10.355339059327378, 60.35533905932738 25.0, 25.0 60.35533905932738, -10.355339059327378 25.0))");
+  }
+
+  public void testFAIL_Circle() throws Exception {
+      OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2003,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,4),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,0,50,50));
+      checkFailure(oraGeom, "CURVEPOLYGON ((-10.355339059327378 25.0, 25.0 -10.355339059327378, 60.35533905932738 25.0, 25.0 60.35533905932738, -10.355339059327378 25.0))");
+  }
+  
+  public void testFAIL_SolidPolygonXY() throws Exception {
+      OraGeom oraGeom = MDSYS.SDO_GEOMETRY(3008,NULL,NULL,/*SDO_ELEM_INFO_ARRAY*/ new int[] {1,1007,1,1,1006,6,1,1003,3,7,1003,3,13,1003,3,19,1003,3,25,1003,3,31,1003,3}, 
+          /*SDO_ORDINATE_ARRAY*/ new double[]{1.0,0.0,-1.0,1.0,1.0,1.0,1.0,0.0,1.0,0.0,0.0,-1.0,0.0,1.0,1.0,0.0,0.0,-1.0,0.0,1.0,-1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,1.0,1.0,1.0,1.0,-1.0,0.0,0.0,-1.0});
+      checkFailure(oraGeom, "ERROR");
+  }
+	
+	public void testFAIL_MultiSolidPolygonXY() throws Exception {
+	      OraGeom oraGeom = MDSYS.SDO_GEOMETRY(3009,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1007,3,7,1007,3),MDSYS.SDO_ORDINATE_ARRAY(-2.0,1.0,3.0,-3.0,-1.0,0.0,0.0,0.0,0.0,1.0,1.0,1.0));
+	      checkFailure(oraGeom, "ERROR");
+	}
+	
+	public void testFAIL_CompoundPolygonXY() throws Exception {
+	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2003,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1005,2, 1,2,1, 5,2,2),MDSYS.SDO_ORDINATE_ARRAY(6,10, 10,1, 14,10, 10,14, 6,10));
+	    checkFailure(oraGeom, "ERROR CURVEPOLYGON ((-10.355339059327378 25.0, 25.0 -10.355339059327378, 60.35533905932738 25.0, 25.0 60.35533905932738, -10.355339059327378 25.0))");
+	}
+	
+	public void testFAIL_CircularLineString() throws Exception {
+	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2002,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,2,2),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,0,50,50));
+	    checkFailure(oraGeom, "ERROR LINESTRING (0 0, 50 0, 50 50)");
+	}
+	
+	public void testFAIL_CompoundLineStringXY() throws Exception {
+	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2002,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,4,2, 1,2,1, 3,2,2),MDSYS.SDO_ORDINATE_ARRAY(10,10, 10,14, 6,10, 14,10));
+	    checkFailure(oraGeom, "ERROR LINESTRING (0 0, 50 0, 50 50)");
+	}
+	
   //====================================================================================
   
   public void testRawGeometryCollectionWithPoint() throws Exception {
@@ -267,6 +315,18 @@ public class OraReaderCreateTest extends BaseOraTestCase
     assertEquals(expected, actual);
   }
 
+  void checkFailure(OraGeom oraGeom, String wkt)
+  {
+	  try {
+		  checkValue(oraGeom, wkt);
+	  }
+	  catch (IllegalArgumentException e) {
+		  // correct expected result
+		  return;
+	  }
+	  fail("Expected IllegalArgumentException");
+  }
+  
   void checkValue(OraGeom oraGeom, String wkt)
   {
 	  checkValue(oraGeom, -1, wkt);
@@ -274,6 +334,12 @@ public class OraReaderCreateTest extends BaseOraTestCase
   
   void checkValue(OraGeom oraGeom, int targetDim, String wkt)
   {
+    final GeometryFactory geometryFactory = new GeometryFactory();
+    final OraReader oraReader = new OraReader(geometryFactory);
+    if (targetDim > -1) oraReader.setDimension(targetDim);
+
+    final Geometry actual = oraReader.create(geometryFactory, oraGeom.gType, oraGeom.ptType, oraGeom.elemInfo, oraGeom.ordinates);
+
     Geometry expected = null;
     try {
       expected = wktRdr.read(wkt);
@@ -281,12 +347,6 @@ public class OraReaderCreateTest extends BaseOraTestCase
     catch (ParseException e) {
       throw new RuntimeException(e);
     }
-    
-    final GeometryFactory geometryFactory = new GeometryFactory();
-    final OraReader oraReader = new OraReader(geometryFactory);
-    if (targetDim > -1) oraReader.setDimension(targetDim);
-
-    final Geometry actual = oraReader.create(geometryFactory, oraGeom.gType, oraGeom.ptType, oraGeom.elemInfo, oraGeom.ordinates);
     
     boolean isEqual = actual.equalsNorm(expected);
     if (! isEqual) {
