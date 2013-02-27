@@ -32,6 +32,8 @@
  */
 package com.vividsolutions.jts.io.oracle;
 
+import java.util.Arrays;
+
 /**
  * A structure to mimic the contents of an Oracle SDO_GEOMETRY structure.
  * 
@@ -94,8 +96,10 @@ public class OraGeom
     if (a1.length != a2.length) return false;
     for (int i = 0; i < a1.length; i++) {
       // check NaN == NaN
-      if (Double.isNaN(a1[i]) && Double.isNaN(a2[i])) continue;
-      if (a1[i] != a2[i]) return false;
+      if (Double.isNaN(a1[i]) && Double.isNaN(a2[i])) 
+    	  continue;
+      if (a1[i] != a2[i]) 
+    	  return false;
     }
     return true;
   }
@@ -107,5 +111,12 @@ public class OraGeom
       if (a1[i] != a2[i]) return false;
     }
     return true;
+  }
+  
+  public String toString()
+  {
+	  return "GTYPE=" + gType 
+			  + " SRID=" + srid
+			  + " ELEM_INFO=" + Arrays.toString(elemInfo);
   }
 }

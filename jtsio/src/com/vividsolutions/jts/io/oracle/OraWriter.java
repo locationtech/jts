@@ -59,40 +59,50 @@ import oracle.sql.*;
 
 /**
  * 
- * Translates a JTS Geometry into an Oracle STRUCT representing an MDSYS.GEOMETRY object. 
- * 
- * A connection to an oracle instance with access to the definition of the MDSYS.GEOMETRY 
- * object is required by the oracle driver.
+ * Translates a JTS Geometry into an Oracle STRUCT representing an <code>MDSYS.SDO_GEOMETRY</code> object. 
+ * <p>
+ * A connection to an Oracle instance with access to the definition of the <code>MDSYS.SDO_GEOMETRY</code>
+ * type is required.
  * 
  * @version 9i
+ * @author Martin Davis
  * @author David Zwiers, Vivid Solutions.
  */
 public class OraWriter 
 {
-	private OracleConnection connection;
-	private int maxOutputDimension = 2;
-	private int srid = OraSDO.SRID_NULL;
-	
-	
 	/**
-	 * Initialize the Oracle MDSYS.GEOMETRY Encoder with a valid oracle connection. 
+	 * A connection providing access to the required type definitions
+	 */
+	private OracleConnection connection;
+	/**
+	 * The maximum output dimension to write
+	 */
+	private int maxOutputDimension = 2;
+	/**
+	 * The default SRID to write 
+	 */
+	private int srid = OraSDO.SRID_NULL;
+
+	/**
+	 * Creates a writer using a valid Oracle connection. 
 	 * 
-	 * The connection should have sufficient privileges to view the description of the MDSYS.GEOMETRY type.
+	 * The connection should have sufficient privileges to view the description of the MDSYS.SDO_GEOMETRY type.
 	 * 
 	 * The maximum output dimension is set to 2
 	 * 
-	 * @param con
+	 * @param con a valid Oracle connection
 	 */
 	public OraWriter(OracleConnection con){
 		this.connection = con;
 	}
 	
 	/**
-	 * Initialize the Oracle MDSYS.GEOMETRY Encoder with a valid oracle connection. 
+	 * Creates a writer using a valid Oracle connection,
+	 * and specifying the maximum output dimension. 
 	 * 
 	 * The connection should have sufficient privileges to view the description of the MDSYS.GEOMETRY type.
 	 * 
-	 * @param con
+	 * @param con a valid Oracle connection
 	 * @param dimension the maximum output dimension
 	 */
 	public OraWriter(OracleConnection con, int maxOutputDimension){
@@ -125,28 +135,28 @@ public class OraWriter
 	}
 
   /**
-   * Converts a {@link Geometry} into an Oracle MDSYS.GEOMETRY STRUCT.
+   * Converts a {@link Geometry} into an Oracle MDSYS.SDO_GEOMETRY STRUCT.
    * <p>
    * Although invalid geometries may be encoded, and inserted into an Oracle DB,
    * this is not recommended. It is the responsibility of the user to ensure the
    * geometry is valid prior to calling this method. 
    * <p>
-   * The SRID of the created geometry is the SRID defined for the writer, 
-   * if any; otherwise it is the SRID of the input geometry. 
-   * The caller should ensure the the geometry's SRID field contains a valid value. 
-   * An incorrect SRID value may cause index exceptions during an
-   * insert or update.
+   * The SRID of the created SDO_GEOMETRY is the SRID defined explicitly for the writer, if any; 
+   * otherwise it is the SRID contained in the input geometry. 
+   * The caller should ensure the the SRID is valid for the intended use, 
+   * since an incorrect SRID may cause indexing exceptions during an
+   * INSERT or UPDATE.
    * <p>
-   * When a null Geometry is passed in, a non-null, empty STRUCT is returned.
-   * Therefore, inserting the result of this method into a
-   * table will never result in null insertions. (March 2006)
+   * When a null Geometry is passed in, a non-null, empty SDO_GEOMETRY STRUCT is returned.
+   * Therefore, inserting the output of the writer into a
+   * table will never result in NULL insertions.
    * To pass a NULL Geometry into an Oracle SDO_GEOMETRY-valued parameter using JDBC, use
    * <pre>
    * java.sql.CallableStatement.setNull(index, java.sql.Types.STRUCT, "MDSYS.SDO_GEOMETRY"). 
    * </pre>
    * 
-   * @param geom JTS Geometry to encode
-   * @return Oracle MDSYS.GEOMETRY STRUCT
+   * @param geom the geometry to encode
+   * @return a Oracle MDSYS.SDO_GEOMETRY STRUCT representing the geometry
    * @throws SQLException if an encoding error was encountered
    */
   public STRUCT write(Geometry geom) throws SQLException
@@ -157,16 +167,8 @@ public class OraWriter
     // was this ... does not work for 9i
     // if( geom == null) return toSTRUCT( null, DATATYPE );
 
-    // works for 9i
-    if (geom == null)
-      return OraUtil.toSTRUCT(new Datum[5], OraSDO.TYPE_GEOMETRY, connection);
-
-    // does not work for 9i
-    // if( geom == null) return null;
-
-    // empty geom
-    if (geom.isEmpty() || geom.getCoordinate() == null)
-      return OraUtil.toSTRUCT(new Datum[5], OraSDO.TYPE_GEOMETRY, connection);
+    if (geom == null || geom.isEmpty() || geom.getCoordinate() == null)
+      return createEmptySDOGeometry();
 
     OraGeom oraGeom = createOraGeom(geom);
     
@@ -199,10 +201,14 @@ public class OraWriter
     return OraUtil.toSTRUCT(sdoGeometryComponents, OraSDO.TYPE_GEOMETRY, connection);
   }
 
+	private STRUCT createEmptySDOGeometry() throws SQLException {
+		return OraUtil.toSTRUCT(new Datum[5], OraSDO.TYPE_GEOMETRY, connection);
+	}
+
   /**
-   * Creates an OraGeom structure corresponding to the Oracle SDO_GEOMETRY
-   * values representing the given Geometry.
-   * This allows disconnected testing.
+   * Creates an {@link OraGeom} structure corresponding to the Oracle SDO_GEOMETRY
+   * attributes representing the given Geometry.
+   * This allows disconnected testing, since no Oracle types are accessed.
    * 
    * @param geom the non-null, non-empty Geometry to write
    * @return an OraGeom structure
@@ -414,7 +420,7 @@ public class OraWriter
             LineString line;
             int offset = sOffSet;
             int dim = gtype/1000;
-            int len = dim + (gtype-dim*1000)/100;
+            int len = dim;
 
             for (int i = 0; i < lines.getNumGeometries(); i++) {
                 line = (LineString) lines.getGeometryN(i);
@@ -438,7 +444,7 @@ public class OraWriter
             }
 
             dim = gtype/1000;
-            len = dim + (gtype-dim*1000)/100;
+            len = dim;
             offset = sOffSet;
             LineString ring;
 
@@ -464,7 +470,7 @@ public class OraWriter
             offset = sOffSet;
 
             dim = gtype/1000;
-            len = dim + (gtype-dim*1000)/100;
+            len = dim;
 
             for (int i = 0; i < polys.getNumGeometries(); i++) {
                 poly = (Polygon) polys.getGeometryN(i);
@@ -483,7 +489,7 @@ public class OraWriter
         	GeometryCollection geoms = (GeometryCollection) geom;
             offset = sOffSet;
             dim = gtype/1000;
-            len = dim + (gtype-dim*1000)/100;
+            len = dim;
 
             for (int i = 0; i < geoms.getNumGeometries(); i++) {
                 geom = geoms.getGeometryN(i);
@@ -518,10 +524,10 @@ public class OraWriter
      *
      * @param polygon
      *
-     * @return <code>true</code> if polygon is SRID==0 and a rectangle
+     * @return <code>true</code> if polygon is SRID==NULL and a rectangle
      */
     private boolean isRectangle(Polygon polygon) {
-        if (polygon.getFactory().getSRID() != OraSDO.SRID_NULL) {
+        if (polygon.getFactory().getSRID() > 0) {
             // Rectangles only valid in CAD applications
             // that do not have an SRID system
             //

@@ -55,6 +55,11 @@ public class OraWriterCreateTest extends BaseOraTestCase
     super(arg);
   }
 
+  public void testTest() throws Exception
+  {
+	  testXY_RectanglePolygon();
+  }
+  
   public void XXtestPoint() throws Exception {
     OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2001,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1),MDSYS.SDO_ORDINATE_ARRAY(50,50));
     checkValue(oraGeom, "POINT (50 50)");
@@ -98,18 +103,18 @@ public class OraWriterCreateTest extends BaseOraTestCase
 	    checkValue(oraGeom, "POLYGON ((0 0, 50 0, 50 50, 0 50, 0 0))");
   }
 
-  public void testXY_MultiPolygon() throws Exception {
+  public void TODO_testXY_RectangleMultiPolygon() throws Exception {
 	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2007,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3,5,2003,3,9,1003,3),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,50,40,40,20,20,60,0,70,10));
 	    checkValue(oraGeom, "MULTIPOLYGON (((0 0, 50 0, 50 50, 0 50, 0 0), (40 40, 20 40, 20 20, 40 20, 40 40)), ((60 0, 70 0, 70 10, 60 10, 60 0)))");
   }
 
-  public void testXY_PolygonRect() throws Exception {
+  public void testXY_RectanglePolygon() throws Exception {
 	    OraGeom oraGeom = MDSYS.
 	    		SDO_GEOMETRY(2003,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,50));
 	    checkValue(oraGeom, "POLYGON ((0 0, 50 0, 50 50, 0 50, 0 0))");
   }
 
-  public void testXY_PolygonHoleRect() throws Exception {
+  public void TODO_testXY_RectanglePolygonHole() throws Exception {
 	    OraGeom oraGeom = MDSYS.
 	    		SDO_GEOMETRY(2003,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3,5,2003,3),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,50,40,40,20,20));
 	    checkValue(oraGeom, "POLYGON ((0 0, 50 0, 50 50, 0 50, 0 0), (40 40, 20 40, 20 20, 40 20, 40 40))");
@@ -122,7 +127,7 @@ public class OraWriterCreateTest extends BaseOraTestCase
     checkValue( MDSYS.SDO_GEOMETRY(2001, NULL, MDSYS.SDO_POINT_TYPE(-79, 37, NULL), NULL, NULL),
             "POINT (-79 37)");
   }
-  public void testXY_Rectangle_Doc() throws Exception {
+  public void TODO_testXY_Rectangle_Doc() throws Exception {
     checkValue( MDSYS.SDO_GEOMETRY(2003, NULL, NULL,
               MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,3),
               MDSYS.SDO_ORDINATE_ARRAY(1,1, 5,7) ),
@@ -135,7 +140,7 @@ public class OraWriterCreateTest extends BaseOraTestCase
                 7,5, 7,10, 10,10, 10,5, 7,5) ),
                 "POLYGON ((2 4, 4 3, 10 3, 13 5, 13 9, 11 13, 5 13, 2 11, 2 4), (7 5, 7 10, 10 10, 10 5, 7 5))");
   }
-  public void testXY_GeometryCollection_Doc() throws Exception {
+  public void TODO_testXY_Rectangle_GeometryCollection_Doc() throws Exception {
     checkValue(  MDSYS.SDO_GEOMETRY(2004, NULL, NULL,
               MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1, 3,2,1, 7,1003,1, 17,1003,1, 25,2003,1),
               MDSYS.SDO_ORDINATE_ARRAY(
@@ -172,7 +177,7 @@ public class OraWriterCreateTest extends BaseOraTestCase
           "POLYGON ((9 5, 13 5, 11 8, 9 5))");
   }
 
-  public void testXY_MultiPolygon_GT() throws Exception {
+  public void TODO_testXY_RectangleMultiPolygon_GT() throws Exception {
     checkValue(  MDSYS.SDO_GEOMETRY(2007, NULL,  NULL,
              MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1, 11,1003,1),
              MDSYS.SDO_ORDINATE_ARRAY(2,3, 7,3, 7,9, 2,9, 2,3,
@@ -208,13 +213,16 @@ public class OraWriterCreateTest extends BaseOraTestCase
     }
     
     final OraWriter oraWriter = new OraWriter(null);
-    if (targetDim > -1) oraWriter.setDimension(targetDim);
+    if (targetDim > -1) 
+    	oraWriter.setDimension(targetDim);
 
     final OraGeom actual = oraWriter.createOraGeom(geom);
     
     boolean isEqual = actual.isEqual(expectedOraGeom);
     if (! isEqual) {
-      System.out.println("Error writing  " + wkt);
+    	actual.isEqual(expectedOraGeom);
+        System.out.println("Error writing  " + wkt);
+        System.out.println("Expected:   " + expectedOraGeom + "  Actual: " + actual);
     }
     assertTrue(isEqual);
   }
