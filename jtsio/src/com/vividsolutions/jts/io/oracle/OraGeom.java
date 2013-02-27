@@ -37,7 +37,7 @@ import java.util.Arrays;
 /**
  * A structure to mimic the contents of an Oracle SDO_GEOMETRY structure.
  * 
- * @author mbdavis
+ * @author Martin Davis
  *
  */
 public class OraGeom
@@ -67,14 +67,6 @@ public class OraGeom
     this(gType, srid, ptType, null, null);
   }
 
-  /*
-  public static OraGeom sdo_geometry(int gType, int srid, double[] ptType,
-	      int elemInfo, int ordinates)
-	  {
-	    return new OraGeom(gType, srid, ptType);
-	  }
-*/
-  
   public boolean isEqual(OraGeom og)
   {
     if (gType != og.gType) return false;
@@ -117,6 +109,21 @@ public class OraGeom
   {
 	  return "GTYPE=" + gType 
 			  + " SRID=" + srid
-			  + " ELEM_INFO=" + Arrays.toString(elemInfo);
+			  + " ELEM_INFO=" + toStringElemInfo(elemInfo);
+  }
+  
+  public static String toStringElemInfo(int[] elemInfo)
+  {
+    StringBuffer buf = new StringBuffer();
+    for (int i = 0; i < elemInfo.length; i++) {
+      if (i > 0) {
+        buf.append(",");
+        // spacer between triplets
+        if (i %3 == 0)
+          buf.append("  ");
+      }
+      buf.append(elemInfo[i]);
+    }
+    return buf.toString();
   }
 }

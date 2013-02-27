@@ -225,7 +225,7 @@ class OraSDO
 	 * @return the coordinate dimension
 	 */
 	static int gTypeDim(int gType) {
-		return gType/1000;
+		return gType / 1000;
 	}
 
 	/**
@@ -238,7 +238,7 @@ class OraSDO
 	 * @return the Measure dimension
 	 */
 	static int gTypeMeasureDim(int gType) {
-		return (gType%1000)/100;
+		return (gType % 1000) / 100;
 	}
 
   /**
@@ -247,12 +247,12 @@ class OraSDO
    * 
    * @see GEOM_TYPE
    *
-   * @param geom
-   * @return geom type code
+   * @param geom the geometry to compute the GEOM_TYPE for
+   * @return geom type code, if known, or UNKNOWN
    */
   static int geomType(Geometry geom) {
       if (geom == null) {
-          return -1; // UNKNOWN
+          return GEOM_TYPE.UNKNOWN; 
       } else if (geom instanceof Point) {
           return GEOM_TYPE.POINT;
       } else if (geom instanceof LineString) {
@@ -268,12 +268,8 @@ class OraSDO
       } else if (geom instanceof GeometryCollection) {
           return GEOM_TYPE.COLLECTION;
       }
-  
-      throw new IllegalArgumentException("Cannot encode JTS "
-          + geom.getGeometryType() + " as SDO_GTEMPLATE "
-          + "(Limitied to Point, Line, Polygon, GeometryCollection, MultiPoint,"
-          + " MultiLineString and MultiPolygon)");
-  }
+      return GEOM_TYPE.UNKNOWN; 
+ }
 
   /**
    * Computes the SDO_GTYPE code for the given D, L, and TT components.

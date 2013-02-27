@@ -751,7 +751,7 @@ public class OraReader {
     {
 		if (startOffset > ordLen)
 		    throw new IllegalArgumentException("STARTING_OFFSET " + startOffset + " inconsistent with ORDINATES length " + ordLen
-		    		+ " (Element " + index + " in SDO_ELEM_INFO " + Arrays.toString(elemInfo) + ")");
+		    		+ " (Element " + index + " in SDO_ELEM_INFO " + OraGeom.toStringElemInfo(elemInfo) + ")");
     }
     
 
