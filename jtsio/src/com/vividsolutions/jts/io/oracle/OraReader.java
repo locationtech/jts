@@ -583,7 +583,7 @@ public class OraReader {
     int ordLength = coords.size() * ordDim;
 
   	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "LineString");
-  	checkETYPE(etype,OraSDO.ETYPE.LINE, "LineString");
+  	checkETYPE(etype, OraSDO.ETYPE.LINE, "LineString");
   	checkInterpretation(interpretation, OraSDO.INTERP.LINESTRING, "LineString");
 	
     int start = (sOffset - 1) / ordDim;

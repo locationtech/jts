@@ -178,9 +178,8 @@ class OraSDO
 
 	/**
 	 * Extracts the SDO_ELEM_INFO interpretation value (SDO_INTERPRETATION) for a given triplet.
-	 *
+	 * <p>
 	 * JTS valid interpretation values are: 1 for straight edges, 3 for rectangle
-	 *
 	 * Other interpretation value include: 2 for arcs, 4 for circles
 	 *
 	 * @param elemInfo the SDO_ELEM_INFO array
