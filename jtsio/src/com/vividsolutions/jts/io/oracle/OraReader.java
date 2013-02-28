@@ -195,8 +195,7 @@ public class OraReader {
    * @return Geometry as encoded
    * @throws IllegalArgumentException when an encoding error or unsupported geometry type is found
    */
-	Geometry read(int gType,
-        double[] point, int[] elemInfo, double[] ordinates) {
+	Geometry read(int gType, double[] point, int[] elemInfo, double[] ordinates) {
 
         int geomType = OraSDO.gTypeGeomType(gType); 
         int ordDim = OraSDO.gTypeDim(gType);
@@ -211,7 +210,7 @@ public class OraReader {
         }    
         int lrsDim = OraSDO.gTypeMeasureDim(gType);
 
-        // read from SDO_POINT_TYPE, if that carries the primary data
+        // read from SDO_POINT_TYPE, if that carries the primary geometry data
         if (lrsDim == 0 && geomType == OraSDO.GEOM_TYPE.POINT && point != null && elemInfo == null) {
           CoordinateSequence ptCoord = coordinates(geometryFactory.getCoordinateSequenceFactory(), outputDim, ordDim, point, false);
           return createPoint(ptCoord);
@@ -390,7 +389,7 @@ public class OraReader {
 
   	   	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Polygon");
       	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR, "Polygon");
-      	checkIntepretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
+      	checkInterpretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
 
         int endTriplet = (numGeom != -1) ? elemIndex + numGeom : (elemInfo.length / 3) + 1;
 
@@ -433,7 +432,7 @@ public class OraReader {
 
 	   	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "MultiLineString");
   		checkETYPE(etype,OraSDO.ETYPE.LINE, "MultiLineString");
-  		checkIntepretation(interpretation, OraSDO.INTERP.LINESTRING, "MultiLineString");
+  		checkInterpretation(interpretation, OraSDO.INTERP.LINESTRING, "MultiLineString");
 
         int endTriplet = (numGeom != -1) ? (elemIndex + numGeom) : (elemInfo.length / 3);
 
@@ -509,7 +508,7 @@ public class OraReader {
 
     	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Polygon");
     	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR, "Polygon");
-    	checkIntepretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
+    	checkInterpretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
 
       LinearRing exteriorRing = createLinearRing(ordDim, lrs, elemInfo, elemIndex, coords);
 
@@ -560,7 +559,7 @@ public class OraReader {
 
     	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Polygon");
     	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR,  OraSDO.ETYPE.POLYGON_INTERIOR, "Polygon");
-    	checkIntepretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
+    	checkInterpretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
 
 		int start = (sOffset - 1) / ordDim;
 		int eOffset = OraSDO.startingOffset(elemInfo, elemIndex+1); // -1 for end
@@ -608,7 +607,7 @@ public class OraReader {
 
   	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "LineString");
   	checkETYPE(etype,OraSDO.ETYPE.LINE, "LineString");
-  	checkIntepretation(interpretation, OraSDO.INTERP.LINESTRING, "LineString");
+  	checkInterpretation(interpretation, OraSDO.INTERP.LINESTRING, "LineString");
 	
 	/*
     if (etype != OraSDO.ETYPE.LINE)
@@ -652,7 +651,7 @@ public class OraReader {
 
   		checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Point");
   		checkETYPE(etype,OraSDO.ETYPE.POINT, "Point");
-  		checkIntepretation(interpretation, OraSDO.INTERP.POINT, "Point");
+  		checkInterpretation(interpretation, OraSDO.INTERP.POINT, "Point");
   
   		int start = (sOffset - 1) / ordDim;
   		int eOffset = OraSDO.startingOffset(elemInfo, elemIndex+1); // -1 for end
@@ -726,11 +725,11 @@ public class OraReader {
     	throw new IllegalArgumentException("SDO_ETYPE "+ eType +" is not supported when reading a " + geomType);
     }
     
-    private static void checkIntepretation(int interpretation, int val1, String geomType) {
-    	checkIntepretation(interpretation, val1, -1, geomType);
+    private static void checkInterpretation(int interpretation, int val1, String geomType) {
+    	checkInterpretation(interpretation, val1, -1, geomType);
     }
     
-    private static void checkIntepretation(int interpretation, int val1, int val2, String geomType) {
+    private static void checkInterpretation(int interpretation, int val1, int val2, String geomType) {
 		if (interpretation == val1) return;
 	   	if (val2 >= 0 && interpretation == val2) return;
 	   	errorInterpretation(interpretation, geomType);
