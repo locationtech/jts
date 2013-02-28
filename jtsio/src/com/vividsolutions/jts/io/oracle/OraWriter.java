@@ -175,7 +175,7 @@ public class OraWriter
     STRUCT SDO_POINT = null;
     ARRAY SDO_ELEM_INFO = null;
     ARRAY SDO_ORDINATES = null;
-    if (oraGeom.ptType == null) {
+    if (oraGeom.point == null) {
       SDO_ELEM_INFO = OraUtil.toARRAY(oraGeom.elemInfo, OraSDO.TYPE_ELEM_INFO_ARRAY,
           connection);
       SDO_ORDINATES = OraUtil.toARRAY(oraGeom.ordinates, OraSDO.TYPE_ORDINATE_ARRAY,
@@ -183,9 +183,9 @@ public class OraWriter
     }
     else { // Point Optimization
       Datum data[] = new Datum[] { 
-          OraUtil.toNUMBER(oraGeom.ptType[0]),
-          OraUtil.toNUMBER(oraGeom.ptType[1]), 
-          OraUtil.toNUMBER(oraGeom.ptType[2]), };
+          OraUtil.toNUMBER(oraGeom.point[0]),
+          OraUtil.toNUMBER(oraGeom.point[1]), 
+          OraUtil.toNUMBER(oraGeom.point[2]), };
       SDO_POINT = OraUtil.toSTRUCT(data, OraSDO.TYPE_POINT_TYPE, connection);
     }
     

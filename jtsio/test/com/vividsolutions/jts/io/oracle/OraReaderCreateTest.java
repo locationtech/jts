@@ -279,7 +279,7 @@ public class OraReaderCreateTest extends BaseOraTestCase
     // 'point' (3, 3).
     final double[] ordinates = new double[] {1, 1, 2, 2, 3, 3};
     // Made 'create' method package private to enable test.
-    final Geometry actual = oraReader.read(gType, null, elemInfo, ordinates);
+    final Geometry actual = oraReader.read(new OraGeom(gType, 0, elemInfo, ordinates));
 
     // Preparing expected result.
     final LineString lineString =
@@ -306,7 +306,7 @@ public class OraReaderCreateTest extends BaseOraTestCase
     final int[] elemInfo = new int[] {1, 2, 1};
     final double[] ordinates = new double[] {1, 1, 20, 2, 2, 30};
     // Made 'create' method package private to enable test.
-    final Geometry actual = oraReader.read(gType, null, elemInfo, ordinates);
+    final Geometry actual = oraReader.read(new OraGeom(gType, 0, elemInfo, ordinates));
 
     // Preparing expected result.
     final LineString expected =
@@ -338,7 +338,7 @@ public class OraReaderCreateTest extends BaseOraTestCase
     final OraReader oraReader = new OraReader(geometryFactory);
     if (targetDim > -1) oraReader.setDimension(targetDim);
 
-    final Geometry actual = oraReader.read(oraGeom.gType, oraGeom.ptType, oraGeom.elemInfo, oraGeom.ordinates);
+    final Geometry actual = oraReader.read(oraGeom);
 
     Geometry expected = null;
     try {

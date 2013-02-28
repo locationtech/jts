@@ -42,19 +42,25 @@ import java.util.Arrays;
  */
 public class OraGeom
 {
-  public int gType;
-  public int srid;
-  public double[] ptType = null;
-  public int[] elemInfo = null;
-  public double[] ordinates = null;
+  int gType;
+  int srid;
+  double[] point = null;
+  int[] elemInfo = null;
+  double[] ordinates = null;
+  private int geomType;
+  private int ordDim;
+  private int lrsDim;
 
   public OraGeom(int gType, int srid, double[] ptType, int[] elemInfo, double[] ordinates)
   {
     this.gType = gType;
     this.srid = srid;
-    this.ptType = ptType;
+    this.point = ptType;
     this.elemInfo = elemInfo;
     this.ordinates = ordinates;
+    geomType = OraSDO.gTypeGeomType(gType);
+    ordDim = OraSDO.gTypeDim(gType);
+    lrsDim = OraSDO.gTypeMeasureDim(gType);
   }
 
   public OraGeom(int gType, int srid, int[] elemInfo, double[] ordinates)
@@ -67,11 +73,31 @@ public class OraGeom
     this(gType, srid, ptType, null, null);
   }
 
+  public int geomType()
+  {
+    return geomType;
+  }
+
+  public int ordDim()
+  {
+    return ordDim;
+  }
+
+  public int lrsDim()
+  {
+    return lrsDim;
+  }
+  
+  public boolean isCompactPoint()
+  {
+    return lrsDim == 0 && geomType == OraSDO.GEOM_TYPE.POINT && point != null && elemInfo == null;
+  }
+  
   public boolean isEqual(OraGeom og)
   {
     if (gType != og.gType) return false;
 //    if (srid != og.srid) return false;
-    if (! isEqual(ptType, og.ptType))
+    if (! isEqual(point, og.point))
         return false;
     // assume is defined by elemInfo and ordinates
     if (! isEqual(elemInfo, og.elemInfo)) 
@@ -130,4 +156,5 @@ public class OraGeom
     }
     return buf.toString();
   }
+
 }

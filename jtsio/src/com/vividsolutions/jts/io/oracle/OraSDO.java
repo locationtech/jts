@@ -167,7 +167,7 @@ class OraSDO
 	 *
 	 * @param elemInfo the SDO_ELEM_INFO array
 	 * @param tripletIndex index of the triplet to read
-	 * @return ETYPE for indicated triplet, or -1 if an error occurred
+	 * @return ETYPE for indicated triplet, or -1 if the triplet index is too large
 	 */
 	static int eType(int[] elemInfo, int tripletIndex) {
 	    if (((tripletIndex * 3) + 1) >= elemInfo.length) {
@@ -185,7 +185,7 @@ class OraSDO
 	 *
 	 * @param elemInfo the SDO_ELEM_INFO array
 	 * @param tripletIndex index of the triplet to read
-	 * @return interpretation value, or -1 if an error occurred
+	 * @return interpretation value, or -1 if the triplet index is too large
 	 */
 	static int interpretation(int[] elemInfo, int tripletIndex) {
 	    if (((tripletIndex * 3) + 2) >= elemInfo.length) {
@@ -199,7 +199,7 @@ class OraSDO
 	 *
 	 * @param elemInfo the SDO_ELEM_INFO array
 	 * @param tripletIndex index of the triplet to read
-	 * @return Starting Offset, or -1 if an error occurred
+	 * @return Starting Offset, or -1 if the triplet index is too large
 	 */
 	static int startingOffset(int[] elemInfo, int tripletIndex) {
 	    if (((tripletIndex * 3) + 0) >= elemInfo.length) {
