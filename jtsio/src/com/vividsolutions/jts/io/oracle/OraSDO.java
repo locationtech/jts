@@ -91,23 +91,29 @@ class OraSDO
 	 * @author David Zwiers, Vivid Solutions.
 	 * @author Jody Garnett, Refractions Research, Inc.
 	 */
-	static final class ETYPE{
+  static final class ETYPE
+  {
 
-	    /** <code>ETYPE</code> code representing Point */
-	    public static final int POINT = 1;
-	
-	    /** <code>ETYPE</code> code representing Line */
-	    public static final int LINE = 2;
-	    
-		/** <code>ETYPE</code> code representing Polygon */
-		public static final int POLYGON = 3;
-	
-	    /** <code>ETYPE</code> code representing exterior counterclockwise  polygon ring */
-	    public static final int POLYGON_EXTERIOR = 1003;
-	
-	    /** <code>ETYPE</code> code representing interior clockwise  polygon ring */
-	    public static final int POLYGON_INTERIOR = 2003;
-	}
+    /** <code>ETYPE</code> code representing Point */
+    public static final int POINT = 1;
+
+    /** <code>ETYPE</code> code representing Line */
+    public static final int LINE = 2;
+
+    /** <code>ETYPE</code> code representing Polygon ring 
+     *  Shell or hole is determined by orientation (CCW or CW).
+     *  Now deprecated. 
+     */
+    public static final int POLYGON = 3;
+
+    /**
+     * <code>ETYPE</code> code representing exterior counterclockwise polygon ring
+     */
+    public static final int POLYGON_EXTERIOR = 1003;
+
+    /** <code>ETYPE</code> code representing interior clockwise polygon ring */
+    public static final int POLYGON_INTERIOR = 2003;
+  }
     
 	/**
 	 * Extracted from the Oracle Documentation for SDO_GTYPE.
@@ -160,53 +166,6 @@ class OraSDO
 				
 	}
 	
-	/**
-	 * Extracts the SDO_ELEM_INFO ETYPE value for a given triplet.
-	 * <p>
-	 * @see ETYPE for an indication of possible values
-	 *
-	 * @param elemInfo the SDO_ELEM_INFO array
-	 * @param tripletIndex index of the triplet to read
-	 * @return ETYPE for indicated triplet, or -1 if the triplet index is too large
-	 */
-	static int eType(int[] elemInfo, int tripletIndex) {
-	    if (((tripletIndex * 3) + 1) >= elemInfo.length) {
-	        return -1;
-	    }
-	    return elemInfo[(tripletIndex * 3) + 1];
-	}
-
-	/**
-	 * Extracts the SDO_ELEM_INFO interpretation value (SDO_INTERPRETATION) for a given triplet.
-	 * <p>
-	 * JTS valid interpretation values are: 1 for straight edges, 3 for rectangle
-	 * Other interpretation value include: 2 for arcs, 4 for circles
-	 *
-	 * @param elemInfo the SDO_ELEM_INFO array
-	 * @param tripletIndex index of the triplet to read
-	 * @return interpretation value, or -1 if the triplet index is too large
-	 */
-	static int interpretation(int[] elemInfo, int tripletIndex) {
-	    if (((tripletIndex * 3) + 2) >= elemInfo.length) {
-	        return -1;
-	    }
-	    return elemInfo[(tripletIndex * 3) + 2];
-	}
-
-	/**
-	 * Extracts the SDO_ELEM_INFO start index (SDO_STARTING_OFFSET) in the ordinate array for a given triplet.
-	 *
-	 * @param elemInfo the SDO_ELEM_INFO array
-	 * @param tripletIndex index of the triplet to read
-	 * @return Starting Offset, or -1 if the triplet index is too large
-	 */
-	static int startingOffset(int[] elemInfo, int tripletIndex) {
-	    if (((tripletIndex * 3) + 0) >= elemInfo.length) {
-	        return -1;
-	    }
-	    return elemInfo[(tripletIndex * 3) + 0];
-	}
-
 	/**
 	 * Extracts the GEOM_TYPE code from an SDO_GTYPE code.
 	 * 

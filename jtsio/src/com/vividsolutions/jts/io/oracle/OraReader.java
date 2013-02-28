@@ -201,61 +201,52 @@ public class OraReader {
     if(dimension != NULL_DIMENSION){
     	outputDim = dimension;
     }    
-
     // read from SDO_POINT_TYPE, if that carries the primary geometry data
     if (oraGeom.isCompactPoint()) {
       CoordinateSequence ptCoord = coordinates(geometryFactory.getCoordinateSequenceFactory(), outputDim, ordDim, oraGeom.point, false);
-      return readPoint(ptCoord);
+      return createPoint(ptCoord);
     } 
     
     CoordinateSequence coords = coordinates(geometryFactory.getCoordinateSequenceFactory(), outputDim,  ordDim, oraGeom.ordinates, true);
 
-    int lrsDim = oraGeom.lrsDim();
     switch (oraGeom.geomType()) {
     case OraSDO.GEOM_TYPE.POINT:
-        return readPoint(ordDim, lrsDim, oraGeom.elemInfo, 0, coords);
-
+        return readPoint(oraGeom, 0, coords);
     case OraSDO.GEOM_TYPE.LINE:
-        return readLine(ordDim, lrsDim, oraGeom.elemInfo, 0, coords);
-
+        return readLine(oraGeom, 0, coords);
     case OraSDO.GEOM_TYPE.POLYGON:
-        return readPolygon(ordDim, lrsDim, oraGeom.elemInfo, 0, coords);
-
+        return readPolygon(oraGeom, 0, coords);
     case OraSDO.GEOM_TYPE.MULTIPOINT:
-        return readMultiPoint(ordDim, lrsDim, oraGeom.elemInfo, 0, coords);
-
+        return readMultiPoint(oraGeom, 0, coords);
     case OraSDO.GEOM_TYPE.MULTILINE:
-        return readMultiLine(ordDim, lrsDim, oraGeom.elemInfo, 0, coords, -1);
-
+        return readMultiLine(oraGeom, coords);
     case OraSDO.GEOM_TYPE.MULTIPOLYGON:
-        return readMultiPolygon(ordDim, lrsDim, oraGeom.elemInfo, 0, coords, -1);
-
+        return readMultiPolygon(oraGeom, coords);
     case OraSDO.GEOM_TYPE.COLLECTION:
-        return readCollection(ordDim, lrsDim, oraGeom.elemInfo, 0, coords, -1);
-
+        return readCollection(oraGeom, coords);
     default:
     	throw new IllegalArgumentException("GTYPE " + oraGeom.gType + " is not supported");
     }
   }
 
 	/**
-     * Constructs a coordinate sequence from the ordinates
-     * taking into account the input and output dimensions.
-     *
-     * The number of ordinates read per coordinate is given by outputDim.
-     * The number of ordinates for each input point is given by ordDim.
-     * The ordinate array length must be a multiple of this value.
-     *
-     * @param csFactory CoordinateSequenceFactory used to encode ordinates for JTS
-     * @param outputDim dimension of target coordinate sequence
-     * @param ordDim dimension of input coordinates
-     * @param ordinates the ordinate values to read
-     * @param checkValidOrdLength whether to check the ordinates length
-     *
-     * @return a coordinate sequence representing all the read ordinates
-     *
-     * @throws IllegalArgumentException if the ordinate array has an invalid length
-     */
+   * Constructs a coordinate sequence from the ordinates
+   * taking into account the input and output dimensions.
+   *
+   * The number of ordinates read per coordinate is given by outputDim.
+   * The number of ordinates for each input point is given by ordDim.
+   * The ordinate array length must be a multiple of this value.
+   *
+   * @param csFactory CoordinateSequenceFactory used to encode ordinates for JTS
+   * @param outputDim dimension of target coordinate sequence
+   * @param ordDim dimension of input coordinates
+   * @param ordinates the ordinate values to read
+   * @param checkValidOrdLength whether to check the ordinates length
+   *
+   * @return a coordinate sequence representing all the read ordinates
+   *
+   * @throws IllegalArgumentException if the ordinate array has an invalid length
+   */
   private CoordinateSequence coordinates(CoordinateSequenceFactory csFactory,
       int outputDim, int ordDim, double[] ordinates, boolean checkValidOrdLength)
   {
@@ -286,73 +277,67 @@ public class OraReader {
     return cs;
   }
 
-    /**
-     * Create a {@link GeometryCollection} as specified by elemInfo.
-     *
-     * @param ordDim dimension of input coordinates
-     * @param elemIndex Triplet in elemInfo to process as a Polygon
-     * @param coords Coordinates to interpret using elemInfo
-     * @param numGeom Number of triplets (or -1 for rest)
-     *
-     * @return GeometryCollection
-     *
-     * @throws IllegalArgumentException when an encoding error or unsupported geometry type is found
-     */
-    private GeometryCollection readCollection(int ordDim, int lrs, int[] elemInfo, int elemIndex, CoordinateSequence coords, int numGeom) 
+  /**
+   * Create a {@link GeometryCollection} as specified by elemInfo. Note that in
+   * Oracle, unlike the SFS and JTS, collections contain only atomic types or
+   * (possibly) MultiPoints. This makes them simpler to parse.
+   * 
+   * @param oraGeom
+   *          SDO_GEOMETRY attributes being read
+   * @param coords
+   *          the coordinates of the entire geometry
+   * @return GeometryCollection
+   * 
+   * @throws IllegalArgumentException
+   *           when an encoding error or unsupported geometry type is found
+   */
+    private GeometryCollection readCollection(OraGeom oraGeom, CoordinateSequence coords) 
     {
-    	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
-      int ordLength = coords.size() * ordDim;
-
-      checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "GeometryCollection");
-
-      int endTriplet = (numGeom != -1) ? elemIndex + numGeom : elemInfo.length / 3 + 1;
-
+      checkOrdinates(oraGeom, 0, "GeometryCollection");
+      
+      int nElem = oraGeom.numElements();
       List geomList = new ArrayList();
       boolean cont = true;
-      for (int i = elemIndex; cont && i < endTriplet; i++) {
-          int etype = OraSDO.eType(elemInfo, i);
-          int interpretation = OraSDO.interpretation(elemInfo, i);
-          Geometry geom;
+      for (int i = 0; cont && i < nElem; i++) {
+        int etype = oraGeom.eType(i);
+        int interpretation = oraGeom.interpretation(i);
+        Geometry geom;
 
-          switch (etype) {
-          case -1:
-              cont = false; // We are at the end of the list - get out of here
-              continue;
-              
-          case OraSDO.ETYPE.POINT:
+        switch (etype) {
+        case -1:
+          cont = false; // We are at the end of the list - get out of here
+          continue;
+            
+        case OraSDO.ETYPE.POINT:
+            if (interpretation == OraSDO.INTERP.POINT) {
+                geom = readPoint(oraGeom, i, coords);
+            } else if (interpretation > 1) {
+                geom = readMultiPoint(oraGeom, i, coords);
+            } else {
+                throw new IllegalArgumentException("ETYPE.POINT requires INTERPRETATION >= 1");
+            }
+            break;
 
-              if (interpretation == OraSDO.INTERP.POINT) {
-                  geom = readPoint(ordDim, lrs, elemInfo, i, coords);
-              } else if (interpretation > 1) {
-                  geom = readMultiPoint(ordDim, lrs, elemInfo, i, coords);
-              } else {
-                  throw new IllegalArgumentException(
-                      "ETYPE.POINT requires INTERPRETATION >= 1");
-              }
-              break;
+        case OraSDO.ETYPE.LINE:
+            geom = readLine(oraGeom, i, coords);
+            break;
 
-          case OraSDO.ETYPE.LINE:
-              geom = readLine(ordDim, lrs, elemInfo, i, coords);
-              break;
+        case OraSDO.ETYPE.POLYGON:
+        case OraSDO.ETYPE.POLYGON_EXTERIOR:
+            geom = readPolygon(oraGeom, i, coords);
+            i += ((Polygon) geom).getNumInteriorRing();
+            break;
 
-          case OraSDO.ETYPE.POLYGON:
-          case OraSDO.ETYPE.POLYGON_EXTERIOR:
-              geom = readPolygon(ordDim, lrs, elemInfo, i, coords);
-              i += ((Polygon) geom).getNumInteriorRing();
-              break;
+        case OraSDO.ETYPE.POLYGON_INTERIOR:
+            throw new IllegalArgumentException(
+                "ETYPE 2003 (Polygon Interior) not expected in a Collection");
 
-          case OraSDO.ETYPE.POLYGON_INTERIOR:
-              throw new IllegalArgumentException(
-                  "ETYPE 2003 (Polygon Interior) no expected in a GeometryCollection"
-                  + "(2003 is used to represent polygon holes, in a 1003 polygon exterior)");
-
-          default:
-              throw new IllegalArgumentException("ETYPE " + etype
-                  + " not representable as a JTS Geometry."
-                  + "(Custom and Compound Straight and Curved Geometries not supported)");
-          }
-
-          geomList.add(geom);
+        default:
+            throw new IllegalArgumentException("ETYPE " + etype
+                + " not representable as a JTS Geometry."
+                + "(Custom and Compound Straight and Curved Geometries not supported)");
+        }
+        geomList.add(geom);
       }
       GeometryCollection geoms = geometryFactory.createGeometryCollection(GeometryFactory.toGeometryArray(geomList));
       return geoms;
@@ -361,202 +346,162 @@ public class OraReader {
     /**
      * Create MultiPolygon as encoded by elemInfo.
      *
-     * @param elemInfo Interpretation of coords
-     * @param elemIndex Triplet in elemInfo to process as a Polygon
-     * @param coords Coordinates to interpret using elemInfo
-     * @param numGeom Number of triplets (or -1 for rest)
-     *
+     * @param oraGeom SDO_GEOMETRY attributes being read
+     * @param coords the coordinates of the entire geometry
      * @return MultiPolygon
      */
-    private MultiPolygon readMultiPolygon(int ordDim, int lrs, int[] elemInfo, int elemIndex, CoordinateSequence coords, int numGeom){
-
-    	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
-        int etype = OraSDO.eType(elemInfo, elemIndex);
-        int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
-        int ordLength = coords.size()*ordDim;
-
-  	   	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Polygon");
-      	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR, "Polygon");
-      	checkInterpretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
-
-        int endTriplet = (numGeom != -1) ? elemIndex + numGeom : (elemInfo.length / 3) + 1;
-
-        List list = new LinkedList();
-        boolean cont = true;
-
-        for (int i = elemIndex; cont && i < endTriplet && (etype = OraSDO.eType(elemInfo, i)) != -1; i++) {
-            if ((etype == OraSDO.ETYPE.POLYGON) || (etype == OraSDO.ETYPE.POLYGON_EXTERIOR)) {
-                Polygon poly = readPolygon(ordDim, lrs, elemInfo, i, coords);
-                i += poly.getNumInteriorRing(); // skip interior rings
-                list.add(poly);
-            } else { // not a Polygon - get out here
-            	cont = false;
-            }
+    private MultiPolygon readMultiPolygon(OraGeom oraGeom, CoordinateSequence coords)
+    {
+      int nElem = oraGeom.numElements();
+      List geoms = new ArrayList();
+      for (int i = 0; i < nElem; i++) {
+        int etype = oraGeom.eType(i);
+        if ((etype == OraSDO.ETYPE.POLYGON) || (etype == OraSDO.ETYPE.POLYGON_EXTERIOR)) {
+          Polygon poly = readPolygon(oraGeom, i, coords);
+          i += poly.getNumInteriorRing(); // skip interior rings
+          geoms.add(poly);
+        } 
+        else { // not a Polygon - stop reading
+        	break;
         }
-
-        MultiPolygon polys = geometryFactory.createMultiPolygon(GeometryFactory.toPolygonArray(list));
-
-        return polys;
+      }
+      MultiPolygon polys = geometryFactory.createMultiPolygon(GeometryFactory.toPolygonArray(geoms));
+      return polys;
     }
 
     /**
      * Create MultiLineString as encoded by elemInfo.
      *
-     * @param elemInfo Interpretation of ordinates
-     * @param elemIndex Triplet in elemInfo to process as a MultiLineString
-     * @param coords Coordinates to interpret using elemInfo
-     * @param numGeom Number of triplets (or -1 for rest)
-     *
+     * @param oraGeom SDO_GEOMETRY attributes being read
+     * @param coords the coordinates of the entire geometry
      * @return MultiLineString
      */
-    private MultiLineString readMultiLine(int ordDim, int lrsDim, int[] elemInfo, int elemIndex, CoordinateSequence coords, int numGeom) {
-
-    	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
-        int etype = OraSDO.eType(elemInfo, elemIndex);
-        int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
-        int ordLength = coords.size()*ordDim;
-
-	   	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "MultiLineString");
-  		checkETYPE(etype,OraSDO.ETYPE.LINE, "MultiLineString");
-  		checkInterpretation(interpretation, OraSDO.INTERP.LINESTRING, "MultiLineString");
-
-        int endTriplet = (numGeom != -1) ? (elemIndex + numGeom) : (elemInfo.length / 3);
-
-        List list = new LinkedList();
-
-        for (int i = elemIndex; i < endTriplet && (etype = OraSDO.eType(elemInfo, i)) != -1 ;i++) {
-            if (etype == OraSDO.ETYPE.LINE) {
-                list.add(readLine(ordDim, lrsDim, elemInfo, i, coords));
-            } else { // not a LineString - get out of here
-                break;
-            }
-        }
-        MultiLineString lines = geometryFactory.createMultiLineString(GeometryFactory.toLineStringArray(list));
-        return lines;
+    private MultiLineString readMultiLine(OraGeom oraGeom, CoordinateSequence coords) 
+    {
+      int nElem = oraGeom.numElements();
+      List geoms = new ArrayList();
+      for (int i = 0; i < nElem; i++) {
+        int etype = oraGeom.eType(i);
+        // stop reading if not a line
+        if (etype != OraSDO.ETYPE.LINE)
+          break;
+        geoms.add(readLine(oraGeom, i, coords));
+      }
+      MultiLineString lines = geometryFactory.createMultiLineString(GeometryFactory.toLineStringArray(geoms));
+      return lines;
     }
 
     /**
      * Create MultiPoint as encoded by elemInfo.
      *
-     * @param elemInfo Interpretation of coords
-     * @param elemIndex Triplet in elemInfo to process as a Polygon
-     * @param coords Coordinates to interpret using elemInfo
-     *
+     * @param oraGeom SDO_GEOMETRY attributes being read
+     * @param elemIndex the element being read
+     * @param coords the coordinates of the entire geometry
      * @return MultiPoint
      */
-    private MultiPoint readMultiPoint(int ordDim, int lrs, int[] elemInfo, int elemIndex, CoordinateSequence coords) {
+    private MultiPoint readMultiPoint(OraGeom oraGeom, int elemIndex, CoordinateSequence coords) 
+    {
+      int etype = oraGeom.eType(elemIndex);
+      int interpretation = oraGeom.interpretation(elemIndex);
 
-    	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
-        int etype = OraSDO.eType(elemInfo, elemIndex);
-        int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
-        int ordLength = coords.size()*ordDim;
-
-    	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "MultiPoint");
-  		checkETYPE(etype,OraSDO.ETYPE.POINT, "MultiPoint");
-  		// MultiPoints have a unique interpretation code
-  		if (! (interpretation > 1)){
-  			errorInterpretation(interpretation, "MultiPoint");
-  		}
-		
-        int start = (sOffset - 1) / ordDim;
-        int end = start + interpretation;
-
-        MultiPoint points = geometryFactory.createMultiPoint(subSeq(coords, start, end));
-
-        return points;
+      checkOrdinates(oraGeom, elemIndex, "MultiPoint");
+      checkETYPE(etype, OraSDO.ETYPE.POINT, "MultiPoint");
+      // MultiPoints have a unique interpretation code
+      if (! (interpretation > 1)){
+        errorInterpretation(interpretation, "MultiPoint");
+      }
+      int start = coordIndex(oraGeom, elemIndex);
+      int end = coordIndex(oraGeom, elemIndex + 1);
+      MultiPoint points = geometryFactory.createMultiPoint(subSeq(coords, start, end));
+      return points;
     }
-
+    
     /**
      * Create Polygon as encoded.
      *
-     * @see OraSDO#interpretation(int[], int)
-     *
-     * @param elemInfo Interpretation of coords
-     * @param elemIndex Triplet in elemInfo to process as a Polygon
-     * @param coords Coordinates to interpret using elemInfo
-     *
+     * @param oraGeom SDO_GEOMETRY attributes being read
+     * @param elemIndex the element being read
+     * @param coords the coordinates of the entire geometry
      * @return Polygon as encoded by elemInfo, or null when faced with and
      *         encoding that can not be captured by JTS
      * @throws IllegalArgumentException When faced with an invalid SDO encoding
      */
-    private Polygon readPolygon(int ordDim, int lrs, int[] elemInfo, int elemIndex, CoordinateSequence coords) {
+    private Polygon readPolygon(OraGeom oraGeom, int elemIndex, CoordinateSequence coords) 
+    {
+      int etype = oraGeom.eType(elemIndex);
+      int interpretation = oraGeom.interpretation(elemIndex);
 
-    	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
-      int etype = OraSDO.eType(elemInfo, elemIndex);
-      int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
-      int ordLength = coords.size()*ordDim;
-
-    	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Polygon");
+    	checkOrdinates(oraGeom, elemIndex, "Polygon");
     	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR, "Polygon");
     	checkInterpretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
 
-      LinearRing exteriorRing = readLinearRing(ordDim, lrs, elemInfo, elemIndex, coords);
+      int nElem = oraGeom.numElements();
+    	// ETYPE is either POLYGON or POLYGON_EXTERIOR
+      LinearRing exteriorRing = readLinearRing(oraGeom, elemIndex, coords);
 
-      List rings = new LinkedList();
-
-      boolean cont = true;
-      for (int i = elemIndex + 1; cont && (etype = OraSDO.eType(elemInfo, i)) != -1; i++) {
-          if (etype == OraSDO.ETYPE.POLYGON_INTERIOR) {
-              rings.add(readLinearRing(ordDim, lrs, elemInfo, i, coords));
-          } else if (etype == OraSDO.ETYPE.POLYGON) { // need to test Clockwiseness of Ring to see if it is
-                                               // interior or not - (use POLYGON_INTERIOR to avoid pain)
-
-              LinearRing ring = readLinearRing(ordDim, lrs, elemInfo, i, coords);
-
-              if (CGAlgorithms.isCCW(ring.getCoordinates())) { // it is an Interior Hole
-                  rings.add(ring);
-              } else { // it is the next Polygon! - get out of here
-                  cont = false;
-              }
-          } else { // not a LinearRing - get out of here
-              cont = false;
-          }
+      /**
+       * Holes are read as long as ETYPE = POLYGON_INTERIOR
+       * or ETYPE = POLYGON && orient = CW (Hole)
+       */
+      List holeRings = new ArrayList();
+      for (int i = elemIndex + 1; i < nElem; i++) {
+        etype = oraGeom.eType(i);
+        if (etype == OraSDO.ETYPE.POLYGON_INTERIOR) {
+          holeRings.add(readLinearRing(oraGeom, i, coords));
+        } 
+        else if (etype == OraSDO.ETYPE.POLYGON) { 
+          // test orientation of Ring to see if it is
+          // an interior (hole) ring
+          LinearRing ring = readLinearRing(oraGeom, i, coords);
+          boolean isHole = ! CGAlgorithms.isCCW(ring.getCoordinates());
+          if (! isHole)
+            break;// it is an Interior Hole
+          holeRings.add(ring);
+        } 
+        else { // not a LinearRing - get out of here
+            break;
+        }
       }
-
-      Polygon poly = geometryFactory.createPolygon(exteriorRing, (LinearRing[]) rings.toArray(new LinearRing[rings.size()]));
-
+      Polygon poly = geometryFactory.createPolygon(exteriorRing, 
+          GeometryFactory.toLinearRingArray(holeRings));
       return poly;
     }
 
     /**
      * Create LinearRing for exterior/interior polygon ELEM_INFO triplets.
      *
-     * @param elemInfo
-     * @param elemIndex
-     * @param coords
-     *
+     * @param oraGeom SDO_GEOMETRY attributes being read
+     * @param elemIndex the element being read
+     * @param coords the coordinates of the entire geometry
      * @return LinearRing
      *
      * @throws IllegalArgumentException If circle, or curve is requested
      */
-    private LinearRing readLinearRing(int ordDim, int lrs, int[] elemInfo, int elemIndex, CoordinateSequence coords) {
+    private LinearRing readLinearRing(OraGeom oraGeom, int elemIndex, CoordinateSequence coords) 
+    {
+      int etype = oraGeom.eType(elemIndex);
+      int interpretation = oraGeom.interpretation(elemIndex);
 
-    	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
-      int etype = OraSDO.eType(elemInfo, elemIndex);
-      int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
-      int ordLength = coords.size()*ordDim;
-
-    	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Polygon");
+    	checkOrdinates(oraGeom, elemIndex, "Polygon");
     	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR,  OraSDO.ETYPE.POLYGON_INTERIOR, "Polygon");
     	checkInterpretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
 
-  		int start = (sOffset - 1) / ordDim;
-  		int eOffset = OraSDO.startingOffset(elemInfo, elemIndex+1); // -1 for end
-      int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
-
+      int start = coordIndex(oraGeom, elemIndex);
+      int end = coordIndex(oraGeom, elemIndex + 1);
+      CoordinateSequence seq = subSeq(coords, start, end);
     	LinearRing ring;
       if (interpretation == OraSDO.INTERP.POLYGON) {
-          ring = geometryFactory.createLinearRing(subSeq(coords, start,end));
+        ring = geometryFactory.createLinearRing(seq);
       } 
       else { 
       	// interpretation == OraSDO.INTERP.RECTANGLE
         // rectangle does not maintain measures
-        CoordinateSequence ext = subSeq(coords, start,end);
-        Coordinate min = ext.getCoordinate(0);
-        Coordinate max = ext.getCoordinate(1);
+        Coordinate min = seq.getCoordinate(0);
+        Coordinate max = seq.getCoordinate(1);
         ring = geometryFactory.createLinearRing(new Coordinate[] {
-                    min, new Coordinate(max.x, min.y), max,
-                    new Coordinate(min.x, max.y), min
+                    min, new Coordinate(max.x, min.y), 
+                    max, new Coordinate(min.x, max.y), 
+                    min
                 });
       }
       return ring;
@@ -565,109 +510,94 @@ public class OraReader {
   /**
    * Create LineString as encoded.
    * 
-   * @param elemInfo
-   * @param coords
-   * 
+   * @param oraGeom SDO_GEOMETRY attributes being read
+   * @param elemIndex the element being read
+   * @param coords the coordinates of the entire geometry
    * @return LineString
    * 
-   * @throws IllegalArgumentException
-   *           If asked to create a curve
+   * @throws IllegalArgumentException If asked to create a curve
    */
-  private LineString readLine(int ordDim, int lrsDim,
-      int[] elemInfo, int elemIndex, CoordinateSequence coords)
+  private LineString readLine(OraGeom oraGeom, int elemIndex, CoordinateSequence coords)
   {
-    int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
-    int etype = OraSDO.eType(elemInfo, elemIndex);
-    int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
-    int ordLength = coords.size() * ordDim;
+    int etype = oraGeom.eType(elemIndex);
+    int interpretation = oraGeom.interpretation(elemIndex);
 
-  	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "LineString");
+  	checkOrdinates(oraGeom, elemIndex, "LineString");
   	checkETYPE(etype, OraSDO.ETYPE.LINE, "LineString");
   	checkInterpretation(interpretation, OraSDO.INTERP.LINESTRING, "LineString");
 	
-    int start = (sOffset - 1) / ordDim;
-    int eOffset = OraSDO.startingOffset(elemInfo, elemIndex + 1); // -1 for end
-    int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
-
-    LineString line = geometryFactory.createLineString(subSeq(
-        coords, start, end));
-
+    int start = coordIndex(oraGeom, elemIndex);
+    int end = coordIndex(oraGeom, elemIndex + 1);
+    LineString line = geometryFactory.createLineString(
+        subSeq(coords, start, end));
     return line;
   }
 
     /**
      * Create Point as encoded.
      *
-     * @param ordDim The number of Dimensions
-     * @param elemInfo
-     * @param elemIndex
-     * @param coords
-     *
+   * @param oraGeom SDO_GEOMETRY attributes being read
+   * @param elemIndex the element being read
+   * @param coords the coordinates of the entire geometry
      * @return Point
      */
-    private Point readPoint(int ordDim, int lrsDim, int[] elemInfo, int elemIndex, CoordinateSequence coords) {
-    	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
-      int etype = OraSDO.eType(elemInfo, elemIndex);
-      int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
-      int ordLength = coords.size() * ordDim;
+    private Point readPoint(OraGeom oraGeom, int elemIndex, CoordinateSequence coords) {
+      int etype = oraGeom.eType(elemIndex);
+      int interpretation = oraGeom.interpretation(elemIndex);
 
-  		checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Point");
+  		checkOrdinates(oraGeom, elemIndex, "Point");
   		checkETYPE(etype,OraSDO.ETYPE.POINT, "Point");
   		checkInterpretation(interpretation, OraSDO.INTERP.POINT, "Point");
   
-  		int start = (sOffset - 1) / ordDim;
-  		int eOffset = OraSDO.startingOffset(elemInfo, elemIndex+1); // -1 for end
-  
-      CoordinateSequence seq;
-      if ((sOffset == 1) && (eOffset == -1)) {
-          // Use all Coordinates
-      	seq = coords;
-      }
-      else {
-        int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
-        seq = subSeq(coords,start,end);
-      }
-      
-      return readPoint(seq);
+      int start = coordIndex(oraGeom, elemIndex);
+      int end = coordIndex(oraGeom, elemIndex + 1);
+      return createPoint(subSeq(coords,start,end));
     }
 
-    private Point readPoint(CoordinateSequence coords)
+    private Point createPoint(CoordinateSequence coords)
     {
-      return geometryFactory.createPoint( coords);
+      return geometryFactory.createPoint(coords);
     }
 
+    private static int coordIndex(OraGeom oraGeom, int elemIndex) 
+    {
+      int sOffset = oraGeom.startingOffset(elemIndex);
+      int ordDim = oraGeom.ordDim();
+      return (sOffset - 1) / ordDim;
+    }
+    
 	/**
-     * Version of List.subList() that returns a CoordinateSequence.
-     *
-     * <p>
-     * Returns from start (inclusive) to end (exclusive):
-     * </p>
-     *
-     * @param factory Manages CoordinateSequences for JTS
-     * @param coords coords to sublist
-     * @param start starting offset
-     * @param end upper bound of sublist
-     *
-     * @return a CoordinateSequence
-     */
+   * Extracts a subsequence of a CoordinateSequence.
+   * If the entire sequence is requested, 
+   * the original sequence is returned to avoid
+   * creating a duplicate.
+   * <p>
+   * The subsequence runs from start (inclusive) to end (exclusive):
+   *
+   * @param coords coords to extract from
+   * @param start starting offset
+   * @param end upper bound of subsequence
+   *
+   * @return a CoordinateSequence
+   */
     private CoordinateSequence subSeq(CoordinateSequence coords, int start, int end) {
       CoordinateSequenceFactory csFactory = geometryFactory.getCoordinateSequenceFactory();
-        if ((start == 0) && (end == coords.size())) {
-            return coords;
-        }
-        if (coords instanceof List) {
-            List sublist = ((List) coords).subList(start, end);
-            if (sublist instanceof CoordinateSequence) {
-                return (CoordinateSequence) sublist;
-            }
-        }
-        CoordinateList list = new CoordinateList(coords.toCoordinateArray());
-        Coordinate[] array = new Coordinate[end - start];
-        int index = 0;
-        for (Iterator i = list.subList(start, end).iterator(); i.hasNext(); index++) {
-            array[index] = (Coordinate) i.next();
-        }
-        return csFactory.create(array);
+      if ((start == 0) && (end == coords.size())) {
+          return coords;
+      }
+      if (coords instanceof List) {
+          List sublist = ((List) coords).subList(start, end);
+          if (sublist instanceof CoordinateSequence) {
+              return (CoordinateSequence) sublist;
+          }
+      }
+      CoordinateList list = new CoordinateList(coords.toCoordinateArray());
+      Coordinate[] array = new Coordinate[end - start];
+      int index = 0;
+      for (Iterator i = list.subList(start, end).iterator(); i.hasNext(); index++) {
+          array[index] = (Coordinate) i.next();
+      }
+      return csFactory.create(array);
     }
 
     private static void checkETYPE(int eType, int val1, String geomType)
@@ -702,11 +632,18 @@ public class OraReader {
   		throw new IllegalArgumentException("SDO_INTERPRETATION "+ interpretation +" is not supported when reading a " + geomType);
   	}
 
-    private static void checkOrdinates(int[] elemInfo, int index, int startOffset, int ordLen, String geomType)
+    private static void checkOrdinates(OraGeom oraGeom, int elemIndex, String geomType)
     {
-		if (startOffset > ordLen)
+      int startOffset = oraGeom.startingOffset(elemIndex);
+      int ordLen = oraGeom.ordinateLen();
+      checkOrdinates(oraGeom.elemInfo, elemIndex, startOffset, ordLen, geomType);
+    }
+
+    private static void checkOrdinates(int[] elemInfo, int elemIndex, int startOffset, int ordLen, String geomType)
+    {
+      if (startOffset > ordLen)
 		    throw new IllegalArgumentException("STARTING_OFFSET " + startOffset + " inconsistent with ORDINATES length " + ordLen
-		    		+ " (Element " + index + " in SDO_ELEM_INFO " + OraGeom.toStringElemInfo(elemInfo) + ")");
+		    		+ " (Element " + elemIndex + " in SDO_ELEM_INFO " + OraGeom.toStringElemInfo(elemInfo) + ")");
     }
     
 

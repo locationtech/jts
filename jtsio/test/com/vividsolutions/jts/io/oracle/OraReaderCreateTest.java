@@ -63,6 +63,9 @@ public class OraReaderCreateTest extends BaseOraTestCase
     super(arg);
   }
 
+  //TODO: tests for ETYPE=POLYGON  (mixture of holes and shells
+  //TODO: tests with mixed ETYPE=POLYGON & POLYGON_EXTERIOR
+  
   public void testXY_Point() throws Exception {
     OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2001,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1),MDSYS.SDO_ORDINATE_ARRAY(50,50));
     checkValue(oraGeom, "POINT (50 50)");

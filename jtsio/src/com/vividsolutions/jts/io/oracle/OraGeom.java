@@ -34,6 +34,8 @@ package com.vividsolutions.jts.io.oracle;
 
 import java.util.Arrays;
 
+import com.vividsolutions.jts.io.oracle.OraSDO.ETYPE;
+
 /**
  * Represents the contents of an Oracle SDO_GEOMETRY structure.
  * 
@@ -156,5 +158,107 @@ public class OraGeom
     }
     return buf.toString();
   }
+
+  public int startingOffset(int elemIndex)
+  {
+    // if beyond actual elements, return "virtual" startingOffset
+    if (((elemIndex * 3)) >= elemInfo.length) {
+      return ordinates.length + 1;
+    }
+    return elemInfo[elemIndex * 3];
+  }
+
+  /**
+   * Extracts the SDO_ELEM_INFO ETYPE value for a given triplet.
+   * <p>
+   * @see ETYPE for an indication of possible values
+   *
+   * @param elemIndex index of the triplet to read
+   * @return ETYPE for indicated triplet, or -1 if the triplet index is out of range
+   */
+  public int eType(int elemIndex)
+  {
+    if (((elemIndex * 3) + 1) >= elemInfo.length) {
+      return -1;
+    }
+    return elemInfo[(elemIndex * 3) + 1];
+  }
+
+  /**
+   * Extracts the SDO_ELEM_INFO interpretation value (SDO_INTERPRETATION) for a given triplet.
+   * <p>
+   * JTS valid interpretation values are: 1 for straight edges, 3 for rectangle
+   * Other interpretation value include: 2 for arcs, 4 for circles
+   *
+   * @param elemIndex index of the triplet to read
+   * @return interpretation value, or -1 if the triplet index is out of range
+   */
+  public int interpretation(int elemIndex)
+  {
+    if (((elemIndex * 3) + 2) >= elemInfo.length) {
+      return -1;
+    }
+    return elemInfo[(elemIndex * 3) + 2];
+  }
+
+  public int ordinateLen()
+  {
+    if (ordinates != null)
+      return ordinates.length;
+    return 0;
+  }
+
+  public int numElements()
+  {
+    if (elemInfo == null) return 0;
+    return elemInfo.length / 3;
+  }
+  /**
+   * Extracts the SDO_ELEM_INFO start index (SDO_STARTING_OFFSET) in the ordinate array for a given triplet.
+   *
+   * @param elemInfo the SDO_ELEM_INFO array
+   * @param tripletIndex index of the triplet to read
+   * @return Starting Offset, or -1 if the triplet index is too large
+   */
+  static int startingOffset(int[] elemInfo, int tripletIndex) {
+      if (((tripletIndex * 3) + 0) >= elemInfo.length) {
+          return -1;
+      }
+      return elemInfo[(tripletIndex * 3) + 0];
+  }
+
+  /**
+   * Extracts the SDO_ELEM_INFO interpretation value (SDO_INTERPRETATION) for a given triplet.
+   * <p>
+   * JTS valid interpretation values are: 1 for straight edges, 3 for rectangle
+   * Other interpretation value include: 2 for arcs, 4 for circles
+   *
+   * @param elemInfo the SDO_ELEM_INFO array
+   * @param tripletIndex index of the triplet to read
+   * @return interpretation value, or -1 if the triplet index is too large
+   */
+  static int interpretation(int[] elemInfo, int tripletIndex) {
+      if (((tripletIndex * 3) + 2) >= elemInfo.length) {
+          return -1;
+      }
+      return elemInfo[(tripletIndex * 3) + 2];
+  }
+
+  /**
+   * Extracts the SDO_ELEM_INFO ETYPE value for a given triplet.
+   * <p>
+   * @see ETYPE for an indication of possible values
+   *
+   * @param elemInfo the SDO_ELEM_INFO array
+   * @param tripletIndex index of the triplet to read
+   * @return ETYPE for indicated triplet, or -1 if the triplet index is too large
+   */
+  static int eType(int[] elemInfo, int tripletIndex) {
+      if (((tripletIndex * 3) + 1) >= elemInfo.length) {
+          return -1;
+      }
+      return elemInfo[(tripletIndex * 3) + 1];
+  }
+
 
 }
