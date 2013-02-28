@@ -122,7 +122,7 @@ class OraSDO
 	static final class GEOM_TYPE {
 	
 		/** <code>TT</code> code representing Unknown type */
-		public static final int UNKNOWN       = 00;
+		public static final int UNKNOWN_GEOMETRY       = 00;
 	
 		/** <code>TT</code> code representing Point */
 		public static final int POINT         = 01;
@@ -252,7 +252,7 @@ class OraSDO
    */
   static int geomType(Geometry geom) {
       if (geom == null) {
-          return GEOM_TYPE.UNKNOWN; 
+          return GEOM_TYPE.UNKNOWN_GEOMETRY; 
       } else if (geom instanceof Point) {
           return GEOM_TYPE.POINT;
       } else if (geom instanceof LineString) {
@@ -268,7 +268,7 @@ class OraSDO
       } else if (geom instanceof GeometryCollection) {
           return GEOM_TYPE.COLLECTION;
       }
-      return GEOM_TYPE.UNKNOWN; 
+      return GEOM_TYPE.UNKNOWN_GEOMETRY; 
  }
 
   /**

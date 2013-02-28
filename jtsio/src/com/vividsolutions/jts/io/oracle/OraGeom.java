@@ -35,7 +35,7 @@ package com.vividsolutions.jts.io.oracle;
 import java.util.Arrays;
 
 /**
- * A structure to mimic the contents of an Oracle SDO_GEOMETRY structure.
+ * Represents the contents of an Oracle SDO_GEOMETRY structure.
  * 
  * @author Martin Davis
  *
@@ -71,9 +71,8 @@ public class OraGeom
   {
     if (gType != og.gType) return false;
 //    if (srid != og.srid) return false;
-    if (ptType != null) {
-      return isEqual(ptType, og.ptType);
-    }
+    if (! isEqual(ptType, og.ptType))
+        return false;
     // assume is defined by elemInfo and ordinates
     if (! isEqual(elemInfo, og.elemInfo)) 
       return false;
@@ -84,7 +83,9 @@ public class OraGeom
 
   private boolean isEqual(double[] a1, double[] a2)
   {
-    if (a2 == null) return false;
+    if (a2 == null || a1 == null) {
+      return a2 == a1;
+    }
     if (a1.length != a2.length) return false;
     for (int i = 0; i < a1.length; i++) {
       // check NaN == NaN
@@ -97,7 +98,9 @@ public class OraGeom
   }
   private boolean isEqual(int[] a1, int[] a2)
   {
-    if (a2 == null) return false;
+    if (a2 == null || a1 == null) {
+      return a2 == a1;
+    }
     if (a1.length != a2.length) return false;
     for (int i = 0; i < a1.length; i++) {
       if (a1[i] != a2[i]) return false;
@@ -114,6 +117,7 @@ public class OraGeom
   
   public static String toStringElemInfo(int[] elemInfo)
   {
+    if (elemInfo == null) return "null";
     StringBuffer buf = new StringBuffer();
     for (int i = 0; i < elemInfo.length; i++) {
       if (i > 0) {
