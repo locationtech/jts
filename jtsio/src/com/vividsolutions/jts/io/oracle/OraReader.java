@@ -461,7 +461,7 @@ public class OraReader {
         int start = (sOffset - 1) / ordDim;
         int end = start + interpretation;
 
-        MultiPoint points = geometryFactory.createMultiPoint(subSeq(geometryFactory.getCoordinateSequenceFactory(), coords, start, end));
+        MultiPoint points = geometryFactory.createMultiPoint(subSeq(coords, start, end));
 
         return points;
     }
@@ -532,35 +532,34 @@ public class OraReader {
     private LinearRing readLinearRing(int ordDim, int lrs, int[] elemInfo, int elemIndex, CoordinateSequence coords) {
 
     	int sOffset = OraSDO.startingOffset(elemInfo, elemIndex);
-        int etype = OraSDO.eType(elemInfo, elemIndex);
-        int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
-        int ordLength = coords.size()*ordDim;
+      int etype = OraSDO.eType(elemInfo, elemIndex);
+      int interpretation = OraSDO.interpretation(elemInfo, elemIndex);
+      int ordLength = coords.size()*ordDim;
 
     	checkOrdinates(elemInfo, elemIndex, sOffset, ordLength, "Polygon");
     	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR,  OraSDO.ETYPE.POLYGON_INTERIOR, "Polygon");
     	checkInterpretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
 
-		int start = (sOffset - 1) / ordDim;
-		int eOffset = OraSDO.startingOffset(elemInfo, elemIndex+1); // -1 for end
-        int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
+  		int start = (sOffset - 1) / ordDim;
+  		int eOffset = OraSDO.startingOffset(elemInfo, elemIndex+1); // -1 for end
+      int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
 
     	LinearRing ring;
-        if (interpretation == OraSDO.INTERP.POLYGON) {
-            ring = geometryFactory.createLinearRing(subSeq(geometryFactory.getCoordinateSequenceFactory(),coords, start,end));
-        } 
-        else { 
-        	// interpretation == OraSDO.INTERP.RECTANGLE
-            // rectangle does not maintain measures
-            CoordinateSequence ext = subSeq(geometryFactory.getCoordinateSequenceFactory(),coords, start,end);
-            Coordinate min = ext.getCoordinate(0);
-            Coordinate max = ext.getCoordinate(1);
-            ring = geometryFactory.createLinearRing(new Coordinate[] {
-                        min, new Coordinate(max.x, min.y), max,
-                        new Coordinate(min.x, max.y), min
-                    });
-        }
-
-        return ring;
+      if (interpretation == OraSDO.INTERP.POLYGON) {
+          ring = geometryFactory.createLinearRing(subSeq(coords, start,end));
+      } 
+      else { 
+      	// interpretation == OraSDO.INTERP.RECTANGLE
+        // rectangle does not maintain measures
+        CoordinateSequence ext = subSeq(coords, start,end);
+        Coordinate min = ext.getCoordinate(0);
+        Coordinate max = ext.getCoordinate(1);
+        ring = geometryFactory.createLinearRing(new Coordinate[] {
+                    min, new Coordinate(max.x, min.y), max,
+                    new Coordinate(min.x, max.y), min
+                });
+      }
+      return ring;
     }
 
   /**
@@ -591,7 +590,7 @@ public class OraReader {
     int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
 
     LineString line = geometryFactory.createLineString(subSeq(
-        geometryFactory.getCoordinateSequenceFactory(), coords, start, end));
+        coords, start, end));
 
     return line;
   }
@@ -626,7 +625,7 @@ public class OraReader {
       }
       else {
         int end = (eOffset != -1) ? ((eOffset - 1) / ordDim) : coords.size();
-        seq = subSeq(geometryFactory.getCoordinateSequenceFactory(),coords,start,end);
+        seq = subSeq(coords,start,end);
       }
       
       return readPoint(seq);
@@ -651,7 +650,8 @@ public class OraReader {
      *
      * @return a CoordinateSequence
      */
-    private CoordinateSequence subSeq(CoordinateSequenceFactory factory, CoordinateSequence coords, int start, int end) {
+    private CoordinateSequence subSeq(CoordinateSequence coords, int start, int end) {
+      CoordinateSequenceFactory csFactory = geometryFactory.getCoordinateSequenceFactory();
         if ((start == 0) && (end == coords.size())) {
             return coords;
         }
@@ -667,7 +667,7 @@ public class OraReader {
         for (Iterator i = list.subList(start, end).iterator(); i.hasNext(); index++) {
             array[index] = (Coordinate) i.next();
         }
-        return factory.create(array);
+        return csFactory.create(array);
     }
 
     private static void checkETYPE(int eType, int val1, String geomType)
