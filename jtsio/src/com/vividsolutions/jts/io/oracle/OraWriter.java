@@ -81,7 +81,7 @@ public class OraWriter
 	/**
 	 * The default SRID to write 
 	 */
-	private int srid = OraSDO.SRID_NULL;
+	private int srid = OraGeom.SRID_NULL;
 
 	/**
 	 * Creates a writer using a valid Oracle connection. 
@@ -176,9 +176,9 @@ public class OraWriter
     ARRAY SDO_ELEM_INFO = null;
     ARRAY SDO_ORDINATES = null;
     if (oraGeom.point == null) {
-      SDO_ELEM_INFO = OraUtil.toARRAY(oraGeom.elemInfo, OraSDO.TYPE_ELEM_INFO_ARRAY,
+      SDO_ELEM_INFO = OraUtil.toARRAY(oraGeom.elemInfo, OraGeom.TYPE_ELEM_INFO_ARRAY,
           connection);
-      SDO_ORDINATES = OraUtil.toARRAY(oraGeom.ordinates, OraSDO.TYPE_ORDINATE_ARRAY,
+      SDO_ORDINATES = OraUtil.toARRAY(oraGeom.ordinates, OraGeom.TYPE_ORDINATE_ARRAY,
           connection);
     }
     else { // Point Optimization
@@ -186,11 +186,11 @@ public class OraWriter
           OraUtil.toNUMBER(oraGeom.point[0]),
           OraUtil.toNUMBER(oraGeom.point[1]), 
           OraUtil.toNUMBER(oraGeom.point[2]), };
-      SDO_POINT = OraUtil.toSTRUCT(data, OraSDO.TYPE_POINT_TYPE, connection);
+      SDO_POINT = OraUtil.toSTRUCT(data, OraGeom.TYPE_POINT_TYPE, connection);
     }
     
     NUMBER SDO_GTYPE = new NUMBER(oraGeom.gType);
-    NUMBER SDO_SRID = oraGeom.srid == OraSDO.SRID_NULL ? null : new NUMBER(oraGeom.srid);
+    NUMBER SDO_SRID = oraGeom.srid == OraGeom.SRID_NULL ? null : new NUMBER(oraGeom.srid);
     
     Datum sdoGeometryComponents[] = new Datum[] { 
         SDO_GTYPE, 
@@ -198,11 +198,11 @@ public class OraWriter
         SDO_POINT,
         SDO_ELEM_INFO, 
         SDO_ORDINATES };
-    return OraUtil.toSTRUCT(sdoGeometryComponents, OraSDO.TYPE_GEOMETRY, connection);
+    return OraUtil.toSTRUCT(sdoGeometryComponents, OraGeom.TYPE_GEOMETRY, connection);
   }
 
 	private STRUCT createEmptySDOGeometry() throws SQLException {
-		return OraUtil.toSTRUCT(new Datum[5], OraSDO.TYPE_GEOMETRY, connection);
+		return OraUtil.toSTRUCT(new Datum[5], OraGeom.TYPE_GEOMETRY, connection);
 	}
 
   /**
@@ -216,7 +216,7 @@ public class OraWriter
   OraGeom createOraGeom(Geometry geom)
   {
     int gtype = gType(geom);
-    int srid = this.srid == OraSDO.SRID_NULL ? geom.getSRID() : this.srid;
+    int srid = this.srid == OraGeom.SRID_NULL ? geom.getSRID() : this.srid;
     double[] point = pointOrdinates(geom);
     int elemInfo[] = null;
     double[] ordinates = null;
@@ -227,8 +227,8 @@ public class OraWriter
       List list = new ArrayList();
       coordinates(list, geom);
 
-      int dim = OraSDO.gTypeDim(gtype);
-      int lrs = OraSDO.gTypeMeasureDim(gtype);
+      int dim = OraGeom.gTypeDim(gtype);
+      int lrs = OraGeom.gTypeMeasureDim(gtype);
       // MD - BUG????  Should be simply dim ????
       int ordDim = dim; // size per coordinate
       
@@ -267,22 +267,22 @@ public class OraWriter
      * @throws IllegalArgumentException If geometry cannot be encoded
      */
     private void coordinates(List list, Geometry geom) {
-        switch (OraSDO.geomType(geom)) {
+        switch (OraGeom.geomType(geom)) {
 
-        case OraSDO.GEOM_TYPE.POINT:
+        case OraGeom.GEOM_TYPE.POINT:
             addCoordinates(list, ((Point)geom).getCoordinateSequence());
             return;
-        case OraSDO.GEOM_TYPE.LINE:
+        case OraGeom.GEOM_TYPE.LINE:
             addCoordinates(list, ((LineString)geom).getCoordinateSequence());
             return;
-        case OraSDO.GEOM_TYPE.POLYGON:
-            switch (elemInfoInterpretation(geom,OraSDO.ETYPE.POLYGON_EXTERIOR)) {
-            case OraSDO.INTERP.RECTANGLE:
+        case OraGeom.GEOM_TYPE.POLYGON:
+            switch (elemInfoInterpretation(geom,OraGeom.ETYPE.POLYGON_EXTERIOR)) {
+            case OraGeom.INTERP.RECTANGLE:
                 Envelope e = geom.getEnvelopeInternal();
                 list.add(new double[] { e.getMinX(), e.getMinY() });
                 list.add(new double[] { e.getMaxX(), e.getMaxY() });
                 return;
-            case OraSDO.INTERP.POLYGON:
+            case OraGeom.INTERP.POLYGON:
             	Polygon polygon = (Polygon) geom;
                 int holes = polygon.getNumInteriorRing();
                 
@@ -304,10 +304,10 @@ public class OraWriter
                 return;
             }
             break; // interpretations 2,4 not supported
-        case OraSDO.GEOM_TYPE.MULTIPOINT:
-        case OraSDO.GEOM_TYPE.MULTILINE:
-        case OraSDO.GEOM_TYPE.MULTIPOLYGON:
-        case OraSDO.GEOM_TYPE.COLLECTION:
+        case OraGeom.GEOM_TYPE.MULTIPOINT:
+        case OraGeom.GEOM_TYPE.MULTILINE:
+        case OraGeom.GEOM_TYPE.MULTIPOLYGON:
+        case OraGeom.GEOM_TYPE.COLLECTION:
             for (int i = 0; i < geom.getNumGeometries(); i++) {
                 coordinates(list, geom.getGeometryN(i));
             }
@@ -388,45 +388,45 @@ public class OraWriter
      */
   private void elemInfo(List elemInfoList, Geometry geom, int sOffSet, int gtype)
   {
-    int dim = OraSDO.gTypeDim(gtype);
+    int dim = OraGeom.gTypeDim(gtype);
     int len = dim;
-    switch (OraSDO.gTypeGeomType(gtype)) {
-    case OraSDO.GEOM_TYPE.POINT:
+    switch (OraGeom.gTypeGeomType(gtype)) {
+    case OraGeom.GEOM_TYPE.POINT:
       addInt(elemInfoList, sOffSet);
-      addInt(elemInfoList, OraSDO.ETYPE.POINT);
-      addInt(elemInfoList, OraSDO.INTERP.POINT);
+      addInt(elemInfoList, OraGeom.ETYPE.POINT);
+      addInt(elemInfoList, OraGeom.INTERP.POINT);
       return;
-    case OraSDO.GEOM_TYPE.MULTIPOINT:
+    case OraGeom.GEOM_TYPE.MULTIPOINT:
       MultiPoint points = (MultiPoint) geom;
       addInt(elemInfoList, sOffSet);
-      addInt(elemInfoList, OraSDO.ETYPE.POINT);
-      addInt(elemInfoList, elemInfoInterpretation(points, OraSDO.ETYPE.POINT));
+      addInt(elemInfoList, OraGeom.ETYPE.POINT);
+      addInt(elemInfoList, elemInfoInterpretation(points, OraGeom.ETYPE.POINT));
       return;
-    case OraSDO.GEOM_TYPE.LINE:
+    case OraGeom.GEOM_TYPE.LINE:
       addInt(elemInfoList, sOffSet);
-      addInt(elemInfoList, OraSDO.ETYPE.LINE);
-      addInt(elemInfoList, OraSDO.INTERP.LINESTRING);
+      addInt(elemInfoList, OraGeom.ETYPE.LINE);
+      addInt(elemInfoList, OraGeom.INTERP.LINESTRING);
       return;
-    case OraSDO.GEOM_TYPE.MULTILINE:
+    case OraGeom.GEOM_TYPE.MULTILINE:
       MultiLineString lines = (MultiLineString) geom;
       LineString line;
       int offset = sOffSet;
       for (int i = 0; i < lines.getNumGeometries(); i++) {
         line = (LineString) lines.getGeometryN(i);
         addInt(elemInfoList, offset);
-        addInt(elemInfoList, OraSDO.ETYPE.LINE);
-        addInt(elemInfoList, OraSDO.INTERP.LINESTRING);
+        addInt(elemInfoList, OraGeom.ETYPE.LINE);
+        addInt(elemInfoList, OraGeom.INTERP.LINESTRING);
         offset += (line.getNumPoints() * len);
       }
       return;
-    case OraSDO.GEOM_TYPE.POLYGON:
+    case OraGeom.GEOM_TYPE.POLYGON:
       Polygon polygon = (Polygon) geom;
       int holes = polygon.getNumInteriorRing();
       if (holes == 0) {
         addInt(elemInfoList, sOffSet);
         addInt(elemInfoList, elemInfoEType(polygon));
         addInt(elemInfoList,
-            elemInfoInterpretation(polygon, OraSDO.ETYPE.POLYGON_EXTERIOR));
+            elemInfoInterpretation(polygon, OraGeom.ETYPE.POLYGON_EXTERIOR));
         return;
       }
       // shell
@@ -435,19 +435,19 @@ public class OraWriter
       addInt(elemInfoList, offset);
       addInt(elemInfoList, elemInfoEType(polygon));
       addInt(elemInfoList,
-          elemInfoInterpretation(polygon, OraSDO.ETYPE.POLYGON_EXTERIOR));
+          elemInfoInterpretation(polygon, OraGeom.ETYPE.POLYGON_EXTERIOR));
       // holes
       offset += (ring.getNumPoints() * len);
       for (int i = 1; i <= holes; i++) {
         ring = polygon.getInteriorRingN(i - 1);
         addInt(elemInfoList, offset);
-        addInt(elemInfoList, OraSDO.ETYPE.POLYGON_INTERIOR);
+        addInt(elemInfoList, OraGeom.ETYPE.POLYGON_INTERIOR);
         addInt(elemInfoList,
-            elemInfoInterpretation(ring, OraSDO.ETYPE.POLYGON_INTERIOR));
+            elemInfoInterpretation(ring, OraGeom.ETYPE.POLYGON_INTERIOR));
         offset += (ring.getNumPoints() * len);
       }
       return;
-    case OraSDO.GEOM_TYPE.MULTIPOLYGON:
+    case OraGeom.GEOM_TYPE.MULTIPOLYGON:
       MultiPolygon polys = (MultiPolygon) geom;
       Polygon poly;
       offset = sOffSet;
@@ -462,7 +462,7 @@ public class OraWriter
         }
       }
       return;
-    case OraSDO.GEOM_TYPE.COLLECTION:
+    case OraGeom.GEOM_TYPE.COLLECTION:
       GeometryCollection geoms = (GeometryCollection) geom;
       offset = sOffSet;
       for (int i = 0; i < geoms.getNumGeometries(); i++) {
@@ -580,14 +580,14 @@ public class OraWriter
      * @throws IllegalArgumentException
      */
     private int elemInfoEType(Geometry geom) {
-        switch (OraSDO.geomType(geom)) {
-        case OraSDO.GEOM_TYPE.POINT:
-            return OraSDO.ETYPE.POINT;
-        case OraSDO.GEOM_TYPE.LINE:
-            return OraSDO.ETYPE.LINE;
-        case OraSDO.GEOM_TYPE.POLYGON:
+        switch (OraGeom.geomType(geom)) {
+        case OraGeom.GEOM_TYPE.POINT:
+            return OraGeom.ETYPE.POINT;
+        case OraGeom.GEOM_TYPE.LINE:
+            return OraGeom.ETYPE.LINE;
+        case OraGeom.GEOM_TYPE.POLYGON:
         	// jts convention
-            return OraSDO.ETYPE.POLYGON_EXTERIOR; // cc order
+            return OraGeom.ETYPE.POLYGON_EXTERIOR; // cc order
         default:
             // should never happen!
             throw new IllegalArgumentException("Unknown encoding of SDO_GTEMPLATE");
@@ -607,30 +607,30 @@ public class OraWriter
      */
     private int elemInfoInterpretation(Geometry geom, int etype) {
         switch (etype) {
-        case OraSDO.ETYPE.POINT:
+        case OraGeom.ETYPE.POINT:
             if (geom instanceof Point) {
-                return OraSDO.INTERP.POINT;
+                return OraGeom.INTERP.POINT;
             }
             if (geom instanceof MultiPoint) {
                 return ((MultiPoint) geom).getNumGeometries();
             }
             break;
             
-        case OraSDO.ETYPE.LINE:
+        case OraGeom.ETYPE.LINE:
         	// always straight for jts
-            return OraSDO.INTERP.LINESTRING;
+            return OraGeom.INTERP.LINESTRING;
             
-        case OraSDO.ETYPE.POLYGON:
-        case OraSDO.ETYPE.POLYGON_EXTERIOR:
-        case OraSDO.ETYPE.POLYGON_INTERIOR:
+        case OraGeom.ETYPE.POLYGON:
+        case OraGeom.ETYPE.POLYGON_EXTERIOR:
+        case OraGeom.ETYPE.POLYGON_INTERIOR:
             if (geom instanceof Polygon) {
                 Polygon polygon = (Polygon) geom;
             	// always straight for jts
                 if (isRectangle(polygon)) {
-                    return OraSDO.INTERP.RECTANGLE;
+                    return OraGeom.INTERP.RECTANGLE;
                 }
             }
-            return OraSDO.INTERP.POLYGON;
+            return OraGeom.INTERP.POLYGON;
         }
         throw new IllegalArgumentException("Cannot encode JTS "
             + geom.getGeometryType() + " as "
@@ -678,7 +678,7 @@ public class OraWriter
      */
     private int gType(Geometry geom)
     {
-      return OraSDO.gType(dimension(geom), lrsDim(geom), OraSDO.geomType(geom));
+      return OraGeom.gType(dimension(geom), lrsDim(geom), OraGeom.geomType(geom));
     }
 
     /**

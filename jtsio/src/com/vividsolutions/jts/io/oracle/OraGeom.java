@@ -32,18 +32,26 @@
  */
 package com.vividsolutions.jts.io.oracle;
 
-import java.util.Arrays;
-
-import com.vividsolutions.jts.io.oracle.OraSDO.ETYPE;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Represents the contents of an Oracle SDO_GEOMETRY structure.
+ * Also provides code values and convenience methods for working
+ * with SDO_GEOMETRY values.
  * 
  * @author Martin Davis
  *
  */
 public class OraGeom
 {
+
   int gType;
   int srid;
   double[] point = null;
@@ -60,9 +68,9 @@ public class OraGeom
     this.point = ptType;
     this.elemInfo = elemInfo;
     this.ordinates = ordinates;
-    geomType = OraSDO.gTypeGeomType(gType);
-    ordDim = OraSDO.gTypeDim(gType);
-    lrsDim = OraSDO.gTypeMeasureDim(gType);
+    geomType = OraGeom.gTypeGeomType(gType);
+    ordDim = OraGeom.gTypeDim(gType);
+    lrsDim = OraGeom.gTypeMeasureDim(gType);
   }
 
   public OraGeom(int gType, int srid, int[] elemInfo, double[] ordinates)
@@ -92,7 +100,7 @@ public class OraGeom
   
   public boolean isCompactPoint()
   {
-    return lrsDim == 0 && geomType == OraSDO.GEOM_TYPE.POINT && point != null && elemInfo == null;
+    return lrsDim == 0 && geomType == OraGeom.GEOM_TYPE.POINT && point != null && elemInfo == null;
   }
   
   public boolean isEqual(OraGeom og)
@@ -171,7 +179,7 @@ public class OraGeom
   /**
    * Extracts the SDO_ELEM_INFO ETYPE value for a given triplet.
    * <p>
-   * @see ETYPE for an indication of possible values
+   * @see OraGeom.ETYPE for an indication of possible values
    *
    * @param elemIndex index of the triplet to read
    * @return ETYPE for indicated triplet, or -1 if the triplet index is out of range
@@ -214,6 +222,82 @@ public class OraGeom
     return elemInfo.length / 3;
   }
   /**
+   * Computes the SDO_GTYPE code for the given D, L, and TT components.
+   * 
+   * @param dim the coordinate dimension
+   * @param lrsDim the measure dimension
+   * @param geomType the geometry type code
+   * @return the SDO_GTYPE code
+   */
+  public static int gType(int dim, int lrsDim, int geomType)
+  {
+    return dim * 1000 + lrsDim * 100 + geomType;
+  }
+
+  /**
+   * Returns the GTYPE GEOM_TYPE code
+   * corresponding to the geometry type.
+   * 
+   * @see OraGeom.GEOM_TYPE
+   *
+   * @param geom the geometry to compute the GEOM_TYPE for
+   * @return geom type code, if known, or UNKNOWN
+   */
+  static int geomType(Geometry geom) {
+    if (geom == null) {
+        return OraGeom.GEOM_TYPE.UNKNOWN_GEOMETRY; 
+    } else if (geom instanceof Point) {
+        return OraGeom.GEOM_TYPE.POINT;
+    } else if (geom instanceof LineString) {
+        return OraGeom.GEOM_TYPE.LINE;
+    } else if (geom instanceof Polygon) {
+        return OraGeom.GEOM_TYPE.POLYGON;
+    } else if (geom instanceof MultiPoint) {
+        return OraGeom.GEOM_TYPE.MULTIPOINT;
+    } else if (geom instanceof MultiLineString) {
+        return OraGeom.GEOM_TYPE.MULTILINE;
+    } else if (geom instanceof MultiPolygon) {
+        return OraGeom.GEOM_TYPE.MULTIPOLYGON;
+    } else if (geom instanceof GeometryCollection) {
+        return OraGeom.GEOM_TYPE.COLLECTION;
+    }
+    return OraGeom.GEOM_TYPE.UNKNOWN_GEOMETRY; 
+  }
+
+  /**
+   * Extracts the coordinate dimension containing the Measure value from 
+   * an SDO_GTYPE code.
+   * For a measured geometry this is 0, 3 or 4.  0 indicates that the last dimension is the measure dimension
+   * For an non-measured geometry this is 0.
+   * 
+   * @param gType an SDO_GTYPE code
+   * @return the Measure dimension
+   */
+  static int gTypeMeasureDim(int gType) {
+  	return (gType % 1000) / 100;
+  }
+
+  /**
+   * Extracts the coordinate dimension from an SDO_GTYPE code.
+   * 
+   * @param gType an SDO_GTYPE code
+   * @return the coordinate dimension
+   */
+  static int gTypeDim(int gType) {
+  	return gType / 1000;
+  }
+
+  /**
+   * Extracts the GEOM_TYPE code from an SDO_GTYPE code.
+   * 
+   * @param gType an SDO_GTYPE code
+   * @return the GEOM_TYPE code
+   */
+  static int gTypeGeomType(int gType) {
+  	return gType % 100;
+  }
+
+  /**
    * Extracts the SDO_ELEM_INFO start index (SDO_STARTING_OFFSET) in the ordinate array for a given triplet.
    *
    * @param elemInfo the SDO_ELEM_INFO array
@@ -247,7 +331,7 @@ public class OraGeom
   /**
    * Extracts the SDO_ELEM_INFO ETYPE value for a given triplet.
    * <p>
-   * @see ETYPE for an indication of possible values
+   * @see OraGeom.ETYPE for an indication of possible values
    *
    * @param elemInfo the SDO_ELEM_INFO array
    * @param tripletIndex index of the triplet to read
@@ -259,6 +343,95 @@ public class OraGeom
       }
       return elemInfo[(tripletIndex * 3) + 1];
   }
+
+  /**
+   * Codes used in SDO_INTERPRETATION attribute.
+   * 
+   * @author Martin Davis
+   *
+   */
+  static final class INTERP {
+    
+    public static final int POINT         = 1;
+    
+    public static final int LINESTRING    = 1;  
+    
+    public static final int POLYGON       = 1;  
+    
+    public static final int RECTANGLE     = 3;  
+        
+  }
+
+  /**
+   * Codes used to specify geometry type
+   * These are used in the last two digits in a GTYPE value.
+   */
+  static final class GEOM_TYPE {
+  
+    /** <code>TT</code> code representing Unknown type */
+    public static final int UNKNOWN_GEOMETRY       = 00;
+  
+    /** <code>TT</code> code representing Point */
+    public static final int POINT         = 01;
+  
+    /** <code>TT</code> code representing Line (or Curve) */
+    public static final int LINE          = 02;  
+      
+    /** <code>TT</code> code representing Polygon */
+    public static final int POLYGON       = 03;
+  
+    /** <code>TT</code> code representing Collection */
+    public static final int COLLECTION    = 04;   
+  
+    /** <code>TT</code> code representing MultiPoint */
+    public static final int MULTIPOINT    = 05;       
+  
+    /** <code>TT</code> code representing MultiLine (or MultiCurve) */
+    public static final int MULTILINE     = 06;
+  
+    /** <code>TT</code> code representing MULTIPOLYGON */
+    public static final int MULTIPOLYGON  = 07;
+  }
+
+  /**
+   * Codes used in the SDO_ETYPE attribute.
+   * The code indicates the type of element denoted by an SDO_ELEM_INFO triplet.
+   */
+  static final class ETYPE
+  {
+    /** <code>ETYPE</code> code representing Point */
+    public static final int POINT = 1;
+  
+    /** <code>ETYPE</code> code representing Line */
+    public static final int LINE = 2;
+  
+    /** <code>ETYPE</code> code representing Polygon ring 
+     *  Shell or hole is determined by orientation (CCW or CW).
+     *  Now deprecated. 
+     */
+    public static final int POLYGON = 3;
+  
+    /**
+     * <code>ETYPE</code> code representing exterior counterclockwise polygon ring
+     */
+    public static final int POLYGON_EXTERIOR = 1003;
+  
+    /** <code>ETYPE</code> code representing interior clockwise polygon ring */
+    public static final int POLYGON_INTERIOR = 2003;
+  }
+  
+  /**
+   * Oracle types used by SDO_GEOMETRY
+   */
+  public static final String TYPE_GEOMETRY = "MDSYS.SDO_GEOMETRY";
+  public static final String TYPE_ELEM_INFO_ARRAY = "MDSYS.SDO_ELEM_INFO_ARRAY";
+  public static final String TYPE_ORDINATE_ARRAY = "MDSYS.SDO_ORDINATE_ARRAY";
+  public static final String TYPE_POINT_TYPE = "MDSYS.SDO_POINT_TYPE";
+  
+  /**
+   * Value indicating a Null SRID.
+   */
+  public static final int SRID_NULL = -1;
 
 
 }

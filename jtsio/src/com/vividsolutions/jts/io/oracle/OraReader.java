@@ -150,7 +150,7 @@ public class OraReader {
 	}
 
 	/**
-	 * Creates a {@link Geometry} representing the MDSYS.GEOMETRY
+	 * Reads a {@link Geometry} representing the MDSYS.GEOMETRY
 	 * provided in the STRUCT. The type of geometry created 
 	 * depends on the Geometry type specified within the STRUCT.
 	 * The SRID of the created geometry is set to be the same as the input SRID.
@@ -170,7 +170,7 @@ public class OraReader {
 		Datum data[] = struct.getOracleAttributes();
 		
 		int gType = OraUtil.toInteger(data[0], 0);
-		int SRID = OraUtil.toInteger(data[1], OraSDO.SRID_NULL);
+		int SRID = OraUtil.toInteger(data[1], OraGeom.SRID_NULL);
 		double point[] = OraUtil.toDoubleArray((STRUCT) data[2], Double.NaN);
 		int elemInfo[] = OraUtil.toIntArray((ARRAY) data[3], 0);
 		double ordinates[] = OraUtil.toDoubleArray((ARRAY) data[4], Double.NaN);
@@ -184,10 +184,10 @@ public class OraReader {
 	}
 
 	/**
-   * Read geometry from SDO_GEOMETRY attributes.
+   * Reads a {@link Geometry} from SDO_GEOMETRY attributes.
    *
    * @param oraGeom the Oracle geometry to read
-   * @return Geometry as encoded
+   * @return Geometry read
    * @throws IllegalArgumentException when an encoding error or unsupported geometry type is found
    */
 	Geometry read(OraGeom oraGeom) {
@@ -210,19 +210,19 @@ public class OraReader {
     CoordinateSequence coords = coordinates(geometryFactory.getCoordinateSequenceFactory(), outputDim,  ordDim, oraGeom.ordinates, true);
 
     switch (oraGeom.geomType()) {
-    case OraSDO.GEOM_TYPE.POINT:
+    case OraGeom.GEOM_TYPE.POINT:
         return readPoint(oraGeom, 0, coords);
-    case OraSDO.GEOM_TYPE.LINE:
+    case OraGeom.GEOM_TYPE.LINE:
         return readLine(oraGeom, 0, coords);
-    case OraSDO.GEOM_TYPE.POLYGON:
+    case OraGeom.GEOM_TYPE.POLYGON:
         return readPolygon(oraGeom, 0, coords);
-    case OraSDO.GEOM_TYPE.MULTIPOINT:
+    case OraGeom.GEOM_TYPE.MULTIPOINT:
         return readMultiPoint(oraGeom, 0, coords);
-    case OraSDO.GEOM_TYPE.MULTILINE:
+    case OraGeom.GEOM_TYPE.MULTILINE:
         return readMultiLine(oraGeom, coords);
-    case OraSDO.GEOM_TYPE.MULTIPOLYGON:
+    case OraGeom.GEOM_TYPE.MULTIPOLYGON:
         return readMultiPolygon(oraGeom, coords);
-    case OraSDO.GEOM_TYPE.COLLECTION:
+    case OraGeom.GEOM_TYPE.COLLECTION:
         return readCollection(oraGeom, coords);
     default:
     	throw new IllegalArgumentException("GTYPE " + oraGeom.gType + " is not supported");
@@ -308,8 +308,8 @@ public class OraReader {
           cont = false; // We are at the end of the list - get out of here
           continue;
             
-        case OraSDO.ETYPE.POINT:
-            if (interpretation == OraSDO.INTERP.POINT) {
+        case OraGeom.ETYPE.POINT:
+            if (interpretation == OraGeom.INTERP.POINT) {
                 geom = readPoint(oraGeom, i, coords);
             } else if (interpretation > 1) {
                 geom = readMultiPoint(oraGeom, i, coords);
@@ -318,17 +318,17 @@ public class OraReader {
             }
             break;
 
-        case OraSDO.ETYPE.LINE:
+        case OraGeom.ETYPE.LINE:
             geom = readLine(oraGeom, i, coords);
             break;
 
-        case OraSDO.ETYPE.POLYGON:
-        case OraSDO.ETYPE.POLYGON_EXTERIOR:
+        case OraGeom.ETYPE.POLYGON:
+        case OraGeom.ETYPE.POLYGON_EXTERIOR:
             geom = readPolygon(oraGeom, i, coords);
             i += ((Polygon) geom).getNumInteriorRing();
             break;
 
-        case OraSDO.ETYPE.POLYGON_INTERIOR:
+        case OraGeom.ETYPE.POLYGON_INTERIOR:
             throw new IllegalArgumentException(
                 "ETYPE 2003 (Polygon Interior) not expected in a Collection");
 
@@ -356,7 +356,7 @@ public class OraReader {
       List geoms = new ArrayList();
       for (int i = 0; i < nElem; i++) {
         int etype = oraGeom.eType(i);
-        if ((etype == OraSDO.ETYPE.POLYGON) || (etype == OraSDO.ETYPE.POLYGON_EXTERIOR)) {
+        if ((etype == OraGeom.ETYPE.POLYGON) || (etype == OraGeom.ETYPE.POLYGON_EXTERIOR)) {
           Polygon poly = readPolygon(oraGeom, i, coords);
           i += poly.getNumInteriorRing(); // skip interior rings
           geoms.add(poly);
@@ -383,7 +383,7 @@ public class OraReader {
       for (int i = 0; i < nElem; i++) {
         int etype = oraGeom.eType(i);
         // stop reading if not a line
-        if (etype != OraSDO.ETYPE.LINE)
+        if (etype != OraGeom.ETYPE.LINE)
           break;
         geoms.add(readLine(oraGeom, i, coords));
       }
@@ -405,7 +405,7 @@ public class OraReader {
       int interpretation = oraGeom.interpretation(elemIndex);
 
       checkOrdinates(oraGeom, elemIndex, "MultiPoint");
-      checkETYPE(etype, OraSDO.ETYPE.POINT, "MultiPoint");
+      checkETYPE(etype, OraGeom.ETYPE.POINT, "MultiPoint");
       // MultiPoints have a unique interpretation code
       if (! (interpretation > 1)){
         errorInterpretation(interpretation, "MultiPoint");
@@ -417,7 +417,7 @@ public class OraReader {
     }
     
     /**
-     * Create Polygon as encoded.
+     * Read {@link Polygon) from encoded geometry.
      *
      * @param oraGeom SDO_GEOMETRY attributes being read
      * @param elemIndex the element being read
@@ -432,8 +432,8 @@ public class OraReader {
       int interpretation = oraGeom.interpretation(elemIndex);
 
     	checkOrdinates(oraGeom, elemIndex, "Polygon");
-    	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR, "Polygon");
-    	checkInterpretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
+    	checkETYPE(etype,OraGeom.ETYPE.POLYGON, OraGeom.ETYPE.POLYGON_EXTERIOR, "Polygon");
+    	checkInterpretation(interpretation, OraGeom.INTERP.POLYGON, OraGeom.INTERP.RECTANGLE, "Polygon");
 
       int nElem = oraGeom.numElements();
     	// ETYPE is either POLYGON or POLYGON_EXTERIOR
@@ -446,10 +446,10 @@ public class OraReader {
       List holeRings = new ArrayList();
       for (int i = elemIndex + 1; i < nElem; i++) {
         etype = oraGeom.eType(i);
-        if (etype == OraSDO.ETYPE.POLYGON_INTERIOR) {
+        if (etype == OraGeom.ETYPE.POLYGON_INTERIOR) {
           holeRings.add(readLinearRing(oraGeom, i, coords));
         } 
-        else if (etype == OraSDO.ETYPE.POLYGON) { 
+        else if (etype == OraGeom.ETYPE.POLYGON) { 
           // test orientation of Ring to see if it is
           // an interior (hole) ring
           LinearRing ring = readLinearRing(oraGeom, i, coords);
@@ -483,14 +483,14 @@ public class OraReader {
       int interpretation = oraGeom.interpretation(elemIndex);
 
     	checkOrdinates(oraGeom, elemIndex, "Polygon");
-    	checkETYPE(etype,OraSDO.ETYPE.POLYGON, OraSDO.ETYPE.POLYGON_EXTERIOR,  OraSDO.ETYPE.POLYGON_INTERIOR, "Polygon");
-    	checkInterpretation(interpretation, OraSDO.INTERP.POLYGON, OraSDO.INTERP.RECTANGLE, "Polygon");
+    	checkETYPE(etype,OraGeom.ETYPE.POLYGON, OraGeom.ETYPE.POLYGON_EXTERIOR,  OraGeom.ETYPE.POLYGON_INTERIOR, "Polygon");
+    	checkInterpretation(interpretation, OraGeom.INTERP.POLYGON, OraGeom.INTERP.RECTANGLE, "Polygon");
 
       int start = coordIndex(oraGeom, elemIndex);
       int end = coordIndex(oraGeom, elemIndex + 1);
       CoordinateSequence seq = subSeq(coords, start, end);
     	LinearRing ring;
-      if (interpretation == OraSDO.INTERP.POLYGON) {
+      if (interpretation == OraGeom.INTERP.POLYGON) {
         ring = geometryFactory.createLinearRing(seq);
       } 
       else { 
@@ -523,8 +523,8 @@ public class OraReader {
     int interpretation = oraGeom.interpretation(elemIndex);
 
   	checkOrdinates(oraGeom, elemIndex, "LineString");
-  	checkETYPE(etype, OraSDO.ETYPE.LINE, "LineString");
-  	checkInterpretation(interpretation, OraSDO.INTERP.LINESTRING, "LineString");
+  	checkETYPE(etype, OraGeom.ETYPE.LINE, "LineString");
+  	checkInterpretation(interpretation, OraGeom.INTERP.LINESTRING, "LineString");
 	
     int start = coordIndex(oraGeom, elemIndex);
     int end = coordIndex(oraGeom, elemIndex + 1);
@@ -546,8 +546,8 @@ public class OraReader {
       int interpretation = oraGeom.interpretation(elemIndex);
 
   		checkOrdinates(oraGeom, elemIndex, "Point");
-  		checkETYPE(etype,OraSDO.ETYPE.POINT, "Point");
-  		checkInterpretation(interpretation, OraSDO.INTERP.POINT, "Point");
+  		checkETYPE(etype,OraGeom.ETYPE.POINT, "Point");
+  		checkInterpretation(interpretation, OraGeom.INTERP.POINT, "Point");
   
       int start = coordIndex(oraGeom, elemIndex);
       int end = coordIndex(oraGeom, elemIndex + 1);
