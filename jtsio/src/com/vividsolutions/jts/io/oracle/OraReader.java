@@ -421,6 +421,7 @@ public class OraReader
           // test orientation of Ring to see if it is
           // an interior (hole) ring
           LinearRing ring = readLinearRing(oraGeom, i);
+          // TODO: use the coordSeq directly (requires new CGAlgorithms method)
           boolean isHole = ! CGAlgorithms.isCCW(ring.getCoordinates());
           // if not a hole, exit
           if (! isHole)
