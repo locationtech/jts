@@ -180,9 +180,9 @@ public class OraReaderCreateTest extends BaseOraTestCase
 			              1,1,
 			              1,2, 2,1,
 			              2,2, 3,2, 3,3, 2,3, 2,2,
-			              5,1, 5,5, 9,5, 5,1,
+			              5,1, 9,5, 5,5, 5,1,
 			              5,3, 6,4, 6,3, 5,3 ) ), 
-	    		"GEOMETRYCOLLECTION (POINT (1 1), LINESTRING (1 2, 2 1), POLYGON ((2 2, 3 2, 3 3, 2 3, 2 2)), POLYGON ((5 1, 5 5, 9 5, 5 1), (5 3, 6 4, 6 3, 5 3)))");
+	    		"GEOMETRYCOLLECTION (POINT (1 1), LINESTRING (1 2, 2 1), POLYGON ((2 2, 3 2, 3 3, 2 3, 2 2)), POLYGON ((5 1, 9 5, 5 5, 5 1), (5 3, 6 4, 6 3, 5 3)))");
   }
   
   //====================================================================================

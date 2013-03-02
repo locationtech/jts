@@ -63,6 +63,15 @@ import oracle.sql.*;
  * <p>
  * A connection to an Oracle instance with access to the definition of the <code>MDSYS.SDO_GEOMETRY</code>
  * type is required.
+ * <p>
+ * By default, a single {@link Point} is written using the optimized SDO_POINT_TYPE attribute.
+ * This can be overridden by using {@link #setOptimizePoint(boolean)}.
+ * <p>
+ * By default, rectangular polygons are written as regular 5-point polygons.
+ * This can be changed to use the optimized RECTANGLE points 
+ * by using {@link #setOptimizeRectangle(boolean)}.
+ * Note that RECTANGLEs do not support LRS Measure ordinate values.
+ * Also, this class will only write RECTANGLEs for polygons containing a single ring. 
  * 
  * @version 9i
  * @author Martin Davis
@@ -82,6 +91,8 @@ public class OraWriter
 	 * The default SRID to write 
 	 */
 	private int srid = OraGeom.SRID_NULL;
+  private boolean isOptimizeRectangle = false;
+  private boolean isOptimizePoint = true;
 
 	/**
 	 * Creates a writer using a valid Oracle connection. 
@@ -134,6 +145,33 @@ public class OraWriter
 		this.srid = srid;
 	}
 
+  /**
+   * Sets whether rectangle polygons should be written using the 
+   * optimized 4-coordinate RECTANGLE format
+   * (ETYPE=1003, INTERPRETATION=3).
+   * If this option is false, rectangles are written as 5-coordinate polygons.
+   * The default setting is <code>false</code>.
+   * 
+   * @param isOptimizeRectangle whether to optimize rectangle writing
+   */
+  public void setOptimizeRectangle(boolean isOptimizeRectangle)
+  {
+    this.isOptimizeRectangle  = isOptimizeRectangle;
+  }
+  
+  /**
+   * Sets whether points should be written using the 
+   * optimized SDO_POINT_TYPE format.
+   * If this option is <code>false</code>, points are written using the SDO_ORDINATES attribute.
+   * The default setting is <code>true</code>.
+   * 
+   * @param isOptimizeRectangle whether to optimize rectangle writing
+   */
+  public void setOptimizePoint(boolean isOptimizePoint)
+  {
+    this.isOptimizePoint   = isOptimizePoint;
+  }
+  
   /**
    * Converts a {@link Geometry} into an Oracle MDSYS.SDO_GEOMETRY STRUCT.
    * <p>
@@ -276,7 +314,7 @@ public class OraWriter
             addCoordinates(list, ((LineString)geom).getCoordinateSequence());
             return;
         case OraGeom.GEOM_TYPE.POLYGON:
-            switch (elemInfoInterpretation(geom,OraGeom.ETYPE.POLYGON_EXTERIOR)) {
+            switch (elemInfoInterpretation(geom, OraGeom.ETYPE.POLYGON_EXTERIOR)) {
             case OraGeom.INTERP.RECTANGLE:
                 Envelope e = geom.getEnvelopeInternal();
                 list.add(new double[] { e.getMinX(), e.getMinY() });
@@ -284,24 +322,24 @@ public class OraWriter
                 return;
             case OraGeom.INTERP.POLYGON:
             	Polygon polygon = (Polygon) geom;
-                int holes = polygon.getNumInteriorRing();
-                
-                // check outer ring's direction
-                CoordinateSequence ring = polygon.getExteriorRing().getCoordinateSequence();
-                if (! CGAlgorithms.isCCW(ring.toCoordinateArray())) {
-                    ring = reverse(polygon.getFactory().getCoordinateSequenceFactory(), ring); 
-                }
-                addCoordinates(list,ring);
+              int holes = polygon.getNumInteriorRing();
+              
+              // check outer ring's direction
+              CoordinateSequence ring = polygon.getExteriorRing().getCoordinateSequence();
+              if (! CGAlgorithms.isCCW(ring.toCoordinateArray())) {
+                  ring = reverse(polygon.getFactory().getCoordinateSequenceFactory(), ring); 
+              }
+              addCoordinates(list,ring);
 
-                for (int i = 0; i < holes; i++) {
-                	// check inner ring's direction
-                	ring = polygon.getInteriorRingN(i).getCoordinateSequence();
-                	if (CGAlgorithms.isCCW(ring.toCoordinateArray())) {
-                        ring = reverse(polygon.getFactory().getCoordinateSequenceFactory(), ring); 
-                    }
-                    addCoordinates(list,ring);
-                }
-                return;
+              for (int i = 0; i < holes; i++) {
+              	// check inner ring's direction
+              	ring = polygon.getInteriorRingN(i).getCoordinateSequence();
+              	if (CGAlgorithms.isCCW(ring.toCoordinateArray())) {
+                      ring = reverse(polygon.getFactory().getCoordinateSequenceFactory(), ring); 
+                  }
+                  addCoordinates(list,ring);
+              }
+              return;
             }
             break; // interpretations 2,4 not supported
         case OraGeom.GEOM_TYPE.MULTIPOINT:
@@ -454,7 +492,7 @@ public class OraWriter
       for (int i = 0; i < polys.getNumGeometries(); i++) {
         poly = (Polygon) polys.getGeometryN(i);
         elemInfo(elemInfoList, poly, offset, gType(poly));
-        if (isRectangle(poly)) {
+        if (isWriteAsRectangle(poly)) {
           offset += (2 * len);
         }
         else {
@@ -469,7 +507,7 @@ public class OraWriter
         geom = geoms.getGeometryN(i);
         // MD 20/3/07 modified to provide gType of component geometry
         elemInfo(elemInfoList, geom, offset, gType(geom));
-        if (geom instanceof Polygon && isRectangle((Polygon) geom)) {
+        if (geom instanceof Polygon && isWriteAsRectangle((Polygon) geom)) {
           offset += (2 * len);
         }
         else {
@@ -499,30 +537,24 @@ public class OraWriter
      *
      * @return <code>true</code> if polygon is SRID==NULL and a rectangle
      */
-    private boolean isRectangle(Polygon polygon) {
-        if (polygon.getFactory().getSRID() > 0) {
-            // Rectangles only valid in CAD applications
-            // that do not have an SRID system
-            //
-            return false;
-        }
+    private boolean isWriteAsRectangle(Polygon polygon) {
+      if (! isOptimizeRectangle) return false;
 
-        if (lrsDim(polygon) != 0) {
-            // cannot support LRS on a rectangle
-            return false;
-        }
-
+      if (lrsDim(polygon) != 0) {
+          // cannot support LRS on a rectangle
+          return false;
+      }
+      return polygon.isRectangle();
+        
+        /*
         Coordinate[] coords = polygon.getCoordinates();
-
         if (coords.length != 5) {
             return false;
         }
-
         if ((coords[0] == null) || (coords[1] == null) || (coords[2] == null)
                 || (coords[3] == null)) {
             return false;
         }
-
         if (!coords[0].equals2D(coords[4])) {
             return false;
         }
@@ -551,6 +583,7 @@ public class OraWriter
         }
 
         return false;
+        */
     }
     /**
      * Produce <code>SDO_ETYPE</code> for geometry description as stored in the
@@ -624,11 +657,10 @@ public class OraWriter
         case OraGeom.ETYPE.POLYGON_EXTERIOR:
         case OraGeom.ETYPE.POLYGON_INTERIOR:
             if (geom instanceof Polygon) {
-                Polygon polygon = (Polygon) geom;
-            	// always straight for jts
-                if (isRectangle(polygon)) {
-                    return OraGeom.INTERP.RECTANGLE;
-                }
+              Polygon polygon = (Polygon) geom;
+              if (isWriteAsRectangle(polygon)) {
+                  return OraGeom.INTERP.RECTANGLE;
+              }
             }
             return OraGeom.INTERP.POLYGON;
         }
@@ -652,6 +684,7 @@ public class OraWriter
      */
   private double[] pointOrdinates(Geometry geom)
   {
+    if (! isOptimizePoint) return null;
     if (geom instanceof Point && (lrsDim(geom) == 0)) {
       Point point = (Point) geom;
       Coordinate coord = point.getCoordinate();
