@@ -153,6 +153,14 @@ public class GeometryImplTest extends TestCase {
         assertTrue(polygon1.equals(polygon2));
     }
 
+  public void testEqualsWithNull() throws Exception
+  {
+    Geometry polygon = reader.read("POLYGON ((0 0, 0 50, 50 50, 50 0, 0 0))");
+    assertTrue(! polygon.equals(null));
+    final Object g = null;
+    assertTrue(! polygon.equals(g));
+  }
+
     //  public void testEquals2() throws Exception {
     //    Geometry lineString = reader.read("LINESTRING(0 0, 0 50, 50 50, 50 0, 0 0)");
     //    Geometry geometryCollection = reader.read("GEOMETRYCOLLECTION ( LINESTRING(0 0  , 0  50), "

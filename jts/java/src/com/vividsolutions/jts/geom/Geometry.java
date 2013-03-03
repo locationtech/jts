@@ -1048,6 +1048,7 @@ public abstract class Geometry
    *@see #equalsTopo(Geometry)
    */
   public boolean equals(Geometry g) {
+    if (g == null) return false;
     return equalsTopo(g);
   }
 
