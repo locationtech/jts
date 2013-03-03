@@ -40,6 +40,7 @@ import org.xml.sax.SAXException;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.gml2.GMLHandler.Handler;
+import com.vividsolutions.jts.util.StringUtil;
 
 /**
  * Container for GML2 Geometry parsing strategies which can be represented in JTS.
@@ -379,7 +380,7 @@ public class GeometryStrategies{
 				if(numNonNullTouples == 0)
 					throw new SAXException("Cannot create a coordinate sequence without a non-null touple to parse");
 				
-				int dim = touples[0].split(coordSeperator).length;
+				int dim = StringUtil.split(touples[0], coordSeperator).length;
 				CoordinateSequence cs = gf.getCoordinateSequenceFactory().create(numNonNullTouples,dim);
 				dim = cs.getDimension(); // max dim
 				
