@@ -255,19 +255,22 @@ public class OraWriter
   {
     int gtype = gType(geom);
     int srid = this.srid == OraGeom.SRID_NULL ? geom.getSRID() : this.srid;
-    double[] point = pointOrdinates(geom);
+    double[] point = null;
     int elemInfo[] = null;
     double[] ordinates = null;
     
-    if (point == null) {
+    // if geometry ordinate data should be represented by SDO_ORDINATES array
+    if (isEncodeAsPointType(geom)) {
+        point = pointOrdinates(geom);
+    }
+    else {
       elemInfo = elemInfo(geom, gtype);
 
       List list = new ArrayList();
-      coordinates(list, geom);
+      addCoordinates(list, geom);
 
       int dim = OraGeom.gTypeDim(gtype);
       int lrs = OraGeom.gTypeMeasureDim(gtype);
-      // MD - BUG????  Should be simply dim ????
       int ordDim = dim; // size per coordinate
       
       ordinates = buildOrdinates(list, ordDim);
@@ -304,7 +307,7 @@ public class OraWriter
      *
      * @throws IllegalArgumentException If geometry cannot be encoded
      */
-    private void coordinates(List list, Geometry geom) {
+    private void addCoordinates(List list, Geometry geom) {
         switch (OraGeom.geomType(geom)) {
 
         case OraGeom.GEOM_TYPE.POINT:
@@ -347,7 +350,7 @@ public class OraWriter
         case OraGeom.GEOM_TYPE.MULTIPOLYGON:
         case OraGeom.GEOM_TYPE.COLLECTION:
             for (int i = 0; i < geom.getNumGeometries(); i++) {
-                coordinates(list, geom.getGeometryN(i));
+                addCoordinates(list, geom.getGeometryN(i));
             }
             return;
         }
@@ -359,15 +362,11 @@ public class OraWriter
     }
 
     /**
-     * Adds a double array to list.
-     * 
-     * <p>
-     * The double array will contain all the ordinates in the Coordiante
-     * sequence.
-     * </p>
+     * Creates a double array for each coordinates
+     * in the {@link CoordinateSequence} and adds it to the list.
      *
-     * @param list
-     * @param sequence
+     * @param list the list of ordinate arrays
+     * @param sequence the sequence to add
      */
     private static void addCoordinates(List list, CoordinateSequence sequence) {
     	Coordinate coord = null;
@@ -670,6 +669,15 @@ public class OraWriter
             + "GeometryCollection, MultiPoint, MultiLineString and MultiPolygon)");
     }
 	
+    private boolean isEncodeAsPointType(Geometry geom)
+    {
+      if (! isOptimizePoint) return false;
+      if (geom instanceof Point && (lrsDim(geom) == 0)) 
+        return true;
+      // Geometry type is not appropriate for SDO_POINT_TYPE
+      return false;
+    }
+
     /**
      * Extracts ordinate data for SDO_POINT_TYPE for Point geometries.
      * <code>null</code> is returned
@@ -684,14 +692,9 @@ public class OraWriter
      */
   private double[] pointOrdinates(Geometry geom)
   {
-    if (! isOptimizePoint) return null;
-    if (geom instanceof Point && (lrsDim(geom) == 0)) {
-      Point point = (Point) geom;
-      Coordinate coord = point.getCoordinate();
-      return new double[] { coord.x, coord.y, coord.z };
-    }
-    // Geometry type is not appropriate for SDO_POINT_TYPE
-    return null;
+    Point point = (Point) geom;
+    Coordinate coord = point.getCoordinate();
+    return new double[] { coord.x, coord.y, coord.z };
   }
 
     /**
