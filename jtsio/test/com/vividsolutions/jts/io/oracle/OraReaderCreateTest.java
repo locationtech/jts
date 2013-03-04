@@ -93,6 +93,11 @@ public class OraReaderCreateTest extends BaseOraTestCase
 	    checkValue(oraGeom, "POINT (12 14)");
   }
   
+  public void testXY_MultiPoint_MultiElem() throws Exception {
+    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2005,32639,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1,3,1,1),MDSYS.SDO_ORDINATE_ARRAY(548810.5,3956383.4, 548766.8,3956415.9));
+    checkValue(oraGeom, "MULTIPOINT ((548810.5 3956383.4), (548766.8 3956415.9))");
+  }
+  
   public void testXYZ_MultiPoint() throws Exception {
     OraGeom oraGeom = MDSYS.SDO_GEOMETRY(3005,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,2),
     		MDSYS.SDO_ORDINATE_ARRAY(50,50,5, 100,200,300));

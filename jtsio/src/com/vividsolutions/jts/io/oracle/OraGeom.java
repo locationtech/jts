@@ -148,9 +148,26 @@ public class OraGeom
   {
 	  return "GTYPE=" + gType 
 			  + " SRID=" + srid
-			  + " ELEM_INFO=" + toStringElemInfo(elemInfo);
+			  + " ELEM_INFO=" + toStringElemInfo(elemInfo)
+			  + " ORDS=" + toString(ordinates);
   }
   
+  private String toString(double[] ordinates)
+  {
+    if (ordinates == null) return "null";
+    StringBuffer buf = new StringBuffer();
+    for (int i = 0; i < ordinates.length; i++) {
+      if (i > 0) {
+        buf.append(",");
+        // spacer between triplets
+        if (i % ordDim == 0)
+          buf.append("  ");
+      }
+      buf.append(ordinates[i]);
+    }
+    return buf.toString();
+  }
+
   public static String toStringElemInfo(int[] elemInfo)
   {
     if (elemInfo == null) return "null";
@@ -159,7 +176,7 @@ public class OraGeom
       if (i > 0) {
         buf.append(",");
         // spacer between triplets
-        if (i %3 == 0)
+        if (i % 3 == 0)
           buf.append("  ");
       }
       buf.append(elemInfo[i]);
@@ -299,6 +316,7 @@ public class OraGeom
 
   /**
    * Extracts the SDO_ELEM_INFO start index (SDO_STARTING_OFFSET) in the ordinate array for a given triplet.
+   * Starting offsets are 1-based indexes.
    *
    * @param elemInfo the SDO_ELEM_INFO array
    * @param tripletIndex index of the triplet to read
