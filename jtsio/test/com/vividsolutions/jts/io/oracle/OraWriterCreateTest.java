@@ -60,11 +60,14 @@ public class OraWriterCreateTest extends BaseOraTestCase
     //testXY_RectangleMultiPolygon();
   }
   
+  // TODO: test that writing GeomCollections with MultiPoints WORKS
+  
   public void testPoint() throws Exception {
     OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2001,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1),MDSYS.SDO_ORDINATE_ARRAY(50,50));
     checkValuePointOrdinates(oraGeom, "POINT (50 50)");
   }
 
+  // Writing measures are not yet supported
   public void TODO_testXYZM_Point() throws Exception {
 	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(4001,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1),MDSYS.SDO_ORDINATE_ARRAY(50,50,100,200));
 	    checkValue(oraGeom, 3, "POINT (50 50)");
@@ -92,15 +95,28 @@ public class OraWriterCreateTest extends BaseOraTestCase
 	    3, "LINESTRING (0 0 0, 50 50 100)");
   }
 
+  // Writing measures are not yet supported
   public void TODO_testXYM_LineString() throws Exception {
 	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(3302,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1, 2, 1),MDSYS.SDO_ORDINATE_ARRAY(1, 1, 20, 2, 2, 30));
 	    checkValue(oraGeom, "LINESTRING (1 1, 2 2)");
   }
 
   public void testXY_Polygon() throws Exception {
-	  OraGeom oraGeom = MDSYS.
-			  SDO_GEOMETRY(2003,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,0,50,50,0,50,0,0));
-	    checkValue(oraGeom, "POLYGON ((0 0, 50 0, 50 50, 0 50, 0 0))");
+    OraGeom oraGeom = MDSYS.
+        SDO_GEOMETRY(2003,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,0,50,50,0,50,0,0));
+      checkValue(oraGeom, "POLYGON ((0 0, 50 0, 50 50, 0 50, 0 0))");
+  }
+
+  public void testXY_Polygon_ShellNotCCW() throws Exception {
+    OraGeom oraGeom = MDSYS.
+        SDO_GEOMETRY(2003,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,0,50,50,0,50,0,0));
+      checkValue(oraGeom, "POLYGON ((0 0, 0 50, 50 50, 50 0, 0 0))");
+  }
+
+  public void testXY_Polygon_HoleNotCW() throws Exception {
+    OraGeom oraGeom = MDSYS.
+    SDO_GEOMETRY(2003,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1,11,2003,1),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,0,50,50,0,50,0,0, 10,10, 10,20, 20,10, 10,10));
+      checkValue(oraGeom, "POLYGON ((0 0, 50 0, 50 50, 0 50, 0 0), (10 10, 20 10, 10 20, 10 10))");
   }
 
   public void testXY_RectanglePolygon() throws Exception {
@@ -110,7 +126,21 @@ public class OraWriterCreateTest extends BaseOraTestCase
   }
 
   /**
-   * OraWriter does not support writing polygons with more than one ring as rectangles
+   * MultiPoints can be written directly as COLLECTION elements.
+   * 
+   * @throws Exception
+   */
+  public void testXY_GeometryCollection_MultiPoint() throws Exception {
+    checkValue(  MDSYS.SDO_GEOMETRY(2004, NULL, NULL,
+              MDSYS.SDO_ELEM_INFO_ARRAY(1,1,3,  7,2,1),
+              MDSYS.SDO_ORDINATE_ARRAY(1,1,  2,2,  3,3,  1,2,  2,1 ) ), 
+          "GEOMETRYCOLLECTION (MULTIPOINT (1 1, 2 2, 3 3), LINESTRING (1 2, 2 1) )");
+  }
+
+  /**
+   * OraWriter does not support writing polygons with more than one ring as rectangles,
+   * so these tests are disabled.
+   * 
    * @throws Exception
    */
   public void INVALID_testXY_RectangleMultiPolygon() throws Exception {
@@ -124,6 +154,7 @@ public class OraWriterCreateTest extends BaseOraTestCase
 	    checkValue(oraGeom, "POLYGON ((0 0, 50 0, 50 50, 0 50, 0 0), (40 40, 20 40, 20 20, 40 20, 40 40))");
   }
 
+  
   //====================================================================================
   // Cases from Oracle documentation
   
@@ -155,6 +186,24 @@ public class OraWriterCreateTest extends BaseOraTestCase
                     5,3, 6,4, 6,3, 5,3 ) ), 
           "GEOMETRYCOLLECTION (POINT (1 1), LINESTRING (1 2, 2 1), POLYGON ((2 2, 3 2, 3 3, 2 3, 2 2)), POLYGON ((5 1, 9 5, 5 5, 5 1), (5 3, 6 4, 6 3, 5 3)))");
   }
+  
+  /**
+   * MultiPolygons in GeometryCollections are written as a sequence of Polygons.
+   * 
+   * @throws Exception
+   */
+  public void testXY_GeometryCollection_MultiPolygon_Doc() throws Exception {
+    checkValue(  MDSYS.SDO_GEOMETRY(2004, NULL, NULL,
+              MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1, 3,2,1, 7,1003,1, 17,1003,1, 25,2003,1),
+              MDSYS.SDO_ORDINATE_ARRAY(
+                    1,1,
+                    1,2, 2,1,
+                    2,2, 3,2, 3,3, 2,3, 2,2,
+                    5,1, 9,5, 5,5, 5,1,
+                    5,3, 6,4, 6,3, 5,3 ) ), 
+          "GEOMETRYCOLLECTION (POINT (1 1), LINESTRING (1 2, 2 1), MULTIPOLYGON (((2 2, 3 2, 3 3, 2 3, 2 2)), ((5 1, 9 5, 5 5, 5 1), (5 3, 6 4, 6 3, 5 3))) )");
+  }
+  
   
 
   //====================================================================================

@@ -75,6 +75,9 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 /**
  * Reads a {@link Geometry} from an Oracle <code>MDSYS.GEOMETRY</code> <code>STRUCT</code> object.
  * <p>
+ * The number of dimensions read is limited by the number supported
+ * by the {@link CoordinateSequenceFactory} used.
+ * <p>
  * A {@link GeometryFactory} may be provided, otherwise a default one will be used.
  * If a {@link PrecisionModel} other than {@link PrecisionModel#FLOATING} 
  * is supplied it is the callers's responsibility
@@ -103,13 +106,11 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  * 
  * <h3>LIMITATIONS</h3>
  * <ul>
- * <li>4-dimensional (XYZM) Oracle geometries are not supported
+ * <li>Geometries with Measures (XYM or XYZM) can be read, but the Measure values are not preserved
  * <li>Oracle geometries with a GTYPE of <code>43xx</code> (XYMZ) are not supported.
- * <li>The number of dimension read is limited by the number supported
- * by the provided {@link CoordinateSequenceFactory}
  * <li>Geometries containing arcs are not supported
  * <li>Surface and solid geometries are not supported
- * <li>There is currently no way to read ancillary SDO_POINT information
+ * <li>There is currently no way to read ancillary SDO_POINT information, if present
  * </ul>
  *
  * @author Martin Davis
