@@ -28,6 +28,40 @@ extends TestCase
 		super(name);
 	}
 
+	/**
+	 * Following cases were failures when using the CentralEndpointIntersector heuristic.
+	 * This is because one segment lies at a significant angle to the other,
+	 * with only one endpoint is close to the other segment.
+	 * The CE heuristic chose the wrong endpoint to return.
+	 * The fix is to use a new heuristic which out of the 4 endpoints
+	 * chooses the one which is closest to the other segment.
+	 * This works in all known failure cases.
+	 * 
+	 * @throws ParseException
+	 */
+	  public void testCentralEndpointHeuristicFailure() 
+	  throws ParseException
+	  {
+	    computeIntersection(
+	        "LINESTRING (163.81867067 -211.31840378, 165.9174252 -214.1665075)",   
+	        "LINESTRING (2.84139601 -57.95412726, 469.59990601 -502.63851732)",
+	        1,
+	        "POINT (163.81867067 -211.31840378)",
+	        0);
+	  }
+
+	  public void testCentralEndpointHeuristicFailure2() 
+	  throws ParseException
+	  {
+	    computeIntersection(
+	        "LINESTRING (-58.00593335955 -1.43739086465, -513.86101637525 -457.29247388035)",   
+	        "LINESTRING (-215.22279674875 -158.65425425385, -218.1208801283 -160.68343590235)",
+	        1,
+	        "POINT ( -215.22279674875 -158.65425425385 )",
+	        0);
+	  }
+
+
   /**
    * Test from Tomas Fa - JTS list 6/13/2012
    * 
@@ -61,7 +95,8 @@ extends TestCase
   }
   
   /**
-   * Test from strk which is bad in GEOS (2009-04-14).
+   * Test involving two non-almost-parallel lines.
+   * Does not seem to cause problems with basic line intersection algorithm.
    * 
    * @throws ParseException
    */
