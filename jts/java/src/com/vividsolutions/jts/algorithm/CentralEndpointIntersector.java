@@ -49,9 +49,13 @@ import com.vividsolutions.jts.geom.Coordinate;
  * Intended to be used as a last resort for 
  * computing ill-conditioned intersection situations which 
  * cause other methods to fail.
- *
+ * <p>
+ * WARNING: in some cases this algorithm makes a poor choice of endpoint.
+ * It has been replaced by a better heuristic in {@link RobustLineIntersector}.
+ *  
  * @author Martin Davis
  * @version 1.8
+ * @deprecated
  */
 public class CentralEndpointIntersector 
 {
@@ -72,7 +76,7 @@ public class CentralEndpointIntersector
 		compute();
 	}
 
-	private void compute() 
+	private void Ocompute() 
 	{
 		Coordinate centroid = average(pts);
 		intPt = new Coordinate(findNearestPoint(centroid, pts));
@@ -122,5 +126,28 @@ public class CentralEndpointIntersector
   	return result;
   }
   
+  	private double minDist = Double.MAX_VALUE;
+  	
+  	/**
+  	 * Finds point with smallest distance to other segment
+  	 */
+	private void compute() 
+	{
+		tryDist(pts[0], pts[2], pts[3]);
+		tryDist(pts[1], pts[2], pts[3]);
+		tryDist(pts[2], pts[0], pts[1]);
+		tryDist(pts[3], pts[0], pts[1]);
+	}
+
+	private void tryDist(Coordinate p, Coordinate p0, Coordinate p1) 
+	{
+		double dist = CGAlgorithms.distancePointLine(p, p0, p1);
+		if (dist < minDist) {
+			minDist = dist;
+			intPt = p;
+		}
+	}
+
+
 
 }
