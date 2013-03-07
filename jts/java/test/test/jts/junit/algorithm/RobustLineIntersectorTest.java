@@ -46,6 +46,8 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 
 
 /**
+ * Basic functionality tests for RobustLineIntersector.
+ * 
  * @version 1.7
  */
 public class RobustLineIntersectorTest extends TestCase {

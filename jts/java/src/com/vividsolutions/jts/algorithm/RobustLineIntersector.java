@@ -248,14 +248,13 @@ public class RobustLineIntersector
 //      System.out.println("Intersection outside segment envelopes: " + intPt);
 //      System.out.println("Segments: " + this);
       // compute a safer result
-      intPt = CentralEndpointIntersector.getIntersection(p1, p2, q1, q2);
+//    intPt = CentralEndpointIntersector.getIntersection(p1, p2, q1, q2);
+      intPt = nearestEndpoint(p1, p2, q1, q2);
 //      System.out.println("Snapped to " + intPt);
     }
-
     if (precisionModel != null) {
       precisionModel.makePrecise(intPt);
     }
-
     return intPt;
   }
 
@@ -298,7 +297,8 @@ public class RobustLineIntersector
     catch (NotRepresentableException e) {
 //    	System.out.println("Not calculable: " + this);
       // compute an approximate result
-      intPt = CentralEndpointIntersector.getIntersection(p1, p2, q1, q2);
+//      intPt = CentralEndpointIntersector.getIntersection(p1, p2, q1, q2);
+      intPt = nearestEndpoint(p1, p2, q1, q2);
  //     System.out.println("Snapped to " + intPt);
     }
     return intPt;
@@ -405,7 +405,7 @@ public class RobustLineIntersector
   }
 
   /**
-   * Test whether a point lies in the envelopes of both input segments.
+   * Tests whether a point lies in the envelopes of both input segments.
    * A correctly computed intersection point should return <code>true</code>
    * for this test.
    * Since this test is for debugging purposes only, no attempt is
@@ -419,5 +419,49 @@ public class RobustLineIntersector
     Envelope env1 = new Envelope(inputLines[1][0], inputLines[1][1]);
     return env0.contains(intPt) && env1.contains(intPt);
   }
+
+  /**
+   * Finds the endpoint of the segments P and Q which 
+   * is closest to the other segment.
+   * This is a reasonable surrogate for the true 
+   * intersection points in ill-conditioned cases
+   * (e.g. where two segments are nearly coincident,
+   * or where the endpoint of one segment lies almost on the other segment).
+   * <p>
+   * This replaces the older CentralEndpoint heuristic,
+   * which chose the wrong endpoint in some cases
+   * where the segments had very distinct slopes 
+   * and one endpoint lay almost on the other segment.
+   * 
+   * @param p1 an endpoint of segment P
+   * @param p2 an endpoint of segment P
+   * @param q1 an endpoint of segment Q
+   * @param q2 an endpoint of segment Q
+   * @return the nearest endpoint to the other segment
+   */
+  private static Coordinate nearestEndpoint(Coordinate p1, Coordinate p2,
+      Coordinate q1, Coordinate q2)
+  {
+    Coordinate nearestPt = p1;
+    double minDist = CGAlgorithms.distancePointLine(p1, q1, q2);
+    
+    double dist = CGAlgorithms.distancePointLine(p2, q1, q2);
+    if (dist < minDist) {
+      minDist = dist;
+      nearestPt = p2;
+    }
+    dist = CGAlgorithms.distancePointLine(q1, p1, p2);
+    if (dist < minDist) {
+      minDist = dist;
+      nearestPt = q1;
+    }
+    dist = CGAlgorithms.distancePointLine(q2, p1, p2);
+    if (dist < minDist) {
+      minDist = dist;
+      nearestPt = q2;
+    }
+    return nearestPt;
+  }
+
 
 }
