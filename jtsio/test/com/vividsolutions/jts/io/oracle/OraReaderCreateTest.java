@@ -150,7 +150,13 @@ public class OraReaderCreateTest extends BaseOraTestCase
 	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(3006,8307,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1,7,2,1),
 	    		MDSYS.SDO_ORDINATE_ARRAY(0,0,2,50,50,100,10,10,12,150,150,110));
 	    checkValue(oraGeom, "MULTILINESTRING ((0 0, 50 50), (10 10, 150 150))");
-  }
+}
+
+  public void testXYM_MultiLineString() throws Exception {
+	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(3306,8307,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1,7,2,1),
+	    		MDSYS.SDO_ORDINATE_ARRAY(0,0,2,50,50,100,10,10,12,150,150,110));
+	    checkValue(oraGeom, "MULTILINESTRING ((0 0, 50 50), (10 10, 150 150))");
+}
 
   public void testXYZM_MultiLineString() throws Exception {
 	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(4406,8307,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1,9,2,1),
