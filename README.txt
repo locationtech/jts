@@ -6,7 +6,7 @@ Welcome to the repository for the JTS Topology Suite.
 Repository Structure
 --------------------
 
-NOTE: JTS is evolving towards a Maven-like structure, but is not quite there yet.
+NOTE: The repo is evolving towards a Maven-compatible structure, but is not quite there yet.
 
 * jts - Core JTS module
 * jtsio - I/O drivers for proprietary formats
@@ -14,6 +14,9 @@ NOTE: JTS is evolving towards a Maven-like structure, but is not quite there yet
 * libjts - A wrapper for building JTS with GCJ (unmaintained)
 * bin - Scripts for running JTS tools on various platforms
 * doc - Documentation
+
+* jts/testxml - Unit tests for use with JTS TestRunner app
+* jts/testdata - test datasets for use in testing algorithms and functions
 
 Building JTS
 ------------
@@ -33,9 +36,9 @@ Configuring JTS in Eclipse
 --------------------------
 
 JTS is only implicitly organized into modules, so a single Eclipse project is 
-easiest for working with all modules.
+fine for working with all modules.
 
-* Create a regular Java project
+* Create a Java project (for example, 'JTS')
 
 * Link the following source folders:
 ** src - jts/java/src
