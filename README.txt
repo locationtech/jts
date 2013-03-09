@@ -21,7 +21,7 @@ NOTE: The repo is evolving towards a Maven-compatible structure, but is not quit
 Building JTS
 ------------
 
-* In the directory 'jts' execute
+* In the root directory execute
 
   ant
   
