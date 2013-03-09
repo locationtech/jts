@@ -195,11 +195,11 @@ public class OraGeom
 
   /**
    * Extracts the SDO_ELEM_INFO ETYPE value for a given triplet.
-   * <p>
-   * @see OraGeom.ETYPE for an indication of possible values
    *
    * @param elemIndex index of the triplet to read
    * @return ETYPE for indicated triplet, or -1 if the triplet index is out of range
+   * 
+   * @see ETYPE
    */
   public int eType(int elemIndex)
   {

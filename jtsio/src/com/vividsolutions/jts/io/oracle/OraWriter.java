@@ -124,7 +124,7 @@ public class OraWriter
 	 * The connection should have sufficient privileges to view the description of the MDSYS.GEOMETRY type.
 	 * 
 	 * @param con a valid Oracle connection
-	 * @param dimension the maximum output dimension
+	 * @param maxOutputDimension the maximum output dimension
 	 */
 	public OraWriter(OracleConnection con, int maxOutputDimension){
 		this.connection = con;
@@ -134,8 +134,7 @@ public class OraWriter
   /**
    * Sets the maximum output dimension for the created Oracle geometries.
    * 
-   * 
-   * @param dimension The dimension to set.
+   * @param maxOutputDimension The dimension to set.
    */
   public void setDimension(int maxOutputDimension) {
     this.maxOutputDimension = maxOutputDimension;
@@ -175,7 +174,7 @@ public class OraWriter
    * If this option is <code>false</code>, points are written using the SDO_ORDINATES attribute.
    * The default setting is <code>true</code>.
    * 
-   * @param isOptimizeRectangle whether to optimize rectangle writing
+   * @param isOptimizePoint whether to optimize point writing
    */
   public void setOptimizePoint(boolean isOptimizePoint)
   {
