@@ -58,11 +58,6 @@ import test.jts.junit.index.IntervalTest;
 import test.jts.junit.index.QuadtreeTest;
 import test.jts.junit.index.SIRtreeTest;
 import test.jts.junit.index.STRtreeTest;
-import test.jts.junit.io.WKBTest;
-import test.jts.junit.io.WKTReaderTest;
-import test.jts.junit.io.WKTWriterTest;
-import test.jts.junit.linearref.LengthIndexedLineTest;
-import test.jts.junit.linearref.LocationIndexedLineTest;
 import test.jts.junit.operation.buffer.BufferTest;
 import test.jts.junit.operation.distance.DistanceTest;
 import test.jts.junit.operation.linemerge.LineMergerTest;
@@ -73,9 +68,14 @@ import test.jts.junit.operation.union.UnaryUnionTest;
 import test.jts.junit.operation.valid.IsValidTest;
 import test.jts.junit.operation.valid.ValidClosedRingTest;
 import test.jts.junit.operation.valid.ValidSelfTouchingRingFormingHoleTest;
-import test.jts.junit.precision.SimpleGeometryPrecisionReducerTest;
 
 import com.vividsolutions.jts.algorithm.RobustLineIntersectionTest;
+import com.vividsolutions.jts.io.WKBTest;
+import com.vividsolutions.jts.io.WKTReaderTest;
+import com.vividsolutions.jts.io.WKTWriterTest;
+import com.vividsolutions.jts.linearref.LengthIndexedLineTest;
+import com.vividsolutions.jts.linearref.LocationIndexedLineTest;
+import com.vividsolutions.jts.precision.SimpleGeometryPrecisionReducerTest;
 import com.vividsolutions.jts.triangulate.ConformingDelaunayTest;
 import com.vividsolutions.jts.triangulate.DelaunayTest;
 /**

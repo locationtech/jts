@@ -1,6 +1,10 @@
-package test.jts.junit.simplify;
+package com.vividsolutions.jts.simplify;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.util.Assert;
 
 /**

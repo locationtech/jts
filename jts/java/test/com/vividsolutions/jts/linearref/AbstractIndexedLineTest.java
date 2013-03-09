@@ -1,11 +1,11 @@
-package test.jts.junit.linearref;
-
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.linearref.LocationIndexedLine;
+package com.vividsolutions.jts.linearref;
 
 import junit.framework.TestCase;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Base class for linear referencing class unit tests.

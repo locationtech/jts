@@ -1,14 +1,17 @@
-package test.jts.junit.io;
+package com.vividsolutions.jts.io;
 
-import java.util.*;
 import java.io.IOException;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.impl.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.util.*;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateFilter;
+import com.vividsolutions.jts.geom.CoordinateSequenceComparator;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
+import com.vividsolutions.jts.util.GeometricShapeFactory;
 
 /**
  * Tests the {@link WKBReader} and {@link WKBWriter}.

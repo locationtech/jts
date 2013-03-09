@@ -1,11 +1,12 @@
-package test.jts.junit.linearref;
-
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.linearref.*;
-import com.vividsolutions.jts.io.WKTReader;
+package com.vividsolutions.jts.linearref;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.io.WKTReader;
 
 
 /**

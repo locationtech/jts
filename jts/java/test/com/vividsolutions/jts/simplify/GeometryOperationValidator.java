@@ -1,8 +1,9 @@
-package test.jts.junit.simplify;
+package com.vividsolutions.jts.simplify;
 
 import junit.framework.Assert;
+
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.geom.*;
 
 /**
  * Runs various validation tests on a the results of a geometry operation

@@ -31,14 +31,17 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.io;
+package com.vividsolutions.jts.io;
+
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
-import java.io.*;
 
 public class SerializabilityTest
 extends TestCase

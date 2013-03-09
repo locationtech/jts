@@ -1,11 +1,7 @@
-package test.jts.junit.linearref;
+package com.vividsolutions.jts.linearref;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.linearref.*;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
-
-import junit.framework.TestCase;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Tests the {@link LocationIndexedLine} class

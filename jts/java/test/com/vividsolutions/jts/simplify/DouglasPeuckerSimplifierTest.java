@@ -1,9 +1,10 @@
-package test.jts.junit.simplify;
+package com.vividsolutions.jts.simplify;
 
 import junit.framework.TestCase;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.simplify.*;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * @version 1.7

@@ -1,14 +1,11 @@
-package test.jts.junit.io;
+package com.vividsolutions.jts.io;
+
+import junit.framework.TestCase;
+import junit.textui.TestRunner;
 
 import com.vividsolutions.jts.geom.CoordinateSequenceComparator;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jts.io.WKTReader;
-
-import junit.framework.TestCase;
-import junit.textui.TestRunner;
 
 /**
  * Tests for reading WKB.

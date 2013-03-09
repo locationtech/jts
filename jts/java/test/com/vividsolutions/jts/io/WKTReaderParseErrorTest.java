@@ -1,40 +1,45 @@
-package test.jts.junit.io;
+package com.vividsolutions.jts.io;
 
-import java.util.*;
 import java.io.IOException;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 
 /**
- * Tests the {@link WKTReader} with exponential notation.
+ * Tests the {@link WKTReader} with various errors
  */
-public class WKTReaderExpTest
+public class WKTReaderParseErrorTest
     extends TestCase
 {
   public static void main(String args[]) {
-    TestRunner.run(WKTReaderExpTest.class);
+    TestRunner.run(WKTReaderParseErrorTest.class);
   }
 
   private GeometryFactory fact = new GeometryFactory();
   private WKTReader rdr = new WKTReader(fact);
 
-  public WKTReaderExpTest(String name)
+  public WKTReaderParseErrorTest(String name)
   {
     super(name);
   }
 
-  public void testGoodBasicExp() throws IOException, ParseException
+  public void testExtraLParen() throws IOException, ParseException
   {
-    readGoodCheckCoordinate("POINT ( 1e01 -1E02)", 1E01, -1E02);
+    readBad("POINT (( 1e01 -1E02)");
   }
 
-  public void testGoodWithExpSign() throws IOException, ParseException
+  public void testMissingOrdinate() throws IOException, ParseException
   {
-    readGoodCheckCoordinate("POINT ( 1e-04 1E-05)", 1e-04, 1e-05);
+    readBad("POINT ( 1e01 )");
+  }
+
+  public void testBadChar() throws IOException, ParseException
+  {
+    readBad("POINT ( # 1e-04 1E-05)");
   }
 
   public void testBadExpFormat() throws IOException, ParseException
@@ -50,15 +55,6 @@ public class WKTReaderExpTest
   public void testBadPlusSign() throws IOException, ParseException
   {
     readBad("POINT ( +1e+01 1X02)");
-  }
-
-  private void readGoodCheckCoordinate(String wkt, double x, double y)
-      throws IOException, ParseException
-  {
-    Geometry g = rdr.read(wkt);
-    Coordinate pt = g.getCoordinate();
-    assertEquals(pt.x, x, 0.0001);
-    assertEquals(pt.y, y, 0.0001);
   }
 
   private void readBad(String wkt)

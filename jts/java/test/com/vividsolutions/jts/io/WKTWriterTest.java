@@ -31,7 +31,7 @@
  *     www.vividsolutions.com
  */
 
-package test.jts.junit.io;
+package com.vividsolutions.jts.io;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -50,7 +50,6 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * Test for {@link WKTWriter}.

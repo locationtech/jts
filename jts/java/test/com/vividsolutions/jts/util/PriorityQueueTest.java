@@ -1,7 +1,6 @@
-package test.jts.junit.util;
+package com.vividsolutions.jts.util;
 
 import junit.framework.TestCase;
-import com.vividsolutions.jts.util.*;
 
 /**
  * @version 1.7
