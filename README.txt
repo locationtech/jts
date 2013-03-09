@@ -1,0 +1,54 @@
+     JTS Topology Suite
+     ==================
+     
+Welcome to the repository for the JTS Topology Suite.
+
+Repository Structure
+--------------------
+
+NOTE: JTS is evolving towards a Maven-like structure, but is not quite there yet.
+
+* jts - Core JTS module
+* jtsio - I/O drivers for proprietary formats
+* jtsapp - Applications for working with JTS
+* libjts - A wrapper for building JTS with GCJ (unmaintained)
+
+Building JTS
+------------
+
+* In the project root directory execute
+
+  ant
+  
+The project is built to the directory 'build'.
+
+* Once JTS is built, unit tests can be executed using
+ 
+  ant junit
+
+
+Configuring JTS in Eclipse
+--------------------------
+
+JTS is only implicitly organized into modules, so a single Eclipse project is 
+easiest for working with all modules.
+
+* Create a regular Java project
+
+* Link the following source folders:
+** src - jts/java/src
+** test - jts/java/test
+** src-app - jtsapp/src/java/main
+** test-app - jtsapp/src/java/main
+** src-io - jtsio/src
+** test-io - jtsio/test
+
+* Link to the libs in
+** jts/java/lib
+** jtsio/lib
+
+It is helpful to make Run Configurations for the following JTS tools:
+
+* JTS TestBuilder - com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
+* JTS XML Tests - com.vividsolutions.jtstest.testrunner.TopologyTestApp
+
