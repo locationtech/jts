@@ -4,8 +4,7 @@
 Welcome to the repository for the JTS Topology Suite.
 JTS essentially consists of several Java modules,
 each one corresponding to a separate JAR file.
-Only the main jts.jar is necessary to use the library
-in an application.
+Only the main jts.jar is necessary to use the library in an application.
 The others are external tools or optional extensions.
 
 Repository Structure
@@ -33,10 +32,32 @@ Build JTS
   
 The project is built to the directory 'build' (which is excluded from version control).
 
-* Once JTS is built, unit tests can be executed using
+Test JTS
+--------
+
+* Once JTS is built, Java unit tests can be executed using
  
   ant junit
+  
+* The XML test files can also be run, using the TestRunner application.
+  This is invoked by the testrunner shell script, and may
+  also be run from inside an IDE.
+  At the JTS root dir run:
+  
+  testrunner -files jts/testxml/general jts/testxml/validate 
 
+Deploy JTS
+----------
+
+The main build artifacts are the following JARs
+
+* jts-x.x.jar - main JAR
+* jtsio-x.x.jar - IO drivers with external dependencies
+* JTS_Test.jar - JTS apps
+
+Only the main jta JAR is required to use the library.
+The jtsio JAR is optional, and requires access to external JARs
+The JTS_Test JAR is only needed when running the JTS tools.
 
 Configure JTS in Eclipse
 ------------------------
@@ -54,19 +75,24 @@ fine for working with all modules.
 ** src-io - jtsio/src
 ** test-io - jtsio/test
 
-* Link to the libs in:
+* Link to the external archives in:
 ** jts/java/lib
 ** jtsio/lib
+
+If not used it may be better to omit the jtsio module.
+
+Alternatively, each ancillary module could be configured as a separate project,
+with a dependency on the main JTS project.
 
 Run Configurations 
 ^^^^^^^^^^^^^^^^^^
 
-For useful JTS tools:
+Useful JTS tools:
 
 * JTS TestBuilder - com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
 ** VM args: -Xmx1000M
 
 * JTS XML Tests - com.vividsolutions.jtstest.testrunner.TopologyTestApp
-** Program arguments: -files <jts>/testxml/general <jts>/testxml/validate  
-                           (where <jts> is the path of the jts directory)
+** Program arguments: -files jts/testxml/general jts/testxml/validate  
+** Working Directory: <repo root>
 
