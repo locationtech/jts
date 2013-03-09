@@ -2,6 +2,11 @@
      ==================
      
 Welcome to the repository for the JTS Topology Suite.
+JTS essentially consists of several Java modules,
+each one corresponding to a separate JAR file.
+Only the main jts.jar is necessary to use the library
+in an application.
+The others are external tools or optional extensions.
 
 Repository Structure
 --------------------
@@ -10,30 +15,31 @@ NOTE: The repo is evolving towards a Maven-compatible structure, but is not quit
 
 * jts - Core JTS module
 * jtsio - I/O drivers for proprietary formats
-* jtsapp - Applications for working with JTS
+* jtsapp - Applications & tools for working with JTS
+* jts-sde-adapter - an older driver for ArcSDE (unmaintained)
 * libjts - A wrapper for building JTS with GCJ (unmaintained)
 * bin - Scripts for running JTS tools on various platforms
-* doc - Documentation
+* doc - Documentation, Version History, license files
 
 * jts/testxml - Unit tests for use with JTS TestRunner app
 * jts/testdata - test datasets for use in testing algorithms and functions
 
-Building JTS
-------------
+Build JTS
+---------
 
 * In the root directory execute
 
   ant
   
-The project is built to the directory 'build'.
+The project is built to the directory 'build' (which is excluded from version control).
 
 * Once JTS is built, unit tests can be executed using
  
   ant junit
 
 
-Configuring JTS in Eclipse
---------------------------
+Configure JTS in Eclipse
+------------------------
 
 JTS is only implicitly organized into modules, so a single Eclipse project is 
 fine for working with all modules.
@@ -52,7 +58,10 @@ fine for working with all modules.
 ** jts/java/lib
 ** jtsio/lib
 
-It is helpful to make Run Configurations for the following JTS tools:
+Run Configurations 
+^^^^^^^^^^^^^^^^^^
+
+For useful JTS tools:
 
 * JTS TestBuilder - com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
 ** VM args: -Xmx1000M
