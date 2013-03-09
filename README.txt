@@ -26,6 +26,10 @@ NOTE: The repo is evolving towards a Maven-compatible structure, but is not quit
 Build JTS
 ---------
 
+The JTS library is intended to be Java 1.4 compatible
+(to permit deployment on mobile platforms and some primitive databases).
+The tools are not subject to this limitation, so target Java 1.6 or higher.
+
 * In the root directory execute
 
   ant
