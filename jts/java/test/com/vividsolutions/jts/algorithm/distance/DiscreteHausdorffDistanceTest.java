@@ -1,11 +1,11 @@
-package test.jts.junit.algorithm.distance;
+package com.vividsolutions.jts.algorithm.distance;
 
-import test.jts.junit.GeometryUtils;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.algorithm.distance.*;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import test.jts.junit.GeometryUtils;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
 
 public class DiscreteHausdorffDistanceTest 
 extends TestCase

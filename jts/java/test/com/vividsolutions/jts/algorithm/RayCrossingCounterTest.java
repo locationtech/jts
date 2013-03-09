@@ -30,9 +30,8 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.algorithm;
+package com.vividsolutions.jts.algorithm;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.geom.*;
@@ -43,7 +42,7 @@ import com.vividsolutions.jts.algorithm.*;
  *
  * @version 1.7
  */
-public class LocatePointInRingTest extends AbstractPointInRingTest {
+public class RayCrossingCounterTest extends AbstractPointInRingTest {
 
   private WKTReader reader = new WKTReader();
 
@@ -51,13 +50,13 @@ public class LocatePointInRingTest extends AbstractPointInRingTest {
     TestRunner.run(LocatePointInRingTest.class);
   }
 
-  public LocatePointInRingTest(String name) { super(name); }
+  public RayCrossingCounterTest(String name) { super(name); }
 
   protected void runPtInRing(int expectedLoc, Coordinate pt, String wkt)
       throws Exception
   {
     Geometry geom = reader.read(wkt);
-    assertEquals(expectedLoc, CGAlgorithms.locatePointInRing(pt, geom.getCoordinates()));
+    assertEquals(expectedLoc, RayCrossingCounter.locatePointInRing(pt, geom.getCoordinates()));
   }
 
 }

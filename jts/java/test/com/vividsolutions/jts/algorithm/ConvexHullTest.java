@@ -32,7 +32,7 @@
  *     www.vividsolutions.com
  */
 
-package test.jts.junit.algorithm;
+package com.vividsolutions.jts.algorithm;
 
 import java.util.Stack;
 

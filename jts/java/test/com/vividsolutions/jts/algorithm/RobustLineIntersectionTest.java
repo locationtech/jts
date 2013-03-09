@@ -1,4 +1,4 @@
-package test.jts.junit.algorithm;
+package com.vividsolutions.jts.algorithm;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;

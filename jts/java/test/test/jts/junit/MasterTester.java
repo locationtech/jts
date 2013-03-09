@@ -37,12 +37,6 @@ package test.jts.junit;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import test.jts.junit.algorithm.AngleTest;
-import test.jts.junit.algorithm.ConvexHullTest;
-import test.jts.junit.algorithm.IsCCWTest;
-import test.jts.junit.algorithm.NonRobustLineIntersectorTest;
-import test.jts.junit.algorithm.OrientationIndexTest;
-import test.jts.junit.algorithm.RobustLineIntersectorTest;
 import test.jts.junit.geom.AreaLengthTest;
 import test.jts.junit.geom.BidirectionalComparatorTest;
 import test.jts.junit.geom.CoordinateArraysTest;
@@ -81,6 +75,7 @@ import test.jts.junit.operation.valid.ValidClosedRingTest;
 import test.jts.junit.operation.valid.ValidSelfTouchingRingFormingHoleTest;
 import test.jts.junit.precision.SimpleGeometryPrecisionReducerTest;
 
+import com.vividsolutions.jts.algorithm.RobustLineIntersectionTest;
 import com.vividsolutions.jts.triangulate.ConformingDelaunayTest;
 import com.vividsolutions.jts.triangulate.DelaunayTest;
 /**
@@ -96,15 +91,15 @@ public class MasterTester extends TestCase {
 
   public static Test suite() {
     TestSuite result = new TestSuite();
-    result.addTest(new TestSuite(AngleTest.class));
+    result.addTest(new TestSuite(com.vividsolutions.jts.algorithm.AngleTest.class));
     result.addTest(new TestSuite(AreaLengthTest.class));
     result.addTest(new TestSuite(BasicCoordinateSequenceTest.class));
     result.addTest(new TestSuite(BidirectionalComparatorTest.class));
     result.addTest(new TestSuite(BufferTest.class));
     result.addTest(new TestSuite(CascadedPolygonUnionTest.class));
-    result.addTest(new TestSuite(OrientationIndexTest.class));
+    result.addTest(new TestSuite(com.vividsolutions.jts.algorithm.OrientationIndexTest.class));
     result.addTest(new TestSuite(ConformingDelaunayTest.class));
-    result.addTest(new TestSuite(ConvexHullTest.class));
+    result.addTest(new TestSuite(com.vividsolutions.jts.algorithm.ConvexHullTest.class));
     result.addTest(new TestSuite(CoordinateArraysTest.class));
     result.addTest(new TestSuite(DelaunayTest.class));
     result.addTest(new TestSuite(DistanceTest.class));
@@ -113,7 +108,7 @@ public class MasterTester extends TestCase {
     result.addTest(new TestSuite(GeometryImplTest.class));
     result.addTest(new TestSuite(IntersectionMatrixTest.class));
     result.addTest(new TestSuite(IntervalTest.class));
-    result.addTest(new TestSuite(IsCCWTest.class));
+    result.addTest(new TestSuite(com.vividsolutions.jts.algorithm.IsCCWTest.class));
     result.addTest(new TestSuite(IsRectangleTest.class));
     result.addTest(new TestSuite(IsValidTest.class));
     result.addTest(new TestSuite(LengthIndexedLineTest.class));
@@ -123,7 +118,7 @@ public class MasterTester extends TestCase {
     result.addTest(new TestSuite(MiscellaneousTest.class));
     result.addTest(new TestSuite(MiscellaneousTest2.class));
     result.addTest(new TestSuite(MultiPointImplTest.class));
-    result.addTest(new TestSuite(NonRobustLineIntersectorTest.class));
+    result.addTest(new TestSuite(com.vividsolutions.jts.algorithm.NonRobustLineIntersectorTest.class));
     result.addTest(new TestSuite(NormalizeTest.class));
     result.addTest(new TestSuite(PointImplTest.class));
     result.addTest(new TestSuite(PolygonizeTest.class));
@@ -133,7 +128,7 @@ public class MasterTester extends TestCase {
     result.addTest(new TestSuite(RectanglePredicateSyntheticTest.class));
     result.addTest(new TestSuite(RectanglePredicateTest.class));
     result.addTest(new TestSuite(RelateBoundaryNodeRuleTest.class));
-    result.addTest(new TestSuite(RobustLineIntersectorTest.class));
+    result.addTest(new TestSuite(RobustLineIntersectionTest.class));
     result.addTest(new TestSuite(SimpleGeometryPrecisionReducerTest.class));
     result.addTest(new TestSuite(SimpleTest.class));
     result.addTest(new TestSuite(SIRtreeTest.class));

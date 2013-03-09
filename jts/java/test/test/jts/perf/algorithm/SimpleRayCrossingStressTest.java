@@ -32,13 +32,18 @@
  */
 package test.jts.perf.algorithm;
 
-import test.jts.junit.algorithm.PerturbedGridPolygonBuilder;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.algorithm.*;
+import com.vividsolutions.jts.algorithm.PerturbedGridPolygonBuilder;
+import com.vividsolutions.jts.algorithm.RayCrossingCounter;
 import com.vividsolutions.jts.algorithm.locate.PointOnGeometryLocator;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 
 public class SimpleRayCrossingStressTest extends TestCase {

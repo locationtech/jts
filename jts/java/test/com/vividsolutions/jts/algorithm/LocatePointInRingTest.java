@@ -30,8 +30,9 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.algorithm;
+package com.vividsolutions.jts.algorithm;
 
+import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.geom.*;
@@ -42,27 +43,21 @@ import com.vividsolutions.jts.algorithm.*;
  *
  * @version 1.7
  */
-public class PointInRingTest extends AbstractPointInRingTest {
+public class LocatePointInRingTest extends AbstractPointInRingTest {
 
   private WKTReader reader = new WKTReader();
 
   public static void main(String args[]) {
-    TestRunner.run(PointInRingTest.class);
+    TestRunner.run(LocatePointInRingTest.class);
   }
 
-  public PointInRingTest(String name) { super(name); }
+  public LocatePointInRingTest(String name) { super(name); }
 
-
-   protected void runPtInRing(int expectedLoc, Coordinate pt, String wkt)
+  protected void runPtInRing(int expectedLoc, Coordinate pt, String wkt)
       throws Exception
   {
-  	 // isPointInRing is not defined for pts on boundary
-  	 if (expectedLoc == Location.BOUNDARY)
-  		 return;
-  	 
     Geometry geom = reader.read(wkt);
-    boolean expected = expectedLoc == Location.INTERIOR;
-    assertEquals(expected, CGAlgorithms.isPointInRing(pt, geom.getCoordinates()));
+    assertEquals(expectedLoc, CGAlgorithms.locatePointInRing(pt, geom.getCoordinates()));
   }
 
 }
