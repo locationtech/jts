@@ -25,7 +25,7 @@
   	<property name="jts.classes" 	value="${build}/jts-classes"/>
  	
    	<property name="jtsapp" 	value="${basedir}/jtsapp"/>
- 	<property name="jtsapp.src" 	value="${jtsapp}/src/java/main"/>
+ 	<property name="jtsapp.src" 	value="${jtsapp}/src/main/java"/>
   	<property name="jtsapp.classes" value="${build}/jtsapp-classes"/>
   	  	
   	<property name="jtsio" 		value="${basedir}/jtsio"/>

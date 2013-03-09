@@ -31,7 +31,7 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts;
+package com.vividsolutions.jtstest;
 
 import java.io.File;
 import java.util.ArrayList;

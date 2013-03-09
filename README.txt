@@ -70,8 +70,8 @@ fine for working with all modules.
 * Link the following source folders:
 ** src - jts/java/src
 ** test - jts/java/test
-** src-app - jtsapp/src/java/main
-** test-app - jtsapp/src/java/main
+** src-app - jtsapp/src/main/java
+** test-app - jtsapp/src/test/java
 ** src-io - jtsio/src
 ** test-io - jtsio/test
 
