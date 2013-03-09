@@ -246,16 +246,31 @@ public class RobustLineIntersector
      */
     if (! isInSegmentEnvelopes(intPt)) {
 //      System.out.println("Intersection outside segment envelopes: " + intPt);
-//      System.out.println("Segments: " + this);
+      
       // compute a safer result
+      // copy the coordinate, since it may be rounded later
+      intPt = new Coordinate(nearestEndpoint(p1, p2, q1, q2));
 //    intPt = CentralEndpointIntersector.getIntersection(p1, p2, q1, q2);
-      intPt = nearestEndpoint(p1, p2, q1, q2);
+      
+//      System.out.println("Segments: " + this);
 //      System.out.println("Snapped to " + intPt);
+//      checkDD(p1, p2, q1, q2, intPt);
     }
     if (precisionModel != null) {
       precisionModel.makePrecise(intPt);
     }
     return intPt;
+  }
+
+  private void checkDD(Coordinate p1, Coordinate p2, Coordinate q1,
+      Coordinate q2, Coordinate intPt)
+  {
+    Coordinate intPtDD = CGAlgorithmsDD.intersection(p1, p2, q1, q2);
+    boolean isIn = isInSegmentEnvelopes(intPtDD);
+    System.out.println(   "DD in env = " + isIn + "  --------------------- " + intPtDD);
+    if (intPt.distance(intPtDD) > 0.0001) {
+      System.out.println("Distance = " + intPt.distance(intPtDD));
+    }
   }
 
   private Coordinate intersectionWithNormalization(
