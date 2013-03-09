@@ -31,23 +31,18 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.index;
+package com.vividsolutions.jts.index;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
-
 import test.jts.index.STRtreeDemo;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.index.ItemVisitor;
-import com.vividsolutions.jts.index.SpatialIndex;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
 import com.vividsolutions.jts.index.strtree.AbstractNode;
 import com.vividsolutions.jts.index.strtree.ItemBoundable;
 import com.vividsolutions.jts.index.strtree.STRtree;

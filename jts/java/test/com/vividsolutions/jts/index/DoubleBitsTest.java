@@ -1,4 +1,3 @@
-
 /*
  * The JTS Topology Suite is a collection of Java classes that
  * implement the fundamental operations required to validate a given
@@ -31,51 +30,29 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.index;
+package com.vividsolutions.jts.index;
 
 import junit.framework.TestCase;
+import junit.textui.TestRunner;
 
-import com.vividsolutions.jts.index.SpatialIndex;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
-import com.vividsolutions.jtstest.util.SerializationUtil;
-
-
+import com.vividsolutions.jts.index.quadtree.DoubleBits;
 /**
+ * Tests DoubleBits
  * @version 1.7
  */
-public class QuadtreeTest extends TestCase {
+public class DoubleBitsTest extends TestCase {
 
-  public QuadtreeTest(String Name_) {
-    super(Name_);
+  public static void main(String args[]) {
+    TestRunner.run(DoubleBitsTest.class);
   }
 
-  public static void main(String[] args) {
-    String[] testCaseName = {QuadtreeTest.class.getName()};
-    junit.textui.TestRunner.main(testCaseName);
-  }
+  public DoubleBitsTest(String name) { super(name); }
 
-  public void testSpatialIndex()
-  throws Exception
+  public void testExponent() throws Exception
   {
-    SpatialIndexTester tester = new SpatialIndexTester();
-    tester.setSpatialIndex(new Quadtree());
-    tester.init();
-    tester.run();
-    assertTrue(tester.isSuccess());
-  }
-  
-  public void testSerialization()
-  throws Exception
-  {
-    SpatialIndexTester tester = new SpatialIndexTester();
-    tester.setSpatialIndex(new Quadtree());
-    tester.init();
-    Quadtree tree = (Quadtree) tester.getSpatialIndex();
-    byte[] data = SerializationUtil.serialize(tree);
-    tree = (Quadtree) SerializationUtil.deserialize(data);
-    tester.setSpatialIndex(tree);
-    tester.run();
-    assertTrue(tester.isSuccess());
+    assertTrue(DoubleBits.exponent(-1) == 0);
+    assertTrue(DoubleBits.exponent(8.0) == 3);
+    assertTrue(DoubleBits.exponent(128.0) == 7);
   }
 
 }

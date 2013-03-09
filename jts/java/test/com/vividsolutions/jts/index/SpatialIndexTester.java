@@ -31,13 +31,12 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.index;
+package com.vividsolutions.jts.index;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.index.SpatialIndex;
 
 
 /**

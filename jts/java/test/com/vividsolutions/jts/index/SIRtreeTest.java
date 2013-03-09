@@ -31,7 +31,7 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.index;
+package com.vividsolutions.jts.index;
 import java.util.List;
 
 import junit.framework.TestCase;
