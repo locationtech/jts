@@ -15,7 +15,9 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-import com.vividsolutions.jtstest.testbuilder.*;
+import com.vividsolutions.jtstest.*;
+import com.vividsolutions.jtstest.testbuilder.AppConstants;
+import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.ui.style.Style;
 
 public class GeometryPainter 

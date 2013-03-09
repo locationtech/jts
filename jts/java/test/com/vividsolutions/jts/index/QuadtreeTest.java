@@ -33,10 +33,10 @@
  */
 package com.vividsolutions.jts.index;
 
+import test.jts.util.SerializationUtil;
 import junit.framework.TestCase;
 
 import com.vividsolutions.jts.index.quadtree.Quadtree;
-import com.vividsolutions.jtstest.util.SerializationUtil;
 
 
 /**

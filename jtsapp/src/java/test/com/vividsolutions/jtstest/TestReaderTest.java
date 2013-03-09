@@ -32,7 +32,7 @@
  *     www.vividsolutions.com
  */
 
-package test.jts.junit;
+package com.vividsolutions.jtstest;
 
 import java.io.File;
 import java.util.Iterator;

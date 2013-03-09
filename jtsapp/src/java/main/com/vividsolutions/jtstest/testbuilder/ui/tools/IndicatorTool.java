@@ -8,7 +8,8 @@ import java.awt.geom.Point2D;
 
 import com.vividsolutions.jts.awt.FontGlyphReader;
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jtstest.testbuilder.*;
+import com.vividsolutions.jtstest.*;
+import com.vividsolutions.jtstest.testbuilder.AppConstants;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 
 public abstract class IndicatorTool extends BasicTool

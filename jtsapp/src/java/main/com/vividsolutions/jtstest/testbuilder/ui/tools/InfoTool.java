@@ -34,7 +34,8 @@ package com.vividsolutions.jtstest.testbuilder.ui.tools;
 
 import java.awt.event.MouseEvent;
 
-import com.vividsolutions.jtstest.testbuilder.*;
+import com.vividsolutions.jtstest.*;
+import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 
 /**
  * @version 1.7

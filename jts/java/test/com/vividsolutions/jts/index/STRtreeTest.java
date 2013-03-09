@@ -38,6 +38,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import test.jts.index.STRtreeDemo;
+import test.jts.util.SerializationUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -47,7 +48,6 @@ import com.vividsolutions.jts.index.strtree.AbstractNode;
 import com.vividsolutions.jts.index.strtree.ItemBoundable;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.util.AssertionFailedException;
-import com.vividsolutions.jtstest.util.SerializationUtil;
 
 
 /**

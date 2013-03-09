@@ -9,7 +9,12 @@ import java.awt.geom.Point2D;
 import com.vividsolutions.jts.awt.FontGlyphReader;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jtstest.testbuilder.*;
+import com.vividsolutions.jtstest.*;
+import com.vividsolutions.jtstest.testbuilder.AppConstants;
+import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
+import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;
+import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
+import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 
 public abstract class BasicTool implements Tool

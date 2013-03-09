@@ -3,7 +3,9 @@ package com.vividsolutions.jtstest.testbuilder.ui.style;
 import java.awt.*;
 import java.awt.geom.*;
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jtstest.testbuilder.*;
+import com.vividsolutions.jtstest.*;
+import com.vividsolutions.jtstest.testbuilder.AppConstants;
+import com.vividsolutions.jtstest.testbuilder.Viewport;
 
 public class VertexStyle  implements Style
 {

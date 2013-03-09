@@ -1,4 +1,4 @@
-package com.vividsolutions.jtstest.util;
+package test.jts.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
