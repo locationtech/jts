@@ -1,8 +1,7 @@
-package test.jts.junit.noding;
+package com.vividsolutions.jts.noding;
 
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.noding.*;
 import com.vividsolutions.jts.geom.Coordinate;
 /**
  * Test IntersectionSegment#compareNodePosition

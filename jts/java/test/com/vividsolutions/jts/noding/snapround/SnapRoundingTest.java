@@ -1,15 +1,16 @@
-package test.jts.junit.noding.snapround;
+package com.vividsolutions.jts.noding.snapround;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
-import java.util.*;
-
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.*;
-import com.vividsolutions.jts.noding.*;
-import com.vividsolutions.jts.noding.snapround.GeometryNoder;
 
 /**
  * Test Snap Rounding

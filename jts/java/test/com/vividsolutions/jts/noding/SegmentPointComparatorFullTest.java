@@ -1,10 +1,11 @@
-package test.jts.junit.noding;
+package com.vividsolutions.jts.noding;
 
 
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.noding.*;
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 /**
  * Test IntersectionSegment#compareNodePosition using an exhaustive set
