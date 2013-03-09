@@ -12,11 +12,13 @@ NOTE: JTS is evolving towards a Maven-like structure, but is not quite there yet
 * jtsio - I/O drivers for proprietary formats
 * jtsapp - Applications for working with JTS
 * libjts - A wrapper for building JTS with GCJ (unmaintained)
+* bin - Scripts for running JTS tools on various platforms
+* doc - Documentation
 
 Building JTS
 ------------
 
-* In the project root directory execute
+* In the directory 'jts' execute
 
   ant
   
@@ -43,12 +45,16 @@ easiest for working with all modules.
 ** src-io - jtsio/src
 ** test-io - jtsio/test
 
-* Link to the libs in
+* Link to the libs in:
 ** jts/java/lib
 ** jtsio/lib
 
 It is helpful to make Run Configurations for the following JTS tools:
 
 * JTS TestBuilder - com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
+** VM args: -Xmx1000M
+
 * JTS XML Tests - com.vividsolutions.jtstest.testrunner.TopologyTestApp
+** Program arguments: -files <jts>/testxml/general <jts>/testxml/validate  
+                           (where <jts> is the path of the jts directory)
 
