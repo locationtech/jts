@@ -30,14 +30,16 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.operation;
+package com.vividsolutions.jts.operation;
 
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.operation.*;
-import junit.framework.*;
-import junit.textui.*;
+import junit.framework.TestCase;
+import junit.textui.TestRunner;
+
+import com.vividsolutions.jts.algorithm.BoundaryNodeRule;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Tests {@link BoundaryOp} with different {@link BoundaryNodeRule}s.

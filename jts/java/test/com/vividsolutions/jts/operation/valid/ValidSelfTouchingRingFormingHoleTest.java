@@ -1,11 +1,9 @@
-package test.jts.junit.operation.valid;
-
-import java.util.*;
+package com.vividsolutions.jts.operation.valid;
 
 import junit.framework.TestCase;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.operation.valid.IsValidOp;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Tests allowing IsValidOp to validate polygons with

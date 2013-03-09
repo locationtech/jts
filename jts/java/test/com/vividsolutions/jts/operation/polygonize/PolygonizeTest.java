@@ -31,19 +31,18 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.operation.polygonize;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
-import com.vividsolutions.jts.util.Assert;
-
-import junit.framework.TestCase;
+package com.vividsolutions.jts.operation.polygonize;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+
+import junit.framework.TestCase;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.util.Assert;
 
 
 

@@ -1,8 +1,12 @@
-package test.jts.junit.operation.overlay;
+package com.vividsolutions.jts.operation.overlay;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
 import junit.framework.TestCase;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 public class FixedPrecisionSnappingTest extends TestCase 
 {

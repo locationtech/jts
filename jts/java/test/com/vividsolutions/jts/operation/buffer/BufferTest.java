@@ -31,12 +31,11 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.operation.buffer;
-
-import com.vividsolutions.jts.geom.PrecisionModel;
+package com.vividsolutions.jts.operation.buffer;
 
 import junit.framework.TestCase;
-import test.jts.junit.*;
+
+import com.vividsolutions.jts.geom.PrecisionModel;
 
 
 /**

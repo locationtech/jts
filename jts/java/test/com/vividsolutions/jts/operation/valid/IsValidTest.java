@@ -30,13 +30,15 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.operation.valid;
+package com.vividsolutions.jts.operation.valid;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.valid.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.WKTReader;
 
 

@@ -31,18 +31,26 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package test.jts.junit.operation.buffer;
+package com.vividsolutions.jts.operation.buffer;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import junit.framework.Assert;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
+import com.vividsolutions.jts.operation.buffer.validate.BufferResultValidator;
 import com.vividsolutions.jtstest.util.StringUtil;
-import com.vividsolutions.jts.operation.buffer.validate.*;
 
 /**
  * @version 1.7

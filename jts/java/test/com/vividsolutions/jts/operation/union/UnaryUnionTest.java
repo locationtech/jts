@@ -1,4 +1,4 @@
-package test.jts.junit.operation.union;
+package com.vividsolutions.jts.operation.union;
 
 import java.util.*;
 import test.jts.junit.*;

@@ -1,15 +1,13 @@
-package test.jts.junit.operation.relate;
-
-import java.util.*;
-import java.io.IOException;
+package com.vividsolutions.jts.operation.relate;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.util.*;
-import com.vividsolutions.jts.operation.relate.RelateOp;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.IntersectionMatrix;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Tests {@link Geometry#relate}.

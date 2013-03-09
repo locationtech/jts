@@ -1,11 +1,13 @@
-package test.jts.junit.operation.linemerge;
+package com.vividsolutions.jts.operation.linemerge;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import junit.framework.TestCase;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.operation.linemerge.LineSequencer;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Test LineSequencer

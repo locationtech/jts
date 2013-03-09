@@ -1,11 +1,13 @@
-package test.jts.junit.operation.valid;
-
-import java.util.*;
+package com.vividsolutions.jts.operation.valid;
 
 import junit.framework.TestCase;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.operation.valid.IsValidOp;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.WKTReader;
 
 /**
  * Tests validating geometries with
