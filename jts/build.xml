@@ -246,12 +246,9 @@
                  usefile="false"/>
       <batchtest todir="${reports.tests}">
         <fileset dir="${build.classes}">
-          <include name="**/*Test.class"/>
-          <exclude name="**/junit/**/*Test.class"/>
-          <exclude name="**/junit/**/*$*.class"/>
-          <exclude name="**/junit/**/Abstract*.class"/>
-          <exclude name="**/perf/**/*Test.class"/>
-          <exclude name="**/MasterTester.class"/>
+          <include name="com/**/*Test.class"/>
+          <exclude name="**/*$*.class"/>
+          <exclude name="**/Abstract*.class"/>
         </fileset>
       </batchtest>        
     </junit>
