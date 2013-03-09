@@ -199,7 +199,6 @@ public class CGAlgorithmsDD
     DD numy = numy1.subtract(numy2);
     double fracQ = numy.selfDivide(denom).doubleValue();
     
-//    double y = DD.valueOf(p1.y).selfAdd(DD.valueOf(p2.y).selfSubtract(p1.y).selfMultiply(fracQ)).doubleValue();
     double y = DD.valueOf(q1.y).selfAdd(DD.valueOf(q2.y).selfSubtract(q1.y).selfMultiply(fracQ)).doubleValue();
 
     return new Coordinate(x,y);
