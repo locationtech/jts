@@ -32,6 +32,9 @@
  */
 package com.vividsolutions.jts.io.oracle;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
@@ -49,8 +52,11 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Martin Davis
  *
  */
-public class OraGeom
+class OraGeom
 {
+	private static NumberFormat fmt = new DecimalFormat("0.#");
+	  
+	public static final String SQL_NULL = "NULL";
 
   int gType;
   int srid;
@@ -146,15 +152,42 @@ public class OraGeom
   
   public String toString()
   {
+	  return toSQLString();
+	  /*
 	  return "GTYPE=" + gType 
 			  + " SRID=" + srid
 			  + " ELEM_INFO=" + toStringElemInfo(elemInfo)
 			  + " ORDS=" + toString(ordinates);
+			  */
+  }
+  
+  public String toSQLString()
+  {
+	StringBuffer buf = new StringBuffer();
+	buf.append("SDO_GEOMETRY(");
+	
+	buf.append(gType);
+	buf.append(",");
+	
+	buf.append(srid >= 0 ? srid : SQL_NULL);
+	buf.append(",");
+	
+	buf.append(toStringPointType());
+	buf.append(",");
+	
+	buf.append(toStringElemInfo());
+	buf.append(",");
+	
+	buf.append(toStringOrdinates());
+	buf.append(")");
+	
+	return buf.toString();
   }
   
   private String toString(double[] ordinates)
   {
-    if (ordinates == null) return "null";
+    if (ordinates == null) return SQL_NULL;
+    
     StringBuffer buf = new StringBuffer();
     for (int i = 0; i < ordinates.length; i++) {
       if (i > 0) {
@@ -163,11 +196,17 @@ public class OraGeom
         if (i % ordDim == 0)
           buf.append("  ");
       }
-      buf.append(ordinates[i]);
+      buf.append(number(ordinates[i]));
     }
     return buf.toString();
   }
 
+  private static String number(double d)
+  {
+	 if (Double.isNaN(d)) return SQL_NULL;
+	 return fmt.format(d);
+  }
+  
   public static String toStringElemInfo(int[] elemInfo)
   {
     if (elemInfo == null) return "null";
@@ -183,8 +222,33 @@ public class OraGeom
     }
     return buf.toString();
   }
+  
+  private Object toStringOrdinates() {
+	  if (ordinates == null) {
+		 return SQL_NULL;
+	  }
+	  return "SDO_ORDINATE_ARRAY(" + toString(ordinates) + ")"; 
+  }
 
-  public int startingOffset(int elemIndex)
+  private Object toStringElemInfo() {
+	  if (elemInfo == null) {
+		 return SQL_NULL;
+	  }
+	  return "SDO_ELEM_INFO_ARRAY(" + toStringElemInfo(elemInfo) + ")"; 
+  }
+
+  private Object toStringPointType() {
+	  if (point == null) {
+		 return SQL_NULL;
+	  }
+	  return "SDO_POINT_TYPE(" 
+	  	+ number(point[0]) + ","
+	  	+ number(point[1]) + ","
+	  	+ number(point[2])
+	  	+ ")"; 
+  }
+
+public int startingOffset(int elemIndex)
   {
     // if beyond actual elements, return "virtual" startingOffset
     if (((elemIndex * 3)) >= elemInfo.length) {

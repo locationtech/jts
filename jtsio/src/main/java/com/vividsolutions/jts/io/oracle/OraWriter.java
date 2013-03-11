@@ -248,6 +248,26 @@ public class OraWriter
     return OraUtil.toSTRUCT(sdoGeometryComponents, OraGeom.TYPE_GEOMETRY, connection);
   }
 
+  /**
+   * Writes a Geometry in Oracle SDO_GEOMETRY SQL literal format.
+   * <p>
+   * Examples of output are:
+   * <pre>
+   * SDO_GEOMETRY(2001,NULL,NULL,SDO_ELEM_INFO_ARRAY(1,1,1),SDO_ORDINATE_ARRAY(50,50))
+   * SDO_GEOMETRY(3001,NULL,SDO_POINT_TYPE(50,50,100,),NULL,NULL)
+   * SDO_GEOMETRY(3006,8307,NULL,SDO_ELEM_INFO_ARRAY(1,2,1,  7,2,1),SDO_ORDINATE_ARRAY(0,0,2,  50,50,100,  10,10,12,  150,150,110))
+   * </pre>
+   * 
+   * @param geom the Geometry to write
+   * @return a string representing the geometry as an SDO_GEOMETRY literal
+   */
+  public String writeSQL(Geometry geom)
+  {
+	  if (geom == null) return OraGeom.SQL_NULL;
+	  OraGeom oraGeom = createOraGeom(geom);
+	  return oraGeom.toString();
+  }
+  
 	private STRUCT createEmptySDOGeometry() throws SQLException {
 		return OraUtil.toSTRUCT(new Datum[5], OraGeom.TYPE_GEOMETRY, connection);
 	}
