@@ -3,6 +3,8 @@
   <description>
 
     This is an Ant build script for the JTS Topology Suite.
+    
+    It depends on properties specified in 'build.properties".
 
   </description>
 
@@ -29,6 +31,7 @@
   	<property name="jtsapp.classes" value="${build}/jtsapp-classes"/>
   	  	
   	<property name="jtsio" 		value="${basedir}/jtsio"/>
+ 	<property name="jtsio.src" 	value="${jtsio}/src/main/java"/>
   	<property name="jtsio.lib" 	value="${jtsio}/lib"/>
   	<property name="jtsio.classes" 	value="${build}/jtsio-classes"/>
   	
@@ -165,8 +168,8 @@
   	description='Copies JTS-IO files to distribution directory' >
    <delete dir="${pre-zip.jtsio}/src"/>
    <delete dir="${pre-zip.jtsio}/test"/>
-   <copy todir='${pre-zip.jtsio}'>
-     <fileset dir="${jtsio}" includes="src/**">
+   <copy todir='${pre-zip.jtsio}/src'>
+     <fileset dir="${jtsio.src}">
      </fileset>
    </copy>    
   </target>
@@ -174,7 +177,7 @@
   <target name='jtsio-jar' depends='props'>
     <delete dir="${jtsio.classes}"/>
     <mkdir dir="${jtsio.classes}"/>
-    <javac srcdir="${jtsio}/src" 
+    <javac srcdir="${jtsio.src}" 
         	includes="**/*.java" listfiles="no"
         	destdir="${jtsio.classes}" 
         	classpath="${pre-zip.lib}/jts-${jts.version}.jar;${jtsio.lib}/classes12-${ora.version}.jar;${jtsio.lib}/jsde91_sdk.jar"/>
