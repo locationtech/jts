@@ -60,8 +60,6 @@ public class OraWriterCreateTest extends BaseOraTestCase
     //testXY_RectangleMultiPolygon();
   }
   
-  // TODO: test that writing GeomCollections with MultiPoints WORKS
-  
   public void testPoint() throws Exception {
     OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2001,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1),MDSYS.SDO_ORDINATE_ARRAY(50,50));
     checkValuePointOrdinates(oraGeom, "POINT (50 50)");
@@ -291,7 +289,7 @@ public class OraWriterCreateTest extends BaseOraTestCase
     
     boolean isEqual = actual.isEqual(expectedOraGeom);
     if (! isEqual) {
-    	actual.isEqual(expectedOraGeom);
+    	//actual.isEqual(expectedOraGeom);
       System.out.println("Error writing  " + wkt);
       System.out.println("Expected:   " + expectedOraGeom + "  Actual: " + actual);
     }
