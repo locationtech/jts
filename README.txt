@@ -76,8 +76,8 @@ fine for working with all modules.
 ** test - jts/java/test
 ** src-app - jtsapp/src/main/java
 ** test-app - jtsapp/src/test/java
-** src-io - jtsio/src
-** test-io - jtsio/test
+** src-io - jtsio/src/main.java
+** test-io - jtsio/src/test/java
 
 * Link to the external archives in:
 ** jts/java/lib

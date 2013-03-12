@@ -168,7 +168,7 @@
   	description='Copies JTS-IO files to distribution directory' >
    <delete dir="${pre-zip.jtsio}/src"/>
    <delete dir="${pre-zip.jtsio}/test"/>
-   <copy todir='${pre-zip.jtsio}/src'>
+   <copy todir="${pre-zip.jtsio}/src">
      <fileset dir="${jtsio.src}">
      </fileset>
    </copy>    
@@ -185,7 +185,7 @@
     <jar destfile="${pre-zip.lib}/jtsio-${jts.version}.jar" basedir="${jtsio.classes}" />
     <!-- Sources JAR -->
     <jar jarfile="${pre-zip.lib}/jtsio-${jts.version}-sources.jar"
-             basedir="${jtsio}/src"
+             basedir="${jtsio.src}"
              includes="**/*.java"
              excludes="**/jtstest/ **/jtsplugin/"
              />
