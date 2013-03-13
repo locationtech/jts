@@ -65,6 +65,11 @@ import oracle.sql.*;
  * A connection to an Oracle instance with access to the definition of the <code>MDSYS.SDO_GEOMETRY</code>
  * type is required.
  * <p>
+ * The coordinate dimension of the output is determined automatically by inspecting a sample Coordinate.
+ * If the Z value is NaN, the output dimension is set to 2.
+ * If Z values are present but dimension 2 output is required, the {@link #setDimension(int)} method
+ * can be used to limit the dimensions.
+ * <p>
  * By default, a single {@link Point} is written using the optimized <code>SDO_POINT_TYPE</code> attribute.
  * This can be overridden to use the (less compact) <code>SDO_ELEM_INFO/SDOORDINATES</code> representation
  * by using {@link #setOptimizePoint(boolean)}.
@@ -78,6 +83,7 @@ import oracle.sql.*;
  * Oracle cannot represent {@link MultiPolygon}s or {@link MultiLineString}s directly as elements
  * of a {@link GeometryCollection}. Instead, their components are written individually.
  * {@link MultiPoint}s are represented directly, however.
+ * 
  * <h3>LIMITATIONS</h3>
  * <ul>
  * <li>Since JTS does not support Measures, they cannot be written.
@@ -89,6 +95,7 @@ import oracle.sql.*;
  */
 public class OraWriter 
 {
+	
 	/**
 	 * A connection providing access to the required type definitions
 	 */
@@ -96,20 +103,20 @@ public class OraWriter
 	/**
 	 * The maximum output dimension to write
 	 */
-	private int maxOutputDimension = 2;
+	private int outputDimension = OraGeom.NULL_DIMENSION;
 	/**
 	 * The default SRID to write 
 	 */
 	private int srid = OraGeom.SRID_NULL;
-  private boolean isOptimizeRectangle = false;
-  private boolean isOptimizePoint = true;
+	private boolean isOptimizeRectangle = false;
+	private boolean isOptimizePoint = true;
 
 	/**
 	 * Creates a writer using a valid Oracle connection. 
 	 * 
 	 * The connection should have sufficient privileges to view the description of the MDSYS.SDO_GEOMETRY type.
 	 * 
-	 * The maximum output dimension is set to 2
+	 * The output dimension will be whatever the dimension of the input is.
 	 * 
 	 * @param con a valid Oracle connection
 	 */
@@ -124,20 +131,20 @@ public class OraWriter
 	 * The connection should have sufficient privileges to view the description of the MDSYS.GEOMETRY type.
 	 * 
 	 * @param con a valid Oracle connection
-	 * @param maxOutputDimension the maximum output dimension
+	 * @param outputDimension the coordinate dimension to use for the output
 	 */
-	public OraWriter(OracleConnection con, int maxOutputDimension){
+	public OraWriter(OracleConnection con, int outputDimension){
 		this.connection = con;
-		this.maxOutputDimension = maxOutputDimension;
+		this.outputDimension = outputDimension;
 	}
 	
   /**
-   * Sets the maximum output dimension for the created Oracle geometries.
+   * Sets the coordinate dimension for the created Oracle geometries.
    * 
-   * @param maxOutputDimension The dimension to set.
+   * @param outputDimension the coordinate dimension to use for the output
    */
-  public void setDimension(int maxOutputDimension) {
-    this.maxOutputDimension = maxOutputDimension;
+  public void setDimension(int outputDimension) {
+    this.outputDimension = outputDimension;
   }
 
 	/**
@@ -293,7 +300,6 @@ public class OraWriter
         point = pointOrdinates(geom);
     }
     else {
-      // testing
       int dim = dimension(geom);
       List elemTriplets = new ArrayList();
       List ordGeoms = new ArrayList();
@@ -490,13 +496,11 @@ public class OraWriter
           ordIndex = writeRectangleOrds(geom, dim, ords, ordIndex);
         }
         else {
-          //TODO: write in CCW orientation
           ordIndex = writeOrdsOriented(((LineString) geom).getCoordinateSequence(), dim, ords, ordIndex, true);
         }
         break;
         
       case OraGeom.ETYPE.POLYGON_INTERIOR:
-        //TODO: write in CW orientation
         ordIndex = writeOrdsOriented(((LineString) geom).getCoordinateSequence(), dim, ords, ordIndex, false);
         break;
       }
@@ -611,14 +615,18 @@ public class OraWriter
 
   /**
    * Return dimension of output coordinates (either 2,3 or 4), 
-   * and clamped to the maximum output dimension (if any).
+   * respecting the explicit output dimension (if any).
    * 
    * @param geom
    * @return coordinate dimension number
    */
   private int dimension(Geometry geom) {
+	  if (outputDimension != OraGeom.NULL_DIMENSION)
+		  return outputDimension;
+	  
+	  //TODO: check dimension of a geometry CoordinateSequence to determine dimension
   	int d = Double.isNaN(geom.getCoordinate().z) ? 2 : 3;
-  	return d < maxOutputDimension ? d : maxOutputDimension;
+  	return d;
   }
 
   /**
@@ -630,22 +638,6 @@ public class OraWriter
   private int lrsDim(Geometry geom) {
     //TODO: implement measure support when available 
   	return 0;
-  }
-    
-  /**
-   * reverses the coordinate order
-   * 
-   * @param factory
-   * @param sequence
-   * 
-   * @return CoordinateSequence reversed sequence
-   */
-  private CoordinateSequence reverse(CoordinateSequenceFactory factory,
-      CoordinateSequence sequence)
-  {
-    CoordinateList list = new CoordinateList(sequence.toCoordinateArray());
-    Collections.reverse(list);
-    return factory.create(list.toCoordinateArray());
   }
 
 }

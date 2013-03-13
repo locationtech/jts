@@ -93,6 +93,17 @@ public class OraWriterCreateTest extends BaseOraTestCase
 	    3, "LINESTRING (0 0 0, 50 50 100)");
   }
 
+  /**
+   * Tests limiting output dimension.
+   * 
+   * @throws Exception
+   */
+  public void testXY_LineString_from_XYZ() throws Exception {
+	  checkValue(
+			  MDSYS.SDO_GEOMETRY(2002,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,50)),
+	    2, "LINESTRING (0 0 0, 50 50 100)");
+  }
+
   // Writing measures are not yet supported
   public void TODO_testXYM_LineString() throws Exception {
 	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(3302,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1, 2, 1),MDSYS.SDO_ORDINATE_ARRAY(1, 1, 20, 2, 2, 30));

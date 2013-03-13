@@ -75,15 +75,18 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 /**
  * Reads a {@link Geometry} from an Oracle <code>MDSYS.GEOMETRY</code> <code>STRUCT</code> object.
  * <p>
- * The number of dimensions read is limited by the number supported
- * by the {@link CoordinateSequenceFactory} used.
- * <p>
  * A {@link GeometryFactory} may be provided, otherwise a default one will be used.
  * If a {@link PrecisionModel} other than {@link PrecisionModel#FLOATING} 
  * is supplied it is the callers's responsibility
  * to ensure that it matches the precision of the incoming data.
  * If a lower precision for the data is required, a subsequent
  * process must be run on the data to reduce its precision.
+ * <p>
+ * The reader attempts to create geometry whose coordinate dimension matches that of the input.
+ * The output coordinate dimension can be set explicitly by the 
+ * {@link #setDimension(int)} method. 
+ * However, the output coordinate dimension is ultimately limited by the dimensions supported
+ * by the provided {@link CoordinateSequenceFactory}.
  * <p>
  * The following Oracle geometry types are supported:
  * <ul>
@@ -117,12 +120,11 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  */
 public class OraReader 
 {
-	
-	private static final int NULL_DIMENSION = -1;
+	//TODO: add a strict mode, that checks for ordinate length & other errors?
 	
 	private GeometryFactory geometryFactory;
 
-	private int dimension = NULL_DIMENSION;
+	private int outputDimension = OraGeom.NULL_DIMENSION;
 
 	/**
 	 * Creates a new reader, with a default {@link GeometryFactory}.
@@ -150,21 +152,21 @@ public class OraReader
 	}
 	
 	/**
-	 * Gets the number of coordinate dimensions which will be read.
+	 * Gets the coordinate dimension which will be created.
 	 *
-	 * @return the dimension which will be read
+	 * @return the coordinate dimension which will be created
 	 */
 	public int getDimension() {
-		return dimension;
+		return outputDimension;
 	}
 
 	/**
-	 * Sets the number of coordinate dimensions to read.
+	 * Sets the coordinate dimension to use for created geometries.
 	 *
-	 * @param dimension the dimension to read
+	 * @param dimension the coordinate dimension to create
 	 */
 	public void setDimension(int dimension) {
-		this.dimension = dimension;
+		this.outputDimension = dimension;
 	}
 
 	/**
@@ -208,17 +210,12 @@ public class OraReader
    * @return the Geometry read
    * @throws IllegalArgumentException when an encoding error or unsupported geometry type is found
    */
-	Geometry read(OraGeom oraGeom) {
+  Geometry read(OraGeom oraGeom) {
     int ordDim = oraGeom.ordDim();
     if (ordDim < 2) {
     	throw new IllegalArgumentException("Dimension D = " + ordDim + " is not supported by JTS. " +
     			"Either specify a valid dimension or use Oracle Locator Version 9i or later");
     }
-    // The actual dimension read is the smaller of the explicit dimension and the input dimension
-    int outputDim = ordDim;
-    if(dimension != NULL_DIMENSION){
-    	outputDim = dimension;
-    }    
     // read from SDO_POINT_TYPE, if that carries the primary geometry data
     if (oraGeom.isCompactPoint()) {
       CoordinateSequence ptCoord = extractCoords(oraGeom, oraGeom.point);
@@ -567,29 +564,23 @@ public class OraReader
     
     private CoordinateSequence extractCoords(OraGeom oraGeom, double[] ordinates, int start, int end)
     {
-      int ordDim = oraGeom.ordDim();
-      // The actual dimension read is the smaller of the explicit dimension and the input dimension
-      int outputDim = oraGeom.ordDim();
-      if(dimension != NULL_DIMENSION){
-        outputDim = dimension;
-      }    
       CoordinateSequenceFactory csFactory = geometryFactory.getCoordinateSequenceFactory();
       // handle empty case
       if ((ordinates == null) || (ordinates.length == 0)) {
         return csFactory.create(new Coordinate[0]);
       }
-      /*
-      if (checkValidOrdLength) {
-        if ((ordDim == 0 && ordinates.length != 0)
-            || (ordDim != 0 && ((ordinates.length % ordDim) != 0))) {
-          throw new IllegalArgumentException("SDO_GTYPE Dimension " + ordDim
-              + " is inconsistent with SDO_ORDINATES length " + ordinates.length);
-        }
+      int ordDim = oraGeom.ordDim();
+      
+      /**
+       * The dimension created matches the input dim, unless it is explicitly set,
+       * and unless the CoordinateSequence impl limits the dimension.
+       */
+      int csDim = ordDim;
+      if(outputDimension != OraGeom.NULL_DIMENSION){
+    	  csDim = outputDimension;
       }
-      */
       int nCoord = (ordDim == 0 ? 0 : (end - start) / ordDim);
 
-      int csDim = outputDim;
       CoordinateSequence cs = csFactory.create(nCoord, csDim);
       int actualCSDim = cs.getDimension();
       int readDim = Math.min(actualCSDim, ordDim);
@@ -597,6 +588,7 @@ public class OraReader
       for (int iCoord = 0; iCoord < nCoord; iCoord++) {
         for (int iDim = 0; iDim < readDim; iDim++) {
           int ordIndex = start + iCoord * ordDim + iDim - 1;
+          // TODO: be more lenient in handling invalid ordinates length
           cs.setOrdinate(iCoord, iDim, ordinates[ordIndex]);
         }
       }

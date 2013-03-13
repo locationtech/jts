@@ -54,6 +54,8 @@ import com.vividsolutions.jts.geom.Polygon;
  */
 class OraGeom
 {
+	public static final int NULL_DIMENSION = -1;	
+
 	private static NumberFormat fmt = new DecimalFormat("0.#");
 	  
 	public static final String SQL_NULL = "NULL";
@@ -66,6 +68,8 @@ class OraGeom
   private int geomType;
   private int ordDim;
   private int lrsDim;
+
+
 
   public OraGeom(int gType, int srid, double[] ptType, int[] elemInfo, double[] ordinates)
   {
