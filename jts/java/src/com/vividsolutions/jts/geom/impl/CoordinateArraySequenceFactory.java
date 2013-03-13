@@ -92,6 +92,7 @@ public final class CoordinateArraySequenceFactory
       //throw new IllegalArgumentException("dimension must be <= 3");
     // handle bogus dimension
     if (dimension < 2)
+    	// TODO: change to dimension = 2  ???
       return new CoordinateArraySequence(size);
     return new CoordinateArraySequence(size, dimension);
   }
