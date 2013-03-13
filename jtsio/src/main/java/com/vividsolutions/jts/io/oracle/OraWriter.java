@@ -65,11 +65,6 @@ import oracle.sql.*;
  * A connection to an Oracle instance with access to the definition of the <code>MDSYS.SDO_GEOMETRY</code>
  * type is required.
  * <p>
- * The coordinate dimension of the output is determined automatically by inspecting a sample Coordinate.
- * If the Z value is NaN, the output dimension is set to 2.
- * If Z values are present but dimension 2 output is required, the {@link #setDimension(int)} method
- * can be used to limit the dimensions.
- * <p>
  * By default, a single {@link Point} is written using the optimized <code>SDO_POINT_TYPE</code> attribute.
  * This can be overridden to use the (less compact) <code>SDO_ELEM_INFO/SDOORDINATES</code> representation
  * by using {@link #setOptimizePoint(boolean)}.
@@ -84,9 +79,21 @@ import oracle.sql.*;
  * of a {@link GeometryCollection}. Instead, their components are written individually.
  * {@link MultiPoint}s are represented directly, however.
  * 
+ * The dimension of the output <code>SDO_GEOMETRY</code> is determined as follows:
+ * <ul>
+ * <li>by default, the dimension matches that of the input
+ * <li>currently the coordinate dimension of the input is determined by inspecting a sample coordinate.
+ * If the Z value is <code>NaN</code>, the coordinate dimension is assumed to be 2.
+ * (In the future this will be determined from the underlying {@link CoordinateSequence}s.
+ * <li>the dimension can be set explicitly by the {@link #setDimension(int)} method.
+ * This allows forcing Z output even if the Z values are <code>NaN</code>.
+ * Conversely, if Z values are present this allows forcing 2D output.
+ * </ul>
+ * 
  * <h3>LIMITATIONS</h3>
  * <ul>
  * <li>Since JTS does not support Measures, they cannot be written.
+ * (A future release could allow forcing interpreting Z as M, or else providing a fixed M value).
  * </ul>
  * 
  * @version 9i

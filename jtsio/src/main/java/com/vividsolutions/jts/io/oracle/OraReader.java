@@ -75,19 +75,6 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 /**
  * Reads a {@link Geometry} from an Oracle <code>MDSYS.GEOMETRY</code> <code>STRUCT</code> object.
  * <p>
- * A {@link GeometryFactory} may be provided, otherwise a default one will be used.
- * If a {@link PrecisionModel} other than {@link PrecisionModel#FLOATING} 
- * is supplied it is the callers's responsibility
- * to ensure that it matches the precision of the incoming data.
- * If a lower precision for the data is required, a subsequent
- * process must be run on the data to reduce its precision.
- * <p>
- * The reader attempts to create geometry whose coordinate dimension matches that of the input.
- * The output coordinate dimension can be set explicitly by the 
- * {@link #setDimension(int)} method. 
- * However, the output coordinate dimension is ultimately limited by the dimensions supported
- * by the provided {@link CoordinateSequenceFactory}.
- * <p>
  * The following Oracle geometry types are supported:
  * <ul>
  * <li>POINT, MULTIPOINT
@@ -95,7 +82,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  * <li>POLYGON, MULTIPOLYGON
  * </ul>
  * The optimized representations of <code>SDO_POINT</code> 
- * and <code>RECTANGLE</code> are supported:
+ * and <code>RECTANGLE</code> are supported in the following way:
  * <ul>
  * <li>If the <code>SDO_POINT</code> attribute is present 
  * and <code>SDO_ELEM_INFO</code> and <code>SDO_ORDINATES</code> are not,
@@ -103,6 +90,21 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  * Otherwise, the geometry specified by the latter two attributes is read.
  * <li><code>RECTANGLE</code>s are converted to equivalent {@link Polygon}s
  * </ul> 
+ * <p>
+ * A {@link GeometryFactory} may be provided, otherwise a default one will be used.
+ * If a {@link PrecisionModel} other than {@link PrecisionModel#FLOATING} 
+ * is supplied it is the client's responsibility
+ * to ensure that it matches the precision of the incoming data.
+ * If a lower precision for the data is required, a subsequent
+ * process must be run on the data to reduce its precision.
+ * <p>
+ * The coordinate dimension of the output is determined as follows:
+ * <ul>
+ * <li>by default, the coordinate dimension matches that of the input
+ * <li>the coordinate dimension can be set explicitly by the {@link #setDimension(int)} method
+ * <li>finally, the coordinate dimension is limited by the maximum dimension supported
+ * by the provided {@link CoordinateSequenceFactory}.
+ * </ul>
  * The Geometry SRID field is populated from the input Geometry.
  * <p>
  * To use this class a suitable Oracle JDBC JAR must be present in the classpath.
@@ -113,7 +115,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
  * <li>Oracle geometries with a GTYPE of <code>43xx</code> (XYMZ) are not supported.
  * <li>Geometries containing arcs are not supported
  * <li>Surface and solid geometries are not supported
- * <li>There is currently no way to read ancillary SDO_POINT information, if present
+ * <li>There is currently no way to read ancillary SDO_POINT information
  * </ul>
  *
  * @author Martin Davis
