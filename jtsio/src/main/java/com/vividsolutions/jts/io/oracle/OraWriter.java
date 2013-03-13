@@ -138,14 +138,17 @@ public class OraWriter
 		this.outputDimension = outputDimension;
 	}
 	
-  /**
-   * Sets the coordinate dimension for the created Oracle geometries.
-   * 
-   * @param outputDimension the coordinate dimension to use for the output
-   */
-  public void setDimension(int outputDimension) {
-    this.outputDimension = outputDimension;
-  }
+    /**
+     * Sets the coordinate dimension for the created Oracle geometries.
+     * 
+     * @param outputDimension
+     *            the coordinate dimension to use for the output
+     */
+    public void setDimension(int outputDimension) {
+        if (outputDimension < 2)
+            throw new IllegalArgumentException("Output dimension must be >= 2");
+        this.outputDimension = outputDimension;
+    }
 
 	/**
 	 * Forces geometries to be written using the specified SRID. 
@@ -596,7 +599,7 @@ public class OraWriter
   private boolean isEncodeAsPointType(Geometry geom)
   {
     if (! isOptimizePoint) return false;
-    if (geom instanceof Point && (lrsDim(geom) == 0)) 
+    if (geom instanceof Point && (lrsDim(geom) == 0) && outputDimension <= 3) 
       return true;
     // Geometry type is not appropriate for SDO_POINT_TYPE
     return false;

@@ -65,11 +65,21 @@ public class OraWriterCreateTest extends BaseOraTestCase
     checkValuePointOrdinates(oraGeom, "POINT (50 50)");
   }
 
-  // Writing measures are not yet supported
+  // Writing measures is not yet supported
   public void TODO_testXYZM_Point() throws Exception {
 	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(4001,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1),MDSYS.SDO_ORDINATE_ARRAY(50,50,100,200));
 	    checkValue(oraGeom, 3, "POINT (50 50)");
-  }
+}
+
+  public void testXYZM_Point() throws Exception {
+      OraGeom oraGeom = MDSYS.SDO_GEOMETRY(4001,0,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1),MDSYS.SDO_ORDINATE_ARRAY(50,50,DNULL,DNULL));
+      checkValue(oraGeom, 4, "POINT (50 50)");
+}
+
+  public void testXYZM_Point_SetDim() throws Exception {
+      OraGeom oraGeom = MDSYS.SDO_GEOMETRY(4001,0,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1),MDSYS.SDO_ORDINATE_ARRAY(50,50,DNULL,DNULL));
+      checkValue(oraGeom, false, false, 4, "POINT (50 50)");
+}
 
   public void testXYZ_PointType() throws Exception {
 	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(3001,NULL,MDSYS.SDO_POINT_TYPE(50,50,100),NULL,NULL);
@@ -82,15 +92,14 @@ public class OraWriterCreateTest extends BaseOraTestCase
   }
 
   public void testXY_LineString() throws Exception {
-	    OraGeom oraGeom = MDSYS.
-	    		SDO_GEOMETRY(2002,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,50));
+	    OraGeom oraGeom = MDSYS.SDO_GEOMETRY(2002,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,50));
 	    checkValue(oraGeom, "LINESTRING (0 0, 50 50)");
   }
 
   public void testXYZ_LineString() throws Exception {
 	  checkValue(
 			  MDSYS.SDO_GEOMETRY(3002,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),MDSYS.SDO_ORDINATE_ARRAY(0,0,0,50,50,100)),
-	    3, "LINESTRING (0 0 0, 50 50 100)");
+			  3, "LINESTRING (0 0 0, 50 50 100)");
   }
 
   /**
@@ -101,7 +110,7 @@ public class OraWriterCreateTest extends BaseOraTestCase
   public void testXY_LineString_from_XYZ() throws Exception {
 	  checkValue(
 			  MDSYS.SDO_GEOMETRY(2002,NULL,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,2,1),MDSYS.SDO_ORDINATE_ARRAY(0,0,50,50)),
-	    2, "LINESTRING (0 0 0, 50 50 100)");
+			  2, "LINESTRING (0 0 0, 50 50 100)");
   }
 
   // Writing measures are not yet supported

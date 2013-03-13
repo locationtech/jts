@@ -48,5 +48,6 @@ public class BaseOraTestCase extends TestCase
   }
 
   protected static final int NULL = -1;
+  protected static final double DNULL = Double.NaN;
 
 }

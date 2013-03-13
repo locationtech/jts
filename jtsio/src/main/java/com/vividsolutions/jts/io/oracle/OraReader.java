@@ -160,14 +160,17 @@ public class OraReader
 		return outputDimension;
 	}
 
-	/**
-	 * Sets the coordinate dimension to use for created geometries.
-	 *
-	 * @param dimension the coordinate dimension to create
-	 */
-	public void setDimension(int dimension) {
-		this.outputDimension = dimension;
-	}
+    /**
+     * Sets the coordinate dimension to use for created geometries.
+     * 
+     * @param outputDimension
+     *            the coordinate dimension to create
+     */
+    public void setDimension(int outputDimension) {
+        if (outputDimension < 2)
+            throw new IllegalArgumentException("Output dimension must be >= 2");
+        this.outputDimension = outputDimension;
+    }
 
 	/**
 	 * Reads a {@link Geometry} representing the MDSYS.GEOMETRY
