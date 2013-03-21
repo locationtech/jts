@@ -173,7 +173,7 @@ class OraGeom
 	buf.append(gType);
 	buf.append(",");
 	
-	buf.append(srid >= 0 ? srid : SQL_NULL);
+	buf.append(srid >= 0 ? String.valueOf(srid) : SQL_NULL);
 	buf.append(",");
 	
 	buf.append(toStringPointType());
