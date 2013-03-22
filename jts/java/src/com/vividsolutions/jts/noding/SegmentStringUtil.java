@@ -34,6 +34,7 @@
 package com.vividsolutions.jts.noding;
 
 import java.util.*;
+
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 
@@ -65,4 +66,15 @@ public class SegmentStringUtil
     return segStr;
   }
 
+  public static String toString(List segStrings)
+  {
+	StringBuffer buf = new StringBuffer();
+    for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
+        SegmentString segStr = (SegmentString) i.next();
+        buf.append(segStr.toString());
+        buf.append("\n");
+        
+    }
+    return buf.toString();
+  }
 }
