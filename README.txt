@@ -95,6 +95,7 @@ Useful JTS tools:
 
 * JTS TestBuilder - com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
 ** VM args: -Xmx1000M
+** Optional VM args (on Mac): -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel
 
 * JTS XML Tests - com.vividsolutions.jtstest.testrunner.TopologyTestApp
 ** Program arguments: -files jts/testxml/general jts/testxml/validate  
