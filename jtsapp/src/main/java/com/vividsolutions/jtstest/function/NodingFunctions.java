@@ -10,6 +10,7 @@ import com.vividsolutions.jts.noding.IntersectionAdder;
 import com.vividsolutions.jts.noding.MCIndexNoder;
 import com.vividsolutions.jts.noding.NodedSegmentString;
 import com.vividsolutions.jts.noding.Noder;
+import com.vividsolutions.jts.algorithm.LineIntersector;
 import com.vividsolutions.jts.algorithm.RobustLineIntersector;
 import com.vividsolutions.jts.noding.ScaledNoder;
 import com.vividsolutions.jts.noding.SegmentString;
@@ -63,10 +64,23 @@ public class NodingFunctions
         pts);
   }
   
-  public static Geometry MCIndexNoding(Geometry geom, double scaleFactor)
+  public static Geometry MCIndexNodingWithPrecision(Geometry geom, double scaleFactor)
   {
     List segs = createNodedSegmentStrings(geom);
     PrecisionModel fixedPM = new PrecisionModel(scaleFactor);
+    
+    LineIntersector li = new RobustLineIntersector();
+    li.setPrecisionModel(fixedPM);
+
+    Noder noder = new MCIndexNoder(new IntersectionAdder(li));
+    noder.computeNodes(segs);
+    Collection nodedSegStrings = noder.getNodedSubstrings();
+    return fromSegmentStrings(nodedSegStrings);
+  }
+
+  public static Geometry MCIndexNoding(Geometry geom)
+  {
+    List segs = createNodedSegmentStrings(geom);
     Noder noder = new MCIndexNoder(new IntersectionAdder(new RobustLineIntersector()));
     noder.computeNodes(segs);
     Collection nodedSegStrings = noder.getNodedSubstrings();
