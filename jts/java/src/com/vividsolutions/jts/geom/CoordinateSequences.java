@@ -32,7 +32,6 @@
  */
 package com.vividsolutions.jts.geom;
 
-import java.util.*;
 
 /**
  * Utility functions for manipulating {@link CoordinateSequence}s
@@ -56,9 +55,9 @@ public class CoordinateSequences {
   /**
    * Swaps two coordinates in a sequence.
    *
-   * @param seq
-   * @param i
-   * @param j
+   * @param seq the sequence to modify
+   * @param i the index of a coordinate to swap
+   * @param j the index of a coordinate to swap
    */
   public static void swap(CoordinateSequence seq, int i, int j)
   {
@@ -72,13 +71,14 @@ public class CoordinateSequences {
   
   /**
    * Copies a section of a {@link CoordinateSequence} to another {@link CoordinateSequence}.
-   * The sequences must have the same dimension.
+   * The sequences may have different dimensions;
+   * in this case only the common dimensions are copied.
    *
-   * @param src
-   * @param srcPos
-   * @param dest
-   * @param destPos
-   * @param length
+   * @param src the sequence to copy from
+   * @param srcPos the position in the source sequence to start copying at
+   * @param dest the sequence to copy to
+   * @param destPos the position in the destination sequence to copy to
+   * @param length the number of coordinates to copy
    */
   public static void copy(CoordinateSequence src, int srcPos, CoordinateSequence dest, int destPos, int length)
   {
@@ -89,16 +89,18 @@ public class CoordinateSequences {
 
   /**
    * Copies a coordinate of a {@link CoordinateSequence} to another {@link CoordinateSequence}.
-   * The sequences must have the same dimension.
+   * The sequences may have different dimensions;
+   * in this case only the common dimensions are copied.
    * 
-   * @param src
-   * @param srcPos
-   * @param dest
-   * @param destPos
+   * @param src the sequence to copy from
+   * @param srcPos the source coordinate to copy
+   * @param dest the sequence to copy to
+   * @param destPos the destination coordinate to copy to
    */
   public static void copyCoord(CoordinateSequence src, int srcPos, CoordinateSequence dest, int destPos)
   {
-		for (int dim = 0; dim < src.getDimension(); dim++) {
+    int minDim = Math.min(src.getDimension(), dest.getDimension());
+		for (int dim = 0; dim < minDim; dim++) {
 			dest.setOrdinate(destPos, dim, src.getOrdinate(srcPos, dim));
 		}
   }
@@ -175,6 +177,38 @@ public class CoordinateSequences {
         copy(seq, n-1, newseq, i, 1);
     }
     return newseq;
+  }
+
+  /**
+   * Tests whether two {@link CoordinateSequence}s are equal.
+   * To be equal, the sequences must be the same length.
+   * They do not need to be of the same dimension, 
+   * but the ordinate values for the smallest dimension of the two
+   * must be equal.
+   * Two <code>NaN</code> ordinates values are considered to be equal. 
+   * 
+   * @param cs1 a CoordinateSequence
+   * @param cs2 a CoordinateSequence
+   * @return true if the sequences are equal in the common dimensions
+   */
+  public static boolean isEqual(CoordinateSequence cs1, CoordinateSequence cs2) {
+    int cs1Size = cs1.size();
+    int cs2Size = cs2.size();
+    if (cs1Size != cs2Size) return false;
+    int dim = Math.min(cs1.getDimension(), cs2.getDimension());
+    for (int i = 0; i < cs1Size; i++) {
+      for (int d = 0; d < dim; d++) {
+        double v1 = cs1.getOrdinate(i, d);
+        double v2 = cs2.getOrdinate(i, d);
+        if (cs1.getOrdinate(i, d) == cs2.getOrdinate(i, d))
+          continue;
+        // special check for NaNs
+        if (Double.isNaN(v1) && Double.isNaN(v2))
+          continue;
+        return false;
+      }
+    }
+    return true;
   }
   
 }
