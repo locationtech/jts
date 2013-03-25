@@ -125,12 +125,13 @@ public class CoordinateArraySequence
    */
   public CoordinateArraySequence(CoordinateSequence coordSeq)
   {
-    if (coordSeq != null) {
-      dimension = coordSeq.getDimension();
-      coordinates = new Coordinate[coordSeq.size()];
-    }
-    else
+    // NOTE: this will make a sequence of the default dimension
+    if (coordSeq == null) {
       coordinates = new Coordinate[0];
+      return;
+    }
+    dimension = coordSeq.getDimension();
+    coordinates = new Coordinate[coordSeq.size()];
 
     for (int i = 0; i < coordinates.length; i++) {
       coordinates[i] = coordSeq.getCoordinateCopy(i);
