@@ -175,6 +175,11 @@ public abstract class PackedCoordinateSequence
     setOrdinate(index, 1, value);
   }
 
+  public String toString()
+  {
+    return CoordinateSequences.toString(this);
+  }
+
   /**
    * Returns a Coordinate representation of the specified coordinate, by always
    * building a new Coordinate object
@@ -458,9 +463,9 @@ public abstract class PackedCoordinateSequence
 
     /**
      * @see com.vividsolutions.jts.geom.CoordinateSequence#getOrdinate(int, int)
-     *      Beware, for performace reasons the ordinate index is not checked, if
-     *      it's over dimensions you may not get an exception but a meaningless
-     *      value.
+     *      For performance reasons the ordinate index is not checked.
+     *      If it is larger than the dimension a meaningless
+     *      value may be returned.
      */
     public double getOrdinate(int index, int ordinate) {
       return coords[index * dimension + ordinate];

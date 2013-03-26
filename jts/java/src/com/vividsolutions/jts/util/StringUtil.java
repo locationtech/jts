@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 /**
@@ -69,5 +71,11 @@ public class StringUtil
      return stackTrace;
  }
 
+  private static NumberFormat SIMPLE_ORDINATE_FORMAT = new DecimalFormat("0.#");
+  
+  public static String toString(double d)
+  {
+    return SIMPLE_ORDINATE_FORMAT.format(d);
+  }
 
 }

@@ -32,6 +32,8 @@
  */
 package com.vividsolutions.jts.geom;
 
+import com.vividsolutions.jts.util.StringUtil;
+
 
 /**
  * Utility functions for manipulating {@link CoordinateSequence}s
@@ -211,4 +213,18 @@ public class CoordinateSequences {
     return true;
   }
   
+  public static String toString(CoordinateSequence cs)
+  {
+    StringBuffer buf = new StringBuffer();
+    int size = cs.size();
+    int dim = cs.getDimension();
+    for (int i = 0; i < size; i++) {
+      if (i > 0) buf.append(" ");
+      for (int d = 0; d < dim; d++) {
+        if (d > 0) buf.append(",");
+        buf.append(StringUtil.toString(cs.getOrdinate(i, d)));
+      }
+    }
+    return buf.toString();
+  }
 }
