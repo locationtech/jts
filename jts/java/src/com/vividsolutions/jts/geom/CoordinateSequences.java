@@ -213,6 +213,16 @@ public class CoordinateSequences {
     return true;
   }
   
+  /**
+   * Creates a string representation of a {@link CoordinateSequence}.
+   * The format is:
+   * <pre>
+   *   ( ord0,ord1.. ord0,ord1,...  ... )
+   * </pre>
+   * 
+   * @param cs the sequence to output
+   * @return the string representation of the sequence
+   */
   public static String toString(CoordinateSequence cs)
   {
     int size = cs.size();
