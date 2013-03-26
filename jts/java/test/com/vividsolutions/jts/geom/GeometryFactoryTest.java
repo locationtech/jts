@@ -36,6 +36,7 @@ package com.vividsolutions.jts.geom;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequenceFactory;
 import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
@@ -98,6 +99,22 @@ public class GeometryFactoryTest extends TestCase {
     Geometry g = read(wkt);
     Geometry g2 = geometryFactory.createGeometry(g);
     assertTrue(g.equalsExact(g2));
+  }
+  
+  public void testCopyGeometryWithNonDefaultDimension() throws ParseException
+  {
+    GeometryFactory gf = new GeometryFactory(CoordinateArraySequenceFactory.instance());
+    CoordinateSequence mpSeq = gf.getCoordinateSequenceFactory().create(1, 2);
+    mpSeq.setOrdinate(0, 0, 50);
+    mpSeq.setOrdinate(0, 1, -2);
+    
+    Point g = gf.createPoint(mpSeq);
+    CoordinateSequence pSeq = ((Point) g.getGeometryN(0)).getCoordinateSequence();
+    assertEquals(2, pSeq.getDimension());
+    
+    Point g2 = (Point) geometryFactory.createGeometry(g);
+    assertEquals(2, g2.getCoordinateSequence().getDimension());
+
   }
   
   private Geometry read(String wkt) throws ParseException
