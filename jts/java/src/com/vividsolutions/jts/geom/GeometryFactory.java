@@ -565,18 +565,12 @@ public class GeometryFactory
           }
     });
   }
-  /*
-  public Geometry OLDcreateGeometry(Geometry g)
-  {
-    GeometryEditor editor = new GeometryEditor(this);
-    return editor.edit(g, new GeometryEditor.CoordinateOperation() {
-      public Coordinate[] edit(Coordinate[] coordinates, Geometry geometry) {
-                  return coordinates;
-          }
-    });
-  }
-*/
 
+  /**
+   * Gets the SRID value defined for this factory.
+   * 
+   * @return the factory SRID value
+   */
   public int getSRID() {
     return SRID;
   }
