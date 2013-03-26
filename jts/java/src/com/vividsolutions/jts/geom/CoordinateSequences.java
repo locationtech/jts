@@ -215,9 +215,12 @@ public class CoordinateSequences {
   
   public static String toString(CoordinateSequence cs)
   {
-    StringBuffer buf = new StringBuffer();
     int size = cs.size();
+    if (size == 0) 
+      return "()";
     int dim = cs.getDimension();
+    StringBuffer buf = new StringBuffer();
+    buf.append('(');
     for (int i = 0; i < size; i++) {
       if (i > 0) buf.append(" ");
       for (int d = 0; d < dim; d++) {
@@ -225,6 +228,7 @@ public class CoordinateSequences {
         buf.append(StringUtil.toString(cs.getOrdinate(i, d)));
       }
     }
+    buf.append(')');
     return buf.toString();
   }
 }
