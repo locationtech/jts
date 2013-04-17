@@ -94,13 +94,12 @@ public class GeometryFactoryTest extends TestCase {
       assertEquals(mpSeq.getOrdinate(0, i), pSeq.getOrdinate(0, i));
   }
   
-  private void checkCreateGeometryExact(String wkt) throws ParseException
-  {
-    Geometry g = read(wkt);
-    Geometry g2 = geometryFactory.createGeometry(g);
-    assertTrue(g.equalsExact(g2));
-  }
-  
+  /**
+     * CoordinateArraySequences default their dimension to 3 unless explicitly told otherwise.
+     * This test ensures that GeometryFactory.createGeometry() recreates the input dimension properly.
+   * 
+   * @throws ParseException
+   */
   public void testCopyGeometryWithNonDefaultDimension() throws ParseException
   {
     GeometryFactory gf = new GeometryFactory(CoordinateArraySequenceFactory.instance());
@@ -115,6 +114,13 @@ public class GeometryFactoryTest extends TestCase {
     Point g2 = (Point) geometryFactory.createGeometry(g);
     assertEquals(2, g2.getCoordinateSequence().getDimension());
 
+  }
+  
+  private void checkCreateGeometryExact(String wkt) throws ParseException
+  {
+    Geometry g = read(wkt);
+    Geometry g2 = geometryFactory.createGeometry(g);
+    assertTrue(g.equalsExact(g2));
   }
   
   private Geometry read(String wkt) throws ParseException
