@@ -65,7 +65,7 @@ public class LineString
   /**
    *  Constructs a <code>LineString</code> with the given points.
    *
-   *@param  points          the points of the linestring, or <code>null</code>
+   *@param  points the points of the linestring, or <code>null</code>
    *      to create the empty geometry. This array must not contain <code>null</code>
    *      elements. Consecutive points may be equal.
    *@param  precisionModel  the specification of the grid of allowable points
@@ -84,8 +84,8 @@ public class LineString
   /**
    * Constructs a <code>LineString</code> with the given points.
    *  
-   *@param  points          the points of the linestring, or <code>null</code>
-   *      to create the empty geometry. Consecutive points may not be equal.
+   *@param  points the points of the linestring, or <code>null</code>
+   *      to create the empty geometry. 
    * @throws IllegalArgumentException if too few points are provided
    */
   public LineString(CoordinateSequence points, GeometryFactory factory) {
