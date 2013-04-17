@@ -264,14 +264,19 @@ public class GeometryFactory
   /**
    * Returns the PrecisionModel that Geometries created by this factory
    * will be associated with.
+   * 
+   * @return the PrecisionModel for this factory
    */
   public PrecisionModel getPrecisionModel() {
     return precisionModel;
   }
 
   /**
-   * Creates a Point using the given Coordinate; a null Coordinate will create
-   * an empty Geometry.
+   * Creates a Point using the given Coordinate.
+   * A null Coordinate creates an empty Geometry.
+   * 
+   * @param coordinate a Coordinate, or null
+   * @return the created Point
    */
   public Point createPoint(Coordinate coordinate) {
     return createPoint(coordinate != null ? getCoordinateSequenceFactory().create(new Coordinate[]{coordinate}) : null);
@@ -280,6 +285,9 @@ public class GeometryFactory
   /**
    * Creates a Point using the given CoordinateSequence; a null or empty
    * CoordinateSequence will create an empty Point.
+   * 
+   * @param coordinates a CoordinateSequence (possibly empty), or null
+   * @return the created Point
    */
   public Point createPoint(CoordinateSequence coordinates) {
   	return new Point(coordinates, this);
@@ -288,7 +296,9 @@ public class GeometryFactory
   /**
    * Creates a MultiLineString using the given LineStrings; a null or empty
    * array will create an empty MultiLineString.
+   * 
    * @param lineStrings LineStrings, each of which may be empty but not null
+   * @return the created MultiLineString
    */
   public MultiLineString createMultiLineString(LineString[] lineStrings) {
   	return new MultiLineString(lineStrings, this);
@@ -297,7 +307,9 @@ public class GeometryFactory
   /**
    * Creates a GeometryCollection using the given Geometries; a null or empty
    * array will create an empty GeometryCollection.
-   * @param geometries Geometries, each of which may be empty but not null
+   * 
+   * @param geometries an array of Geometries, each of which may be empty but not null, or null
+   * @return the created GeometryCollection
    */
   public GeometryCollection createGeometryCollection(Geometry[] geometries) {
   	return new GeometryCollection(geometries, this);
@@ -312,6 +324,7 @@ public class GeometryFactory
    *
    * @param polygons
    *            Polygons, each of which may be empty but not null
+   * @return the created MultiPolygon
    */
   public MultiPolygon createMultiPolygon(Polygon[] polygons) {
     return new MultiPolygon(polygons, this);
@@ -319,10 +332,11 @@ public class GeometryFactory
 
   /**
    * Creates a {@link LinearRing} using the given {@link Coordinate}s.
-   * A null or empty array will
-   * create an empty LinearRing. The points must form a closed and simple
-   * linestring. Consecutive points must not be equal.
+   * A null or empty array creates an empty LinearRing. 
+   * The points must form a closed and simple linestring. 
    * @param coordinates an array without null elements, or an empty array, or null
+   * @return the created LinearRing
+   * @throws IllegalArgumentException if the ring is not closed, or has too few points
    */
   public LinearRing createLinearRing(Coordinate[] coordinates) {
     return createLinearRing(coordinates != null ? getCoordinateSequenceFactory().create(coordinates) : null);
@@ -330,11 +344,11 @@ public class GeometryFactory
 
   /**
    * Creates a {@link LinearRing} using the given {@link CoordinateSequence}. 
-   * A null or empty CoordinateSequence will
-   * create an empty LinearRing. The points must form a closed and simple
-   * linestring. Consecutive points must not be equal.
+   * A null or empty array creates an empty LinearRing. 
+   * The points must form a closed and simple linestring. 
    * 
-   * @param coordinates a CoordinateSequence possibly empty, or null
+   * @param coordinates a CoordinateSequence (possibly empty), or null
+   * @return the created LinearRing
    * @throws IllegalArgumentException if the ring is not closed, or has too few points
    */
   public LinearRing createLinearRing(CoordinateSequence coordinates) {
@@ -523,17 +537,19 @@ public class GeometryFactory
   }
 
   /**
-   * Creates a LineString using the given Coordinates; a null or empty array will
-   * create an empty LineString. Consecutive points must not be equal.
+   * Creates a LineString using the given Coordinates.
+   * A null or empty array creates an empty LineString. 
+   * 
    * @param coordinates an array without null elements, or an empty array, or null
    */
   public LineString createLineString(Coordinate[] coordinates) {
     return createLineString(coordinates != null ? getCoordinateSequenceFactory().create(coordinates) : null);
   }
   /**
-   * Creates a LineString using the given CoordinateSequence; a null or empty CoordinateSequence will
-   * create an empty LineString. Consecutive points must not be equal.
-   * @param coordinates a CoordinateSequence possibly empty, or null
+   * Creates a LineString using the given CoordinateSequence.
+   * A null or empty CoordinateSequence creates an empty LineString. 
+   * 
+   * @param coordinates a CoordinateSequence (possibly empty), or null
    */
   public LineString createLineString(CoordinateSequence coordinates) {
 	return new LineString(coordinates, this);
