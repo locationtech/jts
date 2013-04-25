@@ -84,6 +84,8 @@ public class Polygonizer
   protected List shellList = null;
   protected List polyList = null;
 
+  private boolean isCheckingRingsValid = true;
+
   /**
    * Create a polygonizer with the same {@link GeometryFactory}
    * as the input {@link Geometry}s
@@ -134,6 +136,19 @@ public class Polygonizer
     graph.addEdge(line);
   }
 
+  /**
+   * Allows disabling the valid ring checking, 
+   * to optimize situations where invalid rings are not expected.
+   * <p>
+   * The default is <code>true</code.
+   * 
+   * @param isCheckingRingsValid true if generated rings should be checked for validity
+   */
+  public void setCheckRingsValid(boolean isCheckingRingsValid)
+  {
+    this.isCheckingRingsValid = isCheckingRingsValid;
+  }
+  
   /**
    * Gets the list of polygons formed by the polygonization.
    * @return a collection of {@link Polygon}s
@@ -192,7 +207,12 @@ public class Polygonizer
 
     List validEdgeRingList = new ArrayList();
     invalidRingLines = new ArrayList();
-    findValidRings(edgeRingList, validEdgeRingList, invalidRingLines);
+    if (isCheckingRingsValid) {
+      findValidRings(edgeRingList, validEdgeRingList, invalidRingLines);
+    }
+    else {
+      validEdgeRingList = edgeRingList;
+    }
 
     findShellsAndHoles(validEdgeRingList);
     assignHolesToShells(holeList, shellList);
