@@ -49,8 +49,11 @@ import com.vividsolutions.jts.geom.*;
  * DEBUG_PROPERTY_NAME (currently "jts.debug") has the value
  * "on" or "true" debugging is enabled.
  * Otherwise, debugging is disabled.
- * The system property can be set by adding an option '-Djts.debug=on'
- * to the Java VM commandline.
+ * The system property can be set by specifying the following JVM option:
+ * <pre>
+ * -Djts.debug=on
+ * </pre>
+ * 
  *
  * @version 1.7
  */
@@ -71,6 +74,8 @@ public class Debug {
     }
   }
 
+  private static Stopwatch stopwatch = new Stopwatch();
+  private static long lastTimePrinted;
 
   /**
    * Prints the status of debugging to <tt>System.out</tt>
@@ -136,6 +141,44 @@ public class Debug {
     }
     debug.instancePrint(obj);
     debug.println();
+  }
+  
+  public static void resetTime()
+  {
+    stopwatch.reset();
+    lastTimePrinted = stopwatch.getTime();
+  }
+  
+  public static void printTime(String tag)
+  {
+    if (!debugOn) {
+      return;
+    }
+    long time = stopwatch.getTime();
+    long elapsedTime = time - lastTimePrinted;
+    debug.instancePrint(
+        formatField(Stopwatch.getTimeString(time), 10)
+        + " (" + formatField(Stopwatch.getTimeString(elapsedTime), 10) + " ) "
+        + tag);
+    debug.println();    
+    lastTimePrinted = time;
+  }
+  
+  private static String formatField(String s, int fieldLen)
+  {
+    int nPad = fieldLen - s.length();
+    if (nPad <= 0) return s;
+    String padStr = spaces(nPad) + s;
+    return padStr.substring(padStr.length() - fieldLen);
+  }
+  
+  private static String spaces(int n)
+  {
+    char[] ch = new char[n];
+    for (int i = 0; i < n; i++) {
+      ch[i] = ' ';
+    }
+    return new String(ch);
   }
   
   public static boolean equals(Coordinate c1, Coordinate c2, double tolerance)
@@ -231,7 +274,6 @@ public class Debug {
       // ignore this exception - it will fail later anyway
     }
   }
-
 
   public void instancePrintWatch() {
     if (watchObj == null) return;
