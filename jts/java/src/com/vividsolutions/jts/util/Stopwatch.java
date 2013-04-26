@@ -96,7 +96,13 @@ public class Stopwatch {
   public String getTimeString()
   {
     long totalTime = getTime();
-    String totalTimeStr = totalTime < 10000 ? totalTime + " ms" : (double) totalTime / 1000.0 + " s";
+    return getTimeString(totalTime);
+  }
+
+  public static String getTimeString(long timeMillis) {
+    String totalTimeStr = timeMillis < 10000 
+        ? timeMillis + " ms" 
+        : (double) timeMillis / 1000.0 + " s";
     return totalTimeStr;
   }
 }
