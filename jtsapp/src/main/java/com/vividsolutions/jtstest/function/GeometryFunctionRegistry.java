@@ -65,6 +65,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(SelectionFunctions.class);
     funcRegistry.add(SimplificationFunctions.class);
     funcRegistry.add(AffineTransformationFunctions.class);
+    funcRegistry.add(DissolveFunctions.class);
     funcRegistry.add(DistanceFunctions.class);
     funcRegistry.add(CreateShapeFunctions.class);
     funcRegistry.add(CreateFractalShapeFunctions.class);
