@@ -59,7 +59,7 @@ final public class GMLConstants{
 	  public static final String GML_POLYGON = "Polygon";
 	  public static final String GML_BOX = "Box";
 
-	  // Aggregate Ggeometries
+	  // Aggregate Geometries
 	  public static final String GML_MULTI_GEOMETRY = "MultiGeometry";
 	  public static final String GML_MULTI_POINT = "MultiPoint";
 	  public static final String GML_MULTI_LINESTRING = "MultiLineString";
