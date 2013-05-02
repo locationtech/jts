@@ -28,7 +28,6 @@ import com.vividsolutions.jts.util.StringUtil;
  * The Z ordinate value output can be forced to be a specific value. 
  * The <code>extrude</code> and <code>altitudeMode</code> modes can be set. 
  * If set, the corresponding sub-elements will be output.
-
  */
 public class KMLWriter 
 {
