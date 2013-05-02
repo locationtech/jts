@@ -78,4 +78,17 @@ public class StringUtil
     return SIMPLE_ORDINATE_FORMAT.format(d);
   }
 
+  public static String spaces(int n)
+  {
+    return chars(' ', n);
+  }
+  
+  public static String chars(char c, int n)
+  {
+    char[] ch = new char[n];
+    for (int i = 0; i < n; i++) {
+      ch[i] = c;
+    }
+    return new String(ch);
+  }
 }
