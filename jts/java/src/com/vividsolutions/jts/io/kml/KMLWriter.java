@@ -18,7 +18,7 @@ import com.vividsolutions.jts.util.StringUtil;
  * Writes a formatted string containing the KML representation of a JTS
  * {@link Geometry}. 
  * The output is KML fragments which 
- * can be substituted whereever the KML <i>Geometry</i> abstract element can be used.
+ * can be substituted wherever the KML <i>Geometry</i> abstract element can be used.
  * <p>
  * Output elements are indented to provide a
  * nicely-formatted representation. 
