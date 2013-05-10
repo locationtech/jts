@@ -74,7 +74,7 @@ public class JTSTestBuilderToolBar {
       previousButton.setMaximumSize(new Dimension(30, 30));
       previousButton.setMinimumSize(new Dimension(30, 30));
       previousButton.setPreferredSize(new Dimension(30, 30));
-      previousButton.setToolTipText("Previous Case");
+      previousButton.setToolTipText("<html>Previous Case<br><br>No Zoom = Ctl-Click</html>");
       previousButton.setHorizontalTextPosition(SwingConstants.CENTER);
       previousButton.setIcon(leftIcon);
       previousButton.setMargin(new Insets(0, 0, 0, 0));
@@ -82,7 +82,8 @@ public class JTSTestBuilderToolBar {
       previousButton.addActionListener(
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              tbFrame.btnPrevCase_actionPerformed(e);
+              boolean isZoom = 0 == (e.getModifiers() & ActionEvent.CTRL_MASK);
+              tbFrame.moveToPrevCase(isZoom);
             }
           });
       
@@ -92,13 +93,14 @@ public class JTSTestBuilderToolBar {
       nextButton.setMaximumSize(new Dimension(30, 30));
       nextButton.setMinimumSize(new Dimension(30, 30));
       nextButton.setPreferredSize(new Dimension(30, 30));
-      nextButton.setToolTipText("Next Case");
+      nextButton.setToolTipText("<html>Next Case<br><br>No Zoom = Ctl-Click</html>");
       nextButton.setHorizontalTextPosition(SwingConstants.CENTER);
       nextButton.setIcon(rightIcon);
       nextButton.addActionListener(
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              tbFrame.btnNextCase_actionPerformed(e);
+             boolean isZoom = 0 == (e.getModifiers() & ActionEvent.CTRL_MASK);
+             tbFrame.moveToNextCase(isZoom);
             }
           });
       
@@ -113,9 +115,8 @@ public class JTSTestBuilderToolBar {
       newButton.setIcon(plusIcon);
       newButton.addActionListener(
           new java.awt.event.ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
-              tbFrame.btnNewCase_actionPerformed(e);
+              tbFrame.createNewCase();
             }
           });
       
@@ -131,7 +132,7 @@ public class JTSTestBuilderToolBar {
       copyButton.addActionListener(
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              tbFrame.btnCopyCase_actionPerformed();
+              tbFrame.copyCase();
             }
           });
       

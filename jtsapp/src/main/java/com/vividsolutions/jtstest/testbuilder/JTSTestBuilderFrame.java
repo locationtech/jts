@@ -349,23 +349,25 @@ public class JTSTestBuilderFrame extends JFrame
     updateWktPanel();
   }
 
-  void btnNewCase_actionPerformed(ActionEvent e) {
+  void createNewCase() {
     tbModel.createNew();
     showGeomsTab();
     updateTestCases();
   }
 
-  void btnPrevCase_actionPerformed(ActionEvent e) {
+  void moveToPrevCase(boolean isZoom) {
+    if (isZoom) JTSTestBuilderController.requestAutoZoom();
     tbModel.prevCase();
     updateTestCaseView();
   }
 
-  void btnNextCase_actionPerformed(ActionEvent e) {
+  void moveToNextCase(boolean isZoom) {
+    if (isZoom) JTSTestBuilderController.requestAutoZoom();
     tbModel.nextCase();
-     updateTestCaseView();
+    updateTestCaseView();
   }
 
-  void btnCopyCase_actionPerformed() {
+  void copyCase() {
     tbModel.copyCase();
     updateTestCases();
   }
