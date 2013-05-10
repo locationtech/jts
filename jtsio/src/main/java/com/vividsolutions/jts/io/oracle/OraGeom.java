@@ -69,8 +69,6 @@ class OraGeom
   private int ordDim;
   private int lrsDim;
 
-
-
   public OraGeom(int gType, int srid, double[] ptType, int[] elemInfo, double[] ordinates)
   {
     this.gType = gType;
@@ -78,9 +76,9 @@ class OraGeom
     this.point = ptType;
     this.elemInfo = elemInfo;
     this.ordinates = ordinates;
-    geomType = OraGeom.gTypeGeomType(gType);
-    ordDim = OraGeom.gTypeDim(gType);
-    lrsDim = OraGeom.gTypeMeasureDim(gType);
+    geomType = gTypeGeomType(gType);
+    ordDim = gTypeDim(gType);
+    lrsDim = gTypeMeasureDim(gType);
   }
 
   public OraGeom(int gType, int srid, int[] elemInfo, double[] ordinates)
