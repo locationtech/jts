@@ -37,6 +37,7 @@ import com.vividsolutions.jts.algorithm.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
 import com.vividsolutions.jts.densify.*;
+import com.vividsolutions.jts.dissolve.LineDissolver;
 import com.vividsolutions.jts.operation.polygonize.*;
 import com.vividsolutions.jts.operation.linemerge.*;
 
@@ -100,4 +101,10 @@ public class LineHandlingFunctions {
     }
     return line.getFactory().createLineString(pts);
   }
+  
+  public static Geometry dissolve(Geometry geom)
+  {
+    return LineDissolver.dissolve(geom);
+  }
+
 }

@@ -29,7 +29,7 @@ import com.vividsolutions.jts.geom.LineString;
  * include generalization 
  * (in particular, simplifying polygonal coverages), 
  * and visualization 
- * (in particular, avoidng symbology conflicts when
+ * (in particular, avoiding symbology conflicts when
  * depicting shared polygon boundaries).
  * <p>
  * This class does <b>not</b> node the input lines.
@@ -41,6 +41,12 @@ import com.vividsolutions.jts.geom.LineString;
  */
 public class LineDissolver 
 {
+  /**
+   * Dissolves the linear components in a geometry.
+   * 
+   * @param g the geometry to dissolve
+   * @return the dissolved lines
+   */
   public static Geometry dissolve(Geometry g)
   {
     LineDissolver d = new LineDissolver();
@@ -106,6 +112,11 @@ public class LineDissolver
     }
   }
   
+  /**
+   * Gets the dissolved result as a MultiLineString.
+   * 
+   * @return the dissolved lines
+   */
   public Geometry getResult()
   {
     if (result == null)
