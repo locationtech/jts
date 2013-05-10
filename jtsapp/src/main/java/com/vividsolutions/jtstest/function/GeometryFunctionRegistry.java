@@ -83,6 +83,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(TriangulationFunctions.class);
     funcRegistry.add(TriangleFunctions.class);
     funcRegistry.add(ValidationFunctions.class);
+    funcRegistry.add(WriterFunctions.class);
     
     return funcRegistry;
   }
