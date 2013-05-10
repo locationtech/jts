@@ -2,21 +2,38 @@ package com.vividsolutions.jtstest.testbuilder.controller;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 import com.vividsolutions.jtstest.testbuilder.model.LayerList;
 import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 
 public class JTSTestBuilderController 
 {
-
   public static void geometryViewChanged()
   {
-    JTSTestBuilderFrame.getGeometryEditPanel().updateView();
+    getGeometryEditPanel().updateView();
+    //TODO: provide autoZoom checkbox on Edit tab to control autozooming (default = on)
+    zoomToInput();
   }
 
+  private static GeometryEditPanel getGeometryEditPanel()
+  {
+    return JTSTestBuilderFrame.getGeometryEditPanel();
+  }
+
+  public static void zoomToFullExtent()
+  {
+    getGeometryEditPanel().zoomToFullExtent();
+  }
+  
+  public static void zoomToInput()
+  {
+    getGeometryEditPanel().zoomToInput();
+  }
+  
   public static void extractComponentsToTestCase(Coordinate pt)
   {
-    double toleranceInModel = JTSTestBuilderFrame.getGeometryEditPanel().getToleranceInModel();
+    double toleranceInModel = getGeometryEditPanel().getToleranceInModel();
     LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
     Geometry comp = lyrList.getComponent(pt, toleranceInModel);
     if (comp == null) 
@@ -38,7 +55,7 @@ public class JTSTestBuilderController
   
   public static void copyComponentToClipboard(Coordinate pt)
   {
-    double toleranceInModel = JTSTestBuilderFrame.getGeometryEditPanel().getToleranceInModel();
+    double toleranceInModel = getGeometryEditPanel().getToleranceInModel();
     LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
     Geometry comp = lyrList.getComponent(pt, toleranceInModel);
     if (comp == null) 
