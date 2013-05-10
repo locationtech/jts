@@ -165,25 +165,25 @@ class OraGeom
   
   public String toSQLString()
   {
-	StringBuffer buf = new StringBuffer();
-	buf.append("SDO_GEOMETRY(");
-	
-	buf.append(gType);
-	buf.append(",");
-	
-	buf.append(srid >= 0 ? String.valueOf(srid) : SQL_NULL);
-	buf.append(",");
-	
-	buf.append(toStringPointType());
-	buf.append(",");
-	
-	buf.append(toStringElemInfo());
-	buf.append(",");
-	
-	buf.append(toStringOrdinates());
-	buf.append(")");
-	
-	return buf.toString();
+  	StringBuffer buf = new StringBuffer();
+  	buf.append("SDO_GEOMETRY(");
+  	
+  	buf.append(gType);
+  	buf.append(",");
+  	
+  	buf.append(srid >= 0 ? String.valueOf(srid) : SQL_NULL);
+  	buf.append(",");
+  	
+  	buf.append(toStringPointType());
+  	buf.append(",");
+  	
+  	buf.append(toStringElemInfo());
+  	buf.append(",");
+  	
+  	buf.append(toStringOrdinates());
+  	buf.append(")");
+  	
+  	return buf.toString();
   }
   
   private String toString(double[] ordinates)
