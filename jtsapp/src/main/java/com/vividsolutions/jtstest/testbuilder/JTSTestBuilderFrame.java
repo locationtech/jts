@@ -347,7 +347,6 @@ public class JTSTestBuilderFrame extends JFrame
     //testCasePanel.relatePanel.clearResults();
     JTSTestBuilderController.geometryViewChanged();
     updateWktPanel();
-//    updateTestableGeometries();
   }
 
   void btnNewCase_actionPerformed(ActionEvent e) {

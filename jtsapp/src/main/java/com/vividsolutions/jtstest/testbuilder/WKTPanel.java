@@ -49,6 +49,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
 
@@ -371,6 +372,7 @@ public class WKTPanel extends JPanel
 
     void loadButton_actionPerformed(ActionEvent e) {
       try {
+        JTSTestBuilderController.requestAutoZoom();
         tbModel.loadGeometryText(
             getGeometryTextClean(0), 
             getGeometryTextClean(1));
@@ -406,6 +408,7 @@ public class WKTPanel extends JPanel
     
     void paste(int geomIndex) {
       try {
+        JTSTestBuilderController.requestAutoZoom();
         tbModel.pasteGeometry(geomIndex);
       }
       catch (Exception ex) {
@@ -429,6 +432,7 @@ public class WKTPanel extends JPanel
       new FileDrop(comp, new FileDrop.Listener() {
         public void filesDropped(java.io.File[] files) {
           try {
+            JTSTestBuilderController.requestAutoZoom();
             tbModel.loadMultipleGeometriesFromFile(geomIndex, files[0].getCanonicalPath());
             //(textArea).setText(FileUtil.readText(files[0]));
           } catch (Exception ex) {

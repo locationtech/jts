@@ -441,6 +441,7 @@ public class JTSTestBuilderToolBar {
 
       jToolBar1.add(newButton, null);
       jToolBar1.add(copyButton, null);
+      jToolBar1.add(extractComponentButton, null);
       jToolBar1.add(deleteButton, null);
       
       jToolBar1.add(Box.createHorizontalStrut(8), null);
@@ -473,11 +474,7 @@ public class JTSTestBuilderToolBar {
       jToolBar1.add(deleteVertexButton, null);
       
       jToolBar1.add(Box.createHorizontalStrut(8), null);
-      
-      jToolBar1.add(extractComponentButton, null);
-      
-      jToolBar1.add(Box.createHorizontalStrut(28), null);
-      
+            
       jToolBar1.add(infoButton, null);
       jToolBar1.add(inspectGeometryButton, null);
 
