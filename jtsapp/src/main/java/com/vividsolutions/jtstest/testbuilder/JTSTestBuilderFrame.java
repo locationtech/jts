@@ -356,15 +356,15 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   void moveToPrevCase(boolean isZoom) {
-    if (isZoom) JTSTestBuilderController.requestAutoZoom();
     tbModel.prevCase();
     updateTestCaseView();
+    if (isZoom) JTSTestBuilderController.zoomToInput();
   }
 
   void moveToNextCase(boolean isZoom) {
-    if (isZoom) JTSTestBuilderController.requestAutoZoom();
     tbModel.nextCase();
     updateTestCaseView();
+    if (isZoom) JTSTestBuilderController.zoomToInput();
   }
 
   void copyCase() {

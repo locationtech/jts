@@ -372,10 +372,10 @@ public class WKTPanel extends JPanel
 
     void loadButton_actionPerformed(ActionEvent e) {
       try {
-        JTSTestBuilderController.requestAutoZoom();
         tbModel.loadGeometryText(
             getGeometryTextClean(0), 
             getGeometryTextClean(1));
+        JTSTestBuilderController.zoomToInput();
       }
       catch (Exception ex) {
         SwingUtil.reportException(this, ex);
@@ -408,8 +408,8 @@ public class WKTPanel extends JPanel
     
     void paste(int geomIndex) {
       try {
-        JTSTestBuilderController.requestAutoZoom();
         tbModel.pasteGeometry(geomIndex);
+        JTSTestBuilderController.zoomToInput();
       }
       catch (Exception ex) {
         JTSTestBuilderFrame.reportException(ex);
@@ -432,9 +432,9 @@ public class WKTPanel extends JPanel
       new FileDrop(comp, new FileDrop.Listener() {
         public void filesDropped(java.io.File[] files) {
           try {
-            JTSTestBuilderController.requestAutoZoom();
             tbModel.loadMultipleGeometriesFromFile(geomIndex, files[0].getCanonicalPath());
             //(textArea).setText(FileUtil.readText(files[0]));
+            JTSTestBuilderController.zoomToInput();
           } catch (Exception ex) {
             SwingUtil.reportException(null, ex);
           }

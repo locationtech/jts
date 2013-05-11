@@ -9,24 +9,20 @@ import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 
 public class JTSTestBuilderController 
 {
+  /*
   private static boolean autoZoomOnNextChange = false;
 
+  
   public static void requestAutoZoom()
   {
     autoZoomOnNextChange  = true;
   }
+  */
+  
   public static void geometryViewChanged()
   {
     getGeometryEditPanel().updateView();
     //TODO: provide autoZoom checkbox on Edit tab to control autozooming (default = on)
-    if  (autoZoomOnNextChange) {
-      autoZoom();
-    }
-  }
-  private static void autoZoom()
-  {
-    zoomToInput();
-    autoZoomOnNextChange = false;
   }
 
   private static GeometryEditPanel getGeometryEditPanel()
