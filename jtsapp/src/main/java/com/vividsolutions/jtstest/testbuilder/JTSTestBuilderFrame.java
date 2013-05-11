@@ -789,6 +789,11 @@ public class JTSTestBuilderFrame extends JFrame
     contentPane.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
   }
 
+  public JTSTestBuilderToolBar getToolbar()
+  {
+    return tbToolBar;
+  }
+  
   private void updateStatsPanelIfVisible()
   {
     int index = inputTabbedPane.getSelectedIndex();

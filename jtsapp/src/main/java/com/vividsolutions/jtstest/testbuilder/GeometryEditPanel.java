@@ -459,10 +459,17 @@ public class GeometryEditPanel extends JPanel
     viewport.update();
   }
 
+  /**
+   * 
+   * @param newTool tool to set, or null to clear tool
+   */
   public void setCurrentTool(Tool newTool) {
     removeMouseListener(currentTool);
     removeMouseMotionListener(currentTool);
     currentTool = newTool;
+    // tool cleared
+    if (newTool == null) return;
+    
     currentTool.activate();
     setCursor(currentTool.getCursor());
     addMouseListener(currentTool);

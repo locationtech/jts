@@ -1,11 +1,18 @@
 package com.vividsolutions.jtstest.testbuilder;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.util.Enumeration;
 
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.SwingConstants;
 
 public class JTSTestBuilderToolBar {
 
@@ -57,11 +64,20 @@ public class JTSTestBuilderToolBar {
   private final ImageIcon moveVertexIcon = new ImageIcon(this.getClass().getResource("MoveVertex.png"));
   private final ImageIcon panIcon = new ImageIcon(this.getClass().getResource("Hand.gif"));
 
+  private JToggleButton extractComponentButton;
+
   public JTSTestBuilderToolBar(JTSTestBuilderFrame tbFrame) 
   {
     this.tbFrame = tbFrame;
   }
 
+  public void clearToolButtons()
+  {
+    // this only works in JSE 1.6
+    // In 1.5, need to add an invisible button and select it
+    toolButtonGroup.clearSelection();
+  }
+  
   public JToolBar getToolBar()
   {
     jToolBar1.setFloatable(false);
@@ -410,7 +426,7 @@ public class JTSTestBuilderToolBar {
             }
           });
 
-      JToggleButton extractComponentButton = createToggleButton("Extract Components",
+      extractComponentButton = createToggleButton("Extract Components",
           new ImageIcon(this.getClass().getResource("ExtractComponent.png")), 
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e)

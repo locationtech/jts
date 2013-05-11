@@ -60,6 +60,8 @@ public class JTSTestBuilderController
       return;
     JTSTestBuilderFrame.instance().getModel().addCase(comp);
     JTSTestBuilderFrame.instance().updateTestCases();
+    JTSTestBuilderFrame.instance().getToolbar().clearToolButtons();
+    JTSTestBuilderFrame.instance().getGeometryEditPanel().setCurrentTool(null);
   }
   
   public static void copyComponentToClipboard(Coordinate pt)
