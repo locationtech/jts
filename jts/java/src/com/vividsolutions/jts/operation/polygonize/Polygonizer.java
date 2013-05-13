@@ -33,9 +33,16 @@
  */
 package com.vividsolutions.jts.operation.polygonize;
 
-import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.Debug;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryComponentFilter;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Polygonizes a set of {@link Geometry}s which contain linework that
@@ -206,7 +213,7 @@ public class Polygonizer
     cutEdges = graph.deleteCutEdges();
     List edgeRingList = graph.getEdgeRings();
 
-    Debug.printTime("Build Edge Rings");
+    //Debug.printTime("Build Edge Rings");
 
     List validEdgeRingList = new ArrayList();
     invalidRingLines = new ArrayList();
@@ -216,12 +223,12 @@ public class Polygonizer
     else {
       validEdgeRingList = edgeRingList;
     }
-    Debug.printTime("Validate Rings");
+    //Debug.printTime("Validate Rings");
     
     findShellsAndHoles(validEdgeRingList);
     assignHolesToShells(holeList, shellList);
 
-    Debug.printTime("Assign Holes");
+    //Debug.printTime("Assign Holes");
 
     polyList = new ArrayList();
     for (Iterator i = shellList.iterator(); i.hasNext(); ) {
