@@ -35,6 +35,7 @@ package com.vividsolutions.jts.operation.polygonize;
 
 import java.util.*;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.util.Debug;
 
 /**
  * Polygonizes a set of {@link Geometry}s which contain linework that
@@ -205,6 +206,8 @@ public class Polygonizer
     cutEdges = graph.deleteCutEdges();
     List edgeRingList = graph.getEdgeRings();
 
+    Debug.printTime("Build Edge Rings");
+
     List validEdgeRingList = new ArrayList();
     invalidRingLines = new ArrayList();
     if (isCheckingRingsValid) {
@@ -213,9 +216,12 @@ public class Polygonizer
     else {
       validEdgeRingList = edgeRingList;
     }
-
+    Debug.printTime("Validate Rings");
+    
     findShellsAndHoles(validEdgeRingList);
     assignHolesToShells(holeList, shellList);
+
+    Debug.printTime("Assign Holes");
 
     polyList = new ArrayList();
     for (Iterator i = shellList.iterator(); i.hasNext(); ) {
