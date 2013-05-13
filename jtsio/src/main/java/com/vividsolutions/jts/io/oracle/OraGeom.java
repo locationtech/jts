@@ -56,7 +56,7 @@ class OraGeom
 {
 	public static final int NULL_DIMENSION = -1;	
 
-	private static NumberFormat fmt = new DecimalFormat("0.#");
+	private static NumberFormat fmt = new DecimalFormat("0.################");
 	  
 	public static final String SQL_NULL = "NULL";
 
