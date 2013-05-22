@@ -43,10 +43,27 @@ import com.vividsolutions.jts.geom.CoordinateFilter;
 /**
  *  A {@link CoordinateFilter} that builds a set of <code>Coordinate</code>s.
  *  The set of coordinates contains no duplicate points.
+ *  It preserves the order of the input points.
  *
  *@version 1.7
  */
-public class UniqueCoordinateArrayFilter implements CoordinateFilter {
+public class UniqueCoordinateArrayFilter implements CoordinateFilter 
+{
+  /**
+   * Convenience method which allows running the filter over an array of {@link Coordinate}s.
+   * 
+   * @param coords an array of coordinates
+   * @return an array of the unique coordinates
+   */
+  public static Coordinate[] filterCoordinates(Coordinate[] coords)
+  {
+    UniqueCoordinateArrayFilter filter = new UniqueCoordinateArrayFilter();
+    for (int i = 0; i < coords.length; i++) {
+      filter.filter(coords[i]);
+    }
+    return filter.getCoordinates();
+  }
+  
   TreeSet treeSet = new TreeSet();
   ArrayList list = new ArrayList();
 

@@ -65,7 +65,8 @@ public class ConvexHull
    */
   public ConvexHull(Coordinate[] pts, GeometryFactory geomFactory)
   {
-    inputPts = pts;
+    inputPts = UniqueCoordinateArrayFilter.filterCoordinates(pts);
+    //inputPts = pts;
     this.geomFactory = geomFactory;
   }
 

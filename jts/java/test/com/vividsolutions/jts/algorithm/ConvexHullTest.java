@@ -77,7 +77,17 @@ public class ConvexHullTest extends TestCase {
     ConvexHull ch = new ConvexHull(pts, geometryFactory);
     Geometry actualGeometry = ch.getConvexHull();
     Geometry expectedGeometry = reader.read("LINESTRING (0 0, 1 1)");
-    assertEquals(expectedGeometry.toString(), actualGeometry.toString());
+    assertTrue(expectedGeometry.equalsExact(actualGeometry));
+  }
+
+  public void testAllIdenticalPoints() throws Exception {
+    Coordinate[] pts = new Coordinate[100];
+    for (int i = 0; i < 100; i++)
+      pts[i] = new Coordinate(0,0);
+    ConvexHull ch = new ConvexHull(pts, geometryFactory);
+    Geometry actualGeometry = ch.getConvexHull();
+    Geometry expectedGeometry = reader.read("POINT (0 0)");
+    assertTrue(expectedGeometry.equalsExact(actualGeometry));
   }
 
   public void test1() throws Exception {
