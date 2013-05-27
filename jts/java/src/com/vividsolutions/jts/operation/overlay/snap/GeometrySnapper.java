@@ -45,8 +45,10 @@ import com.vividsolutions.jts.geom.util.GeometryTransformer;
  * robustness for overlay operations by eliminating
  * nearly-coincident edges 
  * (which cause problems during noding and intersection calculation).
+ * It can also be used to eliminate artifacts such as narrow slivers, spikes and gores.
+ * <p>
  * Too much snapping can result in invalid topology 
- * beging created, so the number and location of snapped vertices
+ * being created, so the number and location of snapped vertices
  * is decided using heuristics to determine when it 
  * is safe to snap.
  * This can result in some potential snaps being omitted, however.
@@ -124,9 +126,22 @@ public class GeometrySnapper
 //    System.out.println(snap[1]);
     return snapGeom;
   }
-  public static Geometry snapToSelf(Geometry g0, double snapTolerance, boolean cleanResult)
+  /**
+   * Snaps a geometry to itself.
+   * Allows optionally cleaning the result to ensure it is 
+   * topologically valid
+   * (which fixes issues such as topology collapses in polygonal inputs).
+   * <p>
+   * Snapping a geometry to itself can remove artifacts such as very narrow slivers, gores and spikes.
+   *
+   *@param geom the geometry to snap
+   *@param snapTolerance the snapping tolerance
+   *@param cleanResult whether the result should be made valid
+   * @return a new snapped Geometry
+   */
+  public static Geometry snapToSelf(Geometry geom, double snapTolerance, boolean cleanResult)
   {
-    GeometrySnapper snapper0 = new GeometrySnapper(g0);
+    GeometrySnapper snapper0 = new GeometrySnapper(geom);
     return snapper0.snapToSelf(snapTolerance, cleanResult);
   }
   
@@ -162,7 +177,10 @@ public class GeometrySnapper
   /**
    * Snaps the vertices in the component {@link LineString}s
    * of the source geometry
-   * to the vertices of the given snap geometry.
+   * to the vertices of the same geometry.
+   * Allows optionally cleaning the result to ensure it is 
+   * topologically valid
+   * (which fixes issues such as topology collapses in polygonal inputs).
    *
    *@param snapTolerance the snapping tolerance
    *@param cleanResult whether the result should be made valid
@@ -182,7 +200,7 @@ public class GeometrySnapper
     return result;
   }
 
-  public Coordinate[] extractTargetCoordinates(Geometry g)
+  private Coordinate[] extractTargetCoordinates(Geometry g)
   {
     // TODO: should do this more efficiently.  Use CoordSeq filter to get points, KDTree for uniqueness & queries
     Set ptSet = new TreeSet();
