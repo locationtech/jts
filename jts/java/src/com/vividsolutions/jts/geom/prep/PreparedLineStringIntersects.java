@@ -113,7 +113,6 @@ class PreparedLineStringIntersects
 		if (geom.getDimension() == 0)
 			return isAnyTestPointInTarget(geom);
 		
-//		return prepLine.getGeometry().intersects(geom);
 		return false;
 	}
 	  
