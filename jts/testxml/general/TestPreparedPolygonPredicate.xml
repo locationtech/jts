@@ -4,17 +4,31 @@
   <geometryOperation>com.vividsolutions.jtstest.geomop.PreparedGeometryOperation</geometryOperation>
 
 <case>
-  <desc>P/A - point equal to start point of polygon
+  <desc>A/P - point equal to start point of polygon
   </desc>
   <a>
-      POINT (10 10)
+    POLYGON ((10 10, 60 100, 110 10, 10 10))
   </a>
   <b>
+      POINT (10 10)
+  </b>
+<test>  <op name="contains"   		arg1="A" arg2="B">   false  </op> </test>
+<test>  <op name="covers"     		arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="intersects" 		arg1="A" arg2="B">   true   </op> </test>
+</case>
+
+<case>
+  <desc>A/P - point equal to start point of polygon
+  </desc>
+  <a>
     POLYGON ((10 10, 60 100, 110 10, 10 10))
+  </a>
+  <b>
+      POINT (10 20)
   </b>
 <test>  <op name="contains"   		arg1="A" arg2="B">   false  </op> </test>
 <test>  <op name="covers"     		arg1="A" arg2="B">   false  </op> </test>
-<test>  <op name="intersects" 		arg1="A" arg2="B">   true   </op> </test>
+<test>  <op name="intersects" 		arg1="A" arg2="B">   false  </op> </test>
 </case>
 
 <case>

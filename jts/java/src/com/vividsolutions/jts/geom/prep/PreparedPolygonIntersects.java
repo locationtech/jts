@@ -88,7 +88,12 @@ class PreparedPolygonIntersects extends PreparedPolygonPredicate {
     boolean isInPrepGeomArea = isAnyTestComponentInTarget(geom);
     if (isInPrepGeomArea)
       return true;
-
+    /**
+     * If input contains only points, then at
+     * this point it is known that none of them are contained in the target
+     */
+    if (geom.getDimension() == 0)
+      return false;
     /**
      * If any segments intersect, result is true
      */
