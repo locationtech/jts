@@ -92,6 +92,9 @@ public class CascadedPolygonUnion
 	public CascadedPolygonUnion(Collection polys)
 	{
 		this.inputPolys = polys;
+		// guard against null input
+		if (inputPolys == null) 
+		  inputPolys = new ArrayList();
 	}
 	
   /**
@@ -105,12 +108,22 @@ public class CascadedPolygonUnion
   
 	/**
 	 * Computes the union of the input geometries.
+	 * <p>
+	 * This method discards the input geometries as they are processed.
+	 * In many input cases this reduces the memory retained
+	 * as the operation proceeds. 
+	 * Optimal memory usage is achieved 
+	 * by disposing of the original input collection 
+	 * before calling this method.
 	 * 
 	 * @return the union of the input geometries
 	 * or null if no input geometries were provided
+	 * @throws IllegalStateException if this method is called more than once
 	 */
 	public Geometry union()
 	{
+	  if (inputPolys == null)
+	    throw new IllegalStateException("union() method cannot be called twice");
 		if (inputPolys.isEmpty())
 			return null;
 		geomFactory = ((Geometry) inputPolys.iterator().next()).getFactory();
@@ -127,10 +140,11 @@ public class CascadedPolygonUnion
       Geometry item = (Geometry) i.next();
       index.insert(item.getEnvelopeInternal(), item);
     }
-    List itemTree = index.itemsTree();
-
-//    printItemEnvelopes(itemTree);
+    // To avoiding holding memory remove references to the input geometries,
+    inputPolys = null;
     
+    List itemTree = index.itemsTree();
+//    printItemEnvelopes(itemTree);
     Geometry unionAll = unionTree(itemTree);
     return unionAll;
 	}
