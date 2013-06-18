@@ -32,6 +32,19 @@ import com.vividsolutions.jts.util.StringUtil;
 public class KMLWriter 
 {
   /**
+   * The KML standard value <code>clampToGround</code> for use in {@link #setAltitudeMode(String)}.
+   */
+  public static String ALTITUDE_MODE_CLAMPTOGROUND = "clampToGround ";
+  /**
+   * The KML standard value <code>relativeToGround</code> for use in {@link #setAltitudeMode(String)}.
+   */
+  public static String ALTITUDE_MODE_RELATIVETOGROUND  = "relativeToGround  ";
+  /**
+   * The KML standard value <code>absolute</code> for use in {@link #setAltitudeMode(String)}.
+   */
+  public static String ALTITUDE_MODE_ABSOLUTE = "absolute";
+  
+  /**
    * Writes a Geometry as KML to a string, using
    * a specified Z value.
    * 
@@ -75,6 +88,7 @@ public class KMLWriter
   private int maxCoordinatesPerLine = 5;
   private double zVal = Double.NaN;
   private boolean extrude = false;
+  private boolean tesselate;
   private String altitudeMode = null;
   private DecimalFormat numberFormatter = null;
 
@@ -86,6 +100,7 @@ public class KMLWriter
 
   /**
    * Sets a tag string which is prefixed to every emitted text line.
+   * This can be used to indent the geometry text in a containing document.
    * 
    * @param linePrefix the tag string
    */
@@ -123,6 +138,15 @@ public class KMLWriter
    */
   public void setExtrude(boolean extrude) {
     this.extrude = extrude;
+  }
+
+  /**
+   * Sets the flag to be output in the <code>tesselate</code> element.
+   * 
+   * @param tesselate the tesselate flag to output
+   */
+  public void setTesselate(boolean tesselate) {
+    this.tesselate = tesselate;
   }
 
   /**
@@ -180,15 +204,11 @@ public class KMLWriter
   }
 
   private void writeGeometry(Geometry g, int level, StringBuffer buf) {
-    /*
-     * order is important in this if-else list. E.g. homogeneous collections
-     * need to come before GeometryCollection
-     */
     String attributes = "";
     if (g instanceof Point) {
       writePoint((Point) g, attributes, level, buf);
     } else if (g instanceof LinearRing) {
-      writeLinearRing((LinearRing) g, attributes, level, buf);
+      writeLinearRing((LinearRing) g, attributes, true, level, buf);
     } else if (g instanceof LineString) {
       writeLineString((LineString) g, attributes, level, buf);
     } else if (g instanceof Polygon) {
@@ -196,10 +216,11 @@ public class KMLWriter
     } else if (g instanceof GeometryCollection) {
       writeGeometryCollection((GeometryCollection) g, attributes, level, buf);
     }
-    // throw an error for an unknown type?
+    else 
+      throw new IllegalArgumentException("Geometry type not supported: " + g.getGeometryType());
   }
 
-  private void startLine(StringBuffer buf, int level, String text) {
+  private void startLine(String text, int level, StringBuffer buf) {
     if (linePrefix != null)
       buf.append(linePrefix);
     buf.append(StringUtil.spaces(INDENT_SIZE * level));
@@ -215,65 +236,75 @@ public class KMLWriter
       buf.append(attributes);
     }
     buf.append(">");
-
-    // this is cheesy... AND WRONG! (because these get written in geom
-    // sub-components too
-    if (extrude)
-      buf.append("\n    <extrude>1</extrude>");
-    if (altitudeMode != null)
-      buf.append("\n    <altitudeMode>" + altitudeMode + "</altitudeMode>");
     return buf.toString();
   }
 
+  private void writeModifiers(int level, StringBuffer buf)
+  {
+    if (extrude) {
+      startLine("<extrude>1</extrude>\n", level, buf);
+    }
+    if (tesselate) {
+      startLine("<tesselate>1</tesselate>\n", level, buf);
+    }
+    if (altitudeMode != null) {
+      startLine("<altitudeMode>" + altitudeMode + "</altitudeMode>\n", level, buf);
+    }
+  }
+  
   private void writePoint(Point p, String attributes, int level,
       StringBuffer buf) {
   // <Point><coordinates>...</coordinates></Point>
-    startLine(buf, level, geometryTag("Point", attributes) + "\n");
+    startLine(geometryTag("Point", attributes) + "\n", level, buf);
+    writeModifiers(level, buf);
     write(new Coordinate[] { p.getCoordinate() }, level + 1, buf);
-    startLine(buf, level, "</Point>\n");
+    startLine("</Point>\n", level, buf);
   }
 
   private void writeLineString(LineString ls, String attributes, int level,
       StringBuffer buf) {
   // <LineString><coordinates>...</coordinates></LineString>
-    startLine(buf, level, geometryTag("LineString", attributes) + "\n");
+    startLine(geometryTag("LineString", attributes) + "\n", level, buf);
+    writeModifiers(level, buf);
     write(ls.getCoordinates(), level + 1, buf);
-    startLine(buf, level, "</LineString>\n");
+    startLine("</LineString>\n", level, buf);
   }
 
-  private void writeLinearRing(LinearRing lr, String attributes, int level,
+  private void writeLinearRing(LinearRing lr, String attributes, 
+      boolean writeModifiers, int level,
       StringBuffer buf) {
   // <LinearRing><coordinates>...</coordinates></LinearRing>
-    startLine(buf, level, geometryTag("LinearRing", attributes) + "\n");
-    // startLine(buf, level, "  <tessellate>1</tessellate>\n");
+    startLine(geometryTag("LinearRing", attributes) + "\n", level, buf);
+    if (writeModifiers) writeModifiers(level, buf);
     write(lr.getCoordinates(), level + 1, buf);
-    startLine(buf, level, "</LinearRing>\n");
+    startLine("</LinearRing>\n", level, buf);
   }
 
   private void writePolygon(Polygon p, String attributes, int level,
       StringBuffer buf) {
-    startLine(buf, level, geometryTag("Polygon", attributes) + "\n");
+    startLine(geometryTag("Polygon", attributes) + "\n", level, buf);
+    writeModifiers(level, buf);
 
-    startLine(buf, level, "  <outerBoundaryIs>\n");
-    writeLinearRing((LinearRing) p.getExteriorRing(), null, level + 1, buf);
-    startLine(buf, level, "  </outerBoundaryIs>\n");
+    startLine("  <outerBoundaryIs>\n", level, buf);
+    writeLinearRing((LinearRing) p.getExteriorRing(), null, false, level + 1, buf);
+    startLine("  </outerBoundaryIs>\n", level, buf);
 
     for (int t = 0; t < p.getNumInteriorRing(); t++) {
-      startLine(buf, level, "  <innerBoundaryIs>\n");
-      writeLinearRing((LinearRing) p.getInteriorRingN(t), null, level + 1, buf);
-      startLine(buf, level, "  </innerBoundaryIs>\n");
+      startLine("  <innerBoundaryIs>\n", level, buf);
+      writeLinearRing((LinearRing) p.getInteriorRingN(t), null, false, level + 1, buf);
+      startLine("  </innerBoundaryIs>\n", level, buf);
     }
 
-    startLine(buf, level, "</Polygon>\n");
+    startLine("</Polygon>\n", level, buf);
   }
 
   private void writeGeometryCollection(GeometryCollection gc,
       String attributes, int level, StringBuffer buf) {
-    startLine(buf, level, "<MultiGeometry>\n");
+    startLine("<MultiGeometry>\n", level, buf);
     for (int t = 0; t < gc.getNumGeometries(); t++) {
       writeGeometry(gc.getGeometryN(t), level + 1, buf);
     }
-    startLine(buf, level, "</MultiGeometry>\n");
+    startLine("</MultiGeometry>\n", level, buf);
   }
 
   /**
@@ -283,7 +314,7 @@ public class KMLWriter
    * @param cs array of coordinates
    */
   private void write(Coordinate[] coords, int level, StringBuffer buf) {
-    startLine(buf, level, "<coordinates>");
+    startLine("<coordinates>", level, buf);
 
     boolean isNewLine = false;
     for (int i = 0; i < coords.length; i++) {
@@ -292,7 +323,7 @@ public class KMLWriter
       }
 
       if (isNewLine) {
-        startLine(buf, level, "  ");
+        startLine("  ", level, buf);
         isNewLine = false;
       }
 

@@ -69,13 +69,40 @@ public class KMLWriterTest extends TestCase
         "<MultiGeometry><LineString><coordinates>1.0,9.0 1.0,2.0 3.0,2.0</coordinates></LineString><Polygon><outerBoundaryIs><LinearRing><coordinates>3.0,9.0 5.0,9.0 5.0,7.0 3.0,7.0 3.0,9.0</coordinates></LinearRing></outerBoundaryIs></Polygon><Point><coordinates>5.0,5.0</coordinates></Point></MultiGeometry>");
   }
 
-  public void testExtrudeAltitude()
+  public void testExtrudeAltitudeLineString()
   {
     KMLWriter kmlWriter = new KMLWriter();
     kmlWriter.setExtrude(true);
-    kmlWriter.setAltitudeMode("absolute");
+    kmlWriter.setAltitudeMode(KMLWriter.ALTITUDE_MODE_ABSOLUTE);
     checkEqual(kmlWriter, "LINESTRING (1 1, 2 2)", 
         "<LineString><extrude>1</extrude><altitudeMode>absolute</altitudeMode><coordinates>1.0,1.0 2.0,2.0</coordinates></LineString>");
+  }
+
+  public void testExtrudeTesselateLineString()
+  {
+    KMLWriter kmlWriter = new KMLWriter();
+    kmlWriter.setExtrude(true);
+    kmlWriter.setTesselate(true);
+    //kmlWriter.setAltitudeMode(KMLWriter.ALTITUDE_MODE_ABSOLUTE);
+    checkEqual(kmlWriter, "LINESTRING (1 1, 2 2)", 
+        "<LineString><extrude>1</extrude><tesselate>1</tesselate><coordinates>1.0,1.0 2.0,2.0</coordinates></LineString>");
+  }
+
+  public void testExtrudeAltitudePolygon()
+  {
+    KMLWriter kmlWriter = new KMLWriter();
+    kmlWriter.setExtrude(true);
+    kmlWriter.setAltitudeMode(KMLWriter.ALTITUDE_MODE_ABSOLUTE);
+    checkEqual(kmlWriter, "POLYGON ((1 1, 2 1, 2 2, 1 2, 1 1))", 
+        "<Polygon><extrude>1</extrude><altitudeMode>absolute</altitudeMode><outerBoundaryIs><LinearRing><coordinates>1.0,1.0 2.0,1.0 2.0,2.0 1.0,2.0 1.0,1.0</coordinates></LinearRing></outerBoundaryIs></Polygon>");
+  }
+
+  public void testExtrudeGeometryCollection()
+  {
+    KMLWriter kmlWriter = new KMLWriter();
+    kmlWriter.setExtrude(true);
+    checkEqual(kmlWriter, "GEOMETRYCOLLECTION (LINESTRING (1 9, 1 2, 3 2), POLYGON ((3 9, 5 9, 5 7, 3 7, 3 9)), POINT (5 5))", 
+        "<MultiGeometry><LineString><extrude>1</extrude><coordinates>1.0,9.0 1.0,2.0 3.0,2.0</coordinates></LineString><Polygon><extrude>1</extrude><outerBoundaryIs><LinearRing><coordinates>3.0,9.0 5.0,9.0 5.0,7.0 3.0,7.0 3.0,9.0</coordinates></LinearRing></outerBoundaryIs></Polygon><Point><extrude>1</extrude><coordinates>5.0,5.0</coordinates></Point></MultiGeometry>");
   }
 
   public void testPrecision()
