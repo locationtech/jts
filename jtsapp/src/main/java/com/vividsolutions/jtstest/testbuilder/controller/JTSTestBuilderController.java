@@ -3,6 +3,7 @@ package com.vividsolutions.jtstest.testbuilder.controller;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
+import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 import com.vividsolutions.jtstest.testbuilder.model.LayerList;
 import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
@@ -25,9 +26,17 @@ public class JTSTestBuilderController
     //TODO: provide autoZoom checkbox on Edit tab to control autozooming (default = on)
   }
 
-  private static GeometryEditPanel getGeometryEditPanel()
+  public static GeometryEditPanel getGeometryEditPanel()
   {
     return JTSTestBuilderFrame.getGeometryEditPanel();
+  }
+
+  public static Geometry getGeometryA() {
+    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(0);
+  }
+
+  public static Geometry getGeometryB() {
+    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(1);
   }
 
   public static void zoomToFullExtent()

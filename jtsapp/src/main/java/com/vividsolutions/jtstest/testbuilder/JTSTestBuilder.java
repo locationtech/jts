@@ -59,6 +59,10 @@ import com.vividsolutions.jts.geom.*;
  */
 public class JTSTestBuilder
 {
+  private static final String PROP_SWING_DEFAULTLAF = "swing.defaultlaf";
+
+  private static final String OPT_GEOMFUNC = "geomfunc";
+  
   public static JTSTestBuilder instance()
   {
   	return app;
@@ -66,27 +70,12 @@ public class JTSTestBuilder
   
   public static TestBuilderModel model() { return instance().tbModel; }
 
-  public static Geometry getGeometryA() {
-    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(0);
-  }
-
-  public static Geometry getGeometryB() {
-    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(1);
-  }
-
-// MD - no longer used
-//  private static final String OPT_GEOMOP = "geomop";
-  private static final String OPT_GEOMFUNC = "geomfunc";
-
   private static GeometryFunctionRegistry funcRegistry = GeometryFunctionRegistry.createTestBuilderRegistry();
   private static CommandLine commandLine = createCmdLine();
   public static JTSTestBuilder app;
   
   private static CommandLine createCmdLine() {
     commandLine = new CommandLine('-');
-
-//    commandLine.addOptionSpec(new OptionSpec(OPT_GEOMOP, 1));
-
     commandLine.addOptionSpec(new OptionSpec(OPT_GEOMFUNC, OptionSpec.NARGS_ONE_OR_MORE));
     return commandLine;
   }
@@ -174,7 +163,7 @@ public class JTSTestBuilder
       public void run()
       {
         try {
-          String laf = System.getProperty("swing.defaultlaf");
+          String laf = System.getProperty(PROP_SWING_DEFAULTLAF);
           if (laf == null) {
             laf = UIManager.getSystemLookAndFeelClassName();
           }
@@ -191,23 +180,6 @@ public class JTSTestBuilder
 			ClassNotFoundException {
 		commandLine.parse(args);
 
-		/*
-		 * String geomOpClassname = null; // parse geomop argument, if any if
-		 * (args.length > 0) { if (args[0].equalsIgnoreCase("-" + OPT_GEOMOP) &&
-		 * args.length == 2) { geomOpClassname = args[1]; geometryOp =
-		 * GeometryOperationLoader.createGeometryOperation(JTSTestBuilder.class.getClassLoader(),
-		 * geomOpClassname); } else { System.out.println("Expecting argument
-		 * '-geomop <geometryOperation class>', found: " + args[0]); } if
-		 * (geometryOp == null) { System.exit(0); } System.out.println("Using
-		 * Geometry Operation: " + geomOpClassname); }
-		 * 
-		 * if (commandLine.hasOption(OPT_GEOMOP)) { String geomOpClassname =
-		 * commandLine.getOption(OPT_GEOMOP).getArg(0); geometryOp =
-		 * GeometryOperationLoader.createGeometryOperation(TopologyTestApp.class.getClassLoader(),
-		 * geomOpClassname); if (geometryOp == null) { System.exit(0); }
-		 * System.out.println("Using Geometry Operation: " + geomOpClassname); }
-		 */
-
 		if (commandLine.hasOption(OPT_GEOMFUNC)) {
 			Option opt = commandLine.getOption(OPT_GEOMFUNC);
 			for (int i = 0; i < opt.getNumArgs(); i++) {
@@ -220,10 +192,8 @@ public class JTSTestBuilder
 					System.out.println("Unable to load function class: "
 							+ geomFuncClassname);
 				}
-
 			}
 		}
-
 	}
 
 }

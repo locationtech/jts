@@ -43,6 +43,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Stopwatch;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
 import com.vividsolutions.jtstest.function.*;
+import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 
 
@@ -196,12 +197,12 @@ extends JPanel
 
   public Object getResult() {
     Object result = null;
-    if (currentFunc == null || JTSTestBuilder.getGeometryA() == null)
+    if (currentFunc == null || JTSTestBuilderController.getGeometryA() == null)
       return null;
     
     try {
       timer = new Stopwatch();
-      result = currentFunc.invoke(JTSTestBuilder.getGeometryA(), getFunctionParams());
+      result = currentFunc.invoke(JTSTestBuilderController.getGeometryA(), getFunctionParams());
       timer.stop();
     }
     catch (Exception ex) {
@@ -217,7 +218,7 @@ extends JPanel
     Class[] paramTypes = currentFunc.getParameterTypes();
     if (paramTypes.length == 1 
         && paramTypes[0] == Geometry.class)
-      return new Object[] { JTSTestBuilder.getGeometryB() };
+      return new Object[] { JTSTestBuilderController.getGeometryB() };
     
     if (paramTypes.length == 1 
         && (paramTypes[0] == Double.class || paramTypes[0] == double.class))
@@ -226,7 +227,7 @@ extends JPanel
     if (paramTypes.length == 2 
         && paramTypes[0] == Geometry.class
       && (paramTypes[1] == Double.class || paramTypes[1] == double.class))
-      return new Object[] { JTSTestBuilder.getGeometryB(), SwingUtil.getDouble(txtDistance, null) };
+      return new Object[] { JTSTestBuilderController.getGeometryB(), SwingUtil.getDouble(txtDistance, null) };
     
     if (paramTypes.length >= 2)
       return new Object[] { 

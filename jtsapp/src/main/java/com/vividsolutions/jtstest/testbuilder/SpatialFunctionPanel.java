@@ -43,6 +43,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.util.Stopwatch;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
 import com.vividsolutions.jtstest.function.*;
+import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 import com.vividsolutions.jtstest.testbuilder.model.FunctionParameters;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
 
@@ -250,19 +251,7 @@ extends JPanel
   }
 
   void displayAAndBCheckBox_actionPerformed(ActionEvent e) {
-    getGeometryEditPanel().setShowingInput(displayAAndBCheckBox.isSelected());
-  }
-
-  private Geometry getGeometryA() {
-    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(0);
-  }
-
-  private Geometry getGeometryB() {
-    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(1);
-  }
-
-  private GeometryEditPanel getGeometryEditPanel() {
-    return JTSTestBuilderFrame.instance().getTestCasePanel().getGeometryEditPanel();
+    JTSTestBuilderController.getGeometryEditPanel().setShowingInput(displayAAndBCheckBox.isSelected());
   }
 
   private void setCurrentFunction(GeometryFunction func) {
@@ -336,7 +325,7 @@ extends JPanel
     
     if (paramTypes.length == 1 
         && paramTypes[0] == Geometry.class)
-      return new Object[] { getGeometryB() };
+      return new Object[] { JTSTestBuilderController.getGeometryB() };
     
     if (paramTypes.length == 1 
         && (paramTypes[0] == Double.class || paramTypes[0] == double.class))
@@ -353,12 +342,12 @@ extends JPanel
     if (paramTypes.length == 2 
         && paramTypes[0] == Geometry.class
       && (paramTypes[1] == Double.class || paramTypes[1] == double.class))
-      return new Object[] { getGeometryB(), SwingUtil.getDouble(txtDistance, null) };
+      return new Object[] { JTSTestBuilderController.getGeometryB(), SwingUtil.getDouble(txtDistance, null) };
     
     if (paramTypes.length == 2 
         && paramTypes[0] == Geometry.class
       && (paramTypes[1] == Integer.class || paramTypes[1] == int.class))
-      return new Object[] { getGeometryB(), SwingUtil.getDouble(txtDistance, null) };
+      return new Object[] { JTSTestBuilderController.getGeometryB(), SwingUtil.getDouble(txtDistance, null) };
     
     if (paramTypes.length == 2 
         && (paramTypes[0] == Integer.class || paramTypes[0] == int.class)
