@@ -172,7 +172,7 @@ extends JPanel
   {
     int numNonGeomParams = numNonGeomParams(currentFunc);
     // TODO: this is a bit of a hack, and should be made smarter
-    setEnabled(txtDistance, numNonGeomParams >= 1);
+    SwingUtil.setEnabledWithBackground(txtDistance, numNonGeomParams >= 1);
   }
   
   private static int numNonGeomParams(GeometryFunction func)
@@ -186,15 +186,6 @@ extends JPanel
     return count;
   }
   
-  private static void setEnabled(Component comp, boolean isEnabled)
-  {
-    comp.setEnabled(isEnabled);
-    if (isEnabled)
-      comp.setBackground(SystemColor.text);
-    else
-      comp.setBackground(SystemColor.control);
-  }
-
   public Object getResult() {
     Object result = null;
     if (currentFunc == null || JTSTestBuilderController.getGeometryA() == null)
