@@ -34,6 +34,7 @@ package com.vividsolutions.jtstest.testbuilder;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.UIManager;
 
@@ -146,21 +147,44 @@ public class JTSTestBuilder
   {
     try {
     	readArgs(args);
-    	
-    	// set the look and feel, using user-defined LAF if present
-    	// eg. Metal - -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel
-      String laf = System.getProperty("swing.defaultlaf");
-      if (laf == null) {
-        laf = UIManager.getSystemLookAndFeelClassName();
-      }
-      UIManager.setLookAndFeel(laf);
-
+    	setLookAndFeel();
       app = new JTSTestBuilder();
       app.initFrame();
       
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  /**
+   * Sets the look and feel, using user-defined LAF if 
+   * provided as a system property.
+   * 
+   * e.g. Metal: -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel
+   * 
+   * @throws InterruptedException
+   * @throws InvocationTargetException
+   */
+  private static void setLookAndFeel() throws InterruptedException, InvocationTargetException
+  {
+    /**
+     * Invoke on Swing thread to pass Java security requirements
+     */
+    javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+      public void run()
+      {
+        try {
+          String laf = System.getProperty("swing.defaultlaf");
+          if (laf == null) {
+            laf = UIManager.getSystemLookAndFeelClassName();
+          }
+          javax.swing.UIManager.setLookAndFeel(laf);
+        }
+        catch (Exception e) {
+          e.printStackTrace();
+        }
+      }
+    });
   }
 
   private static void readArgs(String[] args) throws ParseException,
