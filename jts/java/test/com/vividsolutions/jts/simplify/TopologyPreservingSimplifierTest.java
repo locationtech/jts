@@ -158,7 +158,7 @@ public class TopologyPreservingSimplifierTest
   }
   public void testMultiPolygonWithEmpty() throws Exception {
     new GeometryOperationValidator(
-        DPSimplifierResult.getResult(
+        TPSimplifierResult.getResult(
       "MULTIPOLYGON (EMPTY, ((-36 91.5, 4.5 91.5, 4.5 57.5, -36 57.5, -36 91.5)), ((25.5 57.5, 61.5 57.5, 61.5 23.5, 25.5 23.5, 25.5 57.5)))",
         10.0))
         .test();
