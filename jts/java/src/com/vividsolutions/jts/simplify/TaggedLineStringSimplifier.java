@@ -151,23 +151,28 @@ public class TaggedLineStringSimplifier
     return maxIndex;
   }
 
+  /**
+   * Flattens a section of the line between
+   * indexes <code>start</code> and <code>end</code>,
+   * replacing them with a line between the endpoints.
+   * The input and output indexes are updated
+   * to reflect this.
+   * 
+   * @param start the start index of the flattened section
+   * @param end the end index of the flattened section
+   * @return the new segment created
+   */
   private LineSegment flatten(int start, int end)
   {
     // make a new segment for the simplified geometry
     Coordinate p0 = linePts[start];
     Coordinate p1 = linePts[end];
     LineSegment newSeg = new LineSegment(p0, p1);
-// update the indexes
+    // update the indexes
     remove(line, start, end);
     outputIndex.add(newSeg);
     return newSeg;
   }
-
-  /**
-   * Index of section to be tested for flattening - reusable
-   */
-  private int[] validSectionIndex = new int[2];
-
 
   private boolean hasBadIntersection(TaggedLineString parentLine,
                        int[] sectionIndex,
