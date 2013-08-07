@@ -69,6 +69,11 @@ The current and archived JTS distributions can be obtained at the
 <hr size='0' color='darkblue'>
 <h3 style='font-family:sans-serif; color:darkblue'>JTS I/O</h3>
 
+<h3>API Changes</h3>
+<ul>
+<li>In <code>OraWriter</code> the connection is now provided to the <code>write()</code> method, not the constructors
+</ul>
+
 <h3>Bug Fixes</h3>
 <ul>
 <li>Fixed <code>OraReader</code> to handle reading <code>GeometryCollection</code> with <code>Point</code> as second element

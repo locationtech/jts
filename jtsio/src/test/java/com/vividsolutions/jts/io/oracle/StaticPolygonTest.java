@@ -74,8 +74,8 @@ public class StaticPolygonTest extends ConnectedTestCase {
 		
 		Polygon pt = (Polygon) pg.create();
 		
-		OraWriter ow = new OraWriter(getConnection());
-		STRUCT st = ow.write(pt);
+		OraWriter ow = new OraWriter();
+		STRUCT st = ow.write(pt, getConnection());
 		
 		OraReader or = new OraReader();
 		Polygon pt2 = (Polygon) or.read(st);
@@ -102,13 +102,13 @@ public class StaticPolygonTest extends ConnectedTestCase {
 		PolygonGenerator pg = new PolygonGenerator();
 		pg.setGeometryFactory(geometryFactory);
 		pg.setNumberPoints(10);
-		OraWriter ow = new OraWriter(getConnection());
+		OraWriter ow = new OraWriter();
 		
 		int i=0;
 		while(grid.canCreate() && i<100){
 			pg.setBoundingBox(grid.createEnv());
 			pt[i] = (Polygon) pg.create();
-			st[i] = ow.write(pt[i]);
+			st[i] = ow.write(pt[i], getConnection());
 			i++;
 		}
 		
@@ -140,18 +140,18 @@ public class StaticPolygonTest extends ConnectedTestCase {
 		PolygonGenerator pg = new PolygonGenerator();
 		pg.setGeometryFactory(geometryFactory);
 		pg.setNumberPoints(10);
-		OraWriter ow = new OraWriter(getConnection());
+		OraWriter ow = new OraWriter();
 		
 		int i=0;
 		while(grid.canCreate() && i<8){
 			pg.setBoundingBox(grid.createEnv());
 			pt[i] = (Polygon) pg.create();
-			st[i] = ow.write(pt[i]);
+			st[i] = ow.write(pt[i], getConnection());
 			i++;
 		}
 		for(int j=0;j<4;j++){
 			if(pt[j]!=null)
-				st[i++] = ow.write(pt[j]);
+				st[i++] = ow.write(pt[j], getConnection());
 		}
 		
 		OraReader or = new OraReader();
@@ -179,8 +179,8 @@ public class StaticPolygonTest extends ConnectedTestCase {
 		Polygon pt = (Polygon) pg.create();
 //		System.out.println((pt==null?"NULL":pt.toString()));
 		
-		OraWriter ow = new OraWriter(getConnection());
-		STRUCT st = ow.write(pt);
+		OraWriter ow = new OraWriter();
+		STRUCT st = ow.write(pt, getConnection());
 		
 		OraReader or = new OraReader();
 		Polygon pt2 = (Polygon) or.read(st);
@@ -203,8 +203,8 @@ public class StaticPolygonTest extends ConnectedTestCase {
 		
 		Polygon pt = (Polygon) pg.create();
 		
-		OraWriter ow = new OraWriter(getConnection());
-		STRUCT st = ow.write(pt);
+		OraWriter ow = new OraWriter();
+		STRUCT st = ow.write(pt, getConnection());
 		
 		OraReader or = new OraReader();
 		Polygon pt2 = (Polygon) or.read(st);
@@ -232,13 +232,13 @@ public class StaticPolygonTest extends ConnectedTestCase {
 		pg.setGeometryFactory(geometryFactory);
 		pg.setNumberPoints(10);
 		pg.setNumberHoles(4);
-		OraWriter ow = new OraWriter(getConnection());
+		OraWriter ow = new OraWriter();
 		
 		int i=0;
 		while(grid.canCreate() && i<100){
 			pg.setBoundingBox(grid.createEnv());
 			pt[i] = (Polygon) pg.create();
-			st[i] = ow.write(pt[i]);
+			st[i] = ow.write(pt[i], getConnection());
 			i++;
 		}
 		
@@ -271,18 +271,18 @@ public class StaticPolygonTest extends ConnectedTestCase {
 		pg.setGeometryFactory(geometryFactory);
 		pg.setNumberPoints(10);
 		pg.setNumberHoles(4);
-		OraWriter ow = new OraWriter(getConnection());
+		OraWriter ow = new OraWriter();
 		
 		int i=0;
 		while(grid.canCreate() && i<8){
 			pg.setBoundingBox(grid.createEnv());
 			pt[i] = (Polygon) pg.create();
-			st[i] = ow.write(pt[i]);
+			st[i] = ow.write(pt[i], getConnection());
 			i++;
 		}
 		for(int j=0;j<4;j++){
 			if(pt[j]!=null)
-				st[i++] = ow.write(pt[j]);
+				st[i++] = ow.write(pt[j], getConnection());
 		}
 		
 		OraReader or = new OraReader();
@@ -311,8 +311,8 @@ public class StaticPolygonTest extends ConnectedTestCase {
 		Polygon pt = (Polygon) pg.create();
 //		System.out.println((pt==null?"NULL":pt.toString()));
 		
-		OraWriter ow = new OraWriter(getConnection());
-		STRUCT st = ow.write(pt);
+		OraWriter ow = new OraWriter();
+		STRUCT st = ow.write(pt, getConnection());
 		
 		OraReader or = new OraReader();
 		Polygon pt2 = (Polygon) or.read(st);
@@ -337,8 +337,8 @@ public class StaticPolygonTest extends ConnectedTestCase {
 		Polygon pt = (Polygon) pg.create();
 //		System.out.println((pt==null?"NULL":pt.toString()));
 		
-		OraWriter ow = new OraWriter(getConnection());
-		STRUCT st = ow.write(pt);
+		OraWriter ow = new OraWriter();
+		STRUCT st = ow.write(pt, getConnection());
 		
 		OraReader or = new OraReader();
 		Polygon pt2 = (Polygon) or.read(st);

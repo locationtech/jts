@@ -72,8 +72,8 @@ public class StaticLineStringTest extends ConnectedTestCase {
 		
 		LineString pt = (LineString) pg.create();
 		
-		OraWriter ow = new OraWriter(getConnection());
-		STRUCT st = ow.write(pt);
+		OraWriter ow = new OraWriter();
+		STRUCT st = ow.write(pt, getConnection());
 		
 		OraReader or = new OraReader();
 		LineString pt2 = (LineString) or.read(st);
@@ -100,13 +100,13 @@ public class StaticLineStringTest extends ConnectedTestCase {
 		LineStringGenerator pg = new LineStringGenerator();
 		pg.setGeometryFactory(geometryFactory);
 		pg.setNumberPoints(10);
-		OraWriter ow = new OraWriter(getConnection());
+		OraWriter ow = new OraWriter();
 		
 		int i=0;
 		while(grid.canCreate() && i<100){
 			pg.setBoundingBox(grid.createEnv());
 			pt[i] = (LineString) pg.create();
-			st[i] = ow.write(pt[i]);
+			st[i] = ow.write(pt[i], getConnection());
 			i++;
 		}
 		
@@ -138,18 +138,18 @@ public class StaticLineStringTest extends ConnectedTestCase {
 		LineStringGenerator pg = new LineStringGenerator();
 		pg.setGeometryFactory(geometryFactory);
 		pg.setNumberPoints(10);
-		OraWriter ow = new OraWriter(getConnection());
+		OraWriter ow = new OraWriter();
 		
 		int i=0;
 		while(grid.canCreate() && i<8){
 			pg.setBoundingBox(grid.createEnv());
 			pt[i] = (LineString) pg.create();
-			st[i] = ow.write(pt[i]);
+			st[i] = ow.write(pt[i], getConnection());
 			i++;
 		}
 		for(int j=0;j<4;j++){
 			if(pt[j]!=null)
-				st[i++] = ow.write(pt[j]);
+				st[i++] = ow.write(pt[j], getConnection());
 		}
 		
 		OraReader or = new OraReader();
@@ -177,8 +177,8 @@ public class StaticLineStringTest extends ConnectedTestCase {
 		LineString pt = (LineString) pg.create();
 //		System.out.println((pt==null?"NULL":pt.toString()));
 		
-		OraWriter ow = new OraWriter(getConnection());
-		STRUCT st = ow.write(pt);
+		OraWriter ow = new OraWriter();
+		STRUCT st = ow.write(pt, getConnection());
 		
 		OraReader or = new OraReader();
 		LineString pt2 = (LineString) or.read(st);

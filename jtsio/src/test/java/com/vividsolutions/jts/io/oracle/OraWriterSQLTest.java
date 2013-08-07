@@ -48,7 +48,7 @@ public class OraWriterSQLTest extends TestCase {
 	      throw new RuntimeException(e);
 	    }
 	    
-	    final OraWriter oraWriter = new OraWriter(null);
+	    final OraWriter oraWriter = new OraWriter();
 	    if (targetDim > -1) 
 	    	oraWriter.setDimension(targetDim);
 	    oraWriter.setOptimizePoint(isOptimizePoint);

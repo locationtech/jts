@@ -62,8 +62,8 @@ import oracle.sql.*;
  * Translates a JTS Geometry into an Oracle STRUCT representing an <code>MDSYS.SDO_GEOMETRY</code> object. 
  * Supports writing all JTS geometry types into an equivalent Oracle representation.
  * <p>
- * A connection to an Oracle instance with access to the definition of the <code>MDSYS.SDO_GEOMETRY</code>
- * type is required.
+ * To write an Oracle <code>STRUCT</code> a connection to an Oracle instance with access to the definition of the <code>MDSYS.SDO_GEOMETRY</code>
+ * type is required.  Oracle <code>SDO_GEOMETRY</code> SQL strings may be written without a connection, however.
  * <p>
  * By default, a single {@link Point} is written using the optimized <code>SDO_POINT_TYPE</code> attribute.
  * This can be overridden to use the (less compact) <code>SDO_ELEM_INFO/SDOORDINATES</code> representation
@@ -96,13 +96,11 @@ import oracle.sql.*;
  * (A future release could allow forcing interpreting Z as M, or else providing a fixed M value).
  * </ul>
  * 
- * @version 9i
  * @author Martin Davis
  * @author David Zwiers, Vivid Solutions.
  */
 public class OraWriter 
 {
-	
 	/**
 	 * A connection providing access to the required type definitions
 	 */
@@ -118,29 +116,61 @@ public class OraWriter
 	private boolean isOptimizeRectangle = false;
 	private boolean isOptimizePoint = true;
 
-	/**
-	 * Creates a writer using a valid Oracle connection. 
-	 * 
-	 * The connection should have sufficient privileges to view the description of the MDSYS.SDO_GEOMETRY type.
-	 * 
-	 * The output dimension will be whatever the dimension of the input is.
-	 * 
-	 * @param con a valid Oracle connection
-	 */
-	public OraWriter(OracleConnection con){
-		this.connection = con;
-	}
-	
+  /**
+   * Creates a writer for Oracle geometry formats. 
+   * 
+   * The output dimension will be whatever the dimension of the input is.
+   */
+  public OraWriter()
+  {
+  }
+  
+  /**
+   * Creates a writer for Oracle geometry formats,
+   * specifying the maximum output dimension. 
+   * 
+   * @param outputDimension the coordinate dimension to use for the output
+   */
+  public OraWriter(int outputDimension)
+  {
+    this.outputDimension = outputDimension;
+  }
+
+  /**
+   * Creates a writer using a valid Oracle connection. 
+   * <p>
+   * To simplify connection resource handling, the connection should be
+   * provided in the {@link #write(Geometry, OracleConnection)} method.
+   * Accordingly, this constructor has been deprecated.
+   * <p>
+   * The connection should have sufficient privileges to view the description of the MDSYS.SDO_GEOMETRY type.
+   * <p>
+   * The output dimension will be whatever the dimension of the input is.
+   * 
+   * @param con a valid Oracle connection
+   * @deprecated use {@link #OraWriter()} instead
+   */
+  public OraWriter(OracleConnection con)
+  {
+    this.connection = con;
+  }
+  
 	/**
 	 * Creates a writer using a valid Oracle connection,
 	 * and specifying the maximum output dimension. 
-	 * 
-	 * The connection should have sufficient privileges to view the description of the MDSYS.GEOMETRY type.
+   * <p>
+   * To simplify connection resource handling, the connection should be
+   * provided in the {@link #write(Geometry, OracleConnection)} method.
+   * Accordingly, this constructor has been deprecated.
+   * <p>
+   * The connection should have sufficient privileges to view the description of the MDSYS.SDO_GEOMETRY type.
 	 * 
 	 * @param con a valid Oracle connection
 	 * @param outputDimension the coordinate dimension to use for the output
+	 * @deprecated use {@link #OraWriter(int)} instead
 	 */
-	public OraWriter(OracleConnection con, int outputDimension){
+	public OraWriter(OracleConnection con, int outputDimension)
+	{
 		this.connection = con;
 		this.outputDimension = outputDimension;
 	}
@@ -151,7 +181,8 @@ public class OraWriter
      * @param outputDimension
      *            the coordinate dimension to use for the output
      */
-    public void setDimension(int outputDimension) {
+    public void setDimension(int outputDimension) 
+    {
         if (outputDimension < 2)
             throw new IllegalArgumentException("Output dimension must be >= 2");
         this.outputDimension = outputDimension;
@@ -167,7 +198,8 @@ public class OraWriter
 	 * 
 	 * @param srid the srid to use
 	 */
-	public void setSRID(int srid){
+	public void setSRID(int srid)
+	{
 		this.srid = srid;
 	}
 
@@ -222,17 +254,47 @@ public class OraWriter
    * @param geom the geometry to encode
    * @return a Oracle MDSYS.SDO_GEOMETRY STRUCT representing the geometry
    * @throws SQLException if an encoding error was encountered
+   * @deprecated
    */
   public STRUCT write(Geometry geom) throws SQLException
   {
-    // this line may be problematic ... for v9i and later
-    // need to revisit.
+    return write(geom, connection);
+  }
+  
+  /**
+   * Converts a {@link Geometry} into an Oracle MDSYS.SDO_GEOMETRY STRUCT.
+   * <p>
+   * Although invalid geometries may be encoded, and inserted into an Oracle DB,
+   * this is not recommended. It is the responsibility of the user to ensure the
+   * geometry is valid prior to calling this method. 
+   * <p>
+   * The SRID of the created SDO_GEOMETRY is the SRID defined explicitly for the writer, if any; 
+   * otherwise it is the SRID contained in the input geometry. 
+   * The caller should ensure the the SRID is valid for the intended use, 
+   * since an incorrect SRID may cause indexing exceptions during an
+   * INSERT or UPDATE.
+   * <p>
+   * When a null Geometry is passed in, a non-null, empty SDO_GEOMETRY STRUCT is returned.
+   * Therefore, inserting the output of the writer into a
+   * table will never result in NULL insertions.
+   * To pass a NULL Geometry into an Oracle SDO_GEOMETRY-valued parameter using JDBC, use
+   * <pre>
+   * java.sql.CallableStatement.setNull(index, java.sql.Types.STRUCT, "MDSYS.SDO_GEOMETRY"). 
+   * </pre>
+   * 
+   * @param geom the geometry to encode
+   * @return a Oracle MDSYS.SDO_GEOMETRY STRUCT representing the geometry
+   * @throws SQLException if an encoding error was encountered
+   */
+  public STRUCT write(Geometry geom, OracleConnection connection) throws SQLException
+  {
+    // this line may be problematic ... for v9i and later need to revisit.
 
     // was this ... does not work for 9i
     // if( geom == null) return toSTRUCT( null, DATATYPE );
 
     if (geom == null || geom.isEmpty() || geom.getCoordinate() == null)
-      return createEmptySDOGeometry();
+      return createEmptySDOGeometry(connection);
 
     OraGeom oraGeom = createOraGeom(geom);
     
@@ -285,7 +347,7 @@ public class OraWriter
 	  return oraGeom.toString();
   }
   
-	private STRUCT createEmptySDOGeometry() throws SQLException {
+	private STRUCT createEmptySDOGeometry(OracleConnection connection) throws SQLException {
 		return OraUtil.toSTRUCT(new Datum[5], OraGeom.TYPE_GEOMETRY, connection);
 	}
 

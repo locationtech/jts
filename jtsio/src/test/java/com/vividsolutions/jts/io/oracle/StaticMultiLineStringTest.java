@@ -75,8 +75,8 @@ public class StaticMultiLineStringTest extends ConnectedTestCase {
 		
 		MultiLineString pt = (MultiLineString) pg.create();
 		
-		OraWriter ow = new OraWriter(getConnection());
-		STRUCT st = ow.write(pt);
+		OraWriter ow = new OraWriter();
+		STRUCT st = ow.write(pt, getConnection());
 		
 		OraReader or = new OraReader();
 		MultiLineString pt2 = (MultiLineString) or.read(st);
@@ -108,13 +108,13 @@ public class StaticMultiLineStringTest extends ConnectedTestCase {
 		pg.setNumberGeometries(3);
 		pg.setGeometryFactory(geometryFactory);
 		
-		OraWriter ow = new OraWriter(getConnection());
+		OraWriter ow = new OraWriter();
 		
 		int i=0;
 		while(grid.canCreate() && i<100){
 			pg.setBoundingBox(grid.createEnv());
 			pt[i] = (MultiLineString) pg.create();
-			st[i] = ow.write(pt[i]);
+			st[i] = ow.write(pt[i], getConnection());
 			i++;
 		}
 		
@@ -151,18 +151,18 @@ public class StaticMultiLineStringTest extends ConnectedTestCase {
 		pg.setNumberGeometries(3);
 		pg.setGeometryFactory(geometryFactory);
 		
-		OraWriter ow = new OraWriter(getConnection());
+		OraWriter ow = new OraWriter();
 		
 		int i=0;
 		while(grid.canCreate() && i<8){
 			pg.setBoundingBox(grid.createEnv());
 			pt[i] = (MultiLineString) pg.create();
-			st[i] = ow.write(pt[i]);
+			st[i] = ow.write(pt[i], getConnection());
 			i++;
 		}
 		for(int j=0;j<4;j++){
 			if(pt[j]!=null)
-				st[i++] = ow.write(pt[j]);
+				st[i++] = ow.write(pt[j], getConnection());
 		}
 		
 		OraReader or = new OraReader();
@@ -194,8 +194,8 @@ public class StaticMultiLineStringTest extends ConnectedTestCase {
 		MultiLineString pt = (MultiLineString) pg.create();
 //		System.out.println((pt==null?"NULL":pt.toString()));
 		
-		OraWriter ow = new OraWriter(getConnection());
-		STRUCT st = ow.write(pt);
+		OraWriter ow = new OraWriter();
+		STRUCT st = ow.write(pt, getConnection());
 		
 		OraReader or = new OraReader();
 		MultiLineString pt2 = (MultiLineString) or.read(st);
