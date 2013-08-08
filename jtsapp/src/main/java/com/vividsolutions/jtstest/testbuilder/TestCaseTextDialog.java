@@ -42,7 +42,6 @@ import javax.swing.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.io.gml2.*;
-import com.vividsolutions.jts.io.oracle.OraWriter;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 
 
@@ -76,7 +75,6 @@ public class TestCaseTextDialog extends JDialog {
     JRadioButton rbWKT = new JRadioButton();
     JRadioButton rbWKTFormatted = new JRadioButton();
     JRadioButton rbGML = new JRadioButton();
-    JRadioButton rbOra = new JRadioButton();
     
     JCheckBox intersectsCB = new JCheckBox();
 
@@ -168,12 +166,6 @@ public class TestCaseTextDialog extends JDialog {
               rbGML_actionPerformed(e);
           }
       });
-        rbOra.setText("Oracle");
-        rbOra.addActionListener(new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-              rbOra_actionPerformed(e);
-          }
-      });
         getContentPane().add(dialogPanel);
         dialogPanel.add(jScrollPane1, BorderLayout.CENTER);
         dialogPanel.add(jPanel1, BorderLayout.SOUTH);
@@ -184,7 +176,6 @@ public class TestCaseTextDialog extends JDialog {
         textFormatPanel.add(rbWKTFormatted, null);
         textFormatPanel.add(rbWKB, null);
         textFormatPanel.add(rbGML, null);
-        textFormatPanel.add(rbOra, null);
         textFormatPanel.add(rbTestCaseJava, null);
         textFormatPanel.add(rbXML, null);
         textFormatPanel.add(rbXMLWKB, null);
@@ -207,7 +198,6 @@ public class TestCaseTextDialog extends JDialog {
         textFormatGroup.add(rbWKTFormatted);
         textFormatGroup.add(rbWKB);
         textFormatGroup.add(rbGML);
-        textFormatGroup.add(rbOra);
     }
 
     public void setTestCase(TestCaseEdit test) {
@@ -270,14 +260,6 @@ public class TestCaseTextDialog extends JDialog {
           );
   }
     
-    void rbOra_actionPerformed(ActionEvent e) {
-      writeView(
-          convertToOra(test.getGeometry(0)),
-          convertToOra(test.getGeometry(1)),
-          convertToOra(test.getResult())
-          );
-  }
-    
   private void writeView(String a, String b, String result)
   {
   	txtGeomView.setText("");
@@ -317,9 +299,4 @@ public class TestCaseTextDialog extends JDialog {
       return (new GMLWriter()).write(g);
     }
     
-    private String convertToOra(Geometry g)
-    {
-      if (g == null) return "";
-      return (new OraWriter(null)).writeSQL(g);
-    }
 }
