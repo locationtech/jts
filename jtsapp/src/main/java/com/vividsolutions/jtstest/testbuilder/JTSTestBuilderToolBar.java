@@ -26,21 +26,23 @@ public class JTSTestBuilderToolBar {
   JButton deleteButton = new JButton();
   JButton exchangeButton = new JButton();
 
+  JButton oneToOneButton = new JButton();
+  JButton zoomToFullExtentButton = new JButton();
+  JButton zoomToInputButton = new JButton();
+  JButton zoomToInputAButton = new JButton();
+  JButton zoomToInputBButton = new JButton();
+  JButton zoomToResultButton = new JButton();
+  
   JToggleButton drawRectangleButton = new JToggleButton();
   JToggleButton drawPolygonButton = new JToggleButton();
   JToggleButton drawLineStringButton = new JToggleButton();
   JToggleButton drawPointButton = new JToggleButton();
   JToggleButton zoomInButton = new JToggleButton();
   JToggleButton infoButton = new JToggleButton();
-  JButton oneToOneButton = new JButton();
-  ButtonGroup toolButtonGroup = new ButtonGroup();
-  JButton zoomToFullExtentButton = new JButton();
-  JButton zoomToInputButton = new JButton();
-  JButton zoomToInputAButton = new JButton();
-  JButton zoomToInputBButton = new JButton();
-  JButton zoomToResultButton = new JButton();
   JToggleButton panButton = new JToggleButton();
   JToggleButton btnEditVertex = new JToggleButton();
+  JToggleButton extractComponentButton;
+  ButtonGroup toolButtonGroup = new ButtonGroup();
 
   private final ImageIcon leftIcon = new ImageIcon(this.getClass().getResource("Left.gif"));
   private final ImageIcon rightIcon = new ImageIcon(this.getClass().getResource("Right.gif"));
@@ -64,7 +66,6 @@ public class JTSTestBuilderToolBar {
   private final ImageIcon moveVertexIcon = new ImageIcon(this.getClass().getResource("MoveVertex.png"));
   private final ImageIcon panIcon = new ImageIcon(this.getClass().getResource("Hand.gif"));
 
-  private JToggleButton extractComponentButton;
 
   public JTSTestBuilderToolBar(JTSTestBuilderFrame tbFrame) 
   {
@@ -75,7 +76,13 @@ public class JTSTestBuilderToolBar {
   {
     // this only works in JSE 1.6
     // In 1.5, need to add an invisible button and select it
-    toolButtonGroup.clearSelection();
+    //toolButtonGroup.clearSelection();
+  }
+  
+  public void unselectExtractComponentButton()
+  {
+    extractComponentButton.setSelected(false);
+    toolButtonGroup.setSelected(extractComponentButton.getModel(), false);
   }
   
   public JToolBar getToolBar()

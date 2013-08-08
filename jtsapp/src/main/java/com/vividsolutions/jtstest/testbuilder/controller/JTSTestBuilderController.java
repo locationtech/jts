@@ -70,6 +70,7 @@ public class JTSTestBuilderController
     JTSTestBuilderFrame.instance().getModel().addCase(comp);
     JTSTestBuilderFrame.instance().updateTestCases();
     JTSTestBuilderFrame.instance().getToolbar().clearToolButtons();
+    JTSTestBuilderFrame.instance().getToolbar().unselectExtractComponentButton();
     JTSTestBuilderFrame.instance().getGeometryEditPanel().setCurrentTool(null);
   }
   
