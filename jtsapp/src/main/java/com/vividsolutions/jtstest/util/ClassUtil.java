@@ -1,6 +1,9 @@
 package com.vividsolutions.jtstest.util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class ClassUtil 
 {
@@ -35,4 +38,21 @@ public class ClassUtil
   	catch (IllegalAccessException ex) {  	}
 		return null;
   }
+  
+  public static Object dynamicCall(String clzName, String methodName, Class[] methodParamTypes, Object[] methodArgs)
+      throws ClassNotFoundException, SecurityException, NoSuchMethodException,
+      IllegalArgumentException, InstantiationException, IllegalAccessException,
+      InvocationTargetException
+  {
+    Class clz = Class.forName(clzName);
+    
+    Class[] constParTypes = new Class[] { String.class, String.class };
+    Constructor constr = clz.getConstructor(new Class[0]);
+    Object dummyto = constr.newInstance(new Object[0]);
+    
+    Method meth = clz.getMethod(methodName, methodParamTypes);
+    Object result = meth.invoke(dummyto, methodArgs);
+    return result;
+  }
+
 }

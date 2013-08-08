@@ -1,10 +1,12 @@
 package com.vividsolutions.jtstest.function;
 
+import java.lang.reflect.InvocationTargetException;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKBWriter;
 import com.vividsolutions.jts.io.gml2.GMLWriter;
 import com.vividsolutions.jts.io.kml.KMLWriter;
-import com.vividsolutions.jts.io.oracle.OraWriter;
+import com.vividsolutions.jtstest.util.ClassUtil;
 
 public class WriterFunctions 
 {
@@ -21,10 +23,16 @@ public class WriterFunctions
     return (new GMLWriter()).write(geom);
   }
 
-  public static String writeOra(Geometry g)
+  public static String writeOra(Geometry g) throws SecurityException, IllegalArgumentException, ClassNotFoundException, NoSuchMethodException, InstantiationException, IllegalAccessException, InvocationTargetException
   {
     if (g == null) return "";
-    return (new OraWriter(null)).writeSQL(g);
+    // call dynamically to avoid dependency on OraWriter
+    String sql = (String) ClassUtil.dynamicCall("com.vividsolutions.jts.io.oracle.OraWriter", 
+        "writeSQL", 
+        new Class[] { Geometry.class }, 
+        new Object[] { g });
+    return sql;
+    //return (new OraWriter(null)).writeSQL(g);
   }
   
   public static String writeWKB(Geometry g)
@@ -32,4 +40,6 @@ public class WriterFunctions
     if (g == null) return "";
     return WKBWriter.toHex((new WKBWriter().write(g)));
   }
+  
+
 }
