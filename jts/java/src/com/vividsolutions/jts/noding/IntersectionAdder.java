@@ -32,18 +32,13 @@
  */
 package com.vividsolutions.jts.noding;
 
-import java.util.*;
-import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.algorithm.LineIntersector;
-import com.vividsolutions.jts.util.Debug;
+import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * Computes the intersections between two line segments in {@link SegmentString}s
- * and adds them to each string.
- * The {@link SegmentIntersector} is passed to a {@link Noder}.
- * The {@link SegmentIntersector#processIntersections(SegmentString, int, SegmentString, int)} method is called whenever the {@link Noder}
- * detects that two SegmentStrings <i>might</i> intersect.
- * This class is an example of the <i>Strategy</i> pattern.
+ * Computes the possible intersections between two line segments in {@link NodedSegmentString}s
+ * and adds them to each string 
+ * using {@link NodedSegmentString#addIntersection(LineIntersector, int, int, int)}.
  *
  * @version 1.7
  */

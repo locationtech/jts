@@ -38,10 +38,15 @@ import com.vividsolutions.jts.algorithm.LineIntersector;
 import com.vividsolutions.jts.util.Debug;
 
 /**
- * Finds proper and interior intersections in a set of SegmentStrings,
- * and adds them as nodes.
+ * Finds <b>proper, interior</b> intersections between line segments in {@link NodedSegmentString}s,
+ * and adds them as nodes
+ * using {@link NodedSegmentString#addIntersection(LineIntersector, int, int, int)}.
+ * <p>
+ * This class is used primarily for Snap-Rounding.  
+ * For general-purpose noding, use {@link IntersectionAdder}.
  *
  * @version 1.7
+ * @see IntersectionAdder
  */
 public class IntersectionFinderAdder
     implements SegmentIntersector
