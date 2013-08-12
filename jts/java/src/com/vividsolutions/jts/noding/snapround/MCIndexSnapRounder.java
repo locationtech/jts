@@ -117,7 +117,7 @@ public class MCIndexSnapRounder
    */
   private List findInteriorIntersections(Collection segStrings, LineIntersector li)
   {
-    IntersectionFinderAdder intFinderAdder = new IntersectionFinderAdder(li);
+    InteriorIntersectionFinderAdder intFinderAdder = new InteriorIntersectionFinderAdder(li);
     noder.setSegmentIntersector(intFinderAdder);
     noder.computeNodes(segStrings);
     return intFinderAdder.getInteriorIntersections();

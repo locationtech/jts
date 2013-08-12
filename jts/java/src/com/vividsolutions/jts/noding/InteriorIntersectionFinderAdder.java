@@ -47,9 +47,8 @@ import com.vividsolutions.jts.util.Debug;
  *
  * @version 1.7
  * @see IntersectionAdder
- * @deprecated see InteriorIntersectionFinderAdder
  */
-public class IntersectionFinderAdder
+public class InteriorIntersectionFinderAdder
     implements SegmentIntersector
 {
   private LineIntersector li;
@@ -61,7 +60,7 @@ public class IntersectionFinderAdder
    *
    * @param li the LineIntersector to use
    */
-  public IntersectionFinderAdder(LineIntersector li)
+  public InteriorIntersectionFinderAdder(LineIntersector li)
   {
     this.li = li;
     interiorIntersections = new ArrayList();

@@ -119,7 +119,7 @@ public class SimpleSnapRounder
    */
   private List findInteriorIntersections(Collection segStrings, LineIntersector li)
   {
-    IntersectionFinderAdder intFinderAdder = new IntersectionFinderAdder(li);
+    InteriorIntersectionFinderAdder intFinderAdder = new InteriorIntersectionFinderAdder(li);
     SinglePassNoder noder = new MCIndexNoder();
     noder.setSegmentIntersector(intFinderAdder);
     noder.computeNodes(segStrings);
