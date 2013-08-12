@@ -35,6 +35,7 @@ package com.vividsolutions.jts.geom;
 import java.io.Serializable;
 import java.util.Comparator;
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jts.util.NumberUtil;
 
 
 /**
@@ -47,11 +48,12 @@ import com.vividsolutions.jts.util.Assert;
  * and accessor methods. <P>
  *
  * <code>Coordinate</code>s are two-dimensional points, with an additional Z-ordinate. 
- * JTS does not support any operations on the Z-ordinate except the basic accessor functions. 
  * If an Z-ordinate value is not specified or not defined, 
  * constructed coordinates have a Z-ordinate of <code>NaN</code>
  * (which is also the value of <code>NULL_ORDINATE</code>).  
  * The standard comparison functions ignore the Z-ordinate.
+ * Apart from the basic accessor functions, JTS supports
+ * only specific operations involving the Z-ordinate. 
  *
  *@version 1.7
  */
@@ -194,14 +196,54 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
     if (x != other.x) {
       return false;
     }
-
     if (y != other.y) {
       return false;
     }
-
     return true;
   }
 
+  /**
+   * Tests if another coordinate has the same values for the X and Y ordinates.
+   * The Z ordinate is ignored.
+   *
+   *@param other a <code>Coordinate</code> with which to do the 2D comparison.
+   *@return true if <code>other</code> is a <code>Coordinate</code>
+   *      with the same values for X and Y.
+   */
+  public boolean equals2D(Coordinate c, double tolerance){
+    if (! NumberUtil.equalsWithTolerance(this.x, c.x, tolerance)) {
+      return false;
+    }
+    if (! NumberUtil.equalsWithTolerance(this.y, c.y, tolerance)) {
+      return false;
+    }
+    return true;
+  }
+  
+  /**
+   * Tests if another coordinate has the same values for the X, Y and Z ordinates.
+   *
+   *@param other a <code>Coordinate</code> with which to do the 3D comparison.
+   *@return true if <code>other</code> is a <code>Coordinate</code>
+   *      with the same values for X, Y and Z.
+   */
+  public boolean equals3D(Coordinate other) {
+    return (x == other.x) && (y == other.y) &&
+               ((z == other.z) ||
+               (Double.isNaN(z) && Double.isNaN(other.z)));
+  }
+  
+  /**
+   * Tests if another coordinate has the same value for Z, within a tolerance.
+   * 
+   * @param c a coordinate
+   * @param tolerance the tolerance value
+   * @return true if the Z ordinates are within the given tolerance
+   */
+  public boolean equalInZ(Coordinate c, double tolerance){
+    return NumberUtil.equalsWithTolerance(this.z, c.z, tolerance);
+  }
+  
   /**
    *  Returns <code>true</code> if <code>other</code> has the same values for
    *  the x and y ordinates.
@@ -248,20 +290,6 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
   }
 
   /**
-   *  Returns <code>true</code> if <code>other</code> has the same values for x,
-   *  y and z.
-   *
-   *@param  other  a <code>Coordinate</code> with which to do the 3D comparison.
-   *@return        <code>true</code> if <code>other</code> is a <code>Coordinate</code>
-   *      with the same values for x, y and z.
-   */
-  public boolean equals3D(Coordinate other) {
-    return (x == other.x) && (y == other.y) &&
-               ((z == other.z) ||
-               (Double.isNaN(z) && Double.isNaN(other.z)));
-  }
-
-  /**
    *  Returns a <code>String</code> of the form <I>(x,y,z)</I> .
    *
    *@return    a <code>String</code> of the form <I>(x,y,z)</I>
@@ -287,14 +315,26 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
    * Computes the 2-dimensional Euclidean distance to another location.
    * The Z-ordinate is ignored.
    * 
-   * @param p a point
+   * @param c a point
    * @return the 2-dimensional Euclidean distance between the locations
    */
-  public double distance(Coordinate p) {
-    double dx = x - p.x;
-    double dy = y - p.y;
-
+  public double distance(Coordinate c) {
+    double dx = x - c.x;
+    double dy = y - c.y;
     return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  /**
+   * Computes the 3-dimensional Euclidean distance to another location.
+   * 
+   * @param c a coordinate
+   * @return the 3-dimensional Euclidean distance between the locations
+   */
+  public double distance3D(Coordinate c) {
+    double dx = x - c.x;
+    double dy = y - c.y;
+    double dz = z - c.z;
+    return Math.sqrt(dx * dx + dy * dy + dz * dz);
   }
 
   /**
