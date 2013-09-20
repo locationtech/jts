@@ -52,8 +52,6 @@ import java.util.TreeMap;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 
-import Acme.JPM.Encoders.GifEncoder;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.util.Assert;

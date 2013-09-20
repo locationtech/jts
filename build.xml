@@ -75,7 +75,7 @@
     <copy file="${jts.lib}\jdom.jar"      tofile="${pre-zip.lib}\jdom.jar"   />
     <copy file="${jts.lib}\xerces.jar"    tofile="${pre-zip.lib}\xerces.jar" />
     <copy file="${jts.lib}\junit-3.7.jar" tofile="${pre-zip.lib}\junit.jar"  />
-    <copy file="${jts.lib}\acme.jar"      tofile="${pre-zip.lib}\acme.jar"   />
+    <!--<copy file="${jts.lib}\acme.jar"      tofile="${pre-zip.lib}\acme.jar"   /> -->
   	
     <copy todir="${pre-zip.testxml}">
       <fileset dir="${basedir}/jts/testxml" />

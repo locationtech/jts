@@ -51,8 +51,6 @@ import java.util.TreeMap;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 
-import Acme.JPM.Encoders.GifEncoder;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.util.Assert;
@@ -394,6 +392,8 @@ public class HtmlWriter {
     String filenameWithPath = outputDirectory.getPath() + "\\" + filenameNoPath;
     Image image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_4BYTE_ABGR);
     geometryEditPanel.paint(image.getGraphics());
+    /*
+    // disabled - should be replaced with PNG output
     FileOutputStream outputStream = new FileOutputStream(filenameWithPath,
         false);
     GifEncoder gifEncoder = new GifEncoder(image, outputStream);
@@ -401,6 +401,7 @@ public class HtmlWriter {
     gifEncoder.encode();
     outputStream.flush();
     outputStream.close();
+    */
   }
 
   private void createHtmlFile(String filename, String html) throws IOException {
