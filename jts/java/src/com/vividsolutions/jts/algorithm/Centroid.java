@@ -133,17 +133,31 @@ public class Centroid
    */
   public Coordinate getCentroid()
   {
+    /**
+     * The centroid is computed from the highest dimension components present in the input.
+     * I.e. areas dominate lineal geometry, which dominates points.
+     * Degenerate geometry are computed using their effective dimension
+     * (e.g. areas may degenerate to lines or points)
+     */
     Coordinate cent = new Coordinate();
     if (Math.abs(areasum2) > 0.0) {
+      /**
+       * Input contains areal geometry
+       */
     	cent.x = cg3.x / 3 / areasum2;
     	cent.y = cg3.y / 3 / areasum2;
     }
     else if (totalLength > 0.0) {
-    	// if polygon was degenerate, compute linear centroid instead
+      /**
+       * Input contains lineal geometry
+       */
       cent.x = lineCentSum.x / totalLength;
       cent.y = lineCentSum.y / totalLength;   	
     }
     else if (ptCount > 0){
+      /**
+       * Input contains puntal geometry only
+       */
       cent.x = ptCentSum.x / ptCount;
       cent.y = ptCentSum.y / ptCount;
     }
