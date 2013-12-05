@@ -103,9 +103,13 @@ public class ResultController
         
         try {
         	timer = new Stopwatch();
+        	try {
           result = currentFunc.invoke(model.getGeometryEditModel().getGeometry(0), 
           		frame.getTestCasePanel().getSpatialFunctionPanel().getFunctionParams());
-          timer.stop();
+        	}
+        	finally {
+        	  timer.stop();
+        	}
 //          result = currentState.getActualValue();
         }
         catch (Exception ex) {
