@@ -104,9 +104,9 @@ public class SimpleMCSweepLineIntersector
     int[] startIndex = mce.getStartIndexes();
     for (int i = 0; i < startIndex.length - 1; i++) {
       MonotoneChain mc = new MonotoneChain(mce, i);
-      SweepLineEvent insertEvent = new SweepLineEvent(edgeSet, mce.getMinX(i), null, mc);
+      SweepLineEvent insertEvent = new SweepLineEvent(edgeSet, mce.getMinX(i), mc);
       events.add(insertEvent);
-      events.add(new SweepLineEvent(edgeSet, mce.getMaxX(i), insertEvent, mc));
+      events.add(new SweepLineEvent(mce.getMaxX(i), insertEvent));
     }
   }
 
@@ -118,6 +118,7 @@ public class SimpleMCSweepLineIntersector
   private void prepareEvents()
   {
     Collections.sort(events);
+    // set DELETE event indexes
     for (int i = 0; i < events.size(); i++ )
     {
       SweepLineEvent ev = (SweepLineEvent) events.get(i);
@@ -146,16 +147,15 @@ public class SimpleMCSweepLineIntersector
     MonotoneChain mc0 = (MonotoneChain) ev0.getObject();
     /**
      * Since we might need to test for self-intersections,
-     * include current insert event object in list of event objects to test.
+     * include current INSERT event object in list of event objects to test.
      * Last index can be skipped, because it must be a Delete event.
      */
     for (int i = start; i < end; i++ ) {
       SweepLineEvent ev1 = (SweepLineEvent) events.get(i);
       if (ev1.isInsert()) {
         MonotoneChain mc1 = (MonotoneChain) ev1.getObject();
-        // don't compare edges in same group
-        // null group indicates that edges should be compared
-        if (ev0.edgeSet == null || (ev0.edgeSet != ev1.edgeSet)) {
+        // don't compare edges in same group, if labels are present
+        if (! ev0.isSameLabel(ev1)) {
           mc0.computeIntersections(mc1, si);
           nOverlaps++;
         }

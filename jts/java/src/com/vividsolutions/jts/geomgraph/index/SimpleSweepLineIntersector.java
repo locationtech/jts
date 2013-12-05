@@ -99,20 +99,21 @@ public class SimpleSweepLineIntersector
     Coordinate[] pts = edge.getCoordinates();
     for (int i = 0; i < pts.length - 1; i++) {
       SweepLineSegment ss = new SweepLineSegment(edge, i);
-      SweepLineEvent insertEvent = new SweepLineEvent(edgeSet, ss.getMinX(), null, ss);
+      SweepLineEvent insertEvent = new SweepLineEvent(edgeSet, ss.getMinX(), null);
       events.add(insertEvent);
-      events.add(new SweepLineEvent(edgeSet, ss.getMaxX(), insertEvent, ss));
+      events.add(new SweepLineEvent(ss.getMaxX(), insertEvent));
     }
   }
 
   /**
-   * Because Delete Events have a link to their corresponding Insert event,
+   * Because DELETE events have a link to their corresponding INSERT event,
    * it is possible to compute exactly the range of events which must be
-   * compared to a given Insert event object.
+   * compared to a given INSERT event object.
    */
   private void prepareEvents()
   {
     Collections.sort(events);
+    // set DELETE event indexes
     for (int i = 0; i < events.size(); i++ )
     {
       SweepLineEvent ev = (SweepLineEvent) events.get(i);
@@ -141,14 +142,15 @@ public class SimpleSweepLineIntersector
     SweepLineSegment ss0 = (SweepLineSegment) ev0.getObject();
     /**
      * Since we might need to test for self-intersections,
-     * include current insert event object in list of event objects to test.
+     * include current INSERT event object in list of event objects to test.
      * Last index can be skipped, because it must be a Delete event.
      */
     for (int i = start; i < end; i++ ) {
       SweepLineEvent ev1 = (SweepLineEvent) events.get(i);
       if (ev1.isInsert()) {
         SweepLineSegment ss1 = (SweepLineSegment) ev1.getObject();
-        if (ev0.edgeSet == null || (ev0.edgeSet != ev1.edgeSet)) {
+        // don't compare edges in same group, if labels are present
+        if (! ev0.isSameLabel(ev1)) {
           ss0.computeIntersections(ss1, si);
           nOverlaps++;
         }
