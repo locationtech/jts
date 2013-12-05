@@ -130,22 +130,32 @@ public class TriangulationFunctions
 
   public static Geometry conformingDelaunayEdges(Geometry sites, Geometry constraints)
   {
-		ConformingDelaunayTriangulationBuilder builder = new ConformingDelaunayTriangulationBuilder();
-  	builder.setSites(sites);
-  	builder.setConstraints(constraints);
-  	builder.setTolerance(TRIANGULATION_TOLERANCE);
-  	
-  	GeometryFactory geomFact = sites != null ? sites.getFactory() : constraints.getFactory();
-  	Geometry tris = builder.getEdges(geomFact);
-  	return tris;
+    return conformingDelaunayEdgesWithTolerance(sites, constraints, TRIANGULATION_TOLERANCE);
+  }
+
+  public static Geometry conformingDelaunayEdgesWithTolerance(Geometry sites, Geometry constraints, double tol)
+  {
+    ConformingDelaunayTriangulationBuilder builder = new ConformingDelaunayTriangulationBuilder();
+    builder.setSites(sites);
+    builder.setConstraints(constraints);
+    builder.setTolerance(tol);
+    
+    GeometryFactory geomFact = sites != null ? sites.getFactory() : constraints.getFactory();
+    Geometry tris = builder.getEdges(geomFact);
+    return tris;
   }
 
   public static Geometry conformingDelaunayTriangles(Geometry sites, Geometry constraints)
   {
+    return conformingDelaunayTrianglesWithTolerance(sites, constraints, TRIANGULATION_TOLERANCE);
+  }
+  
+  public static Geometry conformingDelaunayTrianglesWithTolerance(Geometry sites, Geometry constraints, double tol)
+  {
 		ConformingDelaunayTriangulationBuilder builder = new ConformingDelaunayTriangulationBuilder();
   	builder.setSites(sites);
   	builder.setConstraints(constraints);
-  	builder.setTolerance(TRIANGULATION_TOLERANCE);
+  	builder.setTolerance(tol);
   	
   	GeometryFactory geomFact = sites != null ? sites.getFactory() : constraints.getFactory();
   	Geometry tris = builder.getTriangles(geomFact);
