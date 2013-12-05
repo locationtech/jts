@@ -135,6 +135,7 @@ public class ConformingDelaunayTriangulator
 
 	/**
 	 * Sets the constraints to be conformed to by the computed triangulation.
+	 * The constraints must not contain duplicate segments (up to orientation).
 	 * The unique set of vertices (as {@link ConstraintVertex}es) 
 	 * forming the constraints must also be supplied.
 	 * Supplying it explicitly allows the ConstraintVertexes to be initialized

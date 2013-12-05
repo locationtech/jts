@@ -79,6 +79,7 @@ public class ConformingDelaunayTriangulationBuilder
 	 * All linear components in the input will be used as constraints.
 	 * The constraint vertices do not have to be disjoint from 
 	 * the site vertices.
+   * The constraints must not contain duplicate segments (up to orientation).
 	 * 
 	 * @param constraintLines the lines to constraint to
 	 */
