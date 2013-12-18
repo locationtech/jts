@@ -37,23 +37,41 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
 
 /**
- * Simplifies a {@link Geometry} using the Visvalingam-Whyatt algorithm. 
+ * Simplifies a {@link Geometry} using the Visvalingam-Whyatt area-based algorithm. 
  * Ensures that any polygonal geometries returned are valid. Simple lines are not
  * guaranteed to remain simple after simplification. All geometry types are
  * handled. Empty and point geometries are returned unchanged. Empty geometry
  * components are deleted.
  * <p>
+ * The simplification tolerance is specified as a distance. 
+ * This is converted to an area tolerance by squaring it.
+ * <p>
  * Note that in general this algorithm does not preserve topology - e.g. polygons can be split,
  * collapse to lines or disappear holes can be created or disappear, and lines
- * can cross. To simplify geometry while preserving topology use
- * {@link TopologyPreservingSimplifier}.
+ * can cross.
+ * 
+ * <h3>Known Bugs</h3>
+ * <ul>
+ * <li>Not yet optimized for performance
+ * <li>Does not simplify the endpoint of rings
+ * </ul>
+ * <h3>To Do</h3>
+ * <ul>
+ * <li>Allow specifying desired number of vertices in the output
+ * </ul>
  * 
  * @version 1.7
- * @see TopologyPreservingSimplifier
  */
 public class VWSimplifier
 {
 
+  /**
+   * Simplifies a geometry using a given tolerance.
+   * 
+   * @param geom geometry to simplify
+   * @param distanceTolerance the tolerance to use
+   * @return a simplified version of the geometry
+   */
   public static Geometry simplify(Geometry geom, double distanceTolerance)
   {
     VWSimplifier simp = new VWSimplifier(geom);
@@ -65,6 +83,11 @@ public class VWSimplifier
   private double distanceTolerance;
   private boolean isEnsureValidTopology = true;
 
+  /**
+   * Creates a simplifier for a given geometry.
+   * 
+   * @param inputGeom the geometry to simplify
+   */
   public VWSimplifier(Geometry inputGeom)
   {
     this.inputGeom = inputGeom;
@@ -104,6 +127,11 @@ public class VWSimplifier
     this.isEnsureValidTopology = isEnsureValidTopology;
   }
 
+  /**
+   * Gets the simplified geometry.
+   * 
+   * @return the simplified geometry
+   */
   public Geometry getResultGeometry()
   {
     // empty input produces an empty result

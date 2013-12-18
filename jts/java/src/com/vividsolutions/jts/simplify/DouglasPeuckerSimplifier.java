@@ -37,7 +37,7 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
 
 /**
- * Simplifies a {@link Geometry} using the standard Douglas-Peucker algorithm.
+ * Simplifies a {@link Geometry} using the Douglas-Peucker algorithm.
  * Ensures that any polygonal geometries returned are valid.
  * Simple lines are not guaranteed to remain simple after simplification.
  * All geometry types are handled. 
@@ -57,6 +57,13 @@ import com.vividsolutions.jts.geom.util.*;
 public class DouglasPeuckerSimplifier
 {
 
+  /**
+   * Simplifies a geometry using a given tolerance.
+   * 
+   * @param geom geometry to simplify
+   * @param distanceTolerance the tolerance to use
+   * @return a simplified version of the geometry
+   */
   public static Geometry simplify(Geometry geom, double distanceTolerance)
   {
     DouglasPeuckerSimplifier tss = new DouglasPeuckerSimplifier(geom);
@@ -68,6 +75,11 @@ public class DouglasPeuckerSimplifier
   private double distanceTolerance;
   private boolean isEnsureValidTopology = true;
   
+  /**
+   * Creates a simplifier for a given geometry.
+   * 
+   * @param inputGeom the geometry to simplify
+   */
   public DouglasPeuckerSimplifier(Geometry inputGeom)
   {
     this.inputGeom = inputGeom;
@@ -106,6 +118,11 @@ public class DouglasPeuckerSimplifier
   	this.isEnsureValidTopology = isEnsureValidTopology;
   }
   
+  /**
+   * Gets the simplified geometry.
+   * 
+   * @return the simplified geometry
+   */
   public Geometry getResultGeometry()
   {
     // empty input produces an empty result
