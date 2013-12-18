@@ -35,13 +35,17 @@ package com.vividsolutions.jtstest.function;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
 import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
+import com.vividsolutions.jts.simplify.VWSimplifier;
 
 public class SimplificationFunctions {
 	public static Geometry simplifyDP(Geometry g, double distance)	
 	{		return DouglasPeuckerSimplifier.simplify(g, distance);	}
 
-	public static Geometry simplifyTP(Geometry g, double distance)	
-	{		return TopologyPreservingSimplifier.simplify(g, distance);	}
+  public static Geometry simplifyTP(Geometry g, double distance)  
+  {   return TopologyPreservingSimplifier.simplify(g, distance);  }
+  
+  public static Geometry simplifyVW(Geometry g, double distance)  
+  {   return VWSimplifier.simplify(g, distance);  }
 
 
 }
