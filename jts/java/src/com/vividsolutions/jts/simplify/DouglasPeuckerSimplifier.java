@@ -33,7 +33,6 @@
 
 package com.vividsolutions.jts.simplify;
 
-import java.util.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.*;
 
