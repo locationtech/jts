@@ -156,12 +156,29 @@ public class WKBReader
   private Geometry readGeometry()
   throws IOException, ParseException
   {
-    // determine byte order
-    byte byteOrderWKB = dis.readByte();
-    // always set byte order, since it may change from geometry to geometry
-    int byteOrder = byteOrderWKB == WKBConstants.wkbNDR ? ByteOrderValues.LITTLE_ENDIAN : ByteOrderValues.BIG_ENDIAN;
-    dis.setOrder(byteOrder);
-    
+
+      // determine byte order
+      byte byteOrderWKB = dis.readByte();
+
+      // always set byte order, since it may change from geometry to geometry
+     if(byteOrderWKB == WKBConstants.wkbNDR)
+     {
+        dis.setOrder(ByteOrderValues.LITTLE_ENDIAN);
+     }
+     else if(byteOrderWKB == WKBConstants.wkbXDR)
+     {
+        dis.setOrder(ByteOrderValues.BIG_ENDIAN);
+     }
+     else if(isStrict)
+     {
+        throw new ParseException("Unknown geometry byte order (not NDR or XDR): " + byteOrderWKB);
+     }
+     //if not strict and not XDR or NDR, then we just use the dis default set at the
+     //start of the geometry (if a multi-geometry).  This  allows WBKReader to work
+     //with Spatialite native BLOB WKB, as well as other WKB variants that might just
+     //specify endian-ness at the start of the multigeometry.
+
+
     int typeInt = dis.readInt();
     int geometryType = typeInt & 0xff;
     // determine if Z values are present
@@ -286,6 +303,7 @@ public class WKBReader
   {
     int numGeom = dis.readInt();
     Polygon[] geoms = new Polygon[numGeom];
+
     for (int i = 0; i < numGeom; i++) {
       Geometry g = readGeometry();
       if (! (g instanceof Polygon))
