@@ -56,13 +56,13 @@ import com.vividsolutions.jts.util.*;
  * <p>
  * When computing buffers in floating point double-precision
  * it can happen that the process of iterated noding can fail to converge (terminate).
- * In this case a TopologyException will be thrown.
+ * In this case a {@link TopologyException} will be thrown.
  * Retrying the computation in a fixed precision
  * can produce more robust results.
  *
  * @version 1.7
  */
-public class BufferBuilder
+class BufferBuilder
 {
   /**
    * Compute the change in depth as an edge is crossed from R to L

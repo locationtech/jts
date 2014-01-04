@@ -50,7 +50,7 @@ import com.vividsolutions.jts.util.*;
  *
  * @version 1.7
  */
-public class RightmostEdgeFinder {
+class RightmostEdgeFinder {
 
   //private Coordinate extremeCoord;
   private int minIndex = -1;

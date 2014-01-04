@@ -46,7 +46,7 @@ import com.vividsolutions.jts.algorithm.*;
  *
  * @version 1.7
  */
-public class SubgraphDepthLocater
+class SubgraphDepthLocater
 {
   private Collection subgraphs;
   private LineSegment seg = new LineSegment();

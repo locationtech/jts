@@ -57,7 +57,7 @@ import com.vividsolutions.jts.util.*;
  *
  * @version 1.7
  */
-public class BufferSubgraph
+class BufferSubgraph
   implements Comparable
 {
   private RightmostEdgeFinder finder;
