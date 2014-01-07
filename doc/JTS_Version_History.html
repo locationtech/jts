@@ -61,6 +61,8 @@ The current and archived JTS distributions can be obtained at the
 <li>Fixed <code>DouglasPeuckerSimplifier</code> and <code>TopologyPreservingSimplifier</code> to handle empty geometry components in the input
 <li>Fixed <code>ConvexHull</code> to handle input of array of identical coordinates
 <li>Fixed <code>GeometryTransformer.transformLinearRing()</code> to handle null inputs
+<li>Fixed the <code>extractPoint(distance, offset)</code> methods in
+<code>LocationIndexedLine</code> and <code>LengthIndexedLine</code> to handle offsets from endpoints correctly.
 </ul>
 
 <h3>API Changes</h3>

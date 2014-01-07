@@ -108,6 +108,15 @@ public class LinearLocation
     normalize();
   }
 
+  private LinearLocation(int componentIndex, int segmentIndex, double segmentFraction, boolean doNormalize)
+  {
+    this.componentIndex = componentIndex;
+    this.segmentIndex = segmentIndex;
+    this.segmentFraction = segmentFraction;
+    if (doNormalize) 
+      normalize();
+  }
+
   /**
    * Creates a new location equal to a given one.
    * 
@@ -430,7 +439,31 @@ public class LinearLocation
     return segmentIndex >= nseg
         || (segmentIndex == nseg && segmentFraction >= 1.0);
   }
-    
+  
+  /**
+   * Converts a linear location to the lowest equivalent location index.
+   * The lowest index has the lowest possible component and segment indices.
+   * <p>
+   * Specifically:
+   * <ul>
+   * <li>if the location point is an endpoint, a location value is returned as (nseg-1, 1.0)
+   * <li>if the location point is ambiguous (i.e. an endpoint and a startpoint), the lowest endpoint location is returned
+   * </ul>
+   * If the location index is already the lowest possible value, the original location is returned.
+   * 
+   * @param linearGeom the linear geometry referenced by this location
+   * @return the lowest equivalent location
+   */
+  public LinearLocation toLowest(Geometry linearGeom)
+  {
+    // TODO: compute lowest component index
+    LineString lineComp = (LineString) linearGeom.getGeometryN(componentIndex);
+    int nseg = lineComp.getNumPoints() - 1;
+    // if not an endpoint can be returned directly
+    if (segmentIndex < nseg) return this;
+    return new LinearLocation(componentIndex, nseg, 1.0, false);
+  }
+  
   /**
    * Copies this location
    *

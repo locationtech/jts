@@ -20,8 +20,7 @@ public abstract class AbstractIndexedLineTest extends TestCase {
 
   public void testFirst()
   {
-    runIndexOfAfterTest("LINESTRING (0 0, 0 60, 50 60, 50 20, -20 20)", 
-        "POINT (-30 20)", "POINT (-20 20)");
+    runOffsetTest("LINESTRING (0 0, 20 20)", "POINT(20 20)", 0.0, "POINT (20 20)");
   }
 
   public void testML()
@@ -126,6 +125,16 @@ public abstract class AbstractIndexedLineTest extends TestCase {
     //runOffsetTest("LINESTRING (0 0, 10 10, 10 10, 20 20)", "POINT(10 10)", -5.0, "POINT (13.535533905932738 6.464466094067262)");
   }
 
+  public void testOffsetEndPoint()
+  {
+    runOffsetTest("LINESTRING (0 0, 20 20)", "POINT(20 20)", 0.0, "POINT (20 20)");
+    runOffsetTest("LINESTRING (0 0, 13 13, 20 20)", "POINT(20 20)", 0.0, "POINT (20 20)");
+    runOffsetTest("LINESTRING (0 0, 10 0, 20 0)", "POINT(20 0)", 1.0, "POINT (20 1)");
+    runOffsetTest("LINESTRING (0 0, 20 0)", "POINT(10 0)", 1.0, "POINT (10 1)"); // point on last segment
+    runOffsetTest("MULTILINESTRING ((0 0, 10 0), (10 0, 20 0))", "POINT(10 0)", -1.0, "POINT (10 -1)");
+    runOffsetTest("MULTILINESTRING ((0 0, 10 0), (10 0, 20 0))", "POINT(20 0)", 1.0, "POINT (20 1)");
+  }
+  
   protected Geometry read(String wkt)
   {
     try {
@@ -210,7 +219,7 @@ public abstract class AbstractIndexedLineTest extends TestCase {
   static final double TOLERANCE_DIST = 0.001;
   
   protected void runOffsetTest(String inputWKT,
-  		String testPtWKT, double offsetDistance, String expectedPtWKT)
+      String testPtWKT, double offsetDistance, String expectedPtWKT)
 //        throws Exception
     {
       Geometry input = read(inputWKT);
@@ -222,11 +231,10 @@ public abstract class AbstractIndexedLineTest extends TestCase {
       
       boolean isOk = offsetPt.distance(expectedPt) < TOLERANCE_DIST;
       if (! isOk)
-      	System.out.println("Expected = " + expectedPoint + "  Actual = " + offsetPt);
+        System.out.println("Expected = " + expectedPoint + "  Actual = " + offsetPt);
       assertTrue(isOk);
     }
   
   protected abstract Coordinate extractOffsetAt(Geometry input, Coordinate testPt, double offsetDistance);
-
 
 }

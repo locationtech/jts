@@ -95,7 +95,8 @@ public class LengthIndexedLine
   public Coordinate extractPoint(double index, double offsetDistance)
   {
     LinearLocation loc = LengthLocationMap.getLocation(linearGeom, index);
-    return loc.getSegment(linearGeom).pointAlongOffset(loc.getSegmentFraction(), offsetDistance);
+    LinearLocation locLow = loc.toLowest(linearGeom);
+    return locLow.getSegment(linearGeom).pointAlongOffset(locLow.getSegmentFraction(), offsetDistance);
   }
 
   /**
