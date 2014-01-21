@@ -1,5 +1,7 @@
 package com.vividsolutions.jts.geom.impl;
 
+import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
+
 import junit.textui.TestRunner;
 
 /**
@@ -17,6 +19,10 @@ public class CoordinateArraySequenceTest
   public CoordinateArraySequenceTest(String name)
   {
     super(name);
-    csFactory = CoordinateArraySequenceFactory.instance();
+  }
+
+  @Override
+  CoordinateSequenceFactory getCSFactory() {
+    return CoordinateArraySequenceFactory.instance();
   }
 }

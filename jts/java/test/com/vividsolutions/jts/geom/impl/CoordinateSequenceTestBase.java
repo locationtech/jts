@@ -13,12 +13,10 @@ import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
  *
  * @version 1.7
  */
-public class CoordinateSequenceTestBase
+public abstract class CoordinateSequenceTestBase
      extends TestCase
 {
   public static final int SIZE = 100;
-
-  protected CoordinateSequenceFactory csFactory;
 
   public static void main(String args[]) {
     TestRunner.run(CoordinateSequenceTestBase.class);
@@ -26,12 +24,14 @@ public class CoordinateSequenceTestBase
 
   public CoordinateSequenceTestBase(String name) { super(name); }
 
+  abstract CoordinateSequenceFactory getCSFactory();
+  
   public void testZeroLength()
   {
-    CoordinateSequence seq = csFactory.create(0, 3);
+    CoordinateSequence seq = getCSFactory().create(0, 3);
     assertTrue(seq.size() == 0);
 
-    CoordinateSequence seq2 = csFactory.create((Coordinate[]) null);
+    CoordinateSequence seq2 = getCSFactory().create((Coordinate[]) null);
     assertTrue(seq2.size() == 0);
   }
 
@@ -39,7 +39,7 @@ public class CoordinateSequenceTestBase
   {
     Coordinate[] coords = createArray(SIZE);
 
-    CoordinateSequence seq = csFactory.create(SIZE, 3);
+    CoordinateSequence seq = getCSFactory().create(SIZE, 3);
     for (int i = 0; i < seq.size(); i++) {
       seq.setOrdinate(i, 0, coords[i].x);
       seq.setOrdinate(i, 1, coords[i].y);
@@ -53,7 +53,7 @@ public class CoordinateSequenceTestBase
   {
     Coordinate[] coords = createArray(SIZE);
 
-    CoordinateSequence seq = csFactory.create(SIZE, 2);
+    CoordinateSequence seq = getCSFactory().create(SIZE, 2);
     for (int i = 0; i < seq.size(); i++) {
       seq.setOrdinate(i, 0, coords[i].x);
       seq.setOrdinate(i, 1, coords[i].y);
@@ -68,15 +68,15 @@ public class CoordinateSequenceTestBase
   public void testCreateByInit()
   {
     Coordinate[] coords = createArray(SIZE);
-    CoordinateSequence seq = csFactory.create(coords);
+    CoordinateSequence seq = getCSFactory().create(coords);
     assertTrue(isEqual(seq, coords));
   }
 
   public void testCreateByInitAndCopy()
   {
     Coordinate[] coords = createArray(SIZE);
-    CoordinateSequence seq = csFactory.create(coords);
-    CoordinateSequence seq2 = csFactory.create(seq);
+    CoordinateSequence seq = getCSFactory().create(coords);
+    CoordinateSequence seq2 = getCSFactory().create(seq);
     assertTrue(isEqual(seq2, coords));
   }
 

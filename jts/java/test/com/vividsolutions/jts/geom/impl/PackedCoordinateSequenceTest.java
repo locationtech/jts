@@ -1,5 +1,7 @@
 package com.vividsolutions.jts.geom.impl;
 
+import com.vividsolutions.jts.geom.CoordinateSequenceFactory;
+
 import junit.textui.TestRunner;
 
 /**
@@ -16,7 +18,11 @@ public class PackedCoordinateSequenceTest
   public PackedCoordinateSequenceTest(String name)
   {
     super(name);
-    csFactory = new PackedCoordinateSequenceFactory();
+  }
+
+  @Override
+  CoordinateSequenceFactory getCSFactory() {
+    return new PackedCoordinateSequenceFactory();
   }
 
 }
