@@ -39,7 +39,7 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.triangulate.quadedge.*;
 
 /**
- * Tests Delaunay Triangulatin classes
+ * Tests Voronoi diagram generation
  * 
  */
 public class VoronoiTest extends TestCase {
@@ -56,10 +56,8 @@ public class VoronoiTest extends TestCase {
   throws ParseException
   {
     String wkt = "MULTIPOINT ((10 10), (20 70), (60 30), (80 70))";
-    String expected = "MULTILINESTRING ((70 180, 190 110), (30 150, 70 180), (30 150, 50 40), (50 40, 120 20), (190 110, 120 20), (120 20, 140 70), (190 110, 140 70), (130 140, 140 70), (130 140, 190 110), (70 180, 130 140), (80 100, 130 140), (70 180, 80 100), (30 150, 80 100), (50 40, 80 100), (80 100, 120 20), (80 100, 140 70))";
-//    runDelaunayEdges(wkt, expected);
-    String expectedTri = "GEOMETRYCOLLECTION (POLYGON ((30 150, 50 40, 80 100, 30 150)), POLYGON ((30 150, 80 100, 70 180, 30 150)), POLYGON ((70 180, 80 100, 130 140, 70 180)), POLYGON ((70 180, 130 140, 190 110, 70 180)), POLYGON ((190 110, 130 140, 140 70, 190 110)), POLYGON ((190 110, 140 70, 120 20, 190 110)), POLYGON ((120 20, 140 70, 80 100, 120 20)), POLYGON ((120 20, 80 100, 50 40, 120 20)), POLYGON ((80 100, 140 70, 130 140, 80 100)))";
-    runVoronoi(wkt, true, expectedTri);
+    String expected = "GEOMETRYCOLLECTION (POLYGON ((-1162.076359832636 462.66344142259413, 50 419.375, 50 60, 27.857142857142854 37.857142857142854, -867 187, -1162.076359832636 462.66344142259413)), POLYGON ((-867 187, 27.857142857142854 37.857142857142854, 245 -505, 45 -725, -867 187)), POLYGON ((27.857142857142854 37.857142857142854, 50 60, 556.6666666666666 -193.33333333333331, 245 -505, 27.857142857142854 37.857142857142854)), POLYGON ((50 60, 50 419.375, 1289.1616314199396 481.3330815709969, 556.6666666666666 -193.33333333333331, 50 60)))";
+    runVoronoi(wkt, true, expected);
   }
     
 	static final double COMPARISON_TOLERANCE = 1.0e-7;
