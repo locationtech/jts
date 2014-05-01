@@ -77,6 +77,19 @@ import java.io.*;
  * care to ensure that aliasing errors are not created
  * and constant values are not changed.
  * <p>
+ * For example, the following code example constructs three DD instances:
+ * two to hold the input values and one to hold the result of the addition.
+ * <pre>
+ *     DD a = new DD(2.0);
+ *     DD b = new DD(3.0);
+ *     DD c = a.add(b);
+ * </pre>
+ * In contrast, the following approach uses only one object:
+ * <pre>
+ *     DD a = new DD(2.0);
+ *     a.selfAdd(3.0);
+ * </pre>
+ * <p>
  * This implementation uses algorithms originally designed variously by 
  * Knuth, Kahan, Dekker, and Linnainmaa.  
  * Douglas Priest developed the first C implementation of these techniques. 
@@ -294,7 +307,30 @@ public strictfp final class DD
   */
   
   /**
-   * Returns a DoubleDouble whose value is <tt>(this + y)</tt>.
+   * Set the value for the DD object. This method supports the mutating
+   * operations concept described in the class documentation (see above).
+   * @param value a DD instance supplying an extended-precision value.
+   * @return a self-reference to the DD instance.
+   */
+  public DD setValue(DD value) {
+    init(value);
+    return this;
+  }
+  
+  /**
+   * Set the value for the DD object. This method supports the mutating
+   * operations concept described in the class documentation (see above).
+   * @param value a floating point value to be stored in the instance.
+   * @return a self-reference to the DD instance.
+   */
+  public DD setValue(double value) {
+    init(value);
+    return this;
+  }
+  
+
+  /**
+   * Returns a new DoubleDouble whose value is <tt>(this + y)</tt>.
    * 
    * @param y the addend
    * @return <tt>(this + y)</tt>
@@ -305,7 +341,7 @@ public strictfp final class DD
   }
   
   /**
-   * Returns a DoubleDouble whose value is <tt>(this + y)</tt>.
+   * Returns a new DoubleDouble whose value is <tt>(this + y)</tt>.
    * 
    * @param y the addend
    * @return <tt>(this + y)</tt>
@@ -428,7 +464,7 @@ public strictfp final class DD
   }
   
   /**
-   * Returns a DoubleDouble whose value is <tt>-this</tt>.
+   * Returns a new DoubleDouble whose value is <tt>-this</tt>.
    * 
    * @return <tt>-this</tt>
    */
@@ -731,6 +767,19 @@ public strictfp final class DD
   public DD sqr()
   {
     return this.multiply(this);
+  }
+  
+  /**
+   * Squares this object.
+   * To prevent altering constants, 
+   * this method <b>must only</b> be used on values known to 
+   * be newly created. 
+   * 
+   * @return the square of this value.
+   */
+  public DD selfSqr()
+  {
+    return this.selfMultiply(this);
   }
   
   /**
