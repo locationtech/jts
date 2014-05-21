@@ -116,7 +116,7 @@ public class ValidPanel extends JPanel {
     taInvalidMsg.setBorder(BorderFactory.createLoweredBevelBorder());
     taInvalidMsg.setMinimumSize(new Dimension(70, 70));
     taInvalidMsg.setToolTipText("");
-    taInvalidMsg.setBackground(SystemColor.inactiveCaptionText);
+    taInvalidMsg.setBackground(SystemColor.control);
     taInvalidMsg.setEditable(false);
     taInvalidMsg.setFont(new java.awt.Font("SansSerif", 0, 12));
     jLabel1.setToolTipText("");
