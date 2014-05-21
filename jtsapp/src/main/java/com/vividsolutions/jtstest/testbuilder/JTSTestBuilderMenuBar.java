@@ -155,7 +155,7 @@ public class JTSTestBuilderMenuBar
           tbFrame.setShowingOrientations(showOrientationsMenuItem.isSelected());
         }
       });
-    showVertexIndicesMenuItem.setText("Show Vertex Indices");
+    showVertexIndicesMenuItem.setText("Vertex Indices");
     showVertexIndicesMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
