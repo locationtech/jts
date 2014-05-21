@@ -14,6 +14,8 @@ public class JTSTestBuilderMenuBar
   JMenu jMenuView = new JMenu();
   JMenuItem jMenuFileExit = new JMenuItem();
   JMenu jMenuEdit = new JMenu();
+  //JMenu jMenuTools = new JMenu();
+  //JMenu jMenuOptions = new JMenu();
   JMenuItem menuExchangeGeom = new JMenuItem();
   JMenuItem menuViewText = new JMenuItem();
   JMenuItem menuViewGeometry = new JMenuItem();
@@ -23,7 +25,6 @@ public class JTSTestBuilderMenuBar
   JMenuItem saveAsPNGMenuItem = new JMenuItem();
   JMenuItem saveToClipboardMenuItem = new JMenuItem();
   JMenuItem deleteAllTestCasesMenuItem = new JMenuItem();
-  JMenu jMenuOptions = new JMenu();
   JCheckBoxMenuItem showVerticesMenuItem = new JCheckBoxMenuItem();
   JCheckBoxMenuItem showGridMenuItem = new JCheckBoxMenuItem();
   JCheckBoxMenuItem showOrientationsMenuItem = new JCheckBoxMenuItem();
@@ -31,7 +32,6 @@ public class JTSTestBuilderMenuBar
   JCheckBoxMenuItem showVertexIndicesMenuItem = new JCheckBoxMenuItem();
   JMenuItem menuLoadXmlTestFolder = new JMenuItem();
   JMenuItem precisionModelMenuItem = new JMenuItem();
-  JMenu jMenuTools = new JMenu();
   JMenuItem removeDuplicatePoints = new JMenuItem();
   JMenuItem changeToLines = new JMenuItem();
   private JMenuItem generateExpectedValuesMenuItem = new JMenuItem();
@@ -125,8 +125,7 @@ public class JTSTestBuilderMenuBar
           tbFrame.deleteAllTestCasesMenuItem_actionPerformed(e);
         }
       });
-    jMenuOptions.setText("Options");
-    showVerticesMenuItem.setText("Show Vertices");
+    showVerticesMenuItem.setText("Vertices");
     showVerticesMenuItem.setSelected(true);
     showVerticesMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
@@ -134,7 +133,7 @@ public class JTSTestBuilderMenuBar
           tbFrame.setShowingVertices(showVerticesMenuItem.isSelected());
         }
       });
-    showGridMenuItem.setText("Show Grid");
+    showGridMenuItem.setText("Grid");
     showGridMenuItem.setSelected(true);
     showGridMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
@@ -142,14 +141,14 @@ public class JTSTestBuilderMenuBar
           tbFrame.setShowingGrid(showGridMenuItem.isSelected());
         }
       });
-    showStructureMenuItem.setText("Show Structure");
+    showStructureMenuItem.setText("Geometry Structure");
     showStructureMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
           tbFrame.setShowingStructure(showStructureMenuItem.isSelected());
         }
       });
-    showOrientationsMenuItem.setText("Show Orientations");
+    showOrientationsMenuItem.setText("Orientations");
     showOrientationsMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -197,7 +196,8 @@ public class JTSTestBuilderMenuBar
     });
     jMenuFile.setText("File");
     jMenuHelp.setText("Help");
-    jMenuTools.setText("Tools");
+    //jMenuOptions.setText("Options");
+    //jMenuTools.setText("Tools");
 
     
     jMenuFile.add(menuLoadXmlTestFile);
@@ -206,13 +206,18 @@ public class JTSTestBuilderMenuBar
     jMenuFile.add(saveToClipboardMenuItem);
     jMenuFile.add(saveAsXmlMenuItem);
     jMenuFile.add(saveAsHtmlMenuItem);
-    jMenuFile.addSeparator();
     jMenuFile.add(generateExpectedValuesMenuItem);
     jMenuFile.addSeparator();
     jMenuFile.add(jMenuFileExit);
     
     jMenuHelp.add(jMenuAbout);
     
+    jMenuView.add(showVerticesMenuItem);
+    //jMenuOptions.add(showVertexIndicesMenuItem);
+    jMenuView.add(showStructureMenuItem);
+    jMenuView.add(showOrientationsMenuItem);
+    jMenuView.add(showGridMenuItem);
+    jMenuView.addSeparator();
     jMenuView.add(menuViewText);
     jMenuView.add(menuViewGeometry);
     
@@ -221,21 +226,14 @@ public class JTSTestBuilderMenuBar
     jMenuEdit.addSeparator();
     jMenuEdit.add(precisionModelMenuItem);
     
-    jMenuOptions.add(showVerticesMenuItem);
-    
-    //jMenuOptions.add(showVertexIndicesMenuItem);
-    jMenuOptions.add(showStructureMenuItem);
-    jMenuOptions.add(showOrientationsMenuItem);
-    jMenuOptions.add(showGridMenuItem);
-    
-    jMenuTools.add(removeDuplicatePoints);
-    jMenuTools.add(changeToLines);
+    //jMenuTools.add(removeDuplicatePoints);
+    //jMenuTools.add(changeToLines);
     
     jMenuBar1.add(jMenuFile);
     jMenuBar1.add(jMenuView);
     jMenuBar1.add(jMenuEdit);
-    jMenuBar1.add(jMenuOptions);
-    jMenuBar1.add(jMenuTools);
+    //jMenuBar1.add(jMenuOptions);
+    //jMenuBar1.add(jMenuTools);
     jMenuBar1.add(jMenuHelp);
 
     return jMenuBar1;
