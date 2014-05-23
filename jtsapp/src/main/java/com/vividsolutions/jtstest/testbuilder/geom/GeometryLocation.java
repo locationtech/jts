@@ -94,6 +94,12 @@ public class GeometryLocation
     return GeometryVertexDeleter.delete(parent, (LineString) component, index);
   }
   
+  public double getLength()
+  {
+    if (isVertex()) return 0;
+    Coordinate p1 = component.getCoordinates()[index + 1];
+    return pt.distance(p1);
+  }
   public String toString()
   {
     return pt.toString();

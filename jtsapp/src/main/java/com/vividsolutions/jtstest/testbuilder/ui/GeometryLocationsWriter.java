@@ -171,28 +171,35 @@ public class GeometryLocationsWriter
 
     	isFirst = false;
       
-      String compType = "";
-      if (loc.getComponent() instanceof LinearRing) {
-        boolean isCCW = CGAlgorithms.isCCW(loc.getComponent().getCoordinates());
-        compType = "Ring" 
-          + (isCCW ? "-CCW" : "-CW ")
-            + " ";
-      }
-      else if (loc.getComponent() instanceof LineString) { 
-        compType = "Line  ";
-      }
-      else if (loc.getComponent() instanceof Point) { 
-        compType = "Point ";
-      }
-      buf.append(compType);
+      buf.append(componentType(loc));
       buf.append(loc.isVertex() ? "Vert" : "Seg");
     	buf.append(loc.toFacetString());
+    	if (! loc.isVertex()) {
+    	  buf.append(" Len: " + loc.getLength());
+    	}
       if (count++ > MAX_ITEMS_TO_DISPLAY) {
         buf.append(eol + " & more..." + eol);
         break;
       }
     }
     return buf.toString();
+  }
+
+  private String componentType(GeometryLocation loc) {
+    String compType = "";
+    if (loc.getComponent() instanceof LinearRing) {
+      boolean isCCW = CGAlgorithms.isCCW(loc.getComponent().getCoordinates());
+      compType = "Ring" 
+        + (isCCW ? "-CCW" : "-CW ")
+          + " ";
+    }
+    else if (loc.getComponent() instanceof LineString) { 
+      compType = "Line  ";
+    }
+    else if (loc.getComponent() instanceof Point) { 
+      compType = "Point ";
+    }
+    return compType;
   }
 
   public String OLDwriteLocation(Geometry geom, Coordinate p, double tolerance)
