@@ -10,6 +10,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -200,11 +201,29 @@ abstract class GeometryNode extends GeometricObjectNode
     }
     
     buf.append(" --     Len: " + geom.getLength());
-    if (geom.getDimension() >= 2) 
-      buf.append("      Area: " + geom.getArea());
+    if (hasArea(geom)) 
+      buf.append("      Area: " + area(geom));
     
     return buf.toString();
   }
+  
+  private static double area(Geometry geom) {
+    double area = 0;
+    if (geom.getDimension() >= 2) {
+      area = geom.getArea();
+    }
+    else if (geom instanceof LinearRing) {
+      area = Math.abs(CGAlgorithms.signedArea(geom.getCoordinates()));
+    }
+    return area;
+  }
+
+  private static boolean hasArea(Geometry geom) {
+    if (geom.getDimension() >= 2) return true;
+    if (geom instanceof LinearRing) return true;
+    return false;
+  }
+  
   public boolean isLeaf()
   {
     return isLeaf;
