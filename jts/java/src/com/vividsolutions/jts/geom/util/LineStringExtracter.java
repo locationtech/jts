@@ -51,6 +51,7 @@ public class LineStringExtracter
    * 
    * @param geom the geometry from which to extract
    * @param lines the list to add the extracted LineStrings to
+   * @return the list argument
    */
   public static List getLines(Geometry geom, List lines)
   {
@@ -70,10 +71,23 @@ public class LineStringExtracter
    * and returns them in a {@link List}.
    * 
    * @param geom the geometry from which to extract
+   * @return a list containing the linear elements
    */
   public static List getLines(Geometry geom)
   {
     return getLines(geom, new ArrayList());
+  }
+
+  /**
+   * Extracts the {@link LineString} elements from a single {@link Geometry}
+   * and returns them as either a {@link LineString) or {@link MultiLineString}.
+   * 
+   * @param geom the geometry from which to extract
+   * @return a linear geometry
+  */
+  public static Geometry getGeometry(Geometry geom)
+  {
+    return geom.getFactory().buildGeometry(getLines(geom));
   }
 
   private List comps;

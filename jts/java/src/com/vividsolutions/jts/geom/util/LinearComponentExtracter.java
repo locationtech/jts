@@ -147,6 +147,33 @@ public class LinearComponentExtracter
     return lines;
   }
 
+  /**
+   * Extracts the linear components from a single {@link Geometry}
+   * and returns them as either a {@link LineString) or {@link MultiLineString}.
+   * 
+   * @param geom the geometry from which to extract
+   * @return a linear geometry
+   */
+  public static Geometry getGeometry(Geometry geom)
+  {
+    return geom.getFactory().buildGeometry(getLines(geom));
+  }
+
+
+  /**
+   * Extracts the linear components from a single {@link Geometry}
+   * and returns them as either a {@link LineString) or {@link MultiLineString}.
+   * 
+   * @param geom the geometry from which to extract
+   * @param forceToLineString true if LinearRings should be converted to LineStrings
+   * @return a linear geometry
+   */
+  public static Geometry getGeometry(Geometry geom, boolean forceToLineString)
+  {
+    return geom.getFactory().buildGeometry(getLines(geom, forceToLineString));
+  }
+
+
   private Collection lines;
   private boolean isForcedToLineString = false;
   
