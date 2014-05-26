@@ -225,9 +225,9 @@ public class JTSTestBuilderMenuBar
     jMenuEdit.add(menuExchangeGeom);
     jMenuEdit.addSeparator();
     jMenuEdit.add(precisionModelMenuItem);
-    
-    //jMenuTools.add(removeDuplicatePoints);
-    //jMenuTools.add(changeToLines);
+    jMenuEdit.addSeparator();
+    jMenuEdit.add(removeDuplicatePoints);
+    jMenuEdit.add(changeToLines);
     
     jMenuBar1.add(jMenuFile);
     jMenuBar1.add(jMenuView);

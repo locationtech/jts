@@ -66,7 +66,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.clean.CleanDuplicatePoints;
-import com.vividsolutions.jtstest.clean.LineStringExtracter;
+import com.vividsolutions.jts.geom.util.LineStringExtracter;
+import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 import com.vividsolutions.jtstest.testbuilder.controller.ResultController;
 import com.vividsolutions.jtstest.testbuilder.model.GeometryEvent;
@@ -860,17 +861,15 @@ public class JTSTestBuilderFrame extends JFrame
         "Error", JOptionPane.ERROR_MESSAGE);
   }
 
-
   void menuRemoveDuplicatePoints_actionPerformed(ActionEvent e) {
     CleanDuplicatePoints clean = new CleanDuplicatePoints();
-    Geometry cleanGeom = clean.clean(tbModel.getCurrentTestCaseEdit().getGeometry(0));
+    Geometry cleanGeom = clean.clean(tbModel.getGeometryEditModel().getGeometry(0));
     tbModel.getCurrentTestCaseEdit().setGeometry(0, cleanGeom);
     updateGeometry();
   }
 
   void menuChangeToLines_actionPerformed(ActionEvent e) {
-    LineStringExtracter lse = new LineStringExtracter();
-    Geometry cleanGeom = lse.extract(tbModel.getCurrentTestCaseEdit().getGeometry(0));
+    Geometry cleanGeom = LinearComponentExtracter.getGeometry(tbModel.getGeometryEditModel().getGeometry(0));
     tbModel.getCurrentTestCaseEdit().setGeometry(0, cleanGeom);
     updateGeometry();
   }
