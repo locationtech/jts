@@ -41,7 +41,8 @@ import java.util.ArrayList;
 
 /**
  * A class which supports creating new {@link Geometry}s 
- * which are modifications of existing ones.
+ * which are modifications of existing ones,
+ * maintaining the same type structure.
  * Geometry objects are intended to be treated as immutable.
  * This class "modifies" Geometrys
  * by traversing them, applying a user-defined
@@ -54,12 +55,12 @@ import java.util.ArrayList;
  * <li>the values of the coordinates may be changed.
  *     The editor does not check whether changing coordinate values makes the result Geometry invalid
  * <li>the coordinate lists may be changed
- *     (e.g. by adding or deleting coordinates).
+ *     (e.g. by adding, deleting or modifying coordinates).
  *     The modifed coordinate lists must be consistent with their original parent component
  *     (e.g. a <tt>LinearRing</tt> must always have at least 4 coordinates, and the first and last
  *     coordinate must be equal)
  * <li>components of the original geometry may be deleted
- * (   e.g. holes may be removed from a Polygon, or LineStrings removed from a MultiLineString).
+ *    (e.g. holes may be removed from a Polygon, or LineStrings removed from a MultiLineString).
  *     Deletions will be propagated up the component tree appropriately.
  * </ul>
  * All changes must be consistent with the original Geometry's structure
@@ -219,7 +220,11 @@ public class GeometryEditor
   {
     /**
      * Edits a Geometry by returning a new Geometry with a modification.
+     * The returned geometry may be:
+     * <ul>
+     * <li>the input geometry itself
      * The returned Geometry might be the same as the Geometry passed in.
+     * It may be <code>null</code> if the geometry is to be deleted.
      *
      * @param geometry the Geometry to modify
      * @param factory the factory with which to construct the modified Geometry
