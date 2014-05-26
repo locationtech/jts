@@ -15,6 +15,9 @@ NOTE: The repo is evolving towards a Maven-compatible structure, but is not quit
 * jts - Core JTS module
 * jtsio - I/O drivers for proprietary formats
 * jtsapp - Applications & tools for working with JTS
+* jts-example - Examples of working JTS code
+* jts-lab - Code which is experimental or under construction, provided for early access
+* jts-jump - A JUMP plugin exposing some JTS functions (unmaintained)
 * jts-sde-adapter - an older driver for ArcSDE (unmaintained)
 * libjts - A wrapper for building JTS with GCJ (unmaintained)
 * bin - Scripts for running JTS tools on various platforms
