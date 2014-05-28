@@ -119,6 +119,8 @@ public class GeometryCollectionIterator implements Iterator {
     // the parent GeometryCollection is the first object returned
     if (atStart) {
       atStart = false;
+      if (isAtomic(parent))
+        index++;
       return parent;
     }
     if (subcollectionIterator != null) {
@@ -141,6 +143,11 @@ public class GeometryCollectionIterator implements Iterator {
     return obj;
   }
 
+  private static boolean isAtomic(Geometry geom)
+  {
+    return ! (geom instanceof GeometryCollection);
+  }
+  
   /**
    * Removal is not supported.
    *

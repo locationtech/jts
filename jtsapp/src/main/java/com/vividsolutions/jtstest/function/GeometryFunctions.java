@@ -32,6 +32,10 @@
  */
 package com.vividsolutions.jtstest.function;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.operation.overlay.snap.*;
@@ -86,22 +90,40 @@ public class GeometryFunctions
 		return g.getGeometryN(i);
 	}
 
-	public static Geometry getPolygonShell(Geometry g)
-	{
-		if (g instanceof Polygon) {
-			LinearRing shell = (LinearRing) ((Polygon) g).getExteriorRing();
-			return g.getFactory().createPolygon(shell, null);
-		}
-		if (g instanceof MultiPolygon) {
-			Polygon[] poly = new Polygon[g.getNumGeometries()];
-			for (int i = 0; i < g.getNumGeometries(); i++) {
-				LinearRing shell = (LinearRing) ((Polygon) g.getGeometryN(i)).getExteriorRing();
-				poly[i] = g.getFactory().createPolygon(shell, null);
-			}
-			return g.getFactory().createMultiPolygon(poly);
-		}
-		return null;
-	}
+  public static Geometry getPolygonShell(Geometry g)
+  {
+    if (g instanceof Polygon) {
+      LinearRing shell = (LinearRing) ((Polygon) g).getExteriorRing();
+      return g.getFactory().createPolygon(shell, null);
+    }
+    if (g instanceof MultiPolygon) {
+      Polygon[] poly = new Polygon[g.getNumGeometries()];
+      for (int i = 0; i < g.getNumGeometries(); i++) {
+        LinearRing shell = (LinearRing) ((Polygon) g.getGeometryN(i)).getExteriorRing();
+        poly[i] = g.getFactory().createPolygon(shell, null);
+      }
+      return g.getFactory().createMultiPolygon(poly);
+    }
+    return null;
+  }
+
+  public static Geometry getPolygonHoles(Geometry geom)
+  {
+    final List holePolys = new ArrayList();
+    geom.apply(new GeometryFilter() {
+
+      public void filter(Geometry geom) {
+        if (geom instanceof Polygon) {
+          Polygon poly = (Polygon) geom;
+          for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+            Polygon hole = geom.getFactory().createPolygon((LinearRing) poly.getInteriorRingN(i), null);
+            holePolys.add(hole);
+          }
+        }
+      }      
+    });
+    return geom.getFactory().buildGeometry(holePolys);
+  }
 
 	public static Geometry getPolygonHoleN(Geometry g, int i)
 	{
