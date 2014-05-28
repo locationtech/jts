@@ -64,7 +64,8 @@ The current and archived JTS distributions can be obtained at the
 <li>Fixed <code>ConvexHull</code> to handle input of array of identical coordinates
 <li>Fixed <code>GeometryTransformer.transformLinearRing()</code> to handle null inputs
 <li>Fixed the <code>extractPoint(distance, offset)</code> methods in
-<code>LocationIndexedLine</code> and <code>LengthIndexedLine</code> to handle offsets from endpoints correctly.
+  <code>LocationIndexedLine</code> and <code>LengthIndexedLine</code> to handle offsets from endpoints correctly.
+<li>Fixed <code>GeometryCollectionIterator</code> to correctly handle atomic geometries
 </ul>
 
 <h3>API Changes</h3>
@@ -72,6 +73,11 @@ The current and archived JTS distributions can be obtained at the
 <li>Changed interface of <code>SegmentSetMutualIntersector</code> to support thread-safety by removing state
 <li>Provided <code>InteriorIntersectionFinderAdder</code> to replace the poorly named <code>IntersectionFinderAdder</code>
 <li>Changed some classes in <code>com.vividsolutions.jts.operation.buffer</code> to be package-private
+</ul>
+
+<h3>Testing Improvements</h3>
+<ul>
+<li>Added <code>GeometryTestCase</code> base class to simplify unit tests
 </ul>
 
 <!------- JTS-IO -------------------->
