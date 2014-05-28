@@ -5,15 +5,6 @@ import com.vividsolutions.jts.precision.*;
 
 public class PrecisionFunctions 
 {
-
-	/*
-	private static Geometry OLDreducePrecisionPointwise(Geometry geom, double scaleFactor)
-	{
-		PrecisionModel pm = new PrecisionModel(scaleFactor);
-		Geometry reducedGeom = SimpleGeometryPrecisionReducer.reduce(geom, pm);
-		return reducedGeom;
-	}
-	*/
 	
 	public static Geometry reducePrecisionPointwise(Geometry geom, double scaleFactor)
 	{
