@@ -83,8 +83,11 @@ public class GeometryOperationValidator
   {
     if (wktExpected == null) return;
     Geometry expectedGeom = rdr.read(wktExpected);
-    Assert.assertTrue("Expected result not found",
-                      expectedGeom.equalsExact(ioGeometry[1]));
+    boolean isEqual = expectedGeom.equalsExact(ioGeometry[1]);
+    if (! isEqual) {
+      System.out.println("Result not expected: " + ioGeometry[1]);
+    }
+    Assert.assertTrue("Expected result not found",isEqual);
 
   }
 }
