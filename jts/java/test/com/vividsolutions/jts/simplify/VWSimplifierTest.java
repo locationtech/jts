@@ -37,12 +37,20 @@ public class VWSimplifierTest
         1.0))
         .test();
   }
-  public void testPolygonWithTouchingHole() throws Exception {
+  public void testPolygonSpikeInShell() throws Exception {
     new GeometryOperationValidator(
         VWSimplifierResult.getResult(
       "POLYGON ((1721355.3 693015.146, 1721318.687 693046.251, 1721306.747 693063.038, 1721367.025 692978.29, 1721355.3 693015.146))",
         10.0))
         .setExpectedResult("POLYGON ((1721355.3 693015.146, 1721367.025 692978.29, 1721318.687 693046.251, 1721355.3 693015.146))")
+        .test();
+  }
+  public void testPolygonSpikeInHole() throws Exception {
+    new GeometryOperationValidator(
+        VWSimplifierResult.getResult(
+      "POLYGON ((1721270 693090, 1721400 693090, 1721400 692960, 1721270 692960, 1721270 693090), (1721355.3 693015.146, 1721318.687 693046.251, 1721306.747 693063.038, 1721367.025 692978.29, 1721355.3 693015.146))",
+        10.0))
+        .setExpectedResult("POLYGON ((1721270 693090, 1721400 693090, 1721400 692960, 1721270 692960, 1721270 693090), (1721355.3 693015.146, 1721318.687 693046.251, 1721367.025 692978.29, 1721355.3 693015.146))")
         .test();
   }
 
