@@ -70,18 +70,19 @@ public class ValidPanel extends JPanel {
   JButton btnSimple = new JButton();
   JTextField txtIsValid = new JTextField();
   JTextArea taInvalidMsg = new JTextArea();
-  JLabel jLabel1 = new JLabel();
+  JLabel lblValidSimple = new JLabel();
   JPanel jPanel1 = new JPanel();
   GridBagLayout gridBagLayout2 = new GridBagLayout();
   private transient Vector validPanelListeners;
   GridLayout gridLayout1 = new GridLayout();
   JPanel markPanel = new JPanel();
   JPanel markSquishPanel = new JPanel();
-  JPanel jPanel3 = new JPanel();
+  JPanel panelValidSimple = new JPanel();
   JPanel markBtnPanel = new JPanel();
-  JTextField txtMark = new JTextField();
+  JTextField txtMarkLocation = new JTextField();
+  JTextField txtMarkLabel = new JTextField();
   GridBagLayout gridBagLayout1 = new GridBagLayout();
-  JLabel markLabel = new JLabel();
+  JLabel lblMark = new JLabel();
   JButton btnClearMark = new JButton();
   JButton btnSetMark = new JButton();
 
@@ -107,6 +108,7 @@ public class ValidPanel extends JPanel {
       }
     });
     this.setLayout(gridLayout1);
+    gridLayout1.setRows(2);
     txtIsValid.setBackground(SystemColor.control);
     txtIsValid.setEditable(false);
     txtIsValid.setText("Y");
@@ -117,14 +119,13 @@ public class ValidPanel extends JPanel {
     taInvalidMsg.setMinimumSize(new Dimension(70, 70));
     taInvalidMsg.setToolTipText("");
     taInvalidMsg.setBackground(SystemColor.control);
-    taInvalidMsg.setEditable(false);
+    taInvalidMsg.setEditable(true);
     taInvalidMsg.setFont(new java.awt.Font("SansSerif", 0, 12));
-    jLabel1.setToolTipText("");
-    jLabel1.setText("Valid / Simple ");
+    lblValidSimple.setToolTipText("");
+    lblValidSimple.setText("Valid / Simple ");
     jPanel1.setLayout(gridBagLayout2);
-    gridLayout1.setRows(2);
-    markLabel.setToolTipText("");
-    markLabel.setText("Mark Point ( X Y ) ");
+    lblMark.setToolTipText("");
+    lblMark.setText("Mark Point ( X Y ) ");
     btnClearMark.setToolTipText("");
     btnClearMark.setText("Clear Mark");
     btnClearMark.addActionListener(new java.awt.event.ActionListener() {
@@ -139,15 +140,15 @@ public class ValidPanel extends JPanel {
         btnSetMark_actionPerformed(e);
       }
     });
-    jPanel3.add(btnValidate);
-    jPanel3.add(btnSimple);
-    jPanel1.add(jPanel3, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
+    panelValidSimple.add(btnValidate);
+    panelValidSimple.add(btnSimple);
+    jPanel1.add(panelValidSimple, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 5, 10, 5), 0, 0));
     jPanel1.add(txtIsValid, new GridBagConstraints(1, 3, 1, 1, 1.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(4, 0, 4, 0), 10, 0));
     jPanel1.add(taInvalidMsg, new GridBagConstraints(0, 4, 2, 1, 0.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 4, 0, 4), 0, 0));
-    jPanel1.add(jLabel1, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
+    jPanel1.add(lblValidSimple, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
             ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 4, 0, 4), 0, 0));
     this.add(jPanel1, null);
     markPanel.setLayout(new BorderLayout());
@@ -165,8 +166,9 @@ public class ValidPanel extends JPanel {
     
     markBtnPanel.add(btnSetMark);
     markBtnPanel.add(btnClearMark);
-    markPanel.add(markLabel, BorderLayout.NORTH);
-    markPanel.add(txtMark, BorderLayout.CENTER);
+    markPanel.add(lblMark, BorderLayout.NORTH);
+    markPanel.add(txtMarkLocation, BorderLayout.CENTER);
+    //markPanel.add(txtMarkLabel, BorderLayout.CENTER);
     markPanel.add(markBtnPanel, BorderLayout.SOUTH);
     
     markSquishPanel.setLayout(new BorderLayout());
@@ -228,7 +230,7 @@ public class ValidPanel extends JPanel {
     if (markPoint != null) {
       markText = " " + coord.x + "  " + coord.y + " ";
     }
-    txtMark.setText(markText);
+    txtMarkLocation.setText(markText);
     fireSetHighlightPerformed(new ValidPanelEvent(this));
   }
   public synchronized void removeValidPanelListener(ValidPanelListener l) {
@@ -256,7 +258,7 @@ public class ValidPanel extends JPanel {
   }
 
   void btnSetMark_actionPerformed(ActionEvent e) {
-    String xyStr = txtMark.getText();
+    String xyStr = txtMarkLocation.getText();
     setMarkPoint(parseXY(xyStr));
   }
 

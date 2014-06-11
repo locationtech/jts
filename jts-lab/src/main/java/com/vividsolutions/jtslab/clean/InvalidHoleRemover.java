@@ -50,6 +50,7 @@ import com.vividsolutions.jts.geom.util.GeometryMapper.MapOp;
  * Notes:
  * <ul>
  * <li>Does not remove holes which are invalid due to touching other rings at more than one point
+ * <li>Does not remove holes which are nested inside another hole
  * </ul>
  * 
  * @author Martin Davis
