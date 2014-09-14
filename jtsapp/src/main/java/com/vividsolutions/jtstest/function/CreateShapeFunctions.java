@@ -68,8 +68,10 @@ public class CreateShapeFunctions {
 			for (int j = 0; j < nCellsOnSideY; j++) {
 				double x = env.getMinX() + i * cellSizeX;
 				double y = env.getMinY() + j * cellSizeY;
+				double x2 = env.getMinX() + (i + 1) * cellSizeX;
+				double y2 = env.getMinY() + (j + 1) * cellSizeY;
 			
-				Envelope cellEnv = new Envelope(x, x + cellSizeX, y, y + cellSizeY);
+				Envelope cellEnv = new Envelope(x, x2, y, y2);
 				geoms.add(geomFact.toGeometry(cellEnv));
 			}
 		}
