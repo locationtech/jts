@@ -44,9 +44,13 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.operation.distance.GeometryLocation;
 
 /**
- * Find two points on two {@link Geometry}s which lie within a given distance,
+ * Find two points on two 3D {@link Geometry}s which lie within a given distance,
  * or else are the nearest points on the geometries (in which case this also
  * provides the distance between the geometries).
+ * <p>
+ * 3D geometries have vertex Z ordinates defined.
+ * 3D {@link Polygon}s are assumed to lie in a single plane (which is enforced if not actually the case).
+ * 3D {@link LineString}s and {link Point}s may have any configuration.
  * <p>
  * The distance computation also finds a pair of points in the input geometries
  * which have the minimum distance between them. If a point lies in the interior
