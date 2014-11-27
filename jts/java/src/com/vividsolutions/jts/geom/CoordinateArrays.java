@@ -457,4 +457,33 @@ public class CoordinateArrays {
     return extractPts;
   }
 
+  /**
+   * Computes the envelope of the coordinates.
+   * 
+   * @param coordinates the coordinates to scan
+   * @return the envelope of the coordinates
+   */
+  public static Envelope envelope(Coordinate[] coordinates) {
+    Envelope env = new Envelope();
+    for (int i = 0; i < coordinates.length; i++) {
+      env.expandToInclude(coordinates[i]);
+    }
+    return env;
+  }
+  
+  /**
+   * Extracts the coordinates which intersect an {@link Envelope}.
+   * 
+   * @param coordinates the coordinates to scan
+   * @param env the envelope to intersect with
+   * @return an array of the coordinates which intersect the envelope
+   */
+  public static Coordinate[] intersection(Coordinate[] coordinates, Envelope env) {
+    CoordinateList coordList = new CoordinateList();
+    for (int i = 0; i < coordinates.length; i++) {
+      if (env.intersects(coordinates[i]))
+        coordList.add(coordinates[i], true);
+    }
+    return coordList.toCoordinateArray();
+  }
 }
