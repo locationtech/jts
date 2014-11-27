@@ -72,7 +72,7 @@ Configure JTS in Eclipse
 JTS is only implicitly organized into modules, so a single Eclipse project is 
 fine for working with all modules.
 
-* Create a Java project (for example, 'JTS')
+* Create a Java project (e.g. 'JTS')
 
 * Link the following source folders:
 ** src - jts/java/src
@@ -86,7 +86,7 @@ fine for working with all modules.
 ** jts/java/lib
 ** jtsio/lib
 
-If not used it may be better to omit the jtsio module.
+If not used, it may be better to omit the jtsio module.
 
 Alternatively, each ancillary module could be configured as a separate project,
 with a dependency on the main JTS project.
@@ -94,13 +94,15 @@ with a dependency on the main JTS project.
 Run Configurations 
 ^^^^^^^^^^^^^^^^^^
 
-Useful JTS tools:
+To allow convenient testing of JTS it is useful to configure the following Run Configurations, :
 
-* JTS TestBuilder - com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
-** VM args: -Xmx1000M
+* JTS TestBuilder
+** Main class: com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
+**    VM args: -Xmx1000M
 ** Optional VM args (on Mac): -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel
 
-* JTS XML Tests - com.vividsolutions.jtstest.testrunner.TopologyTestApp
+* JTS XML Tests - the Test Suite for JTS algorithms
+**        Main class: com.vividsolutions.jtstest.testrunner.TopologyTestApp
 ** Program arguments: -files jts/testxml/general jts/testxml/validate  
 ** Working Directory: <repo root>
 

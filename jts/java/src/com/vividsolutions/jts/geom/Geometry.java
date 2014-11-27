@@ -1537,7 +1537,10 @@ public abstract class Geometry
    * @see #normalize()
    * @see #norm()
    */
-  public boolean equalsExact(Geometry other) { return equalsExact(other, 0); }
+  public boolean equalsExact(Geometry other) 
+  { 
+    return this == other || equalsExact(other, 0);
+  }
 
   /**
    * Tests whether two geometries are exactly equal

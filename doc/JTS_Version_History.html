@@ -49,6 +49,7 @@ The current and archived JTS distributions can be obtained at the
 <li>Performance & memory improvement in <tt>PreparedPolygonIntersects</tt> by short-circuiting point input case
 <li>Allow for memory usage optimization in <code>CascadedPolygonUnion</code>, by avoiding retaining input collection
 <li>Fix <code>Point.isEmpty()</code> to avoid allocating a coordinate
+<li>Fix <code>Geometry.equalsExact()</code> to short-circuit when the inputs are identical objects
 </ul>
 
 <h3>Bug Fixes</h3>
