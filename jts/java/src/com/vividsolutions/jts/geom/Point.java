@@ -104,7 +104,7 @@ public class Point
   }
 
   public boolean isEmpty() {
-    return getCoordinate() == null;
+    return coordinates.size() == 0;
   }
 
   public boolean isSimple() {
