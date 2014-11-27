@@ -40,9 +40,16 @@ import com.vividsolutions.jts.triangulate.quadedge.*;
 /**
  * A utility class which creates Voronoi Diagrams
  * from collections of points.
- * The diagram is returned as a {@link GeometryCollection} of {@link Polygon}s,
- * clipped to the larger of a supplied envelope or to an envelope determined
- * by the input sites.
+ * The diagram is returned as a {@link GeometryCollection} of {@link Polygon}s
+ * representing the faces of the Voronoi diagram.
+ * The faces are clipped to the larger of:
+ * <ul>
+ * <li> an envelope supplied by {@link #setClipEnvelope(Envelope)}
+ * <li> an envelope determined by the input sites
+ * </ul>
+ * The <tt>userData</tt> attribute of each face <tt>Polygon</tt> is set to 
+ * the <tt>Coordinate</tt>  of the corresponding input site.
+ * This allows using a <tt>Map</tt> to link faces to data associated with sites.
  * 
  * @author Martin Davis
  *
@@ -142,9 +149,13 @@ public class VoronoiDiagramBuilder
 	/**
 	 * Gets the faces of the computed diagram as a {@link GeometryCollection} 
 	 * of {@link Polygon}s, clipped as specified.
+	 * <p>
+	 * The <tt>userData</tt> attribute of each face <tt>Polygon</tt> is set to 
+	 * the <tt>Coordinate</tt>  of the corresponding input site.
+	 * This allows using a <tt>Map</tt> to link faces to data associated with sites.
 	 * 
 	 * @param geomFact the geometry factory to use to create the output
-	 * @return the faces of the diagram
+	 * @return a <tt>GeometryCollection</tt> containg the face <tt>Polgyon</tt>s of the diagram
 	 */
 	public Geometry getDiagram(GeometryFactory geomFact)
 	{
