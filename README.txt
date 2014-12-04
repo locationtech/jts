@@ -98,6 +98,7 @@ To allow convenient testing of JTS it is useful to configure the following Run C
 
 * JTS TestBuilder
 ** Main class: com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
+** Option Program Arguments: -geomfunc <classname> ...
 **    VM args: -Xmx1000M
 ** Optional VM args (on Mac): -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel
 
