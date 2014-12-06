@@ -121,10 +121,10 @@ public class WKTPanel extends JPanel
         loadButton.setIcon(loadIcon);
         loadButton.setToolTipText(AppStrings.WKT_PANEL_LOAD_GEOMETRY_TIP);
         jPanel1.setLayout(gridBagLayout2);
-        jLabel2.setFont(new java.awt.Font("Dialog", 1, 12));
+        jLabel2.setFont(new java.awt.Font("Dialog", 1, 16));
         jLabel2.setForeground(Color.red);
         jLabel2.setText("B");
-        jLabel1.setFont(new java.awt.Font("Dialog", 1, 12));
+        jLabel1.setFont(new java.awt.Font("Dialog", 1, 16));
         jLabel1.setForeground(Color.blue);
         jLabel1.setText("A");
         jScrollPane1.setBorder(BorderFactory.createLoweredBevelBorder());
