@@ -50,6 +50,12 @@ import com.vividsolutions.jts.geom.util.*;
  * and lines can cross.
  * To simplify geometry while preserving topology use {@link TopologyPreservingSimplifier}.
  * (However, using D-P is significantly faster).
+ *<h2>KNOWN BUGS</h2>
+ *<ul>
+ *<li>In some cases the approach used to clean invalid simplified polygons
+ *can distort the output geometry severely.
+ *</ul>
+ *
  *
  * @version 1.7
  * @see TopologyPreservingSimplifier
