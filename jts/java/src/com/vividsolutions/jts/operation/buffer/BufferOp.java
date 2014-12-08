@@ -51,25 +51,41 @@ import com.vividsolutions.jts.noding.snapround.*;
  * with a circle of radius equal to the absolute value of the buffer distance.
  * In the CAD/CAM world buffers are known as </i>offset curves</i>.
  * In morphological analysis the 
- * operation of postive and negative buffering 
+ * operation of positive and negative buffering 
  * is referred to as <i>erosion</i> and <i>dilation</i>
  * <p>
  * The buffer operation always returns a polygonal result.
  * The negative or zero-distance buffer of lines and points is always an empty {@link Polygon}.
  * <p>
  * Since true buffer curves may contain circular arcs,
- * computed buffer polygons can only be approximations to the true geometry.
- * The user can control the accuracy of the curve approximation by specifying
- * the number of linear segments used to approximate curves.
+ * computed buffer polygons are only approximations to the true geometry.
+ * The user can control the accuracy of the approximation by specifying
+ * the number of linear segments used to approximate arcs.
+ * This is specified via {@link BufferParameters#setQuadrantSegments(int)} or {@link #setQuadrantSegments(int)}.
  * <p>
- * The <b>end cap style</b> of a linear buffer may be specified. The
+ * The <b>end cap style</b> of a linear buffer may be {@link BufferParameters#setEndCapStyle(int) specified}. The
  * following end cap styles are supported:
  * <ul
- * <li>{@link #CAP_ROUND} - the usual round end caps
- * <li>{@link #CAP_BUTT} - end caps are truncated flat at the line ends
- * <li>{@link #CAP_SQUARE} - end caps are squared off at the buffer distance beyond the line ends
+ * <li>{@link BufferParameters#CAP_ROUND} - the usual round end caps
+ * <li>{@link BufferParameters#CAP_BUTT} - end caps are truncated flat at the line ends
+ * <li>{@link BufferParameters#CAP_SQUARE} - end caps are squared off at the buffer distance beyond the line ends
  * </ul>
  * <p>
+ * The <b>join style</b> of the corners in a buffer may be {@link BufferParameters#setJoinStyle(int) specified}. The
+ * following join styles are supported:
+ * <ul
+ * <li>{@link BufferParameters#JOIN_ROUND} - the usual round join
+ * <li>{@link BufferParameters#JOIN_MITRE} - corners are "sharp" (up to a {@link BufferParameters#getMitreLimit() distance limit})
+ * <li>{@link BufferParameters#JOIN_BEVEL} - corners are beveled (clipped off).
+ * </ul>
+ * <p>
+ * The buffer algorithm can perform simplification on the input to increase performance.
+ * The simplification is performed a way that always increases the buffer area 
+ * (so that the simplified input covers the original input).
+ * The degree of simplification can be {@link BufferParameters#setSimplifyFactor(double) specified},
+ * with a {@link BufferParameters#DEFAULT_SIMPLIFY_FACTOR default} used otherwise.
+ * Note that if the buffer distance is zero then so is the computed simplify tolerance, 
+ * no matter what the simplify factor.
  *
  * @version 1.7
  */
@@ -145,6 +161,7 @@ public class BufferOp
     return scaleFactor;
   }
 
+  /*
   private static double OLDprecisionScaleFactor(Geometry g,
       double distance,
     int maxPrecisionDigits)
@@ -161,6 +178,7 @@ public class BufferOp
     double scaleFactor = Math.pow(10.0, -minUnitLog10);
     return scaleFactor;
   }
+  */
 
   /**
    * Computes the buffer of a geometry for a given buffer distance.
@@ -267,7 +285,7 @@ public class BufferOp
 
   /**
    * Specifies the end cap style of the generated buffer.
-   * The styles supported are {@link #CAP_ROUND}, {@link #CAP_BUTT}, and {@link #CAP_SQUARE}.
+   * The styles supported are {@link BufferParameters#CAP_ROUND}, {@link BufferParameters##CAP_BUTT}, and {@link BufferParameters##CAP_SQUARE}.
    * The default is CAP_ROUND.
    *
    * @param endCapStyle the end cap style to specify

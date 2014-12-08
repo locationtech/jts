@@ -90,12 +90,19 @@ public class BufferParameters
    */
   public static final double DEFAULT_MITRE_LIMIT = 5.0;
   
+  /**
+   * The default simplify factor
+   * Provides an accuracy of about 1%, which matches the accuracy of the default Quadrant Segments parameter.
+   */
+  public static final double DEFAULT_SIMPLIFY_FACTOR = 0.01;
+  
 
   private int quadrantSegments = DEFAULT_QUADRANT_SEGMENTS;
   private int endCapStyle = CAP_ROUND;
   private int joinStyle = JOIN_ROUND;
   private double mitreLimit = DEFAULT_MITRE_LIMIT;
   private boolean isSingleSided = false;
+  private double simplifyFactor = DEFAULT_SIMPLIFY_FACTOR;
   
   /**
    * Creates a default set of parameters
@@ -331,5 +338,29 @@ public class BufferParameters
    */
   public boolean isSingleSided() {
     return isSingleSided;
+  }
+
+  /**
+   * Gets the simplify factor.
+   * 
+   * @return the simplify factor
+   */
+  public double getSimplifyFactor() {
+    return simplifyFactor;
+  }
+  
+  /**
+   * Sets the factor used to determine the simplify distance tolerance
+   * for input simplification.
+   * Simplifying can increase the performance of computing buffers.
+   * Generally the simplify factor should be greater than 0.
+   * Values between 0.01 and .1 produce relatively good accuracy for the generate buffer.
+   * Larger values sacrifice accuracy in return for performance.
+   * 
+   * @param simplifyFactor a value greater than or equal to zero.
+   */
+  public void setSimplifyFactor(double simplifyFactor)
+  {
+    this.simplifyFactor = simplifyFactor < 0 ? 0 : simplifyFactor;
   }
 }

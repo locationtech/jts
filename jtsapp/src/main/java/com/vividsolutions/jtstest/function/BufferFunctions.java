@@ -59,16 +59,28 @@ public class BufferFunctions {
 	public static Geometry bufferWithParams(Geometry g, Double distance, 
 			Integer quadrantSegments, Integer capStyle, Integer joinStyle, Double mitreLimit)	
 	{
-    double dist = 0;
-    if (distance != null) dist = distance.doubleValue();
-    
-    BufferParameters bufParams = new BufferParameters();
-    if (quadrantSegments != null)	bufParams.setQuadrantSegments(quadrantSegments.intValue());
-    if (capStyle != null)	bufParams.setEndCapStyle(capStyle.intValue());
-    if (joinStyle != null) 	bufParams.setJoinStyle(joinStyle.intValue());
-    if (mitreLimit != null) 	bufParams.setMitreLimit(mitreLimit.doubleValue());
-    
-    return BufferOp.bufferOp(g, dist, bufParams);
+	    double dist = 0;
+	    if (distance != null) dist = distance.doubleValue();
+	    
+	    BufferParameters bufParams = new BufferParameters();
+	    if (quadrantSegments != null)	bufParams.setQuadrantSegments(quadrantSegments.intValue());
+	    if (capStyle != null)	bufParams.setEndCapStyle(capStyle.intValue());
+	    if (joinStyle != null) 	bufParams.setJoinStyle(joinStyle.intValue());
+	    if (mitreLimit != null) 	bufParams.setMitreLimit(mitreLimit.doubleValue());
+	    
+	    return BufferOp.bufferOp(g, dist, bufParams);
+	}
+	
+	public static Geometry bufferWithSimplify(Geometry g, Double distance, 
+			Double simplifyFactor)	
+	{
+	    double dist = 0;
+	    if (distance != null) dist = distance.doubleValue();
+	    
+	    BufferParameters bufParams = new BufferParameters();
+	    if (simplifyFactor != null)	bufParams.setSimplifyFactor(simplifyFactor.doubleValue());
+	    
+	    return BufferOp.bufferOp(g, dist, bufParams);
 	}
 	
 	public static Geometry bufferCurve(Geometry g, double distance)	

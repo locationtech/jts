@@ -172,24 +172,15 @@ public class OffsetCurveBuilder
   }
   
   /**
-   * Use a value which results in a potential distance error which is
-   * significantly less than the error due to 
-   * the quadrant segment discretization.
-   * For QS = 8 a value of 100 is reasonable.
-   * This should produce a maximum of 1% distance error.
-   */
-  private static final double SIMPLIFY_FACTOR = 100.0;
-  
-  /**
    * Computes the distance tolerance to use during input
    * line simplification.
    * 
    * @param distance the buffer distance
    * @return the simplification tolerance
    */
-  private static double simplifyTolerance(double bufDistance)
+  private double simplifyTolerance(double bufDistance)
   {
-    return bufDistance / SIMPLIFY_FACTOR;
+    return bufDistance * bufParams.getSimplifyFactor();
   }
   
   private void computePointCurve(Coordinate pt, OffsetSegmentGenerator segGen) {
