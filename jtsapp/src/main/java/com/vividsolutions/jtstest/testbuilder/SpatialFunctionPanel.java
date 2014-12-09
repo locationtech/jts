@@ -270,7 +270,7 @@ extends JPanel
   {
     currentFunc = func;
     updateParameterControls();
-    execButton.setToolTipText("Compute " + functionDescription(func));
+    execButton.setToolTipText(functionDescription(func));
   }
   
   private String functionDescription(GeometryFunction func)
