@@ -53,6 +53,7 @@ The current and archived JTS distributions can be obtained at the
 <li>Allow for memory usage optimization in <code>CascadedPolygonUnion</code>, by avoiding retaining input collection
 <li>Fix <code>Point.isEmpty()</code> to avoid allocating a coordinate
 <li>Fix <code>Geometry.equalsExact()</code> to short-circuit when the inputs are identical objects
+<li>Add short-circuit to <code>PointExtracter</code> to improve performance for Points
 </ul>
 
 <h3>Bug Fixes</h3>
