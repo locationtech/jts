@@ -69,7 +69,7 @@ public class Viewport implements PointTransformation
     return scale;
   }
 
-  public void setScaleNoUpdate(double scale) {
+  private void setScaleNoUpdate(double scale) {
     this.scale = snapScale(scale);
     scalePM = new PrecisionModel(this.scale);   
     
@@ -83,8 +83,15 @@ public class Viewport implements PointTransformation
     scaleFormat.setGroupingUsed(false);
   }
 
-  public void setScale(double scale) {
+  private void setScale(double scale) {
     setScaleNoUpdate(scale);
+    update();
+  }
+
+  public void setScaleOrigin(double scale, double originX, double originY) {
+    setScaleNoUpdate(scale);
+    update();
+    this.viewOriginInModel = new Point2D.Double(originX, originY);
     update();
   }
 
@@ -159,7 +166,7 @@ public class Viewport implements PointTransformation
     return viewOriginInModel.getY();
   }
   
-  public void setViewOrigin(double viewOriginX, double viewOriginY) {
+  public void setOrigin(double viewOriginX, double viewOriginY) {
     this.viewOriginInModel = new Point2D.Double(viewOriginX, viewOriginY);
     update();
   }
@@ -237,8 +244,7 @@ public class Viewport implements PointTransformation
   }
 
   public void zoomToInitialExtent() {
-    setScale(1);
-    setViewOrigin(INITIAL_VIEW_ORIGIN_X, INITIAL_VIEW_ORIGIN_Y);
+    setScaleOrigin(1, INITIAL_VIEW_ORIGIN_X, INITIAL_VIEW_ORIGIN_Y);
   }
 
   public void zoom(Envelope zoomEnv) {
@@ -247,10 +253,8 @@ public class Viewport implements PointTransformation
     double yScale = getHeightInModel() / zoomEnv.getHeight();
     setScale(Math.min(xScale, yScale));
     double xCentering = (getWidthInModel() - zoomEnv.getWidth()) / 2d;
-    double yCentering = (getHeightInModel() - zoomEnv
-        .getHeight()) / 2d;
-    setViewOrigin(zoomEnv.getMinX() - xCentering, 
-        zoomEnv.getMinY() - yCentering);
+    double yCentering = (getHeightInModel() - zoomEnv.getHeight()) / 2d;
+    setOrigin(zoomEnv.getMinX() - xCentering, zoomEnv.getMinY() - yCentering);
   }
 
   public double getWidthInModel() {

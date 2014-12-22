@@ -524,29 +524,46 @@ public class GeometryEditPanel extends JPanel
     viewport.zoom(zoomEnv);
   }
 
-  public void zoom(Point center,
-			double realZoomFactor) {
+  /**
+   * Zoom to a point, ensuring that the zoom point remains fixed relative to the model
+   * @param zoomPt
+   * @param zoomFactor
+   */
+  public void zoom(Point zoomPt, double zoomFactor) {
 
-  	renderMgr.setDirty(true);
+    renderMgr.setDirty(true);
 
-		double width = getSize().width / realZoomFactor;
-		double height = getSize().height / realZoomFactor;
-		double bottomOfNewViewAsPerceivedByOldView = center.y
-				+ (height / 2d);
-		double leftOfNewViewAsPerceivedByOldView = center.x
-				- (width / 2d);
-		Point bottomLeftOfNewViewAsPerceivedByOldView = new Point(
-				(int) leftOfNewViewAsPerceivedByOldView,
-				(int) bottomOfNewViewAsPerceivedByOldView);
-		Point2D bottomLeftOfNewViewAsPerceivedByModel = viewport.toModel(bottomLeftOfNewViewAsPerceivedByOldView);
-		viewport.setScale(getViewport().getScale() * realZoomFactor);
-		viewport.setViewOrigin(bottomLeftOfNewViewAsPerceivedByModel.getX(), bottomLeftOfNewViewAsPerceivedByModel.getY());
-	}
+    double originOffsetX = zoomPt.getX();
+    double originOffsetY = getSize().height - zoomPt.getY();
+    double zoomOriginX = zoomPt.getX() - originOffsetX / zoomFactor;
+    double zoomOriginY = zoomPt.getY() + originOffsetY / zoomFactor;
+    Point2D zoomOriginView = new Point2D.Double(zoomOriginX,  zoomOriginY);
+    Point2D zoomOriginModel = viewport.toModel(zoomOriginView);
+    double zoomScale = getViewport().getScale() * zoomFactor;
+    //viewport.setScale(zoomScale);
+    //viewport.setOrigin(zoomOriginModel.getX(),  zoomOriginModel.getY());
+    viewport.setScaleOrigin(zoomScale, zoomOriginModel.getX(),  zoomOriginModel.getY());
+  }
 
-  public void zoomPan(double xDisplacement, double yDisplacement) 
-  {
-  	renderMgr.setDirty(true);
-    getViewport().setViewOrigin(getViewport().getViewOriginX() - xDisplacement,
+  
+  public void zoomCentre(Point centrePt, double zoomFactor) {
+
+    renderMgr.setDirty(true);
+
+    double width = getSize().width / zoomFactor;
+    double height = getSize().height / zoomFactor;
+    double newMinYView = centrePt.y + (height / 2d);
+    double newMinXView = centrePt.x - (width / 2d);
+    Point newOriginView = new Point(
+        (int) newMinXView,
+        (int) newMinYView);
+    Point2D newOriginModel = viewport.toModel(newOriginView);
+    viewport.setScaleOrigin(getViewport().getScale() * zoomFactor, newOriginModel.getX(),  newOriginModel.getY());
+  }
+
+  public void zoomPan(double xDisplacement, double yDisplacement) {
+    renderMgr.setDirty(true);
+    getViewport().setOrigin(getViewport().getViewOriginX() - xDisplacement,
         getViewport().getViewOriginY() - yDisplacement);
   }
 
@@ -703,7 +720,7 @@ public class GeometryEditPanel extends JPanel
     public void renderMagnifyWarning(Graphics2D g)
     {
       if (stretchView == null) return;
-      
+
       float maxx = (float) viewport.getWidthInView();
       float maxy = (float) viewport.getHeightInView();
       GeneralPath path = new GeneralPath();

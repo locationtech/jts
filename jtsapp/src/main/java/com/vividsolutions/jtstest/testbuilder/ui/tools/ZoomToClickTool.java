@@ -105,7 +105,7 @@ public class ZoomToClickTool extends BasicTool
 		double zoomFactor = Math.min(widthFactor, heightFactor);
 
 //  	double zoomFactor = 2;
-  	panel().zoom(centre, zoomFactor);
+  	panel().zoomCentre(centre, zoomFactor);
   }
   
   public void mouseDragged(MouseEvent e)
