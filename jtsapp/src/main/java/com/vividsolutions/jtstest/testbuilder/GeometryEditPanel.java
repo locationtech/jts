@@ -64,6 +64,8 @@ import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryPainter;
 /**
  * Panel which displays rendered geometries.
  * 
+ * Zoom methods take arguments in model space.
+ * 
  * @version 1.7
  */
 public class GeometryEditPanel extends JPanel 
@@ -500,71 +502,72 @@ public class GeometryEditPanel extends JPanel
     zoom(geom.getEnvelopeInternal());
   }
   
-  public void zoom(Envelope zoomEnv) 
+  public void zoom(Point2D zoom1, Point2D zoom2) 
   {
-    if (zoomEnv == null) return;
-    
-  	renderMgr.setDirty(true);
-  	
+    Envelope zoomEnv = new Envelope();
+    zoomEnv.expandToInclude(zoom1.getX(), zoom1.getY());
+    zoomEnv.expandToInclude(zoom2.getX(), zoom2.getY());
+    zoom(zoomEnv);
+  }
+  
+  public void zoom(Envelope zoomEnv) {
+    if (zoomEnv == null)
+      return;
+
+    renderMgr.setDirty(true);
+
     if (zoomEnv.isNull()) {
       viewport.zoomToInitialExtent();
       return;
     }
-
     double averageExtent = (zoomEnv.getWidth() + zoomEnv.getHeight()) / 2d;
     // fix to allow zooming to points
     if (averageExtent == 0.0)
       averageExtent = 1.0;
     double buffer = averageExtent * 0.03;
-    
-    zoomEnv.expandToInclude(zoomEnv.getMaxX() + buffer,
-    		zoomEnv.getMaxY() + buffer);
-    zoomEnv.expandToInclude(zoomEnv.getMinX() - buffer,
-    		zoomEnv.getMinY() - buffer);
+
+    zoomEnv.expandToInclude(zoomEnv.getMaxX() + buffer, zoomEnv.getMaxY()
+        + buffer);
+    zoomEnv.expandToInclude(zoomEnv.getMinX() - buffer, zoomEnv.getMinY()
+        - buffer);
     viewport.zoom(zoomEnv);
   }
 
   /**
-   * Zoom to a point, ensuring that the zoom point remains fixed relative to the model
+   * Zoom to a point, ensuring that the zoom point remains in the same screen location
    * @param zoomPt
    * @param zoomFactor
    */
-  public void zoom(Point zoomPt, double zoomFactor) {
-
+  public void zoom(Point2D zoomPt, double zoomFactor) {
     renderMgr.setDirty(true);
 
-    double originOffsetX = zoomPt.getX();
-    double originOffsetY = getSize().height - zoomPt.getY();
+    double originOffsetX = zoomPt.getX() - getViewport().getOriginX();
+    double originOffsetY = zoomPt.getY() - getViewport().getOriginY();
     double zoomOriginX = zoomPt.getX() - originOffsetX / zoomFactor;
-    double zoomOriginY = zoomPt.getY() + originOffsetY / zoomFactor;
-    Point2D zoomOriginView = new Point2D.Double(zoomOriginX,  zoomOriginY);
-    Point2D zoomOriginModel = viewport.toModel(zoomOriginView);
+    double zoomOriginY = zoomPt.getY() - originOffsetY / zoomFactor;
     double zoomScale = getViewport().getScale() * zoomFactor;
-    //viewport.setScale(zoomScale);
-    //viewport.setOrigin(zoomOriginModel.getX(),  zoomOriginModel.getY());
-    viewport.setScaleOrigin(zoomScale, zoomOriginModel.getX(),  zoomOriginModel.getY());
+    viewport.setScaleOrigin(zoomScale, zoomOriginX,  zoomOriginY);
   }
 
-  
-  public void zoomCentre(Point centrePt, double zoomFactor) {
-
+  /**
+   * Zoom to a point, making it the centre of the view.
+   * @param centrePt
+   * @param zoomFactor
+   */
+  public void zoomCentre(Point2D centrePt, double zoomFactor) {
     renderMgr.setDirty(true);
 
-    double width = getSize().width / zoomFactor;
-    double height = getSize().height / zoomFactor;
-    double newMinYView = centrePt.y + (height / 2d);
-    double newMinXView = centrePt.x - (width / 2d);
-    Point newOriginView = new Point(
-        (int) newMinXView,
-        (int) newMinYView);
-    Point2D newOriginModel = viewport.toModel(newOriginView);
-    viewport.setScaleOrigin(getViewport().getScale() * zoomFactor, newOriginModel.getX(),  newOriginModel.getY());
+    double zoomWidth = getViewport().getWidthInModel() / zoomFactor;
+    double zoomHeight = getViewport().getHeightInModel() / zoomFactor;
+    double zoomOriginX = centrePt.getX() - (zoomWidth / 2d);
+    double zoomOriginY = centrePt.getY() - (zoomHeight / 2d);
+    viewport.setScaleOrigin(getViewport().getScale() * zoomFactor, zoomOriginX,  zoomOriginY);
   }
 
   public void zoomPan(double xDisplacement, double yDisplacement) {
     renderMgr.setDirty(true);
-    getViewport().setOrigin(getViewport().getViewOriginX() - xDisplacement,
-        getViewport().getViewOriginY() - yDisplacement);
+    getViewport().setOrigin(getViewport().getOriginX() - xDisplacement,
+        getViewport().getOriginY() - yDisplacement);
   }
 
   public String cursorLocationString(Point2D pView)

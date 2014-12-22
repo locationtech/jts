@@ -76,10 +76,6 @@ public class PanTool extends BasicTool {
     double xDisplacement = destination.getX() - source.getX();
     double yDisplacement = destination.getY() - source.getY();
     panel().zoomPan(xDisplacement, yDisplacement);
-    /*
-    getViewport().setViewOrigin(getViewport().getViewOriginX() - xDisplacement,
-        getViewport().getViewOriginY() - yDisplacement);
-        */
   }
 
 }

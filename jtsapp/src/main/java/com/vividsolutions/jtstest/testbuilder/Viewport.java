@@ -158,11 +158,11 @@ public class Viewport implements PointTransformation
   }
   
 
-  public double getViewOriginX() {
+  public double getOriginX() {
     return viewOriginInModel.getX();
   }
 
-  public double getViewOriginY() {
+  public double getOriginY() {
     return viewOriginInModel.getY();
   }
   

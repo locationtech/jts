@@ -72,8 +72,7 @@ public class ZoomToClickTool extends BasicTool
     // determine if zoom in (left) or zoom out (right)
     double realZoomFactor = SwingUtilities.isRightMouseButton(mouseEvent)
          ? (1d / zoomFactor) : zoomFactor;
-    Point center = mouseEvent.getPoint();
-    panel().zoom(center, realZoomFactor);
+    panel().zoom(toModel(mouseEvent.getPoint()), realZoomFactor);
   }
 
   public void mousePressed(MouseEvent e)
@@ -82,30 +81,12 @@ public class ZoomToClickTool extends BasicTool
   	zoomBoxEnd= e.getPoint();
   }
   
-  public void mouseReleased(MouseEvent e)
-  {
-  	// don't process this event if the mouse was clicked or dragged a very short distance
-  	if (! isSignificantMouseMove())
-  		return;
-  	
-    // zoom to extent box
-  	int centreX = (zoomBoxEnd.x + zoomBoxStart.x) / 2; 
-  	int centreY = (zoomBoxEnd.y + zoomBoxStart.y) / 2; 
-  	Point centre = new Point(centreX, centreY);
-  	
-  	int dx = Math.abs(zoomBoxEnd.x - zoomBoxStart.x);
-  	int dy = Math.abs(zoomBoxEnd.y - zoomBoxStart.y);
-  	// ensure deltas are valid
-  	if (dx <= 0) dx = 1;
-  	if (dy <= 0) dy = 1;
-  	
-		GeometryEditPanel panel = panel();
-		double widthFactor = panel.getSize().width / dx;
-		double heightFactor = panel.getSize().height / dy;
-		double zoomFactor = Math.min(widthFactor, heightFactor);
-
-//  	double zoomFactor = 2;
-  	panel().zoomCentre(centre, zoomFactor);
+  public void mouseReleased(MouseEvent e) {
+    // don't process this event if the mouse was clicked or dragged a very short
+    // distance
+    if (!isSignificantMouseMove())
+      return;
+    panel().zoom(toModel(zoomBoxStart), toModel(zoomBoxEnd));
   }
   
   public void mouseDragged(MouseEvent e)
