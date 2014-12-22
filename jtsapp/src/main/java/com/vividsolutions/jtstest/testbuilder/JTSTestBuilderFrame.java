@@ -88,7 +88,7 @@ import com.vividsolutions.jtstest.testbuilder.ui.tools.PanTool;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.PointTool;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.RectangleTool;
 import com.vividsolutions.jtstest.testbuilder.ui.tools.StreamPolygonTool;
-import com.vividsolutions.jtstest.testbuilder.ui.tools.ZoomToClickTool;
+import com.vividsolutions.jtstest.testbuilder.ui.tools.ZoomTool;
 import com.vividsolutions.jtstest.testrunner.GuiUtil;
 import com.vividsolutions.jtstest.util.FileUtil;
 import com.vividsolutions.jtstest.util.StringUtil;
@@ -127,7 +127,7 @@ public class JTSTestBuilderFrame extends JFrame
   ResultValuePanel resultValuePanel = new ResultValuePanel();
   StatsPanel statsPanel = new StatsPanel();
   InfoPanel logPanel = new InfoPanel();
-  private ZoomToClickTool zoomInTool;
+  private ZoomTool zoomTool;
   private final ImageIcon appIcon = new ImageIcon(this.getClass().getResource("app-icon.gif"));
 
   private JFileChooser fileChooser = new JFileChooser();
@@ -192,7 +192,7 @@ public class JTSTestBuilderFrame extends JFrame
         }
       });
 
-      zoomInTool = new ZoomToClickTool(2, AppCursors.ZOOM);
+      zoomTool = new ZoomTool(2, AppCursors.ZOOM);
       showGeomsTab();
       initFileDrop(testCasePanel);
       testCasePanel.getGeometryEditPanel().setCurrentTool(RectangleTool.getInstance());
@@ -599,7 +599,7 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   void zoomInButton_actionPerformed(ActionEvent e) {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(zoomInTool);
+    testCasePanel.getGeometryEditPanel().setCurrentTool(zoomTool);
   }
 
   void oneToOneButton_actionPerformed(ActionEvent e) {

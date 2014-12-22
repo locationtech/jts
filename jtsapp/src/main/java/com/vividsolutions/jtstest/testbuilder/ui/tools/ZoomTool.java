@@ -49,16 +49,16 @@ import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 /**
  * @version 1.7
  */
-public class ZoomToClickTool extends BasicTool 
+public class ZoomTool extends BasicTool 
 {
   private double zoomFactor = 2;
   private Cursor cursor = Cursor.getDefaultCursor();
   private Point zoomBoxStart = null;
   private Point zoomBoxEnd = null;
   
-  public ZoomToClickTool() { }
+  public ZoomTool() { }
 
-  public ZoomToClickTool(double zoomFactor, Cursor cursor) {
+  public ZoomTool(double zoomFactor, Cursor cursor) {
     this();
     this.zoomFactor = zoomFactor;
     this.cursor = cursor;
