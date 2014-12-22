@@ -35,12 +35,13 @@ package com.vividsolutions.jtstest.testbuilder.ui.tools;
 import java.awt.Cursor;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelListener;
 
 
 /**
  * @version 1.7
  */
-public interface Tool extends MouseListener, MouseMotionListener {
+public interface Tool extends MouseListener, MouseMotionListener, MouseWheelListener {
 
     Cursor getCursor();
 

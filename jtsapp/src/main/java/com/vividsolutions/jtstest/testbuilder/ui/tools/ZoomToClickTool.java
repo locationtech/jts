@@ -36,6 +36,7 @@ package com.vividsolutions.jtstest.testbuilder.ui.tools;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 
 import javax.swing.SwingUtilities;
@@ -101,6 +102,13 @@ public class ZoomToClickTool extends BasicTool
   	// draw new zoom box
   	zoomBoxEnd = currPoint;
   	drawRect(g);
+  }
+  
+  public void mouseWheelMoved(MouseWheelEvent e) {
+    int notches = e.getWheelRotation();
+    double realZoomFactor = Math.abs(notches) * 1.5;
+    if (notches < 0 && realZoomFactor > 0) realZoomFactor = 1.0 / realZoomFactor;
+    panel().zoom(toModel(e.getPoint()), realZoomFactor);
   }
   
   public void activate() { }

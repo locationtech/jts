@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 
 import com.vividsolutions.jts.awt.FontGlyphReader;
@@ -56,6 +57,10 @@ public abstract class BasicTool implements Tool
   public void mouseMoved(MouseEvent e) {
   }
 
+  public void mouseWheelMoved(MouseWheelEvent e) {
+    
+  }
+  
   public Cursor getCursor()
   {
     return cursor;

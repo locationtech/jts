@@ -468,14 +468,18 @@ public class GeometryEditPanel extends JPanel
   public void setCurrentTool(Tool newTool) {
     removeMouseListener(currentTool);
     removeMouseMotionListener(currentTool);
+    removeMouseWheelListener(currentTool);
+    
     currentTool = newTool;
     // tool cleared
     if (newTool == null) return;
     
     currentTool.activate();
+    
     setCursor(currentTool.getCursor());
     addMouseListener(currentTool);
     addMouseMotionListener(currentTool);
+    addMouseWheelListener(currentTool);
   }
 
   public void zoomToGeometry(int i) {
@@ -577,18 +581,6 @@ public class GeometryEditPanel extends JPanel
     return format.format(p.getX()) 
     + ", " 
     + format.format(p.getY());
-  
-    /*
-    double width = getViewport().getWidthInModel();
-    double height = getViewport().getHeightInModel();
-    double extent = Math.min(width, height);
-    double precisionDigits = -Math.floor(Math.log(extent)/Math.log(10.0)) + 3;
-    double precisionScale = Math.pow(10.0, precisionDigits);
-    double xRound = Math.round(p.getX() * precisionScale) / precisionScale;
-    double yRound = Math.round(p.getY() * precisionScale) / precisionScale;
-  //    System.out.println(precisionScale);
-    //return xRound + ", " + yRound;
-  */
   }
 
   public Renderer getRenderer()
