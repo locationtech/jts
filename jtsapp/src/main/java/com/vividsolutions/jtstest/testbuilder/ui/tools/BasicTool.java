@@ -23,6 +23,8 @@ public abstract class BasicTool implements Tool
   protected Cursor cursor = Cursor.getDefaultCursor();
 
   private PrecisionModel gridPM;
+
+  private GeometryEditPanel panel;
   
   public BasicTool() {
     super();
@@ -76,15 +78,28 @@ public abstract class BasicTool implements Tool
    * 
    * If subclasses override this method they must call <tt>super.activate()</tt>.
    */
-  public void activate() 
+  public void activate(GeometryEditPanel panel) 
   {
+    this.panel = panel;
   	gridPM = getViewport().getGridPrecisionModel();
+    this.panel.setCursor(getCursor());
+    this.panel.addMouseListener(this);
+    this.panel.addMouseMotionListener(this);
+    this.panel.addMouseWheelListener(this);
   }
-  
+ 
+  public void deactivate() 
+  {
+    this.panel.removeMouseListener(this);
+    this.panel.removeMouseMotionListener(this);
+    this.panel.removeMouseWheelListener(this);
+  }
+
   protected GeometryEditPanel panel()
   {
     // this should probably be passed in during setup
-    return JTSTestBuilderFrame.instance().getTestCasePanel().getGeometryEditPanel();
+    //return JTSTestBuilderFrame.instance().getTestCasePanel().getGeometryEditPanel();
+    return panel;
   }
   
   protected GeometryEditModel geomModel()

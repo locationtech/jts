@@ -52,6 +52,11 @@ public class Viewport implements PointTransformation
     setScaleNoUpdate(1.0);
   }
 
+  private void viewUpdated()
+  {
+    panel.forceRepaint();
+  }
+  
   public Envelope getModelEnv()
   {
   	return viewEnvInModel;
@@ -229,16 +234,14 @@ public class Viewport implements PointTransformation
   public void update(Dimension viewSize)
   {
     this.viewSize = viewSize;
-    updateModelToViewTransform();
-    viewEnvInModel = computeEnvelopeInModel();
-    panel.forceRepaint();
+    update();
   }
   
   private void update()
   {
     updateModelToViewTransform();
     viewEnvInModel = computeEnvelopeInModel();
-    panel.forceRepaint();
+    viewUpdated();
   }
   
   private void updateModelToViewTransform() {

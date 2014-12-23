@@ -458,7 +458,6 @@ public class GeometryEditPanel extends JPanel
   void this_componentResized(ComponentEvent e) {
   	renderMgr.componentResized();
     viewport.update(this.getSize());
-    forceRepaint();
   }
 
   /**
@@ -466,20 +465,9 @@ public class GeometryEditPanel extends JPanel
    * @param newTool tool to set, or null to clear tool
    */
   public void setCurrentTool(Tool newTool) {
-    removeMouseListener(currentTool);
-    removeMouseMotionListener(currentTool);
-    removeMouseWheelListener(currentTool);
-    
+    if (currentTool != null) currentTool.deactivate();
     currentTool = newTool;
-    // tool cleared
-    if (newTool == null) return;
-    
-    currentTool.activate();
-    
-    setCursor(currentTool.getCursor());
-    addMouseListener(currentTool);
-    addMouseMotionListener(currentTool);
-    addMouseWheelListener(currentTool);
+    if (currentTool != null) currentTool.activate(this);
   }
 
   public void zoomToGeometry(int i) {
