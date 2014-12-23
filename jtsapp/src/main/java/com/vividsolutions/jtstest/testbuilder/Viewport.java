@@ -11,7 +11,6 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.math.MathUtil;
 import com.vividsolutions.jts.util.Assert;
 
-
 /**
  * Maintains the information associated with mapping 
  * the model view to the screen
@@ -21,18 +20,17 @@ import com.vividsolutions.jts.util.Assert;
  */
 public class Viewport implements PointTransformation
 {
-  private static int INITIAL_VIEW_ORIGIN_X = -10;
-
-  private static int INITIAL_VIEW_ORIGIN_Y = -10;
-
+  private static double INITIAL_SCALE = 1.0;
+  private static int INITIAL_ORIGIN_X = -10;
+  private static int INITIAL_ORIGIN_Y = -10;
 
   private GeometryEditPanel panel;
   
   /**
    * Origin of view in model space
    */
-  private Point2D viewOriginInModel =
-      new Point2D.Double(INITIAL_VIEW_ORIGIN_X, INITIAL_VIEW_ORIGIN_Y);
+  private Point2D originInModel =
+      new Point2D.Double(INITIAL_ORIGIN_X, INITIAL_ORIGIN_Y);
 
   /**
    * The scale is the factor which model distance 
@@ -46,6 +44,8 @@ public class Viewport implements PointTransformation
   private AffineTransform modelToViewTransform;
   private java.awt.geom.Point2D.Double srcPt = new java.awt.geom.Point2D.Double(0, 0);
   private java.awt.geom.Point2D.Double destPt = new java.awt.geom.Point2D.Double(0, 0);
+
+  private Dimension viewSize;
 
   public Viewport(GeometryEditPanel panel) {
     this.panel = panel;
@@ -83,19 +83,15 @@ public class Viewport implements PointTransformation
     scaleFormat.setGroupingUsed(false);
   }
 
-  public void setScale(double scale) {
+  private void setScale(double scale) {
     setScaleNoUpdate(scale);
     update();
   }
-
-  /*
-  public void setScaleOrigin(double scale, double originX, double originY) {
-    setScaleNoUpdate(scale);
-    update();
-    this.viewOriginInModel = new Point2D.Double(originX, originY);
+  
+  private void setOrigin(double viewOriginX, double viewOriginY) {
+    this.originInModel = new Point2D.Double(viewOriginX, viewOriginY);
     update();
   }
-*/
   
   public NumberFormat getScaleFormat()
   {
@@ -128,7 +124,7 @@ public class Viewport implements PointTransformation
     int scaleDigit = (int) (scaleRaw / nearestLowerPow10);
     double scale = scaleDigit * nearestLowerPow10;
     
-    System.out.println("requested scale = " + scaleRaw + " scale = " + scale  + "   Pow10 = " + pow10);
+    //System.out.println("requested scale = " + scaleRaw + " scale = " + scale  + "   Pow10 = " + pow10);
     return scale;
   }
   
@@ -158,20 +154,6 @@ public class Viewport implements PointTransformation
     return scale;
   }
   
-
-  public double getOriginX() {
-    return viewOriginInModel.getX();
-  }
-
-  public double getOriginY() {
-    return viewOriginInModel.getY();
-  }
-  
-  public void setOrigin(double viewOriginX, double viewOriginY) {
-    this.viewOriginInModel = new Point2D.Double(viewOriginX, viewOriginY);
-    update();
-  }
-
   public boolean intersectsInModel(Envelope env)
   {
   	return viewEnvInModel.intersects(env);
@@ -222,71 +204,6 @@ public class Viewport implements PointTransformation
     return getModelToViewTransform().transform(modelPt, viewPt);
   }
 
-  public void update()
-  {
-    updateModelToViewTransform();
-    viewEnvInModel = computeEnvelopeInModel();
-    panel.forceRepaint();
-  }
-  
-  private void updateModelToViewTransform() {
-    modelToViewTransform = new AffineTransform();
-    modelToViewTransform.translate(0, panel.getSize().height);
-    modelToViewTransform.scale(1, -1);
-    modelToViewTransform.scale(scale, scale);
-    modelToViewTransform.translate(-viewOriginInModel.getX(), -viewOriginInModel.getY());
-  }
-
-  public AffineTransform getModelToViewTransform() {
-    if (modelToViewTransform == null) {
-      updateModelToViewTransform();
-    }
-    return modelToViewTransform;
-  }
-
-  public void zoomToInitialExtent() {
-    setScale(1);
-    setOrigin(INITIAL_VIEW_ORIGIN_X, INITIAL_VIEW_ORIGIN_Y);
-  }
-
-  public void zoom(Envelope zoomEnv) {
-    zoomToInitialExtent();
-    double xScale = getWidthInModel() / zoomEnv.getWidth();
-    double yScale = getHeightInModel() / zoomEnv.getHeight();
-    setScale(Math.min(xScale, yScale));
-    double xCentering = (getWidthInModel() - zoomEnv.getWidth()) / 2d;
-    double yCentering = (getHeightInModel() - zoomEnv.getHeight()) / 2d;
-    setOrigin(zoomEnv.getMinX() - xCentering, zoomEnv.getMinY() - yCentering);
-  }
-
-  public double getWidthInModel() {
-    return getUpperRightCornerInModel().getX()
-        - getLowerLeftCornerInModel().getX();
-  }
-
-  public double getHeightInModel() {
-    return getUpperRightCornerInModel().getY()
-        - getLowerLeftCornerInModel().getY();
-  }
-
-  public Point2D getLowerLeftCornerInModel() {
-    Dimension size = panel.getSize();
-    return toModel(new Point(0, size.height));
-  }
-
-  public Point2D getUpperRightCornerInModel() {
-    Dimension size = panel.getSize();
-    return toModel(new Point(size.width, 0));
-  }
-
-  public double getHeightInView() {
-    return panel.getSize().height;
-  }
-
-  public double getWidthInView() {
-    return panel.getSize().getWidth();
-  }
-
   /**
    * Converts a distance in the view to a distance in the model.
    * 
@@ -295,7 +212,7 @@ public class Viewport implements PointTransformation
    */
   public double toModel(double viewDist)
   {
-  	return viewDist / scale;
+    return viewDist / scale;
   }
   
   /**
@@ -306,18 +223,105 @@ public class Viewport implements PointTransformation
    */
   public double toView(double modelDist)
   {
-  	return modelDist * scale;
+    return modelDist * scale;
   }
   
-  private Envelope computeEnvelopeInModel() {
-    double widthInModel = panel.getWidth() / scale;
-    double heighInModel = panel.getHeight() / scale;
+  public void update(Dimension viewSize)
+  {
+    this.viewSize = viewSize;
+    updateModelToViewTransform();
+    viewEnvInModel = computeEnvelopeInModel();
+    panel.forceRepaint();
+  }
+  
+  private void update()
+  {
+    updateModelToViewTransform();
+    viewEnvInModel = computeEnvelopeInModel();
+    panel.forceRepaint();
+  }
+  
+  private void updateModelToViewTransform() {
+    modelToViewTransform = new AffineTransform();
+    modelToViewTransform.translate(0, viewSize.height);
+    modelToViewTransform.scale(1, -1);
+    modelToViewTransform.scale(scale, scale);
+    modelToViewTransform.translate(-originInModel.getX(), -originInModel.getY());
+  }
 
+  public AffineTransform getModelToViewTransform() {
+    if (modelToViewTransform == null) {
+      updateModelToViewTransform();
+    }
+    return modelToViewTransform;
+  }
+
+  public void zoomToInitialExtent() {
+    setScale(INITIAL_SCALE);
+    setOrigin(INITIAL_ORIGIN_X, INITIAL_ORIGIN_Y);
+  }
+
+  public void zoom(Envelope zoomEnv) {
+    double xScale = getWidthInView() / zoomEnv.getWidth();
+    double yScale = getHeightInView() / zoomEnv.getHeight();
+    double zoomScale = Math.min(xScale, yScale);
+    setScale(zoomScale);
+    double xCentering = (getWidthInModel() - zoomEnv.getWidth()) / 2d;
+    double yCentering = (getHeightInModel() - zoomEnv.getHeight()) / 2d;
+    setOrigin(zoomEnv.getMinX() - xCentering, zoomEnv.getMinY() - yCentering);
+  }
+
+  public void zoomPan(double dx, double dy) {
+    setOrigin(originInModel.getX() - dx,
+        originInModel.getY() - dy);
+  }
+
+  /**
+   * Zoom to a point, ensuring that the zoom point remains in the same screen location.
+   * 
+   * @param zoomPt
+   * @param zoomFactor
+   */
+  public void zoom(Point2D zoomPt, double zoomScale) {
+    double originOffsetX = zoomPt.getX() - originInModel.getX();
+    double originOffsetY = zoomPt.getY() - originInModel.getY();
+    
+    // set scale first, because it may be snapped
+    double scalePrev = getScale();
+    setScale(zoomScale);
+    
+    double actualZoomFactor = getScale() / scalePrev;
+    double zoomOriginX = zoomPt.getX() - originOffsetX / actualZoomFactor;
+    double zoomOriginY = zoomPt.getY() - originOffsetY / actualZoomFactor;
+    setOrigin(zoomOriginX,  zoomOriginY);
+  }
+
+  private double getWidthInModel() {
+    return toModel(viewSize.width);
+  }
+
+  private double getHeightInModel() {
+    return toModel(viewSize.height);
+  }
+
+  public Point2D getLowerLeftCornerInModel() {
+    return toModel(new Point(0, viewSize.height));
+  }
+
+  public double getHeightInView() {
+    return viewSize.height;
+  }
+
+  public double getWidthInView() {
+    return viewSize.width;
+  }
+
+  private Envelope computeEnvelopeInModel() {
     return new Envelope(
-        viewOriginInModel.getX(),
-        viewOriginInModel.getX() + widthInModel,
-        viewOriginInModel.getY(),
-        viewOriginInModel.getY() + heighInModel);
+        originInModel.getX(),
+        originInModel.getX() + getWidthInModel(),
+        originInModel.getY(),
+        originInModel.getY() + getHeightInModel());
   }
 
   public boolean containsInModel(Coordinate p)

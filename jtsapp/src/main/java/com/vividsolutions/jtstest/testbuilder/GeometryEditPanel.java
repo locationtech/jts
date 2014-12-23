@@ -69,8 +69,7 @@ import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryPainter;
  * @version 1.7
  */
 public class GeometryEditPanel extends JPanel 
-{
-	
+{	
 	/*
   private static Color[] selectedPointColor = { new Color(0, 64, 128, 255),
       new Color(170, 64, 0, 255) };
@@ -458,7 +457,8 @@ public class GeometryEditPanel extends JPanel
 
   void this_componentResized(ComponentEvent e) {
   	renderMgr.componentResized();
-    viewport.update();
+    viewport.update(this.getSize());
+    forceRepaint();
   }
 
   /**
@@ -499,18 +499,18 @@ public class GeometryEditPanel extends JPanel
   public void zoomToFullExtent() {
     zoom(getGeomModel().getEnvelopeAll());
   }
-
+  
   public void zoom(Geometry geom) 
   {
     if (geom == null) return;
     zoom(geom.getEnvelopeInternal());
   }
   
-  public void zoom(Point2D zoom1, Point2D zoom2) 
+  public void zoom(Point2D zoomBox1, Point2D zoomBox2) 
   {
     Envelope zoomEnv = new Envelope();
-    zoomEnv.expandToInclude(zoom1.getX(), zoom1.getY());
-    zoomEnv.expandToInclude(zoom2.getX(), zoom2.getY());
+    zoomEnv.expandToInclude(zoomBox1.getX(), zoomBox1.getY());
+    zoomEnv.expandToInclude(zoomBox2.getX(), zoomBox2.getY());
     zoom(zoomEnv);
   }
   
@@ -545,41 +545,13 @@ public class GeometryEditPanel extends JPanel
    */
   public void zoom(Point2D zoomPt, double zoomFactor) {
     renderMgr.setDirty(true);
-
-    double originOffsetX = zoomPt.getX() - getViewport().getOriginX();
-    double originOffsetY = zoomPt.getY() - getViewport().getOriginY();
-    
-    double scale = getViewport().getScale();
-    double zoomScale = scale * zoomFactor;
-    // set scale first, because it may be snapped
-    viewport.setScale(zoomScale);
-    double actualZoomFactor = getViewport().getScale() / scale;
-
-    double zoomOriginX = zoomPt.getX() - originOffsetX / actualZoomFactor;
-    double zoomOriginY = zoomPt.getY() - originOffsetY / actualZoomFactor;
-    viewport.setOrigin(zoomOriginX,  zoomOriginY);
+    double zoomScale = getViewport().getScale() * zoomFactor;
+    viewport.zoom(zoomPt, zoomScale);
   }
-
-  /**
-   * Zoom to a point, making it the centre of the view.
-   * @param centrePt
-   * @param zoomFactor
-   */
-  public void zoomCentre(Point2D centrePt, double zoomFactor) {
+  
+  public void zoomPan(double dx, double dy) {
     renderMgr.setDirty(true);
-
-    viewport.setScale(getViewport().getScale() * zoomFactor);
-    double zoomWidth = getViewport().getWidthInModel();
-    double zoomHeight = getViewport().getHeightInModel();
-    double zoomOriginX = centrePt.getX() - (zoomWidth / 2d);
-    double zoomOriginY = centrePt.getY() - (zoomHeight / 2d);
-    viewport.setOrigin(zoomOriginX,  zoomOriginY);
-  }
-
-  public void zoomPan(double xDisplacement, double yDisplacement) {
-    renderMgr.setDirty(true);
-    getViewport().setOrigin(getViewport().getOriginX() - xDisplacement,
-        getViewport().getOriginY() - yDisplacement);
+    getViewport().zoomPan(dx, dy);
   }
 
   public String cursorLocationString(Point2D pView)
