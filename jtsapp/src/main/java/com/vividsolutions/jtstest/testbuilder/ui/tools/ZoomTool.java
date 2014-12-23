@@ -52,20 +52,13 @@ import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 public class ZoomTool extends BasicTool 
 {
   private double zoomFactor = 2;
-  private Cursor cursor = Cursor.getDefaultCursor();
+  //private Cursor cursor = Cursor.getDefaultCursor();
   private Point zoomBoxStart = null;
   private Point zoomBoxEnd = null;
   
-  public ZoomTool() { }
-
   public ZoomTool(double zoomFactor, Cursor cursor) {
-    this();
+    super(cursor);
     this.zoomFactor = zoomFactor;
-    this.cursor = cursor;
-  }
-
-  public Cursor getCursor() {
-    return cursor;
   }
 
   public void mouseClicked(MouseEvent mouseEvent) 
@@ -106,9 +99,9 @@ public class ZoomTool extends BasicTool
   
   public void mouseWheelMoved(MouseWheelEvent e) {
     int notches = e.getWheelRotation();
-    double realZoomFactor = Math.abs(notches) * 2;
-    if (notches > 0 && realZoomFactor > 0) realZoomFactor = 1.0 / realZoomFactor;
-    panel().zoom(toModel(e.getPoint()), realZoomFactor);
+    double zoomFactor = Math.abs(notches) * 2;
+    if (notches > 0 && zoomFactor > 0) zoomFactor = 1.0 / zoomFactor;
+    panel().zoom(toModel(e.getPoint()), zoomFactor);
   }
   
   public void activate() { }

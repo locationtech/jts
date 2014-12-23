@@ -65,8 +65,7 @@ extends IndicatorTool
   }
 
   private EditVertexTool() {
-    super();
-    cursor = AppCursors.EDIT_VERTEX;
+    super(AppCursors.EDIT_VERTEX);
   }
 
   public void mousePressed(MouseEvent e) {

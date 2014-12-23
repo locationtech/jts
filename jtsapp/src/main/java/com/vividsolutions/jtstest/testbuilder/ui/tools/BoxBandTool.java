@@ -63,8 +63,7 @@ public abstract class BoxBandTool extends IndicatorTool
   public BoxBandTool() { }
 
   public BoxBandTool(Cursor cursor) {
-    this();
-    this.cursor = cursor;
+    super(cursor);
   }
 
   public void mousePressed(MouseEvent e)

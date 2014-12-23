@@ -16,8 +16,7 @@ extends BoxBandTool
   }
 
   public RectangleTool() {
-    super();
-    cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
+    super(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
   }
 
   protected void gestureFinished() 

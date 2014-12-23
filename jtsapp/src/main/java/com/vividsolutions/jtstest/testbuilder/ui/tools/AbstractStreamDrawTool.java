@@ -45,9 +45,7 @@ import com.vividsolutions.jtstest.testbuilder.model.GeometryType;
 public abstract class AbstractStreamDrawTool extends LineBandTool {
 
 	protected AbstractStreamDrawTool() {
-	  super();
-    //cursor = Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
-    cursor = AppCursors.DRAW_GEOM;
+	  super(AppCursors.DRAW_GEOM);
 	}
 
 	protected abstract int getGeometryType();

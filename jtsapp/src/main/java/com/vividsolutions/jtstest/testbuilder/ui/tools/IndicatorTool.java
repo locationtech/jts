@@ -30,6 +30,10 @@ public abstract class IndicatorTool extends BasicTool
     super();
   }
 
+  public IndicatorTool(Cursor cursor) {
+    super(cursor);
+  }
+
   /**
    * Gets the shape for displaying the current state of the action.
    * Subclasses should override.

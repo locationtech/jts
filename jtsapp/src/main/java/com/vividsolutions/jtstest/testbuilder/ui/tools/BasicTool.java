@@ -28,6 +28,11 @@ public abstract class BasicTool implements Tool
     super();
   }
 
+  public BasicTool(Cursor cursor) {
+    super();
+    this.cursor = cursor;
+  }
+
   protected Graphics2D getGraphics2D() {
     Graphics2D g = (Graphics2D) panel().getGraphics();
     if (g != null) {

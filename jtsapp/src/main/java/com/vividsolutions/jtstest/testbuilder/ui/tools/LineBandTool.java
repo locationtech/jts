@@ -24,6 +24,10 @@ public abstract class LineBandTool extends IndicatorTool
     super();
   }
 
+  public LineBandTool(Cursor cursor) {
+    super(cursor);
+  }
+
   protected void setCloseRing(boolean closeRing) {
     this.closeRing = closeRing;
   }
