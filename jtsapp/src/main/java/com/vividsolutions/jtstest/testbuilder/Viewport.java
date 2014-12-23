@@ -83,18 +83,20 @@ public class Viewport implements PointTransformation
     scaleFormat.setGroupingUsed(false);
   }
 
-  private void setScale(double scale) {
+  public void setScale(double scale) {
     setScaleNoUpdate(scale);
     update();
   }
 
+  /*
   public void setScaleOrigin(double scale, double originX, double originY) {
     setScaleNoUpdate(scale);
     update();
     this.viewOriginInModel = new Point2D.Double(originX, originY);
     update();
   }
-
+*/
+  
   public NumberFormat getScaleFormat()
   {
     return scaleFormat;
@@ -114,7 +116,6 @@ public class Viewport implements PointTransformation
   private static double snapScale(double scaleRaw)
   {
     double scale = snapScaleToSingleDigitPrecision(scaleRaw);
-    //System.out.println("requested scale = " + scaleRaw + " scale = " + scale  + "   Pow10 = " + pow10);
     return scale;
   }
   
@@ -127,7 +128,7 @@ public class Viewport implements PointTransformation
     int scaleDigit = (int) (scaleRaw / nearestLowerPow10);
     double scale = scaleDigit * nearestLowerPow10;
     
-    //System.out.println("requested scale = " + scaleRaw + " scale = " + scale  + "   Pow10 = " + pow10);
+    System.out.println("requested scale = " + scaleRaw + " scale = " + scale  + "   Pow10 = " + pow10);
     return scale;
   }
   
@@ -244,7 +245,8 @@ public class Viewport implements PointTransformation
   }
 
   public void zoomToInitialExtent() {
-    setScaleOrigin(1, INITIAL_VIEW_ORIGIN_X, INITIAL_VIEW_ORIGIN_Y);
+    setScale(1);
+    setOrigin(INITIAL_VIEW_ORIGIN_X, INITIAL_VIEW_ORIGIN_Y);
   }
 
   public void zoom(Envelope zoomEnv) {

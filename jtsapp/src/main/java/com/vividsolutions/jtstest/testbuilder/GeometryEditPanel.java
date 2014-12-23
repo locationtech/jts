@@ -538,7 +538,8 @@ public class GeometryEditPanel extends JPanel
   }
 
   /**
-   * Zoom to a point, ensuring that the zoom point remains in the same screen location
+   * Zoom to a point, ensuring that the zoom point remains in the same screen location.
+   * 
    * @param zoomPt
    * @param zoomFactor
    */
@@ -547,10 +548,16 @@ public class GeometryEditPanel extends JPanel
 
     double originOffsetX = zoomPt.getX() - getViewport().getOriginX();
     double originOffsetY = zoomPt.getY() - getViewport().getOriginY();
-    double zoomOriginX = zoomPt.getX() - originOffsetX / zoomFactor;
-    double zoomOriginY = zoomPt.getY() - originOffsetY / zoomFactor;
-    double zoomScale = getViewport().getScale() * zoomFactor;
-    viewport.setScaleOrigin(zoomScale, zoomOriginX,  zoomOriginY);
+    
+    double scale = getViewport().getScale();
+    double zoomScale = scale * zoomFactor;
+    // set scale first, because it may be snapped
+    viewport.setScale(zoomScale);
+    double actualZoomFactor = getViewport().getScale() / scale;
+
+    double zoomOriginX = zoomPt.getX() - originOffsetX / actualZoomFactor;
+    double zoomOriginY = zoomPt.getY() - originOffsetY / actualZoomFactor;
+    viewport.setOrigin(zoomOriginX,  zoomOriginY);
   }
 
   /**
@@ -561,11 +568,12 @@ public class GeometryEditPanel extends JPanel
   public void zoomCentre(Point2D centrePt, double zoomFactor) {
     renderMgr.setDirty(true);
 
-    double zoomWidth = getViewport().getWidthInModel() / zoomFactor;
-    double zoomHeight = getViewport().getHeightInModel() / zoomFactor;
+    viewport.setScale(getViewport().getScale() * zoomFactor);
+    double zoomWidth = getViewport().getWidthInModel();
+    double zoomHeight = getViewport().getHeightInModel();
     double zoomOriginX = centrePt.getX() - (zoomWidth / 2d);
     double zoomOriginY = centrePt.getY() - (zoomHeight / 2d);
-    viewport.setScaleOrigin(getViewport().getScale() * zoomFactor, zoomOriginX,  zoomOriginY);
+    viewport.setOrigin(zoomOriginX,  zoomOriginY);
   }
 
   public void zoomPan(double xDisplacement, double yDisplacement) {
