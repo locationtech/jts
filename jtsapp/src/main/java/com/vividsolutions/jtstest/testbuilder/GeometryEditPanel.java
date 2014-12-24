@@ -506,8 +506,6 @@ public class GeometryEditPanel extends JPanel
     if (zoomEnv == null)
       return;
 
-    renderMgr.setDirty(true);
-
     if (zoomEnv.isNull()) {
       viewport.zoomToInitialExtent();
       return;
@@ -517,11 +515,7 @@ public class GeometryEditPanel extends JPanel
     if (averageExtent == 0.0)
       averageExtent = 1.0;
     double buffer = averageExtent * 0.03;
-
-    zoomEnv.expandToInclude(zoomEnv.getMaxX() + buffer, zoomEnv.getMaxY()
-        + buffer);
-    zoomEnv.expandToInclude(zoomEnv.getMinX() - buffer, zoomEnv.getMinY()
-        - buffer);
+    zoomEnv.expandBy(buffer);
     viewport.zoom(zoomEnv);
   }
 
@@ -532,13 +526,11 @@ public class GeometryEditPanel extends JPanel
    * @param zoomFactor
    */
   public void zoom(Point2D zoomPt, double zoomFactor) {
-    renderMgr.setDirty(true);
     double zoomScale = getViewport().getScale() * zoomFactor;
     viewport.zoom(zoomPt, zoomScale);
   }
   
   public void zoomPan(double dx, double dy) {
-    renderMgr.setDirty(true);
     getViewport().zoomPan(dx, dy);
   }
 
