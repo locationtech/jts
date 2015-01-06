@@ -500,7 +500,7 @@ public class JTSTestBuilderToolBar {
       jToolBar1.add(Box.createHorizontalStrut(8), null);
             
       jToolBar1.add(infoButton, null);
-      jToolBar1.add(inspectGeometryButton, null);
+      //jToolBar1.add(inspectGeometryButton, null);
 
       return jToolBar1;
   }

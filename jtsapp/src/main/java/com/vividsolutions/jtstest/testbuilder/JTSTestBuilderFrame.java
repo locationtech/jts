@@ -117,7 +117,7 @@ public class JTSTestBuilderFrame extends JFrame
   JTabbedPane inputTabbedPane = new JTabbedPane();
   BorderLayout borderLayout3 = new BorderLayout();
   JPanel testPanel = new JPanel();
-  WKTPanel wktPanel = new WKTPanel();
+  WKTPanel wktPanel = new WKTPanel(this);
   TestListPanel testListPanel = new TestListPanel(this);
   //LayerListPanel layerListPanel = new LayerListPanel();
   LayerListPanel layerListPanel = new LayerListPanel();
