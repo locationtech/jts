@@ -52,7 +52,6 @@ import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 public class ZoomTool extends BasicTool 
 {
   private double zoomFactor = 2;
-  //private Cursor cursor = Cursor.getDefaultCursor();
   private Point zoomBoxStart = null;
   private Point zoomBoxEnd = null;
   
@@ -103,8 +102,6 @@ public class ZoomTool extends BasicTool
     if (notches > 0 && zoomFactor > 0) zoomFactor = 1.0 / zoomFactor;
     panel().zoom(toModel(e.getPoint()), zoomFactor);
   }
-  
-  public void activate() { }
   
   private static final int MIN_MOVEMENT = 3;
   

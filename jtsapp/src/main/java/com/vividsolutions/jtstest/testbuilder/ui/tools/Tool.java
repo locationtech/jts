@@ -33,6 +33,7 @@
 package com.vividsolutions.jtstest.testbuilder.ui.tools;
 
 import java.awt.Cursor;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
@@ -43,7 +44,7 @@ import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 /**
  * @version 1.7
  */
-public interface Tool extends MouseListener, MouseMotionListener, MouseWheelListener {
+public interface Tool extends MouseListener, MouseMotionListener, MouseWheelListener, KeyListener  {
 
     Cursor getCursor();
 
