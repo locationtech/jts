@@ -48,12 +48,14 @@ import com.vividsolutions.jts.algorithm.LineIntersector;
 public class InteriorIntersectionFinder
     implements SegmentIntersector
 {
-	private boolean findAllIntersections = false;
-	private boolean isCheckEndSegmentsOnly = false;
+  private boolean findAllIntersections = false;
+  private boolean isCheckEndSegmentsOnly = false;
   private LineIntersector li;
   private Coordinate interiorIntersection = null;
   private Coordinate[] intSegments = null;
   private List intersections = new ArrayList();
+  private int intersectionCount = 0;
+  private boolean keepIntersections = true;
 
   /**
    * Creates an intersection finder which finds an interior intersection
@@ -67,14 +69,51 @@ public class InteriorIntersectionFinder
     interiorIntersection = null;
   }
 
+  /**
+   * Sets whether all intersections should be computed.
+   * When this is <code>false</code> (the default value)
+   * the value of {@link #isDone()} is <code>true</code> after the first intersection is found.
+   * <p>
+   * Default is <code>false</code>.
+   * 
+   * @param findAllIntersections whether all intersections should be computed
+   */
   public void setFindAllIntersections(boolean findAllIntersections)
   {
     this.findAllIntersections = findAllIntersections;
   }
   
+  /**
+   * Sets whether intersection points are recorded.
+   * If the only need is to count intersection points, this can be set to <code>false</code>.
+   * <p>
+   * Default is <code>true</code>.
+   * 
+   * @param keepIntersections indicates whether intersections should be recorded
+   */
+  public void setKeepIntersections(boolean keepIntersections)
+  {
+    this.keepIntersections = keepIntersections;
+  }
+  
+  /**
+   * Gets the intersections found.
+   * 
+   * @return a List of {@link Coordinate)
+   */
   public List getIntersections()
   {
     return intersections;
+  }
+  
+  /**
+   * Gets the count of intersections found.
+   * 
+   * @return the intersection count
+   */
+  public int count()
+  {
+    return intersectionCount;
   }
   
   /**
@@ -136,7 +175,7 @@ public class InteriorIntersectionFinder
       )
   {
   	// short-circuit if intersection already found
-  	if (hasIntersection())
+  	if (! findAllIntersections && hasIntersection())
   		return;
   	
     // don't bother intersecting a segment with itself
@@ -169,7 +208,8 @@ public class InteriorIntersectionFinder
       	intSegments[3] = p11;
       	
       	interiorIntersection = li.getIntersection(0);
-      	intersections.add(interiorIntersection);
+      	if (keepIntersections) intersections.add(interiorIntersection);
+      	intersectionCount++;
       }
     }
   }
@@ -194,4 +234,5 @@ public class InteriorIntersectionFinder
   	if (findAllIntersections) return false;
   	return interiorIntersection != null;
   }
+
 }

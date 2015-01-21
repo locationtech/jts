@@ -45,6 +45,7 @@ The current and archived JTS distributions can be obtained at the
 <li>Added <code>DD.setValue()</code> methods
 <li>Added <code>getGeometry()</code> methods to <code>LinearComponentExtracter</code> and <code>LineStringExtracter</code>
 <li>Added <code>BufferParameters</code> </code>simplifyFactor</code> setting
+<li>Add node counting and ability to not keep intersection points to <code>InteriorIntersectionFinder</code>
 </ul>
 
 <h3>Performance Improvements</h3>
@@ -72,6 +73,7 @@ The current and archived JTS distributions can be obtained at the
 <li>Fixed the <code>extractPoint(distance, offset)</code> methods in
   <code>LocationIndexedLine</code> and <code>LengthIndexedLine</code> to handle offsets from endpoints correctly.
 <li>Fixed <code>GeometryCollectionIterator</code> to correctly handle atomic geometries
+<li>Fixed <code>InteriorIntersectionFinder</code> to not short-circuit when finding all nodes
 </ul>
 
 <h3>API Changes</h3>
@@ -115,6 +117,7 @@ The current and archived JTS distributions can be obtained at the
 <li>Removed dependency on Acme GIF encoder library
 <li>Improved zooming logic
 <li>Added mouse wheel zooming
+<li>Improved UI for editing A/B geometries
 </ul>
 
 <h3>UI Changes</h3>

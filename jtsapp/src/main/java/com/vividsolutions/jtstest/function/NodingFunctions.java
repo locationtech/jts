@@ -6,6 +6,7 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.noding.BasicSegmentString;
 import com.vividsolutions.jts.noding.FastNodingValidator;
+import com.vividsolutions.jts.noding.InteriorIntersectionFinder;
 import com.vividsolutions.jts.noding.IntersectionAdder;
 import com.vividsolutions.jts.noding.MCIndexNoder;
 import com.vividsolutions.jts.noding.NodedSegmentString;
@@ -85,6 +86,17 @@ public class NodingFunctions
     noder.computeNodes(segs);
     Collection nodedSegStrings = noder.getNodedSubstrings();
     return fromSegmentStrings(nodedSegStrings);
+  }
+
+  public static int nodeCount(Geometry geom)
+  {
+    List segs = createNodedSegmentStrings(geom);
+    InteriorIntersectionFinder intCounter = new InteriorIntersectionFinder(new RobustLineIntersector());
+    intCounter.setFindAllIntersections(true);
+    intCounter.setKeepIntersections(false);
+    Noder noder = new MCIndexNoder(intCounter);
+    noder.computeNodes(segs);
+    return intCounter.count();
   }
 
   /**
