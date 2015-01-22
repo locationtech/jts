@@ -52,9 +52,13 @@ public class JTSTestBuilderToolBar {
   private final ImageIcon exchangeGeomsIcon = new ImageIcon(this.getClass().getResource("ExchangeGeoms.png"));
   private final ImageIcon zoomInIcon = new ImageIcon(this.getClass().getResource("MagnifyCursor.gif"));
   private final ImageIcon drawRectangleIcon = new ImageIcon(this.getClass().getResource("DrawRectangle.png"));
+  private final ImageIcon drawRectangleBIcon = new ImageIcon(this.getClass().getResource("DrawRectangleB.png"));
   private final ImageIcon drawPolygonIcon = new ImageIcon(this.getClass().getResource("DrawPolygon.png"));
+  private final ImageIcon drawPolygonBIcon = new ImageIcon(this.getClass().getResource("DrawPolygonB.png"));
   private final ImageIcon drawLineStringIcon = new ImageIcon(this.getClass().getResource("DrawLineString.png"));
+  private final ImageIcon drawLineStringBIcon = new ImageIcon(this.getClass().getResource("DrawLineStringB.png"));
   private final ImageIcon drawPointIcon = new ImageIcon(this.getClass().getResource("DrawPoint.png"));
+  private final ImageIcon drawPointBIcon = new ImageIcon(this.getClass().getResource("DrawPointB.png"));
   private final ImageIcon infoIcon = new ImageIcon(this.getClass().getResource("Info.png"));
   private final ImageIcon zoomOneToOneIcon = new ImageIcon(this.getClass().getResource("ZoomOneToOne.png"));
   private final ImageIcon zoomToInputIcon = new ImageIcon(this.getClass().getResource("ZoomInput.png"));
@@ -505,6 +509,14 @@ public class JTSTestBuilderToolBar {
       return jToolBar1;
   }
   
+  public void setFocusGeometry(int index)
+  {
+    drawRectangleButton.setIcon(index == 0 ? drawRectangleIcon : drawRectangleBIcon);
+    drawPolygonButton.setIcon(index == 0 ? drawPolygonIcon : drawPolygonBIcon);
+    drawLineStringButton.setIcon(index == 0 ? drawLineStringIcon : drawLineStringBIcon);
+    drawPointButton.setIcon(index == 0 ? drawPointIcon : drawPointBIcon);
+  }
+  
   private JToggleButton createToggleButton(String toolTipText, 
       ImageIcon icon, 
       java.awt.event.ActionListener actionListener)
@@ -542,4 +554,5 @@ public class JTSTestBuilderToolBar {
     btn.addActionListener(actionListener);
     return btn;
   }
+  
 }

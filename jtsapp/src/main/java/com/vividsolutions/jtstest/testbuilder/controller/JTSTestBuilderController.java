@@ -1,5 +1,7 @@
 package com.vividsolutions.jtstest.testbuilder.controller;
 
+import javax.swing.JTextArea;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
@@ -83,4 +85,10 @@ public class JTSTestBuilderController
       return;
     SwingUtil.copyToClipboard(comp, false);
   }
+  
+  public static void setFocusGeometry(int index) {
+    JTSTestBuilderFrame.instance().getModel().getGeometryEditModel().setEditGeomIndex(index);
+    JTSTestBuilderFrame.instance().getToolbar().setFocusGeometry(index);    
+  }
+
 }

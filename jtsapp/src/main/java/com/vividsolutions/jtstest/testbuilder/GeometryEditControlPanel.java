@@ -161,7 +161,7 @@ public class GeometryEditControlPanel extends JPanel
             }
         });
 
-        jPanel1.setBorder(titledBorder2);
+        //jPanel1.setBorder(titledBorder2);
 
         btnEraseGeom.setPreferredSize(new Dimension(43, 20));
         btnEraseGeom.setMargin(new Insets(2, 2, 2, 2));
@@ -187,6 +187,7 @@ public class GeometryEditControlPanel extends JPanel
         cbMagnifyTopo.setToolTipText("Stretches portions of geometries to reveal fine topological detail");
         stretchDist.setToolTipText("Stretch Distance");
         
+        /*
         jPanel1.add(
             rbNoEdit,
             new GridBagConstraints(
@@ -243,7 +244,7 @@ public class GeometryEditControlPanel extends JPanel
                 new Insets(0, 0, 0, 0),
                 0,
                 0));
-        
+        */
         
         
         jPanelPM.setLayout(new FlowLayout());
@@ -264,7 +265,7 @@ public class GeometryEditControlPanel extends JPanel
         jPanel3.add(jPanelMagnify);
         
         
-        this.add(jPanel1, BorderLayout.NORTH);
+        //this.add(jPanel1, BorderLayout.NORTH);
         this.add(jPanel3, BorderLayout.SOUTH);
         //this.add(layerList, BorderLayout.CENTER);
        

@@ -36,11 +36,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import com.vividsolutions.jtstest.testbuilder.ui.dnd.FileDrop;
@@ -118,10 +120,10 @@ public class WKTPanel extends JPanel
         initFileDrop(bTextArea, 1);
     }
 
-  	public void setModel(TestBuilderModel tbModel)
-  	{
-  		this.tbModel = tbModel;
-  	}
+  public void setModel(TestBuilderModel tbModel) {
+    this.tbModel = tbModel;
+        setFocusGeometry(0);
+  }
 
     void jbInit() throws Exception {
         titledBorder1 = new TitledBorder("");
@@ -157,6 +159,12 @@ public class WKTPanel extends JPanel
         aTextArea.setBackground(Color.white);
         aTextArea.setFont(new java.awt.Font("Monospaced", 0, 12));
         aTextArea.setToolTipText(AppStrings.TEXT_ENTRY_TIP);
+        aTextArea.addMouseListener(new java.awt.event.MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent arg0) {
+            setFocusGeometry(0);
+          }
+        });
 
         bScrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
         bTextArea.setWrapStyleWord(true);
@@ -164,6 +172,12 @@ public class WKTPanel extends JPanel
         bTextArea.setBackground(Color.white);
         bTextArea.setFont(new java.awt.Font("Monospaced", 0, 12));
         bTextArea.setToolTipText(AppStrings.TEXT_ENTRY_TIP);
+        bTextArea.addMouseListener(new java.awt.event.MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent arg0) {
+            setFocusGeometry(1);
+          }
+        });
         
         aCopyButton.setToolTipText("Copy WKT (Ctl-click for formatted)");
         aCopyButton.setIcon(copyIcon);
@@ -179,12 +193,12 @@ public class WKTPanel extends JPanel
 
         aLabelPanel.add(aLabel);
         aLabel.setAlignmentX(LEFT_ALIGNMENT);
-        aLabelPanel.add(aRB);
+        //aLabelPanel.add(aRB);
         aRB.setAlignmentX(LEFT_ALIGNMENT);
         aRB.setSelected(true);
         aRB.addActionListener(new java.awt.event.ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            tbModel.getGeometryEditModel().setEditGeomIndex(0);
+            setFocusGeometry(0);
           }
         });
         
@@ -214,11 +228,11 @@ public class WKTPanel extends JPanel
 
         bLabelPanel.add(bLabel);
         bLabel.setAlignmentX(LEFT_ALIGNMENT);
-        bLabelPanel.add(bRB);
+        //bLabelPanel.add(bRB);
         bRB.setAlignmentX(LEFT_ALIGNMENT);
         bRB.addActionListener(new java.awt.event.ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            tbModel.getGeometryEditModel().setEditGeomIndex(1);
+            setFocusGeometry(1);
           }
         });
 
@@ -505,6 +519,25 @@ public class WKTPanel extends JPanel
           }
         }
       });
+    }
+
+    Border focusBorder = BorderFactory.createMatteBorder(0, 2, 0, 0, Color.green);
+    //Border otherBorder = BorderFactory.createEmptyBorder();
+    Border otherBorder = BorderFactory.createMatteBorder(0, 2, 0, 0, Color.white);
+    
+    private static Color focusBackgroundColor = Color.white; //new Color(240,255,250);
+    private static Color otherBackgroundColor = SystemColor.control;
+    
+    private void setFocusGeometry(int index) {
+      JTSTestBuilderController.setFocusGeometry(index);
+      
+      JTextArea focusTA = index == 0 ? aTextArea : bTextArea;
+      JTextArea otherTA = index == 0 ? bTextArea : aTextArea;
+      //focusTA.setBorder(focusBorder);
+      //otherTA.setBorder(otherBorder);
+      
+      focusTA.setBackground(focusBackgroundColor);
+      otherTA.setBackground(otherBackgroundColor);
     }
   
 }
