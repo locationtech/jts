@@ -1,21 +1,26 @@
 package com.vividsolutions.jtstest.function;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.algorithm.LineIntersector;
+import com.vividsolutions.jts.algorithm.RobustLineIntersector;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateArrays;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jts.noding.BasicSegmentString;
 import com.vividsolutions.jts.noding.FastNodingValidator;
 import com.vividsolutions.jts.noding.InteriorIntersectionFinder;
 import com.vividsolutions.jts.noding.IntersectionAdder;
 import com.vividsolutions.jts.noding.MCIndexNoder;
-import com.vividsolutions.jts.noding.NodedSegmentString;
 import com.vividsolutions.jts.noding.Noder;
-import com.vividsolutions.jts.noding.SegmentStringUtil;
-import com.vividsolutions.jts.algorithm.LineIntersector;
-import com.vividsolutions.jts.algorithm.RobustLineIntersector;
 import com.vividsolutions.jts.noding.ScaledNoder;
-import com.vividsolutions.jts.noding.SegmentString;
+import com.vividsolutions.jts.noding.SegmentStringUtil;
 import com.vividsolutions.jts.noding.snapround.GeometryNoder;
 import com.vividsolutions.jts.noding.snapround.MCIndexSnapRounder;
 import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
