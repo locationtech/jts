@@ -34,20 +34,20 @@ public class NodingFunctions
    * @param scaleFactor the precision model scale factor to use
    * @return the noded, snap-rounded linework
    */
-	public static Geometry snapRoundWithPointwisePrecisionReduction(Geometry geom, double scaleFactor)
-	{
-		PrecisionModel pm = new PrecisionModel(scaleFactor);
+  public static Geometry snapRoundWithPointwisePrecisionReduction(
+      Geometry geom, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
 
-		Geometry roundedGeom = GeometryPrecisionReducer.reducePointwise(geom, pm);
+    Geometry roundedGeom = GeometryPrecisionReducer.reducePointwise(geom, pm);
 
-		List geomList = new ArrayList();
-		geomList.add(roundedGeom);
-		
-		GeometryNoder noder = new GeometryNoder(pm);
-		List lines = noder.node(geomList);
-		
-		return FunctionsUtil.getFactoryOrDefault(geom).buildGeometry(lines);
-	}
+    List geomList = new ArrayList();
+    geomList.add(roundedGeom);
+
+    GeometryNoder noder = new GeometryNoder(pm);
+    List lines = noder.node(geomList);
+
+    return FunctionsUtil.getFactoryOrDefault(geom).buildGeometry(lines);
+  }
 	
   public static boolean isNoded(Geometry geom) {
     FastNodingValidator nv = new FastNodingValidator(
