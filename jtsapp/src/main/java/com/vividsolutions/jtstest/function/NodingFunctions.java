@@ -49,26 +49,27 @@ public class NodingFunctions
 		return FunctionsUtil.getFactoryOrDefault(geom).buildGeometry(lines);
 	}
 	
-  public static boolean isNoded(Geometry geom)
-  {
-    FastNodingValidator nv = new FastNodingValidator( 
-        SegmentStringUtil.extractNodedSegmentStrings(geom) );
+  public static boolean isNoded(Geometry geom) {
+    FastNodingValidator nv = new FastNodingValidator(
+        SegmentStringUtil.extractNodedSegmentStrings(geom));
     return nv.isValid();
+  }
+
+  public static Geometry findSingleNode(Geometry geom) {
+    FastNodingValidator nv = new FastNodingValidator(
+        SegmentStringUtil.extractNodedSegmentStrings(geom));
+    nv.isValid();
+    List intPts = nv.getIntersections();
+    if (intPts.size() == 0) return null;
+    return FunctionsUtil.getFactoryOrDefault(null).createPoint((Coordinate) intPts.get(0));
   }
   
   public static Geometry findNodes(Geometry geom)
   {
     List intPts = FastNodingValidator.computeIntersections( 
-        SegmentStringUtil.extractNodedSegmentStrings(geom) );
-    
-    Point[] pts = new Point[intPts.size()];
-    for (int i = 0; i < intPts.size(); i++) {
-      Coordinate coord = (Coordinate) intPts.get(i);
-      // use default factory in case intersections are not fixed
-      pts[i] = FunctionsUtil.getFactoryOrDefault(null).createPoint(coord);
-    }
-    return FunctionsUtil.getFactoryOrDefault(null).createMultiPoint(
-        pts);
+        SegmentStringUtil.extractNodedSegmentStrings(geom) );    
+    return FunctionsUtil.getFactoryOrDefault(null)
+        .createMultiPoint(CoordinateArrays.toCoordinateArray(intPts));
   }
 	  
   public static int nodeCount(Geometry geom)
