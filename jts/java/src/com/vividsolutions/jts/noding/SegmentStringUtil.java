@@ -37,6 +37,7 @@ import java.util.*;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
+import com.vividsolutions.jtstest.function.FunctionsUtil;
 
 /**
  * Utility methods for processing {@link SegmentString}s.
@@ -77,6 +78,26 @@ public class SegmentStringUtil
       segStr.add(new NodedSegmentString(pts, geom));
     }
     return segStr;
+  }
+
+  /**
+   * Converts a collection of SegmentStrings into a Geometry.
+   * The geometry will be either a {@link LineString} or a {@link MultiLineString} (possibly empty).
+   *
+   * @param segStrings a collection of SegmentStrings
+   * @return a LineString or MultiLineString
+   */
+  public static Geometry toGeometry(Collection segStrings)
+  {
+    LineString[] lines = new LineString[segStrings.size()];
+    int index = 0;
+    for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
+      SegmentString ss = (SegmentString) i.next();
+      LineString line = FunctionsUtil.getFactoryOrDefault(null).createLineString(ss.getCoordinates());
+      lines[index++] = line;
+    }
+    if (lines.length == 1) return lines[0];
+    return FunctionsUtil.getFactoryOrDefault(null).createMultiLineString(lines);
   }
 
   public static String toString(List segStrings)
