@@ -61,6 +61,14 @@ import com.vividsolutions.jts.io.*;
  */
 public class FastNodingValidator 
 {
+  public static List computeIntersections(Collection segStrings)
+  {
+    FastNodingValidator nv = new FastNodingValidator(segStrings);
+    nv.setFindAllIntersections(true);
+    nv.isValid();
+    return nv.getIntersections();
+  }
+  
   private LineIntersector li = new RobustLineIntersector();
 
   private Collection segStrings;

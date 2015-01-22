@@ -11,6 +11,7 @@ import com.vividsolutions.jts.noding.IntersectionAdder;
 import com.vividsolutions.jts.noding.MCIndexNoder;
 import com.vividsolutions.jts.noding.NodedSegmentString;
 import com.vividsolutions.jts.noding.Noder;
+import com.vividsolutions.jts.noding.SegmentStringUtil;
 import com.vividsolutions.jts.algorithm.LineIntersector;
 import com.vividsolutions.jts.algorithm.RobustLineIntersector;
 import com.vividsolutions.jts.noding.ScaledNoder;
@@ -45,16 +46,21 @@ public class NodingFunctions
 		GeometryNoder noder = new GeometryNoder(pm);
 		List lines = noder.node(geomList);
 		
-    return FunctionsUtil.getFactoryOrDefault(geom).buildGeometry(lines);
+		return FunctionsUtil.getFactoryOrDefault(geom).buildGeometry(lines);
 	}
 	
-  public static Geometry checkNoding(Geometry geom)
+  public static boolean isNoded(Geometry geom)
   {
-    List segs = createSegmentStrings(geom);
-    FastNodingValidator nv = new FastNodingValidator(segs);
-    nv.setFindAllIntersections(true);
-    nv.isValid();
-    List intPts = nv.getIntersections();
+    FastNodingValidator nv = new FastNodingValidator( 
+        SegmentStringUtil.extractNodedSegmentStrings(geom) );
+    return nv.isValid();
+  }
+  
+  public static Geometry findNodes(Geometry geom)
+  {
+    List intPts = FastNodingValidator.computeIntersections( 
+        SegmentStringUtil.extractNodedSegmentStrings(geom) );
+    
     Point[] pts = new Point[intPts.size()];
     for (int i = 0; i < intPts.size(); i++) {
       Coordinate coord = (Coordinate) intPts.get(i);
@@ -64,39 +70,33 @@ public class NodingFunctions
     return FunctionsUtil.getFactoryOrDefault(null).createMultiPoint(
         pts);
   }
-  
+	  
+  public static int nodeCount(Geometry geom)
+  {
+    InteriorIntersectionFinder intCounter = InteriorIntersectionFinder
+    		.createIntersectionCounter( new RobustLineIntersector() );
+    Noder noder = new MCIndexNoder( intCounter );
+    noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
+    return intCounter.count();
+  }
+
   public static Geometry MCIndexNodingWithPrecision(Geometry geom, double scaleFactor)
   {
-    List segs = createNodedSegmentStrings(geom);
     PrecisionModel fixedPM = new PrecisionModel(scaleFactor);
     
     LineIntersector li = new RobustLineIntersector();
     li.setPrecisionModel(fixedPM);
 
     Noder noder = new MCIndexNoder(new IntersectionAdder(li));
-    noder.computeNodes(segs);
-    Collection nodedSegStrings = noder.getNodedSubstrings();
-    return fromSegmentStrings(nodedSegStrings);
+    noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
+    return fromSegmentStrings( noder.getNodedSubstrings() );
   }
 
   public static Geometry MCIndexNoding(Geometry geom)
   {
-    List segs = createNodedSegmentStrings(geom);
     Noder noder = new MCIndexNoder(new IntersectionAdder(new RobustLineIntersector()));
-    noder.computeNodes(segs);
-    Collection nodedSegStrings = noder.getNodedSubstrings();
-    return fromSegmentStrings(nodedSegStrings);
-  }
-
-  public static int nodeCount(Geometry geom)
-  {
-    List segs = createNodedSegmentStrings(geom);
-    InteriorIntersectionFinder intCounter = new InteriorIntersectionFinder(new RobustLineIntersector());
-    intCounter.setFindAllIntersections(true);
-    intCounter.setKeepIntersections(false);
-    Noder noder = new MCIndexNoder(intCounter);
-    noder.computeNodes(segs);
-    return intCounter.count();
+    noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
+    return fromSegmentStrings(noder.getNodedSubstrings());
   }
 
   /**
@@ -125,17 +125,6 @@ public class NodingFunctions
     for (Iterator i = lines.iterator(); i.hasNext(); ) {
       LineString line = (LineString) i.next();
       segs.add(new BasicSegmentString(line.getCoordinates(), null));
-    }
-    return segs;
-  }
-  
-  private static List createNodedSegmentStrings(Geometry geom)
-  {
-    List segs = new ArrayList();
-    List lines = LinearComponentExtracter.getLines(geom);
-    for (Iterator i = lines.iterator(); i.hasNext(); ) {
-      LineString line = (LineString) i.next();
-      segs.add(new NodedSegmentString(line.getCoordinates(), null));
     }
     return segs;
   }

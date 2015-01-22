@@ -48,6 +48,48 @@ import com.vividsolutions.jts.algorithm.LineIntersector;
 public class InteriorIntersectionFinder
     implements SegmentIntersector
 {
+	/**
+	 * Creates an intersection finder which tests if there is at least one interior intersection.
+	 * Uses short-circuiting for efficient performance.
+	 * The intersection found is recorded.
+	 * 
+	 * @param li a line intersector
+	 * @return a intersection finder which tests if there is at least one interior intersection.
+	 */
+	public static InteriorIntersectionFinder createAnyIntersectionFinder(LineIntersector li)
+	{
+		return new InteriorIntersectionFinder(li);
+	}
+	
+	/**
+	 * Creates an intersection finder which finds all interior intersections.
+	 * The intersections are recorded for later inspection.
+	 * 
+	 * @param li a line intersector
+	 * @return a intersection finder which finds all interior intersections.
+	 */
+	public static InteriorIntersectionFinder createAllIntersectionsFinder(LineIntersector li)
+	{
+		InteriorIntersectionFinder finder = new InteriorIntersectionFinder(li);
+		finder.setFindAllIntersections(true);
+		return finder;
+	}
+	
+	/**
+	 * Creates an intersection finder which counts all interior intersections.
+	 * The intersections are note recorded to reduce memory usage.
+	 * 
+	 * @param li a line intersector
+	 * @return a intersection finder which counts all interior intersections.
+	 */
+	public static InteriorIntersectionFinder createIntersectionCounter(LineIntersector li)
+	{
+		InteriorIntersectionFinder finder = new InteriorIntersectionFinder(li);
+		finder.setFindAllIntersections(true);
+		finder.setKeepIntersections(false);
+		return finder;
+	}
+	
   private boolean findAllIntersections = false;
   private boolean isCheckEndSegmentsOnly = false;
   private LineIntersector li;
