@@ -54,13 +54,13 @@ public class NodingFunctions
     return FunctionsUtil.getFactoryOrDefault(geom).buildGeometry(lines);
   }
 	
-  public static boolean isNoded(Geometry geom) {
+  public static boolean isNodingValid(Geometry geom) {
     FastNodingValidator nv = new FastNodingValidator(
         SegmentStringUtil.extractNodedSegmentStrings(geom));
     return nv.isValid();
   }
 
-  public static Geometry findSingleNode(Geometry geom) {
+  public static Geometry findSingleNodePoint(Geometry geom) {
     FastNodingValidator nv = new FastNodingValidator(
         SegmentStringUtil.extractNodedSegmentStrings(geom));
     nv.isValid();
@@ -69,7 +69,7 @@ public class NodingFunctions
     return FunctionsUtil.getFactoryOrDefault(null).createPoint((Coordinate) intPts.get(0));
   }
   
-  public static Geometry findNodes(Geometry geom)
+  public static Geometry findNodePoints(Geometry geom)
   {
     List intPts = FastNodingValidator.computeIntersections( 
         SegmentStringUtil.extractNodedSegmentStrings(geom) );    
@@ -77,7 +77,7 @@ public class NodingFunctions
         .createMultiPoint(CoordinateArrays.toCoordinateArray(intPts));
   }
 	  
-  public static int nodeCount(Geometry geom)
+  public static int interiorIntersectionCount(Geometry geom)
   {
     InteriorIntersectionFinder intCounter = InteriorIntersectionFinder
     		.createIntersectionCounter( new RobustLineIntersector() );
