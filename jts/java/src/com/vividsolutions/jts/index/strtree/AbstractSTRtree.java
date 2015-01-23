@@ -375,9 +375,6 @@ public abstract class AbstractSTRtree implements Serializable {
    */
   protected boolean remove(Object searchBounds, Object item) {
     build();
-    if (itemBoundables.isEmpty()) {
-      Assert.isTrue(root.getBounds() == null);
-    }
     if (getIntersectsOp().intersects(root.getBounds(), searchBounds)) {
       return remove(searchBounds, root, item);
     }

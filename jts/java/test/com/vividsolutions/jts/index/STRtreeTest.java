@@ -164,6 +164,16 @@ public class STRtreeTest extends TestCase {
     doTestVerticalSlices(5, 3, 2, 1);
   }
 
+  public void testRemove() {
+    STRtree tree = new STRtree();
+    tree.insert(new Envelope(0, 10, 0, 10), "1");
+    tree.insert(new Envelope(5, 15, 5, 15), "2");
+    tree.insert(new Envelope(10, 20, 10, 20), "3");
+    tree.insert(new Envelope(15, 25, 15, 25), "4");
+    tree.remove(new Envelope(10, 20, 10, 20), "4");
+    assertEquals(3, tree.size());
+  }
+ 
   private void doTestCreateParentsFromVerticalSlice(int childCount,
       int nodeCapacity, int expectedChildrenPerParentBoundable,
       int expectedChildrenOfLastParent) {
