@@ -63,8 +63,7 @@ class SubgraphDepthLocater
     // if no segments on stabbing line subgraph must be outside all others.
     if (stabbedSegments.size() == 0)
       return 0;
-    Collections.sort(stabbedSegments);
-    DepthSegment ds = (DepthSegment) stabbedSegments.get(0);
+    DepthSegment ds = (DepthSegment) Collections.min(stabbedSegments);
     return ds.leftDepth;
   }
 
@@ -169,7 +168,7 @@ class SubgraphDepthLocater
    * A segment from a directed edge which has been assigned a depth value
    * for its sides.
    */
-  private class DepthSegment
+  static class DepthSegment
       implements Comparable
   {
     private LineSegment upwardSeg;
@@ -183,7 +182,7 @@ class SubgraphDepthLocater
       this.leftDepth = depth;
     }
     /**
-     * Defines a comparision operation on DepthSegments
+     * Defines a comparison operation on DepthSegments
      * which orders them left to right
      *
      * <pre>
@@ -241,5 +240,9 @@ class SubgraphDepthLocater
 
     }
 
+    public String toString()
+    {
+      return upwardSeg.toString();
+    }
   }
 }
