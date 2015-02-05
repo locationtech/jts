@@ -95,6 +95,38 @@ public class LineSegment
   }
 
   /**
+   * Gets the minimum X ordinate.
+   * @return the minimum X ordinate
+   */
+  public double minX() {
+    return Math.min(p0.x, p1.x);
+  }
+  
+  /**
+   * Gets the maximum X ordinate.
+   * @return the maximum X ordinate
+   */
+  public double maxX() {
+    return Math.max(p0.x, p1.x);
+  }
+
+  /**
+   * Gets the minimum Y ordinate.
+   * @return the minimum Y ordinate
+   */
+  public double minY() {
+    return Math.min(p0.y, p1.y);
+  }
+  
+  /**
+   * Gets the maximum Y ordinate.
+   * @return the maximum Y ordinate
+   */
+  public double maxY() {
+    return Math.max(p0.y, p1.y);
+  }
+
+  /**
    * Computes the length of the line segment.
    * @return the length of the line segment
    */
@@ -134,7 +166,7 @@ public class LineSegment
    *
    * @return 1 if <code>seg</code> is to the left of this segment
    * @return -1 if <code>seg</code> is to the right of this segment
-   * @return 0 if <code>seg</code> has indeterminate orientation relative to this segment
+   * @return 0 if <code>seg</code> is collinear to or crosses this segment
    */
   public int orientationIndex(LineSegment seg)
   {

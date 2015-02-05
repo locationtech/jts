@@ -183,41 +183,49 @@ class SubgraphDepthLocater
     }
     /**
      * Defines a comparison operation on DepthSegments
-     * which orders them left to right
+     * which orders them left to right.
+     * Assumes the segments are normalized.
      *
      * <pre>
      * DS1 < DS2   if   DS1.seg is left of DS2.seg
      * DS1 > DS2   if   DS1.seg is right of DS2.seg
      * </pre>
      *
-     * @param obj
+     * KNOWN BUGS:
+     * <ul>
+     * <li>does not obey the {@link Comparator.compareTo} contract.
+     * </ul>
+     * 
+     * @param obj a DepthSegment
      * @return the comparison value
      */
     public int compareTo(Object obj)
     {
       DepthSegment other = (DepthSegment) obj;
+      
+      // fast check if segments are trivially ordered along X
+      if (upwardSeg.minX() >= other.upwardSeg.maxX()) return 1;
+      if (upwardSeg.maxX() <= other.upwardSeg.minX()) return -1;
+      
       /**
        * try and compute a determinate orientation for the segments.
        * Test returns 1 if other is left of this (i.e. this > other)
        */
       int orientIndex = upwardSeg.orientationIndex(other.upwardSeg);
+      if (orientIndex != 0) return orientIndex;
 
       /**
        * If comparison between this and other is indeterminate,
        * try the opposite call order.
-       * orientationIndex value is 1 if this is left of other,
-       * so have to flip sign to get proper comparison value of
-       * -1 if this is leftmost
+       * The sign of the result needs to be flipped.
        */
-      if (orientIndex == 0)
-        orientIndex = -1 * other.upwardSeg.orientationIndex(upwardSeg);
+      orientIndex = -1 * other.upwardSeg.orientationIndex(upwardSeg);
 
       // if orientation is determinate, return it
-      if (orientIndex != 0)
-        return orientIndex;
+      if (orientIndex != 0) return orientIndex;
 
-      // otherwise, segs must be collinear - sort based on minimum X value
-      return compareX(this.upwardSeg, other.upwardSeg);
+      // otherwise, use standard segment ordering
+      return upwardSeg.compareTo(other.upwardSeg);
     }
 
     /**
