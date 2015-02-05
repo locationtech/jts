@@ -185,15 +185,19 @@ class SubgraphDepthLocater
      * Defines a comparison operation on DepthSegments
      * which orders them left to right.
      * Assumes the segments are normalized.
-     *
-     * <pre>
-     * DS1 < DS2   if   DS1.seg is left of DS2.seg
-     * DS1 > DS2   if   DS1.seg is right of DS2.seg
-     * </pre>
+     * <p>
+     * The definition of the ordering is:
+     * <ul>
+     * <li>-1 : if DS1.seg is left of or below DS2.seg (DS1 < DS2)
+     * <li>1 : if   DS1.seg is right of or above DS2.seg (DS1 > DS2) 
+     * <li>0 : if the segments are identical 
+     * </ul>
      *
      * KNOWN BUGS:
      * <ul>
-     * <li>does not obey the {@link Comparator.compareTo} contract.
+     * <li>The logic does not obey the {@link Comparator.compareTo} contract. 
+     * This is acceptable for the intended usage, but may cause problems if used with some
+     * utilities in the Java standard library (e.g. {@link Collections.sort()}.
      * </ul>
      * 
      * @param obj a DepthSegment
@@ -220,11 +224,9 @@ class SubgraphDepthLocater
        * The sign of the result needs to be flipped.
        */
       orientIndex = -1 * other.upwardSeg.orientationIndex(upwardSeg);
-
-      // if orientation is determinate, return it
       if (orientIndex != 0) return orientIndex;
 
-      // otherwise, use standard segment ordering
+      // otherwise, use standard lexocographic segment ordering
       return upwardSeg.compareTo(other.upwardSeg);
     }
 
