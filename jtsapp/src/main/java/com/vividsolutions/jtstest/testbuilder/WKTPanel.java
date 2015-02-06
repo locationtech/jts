@@ -538,6 +538,7 @@ public class WKTPanel extends JPanel
       
       focusTA.setBackground(focusBackgroundColor);
       otherTA.setBackground(otherBackgroundColor);
+      repaint();
     }
   
 }
