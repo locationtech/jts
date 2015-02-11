@@ -36,33 +36,28 @@ package com.vividsolutions.jts.geom;
 
 
 /**
- * <code>Geometry</code> classes support the concept of applying a
- * coordinate filter to every coordinate in the <code>Geometry</code>. A
- * coordinate filter can be used to record information about each coordinate. 
- * Coordinate filters can be
- * used to implement centroid and
- * envelope computation, and many other functions.<p>
+ *  An interface for classes which use the values of the coordinates in a {@link Geometry}. 
+ * Coordinate filters can be used to implement centroid and
+ * envelope computation, and many other functions.
+ * <p>
  * <code>CoordinateFilter</code> is
  * an example of the Gang-of-Four Visitor pattern. 
  * <p>
- * <b>Note</b>: it is not recommended to use filters to mutate the coordinates.
+ * <b>Note</b>: it is not recommended to use these filters to mutate the coordinates.
+ * There is no guarantee that the coordinate is the actual object stored in the geometry.
  * In particular, modified values may not be preserved if the target Geometry uses a non-default {@link CoordinateSequence}.
  * If in-place mutation is required, use {@link CoordinateSequenceFilter}.
- * In general, Geometrys should be treated as immutable, 
- * and mutation should be performed by creating a new Geometry object (see {@link GeometryEditor} 
- * and {@link GeometryTransformer} for convenient ways to do this).
  *  
  * @see Geometry#apply(CoordinateFilter)
  * @see CoordinateSequenceFilter
- * @see GeometryTransformer
- * @see GeometryEditor
  *
  *@version 1.7
  */
 public interface CoordinateFilter {
 
   /**
-   *  Performs an operation with or on <code>coord</code>.
+   * Performs an operation with the <code>coord</code>.
+   * There is no guarantee that the coordinate is the actual object stored in the target geometry.
    *
    *@param  coord  a <code>Coordinate</code> to which the filter is applied.
    */
