@@ -84,7 +84,7 @@ public class UnionPerfTester
     System.out.println("Finished in " + sw.getTimeString());
   }
 
-  private void printFormatted(Geometry geom)
+  void printFormatted(Geometry geom)
   {
   	WKTWriter writer = new WKTWriter();
   	System.out.println(writer.writeFormatted(geom));
