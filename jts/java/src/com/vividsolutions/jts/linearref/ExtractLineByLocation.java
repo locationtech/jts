@@ -46,7 +46,7 @@ class ExtractLineByLocation
    * Computes the subline of a {@link LineString} between
    * two {@link LinearLocation}s on the line.
    * If the start location is after the end location,
-   * the computed geometry is reversed.
+   * the computed linear geometry has reverse orientation to the input line.
    *
    * @param line the line to use as the baseline
    * @param start the start location

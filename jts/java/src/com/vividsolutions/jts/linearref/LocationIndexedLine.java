@@ -102,10 +102,12 @@ public class LocationIndexedLine
   /**
    * Computes the {@link LineString} for the interval
    * on the line between the given indices.
+   * If the start location is after the end location,
+   * the computed linear geometry has reverse orientation to the input line.
    *
    * @param startIndex the index of the start of the interval
    * @param endIndex the index of the end of the interval
-   * @return the linear interval between the indices
+   * @return the linear geometry between the indices
    */
   public Geometry extractLine(LinearLocation startIndex, LinearLocation endIndex)
   {
