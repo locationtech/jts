@@ -62,6 +62,25 @@ import com.vividsolutions.jts.geom.*;
  */
 public class MinimumDiameter
 {
+  /**
+   * Gets the minimum rectangle enclosing a geometry.
+   * 
+   * @param geom the geometry
+   * @return the minimum rectangle enclosing the geometry
+   */
+  public static Geometry getMinimumRectangle(Geometry geom) {
+    return (new MinimumDiameter(geom)).getMinimumRectangle();
+  }
+  
+  /**
+   * Gets the length of the minimum diameter enclosing a geometry
+   * @param geom the geometry
+   * @return the length of the minimum diameter of the geometry
+   */
+  public static Geometry getMinimumDiameter(Geometry geom) {
+    return (new MinimumDiameter(geom)).getDiameter();
+  }
+  
   private final Geometry inputGeom;
   private final boolean isConvex;
 

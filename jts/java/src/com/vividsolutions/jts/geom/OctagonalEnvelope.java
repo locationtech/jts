@@ -33,16 +33,26 @@
 package com.vividsolutions.jts.geom;
 
 /**
- * A Bounding Container which is in the shape of an octagon.
+ * A bounding container for a {@link Geometry} which is in the shape of a general octagon.
  * The OctagonalEnvelope of a geometric object
- * is tight along the four extremal rectilineal parallels
- * and along the four extremal diagonal parallels.
+ * is a geometry which is a tight bound
+ * along the (up to) four extremal rectilinear parallels
+ * and along the (up to) four extremal diagonal parallels.
  * Depending on the shape of the contained
  * geometry, the octagon may be degenerate to any extreme
  * (e.g. it may be a rectangle, a line, or a point).
  */
 public class OctagonalEnvelope
 {
+  /**
+   * Gets the octagonal envelope of a geometry
+   * @param geom the geometry
+   * @return the octagonal envelope of the geometry
+   */
+  public static Geometry octagonalEnvelope(Geometry geom) {
+    return (new OctagonalEnvelope(geom)).toGeometry(geom.getFactory());
+  }
+  
   private static double computeA(double x, double y)
   {
     return x + y;
@@ -74,6 +84,8 @@ public class OctagonalEnvelope
 
   /**
    * Creates a new null bounding octagon bounding a {@link Coordinate}
+   * 
+   * @param p the coordinate to bound
    */
   public OctagonalEnvelope(Coordinate p)
   {
@@ -82,6 +94,9 @@ public class OctagonalEnvelope
 
   /**
    * Creates a new null bounding octagon bounding a pair of {@link Coordinate}s
+   * 
+   * @param p1 a coordinate to bound
+   * @param p2 a coordinate to bound
    */
   public OctagonalEnvelope(Coordinate p0, Coordinate p1)
   {
