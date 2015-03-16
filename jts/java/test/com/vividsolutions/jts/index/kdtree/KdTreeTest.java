@@ -57,15 +57,14 @@ public class KdTreeTest extends TestCase
     		.getCoordinate().equals2D(new Coordinate(2, 2)));
   }
   
-  private KdTree build(String wkt)
-  {
-	Geometry geom = IOUtil.read(wkt);
-	final KdTree index = new KdTree(.001);
-	geom.apply(new CoordinateFilter() {
-		public void filter(Coordinate coord) {
-			index.insert(coord);
-		}
-	});
-	return index;
+  private KdTree build(String wkt) {
+    Geometry geom = IOUtil.read(wkt);
+    final KdTree index = new KdTree(.001);
+    geom.apply(new CoordinateFilter() {
+      public void filter(Coordinate coord) {
+        index.insert(coord);
+      }
+    });
+    return index;
   }
 }
