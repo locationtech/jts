@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -137,6 +138,11 @@ abstract class GeometricObjectNode
       return indexString(index) + " : " + text;
     }
     return text;
+  }
+  
+  public ImageIcon getIcon()
+  {
+    return AppConstants.drawPolygonIcon;
   }
   
   public abstract Geometry getGeometry();
@@ -285,6 +291,11 @@ class PolygonNode extends GeometryNode
     return poly;
   }
 
+  public ImageIcon getIcon()
+  {
+    return AppConstants.drawPolygonIcon;
+  }
+
   protected void fillChildren()
   {
     children.add(new LinearRingNode((LinearRing) poly.getExteriorRing(),
@@ -310,6 +321,11 @@ class LineStringNode extends GeometryNode
   {
     super(line, line.getNumPoints(), tag);
     this.line = line;
+  }
+
+  public ImageIcon getIcon()
+  {
+    return AppConstants.drawLineStringIcon;
   }
 
   public Geometry getGeometry()
@@ -347,6 +363,10 @@ class LinearRingNode extends LineStringNode
   {
     super(ring, tag);
   }
+  public ImageIcon getIcon()
+  {
+    return AppConstants.drawLinearRingIcon;
+  }
 }
 
 class PointNode extends GeometryNode
@@ -357,6 +377,11 @@ class PointNode extends GeometryNode
   {
     super(p);
     pt = p;
+  }
+
+  public ImageIcon getIcon()
+  {
+    return AppConstants.drawPointIcon;
   }
 
   public Geometry getGeometry()
@@ -438,6 +463,10 @@ class CoordinateNode extends GeometricObjectNode
     super(label(coord, i, distPrev));
     this.coord = coord;
     this.index = i;
+  }
+  public ImageIcon getIcon()
+  {
+    return AppConstants.drawPointIcon;
   }
 
   public Geometry getGeometry()

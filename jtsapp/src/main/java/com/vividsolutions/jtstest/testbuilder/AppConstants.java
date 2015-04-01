@@ -2,6 +2,8 @@ package com.vividsolutions.jtstest.testbuilder;
 
 import java.awt.Color;
 
+import javax.swing.ImageIcon;
+
 import com.vividsolutions.jtstest.testbuilder.model.GeometryDepiction;
 import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
 
@@ -38,5 +40,10 @@ public class AppConstants
 	public static final Color GRID_MAJOR_CLR = ColorUtil.gray(240);
 	public static final Color GRID_MINOR_CLR = ColorUtil.gray(190);
   public static int TOLERANCE_PIXELS = 5;
+
+  public final static ImageIcon drawPolygonIcon = new ImageIcon(AppConstants.class.getResource("DrawPolygon.png"));
+  public final static ImageIcon drawLinearRingIcon = new ImageIcon(AppConstants.class.getResource("DrawLinearRing.png"));
+  public final static ImageIcon drawLineStringIcon = new ImageIcon(AppConstants.class.getResource("DrawLineString.png"));
+  public final static ImageIcon drawPointIcon = new ImageIcon(AppConstants.class.getResource("DrawPoint.png"));
 
 }

@@ -70,8 +70,8 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
 			
 			GeometricObjectNode o = (GeometricObjectNode) value;
 			setText(o.getText());
-			//setIcon(isBinaryFunc ? binaryIcon : unaryIcon);
-			//setToolTipText(func.getSignature() + func.getDescription()); // no tool tip
+			setIcon(o.getIcon());
+			setToolTipText("geometry"); 
 			return this;
 		}
 	}
