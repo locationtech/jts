@@ -41,11 +41,7 @@ import com.vividsolutions.jts.operation.polygonize.*;
 import com.vividsolutions.jts.operation.linemerge.*;
 
 public class ConstructionFunctions {
-  public static Geometry octagonalEnvelope(Geometry g) 
-  {      
-    OctagonalEnvelope octEnv = new OctagonalEnvelope(g);
-    return octEnv.toGeometry(g.getFactory());
-  }
+  public static Geometry octagonalEnvelope(Geometry g) { return OctagonalEnvelope.octagonalEnvelope(g); }
   
   public static Geometry minimumDiameter(Geometry g) {      return (new MinimumDiameter(g)).getDiameter();  }
   public static double minimumDiameterLength(Geometry g) {      return (new MinimumDiameter(g)).getDiameter().getLength();  }
