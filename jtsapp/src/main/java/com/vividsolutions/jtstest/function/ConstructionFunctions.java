@@ -32,13 +32,11 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import java.util.*;
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.*;
-import com.vividsolutions.jts.densify.*;
-import com.vividsolutions.jts.operation.polygonize.*;
-import com.vividsolutions.jts.operation.linemerge.*;
+import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
+import com.vividsolutions.jts.algorithm.MinimumDiameter;
+import com.vividsolutions.jts.densify.Densifier;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.OctagonalEnvelope;
 
 public class ConstructionFunctions {
   public static Geometry octagonalEnvelope(Geometry g) { return OctagonalEnvelope.octagonalEnvelope(g); }
