@@ -245,4 +245,20 @@ public class EnvelopeTest extends TestCase {
 		boolean isEqual = envGeomActual.equalsNorm(envGeomExpected);
 		assertTrue(isEqual);
 	}
+	
+	public void testCompareTo()
+	{
+	  checkCompareTo(0, new Envelope(), new Envelope());
+	  checkCompareTo(0, new Envelope(1,2, 1,2), new Envelope(1,2, 1,2));
+	  checkCompareTo(1, new Envelope(2,3, 1,2), new Envelope(1,2, 1,2));
+	  checkCompareTo(-1, new Envelope(1,2, 1,2), new Envelope(2,3, 1,2));
+	  checkCompareTo(1, new Envelope(1,2, 1,3), new Envelope(1,2, 1,2));
+	  checkCompareTo(1, new Envelope(2,3, 1,3), new Envelope(1,3, 1,2));
+	}
+	
+	public void checkCompareTo(int expected, Envelope env1, Envelope env2)
+	{
+          assertTrue(expected == env1.compareTo(env2));
+          assertTrue(-expected == env2.compareTo(env1));
+	}
 }

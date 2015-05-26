@@ -1,5 +1,3 @@
-
-
 /*
  * The JTS Topology Suite is a collection of Java classes that
  * implement the fundamental operations required to validate a given
@@ -41,8 +39,9 @@ import java.io.Serializable;
  *  It is often used to represent the bounding box of a {@link Geometry},
  *  e.g. the minimum and maximum x and y values of the {@link Coordinate}s.
  *  <p>
- *  Note that Envelopes support infinite or half-infinite regions, by using the values of
+ *  Envelopes support infinite or half-infinite regions, by using the values of
  *  <code>Double.POSITIVE_INFINITY</code> and <code>Double.NEGATIVE_INFINITY</code>.
+ *  Envelope objects may have a null value.
  *  <p>
  *  When Envelope objects are created or initialized,
  *  the supplies extent values are automatically sorted into the correct order.
@@ -50,7 +49,7 @@ import java.io.Serializable;
  *@version 1.7
  */
 public class Envelope
-    implements Serializable
+    implements Comparable, Serializable
 {
     private static final long serialVersionUID = 5873921885273102420L;
 
@@ -743,6 +742,38 @@ public class Envelope
   public String toString()
   {
     return "Env[" + minx + " : " + maxx + ", " + miny + " : " + maxy + "]";
+  }
+
+  /**
+   * Compares two envelopes using lexicographic ordering.
+   * The ordering comparison is based on the usual numerical
+   * comparison between the sequence of ordinates.
+   * Null envelopes are less than all non-null envelopes.
+   * 
+   * @param o an Envelope object
+   */
+  public int compareTo(Object o) {
+    Envelope env = (Envelope) o;
+    // compare nulls if present
+    if (isNull()) {
+      if (env.isNull()) return 0;
+      return -1;
+    }
+    else {
+      if (env.isNull()) return 1;
+    }
+    // compare based on numerical ordering of ordinates
+    if (minx < env.minx) return -1;
+    if (minx > env.minx) return 1;
+    if (miny < env.miny) return -1;
+    if (miny > env.miny) return 1;
+    if (maxx < env.maxx) return -1;
+    if (maxx > env.maxx) return 1;
+    if (maxy < env.maxy) return -1;
+    if (maxy > env.maxy) return 1;
+    return 0;
+    
+    
   }
 }
 
