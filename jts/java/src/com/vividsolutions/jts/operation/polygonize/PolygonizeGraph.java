@@ -225,8 +225,8 @@ class PolygonizeGraph
 
   /**
    * Finds and labels all edgerings in the graph.
-   * The edge rings are labelling with unique integers.
-   * The labelling allows detecting cut edges.
+   * The edge rings are labeling with unique integers.
+   * The labeling allows detecting cut edges.
    * 
    * @param dirEdges a List of the DirectedEdges in the graph
    * @return a List of DirectedEdges, one for each edge ring found
@@ -242,7 +242,7 @@ class PolygonizeGraph
       if (de.getLabel() >= 0) continue;
 
       edgeRingStarts.add(de);
-      List edges = findDirEdgesInRing(de);
+      List edges = EdgeRing.findDirEdgesInRing(de);
 
       label(edges, currLabel);
       currLabel++;
@@ -359,40 +359,10 @@ class PolygonizeGraph
     }
   }
 
-  /**
-   * Traverses a ring of DirectedEdges, accumulating them into a list.
-   * This assumes that all dangling directed edges have been removed
-   * from the graph, so that there is always a next dirEdge.
-   *
-   * @param startDE the DirectedEdge to start traversing at
-   * @return a List of DirectedEdges that form a ring
-   */
-  private static List findDirEdgesInRing(PolygonizeDirectedEdge startDE)
-  {
-    PolygonizeDirectedEdge de = startDE;
-    List edges = new ArrayList();
-    do {
-      edges.add(de);
-      de = de.getNext();
-      Assert.isTrue(de != null, "found null DE in ring");
-      Assert.isTrue(de == startDE || ! de.isInRing(), "found DE already in ring");
-    } while (de != startDE);
-
-    return edges;
-  }
-
   private EdgeRing findEdgeRing(PolygonizeDirectedEdge startDE)
   {
-    PolygonizeDirectedEdge de = startDE;
     EdgeRing er = new EdgeRing(factory);
-    do {
-      er.add(de);
-      de.setRing(er);
-      de = de.getNext();
-      Assert.isTrue(de != null, "found null DE in ring");
-      Assert.isTrue(de == startDE || ! de.isInRing(), "found DE already in ring");
-    } while (de != startDE);
-
+    er.build(startDE);
     return er;
   }
 

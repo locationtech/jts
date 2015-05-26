@@ -101,5 +101,14 @@ class PolygonizeDirectedEdge
   {
       this.edgeRing = edgeRing;
   }
+  /**
+   * Gets the {@link EdgeRing} this edge is a member of.
+   * 
+   * @return an edge ring
+   */
+  public EdgeRing getRing() 
+  {
+    return this.edgeRing;
+  }
 
 }

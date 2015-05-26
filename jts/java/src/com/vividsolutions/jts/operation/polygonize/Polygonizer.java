@@ -35,6 +35,7 @@ package com.vividsolutions.jts.operation.polygonize;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,9 +51,9 @@ import com.vividsolutions.jts.geom.Polygon;
  * All types of Geometry are accepted as input;  
  * the constituent linework is extracted as the edges to be polygonized.
  * The processed edges must be correctly noded; that is, they must only meet
- * at their endpoints.  The Polygonizer will run on incorrectly noded input
+ * at their endpoints.  Polygonization will accept incorrectly noded input
  * but will not form polygons from non-noded edges, 
- * and will report them as errors.
+ * and reports them as errors.
  * <p>
  * The Polygonizer reports the follow kinds of errors:
  * <ul>
@@ -61,12 +62,15 @@ import com.vividsolutions.jts.geom.Polygon;
  * <li><b>Invalid Ring Lines</b> - edges which form rings which are invalid
  * (e.g. the component lines contain a self-intersection)
  * </ul>
+ * Polygonization supports extracting only polygons which form a valid polygonal geometry.
+ * The set of extracted polygons is guaranteed to be edge-disjoint.
+ * This is useful for situations where it is known that the input lines form a
+ * valid polygonal geometry.
  *
  * @version 1.7
  */
 public class Polygonizer
-{
-
+{  
   /**
    * Adds every linear element in a {@link Geometry} into the polygonizer graph.
    */
@@ -93,13 +97,26 @@ public class Polygonizer
   protected List polyList = null;
 
   private boolean isCheckingRingsValid = true;
+  private boolean extractOnlyPolygonal;
 
   /**
-   * Create a polygonizer with the same {@link GeometryFactory}
-   * as the input {@link Geometry}s
+   * Creates a polygonizer with the same {@link GeometryFactory}
+   * as the input {@link Geometry}s.
+   * The output mask is {@link #ALL_POLYS}.
    */
   public Polygonizer()
   {
+    this(false);
+  }
+  
+  /**
+   * Creates a polygonizer and allow specifyng if only polygons which form a valid polygonal geometry are to be extracted.
+   * 
+   * @param extractOnlyPolygonal true if only polygons which form a valid polygonal geometry are to be extracted
+   */
+  public Polygonizer(boolean extractOnlyPolygonal)
+  {
+    this.extractOnlyPolygonal = extractOnlyPolygonal;
   }
 
   /**
@@ -227,14 +244,17 @@ public class Polygonizer
     
     findShellsAndHoles(validEdgeRingList);
     assignHolesToShells(holeList, shellList);
+    // order the shells to make any subsequent processing deterministic
+    Collections.sort(shellList, new EdgeRing.EnvelopeComparator());
 
     //Debug.printTime("Assign Holes");
-
-    polyList = new ArrayList();
-    for (Iterator i = shellList.iterator(); i.hasNext(); ) {
-      EdgeRing er = (EdgeRing) i.next();
-      polyList.add(er.getPolygon());
+    
+    boolean includeAll = true;
+    if (extractOnlyPolygonal) {
+      findDisjointShells(shellList);
+      includeAll = false;
     }
+    polyList = extractPolygons(shellList, includeAll);
   }
 
   private void findValidRings(List edgeRingList, List validEdgeRingList, List invalidRingList)
@@ -254,11 +274,11 @@ public class Polygonizer
     shellList = new ArrayList();
     for (Iterator i = edgeRingList.iterator(); i.hasNext(); ) {
       EdgeRing er = (EdgeRing) i.next();
+      er.computeHole();
       if (er.isHole())
         holeList.add(er);
       else
         shellList.add(er);
-
     }
   }
 
@@ -267,15 +287,66 @@ public class Polygonizer
     for (Iterator i = holeList.iterator(); i.hasNext(); ) {
       EdgeRing holeER = (EdgeRing) i.next();
       assignHoleToShell(holeER, shellList);
+      /*
+      if ( ! holeER.hasShell()) {
+        System.out.println("DEBUG: Outer hole: " + holeER);
+      }
+      */
     }
   }
 
   private static void assignHoleToShell(EdgeRing holeER, List shellList)
   {
     EdgeRing shell = EdgeRing.findEdgeRingContaining(holeER, shellList);
-    if (shell != null)
-      shell.addHole(holeER.getRing());
+    if (shell != null) {
+      shell.addHole(holeER);
+    }
   }
 
+  private static void findDisjointShells(List shellList) {
+    findOuterShells(shellList);
+    
+    boolean isMoreToScan;
+    do {
+      isMoreToScan = false;
+      for (Iterator i = shellList.iterator(); i.hasNext(); ) {
+        EdgeRing er = (EdgeRing) i.next();
+        if (er.isIncludedSet()) 
+          continue;
+        er.updateIncluded();
+        if (! er.isIncludedSet()) {
+          isMoreToScan = true;
+        }
+      }
+    } while (isMoreToScan);
+  }
 
+  /**
+   * For each outer hole finds and includes a single outer shell.
+   * This seeds the travesal algorithm for finding only polygonal shells.
+   *  
+   * @param shellList the list of shell EdgeRings
+   */
+  private static void findOuterShells(List shellList) {
+
+    for (Iterator i = shellList.iterator(); i.hasNext();) {
+      EdgeRing er = (EdgeRing) i.next();
+      EdgeRing outerHoleER = er.getOuterHole();
+      if (outerHoleER != null && ! outerHoleER.isProcessed()) {
+        er.setIncluded(true);
+        outerHoleER.setProcessed(true);
+      }
+    }
+  }
+  
+  private static List extractPolygons(List shellList, boolean includeAll) {
+    List polyList = new ArrayList();
+    for (Iterator i = shellList.iterator(); i.hasNext();) {
+      EdgeRing er = (EdgeRing) i.next();
+      if (includeAll || er.isIncluded()) {
+        polyList.add(er.getPolygon());
+      }
+    }
+    return polyList;
+  }
 }
