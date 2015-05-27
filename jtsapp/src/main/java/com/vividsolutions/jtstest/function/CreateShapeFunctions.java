@@ -13,11 +13,16 @@ public class CreateShapeFunctions {
   
 	private static final int DEFAULT_POINTSIZE = 100;
 	
-	public static Geometry fontGlyphSerif(Geometry g, String text)
-	{
-		return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SERIF, Font.PLAIN, DEFAULT_POINTSIZE));
-	}
-		
+        public static Geometry fontGlyphSerif(Geometry g, String text)
+        {
+                return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SERIF, Font.PLAIN, DEFAULT_POINTSIZE));
+        }
+                
+        public static Geometry fontGlyphSerifPointSize(Geometry g, String text, int pointSize)
+        {
+                return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SERIF, Font.PLAIN, pointSize));
+        }
+                
 	public static Geometry fontGlyphSansSerif(Geometry g, String text)
 	{
 		return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SANSSERIF, Font.PLAIN, DEFAULT_POINTSIZE));

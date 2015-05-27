@@ -374,6 +374,15 @@ extends JPanel
         SwingUtil.getDouble(txtQuadrantSegs, new Double(0)) 
         };
     
+    if (paramTypes.length == 2 
+        && (paramTypes[0] == String.class)
+        && (paramTypes[1] == Integer.class || paramTypes[1] == int.class)
+    )
+      return new Object[] {  
+        SwingUtil.getString(txtDistance), 
+        SwingUtil.getInteger(txtQuadrantSegs, new Integer(0)) 
+        };
+    
     if (paramTypes.length >= 2)
       return new Object[] { 
         SwingUtil.getDouble(txtDistance, null),

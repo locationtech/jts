@@ -44,8 +44,7 @@ import com.vividsolutions.jts.geom.*;
  * <p>
  * It is suggested to use larger point sizes to render fonts glyphs,
  * to reduce the effects of scale-dependent hints.
- * The resulting geometry are in the base coordinate system 
- * of the font.  
+ * The result geometry is in the base coordinate system of the font.  
  * The geometry can be further transformed as necessary using
  * {@link AffineTransformation}s.
  * 
@@ -54,10 +53,29 @@ import com.vividsolutions.jts.geom.*;
  */
 public class FontGlyphReader 
 {
-	public static final String FONT_SERIF = "Serif";
-        public static final String FONT_SANSERIF = "SansSerif";
-        public static final String FONT_SANSSERIF = "SansSerif";
-	public static final String FONT_MONOSPACED = "Monospaced";
+  /**
+   * The font name of the Java logical font Serif.
+   */
+  public static final String FONT_SERIF = "Serif";
+  
+  /**
+   * The font name of the Java logical font SansSerif.
+   * <p>
+   * DEPRECATED - use FONT_SANSSERIF
+   */
+  public static final String FONT_SANSERIF = "SansSerif";
+  
+  
+  /**
+   * The font name of the Java logical font SansSerif.
+   */
+  public static final String FONT_SANSSERIF = "SansSerif";
+  
+  /**
+   * The font name of the Java logical font Monospaced.
+   */
+
+  public static final String FONT_MONOSPACED = "Monospaced";
 	
   // a flatness factor empirically determined to provide good results
   private static final double FLATNESS_FACTOR = 400;
@@ -97,7 +115,7 @@ public class FontGlyphReader
    * 
    * @param text the text to render
    * @param font  the font to render with
-   * @param flatness the flatness to use
+   * @param flatness the flatness factor to use
    * @param geomFact the geometryFactory to use to create the result
    * @return a polygonal geometry representing the rendered text
    */

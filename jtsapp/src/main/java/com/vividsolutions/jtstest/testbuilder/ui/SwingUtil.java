@@ -14,7 +14,6 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 
 import com.vividsolutions.jts.geom.*;
-
 import com.vividsolutions.jtstest.testbuilder.model.GeometryTransferable;
 import com.vividsolutions.jtstest.util.StringUtil;
 
@@ -117,6 +116,10 @@ public class SwingUtil {
     } catch (NumberFormatException ex) {
     }
     return new Double(val);
+  }
+  
+  public static String getString(JTextField txt) {
+    return txt.getText();
   }
   
   public static Object getSelectedValue(JComboBox cb, Object[] val)
