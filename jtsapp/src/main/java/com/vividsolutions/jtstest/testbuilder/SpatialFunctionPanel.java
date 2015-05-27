@@ -327,7 +327,7 @@ extends JPanel
     Class[] paramTypes = currentFunc.getParameterTypes();
     Object[] paramVal = new Object[paramTypes.length];
     
-    boolean hasGeometry = paramTypes[0] == Geometry.class;
+    boolean hasGeometry = paramTypes.length > 0 && paramTypes[0] == Geometry.class;
     
     for (int i = 0; i < paramVal.length; i++) {
       Object valRaw = getParamRaw(i,hasGeometry);
