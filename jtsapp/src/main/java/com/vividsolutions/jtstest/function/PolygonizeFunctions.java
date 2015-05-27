@@ -16,9 +16,12 @@ public class PolygonizeFunctions {
     List lines = LineStringExtracter.getLines(g);
     Polygonizer polygonizer = new Polygonizer(extractOnlyPolygonal);
     polygonizer.add(lines);
+    return polygonizer.getGeometry();
+    /*
     Collection polys = polygonizer.getPolygons();
     Polygon[] polyArray = GeometryFactory.toPolygonArray(polys);
     return g.getFactory().createGeometryCollection(polyArray);
+    */
   }
   public static Geometry polygonize(Geometry g)
   {

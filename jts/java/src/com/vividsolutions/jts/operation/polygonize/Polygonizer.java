@@ -99,6 +99,8 @@ public class Polygonizer
   private boolean isCheckingRingsValid = true;
   private boolean extractOnlyPolygonal;
 
+  private GeometryFactory geomFactory = null;
+
   /**
    * Creates a polygonizer with the same {@link GeometryFactory}
    * as the input {@link Geometry}s.
@@ -155,9 +157,11 @@ public class Polygonizer
    */
   private void add(LineString line)
   {
+    // record the geometry factory for later use
+    geomFactory  = line.getFactory();
     // create a new graph using the factory from the input Geometry
     if (graph == null)
-      graph = new PolygonizeGraph(line.getFactory());
+      graph = new PolygonizeGraph(geomFactory);
     graph.addEdge(line);
   }
 
@@ -182,6 +186,23 @@ public class Polygonizer
   {
     polygonize();
     return polyList;
+  }
+
+  /**
+   * Gets a geometry representing the polygons formed by the polygonization.
+   * If a valid polygonal geometry was extracted the result is a {@linkl Polygonal} geometry. 
+   * 
+   * @return a geometry containing the polygons
+   */
+  public Geometry getGeometry()
+  {
+    if (geomFactory == null) geomFactory = new GeometryFactory();
+    polygonize();
+    if (extractOnlyPolygonal) {
+      return geomFactory.buildGeometry(polyList);
+    }
+    // result may not be valid Polygonal, so return as a GeometryCollection
+    return geomFactory.createGeometryCollection(GeometryFactory.toGeometryArray(polyList));
   }
 
   /**
