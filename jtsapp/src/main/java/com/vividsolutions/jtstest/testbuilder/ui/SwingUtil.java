@@ -92,6 +92,33 @@ public class SwingUtil {
       comp.setBackground(SystemColor.control);
   }
   
+  public static Object coerce(Object val, Class clz) {
+    if (val.getClass() == clz) return val;
+    if (val instanceof String && (clz == Double.class || clz == double.class))
+      return convertDouble((String) val);
+    if (val instanceof String && (clz == Integer.class || clz == int.class))
+      return convertInteger((String) val);
+    return val;
+  }
+  
+  public static Integer convertInteger(String str) {
+    int val = 0;
+    try {
+      val = Integer.parseInt(str);
+    } catch (NumberFormatException ex) {
+    }
+    return new Integer(val);
+  }
+  
+  public static Double convertDouble(String str) {
+    double val = 0;
+    try {
+      val = Double.parseDouble(str);
+    } catch (NumberFormatException ex) {
+    }
+    return new Double(val);
+  }
+  
   public static Integer getInteger(JTextField txt, Integer defaultVal) {
     String str = txt.getText();
     if (str.trim().length() <= 0)

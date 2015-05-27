@@ -53,6 +53,11 @@ import com.vividsolutions.jtstest.testbuilder.ui.*;
 public class SpatialFunctionPanel 
 extends JPanel 
 {
+  private static final String PARAM_DEFAULT_0 = "10";
+  private static final String PARAM_DEFAULT_1 = "0";
+  private static final String PARAM_DEFAULT_4 = "0";
+
+  
   private static String[] capStyleItems = new String[] { "", "Round", "Flat", "Square" };
   private static Object[] capStyleValues = new Object[] { 
   		null, 
@@ -150,7 +155,7 @@ extends JPanel
     txtDistance.setMaximumSize(new Dimension(25, 2147483647));
     txtDistance.setMinimumSize(new Dimension(25, 21));
     txtDistance.setPreferredSize(new Dimension(25, 17));
-    txtDistance.setText("10");
+    txtDistance.setText(PARAM_DEFAULT_0);
     txtDistance.setHorizontalAlignment(SwingConstants.RIGHT);
 
     lblQuadSegs.setText("Quadrant Segs");
@@ -319,6 +324,42 @@ extends JPanel
 
   public Object[] getFunctionParams()
   {
+    Class[] paramTypes = currentFunc.getParameterTypes();
+    Object[] paramVal = new Object[paramTypes.length];
+    
+    boolean hasGeometry = paramTypes[0] == Geometry.class;
+    
+    for (int i = 0; i < paramVal.length; i++) {
+      Object valRaw = getParamRaw(i,hasGeometry);
+      paramVal[i] = SwingUtil.coerce(valRaw, paramTypes[i]);
+    }
+    return paramVal;
+  }
+
+  private Object getParamRaw(int index, boolean hasGeometry) {
+    if (hasGeometry && index == 0)
+      return JTSTestBuilderController.getGeometryB();
+    int attrIndex = index;
+    if (hasGeometry) 
+      attrIndex -= 1;
+    switch (attrIndex) {
+    case 0: return valOrDefault(txtDistance.getText(), PARAM_DEFAULT_0);
+    case 1: return valOrDefault(txtQuadrantSegs.getText(), PARAM_DEFAULT_1);
+    case 2: return SwingUtil.getSelectedValue(cbCapStyle, capStyleValues);
+    case 3: return SwingUtil.getSelectedValue(cbJoinStyle, joinStyleValues);
+    case 4: return valOrDefault(txtMitreLimit.getText(), PARAM_DEFAULT_4);
+    }
+    return null;
+  }
+
+  private static String valOrDefault(String s, String defaultVal) {
+    if (s.length() > 0) return s;
+    return defaultVal;
+  }
+  
+  /*
+  public Object[] XgetFunctionParams()
+  {
   	// TODO: improve this, it is cheesy
   	
     Class[] paramTypes = currentFunc.getParameterTypes();
@@ -394,6 +435,7 @@ extends JPanel
     
     return null; 
   }
+  */
   
   public boolean isFunctionSelected()
   {
