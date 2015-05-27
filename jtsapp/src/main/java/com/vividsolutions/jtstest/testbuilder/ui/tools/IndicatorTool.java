@@ -116,7 +116,7 @@ public abstract class IndicatorTool extends BasicTool
     originalColor = graphics.getColor();
     originalStroke = graphics.getStroke();
     originalFont = graphics.getFont();
-    graphics.setFont(new Font(FontGlyphReader.FONT_SANSERIF, Font.PLAIN, 14));
+    graphics.setFont(new Font(FontGlyphReader.FONT_SANSSERIF, Font.PLAIN, 14));
     graphics.setColor(bandColor);
     graphics.setXORMode(Color.white);
   }

@@ -55,7 +55,8 @@ import com.vividsolutions.jts.geom.*;
 public class FontGlyphReader 
 {
 	public static final String FONT_SERIF = "Serif";
-	public static final String FONT_SANSERIF = "SanSerif";
+        public static final String FONT_SANSERIF = "SansSerif";
+        public static final String FONT_SANSSERIF = "SansSerif";
 	public static final String FONT_MONOSPACED = "Monospaced";
 	
   // a flatness factor empirically determined to provide good results

@@ -18,9 +18,9 @@ public class CreateShapeFunctions {
 		return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SERIF, Font.PLAIN, DEFAULT_POINTSIZE));
 	}
 		
-	public static Geometry fontGlyphSanSerif(Geometry g, String text)
+	public static Geometry fontGlyphSansSerif(Geometry g, String text)
 	{
-		return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SANSERIF, Font.PLAIN, DEFAULT_POINTSIZE));
+		return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SANSSERIF, Font.PLAIN, DEFAULT_POINTSIZE));
 	}
 		
 	public static Geometry fontGlyphMonospaced(Geometry g, String text)

@@ -16,7 +16,7 @@ public class SegmentIndexStyle
   private final static int CHAR_HEIGHT_APPROX = 6;
   private final static int VERTEX_OFFSET = 15;
   private final static int BOX_PAD = 1;
-  private final static Font FONT = new Font(FontGlyphReader.FONT_SANSERIF, Font.PLAIN, 10);
+  private final static Font FONT = new Font(FontGlyphReader.FONT_SANSSERIF, Font.PLAIN, 10);
   
   private Color color = Color.RED;
 
