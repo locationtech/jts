@@ -23,6 +23,11 @@ public class CreateShapeFunctions {
                 return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SERIF, Font.PLAIN, pointSize));
         }
                 
+        public static Geometry fontGlyph(Geometry g, String text, String fontName)
+        {
+                return fontGlyph(g, text, new Font(fontName, Font.PLAIN, DEFAULT_POINTSIZE));
+        }
+                
 	public static Geometry fontGlyphSansSerif(Geometry g, String text)
 	{
 		return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SANSSERIF, Font.PLAIN, DEFAULT_POINTSIZE));
