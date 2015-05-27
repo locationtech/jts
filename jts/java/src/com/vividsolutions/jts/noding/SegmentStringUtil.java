@@ -33,11 +33,17 @@
 
 package com.vividsolutions.jts.noding;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jtstest.function.FunctionsUtil;
 
 /**
  * Utility methods for processing {@link SegmentString}s.
@@ -81,23 +87,23 @@ public class SegmentStringUtil
   }
 
   /**
-   * Converts a collection of SegmentStrings into a Geometry.
+   * Converts a collection of {@link SegmentString}s into a {@link Geometry}.
    * The geometry will be either a {@link LineString} or a {@link MultiLineString} (possibly empty).
    *
    * @param segStrings a collection of SegmentStrings
    * @return a LineString or MultiLineString
    */
-  public static Geometry toGeometry(Collection segStrings)
+  public static Geometry toGeometry(Collection segStrings, GeometryFactory geomFact)
   {
     LineString[] lines = new LineString[segStrings.size()];
     int index = 0;
     for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
       SegmentString ss = (SegmentString) i.next();
-      LineString line = FunctionsUtil.getFactoryOrDefault(null).createLineString(ss.getCoordinates());
+      LineString line = geomFact.createLineString(ss.getCoordinates());
       lines[index++] = line;
     }
     if (lines.length == 1) return lines[0];
-    return FunctionsUtil.getFactoryOrDefault(null).createMultiLineString(lines);
+    return geomFact.createMultiLineString(lines);
   }
 
   public static String toString(List segStrings)

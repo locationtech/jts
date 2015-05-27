@@ -66,7 +66,7 @@ public class NodingFunctions
     nv.isValid();
     List intPts = nv.getIntersections();
     if (intPts.size() == 0) return null;
-    return FunctionsUtil.getFactoryOrDefault(null).createPoint((Coordinate) intPts.get(0));
+    return FunctionsUtil.getFactoryOrDefault(geom).createPoint((Coordinate) intPts.get(0));
   }
   
   public static Geometry findNodePoints(Geometry geom)
@@ -95,14 +95,14 @@ public class NodingFunctions
 
     Noder noder = new MCIndexNoder(new IntersectionAdder(li));
     noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
-    return SegmentStringUtil.toGeometry( noder.getNodedSubstrings() );
+    return SegmentStringUtil.toGeometry( noder.getNodedSubstrings(), FunctionsUtil.getFactoryOrDefault(geom) );
   }
 
   public static Geometry MCIndexNoding(Geometry geom)
   {
     Noder noder = new MCIndexNoder(new IntersectionAdder(new RobustLineIntersector()));
     noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
-    return SegmentStringUtil.toGeometry(noder.getNodedSubstrings());
+    return SegmentStringUtil.toGeometry(noder.getNodedSubstrings(), FunctionsUtil.getFactoryOrDefault(geom));
   }
 
   /**
@@ -121,7 +121,7 @@ public class NodingFunctions
         fixedPM.getScale());
     noder.computeNodes(segs);
     Collection nodedSegStrings = noder.getNodedSubstrings();
-    return SegmentStringUtil.toGeometry(nodedSegStrings);
+    return SegmentStringUtil.toGeometry(nodedSegStrings, FunctionsUtil.getFactoryOrDefault(geom));
   }
 
   private static List createSegmentStrings(Geometry geom)
