@@ -115,5 +115,9 @@ public interface GeometryFunction
 	 * @return true if this object is the same as the <tt>obj</tt> argument
 	 */
 	boolean equals(Object obj);
+
+  public abstract boolean hasGeometryParameter();
+
+  public abstract int attributeParamOffset();
 	
 }

@@ -58,16 +58,14 @@ extends JPanel
   private static final String PARAM_DEFAULT_4 = "0";
 
   
-  private static String[] capStyleItems = new String[] { "", "Round", "Flat", "Square" };
+  private static String[] capStyleItems = new String[] { "Round", "Flat", "Square" };
   private static Object[] capStyleValues = new Object[] { 
-  		null, 
   		new Integer(BufferParameters.CAP_ROUND),
   		new Integer(BufferParameters.CAP_FLAT),
   		new Integer(BufferParameters.CAP_SQUARE)
   		};
-  private static String[] joinStyleItems = new String[] { "", "Round", "Mitre", "Bevel" };
+  private static String[] joinStyleItems = new String[] { "Round", "Mitre", "Bevel" };
   private static Object[] joinStyleValues = new Object[] { 
-  		null, 
   		new Integer(BufferParameters.JOIN_ROUND),
   		new Integer(BufferParameters.JOIN_MITRE),
   		new Integer(BufferParameters.JOIN_BEVEL)
@@ -274,7 +272,7 @@ extends JPanel
   private void functionChanged(GeometryFunction func)
   {
     currentFunc = func;
-    updateParameterControls();
+    updateParameterControls(func);
     execButton.setToolTipText(functionDescription(func));
   }
   
@@ -288,17 +286,29 @@ extends JPanel
   	return "<html>" + txt + "</html>";
   }
   
-  private void updateParameterControls()
+  private void updateParameterControls(GeometryFunction func)
   {
-    int numNonGeomParams = numNonGeomParams(currentFunc);
+    int numNonGeomParams = numNonGeomParams(func);
     // TODO: this is a bit of a hack, and should be made smarter
     SwingUtil.setEnabledWithBackground(txtDistance, numNonGeomParams >= 1);
+    setToolTipText(txtDistance, func, 1);
     SwingUtil.setEnabledWithBackground(txtQuadrantSegs, numNonGeomParams >= 2);
+    setToolTipText(txtQuadrantSegs, func, 2);
     SwingUtil.setEnabledWithBackground(cbCapStyle, numNonGeomParams >= 3);
+    setToolTipText(cbCapStyle, func, 3);
     SwingUtil.setEnabledWithBackground(cbJoinStyle, numNonGeomParams >= 4);
+    setToolTipText(cbJoinStyle, func, 4);
     SwingUtil.setEnabledWithBackground(txtMitreLimit, numNonGeomParams >= 5);
+    setToolTipText(txtMitreLimit, func, 5);
   }
   
+  private void setToolTipText(JComponent control, GeometryFunction func, int i) {
+    String txt = null;
+    if (func.getParameterTypes().length > i) {
+      txt = "Enter " + func.getParameterTypes()[i].getSimpleName();
+    }
+    control.setToolTipText(txt);
+  }
   private static int numNonGeomParams(GeometryFunction func)
   {
     int count = 0;
@@ -327,27 +337,25 @@ extends JPanel
     Class[] paramTypes = currentFunc.getParameterTypes();
     Object[] paramVal = new Object[paramTypes.length];
     
-    boolean hasGeometry = paramTypes.length > 0 && paramTypes[0] == Geometry.class;
-    
     for (int i = 0; i < paramVal.length; i++) {
-      Object valRaw = getParamRaw(i,hasGeometry);
+      Object valRaw = getParamRaw(i);
       paramVal[i] = SwingUtil.coerce(valRaw, paramTypes[i]);
     }
     return paramVal;
   }
 
-  private Object getParamRaw(int index, boolean hasGeometry) {
-    if (hasGeometry && index == 0)
+  private Object getParamRaw(int index) {
+    if (currentFunc.hasGeometryParameter() && index == 0)
       return JTSTestBuilderController.getGeometryB();
-    int attrIndex = index;
-    if (hasGeometry) 
-      attrIndex -= 1;
+    
+    int attrIndex = index - currentFunc.attributeParamOffset();
+    
     switch (attrIndex) {
-    case 0: return valOrDefault(txtDistance.getText(), PARAM_DEFAULT_0);
-    case 1: return valOrDefault(txtQuadrantSegs.getText(), PARAM_DEFAULT_1);
-    case 2: return SwingUtil.getSelectedValue(cbCapStyle, capStyleValues);
-    case 3: return SwingUtil.getSelectedValue(cbJoinStyle, joinStyleValues);
-    case 4: return valOrDefault(txtMitreLimit.getText(), PARAM_DEFAULT_4);
+    case 0: return valOrDefault(SwingUtil.value(txtDistance), PARAM_DEFAULT_0);
+    case 1: return valOrDefault(SwingUtil.value(txtQuadrantSegs), PARAM_DEFAULT_1);
+    case 2: return SwingUtil.value(cbCapStyle, capStyleValues);
+    case 3: return SwingUtil.value(cbJoinStyle, joinStyleValues);
+    case 4: return valOrDefault(SwingUtil.value(txtMitreLimit), PARAM_DEFAULT_4);
     }
     return null;
   }
@@ -356,87 +364,7 @@ extends JPanel
     if (s.length() > 0) return s;
     return defaultVal;
   }
-  
-  /*
-  public Object[] XgetFunctionParams()
-  {
-  	// TODO: improve this, it is cheesy
-  	
-    Class[] paramTypes = currentFunc.getParameterTypes();
     
-    if (paramTypes.length == 1 
-        && paramTypes[0] == Geometry.class)
-      return new Object[] { JTSTestBuilderController.getGeometryB() };
-    
-    if (paramTypes.length == 1 
-        && (paramTypes[0] == Double.class || paramTypes[0] == double.class))
-      return new Object[] { SwingUtil.getDouble(txtDistance, null) };
-    
-    if (paramTypes.length == 1 
-        && (paramTypes[0] == Integer.class || paramTypes[0] == int.class))
-      return new Object[] { SwingUtil.getInteger(txtDistance, null) };
-    
-    if (paramTypes.length == 1 
-        && (paramTypes[0] == String.class))
-      return new Object[] { txtDistance.getText() };
-    
-    if (paramTypes.length == 2 
-        && paramTypes[0] == Geometry.class
-      && (paramTypes[1] == Double.class || paramTypes[1] == double.class))
-      return new Object[] { JTSTestBuilderController.getGeometryB(), SwingUtil.getDouble(txtDistance, null) };
-    
-    if (paramTypes.length == 2 
-        && paramTypes[0] == Geometry.class
-      && (paramTypes[1] == Integer.class || paramTypes[1] == int.class))
-      return new Object[] { JTSTestBuilderController.getGeometryB(), SwingUtil.getDouble(txtDistance, null) };
-    
-    if (paramTypes.length == 2 
-        && (paramTypes[0] == Integer.class || paramTypes[0] == int.class)
-        && (paramTypes[1] == Double.class || paramTypes[1] == double.class))
-      return new Object[] {  
-        SwingUtil.getInteger(txtDistance, new Integer(100)), 
-        SwingUtil.getDouble(txtQuadrantSegs, new Double(0.0)) };
-    
-    if (paramTypes.length == 2 
-        && (paramTypes[0] == Double.class || paramTypes[0] == double.class)
-        && (paramTypes[1] == Integer.class || paramTypes[1] == int.class)
-    )
-      return new Object[] {  
-        SwingUtil.getDouble(txtDistance, new Double(10)), 
-        SwingUtil.getInteger(txtQuadrantSegs, new Integer(0)) 
-        };
-    
-    if (paramTypes.length == 2 
-        && (paramTypes[0] == Double.class || paramTypes[0] == double.class)
-        && (paramTypes[1] == Double.class || paramTypes[1] == double.class)
-    )
-      return new Object[] {  
-        SwingUtil.getDouble(txtDistance, new Double(10)), 
-        SwingUtil.getDouble(txtQuadrantSegs, new Double(0)) 
-        };
-    
-    if (paramTypes.length == 2 
-        && (paramTypes[0] == String.class)
-        && (paramTypes[1] == Integer.class || paramTypes[1] == int.class)
-    )
-      return new Object[] {  
-        SwingUtil.getString(txtDistance), 
-        SwingUtil.getInteger(txtQuadrantSegs, new Integer(0)) 
-        };
-    
-    if (paramTypes.length >= 2)
-      return new Object[] { 
-        SwingUtil.getDouble(txtDistance, null),
-        SwingUtil.getInteger(txtQuadrantSegs, null),
-        SwingUtil.getSelectedValue(cbCapStyle, capStyleValues),
-        SwingUtil.getSelectedValue(cbJoinStyle, joinStyleValues),
-        SwingUtil.getDouble(txtMitreLimit, null),
-        };
-    
-    return null; 
-  }
-  */
-  
   public boolean isFunctionSelected()
   {
   	return currentFunc != null;

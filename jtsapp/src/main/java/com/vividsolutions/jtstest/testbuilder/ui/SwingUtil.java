@@ -12,6 +12,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.text.JTextComponent;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jtstest.testbuilder.model.GeometryTransferable;
@@ -93,6 +94,7 @@ public class SwingUtil {
   }
   
   public static Object coerce(Object val, Class clz) {
+    if (val == null) return val;
     if (val.getClass() == clz) return val;
     if (val instanceof String && (clz == Double.class || clz == double.class))
       return convertDouble((String) val);
@@ -145,11 +147,11 @@ public class SwingUtil {
     return new Double(val);
   }
   
-  public static String getString(JTextField txt) {
+  public static String value(JTextComponent txt) {
     return txt.getText();
   }
   
-  public static Object getSelectedValue(JComboBox cb, Object[] val)
+  public static Object value(JComboBox cb, Object[] val)
   {
   	int selIndex = cb.getSelectedIndex();
   	if (selIndex == -1) 
