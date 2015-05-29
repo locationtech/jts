@@ -51,6 +51,12 @@ public class JTSTestBuilderController
     getGeometryEditPanel().zoomToInput();
   }
   
+  public static void addTestCase(Geometry[] geom, String name)
+  {
+    JTSTestBuilderFrame.instance().getModel().addCase(geom, name);
+    JTSTestBuilderFrame.instance().updateTestCases();
+  }
+  
   public static void extractComponentsToTestCase(Coordinate pt)
   {
     double toleranceInModel = getGeometryEditPanel().getToleranceInModel();

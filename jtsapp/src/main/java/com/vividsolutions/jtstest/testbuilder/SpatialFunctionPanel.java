@@ -100,7 +100,6 @@ extends JPanel
   private JTextField txtDistance = new JTextField();
   private JLabel lblQuadSegs = new JLabel();
   private JTextField txtQuadrantSegs = new JTextField();
-  
   private JLabel lblCapStyle = new JLabel();
   private JComboBox cbCapStyle = new JComboBox();
   private JLabel lblJoinStyle = new JLabel();
@@ -204,7 +203,7 @@ extends JPanel
       }
     });
     
-    execToNewButton.setText("Compute To New");
+    execToNewButton.setText("Compute New");
     execToNewButton.addActionListener(new java.awt.event.ActionListener() {
 
       public void actionPerformed(ActionEvent e) {
@@ -214,7 +213,7 @@ extends JPanel
     
     panelExec.add(execButton);
     // disabled until behaviour is worked out
-    //panelExec.add(execToNewButton);
+    panelExec.add(execToNewButton);
     
     panelExecParam.add(panelExec, BorderLayout.NORTH);
     panelExecParam.add(panelParam, BorderLayout.CENTER);
@@ -228,7 +227,7 @@ extends JPanel
       	functionChanged(e.getFunction());
       }
       public void functionInvoked(GeometryFunctionEvent e) {
-        execFunction(e.getFunction());
+        execFunction(e.getFunction(), false);
       }
     };
     geomFuncPanel.addGeometryFunctionListener(gfListener);
@@ -244,11 +243,11 @@ extends JPanel
   }
 
   void execButton_actionPerformed(ActionEvent e) {
-    execFunction(geomFuncPanel.getFunction());
+    execFunction(geomFuncPanel.getFunction(), false);
   }
 
   void execToNewButton_actionPerformed(ActionEvent e) {
-    execFunction(geomFuncPanel.getFunction());
+    execFunction(geomFuncPanel.getFunction(), true);
   }
 
   void displayAAndBCheckBox_actionPerformed(ActionEvent e) {
@@ -260,11 +259,11 @@ extends JPanel
     fireFunctionExecuted(new SpatialFunctionPanelEvent(this));
   }
 
-  public void execFunction(GeometryFunction func) {
+  public void execFunction(GeometryFunction func, boolean createNew) {
     currentFunc = func;
     if (currentFunc == null)
       return;
-    fireFunctionExecuted(new SpatialFunctionPanelEvent(this));
+    fireFunctionExecuted(new SpatialFunctionPanelEvent(this, createNew));
   }
 
   private void functionChanged(GeometryFunction func)
@@ -366,13 +365,6 @@ extends JPanel
   public boolean isFunctionSelected()
   {
   	return currentFunc != null;
-  }
-  
-  public String getFunctionCall() {
-    if (currentFunc == null)
-      return null;
-    return currentFunc.getCategory() + "." + currentFunc.getName()
-    + "(" + FunctionParameters.toString(getFunctionParams()) + ")";
   }
 
   public GeometryFunction getFunction() {
