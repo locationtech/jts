@@ -84,8 +84,7 @@ public class GeometryFunctionTreePanel extends JPanel {
 					hasFocus);
 			if (leaf) {
 				GeometryFunction func = getFunctionFromNode(value);
-				boolean isBinaryFunc = BaseGeometryFunction.isBinaryGeomFunction(func);
-				setIcon(isBinaryFunc ? binaryIcon : unaryIcon);
+				setIcon(func.isBinary() ? binaryIcon : unaryIcon);
 				// setToolTipText("This book is in the Tutorial series.");
 				String name = StringUtil.capitalize(func.getName());
 				setText(name);

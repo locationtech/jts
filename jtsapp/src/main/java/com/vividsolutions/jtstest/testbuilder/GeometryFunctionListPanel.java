@@ -87,8 +87,7 @@ public class GeometryFunctionListPanel extends JPanel {
       setBorder(spaceBorder);
       setText(name);
       setOpaque(true);
-      boolean isBinaryFunc = BaseGeometryFunction.isBinaryGeomFunction(func);
-      setIcon(isBinaryFunc ? binaryIcon : unaryIcon);
+      setIcon(func.isBinary() ? binaryIcon : unaryIcon);
       if (isSelected) {
         setBackground(list.getSelectionBackground());
         setForeground(list.getSelectionForeground());

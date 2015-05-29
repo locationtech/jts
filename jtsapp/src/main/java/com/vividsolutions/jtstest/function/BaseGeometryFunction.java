@@ -128,14 +128,12 @@ implements GeometryFunction, Comparable
 	}
 	
   @Override
-  public boolean hasGeometryParameter() {
+  public boolean isBinary() {
     return parameterTypes.length > 0 && parameterTypes[0] == Geometry.class;
   }
 
   @Override
-  public int attributeParamOffset() {
-    return hasGeometryParameter() ? 1 : 0;
-  }
+
 	public String getSignature()
 	{
 		StringBuffer paramTypes = new StringBuffer();

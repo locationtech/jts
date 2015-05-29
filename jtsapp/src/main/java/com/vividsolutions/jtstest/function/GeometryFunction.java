@@ -116,8 +116,6 @@ public interface GeometryFunction
 	 */
 	boolean equals(Object obj);
 
-  public abstract boolean hasGeometryParameter();
-
-  public abstract int attributeParamOffset();
+  public abstract boolean isBinary();
 	
 }
