@@ -13,7 +13,7 @@ public class FunctionInvocation {
     this.param = functionParams;
   }
 
-  public String getFunctionCall() {
+  public String getSignature() {
     if (function == null)
       return null;
     return function.getCategory() 

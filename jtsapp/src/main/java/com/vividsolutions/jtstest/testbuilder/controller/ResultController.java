@@ -40,7 +40,7 @@ public class ResultController
     FunctionInvocation functionDesc = new FunctionInvocation(
         spatialPanel.getFunction(), 
         spatialPanel.getFunctionParams());
-    model.setOpName(functionDesc.getFunctionCall());
+    model.setOpName(functionDesc.getSignature());
     frame.getResultWKTPanel().setOpName(model.getOpName());
     // initialize UI view
     clearResult();
@@ -86,7 +86,7 @@ public class ResultController
      // log it
      if (result != null) {
        JTSTestBuilderFrame.instance().displayInfo(
-           functionDesc.getFunctionCall() + " : " + timeString, false);
+           functionDesc.getSignature() + " : " + timeString, false);
      }
    }
   
@@ -130,7 +130,7 @@ public class ResultController
         resetUI();
         Object result = getValue();
         if (createNew) {
-          String desc = "Result of " + functionDesc.getFunctionCall();
+          String desc = "Result of " + functionDesc.getSignature();
           JTSTestBuilderController.addTestCase(new Geometry[] { (Geometry) result, null }, desc);          
         } else {
           updateResult(functionDesc, result, timer);
