@@ -92,7 +92,7 @@ public class ResultController
   
   private SwingWorker worker = null;
   
-  private void runFunctionWorker(final FunctionInvocation functionDesc, final boolean createNew)
+  private void runFunctionWorker(final FunctionInvocation functionInvoc, final boolean createNew)
   {
     worker = new SwingWorker() {
     	Stopwatch timer;
@@ -104,7 +104,7 @@ public class ResultController
       
       private Object computeResult() {
         Object result = null;
-        GeometryFunction currentFunc = functionDesc.getFunction();
+        GeometryFunction currentFunc = functionInvoc.getFunction();
         if (currentFunc == null)
           return null;
         
@@ -112,7 +112,7 @@ public class ResultController
           timer = new Stopwatch();
           try {
             result = currentFunc.invoke(model.getGeometryEditModel()
-                .getGeometry(0), functionDesc.getParameters());
+                .getGeometry(0), functionInvoc.getParameters());
           } finally {
             timer.stop();
           }
@@ -130,10 +130,10 @@ public class ResultController
         resetUI();
         Object result = getValue();
         if (createNew) {
-          String desc = "Result of " + functionDesc.getSignature();
+          String desc = "Result of " + functionInvoc.getSignature();
           JTSTestBuilderController.addTestCase(new Geometry[] { (Geometry) result, null }, desc);          
         } else {
-          updateResult(functionDesc, result, timer);
+          updateResult(functionInvoc, result, timer);
         }
         worker = null;
       }
