@@ -57,14 +57,14 @@ public class KdTreeTest extends TestCase
         .getCoordinate().equals2D(new Coordinate(2, 2)));
   }
   
-  public void testDistance()
+  public void testTolerance()
   {
     KdTree index = build("MULTIPOINT ((0 0), (-.1 1), (.1 1))", 1.0);
     
-    Envelope queryEnv = new Envelope(.1, 1.0, .1, 1.0);
+    Envelope queryEnv = new Envelope(-9, 9, -9, 9);
     
     List result = index.query(queryEnv);
-    assertTrue(result.size() == 1);
+    assertTrue(result.size() == 2);
     assertTrue( ((KdNode) result.get(0))
         .getCoordinate().equals2D(new Coordinate(.1, 1)));
   }
