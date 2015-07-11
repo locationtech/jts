@@ -52,19 +52,35 @@ public class KdTreeTest extends TestCase
     List result = index.query(queryEnv);
     assertTrue(result.size() == 2);
     assertTrue( ((KdNode) result.get(0))
-    		.getCoordinate().equals2D(new Coordinate(1, 1)));
+        .getCoordinate().equals2D(new Coordinate(1, 1)));
     assertTrue( ((KdNode) result.get(1))
-    		.getCoordinate().equals2D(new Coordinate(2, 2)));
+        .getCoordinate().equals2D(new Coordinate(2, 2)));
   }
   
-  private KdTree build(String wkt) {
+  public void testDistance()
+  {
+    KdTree index = build("MULTIPOINT ((0 0), (-.1 1), (.1 1))", 1.0);
+    
+    Envelope queryEnv = new Envelope(.1, 1.0, .1, 1.0);
+    
+    List result = index.query(queryEnv);
+    assertTrue(result.size() == 1);
+    assertTrue( ((KdNode) result.get(0))
+        .getCoordinate().equals2D(new Coordinate(.1, 1)));
+  }
+  
+  private KdTree build(String wkt, double tolerance) {
     Geometry geom = IOUtil.read(wkt);
-    final KdTree index = new KdTree(.001);
+    final KdTree index = new KdTree(tolerance);
     geom.apply(new CoordinateFilter() {
       public void filter(Coordinate coord) {
         index.insert(coord);
       }
     });
     return index;
+  }
+  
+  private KdTree build(String wkt) {
+    return build(wkt, 0.001);
   }
 }
