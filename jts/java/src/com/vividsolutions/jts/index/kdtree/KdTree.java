@@ -74,7 +74,6 @@ public class KdTree {
   }
 
   private KdNode root = null;
-  private KdNode last = null;
   private long numberOfNodes;
   private double tolerance;
 
@@ -146,7 +145,7 @@ public class KdTree {
      * Traverse the tree, first cutting the plane left-right (by X ordinate)
      * then top-bottom (by Y ordinate)
      */
-    while (currentNode != last) {
+    while (currentNode != null) {
       // test if point is already a node
       if (currentNode != null) {
         boolean isInTolerance = p.distance(currentNode.getCoordinate()) <= tolerance;
@@ -177,8 +176,6 @@ public class KdTree {
     // no node found, add new leaf node to tree
     numberOfNodes = numberOfNodes + 1;
     KdNode node = new KdNode(p, data);
-    node.setLeft(last);
-    node.setRight(last);
     if (isLessThan) {
       leafNode.setLeft(node);
     } else {
@@ -187,9 +184,9 @@ public class KdTree {
     return node;
   }
 
-  private void queryNode(KdNode currentNode, KdNode bottomNode,
+  private void queryNode(KdNode currentNode,
       Envelope queryEnv, boolean odd, List result) {
-    if (currentNode == bottomNode)
+    if (currentNode == null)
       return;
 
     double min;
@@ -208,13 +205,13 @@ public class KdTree {
     boolean searchRight = discriminant <= max;
 
     if (searchLeft) {
-      queryNode(currentNode.getLeft(), bottomNode, queryEnv, !odd, result);
+      queryNode(currentNode.getLeft(), queryEnv, !odd, result);
     }
     if (queryEnv.contains(currentNode.getCoordinate())) {
       result.add((Object) currentNode);
     }
     if (searchRight) {
-      queryNode(currentNode.getRight(), bottomNode, queryEnv, !odd, result);
+      queryNode(currentNode.getRight(), queryEnv, !odd, result);
     }
 
   }
@@ -228,7 +225,7 @@ public class KdTree {
    */
   public List query(Envelope queryEnv) {
     List result = new ArrayList();
-    queryNode(root, last, queryEnv, true, result);
+    queryNode(root, queryEnv, true, result);
     return result;
   }
 
@@ -241,6 +238,6 @@ public class KdTree {
    *          a list to accumulate the result nodes into
    */
   public void query(Envelope queryEnv, List result) {
-    queryNode(root, last, queryEnv, true, result);
+    queryNode(root, queryEnv, true, result);
   }
 }

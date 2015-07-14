@@ -44,20 +44,20 @@ public class KdTreeTest extends TestCase {
   }
 
   public void testMultiplePoint() {
-    testQuery(readCoords(new double[][] { { 1, 1 }, { 2, 2 } }), 0,
-        new Envelope(0, 10, 0, 10), readCoords(new double[][] { { 1, 1 },
-            { 2, 2 } }));
+    testQuery("MULTIPOINT ( (1 1), (2 2) )", 0,
+        new Envelope(0, 10, 0, 10), 
+        "MULTIPOINT ( (1 1), (2 2) )");
   }
 
   public void testSubset() {
-    testQuery(readCoords(new double[][] { { 1, 1 }, { 2, 2 }, { 3, 3 }, { 4, 4 } }), 
+    testQuery("MULTIPOINT ( (1 1), (2 2), (3 3), (4 4) )", 
         0, 
         new Envelope(1.5, 3.4, 1.5, 3.5),
-        readCoords(new double[][] { { 2, 2 }, { 3, 3 } }));
+        "MULTIPOINT ( (2 2), (3 3) )");
   }
 
-
   public void testToleranceFailure() {
+    // tree build is incorrect - two nodes are created instead of one
     testQuery("MULTIPOINT ( (0 0), (-.1 1), (.1 1) )", 
         1, 
         new Envelope(-9, 9, -9, 9),
@@ -66,16 +66,15 @@ public class KdTreeTest extends TestCase {
   
   private void testQuery(String wktInput, double tolerance,
       Envelope queryEnv, String wktExpected) {
+    KdTree index = build(wktInput, tolerance);
     testQuery(
-        IOUtil.read(wktInput).getCoordinates(),
-        tolerance,
+        index,
         queryEnv,
         IOUtil.read(wktExpected).getCoordinates());
   }
 
-  private void testQuery(Coordinate[] input, double tolerance,
+  private void testQuery(KdTree index,
       Envelope queryEnv, Coordinate[] expectedCoord) {
-    KdTree index = build(input, tolerance);
     Coordinate[] result = KdTree.toCoordinates(index.query(queryEnv));
 
     Arrays.sort(result);
@@ -88,21 +87,13 @@ public class KdTreeTest extends TestCase {
     assertTrue("Expected result coordinates not found", isMatch);
   }
 
-  private KdTree build(Coordinate[] coords, double tolerance) {
+  private KdTree build(String wktInput, double tolerance) {
     final KdTree index = new KdTree(tolerance);
+    Coordinate[] coords = IOUtil.read(wktInput).getCoordinates();
     for (int i = 0; i < coords.length; i++) {
       index.insert(coords[i]);
     }
     return index;
   }
 
-
-  private Coordinate[] readCoords(double[][] ords) {
-    Coordinate[] coords = new Coordinate[ords.length];
-    for (int i = 0; i < ords.length; i++) {
-      Coordinate c = new Coordinate(ords[i][0], ords[i][1]);
-      coords[i] = c;
-    }
-    return coords;
-  }
 }
