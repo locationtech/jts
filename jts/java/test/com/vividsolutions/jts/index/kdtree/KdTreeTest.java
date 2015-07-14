@@ -1,10 +1,12 @@
 package com.vividsolutions.jts.index.kdtree;
 
+import java.util.Arrays;
 import java.util.List;
 
 import test.jts.util.IOUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -64,15 +66,13 @@ public class KdTreeTest extends TestCase
   private void testQuery(Coordinate[] input, double tolerance, Envelope queryEnv,
       Coordinate[] expectedCoord) {
     KdTree index = build(input, tolerance);
-    List result = index.query(queryEnv);
+    Coordinate[] result = KdTree.extractCoordinates(index.query(queryEnv));
+
+    Arrays.sort(result);
+    Arrays.sort(expectedCoord);
+    boolean isMatch = CoordinateArrays.equals(result, expectedCoord);
     
-    assertTrue(result.size() == expectedCoord.length);
-    // TODO: make this order-independent by sorting first
-    for (int i = 0; i < result.size(); i++) {
-      boolean isFound = ((KdNode) result.get(i)).getCoordinate()
-          .equals2D(expectedCoord[i]);
-      assertTrue("Expected to find result point " + expectedCoord[i], isFound );
-    }
+    assertTrue("Expected results not found", isMatch );
   }
 
   public void testTolerance()

@@ -16,16 +16,8 @@ public class IndexFunctions
   {
     KdTree index = build(pts, tolerance);
     List result = index.query(query.getEnvelopeInternal());
-    Coordinate[] resultCoords = nodeCoords(result);
+    Coordinate[] resultCoords = KdTree.extractCoordinates(result);
     return pts.getFactory().createMultiPoint(resultCoords);
-  }
-
-  private static Coordinate[] nodeCoords(List result) {
-   Coordinate[] coord = new Coordinate[result.size()];
-   for (int i = 0; i < result.size(); i++) {
-     coord[i] = ((KdNode) result.get(i)).getCoordinate();
-   }
-   return coord;
   }
 
   private static KdTree build(Geometry geom, double tolerance) {

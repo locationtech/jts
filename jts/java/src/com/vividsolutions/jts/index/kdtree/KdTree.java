@@ -34,6 +34,8 @@
 package com.vividsolutions.jts.index.kdtree;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -53,6 +55,22 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class KdTree 
 {
+  
+  /**
+   * Converts a collection of {@link KdNode}s to an array of {@link Coordinate}s.
+   * 
+   * @param kdnodes a collection of nodes
+   * @return a array of the coordinates represented by the nodes
+   */
+  public static Coordinate[] extractCoordinates(Collection kdnodes) {
+    Coordinate[] coord = new Coordinate[kdnodes.size()];
+    int i = 0;
+    for (Iterator it = kdnodes.iterator(); it.hasNext(); ) {
+      coord[i++] = ((KdNode) it.next()).getCoordinate();
+    }
+    return coord;
+  }
+  
 	private KdNode root = null;
 	private KdNode last = null;
 	private long numberOfNodes;
