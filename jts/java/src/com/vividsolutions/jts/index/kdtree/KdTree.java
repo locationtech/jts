@@ -141,25 +141,38 @@ public class KdTree {
       return root;
     }
     
+    /**
+     * Check if the point is already in the tree up to tolerance
+     */
     KdNode matchNode = findBestMatchNode(p);
     if (matchNode != null) {
       // point already in index - increment counter
       matchNode.increment();
-      return matchNode;      
+      return matchNode;
     }
     
     return insertNew(p, data);
   }
     
+  /**
+   * Finds the node in the tree which is the best match for a point
+   * being inserted.
+   * The match is made deterministic by returning the lowest of any nodes which
+   * lie the same distance from the point.
+   * There may be no match if the point is not within the distance tolerance of any
+   * existing node.
+   * 
+   * @param p the point being inserted
+   * @return the best matching node
+   * @return null if no match was found
+   */
   private KdNode findBestMatchNode(Coordinate p) {
     Envelope queryEnv = new Envelope(p);
     queryEnv.expandBy(tolerance / 2);
     
     BestMatchVisitor visitor = new BestMatchVisitor(p, tolerance);
-    
     query(queryEnv, visitor);
     return visitor.getNode();
-
   }
 
   static private class BestMatchVisitor implements KdNodeVisitor {
@@ -197,12 +210,16 @@ public class KdTree {
     }
   }
   
+  /**
+   * Inserts a point known to be beyond the distance tolerance of any existing node.
+   * The point is inserted at the bottom of the exact splitting path, 
+   * so that tree shape is deterministic.
+   * 
+   * @param p the point to insert
+   * @param data the data for the point
+   * @return the created node
+   */
   private KdNode insertNew(Coordinate p, Object data) {
-    if (root == null) {
-      root = new KdNode(p, data);
-      return root;
-    }
-
     KdNode currentNode = root;
     KdNode leafNode = root;
     boolean isOddLevel = true;
@@ -213,7 +230,7 @@ public class KdTree {
      * then top-bottom (by Y ordinate)
      */
     while (currentNode != null) {
-      // test if point is already a node
+      // test if point is already a node (not strictly necessary)
       if (currentNode != null) {
         boolean isInTolerance = p.distance(currentNode.getCoordinate()) <= tolerance;
 
@@ -237,7 +254,7 @@ public class KdTree {
         currentNode = currentNode.getRight();
       }
 
-      isOddLevel = !isOddLevel;
+      isOddLevel = ! isOddLevel;
     }
 
     // no node found, add new leaf node to tree
