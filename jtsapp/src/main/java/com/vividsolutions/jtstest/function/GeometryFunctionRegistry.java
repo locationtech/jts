@@ -70,6 +70,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(CreateShapeFunctions.class);
     funcRegistry.add(CreateFractalShapeFunctions.class);
     funcRegistry.add(CreateRandomShapeFunctions.class);
+    funcRegistry.add(IndexFunctions.class);
     funcRegistry.add(JTSFunctions.class);
     //funcRegistry.add(MemoryFunctions.class);
     funcRegistry.add(OffsetCurveFunctions.class);
