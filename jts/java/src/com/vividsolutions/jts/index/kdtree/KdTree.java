@@ -185,7 +185,7 @@ public class KdTree {
   }
 
   private void queryNode(KdNode currentNode,
-      Envelope queryEnv, boolean odd, List result) {
+      Envelope queryEnv, boolean odd, KdNodeVisitor visitor) {
     if (currentNode == null)
       return;
 
@@ -204,14 +204,15 @@ public class KdTree {
     boolean searchLeft = min < discriminant;
     boolean searchRight = discriminant <= max;
 
+    // search is computed via in-order traversal
     if (searchLeft) {
-      queryNode(currentNode.getLeft(), queryEnv, !odd, result);
+      queryNode(currentNode.getLeft(), queryEnv, !odd, visitor);
     }
     if (queryEnv.contains(currentNode.getCoordinate())) {
-      result.add((Object) currentNode);
+      visitor.visit(currentNode);
     }
     if (searchRight) {
-      queryNode(currentNode.getRight(), queryEnv, !odd, result);
+      queryNode(currentNode.getRight(), queryEnv, !odd, visitor);
     }
 
   }
@@ -223,9 +224,20 @@ public class KdTree {
    *          the range rectangle to query
    * @return a list of the KdNodes found
    */
+  public void query(Envelope queryEnv, KdNodeVisitor visitor) {
+    queryNode(root, queryEnv, true, visitor);
+  }
+  
+  /**
+   * Performs a range search of the points in the index.
+   * 
+   * @param queryEnv
+   *          the range rectangle to query
+   * @return a list of the KdNodes found
+   */
   public List query(Envelope queryEnv) {
-    List result = new ArrayList();
-    queryNode(root, queryEnv, true, result);
+    final List result = new ArrayList();
+    query(queryEnv, result);
     return result;
   }
 
@@ -237,7 +249,14 @@ public class KdTree {
    * @param result
    *          a list to accumulate the result nodes into
    */
-  public void query(Envelope queryEnv, List result) {
-    queryNode(root, queryEnv, true, result);
+  public void query(Envelope queryEnv, final List result) {
+    queryNode(root, queryEnv, true, new KdNodeVisitor() {
+
+      @Override
+      public void visit(KdNode node) {
+        result.add(node);
+      }
+      
+    });
   }
 }
