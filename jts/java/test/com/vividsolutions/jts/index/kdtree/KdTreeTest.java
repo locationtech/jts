@@ -45,18 +45,36 @@ public class KdTreeTest extends TestCase
   
   public void testMultiplePoint()
   {
-    KdTree index = build("MULTIPOINT ((1 1), (2 2))");
-    
-    Envelope queryEnv = new Envelope(0,10,0,10);
-    
-    List result = index.query(queryEnv);
-    assertTrue(result.size() == 2);
-    assertTrue( ((KdNode) result.get(0))
-        .getCoordinate().equals2D(new Coordinate(1, 1)));
-    assertTrue( ((KdNode) result.get(1))
-        .getCoordinate().equals2D(new Coordinate(2, 2)));
+    testQuery(
+        readCoords(new double[][] {  {1, 1}, {2 ,2}  }), 
+        0,
+        new Envelope(0,10, 0,10),
+        readCoords(new double[][] { {1,1},  {2 ,2}  } ));
   }
   
+  public void testSubset()
+  {
+    testQuery(
+        readCoords(new double[][] {  {1, 1}, {2 ,2}, {3, 3}, {4,4}  }), 
+        0,
+        new Envelope(1.5,3.4, 1.5, 3.5),
+        readCoords(new double[][] {  {2 ,2}, {3, 3}  } ));
+  }
+  
+  private void testQuery(Coordinate[] input, double tolerance, Envelope queryEnv,
+      Coordinate[] expectedCoord) {
+    KdTree index = build(input, tolerance);
+    List result = index.query(queryEnv);
+    
+    assertTrue(result.size() == expectedCoord.length);
+    // TODO: make this order-independent by sorting first
+    for (int i = 0; i < result.size(); i++) {
+      boolean isFound = ((KdNode) result.get(i)).getCoordinate()
+          .equals2D(expectedCoord[i]);
+      assertTrue("Expected to find result point " + expectedCoord[i], isFound );
+    }
+  }
+
   public void testTolerance()
   {
     KdTree index = build("MULTIPOINT ((0 0), (-.1 1), (.1 1))", 1.0);
@@ -67,6 +85,14 @@ public class KdTreeTest extends TestCase
     assertTrue(result.size() == 2);
     assertTrue( ((KdNode) result.get(0))
         .getCoordinate().equals2D(new Coordinate(.1, 1)));
+  }
+  
+  private KdTree build(Coordinate[] coords, double tolerance) {
+    final KdTree index = new KdTree(tolerance);
+    for (int i = 0; i < coords.length; i++) {
+      index.insert(coords[i]);
+    }
+    return index;
   }
   
   private KdTree build(String wkt, double tolerance) {
@@ -82,5 +108,14 @@ public class KdTreeTest extends TestCase
   
   private KdTree build(String wkt) {
     return build(wkt, 0.001);
+  }
+  
+  private Coordinate[] readCoords(double[][] ords) {
+    Coordinate[] coords = new Coordinate[ords.length];
+    for (int i = 0; i < ords.length; i++) {
+      Coordinate c = new Coordinate(ords[i][0], ords[i][1]);
+      coords[i] = c;
+    }
+    return coords;
   }
 }
