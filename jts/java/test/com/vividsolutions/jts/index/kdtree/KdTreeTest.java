@@ -50,9 +50,27 @@ public class KdTreeTest extends TestCase {
   }
 
   public void testSubset() {
-    testQuery(readCoords(new double[][] { { 1, 1 }, { 2, 2 }, { 3, 3 },
-        { 4, 4 } }), 0, new Envelope(1.5, 3.4, 1.5, 3.5),
+    testQuery(readCoords(new double[][] { { 1, 1 }, { 2, 2 }, { 3, 3 }, { 4, 4 } }), 
+        0, 
+        new Envelope(1.5, 3.4, 1.5, 3.5),
         readCoords(new double[][] { { 2, 2 }, { 3, 3 } }));
+  }
+
+
+  public void testToleranceFailure() {
+    testQuery("MULTIPOINT ( (0 0), (-.1 1), (.1 1) )", 
+        1, 
+        new Envelope(-9, 9, -9, 9),
+        "MULTIPOINT ( (0 0), (-.1 1) )");
+  }
+  
+  private void testQuery(String wktInput, double tolerance,
+      Envelope queryEnv, String wktExpected) {
+    testQuery(
+        IOUtil.read(wktInput).getCoordinates(),
+        tolerance,
+        queryEnv,
+        IOUtil.read(wktExpected).getCoordinates());
   }
 
   private void testQuery(Coordinate[] input, double tolerance,
@@ -62,20 +80,12 @@ public class KdTreeTest extends TestCase {
 
     Arrays.sort(result);
     Arrays.sort(expectedCoord);
+    
+    assertTrue("Result count = " + result.length + ", expected count = " + expectedCoord.length,
+        result.length == expectedCoord.length);
+    
     boolean isMatch = CoordinateArrays.equals(result, expectedCoord);
-
-    assertTrue("Expected results not found", isMatch);
-  }
-
-  public void testTolerance() {
-    KdTree index = build("MULTIPOINT ((0 0), (-.1 1), (.1 1))", 1.0);
-
-    Envelope queryEnv = new Envelope(-9, 9, -9, 9);
-
-    List result = index.query(queryEnv);
-    assertTrue(result.size() == 2);
-    assertTrue(((KdNode) result.get(0)).getCoordinate().equals2D(
-        new Coordinate(.1, 1)));
+    assertTrue("Expected result coordinates not found", isMatch);
   }
 
   private KdTree build(Coordinate[] coords, double tolerance) {
@@ -86,20 +96,6 @@ public class KdTreeTest extends TestCase {
     return index;
   }
 
-  private KdTree build(String wkt, double tolerance) {
-    Geometry geom = IOUtil.read(wkt);
-    final KdTree index = new KdTree(tolerance);
-    geom.apply(new CoordinateFilter() {
-      public void filter(Coordinate coord) {
-        index.insert(coord);
-      }
-    });
-    return index;
-  }
-
-  private KdTree build(String wkt) {
-    return build(wkt, 0.001);
-  }
 
   private Coordinate[] readCoords(double[][] ords) {
     Coordinate[] coords = new Coordinate[ords.length];
