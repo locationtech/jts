@@ -16,7 +16,7 @@ public class IndexFunctions
   {
     KdTree index = build(pts, tolerance);
     List result = index.query(query.getEnvelopeInternal());
-    Coordinate[] resultCoords = KdTree.extractCoordinates(result);
+    Coordinate[] resultCoords = KdTree.toCoordinates(result);
     return pts.getFactory().createMultiPoint(resultCoords);
   }
 

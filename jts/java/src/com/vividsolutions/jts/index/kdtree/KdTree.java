@@ -62,7 +62,7 @@ public class KdTree
    * @param kdnodes a collection of nodes
    * @return a array of the coordinates represented by the nodes
    */
-  public static Coordinate[] extractCoordinates(Collection kdnodes) {
+  public static Coordinate[] toCoordinates(Collection kdnodes) {
     Coordinate[] coord = new Coordinate[kdnodes.size()];
     int i = 0;
     for (Iterator it = kdnodes.iterator(); it.hasNext(); ) {

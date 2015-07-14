@@ -66,7 +66,7 @@ public class KdTreeTest extends TestCase
   private void testQuery(Coordinate[] input, double tolerance, Envelope queryEnv,
       Coordinate[] expectedCoord) {
     KdTree index = build(input, tolerance);
-    Coordinate[] result = KdTree.extractCoordinates(index.query(queryEnv));
+    Coordinate[] result = KdTree.toCoordinates(index.query(queryEnv));
 
     Arrays.sort(result);
     Arrays.sort(expectedCoord);
