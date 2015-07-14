@@ -76,7 +76,7 @@ public class KdTreeTest extends TestCase {
     testQuery("MULTIPOINT ((10 60), (20 61), (30 60), (30 63))", 
         9, 
         new Envelope(0,99, 0, 99),
-        "MULTIPOINT ((10 60), (20 60), (30 60))");
+        "MULTIPOINT ((10 60), (20 61), (30 60))");
   }
   
   private void testQuery(String wktInput, double tolerance,

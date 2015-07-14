@@ -41,5 +41,10 @@ package com.vividsolutions.jts.index.kdtree;
 
 public interface KdNodeVisitor
 {
+  /**
+   * Visits a node.
+   * 
+   * @param node the node to visit
+   */
   void visit(KdNode node);
 }

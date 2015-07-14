@@ -135,6 +135,68 @@ public class KdTree {
       root = new KdNode(p, data);
       return root;
     }
+    
+    KdNode matchNode = findBestMatchNode(p);
+    if (matchNode != null) {
+      // point already in index - increment counter
+      matchNode.increment();
+      return matchNode;      
+    }
+    
+    return insertNew(p, data);
+  }
+    
+  private KdNode findBestMatchNode(Coordinate p) {
+    Envelope queryEnv = new Envelope(p);
+    queryEnv.expandBy(tolerance / 2);
+    
+    BestMatchVisitor visitor = new BestMatchVisitor(p, tolerance);
+    
+    query(queryEnv, visitor);
+    return visitor.getNode();
+
+  }
+
+  static private class BestMatchVisitor implements KdNodeVisitor {
+
+    private double tolerance;
+    private KdNode matchNode = null;
+    private double matchDist = 0.0;
+    private Coordinate p;
+    
+    public BestMatchVisitor(Coordinate p, double tolerance) {
+      this.p = p;
+      this.tolerance = tolerance;
+    }
+    
+    public KdNode getNode() {
+      return matchNode;
+    }
+
+    @Override
+    public void visit(KdNode node) {
+      double dist = p.distance(node.getCoordinate());
+      boolean isInTolerance =  dist <= tolerance; 
+      if (! isInTolerance) return;
+      boolean update = false;
+      if (matchNode == null) update = true;
+      if (dist < matchDist) update = true;
+      // if distances are the same, record the lesser coordinate
+      if (matchNode != null && dist == matchDist 
+          && node.getCoordinate().compareTo(matchNode.getCoordinate()) < 1) update = true;
+
+      if (update) {
+        matchNode = node;
+        matchDist = dist;
+      }
+    }
+  }
+  
+  private KdNode insertNew(Coordinate p, Object data) {
+    if (root == null) {
+      root = new KdNode(p, data);
+      return root;
+    }
 
     KdNode currentNode = root;
     KdNode leafNode = root;
@@ -218,11 +280,11 @@ public class KdTree {
   }
 
   /**
-   * Performs a range search of the points in the index.
+   * Performs a range search of the points in the index and visits all nodes found.
    * 
    * @param queryEnv
    *          the range rectangle to query
-   * @return a list of the KdNodes found
+   * @param a visitor to visit all nodes found by the search
    */
   public void query(Envelope queryEnv, KdNodeVisitor visitor) {
     queryNode(root, queryEnv, true, visitor);
