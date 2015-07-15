@@ -207,7 +207,7 @@ public class KdTree {
     
     public Envelope queryEnvelope() {
       Envelope queryEnv = new Envelope(p);
-      queryEnv.expandBy(tolerance / 2);
+      queryEnv.expandBy(tolerance);
       return queryEnv;
     }
 
