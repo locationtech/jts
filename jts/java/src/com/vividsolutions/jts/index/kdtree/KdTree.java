@@ -63,17 +63,27 @@ import com.vividsolutions.jts.geom.Envelope;
 public class KdTree {
 
   /**
-   * Converts a collection of {@link KdNode}s to an array of {@link Coordinate}
-   * s.
+   * Converts a collection of {@link KdNode}s to an array of {@link Coordinate}s.
    * 
    * @param kdnodes
    *          a collection of nodes
-   * @return a array of the coordinates represented by the nodes
+   * @return an array of the coordinates represented by the nodes
    */
   public static Coordinate[] toCoordinates(Collection kdnodes) {
     return toCoordinates(kdnodes, false);
   }
 
+  /**
+   * Converts a collection of {@link KdNode}s 
+   * to an array of {@link Coordinate}s,
+   * specifying whether repeated nodes should be represented
+   * by multiple coordinates.
+   * 
+   * @param kdnodes a collection of nodes
+   * @param includeRepeated true if repeated nodes should 
+   *   be included multiple times
+   * @return an array of the coordinates represented by the nodes
+   */
   public static Coordinate[] toCoordinates(Collection kdnodes, boolean includeRepeated) {
     CoordinateList coord = new CoordinateList();
     for (Iterator it = kdnodes.iterator(); it.hasNext();) {
