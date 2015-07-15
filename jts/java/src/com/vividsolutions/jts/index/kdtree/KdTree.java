@@ -142,7 +142,8 @@ public class KdTree {
     }
     
     /**
-     * Check if the point is already in the tree, up to tolerance
+     * Check if the point is already in the tree, up to tolerance.
+     * If tolerance is zero, this phase of the insertion can be skipped.
      */
     if ( tolerance > 0 ) {
       KdNode matchNode = findBestMatchNode(p);
