@@ -22,6 +22,14 @@ public class SpatialIndexFunctions
     return pts.getFactory().createMultiPoint(resultCoords);
   }
 
+  public static Geometry kdTreeQueryRepeated(Geometry pts, Geometry queryEnv, double tolerance)
+  {
+    KdTree index = buildKdTree(pts, tolerance);
+    List result = index.query(queryEnv.getEnvelopeInternal());
+    Coordinate[] resultCoords = KdTree.toCoordinates(result, true);
+    return pts.getFactory().createMultiPoint(resultCoords);
+  }
+
   private static KdTree buildKdTree(Geometry geom, double tolerance) {
     final KdTree index = new KdTree(tolerance);
     Coordinate[] pt = geom.getCoordinates();
