@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateList;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
@@ -70,12 +71,19 @@ public class KdTree {
    * @return a array of the coordinates represented by the nodes
    */
   public static Coordinate[] toCoordinates(Collection kdnodes) {
-    Coordinate[] coord = new Coordinate[kdnodes.size()];
-    int i = 0;
+    return toCoordinates(kdnodes, false);
+  }
+
+  public static Coordinate[] toCoordinates(Collection kdnodes, boolean includeRepeated) {
+    CoordinateList coord = new CoordinateList();
     for (Iterator it = kdnodes.iterator(); it.hasNext();) {
-      coord[i++] = ((KdNode) it.next()).getCoordinate();
+      KdNode node = (KdNode) it.next();
+      int count = includeRepeated ? node.getCount() : 1;
+      for (int i = 0; i < count; i++) {
+       coord.add(node.getCoordinate(), true);
+      }
     }
-    return coord;
+    return coord.toCoordinateArray();
   }
 
   private KdNode root = null;
