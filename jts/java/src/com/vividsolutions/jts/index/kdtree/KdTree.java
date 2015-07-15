@@ -169,11 +169,8 @@ public class KdTree {
    * @return null if no match was found
    */
   private KdNode findBestMatchNode(Coordinate p) {
-    Envelope queryEnv = new Envelope(p);
-    queryEnv.expandBy(tolerance / 2);
-    
     BestMatchVisitor visitor = new BestMatchVisitor(p, tolerance);
-    query(queryEnv, visitor);
+    query(visitor.queryEnvelope(), visitor);
     return visitor.getNode();
   }
 
@@ -189,6 +186,12 @@ public class KdTree {
       this.tolerance = tolerance;
     }
     
+    public Envelope queryEnvelope() {
+      Envelope queryEnv = new Envelope(p);
+      queryEnv.expandBy(tolerance / 2);
+      return queryEnv;
+    }
+
     public KdNode getNode() {
       return matchNode;
     }
