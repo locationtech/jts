@@ -142,16 +142,18 @@ public class KdTree {
     }
     
     /**
-     * Check if the point is already in the tree up to tolerance
+     * Check if the point is already in the tree, up to tolerance
      */
-    KdNode matchNode = findBestMatchNode(p);
-    if (matchNode != null) {
-      // point already in index - increment counter
-      matchNode.increment();
-      return matchNode;
+    if ( tolerance > 0 ) {
+      KdNode matchNode = findBestMatchNode(p);
+      if (matchNode != null) {
+        // point already in index - increment counter
+        matchNode.increment();
+        return matchNode;
+      }
     }
     
-    return insertNew(p, data);
+    return insertExact(p, data);
   }
     
   /**
@@ -197,11 +199,12 @@ public class KdTree {
       boolean isInTolerance =  dist <= tolerance; 
       if (! isInTolerance) return;
       boolean update = false;
-      if (matchNode == null) update = true;
-      if (dist < matchDist) update = true;
-      // if distances are the same, record the lesser coordinate
-      if (matchNode != null && dist == matchDist 
-          && node.getCoordinate().compareTo(matchNode.getCoordinate()) < 1) update = true;
+      if (matchNode == null
+          || dist < matchDist
+          // if distances are the same, record the lesser coordinate
+          || (matchNode != null && dist == matchDist 
+          && node.getCoordinate().compareTo(matchNode.getCoordinate()) < 1))
+        update = true;
 
       if (update) {
         matchNode = node;
@@ -219,7 +222,7 @@ public class KdTree {
    * @param data the data for the point
    * @return the created node
    */
-  private KdNode insertNew(Coordinate p, Object data) {
+  private KdNode insertExact(Coordinate p, Object data) {
     KdNode currentNode = root;
     KdNode leafNode = root;
     boolean isOddLevel = true;
