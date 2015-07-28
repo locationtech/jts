@@ -299,7 +299,7 @@ public class LineString
         // skip equal points on both ends
         if (!points.getCoordinate(i).equals(points.getCoordinate(j))) {
           if (points.getCoordinate(i).compareTo(points.getCoordinate(j)) > 0) {
-            CoordinateArrays.reverse(getCoordinates());
+            CoordinateSequences.reverse(points);
           }
           return;
         }

@@ -36,6 +36,7 @@ package com.vividsolutions.jts.geom;
 
 import junit.framework.TestCase;
 
+import com.vividsolutions.jts.geom.impl.PackedCoordinateSequenceFactory;
 import com.vividsolutions.jts.io.WKTReader;
 
 
@@ -186,6 +187,16 @@ public class NormalizeTest extends TestCase {
     GeometryCollection expectedValue = (GeometryCollection) reader.read(
           "GEOMETRYCOLLECTION (POINT (100 240), POINT (140 220), LINESTRING (180 320, 220 320, 220 280, 200 280, 200 300), POLYGON ((20 80, 20 160, 100 160, 100 80, 20 80), (40 100, 80 100, 80 140, 40 140, 40 100)))");
     assertEqualsExact(expectedValue, actualValue);
+  }
+
+  public void testNormalizePackedCoordinateSequence() throws Exception {
+    GeometryFactory pcsFactory = new GeometryFactory(PackedCoordinateSequenceFactory.DOUBLE_FACTORY);
+    WKTReader pcsReader = new WKTReader(pcsFactory);
+    Geometry geom = pcsReader.read("LINESTRING (100 100, 0 0)");
+    geom.normalize();
+    // force PackedCoordinateSequence to be copied with empty coordinate cache
+    Geometry clone = (Geometry) geom.clone();
+    assertEqualsExact(geom, clone);
   }
 
   private void assertEqualsExact(Geometry expectedValue, Geometry actualValue) {
