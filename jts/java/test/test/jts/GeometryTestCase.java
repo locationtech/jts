@@ -48,6 +48,22 @@ public class GeometryTestCase extends TestCase{
     return geomFactory.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
   }
   
+  /**
+   * Reads a {@link Geometry} from a WKT string using a custom {@link GeometryFactory}.
+   *  
+   * @param geomFactory the custom factory to use
+   * @param wkt the WKT string
+   * @return the geometry read
+   */
+  protected Geometry read(GeometryFactory geomFactory, String wkt) {
+    WKTReader reader = new WKTReader(geomFactory);
+    try {
+       return reader.read(wkt);
+    } catch (ParseException e) {
+      throw new RuntimeException(e.getMessage());
+    }
+  }
+
   protected Geometry read(String wkt) {
     try {
        return reader.read(wkt);
