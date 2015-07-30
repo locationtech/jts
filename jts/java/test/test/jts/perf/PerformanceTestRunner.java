@@ -43,7 +43,6 @@ public class PerformanceTestRunner
       test.setUp();
       for (int runNum = 0; runNum < runSize.length; runNum++)
       {
-        
         int size = runSize[runNum];
         test.startRun(size);
         for (int i = 0; i < runMethod.length; i++) {
@@ -58,8 +57,10 @@ public class PerformanceTestRunner
       }
       test.tearDown();
     }
+    catch (InvocationTargetException e) {
+      e.getTargetException().printStackTrace();
+    }
     catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
