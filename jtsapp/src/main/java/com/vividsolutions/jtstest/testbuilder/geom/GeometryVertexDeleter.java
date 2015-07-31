@@ -11,6 +11,7 @@ public class GeometryVertexDeleter
       int vertexIndex)
   {
     GeometryEditor editor = new GeometryEditor();
+    editor.setCopyUserData(true);
     return editor.edit(geom, new DeleteVertexOperation(line, vertexIndex));
   }
   

@@ -11,6 +11,7 @@ public class GeometryVertexInserter
       Coordinate newVertex)
   {
     GeometryEditor editor = new GeometryEditor();
+    editor.setCopyUserData(true);
     return editor.edit(geom, new InsertVertexOperation(line, segIndex, newVertex));
   }
   

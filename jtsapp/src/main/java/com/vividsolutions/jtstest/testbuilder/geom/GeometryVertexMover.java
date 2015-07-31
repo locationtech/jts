@@ -9,6 +9,7 @@ public class GeometryVertexMover
   public static Geometry move(Geometry geom, Coordinate fromLoc, Coordinate toLoc)
   {
     GeometryEditor editor = new GeometryEditor();
+    editor.setCopyUserData(true);
     return editor.edit(geom, new MoveVertexOperation(fromLoc, toLoc));
   }
   
