@@ -67,16 +67,20 @@ import java.util.ArrayList;
  * (e.g. a <tt>Polygon</tt> cannot be collapsed into a <tt>LineString</tt>).
  * If changing the structure is required, use a {@link GeometryTransformer}.
  * <p>
- * This class supports the case where an edited Geometry needs to
- * be created under a new GeometryFactory, via the {@link #GeometryEditor(GeometryFactory)}
+ * This class supports creating an edited Geometry
+ * using a different <code>GeometryFactory</code> via the {@link #GeometryEditor(GeometryFactory)}
  * constructor.  
  * Examples of situations where this is required is if the geometry is 
  * transformed to a new SRID and/or a new PrecisionModel.
  * <p>
- * The resulting Geometry is not checked for validity.
+ * <b>Usage Notes</b>
+ * <ul>
+ * <li>The resulting Geometry is not checked for validity.
  * If validity needs to be enforced, the new Geometry's 
  * {@link Geometry#isValid} method should be called.
- *
+ * <li>By default the UserData of the input geometry is not copied to the result.
+ * </ul>
+ * 
  * @see GeometryTransformer
  * @see Geometry#isValid
  *
@@ -89,6 +93,7 @@ public class GeometryEditor
    * If <tt>null</tt> the GeometryFactory of the input is used.
    */
   private GeometryFactory factory = null;
+  private boolean isUserDataCopied = false;
 
   /**
    * Creates a new GeometryEditor object which will create
@@ -110,6 +115,17 @@ public class GeometryEditor
   }
 
   /**
+   * Sets whether the User Data is copied to the edit result.
+   * Only the object reference is copied.
+   * 
+   * @param isUserDataCopied true if the input user data should be copied.
+   */
+  public void setCopyUserData(boolean isUserDataCopied)
+  {
+    this.isUserDataCopied = isUserDataCopied;
+  }
+  
+  /**
    * Edit the input {@link Geometry} with the given edit operation.
    * Clients can create subclasses of {@link GeometryEditorOperation} or
    * {@link CoordinateOperation} to perform required modifications.
@@ -122,7 +138,16 @@ public class GeometryEditor
   {
     // nothing to do
     if (geometry == null) return null;
-
+    
+    Geometry result = editInternal(geometry, operation);
+    if (isUserDataCopied) {
+      result.setUserData(geometry.getUserData());
+    }
+    return result;
+  }
+  
+  private Geometry editInternal(Geometry geometry, GeometryEditorOperation operation)
+  {
     // if client did not supply a GeometryFactory, use the one from the input Geometry
     if (factory == null)
       factory = geometry.getFactory();
