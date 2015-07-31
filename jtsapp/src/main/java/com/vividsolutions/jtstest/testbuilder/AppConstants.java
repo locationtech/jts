@@ -1,9 +1,11 @@
 package com.vividsolutions.jtstest.testbuilder;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.ImageIcon;
 
+import com.vividsolutions.jts.awt.FontGlyphReader;
 import com.vividsolutions.jtstest.testbuilder.model.GeometryDepiction;
 import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
 
@@ -45,5 +47,6 @@ public class AppConstants
   public final static ImageIcon drawLinearRingIcon = new ImageIcon(AppConstants.class.getResource("DrawLinearRing.png"));
   public final static ImageIcon drawLineStringIcon = new ImageIcon(AppConstants.class.getResource("DrawLineString.png"));
   public final static ImageIcon drawPointIcon = new ImageIcon(AppConstants.class.getResource("DrawPoint.png"));
+  public final static Font FONT_LABEL = new Font(FontGlyphReader.FONT_SANSSERIF, Font.BOLD, 12);
 
 }

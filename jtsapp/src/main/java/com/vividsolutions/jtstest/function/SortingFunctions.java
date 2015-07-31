@@ -14,6 +14,13 @@ public class SortingFunctions
   {
     List geoms = components(g);
     Collections.sort(geoms, new GeometryLengthComparator());
+    
+    // annotate geometries with area
+    for (Object o : geoms) {
+      Geometry geom = (Geometry) o;
+      geom.setUserData(geom.getLength());
+    }
+    
     return g.getFactory().buildGeometry(geoms);
   }
   
@@ -31,6 +38,13 @@ public class SortingFunctions
   {
     List geoms = components(g);
     Collections.sort(geoms, new GeometryAreaComparator());
+    
+    // annotate geometries with area
+    for (Object o : geoms) {
+      Geometry geom = (Geometry) o;
+      geom.setUserData(geom.getArea());
+    }
+    
     return g.getFactory().buildGeometry(geoms);
   }
   
