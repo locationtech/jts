@@ -39,6 +39,7 @@ import java.util.*;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geomgraph.Quadrant;
+
 /**
  * MonotoneChains are a way of partitioning the segments of an edge to
  * allow for fast searching of intersections.
@@ -58,6 +59,9 @@ import com.vividsolutions.jts.geomgraph.Quadrant;
  * binary search to be used to find the intersection points of two monotone chains.
  * For many types of real-world data, these properties eliminate a large number of
  * segment comparisons, producing substantial speed gains.
+ * <p>
+ * Note that due to the efficient intersection test, there is no need to limit the size
+ * of chains to obtain fast performance.
  *
  * @version 1.7
  */
@@ -99,7 +103,8 @@ public class MonotoneChainIndexer {
     // determine quadrant for chain
     int chainQuad = Quadrant.quadrant(pts[start], pts[start + 1]);
     int last = start + 1;
-    while (last < pts.length) {
+    while (last < pts.length ) {
+      //if (last - start > 100) break;
       // compute quadrant for next possible segment in chain
       int quad = Quadrant.quadrant(pts[last - 1], pts[last]);
       if (quad != chainQuad) break;
