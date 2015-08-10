@@ -17,7 +17,7 @@ extends PerformanceTestCase
   public ExamplePerfTest(String name)
   {
     super(name);
-    setRunSize(new int[] {10, 20});
+    setRunSize(new int[] { 5, 10, 20 });
     setRunIterations(10);
   }
 
@@ -34,15 +34,15 @@ extends PerformanceTestCase
   
   private int iter = 0;
   
-  public void runExample1()
+  public void runTest1()
   {
-    System.out.println("Iter # " + iter++);
+    System.out.println("Test 1 : Iter # " + iter++);
     // do test work here
   }
   
-  public void runExample2()
+  public void runTest2()
   {
-    System.out.println("Iter # " + iter++);
+    System.out.println("Test 2 : Iter # " + iter++);
     // do test work here
   }
   

@@ -50,8 +50,10 @@ public class PerformanceTestRunner
           for (int iter = 0; iter < runIter; iter++) {
             runMethod[i].invoke(test);
           }
+          long time = sw.getTime();
           System.out.println(runMethod[i].getName()
               + " : " + sw.getTimeString());
+          test.setTime(runNum, time);
         }
         test.endRun();
       }

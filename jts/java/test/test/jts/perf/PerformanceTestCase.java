@@ -21,6 +21,7 @@ public abstract class PerformanceTestCase
   private String name;
   private int[] runSize = new int[] { 1 };
   private int runIter = 1;
+  private long[] runTime;
   
   public PerformanceTestCase(String name)
   {
@@ -40,11 +41,17 @@ public abstract class PerformanceTestCase
   protected void setRunSize(int[] runSize)
   {
     this.runSize = runSize;
+    runTime = new long[runSize.length];
   }
   
   public int[] getRunSize()
   {
     return runSize;
+  }
+  
+  public long[] getRunTime()
+  {
+    return runTime;
   }
   
   /**
@@ -105,6 +112,10 @@ public abstract class PerformanceTestCase
   throws Exception
   {
     
+  }
+
+  void setTime(int runNum, long time) {
+    runTime[runNum] = time;
   }
   
   
