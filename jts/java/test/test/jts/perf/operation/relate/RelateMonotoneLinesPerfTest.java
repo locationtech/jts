@@ -1,4 +1,4 @@
-package test.jts.perf.relate;
+package test.jts.perf.operation.relate;
 
 import java.io.PrintStream;
 
