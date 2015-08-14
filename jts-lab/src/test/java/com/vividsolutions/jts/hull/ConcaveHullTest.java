@@ -1,11 +1,16 @@
 package com.vividsolutions.jts.hull;
 
+import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 public class ConcaveHullTest extends GeometryTestCase {
 
+  public static void main(String args[]) {
+    TestRunner.run(ConcaveHullTest.class);
+  }
+  
   public ConcaveHullTest(String name) {
     super(name);
   }
