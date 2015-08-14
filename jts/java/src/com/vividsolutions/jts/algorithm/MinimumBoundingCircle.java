@@ -134,8 +134,6 @@ public class MinimumBoundingCircle
     case 1:
       return input.getFactory().createPoint(centre);
     }
-    // TODO: handle case of 3 extremal points, by computing a line from one of
-    // them through the centre point with len = 2*radius
     Coordinate p0 = extremalPts[0];
     Coordinate p1 = extremalPts[extremalPts.length - 1];
     return input.getFactory().createLineString(new Coordinate[] { p0, p1 });
