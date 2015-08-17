@@ -11,14 +11,26 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 
 /**
- * Creates a buffer with varying width.
+ * Creates a buffer polygon with varying width along a line.
+ * <p>
+ * Only single lines are supported as input, since buffer widths 
+ * generally need to be specified specifically for each line.
  * 
  * @author Martin Davis
  *
  */
 public class VariableWidthBuffer {
 
-  public static Geometry buffer(Geometry line, double startWidth,
+  /**
+   * Creates a buffer polygon around a line with the width interpolated
+   * between a start width and an end width.
+   *  
+   * @param line the line to buffer
+   * @param startWidth the buffer width at the start of the line
+   * @param endWidth the buffer width at the end of the line
+   * @return the varying-width buffer polygon
+   */
+  public static Geometry buffer(LineString line, double startWidth,
       double endWidth) {
     double[] width = VariableWidthBuffer.interpolate((LineString) line,
         startWidth, endWidth);
@@ -26,11 +38,25 @@ public class VariableWidthBuffer {
     return vb.getResult();
   }
 
-  public static double[] interpolate(LineString line, double startDistance,
-      double endDistance) {
+  /**
+   * Computes a list of values for the points along a line by
+   * interpolating between values for the start and end point.
+   * The interpolation is
+   * based on the distance of each point along the line
+   * relative to the total line length.
+   * 
+   * @param line the line to interpolate along
+   * @param start the start value 
+   * @param end the end value
+   * @return
+   */
+  public static double[] interpolate(LineString line, double start,
+      double end) {
+    start = Math.abs(start);
+    end = Math.abs(end);
     double[] widths = new double[line.getNumPoints()];
-    widths[0] = startDistance;
-    widths[widths.length - 1] = endDistance;
+    widths[0] = start;
+    widths[widths.length - 1] = end;
 
     double totalLen = line.getLength();
     Coordinate[] pts = line.getCoordinates();
@@ -39,8 +65,8 @@ public class VariableWidthBuffer {
       double segLen = pts[i].distance(pts[i - 1]);
       currLen += segLen;
       double lenFrac = currLen / totalLen;
-      double delta = lenFrac * (endDistance - startDistance);
-      widths[i] = startDistance + delta;
+      double delta = lenFrac * (end - start);
+      widths[i] = start + delta;
     }
     return widths;
   }
@@ -49,12 +75,20 @@ public class VariableWidthBuffer {
   private double[] width;
   private GeometryFactory geomFactory;
 
-  public VariableWidthBuffer(Geometry line, double[] width) {
+  public VariableWidthBuffer(LineString line, double[] width) {
     this.line = (LineString) line;
-    this.width = width;
+    this.width = abs(width);
     geomFactory = line.getFactory();
   }
 
+  private static double[] abs(double[] v) {
+    double[] a = new double[v.length];
+    for (int i = 0; i < v.length; i++) {
+      a[i] = Math.abs(v[i]);
+    }
+    return a;
+  }
+  
   private Geometry getResult() {
     List parts = new ArrayList();
 
