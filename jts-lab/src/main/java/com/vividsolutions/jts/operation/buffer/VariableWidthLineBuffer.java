@@ -11,7 +11,7 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 
 /**
- * Creates a buffer polygon with varying width along a line.
+ * Creates a buffer polygon with variable width along a line.
  * <p>
  * Only single lines are supported as input, since buffer widths 
  * generally need to be specified specifically for each line.
@@ -19,22 +19,22 @@ import com.vividsolutions.jts.geom.LineString;
  * @author Martin Davis
  *
  */
-public class VariableWidthBuffer {
+public class VariableWidthLineBuffer {
 
   /**
-   * Creates a buffer polygon around a line with the width interpolated
+   * Creates a buffer polygon along a line with the width interpolated
    * between a start width and an end width.
    *  
    * @param line the line to buffer
    * @param startWidth the buffer width at the start of the line
    * @param endWidth the buffer width at the end of the line
-   * @return the varying-width buffer polygon
+   * @return the variable-width buffer polygon
    */
   public static Geometry buffer(LineString line, double startWidth,
       double endWidth) {
-    double[] width = VariableWidthBuffer.interpolate((LineString) line,
+    double[] width = VariableWidthLineBuffer.interpolate((LineString) line,
         startWidth, endWidth);
-    VariableWidthBuffer vb = new VariableWidthBuffer(line, width);
+    VariableWidthLineBuffer vb = new VariableWidthLineBuffer(line, width);
     return vb.getResult();
   }
 
@@ -48,7 +48,7 @@ public class VariableWidthBuffer {
    * @param line the line to interpolate along
    * @param start the start value 
    * @param end the end value
-   * @return
+   * @return the array of interpolated values
    */
   public static double[] interpolate(LineString line, double start,
       double end) {
@@ -71,16 +71,6 @@ public class VariableWidthBuffer {
     return widths;
   }
 
-  private LineString line;
-  private double[] width;
-  private GeometryFactory geomFactory;
-
-  public VariableWidthBuffer(LineString line, double[] width) {
-    this.line = (LineString) line;
-    this.width = abs(width);
-    geomFactory = line.getFactory();
-  }
-
   private static double[] abs(double[] v) {
     double[] a = new double[v.length];
     for (int i = 0; i < v.length; i++) {
@@ -89,7 +79,28 @@ public class VariableWidthBuffer {
     return a;
   }
   
-  private Geometry getResult() {
+  private LineString line;
+  private double[] width;
+  private GeometryFactory geomFactory;
+
+  /**
+   * Creates a generator for a variable-width line buffer.
+   * 
+   * @param line
+   * @param width
+   */
+  public VariableWidthLineBuffer(LineString line, double[] width) {
+    this.line = (LineString) line;
+    this.width = abs(width);
+    geomFactory = line.getFactory();
+  }
+  
+  /**
+   * Gets the computed variable-width line buffer.
+   * 
+   * @return a polygon
+   */
+  public Geometry getResult() {
     List parts = new ArrayList();
 
     Coordinate[] pts = line.getCoordinates();
@@ -126,7 +137,6 @@ public class VariableWidthBuffer {
     Coordinate[] pts = new Coordinate[] { s0, s1, s2, s3, s0 };
 
     return pts;
-
   }
 
 }
