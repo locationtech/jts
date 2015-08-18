@@ -8,6 +8,7 @@ import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeTriangle;
 
 public class ConcaveHull {
+  
   private Geometry geom;
   private double tolerance;
 
@@ -24,7 +25,8 @@ public class ConcaveHull {
   }
 
   private List extractTriangles(QuadEdgeSubdivision subdiv) {
-    return QuadEdgeTriangle.createOn(subdiv);
+    List qeTris = QuadEdgeTriangle.createOn(subdiv);
+    return qeTris;
   }
 
   private Geometry computeHull(List tris) {
@@ -36,6 +38,5 @@ public class ConcaveHull {
     DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
     builder.setSites(geom);
     return builder.getSubdivision();
-    
   }
 }
