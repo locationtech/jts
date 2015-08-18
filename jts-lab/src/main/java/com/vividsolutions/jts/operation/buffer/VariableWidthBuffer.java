@@ -19,7 +19,7 @@ import com.vividsolutions.jts.geom.LineString;
  * @author Martin Davis
  *
  */
-public class VariableWidthLineBuffer {
+public class VariableWidthBuffer {
 
   /**
    * Creates a buffer polygon along a line with the width interpolated
@@ -30,11 +30,22 @@ public class VariableWidthLineBuffer {
    * @param endWidth the buffer width at the end of the line
    * @return the variable-width buffer polygon
    */
-  public static Geometry buffer(LineString line, double startWidth,
+  public static Geometry buffer(Geometry line, double startWidth,
       double endWidth) {
-    double[] width = VariableWidthLineBuffer.interpolate((LineString) line,
+    double[] width = VariableWidthBuffer.interpolate((LineString) line,
         startWidth, endWidth);
-    VariableWidthLineBuffer vb = new VariableWidthLineBuffer(line, width);
+    VariableWidthBuffer vb = new VariableWidthBuffer(line, width);
+    return vb.getResult();
+  }
+  
+  public static Geometry bufferAternating(Geometry line, double width1,
+      double width2) {
+    int nPts = line.getNumPoints();
+    double[] width = new double[nPts];
+    for (int i = 0; i < width.length; i++) {
+      width[i] = (i % 2) == 0 ? width1 : width2;
+    }
+    VariableWidthBuffer vb = new VariableWidthBuffer(line, width);
     return vb.getResult();
   }
 
@@ -89,7 +100,7 @@ public class VariableWidthLineBuffer {
    * @param line
    * @param width
    */
-  public VariableWidthLineBuffer(LineString line, double[] width) {
+  public VariableWidthBuffer(Geometry line, double[] width) {
     this.line = (LineString) line;
     this.width = abs(width);
     geomFactory = line.getFactory();
@@ -106,12 +117,19 @@ public class VariableWidthLineBuffer {
     Coordinate[] pts = line.getCoordinates();
     for (int i = 0; i < line.getNumPoints(); i++) {
       double dist = width[i] / 2;
-      Geometry ptBuf = line.getPointN(i).buffer(dist);
-      parts.add(ptBuf);
+      // skip zero-width fillets
+      if (dist > 0) {
+        Geometry ptBuf = line.getPointN(i).buffer(dist);
+        parts.add(ptBuf);
+      }
 
-      if (i >= 1) {
+      if (i == 0) continue;
+      
+      double width0 = width[i - 1];
+      double width1 = width[i];
+      if (width0 > 0 || width1 > 0) {
         Coordinate[] curvePts = generateSegmentCurve(pts[i - 1], pts[i],
-            width[i - 1], width[i]);
+            width0, width1);
         Geometry segBuf = geomFactory.createPolygon(curvePts);
         parts.add(segBuf);
       }
