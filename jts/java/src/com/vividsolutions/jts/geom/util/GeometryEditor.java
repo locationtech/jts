@@ -46,7 +46,7 @@ import java.util.ArrayList;
  * Geometry objects are intended to be treated as immutable.
  * This class "modifies" Geometrys
  * by traversing them, applying a user-defined
- * {@link GeometryEditorOperation} or {@link CoordinateOperation}  
+ * {@link GeometryEditorOperation}, {@link CoordinateSequenceOperation} or {@link CoordinateOperation}  
  * and creating new Geometrys with the same structure but
  * (possibly) modified components.
  * <p>
