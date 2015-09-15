@@ -34,6 +34,7 @@ package com.vividsolutions.jts.noding;
 
 import java.io.PrintStream;
 import java.util.*;
+
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.*;
 
@@ -250,9 +251,59 @@ public class SegmentNodeList
     for (int i = ei0.segmentIndex + 1; i <= ei1.segmentIndex; i++) {
       pts[ipt++] = edge.getCoordinate(i);
     }
-    if (useIntPt1) pts[ipt] = ei1.coord;
+    if (useIntPt1) pts[ipt] = new Coordinate(ei1.coord);
 
     return new NodedSegmentString(pts, edge.getData());
+  }
+
+  /**
+   * Gets the list of coordinates for the fully noded segment string,
+   * including all original segment string vertices and vertices
+   * introduced by nodes in this list.
+   * Repeated coordinates are collapsed.
+   * 
+   * @return an array of Coordinates
+   * 
+   */
+  public Coordinate[] getSplitCoordinates()
+  {
+    CoordinateList coordList = new CoordinateList();
+    // ensure that the list has entries for the first and last point of the edge
+    addEndpoints();
+
+    Iterator it = iterator();
+    // there should always be at least two entries in the list, since the endpoints are nodes
+    SegmentNode eiPrev = (SegmentNode) it.next();
+    while (it.hasNext()) {
+      SegmentNode ei = (SegmentNode) it.next();
+      addEdgeCoordinates(eiPrev, ei, coordList);
+      eiPrev = ei;
+    }
+    return coordList.toCoordinateArray();
+  }
+
+  private void addEdgeCoordinates(SegmentNode ei0, SegmentNode ei1,
+      CoordinateList coordList) {
+    int npts = ei1.segmentIndex - ei0.segmentIndex + 2;
+
+    Coordinate lastSegStartPt = edge.getCoordinate(ei1.segmentIndex);
+    // if the last intersection point is not equal to the its segment start pt,
+    // add it to the points list as well.
+    // (This check is needed because the distance metric is not totally reliable!)
+    // The check for point equality is 2D only - Z values are ignored
+    boolean useIntPt1 = ei1.isInterior() || ! ei1.coord.equals2D(lastSegStartPt);
+    if (! useIntPt1) {
+      npts--;
+    }
+
+    int ipt = 0;
+    coordList.add(new Coordinate(ei0.coord), false);
+    for (int i = ei0.segmentIndex + 1; i <= ei1.segmentIndex; i++) {
+      coordList.add(edge.getCoordinate(i));
+    }
+    if (useIntPt1) {
+      coordList.add(new Coordinate(ei1.coord));
+    }
   }
 
   public void print(PrintStream out)
