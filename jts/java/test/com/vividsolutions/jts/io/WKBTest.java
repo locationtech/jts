@@ -140,7 +140,7 @@ public class WKBTest
   public void testPolygonEmpty()
       throws IOException, ParseException
   {
-    runWKBTest("LINESTRING EMPTY");
+    runWKBTest("POLYGON EMPTY");
   }
   public void testMultiPointEmpty()
       throws IOException, ParseException
