@@ -137,7 +137,6 @@ public class JTSTestBuilderFrame extends JFrame
   
   TestBuilderModel tbModel;
   
-  private TextViewDialog textViewDlg = new TextViewDialog(this, "", true);
   private TestCaseTextDialog testCaseTextDlg = new TestCaseTextDialog(this,
       "", true);
   private GeometryInspectorDialog geomInspectorDlg = new GeometryInspectorDialog(this);
@@ -717,19 +716,6 @@ public class JTSTestBuilderFrame extends JFrame
     directoryChooser.setMultiSelectionEnabled(false);
     //Center the window
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    Dimension frameSize = textViewDlg.getSize();
-    if (frameSize.height > screenSize.height) {
-      frameSize.height = screenSize.height;
-    }
-    if (frameSize.width > screenSize.width) {
-      frameSize.width = screenSize.width;
-    }
-    textViewDlg.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height
-         - frameSize.height) / 2);
-    /*
-    loadTestCasesDlg.setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height
-         - frameSize.height) / 2);
-         */
     
     //---------------------------------------------------
     contentPane = (JPanel) this.getContentPane();
