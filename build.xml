@@ -180,7 +180,7 @@
     <javac srcdir="${jtsio.src}" 
         	includes="**/*.java" listfiles="no"
         	destdir="${jtsio.classes}" 
-        	classpath="${pre-zip.lib}/jts-${jts.version}.jar;${jtsio.lib}/classes12-${ora.version}.jar;${jtsio.lib}/jsde91_sdk.jar"/>
+        	classpath="${pre-zip.lib}/jts-${jts.version}.jar;${jtsio.lib}/classes12-${ora.version}.jar;${jtsio.lib}/jsde91_sdk.jar;${jtsio.lib}/json-simple-1.1.1.jar"/>
     	
     <jar destfile="${pre-zip.lib}/jtsio-${jts.version}.jar" basedir="${jtsio.classes}" />
     <!-- Sources JAR -->
@@ -201,6 +201,7 @@
         <pathelement location="${pre-zip.jts-jar}"/>
         <pathelement location="${jtsio.lib}/classes12-${ora.version}.jar"/>
         <pathelement location="${jtsio.lib}/jsde91_sdk.jar"/>
+        <pathelement location="${jtsio.lib}/json-simple-1.1.1.jar"/>
         <pathelement location="${pre-zip.lib}\jdom.jar"/>
         <pathelement location="${pre-zip.lib}\xerces.jar"/>
       </classpath>
