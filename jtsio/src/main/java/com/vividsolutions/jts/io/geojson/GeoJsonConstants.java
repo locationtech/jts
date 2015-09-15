@@ -1,5 +1,3 @@
-
-
 /*
  * The JTS Topology Suite is a collection of Java classes that
  * implement the fundamental operations required to validate a given
@@ -32,44 +30,28 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package com.vividsolutions.jts.io;
+package com.vividsolutions.jts.io.geojson;
+
 
 /**
- *  Thrown by a <code>WKTReader</code> when a parsing problem occurs.
- *
- *@version 1.7
+ * Constants for GeoJSON objects
+ * 
+ * @author Martin Davis
  */
-public class ParseException extends Exception {
+public class GeoJsonConstants {
 
-  /**
-   *  Creates a <code>ParseException</code> with the given detail message.
-   *
-   *@param  message  a description of this <code>ParseException</code>
-   */
-  public ParseException(String message) {
-    super(message);
-  }
+  public static final String NAME_GEOMETRIES = "geometries";
+  public static final String NAME_CRS = "crs";
+  public static final String NAME_PROPERTIES = "properties";
+  public static final String NAME_NAME = "name";
+  public static final String NAME_TYPE = "type";
+  public static final String NAME_POINT = "Point";
+  public static final String NAME_LINESTRING = "LineString";
+  public static final String NAME_POLYGON = "Polygon";
+  public static final String NAME_COORDINATES = "coordinates";
+  public static final String NAME_GEOMETRYCOLLECTION = "GeometryCollection";
+  public static final String NAME_MULTIPOLYGON = "MultiPolygon";
+  public static final String NAME_MULTILINESTRING = "MultiLineString";
+  public static final String NAME_MULTIPOINT = "MultiPoint";
 
-  /**
-   *  Creates a <code>ParseException</code> with <code>e</code>s detail message.
-   *
-   *@param  e  an exception that occurred while a <code>WKTReader</code> was
-   *      parsing a Well-known Text string
-   */
-  public ParseException(Exception e) {
-    this(e.toString(), e);
-  }
-  
-  /**
-   *  Creates a <code>ParseException</code> with <code>e</code>s detail message.
-   *  
-   *@param  message  a description of this <code>ParseException</code>
-   *@param  e  a throwable that occurred while a com.vividsolutions.jts.io reader was
-   *      parsing a string representation
-   */
-  public ParseException(String message, Throwable e) {
-          super(message, e);
-  }
 }
-
-
