@@ -82,11 +82,11 @@ public class GeoJsonReader {
   }
 
   /**
-   * This constructor accepts a <code>GeometryFactory</code> that will be used
-   * to override the GeoJson CRS.
+   * This constructor accepts a <code>GeometryFactory</code> that is used
+   * to create the output geometries and to override the GeoJson CRS.
    * 
    * @param geometryFactory
-   *          a GeometryFactory to override the Geojson CRS
+   *          a GeometryFactory
    */
   public GeoJsonReader(GeometryFactory geometryFactory) {
     this.gf = geometryFactory;
@@ -94,7 +94,7 @@ public class GeoJsonReader {
 
   /**
    * Reads a GeoJson Geometry from a <tt>String</tt> into a single
-   * {@link Geometry}
+   * {@link Geometry}.
    * 
    * 
    * @param json
@@ -103,8 +103,6 @@ public class GeoJsonReader {
    * 
    * @throws ParseException
    *           throws a ParseException if the JSON string cannot be parsed
-   * 
-   * @see #read(Reader, GeometryFactory)
    */
   public Geometry read(String json) throws ParseException {
     Geometry result = read(new StringReader(json));
@@ -113,7 +111,7 @@ public class GeoJsonReader {
 
   /**
    * Reads a GeoJson Geometry from a {@link Reader} into a single
-   * {@link Geometry}
+   * {@link Geometry}.
    * 
    * 
    * @param reader
