@@ -52,10 +52,14 @@ public class EdgeGraph
   /**
    * Adds an edge between the coordinates orig and dest
    * to this graph.
+   * Only valid edges can be added (in particular, zero-length segments cannot be added)
    * 
    * @param orig the edge origin location
    * @param dest the edge destination location.
    * @return the created edge
+   * @return null if the edge was invalid and not added
+   * 
+   * @see {@link #isValidEdge(Coordinate, Coordinate)}
    */
   public HalfEdge addEdge(Coordinate orig, Coordinate dest) {
     if (! isValidEdge(orig, dest)) return null;
@@ -79,7 +83,8 @@ public class EdgeGraph
   }
 
   /**
-   * Test if an the coordinates for an edge form a valid edge (with non-zero length)
+   * Tests if the given coordinates form a valid edge (with non-zero length).
+   * 
    * @param orig the start coordinate
    * @param dest the end coordinate
    * @return true if the edge formed is valid
