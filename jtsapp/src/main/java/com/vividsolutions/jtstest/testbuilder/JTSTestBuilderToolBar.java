@@ -275,7 +275,7 @@ public class JTSTestBuilderToolBar {
       infoButton.addActionListener(
         new java.awt.event.ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            tbFrame.infoButton_actionPerformed(e);
+            tbFrame.infoButton_actionPerformed();
           }
         });
       zoomInButton.setMaximumSize(new Dimension(30, 30));

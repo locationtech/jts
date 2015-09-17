@@ -15,12 +15,20 @@ public class CircleEndpointStyle
 
   // default in case colour is not set
   private Color color = Color.RED;
+  private double diameter = DIAMETER;
 
   public CircleEndpointStyle(Color color, boolean start, boolean filled) {
-      super(start);
-      this.color = color;
-      this.filled = filled;
-  }
+    super(start);
+    this.color = color;
+    this.filled = filled;
+}
+
+  public CircleEndpointStyle(Color color, double diameter, boolean start, boolean filled) {
+    super(start);
+    this.color = color;
+    this.diameter  = diameter;
+    this.filled = filled;
+}
 
   protected void paint(Point2D terminal, Point2D next, Viewport viewport,
       Graphics2D g) 
@@ -39,8 +47,8 @@ public class CircleEndpointStyle
   }
 
   private Shape toCircle(Point2D viewPoint) {
-    return new Ellipse2D.Double(viewPoint.getX() - (DIAMETER / 2d),
-        viewPoint.getY() - (DIAMETER / 2d), DIAMETER, DIAMETER);
+    return new Ellipse2D.Double(viewPoint.getX() - (diameter / 2d),
+        viewPoint.getY() - (diameter / 2d), diameter, diameter);
 }
 
 }

@@ -585,7 +585,7 @@ public class JTSTestBuilderFrame extends JFrame
     testCasePanel.getGeometryEditPanel().setCurrentTool(PointTool.getInstance());
   }
 
-  void infoButton_actionPerformed(ActionEvent e) {
+  void infoButton_actionPerformed() {
     testCasePanel.getGeometryEditPanel().setCurrentTool(InfoTool.getInstance());
   }
 
