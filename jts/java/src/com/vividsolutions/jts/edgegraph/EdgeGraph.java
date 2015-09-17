@@ -58,9 +58,7 @@ public class EdgeGraph
    * @return the created edge
    */
   public HalfEdge addEdge(Coordinate orig, Coordinate dest) {
-    int cmp = dest.compareTo(orig);
-    // ignore zero-length edges
-    if (cmp == 0) return null;
+    if (! isValidEdge(orig, dest)) return null;
     
     /**
      * Attempt to find the edge already in the graph.
@@ -78,6 +76,17 @@ public class EdgeGraph
     
     HalfEdge e = insert(orig, dest, eAdj);
     return e;
+  }
+
+  /**
+   * Test if an the coordinates for an edge form a valid edge (with non-zero length)
+   * @param orig the start coordinate
+   * @param dest the end coordinate
+   * @return true if the edge formed is valid
+   */
+  public static boolean isValidEdge(Coordinate orig, Coordinate dest) {
+    int cmp = dest.compareTo(orig);
+    return cmp != 0;
   }
 
   /**

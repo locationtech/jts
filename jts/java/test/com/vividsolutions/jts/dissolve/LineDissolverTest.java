@@ -108,6 +108,14 @@ public class LineDissolverTest  extends TestCase {
     checkDissolve("MULTILINESTRING ((0 0, 1 0, 1 1), (0 0, 0 1, 1 1), (1 0, 2 0))", "MULTILINESTRING ((1 0, 0 0, 0 1, 1 1, 1 0), (1 0, 2 0))");
   }
   
+  public void testZeroLengthStartSegment() throws ParseException
+  {
+    checkDissolve(
+        "MULTILINESTRING ((0 0, 0 0, 2 1))",  
+        "LINESTRING (0 0, 2 1)");
+  }
+
+
   private void checkDissolve(String wkt, String expectedWKT) throws ParseException {
     checkDissolve(new String[] { wkt }, expectedWKT);
   }
