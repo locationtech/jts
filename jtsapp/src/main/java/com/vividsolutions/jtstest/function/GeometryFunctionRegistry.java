@@ -51,6 +51,7 @@ public class GeometryFunctionRegistry
     GeometryFunctionRegistry funcRegistry = new GeometryFunctionRegistry();
     
     funcRegistry.add(GeometryFunctions.class);
+    funcRegistry.add(BoundaryFunctions.class);
     funcRegistry.add(BufferFunctions.class);
     funcRegistry.add(BufferByUnionFunctions.class);
     funcRegistry.add(ConstructionFunctions.class);

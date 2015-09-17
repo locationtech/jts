@@ -51,6 +51,18 @@ import com.vividsolutions.jts.geomgraph.GeometryGraph;
 
 public class BoundaryOp
 {
+  public static Geometry getBoundary(Geometry g)
+  {
+    BoundaryOp bop = new BoundaryOp(g);
+    return bop.getBoundary();
+  }
+  
+  public static Geometry getBoundary(Geometry g, BoundaryNodeRule bnRule)
+  {
+    BoundaryOp bop = new BoundaryOp(g, bnRule);
+    return bop.getBoundary();
+  }
+  
   private Geometry geom;
   private GeometryFactory geomFact;
   private BoundaryNodeRule bnRule;
