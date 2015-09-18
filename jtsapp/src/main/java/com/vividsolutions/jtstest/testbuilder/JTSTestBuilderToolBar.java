@@ -37,7 +37,7 @@ public class JTSTestBuilderToolBar {
   JToggleButton drawPolygonButton = new JToggleButton();
   JToggleButton drawLineStringButton = new JToggleButton();
   JToggleButton drawPointButton = new JToggleButton();
-  JToggleButton zoomInButton = new JToggleButton();
+  JToggleButton zoomButton = new JToggleButton();
   JToggleButton infoButton = new JToggleButton();
   JToggleButton panButton = new JToggleButton();
   JToggleButton btnEditVertex = new JToggleButton();
@@ -50,7 +50,7 @@ public class JTSTestBuilderToolBar {
   private final ImageIcon copyCaseIcon = new ImageIcon(this.getClass().getResource("CopyCase.gif"));
   private final ImageIcon deleteIcon = new ImageIcon(this.getClass().getResource("Delete.gif"));
   private final ImageIcon exchangeGeomsIcon = new ImageIcon(this.getClass().getResource("ExchangeGeoms.png"));
-  private final ImageIcon zoomInIcon = new ImageIcon(this.getClass().getResource("MagnifyCursor.gif"));
+  private final ImageIcon zoomIcon = new ImageIcon(this.getClass().getResource("MagnifyCursor.gif"));
   private final ImageIcon drawRectangleIcon = new ImageIcon(this.getClass().getResource("DrawRectangle.png"));
   private final ImageIcon drawRectangleBIcon = new ImageIcon(this.getClass().getResource("DrawRectangleB.png"));
   private final ImageIcon drawPolygonIcon = new ImageIcon(this.getClass().getResource("DrawPolygon.png"));
@@ -278,22 +278,22 @@ public class JTSTestBuilderToolBar {
             tbFrame.infoButton_actionPerformed();
           }
         });
-      zoomInButton.setMaximumSize(new Dimension(30, 30));
-      zoomInButton.addActionListener(
+      zoomButton.setMaximumSize(new Dimension(30, 30));
+      zoomButton.addActionListener(
         new java.awt.event.ActionListener() {
 
           public void actionPerformed(ActionEvent e) {
             tbFrame.zoomInButton_actionPerformed(e);
           }
         });
-      zoomInButton.setToolTipText("<html>Zoom In/Out<br><br>In = Left-Btn<br>Out = Right-Btn</html>");
-      zoomInButton.setHorizontalTextPosition(SwingConstants.CENTER);
-      zoomInButton.setFont(new java.awt.Font("Serif", 0, 10));
-      zoomInButton.setMinimumSize(new Dimension(30, 30));
-      zoomInButton.setVerticalTextPosition(SwingConstants.BOTTOM);
-      zoomInButton.setPreferredSize(new Dimension(30, 30));
-      zoomInButton.setIcon(zoomInIcon);
-      zoomInButton.setMargin(new Insets(0, 0, 0, 0));
+      zoomButton.setToolTipText("<html>Zoom In/Out<br><br>In = Left-Btn<br>Out = Right-Btn<br>Ctl-Drag = Pan</html>");
+      zoomButton.setHorizontalTextPosition(SwingConstants.CENTER);
+      zoomButton.setFont(new java.awt.Font("Serif", 0, 10));
+      zoomButton.setMinimumSize(new Dimension(30, 30));
+      zoomButton.setVerticalTextPosition(SwingConstants.BOTTOM);
+      zoomButton.setPreferredSize(new Dimension(30, 30));
+      zoomButton.setIcon(zoomIcon);
+      zoomButton.setMargin(new Insets(0, 0, 0, 0));
       
       oneToOneButton.setMargin(new Insets(0, 0, 0, 0));
       oneToOneButton.setIcon(zoomOneToOneIcon);
@@ -460,7 +460,7 @@ public class JTSTestBuilderToolBar {
       toolButtonGroup.add(drawLineStringButton);
       toolButtonGroup.add(drawPointButton);
       toolButtonGroup.add(panButton);
-      toolButtonGroup.add(zoomInButton);
+      toolButtonGroup.add(zoomButton);
       toolButtonGroup.add(btnEditVertex);
       toolButtonGroup.add(deleteVertexButton);
       toolButtonGroup.add(infoButton);
@@ -483,7 +483,7 @@ public class JTSTestBuilderToolBar {
       
       jToolBar1.add(Box.createHorizontalStrut(8), null);
       
-      jToolBar1.add(zoomInButton, null);
+      jToolBar1.add(zoomButton, null);
       jToolBar1.add(panButton, null);
       jToolBar1.add(oneToOneButton, null);
       jToolBar1.add(zoomToInputAButton, null);
