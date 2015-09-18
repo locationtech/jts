@@ -119,7 +119,7 @@ public class GeometrySnapRounder
     GeometryComponentFilter filter = new GeometryComponentFilter() {
 
       public void filter(Geometry geom) {
-        if (geom.getDimension() != 1) return;
+        if (! (geom instanceof LineString) ) return;
         segStrings.add(new NodedSegmentString(geom.getCoordinates(), geom));
       }
       
