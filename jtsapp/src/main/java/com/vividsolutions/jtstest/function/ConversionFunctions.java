@@ -6,19 +6,22 @@ import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 
 public class ConversionFunctions 
 {
-  public static Geometry toPoints(Geometry g)
+  public static Geometry toPoints(Geometry g1, Geometry g2)
   {
-    return g.getFactory().createMultiPoint(g.getCoordinates());
+    Geometry geoms = FunctionsUtil.buildGeometry(g1, g2);
+    return FunctionsUtil.getFactoryOrDefault(g1, g2)
+        .createMultiPoint(geoms.getCoordinates());
   }
 
-  public static Geometry toLines(Geometry g)
+  public static Geometry toLines(Geometry g1, Geometry g2)
   {
-    return g.getFactory().buildGeometry(LinearComponentExtracter.getLines(g));
+    Geometry geoms = FunctionsUtil.buildGeometry(g1, g2);
+    return FunctionsUtil.getFactoryOrDefault(g1, g2)
+        .buildGeometry(LinearComponentExtracter.getLines(geoms));
   }
 
   public static Geometry toGeometryCollection(Geometry g, Geometry g2)
   {
-    
     List atomicGeoms = new ArrayList();
     if (g != null) addComponents(g, atomicGeoms);
     if (g2 != null) addComponents(g2, atomicGeoms);

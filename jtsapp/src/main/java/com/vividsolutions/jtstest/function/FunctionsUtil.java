@@ -22,11 +22,18 @@ public class FunctionsUtil {
 		return g.getEnvelopeInternal();
 	}
 	
-	public static GeometryFactory getFactoryOrDefault(Geometry g)
-	{
-		if (g == null) return JTSTestBuilder.getGeometryFactory();
-		return g.getFactory();
-	}
+  public static GeometryFactory getFactoryOrDefault(Geometry g)
+  {
+    if (g == null) return JTSTestBuilder.getGeometryFactory();
+    return g.getFactory();
+  }
+  
+  public static GeometryFactory getFactoryOrDefault(Geometry g1, Geometry g2)
+  {
+    if (g1 != null) return g1.getFactory();
+    if (g2 != null) return g2.getFactory();
+    return JTSTestBuilder.getGeometryFactory(); 
+  }
   
   public static void showIndicator(Geometry geom)
   {
@@ -46,11 +53,29 @@ public class FunctionsUtil {
     if (geoms.size() == 1) 
       return (Geometry) geoms.get(0);
     // if parent was a GC, ensure returning a GC
-    if (parentGeom.getGeometryType().equals("GeometryCollection"))
+    if (parentGeom == null || parentGeom.getGeometryType().equals("GeometryCollection"))
       return parentGeom.getFactory().createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
     // otherwise return MultiGeom
     return parentGeom.getFactory().buildGeometry(geoms);
   }
   
+  public static Geometry buildGeometry(Geometry[] geoms)
+  {
+    GeometryFactory gf = JTSTestBuilder.getGeometryFactory();
+    if (geoms.length > 0) {
+      gf = getFactoryOrDefault(geoms[0]);
+    }
+    return gf.createGeometryCollection(geoms);
+  }
+  
+  public static Geometry buildGeometry(Geometry a, Geometry b) {
+    int size = 0;
+    if (a != null) size++;
+    if (b != null) size++;
+    Geometry[] geoms = new Geometry[size];
+    if (a != null) geoms[0] = a;
+    if (b != null) geoms[1] = b;
+    return getFactoryOrDefault(a).createGeometryCollection(geoms);
+  }
 
 }
