@@ -39,6 +39,7 @@ import java.awt.geom.Point2D;
 
 import com.vividsolutions.jtstest.*;
 import com.vividsolutions.jtstest.testbuilder.AppCursors;
+import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 
 /**
  * @version 1.7
@@ -73,9 +74,13 @@ public class PanTool extends BasicTool {
     if (source == null)
       return;
     Point2D destination = toModel(e.getPoint());
+    pan(panel(), source, destination);
+  }
+
+  public static void pan(GeometryEditPanel panel, Point2D source, Point2D destination ) {
     double xDisplacement = destination.getX() - source.getX();
     double yDisplacement = destination.getY() - source.getY();
-    panel().zoomPan(xDisplacement, yDisplacement);
+    panel.zoomPan(xDisplacement, yDisplacement);
   }
 
 }

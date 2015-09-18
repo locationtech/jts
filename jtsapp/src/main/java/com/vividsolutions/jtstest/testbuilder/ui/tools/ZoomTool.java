@@ -77,13 +77,22 @@ public class ZoomTool extends BasicTool
   public void mouseReleased(MouseEvent e) {
     // don't process this event if the mouse was clicked or dragged a very short
     // distance
+    zoomBoxEnd = e.getPoint();
     if (!isSignificantMouseMove())
       return;
+    if (e.isControlDown()) {
+      Point2D destination = toModel(e.getPoint());
+      PanTool.pan(panel(), zoomBoxStart, destination);
+      return;
+    }
     panel().zoom(toModel(zoomBoxStart), toModel(zoomBoxEnd));
   }
   
   public void mouseDragged(MouseEvent e)
   {
+    // if panning don't draw zoom box
+    if (e.isControlDown()) return;
+    
   	Point currPoint = e.getPoint();
   	Graphics g = panel().getGraphics();
   	g.setColor(AppConstants.BAND_CLR);
