@@ -75,16 +75,18 @@ public class ZoomTool extends BasicTool
   }
   
   public void mouseReleased(MouseEvent e) {
-    // don't process this event if the mouse was clicked or dragged a very short
+    // don't process event if the mouse was clicked or dragged a very short
     // distance
-    zoomBoxEnd = e.getPoint();
-    if (!isSignificantMouseMove())
+    if (! isSignificantMouseMove(e.getPoint()))
       return;
+    
+    // do Pan
     if (e.isControlDown()) {
       Point2D destination = toModel(e.getPoint());
-      PanTool.pan(panel(), zoomBoxStart, destination);
+      PanTool.pan(panel(), toModel(zoomBoxStart), destination);
       return;
     }
+    // no key -> do Zoom
     panel().zoom(toModel(zoomBoxStart), toModel(zoomBoxEnd));
   }
   
@@ -98,11 +100,11 @@ public class ZoomTool extends BasicTool
   	g.setColor(AppConstants.BAND_CLR);
   	g.setXORMode(Color.white);
   	// erase old rectangle
-  	drawRect(g);
+  	drawRect(g, zoomBoxStart, zoomBoxEnd);
 
   	// draw new zoom box
   	zoomBoxEnd = currPoint;
-  	drawRect(g);
+  	drawRect(g, zoomBoxStart, zoomBoxEnd);
   }
   
   public void mouseWheelMoved(MouseWheelEvent e) {
@@ -114,21 +116,21 @@ public class ZoomTool extends BasicTool
   
   private static final int MIN_MOVEMENT = 3;
   
-  private boolean isSignificantMouseMove()
+  private boolean isSignificantMouseMove(Point p)
   {
-  	if (Math.abs(zoomBoxStart.x - zoomBoxEnd.x) < MIN_MOVEMENT)
+  	if (Math.abs(zoomBoxStart.x - p.x) < MIN_MOVEMENT)
   		return false;
-  	if (Math.abs(zoomBoxStart.y - zoomBoxEnd.y) < MIN_MOVEMENT)
+  	if (Math.abs(zoomBoxStart.y - p.y) < MIN_MOVEMENT)
   		return false;
   	return true;
   }
   
-  public void drawRect(Graphics g)
+  public void drawRect(Graphics g, Point p0, Point p1)
   {
-  	Point base = new Point(Math.min(zoomBoxStart.x, zoomBoxEnd.x),
-  			Math.min(zoomBoxStart.y, zoomBoxEnd.y));
-  	int width = Math.abs(zoomBoxEnd.x - zoomBoxStart.x);
-  	int height = Math.abs(zoomBoxEnd.y - zoomBoxStart.y);
+  	Point base = new Point(Math.min(p0.x, p1.x),
+  			Math.min(p0.y, p1.y));
+  	int width = Math.abs(p1.x - p0.x);
+  	int height = Math.abs(p1.y - p0.y);
   	g.drawRect(base.x, base.y, width, height);
   }
   
