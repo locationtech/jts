@@ -126,6 +126,19 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
   public Geometry getSelectedGeometry() {
     return getGeometryFromNode(tree.getLastSelectedPathComponent());
   }
+  public void moveToNextNode(int direction) {
+    TreePath path = tree.getSelectionPath();
+    GeometricObjectNode curr = (GeometricObjectNode) path.getLastPathComponent();
+    TreePath parentPath = path.getParentPath();
+    GeometricObjectNode parent = (GeometricObjectNode) parentPath.getLastPathComponent();
+    int index = parent.getIndexOfChild(curr);
+    int nextIndex = index + direction;
+    if (nextIndex >= 0 && nextIndex < parent.getChildCount() ) {
+      curr = parent.getChildAt(nextIndex);
+      TreePath nextPath = parentPath.pathByAddingChild(curr);
+      tree.setSelectionPath(nextPath);
+    }
+  }
 
   private static Geometry getGeometryFromNode(Object value) {
     if (value == null) 

@@ -87,6 +87,9 @@ public class GeometryInspectorDialog extends JDialog
 
   JButton btnCopy = new JButton();
 
+  JButton btnNext = new JButton();
+  JButton btnPrev = new JButton();
+
   JButton btnClose = new JButton();
 
   JSplitPane jSplitPane1 = new JSplitPane();
@@ -133,6 +136,22 @@ public class GeometryInspectorDialog extends JDialog
         btnCopy_actionPerformed(e);
       }
     });
+    btnNext.setEnabled(true);
+    btnNext.setText("Zoom Next");
+    btnNext.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e)
+      {
+        btnZoomNext_actionPerformed(e, 1);
+      }
+    });
+    btnPrev.setEnabled(true);
+    btnPrev.setText("Zoom Prev");
+    btnPrev.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e)
+      {
+        btnZoomNext_actionPerformed(e, -1);
+      }
+    });
     btnClose.setToolTipText("");
     btnClose.setText("Close");
     btnClose.addActionListener(new java.awt.event.ActionListener() {
@@ -143,6 +162,8 @@ public class GeometryInspectorDialog extends JDialog
     });
     // cmdButtonPanel.add(btnCopy, null);
     cmdButtonPanel.add(btnZoom, null);
+    cmdButtonPanel.add(btnNext, null);
+    cmdButtonPanel.add(btnPrev, null);
     cmdButtonPanel.add(btnCopy, null);
     //cmdButtonPanel.add(btnClose, null);
     cmdBtnSurroundPanel.add(cmdButtonPanel, BorderLayout.SOUTH);
@@ -203,6 +224,11 @@ public class GeometryInspectorDialog extends JDialog
   
   void btnZoom_actionPerformed(ActionEvent e)
   {
+    JTSTestBuilderFrame.getGeometryEditPanel().zoom(geomTreePanel.getSelectedGeometry());
+  }
+  void btnZoomNext_actionPerformed(ActionEvent e, int direction)
+  {
+    geomTreePanel.moveToNextNode(direction);
     JTSTestBuilderFrame.getGeometryEditPanel().zoom(geomTreePanel.getSelectedGeometry());
   }
 }
