@@ -191,17 +191,6 @@ public class WKTPanel extends JPanel
         aCutButton.setIcon(cutIcon);
         aCutButton.setMargin(new Insets(0, 0, 0, 0));
 
-        aLabelPanel.add(aLabel);
-        aLabel.setAlignmentX(LEFT_ALIGNMENT);
-        //aLabelPanel.add(aRB);
-        aRB.setAlignmentX(LEFT_ALIGNMENT);
-        aRB.setSelected(true);
-        aRB.addActionListener(new java.awt.event.ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            setFocusGeometry(0);
-          }
-        });
-        
         aButtonPanelLayout.setVgap(1);
         aButtonPanelLayout.setHgap(1);
 //        aButtonPanel.setLayout(aButtonPanelLayout);
@@ -209,10 +198,22 @@ public class WKTPanel extends JPanel
         aButtonPanel.add(aCopyButton);
         aButtonPanel.add(aCutButton);
         
+        aLabel.setAlignmentX(LEFT_ALIGNMENT);
+        aRB.setAlignmentX(LEFT_ALIGNMENT);
+        aRB.setSelected(true);
+        aRB.addActionListener(new java.awt.event.ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            setFocusGeometry(0);
+          }
+        });
+        //aLabelPanel.add(aRB);
+        aLabelPanel.add(aLabel);
+        aLabelPanel.add(aButtonPanel);
+        
         aPanel.setLayout(aPanelLayout);
         aPanel.add(aLabelPanel, BorderLayout.WEST);
         aPanel.add(aScrollPane, BorderLayout.CENTER);
-        aPanel.add(aButtonPanel, BorderLayout.EAST);
+        //aPanel.add(aButtonPanel, BorderLayout.EAST);
         
         bCopyButton.setToolTipText("Copy WKT (Ctl-click for formatted)");
         bCopyButton.setIcon(copyIcon);
@@ -226,7 +227,13 @@ public class WKTPanel extends JPanel
         bCutButton.setIcon(cutIcon);
         bCutButton.setMargin(new Insets(0, 0, 0, 0));
 
-        bLabelPanel.add(bLabel);
+        bButtonPanelLayout.setVgap(1);
+        bButtonPanelLayout.setHgap(1);
+//        bButtonPanel.setLayout(bButtonPanelLayout);
+        bButtonPanel.add(bPasteButton);
+        bButtonPanel.add(bCopyButton);
+        bButtonPanel.add(bCutButton);
+
         bLabel.setAlignmentX(LEFT_ALIGNMENT);
         //bLabelPanel.add(bRB);
         bRB.setAlignmentX(LEFT_ALIGNMENT);
@@ -235,18 +242,13 @@ public class WKTPanel extends JPanel
             setFocusGeometry(1);
           }
         });
+        bLabelPanel.add(bLabel);
+        bLabelPanel.add(bButtonPanel);
 
-        bButtonPanelLayout.setVgap(1);
-        bButtonPanelLayout.setHgap(1);
-//        bButtonPanel.setLayout(bButtonPanelLayout);
-        bButtonPanel.add(bPasteButton);
-        bButtonPanel.add(bCopyButton);
-        bButtonPanel.add(bCutButton);
-        
         bPanel.setLayout(bPanelLayout);
         bPanel.add(bLabelPanel, BorderLayout.WEST);
         bPanel.add(bScrollPane, BorderLayout.CENTER);
-        bPanel.add(bButtonPanel, BorderLayout.EAST);
+        //bPanel.add(bButtonPanel, BorderLayout.EAST);
         
         this.add(
             panelAB,

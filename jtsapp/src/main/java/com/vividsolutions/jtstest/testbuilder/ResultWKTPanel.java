@@ -141,7 +141,7 @@ extends JPanel
 
     this.add(jScrollPane1, BorderLayout.CENTER);
     this.add(labelPanel, BorderLayout.NORTH);
-    this.add(rPanel, BorderLayout.EAST);
+    this.add(rPanel, BorderLayout.WEST);
     
     
     jScrollPane1.getViewport().add(txtResult, null);
