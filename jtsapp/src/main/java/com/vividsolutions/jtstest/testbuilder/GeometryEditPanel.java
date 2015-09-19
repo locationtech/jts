@@ -514,7 +514,7 @@ public class GeometryEditPanel extends JPanel
     // fix to allow zooming to points
     if (averageExtent == 0.0)
       averageExtent = 1.0;
-    double buffer = averageExtent * 0.03;
+    double buffer = averageExtent * 0.1;
     zoomEnv.expandBy(buffer);
     viewport.zoom(zoomEnv);
   }
