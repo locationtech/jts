@@ -262,7 +262,7 @@ public class GeometryEditControlPanel extends JPanel
         //jPanel3.setLayout(gridBagLayout5);
         jPanel3.setLayout(new GridLayout(2, 1, 10, 2));
         jPanel3.add(jPanelPM);
-        jPanel3.add(jPanelMagnify);
+        //jPanel3.add(jPanelMagnify);
         
         
         //this.add(jPanel1, BorderLayout.NORTH);
@@ -323,9 +323,11 @@ public class GeometryEditControlPanel extends JPanel
 
     void setGridSizeButton_actionPerformed(ActionEvent e) {}
     
+    /*
     public double getStretchSize()
     {
       Integer size = (Integer) stretchDist.getValue();
       return size.intValue();
     }
+    */
 }

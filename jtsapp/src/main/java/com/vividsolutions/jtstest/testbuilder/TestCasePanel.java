@@ -38,12 +38,17 @@ import java.awt.event.FocusEvent;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
@@ -94,6 +99,10 @@ public class TestCasePanel extends JPanel {
   JLabel lblPrecisionModel = new JLabel();
   ScalarFunctionPanel scalarFunctionPanel = new ScalarFunctionPanel();
   
+  JPanel jPanelMagnify = new JPanel();
+  JSpinner spStretchDist = new JSpinner(new SpinnerNumberModel(5, 0, 99999, 1));
+  JCheckBox cbMagnifyTopo = new JCheckBox();
+
   private TestBuilderModel tbModel;
   
 
@@ -285,17 +294,30 @@ public class TestCasePanel extends JPanel {
     editGroupPanel.add(editFramePanel, BorderLayout.CENTER);
     editGroupPanel.add(statusBarPanel, BorderLayout.SOUTH);
  
+    //cbMagnifyTopo.setText("Magnify");
+    cbMagnifyTopo.setToolTipText("Stretches geometries to reveal topological detail");
+    spStretchDist.setToolTipText("Stretch Distance (pixels)");
+    spStretchDist.setMaximumSize(new Dimension(20,20));
+    ((JSpinner.DefaultEditor) spStretchDist.getEditor()).getTextField().setColumns(2);
+    jPanelMagnify.setLayout(new BoxLayout(jPanelMagnify, BoxLayout.LINE_AXIS));
+    jPanelMagnify.add(Box.createHorizontalGlue());
+    jPanelMagnify.add(cbMagnifyTopo);
+    jPanelMagnify.add(spStretchDist);
+    jPanelMagnify.add(Box.createHorizontalGlue());
+    jPanelMagnify.setBorder(BorderFactory.createLoweredBevelBorder());
+
     statusBarPanel.setLayout(new GridLayout(1,2));
     statusBarPanel.add(testCaseIndexLabel);
+    statusBarPanel.add(jPanelMagnify);
     statusBarPanel.add(lblPrecisionModel);
     statusBarPanel.add(lblMousePos);
     
     add(jTabbedPane1, BorderLayout.WEST);
-    jTabbedPane1.add(editCtlPanel, "Edit");
-    jTabbedPane1.add(validPanel, "Valid / Mark");
-    jTabbedPane1.add(relateTabPanel, "Predicates");
+    //jTabbedPane1.add(editCtlPanel, "Edit");
     jTabbedPane1.add(spatialFunctionPanel,  "Geometry Functions");
     jTabbedPane1.add(scalarFunctionPanel,   "Scalar Functions");
+    jTabbedPane1.add(validPanel, "Valid / Mark");
+    jTabbedPane1.add(relateTabPanel, "Predicates");
     relateTabPanel.add(relatePanel, BorderLayout.CENTER);
     relateTabPanel.add(btnPanel, BorderLayout.NORTH);
     btnPanel.add(btnRunTests, null);
@@ -303,6 +325,10 @@ public class TestCasePanel extends JPanel {
 
   private void updateTestCaseIndexLabel() {
     testCaseIndexLabel.setText(AppStrings.LABEL_TEST_CASE + " " + currentTestCaseIndex + " of " + maxTestCaseIndex);
+  }
+
+  public double getStretchSize() {
+    return ((Integer) spStretchDist.getValue()).intValue();
   }
 }
 

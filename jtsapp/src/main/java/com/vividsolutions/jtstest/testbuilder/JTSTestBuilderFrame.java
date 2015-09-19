@@ -179,13 +179,16 @@ public class JTSTestBuilderFrame extends JFrame
               precisionModelMenuItem_actionPerformed(e);
             }
           });
-      testCasePanel.editCtlPanel.cbMagnifyTopo.addActionListener(
+      //testCasePanel.editCtlPanel.cbMagnifyTopo.addActionListener(
+      testCasePanel.cbMagnifyTopo.addActionListener(
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
               revealTopo_actionPerformed();
             }
           });
-      testCasePanel.editCtlPanel.stretchDist.addChangeListener(new javax.swing.event.ChangeListener() {
+      //testCasePanel.editCtlPanel.stretchDist
+      testCasePanel.spStretchDist
+      .addChangeListener(new javax.swing.event.ChangeListener() {
         public void stateChanged(javax.swing.event.ChangeEvent e) {
           revealTopo_actionPerformed();
         }
@@ -698,8 +701,10 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
   void revealTopo_actionPerformed() {
-  	tbModel.setMagnifyingTopology(testCasePanel.editCtlPanel.cbMagnifyTopo.isSelected());
-    tbModel.setTopologyStretchSize(testCasePanel.editCtlPanel.getStretchSize());
+    tbModel.setMagnifyingTopology(testCasePanel.cbMagnifyTopo.isSelected());
+    tbModel.setTopologyStretchSize(testCasePanel.getStretchSize());
+    //tbModel.setMagnifyingTopology(testCasePanel.editCtlPanel.cbMagnifyTopo.isSelected());
+    //tbModel.setTopologyStretchSize(testCasePanel.editCtlPanel.getStretchSize());
     JTSTestBuilderController.geometryViewChanged();
   }
 
