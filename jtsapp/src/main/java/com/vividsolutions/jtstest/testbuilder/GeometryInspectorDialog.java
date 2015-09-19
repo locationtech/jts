@@ -137,7 +137,7 @@ public class GeometryInspectorDialog extends JDialog
       }
     });
     btnNext.setEnabled(true);
-    btnNext.setText("Zoom Next");
+    btnNext.setText("Next");
     btnNext.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e)
       {
@@ -145,7 +145,7 @@ public class GeometryInspectorDialog extends JDialog
       }
     });
     btnPrev.setEnabled(true);
-    btnPrev.setText("Zoom Prev");
+    btnPrev.setText("Prev");
     btnPrev.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e)
       {
