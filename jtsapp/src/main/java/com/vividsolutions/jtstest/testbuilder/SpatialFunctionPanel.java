@@ -256,6 +256,7 @@ extends JPanel
 
   private void setCurrentFunction(GeometryFunction func) {
     currentFunc = func;
+    // fire execution event even if null, to set UI appropriately
     fireFunctionExecuted(new SpatialFunctionPanelEvent(this));
   }
 
@@ -331,6 +332,7 @@ extends JPanel
 
   public Object[] getFunctionParams()
   {
+    if (currentFunc == null) return null;
     Class[] paramTypes = currentFunc.getParameterTypes();
     Object[] paramVal = new Object[paramTypes.length];
     
