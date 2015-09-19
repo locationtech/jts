@@ -106,11 +106,12 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
 			  Geometry geom = getSelectedGeometry();
 			  if (geom == null) return;
 			  
+        if (e.getClickCount() == 2) {
+          JTSTestBuilderFrame.getGeometryEditPanel().zoom(geom.getEnvelopeInternal());
+        }
+        // would be nice to flash as well as zoom, but zooming drawing is too slow
         if (e.getClickCount() == 1) {
           JTSTestBuilderFrame.getGeometryEditPanel().flash(geom);
-        }
-        else if (e.getClickCount() == 2) {
-          JTSTestBuilderFrame.getGeometryEditPanel().zoom(geom.getEnvelopeInternal());
         }
 			}
 		});
