@@ -25,10 +25,17 @@ public class InspectorPanel extends TestBuilderPanel  {
 
   JLabel lblGeom = new JLabel();
 
+  private boolean showExpand = true;
+
   public InspectorPanel() {
-   super();
-   uiInit();
-  }
+    this(true);
+   }
+
+  public InspectorPanel(boolean showExpand) {
+    super();
+    this.showExpand  = showExpand;
+    uiInit();
+   }
 
   protected void uiInit() {
     this.setLayout(new BorderLayout());
@@ -73,15 +80,6 @@ public class InspectorPanel extends TestBuilderPanel  {
         btnZoomNext_actionPerformed(e, -1);
       }
     });
-    btnExpand.setEnabled(true);
-    btnExpand.setText("...");
-    btnExpand.setToolTipText("Display in window");
-    btnExpand.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e)
-      {
-        btnExpand_actionPerformed();
-      }
-    });
     
     lblGeom.setText(" ");
     lblGeom.setHorizontalAlignment(JLabel.CENTER);
@@ -95,10 +93,21 @@ public class InspectorPanel extends TestBuilderPanel  {
     btnPanel.add(btnCopy);
     this.add(btnPanel, BorderLayout.WEST);
     
-    JPanel btn2Panel = new JPanel();
-    btn2Panel.setLayout(new BoxLayout(btn2Panel, BoxLayout.PAGE_AXIS));
-    btn2Panel.add(btnExpand);
-    this.add(btn2Panel, BorderLayout.EAST);
+    if (showExpand) {
+      btnExpand.setEnabled(true);
+      btnExpand.setText("...");
+      btnExpand.setToolTipText("Display in window");
+      btnExpand.addActionListener(new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e)
+        {
+          btnExpand_actionPerformed();
+        }
+      });
+      JPanel btn2Panel = new JPanel();
+      btn2Panel.setLayout(new BoxLayout(btn2Panel, BoxLayout.PAGE_AXIS));
+      btn2Panel.add(btnExpand);
+      this.add(btn2Panel, BorderLayout.EAST);
+    }
 
   }
   private void btnExpand_actionPerformed() {
