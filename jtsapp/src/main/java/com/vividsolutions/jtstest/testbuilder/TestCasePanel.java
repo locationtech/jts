@@ -295,7 +295,7 @@ public class TestCasePanel extends JPanel {
     editGroupPanel.add(statusBarPanel, BorderLayout.SOUTH);
  
     //cbMagnifyTopo.setText("Magnify");
-    cbMagnifyTopo.setToolTipText("Stretches geometries to reveal topological detail");
+    cbMagnifyTopo.setToolTipText("Magnify Topology - Stretches geometries to reveal topological detail");
     spStretchDist.setToolTipText("Stretch Distance (pixels)");
     spStretchDist.setMaximumSize(new Dimension(20,20));
     ((JSpinner.DefaultEditor) spStretchDist.getEditor()).getTextField().setColumns(2);

@@ -97,4 +97,8 @@ public class JTSTestBuilderController
     JTSTestBuilderFrame.instance().getToolbar().setFocusGeometry(index);    
   }
 
+  public static void inspectGeometry()
+  {
+    JTSTestBuilderFrame.instance().actionInspectGeometry();
+  }
 }

@@ -355,7 +355,7 @@ public class WKTPanel extends JPanel
         inspectButton.addActionListener(
             new ActionListener() {
               public void actionPerformed(ActionEvent e) {
-                tbFrame.actionInspectGeometry();
+                JTSTestBuilderController.inspectGeometry();
               }
             });
        aCopyButton.addActionListener(

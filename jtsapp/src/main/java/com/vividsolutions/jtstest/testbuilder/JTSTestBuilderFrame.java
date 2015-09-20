@@ -101,6 +101,8 @@ import com.vividsolutions.jtstest.util.StringUtil;
 public class JTSTestBuilderFrame extends JFrame 
 {
     
+  private static final String TAB_INSPECT = "Inspect";
+  private static final String TAB_INPUT = "Input";
   private static JTSTestBuilderFrame singleton = null;
   private ResultController resultController = new ResultController(this);
   private JTSTestBuilderMenuBar tbMenuBar = new JTSTestBuilderMenuBar(this);
@@ -118,6 +120,7 @@ public class JTSTestBuilderFrame extends JFrame
   BorderLayout borderLayout3 = new BorderLayout();
   JPanel testPanel = new JPanel();
   WKTPanel wktPanel = new WKTPanel(this);
+  InspectorPanel inspectPanel = new InspectorPanel();
   TestListPanel testListPanel = new TestListPanel(this);
   //LayerListPanel layerListPanel = new LayerListPanel();
   LayerListPanel layerListPanel = new LayerListPanel();
@@ -246,6 +249,7 @@ public class JTSTestBuilderFrame extends JFrame
   	tbModel = model;
     testCasePanel.setModel(tbModel);
     wktPanel.setModel(model);
+    inspectPanel.setModel(model);
     resultWKTPanel.setModel(model);
     resultValuePanel.setModel(model);
     statsPanel.setModel(model);
@@ -306,9 +310,14 @@ public class JTSTestBuilderFrame extends JFrame
     dlg.setVisible(true);
   }
 
+  public void showTab(String name)
+  {
+    inputTabbedPane.setSelectedIndex(inputTabbedPane.indexOfTab(name));
+  }
+  
   public void showGeomsTab()
   {
-    inputTabbedPane.setSelectedIndex(inputTabbedPane.indexOfTab("Input"));
+    inputTabbedPane.setSelectedIndex(inputTabbedPane.indexOfTab(TAB_INPUT));
   }
   
   public void showResultWKTTab()
@@ -435,12 +444,18 @@ public class JTSTestBuilderFrame extends JFrame
     testCaseTextDlg.setVisible(true);
   }
 
-  void actionInspectGeometry() {
+  public void actionInspectGeometry() {
     int geomIndex = tbModel.getGeometryEditModel().getGeomIndex();
+    String tag = geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B;
+    Geometry geometry = tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex);
+    inspectPanel.setGeometry( tag, geometry);
+    showTab(TAB_INSPECT);
+    /*
     geomInspectorDlg.setGeometry(
         geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B,
         tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex));
-    geomInspectorDlg.setVisible(true);
+        */
+    //geomInspectorDlg.setVisible(true);
   }
 
   void menuLoadXmlTestFile_actionPerformed(ActionEvent e) {
@@ -762,7 +777,8 @@ public class JTSTestBuilderFrame extends JFrame
     jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
     jSplitPane1.setResizeWeight(0.5);
     inputTabbedPane.add(testListPanel, "Cases");
-    inputTabbedPane.add(wktPanel,  "Input");
+    inputTabbedPane.add(wktPanel,  TAB_INPUT);
+    inputTabbedPane.add(inspectPanel,  TAB_INSPECT);
     inputTabbedPane.add(resultWKTPanel, "Result");
     inputTabbedPane.add(resultValuePanel, "Value");
     inputTabbedPane.add(statsPanel, "Stats");

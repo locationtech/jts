@@ -77,6 +77,9 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
 	}
 
 	public GeometryTreePanel() {
+	  // default empty model
+	  tree.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("No geometry shown")));
+	  //((DefaultMutableTreeNode)  (tree.getRoot())).removeAllChildren();
 		try {
 			initUI();
 		} catch (Exception ex) {
@@ -127,17 +130,31 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
     return getGeometryFromNode(tree.getLastSelectedPathComponent());
   }
   public void moveToNextNode(int direction) {
+    direction = (int) Math.signum(direction);
     TreePath path = tree.getSelectionPath();
-    GeometricObjectNode curr = (GeometricObjectNode) path.getLastPathComponent();
+    
+    TreePath nextPath2 = nextPath(path, 2 * direction);
+    tree.scrollPathToVisible(nextPath2);
+    
+    TreePath nextPath = nextPath(path, direction);
+    tree.setSelectionPath(nextPath);
+  }
+
+  private TreePath nextPath(TreePath path, int offset) {
+    GeometricObjectNode node = (GeometricObjectNode) path.getLastPathComponent();
     TreePath parentPath = path.getParentPath();
     GeometricObjectNode parent = (GeometricObjectNode) parentPath.getLastPathComponent();
-    int index = parent.getIndexOfChild(curr);
-    int nextIndex = index + direction;
-    if (nextIndex >= 0 && nextIndex < parent.getChildCount() ) {
-      curr = parent.getChildAt(nextIndex);
-      TreePath nextPath = parentPath.pathByAddingChild(curr);
-      tree.setSelectionPath(nextPath);
+    int index = parent.getIndexOfChild(node);
+    int nextIndex = index + offset;
+    if (nextIndex < 0) {
+      nextIndex = 0;
     }
+    else if (nextIndex >= parent.getChildCount() ) {
+      nextIndex = parent.getChildCount() - 1;
+    }
+    GeometricObjectNode nextNode = parent.getChildAt(nextIndex);
+    TreePath nextPath = parentPath.pathByAddingChild(nextNode);
+    return nextPath;
   }
 
   private static Geometry getGeometryFromNode(Object value) {
