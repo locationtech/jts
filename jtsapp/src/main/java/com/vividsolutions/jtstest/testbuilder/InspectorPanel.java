@@ -4,8 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
+import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -19,6 +21,8 @@ public class InspectorPanel extends TestBuilderPanel  {
   JButton btnCopy = new JButton();
   JButton btnNext = new JButton();
   JButton btnPrev = new JButton();
+
+  JLabel lblGeom = new JLabel();
 
   public InspectorPanel() {
    super();
@@ -68,8 +72,13 @@ public class InspectorPanel extends TestBuilderPanel  {
         btnZoomNext_actionPerformed(e, -1);
       }
     });
+    
+    lblGeom.setText(" ");
+    lblGeom.setHorizontalAlignment(JLabel.CENTER);
+
     JPanel btnPanel = new JPanel();
     btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.PAGE_AXIS));
+    btnPanel.add(lblGeom);
     btnPanel.add(btnZoom);
     btnPanel.add(btnNext);
     btnPanel.add(btnPrev);
@@ -95,7 +104,7 @@ public class InspectorPanel extends TestBuilderPanel  {
 
   public void setGeometry(String tag, Geometry a)
   {
-    //geomLabel.setText(tag);
+    lblGeom.setText(tag);
     geomTreePanel.populate(a);
   }
 }
