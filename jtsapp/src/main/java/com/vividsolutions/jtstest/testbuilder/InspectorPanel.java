@@ -10,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 
 public class InspectorPanel extends TestBuilderPanel  {
@@ -20,6 +21,7 @@ public class InspectorPanel extends TestBuilderPanel  {
   JButton btnCopy = new JButton();
   JButton btnNext = new JButton();
   JButton btnPrev = new JButton();
+  JButton btnExpand = new JButton();
 
   JLabel lblGeom = new JLabel();
 
@@ -71,6 +73,15 @@ public class InspectorPanel extends TestBuilderPanel  {
         btnZoomNext_actionPerformed(e, -1);
       }
     });
+    btnExpand.setEnabled(true);
+    btnExpand.setText("...");
+    btnExpand.setToolTipText("Display in window");
+    btnExpand.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e)
+      {
+        btnExpand_actionPerformed();
+      }
+    });
     
     lblGeom.setText(" ");
     lblGeom.setHorizontalAlignment(JLabel.CENTER);
@@ -82,10 +93,16 @@ public class InspectorPanel extends TestBuilderPanel  {
     btnPanel.add(btnNext);
     btnPanel.add(btnPrev);
     btnPanel.add(btnCopy);
-    
     this.add(btnPanel, BorderLayout.WEST);
     
+    JPanel btn2Panel = new JPanel();
+    btn2Panel.setLayout(new BoxLayout(btn2Panel, BoxLayout.PAGE_AXIS));
+    btn2Panel.add(btnExpand);
+    this.add(btn2Panel, BorderLayout.EAST);
 
+  }
+  private void btnExpand_actionPerformed() {
+    JTSTestBuilderController.inspectGeometryDialog();
   }
   private void btnZoom_actionPerformed(ActionEvent e) {
     JTSTestBuilderFrame.getGeometryEditPanel().zoom(geomTreePanel.getSelectedGeometry());

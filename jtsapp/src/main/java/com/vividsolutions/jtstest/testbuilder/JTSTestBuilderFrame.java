@@ -456,6 +456,14 @@ public class JTSTestBuilderFrame extends JFrame
     //geomInspectorDlg.setVisible(true);
   }
 
+  public void actionInspectGeometryDialog() {
+    int geomIndex = tbModel.getGeometryEditModel().getGeomIndex();
+    String tag = geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B;
+    Geometry geometry = tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex);
+    geomInspectorDlg.setGeometry(tag, geometry);
+    geomInspectorDlg.setVisible(true);
+  }
+
   void menuLoadXmlTestFile_actionPerformed(ActionEvent e) {
     try {
       fileChooser.removeChoosableFileFilter(SwingUtil.JAVA_FILE_FILTER);
