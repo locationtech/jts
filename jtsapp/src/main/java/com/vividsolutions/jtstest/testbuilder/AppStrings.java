@@ -10,6 +10,13 @@ public class AppStrings {
   public static final String GEOM_LABEL_A = "A";
   public static final String GEOM_LABEL_B = "B";
   
-  public static final String LOG_TAB_LABEL = "Log";
+  public static final String TAB_LABEL_LOG = "Log";
+  public static final String TAB_LABEL_VALUE = "Value";
+  static final String TAB_LABEL_RESULT = "Result";
+  static final String TAB_LABEL_INSPECT = "Inspect";
+  static final String TAB_LABEL_INPUT = "Input";
+  static final String TAB_LABEL_LAYERS = "Layers";
+  static final String TAB_LABEL_STATS = "Stats";
+  static final String TAB_LABEL_CASES = "Cases";
 
 }

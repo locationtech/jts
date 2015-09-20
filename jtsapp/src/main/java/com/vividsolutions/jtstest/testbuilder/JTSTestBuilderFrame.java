@@ -101,8 +101,6 @@ import com.vividsolutions.jtstest.util.StringUtil;
 public class JTSTestBuilderFrame extends JFrame 
 {
     
-  private static final String TAB_INSPECT = "Inspect";
-  private static final String TAB_INPUT = "Input";
   private static JTSTestBuilderFrame singleton = null;
   private ResultController resultController = new ResultController(this);
   private JTSTestBuilderMenuBar tbMenuBar = new JTSTestBuilderMenuBar(this);
@@ -317,21 +315,21 @@ public class JTSTestBuilderFrame extends JFrame
   
   public void showGeomsTab()
   {
-    inputTabbedPane.setSelectedIndex(inputTabbedPane.indexOfTab(TAB_INPUT));
+    showTab(AppStrings.TAB_LABEL_INPUT);
   }
   
   public void showResultWKTTab()
   {
-    inputTabbedPane.setSelectedIndex(inputTabbedPane.indexOfTab("Result"));
+    showTab(AppStrings.TAB_LABEL_RESULT);
   }
   public void showResultValueTab()
   {
-    inputTabbedPane.setSelectedIndex(inputTabbedPane.indexOfTab("Value"));
+    showTab(AppStrings.TAB_LABEL_VALUE);
   }
   
   public void showInfoTab()
   {
-    inputTabbedPane.setSelectedIndex(inputTabbedPane.indexOfTab(AppStrings.LOG_TAB_LABEL));
+    showTab(AppStrings.TAB_LABEL_LOG);
   }
   
   public void openXmlFilesAndDirectories(File[] files) throws Exception {
@@ -449,7 +447,7 @@ public class JTSTestBuilderFrame extends JFrame
     String tag = geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B;
     Geometry geometry = tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex);
     inspectPanel.setGeometry( tag, geometry);
-    showTab(TAB_INSPECT);
+    showTab(AppStrings.TAB_LABEL_INSPECT);
     /*
     geomInspectorDlg.setGeometry(
         geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B,
@@ -776,14 +774,14 @@ public class JTSTestBuilderFrame extends JFrame
     jPanel2.add(inputTabbedPane, BorderLayout.CENTER);
     jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
     jSplitPane1.setResizeWeight(0.5);
-    inputTabbedPane.add(testListPanel, "Cases");
-    inputTabbedPane.add(wktPanel,  TAB_INPUT);
-    inputTabbedPane.add(inspectPanel,  TAB_INSPECT);
-    inputTabbedPane.add(resultWKTPanel, "Result");
-    inputTabbedPane.add(resultValuePanel, "Value");
-    inputTabbedPane.add(statsPanel, "Stats");
-    inputTabbedPane.add(logPanel, AppStrings.LOG_TAB_LABEL);
-    inputTabbedPane.add(layerListPanel, "Layers");
+    inputTabbedPane.add(testListPanel, AppStrings.TAB_LABEL_CASES);
+    inputTabbedPane.add(wktPanel,  AppStrings.TAB_LABEL_INPUT);
+    inputTabbedPane.add(inspectPanel,  AppStrings.TAB_LABEL_INSPECT);
+    inputTabbedPane.add(resultWKTPanel, AppStrings.TAB_LABEL_RESULT);
+    inputTabbedPane.add(resultValuePanel, AppStrings.TAB_LABEL_VALUE);
+    inputTabbedPane.add(statsPanel, AppStrings.TAB_LABEL_STATS);
+    inputTabbedPane.add(logPanel, AppStrings.TAB_LABEL_LOG);
+    inputTabbedPane.add(layerListPanel, AppStrings.TAB_LABEL_LAYERS);
     inputTabbedPane.setSelectedIndex(1);
     inputTabbedPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e)
