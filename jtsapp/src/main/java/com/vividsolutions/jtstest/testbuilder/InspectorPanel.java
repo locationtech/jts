@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,6 +17,13 @@ import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 
 public class InspectorPanel extends TestBuilderPanel  {
   
+  private static final int BOX_SPACER = 10;
+
+  private final ImageIcon downIcon = IconLoader.icon("Down.gif");
+  private final ImageIcon upIcon = IconLoader.icon("Up.gif");
+  private final ImageIcon zoomIcon = IconLoader.icon("MagnifyCursor.gif");
+  private final ImageIcon copyIcon = IconLoader.icon("Copy.gif");
+
   GeometryTreePanel geomTreePanel;
   
   JButton btnZoom = new JButton();
@@ -45,51 +54,57 @@ public class InspectorPanel extends TestBuilderPanel  {
     this.add(geomTreePanel, BorderLayout.CENTER);
     
     btnZoom.setEnabled(true);
-    btnZoom.setText("Zoom");
+    btnZoom.setMaximumSize(new Dimension(30, 30));
+    //btnZoom.setText("Zoom");
+    btnZoom.setIcon(zoomIcon);
+    btnZoom.setToolTipText("Zoom to component");
     btnZoom.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e)
-      {
+      public void actionPerformed(ActionEvent e) {
         btnZoom_actionPerformed(e);
       }
-
     });
     btnCopy.setEnabled(true);
-    btnCopy.setText("Copy");
+    btnCopy.setMaximumSize(new Dimension(30, 30));
+    //btnCopy.setText("Copy");
+    btnCopy.setIcon(copyIcon);
     btnCopy.setToolTipText("Copy (Ctl-click to copy formatted");
     btnCopy.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e)
-      {
+      public void actionPerformed(ActionEvent e) {
         btnCopy_actionPerformed(e);
       }
-
     });
     btnNext.setEnabled(true);
-    btnNext.setText("Next");
+    btnNext.setMaximumSize(new Dimension(30, 30));
+    //btnNext.setText("Next");
+    btnNext.setIcon(downIcon);
     btnNext.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e)
-      {
+      public void actionPerformed(ActionEvent e) {
         btnZoomNext_actionPerformed(e, 1);
       }
-
     });
     btnPrev.setEnabled(true);
-    btnPrev.setText("Prev");
+    btnPrev.setMaximumSize(new Dimension(30, 30));
+    //btnPrev.setText("Prev");
+    btnPrev.setIcon(upIcon);
     btnPrev.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e)
-      {
+      public void actionPerformed(ActionEvent e) {
         btnZoomNext_actionPerformed(e, -1);
       }
     });
     
     lblGeom.setText(" ");
+    lblGeom.setMaximumSize(new Dimension(30, 30));
     lblGeom.setHorizontalAlignment(JLabel.CENTER);
 
     JPanel btnPanel = new JPanel();
     btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.PAGE_AXIS));
     btnPanel.add(lblGeom);
-    btnPanel.add(btnZoom);
-    btnPanel.add(btnNext);
+    btnPanel.add(Box.createRigidArea(new Dimension(0, BOX_SPACER)));
     btnPanel.add(btnPrev);
+    btnPanel.add(btnNext);
+    btnPanel.add(Box.createRigidArea(new Dimension(0, BOX_SPACER)));
+    btnPanel.add(btnZoom);
+    btnPanel.add(Box.createRigidArea(new Dimension(0, BOX_SPACER)));
     btnPanel.add(btnCopy);
     this.add(btnPanel, BorderLayout.WEST);
     
