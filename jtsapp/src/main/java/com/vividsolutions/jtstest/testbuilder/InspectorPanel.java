@@ -17,7 +17,7 @@ import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 
 public class InspectorPanel extends TestBuilderPanel  {
   
-  private static final int BOX_SPACER = 10;
+  private static final int BOX_SPACER = 5;
 
   private final ImageIcon downIcon = IconLoader.icon("Down.gif");
   private final ImageIcon upIcon = IconLoader.icon("Up.gif");
@@ -54,7 +54,7 @@ public class InspectorPanel extends TestBuilderPanel  {
     this.add(geomTreePanel, BorderLayout.CENTER);
     
     btnZoom.setEnabled(true);
-    btnZoom.setMaximumSize(new Dimension(30, 30));
+    btnZoom.setMaximumSize(new Dimension(30, 26));
     //btnZoom.setText("Zoom");
     btnZoom.setIcon(zoomIcon);
     btnZoom.setToolTipText("Zoom to component");
