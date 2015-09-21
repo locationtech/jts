@@ -110,6 +110,7 @@ public class InspectorPanel extends TestBuilderPanel  {
     
     if (showExpand) {
       btnExpand.setEnabled(true);
+      btnExpand.setMaximumSize(new Dimension(30, 30));
       btnExpand.setText("...");
       btnExpand.setToolTipText("Display in window");
       btnExpand.addActionListener(new java.awt.event.ActionListener() {
