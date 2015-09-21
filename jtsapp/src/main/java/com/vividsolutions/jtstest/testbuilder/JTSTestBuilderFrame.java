@@ -684,6 +684,11 @@ public class JTSTestBuilderFrame extends JFrame
     JTSTestBuilderController.geometryViewChanged();
   }
 
+  public void setShowingLabel(boolean showLabel) {
+    TestBuilderModel.setShowingLabel(showLabel);
+    JTSTestBuilderController.geometryViewChanged();
+  }
+
   void showVertexIndicesMenuItem_actionPerformed(ActionEvent e) {
 //    testCasePanel.editPanel.setShowVertexIndices(showVertexIndicesMenuItem.isSelected());
   }

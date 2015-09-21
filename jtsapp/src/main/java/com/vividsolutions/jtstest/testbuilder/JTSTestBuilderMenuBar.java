@@ -133,6 +133,12 @@ public class JTSTestBuilderMenuBar
           tbFrame.setShowingVertices(showVerticesMenuItem.isSelected());
         }
       });
+    final JCheckBoxMenuItem showLabelMenuItem = menuItem("Labels", true);
+    showLabelMenuItem.addActionListener(  new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          tbFrame.setShowingLabel(showLabelMenuItem.isSelected());
+        }
+      });
     showGridMenuItem.setText("Grid");
     showGridMenuItem.setSelected(true);
     showGridMenuItem.addActionListener(
@@ -216,6 +222,8 @@ public class JTSTestBuilderMenuBar
     //jMenuOptions.add(showVertexIndicesMenuItem);
     jMenuView.add(showStructureMenuItem);
     jMenuView.add(showOrientationsMenuItem);
+    jMenuView.add(showLabelMenuItem);
+    jMenuView.addSeparator();
     jMenuView.add(showGridMenuItem);
     jMenuView.addSeparator();
     jMenuView.add(menuViewText);
@@ -237,5 +245,12 @@ public class JTSTestBuilderMenuBar
     jMenuBar1.add(jMenuHelp);
 
     return jMenuBar1;
+  }
+  
+  JCheckBoxMenuItem menuItem(String name, boolean init) {
+    JCheckBoxMenuItem item = new JCheckBoxMenuItem();
+    item.setText("Labels");
+    item.setSelected(init);
+    return item;
   }
 }

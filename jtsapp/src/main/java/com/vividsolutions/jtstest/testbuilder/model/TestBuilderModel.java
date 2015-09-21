@@ -23,9 +23,11 @@ public class TestBuilderModel
   protected static boolean showingStructure = false;
   protected static boolean showingOrientation = false;
   protected static boolean showingVertices = true;
-  protected static boolean showingCoordinates = true;
+  protected static boolean showingLabel = true;
+ protected static boolean showingCoordinates = true;
   protected static boolean isMagnifyingTopology = false;
   protected static double topologyStretchSize = AppConstants.TOPO_STRETCH_VIEW_DIST;
+
   
   public static boolean isShowingStructure() {
     return showingStructure;
@@ -50,6 +52,12 @@ public class TestBuilderModel
   }
   public static void setShowingVertices(boolean show) {
     showingVertices = show;
+  }
+  public static void setShowingLabel(boolean show) {
+    showingLabel = show;
+  }
+  public static boolean isShowingLabel() {
+    return showingLabel;
   }
   public boolean isMagnifyingTopology() {
     return isMagnifyingTopology;

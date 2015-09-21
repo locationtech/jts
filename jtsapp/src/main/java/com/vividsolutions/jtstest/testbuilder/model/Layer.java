@@ -39,6 +39,12 @@ public class Layer
     }
   };
     
+  private StyleList.StyleFilter labelFilter = new StyleList.StyleFilter() {
+    public boolean isFiltered(Style style) {
+      return ! TestBuilderModel.isShowingLabel();
+    }
+  };
+    
   public Layer(String name) {
     this.name = name;
   }
@@ -88,7 +94,7 @@ public class Layer
     styleList.add(style);
     styleList.add(polyStyle, structureFilter);
     styleList.add(indexStyle, structureFilter);
-    styleList.add(dataLabelStyle);
+    styleList.add(dataLabelStyle, labelFilter);
   }
   
   public Geometry getGeometry()
