@@ -35,6 +35,7 @@ package com.vividsolutions.jts.noding.snapround;
 
 import com.vividsolutions.jts.algorithm.*;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.io.WKTWriter;
 import com.vividsolutions.jts.noding.*;
 import com.vividsolutions.jts.util.*;
 
@@ -241,7 +242,9 @@ public class HotPixel
   {
     boolean intersectsLeft = false;
     boolean intersectsBottom = false;
-
+    //System.out.println("Hot Pixel: " + WKTWriter.toLineString(corner));
+    //System.out.println("Line: " + WKTWriter.toLineString(p0, p1));
+    
     li.computeIntersection(p0, p1, corner[0], corner[1]);
     if (li.isProper()) return true;
 

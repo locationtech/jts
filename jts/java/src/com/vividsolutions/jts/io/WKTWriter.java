@@ -100,6 +100,32 @@ public class WKTWriter
     }
     return buf.toString();
   }
+  
+  /**
+   * Generates the WKT for a <tt>LINESTRING</tt>
+   * specified by a {@link CoordinateSequence}.
+   *
+   * @param seq the sequence to write
+   *
+   * @return the WKT string
+   */
+  public static String toLineString(Coordinate[] coord)
+  {
+    StringBuffer buf = new StringBuffer();
+    buf.append("LINESTRING ");
+    if (coord.length == 0)
+      buf.append(" EMPTY");
+    else {
+      buf.append("(");
+      for (int i = 0; i < coord.length; i++) {
+        if (i > 0)
+          buf.append(", ");
+        buf.append(coord[i].x + " " + coord[i].y );
+      }
+      buf.append(")");
+    }
+    return buf.toString();
+  }
 
   /**
    * Generates the WKT for a <tt>LINESTRING</tt>
