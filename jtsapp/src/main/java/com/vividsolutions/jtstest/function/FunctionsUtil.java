@@ -53,10 +53,10 @@ public class FunctionsUtil {
     if (geoms.size() == 1) 
       return (Geometry) geoms.get(0);
     // if parent was a GC, ensure returning a GC
-    if (parentGeom == null || parentGeom.getGeometryType().equals("GeometryCollection"))
+    if (parentGeom != null && parentGeom.getGeometryType().equals("GeometryCollection"))
       return parentGeom.getFactory().createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
     // otherwise return MultiGeom
-    return parentGeom.getFactory().buildGeometry(geoms);
+    return getFactoryOrDefault(parentGeom).buildGeometry(geoms);
   }
   
   public static Geometry buildGeometry(Geometry[] geoms)
@@ -69,13 +69,17 @@ public class FunctionsUtil {
   }
   
   public static Geometry buildGeometry(Geometry a, Geometry b) {
+    Geometry[] geoms = toGeometryArray(a, b);
+    return getFactoryOrDefault(a, b).createGeometryCollection(geoms);  }
+
+  public static Geometry[] toGeometryArray(Geometry a, Geometry b) {
     int size = 0;
     if (a != null) size++;
     if (b != null) size++;
     Geometry[] geoms = new Geometry[size];
-    if (a != null) geoms[0] = a;
-    if (b != null) geoms[1] = b;
-    return getFactoryOrDefault(a).createGeometryCollection(geoms);
+    size = 0;
+    if (a != null) geoms[size++] = a;
+    if (b != null) geoms[size] = b;
+    return geoms;
   }
-
 }
