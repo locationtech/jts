@@ -56,4 +56,18 @@ public class BasicCoordinateSequenceTest extends TestCase {
         assertTrue(s1.getCoordinate(0).equals(s2.getCoordinate(0)));
         assertTrue(s1.getCoordinate(0) != s2.getCoordinate(0));
     }
+
+  public void testCloneDimension2() {
+    CoordinateSequence s1 = CoordinateArraySequenceFactory.instance()
+        .create( 2, 2 );
+    s1.setOrdinate(0, 0, 1);
+    s1.setOrdinate(0, 1, 2);
+    s1.setOrdinate(1, 0, 3);
+    s1.setOrdinate(1, 1, 4);
+
+    CoordinateSequence s2 = (CoordinateSequence) s1.clone();
+    assertTrue(s1.getDimension() == s2.getDimension());
+    assertTrue(s1.getCoordinate(0).equals(s2.getCoordinate(0)));
+    assertTrue(s1.getCoordinate(0) != s2.getCoordinate(0));
+  }
 }

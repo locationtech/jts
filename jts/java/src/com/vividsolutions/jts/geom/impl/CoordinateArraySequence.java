@@ -210,7 +210,7 @@ public class CoordinateArraySequence
     for (int i = 0; i < coordinates.length; i++) {
       cloneCoordinates[i] = (Coordinate) coordinates[i].clone();
     }
-    return new CoordinateArraySequence(cloneCoordinates);
+    return new CoordinateArraySequence(cloneCoordinates, dimension);
   }
   /**
    * Returns the size of the coordinate sequence
