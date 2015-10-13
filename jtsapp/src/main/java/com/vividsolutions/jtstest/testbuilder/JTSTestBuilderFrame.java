@@ -789,9 +789,9 @@ public class JTSTestBuilderFrame extends JFrame
     jSplitPane1.setResizeWeight(0.5);
     inputTabbedPane.add(testListPanel, AppStrings.TAB_LABEL_CASES);
     inputTabbedPane.add(wktPanel,  AppStrings.TAB_LABEL_INPUT);
-    inputTabbedPane.add(inspectPanel,  AppStrings.TAB_LABEL_INSPECT);
     inputTabbedPane.add(resultWKTPanel, AppStrings.TAB_LABEL_RESULT);
     inputTabbedPane.add(resultValuePanel, AppStrings.TAB_LABEL_VALUE);
+    inputTabbedPane.add(inspectPanel,  AppStrings.TAB_LABEL_INSPECT);
     inputTabbedPane.add(statsPanel, AppStrings.TAB_LABEL_STATS);
     inputTabbedPane.add(logPanel, AppStrings.TAB_LABEL_LOG);
     inputTabbedPane.add(layerListPanel, AppStrings.TAB_LABEL_LAYERS);
