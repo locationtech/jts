@@ -42,29 +42,27 @@ import com.vividsolutions.jts.noding.*;
 import com.vividsolutions.jts.noding.snapround.*;
 
 /**
- * Nodes the linework in a list of {@link Geometry}s using Snap-Rounding
+ * Nodes a {@link Geometry} using Snap-Rounding
  * to a given {@link PrecisionModel}.
- * <p>
- * The input coordinates are expected to be rounded
+ * <ul>
+ * <li>Point geometries are not handled.  They are skipped if present in the input.
+ * <li>Linestrings which collapse to a point due to snapping are removed.
+ * <li>Polygonal output may not be valid.  
+ * Invalid output is due to the introduction of topology collapses.
+ * This should be straightforward to clean using standard heuristics (e.g. buffer(0) ).
+ * </ul>
+ * The input geometry coordinates are expected to be rounded
  * to the given precision model.
  * This class does not perform that function.
  * <code>GeometryPrecisionReducer</code> may be used to do this.
- * <p>
- * This class does <b>not</b> dissolve the output linework,
- * so there may be duplicate linestrings in the output.  
- * Subsequent processing (e.g. polygonization) may require
- * the linework to be unique.  Using <code>UnaryUnion</code> is one way
- * to do this (although this is an inefficient approach).
- * 
- * 
  */
 public class GeometrySnapRounder
 {
-  private GeometryFactory geomFact;
   private PrecisionModel pm;
+  private boolean isLineworkOnly = false;
 
   /**
-   * Creates a new noder which snap-rounds to a grid specified
+   * Creates a new snap-rounder which snap-rounds to a grid specified
    * by the given {@link PrecisionModel}.
    * 
    * @param pm the precision model for the grid to snap-round to
@@ -73,65 +71,36 @@ public class GeometrySnapRounder
     this.pm = pm;
   }
   
+  public void setLineworkOnly(boolean isLineworkOnly) {
+    this.isLineworkOnly = isLineworkOnly;
+  }
+  
   /**
-   * Nodes the linework of a set of Geometrys using SnapRounding. 
+   * Snap-rounds the given geometry.
+   *  
    * 
-   * @param geoms a Collection of Geometrys of any type
-   * @return a List of LineStrings representing the noded linework of the input
+   * @param geom
+   * @return
    */
-  public List node(Collection geoms)
-  {
-    // get geometry factory
-    Geometry geom0 = (Geometry) geoms.iterator().next();
-    geomFact = geom0.getFactory();
-
-    List segStrings = extractSegmentStrings(geoms);
-    //Noder sr = new SimpleSnapRounder(pm);
-    Noder sr = new MCIndexSnapRounder(pm);
-    sr.computeNodes(segStrings);
+  public Geometry execute(Geometry geom) {
     
-    List nodedLines = getNodedLines(segStrings);
-    return nodedLines;
+    // TODO: reduce precision of input automatically
+    // TODO: add switch to GeometryPrecisionReducer to NOT check & clean invalid polygonal geometry (not needed here)
+    // TODO: OR just do precision reduction with custom code here 
     
-  }
-  
-  public Geometry node(Geometry geom) {
+    List segStrings = extractTaggedSegmentStrings(geom, pm);
+    snapRound(segStrings);
     
-    List geomList = new ArrayList();
-    geomList.add(geom);
-    List segStrings = extractSegmentStrings(geomList);
-    //Noder sr = new SimpleSnapRounder(pm);
-    Noder sr = new MCIndexSnapRounder(pm);
-    sr.computeNodes(segStrings);
-
-    
-    Map nodedPtsMap = getNodedPtsMap(segStrings);
-    GeometryLineReplacer lineReplacer = new GeometryLineReplacer(nodedPtsMap);
-    GeometryEditor geomEditor = new GeometryEditor();
-    Geometry snapped = geomEditor.edit(geom,  lineReplacer);
-    return snapped;
-    
-  }
-
-  private List extractSegmentStrings(Collection geoms)
-  {
-    final List segStrings = new ArrayList();
-    GeometryComponentFilter filter = new GeometryComponentFilter() {
-
-      public void filter(Geometry geom) {
-        if (! (geom instanceof LineString) ) return;
-        segStrings.add(new NodedSegmentString(geom.getCoordinates(), geom));
-      }
-      
-    };
-    for (Iterator it = geoms.iterator(); it.hasNext(); ) {
-      Geometry geom = (Geometry) it.next();
-      geom.apply(filter);
+    if (isLineworkOnly) {
+      return toNodedLines(segStrings, geom.getFactory());
     }
-    return segStrings;
+    
+    Geometry geomSnapped = replaceLines(geom, segStrings);
+    Geometry geomClean = clean(geomSnapped);
+    return geomClean;
   }
-  
-  private List getNodedLines(Collection segStrings) {
+
+  private Geometry toNodedLines(Collection segStrings, GeometryFactory geomFact) {
     List lines = new ArrayList();
     for (Iterator it = segStrings.iterator(); it.hasNext(); ) {
       NodedSegmentString nss = (NodedSegmentString) it.next();
@@ -143,55 +112,96 @@ public class GeometrySnapRounder
       
       lines.add(geomFact.createLineString(pts));
     }
-    return lines;
+    return geomFact.buildGeometry(lines);
   }
-  private HashMap getNodedPtsMap(Collection segStrings) {
+  
+  private Geometry replaceLines(Geometry geom, List segStrings) {
+    Map nodedLinesMap = nodedLinesMap(segStrings);
+    GeometryCoordinateReplacer lineReplacer = new GeometryCoordinateReplacer(nodedLinesMap);
+    GeometryEditor geomEditor = new GeometryEditor();
+    Geometry snapped = geomEditor.edit(geom,  lineReplacer);
+    return snapped;
+  }
+
+  private void snapRound(List segStrings) {
+    //Noder sr = new SimpleSnapRounder(pm);
+    Noder sr = new MCIndexSnapRounder(pm);
+    sr.computeNodes(segStrings);
+  }
+
+  private HashMap nodedLinesMap(Collection segStrings) {
     HashMap ptsMap = new HashMap();
     for (Iterator it = segStrings.iterator(); it.hasNext(); ) {
       NodedSegmentString nss = (NodedSegmentString) it.next();
       // skip collapsed lines
       if (nss.size() < 2)
         continue;
-      //Coordinate[] pts = getCoords(nss);
       Coordinate[] pts = nss.getNodeList().getSplitCoordinates();
-      
       ptsMap.put(nss.getData(), pts);
     }
     return ptsMap;
   }
-
-  /*
-  private Coordinate[] getCoords(NodedSegmentString nss) {
-    List edges = new ArrayList();
-    nss.getNodeList().addSplitEdges(edges);
-    CoordinateList coordList = new CoordinateList();
-    for (Iterator it = edges.iterator(); it.hasNext(); ) {
-      SegmentString ss = (SegmentString) it.next();
-      Coordinate[] coords = ss.getCoordinates();
-      coordList.add(coords, false);
-    }    
-    
-    Coordinate[] pts = coordList.toCoordinateArray();
-    return pts;
-  }
-*/
-
-}
-
-class GeometryLineReplacer extends CoordinateSequenceOperation {
-
-  private Map geometryPtsMap;
-
-  public GeometryLineReplacer(Map geometryPtsMap) {
-    this.geometryPtsMap = geometryPtsMap;
+  
+  static List extractTaggedSegmentStrings(Geometry geom, final PrecisionModel pm)
+  {
+    final List segStrings = new ArrayList();
+    GeometryComponentFilter filter = new GeometryComponentFilter() {
+      public void filter(Geometry geom) {
+        // Extract linework for lineal components only
+        if (! (geom instanceof LineString) ) return;
+        // skip empty lines
+        if (geom.getNumPoints() <= 0) return;
+        Coordinate[] roundPts = round( ((LineString)geom).getCoordinateSequence(), pm);
+        segStrings.add(new NodedSegmentString(roundPts, geom));
+      }
+    };
+    geom.apply(filter);
+    return segStrings;
   }
   
-  public CoordinateSequence edit(CoordinateSequence coordSeq, Geometry geometry) {
-    if (geometryPtsMap.containsKey(geometry)) {
-      Coordinate[] pts = (Coordinate[]) geometryPtsMap.get(geometry);
-      return geometry.getFactory().getCoordinateSequenceFactory().create(pts);
+  static Coordinate[] round(CoordinateSequence seq, PrecisionModel pm) {
+    if (seq.size() == 0) return new Coordinate[0];
+
+    CoordinateList coordList = new CoordinateList();  
+    // copy coordinates and reduce
+    for (int i = 0; i < seq.size(); i++) {
+      Coordinate coord = new Coordinate(
+          seq.getOrdinate(i,  Coordinate.X),
+          seq.getOrdinate(i,  Coordinate.Y) );
+      pm.makePrecise(coord);
+      coordList.add(coord, false);
     }
-    return coordSeq;
+    Coordinate[] coord = coordList.toCoordinateArray();
+    
+    //TODO: what if seq is too short?
+    return coord;
   }
   
+  private static Geometry clean(Geometry geom) {
+    if (! (geom instanceof Polygonal) ) return geom;
+    if (geom.isValid()) return geom;
+    
+    // TODO: use a better method of removing collapsed topology 
+    return geom.buffer(0);
+  }
+  
+  private static class GeometryCoordinateReplacer extends CoordinateSequenceOperation {
+  
+    private Map geometryLinesMap;
+  
+    public GeometryCoordinateReplacer(Map linesMap) {
+      this.geometryLinesMap = linesMap;
+    }
+    
+    public CoordinateSequence edit(CoordinateSequence coordSeq, Geometry geometry) {
+      if (geometryLinesMap.containsKey(geometry)) {
+        Coordinate[] pts = (Coordinate[]) geometryLinesMap.get(geometry);
+        return geometry.getFactory().getCoordinateSequenceFactory().create(pts);
+      }
+      // should this return null if no matching snapped line is found (e.g. could have been reduced to a point)
+      return coordSeq;
+    }
+  }
 }
+
+
