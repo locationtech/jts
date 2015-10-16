@@ -30,6 +30,7 @@ public class SnapRoundOverlayFunctions {
       Geometry geomA, Geometry geomB, 
       double scaleFactor) {
     Geometry snapped = SnapRoundFunctions.snapRound(geomA, geomB, scaleFactor);
+    // TODO: don't need to clean once GeometrySnapRounder ensures all components are valid
     Geometry aSnap = clean(snapped.getGeometryN(0));
     Geometry bSnap = clean(snapped.getGeometryN(1));
     return new Geometry[] { aSnap, bSnap };
