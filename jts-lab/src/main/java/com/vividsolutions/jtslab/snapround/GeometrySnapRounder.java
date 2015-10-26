@@ -33,13 +33,26 @@ package com.vividsolutions.jtslab.snapround;
 *     www.vividsolutions.com
 */
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.*;
-import com.vividsolutions.jts.geom.util.GeometryEditor.CoordinateSequenceOperation;
-import com.vividsolutions.jts.noding.*;
-import com.vividsolutions.jts.noding.snapround.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateList;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryComponentFilter;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Polygonal;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.noding.NodedSegmentString;
+import com.vividsolutions.jts.noding.Noder;
+import com.vividsolutions.jts.noding.snapround.MCIndexSnapRounder;
+import com.vividsolutions.jtslab.geom.util.GeometryEditorEx;
 
 /**
  * Nodes a {@link Geometry} using Snap-Rounding
@@ -118,8 +131,8 @@ public class GeometrySnapRounder
   private Geometry replaceLines(Geometry geom, List segStrings) {
     Map nodedLinesMap = nodedLinesMap(segStrings);
     GeometryCoordinateReplacer lineReplacer = new GeometryCoordinateReplacer(nodedLinesMap);
-    GeometryEditor geomEditor = new GeometryEditor();
-    Geometry snapped = geomEditor.edit(geom,  lineReplacer);
+    GeometryEditorEx geomEditor = new GeometryEditorEx(lineReplacer);
+    Geometry snapped = geomEditor.edit(geom);
     return snapped;
   }
 
@@ -187,61 +200,8 @@ public class GeometrySnapRounder
 
   private static Geometry cleanPolygonal(Geometry geom) {
     // TODO: use a better method of removing collapsed topology 
-    return geom.buffer(0);
-  }
-  
-  private static class GeometryCoordinateReplacer extends CoordinateSequenceOperation {
-  
-    private Map geometryLinesMap;
-  
-    public GeometryCoordinateReplacer(Map linesMap) {
-      this.geometryLinesMap = linesMap;
-    }
-    
-    /**
-     * Gets the snapped coordinate array for an atomic geometry,
-     * or null if it has collapsed.
-     * 
-     * @return the snapped coordinate array for this geometry
-     * @return null if the snapped coordinates have collapsed, or are missing
-     */
-    public CoordinateSequence edit(CoordinateSequence coordSeq, Geometry geometry) {
-      if (geometryLinesMap.containsKey(geometry)) {
-        Coordinate[] pts = (Coordinate[]) geometryLinesMap.get(geometry);
-        // Assert: pts should always have length > 0
-        boolean isValidPts = isValidSize(pts, geometry);
-        if (! isValidPts) return null;
-        return geometry.getFactory().getCoordinateSequenceFactory().create(pts);
-      }
-      //TODO: should this return null if no matching snapped line is found
-      // probably should never reach here?
-      return coordSeq;
-    }
-
-    /**
-     * Tests if a coordinate array has a size which is 
-     * valid for the containing geometry.
-     * 
-     * @param pts the point list to validate
-     * @param geom the atomic geometry containing the point list
-     * @return true if the coordinate array is a valid size
-     */
-    private static boolean isValidSize(Coordinate[] pts, Geometry geom) {
-      if (pts.length == 0) return true;
-      int minSize = minimumNonEmptyCoordinatesSize(geom);
-      if (pts.length < minSize) {
-        return false;
-      }
-      return true;
-    }
-
-    private static int minimumNonEmptyCoordinatesSize(Geometry geom) {
-      if (geom instanceof LinearRing)
-        return 4;
-      if (geom instanceof LineString)
-        return 2;
-      return 0;
-    }
+    //return geom.buffer(0);
+    return PolygonCleaner.clean(geom);
   }
 }
 
