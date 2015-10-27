@@ -191,15 +191,11 @@ public class GeometrySnapRounder
   }
   
   private static Geometry ensureValid(Geometry geom) {
-    // TODO: need to ensure all polygonal components are valid
     if (geom.isValid()) return geom;
-    
     return cleanPolygonal(geom);
   }
 
   private static Geometry cleanPolygonal(Geometry geom) {
-    // TODO: use a better method of removing collapsed topology 
-    //return geom.buffer(0);
     return PolygonCleaner.clean(geom);
   }
 }
