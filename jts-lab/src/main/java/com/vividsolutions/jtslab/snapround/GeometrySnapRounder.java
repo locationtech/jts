@@ -192,7 +192,6 @@ public class GeometrySnapRounder
   
   private static Geometry ensureValid(Geometry geom) {
     // TODO: need to ensure all polygonal components are valid
-    if (! (geom instanceof Polygonal) ) return geom;
     if (geom.isValid()) return geom;
     
     return cleanPolygonal(geom);
