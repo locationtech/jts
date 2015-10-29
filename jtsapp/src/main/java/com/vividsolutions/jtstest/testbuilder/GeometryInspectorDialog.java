@@ -76,6 +76,6 @@ public class GeometryInspectorDialog extends JDialog
   }
 
   public void setGeometry(String tag, Geometry geometry) {
-    inspectPanel.setGeometry(tag, geometry);
+    inspectPanel.setGeometry(tag, geometry, 0);
   }
 }

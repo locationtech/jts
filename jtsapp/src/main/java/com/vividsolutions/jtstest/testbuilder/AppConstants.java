@@ -43,10 +43,17 @@ public class AppConstants
 	public static final Color GRID_MINOR_CLR = ColorUtil.gray(190);
   public static int TOLERANCE_PIXELS = 5;
 
-  public final static ImageIcon drawPolygonIcon = new ImageIcon(AppConstants.class.getResource("DrawPolygon.png"));
-  public final static ImageIcon drawLinearRingIcon = new ImageIcon(AppConstants.class.getResource("DrawLinearRing.png"));
-  public final static ImageIcon drawLineStringIcon = new ImageIcon(AppConstants.class.getResource("DrawLineString.png"));
-  public final static ImageIcon drawPointIcon = new ImageIcon(AppConstants.class.getResource("DrawPoint.png"));
+  public final static ImageIcon ICON_POLYGON = new ImageIcon(AppConstants.class.getResource("DrawPolygon.png"));
+  public final static ImageIcon ICON_POLYGON_B = new ImageIcon(AppConstants.class.getResource("DrawPolygonB.png"));
+  public final static ImageIcon ICON_LINEARRING = new ImageIcon(AppConstants.class.getResource("DrawLinearRing.png"));
+  public final static ImageIcon ICON_LINEARRING_B = new ImageIcon(AppConstants.class.getResource("DrawLinearRingB.png"));
+  public final static ImageIcon ICON_LINESTRING = new ImageIcon(AppConstants.class.getResource("DrawLineString.png"));
+  public final static ImageIcon ICON_LINESTRING_B = new ImageIcon(AppConstants.class.getResource("DrawLineStringB.png"));
+  public final static ImageIcon ICON_POINT = new ImageIcon(AppConstants.class.getResource("DrawPoint.png"));
+  public final static ImageIcon ICON_POINT_B = new ImageIcon(AppConstants.class.getResource("DrawPointB.png"));
+  
+  
   public final static Font FONT_LABEL = new Font(FontGlyphReader.FONT_SANSSERIF, Font.BOLD, 12);
+
 
 }

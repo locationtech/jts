@@ -163,8 +163,8 @@ public class GeometryTreePanel extends JPanel implements TreeWillExpandListener
     return ((GeometricObjectNode) value).getGeometry();
   }
 
-	public void populate(Geometry geom) {
-		tree.setModel(new GeometryTreeModel(geom));
+	public void populate(Geometry geom, int source) {
+		tree.setModel(new GeometryTreeModel(geom, source));
 	}
 
   //Required by TreeWillExpandListener interface.

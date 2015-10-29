@@ -143,9 +143,9 @@ public class InspectorPanel extends TestBuilderPanel  {
     SwingUtil.copyToClipboard(geom, isFormatted);
   }
 
-  public void setGeometry(String tag, Geometry a)
+  public void setGeometry(String tag, Geometry a, int source)
   {
     lblGeom.setText(tag);
-    geomTreePanel.populate(a);
+    geomTreePanel.populate(a, source);
   }
 }

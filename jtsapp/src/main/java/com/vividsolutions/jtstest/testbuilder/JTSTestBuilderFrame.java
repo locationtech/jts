@@ -446,7 +446,7 @@ public class JTSTestBuilderFrame extends JFrame
     int geomIndex = tbModel.getGeometryEditModel().getGeomIndex();
     String tag = geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B;
     Geometry geometry = tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex);
-    inspectPanel.setGeometry( tag, geometry);
+    inspectPanel.setGeometry( tag, geometry, geomIndex);
     showTab(AppStrings.TAB_LABEL_INSPECT);
     /*
     geomInspectorDlg.setGeometry(
