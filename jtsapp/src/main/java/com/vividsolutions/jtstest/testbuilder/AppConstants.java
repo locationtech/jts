@@ -43,6 +43,8 @@ public class AppConstants
 	public static final Color GRID_MINOR_CLR = ColorUtil.gray(190);
   public static int TOLERANCE_PIXELS = 5;
 
+  public final static ImageIcon ICON_COLLECTION = new ImageIcon(AppConstants.class.getResource("Icon_GeomCollection.png"));
+  public final static ImageIcon ICON_COLLECTION_B = new ImageIcon(AppConstants.class.getResource("Icon_GeomCollection_B.png"));
   public final static ImageIcon ICON_POLYGON = new ImageIcon(AppConstants.class.getResource("DrawPolygon.png"));
   public final static ImageIcon ICON_POLYGON_B = new ImageIcon(AppConstants.class.getResource("DrawPolygonB.png"));
   public final static ImageIcon ICON_LINEARRING = new ImageIcon(AppConstants.class.getResource("DrawLinearRing.png"));

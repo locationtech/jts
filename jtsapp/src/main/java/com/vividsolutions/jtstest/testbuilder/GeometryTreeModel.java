@@ -424,6 +424,13 @@ class GeometryCollectionNode extends GeometryNode
       children.add(node);
     }
   }
+  
+  public ImageIcon getIcon()
+  {
+    return context.source == 0 ? AppConstants.ICON_COLLECTION : AppConstants.ICON_COLLECTION_B;
+  }
+
+
 }
 
 /**
