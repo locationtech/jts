@@ -1,6 +1,7 @@
 package com.vividsolutions.jtstest.testbuilder;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
@@ -92,6 +93,7 @@ public class InspectorPanel extends TestBuilderPanel  {
       }
     });
     
+    lblGeom.setFont(new java.awt.Font("Dialog", 1, 16));
     lblGeom.setText(" ");
     lblGeom.setMaximumSize(new Dimension(30, 30));
     lblGeom.setHorizontalAlignment(JLabel.CENTER);
@@ -146,6 +148,7 @@ public class InspectorPanel extends TestBuilderPanel  {
   public void setGeometry(String tag, Geometry a, int source)
   {
     lblGeom.setText(tag);
+    lblGeom.setForeground(source == 0 ? Color.BLUE : Color.RED);
     geomTreePanel.populate(a, source);
   }
 }
