@@ -108,7 +108,7 @@ public class ZoomTool extends BasicTool
   }
   
   public void mouseWheelMoved(MouseWheelEvent e) {
-    int notches = e.getWheelRotation();
+    double notches = e.getPreciseWheelRotation();
     double zoomFactor = Math.abs(notches) * 2;
     if (notches > 0 && zoomFactor > 0) zoomFactor = 1.0 / zoomFactor;
     panel().zoom(toModel(e.getPoint()), zoomFactor);

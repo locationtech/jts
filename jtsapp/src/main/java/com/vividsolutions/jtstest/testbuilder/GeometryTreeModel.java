@@ -213,9 +213,12 @@ abstract class GeometryNode extends GeometricObjectNode
       }
     }
     
-    buf.append(" --     Len: " + geom.getLength());
-    if (hasArea(geom)) 
+    if (hasLength(geom)) {
+    	buf.append("   --     Len: " + geom.getLength());
+    }
+    if (hasArea(geom)) { 
       buf.append("      Area: " + area(geom));
+    }
     
     return buf.toString();
   }
@@ -232,11 +235,16 @@ abstract class GeometryNode extends GeometricObjectNode
   }
 
   private static boolean hasArea(Geometry geom) {
-    if (geom.getDimension() >= 2) return true;
-    if (geom instanceof LinearRing) return true;
-    return false;
-  }
-  
+	    if (geom.getDimension() >= 2) return true;
+	    if (geom instanceof LinearRing) return true;
+	    return false;
+	  }
+	  
+  private static boolean hasLength(Geometry geom) {
+	    if (geom.getDimension() >= 1) return true;
+	    return false;
+	  }
+	  
   public boolean isLeaf()
   {
     return isLeaf;

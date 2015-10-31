@@ -43,16 +43,16 @@ public class AppConstants
 	public static final Color GRID_MINOR_CLR = ColorUtil.gray(190);
   public static int TOLERANCE_PIXELS = 5;
 
-  public final static ImageIcon ICON_COLLECTION = new ImageIcon(AppConstants.class.getResource("Icon_GeomCollection.png"));
-  public final static ImageIcon ICON_COLLECTION_B = new ImageIcon(AppConstants.class.getResource("Icon_GeomCollection_B.png"));
-  public final static ImageIcon ICON_POLYGON = new ImageIcon(AppConstants.class.getResource("DrawPolygon.png"));
-  public final static ImageIcon ICON_POLYGON_B = new ImageIcon(AppConstants.class.getResource("DrawPolygonB.png"));
-  public final static ImageIcon ICON_LINEARRING = new ImageIcon(AppConstants.class.getResource("DrawLinearRing.png"));
-  public final static ImageIcon ICON_LINEARRING_B = new ImageIcon(AppConstants.class.getResource("DrawLinearRingB.png"));
-  public final static ImageIcon ICON_LINESTRING = new ImageIcon(AppConstants.class.getResource("DrawLineString.png"));
-  public final static ImageIcon ICON_LINESTRING_B = new ImageIcon(AppConstants.class.getResource("DrawLineStringB.png"));
-  public final static ImageIcon ICON_POINT = new ImageIcon(AppConstants.class.getResource("DrawPoint.png"));
-  public final static ImageIcon ICON_POINT_B = new ImageIcon(AppConstants.class.getResource("DrawPointB.png"));
+  public final static ImageIcon ICON_COLLECTION 	= new ImageIcon(AppConstants.class.getResource("Icon_GeomCollection.png"));
+  public final static ImageIcon ICON_COLLECTION_B 	= new ImageIcon(AppConstants.class.getResource("Icon_GeomCollection_B.png"));
+  public final static ImageIcon ICON_POLYGON 	= new ImageIcon(AppConstants.class.getResource("Icon_Polygon.png"));
+  public final static ImageIcon ICON_POLYGON_B 	= new ImageIcon(AppConstants.class.getResource("Icon_Polygon_B.png"));
+  public final static ImageIcon ICON_LINEARRING 	= new ImageIcon(AppConstants.class.getResource("Icon_LinearRing.png"));
+  public final static ImageIcon ICON_LINEARRING_B 	= new ImageIcon(AppConstants.class.getResource("Icon_LinearRing_B.png"));
+  public final static ImageIcon ICON_LINESTRING 	= new ImageIcon(AppConstants.class.getResource("Icon_LineString.png"));
+  public final static ImageIcon ICON_LINESTRING_B 	= new ImageIcon(AppConstants.class.getResource("Icon_LineString_B.png"));
+  public final static ImageIcon ICON_POINT 		= new ImageIcon(AppConstants.class.getResource("Icon_Point.png"));
+  public final static ImageIcon ICON_POINT_B 	= new ImageIcon(AppConstants.class.getResource("Icon_Point_b.png"));
   
   
   public final static Font FONT_LABEL = new Font(FontGlyphReader.FONT_SANSSERIF, Font.BOLD, 12);

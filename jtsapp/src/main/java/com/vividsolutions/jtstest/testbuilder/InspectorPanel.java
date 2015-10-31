@@ -102,10 +102,10 @@ public class InspectorPanel extends TestBuilderPanel  {
     btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.PAGE_AXIS));
     btnPanel.add(lblGeom);
     btnPanel.add(Box.createRigidArea(new Dimension(0, BOX_SPACER)));
+    btnPanel.add(btnZoom);
+    btnPanel.add(Box.createRigidArea(new Dimension(0, BOX_SPACER)));
     btnPanel.add(btnPrev);
     btnPanel.add(btnNext);
-    btnPanel.add(Box.createRigidArea(new Dimension(0, BOX_SPACER)));
-    btnPanel.add(btnZoom);
     btnPanel.add(Box.createRigidArea(new Dimension(0, BOX_SPACER)));
     btnPanel.add(btnCopy);
     this.add(btnPanel, BorderLayout.WEST);
