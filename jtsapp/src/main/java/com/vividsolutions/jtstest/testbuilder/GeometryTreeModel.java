@@ -338,6 +338,12 @@ class LineStringNode extends GeometryNode
     this.line = line;
   }
 
+  public LineStringNode(LineString line, String tag, GeometryContext context)
+  {
+    super(line, line.getNumPoints(), tag, context);
+    this.line = line;
+  }
+
   public ImageIcon getIcon()
   {
     return context.source == 0 ? AppConstants.ICON_LINESTRING : AppConstants.ICON_LINESTRING_B;
@@ -375,7 +381,7 @@ class LinearRingNode extends LineStringNode
   }
   public LinearRingNode(LinearRing ring, String tag,
       GeometryContext context) {
-    super(ring, context);
+    super(ring, tag, context);
   }
   public ImageIcon getIcon()
   {
