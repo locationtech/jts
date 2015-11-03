@@ -52,7 +52,7 @@ public class AppConstants
   public final static ImageIcon ICON_LINESTRING 	= new ImageIcon(AppConstants.class.getResource("Icon_LineString.png"));
   public final static ImageIcon ICON_LINESTRING_B 	= new ImageIcon(AppConstants.class.getResource("Icon_LineString_B.png"));
   public final static ImageIcon ICON_POINT 		= new ImageIcon(AppConstants.class.getResource("Icon_Point.png"));
-  public final static ImageIcon ICON_POINT_B 	= new ImageIcon(AppConstants.class.getResource("Icon_Point_b.png"));
+  public final static ImageIcon ICON_POINT_B 	= new ImageIcon(AppConstants.class.getResource("Icon_Point_B.png"));
   
   
   public final static Font FONT_LABEL = new Font(FontGlyphReader.FONT_SANSSERIF, Font.BOLD, 12);
