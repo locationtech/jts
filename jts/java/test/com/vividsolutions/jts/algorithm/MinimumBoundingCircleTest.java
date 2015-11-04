@@ -88,6 +88,11 @@ public class MinimumBoundingCircleTest extends TestCase {
         new Coordinate(15, 15), 7.0710678118654755);
   }
 
+  public void testQuadrilateral() throws Exception {
+    doMinimumBoundingCircleTest("POLYGON ((26426 65078, 26531 65242, 26096 65427, 26075 65136, 26426 65078))", "MULTIPOINT ((26531 65242), (26075 65136), (26096 65427))",
+        new Coordinate(26284.84180271327, 65267.114509082545), 247.4360455914027 );
+  }
+
   static final double TOLERANCE = 1.0e-5;
   
   private void doMinimumBoundingCircleTest(String wkt, String expectedWKT) throws ParseException 
