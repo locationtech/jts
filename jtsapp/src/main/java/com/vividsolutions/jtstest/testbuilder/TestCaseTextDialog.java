@@ -67,6 +67,7 @@ public class TestCaseTextDialog extends JDialog {
     BoxLayout boxLayout1 = new BoxLayout(functionsPanel, BoxLayout.Y_AXIS);
     ButtonGroup textFormatGroup = new ButtonGroup();
     
+    JRadioButton rbSVG = new JRadioButton();
     JRadioButton rbXML = new JRadioButton();
     JRadioButton rbXMLWKB = new JRadioButton();
     JRadioButton rbTestCaseJava = new JRadioButton();
@@ -129,6 +130,13 @@ public class TestCaseTextDialog extends JDialog {
                 rbXMLWKB_actionPerformed(e);
             }
         });
+        rbSVG.setText("Test SVG");
+        rbSVG.setToolTipText("");
+        rbSVG.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                rbSVG_actionPerformed(e);
+            }
+        });
         
         rbTestCaseJava.setText("TestCase Java");
         rbTestCaseJava.setToolTipText("");
@@ -179,6 +187,7 @@ public class TestCaseTextDialog extends JDialog {
         textFormatPanel.add(rbTestCaseJava, null);
         textFormatPanel.add(rbXML, null);
         textFormatPanel.add(rbXMLWKB, null);
+        textFormatPanel.add(rbSVG, null);
         textFormatPanel.add(rbJTSJava, null);
         jScrollPane1.getViewport().add(txtGeomView, null);
         
@@ -226,6 +235,10 @@ public class TestCaseTextDialog extends JDialog {
     
     void rbXMLWKB_actionPerformed(ActionEvent e) {
       txtGeomView.setText((new XMLTestWriter()).getTestXML(test, false));
+  }
+    
+    void rbSVG_actionPerformed(ActionEvent e) {
+      txtGeomView.setText(SVGTestWriter.getTestSVG(test));
   }
     
     void rbWKB_actionPerformed(ActionEvent e) {
