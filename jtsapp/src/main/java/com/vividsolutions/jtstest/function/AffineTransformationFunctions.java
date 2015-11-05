@@ -45,25 +45,27 @@ public class AffineTransformationFunctions
     return new Coordinate(env.getMinX(), env.getMinY());
   }
   
-  public static Geometry fitToEnvelope(Geometry g, Geometry box)
+  public static Geometry viewport(Geometry g, Geometry gViewport)
   {
-    double scale = scaleBetween(g, box);
-    Coordinate centre = envelopeCentre(g);
-    Coordinate boxCentre = envelopeCentre(box);
-    AffineTransformation trans = AffineTransformation.scaleInstance(scale, scale, centre.x, centre.y);
-    trans.translate(boxCentre.x - centre.x, boxCentre.y - centre.y);
+    Envelope viewEnv = gViewport.getEnvelopeInternal();
+    Envelope env = g.getEnvelopeInternal();
+    AffineTransformation trans = viewportTrans(env, viewEnv);
     return trans.transform(g);
   }
 
-  private static double scaleBetween(Geometry g, Geometry box) {
-    Envelope boxEnv = box.getEnvelopeInternal();
-    Envelope env = g.getEnvelopeInternal();
-    
-    // works even if env W or H is zero - yay!
-    double scaleW = boxEnv.getWidth() / env.getWidth();
-    double scaleH = boxEnv.getHeight() / env.getHeight();
+  private static AffineTransformation viewportTrans(Envelope srcEnv, Envelope viewEnv) {
+    double scaleW = viewEnv.getWidth() / srcEnv.getWidth();
+    double scaleH = viewEnv.getHeight() / srcEnv.getHeight();
     double scale = Math.min(scaleW,  scaleH);
-    return scale;
+    
+    Coordinate centre = srcEnv.centre();
+    Coordinate viewCentre = viewEnv.centre();
+    
+    // isotropic scaling
+    AffineTransformation trans = AffineTransformation.scaleInstance(scale, scale, centre.x, centre.y);
+    // translate using envelope centres
+    trans.translate(viewCentre.x - centre.x, viewCentre.y - centre.y);
+    return trans;
   }
   
   public static Geometry scale(Geometry g, double scale)
