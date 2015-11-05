@@ -45,21 +45,25 @@ public class AffineTransformationFunctions
     return new Coordinate(env.getMinX(), env.getMinY());
   }
   
-  private static double diagonalLength(Envelope env) {
-    return Math.sqrt(env.getWidth() * env.getWidth() + env.getHeight() * env.getHeight());
-  }
-
   public static Geometry fitToEnvelope(Geometry g, Geometry box)
   {
+    double scale = scaleBetween(g, box);
+    Coordinate centre = envelopeCentre(g);
+    Coordinate boxCentre = envelopeCentre(box);
+    AffineTransformation trans = AffineTransformation.scaleInstance(scale, scale, centre.x, centre.y);
+    trans.translate(boxCentre.x - centre.x, boxCentre.y - centre.y);
+    return trans.transform(g);
+  }
+
+  private static double scaleBetween(Geometry g, Geometry box) {
     Envelope boxEnv = box.getEnvelopeInternal();
     Envelope env = g.getEnvelopeInternal();
     
-    double scale = diagonalLength(boxEnv) / diagonalLength(env); 
-    Coordinate centre = envelopeCentre(g);
-    AffineTransformation trans = AffineTransformation.scaleInstance(scale, scale, centre.x, centre.y);
-    Coordinate boxCentre = envelopeCentre(box);
-    trans.translate(boxCentre.x - centre.x, boxCentre.y - centre.y);
-    return trans.transform(g);
+    // works even if env W or H is zero - yay!
+    double scaleW = boxEnv.getWidth() / env.getWidth();
+    double scaleH = boxEnv.getHeight() / env.getHeight();
+    double scale = Math.min(scaleW,  scaleH);
+    return scale;
   }
   
   public static Geometry scale(Geometry g, double scale)
