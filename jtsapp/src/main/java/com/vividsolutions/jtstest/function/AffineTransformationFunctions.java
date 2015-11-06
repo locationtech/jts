@@ -54,8 +54,10 @@ public class AffineTransformationFunctions
   }
 
   private static AffineTransformation viewportTrans(Envelope srcEnv, Envelope viewEnv) {
+    // works even if W or H are zero, thanks to Java infinity value.
     double scaleW = viewEnv.getWidth() / srcEnv.getWidth();
     double scaleH = viewEnv.getHeight() / srcEnv.getHeight();
+    // choose minimum scale to ensure source fits viewport
     double scale = Math.min(scaleW,  scaleH);
     
     Coordinate centre = srcEnv.centre();
