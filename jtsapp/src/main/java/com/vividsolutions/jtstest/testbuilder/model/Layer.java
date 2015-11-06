@@ -51,6 +51,13 @@ public class Layer
 
   public String getName() { return name; }
   
+  public String getNameInfo() {
+    if (geomCont.getGeometry() == null) return getName();
+    return getName()
+      + "   " + GeometryUtil.structureSummary(geomCont.getGeometry()) 
+      + "  --  " + GeometryUtil.metricsSummary(geomCont.getGeometry()); 
+  }
+  
   public void setEnabled(boolean isEnabled)
   {
     this.isEnabled = isEnabled;

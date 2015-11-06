@@ -20,4 +20,10 @@ public class GeometryUtil {
     + g.getNumPoints() + " pts";
   }
 
+  public static String metricsSummary(Geometry g)
+  {
+    String metrics = "Length = " + g.getLength() + "    Area = " + g.getArea();
+    return metrics;
+  }
+
 }

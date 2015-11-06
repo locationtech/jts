@@ -54,7 +54,7 @@ public class LayerCheckBoxList extends JList {
       checkbox.setBorderPainted(true);
       checkbox.setBorder(isSelected ? UIManager
           .getBorder("List.focusCellHighlightBorder") : noFocusBorder);
-      checkbox.setText(lyr.getName());
+      checkbox.setText(lyr.getNameInfo());
       return checkbox;
     }
   }
