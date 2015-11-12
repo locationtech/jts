@@ -1,4 +1,4 @@
-package com.vividsolutions.jtstest.testbuilder.io;
+package com.vividsolutions.jtstest.util.io;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.util.*;
