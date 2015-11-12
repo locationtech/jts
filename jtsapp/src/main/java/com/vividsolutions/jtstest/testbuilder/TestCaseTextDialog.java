@@ -130,7 +130,7 @@ public class TestCaseTextDialog extends JDialog {
                 rbXMLWKB_actionPerformed(e);
             }
         });
-        rbSVG.setText("Test SVG");
+        rbSVG.setText("SVG");
         rbSVG.setToolTipText("");
         rbSVG.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -184,14 +184,12 @@ public class TestCaseTextDialog extends JDialog {
         textFormatPanel.add(rbWKTFormatted, null);
         textFormatPanel.add(rbWKB, null);
         textFormatPanel.add(rbGML, null);
+        textFormatPanel.add(rbSVG, null);
         textFormatPanel.add(rbTestCaseJava, null);
         textFormatPanel.add(rbXML, null);
         textFormatPanel.add(rbXMLWKB, null);
-        textFormatPanel.add(rbSVG, null);
         textFormatPanel.add(rbJTSJava, null);
         jScrollPane1.getViewport().add(txtGeomView, null);
-        
-//        functionsPanel.add(intersectsCB);
         
         allOptionsPanel.setLayout(borderLayout3);
         allOptionsPanel.add(textFormatPanel, BorderLayout.NORTH);
