@@ -1,4 +1,4 @@
-package com.vividsolutions.jtstest.util;
+package com.vividsolutions.jtstest.util.io;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,6 +19,7 @@ import com.vividsolutions.jts.io.WKTFileReader;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.gml2.GMLReader;
 import com.vividsolutions.jtstest.testbuilder.io.shapefile.Shapefile;
+import com.vividsolutions.jtstest.util.FileUtil;
 
 public class IOUtil 
 {

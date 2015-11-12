@@ -1,4 +1,4 @@
-package com.vividsolutions.jtstest.util;
+package com.vividsolutions.jtstest.util.io;
 
 import java.io.IOException;
 import org.jdom.Element;

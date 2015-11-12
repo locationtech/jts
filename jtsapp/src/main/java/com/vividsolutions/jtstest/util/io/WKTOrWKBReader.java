@@ -30,7 +30,7 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package com.vividsolutions.jtstest.util;
+package com.vividsolutions.jtstest.util.io;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.*;

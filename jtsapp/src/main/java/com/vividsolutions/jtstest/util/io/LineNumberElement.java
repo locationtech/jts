@@ -1,4 +1,4 @@
-package com.vividsolutions.jtstest.util;
+package com.vividsolutions.jtstest.util.io;
 
 import org.jdom.Element;
 import org.jdom.Namespace;

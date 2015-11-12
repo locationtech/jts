@@ -37,14 +37,18 @@ package com.vividsolutions.jtstest.testrunner;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jtstest.*;
+
 import java.io.*;
 import java.util.*;
+
 import org.jdom.*;
 import org.jdom.input.*;
 
 import com.vividsolutions.jtstest.geomop.*;
 import com.vividsolutions.jtstest.util.*;
-import com.vividsolutions.jtstest.util.StringUtil;
+import com.vividsolutions.jtstest.util.io.LineNumberElement;
+import com.vividsolutions.jtstest.util.io.LineNumberSAXBuilder;
+import com.vividsolutions.jtstest.util.io.WKTOrWKBReader;
 
 /**
  * @version 1.7
