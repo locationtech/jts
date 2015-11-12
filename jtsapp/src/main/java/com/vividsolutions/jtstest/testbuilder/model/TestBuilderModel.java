@@ -180,7 +180,7 @@ public class TestBuilderModel
   public void loadMultipleGeometriesFromFile(int geomIndex, String filename)
   throws Exception 
   {
-    Geometry g = IOUtil.readGeometriesFromFile(filename, getGeometryFactory());
+    Geometry g = IOUtil.readFile(filename, getGeometryFactory());
     TestCaseEdit testCaseEdit = (TestCaseEdit) getCurrentTestCaseEdit();
     testCaseEdit.setGeometry(geomIndex, g);
     testCaseEdit.setName(filename);
