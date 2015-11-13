@@ -30,7 +30,7 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package com.vividsolutions.jtstest.testbuilder;
+package com.vividsolutions.jtstest.testbuilder.event;
 
 import java.util.EventListener;
 

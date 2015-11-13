@@ -1,4 +1,3 @@
-
 /*
  * The JTS Topology Suite is a collection of Java classes that
  * implement the fundamental operations required to validate a given
@@ -31,21 +30,18 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package com.vividsolutions.jtstest.testbuilder;
+package com.vividsolutions.jtstest.testbuilder.event;
 
 import java.util.EventObject;
+import com.vividsolutions.jtstest.function.*;
 
 /**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
- * @author
- * @version 1.7
  */
-public class ValidPanelEvent extends EventObject {
+public class GeometryFunctionEvent extends EventObject {
 
-  public ValidPanelEvent(Object source) {
-    super(source);
-  }
+    public GeometryFunctionEvent(GeometryFunction source) {
+        super(source);
+    }
+    
+    public GeometryFunction getFunction() { return (GeometryFunction) getSource(); }
 }

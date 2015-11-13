@@ -30,9 +30,9 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package com.vividsolutions.jtstest.testbuilder;
+package com.vividsolutions.jtstest.testbuilder.event;
 
-import java.util.EventObject;
+import java.util.EventListener;
 
 /**
  * Title:
@@ -42,22 +42,7 @@ import java.util.EventObject;
  * @author
  * @version 1.7
  */
-public class SpatialFunctionPanelEvent extends EventObject {
+public interface SpatialFunctionPanelListener extends EventListener {
 
-  private boolean createNew = false;
-  
-    public SpatialFunctionPanelEvent(Object source) {
-        super(source);
-    }
-
-    public SpatialFunctionPanelEvent(Object source,
-        boolean createNew) {
-      super(source);
-      this. createNew = createNew;
-    }
-    
-    public boolean isCreateNew() 
-    {
-      return createNew;
-    }
+    public void functionExecuted(SpatialFunctionPanelEvent e);
 }

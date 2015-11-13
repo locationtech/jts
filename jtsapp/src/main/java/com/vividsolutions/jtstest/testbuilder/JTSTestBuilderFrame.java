@@ -70,6 +70,8 @@ import com.vividsolutions.jts.geom.util.LineStringExtracter;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 import com.vividsolutions.jtstest.testbuilder.controller.ResultController;
+import com.vividsolutions.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
+import com.vividsolutions.jtstest.testbuilder.event.SpatialFunctionPanelListener;
 import com.vividsolutions.jtstest.testbuilder.model.GeometryEvent;
 import com.vividsolutions.jtstest.testbuilder.model.HtmlWriter;
 import com.vividsolutions.jtstest.testbuilder.model.JavaTestWriter;

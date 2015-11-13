@@ -44,6 +44,8 @@ import com.vividsolutions.jts.util.Stopwatch;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
 import com.vividsolutions.jtstest.function.*;
 import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
+import com.vividsolutions.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
+import com.vividsolutions.jtstest.testbuilder.event.SpatialFunctionPanelListener;
 import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 
 

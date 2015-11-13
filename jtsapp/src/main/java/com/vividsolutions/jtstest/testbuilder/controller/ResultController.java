@@ -13,7 +13,7 @@ import com.vividsolutions.jtstest.function.GeometryFunction;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 import com.vividsolutions.jtstest.testbuilder.SpatialFunctionPanel;
-import com.vividsolutions.jtstest.testbuilder.SpatialFunctionPanelEvent;
+import com.vividsolutions.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
 import com.vividsolutions.jtstest.testbuilder.model.TestBuilderModel;
 import com.vividsolutions.jtstest.testbuilder.ui.SwingWorker;
 

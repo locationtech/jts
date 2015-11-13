@@ -1,4 +1,3 @@
-
 /*
  * The JTS Topology Suite is a collection of Java classes that
  * implement the fundamental operations required to validate a given
@@ -31,9 +30,9 @@
  *     (250)385-6040
  *     www.vividsolutions.com
  */
-package com.vividsolutions.jtstest.testbuilder;
+package com.vividsolutions.jtstest.testbuilder.event;
 
-import java.util.EventListener;
+import java.util.EventObject;
 
 /**
  * Title:
@@ -43,6 +42,22 @@ import java.util.EventListener;
  * @author
  * @version 1.7
  */
-public interface ValidPanelListener extends EventListener {
-  public void setHighlightPerformed(ValidPanelEvent e);
+public class SpatialFunctionPanelEvent extends EventObject {
+
+  private boolean createNew = false;
+  
+    public SpatialFunctionPanelEvent(Object source) {
+        super(source);
+    }
+
+    public SpatialFunctionPanelEvent(Object source,
+        boolean createNew) {
+      super(source);
+      this. createNew = createNew;
+    }
+    
+    public boolean isCreateNew() 
+    {
+      return createNew;
+    }
 }

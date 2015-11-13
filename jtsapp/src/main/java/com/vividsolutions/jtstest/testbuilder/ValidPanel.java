@@ -56,6 +56,8 @@ import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jts.operation.*;
 import com.vividsolutions.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jts.operation.valid.TopologyValidationError;
+import com.vividsolutions.jtstest.testbuilder.event.ValidPanelEvent;
+import com.vividsolutions.jtstest.testbuilder.event.ValidPanelListener;
 import com.vividsolutions.jtstest.testbuilder.model.TestCaseEdit;
 
 

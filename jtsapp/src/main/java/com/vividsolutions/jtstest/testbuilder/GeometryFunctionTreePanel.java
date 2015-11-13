@@ -43,6 +43,8 @@ import javax.swing.border.*;
 import javax.swing.tree.*;
 
 import com.vividsolutions.jtstest.function.*;
+import com.vividsolutions.jtstest.testbuilder.event.GeometryFunctionEvent;
+import com.vividsolutions.jtstest.testbuilder.event.GeometryFunctionListener;
 import com.vividsolutions.jtstest.util.*;
 
 /**

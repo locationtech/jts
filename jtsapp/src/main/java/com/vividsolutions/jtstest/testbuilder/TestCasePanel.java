@@ -54,6 +54,8 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 
+import com.vividsolutions.jtstest.testbuilder.event.ValidPanelEvent;
+import com.vividsolutions.jtstest.testbuilder.event.ValidPanelListener;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 
 
