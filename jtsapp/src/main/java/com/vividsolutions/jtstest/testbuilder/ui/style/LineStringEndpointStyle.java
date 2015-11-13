@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.geom.*;
 
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jtstest.testbuilder.Viewport;
+import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 
 public abstract class LineStringEndpointStyle extends LineStringStyle  {
     private boolean start;

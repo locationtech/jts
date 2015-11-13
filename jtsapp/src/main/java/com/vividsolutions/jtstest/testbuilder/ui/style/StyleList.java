@@ -4,7 +4,7 @@ import java.util.*;
 import java.awt.Graphics2D;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jtstest.testbuilder.Viewport;
+import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 import com.vividsolutions.jtstest.testbuilder.ui.render.*;
 
 /**

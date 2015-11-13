@@ -6,7 +6,7 @@ import java.awt.geom.*;
 import com.vividsolutions.jts.awt.FontGlyphReader;
 import com.vividsolutions.jts.geomgraph.Quadrant;
 import com.vividsolutions.jts.noding.Octant;
-import com.vividsolutions.jtstest.testbuilder.Viewport;
+import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 
 public class SegmentIndexStyle 
   extends SegmentStyle

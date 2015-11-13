@@ -1,4 +1,4 @@
-package com.vividsolutions.jtstest.testbuilder;
+package com.vividsolutions.jtstest.testbuilder.ui;
 
 import java.awt.*; 
 import java.awt.geom.*; 
@@ -10,6 +10,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.math.MathUtil;
 import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 
 /**
  * Maintains the information associated with mapping 

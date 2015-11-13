@@ -5,7 +5,7 @@ import java.awt.geom.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jtstest.*;
 import com.vividsolutions.jtstest.testbuilder.AppConstants;
-import com.vividsolutions.jtstest.testbuilder.Viewport;
+import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 
 public class VertexStyle  implements Style
 {

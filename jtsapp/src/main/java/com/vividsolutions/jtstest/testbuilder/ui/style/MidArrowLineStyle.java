@@ -3,7 +3,7 @@ package com.vividsolutions.jtstest.testbuilder.ui.style;
 import java.awt.*;
 import java.awt.geom.*;
 
-import com.vividsolutions.jtstest.testbuilder.Viewport;
+import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 
 public class MidArrowLineStyle 
   extends SegmentStyle

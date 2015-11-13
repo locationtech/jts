@@ -6,8 +6,8 @@ import java.awt.geom.*;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
+import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryPainter;
 
 /**

@@ -9,7 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jtstest.testbuilder.Viewport;
+import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 
 public class OperationMonitorManager 
 {

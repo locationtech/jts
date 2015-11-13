@@ -16,8 +16,8 @@ import com.vividsolutions.jtstest.testbuilder.AppConstants;
 import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
-import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.model.*;
+import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 
 public abstract class BasicTool implements Tool
 {

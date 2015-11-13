@@ -4,9 +4,9 @@ import java.awt.Graphics2D;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.model.GeometryContainer;
 import com.vividsolutions.jtstest.testbuilder.model.Layer;
+import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 import com.vividsolutions.jtstest.testbuilder.ui.style.Style;
 
 public class LayerRenderer implements Renderer

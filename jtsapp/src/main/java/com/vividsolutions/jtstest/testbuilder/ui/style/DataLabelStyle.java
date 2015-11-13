@@ -7,8 +7,8 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jtstest.*;
 import com.vividsolutions.jtstest.testbuilder.AppConstants;
-import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.ui.GraphicsUtil;
+import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryPainter;
 
 public class DataLabelStyle implements Style

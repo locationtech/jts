@@ -43,9 +43,9 @@ import java.text.NumberFormat;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.math.MathUtil;
 import com.vividsolutions.jtstest.testbuilder.AppConstants;
-import com.vividsolutions.jtstest.testbuilder.Viewport;
 import com.vividsolutions.jtstest.testbuilder.model.DrawingGrid;
 import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
+import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 
 public class GridRenderer {
   private static final int MIN_VIEW_GRID_SIZE = 5;
