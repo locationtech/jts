@@ -205,6 +205,7 @@ public class TestCaseTextDialog extends JDialog {
         textFormatGroup.add(rbWKTFormatted);
         textFormatGroup.add(rbWKB);
         textFormatGroup.add(rbGML);
+        textFormatGroup.add(rbSVG);
     }
 
     public void setTestCase(TestCaseEdit test) {
