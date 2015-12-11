@@ -42,6 +42,10 @@ import java.util.List;
  * "Sort-Interval-Recursive". STR-packed R-trees are described in:
  * P. Rigaux, Michel Scholl and Agnes Voisard. Spatial Databases With
  * Application To GIS. Morgan Kaufmann, San Francisco, 2002.
+ * <p>
+ * This class is thread-safe.  Building the tree is synchronized, 
+ * and querying is stateless.
+ * 
  * @see STRtree
  *
  * @version 1.7

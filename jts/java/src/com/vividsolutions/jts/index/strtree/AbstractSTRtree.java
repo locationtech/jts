@@ -47,6 +47,9 @@ import java.util.*;
  * This implementation is based on {@link Boundable}s rather than {@link AbstractNode}s,
  * because the STR algorithm operates on both nodes and
  * data, both of which are treated as Boundables.
+ * <p>
+ * This class is thread-safe.  Building the tree is synchronized, 
+ * and querying is stateless.
  *
  * @see STRtree
  * @see SIRtree

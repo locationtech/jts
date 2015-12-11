@@ -55,6 +55,9 @@ import com.vividsolutions.jts.index.*;
  * Described in: P. Rigaux, Michel Scholl and Agnes Voisard.
  * <i>Spatial Databases With Application To GIS</i>.
  * Morgan Kaufmann, San Francisco, 2002.
+ * <p>
+ * This class is thread-safe.  Building the tree is synchronized, 
+ * and querying is stateless.
  *
  * @version 1.7
  */
