@@ -141,4 +141,52 @@ public class CreateShapeFunctions {
       gsf.setEnvelope(new Envelope(0, 1, 0, 1));
     return gsf.createCircle();
   }
+  
+  public static Geometry sineStar(Geometry g, int nArms, int nPts)
+  {
+	Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
+	GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
+	
+	double size = Math.min(env.getHeight(),  env.getWidth());
+    SineStarFactory shape = new SineStarFactory(geomFact);
+    shape.setCentre(env.centre());
+    shape.setSize(size);
+    shape.setNumPoints(nPts);
+    shape.setNumArms(nArms);
+    shape.setArmLengthRatio(0.5);
+    return shape.createSineStar();
+  }
+  
+  public static Geometry comb(Geometry g, int nArms)
+  {
+	Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
+	GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
+	
+	int npts = 4 * (nArms - 1) + 2 + 2 + 1;
+	Coordinate[] pts = new Coordinate[npts];
+	double armWidth = env.getWidth() / (2 * nArms - 1);
+	double armLen = env.getHeight() - armWidth;
+	
+	double xBase = env.getMinX();
+	double yBase = env.getMinY();
+	
+	int ipts = 0;
+	for (int i = 0; i < nArms; i++) {
+		double x1 = xBase + i * 2 * armWidth;
+		double y1 = yBase + armLen + armWidth;
+		pts[ipts++] = new Coordinate(x1, y1);
+		pts[ipts++] = new Coordinate(x1 + armWidth, y1);
+		if (i < nArms - 1) {
+			pts[ipts++] = new Coordinate(x1 + armWidth, yBase + armWidth);
+			pts[ipts++] = new Coordinate(x1 + 2 * armWidth, yBase + armWidth);
+		}
+	}
+	pts[ipts++] = new Coordinate(env.getMaxX(), yBase);
+	pts[ipts++] = new Coordinate(xBase, yBase);
+	pts[ipts++] = new Coordinate(pts[0]);
+	
+	return geomFact.createPolygon(pts);
+  }
+  
+
 }
