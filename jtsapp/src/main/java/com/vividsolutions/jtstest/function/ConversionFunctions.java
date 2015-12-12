@@ -3,6 +3,7 @@ package com.vividsolutions.jtstest.function;
 import java.util.*;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
+import com.vividsolutions.jts.geom.util.PolygonExtracter;
 
 public class ConversionFunctions 
 {
@@ -18,6 +19,15 @@ public class ConversionFunctions
     Geometry geoms = FunctionsUtil.buildGeometry(g1, g2);
     return FunctionsUtil.getFactoryOrDefault(g1, g2)
         .buildGeometry(LinearComponentExtracter.getLines(geoms));
+  }
+
+  public static Geometry toMultiPolygon(Geometry g1, Geometry g2)
+  {
+    Geometry geoms = FunctionsUtil.buildGeometry(g1, g2);
+    List polys = PolygonExtracter.getPolygons(g1);
+    PolygonExtracter.getPolygons(g2, polys);
+    return FunctionsUtil.getFactoryOrDefault(g1, g2)
+        .createMultiPolygon( GeometryFactory.toPolygonArray(polys));
   }
 
   public static Geometry toGeometryCollection(Geometry g, Geometry g2)
