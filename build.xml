@@ -136,6 +136,7 @@
         <pathelement location="${pre-zip.lib}\acme.jar"/>
         <pathelement location="${pre-zip.lib}\junit.jar"/>
         <pathelement location="${pre-zip.lib}\jts-${jts.version}.jar"/>
+        <pathelement location="${pre-zip.lib}\jtsio-${jts.version}.jar"/>
       </classpath>
     </javac>
     <copy todir="${jtsapp.classes}\com\vividsolutions\jtstest\testbuilder">
@@ -278,15 +279,19 @@
     	/>
   </target>
   
-  <target name="build-jts" depends="copy-source, jts-jar, jts-test-jar, javadoc" 
+  <target name="build-jts" depends="copy-source, jts-jar, javadoc" 
           description="Cleans, compiles, builds jars, generates javadoc">
+  </target>
+
+  <target name="build-jts-test" depends="copy-source, jts-jar, jts-test-jar" 
+          description="Cleans, builds JTS_Test">
   </target>
 
   <target name="build-jtsio" depends="copy-source-jtsio, jtsio-jar, javadoc-jtsio" 
           description="Cleans, builds, generates javadoc for JTS-IO">
   </target>
 
-  <target name="all" depends="props, build-jts, build-jtsio, makezip" 
+  <target name="all" depends="props, build-jts, build-jtsio, build-jts-test, makezip" 
 	          description="Compiles and builds the JTS delivery archive"/>
 
 </project>
