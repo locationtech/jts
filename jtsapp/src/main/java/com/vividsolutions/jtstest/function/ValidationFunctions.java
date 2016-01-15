@@ -43,4 +43,11 @@ public class ValidationFunctions
     }
     return g.getFactory().buildGeometry(invalidGeoms);
   }
+  
+  public static boolean isValidAllowSelfTouchingRingFormingHole(Geometry g) {
+    IsValidOp validOp = new IsValidOp(g);
+    validOp.setSelfTouchingRingFormingHoleValid(true);
+    return validOp.isValid();     
+  }
+
 }
