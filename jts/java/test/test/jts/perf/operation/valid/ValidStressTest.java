@@ -1,25 +1,20 @@
 package test.jts.perf.operation.valid;
 
-import java.io.PrintStream;
-
-import test.jts.perf.PerformanceTestCase;
-import test.jts.perf.PerformanceTestRunner;
-import test.jts.util.IOUtil;
-
-import com.vividsolutions.jts.densify.Densifier;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
-import com.vividsolutions.jtstest.function.FunctionsUtil;
+import com.vividsolutions.jts.operation.valid.IsValidOp;
 
 /**
  * Stress-tests {@link IsValidOp} 
- * on invalid polygons with many intersections.
+ * by running it on an invalid MultiPolygon with many intersections.
+ * In JTS 1.14 and earlier this takes a very long time to run, 
+ * since all intersections are computed before the invalid result is returned. 
+ * In fact it is only necessary to detect a single intersection in order
+ * to determine invalidity.
  * 
  * @author mdavis
  *
@@ -35,20 +30,25 @@ public class ValidStressTest
 
   public static int SIZE = 10000;
   
+  static GeometryFactory geomFact = new GeometryFactory();
+  
   public void run()
   {
-	  Envelope env =  new Envelope(0,100,0,100);
+	Envelope env =  new Envelope(0,100,0,100);
+	MultiPolygon mp = crossingCombs(env);
+	//System.out.println(mp);
+	boolean isValid = mp.isValid();
+	System.out.println("Is Valid = " + isValid);
+  }
+
+  private MultiPolygon crossingCombs(Envelope env) {
 	Polygon comb1 = comb(env, SIZE);
 	Coordinate centre = env.centre();
 	AffineTransformation trans = AffineTransformation.rotationInstance(0.5 * Math.PI, centre.x, centre.y);
 	Polygon comb2 = (Polygon) trans.transform(comb1);    
 	MultiPolygon mp = geomFact.createMultiPolygon(new Polygon[] { comb1, comb2 } );
-	//System.out.println(mp);
-	boolean isValid = mp.isValid();
-	System.out.println("Is Valid = " + isValid);
+	return mp;
   }
-  
-  static GeometryFactory geomFact = new GeometryFactory();
 
   static Polygon comb(Envelope env, int nArms)
   {	
