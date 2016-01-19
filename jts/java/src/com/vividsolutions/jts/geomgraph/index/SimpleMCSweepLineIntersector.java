@@ -139,6 +139,9 @@ public class SimpleMCSweepLineIntersector
       if (ev.isInsert()) {
         processOverlaps(i, ev.getDeleteEventIndex(), ev, si);
       }
+      if (si.isDone()) {
+    	  break;
+      }
     }
   }
 

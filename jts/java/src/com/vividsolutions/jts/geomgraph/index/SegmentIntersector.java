@@ -77,11 +77,10 @@ public class SegmentIntersector
   public int numTests = 0;
 
   private Collection[] bdyNodes;
-/*
-  public SegmentIntersector()
-  {
-  }
-*/
+  private boolean isDone = false;
+  private boolean isDoneWhenProperInt = false;
+
+
   public SegmentIntersector(LineIntersector li,  boolean includeProper, boolean recordIsolated)
   {
     this.li = li;
@@ -97,6 +96,13 @@ public class SegmentIntersector
       bdyNodes[1] = bdyNodes1;
   }
 
+  public void setIsDoneIfProperInt(boolean isDoneWhenProperInt) {
+	  this.isDoneWhenProperInt = isDoneWhenProperInt;
+  }
+  
+  public boolean isDone() {
+	  return isDone;
+  }
   /**
    * @return the proper intersection point, or <code>null</code> if none was found
    */
@@ -186,6 +192,9 @@ numTests++;
         if (li.isProper()) {
           properIntersectionPoint = (Coordinate) li.getIntersection(0).clone();
           hasProper = true;
+          if (isDoneWhenProperInt) {
+        	  isDone = true;
+          }
           if (! isBoundaryPoint(li, bdyNodes))
             hasProperInterior = true;
         }

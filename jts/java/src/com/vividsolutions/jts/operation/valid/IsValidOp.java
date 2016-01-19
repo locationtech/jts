@@ -224,8 +224,9 @@ public class IsValidOp
     GeometryGraph graph = new GeometryGraph(0, g);
     checkTooFewPoints(graph);
     if (validErr != null) return;
+    
     LineIntersector li = new RobustLineIntersector();
-    graph.computeSelfNodes(li, true);
+    graph.computeSelfNodes(li, true, true);
     checkNoSelfIntersectingRings(graph);
   }
 

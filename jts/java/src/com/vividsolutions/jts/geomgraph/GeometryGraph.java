@@ -335,25 +335,39 @@ public class GeometryGraph
    * Compute self-nodes, taking advantage of the Geometry type to
    * minimize the number of intersection tests.  (E.g. rings are
    * not tested for self-intersection, since they are assumed to be valid).
+   * 
    * @param li the LineIntersector to use
    * @param computeRingSelfNodes if <false>, intersection checks are optimized to not test rings for self-intersection
-   * @return the SegmentIntersector used, containing information about the intersections found
+   * @return the computed SegmentIntersector containing information about the intersections found
    */
   public SegmentIntersector computeSelfNodes(LineIntersector li, boolean computeRingSelfNodes)
   {
+	  return computeSelfNodes(li, computeRingSelfNodes, false);
+  }
+  
+  /**
+   * Compute self-nodes, taking advantage of the Geometry type to
+   * minimize the number of intersection tests.  (E.g. rings are
+   * not tested for self-intersection, since they are assumed to be valid).
+   * 
+   * @param li the LineIntersector to use
+   * @param computeRingSelfNodes if <false>, intersection checks are optimized to not test rings for self-intersection
+   * @param isDoneIfProperInt short-circuit the intersection computation if a proper intersection is found
+   * @return the computed SegmentIntersector containing information about the intersections found
+   */
+  public SegmentIntersector computeSelfNodes(LineIntersector li, boolean computeRingSelfNodes, boolean isDoneIfProperInt)
+  {
     SegmentIntersector si = new SegmentIntersector(li, true, false);
+    si.setIsDoneIfProperInt(isDoneIfProperInt);
     EdgeSetIntersector esi = createEdgeSetIntersector();
-    // optimized test for Polygons and Rings
-    if (! computeRingSelfNodes
-        && (parentGeom instanceof LinearRing
-        || parentGeom instanceof Polygon
-        || parentGeom instanceof MultiPolygon)) {
-      esi.computeIntersections(edges, si, false);
-    }
-    else {
-      esi.computeIntersections(edges, si, true);
-    }
-//System.out.println("SegmentIntersector # tests = " + si.numTests);
+    // optimize intersection search for valid Polygons and LinearRings
+    boolean isRings = parentGeom instanceof LinearRing
+			|| parentGeom instanceof Polygon
+			|| parentGeom instanceof MultiPolygon;
+    boolean computeAllSegments = computeRingSelfNodes || ! isRings;
+    esi.computeIntersections(edges, si, computeAllSegments);
+    
+    //System.out.println("SegmentIntersector # tests = " + si.numTests);
     addSelfIntersectionNodes(argIndex);
     return si;
   }

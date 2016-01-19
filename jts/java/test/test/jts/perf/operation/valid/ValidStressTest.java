@@ -25,7 +25,8 @@ public class ValidStressTest
 {
   public static void main(String args[]) {
     (new ValidStressTest()).runComb();
-    (new ValidStressTest()).runStarCross();
+    (new ValidStressTest()).runStarCrossPoly();
+    (new ValidStressTest()).runStarCrossRing();
   }
 
   public ValidStressTest() {
@@ -37,14 +38,23 @@ public class ValidStressTest
   
   public void runComb()
   {
-    int size = 100;
+    int size = 400;
     Envelope env =  new Envelope(0,100,0,100);
     Geometry geom = Comb.crossedComb(env, size, geomFact);
     System.out.println(geom);
     checkValid("Crossed combs (size = " + size + " )", geom);
   }
 
-  public void runStarCross()
+  public void runStarCrossPoly()
+  {
+    int size = 1000;
+    Envelope env =  new Envelope(0,100,0,100);
+    Polygon geom = StarCross.star(env, size, geomFact);
+    //System.out.println(geom);
+    checkValid("StarCross " + geom.getGeometryType() + "   (size = " + size + " )", geom);
+  }
+
+  public void runStarCrossRing()
   {
     int size = 1000;
     Envelope env =  new Envelope(0,100,0,100);
