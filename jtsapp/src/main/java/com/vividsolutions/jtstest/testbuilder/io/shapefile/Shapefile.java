@@ -9,24 +9,18 @@ import com.vividsolutions.jts.geom.*;
 
 
 
-/**
- *
- * This class represnts an ESRI Shape file.<p>
- * You construct it with a file name, and later
- * you can read the file's propertys, i.e. Sizes, Types, and the data itself.<p>
- * Copyright 1998 by James Macgill. <p>
- * Modified to allow reading the shapefile as a stream
- * Martin Davis 2005-2007
- *
- * Version 1.0beta1.1 (added construct with inputstream)
- * 1.0beta1.2 (made Shape type constants public 18/Aug/98)
- *
- * This class supports the Shape file as set out in :-<br>
- * <a href="http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf"><b>"ESRI(r) Shapefile - A Technical Description"</b><br>
- * <i>'An ESRI White Paper . May 1997'</i></a><p>
- *
- * This code is coverd by the LGPL.
- *
+/*
+ * The JTS Topology Suite is a collection of Java classes that
+ * implement the fundamental operations required to validate a given
+ * geo-spatial data set to a known topological specification.
+ * 
+ * Copyright (C) 2016 Vivid Solutions
+ * 
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * (http://www.eclipse.org/legal/epl-v10.html), and the Vivid Solutions BSD
+ * License v1.0 (found at the root of the repository).
+ * 
  */
 public class Shapefile  
 {
