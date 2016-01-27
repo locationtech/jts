@@ -1,4 +1,0 @@
-Manifest-version: 1.0
-Implementation-Title: Java Topology Suite
-Implementation-Version: 1.7
-Implementation-Vendor: Vivid Solutions
