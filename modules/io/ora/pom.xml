@@ -7,21 +7,15 @@
         <version>1.15.0</version>
     </parent>
     <groupId>org.locationtech.jts.io</groupId>
-    <artifactId>jts-io</artifactId>
+    <artifactId>jts-ora</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <packaging>jar</packaging>
     <dependencies>
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>${json-simple-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.locationtech.jts</groupId>
-            <artifactId>jts-core</artifactId>
-            <version>${project.parent.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
+       <dependency>
+          <groupId>com.oracle</groupId>
+          <artifactId>ojdbc5</artifactId>
+          <!-- version from dependencyManagment in root pom -->
+          <scope>provided</scope>
+       </dependency>
     </dependencies>
 </project>
