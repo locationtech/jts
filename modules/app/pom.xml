@@ -17,7 +17,7 @@
         </dependency>
         <dependency>
             <groupId>org.locationtech.jts.io</groupId>
-            <artifactId>jts-io</artifactId>
+            <artifactId>jts-io-common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
