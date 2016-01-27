@@ -40,7 +40,7 @@
     </dependencies>
 
     <modules>
-        <module>io</module>
+        <module>common</module>
     </modules>
     
 </project>

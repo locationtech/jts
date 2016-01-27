@@ -7,7 +7,7 @@
         <version>1.15.0</version>
     </parent>
     <groupId>org.locationtech.jts.io</groupId>
-    <artifactId>jts-io</artifactId>
+    <artifactId>jts-io-common</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <packaging>jar</packaging>
     <dependencies>
