@@ -3,26 +3,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.locationtech.jts</groupId>
-        <artifactId>jts</artifactId>
+        <artifactId>jts-modules</artifactId>
         <version>1.15.0</version>
     </parent>
-    <artifactId>jts-modules</artifactId>
+    <artifactId>jts-io</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <packaging>pom</packaging>
     
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit-version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
     <modules>
-        <module>core</module>
         <module>io</module>
-        <module>app</module>
     </modules>
     
 </project>

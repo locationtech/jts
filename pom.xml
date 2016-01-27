@@ -11,12 +11,23 @@
     <url>https://www.locationtech.org/projects/technology.jts</url>
     <description>The JTS Topology Suite is an API for 2D linear geometry predicates and functions.</description>
     
+    <!-- 
+    
+    Build JTS Topology Suite and install in local repository:
+       mvn install 
+       
+    Build everything and skip tests:
+       mvn clean install -DskipTests
+    
+    Setup for eclipse development:
+       mvn eclipse:eclipse
+    -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit-version>3.7</junit-version>
         <jdom-version>1.0b8</jdom-version>
         <jump.version>1.2</jump.version>
-        <json-simple-version>1.1</json-simple-version>
+        <json-simple-version>1.1.1</json-simple-version>
         <ojdbc5-version>11.1.0.7.0</ojdbc5-version>
         <sde-version>9.1</sde-version>
     </properties>
