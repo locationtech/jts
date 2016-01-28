@@ -5,3 +5,6 @@ target
 .project
 .settings
 build
+\#*#
+*~
+.#*

@@ -9,7 +9,7 @@
     <artifactId>jts-modules</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <packaging>pom</packaging>
-    
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -25,5 +25,5 @@
         <module>io</module>
         <module>app</module>
     </modules>
-    
+
 </project>

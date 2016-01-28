@@ -261,9 +261,6 @@ public class TopologyTestApp extends JFrame {
     commandLine = new CommandLine('-');
     OptionSpec os;
 
-    for (int i = 0; i < args.length; i++) {
-        System.out.println(args[i]);
-    }
     os = new OptionSpec("files", OptionSpec.NARGS_ONE_OR_MORE);
     commandLine.addOptionSpec(os);
 

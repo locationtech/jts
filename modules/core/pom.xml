@@ -10,6 +10,16 @@
     <name>${project.groupId}:${project.artifactId}</name>
     <packaging>jar</packaging>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>${jdom-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
     <build>
       <plugins>
        <plugin>
@@ -35,6 +45,29 @@
           </execution>
         </executions>
        </plugin>
+       <plugin>
+         <groupId>org.codehaus.mojo</groupId>
+         <artifactId>exec-maven-plugin</artifactId>
+         <version>1.4.0</version>
+         <executions>
+           <execution>
+             <phase>test</phase>
+             <goals>
+               <goal>java</goal>
+             </goals>
+             <configuration>
+               <mainClass>com.vividsolutions.jtstest.testrunner.TopologyTestApp</mainClass>
+               <classpathScope>test</classpathScope>
+               <arguments>
+                 <argument>-files</argument>
+                 <argument>modules/core/src/test/resources/testxml/general</argument>
+                 <argument>modules/core/src/test/resources/testxml/validate</argument>
+               </arguments>
+             </configuration>
+           </execution>
+         </executions>
+       </plugin>
+
       </plugins>
      </build>
 </project>
