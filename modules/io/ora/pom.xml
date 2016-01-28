@@ -13,7 +13,7 @@
     <dependencies>
        <dependency>
           <groupId>com.oracle</groupId>
-          <artifactId>ojdbc5</artifactId>
+          <artifactId>ojdbc7</artifactId>
           <!-- version from dependencyManagment in root pom -->
           <scope>provided</scope>
        </dependency>

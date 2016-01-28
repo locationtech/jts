@@ -43,7 +43,6 @@ public class SdeReader
   private GeometryFactory geometryFactory;
   private PrecisionModel precisionModel;
   private CoordinateSequenceFactory coordSeqFact;
-  private int maxDimensionToRead = 2;
   
   /**
    * Creates a reader that creates geometries using the default {@link GeometryFactory}.
