@@ -22,8 +22,8 @@ import java.util.regex.Pattern;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.geojson.GeoJsonReader;
 
-import com.vividsolutions.jts.io.geojson.GeoJsonReader;
 
 public class GeoJsonMultiReader {
   private static final String GEOJSON_FEATURECOLLECTION = "FeatureCollection";

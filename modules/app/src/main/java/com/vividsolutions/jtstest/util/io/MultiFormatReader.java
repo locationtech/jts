@@ -19,9 +19,9 @@ import javax.xml.parsers.*;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.*;
+import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.gml2.*;
 
-import com.vividsolutions.jts.io.geojson.GeoJsonReader;
 
 /**
  * Reads a {@link Geometry} from a string which is in either WKT, WKBHex
