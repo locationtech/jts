@@ -18,9 +18,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.Stopwatch;
+
 
 
 /**

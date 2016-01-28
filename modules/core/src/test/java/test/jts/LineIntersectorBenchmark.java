@@ -15,9 +15,10 @@
 
 package test.jts;
 
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geom.Coordinate;
 import java.util.Date;
+
+import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.geom.Coordinate;
 
 
 

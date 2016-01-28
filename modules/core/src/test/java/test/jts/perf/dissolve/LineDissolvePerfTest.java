@@ -20,17 +20,18 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.locationtech.jts.dissolve.LineDissolver;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.util.Memory;
+
 import test.jts.junit.GeometryUtils;
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
 
-import com.vividsolutions.jts.dissolve.LineDissolver;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
-import com.vividsolutions.jts.util.Memory;
 
 public class LineDissolvePerfTest  extends PerformanceTestCase 
 {

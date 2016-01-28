@@ -14,11 +14,11 @@
 package test.jts.perf.algorithm;
 
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.*;
-import com.vividsolutions.jts.util.*;
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.algorithm.locate.PointOnGeometryLocator;
+import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.util.*;
 
 public class PointInAreaPerfTest  {
 

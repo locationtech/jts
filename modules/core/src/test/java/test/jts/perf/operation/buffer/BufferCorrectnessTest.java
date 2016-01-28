@@ -14,9 +14,9 @@
  */
 package test.jts.perf.operation.buffer;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.operation.buffer.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.operation.buffer.*;
 /**
  * Tests self-snapping issues
  * 

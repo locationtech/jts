@@ -15,14 +15,15 @@ package test.jts.perf.operation.predicate;
 
 import java.util.*;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.prep.*;
-import com.vividsolutions.jts.geom.util.*;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
-import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
-import com.vividsolutions.jts.util.GeometricShapeFactory;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.prep.*;
+import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.precision.GeometryPrecisionReducer;
+import org.locationtech.jts.util.GeometricShapeFactory;
+import org.locationtech.jts.util.Stopwatch;
+
 
 public class RectangleIntersectsPerfTest 
 {

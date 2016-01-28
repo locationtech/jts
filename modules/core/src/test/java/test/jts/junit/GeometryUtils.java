@@ -18,8 +18,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+
 
 public class GeometryUtils 
 {

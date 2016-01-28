@@ -16,9 +16,10 @@ package test.jts.perf.operation.distance;
 
 import java.util.*;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.util.Stopwatch;
+
 
 public class TestPerfFastDistanceFile 
 {

@@ -56,7 +56,7 @@
                <goal>java</goal>
              </goals>
              <configuration>
-               <mainClass>com.vividsolutions.jtstest.testrunner.TopologyTestApp</mainClass>
+               <mainClass>org.locationtech.jtstest.testrunner.TopologyTestApp</mainClass>
                <classpathScope>test</classpathScope>
                <arguments>
                  <argument>-files</argument>

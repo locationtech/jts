@@ -8,11 +8,11 @@
  by email on the 22 Dec 2006.
   </desc>
   <precisionModel type='FLOATING'/>
-  <resultMatcher>com.vividsolutions.jtstest.testrunner.BufferResultMatcher</resultMatcher>
+  <resultMatcher>org.locationtech.jtstest.testrunner.BufferResultMatcher</resultMatcher>
 <case>
   <desc>
   	Big Bad Nasty buffer
-  	Note: the expected result has been cleaned up manually from what is returned by JTS 1.10, 
+  	Note: the expected result has been cleaned up manually from what is returned by JTS 1.10,
   	since there are visually determined problems with the actual computed value (i.e a small hole).
   </desc>
   <a>

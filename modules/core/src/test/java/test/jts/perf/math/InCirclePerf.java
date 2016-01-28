@@ -16,8 +16,9 @@ package test.jts.perf.math;
 
 import java.math.*;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.util.*;
+
 
 /**
  * Test performance of evaluating Triangle predicate computations

@@ -15,10 +15,11 @@ package test.jts.perf.geom.prep;
 
 import java.util.*;
 
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.SineStarFactory;
+import org.locationtech.jts.util.GeometricShapeFactory;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.SineStarFactory;
-import com.vividsolutions.jts.util.GeometricShapeFactory;
+
 
 public class TestDataBuilder 
 {

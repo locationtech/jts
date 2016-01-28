@@ -7,7 +7,7 @@
 <run>
  	<desc>Overlay Robustness cases from StMLF (all handled by snapping)</desc>
  	<precisionModel type="FLOATING"/>
- 	<geometryOperation>com.vividsolutions.jtstest.geomop.OverlayValidatedGeometryOperation</geometryOperation>
+ 	<geometryOperation>org.locationtech.jtstest.geomop.OverlayValidatedGeometryOperation</geometryOperation>
 
  <case><desc>966094 - 2025063
 abs( area(A) - difference(A,B) - intersection(A,B) ) = -12  </desc>

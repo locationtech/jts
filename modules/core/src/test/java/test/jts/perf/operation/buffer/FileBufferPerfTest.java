@@ -16,10 +16,11 @@ package test.jts.perf.operation.buffer;
 
 import java.util.*;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTFileReader;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.util.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTFileReader;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.util.*;
+
 import test.jts.*;
 
 public class FileBufferPerfTest

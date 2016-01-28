@@ -19,10 +19,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.index.strtree.AbstractNode;
-import com.vividsolutions.jts.index.strtree.Boundable;
-import com.vividsolutions.jts.index.strtree.STRtree;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.index.strtree.AbstractNode;
+import org.locationtech.jts.index.strtree.Boundable;
+import org.locationtech.jts.index.strtree.STRtree;
+
 
 
 /**

@@ -17,9 +17,10 @@ package test.jts.index;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vividsolutions.jts.index.bintree.Bintree;
-import com.vividsolutions.jts.index.bintree.Interval;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.index.bintree.Bintree;
+import org.locationtech.jts.index.bintree.Interval;
+import org.locationtech.jts.util.Stopwatch;
+
 
 
 /**

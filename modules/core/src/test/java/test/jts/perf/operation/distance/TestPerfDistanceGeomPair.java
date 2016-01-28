@@ -14,11 +14,11 @@
 
 package test.jts.perf.operation.distance;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.distance.IndexedFacetDistance;
-import com.vividsolutions.jts.util.GeometricShapeFactory;
-import com.vividsolutions.jts.geom.util.*;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.operation.distance.IndexedFacetDistance;
+import org.locationtech.jts.util.GeometricShapeFactory;
+import org.locationtech.jts.util.Stopwatch;
 
 public class TestPerfDistanceGeomPair 
 {

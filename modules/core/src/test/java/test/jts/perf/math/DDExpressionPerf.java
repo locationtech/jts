@@ -16,8 +16,9 @@ package test.jts.perf.math;
 
 import java.math.*;
 
-import com.vividsolutions.jts.math.DD;
-import com.vividsolutions.jts.util.*;
+import org.locationtech.jts.math.DD;
+import org.locationtech.jts.util.*;
+
 
 /**
  * Times evaluating floating-point expressions using 

@@ -15,9 +15,10 @@
 package test.jts.perf.geom.impl;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.impl.*;
-import com.vividsolutions.jts.util.*;
+
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.impl.*;
+import org.locationtech.jts.util.*;
 
 public class PackedCoordinateSequenceMemoryTest 
 {

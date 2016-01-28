@@ -16,15 +16,16 @@ package test.jts.perf.operation.distance;
 
 import java.util.List;
 
-import com.vividsolutions.jts.densify.Densifier;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.distance.DistanceOp;
-import com.vividsolutions.jts.operation.distance.IndexedFacetDistance;
-import com.vividsolutions.jts.util.GeometricShapeFactory;
-import com.vividsolutions.jts.geom.util.*;
-import com.vividsolutions.jts.io.WKTFileReader;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.densify.Densifier;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.io.WKTFileReader;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.operation.distance.DistanceOp;
+import org.locationtech.jts.operation.distance.IndexedFacetDistance;
+import org.locationtech.jts.util.GeometricShapeFactory;
+import org.locationtech.jts.util.Stopwatch;
+
 
 /**
  * Tests performance of {@link IndexedFacetDistance} versus standard 

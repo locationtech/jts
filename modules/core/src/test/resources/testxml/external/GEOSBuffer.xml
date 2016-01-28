@@ -1,8 +1,8 @@
 <run>
   <desc>Test cases from GEOS</desc>
   <precisionModel type="FLOATING"/>
-  <resultMatcher>com.vividsolutions.jtstest.testrunner.BufferResultMatcher</resultMatcher>
-  
+  <resultMatcher>org.locationtech.jtstest.testrunner.BufferResultMatcher</resultMatcher>
+
 <case>
 <desc>hole_red.xml - GEOS 3.0.0_rc4 bufferReducedPrecision</desc>
 <a>

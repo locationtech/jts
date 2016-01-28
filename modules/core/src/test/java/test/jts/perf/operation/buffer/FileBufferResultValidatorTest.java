@@ -21,10 +21,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.operation.buffer.validate.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.operation.buffer.validate.*;
+import org.locationtech.jts.util.*;
+
 
 import junit.framework.TestCase;
 import test.jts.TestFiles;
@@ -76,14 +77,14 @@ public class FileBufferResultValidatorTest extends TestCase {
   void runAll(List geoms, double dist)
   {
   	Stopwatch sw = new Stopwatch();
-    System.out.println("Geom count = " + geoms.size() + "   distance = " + dist);
+    //System.out.println("Geom count = " + geoms.size() + "   distance = " + dist);
     for (Iterator i = geoms.iterator(); i.hasNext(); ) {
       Geometry g = (Geometry) i.next();
       runBuffer(g, dist);
       runBuffer(g.reverse(), dist);
-      System.out.print(".");
+      //System.out.print(".");
     }
-    System.out.println("  " + sw.getTimeString());
+    //System.out.println("  " + sw.getTimeString());
 
   }
   void runBuffer(Geometry g, double dist)

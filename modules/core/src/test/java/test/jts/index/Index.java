@@ -17,7 +17,8 @@ package test.jts.index;
 
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
+
 
 /**
  * Adapter for different kinds of indexes

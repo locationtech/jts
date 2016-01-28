@@ -21,13 +21,22 @@
 
     Setup for eclipse development:
        mvn eclipse:eclipse
+       
+    To build with jts-ora:
+       mvn install -Poracle
+
+    To build with jts-sde:
+       mvn install -Parcsde
+       
+    To build everything:
+       mvn install -Dall
     -->
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit-version>3.7</junit-version>
         <jdom-version>1.1.3</jdom-version>
         <json-simple-version>1.1.1</json-simple-version>
-        <ojdbc5-version>11.1.0.7.0</ojdbc5-version>
         <sde-version>9.1</sde-version>
     </properties>
 
@@ -78,7 +87,17 @@
         <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
       </repository>
     </distributionManagement-->
-
+    
+    <dependencyManagement>
+      <dependencies>
+        <dependency>
+          <groupId>com.oracle</groupId>
+          <artifactId>ojdbc7</artifactId>
+          <version>11.1.0.7.0</version>
+        </dependency>
+      </dependencies>
+    </dependencyManagement>
+    
     <!-- Repositories for Dependencies -->
     <repositories>
       <repository>
@@ -107,6 +126,7 @@
             </includes>
             <excludes>
               <exclude>**/*PerfTest.java</exclude>
+              <exclude>**/*StressTest.java</exclude>
             </excludes>
           </configuration>
         </plugin>

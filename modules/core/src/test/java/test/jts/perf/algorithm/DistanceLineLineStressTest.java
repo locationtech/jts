@@ -15,12 +15,13 @@ package test.jts.perf.algorithm;
 
 import java.util.Random;
 
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.io.WKTWriter;
+
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.io.WKTWriter;
 
 public class DistanceLineLineStressTest extends TestCase
 {

@@ -15,14 +15,15 @@ package test.jts.perf.algorithm;
 
 import java.util.*;
 
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.algorithm.locate.PointOnGeometryLocator;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.*;
-import com.vividsolutions.jts.noding.*;
-import com.vividsolutions.jts.index.SpatialIndex;
-import com.vividsolutions.jts.index.chain.*;
-import com.vividsolutions.jts.index.strtree.STRtree;
+import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.index.SpatialIndex;
+import org.locationtech.jts.index.chain.*;
+import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.noding.*;
+
 
 /**
  * Determines the location of {@link Coordinate}s relative to

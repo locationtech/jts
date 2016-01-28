@@ -18,8 +18,9 @@ package test.jts.geom;
 import java.io.*;
 import java.util.*;
 
+import org.locationtech.jts.geom.*;
 
-import com.vividsolutions.jts.geom.*;
+
 
 
 /**
