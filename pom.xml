@@ -127,6 +127,7 @@
             </includes>
             <excludes>
               <exclude>**/*PerfTest.java</exclude>
+              <exclude>**/*StressTest.java</exclude>
             </excludes>
           </configuration>
         </plugin>
