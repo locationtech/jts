@@ -49,21 +49,21 @@ public class CascadedPolygonUnionTester
   
   public boolean test(Collection geoms, double minimumMeasure) 
   {
-    System.out.println("Computing Iterated union");
+    //System.out.println("Computing Iterated union");
     Geometry union1 = unionIterated(geoms);
-    System.out.println("Computing Cascaded union");
+    //System.out.println("Computing Cascaded union");
     Geometry union2 = unionCascaded(geoms);
     
-    System.out.println("Testing similarity with min measure = " + minimumMeasure);
+    //System.out.println("Testing similarity with min measure = " + minimumMeasure);
     
     double areaMeasure = (new AreaSimilarityMeasure()).measure(union1, union2);
     double hausMeasure = (new HausdorffSimilarityMeasure()).measure(union1, union2);
     double overallMeasure = SimilarityMeasureCombiner.combine(areaMeasure, hausMeasure);
     
-    System.out.println(
-    		"Area measure = " + areaMeasure
-    		+ "   Hausdorff measure = " + hausMeasure
-    		+ "    Overall = " + overallMeasure);
+    //System.out.println(
+    //		"Area measure = " + areaMeasure
+    //		+ "   Hausdorff measure = " + hausMeasure
+    //		+ "    Overall = " + overallMeasure);
  	 
   	return overallMeasure > minimumMeasure;
   }
@@ -75,12 +75,12 @@ public class CascadedPolygonUnionTester
     WKTFileReader fileRdr = new WKTFileReader(filename, wktRdr);
     List geoms = fileRdr.read();
     
-    System.out.println("Computing Iterated union");
+    //System.out.println("Computing Iterated union");
     Geometry union1 = unionIterated(geoms);
-    System.out.println("Computing Cascaded union");
+    //System.out.println("Computing Cascaded union");
     Geometry union2 = unionCascaded(geoms);
     
-    System.out.println("Testing similarity with tolerance = " + distanceTolerance);
+    //System.out.println("Testing similarity with tolerance = " + distanceTolerance);
     boolean isSameWithinTolerance =  SimilarityValidator.isSimilar(union1, union2, distanceTolerance);
     
  	

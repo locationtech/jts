@@ -148,8 +148,8 @@ public class LineDissolverTest  extends TestCase {
     Geometry result = d.getResult();
     boolean equal = result.norm().equalsExact(expected.norm());
     if (! equal) {
-      System.out.println("Expected = " + expected
-          + " actual = " + result.norm());
+      //System.out.println("Expected = " + expected
+      //    + " actual = " + result.norm());
     }
     assertTrue(equal);
   }

@@ -59,7 +59,7 @@ public class RectanglePredicateSyntheticTest
 
   public void testLines()
   {
-    System.out.println(rect);
+    //System.out.println(rect);
 
     List testGeoms = getTestGeometries();
     for (Iterator i = testGeoms.iterator(); i.hasNext(); ) {
@@ -70,7 +70,7 @@ public class RectanglePredicateSyntheticTest
 
   public void testDenseLines()
   {
-    System.out.println(rect);
+    //System.out.println(rect);
 
     List testGeoms = getTestGeometries();
     for (Iterator i = testGeoms.iterator(); i.hasNext(); ) {

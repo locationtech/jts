@@ -83,7 +83,7 @@ public class PerturbedGridPolygonBuilder
 		
 		MultiLineString ml = geomFactory.createMultiLineString(lines);
 		Geometry grid = ml.buffer(lineWidth);
-		System.out.println(grid);
+		//System.out.println(grid);
 		return grid;
 		
 	}
@@ -91,7 +91,7 @@ public class PerturbedGridPolygonBuilder
 	private double getRand()
 	{
 		if (rand == null) {
-			System.out.println("Seed = " + seed);
+			//System.out.println("Seed = " + seed);
 			rand = new Random(seed);
 		}
 		return rand.nextDouble();

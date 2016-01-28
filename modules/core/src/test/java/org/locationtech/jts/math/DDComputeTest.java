@@ -37,11 +37,11 @@ public class DDComputeTest
 
 	public void testEByTaylorSeries()
 	{
-    System.out.println("--------------------------------");
-    System.out.println("Computing e by Taylor series");
+    //System.out.println("--------------------------------");
+    //System.out.println("Computing e by Taylor series");
 		DD testE = computeEByTaylorSeries();
 		double err = Math.abs(testE.subtract(DD.E).doubleValue());
-		System.out.println("Difference from DoubleDouble.E = " + err);
+		//System.out.println("Difference from DoubleDouble.E = " + err);
 		assertTrue(err < 64 * DD.EPS);
 	}
 	
@@ -64,18 +64,18 @@ public class DDComputeTest
 			n += 1.0;
 			t = t.divide(DD.valueOf(n));
 			s = s.add(t);
-			System.out.println(i + ": " + s);
+			//System.out.println(i + ": " + s);
 		}
 		return s;
 	}
 	
 	public void testPiByMachin()
 	{
-    System.out.println("--------------------------------");
-    System.out.println("Computing Pi by Machin's rule");
+    //System.out.println("--------------------------------");
+    //System.out.println("Computing Pi by Machin's rule");
 		DD testE = computePiByMachin();
 		double err = Math.abs(testE.subtract(DD.PI).doubleValue());
-		System.out.println("Difference from DoubleDouble.PI = " + err);
+		//System.out.println("Difference from DoubleDouble.PI = " + err);
 		assertTrue(err < 8 * DD.EPS);
 	}
 	
@@ -96,7 +96,7 @@ public class DDComputeTest
 												.multiply(arctan(t1)))
 												.subtract(arctan(t2));
 		DD pi = DD.valueOf(4.0).multiply(pi4);
-		System.out.println("Computed value = " + pi);
+		//System.out.println("Computed value = " + pi);
 		return pi;
 	}
 	
@@ -128,8 +128,8 @@ public class DDComputeTest
 	    t = t.multiply(t2);
 	    sign = -sign;
 	  }
-	  System.out.println("Computed DD.atan(): " + at 
-	  		+ "    Math.atan = " + Math.atan(x.doubleValue()));
+	  //System.out.println("Computed DD.atan(): " + at 
+	  //		+ "    Math.atan = " + Math.atan(x.doubleValue()));
 	  return at;
 	}
 

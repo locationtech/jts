@@ -84,8 +84,8 @@ public class InteriorPointTest extends TestCase
       checkInteriorPoint(g);
       System.out.print(".");
     }
-    System.out.println();
-    System.out.println("  " + sw.getTimeString());
+    //System.out.println();
+    //System.out.println("  " + sw.getTimeString());
   }
 
   private void checkInteriorPoint(Geometry g)

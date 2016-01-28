@@ -63,7 +63,7 @@ public class CascadedPolygonUnionTest extends TestCase
   {
   	Collection geoms = createDiscs(5, 0.7);
   	
-  	System.out.println(geomFact.buildGeometry(geoms));
+  	//System.out.println(geomFact.buildGeometry(geoms));
   	
   	runTest(geoms,
   			CascadedPolygonUnionTester.MIN_SIMILARITY_MEAURE);
@@ -75,7 +75,7 @@ public class CascadedPolygonUnionTest extends TestCase
   {
   	Collection geoms = createDiscs(5, 0.55);
   	
-  	System.out.println(geomFact.buildGeometry(geoms));
+  	//System.out.println(geomFact.buildGeometry(geoms));
   	
   	runTest(geoms,
   			CascadedPolygonUnionTester.MIN_SIMILARITY_MEAURE);

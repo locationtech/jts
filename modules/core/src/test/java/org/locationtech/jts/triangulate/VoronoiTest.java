@@ -62,7 +62,7 @@ public class VoronoiTest extends TestCase {
   	else {
   		//result = builder.getEdges(geomFact);
   	}
-  	System.out.println(result);
+  	//System.out.println(result);
   	
   	Geometry expectedEdges = reader.read(expectedWKT);
   	result.normalize();

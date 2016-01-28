@@ -77,14 +77,14 @@ public class FileBufferResultValidatorTest extends TestCase {
   void runAll(List geoms, double dist)
   {
   	Stopwatch sw = new Stopwatch();
-    System.out.println("Geom count = " + geoms.size() + "   distance = " + dist);
+    //System.out.println("Geom count = " + geoms.size() + "   distance = " + dist);
     for (Iterator i = geoms.iterator(); i.hasNext(); ) {
       Geometry g = (Geometry) i.next();
       runBuffer(g, dist);
       runBuffer(g.reverse(), dist);
-      System.out.print(".");
+      //System.out.print(".");
     }
-    System.out.println("  " + sw.getTimeString());
+    //System.out.println("  " + sw.getTimeString());
 
   }
   void runBuffer(Geometry g, double dist)

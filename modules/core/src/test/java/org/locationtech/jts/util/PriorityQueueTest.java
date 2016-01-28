@@ -61,7 +61,7 @@ public class PriorityQueueTest
     
     while (! q.isEmpty()) {
       Comparable next = (Comparable) q.poll();
-      System.out.println(next);
+      //System.out.println(next);
       if (curr == null)
         curr = next;
       else 

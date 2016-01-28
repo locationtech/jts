@@ -69,7 +69,7 @@ public abstract class WritingTestCase extends TestCase
 //		out.setCustomElements(new String[] { "<test>1</test>" } );
 		out.write(g, getWriter());
 
-		System.out.println(sw.toString());
+		//System.out.println(sw.toString());
 		
 		GMLReader in = new GMLReader();
 		Geometry g2 = in.read(getReader(), geometryFactory);

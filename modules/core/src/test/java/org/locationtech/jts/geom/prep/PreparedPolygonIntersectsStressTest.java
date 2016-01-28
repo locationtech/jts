@@ -66,9 +66,9 @@ public class PreparedPolygonIntersectsStressTest extends TestCase
   {
 //  	Geometry poly = createCircle(new Coordinate(0, 0), 100, nPts);
   	Geometry poly = createSineStar(new Coordinate(0, 0), 100, nPts);
-  	System.out.println(poly);
+  	//System.out.println(poly);
   	
-    System.out.println();
+    //System.out.println();
     //System.out.println("Running with " + nPts + " points");
     test(poly);
   }

@@ -91,9 +91,9 @@ public class MinimumBoundingCircleTest extends TestCase {
   	Geometry actual = geometryFactory.createMultiPoint(exPts);
   	double actualRadius = mbc.getRadius();
   	Coordinate actualCentre = mbc.getCentre();
-  	System.out.println( 
-  			"   Centre = " + actualCentre
-  			+ "   Radius = " + actualRadius);
+  	//System.out.println( 
+  	//		"   Centre = " + actualCentre
+  	//		+ "   Radius = " + actualRadius);
 
   	Geometry expected = reader.read(expectedWKT);
   	boolean isEqual = actual.equals(expected);

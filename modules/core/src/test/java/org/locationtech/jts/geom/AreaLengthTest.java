@@ -61,7 +61,7 @@ public class AreaLengthTest extends TestCase {
   public void checkLength(String wkt, double expectedValue) throws Exception {
 		Geometry g = reader.read(wkt);
 		double len = g.getLength();
-//		System.out.println(len);
+//		//System.out.println(len);
 		assertEquals(expectedValue, len, TOLERANCE);
 	}
 

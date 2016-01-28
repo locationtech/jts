@@ -77,7 +77,7 @@ public class RectanglePredicateTest
 
     //System.out.println(testGeom);
     if (! intersectsOK || ! containsOK) {
-      System.out.println(testGeom);
+      //System.out.println(testGeom);
     }
     assertTrue(intersectsOK);
     assertTrue(containsOK);

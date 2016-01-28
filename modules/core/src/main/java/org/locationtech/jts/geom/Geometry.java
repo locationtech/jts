@@ -1759,7 +1759,7 @@ public abstract class Geometry
    */
   protected void checkNotGeometryCollection(Geometry g) {
     //Don't use instanceof because we want to allow subclasses
-    if (g.getClass().getName().equals("com.vividsolutions.jts.geom.GeometryCollection")) {
+    if (g.getClass().equals(GeometryCollection.class)) {
       throw new IllegalArgumentException("This method does not support GeometryCollection arguments");
     }
   }

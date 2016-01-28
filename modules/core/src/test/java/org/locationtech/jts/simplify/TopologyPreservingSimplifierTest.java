@@ -202,7 +202,7 @@ class TPSimplifierResult
     Geometry[] ioGeom = new Geometry[2];
     ioGeom[0] = rdr.read(wkt);
     ioGeom[1] = TopologyPreservingSimplifier.simplify(ioGeom[0], tolerance);
-    System.out.println(ioGeom[1]);
+    //System.out.println(ioGeom[1]);
     return ioGeom;
   }
 }

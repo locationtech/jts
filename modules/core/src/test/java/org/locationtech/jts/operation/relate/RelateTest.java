@@ -72,7 +72,7 @@ public class RelateTest
     Geometry g2 = rdr.read(wkt2);
     IntersectionMatrix im = RelateOp.relate(g1, g2);
     String imStr = im.toString();
-    System.out.println(imStr);
+    //System.out.println(imStr);
     assertTrue(im.matches(expectedIM));
   }
 }

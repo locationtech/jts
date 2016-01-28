@@ -45,9 +45,9 @@ public class BufferValidator
     Geometry g =
       new WKTReader().read(
         "MULTILINESTRING (( 635074.5418406526 6184832.4888257105, 635074.5681951842 6184832.571842485, 635074.6472587794 6184832.575795664 ), ( 635074.6657069515 6184832.53889932, 635074.6933792098 6184832.451929366, 635074.5642420045 6184832.474330718 ))");
-    System.out.println(g);
-    System.out.println(g.buffer(0.01, 100));
-    System.out.println("END");
+    //System.out.println(g);
+    //System.out.println(g.buffer(0.01, 100));
+    //System.out.println("END");
   }
 
 

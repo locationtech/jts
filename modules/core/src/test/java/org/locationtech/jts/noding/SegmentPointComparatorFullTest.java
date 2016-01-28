@@ -122,7 +122,7 @@ public class SegmentPointComparatorFullTest
   {
     int octant = Octant.octant(seg.p0, seg.p1);
     int posValue = SegmentPointComparator.compare(octant, p0, p1);
-    System.out.println(octant + " " + p0 + " " + p1 + " " + posValue);
+    //System.out.println(octant + " " + p0 + " " + p1 + " " + posValue);
     assertTrue(posValue == expectedPositionValue);
   }
 

@@ -67,7 +67,7 @@ public class TriangleTest extends TestCase
 
     Triangle t = new Triangle(pt[0], pt[1], pt[2]);
     double z = t.interpolateZ(p);
-    System.out.println("Z = " + z);
+    //System.out.println("Z = " + z);
     assertEquals(expectedValue, z, 0.000001);
   }
 
@@ -108,7 +108,7 @@ public class TriangleTest extends TestCase
 
     Triangle t = new Triangle(pt[0], pt[1], pt[2]);
     double signedArea = t.signedArea();
-    System.out.println("signed area = " + signedArea);
+    //System.out.println("signed area = " + signedArea);
     assertEquals(expectedValue, signedArea, TOLERANCE);
 
     double area = t.area();
@@ -133,7 +133,7 @@ public class TriangleTest extends TestCase
 
     Triangle t = new Triangle(pt[0], pt[1], pt[2]);
     boolean isAcute = t.isAcute();
-    System.out.println("isAcute = " + isAcute);
+    //System.out.println("isAcute = " + isAcute);
     assertEquals(expectedValue, isAcute);
   }
 
@@ -170,14 +170,14 @@ public class TriangleTest extends TestCase
     Coordinate[] pt = g.getCoordinates();
 
     Coordinate centroid = Triangle.centroid(pt[0], pt[1], pt[2]);
-    System.out.println("(Static) centroid = " + centroid);
+    //System.out.println("(Static) centroid = " + centroid);
     assertEquals(expectedValue.toString(), centroid.toString());
 
     // Test Instance version
     //
     Triangle t = new Triangle(pt[0], pt[1], pt[2]);
     centroid = t.centroid();
-    System.out.println("(Instance) centroid = " + centroid.toString());
+    //System.out.println("(Instance) centroid = " + centroid.toString());
     assertEquals(expectedValue.toString(), centroid.toString());
   }
 
@@ -188,14 +188,14 @@ public class TriangleTest extends TestCase
     Coordinate[] pt = g.getCoordinates();
 
     Coordinate circumcentre = Triangle.circumcentre(pt[0], pt[1], pt[2]);
-    System.out.println("(Static) circumcentre = " + circumcentre);
+    //System.out.println("(Static) circumcentre = " + circumcentre);
     assertEquals(expectedValue.toString(), circumcentre.toString());
 
     // Test Instance version
     //
     Triangle t = new Triangle(pt[0], pt[1], pt[2]);
     circumcentre = t.circumcentre();
-    System.out.println("(Instance) circumcentre = " + circumcentre.toString());
+    //System.out.println("(Instance) circumcentre = " + circumcentre.toString());
     assertEquals(expectedValue.toString(), circumcentre.toString());
   }
 
@@ -219,14 +219,14 @@ public class TriangleTest extends TestCase
     Coordinate[] pt = g.getCoordinates();
 
     double length = Triangle.longestSideLength(pt[0], pt[1], pt[2]);
-    System.out.println("(Static) longestSideLength = " + length);
+    //System.out.println("(Static) longestSideLength = " + length);
     assertEquals(expectedValue, length, 0.00000001); 
 
     // Test Instance version
     //
     Triangle t = new Triangle(pt[0], pt[1], pt[2]);
     length = t.longestSideLength();
-    System.out.println("(Instance) longestSideLength = " + length);
+    //System.out.println("(Instance) longestSideLength = " + length);
     assertEquals(expectedValue, length, 0.00000001);
   }
 

@@ -46,12 +46,12 @@ public abstract class StressTestHarness
   
   public void run(int nIter)
   {
-  	System.out.println("Running " + nIter + " tests");
+  	//System.out.println("Running " + nIter + " tests");
 //  	Geometry poly = createCircle(new Coordinate(0, 0), 100, nPts);
   	Geometry poly = createSineStar(new Coordinate(0, 0), 100, numTargetPts);
-  	System.out.println(poly);
+  	//System.out.println(poly);
   	
-    System.out.println();
+    //System.out.println();
     //System.out.println("Running with " + nPts + " points");
     run(nIter, poly);
   }
