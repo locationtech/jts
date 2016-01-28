@@ -23,13 +23,14 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import com.vividsolutions.jts.geom.IntersectionMatrix;
-import com.vividsolutions.jts.geom.Location;
 import com.vividsolutions.jtstest.testbuilder.model.TestCaseEdit;
 
 import java.awt.*;
 
 import javax.swing.*;
+
+import org.locationtech.jts.geom.IntersectionMatrix;
+import org.locationtech.jts.geom.Location;
 
 
 /**
@@ -234,7 +235,7 @@ public class RelatePanel extends JPanel {
   }
 
   void setRelateLabel(JLabel lbl, int imValue) {
-    buf.setCharAt(0, com.vividsolutions.jts.geom.Dimension.toDimensionSymbol(imValue));
+    buf.setCharAt(0, org.locationtech.jts.geom.Dimension.toDimensionSymbol(imValue));
     lbl.setText(buf.toString());
   }
 

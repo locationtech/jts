@@ -19,11 +19,12 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.prep.*;
-import com.vividsolutions.jts.index.SpatialIndex;
-import com.vividsolutions.jts.index.strtree.STRtree;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.prep.*;
+import org.locationtech.jts.index.SpatialIndex;
+import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.util.Stopwatch;
+
 
 
 /**

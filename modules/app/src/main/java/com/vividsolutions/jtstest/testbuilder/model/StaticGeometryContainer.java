@@ -14,7 +14,7 @@
 
 package com.vividsolutions.jtstest.testbuilder.model;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 public class StaticGeometryContainer implements GeometryContainer {
 

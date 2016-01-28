@@ -13,7 +13,7 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Implementations for spatial predicate functions.

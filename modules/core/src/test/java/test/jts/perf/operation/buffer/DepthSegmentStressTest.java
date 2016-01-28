@@ -18,7 +18,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.vividsolutions.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineSegment;
+
 
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;

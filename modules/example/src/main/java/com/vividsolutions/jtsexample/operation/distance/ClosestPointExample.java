@@ -14,9 +14,9 @@
  */
 package com.vividsolutions.jtsexample.operation.distance;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.operation.distance.DistanceOp;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.operation.distance.DistanceOp;
 
 /**
  * Example of computing distance and closest points between geometries

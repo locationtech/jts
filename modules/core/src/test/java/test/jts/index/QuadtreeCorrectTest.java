@@ -17,9 +17,10 @@ package test.jts.index;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.index.quadtree.Quadtree;
+import org.locationtech.jts.util.Stopwatch;
+
 
 
 /**

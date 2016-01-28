@@ -14,7 +14,7 @@
  */
 package com.vividsolutions.jtsexample.geom;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 /**
  * Creates ExtendedCoordinateSequenceFactory internally represented
@@ -55,7 +55,7 @@ public class ExtendedCoordinateSequenceFactory
     }
 
     /**
-     * @see com.vividsolutions.jts.geom.CoordinateSequenceFactory#create(int, int)
+     * @see org.locationtech.jts.geom.CoordinateSequenceFactory#create(int, int)
      */
     public CoordinateSequence create(int size, int dimension) {
       return new ExtendedCoordinateSequence(size);

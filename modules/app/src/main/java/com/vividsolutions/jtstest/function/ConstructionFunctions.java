@@ -13,11 +13,11 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
-import com.vividsolutions.jts.algorithm.MinimumDiameter;
-import com.vividsolutions.jts.densify.Densifier;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.OctagonalEnvelope;
+import org.locationtech.jts.algorithm.MinimumBoundingCircle;
+import org.locationtech.jts.algorithm.MinimumDiameter;
+import org.locationtech.jts.densify.Densifier;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.OctagonalEnvelope;
 
 public class ConstructionFunctions {
   public static Geometry octagonalEnvelope(Geometry g) { return OctagonalEnvelope.octagonalEnvelope(g); }

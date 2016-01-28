@@ -17,9 +17,10 @@ package com.vividsolutions.jtstest.testbuilder.ui.style;
 import java.awt.*;
 import java.awt.geom.*;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
+
 import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
 import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 import com.vividsolutions.jtstest.testbuilder.ui.render.GeometryPainter;

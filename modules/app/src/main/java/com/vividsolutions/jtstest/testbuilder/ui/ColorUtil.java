@@ -16,7 +16,8 @@ package com.vividsolutions.jtstest.testbuilder.ui;
 
 import java.awt.Color;
 
-import com.vividsolutions.jts.math.MathUtil;
+import org.locationtech.jts.math.MathUtil;
+
 
 public class ColorUtil {
 

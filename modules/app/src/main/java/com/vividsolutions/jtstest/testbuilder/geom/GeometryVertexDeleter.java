@@ -15,8 +15,9 @@
 package com.vividsolutions.jtstest.testbuilder.geom;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.*;
+
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.*;
 
 public class GeometryVertexDeleter 
 {

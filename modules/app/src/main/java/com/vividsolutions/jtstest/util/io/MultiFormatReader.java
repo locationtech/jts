@@ -17,10 +17,11 @@ import java.io.IOException;
 
 import javax.xml.parsers.*;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.io.gml2.*;
+
 import com.vividsolutions.jts.io.geojson.GeoJsonReader;
-import com.vividsolutions.jts.io.gml2.*;
 
 /**
  * Reads a {@link Geometry} from a string which is in either WKT, WKBHex

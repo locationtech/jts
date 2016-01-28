@@ -42,13 +42,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.LineStringExtracter;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jtstest.clean.CleanDuplicatePoints;
-import com.vividsolutions.jts.geom.util.LineStringExtracter;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
 import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 import com.vividsolutions.jtstest.testbuilder.controller.ResultController;
 import com.vividsolutions.jtstest.testbuilder.event.SpatialFunctionPanelEvent;

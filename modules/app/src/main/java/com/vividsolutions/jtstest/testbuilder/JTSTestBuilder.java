@@ -19,10 +19,11 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.UIManager;
 
+import org.locationtech.jts.geom.*;
+
 import com.vividsolutions.jtstest.command.*;
 import com.vividsolutions.jtstest.function.*;
 import com.vividsolutions.jtstest.testbuilder.model.*;
-import com.vividsolutions.jts.geom.*;
 
 /**
  * A Swing application which supports 

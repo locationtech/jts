@@ -23,7 +23,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
-import com.vividsolutions.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.PrecisionModel;
+
 
 
 /**

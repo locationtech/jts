@@ -14,15 +14,15 @@
 
 package test.jts.perf.operation.valid;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.util.AffineTransformation;
-import com.vividsolutions.jts.operation.valid.IsValidOp;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.util.AffineTransformation;
+import org.locationtech.jts.operation.valid.IsValidOp;
+import org.locationtech.jts.util.Stopwatch;
 
 /**
  * Stress-tests {@link IsValidOp} 

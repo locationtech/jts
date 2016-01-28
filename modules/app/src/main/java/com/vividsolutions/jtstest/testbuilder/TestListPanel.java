@@ -31,7 +31,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
+
 import com.vividsolutions.jtstest.test.Testable;
 import com.vividsolutions.jtstest.testbuilder.model.TestCaseEdit;
 

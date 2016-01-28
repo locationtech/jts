@@ -16,7 +16,8 @@ package com.vividsolutions.jtstest.function;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
+
 
 public class OverlayFunctions {
 	public static Geometry intersection(Geometry a, Geometry b)		{		return a.intersection(b);	}

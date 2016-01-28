@@ -15,10 +15,11 @@
 package test.jts.perf.operation.buffer;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.buffer.validate.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.util.*;
+
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.operation.buffer.validate.*;
+import org.locationtech.jts.util.*;
 
 /**
  * Test repeated buffering of a given input shape.

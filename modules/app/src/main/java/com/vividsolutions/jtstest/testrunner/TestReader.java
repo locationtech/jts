@@ -15,8 +15,6 @@
  */
 package com.vividsolutions.jtstest.testrunner;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
 import com.vividsolutions.jtstest.*;
 
 import java.io.*;
@@ -24,6 +22,8 @@ import java.util.*;
 
 import org.jdom.*;
 import org.jdom.input.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
 
 import com.vividsolutions.jtstest.geomop.*;
 import com.vividsolutions.jtstest.util.*;

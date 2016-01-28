@@ -14,7 +14,8 @@
 
 package com.vividsolutions.jtstest.testbuilder.model;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
+
 import com.vividsolutions.jtstest.testbuilder.geom.*;
 
 public class ResultGeometryContainer

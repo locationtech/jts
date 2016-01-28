@@ -16,7 +16,8 @@ package com.vividsolutions.jtstest.testbuilder.io.shapefile;
 
 import java.io.IOException;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
+
 
 /**
  * Wrapper for a Shapefile arc.

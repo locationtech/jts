@@ -31,10 +31,11 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jtstest.testbuilder.model.*;
 import com.vividsolutions.jtstest.testbuilder.ui.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.AWTUtil;
@@ -411,7 +412,7 @@ public class GeometryEditPanel extends JPanel
     Stroke stroke = new BasicStroke(5);
     
     Geometry flashGeom = g;
-    if (g instanceof com.vividsolutions.jts.geom.Point)
+    if (g instanceof org.locationtech.jts.geom.Point)
       flashGeom = flashPointGeom(g);
     
     try {

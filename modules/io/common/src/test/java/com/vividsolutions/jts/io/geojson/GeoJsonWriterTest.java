@@ -14,10 +14,11 @@
 
 package com.vividsolutions.jts.io.geojson;
 
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+
 import test.jts.GeometryTestCase;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
 
 public class GeoJsonWriterTest extends GeometryTestCase {
 

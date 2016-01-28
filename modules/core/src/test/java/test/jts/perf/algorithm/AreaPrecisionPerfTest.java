@@ -14,7 +14,7 @@
 
 package test.jts.perf.algorithm;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 public class AreaPrecisionPerfTest
 {

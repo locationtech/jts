@@ -13,7 +13,8 @@
  */
 package com.vividsolutions.jtstest.geomop;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
+
 import com.vividsolutions.jtstest.testrunner.Result;
 
 /**

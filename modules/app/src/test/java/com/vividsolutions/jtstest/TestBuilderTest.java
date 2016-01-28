@@ -15,9 +15,10 @@
 
 package com.vividsolutions.jtstest;
 
+import org.locationtech.jts.geom.PrecisionModel;
+
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 

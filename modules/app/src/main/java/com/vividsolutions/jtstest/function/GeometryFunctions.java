@@ -17,9 +17,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.overlay.snap.*;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.overlay.snap.*;
+
 
 /**
  * Implementations for various geometry functions.

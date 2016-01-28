@@ -18,9 +18,10 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.RobustCGAlgorithms;
+import org.locationtech.jts.geom.*;
+
 
 
 

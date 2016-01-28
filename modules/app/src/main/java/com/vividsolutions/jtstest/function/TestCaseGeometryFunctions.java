@@ -13,11 +13,11 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.operation.buffer.BufferOp;
-import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import com.vividsolutions.jts.precision.MinimumClearance;
-import com.vividsolutions.jts.densify.*;
+import org.locationtech.jts.densify.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.precision.MinimumClearance;
 
 /**
  * Geometry functions which

@@ -17,9 +17,10 @@ package com.vividsolutions.jtstest.function;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.operation.valid.IsValidOp;
-import com.vividsolutions.jts.operation.valid.TopologyValidationError;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.valid.IsValidOp;
+import org.locationtech.jts.operation.valid.TopologyValidationError;
+
 
 public class ValidationFunctions
 {

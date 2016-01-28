@@ -16,8 +16,9 @@ package com.vividsolutions.jtstest.testbuilder.model;
 
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+
 import com.vividsolutions.jtstest.testbuilder.topostretch.TopologyStretcher;
 
 public class GeometryStretcherView 

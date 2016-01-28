@@ -14,8 +14,8 @@
  */
 package com.vividsolutions.jtsexample.geom;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
 
 /**
  * An example showing the results of using different precision models

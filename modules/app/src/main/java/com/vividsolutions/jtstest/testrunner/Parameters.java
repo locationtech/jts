@@ -19,7 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jtstest.util.StringUtil;
 
 /**

@@ -14,9 +14,10 @@
 
 package com.vividsolutions.jtsexample.technique;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTReader;
 import java.util.*;
+
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 
 /**
  * Shows a technique for identifying the location of self-intersections

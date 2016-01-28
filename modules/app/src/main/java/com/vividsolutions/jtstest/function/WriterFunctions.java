@@ -16,10 +16,11 @@ package com.vividsolutions.jtstest.function;
 
 import java.lang.reflect.InvocationTargetException;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKBWriter;
-import com.vividsolutions.jts.io.gml2.GMLWriter;
-import com.vividsolutions.jts.io.kml.KMLWriter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKBWriter;
+import org.locationtech.jts.io.gml2.GMLWriter;
+import org.locationtech.jts.io.kml.KMLWriter;
+
 import com.vividsolutions.jtstest.util.ClassUtil;
 
 public class WriterFunctions 

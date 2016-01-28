@@ -15,8 +15,9 @@
 package com.vividsolutions.jtstest.testbuilder.geom;
 
 import java.util.*;
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geom.*;
+
+import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.geom.*;
 
 public class GeometryCombiner 
 {

@@ -13,8 +13,8 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.operation.overlay.OverlayOp;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.overlay.OverlayOp;
 
 public class OverlayNoSnapFunctions {
 	public static Geometry intersection(Geometry a, Geometry b)		{		return OverlayOp.overlayOp(a, b, OverlayOp.INTERSECTION);	}

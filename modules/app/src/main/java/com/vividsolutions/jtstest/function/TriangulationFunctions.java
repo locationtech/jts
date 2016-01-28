@@ -13,10 +13,11 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.triangulate.*;
-import com.vividsolutions.jts.triangulate.quadedge.LocateFailureException;
-import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.triangulate.*;
+import org.locationtech.jts.triangulate.quadedge.LocateFailureException;
+import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
+
 import com.vividsolutions.jtstest.util.*;
 
 public class TriangulationFunctions 

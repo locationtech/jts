@@ -19,7 +19,8 @@ import java.awt.Font;
 
 import javax.swing.ImageIcon;
 
-import com.vividsolutions.jts.awt.FontGlyphReader;
+import org.locationtech.jts.awt.FontGlyphReader;
+
 import com.vividsolutions.jtstest.testbuilder.model.GeometryDepiction;
 import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
 

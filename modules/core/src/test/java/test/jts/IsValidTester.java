@@ -14,10 +14,10 @@
  */
 package test.jts;
 
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.operation.valid.IsValidOp;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.operation.valid.IsValidOp;
 
 
 /**

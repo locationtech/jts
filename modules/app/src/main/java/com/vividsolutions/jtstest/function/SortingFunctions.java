@@ -19,8 +19,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.util.GeometryExtracter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.GeometryExtracter;
+
 
 public class SortingFunctions
 {

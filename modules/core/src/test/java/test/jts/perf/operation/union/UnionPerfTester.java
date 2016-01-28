@@ -18,11 +18,12 @@ package test.jts.perf.operation.union;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
-import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.operation.union.CascadedPolygonUnion;
+import org.locationtech.jts.util.Stopwatch;
+
 
 
 public class UnionPerfTester 

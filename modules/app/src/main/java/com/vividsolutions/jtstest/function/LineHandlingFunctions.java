@@ -14,13 +14,14 @@
 package com.vividsolutions.jtstest.function;
 
 import java.util.*;
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.*;
-import com.vividsolutions.jts.densify.*;
-import com.vividsolutions.jts.dissolve.LineDissolver;
-import com.vividsolutions.jts.operation.polygonize.*;
-import com.vividsolutions.jts.operation.linemerge.*;
+
+import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.densify.*;
+import org.locationtech.jts.dissolve.LineDissolver;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.operation.linemerge.*;
+import org.locationtech.jts.operation.polygonize.*;
 
 public class LineHandlingFunctions {
 	

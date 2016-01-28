@@ -28,7 +28,8 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.JTextComponent;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
+
 import com.vividsolutions.jtstest.testbuilder.model.GeometryTransferable;
 import com.vividsolutions.jtstest.util.StringUtil;
 

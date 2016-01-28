@@ -18,21 +18,17 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.NonRobustCGAlgorithms;
+import org.locationtech.jts.algorithm.PointLocator;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.planargraph.DirectedEdge;
+import org.locationtech.jts.planargraph.Edge;
+import org.locationtech.jts.planargraph.Node;
+import org.locationtech.jts.util.UniqueCoordinateArrayFilter;
+
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.algorithm.NonRobustCGAlgorithms;
-import com.vividsolutions.jts.algorithm.PointLocator;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Location;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.planargraph.DirectedEdge;
-import com.vividsolutions.jts.planargraph.Edge;
-import com.vividsolutions.jts.planargraph.Node;
-import com.vividsolutions.jts.util.UniqueCoordinateArrayFilter;
 
 
 

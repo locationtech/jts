@@ -31,9 +31,10 @@ import javax.swing.JTextArea;
 import javax.swing.border.Border;
 import javax.swing.text.JTextComponent;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.WKTReader;
+
 
 /**
  * Title:

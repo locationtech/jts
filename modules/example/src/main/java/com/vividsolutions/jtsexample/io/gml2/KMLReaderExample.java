@@ -14,10 +14,11 @@
 
 package com.vividsolutions.jtsexample.io.gml2;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.gml2.*;
 import java.util.*;
 import java.io.*;
+
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.gml2.*;
 import org.xml.sax.*;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;

@@ -18,7 +18,8 @@ package com.vividsolutions.jtstest.testrunner;
 import java.io.File;
 import java.util.*;
 
-import com.vividsolutions.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.PrecisionModel;
+
 import com.vividsolutions.jtstest.geomop.*;
 
 

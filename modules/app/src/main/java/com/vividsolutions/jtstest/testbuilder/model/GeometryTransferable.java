@@ -18,8 +18,9 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
+
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
 
 public class GeometryTransferable implements Transferable 
 {

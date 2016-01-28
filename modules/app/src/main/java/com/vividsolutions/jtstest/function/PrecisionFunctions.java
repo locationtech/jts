@@ -14,8 +14,8 @@
 
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.precision.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.precision.*;
 
 public class PrecisionFunctions 
 {

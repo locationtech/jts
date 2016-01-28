@@ -13,8 +13,8 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.GeometryMapper;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.GeometryMapper;
 
 
 public class TriangleFunctions {

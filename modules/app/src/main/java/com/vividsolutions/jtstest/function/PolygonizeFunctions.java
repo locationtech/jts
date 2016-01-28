@@ -18,11 +18,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.util.LineStringExtracter;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.util.LineStringExtracter;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
+
 
 public class PolygonizeFunctions {
 

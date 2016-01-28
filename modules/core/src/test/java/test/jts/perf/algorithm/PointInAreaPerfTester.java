@@ -15,11 +15,12 @@
 package test.jts.perf.algorithm;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.algorithm.locate.PointOnGeometryLocator;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.util.*;
+
+import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.util.*;
 
 /**
  * Creates a perturbed, buffered grid and tests a set

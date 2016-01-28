@@ -21,10 +21,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.operation.buffer.validate.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.operation.buffer.validate.*;
+import org.locationtech.jts.util.*;
+
 
 import junit.framework.TestCase;
 import test.jts.TestFiles;

@@ -15,9 +15,9 @@
  */
 package com.vividsolutions.jtstest.testbuilder.model;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.IntersectionMatrix;
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+
 import com.vividsolutions.jtstest.test.TestCase;
 import com.vividsolutions.jtstest.test.Testable;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;

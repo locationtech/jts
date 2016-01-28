@@ -15,7 +15,8 @@ package com.vividsolutions.jtstest.geomop;
 
 import java.lang.reflect.*;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
+
 import com.vividsolutions.jtstest.testrunner.*;
 import com.vividsolutions.jtstest.function.*;
 

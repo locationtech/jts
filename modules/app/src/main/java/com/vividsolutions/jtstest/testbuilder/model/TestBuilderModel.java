@@ -17,9 +17,10 @@ package com.vividsolutions.jtstest.testbuilder.model;
 import java.io.*;
 import java.util.*;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jtstest.test.TestCaseList;
 import com.vividsolutions.jtstest.test.Testable;
 import com.vividsolutions.jtstest.testbuilder.AppConstants;

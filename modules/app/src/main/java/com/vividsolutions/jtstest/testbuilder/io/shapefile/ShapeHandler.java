@@ -14,8 +14,8 @@
 
 package com.vividsolutions.jtstest.testbuilder.io.shapefile;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 
 
 public interface ShapeHandler {

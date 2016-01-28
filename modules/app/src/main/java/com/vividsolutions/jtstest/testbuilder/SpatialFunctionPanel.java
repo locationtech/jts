@@ -20,9 +20,10 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.util.Stopwatch;
-import com.vividsolutions.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.util.Stopwatch;
+
 import com.vividsolutions.jtstest.function.*;
 import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 import com.vividsolutions.jtstest.testbuilder.event.GeometryFunctionEvent;

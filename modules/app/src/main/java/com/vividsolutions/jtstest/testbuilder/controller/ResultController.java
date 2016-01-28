@@ -21,8 +21,9 @@ import java.text.NumberFormat;
 
 import javax.swing.Timer;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.util.Stopwatch;
+
 import com.vividsolutions.jtstest.function.GeometryFunction;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;

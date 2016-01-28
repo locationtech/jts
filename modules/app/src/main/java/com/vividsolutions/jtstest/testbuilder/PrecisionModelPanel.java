@@ -15,10 +15,12 @@
  */
 package com.vividsolutions.jtstest.testbuilder;
 
-import com.vividsolutions.jts.geom.PrecisionModel;
 
 import java.awt.*;
 import javax.swing.*;
+
+import org.locationtech.jts.geom.PrecisionModel;
+
 import java.awt.event.*;
 
 

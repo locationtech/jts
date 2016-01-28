@@ -13,8 +13,8 @@
  */
 package com.vividsolutions.jtstest.util.io;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
 
 /**
  * Reads a {@link Geometry} from a string which is in either WKT or WKBHex format

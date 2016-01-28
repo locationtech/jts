@@ -13,8 +13,8 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.overlay.snap.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.overlay.snap.*;
 
 /**
  * Implementations for various geometry functions.

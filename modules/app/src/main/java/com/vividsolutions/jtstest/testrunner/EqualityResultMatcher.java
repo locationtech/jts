@@ -13,7 +13,7 @@
  */
 package com.vividsolutions.jtstest.testrunner;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * A {@link ResultMatcher} which compares result for equality,

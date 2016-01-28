@@ -13,8 +13,9 @@
  */
 package com.vividsolutions.jtstest.testbuilder.model;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTWriter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTWriter;
+
 import com.vividsolutions.jtstest.test.TestCaseList;
 import com.vividsolutions.jtstest.test.Testable;
 import com.vividsolutions.jtstest.util.StringUtil;

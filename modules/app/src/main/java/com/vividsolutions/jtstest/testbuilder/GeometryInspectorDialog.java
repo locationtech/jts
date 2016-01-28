@@ -17,7 +17,8 @@ import java.awt.Frame;
 
 import javax.swing.JDialog;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
+
 
 /**
  * @version 1.7

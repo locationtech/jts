@@ -13,13 +13,13 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.algorithm.BoundaryNodeRule;
-import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
-import com.vividsolutions.jts.algorithm.MinimumDiameter;
-import com.vividsolutions.jts.densify.Densifier;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.OctagonalEnvelope;
-import com.vividsolutions.jts.operation.BoundaryOp;
+import org.locationtech.jts.algorithm.BoundaryNodeRule;
+import org.locationtech.jts.algorithm.MinimumBoundingCircle;
+import org.locationtech.jts.algorithm.MinimumDiameter;
+import org.locationtech.jts.densify.Densifier;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.OctagonalEnvelope;
+import org.locationtech.jts.operation.BoundaryOp;
 
 public class BoundaryFunctions {  
   public static Geometry boundary(Geometry g) {      return g.getBoundary();  }

@@ -13,7 +13,6 @@
  */
 package com.vividsolutions.jtstest.testbuilder;
 
-import com.vividsolutions.jts.*;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -30,6 +29,8 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import org.locationtech.jts.*;
 
 
 /**

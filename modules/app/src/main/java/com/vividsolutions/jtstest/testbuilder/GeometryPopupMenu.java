@@ -21,7 +21,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
+
 import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 
 public class GeometryPopupMenu extends JPopupMenu 

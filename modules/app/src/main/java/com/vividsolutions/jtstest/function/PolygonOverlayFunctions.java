@@ -18,13 +18,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.noding.snapround.GeometryNoder;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.noding.snapround.GeometryNoder;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
+
 
 public class PolygonOverlayFunctions 
 {

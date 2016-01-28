@@ -15,9 +15,10 @@
 package com.vividsolutions.jtstest.testbuilder.topostretch;
 
 import java.util.*;
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.*;
+
+import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.*;
 
 class StretchedVertexFinder 
 {

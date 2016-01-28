@@ -22,12 +22,13 @@ import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.GeneralPath;
 
-import com.vividsolutions.jts.awt.PointShapeFactory;
-import com.vividsolutions.jts.awt.ShapeWriter;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.awt.PointShapeFactory;
+import org.locationtech.jts.awt.ShapeWriter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+
 
 import com.vividsolutions.jtstest.*;
 import com.vividsolutions.jtstest.testbuilder.AppConstants;

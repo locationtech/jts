@@ -15,9 +15,9 @@
  */
 package com.vividsolutions.jtstest.test;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.util.Assert;
 
 
 /**

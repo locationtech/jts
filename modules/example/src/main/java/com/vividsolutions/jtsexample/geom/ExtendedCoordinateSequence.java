@@ -14,7 +14,7 @@
  */
 package com.vividsolutions.jtsexample.geom;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 /**
  * Demonstrates how to implement a CoordinateSequence for a new kind of
@@ -85,7 +85,7 @@ public class ExtendedCoordinateSequence
   }
 
   /**
-   * @see com.vividsolutions.jts.geom.CoordinateSequence#getDimension()
+   * @see org.locationtech.jts.geom.CoordinateSequence#getDimension()
    */
   public int getDimension() { return 4; }
 
@@ -94,13 +94,13 @@ public class ExtendedCoordinateSequence
   }
 
   /**
-   * @see com.vividsolutions.jts.geom.CoordinateSequence#getX(int)
+   * @see org.locationtech.jts.geom.CoordinateSequence#getX(int)
    */
   public Coordinate getCoordinateCopy(int index) {
     return new Coordinate(coordinates[index]);
   }
   /**
-   * @see com.vividsolutions.jts.geom.CoordinateSequence#getX(int)
+   * @see org.locationtech.jts.geom.CoordinateSequence#getX(int)
    */
   public void getCoordinate(int index, Coordinate coord) {
     coord.x = coordinates[index].x;
@@ -109,21 +109,21 @@ public class ExtendedCoordinateSequence
 
 
   /**
-   * @see com.vividsolutions.jts.geom.CoordinateSequence#getX(int)
+   * @see org.locationtech.jts.geom.CoordinateSequence#getX(int)
    */
   public double getX(int index) {
       return coordinates[index].x;
   }
 
   /**
-   * @see com.vividsolutions.jts.geom.CoordinateSequence#getY(int)
+   * @see org.locationtech.jts.geom.CoordinateSequence#getY(int)
    */
   public double getY(int index) {
       return coordinates[index].y;
   }
 
   /**
-   * @see com.vividsolutions.jts.geom.CoordinateSequence#getOrdinate(int, int)
+   * @see org.locationtech.jts.geom.CoordinateSequence#getOrdinate(int, int)
    */
   public double getOrdinate(int index, int ordinateIndex)
   {
@@ -137,7 +137,7 @@ public class ExtendedCoordinateSequence
   }
 
   /**
-   * @see com.vividsolutions.jts.geom.CoordinateSequence#setOrdinate(int, int, double)
+   * @see org.locationtech.jts.geom.CoordinateSequence#setOrdinate(int, int, double)
    */
   public void setOrdinate(int index, int ordinateIndex, double value)
   {

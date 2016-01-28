@@ -22,16 +22,16 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBHexFileReader;
+import org.locationtech.jts.io.WKBReader;
+import org.locationtech.jts.io.WKTFileReader;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.gml2.GMLReader;
 import org.xml.sax.SAXException;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBHexFileReader;
-import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jts.io.WKTFileReader;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.gml2.GMLReader;
 import com.vividsolutions.jtstest.testbuilder.io.shapefile.Shapefile;
 import com.vividsolutions.jtstest.util.FileUtil;
 

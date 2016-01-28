@@ -14,10 +14,10 @@
 
 package test.jts.perf.operation.buffer;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.noding.snapround.*;
-import com.vividsolutions.jts.util.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.noding.snapround.*;
+import org.locationtech.jts.util.*;
 
 /**
  * Stress-tests buffering by repeatedly buffering a geometry

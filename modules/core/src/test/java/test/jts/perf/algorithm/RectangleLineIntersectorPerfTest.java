@@ -13,11 +13,11 @@
  */
 package test.jts.perf.algorithm;
 
-import com.vividsolutions.jts.algorithm.LineIntersector;
-import com.vividsolutions.jts.algorithm.RectangleLineIntersector;
-import com.vividsolutions.jts.algorithm.RobustLineIntersector;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.RectangleLineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.util.Stopwatch;
 
 public class RectangleLineIntersectorPerfTest
 {

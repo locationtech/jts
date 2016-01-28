@@ -15,7 +15,8 @@
 package com.vividsolutions.jtstest.clean;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
+
+import org.locationtech.jts.geom.*;
 
 
 /**

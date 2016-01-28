@@ -15,8 +15,8 @@
 package com.vividsolutions.jtstest.function;
 
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.linearref.LengthIndexedLine;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.linearref.LengthIndexedLine;
 
 public class LinearReferencingFunctions
 {

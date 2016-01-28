@@ -19,12 +19,13 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
+
 import junit.framework.TestCase;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilderFrame;
 import com.vividsolutions.jtstest.testbuilder.model.TestRunnerTestCaseAdapter;
 import com.vividsolutions.jtstest.testbuilder.model.XMLTestWriter;

@@ -15,9 +15,10 @@
 package test.jts.perf.algorithm;
 
 import java.util.*;
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.index.strtree.*;
+
+import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.index.strtree.*;
 
 /**
  * Implements {@link PointInRing}

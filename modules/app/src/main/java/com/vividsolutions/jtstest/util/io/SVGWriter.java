@@ -14,12 +14,13 @@
 
 package com.vividsolutions.jtstest.util.io;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.*;
 
 import java.io.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.util.*;
 
 /**
  * Writes the Well-Known Text representation of a {@link Geometry}.

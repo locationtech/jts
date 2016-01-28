@@ -16,7 +16,8 @@ package com.vividsolutions.jtstest.testbuilder.ui.tools;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
+
 import com.vividsolutions.jtstest.testbuilder.AppCursors;
 import com.vividsolutions.jtstest.testbuilder.model.GeometryType;
 

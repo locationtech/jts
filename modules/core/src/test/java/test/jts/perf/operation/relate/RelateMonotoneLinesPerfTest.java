@@ -16,13 +16,14 @@ package test.jts.perf.operation.relate;
 
 import java.io.PrintStream;
 
+import org.locationtech.jts.densify.Densifier;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
 import test.jts.util.IOUtil;
 
-import com.vividsolutions.jts.densify.Densifier;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
 
 /**
  * Tests the performance of {@link RelateOp} (via {@link Geometry#intersects(Geometry)}

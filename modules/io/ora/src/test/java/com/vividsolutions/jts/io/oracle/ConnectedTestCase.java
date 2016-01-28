@@ -17,8 +17,9 @@ import java.net.URL;
 import java.sql.*;
 import java.util.Properties;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+
 
 import oracle.jdbc.OracleConnection;
 import junit.framework.TestCase;

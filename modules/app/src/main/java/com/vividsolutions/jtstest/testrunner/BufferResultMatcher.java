@@ -13,8 +13,8 @@
  */
 package com.vividsolutions.jtstest.testrunner;
 
-import com.vividsolutions.jts.algorithm.distance.DiscreteHausdorffDistance;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * A {@link ResultMatcher} which compares the results of

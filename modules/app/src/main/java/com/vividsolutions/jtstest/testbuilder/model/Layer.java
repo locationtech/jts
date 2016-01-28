@@ -16,6 +16,8 @@ package com.vividsolutions.jtstest.testbuilder.model;
 
 import java.awt.*;
 
+import org.locationtech.jts.geom.*;
+
 import com.vividsolutions.jtstest.*;
 import com.vividsolutions.jtstest.testbuilder.geom.*;
 import com.vividsolutions.jtstest.testbuilder.ui.ColorUtil;
@@ -23,7 +25,6 @@ import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 import com.vividsolutions.jtstest.testbuilder.ui.render.*;
 import com.vividsolutions.jtstest.testbuilder.ui.style.*;
 
-import com.vividsolutions.jts.geom.*;
 
 public class Layer 
 {

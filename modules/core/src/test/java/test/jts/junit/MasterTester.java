@@ -15,50 +15,51 @@
 
 package test.jts.junit;
 
+import org.locationtech.jts.algorithm.RobustLineIntersectionTest;
+import org.locationtech.jts.geom.AreaLengthTest;
+import org.locationtech.jts.geom.BidirectionalComparatorTest;
+import org.locationtech.jts.geom.CoordinateArraysTest;
+import org.locationtech.jts.geom.EnvelopeTest;
+import org.locationtech.jts.geom.GeometryCollectionImplTest;
+import org.locationtech.jts.geom.GeometryImplTest;
+import org.locationtech.jts.geom.IntersectionMatrixTest;
+import org.locationtech.jts.geom.IsRectangleTest;
+import org.locationtech.jts.geom.LineStringImplTest;
+import org.locationtech.jts.geom.MultiPointImplTest;
+import org.locationtech.jts.geom.NormalizeTest;
+import org.locationtech.jts.geom.PointImplTest;
+import org.locationtech.jts.geom.PrecisionModelTest;
+import org.locationtech.jts.geom.PredicateShortCircuitTest;
+import org.locationtech.jts.geom.RectanglePredicateSyntheticTest;
+import org.locationtech.jts.geom.RectanglePredicateTest;
+import org.locationtech.jts.geom.impl.BasicCoordinateSequenceTest;
+import org.locationtech.jts.index.IntervalTest;
+import org.locationtech.jts.index.QuadtreeTest;
+import org.locationtech.jts.index.SIRtreeTest;
+import org.locationtech.jts.index.STRtreeTest;
+import org.locationtech.jts.io.WKBTest;
+import org.locationtech.jts.io.WKTReaderTest;
+import org.locationtech.jts.io.WKTWriterTest;
+import org.locationtech.jts.linearref.LengthIndexedLineTest;
+import org.locationtech.jts.linearref.LocationIndexedLineTest;
+import org.locationtech.jts.operation.buffer.BufferTest;
+import org.locationtech.jts.operation.distance.DistanceTest;
+import org.locationtech.jts.operation.linemerge.LineMergerTest;
+import org.locationtech.jts.operation.polygonize.PolygonizeTest;
+import org.locationtech.jts.operation.relate.RelateBoundaryNodeRuleTest;
+import org.locationtech.jts.operation.union.CascadedPolygonUnionTest;
+import org.locationtech.jts.operation.union.UnaryUnionTest;
+import org.locationtech.jts.operation.valid.IsValidTest;
+import org.locationtech.jts.operation.valid.ValidClosedRingTest;
+import org.locationtech.jts.operation.valid.ValidSelfTouchingRingFormingHoleTest;
+import org.locationtech.jts.precision.SimpleGeometryPrecisionReducerTest;
+import org.locationtech.jts.triangulate.ConformingDelaunayTest;
+import org.locationtech.jts.triangulate.DelaunayTest;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import com.vividsolutions.jts.algorithm.RobustLineIntersectionTest;
-import com.vividsolutions.jts.geom.AreaLengthTest;
-import com.vividsolutions.jts.geom.BidirectionalComparatorTest;
-import com.vividsolutions.jts.geom.CoordinateArraysTest;
-import com.vividsolutions.jts.geom.EnvelopeTest;
-import com.vividsolutions.jts.geom.GeometryCollectionImplTest;
-import com.vividsolutions.jts.geom.GeometryImplTest;
-import com.vividsolutions.jts.geom.IntersectionMatrixTest;
-import com.vividsolutions.jts.geom.IsRectangleTest;
-import com.vividsolutions.jts.geom.LineStringImplTest;
-import com.vividsolutions.jts.geom.MultiPointImplTest;
-import com.vividsolutions.jts.geom.NormalizeTest;
-import com.vividsolutions.jts.geom.PointImplTest;
-import com.vividsolutions.jts.geom.PrecisionModelTest;
-import com.vividsolutions.jts.geom.PredicateShortCircuitTest;
-import com.vividsolutions.jts.geom.RectanglePredicateSyntheticTest;
-import com.vividsolutions.jts.geom.RectanglePredicateTest;
-import com.vividsolutions.jts.geom.impl.BasicCoordinateSequenceTest;
-import com.vividsolutions.jts.index.IntervalTest;
-import com.vividsolutions.jts.index.QuadtreeTest;
-import com.vividsolutions.jts.index.SIRtreeTest;
-import com.vividsolutions.jts.index.STRtreeTest;
-import com.vividsolutions.jts.io.WKBTest;
-import com.vividsolutions.jts.io.WKTReaderTest;
-import com.vividsolutions.jts.io.WKTWriterTest;
-import com.vividsolutions.jts.linearref.LengthIndexedLineTest;
-import com.vividsolutions.jts.linearref.LocationIndexedLineTest;
-import com.vividsolutions.jts.operation.buffer.BufferTest;
-import com.vividsolutions.jts.operation.distance.DistanceTest;
-import com.vividsolutions.jts.operation.linemerge.LineMergerTest;
-import com.vividsolutions.jts.operation.polygonize.PolygonizeTest;
-import com.vividsolutions.jts.operation.relate.RelateBoundaryNodeRuleTest;
-import com.vividsolutions.jts.operation.union.CascadedPolygonUnionTest;
-import com.vividsolutions.jts.operation.union.UnaryUnionTest;
-import com.vividsolutions.jts.operation.valid.IsValidTest;
-import com.vividsolutions.jts.operation.valid.ValidClosedRingTest;
-import com.vividsolutions.jts.operation.valid.ValidSelfTouchingRingFormingHoleTest;
-import com.vividsolutions.jts.precision.SimpleGeometryPrecisionReducerTest;
-import com.vividsolutions.jts.triangulate.ConformingDelaunayTest;
-import com.vividsolutions.jts.triangulate.DelaunayTest;
 /**
  * A collection of all the tests.
  *
@@ -72,15 +73,15 @@ public class MasterTester extends TestCase {
 
   public static Test suite() {
     TestSuite result = new TestSuite();
-    result.addTest(new TestSuite(com.vividsolutions.jts.algorithm.AngleTest.class));
+    result.addTest(new TestSuite(org.locationtech.jts.algorithm.AngleTest.class));
     result.addTest(new TestSuite(AreaLengthTest.class));
     result.addTest(new TestSuite(BasicCoordinateSequenceTest.class));
     result.addTest(new TestSuite(BidirectionalComparatorTest.class));
     result.addTest(new TestSuite(BufferTest.class));
     result.addTest(new TestSuite(CascadedPolygonUnionTest.class));
-    result.addTest(new TestSuite(com.vividsolutions.jts.algorithm.OrientationIndexTest.class));
+    result.addTest(new TestSuite(org.locationtech.jts.algorithm.OrientationIndexTest.class));
     result.addTest(new TestSuite(ConformingDelaunayTest.class));
-    result.addTest(new TestSuite(com.vividsolutions.jts.algorithm.ConvexHullTest.class));
+    result.addTest(new TestSuite(org.locationtech.jts.algorithm.ConvexHullTest.class));
     result.addTest(new TestSuite(CoordinateArraysTest.class));
     result.addTest(new TestSuite(DelaunayTest.class));
     result.addTest(new TestSuite(DistanceTest.class));
@@ -89,7 +90,7 @@ public class MasterTester extends TestCase {
     result.addTest(new TestSuite(GeometryImplTest.class));
     result.addTest(new TestSuite(IntersectionMatrixTest.class));
     result.addTest(new TestSuite(IntervalTest.class));
-    result.addTest(new TestSuite(com.vividsolutions.jts.algorithm.IsCCWTest.class));
+    result.addTest(new TestSuite(org.locationtech.jts.algorithm.IsCCWTest.class));
     result.addTest(new TestSuite(IsRectangleTest.class));
     result.addTest(new TestSuite(IsValidTest.class));
     result.addTest(new TestSuite(LengthIndexedLineTest.class));
@@ -99,7 +100,7 @@ public class MasterTester extends TestCase {
     result.addTest(new TestSuite(MiscellaneousTest.class));
     result.addTest(new TestSuite(MiscellaneousTest2.class));
     result.addTest(new TestSuite(MultiPointImplTest.class));
-    result.addTest(new TestSuite(com.vividsolutions.jts.algorithm.NonRobustLineIntersectorTest.class));
+    result.addTest(new TestSuite(org.locationtech.jts.algorithm.NonRobustLineIntersectorTest.class));
     result.addTest(new TestSuite(NormalizeTest.class));
     result.addTest(new TestSuite(PointImplTest.class));
     result.addTest(new TestSuite(PolygonizeTest.class));

@@ -13,9 +13,9 @@
  */
 package com.vividsolutions.jtsexample.linearref;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.linearref.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.linearref.*;
 
 /**
  * Examples of Linear Referencing

@@ -16,8 +16,9 @@ package com.vividsolutions.jtsexample.operation.polygonize;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
+
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
 
 /**
  *  Example of using Polygonizer class to polygonize a set of fully noded linestrings

@@ -14,8 +14,8 @@
 
 package com.vividsolutions.jtstest;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.impl.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.impl.*;
 
 /**
  * Create the CoordinateSequenceFactory to be used in tests

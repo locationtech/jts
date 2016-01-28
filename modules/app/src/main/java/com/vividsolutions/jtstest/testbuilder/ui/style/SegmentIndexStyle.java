@@ -17,9 +17,10 @@ package com.vividsolutions.jtstest.testbuilder.ui.style;
 import java.awt.*;
 import java.awt.geom.*;
 
-import com.vividsolutions.jts.awt.FontGlyphReader;
-import com.vividsolutions.jts.geomgraph.Quadrant;
-import com.vividsolutions.jts.noding.Octant;
+import org.locationtech.jts.awt.FontGlyphReader;
+import org.locationtech.jts.geomgraph.Quadrant;
+import org.locationtech.jts.noding.Octant;
+
 import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 
 public class SegmentIndexStyle 

@@ -28,7 +28,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.util.Assert;
+
 
 /**
  *  Useful string utilities

@@ -22,15 +22,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.*;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.util.*;
+
 
 /**
  * @version 1.7

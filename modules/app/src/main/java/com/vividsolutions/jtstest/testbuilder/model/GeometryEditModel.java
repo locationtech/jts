@@ -15,9 +15,11 @@
 package com.vividsolutions.jtstest.testbuilder.model;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTWriter;
-import com.vividsolutions.jts.util.Assert;
+
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jtstest.*;
 import com.vividsolutions.jtstest.testbuilder.JTSTestBuilder;
 import com.vividsolutions.jtstest.testbuilder.geom.*;

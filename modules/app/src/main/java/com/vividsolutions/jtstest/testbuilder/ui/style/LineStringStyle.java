@@ -16,7 +16,8 @@ package com.vividsolutions.jtstest.testbuilder.ui.style;
 
 import java.awt.Graphics2D;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
+
 import com.vividsolutions.jtstest.testbuilder.ui.Viewport;
 
 public abstract class LineStringStyle

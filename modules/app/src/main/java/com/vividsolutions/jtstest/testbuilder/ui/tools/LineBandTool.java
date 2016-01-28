@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.*;
-import java.awt.geom.Point2D;
-import com.vividsolutions.jts.geom.*;
+
+import org.locationtech.jts.geom.*;
 
 public abstract class LineBandTool extends IndicatorTool 
 {

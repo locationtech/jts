@@ -19,25 +19,26 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vividsolutions.jts.algorithm.LineIntersector;
-import com.vividsolutions.jts.algorithm.RobustLineIntersector;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateArrays;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.noding.BasicSegmentString;
-import com.vividsolutions.jts.noding.FastNodingValidator;
-import com.vividsolutions.jts.noding.InteriorIntersectionFinder;
-import com.vividsolutions.jts.noding.IntersectionAdder;
-import com.vividsolutions.jts.noding.MCIndexNoder;
-import com.vividsolutions.jts.noding.Noder;
-import com.vividsolutions.jts.noding.ScaledNoder;
-import com.vividsolutions.jts.noding.SegmentStringUtil;
-import com.vividsolutions.jts.noding.snapround.GeometryNoder;
-import com.vividsolutions.jts.noding.snapround.MCIndexSnapRounder;
-import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.noding.BasicSegmentString;
+import org.locationtech.jts.noding.FastNodingValidator;
+import org.locationtech.jts.noding.InteriorIntersectionFinder;
+import org.locationtech.jts.noding.IntersectionAdder;
+import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.ScaledNoder;
+import org.locationtech.jts.noding.SegmentStringUtil;
+import org.locationtech.jts.noding.snapround.GeometryNoder;
+import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
+import org.locationtech.jts.precision.GeometryPrecisionReducer;
+
 
 public class NodingFunctions 
 {

@@ -16,11 +16,12 @@ package test.jts.perf.operation.overlay;
 
 import java.util.*;
 
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.operation.overlay.snap.*;
+import org.locationtech.jts.precision.*;
+
 import junit.framework.TestCase;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.precision.*;
-import com.vividsolutions.jts.operation.overlay.snap.*;
 
 /**
  * Tests Noding checking during overlay.

@@ -15,8 +15,9 @@ package com.vividsolutions.jtstest.function;
 
 import java.lang.reflect.*;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jtstest.util.*;
 
 /**

@@ -14,7 +14,7 @@
 
 package test.jts.perf.operation.buffer;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 
 /**

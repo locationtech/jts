@@ -15,10 +15,11 @@ package com.vividsolutions.jts.io.oracle;
 
 import java.sql.SQLException;
 
+import org.locationtech.jts.generator.*;
+import org.locationtech.jts.geom.*;
+
 import oracle.sql.STRUCT;
 
-import com.vividsolutions.jts.generator.*;
-import com.vividsolutions.jts.geom.*;
 
 /**
  * 

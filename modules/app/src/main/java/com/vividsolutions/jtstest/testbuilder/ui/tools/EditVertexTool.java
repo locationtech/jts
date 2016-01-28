@@ -19,8 +19,9 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.SwingUtilities;
 
-import com.vividsolutions.jts.awt.GeometryCollectionShape;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.awt.GeometryCollectionShape;
+import org.locationtech.jts.geom.*;
+
 import com.vividsolutions.jtstest.testbuilder.AppCursors;
 import com.vividsolutions.jtstest.testbuilder.IconLoader;
 import com.vividsolutions.jtstest.testbuilder.geom.*;

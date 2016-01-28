@@ -13,9 +13,9 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.algorithm.distance.*;
-import com.vividsolutions.jts.operation.distance.*;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.algorithm.distance.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.distance.*;
 
 public class DistanceFunctions {
   public static double distance(Geometry a, Geometry b) {

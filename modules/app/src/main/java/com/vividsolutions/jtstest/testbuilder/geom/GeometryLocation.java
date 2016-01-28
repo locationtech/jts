@@ -14,7 +14,7 @@
 
 package com.vividsolutions.jtstest.testbuilder.geom;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 /**
  * Models the location of a point on a Geometry

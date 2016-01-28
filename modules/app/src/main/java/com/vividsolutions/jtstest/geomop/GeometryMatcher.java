@@ -13,7 +13,7 @@
  */
 package com.vividsolutions.jtstest.geomop;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 
 /**
  * An interface for classes which can determine whether

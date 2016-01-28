@@ -17,7 +17,8 @@ package test.jts.perf;
 import java.lang.reflect.*;
 import java.util.*;
 
-import com.vividsolutions.jts.util.Stopwatch;
+import org.locationtech.jts.util.Stopwatch;
+
 
 /**
  * Runs {@link PerformanceTestCase} classes which contain performance tests.

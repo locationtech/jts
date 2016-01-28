@@ -16,7 +16,8 @@ package com.vividsolutions.jtstest.function;
 
 import java.util.*;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
+
 
 
 public class SelectionFunctions 

@@ -26,7 +26,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
+
 import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 import com.vividsolutions.jtstest.testbuilder.ui.SwingUtil;
 

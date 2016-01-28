@@ -16,10 +16,11 @@ package com.vividsolutions.jtstest.testbuilder.model;
 import java.io.File;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKBWriter;
-import com.vividsolutions.jts.io.WKTWriter;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKBWriter;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jtstest.test.TestCase;
 import com.vividsolutions.jtstest.test.TestCaseList;
 import com.vividsolutions.jtstest.test.Testable;

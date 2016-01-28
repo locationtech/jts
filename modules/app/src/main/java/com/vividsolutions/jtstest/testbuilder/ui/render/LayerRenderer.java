@@ -16,8 +16,9 @@ package com.vividsolutions.jtstest.testbuilder.ui.render;
 
 import java.awt.Graphics2D;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+
 import com.vividsolutions.jtstest.testbuilder.model.GeometryContainer;
 import com.vividsolutions.jtstest.testbuilder.model.Layer;
 import com.vividsolutions.jtstest.testbuilder.ui.Viewport;

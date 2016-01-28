@@ -17,8 +17,8 @@ package com.vividsolutions.jtstest.testbuilder.ui.style;
 import java.awt.*;
 import java.awt.geom.Point2D;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.*;
+
 import com.vividsolutions.jtstest.*;
 import com.vividsolutions.jtstest.testbuilder.AppConstants;
 import com.vividsolutions.jtstest.testbuilder.ui.GraphicsUtil;

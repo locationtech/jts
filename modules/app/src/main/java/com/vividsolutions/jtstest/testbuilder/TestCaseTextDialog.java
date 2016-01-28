@@ -20,9 +20,10 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.*;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.io.gml2.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.io.gml2.*;
+
 import com.vividsolutions.jtstest.testbuilder.model.*;
 
 

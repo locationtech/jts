@@ -15,9 +15,10 @@
 package com.vividsolutions.jtstest.function;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.geom.util.PolygonExtracter;
+
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.geom.util.PolygonExtracter;
 
 public class ConversionFunctions 
 {

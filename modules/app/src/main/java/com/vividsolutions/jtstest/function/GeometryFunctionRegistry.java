@@ -17,7 +17,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
+
 
 /**
  * A registry to manage a collection of {@link GeometryFunction}s.

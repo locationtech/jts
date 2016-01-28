@@ -13,7 +13,8 @@
  */
 package com.vividsolutions.jts.io.sde;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
+
 import com.esri.sde.sdk.client.*;
 
 /**
@@ -43,6 +44,7 @@ public class SdeReader
   private GeometryFactory geometryFactory;
   private PrecisionModel precisionModel;
   private CoordinateSequenceFactory coordSeqFact;
+  private int maxDimensionToRead = 2;
   
   /**
    * Creates a reader that creates geometries using the default {@link GeometryFactory}.

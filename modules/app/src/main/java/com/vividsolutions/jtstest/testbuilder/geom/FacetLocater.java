@@ -15,7 +15,8 @@
 package com.vividsolutions.jtstest.testbuilder.geom;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
+
+import org.locationtech.jts.geom.*;
 
 /**
  * Locates the paths to facets (vertices and segments) of 

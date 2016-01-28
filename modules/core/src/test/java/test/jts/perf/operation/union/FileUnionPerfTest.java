@@ -16,11 +16,12 @@ package test.jts.perf.operation.union;
 
 import java.util.*;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTFileReader;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
-import com.vividsolutions.jts.util.GeometricShapeFactory;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTFileReader;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.util.GeometricShapeFactory;
+
 import test.jts.*;
 
 public class FileUnionPerfTest

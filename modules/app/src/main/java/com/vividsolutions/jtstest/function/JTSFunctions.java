@@ -14,11 +14,11 @@
 
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.buffer.BufferOp;
-import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import com.vividsolutions.jts.util.*;
+import org.locationtech.jts.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.util.*;
 
 public class JTSFunctions 
 {

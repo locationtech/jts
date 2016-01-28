@@ -14,10 +14,10 @@
 
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import com.vividsolutions.jts.operation.buffer.OffsetCurveBuilder;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
 
 public class OffsetCurveFunctions {
 

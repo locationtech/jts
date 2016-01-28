@@ -17,8 +17,9 @@ package com.vividsolutions.jtstest.testbuilder.ui;
 import java.awt.geom.*;
 import java.util.*;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.*;
+
 import com.vividsolutions.jtstest.testbuilder.model.*;
 import com.vividsolutions.jtstest.testbuilder.geom.*;
 

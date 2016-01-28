@@ -13,8 +13,8 @@
  */
 package com.vividsolutions.jtsexample.geom;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.*;
 
 /**
  * An example showing a simple use of JTS methods for:

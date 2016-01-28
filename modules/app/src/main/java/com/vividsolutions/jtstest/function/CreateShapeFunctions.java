@@ -17,10 +17,11 @@ package com.vividsolutions.jtstest.function;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
-import com.vividsolutions.jts.awt.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.util.*;
-import com.vividsolutions.jts.util.GeometricShapeFactory;
+
+import org.locationtech.jts.awt.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.util.GeometricShapeFactory;
 
 public class CreateShapeFunctions {
 

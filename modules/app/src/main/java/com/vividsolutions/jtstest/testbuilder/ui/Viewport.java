@@ -18,12 +18,13 @@ import java.awt.*;
 import java.awt.geom.*; 
 import java.text.NumberFormat;
 
-import com.vividsolutions.jts.awt.PointTransformation;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.math.MathUtil;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.awt.PointTransformation;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.math.MathUtil;
+import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;
 
 /**

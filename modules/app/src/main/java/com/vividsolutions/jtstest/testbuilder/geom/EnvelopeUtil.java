@@ -14,7 +14,7 @@
 
 package com.vividsolutions.jtstest.testbuilder.geom;
 
-import com.vividsolutions.jts.geom.Envelope;
+import org.locationtech.jts.geom.Envelope;
 
 public class EnvelopeUtil 
 {

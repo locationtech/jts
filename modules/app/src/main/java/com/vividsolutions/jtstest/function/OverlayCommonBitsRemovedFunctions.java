@@ -13,9 +13,9 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.precision.CommonBitsOp;
-import com.vividsolutions.jts.precision.EnhancedPrecisionOp;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.precision.CommonBitsOp;
+import org.locationtech.jts.precision.EnhancedPrecisionOp;
 
 public class OverlayCommonBitsRemovedFunctions {
 	public static Geometry intersection(Geometry a, Geometry b)		{		return op().intersection(a, b);	}

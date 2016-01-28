@@ -18,7 +18,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
+
 import com.vividsolutions.jtstest.testrunner.TestCase;
 import com.vividsolutions.jtstest.testrunner.TestReader;
 import com.vividsolutions.jtstest.testrunner.TestRun;

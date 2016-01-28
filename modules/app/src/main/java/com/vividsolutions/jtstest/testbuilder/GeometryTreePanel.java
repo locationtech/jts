@@ -23,7 +23,8 @@ import javax.swing.event.*;
 import javax.swing.border.*;
 import javax.swing.tree.*;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
+
 import com.vividsolutions.jtstest.function.*;
 import com.vividsolutions.jtstest.util.*;
 

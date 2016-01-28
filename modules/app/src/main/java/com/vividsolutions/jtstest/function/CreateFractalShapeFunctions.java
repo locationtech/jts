@@ -14,9 +14,9 @@
 
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.shape.fractal.KochSnowflakeBuilder;
-import com.vividsolutions.jts.shape.fractal.SierpinskiCarpetBuilder;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.shape.fractal.KochSnowflakeBuilder;
+import org.locationtech.jts.shape.fractal.SierpinskiCarpetBuilder;
 
 public class CreateFractalShapeFunctions 
 {

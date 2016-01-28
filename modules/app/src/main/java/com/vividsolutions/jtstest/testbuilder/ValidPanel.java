@@ -32,11 +32,12 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.operation.*;
-import com.vividsolutions.jts.operation.valid.IsValidOp;
-import com.vividsolutions.jts.operation.valid.TopologyValidationError;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.io.*;
+import org.locationtech.jts.operation.*;
+import org.locationtech.jts.operation.valid.IsValidOp;
+import org.locationtech.jts.operation.valid.TopologyValidationError;
+
 import com.vividsolutions.jtstest.testbuilder.event.ValidPanelEvent;
 import com.vividsolutions.jtstest.testbuilder.event.ValidPanelListener;
 import com.vividsolutions.jtstest.testbuilder.model.TestCaseEdit;

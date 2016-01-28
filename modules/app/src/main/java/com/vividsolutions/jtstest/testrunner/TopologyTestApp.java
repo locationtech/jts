@@ -52,8 +52,9 @@ import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.vividsolutions.jts.*;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.*;
+import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jtstest.command.CommandLine;
 import com.vividsolutions.jtstest.command.Option;
 import com.vividsolutions.jtstest.command.OptionSpec;

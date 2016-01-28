@@ -32,9 +32,10 @@ package com.vividsolutions.jts.io.oracle;
 import java.sql.SQLException;
 import java.util.*;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.util.Assert;
+
 
 import oracle.jdbc.OracleConnection;
 import oracle.sql.*;

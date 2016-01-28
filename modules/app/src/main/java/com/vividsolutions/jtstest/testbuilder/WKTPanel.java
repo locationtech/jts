@@ -26,14 +26,15 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jtstest.testbuilder.ui.dnd.FileDrop;
 import com.vividsolutions.jtstest.util.*;
 import com.vividsolutions.jtstest.util.io.MultiFormatReader;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jtstest.testbuilder.controller.JTSTestBuilderController;
 import com.vividsolutions.jtstest.testbuilder.model.*;
 import com.vividsolutions.jtstest.testbuilder.ui.*;

@@ -13,10 +13,10 @@
  */
 package com.vividsolutions.jtstest.function;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
-import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
-import com.vividsolutions.jts.simplify.VWSimplifier;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
+import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
+import org.locationtech.jts.simplify.VWSimplifier;
 
 public class SimplificationFunctions {
 	public static Geometry simplifyDP(Geometry g, double distance)	

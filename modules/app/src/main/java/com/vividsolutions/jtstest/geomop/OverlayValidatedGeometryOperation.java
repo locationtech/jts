@@ -13,10 +13,11 @@
  */
 package com.vividsolutions.jtstest.geomop;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTWriter;
-import com.vividsolutions.jts.operation.overlay.OverlayOp;
-import com.vividsolutions.jts.operation.overlay.validate.OverlayResultValidator;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.operation.overlay.OverlayOp;
+import org.locationtech.jts.operation.overlay.validate.OverlayResultValidator;
+
 import com.vividsolutions.jtstest.testrunner.*;
 
 /**

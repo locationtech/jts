@@ -22,9 +22,10 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 
-import com.vividsolutions.jts.awt.FontGlyphReader;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import org.locationtech.jts.awt.FontGlyphReader;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.PrecisionModel;
+
 import com.vividsolutions.jtstest.*;
 import com.vividsolutions.jtstest.testbuilder.AppConstants;
 import com.vividsolutions.jtstest.testbuilder.GeometryEditPanel;

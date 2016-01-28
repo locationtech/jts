@@ -14,12 +14,13 @@
  */
 package com.vividsolutions.jtsexample.operation.linemerge;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.operation.linemerge.LineMerger;
 
 
 /**

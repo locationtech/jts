@@ -15,8 +15,8 @@
 package com.vividsolutions.jtstest.function;
 
 
-import com.vividsolutions.jts.dissolve.LineDissolver;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.dissolve.LineDissolver;
+import org.locationtech.jts.geom.Geometry;
 
 public class DissolveFunctions {
   

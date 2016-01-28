@@ -14,9 +14,9 @@
  */
 package com.vividsolutions.jtsexample.precision;
 
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.precision.EnhancedPrecisionOp;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.precision.EnhancedPrecisionOp;
 
 /**
  * Example of using {@link EnhancedPrecisionOp} to avoid robustness problems

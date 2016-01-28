@@ -15,9 +15,10 @@
 package test.jts.perf.triangulate;
 
 import java.util.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.*;
-import com.vividsolutions.jts.triangulate.*;
+
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.triangulate.*;
+import org.locationtech.jts.util.*;
 
 public class VoronoiPerfTest 
 {

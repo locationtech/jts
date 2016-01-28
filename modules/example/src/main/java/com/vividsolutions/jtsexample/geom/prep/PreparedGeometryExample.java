@@ -14,8 +14,8 @@
  */
 package com.vividsolutions.jtsexample.geom.prep;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.prep.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.prep.*;
 
 
 /**

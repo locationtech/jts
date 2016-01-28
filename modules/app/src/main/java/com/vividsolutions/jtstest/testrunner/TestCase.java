@@ -19,8 +19,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTWriter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTWriter;
+
 import com.vividsolutions.jtstest.util.StringUtil;
 
 /**

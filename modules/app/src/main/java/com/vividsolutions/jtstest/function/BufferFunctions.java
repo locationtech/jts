@@ -17,19 +17,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.util.GeometryMapper;
-import com.vividsolutions.jts.geom.util.GeometryMapper.MapOp;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.noding.SegmentString;
-import com.vividsolutions.jts.operation.buffer.BufferInputLineSimplifier;
-import com.vividsolutions.jts.operation.buffer.BufferOp;
-import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import com.vividsolutions.jts.operation.buffer.OffsetCurveBuilder;
-import com.vividsolutions.jts.operation.buffer.OffsetCurveSetBuilder;
-import com.vividsolutions.jts.operation.buffer.validate.BufferResultValidator;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.util.GeometryMapper;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.geom.util.GeometryMapper.MapOp;
+import org.locationtech.jts.noding.SegmentString;
+import org.locationtech.jts.operation.buffer.BufferInputLineSimplifier;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
+import org.locationtech.jts.operation.buffer.OffsetCurveSetBuilder;
+import org.locationtech.jts.operation.buffer.validate.BufferResultValidator;
+
 
 public class BufferFunctions {
 	

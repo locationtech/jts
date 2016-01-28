@@ -16,7 +16,8 @@ package com.vividsolutions.jtstest.testbuilder.geom;
 
 import java.util.*;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
+
 
 /**
  * Locates the components of a Geometry

@@ -17,10 +17,11 @@ package com.vividsolutions.jtstest.testbuilder.model;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTWriter;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.util.Assert;
+
 import com.vividsolutions.jtstest.geomop.*;
 import com.vividsolutions.jtstest.test.Testable;
 import com.vividsolutions.jtstest.testrunner.BooleanResult;
