@@ -93,7 +93,7 @@
       <dependencies>
         <dependency>
           <groupId>com.oracle</groupId>
-          <artifactId>ojdbc5</artifactId>
+          <artifactId>ojdbc7</artifactId>
           <version>11.1.0.7.0</version>
         </dependency>
       </dependencies>
