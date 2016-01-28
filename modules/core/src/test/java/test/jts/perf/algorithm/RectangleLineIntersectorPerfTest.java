@@ -16,7 +16,11 @@ package test.jts.perf.algorithm;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RectangleLineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.util.Stopwatch;
 
 public class RectangleLineIntersectorPerfTest

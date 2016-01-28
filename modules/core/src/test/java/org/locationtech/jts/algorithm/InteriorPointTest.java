@@ -20,19 +20,16 @@ import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.RectangleLineIntersector;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTFileReader;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.util.Stopwatch;
 
-import test.jts.TestFiles;
-
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import test.jts.TestFiles;
 
 
 public class InteriorPointTest extends TestCase

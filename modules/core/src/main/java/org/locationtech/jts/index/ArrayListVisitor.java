@@ -14,9 +14,7 @@
 
 package org.locationtech.jts.index;
 
-import java.util.*;
-
-import org.locationtech.jts.index.ItemVisitor;
+import java.util.ArrayList;
 
 /**
  * @version 1.7

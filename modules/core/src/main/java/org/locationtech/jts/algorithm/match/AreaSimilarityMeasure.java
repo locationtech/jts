@@ -14,8 +14,7 @@
 
 package org.locationtech.jts.algorithm.match;
 
-import org.locationtech.jts.algorithm.distance.*;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Measures the degree of similarity between two {@link Geometry}s

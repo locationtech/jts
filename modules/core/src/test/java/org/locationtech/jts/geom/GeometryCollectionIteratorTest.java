@@ -15,17 +15,8 @@
 
 package org.locationtech.jts.geom;
 
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryCollectionIterator;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.WKTReader;
-
-import test.jts.GeometryTestCase;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import test.jts.GeometryTestCase;
 
 
 /**

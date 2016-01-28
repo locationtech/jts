@@ -15,9 +15,6 @@
 package org.locationtech.jts.geom.util;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.util.AffineTransformation;
-import org.locationtech.jts.geom.util.AffineTransformationBuilder;
-import org.locationtech.jts.geom.util.AffineTransformationFactory;
 
 import junit.framework.TestCase;
 

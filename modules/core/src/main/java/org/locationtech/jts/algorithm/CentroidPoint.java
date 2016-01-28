@@ -14,7 +14,10 @@
  */
 package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.Point;
 
 /**
  * Computes the centroid of a point geometry.

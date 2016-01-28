@@ -17,7 +17,8 @@ package org.locationtech.jts.operation.union;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.util.GeometryCombiner;
 
 

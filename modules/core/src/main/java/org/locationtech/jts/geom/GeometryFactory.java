@@ -15,11 +15,12 @@
  */
 package org.locationtech.jts.geom;
 
-import java.util.*;
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
 
-import org.locationtech.jts.geom.impl.*;
-import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
+import org.locationtech.jts.geom.util.GeometryEditor;
 import org.locationtech.jts.util.Assert;
 
 /**

@@ -13,10 +13,13 @@
  */
 package org.locationtech.jts.geomgraph;
 
-import java.io.*;
-import java.util.*;
+import java.io.PrintStream;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * A list of edge intersections along an {@link Edge}.

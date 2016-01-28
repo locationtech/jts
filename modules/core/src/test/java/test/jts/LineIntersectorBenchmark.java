@@ -17,7 +17,9 @@ package test.jts;
 
 import java.util.Date;
 
-import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.NonRobustLineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 
 

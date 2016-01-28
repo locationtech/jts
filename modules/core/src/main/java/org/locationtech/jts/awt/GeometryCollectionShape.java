@@ -23,6 +23,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.locationtech.jts.geom.Geometry;
+
 /**
  * A {@link Shape} which contains a heterogeneous collection of other shapes
  * representing JTS {@link Geometry}s.

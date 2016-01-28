@@ -16,8 +16,6 @@ package org.locationtech.jts.linearref;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.linearref.LinearLocation;
-import org.locationtech.jts.linearref.LocationIndexedLine;
 
 /**
  * Tests the {@link LocationIndexedLine} class

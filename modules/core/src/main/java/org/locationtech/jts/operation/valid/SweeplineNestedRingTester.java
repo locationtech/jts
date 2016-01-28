@@ -14,13 +14,18 @@
  */
 package org.locationtech.jts.operation.valid;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.index.sweepline.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geomgraph.GeometryGraph;
+import org.locationtech.jts.index.sweepline.SweepLineIndex;
+import org.locationtech.jts.index.sweepline.SweepLineInterval;
+import org.locationtech.jts.index.sweepline.SweepLineOverlapAction;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Tests whether any of a set of {@link LinearRing}s are

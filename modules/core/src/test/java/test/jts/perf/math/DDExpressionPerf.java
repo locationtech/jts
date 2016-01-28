@@ -14,10 +14,10 @@
 
 package test.jts.perf.math;
 
-import java.math.*;
+import java.math.BigDecimal;
 
 import org.locationtech.jts.math.DD;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.util.Stopwatch;
 
 
 /**

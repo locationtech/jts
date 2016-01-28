@@ -14,8 +14,6 @@
 
 package org.locationtech.jts.util;
 
-import org.locationtech.jts.util.PriorityQueue;
-
 import junit.framework.TestCase;
 
 /**

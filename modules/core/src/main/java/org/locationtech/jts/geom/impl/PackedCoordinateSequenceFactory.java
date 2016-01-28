@@ -13,7 +13,9 @@
  */
 package org.locationtech.jts.geom.impl;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFactory;
 
 /**
  * Builds packed array coordinate sequences. The array data type can be either

@@ -23,7 +23,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geomgraph.Position;
-import org.locationtech.jts.util.Debug;
 
 /**
  * Generates segments which form an offset curve.

@@ -15,15 +15,19 @@
 package  test.jts.junit;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.NonRobustCGAlgorithms;
 import org.locationtech.jts.algorithm.PointLocator;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.planargraph.DirectedEdge;
-import org.locationtech.jts.planargraph.Edge;
 import org.locationtech.jts.planargraph.Node;
 import org.locationtech.jts.util.UniqueCoordinateArrayFilter;
 

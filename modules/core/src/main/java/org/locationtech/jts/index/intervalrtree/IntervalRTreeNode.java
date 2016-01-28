@@ -15,9 +15,9 @@ package org.locationtech.jts.index.intervalrtree;
 
 import java.util.Comparator;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.index.*;
-import org.locationtech.jts.io.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.index.ItemVisitor;
+import org.locationtech.jts.io.WKTWriter;
 
 
 public abstract class IntervalRTreeNode 

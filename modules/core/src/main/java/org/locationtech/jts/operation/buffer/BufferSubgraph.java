@@ -18,13 +18,22 @@ package org.locationtech.jts.operation.buffer;
 /**
  * @version 1.7
  */
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 
-import java.util.*;
-
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.geomgraph.DirectedEdge;
+import org.locationtech.jts.geomgraph.DirectedEdgeStar;
+import org.locationtech.jts.geomgraph.Label;
+import org.locationtech.jts.geomgraph.Node;
+import org.locationtech.jts.geomgraph.Position;
 
 /**
  * A connected subset of the graph of

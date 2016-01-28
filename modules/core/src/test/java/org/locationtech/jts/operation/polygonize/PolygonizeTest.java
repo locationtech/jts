@@ -17,8 +17,6 @@ package org.locationtech.jts.operation.polygonize;
 import java.util.Collection;
 import java.util.List;
 
-import org.locationtech.jts.operation.polygonize.Polygonizer;
-
 import test.jts.GeometryTestCase;
 
 /**

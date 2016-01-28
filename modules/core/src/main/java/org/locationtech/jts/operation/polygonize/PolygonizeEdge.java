@@ -16,8 +16,8 @@
 
 package org.locationtech.jts.operation.polygonize;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.planargraph.*;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.planargraph.Edge;
 
 /**
  * An edge of a polygonization graph.

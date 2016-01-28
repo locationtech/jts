@@ -14,11 +14,12 @@
 package test.jts.perf.algorithm;
 
 
-import org.locationtech.jts.algorithm.*;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.util.SineStarFactory;
+import org.locationtech.jts.util.Stopwatch;
 
 public class PointInAreaPerfTest  {
 

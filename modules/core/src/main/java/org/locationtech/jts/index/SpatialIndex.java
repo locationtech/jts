@@ -14,7 +14,7 @@
  */
 package org.locationtech.jts.index;
 
-import java.util.*;
+import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
 

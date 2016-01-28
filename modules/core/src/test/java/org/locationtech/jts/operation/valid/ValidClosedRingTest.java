@@ -20,7 +20,6 @@ import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.operation.valid.IsValidOp;
 
 import junit.framework.TestCase;
 

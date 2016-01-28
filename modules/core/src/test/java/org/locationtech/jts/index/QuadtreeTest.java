@@ -16,8 +16,8 @@ package org.locationtech.jts.index;
 
 import org.locationtech.jts.index.quadtree.Quadtree;
 
-import test.jts.util.SerializationUtil;
 import junit.framework.TestCase;
+import test.jts.util.SerializationUtil;
 
 
 

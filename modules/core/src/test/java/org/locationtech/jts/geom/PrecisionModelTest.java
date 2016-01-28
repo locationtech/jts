@@ -15,9 +15,6 @@
 
 package org.locationtech.jts.geom;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.PrecisionModel;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

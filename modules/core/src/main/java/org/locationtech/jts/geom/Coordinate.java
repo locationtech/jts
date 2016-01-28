@@ -16,6 +16,7 @@ package org.locationtech.jts.geom;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import org.locationtech.jts.awt.PointShapeFactory.X;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.NumberUtil;
 

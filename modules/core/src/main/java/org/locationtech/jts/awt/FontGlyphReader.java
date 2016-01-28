@@ -14,11 +14,16 @@
 
 package org.locationtech.jts.awt;
 
-import java.util.*;
 import java.awt.Font;
-import java.awt.font.*;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.util.AffineTransformation;
 
 /**
  * Provides methods to read {@link Font} glyphs for strings 

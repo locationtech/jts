@@ -18,8 +18,6 @@ package org.locationtech.jts.noding;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.noding.Octant;
-import org.locationtech.jts.noding.SegmentPointComparator;
 
 import junit.framework.TestCase;
 

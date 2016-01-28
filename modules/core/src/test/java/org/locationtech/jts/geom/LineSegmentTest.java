@@ -13,8 +13,6 @@
  */
 package org.locationtech.jts.geom;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.io.WKTReader;
 
 import junit.framework.TestCase;

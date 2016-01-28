@@ -13,7 +13,10 @@
  */
 package org.locationtech.jts.geom.prep;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Lineal;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.Puntal;
 
 /**
  * A factory for creating {@link PreparedGeometry}s.

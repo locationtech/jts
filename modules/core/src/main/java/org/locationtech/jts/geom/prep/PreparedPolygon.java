@@ -14,10 +14,16 @@
 package org.locationtech.jts.geom.prep;
 
 
-import org.locationtech.jts.algorithm.locate.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.noding.*;
-import org.locationtech.jts.operation.predicate.*;
+import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
+import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.noding.FastSegmentSetIntersectionFinder;
+import org.locationtech.jts.noding.SegmentStringUtil;
+import org.locationtech.jts.operation.predicate.RectangleContains;
+import org.locationtech.jts.operation.predicate.RectangleIntersects;
 
 /**
  * A prepared version for {@link Polygonal} geometries.

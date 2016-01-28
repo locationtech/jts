@@ -22,7 +22,6 @@ import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.noding.snapround.GeometryNoder;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;

@@ -14,11 +14,17 @@
 
 package org.locationtech.jts.simplify;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
-import org.locationtech.jts.util.Debug;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryComponentFilter;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.util.GeometryTransformer;
 
 /**
  * Simplifies a geometry and ensures that

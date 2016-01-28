@@ -14,10 +14,13 @@
 
 package test.jts.perf.operation.buffer;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.noding.snapround.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.util.GeometricShapeFactory;
+import org.locationtech.jts.util.Stopwatch;
 
 /**
  * Stress-tests buffering by repeatedly buffering a geometry

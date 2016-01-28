@@ -13,7 +13,7 @@
  */
 package org.locationtech.jts.triangulate.quadedge;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.LineSegment;
 
 public class LocateFailureException 
 	extends RuntimeException 

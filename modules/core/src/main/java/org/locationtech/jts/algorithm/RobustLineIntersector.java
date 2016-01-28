@@ -18,9 +18,8 @@ package org.locationtech.jts.algorithm;
 /**
  *@version 1.7
  */
-
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * A robust version of {@link LineIntersector}.

@@ -17,12 +17,18 @@
 package org.locationtech.jts.geomgraph;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.algorithm.BoundaryNodeRule;
 import org.locationtech.jts.algorithm.locate.SimplePointInAreaLocator;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.util.Assert;
 
 /**
  * A EdgeEndStar is an ordered list of EdgeEnds around a node.

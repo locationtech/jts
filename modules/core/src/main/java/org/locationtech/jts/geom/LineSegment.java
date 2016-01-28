@@ -17,7 +17,11 @@ package org.locationtech.jts.geom;
 
 import java.io.Serializable;
 
-import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.HCoordinate;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.NotRepresentableException;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
 
 
 /**

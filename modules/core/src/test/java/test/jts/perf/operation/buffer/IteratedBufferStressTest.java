@@ -14,12 +14,11 @@
  */
 package test.jts.perf.operation.buffer;
 
-import java.util.*;
-
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.operation.buffer.validate.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.util.Stopwatch;
 
 /**
  * Test repeated buffering of a given input shape.

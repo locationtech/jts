@@ -15,8 +15,6 @@
 package org.locationtech.jts.geom.impl;
 
 import org.locationtech.jts.geom.CoordinateSequenceFactory;
-import org.locationtech.jts.geom.impl.CoordinateArraySequence;
-import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
 
 import junit.textui.TestRunner;
 

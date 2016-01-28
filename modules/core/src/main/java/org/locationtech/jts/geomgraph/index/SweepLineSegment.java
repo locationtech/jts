@@ -17,7 +17,7 @@
 package org.locationtech.jts.geomgraph.index;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geomgraph.*;
+import org.locationtech.jts.geomgraph.Edge;
 
 
 /**

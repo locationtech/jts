@@ -14,7 +14,10 @@
 
 package org.locationtech.jts.operation.overlay.snap;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineString;
 
 /**
  * Snaps the vertices and segments of a {@link LineString} 

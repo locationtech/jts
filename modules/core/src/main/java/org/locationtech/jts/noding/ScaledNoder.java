@@ -14,11 +14,11 @@
 
 package org.locationtech.jts.noding;
 
-import java.util.*;
+import java.util.Collection;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.util.CollectionUtil;
 
 /**
  * Wraps a {@link Noder} and transforms its input

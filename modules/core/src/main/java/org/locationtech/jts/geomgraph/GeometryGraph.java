@@ -16,13 +16,35 @@
  */
 package org.locationtech.jts.geomgraph;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.algorithm.locate.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.index.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.algorithm.BoundaryNodeRule;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.PointLocator;
+import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
+import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geomgraph.index.EdgeSetIntersector;
+import org.locationtech.jts.geomgraph.index.SegmentIntersector;
+import org.locationtech.jts.geomgraph.index.SimpleMCSweepLineIntersector;
+import org.locationtech.jts.util.Assert;
 
 /**
  * A GeometryGraph is a graph that models a given Geometry

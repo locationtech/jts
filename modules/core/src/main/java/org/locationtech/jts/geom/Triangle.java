@@ -13,7 +13,9 @@
  */
 package org.locationtech.jts.geom;
 
-import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.algorithm.Angle;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.HCoordinate;
 
 /**
  * Represents a planar triangle, and provides methods for calculating various

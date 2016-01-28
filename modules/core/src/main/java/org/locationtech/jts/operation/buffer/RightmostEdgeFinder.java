@@ -18,13 +18,17 @@ package org.locationtech.jts.operation.buffer;
 /**
  * @version 1.7
  */
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.operation.overlay.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geomgraph.DirectedEdge;
+import org.locationtech.jts.geomgraph.DirectedEdgeStar;
+import org.locationtech.jts.geomgraph.Edge;
+import org.locationtech.jts.geomgraph.Node;
+import org.locationtech.jts.geomgraph.Position;
+import org.locationtech.jts.util.Assert;
 
 /**
  * A RightmostEdgeFinder find the DirectedEdge in a list which has the highest coordinate,

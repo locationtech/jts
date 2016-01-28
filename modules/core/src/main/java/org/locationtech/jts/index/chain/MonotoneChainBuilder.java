@@ -15,7 +15,8 @@
  */
 package org.locationtech.jts.index.chain;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geomgraph.Quadrant;

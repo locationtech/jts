@@ -14,12 +14,14 @@
  */
 package org.locationtech.jts.noding;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.io.WKTWriter;
 
 
 /**

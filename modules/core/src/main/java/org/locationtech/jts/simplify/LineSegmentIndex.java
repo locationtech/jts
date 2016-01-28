@@ -14,10 +14,12 @@
 
 package org.locationtech.jts.simplify;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.index.*;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.quadtree.Quadtree;
 
 /**

@@ -16,10 +16,23 @@
 
 package org.locationtech.jts.operation.polygonize;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.planargraph.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.planargraph.DirectedEdge;
+import org.locationtech.jts.planargraph.DirectedEdgeStar;
+import org.locationtech.jts.planargraph.Edge;
+import org.locationtech.jts.planargraph.Node;
+import org.locationtech.jts.planargraph.PlanarGraph;
 import org.locationtech.jts.util.Assert;
 
 /**

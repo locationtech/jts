@@ -14,10 +14,14 @@
 
 package org.locationtech.jts.operation.overlay.validate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
 
 /**
  * Generates points offset by a given distance 

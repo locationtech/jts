@@ -13,8 +13,10 @@
  */
 package org.locationtech.jts.geom.prep;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.noding.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Lineal;
+import org.locationtech.jts.noding.FastSegmentSetIntersectionFinder;
+import org.locationtech.jts.noding.SegmentStringUtil;
 
 /**
  * A prepared version for {@link Lineal} geometries.

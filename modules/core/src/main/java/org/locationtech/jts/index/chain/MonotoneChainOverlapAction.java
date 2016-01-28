@@ -15,7 +15,8 @@
  */
 package org.locationtech.jts.index.chain;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.LineSegment;
 
 /**
  * The action for the internal iterator for performing

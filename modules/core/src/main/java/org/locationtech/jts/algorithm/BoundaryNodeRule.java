@@ -13,7 +13,13 @@
  */
 package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Lineal;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.operation.BoundaryOp;
+import org.locationtech.jts.operation.IsSimpleOp;
+import org.locationtech.jts.operation.relate.RelateOp;
 
 /**
  * An interface for rules which determine whether node points

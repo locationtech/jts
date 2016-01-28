@@ -14,7 +14,7 @@
  */
 package org.locationtech.jts.noding;
 
-import java.util.*;
+import java.util.Collection;
 
 /**
  * Computes all intersections between segments in a set of {@link SegmentString}s.

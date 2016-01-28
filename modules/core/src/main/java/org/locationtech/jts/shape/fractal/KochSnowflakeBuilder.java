@@ -14,9 +14,13 @@
 
 package org.locationtech.jts.shape.fractal;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.math.Vector2D;
-import org.locationtech.jts.shape.*;
+import org.locationtech.jts.shape.GeometricShapeBuilder;
 
 public class KochSnowflakeBuilder 
 extends GeometricShapeBuilder

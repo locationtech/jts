@@ -15,7 +15,6 @@
  */
 package org.locationtech.jts.geom;
 
-import org.locationtech.jts.operation.valid.*;
 import org.locationtech.jts.util.Assert;
 
 /**

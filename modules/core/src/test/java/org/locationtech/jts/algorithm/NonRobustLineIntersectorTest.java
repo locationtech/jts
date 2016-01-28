@@ -15,8 +15,6 @@
 
 package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.algorithm.NonRobustLineIntersector;
-
 import junit.framework.TestCase;
 
 

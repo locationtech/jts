@@ -13,7 +13,7 @@
  */
 package org.locationtech.jts.geom.prep;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Computes the <tt>covers</tt> spatial relationship predicate

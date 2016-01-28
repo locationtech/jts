@@ -15,6 +15,8 @@
  */
 package org.locationtech.jts.geom;
 
+import org.locationtech.jts.geom.util.GeometryEditor;
+import org.locationtech.jts.geom.util.GeometryTransformer;
 
 /**
  *  An interface for classes which process the coordinates in a {@link CoordinateSequence}. 

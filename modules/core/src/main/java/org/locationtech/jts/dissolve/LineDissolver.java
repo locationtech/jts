@@ -22,6 +22,7 @@ import java.util.Stack;
 
 import org.locationtech.jts.edgegraph.HalfEdge;
 import org.locationtech.jts.edgegraph.MarkHalfEdge;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;

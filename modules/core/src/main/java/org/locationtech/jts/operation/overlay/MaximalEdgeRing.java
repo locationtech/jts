@@ -15,11 +15,14 @@
  */
 package org.locationtech.jts.operation.overlay;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geomgraph.DirectedEdge;
+import org.locationtech.jts.geomgraph.DirectedEdgeStar;
+import org.locationtech.jts.geomgraph.EdgeRing;
+import org.locationtech.jts.geomgraph.Node;
 
 /**
  * A ring of {@link DirectedEdge}s which may contain nodes of degree > 2.

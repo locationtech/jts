@@ -16,9 +16,6 @@ package org.locationtech.jts.edgegraph;
 
 import java.util.List;
 
-import org.locationtech.jts.edgegraph.EdgeGraph;
-import org.locationtech.jts.edgegraph.EdgeGraphBuilder;
-import org.locationtech.jts.edgegraph.HalfEdge;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.io.ParseException;
 

@@ -15,12 +15,29 @@
  */
 package org.locationtech.jts.operation.valid;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.MCPointInRing;
+import org.locationtech.jts.algorithm.PointInRing;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geomgraph.Edge;
+import org.locationtech.jts.geomgraph.EdgeIntersection;
+import org.locationtech.jts.geomgraph.EdgeIntersectionList;
+import org.locationtech.jts.geomgraph.GeometryGraph;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Implements the algorithms required to compute the <code>isValid()</code> method

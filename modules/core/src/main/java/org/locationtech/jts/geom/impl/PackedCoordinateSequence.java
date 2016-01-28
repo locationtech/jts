@@ -16,7 +16,10 @@ package org.locationtech.jts.geom.impl;
 
 import java.lang.ref.SoftReference;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequences;
+import org.locationtech.jts.geom.Envelope;
 
 /**
  * A {@link CoordinateSequence} implementation based on a packed arrays.

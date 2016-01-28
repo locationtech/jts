@@ -14,10 +14,8 @@
 
 package test.jts.perf.math;
 
-import java.math.*;
-
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.util.Stopwatch;
 
 
 /**

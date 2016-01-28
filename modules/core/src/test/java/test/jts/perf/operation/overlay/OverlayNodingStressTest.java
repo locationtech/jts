@@ -14,12 +14,13 @@
 
 package test.jts.perf.operation.overlay;
 
-import java.util.*;
+import java.util.Random;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.operation.overlay.snap.*;
-import org.locationtech.jts.precision.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
 
 import junit.framework.TestCase;
 

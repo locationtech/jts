@@ -16,9 +16,6 @@ package org.locationtech.jts.geom;
 
 import java.util.Comparator;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateArrays;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.CoordinateArrays.BidirectionalComparator;
 import org.locationtech.jts.io.WKTReader;
 

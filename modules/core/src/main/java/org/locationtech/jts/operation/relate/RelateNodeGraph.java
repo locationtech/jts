@@ -17,11 +17,16 @@ package org.locationtech.jts.operation.relate;
 /**
  * @version 1.7
  */
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geomgraph.Edge;
+import org.locationtech.jts.geomgraph.EdgeEnd;
+import org.locationtech.jts.geomgraph.EdgeIntersection;
+import org.locationtech.jts.geomgraph.GeometryGraph;
+import org.locationtech.jts.geomgraph.Node;
+import org.locationtech.jts.geomgraph.NodeMap;
 
 /**
  * Implements the simple graph of Nodes and EdgeEnd which is all that is

@@ -13,7 +13,9 @@
  */
 package org.locationtech.jts.generator;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 
 /**
  * This class illustrates the basic functionality and configuration options for generating spatial data. 

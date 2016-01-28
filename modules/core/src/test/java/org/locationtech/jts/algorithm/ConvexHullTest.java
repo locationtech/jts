@@ -17,7 +17,6 @@ package org.locationtech.jts.algorithm;
 
 import java.util.Stack;
 
-import org.locationtech.jts.algorithm.ConvexHull;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;

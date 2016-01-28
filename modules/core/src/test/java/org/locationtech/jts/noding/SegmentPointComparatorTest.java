@@ -15,7 +15,6 @@
 package org.locationtech.jts.noding;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.noding.SegmentPointComparator;
 
 import junit.framework.TestCase;
 

@@ -17,10 +17,6 @@ package org.locationtech.jts.triangulate.quadedge;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
-
 
 /**
  * Utilities for working with {@link QuadEdge}s.
