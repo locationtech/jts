@@ -54,10 +54,10 @@ public class QuadEdge
     QuadEdge q2 = new QuadEdge();
     QuadEdge q3 = new QuadEdge();
 
-    q0.rot = q1;
-    q1.rot = q2;
-    q2.rot = q3;
-    q3.rot = q0;
+    q0._rot = q1;
+    q1._rot = q2;
+    q2._rot = q3;
+    q3._rot = q0;
 
     q0.setNext(q0);
     q1.setNext(q3);
@@ -130,7 +130,7 @@ public class QuadEdge
     }
 
     // the dual of this edge, directed from right to left
-    private QuadEdge rot;
+    private QuadEdge _rot;
     private Vertex   vertex;            // The vertex that this edge represents
     private QuadEdge next;              // A reference to a connected edge
     private Object   data       = null;
@@ -188,7 +188,7 @@ public class QuadEdge
      *
      */
     public void delete() {
-      rot = null;
+      _rot = null;
     }
     
     /**
@@ -197,7 +197,7 @@ public class QuadEdge
      * @return true if this edge has not been deleted.
      */
     public boolean isLive() {
-      return rot != null;
+      return _rot != null;
     }
 
 
@@ -221,7 +221,7 @@ public class QuadEdge
      * @return the rotated edge
      */
     public final QuadEdge rot() {
-      return rot;
+      return _rot;
     }
 
     /**
@@ -230,7 +230,7 @@ public class QuadEdge
      * @return the inverse rotated edge.
      */
     public final QuadEdge invRot() {
-      return rot.sym();
+      return _rot.sym();
     }
 
     /**
@@ -239,7 +239,7 @@ public class QuadEdge
      * @return the sym of the edge
      */
     public final QuadEdge sym() {
-      return rot.rot;
+      return _rot._rot;
     }
 
     /**
@@ -257,7 +257,7 @@ public class QuadEdge
      * @return the previous edge.
      */
     public final QuadEdge oPrev() {
-        return rot.next.rot;
+        return _rot.next._rot;
     }
 
     /**
@@ -302,7 +302,7 @@ public class QuadEdge
      * @return the next right face edge.
      */
     public final QuadEdge rNext() {
-        return rot.next.invRot();
+        return _rot.next.invRot();
     }
 
     /**

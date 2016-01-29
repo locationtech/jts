@@ -74,16 +74,16 @@ public class HalfEdge {
   public static HalfEdge init(HalfEdge e0, HalfEdge e1)
   {
     // ensure only newly created edges can be initialized, to prevent information loss
-    if (e0.sym != null || e1.sym != null
-        || e0.next != null || e1.next != null)
+    if (e0._sym != null || e1._sym != null
+        || e0._next != null || e1._next != null)
       throw new IllegalStateException("Edges are already initialized");
     e0.init(e1);
     return e0;
   }
   
-  private Coordinate orig;
-  private HalfEdge sym;
-  private HalfEdge next;
+  private Coordinate _orig;
+  private HalfEdge _sym;
+  private HalfEdge _next;
 
   /**
    * Creates an edge originating from a given coordinate.
@@ -91,7 +91,7 @@ public class HalfEdge {
    * @param orig the origin coordinate
    */
   public HalfEdge(Coordinate orig) {
-    this.orig = orig;
+    this._orig = orig;
   }
 
   protected void init(HalfEdge e)
@@ -108,14 +108,14 @@ public class HalfEdge {
    * 
    * @return the origin coordinate
    */
-  public Coordinate orig() { return orig; }
+  public Coordinate orig() { return _orig; }
   
   /**
    * Gets the destination coordinate of this edge.
    * 
    * @return the destination coordinate
    */
-  public Coordinate dest() { return sym.orig; }
+  public Coordinate dest() { return _sym._orig; }
 
   /**
    * Gets the symmetric pair edge of this edge.
@@ -124,7 +124,7 @@ public class HalfEdge {
    */
   public HalfEdge sym()
   { 
-    return sym;
+    return _sym;
   }
   
   /**
@@ -133,7 +133,7 @@ public class HalfEdge {
    * @param e the sym edge to set
    */
   private void setSym(HalfEdge e) {
-    sym = e;
+    _sym = e;
   }
 
   /**
@@ -145,7 +145,7 @@ public class HalfEdge {
    */
   public HalfEdge next()
   {
-    return next;
+    return _next;
   }
   
   /**
@@ -155,16 +155,16 @@ public class HalfEdge {
    * @return the previous edge to this one
    */
   public HalfEdge prev() {
-    return sym.next().sym;
+    return _sym.next()._sym;
   }
 
   public void setNext(HalfEdge e)
   {
-    next = e;
+    _next = e;
   }
   
   public HalfEdge oNext() {
-    return sym.next;
+    return _sym._next;
   }
 
   /**
@@ -195,7 +195,7 @@ public class HalfEdge {
    * @return true if the vertices are equal to the ones of this edge
    */
   public boolean equals(Coordinate p0, Coordinate p1) {
-    return orig.equals2D(p0) && sym.orig.equals(p1);
+    return _orig.equals2D(p0) && _sym._orig.equals(p1);
   }
   
   /**
@@ -236,9 +236,9 @@ public class HalfEdge {
    * @param e the edge to insert (with same origin)
    */
   private void insertAfter(HalfEdge e) {
-    Assert.equals(orig, e.orig());
+    Assert.equals(_orig, e.orig());
     HalfEdge save = oNext();
-    sym.setNext(e);
+    _sym.setNext(e);
     e.sym().setNext(save);
   }
 
@@ -297,7 +297,7 @@ public class HalfEdge {
     // vectors are in the same quadrant
     // Check relative orientation of direction vectors
     // this is > e if it is CCW of e
-    return CGAlgorithms.computeOrientation(e.orig, e.dest(), dest());
+    return CGAlgorithms.computeOrientation(e._orig, e.dest(), dest());
   }
 
   /**
@@ -305,14 +305,14 @@ public class HalfEdge {
    * 
    * @return the X component of the edge length
    */
-  public double deltaX() { return sym.orig.x - orig.x; }
+  public double deltaX() { return _sym._orig.x - _orig.x; }
   
   /**
    * The Y component of the distance between the orig and dest vertices.
    * 
    * @return the Y component of the edge length
    */
-  public double deltaY() { return sym.orig.y - orig.y; }
+  public double deltaY() { return _sym._orig.y - _orig.y; }
   
   /**
    * Computes a string representation of a HalfEdge.
@@ -321,9 +321,9 @@ public class HalfEdge {
    */
   public String toString()
   {
-    return "HE("+orig.x + " " + orig.y
+    return "HE("+_orig.x + " " + _orig.y
         + ", "
-        + sym.orig.x + " " + sym.orig.y
+        + _sym._orig.x + " " + _sym._orig.y
         + ")";
   }
 

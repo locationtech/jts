@@ -52,7 +52,7 @@ public class ObjectCounter
   }
   private static class Counter
   {
-    int count = 0;
+    int _count = 0;
     
     public Counter()
     {
@@ -61,17 +61,17 @@ public class ObjectCounter
     
     public Counter(int count)
     {
-      this.count = count;
+      this._count = count;
     }
     
     public int count()
     {
-      return count;
+      return _count;
     }
     
     public void increment()
     {
-      count++;
+      _count++;
     }
   }
 }

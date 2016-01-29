@@ -80,7 +80,7 @@ public class MarkHalfEdge extends HalfEdge
     ((MarkHalfEdge) e.sym()).mark();
   }
   
-  private boolean isMarked = false;
+  private boolean _isMarked = false;
 
   /**
    * Creates a new marked edge.
@@ -98,7 +98,7 @@ public class MarkHalfEdge extends HalfEdge
    */
   public boolean isMarked()
   {
-    return isMarked ;
+    return _isMarked ;
   }
   
   /**
@@ -107,7 +107,7 @@ public class MarkHalfEdge extends HalfEdge
    */
   public void mark()
   {
-    isMarked = true;
+    _isMarked = true;
   }
 
   /**
@@ -117,7 +117,7 @@ public class MarkHalfEdge extends HalfEdge
    */
   public void setMark(boolean isMarked)
   {
-    this.isMarked = isMarked;
+    this._isMarked = isMarked;
   }
 
 

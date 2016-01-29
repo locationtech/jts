@@ -36,7 +36,7 @@ public class LineStringSnapper
   private Coordinate[] srcPts;
   private LineSegment seg = new LineSegment(); // for reuse during snapping
   private boolean allowSnappingToSourceVertices = false;
-  private boolean isClosed = false;
+  private boolean _isClosed = false;
 
   /**
    * Creates a new snapper using the points in the given {@link LineString}
@@ -60,7 +60,7 @@ public class LineStringSnapper
   public LineStringSnapper(Coordinate[] srcPts, double snapTolerance)
   {
     this.srcPts = srcPts;
-    isClosed = isClosed(srcPts);
+    _isClosed = isClosed(srcPts);
     this.snapTolerance = snapTolerance;
   }
 
@@ -101,7 +101,7 @@ public class LineStringSnapper
   {
     // try snapping vertices
     // if src is a ring then don't snap final vertex
-    int end = isClosed ? srcCoords.size() - 1 : srcCoords.size();
+    int end = _isClosed ? srcCoords.size() - 1 : srcCoords.size();
     for (int i = 0; i < end; i++) {
       Coordinate srcPt = (Coordinate) srcCoords.get(i);
       Coordinate snapVert = findSnapForVertex(srcPt, snapPts);
@@ -109,7 +109,7 @@ public class LineStringSnapper
         // update src with snap pt
         srcCoords.set(i, new Coordinate(snapVert));
         // keep final closing point in synch (rings only)
-        if (i == 0 && isClosed)
+        if (i == 0 && _isClosed)
           srcCoords.set(srcCoords.size() - 1, new Coordinate(snapVert));
       }
     }

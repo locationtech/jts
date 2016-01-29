@@ -84,8 +84,8 @@ public abstract class GraphComponent
     return null;
   }
 
-  protected boolean isMarked = false;
-  protected boolean isVisited = false;
+  protected boolean _isMarked = false;
+  protected boolean _isVisited = false;
   private Object data;
 
   public GraphComponent() {
@@ -95,26 +95,26 @@ public abstract class GraphComponent
    * Tests if a component has been visited during the course of a graph algorithm
    * @return <code>true</code> if the component has been visited
    */
-  public boolean isVisited() { return isVisited; }
+  public boolean isVisited() { return _isVisited; }
 
   /**
    * Sets the visited flag for this component.
    * @param isVisited the desired value of the visited flag
    */
-  public void setVisited(boolean isVisited) { this.isVisited = isVisited; }
+  public void setVisited(boolean isVisited) { this._isVisited = isVisited; }
 
   /**
    * Tests if a component has been marked at some point during the processing
    * involving this graph.
    * @return <code>true</code> if the component has been marked
    */
-  public boolean isMarked() { return isMarked; }
+  public boolean isMarked() { return _isMarked; }
 
   /**
    * Sets the marked flag for this component.
    * @param isMarked the desired value of the marked flag
    */
-  public void setMarked(boolean isMarked) { this.isMarked = isMarked; }
+  public void setMarked(boolean isMarked) { this._isMarked = isMarked; }
 
   /**
    * Sets the user-defined data for this component.

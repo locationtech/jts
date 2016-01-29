@@ -62,7 +62,7 @@ public class BufferDistanceValidator
   private double minDistanceFound;
   private double maxDistanceFound;
   
-  private boolean isValid = true;
+  private boolean _isValid = true;
   private String errMsg = null;
   private Coordinate errorLocation = null;
   private Geometry errorIndicator = null;
@@ -98,7 +98,7 @@ public class BufferDistanceValidator
         + (maxDistanceFound / bufDistance - 1.0)
         );
     }
-  	return isValid;
+  	return _isValid;
   }
   
   public String getErrorMessage()
@@ -129,7 +129,7 @@ public class BufferDistanceValidator
   {
   	Geometry bufCurve = result.getBoundary();
   	checkMinimumDistance(input, bufCurve, minValidDistance);
-  	if (! isValid) return;
+  	if (! _isValid) return;
   	
   	checkMaximumDistance(input, bufCurve, maxValidDistance);
   }
@@ -147,7 +147,7 @@ public class BufferDistanceValidator
   	}
   	Geometry inputCurve = getPolygonLines(input);
   	checkMinimumDistance(inputCurve, result, minValidDistance);
-  	if (! isValid) return;
+  	if (! _isValid) return;
   	
   	checkMaximumDistance(inputCurve, result, maxValidDistance);
   }
@@ -178,7 +178,7 @@ public class BufferDistanceValidator
     
     
   	if (minDistanceFound < minDist) {
-  		isValid = false;
+  		_isValid = false;
   		Coordinate[] pts = distOp.nearestPoints();
   		errorLocation = distOp.nearestPoints()[1];
   		errorIndicator = g1.getFactory().createLineString(pts);
@@ -209,7 +209,7 @@ public class BufferDistanceValidator
     maxDistanceFound = haus.orientedDistance();
     
     if (maxDistanceFound > maxDist) {
-      isValid = false;
+      _isValid = false;
       Coordinate[] pts = haus.getCoordinates();
       errorLocation = pts[1];
       errorIndicator = input.getFactory().createLineString(pts);

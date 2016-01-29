@@ -35,7 +35,7 @@ public class IntersectionAdder
    * These variables keep track of what types of intersections were
    * found during ALL edges that have been intersected.
    */
-  private boolean hasIntersection = false;
+  private boolean _hasIntersection = false;
   private boolean hasProper = false;
   private boolean hasProperInterior = false;
   private boolean hasInterior = false;
@@ -65,7 +65,7 @@ public class IntersectionAdder
    */
   public Coordinate getProperIntersectionPoint()  {    return properIntersectionPoint;  }
 
-  public boolean hasIntersection() { return hasIntersection; }
+  public boolean hasIntersection() { return _hasIntersection; }
   /**
    * A proper intersection is an intersection which is interior to at least two
    * line segments.  Note that a proper intersection is not necessarily
@@ -143,7 +143,7 @@ numTests++;
       // the shared endpoint.  Don't bother adding it if it is the
       // only intersection.
       if (! isTrivialIntersection(e0, segIndex0, e1, segIndex1)) {
-        hasIntersection = true;
+        _hasIntersection = true;
         ((NodedSegmentString) e0).addIntersections(li, segIndex0, 0);
         ((NodedSegmentString) e1).addIntersections(li, segIndex1, 1);
         if (li.isProper()) {

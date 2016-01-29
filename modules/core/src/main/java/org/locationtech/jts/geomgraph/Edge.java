@@ -50,7 +50,7 @@ public class Edge
   EdgeIntersectionList eiList = new EdgeIntersectionList(this);
   private String name;
   private MonotoneChainEdge mce;
-  private boolean isIsolated = true;
+  private boolean _isIsolated = true;
   private Depth depth = new Depth();
   private int depthDelta = 0;   // the change in area depth from the R to L side of this edge
 
@@ -135,11 +135,11 @@ public class Edge
 
   public void setIsolated(boolean isIsolated)
   {
-    this.isIsolated = isIsolated;
+    this._isIsolated = isIsolated;
   }
   public boolean isIsolated()
   {
-    return isIsolated;
+    return _isIsolated;
   }
 
   /**

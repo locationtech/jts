@@ -27,7 +27,7 @@ public class OrientedCoordinateArray
     implements Comparable
 {
   private Coordinate[] pts;
-  private boolean orientation;
+  private boolean _orientation;
 
   /**
    * Creates a new {@link OrientedCoordinateArray}
@@ -38,7 +38,7 @@ public class OrientedCoordinateArray
   public OrientedCoordinateArray(Coordinate[] pts)
   {
     this.pts = pts;
-    orientation = orientation(pts);
+    _orientation = orientation(pts);
   }
 
   /**
@@ -63,8 +63,8 @@ public class OrientedCoordinateArray
 
   public int compareTo(Object o1) {
     OrientedCoordinateArray oca = (OrientedCoordinateArray) o1;
-    int comp = compareOriented(pts, orientation,
-                               oca.pts, oca.orientation);
+    int comp = compareOriented(pts, _orientation,
+                               oca.pts, oca._orientation);
 /*
     // MD - testing only
     int oldComp = SegmentStringDissolver.ptsComp.compare(pts, oca.pts);

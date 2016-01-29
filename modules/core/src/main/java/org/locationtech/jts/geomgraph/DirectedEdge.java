@@ -42,9 +42,9 @@ public class DirectedEdge
     return 0;
   }
 
-  protected boolean isForward;
-  private boolean isInResult = false;
-  private boolean isVisited = false;
+  protected boolean _isForward;
+  private boolean _isInResult = false;
+  private boolean _isVisited = false;
 
   private DirectedEdge sym; // the symmetric edge
   private DirectedEdge next;  // the next edge in the edge ring for the polygon containing this edge
@@ -60,7 +60,7 @@ public class DirectedEdge
   public DirectedEdge(Edge edge, boolean isForward)
   {
     super(edge);
-    this.isForward = isForward;
+    this._isForward = isForward;
     if (isForward) {
       init(edge.getCoordinate(0), edge.getCoordinate(1));
     }
@@ -71,10 +71,10 @@ public class DirectedEdge
     computeDirectedLabel();
   }
   public Edge getEdge() { return edge; }
-  public void setInResult(boolean isInResult) { this.isInResult = isInResult; }
-  public boolean isInResult() { return isInResult; }
-  public boolean isVisited() { return isVisited; }
-  public void setVisited(boolean isVisited) { this.isVisited = isVisited; }
+  public void setInResult(boolean isInResult) { this._isInResult = isInResult; }
+  public boolean isInResult() { return _isInResult; }
+  public boolean isVisited() { return _isVisited; }
+  public void setVisited(boolean isVisited) { this._isVisited = isVisited; }
   public void setEdgeRing(EdgeRing edgeRing) { this.edgeRing = edgeRing; }
   public EdgeRing getEdgeRing() { return edgeRing; }
   public void setMinEdgeRing(EdgeRing minEdgeRing) { this.minEdgeRing = minEdgeRing; }
@@ -97,7 +97,7 @@ public class DirectedEdge
   public int getDepthDelta()
   {
     int depthDelta = edge.getDepthDelta();
-    if (! isForward) depthDelta = -depthDelta;
+    if (! _isForward) depthDelta = -depthDelta;
     return depthDelta;
   }
 
@@ -117,7 +117,7 @@ public class DirectedEdge
    * @return the DirectedEdge for the same Edge but in the opposite direction
    */
   public DirectedEdge getSym() { return sym; }
-  public boolean isForward() { return isForward; }
+  public boolean isForward() { return _isForward; }
   public void setSym(DirectedEdge de)
   {
     sym = de;
@@ -172,7 +172,7 @@ public class DirectedEdge
   private void computeDirectedLabel()
   {
     label = new Label(edge.getLabel());
-    if (! isForward)
+    if (! _isForward)
       label.flip();
   }
 
@@ -184,7 +184,7 @@ public class DirectedEdge
   {
     // get the depth transition delta from R to L for this directed Edge
     int depthDelta = getEdge().getDepthDelta();
-    if (! isForward) depthDelta = -depthDelta;
+    if (! _isForward) depthDelta = -depthDelta;
 
     // if moving from L to R instead of R to L must change sign of delta
     int directionFactor = 1;
@@ -206,13 +206,13 @@ public class DirectedEdge
     out.print(" (" + getDepthDelta() + ")");
     //out.print(" " + this.hashCode());
     //if (next != null) out.print(" next:" + next.hashCode());
-    if (isInResult) out.print(" inResult");
+    if (_isInResult) out.print(" inResult");
   }
   public void printEdge(PrintStream out)
   {
     print(out);
     out.print(" ");
-    if (isForward)
+    if (_isForward)
       edge.print(out);
     else
       edge.printReverse(out);

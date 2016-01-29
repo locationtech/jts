@@ -82,7 +82,7 @@ public class BufferParameters
   private int endCapStyle = CAP_ROUND;
   private int joinStyle = JOIN_ROUND;
   private double mitreLimit = DEFAULT_MITRE_LIMIT;
-  private boolean isSingleSided = false;
+  private boolean _isSingleSided = false;
   private double simplifyFactor = DEFAULT_SIMPLIFY_FACTOR;
   
   /**
@@ -309,7 +309,7 @@ public class BufferParameters
    */
   public void setSingleSided(boolean isSingleSided)
   {
-    this.isSingleSided = isSingleSided;
+    this._isSingleSided = isSingleSided;
   }
 
   /**
@@ -318,7 +318,7 @@ public class BufferParameters
    * @return true if the generated buffer is to be single-sided
    */
   public boolean isSingleSided() {
-    return isSingleSided;
+    return _isSingleSided;
   }
 
   /**

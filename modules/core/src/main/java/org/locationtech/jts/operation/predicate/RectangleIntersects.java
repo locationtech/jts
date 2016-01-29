@@ -128,7 +128,7 @@ class EnvelopeIntersectsVisitor extends ShortCircuitedGeometryVisitor
 {
   private Envelope rectEnv;
 
-  private boolean intersects = false;
+  private boolean _intersects = false;
 
   public EnvelopeIntersectsVisitor(Envelope rectEnv)
   {
@@ -144,7 +144,7 @@ class EnvelopeIntersectsVisitor extends ShortCircuitedGeometryVisitor
    */
   public boolean intersects()
   {
-    return intersects;
+    return _intersects;
   }
 
   protected void visit(Geometry element)
@@ -157,7 +157,7 @@ class EnvelopeIntersectsVisitor extends ShortCircuitedGeometryVisitor
     }
     // rectangle contains target env => must intersect
     if (rectEnv.contains(elementEnv)) {
-      intersects = true;
+      _intersects = true;
       return;
     }
     /**
@@ -171,19 +171,19 @@ class EnvelopeIntersectsVisitor extends ShortCircuitedGeometryVisitor
      */
     if (elementEnv.getMinX() >= rectEnv.getMinX()
         && elementEnv.getMaxX() <= rectEnv.getMaxX()) {
-      intersects = true;
+      _intersects = true;
       return;
     }
     if (elementEnv.getMinY() >= rectEnv.getMinY()
         && elementEnv.getMaxY() <= rectEnv.getMaxY()) {
-      intersects = true;
+      _intersects = true;
       return;
     }
   }
 
   protected boolean isDone()
   {
-    return intersects == true;
+    return _intersects == true;
   }
 }
 
@@ -201,7 +201,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
 
   private Envelope rectEnv;
 
-  private boolean containsPoint = false;
+  private boolean _containsPoint = false;
 
   public GeometryContainsPointVisitor(Polygon rectangle)
   {
@@ -218,7 +218,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
    */
   public boolean containsPoint()
   {
-    return containsPoint;
+    return _containsPoint;
   }
 
   protected void visit(Geometry geom)
@@ -242,7 +242,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
       // point)
       if (SimplePointInAreaLocator.containsPointInPolygon(rectPt,
           (Polygon) geom)) {
-        containsPoint = true;
+        _containsPoint = true;
         return;
       }
     }
@@ -250,7 +250,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
 
   protected boolean isDone()
   {
-    return containsPoint == true;
+    return _containsPoint == true;
   }
 }
 

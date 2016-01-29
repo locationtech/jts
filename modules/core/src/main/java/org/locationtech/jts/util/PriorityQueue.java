@@ -23,14 +23,14 @@ import java.util.ArrayList;
  */
 public class PriorityQueue 
 {
-  private int size; // Number of elements in queue
+  private int _size; // Number of elements in queue
   private ArrayList items; // The queue binary heap array
 
   /**
    * Creates a new empty priority queue
    */
   public PriorityQueue() {
-    size = 0;
+    _size = 0;
     items = new ArrayList();
     // create space for sentinel
     items.add(null);
@@ -47,8 +47,8 @@ public class PriorityQueue
     items.add(null);
 
     // Insert item at end of heap and then re-establish ordering
-    size += 1;
-    int hole = size;
+    _size += 1;
+    int hole = _size;
     // set the item as a sentinel at the base of the heap
     items.set(0, x);
 
@@ -75,7 +75,7 @@ public class PriorityQueue
    * @return true if empty, false otherwise.
    */
   public boolean isEmpty() {
-    return size == 0;
+    return _size == 0;
   }
 
   /**
@@ -83,14 +83,14 @@ public class PriorityQueue
    * @return current size.
    */
   public int size() {
-    return size;
+    return _size;
   }
 
   /**
    * Make the priority queue logically empty.
    */
   public void clear() {
-    size = 0;
+    _size = 0;
     items.clear();
   }
 
@@ -103,8 +103,8 @@ public class PriorityQueue
     if (isEmpty())
       return null;
     Object minItem = items.get(1);
-    items.set(1, items.get(size));
-    size -= 1;
+    items.set(1, items.get(_size));
+    _size -= 1;
     reorder(1);
 
     return minItem;
@@ -120,9 +120,9 @@ public class PriorityQueue
     int child;
     Object tmp = items.get(hole);
 
-    for (; hole * 2 <= size; hole = child) {
+    for (; hole * 2 <= _size; hole = child) {
       child = hole * 2;
-      if (child != size
+      if (child != _size
           && ((Comparable) items.get(child + 1)).compareTo(items.get(child)) < 0)
         child++;
       if (((Comparable) items.get(child)).compareTo(tmp) < 0)

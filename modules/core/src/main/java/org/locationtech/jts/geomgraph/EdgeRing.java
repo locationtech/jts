@@ -43,7 +43,7 @@ public abstract class EdgeRing {
   private List pts = new ArrayList();
   private Label label = new Label(Location.NONE); // label stores the locations of each geometry on the face surrounded by this ring
   private LinearRing ring;  // the ring created for this EdgeRing
-  private boolean isHole;
+  private boolean _isHole;
   private EdgeRing shell;   // if non-null, the ring is a hole and this EdgeRing is its containing shell
   private ArrayList holes = new ArrayList(); // a list of EdgeRings which are holes in this EdgeRing
 
@@ -62,7 +62,7 @@ public abstract class EdgeRing {
   public boolean isHole()
   {
     //computePoints();
-    return isHole;
+    return _isHole;
   }
 
   public Coordinate getCoordinate(int i) { return (Coordinate) pts.get(i);  }
@@ -99,7 +99,7 @@ public abstract class EdgeRing {
       coord[i] = (Coordinate) pts.get(i);
     }
     ring = geometryFactory.createLinearRing(coord);
-    isHole = CGAlgorithms.isCCW(ring.getCoordinates());
+    _isHole = CGAlgorithms.isCCW(ring.getCoordinates());
 //Debug.println( (isHole ? "hole - " : "shell - ") + WKTWriter.toLineString(new CoordinateArraySequence(ring.getCoordinates())));
   }
   abstract public DirectedEdge getNext(DirectedEdge de);

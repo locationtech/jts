@@ -38,7 +38,7 @@ class BoundablePair
 {
   private Boundable boundable1;
   private Boundable boundable2;
-  private double distance;
+  private double _distance;
   private ItemDistance itemDistance;
   //private double maxDistance = -1.0;
   
@@ -47,7 +47,7 @@ class BoundablePair
     this.boundable1 = boundable1;
     this.boundable2 = boundable2;
     this.itemDistance = itemDistance;
-    distance = distance();
+    _distance = distance();
   }
   
   /**
@@ -124,7 +124,7 @@ class BoundablePair
    * 
    * @return the exact or lower bound distance for this pair
    */
-  public double getDistance() { return distance; }
+  public double getDistance() { return _distance; }
   
   /**
    * Compares two pairs based on their minimum distances
@@ -132,8 +132,8 @@ class BoundablePair
   public int compareTo(Object o)
   {
     BoundablePair nd = (BoundablePair) o;
-    if (distance < nd.distance) return -1;
-    if (distance > nd.distance) return 1;
+    if (_distance < nd._distance) return -1;
+    if (_distance > nd._distance) return 1;
     return 0;
   }
 

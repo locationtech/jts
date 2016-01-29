@@ -163,10 +163,10 @@ class EdgeRing {
   private Coordinate[] ringPts = null;
   private List holes;
   private EdgeRing shell;
-  private boolean isHole;
-  private boolean isProcessed = false;
-  private boolean isIncludedSet = false;
-  private boolean isIncluded = false;
+  private boolean _isHole;
+  private boolean _isProcessed = false;
+  private boolean _isIncludedSet = false;
+  private boolean _isIncluded = false;
 
   public EdgeRing(GeometryFactory factory)
   {
@@ -199,7 +199,7 @@ class EdgeRing {
    */
   public boolean isHole()
   {
-    return isHole;
+    return _isHole;
   }
   
   /**
@@ -210,7 +210,7 @@ class EdgeRing {
   public void computeHole()
   {
     LinearRing ring = getRing();
-    isHole = CGAlgorithms.isCCW(ring.getCoordinates());
+    _isHole = CGAlgorithms.isCCW(ring.getCoordinates());
   }
 
   /**
@@ -267,16 +267,16 @@ class EdgeRing {
   }
 
   public boolean isIncludedSet() {
-    return isIncludedSet;
+    return _isIncludedSet;
   }
 
   public boolean isIncluded() {
-    return isIncluded;
+    return _isIncluded;
   }
 
   public void setIncluded(boolean isIncluded) {
-    this.isIncluded = isIncluded;
-    this.isIncludedSet = true;
+    this._isIncluded = isIncluded;
+    this._isIncludedSet = true;
   }
 
   /**
@@ -379,7 +379,7 @@ class EdgeRing {
    * @return true if the ring is an outer hole.
    */
   public boolean isOuterHole() {
-    if (! isHole) return false;
+    if (! _isHole) return false;
     return ! hasShell();
   }
   
@@ -438,14 +438,14 @@ class EdgeRing {
    * @return whether the ring has been processed
    */
   public boolean isProcessed() {
-    return isProcessed;
+    return _isProcessed;
   }
 
   /**
    * @param isProcessed whether the ring has been processed
    */
   public void setProcessed(boolean isProcessed) {
-    this.isProcessed = isProcessed;
+    this._isProcessed = isProcessed;
   }
 
   /**

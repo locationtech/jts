@@ -29,14 +29,14 @@ public class SegmentNode
   public final Coordinate coord;   // the point of intersection
   public final int segmentIndex;   // the index of the containing line segment in the parent edge
   private final int segmentOctant;
-  private final boolean isInterior;
+  private final boolean _isInterior;
 
   public SegmentNode(NodedSegmentString segString, Coordinate coord, int segmentIndex, int segmentOctant) {
     this.segString = segString;
     this.coord = new Coordinate(coord);
     this.segmentIndex = segmentIndex;
     this.segmentOctant = segmentOctant;
-    isInterior = ! coord.equals2D(segString.getCoordinate(segmentIndex));
+    _isInterior = ! coord.equals2D(segString.getCoordinate(segmentIndex));
   }
 
   /**
@@ -49,11 +49,11 @@ public class SegmentNode
     return coord;
   }
   
-  public boolean isInterior() { return isInterior; }
+  public boolean isInterior() { return _isInterior; }
 
   public boolean isEndPoint(int maxSegmentIndex)
   {
-    if (segmentIndex == 0 && ! isInterior) return true;
+    if (segmentIndex == 0 && ! _isInterior) return true;
     if (segmentIndex == maxSegmentIndex) return true;
     return false;
   }

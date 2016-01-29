@@ -58,7 +58,7 @@ public class NonRobustLineIntersector
     /*
      *  'Sign' values
      */
-    isProper = false;
+    _isProper = false;
 
     /*
      *  Compute a1, b1, c1, where line joining points 1 and 2
@@ -87,9 +87,9 @@ public class NonRobustLineIntersector
       return;
     }
 
-    isProper = true;
+    _isProper = true;
     if (p.equals(p1) || p.equals(p2)) {
-      isProper = false;
+      _isProper = false;
     }
     result = POINT_INTERSECTION;
   }
@@ -123,7 +123,7 @@ public class NonRobustLineIntersector
      */
     //double denom, offset, num;     /* Intermediate values */
 
-    isProper = false;
+    _isProper = false;
 
     /*
      *  Compute a1, b1, c1, where line joining points 1 and 2
@@ -194,9 +194,9 @@ public class NonRobustLineIntersector
 
     // check if this is a proper intersection BEFORE truncating values,
     // to avoid spurious equality comparisons with endpoints
-    isProper = true;
+    _isProper = true;
     if (pa.equals(p1) || pa.equals(p2) || pa.equals(p3) || pa.equals(p4)) {
-      isProper = false;
+      _isProper = false;
     }
 
     // truncate computed point to precision grid

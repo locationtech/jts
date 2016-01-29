@@ -101,7 +101,7 @@ public class GeometryGraph
   private boolean useBoundaryDeterminationRule = true;
   private int argIndex;  // the index of this geometry as an argument to a spatial function (used for labelling)
   private Collection boundaryNodes;
-  private boolean hasTooFewPoints = false;
+  private boolean _hasTooFewPoints = false;
   private Coordinate invalidPoint = null;
 
   private PointOnGeometryLocator areaPtLocator = null;
@@ -156,7 +156,7 @@ public class GeometryGraph
 //  }
 //  public int getSRID() { return SRID; }
 
-  public boolean hasTooFewPoints() { return hasTooFewPoints; }
+  public boolean hasTooFewPoints() { return _hasTooFewPoints; }
 
   public Coordinate getInvalidPoint() { return invalidPoint; }
 
@@ -247,7 +247,7 @@ public class GeometryGraph
     Coordinate[] coord = CoordinateArrays.removeRepeatedPoints(lr.getCoordinates());
 
     if (coord.length < 4) {
-      hasTooFewPoints = true;
+      _hasTooFewPoints = true;
       invalidPoint = coord[0];
       return;
     }
@@ -292,7 +292,7 @@ public class GeometryGraph
     Coordinate[] coord = CoordinateArrays.removeRepeatedPoints(line.getCoordinates());
 
     if (coord.length < 2) {
-      hasTooFewPoints = true;
+      _hasTooFewPoints = true;
       invalidPoint = coord[0];
       return;
     }

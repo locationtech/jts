@@ -141,7 +141,7 @@ public class LineSequencer
 
   private boolean isRun = false;
   private Geometry sequencedGeometry = null;
-  private boolean isSequenceable = false;
+  private boolean _isSequenceable = false;
 
   /**
    * Adds a {@link Collection} of {@link Geometry}s to be sequenced.
@@ -192,7 +192,7 @@ public class LineSequencer
   public boolean isSequenceable()
   {
     computeSequence();
-    return isSequenceable;
+    return _isSequenceable;
   }
   /**
    * Returns the {@link LineString} or {@link MultiLineString}
@@ -215,7 +215,7 @@ public class LineSequencer
       return;
 
     sequencedGeometry = buildSequencedGeometry(sequences);
-    isSequenceable = true;
+    _isSequenceable = true;
 
     int finalLineCount = sequencedGeometry.getNumGeometries();
     Assert.isTrue(lineCount == finalLineCount, "Lines were missing from result");

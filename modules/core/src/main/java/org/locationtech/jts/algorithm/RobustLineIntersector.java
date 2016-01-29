@@ -35,14 +35,14 @@ public class RobustLineIntersector
   }
 
   public void computeIntersection(Coordinate p, Coordinate p1, Coordinate p2) {
-    isProper = false;
+    _isProper = false;
     // do between check first, since it is faster than the orientation test
     if (Envelope.intersects(p1, p2, p)) {
       if ((CGAlgorithms.orientationIndex(p1, p2, p) == 0)
           && (CGAlgorithms.orientationIndex(p2, p1, p) == 0)) {
-        isProper = true;
+        _isProper = true;
         if (p.equals(p1) || p.equals(p2)) {
-          isProper = false;
+          _isProper = false;
         }
         result = POINT_INTERSECTION;
         return;
@@ -54,7 +54,7 @@ public class RobustLineIntersector
   protected int computeIntersect(
                 Coordinate p1, Coordinate p2,
                 Coordinate q1, Coordinate q2  ) {
-    isProper = false;
+    _isProper = false;
 
     // first try a fast test to see if the envelopes of the lines intersect
     if (! Envelope.intersects(p1, p2, q1, q2))
@@ -99,7 +99,7 @@ public class RobustLineIntersector
      *  intersect.
      */
     if (Pq1 == 0 || Pq2 == 0 || Qp1 == 0 || Qp2 == 0) {
-      isProper = false;
+      _isProper = false;
       
       /**
        * Check for two equal endpoints.  
@@ -143,7 +143,7 @@ public class RobustLineIntersector
       }
     }
     else {
-      isProper = true;
+      _isProper = true;
       intPt[0] = intersection(p1, p2, q1, q2);
     }
     return POINT_INTERSECTION;

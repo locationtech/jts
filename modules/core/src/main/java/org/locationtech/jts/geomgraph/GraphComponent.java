@@ -32,10 +32,10 @@ abstract public class GraphComponent {
   /**
    * isInResult indicates if this component has already been included in the result
    */
-  private boolean isInResult = false;
-  private boolean isCovered = false;
-  private boolean isCoveredSet = false;
-  private boolean isVisited = false;
+  private boolean _isInResult = false;
+  private boolean _isCovered = false;
+  private boolean _isCoveredSet = false;
+  private boolean _isVisited = false;
 
   public GraphComponent() {
   }
@@ -46,17 +46,17 @@ abstract public class GraphComponent {
 
   public Label getLabel() { return label; }
   public void setLabel(Label label) { this.label = label; }
-  public void setInResult(boolean isInResult) { this.isInResult = isInResult; }
-  public boolean isInResult() { return isInResult; }
+  public void setInResult(boolean isInResult) { this._isInResult = isInResult; }
+  public boolean isInResult() { return _isInResult; }
   public void setCovered(boolean isCovered)
   {
-    this.isCovered = isCovered;
-    this.isCoveredSet = true;
+    this._isCovered = isCovered;
+    this._isCoveredSet = true;
   }
-  public boolean isCovered()    { return isCovered; }
-  public boolean isCoveredSet() { return isCoveredSet; }
-  public boolean isVisited() { return isVisited; }
-  public void setVisited(boolean isVisited) { this.isVisited = isVisited; }
+  public boolean isCovered()    { return _isCovered; }
+  public boolean isCoveredSet() { return _isCoveredSet; }
+  public boolean isVisited() { return _isVisited; }
+  public void setVisited(boolean isVisited) { this._isVisited = isVisited; }
   /**
    * @return a coordinate in this component (or null, if there are none)
    */
