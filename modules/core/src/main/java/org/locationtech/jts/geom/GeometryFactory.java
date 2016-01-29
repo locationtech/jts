@@ -485,7 +485,7 @@ public class GeometryFactory
       if (partClass != geomClass) {
         isHeterogeneous = true;
       }
-      if (geom instanceof GeometryCollection)
+      if (geom.isGeometryCollectionOrDerived())
         hasGeometryCollection = true;
     }
     

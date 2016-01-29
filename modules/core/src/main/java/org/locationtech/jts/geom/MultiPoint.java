@@ -99,6 +99,10 @@ public class MultiPoint
   protected Coordinate getCoordinate(int n) {
     return ((Point) geometries[n]).getCoordinate();
   }
+  
+  protected int getSortIndex() {
+    return Geometry.SORTINDEX_MULTIPOINT;
+  }
 
 }
 

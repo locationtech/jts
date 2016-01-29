@@ -402,6 +402,10 @@ public class Polygon
     if (i < nHole2) return -1;
     return 0;
   }
+  
+  protected int getSortIndex() {
+    return Geometry.SORTINDEX_POLYGON;
+  }
 
   private void normalize(LinearRing ring, boolean clockwise) {
     if (ring.isEmpty()) {

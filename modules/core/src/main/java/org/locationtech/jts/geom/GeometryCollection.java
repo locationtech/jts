@@ -265,6 +265,10 @@ public class GeometryCollection extends Geometry {
 
   }
   
+  protected int getSortIndex() {
+    return Geometry.SORTINDEX_GEOMETRYCOLLECTION;
+  }
+  
   /**
    * Creates a {@link GeometryCollection} with
    * every component reversed.

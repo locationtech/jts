@@ -160,15 +160,14 @@ public abstract class Geometry
 {
   private static final long serialVersionUID = 8763622679187376702L;
     
-  private static final Class[] sortedClasses = new Class[] { 
-    Point.class, 
-    MultiPoint.class,
-    LineString.class, 
-    LinearRing.class, 
-    MultiLineString.class,
-    Polygon.class, 
-    MultiPolygon.class, 
-    GeometryCollection.class };  
+  static final int SORTINDEX_POINT = 0;
+  static final int SORTINDEX_MULTIPOINT = 1;
+  static final int SORTINDEX_LINESTRING = 2;
+  static final int SORTINDEX_LINEARRING = 3;
+  static final int SORTINDEX_MULTILINESTRING = 4;
+  static final int SORTINDEX_POLYGON = 5;
+  static final int SORTINDEX_MULTIPOLYGON = 6;
+  static final int SORTINDEX_GEOMETRYCOLLECTION = 7;
   
   private final static GeometryComponentFilter geometryChangedFilter = new GeometryComponentFilter() {
     public void filter(Geometry geom) {
@@ -1677,8 +1676,8 @@ public abstract class Geometry
    */
   public int compareTo(Object o) {
     Geometry other = (Geometry) o;
-    if (getClassSortIndex() != other.getClassSortIndex()) {
-      return getClassSortIndex() - other.getClassSortIndex();
+    if (getSortIndex() != other.getSortIndex()) {
+      return getSortIndex() - other.getSortIndex();
     }
     if (isEmpty() && other.isEmpty()) {
       return 0;
@@ -1724,8 +1723,8 @@ public abstract class Geometry
    */
   public int compareTo(Object o, CoordinateSequenceComparator comp) {
     Geometry other = (Geometry) o;
-    if (getClassSortIndex() != other.getClassSortIndex()) {
-      return getClassSortIndex() - other.getClassSortIndex();
+    if (getSortIndex() != other.getSortIndex()) {
+      return getSortIndex() - other.getSortIndex();
     }
     if (isEmpty() && other.isEmpty()) {
       return 0;
@@ -1752,7 +1751,7 @@ public abstract class Geometry
    *      s are considered to be equal by the <code>equalsExact</code> method.
    */
   protected boolean isEquivalentClass(Geometry other) {
-    return this.getClass().getName().equals(other.getClass().getName());
+    return this.getSortIndex() == other.getSortIndex();
   }
 
   /**
@@ -1765,7 +1764,7 @@ public abstract class Geometry
    */
   protected void checkNotGeometryCollection(Geometry g) {
     //Don't use instanceof because we want to allow subclasses
-    if (g.getClass().equals(GeometryCollection.class)) {
+    if (getSortIndex() == SORTINDEX_GEOMETRYCOLLECTION) {
       throw new IllegalArgumentException("This method does not support GeometryCollection arguments");
     }
   }
@@ -1778,7 +1777,23 @@ public abstract class Geometry
    */
   protected boolean isGeometryCollection()
   {
-    return getClass().equals(org.locationtech.jts.geom.GeometryCollection.class);
+    return getSortIndex() == SORTINDEX_GEOMETRYCOLLECTION;
+  }
+
+  /**
+   * Tests whether this is an instance of a {@link GeometryCollection},
+   * or one of its homogeneous subclasses.
+   *
+   * @return true if this is a GeometryCollection (including subclasses)
+   */
+  public boolean isGeometryCollectionOrDerived() {
+    if (getSortIndex() == SORTINDEX_GEOMETRYCOLLECTION ||
+        getSortIndex() == SORTINDEX_MULTIPOINT ||
+        getSortIndex() == SORTINDEX_MULTILINESTRING ||
+        getSortIndex() == SORTINDEX_MULTIPOLYGON) {
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -1856,15 +1871,8 @@ public abstract class Geometry
     if (tolerance == 0) { return a.equals(b); }
     return a.distance(b) <= tolerance;
   }
-
-  private int getClassSortIndex() {
-		for (int i = 0; i < sortedClasses.length; i++) {
-			if (sortedClasses[i].isInstance(this))
-				return i;
-		}
-		Assert.shouldNeverReachHere("Class not supported: " + this.getClass());
-		return -1;
-	}
+  
+  abstract protected int getSortIndex();
 
   private Point createPointFromInternalCoord(Coordinate coord, Geometry exemplar)
   {
