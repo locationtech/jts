@@ -129,6 +129,10 @@ public class MultiPolygon
     }
     return getFactory().createMultiPolygon(revGeoms);
   }
+
+  protected int getSortIndex() {
+    return Geometry.SORTINDEX_MULTIPOLYGON;
+  }
 }
 
 

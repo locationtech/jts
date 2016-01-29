@@ -123,6 +123,10 @@ public class LinearRing extends LineString
   public String getGeometryType() {
     return "LinearRing";
   }
+  
+  protected int getSortIndex() {
+    return Geometry.SORTINDEX_LINEARRING;
+  }
 
   public Geometry reverse()
   {

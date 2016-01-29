@@ -317,5 +317,9 @@ public class LineString
     LineString line = (LineString) o;
     return comp.compare(this.points, line.points);
   }
+  
+  protected int getSortIndex() {
+    return Geometry.SORTINDEX_LINESTRING;
+  }
 
 }
