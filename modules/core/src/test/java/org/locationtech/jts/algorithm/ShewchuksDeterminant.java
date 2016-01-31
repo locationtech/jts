@@ -190,7 +190,7 @@ public class ShewchuksDeterminant
    * <p>
    * If the orientation can be computed safely using standard DP
    * arithmetic, this routine returns the orientation index.
-   * Otherwise, a value i > 1 is returned.
+   * Otherwise, a value i &gt; 1 is returned.
    * In this case the orientation index must 
    * be computed using some other method.
    * 
@@ -198,7 +198,7 @@ public class ShewchuksDeterminant
    * @param pb a coordinate
    * @param pc a coordinate
    * @return the orientation index if it can be computed safely, or
-   * i > 1 if the orientation index cannot be computed safely
+   * i &gt; 1 if the orientation index cannot be computed safely
    */
   public static int orientationIndexFilter(Coordinate pa, Coordinate pb, Coordinate pc)
   {

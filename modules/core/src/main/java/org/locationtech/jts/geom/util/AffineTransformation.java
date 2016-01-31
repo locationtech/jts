@@ -545,7 +545,7 @@ public class AffineTransformation
    * sin = y / d;
    * cos = x / d;
    * 
-   * T<sub>ref</sub> = T<sub>rot(sin, cos)</sub> x T<sub>scale(1, -1)</sub> x T<sub>rot(-sin, cos)</sub  
+   * T<sub>ref</sub> = T<sub>rot(sin, cos)</sub> x T<sub>scale(1, -1)</sub> x T<sub>rot(-sin, cos)</sub>
    * </pre></blockquote> 
    * 
    * @param x the x-component of the reflection line vector
@@ -975,7 +975,7 @@ public class AffineTransformation
    * Cretaes a new @link Geometry which is the result
    * of this transformation applied to the input Geometry.
    * 
-   *@param seq  a <code>Geometry</code>
+   *@param g  a <code>Geometry</code>
    *@return a transformed Geometry
    */
   public Geometry transform(Geometry g)

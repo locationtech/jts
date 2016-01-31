@@ -188,7 +188,7 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
    * Tests if another coordinate has the same values for the X and Y ordinates.
    * The Z ordinate is ignored.
    *
-   *@param other a <code>Coordinate</code> with which to do the 2D comparison.
+   *@param c a <code>Coordinate</code> with which to do the 2D comparison.
    *@return true if <code>other</code> is a <code>Coordinate</code>
    *      with the same values for X and Y.
    */
@@ -247,10 +247,9 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
    *  This method ignores the z value when making the comparison.
    *  Returns:
    *  <UL>
-   *    <LI> -1 : this.x < other.x || ((this.x == other.x) && (this.y <
-   *    other.y))
-   *    <LI> 0 : this.x == other.x && this.y = other.y
-   *    <LI> 1 : this.x > other.x || ((this.x == other.x) && (this.y > other.y))
+   *    <LI> -1 : this.x &lt; other.x || ((this.x == other.x) &amp;&amp; (this.y &lt; other.y))
+   *    <LI> 0 : this.x == other.x &amp;&amp; this.y = other.y
+   *    <LI> 1 : this.x &gt; other.x || ((this.x == other.x) &amp;&amp; (this.y &gt; other.y))
    *
    *  </UL>
    *  Note: This method assumes that ordinate values

@@ -74,7 +74,7 @@ public class EdgeGraph
    * @return the created edge
    * @return null if the edge was invalid and not added
    * 
-   * @see {@link #isValidEdge(Coordinate, Coordinate)}
+   * @see #isValidEdge(Coordinate, Coordinate)
    */
   public HalfEdge addEdge(Coordinate orig, Coordinate dest) {
     if (! isValidEdge(orig, dest)) return null;

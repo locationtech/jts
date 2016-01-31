@@ -22,7 +22,7 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geomgraph.*;
 
 /**
- * A ring of {@link DirectedEdge}s which may contain nodes of degree > 2.
+ * A ring of {@link DirectedEdge}s which may contain nodes of degree &gt; 2.
  * A <tt>MaximalEdgeRing</tt> may represent two different spatial entities:
  * <ul>
  * <li>a single polygon possibly containing inversions (if the ring is oriented CW)

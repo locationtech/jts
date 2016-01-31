@@ -184,7 +184,7 @@ public class CGAlgorithms
    *          an array of Coordinates forming a ring
    * @return true if the ring is oriented counter-clockwise.
    * @throws IllegalArgumentException
-   *           if there are too few points to determine orientation (< 4)
+   *           if there are too few points to determine orientation (&lt; 4)
    */
   public static boolean isCCW(Coordinate[] ring)
   {

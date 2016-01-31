@@ -28,6 +28,7 @@ import java.util.Iterator;
  * or visited by an single graph algorithm.  For instance, a breadth-first traversal of the
  * graph might use this to indicate that a node has already been traversed.
  * The visited flag may be set and cleared many times during the lifetime of a graph.
+ * </ul>
  *
  * <p>
  * Graph components support storing user context data.  This will typically be

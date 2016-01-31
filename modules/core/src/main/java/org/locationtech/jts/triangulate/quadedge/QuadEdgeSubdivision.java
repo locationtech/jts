@@ -241,7 +241,7 @@ public class QuadEdgeSubdivision {
 	 * 
 	 * @param v the location to search for
 	 * @param startEdge an edge of the subdivision to start searching at
-	 * @returns a QuadEdge which contains v, or is on the edge of a triangle containing v
+	 * @return a QuadEdge which contains v, or is on the edge of a triangle containing v
 	 * @throws LocateFailureException
 	 *           if the location algorithm fails to converge in a reasonable
 	 *           number of iterations

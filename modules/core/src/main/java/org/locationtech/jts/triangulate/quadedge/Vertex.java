@@ -200,7 +200,7 @@ public class Vertex
    * 
    * @param b a vertex
    * @param c a vertex
-   * @returns true if the triangle is oriented CCW
+   * @return true if the triangle is oriented CCW
    */
   public final boolean isCCW(Vertex b, Vertex c) 
   {

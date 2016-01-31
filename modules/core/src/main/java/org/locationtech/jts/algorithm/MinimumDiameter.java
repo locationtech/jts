@@ -74,7 +74,7 @@ public class MinimumDiameter
   /**
    * Compute a minimum diameter for a given {@link Geometry}.
    *
-   * @param geom a Geometry
+   * @param inputGeom a Geometry
    */
   public MinimumDiameter(Geometry inputGeom)
   {
@@ -88,7 +88,7 @@ public class MinimumDiameter
    * (e.g. a convex Polygon or LinearRing,
    * or a two-point LineString, or a Point).
    *
-   * @param geom a Geometry which is convex
+   * @param inputGeom a Geometry which is convex
    * @param isConvex <code>true</code> if the input geometry is convex
    */
   public MinimumDiameter(Geometry inputGeom, boolean isConvex)

@@ -286,7 +286,7 @@ public class Envelope
   }
 
   /**
-   *  Returns the <code>Envelope</code>s minimum x-value. min x > max x
+   *  Returns the <code>Envelope</code>s minimum x-value. min x &gt; max x
    *  indicates that this is a null <code>Envelope</code>.
    *
    *@return    the minimum x-coordinate
@@ -296,7 +296,7 @@ public class Envelope
   }
 
   /**
-   *  Returns the <code>Envelope</code>s maximum x-value. min x > max x
+   *  Returns the <code>Envelope</code>s maximum x-value. min x &gt; max x
    *  indicates that this is a null <code>Envelope</code>.
    *
    *@return    the maximum x-coordinate
@@ -306,7 +306,7 @@ public class Envelope
   }
 
   /**
-   *  Returns the <code>Envelope</code>s minimum y-value. min y > max y
+   *  Returns the <code>Envelope</code>s minimum y-value. min y &gt; max y
    *  indicates that this is a null <code>Envelope</code>.
    *
    *@return    the minimum y-coordinate
@@ -316,7 +316,7 @@ public class Envelope
   }
 
   /**
-   *  Returns the <code>Envelope</code>s maximum y-value. min y > max y
+   *  Returns the <code>Envelope</code>s maximum y-value. min y &gt; max y
    *  indicates that this is a null <code>Envelope</code>.
    *
    *@return    the maximum y-coordinate

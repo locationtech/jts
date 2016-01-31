@@ -319,7 +319,7 @@ public class GeometryGraph
    * not tested for self-intersection, since they are assumed to be valid).
    * 
    * @param li the LineIntersector to use
-   * @param computeRingSelfNodes if <false>, intersection checks are optimized to not test rings for self-intersection
+   * @param computeRingSelfNodes if <code>false</code>, intersection checks are optimized to not test rings for self-intersection
    * @return the computed SegmentIntersector containing information about the intersections found
    */
   public SegmentIntersector computeSelfNodes(LineIntersector li, boolean computeRingSelfNodes)
@@ -333,7 +333,7 @@ public class GeometryGraph
    * not tested for self-intersection, since they are assumed to be valid).
    * 
    * @param li the LineIntersector to use
-   * @param computeRingSelfNodes if <false>, intersection checks are optimized to not test rings for self-intersection
+   * @param computeRingSelfNodes if <code>false</code>, intersection checks are optimized to not test rings for self-intersection
    * @param isDoneIfProperInt short-circuit the intersection computation if a proper intersection is found
    * @return the computed SegmentIntersector containing information about the intersections found
    */
@@ -438,7 +438,7 @@ Debug.print(e.getEdgeIntersectionList());
    * Determines the {@link Location} of the given {@link Coordinate}
    * in this geometry.
    * 
-   * @param p the point to test
+   * @param pt the point to test
    * @return the location of the point in the geometry
    */
   public int locate(Coordinate pt)

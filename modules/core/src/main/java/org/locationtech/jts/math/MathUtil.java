@@ -72,8 +72,8 @@ public class MathUtil
   
   /**
    * Computes an index which wraps around a given maximum value.
-   * For values >= 0, this is equals to <tt>val % max</tt>.
-   * For values < 0, this is equal to <tt>max - (-val) % max</tt> 
+   * For values &gt;= 0, this is equals to <tt>val % max</tt>.
+   * For values &lt; 0, this is equal to <tt>max - (-val) % max</tt>
    * 
    * @param index the value to wrap
    * @param max the maximum value (or modulus)

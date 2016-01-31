@@ -62,7 +62,7 @@ public class LineStringExtracter
 
   /**
    * Extracts the {@link LineString} elements from a single {@link Geometry}
-   * and returns them as either a {@link LineString) or {@link MultiLineString}.
+   * and returns them as either a {@link LineString} or {@link MultiLineString}.
    * 
    * @param geom the geometry from which to extract
    * @return a linear geometry

@@ -35,8 +35,6 @@ public class SineStarFactory
   /**
    * Creates a factory which will create sine stars using the default
    * {@link GeometryFactory}.
-   *
-   * @param geomFact the factory to use
    */
 	public SineStarFactory()
 	{

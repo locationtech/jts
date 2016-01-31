@@ -229,9 +229,10 @@ public class GeometryEditor
      * Edits a Geometry by returning a new Geometry with a modification.
      * The returned geometry may be:
      * <ul>
-     * <li>the input geometry itself
+     * <li>the input geometry itself.
      * The returned Geometry might be the same as the Geometry passed in.
-     * It may be <code>null</code> if the geometry is to be deleted.
+     * <li><code>null</code> if the geometry is to be deleted.
+     * </ul>
      *
      * @param geometry the Geometry to modify
      * @param factory the factory with which to construct the modified Geometry
@@ -337,7 +338,7 @@ public class GeometryEditor
     /**
      * Edits a {@link CoordinateSequence} from a {@link Geometry}.
      *
-     * @param coordseq the coordinate array to operate on
+     * @param coordSeq the coordinate array to operate on
      * @param geometry the geometry containing the coordinate list
      * @return an edited coordinate sequence (which may be the same as the input)
      */

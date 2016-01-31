@@ -60,8 +60,8 @@ public class BufferParameters
   /**
    * The default number of facets into which to divide a fillet of 90 degrees.
    * A value of 8 gives less than 2% max error in the buffer distance.
-   * For a max error of < 1%, use QS = 12.
-   * For a max error of < 0.1%, use QS = 18.
+   * For a max error of &lt; 1%, use QS = 12.
+   * For a max error of &lt; 0.1%, use QS = 18.
    */
   public static final int DEFAULT_QUADRANT_SEGMENTS = 8;
 
@@ -150,10 +150,10 @@ public class BufferParameters
   /**
    * Sets the number of line segments used to approximate an angle fillet.
    * <ul>
-   * <li>If <tt>quadSegs</tt> >= 1, joins are round, and <tt>quadSegs</tt> indicates the number of 
+   * <li>If <tt>quadSegs</tt> &gt;= 1, joins are round, and <tt>quadSegs</tt> indicates the number of
    * segments to use to approximate a quarter-circle.
    * <li>If <tt>quadSegs</tt> = 0, joins are bevelled (flat)
-   * <li>If <tt>quadSegs</tt> < 0, joins are mitred, and the value of qs
+   * <li>If <tt>quadSegs</tt> &lt; 0, joins are mitred, and the value of qs
    * indicates the mitre ration limit as
    * <pre>
    * mitreLimit = |<tt>quadSegs</tt>|
@@ -162,8 +162,8 @@ public class BufferParameters
    * For round joins, <tt>quadSegs</tt> determines the maximum
    * error in the approximation to the true buffer curve.
    * The default value of 8 gives less than 2% max error in the buffer distance.
-   * For a max error of < 1%, use QS = 12.
-   * For a max error of < 0.1%, use QS = 18.
+   * For a max error of &lt; 1%, use QS = 12.
+   * For a max error of &lt; 0.1%, use QS = 18.
    * The error is always less than the buffer distance 
    * (in other words, the computed buffer curve is always inside the true
    * curve).

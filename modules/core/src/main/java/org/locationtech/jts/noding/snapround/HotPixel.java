@@ -66,7 +66,7 @@ public class HotPixel
    * The scale factor must be strictly positive (non-zero).
    * 
    * @param pt the coordinate at the centre of the pixel
-   * @param scaleFactor the scaleFactor determining the pixel size.  Must be > 0
+   * @param scaleFactor the scaleFactor determining the pixel size.  Must be &gt; 0
    * @param li the intersector to use for testing intersection with line segments
    * 
    */

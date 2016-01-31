@@ -28,8 +28,8 @@ import org.locationtech.jts.util.*;
  * There are three possible outcomes when determining whether two line segments intersect:
  * <ul>
  * <li>{@link #NO_INTERSECTION} - the segments do not intersect
- * <li>{@link #POINT_INTERSECTION - the segments intersect in a single point
- * <li>{@link #COLLINEAR_INTERSECTION - the segments are collinear and they intersect in a line segment
+ * <li>{@link #POINT_INTERSECTION} - the segments intersect in a single point
+ * <li>{@link #COLLINEAR_INTERSECTION} - the segments are collinear and they intersect in a line segment
  * </ul>
  * For segments which intersect in a single point, the point may be either an endpoint
  * or in the interior of each segment.  

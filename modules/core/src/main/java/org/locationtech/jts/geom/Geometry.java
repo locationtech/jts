@@ -397,7 +397,7 @@ public abstract class Geometry
    * <li>Zero-dimensional geometries (points) are simple iff they have no
    * repeated points.
    * <li>Empty <code>Geometry</code>s are always simple.
-   * <ul>
+   * </ul>
    *
    * @return <code>true</code> if this <code>Geometry</code> is simple
    * @see #isValid
@@ -1084,7 +1084,7 @@ public abstract class Geometry
    * Note that to produce the expected result the input geometries
    * should be in normal form.  It is the caller's 
    * responsibility to perform this where required
-   * (using {@link Geometry#norm()
+   * (using {@link Geometry#norm()}
    * or {@link #normalize()} as appropriate).
    * 
    * @param o the Object to compare
@@ -1402,7 +1402,7 @@ public abstract class Geometry
   }
 
   /**
-   * Computes a <coe>Geometry </code> representing the closure of the point-set 
+   * Computes a <code>Geometry </code> representing the closure of the point-set
    * which is the union of the points in this <code>Geometry</code> which are not 
    * contained in the <code>other</code> Geometry,
    * with the points in the <code>other</code> Geometry not contained in this

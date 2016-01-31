@@ -76,8 +76,8 @@ public class OctagonalEnvelope
   /**
    * Creates a new null bounding octagon bounding a pair of {@link Coordinate}s
    * 
+   * @param p0 a coordinate to bound
    * @param p1 a coordinate to bound
-   * @param p2 a coordinate to bound
    */
   public OctagonalEnvelope(Coordinate p0, Coordinate p1)
   {

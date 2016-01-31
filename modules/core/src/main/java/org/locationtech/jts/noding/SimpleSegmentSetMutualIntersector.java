@@ -30,9 +30,9 @@ public class SimpleSegmentSetMutualIntersector implements SegmentSetMutualInters
   private final Collection baseSegStrings;
 
   /**
-   * Constructs a new intersector for a given set of {@link SegmentStrings}.
+   * Constructs a new intersector for a given set of {@link SegmentString}s.
    * 
-   * @param baseSegStrings the base segment strings to intersect
+   * @param segStrings the base segment strings to intersect
    */
   public SimpleSegmentSetMutualIntersector(Collection segStrings)
   {

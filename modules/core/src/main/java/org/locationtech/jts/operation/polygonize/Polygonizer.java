@@ -151,7 +151,7 @@ public class Polygonizer
    * Allows disabling the valid ring checking, 
    * to optimize situations where invalid rings are not expected.
    * <p>
-   * The default is <code>true</code.
+   * The default is <code>true</code>.
    * 
    * @param isCheckingRingsValid true if generated rings should be checked for validity
    */
@@ -172,7 +172,7 @@ public class Polygonizer
 
   /**
    * Gets a geometry representing the polygons formed by the polygonization.
-   * If a valid polygonal geometry was extracted the result is a {@linkl Polygonal} geometry. 
+   * If a valid polygonal geometry was extracted the result is a {@link Polygonal} geometry.
    * 
    * @return a geometry containing the polygons
    */
