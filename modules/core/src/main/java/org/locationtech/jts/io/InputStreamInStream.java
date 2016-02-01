@@ -13,7 +13,8 @@
  */
 package org.locationtech.jts.io;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * An adapter to allow an {@link InputStream} to be used as an {@link InStream}

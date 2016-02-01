@@ -17,13 +17,15 @@
 package org.locationtech.jts.geomgraph;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.index.SpatialIndex;
-import org.locationtech.jts.index.quadtree.Quadtree;
 import org.locationtech.jts.noding.OrientedCoordinateArray;
-import org.locationtech.jts.noding.SegmentString;
 
 
 /**

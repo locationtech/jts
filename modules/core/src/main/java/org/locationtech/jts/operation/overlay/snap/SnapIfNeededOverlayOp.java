@@ -14,9 +14,9 @@
 
 package org.locationtech.jts.operation.overlay.snap;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.operation.overlay.OverlayOp;
-import org.locationtech.jts.operation.overlay.validate.OverlayResultValidator;
 
 
 /**

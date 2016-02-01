@@ -21,7 +21,6 @@ import java.util.Iterator;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.util.Assert;
 
 import junit.framework.TestCase;

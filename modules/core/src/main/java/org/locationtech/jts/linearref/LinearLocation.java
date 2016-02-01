@@ -14,7 +14,11 @@
 
 package org.locationtech.jts.linearref;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
 
 /**
  * Represents a location along a {@link LineString} or {@link MultiLineString}.

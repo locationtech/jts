@@ -15,7 +15,8 @@ package org.locationtech.jts.awt;
 
 import java.awt.geom.Point2D;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Point;
 
 /**
  * Transforms a geometry {@link Coordinate} into a Java2D {@link Point},

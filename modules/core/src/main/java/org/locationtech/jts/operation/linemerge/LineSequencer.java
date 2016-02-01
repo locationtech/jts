@@ -13,10 +13,25 @@
  */
 package org.locationtech.jts.operation.linemerge;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
+import java.util.TreeSet;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.planargraph.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryComponentFilter;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.planargraph.DirectedEdge;
+import org.locationtech.jts.planargraph.GraphComponent;
+import org.locationtech.jts.planargraph.Node;
+import org.locationtech.jts.planargraph.Subgraph;
 import org.locationtech.jts.planargraph.algorithm.ConnectedSubgraphFinder;
 import org.locationtech.jts.util.Assert;
 

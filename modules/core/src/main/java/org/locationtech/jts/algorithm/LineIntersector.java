@@ -16,9 +16,10 @@ package org.locationtech.jts.algorithm;
 /**
  * @version 1.7
  */
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.util.Assert;
 
 /**
  * A <code>LineIntersector</code> is an algorithm that can both test whether

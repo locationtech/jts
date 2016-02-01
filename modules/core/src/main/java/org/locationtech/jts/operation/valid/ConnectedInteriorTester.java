@@ -15,13 +15,27 @@
  */
 package org.locationtech.jts.operation.valid;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.operation.overlay.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geomgraph.DirectedEdge;
+import org.locationtech.jts.geomgraph.Edge;
+import org.locationtech.jts.geomgraph.EdgeRing;
+import org.locationtech.jts.geomgraph.GeometryGraph;
+import org.locationtech.jts.geomgraph.PlanarGraph;
+import org.locationtech.jts.geomgraph.Position;
+import org.locationtech.jts.operation.overlay.MaximalEdgeRing;
+import org.locationtech.jts.operation.overlay.OverlayNodeFactory;
+import org.locationtech.jts.util.Assert;
 
 /**
  * This class tests that the interior of an area {@link Geometry}

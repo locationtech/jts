@@ -13,9 +13,10 @@
  */
 package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.io.WKTReader;
 
 import junit.textui.TestRunner;
 

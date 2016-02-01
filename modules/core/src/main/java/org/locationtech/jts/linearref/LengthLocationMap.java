@@ -14,7 +14,8 @@
 
 package org.locationtech.jts.linearref;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Computes the {@link LinearLocation} for a given length

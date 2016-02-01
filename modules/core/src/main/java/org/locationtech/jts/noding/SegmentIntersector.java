@@ -13,12 +13,6 @@
  */
 package org.locationtech.jts.noding;
 
-import java.util.*;
-
-import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.util.Debug;
-
 /**
  * Processes possible intersections detected by a {@link Noder}.
  * The {@link SegmentIntersector} is passed to a {@link Noder}.

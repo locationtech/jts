@@ -15,12 +15,15 @@
  */
 package org.locationtech.jts.operation.overlay;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.geomgraph.index.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geomgraph.Edge;
+import org.locationtech.jts.geomgraph.index.EdgeSetIntersector;
+import org.locationtech.jts.geomgraph.index.SegmentIntersector;
+import org.locationtech.jts.geomgraph.index.SimpleMCSweepLineIntersector;
 
 /**
  * Nodes a set of edges.

@@ -14,8 +14,7 @@
 
 package org.locationtech.jts.geom.util;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.math.Matrix;
 
 /**

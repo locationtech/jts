@@ -14,9 +14,6 @@
 package org.locationtech.jts.geom.prep;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
-import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
-import org.locationtech.jts.geom.prep.PreparedPolygon;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;

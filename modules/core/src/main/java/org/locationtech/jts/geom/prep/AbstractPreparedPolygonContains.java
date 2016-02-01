@@ -13,12 +13,13 @@
  */
 package org.locationtech.jts.geom.prep;
 
-import java.util.*;
+import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
-import org.locationtech.jts.noding.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.noding.SegmentIntersectionDetector;
+import org.locationtech.jts.noding.SegmentStringUtil;
 
 
 

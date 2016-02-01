@@ -14,14 +14,17 @@
 
 package test.jts.perf.operation.buffer;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.WKTFileReader;
 import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.util.Stopwatch;
 
-import test.jts.*;
+import test.jts.TestFiles;
 
 public class FileBufferPerfTest
 {

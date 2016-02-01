@@ -16,19 +16,10 @@
  */
 package org.locationtech.jts.operation.relate;
 
-/**
- * A RelateNode is a Node that maintains a list of EdgeStubs
- * for the edges that are incident on it.
- *
- * @version 1.7
- */
-
-import java.io.PrintStream;
-import java.util.*;
-
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.IntersectionMatrix;
+import org.locationtech.jts.geomgraph.EdgeEndStar;
+import org.locationtech.jts.geomgraph.Node;
 
 /**
  * Represents a node in the topological graph used to compute spatial relationships.

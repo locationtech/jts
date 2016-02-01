@@ -14,8 +14,6 @@
 
 package org.locationtech.jts.math;
 
-import org.locationtech.jts.math.DD;
-
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 

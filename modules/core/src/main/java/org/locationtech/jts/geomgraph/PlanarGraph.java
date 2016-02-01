@@ -17,11 +17,14 @@ package org.locationtech.jts.geomgraph;
  * @version 1.7
  */
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Location;
 
 /**
  * The computation of the <code>IntersectionMatrix</code> relies on the use of a structure

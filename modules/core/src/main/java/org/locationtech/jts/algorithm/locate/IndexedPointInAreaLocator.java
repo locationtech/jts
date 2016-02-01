@@ -13,13 +13,20 @@
  */
 package org.locationtech.jts.algorithm.locate;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 import org.locationtech.jts.algorithm.RayCrossingCounter;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
-import org.locationtech.jts.index.*;
-import org.locationtech.jts.index.intervalrtree.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.index.ArrayListVisitor;
+import org.locationtech.jts.index.ItemVisitor;
+import org.locationtech.jts.index.intervalrtree.SortedPackedIntervalRTree;
 
 
 /**

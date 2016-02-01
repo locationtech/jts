@@ -18,11 +18,10 @@ package org.locationtech.jts.geomgraph;
 
 import java.io.PrintStream;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.Edge;
-import org.locationtech.jts.geomgraph.Label;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.algorithm.BoundaryNodeRule;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Models the end of an edge incident on a node.

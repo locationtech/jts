@@ -18,8 +18,6 @@ import java.io.IOException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;

@@ -14,9 +14,18 @@
 
 package org.locationtech.jts.planargraph.algorithm;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Stack;
 
-import org.locationtech.jts.planargraph.*;
+import org.locationtech.jts.planargraph.DirectedEdge;
+import org.locationtech.jts.planargraph.DirectedEdgeStar;
+import org.locationtech.jts.planargraph.Edge;
+import org.locationtech.jts.planargraph.GraphComponent;
+import org.locationtech.jts.planargraph.Node;
+import org.locationtech.jts.planargraph.PlanarGraph;
+import org.locationtech.jts.planargraph.Subgraph;
 
 /**
  * Finds all connected {@link Subgraph}s of a {@link PlanarGraph}.

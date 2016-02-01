@@ -14,13 +14,12 @@
 package org.locationtech.jts.io.gml2;
 
 import java.io.IOException;
-import java.io.Writer;
-import java.sql.SQLException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.locationtech.jts.generator.*;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.generator.LineStringGenerator;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.LineString;
 import org.xml.sax.SAXException;
 
 

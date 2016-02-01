@@ -15,9 +15,10 @@
  */
 package org.locationtech.jts.operation.overlay;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geomgraph.DirectedEdge;
+import org.locationtech.jts.geomgraph.Edge;
+import org.locationtech.jts.geomgraph.EdgeRing;
 
 /**
  * A ring of {@link Edge}s with the property that no node

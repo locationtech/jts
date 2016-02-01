@@ -14,7 +14,8 @@
 package org.locationtech.jts.operation.buffer;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
 
 /**
  * Simplifies a buffer input line to 

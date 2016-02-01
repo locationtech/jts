@@ -15,7 +15,7 @@
 package test.jts.perf.operation.distance;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.operation.distance.*;
+import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 
 public class CachedBABDistance 
 {

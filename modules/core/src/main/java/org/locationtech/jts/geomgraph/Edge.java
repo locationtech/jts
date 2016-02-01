@@ -17,13 +17,12 @@
 package org.locationtech.jts.geomgraph;
 
 import java.io.PrintStream;
-import java.util.Iterator;
 
 import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.geomgraph.index.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.IntersectionMatrix;
+import org.locationtech.jts.geomgraph.index.MonotoneChainEdge;
 
 
 /**

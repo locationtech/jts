@@ -15,7 +15,10 @@
 package org.locationtech.jts.operation.distance;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Represents a sequence of facets (points or line segments)

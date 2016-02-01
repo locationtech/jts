@@ -13,10 +13,24 @@
  */
 package org.locationtech.jts.io.gml2;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.WeakHashMap;
 import java.util.regex.Pattern;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.gml2.GMLHandler.Handler;
 import org.locationtech.jts.util.StringUtil;
 import org.xml.sax.Attributes;

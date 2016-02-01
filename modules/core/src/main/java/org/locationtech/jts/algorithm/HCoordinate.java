@@ -13,7 +13,7 @@
  */
 package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * Represents a homogeneous coordinate in a 2-D coordinate space.

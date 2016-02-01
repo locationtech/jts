@@ -13,7 +13,7 @@
  */
 package org.locationtech.jts.index.intervalrtree;
 
-import org.locationtech.jts.index.*;
+import org.locationtech.jts.index.ItemVisitor;
 
 public class IntervalRTreeLeafNode 
 extends IntervalRTreeNode

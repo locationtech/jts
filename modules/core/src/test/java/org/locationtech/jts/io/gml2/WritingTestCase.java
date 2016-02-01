@@ -13,13 +13,19 @@
  */
 package org.locationtech.jts.io.gml2;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
+
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.gml2.GMLReader;
-import org.locationtech.jts.io.gml2.GMLWriter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.xml.sax.SAXException;
+
 import junit.framework.TestCase;
 
 /**

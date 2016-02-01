@@ -13,7 +13,12 @@
  */
 package org.locationtech.jts.algorithm.distance;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 
 /**
  * Computes the Euclidean distance (L2 metric) from a {@link Coordinate} to a {@link Geometry}.

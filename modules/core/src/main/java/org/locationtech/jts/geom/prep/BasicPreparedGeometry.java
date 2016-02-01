@@ -16,9 +16,10 @@ package org.locationtech.jts.geom.prep;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.algorithm.locate.*;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.algorithm.PointLocator;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.util.ComponentCoordinateExtracter;
 
 

@@ -17,7 +17,6 @@ import java.util.Random;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.io.WKTWriter;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;

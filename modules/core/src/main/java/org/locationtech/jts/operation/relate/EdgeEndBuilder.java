@@ -23,11 +23,16 @@ package org.locationtech.jts.operation.relate;
  *
  * @version 1.7
  */
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geomgraph.Edge;
+import org.locationtech.jts.geomgraph.EdgeEnd;
+import org.locationtech.jts.geomgraph.EdgeIntersection;
+import org.locationtech.jts.geomgraph.EdgeIntersectionList;
+import org.locationtech.jts.geomgraph.Label;
 
 /**
  * Computes the {@link EdgeEnd}s which arise from a noded {@link Edge}.

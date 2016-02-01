@@ -16,12 +16,11 @@
  */
 package org.locationtech.jts.operation.relate;
 
-import java.io.PrintStream;
-import java.util.*;
+import java.util.Iterator;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.IntersectionMatrix;
+import org.locationtech.jts.geomgraph.EdgeEnd;
+import org.locationtech.jts.geomgraph.EdgeEndStar;
 
 /**
  * An ordered list of {@link EdgeEndBundle}s around a {@link RelateNode}.

@@ -14,7 +14,7 @@
  */
 package org.locationtech.jts.index.strtree;
 
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.util.Assert;
 
 /**
  * A contiguous portion of 1D-space. Used internally by SIRtree.

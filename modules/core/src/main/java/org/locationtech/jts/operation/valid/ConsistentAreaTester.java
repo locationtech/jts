@@ -15,14 +15,18 @@
  */
 package org.locationtech.jts.operation.valid;
 
-import java.util.*;
+import java.util.Iterator;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geomgraph.GeometryGraph;
 import org.locationtech.jts.geomgraph.index.SegmentIntersector;
-import org.locationtech.jts.operation.relate.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.operation.relate.EdgeEndBundle;
+import org.locationtech.jts.operation.relate.RelateNode;
+import org.locationtech.jts.operation.relate.RelateNodeGraph;
 
 /**
  * Checks that a {@link GeometryGraph} representing an area

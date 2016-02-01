@@ -14,7 +14,9 @@
 
 package org.locationtech.jts.simplify;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.LineSegment;
 
 /**
  * Simplifies a linestring (sequence of points) using

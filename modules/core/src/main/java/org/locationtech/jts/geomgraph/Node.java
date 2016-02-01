@@ -17,14 +17,11 @@
 package org.locationtech.jts.geomgraph;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Iterator;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.IntersectionMatrix;
 import org.locationtech.jts.geom.Location;
-import org.locationtech.jts.geomgraph.GraphComponent;
-import org.locationtech.jts.geomgraph.Label;
-import org.locationtech.jts.util.*;
 
 
 /**

@@ -16,12 +16,16 @@ package org.locationtech.jts.index.strtree;
 
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.index.*;
-import org.locationtech.jts.index.strtree.AbstractSTRtree;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.index.ItemVisitor;
+import org.locationtech.jts.index.SpatialIndex;
+import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.PriorityQueue;
 
 /**

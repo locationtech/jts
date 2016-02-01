@@ -14,8 +14,13 @@
 
 package org.locationtech.jts.simplify;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.util.GeometryTransformer;
 
 /**
  * Simplifies a {@link Geometry} using the Douglas-Peucker algorithm.

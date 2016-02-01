@@ -14,11 +14,16 @@
  */
 package test.jts.perf.algorithm;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.index.strtree.*;
+import org.locationtech.jts.algorithm.PointInRing;
+import org.locationtech.jts.algorithm.RobustDeterminant;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.index.strtree.SIRtree;
 
 /**
  * Implements {@link PointInRing}

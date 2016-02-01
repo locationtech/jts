@@ -13,7 +13,10 @@
  */
 package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Polygonal;
 
 /**
  * Counts the number of segments crossed by a horizontal ray extending to the right

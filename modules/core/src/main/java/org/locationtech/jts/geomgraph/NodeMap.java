@@ -18,11 +18,14 @@ package org.locationtech.jts.geomgraph;
 
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Location;
-import org.locationtech.jts.geomgraph.Node;
 
 /**
  * A map of nodes, indexed by the coordinate of the node

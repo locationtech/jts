@@ -14,8 +14,11 @@
  */
 package org.locationtech.jts.precision;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.util.GeometryEditor;
 
 /**
  * Reduces the precision of a {@link Geometry}

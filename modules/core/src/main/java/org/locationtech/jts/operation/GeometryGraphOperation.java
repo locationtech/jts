@@ -15,8 +15,11 @@
  */
 package org.locationtech.jts.operation;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.algorithm.BoundaryNodeRule;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geomgraph.GeometryGraph;
 
 /**

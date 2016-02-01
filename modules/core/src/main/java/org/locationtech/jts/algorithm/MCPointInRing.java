@@ -14,12 +14,20 @@
  */
 package org.locationtech.jts.algorithm;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.index.bintree.*;
-import org.locationtech.jts.index.chain.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.index.bintree.Bintree;
+import org.locationtech.jts.index.bintree.Interval;
+import org.locationtech.jts.index.chain.MonotoneChain;
+import org.locationtech.jts.index.chain.MonotoneChainBuilder;
+import org.locationtech.jts.index.chain.MonotoneChainSelectAction;
 
 
 /**

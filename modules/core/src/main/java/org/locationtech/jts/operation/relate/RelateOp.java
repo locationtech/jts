@@ -16,15 +16,9 @@
  */
 package org.locationtech.jts.operation.relate;
 
-/**
- * @version 1.7
- */
-
-import java.util.*;
-
 import org.locationtech.jts.algorithm.BoundaryNodeRule;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.IntersectionMatrix;
 import org.locationtech.jts.operation.GeometryGraphOperation;
 
 /**

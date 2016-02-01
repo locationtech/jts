@@ -13,7 +13,8 @@
  */
 package org.locationtech.jts.geom.prep;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 
 /**
  * An interface for classes which prepare {@link Geometry}s 

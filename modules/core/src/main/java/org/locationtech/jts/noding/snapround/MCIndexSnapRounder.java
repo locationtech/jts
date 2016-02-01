@@ -14,11 +14,20 @@
  */
 package org.locationtech.jts.noding.snapround;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.noding.*;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.noding.InteriorIntersectionFinderAdder;
+import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.NodedSegmentString;
+import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.NodingValidator;
+import org.locationtech.jts.noding.SegmentString;
 
 /**
  * Uses Snap Rounding to compute a rounded,

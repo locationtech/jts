@@ -14,7 +14,8 @@
 
 package org.locationtech.jts.triangulate.quadedge;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.io.WKTWriter;
 
 /**

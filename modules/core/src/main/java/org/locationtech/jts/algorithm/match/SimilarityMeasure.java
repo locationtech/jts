@@ -14,7 +14,7 @@
 
 package org.locationtech.jts.algorithm.match;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * An interface for classes which measures the degree of similarity between two {@link Geometry}s.

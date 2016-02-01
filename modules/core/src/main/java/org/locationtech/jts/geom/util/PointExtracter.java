@@ -14,9 +14,14 @@
  */
 package org.locationtech.jts.geom.util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFilter;
+import org.locationtech.jts.geom.Point;
 
 
 /**

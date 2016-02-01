@@ -14,10 +14,6 @@
 package org.locationtech.jts.geom;
 
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateArrays;
-import org.locationtech.jts.geom.Envelope;
-
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 

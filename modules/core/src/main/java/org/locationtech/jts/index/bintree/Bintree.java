@@ -19,8 +19,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.geom.Envelope;
-
 
 /**
  * An <code>BinTree</code> (or "Binary Interval Tree")

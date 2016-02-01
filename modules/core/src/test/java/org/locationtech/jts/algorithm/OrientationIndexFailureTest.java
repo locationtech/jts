@@ -13,10 +13,7 @@
  */
 package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.math.DD;
+import org.locationtech.jts.geom.Coordinate;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;

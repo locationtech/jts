@@ -14,12 +14,18 @@
 package org.locationtech.jts.geom;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.algorithm.Centroid;
+import org.locationtech.jts.algorithm.ConvexHull;
+import org.locationtech.jts.algorithm.InteriorPointArea;
+import org.locationtech.jts.algorithm.InteriorPointLine;
+import org.locationtech.jts.algorithm.InteriorPointPoint;
+import org.locationtech.jts.geom.util.GeometryCollectionMapper;
+import org.locationtech.jts.geom.util.GeometryMapper;
 import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.operation.*;
+import org.locationtech.jts.operation.IsSimpleOp;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.distance.DistanceOp;
 import org.locationtech.jts.operation.linemerge.LineMerger;

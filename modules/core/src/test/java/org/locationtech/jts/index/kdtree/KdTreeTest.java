@@ -19,18 +19,11 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
-import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.index.kdtree.KdNode;
-import org.locationtech.jts.index.kdtree.KdTree;
-import org.locationtech.jts.io.WKTReader;
-
-import test.jts.util.IOUtil;
-
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import test.jts.util.IOUtil;
 
 public class KdTreeTest extends TestCase {
   public static void main(String args[]) {

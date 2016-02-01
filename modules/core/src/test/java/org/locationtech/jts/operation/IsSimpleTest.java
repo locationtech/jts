@@ -19,7 +19,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.operation.IsSimpleOp;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;

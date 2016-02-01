@@ -16,7 +16,6 @@ package org.locationtech.jts.dissolve;
 
 import java.util.List;
 
-import org.locationtech.jts.dissolve.LineDissolver;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 

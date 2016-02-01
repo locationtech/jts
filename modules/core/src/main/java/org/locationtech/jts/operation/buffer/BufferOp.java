@@ -16,11 +16,15 @@ package org.locationtech.jts.operation.buffer;
 /**
  * @version 1.7
  */
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.math.MathUtil;
-import org.locationtech.jts.noding.*;
-import org.locationtech.jts.noding.snapround.*;
-import org.locationtech.jts.precision.SimpleGeometryPrecisionReducer;
+import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.ScaledNoder;
+import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
 
 //import debug.*;
 

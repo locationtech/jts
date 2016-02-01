@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
 
 
 /**

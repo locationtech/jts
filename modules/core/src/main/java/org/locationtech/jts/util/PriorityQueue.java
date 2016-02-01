@@ -13,7 +13,7 @@
  */
 package org.locationtech.jts.util;
 
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * A priority queue over a set of {@link Comparable} objects.

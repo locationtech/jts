@@ -13,14 +13,15 @@
  */
 package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.algorithm.*;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 
-import test.jts.perf.algorithm.PointInAreaStressTester;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import test.jts.perf.algorithm.PointInAreaStressTester;
 
 
 

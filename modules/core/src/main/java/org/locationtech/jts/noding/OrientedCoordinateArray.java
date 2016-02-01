@@ -13,9 +13,8 @@
  */
 package org.locationtech.jts.noding;
 
-import java.util.*;
-
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 
 /**
  * Allows comparing {@link Coordinate} arrays

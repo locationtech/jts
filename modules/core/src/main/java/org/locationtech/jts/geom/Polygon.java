@@ -17,7 +17,7 @@ package org.locationtech.jts.geom;
 
 import java.util.Arrays;
 
-import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.algorithm.CGAlgorithms;
 
 
 /**

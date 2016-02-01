@@ -14,7 +14,8 @@
  */
 package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LinearRing;
 
 /**
  * Tests whether a {@link Coordinate} lies inside

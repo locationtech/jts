@@ -15,11 +15,9 @@
 package org.locationtech.jts.triangulate.quadedge;
 
 
-import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.algorithm.HCoordinate;
+import org.locationtech.jts.algorithm.NotRepresentableException;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Triangle;
-import org.locationtech.jts.geom.impl.CoordinateArraySequence;
-import org.locationtech.jts.io.WKTWriter;
 
 /**
  * Models a site (node) in a {@link QuadEdgeSubdivision}. 

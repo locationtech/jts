@@ -15,8 +15,6 @@
 package org.locationtech.jts.operation.buffer;
 
 import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.operation.buffer.SubgraphDepthLocater;
 
 import junit.framework.TestCase;
 

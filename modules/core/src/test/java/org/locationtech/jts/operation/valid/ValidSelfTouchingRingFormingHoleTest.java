@@ -16,7 +16,6 @@ package org.locationtech.jts.operation.valid;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.operation.valid.IsValidOp;
 
 import junit.framework.TestCase;
 

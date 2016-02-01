@@ -14,11 +14,11 @@
 
 package org.locationtech.jts.noding.snapround;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.noding.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.noding.NodedSegmentString;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Implements a "hot pixel" as used in the Snap Rounding algorithm.

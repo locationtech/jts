@@ -18,7 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.index.SpatialIndex;
 
 
 

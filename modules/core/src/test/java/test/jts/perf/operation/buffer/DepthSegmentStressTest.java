@@ -14,12 +14,11 @@
 
 package test.jts.perf.operation.buffer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 
 import org.locationtech.jts.geom.LineSegment;
-
 
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;

@@ -15,7 +15,8 @@
  */
 package org.locationtech.jts.geom;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Comparator;
 
 import org.locationtech.jts.math.MathUtil;
 

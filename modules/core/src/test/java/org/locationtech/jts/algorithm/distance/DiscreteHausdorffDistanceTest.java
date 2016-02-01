@@ -14,7 +14,6 @@
 
 package org.locationtech.jts.algorithm.distance;
 
-import org.locationtech.jts.algorithm.distance.DiscreteHausdorffDistance;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 

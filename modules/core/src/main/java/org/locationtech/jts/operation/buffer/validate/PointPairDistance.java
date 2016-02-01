@@ -13,7 +13,7 @@
  */
 package org.locationtech.jts.operation.buffer.validate;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
 
 /**
  * Contains a pair of points and the distance between them.

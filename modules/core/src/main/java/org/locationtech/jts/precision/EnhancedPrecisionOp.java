@@ -14,8 +14,7 @@
  */
 package org.locationtech.jts.precision;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.operation.overlay.OverlayOp;
+import org.locationtech.jts.geom.Geometry;
 
 /**
   * Provides versions of Geometry spatial functions which use

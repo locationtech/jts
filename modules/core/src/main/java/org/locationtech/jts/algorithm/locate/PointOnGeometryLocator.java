@@ -13,7 +13,9 @@
  */
 package org.locationtech.jts.algorithm.locate;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Location;
 
 /**
  * An interface for classes which determine the {@link Location} of

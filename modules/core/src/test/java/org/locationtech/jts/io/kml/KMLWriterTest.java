@@ -19,7 +19,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.io.kml.KMLWriter;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;

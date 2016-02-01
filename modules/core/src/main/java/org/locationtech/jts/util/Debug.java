@@ -18,11 +18,17 @@ package org.locationtech.jts.util;
 /**
  *@version 1.7
  */
-import java.io.*;
-import java.util.*;
-import java.lang.reflect.*;
+import java.io.PrintStream;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Iterator;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 
 /**
  * Provides routines to simplify and localize debugging output.

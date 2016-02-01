@@ -14,7 +14,8 @@
 
 package org.locationtech.jts.geom.util;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 
 /**
  * A visitor to {@link Geometry} componets, which 

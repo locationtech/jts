@@ -13,10 +13,11 @@
  */
 package org.locationtech.jts.triangulate;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
-import org.locationtech.jts.triangulate.quadedge.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;

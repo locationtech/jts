@@ -16,12 +16,9 @@
  */
 package org.locationtech.jts.geomgraph.index;
 
-import java.util.*;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.util.Debug;
+import org.locationtech.jts.geomgraph.Edge;
 
 
 /**

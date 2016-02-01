@@ -14,7 +14,8 @@
  */
 package org.locationtech.jts.operation.distance;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Represents the location of a point on a Geometry.

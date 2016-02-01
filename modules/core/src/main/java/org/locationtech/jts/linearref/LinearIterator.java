@@ -14,7 +14,11 @@
 
 package org.locationtech.jts.linearref;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Lineal;
+import org.locationtech.jts.geom.MultiLineString;
 
 /**
  * An iterator over the components and coordinates of a linear geometry

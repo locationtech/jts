@@ -15,9 +15,10 @@
 package org.locationtech.jts.index.strtree;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.util.Assert;
 
 /**
  * A node of an {@link AbstractSTRtree}. A node is one of:

@@ -14,10 +14,10 @@
  */
 
 package org.locationtech.jts.algorithm;
-import org.locationtech.jts.algorithm.CGAlgorithms;
-import org.locationtech.jts.algorithm.NonRobustCGAlgorithms;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
 
 import junit.framework.TestCase;
 

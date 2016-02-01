@@ -14,10 +14,16 @@
 package org.locationtech.jts.noding;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.util.Assert;
 
 
 /**

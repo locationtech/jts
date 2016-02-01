@@ -19,9 +19,12 @@ package org.locationtech.jts.geomgraph.index;
 /**
  * @version 1.7
  */
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.geomgraph.*;
+import org.locationtech.jts.geomgraph.Edge;
 
 /**
  * Finds all intersections in one or two sets of edges,

@@ -14,12 +14,10 @@
 
 package org.locationtech.jts.shape.random;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
-import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.shape.GeometricShapeBuilder;
 

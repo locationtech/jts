@@ -14,22 +14,19 @@
  */
 package test.jts.perf.operation.buffer;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.operation.buffer.validate.*;
-import org.locationtech.jts.util.*;
-
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTFileReader;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.operation.buffer.validate.BufferResultValidator;
+import org.locationtech.jts.util.Stopwatch;
 
 import junit.framework.TestCase;
-import test.jts.TestFiles;
-import test.jts.junit.*;
 
 
 /**

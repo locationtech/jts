@@ -14,6 +14,7 @@
  */
 package org.locationtech.jts.algorithm;
 
+import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
 
 /**

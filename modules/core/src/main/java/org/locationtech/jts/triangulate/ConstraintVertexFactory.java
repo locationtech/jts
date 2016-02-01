@@ -16,7 +16,6 @@ package org.locationtech.jts.triangulate;
 
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.triangulate.quadedge.Vertex;
 
 /**
  * An interface for factories which create a {@link ConstraintVertex}

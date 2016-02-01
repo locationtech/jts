@@ -13,10 +13,18 @@
  */
 package org.locationtech.jts.operation.union;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.util.GeometryCombiner;
+import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.index.strtree.STRtree;
 
 

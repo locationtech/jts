@@ -13,12 +13,19 @@
  */
 package org.locationtech.jts.operation.overlay;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geomgraph.*;
-import org.locationtech.jts.util.*;
+import org.locationtech.jts.algorithm.PointLocator;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geomgraph.DirectedEdge;
+import org.locationtech.jts.geomgraph.DirectedEdgeStar;
+import org.locationtech.jts.geomgraph.Edge;
+import org.locationtech.jts.geomgraph.Label;
+import org.locationtech.jts.geomgraph.Node;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Forms JTS LineStrings out of a the graph of {@link DirectedEdge}s

@@ -14,7 +14,6 @@
 
 package org.locationtech.jts.algorithm;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.geom.Coordinate;
 
 import junit.framework.TestCase;

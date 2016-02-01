@@ -15,8 +15,6 @@
  */
 package org.locationtech.jts.util;
 
-import org.locationtech.jts.util.AssertionFailedException;
-
 /**
  *  A utility for making programming assertions.
  *

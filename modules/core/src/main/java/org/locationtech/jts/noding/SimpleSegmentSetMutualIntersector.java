@@ -13,7 +13,8 @@
  */
 package org.locationtech.jts.noding;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.locationtech.jts.geom.Coordinate;
 

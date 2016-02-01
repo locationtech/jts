@@ -13,6 +13,9 @@
  */
 package org.locationtech.jts.geom;
 
+import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
+import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
+
 /**
  * The internal representation of a list of coordinates inside a Geometry.
  * <p>

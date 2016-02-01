@@ -15,7 +15,9 @@
  */
 package org.locationtech.jts.index.sweepline;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A sweepline implements a sorted index on a set of intervals.
