@@ -20,6 +20,7 @@ import java.util.Iterator;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.util.Debug;
 
 /**
@@ -33,6 +34,8 @@ public class NodingValidator {
   private LineIntersector li = new RobustLineIntersector();
 
   private Collection segStrings;
+  
+  private static final GeometryFactory fact = new GeometryFactory();
 
   public NodingValidator(Collection segStrings)
   {
@@ -70,7 +73,7 @@ public class NodingValidator {
   {
     if (p0.equals(p2))
       throw new RuntimeException("found non-noded collapse at "
-                                 + Debug.toLine(p0, p1, p2));
+        + fact.createLineString(new Coordinate[] { p0, p1, p2}));
   }
 
   /**
