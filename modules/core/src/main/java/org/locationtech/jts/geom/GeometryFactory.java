@@ -204,7 +204,7 @@ public class GeometryFactory
    * <li>null : returns an empty {@link Point}
    * <li>a point : returns a non-empty {@link Point}
    * <li>a line : returns a two-point {@link LineString}
-   * <li>a rectangle : returns a {@link Polygon}> whose points are (minx, miny),
+   * <li>a rectangle : returns a {@link Polygon} whose points are (minx, miny),
    *  (minx, maxy), (maxx, maxy), (maxx, miny), (minx, miny).
    * </ul>
    * 
@@ -411,8 +411,8 @@ public class GeometryFactory
    *            the empty geometry is to be created.
    * @throws IllegalArgumentException if the boundary ring is invalid
    */
-  public Polygon createPolygon(CoordinateSequence coordinates) {
-    return createPolygon(createLinearRing(coordinates));
+  public Polygon createPolygon(CoordinateSequence shell) {
+    return createPolygon(createLinearRing(shell));
   }
 
   /**
@@ -424,8 +424,8 @@ public class GeometryFactory
    *            the empty geometry is to be created.
    * @throws IllegalArgumentException if the boundary ring is invalid
    */
-  public Polygon createPolygon(Coordinate[] coordinates) {
-    return createPolygon(createLinearRing(coordinates));
+  public Polygon createPolygon(Coordinate[] shell) {
+    return createPolygon(createLinearRing(shell));
   }
 
   /**

@@ -42,11 +42,11 @@ import org.locationtech.jts.util.Assert;
  * An example of the output that can be generated is:
  * 
  * <pre>
- * <gml:LineString xmlns:gml='http://www.opengis.net/gml' srsName='foo'>
- *   <gml:coordinates>
+ * &lt;gml:LineString xmlns:gml='http://www.opengis.net/gml' srsName='foo'&gt;
+ *   &lt;gml:coordinates&gt;
  *     6.03,8.17 7.697,6.959 8.333,5.0 7.697,3.041 6.03,1.83 3.97,1.83 2.303,3.041 1.667,5.0 2.303,6.959 3.97,8.17 
- *   </gml:coordinates>
- * </gml:LineString>
+ *   &lt;/gml:coordinates&gt;
+ * &lt;/gml:LineString&gt;
  * </pre>
  * 
  * <p>
@@ -76,7 +76,7 @@ public class GMLWriter {
 	 * Creates a writer which outputs GML with default settings.
 	 * The defaults are:
 	 * <ul>
-	 * <li>the namespace prefix is <tt>gml:<//t>
+	 * <li>the namespace prefix is <tt>gml:</tt>
 	 * <li>no namespace prefix declaration is written
 	 * <li>no <tt>srsName</tt> attribute is written
 	 * </ul>

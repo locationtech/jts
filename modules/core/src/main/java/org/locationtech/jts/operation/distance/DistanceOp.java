@@ -65,7 +65,7 @@ public class DistanceOp
    * @param g0 a {@link Geometry}
    * @param g1 another {@link Geometry}
    * @param distance the distance to test
-   * @return true if g0.distance(g1) <= distance
+   * @return true if g0.distance(g1) &lt;= distance
    */
   public static boolean isWithinDistance(Geometry g0, Geometry g1, double distance)
   {

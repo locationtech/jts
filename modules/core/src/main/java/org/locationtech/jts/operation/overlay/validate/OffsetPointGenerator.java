@@ -63,7 +63,7 @@ public class OffsetPointGenerator
   /**
    * Gets the computed offset points.
    *
-   * @return List<Coordinate>
+   * @return List&lt;Coordinate&gt;
    */
   public List getPoints(double offsetDistance)
   {

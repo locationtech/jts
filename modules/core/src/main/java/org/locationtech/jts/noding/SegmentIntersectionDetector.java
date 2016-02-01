@@ -20,7 +20,7 @@ import org.locationtech.jts.geom.Coordinate;
 /**
  * Detects and records an intersection between two {@link SegmentString}s,
  * if one exists.  Only a single intersection is recorded.
- * This strategy can be configured to search for <b>proper intersections>/b>.
+ * This strategy can be configured to search for <b>proper intersections</b>.
  * In this case, the presence of <i>any</i> kind of intersection will still be recorded,
  * but searching will continue until either a proper intersection has been found
  * or no intersections are detected.

@@ -138,7 +138,7 @@ public class LinearComponentExtracter
 
   /**
    * Extracts the linear components from a single {@link Geometry}
-   * and returns them as either a {@link LineString) or {@link MultiLineString}.
+   * and returns them as either a {@link LineString} or {@link MultiLineString}.
    * 
    * @param geom the geometry from which to extract
    * @return a linear geometry
@@ -151,7 +151,7 @@ public class LinearComponentExtracter
 
   /**
    * Extracts the linear components from a single {@link Geometry}
-   * and returns them as either a {@link LineString) or {@link MultiLineString}.
+   * and returns them as either a {@link LineString} or {@link MultiLineString}.
    * 
    * @param geom the geometry from which to extract
    * @param forceToLineString true if LinearRings should be converted to LineStrings

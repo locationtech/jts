@@ -34,7 +34,7 @@ import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
  * In GIS, the positive (or negative) buffer of a geometry is defined as
  * the Minkowski sum (or difference) of the geometry
  * with a circle of radius equal to the absolute value of the buffer distance.
- * In the CAD/CAM world buffers are known as </i>offset curves</i>.
+ * In the CAD/CAM world buffers are known as <i>offset curves</i>.
  * In morphological analysis the 
  * operation of positive and negative buffering 
  * is referred to as <i>erosion</i> and <i>dilation</i>
@@ -50,15 +50,15 @@ import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
  * <p>
  * The <b>end cap style</b> of a linear buffer may be {@link BufferParameters#setEndCapStyle(int) specified}. The
  * following end cap styles are supported:
- * <ul
+ * <ul>
  * <li>{@link BufferParameters#CAP_ROUND} - the usual round end caps
- * <li>{@link BufferParameters#CAP_BUTT} - end caps are truncated flat at the line ends
+ * <li>{@link BufferParameters#CAP_FLAT} - end caps are truncated flat at the line ends
  * <li>{@link BufferParameters#CAP_SQUARE} - end caps are squared off at the buffer distance beyond the line ends
  * </ul>
  * <p>
  * The <b>join style</b> of the corners in a buffer may be {@link BufferParameters#setJoinStyle(int) specified}. The
  * following join styles are supported:
- * <ul
+ * <ul>
  * <li>{@link BufferParameters#JOIN_ROUND} - the usual round join
  * <li>{@link BufferParameters#JOIN_MITRE} - corners are "sharp" (up to a {@link BufferParameters#getMitreLimit() distance limit})
  * <li>{@link BufferParameters#JOIN_BEVEL} - corners are beveled (clipped off).
@@ -270,7 +270,7 @@ public class BufferOp
 
   /**
    * Specifies the end cap style of the generated buffer.
-   * The styles supported are {@link BufferParameters#CAP_ROUND}, {@link BufferParameters##CAP_BUTT}, and {@link BufferParameters##CAP_SQUARE}.
+   * The styles supported are {@link BufferParameters#CAP_ROUND}, {@link BufferParameters#CAP_FLAT}, and {@link BufferParameters#CAP_SQUARE}.
    * The default is CAP_ROUND.
    *
    * @param endCapStyle the end cap style to specify

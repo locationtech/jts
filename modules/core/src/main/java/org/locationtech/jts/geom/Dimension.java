@@ -86,7 +86,7 @@ public class Dimension {
   public final static char SYM_A = '2';
   
   /**
-   *  Converts the dimension value to a dimension symbol, for example, <code>TRUE => 'T'</code>
+   *  Converts the dimension value to a dimension symbol, for example, <code>TRUE =&gt; 'T'</code>
    *  .
    *
    *@param  dimensionValue  a number that can be stored in the <code>IntersectionMatrix</code>
@@ -114,7 +114,7 @@ public class Dimension {
   }
 
   /**
-   *  Converts the dimension symbol to a dimension value, for example, <code>'*' => DONTCARE</code>
+   *  Converts the dimension symbol to a dimension value, for example, <code>'*' =&gt; DONTCARE</code>
    *  .
    *
    *@param  dimensionSymbol  a character for use in the string representation of

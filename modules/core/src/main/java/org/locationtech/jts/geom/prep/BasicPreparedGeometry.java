@@ -67,8 +67,7 @@ class BasicPreparedGeometry
 	 * intersects the test geometry.
 	 * This is useful in A/A, A/L, A/P, L/P, and P/P cases.
 	 * 
-	 * @param geom the test geometry
-	 * @param repPts the representative points of the target geometry
+	 * @param testGeom the test geometry
 	 * @return true if any component intersects the areal test geometry
 	 */
 	public boolean isAnyTargetComponentInTest(Geometry testGeom)

@@ -33,12 +33,12 @@ import org.locationtech.jts.geom.Geometry;
  * This algorithm is an approximation to the standard Hausdorff distance.
  * Specifically, 
  * <pre>
- *    for all geometries a, b:    DHD(a, b) <= HD(a, b)
+ *    for all geometries a, b:    DHD(a, b) &lt;= HD(a, b)
  * </pre>
  * The approximation can be made as close as needed by densifying the input geometries.  
  * In the limit, this value will approach the true Hausdorff distance:
  * <pre>
- *    DHD(A, B, densifyFactor) -> HD(A, B) as densifyFactor -> 0.0
+ *    DHD(A, B, densifyFactor) -&gt; HD(A, B) as densifyFactor -&gt; 0.0
  * </pre>
  * The default approximation is exact or close enough for a large subset of useful cases.
  * Examples of these are:
@@ -92,7 +92,7 @@ public class DiscreteHausdorffDistance
    * subsegments, whose fraction of the total length is closest
    * to the given fraction.
    * 
-   * @param densifyPercent
+   * @param densifyFrac
    */
   public void setDensifyFraction(double densifyFrac)
   {

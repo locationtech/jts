@@ -143,7 +143,7 @@ public class LinearIterator
    * Checks whether the iterator cursor is pointing to the
    * endpoint of a component {@link LineString}.
    *
-   * @return <code>true</true> if the iterator is at an endpoint
+   * @return <code>true</code> if the iterator is at an endpoint
    */
   public boolean isEndOfLine() {
     if (componentIndex >= numLines) return false;

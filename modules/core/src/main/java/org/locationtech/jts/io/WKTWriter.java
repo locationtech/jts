@@ -100,7 +100,7 @@ public class WKTWriter
    * Generates the WKT for a <tt>LINESTRING</tt>
    * specified by a {@link CoordinateSequence}.
    *
-   * @param seq the sequence to write
+   * @param coord the sequence to write
    *
    * @return the WKT string
    */
@@ -218,7 +218,7 @@ public class WKTWriter
   /**
    * Sets the maximum number of coordinates per line
    * written in formatted output.
-   * If the provided coordinate number is <= 0,
+   * If the provided coordinate number is &lt;= 0,
    * coordinates will be written all on one line.
    *
    * @param coordsPerLine the number of coordinates per line to output.
@@ -245,7 +245,7 @@ public class WKTWriter
    *  Converts a <code>Geometry</code> to its Well-known Text representation.
    *
    *@param  geometry  a <code>Geometry</code> to process
-   *@return           a <Geometry Tagged Text> string (see the OpenGIS Simple
+   *@return           a &lt;Geometry Tagged Text&gt; string (see the OpenGIS Simple
    *      Features Specification)
    */
   public String write(Geometry geometry)
@@ -276,7 +276,7 @@ public class WKTWriter
    *  well-known text more readable.
    *
    *@param  geometry  a <code>Geometry</code> to process
-   *@return           a <Geometry Tagged Text> string (see the OpenGIS Simple
+   *@return           a &lt;Geometry Tagged Text&gt; string (see the OpenGIS Simple
    *      Features Specification), with newlines and spaces
    */
   public String writeFormatted(Geometry geometry)

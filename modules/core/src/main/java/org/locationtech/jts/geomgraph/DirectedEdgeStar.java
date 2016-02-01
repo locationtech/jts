@@ -170,7 +170,7 @@ public class DirectedEdgeStar
   private final int LINKING_TO_OUTGOING = 2;
   /**
    * Traverse the star of DirectedEdges, linking the included edges together.
-   * To link two dirEdges, the <next> pointer for an incoming dirEdge
+   * To link two dirEdges, the <code>next</code> pointer for an incoming dirEdge
    * is set to the next outgoing edge.
    * <p>
    * DirEdges are only linked if:

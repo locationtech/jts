@@ -44,7 +44,7 @@ public class MCIndexSegmentSetMutualIntersector implements SegmentSetMutualInter
   private STRtree index = new STRtree();
 
   /**
-   * Constructs a new intersector for a given set of {@link SegmentStrings}.
+   * Constructs a new intersector for a given set of {@link SegmentString}s.
    * 
    * @param baseSegStrings the base segment strings to intersect
    */

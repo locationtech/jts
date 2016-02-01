@@ -266,8 +266,6 @@ public abstract class PackedCoordinateSequence
 
     /**
      * Builds a new empty packed coordinate sequence of a given size and dimension
-     *
-     * @param coordinates
      */
     public Double(int size, int dimension) {
       this.dimension = dimension;
@@ -349,7 +347,7 @@ public abstract class PackedCoordinateSequence
     float[] coords;
 
     /**
-     * Constructs a packed coordinate sequence from an array of <code>float<code>s
+     * Constructs a packed coordinate sequence from an array of <code>float</code>s
      *
      * @param coords
      * @param dimensions
@@ -367,14 +365,14 @@ public abstract class PackedCoordinateSequence
     }
 
     /**
-     * Constructs a packed coordinate sequence from an array of <code>double<code>s
+     * Constructs a packed coordinate sequence from an array of <code>double</code>s
      *
      * @param coordinates
      * @param dimension
      */
-    public Float(double[] coordinates, int dimensions) {
+    public Float(double[] coordinates, int dimension) {
       this.coords = new float[coordinates.length];
-      this.dimension = dimensions;
+      this.dimension = dimension;
       for (int i = 0; i < coordinates.length; i++) {
         this.coords[i] = (float) coordinates[i];
       }
@@ -402,8 +400,6 @@ public abstract class PackedCoordinateSequence
 
     /**
      * Constructs an empty packed coordinate sequence of a given size and dimension
-     *
-     * @param coordinates
      */
     public Float(int size, int dimension) {
       this.dimension = dimension;

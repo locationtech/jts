@@ -49,7 +49,7 @@ public class Location {
   public final static int NONE = -1;
 
   /**
-   *  Converts the location value to a location symbol, for example, <code>EXTERIOR => 'e'</code>
+   *  Converts the location value to a location symbol, for example, <code>EXTERIOR =&gt; 'e'</code>
    *  .
    *
    *@param  locationValue  either EXTERIOR, BOUNDARY, INTERIOR or NONE

@@ -139,7 +139,7 @@ public class LineSegment
    * Determines the orientation of a LineSegment relative to this segment.
    * The concept of orientation is specified as follows:
    * Given two line segments A and L,
-   * <ul
+   * <ul>
    * <li>A is to the left of a segment L if A lies wholly in the
    * closed half-plane lying to the left of L
    * <li>A is to the right of a segment L if A lies wholly in the
@@ -276,7 +276,7 @@ public class LineSegment
    * fraction along the line defined by this segment.
    * A fraction of <code>0.0</code> returns the start point of the segment;
    * a fraction of <code>1.0</code> returns the end point of the segment.
-   * If the fraction is < 0.0 or > 1.0 the point returned 
+   * If the fraction is &lt; 0.0 or &gt; 1.0 the point returned
    * will lie before the start or beyond the end of the segment. 
    *
    * @param segmentLengthFraction the fraction of the segment length along the line
@@ -338,7 +338,7 @@ public class LineSegment
    * Computes the Projection Factor for the projection of the point p
    * onto this LineSegment.  The Projection Factor is the constant r
    * by which the vector for this segment must be multiplied to
-   * equal the vector for the projection of <tt>p<//t> on the line
+   * equal the vector for the projection of <tt>p</tt> on the line
    * defined by this segment.
    * <p>
    * The projection factor will lie in the range <tt>(-inf, +inf)</tt>,

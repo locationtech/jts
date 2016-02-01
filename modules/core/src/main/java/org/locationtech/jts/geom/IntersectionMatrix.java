@@ -222,8 +222,8 @@ public class IntersectionMatrix implements Cloneable {
   }
 
   /**
-   *  If row >= 0 and column >= 0, changes the specified element to <code>minimumDimensionValue</code>
-   *  if the element is less. Does nothing if row <0 or column < 0.
+   *  If row &gt;= 0 and column &gt;= 0, changes the specified element to <code>minimumDimensionValue</code>
+   *  if the element is less. Does nothing if row &lt;0 or column &lt; 0.
    *
    *@param  row                    the row of this <code>IntersectionMatrix</code>
    *      , indicating the interior, boundary or exterior of the first <code>Geometry</code>

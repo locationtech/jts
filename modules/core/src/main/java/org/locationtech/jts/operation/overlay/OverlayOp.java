@@ -631,7 +631,7 @@ public class OverlayOp
    * <li>{@link #DIFFERENCE} - result has the dimension of the left-hand input
    * <li>{@link #SYMDIFFERENCE} - result has the dimension of the highest input dimension
    * (since the symmetric Difference is the union of the differences).
-   * <li>
+   * </ul>
    * 
    * @param overlayOpCode the code for the overlay operation being performed
    * @param a an input geometry

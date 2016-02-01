@@ -23,7 +23,7 @@ import java.io.Serializable;
  * A number x is represented as a pair of doubles, x.hi and x.lo,
  * such that the number represented by x is x.hi + x.lo, where
  * <pre>
- *    |x.lo| <= 0.5*ulp(x.hi)
+ *    |x.lo| &lt;= 0.5*ulp(x.hi)
  * </pre>
  * and ulp(y) means "unit in the last place of y".  
  * The basic arithmetic operations are implemented using 
@@ -669,8 +669,8 @@ public strictfp final class DD
   /**
    * Returns an integer indicating the sign of this value.
    * <ul>
-   * <li>if this value is > 0, returns 1
-   * <li>if this value is < 0, returns -1
+   * <li>if this value is &gt; 0, returns 1
+   * <li>if this value is &lt; 0, returns -1
    * <li>if this value is = 0, returns 0
    * <li>if this value is NaN, returns 0
    * </ul>
@@ -967,7 +967,7 @@ public strictfp final class DD
   /**
    * Tests whether this value is greater than another <tt>DoubleDouble</tt> value.
    * @param y a DoubleDouble value
-   * @return true if this value > y
+   * @return true if this value &gt; y
    */
   public boolean gt(DD y)
   {
@@ -976,7 +976,7 @@ public strictfp final class DD
   /**
    * Tests whether this value is greater than or equals to another <tt>DoubleDouble</tt> value.
    * @param y a DoubleDouble value
-   * @return true if this value >= y
+   * @return true if this value &gt;= y
    */
   public boolean ge(DD y)
   {
@@ -985,7 +985,7 @@ public strictfp final class DD
   /**
    * Tests whether this value is less than another <tt>DoubleDouble</tt> value.
    * @param y a DoubleDouble value
-   * @return true if this value < y
+   * @return true if this value &lt; y
    */
   public boolean lt(DD y)
   {
@@ -994,7 +994,7 @@ public strictfp final class DD
   /**
    * Tests whether this value is less than or equal to another <tt>DoubleDouble</tt> value.
    * @param y a DoubleDouble value
-   * @return true if this value <= y
+   * @return true if this value &lt;= y
    */
   public boolean le(DD y)
   {
@@ -1292,7 +1292,7 @@ public strictfp final class DD
    * It is defined by the following regular expression:
    * <pre>
    * [<tt>+</tt>|<tt>-</tt>] {<i>digit</i>} [ <tt>.</tt> {<i>digit</i>} ] [ ( <tt>e</tt> | <tt>E</tt> ) [<tt>+</tt>|<tt>-</tt>] {<i>digit</i>}+
-   * <pre>
+   * </pre>
    * 
    * @param str the string to parse
    * @return the value of the parsed number

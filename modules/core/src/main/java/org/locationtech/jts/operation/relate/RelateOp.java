@@ -23,7 +23,7 @@ import org.locationtech.jts.operation.GeometryGraphOperation;
 
 /**
  * Implements the SFS <tt>relate()</tt> generalized spatial predicate on two {@link Geometry}s.
- * <b>
+ * <p>
  * The class supports specifying a custom {@link BoundaryNodeRule}
  * to be used during the relate computation.
  * <p>
