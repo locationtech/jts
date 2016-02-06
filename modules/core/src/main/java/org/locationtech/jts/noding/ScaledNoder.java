@@ -12,11 +12,13 @@
 
 package org.locationtech.jts.noding;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
-import org.locationtech.jts.util.CollectionUtil;
 
 /**
  * Wraps a {@link Noder} and transforms its input
@@ -71,15 +73,12 @@ public class ScaledNoder
 
   private Collection scale(Collection segStrings)
   {
-//  	System.out.println("Scaled: scaleFactor = " + scaleFactor);
-    return CollectionUtil.transform(segStrings,
-                                    new CollectionUtil.Function() {
-      public Object execute(Object obj) {
-        SegmentString ss = (SegmentString) obj;
-        return new NodedSegmentString(scale(ss.getCoordinates()), ss.getData());
-      }
-                                    }
-      );
+    List nodedSegmentStrings = new ArrayList();
+    for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
+      SegmentString ss = (SegmentString) i.next();
+      nodedSegmentStrings.add(new NodedSegmentString(scale(ss.getCoordinates()), ss.getData()));
+    }
+    return nodedSegmentStrings;
   }
 
   private Coordinate[] scale(Coordinate[] pts)
@@ -100,16 +99,10 @@ public class ScaledNoder
 
   private void rescale(Collection segStrings)
   {
-//  	System.out.println("Rescaled: scaleFactor = " + scaleFactor);
-  	CollectionUtil.apply(segStrings,
-  			new CollectionUtil.Function() {
-  		public Object execute(Object obj) {
-  			SegmentString ss = (SegmentString) obj;
-  			rescale(ss.getCoordinates());
-  			return null;
-  		}
-  	}
-  	);
+    for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
+      SegmentString ss = (SegmentString) i.next();
+      rescale(ss.getCoordinates());
+    }
   }
 
   private void rescale(Coordinate[] pts)
