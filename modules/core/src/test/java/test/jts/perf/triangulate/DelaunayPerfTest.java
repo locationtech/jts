@@ -1,15 +1,13 @@
 /*
- * The JTS Topology Suite is a collection of Java classes that
- * implement the fundamental operations required to validate a given
- * geo-spatial data set to a known topological specification.
- * 
- * Copyright (C) 2016 Vivid Solutions
- * 
+ * Copyright (c) 2016 Vivid Solutions.
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
- * (http://www.eclipse.org/legal/epl-v10.html), and the Vivid Solutions BSD
- * License v1.0 (found at the root of the repository).
- * 
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
  */
 
 package test.jts.perf.triangulate;
