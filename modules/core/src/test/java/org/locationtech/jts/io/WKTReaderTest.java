@@ -99,8 +99,14 @@ public class WKTReaderTest extends TestCase {
       assertEquals("GEOMETRYCOLLECTION EMPTY", writer.write(reader.read("GEOMETRYCOLLECTION EMPTY")));
   }
 
-  public void testReadZ() throws Exception {
+  public void testReadZM() throws Exception {
       assertEquals(new Coordinate(1, 2, 3), reader.read("POINT(1 2 3)").getCoordinate());
+      assertEquals(new Coordinate(1, 2, 3), reader.read("POINTZ(1 2 3)").getCoordinate());
+      assertEquals(new Coordinate(1, 2, 3), reader.read("POINT Z(1 2 3)").getCoordinate());
+      assertEquals(new Coordinate(1, 2, 3), reader.read("POINTM(1 2 3)").getCoordinate());
+      assertEquals(new Coordinate(1, 2, 3), reader.read("POINT M(1 2 3)").getCoordinate());
+      assertEquals(new Coordinate(1, 2, 3), reader.read("POINTZM(1 2 3 4)").getCoordinate());
+      assertEquals(new Coordinate(1, 2, 3), reader.read("POINT ZM(1 2 3 4)").getCoordinate());
   }
 
   public void testReadLargeNumbers() throws Exception {
