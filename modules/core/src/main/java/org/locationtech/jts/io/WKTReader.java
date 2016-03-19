@@ -128,6 +128,9 @@ public class WKTReader
   private GeometryFactory geometryFactory;
   private PrecisionModel precisionModel;
   private StreamTokenizer tokenizer;
+  // Not yet used (useful if we want to read Z, M and ZM WKT)
+  private boolean z;
+  private boolean m;
 
   /**
    * Creates a reader that creates objects using the default {@link GeometryFactory}.
@@ -190,6 +193,8 @@ public class WKTReader
     tokenizer.wordChars('.', '.');
     tokenizer.whitespaceChars(0, ' ');
     tokenizer.commentChar('#');
+    z = false;
+    m = false;
 
     try {
       return readGeometryTaggedText();
@@ -249,6 +254,9 @@ public class WKTReader
     if (isNumberNext()) {
         coord.z = getNextNumber();
     }
+    if (isNumberNext()) {
+      getNextNumber(); // ignore M value
+    }
     precisionModel.makePrecise(coord);
     return coord;
   }
@@ -305,6 +313,19 @@ public class WKTReader
    */
   private String getNextEmptyOrOpener() throws IOException, ParseException {
     String nextWord = getNextWord();
+    if (nextWord.equalsIgnoreCase("Z")) {
+      z = true;
+      nextWord = getNextWord();
+    }
+    else if (nextWord.equalsIgnoreCase("M")) {
+      m = true;
+      nextWord = getNextWord();
+    }
+    else if (nextWord.equalsIgnoreCase("ZM")) {
+      z = true;
+      m = true;
+      nextWord = getNextWord();
+    }
     if (nextWord.equals(EMPTY) || nextWord.equals(L_PAREN)) {
       return nextWord;
     }
@@ -448,38 +469,40 @@ public class WKTReader
    *@throws  IOException     if an I/O error occurs
    */
   private Geometry readGeometryTaggedText() throws IOException, ParseException {
-    String type = null;
+    String type;
     
     try{
-    	type = getNextWord();
+    	type = getNextWord().toUpperCase();
+      if (type.endsWith("Z")) z = true;
+      if (type.endsWith("M")) m = true;
     }catch(IOException e){
     	return null;
     }catch(ParseException e){
     	return null;
     }
     
-    if (type.equalsIgnoreCase("POINT")) {
+    if (type.startsWith("POINT")) {
       return readPointText();
     }
-    else if (type.equalsIgnoreCase("LINESTRING")) {
+    else if (type.startsWith("LINESTRING")) {
       return readLineStringText();
     }
-    else if (type.equalsIgnoreCase("LINEARRING")) {
+    else if (type.startsWith("LINEARRING")) {
       return readLinearRingText();
     }
-    else if (type.equalsIgnoreCase("POLYGON")) {
+    else if (type.startsWith("POLYGON")) {
       return readPolygonText();
     }
-    else if (type.equalsIgnoreCase("MULTIPOINT")) {
+    else if (type.startsWith("MULTIPOINT")) {
       return readMultiPointText();
     }
-    else if (type.equalsIgnoreCase("MULTILINESTRING")) {
+    else if (type.startsWith("MULTILINESTRING")) {
       return readMultiLineStringText();
     }
-    else if (type.equalsIgnoreCase("MULTIPOLYGON")) {
+    else if (type.startsWith("MULTIPOLYGON")) {
       return readMultiPolygonText();
     }
-    else if (type.equalsIgnoreCase("GEOMETRYCOLLECTION")) {
+    else if (type.startsWith("GEOMETRYCOLLECTION")) {
       return readGeometryCollectionText();
     }
     parseErrorWithLine("Unknown geometry type: " + type);
