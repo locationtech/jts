@@ -114,15 +114,21 @@ public class TopologyPreservingSimplifier
     if (inputGeom.isEmpty()) return (Geometry) inputGeom.clone();
     
     linestringMap = new HashMap();
-    inputGeom.apply(new LineStringMapBuilderFilter());
+    inputGeom.apply(new LineStringMapBuilderFilter(this));
     lineSimplifier.simplify(linestringMap.values());
-    Geometry result = (new LineStringTransformer()).transform(inputGeom);
+    Geometry result = (new LineStringTransformer(linestringMap)).transform(inputGeom);
     return result;
   }
 
-  class LineStringTransformer
+  static class LineStringTransformer
       extends GeometryTransformer
   {
+    private Map linestringMap;
+    
+    public LineStringTransformer(Map linestringMap) {
+      this.linestringMap = linestringMap;
+    }
+    
     protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent)
     {
       if (coords.size() == 0) return null;
@@ -147,9 +153,15 @@ public class TopologyPreservingSimplifier
    * @author Martin Davis
    *
    */
-  class LineStringMapBuilderFilter
+  static class LineStringMapBuilderFilter
       implements GeometryComponentFilter
   {
+    TopologyPreservingSimplifier tps;
+    
+    LineStringMapBuilderFilter(TopologyPreservingSimplifier tps) {
+      this.tps = tps;
+    }
+    
     /**
      * Filters linear geometries.
      * 
@@ -164,7 +176,7 @@ public class TopologyPreservingSimplifier
         
         int minSize = ((LineString) line).isClosed() ? 4 : 2;
         TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize);
-        linestringMap.put(line, taggedLine);
+        tps.linestringMap.put(line, taggedLine);
       }
     }
   }

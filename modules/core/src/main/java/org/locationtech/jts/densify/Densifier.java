@@ -116,10 +116,16 @@ public class Densifier {
 	 * @return the densified geometry
 	 */
 	public Geometry getResultGeometry() {
-		return (new DensifyTransformer()).transform(inputGeom);
+		return (new DensifyTransformer(distanceTolerance)).transform(inputGeom);
 	}
 
-	class DensifyTransformer extends GeometryTransformer {
+	static class DensifyTransformer extends GeometryTransformer {
+	  double distanceTolerance;
+	  
+	  DensifyTransformer(double distanceTolerance) {
+	    this.distanceTolerance = distanceTolerance;
+    }
+	  
 		protected CoordinateSequence transformCoordinates(
 				CoordinateSequence coords, Geometry parent) {
 			Coordinate[] inputPts = coords.toCoordinateArray();

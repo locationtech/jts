@@ -129,7 +129,7 @@ public class OctagonalEnvelope
 
   public void expandToInclude(Geometry g)
   {
-    g.apply(new BoundingOctagonComponentFilter());
+    g.apply(new BoundingOctagonComponentFilter(this));
   }
 
   public OctagonalEnvelope expandToInclude(CoordinateSequence seq)
@@ -340,16 +340,22 @@ public class OctagonalEnvelope
     return geomFactory.createPolygon(geomFactory.createLinearRing(pts), null);
   }
 
-  private class BoundingOctagonComponentFilter
+  private static class BoundingOctagonComponentFilter
   implements GeometryComponentFilter
   {
+    OctagonalEnvelope oe;
+    
+    BoundingOctagonComponentFilter(OctagonalEnvelope oe) {
+      this.oe = oe;
+    }
+    
      public void filter(Geometry geom)
      {
        if (geom instanceof LineString) {
-         expandToInclude( ((LineString) geom).getCoordinateSequence());
+         oe.expandToInclude( ((LineString) geom).getCoordinateSequence());
        }
        else if (geom instanceof Point) {
-         expandToInclude( ((Point) geom).getCoordinateSequence());
+         oe.expandToInclude( ((Point) geom).getCoordinateSequence());
        }
      }
   }

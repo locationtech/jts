@@ -54,17 +54,23 @@ public class Polygonizer
   /**
    * Adds every linear element in a {@link Geometry} into the polygonizer graph.
    */
-  private class LineStringAdder
+  private static class LineStringAdder
       implements GeometryComponentFilter
   {
+    Polygonizer p;
+    
+    LineStringAdder(Polygonizer p) {
+      this.p = p;
+    }
+    
     public void filter(Geometry g) {
       if (g instanceof LineString)
-        add((LineString) g);
+        p.add((LineString) g);
     }
   }
 
   // default factory
-  private LineStringAdder lineStringAdder = new LineStringAdder();
+  private LineStringAdder lineStringAdder = new LineStringAdder(this);
 
   protected PolygonizeGraph graph;
   // initialize with empty collections, in case nothing is computed
