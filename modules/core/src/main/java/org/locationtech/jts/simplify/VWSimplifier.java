@@ -122,16 +122,18 @@ public class VWSimplifier
     if (inputGeom.isEmpty())
       return (Geometry) inputGeom.clone();
 
-    return (new VWTransformer(isEnsureValidTopology)).transform(inputGeom);
+    return (new VWTransformer(isEnsureValidTopology, distanceTolerance)).transform(inputGeom);
   }
 
-  class VWTransformer extends GeometryTransformer
+  static class VWTransformer extends GeometryTransformer
   {
     private boolean isEnsureValidTopology = true;
+    private double distanceTolerance;
 
-    public VWTransformer(boolean isEnsureValidTopology)
+    public VWTransformer(boolean isEnsureValidTopology, double distanceTolerance)
     {
       this.isEnsureValidTopology = isEnsureValidTopology;
+      this.distanceTolerance = distanceTolerance;
     }
 
     protected CoordinateSequence transformCoordinates(CoordinateSequence coords, Geometry parent)
