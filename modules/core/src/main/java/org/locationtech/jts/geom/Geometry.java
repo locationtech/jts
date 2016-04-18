@@ -762,6 +762,17 @@ public abstract class Geometry
     if (g.isRectangle()) {
       return RectangleIntersects.intersects((Polygon) g, this);
     }
+    if (isGeometryCollection() || g.isGeometryCollection()) {
+      boolean r = false;
+      for (int i = 0 ; i < getNumGeometries() ; i++) {
+        for (int j = 0 ; j < g.getNumGeometries() ; j++) {
+          if (getGeometryN(i).intersects(g.getGeometryN(j))) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
     // general case
     return relate(g).isIntersects();
   }
