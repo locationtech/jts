@@ -290,6 +290,52 @@ public class GeometryImplTest extends TestCase {
             anotherSameClassButEmpty, collectionFactory);
     }
 
+    public void testGeometryCollectionIntersects1() throws Exception {
+        Geometry gc0 = reader.read(
+                "GEOMETRYCOLLECTION ( POINT(0 0) )");
+        Geometry gc1 = reader.read(
+                "GEOMETRYCOLLECTION ( LINESTRING(0 0, 1 1) )");
+        Geometry gc2 = reader.read(
+                "GEOMETRYCOLLECTION ( LINESTRING(1 0, 0 1) )");
+        assertTrue(gc0.intersects(gc1));
+        assertTrue(gc1.intersects(gc2));
+        assertTrue(!gc0.intersects(gc2));
+        // symmetric
+        assertTrue(gc1.intersects(gc0));
+        assertTrue(gc2.intersects(gc1));
+        assertTrue(!gc2.intersects(gc0));
+    }
+
+    public void testGeometryCollectionIntersects2() throws Exception {
+        Geometry gc0 = reader.read(
+                "POINT(0 0)");
+        Geometry gc1 = reader.read(
+                "GEOMETRYCOLLECTION ( LINESTRING(0 0, 1 1) )");
+        Geometry gc2 = reader.read(
+                "LINESTRING(1 0, 0 1)");
+        assertTrue(gc0.intersects(gc1));
+        assertTrue(gc1.intersects(gc2));
+        // symmetric
+        assertTrue(gc1.intersects(gc0));
+        assertTrue(gc2.intersects(gc1));
+    }
+
+    public void testGeometryCollectionIntersects3() throws Exception {
+        Geometry gc0 = reader.read(
+                "GEOMETRYCOLLECTION ( POINT(0 0), LINESTRING(1 1, 2 2) )");
+        Geometry gc1 = reader.read(
+                "GEOMETRYCOLLECTION ( POINT(15 15) )");
+        Geometry gc2 = reader.read(
+                "GEOMETRYCOLLECTION ( LINESTRING(0 0, 2 0), POLYGON((10 10, 20 10, 20 20, 10 20, 10 10)))");
+        assertTrue(gc0.intersects(gc2));
+        assertTrue(!gc0.intersects(gc1));
+        assertTrue(gc1.intersects(gc2));
+        // symmetric
+        assertTrue(gc2.intersects(gc0));
+        assertTrue(!gc1.intersects(gc0));
+        assertTrue(gc2.intersects(gc1));
+    }
+
     private void doTestEqualsExact(Geometry x, 
         Geometry somethingExactlyEqual,
         Geometry somethingNotEqualButSameClass, 
