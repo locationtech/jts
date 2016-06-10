@@ -208,16 +208,16 @@ public class CoordinateSequences {
     if (size == 0) 
       return "()";
     int dim = cs.getDimension();
-    StringBuffer buf = new StringBuffer();
-    buf.append('(');
+    StringBuilder builder = new StringBuilder();
+    builder.append('(');
     for (int i = 0; i < size; i++) {
-      if (i > 0) buf.append(" ");
+      if (i > 0) builder.append(" ");
       for (int d = 0; d < dim; d++) {
-        if (d > 0) buf.append(",");
-        buf.append(StringUtil.toString(cs.getOrdinate(i, d)));
+        if (d > 0) builder.append(",");
+        builder.append(StringUtil.toString(cs.getOrdinate(i, d)));
       }
     }
-    buf.append(')');
-    return buf.toString();
+    builder.append(')');
+    return builder.toString();
   }
 }

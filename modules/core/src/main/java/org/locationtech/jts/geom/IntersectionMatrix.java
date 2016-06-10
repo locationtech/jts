@@ -565,13 +565,13 @@ public class IntersectionMatrix implements Cloneable {
    *      in row-major order.
    */
   public String toString() {
-    StringBuffer buf = new StringBuffer("123456789");
+    StringBuilder builder = new StringBuilder("123456789");
     for (int ai = 0; ai < 3; ai++) {
       for (int bi = 0; bi < 3; bi++) {
-        buf.setCharAt(3 * ai + bi, Dimension.toDimensionSymbol(matrix[ai][bi]));
+        builder.setCharAt(3 * ai + bi, Dimension.toDimensionSymbol(matrix[ai][bi]));
       }
     }
-    return buf.toString();
+    return builder.toString();
   }
 }
 

@@ -252,11 +252,11 @@ public abstract class LineIntersector
 
   private String getTopologySummary()
   {
-    StringBuffer catBuf = new StringBuffer();
-    if (isEndPoint()) catBuf.append(" endpoint");
-    if (isProper) catBuf.append(" proper");
-    if (isCollinear()) catBuf.append(" collinear");
-    return catBuf.toString();
+    StringBuilder catBuilder = new StringBuilder();
+    if (isEndPoint()) catBuilder.append(" endpoint");
+    if (isProper) catBuilder.append(" proper");
+    if (isCollinear()) catBuilder.append(" collinear");
+    return catBuilder.toString();
   }
 
   protected boolean isEndPoint() {

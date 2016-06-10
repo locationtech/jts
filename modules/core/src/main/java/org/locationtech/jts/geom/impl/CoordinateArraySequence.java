@@ -248,15 +248,15 @@ public class CoordinateArraySequence
    */
   public String toString() {
     if (coordinates.length > 0) {
-      StringBuffer strBuf = new StringBuffer(17 * coordinates.length);
-      strBuf.append('(');
-      strBuf.append(coordinates[0]);
+      StringBuilder strBuilder = new StringBuilder(17 * coordinates.length);
+      strBuilder.append('(');
+      strBuilder.append(coordinates[0]);
       for (int i = 1; i < coordinates.length; i++) {
-        strBuf.append(", ");
-        strBuf.append(coordinates[i]);
+        strBuilder.append(", ");
+        strBuilder.append(coordinates[i]);
       }
-      strBuf.append(')');
-      return strBuf.toString();
+      strBuilder.append(')');
+      return strBuilder.toString();
     } else {
       return "()";
     }
