@@ -241,7 +241,7 @@ public class CGAlgorithms
      * happen if the ring is valid, so don't check for it (Might want to assert
      * this)
      */
-    boolean isCCW = false;
+    boolean isCCW;
     if (disc == 0) {
       // poly is CCW if prev x is right of next x
       isCCW = (prev.x > next.x);

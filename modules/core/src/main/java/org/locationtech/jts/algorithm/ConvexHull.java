@@ -224,9 +224,9 @@ public class ConvexHull
   private Stack grahamScan(Coordinate[] c) {
     Coordinate p;
     Stack ps = new Stack();
-    p = (Coordinate) ps.push(c[0]);
-    p = (Coordinate) ps.push(c[1]);
-    p = (Coordinate) ps.push(c[2]);
+    ps.push(c[0]);
+    ps.push(c[1]);
+    ps.push(c[2]);
     for (int i = 3; i < c.length; i++) {
       p = (Coordinate) ps.pop();
       // check for empty stack to guard against robustness problems
@@ -235,10 +235,10 @@ public class ConvexHull
           CGAlgorithms.computeOrientation((Coordinate) ps.peek(), p, c[i]) > 0) {
         p = (Coordinate) ps.pop();
       }
-      p = (Coordinate) ps.push(p);
-      p = (Coordinate) ps.push(c[i]);
+      ps.push(p);
+      ps.push(c[i]);
     }
-    p = (Coordinate) ps.push(c[0]);
+    ps.push(c[0]);
     return ps;
   }
 
