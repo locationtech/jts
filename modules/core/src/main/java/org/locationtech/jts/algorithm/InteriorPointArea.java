@@ -108,7 +108,7 @@ public class InteriorPointArea {
       return;
     
     Coordinate intPt;
-    double width = 0;
+    double width;
     
     LineString bisector = horizontalBisector(geometry);
     if (bisector.getLength() == 0.0) {
