@@ -238,15 +238,15 @@ public class Edge
 
   public String toString()
   {
-    StringBuffer buf = new StringBuffer();
-    buf.append("edge " + name + ": ");
-    buf.append("LINESTRING (");
+    StringBuilder builder = new StringBuilder();
+    builder.append("edge " + name + ": ");
+    builder.append("LINESTRING (");
     for (int i = 0; i < pts.length; i++) {
-      if (i > 0) buf.append(",");
-      buf.append(pts[i].x + " " + pts[i].y);
+      if (i > 0) builder.append(",");
+      builder.append(pts[i].x + " " + pts[i].y);
     }
-    buf.append(")  " + label + " " + depthDelta);
-    return buf.toString();
+    builder.append(")  " + label + " " + depthDelta);
+    return builder.toString();
   }
   public void print(PrintStream out)
   {
