@@ -32,6 +32,8 @@ public class Angle
   /** Constant representing no orientation */
   public static final int NONE = CGAlgorithms.COLLINEAR;
 
+  private Angle() {}
+
   /**
    * Converts from radians to degrees.
    * @param radians an angle in radians

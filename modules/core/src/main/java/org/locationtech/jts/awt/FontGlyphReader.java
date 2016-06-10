@@ -64,7 +64,9 @@ public class FontGlyphReader
 	
   // a flatness factor empirically determined to provide good results
   private static final double FLATNESS_FACTOR = 400;
-  
+
+  private FontGlyphReader() {}
+
   /**
    * Converts text rendered in the given font and pointsize to a {@link Geometry}
    * using a standard flatness factor.

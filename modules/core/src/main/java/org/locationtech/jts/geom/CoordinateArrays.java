@@ -28,6 +28,8 @@ public class CoordinateArrays {
 
   private final static Coordinate[] coordArrayType = new Coordinate[0];
 
+  private CoordinateArrays() {}
+
   /**
    * Tests whether an array of {@link Coordinate}s forms a ring,
    * by checking length and closure. 

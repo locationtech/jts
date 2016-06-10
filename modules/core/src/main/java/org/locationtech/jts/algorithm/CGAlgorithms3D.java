@@ -24,6 +24,8 @@ import org.locationtech.jts.math.Vector3D;
  */
 public class CGAlgorithms3D 
 {
+	private CGAlgorithms3D() {}
+
 	public static double distance(Coordinate p0, Coordinate p1)
 	{
 		// default to 2D distance if either Z is not set
