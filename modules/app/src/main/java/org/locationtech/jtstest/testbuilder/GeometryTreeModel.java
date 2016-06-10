@@ -273,7 +273,7 @@ abstract class GeometryNode extends GeometricObjectNode
     if (isLeaf)
       return null;
     populateChildren();
-    return (GeometricObjectNode) children.get(index);
+    return children.get(index);
   }
 
   public int getChildCount()

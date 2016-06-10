@@ -143,8 +143,8 @@ public interface PointShapeFactory {
           0.0,
           size,
           size);
-      pointMarker.x = (double) (point.getX() - (size / 2));
-      pointMarker.y = (double) (point.getY() - (size / 2));
+      pointMarker.x = (point.getX() - (size / 2));
+      pointMarker.y = (point.getY() - (size / 2));
 
       return pointMarker;
     }
@@ -264,8 +264,8 @@ public interface PointShapeFactory {
           0.0,
           size,
           size);
-      pointMarker.x = (double) (point.getX() - (size / 2));
-      pointMarker.y = (double) (point.getY() - (size / 2));
+      pointMarker.x = (point.getX() - (size / 2));
+      pointMarker.y = (point.getY() - (size / 2));
 
       return pointMarker;
     }

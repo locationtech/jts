@@ -33,7 +33,7 @@ public class DoubleBits {
     if (exp > 1023 || exp < -1022)
       throw new IllegalArgumentException("Exponent out of bounds");
     long expBias = exp + EXPONENT_BIAS;
-    long bits = (long) expBias << 52;
+    long bits = expBias << 52;
     return Double.longBitsToDouble(bits);
   }
 

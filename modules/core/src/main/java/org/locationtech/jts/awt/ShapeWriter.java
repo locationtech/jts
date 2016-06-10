@@ -259,8 +259,8 @@ public class ShapeWriter
     transformPoint(prev, transPoint);
 		shape.moveTo((float) transPoint.getX(), (float) transPoint.getY());
 
-    double prevx = (double) transPoint.getX();
-    double prevy = (double) transPoint.getY();
+    double prevx = transPoint.getX();
+    double prevy = transPoint.getY();
     
     int n = lineString.getNumPoints() - 1;
     //int count = 0;

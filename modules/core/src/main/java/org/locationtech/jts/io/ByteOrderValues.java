@@ -25,16 +25,16 @@ public class ByteOrderValues
   public static int getInt(byte[] buf, int byteOrder)
   {
     if (byteOrder == BIG_ENDIAN) {
-      return  ( (int) (buf[0] & 0xff) << 24)
-            | ( (int) (buf[1] & 0xff) << 16)
-            | ( (int) (buf[2] & 0xff) << 8)
-            | (( int) (buf[3] & 0xff) );
+      return  ( (buf[0] & 0xff) << 24)
+            | ( (buf[1] & 0xff) << 16)
+            | ( (buf[2] & 0xff) << 8)
+            | ( (buf[3] & 0xff) );
     }
     else {// LITTLE_ENDIAN
-      return  ( (int) (buf[3] & 0xff) << 24)
-            | ( (int) (buf[2] & 0xff) << 16)
-            | ( (int) (buf[1] & 0xff) << 8)
-            | ( (int) (buf[0] & 0xff) );
+      return  ( (buf[3] & 0xff) << 24)
+            | ( (buf[2] & 0xff) << 16)
+            | ( (buf[1] & 0xff) << 8)
+            | ( (buf[0] & 0xff) );
     }
   }
 
