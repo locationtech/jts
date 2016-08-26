@@ -14,14 +14,17 @@ package org.locationtech.jts.geom.impl;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFactory;
+import java.io.Serializable;
 
 /**
  * Builds packed array coordinate sequences. The array data type can be either
  * double or float, and defaults to float.
  */
 public class PackedCoordinateSequenceFactory implements
-    CoordinateSequenceFactory
+    CoordinateSequenceFactory, Serializable
 {
+  private static final long serialVersionUID = -3558264771905224525L;
+
   public static final int DOUBLE = 0;
   public static final int FLOAT = 1;
 

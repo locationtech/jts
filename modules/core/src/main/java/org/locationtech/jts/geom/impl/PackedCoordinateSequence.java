@@ -11,7 +11,7 @@
  */
 package org.locationtech.jts.geom.impl;
 
-
+import java.io.Serializable;
 import java.lang.ref.SoftReference;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -33,8 +33,10 @@ import org.locationtech.jts.geom.Envelope;
  * @version 1.7
  */
 public abstract class PackedCoordinateSequence
-    implements CoordinateSequence
+    implements CoordinateSequence, Serializable
 {
+  private static final long serialVersionUID = -6226802049281539646L;
+
   /**
    * The dimensions of the coordinates hold in the packed array
    */
