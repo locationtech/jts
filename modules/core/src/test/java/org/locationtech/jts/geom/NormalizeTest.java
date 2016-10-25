@@ -119,6 +119,18 @@ public class NormalizeTest extends TestCase {
     assertEqualsExact(expectedValue, l);
   }
 
+  public void testNormalizeStringNoSideEffect() throws Exception {
+    LineString l = (LineString) reader.read(
+            "LINESTRING (200 240, 140 160, 80 160, 160 80, 80 80)");
+    LineString ref = (LineString) reader.read(
+            "LINESTRING (200 240, 140 160)");
+    LineString seg = l.getFactory().createLineString(
+            new Coordinate[]{l.getCoordinates()[0], l.getCoordinates()[1]});
+    assertEqualsExact(ref, seg);
+    l.normalize();
+    assertEqualsExact(ref, seg);
+  }
+
   public void testNormalizeEmptyLineString() throws Exception {
     LineString l = (LineString) reader.read("LINESTRING EMPTY");
     l.normalize();
