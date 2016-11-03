@@ -1,0 +1,22 @@
+<run>
+  <desc>Test case from Anders Johansson - JTS list - Nov 29 2011 
+  Inside buffer of a simple rectangular geometry fails - should be empty, but is non-empty.
+  </desc>
+  <precisionModel type="FLOATING"/>
+  <resultMatcher>com.vividsolutions.jtstest.testrunner.BufferResultMatcher</resultMatcher>
+
+<case>
+  <desc>Buffer</desc>
+  <a>
+POLYGON ((0.28 0.38, 0.41 0.21, 0.13 0, 0 0.16, 0.28 0.38))
+</a>
+
+  <test>
+    <op name="buffer" arg1="a" arg2="-.18">
+POLYGON EMPTY
+</op>
+  </test>
+
+</case>
+
+</run>

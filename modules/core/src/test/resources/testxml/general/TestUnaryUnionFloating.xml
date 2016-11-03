@@ -1,0 +1,20 @@
+<run>
+  <desc>Tests for Geometry.union() method (unary union) with floating precision</desc>
+
+<case>
+  <desc>mP - showing that non-polygonal components are discarded correctly</desc>
+  <a>
+  GEOMETRYCOLLECTION (
+    POLYGON ((-3 -2, 700 900, -6 900, -3 -2)),
+    POLYGON((700 900, -1.6859349853697 899.55, 0.3 -0.4, 700 900)),
+    POLYGON ((700 860, 700 899.5, -1.68593498537 899.55, 700 860))
+    )
+  </a>
+<test>
+  <op name="union" arg1="A">
+    POLYGON ((0.2942036115049298 2.226702215615205, -3 -2, -6 900, 700 900, 699.6114719806972 899.5000276853219, 700 899.5, 700 860, 670.2204017222961 861.6785046602191, 0.3 -0.4, 0.2942036115049298 2.226702215615205))
+  </op>
+</test>
+</case>
+
+</run>

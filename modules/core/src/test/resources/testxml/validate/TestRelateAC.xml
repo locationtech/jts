@@ -1,0 +1,36 @@
+<run>
+<precisionModel type="FLOATING"/>
+
+<case>
+<desc>AC A-shells overlapping B-shell at A-vertex</desc>
+  <a>
+    POLYGON(
+      (100 60, 140 100, 100 140, 60 100, 100 60))
+  </a>
+  <b>
+    MULTIPOLYGON(
+      (
+        (80 40, 120 40, 120 80, 80 80, 80 40)), 
+      (
+        (120 80, 160 80, 160 120, 120 120, 120 80)), 
+      (
+        (80 120, 120 120, 120 160, 80 160, 80 120)), 
+      (
+        (40 80, 80 80, 80 120, 40 120, 40 80)))
+  </b>
+  <test>
+    <op name="relate" arg1="A" arg2="B" arg3="21210F212">true</op>
+  </test>
+  <test><op name="contains"   arg1="A" arg2="B">false</op></test>
+  <test><op name="coveredBy"  arg1="A" arg2="B">false</op></test>
+  <test><op name="covers"     arg1="A" arg2="B">false</op></test>
+  <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
+  <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
+  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <test><op name="intersects" arg1="A" arg2="B">true</op></test>
+  <test><op name="overlaps"   arg1="A" arg2="B">true</op></test>
+  <test><op name="touches"    arg1="A" arg2="B">false</op></test>
+  <test><op name="within"     arg1="A" arg2="B">false</op></test>
+</case>
+
+</run>

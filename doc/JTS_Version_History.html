@@ -1,0 +1,1179 @@
+<html>
+
+<head>
+<title>JTS Version History</title>
+</head>
+
+<body bgcolor='#DFF0FF'>
+<h1 style='text-align:center; color:darkblue;'>
+JTS TOPOLOGY SUITE
+<br>
+<i>Version History</i>
+</h1>
+
+
+This document lists the change history of release versions of the
+<span style='color:darkblue;'><b>JTS Topology Suite</b></span>.
+<p>
+Further information on JTS can be found at <b>Tsusiat Software's
+<a href='http://tsusiatsoftware.net/jts/main.html'>JTS pages</a></b>.
+<p>
+The current and archived JTS distributions can be obtained at the
+<a href='http://sourceforge.net/projects/jts-topo-suite/'><b>SourceForge JTS site</b></a>.
+
+<!-- ================================================================ -->
+<hr size='4' color='darkblue'>
+<h2>Version 1.14</h2>
+
+<i>Release Date:  September 23, 2015</i>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added <code>Envelope.compareTo</code> method
+<li>Fixed <code>SegmentSetMutualIntersector</code> classes to be thread-safe</li>
+<li>Fixed <code>PreparedGeometry</code> classes to be thread-safe</li>
+<li>Added <code>LineDissolver</code> class
+<li>Added <code>edgegraph</code> package
+<li>Added <code>CoordinateSequences.isEqual</code> method
+<li>Extended <code>CoordinateSequences.copy</code> and <code>CoordinateSequences.copy</code> to handle inputs of different dimension
+<li>Added <code>CoordinateArrays.envelope()</code> function
+<li>Added <code>CoordinateArrays.intersection()</code> function
+<li>Added <code>Polygonizer.setCheckValidRings()</code> method for optimizing performance in some situations
+<li>Added <code>KMLWriter</code> to convert Geometry to KML representation
+<li>Added <code>Coordinate</code> <code>equals3D</code>, <code>equals2D(Coordinate, tolerance)</code>, and <code>equalInZ</code> methods.
+<li>Added <code>VWSimplifier</code> to perform Visvalingam-Whyatt simplification
+<li>Enhanced <code>WKBReader</code> to handle Spatialite WKB format
+<li>Added <code>DD.setValue()</code> methods
+<li>Added <code>getGeometry()</code> methods to <code>LinearComponentExtracter</code> and <code>LineStringExtracter</code>
+<li>Added <code>BufferParameters</code> </code>simplifyFactor</code> setting
+<li>Added node counting and ability to not keep intersection points to <code>InteriorIntersectionFinder</code>
+<li>Added <code>Polygonizer</code> functionality to extract only polygons forming a valid polygonal geometry
+<li>Added <code>KdTree.toCoordinates</code>
+<li>Added <code>MinimumBoundingCircle.getFarthestPoints</code> method
+</ul>
+
+<h3>Performance Improvements</h3>
+<ul>
+<li>Performance & memory improvement in <tt>PreparedPolygonIntersects</tt> by short-circuiting point input case
+<li>Allow for memory usage optimization in <code>CascadedPolygonUnion</code>, by avoiding retaining input collection
+<li>Fix <code>Point.isEmpty()</code> to avoid allocating a coordinate
+<li>Fix <code>Geometry.equalsExact()</code> to short-circuit when the inputs are identical objects
+<li>Add short-circuit to <code>PointExtracter</code> to improve performance for Points
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed <code>RobustLineIntersector</code> heuristic for handling invalid intersection points
+(computed as outside envelope of input segments due to numeric precision issues)
+<li>Fixed <code>CGAlgorithmsDD.intersection</code> to compute intersection correctly
+<li>Fixed <tt>Geometry.interiorPoint()</tt> to compute a true interior point in certain cases
+<li>Fixed <code>Geometry.equals</code> to handle null argument
+<li>Fixed <code>DistanceToPoint</code> to be thread-safe
+<li>Fixed <code>Geometry.interiorPoint()</code> and <code>InteriorPointArea</code> to handle zero-area geometries
+<li>Fixed <code>STRtree</code> classes to be thread-safe (by synchronizing the <code>AbstractSTRtree.build()</code> method)
+<li>Fixed <code>STRtree.remove()</code> method to avoid a NPE
+<li>Fixed <code>DouglasPeuckerSimplifier</code> and <code>TopologyPreservingSimplifier</code> to handle empty geometry components in the input
+<li>Fixed <code>ConvexHull</code> to handle input of array of identical coordinates
+<li>Fixed <code>GeometryTransformer.transformLinearRing()</code> to handle null inputs
+<li>Fixed the <code>extractPoint(distance, offset)</code> methods in
+  <code>LocationIndexedLine</code> and <code>LengthIndexedLine</code> to handle offsets from endpoints correctly.
+<li>Fixed <code>GeometryCollectionIterator</code> to correctly handle atomic geometries
+<li>Fixed <code>InteriorIntersectionFinder</code> to not short-circuit when finding all nodes
+<li>Fixed <code>SubgraphDepthLocator</code> to work with Java 7+ by avoiding sorting with an inconsistent ordering
+<li>Fixed <code>FontGlyphReader</code> to use correct Java font value of "SansSerif", and added new constant to match.
+<li>Fixed <code>KdTree</code> to correctly implement distance tolerance-based coordinate matching
+<li>Fixed <code>LineString.normalize()</code> to correctly handle CoordinateSequences
+<li>Fixed <code>CommonBitsRemover</code> to correctly handle CoordinateSequences
+<li>Fixed bug in <code>CoordinateArraySequence.clone()</code>
+</ul>
+
+<h3>API Changes</h3>
+<ul>
+<li>Changed interface of <code>SegmentSetMutualIntersector</code> to support thread-safety by removing state
+<li>Provided <code>InteriorIntersectionFinderAdder</code> to replace the poorly named <code>IntersectionFinderAdder</code>
+<li>Changed some classes in <code>com.vividsolutions.jts.operation.buffer</code> to be package-private
+</ul>
+
+<h3>Testing Improvements</h3>
+<ul>
+<li>Added <code>GeometryTestCase</code> base class to simplify unit tests
+</ul>
+
+<!------- JTS-IO -------------------->
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS I/O</h3>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added <code>GeoJsonReader</code> and <code>GeoJsonWriter</code> classes
+</ul>
+
+<h3>API Changes</h3>
+<ul>
+<li>In <code>OraWriter</code> the connection is now provided to the <code>write()</code> method, not the constructors
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed <code>OraReader</code> to handle reading <code>GeometryCollection</code> with <code>Point</code> as second element
+<li>Many improvements to Oracle API code and performance
+<li>Added <code>OraWriter.setOptimizePoint</code> and <code>OraWriter.setOptimizeRectangle</code> methods
+</ul>
+
+<!------- TestBuilder -------------------->
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS TestBuilder</h3>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added ability to read multiple WKBHex geometries from a text file
+<li>Added AutoZoom to input
+<li>Added Oracle text output
+<li>Added more function sets
+<li>Removed dependency on Acme GIF encoder library
+<li>Improved zooming logic
+<li>Added mouse wheel zooming
+<li>Improved UI for editing A/B geometries
+<li>Added <b>Compute New</b> button to Geometry Functions panel
+<li>Added SpatialIndex functions
+<li>Added User Data labelling
+</ul>
+
+<h3>UI Changes</h3>
+<ul>
+<li>Moved Options menu items to View menu
+<li>Removed Tools menu items (they are available as functions)
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed to correctly handle changing Swing Look&Feel
+</ul>
+
+
+<!-- ================================================================ -->
+<hr size='4' color='darkblue'>
+<h2>Version 1.13</h2>
+
+<i>Release Date:  December 13, 2012</i>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Changed <tt>GeometryFactory.createGeometry()</tt> to make a deep copy of the argument Geometry,
+using the CoordinateSequenceFactory of the factory
+<li>Added ability to specify a dimension in <tt>CoordinateArraySequence</tt>
+<li>Changed <tt>Geometry.getEnvelopeInternal()</tt> to return a copy of the cached envelope, to prevent modification
+<li>Added <tt>GeometryEditor.CoordinateSequenceOperation</tt> to allow easy editing of constituent CoordinateSequences
+<li>Added <tt>GeometryFactory.createPolygon</tt> convenience methods which do not require holes to be specified
+<li><tt>Geometry</tt> overlay methods now return empty results as atomic types of appropriate dimension
+<li>Added <tt>RectangleLineIntersector</tt> to provide efficient rectangle-line intersection testing
+<li>Added <tt>getOrdinate</tt> and <tt>setOrdinate</tt> to <tt>Coordinate</tt>
+<li><tt>Quadtree</tt> is <tt>Serializable</tt>
+<li><tt>STRtree</tt> is <tt>Serializable</tt>
+<li>Added <tt>max</tt>, <tt>average</tt> and <tt>wrap</tt> functions to <tt>MathUtil</tt>
+<li>Improved <tt>WKTReader</tt> parse error reporting to report input line of error
+<li>Improved <code>WKBReader</code> to repair structurally-invalid input
+<li>Made <tt>TopologyPreservingSimplifier</tt> thread-safe
+<li>Added <tt>AbstractSTRtree.isEmpty()</tt> method
+<li>Added <tt>QuadTree.isEmpty()</tt> method
+<li>Added <tt>KdTree.isEmpty()</tt> method
+<li>Added decimation and duplicate point removal to </tt>ShapeWriter<tt>.
+<li><tt>ScaledNoder</tt> now preserves Z values of input
+<li>Added instance methods for all <t>Triangle</tt> static methods
+<li>Added <tt>CGAlgorithmsDD</tt> containing high-precision versions of some basic CG algorithms
+<li>Added <tt>IntersectionMatrix.isTrue()</tt> method for testing IM pattern matches
+<li>Added <code>getRawCoordinates</code> methods to <code>PackedCoordinateSequence</code> concrete classes
+<li>Modified <code>Geometry.isSimple()</code> to explicity check for simplicity for all types,
+and support <code>GeometryCollections</code>
+<li>Improved <code>MCIndexSnapRounder</code> to add nodes only where they are necessary
+<li>Added <code>CoordinateArrays.removeNull()</code> method
+<li>Enhanced <code>GeometryEditor</code> to handle null geometries returned from operation
+<li>Added <code>WKBHExFileReader</code>
+<li>Added <code>Distance3D</code> operation
+</ul>
+
+<h3>Performance Improvements</h3>
+<ul>
+<li>Simplified & improved performance of <tt>RectangleIntersects</tt> by using new <tt>RectangleLineIntersector</tt>
+<li>In <tt>RandomPointsInGridBuilder</tt> eliminated redundant <tt>ArrayList</tt> usage
+<li>In <tt>PreparedPolygonIntersects</tt> and <tt>PreparedLineStringIntersects</tt> added check
+to avoid creating segment index if all test inputs are points
+<li>In <tt>AbstractSTRtree</tt> switched to using indexed list access for better performance than using iterators
+<li>In <tt>AbstractSTRtree</tt> freed inserted item array after index is built
+<li>Improved performance of <tt>Polygonizer</tt> for cases with many potential holes
+<li>Improved performance for some <tt>DD</tt> methods by making them <tt>final</tt>
+<li>Added fast filter for <tt>CGAlgorithmsDD.orientationIndex</tt>, and switched to self-operations for DD determinant
+<li>Changed <code>STRtree.createNode()</code> to use a static class for nodes
+<li>Changed <code>QuadTree Node</code> to use scalar x and y variables rather than a <code>Coordinate</code> to reduce memory allocation
+<li>Fixed <code>PreparedGeometry</code> concrete classes to be thread-safe.
+<li>Fixed <code>SortedPackedIntervalRTree</code> so that it is thread-safe.
+</ul>
+
+<h3>Robustness Improvements</h3>
+<ul>
+<li>Switched to using DD extended-precision arithmetic to compute orientation predicate
+<li><code>CGAlgorithms.distanceLineLine()</code> improved to be more robust and performant
+<li>Fixed robustness issue causing <tt>Empty Stack</tt> failure
+in <tt>ConvexHull</tt> for some nearly collinear inputs
+<li><tt>CGAlgorithms.signedArea()</tt> uses a more accurate algorithm
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed <tt>Geometry.equalsExact()</tt> to avoid NPE when comparing empty and non-empty <tt>Point</tt>s
+<li>Fixed <tt>CascadedPolygonUnion</tt> to discard non-polygonal components created during unioning,
+to avoid failures and provide more desirable behaviour
+<li>Fixed <tt>CentralEndpointIntersector</tt> to initialize result correctly
+<li>Fixed <tt>DelaunayTriangulationBuilder.extractUniqueCoordinates(Geometry)</tt>
+to avoid mutating the vertex order of the input Geometry
+<li>Fixed <tt>ConformingDelaunayTriangulationBuilder</tt> to allow
+non-disjoint site and constraint vertex sets
+<li>Fixed <tt>RandomPointsInGridBuilder</tt> point generation to use circle constraint correctly
+<li>Fixed Linear Referencing API to handle MultiLineStrings consistently,
+by always using the lowest possible index value, and by trimming zero-length components from results
+<li>Fixed bug in <tt>LocationIndexedLine</tt> and <tt>LengthIndexLine</tt> which was
+causing an assertion failure when the indexOfAfter() method was called with a constraint location
+which is at the end of the line
+<li>Fixed bug in <tt>STRtree.query(Envelope, ItemVisitor)</tt> causing an NPE when tree is empty
+<li>Fixed issue with creating zero-length edges during buffer topology building under fixed precision, by:
+adding filter to remove zero-length edges;
+using a better estimate of scale factor for reducing to fixed precision after initial failure.
+<li>Fixed <tt>TopologyPreservingSimplifier</tt> to return a valid result
+for closed <tt>LineString</tt>s with large distance tolerances
+<li>Fixed <tt>TopologyPreservingSimplifier</tt> to return an empty result for an empty input
+<li>Fixed <tt>DouglasPeuckerSimplifier</tt> to return an empty result for an empty input
+<li>Fixed <tt>MinimumBoundingCircle</tt> to correctly compute circle for obtuse triangles.
+<li>Fixd <tt>GeometryPrecisionReducer</tt> to use input GeometryFactory when polygon topology is fixed
+<li>Fixed <tt>GeometryNoder</tt> bug that was failing to snap to end vertices of lines
+<li>Fixed <tt>Geometry.getCentroid()</tt> and <tt>Geometry.getInteriorPoint()</tt> to return <tt>POINT EMPTY</tt> for empty inputs
+<li>Fixed <tt>DelaunayTriangulationBuilder</tt> to correctly extract unique points
+<li>Fixed <tt>KdTree</tt> to correctly handle inserting duplicate points into an empty tree
+<li>Fixed <tt>LineSegment.projectionFactor()</tt> to handle zero-length lines (by returning Double.POSITIVE_INFINITY)
+<li>Fixed <tt>LocationIndexedLine</tt> to handle locations on zero-length lines
+<li>Fixed <code>LengthIndexedLine</code> and <code>LocationIndexedLine</code> to handle <code>indexOfAfter()</code> correctly
+<li>Fixed <code>WKBReader</code> to handle successive geometrys with different endianness
+<li>Fixed <code>GeometricShapeFactory</code> to correctly handle setting the centre point
+<li>Fixed <code>GeometryFactory.createMultiPoint(CoordinateSequence)</code> to handle sequences of dimension &gt; 3
+</ul>
+
+<h3>API Changes</h3>
+<ul>
+<li>Changed visibility of <tt>TaggedLineStringSimplifier</tt> back to <tt>public</tt> due to user demand
+</ul>
+
+<h3>Testing</h3>
+<ul>
+<li>Added Performance Testing framework (<tt>PerformanceTestRunner</tt>
+and <tt>PerformanceTestCase</tt>)
+<li>Added named predicate tests to all Relate test cases
+</ul>
+
+<h3>Contributors</h3>
+<ul>
+<li>Peter Hopfgartner - improved area computation
+<li>Michael Michaud - snap-rounding improvements
+</ul>
+
+
+<!------- TestBuilder -------------------->
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS TestBuilder</h3>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added segment index visualization styling
+<li>Improved <b>Geometry Inspector</b>
+<li>Added stream digitizing for Polygon and LineString tools
+<li>Added output of Test Case XML with WKB
+<li>Added Extract Component tool
+<li>Added Delete Vertices Or Components tool
+<li>Added Geometry Edit Panel pop-up menu, with operations
+<li>Added Halton sequence functions
+<li>Added sorting functions
+<li>Added function for selection of first N components
+<li>Added CGAlgorithms functions
+<li>Added ability to paste and load multiple WKBHex geometries
+</ul>
+
+<h3>Performance Improvements</h3>
+<ul>
+<li>Using decimation substantially improves rendering time for large geometries.
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed bug in saving XML test files
+</ul>
+
+<!-- ================================================================ -->
+<hr size='4' color='darkblue'>
+<h2>Version 1.12</h2>
+
+<i>Release Date:  June 30, 2011</i>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added new names for methods for computing <tt>Geometry</tt> equality:
+<li><tt>equals(Object)</tt> is a synonym for <tt>equalsExact(Geometry)</tt>
+<li><tt>equalsNorm(Geometry)</tt> automatically normalizes the operands
+<li><tt>equalsTopo(Geometry)</tt> computes topological equality,
+and is a synonym for the original <tt>equals(Geometry)</tt>
+</ul>
+<li>Added <tt>Geometry.norm()</tt> to provide non-mutating normalization
+<li>Added <tt>Geometry.hashCode()</tt> to fulfill Java conventions
+<li>Added <tt>LineIntersector.getEndpoint()</tt> method
+<li>Added methods to <tt>CoordinateSequences</tt> to test for and create valid rings
+<li>Added <tt>minExtent</tt> and <tt>maxExtent</tt> to <tt>Envelope</tt>
+<li>Added ability to compute Single-Sided Buffers (invoked via <tt>BufferOp</tt> and <tt>BufferParameters</tt>)
+<li>Added <tt>GeometryPrecisionReducer</tt>
+<li>Added ExtendedWKB SRID support to <tt>WKBWriter</tt> (thanks to Justin Deoliviera)
+<li>Improved <tt>PolygonShape</tt> to support floating-point coordinates
+<li>Added <tt>GeometryShapeFactory.setRotation(double radians)</tt> method
+<li>Added <tt>GeometricShapeBuilder</tt> API to support shape builder development
+<li>Added <tt>RandomPointsBuilder</tt> to allow generating various random point sets
+<li>Added <tt>RandomPointsInGridBuilder</tt> to allow generating various random point sets constrained to a grid
+<li>Added <tt>KochSnowflakeBuilder</tt>
+<li>Added <tt>SierpinskiCarpetBuilder</tt>
+<li>Added <tt>MathUtil</tt> containing mathematics and numerical utility functions
+<li>Added <tt>Vector2D</tt> class providing vector operations
+<li>Added <tt>DirectedEdgeStar.getNextCWEdge()</tt> method to <tt>planargraph</tt> API
+<li><tt>AffineTransformation</tt> enhanced to avoid numeric precision issues in case of reflection in X=Y (coordinate flipping)
+<li>Added <tt>LineSequencer.sequence()</tt> static convenience method
+<li>Added error indicators to <tt>BufferDistanceValidator</tt> and <tt>BufferResultValidator</tt>
+<li>Added <tt>MinimumClearance</tt> class
+<li>Added <tt>nearestNeighbours</tt> methods to <tt>STRtree</tt>
+</ul>
+
+<h3>Performance Improvements</h3>
+<ul>
+<li>Improved memory performance of <tt>ShapeWriter</tt> conversions (by tuning coordinate and polygon conversion)
+<li>Improved performance of <tt>RectangleIntersects</tt> by refining <tt>SegmentIntersectionTester</tt>
+</ul>
+
+<h3>Robustness Improvements</h3>
+<ul>
+<li>Delaunay triangulation uses more robust formulation for the inCircle test
+<li>Voronoi computation now uses more robust formulation for the circumcentre computation
+<li>Force <code>RectangleIntersects</code> to always use segment-scanning to improve robustness
+</ul>
+
+<h3>API Changes</h3>
+<ul>
+<li>Reduced visibility of internal classes in <tt>com.vividsolutions.jts.geom.prep</tt>
+<li>Reduced visibility of internal classes in <tt>com.vividsolutions.jts.simplify</tt>
+<li>Moved <tt>Matrix</tt> class into <tt>jts.math</tt> package
+<li>Refactored internal offset curve generation classes
+in <tt>com.vividsolutions.jts.operation.buffer</tt> package
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed <tt>CoordinateArraySequence</tt> and <tt>PackedCoordinateSequence</tt>
+to correctly handle Z ordinate in <tt>getCoordinate(int, Coordinate)</tt>
+<li>Fixed <tt>LinearRing</tt> to have <tt>isClosed()</tt> return <tt>true</tt> for empty rings
+<li>Fixed <tt>Geometry.union()</tt> to use more robust union algorithm.
+    This provides behaviour consistent with <tt>union(Geometry)</tt>.
+<li>Fixed <tt>Point.isValid()</tt> to validate POINT EMPTY correctly
+<li>Fixed <tt>SnapIfNeededOverlayOp</tt> to throw the originating exception,which contains meaningful coordinates
+<li>Fixed <tt>GeometrySnapper</tt> to allow final vertices of LineStrings to snap correctly
+<li>Fixed buffer (<tt>OffsetCurveSetBuilder</tt>) to handle "flat" rings correctly
+<li>Fixed <tt>IsValidOp</tt> to handle reporting "Not Closed" errors on empty rings correctly
+<li>Fixed <tt>NestedRingTester</tt> (used by <tt>IsValidOp</tt>)
+to correctly handle the case where a hole touches all the vertices of another hole (which is invalid)
+<li>Fixed <tt>ConvexHull</tt> to handle large geometries with fewer than 3 unique points
+<li>Fixed <tt>GeometryGraph</tt> to ignore empty hole rings when building graph
+<li>Fixed <tt>LineMerger</tt> to skip lines with only a single unique coordinate
+<li>Fixed <tt>ByteArrayInStream</tt> to pad byte buffers with zeroes
+<li>Corrected spelling of <tt>SquarePointShapeFactory</tt>
+<li>Fixed tolerance check in <tt>KdTree</tt>
+<li>Updated <tt>MasterTester</tt> to include more unit tests
+</ul>
+
+<!------- TestBuilder -------------------->
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS TestBuilder</h3>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added <tt>[Zoom To Result]</tt> button
+<li>Improved mark display, with floating point label
+<li>Added more random geometry creation functions
+<li>Added fractal geometry creation functions
+<li>Improved threaded rendering handling to ensure only one frame drawn
+<li>Added Magnify Topology capability
+<li>Added Geometry Inspector dialog
+<li>Better startup script, with auto-home directory detection
+and JTS_LIB_DIR environment variable (thanks to strk)
+<li>Added logging Info window behaviour
+<li>Improved saving PNG to allow specifying file name
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed Stats panel to update when current test changes
+<li>Fixed deleting single test case
+</ul>
+
+<!-- ================================================================ -->
+<hr size='4' color='darkblue'>
+<h2>Version 1.11</h2>
+
+<i>Release Date:  March 1, 2010</i>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added <tt>CoordinateArrays.isRing</tt>
+<li>Added <tt>CGAlgorithms.signedArea(CoordinateSequence)</tt>
+<li>Added <tt>CoordinateArrays.copyDeep(...)</tt> method to copy sections of arrays
+<li>Added <tt>CoordinateList.add(Coordinate[], boolean, int, int)</tt> method to add sections of arrays
+<li>Added <tt>LineSegment.toGeometry()</tt>, <tt>LineSegment.lineIntersection()()</tt>
+<li>Added <tt>LineSegment.hashCode()</tt>
+<li>Added geometric similarity classes (<tt>HausdorffSimilarityMeasure</tt>, <tt>AreaSimilarityMeasure</tt>)
+<li>Added <tt>MinimumDiameter.getMinimumRectangle()</tt>
+<li>Added <tt>MinimumBoundingCircle</tt> class
+<li>Added <tt>Densifier</tt> class
+<li>Added triangulation API, including <tt>QuadEdgeSubdivision</tt>, <tt>IncrementalDelaunayTriangulator</tt>,
+	<tt>ConformingDelaunayTriangulator</tt> and supporting classes
+<li>Added <tt>VoronoiDiagramBuilder</tt> to perform Voronoi diagram generation
+<li>Added <tt>scaleInstance(scaleX, scaleY, x, y)</tt> to <tt>AffineTransformation</tt>
+<li>Added <tt>AffineTransformationFactory</tt> to allow generating transformations from various kinds of control inputs
+<li>Added <tt>BinTree.remove()</tt> method
+<li>Fixed <tt>BinTree.query()</tt> to allow null interval arguments
+<li>Added <tt>ShapeReader</tt> API to convert Java2D Shapes into JTS Geometry
+<li>Added <tt>ShapeWriter</tt> API to convert JTS geometry into Java2D Shapes
+<li>Added <tt>FontGlyphReader</tt> API to render Java2D text font glyphs into geometry
+<li>Added <tt>SdeReader</tt> to <b>jtsio</b> library
+<li>Added <tt>Debug</tt> break methods
+<li>Added <tt>Memory</tt> utility for reporting memory statistics
+<li>Added <tt>ObjectCounter</tt> utility for counting objects
+<li>Added <tt>createSquircle</tt> and <tt>createSuperCircle</tt> to <tt>GeometricShapeFactory</tt>
+</ul>
+
+<h3>Performance Improvements</h3>
+<ul>
+<li>Improved performance of <tt>Geometry.getArea()</tt> and <tt>Geometry.getLength()</tt> when used with custom <tt>CoordinateSequence</tt>s
+</ul>
+
+<h3>API Changes</h3>
+<ul>
+<li>Deprecated <tt>WKBWriter.bytesToHex</tt> in favour of <tt>WKBWriter.toHex</tt> to regularize and simplify method name
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed Point.isValid() to check for invalid coordinates (ie with Nan ordinates)
+<li>Fixed <tt>Geometry.distance()</tt> and <tt>DistanceOp</tt> to return 0.0 for empty inputs
+<li>Fixed <tt>Buffer</tt> to handle degenerate polygons with too few distinct points correctly
+<li>Added illegal state check in <tt>LineSegment.pointAlongOffset()</tt>
+<li>Fixed exception strategy in <tt>BufferSubgraph</tt> to handle certain robustness failures correctly
+<li>Fixed robustness problem in <tt>OffsetCurveBuilder</tt> in computing mitred joins for nearly parallel segments
+<li>Fixed minor bug in <tt>BufferInputLineSimplifier</tt> which prevented simplification of some situations
+<li>Fixed bug in <tt>BufferInputLineSimplifier</tt> which caused over-simplification for large tolerances
+<li>Fixed bug in <tt>Angle.normalizePositive</tt> to handle values > 2PI correctly
+<li>Fixed <tt>WKTWriter</tt> to emit correct syntax for MULTIPOINTs
+<li>Fixed <tt>WKTReader</tt> to accept correct syntax for MULTIPOINTs
+<li><tt>CGAlgorithms.isCCW</tt> now checks for too few points in the ring and throws an <tt>IllegalArgumentException</tt>
+<li>Fixed bug in <tt>AffineTransformation#eqals</tt> (logic bug)
+<li>Fixed bug in <tt>CoordinateList#closeRing</tt> (cloning closing Coordinate)
+</ul>
+
+<!------- TestBuilder -------------------->
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS TestBuilder</h3>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>WKT input is cleaned automatically when loaded (illegal chars are removed)
+<li>Added WKT-Formatted option to Test Case View dialog
+<li>Many new geometry functions added
+<li>Geometry functions are displayed in tree
+<li>Geometry functions can be implemented as Java static class methods.
+<li>Geometry function classes can be loaded dynamically from command-line
+<li>Improved handling of very large geometry inputs and results
+<li>Threaded rendering allows display of very large geometries without limiting usability
+<li>Added Draw Rectangle tool
+<li>Added Drag-n-drop loading of .SHP files
+<li>Added Info tool to provide persistent display of geometry point/segment information
+<li>Added display of memory usage
+</ul>
+
+
+<!-- ================================================================ -->
+<hr size='4' color='darkblue'>
+<h2>Version 1.10</h2>
+
+<i>Release Date:  December 31, 2008</i>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added <tt>Geometry.reverse()</tt> method for all geometry types
+<li>Added <tt>setSrsName</tt>, <tt>setNamespace</tt>, <tt>setCustomRootElements</tt> methods to <tt>GMLWriter</tt>
+<li>Added <tt>Envelope.getArea</tt> method
+<li>Added <tt>copy</tt>, <tt>copyCoord</tt> methods to <tt>CoordinateSequences</tt>
+<li>Added <tt>area</tt> method to <tt>Envelope</tt>
+<li>Added <tt>extractPoint(pt, offset)</tt> methods to <tt>LengthIndexedLine</tt> and <tt>LocationIndexedLine</tt>
+<li>Added <tt>CoordinatePrecisionReducerFilter</tt>
+<li>Added <tt>UnaryUnionOp(Collection, GeometryFactory)</tt> constructor to handle empty inputs more automatically
+<li>Added <tt>DiscreteHausdorffDistance</tt> class
+<li>Made <tt>LineMerger</tt> able to be called incrementally
+<li>Added <tt>GeometricShapeFactory.createArcPolygon</tt> to create a polygonal arc
+<li>Enhanced <tt>Geometry.buffer()</tt> to preserve SRID
+</ul>
+
+<h3>Performance Improvements</h3>
+<ul>
+<li>Improved performance for <code>EdgeList</code> (by using a more efficient technique for detecting duplicate edges)
+<li>Improved performance for <code>ByteArrayInStream</code> (by avoiding use of <tt>java.io.ByteArrayInputStream</tt>)
+<li>Unrolled intersection computation in <tt>HCoordinate</tt> to avoid object allocation
+<li>Improved performance for buffering via better offset curve generation and simplification.
+<li>Improved performance for <tt>IsValidOp</tt> by switching to use <tt>STRtree</tt> for nested hole checking
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed <tt>Geometry.getClassSortIndex()</tt> to lazily initialize the sorted class list.  This fixes a threading bug.
+<li>Fixed <tt>RectangleContains</tt> to return correct result for points on the boundary of the rectangle
+<li>Fixed error in <tt>com.vividsolutions.jts.simplify.LineSegmentIndex</tt> which caused polygons
+simplified using <tt>TopologyPreservingSimplifier</tt> to be invalid in certain situations
+<li>Fixed error in <tt>DouglasPeuckerSimplifier</tt> which caused empty polygons to be returned when they contained a very small hole
+<li>Fixed <tt>PackedCoordinateSequence</tt> to return <tt>NaN</tt> for null ordinate values
+<li>Fixed <tt>Geometry.centroid()</tt> (<tt>CentroidArea</tt>) so that it handles degenerate (zero-area) polygons
+<li>Fixed <tt>Geometry.buffer()</tt> (<tt>OffsetCurveBuilder</tt>) so that it handles JOIN_MITRE cases with nearly collinear lines correctly
+<li>Fixed <tt>GeometryFactory.toGeometry(Envelope)</tt> to return a CW polygon
+<li>Fixed <tt>UnaryUnionOp</tt> to correctly handle heterogeneous inputs with P/L/A components
+<li>Fixed <tt>UnaryUnionOp</tt> to accept <tt>LINEARRING</tt>s
+<li>Fixed <tt>CentroidArea</tt> to handle zero-area polygons correctly
+<li>Fixed <tt>WKBWriter</tt> to always output 3D when requested, and to handle 2D <tt>PackedCoordinateSequences</tt> correctly in this case
+<li>Fixed <tt>NodedSegmentString</tt> to handle zero-length line segments correctly (via <tt>safeOctant</tt>)
+<li>Cleaned up code to remove unneeded <tt>CGAlgorithms</tt> objects
+<li>Fixed <tt>GeometricShapeFactory.createArc</tt> to ensure arc has requested number of vertices
+</ul>
+
+<h3>API Changes</h3>
+<ul>
+<li>Moved GML I/O classes into core JTS codebase
+<li>Changed <tt>GMLWriter</tt> to not write the <tt>srsName</tt> attribute by default
+<li>In <tt>DistanceOp</tt> switched to using <tt>nearestPoints</tt> method names
+<li>Exposed <tt>STRtree.getRoot()</tt> method
+</ul>
+
+
+<!------- TestBuilder -------------------->
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS TestBuilder</h3>
+
+<h3>UI Improvements</h3>
+<ul>
+<li>Added ability to read GML from input panel
+<li>Added GML output to View dialog
+<li>Added file drag'n'drop to Geometry Input text areas
+<li>Add display of computation time
+<li>Added Stats panel
+<li>Added Scalar functions panel, with extensible function list
+<li>Added <b>Save as PNG...</b>
+<li>Added stream digitizing to Polygon and Line Draw tools
+</ul>
+
+<!------- TestRunner -------------------->
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS TestRunner</h3>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added <tt>-testCaseIndex</tt> command-line option
+</ul>
+
+<!-- ================================================================ -->
+<hr size='4' color='darkblue'>
+<h2>Version 1.9</h2>
+
+<i>Release Date: January 2, 2008</i>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added <tt>Polygonal</tt>, <tt>Lineal</tt>, <tt>Puntal</tt> tag interfaces to better categorize geometry classes
+<li>Added <tt>Geometry.union()</tt> method, <tt>UnaryUnionOp</tt> class for efficient unioning of geometrys
+<li>Added <tt>Triangle.area3D</tt> method
+<li>Added <tt>LineSegment.pointAlongOffset</tt> method
+<li>Added <tt>LineSegment.orientationIndex(Coordinate)</tt> method
+<li>Added <tt>PreparedGeometry</tt> classes and methods to optimize some geometry functions in batch situations
+<li>Added <tt>Envelope.covers</tt> methods, for preciseness
+<li>Added <tt>OctagonalEnvelope</tt> class
+<li>Improved <tt>CGAlgorithms.isPointInRing</tt> method to handle case where point lies on the ring
+<li>Added <tt>CGAlgorithms.locatePointInRing</tt> method
+<li>Added <tt>PointInAreaLocator</tt> interface, enhanced <tt>SimplePointInAreaLocator</tt> to extend this
+<li>Added <tt>RayCrossingCounter</tt>,  <tt>IndexedPointInAreaLocator</tt> classes for more efficient Point-In-Polygon testing
+<li>Added <tt>GeometryCombiner</tt> class
+<li>Enhanced <tt>BufferOp</tt> with join styles
+<li>Enhanced <tt>WKTReader</tt> to accept any case for <tt>NaN</tt> number symbols
+<li>Added <tt>WKTFileReader</tt> class
+<li>Improved performance of <tt>CoordinateList</tt> constructors
+<li>Added <tt>CascadedPolygonUnion</tt> class
+<li>Added <tt>LinearLocation.isOnSameSegment</tt> method
+<li>Added <tt>LinearLocation.getSegment</tt> method
+<li>Added <tt>LocationIndexedLine.indexOfAfter</tt> method
+<li>Added interpolation of Z value to linear referencing methods
+<li>Added methods to rotate around a given point to <tt>AffineTransformation</tt>
+<li>Allowed <tt>GeometricShapeFactory</tt> to be subclassed to add new shapes
+<li>Added <tt>SineStarFactory</tt> (primarily to support testing)
+<li>Added <tt>SortedPackedIntervalRTree</tt> class
+<li>Added <tt>SegmentSetMutualIntersector</tt> interface and implementations
+<li>Added <tt>Node.remove(DirectedEdge)</tt> method in <tt>planargraph</tt> package
+</ul>
+
+<h3>Performance Improvements</h3>
+<ul>
+<li>Improved performance for <code>SimplePointInAreaLocator</code> (by checking ring envelopes as a filter)
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li><tt>Geometry.buffer</tt> operation fixed to always return polygonal geometries
+<li>Fixed bug in <code>Geometry.buffer(distance, quadrantSegs)</code>
+causing failure for some cases with <tt>quadrantSegs = 1</tt>
+<li>Fixed bug in <tt>GeometryFactory.toGeometry(Envelope)</tt>
+which was returning invalid Polygons for "linear" envelopes
+<li>Fixed bug in <tt>MonotoneChainBuilder</tt> which caused failures in situations with segments of zero length
+<li>Fixed <tt>PointLocator</tt> to handle locating in Point geometries
+<li>Fixed <tt>GeometricShapeFactory</tt> to always use provided PrecisionModel
+<li>Fixed <tt>LinearLocation.clone</tt> method
+<li>Fixed <tt>LinearLocation.isValid</tt> method
+<li>Fixed <tt>Polygonizer</tt> to accept single-point linestrings (which are ignored)
+</ul>
+
+<h3>API Changes</h3>
+<ul>
+<li>Deprecated <code>RobustCGAlgorithms</code>
+<li>Deprecated <code>BufferOp</code> cap style constants (these are now provided in </tt>BufferParameters</tt>)
+<li>Removed <code>SIRPointInRing</code>
+</ul>
+
+<!------- TestRunner -------------------->
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS TestRunner</h3>
+
+<h3>New Features</h3>
+<ul>
+<li>Added ability to specify GeometryOperation in XML file
+<li>Added <tt>BufferValidatedGeometryOperation</tt>
+<li>Added ability to specify custom result matching via <tt>resultMatcher</tt> parameter
+in XML files
+<li>Added <tt>BufferResultMatcher</tt>
+</ul>
+
+
+<!------- TestBuilder -------------------->
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS TestBuilder</h3>
+
+<h3>UI Improvements</h3>
+<ul>
+<li>Improved rendering of geometries
+<li>Improved symbology for orientation
+<li>Simplified Geometry creation
+<li>Improved vertex move/add
+<li>Added tooltip for coordinate location
+<li>Added more geometry functions
+<li>Added Copy Result to Test button
+</ul>
+
+<h3>Code Improvements</h3>
+<ul>
+<li>Restructured code for more flexibility, better Swing functionality
+<li>Made it easier to add geometry functions
+</ul>
+
+
+<!-- ================================================================ -->
+<hr size='4' color='darkblue'>
+<h2>Version 1.8</h2>
+
+<i>Release Date: December 19, 2006</i>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Improved robustness for overlay operations, via using geometry snapping
+<li>Added <code>Angle</code> class
+<li>Added methods to <code>Triangle</code> class
+<li>Added <code>LineSegment.midPoint</code> method
+<li>Added ability to specify output of Z values to <code>WKTWriter</code>
+<li>Added <code>setFormatted</code>, <code>setTab</code>, <code>setMaxCoordinatesPerLine</code> methods to <code>WKTWriter</code>
+<li>Added <code>BoundaryNodeRule</code> classes, and ability to specify a Boundary Node Rule
+in <code>RelateOp</code>, <code>IsSimpleOp</code>, <code>BoundaryOp</code>
+<li>Added ability to get the failure location to <code>IsSimpleOp</code>
+<li>Added <code>BoundaryOp</code> with improved algorithm for lineal geometries.  Changed lineal Geometry classes to use it.
+<li>Enhanced <code>Geometry</code> overlay methods to accept empty <code>GeometryCollections.</code>
+<li>Enhanced Error Handling for <tt>WKTReader</tt>
+<li>Added <code>CoordinateSequenceFilter</code>
+<li>Added <code>AffineTransformation</code> and <code>AffineTransformationBuilder</code>
+</ul>
+
+<h3>API Changes</h3>
+<ul>
+<li>Changed API for <code>IsSimpleOp</code> (required to support returning failure location)
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed bug in <code>GeometryFactory.buildGeometry</code>
+causing failure if input contained all GeometryCollections of the same subclass
+<li>Changed AssertFailure to TopologyException in <code>PolygonBuilder</code>
+<li>Improved correctness of <tt>RobustLineIntersector</tt> in certain cases where segment endpoints intersect
+<li>Eliminated duplicate method execution in <code>TestRunner</code>
+</ul>
+
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS TestBuilder</h3>
+
+<h3>New Features</h3>
+<ul>
+<li>Zoom tool can now draw zoom box as well as click
+<li>Cut, Copy and Paste buttons for Input WKT
+<li>added ability to specify custom Geometry Operations
+</ul>
+
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS TestRunner</h3>
+
+<h3>New Features</h3>
+<ul>
+<li>added ability to specify custom Geometry Operations
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Eliminated duplicate method execution
+</ul>
+
+
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 1.7.2</h2>
+
+<i>Release Date: June 22, 2006</i>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added support for EWKB (SRIDs only) to <code>WKBReader</code>
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed bug in <code>CoordinateArrays.ptNotInList</code>.
+Changed <code>polygonize.EdgeRing</code> to used corrected code.
+<li>Fixed bug causing duplicate points in <code>ScaledNoder</code>
+<li>Fixed bug causing Null Pointer for empty geometries in <code>OraWriter</code>
+<li>Changed AssertFailure to TopologyException in <code>EdgeNode</code>
+</ul>
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 1.7.1</h2>
+
+<i>Release Date: March 20, 2006</i>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added Hex string conversion to <code>WKBReader</code> and <code>WKBWriter</code>
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed null point cloning bug in <code>TopologyValidationError</code> (<i>thanks to Markus Gebhard</i>)
+<li>Fixed bug in <code>PointLocator</code> fix for LinearRings
+<li>Fixed bug in <code>Geometry.isValid</code> and <code>IsValidOp</code> causing some valid polygons
+to be reported as having a Disconnected Interior (specifically, polygons containing
+holes touching at a single point, where the point is the highest point in the hole rings, and where the holes
+have a specific orientation)
+<li>Fixed bug in <code>Polygon.isRectangle</code>, which reported some valid rectangles as false
+</ul>
+
+<h3>Performance Improvements</h3>
+<ul>
+<li>Improved performance for <code>Geometry#withinDistance</code> (via short-circuiting)
+</ul>
+
+<h3>Contributors</h3>
+<ul>
+<li>Dave Blasby
+<li>Koen van Dijken
+</ul>
+
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 1.7</h2>
+
+<i>Release Date: December 7, 2005</i>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added <code>JTSVersion</code> class to provide access to the API version information
+<li>Added <code>covers</code> and <code>coveredBy</code> predicates to <code>Geometry</code>
+<li>Added <code>Geometry#buffer(distance, quadSegs, endCapStyle)</code> method to expose buffer end cap styles
+<li>Added <code>LineString#reverse</code> and <code>MultiLineString#reverse</code> methods
+<li>Added <code>centre</code>, <code>intersection</code>, <code>translate</code>,
+<code>expandBy(distance)</code>, <code>expandBy(dx, dy)</code>
+methods to <code>Envelope</code>
+<li>Added <code>CollectionUtil</code> class for performing operations over collections
+<li>Added <code>CoordinateArrays</code> comparators
+<li>Added <code>CoordinateSequence#getDimension</code>
+<li>Added convenience methods <code>toPoint</code> and <code>toLineString</code> to <code>WKTWriter</code>
+<li>Added WKB API (<code>WKBReader</code> and <code>WKBWriter</code> classes in <code>com.vividsolutions.jts.io</code>
+<li><code>WKTReader</code> has better handling of numeric parsing, including support for scientific notation
+<li>Added <code>IsValidOp#setSelfTouchingRingFormingHoleValid</code> to allow validating SDE-style polygons
+<li>Added check for non-closed rings in <code>IsValidOp</code>
+<li>Added Linear Referencing API (<code>com.vividsolutions.jts.linearref</code>
+<li>Added <code>LineSequencer</code> class to <code>com.vividsolutions.jts.operation.linemerge</code>
+<li>Added <code>Subgraph</code> class to <code>com.vividsolutions.jts.planargraph</code>
+<li>Added <code>isRemoved</code> method to <code>GraphComponent</code>
+<li>Added <code>ConnectedSubgraphFinder</code> class to <code>com.vividsolutions.jts.planargraph.algorithm</code>
+<li>Added <code>setVisited</code>, <code>getComponentWithVisitedState</code>,
+<code>setVisited</code>, <code>getComponentWithVisitedState</code>
+methods to <code>com.vividsolutions.jts.planargraph.GraphComponent</code>
+<li>Added classes to perform Snap Rounding (in <code>com.vividsolutions.jts.noding.snapround</code>>
+<li>Improved buffering speed and robustness by using Snap Rounding
+<li>Added buffer optimization for results with large numbers of polygons and/or holes
+<li>Added <code>STRtree#query(Envelope, ItemVisitor)</code> method
+<li>Added <code>Debug#toLine</code> methods
+<li>Added <code>ConvexHull(Coordinate[])</code> constructor
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed decimal formatting in <code>WKTWriter</code> to force a leading 0 in decimal numbers
+<li>Fixed bug in <code>CoordinateArraySequence#setOrdinate</code>
+<li>Fixed bug when checking validity of polygon with hole (<code>IsValidOp#checkHolesInShell</code>)
+<li>Improved correctness of computated intersections in <code>RobustLineIntersector</code>
+<li>Fixed bugs in <code>CoordinateList.clone</code> (thanks to Matthias Bobzien)
+<li>Fixed bug in <code>Envelope.equals</code> (thanks to John Cartwright)
+<li>Fixed <code>PointLocator</code> for LinearRings
+</ul>
+
+<h3>Performance Improvements</h3>
+<ul>
+<li>Improved performance for overlay operations (point inclusion, identical edge detection)
+<li>Improved Convex Hull performance
+</ul>
+
+<h3>API Changes</h3>
+<ul>
+<li>Added <code>SpatiaIndex#query(Envelope, ItemVisitor)</code> method signature
+<li>Added <code>CoordinateSequence#getDimension()</code> method signature
+<li>Marked <code>GeometryEditor.CoordinateOperation#edit(Geometry, GeometryFactory)</code> method
+as <code>final</code>, to prevent incorrect use
+</ul>
+
+<h3>Semantics Changes</h3>
+<ul>
+<li>CoordinateArraySequence#setOrdinate now checks that the ordinate index is in range
+</ul>
+
+
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 1.6</h2>
+
+Release Date: February 3, 2005
+
+<h3>API Changes</h3>
+<ul>
+<li>Changed to using <code>CoordinateArraySequence</code> instead of <code>DefaultCoordinateSequence</code>
+(to provide a more descriptive name).
+</ul>
+
+<h3>Semantics Changes</h3>
+<ul>
+<li>PrecisionModel#makePrecise changed to use Symmetric Arithmetic Rounding rather than Banker's Rounding
+</ul>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added ability to enable <code>Debug</code> methods by setting a system property
+<li>Added <code>getNumGeometries</code> and <code>getGeometryN</code> methods to Geometry class, to make API more uniform
+<li>Improved API for <code>CoordinateSequence</code> allows more options for improving memory usage and handling custom coordinate storage methods
+<li>Added <code>PackedCoordinateSequence</code> to provide reduced memory footprint for geometry objects if desired
+<li>Added optimized spatial predicates for rectangles
+<li>Added Debug#isDebugging method
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed bug in <code>Geometry#within()</code> short circuiting
+<li>Fixed bug causing <code>Geometry#isValid</code> to throw IllegalArgumentException for certain kinds of holes with invalid rings
+<li>Fixed bug causing redundant linestrings to be returned in the result of overlaying polygons containing holes touching their shell.
+<li><code>Polygon#getBoundary</code> now returns a <code>LinearRing</code> if the polygon does not have holes
+</ul>
+
+<h3>Architecture Changes</h3>
+<ul>
+<li>Removed a proliferation of references to the default <code>CoordinateSequenceFactory</code>
+</ul>
+
+<h3>Contributors</h3>
+<ul>
+<li>Andrea Aime
+</ul>
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 1.5</h2>
+Release Date: September 22, 2004
+<p>
+This version is upwards compatible with Version 1.4
+
+<h3>API Changes</h3>
+<ul>
+<li>None
+</ul>
+
+<h3>Semantics Changes</h3>
+<ul>
+<li>None
+</ul>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li><code>CGAlgorithms#isCCW</code> now handles coordinate lists with repeated points.  Also throws an IllegalArgumentException if the input ring does not have 3 distinct points
+<li><code>isValid</code> now checks for invalid coordinates (e.g. ones with Nan or infinite numbers)
+<li>added copyDeep() method to <code>CoordinateArrays</code>
+<li>added geometry simplification operations <code>DouglasPeuckerSimplifier</code> and <code>TopologyPreservingSimplifier</code>
+<li>added methods to <code>Quadtree</code> and <code>STRtree</code> to remove items and query using the Visitor pattern
+</ul>
+
+<h3>Performance Improvements</h3>
+<ul>
+<li>Added short-circuit tests in geometry named predicates based on envelope tests
+</ul>
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed bugs in <code>Geometry</code> serialization
+<li>Fixed bug in <code>ValidOp</code> which reported some MultiPolygons with shells nested inside a hole as invalid
+<li>Fixed bug in buffer which caused buffers of some polygons with small & large holes to not contain any holes
+<li>Fixed bug in <code>Polygonizer</code> which caused exception if no lines were supplied
+</ul>
+<h3>Architecture Changes</h3>
+<ul>
+<li>Basic CG algorithm methods made static in the <code>CGAlgorithms</code> class
+<li>Various utility methods made public in <code>CoordinateArrays</code> class
+</ul>
+<h3>Documentation</h3>
+<ul>
+<li>More examples provided in <code>com.vividsolutions.jtsexamples package</code>
+</ul>
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 1.4</h2>
+
+Release Date: November 4, 2003
+<h3>Semantics Changes</h3>
+<ul>
+<li>none
+</ul>
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added "LINEARRING" tag to WKT syntax
+<li>Added GeometryEditor class to allow easy copy/modify of Geometrys
+<li>Added GeometricShapeFactory class to easily create standard geometric shapes
+<li>Geometries can now carry arbitrary user-defined data objects (via Geometry#get/setUserData(Object) method)
+<li>Added CoordinateSequence and CoordinateSequenceFactory interfaces, and default implementations (BasicCoordinateSequence, BasicCoordinateSequenceFactory)
+<li>Added Geometry#getFactory
+<li>Added new PrecisionModel type of FLOATING_SINGLE, for rounding to single precision floating point
+<li>Added DistanceOp#getClosestPoints method, which returns the closest points between two Geometries
+<li>Added com.vividsolutions.jts.noding package containing classes to perform fast indexed noding of linestrings
+<li>Added com.vividsolutions.jts.operation.polygonize package containing classes to perform polygonization
+<li>Added com.vividsolutions.jts.operation.linemerge package containing classes to perform line merging
+<li>Added SimpleGeometryPrecisionReducer to allow reducing precision of coordinates of a Geometry
+<li>Added LineSegment#closestPoints method to compute the closest points between two line segments
+<li>Added MinimumDiameter class to compute minimum diameters of Geometries
+<li>Added geom.Triangle class to contain algorithms for Triangles
+<li>BufferOp now allows end cap styles to be specified.  Three types are supported: round, butt and square.
+</ul>
+<h3>Performance Improvements</h3>
+<ul>
+<li>EdgeList now provides a findEqualEdge method which is substantially faster than findEdgeIndex, for large lists
+<li>Buffering is now faster and much more robust
+<li>Overlap operations are now more robust
+</ul>
+<h3>Bug Fixes</h3>
+<ul>
+<li>Envelope#init(Envelope) now handles null Envelopes correctly
+<li>CoordinateList#add() now correctly ignores the z-value of Coordinates in determining equality
+<li>Geometry#isValid now correctly handles checking validity of LinearRings
+<li>Fixed infinite loop bug causing Out Of Memory errors during polygon intersection
+<li>Geometry#clone now correctly clones the Geometry's Envelope
+<li>LineIntersector#computeEdgeDistance now correctly computes a non-zero edge distance in certain situations when a fixed precision model was being used and the line segment was a single unit in length
+<li>Fixed incorrect calculation of depths in DirectedEdgeStar#computeDepths
+<li>Fixed BufferSubgraph#addReachable to use explicit stack to avoid stack overflow problems
+<li>Fixed various bugs causing some kinds of buffers to be computed incorrectly
+</ul>
+<h3>API Changes</h3>
+<ul>
+<li>WKTReader/Writer: changed protected members to private
+<li>PrecisionModel type is now an object rather than an int
+<li>ConvexHull API changed to remove requirement to pass in CGAlgorithms object
+</ul>
+<h3>Code Architecture Changes</h3>
+<ul>
+<li>geom.util package added for utility classes which parse and modify geometries
+</ul>
+<h3>Documentation</h3>
+<ul>
+<li>More examples provided in com.vividsolutions.jtsexamples package
+<li>Added JTS Developers Guide
+</ul>
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 1.3</h2>
+Release Date: April 4, 2003
+<h3>Semantics Changes</h3>
+<ul>
+<li>all Geometry methods are now reentrant (thread-safe)
+<li>Fixed-precision coordinates are now stored in a rounded but non-scaled form.  This makes them compatible with non-precise (Floating) coordinates, and simplifies working with precise coordinates directly.  Mixed precision models are now supported in Geometry methods; method results are in the more precise of the input precision models.
+<li>Offsets are no longer supported in the Fixed precision model.  This is necessary to allow storing fixed precision coordinates in a non-scaled form.  This does not reduce the total precision available, since coordinates are stored in a floating-point format.
+<li>SRID and Precision Model are no longer checked for equality during Geometry operations.  This removes a limitation which provided little semantic benefit.
+</ul>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>added Geometry.isWithinDistance(Geometry g, double distance) method, to provide optimized proximity queries
+<li>added Geometry.buffer(double distance, int quadrantSegments) method, allowing control over accuracy of buffer approximation
+<li>added Geometry.getCentroid() method
+<li>added Geometry.getInteriorPoint() method, which uses heuristic methods to return a point in the interior of a Geometry
+<li>GeometryFactory.toGeometryArray now returns null if the argument is null
+</ul>
+<h3>Performance Improvements</h3>
+<ul>
+<li>Removed unnecessary string construction in EdgeEndStar.propagateSideLabels()
+<li>Eliminated unnecessary computation of self-intersections in rings during relate and spatial functions.  This provides a large increase in speed when working with large rings and polygons.  (Note that IsValid still checks for these self-intersections, which are illegal in LinearRings)
+<li>Add short-circuit code to RobustLineIntersector to detect non-intersections more efficiently
+</ul>
+<h3>Bug Fixes</h3>
+<ul>
+<li>Fixed ClassCastException occurring in GeometryCollection.getLength()
+<li>Fixed bug in Edge Intersection insertion (replaced Coordinate#equals with equals2D to ensure that intersection creation is not sensitive to Z-value).
+<li>Fixed handling LineStrings with too few points in GeometryGraph.addLineString
+<li>Fixed: was not checking that MultiPolygons don't contain components with too few points.
+<li>Fixed Envelope.distance() to return correct distance for all envelopes.
+<li>Fixed a few Geometry methods to make them re-entrant.
+<li>Fixed CoordinateList.closeRing() to ensure endpoints are not duplicated
+<li>Fixed CGAlgorithms.signedArea() to use a simpler algorithm which is more robust and faster.
+<li>Fixed bug preventing validating Rings containing an initial repeated point.
+</ul>
+<h3>API Changes</h3>
+<ul>
+<li>Added default constructor to WKTReader.  It uses the default GeometryFactory
+<li>Add two static intersects() methods to Envelope, to allow computing intersections with envelopes defined by points only.
+<li>Dropped BinaryPower; its functionality is provided by DoubleBits in a more robust fashion.
+<li>Removed a couple of redundant private static methods from Geometry; they have been replaced by methods in CoordinateArrays
+<li>The Geometry class is now marked as Serializable
+</ul>
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 1.2</h2>
+
+Release Date: 7 October 2002
+<h3>Semantics Changes</h3>
+<ul>
+<li>JTS now allows Geometrys to have repeated points.  All operations will continue to perform as before.  This removes a significant incompatibility with the OGC spatial data model.
+<li>TopologyExceptions may now be thrown by spatial overlay methods.  This helps to distinguish between code bugs and known robustness problems.  It also provides a machine-readable coordinate for the error location.
+</ul>
+<h3>Functionality Improvements</h3>
+<ul>
+<li>RobustLineIntersector now uses "normalized" coordinates to maximize the accuracy of intersection computation.
+<li>Upgraded Quadtree with more robust implementation
+<li>Replaced IntervalTree with a more robust implementation of BinTree
+<li>Added STRTree 2-D spatial index, which exhibits better performance than QuadTrees in many situations.
+<li>Added EnhancePrecisionOp, which uses precisioning enhancing techniques to reduce the number of failure cases due to robustness problems.
+</ul>
+<h3>Bug Fixes</h3>
+<ul>
+<li>fixed ConvexHull to use TreeSet instead of HashSet for coordinates
+<li>Fixed isValid for GeometryCollections containing Polygons, which were sometimes erroneously returning a validity failure for correct Geometrys.
+<li>Fixed bug in LineSegment.distancePointLine() which would return the incorrect distance for a LineSegment with two identical points
+<li>Improved error handling in CGAlgorithms.isCCW()
+<li>IsValid now checks for too few points in a geometry component (e.g. due to repeated points in a ring)
+</ul>
+<h3>API Changes</h3>
+<ul>
+<li>added Stopwatch class
+<li>added Geometry.getArea() and Geometry.getLength() methods
+<li>added CGAlgorithms.signedArea() method
+<li>added methods to LineSegment - closestPoint(), getLength()
+<li>added CoordinateArrrays and CoordinateLists utility classes
+<li>Added TopologyValidationError.getErrorType() method
+<li>Added Envelope#intersects; deprecated Envelope#overlaps.
+<li>Added Geometry#geometryChanged() method to allow signaling when Geometry coordinates have been mutated by a client class
+<li>Added STRTree class implementing a Sort-Tile-Recursive spatial index (a variant of a packed R-tree)
+<li>Deleted IntervalTree 1-D spatial index (replaced by BinTree)
+<li>Add BinTree 1-D spatial index
+</ul>
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 1.1.1</h2>
+
+Release Date: 9 April 2002
+<h3>Bug Fixes</h3>
+<ul>
+<li>fixed decimal-point symbol localization bug in WKTWriter
+<li>fixed bug in Envelope.int(Envelope env)
+<li>fixed filename case of SFSMultiLineString.java and IntervalTree.java
+</ul>
+<h3>API Changes</h3>
+<ul>
+<li>deleted TopologyException class
+<li>renamed CGAlgorithms.isPointInPolygon to isPointInRing (a more accurate description of what the method computes)
+</ul>
+<h3>API Additions</h3>
+<ul>
+<li>added Geometry.getCoordinate() method
+<li>added Geometry.distance() method
+<li>added GeometryComponentFilter interface and Geometry.apply(GeometryComponentFilter) method
+</ul>
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 1.1</h2>
+
+Release Date: 28 March 2002
+<h3>New Features</h3>
+<ul>
+<li>added Geometry.isSimple() and Geometry.isValid() methods
+<li>improved design of topological data structures
+<li>added Geometry.setSRID() method
+<li>improved functionality of the Envelope class
+<li>added ability to write to an arbitrary java.io.Writer object to WKTWriter
+<li>added Validate and Mark Location functionality to TestBuilder
+</ul>
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 1.0</h2>
+Release Date: 1 February 2002
+<ul>
+<li>Removed some non-compatibilities with Java 1.1
+<li>Fixed bug in constructing buffer outline around inside of angles
+<li>In TestBuilder vertices are now displayed with fixed size in view units
+<li>Improved code for WKTWriter.writeFormatted()
+<li>Fixed bug in constructor for LinearRing
+<li>Improved implementation of sweepline intersection algorithm to avoid use of dynamic set.
+<li>Fixed bug in ConvexHull.cleanRing()
+<li>Refactored RobustLineIntersector and NonRobustLineIntersector
+</ul>
+
+<!----------------------------------------------------------------------->
+<hr size='4' color='darkblue'>
+<h2>Version 0.0</h2>
+Release Date: 30 May 2001
+
+<p>
+<i>Baseline version</i>
+
+</body>
+</html>

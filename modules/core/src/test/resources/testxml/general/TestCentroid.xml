@@ -1,0 +1,247 @@
+<run>
+  <!-- <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/> -->
+
+<case>
+  <desc>P - empty</desc>
+  <a>    POINT EMPTY  </a>
+<test><op name="getCentroid" arg1="A" >    POINT EMPTY   </op></test>
+</case>
+
+<case>
+  <desc>P - single point</desc>
+  <a>    POINT(10 10)  </a>
+<test><op name="getCentroid" arg1="A" >    POINT(10 10)   </op></test>
+</case>
+
+<case>
+  <desc>mP - two points</desc>
+  <a>    MULTIPOINT((10 10), (20 20) )  </a>
+<test><op name="getCentroid" arg1="A" >    POINT(15 15)   </op></test>
+</case>
+
+<case>
+  <desc>mP - 4 points</desc>
+  <a>    MULTIPOINT((10 10), (20 20), (10 20), (20 10))  </a>
+<test><op name="getCentroid" arg1="A" >    POINT(15 15)   </op></test>
+</case>
+
+<case>
+  <desc>mP - repeated points</desc>
+  <a>    MULTIPOINT((10 10), (10 10), (10 10), (18 18))  </a>
+<test><op name="getCentroid" arg1="A" >    POINT(12 12)   </op></test>
+</case>
+
+<case>
+  <desc>L - single segment</desc>
+  <a>    LINESTRING(10 10, 20 20)  </a>
+<test><op name="getCentroid" arg1="A" >    POINT(15 15)   </op></test>
+</case>
+
+<case>
+  <desc>L - zero length line</desc>
+  <a>    LINESTRING (10 10, 10 10)  </a>
+<test><op name="getCentroid" arg1="A" >    POINT (10 10)   </op></test>
+</case>
+
+<case>
+  <desc>mL - zero length lines</desc>
+  <a>    MULTILINESTRING ((10 10, 10 10), (20 20, 20 20))  </a>
+<test><op name="getCentroid" arg1="A" >    POINT (15 15)   </op></test>
+</case>
+
+<case>
+  <desc>L - two segments</desc>
+  <a>    LINESTRING (60 180, 120 100, 180 180)  </a>
+<test><op name="getCentroid" arg1="A" >    POINT (120 140)   </op></test>
+</case>
+
+<case>
+  <desc>L - elongated horseshoe</desc>
+  <a>    LINESTRING (80 0, 80 120, 120 120, 120 0))
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (100 68.57142857142857)   </op></test>
+</case>
+
+
+<case>
+  <desc>mL - two single-segment lines</desc>
+  <a>    MULTILINESTRING ((0 0, 0 100), (100 0, 100 100))  </a>
+<test><op name="getCentroid" arg1="A" >    POINT (50 50)   </op></test>
+</case>
+
+<case>
+  <desc>mL - two concentric rings, offset</desc>
+  <a>    MULTILINESTRING ((0 0, 0 200, 200 200, 200 0, 0 0), 
+  (60 180, 20 180, 20 140, 60 140, 60 180))  
+</a>
+<test><op name="getCentroid" arg1="A" >    POINT (90 110)   </op></test>
+</case>
+
+<case>
+  <desc>mL - complicated symmetrical collection of lines</desc>
+  <a>    MULTILINESTRING ((20 20, 60 60), 
+  (20 -20, 60 -60), 
+  (-20 -20, -60 -60), 
+  (-20 20, -60 60), 
+  (-80 0, 0 80, 80 0, 0 -80, -80 0), 
+  (-40 20, -40 -20), 
+  (-20 40, 20 40), 
+  (40 20, 40 -20), 
+  (20 -40, -20 -40)) </a>
+<test><op name="getCentroid" arg1="A" >    POINT (0 0)   </op></test>
+</case>
+
+<case>
+  <desc>A - box</desc>
+  <a>    POLYGON ((40 160, 160 160, 160 40, 40 40, 40 160))  </a>
+<test><op name="getCentroid" arg1="A" >    POINT (100 100)   </op></test>
+</case>
+
+<case>
+  <desc>A - box with hole</desc>
+  <a>    POLYGON ((0 200, 200 200, 200 0, 0 0, 0 200), (20 180, 80 180, 80 20, 20 20, 20 180)) </a>
+<test><op name="getCentroid" arg1="A" >    POINT (115.78947368421052 100)  </op></test>
+</case>
+
+<case>
+  <desc>A - box with offset hole (showing difference between area and line centroid)</desc>
+  <a>    POLYGON ((0 0, 0 200, 200 200, 200 0, 0 0), 
+  (60 180, 20 180, 20 140, 60 140, 60 180))
+	 </a>
+<test><op name="getCentroid" arg1="A" >    POINT (102.5 97.5)  </op></test>
+</case>
+
+<case>
+  <desc>A - box with 2 symmetric holes </desc>
+  <a>    POLYGON ((0 0, 0 200, 200 200, 200 0, 0 0), 
+  (60 180, 20 180, 20 140, 60 140, 60 180), 
+  (180 60, 140 60, 140 20, 180 20, 180 60))
+	 </a>
+<test><op name="getCentroid" arg1="A" >   POINT (100 100)   </op></test>
+</case>
+
+<case>
+  <desc>mA - symmetric angles</desc>
+  <a>    MULTIPOLYGON (((0 40, 0 140, 140 140, 140 120, 20 120, 20 40, 0 40)), 
+  ((0 0, 0 20, 120 20, 120 100, 140 100, 140 0, 0 0))) 
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (70 70)   </op></test>
+</case>
+
+<case>
+  <desc>GC - two adjacent polygons (showing that centroids are additive) </desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((0 200, 20 180, 20 140, 60 140, 200 0, 0 0, 0 200)), 
+  POLYGON ((200 200, 0 200, 20 180, 60 180, 60 140, 200 0, 200 200))) 
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (102.5 97.5)   </op></test>
+</case>
+
+<case>
+  <desc>GC - heterogeneous collection of lines, points</desc>
+  <a>    GEOMETRYCOLLECTION (LINESTRING (80 0, 80 120, 120 120, 120 0), 
+  MULTIPOINT ((20 60), (40 80), (60 60)))
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (100 68.57142857142857)   </op></test>
+</case>
+
+<case>
+  <desc>GC - heterogeneous collection of polygons, line</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((0 40, 40 40, 40 0, 0 0, 0 40)), 
+  LINESTRING (80 0, 80 80, 120 40)) 
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (20 20)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection of polygons, lines, points</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((0 40, 40 40, 40 0, 0 0, 0 40)), 
+  LINESTRING (80 0, 80 80, 120 40), 
+  MULTIPOINT ((20 60), (40 80), (60 60)))
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (20 20)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection of zero-area polygons and lines</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
+  LINESTRING (20 20, 30 30))
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (25 25)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection of zero-area polygons and zero-length lines</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
+  LINESTRING (20 20, 20 20))
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (15 15)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection of zero-area polygons, zero-length lines, and points</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
+  LINESTRING (20 20, 20 20),
+  MULTIPOINT ((20 10), (10 20)) )
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (15 15)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection of zero-area polygons, zero-length lines, and points</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
+  LINESTRING (20 20, 20 20),
+  POINT EMPTY )
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (15 15)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection of zero-area polygons, zero-length lines, and points</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
+  LINESTRING EMPTY,
+  POINT EMPTY )
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (10 10)   </op></test>
+</case>
+
+<case>
+  <desc>GC - overlapping polygons </desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON ((20 100, 20 -20, 60 -20, 60 100, 20 100)), 
+  POLYGON ((-20 60, 100 60, 100 20, -20 20, -20 60)))
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (40 40)   </op></test>
+</case>
+
+<case>
+  <desc>A - degenerate box</desc>
+  <a>    POLYGON ((40 160, 160 160, 160 160, 40 160, 40 160))  </a>
+<test><op name="getCentroid" arg1="A" >    POINT (100 160)   </op></test>
+</case>
+
+<case>
+  <desc>A - degenerate triangle</desc>
+  <a>    POLYGON ((10 10, 100 100, 100 100, 10 10))  </a>
+<test><op name="getCentroid" arg1="A" >    POINT (55 55)   </op></test>
+</case>
+
+<case>
+  <desc>A - empty</desc>
+  <a>    POLYGON EMPTY
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT EMPTY   </op></test>
+</case>
+
+<case>
+  <desc>A - almost degenerate triangle</desc>
+  <a>    POLYGON((
+56.528666666700 25.2101666667,
+56.529000000000 25.2105000000,
+56.528833333300 25.2103333333,
+56.528666666700 25.2101666667))
+	</a>
+<test><op name="getCentroid" arg1="A" >    POINT (56.52883333335 25.21033333335)  </op></test>
+</case>
+
+
+
+</run>

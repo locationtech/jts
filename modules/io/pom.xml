@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.locationtech.jts</groupId>
+        <artifactId>jts-modules</artifactId>
+        <version>1.15.0</version>
+    </parent>
+    <artifactId>jts-io</artifactId>
+    <name>${project.groupId}:${project.artifactId}</name>
+    <packaging>pom</packaging>
+    
+    <profiles>
+      <profile>
+        <id>oracle</id>
+        <activation>
+           <property><name>all</name></property>
+         </activation>
+        <modules>
+          <module>ora</module>
+        </modules>
+      </profile>
+      <profile>
+        <id>arcsde</id>
+        <activation>
+           <property><name>all</name></property>
+         </activation>
+        <modules>
+          <module>sde</module>
+        </modules>
+      </profile>
+    </profiles>
+    
+    <dependencies>
+      <dependency>
+          <groupId>org.locationtech.jts</groupId>
+          <artifactId>jts-core</artifactId>
+          <version>${project.parent.version}</version>
+      </dependency>
+    </dependencies>
+
+    <modules>
+        <module>common</module>
+    </modules>
+    
+</project>
