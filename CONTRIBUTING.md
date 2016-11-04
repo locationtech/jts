@@ -1,10 +1,14 @@
 # Contributing to JTS
 
-We welcome contributions.  To start, it helps the community if you can let us know what you are working on ahead of time.
+We welcome contributions.  
 
-Our developer list is hosted at LocationTech here: https://locationtech.org/mailman/listinfo/jts-dev.
+To start, it helps the community if you can announce what you are working on ahead of time and confirm that it is an acceptable contribution.  To do this post to the JTS Mailing List.
 
-JTS is an open source project under a EPL 1.0 and BSD style License.  In order to accept code contributions, the submitter must
+There is a single project mailing list for both users and developers hosted at LocationTech: https://locationtech.org/mailman/listinfo/jts-dev.
+
+JTS is an open source project under a EPL 1.0 and BSD style License.  
+
+In order to have code contributions accepted, the submitter must
 
 1.  Sign a CLA with the Eclipse Foundation and use the registered email with the Git commits associated to the GitHub pull request.
 
