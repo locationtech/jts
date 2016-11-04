@@ -5,6 +5,12 @@ Welcome to the repository for the JTS Topology Suite.  The JTS Topology Suite is
 
 #### ![LocationTech](https://pbs.twimg.com/profile_images/2552421256/hv2oas84tv7n3maianiq_normal.png) JTS is in incubation with the [LocationTech](http://www.locationtech.org) working group of the Eclipse Foundation.
 
+## Locationss
+
+* Git Repo: https://github.com/locationtech/jts
+* Mailing List: https://locationtech.org/mailman/listinfo/jts-dev
+8 LocationTech Home: https://www.locationtech.org/projects/technology.jts
+
 ## License
 
 JTS is open source software.  It is dual-licensed under:
