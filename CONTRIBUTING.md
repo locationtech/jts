@@ -1,17 +1,23 @@
 # Contributing to JTS
 
-We welcome contributions.  
+The project welcomes contributions.  To start, it helps to announce what you are working on ahead of time to confirm that it is an acceptable contribution.  To do this post to the [JTS Mailing List](https://locationtech.org/mailman/listinfo/jts-dev). 
 
-To start, it helps the community if you can announce what you are working on ahead of time and confirm that it is an acceptable contribution.  To do this post to the JTS Mailing List.
+## Become a Contributor
 
-There is a single project mailing list for both users and developers hosted at LocationTech: https://locationtech.org/mailman/listinfo/jts-dev.
-
-JTS is an open source project under a EPL 1.0 and BSD style License.  
-
-In order to have code contributions accepted, the submitter must
+In order to have code contributions accepted, the submitter must:
 
 1.  Sign a CLA with the Eclipse Foundation and use the registered email with the Git commits associated to the GitHub pull request.
 
-2.  Acknowledge that the code contribution is IP clean by 'signing off' the commits in the pull request with the '-s' option to 'git commit'.
+## Make a Contribution
 
-If you have questions or concerns about this, please ask on the jts-dev list.
+The easiest and most visible way to make a contribution is to submit a Pull Request to the [GitHub repo](https://github.com/locationtech/jts).  
+
+When preparing a Pull Request please do the following:
+
+1.  Acknowledge that the code contribution is IP clean by 'signing off' the commits in the pull request with the '-s' option to 'git commit'.
+
+2. Labeling the PR helps to track and prioritize the contribution.  Use the following labels:
+* The contribution type: enhancement, bug, api
+* The module being contributed to: jts-core, jst-io, jts-app, jts-doc, jts-build
+
+If you have questions about this, please ask on the jts-dev list.
