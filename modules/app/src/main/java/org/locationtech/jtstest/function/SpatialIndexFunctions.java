@@ -99,7 +99,6 @@ public class SpatialIndexFunctions
     final STRtree index = new STRtree();
     geom.apply(new GeometryFilter() {
 
-      @Override
       public void filter(Geometry geom) {
         // only insert atomic geometries
         if (geom instanceof GeometryCollection) return;
@@ -123,7 +122,6 @@ public class SpatialIndexFunctions
     final Quadtree index = new Quadtree();
     geom.apply(new GeometryFilter() {
 
-      @Override
       public void filter(Geometry geom) {
         // only insert atomic geometries
         if (geom instanceof GeometryCollection) return;
