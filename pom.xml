@@ -92,6 +92,21 @@
     <dependencyManagement>
       <dependencies>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom</artifactId>
+            <version>${jdom-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>${json-simple-version}</version>
+        </dependency>
+        <dependency>
           <groupId>com.oracle</groupId>
           <artifactId>ojdbc7</artifactId>
           <version>11.1.0.7.0</version>
