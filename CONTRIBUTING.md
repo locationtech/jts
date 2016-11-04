@@ -17,8 +17,8 @@ When preparing a PR please do the following:
 1.  Acknowledge that the code contribution is IP clean by 'signing off' the commits in the pull request with the '-s' option to 'git commit'.
 
 2. Labeling the PR helps to track and prioritize the contribution.  Use the following labels:
-* The contribution type: enhancement, bug, api
-* The module being contributed to: jts-core, jst-io, jts-app, jts-doc, jts-build
+   * The contribution type: enhancement, bug, api
+   * The module being contributed to: jts-core, jst-io, jts-app, jts-doc, jts-build
 
 3. When a PR is submitted Travis CI will run to check the commiter Eclipse status and the build correctness.  
   Please check the PR status, and fix any reported problems
