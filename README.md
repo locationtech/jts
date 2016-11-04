@@ -24,8 +24,8 @@ JTS is open source software.  It is dual-licensed under:
 
 JTS consists of several Java modules,
 each one corresponding to a separate JAR file.
-Only the jts-core.jar is necessary to use the library in an application.
-The others are external tools or optional extensions.
+Only `jts-core.jar` is needed to use the library in an application.
+The other JAR files are external tools or optional extensions.
 
 ## Contributing
 
