@@ -4,13 +4,15 @@ The project welcomes contributions.  JTS is a mature, widely-used library, so co
 
 To start, it helps to announce what you are working on ahead of time to confirm that it is an acceptable contribution.  To do this post to the [JTS Mailing List](https://locationtech.org/mailman/listinfo/jts-dev). 
 
+The following sections outline workflows involved with contributions.
+
 ## Become a Contributor
 
 In order to have code contributions accepted, the submitter must:
 
 1.  Sign a CLA with the Eclipse Foundation and use the registered email with the Git commits associated to the GitHub pull request.
 
-## Developing a Contribution
+## Develop a Contribution
 
 Code contributions should include the following:
 
