@@ -5,7 +5,7 @@ Welcome to the repository for the JTS Topology Suite.  The JTS Topology Suite is
 
 #### ![LocationTech](https://pbs.twimg.com/profile_images/2552421256/hv2oas84tv7n3maianiq_normal.png) JTS is in incubation with the [LocationTech](http://www.locationtech.org) working group of the Eclipse Foundation.
 
-## Locationss
+## Locations
 
 * Git Repo: https://github.com/locationtech/jts
 * Mailing List: https://locationtech.org/mailman/listinfo/jts-dev
