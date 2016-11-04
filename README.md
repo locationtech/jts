@@ -14,8 +14,9 @@ Welcome to the repository for the JTS Topology Suite.  The JTS Topology Suite is
 ## License
 
 JTS is open source software.  It is dual-licensed under:
-* the [Eclipse Public License 1.0](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
-* the [Eclipse Distribution License 1.0](http://www.eclipse.org/org/documents/edl-v10.php) (a BSD Style License)
+
+* [Eclipse Public License 1.0](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+* [Eclipse Distribution License 1.0](http://www.eclipse.org/org/documents/edl-v10.php) (a BSD Style License)
 
 ## Using JTS
 
