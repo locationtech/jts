@@ -107,12 +107,9 @@ implements GeometryFunction, Comparable
 		return returnType;
 	}
 	
-  @Override
   public boolean isBinary() {
     return parameterTypes.length > 0 && parameterTypes[0] == Geometry.class;
   }
-
-  @Override
 
 	public String getSignature()
 	{
