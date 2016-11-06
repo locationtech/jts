@@ -1,5 +1,9 @@
 # JTS Developing Guide
 
+## Building
+
+The JTS build chain uses Maven.  To build JTS execute `mvn clean install` at the repo root.
+
 ## Eclipse Configuration
 
 * Generate Eclipse configuration using `mvn eclipse:eclipse`
