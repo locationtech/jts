@@ -31,4 +31,4 @@ The other JAR files are external tools or optional extensions.
 
 ## Contributing
 
-If you are interested in contributing to JTS please read the [Contribution Guidelines](CONTRIBUTING.md).
+If you are interested in contributing to JTS please read the [Contributing Guide](CONTRIBUTING.md).
