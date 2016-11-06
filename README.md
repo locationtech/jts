@@ -29,6 +29,10 @@ each one corresponding to a separate JAR file.
 Only `jts-core.jar` is needed to use the library in an application.
 The other JAR files are external tools or optional extensions.
 
+## Developing
+
+Building and developing with JTS is described in the [Developing Guide](DEVELOPING.md).
+
 ## Contributing
 
 If you are interested in contributing to JTS please read the [Contributing Guide](CONTRIBUTING.md).
