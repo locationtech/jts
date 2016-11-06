@@ -19,7 +19,16 @@ Used for verifying API code, internal data structures, and ancillary algorithms.
 
 JTS provides a code-independent, declarative XML-based format for expressing geometric functional tests.  
 This format is convenient for encoding large geometries, and for providing geometric test cases 
-in a reusable way.  This format should be used for tests which involve large geometries, or which 
-express fundamental geometric properties of the JTS library.
+in a reusable way.  It is easily consumed by external tools such as the JTS TestBuilder.
+It allows geometry function test cases to easily be to applied to other operation implementations,
+for testing or comparison purposes.
 
- 
+This format should be used for tests which involve large geometries, or which 
+express fundamental geometric semantics of the JTS library.
+
+It is convenient to define a Run Configuration to execute the core XML tests as follows:
+
+* Main class: `org.locationtech.jtstest.testrunner.TopologyTestApp`
+* Program arguments: `-files validate general`
+* Working directory: `${jts-core}/src/test/resources/testxml`
+
