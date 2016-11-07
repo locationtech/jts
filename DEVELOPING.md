@@ -50,9 +50,10 @@ for testing or comparison purposes.
 This format should be used for tests which involve large geometries, or which 
 express fundamental geometric semantics of the JTS library.
 
-It is convenient to define a Run Configuration to execute the core XML tests as follows:
+It is convenient to define the following Run Configurations:
 
-* Main class: `org.locationtech.jtstest.testrunner.TopologyTestApp`
-* Program arguments: `-files validate general`
-* Working directory: `${jts-core}/src/test/resources/testxml`
+* XML tests:
+  * Main class: `org.locationtech.jtstest.testrunner.TopologyTestApp`
+  * Program arguments: `-files validate general`
+  * Working directory: `${jts-core}/src/test/resources/testxml`
 
