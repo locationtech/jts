@@ -4,7 +4,7 @@
         GCs as the test geometry.
   </desc>
   <precisionModel type="FLOATING"/>
-  <geometryOperation>com.vividsolutions.jtstest.geomop.PreparedGeometryOperation</geometryOperation>
+  <geometryOperation>org.locationtech.jtstest.geomop.PreparedGeometryOperation</geometryOperation>
 
 <case>
   <desc>Box against GC

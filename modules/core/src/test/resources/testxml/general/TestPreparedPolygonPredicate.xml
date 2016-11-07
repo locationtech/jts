@@ -1,7 +1,7 @@
 <run>
   <desc>Test cases for PreparedGeometry predicates using polygons as input</desc>
   <precisionModel type="FLOATING"/>
-  <geometryOperation>com.vividsolutions.jtstest.geomop.PreparedGeometryOperation</geometryOperation>
+  <geometryOperation>org.locationtech.jtstest.geomop.PreparedGeometryOperation</geometryOperation>
 
 <case>
   <desc>A/P - point equal to start point of polygon

@@ -3,7 +3,7 @@
     Test cases for buffers with mitred joins.
   </desc>
   <precisionModel type="FLOATING" />
-  <resultMatcher>com.vividsolutions.jtstest.testrunner.BufferResultMatcher</resultMatcher>
+  <resultMatcher>org.locationtech.jtstest.testrunner.BufferResultMatcher</resultMatcher>
 
 <case>
  <desc>Polygon with very close vertices  </desc>
