@@ -20,13 +20,10 @@ JTS is open source software.  It is dual-licensed under:
 * [Eclipse Public License 1.0](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
 * [Eclipse Distribution License 1.0](http://www.eclipse.org/org/documents/edl-v10.php) (a BSD Style License)
 
-## Using JTS
+## Documentation
 
-Installing and using JTS is described in the [User Guide](USING.md).
-
-## Developing
-
-Building and developing with JTS is described in the [Developing Guide](DEVELOPING.md).
+* Installing and using JTS is described in the [User Guide](USING.md).
+* Building and developing with JTS is described in the [Developing Guide](DEVELOPING.md).
 
 ## Contributing
 
