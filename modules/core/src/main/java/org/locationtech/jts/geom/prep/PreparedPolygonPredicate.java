@@ -51,7 +51,7 @@ abstract class PreparedPolygonPredicate
    * Handles both linear and point components.
    * 
    * @param geom a geometry to test
-   * @return true if all componenta of the argument are contained in the target geometry
+   * @return true if all components of the argument are contained in the target geometry
    */
 	protected boolean isAllTestComponentsInTarget(Geometry testGeom)
 	{
@@ -71,7 +71,7 @@ abstract class PreparedPolygonPredicate
    * Handles both linear and point components.
    * 
    * @param geom a geometry to test
-   * @return true if all componenta of the argument are contained in the target geometry interior
+   * @return true if all components of the argument are contained in the target geometry interior
    */
 	protected boolean isAllTestComponentsInTargetInterior(Geometry testGeom)
 	{

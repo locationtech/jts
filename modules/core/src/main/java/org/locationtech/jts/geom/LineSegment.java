@@ -570,7 +570,7 @@ public class LineSegment
   /**
    * Creates a LineString with the same coordinates as this segment
    * 
-   * @param geomFactory the geometery factory to use
+   * @param geomFactory the geometry factory to use
    * @return a LineString with the same geometry as this segment
    */
   public LineString toGeometry(GeometryFactory geomFactory)

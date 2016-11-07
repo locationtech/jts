@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 /**
- * Tests Delaunay Triangulatin classes
+ * Tests Delaunay Triangulation classes
  * 
  */
 public class ConformingDelaunayTest extends TestCase {

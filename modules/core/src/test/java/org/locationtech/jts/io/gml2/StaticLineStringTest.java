@@ -53,7 +53,7 @@ public class StaticLineStringTest extends WritingTestCase {
 	}
 
 	/**
-	 * Round Trip test for a single line string with lotsa points
+	 * Round Trip test for a single line string with lots of points
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
 	 * @throws SAXException 

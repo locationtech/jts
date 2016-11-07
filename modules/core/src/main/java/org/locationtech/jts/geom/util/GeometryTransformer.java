@@ -148,7 +148,7 @@ public class GeometryTransformer
   }
 
   /**
-   * Convenience method which provides statndard way of copying {@link CoordinateSequence}s
+   * Convenience method which provides a standard way of copying {@link CoordinateSequence}s
    * @param seq the sequence to copy
    * @return a deep copy of the sequence
    */
@@ -193,7 +193,7 @@ public class GeometryTransformer
   /**
    * Transforms a LinearRing.
    * The transformation of a LinearRing may result in a coordinate sequence
-   * which does not form a structurally valid ring (i.e. a degnerate ring of 3 or fewer points).
+   * which does not form a structurally valid ring (i.e. a degenerate ring of 3 or fewer points).
    * In this case a LineString is returned. 
    * Subclasses may wish to override this method and check for this situation
    * (e.g. a subclass may choose to eliminate degenerate linear rings)

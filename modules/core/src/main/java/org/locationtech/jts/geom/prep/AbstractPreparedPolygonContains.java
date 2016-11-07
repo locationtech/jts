@@ -102,7 +102,7 @@ abstract class AbstractPreparedPolygonContains
 		/**
 		 * Check if there is any intersection between the line segments
 		 * in target and test.
-		 * In some important cases, finding a proper interesection implies that the 
+		 * In some important cases, finding a proper intersection implies that the
 		 * test geometry is NOT contained.
 		 * These cases are:
 		 * <ul>

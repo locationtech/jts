@@ -19,7 +19,7 @@ import java.util.Iterator;
 
 /**
  * A list of {@link Coordinate}s, which may
- * be set to prevent repeated coordinates from occuring in the list.
+ * be set to prevent repeated coordinates from occurring in the list.
  *
  *
  * @version 1.7

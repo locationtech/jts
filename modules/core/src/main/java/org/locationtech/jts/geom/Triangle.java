@@ -80,11 +80,11 @@ public class Triangle
    * all three vertices of the triangle.
    * 
    * @param a
-   *          a vertx of the triangle
+   *          a vertex of the triangle
    * @param b
-   *          a vertx of the triangle
+   *          a vertex of the triangle
    * @param c
-   *          a vertx of the triangle
+   *          a vertex of the triangle
    * @return the circumcentre of the triangle
    */
   /*
@@ -114,18 +114,18 @@ public class Triangle
    * all three vertices of the triangle.
    * <p>
    * The circumcentre does not necessarily lie within the triangle. For example,
-   * the circumcentre of an obtuse isoceles triangle lies outside the triangle.
+   * the circumcentre of an obtuse isosceles triangle lies outside the triangle.
    * <p>
    * This method uses an algorithm due to J.R.Shewchuk which uses normalization
    * to the origin to improve the accuracy of computation. (See <i>Lecture Notes
    * on Geometric Robustness</i>, Jonathan Richard Shewchuk, 1999).
    * 
    * @param a
-   *          a vertx of the triangle
+   *          a vertex of the triangle
    * @param b
-   *          a vertx of the triangle
+   *          a vertex of the triangle
    * @param c
-   *          a vertx of the triangle
+   *          a vertex of the triangle
    * @return the circumcentre of the triangle
    */
   public static Coordinate circumcentre(Coordinate a, Coordinate b, Coordinate c)
@@ -176,11 +176,11 @@ public class Triangle
    * The incentre always lies within the triangle.
    * 
    * @param a
-   *          a vertx of the triangle
+   *          a vertex of the triangle
    * @param b
-   *          a vertx of the triangle
+   *          a vertex of the triangle
    * @param c
-   *          a vertx of the triangle
+   *          a vertex of the triangle
    * @return the point which is the incentre of the triangle
    */
   public static Coordinate inCentre(Coordinate a, Coordinate b, Coordinate c)
@@ -316,14 +316,14 @@ public class Triangle
   {
     /**
      * Uses the formula 1/2 * | u x v | where u,v are the side vectors of the
-     * triangle x is the vector cross-product For 2D vectors, this formual
+     * triangle x is the vector cross-product For 2D vectors, this formula
      * simplifies to the expression below
      */
     return ((c.x - a.x) * (b.y - a.y) - (b.x - a.x) * (c.y - a.y)) / 2;
   }
 
   /**
-   * Computes the 3D area of a triangle. The value computed is alway
+   * Computes the 3D area of a triangle. The value computed is always
    * non-negative.
    * 
    * @param a
@@ -526,7 +526,7 @@ public class Triangle
   }
 
   /**
-   * Computes the 3D area of this triangle. The value computed is alway
+   * Computes the 3D area of this triangle. The value computed is always
    * non-negative.
    * 
    * @return the 3D area of this triangle

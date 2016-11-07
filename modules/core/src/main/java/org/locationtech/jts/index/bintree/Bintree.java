@@ -31,7 +31,7 @@ import java.util.List;
  * (although this is not currently implemented).
  * <p>
  * This implementation does not require specifying the extent of the inserted
- * items beforehand.  It will automatically expand to accomodate any extent
+ * items beforehand.  It will automatically expand to accommodate any extent
  * of dataset.
  * <p>
  * The bintree structure is used to provide a primary filter
@@ -172,7 +172,7 @@ if (newSize <= oldSize) {
    * to the given collection.
    * If the query interval is <tt>null</tt>, add all items in the tree.
    * 
-   * @param interval a query nterval, or null
+   * @param interval a query interval, or null
    * @param resultItems the candidate items found
    */
   public void query(Interval interval, Collection foundItems)

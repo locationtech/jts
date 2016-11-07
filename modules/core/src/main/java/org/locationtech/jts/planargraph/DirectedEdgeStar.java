@@ -71,7 +71,7 @@ public class DirectedEdgeStar
   public int getDegree() { return outEdges.size(); }
 
   /**
-   * Returns the coordinate for the node at wich this star is based
+   * Returns the coordinate for the node at which this star is based
    */
   public Coordinate getCoordinate()
   {

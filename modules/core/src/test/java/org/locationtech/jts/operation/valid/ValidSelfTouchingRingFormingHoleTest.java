@@ -68,7 +68,7 @@ public class ValidSelfTouchingRingFormingHoleTest
 
   /**
    * Tests an overlapping hole condition, where one of the holes is created by a shell self-touch.
-   * This is never vallid.
+   * This is never valid.
    */
   public void testShellSelfTouchHoleOverlappingHole()
   {

@@ -115,7 +115,7 @@ public class PointInAreaStressTester
 	/**
 	 * 
 	 * @param p
-	 * @return true if the point location is determined to be the same by both PIA locaters
+	 * @return true if the point location is determined to be the same by both PIA locators
 	 */
 	private boolean testPIA(Coordinate p)
 	{

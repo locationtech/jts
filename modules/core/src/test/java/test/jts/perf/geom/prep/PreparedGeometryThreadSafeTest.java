@@ -25,7 +25,7 @@ import test.jts.perf.ThreadTestRunner;
 
 
 /**
- * Tests for race conditons in the PreparedGeometry classes.
+ * Tests for race conditions in the PreparedGeometry classes.
  * 
  * @author Martin Davis
  *

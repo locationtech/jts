@@ -80,7 +80,7 @@ public class LineDissolver
   
   /**
    * Adds a {@link Geometry} to be dissolved. 
-   * Any number of geometries may be adde by calling this method multiple times.
+   * Any number of geometries may be added by calling this method multiple times.
    * Any type of Geometry may be added.  The constituent linework will be
    * extracted to be dissolved.
    * 

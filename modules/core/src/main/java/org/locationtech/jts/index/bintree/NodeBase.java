@@ -72,7 +72,7 @@ public abstract class NodeBase {
    * to the given collection.
    * If the query interval is <tt>null</tt>, add all items in the tree.
    * 
-   * @param interval a query nterval, or null
+   * @param interval a query interval, or null
    * @param resultItems the candidate items found
    */
   public void addAllItemsFromOverlapping(Interval interval, Collection resultItems)
