@@ -3,7 +3,7 @@
     Basic buffer test cases.
   </desc>
   <precisionModel type="FLOATING" />
-  <resultMatcher>com.vividsolutions.jtstest.testrunner.BufferResultMatcher</resultMatcher>
+  <resultMatcher>org.locationtech.jtstest.testrunner.BufferResultMatcher</resultMatcher>
 
 <case>
   <desc>
