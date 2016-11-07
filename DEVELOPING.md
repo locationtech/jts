@@ -2,7 +2,27 @@
 
 ## Building
 
-The JTS build chain uses Maven.  To build JTS execute `mvn clean install` at the repo root.
+The JTS build chain uses Maven.  Build commands are executed at the project root directory (this one).
+
+* Build JTS, with tests:
+
+        mvn clean install
+    
+* Build JTS, no tests:
+
+        mvn clean install -DskipTests
+
+* Build `jts-io-ora`:
+
+        mvn install -Poracle
+        
+* Build `jts-io-sde`:
+
+        mvn install -Parcsde
+        
+* Build everything:
+
+        mvn install -Pall
 
 ## Eclipse Configuration
 
