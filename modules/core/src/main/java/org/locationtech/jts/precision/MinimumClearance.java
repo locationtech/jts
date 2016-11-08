@@ -34,7 +34,7 @@ import org.locationtech.jts.operation.distance.FacetSequenceTreeBuilder;
  * the vertices of a geometry can be tolerated
  * before the geometry becomes topologically invalid.
  * The smaller the Minimum Clearance distance, 
- * the less vertex pertubation the geometry can tolerate
+ * the less vertex perturbation the geometry can tolerate
  * before becoming invalid.
  * <p>
  * The concept was introduced by Thompson and Van Oosterom

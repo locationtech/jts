@@ -57,7 +57,7 @@ public class StaticMultiPolygonTest extends WritingTestCase {
 	}
 
 	/**
-	 * Round Trip test for a single MultiPolygon with lotsa points
+	 * Round Trip test for a single MultiPolygon with lots of points
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
 	 * @throws SAXException 
@@ -102,7 +102,7 @@ public class StaticMultiPolygonTest extends WritingTestCase {
 	}
 
 	/**
-	 * Round Trip test for a single MultiPolygon with lotsa points
+	 * Round Trip test for a single MultiPolygon with lots of points
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
 	 * @throws SAXException 
@@ -126,7 +126,7 @@ public class StaticMultiPolygonTest extends WritingTestCase {
 	}
 
 	/**
-	 * Round Trip test for a single MultiPolygon with lotsa points
+	 * Round Trip test for a single MultiPolygon with lots of points
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
 	 * @throws SAXException 

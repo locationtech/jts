@@ -22,7 +22,7 @@ import org.locationtech.jts.operation.valid.IsValidOp;
  * 
  * This class is used to create a polygon within the specified bounding box.
  * 
- * Sucessive calls to create may or may not return the same geometry topology.
+ * Successive calls to create may or may not return the same geometry topology.
  *
  * @author David Zwiers, Vivid Solutions. 
  */

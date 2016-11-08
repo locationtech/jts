@@ -814,7 +814,7 @@ public abstract class Geometry
    * An implication of the definition is that
    * "The boundary of a Geometry is not within the Geometry".
    * In other words, if a geometry A is a subset of
-   * the points in the boundary of a geomtry B, <code>A.within(B) = false</code>
+   * the points in the boundary of a geometry B, <code>A.within(B) = false</code>
    * (As a concrete example, take A to be a LineString which lies in the boundary of a Polygon B.)
    * For a predicate with similar behaviour but avoiding 
    * this subtle limitation, see {@link #coveredBy}.
@@ -1282,7 +1282,7 @@ public abstract class Geometry
    * The intersection of two geometries of different dimension produces a result
    * geometry of dimension less than or equal to the minimum dimension of the input
    * geometries. 
-   * The result geometry may be a heterogenous {@link GeometryCollection}.
+   * The result geometry may be a heterogeneous {@link GeometryCollection}.
    * If the result is empty, it is an atomic geometry
    * with the dimension of the lowest input dimension.
    * <p>
@@ -1332,7 +1332,7 @@ public abstract class Geometry
    * The union of two geometries of different dimension produces a result
    * geometry of dimension equal to the maximum dimension of the input
    * geometries. 
-   * The result geometry may be a heterogenous
+   * The result geometry may be a heterogeneous
    * {@link GeometryCollection}.
    * If the result is empty, it is an atomic geometry
    * with the dimension of the highest input dimension.
@@ -1772,7 +1772,7 @@ public abstract class Geometry
    * Tests whether this is an instance of a general {@link GeometryCollection},
    * rather than a homogeneous subclass.
    * 
-   * @return true if this is a hetereogeneous GeometryCollection
+   * @return true if this is a heterogeneous GeometryCollection
    */
   protected boolean isGeometryCollection()
   {

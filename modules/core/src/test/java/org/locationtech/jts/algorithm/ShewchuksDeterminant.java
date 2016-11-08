@@ -53,7 +53,7 @@ import org.locationtech.jts.geom.Coordinate;
  *   fast_expansion_sum_zeroelim caused the code to access memory outside of the array boundary. This is not
  *   allowed in Java which is the reason why this bug was discovered. It is unclear if the code worked correctly
  *   as a compiled c-program. It has been confirmed by valgrind that this actually happens in the original code.
- *   The author of the original code has been contacted, and we are waiting for an answer. All occurences of the
+ *   The author of the original code has been contacted, and we are waiting for an answer. All occurrences of the
  *   prefix incrementation operator in that function have been replaced with the postfix version. This change looks
  *   reasonable by a quick look at the code, but this needs to be more thoroughly analyzed.
  *

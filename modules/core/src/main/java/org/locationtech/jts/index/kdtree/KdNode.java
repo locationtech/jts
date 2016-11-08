@@ -59,7 +59,7 @@ public class KdNode {
     /**
      * Returns the X coordinate of the node
      * 
-     * @return X coordiante of the node
+     * @return X coordinate of the node
      */
     public double getX() {
         return p.x;
@@ -68,7 +68,7 @@ public class KdNode {
     /**
      * Returns the Y coordinate of the node
      * 
-     * @return Y coordiante of the node
+     * @return Y coordinate of the node
      */
     public double getY() {
         return p.y;

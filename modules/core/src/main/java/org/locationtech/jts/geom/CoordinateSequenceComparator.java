@@ -126,7 +126,7 @@ public class CoordinateSequenceComparator
    * @param s1 a {@link CoordinateSequence}
    * @param s2 a {@link CoordinateSequence}
    * @param i the index of the coordinate to test
-   * @param dimension the number of dimensiosn to test
+   * @param dimension the number of dimensions to test
    * @return -1, 0, or 1 depending on whether s1[i] is less than, equal to, or greater than s2[i]
    */
   protected int compareCoordinate(CoordinateSequence s1, CoordinateSequence s2, int i, int dimension)

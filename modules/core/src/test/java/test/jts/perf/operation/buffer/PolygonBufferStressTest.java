@@ -28,7 +28,7 @@ import org.locationtech.jts.util.Stopwatch;
  * issues (bad noding causing topology failures).
  * However by ver 1.13 (at least) this test should pass perfectly.
  * This is due to the many heuristics introduced to improve buffer
- * robustnesss.
+ * robustness.
  * 
  * 
  * @author Martin Davis
