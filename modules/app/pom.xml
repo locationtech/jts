@@ -46,7 +46,7 @@
                 <version>2.6</version>
                 <configuration>
                     <descriptorRefs>
-                        <descriptorRef>bundled</descriptorRef>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <archive>
                         <manifest>
