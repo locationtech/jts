@@ -112,7 +112,7 @@ public class CommonBitsOp {
   }
 
   /**
-   * If required, returning the result to the orginal precision if required.
+   * If required, returning the result to the original precision if required.
    * <p>
    * In this current implementation, no rounding is performed on the
    * reshifted result geometry, which means that it is possible

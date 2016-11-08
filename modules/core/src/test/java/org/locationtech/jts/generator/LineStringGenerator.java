@@ -21,7 +21,7 @@ import org.locationtech.jts.operation.valid.IsValidOp;
  * 
  * This class is used to create a line string within the specified bounding box.
  * 
- * Sucessive calls to create may or may not return the same geometry topology.
+ * Successive calls to create may or may not return the same geometry topology.
  *
  * @author David Zwiers, Vivid Solutions. 
  */
@@ -50,7 +50,7 @@ public class LineStringGenerator extends GeometryGenerator {
 	public static final int ARC = 0;
 	
 	/**
-	 * Number of interations attempting to create a valid line string
+	 * Number of iterations attempting to create a valid line string
 	 */
 	private static final int RUNS = 5;
 

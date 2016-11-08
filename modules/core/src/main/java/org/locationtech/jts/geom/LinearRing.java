@@ -72,7 +72,7 @@ public class LinearRing extends LineString
 
   /**
    * Constructs a <code>LinearRing</code> with the vertices
-   * specifed by the given {@link CoordinateSequence}.
+   * specified by the given {@link CoordinateSequence}.
    *
    *@param  points  a sequence points forming a closed and simple linestring, or
    *      <code>null</code> to create the empty geometry.

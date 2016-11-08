@@ -42,7 +42,7 @@ import org.locationtech.jts.index.SpatialIndex;
  * the envelope intersection check is performed automatically.
  * <p>
  * This implementation does not require specifying the extent of the inserted
- * items beforehand.  It will automatically expand to accomodate any extent
+ * items beforehand.  It will automatically expand to accommodate any extent
  * of dataset.
  * <p>
  * This data structure is also known as an <i>MX-CIF quadtree</i>

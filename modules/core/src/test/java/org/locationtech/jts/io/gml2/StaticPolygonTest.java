@@ -52,7 +52,7 @@ public class StaticPolygonTest extends WritingTestCase {
 	}
 
 	/**
-	 * Round Trip test for a single polygon with lotsa points
+	 * Round Trip test for a single polygon with lots of points
 	 * @throws IOException 
 	 * @throws ParserConfigurationException 
 	 * @throws SAXException 
@@ -86,7 +86,7 @@ public class StaticPolygonTest extends WritingTestCase {
 	}
 
 	/**
-	 * Round Trip test for a single polygon with lotsa points
+	 * Round Trip test for a single polygon with lots of points
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
 	 * @throws SAXException 
@@ -104,7 +104,7 @@ public class StaticPolygonTest extends WritingTestCase {
 	}
 
 	/**
-	 * Round Trip test for a single polygon with lotsa points
+	 * Round Trip test for a single polygon with lots of points
 	 * @throws ParserConfigurationException 
 	 * @throws IOException 
 	 * @throws SAXException 

@@ -215,7 +215,7 @@ public class AffineTransformation
    * 
    * @param xShear the value to shear by in the x direction
    * @param yShear the value to shear by in the y direction
-   * @return a tranformation for the shear
+   * @return a transformation for the shear
    */
   public static AffineTransformation shearInstance(double xShear, double yShear)
   {
@@ -229,7 +229,7 @@ public class AffineTransformation
    * 
    * @param x the value to translate by in the x direction
    * @param y the value to translate by in the y direction
-   * @return a tranformation for the translation
+   * @return a transformation for the translation
    */  
   public static AffineTransformation translationInstance(double x, double y)
   {
@@ -973,7 +973,7 @@ public class AffineTransformation
   }
   
   /**
-   * Cretaes a new @link Geometry which is the result
+   * Creates a new {@link Geometry} which is the result
    * of this transformation applied to the input Geometry.
    * 
    *@param g  a <code>Geometry</code>

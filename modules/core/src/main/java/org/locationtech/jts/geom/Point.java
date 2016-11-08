@@ -21,7 +21,7 @@ import org.locationtech.jts.util.Assert;
  * A <code>Point</code> is topologically valid if and only if:
  * <ul>
  * <li>the coordinate which defines it (if any) is a valid coordinate 
- * (i.e does not have an <code>NaN</code> X or Y ordinate)
+ * (i.e. does not have an <code>NaN</code> X or Y ordinate)
  * </ul>
  * 
  *@version 1.7

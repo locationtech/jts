@@ -16,7 +16,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 
 /**
- * A visitor to {@link Geometry} componets, which 
+ * A visitor to {@link Geometry} components, which
  * allows short-circuiting when a defined condition holds.
  *
  * @version 1.7

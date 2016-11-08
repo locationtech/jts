@@ -24,7 +24,7 @@ import org.locationtech.jts.geom.Coordinate;
  */
 public class AffineTransformationFactory {
 	/**
-	 * Creates a tranformation from a set of three control vectors. A control
+	 * Creates a transformation from a set of three control vectors. A control
 	 * vector consists of a source point and a destination point, which is the
 	 * image of the source point under the desired transformation. Three control
 	 * vectors allows defining a fully general affine transformation.
@@ -134,7 +134,7 @@ public class AffineTransformationFactory {
 	}
 
 	/**
-	 * Creates an AffineTransformation defined by a maping between two baselines. 
+	 * Creates an AffineTransformation defined by a mapping between two baselines.
 	 * The computed transformation consists of:
 	 * <ul>
 	 * <li>a translation 
