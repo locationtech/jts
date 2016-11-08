@@ -28,7 +28,7 @@ import org.locationtech.jts.index.strtree.STRtree;
 
 /**
  * Provides an efficient method of unioning a collection of 
- * {@link Polygonal} geometrys.
+ * {@link Polygonal} geometries.
  * The geometries are indexed using a spatial index, 
  * and unioned recursively in index order.
  * For geometries with a high degree of overlap,

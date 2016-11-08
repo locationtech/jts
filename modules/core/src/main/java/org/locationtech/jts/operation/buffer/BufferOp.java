@@ -180,7 +180,7 @@ public class BufferOp
   }
 
   /**
-   * Comutes the buffer for a geometry for a given buffer distance
+   * Computes the buffer for a geometry for a given buffer distance
    * and accuracy of approximation.
    *
    * @param g the geometry to buffer
@@ -197,7 +197,7 @@ public class BufferOp
   }
   
   /**
-   * Comutes the buffer for a geometry for a given buffer distance
+   * Computes the buffer for a geometry for a given buffer distance
    * and accuracy of approximation.
    *
    * @param g the geometry to buffer
@@ -215,7 +215,7 @@ public class BufferOp
   }
 
   /**
-   * Comutes the buffer for a geometry for a given buffer distance
+   * Computes the buffer for a geometry for a given buffer distance
    * and accuracy of approximation.
    *
    * @param g the geometry to buffer

@@ -97,7 +97,7 @@ public class Densifier {
 
 	/**
 	 * Sets the distance tolerance for the densification. All line segments
-	 * in the densified geometry will be no longer than the distance tolereance.
+	 * in the densified geometry will be no longer than the distance tolerance.
 	 * simplified geometry will be within this distance of the original geometry.
 	 * The distance tolerance must be positive.
 	 * 

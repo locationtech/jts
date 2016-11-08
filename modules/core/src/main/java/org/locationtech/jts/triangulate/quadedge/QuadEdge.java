@@ -29,7 +29,7 @@ import org.locationtech.jts.io.WKTWriter;
  * The linkage between the quadedge quartets determines the topology
  * of the subdivision. 
  * <p>
- * The edge class does not contain separate information for vertice or faces; a vertex is implicitly
+ * The edge class does not contain separate information for vertices or faces; a vertex is implicitly
  * defined as a ring of edges (created using the <tt>next</tt> field).
  * 
  * @author David Skea
@@ -364,7 +364,7 @@ public class QuadEdge
      * Tests if this quadedge and another have the same line segment geometry, 
      * regardless of orientation.
      * 
-     * @param qe a quadege
+     * @param qe a quadedge
      * @return true if the quadedges are based on the same line segment regardless of orientation
      */
     public boolean equalsNonOriented(QuadEdge qe) {
@@ -379,7 +379,7 @@ public class QuadEdge
      * Tests if this quadedge and another have the same line segment geometry
      * with the same orientation.
      * 
-     * @param qe a quadege
+     * @param qe a quadedge
      * @return true if the quadedges are based on the same line segment
      */
     public boolean equalsOriented(QuadEdge qe) {

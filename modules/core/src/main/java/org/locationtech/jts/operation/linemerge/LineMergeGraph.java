@@ -22,8 +22,8 @@ import org.locationtech.jts.planargraph.PlanarGraph;
 
 /**
  * A planar graph of edges that is analyzed to sew the edges together. The 
- * <code>marked</code> flag on @{link com.vividsolutions.planargraph.Edge}s 
- * and @{link com.vividsolutions.planargraph.Node}s indicates whether they have been
+ * <code>marked</code> flag on {@link com.vividsolutions.planargraph.Edge}s
+ * and {@link com.vividsolutions.planargraph.Node}s indicates whether they have been
  * logically deleted from the graph.
  *
  * @version 1.7

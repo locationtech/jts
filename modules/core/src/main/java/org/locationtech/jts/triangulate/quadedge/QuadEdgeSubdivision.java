@@ -38,7 +38,7 @@ import org.locationtech.jts.io.WKTWriter;
  * A class that contains the {@link QuadEdge}s representing a planar
  * subdivision that models a triangulation. 
  * The subdivision is constructed using the
- * quadedge algebra defined in the classs {@link QuadEdge}. 
+ * quadedge algebra defined in the class {@link QuadEdge}.
  * All metric calculations
  * are done in the {@link Vertex} class.
  * In addition to a triangulation, subdivisions
@@ -99,7 +99,7 @@ public class QuadEdgeSubdivision {
 	 * contains the triangle is computed and stored.
 	 * 
 	 * @param env
-	 *          the bouding box to surround
+	 *          the bounding box to surround
 	 * @param tolerance
 	 *          the tolerance value for determining if two sites are equal
 	 */

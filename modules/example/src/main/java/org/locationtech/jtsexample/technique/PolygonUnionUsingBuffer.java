@@ -17,7 +17,7 @@ import org.locationtech.jts.io.WKTReader;
 
 /**
  * Shows a technique for using a zero-width buffer to compute
- * the union of a collection of <b>polygonal</b> geometrys.
+ * the union of a collection of <b>polygonal</b> geometries.
  * The advantages of this technique are:
  * <ul>
  * <li>can avoid robustness issues

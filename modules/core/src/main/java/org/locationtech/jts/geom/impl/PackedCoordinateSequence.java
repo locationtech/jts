@@ -308,7 +308,7 @@ public abstract class PackedCoordinateSequence
 
     /**
      * @see org.locationtech.jts.geom.CoordinateSequence#getOrdinate(int, int)
-     *      Beware, for performace reasons the ordinate index is not checked, if
+     *      Beware, for performance reasons the ordinate index is not checked, if
      *      it's over dimensions you may not get an exception but a meaningless
      *      value.
      */

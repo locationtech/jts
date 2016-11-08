@@ -31,7 +31,7 @@ import org.locationtech.jts.triangulate.quadedge.Vertex;
 
 
 /**
- * A utility class which creates Delaunay Trianglulations
+ * A utility class which creates Delaunay Triangulations
  * from collections of points and extract the resulting 
  * triangulation edges or triangles as geometries. 
  * 

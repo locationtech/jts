@@ -459,7 +459,7 @@ class OffsetSegmentGenerator
   
     /**
      * This computation is unstable if the offset segments are nearly collinear.
-     * Howver, this situation should have been eliminated earlier by the check for 
+     * However, this situation should have been eliminated earlier by the check for
      * whether the offset segment endpoints are almost coincident
      */
     try {

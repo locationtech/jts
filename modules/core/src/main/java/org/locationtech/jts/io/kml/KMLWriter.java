@@ -172,7 +172,7 @@ public class KMLWriter
   }
 
   /**
-   * Sets the maximum nummber of decimal places to output in ordinate values.
+   * Sets the maximum number of decimal places to output in ordinate values.
    * Useful for limiting output size.
    * 
    * @param precision the number of decimal places to output

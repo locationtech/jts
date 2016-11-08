@@ -29,7 +29,7 @@ import java.util.Collection;
  * <li>the only intersection between any two linestrings occurs at their endpoints.
  * </ul>
  * Implementations can take advantage of this fact to optimize processing
- * (i.e by avoiding testing for intersections between linestrings
+ * (i.e. by avoiding testing for intersections between linestrings
  * belonging to the same set).
  *
  * @author Martin Davis
@@ -42,7 +42,7 @@ public interface SegmentSetMutualIntersector
    * using the supplied {@link SegmentIntersector}.
    *
    * @param segStrings a collection of {@link SegmentString}s to node
-   * @param segInt the intersection detector to either record intersection occurences
+   * @param segInt the intersection detector to either record intersection occurrences
    * 			 or add intersection nodes to the input segment strings.
    */
   void process(Collection segStrings, SegmentIntersector segInt);

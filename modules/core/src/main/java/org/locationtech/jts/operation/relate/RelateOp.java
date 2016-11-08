@@ -49,7 +49,7 @@ public class RelateOp
    *
    * @param a a Geometry to test
    * @param b a Geometry to test
-   * @return the IntersectonMatrix for the spatial relationship between the geometries
+   * @return the IntersectionMatrix for the spatial relationship between the geometries
    */
   public static IntersectionMatrix relate(Geometry a, Geometry b)
   {
@@ -65,7 +65,7 @@ public class RelateOp
    * @param a a Geometry to test
    * @param b a Geometry to test
    * @param boundaryNodeRule the Boundary Node Rule to use
-   * @return the IntersectonMatrix for the spatial relationship between the input geometries
+   * @return the IntersectionMatrix for the spatial relationship between the input geometries
    */
   public static IntersectionMatrix relate(Geometry a, Geometry b, BoundaryNodeRule boundaryNodeRule)
   {
@@ -105,7 +105,7 @@ public class RelateOp
    * Gets the IntersectionMatrix for the spatial relationship
    * between the input geometries.
    *
-   * @return the IntersectonMatrix for the spatial relationship between the input geometries
+   * @return the IntersectionMatrix for the spatial relationship between the input geometries
    */
   public IntersectionMatrix getIntersectionMatrix()
   {

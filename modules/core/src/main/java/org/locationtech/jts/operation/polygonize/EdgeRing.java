@@ -202,7 +202,7 @@ class EdgeRing {
   
   /**
    * Computes whether this ring is a hole.
-   * Due to the way the edges in the polyongization graph are linked,
+   * Due to the way the edges in the polygonization graph are linked,
    * a ring is a hole if it is oriented counter-clockwise.
    */
   public void computeHole()
@@ -279,7 +279,7 @@ class EdgeRing {
 
   /**
    * Computes the list of coordinates which are contained in this ring.
-   * The coordinatea are computed once only and cached.
+   * The coordinates are computed once only and cached.
    *
    * @return an array of the {@link Coordinate}s in this ring
    */
