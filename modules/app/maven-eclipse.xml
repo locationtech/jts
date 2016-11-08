@@ -1,8 +1,0 @@
-<project default="copy-resources">
-  <target name="init"/>
-  <target name="copy-resources" depends="init">
-    <copy todir="target/classes/Users/mdavis/proj/jts-lt/git-lt/jts/modules/app/target/classes/org/locationtech/jtstest/testbuilder" filtering="false">
-      <fileset dir="src/main/java/org/locationtech/jtstest/testbuilder" includes="*.gif|*.png" excludes="**/*.java"/>
-    </copy>
-  </target>
-</project>
