@@ -12,3 +12,39 @@ The other modules are tools or optional extensions.
 * `jts-io` - I/O classes for open spatial formats
 * `jts-ora` - Oracle reader and writer
 * `jts-sde` - SDE reader and writer
+
+## Using JTS with Maven
+
+To include JTS in your Maven project, add a dependency block like the next one.
+
+```xml
+<dependency>
+    <groupId>org.locationtech.jts</groupId>
+    <artifactId>jts-core</artifactId>
+    <version>${jts.version}</version>
+</dependency>
+```
+
+JTS snapshot artifacts are published to the LocationTech Maven repository. To include JTS in your project, add the following repositories to your pom.
+
+```xml
+<repositories>
+  <repository>
+    <id>locationtech-releases</id>
+    <url>https://repo.locationtech.org/content/groups/releases</url>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </repository>
+  <repository>
+    <id>jts-snapshots</id>
+    <url>https://repo.locationtech.org/content/repositories/jts-snapshots</url>
+    <releases>
+      <enabled>false</enabled>
+    </releases>
+	<snapshots>
+      <enabled>true</enabled>
+    </snapshots>
+   </repository>
+</repositories>
+```
