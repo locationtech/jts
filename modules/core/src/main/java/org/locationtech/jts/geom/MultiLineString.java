@@ -120,5 +120,8 @@ public class MultiLineString
     return super.equalsExact(other, tolerance);
   }
 
+  protected int getSortIndex() {
+    return Geometry.SORTINDEX_MULTILINESTRING;
+  }
 }
 

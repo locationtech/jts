@@ -207,6 +207,10 @@ public class Point
     Point point = (Point) other;
     return comp.compare(this.coordinates, point.coordinates);
   }
+  
+  protected int getSortIndex() {
+    return Geometry.SORTINDEX_POINT;
+  }
 
   public CoordinateSequence getCoordinateSequence() {
     return coordinates;
