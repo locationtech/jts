@@ -105,7 +105,7 @@ public class WKBHexFileReader
 	 * 
 	 * @return the list of geometries read
 	 * @throws IOException if an I/O exception was encountered
-	 * @throws ParseException if an error occured reading a geometry
+	 * @throws ParseException if an error occurred reading a geometry
 	 */
 	public List read() 
 	throws IOException, ParseException 

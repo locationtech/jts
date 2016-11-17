@@ -83,7 +83,7 @@ public class Angle
    * Tests whether the angle between p0-p1-p2 is acute.
    * An angle is acute if it is less than 90 degrees.
    * <p>
-   * Note: this implementation is not precise (determistic) for angles very close to 90 degrees.
+   * Note: this implementation is not precise (deterministic) for angles very close to 90 degrees.
    *
    * @param p0 an endpoint of the angle
    * @param p1 the base of the angle
@@ -104,7 +104,7 @@ public class Angle
    * Tests whether the angle between p0-p1-p2 is obtuse.
    * An angle is obtuse if it is greater than 90 degrees.
    * <p>
-   * Note: this implementation is not precise (determistic) for angles very close to 90 degrees.
+   * Note: this implementation is not precise (deterministic) for angles very close to 90 degrees.
    *
    * @param p0 an endpoint of the angle
    * @param p1 the base of the angle

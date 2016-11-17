@@ -92,7 +92,7 @@ public class Polygonizer
   }
   
   /**
-   * Creates a polygonizer and allow specifyng if only polygons which form a valid polygonal geometry are to be extracted.
+   * Creates a polygonizer and allow specifying if only polygons which form a valid polygonal geometry are to be extracted.
    * 
    * @param extractOnlyPolygonal true if only polygons which form a valid polygonal geometry are to be extracted
    */
@@ -324,7 +324,7 @@ public class Polygonizer
 
   /**
    * For each outer hole finds and includes a single outer shell.
-   * This seeds the travesal algorithm for finding only polygonal shells.
+   * This seeds the traversal algorithm for finding only polygonal shells.
    *  
    * @param shellList the list of shell EdgeRings
    */

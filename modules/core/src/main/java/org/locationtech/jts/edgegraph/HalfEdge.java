@@ -344,7 +344,7 @@ public class HalfEdge {
 
   /**
    * Finds the first node previous to this edge, if any.
-   * If no such node exists (i.e the edge is part of a ring)
+   * If no such node exists (i.e. the edge is part of a ring)
    * then null is returned.
    * 
    * @return an edge originating at the node prior to this edge, if any,

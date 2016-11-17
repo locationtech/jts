@@ -98,7 +98,7 @@ public class MCIndexSnapRounder
 
   /**
    * Computes all interior intersections in the collection of {@link SegmentString}s,
-   * and returns their @link Coordinate}s.
+   * and returns their {@link Coordinate}s.
    *
    * Does NOT node the segStrings.
    *

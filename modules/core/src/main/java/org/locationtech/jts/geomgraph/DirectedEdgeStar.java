@@ -281,7 +281,7 @@ public class DirectedEdgeStar
   }
 
   /**
-   * Traverse the star of edges, maintaing the current location in the result
+   * Traverse the star of edges, maintaining the current location in the result
    * area at this node (if any).
    * If any L edges are found in the interior of the result, mark them as covered.
    */

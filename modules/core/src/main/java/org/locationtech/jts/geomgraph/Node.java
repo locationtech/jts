@@ -47,7 +47,7 @@ public class Node
    * This test can be used to determine if the node is in the result,
    * since if any incident edge is in the result, the node must be in the result as well.
    *
-   * @return <code>true</code> if any indicident edge in the in the result
+   * @return <code>true</code> if any incident edge in the in the result
    */
   public boolean isIncidentEdgeInResult()
   {

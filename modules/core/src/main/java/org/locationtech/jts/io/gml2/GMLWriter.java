@@ -86,7 +86,7 @@ public class GMLWriter {
 	 * Creates a writer which may emit the GML namespace prefix 
 	 * declaration in the geometry root element.
 	 * 
-	 * @param emitNamespace trueif the GML namespace prefix declaration should be written
+	 * @param emitNamespace true if the GML namespace prefix declaration should be written
 	 *  in the geometry root element
 	 */
 	public GMLWriter(boolean emitNamespace) {

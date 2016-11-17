@@ -119,7 +119,7 @@ public class ConformingDelaunayTriangulator
 	 * The unique set of vertices (as {@link ConstraintVertex}es) 
 	 * forming the constraints must also be supplied.
 	 * Supplying it explicitly allows the ConstraintVertexes to be initialized
-	 * appropriately(e.g. with external data), and avoids re-computing the unique set
+	 * appropriately (e.g. with external data), and avoids re-computing the unique set
 	 * if it is already available.
 	 * 
 	 * @param segments a list of the constraint {@link Segment}s
