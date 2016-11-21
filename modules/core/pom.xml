@@ -8,7 +8,7 @@
     </parent>
     <artifactId>jts-core</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
 
     <build>
       <plugins>
@@ -46,7 +46,6 @@
                         <Bundle-SymbolicName>${pom.groupId}.${pom.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${pom.artifactId}</Bundle-Name>              
                         <Bundle-Version>1.15.0-SNAPSHOT</Bundle-Version>
-                        <Import-Package>org.locationtech.jts,org.locationtech.jts.*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
