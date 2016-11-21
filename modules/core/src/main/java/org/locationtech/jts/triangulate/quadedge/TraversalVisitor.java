@@ -13,7 +13,7 @@
 package org.locationtech.jts.triangulate.quadedge;
 
 /**
- * Interface for classes which process triangles visited during travesals of a
+ * Interface for classes which process triangles visited during traversals of a
  * {@link QuadEdgeSubdivision}
  * 
  * @author Martin Davis

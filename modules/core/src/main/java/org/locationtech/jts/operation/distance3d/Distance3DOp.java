@@ -29,7 +29,7 @@ import org.locationtech.jts.operation.distance.GeometryLocation;
  * <p>
  * 3D geometries have vertex Z ordinates defined.
  * 3D {@link Polygon}s are assumed to lie in a single plane (which is enforced if not actually the case).
- * 3D {@link LineString}s and {link Point}s may have any configuration.
+ * 3D {@link LineString}s and {@link Point}s may have any configuration.
  * <p>
  * The distance computation also finds a pair of points in the input geometries
  * which have the minimum distance between them. If a point lies in the interior

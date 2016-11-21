@@ -22,8 +22,8 @@ import org.locationtech.jts.triangulate.quadedge.Vertex;
 
 
 /**
- * Computes a Delauanay Triangulation of a set of {@link Vertex}es, using an
- * incrementatal insertion algorithm.
+ * Computes a Delaunay Triangulation of a set of {@link Vertex}es, using an
+ * incremental insertion algorithm.
  * 
  * @author Martin Davis
  * @version 1.0

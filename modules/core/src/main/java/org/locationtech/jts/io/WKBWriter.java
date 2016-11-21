@@ -30,7 +30,7 @@ import org.locationtech.jts.util.Assert;
 /**
  * Writes a {@link Geometry} into Well-Known Binary format.
  * Supports use of an {@link OutStream}, which allows easy use
- * with arbitary byte stream sinks.
+ * with arbitrary byte stream sinks.
  * <p>
  * The WKB format is specified in the 
  * OGC <A HREF="http://www.opengis.org/techno/specs.htm"><i>Simple Features for SQL</i></a>

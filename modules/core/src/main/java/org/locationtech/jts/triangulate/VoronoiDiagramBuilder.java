@@ -143,7 +143,7 @@ public class VoronoiDiagramBuilder
 	 * This allows using a <tt>Map</tt> to link faces to data associated with sites.
 	 * 
 	 * @param geomFact the geometry factory to use to create the output
-	 * @return a <tt>GeometryCollection</tt> containg the face <tt>Polgyon</tt>s of the diagram
+	 * @return a <tt>GeometryCollection</tt> containing the face <tt>Polygon</tt>s of the diagram
 	 */
 	public Geometry getDiagram(GeometryFactory geomFact)
 	{

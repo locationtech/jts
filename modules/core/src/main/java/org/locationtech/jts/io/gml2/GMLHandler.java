@@ -49,7 +49,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class GMLHandler extends DefaultHandler {
 
 	/**
-	 * This class is intended to log the SAX acitivity within a given element until its termination. 
+	 * This class is intended to log the SAX activity within a given element until its termination.
 	 * At this time, a new object of value is created and passed to the parent. 
 	 * An object of value is typically either java.lang.* or a JTS Geometry
 	 * This class is not intended for use outside this distribution, 

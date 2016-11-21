@@ -44,7 +44,7 @@ public class ValidSelfTouchingRingFormingHoleTest
   }
 
   /**
-   * Tests a geometry with both a shell self-touch and a hole self=touch.
+   * Tests a geometry with both a shell self-touch and a hole self-touch.
    * This is valid if STR is allowed, but invalid in OGC
    */
   public void testShellAndHoleSelfTouch()

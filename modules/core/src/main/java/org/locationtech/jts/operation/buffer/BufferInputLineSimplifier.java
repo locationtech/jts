@@ -202,7 +202,7 @@ public class BufferInputLineSimplifier
   
   /**
    * Checks for shallowness over a sample of points in the given section.
-   * This helps prevents the siplification from incrementally  
+   * This helps prevents the simplification from incrementally
    * "skipping" over points which are in fact non-shallow.
    * 
    * @param p0 start coordinate of section

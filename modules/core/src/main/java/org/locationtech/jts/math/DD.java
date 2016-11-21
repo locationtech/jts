@@ -36,7 +36,7 @@ import java.io.Serializable;
  * This is the Java standard arithmetic model, but for performance reasons 
  * Java implementations are not
  * constrained to using this standard by default.  
- * Some processors (notably the Intel Pentium architecure) perform
+ * Some processors (notably the Intel Pentium architecture) perform
  * floating point operations in (non-IEEE-754-standard) extended-precision.
  * A JVM implementation may choose to use the non-standard extended-precision
  * as its default arithmetic mode.

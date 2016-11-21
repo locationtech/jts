@@ -78,16 +78,18 @@
      </scm>
 
     <!-- PUBLISHING -->
-    <!--distributionManagement>
-      <snapshotRepository>
-        <id>ossrh</id>
-        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      </snapshotRepository>
-      <repository>
-        <id>ossrh</id>
-        <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-      </repository>
-    </distributionManagement-->
+    <distributionManagement>
+        <repository>
+            <id>repo.locationtech.org</id>
+            <name>JTS Repository - Releases</name>
+            <url>https://repo.locationtech.org/content/repositories/jts-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>repo.locationtech.org</id>
+            <name>JTS Repository - Snapshots</name>
+            <url>https://repo.locationtech.org/content/repositories/jts-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
     
     <dependencyManagement>
       <dependencies>

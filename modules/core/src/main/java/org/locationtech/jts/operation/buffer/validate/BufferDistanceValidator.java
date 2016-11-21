@@ -163,7 +163,7 @@ public class BufferDistanceValidator
   }
   
   /**
-   * Checks that two geometries are at least a minumum distance apart.
+   * Checks that two geometries are at least a minimum distance apart.
    * 
    * @param g1 a geometry
    * @param g2 a geometry

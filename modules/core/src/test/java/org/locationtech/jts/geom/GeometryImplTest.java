@@ -41,6 +41,43 @@ public class GeometryImplTest extends TestCase {
         return new TestSuite(GeometryImplTest.class);
     }
 
+    public void testComparable() throws Exception {
+        Geometry point = reader.read("POINT EMPTY");
+        Geometry lineString = reader.read("LINESTRING EMPTY");
+        Geometry linearRing = reader.read("LINEARRING EMPTY");
+        Geometry polygon = reader.read("POLYGON EMPTY");
+        Geometry mpoint = reader.read("MULTIPOINT EMPTY");
+        Geometry mlineString = reader.read("MULTILINESTRING EMPTY");
+        Geometry mpolygon = reader.read("MULTIPOLYGON EMPTY");
+        Geometry gc = reader.read("GEOMETRYCOLLECTION EMPTY");
+
+        Geometry[] geometries = new Geometry[] {
+            gc,
+            mpolygon,
+            mlineString,
+            mpoint,
+            polygon,
+            linearRing,
+            lineString,
+            point
+        };
+
+        Geometry[] geometriesExpectedOrder = new Geometry[] {
+            point,
+            mpoint,
+            lineString,
+            linearRing,
+            mlineString,
+            polygon,
+            mpolygon,
+            gc
+        };
+
+        Arrays.sort(geometries);
+
+        assertTrue(Arrays.equals(geometries, geometriesExpectedOrder));
+    }
+
     public void testPolygonRelate() throws Exception {
         Geometry bigPolygon = reader.read(
                 "POLYGON ((0 0, 0 50, 50 50, 50 0, 0 0))");
@@ -81,7 +118,7 @@ public class GeometryImplTest extends TestCase {
 
     private void doTestFromCommcast2003AtYahooDotCa(WKTReader reader)
         throws ParseException {
-    	readerFloat.read(
+        readerFloat.read(
             "POLYGON ((708653.498611049 2402311.54647056, 708708.895756966 2402203.47250014, 708280.326454234 2402089.6337791, 708247.896591321 2402252.48269854, 708367.379593851 2402324.00761653, 708248.882609455 2402253.07294874, 708249.523621829 2402244.3124463, 708261.854734465 2402182.39086576, 708262.818392579 2402183.35452387, 708653.498611049 2402311.54647056))")
               .intersection(reader.read(
                 "POLYGON ((708258.754920656 2402197.91172757, 708257.029447455 2402206.56901508, 708652.961095455 2402312.65463437, 708657.068786251 2402304.6356364, 708258.754920656 2402197.91172757))"));

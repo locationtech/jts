@@ -427,8 +427,8 @@ public class IsValidOp
   /**
    * Tests that each hole is inside the polygon shell.
    * This routine assumes that the holes have previously been tested
-   * to ensure that all vertices lie on the shell oon the same side of it
-   * (i.e that the hole rings do not cross the shell ring).
+   * to ensure that all vertices lie on the shell or on the same side of it
+   * (i.e. that the hole rings do not cross the shell ring).
    * In other words, this test is only correct if the ConsistentArea test is passed first.
    * Given this, a simple point-in-polygon test of a single point in the hole can be used,
    * provided the point is chosen such that it does not lie on the shell.
