@@ -22,6 +22,7 @@
         <module>core</module>
         <module>example</module>
         <module>io</module>
+        <module>tests</module>
         <module>app</module>
     </modules>
     

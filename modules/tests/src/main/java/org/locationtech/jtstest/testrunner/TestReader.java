@@ -537,7 +537,7 @@ public class TestReader
     {
       String geomText = null;
       if (wktFile != null) {
-        List wktList = FileUtil.getContents(wktFile.getPath());
+        List wktList = getContents(wktFile.getPath());
         geomText = toString(wktList);
       }
       else {
@@ -576,4 +576,20 @@ public class TestReader
         }
         return absoluteWktFile;
     }
+    
+    /**
+     * Returns a List of the String's in the text file, one per line.
+     */
+    public static List getContents(String textFileName) throws FileNotFoundException, IOException {
+        List contents = new Vector();
+        FileReader fileReader = new FileReader(textFileName);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        String line = bufferedReader.readLine();
+        while (line != null) {
+            contents.add(line);
+            line = bufferedReader.readLine();
+        }
+        return contents;
+    }
+
 }
