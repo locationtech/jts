@@ -35,7 +35,7 @@ public class CoreGeometryXMLTest extends TestCase {
 //    }
 
     public void testGeneral() {
-        testFiles("../tests/src/main/resources/testxml/general");
+        testFiles("src/test/resources/testxml/general");
     }
 
 //    public void testRobust() {
@@ -47,7 +47,7 @@ public class CoreGeometryXMLTest extends TestCase {
 //    }
 
     public void testValidate() {
-        testFiles("../tests/src/main/resources/testxml/validate");
+        testFiles("src/test/resources/testxml/validate");
     }
 
     private void testFiles(String directoryName) {
