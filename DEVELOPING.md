@@ -28,7 +28,7 @@ The JTS build chain uses Maven.  Build commands are executed at the project root
 
 * Build Javadoc for core modules
 
-       mvn javadoc:aggregate
+        mvn javadoc:aggregate
 
 ## Eclipse Configuration
 
