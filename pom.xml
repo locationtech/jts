@@ -7,7 +7,7 @@
     <version>1.15.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>${project.groupId}:${project.artifactId}</name>
+    <name>JTS Topology Suite</name>
     <url>https://www.locationtech.org/projects/technology.jts</url>
     <description>The JTS Topology Suite is an API for 2D linear geometry predicates and functions.</description>
 
@@ -148,6 +148,45 @@
             </excludes>
           </configuration>
         </plugin>
+
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-javadoc-plugin</artifactId>
+			<version>2.10.4</version>
+			<configuration>
+				<show>public</show>
+				<header>${project.name} ${project.version}</header>
+				<footer>${project.name} ${project.version}</footer>
+				<overview>${basedir}/modules/core/src/main/javadoc/overview.html</overview>
+				
+				<excludePackageNames>org.locationtech.jtsexample.*,org.locationtech.jtstest,org.locationtech.jtstest.*</excludePackageNames>
+				
+				<groups>
+					<group>
+					  <title>Core - Geometry</title>
+					  <packages>org.locationtech.jts.geom:org.locationtech.jts.geom.*</packages>
+					</group>
+					<group>
+					  <title>Core - I/O</title>
+					  <packages>org.locationtech.jts.io</packages>
+					</group>
+					<group>
+					  <title>Core - Algorithms</title>
+					  <packages>org.locationtech.jts.algorithm:org.locationtech.jts.algorithm.*:org.locationtech.jts.densify:org.locationtech.jts.dissolve:org.locationtech.jts.linearref:org.locationtech.jts.operation.*:org.locationtech.jts.simplify:org.locationtech.jts.triangulate</packages>
+					</group>
+					<group>
+					  <title>Core - Other</title>
+					  <packages>org.locationtech.jts:org.locationtech.jts.*</packages>
+					</group>
+					<group>
+					  <title>I/O - Common</title>
+					  <packages>org.locationtech.jts.io.*</packages>
+					</group>
+				</groups>
+				
+			</configuration>
+		</plugin>
+
       </plugins>
     </build>
 
