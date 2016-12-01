@@ -7,8 +7,14 @@ body {
 .header {
 	background-color: #1f3963;
 	color: white;
-	font-size: 20pt;
-	padding: 10px;
+	font-size: 40px;
+	padding: 5px;
+}
+.header-text {
+	display: inline-block;
+	padding-top: 10px;
+	margin-left: 10px;
+	vertical-align: top;
 }
 .content {
 	margin: 10px;
