@@ -1,0 +1,15 @@
+body {
+	font-family: "Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
+	background: #DFF0FF;
+	margin: 0px;
+
+}
+.header {
+	background-color: #1f3963;
+	color: white;
+	font-size: 20pt;
+	padding: 10px;
+}
+.content {
+	margin: 10px;
+}
