@@ -21,8 +21,8 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-public class TestRunnerTest extends TestCase {
-    public TestRunnerTest(String name) {
+public class CoreGeometryXMLTest extends TestCase {
+    public CoreGeometryXMLTest(String name) {
         super(name);
     }
 
@@ -35,7 +35,7 @@ public class TestRunnerTest extends TestCase {
 //    }
 
     public void testGeneral() {
-        testFiles("../core/src/test/resources/testxml/general");
+        testFiles("src/test/resources/testxml/general");
     }
 
 //    public void testRobust() {
@@ -47,7 +47,7 @@ public class TestRunnerTest extends TestCase {
 //    }
 
     public void testValidate() {
-        testFiles("../core/src/test/resources/testxml/validate");
+        testFiles("src/test/resources/testxml/validate");
     }
 
     private void testFiles(String directoryName) {

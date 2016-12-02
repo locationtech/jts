@@ -56,7 +56,6 @@ import org.locationtech.jtstest.command.CommandLine;
 import org.locationtech.jtstest.command.Option;
 import org.locationtech.jtstest.command.OptionSpec;
 import org.locationtech.jtstest.command.ParseException;
-import org.locationtech.jtstest.function.*;
 import org.locationtech.jtstest.geomop.*;
 import org.locationtech.jtstest.util.StringUtil;
 
@@ -101,8 +100,9 @@ public class TopologyTestApp extends JFrame {
 
   private static CommandLine commandLine;
 
+  
   private static GeometryFunctionRegistry funcRegistry 
-  	= new GeometryFunctionRegistry(TestCaseGeometryFunctions.class);
+	= new GeometryFunctionRegistry(TestCaseGeometryFunctions.class);
   private static GeometryOperation defaultOp = new GeometryFunctionOperation(funcRegistry);
   private static GeometryOperation geometryOp = defaultOp;
 
@@ -226,11 +226,13 @@ public class TopologyTestApp extends JFrame {
         System.out.println("Using Geometry Operation: " + geomOpClassname);
       }
       
+      /*
       if (commandLine.hasOption(OPT_GEOMFUNC)) {
         String geomFuncClassname = commandLine.getOption(OPT_GEOMFUNC).getArg(0);
         System.out.println("Adding Geometry Functions from: " + geomFuncClassname);
         funcRegistry.add(geomFuncClassname);
       }
+      */
       
       if (commandLine.hasOption(OPT_TESTCASEINDEX)) 
       {

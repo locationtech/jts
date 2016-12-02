@@ -10,13 +10,12 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
 package org.locationtech.jtstest.testrunner;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.io.*;
 
 import org.locationtech.jts.util.Assert;
-import org.locationtech.jtstest.testbuilder.AppStrings;
 import org.locationtech.jtstest.util.StringUtil;
 
 
@@ -27,7 +26,8 @@ import org.locationtech.jtstest.util.StringUtil;
 public class SimpleReportWriter implements ReportWriter
 {
 
-  private boolean verbose;
+  private static final String LABEL_TEST_CASE = "Case";
+private boolean verbose;
   private StringWriter reportBuf;
 
   public SimpleReportWriter(boolean verbose) { this.verbose = verbose; }
@@ -144,7 +144,7 @@ public class SimpleReportWriter implements ReportWriter
       return;
     }
     reportBuf.write("\n");
-    reportBuf.write(AppStrings.LABEL_TEST_CASE + " " + testCase.getTestRun().getTestFile().getName()
+    reportBuf.write(LABEL_TEST_CASE + " " + testCase.getTestRun().getTestFile().getName()
                     + " - #" + testCase.getCaseIndex()
                     + " (" + testCase.getLineNumber() + ")"
         + (testCase.getDescription().length() > 0 ? ": " + testCase.getDescription() :

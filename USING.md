@@ -2,16 +2,23 @@
 
 ## Project Structure
 
-JTS consists of several Java modules,
-each one corresponding to a separate JAR file.
-Only `jts-core` is needed to use the library in an application.
-The other modules are tools or optional extensions.
+JTS consists of several Java modules.
+Each one corresponds to a separate JAR file.
 
-* `jts-core` - The JTS geometry model and operations
-* `jts-app` - Applications for working with JTS, including the TestBuilder GUI
-* `jts-io` - I/O classes for open spatial formats
-* `jts-ora` - Oracle reader and writer
-* `jts-sde` - SDE reader and writer
+The core modules are:
+
+* `jts-core` - The JTS  core: geometry model, operations, algorithms, and spatial data structures
+* `jts-io-common` - I/O classes for open spatial formats
+
+The following modules depend on proprietary libraries, and are not built by default:
+
+* `jts-io-ora` - Oracle reader and writer
+* `jts-io-sde` - SDE reader and writer
+
+The following modules are applications and data for testing and working with JTS
+
+* `jts-tests` - The JTS XML test suite and the Test Runner application
+* `jts-app` -The TestBuilder GUI, for working with JTS geometry interactively
 
 ## Using JTS with Maven
 
