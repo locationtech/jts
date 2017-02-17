@@ -1,6 +1,6 @@
 
 /*
- * Copyright (c) 2016 Jia Yu.
+ * Copyright (c) 2017 Jia Yu.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -9,7 +9,8 @@
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
- */package org.locationtech.jts.index;
+ */
+package org.locationtech.jts.index;
 
 import java.io.Serializable;
 import java.util.Comparator;
