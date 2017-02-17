@@ -264,15 +264,18 @@ implements SpatialIndex, Serializable
     return nearestNeighbour(bp);
   }
   /**
-   * Finds k items in this tree which are the top k nearest neighbors to the given {@link Object}, 
-   * using {@link ItemDistance} as the distance metric.
+   * Finds k items in this tree which are the top k nearest neighbors to the given {@code item}, 
+   * using {@code itemDist} as the distance metric.
    * A Branch-and-Bound tree traversal algorithm is used
-   * to provide an efficient search. This method implements the KNN algorithm described in the following paper:
-   * Roussopoulos, Nick, Stephen Kelley, and Frédéric Vincent. "Nearest neighbor queries." ACM sigmod record. Vol. 24. No. 2. ACM, 1995.
+   * to provide an efficient search.
+   * This method implements the KNN algorithm described in the following paper:
    * <p>
-   * The query <tt>object</tt> does <b>not</b> have to be 
+   * Roussopoulos, Nick, Stephen Kelley, and Frédéric Vincent. "Nearest neighbor queries."
+   * ACM sigmod record. Vol. 24. No. 2. ACM, 1995.
+   * <p>
+   * The query {@code item} does <b>not</b> have to be 
    * contained in the tree, but it does 
-   * have to be compatible with the <tt>itemDist</tt> 
+   * have to be compatible with the {@code itemDist} 
    * distance metric. 
    * 
    * @param env the envelope of the query item
@@ -281,7 +284,7 @@ implements SpatialIndex, Serializable
    * @param k the K nearest items in kNearestNeighbour
    * @return the K nearest items in this tree
    */
-  public Object[] kNearestNeighbour(Envelope env, Object item, ItemDistance itemDist,int k)
+  public Object[] nearestNeighbour(Envelope env, Object item, ItemDistance itemDist,int k)
   {
     Boundable bnd = new ItemBoundable(env, item);
     BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
