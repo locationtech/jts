@@ -479,14 +479,22 @@ implements SpatialIndex, Serializable
     }
     // done - return items with min distance
 
-    Object[] result = new Object[kNearestNeighbors.size()];
-    Iterator<BoundablePair> resultIterator = kNearestNeighbors.iterator();
-    int count=0;
-    while(resultIterator.hasNext())
-    {
-    	result[count]=((ItemBoundable)resultIterator.next().getBoundable(0)).getItem();
-    	count++;
-    }
-    return result;
+    return getItems(kNearestNeighbors);
+  }
+  private static Object[] getItems(java.util.PriorityQueue<BoundablePair> kNearestNeighbors)
+  {
+	  /** 
+	   * Iterate the K Nearest Neighbour Queue and retrieve the item from each BoundablePair
+	   * in this queue
+	   */
+	  Object[] items = new Object[kNearestNeighbors.size()];
+	  Iterator<BoundablePair> resultIterator = kNearestNeighbors.iterator();
+	  int count=0;
+	  while(resultIterator.hasNext())
+	  {
+		  items[count]=((ItemBoundable)resultIterator.next().getBoundable(0)).getItem();
+		  count++;
+	  }	
+	  return items;
   }
 }
