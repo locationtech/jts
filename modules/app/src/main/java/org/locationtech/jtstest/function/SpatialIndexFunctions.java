@@ -27,6 +27,7 @@ import org.locationtech.jts.index.kdtree.KdTree;
 import org.locationtech.jts.index.quadtree.Quadtree;
 import org.locationtech.jts.index.strtree.AbstractNode;
 import org.locationtech.jts.index.strtree.Boundable;
+import org.locationtech.jts.index.strtree.GeometryItemDistance;
 import org.locationtech.jts.index.strtree.STRtree;
 
 
@@ -109,6 +110,13 @@ public class SpatialIndexFunctions
     return index;
   }
   
+  public static Geometry strTreeNN(Geometry geoms, Geometry geom)
+  {
+    STRtree index = buildSTRtree(geoms);
+    Object result = index.nearestNeighbour(geom.getEnvelopeInternal(), geom, new GeometryItemDistance());
+    return (Geometry) result;
+  }
+
   public static Geometry quadTreeQuery(Geometry geoms, Geometry queryEnv)
   {
     Quadtree index = buildQuadtree(geoms);
