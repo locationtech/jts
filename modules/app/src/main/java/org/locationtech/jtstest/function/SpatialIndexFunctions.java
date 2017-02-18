@@ -117,6 +117,14 @@ public class SpatialIndexFunctions
     return (Geometry) result;
   }
 
+  public static Geometry[] strTreeNNk(Geometry geoms, Geometry geom)
+  {
+    STRtree index = buildSTRtree(geoms);
+    int k = 10;
+    Object[] result = index.nearestNeighbour(geom.getEnvelopeInternal(), geom, new GeometryItemDistance(), k);
+    return (Geometry[]) result;
+  }
+  
   public static Geometry quadTreeQuery(Geometry geoms, Geometry queryEnv)
   {
     Quadtree index = buildQuadtree(geoms);
