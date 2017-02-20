@@ -117,12 +117,19 @@ public class SpatialIndexFunctions
     return (Geometry) result;
   }
 
-  public static Geometry[] strTreeNNk(Geometry geoms, Geometry geom)
+  public static Geometry strTreeNNk(Geometry geoms, Geometry geom)
   {
     STRtree index = buildSTRtree(geoms);
-    int k = 10;
-    Object[] result = index.nearestNeighbour(geom.getEnvelopeInternal(), geom, new GeometryItemDistance(), k);
-    return (Geometry[]) result;
+    int k = 2;
+    Object[] knnObjects = index.nearestNeighbour(geom.getEnvelopeInternal(), geom, new GeometryItemDistance(), k);
+    Geometry[] knnGeoms = new Geometry[k];
+    // Use a loop to cast objects to geometries.
+    for(int i=0;i<k;i++)
+    {
+    	knnGeoms[i] = (Geometry) knnObjects[i];
+    }
+    GeometryCollection geometryCollection = geoms.getFactory().createGeometryCollection(knnGeoms);
+    return geometryCollection;
   }
   
   public static Geometry quadTreeQuery(Geometry geoms, Geometry queryEnv)
