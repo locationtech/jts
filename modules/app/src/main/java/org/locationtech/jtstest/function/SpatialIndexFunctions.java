@@ -14,6 +14,7 @@ package org.locationtech.jtstest.function;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -117,18 +118,12 @@ public class SpatialIndexFunctions
     return (Geometry) result;
   }
 
-  public static Geometry strTreeNNk(Geometry geoms, Geometry geom)
+  public static Geometry strTreeNNk(Geometry geoms, Geometry geom, int k)
   {
     STRtree index = buildSTRtree(geoms);
-    int k = 2;
     Object[] knnObjects = index.nearestNeighbour(geom.getEnvelopeInternal(), geom, new GeometryItemDistance(), k);
-    Geometry[] knnGeoms = new Geometry[k];
-    // Use a loop to cast objects to geometries.
-    for(int i=0;i<k;i++)
-    {
-    	knnGeoms[i] = (Geometry) knnObjects[i];
-    }
-    GeometryCollection geometryCollection = geoms.getFactory().createGeometryCollection(knnGeoms);
+    List knnGeoms = new ArrayList(Arrays.asList(knnObjects));
+    Geometry geometryCollection = geoms.getFactory().buildGeometry(knnGeoms);
     return geometryCollection;
   }
   
