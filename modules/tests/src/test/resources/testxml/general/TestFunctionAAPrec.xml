@@ -310,11 +310,6 @@
       (10 30, 10 0, 30 10, 30 30, 10 30))
   </b>
 <test>
-  <op name="relate" arg3="212111212" arg1="A" arg2="B">
-    true
-  </op>
-</test>
-<test>
   <op name="intersection" arg1="A" arg2="B">
     MULTILINESTRING(
       (10 30, 10 10), 
@@ -358,11 +353,6 @@
     POLYGON(
       (10 30, 10 10, 30 10, 30 30, 10 30))
   </b>
-<test>
-  <op name="relate" arg3="212111212" arg1="A" arg2="B">
-    true
-  </op>
-</test>
 <test>
   <op name="intersection" arg1="A" arg2="B">
     MULTILINESTRING(
@@ -408,11 +398,6 @@
       (90 90, 11 90, 10 10, 90 11, 90 90))
   </b>
 <test>
-  <op name="relate" arg3="212111212" arg1="A" arg2="B">
-    true
-  </op>
-</test>
-<test>
   <op name="intersection" arg1="A" arg2="B">
     MULTILINESTRING(
       (10 30, 10 10), 
@@ -455,11 +440,6 @@
     POLYGON(
       (280 60, 139 60, 280 70, 280 60))
   </b>
-<test>
-  <op name="relate" arg3="212101212" arg1="A" arg2="B">
-    true
-  </op>
-</test>
 <test>
   <op name="intersection" arg1="A" arg2="B">
     POINT(139 60)
