@@ -85,7 +85,6 @@ public class RelateOp
   public RelateOp(Geometry g0, Geometry g1)
   {
     super(g0, g1);
-    relate = new RelateComputer(arg);
   }
 
   /**
@@ -98,7 +97,6 @@ public class RelateOp
   public RelateOp(Geometry g0, Geometry g1, BoundaryNodeRule boundaryNodeRule)
   {
     super(g0, g1, boundaryNodeRule);
-    relate = new RelateComputer(arg);
   }
 
   /**
@@ -109,6 +107,8 @@ public class RelateOp
    */
   public IntersectionMatrix getIntersectionMatrix()
   {
+    if (relate == null) 
+    	relate = new RelateComputer(arg, super.li);
     return relate.computeIM();
   }
 

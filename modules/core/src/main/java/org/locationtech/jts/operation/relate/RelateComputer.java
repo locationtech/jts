@@ -28,6 +28,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.IntersectionMatrix;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geomgraph.Edge;
 import org.locationtech.jts.geomgraph.EdgeEnd;
 import org.locationtech.jts.geomgraph.EdgeIntersection;
@@ -43,7 +44,7 @@ import org.locationtech.jts.util.Assert;
  * <p>
  * RelateComputer does not need to build a complete graph structure to compute
  * the IntersectionMatrix.  The relationship between the geometries can
- * be computed by simply examining the labelling of edges incident on each node.
+ * be computed by simply examining the labeling of edges incident on each node.
  * <p>
  * RelateComputer does not currently support arbitrary GeometryCollections.
  * This is because GeometryCollections can contain overlapping Polygons.
@@ -55,21 +56,33 @@ import org.locationtech.jts.util.Assert;
  */
 public class RelateComputer
 {
-  private LineIntersector li = new RobustLineIntersector();
+  private LineIntersector li; // = new RobustLineIntersector();
   private PointLocator ptLocator = new PointLocator();
-  private GeometryGraph[] arg;  // the arg(s) of the operation
+  private GeometryGraph[] arg;  // the argument(s) of the operation
   private NodeMap nodes = new NodeMap(new RelateNodeFactory());
   // this intersection matrix will hold the results compute for the relate
   private IntersectionMatrix im = null;
   private ArrayList isolatedEdges = new ArrayList();
 
   // the intersection point found (if any)
-  private Coordinate invalidPoint;
+  //private Coordinate invalidPoint;
 
+  //@Deprecated
   public RelateComputer(GeometryGraph[] arg) {
-    this.arg = arg;
+	    this(arg, (PrecisionModel)null);
   }
 
+  public RelateComputer(GeometryGraph[] arg, PrecisionModel precisionModel) {
+    this.arg = arg;
+    li = new RobustLineIntersector();
+    li.setPrecisionModel(precisionModel);
+  }
+
+  public RelateComputer(GeometryGraph[] arg, LineIntersector lineIntersector) {
+	    this.arg = arg;
+	    this.li = lineIntersector;
+	  }  
+  
   public IntersectionMatrix computeIM()
   {
     IntersectionMatrix im = new IntersectionMatrix();
@@ -91,13 +104,13 @@ public class RelateComputer
     computeIntersectionNodes(0);
     computeIntersectionNodes(1);
     /**
-     * Copy the labelling for the nodes in the parent Geometries.  These override
+     * Copy the labeling for the nodes in the parent Geometries.  These override
      * any labels determined by intersections between the geometries.
      */
     copyNodesAndLabels(0);
     copyNodesAndLabels(1);
 
-    // complete the labelling for any nodes which only have a label for a single geometry
+    // complete the labeling for any nodes which only have a label for a single geometry
 //Debug.addWatch(nodes.find(new Coordinate(110, 200)));
 //Debug.printWatch();
     labelIsolatedNodes();
@@ -108,7 +121,7 @@ public class RelateComputer
 
     /**
      * Now process improper intersections
-     * (eg where one or other of the geometries has a vertex at the intersection point)
+     * (e.g. where one or other of the geometries has a vertex at the intersection point)
      * We need to compute the edge graph at all nodes to determine the IM.
      */
 
@@ -219,8 +232,8 @@ public class RelateComputer
    * Insert nodes for all intersections on the edges of a Geometry.
    * Label the created nodes the same as the edge label if they do not already have a label.
    * This allows nodes created by either self-intersections or
-   * mutual intersections to be labelled.
-   * Endpoint nodes will already be labelled from when they were inserted.
+   * mutual intersections to be labeled.
+   * Endpoint nodes will already be labeled from when they were inserted.
    */
   private void computeIntersectionNodes(int argIndex)
   {
@@ -244,8 +257,8 @@ public class RelateComputer
    * For all intersections on the edges of a Geometry,
    * label the corresponding node IF it doesn't already have a label.
    * This allows nodes created by either self-intersections or
-   * mutual intersections to be labelled.
-   * Endpoint nodes will already be labelled from when they were inserted.
+   * mutual intersections to be labeled.
+   * Endpoint nodes will already be labeled from when they were inserted.
    */
   private void labelIntersectionNodes(int argIndex)
   {
@@ -267,7 +280,7 @@ public class RelateComputer
   }
   /**
    * If the Geometries are disjoint, we need to enter their dimension and
-   * boundary dimension in the Ext rows in the IM
+   * boundary dimension in the Exterior rows in the IM
    */
   private void computeDisjointIM(IntersectionMatrix im)
   {
@@ -315,7 +328,7 @@ public class RelateComputer
   }
 
   /**
-   * Processes isolated edges by computing their labelling and adding them
+   * Processes isolated edges by computing their labeling and adding them
    * to the isolated edges list.
    * Isolated edges are guaranteed not to touch the boundary of the target (since if they
    * did, they would have caused an intersection to be computed and hence would
@@ -338,7 +351,7 @@ public class RelateComputer
    */
   private void labelIsolatedEdge(Edge e, int targetIndex, Geometry target)
   {
-    // this won't work for GeometryCollections with both dim 2 and 1 geoms
+    // this won't work for GeometryCollections with both dim 2 and 1 geometries
     if ( target.getDimension() > 0) {
     // since edge is not in boundary, may not need the full generality of PointLocator?
     // Possibly should use ptInArea locator instead?  We probably know here
@@ -356,9 +369,9 @@ public class RelateComputer
    * Isolated nodes are nodes whose labels are incomplete
    * (e.g. the location for one Geometry is null).
    * This is the case because nodes in one graph which don't intersect
-   * nodes in the other are not completely labelled by the initial process
+   * nodes in the other are not completely labeled by the initial process
    * of adding nodes to the nodeList.
-   * To complete the labelling we need to check for nodes that lie in the
+   * To complete the labeling we need to check for nodes that lie in the
    * interior of edges, and in the interior of areas.
    */
   private void labelIsolatedNodes()
