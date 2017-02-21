@@ -14,6 +14,7 @@ package org.locationtech.jtstest.function;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -117,6 +118,15 @@ public class SpatialIndexFunctions
     return (Geometry) result;
   }
 
+  public static Geometry strTreeNNk(Geometry geoms, Geometry geom, int k)
+  {
+    STRtree index = buildSTRtree(geoms);
+    Object[] knnObjects = index.nearestNeighbour(geom.getEnvelopeInternal(), geom, new GeometryItemDistance(), k);
+    List knnGeoms = new ArrayList(Arrays.asList(knnObjects));
+    Geometry geometryCollection = geoms.getFactory().buildGeometry(knnGeoms);
+    return geometryCollection;
+  }
+  
   public static Geometry quadTreeQuery(Geometry geoms, Geometry queryEnv)
   {
     Quadtree index = buildQuadtree(geoms);
