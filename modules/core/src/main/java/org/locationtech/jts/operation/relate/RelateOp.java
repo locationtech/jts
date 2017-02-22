@@ -133,7 +133,7 @@ public class RelateOp
       if (precisionModel == null || 
           precisionModel.getType() != PrecisionModel.FIXED ||
           (precisionModel.getType() == PrecisionModel.FIXED && 
-           precisionModel.getScale() <= 1.0e15))
+           precisionModel.getScale() > 1.0e15))
         throw tex;
       
       Debug.println(

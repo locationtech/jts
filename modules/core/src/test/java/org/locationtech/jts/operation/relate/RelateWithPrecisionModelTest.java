@@ -22,6 +22,7 @@ import org.locationtech.jts.geom.util.AffineTransformation;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
@@ -52,11 +53,46 @@ public class RelateWithPrecisionModelTest
     Geometry geomA = rdr.read("MULTIPOLYGON (((0 10, 10 10, 0 0, 0 10)), ((6 5, 10 5, 10 0, 6 0, 6 5)))");
     Geometry geomB = rdr.read("LINESTRING(5 6, 2 9)");
     
+    doTestRotationInvariant2(geomA, geomB);
     doTestRotationInvariant(geomA, geomB);
     
     // TODO Add others
   }
 
+  private void doTestRotationInvariant2(Geometry geomA, Geometry geomB) throws ParseException
+  {
+    PrecisionModel pm = new PrecisionModel(1);
+    
+    IntersectionMatrix im1 = getIntersectionMatrix(geomA, geomB, pm);
+    IntersectionMatrix im2 = getIntersectionMatrix(geomB, geomA, pm);
+    
+    System.out.println("Geometry A is\n" + geomA.toString());
+    System.out.println("Geometry B is\n" + geomB.toString());
+    System.out.println("Relate(A, B) is " + im1.toString());
+    System.out.println("Relate(B, A) is " + im2.toString());
+    IntersectionMatrix im3 = new IntersectionMatrix(im1);
+    im3.transpose();
+    System.out.println("Relate(A, B).transpose is " + im3.toString());
+    
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j ++) {
+        assertEquals(im1.get(i,  j), im2.get(j, i));
+        assertEquals(im2.get(i,  j), im3.get(i, j));
+      }
+    }
+    Assert.assertTrue("Results are rotational-invariant", true);
+    //assertEquals(rop1, rop2);
+  }
+  
+  private static IntersectionMatrix getIntersectionMatrix(Geometry geomA, Geometry geomB,
+      PrecisionModel pm)
+  {
+    RelateOp ro = new RelateOp(geomA, geomB);
+    ro.setPrecisionModel(pm);
+    
+    return ro.getIntersectionMatrix();//.toString();
+  }
+  
   @SuppressWarnings("null")
   private void doTestRotationInvariant(Geometry geomA, Geometry geomB) throws ParseException
   {
