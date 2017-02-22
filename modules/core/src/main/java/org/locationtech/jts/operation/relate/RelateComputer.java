@@ -61,31 +61,81 @@ public class RelateComputer
   private GeometryGraph[] arg;  // the argument(s) of the operation
   private NodeMap nodes = new NodeMap(new RelateNodeFactory());
   // this intersection matrix will hold the results compute for the relate
-  private IntersectionMatrix im = null;
+  //private IntersectionMatrix im = null;
   private ArrayList isolatedEdges = new ArrayList();
 
   // the intersection point found (if any)
   //private Coordinate invalidPoint;
 
-  //@Deprecated
-  public RelateComputer(GeometryGraph[] arg) {
-	    this(arg, (PrecisionModel)null);
+  /**
+   * Creates an instance of this class based on 2 {@link GeometryGraph}s.
+   *
+   * @param arg an array of two {@link GeometryGraph}s to relate
+   * @exception IllegalArgumentException Thrown if {@code arg} is {code null}, 
+   * has a length != 2 or has elements that are {@code null}.
+   */
+    public RelateComputer(GeometryGraph[] arg) 
+	  throws IllegalArgumentException {
+  	  if (arg == null)
+		  throw new IllegalArgumentException("arg is null");
+	  if (arg.length != 2)
+		  throw new IllegalArgumentException("arg is null");
+	  if (arg[0] == null || arg[1] == null)
+		  throw new IllegalArgumentException("arg[0] or arg[1] is null");
+	  this.arg = arg;
+
+    }
+
+  /**
+   * Creates an instance of this class based on 2 {@link GeometryGraph}s and a {@link PrecisionModel}.
+   * The passed {@link PrecisionModel}, will be applied to the internally used {@link LineIntersector} 
+   * causing it to compute intersection points in the given precision. 
+   * 
+   * @param arg An array of two {@link GeometryGraph}s to relate
+   * @param precisionModel The {@link PrecisionModel} to use with the underlying {@link LineIntersector}. 
+   * It may be {@code null}.
+   * @exception IllegalArgumentException Thrown if {@code arg} is {code null}, 
+   * has a length != 2 or has elements that are {@code null}.
+   */    
+  public RelateComputer(GeometryGraph[] arg, PrecisionModel precisionModel) 
+	  throws IllegalArgumentException
+  {
+    this(arg);
+    if (precisionModel != null) {
+    	li = new RobustLineIntersector();
+    	li.setPrecisionModel(precisionModel);
+	}
   }
 
-  public RelateComputer(GeometryGraph[] arg, PrecisionModel precisionModel) {
-    this.arg = arg;
-    li = new RobustLineIntersector();
-    li.setPrecisionModel(precisionModel);
-  }
-
-  public RelateComputer(GeometryGraph[] arg, LineIntersector lineIntersector) {
-	    this.arg = arg;
-	    this.li = lineIntersector;
-	  }  
+  /**
+   * Creates an instance of this class based on 2 {@link GeometryGraph}s and a {@link LineIntersector}. @
+   *
+   * @param arg An array of two {@link GeometryGraph}s to relate
+   * @param lineIntersector The {@link LineIntersector} to use. It <b>may not</b> be {@code null}.
+   * @exception IllegalArgumentException Thrown if {@code arg} is {code null}, 
+   * has a length != 2, has elements that are {@code null} or if {@code li} is {@code null}.
+   */    
+  public RelateComputer(GeometryGraph[] arg, LineIntersector lineIntersector)
+		  throws IllegalArgumentException
+  {
+      this(arg);
+	  if (lineIntersector == null)
+		  throw new IllegalArgumentException("li is null");
+	  this.li = lineIntersector;
+  }  
   
+  /**
+   * Function to compute the {@link IntersectionMatrix}.
+   * 
+   * @return the DE-9IM intersection matrix based on the provided geometry graphs.
+   */
   public IntersectionMatrix computeIM()
   {
-    IntersectionMatrix im = new IntersectionMatrix();
+    // if we don't have a LineIntersector we want a plain RobustLineIntersector
+	if (li == null) 
+    	li = new RobustLineIntersector();
+	
+	IntersectionMatrix im = new IntersectionMatrix();
     // since Geometries are finite and embedded in a 2-D space, the EE element must always be 2
     im.set(Location.EXTERIOR, Location.EXTERIOR, 2);
 
@@ -103,7 +153,7 @@ public class RelateComputer
 //System.out.println("computeIM: # segment intersection tests: " + intersector.numTests);
     computeIntersectionNodes(0);
     computeIntersectionNodes(1);
-    /**
+    /*
      * Copy the labeling for the nodes in the parent Geometries.  These override
      * any labels determined by intersections between the geometries.
      */
@@ -119,7 +169,7 @@ public class RelateComputer
     // If a proper intersection was found, we can set a lower bound on the IM.
     computeProperIntersectionIM(intersector, im);
 
-    /**
+    /*
      * Now process improper intersections
      * (e.g. where one or other of the geometries has a vertex at the intersection point)
      * We need to compute the edge graph at all nodes to determine the IM.
@@ -137,7 +187,7 @@ public class RelateComputer
 
     labelNodeEdges();
 
-  /**
+  /*
    * Compute the labeling for isolated components
    * <br>
    * Isolated components are components that do not touch any other components in the graph.
@@ -253,6 +303,9 @@ public class RelateComputer
       }
     }
   }
+  
+  
+  
   /**
    * For all intersections on the edges of a Geometry,
    * label the corresponding node IF it doesn't already have a label.
@@ -260,6 +313,7 @@ public class RelateComputer
    * mutual intersections to be labeled.
    * Endpoint nodes will already be labeled from when they were inserted.
    */
+  // TODO: Is this a left-over and can be removed?
   private void labelIntersectionNodes(int argIndex)
   {
     for (Iterator i = arg[argIndex].getEdgeIterator(); i.hasNext(); ) {
