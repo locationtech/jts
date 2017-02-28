@@ -10,9 +10,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.index;
-import org.locationtech.jts.index.strtree.Interval;
-
+package org.locationtech.jts.index.strtree;
 import junit.framework.TestCase;
 
 

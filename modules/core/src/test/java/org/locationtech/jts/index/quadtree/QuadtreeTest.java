@@ -18,6 +18,9 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.index.SpatialIndexTester;
+
+import test.jts.util.SerializationUtil;
 
 public class QuadtreeTest extends TestCase {
   public static void main(String args[]) {
@@ -26,6 +29,30 @@ public class QuadtreeTest extends TestCase {
 
   public QuadtreeTest(String name) {
     super(name);
+  }
+
+  public void testSpatialIndex()
+  throws Exception
+  {
+    SpatialIndexTester tester = new SpatialIndexTester();
+    tester.setSpatialIndex(new Quadtree());
+    tester.init();
+    tester.run();
+    assertTrue(tester.isSuccess());
+  }
+  
+  public void testSerialization()
+  throws Exception
+  {
+    SpatialIndexTester tester = new SpatialIndexTester();
+    tester.setSpatialIndex(new Quadtree());
+    tester.init();
+    Quadtree tree = (Quadtree) tester.getSpatialIndex();
+    byte[] data = SerializationUtil.serialize(tree);
+    tree = (Quadtree) SerializationUtil.deserialize(data);
+    tester.setSpatialIndex(tree);
+    tester.run();
+    assertTrue(tester.isSuccess());
   }
 
   @SuppressWarnings("rawtypes")

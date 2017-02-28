@@ -10,11 +10,8 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.index;
+package org.locationtech.jts.index.strtree;
 import java.util.List;
-
-import org.locationtech.jts.index.strtree.AbstractNode;
-import org.locationtech.jts.index.strtree.SIRtree;
 
 import junit.framework.TestCase;
 

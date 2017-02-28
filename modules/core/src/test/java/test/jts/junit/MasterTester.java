@@ -13,6 +13,10 @@
 
 package test.jts.junit;
 
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
 import org.locationtech.jts.algorithm.RobustLineIntersectionTest;
 import org.locationtech.jts.geom.AreaLengthTest;
 import org.locationtech.jts.geom.BidirectionalComparatorTest;
@@ -31,10 +35,10 @@ import org.locationtech.jts.geom.PredicateShortCircuitTest;
 import org.locationtech.jts.geom.RectanglePredicateSyntheticTest;
 import org.locationtech.jts.geom.RectanglePredicateTest;
 import org.locationtech.jts.geom.impl.BasicCoordinateSequenceTest;
-import org.locationtech.jts.index.IntervalTest;
-import org.locationtech.jts.index.QuadtreeTest;
-import org.locationtech.jts.index.SIRtreeTest;
-import org.locationtech.jts.index.STRtreeTest;
+import org.locationtech.jts.index.quadtree.QuadtreeTest;
+import org.locationtech.jts.index.strtree.IntervalTest;
+import org.locationtech.jts.index.strtree.SIRtreeTest;
+import org.locationtech.jts.index.strtree.STRtreeTest;
 import org.locationtech.jts.io.WKBTest;
 import org.locationtech.jts.io.WKTReaderTest;
 import org.locationtech.jts.io.WKTWriterTest;
@@ -53,10 +57,6 @@ import org.locationtech.jts.operation.valid.ValidSelfTouchingRingFormingHoleTest
 import org.locationtech.jts.precision.SimpleGeometryPrecisionReducerTest;
 import org.locationtech.jts.triangulate.ConformingDelaunayTest;
 import org.locationtech.jts.triangulate.DelaunayTest;
-
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 /**
  * A collection of all the tests.
