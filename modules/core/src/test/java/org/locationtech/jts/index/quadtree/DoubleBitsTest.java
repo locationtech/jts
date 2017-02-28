@@ -9,9 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.index;
-
-import org.locationtech.jts.index.quadtree.DoubleBits;
+package org.locationtech.jts.index.quadtree;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
