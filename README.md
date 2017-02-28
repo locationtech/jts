@@ -26,6 +26,7 @@ In addition:
 
 ## Documentation
 
+* Javadoc: https://locationtech.github.io/jts/javadoc/index.html
 * Installing and using JTS is described in the [User Guide](USING.md).
 * Building and developing with JTS is described in the [Developing Guide](DEVELOPING.md).
 
