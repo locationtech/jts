@@ -60,6 +60,7 @@ public class Node
 
   protected boolean isSearchMatch(Envelope searchEnv)
   {
+  	if (searchEnv == null) return false;
     return env.intersects(searchEnv);
   }
 
