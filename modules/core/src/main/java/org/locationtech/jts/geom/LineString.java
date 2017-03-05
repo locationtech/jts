@@ -278,7 +278,9 @@ public class LineString
         // skip equal points on both ends
         if (!points.getCoordinate(i).equals(points.getCoordinate(j))) {
           if (points.getCoordinate(i).compareTo(points.getCoordinate(j)) > 0) {
-            CoordinateSequences.reverse(points);
+            CoordinateSequence copy = (CoordinateSequence) points.clone();
+            CoordinateSequences.reverse(copy);
+            points = copy;
           }
           return;
         }
