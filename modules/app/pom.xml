@@ -30,11 +30,6 @@
             <groupId>org.jdom</groupId>
             <artifactId>jdom</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.jdom</groupId>
-            <artifactId>jdom-contrib</artifactId>
-            <version>${jdom-version}</version>
-        </dependency>
     </dependencies>
 
     <build>

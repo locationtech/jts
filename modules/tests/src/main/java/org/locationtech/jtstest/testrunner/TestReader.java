@@ -24,8 +24,8 @@ import org.locationtech.jts.io.*;
 import org.locationtech.jtstest.*;
 import org.locationtech.jtstest.geomop.*;
 import org.locationtech.jtstest.util.*;
-import org.jdom.contrib.input.LineNumberElement;
-import org.jdom.contrib.input.LineNumberSAXBuilder;
+import org.locationtech.jtstest.util.io.LineNumberElement;
+import org.locationtech.jtstest.util.io.LineNumberSAXBuilder;
 import org.locationtech.jtstest.util.io.WKTOrWKBReader;
 
 
