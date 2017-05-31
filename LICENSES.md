@@ -14,6 +14,8 @@ The Content includes items that have been sourced from third parties as set out 
 
 ### Jdom-contrib version 1.1.3
 
-The JTS tests module contains source from Jdom-contrib 1.1.3 which is available under a BSD-style license.  The two files are LineNumberElement.java and LineNumberSAXHandler.java.
+The JTS tests module contains source from JDOM Contrib 1.1.3 which is available under the Jdom License [1].  The two files are LineNumberElement.java and LineNumberSAXHandler.java.
 
 Typical users of this library will not need to depend on this module.
+
+[1] https://github.com/hunterhacker/jdom/blob/master/LICENSE.txt
