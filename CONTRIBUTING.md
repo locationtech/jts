@@ -14,6 +14,8 @@ In order to have code contributions accepted, the submitter must:
 
 ## Develop a Contribution
 
+Code contributions must include a license header at the top of each file.  A sample header for Java files is [here](doc/sample_java_header.txt). 
+
 Code contributions should include the following:
 
 * Javadoc on classed and methods
