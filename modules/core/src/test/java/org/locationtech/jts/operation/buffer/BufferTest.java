@@ -389,10 +389,7 @@ public class BufferTest extends TestCase {
       "MULTIPOLYGON (((0 400, 440 400, 440 0, 0 0, 0 400),(380 360, 160 120, 260 80, 380 360)), ((360 320, 200 120, 240 100, 360 320)))")
       .test();
   }
-  /**
-   * The #testFloatingPrecisionN tests were taken from bufferError-dist
-   * 100.jml.
-   */
+
   public void testFloatingPrecision1() throws Exception {
     new BufferValidator(
       100,

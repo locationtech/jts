@@ -1,5 +1,5 @@
 <run>
-  <desc>Test cases from GEOS</desc>
+  <desc>Test cases from GEOS bug reports</desc>
   <precisionModel type="FLOATING"/>
   <resultMatcher>com.vividsolutions.jtstest.testrunner.BufferResultMatcher</resultMatcher>
   
