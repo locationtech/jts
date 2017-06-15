@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import org.locationtech.jts.util.Assert;
 
@@ -492,40 +493,8 @@ public class StringUtil
         return result;
     }
 
-    //From: Phil Hanna (pehanna@my-deja.com)
-    //Subject: Re: special html characters and java???
-    //Newsgroups: comp.lang.java.help
-    //Date: 2000/09/16
     public static String escapeHTML(String s) {
-        replace(s, "\r\n", "\n", true);
-        replace(s, "\n\r", "\n", true);
-        replace(s, "\r", "\n", true);
-        StringBuffer sb = new StringBuffer();
-        int n = s.length();
-        for (int i = 0; i < n; i++) {
-            char c = s.charAt(i);
-            switch (c) {
-                case '<' :
-                    sb.append("&lt;");
-                    break;
-                case '>' :
-                    sb.append("&gt;");
-                    break;
-                case '&' :
-                    sb.append("&amp;");
-                    break;
-                case '"' :
-                    sb.append("&quot;");
-                    break;
-                case '\n' :
-                    sb.append("<BR>");
-                    break;
-                default :
-                    sb.append(c);
-                    break;
-            }
-        }
-        return sb.toString();
+        return StringEscapeUtils.escapeHtml4(s);
     }
 
     //Based on code from http://developer.java.sun.com/developer/qow/archive/104/index.html

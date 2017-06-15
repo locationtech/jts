@@ -109,13 +109,18 @@
             <version>${json-simple-version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.5</version>
+        </dependency>
+        <dependency>
           <groupId>com.oracle</groupId>
           <artifactId>ojdbc7</artifactId>
           <version>11.1.0.7.0</version>
         </dependency>
       </dependencies>
     </dependencyManagement>
-    
+
     <!-- Repositories for Dependencies -->
     <repositories>
       <repository>
