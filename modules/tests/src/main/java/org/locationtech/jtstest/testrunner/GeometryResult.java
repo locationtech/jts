@@ -14,6 +14,7 @@
 package org.locationtech.jtstest.testrunner;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.io.WKBWriter;
 
 
 /**
@@ -21,9 +22,14 @@ import org.locationtech.jts.io.WKTWriter;
  */
 public class GeometryResult implements Result {
   private Geometry geometry;
+  private boolean outputwkb = System.getenv("JTSTEST_WKB_OUTPUT") != null;
 
   public GeometryResult(Geometry geometry) {
     this.geometry = geometry;
+  }
+
+  public void setWKBOutput(boolean newval) {
+    this.outputwkb = newval;
   }
 
   public Geometry getGeometry() {
@@ -45,12 +51,22 @@ public class GeometryResult implements Result {
   }
 
   public String toLongString() {
-    return geometry.toText();
+    if ( this.outputwkb ) {
+      WKBWriter wkbwriter = new WKBWriter();
+      return WKBWriter.toHex(wkbwriter.write(geometry));
+    } else {
+      return geometry.toText();
+    }
   }
 
   public String toFormattedString() {
-    WKTWriter writer = new WKTWriter();
-    return writer.writeFormatted(geometry);
+    if ( this.outputwkb ) {
+      WKBWriter wkbwriter = new WKBWriter();
+      return WKBWriter.toHex(wkbwriter.write(geometry));
+    } else {
+      WKTWriter writer = new WKTWriter();
+      return writer.writeFormatted(geometry);
+    }
   }
 
   public String toShortString() {
