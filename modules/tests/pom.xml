@@ -37,6 +37,7 @@
                             <mainClass>org.locationtech.jtstest.testrunner.JTSTestRunnerCmd</mainClass>
                         </manifest>
                     </archive>
+                    <finalName>JTSTestRunner</finalName>
                 </configuration>
                 <executions>
                     <execution>
