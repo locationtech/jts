@@ -59,7 +59,7 @@ express fundamental geometric semantics of the JTS library.
 It is convenient to define the following Run Configurations:
 
 * XML tests:
-  * Main class: `org.locationtech.jtstest.testrunner.TopologyTestApp`
+  * Main class: `org.locationtech.jtstest.testrunner.JTSTestRunnerCmd`
   * Program arguments: `-files validate general`
   * Working directory: `${jts-core}/src/test/resources/testxml`
 
