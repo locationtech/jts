@@ -33,10 +33,10 @@ public class InspectorPanel extends TestBuilderPanel  {
   
   private static final int BOX_SPACER = 5;
 
-  private final ImageIcon downIcon = IconLoader.icon("Down.gif");
-  private final ImageIcon upIcon = IconLoader.icon("Up.gif");
+  private final ImageIcon downIcon = IconLoader.icon("Down.png");
+  private final ImageIcon upIcon = IconLoader.icon("Up.png");
   private final ImageIcon zoomIcon = IconLoader.icon("MagnifyCursor.gif");
-  private final ImageIcon copyIcon = IconLoader.icon("Copy.gif");
+  private final ImageIcon copyIcon = IconLoader.icon("Copy.png");
 
   GeometryTreePanel geomTreePanel;
   

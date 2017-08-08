@@ -82,7 +82,7 @@ public class WKTPanel extends JPanel
     JTextArea bTextArea = new JTextArea();
     ButtonGroup editMode = new ButtonGroup();
 
-    private final ImageIcon copyIcon = new ImageIcon(this.getClass().getResource("Copy.gif"));
+    private final ImageIcon copyIcon = new ImageIcon(this.getClass().getResource("Copy.png"));
     private final ImageIcon pasteIcon = new ImageIcon(this.getClass().getResource("Paste.gif"));
     private final ImageIcon cutIcon = new ImageIcon(this.getClass().getResource("Delete_small.png"));
     private final ImageIcon loadIcon = new ImageIcon(this.getClass().getResource("LoadWKTToTest.png"));

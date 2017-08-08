@@ -56,10 +56,10 @@ public class JTSTestBuilderToolBar {
   JToggleButton extractComponentButton;
   ButtonGroup toolButtonGroup = new ButtonGroup();
 
-  private final ImageIcon leftIcon = new ImageIcon(this.getClass().getResource("Left.gif"));
-  private final ImageIcon rightIcon = new ImageIcon(this.getClass().getResource("Right.gif"));
+  private final ImageIcon leftIcon = new ImageIcon(this.getClass().getResource("Left.png"));
+  private final ImageIcon rightIcon = new ImageIcon(this.getClass().getResource("Right.png"));
   private final ImageIcon plusIcon = new ImageIcon(this.getClass().getResource("Plus.png"));
-  private final ImageIcon copyCaseIcon = new ImageIcon(this.getClass().getResource("CopyCase.gif"));
+  private final ImageIcon copyCaseIcon = new ImageIcon(this.getClass().getResource("CopyCase.png"));
   private final ImageIcon deleteIcon = new ImageIcon(this.getClass().getResource("Delete.png"));
   private final ImageIcon exchangeGeomsIcon = new ImageIcon(this.getClass().getResource("ExchangeGeoms.png"));
   private final ImageIcon zoomIcon = new ImageIcon(this.getClass().getResource("MagnifyCursor.gif"));
