@@ -32,6 +32,8 @@ import junit.framework.TestCase;
  */
 public class FileBufferResultValidatorTest extends TestCase {
 
+  static int MAX_FEATURE = 1;
+  
 	WKTReader rdr = new WKTReader();
 
   public FileBufferResultValidatorTest(String name) {
@@ -73,11 +75,14 @@ public class FileBufferResultValidatorTest extends TestCase {
   {
   	Stopwatch sw = new Stopwatch();
     //System.out.println("Geom count = " + geoms.size() + "   distance = " + dist);
+  	int count = 0;
     for (Iterator i = geoms.iterator(); i.hasNext(); ) {
       Geometry g = (Geometry) i.next();
       runBuffer(g, dist);
       runBuffer(g.reverse(), dist);
       //System.out.print(".");
+      count++;
+      if (count > MAX_FEATURE) return;
     }
     //System.out.println("  " + sw.getTimeString());
 
