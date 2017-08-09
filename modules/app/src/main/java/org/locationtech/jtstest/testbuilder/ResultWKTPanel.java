@@ -52,7 +52,7 @@ extends JPanel
   BorderLayout rPanelLayout = new BorderLayout();
   BorderLayout tabPanelLayout = new BorderLayout();
 	
-  private final ImageIcon copyIcon = new ImageIcon(this.getClass().getResource("Copy.gif"));
+  private final ImageIcon copyIcon = new ImageIcon(this.getClass().getResource("Copy.png"));
   private final ImageIcon copyToTestIcon = new ImageIcon(this.getClass().getResource("CopyToTest.png"));
 	
 	public ResultWKTPanel() {
