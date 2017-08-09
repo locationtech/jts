@@ -56,11 +56,19 @@ for testing or comparison purposes.
 This format should be used for tests which involve large geometries, or which 
 express fundamental geometric semantics of the JTS library.
 
+### Run Configurations
+
 It is convenient to define the following Run Configurations:
 
-* XML tests:
+* JTS TestRunner for XML tests:
   * Project: `jts-tests`
   * Main class: `org.locationtech.jtstest.testrunner.JTSTestRunnerCmd`
   * Program arguments: `-files validate general`
   * Working directory: `${workspace_loc:jts-tests/src/test/resources/testxml}`
 
+* JTS TestBuilder:
+  * Project: `jts-app`
+  * Main class: `org.locationtech.jtstest.testbuilder.JTSTestBuilder`
+  * Program arguments: 
+  * VM arguments: `-Xmx1000M`
+  * Working directory: Default
