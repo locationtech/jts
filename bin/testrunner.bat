@@ -1,24 +1,6 @@
 @echo off
-rem A batch file to run the JTS test runner.
+REM A batch file to run the JTS Test Runner.  
+REM Requirements: Maven build must be run to create fat jar  (mvn clean install)
 
-set CLASSPATH=
-for %%i in (..\lib\*.*) do (
- set jarfile=%%i
+java -jar %~dp0\..\modules\tests\target\JTSTestRunner-jar-with-dependencies.jar %*
 
- rem If we append to a variable inside the for, only the last entry will
- rem be kept. So append to the variable outside the for.
- rem See http://www.experts-exchange.com/Operating_Systems/MSDOS/Q_20561701.html.
- rem [Jon Aquino]
-
- call :setclass
-)  
-
-start javaw com.vividsolutions.jtstest.testrunner.TopologyTestApp -Properties testrunner.properties -GUI
-
-goto :eof
-
-:setclass
-set CLASSPATH=%jarfile%;%CLASSPATH%
-set jarfile=
-
-:eof
