@@ -44,7 +44,7 @@ public class XMLTestWriter
   public XMLTestWriter() {
   }
 
-  public String getTestXML(Geometry geometry, String opName, String[] arguments) {
+  public String getTestXML(Geometry geometry, String opName, String[] arguments, boolean useWKT) {
     String xml = "  <test>\n";
     xml += "    <op name=\"" + opName + "\" arg1=\"A\"";
     int j = 2;
@@ -55,7 +55,7 @@ public class XMLTestWriter
       j++;
     }
     xml += ">\n";
-    xml += StringUtil.indent(wktWriter.writeFormatted(geometry) + "\n", 6);
+    xml += getWKTorWKB(geometry, useWKT) + "\n";
     xml += "    </op>\n";
     xml += "  </test>\n";
     return xml;
@@ -86,10 +86,12 @@ public class XMLTestWriter
         + "]") + "</desc>\n";
   }
 
-  public String getDescriptionForXml(TestCase testCase) {
+  public String getDescriptionForXml(Testable testCase) {
+  	/*
     if (isGdbcTestCase(testCase)) {
       return getDescriptionForXmlFromGdbcTestCase(testCase);
     }
+    */
     if (testCase.getDescription() != null && testCase.getDescription().length() > 0) {
       return "<desc>" + StringUtil.escapeHTML(testCase.getDescription()) + "</desc>\n";
     }
@@ -97,16 +99,16 @@ public class XMLTestWriter
       return "<desc>" + StringUtil.escapeHTML(testCase.getName()) + "</desc>\n";
     }
     return "<desc> " 
-    + getGeometryArgPairCode(testCase.getGeometries())
+    + getGeometryArgPairCode(testCase.getGeometry(0), testCase.getGeometry(1) )
     + " </desc>\n";
   }
 
-  private String getGeometryArgPairCode(Geometry[] geom)
+  private static String getGeometryArgPairCode(Geometry geom0, Geometry geom1)
   {
-   return getGeometryCode(geom[0]) + "/" + getGeometryCode(geom[1]); 
+   return getGeometryCode(geom0) + "/" + getGeometryCode(geom1); 
   }
   
-  private String getGeometryCode(Geometry geom)
+  private static String getGeometryCode(Geometry geom)
   {
     String dimCode = "";
     if (geom instanceof Puntal) dimCode = "P";
@@ -121,37 +123,24 @@ public class XMLTestWriter
   public String getTestXML(TestRunnerTestCaseAdapter adapter) {
     return adapter.getTestRunnerTestCase().toXml();
   }
-
-  public String getTestXML(Testable testable, boolean useWKT) {
-    if (testable instanceof TestCase) {
-      return getTestXML((TestCase)testable, useWKT);
-    }
-    if (testable instanceof TestCaseEdit) {
-      return getTestXML(((TestCaseEdit)testable).getTestable(), useWKT);
-    }
-    if (testable instanceof TestRunnerTestCaseAdapter) {
-      return getTestXML((TestRunnerTestCaseAdapter)testable, useWKT);
-    }
-    Assert.shouldNeverReachHere();
-    return null;
-  }
-
+  
   public String getTestXML(Testable testCase)
   {
     return getTestXML(testCase, true);
   }
   
-  private String getTestXML(TestCase testCase, boolean useWKT) {
-    Geometry[] geom = testCase.getGeometries();
+  public String getTestXML(Testable testCase, boolean useWKT) {
+    Geometry geom0 = testCase.getGeometry(0);
+    Geometry geom1 = testCase.getGeometry(1);
     StringBuffer xml = new StringBuffer();
     xml.append("<case>\n");
     xml.append(getDescriptionForXml(testCase));
-    if (geom[0] != null) {
-      String wkt0 = getWKTorWKB(geom[0], useWKT);
+    if (geom0 != null) {
+      String wkt0 = getWKTorWKB(geom0, useWKT);
       xml.append("  <a>\n" + wkt0 + "\n    </a>\n");
     }
-    if (geom[1] != null) {
-      String wkt1 = getWKTorWKB(geom[1], useWKT);
+    if (geom1 != null) {
+      String wkt1 = getWKTorWKB(geom1, useWKT);
       xml.append("  <b>\n" + wkt1 + "\n    </b>\n");
     }
     if (testCase.getExpectedIntersectionMatrix() != null) {
@@ -160,22 +149,22 @@ public class XMLTestWriter
       xml.append("  </test>\n");
     }
     if (testCase.getExpectedBoundary() != null) {
-      xml.append(getTestXML(testCase.getExpectedBoundary(), "getboundary", new String[] {}));
+      xml.append(getTestXML(testCase.getExpectedBoundary(), "getboundary", new String[] {}, useWKT));
     }
     if (testCase.getExpectedConvexHull() != null) {
-      xml.append(getTestXML(testCase.getExpectedConvexHull(), "convexhull", new String[] {}));
+      xml.append(getTestXML(testCase.getExpectedConvexHull(), "convexhull", new String[] {}, useWKT));
     }
     if (testCase.getExpectedIntersection() != null) {
-      xml.append(getTestXML(testCase.getExpectedIntersection(), "intersection", new String[] {"B"}));
+      xml.append(getTestXML(testCase.getExpectedIntersection(), "intersection", new String[] {"B"}, useWKT));
     }
     if (testCase.getExpectedUnion() != null) {
-      xml.append(getTestXML(testCase.getExpectedUnion(), "union", new String[] {"B"}));
+      xml.append(getTestXML(testCase.getExpectedUnion(), "union", new String[] {"B"}, useWKT));
     }
     if (testCase.getExpectedDifference() != null) {
-      xml.append(getTestXML(testCase.getExpectedDifference(), "difference", new String[] {"B"}));
+      xml.append(getTestXML(testCase.getExpectedDifference(), "difference", new String[] {"B"}, useWKT));
     }
     if (testCase.getExpectedSymDifference() != null) {
-      xml.append(getTestXML(testCase.getExpectedSymDifference(), "symdifference", new String[] {"B"}));
+      xml.append(getTestXML(testCase.getExpectedSymDifference(), "symdifference", new String[] {"B"}, useWKT));
     }
     xml.append("</case>\n");
     return xml.toString();
