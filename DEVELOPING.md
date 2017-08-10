@@ -35,27 +35,6 @@ The JTS build chain uses Maven.  Build commands are executed at the project root
 * Generate Eclipse configuration using `mvn eclipse:eclipse`
 * Import the generated projects into an Eclipse workspace
 
-## Testing
-
-JTS aims for 100% code coverage for unit tests. 
-
-There are two kinds of unit tests:
-
-### JUnit tests
-
-Used for verifying API code, internal data structures, and ancillary algorithms.
-
-### XML Tests
-
-JTS provides a code-independent, declarative XML-based format for expressing geometric functional tests.  
-This format is convenient for encoding large geometries, and for providing geometric test cases 
-in a reusable way.  It is easily consumed by external tools such as the JTS TestBuilder.
-It allows geometry function test cases to easily be to applied to other operation implementations,
-for testing or comparison purposes.
-
-This format should be used for tests which involve large geometries, or which 
-express fundamental geometric semantics of the JTS library.
-
 ### Run Configurations
 
 It is convenient to define the following Run Configurations:
@@ -72,3 +51,28 @@ It is convenient to define the following Run Configurations:
   * Program arguments: 
   * VM arguments: `-Xmx1000M`
   * Working directory: Default
+
+## Testing
+
+JTS aims for 100% code coverage for unit tests. 
+
+There are two kinds of unit tests:
+
+### JUnit tests
+
+Used for verifying API code, internal data structures, and ancillary algorithms.
+
+### XML Tests
+
+JTS provides a code-independent, declarative XML-based format for expressing geometric functional tests.  
+This format has the following advantages:
+
+* allows encoding large geometries
+* provides geometric test cases in a reusable way
+* easily consumed by external tools such as the JTS TestBuilder or other geometry libraries (e.g. GEOS)
+* allows geometric tests to be used with other operation implementations, for testing or comparison purposes
+
+This format should be used for tests which involve large geometries, or which 
+express fundamental geometric semantics of the JTS library.
+
+
