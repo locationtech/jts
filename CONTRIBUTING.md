@@ -10,7 +10,7 @@ The following sections outline workflows involved with contributions.
 
 In order to have code contributions accepted, the submitter must:
 
-1.  Sign a CLA with the Eclipse Foundation and use the registered email with the Git commits associated to the GitHub pull request.
+1.  Sign the [Eclipse Contributor Agreement](https://www.eclipse.org/legal/ECA.php) (ECA) with the Eclipse Foundation.  Use the registered email with the Git commits associated to the GitHub pull request.
 
 ## Develop a Contribution
 
