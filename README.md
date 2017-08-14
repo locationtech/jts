@@ -12,6 +12,7 @@ The JTS Topology Suite is a Java library for creating and manipulating vector ge
 * Git Repo: https://github.com/locationtech/jts
 * Mailing List: https://locationtech.org/mailman/listinfo/jts-dev
 * LocationTech Home: https://www.locationtech.org/projects/technology.jts
+* GitHub web pages: https://locationtech.github.io/jts/
 
 ## License
 
