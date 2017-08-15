@@ -80,11 +80,43 @@ public class SelectionFunctions
     }
     return a.getFactory().buildGeometry(selected);
   }
-  public static Geometry areaGreater(Geometry a, final double minArea)
+  public static Geometry lengthGreaterThan(Geometry a, final double minLen)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return g.getLength() > minLen;
+      }
+    });
+  }
+  public static Geometry lengthLessThan(Geometry a, final double maxLen)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return g.getLength() < maxLen;
+      }
+    });
+  }
+  public static Geometry lengthZero(Geometry a)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return g.getLength() == 0.0;
+      }
+    });
+  }
+  public static Geometry areaGreaterThan(Geometry a, final double minArea)
   {
     return select(a, new GeometryPredicate() {
       public boolean isTrue(Geometry g) {
         return g.getArea() > minArea;
+      }
+    });
+  }
+  public static Geometry areaLessThan(Geometry a, final double maxArea)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return g.getArea() < maxArea;
       }
     });
   }
