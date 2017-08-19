@@ -45,15 +45,11 @@
     <licenses>
         <license>
             <name>Eclipse Publish License, Version 1.0</name>
-            <url>https://github.com/dr-jts/jts/blob/master/LICENSE_EPLv1.txt</url>
+            <url>https://github.com/locationtech/jts/blob/master/LICENSE_EPLv1.txt</url>
         </license>
         <license>
-            <name>Martin Davis Distribution License (BSD 3 Clause)</name>
-            <url>https://github.com/dr-jts/jts/blob/master/LICENSE_MDAVIS_BSDv3.txt</url>
-        </license>
-        <license>
-            <name>Vivid Solutions Distribution License (BSD 3 Clause)</name>
-            <url>https://github.com/dr-jts/jts/blob/master/LICENSE_VSI_BSDv3.txt</url>
+            <name>Eclipse Distribution License - v 1.0</name>
+            <url>https://github.com/locationtech/jts/blob/master/LICENSE_EDLv1.txt</url>
         </license>
     </licenses>
     <developers>
@@ -98,6 +94,10 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 
     <dependencyManagement>
