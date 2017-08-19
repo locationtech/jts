@@ -21,13 +21,13 @@
 
     Setup for eclipse development:
        mvn eclipse:eclipse
-       
+
     To build with jts-ora:
        mvn install -Poracle
 
     To build with jts-sde:
        mvn install -Parcsde
-       
+
     To build everything:
        mvn install -Dall
     -->
@@ -151,7 +151,7 @@
                 <configuration>
                     <serverId>ossrh</serverId>
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
             </plugin>
 
