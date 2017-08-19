@@ -153,7 +153,6 @@ public class Centroid
 
   private void setBasePoint(Coordinate basePt)
   {
-    if (this.areaBasePt == null)
       this.areaBasePt = basePt;
   }
   
