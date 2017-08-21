@@ -39,20 +39,20 @@ The JTS build chain uses Maven.  Build commands are executed at the project root
 
 It is convenient to define the following Run Configurations:
 
-* JTS TestRunner for XML tests:
-  * Type: Java Application
-  * Project: `jts-tests`
-  * Main class: `org.locationtech.jtstest.testrunner.JTSTestRunnerCmd`
-  * Program arguments: `-files validate general`
-  * Working directory: `${workspace_loc:jts-tests/src/test/resources/testxml}`
+* **JTS TestRunner** - for executing XML tests:
+  * **Type:** Java Application
+  * **Project:** `jts-tests`
+  * **Main class:** `org.locationtech.jtstest.testrunner.JTSTestRunnerCmd`
+  * **Program arguments:** `-files validate general`
+  * **Working directory:** `${workspace_loc:jts-tests/src/test/resources/testxml}`
 
-* JTS TestBuilder:
-  * Type: Java Application
-  * Project: `jts-app`
-  * Main class: `org.locationtech.jtstest.testbuilder.JTSTestBuilder`
-  * Optional Program arguments: `-geomfunc <classname> ...`
-  * VM args: `-Xmx1000M`
-  * Optional VM args (on Mac): `-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel`  * Working directory: Default
+* **JTS TestBuilder** - for viewing and processing geometry with JTS
+  * **Type:** Java Application
+  * **Project:** `jts-app`
+  * **Main class:** `org.locationtech.jtstest.testbuilder.JTSTestBuilder`
+  * **Optional Program arguments:** `-geomfunc <classname> ...`
+  * **VM args:** `-Xmx1000M`
+  * **Optional VM args (on Mac):** `-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel`  * Working directory: Default
 
 ## Testing
 
