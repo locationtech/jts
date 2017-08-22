@@ -49,6 +49,7 @@
                             <mainClass>org.locationtech.jtstest.testbuilder.JTSTestBuilder</mainClass>
                         </manifest>
                     </archive>
+                    <finalName>JTSTestBuilder</finalName>
                 </configuration>
                 <executions>
                     <execution>
