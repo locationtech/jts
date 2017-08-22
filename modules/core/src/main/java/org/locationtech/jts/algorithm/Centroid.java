@@ -151,9 +151,8 @@ public class Centroid
     return cent;
   }
 
-  private void setBasePoint(Coordinate basePt)
+  private void setAreaBasePoint(Coordinate basePt)
   {
-    if (this.areaBasePt == null)
       this.areaBasePt = basePt;
   }
   
@@ -168,7 +167,7 @@ public class Centroid
   private void addShell(Coordinate[] pts)
   {
     if (pts.length > 0) 
-      setBasePoint(pts[0]);
+      setAreaBasePoint(pts[0]);
     boolean isPositiveArea = ! CGAlgorithms.isCCW(pts);
     for (int i = 0; i < pts.length - 1; i++) {
       addTriangle(areaBasePt, pts[i], pts[i+1], isPositiveArea);
