@@ -3,17 +3,22 @@ JTS Topology Suite
 
 The JTS Topology Suite is a Java library for creating and manipulating vector geometry.  It also provides a comprehensive set of geometry test cases, and the TestBuilder GUI application for working with and visualizing geometry and JTS functions.
 
-#### ![LocationTech](https://pbs.twimg.com/profile_images/2552421256/hv2oas84tv7n3maianiq_normal.png) JTS is in incubation with the [LocationTech](http://www.locationtech.org) working group of the Eclipse Foundation.
+![JTS logo](jts_logo.png)
 
 [![Build Status](https://api.travis-ci.org/locationtech/jts.svg)](http://travis-ci.org/locationtech/jts) [![Join the chat at https://gitter.im/locationtech/jts](https://badges.gitter.im/locationtech/jts.svg)](https://gitter.im/locationtech/jts?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+
+JTS is in incubation with the [LocationTech](http://www.locationtech.org) working group of the Eclipse Foundation.
+
+![LocationTech](locationtech_mark.png) 
+
 ## Locations
 
-* Git Repo: https://github.com/locationtech/jts
-* Mailing List: https://locationtech.org/mailman/listinfo/jts-dev
-* LocationTech Home: https://www.locationtech.org/projects/technology.jts
-* GitHub web pages: https://locationtech.github.io/jts/
-* Gitter Channel: https://gitter.im/locationtech/jts
+* Git Repo: [github.com/locationtech/jts](https://github.com/locationtech/jts)
+* Mailing List: [locationtech.org/mailman/listinfo/jts-dev](https://locationtech.org/mailman/listinfo/jts-dev)
+* LocationTech Home: [locationtech.org/projects/technology.jts](https://locationtech.org/projects/technology.jts)
+* GitHub web pages: [locationtech.github.io/jts/](https://locationtech.github.io/jts/)
+* Gitter Channel: [gitter.im/locationtech/jts](https://gitter.im/locationtech/jts)
 
 ## License
 
@@ -28,7 +33,7 @@ In addition:
 
 ## Documentation
 
-* Javadoc: https://locationtech.github.io/jts/javadoc/index.html
+* Javadoc: [https://locationtech.github.io/jts/javadoc](https://locationtech.github.io/jts/javadoc)
 * Installing and using JTS is described in the [User Guide](USING.md).
 * Building and developing with JTS is described in the [Developing Guide](DEVELOPING.md).
 
