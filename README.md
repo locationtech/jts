@@ -1,6 +1,8 @@
 JTS Topology Suite
 ==================
 
+[![Join the chat at https://gitter.im/locationtech/jts](https://badges.gitter.im/locationtech/jts.svg)](https://gitter.im/locationtech/jts?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 The JTS Topology Suite is a Java library for creating and manipulating vector geometry.  It also provides a comprehensive set of geometry test cases, and the TestBuilder GUI application for working with and visualizing geometry and JTS functions.
 
 #### ![LocationTech](https://pbs.twimg.com/profile_images/2552421256/hv2oas84tv7n3maianiq_normal.png) JTS is in incubation with the [LocationTech](http://www.locationtech.org) working group of the Eclipse Foundation.
