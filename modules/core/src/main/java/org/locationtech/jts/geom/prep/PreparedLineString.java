@@ -45,6 +45,16 @@ public class PreparedLineString
   		segIntFinder = new FastSegmentSetIntersectionFinder(SegmentStringUtil.extractSegmentStrings(getGeometry()));
     return segIntFinder;
   }
+
+  @Override
+  public boolean covers(Geometry g)
+  {
+    /**
+     * A line cannot cover a non-empty polygon.
+     */
+    if (g.getDimension() > 1 && ! g.isEmpty()) return false;
+    return super.covers(g);
+  }
   
   public boolean intersects(Geometry g)
   {
