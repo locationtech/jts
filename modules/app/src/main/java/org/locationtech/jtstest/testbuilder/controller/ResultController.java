@@ -21,7 +21,8 @@ import javax.swing.Timer;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.util.Stopwatch;
-import org.locationtech.jtstest.function.GeometryFunction;
+import org.locationtech.jtstest.geomfunction.GeometryFunction;
+import org.locationtech.jtstest.geomfunction.GeometryFunctionInvocation;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 import org.locationtech.jtstest.testbuilder.SpatialFunctionPanel;
@@ -50,7 +51,7 @@ public class ResultController
   public void spatialFunctionPanel_functionExecuted(SpatialFunctionPanelEvent e) 
   {
     SpatialFunctionPanel spatialPanel = frame.getTestCasePanel().getSpatialFunctionPanel();
-    FunctionInvocation functionDesc = new FunctionInvocation(
+    GeometryFunctionInvocation functionDesc = new GeometryFunctionInvocation(
         spatialPanel.getFunction(), 
         spatialPanel.getFunctionParams());
     model.setOpName(functionDesc.getSignature());
@@ -90,7 +91,7 @@ public class ResultController
          .enableExecuteControl(true);
      frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
    }
-  private void updateResult(FunctionInvocation functionDesc, Object result, Stopwatch timer) {
+  private void updateResult(GeometryFunctionInvocation functionDesc, Object result, Stopwatch timer) {
      model.setResult(result);
      String timeString = timer != null ? timer.getTimeString() : "";
      frame.getResultWKTPanel().setExecutedTime(timeString);
@@ -105,7 +106,7 @@ public class ResultController
   
   private SwingWorker worker = null;
   
-  private void runFunctionWorker(final FunctionInvocation functionInvoc, final boolean createNew)
+  private void runFunctionWorker(final GeometryFunctionInvocation functionInvoc, final boolean createNew)
   {
     worker = new SwingWorker() {
     	Stopwatch timer;
@@ -125,7 +126,7 @@ public class ResultController
           timer = new Stopwatch();
           try {
             result = currentFunc.invoke(model.getGeometryEditModel()
-                .getGeometry(0), functionInvoc.getParameters());
+                .getGeometry(0), functionInvoc.getArgs());
           } finally {
             timer.stop();
           }

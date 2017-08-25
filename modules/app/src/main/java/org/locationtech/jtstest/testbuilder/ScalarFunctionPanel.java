@@ -22,7 +22,11 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.util.Stopwatch;
 import org.locationtech.jtstest.function.*;
+import org.locationtech.jtstest.geomfunction.GeometryFunction;
+import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
+import org.locationtech.jtstest.testbuilder.event.GeometryFunctionEvent;
+import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelListener;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
@@ -36,7 +40,7 @@ public class ScalarFunctionPanel
 extends JPanel 
 {
   JPanel panelRB = new JPanel();
-  GeometryFunctionListPanel funcListPanel = new GeometryFunctionListPanel();
+  GeometryFunctionTreePanel funcListPanel = new GeometryFunctionTreePanel();
   GridLayout gridLayout1 = new GridLayout();
   GridLayout gridLayout2 = new GridLayout();
 
@@ -55,7 +59,10 @@ extends JPanel
 
   private JLabel lblDistance = new JLabel();
   private JTextField txtDistance = new JTextField();
-  
+
+  private JComponent[] paramComp = { txtDistance };
+  private JLabel[] paramLabel = { lblDistance };
+
   private GeometryFunction currentFunc = null;
   private Stopwatch timer;
   
@@ -69,7 +76,7 @@ extends JPanel
   }
   
   void jbInit() throws Exception {
-    funcListPanel.populate(JTSTestBuilder.getFunctionRegistry().getScalarFunctions());
+    funcListPanel.populate(JTSTestBuilder.getFunctionRegistry().getCategorizedScalarFunctions());
 
     this.setLayout(borderLayout1);
     panelParam.setLayout(gridLayout2);
@@ -106,66 +113,32 @@ extends JPanel
     this.add(funcListPanel, BorderLayout.CENTER);
     this.add(panelExecParam, BorderLayout.SOUTH);
 
-    MouseListener mouseListener = new MouseAdapter() {
-      public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2) {
-          execFunction();
-        }
+    GeometryFunctionListener gfListener = new GeometryFunctionListener() {
+      public void functionSelected(GeometryFunctionEvent e) {
+        functionChanged(e.getFunction());
+      }
+      public void functionInvoked(GeometryFunctionEvent e) {
+        execFunction(e.getFunction(), false);
       }
     };
-    funcListPanel.registerMouseListener(mouseListener);
-
-    ListSelectionListener listListener = new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        functionListValueChanged();
-      }
-    };
-    funcListPanel.registerListSelectionListener(listListener);
+    funcListPanel.addGeometryFunctionListener(gfListener);
   }
 
   void execButton_actionPerformed(ActionEvent e) {
-    execFunction();
-  }
+    execFunction(funcListPanel.getFunction(), false);  }
 
-  public void execFunction() {
-    currentFunc = funcListPanel.getFunction();
+  public void execFunction(GeometryFunction func, boolean createNew) {
+    currentFunc = func;
     if (currentFunc == null)
       return;
-    /*
-    Object result = getResult();
-    if (result == null)
-    	return;
-      */
     fireFunctionExecuted(new SpatialFunctionPanelEvent(this));
   }
-
-  private void setCurrentFunction(GeometryFunction func) {
+  
+  private void functionChanged(GeometryFunction func)
+  {
     currentFunc = func;
-    fireFunctionExecuted(new SpatialFunctionPanelEvent(this));
-  }
-
-  private void functionListValueChanged()
-  {
-    currentFunc = funcListPanel.getFunction();
-    updateParameterControls();
-  }
-  
-  private void updateParameterControls()
-  {
-    int numNonGeomParams = numNonGeomParams(currentFunc);
-    // TODO: this is a bit of a hack, and should be made smarter
-    SwingUtil.setEnabledWithBackground(txtDistance, numNonGeomParams >= 1);
-  }
-  
-  private static int numNonGeomParams(GeometryFunction func)
-  {
-    int count = 0;
-    Class[] paramTypes = func.getParameterTypes();
-    for (int i = 0; i < paramTypes.length; i++) {
-      if (paramTypes[i] != Geometry.class)
-        count++;
-    }
-    return count;
+    SpatialFunctionPanel.updateParameters(func, paramComp, paramLabel);
+    execButton.setToolTipText( GeometryFunctionRegistry.functionDescriptionHTML(func) );
   }
   
   public Object getResult() {

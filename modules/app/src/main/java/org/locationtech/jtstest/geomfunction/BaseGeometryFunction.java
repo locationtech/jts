@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jtstest.function;
+package org.locationtech.jtstest.geomfunction;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.util.*;
