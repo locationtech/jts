@@ -16,6 +16,11 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 
+/**
+ * Function to execute PreparedGeometry methods which have optimized behaviour.
+ * @author mdavis
+ *
+ */
 public class PreparedGeometryFunctions 
 {
   private static PreparedGeometry createPG(Geometry g)
@@ -27,11 +32,22 @@ public class PreparedGeometryFunctions
   {
     return createPG(g1).intersects(g2);
   }
-  
-  public static boolean intersects(Geometry g1, Geometry g2)
+
+  public static boolean preparedContains(Geometry g1, Geometry g2)
   {
-    return g1.intersects(g2);
+    return createPG(g1).contains(g2);
   }
+
+  public static boolean preparedContainsProperly(Geometry g1, Geometry g2)
+  {
+    return createPG(g1).containsProperly(g2);
+  }
+
+  public static boolean preparedCovers(Geometry g1, Geometry g2)
+  {
+    return createPG(g1).covers(g2);
+  }
+
   
 
 }
