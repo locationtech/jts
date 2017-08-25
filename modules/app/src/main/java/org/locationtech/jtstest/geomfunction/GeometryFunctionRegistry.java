@@ -9,13 +9,48 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jtstest.function;
+package org.locationtech.jtstest.geomfunction;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.*;
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jtstest.function.AffineTransformationFunctions;
+import org.locationtech.jtstest.function.BoundaryFunctions;
+import org.locationtech.jtstest.function.BufferByUnionFunctions;
+import org.locationtech.jtstest.function.BufferFunctions;
+import org.locationtech.jtstest.function.CGAlgorithmFunctions;
+import org.locationtech.jtstest.function.ConstructionFunctions;
+import org.locationtech.jtstest.function.ConversionFunctions;
+import org.locationtech.jtstest.function.CreateFractalShapeFunctions;
+import org.locationtech.jtstest.function.CreateRandomShapeFunctions;
+import org.locationtech.jtstest.function.CreateShapeFunctions;
+import org.locationtech.jtstest.function.DissolveFunctions;
+import org.locationtech.jtstest.function.DistanceFunctions;
+import org.locationtech.jtstest.function.DoubleKeyMap;
+import org.locationtech.jtstest.function.GeometryFunctions;
+import org.locationtech.jtstest.function.JTSFunctions;
+import org.locationtech.jtstest.function.LineHandlingFunctions;
+import org.locationtech.jtstest.function.LinearReferencingFunctions;
+import org.locationtech.jtstest.function.NodingFunctions;
+import org.locationtech.jtstest.function.OffsetCurveFunctions;
+import org.locationtech.jtstest.function.OverlayFunctions;
+import org.locationtech.jtstest.function.OverlayNoSnapFunctions;
+import org.locationtech.jtstest.function.PolygonOverlayFunctions;
+import org.locationtech.jtstest.function.PolygonizeFunctions;
+import org.locationtech.jtstest.function.PrecisionFunctions;
+import org.locationtech.jtstest.function.PreparedGeometryFunctions;
+import org.locationtech.jtstest.function.SelectionFunctions;
+import org.locationtech.jtstest.function.SimplificationFunctions;
+import org.locationtech.jtstest.function.SnappingFunctions;
+import org.locationtech.jtstest.function.SortingFunctions;
+import org.locationtech.jtstest.function.SpatialIndexFunctions;
+import org.locationtech.jtstest.function.SpatialPredicateFunctions;
+import org.locationtech.jtstest.function.TriangleFunctions;
+import org.locationtech.jtstest.function.TriangulationFunctions;
+import org.locationtech.jtstest.function.ValidationFunctions;
+import org.locationtech.jtstest.function.WriterFunctions;
 
 
 /**
@@ -70,11 +105,21 @@ public class GeometryFunctionRegistry
     
     return funcRegistry;
   }
-
+  public static String functionDescriptionHTML(GeometryFunction func)
+  {
+    String txt = "<b>" + func.getSignature() + "</b>";
+    String desc = func.getDescription();
+    if (desc != null) {
+      txt += "<br><br>" + desc;
+    }
+    return "<html>" + txt + "</html>";
+  }
+  
 	private List functions = new ArrayList();
 	private Map sortedFunctions = new TreeMap();
 	private DoubleKeyMap categorizedFunctions = new DoubleKeyMap();
 	private DoubleKeyMap categorizedGeometryFunctions = new DoubleKeyMap();
+  private DoubleKeyMap categorizedScalarFunctions = new DoubleKeyMap();
 	
 	public GeometryFunctionRegistry()
 	{
@@ -186,15 +231,24 @@ public class GeometryFunctionRegistry
 		functions.add(func);
 		sortedFunctions.put(func.getName(), func);
 		categorizedFunctions.put(func.getCategory(), func.getName(), func);
-		if (hasGeometryResult(func))
+		if (hasGeometryResult(func)) {
 			categorizedGeometryFunctions.put(func.getCategory(), func.getName(), func);
+		}
+		else {
+      categorizedScalarFunctions.put(func.getCategory(), func.getName(), func);		  
+		}
 	}
 	
-	public DoubleKeyMap getCategorizedGeometryFunctions()
-	{
-		return categorizedGeometryFunctions;
-	}
-	
+  public DoubleKeyMap getCategorizedGeometryFunctions()
+  {
+    return categorizedGeometryFunctions;
+  }
+  
+  public DoubleKeyMap getCategorizedScalarFunctions()
+  {
+    return categorizedScalarFunctions;
+  }
+  
 	public Collection getCategories()
 	{
 		return categorizedFunctions.keySet();

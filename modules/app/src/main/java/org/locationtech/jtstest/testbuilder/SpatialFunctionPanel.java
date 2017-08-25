@@ -22,12 +22,13 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.util.Stopwatch;
 import org.locationtech.jtstest.function.*;
+import org.locationtech.jtstest.geomfunction.GeometryFunction;
+import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionEvent;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelListener;
-import org.locationtech.jtstest.testbuilder.model.FunctionParameters;
 import org.locationtech.jtstest.testbuilder.ui.*;
 
 
@@ -254,21 +255,12 @@ extends JPanel
   private void functionChanged(GeometryFunction func)
   {
     currentFunc = func;
-    updateParameters(func);
-    execButton.setToolTipText(functionDescription(func));
+    updateParameters(func, paramComp, paramLabel);
+    execButton.setToolTipText( GeometryFunctionRegistry.functionDescriptionHTML(func) );
   }
+ 
   
-  private String functionDescription(GeometryFunction func)
-  {
-  	String txt = "<b>" + func.getSignature() + "</b>";
-  	String desc = func.getDescription();
-  	if (desc != null) {
-  		txt += "<br><br>" + desc;
-  	}
-  	return "<html>" + txt + "</html>";
-  }
-  
-  private void updateParameters(GeometryFunction func)
+  static void updateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel)
   {
     int numNonGeomParams = numNonGeomParams(func);
     for (int i = 0; i < paramComp.length; i++) {
@@ -276,7 +268,7 @@ extends JPanel
       //SwingUtil.setEnabledWithBackground(paramComp[i], isUsed);
       paramComp[i].setVisible(isUsed);
       paramLabel[i].setVisible(isUsed);
-      setToolTipText(paramComp[i], func, i + 1);      
+      SpatialFunctionPanel.setToolTipText(paramComp[i], func, i + 1);      
     }
   }
   
@@ -287,6 +279,7 @@ extends JPanel
     }
     control.setToolTipText(txt);
   }
+  
   private static int numNonGeomParams(GeometryFunction func)
   {
     int count = 0;

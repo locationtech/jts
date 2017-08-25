@@ -22,6 +22,7 @@ import javax.swing.border.*;
 import javax.swing.tree.*;
 
 import org.locationtech.jtstest.function.*;
+import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionEvent;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
 import org.locationtech.jtstest.util.*;

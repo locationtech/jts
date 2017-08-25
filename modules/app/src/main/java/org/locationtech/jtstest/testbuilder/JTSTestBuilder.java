@@ -20,6 +20,7 @@ import javax.swing.UIManager;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jtstest.command.*;
 import org.locationtech.jtstest.function.*;
+import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.testbuilder.model.*;
 
 
