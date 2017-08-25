@@ -29,7 +29,6 @@ public class SmallHoleRemover {
       this.area = area;
     }
 
-    @Override
     public boolean value(Geometry geom) {
       double holeArea = Math.abs(CGAlgorithms.signedArea(geom.getCoordinates()));
       return holeArea <= area;

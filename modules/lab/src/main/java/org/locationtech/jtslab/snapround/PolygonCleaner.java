@@ -24,7 +24,6 @@ public class PolygonCleaner implements GeometryEditorOperation {
     return editor.edit(geom);
   }
   
-  @Override
   public Geometry edit(Geometry geometry, GeometryFactory targetFactory) {
     if (geometry instanceof Polygonal) {
       return geometry.buffer(0);
