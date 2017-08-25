@@ -253,7 +253,7 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   public void setCurrentTestCase(TestCaseEdit testCase) {
-    tbModel.setCurrentTestCase(testCase);
+    tbModel.cases().setCurrent(testCase);
     updateTestCaseView();
   }
 
@@ -342,28 +342,30 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   void createNewCase() {
-    tbModel.createNew();
+    tbModel.cases().createNew();
     showGeomsTab();
     updateTestCases();
   }
 
   void moveToPrevCase(boolean isZoom) {
-    tbModel.prevCase();
+    tbModel.cases().prevCase();
     updateTestCaseView();
     if (isZoom) JTSTestBuilderController.zoomToInput();
   }
 
   void moveToNextCase(boolean isZoom) {
-    tbModel.nextCase();
+    tbModel.cases().nextCase();
     updateTestCaseView();
     if (isZoom) JTSTestBuilderController.zoomToInput();
   }
 
   void copyCase() {
-    tbModel.copyCase();
+    tbModel.cases().copyCase();
     updateTestCases();
   }
-
+  TestCaseEdit currentCase() {
+    return tbModel.cases().getCurrentCase();
+  }
   public void updateTestCases()
   {
     testListPanel.populateList();    
@@ -382,12 +384,12 @@ public class JTSTestBuilderFrame extends JFrame
   }
   
   void btnExchangeGeoms_actionPerformed(ActionEvent e) {
-    tbModel.getCurrentTestCaseEdit().exchange();
-    testCasePanel.setTestCase(tbModel.getCurrentTestCaseEdit());
+    currentCase().exchange();
+    testCasePanel.setTestCase(currentCase());
   }
 
   void btnDeleteCase_actionPerformed(ActionEvent e) {
-    tbModel.deleteCase();
+    tbModel.cases().deleteCase();
     updateTestCaseView();
     testListPanel.populateList();
   }
@@ -415,19 +417,19 @@ public class JTSTestBuilderFrame extends JFrame
 */
   
   void menuExchangeGeom_actionPerformed(ActionEvent e) {
-    tbModel.getCurrentTestCaseEdit().exchange();
-    testCasePanel.setTestCase(tbModel.getCurrentTestCaseEdit());
+    currentCase().exchange();
+    testCasePanel.setTestCase(currentCase());
   }
 
   void menuViewText_actionPerformed(ActionEvent e) {
-    testCaseTextDlg.setTestCase(tbModel.getCurrentTestCaseEdit());
+    testCaseTextDlg.setTestCase(currentCase());
     testCaseTextDlg.setVisible(true);
   }
 
   public void actionInspectGeometry() {
     int geomIndex = tbModel.getGeometryEditModel().getGeomIndex();
     String tag = geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B;
-    Geometry geometry = tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex);
+    Geometry geometry = currentCase().getGeometry(geomIndex);
     inspectPanel.setGeometry( tag, geometry, geomIndex);
     showTab(AppStrings.TAB_LABEL_INSPECT);
     /*
@@ -441,7 +443,7 @@ public class JTSTestBuilderFrame extends JFrame
   public void actionInspectGeometryDialog() {
     int geomIndex = tbModel.getGeometryEditModel().getGeomIndex();
     String tag = geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B;
-    Geometry geometry = tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex);
+    Geometry geometry = currentCase().getGeometry(geomIndex);
     geomInspectorDlg.setGeometry(tag, geometry);
     geomInspectorDlg.setVisible(true);
   }
@@ -636,7 +638,7 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   void deleteAllTestCasesMenuItem_actionPerformed(ActionEvent e) {
-    tbModel.initTestCaseList();
+    tbModel.cases().init();
     updateTestCaseView();
     testListPanel.populateList();
   }
@@ -806,7 +808,7 @@ public class JTSTestBuilderFrame extends JFrame
   
   private void updateGeometry() {
     testCasePanel.relatePanel.clearResults();
-    testCasePanel.setTestCase(tbModel.getCurrentTestCaseEdit());
+    testCasePanel.setTestCase(currentCase());
     updateWktPanel();
   }
 
@@ -822,9 +824,9 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   public void updateTestCaseView() {
-    testCasePanel.setTestCase(tbModel.getCurrentTestCaseEdit());
-    getTestCasePanel().setCurrentTestCaseIndex(tbModel.getCurrentTestIndex() + 1);
-    getTestCasePanel().setMaxTestCaseIndex(tbModel.getTestListSize());
+    testCasePanel.setTestCase(currentCase());
+    getTestCasePanel().setCurrentTestCaseIndex(tbModel.getCurrentCaseIndex() + 1);
+    getTestCasePanel().setMaxTestCaseIndex(tbModel.getCasesSize());
     updateWktPanel();
     updateStatsPanelIfVisible();
   }
@@ -864,13 +866,13 @@ public class JTSTestBuilderFrame extends JFrame
   void menuRemoveDuplicatePoints_actionPerformed(ActionEvent e) {
     CleanDuplicatePoints clean = new CleanDuplicatePoints();
     Geometry cleanGeom = clean.clean(tbModel.getGeometryEditModel().getGeometry(0));
-    tbModel.getCurrentTestCaseEdit().setGeometry(0, cleanGeom);
+    currentCase().setGeometry(0, cleanGeom);
     updateGeometry();
   }
 
   void menuChangeToLines_actionPerformed(ActionEvent e) {
     Geometry cleanGeom = LinearComponentExtracter.getGeometry(tbModel.getGeometryEditModel().getGeometry(0));
-    tbModel.getCurrentTestCaseEdit().setGeometry(0, cleanGeom);
+    currentCase().setGeometry(0, cleanGeom);
     updateGeometry();
   }
 

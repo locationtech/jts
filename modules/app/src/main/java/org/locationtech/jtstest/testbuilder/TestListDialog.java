@@ -125,7 +125,7 @@ public class TestListDialog extends JDialog {
 
     public void populateList() {
         listModel.clear();
-        for (Iterator i = testBuilderFrame.getModel().getTestCases().iterator(); i.hasNext();) {
+        for (Iterator i = testBuilderFrame.getModel().getCases().iterator(); i.hasNext();) {
             Testable testCase = (Testable) i.next();
             listModel.addElement(testCase);
         }
@@ -165,7 +165,7 @@ public class TestListDialog extends JDialog {
 
     void runAllTestsButton_actionPerformed(ActionEvent e) {
         try {
-            for (Iterator i = testBuilderFrame.getModel().getTestCases().iterator(); i.hasNext();) {
+            for (Iterator i = testBuilderFrame.getModel().getCases().iterator(); i.hasNext();) {
                 Testable testCase = (Testable) i.next();
                 if (testCase.getWellKnownText(0) != null && testCase.getWellKnownText(1) != null) {
                     testCase.runTest();

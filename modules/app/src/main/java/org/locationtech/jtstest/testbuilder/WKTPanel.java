@@ -455,7 +455,7 @@ public class WKTPanel extends JPanel
     void copy(ActionEvent e, int geomIndex)
     {
       boolean isFormatted = 0 != (e.getModifiers() & ActionEvent.CTRL_MASK);
-      Geometry g = tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex);
+      Geometry g = tbModel.getCurrentCase().getGeometry(geomIndex);
       if (g != null)
         SwingUtil.copyToClipboard(g, isFormatted);
     }

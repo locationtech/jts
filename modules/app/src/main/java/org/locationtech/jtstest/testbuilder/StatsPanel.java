@@ -69,9 +69,9 @@ extends JPanel
   {
     StringBuffer buf = new StringBuffer();
 
-    writeGeomStats("A", tbModel.getCurrentTestCaseEdit().getGeometry(0), buf);
-    writeGeomStats("B", tbModel.getCurrentTestCaseEdit().getGeometry(1), buf);
-    writeGeomStats("Result", tbModel.getCurrentTestCaseEdit().getResult(), buf);
+    writeGeomStats("A", tbModel.getCurrentCase().getGeometry(0), buf);
+    writeGeomStats("B", tbModel.getCurrentCase().getGeometry(1), buf);
+    writeGeomStats("Result", tbModel.getCurrentCase().getResult(), buf);
     
     setString(buf.toString());
   }
