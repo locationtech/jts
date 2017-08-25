@@ -99,7 +99,7 @@ public class TestBuilderModel
 	{
 		geomEditModel = new GeometryEditModel();
     initLayers();
-    initTestCaseList();
+    caseList.init();
 	}
 	
 	public GeometryEditModel getGeometryEditModel() { return geomEditModel; }
@@ -173,7 +173,7 @@ public class TestBuilderModel
   	else
   		g = (Geometry) obj;
   	
-    TestCaseEdit testCaseEdit = (TestCaseEdit) getCurrentTestCaseEdit();
+    TestCaseEdit testCaseEdit = getCurrentCase();
     testCaseEdit.setGeometry(geomIndex, g);
     getGeometryEditModel().setTestCase(testCaseEdit);
   }
@@ -194,7 +194,7 @@ public class TestBuilderModel
   throws Exception 
   {
     Geometry g = IOUtil.readFile(filename, getGeometryFactory());
-    TestCaseEdit testCaseEdit = (TestCaseEdit) getCurrentTestCaseEdit();
+    TestCaseEdit testCaseEdit = getCurrentCase();
     testCaseEdit.setGeometry(geomIndex, g);
     testCaseEdit.setName(filename);
     getGeometryEditModel().setTestCase(testCaseEdit);
@@ -227,7 +227,7 @@ public class TestBuilderModel
     }
     */
     
-    TestCaseEdit testCaseEdit = (TestCaseEdit) getCurrentTestCaseEdit();
+    TestCaseEdit testCaseEdit = getCurrentCase();
     testCaseEdit.setGeometry(0, g0);
     testCaseEdit.setGeometry(1, g1);
     getGeometryEditModel().setTestCase(testCaseEdit);
@@ -334,88 +334,41 @@ public class TestBuilderModel
   
   //=============================================================
   
-  private TestCaseList tcList = new TestCaseList();
-  private ListIterator tcListi;
-  private List parseErrors = null;
-  
-  /**
-   *  The current test case (if any). Invariant: currTestCase = tcListi.prev()
-   */
-  private TestCaseEdit currTestCase;
-
-  public void initTestCaseList()
-  {
-    tcList = new TestCaseList();
-    tcListi = new IteratorWrapper(tcList.getList().listIterator());
-    // ensure that there is always a valid TestCase in the list
-    createNew();
-  }
-  
-  public void initList(TestCaseList tcl) {
-    tcList = tcl;
-    tcListi = new IteratorWrapper(tcList.getList().listIterator());
-    // ensure that there is always a valid TestCase in the list
-    if (tcListi.hasNext()) {
-      currTestCase = (TestCaseEdit) tcListi.next();
+  private CaseList caseList = new CaseList(new CaseList.CaseFactory() {
+    public TestCaseEdit create() {
+      return new TestCaseEdit(precisionModel);
     }
-    else {
-      createNew();
-    }
+  });
+
+  public CaseList cases() {
+    return caseList;
   }
-
-  public void createNew() {
-    // move to end of list
-    while (tcListi.hasNext()) {
-      tcListi.next();
-    }
-    currTestCase = new TestCaseEdit(precisionModel);
-    tcListi.add(currTestCase);
+  public TestCaseEdit getCurrentCase() {
+    return caseList.getCurrentCase();
   }
-
-
-  public java.util.List getTestCases() {
-    return Collections.unmodifiableList(tcList.getList());
+  public int getCurrentCaseIndex() {
+    return caseList.getCurrentTestIndex();
   }
-
+  public int getCasesSize() {
+    return caseList.getSize();
+  }
+  public List getCases() {
+    return caseList.getCases();
+  }
   public TestCaseList getTestCaseList() {
-    return tcList;
+    return caseList.tcList;
+  }
+  public void addCase(Geometry[] geoms) {
+    addCase(geoms, null);
   }
 
-  public void setCurrentTestCase(TestCaseEdit testCase) {
-    while (tcListi.hasPrevious()) {
-      tcListi.previous();
-    }
-    while (tcListi.hasNext()) {
-      if (tcListi.next() == (TestCaseEdit) testCase) {
-        currTestCase = testCase;
-        return;
-      }
-    }
-  }
-  
-  public TestCaseEdit getCurrentTestCaseEdit()
-  {
-    return currTestCase;
-  }
-  
-  public Testable getCurrentTestable() {
-    return currTestCase;
+  public void addCase(Geometry[] geoms, String name) {
+    TestCaseEdit copy = null;
+    copy = new TestCaseEdit(geoms, name);
+    caseList.addCase(copy);
   }
 
-  public int getCurrentTestIndex()
-  {
-    return tcListi.previousIndex();
-  }
-  
-  public TestCaseList getTestList()
-  {
-    return tcList;
-  }
-  
-  public int getTestListSize()
-  {
-    return tcList.getList().size();
-  }
+  //================================================================= 
   
   public void openXmlFilesAndDirectories(File[] files) throws Exception {
      TestCaseList testCaseList = createTestCaseList(files);
@@ -424,14 +377,14 @@ public class TestBuilderModel
       TestRunnerTestCaseAdapter a = (TestRunnerTestCaseAdapter) testCaseList.getList().get(0);
       precisionModel = a.getTestRunnerTestCase().getTestRun().getPrecisionModel();
     }
-    if (tcList.getList().size() == 1
-         && ((Testable) tcList.getList().get(0)).getGeometry(0) == null
-         && ((Testable) tcList.getList().get(0)).getGeometry(1) == null) {
+    if (getCases().size() == 1
+         && ((Testable) getCases().get(0)).getGeometry(0) == null
+         && ((Testable) getCases().get(0)).getGeometry(1) == null) {
       loadTestCaseList(testCaseList, precisionModel);
     }
     else {
       TestCaseList newList = new TestCaseList();
-      newList.add(tcList);
+      newList.add(getTestCaseList());
       newList.add(testCaseList);
       loadTestCaseList(newList, precisionModel);
     }
@@ -459,7 +412,7 @@ public class TestBuilderModel
         }
 
     }
-    initList(newTcl);
+    caseList.init(newTcl);
   }
 
   private TestCaseList createTestCaseList(File[] filesAndDirectories) {
@@ -504,6 +457,8 @@ public class TestBuilderModel
     return tcl;
   }
 
+  private List parseErrors = null;
+
   /**
    * 
    * @return empy list if no errors
@@ -519,122 +474,13 @@ public class TestBuilderModel
     return parseErrors.size() > 0;
   }
   
-  public void prevCase() {
-    // since current test case = tcListi.prev, to
-    // display the case *before* the current one must move back twice
-    if (tcListi.hasPrevious()) {
-      tcListi.previous();
-    }
-    if (tcListi.hasPrevious()) {
-      tcListi.previous();
-    }
-    currTestCase = (TestCaseEdit) tcListi.next();
-  }
 
-  public void nextCase() {
-    // don't move past the last one
-    if (tcListi.nextIndex() >= tcList.getList().size()) {
-      return;
-    }
-    if (tcListi.hasNext()) {
-      currTestCase = (TestCaseEdit) tcListi.next();
-    }
-  }
-
-  public void copyCase() {
-    TestCaseEdit copy = null;
-    copy = new TestCaseEdit(currTestCase);
-    tcListi.add(copy);
-    currTestCase = copy;
-  }
-
-  public void addCase(Geometry[] geoms) {
-    addCase(geoms, null);
-  }
-
-  public void addCase(Geometry[] geoms, String name) {
-    TestCaseEdit copy = null;
-    copy = new TestCaseEdit(geoms, name);
-    tcListi.add(copy);
-    currTestCase = copy;
-  }
-
-  public void deleteCase() {
-    // corner case - handle case where list has only one element
-    if (tcList.getList().size() == 1) {
-      tcListi.previous();
-    }
-    tcListi.remove();
-    
-    if (tcListi.hasNext()) {
-      currTestCase = (TestCaseEdit) tcListi.next();
-    }
-    else if (tcListi.hasPrevious()) {
-      currTestCase = (TestCaseEdit) tcListi.previous();
-    }
-    else {
-      createNew();
-    }
-  }
-
-  private class IteratorWrapper implements ListIterator {
-    ListIterator i;
-
-    public IteratorWrapper(ListIterator i) {
-      this.i = i;
-    }
-
-    public void set(Object o) {
-      checkStop();
-      i.set(o);
-    }
-
-    public boolean hasNext() {
-      return i.hasNext();
-    }
-
-    public Object next() {
-      checkStop();
-      return i.next();
-    }
-
-    public void remove() {
-      checkStop();
-      i.remove();
-    }
-
-    public boolean hasPrevious() {
-      return i.hasPrevious();
-    }
-
-    public Object previous() {
-      checkStop();
-      return i.previous();
-    }
-
-    public int nextIndex() {
-      return i.nextIndex();
-    }
-
-    public int previousIndex() {
-      return i.previousIndex();
-    }
-
-    public void add(Object o) {
-      checkStop();
-      i.add(o);
-    }
-
-    private void checkStop() {
-      int a = 5;
-    }
-  }
 
   public void setResult(Object result)
   {
   	currResult = result;
     if (result == null || result instanceof Geometry) {
-    	getCurrentTestCaseEdit().setResult((Geometry) result);
+    	getCurrentCase().setResult((Geometry) result);
     }
   }
   
@@ -676,7 +522,7 @@ public class TestBuilderModel
   private void saveWKTBeforePMChange() {
     wktABeforePMChange.clear();
     wktBBeforePMChange.clear();
-    for (Iterator i = getTestCaseList().getList().iterator(); i.hasNext(); ) {
+    for (Iterator i = getCases().iterator(); i.hasNext(); ) {
       Testable testable = (Testable) i.next();
       Geometry a = testable.getGeometry(0);
       Geometry b = testable.getGeometry(1);
@@ -687,8 +533,8 @@ public class TestBuilderModel
 
   private void loadWKTAfterPMChange() throws ParseException {
     WKTReader reader = new WKTReader(new GeometryFactory(getPrecisionModel(), 0));
-    for (int i = 0; i < getTestCaseList().getList().size(); i++) {
-      Testable testable = (Testable) getTestCaseList().getList().get(i);
+    for (int i = 0; i < getCases().size(); i++) {
+      Testable testable = (Testable) getCases().get(i);
       String wktA = (String) wktABeforePMChange.get(i);
       String wktB = (String) wktBBeforePMChange.get(i);
       testable.setGeometry(0, wktA != null ? reader.read(wktA) : null);
@@ -696,5 +542,119 @@ public class TestBuilderModel
     }
   }
 
+  
+  public static class CaseList {
+    
+    public static interface CaseFactory {
+      TestCaseEdit create();
+    }
+
+    private TestCaseList tcList = new TestCaseList();
+    private int tcIndex = -1;
+    private CaseFactory caseFactory;
+  
+    public CaseList(CaseFactory caseFactory) {
+      this.caseFactory = caseFactory;
+    }
+    public void init()
+    {
+      tcList = new TestCaseList();
+      // ensure that there is always a valid TestCase in the list
+      createNew();
+    }
+    
+    public void init(TestCaseList tcl) {
+      tcList = tcl;
+      if (tcList.size() > 0) {
+        tcIndex = 0;
+      }
+      else {
+        createNew();
+      }
+    }
+  
+    public List getCases() {
+      return Collections.unmodifiableList(tcList.getList());
+    }
+  
+    public TestCaseList getTestCaseList() {
+      return tcList;
+    }
+  
+    public void setCurrent(TestCaseEdit testCase) {
+      for (int i = 0; i < tcList.size(); i++) {
+        if (tcList.get(i) == testCase) {
+          tcIndex = i;
+          return;
+        }
+      }
+    }
+    
+    public TestCaseEdit getCurrentCase()
+    {
+      return (TestCaseEdit) getCurrentTestable();
+    }
+    
+    public Testable getCurrentTestable() {
+      return (TestCaseEdit) tcList.get(tcIndex);
+    }
+  
+    public int getCurrentTestIndex()
+    {
+      return tcIndex;
+    }
+    
+    public TestCaseList getTestList()
+    {
+      return tcList;
+    }
+    
+    public int getSize()
+    {
+      return tcList.getList().size();
+    }
+    public void prevCase() {
+      if (tcIndex > 0)
+        tcIndex--;
+    }
+  
+    public void nextCase() {
+      if (tcIndex < tcList.size() - 1)
+        tcIndex++;
+    }
+  
+    public void copyCase() {
+      TestCaseEdit copy = null;
+      copy = new TestCaseEdit(getCurrentCase());
+      addCase(copy);
+    }
+    
+    public void createNew() {
+      addCase( caseFactory.create());
+    }
+    
+    private void addCase(TestCaseEdit testcase) {
+      if (tcIndex < 0) {
+        tcList.add(testcase);
+      }
+      else {
+        tcList.add(testcase, tcIndex+1);
+      }
+      tcIndex++;
+    }
+  
+    public void deleteCase() {
+      tcList.remove(tcIndex);
+      if (tcList.size() == 0) {
+        createNew();
+      }
+      if (tcIndex >= tcList.size())
+        tcIndex = tcList.size() - 1;
+    }  
+  
+  }
+
 
 }
+
+

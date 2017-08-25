@@ -11,6 +11,8 @@
  */
 package org.locationtech.jtstest.testbuilder.model;
 
+import java.util.List;
+
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jtstest.test.TestCaseList;
@@ -36,15 +38,15 @@ public class JavaTestWriter {
          + "  }" + StringUtil.newLine
          + "" + StringUtil.newLine
          + "  public " + className + "() {" + StringUtil.newLine
-         + getTestJava(tbModel.getTestCaseList())
+         + getTestJava(tbModel.getCases())
          + "  }" + StringUtil.newLine
          + "}";
   }
 
-    public static String getTestJava(TestCaseList tcList) {
+    public static String getTestJava(List testCases) {
       StringBuffer java = new StringBuffer();
-      for (int i = 0; i < tcList.getList().size(); i++) {
-        java.append((new JavaTestWriter()).write((Testable) tcList.getList().get(i)));
+      for (int i = 0; i < testCases.size(); i++) {
+        java.append((new JavaTestWriter()).write((Testable) testCases.get(i)));
       }
       return java.toString();
     }
