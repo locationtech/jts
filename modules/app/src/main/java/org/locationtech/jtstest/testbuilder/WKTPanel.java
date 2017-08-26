@@ -384,7 +384,7 @@ public class WKTPanel extends JPanel
       String txt = null;
       if (g == null)
         txt = "";
-      else if (g.getNumPoints() > TestBuilderModel.MAX_DISPLAY_POINTS)
+      else if (g.getNumPoints() > DisplayParameters.MAX_DISPLAY_POINTS)
         txt = GeometryEditModel.toStringVeryLarge(g);
       else
         txt = GeometryEditModel.getText(g, GeometryType.WELLKNOWNTEXT);

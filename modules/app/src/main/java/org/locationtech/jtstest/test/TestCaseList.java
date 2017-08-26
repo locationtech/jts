@@ -23,8 +23,6 @@ import org.locationtech.jtstest.testbuilder.model.TestCaseEdit;
  */
 public class TestCaseList {
   ArrayList tests = new ArrayList();
-  int countError = 0;
-  int countTotal = 0;
 
   public TestCaseList() { }
 
@@ -51,40 +49,17 @@ public class TestCaseList {
   public void remove(int i) {
     tests.remove(i);
   }
-  public void run() {
-    for (int i = 0; i < tests.size(); i++) {
-      boolean failed = true;
-      String failedMsg = "";
-      Testable tc = (Testable) tests.get(i);
-      String resultStr = "Passed";
-      countTotal++;
-      try {
-        tc.runTest();
-        failed = tc.isFailed();
-        failedMsg = tc.getFailedMsg();
-      }
-      catch (Exception e) {
-        failedMsg = e.getMessage();
-        System.out.println(e.getMessage());
-        e.printStackTrace();
-        failed = true;
-      }
-      if (failed) {
-        countError++;
-        resultStr = "FAILED! - " + failedMsg;
-      }
-      System.out.println(countTotal + ". " + tc.getName() + " - " + resultStr);
-    }
-    String errReport = "  All tests passed";
-    if (countError > 0) {
-      errReport = "  Failed: " + countError;
-    }
-    System.out.print("\nTotal tests: " + countTotal + errReport);
-  }
 
+  /**
+   * A shim for ArrayList.add(Object, int)
+   * 
+   * @param list ArrayList to add to
+   * @param o object to add
+   * @param index index to add at
+   */
   private static void arrayAdd(ArrayList list, Object o, int index) {
     list.add(o);
-    // adding at end of array?
+    // adding at or after end of array?
     if (index >= list.size()) {
       return;
     }

@@ -32,61 +32,6 @@ import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 public class TestBuilderModel 
 {
-  public static int MAX_DISPLAY_POINTS = 2000;
-
-  protected static boolean showingGrid = true;
-  protected static boolean showingStructure = false;
-  protected static boolean showingOrientation = false;
-  protected static boolean showingVertices = true;
-  protected static boolean showingLabel = true;
- protected static boolean showingCoordinates = true;
-  protected static boolean isMagnifyingTopology = false;
-  protected static double topologyStretchSize = AppConstants.TOPO_STRETCH_VIEW_DIST;
-
-  
-  public static boolean isShowingStructure() {
-    return showingStructure;
-  }
-  public static void setShowingStructure(boolean show) {
-    showingStructure = show;
-  }
-  public static boolean isShowingOrientation() {
-    return showingOrientation;
-  }
-  public static void setShowingOrientation(boolean show) {
-    showingOrientation = show;
-  }
-  public static boolean isShowingGrid() {
-    return showingGrid;
-  }
-  public static void setShowingGrid(boolean show) {
-    showingGrid = show;
-  }
-  public static boolean isShowingVertices() {
-    return showingVertices;
-  }
-  public static void setShowingVertices(boolean show) {
-    showingVertices = show;
-  }
-  public static void setShowingLabel(boolean show) {
-    showingLabel = show;
-  }
-  public static boolean isShowingLabel() {
-    return showingLabel;
-  }
-  public boolean isMagnifyingTopology() {
-    return isMagnifyingTopology;
-  }
-  public void setMagnifyingTopology(boolean show) {
-    isMagnifyingTopology = show;
-  }
-  public void setTopologyStretchSize(double pixels) {
-    topologyStretchSize = pixels;
-  }
-  public double getTopologyStretchSize() {
-    return topologyStretchSize;
-  }
-  
   private PrecisionModel precisionModel = new PrecisionModel();
   private GeometryFactory geometryFactory = null;
 	private GeometryEditModel geomEditModel;
@@ -124,7 +69,7 @@ public class TestBuilderModel
 	{
 		if (g == null)
 			return "";
-    if (g.getNumPoints() > MAX_DISPLAY_POINTS)
+    if (g.getNumPoints() > DisplayParameters.MAX_DISPLAY_POINTS)
       return GeometryEditModel.toStringVeryLarge(g);
 		return writer.writeFormatted(g);
 	}
@@ -363,9 +308,8 @@ public class TestBuilderModel
   }
 
   public void addCase(Geometry[] geoms, String name) {
-    TestCaseEdit copy = null;
-    copy = new TestCaseEdit(geoms, name);
-    caseList.addCase(copy);
+    TestCaseEdit tc = new TestCaseEdit(geoms, name);
+    caseList.addCase(tc);
   }
 
   //================================================================= 
@@ -473,9 +417,7 @@ public class TestBuilderModel
     if (parseErrors == null) return false;
     return parseErrors.size() > 0;
   }
-  
-
-
+ 
   public void setResult(Object result)
   {
   	currResult = result;
@@ -542,7 +484,11 @@ public class TestBuilderModel
     }
   }
 
-  
+  /**
+   * Encapsulates test case cursor logic. 
+   * @author Martin Davis
+   *
+   */
   public static class CaseList {
     
     public static interface CaseFactory {
@@ -575,10 +521,6 @@ public class TestBuilderModel
   
     public List getCases() {
       return Collections.unmodifiableList(tcList.getList());
-    }
-  
-    public TestCaseList getTestCaseList() {
-      return tcList;
     }
   
     public void setCurrent(TestCaseEdit testCase) {

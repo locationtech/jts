@@ -51,6 +51,7 @@ import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.controller.ResultController;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelListener;
+import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryEvent;
 import org.locationtech.jtstest.testbuilder.model.HtmlWriter;
 import org.locationtech.jtstest.testbuilder.model.JavaTestWriter;
@@ -649,27 +650,27 @@ public class JTSTestBuilderFrame extends JFrame
   }
 
   public void setShowingStructure(boolean showStructure) {
-    TestBuilderModel.setShowingStructure(showStructure);
+    DisplayParameters.setShowingStructure(showStructure);
     JTSTestBuilderController.geometryViewChanged();
   }
 
   public void setShowingOrientations(boolean showingOrientations) {
-    TestBuilderModel.setShowingOrientation(showingOrientations);
+    DisplayParameters.setShowingOrientation(showingOrientations);
     JTSTestBuilderController.geometryViewChanged();
   }
 
   public void setShowVertexIndices(boolean showVertexIndices) {
-    TestBuilderModel.setShowingOrientation(showVertexIndices);
+    DisplayParameters.setShowingOrientation(showVertexIndices);
     JTSTestBuilderController.geometryViewChanged();
   }
 
   public void setShowingVertices(boolean showingVertices) {
-    TestBuilderModel.setShowingVertices(showingVertices);
+    DisplayParameters.setShowingVertices(showingVertices);
     JTSTestBuilderController.geometryViewChanged();
   }
 
   public void setShowingLabel(boolean showLabel) {
-    TestBuilderModel.setShowingLabel(showLabel);
+    DisplayParameters.setShowingLabel(showLabel);
     JTSTestBuilderController.geometryViewChanged();
   }
 
@@ -711,8 +712,8 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
   void revealTopo_actionPerformed() {
-    tbModel.setMagnifyingTopology(testCasePanel.cbMagnifyTopo.isSelected());
-    tbModel.setTopologyStretchSize(testCasePanel.getStretchSize());
+    DisplayParameters.setMagnifyingTopology(testCasePanel.cbMagnifyTopo.isSelected());
+    DisplayParameters.setTopologyStretchSize(testCasePanel.getStretchSize());
     //tbModel.setMagnifyingTopology(testCasePanel.editCtlPanel.cbMagnifyTopo.isSelected());
     //tbModel.setTopologyStretchSize(testCasePanel.editCtlPanel.getStretchSize());
     JTSTestBuilderController.geometryViewChanged();
