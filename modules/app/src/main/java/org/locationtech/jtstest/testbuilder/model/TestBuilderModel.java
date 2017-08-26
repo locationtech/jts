@@ -77,13 +77,7 @@ public class TestBuilderModel
   public LayerList getLayers() { return layerList; }
   
   private void initLayers()
-  {
-  	/*
-  	GeometryStretcherView stretcher = new GeometryStretcherView(geomEditModel);
-  	GeometryContainer geomCont0 = stretcher.getContainer(0);
-  	GeometryContainer geomCont1 = stretcher.getContainer(1);
-  	*/
-  	
+  {  	
   	GeometryContainer geomCont0 = new IndexedGeometryContainer(geomEditModel, 0);
   	GeometryContainer geomCont1 = new IndexedGeometryContainer(geomEditModel, 1);
   	
@@ -159,18 +153,6 @@ public class TestBuilderModel
     if (wktB.length() > 0) {
       g1 = reader.read(wktB);
     }
-    /*
-    if (moveToOrigin) {
-      Coordinate offset = pickOffset(g0, g1);
-      if (offset == null) { return; }
-      if (g0 != null) {
-        g0 = reader.read(offset(getGeometryTextA(), offset));
-      }
-      if (g1 != null) {
-        g1 = reader.read(offset(getGeometryTextB(), offset));
-      }
-    }
-    */
     
     TestCaseEdit testCaseEdit = getCurrentCase();
     testCaseEdit.setGeometry(0, g0);
@@ -178,53 +160,6 @@ public class TestBuilderModel
     getGeometryEditModel().setTestCase(testCaseEdit);
   }
 
-  private Coordinate pickOffset(Geometry a, Geometry b) {
-    if (a != null && ! a.isEmpty()) {
-      return a.getCoordinates()[0];
-    }
-    if (b != null && ! b.isEmpty()) {
-      return b.getCoordinates()[0];
-    }
-    return null;
-  }
-  
-  private String offset(String wellKnownText, Coordinate offset) throws IOException {
-    String offsetWellKnownText = "";
-    StreamTokenizer tokenizer = new StreamTokenizer(new StringReader(wellKnownText));
-    boolean xValue = false;
-    int type = tokenizer.nextToken();
-    while (type != StreamTokenizer.TT_EOF) {
-      offsetWellKnownText += " ";
-      switch (type) {
-        case StreamTokenizer.TT_EOL:
-          break;
-        case StreamTokenizer.TT_NUMBER:
-          xValue = ! xValue;
-          offsetWellKnownText += offsetNumber(tokenizer.nval, offset, xValue);
-          break;
-        case StreamTokenizer.TT_WORD:
-          offsetWellKnownText += tokenizer.sval;
-          break;
-        case '(':
-          offsetWellKnownText += "(";
-          break;
-        case ')':
-          offsetWellKnownText += ")";
-          break;
-        case ',':
-          offsetWellKnownText += ",";
-          break;
-        default:
-          Assert.shouldNeverReachHere();
-      }
-      type = tokenizer.nextToken();
-    }
-    return offsetWellKnownText;
-  }
-
-  private double offsetNumber(double number, Coordinate offset, boolean xValue) {
-    return number - (xValue ? offset.x : offset.y);
-  }
 
 
   /*
