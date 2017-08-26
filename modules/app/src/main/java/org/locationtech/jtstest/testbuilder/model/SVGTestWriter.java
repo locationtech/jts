@@ -26,14 +26,6 @@ import org.locationtech.jtstest.util.io.SVGWriter;
  */
 public class SVGTestWriter {
 
-  public static String getTestSVG(TestCaseList tcList) {
-    StringBuffer java = new StringBuffer();
-    for (int i = 0; i < tcList.getList().size(); i++) {
-      java.append((new SVGTestWriter()).write((Testable) tcList.getList().get(i)));
-    }
-    return java.toString();
-  }
-
   public static String getTestSVG(Testable test) {
     SVGTestWriter writer = new SVGTestWriter();
     return writer.write(test);

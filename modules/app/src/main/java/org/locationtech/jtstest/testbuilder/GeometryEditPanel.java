@@ -536,12 +536,12 @@ public class GeometryEditPanel extends JPanel
     
   	public GeometryEditPanelRenderer()
   	{
-      if (tbModel.isMagnifyingTopology()) {
+      if (DisplayParameters.isMagnifyingTopology()) {
         stretchView = new GeometryStretcherView(getGeomModel());
-        stretchView.setStretchSize(viewport.toModel(tbModel.getTopologyStretchSize()));
+        stretchView.setStretchSize(viewport.toModel(DisplayParameters.getTopologyStretchSize()));
         stretchView.setNearnessTolerance(viewport.toModel(GeometryStretcherView.NEARNESS_TOL_IN_VIEW));
         stretchView.setEnvelope(viewport.getModelEnv());
-        isMagnifyingTopology = tbModel.isMagnifyingTopology();
+        isMagnifyingTopology = DisplayParameters.isMagnifyingTopology();
         isRenderingStretchVertices = stretchView.isViewPerformant();
       }  		
   	}

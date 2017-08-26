@@ -36,25 +36,25 @@ public class Layer
   
   private StyleList.StyleFilter vertexFilter = new StyleList.StyleFilter() {
   	public boolean isFiltered(Style style) {
-  		return ! TestBuilderModel.isShowingVertices();
+  		return ! DisplayParameters.isShowingVertices();
   	}
   };
   
   private StyleList.StyleFilter decorationFilter = new StyleList.StyleFilter() {
     public boolean isFiltered(Style style) {
-      return ! TestBuilderModel.isShowingOrientation();
+      return ! DisplayParameters.isShowingOrientation();
     }
   };
     
   private StyleList.StyleFilter structureFilter = new StyleList.StyleFilter() {
     public boolean isFiltered(Style style) {
-      return ! TestBuilderModel.isShowingStructure();
+      return ! DisplayParameters.isShowingStructure();
     }
   };
     
   private StyleList.StyleFilter labelFilter = new StyleList.StyleFilter() {
     public boolean isFiltered(Style style) {
-      return ! TestBuilderModel.isShowingLabel();
+      return ! DisplayParameters.isShowingLabel();
     }
   };
     
