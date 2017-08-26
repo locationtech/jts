@@ -9,8 +9,9 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.algorithm;
+package test.jts.perf.algorithm;
 
+import org.locationtech.jts.algorithm.PerturbedGridPolygonBuilder;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Geometry;
@@ -19,7 +20,6 @@ import org.locationtech.jts.geom.PrecisionModel;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import test.jts.perf.algorithm.PointInAreaStressTester;
 
 
 
