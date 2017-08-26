@@ -17,6 +17,8 @@ import org.locationtech.jts.algorithm.CGAlgorithmsDD;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 
 public class CGAlgorithmFunctions
 {
@@ -92,5 +94,34 @@ public class CGAlgorithmFunctions
     return g1.getFactory().createPoint(intPt);
   }
   
+  public static boolean isPointInRing(Geometry g1, Geometry g2) {
+    Geometry ring = g1;
+    Geometry pt = g2;
+    if (g1.getNumPoints() == 1) {
+      ring = g2;
+      pt = g1;
+    }
+    Coordinate[] ptsRing = getRing(ring);
+    if (ptsRing == null) return false;
+    return CGAlgorithms.isPointInRing(pt.getCoordinate(), ptsRing);
+  }
   
+  public static boolean isCCW(Geometry g)
+  {
+    Coordinate[] ptsRing = getRing(g);
+    if (ptsRing == null) return false;
+    return CGAlgorithms.isCCW(ptsRing);
+  }
+
+  private static Coordinate[] getRing(Geometry g) {
+    Coordinate[] pts = null;
+    if (g instanceof Polygon) {
+      pts = ((Polygon) g).getExteriorRing().getCoordinates();
+    } 
+    else if (g instanceof LineString
+        && ((LineString) g).isClosed()) {
+      pts = g.getCoordinates();
+    }
+    return pts;
+  }
 }

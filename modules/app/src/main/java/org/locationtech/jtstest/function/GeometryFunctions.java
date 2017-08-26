@@ -31,20 +31,6 @@ public class GeometryFunctions
 	public static String lengthDescription = "Computes the length of perimeter of a Geometry";
 	public static double length(Geometry g)				{		return g.getLength();	}
 	public static double area(Geometry g)					{		return g.getArea();	}
-	
-  public static boolean isCCW(Geometry g)
-  {
-    Coordinate[] pts = null;
-    if (g instanceof Polygon) {
-      pts = ((Polygon) g).getExteriorRing().getCoordinates();
-    } 
-    else if (g instanceof LineString
-        && ((LineString) g).isClosed()) {
-      pts = g.getCoordinates();
-    }
-    if (pts == null) return false;
-    return CGAlgorithms.isCCW(pts);
-  }
   
 	public static boolean isSimple(Geometry g)		{		return g.isSimple();	}
 	public static boolean isValid(Geometry g)			{		return g.isValid();	}
