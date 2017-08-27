@@ -143,7 +143,7 @@ public class CGAlgorithms
    */
   public static int locatePointInRing(Coordinate p, Coordinate[] ring)
   {
-    return RayCrossingCounter.locatePointInRing(p, ring);
+    return RayCrossingCounterDD.locatePointInRing(p, ring);
   }
 
   /**
