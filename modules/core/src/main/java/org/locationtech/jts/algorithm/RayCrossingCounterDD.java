@@ -163,7 +163,7 @@ public class RayCrossingCounterDD
 			}
 			
 			// The upward segment crosses the ray if the test point lies to the left (CCW) of the segment.
-			if (orient == CGAlgorithms.COUNTERCLOCKWISE) {
+			if (orient == CGAlgorithms.LEFT) {
 				crossingCount++;
 			}
 		}
