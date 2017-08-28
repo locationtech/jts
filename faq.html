@@ -1,0 +1,453 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html>
+  <head>
+    <meta content="text/html; charset=windows-1252" http-equiv="content-type">
+    <link rel="stylesheet" type="text/css" href="jts-doc.css">
+    <title> JTS | FAQ </title>
+  </head>
+  <body>
+    <div class="header"><img src="jts_logo.png">
+      <div class="header-text">JTS Topology Suite - FAQ</div>
+    </div>
+    <div class="content">
+      <h1>JTS Frequently Asked Questions</h1>
+      Last Update: September 18, 2008 <br>
+      <br>
+      <ol type="A">
+        <li><a href="#general">General</a></li>
+        <ol>
+          <li><a href="#A1">What Java versions does JTS work with?</a></li>
+        </ol>
+        <li><a href="#design">Design and Structure</a></li>
+        <ol>
+          <li><a href="#B1">How can I use JTS algorithms with a different
+              geometry model?</a> </li>
+          <li><a href="#B2">Why does JTS allow geometries to be constructed with
+              invalid topology? </a></li>
+          <li><a href="#B3">What is the difference between a Point and a
+              Coordinate?</a> </li>
+          <li><a href="#B4">Does JTS support 3D operations? </a></li>
+          <li><a href="#B5">What coordinate system and/or units does JTS use?</a></li>
+        </ol>
+        <li><a href="#predicates">Geometry Predicates</a></li>
+        <ol>
+          <li><a href="#C1">How are spatial predicates computed?</a></li>
+          <li><a href="#C2">Why does relate(POINT(20 20), POINT(20 30),
+              "FF0FFF0F2") = true?</a></li>
+          <li><a href="#C3">Why is the result of a predicate different in JTS
+              than in another software application/library?</a></li>
+        </ol>
+        <li><a href="#robustness">Robustness and Precision</a></li>
+        <ol>
+          <li><a href="#D1">Why is a TopologyException thrown? </a></li>
+          <li><a href="#D2">Why does the coordinate given in a TopologyException
+              not appear in the input data? </a></li>
+          <li><a href="#D3">What is a "robustness failure"? </a></li>
+          <li><a href="#D4">What is a "topology collapse"? </a></li>
+          <li><a href="#D5">What is the PrecisionModel for? </a></li>
+          <li><a href="#D6">Why does JTS not enforce the specified
+              PrecisionModel when creating new geometry? </a></li>
+          <li><a href="#D7">Why do the overlay operations not obey the axioms of
+              set theory? </a></li>
+          <li><a href="#D8">Why does JTS report the intersection of LINESTRING
+              (0 0, 5 3) and LINESTRING (0 0, 1.2 0.72) as a point rather than a
+              line? </a></li>
+          <li><a href="#D9">How can I prevent TopologyExceptions or incorrect
+              results in overlay operations?</a></li>
+        </ol>
+        <li><a href="#algorithms">Algorithms </a> </li>
+        <ol>
+          <li><a href="#E1">Are there any references which describe the
+              algorithms used in JTS? </a> </li>
+          <li><a href="#E2">Is there a skeletonization algorithm which works
+              with JTS?</a> </li>
+        </ol>
+        <li><a href="#geodetic_operations">Geodetic Operations</a> </li>
+        <ol>
+          <li><a href="#F1">Does JTS support computation on the geodetic
+              ellipsoid?</a> </li>
+          <li><a href="#F2">Can JTS be used to compute a geographically accurate
+              range circle?</a> </li>
+        </ol>
+        <li><a href="#geometry_cleaning">Geometry Cleaning and Conflation</a> </li>
+        <ol>
+          <li><a href="#G1">How can I correct the topology of a Polygon that JTS
+              is reporting as invalid?</a> </li>
+        </ol>
+      </ol>
+      <br>
+      <h2>A. General<a name="general"></a></h2>
+      <h3> 1. What Java versions does JTS work with?<a name="A1"></a></h3>
+      JTS is developed using Java 1.4.2. It should work with all newer versions.
+      With a small amount of work the library can be made to work with almost
+      all previous Java versions as well. <br>
+      <h2>B. Design and Structure<a name="design"></a></h2>
+      <h3>1. How can I use JTS algorithms with a different geometry model?<a name="B1"></a></h3>
+      The solution to this is to use Facade objects which wrap the non-JTS
+      geometry model classes. In order to avoid having to create and copy large
+      numbers of <a href="./javadoc/org/locationtech/jts/geom/Coordinate.html">Coordinate</a>
+      objects, JTS provides the <a href="./javadoc/index.html?org/locationtech/jts/geom/CoordinateSequence.html">CoordinateSequence</a>
+      interface. A CoordinateSequence-based adapter can be written for whatever
+      structure the foreign model uses to represent sequences of points. JTS
+      <a href="./javadoc/org/locationtech/jts/geom/Geometry.html">
+        Geometry</a> objects will still need to be created to represent the
+      structure of the geometries containing the points, but these are
+      relatively lightweight in comparison. <br>
+      <h3> 2. Why does JTS allow geometries to be constructed with invalid
+        topology?<a name="B2"></a></h3>
+      JTS intentionally allows topologically invalid geometries to be
+      constructed for the following reasons:
+      <br>
+      <ol>
+        <li> It allows a wider set of geometry to be read, stored and written
+          from external data sources
+        </li>
+        <li> It allows geometries to be constructed and then validated </li>
+        <li>It avoids the costly overhead of validating topology every time a
+          geometry is constructed </li>
+      </ol>
+      <h3> 3. What is the difference between a Point and a Coordinate?<a name="B3"></a></h3>
+      A <a href="./javadoc/org/locationtech/jts/geom/Coordinate.html">Coordinate</a>
+      is a relatively simple class which represents a location on the Cartesian
+      plane (optionally with an associated height value).
+      <a href="./javadoc/org/locationtech/jts/geom/Coordinate.html">Coordinate</a>s
+      are usually treated as mutable objects, in order to simplify certain
+      algorithms. <br>
+      <br>
+      A <a href="./javadoc/org/locationtech/jts/geom/Point.html">Point</a>
+      is a subclass of&nbsp;<a href="./javadoc/org/locationtech/jts/geom/Geometry.html">
+        Geometry</a> that also represents a location on the Cartesian plane. It
+      is a "heavy-weight" object (which for instance may contain an envelope)
+      which support all methods that apply to <a href="./javadoc/org/locationtech/jts/geom/Geometry.html">
+        Geometry</a>s. <br>
+      <h3>4. Does JTS support 3D operations?<a name="B4"></a></h3>
+      JTS does not provide support for true 3D&nbsp;<a href="./javadoc/org/locationtech/jts/geom/Geometry.html">
+        Geometry</a> and operations. However, JTS does allow <a href="./javadoc/org/locationtech/jts/geom/Coordinate.html">Coordinate</a>s
+      to carry an elevation or Z value. This does not provide true 3D support,
+      but does allow "2.5D" uses which are required in some geospatial
+      applications. <br>
+      <h3>5. What coordinate system and/or units does JTS use?<a name="B5"></a></h3>
+      JTS uses the implicit coordinate system of the input data. The only
+      assumption it makes is that the coordinate system is infinite, planar and
+      Euclidean (i.e. rectilinear and obeying the standard Euclidean distance
+      metric). In the same way JTS does not specify any particular units for
+      coordinates and geometries. Instead, the units are implicitly defined by
+      the input data provided. This implies that in most cases input geometries
+      to operations should be defined with the same coordinate system. <br>
+      <h2>C. Geometry Predicates<a name="predicates"></a></h2>
+      <h3>1. How are spatial predicates computed?<a name="C1"></a></h3>
+      The two input geometries are decomposed into labelled topology graphs (<a
+        href="./javadoc/org/locationtech/jts/geomgraph/GeometryGraph.html">GeometryGraph</a>s).
+      The labels are on the nodes and edges of the graphs. They contain full
+      information about the topology of the node/edge in the
+      points/lines/polygons of the original geometry. The labelled topology
+      graphs are merged. This includes merging the labels wherever there is
+      common nodes or edges. For each geometry at each node, the label
+      information is propagated to all edges incident on that node. The
+      resulting relationship (Intersection Matrix, or IM) is determined by the
+      merged label information at the nodes of the merged graph. The labelling
+      of each node and its incident edges is inspected, and the topological
+      relationship information it contributes is added to the overall IM. At the
+      end of this process the IM has been completely determined. <br>
+      <h3>2. Why does relate(POINT(20 20), POINT(20 30), "FF0FFF0F2") = true?<a
+          name="C2"></a></h3>
+      According to the SFS 1.1, section 2.1.3: <br>
+      <br>
+      &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; <em>The boundary of a Point is the
+        empty set </em><br>
+      <br>
+      Since points do not have boundaries, all the intersection matrix entries
+      relating to the geometry boundaries are "F". <br>
+      <br>
+      In some situations it is desirable to use a different definition for
+      determining whether geometry endpoints are on their boundary. To support
+      this, JTS provides the ability to specify a custom <a href="./javadoc/org/locationtech/jts/algorithm/BoundaryNodeRule.html">BoundaryNodeRule</a>
+      to the <a href="./javadoc/org/locationtech/jts/operation/relate/RelateOp.html">RelateOp</a>
+      class. <br>
+      <h3>3. Why is the result of a predicate different in JTS than in another
+        software application/library?<a name="C3"></a></h3>
+      This is usually due to the fact that JTS predicates are computed exactly,
+      using the full precision of the double-precision coordinates. Other
+      geometry engines sometimes compute in lower precision, or round input
+      coordinates, or use a tolerance when determining whether two lines
+      intersect or cross. <br>
+      <br>
+      As a specific example, in the following case: <br>
+      <br>
+      <code>A: POLYGON ((1368.62186660165 17722.3281808793, -1653 9287.5,
+        4038.14058906538 8613.02390521266, 1368.62186660165 17722.3281808793)) </code><br>
+      <code>B: POLYGON ((-5846 9287.5, 7453 8380, 9082 16600, -6326.5 18842,
+        -5846 9287.5)) </code><br>
+      <br>
+      JTS reports <code>A.overlaps(B) = true</code>, whereas another
+      application reports false. The <a href="./javadoc/org/locationtech/jts/geom/Geometry.html#overlaps%28org.locationtech.jts.geom.Geometry%29">Overlaps</a>
+      result is correct - the bottom right point in the triangle B lies outside
+      the quadrilateral A. This is demonstrated by intersecting the bottom edge
+      of A <br>
+      <br>
+      <code>LINESTRING (-5846 9287.5, 7453 8380) </code><br>
+      <br>
+      with B. The value of the intersection is a line segment: <br>
+      <br>
+      <code>LINESTRING (4038.140589065375 8613.02390521266, 4038.14058906538
+        8613.02390521266) </code><br>
+      <br>
+      which shows that B crosses the boundary of A, and thus overlaps A. <br>
+      <h2>D. Robustness &amp; Precision<a name="robustness"></a></h2>
+      <h3>1. Why is a TopologyException thrown?<a name="D1"></a></h3>
+      <a href="./javadoc/org/locationtech/jts/geom/TopologyException.html">TopologyException</a>s
+      are thrown when JTS encounters an inconsistency in the internal topology
+      structures it creates to compute certain spatial operations (in
+      particular, <strong>spatial predicates</strong> and <strong>overlay
+        operations</strong>). These inconsistencies can happen for two reasons:
+      <br>
+      <ol>
+        <li><strong>Invalid input geometry</strong>. If input geometry is
+          invalid according to the JTS (and OGC SFS) model, the results of
+          operations is undefined, and may produce exceptions. <a href="./javadoc/org/locationtech/jts/geom/Geometry.html">Geometry</a>
+          validity can be checked by using the <a href="./javadoc/org/locationtech/jts/geom/Geometry.html#isValid%28%29">isValid()</a>
+          method. </li>
+        <li><strong>Robustness failure</strong> due to floating-point roundoff
+          errors. Floating-point errors can cause incorrect results to be
+          computed for internal operations (such as computing point-line
+          orientation, computing the intersection of two line segments, or
+          computing the noded arrangement of a set of line segments). </li>
+      </ol>
+      Both of these situations can cause the topological properties of computed
+      geometries to become inconsistent. When this issue is detected JTS throws
+      a <a href="./javadoc/org/locationtech/jts/geom/TopologyException.html">TopologyException</a>.
+      <br>
+      <br>
+      In some rare cases, it is not possible to recognize an inconsistent
+      topological situation. In these cases, no exception will be thrown, but
+      the returned geometry will not correctly reflect the true result of the
+      operation. JTS contains special checks to detect and prevent this from
+      occurring for the overwhelming majority of inputs, however. <br>
+      <br>
+      Unfortunately there is no guaranteed way of avoiding <a href="./javadoc/org/locationtech/jts/geom/TopologyException.html">TopologyException</a>s.
+      However, a heuristic which often helps is to ensure that input geometry
+      coordinates do not carry excessive precision. Instead of providing
+      coordinates with a full 16 digits of precision (which usually far exceeds
+      the actual accuracy of the input data), try reducing precision to a few
+      decimal places. Of course, correct geometry topology must still be
+      maintained. (This is primarily an issue for polygons, and can be tricky to
+      do in some pathological cases). JTS provides the
+      <a href="./javadoc/org/locationtech/jts/precision/SimpleGeometryPrecisionReducer.html./javadoc/org/locationtech/jts/precision/SimpleGeometryPrecisionReducer.html">
+        SimpleGeometryPrecisionReducer</a> class to do a simple reduction in
+      coordinate precision, although this class is not guaranteed to maintain
+      correct geometry topology. <br>
+      <h3>2. Why does the coordinate given in a TopologyException not appear in
+        the input data?<a name="D2"><br>
+        </a></h3>
+      In order to reduce robustness problems during overlay operations, JTS/<a href="https://trac.osgeo.org/geos/">GEOS</a>
+      sometimes transforms geometry into a different coordinate system. The
+      coordinates in a <a href="./javadoc/org/locationtech/jts/geom/TopologyException.html">TopologyException</a>
+      message are presented in the working coordinate system, rather than the
+      input coordinate system. This may not match the input data. <br>
+      <h3>3. What is a "robustness failure"?<a name="D3"></a></h3>
+      A <strong>robustness failure</strong> is a situation in which a JTS
+      operation on valid inputs either fails to complete (by throwing an
+      exception) or produces an incorrect answer. This situation is usually
+      caused by the unavoidable internal finite-precision arithmetic causing
+      round-off error, which in turn causes invalid geometric topology to be
+      created at some point during the evaluation of the algorithm. <br>
+      <br>
+      The operations which are notably susceptible to robustness errors are the
+      overlay operations (intersection, union, difference and symDifference).
+      The input geometries which are most likely to trigger this behavior are
+      ones which contain a lot of precision (e.g. 14-16 significant digits of
+      precision), and/or ones which contain line segments which are nearly, but
+      not exactly, coincident. <br>
+      <h3>4. What is a "topology collapse"?<a name="D4"></a></h3>
+      A <strong>topology collapse</strong> is a situation in which the
+      finite-precision numerical representation used in JTS (Java's IEEE-754
+      double-precision floating point) is unable to accurately represent a
+      particular geometric configuration exactly. This causes vertices to be
+      slightly shifted from their mathematically exact position. In certain
+      geometric configurations, this can result in the computed geometry being
+      topologically invalid. <br>
+      <br>
+      Typically this occurs in situations where polygon vertices are very close
+      to other line segments. If the vertex is shifted slightly it may cross the
+      line segment, resulting in a ring which self-intersects. <br>
+      <h3>5. What is the PrecisionModel for?<a name="D5"></a></h3>
+      TBD <br>
+      <h3>6. Why does JTS not enforce the specified PrecisionModel when creating
+        new geometry?<a name="D6"></a></h3>
+      TBD <br>
+      <h3>7. Why do the overlay operations not obey the axioms of set theory?<a
+          name="D7"></a></h3>
+      This is sometimes posed as:
+      <br>
+      <br>
+      "When I intersect two geometries why is the result not contained in either
+      of the originals?" <br>
+      <br>
+      or: "When I union two geometries why does the result not contain either of
+      the originals?" <br>
+      <br>
+      or: "Why does <code>A union (B difference A) != A</code> ?"
+      <br>
+      <br>
+      The axioms of geometric set theory apply in a theoretical world in which
+      all arithmetic is carried out exactly with infite precision real numbers.
+      In this world operations such as union and intersection are exact, which
+      in turn means that they are commutative and associative. This allows
+      equations such as
+      <br>
+      <br>
+      <code>A union (B difference A) = A </code><br>
+      <br>
+      to hold. <br>
+      <br>
+      JTS only approximates this ideal by simulating it using finite-precision
+      floating point arithmetic. JTS uses double-precision floating point
+      numbers to represent the coordinates of geometries (specifically, IEEE-754
+      double-precision floating point, which provides 56 bits of precision).
+      This provides the illusion of computing using real numbers - but it's only
+      an illusion. The finite representation of real numbers forces rounding to
+      take place during arithmetic computation. This means that operations are
+      not commutative or associative. This in turn has the effect that geometric
+      axioms are not maintained. (For the same reason, as is well known and
+      documented, finite-precision floating-point computation does not fully
+      obey the axioms of arithmetic.) <br>
+      <br>
+      Furthermore, JTS contains code which adjusts input geometries in small
+      ways in order to try and prevent robustness errors from occuring. These
+      minor perturbations may also result in computed results which do not
+      necessarily obey the set theory axioms. <br>
+      <br>
+      However, a major JTS design goal is that the output of geometric
+      operations is "close" to the theoretically correct result (using some
+      small epsilon of tolerance and a suitable geometric distance metric.) This
+      is the best that can be achieved under the finite-precision paradigm. This
+      goal is generally met by the JTS algorithms. Moreover, the precision of
+      JTS geometric operations is almost always much greater than the inherent
+      accuracy of the input data. <br>
+      <h3>8. Why does JTS report the intersection of LINESTRING (0 0, 5 3) and
+        LINESTRING (0 0, 1.2 0.72) as a point rather than a line?<a name="D8"></a></h3>
+      This is a specific case of D7 above. It is interesting because it shows
+      how very simple geometric cases can reveal the limitations of
+      finite-precision binary floating-point arithmetic. In this case, the
+      mathematical point (1.2 0.72) lies exactly on the line <code>LINESTRING
+        (0 0, 5 3)</code>, so the the true mathematical value of the
+      intersection is <code>LINESTRING (0 0, 1.2, 0.72)</code>. However, JTS
+      computes the intersection as <code>POINT(0 0)</code>. <br>
+      <br>
+      The reason for this is that the values 1.2 and 0.72 cannot be represented
+      precisely as binary numbers. For instance, the binary value of 1.2 is the
+      infinite repeating value 1.001100110011...<sub>2</sub>, and similarly for
+      0.72. So JTS is computing the intersection using the truncated
+      approximation to the point - which does NOT lie on the line <code>LINESTRING(0
+        0, 5 3)</code>. Thus the intersection is reported (correctly, as far as
+      JTS can determine) as <code>POINT (0 0)</code>. <br>
+      <h3>9. How can I prevent TopologyExceptions or incorrect results in
+        overlay operations?<a name="D9"></a></h3>
+      <a href="./javadoc/org/locationtech/jts/geom/TopologyException.html">TopologyException</a>s
+      and incorrect results encountered during overlay computations are symptoms
+      of robustness issues. Robustness issues are caused by the limitations of
+      using finite-precision numerics in geometric algorithms. <br>
+      <br>
+      Currently the surest way to prevent robustness issues is to limit the
+      numerical precision of the input geometries to something less than the
+      available 16 digits. To be safe, the precision of the input geometry
+      coordinates should be no more than 14 decimal digits (and possibly as few
+      as 10 or 12). This is still plenty of precision to represent the accuracy
+      of real-world data. <br>
+      <br>
+      Reducing the precision of the input data means that result vertices will
+      not perfectly match the input ones. Thus this technique is particularly
+      useful in situations where it is not necessary to perfectly preserve
+      vertex-to-vertex faithfulness to the source geometry. Example use cases
+      are:
+      <br>
+      <ul>
+        <li>the result is only used to obtain derived quantities such as area or
+          length </li>
+        <li>the result is only used for visualization purposes </li>
+        <li>the result vertices do not need to fully match the input </li>
+      </ul>
+      )
+      <br>
+      <br>
+      <a href="./javadoc/org/locationtech/jts/geom/Coordinate.html">Coordinate</a>
+      precision can be controlled in several ways: <br>
+      <ul>
+        <li>the best way is to ensure that the original source of the input
+          geometries provides only as much precision as is really required. If
+          this is not possible to enforce, then it will be necessary to reduce
+          the precision of the geometries once they are created. </li>
+        <li>the&nbsp;<a href="./javadoc/org/locationtech/jts/precision/SimpleGeometryPrecisionReducer.html./javadoc/org/locationtech/jts/precision/SimpleGeometryPrecisionReducer.html">
+            SimpleGeometryPrecisionReducer</a> class can be used to reduce the
+          precision of geometry coordinates. Note that this class operates in a
+          point-wise fashion, and thus in some situations may not maintain
+          correct polygonal topology. If this is an issue, see the following
+          item.
+        </li>
+        <li> the <a href="./javadoc/org/locationtech/jts/precision/GeometryPrecisionReducer.html">GeometryPrecisionReducer</a>
+          reduces geometry coordinate precision, and attempts to detect and
+          correct invalid polygonal topology resulting from precision reduction.
+        </li>
+      </ul>
+      <h2>E. Algorithms<a name="algorithms"></a></h2>
+      <h3>1. Are there any references which describe the algorithms used in JTS?<a
+          name="E1"></a></h3>
+      Many of the details of JTS algorithms (particularly in the areas of
+      performance and robustness) are unique to JTS. However, the general design
+      of the algorithms for computing spatial predicates and spatial overlay
+      follow a generally accepted strategy for computing with 2-dimensional
+      planar linear topological structures. Some papers which present similar
+      approaches are: <br>
+      <ul>
+        <li>E. Chan, J. Ng. <strong>A General and Efficient Implementation of
+            Geometric Operators and Predicates</strong>; <em>Proceedings of the
+            5th International Symposium on Advances in Spatial Databases, 1997.
+          </em></li>
+        <li>Schutte, Klamer. <strong>An edge-labeling approach to concave
+            polygon clipping</strong>; <em>submitted to ACM Transactions on
+            Graphics, 1995. </em></li>
+        <li>M. V. Leonov and A. G. Nikitin. <strong>An Efficient Algorithm for
+            a Closed Set of Boolean Operations on Polygonal Regions in the Plane
+            (draft English translation).</strong> <em>A. P. Ershov Institute of
+            Informatics Systems, Preprint 46, 1997. </em></li>
+        <li>Vatti, B.R. <strong>A Generic Solution to Polygon Clipping</strong>;
+          <em>Communications of the ACM, 35(7), July 1992, pp.56-63. </em></li>
+      </ul>
+      <h3>2. Is there a skeletonization algorithm which works with JTS?<a name="E2"></a></h3>
+      Yes. See the Refractions Research Skeletonizer <br>
+      <h2>F. Geodetic Operations<a name="geodetic_operations"></a></h2>
+      <h3>1. Does JTS support computation on the geodetic ellipsoid?<a name="F1"></a></h3>
+      No. JTS currently assumes that geometries are defined in a Cartesian,
+      planar, 2-dimensional space. Thus it cannot be used to compute accurate
+      metrics, predicates or constructions on the geodetic ellipsoid which is
+      usually used to model the surface of the Earth. <br>
+      <br>
+      It is hoped to provide geodetic operations in a future version. <br>
+      <h3>2. Can JTS be used to compute a geographically accurate range circle?<a
+          name="F2"></a></h3>
+      A geographically accurate range circle is a shape on the ellipsoid
+      modelling the surface of the Earth which represents all points which are a
+      given distance from a fixed point on the ellipsoid. This is a more
+      complicated shape than either a circle or even an ellipsoid. In general
+      JTS cannot compute this shape, since JTS assumes a Cartesian coordinate
+      system (i.e. a two-dimensional plane extending infinitely in all
+      directions). This is obviously not a good approximation to the surface of
+      the ellipsoid, except over very small distances. Computing a true range
+      circle requires complex spherical mathematics as well as a richer
+      coordinate system model. This is outside the current scope of JTS. <br>
+      <h2>G. Geometry Cleaning and Conflation<a name="geometry_cleaning"></a></h2>
+      <h3>1. How can I correct the topology of a Polygon that JTS is reporting
+        as invalid?<a name="G1"></a></h3>
+      <ul>
+        <li>Compute <a href="./javadoc/org/locationtech/jts/geom/Geometry.html#buffer%28double%29">polygon.buffer(0)</a>.
+          The buffer operation is fairly insensitive to topological invalidity,
+          and the act of computing the buffer can often resolve minor issues
+          such as self-intersecting rings. However, in some situations the
+          computed result may not be what is desired. </li>
+        <li>If holes are overlapping the shell or other holes, create individual
+          polygons from the shell and all the holes, and then subtract the holes
+          from the shell. </li>
+      </ul>
+    </div>
+  </body>
+</html>
