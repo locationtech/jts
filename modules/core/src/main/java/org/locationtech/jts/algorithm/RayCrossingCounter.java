@@ -38,6 +38,10 @@ import org.locationtech.jts.geom.Polygonal;
  * which can be a priori determined to <i>not</i> touch the ray
  * (i.e. by a test of their bounding box or Y-extent) 
  * do not need to be counted.  This allows for optimization by indexing.
+ * <p>
+ * This implementation uses the extended-precision orientation test,
+ * to provide maximum robustness and consistency within 
+ * other algorithms.
  * 
  * @author Martin Davis
  *
@@ -150,34 +154,19 @@ public class RayCrossingCounter
 		 */
 		if (((p1.y > p.y) && (p2.y <= p.y)) 
 				|| ((p2.y > p.y) && (p1.y <= p.y))) {
-			// translate the segment so that the test point lies on the origin
-			double x1 = p1.x - p.x;
-			double y1 = p1.y - p.y;
-			double x2 = p2.x - p.x;
-			double y2 = p2.y - p.y;
-
-			/**
-			 * The translated segment straddles the x-axis. Compute the sign of the
-			 * ordinate of intersection with the x-axis. (y2 != y1, so denominator
-			 * will never be 0.0)
-			 */
-			// double xIntSign = RobustDeterminant.signOfDet2x2(x1, y1, x2, y2) / (y2
-			// - y1);
-			// MD - faster & more robust computation?
-			double xIntSign = RobustDeterminant.signOfDet2x2(x1, y1, x2, y2);
-			if (xIntSign == 0.0) {
-				isPointOnSegment = true;
-				return;
-			}
-			if (y2 < y1)
-				xIntSign = -xIntSign;
-			// xsave = xInt;
-
-      //System.out.println("xIntSign(" + x1 + ", " + y1 + ", " + x2 + ", " + y2 + " = " + xIntSign);
-			// The segment crosses the ray if the sign is strictly positive.
-			if (xIntSign > 0.0) {
-				crossingCount++;
-			}
+      int orient = CGAlgorithms.orientationIndex(p1, p2, p);
+      if (orient == CGAlgorithms.COLLINEAR) {
+        isPointOnSegment = true;
+        return;
+      }
+      // Re-orient the result if needed to ensure effective segment direction is upwards
+      if (p2.y < p1.y) {
+        orient = -orient;
+      }
+      // The upward segment crosses the ray if the test point lies to the left (CCW) of the segment.
+      if (orient == CGAlgorithms.LEFT) {
+        crossingCount++;
+      }
 		}
 	}
 	
