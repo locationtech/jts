@@ -13,11 +13,11 @@ import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
 /**
- * Stress test of {@link RayCrossingCounter} Point-In-Ring algorithm.
- * The input to each test is a triangle with a slanted side, 
+ * Robustness test of Point-In-Ring algorithms.
+ * The input to each test is a triangle, 
  * and a point interpolated along the side. 
  * Almost always the point will not lie exactly on the side.
- * The test consists of comparing the result of computing Point-In-Ring and the result of
+ * The robustness test consists of comparing the result of computing Point-In-Ring and the result of
  * determining the orientation of the point relative to the side.
  * The test fails if these are not consistent.
  * <p>
@@ -38,60 +38,90 @@ import test.jts.GeometryTestCase;
  * @author Martin Davis
  *
  */
-public class RayCrossingCounterStressTest extends GeometryTestCase {
+public class PointInRingRobustnessTest extends GeometryTestCase {
   
   public static void main(String args[]) {
-    TestRunner.run(RayCrossingCounterStressTest.class);
+    TestRunner.run(PointInRingRobustnessTest.class);
   }
 
   private boolean isAllConsistent = true;
   private int testCount;
   private int failureCount;
   
-  public RayCrossingCounterStressTest(String name) {
+  public PointInRingRobustnessTest(String name) {
     super(name);
   }
 
-  public void testTriangles() {
-    checkTriangles(500, 100, 1000);
+  public void init() {
+    testCount = 0;
+    failureCount = 0;
+    isAllConsistent = false;
+  }
+  public void testRightTriangles() {
+    init();
+    checkRightTriangles(200, 100, 1000);
     System.out.println("Tests: " + testCount + "   Failures: " + failureCount);
     assertTrue(isAllConsistent);
   }
 
-  private void checkTriangles(double maxHeight, double width, int numPts) {
-    for (int i = 0; i < maxHeight; i++) {
-      checkTriangleEdge(i, width, numPts);
-    }
-  }
-  
-  public void checkTriangleEdge(double height, double width, int numPts) {
-    for (int i = 0; i < numPts; i++) {
-      double lenFrac = i / (double) (numPts + 1);
-      checkTriangle(height, width, lenFrac);
-    }
-  }
-  
-  private boolean checkTriangle(double height, double width, double lenFraction) {
-    Coordinate[] triPts = new Coordinate[] {
-        new Coordinate(0,0),
-        new Coordinate(0, height),
-        new Coordinate(width, 0),
-        new Coordinate(0,0)
-    };
-    LineSegment seg = new LineSegment(0, height, width, 0);
-    Coordinate pt = seg.pointAlong(lenFraction);
-    
-    return checkTriangleConsistent(triPts, pt);
+  public void XtestRandomTriangles() {
+    init();
+    checkRandomTriangles(1000, 100, 100);
+    System.out.println("Tests: " + testCount + "   Failures: " + failureCount);
+    assertTrue(isAllConsistent);
   }
 
-  boolean checkTriangleConsistent(Coordinate[] triPts, Coordinate pt) {
+  private void checkRandomTriangles(int sideLen, int numTris, int numEdgePts) {
+    for (int i = 0; i < numTris; i++) {
+      Coordinate start = new Coordinate(randomInt(sideLen), randomInt(sideLen));
+      Coordinate[] triPts = new Coordinate[] {
+          start,
+          new Coordinate(randomInt(sideLen), randomInt(sideLen)),
+          new Coordinate(randomInt(sideLen), randomInt(sideLen)),
+          new Coordinate(start)
+      };
+      checkTriangleEdgePoints(triPts, numEdgePts);
+    }
+  }
+
+  private static int randomInt(int max) {
+    return (int) (Math.random() * max);
+  }
+  
+  private void checkRightTriangles(double maxHeight, double width, int numEdgePts) {
+    for (int height = 0; height < maxHeight; height++) {
+      Coordinate[] triPts = new Coordinate[] {
+          new Coordinate(0,0),
+          new Coordinate(0, height),
+          new Coordinate(width, 0),
+          new Coordinate(0,0)
+      };
+      checkTriangleEdgePoints(triPts, numEdgePts);
+    }
+  }
+  
+  public void checkTriangleEdgePoints(Coordinate[] triPts, int numEdgePts) {
+    for (int i = 0; i < numEdgePts; i++) {
+      double lenFrac = i / (double) (numEdgePts + 1);
+      checkTriangleConsistent(triPts, lenFrac);
+    }
+  }
+
+  boolean checkTriangleConsistent(Coordinate[] triPts, double lenFraction) {
     testCount++;
+    
+    LineSegment seg = new LineSegment(triPts[1], triPts[2]);
+    Coordinate pt = seg.pointAlong(lenFraction);
+
     //boolean isPointInRing = CGAlgorithms.isPointInRing(pt, triPts);
     //boolean isPointInRing = pointInRingWindingNumber(pt, triPts);
     boolean isPointInRing = Location.INTERIOR == RayCrossingCounter.locatePointInRing(pt, triPts);
     //boolean isPointInRing = Location.INTERIOR == RayCrossingCounterDD.locatePointInRing(pt, triPts);
     
     int orientation = CGAlgorithms.orientationIndex(triPts[1], triPts[2], pt);
+    if (CGAlgorithms.isCCW(triPts)) {
+      orientation = -orientation;
+    }
     
     // if collinear can't determine a failure
     if (orientation == CGAlgorithms.COLLINEAR) return true;
