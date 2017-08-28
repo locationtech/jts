@@ -12,16 +12,17 @@
 package org.locationtech.jts.algorithm;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Location;
 
-import junit.framework.TestCase;
+import test.jts.GeometryTestCase;
 
 /**
  * Tests PointInRing algorithms
  *
  * @version 1.7
  */
-public abstract class AbstractPointInRingTest extends TestCase {
+public abstract class AbstractPointInRingTest extends GeometryTestCase {
 
 
   public AbstractPointInRingTest(String name) { super(name); }
@@ -89,6 +90,20 @@ public abstract class AbstractPointInRingTest extends TestCase {
     runPtInRing(Location.INTERIOR, new Coordinate(1, 5), repeatedPts);
     runPtInRing(Location.INTERIOR, new Coordinate(3, 5), repeatedPts);
 
+  }
+  
+  /**
+   * Cases generated from RayCrossingCounterStressTest.
+   * 
+   * @throws Exception
+   */
+  public void testRobustStressTriangles() throws Exception {
+    runPtInRing(Location.EXTERIOR, new Coordinate(25.374625374625374, 128.35564435564436), "POLYGON ((0.0 0.0, 0.0 172.0, 100.0 0.0, 0.0 0.0))");
+    runPtInRing(Location.INTERIOR, new Coordinate(97.96039603960396, 782.0), "POLYGON ((642.0 815.0, 69.0 764.0, 394.0 966.0, 642.0 815.0))");
+  }
+  
+  public void testRobustTriangle() throws Exception {
+    runPtInRing(Location.EXTERIOR, new Coordinate(3.166572116932842, 48.5390194687463), "POLYGON ((2.152214146946829 50.470470727186765, 18.381941666723034 19.567250592139274, 2.390837642830135 49.228045261718165, 2.152214146946829 50.470470727186765))");
   }
   
   abstract protected void runPtInRing(int expectedLoc, Coordinate pt, String wkt)

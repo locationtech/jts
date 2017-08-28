@@ -30,7 +30,7 @@ public class MCPointInRingTest extends AbstractPointInRingTest {
   private WKTReader reader = new WKTReader();
 
   public static void main(String args[]) {
-    TestRunner.run(PointInRingTest.class);
+    TestRunner.run(MCPointInRingTest.class);
   }
 
   public MCPointInRingTest(String name) { super(name); }
