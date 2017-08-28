@@ -27,7 +27,7 @@ public class RayCrossingCounterTest extends AbstractPointInRingTest {
   private WKTReader reader = new WKTReader();
 
   public static void main(String args[]) {
-    TestRunner.run(LocatePointInRingTest.class);
+    TestRunner.run(RayCrossingCounterTest.class);
   }
 
   public RayCrossingCounterTest(String name) { super(name); }
