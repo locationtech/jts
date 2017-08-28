@@ -1,8 +1,8 @@
 package test.jts.perf.algorithm;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.NonRobustRayCrossingCounter;
 import org.locationtech.jts.algorithm.RayCrossingCounter;
-import org.locationtech.jts.algorithm.RayCrossingCounterDD;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.Location;
@@ -55,7 +55,7 @@ public class PointInRingRobustnessTest extends GeometryTestCase {
   public void init() {
     testCount = 0;
     failureCount = 0;
-    isAllConsistent = false;
+    isAllConsistent = true;
   }
   public void testRightTriangles() {
     init();
@@ -115,8 +115,8 @@ public class PointInRingRobustnessTest extends GeometryTestCase {
 
     //boolean isPointInRing = CGAlgorithms.isPointInRing(pt, triPts);
     //boolean isPointInRing = pointInRingWindingNumber(pt, triPts);
-    boolean isPointInRing = Location.INTERIOR == RayCrossingCounter.locatePointInRing(pt, triPts);
-    //boolean isPointInRing = Location.INTERIOR == RayCrossingCounterDD.locatePointInRing(pt, triPts);
+    //boolean isPointInRing = Location.INTERIOR == RayCrossingCounter.locatePointInRing(pt, triPts);
+    boolean isPointInRing = Location.INTERIOR == NonRobustRayCrossingCounter.locatePointInRing(pt, triPts);
     
     int orientation = CGAlgorithms.orientationIndex(triPts[1], triPts[2], pt);
     if (CGAlgorithms.isCCW(triPts)) {

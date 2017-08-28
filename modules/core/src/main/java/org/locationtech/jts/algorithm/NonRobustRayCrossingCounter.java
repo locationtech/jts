@@ -39,10 +39,14 @@ import org.locationtech.jts.geom.Polygonal;
  * (i.e. by a test of their bounding box or Y-extent) 
  * do not need to be counted.  This allows for optimization by indexing.
  * 
+ * This version is non-robust, since it uses relies on double-precision arithmetic.
+ * 
  * @author Martin Davis
+ * 
+ * @see RayCrossingCounter
  *
  */
-public class RayCrossingCounterDD 
+public class NonRobustRayCrossingCounter 
 {
 	/**
 	 * Determines the {@link Location} of a point in a ring.
@@ -54,7 +58,7 @@ public class RayCrossingCounterDD
 	 */
 	public static int locatePointInRing(Coordinate p, Coordinate[] ring) 
 	{
-		RayCrossingCounterDD counter = new RayCrossingCounterDD(p);
+		NonRobustRayCrossingCounter counter = new NonRobustRayCrossingCounter(p);
 	
     for (int i = 1; i < ring.length; i++) {
       Coordinate p1 = ring[i];
@@ -76,7 +80,7 @@ public class RayCrossingCounterDD
    * @return the location of the point in the ring
    */
   public static int locatePointInRing(Coordinate p, CoordinateSequence ring) {
-    RayCrossingCounterDD counter = new RayCrossingCounterDD(p);
+    NonRobustRayCrossingCounter counter = new NonRobustRayCrossingCounter(p);
 
     Coordinate p1 = new Coordinate();
     Coordinate p2 = new Coordinate();
@@ -95,7 +99,7 @@ public class RayCrossingCounterDD
 	// true if the test point lies on an input segment
 	private boolean isPointOnSegment = false;
 	
-	public RayCrossingCounterDD(Coordinate p)
+	public NonRobustRayCrossingCounter(Coordinate p)
 	{
 		this.p = p;
 	}
@@ -150,20 +154,32 @@ public class RayCrossingCounterDD
 		 */
 		if (((p1.y > p.y) && (p2.y <= p.y)) 
 				|| ((p2.y > p.y) && (p1.y <= p.y))) {
+			// translate the segment so that the test point lies on the origin
+			double x1 = p1.x - p.x;
+			double y1 = p1.y - p.y;
+			double x2 = p2.x - p.x;
+			double y2 = p2.y - p.y;
 
-		  int orient = CGAlgorithms.orientationIndex(p1, p2, p);
-
-			if (orient == 0.0) {
+			/**
+			 * The translated segment straddles the x-axis. Compute the sign of the
+			 * ordinate of intersection with the x-axis. (y2 != y1, so denominator
+			 * will never be 0.0)
+			 */
+			// double xIntSign = RobustDeterminant.signOfDet2x2(x1, y1, x2, y2) / (y2
+			// - y1);
+			// MD - faster & more robust computation?
+			double xIntSign = RobustDeterminant.signOfDet2x2(x1, y1, x2, y2);
+			if (xIntSign == 0.0) {
 				isPointOnSegment = true;
 				return;
 			}
-			// Re-orient the result if needed to ensure effective segment direction is upwards
-			if (p2.y < p1.y) {
-			  orient = -orient;
-			}
-			
-			// The upward segment crosses the ray if the test point lies to the left (CCW) of the segment.
-			if (orient == CGAlgorithms.LEFT) {
+			if (y2 < y1)
+				xIntSign = -xIntSign;
+			// xsave = xInt;
+
+      //System.out.println("xIntSign(" + x1 + ", " + y1 + ", " + x2 + ", " + y2 + " = " + xIntSign);
+			// The segment crosses the ray if the sign is strictly positive.
+			if (xIntSign > 0.0) {
 				crossingCount++;
 			}
 		}
