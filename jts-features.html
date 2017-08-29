@@ -26,14 +26,14 @@ types defined in the OGC <i>Simple Features for SQL</i> specification,
 including:
 
 <ul>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Point.html'>Points</a>
-and <a class="javadoc" href='javadoc/org/locationtech/jts/geom/MultiPoint.html'>MultiPoints</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/LineString.html'>LineStrings</a>
-and <a class="javadoc" href='javadoc/org/locationtech/jts/geom/MultiLineString.html'>MultiLineStrings</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Polygon.html'>Polygons</a>
-and <a class="javadoc" href='javadoc/org/locationtech/jts/geom/MultiPolygon.html'>MultiPolygons</a>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Point.html'>Point</a>
+and <a class="javadoc" href='javadoc/org/locationtech/jts/geom/MultiPoint.html'>MultiPoint</a>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/LineString.html'>LineString</a>
+and <a class="javadoc" href='javadoc/org/locationtech/jts/geom/MultiLineString.html'>MultiLineString</a>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Polygon.html'>Polygon</a>
+and <a class="javadoc" href='javadoc/org/locationtech/jts/geom/MultiPolygon.html'>MultiPolygon</a>
 <li>heterogeneous
-<a class="javadoc" href='javadoc/org/locationtech/jts/geom/GeometryCollection.html'>GeometryCollections</a>
+<a class="javadoc" href='javadoc/org/locationtech/jts/geom/GeometryCollection.html'>GeometryCollection</a>
 </ul>
 
 </ul>
@@ -41,138 +41,138 @@ and <a class="javadoc" href='javadoc/org/locationtech/jts/geom/MultiPolygon.html
 <h3>Geometry Operations</h3>
 
 <ul>
-<li>Topological <a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#isValid()'>validity</a> checking
+<li>Topological <a class="" href='javadoc/org/locationtech/jts/geom/Geometry.html#isValid()'>validity</a> checking
 
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#getArea()'>Area</a>
+<li><a class="" href='javadoc/org/locationtech/jts/geom/Geometry.html#getArea()'>Area</a>
 and
-<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#getLength()'>Length/Perimeter</a>
+<a class="" href='javadoc/org/locationtech/jts/geom/Geometry.html#getLength()'>Length/Perimeter</a>
 
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#distance(com.vividsolutions.jts.geom.Geometry)'>
+<li><a href='javadoc/org/locationtech/jts/geom/Geometry.html#distance(org.locationtech.jts.geom.Geometry)'>
 Distance between geometries</a>
 and
-<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#isWithinDistance(com.vividsolutions.jts.geom.Geometry,%20double)'>
-WithinDistance</a> predicate</a>
+<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#isWithinDistance(org.locationtech.jts.geom.Geometry,%20double)'>
+isWithinDistance</a> predicate</a>
 
 <li>Spatial Predicates based on the Egenhofer DE-9IM model,
 including the named predicates:
 <ul>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#contains(com.vividsolutions.jts.geom.Geometry)'>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#contains(org.locationtech.jts.geom.Geometry)'>
 contains</a>,
-<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#within(com.vividsolutions.jts.geom.Geometry)'>
+<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#within(org.locationtech.jts.geom.Geometry)'>
 within
 
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#covers(com.vividsolutions.jts.geom.Geometry)'>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#covers(org.locationtech.jts.geom.Geometry)'>
 covers</a>,
-<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#coveredBy(com.vividsolutions.jts.geom.Geometry)'>
+<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#coveredBy(org.locationtech.jts.geom.Geometry)'>
 coveredBy</a>
 
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#intersects(com.vividsolutions.jts.geom.Geometry)'>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#intersects(org.locationtech.jts.geom.Geometry)'>
 intersects</a>,
-<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#disjoint(com.vividsolutions.jts.geom.Geometry)'>
+<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#disjoint(org.locationtech.jts.geom.Geometry)'>
 disjoint</a>
 
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#crosses(com.vividsolutions.jts.geom.Geometry)'>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#crosses(org.locationtech.jts.geom.Geometry)'>
 crosses</a>
 
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#overlaps(com.vividsolutions.jts.geom.Geometry)'>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#overlaps(org.locationtech.jts.geom.Geometry)'>
 overlaps</a>
 
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#touches(com.vividsolutions.jts.geom.Geometry)'>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#touches(org.locationtech.jts.geom.Geometry)'>
 touches</a>
 
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#equals(com.vividsolutions.jts.geom.Geometry)'>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#equals(org.locationtech.jts.geom.Geometry)'>
 equals</a>
 </ul>
 
 and the general
-<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#relate(com.vividsolutions.jts.geom.Geometry)'>
+<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#relate(org.locationtech.jts.geom.Geometry)'>
 relate</a> operation returning the DE-9IM
-<a class="javadoc" href='javadoc/org/locationtech/jts/geom/IntersectionMatrix.html'>
+<a href='javadoc/org/locationtech/jts/geom/IntersectionMatrix.html'>
 intersection matrix</a>.
 
 <li>Overlay functions including
 <ul>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#intersection(com.vividsolutions.jts.geom.Geometry)'>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#intersection(org.locationtech.jts.geom.Geometry)'>
 intersection</a>,
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#difference(com.vividsolutions.jts.geom.Geometry)'>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#difference(org.locationtech.jts.geom.Geometry)'>
 difference</a>,
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#union(com.vividsolutions.jts.geom.Geometry)'>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#union(org.locationtech.jts.geom.Geometry)'>
 union</a>,
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#symDifference(com.vividsolutions.jts.geom.Geometry)'>
+<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#symDifference(org.locationtech.jts.geom.Geometry)'>
 symmetric difference</a>
 <li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#union()'>
 unary union</a>, providing fast union of geometry collections
 </ul>
 
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#buffer(double)'>
+<li><a class="" href='javadoc/org/locationtech/jts/geom/Geometry.html#buffer(double)'>
 Buffer</a> computation (also known as Minkowski sum with a circle)
 <ul>
 <li>selection of different
-<a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#buffer(double,%20int,%20int)'>end-cap and join</a>
-atyles.
+<a class="" href='javadoc/org/locationtech/jts/geom/Geometry.html#buffer(double,%20int,%20int)'>end-cap and join</a>
+styles.
 </ul>
 
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/geom/Geometry.html#convexHull()'>Convex hull</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/simplify/package-summary.html'>Geometric simplification</a>
+<li><a class="" href='javadoc/org/locationtech/jts/geom/Geometry.html#convexHull()'>Convex hull</a>
+<li><a class="" href='javadoc/org/locationtech/jts/simplify/package-summary.html'>Geometric simplification</a>
 including the
-<a class="javadoc" href='javadoc/org/locationtech/jts/simplify/DouglasPeuckerSimplifier.html'>
+<a class="" href='javadoc/org/locationtech/jts/simplify/DouglasPeuckerSimplifier.html'>
 Douglas-Peucker</a> algorithm
 and
-<a class="javadoc" href='javadoc/org/locationtech/jts/simplify/TopologyPreservingSimplifier.html'>
+<a class="" href='javadoc/org/locationtech/jts/simplify/TopologyPreservingSimplifier.html'>
 topology-preserving simplification</a>
-<li>Geometric <a class="javadoc" href='javadoc/org/locationtech/jts/densify/Densifier.html'>densification</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/linearref/package-summary.html'>Linear referencing</a>
+<li>Geometric <a class="" href='javadoc/org/locationtech/jts/densify/Densifier.html'>densification</a>
+<li><a class="" href='javadoc/org/locationtech/jts/linearref/package-summary.html'>Linear referencing</a>
 </ul>
 
 <h3>Precision Handling</h3>
 <ul>
 <li>Explicit coordinate
-<a class="javadoc" href='javadoc/org/locationtech/jts/geom/PrecisionModel.html'>Precision Model</a>
+<a class="" href='javadoc/org/locationtech/jts/geom/PrecisionModel.html'>Precision Model</a>
 <li>Geometry precision reduction
 </ul>
 
 <h3>Geometric Constructions</h3>
 <ul>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/triangulate/DelaunayTriangulationBuilder.html'>
+<li><a class="" href='javadoc/org/locationtech/jts/triangulate/DelaunayTriangulationBuilder.html'>
 Delaunay triangulation</a>
 and
-<a class="javadoc" href='javadoc/org/locationtech/jts/triangulate/ConformingDelaunayTriangulationBuilder.html'>
+<a class="" href='javadoc/org/locationtech/jts/triangulate/ConformingDelaunayTriangulationBuilder.html'>
 Conforming Delaunay triangulation</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/triangulate/VoronoiDiagramBuilder.html'>
+<li><a class="" href='javadoc/org/locationtech/jts/triangulate/VoronoiDiagramBuilder.html'>
 Voronoi diagram generation</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/algorithm/MinimumDiameter.html'>
+<li><a class="" href='javadoc/org/locationtech/jts/algorithm/MinimumDiameter.html'>
 Minimum Diameter</a>
 of a geometry
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/algorithm/MinimumDiameter.html#getMinimumRectangle()'>
+<li><a class="" href='javadoc/org/locationtech/jts/algorithm/MinimumDiameter.html#getMinimumRectangle()'>
 Minimum Enclosing Rectangle</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/algorithm/MinimumBoundingCircle.html'>
+<li><a class="" href='javadoc/org/locationtech/jts/algorithm/MinimumBoundingCircle.html'>
 Minimum Bounding Circle</a>
 </ul>
 
 <h3>Metric Functions</h3>
 <ul>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/operation/distance/DistanceOp.html'>Distance between geometries</a>, with supporting points
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/algorithm/distance/DiscreteHausdorffDistance.html'>
+<li><a class="" href='javadoc/org/locationtech/jts/operation/distance/DistanceOp.html'>Distance between geometries</a>, with supporting points
+<li><a class="" href='javadoc/org/locationtech/jts/algorithm/distance/DiscreteHausdorffDistance.html'>
 Discrete Hausdorff</a> distance
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/algorithm/match/AreaSimilarityMeasure.html'>Area</a> and
-<a class="javadoc" href='javadoc/org/locationtech/jts/algorithm/match/HausdorffSimilarityMeasure.html'>Hausdorff<a>
+<li><a class="" href='javadoc/org/locationtech/jts/algorithm/match/AreaSimilarityMeasure.html'>Area</a> and
+<a class="" href='javadoc/org/locationtech/jts/algorithm/match/HausdorffSimilarityMeasure.html'>Hausdorff<a>
 similarity measures
 </ul>
 
 <h3>Spatial algorithms</h3>
 <ul>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/algorithm/RobustLineIntersector.html'>Robust line segment intersection</a>
+<li><a class="" href='javadoc/org/locationtech/jts/algorithm/RobustLineIntersector.html'>Robust line segment intersection</a>
 <li>Efficient line arrangement
-<a class="javadoc" href='javadoc/org/locationtech/jts/noding/package-summary.html'>intersection and noding</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/noding/snapround/package-summary.html'>
+<a class="" href='javadoc/org/locationtech/jts/noding/package-summary.html'>intersection and noding</a>
+<li><a class="" href='javadoc/org/locationtech/jts/noding/snapround/package-summary.html'>
 Snap-rounding</a> for noding line arrangements
-<li>Efficient <a class="javadoc" href='javadoc/org/locationtech/jts/algorithm/locate/package-summary.html'>Point-in-Polygon</a> testing
+<li>Efficient <a class="" href='javadoc/org/locationtech/jts/algorithm/locate/package-summary.html'>Point-in-Polygon</a> testing
 </ul>
 
 <h3>Mathematical Functions</h3>
 <ul>
 <li><a class="javadoc" href='javadoc/org/locationtech/jts/algorithm/Angle.html'>Angle</a> computation
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/algorithm/VectorMath.html'>Vector</a> arithmetic
+<li><a class="" href='javadoc/org/locationtech/jts/algorithm/VectorMath.html'>Vector</a> arithmetic
 </ul>
 
 <h3>Spatial structures</h3>
@@ -180,36 +180,37 @@ Snap-rounding</a> for noding line arrangements
 <li>Spatial index structures including:
 <ul>
 <li><a class="javadoc" href='javadoc/org/locationtech/jts/index/quadtree/Quadtree.html'>Quadtree</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/index/strtree/STRtree.html'>STR-tree</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/index/kdtree/KdTree.html'>KD-tree</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/index/intervalrtree/package-summary.html'>Interval R-tree</a>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/index/chain/package-summary.html'>Monotone Chains</a>
+<li><a class="" href='javadoc/org/locationtech/jts/index/strtree/STRtree.html'>STR-tree</a>
+<li><a class="" href='javadoc/org/locationtech/jts/index/kdtree/KdTree.html'>KD-tree</a>
+<li><a class="" href='javadoc/org/locationtech/jts/index/intervalrtree/package-summary.html'>Interval R-tree</a>
+<li><a class="" href='javadoc/org/locationtech/jts/index/chain/package-summary.html'>Monotone Chains</a>
 </ul>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/planargraph/PlanarGraph.html'>Planar graphs</a>
-and <a class="javadoc" href='javadoc/org/locationtech/jts/planargraph/algorithm/package-summary.html'>graph algorithms</a>
+<li><a class="" href='javadoc/org/locationtech/jts/planargraph/PlanarGraph.html'>Planar graphs</a>
+and <a class="" href='javadoc/org/locationtech/jts/planargraph/algorithm/package-summary.html'>graph algorithms</a>
 </ul>
 
 <h3>Input/Output</h3>
 <ul>
 <li>WKT (Well-Known Text)
-<a class="javadoc" href='javadoc/org/locationtech/jts/io/WKTReader.html'>reading</a> and
-<a class="javadoc" href='javadoc/org/locationtech/jts/io/WKTWriter.html'>writing</a>
+<a class="" href='javadoc/org/locationtech/jts/io/WKTReader.html'>reading</a> and
+<a class="" href='javadoc/org/locationtech/jts/io/WKTWriter.html'>writing</a>
 <li>WKB (Well-Known Binary)
-<a class="javadoc" href='javadoc/org/locationtech/jts/io/WKBReader.html'>reading</a>
+<a class="" href='javadoc/org/locationtech/jts/io/WKBReader.html'>reading</a>
 and
-<a class="javadoc" href='javadoc/org/locationtech/jts/io/WKBWriter.html'>writing</a>
+<a class="" href='javadoc/org/locationtech/jts/io/WKBWriter.html'>writing</a>
 <li>GML(Geography Markup Language) Version 2
-<a class="javadoc" href='javadoc/org/locationtech/jts/io/gml2/GMLReader.html'>reading</a>
+<a class="" href='javadoc/org/locationtech/jts/io/gml2/GMLReader.html'>reading</a>
 and
-<a class="javadoc" href='javadoc/org/locationtech/jts/io/gml2/GMLWriter.html'>writing</a>
-<li>Java Swing/AWT Shape <a class="javadoc" href='javadoc/org/locationtech/jts/awt/package-summary.html'>writing</a>
+<a class="" href='javadoc/org/locationtech/jts/io/gml2/GMLWriter.html'>writing</a>
+<li>Java Swing/AWT Shape <a class="" href='javadoc/org/locationtech/jts/awt/package-summary.html'>writing</a>
 </ul>
 
 <h3>High-Precision Arithmetic</h3>
 <ul>
-<li><a class="javadoc" href='javadoc/org/locationtech/jts/algorithm/RobustDeterminant.html'>
+<li><a class="" href='javadoc/org/locationtech/jts/algorithm/RobustDeterminant.html'>
 Robust evaluation of 2x2 double-precision determinants</a>
-<li>DoubleDouble extended-precision arithmetic
+<li><a class="" href='javadoc/org/locationtech/jts/math/DD.html'>
+DoubleDouble</a> extended-precision arithmetic
 </ul>
 
 </div>
