@@ -19,3 +19,16 @@ body {
 .content {
 	margin: 10px;
 }
+.javadoc {
+	font-family: "Courier New", Courier, monospace;
+	text-decoration: none;
+	font-size: 1em;
+    font-weight: bold;
+}
+.wkt {
+	font-family: "Courier New", Courier, monospace;
+	font-size: 10pt;
+	background-color: #dddddd;
+	padding: 4px 5px 4px 5px; 
+	border-radius: 5px;
+}
