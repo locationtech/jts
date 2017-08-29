@@ -4,6 +4,18 @@
     <meta content="text/html; charset=windows-1252" http-equiv="content-type">
     <link rel="stylesheet" type="text/css" href="jts-doc.css">
     <title> JTS | FAQ </title>
+	<style>
+		.javadoc {
+				font-family: "Courier New", Courier, monospace;
+				text-decoration: none;
+			}
+		.wkt {
+				font-family: "Courier New", Courier, monospace;
+				font-size: 10pt;
+				background-color: #dddddd;
+				padding: 5px 0 5px 5px; 
+		}
+	</style>
   </head>
   <body>
     <div class="header"><img src="jts_logo.png">
@@ -85,7 +97,7 @@
       <h3>1. How can I use JTS algorithms with a different geometry model?<a name="B1"></a></h3>
       The solution to this is to use Facade objects which wrap the non-JTS
       geometry model classes. In order to avoid having to create and copy large
-      numbers of <a href="./javadoc/org/locationtech/jts/geom/Coordinate.html">Coordinate</a>
+      numbers of <a class="javadoc" href="./javadoc/org/locationtech/jts/geom/Coordinate.html">Coordinate</a>
       objects, JTS provides the <a href="./javadoc/index.html?org/locationtech/jts/geom/CoordinateSequence.html">CoordinateSequence</a>
       interface. A CoordinateSequence-based adapter can be written for whatever
       structure the foreign model uses to represent sequences of points. JTS
@@ -174,10 +186,10 @@
       <br>
       As a specific example, in the following case: <br>
       <br>
-      <code>A: POLYGON ((1368.62186660165 17722.3281808793, -1653 9287.5,
-        4038.14058906538 8613.02390521266, 1368.62186660165 17722.3281808793)) </code><br>
-      <code>B: POLYGON ((-5846 9287.5, 7453 8380, 9082 16600, -6326.5 18842,
-        -5846 9287.5)) </code><br>
+      <div class='wkt'>A: POLYGON ((1368.62186660165 17722.3281808793, -1653 9287.5,
+        4038.14058906538 8613.02390521266, 1368.62186660165 17722.3281808793)) </div>
+      <div class='wkt'>B: POLYGON ((-5846 9287.5, 7453 8380, 9082 16600, -6326.5 18842,
+        -5846 9287.5)) </div>
       <br>
       JTS reports <code>A.overlaps(B) = true</code>, whereas another
       application reports false. The <a href="./javadoc/org/locationtech/jts/geom/Geometry.html#overlaps%28org.locationtech.jts.geom.Geometry%29">Overlaps</a>
@@ -185,12 +197,12 @@
       the quadrilateral A. This is demonstrated by intersecting the bottom edge
       of A <br>
       <br>
-      <code>LINESTRING (-5846 9287.5, 7453 8380) </code><br>
+      <div class='wkt'>LINESTRING (-5846 9287.5, 7453 8380) </div>
       <br>
       with B. The value of the intersection is a line segment: <br>
       <br>
-      <code>LINESTRING (4038.140589065375 8613.02390521266, 4038.14058906538
-        8613.02390521266) </code><br>
+      <div class='wkt'>LINESTRING (4038.140589065375 8613.02390521266, 4038.14058906538
+        8613.02390521266) </div>
       <br>
       which shows that B crosses the boundary of A, and thus overlaps A. <br>
       <h2>D. Robustness &amp; Precision<a name="robustness"></a></h2>
