@@ -50,6 +50,7 @@
                         </manifest>
                     </archive>
                     <finalName>JTSTestBuilder</finalName>
+		    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
                     <execution>
