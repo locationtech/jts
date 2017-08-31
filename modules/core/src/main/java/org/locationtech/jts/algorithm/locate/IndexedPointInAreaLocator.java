@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
@@ -29,9 +30,16 @@ import org.locationtech.jts.index.intervalrtree.SortedPackedIntervalRTree;
 
 /**
  * Determines the {@link Location} of {@link Coordinate}s relative to
- * a {@link Polygonal} geometry, using indexing for efficiency.
+ * an areal geometry, using indexing for efficiency.
  * This algorithm is suitable for use in cases where
  * many points will be tested against a given area.
+ * <p>
+ * The Location is computed precisely, in that points
+ * located on the geometry boundary or segments will 
+ * return {@link Location.BOUNDARY}.
+ * <p>
+ * {@link Polygonal} and {@link LinearRing} geometries
+ * are supported.
  * 
  * Thread-safe and immutable.
  *
@@ -44,13 +52,16 @@ public class IndexedPointInAreaLocator
   private final IntervalIndexedGeometry index;
   
   /**
-   * Creates a new locator for a given {@link Geometry}
+   * Creates a new locator for a given {@link Geometry}.
+   * {@link Polygonal} and {@link LinearRing} geometries
+   * are supported.
+   * 
    * @param g the Geometry to locate in
    */
   public IndexedPointInAreaLocator(Geometry g)
   {
-    if (! (g instanceof Polygonal))
-      throw new IllegalArgumentException("Argument must be Polygonal");
+    if (! (g instanceof Polygonal  || g instanceof LinearRing))
+      throw new IllegalArgumentException("Argument must be Polygonal or LinearRing");
     index = new IntervalIndexedGeometry(g);
   }
     

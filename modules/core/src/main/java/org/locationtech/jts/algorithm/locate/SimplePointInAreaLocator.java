@@ -42,7 +42,8 @@ public class SimplePointInAreaLocator
 
   /**
    * Determines the {@link Location} of a point in an areal {@link Geometry}.
-   * Currently this will never return a value of BOUNDARY.  
+   * Computes {@link Location.BOUNDARY} if the point lies exactly
+   * on a geometry line segment. 
    * 
    * @param p the point to test
    * @param geom the areal geometry to test
@@ -51,42 +52,68 @@ public class SimplePointInAreaLocator
   public static int locate(Coordinate p, Geometry geom)
   {
     if (geom.isEmpty()) return Location.EXTERIOR;
-
-    if (containsPoint(p, geom))
-      return Location.INTERIOR;
-    return Location.EXTERIOR;
+    return locateInGeometry(p, geom);
   }
 
-  private static boolean containsPoint(Coordinate p, Geometry geom)
+  private static int locateInGeometry(Coordinate p, Geometry geom)
   {
     if (geom instanceof Polygon) {
-      return containsPointInPolygon(p, (Polygon) geom);
+      return locatePointInPolygon(p, (Polygon) geom);
     }
     else if (geom instanceof GeometryCollection) {
       Iterator geomi = new GeometryCollectionIterator((GeometryCollection) geom);
       while (geomi.hasNext()) {
         Geometry g2 = (Geometry) geomi.next();
-        if (g2 != geom)
-          if (containsPoint(p, g2))
-            return true;
+        if (g2 != geom) {
+          int loc = locateInGeometry(p, g2);
+          if (loc != Location.EXTERIOR) return loc;
+        }
       }
     }
-    return false;
+    return Location.EXTERIOR;
   }
 
-  public static boolean containsPointInPolygon(Coordinate p, Polygon poly)
+  /**
+   * Determines the {@link Location} of a point in a {@link Polygon}.
+   * Computes {@link Location.BOUNDARY} if the point lies exactly
+   * on the polygon boundary. 
+   * 
+   * @param p the point to test
+   * @param poly the geometry to test
+   * @return the Location of the point in the polygon  
+   */
+  public static int locatePointInPolygon(Coordinate p, Polygon poly)
   {
-    if (poly.isEmpty()) return false;
+    if (poly.isEmpty()) return Location.EXTERIOR;
     LinearRing shell = (LinearRing) poly.getExteriorRing();
-    if (! isPointInRing(p, shell)) return false;
+    int shellLoc = locatePointInRing(p, shell);
+    if (shellLoc != Location.INTERIOR) return shellLoc;
+    
     // now test if the point lies in or on the holes
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       LinearRing hole = (LinearRing) poly.getInteriorRingN(i);
-      if (isPointInRing(p, hole)) return false;
+      int holeLoc = locatePointInRing(p, hole);
+      if (holeLoc == Location.BOUNDARY) return Location.BOUNDARY;
+      if (holeLoc == Location.INTERIOR) return Location.EXTERIOR;
+      // if in EXTERIOR of this hole keep checking the other ones
     }
-    return true;
+    // If not in any hole must be inside polygon
+    return Location.INTERIOR;
   }
 
+  /**
+   * Determines whether a point lies in a {@link Polygon}.
+   * If the point lies on the polygon boundary it is 
+   * considered to be inside.
+   * 
+   * @param p the point to test
+   * @param poly the geometry to test
+   * @return true if the point lies in or on the polygon  
+   */
+  public static boolean containsPointInPolygon(Coordinate p, Polygon poly) {
+    return Location.EXTERIOR != locatePointInPolygon(p, poly);
+  }
+  
   /**
    * Determines whether a point lies in a LinearRing,
    * using the ring envelope to short-circuit if possible.
@@ -95,12 +122,12 @@ public class SimplePointInAreaLocator
    * @param ring a linear ring
    * @return true if the point lies inside the ring
    */
-  private static boolean isPointInRing(Coordinate p, LinearRing ring)
+  private static int locatePointInRing(Coordinate p, LinearRing ring)
   {
   	// short-circuit if point is not in ring envelope
   	if (! ring.getEnvelopeInternal().intersects(p))
-  		return false;
-  	return CGAlgorithms.isPointInRing(p, ring.getCoordinates());
+  		return Location.EXTERIOR;
+  	return CGAlgorithms.locatePointInRing(p, ring.getCoordinates());
   }
 
 	private Geometry geom;
