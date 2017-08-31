@@ -35,8 +35,10 @@ import org.locationtech.jts.index.chain.MonotoneChainSelectAction;
  *
  * @version 1.7
  * 
- * @see IndexedPointInAreaLocator for more general functionality
+ * @deprecated non-robust implementation; use {@link IndexedPointInAreaLocator}
+ * @see IndexedPointInAreaLocator for a more general and robust equivalent
  */
+@Deprecated
 public class MCPointInRing   implements PointInRing {
 
   class MCSelecter extends MonotoneChainSelectAction
