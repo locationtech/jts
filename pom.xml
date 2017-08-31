@@ -145,6 +145,7 @@
             <excludes>
               <exclude>**/*PerfTest.java</exclude>
               <exclude>**/*StressTest.java</exclude>
+              <exclude>**/jts/perf/**/*.java</exclude>
             </excludes>
           </configuration>
         </plugin>
