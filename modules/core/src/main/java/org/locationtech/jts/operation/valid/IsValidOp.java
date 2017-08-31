@@ -22,11 +22,14 @@ import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.MCPointInRing;
 import org.locationtech.jts.algorithm.PointInRing;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
+import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
@@ -442,7 +445,8 @@ public class IsValidOp
 
     //PointInRing pir = new SimplePointInRing(shell);
     //PointInRing pir = new SIRtreePointInRing(shell);
-    PointInRing pir = new MCPointInRing(shell);
+    //PointInRing pir = new MCPointInRing(shell);
+    PointOnGeometryLocator pir = new IndexedPointInAreaLocator(shell);
 
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
 
@@ -455,7 +459,7 @@ public class IsValidOp
        */
       if (holePt == null) return;
 
-      boolean outside = ! pir.isInside(holePt);
+      boolean outside = Location.EXTERIOR == pir.locate(holePt);
       if ( outside ) {
         validErr = new TopologyValidationError(
                           TopologyValidationError.HOLE_OUTSIDE_SHELL,
