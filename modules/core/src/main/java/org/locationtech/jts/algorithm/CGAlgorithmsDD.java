@@ -68,6 +68,25 @@ public class CGAlgorithmsDD
   }
 
   /**
+   * Computes the sign of the determinant of the 2x2 matrix
+   * with the given entries.
+   * 
+   * @return -1 if the determinant is negative,
+   * @return  1 if the determinant is positive,
+   * @return  0 if the determinant is 0.
+   */
+  public static int signOfDet2x2(double dx1, double dy1, double dx2, double dy2)
+  {
+    DD x1 = DD.valueOf(dx1);
+    DD y1 = DD.valueOf(dy1);
+    DD x2 = DD.valueOf(dx2);
+    DD y2 = DD.valueOf(dy2);
+
+    DD det = x1.multiply(y2).selfSubtract(y1.multiply(x2));
+    return det.signum();
+  }
+
+  /**
    * A value which is safely greater than the
    * relative round-off error in double-precision numbers
    */
