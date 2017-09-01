@@ -25,17 +25,20 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
-import org.locationtech.jts.algorithm.RobustCGAlgorithms;
-import org.locationtech.jts.geom.*;
-
-
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 
 
 /**
  * Wrapper for a Shapefile polygon.
  */
 public class PolygonHandler implements ShapeHandler{
-    protected static CGAlgorithms cga = new RobustCGAlgorithms();
     int myShapeType;
     
     public PolygonHandler()
@@ -188,7 +191,7 @@ public class PolygonHandler implements ShapeHandler{
                 offset++;
             }
             LinearRing ring = geometryFactory.createLinearRing(points);
-            if(cga.isCCW(points)){
+            if(CGAlgorithms.isCCW(points)){
                 holes.add(ring);
             }
             else{
