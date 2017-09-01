@@ -23,7 +23,6 @@ import org.locationtech.jts.geom.Envelope;
  * A robust version of {@link LineIntersector}.
  *
  * @version 1.7
- * @see RobustDeterminant
  */
 public class RobustLineIntersector
     extends LineIntersector

@@ -156,7 +156,7 @@ public class OrientationIndexFailureTest
 
   private void checkOriginalJTS(Coordinate[] pts, boolean expected)
   {
-    assertTrue("JTS Robust FAIL", expected == OrientationIndexTest.isAllOrientationsEqual(pts));
+    assertTrue("JTS RobustDeterminant FAIL", expected == isAllOrientationsEqualRD(pts));
   }
 
   private void checkDD(Coordinate[] pts, boolean expected)
@@ -195,4 +195,12 @@ public class OrientationIndexFailureTest
     return orient0 == orient1 && orient0 == orient2;
   }
   
+  public static boolean isAllOrientationsEqualRD(Coordinate[] pts)
+  {
+    int[] orient = new int[3];
+    orient[0] = RobustDeterminant.orientationIndex(pts[0], pts[1], pts[2]);
+    orient[1] = RobustDeterminant.orientationIndex(pts[1], pts[2], pts[0]);
+    orient[2] = RobustDeterminant.orientationIndex(pts[2], pts[0], pts[1]);
+    return orient[0] == orient[1] && orient[0] == orient[2];
+  }
 }
