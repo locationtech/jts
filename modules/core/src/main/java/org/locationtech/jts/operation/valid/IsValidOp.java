@@ -19,8 +19,6 @@ import java.util.TreeSet;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.MCPointInRing;
-import org.locationtech.jts.algorithm.PointInRing;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
