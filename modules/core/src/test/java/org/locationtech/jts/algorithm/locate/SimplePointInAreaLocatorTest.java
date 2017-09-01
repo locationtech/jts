@@ -12,12 +12,8 @@
 package org.locationtech.jts.algorithm.locate;
 
 import org.locationtech.jts.algorithm.AbstractPointInRingTest;
-import org.locationtech.jts.algorithm.MCPointInRing;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Location;
-import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
 
 import junit.textui.TestRunner;
