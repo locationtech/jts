@@ -13,7 +13,6 @@ package org.locationtech.jts.math;
 
 import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.CGAlgorithmsDD;
-import org.locationtech.jts.algorithm.RobustDeterminant;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.util.Assert;
 
