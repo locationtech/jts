@@ -12,6 +12,7 @@
 package org.locationtech.jts.math;
 
 import org.locationtech.jts.algorithm.Angle;
+import org.locationtech.jts.algorithm.CGAlgorithmsDD;
 import org.locationtech.jts.algorithm.RobustDeterminant;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.util.Assert;
@@ -275,7 +276,7 @@ public class Vector2D {
 
   public boolean isParallel(Vector2D v)
   {
-    return 0.0 == RobustDeterminant.signOfDet2x2(x, y, v.x, v.y);
+    return 0.0 == CGAlgorithmsDD.signOfDet2x2(x, y, v.x, v.y);
   }
   
 	public Coordinate translate(Coordinate coord) {
