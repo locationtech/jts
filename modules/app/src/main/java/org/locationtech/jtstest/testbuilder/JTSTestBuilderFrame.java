@@ -256,6 +256,7 @@ public class JTSTestBuilderFrame extends JFrame
   public void setCurrentTestCase(TestCaseEdit testCase) {
     tbModel.cases().setCurrent(testCase);
     updateTestCaseView();
+    JTSTestBuilderController.zoomToInput();
   }
 
   public TestCasePanel getTestCasePanel() {
@@ -324,6 +325,7 @@ public class JTSTestBuilderFrame extends JFrame
     updateTestCaseView();
     testListPanel.populateList();
     updatePrecisionModelDescription();
+    JTSTestBuilderController.zoomToInput();
   }
 
   /**
