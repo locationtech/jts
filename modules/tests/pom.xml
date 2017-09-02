@@ -38,7 +38,8 @@
                         </manifest>
                     </archive>
                     <finalName>JTSTestRunner</finalName>
-                </configuration>
+ 		    		<appendAssemblyId>false</appendAssemblyId>
+ 		        </configuration>
                 <executions>
                     <execution>
                         <id>make-assembly</id>
