@@ -17,6 +17,7 @@ import java.util.*;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.*;
+import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jtstest.test.TestCaseList;
 import org.locationtech.jtstest.test.Testable;
@@ -264,8 +265,10 @@ public class TestBuilderModel
     else {
       TestCaseList newList = new TestCaseList();
       newList.add(getTestCaseList());
+      int firstIndex = newList.size();
       newList.add(testCaseList);
       loadTestCaseList(newList, precisionModel);
+      caseList.setCurrentTestIndex(firstIndex);
     }
   }
 
@@ -276,20 +279,16 @@ public class TestBuilderModel
     }
   }
 
-  public void loadEditList(TestCaseList tcl) 
-  throws ParseException
-  {
+  public void loadEditList(TestCaseList tcl) throws ParseException {
     TestCaseList newTcl = new TestCaseList();
-    for (Iterator i = tcl.getList().iterator(); i.hasNext(); ) {
+    for (Iterator i = tcl.getList().iterator(); i.hasNext();) {
       Testable tc = (Testable) i.next();
 
-        if (tc instanceof TestCaseEdit) {
-          newTcl.add((TestCaseEdit) tc);
-        }
-        else {
-          newTcl.add(new TestCaseEdit(tc));
-        }
-
+      if (tc instanceof TestCaseEdit) {
+        newTcl.add((TestCaseEdit) tc);
+      } else {
+        newTcl.add(new TestCaseEdit(tc));
+      }
     }
     caseList.init(newTcl);
   }
@@ -480,7 +479,9 @@ public class TestBuilderModel
     {
       return tcIndex;
     }
-    
+    public void setCurrentTestIndex(int i) {
+      tcIndex = MathUtil.clamp(i,  0, getSize() -1 );
+    }
     public TestCaseList getTestList()
     {
       return tcList;
