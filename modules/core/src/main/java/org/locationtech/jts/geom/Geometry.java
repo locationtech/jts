@@ -868,7 +868,11 @@ public abstract class Geometry
    * @see Geometry#covers
    */
   public boolean contains(Geometry g) {
-    // short-circuit test
+    // optimization - lines cannot contain polygons
+    if (getDimension() == 1 && g.getDimension() == 2) {
+      return false;
+    }
+    // optimization - envelope test
     if (! getEnvelopeInternal().contains(g.getEnvelopeInternal()))
       return false;
     // optimization for rectangle arguments
@@ -942,7 +946,11 @@ public abstract class Geometry
    * @see Geometry#coveredBy
    */
   public boolean covers(Geometry g) {
-    // short-circuit test
+    // optimization - lines cannot cover polygons
+    if (getDimension() == 1 && g.getDimension() == 2) {
+      return false;
+    }
+    // optimization - envelope test
     if (! getEnvelopeInternal().covers(g.getEnvelopeInternal()))
       return false;
     // optimization for rectangle arguments
