@@ -73,7 +73,7 @@ public class ScaledNoder
 
   private Collection scale(Collection segStrings)
   {
-    List nodedSegmentStrings = new ArrayList();
+    List nodedSegmentStrings = new ArrayList(segStrings.size());
     for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
       SegmentString ss = (SegmentString) i.next();
       nodedSegmentStrings.add(new NodedSegmentString(scale(ss.getCoordinates()), ss.getData()));
