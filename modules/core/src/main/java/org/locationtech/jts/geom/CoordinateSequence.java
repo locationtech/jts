@@ -48,10 +48,10 @@ public interface CoordinateSequence
   /**
    * Standard ordinate index values
    */
-  int X = 0;
-  int Y = 1;
-  int Z = 2;
-  int M = 3;
+  static final int X = 0;
+  static final int Y = 1;
+  static final int Z = 2;
+  static final int M = 3;
 
   /**
    * Returns the dimension (number of ordinates in each coordinate)
