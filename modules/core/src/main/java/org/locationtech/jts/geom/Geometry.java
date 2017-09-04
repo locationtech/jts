@@ -1791,8 +1791,7 @@ public abstract class Geometry
    *      but not one of its subclasses
    */
   protected void checkNotGeometryCollection(Geometry g) {
-    //Don't use instanceof because we want to allow subclasses
-    if (g.getClass().equals(GeometryCollection.class)) {
+    if (getSortIndex() == SORTINDEX_GEOMETRYCOLLECTION) {
       throw new IllegalArgumentException("This method does not support GeometryCollection arguments");
     }
   }
@@ -1805,7 +1804,7 @@ public abstract class Geometry
    */
   protected boolean isGeometryCollection()
   {
-    return getClass().equals(org.locationtech.jts.geom.GeometryCollection.class);
+    return getSortIndex() == SORTINDEX_GEOMETRYCOLLECTION;
   }
 
   /**
