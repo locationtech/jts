@@ -23,7 +23,7 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Area;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -242,7 +242,7 @@ abstract class GeometryNode extends GeometricObjectNode
       area = geom.getArea();
     }
     else if (geom instanceof LinearRing) {
-      area = Math.abs(CGAlgorithms.signedArea(geom.getCoordinates()));
+      area = Area.ofRing(geom.getCoordinates());
     }
     return area;
   }

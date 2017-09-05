@@ -11,7 +11,7 @@
  */
 package org.locationtech.jtslab.clean;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Area;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -30,7 +30,7 @@ public class SmallHoleRemover {
     }
 
     public boolean value(Geometry geom) {
-      double holeArea = Math.abs(CGAlgorithms.signedArea(geom.getCoordinates()));
+      double holeArea = Area.ofRing(geom.getCoordinates());
       return holeArea <= area;
     }
     

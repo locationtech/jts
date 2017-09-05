@@ -15,6 +15,7 @@ package org.locationtech.jts.geom;
 
 import java.util.Arrays;
 
+import org.locationtech.jts.algorithm.Area;
 import org.locationtech.jts.algorithm.CGAlgorithms;
 
 
@@ -243,9 +244,9 @@ public class Polygon
   public double getArea()
   {
     double area = 0.0;
-    area += Math.abs(CGAlgorithms.signedArea(shell.getCoordinateSequence()));
+    area += Area.ofRing(shell.getCoordinateSequence());
     for (int i = 0; i < holes.length; i++) {
-      area -= Math.abs(CGAlgorithms.signedArea(holes[i].getCoordinateSequence()));
+      area -= Area.ofRing(holes[i].getCoordinateSequence());
     }
     return area;
   }
