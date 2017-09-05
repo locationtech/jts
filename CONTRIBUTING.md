@@ -18,8 +18,9 @@ Code contributions must include a license header at the top of each file.  A sam
 
 Code contributions should include the following:
 
-* Javadoc on classed and methods
+* Javadoc on classes and methods
 * Unit Tests to demonstrate code correctness and allow this to be maintained going forward.  In the case of bug fixes the unit test should demonstrate the bug in the absence of the fix (if any).  Unit Tests are usually JUnit classes, or in some cases may be JTS TestRunner test cases
+* License information on __all__ provided source files. An example license header can be found [here](doc/sample_java_header.txt). 
 
 ## Make a Pull Request
 
