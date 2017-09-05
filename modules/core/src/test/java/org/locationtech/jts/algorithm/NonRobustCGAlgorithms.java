@@ -21,10 +21,7 @@ import org.locationtech.jts.geom.Coordinate;
  * @version 1.7
  */
 public class NonRobustCGAlgorithms
-  extends CGAlgorithms
 {
-  public NonRobustCGAlgorithms() {
-  }
 
   /**
    * Computes whether a ring defined by an array of {@link Coordinate} is
@@ -148,21 +145,10 @@ public class NonRobustCGAlgorithms
   }
 
   /**
-   * Computes the orientation of a point q to the directed line segment p1-p2.
+   * Returns the index of the orientation of the point <code>q</code> relative to
+   * a vector specified by <code>p1-p2</code>.
    * The orientation of a point relative to a directed line segment indicates
    * which way you turn to get to q after travelling from p1 to p2.
-   * 
-   * @return 1 if q is counter-clockwise from p1-p2
-   * @return -1 if q is clockwise from p1-p2
-   * @return 0 if q is collinear with p1-p2
-   */
-  public static int computeOrientation(Coordinate p1, Coordinate p2, Coordinate q) {
-    return orientationIndex(p1, p2, q);
-  }
-  
-  /**
-   * Returns the index of the direction of the point <code>q</code> relative to
-   * a vector specified by <code>p1-p2</code>.
    * 
    * @param p1
    *          the origin point of the vector
@@ -206,9 +192,9 @@ public class NonRobustCGAlgorithms
   {
     // check for zero-length segments
     if (A.equals(B))
-      return distancePointLine(A, C, D);
+      return CGAlgorithms.distancePointLine(A, C, D);
     if (C.equals(D))
-      return distancePointLine(D, A, B);
+      return CGAlgorithms.distancePointLine(D, A, B);
 
     // AB and CD are line segments
     /*
@@ -235,11 +221,11 @@ public class NonRobustCGAlgorithms
     if ((r_bot == 0) || (s_bot == 0)) {
       return Math
           .min(
-              distancePointLine(A, C, D),
+              CGAlgorithms.distancePointLine(A, C, D),
               Math.min(
-                  distancePointLine(B, C, D),
-                  Math.min(distancePointLine(C, A, B),
-                      distancePointLine(D, A, B))));
+                  CGAlgorithms.distancePointLine(B, C, D),
+                  Math.min(CGAlgorithms.distancePointLine(C, A, B),
+                      CGAlgorithms.distancePointLine(D, A, B))));
 
     }
     double s = s_top / s_bot;
@@ -249,11 +235,11 @@ public class NonRobustCGAlgorithms
       // no intersection
       return Math
           .min(
-              distancePointLine(A, C, D),
+              CGAlgorithms.distancePointLine(A, C, D),
               Math.min(
-                  distancePointLine(B, C, D),
-                  Math.min(distancePointLine(C, A, B),
-                      distancePointLine(D, A, B))));
+                  CGAlgorithms.distancePointLine(B, C, D),
+                  Math.min(CGAlgorithms.distancePointLine(C, A, B),
+                      CGAlgorithms.distancePointLine(D, A, B))));
     }
     return 0.0; // intersection exists
   }

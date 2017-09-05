@@ -15,6 +15,7 @@ package  test.jts.junit;
 import java.util.Arrays;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.NonRobustCGAlgorithms;
 import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.geom.Coordinate;
@@ -108,10 +109,9 @@ public class MiscellaneousTest2 extends TestCase {
   }
 
   public void test1() throws Exception {
-    NonRobustCGAlgorithms algorithms = new NonRobustCGAlgorithms();
-    assertTrue(algorithms.isOnLine(new Coordinate(10,10),
+    assertTrue(CGAlgorithms.isOnLine(new Coordinate(10,10),
           new Coordinate[] {new Coordinate(0,10), new Coordinate(20,10)}));
-    assertTrue(! algorithms.isOnLine(new Coordinate(30,10),
+    assertTrue(! CGAlgorithms.isOnLine(new Coordinate(30,10),
           new Coordinate[] {new Coordinate(0,10), new Coordinate(20,10)}));
   }
 
