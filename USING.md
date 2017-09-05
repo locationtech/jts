@@ -49,7 +49,7 @@ JTS snapshot artifacts are published to the LocationTech Maven repository. To in
     <releases>
       <enabled>false</enabled>
     </releases>
-	<snapshots>
+    <snapshots>
       <enabled>true</enabled>
     </snapshots>
    </repository>
