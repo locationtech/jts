@@ -22,7 +22,7 @@ The following modules are applications and data for testing and working with JTS
 
 ## Using JTS with Maven
 
-To include JTS in your Maven project, add a dependency block like the next one.
+To include JTS in a Maven project, add a dependency block like the following:
 
 ```xml
 <dependency>
@@ -32,7 +32,7 @@ To include JTS in your Maven project, add a dependency block like the next one.
 </dependency>
 ```
 
-JTS snapshot artifacts are published to the LocationTech Maven repository. To include JTS in your project, add the following repositories to your pom.
+JTS snapshot artifacts are published to the LocationTech Maven repository. To include JTS in a project, add the following repositories to the pom.
 
 ```xml
 <repositories>
