@@ -11,7 +11,7 @@
  */
 package org.locationtech.jts.geom;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Length;
 import org.locationtech.jts.operation.BoundaryOp;
 
 /**
@@ -160,7 +160,7 @@ public class LineString
    */
   public double getLength()
   {
-   return CGAlgorithms.length(points);
+   return Length.ofLine(points);
   }
 
   /**
