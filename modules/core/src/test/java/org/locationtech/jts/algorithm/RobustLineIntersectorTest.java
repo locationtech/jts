@@ -151,10 +151,6 @@ public class RobustLineIntersectorTest extends TestCase {
         new Coordinate(10, 10),
         new Coordinate(20, 20),
         new Coordinate(0, 0)));
-    assertEquals(0, NonRobustCGAlgorithms.computeOrientation(
-        new Coordinate(10, 10),
-        new Coordinate(20, 20),
-        new Coordinate(0, 0)));
   }
 
   public void testA() {
