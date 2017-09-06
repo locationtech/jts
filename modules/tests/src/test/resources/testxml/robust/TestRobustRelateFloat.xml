@@ -1,0 +1,40 @@
+<run>
+  <precisionModel type="FLOATING" />
+
+<case>
+  <desc>A/P - Point is on boundary of polygon. 
+  	Orientation algorithms (including CGAlgorithmsDD) fail by incorrectly reporting the point to not be on the boundary.
+  	See https://trac.osgeo.org/geos/ticket/841
+  	</desc>
+  <a>
+    POLYGON ((0 0, 1 0, 0 1, 0 0))
+  </a>
+  <b>
+    POINT (0.95 0.05)
+  </b>
+<test>
+  <op name="contains" arg1="A" arg2="B">
+    false
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>L/L - Line A contains Line B. 
+  	Fails due to imprecision of computed self-node in A.
+  	See https://trac.osgeo.org/geos/ticket/572
+  	</desc>
+  <a>
+    LINESTRING (1 0, 0 2, 0 0, 2 2)
+  </a>
+  <b>
+    LINESTRING (0 0, 2 2)
+  </b>
+<test>
+  <op name="contains" arg1="A" arg2="B">
+    true
+  </op>
+</test>
+</case>
+
+</run>
