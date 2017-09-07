@@ -17,7 +17,7 @@ package org.locationtech.jts.geomgraph;
 import java.io.PrintStream;
 
 import org.locationtech.jts.algorithm.BoundaryNodeRule;
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.util.Assert;
 
@@ -103,7 +103,7 @@ public class EdgeEnd
     if (quadrant < e.quadrant) return -1;
     // vectors are in the same quadrant - check relative orientation of direction vectors
     // this is > e if it is CCW of e
-    return CGAlgorithms.computeOrientation(e.p0, e.p1, p1);
+    return Orientation.index(e.p0, e.p1, p1);
   }
 
   public void computeLabel(BoundaryNodeRule boundaryNodeRule)

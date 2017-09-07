@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geomgraph.Quadrant;
 
@@ -164,7 +164,7 @@ public class DirectedEdge
    * <li>first compare the quadrants. If the quadrants are different, it it
    * trivial to determine which vector is "greater".
    * <li>if the vectors lie in the same quadrant, the robust
-   * {@link CGAlgorithms#computeOrientation(Coordinate, Coordinate, Coordinate)}
+   * {@link Orientation#computeOrientation(Coordinate, Coordinate, Coordinate)}
    * function can be used to decide the relative orientation of the vectors.
    * </ul>
    */
@@ -185,7 +185,7 @@ public class DirectedEdge
    * <li>first compare the quadrants. If the quadrants are different, it it
    * trivial to determine which vector is "greater".
    * <li>if the vectors lie in the same quadrant, the robust
-   * {@link CGAlgorithms#computeOrientation(Coordinate, Coordinate, Coordinate)}
+   * {@link Orientation#computeOrientation(Coordinate, Coordinate, Coordinate)}
    * function can be used to decide the relative orientation of the vectors.
    * </ul>
    */
@@ -196,7 +196,7 @@ public class DirectedEdge
     if (quadrant < e.quadrant) return -1;
     // vectors are in the same quadrant - check relative orientation of direction vectors
     // this is > e if it is CCW of e
-    return CGAlgorithms.computeOrientation(e.p0, e.p1, p1);
+    return Orientation.index(e.p0, e.p1, p1);
   }
 
   /**

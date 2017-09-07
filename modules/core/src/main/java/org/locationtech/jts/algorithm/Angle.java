@@ -24,13 +24,13 @@ public class Angle
   public static final double PI_OVER_4 = Math.PI / 4.0;
 
   /** Constant representing counterclockwise orientation */
-  public static final int COUNTERCLOCKWISE = CGAlgorithms.COUNTERCLOCKWISE;
+  public static final int COUNTERCLOCKWISE = Orientation.COUNTERCLOCKWISE;
 
   /** Constant representing clockwise orientation */
-  public static final int CLOCKWISE = CGAlgorithms.CLOCKWISE;
+  public static final int CLOCKWISE = Orientation.CLOCKWISE;
 
   /** Constant representing no orientation */
-  public static final int NONE = CGAlgorithms.COLLINEAR;
+  public static final int NONE = Orientation.COLLINEAR;
 
   private Angle() {}
 

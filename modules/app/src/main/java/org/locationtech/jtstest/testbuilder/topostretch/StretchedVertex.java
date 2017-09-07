@@ -132,7 +132,7 @@ public class StretchedVertex
 		
 		// displace away from the segment on the same side as the original point
 		int side = nearSeg.orientationIndex(vertexPt);
-		if (side == CGAlgorithms.RIGHT)
+		if (side == Orientation.RIGHT)
 			dist = -dist;
 		
 		return nearSeg.pointAlongOffset(frac, dist);
@@ -241,8 +241,8 @@ public class StretchedVertex
 
   private boolean isInsideCorner(Coordinate queryPt, Coordinate base, Coordinate p1, Coordinate p2)
   {
-      return CGAlgorithms.orientationIndex(base, p1, queryPt) == CGAlgorithms.CLOCKWISE
-              && CGAlgorithms.orientationIndex(base, p2, queryPt) == CGAlgorithms.COUNTERCLOCKWISE;
+      return Orientation.index(base, p1, queryPt) == Orientation.CLOCKWISE
+              && Orientation.index(base, p2, queryPt) == Orientation.COUNTERCLOCKWISE;
   }
 
   private static final double POINT_LINE_FLATNESS_RATIO = 0.01;
@@ -265,15 +265,15 @@ public class StretchedVertex
    */
   private static int quadrant(Coordinate pt, Coordinate cornerBase, Coordinate[] corner)
   {
-  	if (CGAlgorithms.orientationIndex(cornerBase, corner[0], pt) == CGAlgorithms.CLOCKWISE) {
-  		if (CGAlgorithms.orientationIndex(cornerBase, corner[1], pt) == CGAlgorithms.COUNTERCLOCKWISE) {
+  	if (Orientation.index(cornerBase, corner[0], pt) == Orientation.CLOCKWISE) {
+  		if (Orientation.index(cornerBase, corner[1], pt) == Orientation.COUNTERCLOCKWISE) {
   			return 0;
   		}
   		else
   			return 3;
   	}
   	else {
-  		if (CGAlgorithms.orientationIndex(cornerBase, corner[1], pt) == CGAlgorithms.COUNTERCLOCKWISE) {
+  		if (Orientation.index(cornerBase, corner[1], pt) == Orientation.COUNTERCLOCKWISE) {
   			return 1;
   		}
   		else
@@ -304,7 +304,7 @@ public class StretchedVertex
   {
   	Coordinate[] orient;
   	// TODO: not sure if determining orientation is necessary?
-    if (CGAlgorithms.CLOCKWISE == CGAlgorithms.orientationIndex(p0, p1, p2)) {
+    if (Orientation.CLOCKWISE == Orientation.index(p0, p1, p2)) {
     	orient = new Coordinate[] {p1, p2 };
     }
     else {

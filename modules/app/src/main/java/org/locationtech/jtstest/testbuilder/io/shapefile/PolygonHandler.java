@@ -25,6 +25,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -191,7 +192,7 @@ public class PolygonHandler implements ShapeHandler{
                 offset++;
             }
             LinearRing ring = geometryFactory.createLinearRing(points);
-            if(CGAlgorithms.isCCW(points)){
+            if(Orientation.isCCW(points)){
                 holes.add(ring);
             }
             else{

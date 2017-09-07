@@ -154,8 +154,8 @@ public class RayCrossingCounter
 		 */
 		if (((p1.y > p.y) && (p2.y <= p.y)) 
 				|| ((p2.y > p.y) && (p1.y <= p.y))) {
-      int orient = CGAlgorithms.orientationIndex(p1, p2, p);
-      if (orient == CGAlgorithms.COLLINEAR) {
+      int orient = Orientation.index(p1, p2, p);
+      if (orient == Orientation.COLLINEAR) {
         isPointOnSegment = true;
         return;
       }
@@ -164,7 +164,7 @@ public class RayCrossingCounter
         orient = -orient;
       }
       // The upward segment crosses the ray if the test point lies to the left (CCW) of the segment.
-      if (orient == CGAlgorithms.LEFT) {
+      if (orient == Orientation.LEFT) {
         crossingCount++;
       }
 		}

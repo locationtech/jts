@@ -12,8 +12,8 @@
 package org.locationtech.jts.geom;
 
 import org.locationtech.jts.algorithm.Angle;
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.HCoordinate;
+import org.locationtech.jts.algorithm.Orientation;
 
 /**
  * Represents a planar triangle, and provides methods for calculating various
@@ -299,7 +299,7 @@ public class Triangle
    * <p>
    * The signed area value can be used to determine point orientation, but the
    * implementation in this method is susceptible to round-off errors. Use
-   * {@link CGAlgorithms#orientationIndex(Coordinate, Coordinate, Coordinate)}
+   * {@link Orientation#index(Coordinate, Coordinate, Coordinate)}
    * for robust orientation calculation.
    * 
    * @param a
@@ -310,7 +310,7 @@ public class Triangle
    *          a vertex of the triangle
    * @return the signed 2D area of the triangle
    * 
-   * @see CGAlgorithms#orientationIndex(Coordinate, Coordinate, Coordinate)
+   * @see Orientation#index(Coordinate, Coordinate, Coordinate)
    */
   public static double signedArea(Coordinate a, Coordinate b, Coordinate c)
   {
@@ -513,12 +513,12 @@ public class Triangle
    * <p>
    * The signed area value can be used to determine point orientation, but the
    * implementation in this method is susceptible to round-off errors. Use
-   * {@link CGAlgorithms#orientationIndex(Coordinate, Coordinate, Coordinate)}
+   * {@link Orientation#index(Coordinate, Coordinate, Coordinate)}
    * for robust orientation calculation.
    * 
    * @return the signed 2D area of this triangle
    * 
-   * @see CGAlgorithms#orientationIndex(Coordinate, Coordinate, Coordinate)
+   * @see Orientation#index(Coordinate, Coordinate, Coordinate)
    */
   public double signedArea()
   {

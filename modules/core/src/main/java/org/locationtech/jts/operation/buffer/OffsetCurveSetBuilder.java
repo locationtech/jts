@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Envelope;
@@ -216,7 +217,7 @@ public class OffsetCurveSetBuilder {
     int leftLoc  = cwLeftLoc;
     int rightLoc = cwRightLoc;
     if (coord.length >= LinearRing.MINIMUM_VALID_SIZE 
-        && CGAlgorithms.isCCW(coord)) {
+        && Orientation.isCCW(coord)) {
       leftLoc = cwRightLoc;
       rightLoc = cwLeftLoc;
       side = Position.opposite(side);

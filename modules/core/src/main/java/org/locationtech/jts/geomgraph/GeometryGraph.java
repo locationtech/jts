@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.locationtech.jts.algorithm.BoundaryNodeRule;
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
@@ -252,7 +252,7 @@ public class GeometryGraph
 
     int left  = cwLeft;
     int right = cwRight;
-    if (CGAlgorithms.isCCW(coord)) {
+    if (Orientation.isCCW(coord)) {
       left = cwRight;
       right = cwLeft;
     }

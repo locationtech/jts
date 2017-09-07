@@ -168,7 +168,7 @@ public class Centroid
   {
     if (pts.length > 0) 
       setAreaBasePoint(pts[0]);
-    boolean isPositiveArea = ! CGAlgorithms.isCCW(pts);
+    boolean isPositiveArea = ! Orientation.isCCW(pts);
     for (int i = 0; i < pts.length - 1; i++) {
       addTriangle(areaBasePt, pts[i], pts[i+1], isPositiveArea);
     }
@@ -177,7 +177,7 @@ public class Centroid
   
   private void addHole(Coordinate[] pts)
   {
-    boolean isPositiveArea = CGAlgorithms.isCCW(pts);
+    boolean isPositiveArea = Orientation.isCCW(pts);
     for (int i = 0; i < pts.length - 1; i++) {
       addTriangle(areaBasePt, pts[i], pts[i+1], isPositiveArea);
     }

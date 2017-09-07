@@ -36,13 +36,13 @@ public class IsCCWTest extends TestCase {
   public void testCCW() throws Exception
   {
     Coordinate[] pts = getCoordinates("POLYGON ((60 180, 140 240, 140 240, 140 240, 200 180, 120 120, 60 180))");
-    assertEquals(CGAlgorithms.isCCW(pts), false);
+    assertEquals(Orientation.isCCW(pts), false);
 
     Coordinate[] pts2 = getCoordinates("POLYGON ((60 180, 140 120, 100 180, 140 240, 60 180))");
-    assertEquals(CGAlgorithms.isCCW(pts2), true);
+    assertEquals(Orientation.isCCW(pts2), true);
     // same pts list with duplicate top point - check that isCCW still works
     Coordinate[] pts2x = getCoordinates("POLYGON ((60 180, 140 120, 100 180, 140 240, 140 240, 60 180))");
-    assertEquals(CGAlgorithms.isCCW(pts2x), true);
+    assertEquals(Orientation.isCCW(pts2x), true);
   }
 
   private Coordinate[] getCoordinates(String wkt)

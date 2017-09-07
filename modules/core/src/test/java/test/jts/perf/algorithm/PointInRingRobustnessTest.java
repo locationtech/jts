@@ -1,7 +1,7 @@
 package test.jts.perf.algorithm;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.NonRobustRayCrossingCounter;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RayCrossingCounter;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineSegment;
@@ -23,7 +23,7 @@ import test.jts.GeometryTestCase;
  * <p>
  * The stress test reveals that the original {@link RayCrossingCounter}
  * has inconsistencies with the 
- * {@link CGAlgorithmsDD#orientationIndex(Coordinate, Coordinate, Coordinate)}
+ * {@link CGAlgorithmsDD#index(Coordinate, Coordinate, Coordinate)}
  * orientation index computation
  * (which is now the standard in JTS, due to its improved robustness).
  * The {@link RayCrossingCounterDD} implementation is consistent,
@@ -118,16 +118,16 @@ public class PointInRingRobustnessTest extends GeometryTestCase {
     //boolean isPointInRing = Location.INTERIOR == RayCrossingCounter.locatePointInRing(pt, triPts);
     boolean isPointInRing = Location.INTERIOR == NonRobustRayCrossingCounter.locatePointInRing(pt, triPts);
     
-    int orientation = CGAlgorithms.orientationIndex(triPts[1], triPts[2], pt);
-    if (CGAlgorithms.isCCW(triPts)) {
+    int orientation = Orientation.index(triPts[1], triPts[2], pt);
+    if (Orientation.isCCW(triPts)) {
       orientation = -orientation;
     }
     
     // if collinear can't determine a failure
-    if (orientation == CGAlgorithms.COLLINEAR) return true;
+    if (orientation == Orientation.COLLINEAR) return true;
     
-    boolean bothOutside = ! isPointInRing && orientation == CGAlgorithms.LEFT;
-    boolean bothInside = isPointInRing && orientation == CGAlgorithms.RIGHT;
+    boolean bothOutside = ! isPointInRing && orientation == Orientation.LEFT;
+    boolean bothInside = isPointInRing && orientation == Orientation.RIGHT;
     boolean isConsistent = bothOutside || bothInside;
     
     if (! isConsistent) {
@@ -181,13 +181,13 @@ public class PointInRingRobustnessTest extends GeometryTestCase {
       if (ring[i].y <= p.y) { 
         // detect an upward crossing
         if (ring[i + 1].y > p.y) {
-          if (CGAlgorithms.LEFT == CGAlgorithms.orientationIndex(ring[i], ring[i + 1], p)) 
+          if (Orientation.LEFT == Orientation.index(ring[i], ring[i + 1], p)) 
             winding++; 
         }
       } else { 
         // detect a downward crossing
         if (ring[i + 1].y <= p.y) 
-          if (CGAlgorithms.RIGHT == CGAlgorithms.orientationIndex(ring[i], ring[i + 1], p)) 
+          if (Orientation.RIGHT == Orientation.index(ring[i], ring[i + 1], p)) 
             winding--; 
       }
     }

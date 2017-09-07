@@ -16,7 +16,7 @@ package org.locationtech.jts.geom;
 import java.util.Arrays;
 
 import org.locationtech.jts.algorithm.Area;
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 
 
 /**
@@ -416,7 +416,7 @@ public class Polygon
     CoordinateArrays.scroll(uniqueCoordinates, minCoordinate);
     System.arraycopy(uniqueCoordinates, 0, ring.getCoordinates(), 0, uniqueCoordinates.length);
     ring.getCoordinates()[uniqueCoordinates.length] = uniqueCoordinates[0];
-    if (CGAlgorithms.isCCW(ring.getCoordinates()) == clockwise) {
+    if (Orientation.isCCW(ring.getCoordinates()) == clockwise) {
       CoordinateArrays.reverse(ring.getCoordinates());
     }
   }
