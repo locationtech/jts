@@ -12,6 +12,7 @@
 package org.locationtech.jts.operation.buffer;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 
@@ -74,7 +75,7 @@ public class BufferInputLineSimplifier
   private Coordinate[] inputLine;
   private double distanceTol;
   private byte[] isDeleted;
-  private int angleOrientation = CGAlgorithms.COUNTERCLOCKWISE;
+  private int angleOrientation = Orientation.COUNTERCLOCKWISE;
   
   public BufferInputLineSimplifier(Coordinate[] inputLine) {
     this.inputLine = inputLine;
@@ -94,7 +95,7 @@ public class BufferInputLineSimplifier
   {
     this.distanceTol = Math.abs(distanceTol);
     if (distanceTol < 0)
-      angleOrientation = CGAlgorithms.CLOCKWISE;
+      angleOrientation = Orientation.CLOCKWISE;
     
     // rely on fact that boolean array is filled with false value
     isDeleted = new byte[inputLine.length];
@@ -189,7 +190,7 @@ public class BufferInputLineSimplifier
 
   private boolean isShallowConcavity(Coordinate p0, Coordinate p1, Coordinate p2, double distanceTol)
   {
-    int orientation = CGAlgorithms.computeOrientation(p0, p1, p2);
+    int orientation = Orientation.index(p0, p1, p2);
     boolean isAngleToSimplify = (orientation == angleOrientation);
     if (! isAngleToSimplify)
       return false;
@@ -233,7 +234,7 @@ public class BufferInputLineSimplifier
   
   private boolean isConcave(Coordinate p0, Coordinate p1, Coordinate p2)
   {
-    int orientation = CGAlgorithms.computeOrientation(p0, p1, p2);
+    int orientation = Orientation.index(p0, p1, p2);
     boolean isConcave = (orientation == angleOrientation);
     return isConcave;
   }

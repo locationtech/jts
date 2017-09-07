@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineSegment;
@@ -137,8 +138,8 @@ class SubgraphDepthLocater
         continue;
 
       // skip if stabbing ray is right of the segment
-      if (CGAlgorithms.computeOrientation(seg.p0, seg.p1, stabbingRayLeftPt)
-          == CGAlgorithms.RIGHT)
+      if (Orientation.index(seg.p0, seg.p1, stabbingRayLeftPt)
+          == Orientation.RIGHT)
         continue;
 
       // stabbing line cuts this segment, so record it

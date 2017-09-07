@@ -19,7 +19,7 @@ package org.locationtech.jts.operation.buffer;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geomgraph.DirectedEdge;
 import org.locationtech.jts.geomgraph.DirectedEdgeStar;
@@ -109,15 +109,15 @@ class RightmostEdgeFinder {
       Assert.isTrue(minIndex > 0 && minIndex < pts.length, "rightmost point expected to be interior vertex of edge");
       Coordinate pPrev = pts[minIndex - 1];
       Coordinate pNext = pts[minIndex + 1];
-      int orientation = CGAlgorithms.computeOrientation(minCoord, pNext, pPrev);
+      int orientation = Orientation.index(minCoord, pNext, pPrev);
       boolean usePrev = false;
         // both segments are below min point
       if (pPrev.y < minCoord.y && pNext.y < minCoord.y
-         && orientation == CGAlgorithms.COUNTERCLOCKWISE) {
+         && orientation == Orientation.COUNTERCLOCKWISE) {
           usePrev = true;
       }
       else if (pPrev.y > minCoord.y && pNext.y > minCoord.y
-                && orientation == CGAlgorithms.CLOCKWISE) {
+                && orientation == Orientation.CLOCKWISE) {
           usePrev = true;
       }
       // if both segments are on the same side, do nothing - either is safe

@@ -15,7 +15,7 @@ package org.locationtech.jtstest.testbuilder.ui;
 import java.awt.geom.*;
 import java.util.*;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jtstest.testbuilder.geom.*;
 import org.locationtech.jtstest.testbuilder.model.*;
@@ -201,7 +201,7 @@ public class GeometryLocationsWriter
   private String componentType(GeometryLocation loc) {
     String compType = "";
     if (loc.getComponent() instanceof LinearRing) {
-      boolean isCCW = CGAlgorithms.isCCW(loc.getComponent().getCoordinates());
+      boolean isCCW = Orientation.isCCW(loc.getComponent().getCoordinates());
       compType = "Ring" 
         + (isCCW ? "-CCW" : "-CW ")
           + " ";

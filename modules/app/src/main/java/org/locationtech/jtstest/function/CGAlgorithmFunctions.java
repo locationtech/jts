@@ -14,6 +14,7 @@ package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.CGAlgorithmsDD;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -29,7 +30,7 @@ public class CGAlgorithmFunctions
     Coordinate[] segPt = segment.getCoordinates();
     
     Coordinate p = ptGeom.getCoordinate();
-    int index = CGAlgorithms.orientationIndex(segPt[0], segPt[1], p);
+    int index = Orientation.index(segPt[0], segPt[1], p);
     return index;
   }
 
@@ -110,7 +111,7 @@ public class CGAlgorithmFunctions
   {
     Coordinate[] ptsRing = getRing(g);
     if (ptsRing == null) return false;
-    return CGAlgorithms.isCCW(ptsRing);
+    return Orientation.isCCW(ptsRing);
   }
 
   private static Coordinate[] getRing(Geometry g) {

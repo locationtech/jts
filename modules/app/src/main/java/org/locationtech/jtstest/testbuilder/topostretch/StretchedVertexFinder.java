@@ -152,7 +152,7 @@ class StretchedVertexFinder
 	{
 		// don't rely on segment distance algorithm to correctly compute zero distance
 		// on segment
-		if (CGAlgorithms.computeOrientation(p0, p1, p) == CGAlgorithms.COLLINEAR)
+		if (Orientation.index(p0, p1, p) == Orientation.COLLINEAR)
 			return false;
 
 		// compute actual distance
@@ -173,7 +173,7 @@ class StretchedVertexFinder
 		double segDist = distSeg.distance(p);
 		
 		// robust calculation of zero distance
-		if (CGAlgorithms.computeOrientation(p0, p1, p) == CGAlgorithms.COLLINEAR)
+		if (Orientation.index(p0, p1, p) == Orientation.COLLINEAR)
 			segDist = 0.0;
 		
 		return segDist;

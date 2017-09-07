@@ -19,6 +19,7 @@ import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.HCoordinate;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.NotRepresentableException;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 
 
@@ -154,8 +155,8 @@ public class LineSegment
    */
   public int orientationIndex(LineSegment seg)
   {
-    int orient0 = CGAlgorithms.orientationIndex(p0, p1, seg.p0);
-    int orient1 = CGAlgorithms.orientationIndex(p0, p1, seg.p1);
+    int orient0 = Orientation.index(p0, p1, seg.p0);
+    int orient1 = Orientation.index(p0, p1, seg.p1);
     // this handles the case where the points are L or collinear
     if (orient0 >= 0 && orient1 >= 0)
       return Math.max(orient0, orient1);
@@ -168,7 +169,7 @@ public class LineSegment
   
   /**
    * Determines the orientation index of a {@link Coordinate} relative to this segment.
-   * The orientation index is as defined in {@link CGAlgorithms#computeOrientation}.
+   * The orientation index is as defined in {@link Orientation#computeOrientation}.
    *
    * @param p the coordinate to compare
    *
@@ -176,11 +177,11 @@ public class LineSegment
    * @return -1 (RIGHT) if <code>p</code> is to the right of this segment
    * @return 0 (COLLINEAR) if <code>p</code> is collinear with this segment
    * 
-   * @see CGAlgorithms#computeOrientation(Coordinate, Coordinate, Coordinate)
+   * @see Orientation#computeOrientation(Coordinate, Coordinate, Coordinate)
    */
   public int orientationIndex(Coordinate p)
   {
-    return CGAlgorithms.orientationIndex(p0, p1, p);
+    return Orientation.index(p0, p1, p);
   }
   
   /**

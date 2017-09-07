@@ -232,7 +232,7 @@ public class ConvexHull
       // check for empty stack to guard against robustness problems
       while (
           ! ps.empty() && 
-          CGAlgorithms.computeOrientation((Coordinate) ps.peek(), p, c[i]) > 0) {
+          Orientation.index((Coordinate) ps.peek(), p, c[i]) > 0) {
         p = (Coordinate) ps.pop();
       }
       ps.push(p);
@@ -247,7 +247,7 @@ public class ConvexHull
    *      c1 and c3 inclusive
    */
   private boolean isBetween(Coordinate c1, Coordinate c2, Coordinate c3) {
-    if (CGAlgorithms.computeOrientation(c1, c2, c3) != 0) {
+    if (Orientation.index(c1, c2, c3) != 0) {
       return false;
     }
     if (c1.x != c3.x) {
@@ -488,10 +488,10 @@ public class ConvexHull
       if (result !=  0) return result;
       //*/
 
-      int orient = CGAlgorithms.computeOrientation(o, p, q);
+      int orient = Orientation.index(o, p, q);
 
-      if (orient == CGAlgorithms.COUNTERCLOCKWISE) return 1;
-      if (orient == CGAlgorithms.CLOCKWISE) return -1;
+      if (orient == Orientation.COUNTERCLOCKWISE) return 1;
+      if (orient == Orientation.CLOCKWISE) return -1;
 
       // points are collinear - check distance
       double op = dxp * dxp + dyp * dyp;

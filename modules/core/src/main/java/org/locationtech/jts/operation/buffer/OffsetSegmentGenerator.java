@@ -12,10 +12,10 @@
 package org.locationtech.jts.operation.buffer;
 
 import org.locationtech.jts.algorithm.Angle;
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.HCoordinate;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.NotRepresentableException;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineSegment;
@@ -205,10 +205,10 @@ class OffsetSegmentGenerator
     // do nothing if points are equal
     if (s1.equals(s2)) return;
 
-    int orientation = CGAlgorithms.computeOrientation(s0, s1, s2);
+    int orientation = Orientation.index(s0, s1, s2);
     boolean outsideTurn =
-          (orientation == CGAlgorithms.CLOCKWISE        && side == Position.LEFT)
-      ||  (orientation == CGAlgorithms.COUNTERCLOCKWISE && side == Position.RIGHT);
+          (orientation == Orientation.CLOCKWISE        && side == Position.LEFT)
+      ||  (orientation == Orientation.COUNTERCLOCKWISE && side == Position.RIGHT);
 
     if (orientation == 0) { // lines are collinear
       addCollinear(addStartPoint);
@@ -251,7 +251,7 @@ class OffsetSegmentGenerator
         segList.addPt(offset1.p0);
       }
       else {
-        addFillet(s1, offset0.p1, offset1.p0, CGAlgorithms.CLOCKWISE, distance);
+        addFillet(s1, offset0.p1, offset1.p0, Orientation.CLOCKWISE, distance);
       }
     }
   }
@@ -415,7 +415,7 @@ class OffsetSegmentGenerator
       case BufferParameters.CAP_ROUND:
         // add offset seg points with a fillet between them
         segList.addPt(offsetL.p1);
-        addFillet(p1, angle + Math.PI / 2, angle - Math.PI / 2, CGAlgorithms.CLOCKWISE, distance);
+        addFillet(p1, angle + Math.PI / 2, angle - Math.PI / 2, Orientation.CLOCKWISE, distance);
         segList.addPt(offsetR.p1);
         break;
       case BufferParameters.CAP_FLAT:
@@ -583,7 +583,7 @@ class OffsetSegmentGenerator
     double dy1 = p1.y - p.y;
     double endAngle = Math.atan2(dy1, dx1);
 
-    if (direction == CGAlgorithms.CLOCKWISE) {
+    if (direction == Orientation.CLOCKWISE) {
       if (startAngle <= endAngle) startAngle += 2.0 * Math.PI;
     }
     else {    // direction == COUNTERCLOCKWISE
@@ -605,7 +605,7 @@ class OffsetSegmentGenerator
    */
   private void addFillet(Coordinate p, double startAngle, double endAngle, int direction, double radius)
   {
-    int directionFactor = direction == CGAlgorithms.CLOCKWISE ? -1 : 1;
+    int directionFactor = direction == Orientation.CLOCKWISE ? -1 : 1;
 
     double totalAngle = Math.abs(startAngle - endAngle);
     int nSegs = (int) (totalAngle / filletAngleQuantum + 0.5);

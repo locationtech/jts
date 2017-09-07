@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Location;
 
@@ -210,7 +210,7 @@ public class PlanarGraph
     if (! p0.equals(ep0))
       return false;
 
-    if (CGAlgorithms.computeOrientation(p0, p1, ep1) == CGAlgorithms.COLLINEAR
+    if (Orientation.index(p0, p1, ep1) == Orientation.COLLINEAR
          && Quadrant.quadrant(p0, p1) == Quadrant.quadrant(ep0, ep1) )
       return true;
     return false;

@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
@@ -208,7 +209,7 @@ class EdgeRing {
   public void computeHole()
   {
     LinearRing ring = getRing();
-    isHole = CGAlgorithms.isCCW(ring.getCoordinates());
+    isHole = Orientation.isCCW(ring.getCoordinates());
   }
 
   /**

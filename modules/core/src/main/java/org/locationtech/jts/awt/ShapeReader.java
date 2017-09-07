@@ -18,7 +18,7 @@ import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
@@ -114,7 +114,7 @@ public class ShapeReader
   
   private boolean isHole(Coordinate[] pts)
   {
-    return CGAlgorithms.isCCW(pts);
+    return Orientation.isCCW(pts);
   }
   
   /**

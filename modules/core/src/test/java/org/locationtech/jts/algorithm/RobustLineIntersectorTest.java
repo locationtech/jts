@@ -140,17 +140,11 @@ public class RobustLineIntersectorTest extends TestCase {
   }
 
   public void testIsCCW() {
-    assertEquals(1, CGAlgorithms.computeOrientation(
-        new Coordinate(-123456789, -40),
-        new Coordinate(0, 0),
-        new Coordinate(381039468754763d, 123456789)));
+    assertEquals(1, Orientation.index(new Coordinate(-123456789, -40), new Coordinate(0, 0), new Coordinate(381039468754763d, 123456789)));
   }
 
   public void testIsCCW2() {
-    assertEquals(0, CGAlgorithms.computeOrientation(
-        new Coordinate(10, 10),
-        new Coordinate(20, 20),
-        new Coordinate(0, 0)));
+    assertEquals(0, Orientation.index(new Coordinate(10, 10), new Coordinate(20, 20), new Coordinate(0, 0)));
   }
 
   public void testA() {
@@ -161,7 +155,7 @@ public class RobustLineIntersectorTest extends TestCase {
     Point p = new GeometryFactory().createPoint(q);
     assertEquals(false, l.intersects(p));
     assertEquals(false, CGAlgorithms.isOnLine(q, new Coordinate[] {p1, p2}));
-    assertEquals(-1, CGAlgorithms.computeOrientation(p1, p2, q));
+    assertEquals(-1, Orientation.index(p1, p2, q));
   }
 
 }

@@ -12,7 +12,7 @@
 
 package org.locationtech.jts.edgegraph;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geomgraph.Quadrant;
 import org.locationtech.jts.util.Assert;
@@ -271,7 +271,7 @@ public class HalfEdge {
    * it is trivial to determine which edge has a greater angle.
    * 
    * <li>if the vectors lie in the same quadrant, the 
-   * {@link CGAlgorithms#computeOrientation(Coordinate, Coordinate, Coordinate)} function
+   * {@link Orientation#computeOrientation(Coordinate, Coordinate, Coordinate)} function
    * can be used to determine the relative orientation of the vectors.
    * </ul>
    */
@@ -295,7 +295,7 @@ public class HalfEdge {
     // vectors are in the same quadrant
     // Check relative orientation of direction vectors
     // this is > e if it is CCW of e
-    return CGAlgorithms.computeOrientation(e.orig, e.dest(), dest());
+    return Orientation.index(e.orig, e.dest(), dest());
   }
 
   /**
