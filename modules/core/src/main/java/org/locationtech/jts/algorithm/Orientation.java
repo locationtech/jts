@@ -14,7 +14,15 @@ package org.locationtech.jts.algorithm;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * Functions to compute the orientation of points, lines and rings.
+ * Functions to compute the orientation of basic geometric structures
+ * including point triplets (triangles) and rings.
+ * Orientation is a fundamental property of planar geometries 
+ * (and more generally geometry on two-dimensional manifolds).
+ * <p>
+ * Orientation is notoriously subject to numerical precision errors
+ * in the case of collinear or nearly collinear points.  
+ * JTS uses extended-precision arithmetic to increase
+ * the robustness of the computation.
  * 
  * @author Martin Davis
  *
@@ -46,16 +54,20 @@ public class Orientation {
   public static final int STRAIGHT = COLLINEAR;
 
   /**
-   * Returns the index of the direction of the point <code>q</code> relative to
-   * a vector specified by <code>p1-p2</code>.
+   * Returns the orientation index of the direction of the point <code>q</code> relative to
+   * a directed infinite line specified by <code>p1-p2</code>.
+   * The index indicates whether the point lies to the {@link LEFT} or {@link #RIGHT} 
+   * of the line, or lies on it {@link #COLLINEAR}.
+   * The index also indicates the orientation of the triangle formed by the three points
+   * ( {@link #COUNTERCLOCKWISE}, {@link #CLOCKWISE}, or {@link #STRAIGHT} )
    * 
-   * @param p1 the origin point of the vector
-   * @param p2 the final point of the vector
+   * @param p1 the origin point of the line vector
+   * @param p2 the final point of the line vector
    * @param q the point to compute the direction to
    * 
-   * @return 1 if q is counter-clockwise (left) from p1-p2
-   * @return -1 if q is clockwise (right) from p1-p2
-   * @return 0 if q is collinear with p1-p2
+   * @return -1 ( {@link #CLOCKWISE} or {@link #RIGHT} ) if q is clockwise (right) from p1-p2;
+   *         1 ( {@link #COUNTERCLOCKWISE} or {@link LEFT} ) if q is counter-clockwise (left) from p1-p2;
+   *         0 ( {@link #COLLINEAR} or {@link #STRAIGHT} ) if q is collinear with p1-p2
    */
   public static int index(Coordinate p1, Coordinate p2, Coordinate q)
   {
