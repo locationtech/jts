@@ -55,3 +55,30 @@ JTS snapshot artifacts are published to the LocationTech Maven repository. To in
    </repository>
 </repositories>
 ```
+## Using older versions of JTS with Maven
+
+Older versions of JTS are available on Maven Central.
+
+### 1.14
+
+```xml
+<dependency>
+    <groupId>com.vividsolutions</groupId>
+    <artifactId>jts-core</artifactId>
+    <version>1.14.0</version>
+</dependency>
+<dependency>
+    <groupId>com.vividsolutions</groupId>
+    <artifactId>jts-io</artifactId>
+    <version>1.14.0</version>
+</dependency>
+```
+### 1.13
+
+```xml
+<dependency>
+    <groupId>com.vividsolutions</groupId>
+    <artifactId>jts</artifactId>
+    <version>1.13</version>
+</dependency>
+```
