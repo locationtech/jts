@@ -169,7 +169,7 @@ public class ConvexHull
      * are forced to be in the reduced set.
      */
     for (int i = 0; i < inputPts.length; i++) {
-      if (! CGAlgorithms.isPointInRing(inputPts[i], polyPts)) {
+      if (! PointLocation.isInRing(inputPts[i], polyPts)) {
         reducedSet.add(inputPts[i]);
       }
     }

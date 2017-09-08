@@ -14,7 +14,7 @@ package org.locationtech.jts.operation.valid;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LinearRing;
@@ -85,7 +85,7 @@ public class IndexedNestedRingTester
         if (innerRingPt == null)
           continue;
 
-        boolean isInside = CGAlgorithms.isPointInRing(innerRingPt, searchRingPts);
+        boolean isInside = PointLocation.isInRing(innerRingPt, searchRingPts);
         if (isInside) {
           nestedPt = innerRingPt;
           return false;

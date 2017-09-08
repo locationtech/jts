@@ -24,8 +24,8 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -250,7 +250,7 @@ public class PolygonHandler implements ShapeHandler{
             Coordinate[] coordList = tryShell.getCoordinates();
 
             if (nShells <= 1 
-                || CGAlgorithms.isPointInRing(testHolePt, coordList) 
+                || PointLocation.isInRing(testHolePt, coordList) 
                 || pointInList(testHolePt, coordList))
               isContained = true;
             

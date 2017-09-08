@@ -14,6 +14,7 @@ package org.locationtech.jts.algorithm;
 import java.util.Iterator;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryCollectionIterator;
@@ -157,18 +158,19 @@ public class PointLocator
 
   private int locate(Coordinate p, LineString l)
   {
-  	// bounding-box check
-  	if (! l.getEnvelopeInternal().intersects(p)) return Location.EXTERIOR;
-  	
-    Coordinate[] pt = l.getCoordinates();
+    // bounding-box check
+    if (! l.getEnvelopeInternal().intersects(p)) return Location.EXTERIOR;
+    
+    CoordinateSequence seq = l.getCoordinateSequence();
     if (! l.isClosed()) {
-      if (p.equals(pt[0])
-          || p.equals(pt[pt.length - 1]) ) {
+          if (p.equals(seq.getCoordinate(0))
+          || p.equals(seq.getCoordinate(seq.size() - 1)) ) {
         return Location.BOUNDARY;
       }
     }
-    if (CGAlgorithms.isOnLine(p, pt))
+    if (PointLocation.isOnLine(p, seq)) {
       return Location.INTERIOR;
+    }
     return Location.EXTERIOR;
   }
 
@@ -177,7 +179,7 @@ public class PointLocator
   	// bounding-box check
   	if (! ring.getEnvelopeInternal().intersects(p)) return Location.EXTERIOR;
 
-  	return CGAlgorithms.locatePointInRing(p, ring.getCoordinates());
+  	return PointLocation.locateInRing(p, ring.getCoordinates());
   }
 
   private int locate(Coordinate p, Polygon poly)

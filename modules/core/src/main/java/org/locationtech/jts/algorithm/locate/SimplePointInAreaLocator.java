@@ -13,7 +13,7 @@ package org.locationtech.jts.algorithm.locate;
 
 import java.util.Iterator;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
@@ -127,7 +127,7 @@ public class SimplePointInAreaLocator
   	// short-circuit if point is not in ring envelope
   	if (! ring.getEnvelopeInternal().intersects(p))
   		return Location.EXTERIOR;
-  	return CGAlgorithms.locatePointInRing(p, ring.getCoordinates());
+  	return PointLocation.locateInRing(p, ring.getCoordinates());
   }
 
 	private Geometry geom;

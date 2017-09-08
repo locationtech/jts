@@ -154,7 +154,7 @@ public class RobustLineIntersectorTest extends TestCase {
     LineString l = new GeometryFactory().createLineString(new Coordinate[] {p1, p2});
     Point p = new GeometryFactory().createPoint(q);
     assertEquals(false, l.intersects(p));
-    assertEquals(false, CGAlgorithms.isOnLine(q, new Coordinate[] {p1, p2}));
+    assertEquals(false, PointLocation.isOnLine(q, new Coordinate[] {p1, p2}));
     assertEquals(-1, Orientation.index(p1, p2, q));
   }
 
