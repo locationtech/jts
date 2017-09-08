@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -247,7 +247,7 @@ public class PolygonBuilder {
       if (minShell != null) minEnv = minShell.getLinearRing().getEnvelopeInternal();
       boolean isContained = false;
       if (tryEnv.contains(testEnv)
-          && CGAlgorithms.isPointInRing(testPt, tryRing.getCoordinates()) )
+          && PointLocation.isInRing(testPt, tryRing.getCoordinates()) )
         isContained = true;
       // check if this new containing ring is smaller than the current minimum ring
       if (isContained) {

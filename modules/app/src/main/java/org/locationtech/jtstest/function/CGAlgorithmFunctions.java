@@ -12,9 +12,9 @@
 
 package org.locationtech.jtstest.function;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.CGAlgorithmsDD;
 import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -104,7 +104,7 @@ public class CGAlgorithmFunctions
     }
     Coordinate[] ptsRing = getRing(ring);
     if (ptsRing == null) return false;
-    return CGAlgorithms.isPointInRing(pt.getCoordinate(), ptsRing);
+    return PointLocation.isInRing(pt.getCoordinate(), ptsRing);
   }
   
   public static boolean isCCW(Geometry g)

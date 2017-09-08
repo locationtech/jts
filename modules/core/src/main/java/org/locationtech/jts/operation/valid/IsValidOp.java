@@ -17,8 +17,8 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
@@ -542,7 +542,7 @@ public class IsValidOp
     // if no point could be found, we can assume that the shell is outside the polygon
     if (shellPt == null)
       return;
-    boolean insidePolyShell = CGAlgorithms.isPointInRing(shellPt, polyPts);
+    boolean insidePolyShell = PointLocation.isInRing(shellPt, polyPts);
     if (! insidePolyShell) return;
 
     // if no holes, this is an error!
@@ -588,7 +588,7 @@ public class IsValidOp
     Coordinate shellPt = findPtNotNode(shellPts, hole, graph);
     // if point is on shell but not hole, check that the shell is inside the hole
     if (shellPt != null) {
-      boolean insideHole = CGAlgorithms.isPointInRing(shellPt, holePts);
+      boolean insideHole = PointLocation.isInRing(shellPt, holePts);
       if (! insideHole) {
         return shellPt;
       }
@@ -596,7 +596,7 @@ public class IsValidOp
     Coordinate holePt = findPtNotNode(holePts, shell, graph);
     // if point is on hole but not shell, check that the hole is outside the shell
     if (holePt != null) {
-      boolean insideShell = CGAlgorithms.isPointInRing(holePt, shellPts);
+      boolean insideShell = PointLocation.isInRing(holePt, shellPts);
       if (insideShell) {
         return holePt;
       }

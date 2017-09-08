@@ -15,8 +15,8 @@ package  test.jts.junit;
 import java.util.Arrays;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.NonRobustCGAlgorithms;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -106,13 +106,6 @@ public class MiscellaneousTest2 extends TestCase {
     assertEquals(Location.BOUNDARY, pointLocator.locate(new Coordinate(350, 50), polygon));
     assertEquals(Location.BOUNDARY, pointLocator.locate(new Coordinate(410, 50), polygon));
     assertEquals(Location.INTERIOR, pointLocator.locate(new Coordinate(190, 150), polygon));
-  }
-
-  public void test1() throws Exception {
-    assertTrue(CGAlgorithms.isOnLine(new Coordinate(10,10),
-          new Coordinate[] {new Coordinate(0,10), new Coordinate(20,10)}));
-    assertTrue(! CGAlgorithms.isOnLine(new Coordinate(30,10),
-          new Coordinate[] {new Coordinate(0,10), new Coordinate(20,10)}));
   }
 
   public void testDirectedEdgeComparator() {

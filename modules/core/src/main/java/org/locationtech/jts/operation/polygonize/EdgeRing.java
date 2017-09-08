@@ -19,8 +19,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
@@ -77,7 +77,7 @@ class EdgeRing {
       
       testPt = CoordinateArrays.ptNotInList(testRing.getCoordinates(), tryShellRing.getCoordinates());
       boolean isContained = false;
-      if (CGAlgorithms.isPointInRing(testPt, tryShellRing.getCoordinates()) )
+      if (PointLocation.isInRing(testPt, tryShellRing.getCoordinates()) )
         isContained = true;
 
       // check if this new containing ring is smaller than the current minimum ring

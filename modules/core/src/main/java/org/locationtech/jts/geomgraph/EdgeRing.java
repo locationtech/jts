@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -218,7 +218,7 @@ public abstract class EdgeRing {
     LinearRing shell = getLinearRing();
     Envelope env = shell.getEnvelopeInternal();
     if (! env.contains(p)) return false;
-    if (! CGAlgorithms.isPointInRing(p, shell.getCoordinates()) ) return false;
+    if (! PointLocation.isInRing(p, shell.getCoordinates()) ) return false;
 
     for (Iterator i = holes.iterator(); i.hasNext(); ) {
       EdgeRing hole = (EdgeRing) i.next();

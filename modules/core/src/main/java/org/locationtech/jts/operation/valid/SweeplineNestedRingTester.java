@@ -15,7 +15,7 @@ package org.locationtech.jts.operation.valid;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LinearRing;
@@ -86,7 +86,7 @@ public class SweeplineNestedRingTester
     Coordinate innerRingPt = IsValidOp.findPtNotNode(innerRingPts, searchRing, graph);
     Assert.isTrue(innerRingPt != null, "Unable to find a ring point not a node of the search ring");
 
-    boolean isInside = CGAlgorithms.isPointInRing(innerRingPt, searchRingPts);
+    boolean isInside = PointLocation.isInRing(innerRingPt, searchRingPts);
     if (isInside) {
       nestedPt = innerRingPt;
       return true;

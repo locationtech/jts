@@ -15,7 +15,7 @@ package org.locationtech.jts.triangulate.quadedge;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -73,7 +73,7 @@ public class QuadEdgeTriangle
 	public static boolean contains(Vertex[] tri, Coordinate pt) {
 		Coordinate[] ring = new Coordinate[] { tri[0].getCoordinate(),
 				tri[1].getCoordinate(), tri[2].getCoordinate(), tri[0].getCoordinate() };
-		return CGAlgorithms.isPointInRing(pt, ring);
+		return PointLocation.isInRing(pt, ring);
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class QuadEdgeTriangle
 		Coordinate[] ring = new Coordinate[] { tri[0].orig().getCoordinate(),
 				tri[1].orig().getCoordinate(), tri[2].orig().getCoordinate(),
 				tri[0].orig().getCoordinate() };
-		return CGAlgorithms.isPointInRing(pt, ring);
+		return PointLocation.isInRing(pt, ring);
 	}
 
 	public static Geometry toPolygon(Vertex[] v) {
@@ -243,7 +243,7 @@ public class QuadEdgeTriangle
 
 	public boolean contains(Coordinate pt) {
 		Coordinate[] ring = getCoordinates();
-		return CGAlgorithms.isPointInRing(pt, ring);
+		return PointLocation.isInRing(pt, ring);
 	}
 
 	public Polygon getGeometry(GeometryFactory fact) {
