@@ -13,38 +13,12 @@
 package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.algorithm.CGAlgorithmsDD;
-import org.locationtech.jts.algorithm.Orientation;
-import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Polygon;
 
-public class CGAlgorithmFunctions
+public class LineSegmentFunctions
 {
-  public static int orientationIndex(Geometry segment, Geometry ptGeom) {
-    if (segment.getNumPoints() != 2 || ptGeom.getNumPoints() != 1) {
-      throw new IllegalArgumentException("A must have two points and B must have one");
-    }
-    Coordinate[] segPt = segment.getCoordinates();
-    
-    Coordinate p = ptGeom.getCoordinate();
-    int index = Orientation.index(segPt[0], segPt[1], p);
-    return index;
-  }
-
-  public static int orientationIndexDD(Geometry segment, Geometry ptGeom) {
-    if (segment.getNumPoints() != 2 || ptGeom.getNumPoints() != 1) {
-      throw new IllegalArgumentException("A must have two points and B must have one");
-    }
-    Coordinate[] segPt = segment.getCoordinates();
-    
-    Coordinate p = ptGeom.getCoordinate();
-    int index = CGAlgorithmsDD.orientationIndex(segPt[0], segPt[1], p);
-    return index;
-  }
-
   public static boolean segmentIntersects(Geometry g1, Geometry g2)
   {
     Coordinate[] pt1 = g1.getCoordinates();
@@ -93,36 +67,5 @@ public class CGAlgorithmFunctions
     
     Coordinate intPt = CGAlgorithmsDD.intersection(pt1[0], pt1[1], pt2[0], pt2[1]);
     return g1.getFactory().createPoint(intPt);
-  }
-  
-  public static boolean isPointInRing(Geometry g1, Geometry g2) {
-    Geometry ring = g1;
-    Geometry pt = g2;
-    if (g1.getNumPoints() == 1) {
-      ring = g2;
-      pt = g1;
-    }
-    Coordinate[] ptsRing = getRing(ring);
-    if (ptsRing == null) return false;
-    return PointLocation.isInRing(pt.getCoordinate(), ptsRing);
-  }
-  
-  public static boolean isCCW(Geometry g)
-  {
-    Coordinate[] ptsRing = getRing(g);
-    if (ptsRing == null) return false;
-    return Orientation.isCCW(ptsRing);
-  }
-
-  private static Coordinate[] getRing(Geometry g) {
-    Coordinate[] pts = null;
-    if (g instanceof Polygon) {
-      pts = ((Polygon) g).getExteriorRing().getCoordinates();
-    } 
-    else if (g instanceof LineString
-        && ((LineString) g).isClosed()) {
-      pts = g.getCoordinates();
-    }
-    return pts;
   }
 }

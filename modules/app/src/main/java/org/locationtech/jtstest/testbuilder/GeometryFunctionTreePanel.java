@@ -69,7 +69,8 @@ public class GeometryFunctionTreePanel extends JPanel {
 				GeometryFunction func = getFunctionFromNode(value);
 				setIcon(func.isBinary() ? binaryIcon : unaryIcon);
 				// setToolTipText("This book is in the Tutorial series.");
-				String name = StringUtil.capitalize(func.getName());
+        //String name = StringUtil.capitalize(func.getName());
+        String name = func.getName();
 				setText(name);
 				setToolTipText(func.getSignature() + func.getDescription()); // no tool tip
 			} else {
