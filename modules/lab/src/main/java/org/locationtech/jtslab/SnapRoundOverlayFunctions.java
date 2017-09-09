@@ -37,13 +37,22 @@ public class SnapRoundOverlayFunctions {
     return geom[0].union(geom[1]);
   }
 
+  public static Geometry unaryUnion(Geometry geomA, double scaleFactor) {
+    Geometry[] geom = snapClean(geomA, null, scaleFactor);
+    return geom[0].union();
+  }
+
   private static Geometry[] snapClean(
       Geometry geomA, Geometry geomB, 
       double scaleFactor) {
     Geometry snapped = SnapRoundFunctions.snapRound(geomA, geomB, scaleFactor);
     // TODO: don't need to clean once GeometrySnapRounder ensures all components are valid
-    Geometry aSnap = snapped.getGeometryN(0);
-    Geometry bSnap = snapped.getGeometryN(1);
+    Geometry aSnap = snapped;
+    Geometry bSnap = null;
+    if (geomB != null) {
+      aSnap = snapped.getGeometryN(0);
+      bSnap = snapped.getGeometryN(1);
+    }
     return new Geometry[] { aSnap, bSnap };
   }
 
