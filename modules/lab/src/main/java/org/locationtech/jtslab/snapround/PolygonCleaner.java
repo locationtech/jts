@@ -61,8 +61,7 @@ public class PolygonCleaner {
 			 * returns areas. This also may return empty geometries, if the input has no
 			 * actual area.
 			 */
-			return area;
-			//return area.buffer(0.0);
+			return area.buffer(0.0);
 		}
 	}
 
