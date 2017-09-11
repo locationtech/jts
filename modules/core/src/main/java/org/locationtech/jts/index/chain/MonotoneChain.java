@@ -207,10 +207,8 @@ public class MonotoneChain {
       mco.overlap(this, start0, mc, start1);
       return;
     }
-    // nothing to do if the envelopes of these chains don't overlap
-    mco.tempEnv1.init(p00, p01);
-    mco.tempEnv2.init(p10, p11);
-    if (! mco.tempEnv1.intersects(mco.tempEnv2)) return;
+    // nothing to do if the envelopes of these subchains don't overlap
+    if (! Envelope.intersects(p00, p01, p10, p11)) return;
 
     // the chains overlap, so split each in half and iterate  (binary search)
     int mid0 = (start0 + end0) / 2;

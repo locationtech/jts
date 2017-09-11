@@ -13,7 +13,6 @@
  */
 package org.locationtech.jts.index.chain;
 
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineSegment;
 
 /**
@@ -24,10 +23,6 @@ import org.locationtech.jts.geom.LineSegment;
  */
 public class MonotoneChainOverlapAction
 {
-  // these envelopes are used during the MonotoneChain search process
-  Envelope tempEnv1 = new Envelope();
-  Envelope tempEnv2 = new Envelope();
-
   protected LineSegment overlapSeg1 = new LineSegment();
   protected LineSegment overlapSeg2 = new LineSegment();
 
