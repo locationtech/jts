@@ -146,7 +146,7 @@ public class MonotoneChain {
   {
     Coordinate p0 = pts[start0];
     Coordinate p1 = pts[end0];
-    mcs.tempEnv1.init(p0, p1);
+    //mcs.tempEnv1.init(p0, p1);
 
 //Debug.println("trying:" + p0 + p1 + " [ " + start0 + ", " + end0 + " ]");
     // terminating condition for the recursion
@@ -156,7 +156,7 @@ public class MonotoneChain {
       return;
     }
     // nothing to do if the envelopes don't overlap
-    if (! searchEnv.intersects(mcs.tempEnv1))
+    if (! searchEnv.intersects(p0, p1))
       return;
 
     // the chains overlap, so split each in half and iterate  (binary search)

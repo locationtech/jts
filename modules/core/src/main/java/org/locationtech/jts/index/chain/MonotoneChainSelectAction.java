@@ -24,7 +24,7 @@ import org.locationtech.jts.geom.LineSegment;
 public class MonotoneChainSelectAction
 {
   // these envelopes are used during the MonotoneChain search process
-  Envelope tempEnv1 = new Envelope();
+  //Envelope tempEnv1 = new Envelope();
 
   LineSegment selectedSegment = new LineSegment();
 
