@@ -516,15 +516,13 @@ public class Envelope
     return new Envelope(intMinX, intMaxX, intMinY, intMaxY);
   }
 
-
-
   /**
    *  Check if the region defined by <code>other</code>
-   *  overlaps (intersects) the region of this <code>Envelope</code>.
+   *  intersects the region of this <code>Envelope</code>.
    *
    *@param  other  the <code>Envelope</code> which this <code>Envelope</code> is
-   *          being checked for overlapping
-   *@return        <code>true</code> if the <code>Envelope</code>s overlap
+   *          being checked for intersecting
+   *@return        <code>true</code> if the <code>Envelope</code>s intersect
    */
   public boolean intersects(Envelope other) {
       if (isNull() || other.isNull()) { return false; }
@@ -532,6 +530,31 @@ public class Envelope
         other.maxx < minx ||
         other.miny > maxy ||
         other.maxy < miny);
+  }
+  /**
+   *  Check if the extent defined by two extremal points
+   *  intersects the extent of this <code>Envelope</code>.
+   *
+   *@param a a point
+   *@param b another point
+   *@return   <code>true</code> if the extents intersect
+   */
+  public boolean intersects(Coordinate a, Coordinate b) {
+    if (isNull()) { return false; }
+    
+    double envminx = (a.x < b.x) ? a.x : b.x;
+    if (envminx > maxx) return false;
+    
+    double envmaxx = (a.x > b.x) ? a.x : b.x;
+    if (envmaxx < minx) return false;
+    
+    double envminy = (a.y < b.y) ? a.y : b.y;
+    if (envminy > maxy) return false;
+    
+    double envmaxy = (a.y > b.y) ? a.y : b.y;
+    if (envmaxy < miny) return false;
+    
+    return true;
   }
   /**
    * @deprecated Use #intersects instead. In the future, #overlaps may be
@@ -544,10 +567,10 @@ public class Envelope
 
   /**
    *  Check if the point <code>p</code>
-   *  overlaps (lies inside) the region of this <code>Envelope</code>.
+   *  intersects (lies inside) the region of this <code>Envelope</code>.
    *
    *@param  p  the <code>Coordinate</code> to be tested
-   *@return        <code>true</code> if the point overlaps this <code>Envelope</code>
+   *@return <code>true</code> if the point intersects this <code>Envelope</code>
    */
   public boolean intersects(Coordinate p) {
     return intersects(p.x, p.y);
@@ -560,7 +583,7 @@ public class Envelope
   }
   /**
    *  Check if the point <code>(x, y)</code>
-   *  overlaps (lies inside) the region of this <code>Envelope</code>.
+   *  intersects (lies inside) the region of this <code>Envelope</code>.
    *
    *@param  x  the x-ordinate of the point
    *@param  y  the y-ordinate of the point
