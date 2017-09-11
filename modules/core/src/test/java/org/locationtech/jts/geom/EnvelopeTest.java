@@ -76,6 +76,11 @@ public class EnvelopeTest extends TestCase {
 		assertTrue(e1.intersects(e4));
 	}
 
+	public void testIntersects() {
+		checkIntersectsPermuted(1,1, 2,2, 2,2, 3,3, true);
+		checkIntersectsPermuted(1,1, 2,2, 3,3, 4,4, false);
+	}
+
 	public void testIntersectsEmpty() {
 		assertTrue(!new Envelope(-5, 5, -5, 5).intersects(new Envelope()));
 		assertTrue(!new Envelope().intersects(new Envelope(-5, 5, -5, 5)));
@@ -206,6 +211,26 @@ public class EnvelopeTest extends TestCase {
 				poly10);
 
 		
+	}
+
+	private void checkIntersectsPermuted(double a1x, double a1y, double a2x, double a2y, double b1x, double b1y, double b2x, double b2y, boolean expected) {
+		checkIntersects(a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, expected);
+		checkIntersects(a1x, a2y, a2x, a1y, b1x, b1y, b2x, b2y, expected);
+		checkIntersects(a1x, a1y, a2x, a2y, b1x, b2y, b2x, b1y, expected);
+		checkIntersects(a1x, a2y, a2x, a1y, b1x, b2y, b2x, b1y, expected);
+	}
+	private void checkIntersects(double a1x, double a1y, double a2x, double a2y, double b1x, double b1y, double b2x, double b2y, boolean expected) {
+		Envelope a = new Envelope(a1x, a2x, a1y, a2y); 
+		Envelope b = new Envelope(b1x, b2x, b1y, b2y); 
+		assertEquals(expected, a.intersects(b));
+		
+		Coordinate a1 = new Coordinate(a1x, a1y);
+		Coordinate a2 = new Coordinate(a2x, a2y);
+		Coordinate b1 = new Coordinate(b1x, b1y);
+		Coordinate b2 = new Coordinate(b2x, b2y);
+		assertEquals(expected, Envelope.intersects(a1, a2, b1, b2));
+		
+		assertEquals(expected, a.intersects(b1, b2));
 	}
 
 	void checkExpectedEnvelopeGeometry(String wktInput)
