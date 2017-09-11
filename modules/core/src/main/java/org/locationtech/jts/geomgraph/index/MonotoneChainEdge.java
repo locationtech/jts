@@ -43,9 +43,6 @@ public class MonotoneChainEdge {
   // the lists of start/end indexes of the monotone chains.
   // Includes the end point of the edge as a sentinel
   int[] startIndex;
-  // these envelopes are created once and reused
-  Envelope env1 = new Envelope();
-  Envelope env2 = new Envelope();
 
   public MonotoneChainEdge(Edge e) {
     this.e = e;
@@ -109,9 +106,7 @@ public class MonotoneChainEdge {
       return;
     }
     // nothing to do if the envelopes of these chains don't overlap
-    env1.init(p00, p01);
-    env2.init(p10, p11);
-    if (! env1.intersects(env2)) return;
+    if (! Envelope.intersects(p00, p01, p10, p11)) return;
 
     // the chains overlap, so split each in half and iterate  (binary search)
     int mid0 = (start0 + end0) / 2;
