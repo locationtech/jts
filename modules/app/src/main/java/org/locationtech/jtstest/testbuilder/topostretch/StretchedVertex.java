@@ -249,7 +249,7 @@ public class StretchedVertex
   
   private static boolean isFlat(Coordinate p, Coordinate p1, Coordinate p2)
   {
-  	double dist = CGAlgorithms.distancePointLine(p, p1, p2);
+  	double dist = Distance.pointToSegment(p, p1, p2);
   	double len = p1.distance(p2);
   	if (dist/len < POINT_LINE_FLATNESS_RATIO)
   		return true;

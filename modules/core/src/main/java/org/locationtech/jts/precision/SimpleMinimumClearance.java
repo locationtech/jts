@@ -11,7 +11,7 @@
  */
 package org.locationtech.jts.precision;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -147,7 +147,7 @@ public class SimpleMinimumClearance
     {
         if (queryPt.equals2D(seg0) || queryPt.equals2D(seg1))
           return;
-        double segDist = CGAlgorithms.distancePointLine(queryPt, seg1, seg0);
+        double segDist = Distance.pointToSegment(queryPt, seg1, seg0);
         if (segDist > 0) 
           smc.updateClearance(segDist, queryPt, seg1, seg0);
     }
