@@ -20,7 +20,7 @@ package org.locationtech.jts.operation.buffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
@@ -299,7 +299,7 @@ public class OffsetCurveSetBuilder {
   {
     Triangle tri = new Triangle(triangleCoord[0], triangleCoord[1], triangleCoord[2]);
     Coordinate inCentre = tri.inCentre();
-    double distToCentre = CGAlgorithms.distancePointLine(inCentre, tri.p0, tri.p1);
+    double distToCentre = Distance.pointToSegment(inCentre, tri.p0, tri.p1);
     return distToCentre < Math.abs(bufferDistance);
   }
 

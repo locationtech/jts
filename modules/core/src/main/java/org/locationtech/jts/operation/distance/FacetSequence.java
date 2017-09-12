@@ -12,7 +12,7 @@
 
 package org.locationtech.jts.operation.distance;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
@@ -128,7 +128,7 @@ public class FacetSequence
         facetSeq.pts.getCoordinate(j, q0);
         facetSeq.pts.getCoordinate(j + 1, q1);
         
-        double dist = CGAlgorithms.distanceLineLine(p0, p1, q0, q1);
+        double dist = Distance.segmentToSegment(p0, p1, q0, q1);
         if (dist == 0.0) 
           return 0.0;
         if (dist < minDistance) {
@@ -146,7 +146,7 @@ public class FacetSequence
     for (int i = facetSeq.start; i < facetSeq.end - 1; i++) {
       facetSeq.pts.getCoordinate(i, q0);
       facetSeq.pts.getCoordinate(i + 1, q1);
-      double dist = CGAlgorithms.distancePointLine(pt, q0, q1);
+      double dist = Distance.pointToSegment(pt, q0, q1);
       if (dist == 0.0) return 0.0;
       if (dist < minDistance) {
         minDistance = dist;

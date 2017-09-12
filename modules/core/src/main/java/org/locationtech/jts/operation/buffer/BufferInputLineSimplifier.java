@@ -11,7 +11,7 @@
  */
 package org.locationtech.jts.operation.buffer;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
@@ -195,7 +195,7 @@ public class BufferInputLineSimplifier
     if (! isAngleToSimplify)
       return false;
     
-    double dist = CGAlgorithms.distancePointLine(p1, p0, p2);
+    double dist = Distance.pointToSegment(p1, p0, p2);
     return dist < distanceTol;
   }
   
@@ -227,7 +227,7 @@ public class BufferInputLineSimplifier
   
   private boolean isShallow(Coordinate p0, Coordinate p1, Coordinate p2, double distanceTol)
   {
-    double dist = CGAlgorithms.distancePointLine(p1, p0, p2);
+    double dist = Distance.pointToSegment(p1, p0, p2);
     return dist < distanceTol;
   }
   

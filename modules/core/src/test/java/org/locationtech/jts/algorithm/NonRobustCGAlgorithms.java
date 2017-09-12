@@ -192,9 +192,9 @@ public class NonRobustCGAlgorithms
   {
     // check for zero-length segments
     if (A.equals(B))
-      return CGAlgorithms.distancePointLine(A, C, D);
+      return Distance.pointToSegment(A, C, D);
     if (C.equals(D))
-      return CGAlgorithms.distancePointLine(D, A, B);
+      return Distance.pointToSegment(D, A, B);
 
     // AB and CD are line segments
     /*
@@ -221,11 +221,11 @@ public class NonRobustCGAlgorithms
     if ((r_bot == 0) || (s_bot == 0)) {
       return Math
           .min(
-              CGAlgorithms.distancePointLine(A, C, D),
+              Distance.pointToSegment(A, C, D),
               Math.min(
-                  CGAlgorithms.distancePointLine(B, C, D),
-                  Math.min(CGAlgorithms.distancePointLine(C, A, B),
-                      CGAlgorithms.distancePointLine(D, A, B))));
+                  Distance.pointToSegment(B, C, D),
+                  Math.min(Distance.pointToSegment(C, A, B),
+                      Distance.pointToSegment(D, A, B))));
 
     }
     double s = s_top / s_bot;
@@ -235,11 +235,11 @@ public class NonRobustCGAlgorithms
       // no intersection
       return Math
           .min(
-              CGAlgorithms.distancePointLine(A, C, D),
+              Distance.pointToSegment(A, C, D),
               Math.min(
-                  CGAlgorithms.distancePointLine(B, C, D),
-                  Math.min(CGAlgorithms.distancePointLine(C, A, B),
-                      CGAlgorithms.distancePointLine(D, A, B))));
+                  Distance.pointToSegment(B, C, D),
+                  Math.min(Distance.pointToSegment(C, A, B),
+                      Distance.pointToSegment(D, A, B))));
     }
     return 0.0; // intersection exists
   }

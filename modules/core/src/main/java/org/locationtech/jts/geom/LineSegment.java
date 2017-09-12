@@ -15,7 +15,7 @@ package org.locationtech.jts.geom;
 
 import java.io.Serializable;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.algorithm.HCoordinate;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.NotRepresentableException;
@@ -246,7 +246,7 @@ public class LineSegment
    */
   public double distance(LineSegment ls)
   {
-    return CGAlgorithms.distanceLineLine(p0, p1, ls.p0, ls.p1);
+    return Distance.segmentToSegment(p0, p1, ls.p0, ls.p1);
   }
 
   /**
@@ -256,7 +256,7 @@ public class LineSegment
    */
   public double distance(Coordinate p)
   {
-    return CGAlgorithms.distancePointLine(p, p0, p1);
+    return Distance.pointToSegment(p, p0, p1);
   }
 
   /**
@@ -267,7 +267,7 @@ public class LineSegment
    */
   public double distancePerpendicular(Coordinate p)
   {
-    return CGAlgorithms.distancePointLinePerpendicular(p, p0, p1);
+    return Distance.pointToLinePerpendicular(p, p0, p1);
   }
 
   /**

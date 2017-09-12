@@ -13,7 +13,7 @@ package test.jts.perf.algorithm;
 
 import java.util.Random;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.geom.Coordinate;
 
 import junit.framework.TestCase;
@@ -40,7 +40,7 @@ public class DistanceLineLineStressTest extends TestCase
     for (int i = 0; i < n; i++) {
       //System.out.println(i);
       Coordinate[] seg = randomDisjointCollinearSegments();
-      if (0 == CGAlgorithms.distanceLineLine(seg[0], seg[1], seg[2], seg[3])) {
+      if (0 == Distance.segmentToSegment(seg[0], seg[1], seg[2], seg[3])) {
         /*
         System.out.println("FAILED! - "
             + WKTWriter.toLineString(seg[0], seg[1]) + "  -  "

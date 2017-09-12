@@ -13,7 +13,7 @@ package org.locationtech.jts.operation.distance;
 
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -371,7 +371,7 @@ public class DistanceOp
       // brute force approach!
     for (int i = 0; i < coord0.length - 1; i++) {
       for (int j = 0; j < coord1.length - 1; j++) {
-        double dist = CGAlgorithms.distanceLineLine(
+        double dist = Distance.segmentToSegment(
                                         coord0[i], coord0[i + 1],
                                         coord1[j], coord1[j + 1] );
         if (dist < minDistance) {
@@ -397,7 +397,7 @@ public class DistanceOp
     Coordinate coord = pt.getCoordinate();
       // brute force approach!
     for (int i = 0; i < coord0.length - 1; i++) {
-        double dist = CGAlgorithms.distancePointLine(
+        double dist = Distance.pointToSegment(
             coord, coord0[i], coord0[i + 1] );
         if (dist < minDistance) {
           minDistance = dist;

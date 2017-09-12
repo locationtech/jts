@@ -11,7 +11,7 @@
  */
 package org.locationtech.jts.precision;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineSegment;
@@ -286,7 +286,7 @@ public class MinimumClearance
             Coordinate seg1 = fs2.getCoordinate(i2);
             
             if (! (p.equals2D(seg0) || p.equals2D(seg1))) {
-              double d = CGAlgorithms.distancePointLine(p, seg0, seg1);
+              double d = Distance.pointToSegment(p, seg0, seg1);
               if (d < minDist) {
                 minDist = d;
                 updatePts(p, seg0, seg1);
