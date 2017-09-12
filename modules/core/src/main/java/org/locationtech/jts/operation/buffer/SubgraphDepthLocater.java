@@ -19,7 +19,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -39,7 +38,6 @@ class SubgraphDepthLocater
 {
   private Collection subgraphs;
   private LineSegment seg = new LineSegment();
-  private CGAlgorithms cga = new CGAlgorithms();
 
   public SubgraphDepthLocater(List subgraphs)
   {
