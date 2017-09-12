@@ -23,6 +23,7 @@ import org.locationtech.jts.math.MathUtil;
  * double-precision floating point.
  * 
  * @version 1.7
+ * @deprecated See Length, Area, Distance, Orientation, PointLocation
  */
 public class CGAlgorithms
 {
@@ -376,7 +377,7 @@ public class CGAlgorithms
     // this handles the case of length = 1
     double minDistance = p.distance(line[0]);
     for (int i = 0; i < line.length - 1; i++) {
-      double dist = CGAlgorithms.distancePointLine(p, line[i], line[i + 1]);
+      double dist = distancePointLine(p, line[i], line[i + 1]);
       if (dist < minDistance) {
         minDistance = dist;
       }
