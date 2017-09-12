@@ -43,9 +43,12 @@ If you are interested in contributing to JTS please read the [**Contributing Gui
 
 ## Downstream Projects
 
+### Direct
 * [**GEOS**](https://trac.osgeo.org/geos) - C++ port
 * [**NetTopologySuite**](https://github.com/NetTopologySuite/NetTopologySuite) - .NET port
 * [**JSTS**](https://github.com/bjornharrtell/jsts) - JavaScript port
+
+## Via GEOS
 * [**Shapely**](https://github.com/Toblerity/Shapely) - Python wrapper of GEOS
 * [**R-GEOS**](https://cran.r-project.org/web/packages/rgeos/index.html) - R wrapper of GEOS
 
