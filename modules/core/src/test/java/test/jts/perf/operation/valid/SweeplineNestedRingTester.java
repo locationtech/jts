@@ -10,7 +10,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.operation.valid;
+package test.jts.perf.operation.valid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +23,7 @@ import org.locationtech.jts.geomgraph.GeometryGraph;
 import org.locationtech.jts.index.sweepline.SweepLineIndex;
 import org.locationtech.jts.index.sweepline.SweepLineInterval;
 import org.locationtech.jts.index.sweepline.SweepLineOverlapAction;
+import org.locationtech.jts.operation.valid.IsValidOp;
 import org.locationtech.jts.util.Assert;
 
 /**
