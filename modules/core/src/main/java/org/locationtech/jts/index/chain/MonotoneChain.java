@@ -16,6 +16,7 @@ package org.locationtech.jts.index.chain;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geomgraph.index.MonotoneChainEdge;
 
 
 /**
@@ -146,7 +147,6 @@ public class MonotoneChain {
   {
     Coordinate p0 = pts[start0];
     Coordinate p1 = pts[end0];
-    //mcs.tempEnv1.init(p0, p1);
 
 //Debug.println("trying:" + p0 + p1 + " [ " + start0 + ", " + end0 + " ]");
     // terminating condition for the recursion
@@ -197,10 +197,6 @@ public class MonotoneChain {
     int start1, int end1,
     MonotoneChainOverlapAction mco)
   {
-    Coordinate p00 = pts[start0];
-    Coordinate p01 = pts[end0];
-    Coordinate p10 = mc.pts[start1];
-    Coordinate p11 = mc.pts[end1];
 //Debug.println("computeIntersectsForChain:" + p00 + p01 + p10 + p11);
     // terminating condition for the recursion
     if (end0 - start0 == 1 && end1 - start1 == 1) {
@@ -208,7 +204,7 @@ public class MonotoneChain {
       return;
     }
     // nothing to do if the envelopes of these subchains don't overlap
-    if (! Envelope.intersects(p00, p01, p10, p11)) return;
+    if (! overlaps(start0, end0, mc, start1, end1)) return;
 
     // the chains overlap, so split each in half and iterate  (binary search)
     int mid0 = (start0 + end0) / 2;
@@ -225,4 +221,22 @@ public class MonotoneChain {
       if (mid1 < end1)   computeOverlaps(mid0,   end0, mc, mid1,    end1, mco);
     }
   }
+  /**
+   * Tests whether the envelopes of two chain sections overlap (intersect).
+   * 
+   * @param start0
+   * @param end0
+   * @param mc
+   * @param start1
+   * @param end1
+   * @return true if the section envelopes overlap
+   */
+  private boolean overlaps(
+      int start0, int end0,
+      MonotoneChain mc,
+      int start1, int end1)
+  {
+    return Envelope.intersects(pts[start0], pts[end0], mc.pts[start1], mc.pts[end1]);
+  }
+
 }

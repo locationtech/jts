@@ -95,18 +95,15 @@ public class MonotoneChainEdge {
     int start1, int end1,
     SegmentIntersector ei)
   {
-    Coordinate p00 = pts[start0];
-    Coordinate p01 = pts[end0];
-    Coordinate p10 = mce.pts[start1];
-    Coordinate p11 = mce.pts[end1];
 //Debug.println("computeIntersectsForChain:" + p00 + p01 + p10 + p11);
+ 
     // terminating condition for the recursion
     if (end0 - start0 == 1 && end1 - start1 == 1) {
       ei.addIntersections(e, start0, mce.e, start1);
       return;
     }
     // nothing to do if the envelopes of these chains don't overlap
-    if (! Envelope.intersects(p00, p01, p10, p11)) return;
+    if (! overlaps(start0, end0, mce, start1, end1)) return;
 
     // the chains overlap, so split each in half and iterate  (binary search)
     int mid0 = (start0 + end0) / 2;
@@ -123,4 +120,23 @@ public class MonotoneChainEdge {
       if (mid1 < end1)   computeIntersectsForChain(mid0,   end0, mce, mid1,    end1, ei);
     }
   }
+  
+  /**
+   * Tests whether the envelopes of two chain sections overlap (intersect).
+   *
+   * @param start0
+   * @param end0
+   * @param mce
+   * @param start1
+   * @param end1
+   * @return true if the section envelopes overlap
+   */
+  private boolean overlaps(
+      int start0, int end0,
+      MonotoneChainEdge mce,
+      int start1, int end1)
+  {
+    return Envelope.intersects(pts[start0], pts[end0], mce.pts[start1], mce.pts[end1]);
+  }
+
 }
