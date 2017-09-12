@@ -10,7 +10,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.operation.valid;
+package test.jts.perf.operation.valid;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geomgraph.GeometryGraph;
 import org.locationtech.jts.index.quadtree.Quadtree;
+import org.locationtech.jts.operation.valid.IsValidOp;
 import org.locationtech.jts.util.Assert;
 
 /**
