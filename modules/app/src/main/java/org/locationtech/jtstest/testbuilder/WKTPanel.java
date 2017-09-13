@@ -11,29 +11,43 @@
  */
 package org.locationtech.jtstest.testbuilder;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.io.StreamTokenizer;
-import java.io.StringReader;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.util.Assert;
 import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
-import org.locationtech.jtstest.testbuilder.model.*;
-import org.locationtech.jtstest.testbuilder.ui.*;
+import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
+import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
+import org.locationtech.jtstest.testbuilder.model.GeometryType;
+import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
+import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.dnd.FileDrop;
-import org.locationtech.jtstest.util.*;
+import org.locationtech.jtstest.util.GeometryTextCleaner;
 import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 
@@ -49,6 +63,7 @@ public class WKTPanel extends JPanel
     JPanel panelAB = new JPanel();
     JButton loadButton = new JButton();
     JButton inspectButton = new JButton();
+    JButton exchangeButton = new JButton();
     TitledBorder titledBorder1;
     JLabel bLabel = new JLabel();
     GridBagLayout gridBagLayout2 = new GridBagLayout();
@@ -87,6 +102,7 @@ public class WKTPanel extends JPanel
     private final ImageIcon cutIcon = new ImageIcon(this.getClass().getResource("Delete_small.png"));
     private final ImageIcon loadIcon = new ImageIcon(this.getClass().getResource("LoadWKTToTest.png"));
     private final ImageIcon inspectIcon = new ImageIcon(this.getClass().getResource("InspectGeometry.png"));
+    private final ImageIcon exchangeGeomsIcon = new ImageIcon(this.getClass().getResource("ExchangeGeoms.png"));
 
     protected JTSTestBuilderFrame tbFrame;
 
@@ -115,11 +131,15 @@ public class WKTPanel extends JPanel
         loadButton.setMargin(new Insets(8, 8, 8, 8));
 //        loadButton.setText("Load");
         loadButton.setIcon(loadIcon);
-        loadButton.setToolTipText(AppStrings.WKT_PANEL_LOAD_GEOMETRY_TIP);
+        loadButton.setToolTipText(AppStrings.TIP_WKT_PANEL_LOAD_GEOMETRY);
         
         inspectButton.setPreferredSize(new Dimension(30, 38));
-        inspectButton.setToolTipText(AppStrings.INSPECT_GEOMETRY_TIP);
+        inspectButton.setToolTipText(AppStrings.TIP_INSPECT_GEOMETRY);
         inspectButton.setIcon(inspectIcon);
+        
+        exchangeButton.setPreferredSize(new Dimension(30, 38));
+        exchangeButton.setToolTipText(AppStrings.TIP_EXCHANGE_A_B);
+        exchangeButton.setIcon(exchangeGeomsIcon);
         
         panelAB.setLayout(gridBagLayout2);
         
@@ -139,7 +159,7 @@ public class WKTPanel extends JPanel
         aTextArea.setLineWrap(true);
         aTextArea.setBackground(Color.white);
         aTextArea.setFont(new java.awt.Font("Monospaced", 0, 12));
-        aTextArea.setToolTipText(AppStrings.TEXT_ENTRY_TIP);
+        aTextArea.setToolTipText(AppStrings.TIP_TEXT_ENTRY);
         aTextArea.addMouseListener(new java.awt.event.MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent arg0) {
@@ -152,7 +172,7 @@ public class WKTPanel extends JPanel
         bTextArea.setLineWrap(true);
         bTextArea.setBackground(Color.white);
         bTextArea.setFont(new java.awt.Font("Monospaced", 0, 12));
-        bTextArea.setToolTipText(AppStrings.TEXT_ENTRY_TIP);
+        bTextArea.setToolTipText(AppStrings.TIP_TEXT_ENTRY);
         bTextArea.addMouseListener(new java.awt.event.MouseAdapter() {
           @Override
           public void mouseClicked(MouseEvent arg0) {
@@ -233,99 +253,45 @@ public class WKTPanel extends JPanel
         
         this.add(
             panelAB,
-            new GridBagConstraints(
-                0,
-                1,
-                1,
-                2,
-                1.0,
-                1.0,
+            new GridBagConstraints(0, 1, 1, 2,
+                1.0, 1.0,
                 GridBagConstraints.CENTER,
                 GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0),
-                0,
-                0));
-        /*
-        panelAB.add(
-            labelA,
-            new GridBagConstraints(
-                0,
-                0,
-                1,
-                1,
-                0.0,
-                0.0,
-                GridBagConstraints.NORTH,
-                GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2),
-                0,
-                0));
-                */
+                0, 0));
         panelAB.add(
         		aPanel,
-            new GridBagConstraints(
-                1,
-                0,
-                1,
-                1,
-                1.0,
-                1.0,
+            new GridBagConstraints(1, 0, 1, 1,
+                1.0, 1.0,
                 GridBagConstraints.CENTER,
                 GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0),
-                0,
-                0));
-        /*
-        panelAB.add(
-            labelB,
-            new GridBagConstraints(
-                0,
-                1,
-                1,
-                1,
-                0.0,
-                0.0,
-                GridBagConstraints.NORTH,
-                GridBagConstraints.NONE,
-                new Insets(2, 2, 2, 2),
-                0,
-                0));
-                */
+                0, 0));
         panelAB.add(
             bPanel,
-            new GridBagConstraints(
-                1,
-                1,
-                1,
-                1,
-                1.0,
-                1.0,
+            new GridBagConstraints(1, 1, 1, 1,
+                1.0, 1.0,
                 GridBagConstraints.CENTER,
                 GridBagConstraints.BOTH,
                 new Insets(0, 0, 0, 0),
-                0,
-                0));
+                0, 0));
         bScrollPane.getViewport().add(bTextArea, null);
         aScrollPane.getViewport().add(aTextArea, null);
         
         panelButtons.add(loadButton);
         panelButtons.add(Box.createVerticalStrut(20));
+        panelButtons.add(exchangeButton);
+        panelButtons.add(Box.createVerticalStrut(10));
         panelButtons.add(inspectButton);
         
         this.add(
             panelButtons,
-            new GridBagConstraints(
-                1,
-                1,
-                1,
-                1,
-                0.0,
-                0.0,
+            new GridBagConstraints( 1, 1, 1, 1,
+                0.0, 0.0,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.NONE,
                 new Insets(2, 2, 0, 2),
-                0,
-                0));
+                0, 0));
         
         loadButton.addActionListener(
             new ActionListener() {
@@ -337,6 +303,12 @@ public class WKTPanel extends JPanel
             new ActionListener() {
               public void actionPerformed(ActionEvent e) {
                 JTSTestBuilderController.inspectGeometry();
+              }
+            });
+        exchangeButton.addActionListener(
+            new ActionListener() {
+              public void actionPerformed(ActionEvent e) {
+                JTSTestBuilderController.exchangeGeometry();
               }
             });
        aCopyButton.addActionListener(

@@ -386,7 +386,7 @@ public class JTSTestBuilderFrame extends JFrame
     testListPanel.populateList();  
   }
   
-  void btnExchangeGeoms_actionPerformed(ActionEvent e) {
+  public void actionExchangeGeoms() {
     currentCase().exchange();
     testCasePanel.setTestCase(currentCase());
   }
@@ -762,7 +762,7 @@ public class JTSTestBuilderFrame extends JFrame
     jPanel2.setLayout(borderLayout3);
     wktPanel.setMinimumSize(new Dimension(111, 0));
     wktPanel.setPreferredSize(new Dimension(600, 100));
-    wktPanel.setToolTipText(AppStrings.TEXT_ENTRY_TIP);
+    wktPanel.setToolTipText(AppStrings.TIP_TEXT_ENTRY);
     testPanel.setLayout(gridBagLayout2);
     gridLayout1.setRows(4);
     gridLayout1.setColumns(1);
@@ -771,6 +771,7 @@ public class JTSTestBuilderFrame extends JFrame
     jSplitPane1.add(jPanel1, JSplitPane.TOP);
     jPanel1.add(testCasePanel, BorderLayout.CENTER);
     jSplitPane1.add(jPanel2, JSplitPane.BOTTOM);
+    jPanel2.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
     jPanel2.add(inputTabbedPane, BorderLayout.CENTER);
     jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
     jSplitPane1.setResizeWeight(0.5);
@@ -792,7 +793,7 @@ public class JTSTestBuilderFrame extends JFrame
     
     jSplitPane1.setDividerLocation(500);
     this.setJMenuBar(tbMenuBar.getMenuBar());
-    contentPane.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
+    //contentPane.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
   }
 
   public JTSTestBuilderToolBar getToolbar()
