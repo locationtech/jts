@@ -237,8 +237,12 @@ public class DistanceOp
   
   private void computeContainmentDistance(int polyGeomIndex, GeometryLocation[] locPtPoly)
   {
+    Geometry polyGeom = geom[polyGeomIndex];
+    // if no polygon then nothing to do
+    if (polyGeom.getDimension() < 2) return;
+    
   	int locationsIndex = 1 - polyGeomIndex;
-    List polys = PolygonExtracter.getPolygons(geom[polyGeomIndex]);
+    List polys = PolygonExtracter.getPolygons(polyGeom);
     if (polys.size() > 0) {
       List insideLocs = ConnectedElementLocationFilter.getLocations(geom[locationsIndex]);
       computeContainmentDistance(insideLocs, polys, locPtPoly);
