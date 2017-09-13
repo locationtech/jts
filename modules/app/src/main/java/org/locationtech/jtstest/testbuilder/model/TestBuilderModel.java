@@ -103,7 +103,7 @@ public class TestBuilderModel
   }
 
   public void pasteGeometry(int geomIndex)
-  	throws ParseException, IOException
+  	throws Exception
   {
   	Object obj = SwingUtil.getFromClipboard();
   	Geometry g = null;
@@ -118,16 +118,30 @@ public class TestBuilderModel
     getGeometryEditModel().setTestCase(testCaseEdit);
   }
   
-  public Geometry readGeometryText(String geomStr) 
-  throws ParseException, IOException 
+  private Geometry readGeometryText(String geomStr) 
+  throws Exception
   {
-  	MultiFormatReader reader = new MultiFormatReader(getGeometryFactory());
-  	
     Geometry g = null;
     if (geomStr.length() > 0) {
-      g = reader.read(geomStr);
+      try {
+        MultiFormatReader reader = new MultiFormatReader(getGeometryFactory());
+        g = reader.read(geomStr);
+      } catch (ParseException ex) {
+        String msg = "Unable to parse data: '" + condense(geomStr) + "'";  
+        throw new IllegalArgumentException(msg); 
+      }
     }
     return g;
+  }
+
+  private String condense(String str) {
+    final int N_START = 10;
+    final int N_END = 10;
+    int len = str.length();
+    if (len <= N_START + N_END + 10) return str;
+    return str.substring(0, N_START)
+        + "..."
+        + str.substring(len - N_START, len);
   }
 
   public void loadMultipleGeometriesFromFile(int geomIndex, String filename)
