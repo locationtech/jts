@@ -12,8 +12,6 @@
 
 package org.locationtech.jtstest.testbuilder.controller;
 
-import javax.swing.JTextArea;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
@@ -113,6 +111,10 @@ public class JTSTestBuilderController
   public static void inspectGeometry()
   {
     JTSTestBuilderFrame.instance().actionInspectGeometry();
+  }
+  public static void exchangeGeometry()
+  {
+    JTSTestBuilderFrame.instance().actionExchangeGeoms();
   }
   public static void inspectGeometryDialog()
   {
