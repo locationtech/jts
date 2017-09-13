@@ -98,7 +98,7 @@ public class WKTPanel extends JPanel
     ButtonGroup editMode = new ButtonGroup();
 
     private final ImageIcon copyIcon = new ImageIcon(this.getClass().getResource("Copy.png"));
-    private final ImageIcon pasteIcon = new ImageIcon(this.getClass().getResource("Paste.gif"));
+    private final ImageIcon pasteIcon = new ImageIcon(this.getClass().getResource("Paste.png"));
     private final ImageIcon cutIcon = new ImageIcon(this.getClass().getResource("Delete_small.png"));
     private final ImageIcon loadIcon = new ImageIcon(this.getClass().getResource("LoadWKTToTest.png"));
     private final ImageIcon inspectIcon = new ImageIcon(this.getClass().getResource("InspectGeometry.png"));
@@ -180,11 +180,11 @@ public class WKTPanel extends JPanel
           }
         });
         
-        aCopyButton.setToolTipText("Copy WKT (Ctl-click for formatted)");
+        aCopyButton.setToolTipText(AppStrings.TIP_COPY_DATA);
         aCopyButton.setIcon(copyIcon);
         aCopyButton.setMargin(new Insets(0, 0, 0, 0));
 
-        aPasteButton.setToolTipText("Paste WKT, WKB, or GML");
+        aPasteButton.setToolTipText(AppStrings.TIP_PASTE_DATA);
         aPasteButton.setIcon(pasteIcon);
         aPasteButton.setMargin(new Insets(0, 0, 0, 0));
 
@@ -216,11 +216,11 @@ public class WKTPanel extends JPanel
         aPanel.add(aScrollPane, BorderLayout.CENTER);
         //aPanel.add(aButtonPanel, BorderLayout.EAST);
         
-        bCopyButton.setToolTipText("Copy WKT (Ctl-click for formatted)");
+        bCopyButton.setToolTipText(AppStrings.TIP_COPY_DATA);
         bCopyButton.setIcon(copyIcon);
         bCopyButton.setMargin(new Insets(0, 0, 0, 0));
 
-        bPasteButton.setToolTipText("Paste WKT, WKB, or GML");
+        bPasteButton.setToolTipText(AppStrings.TIP_PASTE_DATA);
         bPasteButton.setIcon(pasteIcon);
         bPasteButton.setMargin(new Insets(0, 0, 0, 0));
 
