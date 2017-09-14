@@ -23,6 +23,7 @@ import javax.swing.tree.*;
 
 import org.locationtech.jtstest.function.*;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
+import org.locationtech.jtstest.geomfunction.GeometryFunctionUtil;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionEvent;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
 import org.locationtech.jtstest.util.*;
@@ -32,7 +33,8 @@ import org.locationtech.jtstest.util.*;
  * @version 1.7
  */
 public class GeometryFunctionTreePanel extends JPanel {
-	JScrollPane jScrollPane = new JScrollPane();
+  
+  JScrollPane jScrollPane = new JScrollPane();
 
 	JTree tree = new JTree();
 
@@ -68,11 +70,10 @@ public class GeometryFunctionTreePanel extends JPanel {
 			if (leaf) {
 				GeometryFunction func = getFunctionFromNode(value);
 				setIcon(func.isBinary() ? binaryIcon : unaryIcon);
-				// setToolTipText("This book is in the Tutorial series.");
         //String name = StringUtil.capitalize(func.getName());
         String name = func.getName();
 				setText(name);
-				setToolTipText(func.getSignature() + func.getDescription()); // no tool tip
+				setToolTipText(GeometryFunctionUtil.toolTipText(func)); 
 			} else {
 				setToolTipText(null); // no tool tip
 			}
@@ -84,6 +85,7 @@ public class GeometryFunctionTreePanel extends JPanel {
 	public GeometryFunctionTreePanel() {
 		try {
 			jbInit();
+      javax.swing.ToolTipManager.sharedInstance().registerComponent(tree);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
