@@ -651,31 +651,6 @@ public class JTSTestBuilderFrame extends JFrame
     JTSTestBuilderController.geometryViewChanged();
   }
 
-  public void setShowingStructure(boolean showStructure) {
-    DisplayParameters.setShowingStructure(showStructure);
-    JTSTestBuilderController.geometryViewChanged();
-  }
-
-  public void setShowingOrientations(boolean showingOrientations) {
-    DisplayParameters.setShowingOrientation(showingOrientations);
-    JTSTestBuilderController.geometryViewChanged();
-  }
-
-  public void setShowVertexIndices(boolean showVertexIndices) {
-    DisplayParameters.setShowingOrientation(showVertexIndices);
-    JTSTestBuilderController.geometryViewChanged();
-  }
-
-  public void setShowingVertices(boolean showingVertices) {
-    DisplayParameters.setShowingVertices(showingVertices);
-    JTSTestBuilderController.geometryViewChanged();
-  }
-
-  public void setShowingLabel(boolean showLabel) {
-    DisplayParameters.setShowingLabel(showLabel);
-    JTSTestBuilderController.geometryViewChanged();
-  }
-
   void showVertexIndicesMenuItem_actionPerformed(ActionEvent e) {
 //    testCasePanel.editPanel.setShowVertexIndices(showVertexIndicesMenuItem.isSelected());
   }

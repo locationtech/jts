@@ -16,12 +16,14 @@ import java.awt.*;
 import java.awt.geom.*;
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 
 public class ArrowEndpointStyle 
   extends LineStringEndpointStyle {
 
+  private static final int ARROW_ALPHA = 150;
   private final static double ANGLE = 18;
   private final static double LENGTH = 15;
   private boolean filled = true;
@@ -31,7 +33,7 @@ public class ArrowEndpointStyle
 
   public ArrowEndpointStyle(Color color, boolean start, boolean filled) {
       super(start);
-      this.color = color;
+      this.color = ColorUtil.setAlpha(color, ARROW_ALPHA);
       this.filled = filled;
   }
 
