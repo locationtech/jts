@@ -17,6 +17,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
+import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 
@@ -32,6 +33,37 @@ public class JTSTestBuilderController
     autoZoomOnNextChange  = true;
   }
   */
+ 
+
+  public static void setShowingStructure(boolean showStructure) {
+    DisplayParameters.setShowingStructure(showStructure);
+    JTSTestBuilderController.geometryViewChanged();
+  }
+
+  public static void setShowingOrientations(boolean showingOrientations) {
+    DisplayParameters.setShowingOrientation(showingOrientations);
+    JTSTestBuilderController.geometryViewChanged();
+  }
+
+  public void setShowVertexIndices(boolean showVertexIndices) {
+    DisplayParameters.setShowingOrientation(showVertexIndices);
+    JTSTestBuilderController.geometryViewChanged();
+  }
+
+  public static void setShowingVertices(boolean showingVertices) {
+    DisplayParameters.setShowingVertices(showingVertices);
+    JTSTestBuilderController.geometryViewChanged();
+  }
+
+  public static void setShowingLabel(boolean showLabel) {
+    DisplayParameters.setShowingLabel(showLabel);
+    JTSTestBuilderController.geometryViewChanged();
+  }
+
+  public static void setFillType(int fillType) {
+    DisplayParameters.setFillType(fillType);
+    JTSTestBuilderController.geometryViewChanged();
+  }
   
   public static void geometryViewChanged()
   {
@@ -120,4 +152,5 @@ public class JTSTestBuilderController
   {
     JTSTestBuilderFrame.instance().actionInspectGeometryDialog();
   }
+
 }

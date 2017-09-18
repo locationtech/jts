@@ -14,6 +14,7 @@ package org.locationtech.jtstest.testbuilder.model;
 import org.locationtech.jtstest.testbuilder.AppConstants;
 
 public class DisplayParameters {
+  
   protected static boolean showingGrid = true;
   protected static boolean showingStructure = false;
   protected static boolean showingOrientation = false;
@@ -80,5 +81,20 @@ public class DisplayParameters {
   }
 
   public static int MAX_DISPLAY_POINTS = 2000;
+
+  public static final int FILL_BASIC = 1;
+  public static final int FILL_VARY = 2;
+  public static final int FILL_RAINBOW = 3;
+  public static final int FILL_RAINBOW_RANDOM = 4;
+
+  private static int fillType = FILL_BASIC;
+
+  public static int fillType() {
+    return fillType;
+  }
+
+  public static void setFillType(int type) {
+    fillType = type;  
+  }
 
 }

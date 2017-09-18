@@ -17,6 +17,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
+import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
+
 public class JTSTestBuilderMenuBar 
 {
   JMenuBar jMenuBar1 = new JMenuBar();
@@ -64,7 +67,6 @@ public class JTSTestBuilderMenuBar
           tbFrame.jMenuHelpAbout_actionPerformed(e);
         }
       });
-    jMenuView.setText("View");
 
     jMenuFileExit.setText("Exit");
     jMenuFileExit.addActionListener(
@@ -73,7 +75,6 @@ public class JTSTestBuilderMenuBar
           tbFrame.jMenuFileExit_actionPerformed(e);
         }
       });
-    jMenuEdit.setText("Edit");
     menuExchangeGeom.setText("Exchange Geometries");
     menuExchangeGeom.addActionListener(
       new java.awt.event.ActionListener() {
@@ -142,13 +143,38 @@ public class JTSTestBuilderMenuBar
     showVerticesMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.setShowingVertices(showVerticesMenuItem.isSelected());
+          JTSTestBuilderController.setShowingVertices(showVerticesMenuItem.isSelected());
         }
       });
     final JCheckBoxMenuItem showLabelMenuItem = menuItem("Labels", true);
     showLabelMenuItem.addActionListener(  new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.setShowingLabel(showLabelMenuItem.isSelected());
+          JTSTestBuilderController.setShowingLabel(showLabelMenuItem.isSelected());
+        }
+      });
+    final JRadioButtonMenuItem basicFillMenuItem = menuItemRadio("Basic Fill", false);
+        basicFillMenuItem.addActionListener(
+        new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          JTSTestBuilderController.setFillType(DisplayParameters.FILL_BASIC);
+        }
+      });
+    final JRadioButtonMenuItem varyFillMenuItem = menuItemRadio("Varying Fill", false);
+    varyFillMenuItem.addActionListener(  new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          JTSTestBuilderController.setFillType(DisplayParameters.FILL_VARY);
+        }
+      });
+    final JRadioButtonMenuItem rainbowFillMenuItem = menuItemRadio("Rainbow Fill", false);
+    rainbowFillMenuItem.addActionListener(  new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          JTSTestBuilderController.setFillType(DisplayParameters.FILL_RAINBOW);
+        }
+      });
+    final JRadioButtonMenuItem rainbowRandomFillMenuItem = menuItemRadio("Random Rainbow Fill", false);
+    rainbowRandomFillMenuItem.addActionListener(  new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          JTSTestBuilderController.setFillType(DisplayParameters.FILL_RAINBOW_RANDOM);
         }
       });
     showGridMenuItem.setText("Grid");
@@ -163,21 +189,21 @@ public class JTSTestBuilderMenuBar
     showStructureMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.setShowingStructure(showStructureMenuItem.isSelected());
+          JTSTestBuilderController.setShowingStructure(showStructureMenuItem.isSelected());
         }
       });
     showOrientationsMenuItem.setText("Orientations");
     showOrientationsMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.setShowingOrientations(showOrientationsMenuItem.isSelected());
+          JTSTestBuilderController.setShowingOrientations(showOrientationsMenuItem.isSelected());
         }
       });
     showVertexIndicesMenuItem.setText("Vertex Indices");
     showVertexIndicesMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.setShowingVertices(showVerticesMenuItem.isSelected());
+          JTSTestBuilderController.setShowingVertices(showVerticesMenuItem.isSelected());
         }
       });
     menuLoadXmlTestFolder.setText("Open XML Folder(s)...");
@@ -213,34 +239,51 @@ public class JTSTestBuilderMenuBar
       }
     });
     jMenuFile.setText("File");
-    jMenuHelp.setText("Help");
     //jMenuOptions.setText("Options");
     //jMenuTools.setText("Tools");
 
-    
+    ButtonGroup fillGroup = new ButtonGroup();
+    fillGroup.add(basicFillMenuItem);
+    fillGroup.add(varyFillMenuItem);
+    fillGroup.add(rainbowFillMenuItem);
+    fillGroup.add(rainbowRandomFillMenuItem);
+    basicFillMenuItem.setSelected(true);
+
     jMenuFile.add(menuLoadXmlTestFile);
     jMenuFile.add(menuLoadXmlTestFolder);
     jMenuFile.add(saveAsPNGMenuItem);
     jMenuFile.add(saveToClipboardMenuItem);
     jMenuFile.add(saveAsXmlMenuItem);
-    jMenuFile.add(saveAsHtmlMenuItem);
-    jMenuFile.add(generateExpectedValuesMenuItem);
+    //jMenuFile.add(saveAsHtmlMenuItem);
+    //jMenuFile.add(generateExpectedValuesMenuItem);
     jMenuFile.addSeparator();
     jMenuFile.add(jMenuFileExit);
+    //==========================
     
+    jMenuHelp.setText("Help");
     jMenuHelp.add(jMenuAbout);
-    
+    //==========================
+    jMenuView.setText("View");
     jMenuView.add(showVerticesMenuItem);
     //jMenuOptions.add(showVertexIndicesMenuItem);
     jMenuView.add(showStructureMenuItem);
     jMenuView.add(showOrientationsMenuItem);
     jMenuView.add(showLabelMenuItem);
+    
+    jMenuView.addSeparator();
+    jMenuView.add(basicFillMenuItem);
+    jMenuView.add(varyFillMenuItem);
+    jMenuView.add(rainbowFillMenuItem);
+    jMenuView.add(rainbowRandomFillMenuItem);
+    
     jMenuView.addSeparator();
     jMenuView.add(showGridMenuItem);
+    
     jMenuView.addSeparator();
     jMenuView.add(menuViewText);
     jMenuView.add(menuViewGeometry);
-    
+    //==========================    
+    jMenuEdit.setText("Edit");
     jMenuEdit.add(deleteAllTestCasesMenuItem);
     jMenuEdit.add(menuExchangeGeom);
     jMenuEdit.addSeparator();
@@ -261,7 +304,13 @@ public class JTSTestBuilderMenuBar
   
   JCheckBoxMenuItem menuItem(String name, boolean init) {
     JCheckBoxMenuItem item = new JCheckBoxMenuItem();
-    item.setText("Labels");
+    item.setText(name);
+    item.setSelected(init);
+    return item;
+  }
+  JRadioButtonMenuItem menuItemRadio(String name, boolean init) {
+    JRadioButtonMenuItem item = new JRadioButtonMenuItem();
+    item.setText(name);
     item.setSelected(init);
     return item;
   }

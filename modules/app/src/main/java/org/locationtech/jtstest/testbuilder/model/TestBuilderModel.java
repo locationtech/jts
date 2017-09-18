@@ -90,15 +90,15 @@ public class TestBuilderModel
           new ResultGeometryContainer(geomEditModel));
 
     Layer lyrA = layerList.getLayer(LayerList.LYR_A);
-    lyrA.setStyle(new BasicStyle(GeometryDepiction.GEOM_A_LINE_CLR,
+    lyrA.setGeometryStyle(new BasicStyle(GeometryDepiction.GEOM_A_LINE_CLR,
         GeometryDepiction.GEOM_A_FILL_CLR));
     
     Layer lyrB = layerList.getLayer(LayerList.LYR_B);
-    lyrB.setStyle(new BasicStyle(GeometryDepiction.GEOM_B_LINE_CLR,
+    lyrB.setGeometryStyle(new BasicStyle(GeometryDepiction.GEOM_B_LINE_CLR,
         GeometryDepiction.GEOM_B_FILL_CLR));
     
     Layer lyrR = layerList.getLayer(LayerList.LYR_RESULT);
-    lyrR.setStyle(new BasicStyle(GeometryDepiction.GEOM_RESULT_LINE_CLR,
+    lyrR.setGeometryStyle(new BasicStyle(GeometryDepiction.GEOM_RESULT_LINE_CLR,
         GeometryDepiction.GEOM_RESULT_FILL_CLR));
   }
 
