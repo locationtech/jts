@@ -63,21 +63,12 @@ public class JavaTestWriter {
         String description = testable.getDescription() == null ? "" : testable.getDescription();
         String a = testable.getGeometry(0) == null ? null : writer.write(testable.getGeometry(0));
         String b = testable.getGeometry(1) == null ? null : writer.write(testable.getGeometry(1));
-        String im =
-            testable.getExpectedIntersectionMatrix() != null
-                ? testable.getExpectedIntersectionMatrix().toString()
-                : null;
+
         text.append("          \"" + name + "\",\n");
         text.append("          \"" + description + "\",\n");
         text.append("          " + (a == null ? "null" : "\"" + a + "\"") + ",\n");
         text.append("          " + (b == null ? "null" : "\"" + b + "\"") + ",\n");
-        text.append("          " + (im == null ? "null" : "\"" + im + "\"") + ",\n");
-        text.append("          " + write(testable.getExpectedConvexHull()) + ",\n");
-        text.append("          " + write(testable.getExpectedIntersection()) + ",\n");
-        text.append("          " + write(testable.getExpectedUnion()) + ",\n");
-        text.append("          " + write(testable.getExpectedDifference()) + ",\n");
-        text.append("          " + write(testable.getExpectedSymDifference()) + ",\n");
-        text.append("          " + write(testable.getExpectedBoundary()) + "));\n");
+
         return text.toString();
     }
 

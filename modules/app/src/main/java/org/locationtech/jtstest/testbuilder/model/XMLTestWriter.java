@@ -143,29 +143,6 @@ public class XMLTestWriter
       String wkt1 = getWKTorWKB(geom1, useWKT);
       xml.append("  <b>\n" + wkt1 + "\n    </b>\n");
     }
-    if (testCase.getExpectedIntersectionMatrix() != null) {
-      xml.append("  <test>\n");
-      xml.append("    <op name=\"relate\" arg1=\"A\" arg2=\"B\" arg3=\"" + testCase.getExpectedIntersectionMatrix() + "\">true</op>\n");
-      xml.append("  </test>\n");
-    }
-    if (testCase.getExpectedBoundary() != null) {
-      xml.append(getTestXML(testCase.getExpectedBoundary(), "getboundary", new String[] {}, useWKT));
-    }
-    if (testCase.getExpectedConvexHull() != null) {
-      xml.append(getTestXML(testCase.getExpectedConvexHull(), "convexhull", new String[] {}, useWKT));
-    }
-    if (testCase.getExpectedIntersection() != null) {
-      xml.append(getTestXML(testCase.getExpectedIntersection(), "intersection", new String[] {"B"}, useWKT));
-    }
-    if (testCase.getExpectedUnion() != null) {
-      xml.append(getTestXML(testCase.getExpectedUnion(), "union", new String[] {"B"}, useWKT));
-    }
-    if (testCase.getExpectedDifference() != null) {
-      xml.append(getTestXML(testCase.getExpectedDifference(), "difference", new String[] {"B"}, useWKT));
-    }
-    if (testCase.getExpectedSymDifference() != null) {
-      xml.append(getTestXML(testCase.getExpectedSymDifference(), "symdifference", new String[] {"B"}, useWKT));
-    }
     xml.append("</case>\n");
     return xml.toString();
   }

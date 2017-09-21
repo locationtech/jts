@@ -143,8 +143,6 @@ public class HtmlWriter {
 
   private String htmlForTests(TestCaseEdit testCaseEdit, int runSkey, int caseSkey) throws IOException {
     String html = htmlForBinaryPredicates(testCaseEdit, caseSkey);
-    html += htmlForSpatialFunctions(testCaseEdit, runSkey, caseSkey);
-    html += htmlForTopologyMethods(testCaseEdit, runSkey, caseSkey);
     return html;
   }
 
@@ -541,54 +539,6 @@ public class HtmlWriter {
     return html;
   }
 
-  private String htmlForSpatialFunctions(TestCaseEdit testCaseEdit, int runSkey, int caseSkey) {
-    if (testCaseEdit.getExpectedConvexHull() == null
-         && testCaseEdit.getExpectedIntersection() == null
-         && testCaseEdit.getExpectedUnion() == null
-         && testCaseEdit.getExpectedDifference() == null
-         && testCaseEdit.getExpectedSymDifference() == null) {
-      return "";
-    }
-    String html = "";
-    html += htmlForSpatialFunctionTest(testCaseEdit, runSkey, caseSkey, "convexHull", "A", null);
-    if (testCaseEdit.getGeometry(1) != null) {
-      html += htmlForSpatialFunctionTest(testCaseEdit, runSkey, caseSkey, "intersection", "A", "B");
-      html += htmlForSpatialFunctionTest(testCaseEdit, runSkey, caseSkey, "union", "A", "B");
-      html += htmlForSpatialFunctionTest(testCaseEdit, runSkey, caseSkey, "difference", "A", "B");
-      html += htmlForSpatialFunctionTest(testCaseEdit, runSkey, caseSkey, "symDifference", "A", "B");
-    }
 
-    html = "<h2>Spatial Analysis Methods</h2>" + StringUtil.newLine
-         + "<TABLE BORDER=1>" + StringUtil.newLine
-         + html
-         + "</TABLE>" + StringUtil.newLine;
-    return html;
-  }
-
-  private String htmlForTopologyMethods(TestCaseEdit testCaseEdit, int runSkey, int caseSkey) {
-    boolean isSimpleSpecified = expectedPredicateResult(testCaseEdit, "isSimple", "A", null) != null;
-    boolean getBoundarySpecified = testCaseEdit.getExpectedBoundary() != null;
-    boolean isValidSpecified = expectedPredicateResult(testCaseEdit, "isValid", "A", null) != null;
-    if (! isSimpleSpecified && ! getBoundarySpecified && ! isValidSpecified) {
-      return "";
-    }
-
-    String html = "";
-    if (isSimpleSpecified) {
-      html += htmlForPredicateTest(testCaseEdit, caseSkey, "isSimple", "A", null);
-    }
-    if (isValidSpecified) {
-      html += htmlForPredicateTest(testCaseEdit, caseSkey, "isValid", "A", null);
-    }
-    if (getBoundarySpecified) {
-      html += htmlForSpatialFunctionTest(testCaseEdit, runSkey, caseSkey, "getBoundary", "A", null);
-    }
-
-    html = "<h2>Topology Methods (on A)</h2>" + StringUtil.newLine
-         + "<TABLE BORDER=1>" + StringUtil.newLine
-         + html
-         + "</TABLE>" + StringUtil.newLine;
-    return html;
-  }
 }
 
