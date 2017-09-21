@@ -146,33 +146,33 @@ public class JTSTestBuilderMenuBar
           JTSTestBuilderController.setShowingVertices(showVerticesMenuItem.isSelected());
         }
       });
-    final JCheckBoxMenuItem showLabelMenuItem = menuItem("Labels", true);
-    showLabelMenuItem.addActionListener(  new java.awt.event.ActionListener() {
+
+    final JMenuItem showLabelMenuItem = menuItemCheck("Labels", true,
+        new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          JTSTestBuilderController.setShowingLabel(showLabelMenuItem.isSelected());
+          JTSTestBuilderController.setShowingLabel(((JMenuItem)e.getSource()).isSelected());
         }
       });
-    final JRadioButtonMenuItem basicFillMenuItem = menuItemRadio("Basic Fill", false);
-        basicFillMenuItem.addActionListener(
-        new java.awt.event.ActionListener() {
+    final JMenuItem basicFillMenuItem = menuItemRadio("Basic Fill", true,
+        new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           JTSTestBuilderController.setFillType(DisplayParameters.FILL_BASIC);
         }
       });
-    final JRadioButtonMenuItem varyFillMenuItem = menuItemRadio("Varying Fill", false);
-    varyFillMenuItem.addActionListener(  new java.awt.event.ActionListener() {
+    final JMenuItem varyFillMenuItem = menuItemRadio("Varying Fill", false,
+        new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           JTSTestBuilderController.setFillType(DisplayParameters.FILL_VARY);
         }
       });
-    final JRadioButtonMenuItem rainbowFillMenuItem = menuItemRadio("Rainbow Fill", false);
-    rainbowFillMenuItem.addActionListener(  new java.awt.event.ActionListener() {
+    final JMenuItem rainbowFillMenuItem = menuItemRadio("Rainbow Fill", false,
+        new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           JTSTestBuilderController.setFillType(DisplayParameters.FILL_RAINBOW);
         }
       });
-    final JRadioButtonMenuItem rainbowRandomFillMenuItem = menuItemRadio("Random Rainbow Fill", false);
-    rainbowRandomFillMenuItem.addActionListener(  new java.awt.event.ActionListener() {
+    final JMenuItem rainbowRandomFillMenuItem = menuItemRadio("Random Rainbow Fill", false,
+        new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           JTSTestBuilderController.setFillType(DisplayParameters.FILL_RAINBOW_RANDOM);
         }
@@ -301,17 +301,26 @@ public class JTSTestBuilderMenuBar
 
     return jMenuBar1;
   }
-  
-  JCheckBoxMenuItem menuItem(String name, boolean init) {
-    JCheckBoxMenuItem item = new JCheckBoxMenuItem();
-    item.setText(name);
-    item.setSelected(init);
-    return item;
+
+  JMenuItem menuItemCheck(String name, boolean init) {
+    return createMenuItemSelectable(new JCheckBoxMenuItem(), name, init, null);
   }
-  JRadioButtonMenuItem menuItemRadio(String name, boolean init) {
-    JRadioButtonMenuItem item = new JRadioButtonMenuItem();
+  JMenuItem menuItemCheck(String name, boolean init, ActionListener listener) {
+    return createMenuItemSelectable(new JCheckBoxMenuItem(), name, init, listener);
+  }
+  JMenuItem menuItemRadio(String name, boolean init) {
+    return createMenuItemSelectable(new JRadioButtonMenuItem(), name, init, null);
+  }
+  JMenuItem menuItemRadio(String name, boolean init, ActionListener listener) {
+    return createMenuItemSelectable(new JRadioButtonMenuItem(), name, init, listener);
+  }
+  
+  JMenuItem createMenuItemSelectable(JMenuItem item, String name, boolean init, ActionListener listener) {
     item.setText(name);
     item.setSelected(init);
+    if (listener != null) {
+      item.addActionListener(listener);
+    }
     return item;
   }
 }
