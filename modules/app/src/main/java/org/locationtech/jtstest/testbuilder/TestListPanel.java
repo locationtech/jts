@@ -61,7 +61,6 @@ public class TestListPanel extends JPanel {
             Testable testCase = (Testable) value;
             setText(testName(testCase));
             setOpaque(true);
-            setIcon(testCase.isPassed() ? tickIcon : (testCase.isFailed() ? crossIcon : clearIcon));
             if (isSelected) {
                 setBackground(list.getSelectionBackground());
                 setForeground(list.getSelectionForeground());

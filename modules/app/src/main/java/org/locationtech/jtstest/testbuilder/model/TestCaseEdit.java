@@ -74,10 +74,6 @@ public class TestCaseEdit implements Testable {
     testable.setGeometry(i, geom);
   }
 
-  public void setIntersectionMatrix(IntersectionMatrix im) {
-    testable.setIntersectionMatrix(im);
-  }
-
   public void setName(String name) {
     testable.setName(name);
   }
@@ -96,59 +92,16 @@ public class TestCaseEdit implements Testable {
   
   public void setOpName(String name) { opName = name; }
   
-  public void setExpectedIntersectionMatrix(String expectedIntersectionMatrix) {
-    testable.setExpectedIntersectionMatrix(expectedIntersectionMatrix);
-  }
-
-  public void setExpectedConvexHull(Geometry expectedConvexHull) {
-    testable.setExpectedConvexHull(expectedConvexHull);
-  }
-
-  public void setExpectedBoundary(Geometry expectedBoundary) {
-    testable.setExpectedBoundary(expectedBoundary);
-  }
-
-  public void setExpectedIntersection(Geometry expectedIntersection) {
-    testable.setExpectedIntersection(expectedIntersection);
-  }
-
-  public void setExpectedUnion(Geometry expectedUnion) {
-    testable.setExpectedUnion(expectedUnion);
-  }
-
-  public void setExpectedDifference(Geometry expectedDifference) {
-    testable.setExpectedDifference(expectedDifference);
-  }
-
-  public void setExpectedSymDifference(Geometry expectedSymDifference) {
-    testable.setExpectedSymDifference(expectedSymDifference);
-  }
-
-  public void setExpectedCentroid(Geometry expectedCentroid) {
-    testable.setExpectedCentroid(expectedCentroid);
-  }
-
   public Geometry getGeometry(int i) {
 //    return geom[i];
     return testable.getGeometry(i);
   }
 
-  public IntersectionMatrix getIM() {
-    runRelate();
-    return testable.getIntersectionMatrix();
-  }
 
   public Testable getTestable() {
     return testable;
   }
 
-  public boolean isFailed() {
-    return testable.isFailed();
-  }
-
-  public String getFailedMsg() {
-    return testable.getFailedMsg();
-  }
 
   public String getName() {
     return testable.getName();
@@ -158,44 +111,15 @@ public class TestCaseEdit implements Testable {
     return testable.getIntersectionMatrix();
   }
 
+  public void setIntersectionMatrix(IntersectionMatrix im) {
+    testable.setIntersectionMatrix(im);
+  }
   public String getDescription() {
     return testable.getDescription();
   }
 
-  public boolean isPassed() {
-    return testable.isPassed();
-  }
-
   public String getWellKnownText(int i) {
     return testable.getWellKnownText(i);
-  }
-
-  public String getExpectedIntersectionMatrix() {
-    return testable.getExpectedIntersectionMatrix();
-  }
-
-  public Geometry getExpectedConvexHull() {
-    return testable.getExpectedConvexHull();
-  }
-
-  public Geometry getExpectedBoundary() {
-    return testable.getExpectedBoundary();
-  }
-
-  public Geometry getExpectedIntersection() {
-    return testable.getExpectedIntersection();
-  }
-
-  public Geometry getExpectedUnion() {
-    return testable.getExpectedUnion();
-  }
-
-  public Geometry getExpectedDifference() {
-    return testable.getExpectedDifference();
-  }
-
-  public Geometry getExpectedSymDifference() {
-    return testable.getExpectedSymDifference();
   }
 
   public void exchange() 
@@ -203,10 +127,6 @@ public class TestCaseEdit implements Testable {
     Geometry temp = testable.getGeometry(0);
     testable.setGeometry(0, testable.getGeometry(1));
     testable.setGeometry(1, temp);
-  }
-
-  public void runTest() throws ParseException {
-    testable.runTest();
   }
 
   public void initGeometry() throws ParseException {
@@ -219,6 +139,11 @@ public class TestCaseEdit implements Testable {
         };
   }
 
+  public IntersectionMatrix getIM() {
+    runRelate();
+    return testable.getIntersectionMatrix();
+  }
+  
   void runRelate() {
     Geometry[] geom = getGeometries();
     if (geom[0] == null || geom[1] == null) {

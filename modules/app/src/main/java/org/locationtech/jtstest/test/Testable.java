@@ -23,14 +23,6 @@ import org.locationtech.jts.io.ParseException;
  */
 public interface Testable {
 
-  boolean isFailed();
-
-
-  String getFailedMsg();
-
-
-  void runTest() throws ParseException;
-
 
   String getName();
 
@@ -44,66 +36,15 @@ public interface Testable {
   IntersectionMatrix getIntersectionMatrix();
 
 
-  String getExpectedIntersectionMatrix();
-
-
   void setIntersectionMatrix(IntersectionMatrix im);
-
-
-  void setExpectedIntersectionMatrix(String expectedIntersectionMatrix);
-
 
   void initGeometry() throws ParseException;
 
-
   String getDescription();
-
-
-  boolean isPassed();
-
 
   String getWellKnownText(int i);
 
-
   void setName(String name);
 
-
-  void setExpectedConvexHull(Geometry expectedConvexHull);
-
-
-  void setExpectedBoundary(Geometry boundary);
-
-
-  void setExpectedIntersection(Geometry expectedIntersection);
-
-
-  void setExpectedUnion(Geometry expectedUnion);
-
-
-  void setExpectedDifference(Geometry expectedDifference);
-
-
-  void setExpectedSymDifference(Geometry expectedSymDifference);
-
-  void setExpectedCentroid(Geometry expectedCentroid);
-  //void setExpectedInteriorPoint(Geometry expectedCentroid);
-
-
-  Geometry getExpectedConvexHull();
-
-
-  Geometry getExpectedBoundary();
-
-
-  Geometry getExpectedIntersection();
-
-
-  Geometry getExpectedUnion();
-
-
-  Geometry getExpectedDifference();
-
-
-  Geometry getExpectedSymDifference();
 }
 
