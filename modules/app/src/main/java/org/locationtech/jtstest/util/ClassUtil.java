@@ -67,4 +67,37 @@ public class ClassUtil
     return result;
   }
 
+  public static boolean isNumber(Class clz) {
+    if (clz == Double.class) return true;
+    if (clz == double.class) return true;
+    if (clz == Integer.class) return true;
+    if (clz == int.class) return true;
+    return false;
+  }
+  
+  /**
+   * Converts a number-like object to a Double.
+   * If the object cannot be converted null is returned.
+   * 
+   * @param o a number-like object
+   * @return the value of the number, or null
+   */
+  public static Double toDouble(Object o) {
+    double d = 0;
+    try {
+      // get Java to figure out the conversion to double
+      d = (Double) o;
+    //  d = ((Number) o).doubleValue();
+    } catch (ClassCastException e) {
+      return null;
+    }
+    return new Double(d);
+  }
+
+  public static boolean isDouble(Class clz) {
+    if (clz == Double.class) return true;
+    if (clz == double.class) return true;
+    return false;
+  }
+
 }
