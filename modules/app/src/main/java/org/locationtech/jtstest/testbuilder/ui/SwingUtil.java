@@ -228,4 +228,13 @@ public class SwingUtil {
     return btn;
   }
 
+  public static JButton createButton(String title, String tip, ActionListener action ) {
+    JButton btn = new JButton();
+    btn.setText(title);
+    if (tip != null) btn.setToolTipText(tip);
+    //btn.setMargin(new Insets(0, 0, 0, 0));
+    if (action != null) btn.addActionListener(action);
+    return btn;
+  }
+
 }

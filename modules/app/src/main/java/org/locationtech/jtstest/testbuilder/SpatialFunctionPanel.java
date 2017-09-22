@@ -11,25 +11,38 @@
  */
 package org.locationtech.jtstest.testbuilder;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.util.Vector;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.util.Stopwatch;
-import org.locationtech.jtstest.function.*;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
+import org.locationtech.jtstest.geomfunction.RepeaterGeometryFunction;
 import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionEvent;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelListener;
-import org.locationtech.jtstest.testbuilder.ui.*;
+import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 
 
 /**
@@ -97,6 +110,8 @@ extends JPanel
   
   private GeometryFunction currentFunc = null;
   private Stopwatch timer;
+
+  private JButton btnRepeat;
   
   public SpatialFunctionPanel() {
     try {
@@ -180,6 +195,12 @@ extends JPanel
     panelControl.add(displayAAndBCheckBox, null);
     //panelControl.add(btnClearResult, null);
     
+    final JTextField txtRepeatCount = new JTextField();
+    txtRepeatCount.setMaximumSize(new Dimension(25, 2147483647));
+    txtRepeatCount.setMinimumSize(new Dimension(30, 21));
+    txtRepeatCount.setPreferredSize(new Dimension(30, 21));
+    txtRepeatCount.setText("10");
+    txtRepeatCount.setHorizontalAlignment(SwingConstants.RIGHT);    
     execButton.setText("Compute");
     execButton.addActionListener(new java.awt.event.ActionListener() {
 
@@ -196,9 +217,22 @@ extends JPanel
       }
     });
     
+    btnRepeat = SwingUtil.createButton("Repeat", "Repeat function a number of times, incrementing the first parameter", 
+        new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        int count = SwingUtil.getInteger(txtRepeatCount, 10);
+        execRepeatFunction(count);
+      }
+    });
+    // until we know what the function is
+    btnRepeat.setEnabled(false);
+
+
     panelExec.add(execButton);
     // disabled until behaviour is worked out
     panelExec.add(execToNewButton);
+    panelExec.add(btnRepeat);
+    panelExec.add(txtRepeatCount);
     
     panelExecParam.add(panelExec, BorderLayout.NORTH);
     panelExecParam.add(panelParam, BorderLayout.CENTER);
@@ -235,6 +269,13 @@ extends JPanel
     execFunction(geomFuncPanel.getFunction(), true);
   }
 
+  void execRepeatFunction(int count) {
+
+    GeometryFunction f = geomFuncPanel.getFunction();
+    RepeaterGeometryFunction fRepeat = new RepeaterGeometryFunction(f, count);
+    execFunction(fRepeat, false);
+  }
+
   void displayAAndBCheckBox_actionPerformed(ActionEvent e) {
     JTSTestBuilderController.getGeometryEditPanel().setShowingInput(displayAAndBCheckBox.isSelected());
   }
@@ -257,6 +298,7 @@ extends JPanel
     currentFunc = func;
     updateParameters(func, paramComp, paramLabel);
     execButton.setToolTipText( GeometryFunctionRegistry.functionDescriptionHTML(func) );
+    btnRepeat.setEnabled(RepeaterGeometryFunction.isRepeatable(func));
   }
  
   
