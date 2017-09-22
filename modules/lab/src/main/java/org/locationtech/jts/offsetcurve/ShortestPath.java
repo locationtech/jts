@@ -19,10 +19,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Stack;
 
+import org.locationtech.jts.edgegraph.EdgeGraph;
 import org.locationtech.jts.edgegraph.HalfEdge;
-import org.locationtech.jts.edgegraph.MarkHalfEdge;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -74,16 +73,14 @@ public class ShortestPath
   private GeometryFactory factory;
   
   //TODO: Is an EdgeGraph the most efficient structure for line sets which probably contain many long sequences of segments?
-  private LineEdgeGraph graph;
-  private List lines = new ArrayList();
+  private EdgeGraph graph;
   private Node startNode;
   private Node endNode;
-  //private Set<Node> unvisited = new HashSet();
   private HashMap<Coordinate, Node> nodeMap = new HashMap<Coordinate, Node>();
 
   public ShortestPath()
   {
-    graph = new LineEdgeGraph();
+    graph = new EdgeGraph();
   }
   
   /**
@@ -188,7 +185,6 @@ public class ShortestPath
       currentNode.setMark(true);
       uncommitted.remove(currentNode);
       updateNeighbours(currentNode, uncommitted);
-      //uncommitted.addAll(neighbours);
       
       // TODO: linear search - speed up with priority queue?
       currentNode = nearest(uncommitted);
@@ -204,7 +200,6 @@ public class ShortestPath
   }
 
   private void updateNeighbours(Node currentNode, Set<Node> uncommitted) {
-    //List<Node> neighbours = new ArrayList<Node>();
     HalfEdge start = currentNode.edge();
     double distCurr = currentNode.getDistance();
     HalfEdge next = start;
@@ -217,12 +212,9 @@ public class ShortestPath
           n.setDistance(dist);
           n.setNearestOnPath(currentNode);
         }
-        //neighbours.add(n);
       }
       next = next.oNext();
     } while (next != start);
-    //return neighbours;
-    
   }
 
   private Node findNode(Coordinate dest) {
