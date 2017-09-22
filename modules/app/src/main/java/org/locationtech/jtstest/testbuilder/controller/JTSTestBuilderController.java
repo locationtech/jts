@@ -17,8 +17,10 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
+import org.locationtech.jtstest.testbuilder.JTSTestBuilderToolBar;
 import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
+import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 
 
@@ -96,39 +98,39 @@ public class JTSTestBuilderController
   
   public static void addTestCase(Geometry[] geom, String name)
   {
-    JTSTestBuilderFrame.instance().getModel().addCase(geom, name);
+    model().addCase(geom, name);
     JTSTestBuilderFrame.instance().updateTestCases();
   }
   
   public static void extractComponentsToTestCase(Coordinate pt)
   {
     double toleranceInModel = getGeometryEditPanel().getToleranceInModel();
-    LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
+    LayerList lyrList = model().getLayers();
     Geometry comp = lyrList.getComponent(pt, toleranceInModel);
     if (comp == null) 
       return;
-    JTSTestBuilderFrame.instance().getModel().addCase(new Geometry[] { comp, null });
+    model().addCase(new Geometry[] { comp, null });
     JTSTestBuilderFrame.instance().updateTestCases();
   }
   
   public static void extractComponentsToTestCase(Geometry aoi)
   {
     //double toleranceInModel = JTSTestBuilderFrame.getGeometryEditPanel().getToleranceInModel();
-    LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
+    LayerList lyrList = model().getLayers();
     Geometry[] comp = lyrList.getComponents(aoi);
     if (comp == null) 
       return;
-    JTSTestBuilderFrame.instance().getModel().addCase(comp);
+    model().addCase(comp);
     JTSTestBuilderFrame.instance().updateTestCases();
-    JTSTestBuilderFrame.instance().getToolbar().clearToolButtons();
-    JTSTestBuilderFrame.instance().getToolbar().unselectExtractComponentButton();
-    JTSTestBuilderFrame.instance().getGeometryEditPanel().setCurrentTool(null);
+    toolbar().clearToolButtons();
+    toolbar().unselectExtractComponentButton();
+    editPanel().setCurrentTool(null);
   }
-  
+
   public static void copyComponentToClipboard(Coordinate pt)
   {
     double toleranceInModel = getGeometryEditPanel().getToleranceInModel();
-    LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
+    LayerList lyrList = model().getLayers();
     Geometry comp = lyrList.getComponent(pt, toleranceInModel);
     if (comp == null) 
       return;
@@ -136,8 +138,8 @@ public class JTSTestBuilderController
   }
   
   public static void setFocusGeometry(int index) {
-    JTSTestBuilderFrame.instance().getModel().getGeometryEditModel().setEditGeomIndex(index);
-    JTSTestBuilderFrame.instance().getToolbar().setFocusGeometry(index);    
+    model().getGeometryEditModel().setEditGeomIndex(index);
+    toolbar().setFocusGeometry(index);    
   }
 
   public static void inspectGeometry()
@@ -152,5 +154,23 @@ public class JTSTestBuilderController
   {
     JTSTestBuilderFrame.instance().actionInspectGeometryDialog();
   }
+  public static void clearResult()
+  {
+    JTSTestBuilderFrame.instance().getResultWKTPanel().clearResult();
+    model().setResult(null);
+    editPanel().updateView();
+  }
+
+  private static TestBuilderModel model() {
+    return JTSTestBuilderFrame.instance().getModel();
+  }
+  private static GeometryEditPanel editPanel() {
+    return JTSTestBuilderFrame.instance().getGeometryEditPanel();
+  }
+
+  private static JTSTestBuilderToolBar toolbar() {
+    return JTSTestBuilderFrame.instance().getToolbar();
+  }
+  
 
 }

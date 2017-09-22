@@ -13,12 +13,16 @@
 package org.locationtech.jtstest.testbuilder.ui;
 
 import java.awt.Component;
+import java.awt.Insets;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.util.Collection;
 import java.awt.datatransfer.*;
+import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -213,6 +217,15 @@ public class SwingUtil {
     JOptionPane.showMessageDialog(c, StringUtil.wrap(e.toString(), 80), "Exception",
         JOptionPane.ERROR_MESSAGE);
     e.printStackTrace(System.out);
+  }
+
+  public static JButton createButton(ImageIcon icon, String tip, ActionListener action ) {
+    JButton btn = new JButton();
+    btn.setToolTipText(tip);
+    btn.setIcon(icon);
+    btn.setMargin(new Insets(0, 0, 0, 0));
+    if (action != null) btn.addActionListener(action);
+    return btn;
   }
 
 }

@@ -20,6 +20,7 @@ import javax.swing.*;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.util.*;
+import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.model.*;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.util.*;
@@ -54,6 +55,7 @@ extends JPanel
 	
   private final ImageIcon copyIcon = new ImageIcon(this.getClass().getResource("Copy.png"));
   private final ImageIcon copyToTestIcon = new ImageIcon(this.getClass().getResource("CopyToTest.png"));
+  private final ImageIcon clearIcon = new ImageIcon(this.getClass().getResource("Delete_small.png"));
 	
 	public ResultWKTPanel() {
 		try {
@@ -69,20 +71,33 @@ extends JPanel
    
     jScrollPane1.setBorder(BorderFactory.createLoweredBevelBorder());
     
-    copyButton.setToolTipText("Copy Result (Ctl-click for formatted)");
-    copyButton.setIcon(copyIcon);
-    copyButton.setMargin(new Insets(0, 0, 0, 0));
+    JButton copyButton = SwingUtil.createButton(copyIcon, "Copy Result (Ctl-click for formatted)", 
+        new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        rCopyButton_actionPerformed(e);
+      }
+    });
+    JButton copyToTestButton = SwingUtil.createButton(copyToTestIcon, "Copy Result to new Test",
+        new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        JTSTestBuilderFrame.instance().copyResultToTest();
+      }
+    });
+    JButton btnClearResult = SwingUtil.createButton(clearIcon, "Clear Result",         
+        new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        JTSTestBuilderController.clearResult();
+      }
+    });
+
     
-    copyToTestButton.setToolTipText("Copy Result to new Test");
-    copyToTestButton.setIcon(copyToTestIcon);
-    copyToTestButton.setMargin(new Insets(0, 0, 0, 0));
-    
-    rButtonPanelLayout = new GridLayout(2,1);
+    rButtonPanelLayout = new GridLayout(3,1);
     rButtonPanelLayout.setVgap(1);
     rButtonPanelLayout.setHgap(1);
     rButtonPanel.setLayout(rButtonPanelLayout);
     rButtonPanel.add(copyButton);
     rButtonPanel.add(copyToTestButton);
+    rButtonPanel.add(btnClearResult);
     
     rPanel.setLayout(rPanelLayout);
     rPanel.add(rButtonPanel, BorderLayout.NORTH);
@@ -119,22 +134,10 @@ extends JPanel
     
     
     jScrollPane1.getViewport().add(txtResult, null);
-    
-    copyButton.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            rCopyButton_actionPerformed(e);
-          }
-        });
-    copyToTestButton.addActionListener(
-        new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            copyToTestButton_actionPerformed(e);
-          }
-        });
+
   }
-  
-	public void setModel(TestBuilderModel tbModel)
+
+  public void setModel(TestBuilderModel tbModel)
 	{
 		this.tbModel = tbModel;
 	}
