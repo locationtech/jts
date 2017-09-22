@@ -178,7 +178,7 @@ extends JPanel
     panelParam.add(txtMitreLimit);
 
     panelControl.add(displayAAndBCheckBox, null);
-    panelControl.add(btnClearResult, null);
+    //panelControl.add(btnClearResult, null);
     
     execButton.setText("Compute");
     execButton.addActionListener(new java.awt.event.ActionListener() {
