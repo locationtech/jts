@@ -1,6 +1,7 @@
 package org.locationtech.jtstest.geomfunction;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jtstest.function.FunctionsUtil;
 import org.locationtech.jtstest.util.ClassUtil;
 
 public class RepeaterGeometryFunction implements GeometryFunction {
@@ -48,8 +49,9 @@ public class RepeaterGeometryFunction implements GeometryFunction {
     }
     
     //TODO: handle repeating methods with integer arg
-    Double argBase = ClassUtil.toDouble(args[0]);
-    return invokeRepeated(geom, args, argBase);
+    int repeatArgIndex = repeatableArgIndex(fun);
+    Double argStart = ClassUtil.toDouble(args[repeatArgIndex]);
+    return invokeRepeated(geom, args, argStart);
   }
 
   public static boolean isRepeatable(GeometryFunction fun) {
@@ -58,7 +60,9 @@ public class RepeaterGeometryFunction implements GeometryFunction {
     Class[] paramType = fun.getParameterTypes();
     // nothing to change by repeating
     if (paramType.length < 1) return false;
-    if (! ClassUtil.isDouble(paramType[0])) return false;
+    int repeatArgIndex = repeatableArgIndex(fun);
+    Class type = paramType[repeatArgIndex];
+    if (! ClassUtil.isDouble(type)) return false;
     
     /*
     Double argBase = ClassUtil.toDouble(args[0]);
@@ -68,23 +72,33 @@ public class RepeaterGeometryFunction implements GeometryFunction {
     return true;
   }
 
-  private Object invokeRepeated(Geometry geom, Object[] args, double argBase) {
+  public static int repeatableArgIndex(GeometryFunction fun) {
+    if (fun.isBinary()) return 1;
+    return 0;
+  }
+  private Object invokeRepeated(Geometry geom, Object[] args, double argStart) {
     Geometry[] results = new Geometry[count];
+    int repeatArgIndex = repeatableArgIndex(fun);
     for (int i = 1; i <= count; i++) {
-      double val = argBase * i;
-      Geometry result = (Geometry) fun.invoke(geom, copyArgs(args, val));
+      double val = argStart * i;
+      Geometry result = (Geometry) fun.invoke(geom, copyArgs(args, repeatArgIndex, val));
+      FunctionsUtil.showIndicator(result);
       results[i-1] = result;
     }
     return geom.getFactory().createGeometryCollection(results);
   }
 
-  private Object[] copyArgs(Object[] args, double val) {
-    Object[] newArgs = new Object[args.length];
-    args[0] = val;
-    for (int i = 1; i < args.length; i++) {
+  private Object[] copyArgs(Object[] args, int replaceIndex, double val) {
+    Object[] newArgs = args.clone();
+    
+    /*
+    //Object[] newArgs = new Object[args.length];
+    for (int i = 0; i < args.length; i++) {
       newArgs[i] = args[i];
     }
-    return args;
+    */
+    newArgs[replaceIndex] = val;
+    return newArgs;
   }
 
   public boolean isBinary() {
