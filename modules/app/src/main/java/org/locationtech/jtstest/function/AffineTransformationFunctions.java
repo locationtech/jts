@@ -110,10 +110,36 @@ public class AffineTransformationFunctions
     return trans.transform(g);    
   }
   
+  public static Geometry rotateByPiMultipleAroundPoint(Geometry g, Geometry pt, double multipleOfPi)
+  {
+    Coordinate loc;
+    if (pt == null) {
+      loc = new Coordinate(0,0);
+    }
+    else {
+      loc = pt.getCoordinates()[0];
+    }
+    AffineTransformation trans = AffineTransformation.rotationInstance(multipleOfPi * Math.PI, loc.x, loc.y);
+    return trans.transform(g);    
+  }
+  
   public static Geometry rotate(Geometry g, double angle)
   {
     Coordinate centre = envelopeCentre(g);
     AffineTransformation trans = AffineTransformation.rotationInstance(angle, centre.x, centre.y);
+    return trans.transform(g);    
+  }
+  
+  public static Geometry rotateAroundPoint(Geometry g, Geometry pt, double angle)
+  {
+    Coordinate loc;
+    if (pt == null) {
+      loc = new Coordinate(0,0);
+    }
+    else {
+      loc = pt.getCoordinates()[0];
+    }
+    AffineTransformation trans = AffineTransformation.rotationInstance(angle, loc.x, loc.y);
     return trans.transform(g);    
   }
   
