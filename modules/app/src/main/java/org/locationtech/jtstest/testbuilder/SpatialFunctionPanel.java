@@ -17,6 +17,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Vector;
 
 import javax.swing.ComboBoxModel;
@@ -200,25 +201,24 @@ extends JPanel
     txtRepeatCount.setMinimumSize(new Dimension(30, 21));
     txtRepeatCount.setPreferredSize(new Dimension(30, 21));
     txtRepeatCount.setText("10");
-    txtRepeatCount.setHorizontalAlignment(SwingConstants.RIGHT);    
-    execButton.setText("Compute");
-    execButton.addActionListener(new java.awt.event.ActionListener() {
-
+    txtRepeatCount.setHorizontalAlignment(SwingConstants.RIGHT); 
+    
+    execButton = SwingUtil.createButton("Compute", "Compute the result of the function",
+        new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         execButton_actionPerformed(e);
       }
     });
     
-    execToNewButton.setText("Compute New");
-    execToNewButton.addActionListener(new java.awt.event.ActionListener() {
-
+    execToNewButton = SwingUtil.createButton("Compute New", "Compute function result to a new case",
+        new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         execToNewButton_actionPerformed(e);
       }
     });
     
     btnRepeat = SwingUtil.createButton("Repeat", "Repeat function a number of times, incrementing the first parameter", 
-        new java.awt.event.ActionListener() {
+        new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         int count = SwingUtil.getInteger(txtRepeatCount, 10);
         execRepeatFunction(count);
@@ -254,7 +254,9 @@ extends JPanel
 
   public void enableExecuteControl(boolean isEnabled)
   {
-  	execButton.setEnabled(isEnabled);
+    execButton.setEnabled(isEnabled);
+    execToNewButton.setEnabled(isEnabled);
+    btnRepeat.setEnabled(isEnabled);
   }
   
   void clearResultButton_actionPerformed(ActionEvent e) {
