@@ -168,4 +168,7 @@ public class BufferFunctions {
     });
   }
 
+  public static Geometry bufferAndInverse(Geometry g, double distance) {
+    return g.buffer(distance).buffer(-distance);
+  }
 }
