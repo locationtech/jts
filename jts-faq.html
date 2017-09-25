@@ -56,13 +56,16 @@
           <li><a href="#D9">How can I prevent TopologyExceptions or incorrect
               results in overlay operations?</a></li>
         </ol>
+		
         <li><a href="#algorithms">Algorithms </a> </li>
         <ol>
           <li><a href="#E1">Are there any references which describe the
               algorithms used in JTS? </a> </li>
           <li><a href="#E2">Is there a skeletonization algorithm which works
               with JTS?</a> </li>
+          <li><a href="#E3">How can JTS split a polygon with a linestring?</a> </li>
         </ol>
+		
         <li><a href="#geodetic_operations">Geodetic Operations</a> </li>
         <ol>
           <li><a href="#F1">Does JTS support computation on the geodetic
@@ -411,8 +414,19 @@
         <li>Vatti, B.R. <strong>A Generic Solution to Polygon Clipping</strong>;
           <em>Communications of the ACM, 35(7), July 1992, pp.56-63. </em></li>
       </ul>
+	  
       <h3>2. Is there a skeletonization algorithm which works with JTS?<a name="E2"></a></h3>
       Yes. See the Refractions Research Skeletonizer <br>
+	  
+<h3>3. How can JTS split a polygon with a linestring?<a name="E3"></a></h3>
+Currently JTS does not contain a <b>Split Polygon By Line</b> operation.  
+Thus the only way to do this is to construct a "splitting" polygon which contains the linestring
+and surrounds one side of the target polygon without touching it.  
+Then the overlay operations <code>intersection</code> and <code>difference</code>
+can be used to extract the two sides of the target polygon.
+Constructing the splitting polygon is obviously easier when the linestring is a straight line;
+and simplest if it is horizontal or vertical.
+	  
       <h2>F. Geodetic Operations<a name="geodetic_operations"></a></h2>
       <h3>1. Does JTS support computation on the geodetic ellipsoid?<a name="F1"></a></h3>
       No. JTS currently assumes that geometries are defined in a Cartesian,
