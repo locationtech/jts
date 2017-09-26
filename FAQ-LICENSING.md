@@ -1,7 +1,8 @@
 # JTS License FAQ
 
-This FAQ clarifies the implications of the JTS dual-license 
-(described here).
+This FAQ clarifies the implications of the JTS software licensing.
+JTS is dual-licensed under the EDL and EPL 
+(as described [here](LICENSES.md).
 
 ## Terminology
 
@@ -12,9 +13,9 @@ This FAQ clarifies the implications of the JTS dual-license
 
 ## Licensing Frequently Asked Questions
 
-1. What is the difference between EDL and BSD-3?
+1. **What is the difference between EDL and BSD-3?**
 
-BSD-3 is a license **family**.  EDL is the actual license and is called that because Eclipse is the distributing organization.
+  BSD-3 is a license **family**.  EDL is the actual license and is called that because Eclipse is the distributing organization.
 
 1. **JTS no longer uses LGPL.  What does this mean for downstream projects?**
 
