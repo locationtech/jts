@@ -6,8 +6,6 @@ as described [here](LICENSES.md).
 
 ## Terminology
 
-**Downstream projects** includes the following:
-
 * **Downstream projects** are codebases which link to JTS libraries
   * e.g. GeoTools, GeoServer, etc.
 * **Derivative projects** are ports of JTS to other languages 
