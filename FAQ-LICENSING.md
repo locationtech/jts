@@ -2,7 +2,7 @@
 
 This FAQ clarifies the implications of the JTS software licensing.
 JTS is dual-licensed under the EDL and EPL 
-(as described [here](LICENSES.md).
+as described [here](LICENSES.md).
 
 ## Terminology
 
@@ -13,11 +13,11 @@ JTS is dual-licensed under the EDL and EPL
 
 ## Licensing Frequently Asked Questions
 
-1. **What is the difference between EDL and BSD-3?**
+A1. **What is the difference between EDL and BSD-3?**
 
   BSD-3 is a license **family**.  EDL is the actual license and is called that because Eclipse is the distributing organization.
 
-1. **JTS no longer uses LGPL.  What does this mean for downstream projects?**
+A2. **JTS no longer uses LGPL.  What does this mean for downstream projects?**
 
 JTS is now released under a dual license: EDL and EPL.  
 Dual-licensing gives downstream projects more options:
@@ -27,14 +27,15 @@ Dual-licensing gives downstream projects more options:
   
 * The EPL license provideds a similar permissiveness to LGPL with different wording around patents
 
-1. **But I thought LGPL and EPL do not mix? How does this effect the LGPL GEOS project?**
+A3. **But I thought LGPL and EPL do not mix? How does this effect the LGPL GEOS project?**
 
 For use of JTS by an LGPL project like GEOS:
 
-Please use the BSD-3 License (the BSD-3 License is compatible with the LGPL license used by GEOS).
-Long term the EPL license is being revised to work with GPL / LGPL allowing GEOS the choice of BSD-3 or EPL license.
+Use the BSD-3 License (the BSD-3 License is compatible with the LGPL license used by GEOS).
 
-1. How can an LGPL-licensed project (such as GEOS) contribute code to JTS?
+In the longer term the EPL license is being revised to work with GPL / LGPL, allowing GEOS the choice of either BSD-3 or EPL license.
+
+A4. **How can an LGPL-licensed project (such as GEOS) contribute code to JTS?**
 
 From the JTS perspective this works in the same way as any other contribution.  
 The contributor must have an Eclipse Contributor License Agreement (CLA) in place (see here).
