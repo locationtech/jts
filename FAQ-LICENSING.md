@@ -1,8 +1,9 @@
 # JTS License FAQ
 
-This FAQ clarifies the implications of the JTS software licensing.
 JTS is dual-licensed under the EDL and EPL 
 as described [here](LICENSES.md).
+
+This FAQ clarifies the implications of the JTS software licensing.
 
 ## Terminology
 
