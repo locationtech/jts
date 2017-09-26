@@ -25,10 +25,10 @@ A2. **JTS no longer uses LGPL.  What does this mean for downstream projects?**
 JTS is now released under a dual license: EDL and EPL.  
 Dual-licensing gives downstream projects more options:
 
-* EDL is a BSD-3-style license, which is more permissive than the LGPL.  
+* The **EDL** is a BSD-3-style license, which is more permissive than the LGPL.  
   This allows a wider variety of uses; for instance, it permits iOS use of JTS for mobile development.
   
-* The EPL license provideds a similar permissiveness to LGPL with different wording around patents
+* The **EPL** provides a similar permissiveness to LGPL with different wording around patents
 
 A3. **But I thought LGPL and EPL do not mix? How does this effect derivative projects (like the LGPL GEOS project)?**
 
@@ -40,7 +40,7 @@ This will allow derivative projects like GEOS the choice of using either BSD-3-s
 A4. **How can an LGPL-licensed project (such as GEOS) contribute code to JTS?**
 
 From the JTS perspective this works in the same way as any other contribution.  
-The contributor must have an Eclipse Contributor License Agreement (CLA) in place.  
+The contributor must have an Eclipse *Contributor License Agreement* (CLA) in place.  
 For details see the [**Contributing Guide**](CONTRIBUTING.md).
 
 Code contributed to JTS must be releasable under the EDL & EPL licenses.
