@@ -1,8 +1,8 @@
-# About the JTS Topology Suite
+# JTS Topology Suite Licensing
 
 May 30th, 2017
 
-## Licenses
+## Project Licenses
 
 The Eclipse Foundation makes available all content in this project ("Content"). Unless otherwise indicated below, the Content is provided to you under the terms and conditions of either the [Eclipse Public License 1.0](https://www.eclipse.org/legal/epl-v10.html) ("EPL") or the [Eclipse Distribution License 1.0](http://www.eclipse.org/org/documents/edl-v10.php) (a BSD Style License).  For purposes of the EPL, "Program" will mean the Content.
 
