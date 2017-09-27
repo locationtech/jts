@@ -12,10 +12,12 @@
  */
 
 package org.locationtech.jts.algorithm;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 
 import junit.framework.TestCase;
 
@@ -137,6 +139,25 @@ public class RobustLineIntersectorTest extends TestCase {
     assertTrue(i.hasIntersection());
     assertEquals(1, i.getIntersectionNum());
     assertTrue(! i.isProper());
+  }
+
+  public void testIsProper3() {
+	    i.computeIntersection(new Coordinate(152593, 594973), new Coordinate(152622, 594946),
+	        new Coordinate(152503, 594904), new Coordinate(152609.01464968, 594958.08980892));
+	    assertTrue(i.hasIntersection());
+	    assertEquals(1, i.getIntersectionNum());
+	    // this should actually be false!
+	    assertTrue(i.isProper());
+
+	    i.setPrecisionModel(new PrecisionModel(100000000));
+	    i.computeIntersection(new Coordinate(152593, 594973), new Coordinate(152622, 594946),
+		        new Coordinate(152503, 594904), new Coordinate(152609.01464968, 594958.08980892));
+		    assertTrue(i.hasIntersection());
+		    assertEquals(1, i.getIntersectionNum());
+	    assertTrue(!i.isProper());
+
+	    i.setPrecisionModel(null);
+  
   }
 
   public void testIsCCW() {

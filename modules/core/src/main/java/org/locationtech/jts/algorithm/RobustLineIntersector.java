@@ -140,12 +140,25 @@ public class RobustLineIntersector
       }
     }
     else {
-      isProper = true;
       intPt[0] = intersection(p1, p2, q1, q2);
+      isProper = precisionModel != null
+    		  ? checkProper(intPt[0], p1, p2, q1, q2)
+			  : true;
     }
     return POINT_INTERSECTION;
   }
 
+  private static boolean checkProper(Coordinate intPt,
+		  Coordinate p1, Coordinate p2,
+		  Coordinate q1, Coordinate q2)
+  {
+	  if (intPt.equals2D(p1)) return false;
+	  if (intPt.equals2D(p2)) return false;
+	  if (intPt.equals2D(q1)) return false;
+	  if (intPt.equals2D(q2)) return false;
+	  return true;
+  }
+  
   private int computeCollinearIntersection(Coordinate p1, Coordinate p2,
       Coordinate q1, Coordinate q2) {
     boolean p1q1p2 = Envelope.intersects(p1, p2, q1);

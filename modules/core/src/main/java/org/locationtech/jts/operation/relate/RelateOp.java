@@ -15,9 +15,14 @@
 package org.locationtech.jts.operation.relate;
 
 import org.locationtech.jts.algorithm.BoundaryNodeRule;
+import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.IntersectionMatrix;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.geomgraph.GeometryGraph;
 import org.locationtech.jts.operation.GeometryGraphOperation;
+import org.locationtech.jts.util.Debug;
 
 /**
  * Implements the SFS <tt>relate()</tt> generalized spatial predicate on two {@link Geometry}s.
@@ -75,7 +80,9 @@ public class RelateOp
   }
 
   private RelateComputer relate;
-
+  private PrecisionModel precisionModel;
+  private Geometry geom0, geom1;
+  
   /**
    * Creates a new Relate operation, using the default (OGC SFS) Boundary Node Rule.
    *
@@ -85,7 +92,8 @@ public class RelateOp
   public RelateOp(Geometry g0, Geometry g1)
   {
     super(g0, g1);
-    relate = new RelateComputer(arg);
+    geom0 = g0;
+    geom1 = g1;
   }
 
   /**
@@ -98,18 +106,56 @@ public class RelateOp
   public RelateOp(Geometry g0, Geometry g1, BoundaryNodeRule boundaryNodeRule)
   {
     super(g0, g1, boundaryNodeRule);
-    relate = new RelateComputer(arg);
+    geom0 = g0;
+    geom1 = g1;
   }
 
   /**
-   * Gets the IntersectionMatrix for the spatial relationship
+   * Gets the DE-9IM {@link IntersectionMatrix} for the spatial relationship
    * between the input geometries.
    *
-   * @return the IntersectionMatrix for the spatial relationship between the input geometries
+   * @return the {@link IntersectionMatrix} for the spatial relationship between the input geometries
    */
   public IntersectionMatrix getIntersectionMatrix()
+    throws TopologyException
   {
-    return relate.computeIM();
+    IntersectionMatrix im = null;
+    if (relate == null) 
+      relate = new RelateComputer(arg, precisionModel);
+
+    try {
+      im = relate.computeIM();
+    }
+    catch(TopologyException tex)
+    {
+      // if we don't have a fixed precision model, there is 
+      // currently nothing we can do about it.
+      if (precisionModel == null || 
+          precisionModel.getType() != PrecisionModel.FIXED ||
+          (precisionModel.getType() == PrecisionModel.FIXED && 
+           precisionModel.getScale() > 1.0e15))
+        throw tex;
+      
+      Debug.println(
+          "RelateOp.getIntersectionMatrix threw TopologyException using "+ precisionModel.toString() + "\n" +
+          "Attempting to fix that with a more precise PrecisionModel");
+      
+      // We have a fixed precision model, let's see if increasing
+      // the precision helps.
+      RelateOp ro = new RelateOp(geom0, geom1);
+      ro.setPrecisionModel(
+          new PrecisionModel(precisionModel.getScale()*10));
+      return ro.getIntersectionMatrix();
+    }
+    return im;
   }
 
+  /**
+   * Sets the {@link} to use with the underlying {@link RelateComputer}.
+   * The default is {@code null}.
+   * @param pm The precision model.
+   */
+  public void setPrecisionModel(PrecisionModel pm) {
+    this.precisionModel = pm;  
+  }
 }
