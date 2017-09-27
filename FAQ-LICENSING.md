@@ -42,6 +42,6 @@ From the JTS perspective this works in the same way as any other contribution.
 The contributor must have an Eclipse *Contributor License Agreement* (CLA) in place.  
 For details see the [**Contributing Guide**](CONTRIBUTING.md).
 
-Code contributed to JTS must be releasable under the EDL & EPL licenses.
-Therefore the contributor must also have permission from the downstream project (e.g. via OSGeo CLA or similar) 
+Code contributed to JTS **must** be releasable under the EDL & EPL licenses.
+Therefore the contributor must also have permission from the contributing project (e.g. via OSGeo CLA or similar) 
 to relicense the work in question. 
