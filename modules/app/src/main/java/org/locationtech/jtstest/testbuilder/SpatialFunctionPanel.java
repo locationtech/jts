@@ -209,6 +209,7 @@ extends JPanel
         execButton_actionPerformed(e);
       }
     });
+    execButton.setEnabled(false);
     
     execToNewButton = SwingUtil.createButton("Compute New", "Compute function result to a new case",
         new ActionListener() {
@@ -216,6 +217,7 @@ extends JPanel
         execToNewButton_actionPerformed(e);
       }
     });
+    execToNewButton.setEnabled(false); 
     
     btnRepeat = SwingUtil.createButton("Repeat", "Repeat function a number of times, incrementing the first parameter", 
         new ActionListener() {
@@ -300,6 +302,8 @@ extends JPanel
     currentFunc = func;
     updateParameters(func, paramComp, paramLabel);
     execButton.setToolTipText( GeometryFunctionRegistry.functionDescriptionHTML(func) );
+    execButton.setEnabled(true);
+    execToNewButton.setEnabled(true); 
     btnRepeat.setEnabled(RepeaterGeometryFunction.isRepeatable(func));
   }
  
