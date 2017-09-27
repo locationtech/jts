@@ -1,7 +1,8 @@
 # JTS License FAQ
 
-JTS is dual-licensed under the EDL and EPL 
-as described [here](LICENSES.md).
+JTS is dual-licensed under the [Eclipse Public License 1.0](https://www.eclipse.org/legal/epl-v10.html) ("EPL") 
+**or** the [Eclipse Distribution License 1.0](http://www.eclipse.org/org/documents/edl-v10.php) (a Revised BSD-style license). 
+More detail is provided in the [LICENSES](LICENSES.md) document.
 
 This FAQ clarifies the implications of the JTS software licensing.
 
@@ -15,17 +16,20 @@ This FAQ clarifies the implications of the JTS software licensing.
 
 ## Licensing Frequently Asked Questions
 
-**A1. What is the difference between EDL and BSD-3?**
+**A1. What is the difference between EDL and Revised BSD?**
 
-  BSD-3 is a license *family*.  EDL is the actual license and is called that because Eclipse is the distributing organization.
+  Revised BSD is a license *family* ([Wikipedia](https://en.wikipedia.org/wiki/BSD_licenses#3-clause_license_.28.22BSD_License_2.0.22.2C_.22Revised_BSD_License.22.2C_.22New_BSD_License.22.2C_or_.22Modified_BSD_License.22.29))
+  EDL is the actual license.
+  It is called that because Eclipse is the distributing organization.
 
 **A2. JTS no longer uses LGPL.  What does this mean for downstream projects?**
 
-JTS is now released under a dual license: EDL and EPL.  
+JTS is now released under a dual license: EDL **or** EPL.  
 Dual-licensing gives downstream projects more options:
 
-* The **EDL** is a BSD-3-style license, which is more permissive than the LGPL.  
-  This allows a wider variety of uses; for instance, it permits iOS use of JTS for mobile development.
+* The **EDL** is a Revised BSD-style license.
+  This is **more** permissive than the LGPL.  
+  This allows a wider variety of uses.  For instance, it permits iOS use of JTS for mobile development.
   
 * The **EPL** provides a similar permissiveness to LGPL with different wording around patents
 
