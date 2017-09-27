@@ -58,9 +58,9 @@ public class RepeaterGeometryFunction implements GeometryFunction {
     if (! (fun.getReturnType() ==  Geometry.class )) return false;
     
     Class[] paramType = fun.getParameterTypes();
-    // nothing to change by repeating
-    if (paramType.length < 1) return false;
     int repeatArgIndex = repeatableArgIndex(fun);
+    // abort if no repeatable parameter
+    if (paramType.length < repeatArgIndex + 1) return false;
     Class type = paramType[repeatArgIndex];
     if (! ClassUtil.isDouble(type)) return false;
     
