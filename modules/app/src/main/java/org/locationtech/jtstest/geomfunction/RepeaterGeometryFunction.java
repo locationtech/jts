@@ -19,7 +19,7 @@ public class RepeaterGeometryFunction implements GeometryFunction {
   }
 
   public String getName() {
-    return fun.getName();
+    return fun.getName() + repeatAnnotation();
   }
 
   public String getDescription() {
@@ -42,6 +42,14 @@ public class RepeaterGeometryFunction implements GeometryFunction {
     return fun.getSignature();
   }
 
+  private String repeatAnnotation() {
+    return "*" + count;
+  }
+
+  public boolean isBinary() {
+    return fun.isBinary();
+  }
+  
   public Object invoke(Geometry geom, Object[] args) {
     
     if (! isRepeatable(fun)) {
@@ -90,19 +98,8 @@ public class RepeaterGeometryFunction implements GeometryFunction {
 
   private Object[] copyArgs(Object[] args, int replaceIndex, double val) {
     Object[] newArgs = args.clone();
-    
-    /*
-    //Object[] newArgs = new Object[args.length];
-    for (int i = 0; i < args.length; i++) {
-      newArgs[i] = args[i];
-    }
-    */
     newArgs[replaceIndex] = val;
     return newArgs;
-  }
-
-  public boolean isBinary() {
-    return fun.isBinary();
   }
 
 }
