@@ -28,6 +28,7 @@ import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.buffer.OffsetCurveSetBuilder;
 import org.locationtech.jts.operation.buffer.validate.BufferResultValidator;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 
 public class BufferByUnionFunctions {
@@ -67,7 +68,9 @@ public class BufferByUnionFunctions {
     return g.union(segBuf);
   }
   
-  public static Geometry bufferByChains(Geometry g, double distance, int maxChainSize)
+  public static Geometry bufferByChains(Geometry g, double distance,
+      @Metadata(title="Max Chain Size")
+      int maxChainSize)
   {
     if (maxChainSize <= 0)
       throw new IllegalArgumentException("Maximum Chain Size must be specified as an input parameter");

@@ -11,6 +11,7 @@
  */
 package org.locationtech.jtstest.geomfunction;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 
 import org.locationtech.jts.geom.Geometry;
@@ -28,9 +29,11 @@ import org.locationtech.jtstest.util.*;
 public class StaticMethodGeometryFunction
 	extends BaseGeometryFunction
 {
-	private static final String FUNCTIONS_SUFFIX = "Functions";
-	private static final String PARAMETERS_SUFFIX = "Parameters";
-	private static final String DESCRIPTION_SUFFIX = "Description";
+  private static final String PARAM_NAME_TEXT = "Text";
+  private static final String PARAM_NAME_COUNT = "Count";
+  private static final String PARAM_NAME_DISTANCE = "Distance";
+  
+  private static final String FUNCTIONS_SUFFIX = "Functions";
 	
 	public static StaticMethodGeometryFunction createFunction(Method method)
 	{
@@ -65,24 +68,45 @@ public class StaticMethodGeometryFunction
 	 */
 	private static String[] extractParamNames(Method method)
 	{
-		// try to get names from predefined ones first
-		String paramsName = method.getName() + PARAMETERS_SUFFIX;
-		String[] codeName = ClassUtil.getStringArrayClassField(method.getDeclaringClass(), paramsName);
-		if (codeName != null) return codeName;
-		
 		// Synthesize default names
-		String[] name = new String[method.getParameterTypes().length - 1];
+		String[] name = defaultParamNames(method);
+		// override with metadata titles, if any
+    Annotation[][] anno = method.getParameterAnnotations();
 		// Skip first parameter - it is the target geometry
-		for (int i = 1; i < name.length; i++)
-			name[i] = "arg" + i;
+		for (int i = 0; i < name.length; i++) {
+			String annoName = MetadataUtil.title(anno[i+1]);
+			if (annoName != null) {
+			  name[i] = annoName;
+			}
+		}
 		return name;
 	}
 	
-	private static String extractDescription(Method method)
+	private static String[] defaultParamNames(Method method) {
+	   // Synthesize default names
+	  Class<?>[] type = method.getParameterTypes();
+    String[] name = new String[type.length - 1];
+    for (int i = 0; i < name.length; i++) {
+      // for first parameter choose default name based on type
+      name[i] = "Arg " + i;
+      if (i == 0) {
+        name[i] = paramNamePrimary(type[i+1]);
+      }
+    }
+    return name;
+	}
+  private static String paramNamePrimary(Class<?> clz) {
+    if (clz == String.class) return PARAM_NAME_TEXT;
+    if (ClassUtil.isDouble(clz)) return PARAM_NAME_DISTANCE;
+    //if (ClassUtil.isInt(clz)) return PARAM_NAME_COUNT;
+    return PARAM_NAME_COUNT;
+  }
+
+  private static String extractDescription(Method method)
 	{
-		// try to get names from predefined ones first
-		String paramsName = method.getName() + DESCRIPTION_SUFFIX;
-		return ClassUtil.getStringClassField(method.getDeclaringClass(), paramsName);
+    Metadata doc = method.getAnnotation(Metadata.class);
+    String desc = (doc == null) ? "" : doc.description();
+    return desc;
 	}
 	
 	private static Class[] extractParamTypes(Method method)

@@ -31,6 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.buffer.BufferParameters;
@@ -168,6 +169,8 @@ extends JPanel
     lblMitreLimit.setText("Mitre Limit");
     txtMitreLimit.setHorizontalAlignment(SwingConstants.RIGHT);
 
+    initLabels(paramLabel);
+    
     panelControl.setLayout(flowLayout1);
 
 
@@ -254,6 +257,15 @@ extends JPanel
     geomFuncPanel.addGeometryFunctionListener(gfListener);
   }
 
+  static void initLabels(JLabel[] paramLabel)
+  {
+    for (int i = 0; i < paramLabel.length; i++) {
+      JLabel lbl = paramLabel[i];
+      lbl.setHorizontalAlignment(SwingConstants.RIGHT);
+      lbl.setBorder(new EmptyBorder(5,5,5,5));
+    }
+  }
+
   public void enableExecuteControl(boolean isEnabled)
   {
     execButton.setEnabled(isEnabled);
@@ -314,6 +326,11 @@ extends JPanel
     for (int i = 0; i < paramComp.length; i++) {
       boolean isUsed = numNonGeomParams > i;
       //SwingUtil.setEnabledWithBackground(paramComp[i], isUsed);
+      //*
+      if (isUsed) {
+        paramLabel[i].setText(func.getParameterNames()[i]);
+      }
+      //*/
       paramComp[i].setVisible(isUsed);
       paramLabel[i].setVisible(isUsed);
       SpatialFunctionPanel.setToolTipText(paramComp[i], func, i + 1);      
@@ -323,7 +340,7 @@ extends JPanel
   private static void setToolTipText(JComponent control, GeometryFunction func, int i) {
     String txt = null;
     if (func.getParameterTypes().length > i) {
-      txt = "Enter " + func.getParameterTypes()[i].getSimpleName();
+      txt = "Enter an " + func.getParameterTypes()[i].getSimpleName();
     }
     control.setToolTipText(txt);
   }
