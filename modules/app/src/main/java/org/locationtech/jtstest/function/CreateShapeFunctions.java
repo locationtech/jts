@@ -20,6 +20,7 @@ import org.locationtech.jts.awt.*;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.*;
 import org.locationtech.jts.util.GeometricShapeFactory;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class CreateShapeFunctions {
 
@@ -31,7 +32,9 @@ public class CreateShapeFunctions {
                 return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SERIF, Font.PLAIN, DEFAULT_POINTSIZE));
         }
                 
-        public static Geometry fontGlyphSerifPointSize(Geometry g, String text, int pointSize)
+        public static Geometry fontGlyphSerifPointSize(Geometry g, String text, 
+            @Metadata(title="Point size")
+            int pointSize)
         {
                 return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SERIF, Font.PLAIN, pointSize));
         }

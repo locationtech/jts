@@ -28,16 +28,26 @@ import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
 import org.locationtech.jts.operation.buffer.OffsetCurveSetBuilder;
 import org.locationtech.jts.operation.buffer.validate.BufferResultValidator;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 
 public class BufferFunctions {
 	
 	public static String bufferDescription = "Buffers a geometry by a distance";
 	
+	@Metadata(description="Buffer a geometry by a distance")
 	public static Geometry buffer(Geometry g, double distance)		{		return g.buffer(distance);	}
 	
-	public static Geometry bufferWithParams(Geometry g, Double distance, 
-			Integer quadrantSegments, Integer capStyle, Integer joinStyle, Double mitreLimit)	
+	public static Geometry bufferWithParams(Geometry g, 
+	    Double distance,
+	    @Metadata(title="Quadrant Segs")
+			Integer quadrantSegments, 
+      @Metadata(title="Cap style")
+			Integer capStyle, 
+      @Metadata(title="Join style")
+			Integer joinStyle, 
+      @Metadata(title="Mitre limit")
+			Double mitreLimit)	
 	{
 	    double dist = 0;
 	    if (distance != null) dist = distance.doubleValue();
@@ -51,7 +61,8 @@ public class BufferFunctions {
 	    return BufferOp.bufferOp(g, dist, bufParams);
 	}
 	
-	public static Geometry bufferWithSimplify(Geometry g, Double distance, 
+	public static Geometry bufferWithSimplify(Geometry g, Double distance,
+	    @Metadata(title="Simplify factor")
 			Double simplifyFactor)	
 	{
 	    double dist = 0;
@@ -68,8 +79,16 @@ public class BufferFunctions {
     return buildCurveSet(g, distance, new BufferParameters());
 	}
 	
-	public static Geometry bufferCurveWithParams(Geometry g, Double distance, 
-			Integer quadrantSegments, Integer capStyle, Integer joinStyle, Double mitreLimit)	
+	public static Geometry bufferCurveWithParams(Geometry g, 
+      Double distance,
+      @Metadata(title="Quadrant Segs")
+      Integer quadrantSegments, 
+      @Metadata(title="Cap style")
+      Integer capStyle, 
+      @Metadata(title="Join style")
+      Integer joinStyle, 
+      @Metadata(title="Mitre limit")
+      Double mitreLimit)  	
 	{
     double dist = 0;
     if (distance != null) dist = distance.doubleValue();
