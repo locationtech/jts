@@ -36,6 +36,7 @@ import javax.swing.border.EmptyBorder;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.util.Stopwatch;
+import org.locationtech.jtstest.geomfunction.BaseGeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.geomfunction.RepeaterGeometryFunction;
@@ -45,6 +46,7 @@ import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelListener;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
+import org.locationtech.jtstest.util.ClassUtil;
 
 
 /**
@@ -320,7 +322,7 @@ extends JPanel
   }
  
   
-  static void updateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel)
+  static void OLDupdateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel)
   {
     int numNonGeomParams = numNonGeomParams(func);
     for (int i = 0; i < paramComp.length; i++) {
@@ -331,6 +333,21 @@ extends JPanel
         paramLabel[i].setText(func.getParameterNames()[i]);
       }
       //*/
+      paramComp[i].setVisible(isUsed);
+      paramLabel[i].setVisible(isUsed);
+      SpatialFunctionPanel.setToolTipText(paramComp[i], func, i + 1);      
+    }
+  }
+  
+  static void updateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel)
+  {
+    int numNonGeomParams = numNonGeomParams(func);
+    int indexOffset = BaseGeometryFunction.firstScalarParamIndex(func);
+    for (int i = 0; i < paramComp.length; i++) {
+      boolean isUsed = numNonGeomParams > i;
+      if (isUsed) {
+        paramLabel[i].setText(func.getParameterNames()[i+indexOffset]);
+      }      
       paramComp[i].setVisible(isUsed);
       paramLabel[i].setVisible(isUsed);
       SpatialFunctionPanel.setToolTipText(paramComp[i], func, i + 1);      
@@ -350,7 +367,7 @@ extends JPanel
     int count = 0;
     Class[] paramTypes = func.getParameterTypes();
     for (int i = 0; i < paramTypes.length; i++) {
-      if (paramTypes[i] != Geometry.class)
+      if (! ClassUtil.isGeometry(paramTypes[i]))
         count++;
     }
     return count;

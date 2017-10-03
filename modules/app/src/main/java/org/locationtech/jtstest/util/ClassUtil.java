@@ -17,6 +17,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import org.locationtech.jts.geom.Geometry;
+
 public class ClassUtil 
 {
   public static String getClassname(Class clz)
@@ -98,6 +100,10 @@ public class ClassUtil
     if (clz == Double.class) return true;
     if (clz == double.class) return true;
     return false;
+  }
+
+  public static boolean isGeometry(Class<?> clz) {
+    return Geometry.class.isAssignableFrom(clz);
   }
 
 }

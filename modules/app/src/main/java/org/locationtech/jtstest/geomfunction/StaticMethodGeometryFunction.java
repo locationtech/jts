@@ -72,28 +72,51 @@ public class StaticMethodGeometryFunction
 		String[] name = defaultParamNames(method);
 		// override with metadata titles, if any
     Annotation[][] anno = method.getParameterAnnotations();
-		// Skip first parameter - it is the target geometry
+		// Skip first annotation - it is the target geometry
 		for (int i = 0; i < name.length; i++) {
 			String annoName = MetadataUtil.title(anno[i+1]);
 			if (annoName != null) {
 			  name[i] = annoName;
+			}
+			else {
+			  // Debugging check for functions needing explicit names
+			  //*
+			  if (name[i].startsWith("Arg") ) {
+  			  System.out.println("Need name: "
+  			      + method.getDeclaringClass()
+  			      + "." + method.getName());
+  			}
+  			//*/
 			}
 		}
 		return name;
 	}
 	
 	private static String[] defaultParamNames(Method method) {
+	  int firstScalarIndex = firstScalarParamIndex(method);
+	  if (method.getName().equals("kdTreeQueryRepeated")) {
+	    System.out.println(method);
+	  }
 	   // Synthesize default names
 	  Class<?>[] type = method.getParameterTypes();
     String[] name = new String[type.length - 1];
     for (int i = 0; i < name.length; i++) {
-      // for first parameter choose default name based on type
+      // for first scalar parameter choose default name based on type
       name[i] = "Arg " + i;
-      if (i == 0) {
-        name[i] = paramNamePrimary(type[i+1]);
+      if (i+1 == firstScalarIndex) {
+        name[i] = paramNamePrimary(type[firstScalarIndex]);
       }
     }
     return name;
+	}
+	private static int firstScalarParamIndex(Method method) {
+	   Class<?>[] type = method.getParameterTypes();
+	   for (int i = 0; i < type.length; i++) {
+	     if (! ClassUtil.isGeometry(type[i])) {
+	       return i;
+	     }
+	   }
+	   return -1;
 	}
   private static String paramNamePrimary(Class<?> clz) {
     if (clz == String.class) return PARAM_NAME_TEXT;

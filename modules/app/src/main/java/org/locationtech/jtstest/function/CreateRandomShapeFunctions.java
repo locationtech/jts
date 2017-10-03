@@ -21,6 +21,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.shape.random.RandomPointsBuilder;
 import org.locationtech.jts.shape.random.RandomPointsInGridBuilder;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 
 public class CreateRandomShapeFunctions {
@@ -40,7 +41,9 @@ public class CreateRandomShapeFunctions {
     return shapeBuilder.getGeometry();
   }
 
-  public static Geometry randomPointsInGridWithGutter(Geometry g, int nPts, double gutterFraction) {
+  public static Geometry randomPointsInGridWithGutter(Geometry g, int nPts,
+      @Metadata(title="Gutter fraction")
+      double gutterFraction) {
   	RandomPointsInGridBuilder shapeBuilder = new RandomPointsInGridBuilder(FunctionsUtil.getFactoryOrDefault(g));
   	shapeBuilder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
   	shapeBuilder.setNumPoints(nPts);
@@ -131,7 +134,11 @@ public class CreateRandomShapeFunctions {
     return haltonPointsWithBases(g, nPts, 5, 7);
   }
   
-  public static Geometry haltonPointsWithBases(Geometry g, int nPts, int basei, int basej)
+  public static Geometry haltonPointsWithBases(Geometry g, int nPts, 
+      @Metadata(title="Base 1")
+      int basei, 
+      @Metadata(title="Base 2")
+      int basej)
   {
     Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
     Coordinate[] pts = new Coordinate[nPts];
