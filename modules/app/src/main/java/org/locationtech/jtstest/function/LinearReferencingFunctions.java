@@ -15,6 +15,7 @@ package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.linearref.LengthIndexedLine;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class LinearReferencingFunctions
 {
@@ -24,7 +25,11 @@ public class LinearReferencingFunctions
     Coordinate p = ll.extractPoint(index);
     return g.getFactory().createPoint(p);
   }
-  public static Geometry extractLine(Geometry g, double start, double end)
+  public static Geometry extractLine(Geometry g,
+      @Metadata(title="Start length")
+      double start, 
+      @Metadata(title="End length")
+      double end)
   {
     LengthIndexedLine ll = new LengthIndexedLine(g);
     return ll.extractLine(start, end);

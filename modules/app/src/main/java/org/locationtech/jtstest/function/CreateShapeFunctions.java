@@ -39,7 +39,9 @@ public class CreateShapeFunctions {
                 return fontGlyph(g, text, new Font(FontGlyphReader.FONT_SERIF, Font.PLAIN, pointSize));
         }
                 
-        public static Geometry fontGlyph(Geometry g, String text, String fontName)
+        public static Geometry fontGlyph(Geometry g, String text,
+            @Metadata(title="Font name")
+            String fontName)
         {
                 return fontGlyph(g, text, new Font(fontName, Font.PLAIN, DEFAULT_POINTSIZE));
         }
@@ -125,7 +127,11 @@ public class CreateShapeFunctions {
 	}
 
 	
-	public static Geometry supercircle(Geometry g, int nPts, double pow)
+	public static Geometry supercircle(Geometry g,
+	    @Metadata(title="Point count")
+	    int nPts, 
+	    @Metadata(title="Power")
+	    double pow)
 	{
 		GeometricShapeFactory gsf = new GeometricShapeFactory();
 		gsf.setNumPoints(nPts);
@@ -146,7 +152,9 @@ public class CreateShapeFunctions {
       gsf.setEnvelope(new Envelope(0, 1, 0, 1));
     return gsf.createCircle();
   }
-  public static Geometry ellipseRotate(Geometry g, int nPts, double ang)
+  public static Geometry ellipseRotate(Geometry g, int nPts, 
+      @Metadata(title="Angle")
+      double ang)
   {
     GeometricShapeFactory gsf = new GeometricShapeFactory();
     gsf.setNumPoints(nPts);
@@ -158,7 +166,11 @@ public class CreateShapeFunctions {
     return gsf.createCircle();
   }
   
-  public static Geometry sineStar(Geometry g, int nArms, int nPts)
+  public static Geometry sineStar(Geometry g,
+      @Metadata(title="Arm count")
+      int nArms, 
+      @Metadata(title="Point count")
+      int nPts)
   {
 	Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
 	GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);

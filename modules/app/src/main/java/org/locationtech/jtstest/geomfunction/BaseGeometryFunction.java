@@ -11,6 +11,8 @@
  */
 package org.locationtech.jtstest.geomfunction;
 
+import java.lang.reflect.Method;
+
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.util.*;
 
@@ -33,7 +35,15 @@ implements GeometryFunction, Comparable
     return func.getParameterTypes().length >= 1
         && func.getParameterTypes()[0] == Geometry.class;
   }
-  
+  public static int firstScalarParamIndex(GeometryFunction func) {
+    Class<?>[] type = func.getParameterTypes();
+    for (int i = 0; i < type.length; i++) {
+      if (! ClassUtil.isGeometry(type[i])) {
+        return i;
+      }
+    }
+    return -1;
+ }
 	protected String category  = null;
 	protected String name;
 	protected String description;
