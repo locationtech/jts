@@ -12,6 +12,8 @@
 package org.locationtech.jts.geom.impl;
 
 
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.lang.ref.SoftReference;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -33,8 +35,9 @@ import org.locationtech.jts.geom.Envelope;
  * @version 1.7
  */
 public abstract class PackedCoordinateSequence
-    implements CoordinateSequence
+    implements CoordinateSequence, Serializable
 {
+  private static final long serialVersionUID = -3151899011275603L;
   /**
    * The dimensions of the coordinates hold in the packed array
    */
@@ -44,7 +47,7 @@ public abstract class PackedCoordinateSequence
    * A soft reference to the Coordinate[] representation of this sequence.
    * Makes repeated coordinate array accesses more efficient.
    */
-  protected SoftReference coordRef;
+  protected transient SoftReference coordRef;
 
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getDimension()
@@ -163,6 +166,11 @@ public abstract class PackedCoordinateSequence
     return CoordinateSequences.toString(this);
   }
 
+  protected Object readResolve() throws ObjectStreamException {
+    coordRef = null;
+    return this;
+  }
+  
   /**
    * Returns a Coordinate representation of the specified coordinate, by always
    * building a new Coordinate object
@@ -305,7 +313,7 @@ public abstract class PackedCoordinateSequence
       System.arraycopy(coords, 0, clone, 0, coords.length);
       return new Double(clone, dimension);
     }
-
+    
     /**
      * @see org.locationtech.jts.geom.CoordinateSequence#getOrdinate(int, int)
      *      Beware, for performance reasons the ordinate index is not checked, if

@@ -12,6 +12,12 @@
 
 package org.locationtech.jts.geom.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFactory;
@@ -91,6 +97,31 @@ public abstract class CoordinateSequenceTestBase
     CoordinateSequence seq = getCSFactory().create(coords);
     CoordinateSequence seq2 = getCSFactory().create(seq);
     assertTrue(isEqual(seq2, coords));
+  }
+
+  public void testSerializable() throws IOException, ClassNotFoundException {
+    Coordinate[] coords = createArray(SIZE);
+    CoordinateSequence seq = getCSFactory().create(coords);
+    // throws exception if not serializable
+    byte[] data = serialize(seq);
+    // check round-trip gives same data
+    CoordinateSequence seq2 = deserialize(data);
+    assertTrue(isEqual(seq2, coords));
+  }
+  
+  private static byte[] serialize(CoordinateSequence seq) throws IOException {
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    ObjectOutputStream oos = new ObjectOutputStream(bos);
+    oos.writeObject(seq);
+    oos.close();
+    return bos.toByteArray();
+  }
+
+  private static CoordinateSequence deserialize(byte[] data) throws IOException, ClassNotFoundException {
+    ByteArrayInputStream bais = new ByteArrayInputStream(data);
+    ObjectInputStream ois = new ObjectInputStream(bais);
+    Object o = ois.readObject();
+    return (CoordinateSequence) o;
   }
 
   Coordinate[] createArray(int size)
