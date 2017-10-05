@@ -1791,7 +1791,7 @@ public abstract class Geometry
    *      but not one of its subclasses
    */
   protected void checkNotGeometryCollection(Geometry g) {
-    if (getSortIndex() == SORTINDEX_GEOMETRYCOLLECTION) {
+    if (isGeometryCollection()) {
       throw new IllegalArgumentException("This method does not support GeometryCollection arguments");
     }
   }
