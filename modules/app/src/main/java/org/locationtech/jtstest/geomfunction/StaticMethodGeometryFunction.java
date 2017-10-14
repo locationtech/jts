@@ -78,25 +78,12 @@ public class StaticMethodGeometryFunction
 			if (annoName != null) {
 			  name[i] = annoName;
 			}
-			else {
-			  // Debugging check for functions needing explicit names
-			  //*
-			  if (name[i].startsWith("Arg") ) {
-  			  System.out.println("Need name: "
-  			      + method.getDeclaringClass()
-  			      + "." + method.getName());
-  			}
-  			//*/
-			}
 		}
 		return name;
 	}
 	
 	private static String[] defaultParamNames(Method method) {
 	  int firstScalarIndex = firstScalarParamIndex(method);
-	  if (method.getName().equals("kdTreeQueryRepeated")) {
-	    System.out.println(method);
-	  }
 	   // Synthesize default names
 	  Class<?>[] type = method.getParameterTypes();
     String[] name = new String[type.length - 1];
