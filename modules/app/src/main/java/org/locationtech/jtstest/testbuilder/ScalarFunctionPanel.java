@@ -39,6 +39,8 @@ import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 public class ScalarFunctionPanel 
 extends JPanel 
 {
+  private static final String[] PARAM_DEFAULT = { "10" };
+  
   JPanel panelRB = new JPanel();
   GeometryFunctionTreePanel funcListPanel = new GeometryFunctionTreePanel();
   GridLayout gridLayout1 = new GridLayout();
@@ -158,7 +160,7 @@ extends JPanel
     return result;
   }
 
-  private Object[] getFunctionParams()
+  private Object[] OLDgetFunctionParams()
   {
   	// TODO: this is somewhat cheesy
     Class[] paramTypes = currentFunc.getParameterTypes();
@@ -180,6 +182,31 @@ extends JPanel
     		SwingUtil.getDouble(txtDistance, null)
         };
     
+    return null;
+  }
+  
+  private Object[] getFunctionParams()
+  {
+    if (currentFunc == null) return null;
+    Class[] paramTypes = currentFunc.getParameterTypes();
+    Object[] paramVal = new Object[paramTypes.length];
+    
+    for (int i = 0; i < paramVal.length; i++) {
+      Object valRaw = getParamValue(i);
+      paramVal[i] = SwingUtil.coerce(valRaw, paramTypes[i]);
+    }
+    return paramVal;
+  }
+  
+  private Object getParamValue(int index) {
+    if (currentFunc.isBinary() && index == 0)
+      return JTSTestBuilderController.getGeometryB();
+    
+    int attrIndex = index - SpatialFunctionPanel.attributeParamOffset(currentFunc);
+    
+    switch (attrIndex) {
+    case 0: return SpatialFunctionPanel.valOrDefault(SwingUtil.value(txtDistance), PARAM_DEFAULT[0]);
+    }
     return null;
   }
   
