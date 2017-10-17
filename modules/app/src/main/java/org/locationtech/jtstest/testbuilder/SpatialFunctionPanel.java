@@ -373,7 +373,7 @@ extends JPanel
     return count;
   }
   
-  private int attributeParamOffset(GeometryFunction func) {
+  public static int attributeParamOffset(GeometryFunction func) {
     return func.isBinary() ? 1 : 0;
   }
   
@@ -418,7 +418,7 @@ extends JPanel
     return null;
   }
 
-  private static String valOrDefault(String s, String defaultVal) {
+  public static String valOrDefault(String s, String defaultVal) {
     if (s.length() > 0) return s;
     return defaultVal;
   }

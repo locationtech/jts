@@ -62,16 +62,12 @@ public class WriterFunctions
     return (new GeoJsonWriter().write(g));
   }
   
-  // TODO: fix Scalar function invoker to allow int parameters
-  /*
-  public static String writeGeoJSONFix(Geometry g,
+  public static String writeGeoJSONFixDecimal(Geometry g,
       @Metadata(title="Num Decimals")
       int numDecimals)
   {
     if (g == null) return "";
     return (new GeoJsonWriter(numDecimals).write(g));
   }
-  */
-  
 
 }
