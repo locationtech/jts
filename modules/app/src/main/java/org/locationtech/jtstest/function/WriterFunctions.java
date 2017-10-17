@@ -16,8 +16,10 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBWriter;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.locationtech.jts.io.gml2.GMLWriter;
 import org.locationtech.jts.io.kml.KMLWriter;
+import org.locationtech.jtstest.geomfunction.Metadata;
 import org.locationtech.jtstest.util.ClassUtil;
 
 
@@ -53,6 +55,23 @@ public class WriterFunctions
     if (g == null) return "";
     return WKBWriter.toHex((new WKBWriter().write(g)));
   }
+  
+  public static String writeGeoJSON(Geometry g)
+  {
+    if (g == null) return "";
+    return (new GeoJsonWriter().write(g));
+  }
+  
+  // TODO: fix Scalar function invoker to allow int parameters
+  /*
+  public static String writeGeoJSONFix(Geometry g,
+      @Metadata(title="Num Decimals")
+      int numDecimals)
+  {
+    if (g == null) return "";
+    return (new GeoJsonWriter(numDecimals).write(g));
+  }
+  */
   
 
 }
