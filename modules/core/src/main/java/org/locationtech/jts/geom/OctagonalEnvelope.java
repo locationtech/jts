@@ -292,7 +292,7 @@ public class OctagonalEnvelope
   public Geometry toGeometry(GeometryFactory geomFactory)
   {
     if (isNull()) {
-      return geomFactory.createPoint((CoordinateSequence)null);
+      return geomFactory.createPoint();
     }
 
     Coordinate px00 = new Coordinate(minX, minA - minX);
@@ -337,7 +337,7 @@ public class OctagonalEnvelope
     // must be a polygon, so add closing point
     coordList.add(px00, false);
     Coordinate[] pts = coordList.toCoordinateArray();
-    return geomFactory.createPolygon(geomFactory.createLinearRing(pts), null);
+    return geomFactory.createPolygon(geomFactory.createLinearRing(pts));
   }
 
   private static class BoundingOctagonComponentFilter

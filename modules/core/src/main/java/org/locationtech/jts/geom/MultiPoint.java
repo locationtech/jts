@@ -73,7 +73,7 @@ public class MultiPoint
    * @see Geometry#getBoundary
    */
   public Geometry getBoundary() {
-    return getFactory().createGeometryCollection(null);
+    return getFactory().createGeometryCollection();
   }
 
   public boolean isValid() {

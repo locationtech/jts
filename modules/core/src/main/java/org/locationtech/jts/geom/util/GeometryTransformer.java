@@ -246,7 +246,6 @@ public class GeometryTransformer
         || ! (shell instanceof LinearRing)
         || shell.isEmpty() )
       isAllValidLinearRings = false;
-//return factory.createPolygon(null, null);
 
     ArrayList holes = new ArrayList();
     for (int i = 0; i < geom.getNumInteriorRing(); i++) {

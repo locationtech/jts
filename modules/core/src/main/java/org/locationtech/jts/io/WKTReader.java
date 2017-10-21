@@ -523,7 +523,7 @@ public class WKTReader
   private Point readPointText() throws IOException, ParseException {
     String nextToken = getNextEmptyOrOpener();
     if (nextToken.equals(EMPTY)) {
-      return geometryFactory.createPoint((Coordinate)null);
+      return geometryFactory.createPoint();
     }
     Point point = geometryFactory.createPoint(getPreciseCoordinate());
     getNextCloser();
@@ -698,7 +698,7 @@ public class WKTReader
   private MultiPolygon readMultiPolygonText() throws IOException, ParseException {
     String nextToken = getNextEmptyOrOpener();
     if (nextToken.equals(EMPTY)) {
-      return geometryFactory.createMultiPolygon(new Polygon[]{});
+      return geometryFactory.createMultiPolygon();
     }
     ArrayList polygons = new ArrayList();
     Polygon polygon = readPolygonText();

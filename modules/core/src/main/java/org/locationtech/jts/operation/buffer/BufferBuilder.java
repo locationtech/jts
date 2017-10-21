@@ -319,7 +319,7 @@ class BufferBuilder
    */
   private Geometry createEmptyResultGeometry()
   {
-    Geometry emptyGeom = geomFact.createPolygon(null, null);
+    Geometry emptyGeom = geomFact.createPolygon();
     return emptyGeom;
   }
 }

@@ -85,7 +85,7 @@ public class ConvexHull
   public Geometry getConvexHull() {
 
     if (inputPts.length == 0) {
-      return geomFactory.createGeometryCollection(null);
+      return geomFactory.createGeometryCollection();
     }
     if (inputPts.length == 1) {
       return geomFactory.createPoint(inputPts[0]);
@@ -394,7 +394,7 @@ public class ConvexHull
 //          geometry.getPrecisionModel(), geometry.getSRID());
     }
     LinearRing linearRing = geomFactory.createLinearRing(coordinates);
-    return geomFactory.createPolygon(linearRing, null);
+    return geomFactory.createPolygon(linearRing);
   }
 
   /**

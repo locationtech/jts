@@ -124,7 +124,7 @@ public class SineStarFactory
     pts[iPt] = new Coordinate(pts[0]);
 
     LinearRing ring = geomFact.createLinearRing(pts);
-    Polygon poly = geomFact.createPolygon(ring, null);
+    Polygon poly = geomFact.createPolygon(ring);
     return poly;
   }
 }
