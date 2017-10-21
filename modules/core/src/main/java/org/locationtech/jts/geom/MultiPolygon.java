@@ -129,6 +129,14 @@ public class MultiPolygon
     }
     return getFactory().createMultiPolygon(revGeoms);
   }
+  
+  public MultiPolygon copy() {
+    Polygon[] polygons = new Polygon[this.geometries.length];
+    for (int i = 0; i < polygons.length; i++) {
+      polygons[i] = (Polygon) this.geometries[i].copy();
+    }
+    return new MultiPolygon(polygons, factory);
+  }
 
   protected int getSortIndex() {
     return Geometry.SORTINDEX_MULTIPOLYGON;

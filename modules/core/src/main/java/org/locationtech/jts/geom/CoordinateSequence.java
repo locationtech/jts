@@ -164,6 +164,14 @@ public interface CoordinateSequence
    * Called by Geometry#clone.
    *
    * @return a copy of the coordinate sequence containing copies of all points
+   * @deprecated
    */
   Object clone();
+  
+  /**
+   * Returns a deep copy of this collection.
+   *
+   * @return a copy of the coordinate sequence containing copies of all points
+   */
+  CoordinateSequence copy();
 }

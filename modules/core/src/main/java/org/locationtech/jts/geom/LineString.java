@@ -259,11 +259,20 @@ public class LineString
    * (including all coordinates contained by it).
    *
    * @return a clone of this instance
+   * @deprecated
    */
   public Object clone() {
-    LineString ls = (LineString) super.clone();
-    ls.points = (CoordinateSequence) points.clone();
-    return ls;
+    return copy();
+  }
+  
+  /**
+   * Creates and returns a full copy of this {@link LineString} object.
+   * (including all coordinates contained by it).
+   *
+   * @return a copy of this instance
+   */
+  public LineString copy() {
+    return new LineString(points.copy(), factory);
   }
 
   /**

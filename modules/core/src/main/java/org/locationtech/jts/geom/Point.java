@@ -180,16 +180,25 @@ public class Point
    * (including all coordinates contained by it).
    *
    * @return a clone of this instance
+   * @deprecated
    */
   public Object clone() {
-    Point p = (Point) super.clone();
-    p.coordinates = (CoordinateSequence) coordinates.clone();
-    return p;// return the clone
+    return copy();
+  }
+  
+  /**
+   * Creates and returns a full copy of this {@link Point} object.
+   * (including all coordinates contained by it).
+   *
+   * @return a copy of this instance
+   */
+  public Point copy() {
+    return new Point(coordinates.copy(), factory);
   }
 
   public Geometry reverse()
   {
-    return (Geometry) clone();
+    return copy();
   }
   
   public void normalize() 

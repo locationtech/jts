@@ -56,7 +56,7 @@ class LocationIndexOfLine
 
     // check for case where subline is zero length
     if (subLine.getLength() == 0.0) {
-      subLineLoc[1] = (LinearLocation) subLineLoc[0].clone();
+      subLineLoc[1] = subLineLoc[0].copy();
     }
     else  {
       subLineLoc[1] = locPt.indexOfAfter(endPt, subLineLoc[0]);

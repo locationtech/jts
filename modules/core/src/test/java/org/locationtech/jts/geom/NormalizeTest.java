@@ -187,7 +187,7 @@ public class NormalizeTest extends TestCase {
     Geometry geom = pcsReader.read("LINESTRING (100 100, 0 0)");
     geom.normalize();
     // force PackedCoordinateSequence to be copied with empty coordinate cache
-    Geometry clone = (Geometry) geom.clone();
+    Geometry clone = (Geometry) geom.copy();
     assertEqualsExact(geom, clone);
   }
 

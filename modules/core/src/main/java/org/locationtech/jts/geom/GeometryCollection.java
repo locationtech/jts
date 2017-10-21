@@ -213,14 +213,24 @@ public class GeometryCollection extends Geometry {
    * (including all coordinates contained by it).
    *
    * @return a clone of this instance
+   * @deprecated
    */
   public Object clone() {
-    GeometryCollection gc = (GeometryCollection) super.clone();
-    gc.geometries = new Geometry[geometries.length];
+    return copy();
+  }
+  
+  /**
+   * Creates and returns a full copy of this {@link GeometryCollection} object.
+   * (including all coordinates contained by it).
+   *
+   * @return a copy of this instance
+   */
+  public GeometryCollection copy() {
+    Geometry[] geometries = new Geometry[this.geometries.length];
     for (int i = 0; i < geometries.length; i++) {
-      gc.geometries[i] = (Geometry) geometries[i].clone();
+      geometries[i] = this.geometries[i].copy();
     }
-    return gc;// return the clone
+    return new GeometryCollection(geometries, factory);
   }
 
   public void normalize() {

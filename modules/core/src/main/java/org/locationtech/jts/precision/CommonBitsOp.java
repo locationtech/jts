@@ -138,7 +138,7 @@ public class CommonBitsOp {
   {
     cbr = new CommonBitsRemover();
     cbr.add(geom0);
-    Geometry geom = cbr.removeCommonBits((Geometry) geom0.clone());
+    Geometry geom = cbr.removeCommonBits(geom0.copy());
     return geom;
   }
 
@@ -156,8 +156,8 @@ public class CommonBitsOp {
     cbr.add(geom0);
     cbr.add(geom1);
     Geometry geom[] = new Geometry[2];
-    geom[0] = cbr.removeCommonBits((Geometry) geom0.clone());
-    geom[1] = cbr.removeCommonBits((Geometry) geom1.clone());
+    geom[0] = cbr.removeCommonBits(geom0.copy());
+    geom[1] = cbr.removeCommonBits(geom1.copy());
     return geom;
   }
 }

@@ -154,7 +154,7 @@ public class GeometryTransformer
    */
   protected final CoordinateSequence copy(CoordinateSequence seq)
   {
-    return (CoordinateSequence) seq.clone();
+    return seq.copy();
   }
 
   /**

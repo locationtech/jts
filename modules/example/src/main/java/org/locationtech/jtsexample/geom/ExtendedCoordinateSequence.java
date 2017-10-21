@@ -155,10 +155,17 @@ public class ExtendedCoordinateSequence
     }
   }
 
+  /**
+   * @deprecated
+   */
   public Object clone() {
-    ExtendedCoordinate[] cloneCoordinates = new ExtendedCoordinate[size()];
+    return copy();
+  }
+  
+  public ExtendedCoordinateSequence copy() {
+	  ExtendedCoordinate[] cloneCoordinates = new ExtendedCoordinate[size()];
     for (int i = 0; i < coordinates.length; i++) {
-      cloneCoordinates[i] = (ExtendedCoordinate) coordinates[i].clone();
+      cloneCoordinates[i] = coordinates[i].copy();
     }
 
     return new ExtendedCoordinateSequence(cloneCoordinates);

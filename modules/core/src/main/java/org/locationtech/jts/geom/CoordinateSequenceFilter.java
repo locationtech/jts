@@ -35,7 +35,7 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
  * <b>Note</b>: In general, it is preferable to treat Geometrys as immutable. 
  * Mutation should be performed by creating a new Geometry object (see {@link GeometryEditor} 
  * and {@link GeometryTransformer} for convenient ways to do this).
- * An exception to this rule is when a new Geometry has been created via {@link Geometry#clone()}.
+ * An exception to this rule is when a new Geometry has been created via {@link Geometry#copy()}.
  * In this case mutating the Geometry will not cause aliasing issues, 
  * and a filter is a convenient way to implement coordinate transformation.
  *  

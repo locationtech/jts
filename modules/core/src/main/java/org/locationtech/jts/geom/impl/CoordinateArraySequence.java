@@ -187,11 +187,20 @@ public class CoordinateArraySequence
    * Creates a deep copy of the Object
    *
    * @return The deep copy
+   * @deprecated
    */
   public Object clone() {
+    return copy();
+  }
+  /**
+   * Creates a deep copy of the CoordinateArraySequence
+   *
+   * @return The deep copy
+   */
+  public CoordinateArraySequence copy() {
     Coordinate[] cloneCoordinates = new Coordinate[size()];
     for (int i = 0; i < coordinates.length; i++) {
-      cloneCoordinates[i] = (Coordinate) coordinates[i].clone();
+      cloneCoordinates[i] = coordinates[i].copy();
     }
     return new CoordinateArraySequence(cloneCoordinates, dimension);
   }
