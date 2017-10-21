@@ -35,7 +35,7 @@ public class CoordinateList
    * Constructs a new list without any coordinates
    */
   public CoordinateList()
-  { super();
+  {
   }
 
   /**
@@ -62,6 +62,10 @@ public class CoordinateList
   {
   	ensureCapacity(coord.length);
     add(coord, allowRepeated);
+  }
+
+  public void add(Coordinate coord) {
+	super.add(coord);
   }
 
   public Coordinate getCoordinate(int i) { return (Coordinate) get(i); }
