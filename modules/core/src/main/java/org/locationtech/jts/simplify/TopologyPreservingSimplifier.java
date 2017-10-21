@@ -111,7 +111,7 @@ public class TopologyPreservingSimplifier
   public Geometry getResultGeometry() 
   {
     // empty input produces an empty result
-    if (inputGeom.isEmpty()) return (Geometry) inputGeom.clone();
+    if (inputGeom.isEmpty()) return inputGeom.copy();
     
     linestringMap = new HashMap();
     inputGeom.apply(new LineStringMapBuilderFilter(this));

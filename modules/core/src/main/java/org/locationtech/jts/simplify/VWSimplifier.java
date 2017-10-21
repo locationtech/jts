@@ -120,7 +120,7 @@ public class VWSimplifier
   {
     // empty input produces an empty result
     if (inputGeom.isEmpty())
-      return (Geometry) inputGeom.clone();
+      return inputGeom.copy();
 
     return (new VWTransformer(isEnsureValidTopology, distanceTolerance)).transform(inputGeom);
   }

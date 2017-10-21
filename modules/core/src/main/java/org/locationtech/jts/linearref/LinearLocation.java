@@ -451,10 +451,20 @@ public class LinearLocation
    * Copies this location
    *
    * @return a copy of this location
+   * @deprecated
    */
   public Object clone()
   {
-    return new LinearLocation(componentIndex, segmentIndex, segmentFraction);
+    return copy();
+  }
+  
+  /**
+   * Copies this location
+   *
+   * @return a copy of this location
+   */
+  public LinearLocation copy() {
+	return new LinearLocation(componentIndex, segmentIndex, segmentFraction);
   }
   
   public String toString()

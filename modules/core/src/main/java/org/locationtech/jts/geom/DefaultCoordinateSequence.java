@@ -141,8 +141,17 @@ class DefaultCoordinateSequence
    * Creates a deep copy of the Object
    *
    * @return The deep copy
+   * @deprecated
    */
   public Object clone() {
+    return copy();
+  }
+  /**
+   * Creates a deep copy of the DefaultCoordinateSequence
+   *
+   * @return The deep copy
+   */
+  public DefaultCoordinateSequence copy() {
     Coordinate[] cloneCoordinates = new Coordinate[size()];
     for (int i = 0; i < coordinates.length; i++) {
       cloneCoordinates[i] = (Coordinate) coordinates[i].clone();

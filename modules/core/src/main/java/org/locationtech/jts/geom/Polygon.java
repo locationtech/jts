@@ -350,15 +350,26 @@ public class Polygon
    * (including all coordinates contained by it).
    *
    * @return a clone of this instance
+   * @deprecated
    */
   public Object clone() {
-    Polygon poly = (Polygon) super.clone();
-    poly.shell = (LinearRing) shell.clone();
-    poly.holes = new LinearRing[holes.length];
+
+    return copy();
+  }
+  
+  /**
+   * Creates and returns a full copy of this {@link Polygon} object.
+   * (including all coordinates contained by it).
+   *
+   * @return a copy of this instance
+   */
+  public Polygon copy() {
+    LinearRing shellCopy = shell.copy();
+    LinearRing[] holeCopies = new LinearRing[this.holes.length];
     for (int i = 0; i < holes.length; i++) {
-      poly.holes[i] = (LinearRing) holes[i].clone();
+    	holeCopies[i] = holes[i].copy();
     }
-    return poly;// return the clone
+    return new Polygon(shellCopy, holeCopies, factory);
   }
 
   public Geometry convexHull() {
@@ -423,11 +434,11 @@ public class Polygon
 
   public Geometry reverse()
   {
-    Polygon poly = (Polygon) super.clone();
-    poly.shell = (LinearRing) ((LinearRing) shell.clone()).reverse();
+    Polygon poly = copy();
+    poly.shell = (LinearRing) shell.copy().reverse();
     poly.holes = new LinearRing[holes.length];
     for (int i = 0; i < holes.length; i++) {
-      poly.holes[i] = (LinearRing) ((LinearRing) holes[i].clone()).reverse();
+      poly.holes[i] = (LinearRing) holes[i].copy().reverse();
     }
     return poly;// return the clone
   }

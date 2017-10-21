@@ -546,12 +546,12 @@ public class GeometryFactory
    * used to represent a geometry, or to change the 
    * factory used for a geometry.
    * <p>
-   * {@link Geometry#clone()} can also be used to make a deep copy,
+   * {@link Geometry#copy()} can also be used to make a deep copy,
    * but it does not allow changing the CoordinateSequence type.
    * 
    * @return a deep copy of the input geometry, using the CoordinateSequence type of this factory
    * 
-   * @see Geometry#clone() 
+   * @see Geometry#copy() 
    */
   public Geometry createGeometry(Geometry g)
   {

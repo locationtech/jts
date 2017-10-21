@@ -127,10 +127,14 @@ public class LinearRing extends LineString
   protected int getSortIndex() {
     return Geometry.SORTINDEX_LINEARRING;
   }
+  
+  public LinearRing copy() {
+    return new LinearRing(points.copy(), factory);
+  }
 
   public Geometry reverse()
   {
-    CoordinateSequence seq = (CoordinateSequence) points.clone();
+    CoordinateSequence seq = points.copy();
     CoordinateSequences.reverse(seq);
     LinearRing rev = getFactory().createLinearRing(seq);
     return rev;

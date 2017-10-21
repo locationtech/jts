@@ -116,7 +116,7 @@ public class DouglasPeuckerSimplifier
   public Geometry getResultGeometry()
   {
     // empty input produces an empty result
-    if (inputGeom.isEmpty()) return (Geometry) inputGeom.clone();
+    if (inputGeom.isEmpty()) return inputGeom.copy();
     
     return (new DPTransformer(isEnsureValidTopology, distanceTolerance)).transform(inputGeom);
   }

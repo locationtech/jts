@@ -112,6 +112,14 @@ public class MultiLineString
     }
     return getFactory().createMultiLineString(revLines);
   }
+  
+  public MultiLineString copy() {
+    LineString[] lineStrings = new LineString[this.geometries.length];
+    for (int i = 0; i < lineStrings.length; i++) {
+      lineStrings[i] = (LineString) this.geometries[i].copy();
+    }
+    return new MultiLineString(lineStrings, factory);
+  }
 
   public boolean equalsExact(Geometry other, double tolerance) {
     if (!isEquivalentClass(other)) {

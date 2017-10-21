@@ -289,6 +289,10 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
       return null;
     }
   }
+  
+  public Coordinate copy() {
+	return new Coordinate(this);
+  }
 
   /**
    * Computes the 2-dimensional Euclidean distance to another location.

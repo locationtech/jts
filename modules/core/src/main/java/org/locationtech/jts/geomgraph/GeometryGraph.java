@@ -176,7 +176,7 @@ public class GeometryGraph
     int i = 0;
     for (Iterator it = coll.iterator(); it.hasNext(); ) {
       Node node = (Node) it.next();
-      pts[i++] = (Coordinate) node.getCoordinate().clone();
+      pts[i++] = node.getCoordinate().copy();
     }
     return pts;
   }

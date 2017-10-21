@@ -15,6 +15,7 @@ package org.locationtech.jts.geom.impl;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
+import java.util.Arrays;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -182,8 +183,11 @@ public abstract class PackedCoordinateSequence
 
   /**
    * @see java.lang.Object#clone()
+   * @deprecated
    */
   public abstract Object clone();
+  
+  public abstract PackedCoordinateSequence copy();
 
   /**
    * Sets the ordinate of a coordinate in this sequence.
@@ -307,10 +311,14 @@ public abstract class PackedCoordinateSequence
 
     /**
      * @see java.lang.Object#clone()
+     * @deprecated
      */
     public Object clone() {
-      double[] clone = new double[coords.length];
-      System.arraycopy(coords, 0, clone, 0, coords.length);
+      return copy();
+    }
+    
+    public Double copy() {
+      double[] clone = Arrays.copyOf(coords, coords.length);
       return new Double(clone, dimension);
     }
     
@@ -441,10 +449,14 @@ public abstract class PackedCoordinateSequence
 
     /**
      * @see java.lang.Object#clone()
+     * @deprecated
      */
     public Object clone() {
-      float[] clone = new float[coords.length];
-      System.arraycopy(coords, 0, clone, 0, coords.length);
+      return copy();
+    }
+    
+    public Float copy() {
+      float[] clone = Arrays.copyOf(coords, coords.length);
       return new Float(clone, dimension);
     }
 

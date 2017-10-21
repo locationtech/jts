@@ -207,7 +207,7 @@ public class LocationIndexedLine
    */
   public LinearLocation clampIndex(LinearLocation index)
   {
-    LinearLocation loc = (LinearLocation) index.clone();
+    LinearLocation loc = index.copy();
     loc.clamp(linearGeom);
     return loc;
   }

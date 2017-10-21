@@ -1395,8 +1395,8 @@ public abstract class Geometry
         return OverlayOp.createEmptyResult(OverlayOp.UNION, this, other, factory);
         
     // special case: if either input is empty ==> other input
-      if (this.isEmpty()) return (Geometry) other.clone();
-      if (other.isEmpty()) return (Geometry) clone();
+      if (this.isEmpty()) return other.copy();
+      if (other.isEmpty()) return copy();
     }
     
     // TODO: optimize if envelopes of geometries do not intersect
@@ -1427,7 +1427,7 @@ public abstract class Geometry
   {
     // special case: if A.isEmpty ==> empty; if B.isEmpty ==> A
     if (this.isEmpty()) return OverlayOp.createEmptyResult(OverlayOp.DIFFERENCE, this, other, factory);
-    if (other.isEmpty()) return (Geometry) clone();
+    if (other.isEmpty()) return copy();
 
     checkNotGeometryCollection(this);
     checkNotGeometryCollection(other);
@@ -1461,8 +1461,8 @@ public abstract class Geometry
         return OverlayOp.createEmptyResult(OverlayOp.SYMDIFFERENCE, this, other, factory);
         
     // special case: if either input is empty ==> result = other arg
-      if (this.isEmpty()) return (Geometry) other.clone();
-      if (other.isEmpty()) return (Geometry) clone();
+      if (this.isEmpty()) return other.copy();
+      if (other.isEmpty()) return copy();
     }
 
     checkNotGeometryCollection(this);
@@ -1632,6 +1632,7 @@ public abstract class Geometry
    * their internal data.  Overrides should call this method first.
    *
    * @return a clone of this instance
+   * @deprecated
    */
   public Object clone() {
     try {
@@ -1644,6 +1645,16 @@ public abstract class Geometry
       return null;
     }
   }
+  
+  /**
+   * Creates and returns a full copy of this {@link Geometry} object
+   * (including all coordinates contained by it).
+   * Subclasses are responsible for implementing this method and copying
+   * their internal data.
+   *
+   * @return a clone of this instance
+   */
+  abstract public Geometry copy();
 
   /**
    *  Converts this <code>Geometry</code> to <b>normal form</b> (or <b>
@@ -1671,7 +1682,7 @@ public abstract class Geometry
    */
   public Geometry norm()
   {
-    Geometry copy = (Geometry) clone();
+    Geometry copy = copy();
     copy.normalize();
     return copy;
   }

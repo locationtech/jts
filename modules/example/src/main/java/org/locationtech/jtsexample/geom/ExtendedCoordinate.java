@@ -53,6 +53,10 @@ public class ExtendedCoordinate
     super(coord);
     m = coord.m;
   }
+  
+  public ExtendedCoordinate copy() {
+    return new ExtendedCoordinate(this);
+  }
 
   /**
    * An example of extended data.
