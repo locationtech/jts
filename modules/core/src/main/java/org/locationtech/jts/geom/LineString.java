@@ -182,7 +182,7 @@ public class LineString
    */
   public Geometry reverse()
   {
-    CoordinateSequence seq = (CoordinateSequence) points.clone();
+    CoordinateSequence seq = points.copy();
     CoordinateSequences.reverse(seq);
     LineString revLine = getFactory().createLineString(seq);
     return revLine;
