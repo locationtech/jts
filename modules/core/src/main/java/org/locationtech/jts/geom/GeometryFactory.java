@@ -215,7 +215,7 @@ public class GeometryFactory
   {
   	// null envelope - return empty point geometry
     if (envelope.isNull()) {
-      return createPoint((CoordinateSequence)null);
+      return createPoint();
     }
     
     // point?
@@ -252,6 +252,10 @@ public class GeometryFactory
     return precisionModel;
   }
 
+  public Point createPoint() {
+	return createPoint(getCoordinateSequenceFactory().create(new Coordinate[]{}));
+  }
+  
   /**
    * Creates a Point using the given Coordinate.
    * A null Coordinate creates an empty Geometry.
@@ -273,6 +277,10 @@ public class GeometryFactory
   public Point createPoint(CoordinateSequence coordinates) {
   	return new Point(coordinates, this);
   }
+  
+  public MultiLineString createMultiLineString() {
+    return new MultiLineString(null, this);
+  }
 
   /**
    * Creates a MultiLineString using the given LineStrings; a null or empty
@@ -284,6 +292,10 @@ public class GeometryFactory
   public MultiLineString createMultiLineString(LineString[] lineStrings) {
   	return new MultiLineString(lineStrings, this);
   }
+  
+  public GeometryCollection createGeometryCollection() {
+    return new GeometryCollection(null, this);
+  }
 
   /**
    * Creates a GeometryCollection using the given Geometries; a null or empty
@@ -294,6 +306,10 @@ public class GeometryFactory
    */
   public GeometryCollection createGeometryCollection(Geometry[] geometries) {
   	return new GeometryCollection(geometries, this);
+  }
+  
+  public MultiPolygon createMultiPolygon() {
+    return new MultiPolygon(null, this);
   }
 
   /**
@@ -309,6 +325,10 @@ public class GeometryFactory
    */
   public MultiPolygon createMultiPolygon(Polygon[] polygons) {
     return new MultiPolygon(polygons, this);
+  }
+  
+  public LinearRing createLinearRing() {
+    return createLinearRing(getCoordinateSequenceFactory().create(new Coordinate[]{}));
   }
 
   /**
@@ -334,6 +354,10 @@ public class GeometryFactory
    */
   public LinearRing createLinearRing(CoordinateSequence coordinates) {
     return new LinearRing(coordinates, this);
+  }
+  
+  public MultiPoint createMultiPoint() {
+    return new MultiPoint(null, this);
   }
 
   /**
@@ -438,6 +462,10 @@ public class GeometryFactory
   public Polygon createPolygon(LinearRing shell) {
     return createPolygon(shell, null);
   }
+  
+  public Polygon createPolygon() {
+    return createPolygon(null, null);
+  }
 
   /**
    *  Build an appropriate <code>Geometry</code>, <code>MultiGeometry</code>, or
@@ -492,7 +520,7 @@ public class GeometryFactory
      */
     // for the empty geometry, return an empty GeometryCollection
     if (geomClass == null) {
-      return createGeometryCollection(null);
+      return createGeometryCollection();
     }
     if (isHeterogeneous || hasGeometryCollection) {
       return createGeometryCollection(toGeometryArray(geomList));
@@ -515,6 +543,10 @@ public class GeometryFactory
       Assert.shouldNeverReachHere("Unhandled class: " + geom0.getClass().getName());
     }
     return geom0;
+  }
+  
+  public LineString createLineString() {
+    return createLineString(getCoordinateSequenceFactory().create(new Coordinate[]{}));
   }
 
   /**

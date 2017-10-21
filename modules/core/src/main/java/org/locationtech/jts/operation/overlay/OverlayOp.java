@@ -642,16 +642,16 @@ public class OverlayOp
   	Geometry result = null;
   	switch (resultDimension(overlayOpCode, a, b)) {
   	case -1:
-  		result = geomFact.createGeometryCollection(new Geometry[0]);
+  		result = geomFact.createGeometryCollection();
   		break;
   	case 0:
-  		result =  geomFact.createPoint((Coordinate) null);
+  		result =  geomFact.createPoint();
   		break;
   	case 1:
-  		result =  geomFact.createLineString((Coordinate[]) null);
+  		result =  geomFact.createLineString();
   		break;
   	case 2:
-  		result =  geomFact.createPolygon(null, null);
+  		result =  geomFact.createPolygon();
   		break;
   	}
 		return result;

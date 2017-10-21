@@ -128,7 +128,7 @@ public class Point
    * @see Geometry#getBoundary
    */
   public Geometry getBoundary() {
-    return getFactory().createGeometryCollection(null);
+    return getFactory().createGeometryCollection();
   }
 
   protected Envelope computeEnvelopeInternal() {

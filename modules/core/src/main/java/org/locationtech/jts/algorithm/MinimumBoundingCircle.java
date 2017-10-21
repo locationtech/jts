@@ -93,7 +93,7 @@ public class MinimumBoundingCircle
 		
 		compute();
 		if (centre == null)
-			return input.getFactory().createPolygon(null, null);
+			return input.getFactory().createPolygon();
 		Point centrePoint = input.getFactory().createPoint(centre);
 		if (radius == 0.0)
 			return centrePoint;
@@ -114,7 +114,7 @@ public class MinimumBoundingCircle
     compute();
     switch (extremalPts.length) {
     case 0:
-      return input.getFactory().createLineString((CoordinateSequence) null);
+      return input.getFactory().createLineString();
     case 1:
       return input.getFactory().createPoint(centre);
     }
@@ -135,7 +135,7 @@ public class MinimumBoundingCircle
     compute();
     switch (extremalPts.length) {
     case 0:
-      return input.getFactory().createLineString((CoordinateSequence) null);
+      return input.getFactory().createLineString();
     case 1:
       return input.getFactory().createPoint(centre);
     }

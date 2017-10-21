@@ -151,7 +151,7 @@ public class GeometryCombiner
     if (elems.size() == 0) {
     	if (geomFactory != null) {
       // return an empty GC
-    		return geomFactory.createGeometryCollection(null);
+    		return geomFactory.createGeometryCollection();
     	}
     	return null;
     }

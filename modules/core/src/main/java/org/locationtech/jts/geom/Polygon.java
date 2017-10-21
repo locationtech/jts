@@ -274,7 +274,7 @@ public class Polygon
    */
   public Geometry getBoundary() {
     if (isEmpty()) {
-      return getFactory().createMultiLineString(null);
+      return getFactory().createMultiLineString();
     }
     LinearRing[] rings = new LinearRing[holes.length + 1];
     rings[0] = shell;

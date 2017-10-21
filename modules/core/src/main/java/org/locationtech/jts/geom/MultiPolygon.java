@@ -92,7 +92,7 @@ public class MultiPolygon
    */
   public Geometry getBoundary() {
     if (isEmpty()) {
-      return getFactory().createMultiLineString(null);
+      return getFactory().createMultiLineString();
     }
     ArrayList allRings = new ArrayList();
     for (int i = 0; i < geometries.length; i++) {

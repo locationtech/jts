@@ -169,7 +169,7 @@ public class GeometryEditor
     Polygon newPolygon = (Polygon) operation.edit(polygon, factory);
     // create one if needed
     if (newPolygon == null)
-      newPolygon = factory.createPolygon((CoordinateSequence) null);
+      newPolygon = factory.createPolygon();
     if (newPolygon.isEmpty()) {
       //RemoveSelectedPlugIn relies on this behaviour. [Jon Aquino]
       return newPolygon;
@@ -178,7 +178,7 @@ public class GeometryEditor
     LinearRing shell = (LinearRing) edit(newPolygon.getExteriorRing(), operation);
     if (shell == null || shell.isEmpty()) {
       //RemoveSelectedPlugIn relies on this behaviour. [Jon Aquino]
-      return factory.createPolygon(null, null);
+      return factory.createPolygon();
     }
 
     ArrayList holes = new ArrayList();
