@@ -51,7 +51,12 @@ public class InteriorPointLine {
 
   public InteriorPointLine(Geometry g)
   {
-    centroid = g.getCentroid().getCoordinate();
+    if (g.isEmpty()) {
+      centroid = null;
+    } else {
+      centroid = Centroid.getCentroid(g);
+      g.getPrecisionModel().makePrecise(centroid);
+    }
     addInterior(g);
     if (interiorPoint == null)
       addEndpoints(g);

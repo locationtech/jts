@@ -22,6 +22,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
 
 
@@ -171,7 +172,7 @@ public class VoronoiDiagramBuilder
 			if (clipEnv.contains(g.getEnvelopeInternal()))
 					result = g;
 			else if (clipEnv.intersects(g.getEnvelopeInternal())) {
-				result = clipPoly.intersection(g);
+				result = OverlayOp.intersection(clipPoly, g);
 				// keep vertex key info
 				result.setUserData(g.getUserData());
 			}

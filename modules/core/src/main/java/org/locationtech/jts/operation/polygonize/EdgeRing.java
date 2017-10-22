@@ -11,7 +11,6 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
 
-
 package org.locationtech.jts.operation.polygonize;
 
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.operation.valid.IsValidOp;
 import org.locationtech.jts.planargraph.DirectedEdge;
 import org.locationtech.jts.util.Assert;
 
@@ -231,7 +231,7 @@ class EdgeRing {
     getCoordinates();
     if (ringPts.length <= 3) return false;
     getRing();
-    return ring.isValid();
+    return IsValidOp.isValid(ring);
   }
 
   public boolean isIncludedSet() {
