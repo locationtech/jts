@@ -405,8 +405,7 @@ public abstract class Geometry
    */
   public boolean isSimple()
   {
-    IsSimpleOp op = new IsSimpleOp(this);
-    return op.isSimple();
+    return IsSimpleOp.isSimple(this);
   }
 
   /**
@@ -684,10 +683,7 @@ public abstract class Geometry
    *      Returns <code>false</code> if both <code>Geometry</code>s are points
    */
   public boolean touches(Geometry g) {
-    // short-circuit test
-    if (! getEnvelopeInternal().intersects(g.getEnvelopeInternal()))
-      return false;
-    return relate(g).isTouches(getDimension(), g.getDimension());
+    return RelateOp.touches(this, g);
   }
 
   /**
@@ -714,46 +710,7 @@ public abstract class Geometry
    * @see Geometry#disjoint
    */
   public boolean intersects(Geometry g) {
-
-    // short-circuit envelope test
-    if (! getEnvelopeInternal().intersects(g.getEnvelopeInternal()))
-      return false;
-
-    /**
-     * TODO: (MD) Add optimizations:
-     *
-     * - for P-A case:
-     * If P is in env(A), test for point-in-poly
-     *
-     * - for A-A case:
-     * If env(A1).overlaps(env(A2))
-     * test for overlaps via point-in-poly first (both ways)
-     * Possibly optimize selection of point to test by finding point of A1
-     * closest to centre of env(A2).
-     * (Is there a test where we shouldn't bother - e.g. if env A
-     * is much smaller than env B, maybe there's no point in testing
-     * pt(B) in env(A)?
-     */
-
-    // optimization for rectangle arguments
-    if (isRectangle()) {
-      return RectangleIntersects.intersects((Polygon) this, g);
-    }
-    if (g.isRectangle()) {
-      return RectangleIntersects.intersects((Polygon) g, this);
-    }
-    if (isGeometryCollection() || g.isGeometryCollection()) {
-      for (int i = 0 ; i < getNumGeometries() ; i++) {
-        for (int j = 0 ; j < g.getNumGeometries() ; j++) {
-          if (getGeometryN(i).intersects(g.getGeometryN(j))) {
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-    // general case
-    return relate(g).isIntersects();
+	return RelateOp.intersects(this, g);
   }
 
   /**
@@ -781,10 +738,7 @@ public abstract class Geometry
    *@return        <code>true</code> if the two <code>Geometry</code>s cross.
    */
   public boolean crosses(Geometry g) {
-    // short-circuit test
-    if (! getEnvelopeInternal().intersects(g.getEnvelopeInternal()))
-      return false;
-    return relate(g).isCrosses(getDimension(), g.getDimension());
+	return RelateOp.crosses(this, g);
   }
 
   /**
@@ -847,25 +801,7 @@ public abstract class Geometry
    * @see Geometry#covers
    */
   public boolean contains(Geometry g) {
-    // optimization - lower dimension cannot contain areas
-    if (g.getDimension() == 2 && getDimension() < 2) {
-      return false;
-    }
-    // optimization - P cannot contain a non-zero-length L
-    // Note that a point can contain a zero-length lineal geometry, 
-    // since the line has no boundary due to Mod-2 Boundary Rule
-    if (g.getDimension() == 1 && getDimension() < 1 && g.getLength() > 0.0) {
-      return false;
-    }
-    // optimization - envelope test
-    if (! getEnvelopeInternal().contains(g.getEnvelopeInternal()))
-      return false;
-    // optimization for rectangle arguments
-    if (isRectangle()) {
-      return RectangleContains.contains((Polygon) this, g);
-    }
-    // general case
-    return relate(g).isContains();
+    return RelateOp.contains(this, g);
   }
 
   /**
@@ -890,10 +826,7 @@ public abstract class Geometry
    *@return        <code>true</code> if the two <code>Geometry</code>s overlap.
    */
   public boolean overlaps(Geometry g) {
-    // short-circuit test
-    if (! getEnvelopeInternal().intersects(g.getEnvelopeInternal()))
-      return false;
-    return relate(g).isOverlaps(getDimension(), g.getDimension());
+    return RelateOp.overlaps(this, g);
   }
 
   /**
@@ -931,24 +864,7 @@ public abstract class Geometry
    * @see Geometry#coveredBy
    */
   public boolean covers(Geometry g) {
-    // optimization - lower dimension cannot cover areas
-    if (g.getDimension() == 2 && getDimension() < 2) {
-      return false;
-    }
-    // optimization - P cannot cover a non-zero-length L
-    // Note that a point can cover a zero-length lineal geometry
-    if (g.getDimension() == 1 && getDimension() < 1 && g.getLength() > 0.0) {
-      return false;
-    }
-    // optimization - envelope test
-    if (! getEnvelopeInternal().covers(g.getEnvelopeInternal()))
-      return false;
-    // optimization for rectangle arguments
-    if (isRectangle()) {
-    	// since we have already tested that the test envelope is covered
-      return true;
-    }
-    return relate(g).isCovers();
+    return RelateOp.covers(this, g);
   }
 
   /**
@@ -1306,31 +1222,7 @@ public abstract class Geometry
    */
   public Geometry intersection(Geometry other)
   {
-  	/**
-  	 * TODO: MD - add optimization for P-A case using Point-In-Polygon
-  	 */
-    // special case: if one input is empty ==> empty
-    if (this.isEmpty() || other.isEmpty()) 
-      return OverlayOp.createEmptyResult(OverlayOp.INTERSECTION, this, other, factory);
-
-    // compute for GCs
-    // (An inefficient algorithm, but will work)
-    // TODO: improve efficiency of computation for GCs
-    if (this.isGeometryCollection()) {
-      final Geometry g2 = other;
-      return GeometryCollectionMapper.map(
-          (GeometryCollection) this,
-          new GeometryMapper.MapOp() {
-            public Geometry map(Geometry g) {
-              return g.intersection(g2);
-            }
-      });
-    }
-
-    // No longer needed since GCs are handled by previous code
-    //checkNotGeometryCollection(this);
-    //checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.INTERSECTION);
+	return OverlayOp.intersection(this, other);
   }
 
   /**
@@ -1369,21 +1261,7 @@ public abstract class Geometry
    */
   public Geometry union(Geometry other)
   {
-    // handle empty geometry cases
-    if (this.isEmpty() || other.isEmpty()) {
-      if (this.isEmpty() && other.isEmpty())
-        return OverlayOp.createEmptyResult(OverlayOp.UNION, this, other, factory);
-        
-    // special case: if either input is empty ==> other input
-      if (this.isEmpty()) return other.copy();
-      if (other.isEmpty()) return copy();
-    }
-    
-    // TODO: optimize if envelopes of geometries do not intersect
-    
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.UNION);
+    return OverlayOp.union(this, other);
   }
 
   /**
@@ -1405,13 +1283,7 @@ public abstract class Geometry
    */
   public Geometry difference(Geometry other)
   {
-    // special case: if A.isEmpty ==> empty; if B.isEmpty ==> A
-    if (this.isEmpty()) return OverlayOp.createEmptyResult(OverlayOp.DIFFERENCE, this, other, factory);
-    if (other.isEmpty()) return copy();
-
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.DIFFERENCE);
+    return OverlayOp.difference(this, other);
   }
 
   /**
@@ -1434,20 +1306,7 @@ public abstract class Geometry
    */
   public Geometry symDifference(Geometry other)
   {
-    // handle empty geometry cases
-    if (this.isEmpty() || other.isEmpty()) {
-      // both empty - check dimensions
-      if (this.isEmpty() && other.isEmpty())
-        return OverlayOp.createEmptyResult(OverlayOp.SYMDIFFERENCE, this, other, factory);
-        
-    // special case: if either input is empty ==> result = other arg
-      if (this.isEmpty()) return other.copy();
-      if (other.isEmpty()) return copy();
-    }
-
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.SYMDIFFERENCE);
+    return OverlayOp.symDifference(this, other);
   }
 
 	/**
@@ -1808,7 +1667,7 @@ public abstract class Geometry
    * 
    * @return true if this is a heterogeneous GeometryCollection
    */
-  protected boolean isGeometryCollection()
+  public boolean isGeometryCollection()
   {
     return getSortIndex() == SORTINDEX_GEOMETRYCOLLECTION;
   }

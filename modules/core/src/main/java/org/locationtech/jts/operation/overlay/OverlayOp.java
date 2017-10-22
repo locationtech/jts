@@ -20,9 +20,12 @@ import java.util.List;
 import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.geom.util.GeometryCollectionMapper;
+import org.locationtech.jts.geom.util.GeometryMapper;
 import org.locationtech.jts.geomgraph.Depth;
 import org.locationtech.jts.geomgraph.DirectedEdge;
 import org.locationtech.jts.geomgraph.DirectedEdgeStar;
@@ -34,6 +37,7 @@ import org.locationtech.jts.geomgraph.Node;
 import org.locationtech.jts.geomgraph.PlanarGraph;
 import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.operation.GeometryGraphOperation;
+import org.locationtech.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
 import org.locationtech.jts.util.Assert;
 
 /**
@@ -138,6 +142,91 @@ public class OverlayOp
             || (     loc0 != Location.INTERIOR &&  loc1 == Location.INTERIOR);
     }
     return false;
+  }
+  
+  public static Geometry intersection(Geometry geom, Geometry other)
+  {
+  	/**
+  	 * TODO: MD - add optimization for P-A case using Point-In-Polygon
+  	 */
+    // special case: if one input is empty ==> empty
+    if (geom.isEmpty() || other.isEmpty()) 
+      return OverlayOp.createEmptyResult(OverlayOp.INTERSECTION, geom, other, geom.getFactory());
+
+    // compute for GCs
+    if (geom.isGeometryCollection()) {
+      final Geometry g2 = other;
+      return GeometryCollectionMapper.map(
+          (GeometryCollection) geom,
+          new GeometryMapper.MapOp() {
+        public Geometry map(Geometry g) {
+          return g.intersection(g2);
+        }
+      });
+    }
+//    if (isGeometryCollection(other))
+//      return other.intersection(this);
+    
+    if (geom.isGeometryCollection() || other.isGeometryCollection())
+	  throw new IllegalArgumentException("This method does not support GeometryCollection arguments");
+    return SnapIfNeededOverlayOp.overlayOp(geom, other, OverlayOp.INTERSECTION);
+  }
+  
+  /**
+   * @see Geometry#union(Geometry)
+   */
+  public static Geometry union(Geometry geom, Geometry other)
+  {
+    // handle empty geometry cases
+    if (geom.isEmpty() || other.isEmpty()) {
+      if (geom.isEmpty() && other.isEmpty())
+        return OverlayOp.createEmptyResult(OverlayOp.UNION, geom, other, geom.getFactory());
+        
+    // special case: if either input is empty ==> other input
+      if (geom.isEmpty()) return other.copy();
+      if (other.isEmpty()) return geom.copy();
+    }
+    
+    // TODO: optimize if envelopes of geometries do not intersect
+    
+    if (geom.isGeometryCollection() || other.isGeometryCollection())
+  	  throw new IllegalArgumentException("This method does not support GeometryCollection arguments");
+    return SnapIfNeededOverlayOp.overlayOp(geom, other, OverlayOp.UNION);
+  }
+  
+  /**
+   * @see Geometry#difference(Geometry)
+   */
+  public static Geometry difference(Geometry geom, Geometry other)
+  {
+    // special case: if A.isEmpty ==> empty; if B.isEmpty ==> A
+    if (geom.isEmpty()) return OverlayOp.createEmptyResult(OverlayOp.DIFFERENCE, geom, other, geom.getFactory());
+    if (other.isEmpty()) return geom.copy();
+
+    if (geom.isGeometryCollection() || other.isGeometryCollection())
+    	  throw new IllegalArgumentException("This method does not support GeometryCollection arguments");
+    return SnapIfNeededOverlayOp.overlayOp(geom, other, OverlayOp.DIFFERENCE);
+  }
+
+  /**
+   * @see Geometry#symDifference(Geometry)
+   */
+  public static Geometry symDifference(Geometry geom, Geometry other)
+  {
+    // handle empty geometry cases
+    if (geom.isEmpty() || other.isEmpty()) {
+      // both empty - check dimensions
+      if (geom.isEmpty() && other.isEmpty())
+        return OverlayOp.createEmptyResult(OverlayOp.SYMDIFFERENCE, geom, other, geom.getFactory());
+        
+    // special case: if either input is empty ==> result = other arg
+      if (geom.isEmpty()) return other.copy();
+      if (other.isEmpty()) return geom.copy();
+    }
+
+    if (geom.isGeometryCollection() || other.isGeometryCollection())
+    	  throw new IllegalArgumentException("This method does not support GeometryCollection arguments");
+    return SnapIfNeededOverlayOp.overlayOp(geom, other, OverlayOp.SYMDIFFERENCE);
   }
 
   private final PointLocator ptLocator = new PointLocator();
