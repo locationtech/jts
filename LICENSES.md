@@ -19,3 +19,11 @@ The JTS tests module contains source from JDOM Contrib 1.1.3 which is available 
 Typical users of this library will not need to depend on this module.
 
 [1] https://github.com/hunterhacker/jdom/blob/master/LICENSE.txt
+
+### JTS Oracle IO
+
+The JTS IO module for Oracle support uses code from the GeoTools project.  This code has been licensed to the JTS project under the OSGeo BSD License [2] by the GeoTools PSC [3].
+
+[2] https://www.osgeo.org/sites/osgeo.org/files/Page/osgeo-bsd-license.txt
+
+[3] https://github.com/geotools/geotools/wiki/JTS-ORA-Contribution
