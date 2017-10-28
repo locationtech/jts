@@ -45,7 +45,18 @@ import org.locationtech.jts.geom.PrecisionModel;
  * This class is designed to support reuse of a single instance to read multiple
  * geometries. This class is not thread-safe; each thread should create its own
  * instance.
- *
+ * <p>
+ * As of version 1.15, the reader can read geometries following OGC 06-103r4
+ * speification used by Spatialite/Geopackage.
+ * <p>
+ * The difference between PostGIS EWKB format and the new OGC specification is
+ * that Z and M coordinates are detected with a bit mask on the higher byte in
+ * the former case (0x80 for Z and 0x40 for M) while new OGC specification use
+ * specif int ranges for 2D gemetries, Z geometries (2D code+1000), M geometries
+ * (2D code+2000) and ZM geometries (2D code+3000).
+ * <p>
+ * Note that the {@link WKBWriter} is not changed and still write PostGIS WKB
+ * geometries
  * @see WKBWriter for a formal format specification
  */
 public class WKBReader

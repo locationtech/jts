@@ -64,6 +64,10 @@ import org.locationtech.jts.util.AssertionFailedException;
  * (The specification uses a syntax language similar to that used in
  * the C and Java language specifications.)
  * <p>
+ * As of version 1.15, JTS can read (but not write) WKT Strings including Z, M or ZM
+ * in the name of the geometry type (ex. POINT Z, LINESTRINGZM).
+ * Note that it only makes the reader more flexible, but JTS could already read
+ * 3D coordinates from WKT String and still can't read 4D coordinates.
  *
  * <blockquote><pre>
  * <i>WKTGeometry:</i> one of<i>
@@ -72,23 +76,23 @@ import org.locationtech.jts.util.AssertionFailedException;
  *       WKTMultiPoint  WKTMultiLineString  WKTMultiPolygon
  *       WKTGeometryCollection</i>
  *
- * <i>WKTPoint:</i> <b>POINT ( </b><i>Coordinate</i> <b>)</b>
+ * <i>WKTPoint:</i> <b>POINT</b><i>[Dimension]</i> <b>( </b><i>Coordinate</i> <b>)</b>
  *
- * <i>WKTLineString:</i> <b>LINESTRING</b> <i>CoordinateSequence</i>
+ * <i>WKTLineString:</i> <b>LINESTRING</b><i>[Dimension]</i> <i>CoordinateSequence</i>
  *
- * <i>WKTLinearRing:</i> <b>LINEARRING</b> <i>CoordinateSequence</i>
+ * <i>WKTLinearRing:</i> <b>LINEARRING</b><i>[Dimension]</i> <i>CoordinateSequence</i>
  *
- * <i>WKTPolygon:</i> <b>POLYGON</b> <i>CoordinateSequenceList</i>
+ * <i>WKTPolygon:</i> <b>POLYGON</b><i>[Dimension]</i> <i>CoordinateSequenceList</i>
  *
- * <i>WKTMultiPoint:</i> <b>MULTIPOINT</b> <i>CoordinateSingletonList</i>
+ * <i>WKTMultiPoint:</i> <b>MULTIPOINT</b><i>[Dimension]</i> <i>CoordinateSingletonList</i>
  *
- * <i>WKTMultiLineString:</i> <b>MULTILINESTRING</b> <i>CoordinateSequenceList</i>
+ * <i>WKTMultiLineString:</i> <b>MULTILINESTRING</b><i>[Dimension]</i> <i>CoordinateSequenceList</i>
  *
  * <i>WKTMultiPolygon:</i>
- *         <b>MULTIPOLYGON (</b> <i>CoordinateSequenceList {</i> , <i>CoordinateSequenceList }</i> <b>)</b>
+ *         <b>MULTIPOLYGON</b><i>[Dimension]</i> <b>(</b> <i>CoordinateSequenceList {</i> , <i>CoordinateSequenceList }</i> <b>)</b>
  *
  * <i>WKTGeometryCollection: </i>
- *         <b>GEOMETRYCOLLECTION (</b> <i>WKTGeometry {</i> , <i>WKTGeometry }</i> <b>)</b>
+ *         <b>GEOMETRYCOLLECTION</b><i>[Dimension]</i> <b> (</b> <i>WKTGeometry {</i> , <i>WKTGeometry }</i> <b>)</b>
  *
  * <i>CoordinateSingletonList:</i>
  *         <b>(</b> <i>CoordinateSingleton {</i> <b>,</b> <i>CoordinateSingleton }</i> <b>)</b>
@@ -110,6 +114,9 @@ import org.locationtech.jts.util.AssertionFailedException;
  *         Number Number Number<sub>opt</sub></i>
  *
  * <i>Number:</i> A Java-style floating-point number (including <tt>NaN</tt>, with arbitrary case)
+ *
+ * <i>Dimension:</i>
+ *         <b>Z</b>|<b> Z</b>|<b>M</b>|<b> M</b>|<b>ZM</b>|<b> ZM</b>
  *
  * </pre></blockquote>
  *
