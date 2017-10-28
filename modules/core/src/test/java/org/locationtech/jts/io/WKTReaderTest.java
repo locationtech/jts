@@ -99,7 +99,7 @@ public class WKTReaderTest extends TestCase {
       assertEquals("GEOMETRYCOLLECTION EMPTY", writer.write(reader.read("GEOMETRYCOLLECTION EMPTY")));
   }
 
-  public void testReadZM() throws Exception {
+  public void testReadPointZM() throws Exception {
       assertEquals(new Coordinate(1, 2, 3), reader.read("POINT(1 2 3)").getCoordinate());
       assertEquals(new Coordinate(1, 2, 3), reader.read("POINTZ(1 2 3)").getCoordinate());
       assertEquals(new Coordinate(1, 2, 3), reader.read("POINT Z(1 2 3)").getCoordinate());
@@ -107,6 +107,33 @@ public class WKTReaderTest extends TestCase {
       assertEquals(new Coordinate(1, 2, 3), reader.read("POINT M(1 2 3)").getCoordinate());
       assertEquals(new Coordinate(1, 2, 3), reader.read("POINTZM(1 2 3 4)").getCoordinate());
       assertEquals(new Coordinate(1, 2, 3), reader.read("POINT ZM(1 2 3 4)").getCoordinate());
+      assertEquals(new Coordinate(1, 2, 3), reader.read("Point Zm(1 2 3 4)").getCoordinate());
+  }
+
+  public void testReadLineStringZM() throws Exception {
+    assertEquals(new Coordinate(4, 5, 6), reader.read("LINESTRING(1 2 3, 4 5 6)").getCoordinates()[1]);
+    assertEquals(new Coordinate(4, 5, 6), reader.read("LINESTRINGZ(1 2 3, 4 5 6)").getCoordinates()[1]);
+    assertEquals(new Coordinate(4, 5, 6), reader.read("LINESTRING Z(1 2 3, 4 5 6)").getCoordinates()[1]);
+    assertEquals(new Coordinate(4, 5, 6), reader.read("LINESTRINGM(1 2 3, 4 5 6)").getCoordinates()[1]);
+    assertEquals(new Coordinate(4, 5, 6), reader.read("LINESTRING M(1 2 3, 4 5 6)").getCoordinates()[1]);
+    assertEquals(new Coordinate(4, 5, 6), reader.read("LINESTRINGZM(1 2 3 10, 4 5 6 10)").getCoordinates()[1]);
+    assertEquals(new Coordinate(4, 5, 6), reader.read("LINESTRING ZM(1 2 3 10, 4 5 6 10)").getCoordinates()[1]);
+    assertEquals(new Coordinate(4, 5, 6), reader.read("LineString Zm(1 2 3 10, 4 5 6 10)").getCoordinates()[1]);
+  }
+
+  public void testReadPolygonZM() throws Exception {
+    assertEquals(new Coordinate(7, 8, 9), reader.read("POLYGON((1 2 3, 4 5 6, 7 8 9, 1 2 3))").getCoordinates()[2]);
+    assertEquals(new Coordinate(7, 8, 9), reader.read("POLYGONZ((1 2 3, 4 5 6, 7 8 9, 1 2 3))").getCoordinates()[2]);
+    assertEquals(new Coordinate(7, 8, 9), reader.read("POLYGON Z((1 2 3, 4 5 6, 7 8 9, 1 2 3))").getCoordinates()[2]);
+    assertEquals(new Coordinate(7, 8, 9), reader.read("POLYGONM((1 2 3, 4 5 6, 7 8 9, 1 2 3))").getCoordinates()[2]);
+    assertEquals(new Coordinate(7, 8, 9), reader.read("POLYGON M((1 2 3, 4 5 6, 7 8 9, 1 2 3))").getCoordinates()[2]);
+    assertEquals(new Coordinate(7, 8, 9), reader.read("POLYGONZM((1 2 3 10, 4 5 6 11, 7 8 9 12, 1 2 3 13))").getCoordinates()[2]);
+    assertEquals(new Coordinate(7, 8, 9), reader.read("POLYGON ZM((1 2 3 10, 4 5 6 11, 7 8 9 12, 1 2 3 13))").getCoordinates()[2]);
+    assertEquals(new Coordinate(7, 8, 9), reader.read("Polygon Zm((1 2 3 10, 4 5 6 11, 7 8 9 12, 1 2 3 13))").getCoordinates()[2]);
+  }
+
+  public void testReadMultiPolygonZM() throws Exception {
+    assertEquals(new Coordinate(7, 8, 9), reader.read("MultiPolygon Zm(((1 2 3 10, 4 5 6 11, 7 8 9 12, 1 2 3 13)))").getCoordinates()[2]);
   }
 
   public void testReadLargeNumbers() throws Exception {
