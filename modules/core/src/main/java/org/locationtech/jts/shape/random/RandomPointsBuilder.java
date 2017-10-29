@@ -80,7 +80,7 @@ extends GeometricShapeBuilder
   			continue;
   		pts[i++] = p;
   	}
-  	return geomFactory.createMultiPoint(pts);
+  	return geomFactory.createMultiPointFromCoords(pts);
   }
   
   protected boolean isInExtent(Coordinate p)

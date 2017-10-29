@@ -77,7 +77,7 @@ public class PointGeometryUnion
 			ptComp = geomFact.createPoint(coords[0]);
 		}
 		else {
-			ptComp = geomFact.createMultiPoint(coords);
+			ptComp = geomFact.createMultiPointFromCoords(coords);
 		}
 		
 		// add point component to the other geometry

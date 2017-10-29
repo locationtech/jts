@@ -384,6 +384,12 @@ public class GeometryFactory
                               : null);
   }
 
+  public MultiPoint createMultiPointFromCoords(Coordinate[] coordinates) {
+      return createMultiPoint(coordinates != null
+                              ? getCoordinateSequenceFactory().create(coordinates)
+                              : null);
+  }
+
   /**
    * Creates a {@link MultiPoint} using the 
    * points in the given {@link CoordinateSequence}.
