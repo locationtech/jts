@@ -196,6 +196,16 @@ implements SpatialIndex, Serializable
     super.insert(itemEnv, item);
   }
 
+  @Override
+  protected void query(Object searchBounds, AbstractNode node, List matches) {
+    super.query(searchBounds, node, matches);
+  }
+
+  @Override
+  protected void query(Object searchBounds, AbstractNode node, ItemVisitor visitor) {
+    super.query(searchBounds, node, visitor);
+  }
+
   /**
    * Returns items whose bounds intersect the given envelope.
    */

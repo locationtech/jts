@@ -16,6 +16,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.locationtech.jts.index.ItemVisitor;
+
 /**
  * One-dimensional version of an STR-packed R-tree. SIR stands for
  * "Sort-Interval-Recursive". STR-packed R-trees are described in:
@@ -81,6 +83,16 @@ public class SIRtree extends AbstractSTRtree {
    */
   public void insert(double x1, double x2, Object item) {
     super.insert(new Interval(Math.min(x1, x2), Math.max(x1, x2)), item);
+  }
+
+  @Override
+  protected void query(Object searchBounds, AbstractNode node, List matches) {
+    super.query(searchBounds, node, matches);
+  }
+
+  @Override
+  protected void query(Object searchBounds, AbstractNode node, ItemVisitor visitor) {
+    super.query(searchBounds, node, visitor);
   }
 
   /**
