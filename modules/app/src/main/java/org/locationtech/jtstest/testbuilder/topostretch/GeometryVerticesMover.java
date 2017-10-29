@@ -59,7 +59,7 @@ public class GeometryVerticesMover
     }
     
     
-    public Coordinate[] edit(Coordinate[] coords,
+    public Coordinate[] editCoordinates(Coordinate[] coords,
         Geometry geometry)
     {
       Coordinate[] newPts = new Coordinate[coords.length];

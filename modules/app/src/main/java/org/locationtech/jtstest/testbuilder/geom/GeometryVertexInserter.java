@@ -41,7 +41,7 @@ public class GeometryVertexInserter
       this.newVertex = newVertex;
     }
     
-    public Coordinate[] edit(Coordinate[] coords,
+    public Coordinate[] editCoordinates(Coordinate[] coords,
         Geometry geometry)
     {
       if (geometry != line) return coords;

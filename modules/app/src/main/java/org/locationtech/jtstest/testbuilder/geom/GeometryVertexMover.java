@@ -37,7 +37,7 @@ public class GeometryVertexMover
       this.toLoc = toLoc;
     }
     
-    public Coordinate[] edit(Coordinate[] coords,
+    public Coordinate[] editCoordinates(Coordinate[] coords,
         Geometry geometry)
     {
       Coordinate[] newPts = new Coordinate[coords.length];

@@ -106,7 +106,7 @@ public class GeometryBoxDeleter
     
     public boolean isEdited() { return isEdited; }
   
-    public Coordinate[] edit(Coordinate[] coords,
+    public Coordinate[] editCoordinates(Coordinate[] coords,
         Geometry geometry)
     {
       if (isEdited) return coords;
