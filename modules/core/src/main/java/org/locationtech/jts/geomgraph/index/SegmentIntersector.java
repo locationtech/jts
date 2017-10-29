@@ -188,12 +188,12 @@ numTests++;
   private boolean isBoundaryPoint(LineIntersector li, Collection[] bdyNodes)
   {
     if (bdyNodes == null) return false;
-    if (isBoundaryPoint(li, bdyNodes[0])) return true;
-    if (isBoundaryPoint(li, bdyNodes[1])) return true;
+    if (isBoundaryPointInternal(li, bdyNodes[0])) return true;
+    if (isBoundaryPointInternal(li, bdyNodes[1])) return true;
     return false;
   }
 
-  private boolean isBoundaryPoint(LineIntersector li, Collection bdyNodes)
+  private boolean isBoundaryPointInternal(LineIntersector li, Collection bdyNodes)
   {
     for (Iterator i = bdyNodes.iterator(); i.hasNext(); ) {
       Node node = (Node) i.next();
