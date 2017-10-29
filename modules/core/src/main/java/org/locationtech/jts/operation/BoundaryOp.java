@@ -158,7 +158,7 @@ public class BoundaryOp
         return line.getStartPoint();
       }
       else {
-        return geomFact.createMultiPoint((Coordinate[]) null);
+        return geomFact.createMultiPoint();
       }
     }
     return geomFact.createMultiPoint(new Point[]{
