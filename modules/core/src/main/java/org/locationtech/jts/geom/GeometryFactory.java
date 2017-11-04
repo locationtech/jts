@@ -377,6 +377,7 @@ public class GeometryFactory
    *
    * @param coordinates an array (without null elements), or an empty array, or <code>null</code>
    * @return a MultiPoint object
+   * @deprecated Use {@link GeometryFactory#createMultiPointFromCoords} instead
    */
   public MultiPoint createMultiPoint(Coordinate[] coordinates) {
       return createMultiPoint(coordinates != null
@@ -384,6 +385,13 @@ public class GeometryFactory
                               : null);
   }
 
+  /**
+   * Creates a {@link MultiPoint} using the given {@link Coordinate}s.
+   * A null or empty array will create an empty MultiPoint.
+   *
+   * @param coordinates an array (without null elements), or an empty array, or <code>null</code>
+   * @return a MultiPoint object
+   */
   public MultiPoint createMultiPointFromCoords(Coordinate[] coordinates) {
       return createMultiPoint(coordinates != null
                               ? getCoordinateSequenceFactory().create(coordinates)
