@@ -279,17 +279,17 @@ public class GeometryEditor
   {
     public final Geometry edit(Geometry geometry, GeometryFactory factory) {
       if (geometry instanceof LinearRing) {
-        return factory.createLinearRing(edit(geometry.getCoordinates(),
+        return factory.createLinearRing(editCoordinates(geometry.getCoordinates(),
             geometry));
       }
 
       if (geometry instanceof LineString) {
-        return factory.createLineString(edit(geometry.getCoordinates(),
+        return factory.createLineString(editCoordinates(geometry.getCoordinates(),
             geometry));
       }
 
       if (geometry instanceof Point) {
-        Coordinate[] newCoordinates = edit(geometry.getCoordinates(),
+        Coordinate[] newCoordinates = editCoordinates(geometry.getCoordinates(),
             geometry);
 
         return factory.createPoint((newCoordinates.length > 0)
@@ -310,7 +310,7 @@ public class GeometryEditor
      * @param geometry the geometry containing the coordinate list
      * @return an edited coordinate array (which may be the same as the input)
      */
-    public abstract Coordinate[] edit(Coordinate[] coordinates,
+    public abstract Coordinate[] editCoordinates(Coordinate[] coordinates,
                                       Geometry geometry);
   }
   
