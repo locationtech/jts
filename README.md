@@ -52,6 +52,7 @@ If you are interested in contributing to JTS please read the [**Contributing Gui
 * [**Shapely**](https://github.com/Toblerity/Shapely) - Python wrapper of GEOS
 * [**R-GEOS**](https://cran.r-project.org/web/packages/rgeos/index.html) - R wrapper of GEOS
 * [**rgeo**](https://github.com/rgeo/rgeo) - Ruby wrapper of GEOS
+* [**GEOSwift**](https://github.com/GEOSwift/GEOSwift)- Swift library using GEOS
 
 
 
