@@ -80,7 +80,7 @@ public class BoundaryOp
 
   private MultiPoint getEmptyMultiPoint()
   {
-    return geomFact.createMultiPoint((CoordinateSequence) null);
+    return geomFact.createMultiPoint();
   }
 
   private Geometry boundaryMultiLineString(MultiLineString mLine)
@@ -96,7 +96,7 @@ public class BoundaryOp
       return geomFact.createPoint(bdyPts[0]);
     }
     // this handles 0 points case as well
-    return geomFact.createMultiPoint(bdyPts);
+    return geomFact.createMultiPointFromCoords(bdyPts);
   }
 
 /*

@@ -110,7 +110,7 @@ extends GeometricShapeBuilder
         pts[index++] = randomPointInCell(orgX, orgY, cellDX, cellDY);
       }
     }
-    return geomFactory.createMultiPoint(pts);
+    return geomFactory.createMultiPointFromCoords(pts);
   }
   
   private Coordinate randomPointInCell(double orgX, double orgY, double xLen, double yLen)
