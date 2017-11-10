@@ -15,9 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.PointLocator;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.ComponentCoordinateExtracter;
 
 
@@ -31,7 +29,7 @@ import org.locationtech.jts.geom.util.ComponentCoordinateExtracter;
  * @author Martin Davis
  *
  */
-class BasicPreparedGeometry 
+class BasicPreparedGeometry extends Geometry
   implements PreparedGeometry
 {
   private final Geometry baseGeom;
@@ -39,8 +37,33 @@ class BasicPreparedGeometry
 
   public BasicPreparedGeometry(Geometry geom) 
   {
+    super(geom.getFactory());
     baseGeom = geom;
     representativePts = ComponentCoordinateExtracter.getCoordinates(geom);
+  }
+
+  public Geometry copy() {
+    return baseGeom.copy();
+  }
+
+  public void normalize() {
+    baseGeom.normalize();
+  }
+
+  protected Envelope computeEnvelopeInternal() {
+    return baseGeom.getEnvelopeInternal();
+  }
+
+  protected int compareToSameClass(Object o) {
+    return baseGeom.compareTo(o);
+  }
+
+  protected int compareToSameClass(Object o, CoordinateSequenceComparator comp) {
+    return baseGeom.compareTo(o, comp);
+  }
+
+  protected int getSortIndex() {
+    return 0;
   }
 
   public Geometry getGeometry() { return baseGeom; }
@@ -200,4 +223,75 @@ class BasicPreparedGeometry
   {
   	return baseGeom.toString();
   }
+
+  public String getGeometryType()
+  {
+    return baseGeom.getGeometryType();
+  }
+
+  public Coordinate getCoordinate()
+  {
+    return baseGeom.getCoordinate();
+  }
+
+  public Coordinate[] getCoordinates()
+  {
+    return baseGeom.getCoordinates();
+  }
+
+  public int getNumPoints()
+  {
+    return baseGeom.getNumPoints();
+  }
+
+  public boolean isEmpty()
+  {
+    return baseGeom.isEmpty();
+  }
+
+  public int getDimension()
+  {
+    return baseGeom.getDimension();
+  }
+
+  public Geometry getBoundary()
+  {
+    return baseGeom.getBoundary();
+  }
+
+  public int getBoundaryDimension()
+  {
+    return baseGeom.getBoundaryDimension();
+  }
+
+  public Geometry reverse()
+  {
+    return baseGeom.reverse();
+  }
+
+  public boolean equalsExact(Geometry other, double tolerance)
+  {
+    return baseGeom.equalsExact(other, tolerance);
+  }
+
+  public void apply(CoordinateFilter filter)
+  {
+    baseGeom.apply(filter);
+  }
+
+  public void apply(CoordinateSequenceFilter filter)
+  {
+    baseGeom.apply(filter);
+  }
+
+  public void apply(GeometryFilter filter)
+  {
+    baseGeom.apply(filter);
+  }
+
+  public void apply(GeometryComponentFilter filter)
+  {
+    baseGeom.apply(filter);
+  }
+
 }
