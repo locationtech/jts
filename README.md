@@ -31,6 +31,11 @@ In addition:
 
 * This product includes software developed by the [JDOM Project](http://www.jdom.org/) (Apache-style license)
 
+See also:
+
+* [License details](LICENSES.md)
+* Licensing [FAQ](FAQ-LICENSING.md)
+
 ## Documentation
 
 * Javadoc: [https://locationtech.github.io/jts/javadoc](https://locationtech.github.io/jts/javadoc)
