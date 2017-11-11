@@ -19,7 +19,7 @@ This FAQ clarifies the implications of the JTS software licensing.
 **A1. What is the difference between EDL and Revised BSD?**
 
   Revised BSD is a license *family* (see [Wikipedia entry](https://en.wikipedia.org/wiki/BSD_licenses#3-clause_license_.28.22BSD_License_2.0.22.2C_.22Revised_BSD_License.22.2C_.22New_BSD_License.22.2C_or_.22Modified_BSD_License.22.29)).
-  Revised BSD is also known as "BSD 2.0" or "3-clause BSD".  It is a less restrictive version of the original BSD license.
+  Revised BSD is also known as "Modified BSD", "BSD 2.0" or "3-clause BSD".  It is a less restrictive version of the original BSD license.
   
   EDL is the actual defined license.
   It is called that because Eclipse is the distributing organization.
@@ -44,7 +44,7 @@ This FAQ clarifies the implications of the JTS software licensing.
   (notably a requirement to share modifications under the same license) 
   that exceed what is required by the EDL, these do not conflict with the EDL.
   
-  For further information about the compatibility of Modifed BSD-style licenses
+  For further information about the compatibility of Revised BSD-style licenses
   with the GPL see the [FSF License Comments](https://www.gnu.org/licenses/license-list.en.html).
 
 **A4. How can an LGPL-licensed project (such as GEOS) contribute code to JTS?**
