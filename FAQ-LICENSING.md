@@ -35,21 +35,17 @@ This FAQ clarifies the implications of the JTS software licensing.
   
 * The **EPL** provides a similar permissiveness to LGPL, with different wording around patents
 
-**A3. But I thought LGPL and EPL do not mix? How does this effect derivative projects like the LGPL GEOS project?**
+**A3. But I thought LGPL and EPL do not mix? How does this affect derivative projects like the LGPL GEOS project?**
 
   An LGPL project (like GEOS or GeoTools) can use JTS as a dependency, under the terms of the EDL license. 
   The three clauses in the EDL (common to all BSD-style licenses) allow GEOS to
-  port the work to C and distribute the resulting work. 
+  port the JTS work to C and distribute the resulting work under the LGPL. 
   Although the LGPL license contains additional restrictions 
   (notably a requirement to share modifications under the same license) 
   that exceed what is required by the EDL, these do not conflict with the EDL.
   
   For further information about the compatibility of Modifed BSD-style licenses
-  with the GPL see the
-  [FSF License Comments](https://www.gnu.org/licenses/license-list.en.html).
-  
-  In the longer term, the EPL license is being revised to work with GPL / LGPL.  
-  This will allow derivative projects the choice of using JTS under the terms of either the EDL or EPL license.
+  with the GPL see the [FSF License Comments](https://www.gnu.org/licenses/license-list.en.html).
 
 **A4. How can an LGPL-licensed project (such as GEOS) contribute code to JTS?**
 
