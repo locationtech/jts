@@ -264,10 +264,10 @@ public class GeometryEditor
   public static class NoOpGeometryOperation
   implements GeometryEditorOperation
   {
-  	public Geometry edit(Geometry geometry, GeometryFactory factory)
-  	{
-  		return geometry;
-  	}
+      public Geometry edit(Geometry geometry, GeometryFactory factory)
+      {
+          return geometry;
+      }
   }
   
   /**
@@ -278,22 +278,27 @@ public class GeometryEditor
       implements GeometryEditorOperation
   {
     public final Geometry edit(Geometry geometry, GeometryFactory factory) {
+      Coordinate[] coordinates = edit(geometry.getCoordinates(), geometry);
+
       if (geometry instanceof LinearRing) {
-        return factory.createLinearRing(edit(geometry.getCoordinates(),
-            geometry));
+        if (coordinates == null)
+            return factory.createLinearRing();
+        else
+            return factory.createLinearRing(coordinates);
       }
 
       if (geometry instanceof LineString) {
-        return factory.createLineString(edit(geometry.getCoordinates(),
-            geometry));
+        if (coordinates == null)
+              return factory.createLineString();
+          else
+              return factory.createLineString(coordinates);
       }
 
       if (geometry instanceof Point) {
-        Coordinate[] newCoordinates = edit(geometry.getCoordinates(),
-            geometry);
-
-        return factory.createPoint((newCoordinates.length > 0)
-                                   ? newCoordinates[0] : null);
+        if (coordinates == null && coordinates.length > 1)
+            return factory.createPoint();
+        else
+            return factory.createPoint(coordinates[0]);
       }
 
       return geometry;
