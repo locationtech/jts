@@ -173,8 +173,8 @@ public class GeometryPrecisionReducer
   	
   	Geometry finalGeom = bufGeom;
   	if (! changePrecisionModel) {
-  	  // a slick way to copy the geometry with the original precision factory
-  		finalGeom = geom.getFactory().createGeometry(bufGeom);
+  		finalGeom = bufGeom.copy();
+  		changePM(finalGeom, geom.getPrecisionModel());
   	}
   	return finalGeom;
   }
