@@ -247,7 +247,7 @@ public abstract class AbstractSTRtree implements Serializable {
       return matches;
     }
     if (getIntersectsOp().intersects(root.getBounds(), searchBounds)) {
-      query(searchBounds, root, matches);
+      queryInternal(searchBounds, root, matches);
     }
     return matches;
   }
@@ -263,7 +263,7 @@ public abstract class AbstractSTRtree implements Serializable {
       return;
     }
     if (getIntersectsOp().intersects(root.getBounds(), searchBounds)) {
-      query(searchBounds, root, visitor);
+      queryInternal(searchBounds, root, visitor);
     }
   }
 
@@ -274,7 +274,7 @@ public abstract class AbstractSTRtree implements Serializable {
    */
   protected abstract IntersectsOp getIntersectsOp();
 
-  private void query(Object searchBounds, AbstractNode node, List matches) {
+  private void queryInternal(Object searchBounds, AbstractNode node, List matches) {
     List childBoundables = node.getChildBoundables();
     for (int i = 0; i < childBoundables.size(); i++) {
       Boundable childBoundable = (Boundable) childBoundables.get(i);
@@ -282,7 +282,7 @@ public abstract class AbstractSTRtree implements Serializable {
         continue;
       }
       if (childBoundable instanceof AbstractNode) {
-        query(searchBounds, (AbstractNode) childBoundable, matches);
+        queryInternal(searchBounds, (AbstractNode) childBoundable, matches);
       }
       else if (childBoundable instanceof ItemBoundable) {
         matches.add(((ItemBoundable)childBoundable).getItem());
@@ -293,7 +293,7 @@ public abstract class AbstractSTRtree implements Serializable {
     }
   }
 
-  private void query(Object searchBounds, AbstractNode node, ItemVisitor visitor) {
+  private void queryInternal(Object searchBounds, AbstractNode node, ItemVisitor visitor) {
     List childBoundables = node.getChildBoundables();
     for (int i = 0; i < childBoundables.size(); i++) {
       Boundable childBoundable = (Boundable) childBoundables.get(i);
@@ -301,7 +301,7 @@ public abstract class AbstractSTRtree implements Serializable {
         continue;
       }
       if (childBoundable instanceof AbstractNode) {
-        query(searchBounds, (AbstractNode) childBoundable, visitor);
+        queryInternal(searchBounds, (AbstractNode) childBoundable, visitor);
       }
       else if (childBoundable instanceof ItemBoundable) {
         visitor.visitItem(((ItemBoundable)childBoundable).getItem());
