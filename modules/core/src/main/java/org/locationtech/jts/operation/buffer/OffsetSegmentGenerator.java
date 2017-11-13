@@ -251,7 +251,7 @@ class OffsetSegmentGenerator
         segList.addPt(offset1.p0);
       }
       else {
-        addFillet(s1, offset0.p1, offset1.p0, Orientation.CLOCKWISE, distance);
+        addCornerFillet(s1, offset0.p1, offset1.p0, Orientation.CLOCKWISE, distance);
       }
     }
   }
@@ -286,7 +286,7 @@ class OffsetSegmentGenerator
     // add a circular fillet connecting the endpoints of the offset segments
      if (addStartPoint) segList.addPt(offset0.p1);
       // TESTING - comment out to produce beveled joins
-      addFillet(s1, offset0.p1, offset1.p0, orientation, distance);
+      addCornerFillet(s1, offset0.p1, offset1.p0, orientation, distance);
       segList.addPt(offset1.p0);
     }
   }
@@ -415,7 +415,7 @@ class OffsetSegmentGenerator
       case BufferParameters.CAP_ROUND:
         // add offset seg points with a fillet between them
         segList.addPt(offsetL.p1);
-        addFillet(p1, angle + Math.PI / 2, angle - Math.PI / 2, Orientation.CLOCKWISE, distance);
+        addDirectedFillet(p1, angle + Math.PI / 2, angle - Math.PI / 2, Orientation.CLOCKWISE, distance);
         segList.addPt(offsetR.p1);
         break;
       case BufferParameters.CAP_FLAT:
@@ -574,7 +574,7 @@ class OffsetSegmentGenerator
    * @param direction the orientation of the fillet
    * @param radius the radius of the fillet
    */
-  private void addFillet(Coordinate p, Coordinate p0, Coordinate p1, int direction, double radius)
+  private void addCornerFillet(Coordinate p, Coordinate p0, Coordinate p1, int direction, double radius)
   {
     double dx0 = p0.x - p.x;
     double dy0 = p0.y - p.y;
@@ -590,7 +590,7 @@ class OffsetSegmentGenerator
       if (startAngle >= endAngle) startAngle -= 2.0 * Math.PI;
     }
     segList.addPt(p0);
-    addFillet(p, startAngle, endAngle, direction, radius);
+    addDirectedFillet(p, startAngle, endAngle, direction, radius);
     segList.addPt(p1);
   }
 
@@ -603,7 +603,7 @@ class OffsetSegmentGenerator
    * @param direction is -1 for a CW angle, 1 for a CCW angle
    * @param radius the radius of the fillet
    */
-  private void addFillet(Coordinate p, double startAngle, double endAngle, int direction, double radius)
+  private void addDirectedFillet(Coordinate p, double startAngle, double endAngle, int direction, double radius)
   {
     int directionFactor = direction == Orientation.CLOCKWISE ? -1 : 1;
 
@@ -638,7 +638,7 @@ class OffsetSegmentGenerator
     // add start point
     Coordinate pt = new Coordinate(p.x + distance, p.y);
     segList.addPt(pt);
-    addFillet(p, 0.0, 2.0 * Math.PI, -1, distance);
+    addDirectedFillet(p, 0.0, 2.0 * Math.PI, -1, distance);
     segList.closeRing();
   }
 
