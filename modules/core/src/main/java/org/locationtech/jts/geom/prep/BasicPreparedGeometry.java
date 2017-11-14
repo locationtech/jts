@@ -35,6 +35,7 @@ class BasicPreparedGeometry extends Geometry
   private final Geometry baseGeom;
   private final List representativePts;  // List<Coordinate>
 
+  // Aligned with sort indexes in Geometry
   static final int SORTINDEX_POINT = 0;
   static final int SORTINDEX_MULTIPOINT = 1;
   static final int SORTINDEX_LINESTRING = 2;
