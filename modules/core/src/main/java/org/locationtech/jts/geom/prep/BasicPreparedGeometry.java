@@ -35,6 +35,15 @@ class BasicPreparedGeometry extends Geometry
   private final Geometry baseGeom;
   private final List representativePts;  // List<Coordinate>
 
+  static final int SORTINDEX_POINT = 0;
+  static final int SORTINDEX_MULTIPOINT = 1;
+  static final int SORTINDEX_LINESTRING = 2;
+  static final int SORTINDEX_LINEARRING = 3;
+  static final int SORTINDEX_MULTILINESTRING = 4;
+  static final int SORTINDEX_POLYGON = 5;
+  static final int SORTINDEX_MULTIPOLYGON = 6;
+  static final int SORTINDEX_GEOMETRYCOLLECTION = 7;
+
   public BasicPreparedGeometry(Geometry geom) 
   {
     super(geom.getFactory());
@@ -50,6 +59,7 @@ class BasicPreparedGeometry extends Geometry
     baseGeom.normalize();
   }
 
+  // FIXME: Protected methods are a workaround for now. Needed for compatibility with Geometry.
   protected Envelope computeEnvelopeInternal() {
     return baseGeom.getEnvelopeInternal();
   }
@@ -62,6 +72,7 @@ class BasicPreparedGeometry extends Geometry
     return baseGeom.compareTo(o, comp);
   }
 
+  // FIXME: This method should always be overridden by subclasses
   protected int getSortIndex() {
     return 0;
   }
@@ -224,6 +235,9 @@ class BasicPreparedGeometry extends Geometry
   	return baseGeom.toString();
   }
 
+  /**
+   * Default implementations.
+   */
   public String getGeometryType()
   {
     return baseGeom.getGeometryType();

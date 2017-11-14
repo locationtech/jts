@@ -120,4 +120,8 @@ public class PreparedPolygon
     }
     return PreparedPolygonCovers.covers(this, g);
   }
+
+  protected int getSortIndex() {
+      return BasicPreparedGeometry.SORTINDEX_POLYGON;
+  }
 }

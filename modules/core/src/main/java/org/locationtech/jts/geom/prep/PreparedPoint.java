@@ -45,4 +45,7 @@ public class PreparedPoint
   	 */
     return isAnyTargetComponentInTest(g);
   }  
+  protected int getSortIndex() {
+      return BasicPreparedGeometry.SORTINDEX_POINT;
+  }
 }

@@ -51,6 +51,10 @@ public class PreparedLineString
   	if (! envelopesIntersect(g)) return false;
     return PreparedLineStringIntersects.intersects(this, g);
   }
+
+  protected int getSortIndex() {
+    return BasicPreparedGeometry.SORTINDEX_LINESTRING;
+  }
   
   /**
    * There's not much point in trying to optimize contains, since 
