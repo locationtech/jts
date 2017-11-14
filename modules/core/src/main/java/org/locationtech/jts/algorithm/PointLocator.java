@@ -88,10 +88,10 @@ public class PointLocator
     if (geom.isEmpty()) return Location.EXTERIOR;
 
     if (geom instanceof LineString) {
-      return locate(p, (LineString) geom);
+      return locateOnLineString(p, (LineString) geom);
     }
     else if (geom instanceof Polygon) {
-      return locate(p, (Polygon) geom);
+      return locateInPolygon(p, (Polygon) geom);
     }
 
     isIn = false;
@@ -108,26 +108,26 @@ public class PointLocator
   private void computeLocation(Coordinate p, Geometry geom)
   {
     if (geom instanceof Point) {
-      updateLocationInfo(locate(p, (Point) geom));
+      updateLocationInfo(locateOnPoint(p, (Point) geom));
     }
     if (geom instanceof LineString) {
-      updateLocationInfo(locate(p, (LineString) geom));
+      updateLocationInfo(locateOnLineString(p, (LineString) geom));
     }
     else if (geom instanceof Polygon) {
-      updateLocationInfo(locate(p, (Polygon) geom));
+      updateLocationInfo(locateInPolygon(p, (Polygon) geom));
     }
     else if (geom instanceof MultiLineString) {
       MultiLineString ml = (MultiLineString) geom;
       for (int i = 0; i < ml.getNumGeometries(); i++) {
         LineString l = (LineString) ml.getGeometryN(i);
-        updateLocationInfo(locate(p, l));
+        updateLocationInfo(locateOnLineString(p, l));
       }
     }
     else if (geom instanceof MultiPolygon) {
       MultiPolygon mpoly = (MultiPolygon) geom;
       for (int i = 0; i < mpoly.getNumGeometries(); i++) {
         Polygon poly = (Polygon) mpoly.getGeometryN(i);
-        updateLocationInfo(locate(p, poly));
+        updateLocationInfo(locateInPolygon(p, poly));
       }
     }
     else if (geom instanceof GeometryCollection) {
@@ -146,7 +146,7 @@ public class PointLocator
     if (loc == Location.BOUNDARY) numBoundaries++;
   }
 
-  private int locate(Coordinate p, Point pt)
+  private int locateOnPoint(Coordinate p, Point pt)
   {
   	// no point in doing envelope test, since equality test is just as fast
   	
@@ -156,7 +156,7 @@ public class PointLocator
     return Location.EXTERIOR;
   }
 
-  private int locate(Coordinate p, LineString l)
+  private int locateOnLineString(Coordinate p, LineString l)
   {
     // bounding-box check
     if (! l.getEnvelopeInternal().intersects(p)) return Location.EXTERIOR;
@@ -182,7 +182,7 @@ public class PointLocator
   	return PointLocation.locateInRing(p, ring.getCoordinates());
   }
 
-  private int locate(Coordinate p, Polygon poly)
+  private int locateInPolygon(Coordinate p, Polygon poly)
   {
     if (poly.isEmpty()) return Location.EXTERIOR;
 
