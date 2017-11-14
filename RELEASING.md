@@ -11,4 +11,5 @@ to assist them in preparing releases of the project.
 * Create a Release Milestone, and tag it to Issues and PRs wanted in the release
 * Confirm Maven build executes with no errors
 * Review scripts in `bin` to confirm correctness
+* Update the Version History
 
