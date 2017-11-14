@@ -127,10 +127,14 @@ public abstract class NodeBase implements Serializable {
   {
     boolean isEmpty = true;
     if (! items.isEmpty()) isEmpty = false;
-    for (int i = 0; i < 4; i++) {
-      if (subnode[i] != null) {
-        if (! subnode[i].isEmpty() )
-          isEmpty = false;
+    else {
+      for (int i = 0; i < 4; i++) {
+        if (subnode[i] != null) {
+          if (!subnode[i].isEmpty()) {
+            isEmpty = false;
+            break;
+          }
+        }
       }
     }
     return isEmpty;

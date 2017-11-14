@@ -124,7 +124,7 @@ public class Quadtree
   public boolean isEmpty()
   {
     if (root == null) return true;
-    return false;
+    return root.isEmpty();
   }
   
   /**
