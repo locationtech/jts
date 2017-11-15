@@ -17,15 +17,15 @@ package org.locationtech.jtstest.testrunner;
 import java.io.*;
 import java.util.*;
 
-import org.jdom.*;
-import org.jdom.input.*;
+import org.jdom2.*;
+import org.jdom2.input.*;
+import org.jdom2.located.LocatedElement;
+import org.jdom2.located.LocatedJDOMFactory;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.*;
 import org.locationtech.jtstest.*;
 import org.locationtech.jtstest.geomop.*;
 import org.locationtech.jtstest.util.*;
-import org.locationtech.jtstest.util.io.LineNumberElement;
-import org.locationtech.jtstest.util.io.LineNumberSAXBuilder;
 import org.locationtech.jtstest.util.io.WKTOrWKBReader;
 
 
@@ -88,7 +88,8 @@ public class TestReader
 
     public TestRun createTestRun(File testFile, int runIndex) {
         try {
-            SAXBuilder builder = new LineNumberSAXBuilder();
+            SAXBuilder builder = new SAXBuilder( );
+            builder.setJDOMFactory(new LocatedJDOMFactory());
             Document document = builder.build(new FileInputStream(testFile));
             Element runElement = document.getRootElement();
             if (!runElement.getName().equalsIgnoreCase("run")) {
@@ -272,7 +273,7 @@ public class TestReader
                         bWktFile,
                         testRun,
                         caseIndex,
-                        ((LineNumberElement)caseElement).getStartLine());
+                        ((LocatedElement)caseElement).getLine());
                 List testElements = caseElement.getChildren("test");
                 //        if (testElements.size() == 0) {
                 //          throw  new TestParseException("Missing <test> in <case>");
