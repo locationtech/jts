@@ -35,7 +35,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
   
   public void testSimplifyEmptyLineShouldReturnNull() {
     Geometry input = _factory.createLineString(new Coordinate[0]);
-    Geometry simplified = RadialDistanceByAngleSimplifier.Simplify(input, 0, 0);
+    Geometry simplified = RadialDistanceByAngleSimplifier.simplify(input, 0, 0);
 
     assertNull(simplified);
   }
@@ -48,7 +48,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(10, 0)
       });
 
-      Geometry simplified = RadialDistanceByAngleSimplifier.Simplify(line, 30, Math.PI / 2);
+      Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
       assertNull(simplified);
   }
@@ -61,7 +61,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(100, 0)
       });
 
-    Geometry simplified = RadialDistanceByAngleSimplifier.Simplify(line, 30, Math.PI / 2);
+    Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
     assertNotNull(simplified);
     assertTrue(line.equalsExact(simplified));
@@ -80,7 +80,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(0, 0)
       });
 
-      Geometry simplified = RadialDistanceByAngleSimplifier.Simplify(line, 30, Math.PI / 2);
+      Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
       CoordinateList coordinates = new CoordinateList(simplified.getCoordinates());
       assertTrue(!coordinates.contains(coordinateThatShouldBeRemoved));
@@ -96,7 +96,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(300, 0),
       });
 
-      Geometry simplified = RadialDistanceByAngleSimplifier.Simplify(line, 30, Math.PI / 2);
+      Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
       assertNotNull(simplified);
       assertTrue(line.equalsExact(simplified));
@@ -112,7 +112,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(100, 200)
       });
 
-    Geometry simplified = RadialDistanceByAngleSimplifier.Simplify(line, 30, Math.PI / 2);
+    Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
     assertEquals(line.getCoordinates().length - 1, simplified.getCoordinates().length);
   }
@@ -127,7 +127,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(100, 1)
       });
 
-    Geometry simplified = RadialDistanceByAngleSimplifier.Simplify(line, 30, Math.PI / 2);
+    Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
     assertTrue(line.equalsExact(simplified));
   }

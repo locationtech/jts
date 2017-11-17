@@ -71,7 +71,7 @@ public class RadialDistanceByAngleSimplifier
      * 
      * @return A simplified {@link Geometry}
      */
-    public static Geometry Simplify(Geometry geometry, double distanceTolerance, double angleTolerace)
+    public static Geometry simplify(Geometry geometry, double distanceTolerance, double angleTolerace)
     {
       RadialDistanceByAngleSimplifier simplifier = new RadialDistanceByAngleSimplifier(geometry);
       simplifier.setDistanceTolerance(distanceTolerance);
