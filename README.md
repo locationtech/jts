@@ -48,7 +48,7 @@ If you are interested in contributing to JTS please read the [**Contributing Gui
 
 ## Downstream Projects
 
-### Direct
+### Derivative
 * [**GEOS**](https://trac.osgeo.org/geos) - C++ port
 * [**NetTopologySuite**](https://github.com/NetTopologySuite/NetTopologySuite) - .NET port
 * [**JSTS**](https://github.com/bjornharrtell/jsts) - JavaScript port
