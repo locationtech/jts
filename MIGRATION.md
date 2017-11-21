@@ -16,3 +16,15 @@ To upgrade a Maven project (or another build tool using Maven dependency managem
 git grep -l com.vividsolutions | grep pom.xml | xargs sed -i "s/com.vividsolutions/org.locationtech.jts/g"
 git grep -l com.vividsolutions | xargs sed -i "s/com.vividsolutions/org.locationtech/g"
 ```
+
+## Using JTS with Maven
+
+To include JTS in a Maven project, add a dependency block like the following:
+
+```xml
+<dependency>
+    <groupId>org.locationtech.jts</groupId>
+    <artifactId>jts-core</artifactId>
+    <version>${jts.version}</version>
+</dependency>
+```
