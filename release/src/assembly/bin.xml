@@ -30,13 +30,15 @@
         <include>*.bat</include>
       </includes>
     </fileSet>
-    <fileSet>
+    
+    <!--fileSet>
       <directory>${project.basedir}/target/dependency</directory>
       <outputDirectory>bin</outputDirectory>
       <includes>
        <include>jts-app*</include>
       </includes>
-    </fileSet>
+      <outputFileNameMapping>JTSTestBuilder-${artifact.version}.jar</outputFileNameMapping>
+    </fileSet-->
     
     <fileSet>
       <directory>${project.basedir}/doc</directory>
@@ -63,4 +65,14 @@
     </fileSet>
 
   </fileSets>
+  
+ <files>
+      <file>
+         <source>${project.basedir}/target/dependency/jts-app-${project.version}-jar-with-dependencies.jar</source>
+         <outputDirectory>bin</outputDirectory>
+         <destName>JTSTestBuilder-${project.version}.jar</destName>
+      </file>
+ </files>
+    
+
 </assembly>
