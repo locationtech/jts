@@ -11,17 +11,17 @@ JTS TOPOLOGY SUITE
 <i>Version History</i>
 </h1>
 
-
 This document lists the change history of release versions of the
 <span style='color:darkblue;'><b>JTS Topology Suite</b></span>.
-<p>
-The current JTS distributions can be obtained at the
-<a href='https://github.com/locationtech/jts/releases'><b>Github JTS site</b></a>.
-
+<ul>
+<li>Project site: <a href='http://locationtech.org/projects/technology.jts'><b>LocationTech JTS </b></a>
+<li>Code repo: <a href='https://github.com/locationtech/jts'><b>Github JTS</b></a>
+<li>Distribution: <a href='https://github.com/locationtech/jts/releases'><b>Github JTS Releases</b></a>
+</ul>
 <p>
 The JTS distributions for older versions can be obtained at the
 <a href='http://sourceforge.net/projects/jts-topo-suite/'><b>SourceForge JTS site</b></a>.
-
+</p>
 <!-- ================================================================ -->
 <hr size='4' color='darkblue'>
 <h2>Version 1.15</h2>
@@ -42,11 +42,11 @@ The JTS distributions for older versions can be obtained at the
 <li>Changed Java package root to <code>org.locationtech.jts</code>
 <li>Refactored <code>CGAlgorithms</code> into function-specific classes
     <code>Orientation</code>, <code>PointLocation</code>, <code>Distance</code>, <code>Length</code>, <code>Area</code>
-<li>Deprecated <code>NonRobustCGAlgorithms</code>
-<li>Deprecated <code>RobustDeterminant</code>
-<li>Use <code>Geometry.copy</code> instead of <code>Geometry.clone</code>
-<li>Use no-argument <code>GeometryFactory.create</code> methods
-<li>Use <code>GeometryFactory.createMultiPointFromCoords</code> instead of overloaded <code>GeometryFactory.createMultiPoint</code>
+<li>Deprecated <code>NonRobustCGAlgorithms</code>; use function-specific classes refactored from <code>CGAlgorithms</code>
+<li>Deprecated <code>RobustDeterminant</code>; use <code>CGAlgorithmsDD</code>
+<li>Deprecated <code>Geometry.clone</code>; use <code>Geometry.copy</code>
+<li>Deprecated <code>GeometryFactory.createX(null)</code> methods; Use no-argument <code>GeometryFactory.createX</code> methods
+<li>Deprecated overloaded <code>GeometryFactory.createMultiPoint</code>; use <code>GeometryFactory.createMultiPointFromCoords</code>
 </ul>
 
 <h3>Functionality Improvements</h3>
