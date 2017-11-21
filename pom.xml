@@ -27,8 +27,8 @@
     To build with jts-sde:
        mvn install -Parcsde
        
-    To build everything:
-       mvn install -Dall
+    To build the release (for Maven Central; committers only)
+       mvn install -Drelease
     -->
 
     <properties>
