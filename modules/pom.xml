@@ -20,10 +20,24 @@
 
     <modules>
         <module>core</module>
-        <module>example</module>
         <module>io</module>
-        <module>tests</module>
-        <module>app</module>
     </modules>
-    
+
+    <profiles>
+        <profile>
+            <id>all</id>
+            <activation>
+                <property>
+                    <name>!release</name>
+                </property>
+            </activation>
+
+            <modules>
+                <module>example</module>
+                <module>tests</module>
+                <module>app</module>
+            </modules>
+        </profile>
+    </profiles>
+
 </project>
