@@ -2,7 +2,7 @@
 rem A batch file to run a XML test files
 
 set CLASSPATH=
-for %%i in (..\lib\*.*) do (
+for %%i in (*.jar) do (
  set jarfile=%%i
 
  rem If we append to a variable inside the for, only the last entry will
