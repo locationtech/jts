@@ -72,9 +72,9 @@
      </developers>
 
      <scm>
-        <connection>scm:git:https://github.com/dr-jts/jts.git</connection>
-        <developerConnection>scm:https://github.com/dr-jts/jts.git</developerConnection>
-        <url>https://github.com/dr-jts/jts</url>
+        <connection>scm:git:https://github.com/locationtech/jts.git</connection>
+        <developerConnection>scm:https://github.com/locationtech/jts.git</developerConnection>
+        <url>https://github.com/locationtech/jts</url>
      </scm>
 
     <!-- PUBLISHING -->
