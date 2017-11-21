@@ -29,4 +29,4 @@ To include JTS in a Maven project, add a dependency block like the following:
 </dependency>
 ```
 
-Where a ${jts.version} is the released version of JTS one chooses to use.  See the [releases](https://github.com/locationtech/jts/releases) page for options.
+Where ${jts.version} is the released version of JTS one chooses to use.  See the [releases](https://github.com/locationtech/jts/releases) page for options.
