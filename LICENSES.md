@@ -12,14 +12,6 @@ If you did not receive this Content directly from the Eclipse Foundation, the Co
 
 The Content includes items that have been sourced from third parties as set out below. If you did not receive this Content directly from the Eclipse Foundation, the following is provided for informational purposes only, and you should look to the Redistributor's license for terms and conditions of use.
 
-### Jdom-contrib version 1.1.3
-
-The JTS tests module contains source from JDOM Contrib 1.1.3 which is available under the Jdom License [1].  The two files are LineNumberElement.java and LineNumberSAXHandler.java.
-
-Typical users of this library will not need to depend on this module.
-
-[1] https://github.com/hunterhacker/jdom/blob/master/LICENSE.txt
-
 ### GeoTools 
 
 JTS includes some code from the GeoTools project.  This code has been licensed to the JTS project under the OSGeo BSD License [2] by the GeoTools PSC [3,4].
