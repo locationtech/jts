@@ -16,26 +16,25 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jtslab.simplify.RadialDistanceByAngleSimplifier;
 
 import junit.framework.TestCase;
 
-public class RadialDistanceByAngleSimplifierTest extends TestCase 
+public class ShortSharpAngleSimplifierTest extends TestCase
 {
   GeometryFactory _factory;
   
-  public RadialDistanceByAngleSimplifierTest(String name) {
+  public ShortSharpAngleSimplifierTest(String name) {
     super(name);
     _factory = new GeometryFactory();
   }
 
   public static void main(String[] args) {
-    junit.textui.TestRunner.run(RadialDistanceByAngleSimplifierTest.class);
+    junit.textui.TestRunner.run(ShortSharpAngleSimplifierTest.class);
   }
   
   public void testSimplifyEmptyLineShouldReturnNull() {
     Geometry input = _factory.createLineString(new Coordinate[0]);
-    Geometry simplified = RadialDistanceByAngleSimplifier.simplify(input, 0, 0);
+    Geometry simplified = ShortSharpAngleSimplifier.simplify(input, 0, 0);
 
     assertNull(simplified);
   }
@@ -48,7 +47,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(10, 0)
       });
 
-      Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
+      Geometry simplified = ShortSharpAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
       assertNull(simplified);
   }
@@ -61,7 +60,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(100, 0)
       });
 
-    Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
+    Geometry simplified = ShortSharpAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
     assertNotNull(simplified);
     assertTrue(line.equalsExact(simplified));
@@ -80,7 +79,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(0, 0)
       });
 
-      Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
+      Geometry simplified = ShortSharpAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
       CoordinateList coordinates = new CoordinateList(simplified.getCoordinates());
       assertTrue(!coordinates.contains(coordinateThatShouldBeRemoved));
@@ -96,7 +95,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(300, 0),
       });
 
-      Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
+      Geometry simplified = ShortSharpAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
       assertNotNull(simplified);
       assertTrue(line.equalsExact(simplified));
@@ -112,7 +111,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(100, 200)
       });
 
-    Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
+    Geometry simplified = ShortSharpAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
     assertEquals(line.getCoordinates().length - 1, simplified.getCoordinates().length);
   }
@@ -127,7 +126,7 @@ public class RadialDistanceByAngleSimplifierTest extends TestCase
           new Coordinate(100, 1)
       });
 
-    Geometry simplified = RadialDistanceByAngleSimplifier.simplify(line, 30, Math.PI / 2);
+    Geometry simplified = ShortSharpAngleSimplifier.simplify(line, 30, Math.PI / 2);
 
     assertTrue(line.equalsExact(simplified));
   }

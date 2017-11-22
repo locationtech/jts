@@ -40,7 +40,7 @@ import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
  * @see <a href="https://github.com/IsraelHikingMap/Site/blob/master/IsraelHiking.API/Services/RadialDistanceByAngleSimplifier.cs/">Orginal code</a>
  * @see <a href="http://israelhiking.osm.org.il/">Isreal hiking map</a>
  */
-public class RadialDistanceByAngleSimplifier
+public class ShortSharpAngleSimplifier
 {
     private Geometry _geometry;
     private double _distanceTolerance;
@@ -73,7 +73,7 @@ public class RadialDistanceByAngleSimplifier
      */
     public static Geometry simplify(Geometry geometry, double distanceTolerance, double angleTolerace)
     {
-      RadialDistanceByAngleSimplifier simplifier = new RadialDistanceByAngleSimplifier(geometry);
+      ShortSharpAngleSimplifier simplifier = new ShortSharpAngleSimplifier(geometry);
       simplifier.setDistanceTolerance(distanceTolerance);
       simplifier.setAngleTolerance(angleTolerace);
 
@@ -86,7 +86,7 @@ public class RadialDistanceByAngleSimplifier
      * @param geometry The geometry to simplify. 
      * @exception IllegalArgumentException Thrown if {@code geometry} is {@code null} or not a {@link Lineal} geometry.
      */
-    public RadialDistanceByAngleSimplifier(Geometry geometry)
+    public ShortSharpAngleSimplifier(Geometry geometry)
     {
       if (geometry == null)
         throw new IllegalArgumentException("geometry must not be null");
