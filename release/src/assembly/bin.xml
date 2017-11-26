@@ -61,6 +61,9 @@
       <includes>
        <include>jts-core*</include>
        <include>jts-io-common*</include>
+       <include>commons-lang*</include>
+       <include>jdom2*</include>
+       <include>json-simple*</include>
       </includes>
     </fileSet>
 
