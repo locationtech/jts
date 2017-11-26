@@ -10,4 +10,4 @@ set JAVA_LOOKANDFEEL=
 REM Default app options can be added here
 set APP_OPTS=%*
 
-javaw %JAVA_OPTS% %JAVA_LOOKANDFEEL% -jar %~dp0\..\modules\app\target\JTSTestBuilder.jar %APP_OPTS%
+javaw %JAVA_OPTS% %JAVA_LOOKANDFEEL% -jar %~dp0\JTSTestBuilder-1.15.0.jar %APP_OPTS%

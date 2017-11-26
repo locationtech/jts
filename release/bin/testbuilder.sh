@@ -9,7 +9,7 @@ JAVA_OPTS="-Xms256M -Xmx1024M"
 APP_OPTS=""
 
 if test "x$JTS_LIB_DIR" = "x"; then
-        JTS_LIB_DIR=`dirname $0`/../lib/
+        JTS_LIB_DIR=`dirname $0`/
 fi
 
 #---------------------------------#
@@ -24,5 +24,5 @@ done
 #---------------------------#
 # run the program           #
 #---------------------------#
-MAIN=com.vividsolutions.jtstest.testbuilder.JTSTestBuilder
+MAIN=org.locationtech.jtstest.testbuilder.JTSTestBuilder
 java -cp ".:${CP}" $JAVA_OPTS  $JAVA_LOOKANDFEEL $MAIN $APP_OPTS
