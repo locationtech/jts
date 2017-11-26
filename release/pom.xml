@@ -36,7 +36,7 @@
        <artifactId>maven-dependency-plugin</artifactId>
        <executions>
         <execution>
-         <phase>install</phase>
+         <phase>package</phase>
          <goals>
           <goal>copy-dependencies</goal>
          </goals>
