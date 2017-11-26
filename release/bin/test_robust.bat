@@ -2,7 +2,7 @@
 rem A batch file to run a XML test files
 
 set CLASSPATH=
-for %%i in (*.jar) do (
+for %%i in (..\*.*) do (
  set jarfile=%%i
 
  rem If we append to a variable inside the for, only the last entry will
@@ -13,7 +13,7 @@ for %%i in (*.jar) do (
  call :setclass
 )  
 
-java com.vividsolutions.jtstest.testrunner.TopologyTestApp -Files ..\testxml\robust
+java org.locationtech.jtstest.testrunner.TopologyTestApp -Files ..\testxml\robust
 pause
 
 goto :eof

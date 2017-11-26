@@ -2,7 +2,7 @@
 rem A batch file to run the XML test files written by Geographic Data BC.
 
 set CLASSPATH=
-for %%i in (*.jar) do (
+for %%i in (..\lib\*.*) do (
  set jarfile=%%i
 
  rem If we append to a variable inside the for, only the last entry will
@@ -13,7 +13,7 @@ for %%i in (*.jar) do (
  call :setclass
 )  
 
-java com.vividsolutions.jtstest.testrunner.TopologyTestApp -Files ..\testxml\validate ..\testxml\general
+java org.locationtech.jtstest.testrunner.TopologyTestApp -Files ..\testxml\validate ..\testxml\general
 pause
 
 goto :eof
