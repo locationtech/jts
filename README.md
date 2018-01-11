@@ -34,7 +34,8 @@ See also:
 
 ## Documentation
 
-* Javadoc: [https://locationtech.github.io/jts/javadoc](https://locationtech.github.io/jts/javadoc)
+* [**Javadoc**](https://locationtech.github.io/jts/javadoc)
+* Frequently Asked Questions are documented in the [**FAQ**](https://locationtech.github.io/jts/jts-faq.html)
 * Installing and using JTS is described in the [**User Guide**](USING.md).
 * Building and developing with JTS is described in the [**Developing Guide**](DEVELOPING.md).
 
