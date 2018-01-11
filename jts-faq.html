@@ -275,10 +275,19 @@
       to other line segments. If the vertex is shifted slightly it may cross the
       line segment, resulting in a ring which self-intersects. <br>
       <h3>5. What is the PrecisionModel for?<a name="D5"></a></h3>
-      TBD <br>
+      The PrecisionModel specifies the precision of the coordinates used to define geometries.
+	  Note that JTS expects that coordinates are supplied already rounded to the desired
+	  precision model; it does not perform this automatically during geometry creation.
+	  <br>
+	  For some operations the Precision Model also specifies the precision in which computation is performed, 
+	  and in which computed results are constructed.  However, this is not uniform
+	  across all operations.  For instance, the the overlay and buffer operations
+	  <b>do</b> obey the precision model, but the spatial predicates do not.
+	  <br>	  
       <h3>6. Why does JTS not enforce the specified PrecisionModel when creating
         new geometry?<a name="D6"></a></h3>
-      TBD <br>
+      This is in order to avoid unnecessary performance overhead, and also to avoid the risk
+      of mutating the supplied coordinate objects.<br>
       <h3>7. Why do the overlay operations not obey the axioms of set theory?<a
           name="D7"></a></h3>
       This is sometimes posed as:
