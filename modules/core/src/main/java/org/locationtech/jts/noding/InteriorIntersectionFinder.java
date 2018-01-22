@@ -216,25 +216,53 @@ public class InteriorIntersectionFinder
     Coordinate p01 = e0.getCoordinates()[segIndex0 + 1];
     Coordinate p10 = e1.getCoordinates()[segIndex1];
     Coordinate p11 = e1.getCoordinates()[segIndex1 + 1];
+    boolean isEnd00 = segIndex0 == 0;
+    boolean isEnd01 = segIndex0 + 2 == e0.size();
+    boolean isEnd10 = segIndex1 == 0;
+    boolean isEnd11 = segIndex1 + 2 == e1.size();
     
     li.computeIntersection(p00, p01, p10, p11);
 //if (li.hasIntersection() && li.isProper()) Debug.println(li);
 
-    if (li.hasIntersection()) {
-      if (li.isInteriorIntersection()) {
-      	intSegments = new Coordinate[4];
-      	intSegments[0] = p00;
-      	intSegments[1] = p01;
-      	intSegments[2] = p10;
-      	intSegments[3] = p11;
-      	
-      	interiorIntersection = li.getIntersection(0);
-      	if (keepIntersections) intersections.add(interiorIntersection);
-      	intersectionCount++;
-      }
+    boolean isProperInteriorInt = li.hasIntersection() && li.isInteriorIntersection();
+    boolean isEndInteriorInt = (e0 != e1) && isEndInteriorIntersection(p00, p01, p10, p11,
+        isEnd00, isEnd01, isEnd10, isEnd11);
+    
+    if (isProperInteriorInt || isEndInteriorInt) {
+      // found an intersection!
+    	intSegments = new Coordinate[4];
+    	intSegments[0] = p00;
+    	intSegments[1] = p01;
+    	intSegments[2] = p10;
+    	intSegments[3] = p11;
+    	
+    	interiorIntersection = li.getIntersection(0);
+    	if (keepIntersections) intersections.add(interiorIntersection);
+    	intersectionCount++;
     }
   }
   
+  boolean isEndInteriorIntersection(
+      Coordinate p00, Coordinate p01, 
+      Coordinate p10, Coordinate p11,
+      boolean isEnd00, boolean isEnd01,
+      boolean isEnd10, boolean isEnd11) {
+    if (isEndInteriorIntersection(p00, isEnd00, p10, isEnd10)) return true;
+    if (isEndInteriorIntersection(p00, isEnd00, p11, isEnd11)) return true;
+    if (isEndInteriorIntersection(p01, isEnd01, p10, isEnd10)) return true;
+    if (isEndInteriorIntersection(p01, isEnd01, p11, isEnd11)) return true;
+    return false;
+  }
+  private boolean isEndInteriorIntersection(
+      Coordinate p0, boolean isEnd0, 
+      Coordinate p1, boolean isEnd1) {
+    if (isEnd0 && isEnd1) return false;
+    if (p0.equals2D(p1)) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    * Tests whether a segment in a {@link SegmentString} is an end segment.
    * (either the first or last).
