@@ -32,7 +32,11 @@ import org.locationtech.jts.io.WKTWriter;
  * <p>
  * The validator does not check for a-b-a topology collapse situations.
  * <p> 
- * The validator does not check for endpoint-interior vertex intersections.
+ * The validator checks for the following noding failure conditions:
+ * <ul>
+ * <li>Proper intersections between segments (i.e. the intersection is interior to both segments)
+ * </ul>
+ * endpoint-interior vertex intersections.
  * This should not be a problem, since the JTS noders should be
  * able to compute intersections between vertices correctly.
  * <p>
@@ -40,9 +44,19 @@ import org.locationtech.jts.io.WKTWriter;
  * or request that a suitable {@link TopologyException} be thrown.
  *
  * @version 1.7
+ * 
+ * @see InteriorIntersectionFinder
  */
 public class FastNodingValidator 
 {
+  /**
+   * Gets a list of all intersections found.
+   * Intersections are represented as {@link Coordinate}s.
+   * List is empty if none were found.
+   * 
+   * @param segStrings a collection of SegmentStrings
+   * @return a list of Coordinate
+   */
   public static List computeIntersections(Collection segStrings)
   {
     FastNodingValidator nv = new FastNodingValidator(segStrings);

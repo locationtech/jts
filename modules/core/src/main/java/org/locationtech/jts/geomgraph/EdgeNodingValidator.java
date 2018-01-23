@@ -25,6 +25,8 @@ import org.locationtech.jts.noding.FastNodingValidator;
  * Throws an appropriate exception if an noding error is found.
  *
  * @version 1.7
+ * 
+ * @see FastNodingValidator
  */
 public class EdgeNodingValidator 
 {  
