@@ -45,7 +45,7 @@ import org.locationtech.jts.io.WKTWriter;
  *
  * @version 1.7
  * 
- * @see InteriorIntersectionFinder
+ * @see NodingIntersectionFinder
  */
 public class FastNodingValidator 
 {
@@ -69,7 +69,7 @@ public class FastNodingValidator
 
   private Collection segStrings;
   private boolean findAllIntersections = false;
-  private InteriorIntersectionFinder segInt = null;
+  private NodingIntersectionFinder segInt = null;
   private boolean isValid = true;
   
   /**
@@ -156,7 +156,7 @@ public class FastNodingValidator
   	 * since noding should have split any true interior intersections already.
   	 */
   	isValid = true;
-  	segInt = new InteriorIntersectionFinder(li);
+  	segInt = new NodingIntersectionFinder(li);
     segInt.setFindAllIntersections(findAllIntersections);
   	MCIndexNoder noder = new MCIndexNoder();
   	noder.setSegmentIntersector(segInt);
