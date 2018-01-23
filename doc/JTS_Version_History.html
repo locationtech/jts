@@ -11,26 +11,81 @@ JTS TOPOLOGY SUITE
 <i>Version History</i>
 </h1>
 
-
 This document lists the change history of release versions of the
 <span style='color:darkblue;'><b>JTS Topology Suite</b></span>.
+<ul>
+<li>Project site: <a href='http://locationtech.org/projects/technology.jts'><b>LocationTech JTS </b></a>
+<li>Code repo: <a href='https://github.com/locationtech/jts'><b>Github JTS</b></a>
+<li>Distribution: <a href='https://github.com/locationtech/jts/releases'><b>Github JTS Releases</b></a>
+</ul>
 <p>
-Further information on JTS can be found at <b>Tsusiat Software's
-<a href='http://tsusiatsoftware.net/jts/main.html'>JTS pages</a></b>.
-<p>
-The current and archived JTS distributions can be obtained at the
+The JTS distributions for older versions can be obtained at the
 <a href='http://sourceforge.net/projects/jts-topo-suite/'><b>SourceForge JTS site</b></a>.
-
+</p>
 <!-- ================================================================ -->
 <hr size='4' color='darkblue'>
 <h2>Version 1.15</h2>
 
-<i>Release Date:  September 23, 2015</i>
+<i>Release Date:  November 30, 2017</i>
+
+<h3>Project Changes</h3>
+<ul>
+<li>Changed licensing to dual-licensed EDL or EPL
+<li>Changed source hosting to GitHub
+<li>Changed distro hosting to GitHub
+<li>Changed build chain to use Maven
+<li>Changed code module structure
+</ul>
+
+<h3>API Changes</h3>
+<ul>
+<li>Changed Java package root to <code>org.locationtech.jts</code>
+<li>Refactored <code>CGAlgorithms</code> into function-specific classes
+    <code>Orientation</code>, <code>PointLocation</code>, <code>Distance</code>, <code>Length</code>, <code>Area</code>
+<li>Deprecated <code>NonRobustCGAlgorithms</code>; use function-specific classes refactored from <code>CGAlgorithms</code>
+<li>Deprecated <code>RobustDeterminant</code>; use <code>CGAlgorithmsDD</code>
+<li>Deprecated <code>Geometry.clone</code>; use <code>Geometry.copy</code>
+<li>Deprecated <code>GeometryFactory.createX(null)</code> methods; Use no-argument <code>GeometryFactory.createX</code> methods
+<li>Deprecated overloaded <code>GeometryFactory.createMultiPoint</code>; use <code>GeometryFactory.createMultiPointFromCoords</code>
+</ul>
 
 <h3>Functionality Improvements</h3>
 <ul>
 <li>Improve <code>Quadtree</code> to handle queries with null envelopes
 <li>Add <code>STRtree</code> K-Nearest Neighbours query
+<li>Add <code>Serializable</code> to </code><code>PackedCoordinateSequence</code> 
+<li>Add <code>Envelope.intersects</code>
+<li>Add <code>Geometry.intersects</code> for <code>GeometryCollection</code>
+<li>Improve <code>WKBReader</code> to handle the OGC 06-103r4 specification.
+<li>Improve <code>WKTReader</code> to handle <code>Z</code>, <code>M</code>, <code>ZM</code> modifiers.
+</ul>
+
+<h3>Performance & Robustness Improvements</h3>
+<ul>
+<li>Add optimization for <code>Geometry.contains</code> and <code>Geometry.covers</code>
+<li>Improve robustness of <code>RayCrossingCounter</code> and <code>Geometry.contains</code>
+<li>Improve robustness of <code>MultiPolygon</code> centroid computation
+<li>
+</ul>
+
+<h3>Bug Fixes</h3>
+<ul>
+<li>Eliminated <code>LineString.normalize</code> side-effects
+</ul>
+
+<!------- TestBuilder -------------------->
+<hr size='0' color='darkblue'>
+<h3 style='font-family:sans-serif; color:darkblue'>JTS TestBuilder</h3>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Added function <code>Writer.writeGeoJSON</code>
+<li>Added tree view of scalar functions
+<li>Added ability to repeat functions
+<li>Added custom fill styling
+<li>Added <code>SelectionFunctions</code> for metrics (area, length) 
+<li>Added function documentation driven by annotations
+<li>Some changes to layout of GUI elements (such as toolbar)
 </ul>
 
 <!-- ================================================================ -->

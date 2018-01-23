@@ -27,10 +27,6 @@ JTS is open source software.  It is dual-licensed under:
 * [Eclipse Public License 1.0](https://www.eclipse.org/legal/epl-v10.html)
 * [Eclipse Distribution License 1.0](http://www.eclipse.org/org/documents/edl-v10.php) (a BSD Style License)
 
-In addition:
-
-* This product includes software developed by the [JDOM Project](http://www.jdom.org/) (Apache-style license)
-
 See also:
 
 * [License details](LICENSES.md)
@@ -38,9 +34,11 @@ See also:
 
 ## Documentation
 
-* Javadoc: [https://locationtech.github.io/jts/javadoc](https://locationtech.github.io/jts/javadoc)
+* [**Javadoc**](https://locationtech.github.io/jts/javadoc)
+* Frequently Asked Questions are documented in the [**FAQ**](https://locationtech.github.io/jts/jts-faq.html)
 * Installing and using JTS is described in the [**User Guide**](USING.md).
 * Building and developing with JTS is described in the [**Developing Guide**](DEVELOPING.md).
+* Migrating from previous versions of JTS is described in the [**Upgrade Guide**](MIGRATING.md).
 
 ## Contributing
 
@@ -48,10 +46,10 @@ If you are interested in contributing to JTS please read the [**Contributing Gui
 
 ## Downstream Projects
 
-### Direct
-* [**GEOS**](https://trac.osgeo.org/geos) - C++ port
-* [**NetTopologySuite**](https://github.com/NetTopologySuite/NetTopologySuite) - .NET port
-* [**JSTS**](https://github.com/bjornharrtell/jsts) - JavaScript port
+### Derivative (ports to other languages)
+* [**GEOS**](https://trac.osgeo.org/geos) - C++
+* [**NetTopologySuite**](https://github.com/NetTopologySuite/NetTopologySuite) - .NET
+* [**JSTS**](https://github.com/bjornharrtell/jsts) - JavaScript
 
 ### Via GEOS
 * [**Shapely**](https://github.com/Toblerity/Shapely) - Python wrapper of GEOS

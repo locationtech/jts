@@ -1,7 +1,10 @@
-# JTS License FAQ
+# JTS Licensing FAQ
 
-JTS is dual-licensed under the [Eclipse Public License 1.0](https://www.eclipse.org/legal/epl-v10.html) ("EPL") 
-**or** the [Eclipse Distribution License 1.0](http://www.eclipse.org/org/documents/edl-v10.php) (a Revised BSD-style license). 
+JTS is dual-licensed under:
+
+* the [Eclipse Public License 1.0](https://www.eclipse.org/legal/epl-v10.html) ("EPL") 
+* the [Eclipse Distribution License 1.0](http://www.eclipse.org/org/documents/edl-v10.php) (a Revised BSD-style license). 
+
 More detail is provided in the [LICENSES](LICENSES.md) document.
 
 This FAQ clarifies the implications of the JTS software licensing.
@@ -27,13 +30,14 @@ This FAQ clarifies the implications of the JTS software licensing.
 **A2. JTS no longer uses LGPL.  What does this mean for downstream projects?**
 
   JTS is now released under a dual license: EDL **or** EPL.  
-  Dual-licensing gives downstream projects more options:
-
-* The **EDL** is a Revised BSD-style license.
-  It is **more** permissive than the LGPL.  
-  This allows a wider variety of uses.  For instance, it permits iOS use of JTS for mobile development.
   
-* The **EPL** provides a similar permissiveness to LGPL, with different wording around patents
+  Dual-licensing gives downstream projects their choice of either:
+
+* The **EDL** is a Revised BSD-style license. This license is **more** permissive than the LGPL, allowing a wider variety of uses.
+  
+* The **EPL** provides a similar permissiveness to LGPL, with different wording around patents and requires a notice of where source code for JTS is available.
+
+The choice of which license to use is up to you.
 
 **A3. But I thought LGPL and EPL do not mix? How does this affect derivative projects like the LGPL GEOS project?**
 
