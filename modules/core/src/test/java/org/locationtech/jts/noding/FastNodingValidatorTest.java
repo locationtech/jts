@@ -58,7 +58,7 @@ public class FastNodingValidatorTest extends GeometryTestCase {
     checkValid(SELF_INTERIOR_INT, false);
   }
 
-  public void testSelfVertexIntersection_TODO() {
+  public void testSelfVertexIntersection() {
     checkValid(SELF_VERTEX_INT, false);
   }
 
