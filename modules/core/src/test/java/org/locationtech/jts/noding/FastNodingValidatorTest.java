@@ -29,9 +29,7 @@ public class FastNodingValidatorTest extends GeometryTestCase {
       "LINESTRING (100 100, 300 300, 300 100, 100 300)"
   };
   private static final String[] SELF_VERTEX_INT = new String[] {
-      "LINESTRING (100 100, 200 200)"
-      ,"LINESTRING (200 200, 300 300)"
-      ,"LINESTRING (100 300, 200 200)"
+      "LINESTRING (100 100, 200 200, 300 300, 400 200, 200 200)"
   };
 
   public FastNodingValidatorTest(String name) {
@@ -61,8 +59,7 @@ public class FastNodingValidatorTest extends GeometryTestCase {
   }
 
   public void testSelfVertexIntersection_TODO() {
-    //TODO: this test should be invalid - need to improve {@link InteriorIntersectionFinder}
-    checkValid(SELF_VERTEX_INT, true);
+    checkValid(SELF_VERTEX_INT, false);
   }
 
   private void checkValid(String[] inputWKT, boolean isValidExpected) {
