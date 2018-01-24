@@ -138,6 +138,6 @@ public class PolygonShape implements Shape
     }
 
     public PathIterator getPathIterator(AffineTransform at, double flatness) {
-    	return getPathIterator(at, flatness);
+    	return polygonPath.getPathIterator(at, flatness);
     }
 }
