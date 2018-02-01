@@ -35,6 +35,7 @@
                 <module>example</module>
                 <module>tests</module>
                 <module>app</module>
+                <module>lab</module>
             </modules>
         </profile>
     </profiles>
