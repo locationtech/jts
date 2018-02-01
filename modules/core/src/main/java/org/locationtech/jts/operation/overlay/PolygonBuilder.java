@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
@@ -38,8 +39,6 @@ import org.locationtech.jts.util.Assert;
 public class PolygonBuilder {
 
   private GeometryFactory geometryFactory;
-  //private List dirEdgeList;
-  //private NodeMap nodes;
   private List shellList        = new ArrayList();
 
   public PolygonBuilder(GeometryFactory geometryFactory)
@@ -232,28 +231,35 @@ public class PolygonBuilder {
    * @return containing EdgeRing, if there is one
    * or null if no containing EdgeRing is found
    */
-  private EdgeRing findEdgeRingContaining(EdgeRing testEr, List shellList)
+  private static EdgeRing findEdgeRingContaining(EdgeRing testEr, List shellList)
   {
     LinearRing testRing = testEr.getLinearRing();
     Envelope testEnv = testRing.getEnvelopeInternal();
     Coordinate testPt = testRing.getCoordinateN(0);
 
     EdgeRing minShell = null;
-    Envelope minEnv = null;
+    Envelope minShellEnv = null;
     for (Iterator it = shellList.iterator(); it.hasNext(); ) {
       EdgeRing tryShell = (EdgeRing) it.next();
-      LinearRing tryRing = tryShell.getLinearRing();
-      Envelope tryEnv = tryRing.getEnvelopeInternal();
-      if (minShell != null) minEnv = minShell.getLinearRing().getEnvelopeInternal();
+      LinearRing tryShellRing = tryShell.getLinearRing();
+      Envelope tryShellEnv = tryShellRing.getEnvelopeInternal();
+      // the hole envelope cannot equal the shell envelope
+      // (also guards against testing rings against themselves)
+      if (tryShellEnv.equals(testEnv)) continue;
+      // hole must be contained in shell
+      if (! tryShellEnv.contains(testEnv)) continue;
+      
+      testPt = CoordinateArrays.ptNotInList(testRing.getCoordinates(), tryShellRing.getCoordinates());
       boolean isContained = false;
-      if (tryEnv.contains(testEnv)
-          && PointLocation.isInRing(testPt, tryRing.getCoordinates()) )
+      if (PointLocation.isInRing(testPt, tryShellRing.getCoordinates()) )
         isContained = true;
+
       // check if this new containing ring is smaller than the current minimum ring
       if (isContained) {
         if (minShell == null
-            || minEnv.contains(tryEnv)) {
+            || minShellEnv.contains(tryShellEnv)) {
           minShell = tryShell;
+          minShellEnv = minShell.getLinearRing().getEnvelopeInternal();
         }
       }
     }
@@ -270,20 +276,5 @@ public class PolygonBuilder {
     }
     return resultPolyList;
   }
-
-  /**
-   * Checks the current set of shells (with their associated holes) to
-   * see if any of them contain the point.
-   */
-  public boolean containsPoint(Coordinate p)
-  {
-    for (Iterator it = shellList.iterator(); it.hasNext(); ) {
-      EdgeRing er = (EdgeRing) it.next();
-      if (er.containsPoint(p))
-       return true;
-    }
-    return false;
-  }
-
 
 }
