@@ -40,6 +40,7 @@ import org.locationtech.jtstest.function.OffsetCurveFunctions;
 import org.locationtech.jtstest.function.OrientationFunctions;
 import org.locationtech.jtstest.function.OverlayFunctions;
 import org.locationtech.jtstest.function.OverlayNoSnapFunctions;
+import org.locationtech.jtstest.function.OverlaySRFunctions;
 import org.locationtech.jtstest.function.PointLocationFunctions;
 import org.locationtech.jtstest.function.PolygonOverlayFunctions;
 import org.locationtech.jtstest.function.PolygonizeFunctions;
@@ -100,6 +101,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(OrientationFunctions.class);
     funcRegistry.add(LineSegmentFunctions.class);
     funcRegistry.add(OverlayFunctions.class);
+    funcRegistry.add(OverlaySRFunctions.class);
     funcRegistry.add(OverlayNoSnapFunctions.class);
     funcRegistry.add(PointLocationFunctions.class);
     //funcRegistry.add(OverlayEnhancedPrecisionFunctions.class);

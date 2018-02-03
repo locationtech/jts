@@ -27,9 +27,9 @@ import org.locationtech.jts.index.strtree.STRtree;
 
 
 /**
- * Provides an efficient method of unioning a collection of 
+ * Provides an efficient method of unioning a collection of
  * {@link Polygonal} geometries.
- * The geometries are indexed using a spatial index, 
+ * The geometries are indexed using a spatial index,
  * and unioned recursively in index order.
  * For geometries with a high degree of overlap,
  * this has the effect of reducing the number of vertices
@@ -37,73 +37,97 @@ import org.locationtech.jts.index.strtree.STRtree;
  * and robustness.
  * <p>
  * This algorithm is faster and more robust than
- * the simple iterated approach of 
+ * the simple iterated approach of
  * repeatedly unioning each polygon to a result geometry.
  * <p>
- * The <tt>buffer(0)</tt> trick is sometimes faster, but can be less robust and 
+ * The <tt>buffer(0)</tt> trick is sometimes faster, but can be less robust and
  * can sometimes take a long time to complete.
  * This is particularly the case where there is a high degree of overlap
  * between the polygons.  In this case, <tt>buffer(0)</tt> is forced to compute
- * with <i>all</i> line segments from the outset, 
+ * with <i>all</i> line segments from the outset,
  * whereas cascading can eliminate many segments
  * at each stage of processing.
  * The best situation for using <tt>buffer(0)</tt> is the trivial case
- * where there is <i>no</i> overlap between the input geometries. 
+ * where there is <i>no</i> overlap between the input geometries.
  * However, this case is likely rare in practice.
- * 
+ *
  * @author Martin Davis
  *
  */
-public class CascadedPolygonUnion 
+public class CascadedPolygonUnion
 {
-	/**
-	 * Computes the union of
-	 * a collection of {@link Polygonal} {@link Geometry}s.
-	 * 
-	 * @param polys a collection of {@link Polygonal} {@link Geometry}s
-	 */
-	public static Geometry union(Collection polys)
-	{
-		CascadedPolygonUnion op = new CascadedPolygonUnion(polys);
-		return op.union();
-	}
-	
+  /**
+   * Computes the union of
+   * a collection of {@link Polygonal} {@link Geometry}s.
+   *
+   * @param polys a collection of {@link Polygonal} {@link Geometry}s
+   */
+  public static Geometry union(Collection polys)
+  {
+    CascadedPolygonUnion op = new CascadedPolygonUnion(polys);
+    return op.union();
+  }
+
+  /**
+   * Computes the union of
+   * a collection of {@link Polygonal} {@link Geometry}s.
+   *
+   * @param polys a collection of {@link Polygonal} {@link Geometry}s
+   */
+  public static Geometry union(Collection polys, UnionFunction unionFun)
+  {
+    CascadedPolygonUnion op = new CascadedPolygonUnion(polys, unionFun);
+    return op.union();
+  }
+
 	private Collection inputPolys;
 	private GeometryFactory geomFactory = null;
-	
-	/**
-	 * Creates a new instance to union
-	 * the given collection of {@link Geometry}s.
-	 * 
-	 * @param polys a collection of {@link Polygonal} {@link Geometry}s
-	 */
-	public CascadedPolygonUnion(Collection polys)
-	{
-		this.inputPolys = polys;
-		// guard against null input
-		if (inputPolys == null) 
-		  inputPolys = new ArrayList();
-	}
-	
+  private UnionFunction unionFun;
+
+  /**
+   * Creates a new instance to union
+   * the given collection of {@link Geometry}s.
+   *
+   * @param polys a collection of {@link Polygonal} {@link Geometry}s
+   */
+  public CascadedPolygonUnion(Collection polys)
+  {
+    this(polys, UnionFunction.CLASSIC);
+  }
+
+	 /**
+   * Creates a new instance to union
+   * the given collection of {@link Geometry}s.
+   *
+   * @param polys a collection of {@link Polygonal} {@link Geometry}s
+   */
+  public CascadedPolygonUnion(Collection polys, UnionFunction unionFun)
+  {
+    this.inputPolys = polys;
+    this.unionFun = unionFun;
+    // guard against null input
+    if (inputPolys == null)
+      inputPolys = new ArrayList();
+  }
   /**
    * The effectiveness of the index is somewhat sensitive
-   * to the node capacity.  
+   * to the node capacity.
    * Testing indicates that a smaller capacity is better.
    * For an STRtree, 4 is probably a good number (since
    * this produces 2x2 "squares").
    */
   private static final int STRTREE_NODE_CAPACITY = 4;
-  
+
 	/**
 	 * Computes the union of the input geometries.
 	 * <p>
 	 * This method discards the input geometries as they are processed.
 	 * In many input cases this reduces the memory retained
-	 * as the operation proceeds. 
-	 * Optimal memory usage is achieved 
-	 * by disposing of the original input collection 
+	 * as the operation proceeds.
+	 * Optimal memory usage is achieved
+	 * by disposing of the original input collection
 	 * before calling this method.
-	 * 
+	 *
 	 * @return the union of the input geometries
 	 * or null if no input geometries were provided
 	 * @throws IllegalStateException if this method is called more than once
@@ -115,11 +139,11 @@ public class CascadedPolygonUnion
 		if (inputPolys.isEmpty())
 			return null;
 		geomFactory = ((Geometry) inputPolys.iterator().next()).getFactory();
-		
+
 		/**
 		 * A spatial index to organize the collection
 		 * into groups of close geometries.
-		 * This makes unioning more efficient, since vertices are more likely 
+		 * This makes unioning more efficient, since vertices are more likely
 		 * to be eliminated on each round.
 		 */
 //    STRtree index = new STRtree();
@@ -130,13 +154,13 @@ public class CascadedPolygonUnion
     }
     // To avoiding holding memory remove references to the input geometries,
     inputPolys = null;
-    
+
     List itemTree = index.itemsTree();
 //    printItemEnvelopes(itemTree);
     Geometry unionAll = unionTree(itemTree);
     return unionAll;
 	}
-	
+
   private Geometry unionTree(List geomTree)
   {
     /**
@@ -146,10 +170,10 @@ public class CascadedPolygonUnion
     List geoms = reduceToGeometries(geomTree);
 //    Geometry union = bufferUnion(geoms);
     Geometry union = binaryUnion(geoms);
-    
+
     // print out union (allows visualizing hierarchy)
 //    System.out.println(union);
-    
+
     return union;
   }
 
@@ -157,7 +181,7 @@ public class CascadedPolygonUnion
   /*
    * The following methods are for experimentation only
    */
-  
+
   private Geometry repeatedUnion(List geoms)
   {
   	Geometry union = null;
@@ -166,31 +190,15 @@ public class CascadedPolygonUnion
   		if (union == null)
   			union = g.copy();
   		else
-  			union = union.union(g);
+  			union = unionFun.union(union, g);
   	}
   	return union;
   }
-  
-  private Geometry bufferUnion(List geoms)
-  {
-  	GeometryFactory factory = ((Geometry) geoms.get(0)).getFactory();
-  	Geometry gColl = factory.buildGeometry(geoms);
-  	Geometry unionAll = gColl.buffer(0.0);
-    return unionAll;
-  }
-  
-  private Geometry bufferUnion(Geometry g0, Geometry g1)
-  {
-  	GeometryFactory factory = g0.getFactory();
-  	Geometry gColl = factory.createGeometryCollection(new Geometry[] { g0, g1 } );
-  	Geometry unionAll = gColl.buffer(0.0);
-    return unionAll;
-  }
-  
+
   //=======================================
 
   /**
-   * Unions a list of geometries 
+   * Unions a list of geometries
    * by treating the list as a flattened binary tree,
    * and performing a cascaded union on the tree.
    */
@@ -198,11 +206,11 @@ public class CascadedPolygonUnion
   {
   	return binaryUnion(geoms, 0, geoms.size());
   }
-  
+
   /**
    * Unions a section of a list using a recursive binary union on each half
    * of the section.
-   * 
+   *
    * @param geoms the list of geometries containing the section to union
    * @param start the start index of the section
    * @param end the index after the end of the section
@@ -225,11 +233,11 @@ public class CascadedPolygonUnion
   		return unionSafe(g0, g1);
   	}
   }
-  
+
   /**
    * Gets the element at a given list index, or
    * null if the index is out of range.
-   * 
+   *
    * @param list
    * @param index
    * @return the geometry at the given index
@@ -240,11 +248,11 @@ public class CascadedPolygonUnion
   	if (index >= list.size()) return null;
   	return (Geometry) list.get(index);
   }
-  
+
   /**
    * Reduces a tree of geometries to a list of geometries
    * by recursively unioning the subtrees in the list.
-   * 
+   *
    * @param geomTree a tree-structured list of geometries
    * @return a list of Geometrys
    */
@@ -264,11 +272,11 @@ public class CascadedPolygonUnion
     }
     return geoms;
   }
-  
+
   /**
-   * Computes the union of two geometries, 
+   * Computes the union of two geometries,
    * either or both of which may be null.
-   * 
+   *
    * @param g0 a Geometry
    * @param g1 a Geometry
    * @return the union of the input(s)
@@ -283,13 +291,13 @@ public class CascadedPolygonUnion
   		return g1.copy();
   	if (g1 == null)
   		return g0.copy();
-  	
+
   	return unionActual( g0, g1 );
   }
-  
+
   /**
    * Encapsulates the actual unioning of two polygonal geometries.
-   * 
+   *
    * @param g0
    * @param g1
    * @return
@@ -299,17 +307,17 @@ public class CascadedPolygonUnion
     Geometry union = OverlapUnion.union(g0, g1);;
   	return restrictToPolygons( union );
   }
-  
+
   /**
    * Computes a {@link Geometry} containing only {@link Polygonal} components.
-   * Extracts the {@link Polygon}s from the input 
+   * Extracts the {@link Polygon}s from the input
    * and returns them as an appropriate {@link Polygonal} geometry.
    * <p>
    * If the input is already <tt>Polygonal</tt>, it is returned unchanged.
    * <p>
    * A particular use case is to filter out non-polygonal components
-   * returned from an overlay operation.  
-   * 
+   * returned from an overlay operation.
+   *
    * @param g the geometry to filter
    * @return a Polygonal geometry
    */
@@ -319,7 +327,7 @@ public class CascadedPolygonUnion
       return g;
     }
     List polygons = PolygonExtracter.getPolygons(g);
-    if (polygons.size() == 1) 
+    if (polygons.size() == 1)
       return (Polygon) polygons.get(0);
     return g.getFactory().createMultiPolygon(GeometryFactory.toPolygonArray(polygons));
   }
