@@ -412,7 +412,7 @@ implements SpatialIndex, Serializable
     // initialize queue
     priQ.add(initBndPair);
 
-    java.util.PriorityQueue<BoundablePair> kNearestNeighbors = new java.util.PriorityQueue<BoundablePair>(k, new BoundablePairDistanceComparator(false));
+    PriorityQueue kNearestNeighbors = new PriorityQueue();
 
     while (! priQ.isEmpty() && distanceLowerBound >= 0.0) {
       // pop head of queue and expand one side of pair
@@ -447,8 +447,8 @@ implements SpatialIndex, Serializable
     	  }
     	  else
     	  {
-
-    		  if(kNearestNeighbors.peek().getDistance()>currentDistance)
+    		  BoundablePair bp1 = (BoundablePair) kNearestNeighbors.peek();
+    		  if(bp1.getDistance()>currentDistance)
     		  {
     			  kNearestNeighbors.poll();
     			  kNearestNeighbors.add(bndPair);
@@ -456,7 +456,8 @@ implements SpatialIndex, Serializable
     		  /*
     		   * minDistance should be the farthest point in the K nearest neighbor queue.
     		   */
-    		  distanceLowerBound = kNearestNeighbors.peek().getDistance();
+    		  BoundablePair bp2 = (BoundablePair) kNearestNeighbors.peek();
+    		  distanceLowerBound = bp2.getDistance();
 
     	  }        
       }
@@ -481,18 +482,18 @@ implements SpatialIndex, Serializable
 
     return getItems(kNearestNeighbors);
   }
-  private static Object[] getItems(java.util.PriorityQueue<BoundablePair> kNearestNeighbors)
+  private static Object[] getItems(PriorityQueue kNearestNeighbors)
   {
 	  /** 
 	   * Iterate the K Nearest Neighbour Queue and retrieve the item from each BoundablePair
 	   * in this queue
 	   */
 	  Object[] items = new Object[kNearestNeighbors.size()];
-	  Iterator<BoundablePair> resultIterator = kNearestNeighbors.iterator();
 	  int count=0;
-	  while(resultIterator.hasNext())
+	  while(!kNearestNeighbors.isEmpty())
 	  {
-		  items[count]=((ItemBoundable)resultIterator.next().getBoundable(0)).getItem();
+		  BoundablePair bp = (BoundablePair) kNearestNeighbors.poll(); 
+		  items[count]=((ItemBoundable)bp.getBoundable(0)).getItem();
 		  count++;
 	  }	
 	  return items;
