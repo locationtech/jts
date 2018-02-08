@@ -256,17 +256,15 @@ public class HalfEdge {
    */
   public int compareAngularDirection(HalfEdge e)
   {
-    double dx = deltaX();
-    double dy = deltaY();
-    double dx2 = e.deltaX();
-    double dy2 = e.deltaY();
+    Coordinate dir1 = directionPt();
+    Coordinate dir2 = e.directionPt();
     
     // same vector
-    if (dx == dx2 && dy == dy2)
+    if (dir1.equals2D(dir2))
       return 0;
     
-    double quadrant = Quadrant.quadrant(dx, dy);
-    double quadrant2 = Quadrant.quadrant(dx2, dy2);
+    double quadrant = Quadrant.quadrant(orig, dir1);
+    double quadrant2 = Quadrant.quadrant(orig, dir2);
     
     // if the vectors are in different quadrants, determining the ordering is trivial
     if (quadrant > quadrant2) return 1;
@@ -274,22 +272,13 @@ public class HalfEdge {
     // vectors are in the same quadrant
     // Check relative orientation of direction vectors
     // this is > e if it is CCW of e
-    return Orientation.index(e.orig, e.dest(), dest());
+    return Orientation.index(e.orig, dir2, dir1);
   }
 
-  /**
-   * The X component of the distance between the orig and dest vertices.
-   * 
-   * @return the X component of the edge length
-   */
-  public double deltaX() { return sym.orig.x - orig.x; }
-  
-  /**
-   * The Y component of the distance between the orig and dest vertices.
-   * 
-   * @return the Y component of the edge length
-   */
-  public double deltaY() { return sym.orig.y - orig.y; }
+  protected Coordinate directionPt() {
+    // default is to assume edges have only 2 vertices
+    return dest();
+  }
   
   /**
    * Computes a string representation of a HalfEdge.

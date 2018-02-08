@@ -81,9 +81,9 @@ public class OverlaySR {
   private static Geometry toLines(Collection segStrings, GeometryFactory geomFact) {
     List lines = new ArrayList();
     for (Iterator it = segStrings.iterator(); it.hasNext(); ) {
-      SegmentString nss = (SegmentString) it.next();
+      SegmentString ss = (SegmentString) it.next();
       //Coordinate[] pts = getCoords(nss);
-      Coordinate[] pts = nss.getCoordinates();
+      Coordinate[] pts = ss.getCoordinates();
       
       lines.add(geomFact.createLineString(pts));
     }
