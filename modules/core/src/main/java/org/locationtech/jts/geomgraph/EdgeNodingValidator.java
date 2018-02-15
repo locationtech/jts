@@ -23,8 +23,11 @@ import org.locationtech.jts.noding.FastNodingValidator;
 /**
  * Validates that a collection of {@link Edge}s is correctly noded.
  * Throws an appropriate exception if an noding error is found.
- *
+ * Uses {@link FastNodingValidator} to perform the validation.
+ * 
  * @version 1.7
+ * 
+ * @see FastNodingValidator
  */
 public class EdgeNodingValidator 
 {  
