@@ -63,18 +63,35 @@ public class OverlaySR {
   }
 
   private Geometry computeOverlay(int overlayOpCode) {
+    Collection edges = node();
+    OverlayGraph graph = buildTopology(edges);
+    
+    //TODO: extract include linework from graph
+    
+    return toLines(edges, geomFact );
+  }
+
+  private OverlayGraph buildTopology(Collection edges) {
+    OverlayGraph graph = OverlayGraph.buildGraph( edges );
+    graph.computeLabelling();
+    return graph;
+  }
+
+  private Collection node() {
     OverlayNoder noder = new OverlayNoder(pm);
     noder.add(geom[0], 0);
     noder.add(geom[1], 1);
     Collection edges = noder.node();
     Collection mergedEdges = merge(edges);
-    OverlayGraph graph = OverlayGraph.buildGraph( mergedEdges );
-    
-    return toLines(edges, geomFact );
+    return mergedEdges;
   }
-
+  
   private Collection merge(Collection edges) {
-    // TODO implement merging here?
+    // TODO implement merging here
+    
+    //computeLabelsFromDepths();
+    //replaceCollapsedEdges();
+    
     return edges;
   }
 

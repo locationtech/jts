@@ -115,10 +115,11 @@ public class HalfEdge {
 
   /**
    * Gets the next edge CCW around the 
-   * destination vertex of this edge.
+   * destination vertex of this edge,
+   * with that vertex as origin.
    * If the vertex has degree 1 then this is the <b>sym</b> edge.
    * 
-   * @return the next edge
+   * @return the next edge CCW around the dest vertex
    */
   public HalfEdge next()
   {
@@ -140,6 +141,14 @@ public class HalfEdge {
     next = e;
   }
   
+  /**
+   * Gets the next edge CCW around the 
+   * origin vertex of this edge,
+   * with that vertex as origin.
+   * If the vertex has degree 1 then this is the <b>sym</b> edge.
+   * 
+   * @return the next edge CCW around the origin vertex
+   */
   public HalfEdge oNext() {
     return sym.next;
   }

@@ -29,6 +29,7 @@ public class OverlayGraph {
    * Override to use a different HalfEdge subclass.
    * 
    * @param orig the origin location
+   * @param direction the direction along the segment string - true is forward
    * @return a new HalfEdge with the given origin
    */
   protected OverlayEdge createEdge(SegmentString ss, boolean direction)
@@ -130,5 +131,10 @@ public class OverlayGraph {
     HalfEdge e = (HalfEdge) vertexMap.get(orig);
     if (e == null) return null;
     return e.find(dest);
+  }
+
+  public void computeLabelling() {
+    // TODO Auto-generated method stub
+    
   }
 }
