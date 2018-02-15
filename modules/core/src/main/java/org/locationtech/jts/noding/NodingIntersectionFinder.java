@@ -25,7 +25,8 @@ import org.locationtech.jts.geom.Coordinate;
  * Non-noded intersections include:
  * <ul>
  * <li>intersections which lie in the interior of a segment
- * <lI>intersections at a vertex in the interior of a {@link SegmentString}
+ * <li>intersections at a vertex in the interior of a {@link SegmentString}
+ * (e.g. with a segment string endpoint or other interior vertex)
  * </ul>
  *
  * @version 1.7

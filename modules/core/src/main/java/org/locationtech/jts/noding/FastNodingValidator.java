@@ -25,20 +25,19 @@ import org.locationtech.jts.io.WKTWriter;
 /**
  * Validates that a collection of {@link SegmentString}s is correctly noded.
  * Indexing is used to improve performance.
- * In the most common use case, validation stops after a single 
- * non-noded intersection is detected, 
- * but the class can be requested to detect all intersections
- * by using the {@link #setFindAllIntersections(boolean)} method.
+ * By default validation stops after a single 
+ * non-noded intersection is detected. 
+ * Alternatively, it can be requested to detect all intersections
+ * by using {@link #setFindAllIntersections(boolean)}.
  * <p>
- * The validator does not check for a-b-a topology collapse situations.
+ * The validator does not check for topology collapse situations
+ * (e.g. where two segment strings are fully co-incident).
  * <p> 
- * The validator checks for the following noding failure conditions:
+ * The validator checks for the following situations which indicated incorrect noding:
  * <ul>
  * <li>Proper intersections between segments (i.e. the intersection is interior to both segments)
+ * <li>Intersections at an interior vertex (i.e. with an endpoint or another interior vertex)
  * </ul>
- * endpoint-interior vertex intersections.
- * This should not be a problem, since the JTS noders should be
- * able to compute intersections between vertices correctly.
  * <p>
  * The client may either test the {@link #isValid()} condition, 
  * or request that a suitable {@link TopologyException} be thrown.
