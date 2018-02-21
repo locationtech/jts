@@ -377,9 +377,9 @@ public class Polygon
   }
 
   public void normalize() {
-    normalize(shell, true);
+    shell = normalized(shell, true);
     for (int i = 0; i < holes.length; i++) {
-      normalize(holes[i], false);
+      holes[i] = normalized(holes[i], false);
     }
     Arrays.sort(holes);
   }
@@ -417,10 +417,17 @@ public class Polygon
     return Geometry.SORTINDEX_POLYGON;
   }
 
+  private LinearRing normalized(LinearRing ring, boolean clockwise) {
+    LinearRing res = getFactory().createLinearRing(ring.getCoordinateSequence().copy());
+    normalize(res, clockwise);
+    return res;
+  }
+
   private void normalize(LinearRing ring, boolean clockwise) {
     if (ring.isEmpty()) {
       return;
     }
+    /* old code
     Coordinate[] uniqueCoordinates = new Coordinate[ring.getCoordinates().length - 1];
     System.arraycopy(ring.getCoordinates(), 0, uniqueCoordinates, 0, uniqueCoordinates.length);
     Coordinate minCoordinate = CoordinateArrays.minCoordinate(ring.getCoordinates());
@@ -430,6 +437,14 @@ public class Polygon
     if (Orientation.isCCW(ring.getCoordinates()) == clockwise) {
       CoordinateArrays.reverse(ring.getCoordinates());
     }
+     */
+
+    CoordinateSequence seq = ring.getCoordinateSequence();
+
+    int minCoordinateIndex = CoordinateSequences.minCoordinateIndex(seq, 0, seq.size()-2);
+    CoordinateSequences.scroll(seq, minCoordinateIndex, true);
+    if (Orientation.isCCW(seq) == clockwise)
+      CoordinateSequences.reverse(seq);
   }
 
   public Geometry reverse()

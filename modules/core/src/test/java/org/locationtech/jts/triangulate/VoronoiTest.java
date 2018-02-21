@@ -66,6 +66,7 @@ public class VoronoiTest extends TestCase {
   	Geometry expectedEdges = reader.read(expectedWKT);
   	result.normalize();
   	expectedEdges.normalize();
-  	assertTrue(expectedEdges.equalsExact(result, COMPARISON_TOLERANCE));
+  	assertTrue("Assertion failed!\nexpected: " + expectedEdges.toString() +"\nresult:   " + result.toString(),
+            expectedEdges.equalsExact(result, COMPARISON_TOLERANCE));
   }
 }

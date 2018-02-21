@@ -98,7 +98,7 @@ public abstract class EdgeRing {
       coord[i] = (Coordinate) pts.get(i);
     }
     ring = geometryFactory.createLinearRing(coord);
-    isHole = Orientation.isCCW(ring.getCoordinates());
+    isHole = Orientation.isCCW(ring.getCoordinateSequence());
 //Debug.println( (isHole ? "hole - " : "shell - ") + WKTWriter.toLineString(new CoordinateArraySequence(ring.getCoordinates())));
   }
   abstract public DirectedEdge getNext(DirectedEdge de);
