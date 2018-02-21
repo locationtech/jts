@@ -88,6 +88,11 @@ public class DDIOTest extends TestCase {
 	}
 
 	public void testParse() {
+		//checkParse("0", 0, 1e-32);
+		checkParse("1", 1, 1e-32);
+        checkParse("100", 100, 1e-32);
+		checkParse("-123", -123, 1e-32);
+		checkParse("-1.0", -1, 1e-32);
 		checkParse("1.05e10", 1.05E10, 1e-32);
 		checkParse("-1.05e10", -1.05E10, 1e-32);
 		checkParse("1.05e-10", DD.valueOf(105.).divide(
@@ -119,11 +124,12 @@ public class DDIOTest extends TestCase {
 			double relErrBound) {
 		DD xdd = DD.parse(str);
 		double err = xdd.subtract(expectedVal).doubleValue();
-		double relErr = err / xdd.doubleValue();
+		double relErr = Math.abs(err / xdd.doubleValue());
 
 		//System.out.println("Parsed= " + xdd + " rel err= " + relErr);
 
-		assertTrue(err <= relErrBound);
+		assertTrue("parsing '" + str + "' results in " + xdd.toString() + " ( "
+				+ xdd.dump() + ") != " + expectedVal + "\n  err =" + err + ", relerr =" + relErr, relErr <= relErrBound);
 	}
 
 	public void testParseError() {

@@ -1323,6 +1323,7 @@ public strictfp final class DD
     int numDigits = 0;
     int numBeforeDec = 0;
     int exp = 0;
+    boolean hasDecimalChar = false;
     while (true) {
       if (i >= strlen)
         break;
@@ -1338,6 +1339,7 @@ public strictfp final class DD
       }
       if (ch == '.') {
         numBeforeDec = numDigits;
+        hasDecimalChar = true;
         continue;
       }
       if (ch == 'e' || ch == 'E') {
@@ -1356,7 +1358,10 @@ public strictfp final class DD
           + " in string " + str);
     }
     DD val2 = val;
-    
+
+    // correct number of digits before decimal sign if we don't have a decimal sign in the string
+    if (!hasDecimalChar) numBeforeDec = numDigits;
+
     // scale the number correctly
     int numDecPlaces = numDigits - numBeforeDec - exp;
     if (numDecPlaces == 0) {
