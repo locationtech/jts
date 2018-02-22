@@ -31,7 +31,7 @@ public class DDIOTest extends TestCase {
 	}
 
 
-	public void testStandardNotation() 
+	public void testWriteStandardNotation() 
 	{	
 		// standard cases
 		checkStandardNotation(1.0, "1.0");
@@ -68,7 +68,7 @@ public class DDIOTest extends TestCase {
 		assertEquals(expectedStr, xStr);
 	}
 
-	public void testSciNotation() {
+	public void testWriteSciNotation() {
 		checkSciNotation(0.0, "0.0E0");
 		checkSciNotation(1.05e10, "1.05E10");
 		checkSciNotation(0.34, "3.4000000000000002442490654175344E-1");
@@ -87,33 +87,59 @@ public class DDIOTest extends TestCase {
 		assertEquals(xStr, expectedStr);
 	}
 
-	public void testParse() {
-		checkParse("0", 0, 1e-32);
+	public void testParseInt() {
+    checkParse("0", 0, 1e-32);
+    checkParse("00", 0, 1e-32);
+    checkParse("000", 0, 1e-32);
+		
 		checkParse("1", 1, 1e-32);
-		checkParse("100", 100, 1e-32);
-		checkParse("-123", -123, 1e-32);
-		checkParse("-1.0", -1, 1e-32);
-		checkParse("1.05e10", 1.05E10, 1e-32);
+    checkParse("100", 100, 1e-32);
+    checkParse("00100", 100, 1e-32);
+		
+    checkParse("-1", -1, 1e-32);
+    checkParse("-01", -1, 1e-32);
+    checkParse("-123", -123, 1e-32);
+    checkParse("-00123", -123, 1e-32);
+	}
+		
+	public void testParseStandardNotation() {
+    checkParse("1.0000000", 1, 1e-32);
+    checkParse("1.0", 1, 1e-32);
+    checkParse("1.", 1, 1e-32);
+    checkParse("01.", 1, 1e-32);
+    
+    checkParse("-1.0", -1, 1e-32);
+    checkParse("-1.", -1, 1e-32);
+    checkParse("-01.0", -1, 1e-32);
+    checkParse("-123.0", -123, 1e-32);
+    
+    /*
+     * The Java double-precision constant 1.4 gives rise to a value which
+     * differs from the exact binary representation down around the 17th decimal
+     * place. Thus it will not compare exactly to the DoubleDouble
+     * representation of the same number. To avoid this, compute the expected
+     * value using full DD precision.
+     */
+    checkParse("1.4",
+        DD.valueOf(14).divide(DD.valueOf(10)), 1e-30);
+
+    // 39.5D can be converted to an exact FP representation
+    checkParse("39.5", 39.5, 1e-30);
+    checkParse("-39.5", -39.5, 1e-30);
+  }
+    
+  public void testParseSciNotation() {
+    checkParse("1.05e10", 1.05E10, 1e-32);
+    checkParse("01.05e10", 1.05E10, 1e-32);
+    checkParse("12.05e10", 1.205E11, 1e-32);
+		
 		checkParse("-1.05e10", -1.05E10, 1e-32);
+		
 		checkParse("1.05e-10", DD.valueOf(105.).divide(
 				DD.valueOf(100.)).divide(DD.valueOf(1.0E10)), 1e-32);
 		checkParse("-1.05e-10", DD.valueOf(105.).divide(
 				DD.valueOf(100.)).divide(DD.valueOf(1.0E10))
 				.negate(), 1e-32);
-
-		/*
-		 * The Java double-precision constant 1.4 gives rise to a value which
-		 * differs from the exact binary representation down around the 17th decimal
-		 * place. Thus it will not compare exactly to the DoubleDouble
-		 * representation of the same number. To avoid this, compute the expected
-		 * value using full DD precision.
-		 */
-		checkParse("1.4",
-				DD.valueOf(14).divide(DD.valueOf(10)), 1e-30);
-
-		// 39.5D can be converted to an exact FP representation
-		checkParse("39.5", 39.5, 1e-30);
-		checkParse("-39.5", -39.5, 1e-30);
 	}
 
 	private void checkParse(String str, double expectedVal, double errBound) {
@@ -149,7 +175,7 @@ public class DDIOTest extends TestCase {
 		assertTrue(foundParseError);
 	}
 
-	public void testRepeatedSqrt()
+	public void tesWritetRepeatedSqrt()
 	{
 		writeRepeatedSqrt(DD.valueOf(1.0));
 		writeRepeatedSqrt(DD.valueOf(.999999999999));
@@ -187,7 +213,7 @@ public class DDIOTest extends TestCase {
 		}
 	}
 	
-	public void testRepeatedSqr()
+	public void testWriteRepeatedSqr()
 	{
 		writeRepeatedSqr(DD.valueOf(.9));
 		writeRepeatedSqr(DD.PI.divide(DD.valueOf(10)));
@@ -219,7 +245,7 @@ public class DDIOTest extends TestCase {
 		}
 	}
 	
-	public void testIOSquaresStress() {
+	public void testWriteSquaresStress() {
 		for (int i = 1; i < 10000; i++) {
 			writeAndReadSqrt(i);
 		}
