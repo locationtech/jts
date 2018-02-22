@@ -124,7 +124,8 @@ public class DDIOTest extends TestCase {
 			double relErrBound) {
 		DD xdd = DD.parse(str);
 		double err = xdd.subtract(expectedVal).doubleValue();
-		double relErr = err == 0d ? 0d : Math.abs(err / xdd.doubleValue());
+		double xddd = xdd.doubleValue();
+		double relErr = xddd == 0d ? err : Math.abs(err / xddd);
 
 		//System.out.println("Parsed= " + xdd + " rel err= " + relErr);
 
