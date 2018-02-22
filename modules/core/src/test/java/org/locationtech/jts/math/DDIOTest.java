@@ -40,7 +40,7 @@ public class DDIOTest extends TestCase {
 		// cases where hi is a power of 10 and lo is negative
 		checkStandardNotation(DD.valueOf(1e12).subtract(DD.valueOf(1)),	"999999999999.0");
 		checkStandardNotation(DD.valueOf(1e14).subtract(DD.valueOf(1)),	"99999999999999.0");
-  	checkStandardNotation(DD.valueOf(1e16).subtract(DD.valueOf(1)),	"9999999999999999.0");
+		checkStandardNotation(DD.valueOf(1e16).subtract(DD.valueOf(1)),	"9999999999999999.0");
 		
 		DD num8Dec = DD.valueOf(-379363639).divide(
 				DD.valueOf(100000000));
@@ -88,9 +88,9 @@ public class DDIOTest extends TestCase {
 	}
 
 	public void testParse() {
-		//checkParse("0", 0, 1e-32);
+		checkParse("0", 0, 1e-32);
 		checkParse("1", 1, 1e-32);
-        checkParse("100", 100, 1e-32);
+		checkParse("100", 100, 1e-32);
 		checkParse("-123", -123, 1e-32);
 		checkParse("-1.0", -1, 1e-32);
 		checkParse("1.05e10", 1.05E10, 1e-32);
@@ -101,7 +101,7 @@ public class DDIOTest extends TestCase {
 				DD.valueOf(100.)).divide(DD.valueOf(1.0E10))
 				.negate(), 1e-32);
 
-		/**
+		/*
 		 * The Java double-precision constant 1.4 gives rise to a value which
 		 * differs from the exact binary representation down around the 17th decimal
 		 * place. Thus it will not compare exactly to the DoubleDouble
@@ -124,7 +124,7 @@ public class DDIOTest extends TestCase {
 			double relErrBound) {
 		DD xdd = DD.parse(str);
 		double err = xdd.subtract(expectedVal).doubleValue();
-		double relErr = Math.abs(err / xdd.doubleValue());
+		double relErr = err == 0d ? 0d : Math.abs(err / xdd.doubleValue());
 
 		//System.out.println("Parsed= " + xdd + " rel err= " + relErr);
 
@@ -158,9 +158,9 @@ public class DDIOTest extends TestCase {
 	/**
 	 * This routine simply tests for robustness of the toString function.
 	 * 
-	 * @param xdd
+	 * @param xdd the value to test (write and parse)
 	 */
-	void writeRepeatedSqrt(DD xdd) 
+	private void writeRepeatedSqrt(DD xdd)
 	{
 		int count = 0;
 		while (xdd.doubleValue() > 1e-300) {
@@ -195,9 +195,9 @@ public class DDIOTest extends TestCase {
 	/**
 	 * This routine simply tests for robustness of the toString function.
 	 * 
-	 * @param xdd
+	 * @param xdd the value to test (write and parse)
 	 */
-	void writeRepeatedSqr(DD xdd) 
+	private void writeRepeatedSqr(DD xdd)
 	{
 		if (xdd.ge(DD.valueOf(1)))
 			throw new IllegalArgumentException("Argument must be < 1");
@@ -228,9 +228,9 @@ public class DDIOTest extends TestCase {
 	 * Tests that printing values with many decimal places works. 
 	 * This tests the correctness and robustness of both output and input.
 	 * 
-	 * @param x
+	 * @param x the value to test
 	 */
-	void writeAndReadSqrt(double x) {
+	private void writeAndReadSqrt(double x) {
 		DD xdd = DD.valueOf(x);
 		DD xSqrt = xdd.sqrt();
 		String s = xSqrt.toString();
