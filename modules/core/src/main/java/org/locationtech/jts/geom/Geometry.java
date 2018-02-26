@@ -1794,16 +1794,16 @@ public abstract class Geometry
   }
 
   /**
-   *  Throws an exception if <code>g</code>'s class is <code>GeometryCollection</code>
-   *  . (Its subclasses do not trigger an exception).
+   *  Throws an exception if <code>g</code>'s type is a <code>GeometryCollection</code>.
+   *  (Its subclasses do not trigger an exception).
    *
-   *@param  g                          the <code>Geometry</code> to check
+   *@param  g the <code>Geometry</code> to check
    *@throws  IllegalArgumentException  if <code>g</code> is a <code>GeometryCollection</code>
    *      but not one of its subclasses
    */
-  protected void checkNotGeometryCollection(Geometry g) {
-    if (isGeometryCollection()) {
-      throw new IllegalArgumentException("This method does not support GeometryCollection arguments");
+  protected static void checkNotGeometryCollection(Geometry g) {
+    if (g.isGeometryCollection()) {
+      throw new IllegalArgumentException("Operation does not support GeometryCollection arguments");
     }
   }
 
