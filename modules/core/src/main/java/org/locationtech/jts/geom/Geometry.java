@@ -1335,21 +1335,22 @@ public abstract class Geometry
       return OverlayOp.createEmptyResult(OverlayOp.INTERSECTION, this, other, factory);
 
     // compute for GCs
+    // (An inefficient algorithm, but will work)
+    // TODO: improve efficiency of computation for GCs
     if (this.isGeometryCollection()) {
       final Geometry g2 = other;
       return GeometryCollectionMapper.map(
           (GeometryCollection) this,
           new GeometryMapper.MapOp() {
-        public Geometry map(Geometry g) {
-          return g.intersection(g2);
-        }
+            public Geometry map(Geometry g) {
+              return g.intersection(g2);
+            }
       });
     }
-//    if (isGeometryCollection(other))
-//      return other.intersection(this);
-    
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
+
+    // No longer needed since GCs are handled by previous code
+    //checkNotGeometryCollection(this);
+    //checkNotGeometryCollection(other);
     return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.INTERSECTION);
   }
 
