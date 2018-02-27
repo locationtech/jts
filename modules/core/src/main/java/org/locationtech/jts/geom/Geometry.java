@@ -1335,21 +1335,22 @@ public abstract class Geometry
       return OverlayOp.createEmptyResult(OverlayOp.INTERSECTION, this, other, factory);
 
     // compute for GCs
+    // (An inefficient algorithm, but will work)
+    // TODO: improve efficiency of computation for GCs
     if (this.isGeometryCollection()) {
       final Geometry g2 = other;
       return GeometryCollectionMapper.map(
           (GeometryCollection) this,
           new GeometryMapper.MapOp() {
-        public Geometry map(Geometry g) {
-          return g.intersection(g2);
-        }
+            public Geometry map(Geometry g) {
+              return g.intersection(g2);
+            }
       });
     }
-//    if (isGeometryCollection(other))
-//      return other.intersection(this);
-    
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
+
+    // No longer needed since GCs are handled by previous code
+    //checkNotGeometryCollection(this);
+    //checkNotGeometryCollection(other);
     return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.INTERSECTION);
   }
 
@@ -1794,16 +1795,16 @@ public abstract class Geometry
   }
 
   /**
-   *  Throws an exception if <code>g</code>'s class is <code>GeometryCollection</code>
-   *  . (Its subclasses do not trigger an exception).
+   *  Throws an exception if <code>g</code>'s type is a <code>GeometryCollection</code>.
+   *  (Its subclasses do not trigger an exception).
    *
-   *@param  g                          the <code>Geometry</code> to check
+   *@param  g the <code>Geometry</code> to check
    *@throws  IllegalArgumentException  if <code>g</code> is a <code>GeometryCollection</code>
    *      but not one of its subclasses
    */
-  protected void checkNotGeometryCollection(Geometry g) {
-    if (isGeometryCollection()) {
-      throw new IllegalArgumentException("This method does not support GeometryCollection arguments");
+  protected static void checkNotGeometryCollection(Geometry g) {
+    if (g.isGeometryCollection()) {
+      throw new IllegalArgumentException("Operation does not support GeometryCollection arguments");
     }
   }
 
