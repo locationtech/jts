@@ -275,6 +275,7 @@ public class CoordinateSequences {
     }
     return minCoordIndex;
   }
+
   /**
    *  Shifts the positions of the coordinates until <code>firstCoordinate</code>
    *  is first.
@@ -286,14 +287,8 @@ public class CoordinateSequences {
     int i = indexOf(firstCoordinate, seq);
     if (i <= 0) return;
     scroll(seq, i);
-
-    /*
-    Coordinate[] newCoordinates = new Coordinate[coordinates.length];
-    System.arraycopy(coordinates, i, newCoordinates, 0, coordinates.length - i);
-    System.arraycopy(coordinates, 0, newCoordinates, coordinates.length - i, i);
-    System.arraycopy(newCoordinates, 0, coordinates, 0, coordinates.length);
-     */
   }
+
   /**
    *  Shifts the positions of the coordinates until the coordinate at  <code>firstCoordinateIndex</code>
    *  is first.
@@ -311,7 +306,10 @@ public class CoordinateSequences {
    *  is first.
    *
    *@param  seq      the coordinate sequence to rearrange
-   *@param  indexOfFirstCoordinate  the index of the coordinate to make first
+   *@param  indexOfFirstCoordinate
+   *                 the index of the coordinate to make first
+   *@param  ensureRing
+   *                 makes sure that {@code} will be a closed ring upon exit
    */
     public static void scroll(CoordinateSequence seq, int indexOfFirstCoordinate, boolean ensureRing) {
     int i = indexOfFirstCoordinate;
@@ -335,13 +333,6 @@ public class CoordinateSequences {
       for (int k = 0; k < seq.getDimension(); k++)
         seq.setOrdinate(last, k, seq.getOrdinate(0, k));
     }
-
-    /*
-    Coordinate[] newCoordinates = new Coordinate[coordinates.length];
-    System.arraycopy(coordinates, i, newCoordinates, 0, coordinates.length - i);
-    System.arraycopy(coordinates, 0, newCoordinates, coordinates.length - i, i);
-    System.arraycopy(newCoordinates, 0, coordinates, 0, coordinates.length);
-     */
   }
 
   /**
@@ -355,7 +346,8 @@ public class CoordinateSequences {
    */
   public static int indexOf(Coordinate coordinate, CoordinateSequence seq) {
     for (int i = 0; i < seq.size(); i++) {
-      if (coordinate.equals(seq.getCoordinate(i))) {
+      if (coordinate.x == seq.getOrdinate(i, CoordinateSequence.X) &&
+          coordinate.y == seq.getOrdinate(i, CoordinateSequence.Y)) {
         return i;
       }
     }
