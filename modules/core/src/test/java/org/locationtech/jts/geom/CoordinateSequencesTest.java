@@ -209,12 +209,12 @@ public class CoordinateSequencesTest extends TestCase {
 
     // assert
     assertTrue(isRingRing);
-    assertFalse(isRingNoRing);
-    assertFalse(isRingIncomplete0);
-    assertFalse(isRingIncomplete1);
-    assertFalse(isRingIncomplete2);
-    assertFalse(isRingIncomplete3);
-    assertFalse(isRingIncomplete4a);
+    assertTrue(!isRingNoRing);
+    assertTrue(!isRingIncomplete0);
+    assertTrue(!isRingIncomplete1);
+    assertTrue(!isRingIncomplete2);
+    assertTrue(!isRingIncomplete3);
+    assertTrue(!isRingIncomplete4a);
     assertTrue(isRingIncomplete4b);
   }
 
