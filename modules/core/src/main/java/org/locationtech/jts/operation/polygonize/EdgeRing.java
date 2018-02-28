@@ -209,7 +209,7 @@ class EdgeRing {
   public void computeHole()
   {
     LinearRing ring = getRing();
-    isHole = Orientation.isCCW(ring.getCoordinateSequence());
+    isHole = Orientation.isCCW(ring.getCoordinates());
   }
 
   /**
