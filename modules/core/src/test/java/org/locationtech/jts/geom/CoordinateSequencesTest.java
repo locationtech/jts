@@ -30,16 +30,20 @@ public class CoordinateSequencesTest extends TestCase {
   private PrecisionModel precisionModel = new PrecisionModel();
   private GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
   WKTReader reader = new WKTReader(geometryFactory);
-  
-  private static final double TOLERANCE = 1E-5;
-  
+
+  private static final double[][] ordinateValues = {
+          {75.76,77.43},{41.35,90.75},{73.74,41.67},{20.87,86.49},{17.49,93.59},{67.75,80.63},
+          {63.01,52.57},{32.9,44.44},{79.36,29.8},{38.17,88.0},{19.31,49.71},{57.03,19.28},
+          {63.76,77.35},{45.26,85.15},{51.71,50.38},{92.16,19.85},{64.18,27.7},{64.74,65.1},
+          {80.07,13.55},{55.54,94.07}};
+
   public static void main(String args[]) {
     TestRunner.run(CoordinateSequencesTest.class);
   }
 
   public CoordinateSequencesTest(String name) { super(name); }
 
-  public void testCopyToLargerDim() throws Exception
+  public void testCopyToLargerDim()
   {
     PackedCoordinateSequenceFactory csFactory = new PackedCoordinateSequenceFactory();
     CoordinateSequence cs2D = createTestSequence(csFactory, 10,  2);
@@ -48,7 +52,7 @@ public class CoordinateSequencesTest extends TestCase {
     assertTrue(CoordinateSequences.isEqual(cs2D, cs3D));
   }
 
-  public void testCopyToSmallerDim() throws Exception
+  public void testCopyToSmallerDim()
   {
     PackedCoordinateSequenceFactory csFactory = new PackedCoordinateSequenceFactory();
     CoordinateSequence cs3D = createTestSequence(csFactory, 10,  3);
@@ -113,6 +117,47 @@ public class CoordinateSequencesTest extends TestCase {
     doTestReverse(PackedCoordinateSequenceFactory.FLOAT_FACTORY, 7);
   }
 
+  /**
+   * Method used to create a {@link this.ordinateValues}.
+   * Usage: remove first 't' and run as unit test.
+   * Note: When parameters are changed, some unit tests may need to be
+   * changed, too. <p>
+   * This is especially true for the (@link testMinCoordinateIndex) test,
+   * which assumes that the coordinates in the sequence are all within an
+   * envelope of [Env(10, 100, 10, 100)].
+   * </p>.
+   *
+   * @deprecated only use to update {@link this.ordinateValues}
+   */
+  public void ttestCreateRandomOrdinates() {
+    CoordinateSequence sequence = createRandomTestSequence(CoordinateArraySequenceFactory.instance(), 20,
+            2, new Random(7),
+            new Envelope(10, 100, 10, 100), new PrecisionModel(100));
+    StringBuilder ordinates;
+    ordinates = new StringBuilder("\tprivate static final double[][] ordinateValues = {");
+    for (int i = 0; i < sequence.size(); i++) {
+      if (i%6 == 0) ordinates.append("\n\t\t");
+      ordinates.append('{');
+      ordinates.append(sequence.getOrdinate(i, 0));
+      ordinates.append(',');
+      ordinates.append(sequence.getOrdinate(i, 1));
+      if (i < sequence.size()-1) ordinates.append("},"); else ordinates.append('}');
+    }
+    ordinates.append("};");
+
+    System.out.println(ordinates.toString());
+    assertTrue(true);
+  }
+
+  private static CoordinateSequence createSequenceFromOrdinates(CoordinateSequenceFactory csFactory, int dim) {
+    CoordinateSequence sequence = csFactory.create(ordinateValues.length, dim);
+    for (int i = 0; i < ordinateValues.length; i++) {
+      sequence.setOrdinate(i, 0, ordinateValues[i][0]);
+      sequence.setOrdinate(i, 1, ordinateValues[i][1]);
+    }
+    return fillNonPlanarDimensions(sequence);
+  }
+
   private static CoordinateSequence createTestSequence(CoordinateSequenceFactory csFactory, int size, int dim)
   {
     CoordinateSequence cs = csFactory.create(size,  dim);
@@ -125,29 +170,25 @@ public class CoordinateSequencesTest extends TestCase {
     return cs;
   }
 
+  /**
+   * @deprecated only use to update in conjunction with {@link this.ttestCreateRandomOrdinates}
+   */
   private static CoordinateSequence createRandomTestSequence(CoordinateSequenceFactory csFactory, int size, int dim,
-                                                   Random rnd, Envelope range)
+                                                   Random rnd, Envelope range, PrecisionModel pm)
   {
     CoordinateSequence cs = csFactory.create(size,  dim);
-    // initialize with a data signature where coords look like [1, 10, 100, ...]
     for (int i = 0; i < size; i++) {
-      {
-        cs.setOrdinate(i, 0, range.getWidth() * rnd.nextDouble() + range.getMinX());
-        cs.setOrdinate(i, 1, range.getHeight() * rnd.nextDouble() + range.getMinY());
-        for (int d = 2; d < dim; d++)
-          cs.setOrdinate(i, d, i * Math.pow(10, d));
-      }
+        cs.setOrdinate(i, 0, pm.makePrecise(range.getWidth() * rnd.nextDouble() + range.getMinX()));
+        cs.setOrdinate(i, 1, pm.makePrecise(range.getHeight() * rnd.nextDouble() + range.getMinY()));
     }
-    return cs;
+
+    return fillNonPlanarDimensions(cs);
   }
 
   private static void doTestReverse(CoordinateSequenceFactory factory, int dimension) {
 
-    final Random rnd = new Random();
-
     // arrange
-    CoordinateSequence sequence = createRandomTestSequence(factory, 20, dimension, rnd,
-            new Envelope(10, 100, 10, 100));
+    CoordinateSequence sequence = createSequenceFromOrdinates(factory, dimension);
     CoordinateSequence reversed = sequence.copy();
 
     // act
@@ -160,13 +201,16 @@ public class CoordinateSequencesTest extends TestCase {
 
   private static void doTestCopy(CoordinateSequenceFactory factory, int dimension) {
 
-    final Random rnd = new Random();
-
     // arrange
-    CoordinateSequence sequence = createRandomTestSequence(factory, 20, dimension, rnd,
-            new Envelope(10, 100, 10, 100));
-    CoordinateSequence fullCopy = factory.create(20, dimension);
-    CoordinateSequence partialCopy = factory.create(15, dimension);
+    CoordinateSequence sequence = createSequenceFromOrdinates(factory, dimension);
+    if (sequence.size() <= 7) {
+      System.out.println("sequence has a size of " + sequence.size() + ". Execution of this test needs a sequence "+
+              "with more than 6 coordinates.");
+      return;
+    }
+
+    CoordinateSequence fullCopy = factory.create(sequence.size(), dimension);
+    CoordinateSequence partialCopy = factory.create(sequence.size() - 5, dimension);
 
     // act
     CoordinateSequences.copy(sequence, 0, fullCopy, 0, sequence.size());
@@ -187,20 +231,17 @@ public class CoordinateSequencesTest extends TestCase {
     CoordinateSequence ring = createCircle(factory, dimension, new Coordinate(), 5);
     CoordinateSequence noRing = createCircularString(factory, dimension, new Coordinate(), 5,
             0.1, 22);
-    CoordinateSequence incomplete0 = createAlmostRing(factory, dimension, 1);
+    CoordinateSequence empty = createAlmostRing(factory, dimension, 0);
     CoordinateSequence incomplete1 = createAlmostRing(factory, dimension, 1);
-    CoordinateSequence incomplete2 = createAlmostRing(factory, dimension, 2);;
-    CoordinateSequence incomplete3 = createAlmostRing(factory, dimension, 3);;
-    CoordinateSequence incomplete4a = createAlmostRing(factory, dimension, 4);;
+    CoordinateSequence incomplete2 = createAlmostRing(factory, dimension, 2);
+    CoordinateSequence incomplete3 = createAlmostRing(factory, dimension, 3);
+    CoordinateSequence incomplete4a = createAlmostRing(factory, dimension, 4);
     CoordinateSequence incomplete4b = CoordinateSequences.ensureValidRing(factory, incomplete4a);
-
-
-    //incomplete1
 
     // act
     boolean isRingRing = CoordinateSequences.isRing(ring);
     boolean isRingNoRing = CoordinateSequences.isRing(noRing);
-    boolean isRingIncomplete0 = CoordinateSequences.isRing(incomplete0);
+    boolean isRingEmpty = CoordinateSequences.isRing(empty);
     boolean isRingIncomplete1 = CoordinateSequences.isRing(incomplete1);
     boolean isRingIncomplete2 = CoordinateSequences.isRing(incomplete2);
     boolean isRingIncomplete3 = CoordinateSequences.isRing(incomplete3);
@@ -210,7 +251,7 @@ public class CoordinateSequencesTest extends TestCase {
     // assert
     assertTrue(isRingRing);
     assertTrue(!isRingNoRing);
-    assertTrue(!isRingIncomplete0);
+    assertTrue(isRingEmpty);
     assertTrue(!isRingIncomplete1);
     assertTrue(!isRingIncomplete2);
     assertTrue(!isRingIncomplete3);
@@ -220,13 +261,10 @@ public class CoordinateSequencesTest extends TestCase {
 
   private static void doTestIndexOf(CoordinateSequenceFactory factory, int dimension) {
 
-    final Random rnd = new Random();
-
     // arrange
-    //System.out.println("Testing '" + factory.getClass().getSimpleName() + "' with dim=" +dimension );
-    CoordinateSequence sequence = createRandomTestSequence(factory, 100, dimension, rnd,
-            new Envelope(20, 100, 20, 100));
+    CoordinateSequence sequence = createSequenceFromOrdinates(factory, dimension);
 
+    // act & assert
     Coordinate[] coordinates = sequence.toCoordinateArray();
     for (int i = 0; i < sequence.size(); i++)
       assertEquals(i, CoordinateSequences.indexOf(coordinates[i], sequence));
@@ -235,26 +273,25 @@ public class CoordinateSequencesTest extends TestCase {
 
   private static void doTestMinCoordinateIndex(CoordinateSequenceFactory factory, int dimension) {
 
-    final Random rnd = new Random();
-
-    // arrange
-    //System.out.println("Testing '" + factory.getClass().getSimpleName() + "' with dim=" +dimension );
-    CoordinateSequence sequence = createRandomTestSequence(factory, 100, dimension, rnd,
-            new Envelope(20, 100, 20, 100));
+    CoordinateSequence sequence = createSequenceFromOrdinates(factory, dimension);
+    if (sequence.size() <= 6) {
+      System.out.println("sequence has a size of " + sequence.size() + ". Execution of this test needs a sequence "+
+              "with more than 5 coordinates.");
+      return;
+    }
 
     int minIndex = sequence.size() / 2;
-    sequence.setOrdinate(minIndex, 0, 10);
-    sequence.setOrdinate(minIndex, 1, 10);
+    sequence.setOrdinate(minIndex, 0, 5);
+    sequence.setOrdinate(minIndex, 1, 5);
 
     assertEquals(minIndex, CoordinateSequences.minCoordinateIndex(sequence));
-    assertEquals(minIndex, CoordinateSequences.minCoordinateIndex(sequence, 25, 75));
+    assertEquals(minIndex, CoordinateSequences.minCoordinateIndex(sequence, 2, sequence.size()-2));
 
   }
 
   private static void doTestScroll(CoordinateSequenceFactory factory, int dimension) {
 
     // arrange
-    //System.out.println("Testing '" + factory.getClass().getSimpleName() + "' with dim=" +dimension );
     CoordinateSequence sequence = createCircularString(factory, dimension, new Coordinate(20, 20), 7d,
             0.1, 22);
     CoordinateSequence scrolled = sequence.copy();

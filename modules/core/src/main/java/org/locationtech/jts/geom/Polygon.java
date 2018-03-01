@@ -418,7 +418,7 @@ public class Polygon
   }
 
   private LinearRing normalized(LinearRing ring, boolean clockwise) {
-    LinearRing res = getFactory().createLinearRing(ring.getCoordinateSequence().copy());
+    LinearRing res = ring.copy();
     normalize(res, clockwise);
     return res;
   }
@@ -427,20 +427,8 @@ public class Polygon
     if (ring.isEmpty()) {
       return;
     }
-    /* old code
-    Coordinate[] uniqueCoordinates = new Coordinate[ring.getCoordinates().length - 1];
-    System.arraycopy(ring.getCoordinates(), 0, uniqueCoordinates, 0, uniqueCoordinates.length);
-    Coordinate minCoordinate = CoordinateArrays.minCoordinate(ring.getCoordinates());
-    CoordinateArrays.scroll(uniqueCoordinates, minCoordinate);
-    System.arraycopy(uniqueCoordinates, 0, ring.getCoordinates(), 0, uniqueCoordinates.length);
-    ring.getCoordinates()[uniqueCoordinates.length] = uniqueCoordinates[0];
-    if (Orientation.isCCW(ring.getCoordinates()) == clockwise) {
-      CoordinateArrays.reverse(ring.getCoordinates());
-    }
-     */
 
     CoordinateSequence seq = ring.getCoordinateSequence();
-
     int minCoordinateIndex = CoordinateSequences.minCoordinateIndex(seq, 0, seq.size()-2);
     CoordinateSequences.scroll(seq, minCoordinateIndex, true);
     if (Orientation.isCCW(seq) == clockwise)
