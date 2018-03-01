@@ -57,7 +57,7 @@ public class Orientation {
   /**
    * Returns the orientation index of the direction of the point <code>q</code> relative to
    * a directed infinite line specified by <code>p1-p2</code>.
-   * The index indicates whether the point lies to the {@link LEFT} or {@link #RIGHT} 
+   * The index indicates whether the point lies to the {@link #LEFT} or {@link #RIGHT}
    * of the line, or lies on it {@link #COLLINEAR}.
    * The index also indicates the orientation of the triangle formed by the three points
    * ( {@link #COUNTERCLOCKWISE}, {@link #CLOCKWISE}, or {@link #STRAIGHT} )
@@ -67,12 +67,12 @@ public class Orientation {
    * @param q the point to compute the direction to
    * 
    * @return -1 ( {@link #CLOCKWISE} or {@link #RIGHT} ) if q is clockwise (right) from p1-p2;
-   *         1 ( {@link #COUNTERCLOCKWISE} or {@link LEFT} ) if q is counter-clockwise (left) from p1-p2;
+   *         1 ( {@link #COUNTERCLOCKWISE} or {@link #LEFT} ) if q is counter-clockwise (left) from p1-p2;
    *         0 ( {@link #COLLINEAR} or {@link #STRAIGHT} ) if q is collinear with p1-p2
    */
   public static int index(Coordinate p1, Coordinate p2, Coordinate q)
   {
-    /**
+    /*
      * MD - 9 Aug 2010 It seems that the basic algorithm is slightly orientation
      * dependent, when computing the orientation of a point very close to a
      * line. This is possibly due to the arithmetic in the translation to the
@@ -94,8 +94,7 @@ public class Orientation {
      * clear this is an appropriate patch.
      * 
      */
-    int res = CGAlgorithmsDD.orientationIndex(p1, p2, q);
-    return res;
+    return CGAlgorithmsDD.orientationIndex(p1, p2, q);
 
     // testing only
     //return ShewchuksDeterminant.orientationIndex(p1, p2, q);
@@ -157,7 +156,7 @@ public class Orientation {
     Coordinate prev = ring[iPrev];
     Coordinate next = ring[iNext];
   
-    /**
+    /*
      * This check catches cases where the ring contains an A-B-A configuration
      * of points. This can happen if the ring does not contain 3 distinct points
      * (including the case where the input array has fewer than 4 elements), or
@@ -168,7 +167,7 @@ public class Orientation {
   
     int disc = Orientation.index(prev, hiPt, next);
   
-    /**
+    /*
      * If disc is exactly 0, lines are collinear. There are two possible cases:
      * (1) the lines lie along the x axis in opposite directions (2) the lines
      * lie on top of one another
@@ -244,10 +243,7 @@ public class Orientation {
       next = ring.getCoordinate(iNext);
     } while (next.equals2D(hiPt) && iNext != hiIndex);
 
-    //prev = ring[iPrev];
-    //next = ring[iNext];
-
-    /**
+    /*
      * This check catches cases where the ring contains an A-B-A configuration
      * of points. This can happen if the ring does not contain 3 distinct points
      * (including the case where the input array has fewer than 4 elements), or
@@ -258,7 +254,7 @@ public class Orientation {
 
     int disc = Orientation.index(prev, hiPt, next);
 
-    /**
+    /*
      * If disc is exactly 0, lines are collinear. There are two possible cases:
      * (1) the lines lie along the x axis in opposite directions (2) the lines
      * lie on top of one another
