@@ -26,8 +26,10 @@ public class PackedCoordinateSequenceFactory implements
     CoordinateSequenceFactory, Serializable
 {
   private static final long serialVersionUID = -3558264771905224525L;
-  
+
+  /** Type code for a factory that creates {@link PackedCoordinateSequence.Double} sequences*/
   public static final int DOUBLE = 0;
+  /** Type code for a factory that creates {@link PackedCoordinateSequence.Float} sequences*/
   public static final int FLOAT = 1;
 
   public static final PackedCoordinateSequenceFactory DOUBLE_FACTORY =
@@ -50,8 +52,8 @@ public class PackedCoordinateSequenceFactory implements
    * Creates a new PackedCoordinateSequenceFactory
    * of the given type.
    * Acceptable type values are
-   * {@linkplain PackedCoordinateSequenceFactory#Float}or
-   * {@linkplain PackedCoordinateSequenceFactory#Double}
+   * {@linkplain PackedCoordinateSequenceFactory#FLOAT}or
+   * {@linkplain PackedCoordinateSequenceFactory#DOUBLE}
    */
   public PackedCoordinateSequenceFactory(int type){
     this.type = type;
@@ -59,11 +61,30 @@ public class PackedCoordinateSequenceFactory implements
 
   /**
    * Returns the type of packed coordinate sequences this factory builds, either
-   * {@linkplain PackedCoordinateSequenceFactory#Float} or
-   * {@linkplain PackedCoordinateSequenceFactory#Double}
+   * {@linkplain PackedCoordinateSequenceFactory#FLOAT} or
+   * {@linkplain PackedCoordinateSequenceFactory#DOUBLE}
    */
   public int getType() {
     return type;
+  }
+
+  /**
+   * Sets the type of packed coordinate sequences this factory builds,
+   * acceptable values are {@linkplain PackedCoordinateSequenceFactory#FLOAT}or
+   * {@linkplain PackedCoordinateSequenceFactory#DOUBLE}
+   */
+  public void setType(int type) {
+    if (type != DOUBLE && type != FLOAT)
+      throw new IllegalArgumentException("Unknown type " + type);
+    this.type = type;
+  }
+
+
+  public int getDimension() { return dimension; }
+
+  public void setDimension(int dimension) {
+    PackedCoordinateSequence.checkDimension(dimension);
+    this.dimension = dimension;
   }
 
   /**
@@ -91,9 +112,14 @@ public class PackedCoordinateSequenceFactory implements
     int dimension = coordSeq.getDimension();
     int measures = coordSeq.getMeasures();
     if (type == DOUBLE) {
-      return new PackedCoordinateSequence.Double(coordSeq.toCoordinateArray(), dimension, measures);
+
+      return coordSeq != null
+              ? new PackedCoordinateSequence.Double(coordSeq)
+              : new PackedCoordinateSequence.Double(0, this.dimension);
     } else {
-      return new PackedCoordinateSequence.Float(coordSeq.toCoordinateArray(), dimension, measures);
+      return coordSeq != null
+              ? new PackedCoordinateSequence.Float(coordSeq)
+              : new PackedCoordinateSequence.Float(0, this.dimension);
     }
   }
 
@@ -133,7 +159,7 @@ public class PackedCoordinateSequenceFactory implements
   public CoordinateSequence create(float[] packedCoordinates, int dimension) {
     return create( packedCoordinates, dimension, 0 );
   }
-  
+
   /**
    * @param packedCoordinates
    * @param dimension

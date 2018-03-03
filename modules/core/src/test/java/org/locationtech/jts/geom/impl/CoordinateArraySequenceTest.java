@@ -42,6 +42,50 @@ public class CoordinateArraySequenceTest
   CoordinateSequenceFactory getCSFactory() {
     return CoordinateArraySequenceFactory.instance();
   }
+
+  @Override
+  int getDefaultDimension() {
+    CoordinateSequence seq = getCSFactory().create(new Coordinate[0]);
+    return seq.getDimension();
+  }
+
+  @Override
+  public void testConstructorDirect() {
+
+    CoordinateSequence seq = new CoordinateArraySequence(5);
+    assertNotNull(seq);
+    assertEquals(5, seq.size());
+    assertEquals(getDefaultDimension(), seq.getDimension());
+
+  }
+
+  public void testSetMeasureThrows() {
+    CoordinateSequence seq = new CoordinateArraySequence(1);
+    try {
+      seq.setOrdinate(0, CoordinateSequence.M, 0d);
+      fail();
+    }
+    catch (IllegalArgumentException e) {
+    }
+  }
+
+  @Override
+  boolean isSame(CoordinateSequence seq1, CoordinateSequence seq2) {
+
+    if (seq1 == seq2)
+      return true;
+    if (seq1.toCoordinateArray() == seq2.toCoordinateArray())
+      return true;
+
+    if (seq1.size() == seq2.size()) {
+      for (int i = 0; i < seq1.size(); i++) {
+        if (seq1.getCoordinate(i) != seq2.getCoordinate(i))
+          return false;
+      }
+      return true;
+    }
+    return false;
+  }
   
   public void testDimensionAndMeasure()
   {

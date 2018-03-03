@@ -150,14 +150,18 @@ public class GeometryImplTest extends TestCase {
     public void testInvalidateEnvelope() throws Exception {
         Geometry g = reader.read("POLYGON ((0 0, 0 50, 50 50, 50 0, 0 0))");
         assertEquals(new Envelope(0, 50, 0, 50), g.getEnvelopeInternal());
-        g.apply(new CoordinateFilter() {
-                public void filter(Coordinate coord) {
-                    coord.x += 1;
-                    coord.y += 1;
+        g.apply(new CoordinateSequenceFilter() {
+                public void filter(CoordinateSequence seq, int i) {
+                    seq.setOrdinate(i, CoordinateSequence.X, seq.getOrdinate(i, CoordinateSequence.X) + 1);
+                    seq.setOrdinate(i, CoordinateSequence.Y, seq.getOrdinate(i, CoordinateSequence.Y) + 1);
                 }
+
+                public boolean isDone() { return false; }
+
+                public boolean isGeometryChanged() { return true;}
             });
-        assertEquals(new Envelope(0, 50, 0, 50), g.getEnvelopeInternal());
-        g.geometryChanged();
+        //assertEquals(new Envelope(0, 50, 0, 50), g.getEnvelopeInternal());
+        //g.geometryChanged();
         assertEquals(new Envelope(1, 51, 1, 51), g.getEnvelopeInternal());
     }
 
