@@ -74,7 +74,7 @@ public class SVGTestWriter {
     }
 
     private String writeGeometryStyled(Geometry g, String fillClr, String strokeClr ) {
-      String s = "<g style='fill:" + fillClr + "; fill-opacity:0.5; stroke:" + strokeClr + "; stroke-width:1; stroke-opacity:1' >\n";
+      String s = "<g style='fill:" + fillClr + "; fill-opacity:0.5; stroke:" + strokeClr + "; stroke-width:1; stroke-opacity:1; stroke-miterlimit:4; stroke-linejoin:miter; stroke-linecap:square' >\n";
       s += write(g);
       s += "</g>";
       return s;
