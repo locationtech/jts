@@ -42,12 +42,15 @@ public class WKTWriterTest extends TestCase {
   GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
   WKTWriter writer = new WKTWriter();
   WKTWriter writer3D = new WKTWriter(3);
+  WKTWriter writer2DM = new WKTWriter(3);
 
   public static void main(String args[]) {
     TestRunner.run(suite());
   }
 
-  public WKTWriterTest(String name) { super(name); }
+  public WKTWriterTest(String name) { super(name);
+    writer2DM.setZIsMeasure(true);
+  }
 
   public static Test suite() { return new TestSuite(WKTWriterTest.class); }
 
@@ -151,7 +154,9 @@ public class WKTWriterTest extends TestCase {
     GeometryFactory geometryFactory = new GeometryFactory();
     Point point = geometryFactory.createPoint(new Coordinate(1, 1, 1));
     String wkt = writer3D.write(point);
-    assertEquals("POINT (1 1 1)", wkt);
+    assertEquals("POINT Z(1 1 1)", wkt);
+    wkt = writer2DM.write(point);
+    assertEquals("POINT M(1 1 1)", wkt);
   }
 
   public void testWrite3D_withNaN() {
@@ -160,7 +165,9 @@ public class WKTWriterTest extends TestCase {
                                  new Coordinate(2, 2, 2) };
     LineString line = geometryFactory.createLineString(coordinates);
     String wkt = writer3D.write(line);
-    assertEquals("LINESTRING (1 1, 2 2 2)", wkt);
+    assertEquals("LINESTRING Z(1 1, 2 2 2)", wkt);
+    wkt = writer2DM.write(line);
+    assertEquals("LINESTRING M(1 1, 2 2 2)", wkt);
   }
 
 }
