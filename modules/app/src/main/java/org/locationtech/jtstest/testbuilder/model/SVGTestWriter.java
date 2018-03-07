@@ -33,7 +33,7 @@ public class SVGTestWriter {
   }
 
 
-    private SVGWriter writer = new SVGWriter();
+    private SVGWriter svgWriter = new SVGWriter();
 
     public SVGTestWriter() {}
 
@@ -61,28 +61,33 @@ public class SVGTestWriter {
         String description = testable.getDescription() == null ? "" : testable.getDescription();
         //text.append("          \"" + name + "\",\n");
         text.append("  <desc>" + description + "</desc>\n");
-        text.append("  <g transform='" + trans + "'>\n");
+        text.append("  <g transform='" + trans + "'>\n\n");
 
-        String a = writeGeometryStyled(ga, "#bbbbff", "#0000ff");
-        String b = writeGeometryStyled(gb, "#ffbbbb", "#ff0000");
-        text.append(a + "\n");
-        text.append("\n");
-        text.append(b + "\n");
+        writeGeometryElement(ga, "#bbbbff", "#0000ff", text);
+        writeGeometryElement(gb, "#ffbbbb", "#ff0000", text);
+
         text.append("  </g>\n");
         text.append("</svg>\n");
         return text.toString();
     }
 
-    private String writeGeometryStyled(Geometry g, String fillClr, String strokeClr ) {
-      String s = "<g style='fill:" + fillClr + "; fill-opacity:0.5; stroke:" + strokeClr + "; stroke-width:1; stroke-opacity:1; stroke-miterlimit:4; stroke-linejoin:miter; stroke-linecap:square' >\n";
-      s += write(g);
-      s += "</g>";
-      return s;
+    private void writeGeometryElement(Geometry g, String fillClr, String strokeClr, StringBuffer text) {
+      if (g == null) return;
+      writeGeometryStyled(g, fillClr, strokeClr, text);
+      text.append("\n");
     }
+
+    private void writeGeometryStyled(Geometry g, String fillClr, String strokeClr, StringBuffer text ) {
+      String gstyle = "<g style='fill:" + fillClr + "; fill-opacity:0.5; stroke:" + strokeClr + "; stroke-width:1; stroke-opacity:1; stroke-miterlimit:4; stroke-linejoin:miter; stroke-linecap:square' >\n";
+      text.append(gstyle);
+      text.append(write(g));
+      text.append("\n</g>\n");
+    }
+    
     private String write(Geometry geometry) {
         if (geometry == null) {
             return "";
         }
-        return writer.write(geometry);
+        return svgWriter.write(geometry);
     }
 }
