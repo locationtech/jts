@@ -11,6 +11,7 @@
  */
 package org.locationtech.jtstest.testbuilder.model;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
@@ -32,7 +33,7 @@ public class SVGTestWriter {
   }
 
 
-    private SVGWriter writer = new SVGWriter();
+    private SVGWriter svgWriter = new SVGWriter();
 
     public SVGTestWriter() {}
 
@@ -45,36 +46,48 @@ public class SVGTestWriter {
         Envelope env = new Envelope();
         if (ga != null) env.expandToInclude(ga.getEnvelopeInternal());
         if (gb != null) env.expandToInclude(gb.getEnvelopeInternal());
+        Coordinate centre = env.centre();
         
-        String viewBox = env.getMinX() + " " + env.getMinY() + " " + env.getMaxX() + " " + env.getMaxY();
+        int DIM = 1000;
+        String wh = "width='" + DIM + "' height='" + DIM + "'";
+        String viewBox = env.getMinX() + " " + env.getMinY() + " " + env.getWidth() + " " + env.getHeight();
+        // transform to flip the Y axis to match SVG
+        String trans = String.format("translate(0 %f) scale( 1 -1 ) translate(0 %f)", centre.y, -centre.y);
         
         text.append("<?xml version='1.0' standalone='no'?>\n");
         text.append("<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n");
-        text.append("<svg width='400' height='400' viewBox='" + viewBox + "'  version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>\n");
+        text.append("<svg " + wh + " viewBox='" + viewBox + "'  version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>\n");
         String name = testable.getName() == null ? "" : testable.getName();
         String description = testable.getDescription() == null ? "" : testable.getDescription();
         //text.append("          \"" + name + "\",\n");
         text.append("  <desc>" + description + "</desc>\n");
-        
-        String a = writeGeometryStyled(ga, "#bbbbff", "#0000ff");
-        String b = writeGeometryStyled(gb, "#ffbbbb", "#ff0000");
-        text.append(a + "\n");
-        text.append("\n");
-        text.append(b + "\n");
+        text.append("  <g transform='" + trans + "'>\n\n");
+
+        writeGeometryElement(ga, "#bbbbff", "#0000ff", text);
+        writeGeometryElement(gb, "#ffbbbb", "#ff0000", text);
+
+        text.append("  </g>\n");
         text.append("</svg>\n");
         return text.toString();
     }
 
-    private String writeGeometryStyled(Geometry g, String fillClr, String strokeClr ) {
-      String s = "<g fill='" + fillClr + "' stroke='" + strokeClr + "' >\n";
-      s += write(g);
-      s += "</g>";
-      return s;
+    private void writeGeometryElement(Geometry g, String fillClr, String strokeClr, StringBuffer text) {
+      if (g == null) return;
+      writeGeometryStyled(g, fillClr, strokeClr, text);
+      text.append("\n");
     }
+
+    private void writeGeometryStyled(Geometry g, String fillClr, String strokeClr, StringBuffer text ) {
+      String gstyle = "<g style='fill:" + fillClr + "; fill-opacity:0.5; stroke:" + strokeClr + "; stroke-width:1; stroke-opacity:1; stroke-miterlimit:4; stroke-linejoin:miter; stroke-linecap:square' >\n";
+      text.append(gstyle);
+      text.append(write(g));
+      text.append("\n</g>\n");
+    }
+    
     private String write(Geometry geometry) {
         if (geometry == null) {
             return "";
         }
-        return writer.write(geometry);
+        return svgWriter.write(geometry);
     }
 }
