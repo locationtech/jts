@@ -57,6 +57,7 @@ public interface CoordinateSequence
    * <p>This constant assumes XYZM coordinate sequence definition, please check this assumption
    * using {@link #getDimension()} and {@link #getMeasures()} before use.
    */
+  /** Standard z-ordinate index */
   int Z = 2;
 
   /**
@@ -177,7 +178,7 @@ public interface CoordinateSequence
    * @return the value of the Y ordinate in the index'th coordinate
    */
   double getY(int index);
-  
+
   /**
    * Returns ordinate Z of the specified coordinate if available.
    * 
