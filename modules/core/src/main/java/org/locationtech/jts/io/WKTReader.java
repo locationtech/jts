@@ -143,17 +143,6 @@ public class WKTReader
   private static CoordinateSequenceFactory csFactoryXYZM = PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
   private PrecisionModel precisionModel;
 
-  /** Flag for x-ordinate */
-  private static final int XFlag = 1;
-  /** Flag for y-ordinate */
-  private static final int YFlag = 2;
-  /** Flag for z-ordinate */
-  private static final int ZFlag = 4;
-  /** Flag for m-ordinate */
-  private static final int MFlag = 8;
-  /** Flag for x- and y-ordinate */
-  private static final int XYFlag = XFlag | YFlag;
-
   /**
    * Flag indicating that the old notation of coordinates in JTS
    * is supported.
@@ -317,17 +306,17 @@ public class WKTReader
     sequence.setOrdinate(0, CoordinateSequence.Y, precisionModel.makePrecise(getNextNumber(tokenizer)));
 
     // additionally read other vertices
-    if ((ordinateFlags & ZFlag) == ZFlag)
+    if ((ordinateFlags & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag)
       sequence.setOrdinate(0, CoordinateSequence.Z, getNextNumber(tokenizer));
-    if ((ordinateFlags & MFlag) == MFlag)
+    if ((ordinateFlags & CoordinateSequence.MFlag) == CoordinateSequence.MFlag)
     {
-      if (((ordinateFlags & ZFlag) == 0) & this.measureToZ)
+      if (((ordinateFlags & CoordinateSequence.ZFlag) == 0) & this.measureToZ)
         sequence.setOrdinate(0, CoordinateSequence.Z, getNextNumber(tokenizer));
       else
         sequence.setOrdinate(0, CoordinateSequence.M, getNextNumber(tokenizer));
     }
 
-    if (ordinateFlags == XYFlag && this.isAllowOldJtsCoordinateSyntax && isNumberNext(tokenizer)) {
+    if (ordinateFlags == CoordinateSequence.XYFlag && this.isAllowOldJtsCoordinateSyntax && isNumberNext(tokenizer)) {
       sequence.setOrdinate(0, CoordinateSequence.Z, getNextNumber(tokenizer));
     }
 
@@ -390,7 +379,7 @@ S   */
 
   /**
    * Computes the required dimension based on the given ordinate bit-mask.
-   * It is assumed that {@link #XYFlag} is set.
+   * It is assumed that {@link CoordinateSequence#XYFlag} is set.
    * <p>
    *   This is a
    * </p>
@@ -399,8 +388,8 @@ S   */
    */
   private int toDimension(int ordinateFlags) {
     int dimension = 2;
-    if ((ordinateFlags & ZFlag) == ZFlag) dimension = 3;
-    if ((ordinateFlags & MFlag) == MFlag)
+    if ((ordinateFlags & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag) dimension = 3;
+    if ((ordinateFlags & CoordinateSequence.MFlag) == CoordinateSequence.MFlag)
       dimension = measureToZ ? dimension + 1 : 4;
 
     if (dimension < 3 &&  this.isAllowOldJtsCoordinateSyntax)
@@ -425,8 +414,8 @@ S   */
     if (sequences.size() == 1)
       return (CoordinateSequence) sequences.get(0);
 
-    if (ordinateFlags == XYFlag && this.isAllowOldJtsCoordinateSyntax)
-      ordinateFlags |= ZFlag;
+    if (ordinateFlags == CoordinateSequence.XYFlag && this.isAllowOldJtsCoordinateSyntax)
+      ordinateFlags |= CoordinateSequence.ZFlag;
 
     // create and fill the result sequence
     CoordinateSequence sequence = this.csFactory.create(sequences.size(), toDimension(ordinateFlags));
@@ -434,11 +423,11 @@ S   */
       CoordinateSequence item = (CoordinateSequence)sequences.get(i);
       sequence.setOrdinate(i, CoordinateSequence.X, item.getOrdinate(0, CoordinateSequence.X));
       sequence.setOrdinate(i, CoordinateSequence.Y, item.getOrdinate(0, CoordinateSequence.Y));
-      if ((ordinateFlags & ZFlag) == ZFlag)
+      if ((ordinateFlags & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag)
         sequence.setOrdinate(i, CoordinateSequence.Z, item.getOrdinate(0, CoordinateSequence.Z));
-      if ((ordinateFlags & MFlag) == MFlag)
+      if ((ordinateFlags & CoordinateSequence.MFlag) == CoordinateSequence.MFlag)
       {
-        if (((ordinateFlags & ZFlag) == 0) & this.measureToZ)
+        if (((ordinateFlags & CoordinateSequence.ZFlag) == 0) & this.measureToZ)
           sequence.setOrdinate(0, CoordinateSequence.Z, item.getOrdinate(0, CoordinateSequence.Z));
         else
           sequence.setOrdinate(0, CoordinateSequence.M, item.getOrdinate(0, CoordinateSequence.M));
@@ -637,17 +626,18 @@ S   */
     String nextWord = lookAheadWord(tokenizer).toUpperCase();
     if (nextWord.equalsIgnoreCase("Z")) {
       tokenizer.nextToken();
-      return XYFlag | ZFlag;
+      return CoordinateSequence.XYFlag | CoordinateSequence.ZFlag;
     }
     else if (nextWord.equalsIgnoreCase("M")) {
       tokenizer.nextToken();
-      return XYFlag | MFlag;
+      return CoordinateSequence.XYFlag | CoordinateSequence.MFlag;
     }
     else if (nextWord.equalsIgnoreCase("ZM")) {
       tokenizer.nextToken();
-      return XYFlag | ZFlag | MFlag;
+      return CoordinateSequence.XYFlag | CoordinateSequence.ZFlag |
+             CoordinateSequence.MFlag;
     }
-    return XYFlag;
+    return CoordinateSequence.XYFlag;
   }
 
   /**
@@ -786,15 +776,15 @@ S   */
   private Geometry readGeometryTaggedText(StreamTokenizer tokenizer) throws IOException, ParseException {
     String type;
 
-    int ordinateFlags = XYFlag;
+    int ordinateFlags = CoordinateSequence.XYFlag;
     try {
       type = getNextWord(tokenizer).toUpperCase();
       if (type.endsWith("ZM")) {
-        ordinateFlags += ZFlag | MFlag;
+        ordinateFlags |= CoordinateSequence.ZFlag | CoordinateSequence.MFlag;
       } else if (type.endsWith("Z")) {
-        ordinateFlags += ZFlag;
+        ordinateFlags |= CoordinateSequence.ZFlag;
       } else if (type.endsWith("M")) {
-        ordinateFlags += MFlag;
+        ordinateFlags |= CoordinateSequence.MFlag;
       }
     } catch (IOException e) {
       return null;
@@ -808,7 +798,7 @@ S   */
   private Geometry readGeometryTaggedText(StreamTokenizer tokenizer, String type, int ordinateFlags)
           throws IOException, ParseException {
 
-    if (ordinateFlags == XYFlag) {
+    if (ordinateFlags == CoordinateSequence.XYFlag) {
       ordinateFlags = getNextOrdinateFlags(tokenizer);
     }
 

@@ -12,23 +12,13 @@
 
 package org.locationtech.jts.io;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.*;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 
 
 /**
@@ -53,6 +43,37 @@ public class WKTWriterTest extends TestCase {
   }
 
   public static Test suite() { return new TestSuite(WKTWriterTest.class); }
+
+  public void testProperties() {
+    assertEquals(CoordinateSequence.XYFlag, writer.getOutputOrdinates());
+    assertEquals(CoordinateSequence.XYZFlag, writer3D.getOutputOrdinates());
+    assertEquals(CoordinateSequence.XYMFlag, writer2DM.getOutputOrdinates());
+    assertTrue(writer2DM.getZIsMeasure());
+    writer2DM.setZIsMeasure(false);
+    assertTrue(!writer2DM.getZIsMeasure());
+    assertEquals(CoordinateSequence.XYZFlag, writer2DM.getOutputOrdinates());
+    writer2DM.setZIsMeasure(true);
+    assertTrue(writer2DM.getZIsMeasure());
+    assertEquals(CoordinateSequence.XYMFlag, writer2DM.getOutputOrdinates());
+
+    GeometryFactory gf = new GeometryFactory(
+            PackedCoordinateSequenceFactory.DOUBLE_FACTORY);
+    WKTWriter writer3DM = new WKTWriter(4);
+    assertEquals(CoordinateSequence.XYZMFlag, writer3DM.getOutputOrdinates());
+    assertTrue(!writer3DM.getZIsMeasure());
+    writer3DM.setZIsMeasure(true);
+    assertTrue(!writer3DM.getZIsMeasure());
+
+    writer3DM.setOutputOrdinates(CoordinateSequence.XYFlag);
+    assertEquals(CoordinateSequence.XYFlag, writer3DM.getOutputOrdinates());
+    writer3DM.setOutputOrdinates(CoordinateSequence.XYZFlag);
+    assertEquals(CoordinateSequence.XYZFlag, writer3DM.getOutputOrdinates());
+    writer3DM.setOutputOrdinates(CoordinateSequence.XYMFlag);
+    assertEquals(CoordinateSequence.XYMFlag, writer3DM.getOutputOrdinates());
+    writer3DM.setOutputOrdinates(CoordinateSequence.XYZMFlag);
+    assertEquals(CoordinateSequence.XYZMFlag, writer3DM.getOutputOrdinates());
+
+  }
 
   public void testWritePoint() {
     Point point = geometryFactory.createPoint(new Coordinate(10, 10));

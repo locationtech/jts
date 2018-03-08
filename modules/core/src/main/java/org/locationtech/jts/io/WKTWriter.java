@@ -19,19 +19,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.CoordinateSequenceFactory;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.util.Assert;
 
 /**
@@ -167,7 +155,7 @@ public class WKTWriter
    *@param  count  the number of times to repeat the character
    *@return        a <code>String</code> of characters
    */
-  public static String stringOfChar(char ch, int count) {
+  private static String stringOfChar(char ch, int count) {
     StringBuilder buf = new StringBuilder(count);
     for (int i = 0; i < count; i++) {
       buf.append(ch);
@@ -175,12 +163,89 @@ public class WKTWriter
     return buf.toString();
   }
 
-  private int outputDimension;
+  /**
+   * A filter implementation to test if a coordinate sequence actually has
+   * meaningful values for an ordinate bit-pattern
+   */
+  private class CheckOrdinatesFilter implements CoordinateSequenceFilter {
+
+    private final int[] ordinateFlag = {
+            CoordinateSequence.XFlag,
+            CoordinateSequence.YFlag,
+            CoordinateSequence.ZFlag,
+            CoordinateSequence.MFlag};
+
+    private final int checkOrdinateFlags;
+    private int numOrdinates;
+
+    private int outputOrdinates;
+
+    /**
+     * Creates an instance of this class
+
+     * @param checkOrdinateFlags the index for the ordinates to test.
+     */
+    private CheckOrdinatesFilter(int checkOrdinateFlags, boolean zIsMeasure) {
+
+      // verify zIsMeasure.
+      if ((checkOrdinateFlags & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag)
+        zIsMeasure = false;
+
+      // On zIsMeasure we need to adjust the ordinate flag array.
+      if (zIsMeasure) {
+        ordinateFlag[CoordinateSequence.Z] = CoordinateSequence.MFlag;
+        ordinateFlag[CoordinateSequence.M] = 0;
+      }
+      this.outputOrdinates = CoordinateSequence.XYFlag;
+      this.checkOrdinateFlags = checkOrdinateFlags;
+
+      // get number of ordinates to test
+      int numOrdinates = 2;
+      if ((checkOrdinateFlags & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag)
+        numOrdinates = 3;
+      if ((checkOrdinateFlags & CoordinateSequence.MFlag) == CoordinateSequence.MFlag)
+        numOrdinates = zIsMeasure ? 3 : 4;
+      this.numOrdinates = numOrdinates;
+    }
+
+    /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isGeometryChanged */
+    public void filter(CoordinateSequence seq, int i) {
+
+      int numOrdinates = Math.min(this.numOrdinates, seq.getDimension());
+      for (int j = 2; j < numOrdinates; j++) {
+        double val = seq.getOrdinate(i, j);
+        if (!Double.isNaN(val))
+          outputOrdinates |= ordinateFlag[j];
+      }
+    }
+
+    /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isGeometryChanged */
+    public boolean isGeometryChanged() {
+      return false;
+    }
+
+    /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isDone */
+    public boolean isDone() {
+      return outputOrdinates == checkOrdinateFlags;
+    }
+
+    /**
+     * Gets the evaluated ordinate bit-pattern
+     *
+     * @return A bit-pattern of ordinates with valid values masked by {@link #checkOrdinateFlags}.
+     */
+    int getOutputOrdinates() {
+      return outputOrdinates;
+    }
+  }
+
+  private int outputOrdinates;
+  private final int outputDimension;
   private PrecisionModel precisionModel = null;
   private boolean isFormatted = false;
   private int coordsPerLine = -1;
   private String indentTabStr ;
-  private boolean zIsMeasure = false;
+  //private boolean zIsMeasure = false;
 
   /**
    * Creates a new WKTWriter with default settings
@@ -216,6 +281,19 @@ public class WKTWriter
 
     if (outputDimension < 2 || outputDimension > 4)
       throw new IllegalArgumentException("Invalid output dimension (must be 2 to 4)");
+
+    switch (outputDimension)
+    {
+      case 2:
+        this.outputOrdinates = CoordinateSequence.XYFlag;
+        break;
+      case 3:
+        this.outputOrdinates = CoordinateSequence.XYZFlag;
+        break;
+      case 4:
+        this.outputOrdinates = CoordinateSequence.XYZMFlag;
+        break;
+    }
   }
 
   /**
@@ -262,10 +340,59 @@ public class WKTWriter
    *                   measure value.
    */
   public void setZIsMeasure(boolean zIsMeasure) {
-    this.zIsMeasure = zIsMeasure;
+    // if we only output 2 dimensions, there is no need to
+    // check which other ordinate holds a measure value!
+    if (this.outputDimension == 2) return;
+
+    // if we want to output four dimensions anyway, bail out
+    if (this.outputDimension == 4) return;
+
+    this.outputOrdinates = zIsMeasure
+            ? CoordinateSequence.XYMFlag
+            : CoordinateSequence.XYZFlag;
   }
 
   /**
+   * Sets a bit-pattern defining which ordinates should be
+   * written. It is one of the following values:
+   * <ul>
+   * <li>{@link CoordinateSequence#XYFlag}</li>
+   * <li>{@link CoordinateSequence#XYZFlag}</li>
+   * <li>{@link CoordinateSequence#XYMFlag}</li>
+   * <li>{@link CoordinateSequence#XYZMFlag}</li>
+   * </ul>
+   * {@link CoordinateSequence#XYFlag} is always assumed and not
+   * particularly checked for.
+   *
+   * @param outputOrdinates A bit-pattern
+   */
+  public void setOutputOrdinates(int outputOrdinates) {
+
+    switch (this.outputDimension) {
+      case 2:
+        this.outputOrdinates =
+                CoordinateSequence.XYFlag;
+      case 3:
+        this.outputOrdinates =
+                (outputOrdinates & CoordinateSequence.XYZFlag) |
+                (outputOrdinates & CoordinateSequence.XYMFlag);
+      default:
+        this.outputOrdinates =
+                outputOrdinates & CoordinateSequence.XYZMFlag;
+    }
+  }
+
+  /**
+   * Gets a bit-pattern defining which ordinates should be
+   * @returns an ordinate bit-pattern
+   * @see #setOutputOrdinates(int)
+   */
+  public int getOutputOrdinates() {
+    return this.outputOrdinates;
+  }
+
+
+   /**
    * Sets a {@link PrecisionModel} that should be used on the ordinates written.
    * <p>If none/{@code null} is assigned, the precision model of the {@link Geometry#getFactory()}
    * is used.</p>
@@ -282,7 +409,8 @@ public class WKTWriter
    * @return {@code true} if the z-ordinate value should be treated as a measrue value.
    */
   public boolean getZIsMeasure() {
-    return this.zIsMeasure;
+    return this.outputDimension == 3 &&
+           this.outputOrdinates == CoordinateSequence.XYMFlag;
   }
   /**
    *  Converts a <code>Geometry</code> to its Well-known Text representation.
@@ -367,10 +495,35 @@ public class WKTWriter
     if (precisionModel == null)
       precisionModel = geometry.getPrecisionModel();
 
+    // create the formatter
     DecimalFormat formatter = createFormatter(precisionModel);
-    appendGeometryTaggedText(geometry, useFormatting, 0, writer, formatter);
+
+    // append the WKT
+    appendGeometryTaggedText(geometry, useFormatting, writer, formatter);
   }
 
+  /**
+   *  Converts a <code>Geometry</code> to &lt;Geometry Tagged Text&gt; format,
+   *  then appends it to the writer.
+   *
+   * @param  geometry           the <code>Geometry</code> to process
+   * @param  useFormatting      flag indicating that the output should be formatted
+   * @param  writer             the output writer to append to
+   * @param  formatter       the <code>DecimalFormatter</code> to use to convert
+   *      from a precise coordinate to an external coordinate
+   */
+  private void appendGeometryTaggedText(Geometry geometry, boolean useFormatting, Writer writer,
+                                        DecimalFormat formatter)
+    throws IOException
+  {
+    // evaluate the ordinates actually present in the geometry
+    CheckOrdinatesFilter cof = new CheckOrdinatesFilter(this.outputOrdinates, this.getZIsMeasure());
+    geometry.apply(cof);
+
+    // Append the WKT
+    appendGeometryTaggedText(geometry, cof.getOutputOrdinates(), useFormatting,
+            0, writer, formatter);
+  }
   /**
    *  Converts a <code>Geometry</code> to &lt;Geometry Tagged Text&gt; format,
    *  then appends it to the writer.
@@ -382,35 +535,45 @@ public class WKTWriter
    * @param  formatter       the <code>DecimalFormatter</code> to use to convert
    *      from a precise coordinate to an external coordinate
    */
-  private void appendGeometryTaggedText(Geometry geometry, boolean useFormatting, int level, Writer writer,
-                                        DecimalFormat formatter)
+  private void appendGeometryTaggedText(
+          Geometry geometry, int outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
+
   {
     indent(useFormatting, level, writer);
 
     if (geometry instanceof Point) {
-      appendPointTaggedText((Point) geometry, useFormatting, level, writer, formatter);
+      appendPointTaggedText((Point) geometry, outputOrdinates, useFormatting,
+              level, writer, formatter);
     }
     else if (geometry instanceof LinearRing) {
-      appendLinearRingTaggedText((LinearRing) geometry, useFormatting, level, writer, formatter);
+      appendLinearRingTaggedText((LinearRing) geometry, outputOrdinates, useFormatting,
+              level, writer, formatter);
     }
     else if (geometry instanceof LineString) {
-      appendLineStringTaggedText((LineString) geometry, useFormatting, level, writer, formatter);
+      appendLineStringTaggedText((LineString) geometry, outputOrdinates, useFormatting,
+              level, writer, formatter);
     }
     else if (geometry instanceof Polygon) {
-      appendPolygonTaggedText((Polygon) geometry, useFormatting, level, writer, formatter);
+      appendPolygonTaggedText((Polygon) geometry, outputOrdinates, useFormatting,
+              level, writer, formatter);
     }
     else if (geometry instanceof MultiPoint) {
-      appendMultiPointTaggedText((MultiPoint) geometry, useFormatting, level, writer, formatter);
+      appendMultiPointTaggedText((MultiPoint) geometry, outputOrdinates,
+              useFormatting, level, writer, formatter);
     }
     else if (geometry instanceof MultiLineString) {
-      appendMultiLineStringTaggedText((MultiLineString) geometry, useFormatting, level, writer, formatter);
+      appendMultiLineStringTaggedText((MultiLineString) geometry, outputOrdinates,
+              useFormatting, level, writer, formatter);
     }
     else if (geometry instanceof MultiPolygon) {
-      appendMultiPolygonTaggedText((MultiPolygon) geometry, useFormatting, level, writer, formatter);
+      appendMultiPolygonTaggedText((MultiPolygon) geometry, outputOrdinates,
+              useFormatting, level, writer, formatter);
     }
     else if (geometry instanceof GeometryCollection) {
-      appendGeometryCollectionTaggedText((GeometryCollection) geometry, useFormatting, level, writer, formatter);
+      appendGeometryCollectionTaggedText((GeometryCollection) geometry, outputOrdinates,
+              useFormatting, level, writer, formatter);
     }
     else {
       Assert.shouldNeverReachHere("Unsupported Geometry implementation:"
@@ -428,12 +591,15 @@ public class WKTWriter
    * @param  writer             the output writer to append to
    * @param  formatter          the formatter to use when writing numbers
    */
-  private void appendPointTaggedText(Point point, boolean useFormatting, int level, Writer writer, DecimalFormat formatter)
+  private void appendPointTaggedText(
+          Point point, int outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("POINT ");
-    appendOrdinateText(point.getCoordinateSequence(), writer);
-    appendSequenceText(point.getCoordinateSequence(), useFormatting, level, false, writer, formatter);
+    appendOrdinateText(outputOrdinates, writer);
+    appendSequenceText(point.getCoordinateSequence(), outputOrdinates, useFormatting,
+            level, false, writer, formatter);
   }
 
   /**
@@ -447,13 +613,15 @@ public class WKTWriter
    * @param  formatter       the <code>DecimalFormatter</code> to use to convert
    *      from a precise coordinate to an external coordinate
    */
-  private void appendLineStringTaggedText(LineString lineString, boolean useFormatting, int level, Writer writer,
-                                          DecimalFormat formatter)
+  private void appendLineStringTaggedText(
+          LineString lineString, int outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("LINESTRING ");
-    appendOrdinateText(lineString.getCoordinateSequence(), writer);
-    appendSequenceText(lineString.getCoordinateSequence(), useFormatting, level, false, writer, formatter);
+    appendOrdinateText(outputOrdinates, writer);
+    appendSequenceText(lineString.getCoordinateSequence(), outputOrdinates, useFormatting,
+            level, false, writer, formatter);
   }
 
   /**
@@ -467,13 +635,15 @@ public class WKTWriter
    * @param  formatter       the <code>DecimalFormatter</code> to use to convert
    *      from a precise coordinate to an external coordinate
    */
-  private void appendLinearRingTaggedText(LinearRing linearRing, boolean useFormatting, int level, Writer writer,
-                                          DecimalFormat formatter)
+  private void appendLinearRingTaggedText(
+          LinearRing linearRing, int outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("LINEARRING ");
-    appendOrdinateText(linearRing.getCoordinateSequence(), writer);
-    appendSequenceText(linearRing.getCoordinateSequence(), useFormatting, level, false, writer, formatter);
+    appendOrdinateText(outputOrdinates, writer);
+    appendSequenceText(linearRing.getCoordinateSequence(), outputOrdinates, useFormatting,
+            level, false, writer, formatter);
   }
 
   /**
@@ -487,13 +657,15 @@ public class WKTWriter
    * @param  formatter       the <code>DecimalFormatter</code> to use to convert
    *      from a precise coordinate to an external coordinate
    */
-  private void appendPolygonTaggedText(Polygon polygon, boolean useFormatting, int level, Writer writer,
-                                       DecimalFormat formatter)
+  private void appendPolygonTaggedText(
+          Polygon polygon, int outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("POLYGON ");
-    appendOrdinateText(polygon.getExteriorRing().getCoordinateSequence(), writer);
-    appendPolygonText(polygon, useFormatting, level, false, writer, formatter);
+    appendOrdinateText(outputOrdinates, writer);
+    appendPolygonText(polygon, outputOrdinates, useFormatting,
+            level, false, writer, formatter);
   }
 
   /**
@@ -507,13 +679,14 @@ public class WKTWriter
    * @param  formatter       the <code>DecimalFormatter</code> to use to convert
    *      from a precise coordinate to an external coordinate
    */
-  private void appendMultiPointTaggedText(MultiPoint multipoint, boolean useFormatting, int level, Writer writer,
+  private void appendMultiPointTaggedText(MultiPoint multipoint, int outputOrdinates,
+                                          boolean useFormatting, int level, Writer writer,
                                           DecimalFormat formatter)
     throws IOException
   {
     writer.write("MULTIPOINT ");
-    appendOrdinateText(findFirstSequence(multipoint), writer);
-    appendMultiPointText(multipoint, useFormatting, level, writer, formatter);
+    appendOrdinateText(outputOrdinates, writer);
+    appendMultiPointText(multipoint, outputOrdinates, useFormatting, level, writer, formatter);
   }
 
   /**
@@ -527,13 +700,15 @@ public class WKTWriter
    * @param  formatter       the <code>DecimalFormatter</code> to use to convert
    *      from a precise coordinate to an external coordinate
    */
-  private void appendMultiLineStringTaggedText(MultiLineString multiLineString, boolean useFormatting, int level,
-      Writer writer, DecimalFormat formatter)
+  private void appendMultiLineStringTaggedText(
+          MultiLineString multiLineString, int outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("MULTILINESTRING ");
-    appendOrdinateText(findFirstSequence(multiLineString), writer);
-    appendMultiLineStringText(multiLineString, useFormatting, level, false, writer, formatter);
+    appendOrdinateText(outputOrdinates, writer);
+    appendMultiLineStringText(multiLineString, outputOrdinates, useFormatting,
+            level, /*false, */writer, formatter);
   }
 
   /**
@@ -547,13 +722,15 @@ public class WKTWriter
    * @param  formatter       the <code>DecimalFormatter</code> to use to convert
    *      from a precise coordinate to an external coordinate
    */
-  private void appendMultiPolygonTaggedText(MultiPolygon multiPolygon, boolean useFormatting, int level, Writer writer,
-                                            DecimalFormat formatter)
+  private void appendMultiPolygonTaggedText(
+          MultiPolygon multiPolygon, int outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("MULTIPOLYGON ");
-    appendOrdinateText(findFirstSequence(multiPolygon), writer);
-    appendMultiPolygonText(multiPolygon, useFormatting, level, writer, formatter);
+    appendOrdinateText(outputOrdinates, writer);
+    appendMultiPolygonText(multiPolygon, outputOrdinates, useFormatting,
+            level, writer, formatter);
   }
 
   /**
@@ -567,47 +744,18 @@ public class WKTWriter
    * @param  formatter       the <code>DecimalFormatter</code> to use to convert
    *      from a precise coordinate to an external coordinate
    */
-  private void appendGeometryCollectionTaggedText(GeometryCollection geometryCollection, boolean useFormatting,
-      int level, Writer writer, DecimalFormat formatter)
+  private void appendGeometryCollectionTaggedText(
+          GeometryCollection geometryCollection, int outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("GEOMETRYCOLLECTION ");
-    appendOrdinateText(findFirstSequence(geometryCollection), writer);
-    appendGeometryCollectionText(geometryCollection, useFormatting, level, writer, formatter);
+    appendOrdinateText(outputOrdinates, writer);
+    appendGeometryCollectionText(geometryCollection, outputOrdinates,
+            useFormatting, level, writer, formatter);
   }
 
-  /**
-   * Utility function to find the first {@link CoordinateSequence} that a geometry in {@code gc} has.
-   *
-   * @param gc a geometry collection
-   * @return A coordinate sequence.
-   */
-  private CoordinateSequence findFirstSequence(GeometryCollection gc) {
-
-    for (int i = 0; i < gc.getNumGeometries(); i++) {
-      Geometry g = gc.getGeometryN(i);
-      if (g instanceof Point)
-        return ((Point)g).getCoordinateSequence();
-      else if (g instanceof  LineString)
-        return ((LineString)g).getCoordinateSequence();
-      else if (g instanceof  Polygon)
-      {
-        if (!g.isEmpty())
-          return ((Polygon)g).getExteriorRing().getCoordinateSequence();
-      }
-      else if (g instanceof  GeometryCollection)
-      {
-        CoordinateSequence res = findFirstSequence((GeometryCollection)g);
-        if (res != null) return res;
-      }
-    }
-
-    // Havn't found anything, return default
-    CoordinateSequenceFactory csFactory = gc.getFactory().getCoordinateSequenceFactory();
-    return csFactory.create(0, outputDimension);
-  }
-
-  /**
+   /**
    * Appends the i'th coordinate from the sequence to the writer
    * <p>If the {@code seq} has coordinates that are {@link double.NAN}, these are not written, even though
    * {@link #outputDimension} suggests this.
@@ -617,16 +765,19 @@ public class WKTWriter
    * @param  writer     the output writer to append to
    * @param  formatter  the formatter to use for writing ordinate values
    */
-  private void appendCoordinate(CoordinateSequence seq, int i, Writer writer, DecimalFormat formatter)
+  private static void appendCoordinate(
+          CoordinateSequence seq, int outputOrdinates, int i,
+          Writer writer, DecimalFormat formatter)
       throws IOException
   {
-    writer.write(writeNumber(seq.getX(i), formatter) + " " + writeNumber(seq.getY(i), formatter));
-    int dimension = outputDimension < seq.getDimension() ? outputDimension : seq.getDimension();
-    if (dimension == 2) return;
+    writer.write(writeNumber(seq.getX(i), formatter) + " " +
+            writeNumber(seq.getY(i), formatter));
+    if (outputOrdinates == CoordinateSequence.XYFlag) return;
 
     // we have three dimensions, either z- or measure-ordinate
-    if (dimension == 3) {
-      double val = (zIsMeasure & seq.getDimension() > 3)
+    if (outputOrdinates == CoordinateSequence.XYZFlag ||
+        outputOrdinates == CoordinateSequence.XYMFlag) {
+      double val = (outputOrdinates == CoordinateSequence.XYMFlag && seq.getDimension() > 3)
               ? seq.getOrdinate(i, CoordinateSequence.M)
               : seq.getOrdinate(i, CoordinateSequence.Z);
       if (! Double.isNaN(val)) {
@@ -665,41 +816,29 @@ public class WKTWriter
   /**
    * Appends additional ordinate information. This function may
    * <ul>
-   *   <li>append 'Z' if the {@link #outputDimension} is 3,
-   *   {@code seq} has a dimension of 3 and {@link #zIsMeasure}
-   *   is {@code false}
+   *   <li>append 'Z' if in {@code outputOrdinates} the
+   *   {@link CoordinateSequence#ZFlag} bit is set
    *   </li>
-   *   <li>append 'M' if the {@link #outputDimension} is 3,
-   *   {@code seq} has a dimension of 4 and {@link #zIsMeasure}
-   *   is {@code true}
+   *   <li>append 'M' if in {@code outputOrdinates} the
+   *   {@link CoordinateSequence#MFlag} bit is set
    *   </li>
-   *   <li> append 'ZM' if {@link #outputDimension} and the
-   *   dimension of {@code seq} are both 4</li>
+   *   <li> append 'ZM' if in {@code outputOrdinates} the
+   *   {@link CoordinateSequence#ZFlag} bit and
+   *   {@link CoordinateSequence#MFlag} bit are set/li>
    * </ul>
    *
-   * @param seq        a {@code CoordinateSequence} to test the output dimensions.
-   * @param writer     the output writer to append to.
-   * @throws IOException if an error occurs while using the writer.
+   * @param outputOrdinates  a bit-pattern of ordinates to write.
+   * @param writer         the output writer to append to.
+   * @throws IOException   if an error occurs while using the writer.
    */
-  private void appendOrdinateText(CoordinateSequence seq, Writer writer) throws IOException {
+  private void appendOrdinateText(int outputOrdinates, Writer writer) throws IOException {
 
-    if (seq.size() > 0) {
-
-      int dimensionToUse = seq.getDimension();
-      if (outputDimension < dimensionToUse) dimensionToUse = outputDimension;
-
-      switch (dimensionToUse) {
-        case 2:
-          break;
-        case 3: // assume /
-          writer.write(!(zIsMeasure & seq.getDimension()==3) ? "Z" : "M");
-          break;
-        case 4:
-          writer.write("ZM");
-          break;
-      }
-    }
+    if ((outputOrdinates & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag)
+      writer.append('Z');
+    if ((outputOrdinates & CoordinateSequence.MFlag) == CoordinateSequence.MFlag)
+      writer.append('M');
   }
+
   /**
    *  Appends all members of a <code>CoordinateSequence</code> to the stream. Each {@code Coordinate} is separated from
    *  another using a colon, the ordinates of a {@code Coordinate} are separated by a space.
@@ -712,7 +851,7 @@ public class WKTWriter
    * @param  writer          the output writer to append to
    * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendSequenceText(CoordinateSequence seq, boolean useFormatting, int level, boolean indentFirst,
+  private void appendSequenceText(CoordinateSequence seq, int outputOrdinates, boolean useFormatting, int level, boolean indentFirst,
                                   Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -730,7 +869,7 @@ public class WKTWriter
             indent(useFormatting, level + 1, writer);
           }
         }
-        appendCoordinate(seq, i, writer, formatter);
+        appendCoordinate(seq, outputOrdinates, i, writer, formatter);
       }
       writer.write(")");
     }
@@ -748,8 +887,9 @@ public class WKTWriter
    * @param  writer          the output writer to append to
    * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendPolygonText(Polygon polygon, boolean useFormatting, int level, boolean indentFirst, Writer writer,
-                                 DecimalFormat formatter)
+  private void appendPolygonText(
+          Polygon polygon, int outputOrdinates, boolean useFormatting,
+          int level, boolean indentFirst, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (polygon.isEmpty()) {
@@ -758,11 +898,11 @@ public class WKTWriter
     else {
       if (indentFirst) indent(useFormatting, level, writer);
       writer.write("(");
-      appendSequenceText(polygon.getExteriorRing().getCoordinateSequence(),
+      appendSequenceText(polygon.getExteriorRing().getCoordinateSequence(), outputOrdinates,
               useFormatting, level, false, writer, formatter);
       for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
         writer.write(", ");
-        appendSequenceText(polygon.getInteriorRingN(i).getCoordinateSequence(),
+        appendSequenceText(polygon.getInteriorRingN(i).getCoordinateSequence(), outputOrdinates,
               useFormatting,level + 1,true, writer, formatter);
       }
       writer.write(")");
@@ -779,8 +919,9 @@ public class WKTWriter
    * @param  writer          the output writer to append to
    * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendMultiPointText(MultiPoint multiPoint, boolean useFormatting, int level, Writer writer,
-                                    DecimalFormat formatter)
+  private void appendMultiPointText(
+          MultiPoint multiPoint, int outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (multiPoint.isEmpty()) {
@@ -794,7 +935,7 @@ public class WKTWriter
           indentCoords(useFormatting, i, level + 1, writer);
         }
         appendSequenceText(((Point) multiPoint.getGeometryN(i)).getCoordinateSequence(),
-                useFormatting, level, false, writer, formatter);
+                outputOrdinates, useFormatting, level, false, writer, formatter);
      }
       writer.write(")");
     }
@@ -807,13 +948,13 @@ public class WKTWriter
    * @param  multiLineString  the <code>MultiLineString</code> to process
    * @param  useFormatting    flag indicating that
    * @param  level            the indentation level
-   * @param  indentFirst      flag indicating that the first {@code Coordinate} of the sequence should be indented for
-   *                          better visibility
+   * //@param  indentFirst      flag indicating that the first {@code Coordinate} of the sequence should be indented for
+   * //                         better visibility
    * @param  writer           the output writer to append to
    * @param  formatter        the formatter to use for writing ordinate values.
    */
-  private void appendMultiLineStringText(MultiLineString multiLineString, boolean useFormatting, int level,
-                                         boolean indentFirst, Writer writer, DecimalFormat formatter)
+  private void appendMultiLineStringText(MultiLineString multiLineString, int outputOrdinates,
+           boolean useFormatting, int level, /*boolean indentFirst, */Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (multiLineString.isEmpty()) {
@@ -821,7 +962,7 @@ public class WKTWriter
     }
     else {
       int level2 = level;
-      boolean doIndent = indentFirst;
+      boolean doIndent = false;
       writer.write("(");
       for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
         if (i > 0) {
@@ -830,7 +971,7 @@ public class WKTWriter
           doIndent = true;
         }
         appendSequenceText(((LineString) multiLineString.getGeometryN(i)).getCoordinateSequence(),
-                useFormatting, level2, doIndent, writer, formatter);
+                outputOrdinates, useFormatting, level2, doIndent, writer, formatter);
       }
       writer.write(")");
     }
@@ -846,8 +987,9 @@ public class WKTWriter
    * @param  writer          the output writer to append to
    * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendMultiPolygonText(MultiPolygon multiPolygon, boolean useFormatting, int level, Writer writer,
-                                      DecimalFormat formatter)
+  private void appendMultiPolygonText(
+          MultiPolygon multiPolygon, int outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (multiPolygon.isEmpty()) {
@@ -863,7 +1005,8 @@ public class WKTWriter
           level2 = level + 1;
           doIndent = true;
         }
-        appendPolygonText((Polygon) multiPolygon.getGeometryN(i), useFormatting, level2, doIndent, writer, formatter);
+        appendPolygonText((Polygon) multiPolygon.getGeometryN(i), outputOrdinates,
+                useFormatting, level2, doIndent, writer, formatter);
       }
       writer.write(")");
     }
@@ -879,8 +1022,9 @@ public class WKTWriter
    * @param  writer          the output writer to append to
    * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendGeometryCollectionText(GeometryCollection geometryCollection,
-      boolean useFormatting, int level, Writer writer, DecimalFormat formatter)
+  private void appendGeometryCollectionText(
+          GeometryCollection geometryCollection, int outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (geometryCollection.isEmpty()) {
@@ -894,7 +1038,8 @@ public class WKTWriter
           writer.write(", ");
           level2 = level + 1;
         }
-        appendGeometryTaggedText(geometryCollection.getGeometryN(i), useFormatting, level2, writer, formatter);
+        appendGeometryTaggedText(geometryCollection.getGeometryN(i), outputOrdinates,
+                useFormatting, level2, writer, formatter);
       }
       writer.write(")");
     }
@@ -919,7 +1064,5 @@ public class WKTWriter
       writer.write(indentTabStr);
     }
   }
-
-
 }
 
