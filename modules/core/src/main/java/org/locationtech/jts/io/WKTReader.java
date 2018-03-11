@@ -428,9 +428,9 @@ S   */
       if ((ordinateFlags & CoordinateSequence.MFlag) == CoordinateSequence.MFlag)
       {
         if (((ordinateFlags & CoordinateSequence.ZFlag) == 0) & this.measureToZ)
-          sequence.setOrdinate(0, CoordinateSequence.Z, item.getOrdinate(0, CoordinateSequence.Z));
+          sequence.setOrdinate(i, CoordinateSequence.Z, item.getOrdinate(0, CoordinateSequence.Z));
         else
-          sequence.setOrdinate(0, CoordinateSequence.M, item.getOrdinate(0, CoordinateSequence.M));
+          sequence.setOrdinate(i, CoordinateSequence.M, item.getOrdinate(0, CoordinateSequence.M));
       }
     }
 
