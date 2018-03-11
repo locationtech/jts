@@ -384,7 +384,7 @@ public class WKTWriter
 
   /**
    * Gets a bit-pattern defining which ordinates should be
-   * @returns an ordinate bit-pattern
+   * @return an ordinate bit-pattern
    * @see #setOutputOrdinates(int)
    */
   public int getOutputOrdinates() {
