@@ -50,9 +50,7 @@
               PrecisionModel when creating new geometry? </a></li>
           <li><a href="#D7">Why do the overlay operations not obey the axioms of
               set theory? </a></li>
-          <li><a href="#D8">Why does JTS report the intersection of LINESTRING
-              (0 0, 5 3) and LINESTRING (0 0, 1.2 0.72) as a point rather than a
-              line? </a></li>
+          <li><a href="#D8"> Why is the result of <code>intersects</code> inconsistent with the result of <code>intersection</code> ? </a></li>
           <li><a href="#D9">How can I prevent TopologyExceptions or incorrect
               results in overlay operations?</a></li>
         </ol>
@@ -288,15 +286,17 @@
         new geometry?<a name="D6"></a></h3>
       This is in order to avoid unnecessary performance overhead, and also to avoid the risk
       of mutating the supplied coordinate objects.<br>
+<!-- ----------------------------------------  -->
       <h3>7. Why do the overlay operations not obey the axioms of set theory?<a
           name="D7"></a></h3>
+		  
       This is sometimes posed as:
       <br>
       <br>
-      "When I intersect two geometries why is the result not contained in either
+      "Why is the <code>intersection</code> of two geometries not contained in either
       of the originals?" <br>
       <br>
-      or: "When I union two geometries why does the result not contain either of
+      or: "Why does the <code>union</code> of two geometries not contain either of
       the originals?" <br>
       <br>
       or: "Why does <code class="wkt">A union (B difference A) != A </code>?"
@@ -334,25 +334,36 @@
       goal is generally met by the JTS algorithms. Moreover, the precision of
       JTS geometric operations is almost always much greater than the inherent
       accuracy of the input data. <br>
-      <h3>8. Why does JTS report the intersection of LINESTRING (0 0, 5 3) and
-        LINESTRING (0 0, 1.2 0.72) as a point rather than a line?<a name="D8"></a></h3>
+<!-- ----------------------------------------  -->
+      <h3>8. Why is the result of <code>intersects</code> inconsistent with the result of <code>intersection</code> ?<a name="D8"></a></h3>
+		
+	The inconsistent case is:
+<pre>
+A = LINESTRING(0.0 0.0, -10.0 1.2246467991473533E-15)
+B = LINESTRING(-9.999143275740073 -0.13089595571333978, -10.0 1.0535676356486768E-13)
+</pre>
+This case produces the following inconsistent results:
+<pre>
+A.intersects(B) = false
+A.intersection(B) = POINT (-10 0.0000000000000012)
+</pre>
+
       This is a specific case of D7 above. It is interesting because it shows
-      how very simple geometric cases can reveal the limitations of
-      finite-precision binary floating-point arithmetic. In this case, the
-      mathematical point (1.2 0.72) lies exactly on the line <code class="wkt">LINESTRING
-        (0 0, 5 3)</code>, so the the true mathematical value of the
-      intersection is <code class="wkt">LINESTRING (0 0, 1.2, 0.72)</code>. However, JTS
-      computes the intersection as <code class="wkt">POINT(0 0)</code>. <br>
-      <br>
-      The reason for this is that the values 1.2 and 0.72 cannot be represented
-      precisely as binary numbers. For instance, the binary value of 1.2 is the
-      infinite repeating value 1.001100110011...<sub>2</sub>, and similarly for
-      0.72. So JTS is computing the intersection using the truncated
-      approximation to the point - which does NOT lie on the line <code class="wkt">LINESTRING(0
-        0, 5 3)</code>. Thus the intersection is reported (correctly, as far as
-      JTS can determine) as <code class="wkt">POINT (0 0)</code>. <br>
+      how simple geometric cases can reveal the limitations of
+      finite-precision binary floating-point arithmetic. 
+	  It also highlights the impact of design choices made in JTS.
+	  Specifically, JTS computes spatial predicates (including <code>intersects</code>) using high-precision arithemtic.
+	  This determines the exact spatial relationship of the input geometries.
+	  In contrast, the overlay operations (including <code>intersection</code>) use standard double-precision arithmetic
+	  to compute intersection points, and the computed point is necessarily represented
+	  in double-precision.
+	  This has the effect that there are cases where the results of spatial predicates is not be consistent 
+	  with the result of overlay operations.  
+	<br>
+<!-- ----------------------------------------  -->
       <h3>9. How can I prevent TopologyExceptions or incorrect results in
         overlay operations?<a name="D9"></a></h3>
+		
       <a class="javadoc" href="./javadoc/org/locationtech/jts/geom/TopologyException.html">TopologyException</a>s
       and incorrect results encountered during overlay computations are symptoms
       of robustness issues. Robustness issues are caused by the limitations of
@@ -377,8 +388,6 @@
         <li>the result is only used for visualization purposes </li>
         <li>the result vertices do not need to fully match the input </li>
       </ul>
-      )
-      <br>
       <br>
       <a class="javadoc" href="./javadoc/org/locationtech/jts/geom/Coordinate.html">Coordinate</a>
       precision can be controlled in several ways: <br>
