@@ -86,7 +86,7 @@ public class RelateComputer
     arg[1].computeSelfNodes(li, false);
 
     // compute intersections between edges of the two input geometries
-    SegmentIntersector intersector = arg[0].computeEdgeIntersections(arg[1], li, false);
+    SegmentIntersector intersector = arg[0].computeEdgeIntersections(arg[1], li, true);
 //System.out.println("computeIM: # segment intersection tests: " + intersector.numTests);
     computeIntersectionNodes(0);
     computeIntersectionNodes(1);

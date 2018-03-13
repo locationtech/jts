@@ -31,6 +31,7 @@ import junit.textui.TestRunner;
 public class RelateTest
     extends TestCase
 {
+
   public static void main(String args[]) {
     TestRunner.run(RelateTest.class);
   }
@@ -59,7 +60,10 @@ public class RelateTest
 
     // actual matrix is 001F001F2
     // true matrix should be 101F00FF2
-    runRelateTest(a, b,  "001F001F2"    );
+    String BAD_IM = "001F001F2";
+    String TRUE_IM = "101F00FF2";
+
+    runRelateTest(a, b,  TRUE_IM    );
   }
 
   void runRelateTest(String wkt1, String wkt2, String expectedIM)
