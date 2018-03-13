@@ -12,6 +12,11 @@
  */
 package org.locationtech.jts.geom;
 
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
+import org.locationtech.jts.geom.impl.PackedCoordinateSequence;
+
+import java.util.Arrays;
+
 /**
  * A wrapper around a coordinate sequence that always
  * ensures that a sequence is large enough to store ordinate
@@ -205,10 +210,115 @@ public class ExtendableCoordinateSequence implements CoordinateSequence {
       capacity *= 2;
     } while (index >= capacity);
 
+    // create the new sequence
     CoordinateSequence newSequence = csFactory.create(capacity, this.sequence.getDimension());
-    CoordinateSequences.copy(sequence, 0, newSequence, 0, this.sequence.size());
+    if (this.sequence instanceof CoordinateArraySequence) {
+      // performance improvement for CoordinateArraySequence
+      System.arraycopy(this.sequence.toCoordinateArray(), 0, newSequence.toCoordinateArray(), 0, this.sequence.size());
+    }
+    else if (this.sequence instanceof PackedCoordinateSequence.Float) {
+      // performance improvement for PackedCoordinateSequence.Float
+      System.arraycopy(((PackedCoordinateSequence.Float)this.sequence).getRawCoordinates(), 0,
+              ((PackedCoordinateSequence.Float)newSequence).getRawCoordinates(), 0,
+              this.sequence.size() * this.sequence.getDimension());
+    }
+    else if (this.sequence instanceof PackedCoordinateSequence.Double) {
+      // performance improvement for PackedCoordinateSequence.Double
+      System.arraycopy(((PackedCoordinateSequence.Double)this.sequence).getRawCoordinates(), 0,
+              ((PackedCoordinateSequence.Double)newSequence).getRawCoordinates(), 0,
+              this.sequence.size() * this.sequence.getDimension());
+    }
+    else
+    {
+      // for all other sequences we need to copy by hand.
+      CoordinateSequences.copy(sequence, 0, newSequence, 0, this.sequence.size());
+    }
+
+
     sequence = newSequence;
     size = index + 1;
+  }
+
+  public void add(Coordinate pt) {
+    add(pt.x, pt.y, pt.z);
+  }
+
+  public void add(double x, double y) {
+    add(x, y, Double.NaN);
+  }
+
+  public void add(double x, double y, double z) {
+    add(x, y, z, Double.NaN);
+  }
+
+  public void add(double x, double y, double z, double m) {
+    // get the index for the new sequence
+    int index = this.size();
+
+    // add x- and y-ordinates
+    this.setOrdinate(index, CoordinateSequence.X, x);
+    this.setOrdinate(index, CoordinateSequence.Y, y);
+    if (getDimension() == 2) return;
+    // add z-ordinate
+    this.setOrdinate(index, CoordinateSequence.Z, z);
+    if (getDimension() == 3) return;
+    // add m-ordinate
+    this.setOrdinate(index, CoordinateSequence.M, m);
+  }
+
+  public void insertAt(int index, Coordinate p) {
+    insertAt(index, p.x, p.y, p.z);
+  }
+
+  public void insertAt(int index, double x, double y) {
+    insertAt(index, x, y, Double.NaN);
+  }
+  public void insertAt(int index, double x, double y, double z) {
+    insertAt(index, x, y, z, Double.NaN);
+  }
+
+  public void insertAt(int index, double x, double y, double z, double m) {
+
+    // ensure capacity
+    ensureCapacity(size()+1);
+
+    // make space
+    if (this.sequence instanceof CoordinateArraySequence) {
+      // performance improvement for CoordinateArraySequence
+      System.arraycopy(this.sequence.toCoordinateArray(), index,
+                       this.sequence.toCoordinateArray(), index + 1,
+                      this.size() - index);
+    }
+    else if (this.sequence instanceof PackedCoordinateSequence.Float) {
+      // performance improvement for PackedCoordinateSequence.Float
+      PackedCoordinateSequence.Float fseq = (PackedCoordinateSequence.Float)this.sequence;
+      System.arraycopy(fseq.getRawCoordinates(), index * fseq.getDimension(),
+                       fseq.getRawCoordinates(), (index + 1)* fseq.getDimension(),
+                      (this.size() - index) * fseq.getDimension());
+    }
+    else if (this.sequence instanceof PackedCoordinateSequence.Double) {
+      // performance improvement for PackedCoordinateSequence.Double
+      PackedCoordinateSequence.Double dseq = (PackedCoordinateSequence.Double)this.sequence;
+      System.arraycopy(dseq.getRawCoordinates(), index * dseq.getDimension(),
+                       dseq.getRawCoordinates(), (index + 1)* dseq.getDimension(),
+                      (this.size() - index) * dseq.getDimension());
+    }
+    else
+    {
+      // for all other sequences we need to copy by hand.
+      CoordinateSequences.copy(sequence, index, sequence, index + 1, this.sequence.size() - index);
+    }
+
+    // add x- and y-ordinates
+    this.size++;
+    this.setOrdinate(index, CoordinateSequence.X, x);
+    this.setOrdinate(index, CoordinateSequence.Y, y);
+    if (getDimension() == 2) return;
+    // add z-ordinate
+    this.setOrdinate(index, CoordinateSequence.Z, z);
+    if (getDimension() == 3) return;
+    // add m-ordinate
+    this.setOrdinate(index, CoordinateSequence.M, m);
   }
 
   /**
@@ -228,15 +338,19 @@ public class ExtendableCoordinateSequence implements CoordinateSequence {
   public String toString() {
     StringBuilder builder = new StringBuilder();
     builder.append("EXT(");
-    builder.append(sequence.getClass().getSimpleName());
+    builder.append(this.sequence.getClass().getSimpleName());
     builder.append(String.format(", size=%d, dim=%d, cap=%d)", size, getDimension(), getCapacity()));
     builder.append('[');
     for (int i = 0; i < size; i++)
     {
       if (i > 0) builder.append(',');
-      builder.append(sequence.getX(i) + " " + sequence.getY(i));
-      for (int j = 2; j < sequence.getDimension(); j++)
-        builder.append(" " + sequence.getOrdinate(i, j));
+      builder.append(this.sequence.getX(i));
+      builder.append(' ');
+      builder.append(this.sequence.getY(i));
+      for (int j = 2; j < this.sequence.getDimension(); j++) {
+        builder.append(' ');
+        builder.append(this.sequence.getOrdinate(i, j));
+      }
     }
     builder.append(']');
     return builder.toString();

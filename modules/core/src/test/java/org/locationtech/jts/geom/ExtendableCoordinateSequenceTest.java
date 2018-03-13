@@ -63,6 +63,26 @@ public class ExtendableCoordinateSequenceTest extends TestCase {
 
   }
 
+  public void testAdd() {
+
+    doTestAdd(CoordinateArraySequenceFactory.instance(), 2);
+    doTestAdd(CoordinateArraySequenceFactory.instance(), 3);
+    doTestAdd(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 2);
+    doTestAdd(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 3);
+    doTestAdd(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 4);
+
+  }
+
+  public void testInsert() {
+
+    doTestInsert(CoordinateArraySequenceFactory.instance(), 2);
+    doTestInsert(CoordinateArraySequenceFactory.instance(), 3);
+    doTestInsert(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 2);
+    doTestInsert(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 3);
+    doTestInsert(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 4);
+
+  }
+
   public void testToCoordinateSequence() {
 
     doTestCoordinateSequence(CoordinateArraySequenceFactory.instance(), 2);
@@ -185,6 +205,74 @@ public class ExtendableCoordinateSequenceTest extends TestCase {
     assertEquals(eseq.getDimension(), seqTruncated.getDimension());
 
     assertTrue(CoordinateSequences.isEqual(eseq, seqTruncated));
+  }
+
+  private static void doTestAdd(CoordinateSequenceFactory csf, int dimension) {
+
+    // arrange
+    ExtendableCoordinateSequence eseq = create(csf, dimension, 8);
+
+    // act
+    switch (dimension) {
+      case 2:
+        eseq.add(-1, -2);
+        break;
+      case 3:
+        eseq.add(-1, -2, -3);
+        break;
+      case 4:
+        eseq.add(-1, -2, -3, -4);
+        break;
+    }
+    eseq.add(new Coordinate(-11, -12));
+
+    // assert
+    assertEquals(10, eseq.size());
+    assertEquals(-1d, eseq.getOrdinate(8, CoordinateSequence.X));
+    assertEquals(-2d, eseq.getOrdinate(8, CoordinateSequence.Y));
+    if (dimension>2)
+      assertEquals(-3d, eseq.getOrdinate(8, CoordinateSequence.Z));
+    if (dimension>3)
+      assertEquals(-4d, eseq.getOrdinate(8, CoordinateSequence.M));
+
+    assertEquals(-11d, eseq.getOrdinate(9, CoordinateSequence.X));
+    assertEquals(-12d, eseq.getOrdinate(9, CoordinateSequence.Y));
+    if (dimension>2)
+      assertTrue(Double.isNaN(eseq.getOrdinate(9, CoordinateSequence.Z)));
+  }
+
+  private static void doTestInsert(CoordinateSequenceFactory csf, int dimension) {
+
+    // arrange
+    ExtendableCoordinateSequence eseq = create(csf, dimension, 8);
+
+    // act
+    switch (dimension) {
+      case 2:
+        eseq.insertAt(2, -1, -2);
+        break;
+      case 3:
+        eseq.insertAt(2,-1, -2, -3);
+        break;
+      case 4:
+        eseq.insertAt(2,-1, -2, -3, -4);
+        break;
+    }
+    eseq.insertAt(7, new Coordinate(-11, -12));
+
+    // assert
+    assertEquals(10, eseq.size());
+    assertEquals(-1d, eseq.getOrdinate(2, CoordinateSequence.X));
+    assertEquals(-2d, eseq.getOrdinate(2, CoordinateSequence.Y));
+    if (dimension>2)
+      assertEquals(-3d, eseq.getOrdinate(2, CoordinateSequence.Z));
+    if (dimension>3)
+      assertEquals(-4d, eseq.getOrdinate(2, CoordinateSequence.M));
+
+    assertEquals(-11d, eseq.getOrdinate(7, CoordinateSequence.X));
+    assertEquals(-12d, eseq.getOrdinate(7, CoordinateSequence.Y));
+    if (dimension>2)
+      assertTrue(Double.isNaN(eseq.getOrdinate(7, CoordinateSequence.Z)));
   }
 
   private static void doTestCoordinateSequence(CoordinateSequenceFactory csf, int dimension) {
