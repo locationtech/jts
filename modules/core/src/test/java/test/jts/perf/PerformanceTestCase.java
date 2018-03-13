@@ -126,7 +126,7 @@ public abstract class PerformanceTestCase
     
   }
 
-  void setTime(int runNum, long time) {
+  protected void setTime(int runNum, long time) {
     runTime[runNum] = time;
   }
   
