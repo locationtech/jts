@@ -31,6 +31,15 @@ public class ExtendableCoordinateSequenceTest extends TestCase {
   }
 
   public void testConstructor() {
+
+    CoordinateSequence seq =
+      new ExtendableCoordinateSequence(2);
+    assertNotNull(seq);
+    assertEquals(2, seq.getDimension());
+    assertEquals(0, seq.size());
+    assertEquals(ExtendableCoordinateSequence.INITIAL_CAPACITY,
+            ((ExtendableCoordinateSequence)seq).getCapacity());
+
     doTestConstructor(null, 2);
     doTestConstructor(null, 2, 7);
     doTestConstructor(CoordinateArraySequenceFactory.instance(), 2);
@@ -60,6 +69,7 @@ public class ExtendableCoordinateSequenceTest extends TestCase {
 
     doTestCopy(CoordinateArraySequenceFactory.instance(), 2);
     doTestCopy(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 4);
+    doTestCopy(PackedCoordinateSequenceFactory.FLOAT_FACTORY, 4);
 
   }
 
@@ -68,7 +78,7 @@ public class ExtendableCoordinateSequenceTest extends TestCase {
     doTestAdd(CoordinateArraySequenceFactory.instance(), 2);
     doTestAdd(CoordinateArraySequenceFactory.instance(), 3);
     doTestAdd(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 2);
-    doTestAdd(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 3);
+    doTestAdd(PackedCoordinateSequenceFactory.FLOAT_FACTORY, 3);
     doTestAdd(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 4);
 
   }
@@ -78,7 +88,7 @@ public class ExtendableCoordinateSequenceTest extends TestCase {
     doTestInsert(CoordinateArraySequenceFactory.instance(), 2);
     doTestInsert(CoordinateArraySequenceFactory.instance(), 3);
     doTestInsert(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 2);
-    doTestInsert(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 3);
+    doTestInsert(PackedCoordinateSequenceFactory.FLOAT_FACTORY, 3);
     doTestInsert(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 4);
 
   }

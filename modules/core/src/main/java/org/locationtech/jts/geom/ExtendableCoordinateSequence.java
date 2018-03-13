@@ -280,7 +280,7 @@ public class ExtendableCoordinateSequence implements CoordinateSequence {
    * @param x a x-ordinate
    * @param y a y-ordinate
    * @param z a z-ordinate
-   * @param m a z-ordinate
+   * @param m a m-ordinate
    */
   public void add(double x, double y, double z, double m) {
     // get the index for the new sequence
@@ -336,7 +336,7 @@ public class ExtendableCoordinateSequence implements CoordinateSequence {
    * @param x a x-ordinate
    * @param y a y-ordinate
    * @param z a z-ordinate
-   * @param m a z-ordinate
+   * @param m a m-ordinate
    */
   public void insertAt(int index, double x, double y, double z, double m) {
 
