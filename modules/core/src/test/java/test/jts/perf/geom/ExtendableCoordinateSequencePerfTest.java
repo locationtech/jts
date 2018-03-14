@@ -11,10 +11,7 @@
  */
 package test.jts.perf.geom;
 
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.CoordinateSequenceFactory;
-import org.locationtech.jts.geom.CoordinateSequences;
-import org.locationtech.jts.geom.ExtendableCoordinateSequence;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 import org.locationtech.jts.util.Assert;
@@ -29,6 +26,7 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
   private static final int RANDOM_SEED = 13;
   private long durationExtend;
   private long durationMerge;
+  private long durationCoord;
 
   private CoordinateSequenceFactory currentFactory;
   private int currentSize;
@@ -37,7 +35,7 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
   public ExtendableCoordinateSequencePerfTest(String name) {
     super(name);
     setRunSize(new int[] {10, 10, 15, 16, 25, 48, 50, 96, 192, 200, 500, 1000, 1500, 1537});
-    setRunIterations(100);
+    setRunIterations(500);
   }
 
 
@@ -54,8 +52,6 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
   public void startRun(int size) throws Exception {
     super.startRun(size);
     currentSize = size;
-    durationExtend = 0;
-    durationMerge = 0;
     System.out.println(
             "======================================================================================================");
     System.out.println("Testing with size of " + size);
@@ -71,41 +67,86 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
   protected void setTime(int runNum, long time) {
     super.setTime(runNum, time);
 
+    long minTime = this.durationMerge < this.durationExtend
+            ? this.durationMerge
+            : this.durationExtend;
+    if (this.durationCoord > 0 && this.durationCoord < minTime)
+      minTime = this.durationCoord;
+    minTime = minTime / this.getRunIterations();
+
     System.out.println(reportTime("Extend", this.currentFactory, this.currentSize,
-            this.currentDimension, durationExtend / getRunIterations()));
+            this.currentDimension, durationExtend / getRunIterations(), minTime));
     System.out.println(reportTime("Merge ", this.currentFactory, this.currentSize,
-            this.currentDimension, durationMerge / getRunIterations()));
+            this.currentDimension, durationMerge / getRunIterations(), minTime));
+    if (this.durationCoord > 0) {
+      System.out.println(reportTime("Coords", this.currentFactory, this.currentSize,
+              this.currentDimension, durationCoord / getRunIterations(), minTime));
+    }
     System.out.println(
             "------------------------------------------------------------------------------------------------------");
 
+    // init counter
+    durationExtend = 0;
+    durationMerge = 0;
+    durationCoord = 0;
+
   }
 
-  private String reportTime(String approach, CoordinateSequenceFactory csf, int size, int dimension, long ms) {
-    return String.format("%s with %s (size=%d, dim=%d) took average %d (nanotime()).",
-            approach, csf.getClass().getSimpleName(), size, dimension, ms);
+  private String reportTime(String approach, CoordinateSequenceFactory csf, int size,
+                            int dimension, long time, long minTime) {
+
+    return String.format("%s with %s (size=%d, dim=%d) took average %d (%.1f%%).",
+            approach, csf.getClass().getSimpleName(), size, dimension, time,
+            100d * ((double)time/(double)minTime - 1d));
   }
 
-  public void runCoordinateArraySequenceDim2() {
+  public void run01_CoordinateArraySequenceDim2() {
     this.currentFactory = CoordinateArraySequenceFactory.instance();
     this.currentDimension = 2;
     performExtendableVsMerge(currentFactory, currentDimension);
   }
 
-  public void runCoordinateArraySequenceDim3() {
+  public void run04_CoordinateArraySequenceDim3() {
     this.currentFactory = CoordinateArraySequenceFactory.instance();
     this.currentDimension = 3;
     performExtendableVsMerge(currentFactory, currentDimension);
   }
 
-  public void runPackedCoordinateSequenceDim2() {
-    this.currentFactory = PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
+  public void run02_PackedCoordinateSequenceFloatDim2() {
+    this.currentFactory = PackedCoordinateSequenceFactory.FLOAT_FACTORY;
     this.currentDimension = 2;
+    ((PackedCoordinateSequenceFactory)this.currentFactory).setDimension(this.currentDimension);
+    performExtendableVsMerge(currentFactory, currentDimension);
+  }
+  public void run05_PackedCoordinateSequenceFloatDim3() {
+    this.currentFactory = PackedCoordinateSequenceFactory.FLOAT_FACTORY;
+    this.currentDimension = 3;
+    ((PackedCoordinateSequenceFactory)this.currentFactory).setDimension(this.currentDimension);
+    performExtendableVsMerge(currentFactory, currentDimension);
+  }
+  public void run07_PackedCoordinateSequenceFloatDim4() {
+    this.currentFactory = PackedCoordinateSequenceFactory.FLOAT_FACTORY;
+    this.currentDimension = 4;
+    ((PackedCoordinateSequenceFactory)this.currentFactory).setDimension(this.currentDimension);
     performExtendableVsMerge(currentFactory, currentDimension);
   }
 
-  public void runPackedCoordinateSequenceDim4() {
+  public void run03_PackedCoordinateSequenceDoubleDim2() {
+    this.currentFactory = PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
+    this.currentDimension = 2;
+    ((PackedCoordinateSequenceFactory)this.currentFactory).setDimension(this.currentDimension);
+    performExtendableVsMerge(currentFactory, currentDimension);
+  }
+  public void run06_PackedCoordinateSequenceDoubleDim3() {
+    this.currentFactory = PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
+    this.currentDimension = 3;
+    ((PackedCoordinateSequenceFactory)this.currentFactory).setDimension(this.currentDimension);
+    performExtendableVsMerge(currentFactory, currentDimension);
+  }
+  public void run08_PackedCoordinateSequenceDoubleDim4() {
     this.currentFactory = PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
     this.currentDimension = 4;
+    ((PackedCoordinateSequenceFactory)this.currentFactory).setDimension(this.currentDimension);
     performExtendableVsMerge(currentFactory, currentDimension);
   }
 
@@ -122,6 +163,13 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
     CoordinateSequence seq2 = createUsingMerge(csf, dimension, this.currentSize, RANDOM_SEED);
     duration = System.nanoTime() - start;
     durationMerge += duration;
+
+    //if (dimension < 4) {
+      start = System.nanoTime();
+      CoordinateSequence seq3 = createUsingArrayListAndFactoryCreate(csf, dimension, this.currentSize, RANDOM_SEED);
+      duration = System.nanoTime() - start;
+      durationCoord += duration;
+    //}
 
     Assert.isTrue(CoordinateSequences.isEqual(seq1, seq2));
   }
@@ -172,4 +220,24 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
 
     return mergeSequences(factory, sequences);
   }
+
+  private static CoordinateSequence createUsingArrayListAndFactoryCreate(CoordinateSequenceFactory factory, int dimension, int size, int seed) {
+
+    final ArrayList sequences = new ArrayList();
+    final Random rnd = new Random(seed);
+    double msum = 0;
+    for (int i = 0; i < size; i++) {
+      Coordinate pt = new Coordinate(rnd.nextDouble() * 640, rnd.nextDouble() * 480);
+      if (dimension > 2)
+        pt.z = rnd.nextDouble() * 10;
+      if (dimension > 3)
+        msum += rnd.nextDouble() * 10;
+      sequences.add(pt);
+    }
+
+    Coordinate[] points = new Coordinate[size];
+    System.arraycopy(sequences.toArray(), 0, points, 0, size);
+    return factory.create(points);
+  }
+
 }

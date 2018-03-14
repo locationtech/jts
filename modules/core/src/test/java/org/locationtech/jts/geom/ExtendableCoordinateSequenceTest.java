@@ -161,13 +161,12 @@ public class ExtendableCoordinateSequenceTest extends TestCase {
       eseq.setOrdinate(i, CoordinateSequence.Y, i * 10 + 2);
 
       assertEquals(i + 1, eseq.size());
-      if (i > 0 && (i % currentCapacity) == 0)
-        currentCapacity*=2;
+      if ((i + 1) % currentCapacity == 0)
+        currentCapacity = (currentCapacity * 3) / 2 +1;
       assertEquals(currentCapacity, eseq.getCapacity());
     }
 
     assertEquals(count, eseq.size());
-    assertEquals(4*capacity, eseq.getCapacity());
   }
 
   private static ExtendableCoordinateSequence create(CoordinateSequenceFactory csf, int dimension, int size) {

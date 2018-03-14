@@ -16,6 +16,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import org.locationtech.jts.util.Stopwatch;
@@ -93,6 +95,15 @@ public class PerformanceTestRunner
         runMeths.add(meth[i]);
       }
     }
-    return (Method[]) runMeths.toArray(new Method[0]);
+
+    // sort method by name
+    Method[] methods = (Method[])runMeths.toArray(new Method[0]);
+    Arrays.sort(methods, new Comparator<Method>() {
+      public int compare(Method o1, Method o2) {
+        return o1.getName().compareTo(o2.getName());
+      }
+    });
+
+    return methods;
   }
 }

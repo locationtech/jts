@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.impl.PackedCoordinateSequence;
 public class ExtendableCoordinateSequence implements CoordinateSequence {
 
   /** The default initial capacity */
-  static final int INITIAL_CAPACITY = 12;
+  static final int INITIAL_CAPACITY = 10;
 
   /** The factory to use when extending the current sequence*/
   private final CoordinateSequenceFactory csFactory;
@@ -145,7 +145,7 @@ public class ExtendableCoordinateSequence implements CoordinateSequence {
   public void setOrdinate(int index, int ordinate, double value) {
 
     // ensure capacity
-    ensureCapacity(index);
+    ensureCapacity(index + 1);
 
     // set value in sequence
     this.sequence.setOrdinate(index, ordinate, value);
@@ -204,32 +204,26 @@ public class ExtendableCoordinateSequence implements CoordinateSequence {
   /**
    * Tests if {@code index} is in the allowed bounds. If not, the bounds are extended.
    * 
-   * @param index an index
+   * @param minCapacity the minimal capacity
    */
-  private void ensureCapacity(int index) {
-    if (index < 0)
-      throw new IllegalArgumentException("index < 0");
+  private void ensureCapacity(int minCapacity) {
+    if (minCapacity <= 0)
+      throw new IllegalArgumentException("minCapacity < 0");
 
-    int capacity = getCapacity();
-    if (index < capacity)
+    // check if the current capacity is sufficient
+    int oldCapacity = getCapacity();
+    if (minCapacity < oldCapacity)
       return;
 
-
-    do {
-      capacity *= 2;
-    } while (index >= capacity);
+    // compute the new capacity (see ArrayList implementation
+    int newCapacity = (oldCapacity * 3) / 2 + 1;
+    if (newCapacity < minCapacity) newCapacity = minCapacity;
 
     // create the new sequence
-    CoordinateSequence newSequence = csFactory.create(capacity, this.sequence.getDimension());
+    CoordinateSequence newSequence = csFactory.create(newCapacity, this.sequence.getDimension());
     if (this.sequence instanceof CoordinateArraySequence) {
       // performance improvement for CoordinateArraySequence
       System.arraycopy(this.sequence.toCoordinateArray(), 0, newSequence.toCoordinateArray(), 0, this.sequence.size());
-    }
-    else if (this.sequence instanceof PackedCoordinateSequence.Float) {
-      // performance improvement for PackedCoordinateSequence.Float
-      System.arraycopy(((PackedCoordinateSequence.Float)this.sequence).getRawCoordinates(), 0,
-              ((PackedCoordinateSequence.Float)newSequence).getRawCoordinates(), 0,
-              this.sequence.size() * this.sequence.getDimension());
     }
     else if (this.sequence instanceof PackedCoordinateSequence.Double) {
       // performance improvement for PackedCoordinateSequence.Double
@@ -237,15 +231,19 @@ public class ExtendableCoordinateSequence implements CoordinateSequence {
               ((PackedCoordinateSequence.Double)newSequence).getRawCoordinates(), 0,
               this.sequence.size() * this.sequence.getDimension());
     }
+    else if (this.sequence instanceof PackedCoordinateSequence.Float) {
+      // performance improvement for PackedCoordinateSequence.Float
+      System.arraycopy(((PackedCoordinateSequence.Float)this.sequence).getRawCoordinates(), 0,
+              ((PackedCoordinateSequence.Float)newSequence).getRawCoordinates(), 0,
+              this.sequence.size() * this.sequence.getDimension());
+    }
     else
     {
       // for all other sequences we need to copy by hand.
-      CoordinateSequences.copy(sequence, 0, newSequence, 0, this.sequence.size());
+      CoordinateSequences.copy(this.sequence, 0, newSequence, 0, this.sequence.size());
     }
 
-
-    sequence = newSequence;
-    size = index + 1;
+    this.sequence = newSequence;
   }
 
   /**
