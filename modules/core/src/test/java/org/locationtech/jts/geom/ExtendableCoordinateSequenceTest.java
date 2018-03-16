@@ -14,7 +14,10 @@ package org.locationtech.jts.geom;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
+import org.locationtech.jts.geom.impl.CoordinateSequenceTestBase;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
+
+import java.io.IOException;
 
 
 /**
@@ -102,6 +105,16 @@ public class ExtendableCoordinateSequenceTest extends TestCase {
     doTestCoordinateSequence(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 4);
     doTestCoordinateSequence(PackedCoordinateSequenceFactory.FLOAT_FACTORY, 4);
   }
+
+  public void testSerialization() throws IOException, ClassNotFoundException {
+    doTestSerialization(CoordinateArraySequenceFactory.instance(), 2);
+    doTestSerialization(CoordinateArraySequenceFactory.instance(), 3);
+    doTestSerialization(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 2);
+    doTestSerialization(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 3);
+    doTestSerialization(PackedCoordinateSequenceFactory.DOUBLE_FACTORY, 4);
+    doTestSerialization(PackedCoordinateSequenceFactory.FLOAT_FACTORY, 4);
+  }
+
   private static void doTestConstructor(CoordinateSequenceFactory csf, int dimension) {
 
     // arrange
@@ -161,12 +174,19 @@ public class ExtendableCoordinateSequenceTest extends TestCase {
       eseq.setOrdinate(i, CoordinateSequence.Y, i * 10 + 2);
 
       assertEquals(i + 1, eseq.size());
-      if ((i + 1) % currentCapacity == 0)
-        currentCapacity = (currentCapacity * 3) / 2 +1;
+      if (eseq.size() > currentCapacity)
+        currentCapacity += (currentCapacity >> 1);
       assertEquals(currentCapacity, eseq.getCapacity());
     }
 
     assertEquals(count, eseq.size());
+    currentCapacity += (currentCapacity >> 1);
+    currentCapacity += (currentCapacity >> 1);
+    eseq.setOrdinate(currentCapacity + 3, CoordinateSequence.X, (currentCapacity + 3)*10 + 1);
+    eseq.setOrdinate(currentCapacity + 3, CoordinateSequence.Y, (currentCapacity + 3)*10 + 2);
+
+    assertEquals(currentCapacity + 4, eseq.getCapacity());
+    assertEquals(currentCapacity + 4, eseq.size());
   }
 
   private static ExtendableCoordinateSequence create(CoordinateSequenceFactory csf, int dimension, int size) {
@@ -331,5 +351,20 @@ public class ExtendableCoordinateSequenceTest extends TestCase {
     } catch (IllegalArgumentException e) {
       // This is expected
     }
+  }
+
+  private static void doTestSerialization(CoordinateSequenceFactory csf, int dimension)
+          throws IOException, ClassNotFoundException {
+
+    final int size = 5;
+    ExtendableCoordinateSequence eseq1 = create(csf, dimension, size);
+    byte[] eseqBytes = CoordinateSequenceTestBase.serialize(eseq1);
+    ExtendableCoordinateSequence eseq2 =
+            (ExtendableCoordinateSequence)CoordinateSequenceTestBase.deserialize(eseqBytes);
+
+    assertNotNull(eseq2);
+    assertTrue(CoordinateSequences.isEqual(eseq1, eseq2));
+    assertEquals(eseq1.getCapacity(), eseq2.getCapacity());
+
   }
 }

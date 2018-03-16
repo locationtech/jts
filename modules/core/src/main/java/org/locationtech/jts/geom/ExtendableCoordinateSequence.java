@@ -15,12 +15,17 @@ package org.locationtech.jts.geom;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequence;
 
+import java.io.Serializable;
+
 /**
  * A wrapper around a coordinate sequence that always
  * ensures that a sequence is large enough to store ordinate
  * values.
  */
-public class ExtendableCoordinateSequence implements CoordinateSequence {
+public class ExtendableCoordinateSequence implements CoordinateSequence, Serializable {
+
+  /** The serial version UID */
+  private static final long serialVersionUID = 1167611362034559688L;
 
   /** The default initial capacity */
   static final int INITIAL_CAPACITY = 10;
@@ -170,7 +175,10 @@ public class ExtendableCoordinateSequence implements CoordinateSequence {
     return res;
   }
 
-  /** @see CoordinateSequence#clone() */
+  /**
+   * @see CoordinateSequence#clone()
+   * @deprecated use {@link #copy()}
+   */
   public Object clone() {
     return this.copy();
   }
@@ -212,11 +220,11 @@ public class ExtendableCoordinateSequence implements CoordinateSequence {
 
     // check if the current capacity is sufficient
     int oldCapacity = getCapacity();
-    if (minCapacity < oldCapacity)
+    if (minCapacity <= oldCapacity)
       return;
 
     // compute the new capacity (see ArrayList implementation
-    int newCapacity = (oldCapacity * 3) / 2 + 1;
+    int newCapacity = oldCapacity + (oldCapacity >> 1);
     if (newCapacity < minCapacity) newCapacity = minCapacity;
 
     // create the new sequence

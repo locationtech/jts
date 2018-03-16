@@ -109,7 +109,7 @@ public abstract class CoordinateSequenceTestBase
     assertTrue(isEqual(seq2, coords));
   }
   
-  private static byte[] serialize(CoordinateSequence seq) throws IOException {
+  public static byte[] serialize(CoordinateSequence seq) throws IOException {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     ObjectOutputStream oos = new ObjectOutputStream(bos);
     oos.writeObject(seq);
@@ -117,7 +117,7 @@ public abstract class CoordinateSequenceTestBase
     return bos.toByteArray();
   }
 
-  private static CoordinateSequence deserialize(byte[] data) throws IOException, ClassNotFoundException {
+  public static CoordinateSequence deserialize(byte[] data) throws IOException, ClassNotFoundException {
     ByteArrayInputStream bais = new ByteArrayInputStream(data);
     ObjectInputStream ois = new ObjectInputStream(bais);
     Object o = ois.readObject();

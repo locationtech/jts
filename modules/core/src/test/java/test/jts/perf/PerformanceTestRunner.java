@@ -64,13 +64,13 @@ public class PerformanceTestRunner
         int size = runSize[runNum];
         test.startRun(size);
         for (int i = 0; i < runMethod.length; i++) {
-          Stopwatch sw = new Stopwatch();
+          long start = System.nanoTime();
           for (int iter = 0; iter < runIter; iter++) {
             runMethod[i].invoke(test);
           }
-          long time = sw.getTime();
+          long time = System.nanoTime() - start;
           System.out.println(runMethod[i].getName()
-              + " : " + sw.getTimeString());
+              + " : " + getTimeString(time));
           test.setTime(runNum, time);
         }
         test.endRun();
@@ -85,7 +85,14 @@ public class PerformanceTestRunner
     }
   }
   
-  
+  public static String getTimeString(long nanoSeconds) {
+    if (nanoSeconds < 1000)
+      return nanoSeconds + " nanosec";
+    if (nanoSeconds < 1000000)
+      return (nanoSeconds/1000) + " microsec";
+    return (nanoSeconds/1000000) + " millisec";
+  }
+
   private static Method[] findMethods(Class clz, String methodPrefix)
   {
     List runMeths = new ArrayList();
