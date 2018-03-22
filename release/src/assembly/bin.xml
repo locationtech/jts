@@ -1,0 +1,81 @@
+<assembly>
+  <id>bin</id>
+  <formats>
+  <format>zip</format>
+    </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>${project.basedir}/..</directory>
+      <outputDirectory>/</outputDirectory>
+      <includes>
+        <include>README.md</include>
+        <include>USING.md</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/..</directory>
+      <outputDirectory>license</outputDirectory>
+      <includes>
+        <include>LICENSES.md</include>
+        <include>LICENSE_*</include>
+        <include>OSGEO_LICENSE.txt</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/bin</directory>
+      <outputDirectory>bin</outputDirectory>
+      <includes>
+        <include>*.sh</include>
+        <include>*.bat</include>
+      </includes>
+    </fileSet>
+    
+    <!--fileSet>
+      <directory>${project.basedir}/target/dependency</directory>
+      <outputDirectory>bin</outputDirectory>
+      <includes>
+       <include>jts-app*</include>
+      </includes>
+      <outputFileNameMapping>JTSTestBuilder-${artifact.version}.jar</outputFileNameMapping>
+    </fileSet-->
+    
+    <fileSet>
+      <directory>${project.basedir}/doc</directory>
+      <outputDirectory>doc</outputDirectory>
+      <includes>
+        <include>doc</include>
+      </includes>
+    </fileSet>
+    <!--fileSet>
+         <directory>target/site/apidocs</directory>
+         <outputDirectory>/</outputDirectory>
+         <includes>
+            <include>**/*</include>
+         </includes>
+    </fileSet-->
+
+    <fileSet>
+      <directory>${project.basedir}/target/dependency</directory>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+       <include>jts-core*</include>
+       <include>jts-io-common*</include>
+       <include>commons-lang*</include>
+       <include>jdom2*</include>
+       <include>json-simple*</include>
+      </includes>
+    </fileSet>
+
+  </fileSets>
+  
+  <files>
+       <file>
+          <source>${project.basedir}/target/dependency/jts-app-${project.version}-jar-with-dependencies.jar</source>
+          <outputDirectory>bin</outputDirectory>
+          <destName>JTSTestBuilder-${project.version}.jar</destName>
+       </file>
+  </files>
+    
+
+</assembly>

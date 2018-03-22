@@ -13,3 +13,15 @@ to assist them in preparing releases of the project.
 * Review scripts in `bin` to confirm correctness
 * Update the Version History, to record significant changes
 
+## Release Bundle
+
+Download bundle structure is:
+
+    bin/testbuilder        launch gui test builder application 
+    bin/testrunner         launch command line test runner
+    bin/JTSTestBuilder.jar stand-alone jar 
+    README
+    USING
+    license/               license files
+    lib/                   jars
+    api/                   javadocs

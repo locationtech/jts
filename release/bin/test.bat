@@ -1,5 +1,5 @@
 @echo off
-rem A batch file to run a XML test files
+rem A batch file to run the XML test files written by Geographic Data BC.
 
 set CLASSPATH=
 for %%i in (..\lib\*.*) do (
@@ -13,7 +13,7 @@ for %%i in (..\lib\*.*) do (
  call :setclass
 )  
 
-java com.vividsolutions.jtstest.testrunner.TopologyTestApp -Files ..\testxml\robust
+java org.locationtech.jtstest.testrunner.TopologyTestApp -Files ..\testxml\validate ..\testxml\general
 pause
 
 goto :eof
