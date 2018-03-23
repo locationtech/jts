@@ -10,6 +10,30 @@
     <artifactId>jts-io-ora</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <packaging>jar</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                  <archive>
+                    <manifestEntries>
+                      <Automatic-Module-Name>org.locationtech.jts.io.oracle</Automatic-Module-Name>
+                    </manifestEntries>
+                    <manifestSections>
+                      <manifestSection>
+                        <name>org.locationtech.jts.io.oracle</name>
+                        <manifestEntries>
+                          <Sealed>true</Sealed>
+                        </manifestEntries>
+                      </manifestSection>
+                    </manifestSections>
+                  </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
        <dependency>
           <groupId>com.oracle</groupId>

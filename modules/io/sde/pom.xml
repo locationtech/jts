@@ -10,17 +10,40 @@
     <artifactId>jts-io-sde</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <packaging>jar</packaging>
-    
+
     <properties>
       <!--
          Default SDE version is 9.1. To use newer version (that has been installed
          in your local repository) run maven with:
-         
+
              mvn -Parcsde -Dsde.version={desired version}
       -->
       <sde.version>9.1</sde.version>
     </properties>
-  
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                  <archive>
+                    <manifestEntries>
+                      <Automatic-Module-Name>org.locationtech.jts.io.sde</Automatic-Module-Name>
+                    </manifestEntries>
+                    <manifestSections>
+                      <manifestSection>
+                        <name>org.locationtech.jts.io.sde</name>
+                        <manifestEntries>
+                          <Sealed>true</Sealed>
+                        </manifestEntries>
+                      </manifestSection>
+                    </manifestSections>
+                  </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
       <dependency>
         <groupId>com.esri</groupId>
