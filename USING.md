@@ -82,3 +82,18 @@ Older versions of JTS are available on Maven Central.
     <version>1.13</version>
 </dependency>
 ```
+
+## Using JTS with Jigsaw
+
+JTS uses [#ModuleNameInManifest](http://openjdk.java.net/projects/jigsaw/spec/issues/#ModuleNameInManifest) to export a module name for each of the JARs published for use as a library. In this way, you can depend on the various JTS modules in your `module-info.java` in the following way:
+
+```java
+// module-info.java for project org.foo.baz
+
+module org.foo.baz {
+  requires org.locationtech.jts;            // jts-core
+  requires org.locationtech.jts.io;         // jts-io-common
+  requires org.locationtech.jts.io.oracle;  // jts-io-ora
+  requires org.locationtech.jts.io.sde;     // jts-io-sde
+}
+```
