@@ -20,13 +20,13 @@
 
     Setup for eclipse development:
        mvn eclipse:eclipse
-       
+
     To build with jts-ora:
        mvn install -Poracle
 
     To build with jts-sde:
        mvn install -Parcsde
-       
+
     To build the release (for Maven Central; committers only)
        mvn install -Drelease
     -->
@@ -38,6 +38,10 @@
         <jump.version>1.2</jump.version>
         <json-simple-version>1.1.1</json-simple-version>
         <sde-version>9.1</sde-version>
+
+        <!-- maven compiler target versions -->
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.6</maven.compiler.target>
     </properties>
 
     <!-- PROJECT INFORMATION -->
