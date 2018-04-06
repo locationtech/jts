@@ -186,13 +186,7 @@ public class Point
     return copy();
   }
   
-  /**
-   * Creates and returns a full copy of this {@link Point} object.
-   * (including all coordinates contained by it).
-   *
-   * @return a copy of this instance
-   */
-  public Point copy() {
+  protected Point copyInternal() {
     return new Point(coordinates.copy(), factory);
   }
 

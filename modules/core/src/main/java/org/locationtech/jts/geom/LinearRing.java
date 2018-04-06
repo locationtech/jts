@@ -128,7 +128,7 @@ public class LinearRing extends LineString
     return Geometry.SORTINDEX_LINEARRING;
   }
   
-  public LinearRing copy() {
+  protected LinearRing copyInternal() {
     return new LinearRing(points.copy(), factory);
   }
 

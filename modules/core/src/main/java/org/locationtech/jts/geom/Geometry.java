@@ -1648,15 +1648,21 @@ public abstract class Geometry
   }
   
   /**
-   * Creates and returns a full copy of this {@link Geometry} object
+   * Creates a full copy of this {@link Geometry} object
    * (including all coordinates contained by it).
-   * Subclasses are responsible for implementing this method and copying
-   * their internal data.
+   * All instance fields are copied (i.e. the <tt>SRID</tt> and <tt>userData</tt>).
    *
-   * @return a clone of this instance
+   * @return a copy of this instance
    */
-  abstract public Geometry copy();
-
+  public Geometry copy() {
+    Geometry copy = copyInternal();
+    copy.SRID = this.SRID;
+    copy.userData = this.userData; 
+    return copy;
+  }
+  
+  protected abstract Geometry copyInternal();
+  
   /**
    *  Converts this <code>Geometry</code> to <b>normal form</b> (or <b>
    *  canonical form</b> ). Normal form is a unique representation for <code>Geometry</code>
