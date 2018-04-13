@@ -38,7 +38,7 @@ See also:
 * Frequently Asked Questions are documented in the [**FAQ**](https://locationtech.github.io/jts/jts-faq.html)
 * Installing and using JTS is described in the [**User Guide**](USING.md).
 * Building and developing with JTS is described in the [**Developing Guide**](DEVELOPING.md).
-* Migrating from previous versions of JTS is described in the [**Upgrade Guide**](MIGRATING.md).
+* Migrating from previous versions of JTS is described in the [**Upgrade Guide**](MIGRATION.md).
 
 ## Contributing
 
