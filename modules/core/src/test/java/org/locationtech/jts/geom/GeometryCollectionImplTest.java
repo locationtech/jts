@@ -72,7 +72,19 @@ public class GeometryCollectionImplTest extends TestCase {
     assertEquals(112, g.getLength(), 1E-15);
   }
   
-
+  public void testCopy() throws Exception {
+    GeometryCollection g = (GeometryCollection) reader.read("GEOMETRYCOLLECTION (POINT (10 10), POINT (30 30), LINESTRING (15 15, 20 20))");
+    g.setUserData(12);
+    g.setSRID(4326);
+    GeometryCollection copy = g.copy();
+    assertEquals(g.getNumGeometries(), copy.getNumGeometries());
+    for(int i=0; i<g.getNumGeometries(); i++){
+      assertEquals(g.getGeometryN(i), copy.getGeometryN(i));
+    }
+    assertEquals(g.getUserData(), copy.getUserData());
+    assertEquals(g.getSRID(), copy.getSRID());
+    assertEquals(g.getFactory(), copy.getFactory());
+  }
   
 
 }

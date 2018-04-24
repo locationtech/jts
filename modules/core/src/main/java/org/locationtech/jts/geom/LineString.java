@@ -272,7 +272,10 @@ public class LineString
    * @return a copy of this instance
    */
   public LineString copy() {
-    return new LineString(points.copy(), factory);
+    LineString copy = new LineString(points.copy(), factory);
+    copy.setSRID(this.getSRID());
+    copy.setUserData(this.getUserData());
+    return copy;
   }
 
   /**

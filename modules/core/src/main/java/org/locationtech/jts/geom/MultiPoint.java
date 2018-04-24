@@ -103,7 +103,10 @@ public class MultiPoint
     for (int i = 0; i < points.length; i++) {
       points[i] = (Point) this.geometries[i].copy();
     }
-    return new MultiPoint(points, factory);
+    MultiPoint copy = new MultiPoint(points, factory);
+    copy.setSRID(this.getSRID());
+    copy.setUserData(this.getUserData());
+    return copy;
   }
   
   protected int getSortIndex() {
