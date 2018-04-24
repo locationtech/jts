@@ -182,4 +182,18 @@ public class LineStringImplTest extends TestCase {
     }
   }
 
+  public void testCopy() throws Exception {
+    LineString l = (LineString) reader.read("LINESTRING(1.111 2.222, 5.555 6.666, 3.333 4.444)");
+    l.setUserData(12);
+    l.setSRID(4326);
+    LineString copy = l.copy();
+    assertEquals(l.getCoordinates().length, copy.getCoordinates().length);
+    for(int i=0; i<l.getCoordinates().length; i++){
+      assertEquals(l.getCoordinates()[i], copy.getCoordinates()[i]);
+    }
+    assertEquals(l.getUserData(), copy.getUserData());
+    assertEquals(l.getSRID(), copy.getSRID());
+    assertEquals(l.getFactory(), copy.getFactory());
+  }
+
 }

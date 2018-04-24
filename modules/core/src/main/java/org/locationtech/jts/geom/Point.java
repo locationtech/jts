@@ -193,7 +193,10 @@ public class Point
    * @return a copy of this instance
    */
   public Point copy() {
-    return new Point(coordinates.copy(), factory);
+    Point copy = new Point(coordinates.copy(), factory);
+    copy.setSRID(this.getSRID());
+    copy.setUserData(this.getUserData());
+    return copy;
   }
 
   public Geometry reverse()

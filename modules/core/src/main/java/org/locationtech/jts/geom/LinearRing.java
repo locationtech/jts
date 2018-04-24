@@ -129,7 +129,10 @@ public class LinearRing extends LineString
   }
   
   public LinearRing copy() {
-    return new LinearRing(points.copy(), factory);
+    LinearRing copy = new LinearRing(points.copy(), factory);
+    copy.setSRID(this.getSRID());
+    copy.setUserData(this.getUserData());
+    return copy;
   }
 
   public Geometry reverse()

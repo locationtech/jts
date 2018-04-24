@@ -230,7 +230,10 @@ public class GeometryCollection extends Geometry {
     for (int i = 0; i < geometries.length; i++) {
       geometries[i] = this.geometries[i].copy();
     }
-    return new GeometryCollection(geometries, factory);
+    GeometryCollection copy = new GeometryCollection(geometries, factory);
+    copy.setSRID(this.getSRID());
+    copy.setUserData(this.getUserData());
+    return copy;
   }
 
   public void normalize() {

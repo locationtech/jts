@@ -99,6 +99,18 @@ public class PointImplTest extends TestCase {
     assertTrue(p2.isSimple());
   }
 
-
+  public void testCopy() throws Exception {
+    Point p = (Point) reader.read("POINT(1.2324 5.678)");
+    p.setUserData(12);
+    p.setSRID(4326);
+    Point copy = p.copy();
+    assertEquals(p.getCoordinates().length, copy.getCoordinates().length);
+    for(int i=0; i<p.getCoordinates().length; i++){
+      assertEquals(p.getCoordinates()[i], copy.getCoordinates()[i]);
+    }
+    assertEquals(p.getUserData(), copy.getUserData());
+    assertEquals(p.getSRID(), copy.getSRID());
+    assertEquals(p.getFactory(), copy.getFactory());
+  }
 
 }
