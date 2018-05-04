@@ -19,27 +19,144 @@ public class TWKBReader {
     private CoordinateSequenceFactory csfactory = new PackedCoordinateSequenceFactory();
     private GeometryFactory factory = new GeometryFactory(csfactory);
 
+    private static final String INVALID_GEOM_TYPE_MSG
+            = "Invalid geometry type encountered in ";
+
     public TWKBReader() {
     }
 
     public Geometry read(byte[] bytes) throws ParseException {
         CodedInputStream is = CodedInputStream.newInstance(bytes);
-
         try {
-            TWKBMetadata metadata = readMetadata(is);
-            CoordinateSequence pts = readCoordinateSequence(is, metadata);
-
-            switch (metadata.getType()) {
-                case twkbPoint:
-                    return factory.createPoint(pts);
-                case twkbLineString:
-                    return factory.createLineString(pts);
-            }
-            return null;
+            return readGeometry(is);
         } catch (IOException ex) {
             throw new RuntimeException("Unexpected IOException caught: " + ex.getMessage());
         }
     }
+
+    private Geometry readGeometry(CodedInputStream is) throws IOException, ParseException {
+
+        TWKBMetadata metadata = readMetadata(is);
+        switch (metadata.getType()) {
+            case twkbPoint:
+                return readPoint(is, metadata);
+            case twkbLineString:
+                return readLineString(is, metadata);
+            case twkbPolygon:
+                return readPolygon(is, metadata);
+            case twkbMultiPoint:
+                return readMultiPoint(is, metadata);
+            case twkbMultiLineString:
+                return readMultiLineString(is, metadata);
+            case twkbMultiPolygon:
+                return readMultiPolygon(is, metadata);
+            case twkbGeometryCollection:
+                return readGeometryCollection(is, metadata);
+        }
+        return null;
+    }
+
+    private Point readPoint(CodedInputStream is, TWKBMetadata metadata) throws IOException {
+        if (!metadata.isEmpty()) {
+            CoordinateSequence cs = readCoordinateSequence(is, 1, metadata);
+            return factory.createPoint(cs);
+        } else {
+            return factory.createPoint();
+        }
+    }
+
+    private LineString readLineString(CodedInputStream is, TWKBMetadata metadata) throws IOException {
+        if (!metadata.isEmpty()) {
+            int size = is.readInt32();
+            CoordinateSequence cs = readCoordinateSequence(is, size, metadata);
+            return factory.createLineString(cs);
+        } else {
+            return factory.createLineString();
+        }
+    }
+
+    private Polygon readPolygon(CodedInputStream is, TWKBMetadata metadata) throws IOException {
+        if (!metadata.isEmpty()) {
+            int numRings = is.readInt32();
+            LinearRing[] holes = null;
+            if (numRings > 1)
+                holes = new LinearRing[numRings - 1];
+
+            LinearRing shell = readLinearRing(is, metadata);
+            for (int i = 0; i < numRings - 1; i++) {
+                holes[i] = readLinearRing(is, metadata);
+            }
+            return factory.createPolygon(shell, holes);
+        } else {
+            return factory.createPolygon();
+        }
+    }
+
+    private MultiPoint readMultiPoint(CodedInputStream is, TWKBMetadata metadata) throws IOException {
+        if (!metadata.isEmpty()) {
+            int numGeom = is.readInt32();
+            Point[] geoms = new Point[numGeom];
+            for (int i = 0; i < numGeom; i++) {
+                geoms[i] = readPoint(is, metadata);
+            }
+            return factory.createMultiPoint(geoms);
+        } else {
+            return factory.createMultiPoint();
+        }
+    }
+    private MultiLineString readMultiLineString(CodedInputStream is, TWKBMetadata metadata) throws IOException, ParseException {
+        if (!metadata.isEmpty()) {
+            int numGeom = is.readInt32();
+            LineString[] geoms = new LineString[numGeom];
+            for (int i = 0; i < numGeom; i++) {
+                geoms[i] = readLineString(is, metadata);
+            }
+            return factory.createMultiLineString(geoms);
+        } else {
+            return factory.createMultiLineString();
+        }
+    }
+    private MultiPolygon readMultiPolygon(CodedInputStream is, TWKBMetadata metadata) throws IOException, ParseException {
+        if (!metadata.isEmpty()) {
+            int numGeom = is.readInt32();
+            Polygon[] geoms = new Polygon[numGeom];
+            for (int i = 0; i < numGeom; i++) {
+                geoms[i] = readPolygon(is, metadata);
+            }
+            return factory.createMultiPolygon(geoms);
+        } else {
+            return factory.createMultiPolygon();
+        }
+    }
+    private GeometryCollection readGeometryCollection(CodedInputStream is, TWKBMetadata metadata) throws IOException, ParseException {
+        if (!metadata.isEmpty()) {
+            int numGeom = is.readInt32();
+            Geometry[] geoms = new Geometry[numGeom];
+            for (int i = 0; i < numGeom; i++) {
+                geoms[i] = readGeometry(is);
+            }
+            return factory.createGeometryCollection(geoms);
+        } else {
+            return factory.createGeometryCollection();
+        }
+    }
+
+
+    private LinearRing readLinearRing(CodedInputStream is, TWKBMetadata metadata) throws IOException
+    {
+        int size = is.readInt32(); //.readInt();
+        CoordinateSequence pts = readCoordinateSequenceRing(is, size, metadata);
+        return factory.createLinearRing(pts);
+    }
+
+    private CoordinateSequence readCoordinateSequenceRing(CodedInputStream is, int size, TWKBMetadata metadata) throws IOException
+    {
+        CoordinateSequence seq = readCoordinateSequence(is, size, metadata);
+        //if (isStrict) return seq;
+        if (CoordinateSequences.isRing(seq)) return seq;
+        return CoordinateSequences.ensureValidRing(csfactory, seq);
+    }
+
 
     private int zigzagDecode(int input) {
         return (input >> 1) ^ (-(input & 1));
@@ -78,11 +195,13 @@ public class TWKBReader {
             System.out.println("          hasZ: " + (dimensions & 0x01));
             System.out.println("          hasM: " + (dimensions & 0x02));
 
+            // TODO: Fix this.  Handle XYM, XYZ, XYZM
             if ((dimensions & 0x03) > 0) {
                 if ((dimensions & 0x03) < 2) {
                     dims = 3;
+                } else {
+                    dims = 4;
                 }
-                dims = 4;
             }
             System.out.println("  Geometry has " + dims + " dimensions");
         }
@@ -95,7 +214,6 @@ public class TWKBReader {
         } else { // TODO: Deal with empty geometries properly
             metadata.setSize(1);
         }
-
 
         // TODO: Read Bounding Box relative to extra dimensions
         if (metadata.hasBBOX()) {
@@ -115,23 +233,25 @@ public class TWKBReader {
         return metadata;
     }
 
-    private CoordinateSequence readCoordinateSequence(CodedInputStream is, TWKBMetadata metadata) throws IOException {
+    private CoordinateSequence readCoordinateSequence(CodedInputStream is, int numPts, TWKBMetadata metadata) throws IOException {
         int dims = metadata.getDims();
-        int size = metadata.getSize();
 
         // Create CoordinateSequence and read geometry
-        CoordinateSequence seq = csfactory.create(size, dims);
-        int targetDim = seq.getDimension();
-        // JNH: Ask Martin about this!
-        if (targetDim > dims)
-            targetDim = dims;
+        CoordinateSequence seq = csfactory.create(numPts, dims);
+        // TODO: Make this exception 'better'.
+        if (seq.getDimension() != dims) {
+            throw new IOException("Dimension mismatch between CoordinateSequenceFactory and input.");
+        }
 
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < targetDim; j++) {
+
+        for (int i = 0; i < numPts; i++) {
+            for (int j = 0; j < dims; j++) {
                 // TODO:  Handle differences in precision between XY, Z, M
-                double ordinate = readNextDouble(is, metadata.getPrecision());
-                System.out.println(" Calling: " + i + " " + j + " " + ordinate);
-                seq.setOrdinate(i, j, ordinate);
+                double ordinateDelta = readNextDouble(is, metadata.getPrecision());
+                metadata.valueArray[j] += ordinateDelta;
+
+                System.out.println(" Calling: " + i + " " + j + " " + metadata.valueArray[j]);
+                seq.setOrdinate(i, j, metadata.valueArray[j]);
             }
         }
 
@@ -170,6 +290,7 @@ public class TWKBReader {
 
         public void setDims(int dims) {
             this.dims = dims;
+            this.valueArray = new double[this.dims];
         }
 
         public byte getHeader() {
@@ -198,6 +319,7 @@ public class TWKBReader {
             this.precision = precision;
         }
 
+        double[] valueArray;
         int precision;
         byte header;
         int size;
