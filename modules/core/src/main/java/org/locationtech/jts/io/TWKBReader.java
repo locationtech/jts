@@ -184,9 +184,6 @@ public class TWKBReader {
 
         metadata.setHeader(header);
 
-        // Read Optional bits first!
-
-        // TODO: compute dimensions
         int dims = 2;
         if (metadata.hasExtendedDims()) {
             int dimensions = is.readRawByte();
@@ -207,12 +204,10 @@ public class TWKBReader {
         // TODO: Read optional size?
         if (metadata.hasSize()) {
             metadata.setSize(is.readSInt32());
-            // Compute Size
         } else { // TODO: Deal with empty geometries properly
             metadata.setSize(1);
         }
 
-        // TODO: Read Bounding Box relative to extra dimensions
         if (metadata.hasBBOX()) {
             CoordinateSequence bbox = csfactory.create(2, dims);
             for (int i = 0; i < dims; i++) {
