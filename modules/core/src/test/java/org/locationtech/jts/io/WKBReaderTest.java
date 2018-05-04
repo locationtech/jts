@@ -198,7 +198,7 @@ public class WKBReaderTest  extends TestCase
   {
     WKBReader wkbReader = new WKBReader(geomFactory);
     byte[] wkb = WKBReader.hexToBytes(wkbHex);
-    Geometry g2 = wkbReader.read(wkb);
+      Geometry g2 = wkbReader.read(wkb);
 
     WKTReader useRdr = rdr;
     if (expectedWKT.contains("ZM"))
