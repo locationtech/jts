@@ -194,14 +194,11 @@ public class TWKBReader {
             System.out.println("  reading dimension data :" + dimensions);
             System.out.println("          hasZ: " + (dimensions & 0x01));
             System.out.println("          hasM: " + (dimensions & 0x02));
-
-            // TODO: Fix this.  Handle XYM, XYZ, XYZM
-            if ((dimensions & 0x03) > 0) {
-                if ((dimensions & 0x03) < 2) {
-                    dims = 3;
-                } else {
-                    dims = 4;
-                }
+            if ((dimensions & 0x01) > 0) {
+                dims += 1;
+            }
+            if ((dimensions & 0x02) > 0) {
+                dims += 1;
             }
             System.out.println("  Geometry has " + dims + " dimensions");
         }
