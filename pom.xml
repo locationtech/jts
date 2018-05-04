@@ -33,7 +33,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit-version>3.7</junit-version>
+        <junit-version>3.8</junit-version>
         <jdom-version>2.0.6</jdom-version>
         <jump.version>1.2</jump.version>
         <json-simple-version>1.1.1</json-simple-version>

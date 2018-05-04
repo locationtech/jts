@@ -192,7 +192,7 @@ public class WKBReaderTest  extends TestCase
   {
     WKBReader wkbReader = new WKBReader(geomFactory);
     byte[] wkb = WKBReader.hexToBytes(wkbHex);
-    Geometry g2 = wkbReader.read(wkb);
+      Geometry g2 = wkbReader.read(wkb);
     
     Geometry expected = rdr.read(expectedWKT);
     
