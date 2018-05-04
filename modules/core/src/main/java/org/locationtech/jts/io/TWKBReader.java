@@ -8,13 +8,13 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 public class TWKBReader {
-    final int wkbPoint = 1;
-    int wkbLineString = 2;
-    int wkbPolygon = 3;
-    int wkbMultiPoint = 4;
-    int wkbMultiLineString = 5;
-    int wkbMultiPolygon = 6;
-    int wkbGeometryCollection = 7;
+    final int twkbPoint = 1;
+    final int twkbLineString = 2;
+    final int twkbPolygon = 3;
+    final int twkbMultiPoint = 4;
+    final int twkbMultiLineString = 5;
+    final int twkbMultiPolygon = 6;
+    final int twkbGeometryCollection = 7;
 
     private CoordinateSequenceFactory csfactory = new PackedCoordinateSequenceFactory();
     private GeometryFactory factory = new GeometryFactory(csfactory);
@@ -34,11 +34,14 @@ public class TWKBReader {
         System.out.println("    type:      " + geometryType);
         System.out.println("    xy precision: " + precision);
 
+        CodedInputStream is = CodedInputStream.newInstance(bb);
+
         try {
-            CoordinateSequence pts = readCoordinateSequence(bb, precision);
+            TWKBMetadata metadata = readMetadata(is, precision);
+            CoordinateSequence pts = readCoordinateSequence(is, precision, metadata.getSize(), metadata.getDims());
 
             switch (geometryType) {
-                case wkbPoint:
+                case twkbPoint:
                     return factory.createPoint(pts);
             }
             return null;
@@ -55,8 +58,11 @@ public class TWKBReader {
         return (input << 1) ^ (input >> 31);
     }
 
-    private CoordinateSequence readCoordinateSequence(ByteBuffer bb, int precision) throws IOException {
-        int header = readHeader(bb);
+    private TWKBMetadata readMetadata(CodedInputStream is, int precision) throws IOException {
+        TWKBMetadata metadata = new TWKBMetadata();
+        byte header = readHeader(is);
+
+        metadata.setHeader(header);
 
         // TODO: compute size
         int size = 1;
@@ -65,8 +71,8 @@ public class TWKBReader {
 
         // TODO: compute dimensions
         int dims = 2;
-        if ((header & 0x08) > 0) {
-            int dimensions = bb.get();
+        if (metadata.hasExtendedDims()) {
+            int dimensions = is.readRawByte();
 
             System.out.println("  reading dimension data :" + dimensions);
             System.out.println("          hasZ: " + (dimensions & 0x01));
@@ -80,22 +86,34 @@ public class TWKBReader {
             }
             System.out.println("  Geometry has " + dims + " dimensions");
         }
-
-        CodedInputStream is = CodedInputStream.newInstance(bb);
+        metadata.setDims(dims);
 
         // TODO: Read optional size?
-
-        // TODO: Read Boudning Box relative to extra dimensions
-        CoordinateSequence bbox = csfactory.create(2, dims);
-        for (int i = 0; i < dims; i++) {
-            double min = readNextDouble(is, precision);
-            double delta = readNextDouble(is, precision);
-            bbox.setOrdinate(0, i, min);
-            bbox.setOrdinate(1, i, min + delta);
+        if (metadata.hasSize()) {
+            // Compute Size
         }
-        System.out.println("BBOX read " + bbox);
+        metadata.setSize(1);
+
+        // TODO: Read Bounding Box relative to extra dimensions
+        if (metadata.hasBBOX()) {
+            CoordinateSequence bbox = csfactory.create(2, dims);
+            for (int i = 0; i < dims; i++) {
+                double min = readNextDouble(is, precision);
+                double delta = readNextDouble(is, precision);
+                bbox.setOrdinate(0, i, min);
+                bbox.setOrdinate(1, i, min + delta);
+            }
+            System.out.println("BBOX read " + bbox);
+            metadata.setEnvelope(bbox);
+        }
 
         // TODO: Read ID list
+
+        return metadata;
+    }
+
+    private CoordinateSequence readCoordinateSequence(CodedInputStream is, int precision, int size, int dims) throws IOException {
+        // Create CoordinateSequence and read geometry
         CoordinateSequence seq = csfactory.create(size, dims);
         int targetDim = seq.getDimension();
         // JNH: Ask Martin about this!
@@ -118,9 +136,8 @@ public class TWKBReader {
         return value / Math.pow(10, precision);
     }
 
-
-    int readHeader(ByteBuffer bb) {
-        int header = bb.get();
+    byte readHeader(CodedInputStream is) throws IOException {
+        byte header = is.readRawByte();
         System.out.println(" Header: " + header);
         System.out.println("   Has bbox:          " + (header & 0x01));
         System.out.println("   Has size:          " + (header & 0x02));
@@ -130,4 +147,64 @@ public class TWKBReader {
 
         return header;
     }
+
+    public class TWKBMetadata {
+        public int getSize() {
+            return size;
+        }
+
+        public void setSize(int size) {
+            this.size = size;
+        }
+
+        public int getDims() {
+            return dims;
+        }
+
+        public void setDims(int dims) {
+            this.dims = dims;
+        }
+
+        public byte getHeader() {
+            return header;
+        }
+
+        public void setHeader(byte header) {
+            this.header = header;
+        }
+
+        byte header;
+        int size;
+        int dims;
+        CoordinateSequence envelope;
+
+        public CoordinateSequence getEnvelope() {
+            return envelope;
+        }
+
+        public void setEnvelope(CoordinateSequence envelope) {
+            this.envelope = envelope;
+        }
+
+        public TWKBMetadata() {
+        }
+
+        boolean hasBBOX() {
+            return (header & 0x01) > 0;
+        }
+        boolean hasSize() {
+            return (header & 0x02) > 0;
+        }
+        boolean hasIdList() {
+            return (header & 0x04) > 0;
+        }
+        boolean hasExtendedDims() {
+            return (header & 0x08) > 0;
+        }
+        boolean isEmpty() {
+            return (header & 0x10) > 0;
+        }
+
+    }
 }
+

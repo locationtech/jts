@@ -34,7 +34,7 @@ public class TWKBReaderTest extends TestCase
 
   public void test() throws ParseException
   {
-      /*
+
       checkTWKBGeometry("01000204", "POINT(1 2)");
       checkTWKBGeometry("01080302040608", "POINT(1 2 3 4)");
 
@@ -45,7 +45,7 @@ public class TWKBReaderTest extends TestCase
 
       // With bounding boxes
       checkTWKBGeometry("0101020004000204", "POINT(1 2)");
-*/
+
       checkTWKBGeometry("010903020004000600080002040608", "POINT(1 2 3 4)");
   }
 
