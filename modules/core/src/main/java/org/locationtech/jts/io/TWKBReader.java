@@ -23,26 +23,17 @@ public class TWKBReader {
     }
 
     public Geometry read(byte[] bytes) throws ParseException {
-        ByteBuffer bb = ByteBuffer.wrap(bytes);
-
-        //byte typeByte = bb.get();
-        int geometryTypeAndPrecision = bb.get();
-        int geometryType = geometryTypeAndPrecision & 0x0F;
-        int precision = zigzagDecode((geometryTypeAndPrecision & 0xF0) >> 4);
-
-        System.out.println(" Geometry type and precision: " + geometryTypeAndPrecision);
-        System.out.println("    type:      " + geometryType);
-        System.out.println("    xy precision: " + precision);
-
-        CodedInputStream is = CodedInputStream.newInstance(bb);
+        CodedInputStream is = CodedInputStream.newInstance(bytes);
 
         try {
-            TWKBMetadata metadata = readMetadata(is, precision);
-            CoordinateSequence pts = readCoordinateSequence(is, precision, metadata.getSize(), metadata.getDims());
+            TWKBMetadata metadata = readMetadata(is);
+            CoordinateSequence pts = readCoordinateSequence(is, metadata);
 
-            switch (geometryType) {
+            switch (metadata.getType()) {
                 case twkbPoint:
                     return factory.createPoint(pts);
+                case twkbLineString:
+                    return factory.createLineString(pts);
             }
             return null;
         } catch (IOException ex) {
@@ -58,14 +49,23 @@ public class TWKBReader {
         return (input << 1) ^ (input >> 31);
     }
 
-    private TWKBMetadata readMetadata(CodedInputStream is, int precision) throws IOException {
+    private TWKBMetadata readMetadata(CodedInputStream is) throws IOException {
         TWKBMetadata metadata = new TWKBMetadata();
+
+        int geometryTypeAndPrecision = is.readRawByte();
+        int geometryType = geometryTypeAndPrecision & 0x0F;
+        int precision = zigzagDecode((geometryTypeAndPrecision & 0xF0) >> 4);
+
+        System.out.println(" Geometry type and precision: " + geometryTypeAndPrecision);
+        System.out.println("    type:      " + geometryType);
+        System.out.println("    xy precision: " + precision);
+
+        metadata.setType(geometryType);
+        metadata.setPrecision(precision);
+
         byte header = readHeader(is);
 
         metadata.setHeader(header);
-
-        // TODO: compute size
-        int size = 1;
 
         // Read Optional bits first!
 
@@ -90,9 +90,12 @@ public class TWKBReader {
 
         // TODO: Read optional size?
         if (metadata.hasSize()) {
+            metadata.setSize(is.readSInt32());
             // Compute Size
+        } else { // TODO: Deal with empty geometries properly
+            metadata.setSize(1);
         }
-        metadata.setSize(1);
+
 
         // TODO: Read Bounding Box relative to extra dimensions
         if (metadata.hasBBOX()) {
@@ -112,7 +115,10 @@ public class TWKBReader {
         return metadata;
     }
 
-    private CoordinateSequence readCoordinateSequence(CodedInputStream is, int precision, int size, int dims) throws IOException {
+    private CoordinateSequence readCoordinateSequence(CodedInputStream is, TWKBMetadata metadata) throws IOException {
+        int dims = metadata.getDims();
+        int size = metadata.getSize();
+
         // Create CoordinateSequence and read geometry
         CoordinateSequence seq = csfactory.create(size, dims);
         int targetDim = seq.getDimension();
@@ -122,7 +128,8 @@ public class TWKBReader {
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < targetDim; j++) {
-                double ordinate = readNextDouble(is, precision);
+                // TODO:  Handle differences in precision between XY, Z, M
+                double ordinate = readNextDouble(is, metadata.getPrecision());
                 System.out.println(" Calling: " + i + " " + j + " " + ordinate);
                 seq.setOrdinate(i, j, ordinate);
             }
@@ -173,6 +180,25 @@ public class TWKBReader {
             this.header = header;
         }
 
+        public int getType() {
+            return type;
+        }
+
+        public void setType(int type) {
+            this.type = type;
+        }
+
+        int type;
+
+        public int getPrecision() {
+            return precision;
+        }
+
+        public void setPrecision(int precision) {
+            this.precision = precision;
+        }
+
+        int precision;
         byte header;
         int size;
         int dims;

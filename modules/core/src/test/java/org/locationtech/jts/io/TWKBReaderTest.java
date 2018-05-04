@@ -45,8 +45,15 @@ public class TWKBReaderTest extends TestCase
 
       // With bounding boxes
       checkTWKBGeometry("0101020004000204", "POINT(1 2)");
-
       checkTWKBGeometry("010903020004000600080002040608", "POINT(1 2 3 4)");
+
+/*
+      // Non-point geometries
+      checkTWKBGeometry("a20002c09a0c80b51880b51880b518", "LINESTRING(1 2, 3 4)");
+
+      checkTWKBGeometry("a3000104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2))");
+*/
+        // TODO: Create test case for difference in XY vs Z/M precision
   }
 
   public void testShortPolygons() throws ParseException
