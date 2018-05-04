@@ -37,13 +37,15 @@ public class TWKBReaderTest extends TestCase
       /*
       checkTWKBGeometry("01000204", "POINT(1 2)");
       checkTWKBGeometry("01080302040608", "POINT(1 2 3 4)");
-*/
 
-      // Written with precision = 5 and the bounding box!
+
+      // Written with precision = 5
       checkTWKBGeometry("a100c09a0c80b518", "POINT(1 2)");
+      checkTWKBGeometry("a10080a8d6b90780d0acf30e", "POINT(10000 20000)");
 
       // With bounding boxes
       checkTWKBGeometry("0101020004000204", "POINT(1 2)");
+*/
       checkTWKBGeometry("010903020004000600080002040608", "POINT(1 2 3 4)");
   }
 
