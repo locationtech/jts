@@ -1,10 +1,8 @@
 package org.locationtech.jts.io;
 
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.*;
 import com.google.protobuf.CodedInputStream;
+import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -18,7 +16,8 @@ public class TWKBReader {
     int wkbMultiPolygon = 6;
     int wkbGeometryCollection = 7;
 
-    private GeometryFactory factory = new GeometryFactory();
+    private CoordinateSequenceFactory csfactory = new PackedCoordinateSequenceFactory();
+    private GeometryFactory factory = new GeometryFactory(csfactory);
 
     public TWKBReader() {
     }
@@ -62,6 +61,8 @@ public class TWKBReader {
         // TODO: compute size
         int size = 1;
 
+        // Read Optional bits first!
+
         // TODO: compute dimensions
         int dims = 2;
         if ((header & 0x08) > 0) {
@@ -80,10 +81,22 @@ public class TWKBReader {
             System.out.println("  Geometry has " + dims + " dimensions");
         }
 
-
         CodedInputStream is = CodedInputStream.newInstance(bb);
 
-        CoordinateSequence seq = factory.getCoordinateSequenceFactory().create(size, dims);
+        // TODO: Read optional size?
+
+        // TODO: Read Boudning Box relative to extra dimensions
+        CoordinateSequence bbox = csfactory.create(2, dims);
+        for (int i = 0; i < dims; i++) {
+            double min = readNextDouble(is, precision);
+            double delta = readNextDouble(is, precision);
+            bbox.setOrdinate(0, i, min);
+            bbox.setOrdinate(1, i, min + delta);
+        }
+        System.out.println("BBOX read " + bbox);
+
+        // TODO: Read ID list
+        CoordinateSequence seq = csfactory.create(size, dims);
         int targetDim = seq.getDimension();
         // JNH: Ask Martin about this!
         if (targetDim > dims)
@@ -91,22 +104,18 @@ public class TWKBReader {
 
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < targetDim; j++) {
-                double ordinate;
-                int value = is.readSInt32();
-                if (precision != 0) {
-                    ordinate = value / Math.pow(10, precision);
-                } else {
-                   ordinate = value;
-                }
-
-                System.out.println(" Calling: " + i + " " + j + " " + ordinate + " (value was " + value + ")");
+                double ordinate = readNextDouble(is, precision);
+                System.out.println(" Calling: " + i + " " + j + " " + ordinate);
                 seq.setOrdinate(i, j, ordinate);
             }
         }
 
-//        System.out.println("read: " + is.readSInt32() + " " + is.readSInt32());
-
         return seq;
+    }
+
+    private double readNextDouble(CodedInputStream is, int precision) throws IOException {
+        int value = is.readSInt32();
+        return value / Math.pow(10, precision);
     }
 
 
