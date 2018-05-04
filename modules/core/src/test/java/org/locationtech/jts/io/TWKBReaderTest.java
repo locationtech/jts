@@ -32,8 +32,7 @@ public class TWKBReaderTest extends TestCase
   private GeometryFactory geomFactory = new GeometryFactory();
   private WKTReader rdr = new WKTReader(geomFactory);
 
-  public void test() throws ParseException
-  {
+  public void testPointGeometries() throws ParseException {
 
       checkTWKBGeometry("01000204", "POINT(1 2)");
       checkTWKBGeometry("01080302040608", "POINT(1 2 3 4)");
@@ -46,23 +45,56 @@ public class TWKBReaderTest extends TestCase
       // With bounding boxes
       checkTWKBGeometry("0101020004000204", "POINT(1 2)");
       checkTWKBGeometry("010903020004000600080002040608", "POINT(1 2 3 4)");
-
-/*
-      // Non-point geometries
-      checkTWKBGeometry("a20002c09a0c80b51880b51880b518", "LINESTRING(1 2, 3 4)");
-
-      checkTWKBGeometry("a3000104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2))");
-*/
-        // TODO: Create test case for difference in XY vs Z/M precision
   }
 
-  public void testShortPolygons() throws ParseException
-  {
-    // one point
-    checkTWKBGeometry("0000000003000000010000000140590000000000004069000000000000", "POLYGON ((100 200, 100 200, 100 200, 100 200))");
-    // two point
-    checkTWKBGeometry("000000000300000001000000024059000000000000406900000000000040590000000000004069000000000000", "POLYGON ((100 200, 100 200, 100 200, 100 200))");
-  }
+    public void testNonPointGeometries() throws ParseException {
+
+        // Non-point geometries
+        checkTWKBGeometry("a20002c09a0c80b51880b51880b518", "LINESTRING(1 2, 3 4)");
+        checkTWKBGeometry("a3000104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2))");
+        checkTWKBGeometry("a3000204c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12))");
+        checkTWKBGeometry("a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22))");
+
+        checkTWKBGeometry("a40001c09a0c80b518", "MULTIPOINT(1 2)");
+        checkTWKBGeometry("a3000104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2))");
+        checkTWKBGeometry("a3000204c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12))");
+        checkTWKBGeometry("a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22))");
+
+    }
+    // TODO: Create test case for difference in XY vs Z/M precision
+
+    public void testTWKB() throws ParseException {
+        checkTWKBGeometry("a110", "POINT EMPTY");
+        checkTWKBGeometry("a100c09a0c80b518", "POINT(1 2)");
+        checkTWKBGeometry("a210", "LINESTRING EMPTY");
+        checkTWKBGeometry("a20002c09a0c80b51880b51880b518", "LINESTRING(1 2,3 4)");
+        checkTWKBGeometry("a310", "POLYGON EMPTY");
+        checkTWKBGeometry("a3000104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2))");
+        checkTWKBGeometry("a3000204c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12))");
+        checkTWKBGeometry("a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22))");
+        checkTWKBGeometry("a410", "MULTIPOINT EMPTY");
+        checkTWKBGeometry("a40001c09a0c80b518", "MULTIPOINT(1 2)");
+        checkTWKBGeometry("a40002c09a0c80b51880b51880b518", "MULTIPOINT(1 2,3 4)");
+        checkTWKBGeometry("a510", "MULTILINESTRING EMPTY");
+        checkTWKBGeometry("a5000102c09a0c80b51880b51880b518", "MULTILINESTRING((1 2,3 4))");
+        checkTWKBGeometry("a5000202c09a0c80b51880b51880b5180280b51880b51880b51880b518", "MULTILINESTRING((1 2,3 4),(5 6,7 8))");
+        checkTWKBGeometry("a610", "MULTIPOLYGON EMPTY");
+        checkTWKBGeometry("a600010104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "MULTIPOLYGON(((1 2,3 4,5 6,1 2)))");
+        checkTWKBGeometry("a600020104c09a0c80b51880b51880b51880b51880b518ffe930ffe9300304000080b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "MULTIPOLYGON(((1 2,3 4,5 6,1 2)),((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22)))");
+        checkTWKBGeometry("a710", "GEOMETRYCOLLECTION EMPTY");
+        checkTWKBGeometry("a70001a100c09a0c80b518", "GEOMETRYCOLLECTION(POINT(1 2))");
+        checkTWKBGeometry("a70002a100c09a0c80b518a20002c09a0c80b51880b51880b518", "GEOMETRYCOLLECTION(POINT(1 2),LINESTRING(1 2,3 4))");
+        checkTWKBGeometry("a70003a100c09a0c80b518a20002c09a0c80b51880b51880b518a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "GEOMETRYCOLLECTION(POINT(1 2),LINESTRING(1 2,3 4),POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22)))");
+    }
+
+
+//  public void testShortPolygons() throws ParseException
+//  {
+//    // one point
+//    checkTWKBGeometry("0000000003000000010000000140590000000000004069000000000000", "POLYGON ((100 200, 100 200, 100 200, 100 200))");
+//    // two point
+//    checkTWKBGeometry("000000000300000001000000024059000000000000406900000000000040590000000000004069000000000000", "POLYGON ((100 200, 100 200, 100 200, 100 200))");
+//  }
 
   public TWKBReaderTest(String name) { super(name); }
 
