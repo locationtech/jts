@@ -1,11 +1,10 @@
 package org.locationtech.jts.io;
 
-import org.locationtech.jts.geom.*;
 import com.google.protobuf.CodedInputStream;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class TWKBReader {
     final int twkbPoint = 1;

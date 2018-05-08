@@ -20,7 +20,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 /**
  * Tests for reading WKB.
  * 
- * @author Martin Davis
+ * @author James Hughes
  *
  */
 public class TWKBReaderTest extends TestCase
@@ -312,6 +312,5 @@ public class TWKBReaderTest extends TestCase
    boolean isEqual = (expected.compareTo(g2, comp2) == 0);
     if (!isEqual) {System.out.println(g2);System.out.println(expected);}
     assertTrue(isEqual);
-
  }
 }
