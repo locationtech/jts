@@ -187,16 +187,28 @@ public class TWKBReader {
         if (metadata.hasExtendedDims()) {
             int dimensions = is.readRawByte();
 
-            System.out.println("  reading dimension data :" + dimensions);
-            System.out.println("          hasZ: " + (dimensions & 0x01));
-            System.out.println("          hasM: " + (dimensions & 0x02));
+
             if ((dimensions & 0x01) > 0) {
                 dims += 1;
             }
             if ((dimensions & 0x02) > 0) {
                 dims += 1;
             }
+
+            System.out.println("  reading dimension data :" + dimensions);
+            if ((dimensions & 0x01) > 0) {
+                metadata.setHasM(true);
+                metadata.setMprecision((dimensions & 0xE0) >> 5);
+                System.out.println("      hasM with precision: " + metadata.getMprecision());
+            }
+            if ((dimensions & 0x02) > 0) {
+                metadata.setHasZ(true);
+                metadata.setZprecision((dimensions & 0x1C) >> 2);
+                System.out.println("      hasZ with precision: " + metadata.getZprecision());
+            }
+
             System.out.println("  Geometry has " + dims + " dimensions");
+
         }
         metadata.setDims(dims);
 
@@ -238,7 +250,7 @@ public class TWKBReader {
         for (int i = 0; i < numPts; i++) {
             for (int j = 0; j < dims; j++) {
                 // TODO:  Handle differences in precision between XY, Z, M
-                double ordinateDelta = readNextDouble(is, metadata.getPrecision());
+                double ordinateDelta = readNextDouble(is, metadata.getPrecision(j));
                 metadata.valueArray[j] += ordinateDelta;
 
                 System.out.println(" Calling: " + i + " " + j + " " + metadata.valueArray[j]);
@@ -306,15 +318,71 @@ public class TWKBReader {
             return precision;
         }
 
+        public int getPrecision(int i) {
+            if (i >= 0 && i <= 1) {
+                return precision;
+            } else if (i == 2) {
+                if (hasZ) {
+                    return zprecision;
+                } else if (hasM) {
+                    return mprecision;
+                } else {
+                    throw new IllegalArgumentException("Geometry only has XY dimensions.");
+                }
+            } else if (i == 3 && hasZ && hasM) {
+                return mprecision;
+            } else {
+                throw new IllegalArgumentException("Mismatch with the number of dimensions.");
+            }
+        }
+
         public void setPrecision(int precision) {
             this.precision = precision;
         }
 
         double[] valueArray;
         int precision;
+
+        public int getZprecision() {
+            return zprecision;
+        }
+
+        public void setZprecision(int zprecision) {
+            this.zprecision = zprecision;
+        }
+
+        public int getMprecision() {
+            return mprecision;
+        }
+
+        public void setMprecision(int mprecision) {
+            this.mprecision = mprecision;
+        }
+
+        int zprecision;
+        int mprecision;
         byte header;
         int size;
         int dims;
+
+        boolean hasZ, hasM;
+
+        public boolean isHasZ() {
+            return hasZ;
+        }
+
+        public void setHasZ(boolean hasZ) {
+            this.hasZ = hasZ;
+        }
+
+        public boolean isHasM() {
+            return hasM;
+        }
+
+        public void setHasM(boolean hasM) {
+            this.hasM = hasM;
+        }
+
         CoordinateSequence envelope;
 
         public CoordinateSequence getEnvelope() {

@@ -3,6 +3,7 @@ package org.locationtech.jts.io;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 import org.locationtech.jts.geom.CoordinateSequenceComparator;
+import org.locationtech.jts.geom.CoordinateSequenceFactory;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
@@ -14,8 +15,8 @@ public class TWKBWriterTest extends TestCase {
         TestRunner.run(TWKBWriterTest.class);
     }
 
-    private GeometryFactory geomFactory = new GeometryFactory();
-    private WKTReader rdr = new WKTReader(geomFactory);
+//    private GeometryFactory geomFactory = new GeometryFactory();
+//    private WKTReader rdr = new WKTReader(geomFactory);
 
 //    GeometryFactory geomFactory = new GeometryFactory(
 //            new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE, 2));
@@ -23,7 +24,7 @@ public class TWKBWriterTest extends TestCase {
 
 
     public void testPointGeometries() throws ParseException {
-        checkTWKBGeometry("01000204", 2, "POINT(1 2)");
+       // checkTWKBGeometry("01000204", 2, "POINT(1 2)");
         checkTWKBGeometry("01080302040608", 4,"POINT(1 2 3 4)");
 
         // Written with precision = 5
@@ -72,6 +73,11 @@ public class TWKBWriterTest extends TestCase {
 
     private void checkTWKBGeometry(String twkbHex, int dimension, String expectedWKT) throws ParseException
     {
+        CoordinateSequenceFactory csf =
+                new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE ,dimension);
+        GeometryFactory geomFactory = new GeometryFactory(csf);
+        WKTReader rdr = new WKTReader(geomFactory);
+
         Geometry g = rdr.read(expectedWKT);
 
         TWKBWriter twkbWriter = new TWKBWriter();
@@ -82,7 +88,7 @@ public class TWKBWriterTest extends TestCase {
         Geometry g2 = reader.read(written);
 
         boolean isEqualHex = Arrays.equals(twkb, written);
-        assertTrue(isEqualHex);
+
 
         CoordinateSequenceComparator comp = null;
         switch (dimension) {
@@ -91,14 +97,16 @@ public class TWKBWriterTest extends TestCase {
             case 4: comp = comp4; break;
             //default: throw new Exception("Never gonna get here!");
         }
-        boolean isEqual = (g.compareTo(g2, comp2) == 0);
+        boolean isEqual = (g.compareTo(g2, comp) == 0);
 
-        if (!isEqual) {
+        if (!isEqual || !isEqualHex) {
+            System.out.println("isEqual: " + isEqual + " isEqualHex: " + isEqualHex);
             System.out.println("Input:      " + expectedWKT);
             System.out.println("Round-trip: " + g2);
             System.out.println("Expected " + twkbHex);
             System.out.println("Written  " + javax.xml.bind.DatatypeConverter.printHexBinary(written));
         }
+        assertTrue(isEqualHex);
         assertTrue(isEqual);
     }
 
