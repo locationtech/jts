@@ -22,12 +22,21 @@ public class TWKBWriter {
     public TWKBWriter() {
     }
 
-    public byte[] write(Geometry geom)
+    public byte[] write(Geometry geom) {
+        return write(geom, 0, 0, 0, false, false);
+    }
+
+    public byte[] write(Geometry geom,
+                        int xyprecision,
+                        int zprecision,
+                        int mprecision,
+                        boolean includeSize,
+                        boolean includeBbox)
     {
         CodedOutputStream cos = CodedOutputStream.newInstance(byteArrayOS);
         try {
             byteArrayOS.reset();
-            write(geom, cos);
+            write(geom, cos, xyprecision, zprecision, mprecision, includeSize, includeBbox);
             cos.flush();
         }
         catch (IOException ex) {
@@ -36,7 +45,6 @@ public class TWKBWriter {
         return byteArrayOS.toByteArray();
     }
 
-
     /**
      * Writes a {@link Geometry} to an {@link OutStream}.
      *
@@ -44,8 +52,14 @@ public class TWKBWriter {
      * @param os the out stream to write to
      * @throws IOException if an I/O error occurs
      */
-    public void write(Geometry geom, CodedOutputStream os) throws IOException
+    public void write(Geometry geom, CodedOutputStream os,
+                      int xyprecision,
+                      int zprecision,
+                      int mprecision,
+                      boolean includeSize,
+                      boolean includeBbox) throws IOException
     {
+        writeHeader(geom, os, xyprecision, zprecision, mprecision, includeSize, includeBbox);
         if (geom instanceof Point)
             writePoint((Point) geom, os);
             // LinearRings will be written as LineStrings
@@ -73,11 +87,17 @@ public class TWKBWriter {
     private void writePoint(Point pt, CodedOutputStream os) throws IOException
     {
         // Handle empty geometries first?
-        writeHeader(pt, os);
+
         writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
     }
 
-    private void writeHeader(Geometry g, CodedOutputStream os) throws IOException {
+    private void writeHeader(Geometry g, CodedOutputStream os,
+                             int xyprecision,
+                             int zprecision,
+                             int mprecision,
+                             boolean includeSize,
+                             boolean includeBbox) throws IOException {
+        int dim = 2;
         // Write Geometry Type and Precision Byte
 
         // Calculate type
@@ -97,14 +117,39 @@ public class TWKBWriter {
 
         // TODO: Compute metadata byte correctly.
         buf[1] = 0x00;
-        os.writeRawBytes(buf, 0, 2);
 
+        if (includeBbox) { buf[1] |= 0x01; }
+        if (includeSize) { buf[1] |= 0x02; }
+        //if (There is an id list!   0x04; }
+        if (dim > 2)     { buf[1] |= 0x08; }
+        if (g.isEmpty()) { buf[1] |= 0x10; }
+
+        os.writeRawBytes(buf, 0, 2);
 
         // Optionally, write extended dimension data
 
         // Optionally, write size byte
+        if (includeSize) {
+            os.writeRawByte(CodedOutputStream.encodeZigZag32(g.getNumGeometries()));
+        }
 
         // Optionally, write bbox
+        // TODO: Handle multiple dimensions
+        if (includeBbox) {
+            double[] prestorage = new double[dim * 2];
+
+            Envelope env = g.getEnvelopeInternal();
+            prestorage[0] = env.getMinX();
+            prestorage[1] = env.getMaxX() - prestorage[0];
+
+            prestorage[2] = env.getMinY();
+            prestorage[3] = env.getMaxY() - prestorage[2];
+
+            for (int i = 0; i <= 3; i++){
+                int intToWrite = (int)(prestorage[i] * Math.pow(10, xyprecision));
+                os.writeSInt32NoTag(intToWrite);
+            }
+        }
 
         // Optionally, write id-array
 
