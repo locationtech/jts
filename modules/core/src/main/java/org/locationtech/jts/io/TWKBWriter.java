@@ -36,7 +36,8 @@ public class TWKBWriter {
         CodedOutputStream cos = CodedOutputStream.newInstance(byteArrayOS);
         try {
             byteArrayOS.reset();
-            write(geom, cos, xyprecision, zprecision, mprecision, includeSize, includeBbox);
+            writeHeader(geom, cos, xyprecision, zprecision, mprecision, includeSize, includeBbox);
+            write(geom, cos, xyprecision, zprecision, mprecision, null);
             cos.flush();
         }
         catch (IOException ex) {
@@ -52,47 +53,44 @@ public class TWKBWriter {
      * @param os the out stream to write to
      * @throws IOException if an I/O error occurs
      */
-    public void write(Geometry geom, CodedOutputStream os,
+    public double[] write(Geometry geom, CodedOutputStream os,
                       int xyprecision,
                       int zprecision,
                       int mprecision,
-                      boolean includeSize,
-                      boolean includeBbox) throws IOException
+                      double[] inputValueArray) throws IOException
     {
-        writeHeader(geom, os, xyprecision, zprecision, mprecision, includeSize, includeBbox);
+
         if (geom instanceof Point)
-            writePoint((Point) geom, os, xyprecision, zprecision, mprecision);
+            return writePoint((Point) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
             // LinearRings will be written as LineStrings
         else if (geom instanceof LineString)
-            writeLineString((LineString) geom, os, xyprecision, zprecision, mprecision, null);
+            return writeLineString((LineString) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
         else if (geom instanceof Polygon)
-            writePolygon((Polygon) geom, os, xyprecision, zprecision, mprecision);
-//        else if (geom instanceof MultiPoint)
-//            writeGeometryCollection(WKBConstants.wkbMultiPoint,
-//                    (MultiPoint) geom, os);
-//        else if (geom instanceof MultiLineString)
-//            writeGeometryCollection(WKBConstants.wkbMultiLineString,
-//                    (MultiLineString) geom, os);
-//        else if (geom instanceof MultiPolygon)
-//            writeGeometryCollection(WKBConstants.wkbMultiPolygon,
-//                    (MultiPolygon) geom, os);
-//        else if (geom instanceof GeometryCollection)
-//            writeGeometryCollection(WKBConstants.wkbGeometryCollection,
-//                    (GeometryCollection) geom, os);
+            return writePolygon((Polygon) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
+        else if (geom instanceof MultiPoint)
+            return writeMultiPoint((MultiPoint) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
+        else if (geom instanceof MultiLineString)
+            return writeMultiLineString((MultiLineString) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
+        else if (geom instanceof MultiPolygon)
+            return writeMultiPolygon((MultiPolygon) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
+        else if (geom instanceof GeometryCollection)
+            return writeGeometryCollection((GeometryCollection) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
         else {
             Assert.shouldNeverReachHere("Unknown Geometry type");
+            return null;
         }
     }
 
-    private void writePoint(Point pt, CodedOutputStream os,
+    private double[] writePoint(Point pt, CodedOutputStream os,
                             int xyprecision,
                             int zprecision,
-                            int mprecision) throws IOException
+                            int mprecision,
+                            double[] inputValueArray) throws IOException
     {
         // Handle empty geometries first?
 
-        writeCoordinateSequence(pt.getCoordinateSequence(), false, os,
-                xyprecision, zprecision, mprecision, null);
+        return writeCoordinateSequence(pt.getCoordinateSequence(), false, os,
+                xyprecision, zprecision, mprecision, inputValueArray);
     }
 
     private double[] writeLineString(LineString line, CodedOutputStream os,
@@ -110,22 +108,104 @@ public class TWKBWriter {
         return null;
     }
 
-    private void writePolygon(Polygon polygon, CodedOutputStream os,
+    private double[] writePolygon(Polygon polygon, CodedOutputStream os,
                                  int xyprecision,
                                  int zprecision,
-                                 int mprecision) throws IOException
+                                 int mprecision,
+                                 double[] inputValueArray) throws IOException
     {
         // Handle empty geometries first?
         if (!polygon.isEmpty()) {
                         os.writeInt32NoTag(polygon.getNumInteriorRing() + 1);
-            double[] inputValueArray = writeLineString(polygon.getExteriorRing(), os,
-                    xyprecision, zprecision, mprecision, null);
+            inputValueArray = writeLineString(polygon.getExteriorRing(), os,
+                    xyprecision, zprecision, mprecision, inputValueArray);
 
             for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
                 inputValueArray = writeLineString(polygon.getInteriorRingN(i), os,
                         xyprecision, zprecision, mprecision, inputValueArray);
             }
         }
+        return inputValueArray;
+    }
+
+    private double[] writeMultiPoint(MultiPoint mpt, CodedOutputStream os,
+                            int xyprecision,
+                            int zprecision,
+                            int mprecision,
+                            double[] inputValueArray) throws IOException
+    {
+        // Handle empty geometries first?
+        if (!mpt.isEmpty()) {
+            os.writeInt32NoTag(mpt.getNumGeometries());
+            for (int i = 0; i < mpt.getNumGeometries(); i++) {
+                inputValueArray = writePoint((Point) mpt.getGeometryN(i), os, xyprecision, zprecision, mprecision, inputValueArray);
+            }
+        }
+        return inputValueArray;
+    }
+
+    private double[] writeMultiLineString(MultiLineString multiLineString, CodedOutputStream os,
+                                 int xyprecision,
+                                 int zprecision,
+                                 int mprecision,
+                                 double[] inputValueArray) throws IOException
+    {
+        // Handle empty geometries first?
+        if (!multiLineString.isEmpty()) {
+            os.writeInt32NoTag(multiLineString.getNumGeometries());
+            for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
+                inputValueArray = writeLineString((LineString) multiLineString.getGeometryN(i), os, xyprecision, zprecision, mprecision, inputValueArray);
+            }
+        }
+        return inputValueArray;
+    }
+
+    private double[] writeMultiPolygon(MultiPolygon multiPolygon, CodedOutputStream os,
+                                      int xyprecision,
+                                      int zprecision,
+                                      int mprecision,
+                                      double[] inputValueArray) throws IOException
+    {
+        if (!multiPolygon.isEmpty()) {
+            os.writeInt32NoTag(multiPolygon.getNumGeometries());
+            for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+                inputValueArray = writePolygon((Polygon) multiPolygon.getGeometryN(i), os, xyprecision, zprecision, mprecision, inputValueArray);
+            }
+        }
+        return inputValueArray;
+    }
+
+    private double[] writeGeometryCollection(GeometryCollection geometryCollection, CodedOutputStream os,
+                                   int xyprecision,
+                                   int zprecision,
+                                   int mprecision,
+                                         double[] inputValueArray) throws IOException
+    {
+        if (!geometryCollection.isEmpty()) {
+            os.writeInt32NoTag(geometryCollection.getNumGeometries());
+            for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
+                inputValueArray = write(geometryCollection.getGeometryN(i), os, xyprecision, zprecision, mprecision, inputValueArray);
+            }
+        }
+        return inputValueArray;
+    }
+
+
+    private int getDimension(Geometry g) {
+        if (g.isEmpty()) {
+            return 2;  // Why not?!
+        }
+
+        if (g instanceof Point) {
+            return ((Point) g).getCoordinateSequence().getDimension();
+        } else if (g instanceof LineString) {
+            return (((LineString) g).getCoordinateSequence().getDimension());
+        } else if (g instanceof Polygon) {
+            return (((Polygon) g).getExteriorRing().getCoordinateSequence().getDimension());
+        } else {
+            return getDimension(g.getGeometryN(0));
+        }
+
     }
 
     private void writeHeader(Geometry g, CodedOutputStream os,
@@ -140,17 +220,29 @@ public class TWKBWriter {
         // Calculate type
         // TODO: Calculate type correctly
         byte geometryType = 0;
-
+        dim = getDimension(g);
         // TODO: Clean up as Constants
         if (g instanceof Point) {
-            geometryType = 1;
-            dim = ((Point) g).getCoordinateSequence().getDimension();
+            geometryType = TWKBReader.twkbPoint;
+            //dim = ((Point) g).getCoordinateSequence().getDimension();
         } else if (g instanceof LineString){
-            geometryType = 2;
-            dim = ((LineString) g).getCoordinateSequence().getDimension();
+            geometryType = TWKBReader.twkbLineString;
+            //dim = ((LineString) g).getCoordinateSequence().getDimension();
         } else if (g instanceof Polygon) {
-            geometryType = 3;
-            dim = ((Polygon) g).getExteriorRing().getCoordinateSequence().getDimension();
+            geometryType = TWKBReader.twkbPolygon;
+            //dim = ((Polygon) g).getExteriorRing().getCoordinateSequence().getDimension();
+        } else if (g instanceof MultiPoint) {
+            geometryType = TWKBReader.twkbMultiPoint;
+           // dim = ((Point)(g.getGeometryN(0))).getCoordinateSequence().getDimension();
+        } else if (g instanceof MultiLineString) {
+            geometryType = TWKBReader.twkbMultiLineString;
+            //dim = ((LineString)(g.getGeometryN(0))).getCoordinateSequence().getDimension();
+        } else if (g instanceof MultiPolygon) {
+            geometryType = TWKBReader.twkbMultiPolygon;
+            //dim = ((Polygon)(g.getGeometryN(0))).getExteriorRing().getCoordinateSequence().getDimension();
+        } else if (g instanceof GeometryCollection) {
+            geometryType = TWKBReader.twkbGeometryCollection;
+            //dim = getDimension(g);
         }
 
 

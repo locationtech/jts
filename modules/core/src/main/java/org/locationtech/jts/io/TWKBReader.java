@@ -7,13 +7,13 @@ import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 import java.io.IOException;
 
 public class TWKBReader {
-    final int twkbPoint = 1;
-    final int twkbLineString = 2;
-    final int twkbPolygon = 3;
-    final int twkbMultiPoint = 4;
-    final int twkbMultiLineString = 5;
-    final int twkbMultiPolygon = 6;
-    final int twkbGeometryCollection = 7;
+    static final int twkbPoint = 1;
+    static final int twkbLineString = 2;
+    static final int twkbPolygon = 3;
+    static final int twkbMultiPoint = 4;
+    static final int twkbMultiLineString = 5;
+    static final int twkbMultiPolygon = 6;
+    static final int twkbGeometryCollection = 7;
 
     private CoordinateSequenceFactory csfactory = new PackedCoordinateSequenceFactory();
     private GeometryFactory factory = new GeometryFactory(csfactory);
