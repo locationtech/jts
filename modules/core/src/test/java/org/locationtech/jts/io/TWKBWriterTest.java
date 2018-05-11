@@ -116,55 +116,30 @@ public class TWKBWriterTest extends TestCase {
     }
 
     public void testPointsZ() throws ParseException {
-
-        check("POINT Z(1 2 3)", -1, 0, 0, true, true, "110b0109000000000600000006");
-        check("POINT Z(1 2 3)", -1, 0, 0, true, false, "110a0103000006");
-        check("POINT Z(1 2 3)", -1, 0, 0, false, true, "110901000000000600000006");
-        check("POINT Z(1 2 3)", -1, 0, 0, false, false, "110801000006");
-        check("POINT Z(1 2 3)", -1, 1, 0, true, true, "110b0509000000003c0000003c");
-        check("POINT Z(1 2 3)", -1, 1, 0, true, false, "110a050300003c");
-        check("POINT Z(1 2 3)", -1, 1, 0, false, true, "110905000000003c0000003c");
-        check("POINT Z(1 2 3)", -1, 1, 0, false, false, "11080500003c");
-        check("POINT Z(1 2 3)", -1, 5, 0, true, true, "110b150d00000000c0cf24000000c0cf24");
-        check("POINT Z(1 2 3)", -1, 5, 0, true, false, "110a15050000c0cf24");
-        check("POINT Z(1 2 3)", -1, 5, 0, false, true, "11091500000000c0cf24000000c0cf24");
-        check("POINT Z(1 2 3)", -1, 5, 0, false, false, "1108150000c0cf24");
-        check("POINT Z(1 2 3)", 0, 0, 0, true, true, "010b0109020004000600020406");
-        check("POINT Z(1 2 3)", 0, 0, 0, true, false, "010a0103020406");
-        check("POINT Z(1 2 3)", 0, 0, 0, false, true, "010901020004000600020406");
-        check("POINT Z(1 2 3)", 0, 0, 0, false, false, "010801020406");
-        check("POINT Z(1 2 3)", 0, 1, 0, true, true, "010b0509020004003c0002043c");
-        check("POINT Z(1 2 3)", 0, 1, 0, true, false, "010a050302043c");
-        check("POINT Z(1 2 3)", 0, 1, 0, false, true, "010905020004003c0002043c");
-        check("POINT Z(1 2 3)", 0, 1, 0, false, false, "01080502043c");
-        check("POINT Z(1 2 3)", 0, 5, 0, true, true, "010b150d02000400c0cf24000204c0cf24");
-        check("POINT Z(1 2 3)", 0, 5, 0, true, false, "010a15050204c0cf24");
-        check("POINT Z(1 2 3)", 0, 5, 0, false, true, "01091502000400c0cf24000204c0cf24");
-        check("POINT Z(1 2 3)", 0, 5, 0, false, false, "0108150204c0cf24");
-        check("POINT Z(1 2 3)", 1, 0, 0, true, true, "210b0109140028000600142806");
-        check("POINT Z(1 2 3)", 1, 0, 0, true, false, "210a0103142806");
-        check("POINT Z(1 2 3)", 1, 0, 0, false, true, "210901140028000600142806");
-        check("POINT Z(1 2 3)", 1, 0, 0, false, false, "210801142806");
-        check("POINT Z(1 2 3)", 1, 1, 0, true, true, "210b0509140028003c0014283c");
-        check("POINT Z(1 2 3)", 1, 1, 0, true, false, "210a050314283c");
-        check("POINT Z(1 2 3)", 1, 1, 0, false, true, "210905140028003c0014283c");
-        check("POINT Z(1 2 3)", 1, 1, 0, false, false, "21080514283c");
-        check("POINT Z(1 2 3)", 1, 5, 0, true, true, "210b150d14002800c0cf24001428c0cf24");
-        check("POINT Z(1 2 3)", 1, 5, 0, true, false, "210a15051428c0cf24");
-        check("POINT Z(1 2 3)", 1, 5, 0, false, true, "21091514002800c0cf24001428c0cf24");
-        check("POINT Z(1 2 3)", 1, 5, 0, false, false, "2108151428c0cf24");
-        check("POINT Z(1 2 3)", 5, 0, 0, true, true, "a10b0111c09a0c0080b518000600c09a0c80b51806");
-        check("POINT Z(1 2 3)", 5, 0, 0, true, false, "a10a0107c09a0c80b51806");
-        check("POINT Z(1 2 3)", 5, 0, 0, false, true, "a10901c09a0c0080b518000600c09a0c80b51806");
-        check("POINT Z(1 2 3)", 5, 0, 0, false, false, "a10801c09a0c80b51806");
-        check("POINT Z(1 2 3)", 5, 1, 0, true, true, "a10b0511c09a0c0080b518003c00c09a0c80b5183c");
-        check("POINT Z(1 2 3)", 5, 1, 0, true, false, "a10a0507c09a0c80b5183c");
-        check("POINT Z(1 2 3)", 5, 1, 0, false, true, "a10905c09a0c0080b518003c00c09a0c80b5183c");
-        check("POINT Z(1 2 3)", 5, 1, 0, false, false, "a10805c09a0c80b5183c");
-        check("POINT Z(1 2 3)", 5, 5, 0, true, true, "a10b1515c09a0c0080b51800c0cf2400c09a0c80b518c0cf24");
-        check("POINT Z(1 2 3)", 5, 5, 0, true, false, "a10a1509c09a0c80b518c0cf24");
-        check("POINT Z(1 2 3)", 5, 5, 0, false, true, "a10915c09a0c0080b51800c0cf2400c09a0c80b518c0cf24");
-        check("POINT Z(1 2 3)", 5, 5, 0, false, false, "a10815c09a0c80b518c0cf24");
+        check(reader3,"POINT Z(1 2 3)", -1, 0, 0, false, true, "110901000000000600000006");
+        check(reader3,"POINT Z(1 2 3)", -1, 0, 0, false, false, "110801000006");
+        check(reader3,"POINT Z(1 2 3)", -1, 1, 0, false, true, "110905000000003c0000003c");
+        check(reader3,"POINT Z(1 2 3)", -1, 1, 0, false, false, "11080500003c");
+        check(reader3,"POINT Z(1 2 3)", -1, 5, 0, false, true, "11091500000000c0cf24000000c0cf24");
+        check(reader3,"POINT Z(1 2 3)", -1, 5, 0, false, false, "1108150000c0cf24");
+        check(reader3,"POINT Z(1 2 3)", 0, 0, 0, false, true, "010901020004000600020406");
+        check(reader3,"POINT Z(1 2 3)", 0, 0, 0, false, false, "010801020406");
+        check(reader3,"POINT Z(1 2 3)", 0, 1, 0, false, true, "010905020004003c0002043c");
+        check(reader3,"POINT Z(1 2 3)", 0, 1, 0, false, false, "01080502043c");
+        check(reader3,"POINT Z(1 2 3)", 0, 5, 0, false, true, "01091502000400c0cf24000204c0cf24");
+        check(reader3,"POINT Z(1 2 3)", 0, 5, 0, false, false, "0108150204c0cf24");
+        check(reader3,"POINT Z(1 2 3)", 1, 0, 0, false, true, "210901140028000600142806");
+        check(reader3,"POINT Z(1 2 3)", 1, 0, 0, false, false, "210801142806");
+        check(reader3,"POINT Z(1 2 3)", 1, 1, 0, false, true, "210905140028003c0014283c");
+        check(reader3,"POINT Z(1 2 3)", 1, 1, 0, false, false, "21080514283c");
+        check(reader3,"POINT Z(1 2 3)", 1, 5, 0, false, true, "21091514002800c0cf24001428c0cf24");
+        check(reader3,"POINT Z(1 2 3)", 1, 5, 0, false, false, "2108151428c0cf24");
+        check(reader3,"POINT Z(1 2 3)", 5, 0, 0, false, true, "a10901c09a0c0080b518000600c09a0c80b51806");
+        check(reader3,"POINT Z(1 2 3)", 5, 0, 0, false, false, "a10801c09a0c80b51806");
+        check(reader3,"POINT Z(1 2 3)", 5, 1, 0, false, true, "a10905c09a0c0080b518003c00c09a0c80b5183c");
+        check(reader3,"POINT Z(1 2 3)", 5, 1, 0, false, false, "a10805c09a0c80b5183c");
+        check(reader3,"POINT Z(1 2 3)", 5, 5, 0, false, true, "a10915c09a0c0080b51800c0cf2400c09a0c80b518c0cf24");
+        check(reader3,"POINT Z(1 2 3)", 5, 5, 0, false, false, "a10815c09a0c80b518c0cf24");
     }
 
         public void testPointsZandM() throws ParseException {
@@ -200,8 +175,20 @@ public class TWKBWriterTest extends TestCase {
     private GeometryFactory geometryFactory = new GeometryFactory(factory);
     private TWKBWriter writer = new TWKBWriter();
     private WKTReader reader = new WKTReader(geometryFactory);
+    private WKTReader reader3 = new WKTReader();
 
     private void check(String wkt,
+                       int xyprecision,
+                       int zprecision,
+                       int mprecision,
+                       boolean includeSize,
+                       boolean includeBbox,
+                       String expectedTWKB) throws ParseException {
+        check(this.reader, wkt, xyprecision, zprecision, mprecision, includeSize, includeBbox, expectedTWKB);
+    }
+
+    private void check(WKTReader reader,
+                       String wkt,
                        int xyprecision,
                        int zprecision,
                        int mprecision,
@@ -230,42 +217,29 @@ public class TWKBWriterTest extends TestCase {
 //    WKTReader rdr = new WKTReader(geomFactory);
 
 
-    public void testPointGeometries() throws ParseException {
-       // checkTWKBGeometry("01000204", 2, "POINT(1 2)");
-        checkTWKBGeometry("01080302040608", 4,"POINT(1 2 3 4)");
-
-        // Written with precision = 5
-        checkTWKBGeometry("a100c09a0c80b518", 2,"POINT(1 2)");
-        checkTWKBGeometry("a10080a8d6b90780d0acf30e", 2,"POINT(10000 20000)");
-
-        // With bounding boxes
-        checkTWKBGeometry("0101020004000204", 2,"POINT(1 2)");
-        checkTWKBGeometry("010903020004000600080002040608", 4, "POINT(1 2 3 4)");
-    }
-
-    public void testTWKB() throws ParseException {
-        checkTWKBGeometry("0110", "POINT EMPTY");
-        checkTWKBGeometry("a100c09a0c80b518", "POINT(1 2)");
-        checkTWKBGeometry("a210", "LINESTRING EMPTY");
-        checkTWKBGeometry("a20002c09a0c80b51880b51880b518", "LINESTRING(1 2,3 4)");
-        checkTWKBGeometry("a310", "POLYGON EMPTY");
-        checkTWKBGeometry("a3000104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2))");
-        checkTWKBGeometry("a3000204c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12))");
-        checkTWKBGeometry("a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22))");
-        checkTWKBGeometry("a410", "MULTIPOINT EMPTY");
-        checkTWKBGeometry("a40001c09a0c80b518", "MULTIPOINT(1 2)");
-        checkTWKBGeometry("a40002c09a0c80b51880b51880b518", "MULTIPOINT(1 2,3 4)");
-        checkTWKBGeometry("a510", "MULTILINESTRING EMPTY");
-        checkTWKBGeometry("a5000102c09a0c80b51880b51880b518", "MULTILINESTRING((1 2,3 4))");
-        checkTWKBGeometry("a5000202c09a0c80b51880b51880b5180280b51880b51880b51880b518", "MULTILINESTRING((1 2,3 4),(5 6,7 8))");
-        checkTWKBGeometry("a610", "MULTIPOLYGON EMPTY");
-        checkTWKBGeometry("a600010104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "MULTIPOLYGON(((1 2,3 4,5 6,1 2)))");
-        checkTWKBGeometry("a600020104c09a0c80b51880b51880b51880b51880b518ffe930ffe9300304000080b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "MULTIPOLYGON(((1 2,3 4,5 6,1 2)),((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22)))");
-        checkTWKBGeometry("a710", "GEOMETRYCOLLECTION EMPTY");
-        checkTWKBGeometry("a70001a100c09a0c80b518", "GEOMETRYCOLLECTION(POINT(1 2))");
-        checkTWKBGeometry("a70002a100c09a0c80b518a20002c09a0c80b51880b51880b518", "GEOMETRYCOLLECTION(POINT(1 2),LINESTRING(1 2,3 4))");
-        checkTWKBGeometry("a70003a100c09a0c80b518a20002c09a0c80b51880b51880b518a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "GEOMETRYCOLLECTION(POINT(1 2),LINESTRING(1 2,3 4),POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22)))");
-    }
+//    public void testTWKB() throws ParseException {
+//        checkTWKBGeometry("0110", "POINT EMPTY");
+//        checkTWKBGeometry("a100c09a0c80b518", "POINT(1 2)");
+//        checkTWKBGeometry("a210", "LINESTRING EMPTY");
+//        checkTWKBGeometry("a20002c09a0c80b51880b51880b518", "LINESTRING(1 2,3 4)");
+//        checkTWKBGeometry("a310", "POLYGON EMPTY");
+//        checkTWKBGeometry("a3000104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2))");
+//        checkTWKBGeometry("a3000204c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12))");
+//        checkTWKBGeometry("a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22))");
+//        checkTWKBGeometry("a410", "MULTIPOINT EMPTY");
+//        checkTWKBGeometry("a40001c09a0c80b518", "MULTIPOINT(1 2)");
+//        checkTWKBGeometry("a40002c09a0c80b51880b51880b518", "MULTIPOINT(1 2,3 4)");
+//        checkTWKBGeometry("a510", "MULTILINESTRING EMPTY");
+//        checkTWKBGeometry("a5000102c09a0c80b51880b51880b518", "MULTILINESTRING((1 2,3 4))");
+//        checkTWKBGeometry("a5000202c09a0c80b51880b51880b5180280b51880b51880b51880b518", "MULTILINESTRING((1 2,3 4),(5 6,7 8))");
+//        checkTWKBGeometry("a610", "MULTIPOLYGON EMPTY");
+//        checkTWKBGeometry("a600010104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "MULTIPOLYGON(((1 2,3 4,5 6,1 2)))");
+//        checkTWKBGeometry("a600020104c09a0c80b51880b51880b51880b51880b518ffe930ffe9300304000080b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "MULTIPOLYGON(((1 2,3 4,5 6,1 2)),((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22)))");
+//        checkTWKBGeometry("a710", "GEOMETRYCOLLECTION EMPTY");
+//        checkTWKBGeometry("a70001a100c09a0c80b518", "GEOMETRYCOLLECTION(POINT(1 2))");
+//        checkTWKBGeometry("a70002a100c09a0c80b518a20002c09a0c80b51880b51880b518", "GEOMETRYCOLLECTION(POINT(1 2),LINESTRING(1 2,3 4))");
+//        checkTWKBGeometry("a70003a100c09a0c80b518a20002c09a0c80b51880b51880b518a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "GEOMETRYCOLLECTION(POINT(1 2),LINESTRING(1 2,3 4),POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22)))");
+//    }
 
     private static CoordinateSequenceComparator comp2 = new CoordinateSequenceComparator(2);
     private static CoordinateSequenceComparator comp3 = new CoordinateSequenceComparator(3);

@@ -106,7 +106,14 @@ public class TWKBWriter {
 
         // Calculate type
         // TODO: Calculate type correctly
-        byte geometryType = 1;
+        byte geometryType = 0;
+
+        // TODO: Clean up as Constants
+        if (g instanceof Point) {
+            geometryType = 1;
+            dim = ((Point) g).getCoordinateSequence().getDimension();
+        }
+
 
         byte typePrecision = (byte)((CodedOutputStream.encodeZigZag32(xyprecision ) << 4) | geometryType);
 
@@ -127,6 +134,18 @@ public class TWKBWriter {
         os.writeRawBytes(buf, 0, 2);
 
         // Optionally, write extended dimension data
+        byte optionalDimesions = 0;
+        if (dim > 2) {
+            optionalDimesions |= 0x01; // has Z
+            optionalDimesions |= (zprecision << 2);
+            if (dim == 4) {
+                optionalDimesions |= 0x02; // has M
+                optionalDimesions |= (mprecision << 5);
+            }
+            os.writeRawByte(optionalDimesions);
+        }
+
+
 
         // Optionally, write size byte
         // TODO:  This requires computing the size of the rest of the geometry!
@@ -146,8 +165,37 @@ public class TWKBWriter {
             prestorage[2] = env.getMinY();
             prestorage[3] = env.getMaxY() - prestorage[2];
 
-            for (int i = 0; i <= 3; i++){
-                long longToWrite = Math.round((prestorage[i] * Math.pow(10, xyprecision)));
+
+            if (dim > 2) {
+                Coordinate[] coords = g.getCoordinates();
+                double min[] = new double[dim - 2];
+                double max[] = new double[dim - 2];
+
+                for (int i = 0; i < coords.length; i++) {
+                    prestorage[4] = Double.MAX_VALUE;
+                    prestorage[5] = Double.MIN_VALUE;
+
+                    for (int j = 2; j < dim; j++) {
+                        // TODO: HANDLE ZM CASE
+                        double value = coords[i].getOrdinate(j);
+                        if (value < prestorage[4]) {
+                            prestorage[4] = value;
+                        }
+                        if (value > prestorage[5]) {
+                            prestorage[5] = value;
+                        }
+                    }
+                }
+                prestorage[5] -= prestorage[4];
+            }
+
+            for (int i = 0; i < dim * 2; i++){
+                int precision = 0;
+                if (i < 4) { precision = xyprecision; }
+                if (i == 4 || i == 5) { precision = zprecision; }
+
+                long longToWrite = Math.round((prestorage[i] * Math.pow(10, precision)));
+                System.out.println(" Writing bbox " + i + " : " + longToWrite);
                 os.writeSInt64NoTag(longToWrite);
             }
         }
@@ -168,7 +216,12 @@ public class TWKBWriter {
 
         for (int i = 0; i < seq.size(); i++) {
             for (int j = 0; j < seq.getDimension(); j++) {
-                value = seq.getOrdinate(i, j) * Math.pow(10, xyprecision);
+                int precision = xyprecision;
+                // TODO: Fix this!
+                if (j == 2) { precision = zprecision; }
+                if (j == 3) { precision = mprecision; }
+
+                value = seq.getOrdinate(i, j) * Math.pow(10, precision);
                 long longToWrite = Math.round(value);
 
                 System.out.println("writing value " + longToWrite);
