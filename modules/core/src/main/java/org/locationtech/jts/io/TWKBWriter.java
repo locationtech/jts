@@ -63,10 +63,10 @@ public class TWKBWriter {
         if (geom instanceof Point)
             writePoint((Point) geom, os, xyprecision, zprecision, mprecision);
             // LinearRings will be written as LineStrings
-//        else if (geom instanceof LineString)
-//            writeLineString((LineString) geom, os);
-//        else if (geom instanceof Polygon)
-//            writePolygon((Polygon) geom, os);
+        else if (geom instanceof LineString)
+            writeLineString((LineString) geom, os, xyprecision, zprecision, mprecision, null);
+        else if (geom instanceof Polygon)
+            writePolygon((Polygon) geom, os, xyprecision, zprecision, mprecision);
 //        else if (geom instanceof MultiPoint)
 //            writeGeometryCollection(WKBConstants.wkbMultiPoint,
 //                    (MultiPoint) geom, os);
@@ -92,7 +92,40 @@ public class TWKBWriter {
         // Handle empty geometries first?
 
         writeCoordinateSequence(pt.getCoordinateSequence(), false, os,
-                xyprecision, zprecision, mprecision);
+                xyprecision, zprecision, mprecision, null);
+    }
+
+    private double[] writeLineString(LineString line, CodedOutputStream os,
+                            int xyprecision,
+                            int zprecision,
+                            int mprecision,
+                            double[] inputValueArray) throws IOException
+    {
+        // Handle empty geometries first?
+        if (!line.isEmpty()) {
+            os.writeInt32NoTag(line.getNumPoints());
+            return writeCoordinateSequence(line.getCoordinateSequence(), false, os,
+                    xyprecision, zprecision, mprecision, inputValueArray);
+        }
+        return null;
+    }
+
+    private void writePolygon(Polygon polygon, CodedOutputStream os,
+                                 int xyprecision,
+                                 int zprecision,
+                                 int mprecision) throws IOException
+    {
+        // Handle empty geometries first?
+        if (!polygon.isEmpty()) {
+                        os.writeInt32NoTag(polygon.getNumInteriorRing() + 1);
+            double[] inputValueArray = writeLineString(polygon.getExteriorRing(), os,
+                    xyprecision, zprecision, mprecision, null);
+
+            for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+                inputValueArray = writeLineString(polygon.getInteriorRingN(i), os,
+                        xyprecision, zprecision, mprecision, inputValueArray);
+            }
+        }
     }
 
     private void writeHeader(Geometry g, CodedOutputStream os,
@@ -112,6 +145,12 @@ public class TWKBWriter {
         if (g instanceof Point) {
             geometryType = 1;
             dim = ((Point) g).getCoordinateSequence().getDimension();
+        } else if (g instanceof LineString){
+            geometryType = 2;
+            dim = ((LineString) g).getCoordinateSequence().getDimension();
+        } else if (g instanceof Polygon) {
+            geometryType = 3;
+            dim = ((Polygon) g).getExteriorRing().getCoordinateSequence().getDimension();
         }
 
 
@@ -204,15 +243,23 @@ public class TWKBWriter {
 
     }
 
-    private void writeCoordinateSequence(CoordinateSequence seq, boolean writeSize, CodedOutputStream os,
+    private double[] writeCoordinateSequence(CoordinateSequence seq, boolean writeSize, CodedOutputStream os,
                                          int xyprecision,
                                          int zprecision,
-                                         int mprecision)
+                                         int mprecision,
+                                         double[] inputValueArray)
             throws IOException
     {
         // TODO: Wire through output dimensions
-        byte[] valueArray = new byte[seq.getDimension()];
+
+        double[] valueArray = new double[seq.getDimension()];
+
+        if (inputValueArray != null) {
+            valueArray = inputValueArray;
+        }
+
         double value;
+        double valueToWrite;
 
         for (int i = 0; i < seq.size(); i++) {
             for (int j = 0; j < seq.getDimension(); j++) {
@@ -222,17 +269,20 @@ public class TWKBWriter {
                 if (j == 3) { precision = mprecision; }
 
                 value = seq.getOrdinate(i, j) * Math.pow(10, precision);
-                long longToWrite = Math.round(value);
+
+                if (i == 0 && inputValueArray == null) {
+                    valueToWrite = value;
+                } else {
+                    valueToWrite = value - valueArray[j];
+                }
+                valueArray[j] = value;
+
+                long longToWrite = Math.round(valueToWrite);
 
                 System.out.println("writing value " + longToWrite);
                 os.writeSInt64NoTag(longToWrite);
             }
         }
-
-//        if (writeSize)
-//            writeInt(seq.size(), os);
-//
-//        for (int i = 0; i < seq.size(); i++) {
-//            writeCoordinate(seq, i, os);
+        return valueArray;
     }
 }
