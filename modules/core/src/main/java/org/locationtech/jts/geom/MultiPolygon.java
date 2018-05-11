@@ -135,7 +135,10 @@ public class MultiPolygon
     for (int i = 0; i < polygons.length; i++) {
       polygons[i] = (Polygon) this.geometries[i].copy();
     }
-    return new MultiPolygon(polygons, factory);
+    MultiPolygon copy = new MultiPolygon(polygons, factory);
+    copy.setSRID(this.getSRID());
+    copy.setUserData(this.getUserData());
+    return copy;
   }
 
   protected int getSortIndex() {

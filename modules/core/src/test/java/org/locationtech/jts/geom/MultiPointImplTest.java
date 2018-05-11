@@ -84,4 +84,18 @@ public class MultiPointImplTest extends TestCase {
     assertTrue(m1.equals(m2));
   }
 
+  public void testCopy() throws Exception {
+    MultiPoint m = (MultiPoint) reader.read("MULTIPOINT(5 6, 7 8)");
+    m.setUserData(12);
+    m.setSRID(4326);
+    GeometryCollection copy = m.copy();
+    assertEquals(m.getNumGeometries(), copy.getNumGeometries());
+    for(int i=0; i<m.getNumGeometries(); i++){
+      assertEquals(m.getGeometryN(i), copy.getGeometryN(i));
+    }
+    assertEquals(m.getUserData(), copy.getUserData());
+    assertEquals(m.getSRID(), copy.getSRID());
+    assertEquals(m.getFactory(), copy.getFactory());
+  }
+
 }

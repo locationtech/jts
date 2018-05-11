@@ -118,7 +118,10 @@ public class MultiLineString
     for (int i = 0; i < lineStrings.length; i++) {
       lineStrings[i] = (LineString) this.geometries[i].copy();
     }
-    return new MultiLineString(lineStrings, factory);
+    MultiLineString copy = new MultiLineString(lineStrings, factory);
+    copy.setSRID(this.getSRID());
+    copy.setUserData(this.getUserData());
+    return copy;
   }
 
   public boolean equalsExact(Geometry other, double tolerance) {

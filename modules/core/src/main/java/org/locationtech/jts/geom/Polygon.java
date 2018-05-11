@@ -369,7 +369,10 @@ public class Polygon
     for (int i = 0; i < holes.length; i++) {
     	holeCopies[i] = holes[i].copy();
     }
-    return new Polygon(shellCopy, holeCopies, factory);
+    Polygon copy = new Polygon(shellCopy, holeCopies, factory);
+    copy.setSRID(this.getSRID());
+    copy.setUserData(this.getUserData());
+    return copy;
   }
 
   public Geometry convexHull() {
