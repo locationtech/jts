@@ -36,8 +36,7 @@ public class TWKBWriter {
         CodedOutputStream cos = CodedOutputStream.newInstance(byteArrayOS);
         try {
             byteArrayOS.reset();
-            writeHeader(geom, cos, xyprecision, zprecision, mprecision, includeSize, includeBbox);
-            write(geom, cos, xyprecision, zprecision, mprecision, null);
+            write(geom, cos, xyprecision, zprecision, mprecision, includeSize, includeBbox, null);
             cos.flush();
         }
         catch (IOException ex) {
@@ -57,9 +56,11 @@ public class TWKBWriter {
                       int xyprecision,
                       int zprecision,
                       int mprecision,
+                      boolean includeSize,
+                      boolean includeBbox,
                       double[] inputValueArray) throws IOException
     {
-
+        writeHeader(geom, os, xyprecision, zprecision, mprecision, includeSize, includeBbox);
         if (geom instanceof Point)
             return writePoint((Point) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
             // LinearRings will be written as LineStrings
@@ -74,7 +75,7 @@ public class TWKBWriter {
         else if (geom instanceof MultiPolygon)
             return writeMultiPolygon((MultiPolygon) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
         else if (geom instanceof GeometryCollection)
-            return writeGeometryCollection((GeometryCollection) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
+            return writeGeometryCollection((GeometryCollection) geom, os, xyprecision, zprecision, mprecision, includeSize, includeBbox, inputValueArray);
         else {
             Assert.shouldNeverReachHere("Unknown Geometry type");
             return null;
@@ -179,12 +180,14 @@ public class TWKBWriter {
                                    int xyprecision,
                                    int zprecision,
                                    int mprecision,
-                                         double[] inputValueArray) throws IOException
+                                   boolean includeSize,
+                                   boolean includeBbox,
+                                   double[] inputValueArray) throws IOException
     {
         if (!geometryCollection.isEmpty()) {
             os.writeInt32NoTag(geometryCollection.getNumGeometries());
             for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
-                inputValueArray = write(geometryCollection.getGeometryN(i), os, xyprecision, zprecision, mprecision, inputValueArray);
+                write(geometryCollection.getGeometryN(i), os, xyprecision, zprecision, mprecision, includeSize, includeBbox, null);
             }
         }
         return inputValueArray;
