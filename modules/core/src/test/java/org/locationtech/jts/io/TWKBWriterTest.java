@@ -15,6 +15,219 @@ public class TWKBWriterTest extends TestCase {
         TestRunner.run(TWKBWriterTest.class);
     }
 
+    public void testPoints() throws ParseException {
+        check("POINT(1 2)", 0, 0, 0, false, false, "01000204");
+
+        check("POINT(1 2)", 0, 0, 0, true, false, "0102020204");
+        check("POINT(1 2)", 0, 0, 0, false, true, "0101020004000204");
+
+        check("POINT(1 2)", 0, 0, 0, true, true, "010306020004000204");
+
+
+        check("POINT(1 2)", 0, 1, 0, true, true, "010306020004000204");
+        check("POINT(1 2)", 0, 1, 0, true, false, "0102020204");
+        check("POINT(1 2)", 0, 1, 0, false, true, "0101020004000204");
+        check("POINT(1 2)", 0, 1, 0, false, false, "01000204");
+        check("POINT(1 2)", 0, 5, 0, true, true, "010306020004000204");
+        check("POINT(1 2)", 0, 5, 0, true, false, "0102020204");
+        check("POINT(1 2)", 0, 5, 0, false, true, "0101020004000204");
+        check("POINT(1 2)", 0, 5, 0, false, false, "01000204");
+
+        check("POINT(1 2)", -1, 0, 0, true, true, "110306000000000000");
+        check("POINT(1 2)", -1, 0, 0, true, false, "1102020000");
+        check("POINT(1 2)", -1, 0, 0, false, true, "1101000000000000");
+        check("POINT(1 2)", -1, 0, 0, false, false, "11000000");
+        check("POINT(1 2)", -1, 1, 0, true, true, "110306000000000000");
+        check("POINT(1 2)", -1, 1, 0, true, false, "1102020000");
+        check("POINT(1 2)", -1, 1, 0, false, true, "1101000000000000");
+        check("POINT(1 2)", -1, 1, 0, false, false, "11000000");
+        check("POINT(1 2)", -1, 5, 0, true, true, "110306000000000000");
+        check("POINT(1 2)", -1, 5, 0, true, false, "1102020000");
+        check("POINT(1 2)", -1, 5, 0, false, true, "1101000000000000");
+        check("POINT(1 2)", -1, 5, 0, false, false, "11000000");
+
+        check("POINT(1 2)", 1, 0, 0, true, true, "210306140028001428");
+        check("POINT(1 2)", 1, 0, 0, true, false, "2102021428");
+        check("POINT(1 2)", 1, 0, 0, false, true, "2101140028001428");
+        check("POINT(1 2)", 1, 0, 0, false, false, "21001428");
+        check("POINT(1 2)", 1, 1, 0, true, true, "210306140028001428");
+        check("POINT(1 2)", 1, 1, 0, true, false, "2102021428");
+        check("POINT(1 2)", 1, 1, 0, false, true, "2101140028001428");
+        check("POINT(1 2)", 1, 1, 0, false, false, "21001428");
+        check("POINT(1 2)", 1, 5, 0, true, true, "210306140028001428");
+        check("POINT(1 2)", 1, 5, 0, true, false, "2102021428");
+        check("POINT(1 2)", 1, 5, 0, false, true, "2101140028001428");
+        check("POINT(1 2)", 1, 5, 0, false, false, "21001428");
+        check("POINT(1 2)", 5, 0, 0, true, true, "a1030ec09a0c0080b51800c09a0c80b518");
+        check("POINT(1 2)", 5, 0, 0, true, false, "a10206c09a0c80b518");
+        check("POINT(1 2)", 5, 0, 0, false, true, "a101c09a0c0080b51800c09a0c80b518");
+        check("POINT(1 2)", 5, 0, 0, false, false, "a100c09a0c80b518");
+        check("POINT(1 2)", 5, 1, 0, true, true, "a1030ec09a0c0080b51800c09a0c80b518");
+        check("POINT(1 2)", 5, 1, 0, true, false, "a10206c09a0c80b518");
+        check("POINT(1 2)", 5, 1, 0, false, true, "a101c09a0c0080b51800c09a0c80b518");
+        check("POINT(1 2)", 5, 1, 0, false, false, "a100c09a0c80b518");
+        check("POINT(1 2)", 5, 5, 0, true, true, "a1030ec09a0c0080b51800c09a0c80b518");
+        check("POINT(1 2)", 5, 5, 0, true, false, "a10206c09a0c80b518");
+        check("POINT(1 2)", 5, 5, 0, false, true, "a101c09a0c0080b51800c09a0c80b518");
+        check("POINT(1 2)", 5, 5, 0, false, false, "a100c09a0c80b518");
+        check("POINT(1234.567891234 98765.54321)", -1, 0, 0, true, true, "11030cf60100aa9a0100f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", -1, 0, 0, true, false, "110205f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", -1, 0, 0, false, true, "1101f60100aa9a0100f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", -1, 0, 0, false, false, "1100f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", -1, 1, 0, true, true, "11030cf60100aa9a0100f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", -1, 1, 0, true, false, "110205f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", -1, 1, 0, false, true, "1101f60100aa9a0100f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", -1, 1, 0, false, false, "1100f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", -1, 5, 0, true, true, "11030cf60100aa9a0100f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", -1, 5, 0, true, false, "110205f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", -1, 5, 0, false, true, "1101f60100aa9a0100f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", -1, 5, 0, false, false, "1100f601aa9a01");
+        check("POINT(1234.567891234 98765.54321)", 0, 0, 0, true, true, "01030ca613009c870c00a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 0, 0, 0, true, false, "010205a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 0, 0, 0, false, true, "0101a613009c870c00a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 0, 0, 0, false, false, "0100a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 0, 1, 0, true, true, "01030ca613009c870c00a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 0, 1, 0, true, false, "010205a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 0, 1, 0, false, true, "0101a613009c870c00a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 0, 1, 0, false, false, "0100a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 0, 5, 0, true, true, "01030ca613009c870c00a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 0, 5, 0, true, false, "010205a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 0, 5, 0, false, true, "0101a613009c870c00a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 0, 5, 0, false, false, "0100a6139c870c");
+        check("POINT(1234.567891234 98765.54321)", 1, 0, 0, true, true, "21030ef4c001008ec87800f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 1, 0, 0, true, false, "210206f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 1, 0, 0, false, true, "2101f4c001008ec87800f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 1, 0, 0, false, false, "2100f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 1, 1, 0, true, true, "21030ef4c001008ec87800f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 1, 1, 0, true, false, "210206f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 1, 1, 0, false, true, "2101f4c001008ec87800f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 1, 1, 0, false, false, "2100f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 1, 5, 0, true, true, "21030ef4c001008ec87800f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 1, 5, 0, true, false, "210206f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 1, 5, 0, false, true, "2101f4c001008ec87800f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 1, 5, 0, false, false, "2100f4c0018ec878");
+        check("POINT(1234.567891234 98765.54321)", 5, 0, 0, true, true, "a10314aab4de7500a28982cb4900aab4de75a28982cb49");
+        check("POINT(1234.567891234 98765.54321)", 5, 0, 0, true, false, "a10209aab4de75a28982cb49");
+        check("POINT(1234.567891234 98765.54321)", 5, 0, 0, false, true, "a101aab4de7500a28982cb4900aab4de75a28982cb49");
+        check("POINT(1234.567891234 98765.54321)", 5, 0, 0, false, false, "a100aab4de75a28982cb49");
+        check("POINT(1234.567891234 98765.54321)", 5, 1, 0, true, true, "a10314aab4de7500a28982cb4900aab4de75a28982cb49");
+        check("POINT(1234.567891234 98765.54321)", 5, 1, 0, true, false, "a10209aab4de75a28982cb49");
+        check("POINT(1234.567891234 98765.54321)", 5, 1, 0, false, true, "a101aab4de7500a28982cb4900aab4de75a28982cb49");
+        check("POINT(1234.567891234 98765.54321)", 5, 1, 0, false, false, "a100aab4de75a28982cb49");
+        check("POINT(1234.567891234 98765.54321)", 5, 5, 0, true, true, "a10314aab4de7500a28982cb4900aab4de75a28982cb49");
+        check("POINT(1234.567891234 98765.54321)", 5, 5, 0, true, false, "a10209aab4de75a28982cb49");
+        check("POINT(1234.567891234 98765.54321)", 5, 5, 0, false, true, "a101aab4de7500a28982cb4900aab4de75a28982cb49");
+        check("POINT(1234.567891234 98765.54321)", 5, 5, 0, false, false, "a100aab4de75a28982cb49");
+
+    }
+
+    public void testPointsZ() throws ParseException {
+
+        check("POINT Z(1 2 3)", -1, 0, 0, true, true, "110b0109000000000600000006");
+        check("POINT Z(1 2 3)", -1, 0, 0, true, false, "110a0103000006");
+        check("POINT Z(1 2 3)", -1, 0, 0, false, true, "110901000000000600000006");
+        check("POINT Z(1 2 3)", -1, 0, 0, false, false, "110801000006");
+        check("POINT Z(1 2 3)", -1, 1, 0, true, true, "110b0509000000003c0000003c");
+        check("POINT Z(1 2 3)", -1, 1, 0, true, false, "110a050300003c");
+        check("POINT Z(1 2 3)", -1, 1, 0, false, true, "110905000000003c0000003c");
+        check("POINT Z(1 2 3)", -1, 1, 0, false, false, "11080500003c");
+        check("POINT Z(1 2 3)", -1, 5, 0, true, true, "110b150d00000000c0cf24000000c0cf24");
+        check("POINT Z(1 2 3)", -1, 5, 0, true, false, "110a15050000c0cf24");
+        check("POINT Z(1 2 3)", -1, 5, 0, false, true, "11091500000000c0cf24000000c0cf24");
+        check("POINT Z(1 2 3)", -1, 5, 0, false, false, "1108150000c0cf24");
+        check("POINT Z(1 2 3)", 0, 0, 0, true, true, "010b0109020004000600020406");
+        check("POINT Z(1 2 3)", 0, 0, 0, true, false, "010a0103020406");
+        check("POINT Z(1 2 3)", 0, 0, 0, false, true, "010901020004000600020406");
+        check("POINT Z(1 2 3)", 0, 0, 0, false, false, "010801020406");
+        check("POINT Z(1 2 3)", 0, 1, 0, true, true, "010b0509020004003c0002043c");
+        check("POINT Z(1 2 3)", 0, 1, 0, true, false, "010a050302043c");
+        check("POINT Z(1 2 3)", 0, 1, 0, false, true, "010905020004003c0002043c");
+        check("POINT Z(1 2 3)", 0, 1, 0, false, false, "01080502043c");
+        check("POINT Z(1 2 3)", 0, 5, 0, true, true, "010b150d02000400c0cf24000204c0cf24");
+        check("POINT Z(1 2 3)", 0, 5, 0, true, false, "010a15050204c0cf24");
+        check("POINT Z(1 2 3)", 0, 5, 0, false, true, "01091502000400c0cf24000204c0cf24");
+        check("POINT Z(1 2 3)", 0, 5, 0, false, false, "0108150204c0cf24");
+        check("POINT Z(1 2 3)", 1, 0, 0, true, true, "210b0109140028000600142806");
+        check("POINT Z(1 2 3)", 1, 0, 0, true, false, "210a0103142806");
+        check("POINT Z(1 2 3)", 1, 0, 0, false, true, "210901140028000600142806");
+        check("POINT Z(1 2 3)", 1, 0, 0, false, false, "210801142806");
+        check("POINT Z(1 2 3)", 1, 1, 0, true, true, "210b0509140028003c0014283c");
+        check("POINT Z(1 2 3)", 1, 1, 0, true, false, "210a050314283c");
+        check("POINT Z(1 2 3)", 1, 1, 0, false, true, "210905140028003c0014283c");
+        check("POINT Z(1 2 3)", 1, 1, 0, false, false, "21080514283c");
+        check("POINT Z(1 2 3)", 1, 5, 0, true, true, "210b150d14002800c0cf24001428c0cf24");
+        check("POINT Z(1 2 3)", 1, 5, 0, true, false, "210a15051428c0cf24");
+        check("POINT Z(1 2 3)", 1, 5, 0, false, true, "21091514002800c0cf24001428c0cf24");
+        check("POINT Z(1 2 3)", 1, 5, 0, false, false, "2108151428c0cf24");
+        check("POINT Z(1 2 3)", 5, 0, 0, true, true, "a10b0111c09a0c0080b518000600c09a0c80b51806");
+        check("POINT Z(1 2 3)", 5, 0, 0, true, false, "a10a0107c09a0c80b51806");
+        check("POINT Z(1 2 3)", 5, 0, 0, false, true, "a10901c09a0c0080b518000600c09a0c80b51806");
+        check("POINT Z(1 2 3)", 5, 0, 0, false, false, "a10801c09a0c80b51806");
+        check("POINT Z(1 2 3)", 5, 1, 0, true, true, "a10b0511c09a0c0080b518003c00c09a0c80b5183c");
+        check("POINT Z(1 2 3)", 5, 1, 0, true, false, "a10a0507c09a0c80b5183c");
+        check("POINT Z(1 2 3)", 5, 1, 0, false, true, "a10905c09a0c0080b518003c00c09a0c80b5183c");
+        check("POINT Z(1 2 3)", 5, 1, 0, false, false, "a10805c09a0c80b5183c");
+        check("POINT Z(1 2 3)", 5, 5, 0, true, true, "a10b1515c09a0c0080b51800c0cf2400c09a0c80b518c0cf24");
+        check("POINT Z(1 2 3)", 5, 5, 0, true, false, "a10a1509c09a0c80b518c0cf24");
+        check("POINT Z(1 2 3)", 5, 5, 0, false, true, "a10915c09a0c0080b51800c0cf2400c09a0c80b518c0cf24");
+        check("POINT Z(1 2 3)", 5, 5, 0, false, false, "a10815c09a0c80b518c0cf24");
+    }
+
+        public void testPointsZandM() throws ParseException {
+
+            check("POINT Z(1 2 3)", -1, 0, 0, false, false, "110801000006");
+            check("POINT Z(1 2 3)", -1, 1, 0, false, false, "11080500003c");
+            check("POINT Z(1 2 3)", -1, 5, 0, false, false, "1108150000c0cf24");
+            check("POINT Z(1 2 3)", 0, 0, 0, false, false, "010801020406");
+            check("POINT Z(1 2 3)", 0, 1, 0, false, false, "01080502043c");
+            check("POINT Z(1 2 3)", 0, 5, 0, false, false, "0108150204c0cf24");
+            check("POINT Z(1 2 3)", 1, 0, 0, false, false, "210801142806");
+            check("POINT Z(1 2 3)", 1, 1, 0, false, false, "21080514283c");
+            check("POINT Z(1 2 3)", 1, 5, 0, false, false, "2108151428c0cf24");
+            check("POINT Z(1 2 3)", 5, 0, 0, false, false, "a10801c09a0c80b51806");
+            check("POINT Z(1 2 3)", 5, 1, 0, false, false, "a10805c09a0c80b5183c");
+            check("POINT Z(1 2 3)", 5, 5, 0, false, false, "a10815c09a0c80b518c0cf24");
+
+            check("POINT M(1 2 3)", -1, 0, 0, false, false, "110802000006");
+            check("POINT M(1 2 3)", -1, 1, 0, false, false, "110806000006");
+            check("POINT M(1 2 3)", -1, 5, 0, false, false, "110816000006");
+            check("POINT M(1 2 3)", 0, 0, 0, false, false, "010802020406");
+            check("POINT M(1 2 3)", 0, 1, 0, false, false, "010806020406");
+            check("POINT M(1 2 3)", 0, 5, 0, false, false, "010816020406");
+            check("POINT M(1 2 3)", 1, 0, 0, false, false, "210802142806");
+            check("POINT M(1 2 3)", 1, 1, 0, false, false, "210806142806");
+            check("POINT M(1 2 3)", 1, 5, 0, false, false, "210816142806");
+            check("POINT M(1 2 3)", 5, 0, 0, false, false, "a10802c09a0c80b51806");
+            check("POINT M(1 2 3)", 5, 1, 0, false, false, "a10806c09a0c80b51806");
+            check("POINT M(1 2 3)", 5, 5, 0, false, false, "a10816c09a0c80b51806");
+        }
+
+    private CoordinateSequenceFactory factory = new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE, 2);
+    private GeometryFactory geometryFactory = new GeometryFactory(factory);
+    private TWKBWriter writer = new TWKBWriter();
+    private WKTReader reader = new WKTReader(geometryFactory);
+
+    private void check(String wkt,
+                       int xyprecision,
+                       int zprecision,
+                       int mprecision,
+                       boolean includeSize,
+                       boolean includeBbox,
+                       String expectedTWKB) throws ParseException {
+
+        Geometry geom = reader.read(wkt);
+        byte[] written = writer.write(geom, xyprecision, zprecision, mprecision, includeSize, includeBbox);
+        byte[] twkb = WKBReader.hexToBytes(expectedTWKB);
+
+        boolean isEqualHex = Arrays.equals(twkb, written);
+
+        if (!isEqualHex) {
+            System.out.println("Expected    " + expectedTWKB);
+            System.out.println("Output:     " + javax.xml.bind.DatatypeConverter.printHexBinary(written));
+        }
+        assertTrue(isEqualHex);
+    }
+
 //    private GeometryFactory geomFactory = new GeometryFactory();
 //    private WKTReader rdr = new WKTReader(geomFactory);
 
@@ -37,7 +250,7 @@ public class TWKBWriterTest extends TestCase {
     }
 
     public void testTWKB() throws ParseException {
-        checkTWKBGeometry("a110", "POINT EMPTY");
+        checkTWKBGeometry("0110", "POINT EMPTY");
         checkTWKBGeometry("a100c09a0c80b518", "POINT(1 2)");
         checkTWKBGeometry("a210", "LINESTRING EMPTY");
         checkTWKBGeometry("a20002c09a0c80b51880b51880b518", "LINESTRING(1 2,3 4)");
@@ -70,7 +283,6 @@ public class TWKBWriterTest extends TestCase {
         checkTWKBGeometry(twkbHex, 3, expectedWKT);
     }
 
-
     private void checkTWKBGeometry(String twkbHex, int dimension, String expectedWKT) throws ParseException
     {
         CoordinateSequenceFactory csf =
@@ -84,11 +296,15 @@ public class TWKBWriterTest extends TestCase {
         byte[] twkb = WKBReader.hexToBytes(twkbHex);
         byte[] written = twkbWriter.write(g);
 
-        TWKBReader reader = new TWKBReader();
-        Geometry g2 = reader.read(written);
-
         boolean isEqualHex = Arrays.equals(twkb, written);
 
+        if (!isEqualHex) {
+            System.out.println("Input:      " + twkbHex);
+            System.out.println("Expected " + javax.xml.bind.DatatypeConverter.printHexBinary(written));
+        }
+
+        TWKBReader reader = new TWKBReader();
+        Geometry g2 = reader.read(written);
 
         CoordinateSequenceComparator comp = null;
         switch (dimension) {
