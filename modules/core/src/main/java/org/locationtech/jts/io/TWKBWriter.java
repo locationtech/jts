@@ -61,7 +61,7 @@ public class TWKBWriter {
     {
         writeHeader(geom, os, xyprecision, zprecision, mprecision, includeSize, includeBbox);
         if (geom instanceof Point)
-            writePoint((Point) geom, os);
+            writePoint((Point) geom, os, xyprecision, zprecision, mprecision);
             // LinearRings will be written as LineStrings
 //        else if (geom instanceof LineString)
 //            writeLineString((LineString) geom, os);
@@ -84,11 +84,15 @@ public class TWKBWriter {
         }
     }
 
-    private void writePoint(Point pt, CodedOutputStream os) throws IOException
+    private void writePoint(Point pt, CodedOutputStream os,
+                            int xyprecision,
+                            int zprecision,
+                            int mprecision) throws IOException
     {
         // Handle empty geometries first?
 
-        writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
+        writeCoordinateSequence(pt.getCoordinateSequence(), false, os,
+                xyprecision, zprecision, mprecision);
     }
 
     private void writeHeader(Geometry g, CodedOutputStream os,
@@ -104,11 +108,7 @@ public class TWKBWriter {
         // TODO: Calculate type correctly
         byte geometryType = 1;
 
-        // Calculate precision
-        // TODO: Calculate precision correctly.
-        byte precision = 0;
-
-        byte typePrecision = (byte)((precision << 4) | geometryType);
+        byte typePrecision = (byte)((CodedOutputStream.encodeZigZag32(xyprecision ) << 4) | geometryType);
 
         buf[0] = typePrecision;
         //os.write(buf, 1);
@@ -129,9 +129,10 @@ public class TWKBWriter {
         // Optionally, write extended dimension data
 
         // Optionally, write size byte
-        if (includeSize) {
-            os.writeRawByte(CodedOutputStream.encodeZigZag32(g.getNumGeometries()));
-        }
+        // TODO:  This requires computing the size of the rest of the geometry!
+//        if (includeSize) {
+//            os.writeRawByte(CodedOutputStream.encodeZigZag32(g.getNumGeometries()));
+//        }
 
         // Optionally, write bbox
         // TODO: Handle multiple dimensions
@@ -146,8 +147,8 @@ public class TWKBWriter {
             prestorage[3] = env.getMaxY() - prestorage[2];
 
             for (int i = 0; i <= 3; i++){
-                int intToWrite = (int)(prestorage[i] * Math.pow(10, xyprecision));
-                os.writeSInt32NoTag(intToWrite);
+                long longToWrite = Math.round((prestorage[i] * Math.pow(10, xyprecision)));
+                os.writeSInt64NoTag(longToWrite);
             }
         }
 
@@ -155,7 +156,10 @@ public class TWKBWriter {
 
     }
 
-    private void writeCoordinateSequence(CoordinateSequence seq, boolean writeSize, CodedOutputStream os)
+    private void writeCoordinateSequence(CoordinateSequence seq, boolean writeSize, CodedOutputStream os,
+                                         int xyprecision,
+                                         int zprecision,
+                                         int mprecision)
             throws IOException
     {
         // TODO: Wire through output dimensions
@@ -164,9 +168,11 @@ public class TWKBWriter {
 
         for (int i = 0; i < seq.size(); i++) {
             for (int j = 0; j < seq.getDimension(); j++) {
-                value = seq.getOrdinate(i, j);
-                System.out.println("writing value " + value);
-                os.writeSInt32NoTag((int) value);
+                value = seq.getOrdinate(i, j) * Math.pow(10, xyprecision);
+                long longToWrite = Math.round(value);
+
+                System.out.println("writing value " + longToWrite);
+                os.writeSInt64NoTag(longToWrite);
             }
         }
 
