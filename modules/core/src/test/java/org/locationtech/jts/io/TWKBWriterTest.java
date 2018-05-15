@@ -2,11 +2,9 @@ package org.locationtech.jts.io;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import org.locationtech.jts.geom.CoordinateSequenceComparator;
-import org.locationtech.jts.geom.CoordinateSequenceFactory;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
+import org.locationtech.jts.util.Assert;
 
 import java.util.Arrays;
 
@@ -271,7 +269,9 @@ public class TWKBWriterTest extends TestCase {
     }
 
     private CoordinateSequenceFactory factory = new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE, 2);
+    private CoordinateSequenceFactory factory3d = new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE, 3);
     private GeometryFactory geometryFactory = new GeometryFactory(factory);
+
     private TWKBWriter writer = new TWKBWriter();
     private WKTReader reader = new WKTReader(geometryFactory);
     private WKTReader reader3 = new WKTReader();
@@ -306,6 +306,31 @@ public class TWKBWriterTest extends TestCase {
             System.out.println("Output:     " + javax.xml.bind.DatatypeConverter.printHexBinary(written));
         }
         assertTrue(isEqualHex);
+
+        // read the twkb back out as a geom
+        TWKBReader twkbReader = new TWKBReader();
+        Geometry roundTripGeom = twkbReader.read(twkb);
+        // round input geom to written precision
+        CoordinateSequenceComparator comp = comp2;
+        int dimension = 2;
+        // TODO: better way of getting dimension? match on geometry type?
+        if (geom.getCoordinate() != null && !Double.isNaN(geom.getCoordinate().getOrdinate(2))){
+            comp = comp3;
+            dimension = 3;
+        }
+
+        Geometry roundedGeom = roundGeomToPrecision(geom, xyprecision, zprecision, mprecision, dimension);
+
+        boolean isEqual = (roundTripGeom.compareTo(roundedGeom, comp) == 0);
+        if (!isEqual) {
+            System.out.println("isEqual: " + isEqual);
+            System.out.println("Precision:      " + xyprecision);
+            System.out.println("Input:      " + wkt);
+            System.out.println("Rounded Input:      " + roundedGeom);
+            System.out.println("Round-trip: " + roundTripGeom);
+            System.out.println("Written  " + javax.xml.bind.DatatypeConverter.printHexBinary(written));
+        }
+        assertTrue(isEqual);
     }
 
 //    private GeometryFactory geomFactory = new GeometryFactory();
@@ -391,6 +416,87 @@ public class TWKBWriterTest extends TestCase {
         }
         assertTrue(isEqualHex);
         assertTrue(isEqual);
+    }
+
+    private double roundToPrecision(double d, int precision) {
+        double constant = Math.pow(10, precision);
+        return Math.round(d*constant)/constant;
+    }
+
+    private CoordinateSequence roundCoordsToPrecision(Coordinate[] coords,
+                                                      int xyprecision,
+                                                      int zprecision,
+                                                      int mprecision,
+                                                      int dimension)
+    {
+        int length = coords.length;
+        Coordinate[] roundedCoordArray = new Coordinate[length];
+        for (int i = 0; i < length; i++) {
+            Coordinate coord = coords[i];
+            double x = roundToPrecision(coord.getOrdinate(0), xyprecision);
+            double y = roundToPrecision(coord.getOrdinate(1), xyprecision);
+            double z = roundToPrecision(coord.getOrdinate(2), zprecision); //TODO: how to tell if this ordinate is z or m
+            roundedCoordArray[i] = new Coordinate(x, y, z);
+        }
+        if (dimension == 2) {
+            return factory.create(roundedCoordArray);
+        } else {
+            return factory3d.create(roundedCoordArray);
+        }
+
+    }
+
+    private Geometry roundGeomToPrecision(Geometry geom,
+                                          int xyprecision,
+                                          int zprecision,
+                                          int mprecision,
+                                          int dimension)
+    {
+        Coordinate[] coords = geom.getCoordinates();
+
+        if (geom instanceof Point)
+            return geometryFactory.createPoint(roundCoordsToPrecision(coords, xyprecision, zprecision, mprecision, dimension));
+        else if (geom instanceof LineString)
+            return geometryFactory.createLineString(roundCoordsToPrecision(coords, xyprecision, zprecision, mprecision, dimension));
+        else if (geom instanceof Polygon) {
+            int numRings = ((Polygon) geom).getNumInteriorRing();
+            Coordinate[] shellCoords = ((Polygon) geom).getExteriorRing().getCoordinates();
+            CoordinateSequence roundedShell = roundCoordsToPrecision(shellCoords, xyprecision, zprecision, mprecision, dimension);
+            LinearRing shell = geometryFactory.createLinearRing(roundedShell);
+
+            LinearRing[] holes = new LinearRing[numRings];
+            for (int i = 0; i < numRings; i++) {
+                LineString hole = ((Polygon) geom).getInteriorRingN(i);
+                Geometry roundedHole = roundGeomToPrecision(hole, xyprecision, zprecision, mprecision, dimension);
+                holes[i] = geometryFactory.createLinearRing(roundedHole.getCoordinates());
+            }
+            return geometryFactory.createPolygon(shell, holes);
+        } else if (geom instanceof MultiPoint)
+            return geometryFactory.createMultiPoint(roundCoordsToPrecision(coords, xyprecision, zprecision, mprecision, dimension));
+        else if (geom instanceof MultiLineString) {
+            int numGeoms = geom.getNumGeometries();
+            LineString[] lineStrings = new LineString[numGeoms];
+            for (int i = 0; i < numGeoms; i++) {
+                lineStrings[i] = (LineString)roundGeomToPrecision(geom.getGeometryN(i), xyprecision, zprecision, mprecision, dimension);
+            }
+            return geometryFactory.createMultiLineString(lineStrings);
+        } else if (geom instanceof MultiPolygon) {
+            int numGeoms = geom.getNumGeometries();
+            Polygon[] polygons = new Polygon[numGeoms];
+            for (int i = 0; i < numGeoms; i++) {
+                polygons[i] = (Polygon)roundGeomToPrecision(geom.getGeometryN(i), xyprecision, zprecision, mprecision, dimension);
+            }
+            return geometryFactory.createMultiPolygon(polygons);
+        } else if (geom instanceof GeometryCollection) {
+            int numGeoms = geom.getNumGeometries();
+            Geometry[] geometries = new Geometry[numGeoms];
+            for (int i = 0; i < numGeoms; i++) {
+                geometries[i] = roundGeomToPrecision(geom.getGeometryN(i), xyprecision, zprecision, mprecision, dimension);
+            }
+            return geometryFactory.createGeometryCollection(geometries);
+        } else
+            Assert.shouldNeverReachHere("Unknown Geometry type");
+        return null;
     }
 
 }
