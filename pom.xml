@@ -116,6 +116,11 @@
                 <artifactId>ojdbc7</artifactId>
                 <version>11.1.0.7.0</version>
             </dependency>
+            <dependency>
+                <groupId>com.google.protobuf</groupId>
+                <artifactId>protobuf-java</artifactId>
+                <version>3.5.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
