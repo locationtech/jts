@@ -1648,11 +1648,11 @@ public abstract class Geometry
   }
   
   /**
-   * Creates a full copy of this {@link Geometry} object
-   * (including all coordinates contained by it).
+   * Creates a deep copy of this {@link Geometry} object.
+   * Coordinate sequences contained in it are copied.
    * All instance fields are copied (i.e. the <tt>SRID</tt> and <tt>userData</tt>).
    *
-   * @return a copy of this instance
+   * @return a deep copy of this geometry
    */
   public Geometry copy() {
     Geometry copy = copyInternal();
@@ -1661,6 +1661,11 @@ public abstract class Geometry
     return copy;
   }
   
+  /**
+   * An internal method to copy subclass-specific geometry data.
+   * 
+   * @return a copy of the target geometry object.
+   */
   protected abstract Geometry copyInternal();
   
   /**

@@ -1,7 +1,7 @@
 package org.locationtech.jts.geom;
 
 import test.jts.GeometryTestCase;
-import test.jts.TestData;
+import test.jts.GeometryTestData;
 
 public class GeometryCopyTest extends GeometryTestCase {
 
@@ -14,14 +14,14 @@ public class GeometryCopyTest extends GeometryTestCase {
   }
   
   public void testCopy() {
-    checkCopy( read( TestData.WKT_POINT ));
-    checkCopy( read( TestData.WKT_LINESTRING ));
-    checkCopy( read( TestData.WKT_LINEARRING ));
-    checkCopy( read( TestData.WKT_POLY ));
-    checkCopy( read( TestData.WKT_MULTIPOINT ));
-    checkCopy( read( TestData.WKT_MULTILINESTRING ));
-    checkCopy( read( TestData.WKT_MULTIPOLYGON ));
-    checkCopy( read( TestData.WKT_GC ));
+    checkCopy( read( GeometryTestData.WKT_POINT ));
+    checkCopy( read( GeometryTestData.WKT_LINESTRING ));
+    checkCopy( read( GeometryTestData.WKT_LINEARRING ));
+    checkCopy( read( GeometryTestData.WKT_POLY ));
+    checkCopy( read( GeometryTestData.WKT_MULTIPOINT ));
+    checkCopy( read( GeometryTestData.WKT_MULTILINESTRING ));
+    checkCopy( read( GeometryTestData.WKT_MULTIPOLYGON ));
+    checkCopy( read( GeometryTestData.WKT_GC ));
   }
 
   private void checkCopy(final Geometry g) {

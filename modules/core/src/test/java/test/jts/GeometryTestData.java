@@ -1,6 +1,6 @@
 package test.jts;
 
-public class TestData {
+public class GeometryTestData {
 
   public static String WKT_POINT = "POINT ( 10 10)";
   
