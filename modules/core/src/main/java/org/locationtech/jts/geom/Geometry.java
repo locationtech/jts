@@ -1651,6 +1651,10 @@ public abstract class Geometry
    * Creates a deep copy of this {@link Geometry} object.
    * Coordinate sequences contained in it are copied.
    * All instance fields are copied (i.e. the <tt>SRID</tt> and <tt>userData</tt>).
+   * <p>
+   * <b>NOTE:</b> the userData object reference (if present) is copied,
+   * but the value itself is not copied.
+   * If a deep copy is required this must be performed by the caller. 
    *
    * @return a deep copy of this geometry
    */
