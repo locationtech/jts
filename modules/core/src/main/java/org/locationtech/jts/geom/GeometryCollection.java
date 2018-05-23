@@ -219,13 +219,7 @@ public class GeometryCollection extends Geometry {
     return copy();
   }
   
-  /**
-   * Creates and returns a full copy of this {@link GeometryCollection} object.
-   * (including all coordinates contained by it).
-   *
-   * @return a copy of this instance
-   */
-  public GeometryCollection copy() {
+  protected GeometryCollection copyInternal() {
     Geometry[] geometries = new Geometry[this.geometries.length];
     for (int i = 0; i < geometries.length; i++) {
       geometries[i] = this.geometries[i].copy();

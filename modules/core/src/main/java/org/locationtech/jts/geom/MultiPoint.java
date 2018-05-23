@@ -98,7 +98,7 @@ public class MultiPoint
     return ((Point) geometries[n]).getCoordinate();
   }
   
-  public MultiPoint copy() {
+  protected MultiPoint copyInternal() {
     Point[] points = new Point[this.geometries.length];
     for (int i = 0; i < points.length; i++) {
       points[i] = (Point) this.geometries[i].copy();

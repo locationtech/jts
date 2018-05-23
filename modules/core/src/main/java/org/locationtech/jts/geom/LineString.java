@@ -265,13 +265,7 @@ public class LineString
     return copy();
   }
   
-  /**
-   * Creates and returns a full copy of this {@link LineString} object.
-   * (including all coordinates contained by it).
-   *
-   * @return a copy of this instance
-   */
-  public LineString copy() {
+  protected LineString copyInternal() {
     return new LineString(points.copy(), factory);
   }
 

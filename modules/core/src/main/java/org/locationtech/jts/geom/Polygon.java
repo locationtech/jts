@@ -357,17 +357,11 @@ public class Polygon
     return copy();
   }
   
-  /**
-   * Creates and returns a full copy of this {@link Polygon} object.
-   * (including all coordinates contained by it).
-   *
-   * @return a copy of this instance
-   */
-  public Polygon copy() {
-    LinearRing shellCopy = shell.copy();
+  protected Polygon copyInternal() {
+    LinearRing shellCopy = (LinearRing) shell.copy();
     LinearRing[] holeCopies = new LinearRing[this.holes.length];
     for (int i = 0; i < holes.length; i++) {
-    	holeCopies[i] = holes[i].copy();
+    	holeCopies[i] = (LinearRing) holes[i].copy();
     }
     return new Polygon(shellCopy, holeCopies, factory);
   }
@@ -418,7 +412,7 @@ public class Polygon
   }
 
   private LinearRing normalized(LinearRing ring, boolean clockwise) {
-    LinearRing res = ring.copy();
+    LinearRing res = (LinearRing) ring.copy();
     normalize(res, clockwise);
     return res;
   }
@@ -435,9 +429,8 @@ public class Polygon
       CoordinateSequences.reverse(seq);
   }
 
-  public Geometry reverse()
-  {
-    Polygon poly = copy();
+  public Geometry reverse() {
+    Polygon poly = (Polygon) copy();
     poly.shell = (LinearRing) shell.copy().reverse();
     poly.holes = new LinearRing[holes.length];
     for (int i = 0; i < holes.length; i++) {
