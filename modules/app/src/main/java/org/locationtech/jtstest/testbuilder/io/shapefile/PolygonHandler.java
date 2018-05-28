@@ -301,27 +301,16 @@ public class PolygonHandler implements ShapeHandler{
     }
     public int getLength(Geometry geometry){
         
-          Polygon[] polygonArray;
-          MultiPolygon multi;
-        if(geometry instanceof MultiPolygon){
-            multi = (MultiPolygon)geometry;
-        }
-        else{
-            polygonArray = new Polygon[]{(Polygon)geometry};
-            geometryFactory = new GeometryFactory(geometry.getPrecisionModel(), geometry.getSRID());
-            multi = geometryFactory.createMultiPolygon(polygonArray);
-        }
-        
          int nrings=0;
         
-        for (int t=0;t<multi.getNumGeometries();t++)
+        for (int t=0;t<geometry.getNumGeometries();t++)
         {
             Polygon p;
-            p = (Polygon) multi.getGeometryN(t);
+            p = (Polygon) geometry.getGeometryN(t);
             nrings = nrings + 1 + p.getNumInteriorRing();
         }
          
-         int npoints = multi.getNumPoints();
+         int npoints = geometry.getNumPoints();
          
          if (myShapeType == 15)
          {
