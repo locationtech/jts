@@ -106,7 +106,7 @@ public class Shapefile
         if(mainHeader.getVersion() > VERSION){System.err.println("Sf-->Warning, Shapefile format ("+mainHeader.getVersion()+") newer that supported ("+VERSION+"), attempting to read anyway");}
 
         Geometry body;
-        ArrayList list = new ArrayList();
+        ArrayList<Geometry> list = new ArrayList<Geometry>();
         int type=mainHeader.getShapeType();
         ShapeHandler handler = getShapeHandler(type);
         if(handler==null)throw new ShapeTypeNotSupportedException("Unsuported shape type:"+type);
@@ -123,13 +123,15 @@ public class Shapefile
                     list.add(body);
                    // System.out.println("Done record: " + recordNumber);
                 }catch(IllegalArgumentException r2d2){
+                    geomFactory = new GeometryFactory(null, -1);
                     //System.out.println("Record " +recordNumber+ " has is NULL Shape");
-                    list.add(new GeometryCollection(null,null,-1));
+                    list.add(geomFactory.createGeometryCollection(null));
                 }catch(Exception c3p0){
+                    geomFactory = new GeometryFactory(null, -1);
                     System.out.println("Error processing record (a):" +recordNumber);
                     System.out.println(c3p0.getMessage());
                     c3p0.printStackTrace();
-                    list.add(new GeometryCollection(null,null,-1));
+                    list.add(geomFactory.createGeometryCollection(null));
                 }
                // System.out.println("processing:" +recordNumber);
             }
@@ -184,12 +186,14 @@ public class Shapefile
           // System.out.println("Done record: " + recordNumber);
         }catch(IllegalArgumentException r2d2){
           //System.out.println("Record " +recordNumber+ " has is NULL Shape");
-          geom = new GeometryCollection(null,null,-1);
+          geomFactory = new GeometryFactory(null, -1);
+          geom = geomFactory.createGeometryCollection(null);
         }catch(Exception c3p0){
+          geomFactory = new GeometryFactory(null, -1);
           System.out.println("Error processing record (a):" +recordNumber);
           System.out.println(c3p0.getMessage());
           c3p0.printStackTrace();
-          geom = new GeometryCollection(null,null,-1);
+          geom = geomFactory.createGeometryCollection(null);
         }
         // System.out.println("processing:" +recordNumber);
       }

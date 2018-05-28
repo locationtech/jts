@@ -37,6 +37,8 @@ import org.locationtech.jts.geom.*;
  */
 public class MultiPointHandler  implements ShapeHandler  {
     int myShapeType= -1;
+    private PrecisionModel precisionModel = new PrecisionModel();
+    private GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
     
     /** Creates new MultiPointHandler */
     public MultiPointHandler() {
@@ -60,7 +62,7 @@ public class MultiPointHandler  implements ShapeHandler  {
 		actualReadWords += 2;
         
         if (shapeType ==0)
-            return  new MultiPoint(null,new PrecisionModel(),0);
+            return geometryFactory.createMultiPointFromCoords(null);
         if (shapeType != myShapeType)
         {
             throw new InvalidShapefileException("Multipointhandler.read() - expected type code "+myShapeType+" but got "+shapeType);
@@ -134,7 +136,7 @@ public class MultiPointHandler  implements ShapeHandler  {
 		  actualReadWords += 1;
 	}
 	
-        return geometryFactory.createMultiPoint(coords);
+        return geometryFactory.createMultiPointFromCoords(coords);
     }
     
     double[] zMinMax(Geometry g)
