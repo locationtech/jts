@@ -41,6 +41,8 @@ import org.locationtech.jts.geom.PrecisionModel;
  */
 public class PolygonHandler implements ShapeHandler{
     int myShapeType;
+    private PrecisionModel precisionModel = new PrecisionModel();
+    private GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
     
     public PolygonHandler()
     {
@@ -87,7 +89,7 @@ public class PolygonHandler implements ShapeHandler{
         
          if (shapeType ==0)
         {
-             return new MultiPolygon(null,new PrecisionModel(),0); //null shape
+            return geometryFactory.createMultiPolygon(null); //null shape
         }
         
         if ( shapeType != myShapeType ) {
@@ -118,8 +120,8 @@ public class PolygonHandler implements ShapeHandler{
         }
         
         //LinearRing[] rings = new LinearRing[numParts];
-        ArrayList shells = new ArrayList();
-        ArrayList holes = new ArrayList();
+        ArrayList<LinearRing> shells = new ArrayList<LinearRing>();
+        ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
         Coordinate[] coords = new Coordinate[numPoints];
         
         for(int t=0;t<numPoints;t++)
@@ -200,12 +202,12 @@ public class PolygonHandler implements ShapeHandler{
             }
         }
         
-        ArrayList holesForShells = assignHolesToShells(shells, holes);
+        ArrayList<ArrayList<LinearRing>> holesForShells = assignHolesToShells(shells, holes);
 
         Polygon[] polygons = new Polygon[shells.size()];
         for (int i = 0; i < shells.size(); i++) {
           polygons[i] = geometryFactory.createPolygon((LinearRing) shells.get(i),
-              (LinearRing[]) ((ArrayList) holesForShells.get(i))
+              (LinearRing[]) ((ArrayList<LinearRing>) holesForShells.get(i))
                   .toArray(new LinearRing[0]));
         }
 
@@ -224,12 +226,12 @@ public class PolygonHandler implements ShapeHandler{
         return result;
       }
 
-      private ArrayList assignHolesToShells(ArrayList shells, ArrayList holes)
+      private ArrayList<ArrayList<LinearRing>> assignHolesToShells(ArrayList<LinearRing> shells, ArrayList<LinearRing> holes)
       {
         // now we have a list of all shells and all holes
-        ArrayList holesForShells = new ArrayList(shells.size());
+        ArrayList<ArrayList<LinearRing>> holesForShells = new ArrayList<ArrayList<LinearRing>>(shells.size());
         for (int i = 0; i < shells.size(); i++) {
-          holesForShells.add(new ArrayList());
+          holesForShells.add(new ArrayList<LinearRing>());
         }
 
         // find homes
@@ -269,7 +271,7 @@ public class PolygonHandler implements ShapeHandler{
           }
           else {
             // ((ArrayList)holesForShells.get(shells.indexOf(minShell))).add(testRing);
-            ((ArrayList) holesForShells.get(findIndex(shells, minShell)))
+            ((ArrayList<LinearRing>) holesForShells.get(findIndex(shells, minShell)))
                 .add(testHole);
           }
         }
@@ -299,24 +301,16 @@ public class PolygonHandler implements ShapeHandler{
     }
     public int getLength(Geometry geometry){
         
-           MultiPolygon multi;
-        if(geometry instanceof MultiPolygon){
-            multi = (MultiPolygon)geometry;
-        }
-        else{
-            multi = new MultiPolygon(new Polygon[]{(Polygon)geometry},geometry.getPrecisionModel(),geometry.getSRID());
-        }
-        
          int nrings=0;
         
-        for (int t=0;t<multi.getNumGeometries();t++)
+        for (int t=0;t<geometry.getNumGeometries();t++)
         {
             Polygon p;
-            p = (Polygon) multi.getGeometryN(t);
+            p = (Polygon) geometry.getGeometryN(t);
             nrings = nrings + 1 + p.getNumInteriorRing();
         }
          
-         int npoints = multi.getNumPoints();
+         int npoints = geometry.getNumPoints();
          
          if (myShapeType == 15)
          {

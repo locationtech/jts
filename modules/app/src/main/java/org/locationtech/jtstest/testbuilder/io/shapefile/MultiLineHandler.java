@@ -29,8 +29,11 @@ import org.locationtech.jts.geom.*;
  * Wrapper for a Shapefile arc.
  */
 public class MultiLineHandler implements ShapeHandler{
-    
-     int myShapeType= -1;
+
+    int myShapeType = -1;
+    private PrecisionModel precisionModel = new PrecisionModel();
+    private GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
+
      
     public MultiLineHandler()
     {
@@ -60,7 +63,7 @@ public class MultiLineHandler implements ShapeHandler{
         
         if (shapeType ==0)
         {
-             return new MultiLineString(null,new PrecisionModel(),0); //null shape
+            return geometryFactory.createMultiLineString(null); //null shape
         }
         
         if (shapeType != myShapeType)
