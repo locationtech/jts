@@ -82,11 +82,11 @@ public class HoleRemover {
     public Polygon getResult()
     {
       GeometryFactory gf = poly.getFactory();
-      Polygon shell = gf.createPolygon((LinearRing) poly.getExteriorRing());
+      Polygon shell = gf.createPolygon(poly.getExteriorRing());
       
       List holes = new ArrayList();
       for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-        LinearRing hole = (LinearRing) poly.getInteriorRingN(i);
+        LinearRing hole = poly.getInteriorRingN(i);
         if (! isRemoved.value(hole)) {
           holes.add(hole);
         }
@@ -96,7 +96,7 @@ public class HoleRemover {
         return poly;
       
       // return new polygon with covered holes only
-      Polygon result = gf.createPolygon((LinearRing) poly.getExteriorRing(), 
+      Polygon result = gf.createPolygon(poly.getExteriorRing(),
           GeometryFactory.toLinearRingArray(holes));
       return result;
     }

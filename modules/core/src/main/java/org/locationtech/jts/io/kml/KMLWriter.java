@@ -299,12 +299,12 @@ public class KMLWriter
     writeModifiers(level, buf);
 
     startLine("  <outerBoundaryIs>\n", level, buf);
-    writeLinearRing((LinearRing) p.getExteriorRing(), null, false, level + 1, buf);
+    writeLinearRing(p.getExteriorRing(), null, false, level + 1, buf);
     startLine("  </outerBoundaryIs>\n", level, buf);
 
     for (int t = 0; t < p.getNumInteriorRing(); t++) {
       startLine("  <innerBoundaryIs>\n", level, buf);
-      writeLinearRing((LinearRing) p.getInteriorRingN(t), null, false, level + 1, buf);
+      writeLinearRing(p.getInteriorRingN(t), null, false, level + 1, buf);
       startLine("  </innerBoundaryIs>\n", level, buf);
     }
 

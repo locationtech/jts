@@ -59,13 +59,13 @@ public class GeometryFunctions
   public static Geometry getPolygonShell(Geometry g)
   {
     if (g instanceof Polygon) {
-      LinearRing shell = (LinearRing) ((Polygon) g).getExteriorRing();
+      LinearRing shell = ((Polygon) g).getExteriorRing();
       return g.getFactory().createPolygon(shell, null);
     }
     if (g instanceof MultiPolygon) {
       Polygon[] poly = new Polygon[g.getNumGeometries()];
       for (int i = 0; i < g.getNumGeometries(); i++) {
-        LinearRing shell = (LinearRing) ((Polygon) g.getGeometryN(i)).getExteriorRing();
+        LinearRing shell = ((Polygon) g.getGeometryN(i)).getExteriorRing();
         poly[i] = g.getFactory().createPolygon(shell, null);
       }
       return g.getFactory().createMultiPolygon(poly);
@@ -82,7 +82,7 @@ public class GeometryFunctions
         if (geom instanceof Polygon) {
           Polygon poly = (Polygon) geom;
           for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-            Polygon hole = geom.getFactory().createPolygon((LinearRing) poly.getInteriorRingN(i), null);
+            Polygon hole = geom.getFactory().createPolygon(poly.getInteriorRingN(i), null);
             holePolys.add(hole);
           }
         }
@@ -94,7 +94,7 @@ public class GeometryFunctions
 	public static Geometry getPolygonHoleN(Geometry g, int i)
 	{
 		if (g instanceof Polygon) {
-			LinearRing ring = (LinearRing) ((Polygon) g).getInteriorRingN(i);
+			LinearRing ring = ((Polygon) g).getInteriorRingN(i);
 			return ring;
 		}
 		return null;

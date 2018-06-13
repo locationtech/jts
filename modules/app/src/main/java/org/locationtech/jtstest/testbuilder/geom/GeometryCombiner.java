@@ -76,10 +76,10 @@ public class GeometryCombiner
     int nOrigHoles = poly.getNumInteriorRing();
     LinearRing[] newHoles = new LinearRing[nOrigHoles + 1];
     for (int i = 0; i < nOrigHoles; i++) {
-      newHoles[i] = (LinearRing) poly.getInteriorRingN(i);
+      newHoles[i] = poly.getInteriorRingN(i);
     }
     newHoles[nOrigHoles] = hole;
-    return geomFactory.createPolygon((LinearRing) poly.getExteriorRing(), newHoles);
+    return geomFactory.createPolygon(poly.getExteriorRing(), newHoles);
   }
   
   public Geometry combine(Geometry orig, Geometry geom)
