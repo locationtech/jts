@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 
+import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFactory;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
@@ -27,6 +28,7 @@ public class WKTReadWriteTest extends TestCase {
 
   public WKTReadWriteTest(String name) {
     super(name);
+    writer.setOutputOrdinates(CoordinateSequence.XYFlag);
   }
 
   public void testReadNaN() throws Exception {
@@ -53,7 +55,6 @@ public class WKTReadWriteTest extends TestCase {
     }
     catch (IllegalArgumentException e) {
       assertTrue(e.getMessage().contains("not form a closed linestring"));
-      fail();
     }
     assertEquals("LINEARRING (10 10, 20 20, 30 40, 10 10)", writer.write(reader.read("LINEARRING (10 10, 20 20, 30 40, 10 10)")));
     assertEquals("LINEARRING EMPTY", writer.write(reader.read("LINEARRING EMPTY")));
