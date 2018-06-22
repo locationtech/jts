@@ -19,7 +19,7 @@ import java.io.Serializable;
  *
  * @version 1.7
  *
- * @deprecated no longer used
+ * @deprecated no longer used, recommend CoordinateArraySequenceFactory for array backed implementation
  */
 public class DefaultCoordinateSequenceFactory
     implements CoordinateSequenceFactory, Serializable

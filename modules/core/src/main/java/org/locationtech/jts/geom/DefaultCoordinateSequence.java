@@ -20,7 +20,7 @@ import java.io.Serializable;
  *
  * @version 1.7
  *
- * @deprecated no longer used
+ * @deprecated No longer used, recommend CoordinateArraySequence for an array backed implementation
  */
 class DefaultCoordinateSequence
     implements CoordinateSequence, Serializable
