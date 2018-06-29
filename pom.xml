@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.locationtech.jts</groupId>
     <artifactId>jts</artifactId>
-    <version>1.15.1-SNAPSHOT</version>
+    <version>1.15.1</version>
     <packaging>pom</packaging>
 
     <name>JTS Topology Suite</name>
@@ -74,7 +74,7 @@
         <connection>scm:git::git@github.com:locationtech/jts.git</connection>
         <developerConnection>scm:git:git@github.com:locationtech/jts.git</developerConnection>
         <url>https://github.com/locationtech/jts</url>
-        <tag>HEAD</tag>
+        <tag>jts-1.15.1</tag>
     </scm>
 
     <distributionManagement>
