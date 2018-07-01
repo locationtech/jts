@@ -37,7 +37,7 @@ import org.locationtech.jts.util.NumberUtil;
  *
  *@version 1.7
  */
-public class Coordinate implements Comparable, Cloneable, Serializable {
+public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializable {
   private static final long serialVersionUID = 6683108902428366910L;
   
   /**
@@ -258,7 +258,7 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
    *@return    -1, zero, or 1 as this <code>Coordinate</code>
    *      is less than, equal to, or greater than the specified <code>Coordinate</code>
    */
-  public int compareTo(Object o) {
+  public int compareTo(Coordinate o) {
     Coordinate other = (Coordinate) o;
 
     if (x < other.x) return -1;
@@ -350,7 +350,7 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
    * or 3-dimensional comparison, and handling NaN values correctly.
    */
   public static class DimensionalComparator
-      implements Comparator
+      implements Comparator<Coordinate>
   {
     /**
      * Compare two <code>double</code>s, allowing for NaN values.
@@ -407,11 +407,8 @@ public class Coordinate implements Comparable, Cloneable, Serializable {
      * equal to, or greater than 02
      *
      */
-    public int compare(Object o1, Object o2)
+    public int compare(Coordinate c1, Coordinate c2)
     {
-      Coordinate c1 = (Coordinate) o1;
-      Coordinate c2 = (Coordinate) o2;
-
       int compX = compare(c1.x, c2.x);
       if (compX != 0) return compX;
 
