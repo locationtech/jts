@@ -60,6 +60,14 @@ public interface CoordinateSequence
    * @return the dimension of the sequence.
    */
   int getDimension();
+  
+  /**
+   * Returns the number of measures in each coordinate for this sequence.
+   * @return
+   */
+  default int getNumberOfMeasures() {
+	  return 0;
+  }
 
   /**
    * Returns (possibly a copy of) the i'th coordinate in this sequence.
@@ -119,7 +127,7 @@ public interface CoordinateSequence
    * (for instance, they may contain other dimensions or measure values).
    *
    * @param index  the coordinate index in the sequence
-   * @param ordinateIndex the ordinate index in the coordinate (in range [0, dimension-1])
+   * @param ordinateIndex the ordinate index in the coordinate (in range [0, dimension-numberOfMeasures-1])
    */
   double getOrdinate(int index, int ordinateIndex);
 
@@ -133,7 +141,7 @@ public interface CoordinateSequence
    * Sets the value for a given ordinate of a coordinate in this sequence.
    *
    * @param index  the coordinate index in the sequence
-   * @param ordinateIndex the ordinate index in the coordinate (in range [0, dimension-1])
+   * @param ordinateIndex the ordinate index in the coordinate (in range [0, dimension-numberOfMeasures1])
    * @param value  the new ordinate value
    */
   void setOrdinate(int index, int ordinateIndex, double value);
@@ -164,7 +172,7 @@ public interface CoordinateSequence
    * Called by Geometry#clone.
    *
    * @return a copy of the coordinate sequence containing copies of all points
-   * @deprecated
+   * @deprecated Recommend {@link #copy()} 
    */
   Object clone();
   
