@@ -151,7 +151,7 @@ public class WKBTest
 
 	private void runWKBTestPackedCoordinate(String wkt) throws IOException, ParseException {
 		GeometryFactory geomFactory = new GeometryFactory(
-				new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE, 2));
+				new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE));
 	  WKTReader rdr = new WKTReader(geomFactory);
 		Geometry g = rdr.read(wkt);
 		
