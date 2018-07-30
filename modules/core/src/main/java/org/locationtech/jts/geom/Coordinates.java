@@ -50,41 +50,41 @@ public class Coordinates {
     /**
      * Determine dimension based on subclass of {@link Coordinate}.
      * 
-     * @param coordiante
-     * @return dimension 
+     * @param coordiante supplied coordinate
+     * @return number of ordinates recorded
      */
-    public static int getDimension(Coordinate coordiante) {
-	if(coordiante instanceof CoordinateXY) {
+    public static int getDimension(Coordinate coordinate) {
+	if(coordinate instanceof CoordinateXY) {
 	    return 2;
 	}
-	else if(coordiante instanceof CoordinateXYM) {
+	else if(coordinate instanceof CoordinateXYM) {
 	    return 2;
 	}
-	else if(coordiante instanceof Coordinate) {
+	else if(coordinate instanceof Coordinate) {
 	    return 3;
 	}
-	else if(coordiante instanceof CoordinateXYZM) {
+	else if(coordinate instanceof CoordinateXYZM) {
 	    return 4;
 	}
 	return 3;
     }
     /**
-     * Determine dimension based on subclass of {@link Coordinate}.
+     * Determine number of measures based on subclass of {@link Coordinate}.
      * 
-     * @param coordiante
-     * @return dimension 
+     * @param coordiante supplied coordinate
+     * @return number of measures recorded 
      */
-    public static int getMeasures(Coordinate coordiante) {
-	if(coordiante instanceof CoordinateXY) {
+    public static int getMeasures(Coordinate coordinate) {
+	if(coordinate instanceof CoordinateXY) {
 	    return 0;
 	}
-	else if(coordiante instanceof CoordinateXYM) {
+	else if(coordinate instanceof CoordinateXYM) {
 	    return 1;
 	}
-	else if(coordiante instanceof Coordinate) {
+	else if(coordinate instanceof Coordinate) {
 	    return 0;
 	}
-	else if(coordiante instanceof CoordinateXYZM) {
+	else if(coordinate instanceof CoordinateXYZM) {
 	    return 1;
 	}
 	return 0;
