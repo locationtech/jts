@@ -556,7 +556,7 @@ public class Distance3DOp {
 		double f = Math.abs(d0) / (Math.abs(d0) + Math.abs(d1));
 		double intx = p0.x + f * (p1.x - p0.x);
 		double inty = p0.y + f * (p1.y - p0.y);
-		double intz = p0.z + f * (p1.z - p0.z);
+		double intz = p0.getZ() + f * (p1.getZ() - p0.getZ());
 		return new Coordinate(intx, inty, intz);
 	}
 

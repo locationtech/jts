@@ -323,7 +323,7 @@ public class PrecisionModel implements Serializable, Comparable
       internal.x = makePrecise(external.x);
       internal.y = makePrecise(external.y);
     }
-    internal.z = external.z;
+    internal.setZ(external.getZ());
   }
 
   /**

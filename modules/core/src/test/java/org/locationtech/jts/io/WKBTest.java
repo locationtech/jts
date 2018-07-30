@@ -239,7 +239,7 @@ class AverageZFilter implements CoordinateFilter
 {
   public void filter(Coordinate coord)
   {
-    coord.z = (coord.x + coord.y) / 2;
+    coord.setZ((coord.x + coord.y) / 2);
   }
 }
 

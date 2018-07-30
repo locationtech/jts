@@ -62,7 +62,7 @@ public abstract class CoordinateSequenceTestBase
     for (int i = 0; i < seq.size(); i++) {
       seq.setOrdinate(i, 0, coords[i].x);
       seq.setOrdinate(i, 1, coords[i].y);
-      seq.setOrdinate(i, 2, coords[i].z);
+      seq.setOrdinate(i, 2, coords[i].getZ());
     }
 
     assertTrue(isEqual(seq, coords));
@@ -80,7 +80,7 @@ public abstract class CoordinateSequenceTestBase
 
     for (int i = 0; i < seq.size(); i++) {
       Coordinate p = seq.getCoordinate(i);
-      assertTrue(Double.isNaN(p.z));
+      assertTrue(Double.isNaN(p.getZ()));
     }
   }
 
@@ -141,7 +141,7 @@ public abstract class CoordinateSequenceTestBase
 
       if (coord.x != seq.getOrdinate(i, CoordinateSequence.X))  return false;
       if (coord.y != seq.getOrdinate(i, CoordinateSequence.Y))  return false;
-      if (coord.z != seq.getOrdinate(i, CoordinateSequence.Z))  return false;
+      if (coord.getZ() != seq.getOrdinate(i, CoordinateSequence.Z))  return false;
     }
     return true;
   }
@@ -170,13 +170,13 @@ public abstract class CoordinateSequenceTestBase
       // Ordinate indexed getters
       if (coords[i].x != seq.getOrdinate(i, CoordinateSequence.X))  return false;
       if (coords[i].y != seq.getOrdinate(i, CoordinateSequence.Y))  return false;
-      if (coords[i].z != seq.getOrdinate(i, CoordinateSequence.Z))  return false;
+      if (coords[i].getZ() != seq.getOrdinate(i, CoordinateSequence.Z))  return false;
       
       // Coordinate getter
       seq.getCoordinate(i, p);
       if (coords[i].x != p.x) return false;
       if (coords[i].y != p.y)  return false;
-      if (coords[i].z != p.z)  return false;
+      if (coords[i].getZ() != p.getZ())  return false;
       
     }
     return true;

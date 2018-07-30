@@ -445,12 +445,12 @@ public class MiscellaneousTest extends TestCase {
     Coordinate c1 = new Coordinate();
     assertTrue(! Double.isNaN(c1.x));
     assertTrue(! Double.isNaN(c1.y));
-    assertTrue(Double.isNaN(c1.z));
+    assertTrue(Double.isNaN(c1.getZ()));
 
     Coordinate c2 = new Coordinate(3,4);
     assertEquals(3,c2.x,1E-10);
     assertEquals(4,c2.y,1E-10);
-    assertTrue(Double.isNaN(c2.z));
+    assertTrue(Double.isNaN(c2.getZ()));
 
     assertEquals(c1,c1);
     assertEquals(c2,c2);
