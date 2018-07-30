@@ -25,18 +25,21 @@ import org.locationtech.jts.util.NumberUtil;
  * Unlike objects of type {@link Point} (which contain additional
  * information such as an envelope, a precision model, and spatial reference
  * system information), a <code>Coordinate</code> only contains ordinate values
- * and accessor methods. <P>
+ * and accessor methods. </p>
  * <p>
- *
  * <code>Coordinate</code>s are two-dimensional points, with an additional Z-ordinate. 
  * If an Z-ordinate value is not specified or not defined, 
  * constructed coordinates have a Z-ordinate of <code>NaN</code>
  * (which is also the value of <code>NULL_ORDINATE</code>).  
  * The standard comparison functions ignore the Z-ordinate.
  * Apart from the basic accessor functions, JTS supports
- * only specific operations involving the Z-ordinate. 
+ * only specific operations involving the Z-ordinate.</p> 
+ * <p>
+ * Implementations may optionally support Z-ordiante and M-measure values
+ * as appropriate for a CoordinateSeqeunce. Use of {@link #getZ()} and {@link #getM()}
+ * accessors, or {@link #getOrdinate(int)} are recommended.</p> 
  *
- * @version 1.7
+ * @version 1.16
  */
 public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializable {
   private static final long serialVersionUID = 6683108902428366910L;
@@ -175,7 +178,16 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
    *  The m-measure, if available.
    */  
   public double getM() {
-      return Double.NaN;     
+    return Double.NaN;     
+  }
+  
+  /**
+   * The m-measure, if supported.
+   *
+   * @param m
+   */
+  public void setM(double m) {
+    throw new IllegalArgumentException("Invalid ordinate index: " + M);
   }
   
   /**
