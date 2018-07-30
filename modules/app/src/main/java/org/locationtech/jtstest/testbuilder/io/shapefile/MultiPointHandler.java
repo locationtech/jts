@@ -96,7 +96,7 @@ public class MultiPointHandler  implements ShapeHandler  {
             { 
                        double z =  file.readDoubleLE();//z
 						actualReadWords += 4;
-                       coords[t].z = z;
+                       coords[t].setZ(z);
             }
         }
         
@@ -152,7 +152,7 @@ public class MultiPointHandler  implements ShapeHandler  {
         
         for (int t=0;t<cs.length; t++)
         {
-            z= cs[t].z ;
+            z= cs[t].getZ();
             if (!(Double.isNaN( z ) ))
             {
                 if (validZFound)

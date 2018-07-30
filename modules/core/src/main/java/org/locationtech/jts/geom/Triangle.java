@@ -343,11 +343,11 @@ public class Triangle
     // side vectors u and v
     double ux = b.x - a.x;
     double uy = b.y - a.y;
-    double uz = b.z - a.z;
+    double uz = b.getZ() - a.getZ();
 
     double vx = c.x - a.x;
     double vy = c.y - a.y;
-    double vz = c.z - a.z;
+    double vz = c.getZ() - a.getZ();
 
     // cross-product = u x v
     double crossx = uy * vz - uz * vy;
@@ -394,7 +394,7 @@ public class Triangle
     double dy = p.y - y0;
     double t = (d * dx - b * dy) / det;
     double u = (-c * dx + a * dy) / det;
-    double z = v0.z + t * (v1.z - v0.z) + u * (v2.z - v0.z);
+    double z = v0.getZ() + t * (v1.getZ() - v0.getZ()) + u * (v2.getZ() - v0.getZ());
     return z;
   }
 

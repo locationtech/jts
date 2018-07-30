@@ -68,7 +68,7 @@ public class PolygonHandler implements ShapeHandler{
         {
             p = pointList[t];
             if ( (testPoint.x == p.x) && (testPoint.y == p.y) &&
-                    ((testPoint.z == p.z) || (!(testPoint.z == testPoint.z))  )  //nan test; x!=x iff x is nan
+                    ((testPoint.getZ() == p.getZ()) || (!(testPoint.getZ() == testPoint.getZ()))  )  //nan test; x!=x iff x is nan
                     )
             {
                 return true;
@@ -138,7 +138,7 @@ public class PolygonHandler implements ShapeHandler{
 			actualReadWords += 8;
              for(int t=0;t<numPoints;t++)
             {
-                coords[t].z = file.readDoubleLE();
+                coords[t].setZ(file.readDoubleLE());
 				actualReadWords += 4;
             }
         }
@@ -339,7 +339,7 @@ public class PolygonHandler implements ShapeHandler{
         
         for (int t=0;t<cs.length; t++)
         {
-            z= cs[t].z ;
+            z= cs[t].getZ() ;
             if (!(Double.isNaN( z ) ))
             {
                 if (validZFound)

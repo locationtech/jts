@@ -88,7 +88,7 @@ public class ScaledNoder
       roundPts[i] = new Coordinate(
           Math.round((pts[i].x - offsetX) * scaleFactor),
           Math.round((pts[i].y - offsetY) * scaleFactor),
-          pts[i].z
+          pts[i].getZ()
         );
     }
     Coordinate[] roundPtsNoDup = CoordinateArrays.removeRepeatedPoints(roundPts);

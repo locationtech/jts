@@ -144,7 +144,7 @@ public class CoordinateArraySequence
    * @return a copy of the requested Coordinate
    */
   public Coordinate getCoordinateCopy(int i) {
-    return new Coordinate(coordinates[i]);
+    return coordinates[i].copy();
   }
 
   /**
@@ -153,7 +153,7 @@ public class CoordinateArraySequence
   public void getCoordinate(int index, Coordinate coord) {
     coord.x = coordinates[index].x;
     coord.y = coordinates[index].y;
-    coord.z = coordinates[index].z;
+    coord.setZ(coordinates[index].getZ());
   }
 
   /**
@@ -178,9 +178,9 @@ public class CoordinateArraySequence
     switch (ordinateIndex) {
       case CoordinateSequence.X:  return coordinates[index].x;
       case CoordinateSequence.Y:  return coordinates[index].y;
-      case CoordinateSequence.Z:  return coordinates[index].z;
+      default:
+	return coordinates[index].getOrdinate(ordinateIndex);
     }
-    return Double.NaN;
   }
 
   /**
@@ -226,7 +226,7 @@ public class CoordinateArraySequence
         coordinates[index].y = value;
         break;
       case CoordinateSequence.Z:
-        coordinates[index].z = value;
+        coordinates[index].setZ(value);
         break;
       default:
           throw new IllegalArgumentException("invalid ordinateIndex");

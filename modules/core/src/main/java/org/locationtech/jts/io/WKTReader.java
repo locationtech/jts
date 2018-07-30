@@ -259,7 +259,7 @@ public class WKTReader
     coord.x = getNextNumber();
     coord.y = getNextNumber();
     if (isNumberNext()) {
-        coord.z = getNextNumber();
+        coord.setZ(getNextNumber());
     }
     if (isNumberNext()) {
       getNextNumber(); // ignore M value

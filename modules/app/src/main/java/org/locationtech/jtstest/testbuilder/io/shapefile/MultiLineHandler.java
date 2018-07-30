@@ -112,7 +112,7 @@ public class MultiLineHandler implements ShapeHandler{
             
             for (int t =0;t<numPoints; t++)
             {
-              coords[t].z =   file.readDoubleLE(); //z value
+              coords[t].setZ(file.readDoubleLE()); //z value
 		   	  actualReadWords += 4;
             }
         }
@@ -227,7 +227,7 @@ public class MultiLineHandler implements ShapeHandler{
         
         for (int t=0;t<cs.length; t++)
         {
-            z= cs[t].z ;
+            z= cs[t].getZ() ;
             if (!(Double.isNaN( z ) ))
             {
                 if (validZFound)

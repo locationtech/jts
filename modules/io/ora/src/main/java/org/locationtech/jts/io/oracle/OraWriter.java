@@ -373,7 +373,7 @@ public class OraWriter
   {
     Point point = (Point) geom;
     Coordinate coord = point.getCoordinate();
-    return new double[] { coord.x, coord.y, coord.z };
+    return new double[] { coord.x, coord.y, coord.getZ() };
   }
 
   /**
@@ -670,7 +670,7 @@ public class OraWriter
 		  return outputDimension;
 	  
 	  //TODO: check dimension of a geometry CoordinateSequence to determine dimension
-  	int d = Double.isNaN(geom.getCoordinate().z) ? 2 : 3;
+  	int d = Double.isNaN(geom.getCoordinate().getZ()) ? 2 : 3;
   	return d;
   }
 

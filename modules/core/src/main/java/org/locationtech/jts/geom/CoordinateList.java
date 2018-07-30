@@ -25,9 +25,10 @@ import java.util.Iterator;
  * @version 1.7
  */
 public class CoordinateList
-  extends ArrayList
+  extends ArrayList<Coordinate>
 {
-  //With contributions from Markus Schaber [schabios@logi-track.com]
+  private static final long serialVersionUID = -1626110935756089896L;
+//With contributions from Markus Schaber [schabios@logi-track.com]
   //[Jon Aquino 2004-03-25]
   private final static Coordinate[] coordArrayType = new Coordinate[0];
 
@@ -64,8 +65,8 @@ public class CoordinateList
     add(coord, allowRepeated);
   }
 
-  public void add(Coordinate coord) {
-	super.add(coord);
+  public boolean add(Coordinate coord) {
+	return super.add(coord);
   }
 
   public Coordinate getCoordinate(int i) { return (Coordinate) get(i); }
@@ -186,11 +187,11 @@ public class CoordinateList
    * @param allowRepeated if set to false, repeated coordinates are collapsed
    * @return true (as by general collection contract)
    */
-  public boolean addAll(Collection coll, boolean allowRepeated)
+  public boolean addAll(Collection<? extends Coordinate> coll, boolean allowRepeated)
   {
     boolean isChanged = false;
-    for (Iterator i = coll.iterator(); i.hasNext(); ) {
-      add((Coordinate) i.next(), allowRepeated);
+    for (Iterator<? extends Coordinate> i = coll.iterator(); i.hasNext(); ) {
+      add(i.next(), allowRepeated);
       isChanged = true;
     }
     return isChanged;
@@ -201,8 +202,10 @@ public class CoordinateList
    */
   public void closeRing()
   {
-    if (size() > 0)
-      add(new Coordinate((Coordinate) get(0)), false);
+    if (size() > 0) {
+      Coordinate duplicate = get(0).copy();
+      add(duplicate, false);
+    }
   }
 
   /** Returns the Coordinates in this collection.
@@ -221,8 +224,8 @@ public class CoordinateList
    */
   public Object clone() {
       CoordinateList clone = (CoordinateList) super.clone();
-      for (int i = 0; i < this.size(); i++) {
-          clone.add(i, ((Coordinate) this.get(i)).clone());
+      for (int i = 0; i < this.size(); i++) {	  
+          clone.add(i, (Coordinate) this.get(i).clone());
       }
       return clone;
   }

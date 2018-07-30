@@ -31,7 +31,7 @@ public class CoordinateTest extends TestCase
     Coordinate c = new Coordinate(350.2, 4566.8, 5266.3);
     assertEquals(c.x, 350.2);
     assertEquals(c.y, 4566.8);
-    assertEquals(c.z, 5266.3);
+    assertEquals(c.getZ(), 5266.3);
   }
   
   public void testConstructor2D() 
@@ -39,14 +39,14 @@ public class CoordinateTest extends TestCase
     Coordinate c = new Coordinate(350.2, 4566.8);
     assertEquals(c.x, 350.2);
     assertEquals(c.y, 4566.8);
-    assertEquals(c.z, Coordinate.NULL_ORDINATE);
+    assertEquals(c.getZ(), Coordinate.NULL_ORDINATE);
   }
   public void testDefaultConstructor() 
   {
     Coordinate c = new Coordinate();
     assertEquals(c.x, 0.0);
     assertEquals(c.y, 0.0);
-    assertEquals(c.z, Coordinate.NULL_ORDINATE);
+    assertEquals(c.getZ(), Coordinate.NULL_ORDINATE);
   }
   public void testCopyConstructor3D() 
   {
@@ -54,7 +54,7 @@ public class CoordinateTest extends TestCase
     Coordinate c = new Coordinate(orig);
     assertEquals(c.x, 350.2);
     assertEquals(c.y, 4566.8);
-    assertEquals(c.z, 5266.3);
+    assertEquals(c.getZ(), 5266.3);
   }
   public void testSetCoordinate() 
   {
@@ -63,7 +63,7 @@ public class CoordinateTest extends TestCase
     c.setCoordinate(orig);
     assertEquals(c.x, 350.2);
     assertEquals(c.y, 4566.8);
-    assertEquals(c.z, 5266.3);
+    assertEquals(c.getZ(), 5266.3);
   }
   public void testGetOrdinate() 
   {

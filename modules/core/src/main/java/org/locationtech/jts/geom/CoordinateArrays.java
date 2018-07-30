@@ -25,7 +25,6 @@ import org.locationtech.jts.math.MathUtil;
  * @version 1.7
  */
 public class CoordinateArrays {
-
   private final static Coordinate[] coordArrayType = new Coordinate[0];
 
   private CoordinateArrays() {}

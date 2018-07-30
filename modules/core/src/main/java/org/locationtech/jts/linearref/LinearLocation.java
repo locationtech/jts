@@ -64,7 +64,7 @@ public class LinearLocation
     double x = (p1.x - p0.x) * frac + p0.x;
     double y = (p1.y - p0.y) * frac + p0.y;
     // interpolate Z value. If either input Z is NaN, result z will be NaN as well.
-    double z = (p1.z - p0.z) * frac + p0.z;
+    double z = (p1.getZ() - p0.getZ()) * frac + p0.getZ();
     return new Coordinate(x, y, z);
   }
 

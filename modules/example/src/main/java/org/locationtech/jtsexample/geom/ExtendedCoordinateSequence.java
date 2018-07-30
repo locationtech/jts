@@ -128,7 +128,7 @@ public class ExtendedCoordinateSequence
     switch (ordinateIndex) {
       case CoordinateSequence.X:  return coordinates[index].x;
       case CoordinateSequence.Y:  return coordinates[index].y;
-      case CoordinateSequence.Z:  return coordinates[index].z;
+      case CoordinateSequence.Z:  return coordinates[index].getZ();
       case CoordinateSequence.M:  return coordinates[index].getM();
     }
     return Double.NaN;
@@ -147,7 +147,7 @@ public class ExtendedCoordinateSequence
         coordinates[index].y = value;
         break;
       case CoordinateSequence.Z:  
-        coordinates[index].z = value;
+        coordinates[index].setZ(value);
         break;
       case CoordinateSequence.M:  
         coordinates[index].setM(value);
