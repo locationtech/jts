@@ -75,9 +75,16 @@ public class CoordinateXYM extends Coordinate {
     this.m = m;
   }
   
+  /** The z-ordinate is not supported */
   @Override
   public double getZ() {
-    return NULL_ORDINATE;
+      return NULL_ORDINATE;
+  }
+
+  /** The z-ordinate is not supported */
+  @Override
+  public void setZ(double z) {
+      throw new IllegalArgumentException("CoordianteXY dimension 2 does not support z-ordinate");
   }
   
   @Override

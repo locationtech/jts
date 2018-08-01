@@ -99,7 +99,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   public Coordinate(double x, double y, double z) {
     this.x = x;
     this.y = y;
-    this.setZ(z);
+    this.z = z;
   }
 
   /**
@@ -137,7 +137,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   public void setCoordinate(Coordinate other) {
     x = other.x;
     y = other.y;
-    setZ(other.getZ());
+    z = other.getZ();
   }
 
   /**
