@@ -59,4 +59,9 @@ public class ExtendedCoordinateSequenceFactory
       return new ExtendedCoordinateSequence(size);
     }
 
+    @Override
+    public CoordinateSequence create(int size, int dimension, int measures)
+    {
+      return new ExtendedCoordinateSequence(size);
+    }
 }
