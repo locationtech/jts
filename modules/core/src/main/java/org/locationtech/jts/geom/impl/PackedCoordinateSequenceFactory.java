@@ -74,8 +74,8 @@ public class PackedCoordinateSequenceFactory implements
     int measures = 0;
     if (coordinates != null && coordinates.length > 1 && coordinates[0] != null) {
       Coordinate first = coordinates[0];
-      dimension = Coordinates.getDimension(first);
-      measures = Coordinates.getMeasures(first);
+      dimension = Coordinates.dimension(first);
+      measures = Coordinates.measures(first);
     }
     if (type == DOUBLE) {
       return new PackedCoordinateSequence.Double(coordinates, dimension, measures);

@@ -28,7 +28,40 @@ public class CoordinateArrays {
   private final static Coordinate[] coordArrayType = new Coordinate[0];
 
   private CoordinateArrays() {}
-
+  
+  /**
+   * Determine dimension based on subclass of {@link Coordinate}.
+   * 
+   * @param pts supplied coordinates
+   * @return number of ordinates recorded
+   */
+  public static int dimension(Coordinate[] pts) {
+    if( pts == null || pts.length == 0) {
+      return 3; // unknown, assume default
+    }
+    Coordinate first = pts[0];
+    if( first == null ) {
+      return 3; // unknown, assume default
+    }
+    return Coordinates.dimension(first);
+  }
+  /**
+   * Determine number of measures based on subclass of {@link Coordinate}.
+   * 
+   * @param pts supplied coordinates
+   * @return number of measures recorded
+   */
+  public static int measures(Coordinate[] pts) {
+    if( pts == null || pts.length == 0) {
+      return 0; // unknown, assume default
+    }
+    Coordinate first = pts[0];
+    if( first == null ) {
+      return 0; // unknown, assume default
+    }
+    return Coordinates.measures(first);
+  }
+  
   /**
    * Tests whether an array of {@link Coordinate}s forms a ring,
    * by checking length and closure. 
