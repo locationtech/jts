@@ -46,6 +46,7 @@ public class PackedCoordinateSequenceTest
   {
     CoordinateSequenceFactory factory = new PackedCoordinateSequenceFactory();
     CoordinateSequence seq = factory.create(5, 2);
+    CoordinateSequence copy;
     Coordinate coord;
     Coordinate[] array;
     
@@ -61,7 +62,10 @@ public class PackedCoordinateSequenceTest
     assertEquals(coord, array[4]);
     assertTrue(coord != array[4]);
     assertTrue(isEqual(seq,array));
-    
+    copy = factory.create(array);
+    assertTrue(isEqual(copy,array));
+    copy = factory.create(seq);
+    assertTrue(isEqual(copy,array));
     
     seq = factory.create(5, 3);
     initProgression(seq);
@@ -77,7 +81,11 @@ public class PackedCoordinateSequenceTest
     assertEquals(coord, array[4]);
     assertTrue(coord != array[4]);
     assertTrue(isEqual(seq,array));
-
+    copy = factory.create(array);
+    assertTrue(isEqual(copy,array));
+    copy = factory.create(seq);
+    assertTrue(isEqual(copy,array));
+    
     seq = factory.create(5, 3, 1);
     initProgression(seq);
     assertEquals("xym", 3, seq.getDimension());
@@ -92,6 +100,10 @@ public class PackedCoordinateSequenceTest
     assertEquals(coord, array[4]);
     assertTrue(coord != array[4]);
     assertTrue(isEqual(seq,array));
+    copy = factory.create(array);
+    assertTrue(isEqual(copy,array));
+    copy = factory.create(seq);
+    assertTrue(isEqual(copy,array));
     
     seq = factory.create(5, 4, 1);
     initProgression(seq);
@@ -108,12 +120,16 @@ public class PackedCoordinateSequenceTest
     assertEquals(coord, array[4]);
     assertTrue(coord != array[4]);
     assertTrue(isEqual(seq,array));
+    copy = factory.create(array);
+    assertTrue(isEqual(copy,array));
+    copy = factory.create(seq);
+    assertTrue(isEqual(copy,array));
     
     try {
       seq = factory.create(5, 2, 1);
       fail("xm not supported");
     } catch (IllegalArgumentException expected) {
-    }
+    }    
   }
   
   private void initProgression(CoordinateSequence seq) {
