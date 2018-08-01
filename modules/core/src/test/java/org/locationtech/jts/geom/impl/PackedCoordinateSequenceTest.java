@@ -44,7 +44,7 @@ public class PackedCoordinateSequenceTest
   
   public void testDimensionAndMeasure()
   {
-    CoordinateSequenceFactory factory = new PackedCoordinateSequenceFactory();
+    CoordinateSequenceFactory factory = getCSFactory();
     CoordinateSequence seq = factory.create(5, 2);
     CoordinateSequence copy;
     Coordinate coord;

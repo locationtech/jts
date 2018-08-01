@@ -69,6 +69,25 @@ public class CoordinateXYZM extends Coordinate {
     throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
   }
   
+  @Override
+  public void setOrdinate(int ordinateIndex, double value) {
+      switch (ordinateIndex) {
+      case X:
+        x = value;
+        break;
+      case Y:
+        y = value;
+        break;
+      case Z:
+        z = value;
+        break;
+      case M:
+        m = value;
+        break;
+      default:
+        throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
+    }
+  }
   
   public String toString() {
     String stringRep = x + " " + y + " " + getZ() + " m=" + m;
