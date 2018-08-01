@@ -86,6 +86,12 @@ public class ExtendedCoordinateSequence
    * @see org.locationtech.jts.geom.CoordinateSequence#getDimension()
    */
   public int getDimension() { return 4; }
+  
+  @Override
+  public int getMeasures()
+  {
+    return 1;
+  }
 
   public Coordinate getCoordinate(int i) {
     return coordinates[i];
