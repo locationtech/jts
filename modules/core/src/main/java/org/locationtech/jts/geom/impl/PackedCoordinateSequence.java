@@ -291,7 +291,7 @@ public abstract class PackedCoordinateSequence
         if (this.dimension >= 3)
           coords[i * this.dimension + 2] = coordinates[i].getOrdinate(2); // Z or M
         if (this.dimension >= 4)
-            coords[i * this.dimension + 2] = coordinates[i].getOrdinate(3); // M
+          coords[i * this.dimension + 3] = coordinates[i].getOrdinate(3); // M
       }
     }
     /**

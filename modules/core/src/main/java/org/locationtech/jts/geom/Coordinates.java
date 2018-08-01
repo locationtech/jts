@@ -47,27 +47,25 @@ public class Coordinates {
 	return new Coordinate();
     }
     
-    /**
-     * Determine dimension based on subclass of {@link Coordinate}.
-     * 
-     * @param coordiante supplied coordinate
-     * @return number of ordinates recorded
-     */
-    public static int getDimension(Coordinate coordinate) {
-	if(coordinate instanceof CoordinateXY) {
-	    return 2;
-	}
-	else if(coordinate instanceof CoordinateXYM) {
-	    return 2;
-	}
-	else if(coordinate instanceof Coordinate) {
-	    return 3;
-	}
-	else if(coordinate instanceof CoordinateXYZM) {
-	    return 4;
-	}
-	return 3;
+  /**
+   * Determine dimension based on subclass of {@link Coordinate}.
+   * 
+   * @param coordiante supplied coordinate
+   * @return number of ordinates recorded
+   */
+  public static int getDimension(Coordinate coordinate)
+  {
+    if (coordinate instanceof CoordinateXY) {
+      return 2;
+    } else if (coordinate instanceof CoordinateXYM) {
+      return 3;
+    } else if (coordinate instanceof Coordinate) {
+      return 3;
+    } else if (coordinate instanceof CoordinateXYZM) {
+      return 4;
     }
+    return 3;
+  }
     /**
      * Determine number of measures based on subclass of {@link Coordinate}.
      * 
