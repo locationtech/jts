@@ -58,6 +58,18 @@ public class CoordinateXYZM extends Coordinate {
     this.m = m;
   }
 
+  public double getOrdinate(int ordinateIndex)
+  {
+    switch (ordinateIndex) {
+    case X: return x;
+    case Y: return y;
+    case Z: return getZ(); // sure to delegate to subclass rather than offer direct field access
+    case M: return getM(); // sure to delegate to subclass rather than offer direct field access
+    }
+    throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
+  }
+  
+  
   public String toString() {
     String stringRep = x + " " + y + " " + getZ() + " m=" + m;
     return stringRep;

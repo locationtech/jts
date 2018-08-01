@@ -94,6 +94,26 @@ public interface CoordinateSequence
   default int getMeasures() {
     return 0;
   }
+  
+  /**
+   * Checks {@link #getDimension()} and {@link #getMeasures()} to determine if {@link #getZ(int)}
+   * is supported.
+   * 
+   * @return true if {@link #getZ(int)} is supported.
+   */
+  default boolean hasZ() {
+      return (getDimension()-getMeasures()) > 2;
+  }
+  
+  /**
+   * Checks {@link #getMeasures()} to determine if {@link #getM(int)}
+   * is supported.
+   * 
+   * @return true if {@link #getM(int)} is supported.
+   */
+  default boolean hasM() {
+      return getDimension()>2 && getMeasures() > 0;
+  }
 
   /**
    * Returns (possibly a copy of) the i'th coordinate in this sequence.
@@ -152,13 +172,13 @@ public interface CoordinateSequence
    * @param index
    * @return the value of the Z ordinate in the index'th coordinate, or Double.NaN if not defined.
    */
-  default double getZ(int index) {
-     if( (getDimension()-getMeasures()) > 2 ) {
-	 return getOrdinate( index, 2 );
-     }
-     else {
-         return Double.NaN;
-     }
+  default double getZ(int index)
+  {
+    if (hasZ()) {
+        return getOrdinate(index, 2);
+    } else {
+        return Double.NaN;
+    }
   }
 
   /**
@@ -167,14 +187,15 @@ public interface CoordinateSequence
    * @param index
    * @return the value of the Z ordinate in the index'th coordinate, or Double.NaN if not defined.
    */
-  default double getM(int index) {
-     if( getDimension() > 2 && getMeasures() > 0 ) {
-	 final int mIndex = getDimension()-getDimension();
-	 return getOrdinate( index, mIndex );
-     }
-     else {
-         return Double.NaN;
-     }
+  default double getM(int index)
+  {
+    if (hasM()) {
+      final int mIndex = getDimension()-getMeasures();
+      return getOrdinate( index, mIndex );
+    }
+    else {
+        return Double.NaN;
+    }
   }
   
   /**
