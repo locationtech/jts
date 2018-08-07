@@ -194,7 +194,7 @@ public class CoordinateTest extends TestCase
       assertEquals( xym, coord );
       assertTrue( !xym.equalInZ(coord,0.000001) ); 
   }
-  public void testCoordinateXYMZ() {
+  public void testCoordinateXYZM() {
       Coordinate xyzm = new CoordinateXYZM();
       xyzm.setZ(1.0);
       assertEquals( 1.0, xyzm.getZ());

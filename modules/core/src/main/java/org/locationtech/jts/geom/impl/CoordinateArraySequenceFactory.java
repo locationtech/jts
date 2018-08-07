@@ -91,7 +91,8 @@ public final class CoordinateArraySequenceFactory
     if (dimension < 2)
       dimension = 2; // handle bogus dimension
     if (dimension - measures < 2) {
-      throw new IllegalArgumentException("max spatial dimension 2 required");
+      throw new IllegalArgumentException("Minimum spatial dimension of 2 required. Input was dimension " + dimension
+          + "and number of measures " + measures + ".");
     }
     return new CoordinateArraySequence(size, dimension, measures);
   }

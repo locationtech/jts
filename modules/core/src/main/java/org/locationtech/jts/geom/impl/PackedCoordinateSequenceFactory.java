@@ -102,7 +102,7 @@ public class PackedCoordinateSequenceFactory implements
    * 
    * @param packedCoordinates 
    * @param dimension
-   * @return Packaged coordiante seqeunce of the requested type
+   * @return Packaged coordinate seqeunce of the requested type
    */
   public CoordinateSequence create(double[] packedCoordinates, int dimension, int measures) {
     if (type == DOUBLE) {
@@ -115,7 +115,7 @@ public class PackedCoordinateSequenceFactory implements
    * @param packedCoordinates
    * @param dimension
    * @param measures
-   * @return Packaged coordiante seqeunce of the requested type
+   * @return Packaged coordinate seqeunce of the requested type
    */
   public CoordinateSequence create(float[] packedCoordinates, int dimension, int measures) {
     if (type == DOUBLE) {

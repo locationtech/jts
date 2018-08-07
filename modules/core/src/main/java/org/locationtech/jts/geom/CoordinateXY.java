@@ -28,10 +28,10 @@ public class CoordinateXY extends Coordinate {
   /** Standard ordinate index value for, where Y is 1 */
   public static final int Y = 1;
 
-  /** CoordianteXY does not support Z values. */
+  /** CoordinateXY does not support Z values. */
   public static final int Z = -1;
 
-  /** CoordianteXY does not support M measures. */
+  /** CoordinateXY does not support M measures. */
    
   public static final int M = -1;
 
@@ -65,7 +65,7 @@ public class CoordinateXY extends Coordinate {
   /** The z-ordinate is not supported */
   @Override
   public void setZ(double z) {
-      throw new IllegalArgumentException("CoordianteXY dimension 2 does not support z-ordinate");
+      throw new IllegalArgumentException("CoordinateXY dimension 2 does not support z-ordinate");
   }  
   
   @Override
@@ -92,7 +92,6 @@ public class CoordinateXY extends Coordinate {
   }
   
   public String toString() {
-    String stringRep = x + " " + y;
-    return stringRep;
+    return "(" + x + ", " + y + ")";
   }
 }

@@ -169,7 +169,7 @@ public abstract class CoordinateSequenceTestBase
   {
     if (seq.size() != coords.length) return false;
     
-    // carefully get coordiante of the same type as the sequence
+    // carefully get coordinate of the same type as the sequence
     Coordinate p = seq.size() == 0 ? new Coordinate() : (Coordinate) seq.getCoordinate(0).clone();
     p.setX(0);
     p.setY(0);

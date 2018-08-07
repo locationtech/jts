@@ -27,7 +27,7 @@ public class CoordinateXYM extends Coordinate {
   /** Standard ordinate index value for, where Y is 1 */
   public static final int Y = 1;
 
-  /** CoordianteXYM does not support Z values. */
+  /** CoordinateXYM does not support Z values. */
   public static final int Z = -1;
 
   /**
@@ -64,7 +64,7 @@ public class CoordinateXYM extends Coordinate {
   }
     
   /** The m-measure. */
-  private double m;
+  protected double m;
 
   /** The m-measure, if available. */
   public double getM() {
@@ -84,7 +84,7 @@ public class CoordinateXYM extends Coordinate {
   /** The z-ordinate is not supported */
   @Override
   public void setZ(double z) {
-      throw new IllegalArgumentException("CoordianteXY dimension 2 does not support z-ordinate");
+      throw new IllegalArgumentException("CoordinateXY dimension 2 does not support z-ordinate");
   }
   
   @Override
@@ -115,7 +115,6 @@ public class CoordinateXYM extends Coordinate {
   }
   
   public String toString() {
-    String stringRep = x + " " + y + " m=" + m;
-    return stringRep;
+    return "(" + x + ", " + y + " m=" + getM() + ")";
   }
 }

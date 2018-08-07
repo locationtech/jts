@@ -134,7 +134,7 @@ public class CoordinateArraySequence
     this.dimension = dimension;
     this.measures = measures;
     for (int i = 0; i < size; i++) {
-      coordinates[i] = Coordinates.create(dimension,measures);
+      coordinates[i] = createCoordinate();
     }
   }
 
