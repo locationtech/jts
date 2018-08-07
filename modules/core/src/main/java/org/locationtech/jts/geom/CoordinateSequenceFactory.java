@@ -67,7 +67,7 @@ public interface CoordinateSequenceFactory
    * @param size the number of coordinates in the sequence
    * @param dimension the dimension of the coordinates in the sequence (if user-specifiable,
    * otherwise ignored)
-   * @param measures the number of measures of the coordiantes in the sequence (if user-specifiable,
+   * @param measures the number of measures of the coordinates in the sequence (if user-specifiable,
    * otherwise ignored)
    */
   default CoordinateSequence create(int size, int dimension, int measures) {

@@ -300,7 +300,7 @@ public abstract class PackedCoordinateSequence
      * @param coordinates
      */
     public Double(Coordinate[] coordinates) {
-      this(coordinates, 3,0);
+      this(coordinates, 3, 0);
     }
 
     /**

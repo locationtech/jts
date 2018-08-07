@@ -193,7 +193,7 @@
                 <version>2.15</version>
                 <configuration>
                     <includes>
-                        <include>**/*Test.`java`</include>
+                        <include>**/*Test.java</include>
                     </includes>
                     <excludes>
                         <exclude>**/*PerfTest.java</exclude>

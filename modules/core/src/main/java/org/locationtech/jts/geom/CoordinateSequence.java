@@ -116,6 +116,18 @@ public interface CoordinateSequence
   }
 
   /**
+   * Creates a coordinate for use in this sequence.
+   * <p>
+   * The coordinate is created supporting the same number of {@link #getDimension()} and {@link #getMeasures()}
+   * as this sequence and is suitable for use with {@link #getCoordinate(int, Coordinate)}.
+   * </p>
+   * @return coordinate for use with this sequence
+   */
+  default Coordinate createCoordinate() {
+    return Coordinates.create(getDimension(), getMeasures());
+  }
+  
+  /**
    * Returns (possibly a copy of) the i'th coordinate in this sequence.
    * Whether or not the Coordinate returned is the actual underlying
    * Coordinate or merely a copy depends on the implementation.

@@ -92,7 +92,13 @@ public class ExtendedCoordinateSequence
   {
     return 1;
   }
-
+  
+  @Override
+  public Coordinate createCoordinate()
+  {
+    return new ExtendedCoordinate();
+  }
+  
   public Coordinate getCoordinate(int i) {
     return coordinates[i];
   }
@@ -109,6 +115,8 @@ public class ExtendedCoordinateSequence
   public void getCoordinate(int index, Coordinate coord) {
     coord.x = coordinates[index].x;
     coord.y = coordinates[index].y;
+    coord.setZ( coordinates[index].getZ());
+    coord.setM( coordinates[index].getM());
   }
 
 

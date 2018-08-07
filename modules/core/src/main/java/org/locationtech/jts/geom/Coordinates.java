@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Vivid Solutions and others.
+ * Copyright (c) 2016 Vivid Solutions
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -50,7 +50,7 @@ public class Coordinates {
   /**
    * Determine dimension based on subclass of {@link Coordinate}.
    * 
-   * @param coordiante supplied coordinate
+   * @param coordinate supplied coordinate
    * @return number of ordinates recorded
    */
   public static int dimension(Coordinate coordinate)
@@ -70,7 +70,7 @@ public class Coordinates {
   /**
    * Determine number of measures based on subclass of {@link Coordinate}.
    * 
-   * @param coordiante supplied coordinate
+   * @param coordinate supplied coordinate
    * @return number of measures recorded
    */
   public static int measures(Coordinate coordinate)
