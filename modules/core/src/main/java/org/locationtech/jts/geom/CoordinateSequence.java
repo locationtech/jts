@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Vivid Solutions, and others.
+ * Copyright (c) 2018 Vivid Solutions
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -219,7 +219,7 @@ public interface CoordinateSequence
    * values as described by {@link #getDimension()} and {@link #getMeasures()}).
    *
    * @param index  the coordinate index in the sequence
-   * @param ordinateIndex the ordinate index in the coordinate (in range [0, dimension-numberOfMeasures-1])
+   * @param ordinateIndex the ordinate index in the coordinate (in range [0, dimension-1])
    */
   double getOrdinate(int index, int ordinateIndex);
 
@@ -233,7 +233,7 @@ public interface CoordinateSequence
    * Sets the value for a given ordinate of a coordinate in this sequence.
    *
    * @param index  the coordinate index in the sequence
-   * @param ordinateIndex the ordinate index in the coordinate (in range [0, dimension-numberOfMeasures1])
+   * @param ordinateIndex the ordinate index in the coordinate (in range [0, dimension-1])
    * @param value  the new ordinate value
    */
   void setOrdinate(int index, int ordinateIndex, double value);
