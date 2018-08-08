@@ -1,6 +1,14 @@
 JTS Upgrade Guide
 =================
 
+JTS 1.16
+--------
+
+Coordinate and CoordinateSequence now define methods for XYZM access, with this in mind we ask the field ``z`` is deprecated and we ask client code to use ``coord.getZ()``.
+
+JTS 1.15
+--------
+
 The JTS Topology Suite has a long history, and in 2016/2017, [Vivid Solutions](http://www.vividsolutions.com/) brought the project to the LocationTech working group of the Eclipse Foundation.  
 
 During that transition, the Java package names and Maven GAVs have changed.  For package names (typically used in imports), the change is reflected below:
