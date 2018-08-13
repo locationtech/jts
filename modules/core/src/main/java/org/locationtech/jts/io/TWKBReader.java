@@ -208,14 +208,14 @@ public class TWKBReader {
 
             System.out.println("  reading dimension data :" + dimensions);
             if ((dimensions & 0x01) > 0) {
-                metadata.setHasM(true);
-                metadata.setMprecision((dimensions & 0xE0) >> 5);
-                System.out.println("      hasM with precision: " + metadata.getMprecision());
-            }
-            if ((dimensions & 0x02) > 0) {
                 metadata.setHasZ(true);
                 metadata.setZprecision((dimensions & 0x1C) >> 2);
                 System.out.println("      hasZ with precision: " + metadata.getZprecision());
+            }
+            if ((dimensions & 0x02) > 0) {
+                metadata.setHasM(true);
+                metadata.setMprecision((dimensions & 0xE0) >> 5);
+                System.out.println("      hasM with precision: " + metadata.getMprecision());
             }
 
             System.out.println("  Geometry has " + dims + " dimensions");
@@ -273,7 +273,7 @@ public class TWKBReader {
     }
 
     private double readNextDouble(CodedInputStream is, int precision) throws IOException {
-        int value = is.readSInt32();
+        long value = is.readSInt64();
         return value / Math.pow(10, precision);
     }
 
