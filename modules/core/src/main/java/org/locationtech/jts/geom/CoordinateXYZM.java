@@ -70,6 +70,15 @@ public class CoordinateXYZM extends Coordinate {
   }
   
   @Override
+  public void setCoordinate(Coordinate other)
+  {
+    x = other.x;
+    y = other.y;
+    z = other.getZ();
+    m = other.getM();
+  }
+  
+  @Override
   public void setOrdinate(int ordinateIndex, double value) {
       switch (ordinateIndex) {
       case X:

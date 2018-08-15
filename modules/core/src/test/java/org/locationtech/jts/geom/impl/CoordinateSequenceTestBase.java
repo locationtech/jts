@@ -170,51 +170,45 @@ public abstract class CoordinateSequenceTestBase
     if (seq.size() != coords.length) return false;
     
     // carefully get coordinate of the same type as the sequence
-    Coordinate p = seq.size() == 0 ? new Coordinate() : (Coordinate) seq.getCoordinate(0).clone();
-    p.setX(0);
-    p.setY(0);
-    if (seq.hasZ()) {
-      p.setZ(0.0);
-    }
-    if (seq.hasM()) {
-      p.setM(0.0);
-    }
-
+    Coordinate p = seq.createCoordinate();
     for (int i = 0; i < seq.size(); i++) {
       if (!coords[i].equals(seq.getCoordinate(i))) return false;
 
       // Ordinate named getters
-      if (coords[i].x != seq.getX(i)) return false;
-      if (coords[i].y != seq.getY(i)) return false;
+      if (!isEqual(coords[i].x,seq.getX(i))) return false;
+      if (!isEqual(coords[i].y,seq.getY(i))) return false;
       if (seq.hasZ()) {
-        if (coords[i].getZ() != seq.getZ(i)) return false;
+        if (!isEqual(coords[i].getZ(),seq.getZ(i))) return false;
       }
       if (seq.hasM()) {
-        if (coords[i].getM() != seq.getM(i)) return false;
+        if (!isEqual(coords[i].getM(),seq.getM(i))) return false;
       }
 
       // Ordinate indexed getters
-      if (coords[i].x != seq.getOrdinate(i, CoordinateSequence.X)) return false;
-      if (coords[i].y != seq.getOrdinate(i, CoordinateSequence.Y)) return false;
+      if (!isEqual(coords[i].x,seq.getOrdinate(i, CoordinateSequence.X))) return false;
+      if (!isEqual(coords[i].y,seq.getOrdinate(i, CoordinateSequence.Y))) return false;
       if (seq.getDimension() > 2) {
-        if (coords[i].getOrdinate(2) != seq.getOrdinate(i, 2)) return false;
+        if (!isEqual(coords[i].getOrdinate(2),seq.getOrdinate(i, 2))) return false;
       }
       if (seq.getDimension() > 3) {
-        if (coords[i].getOrdinate(3) != seq.getOrdinate(i, 3)) return false;
+        if (!isEqual(coords[i].getOrdinate(3),seq.getOrdinate(i, 3))) return false;
       }
 
       // Coordinate getter
       seq.getCoordinate(i, p);
-      if (coords[i].x != p.x) return false;
-      if (coords[i].y != p.y) return false;
+      if (!isEqual(coords[i].x,p.x)) return false;
+      if (!isEqual(coords[i].y,p.y)) return false;
       if (seq.hasZ()) {
-        if (coords[i].getZ() != p.getZ()) return false;
+        if (!isEqual(coords[i].getZ(),p.getZ())) return false;
       }
       if (seq.hasM()) {
-        if (coords[i].getM() != p.getM()) return false;
+        if (!isEqual(coords[i].getM(),p.getM())) return false;
       }
     }
     return true;
+  }
+  boolean isEqual( double expected, double actual) {
+    return expected == actual || (Double.isNaN(expected)&&Double.isNaN(actual));
   }
 }
 

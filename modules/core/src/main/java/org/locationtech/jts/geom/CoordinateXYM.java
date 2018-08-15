@@ -88,6 +88,15 @@ public class CoordinateXYM extends Coordinate {
   }
   
   @Override
+  public void setCoordinate(Coordinate other)
+  {
+    x = other.x;
+    y = other.y;
+    z = other.getZ();
+    m = other.getM();
+  }
+  
+  @Override
   public double getOrdinate(int ordinateIndex) {
       switch (ordinateIndex) {
       case X: return x;
