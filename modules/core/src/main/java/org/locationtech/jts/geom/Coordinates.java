@@ -59,11 +59,11 @@ public class Coordinates {
       return 2;
     } else if (coordinate instanceof CoordinateXYM) {
       return 3;
+    } else if (coordinate instanceof CoordinateXYZM) {
+      return 4;      
     } else if (coordinate instanceof Coordinate) {
       return 3;
-    } else if (coordinate instanceof CoordinateXYZM) {
-      return 4;
-    }
+    } 
     return 3;
   }
 
@@ -79,11 +79,11 @@ public class Coordinates {
       return 0;
     } else if (coordinate instanceof CoordinateXYM) {
       return 1;
-    } else if (coordinate instanceof Coordinate) {
-      return 0;
     } else if (coordinate instanceof CoordinateXYZM) {
       return 1;
-    }
+    } else if (coordinate instanceof Coordinate) {
+      return 0;
+    } 
     return 0;
   }
     

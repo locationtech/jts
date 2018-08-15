@@ -130,6 +130,21 @@ public class CoordinateArraySequenceTest
     } catch (IllegalArgumentException expected) {
     }    
   }
+ 
+  public void testMixedCoordinates()
+  {
+    CoordinateSequenceFactory factory = getCSFactory();
+    Coordinate coord1 = new Coordinate(1.0,1.0,1.0);
+    CoordinateXY coord2 = new CoordinateXY(2.0,2.0);
+    CoordinateXYM coord3 = new CoordinateXYM(3.0,3.0,3.0);
+    Coordinate[] array = new Coordinate[] {coord1, coord2, coord3};
+    CoordinateSequence seq = factory.create(array);
+    assertEquals( 3, seq.getDimension());
+    assertEquals( 1, seq.getMeasures());
+    assertTrue( coord1.equals( seq.getCoordinate(0)));
+    assertTrue( coord2.equals( seq.getCoordinate(1)));
+    assertTrue( coord3.equals( seq.getCoordinate(2)));   
+  }
   
   private void initProgression(CoordinateSequence seq) {
     for (int index = 0; index < seq.size(); index++) {
