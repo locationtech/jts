@@ -93,6 +93,7 @@ public class CoordinateArraySequence
     if (coordinates == null) {
       this.coordinates = new Coordinate[0];
     }
+    enforceArrayConsistency( this.coordinates );
   }
 
   /**
@@ -161,6 +162,29 @@ public class CoordinateArraySequence
   }
 
   /**
+   * Ensure array contents of the same type, making use of {@link #createCoordinate()} as needed.
+   * 
+   * @param array array is modified in place as needed
+   */
+  protected void enforceArrayConsistency(Coordinate[] array)
+  {
+     Coordinate sample = createCoordinate();
+     Class<?> type = sample.getClass();
+     for( int i = 0; i < array.length; i++) {
+       Coordinate coordinate = array[i];
+       if( coordinate == null ) {
+         array[i] = createCoordinate();
+       }
+       else if(!coordinate.getClass().equals(type)) {
+         Coordinate duplicate = createCoordinate();
+         duplicate.setCoordinate(coordinate);
+         array[i] = duplicate;         
+       }
+     }
+  }
+
+  
+  /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getDimension()
    */
   public int getDimension()
@@ -192,7 +216,9 @@ public class CoordinateArraySequence
    * @return a copy of the requested Coordinate
    */
   public Coordinate getCoordinateCopy(int i) {
-    return coordinates[i].copy();
+    Coordinate copy = createCoordinate();
+    copy.setCoordinate(coordinates[i]);
+    return copy;
   }
 
   /**
@@ -278,7 +304,9 @@ public class CoordinateArraySequence
   public CoordinateArraySequence copy() {
     Coordinate[] cloneCoordinates = new Coordinate[size()];
     for (int i = 0; i < coordinates.length; i++) {
-      cloneCoordinates[i] = coordinates[i].copy();
+      Coordinate duplicate = createCoordinate();
+      duplicate.setCoordinate(coordinates[i]);
+      cloneCoordinates[i] = duplicate;
     }
     return new CoordinateArraySequence(cloneCoordinates, dimension, measures);
   }
