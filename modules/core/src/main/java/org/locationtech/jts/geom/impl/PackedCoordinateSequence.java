@@ -45,12 +45,12 @@ public abstract class PackedCoordinateSequence
   /**
    * The dimensions of the coordinates held in the packed array
    */
-  final protected int dimension;
+  protected int dimension;
   
   /**
    * The number of measures of the coordinates held in the packed array.
    */
-  final protected int measures;
+  protected int measures;
   
   protected PackedCoordinateSequence(int dimension, int measures ) {
       if (dimension - measures < 2) {
