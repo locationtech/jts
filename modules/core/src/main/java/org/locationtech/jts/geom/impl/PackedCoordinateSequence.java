@@ -255,7 +255,7 @@ public abstract class PackedCoordinateSequence
       }
       this.coords = coords;
     }
-
+    
     /**
      * Builds a new packed coordinate sequence out of a float coordinate array
      *
@@ -270,7 +270,16 @@ public abstract class PackedCoordinateSequence
         this.coords[i] = coordinates[i];
       }
     }
-
+    
+    /**
+     * Builds a new packed coordinate sequence out of a coordinate array
+     * 
+     * @param coordinates
+     * @param dimension
+     */
+    public Double(Coordinate[] coordinates, int dimension) {
+      this( coordinates, dimension, 0);
+    }
     /**
      * Builds a new packed coordinate sequence out of a coordinate array
      *
@@ -435,12 +444,22 @@ public abstract class PackedCoordinateSequence
     }
 
     /**
+     * Builds a new packed coordinate sequence out of a coordinate array
+     * 
+     * @param coordinates
+     * @param dimension
+     */
+    public Float(Coordinate[] coordinates, int dimension) {
+      this( coordinates, dimension, 0);
+    }
+    
+    /**
      * Constructs a packed coordinate sequence out of a coordinate array
      *
      * @param coordinates
      */
     public Float(Coordinate[] coordinates, int dimension, int measures) {
-	super(dimension,measures);
+	    super(dimension,measures);
       if (coordinates == null)
         coordinates = new Coordinate[0];
       

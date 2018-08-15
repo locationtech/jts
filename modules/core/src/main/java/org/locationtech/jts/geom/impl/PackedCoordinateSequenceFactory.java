@@ -104,6 +104,18 @@ public class PackedCoordinateSequenceFactory implements
    * @param dimension
    * @return Packaged coordinate seqeunce of the requested type
    */
+  public CoordinateSequence create(double[] packedCoordinates, int dimension) {
+    return create( packedCoordinates, dimension, 0 );
+  }
+  
+  /**
+   * Create a packed coordinate sequence from the provided array. 
+   * 
+   * @param packedCoordinates 
+   * @param dimension
+   * @param measures
+   * @return Packaged coordinate seqeunce of the requested type
+   */
   public CoordinateSequence create(double[] packedCoordinates, int dimension, int measures) {
     if (type == DOUBLE) {
       return new PackedCoordinateSequence.Double(packedCoordinates, dimension, measures);
@@ -111,6 +123,17 @@ public class PackedCoordinateSequenceFactory implements
       return new PackedCoordinateSequence.Float(packedCoordinates, dimension, measures);
     }
   }
+  /**
+   * Create a packed coordinate sequence from the provided array. 
+   * 
+   * @param packedCoordinates 
+   * @param dimension
+   * @return Packaged coordinate seqeunce of the requested type
+   */
+  public CoordinateSequence create(float[] packedCoordinates, int dimension) {
+    return create( packedCoordinates, dimension, 0 );
+  }
+  
   /**
    * @param packedCoordinates
    * @param dimension
