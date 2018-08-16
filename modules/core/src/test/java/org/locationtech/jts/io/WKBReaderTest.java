@@ -35,13 +35,11 @@ public class WKBReaderTest  extends TestCase
 
   private GeometryFactory geomFactory = new GeometryFactory();
   private WKTReader rdr = new WKTReader(geomFactory);
-  private WKTReader rdr2DM = new WKTReader(geomFactory);
-  private WKTReader rdr3DM =
+  private WKTReader rdrM =
           new WKTReader(new GeometryFactory(PackedCoordinateSequenceFactory.DOUBLE_FACTORY));
 
   public WKBReaderTest(String name) {
     super(name);
-    rdr2DM.setMeasureToZ(true);
   }
 
   public void testShortPolygons() throws ParseException
@@ -204,9 +202,9 @@ public class WKBReaderTest  extends TestCase
 
     WKTReader useRdr = rdr;
     if (expectedWKT.contains("ZM"))
-      useRdr = rdr3DM;
+      useRdr = rdrM;
     else if (expectedWKT.contains("M(") || expectedWKT.contains("M ("))
-      useRdr = rdr2DM;
+      useRdr = rdrM;
 
     Geometry expected = useRdr.read(expectedWKT);
     

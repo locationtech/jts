@@ -9,6 +9,8 @@ import org.locationtech.jts.geom.CoordinateSequenceFactory;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 
+import java.util.EnumSet;
+
 public class WKTReadWriteTest extends TestCase {
 
   // We deliberately chose a coordinate sequence factory that can handle 4 dimensions
@@ -28,7 +30,7 @@ public class WKTReadWriteTest extends TestCase {
 
   public WKTReadWriteTest(String name) {
     super(name);
-    writer.setOutputOrdinates(CoordinateSequence.XYFlag);
+    writer.setOutputOrdinates(WKTOrdinates.getXY());
   }
 
   public void testReadNaN() throws Exception {

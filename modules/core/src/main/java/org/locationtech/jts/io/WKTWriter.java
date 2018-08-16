@@ -17,6 +17,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.EnumSet;
 import java.util.Locale;
 
 import org.locationtech.jts.geom.*;
@@ -169,53 +170,31 @@ public class WKTWriter
    */
   private class CheckOrdinatesFilter implements CoordinateSequenceFilter {
 
-    private final int[] ordinateFlag = {
-            CoordinateSequence.XFlag,
-            CoordinateSequence.YFlag,
-            CoordinateSequence.ZFlag,
-            CoordinateSequence.MFlag};
-
-    private final int checkOrdinateFlags;
-    private int numOrdinates;
-
-    private int outputOrdinates;
+    private final EnumSet<WKTOrdinates> checkOrdinateFlags;
+    private final EnumSet<WKTOrdinates> outputOrdinates;
 
     /**
      * Creates an instance of this class
 
      * @param checkOrdinateFlags the index for the ordinates to test.
      */
-    private CheckOrdinatesFilter(int checkOrdinateFlags, boolean zIsMeasure) {
+    private CheckOrdinatesFilter(EnumSet<WKTOrdinates> checkOrdinateFlags) {
 
-      // verify zIsMeasure.
-      if ((checkOrdinateFlags & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag)
-        zIsMeasure = false;
-
-      // On zIsMeasure we need to adjust the ordinate flag array.
-      if (zIsMeasure) {
-        ordinateFlag[CoordinateSequence.Z] = CoordinateSequence.MFlag;
-        ordinateFlag[CoordinateSequence.M] = 0;
-      }
-      this.outputOrdinates = CoordinateSequence.XYFlag;
+      this.outputOrdinates = EnumSet.of(WKTOrdinates.X, WKTOrdinates.Y);
       this.checkOrdinateFlags = checkOrdinateFlags;
-
-      // get number of ordinates to test
-      int numOrdinates = 2;
-      if ((checkOrdinateFlags & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag)
-        numOrdinates = 3;
-      if ((checkOrdinateFlags & CoordinateSequence.MFlag) == CoordinateSequence.MFlag)
-        numOrdinates = zIsMeasure ? 3 : 4;
-      this.numOrdinates = numOrdinates;
     }
 
     /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isGeometryChanged */
     public void filter(CoordinateSequence seq, int i) {
 
-      int numOrdinates = Math.min(this.numOrdinates, seq.getDimension());
-      for (int j = 2; j < numOrdinates; j++) {
-        double val = seq.getOrdinate(i, j);
-        if (!Double.isNaN(val))
-          outputOrdinates |= ordinateFlag[j];
+      if (checkOrdinateFlags.contains(WKTOrdinates.Z) && !outputOrdinates.contains(WKTOrdinates.Z)) {
+        if (!Double.isNaN(seq.getZ(i)))
+          outputOrdinates.add(WKTOrdinates.Z);
+      }
+
+      if (checkOrdinateFlags.contains(WKTOrdinates.M) && !outputOrdinates.contains(WKTOrdinates.M)) {
+        if (!Double.isNaN(seq.getM(i)))
+          outputOrdinates.add(WKTOrdinates.M);
       }
     }
 
@@ -226,7 +205,7 @@ public class WKTWriter
 
     /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isDone */
     public boolean isDone() {
-      return outputOrdinates == checkOrdinateFlags;
+      return outputOrdinates.equals(checkOrdinateFlags);
     }
 
     /**
@@ -234,18 +213,17 @@ public class WKTWriter
      *
      * @return A bit-pattern of ordinates with valid values masked by {@link #checkOrdinateFlags}.
      */
-    int getOutputOrdinates() {
+    EnumSet<WKTOrdinates> getOutputOrdinates() {
       return outputOrdinates;
     }
   }
 
-  private int outputOrdinates;
+  private EnumSet<WKTOrdinates> outputOrdinates;
   private final int outputDimension;
   private PrecisionModel precisionModel = null;
   private boolean isFormatted = false;
   private int coordsPerLine = -1;
   private String indentTabStr ;
-  //private boolean zIsMeasure = false;
 
   /**
    * Creates a new WKTWriter with default settings
@@ -282,18 +260,11 @@ public class WKTWriter
     if (outputDimension < 2 || outputDimension > 4)
       throw new IllegalArgumentException("Invalid output dimension (must be 2 to 4)");
 
-    switch (outputDimension)
-    {
-      case 2:
-        this.outputOrdinates = CoordinateSequence.XYFlag;
-        break;
-      case 3:
-        this.outputOrdinates = CoordinateSequence.XYZFlag;
-        break;
-      case 4:
-        this.outputOrdinates = CoordinateSequence.XYZMFlag;
-        break;
-    }
+    this.outputOrdinates = EnumSet.of(WKTOrdinates.X, WKTOrdinates.Y);
+    if (outputDimension > 2)
+      outputOrdinates.add(WKTOrdinates.Z);
+    if (outputDimension > 3)
+      outputOrdinates.add(WKTOrdinates.M);
   }
 
   /**
@@ -333,61 +304,43 @@ public class WKTWriter
   }
 
   /**
-   * Sets a flag indicating that the {@link Coordinate#z} value should be
-   * interpreted as a measure value. This way {@code Geometry M} can be written.
-   *
-   * @param zIsMeasure the flag indicating if {@link Coordinate#z} is actually a
-   *                   measure value.
-   */
-  public void setZIsMeasure(boolean zIsMeasure) {
-    // if we only output 2 dimensions, there is no need to
-    // check which other ordinate holds a measure value!
-    if (this.outputDimension == 2) return;
-
-    // if we want to output four dimensions anyway, bail out
-    if (this.outputDimension == 4) return;
-
-    this.outputOrdinates = zIsMeasure
-            ? CoordinateSequence.XYMFlag
-            : CoordinateSequence.XYZFlag;
-  }
-
-  /**
-   * Sets a bit-pattern defining which ordinates should be
-   * written. It is one of the following values:
+   * Sets the {@link WKTOrdinates} that are to be written. Possible members are:
    * <ul>
-   * <li>{@link CoordinateSequence#XYFlag}</li>
-   * <li>{@link CoordinateSequence#XYZFlag}</li>
-   * <li>{@link CoordinateSequence#XYMFlag}</li>
-   * <li>{@link CoordinateSequence#XYZMFlag}</li>
+   * <li>{@link WKTOrdinates#X}</li>
+   * <li>{@link WKTOrdinates#Y}</li>
+   * <li>{@link WKTOrdinates#Z}</li>
+   * <li>{@link WKTOrdinates#M}</li>
    * </ul>
-   * {@link CoordinateSequence#XYFlag} is always assumed and not
+   * Values of {@link WKTOrdinates#X} and {@link WKTOrdinates#Y} are always assumed and not
    * particularly checked for.
    *
-   * @param outputOrdinates A bit-pattern
+   * @param outputOrdinates A set of {@link WKTOrdinates} values
    */
-  public void setOutputOrdinates(int outputOrdinates) {
+  public void setOutputOrdinates(EnumSet<WKTOrdinates> outputOrdinates) {
 
-    switch (this.outputDimension) {
-      case 2:
-        this.outputOrdinates =
-                CoordinateSequence.XYFlag;
-      case 3:
-        this.outputOrdinates =
-                (outputOrdinates & CoordinateSequence.XYZFlag) |
-                (outputOrdinates & CoordinateSequence.XYMFlag);
-      default:
-        this.outputOrdinates =
-                outputOrdinates & CoordinateSequence.XYZMFlag;
+    this.outputOrdinates.remove(WKTOrdinates.Z);
+    this.outputOrdinates.remove(WKTOrdinates.M);
+
+    if (this.outputDimension == 3) {
+      if (outputOrdinates.contains(WKTOrdinates.Z))
+        this.outputOrdinates.add(WKTOrdinates.Z);
+      else if (outputOrdinates.contains(WKTOrdinates.M))
+        this.outputOrdinates.add(WKTOrdinates.M);
+    }
+    if (this.outputDimension == 4) {
+      if (outputOrdinates.contains(WKTOrdinates.Z))
+        this.outputOrdinates.add(WKTOrdinates.Z);
+      if (outputOrdinates.contains(WKTOrdinates.M))
+        this.outputOrdinates.add(WKTOrdinates.M);
     }
   }
 
   /**
    * Gets a bit-pattern defining which ordinates should be
    * @return an ordinate bit-pattern
-   * @see #setOutputOrdinates(int)
+   * @see #setOutputOrdinates(EnumSet)
    */
-  public int getOutputOrdinates() {
+  public EnumSet<WKTOrdinates> getOutputOrdinates() {
     return this.outputOrdinates;
   }
 
@@ -404,14 +357,6 @@ public class WKTWriter
     this.precisionModel = precisionModel;
   }
 
-  /**
-   * Gets a value indicating if the z-ordinate value should be treated as a measure value
-   * @return {@code true} if the z-ordinate value should be treated as a measrue value.
-   */
-  public boolean getZIsMeasure() {
-    return this.outputDimension == 3 &&
-           this.outputOrdinates == CoordinateSequence.XYMFlag;
-  }
   /**
    *  Converts a <code>Geometry</code> to its Well-known Text representation.
    *
@@ -517,7 +462,7 @@ public class WKTWriter
     throws IOException
   {
     // evaluate the ordinates actually present in the geometry
-    CheckOrdinatesFilter cof = new CheckOrdinatesFilter(this.outputOrdinates, this.getZIsMeasure());
+    CheckOrdinatesFilter cof = new CheckOrdinatesFilter(this.outputOrdinates);
     geometry.apply(cof);
 
     // Append the WKT
@@ -536,7 +481,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendGeometryTaggedText(
-          Geometry geometry, int outputOrdinates, boolean useFormatting,
+          Geometry geometry, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
 
@@ -592,7 +537,7 @@ public class WKTWriter
    * @param  formatter          the formatter to use when writing numbers
    */
   private void appendPointTaggedText(
-          Point point, int outputOrdinates, boolean useFormatting,
+          Point point, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -614,7 +559,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendLineStringTaggedText(
-          LineString lineString, int outputOrdinates, boolean useFormatting,
+          LineString lineString, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -636,7 +581,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendLinearRingTaggedText(
-          LinearRing linearRing, int outputOrdinates, boolean useFormatting,
+          LinearRing linearRing, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -658,7 +603,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendPolygonTaggedText(
-          Polygon polygon, int outputOrdinates, boolean useFormatting,
+          Polygon polygon, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -679,7 +624,7 @@ public class WKTWriter
    * @param  formatter       the <code>DecimalFormatter</code> to use to convert
    *      from a precise coordinate to an external coordinate
    */
-  private void appendMultiPointTaggedText(MultiPoint multipoint, int outputOrdinates,
+  private void appendMultiPointTaggedText(MultiPoint multipoint, EnumSet<WKTOrdinates> outputOrdinates,
                                           boolean useFormatting, int level, Writer writer,
                                           DecimalFormat formatter)
     throws IOException
@@ -701,7 +646,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendMultiLineStringTaggedText(
-          MultiLineString multiLineString, int outputOrdinates, boolean useFormatting,
+          MultiLineString multiLineString, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -723,7 +668,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendMultiPolygonTaggedText(
-          MultiPolygon multiPolygon, int outputOrdinates, boolean useFormatting,
+          MultiPolygon multiPolygon, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -745,7 +690,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendGeometryCollectionTaggedText(
-          GeometryCollection geometryCollection, int outputOrdinates, boolean useFormatting,
+          GeometryCollection geometryCollection, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -766,38 +711,26 @@ public class WKTWriter
    * @param  formatter  the formatter to use for writing ordinate values
    */
   private static void appendCoordinate(
-          CoordinateSequence seq, int outputOrdinates, int i,
+          CoordinateSequence seq, EnumSet<WKTOrdinates> outputOrdinates, int i,
           Writer writer, DecimalFormat formatter)
       throws IOException
   {
     writer.write(writeNumber(seq.getX(i), formatter) + " " +
             writeNumber(seq.getY(i), formatter));
-    if (outputOrdinates == CoordinateSequence.XYFlag) return;
 
-    // we have three dimensions, either z- or measure-ordinate
-    if (outputOrdinates == CoordinateSequence.XYZFlag ||
-        outputOrdinates == CoordinateSequence.XYMFlag) {
-      double val = (outputOrdinates == CoordinateSequence.XYMFlag && seq.getDimension() > 3)
-              ? seq.getOrdinate(i, CoordinateSequence.M)
-              : seq.getOrdinate(i, CoordinateSequence.Z);
-      if (! Double.isNaN(val)) {
+    if (outputOrdinates.contains(WKTOrdinates.Z)) {
+      double z = seq.getZ(i);
+      if (!Double.isNaN(z)) {
         writer.write(" ");
-        writer.write(writeNumber(val, formatter));
+        writer.write(writeNumber(seq.getZ(i), formatter));
+      } else {
+        writer.write(" NaN");
       }
-      return;
     }
 
-    // we have 4 dimensions!
-    double z = seq.getOrdinate(i, CoordinateSequence.Z);
-    double m = seq.getOrdinate(i, CoordinateSequence.M);
-    if (!Double.isNaN(z) | !Double.isNaN(m)) {
+    if (outputOrdinates.contains(WKTOrdinates.M)) {
       writer.write(" ");
-      writer.write(writeNumber(z, formatter));
-    }
-
-    if (!Double.isNaN(m)) {
-      writer.write(" ");
-      writer.write(writeNumber(z, formatter));
+      writer.write(writeNumber(seq.getM(i), formatter));
     }
   }
 
@@ -817,25 +750,25 @@ public class WKTWriter
    * Appends additional ordinate information. This function may
    * <ul>
    *   <li>append 'Z' if in {@code outputOrdinates} the
-   *   {@link CoordinateSequence#ZFlag} bit is set
+   *   {@link WKTOrdinates#Z} value is included
    *   </li>
    *   <li>append 'M' if in {@code outputOrdinates} the
-   *   {@link CoordinateSequence#MFlag} bit is set
+   *   {@link WKTOrdinates#M} value is included
    *   </li>
    *   <li> append 'ZM' if in {@code outputOrdinates} the
-   *   {@link CoordinateSequence#ZFlag} bit and
-   *   {@link CoordinateSequence#MFlag} bit are set/li>
+   *   {@link WKTOrdinates#Z} and
+   *   {@link WKTOrdinates#M} values are included/li>
    * </ul>
    *
    * @param outputOrdinates  a bit-pattern of ordinates to write.
    * @param writer         the output writer to append to.
    * @throws IOException   if an error occurs while using the writer.
    */
-  private void appendOrdinateText(int outputOrdinates, Writer writer) throws IOException {
+  private void appendOrdinateText(EnumSet<WKTOrdinates> outputOrdinates, Writer writer) throws IOException {
 
-    if ((outputOrdinates & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag)
+    if (outputOrdinates.contains(WKTOrdinates.Z))
       writer.append('Z');
-    if ((outputOrdinates & CoordinateSequence.MFlag) == CoordinateSequence.MFlag)
+    if (outputOrdinates.contains(WKTOrdinates.M))
       writer.append('M');
   }
 
@@ -851,8 +784,8 @@ public class WKTWriter
    * @param  writer          the output writer to append to
    * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendSequenceText(CoordinateSequence seq, int outputOrdinates, boolean useFormatting, int level, boolean indentFirst,
-                                  Writer writer, DecimalFormat formatter)
+  private void appendSequenceText(CoordinateSequence seq, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+                                  int level, boolean indentFirst, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (seq.size() == 0) {
@@ -888,7 +821,7 @@ public class WKTWriter
    * @param  formatter       the formatter to use for writing ordinate values.
    */
   private void appendPolygonText(
-          Polygon polygon, int outputOrdinates, boolean useFormatting,
+          Polygon polygon, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, boolean indentFirst, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -920,7 +853,7 @@ public class WKTWriter
    * @param  formatter       the formatter to use for writing ordinate values.
    */
   private void appendMultiPointText(
-          MultiPoint multiPoint, int outputOrdinates, boolean useFormatting,
+          MultiPoint multiPoint, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -953,7 +886,7 @@ public class WKTWriter
    * @param  writer           the output writer to append to
    * @param  formatter        the formatter to use for writing ordinate values.
    */
-  private void appendMultiLineStringText(MultiLineString multiLineString, int outputOrdinates,
+  private void appendMultiLineStringText(MultiLineString multiLineString, EnumSet<WKTOrdinates> outputOrdinates,
            boolean useFormatting, int level, /*boolean indentFirst, */Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -988,7 +921,7 @@ public class WKTWriter
    * @param  formatter       the formatter to use for writing ordinate values.
    */
   private void appendMultiPolygonText(
-          MultiPolygon multiPolygon, int outputOrdinates, boolean useFormatting,
+          MultiPolygon multiPolygon, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -1023,7 +956,7 @@ public class WKTWriter
    * @param  formatter       the formatter to use for writing ordinate values.
    */
   private void appendGeometryCollectionText(
-          GeometryCollection geometryCollection, int outputOrdinates, boolean useFormatting,
+          GeometryCollection geometryCollection, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
