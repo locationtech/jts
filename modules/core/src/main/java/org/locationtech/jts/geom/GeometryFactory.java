@@ -413,7 +413,7 @@ public class GeometryFactory
     Point[] points = new Point[coordinates.size()];
     for (int i = 0; i < coordinates.size(); i++) {
       CoordinateSequence ptSeq = getCoordinateSequenceFactory()
-        .create(1, coordinates.getDimension());
+        .create(1, coordinates.getDimension(), coordinates.getMeasures());
       CoordinateSequences.copy(coordinates, i, ptSeq, 0, 1);
       points[i] = createPoint(ptSeq);
     }
