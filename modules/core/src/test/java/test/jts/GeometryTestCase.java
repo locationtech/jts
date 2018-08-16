@@ -14,12 +14,14 @@ package test.jts;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTOrdinates;
 import org.locationtech.jts.io.WKTReader;
 
 import junit.framework.TestCase;
@@ -112,94 +114,52 @@ public abstract class GeometryTestCase extends TestCase{
 
   /**
    * Gets a {@link WKTReader} to read geometries from WKT with expected ordinates.
-   * If {@code ordinateFlags} is {@link CoordinateSequence#XYMFlag}, measure ordinate values will be saved
-   * at {@link CoordinateSequence#Z} index.
    *
-   * @param ordinateFlags a bit-pattern describing the ordinates expected
+   * @param ordinateFlags a set of expected ordinates
    * @return a {@code WKTReader}
    */
-  public static WKTReader getWKTReader(int ordinateFlags) {
-    return getWKTReader(ordinateFlags, true);
+  public static WKTReader getWKTReader(EnumSet<WKTOrdinates> ordinateFlags) {
+    return getWKTReader(ordinateFlags, new PrecisionModel());
   }
 
   /**
    * Gets a {@link WKTReader} to read geometries from WKT with expected ordinates.
    *
-   * @param ordinateFlags a bit-pattern describing the ordinates expected
-   * @param measureToZ a flag indicating that measure values should be stored as z-ordinate values
-   * @return a {@code WKTReader}
-   */
-  public static WKTReader getWKTReader(int ordinateFlags, boolean measureToZ) {
-    return getWKTReader(ordinateFlags, measureToZ, new PrecisionModel());
-  }
-
-  /**
-   * Gets a {@link WKTReader} to read geometries from WKT with expected ordinates.
-   * If {@code ordinateFlags} is {@link CoordinateSequence#XYMFlag}, measure ordinate values will be saved
-   * at {@link CoordinateSequence#Z} index.
-   *
-   * @param ordinateFlags a bit-pattern describing the ordinates expected
+   * @param ordinateFlags a set of expected ordinates
    * @param scale         a scale value to create a {@link PrecisionModel}
    *
    * @return a {@code WKTReader}
    */
-  public static WKTReader getWKTReader(int ordinateFlags, double scale) {
-    return getWKTReader(ordinateFlags, true, new PrecisionModel(scale));
-  }
-  /**
-   * Gets a {@link WKTReader} to read geometries from WKT with expected ordinates.
-   *
-   * @param ordinateFlags a bit-pattern describing the ordinates expected
-   * @param scale         a scale value to create a {@link PrecisionModel}
-   * @param measureToZ    a flag indicating that measure values should be stored as z-ordinate values
-   *
-   * @return a {@code WKTReader}
-   */
-  public static WKTReader getWKTReader(int ordinateFlags, boolean measureToZ, double scale) {
-    return getWKTReader(ordinateFlags, measureToZ, new PrecisionModel(scale));
+  public static WKTReader getWKTReader(EnumSet<WKTOrdinates> ordinateFlags, double scale) {
+    return getWKTReader(ordinateFlags, new PrecisionModel(scale));
   }
 
   /**
    * Gets a {@link WKTReader} to read geometries from WKT with expected ordinates.
-   * If {@code ordinateFlags} is {@link CoordinateSequence#XYMFlag}, measure ordinate values will be saved
-   * at {@link CoordinateSequence#Z} index.
    *
-   * @param ordinateFlags  a bit-pattern describing the ordinates expected
+   * @param ordinateFlags a set of expected ordinates
    * @param precisionModel a precision model
    *
    * @return a {@code WKTReader}
    */
-  public static WKTReader getWKTReader(int ordinateFlags, PrecisionModel precisionModel) {
-    return getWKTReader(ordinateFlags, true, precisionModel);
-  }
+  public static WKTReader getWKTReader(EnumSet<WKTOrdinates> ordinateFlags, PrecisionModel precisionModel) {
 
-  /**
-   * Gets a {@link WKTReader} to read geometries from WKT with expected ordinates.
-   *
-   * @param ordinateFlags  a bit-pattern describing the ordinates expected
-   * @param precisionModel a precision model
-   * @param measureToZ     a flag indicating that measure values should be stored as z-ordinate values
-   *
-   * @return a {@code WKTReader}
-   */
-  public static WKTReader getWKTReader(int ordinateFlags, boolean measureToZ, PrecisionModel precisionModel) {
-
-    ordinateFlags = ordinateFlags & CoordinateSequence.XYZMFlag;
     WKTReader result;
 
-    if (ordinateFlags == CoordinateSequence.XYFlag)
+    if (!ordinateFlags.contains(WKTOrdinates.X)) ordinateFlags.add(WKTOrdinates.X);
+    if (!ordinateFlags.contains(WKTOrdinates.Y)) ordinateFlags.add(WKTOrdinates.Y);
+
+    if (ordinateFlags.size() == 2)
     {
       result = new WKTReader(new GeometryFactory(precisionModel, 0, CoordinateArraySequenceFactory.instance()));
       result.setIsOldJtsCoordinateSyntaxAllowed(false);
     }
-    else if (ordinateFlags == CoordinateSequence.XYZFlag)
+    else if (ordinateFlags.contains(WKTOrdinates.Z))
       result = new WKTReader(new GeometryFactory(precisionModel, 0, CoordinateArraySequenceFactory.instance()));
-    else if (ordinateFlags == CoordinateSequence.XYMFlag) {
-      result = new WKTReader(new GeometryFactory(precisionModel, 0, measureToZ
-              ? CoordinateArraySequenceFactory.instance()
-              : PackedCoordinateSequenceFactory.DOUBLE_FACTORY));
+    else if (ordinateFlags.contains(WKTOrdinates.M)) {
+      result = new WKTReader(new GeometryFactory(precisionModel, 0,
+              PackedCoordinateSequenceFactory.DOUBLE_FACTORY));
       result.setIsOldJtsCoordinateSyntaxAllowed(false);
-      result.setMeasureToZ(measureToZ);
     }
     else
       result = new WKTReader(new GeometryFactory(precisionModel, 0, PackedCoordinateSequenceFactory.DOUBLE_FACTORY));
@@ -293,29 +253,10 @@ public abstract class GeometryTestCase extends TestCase{
    * @param ordinateFlags a bit-pattern of ordinates
    * @return a {@code CoordinateSequenceFactory}
    */
-  public static CoordinateSequenceFactory getCSFactory(int ordinateFlags)
+  public static CoordinateSequenceFactory getCSFactory(EnumSet<WKTOrdinates> ordinateFlags)
   {
-    return getCSFactory(ordinateFlags, false);
-  }
-  /**
-   * Gets a {@link CoordinateSequenceFactory} that can create sequences
-   * for ordinates defined in the provided bit-pattern.
-   * @param ordinateFlags a bit-pattern of ordinates
-   * @param zToMeasure a flag indicating that z-ordinate values should be stored as m-ordinate values
-   *
-   * @return a {@code CoordinateSequenceFactory}
-   */
-  public static CoordinateSequenceFactory getCSFactory(int ordinateFlags, boolean zToMeasure)
-  {
-    ordinateFlags = ordinateFlags & CoordinateSequence.XYZMFlag;
-    switch (ordinateFlags) {
-      case CoordinateSequence.XYZMFlag:
+    if (ordinateFlags.contains(WKTOrdinates.M))
         return PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
-      case CoordinateSequence.XYMFlag:
-        return !zToMeasure
-                ? CoordinateArraySequenceFactory.instance()
-                : PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
-    }
 
     return CoordinateArraySequenceFactory.instance();
   }

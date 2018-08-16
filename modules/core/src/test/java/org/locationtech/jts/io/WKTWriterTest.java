@@ -39,39 +39,29 @@ public class WKTWriterTest extends TestCase {
   }
 
   public WKTWriterTest(String name) { super(name);
-    writer2DM.setZIsMeasure(true);
+    writer2DM.setOutputOrdinates(WKTOrdinates.getXYM());
   }
 
   public static Test suite() { return new TestSuite(WKTWriterTest.class); }
 
   public void testProperties() {
-    assertEquals(CoordinateSequence.XYFlag, writer.getOutputOrdinates());
-    assertEquals(CoordinateSequence.XYZFlag, writer3D.getOutputOrdinates());
-    assertEquals(CoordinateSequence.XYMFlag, writer2DM.getOutputOrdinates());
-    assertTrue(writer2DM.getZIsMeasure());
-    writer2DM.setZIsMeasure(false);
-    assertTrue(!writer2DM.getZIsMeasure());
-    assertEquals(CoordinateSequence.XYZFlag, writer2DM.getOutputOrdinates());
-    writer2DM.setZIsMeasure(true);
-    assertTrue(writer2DM.getZIsMeasure());
-    assertEquals(CoordinateSequence.XYMFlag, writer2DM.getOutputOrdinates());
+    assertEquals(WKTOrdinates.getXY(), writer.getOutputOrdinates());
+    assertEquals(WKTOrdinates.getXYZ(), writer3D.getOutputOrdinates());
+    assertEquals(WKTOrdinates.getXYM(), writer2DM.getOutputOrdinates());
 
     GeometryFactory gf = new GeometryFactory(
             PackedCoordinateSequenceFactory.DOUBLE_FACTORY);
     WKTWriter writer3DM = new WKTWriter(4);
-    assertEquals(CoordinateSequence.XYZMFlag, writer3DM.getOutputOrdinates());
-    assertTrue(!writer3DM.getZIsMeasure());
-    writer3DM.setZIsMeasure(true);
-    assertTrue(!writer3DM.getZIsMeasure());
+    assertEquals(WKTOrdinates.getXYZM(), writer3DM.getOutputOrdinates());
 
-    writer3DM.setOutputOrdinates(CoordinateSequence.XYFlag);
-    assertEquals(CoordinateSequence.XYFlag, writer3DM.getOutputOrdinates());
-    writer3DM.setOutputOrdinates(CoordinateSequence.XYZFlag);
-    assertEquals(CoordinateSequence.XYZFlag, writer3DM.getOutputOrdinates());
-    writer3DM.setOutputOrdinates(CoordinateSequence.XYMFlag);
-    assertEquals(CoordinateSequence.XYMFlag, writer3DM.getOutputOrdinates());
-    writer3DM.setOutputOrdinates(CoordinateSequence.XYZMFlag);
-    assertEquals(CoordinateSequence.XYZMFlag, writer3DM.getOutputOrdinates());
+    writer3DM.setOutputOrdinates(WKTOrdinates.getXY());
+    assertEquals(WKTOrdinates.getXY(), writer3DM.getOutputOrdinates());
+    writer3DM.setOutputOrdinates(WKTOrdinates.getXYZ());
+    assertEquals(WKTOrdinates.getXYZ(), writer3DM.getOutputOrdinates());
+    writer3DM.setOutputOrdinates(WKTOrdinates.getXYM());
+    assertEquals(WKTOrdinates.getXYM(), writer2DM.getOutputOrdinates());
+    writer3DM.setOutputOrdinates(WKTOrdinates.getXYZM());
+    assertEquals(WKTOrdinates.getXYZM(), writer3DM.getOutputOrdinates());
 
   }
 
@@ -177,7 +167,7 @@ public class WKTWriterTest extends TestCase {
     String wkt = writer3D.write(point);
     assertEquals("POINT Z(1 1 1)", wkt);
     wkt = writer2DM.write(point);
-    assertEquals("POINT M(1 1 1)", wkt);
+    assertEquals("POINT (1 1)", wkt);
   }
 
   public void testWrite3D_withNaN() {
@@ -186,9 +176,9 @@ public class WKTWriterTest extends TestCase {
                                  new Coordinate(2, 2, 2) };
     LineString line = geometryFactory.createLineString(coordinates);
     String wkt = writer3D.write(line);
-    assertEquals("LINESTRING Z(1 1, 2 2 2)", wkt);
+    assertEquals("LINESTRING Z(1 1 NaN, 2 2 2)", wkt);
     wkt = writer2DM.write(line);
-    assertEquals("LINESTRING M(1 1, 2 2 2)", wkt);
+    assertEquals("LINESTRING (1 1, 2 2)", wkt);
   }
 
 }

@@ -21,6 +21,8 @@ import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
+import java.util.EnumSet;
+
 
 /**
  * Test for {@link WKTReader}
@@ -34,7 +36,6 @@ public class WKTReaderTest extends TestCase {
   private final WKTReader reader2DOld;
   private final WKTReader reader3D;
   private final WKTReader reader2DM;
-  private final WKTReader reader2DMtoZ;
   private final WKTReader reader3DM;
 
   public static void main(String args[]) {
@@ -44,14 +45,13 @@ public class WKTReaderTest extends TestCase {
   public WKTReaderTest(String name) {
     super(name);
 
-    reader2D = GeometryTestCase.getWKTReader(CoordinateSequence.XYFlag, 1d);
+    reader2D = GeometryTestCase.getWKTReader(WKTOrdinates.getXY(), 1d);
     reader2D.setIsOldJtsCoordinateSyntaxAllowed(false);
-    reader2DOld = GeometryTestCase.getWKTReader(CoordinateSequence.XYFlag, 1d);
+    reader2DOld = GeometryTestCase.getWKTReader(WKTOrdinates.getXY(), 1d);
     reader2DOld.setIsOldJtsCoordinateSyntaxAllowed(true);
-    reader3D = GeometryTestCase.getWKTReader(CoordinateSequence.XYZFlag, 1d);
-    reader2DM = GeometryTestCase.getWKTReader(CoordinateSequence.XYMFlag, false, 1d);
-    reader2DMtoZ = GeometryTestCase.getWKTReader(CoordinateSequence.XYMFlag, true, 1d);
-    reader3DM = GeometryTestCase.getWKTReader(CoordinateSequence.XYZMFlag, 1d);
+    reader3D = GeometryTestCase.getWKTReader(WKTOrdinates.getXYZ(), 1d);
+    reader2DM = GeometryTestCase.getWKTReader(WKTOrdinates.getXYM(), 1d);
+    reader3DM = GeometryTestCase.getWKTReader(WKTOrdinates.getXYZM(), 1d);
   }
 
   public static Test suite() { return new TestSuite(WKTReaderTest.class); }
@@ -59,9 +59,8 @@ public class WKTReaderTest extends TestCase {
   public void testReadNaN() throws Exception {
 
     // arrange
-    CoordinateSequence seq = createSequence(CoordinateSequence.XYZFlag, new double[] {10, 10});
-    seq.setOrdinate(0, 2, Double.NaN);
-
+    CoordinateSequence seq = createSequence(WKTOrdinates.getXYZ(), new double[] {10, 10});
+    seq.setOrdinate(0, CoordinateSequence.Z, Double.NaN);
 
     // act
     Point pt1 = (Point)reader2DOld.read("POINT (10 10 NaN)");
@@ -78,11 +77,11 @@ public class WKTReaderTest extends TestCase {
 
     // arrange
     double[] coordinates = new double[] {10, 10};
-    CoordinateSequence seqPt2D = createSequence(CoordinateSequence.XYFlag, coordinates);
-    CoordinateSequence seqPt2DE = createSequence(CoordinateSequence.XYFlag, new double[0]);
-    CoordinateSequence seqPt3D = createSequence(CoordinateSequence.XYZFlag, coordinates);
-    CoordinateSequence seqPt2DM = createSequence(CoordinateSequence.XYMFlag, true, coordinates);
-    CoordinateSequence seqPt3DM = createSequence(CoordinateSequence.XYZMFlag, coordinates);
+    CoordinateSequence seqPt2D = createSequence(WKTOrdinates.getXY(), coordinates);
+    CoordinateSequence seqPt2DE = createSequence(WKTOrdinates.getXY(), new double[0]);
+    CoordinateSequence seqPt3D = createSequence(WKTOrdinates.getXYZ(), coordinates);
+    CoordinateSequence seqPt2DM = createSequence(WKTOrdinates.getXYM(), coordinates);
+    CoordinateSequence seqPt3DM = createSequence(WKTOrdinates.getXYZM(), coordinates);
 
     // act
     Point pt2D = (Point) reader2D.read("POINT (10 10)");
@@ -103,11 +102,11 @@ public class WKTReaderTest extends TestCase {
 
     // arrange
     double[] coordinates = new double[] {10, 10, 20, 20, 30, 40};
-    CoordinateSequence seqLs2D = createSequence(CoordinateSequence.XYFlag, coordinates);
-    CoordinateSequence seqLs2DE = createSequence(CoordinateSequence.XYFlag, new double[0]);
-    CoordinateSequence seqLs3D = createSequence(CoordinateSequence.XYZFlag, coordinates);
-    CoordinateSequence seqLs2DM = createSequence(CoordinateSequence.XYMFlag, true, coordinates);
-    CoordinateSequence seqLs3DM = createSequence(CoordinateSequence.XYZMFlag, coordinates);
+    CoordinateSequence seqLs2D = createSequence(WKTOrdinates.getXY(), coordinates);
+    CoordinateSequence seqLs2DE = createSequence(WKTOrdinates.getXY(), new double[0]);
+    CoordinateSequence seqLs3D = createSequence(WKTOrdinates.getXYZ(), coordinates);
+    CoordinateSequence seqLs2DM = createSequence(WKTOrdinates.getXYM(), coordinates);
+    CoordinateSequence seqLs3DM = createSequence(WKTOrdinates.getXYZM(), coordinates);
 
     // act
     LineString ls2D = (LineString) reader2D
@@ -132,11 +131,11 @@ public class WKTReaderTest extends TestCase {
   public void testReadLinearRing() throws Exception {
 
     double[] coordinates = new double[] {10, 10, 20, 20, 30, 40, 10, 10};
-    CoordinateSequence seqLs2D = createSequence(CoordinateSequence.XYFlag, coordinates);
-    CoordinateSequence seqLs2DE = createSequence(CoordinateSequence.XYFlag, new double[0]);
-    CoordinateSequence seqLs3D = createSequence(CoordinateSequence.XYZFlag, coordinates);
-    CoordinateSequence seqLs2DM = createSequence(CoordinateSequence.XYMFlag, true, coordinates);
-    CoordinateSequence seqLs3DM = createSequence(CoordinateSequence.XYZMFlag, coordinates);
+    CoordinateSequence seqLs2D = createSequence(WKTOrdinates.getXY(), coordinates);
+    CoordinateSequence seqLs2DE = createSequence(WKTOrdinates.getXY(), new double[0]);
+    CoordinateSequence seqLs3D = createSequence(WKTOrdinates.getXYZ(), coordinates);
+    CoordinateSequence seqLs2DM = createSequence(WKTOrdinates.getXYM(), coordinates);
+    CoordinateSequence seqLs3DM = createSequence(WKTOrdinates.getXYZM(), coordinates);
 
     // act
     LineString ls2D = (LineString) reader2D
@@ -173,22 +172,22 @@ public class WKTReaderTest extends TestCase {
     double[] ring2 = new double[] {11, 19, 11, 18, 12, 18, 12, 19, 11, 19};
     
     CoordinateSequence[] csPoly2D = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYFlag, shell),
-            createSequence(CoordinateSequence.XYFlag, ring1),
-            createSequence(CoordinateSequence.XYFlag, ring2)};
-    CoordinateSequence csPoly2DE = createSequence(CoordinateSequence.XYFlag, new double[0]);
+            createSequence(WKTOrdinates.getXY(), shell),
+            createSequence(WKTOrdinates.getXY(), ring1),
+            createSequence(WKTOrdinates.getXY(), ring2)};
+    CoordinateSequence csPoly2DE = createSequence(WKTOrdinates.getXY(), new double[0]);
     CoordinateSequence[] csPoly3D = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYZFlag, shell),
-            createSequence(CoordinateSequence.XYZFlag, ring1),
-            createSequence(CoordinateSequence.XYZFlag, ring2)};
+            createSequence(WKTOrdinates.getXYZ(), shell),
+            createSequence(WKTOrdinates.getXYZ(), ring1),
+            createSequence(WKTOrdinates.getXYZ(), ring2)};
     CoordinateSequence[] csPoly2DM = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYMFlag, true, shell),
-            createSequence(CoordinateSequence.XYMFlag, true, ring1),
-            createSequence(CoordinateSequence.XYMFlag, true, ring2)};
+            createSequence(WKTOrdinates.getXYM(), shell),
+            createSequence(WKTOrdinates.getXYM(), ring1),
+            createSequence(WKTOrdinates.getXYM(), ring2)};
     CoordinateSequence[] csPoly3DM = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYZMFlag, shell),
-            createSequence(CoordinateSequence.XYZMFlag, ring1),
-            createSequence(CoordinateSequence.XYZMFlag, ring2)};
+            createSequence(WKTOrdinates.getXYZM(), shell),
+            createSequence(WKTOrdinates.getXYZM(), ring1),
+            createSequence(WKTOrdinates.getXYZM(), ring2)};
     
     WKTReader rdr = reader2D;
     Polygon[] poly2D = new Polygon[]{
@@ -237,17 +236,17 @@ public class WKTReaderTest extends TestCase {
     // arrange
     double[][] coordinates = new double[][] { new double[] {10, 10}, new double[] {20, 20}};
     CoordinateSequence[] csMP2D = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYFlag, coordinates[0]),
-            createSequence(CoordinateSequence.XYFlag, coordinates[1])};
+            createSequence(WKTOrdinates.getXY(), coordinates[0]),
+            createSequence(WKTOrdinates.getXY(), coordinates[1])};
     CoordinateSequence[] csMP3D = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYZFlag, coordinates[0]),
-            createSequence(CoordinateSequence.XYZFlag, coordinates[1])};
+            createSequence(WKTOrdinates.getXYZ(), coordinates[0]),
+            createSequence(WKTOrdinates.getXYZ(), coordinates[1])};
     CoordinateSequence[] csMP2DM = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYMFlag, true, coordinates[0]),
-            createSequence(CoordinateSequence.XYMFlag, true, coordinates[1])};
+            createSequence(WKTOrdinates.getXYM(), coordinates[0]),
+            createSequence(WKTOrdinates.getXYM(), coordinates[1])};
     CoordinateSequence[] csMP3DM = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYZMFlag, coordinates[0]),
-            createSequence(CoordinateSequence.XYZMFlag, coordinates[1])};
+            createSequence(WKTOrdinates.getXYZM(), coordinates[0]),
+            createSequence(WKTOrdinates.getXYZM(), coordinates[1])};
 
     // act
     WKTReader rdr = reader2D;
@@ -278,17 +277,17 @@ public class WKTReaderTest extends TestCase {
     // arrange
     double[][] coordinates = new double[][] { new double[] {10, 10, 20, 20}, new double[] {15, 15, 30, 15}};
     CoordinateSequence[] csMls2D = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYFlag, coordinates[0]),
-            createSequence(CoordinateSequence.XYFlag, coordinates[1])};
+            createSequence(WKTOrdinates.getXY(), coordinates[0]),
+            createSequence(WKTOrdinates.getXY(), coordinates[1])};
     CoordinateSequence[] csMls3D = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYZFlag, coordinates[0]),
-            createSequence(CoordinateSequence.XYZFlag, coordinates[1])};
+            createSequence(WKTOrdinates.getXYZ(), coordinates[0]),
+            createSequence(WKTOrdinates.getXYZ(), coordinates[1])};
     CoordinateSequence[] csMls2DM = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYMFlag, true, coordinates[0]),
-            createSequence(CoordinateSequence.XYMFlag, true, coordinates[1])};
+            createSequence(WKTOrdinates.getXYM(), coordinates[0]),
+            createSequence(WKTOrdinates.getXYM(), coordinates[1])};
     CoordinateSequence[] csMls3DM = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYZMFlag, coordinates[0]),
-            createSequence(CoordinateSequence.XYZMFlag, coordinates[1])};
+            createSequence(WKTOrdinates.getXYZM(), coordinates[0]),
+            createSequence(WKTOrdinates.getXYZM(), coordinates[1])};
 
     // act
     WKTReader rdr = reader2D;
@@ -321,21 +320,21 @@ public class WKTReaderTest extends TestCase {
     double[] shell2 = new double[] {60, 60, 70, 70, 80, 60, 60, 60};
 
     CoordinateSequence[] csPoly2D = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYFlag, shell1),
-            createSequence(CoordinateSequence.XYFlag, ring1),
-            createSequence(CoordinateSequence.XYFlag, shell2)};
+            createSequence(WKTOrdinates.getXY(), shell1),
+            createSequence(WKTOrdinates.getXY(), ring1),
+            createSequence(WKTOrdinates.getXY(), shell2)};
     CoordinateSequence[] csPoly3D = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYZFlag, shell1),
-            createSequence(CoordinateSequence.XYZFlag, ring1),
-            createSequence(CoordinateSequence.XYZFlag, shell2)};
+            createSequence(WKTOrdinates.getXYZ(), shell1),
+            createSequence(WKTOrdinates.getXYZ(), ring1),
+            createSequence(WKTOrdinates.getXYZ(), shell2)};
     CoordinateSequence[] csPoly2DM = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYMFlag, shell1),
-            createSequence(CoordinateSequence.XYMFlag, ring1),
-            createSequence(CoordinateSequence.XYMFlag, shell2)};
+            createSequence(WKTOrdinates.getXYM(), shell1),
+            createSequence(WKTOrdinates.getXYM(), ring1),
+            createSequence(WKTOrdinates.getXYM(), shell2)};
     CoordinateSequence[] csPoly3DM = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYZMFlag, shell1),
-            createSequence(CoordinateSequence.XYZMFlag, ring1),
-            createSequence(CoordinateSequence.XYZMFlag, shell2)};
+            createSequence(WKTOrdinates.getXYZM(), shell1),
+            createSequence(WKTOrdinates.getXYZM(), ring1),
+            createSequence(WKTOrdinates.getXYZM(), shell2)};
 
     WKTReader rdr = reader2D;
     MultiPolygon[] poly2D = new MultiPolygon[]{
@@ -350,7 +349,6 @@ public class WKTReaderTest extends TestCase {
             (MultiPolygon) rdr.read("MULTIPOLYGON Z(((10 10 10, 10 20 10, 20 20 10, 20 15 10, 10 10 10), (11 11 10, 12 11 10, 12 12 10, 12 11 10, 11 11 10)))"),
             (MultiPolygon) rdr.read("MULTIPOLYGON Z(((10 10 10, 10 20 10, 20 20 10, 20 15 10, 10 10 10), (11 11 10, 12 11 10, 12 12 10, 12 11 10, 11 11 10)), ((60 60 10, 70 70 10, 80 60 10, 60 60 10)))")
     };
-    rdr =  reader2DMtoZ;
     MultiPolygon[] poly2DM = new MultiPolygon[]{
             (MultiPolygon) rdr.read("MULTIPOLYGON M(((10 10 11, 10 20 11, 20 20 11, 20 15 11, 10 10 11)))"),
             (MultiPolygon) rdr.read("MULTIPOLYGON M(((10 10 11, 10 20 11, 20 20 11, 20 15 11, 10 10 11), (11 11 11, 12 11 11, 12 12 11, 12 11 11, 11 11 11)))"),
@@ -390,15 +388,15 @@ public class WKTReaderTest extends TestCase {
             new double[] {15, 15, 20, 20}, new double[0], new double[] {10, 10, 20, 20, 30, 40, 10, 10}  };
 
     CoordinateSequence[] css = new CoordinateSequence[] {
-            createSequence(CoordinateSequence.XYFlag, coordinates[0]),
-            createSequence(CoordinateSequence.XYFlag, coordinates[1]),
-            createSequence(CoordinateSequence.XYFlag, coordinates[2]),
-            createSequence(CoordinateSequence.XYFlag, coordinates[3]),
-            createSequence(CoordinateSequence.XYFlag, coordinates[4]),
+            createSequence(WKTOrdinates.getXY(), coordinates[0]),
+            createSequence(WKTOrdinates.getXY(), coordinates[1]),
+            createSequence(WKTOrdinates.getXY(), coordinates[2]),
+            createSequence(WKTOrdinates.getXY(), coordinates[3]),
+            createSequence(WKTOrdinates.getXY(), coordinates[4]),
     };
 
     // arrange
-    WKTReader rdr = GeometryTestCase.getWKTReader(CoordinateSequence.XYFlag, 1);
+    WKTReader rdr = GeometryTestCase.getWKTReader(WKTOrdinates.getXY(), 1);
     GeometryCollection gc0 = (GeometryCollection)rdr.read("GEOMETRYCOLLECTION (POINT (10 10), POINT (30 30), LINESTRING (15 15, 20 20))");
     GeometryCollection gc1 = (GeometryCollection)rdr.read("GEOMETRYCOLLECTION (POINT (10 10), LINEARRING EMPTY, LINESTRING (15 15, 20 20))");
     GeometryCollection gc2 = (GeometryCollection)rdr.read("GEOMETRYCOLLECTION (POINT (10 10), LINEARRING (10 10, 20 20, 30 40, 10 10), LINESTRING (15 15, 20 20))");
@@ -427,18 +425,10 @@ public class WKTReaderTest extends TestCase {
     assertEquals(point1.getOrdinate(0, CoordinateSequence.Y), point2.getOrdinate(0, CoordinateSequence.Y), 1E-7);
   }
 
-  private static CoordinateSequence createSequence(int ordinateFlags, double[] ordinateValues) {
-    return createSequence(ordinateFlags,false, ordinateValues);
-  }
-
-  private static CoordinateSequence createSequence(int ordinateFlags, boolean thirdToMeasure, double[] xy) {
-
-    // check if measure to z is meaningful
-    if ((ordinateFlags & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag)
-      thirdToMeasure = false;
+  private static CoordinateSequence createSequence(EnumSet<WKTOrdinates> ordinateFlags, double[] xy) {
 
     // get the number of dimension to verify size of provided ordinate values array
-    int dimension = requiredDimension(ordinateFlags, false);
+    int dimension = requiredDimension(ordinateFlags);
 
     // inject additional values
     double[] ordinateValues = injectZM(ordinateFlags, xy);
@@ -450,45 +440,36 @@ public class WKTReaderTest extends TestCase {
     int size = ordinateValues.length / dimension;
 
     // create a sequence capable of storing all ordinate values.
-    CoordinateSequence res = GeometryTestCase.getCSFactory(ordinateFlags, thirdToMeasure)
-            .create(size, requiredDimension(ordinateFlags, thirdToMeasure));
-
-    // determine ordinate indices
-    int[] ordinateIndices = {0, 1, thirdToMeasure ? 3 : 2, 3};
+    CoordinateSequence res = GeometryTestCase.getCSFactory(ordinateFlags)
+            .create(size, requiredDimension(ordinateFlags));
 
     // fill in values
     int k = 0;
     for(int i = 0; i < ordinateValues.length; i+= dimension) {
       for (int j = 0; j < dimension; j++)
-        res.setOrdinate(k, ordinateIndices[j], ordinateValues[i+j]);
+        res.setOrdinate(k, j, ordinateValues[i+j]);
       k++;
     }
 
     return res;
   }
 
-  private static int requiredDimension(int ordinateFlags, boolean zToMeasure)
+  private static int requiredDimension(EnumSet<WKTOrdinates> ordinateFlags)
   {
-    int res = 2;
-    if ((ordinateFlags & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag) res +=1;
-    if ((ordinateFlags & CoordinateSequence.MFlag) == CoordinateSequence.MFlag) {
-      res +=1;
-      if (zToMeasure) res += 1;
-    }
-    return res;
+    return ordinateFlags.size();
   }
 
 
-  private static double[] injectZM(int ordinateFlags, double[] xy) {
+  private static double[] injectZM(EnumSet<WKTOrdinates> ordinateFlags, double[] xy) {
     int size = xy.length / 2;
-    int dimension = requiredDimension(ordinateFlags, false);
+    int dimension = requiredDimension(ordinateFlags);
     double[] res = new double[size * dimension];
     int k = 0;
     for (int i = 0; i < xy.length; i+=2) {
       res[k++] = xy[i];
       res[k++] = xy[i+1];
-      if ((ordinateFlags & CoordinateSequence.ZFlag) == CoordinateSequence.ZFlag) res[k++] = 10;
-      if ((ordinateFlags & CoordinateSequence.MFlag) == CoordinateSequence.MFlag) res[k++] = 11;
+      if (ordinateFlags.contains(WKTOrdinates.Z)) res[k++] = 10;
+      if (ordinateFlags.contains(WKTOrdinates.M)) res[k++] = 11;
     }
     return res;
   }
