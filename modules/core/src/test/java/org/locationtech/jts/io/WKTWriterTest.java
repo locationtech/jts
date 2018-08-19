@@ -39,29 +39,29 @@ public class WKTWriterTest extends TestCase {
   }
 
   public WKTWriterTest(String name) { super(name);
-    writer2DM.setOutputOrdinates(WKTOrdinates.getXYM());
+    writer2DM.setOutputOrdinates(Ordinate.createXYM());
   }
 
   public static Test suite() { return new TestSuite(WKTWriterTest.class); }
 
   public void testProperties() {
-    assertEquals(WKTOrdinates.getXY(), writer.getOutputOrdinates());
-    assertEquals(WKTOrdinates.getXYZ(), writer3D.getOutputOrdinates());
-    assertEquals(WKTOrdinates.getXYM(), writer2DM.getOutputOrdinates());
+    assertEquals(Ordinate.createXY(), writer.getOutputOrdinates());
+    assertEquals(Ordinate.createXYZ(), writer3D.getOutputOrdinates());
+    assertEquals(Ordinate.createXYM(), writer2DM.getOutputOrdinates());
 
     GeometryFactory gf = new GeometryFactory(
             PackedCoordinateSequenceFactory.DOUBLE_FACTORY);
     WKTWriter writer3DM = new WKTWriter(4);
-    assertEquals(WKTOrdinates.getXYZM(), writer3DM.getOutputOrdinates());
+    assertEquals(Ordinate.createXYZM(), writer3DM.getOutputOrdinates());
 
-    writer3DM.setOutputOrdinates(WKTOrdinates.getXY());
-    assertEquals(WKTOrdinates.getXY(), writer3DM.getOutputOrdinates());
-    writer3DM.setOutputOrdinates(WKTOrdinates.getXYZ());
-    assertEquals(WKTOrdinates.getXYZ(), writer3DM.getOutputOrdinates());
-    writer3DM.setOutputOrdinates(WKTOrdinates.getXYM());
-    assertEquals(WKTOrdinates.getXYM(), writer2DM.getOutputOrdinates());
-    writer3DM.setOutputOrdinates(WKTOrdinates.getXYZM());
-    assertEquals(WKTOrdinates.getXYZM(), writer3DM.getOutputOrdinates());
+    writer3DM.setOutputOrdinates(Ordinate.createXY());
+    assertEquals(Ordinate.createXY(), writer3DM.getOutputOrdinates());
+    writer3DM.setOutputOrdinates(Ordinate.createXYZ());
+    assertEquals(Ordinate.createXYZ(), writer3DM.getOutputOrdinates());
+    writer3DM.setOutputOrdinates(Ordinate.createXYM());
+    assertEquals(Ordinate.createXYM(), writer2DM.getOutputOrdinates());
+    writer3DM.setOutputOrdinates(Ordinate.createXYZM());
+    assertEquals(Ordinate.createXYZM(), writer3DM.getOutputOrdinates());
 
   }
 

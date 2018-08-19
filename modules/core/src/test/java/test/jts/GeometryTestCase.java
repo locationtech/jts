@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTOrdinates;
+import org.locationtech.jts.io.Ordinate;
 import org.locationtech.jts.io.WKTReader;
 
 import junit.framework.TestCase;
@@ -118,7 +118,7 @@ public abstract class GeometryTestCase extends TestCase{
    * @param ordinateFlags a set of expected ordinates
    * @return a {@code WKTReader}
    */
-  public static WKTReader getWKTReader(EnumSet<WKTOrdinates> ordinateFlags) {
+  public static WKTReader getWKTReader(EnumSet<Ordinate> ordinateFlags) {
     return getWKTReader(ordinateFlags, new PrecisionModel());
   }
 
@@ -130,7 +130,7 @@ public abstract class GeometryTestCase extends TestCase{
    *
    * @return a {@code WKTReader}
    */
-  public static WKTReader getWKTReader(EnumSet<WKTOrdinates> ordinateFlags, double scale) {
+  public static WKTReader getWKTReader(EnumSet<Ordinate> ordinateFlags, double scale) {
     return getWKTReader(ordinateFlags, new PrecisionModel(scale));
   }
 
@@ -142,21 +142,21 @@ public abstract class GeometryTestCase extends TestCase{
    *
    * @return a {@code WKTReader}
    */
-  public static WKTReader getWKTReader(EnumSet<WKTOrdinates> ordinateFlags, PrecisionModel precisionModel) {
+  public static WKTReader getWKTReader(EnumSet<Ordinate> ordinateFlags, PrecisionModel precisionModel) {
 
     WKTReader result;
 
-    if (!ordinateFlags.contains(WKTOrdinates.X)) ordinateFlags.add(WKTOrdinates.X);
-    if (!ordinateFlags.contains(WKTOrdinates.Y)) ordinateFlags.add(WKTOrdinates.Y);
+    if (!ordinateFlags.contains(Ordinate.X)) ordinateFlags.add(Ordinate.X);
+    if (!ordinateFlags.contains(Ordinate.Y)) ordinateFlags.add(Ordinate.Y);
 
     if (ordinateFlags.size() == 2)
     {
       result = new WKTReader(new GeometryFactory(precisionModel, 0, CoordinateArraySequenceFactory.instance()));
       result.setIsOldJtsCoordinateSyntaxAllowed(false);
     }
-    else if (ordinateFlags.contains(WKTOrdinates.Z))
+    else if (ordinateFlags.contains(Ordinate.Z))
       result = new WKTReader(new GeometryFactory(precisionModel, 0, CoordinateArraySequenceFactory.instance()));
-    else if (ordinateFlags.contains(WKTOrdinates.M)) {
+    else if (ordinateFlags.contains(Ordinate.M)) {
       result = new WKTReader(new GeometryFactory(precisionModel, 0,
               PackedCoordinateSequenceFactory.DOUBLE_FACTORY));
       result.setIsOldJtsCoordinateSyntaxAllowed(false);
@@ -253,9 +253,9 @@ public abstract class GeometryTestCase extends TestCase{
    * @param ordinateFlags a bit-pattern of ordinates
    * @return a {@code CoordinateSequenceFactory}
    */
-  public static CoordinateSequenceFactory getCSFactory(EnumSet<WKTOrdinates> ordinateFlags)
+  public static CoordinateSequenceFactory getCSFactory(EnumSet<Ordinate> ordinateFlags)
   {
-    if (ordinateFlags.contains(WKTOrdinates.M))
+    if (ordinateFlags.contains(Ordinate.M))
         return PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
 
     return CoordinateArraySequenceFactory.instance();

@@ -170,31 +170,31 @@ public class WKTWriter
    */
   private class CheckOrdinatesFilter implements CoordinateSequenceFilter {
 
-    private final EnumSet<WKTOrdinates> checkOrdinateFlags;
-    private final EnumSet<WKTOrdinates> outputOrdinates;
+    private final EnumSet<Ordinate> checkOrdinateFlags;
+    private final EnumSet<Ordinate> outputOrdinates;
 
     /**
      * Creates an instance of this class
 
      * @param checkOrdinateFlags the index for the ordinates to test.
      */
-    private CheckOrdinatesFilter(EnumSet<WKTOrdinates> checkOrdinateFlags) {
+    private CheckOrdinatesFilter(EnumSet<Ordinate> checkOrdinateFlags) {
 
-      this.outputOrdinates = EnumSet.of(WKTOrdinates.X, WKTOrdinates.Y);
+      this.outputOrdinates = EnumSet.of(Ordinate.X, Ordinate.Y);
       this.checkOrdinateFlags = checkOrdinateFlags;
     }
 
     /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isGeometryChanged */
     public void filter(CoordinateSequence seq, int i) {
 
-      if (checkOrdinateFlags.contains(WKTOrdinates.Z) && !outputOrdinates.contains(WKTOrdinates.Z)) {
+      if (checkOrdinateFlags.contains(Ordinate.Z) && !outputOrdinates.contains(Ordinate.Z)) {
         if (!Double.isNaN(seq.getZ(i)))
-          outputOrdinates.add(WKTOrdinates.Z);
+          outputOrdinates.add(Ordinate.Z);
       }
 
-      if (checkOrdinateFlags.contains(WKTOrdinates.M) && !outputOrdinates.contains(WKTOrdinates.M)) {
+      if (checkOrdinateFlags.contains(Ordinate.M) && !outputOrdinates.contains(Ordinate.M)) {
         if (!Double.isNaN(seq.getM(i)))
-          outputOrdinates.add(WKTOrdinates.M);
+          outputOrdinates.add(Ordinate.M);
       }
     }
 
@@ -213,12 +213,12 @@ public class WKTWriter
      *
      * @return A bit-pattern of ordinates with valid values masked by {@link #checkOrdinateFlags}.
      */
-    EnumSet<WKTOrdinates> getOutputOrdinates() {
+    EnumSet<Ordinate> getOutputOrdinates() {
       return outputOrdinates;
     }
   }
 
-  private EnumSet<WKTOrdinates> outputOrdinates;
+  private EnumSet<Ordinate> outputOrdinates;
   private final int outputDimension;
   private PrecisionModel precisionModel = null;
   private boolean isFormatted = false;
@@ -260,11 +260,11 @@ public class WKTWriter
     if (outputDimension < 2 || outputDimension > 4)
       throw new IllegalArgumentException("Invalid output dimension (must be 2 to 4)");
 
-    this.outputOrdinates = EnumSet.of(WKTOrdinates.X, WKTOrdinates.Y);
+    this.outputOrdinates = EnumSet.of(Ordinate.X, Ordinate.Y);
     if (outputDimension > 2)
-      outputOrdinates.add(WKTOrdinates.Z);
+      outputOrdinates.add(Ordinate.Z);
     if (outputDimension > 3)
-      outputOrdinates.add(WKTOrdinates.M);
+      outputOrdinates.add(Ordinate.M);
   }
 
   /**
@@ -304,34 +304,34 @@ public class WKTWriter
   }
 
   /**
-   * Sets the {@link WKTOrdinates} that are to be written. Possible members are:
+   * Sets the {@link Ordinate} that are to be written. Possible members are:
    * <ul>
-   * <li>{@link WKTOrdinates#X}</li>
-   * <li>{@link WKTOrdinates#Y}</li>
-   * <li>{@link WKTOrdinates#Z}</li>
-   * <li>{@link WKTOrdinates#M}</li>
+   * <li>{@link Ordinate#X}</li>
+   * <li>{@link Ordinate#Y}</li>
+   * <li>{@link Ordinate#Z}</li>
+   * <li>{@link Ordinate#M}</li>
    * </ul>
-   * Values of {@link WKTOrdinates#X} and {@link WKTOrdinates#Y} are always assumed and not
+   * Values of {@link Ordinate#X} and {@link Ordinate#Y} are always assumed and not
    * particularly checked for.
    *
-   * @param outputOrdinates A set of {@link WKTOrdinates} values
+   * @param outputOrdinates A set of {@link Ordinate} values
    */
-  public void setOutputOrdinates(EnumSet<WKTOrdinates> outputOrdinates) {
+  public void setOutputOrdinates(EnumSet<Ordinate> outputOrdinates) {
 
-    this.outputOrdinates.remove(WKTOrdinates.Z);
-    this.outputOrdinates.remove(WKTOrdinates.M);
+    this.outputOrdinates.remove(Ordinate.Z);
+    this.outputOrdinates.remove(Ordinate.M);
 
     if (this.outputDimension == 3) {
-      if (outputOrdinates.contains(WKTOrdinates.Z))
-        this.outputOrdinates.add(WKTOrdinates.Z);
-      else if (outputOrdinates.contains(WKTOrdinates.M))
-        this.outputOrdinates.add(WKTOrdinates.M);
+      if (outputOrdinates.contains(Ordinate.Z))
+        this.outputOrdinates.add(Ordinate.Z);
+      else if (outputOrdinates.contains(Ordinate.M))
+        this.outputOrdinates.add(Ordinate.M);
     }
     if (this.outputDimension == 4) {
-      if (outputOrdinates.contains(WKTOrdinates.Z))
-        this.outputOrdinates.add(WKTOrdinates.Z);
-      if (outputOrdinates.contains(WKTOrdinates.M))
-        this.outputOrdinates.add(WKTOrdinates.M);
+      if (outputOrdinates.contains(Ordinate.Z))
+        this.outputOrdinates.add(Ordinate.Z);
+      if (outputOrdinates.contains(Ordinate.M))
+        this.outputOrdinates.add(Ordinate.M);
     }
   }
 
@@ -340,7 +340,7 @@ public class WKTWriter
    * @return an ordinate bit-pattern
    * @see #setOutputOrdinates(EnumSet)
    */
-  public EnumSet<WKTOrdinates> getOutputOrdinates() {
+  public EnumSet<Ordinate> getOutputOrdinates() {
     return this.outputOrdinates;
   }
 
@@ -481,7 +481,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendGeometryTaggedText(
-          Geometry geometry, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          Geometry geometry, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
 
@@ -537,7 +537,7 @@ public class WKTWriter
    * @param  formatter          the formatter to use when writing numbers
    */
   private void appendPointTaggedText(
-          Point point, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          Point point, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -559,7 +559,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendLineStringTaggedText(
-          LineString lineString, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          LineString lineString, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -581,7 +581,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendLinearRingTaggedText(
-          LinearRing linearRing, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          LinearRing linearRing, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -603,7 +603,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendPolygonTaggedText(
-          Polygon polygon, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          Polygon polygon, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -624,7 +624,7 @@ public class WKTWriter
    * @param  formatter       the <code>DecimalFormatter</code> to use to convert
    *      from a precise coordinate to an external coordinate
    */
-  private void appendMultiPointTaggedText(MultiPoint multipoint, EnumSet<WKTOrdinates> outputOrdinates,
+  private void appendMultiPointTaggedText(MultiPoint multipoint, EnumSet<Ordinate> outputOrdinates,
                                           boolean useFormatting, int level, Writer writer,
                                           DecimalFormat formatter)
     throws IOException
@@ -646,7 +646,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendMultiLineStringTaggedText(
-          MultiLineString multiLineString, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          MultiLineString multiLineString, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -668,7 +668,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendMultiPolygonTaggedText(
-          MultiPolygon multiPolygon, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          MultiPolygon multiPolygon, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -690,7 +690,7 @@ public class WKTWriter
    *      from a precise coordinate to an external coordinate
    */
   private void appendGeometryCollectionTaggedText(
-          GeometryCollection geometryCollection, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          GeometryCollection geometryCollection, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -711,14 +711,14 @@ public class WKTWriter
    * @param  formatter  the formatter to use for writing ordinate values
    */
   private static void appendCoordinate(
-          CoordinateSequence seq, EnumSet<WKTOrdinates> outputOrdinates, int i,
+          CoordinateSequence seq, EnumSet<Ordinate> outputOrdinates, int i,
           Writer writer, DecimalFormat formatter)
       throws IOException
   {
     writer.write(writeNumber(seq.getX(i), formatter) + " " +
             writeNumber(seq.getY(i), formatter));
 
-    if (outputOrdinates.contains(WKTOrdinates.Z)) {
+    if (outputOrdinates.contains(Ordinate.Z)) {
       double z = seq.getZ(i);
       if (!Double.isNaN(z)) {
         writer.write(" ");
@@ -728,7 +728,7 @@ public class WKTWriter
       }
     }
 
-    if (outputOrdinates.contains(WKTOrdinates.M)) {
+    if (outputOrdinates.contains(Ordinate.M)) {
       writer.write(" ");
       writer.write(writeNumber(seq.getM(i), formatter));
     }
@@ -750,25 +750,25 @@ public class WKTWriter
    * Appends additional ordinate information. This function may
    * <ul>
    *   <li>append 'Z' if in {@code outputOrdinates} the
-   *   {@link WKTOrdinates#Z} value is included
+   *   {@link Ordinate#Z} value is included
    *   </li>
    *   <li>append 'M' if in {@code outputOrdinates} the
-   *   {@link WKTOrdinates#M} value is included
+   *   {@link Ordinate#M} value is included
    *   </li>
    *   <li> append 'ZM' if in {@code outputOrdinates} the
-   *   {@link WKTOrdinates#Z} and
-   *   {@link WKTOrdinates#M} values are included/li>
+   *   {@link Ordinate#Z} and
+   *   {@link Ordinate#M} values are included/li>
    * </ul>
    *
    * @param outputOrdinates  a bit-pattern of ordinates to write.
    * @param writer         the output writer to append to.
    * @throws IOException   if an error occurs while using the writer.
    */
-  private void appendOrdinateText(EnumSet<WKTOrdinates> outputOrdinates, Writer writer) throws IOException {
+  private void appendOrdinateText(EnumSet<Ordinate> outputOrdinates, Writer writer) throws IOException {
 
-    if (outputOrdinates.contains(WKTOrdinates.Z))
+    if (outputOrdinates.contains(Ordinate.Z))
       writer.append('Z');
-    if (outputOrdinates.contains(WKTOrdinates.M))
+    if (outputOrdinates.contains(Ordinate.M))
       writer.append('M');
   }
 
@@ -784,7 +784,7 @@ public class WKTWriter
    * @param  writer          the output writer to append to
    * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendSequenceText(CoordinateSequence seq, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+  private void appendSequenceText(CoordinateSequence seq, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
                                   int level, boolean indentFirst, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -821,7 +821,7 @@ public class WKTWriter
    * @param  formatter       the formatter to use for writing ordinate values.
    */
   private void appendPolygonText(
-          Polygon polygon, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          Polygon polygon, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, boolean indentFirst, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -853,7 +853,7 @@ public class WKTWriter
    * @param  formatter       the formatter to use for writing ordinate values.
    */
   private void appendMultiPointText(
-          MultiPoint multiPoint, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          MultiPoint multiPoint, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -886,7 +886,7 @@ public class WKTWriter
    * @param  writer           the output writer to append to
    * @param  formatter        the formatter to use for writing ordinate values.
    */
-  private void appendMultiLineStringText(MultiLineString multiLineString, EnumSet<WKTOrdinates> outputOrdinates,
+  private void appendMultiLineStringText(MultiLineString multiLineString, EnumSet<Ordinate> outputOrdinates,
            boolean useFormatting, int level, /*boolean indentFirst, */Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -921,7 +921,7 @@ public class WKTWriter
    * @param  formatter       the formatter to use for writing ordinate values.
    */
   private void appendMultiPolygonText(
-          MultiPolygon multiPolygon, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          MultiPolygon multiPolygon, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
@@ -956,7 +956,7 @@ public class WKTWriter
    * @param  formatter       the formatter to use for writing ordinate values.
    */
   private void appendGeometryCollectionText(
-          GeometryCollection geometryCollection, EnumSet<WKTOrdinates> outputOrdinates, boolean useFormatting,
+          GeometryCollection geometryCollection, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
           int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
