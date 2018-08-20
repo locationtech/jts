@@ -46,7 +46,7 @@ public class JTSVersion {
   /**
    * An optional string providing further release info (such as "alpha 1");
    */
-  private static final String releaseInfo = "SNAPSHOT";
+  private static final String releaseInfo = "RC1";
 
   /**
    * Prints the current JTS version to stdout.
