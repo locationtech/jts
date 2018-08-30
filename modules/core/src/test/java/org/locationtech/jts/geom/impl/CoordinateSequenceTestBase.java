@@ -17,15 +17,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.text.DecimalFormat;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFactory;
+import org.locationtech.jts.geom.CoordinateXY;
+import org.locationtech.jts.geom.CoordinateXYM;
+import org.locationtech.jts.geom.CoordinateXYZM;
+import org.locationtech.jts.geom.Envelope;
+
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import org.locationtech.jts.geom.Envelope;
 
 
 /**
@@ -104,34 +107,58 @@ public abstract class CoordinateSequenceTestBase
     CoordinateSequenceFactory factory = getCSFactory();
     CoordinateSequence seq = factory.create(5, 2);
     assertNotNull(seq);
+    assertTrue(seq.getCoordinate(0) instanceof CoordinateXY);
     assertEquals(5, seq.size());
     assertEquals(2, seq.getDimension());
+    assertEquals(0, seq.getMeasures());
     assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.X));
     assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.Y));
     if (seq instanceof CoordinateArraySequence) {
-      assertTrue(Double.isNaN(seq.getOrdinate(0, CoordinateSequence.Z)));
-      assertTrue(Double.isNaN(seq.getOrdinate(0, CoordinateSequence.M)));
+      assertTrue(Double.isNaN(seq.getZ(0)));
+      assertTrue(Double.isNaN(seq.getM(0)));
     }
 
     seq = factory.create(5, 3);
     assertNotNull(seq);
+    assertTrue(seq.getCoordinate(0) instanceof Coordinate);
+    assertTrue(!(seq.getCoordinate(0) instanceof CoordinateXY));
+    assertTrue(!(seq.getCoordinate(0) instanceof CoordinateXYM));
+    assertTrue(!(seq.getCoordinate(0) instanceof CoordinateXYZM));
     assertEquals(5, seq.size());
     assertEquals(3, seq.getDimension());
+    assertEquals(0, seq.getMeasures());
     assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.X));
     assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.Y));
     assertTrue(Double.isNaN(seq.getOrdinate(0, CoordinateSequence.Z)));
     if (seq instanceof CoordinateArraySequence) {
-      assertTrue(Double.isNaN(seq.getOrdinate(0, CoordinateSequence.M)));
+      assertTrue(Double.isNaN(seq.getM(0)));
     }
 
     seq = factory.create(5, 4);
-    assertNotNull(seq);
-    assertEquals(5, seq.size());
-    assertEquals(Math.min(getFactoryMaxDimension(), 4), seq.getDimension());
-    assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.X));
-    assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.Y));
-    assertTrue(Double.isNaN(seq.getOrdinate(0, CoordinateSequence.Z)));
-    assertTrue(Double.isNaN(seq.getOrdinate(0, CoordinateSequence.M)));
+    if (seq.getDimension() == 4) {
+      assertNotNull(seq);
+      assertEquals(5, seq.size());
+      assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.X));
+      assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.Y));
+      assertTrue(Double.isNaN(seq.getZ(0)));
+      assertTrue(Double.isNaN(seq.getOrdinate(0, CoordinateSequence.Z)));
+      if (seq.hasM())
+        assertEquals(0d, seq.getM(0));
+      assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.M));
+    }
+
+    seq = factory.create(5, 4, 1);
+    if (seq.getDimension() == 4) {
+      assertNotNull(seq);
+      assertEquals(5, seq.size());
+      assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.X));
+      assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.Y));
+      assertTrue(Double.isNaN(seq.getZ(0)));
+      assertTrue(Double.isNaN(seq.getOrdinate(0, CoordinateSequence.Z)));
+      if (seq.hasM())
+        assertEquals(0d, seq.getM(0));
+      assertEquals(0d, seq.getOrdinate(0, CoordinateSequence.M));
+    }
   }
 
   public void testFactoryCreateWithSequence() {
@@ -267,12 +294,34 @@ public abstract class CoordinateSequenceTestBase
     return (CoordinateSequence) o;
   }
 
-  static Coordinate[] createArray(int size)
+  static Coordinate[] createArray(int size) {
+    return createArray(size, XYZFlag);
+  }
+
+  static Coordinate[] createArray(int size, int ordinateFlags)
   {
+    ordinateFlags = ordinateFlags & XYZMFlag;
+
     Coordinate[] coords = new Coordinate[size];
     for (int i = 0; i < size; i++) {
       double base = 2 * i;
-      coords[i] = new Coordinate(base, base + 1, base + 2);
+      switch (ordinateFlags) {
+        case XYFlag:
+          coords[i] = new CoordinateXY(base + Coordinate.X, base + Coordinate.Y);
+          break;
+        case XYZFlag:
+          coords[i] = new Coordinate(base + Coordinate.X, base + Coordinate.Y,
+                                     base + Coordinate.Z);
+          break;
+        case XYMFlag:
+          coords[i] = new CoordinateXYM(base + Coordinate.X, base + Coordinate.Y,
+                                        base + Coordinate.M);
+          break;
+        case XYZMFlag:
+          coords[i] = new CoordinateXYZM(base + Coordinate.X, base + Coordinate.Y,
+                                         base + Coordinate.Z, base + Coordinate.M);
+          break;
+      }
     }
     return coords;
   }
@@ -396,15 +445,49 @@ public abstract class CoordinateSequenceTestBase
       // Get Coordinate copy
       Coordinate cc1 = seq1.getCoordinateCopy(i);
       Coordinate cc2 = seq2.getCoordinateCopy(i);
-      if (!cc1.equals3D(cc2)) return false;
+      if (!areCoordinatesEqual(cc1, cc2, tolerance)) return false;
 
       // Get Coordinate as out argument
-      cc1 = new Coordinate(); seq1.getCoordinate(i, cc1);
-      cc2 = new Coordinate(); seq2.getCoordinate(i, cc2);
-      if (!cc1.equals3D(cc2)) return false;
+      cc1 = seq1.createCoordinate(); seq1.getCoordinate(i, cc1);
+      cc2 = seq1.createCoordinate(); seq2.getCoordinate(i, cc2);
+      if (!areCoordinatesEqual(cc1, cc2, tolerance)) return false;
     }
 
     return true;
+  }
+
+  private static boolean areCoordinatesEqual(Coordinate cc1, Coordinate cc2, double tolerance) {
+
+    if (cc1 == null && cc2 == null) return true;
+    if (cc1 == null) return false;
+    if (cc2 == null) return false;
+    if (cc1.getClass() != cc2.getClass()) return false;
+
+    if (cc1 instanceof CoordinateXYM && cc2 instanceof  CoordinateXYM) {
+      if (!areOrdinateValuesEqual(cc1.getM(), cc2.getM(), tolerance))
+        return false;
+    }
+
+    if (cc1 instanceof CoordinateXYZM && !(cc2 instanceof  CoordinateXY)) {
+      if (!areOrdinateValuesEqual(cc1.getZ(), cc2.getZ(), tolerance))
+        return false;
+    }
+
+    if (!areOrdinateValuesEqual(cc1.x, cc2.x, tolerance))
+      return false;
+
+    return areOrdinateValuesEqual(cc1.Y, cc2.Y, tolerance);
+
+  }
+
+  private static boolean areOrdinateValuesEqual(double o1, double o2, double tolerance) {
+    if (java.lang.Double.isNaN(o1) ^ java.lang.Double.isNaN(o2))
+      return false;
+
+    if (java.lang.Double.isNaN(o1))
+      return true;
+
+    return Math.abs(o1 - o2) <= tolerance;
   }
 
   boolean isNotSameButEqual(CoordinateSequence seq1, CoordinateSequence seq2) {
@@ -443,10 +526,7 @@ public abstract class CoordinateSequenceTestBase
     Envelope e = new Envelope();
     cs.expandEnvelope(e);
     assertTrue(e.isNull());
-  }
 
-  private static final int MAX_ORDINATES = 30;
-  public static final int XFlag = 1;
     cs = createSequence(getCSFactory(), 5);
     cs.expandEnvelope(e = new Envelope());
     assertTrue(new Envelope(11, 51, 12, 52).equals(e));

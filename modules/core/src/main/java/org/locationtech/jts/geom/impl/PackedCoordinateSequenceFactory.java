@@ -56,7 +56,7 @@ public class PackedCoordinateSequenceFactory implements
    * {@linkplain PackedCoordinateSequenceFactory#DOUBLE}
    */
   public PackedCoordinateSequenceFactory(int type){
-    this.type = type;
+    setType(type);
   }
 
   /**
@@ -80,12 +80,6 @@ public class PackedCoordinateSequenceFactory implements
   }
 
 
-  public int getDimension() { return dimension; }
-
-  public void setDimension(int dimension) {
-    PackedCoordinateSequence.checkDimension(dimension);
-    this.dimension = dimension;
-  }
 
   /**
    * @see org.locationtech.jts.geom.CoordinateSequenceFactory#create(org.locationtech.jts.geom.Coordinate[])
@@ -109,18 +103,15 @@ public class PackedCoordinateSequenceFactory implements
    * @see org.locationtech.jts.geom.CoordinateSequenceFactory#create(org.locationtech.jts.geom.CoordinateSequence)
    */
   public CoordinateSequence create(CoordinateSequence coordSeq) {
-    int dimension = coordSeq.getDimension();
-    int measures = coordSeq.getMeasures();
-    if (type == DOUBLE) {
-
-      return coordSeq != null
-              ? new PackedCoordinateSequence.Double(coordSeq)
-              : new PackedCoordinateSequence.Double(0, this.dimension);
-    } else {
-      return coordSeq != null
-              ? new PackedCoordinateSequence.Float(coordSeq)
-              : new PackedCoordinateSequence.Float(0, this.dimension);
+    if (coordSeq == null) {
+      if (type == DOUBLE)
+        return new PackedCoordinateSequence.Double(0, 3, 0);
+      return new PackedCoordinateSequence.Float(0, 3, 0);
     }
+
+    if (type == DOUBLE)
+      return new PackedCoordinateSequence.Double(coordSeq);
+    return new PackedCoordinateSequence.Float(coordSeq);
   }
 
   /**
@@ -131,7 +122,8 @@ public class PackedCoordinateSequenceFactory implements
    * @return Packaged coordinate seqeunce of the requested type
    */
   public CoordinateSequence create(double[] packedCoordinates, int dimension) {
-    return create( packedCoordinates, dimension, 0 );
+    int measures = Math.max(0, dimension - PackedCoordinateSequence.DEFAULT_SPATIAL_DIMENSION);
+    return create(packedCoordinates, dimension, measures);
   }
   
   /**
@@ -157,7 +149,8 @@ public class PackedCoordinateSequenceFactory implements
    * @return Packaged coordinate seqeunce of the requested type
    */
   public CoordinateSequence create(float[] packedCoordinates, int dimension) {
-    return create( packedCoordinates, dimension, 0 );
+    int measures = Math.max(0, dimension - PackedCoordinateSequence.DEFAULT_SPATIAL_DIMENSION);
+    return create(packedCoordinates, dimension, measures);
   }
 
   /**
@@ -178,11 +171,8 @@ public class PackedCoordinateSequenceFactory implements
    * @see org.locationtech.jts.geom.CoordinateSequenceFactory#create(int, int)
    */
   public CoordinateSequence create(int size, int dimension) {
-    if (type == DOUBLE) {
-      return new PackedCoordinateSequence.Double(size, dimension, 0);
-    } else {
-      return new PackedCoordinateSequence.Float(size, dimension, 0 );
-    }
+    int measures = Math.max(0, dimension - PackedCoordinateSequence.DEFAULT_SPATIAL_DIMENSION);
+    return create(size, dimension, measures);
   }
   
   /**

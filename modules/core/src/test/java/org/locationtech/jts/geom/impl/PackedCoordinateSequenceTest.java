@@ -39,7 +39,10 @@ public class PackedCoordinateSequenceTest
   CoordinateSequenceFactory getCSFactory() {
     return new PackedCoordinateSequenceFactory(getType());
   }
-  
+
+  @Override
+  int getDefaultDimension() { return 3; }
+
   public void testDimensionAndMeasure()
   {
     CoordinateSequenceFactory factory = getCSFactory();
@@ -139,11 +142,6 @@ public class PackedCoordinateSequenceTest
   }
 
   @Override
-  int getDefaultDimension() {
-    return ((PackedCoordinateSequenceFactory)getCSFactory()).getDimension();
-  }
-
-  @Override
   public void testFactoryCreateWithCoordinateSequence()
   {
     super.testFactoryCreateWithCoordinateSequence();
@@ -176,9 +174,15 @@ public class PackedCoordinateSequenceTest
     }
   }
 
-  public void testMOrdinateIsNaN() {
-    CoordinateSequence cs = getCSFactory().create(1, 4);
-    assertTrue(Double.isNaN(cs.getOrdinate(0, CoordinateSequence.M)));
+  public void testMOrdinateIs0() {
+    CoordinateSequence cs = getCSFactory().create(1, 3, 1);
+    assertFalse(Double.isNaN(cs.getOrdinate(0, 2)));
+    assertEquals(0d, cs.getM(0));
+    assertEquals(0d, cs.getOrdinate(0, 2));
+    cs = getCSFactory().create(1, 4, 1);
+    assertFalse(Double.isNaN(cs.getOrdinate(0, CoordinateSequence.M)));
+    assertEquals(0d, cs.getM(0));
+    assertEquals(0d, cs.getOrdinate(0, 3));
   }
 
   /** @deprecated */
@@ -193,55 +197,69 @@ public class PackedCoordinateSequenceTest
     }
   }
 
-  public void testFactoryCreateByCoordinateArrayAndDimension() {
-    Coordinate[] coords = createArray(5);
-    PackedCoordinateSequenceFactory factory = (PackedCoordinateSequenceFactory)getCSFactory();
-    int dimension = factory.getDimension();
+  public void testFailWithInsufficientDimension() {
+    PackedCoordinateSequenceFactory factory = (PackedCoordinateSequenceFactory) getCSFactory();
 
     // dimension = 0
     try {
-      factory.setDimension(0);
+      factory.create(0, 0, 0);
       fail();
     } catch (IllegalArgumentException e) {
 
     }
 
     // dimension = 1
-    // shouldn't this fail, too
     try {
-      factory.setDimension(1);
+      factory.create(0, 1, 0);
       fail();
     } catch (IllegalArgumentException e) {
 
     }
 
-    // dimension = 2
-    factory.setDimension(2);
+    // dimension - measure >= 2
+    try {
+      factory.create(0, 3, 2);
+      fail();
+    } catch (IllegalArgumentException e) {
+
+    }
+  }
+
+  public void testFactoryCreateByCoordinateArrayAndDimension() {
+    PackedCoordinateSequenceFactory factory = (PackedCoordinateSequenceFactory)getCSFactory();
+
+
+    // Create with array of Coordinates
+    Coordinate[] coords = createArray(5); // Defaults to XYZFlag
     CoordinateSequence sequence = factory.create(coords);
-    assertEquals(2, sequence.getDimension());
-    assertTrue(checkOrdinates(coords, sequence));
-
-    // dimension = 3
-    factory.setDimension(3);
-    sequence = factory.create(coords);
+    assertEquals(5, sequence.size());
     assertEquals(3, sequence.getDimension());
+    assertEquals(0, sequence.getMeasures());
     assertTrue(checkOrdinates(coords, sequence));
 
-    // dimension = 4
-    factory.setDimension(4);
+    // Create with array of CoordinateXYs
+    coords = createArray(5, XYFlag);
     sequence = factory.create(coords);
+    assertEquals(5, sequence.size());
+    assertEquals(2, sequence.getDimension());
+    assertEquals(0, sequence.getMeasures());
+    assertTrue(checkOrdinates(coords, sequence));
+
+    // Create with array of CoordinateXYMs
+    coords = createArray(5, XYMFlag);
+    sequence = factory.create(coords);
+    assertEquals(5, sequence.size());
+    assertEquals(3, sequence.getDimension());
+    assertEquals(1, sequence.getMeasures());
+    assertTrue(checkOrdinates(coords, sequence));
+
+    // Create with array of CoordinateXYMs
+    coords = createArray(5, XYZMFlag);
+    sequence = factory.create(coords);
+    assertEquals(5, sequence.size());
     assertEquals(4, sequence.getDimension());
+    assertEquals(1, sequence.getMeasures());
     assertTrue(checkOrdinates(coords, sequence));
-
-    // dimension = 7
-    factory.setDimension(7);
-    sequence = factory.create(coords);
-    assertEquals(7, sequence.getDimension());
-    assertTrue(checkOrdinates(coords, sequence));
-
-    // restore dimension
-    factory.setDimension(dimension);
-    assertEquals(dimension, factory.getDimension());
   }
 
   public void testSetOrdinateInvalidatesCachedCoordinateArray() {
@@ -396,22 +414,30 @@ public class PackedCoordinateSequenceTest
       if (coords[i].y != sequence.getY(i)) return false;
       if (dimension == 2) continue;
 
-      // z-ordinate may be Double.NaN or sth. else
-      if (!Double.isNaN(coords[i].z)) {
-        if (coords[i].z != sequence.getOrdinate(i, CoordinateSequence.Z))
-          return false;
+      if (coords[i] instanceof CoordinateXY) {
+        if (i == 0) assertFalse(sequence.hasZ());
+        assertTrue(java.lang.Double.isNaN(sequence.getZ(i)));
+        if (i == 0) assertFalse(sequence.hasM());
+        assertTrue(java.lang.Double.isNaN(sequence.getM(i)));
+      }
+      else if (coords[i] instanceof CoordinateXYM) {
+        if (i == 0) assertFalse(sequence.hasZ());
+        assertTrue(java.lang.Double.isNaN(sequence.getZ(i)));
+        if (i == 0) assertTrue(sequence.hasM());
+        assertFalse(java.lang.Double.isNaN(sequence.getM(i)));
+      }
+      else if (coords[i] instanceof CoordinateXYZM) {
+        if (i == 0) assertTrue(sequence.hasZ());
+        assertEquals(coords[i].getZ(), sequence.getZ(i));
+        if (i == 0) assertTrue(sequence.hasM());
+        assertEquals(coords[i].getM(), sequence.getM(i));
       }
       else {
-        if (!Double.isNaN(sequence.getOrdinate(i, CoordinateSequence.Z)))
-          return false;
+        if (i == 0) assertTrue(sequence.hasZ());
+        assertEquals(coords[i].getZ(), sequence.getZ(i));
+        if (i == 0) assertFalse(sequence.hasM());
+        assertTrue(java.lang.Double.isNaN(sequence.getM(i)));
       }
-      if (dimension == 3) continue;
-
-      // all others must be Double.NaN
-      for (int j = 3; j < dimension; j++)
-        if (!Double.isNaN(sequence.getOrdinate(i, j)))
-          return false;
-
     }
     return true;
   }
