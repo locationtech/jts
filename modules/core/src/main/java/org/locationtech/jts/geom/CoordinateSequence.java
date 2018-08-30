@@ -198,7 +198,7 @@ public interface CoordinateSequence
    * Returns ordinate M of the specified coordinate if available.
    * 
    * @param index
-   * @return the value of the Z ordinate in the index'th coordinate, or Double.NaN if not defined.
+   * @return the value of the M ordinate in the index'th coordinate, or Double.NaN if not defined.
    */
   default double getM(int index)
   {
