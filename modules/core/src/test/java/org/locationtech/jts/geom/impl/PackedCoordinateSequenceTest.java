@@ -176,11 +176,11 @@ public class PackedCoordinateSequenceTest
 
   public void testMOrdinateIs0() {
     CoordinateSequence cs = getCSFactory().create(1, 3, 1);
-    assertFalse(Double.isNaN(cs.getOrdinate(0, 2)));
+    assertTrue(!Double.isNaN(cs.getOrdinate(0, 2)));
     assertEquals(0d, cs.getM(0));
     assertEquals(0d, cs.getOrdinate(0, 2));
     cs = getCSFactory().create(1, 4, 1);
-    assertFalse(Double.isNaN(cs.getOrdinate(0, CoordinateSequence.M)));
+    assertTrue(!Double.isNaN(cs.getOrdinate(0, CoordinateSequence.M)));
     assertEquals(0d, cs.getM(0));
     assertEquals(0d, cs.getOrdinate(0, 3));
   }
@@ -415,16 +415,16 @@ public class PackedCoordinateSequenceTest
       if (dimension == 2) continue;
 
       if (coords[i] instanceof CoordinateXY) {
-        if (i == 0) assertFalse(sequence.hasZ());
+        if (i == 0) assertTrue(!sequence.hasZ());
         assertTrue(java.lang.Double.isNaN(sequence.getZ(i)));
-        if (i == 0) assertFalse(sequence.hasM());
+        if (i == 0) assertTrue(!sequence.hasM());
         assertTrue(java.lang.Double.isNaN(sequence.getM(i)));
       }
       else if (coords[i] instanceof CoordinateXYM) {
-        if (i == 0) assertFalse(sequence.hasZ());
+        if (i == 0) assertTrue(!sequence.hasZ());
         assertTrue(java.lang.Double.isNaN(sequence.getZ(i)));
         if (i == 0) assertTrue(sequence.hasM());
-        assertFalse(java.lang.Double.isNaN(sequence.getM(i)));
+        assertTrue(!java.lang.Double.isNaN(sequence.getM(i)));
       }
       else if (coords[i] instanceof CoordinateXYZM) {
         if (i == 0) assertTrue(sequence.hasZ());
@@ -435,7 +435,7 @@ public class PackedCoordinateSequenceTest
       else {
         if (i == 0) assertTrue(sequence.hasZ());
         assertEquals(coords[i].getZ(), sequence.getZ(i));
-        if (i == 0) assertFalse(sequence.hasM());
+        if (i == 0) assertTrue(!sequence.hasM());
         assertTrue(java.lang.Double.isNaN(sequence.getM(i)));
       }
     }
