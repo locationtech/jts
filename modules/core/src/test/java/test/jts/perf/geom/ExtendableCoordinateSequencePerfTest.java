@@ -68,8 +68,7 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
       this.currentSize *= 10;
       run001_GrowableVsExtendableFloat();
       run002_GrowableVsExtendableDouble();
-      //run003_GrowableVsExtendableCoordinateArray();
-      run003_GrowableVsExtendableFloatToCoordinateArray();
+      run003_GrowableVsExtendableCoordinateArray();
       /*
       run01_CoordinateArraySequenceDim2();
       run02_PackedCoordinateSequenceFloatDim2();
@@ -194,12 +193,6 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
     this.currentFactory = CoordinateArraySequenceFactory.instance();
     this.currentDimension = 2;
     //((PackedCoordinateSequenceFactory) this.currentFactory).setDimension(this.currentDimension);
-    performGrowableVsExtendable(currentFactory);
-  }
-  public void run003_GrowableVsExtendableFloatToCoordinateArray() {
-    this.currentFactory = PackedCoordinateSequenceFactory.FLOAT_FACTORY;
-    this.currentDimension = 2;
-    ((PackedCoordinateSequenceFactory) this.currentFactory).setDimension(this.currentDimension);
     performGrowableVsExtendable(currentFactory);
   }
   /*
