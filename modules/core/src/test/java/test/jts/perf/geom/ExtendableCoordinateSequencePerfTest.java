@@ -13,8 +13,8 @@ package test.jts.perf.geom;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
+import test.jts.perf.geom.impl.GrowableCoordinateSequence;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
-import org.locationtech.jts.util.Assert;
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
 
@@ -37,7 +37,8 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
   public ExtendableCoordinateSequencePerfTest(String name) {
     super(name);
     setRunSize(new int[] {10, 15, 16, 25, 48, 50, 96, 192, 200, 500, 1000, 1500, 1537});
-    setRunIterations(500);
+    setRunIterations(1500);
+
     //setRunSize(new int[] {500});
     //setRunIterations(500);
   }
@@ -65,6 +66,11 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
     this.currentSize = 1;
     for (int i = 0; i < 3; i++) {
       this.currentSize *= 10;
+      run001_GrowableVsExtendableFloat();
+      run002_GrowableVsExtendableDouble();
+      //run003_GrowableVsExtendableCoordinateArray();
+      run003_GrowableVsExtendableFloatToCoordinateArray();
+      /*
       run01_CoordinateArraySequenceDim2();
       run02_PackedCoordinateSequenceFloatDim2();
       run03_PackedCoordinateSequenceDoubleDim2();
@@ -73,6 +79,7 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
       run06_PackedCoordinateSequenceDoubleDim3();
       run07_PackedCoordinateSequenceFloatDim4();
       run08_PackedCoordinateSequenceDoubleDim4();
+      */
     }
     this.durationCoord = this.durationMerge = this.durationExtend = 0;
     this.durationsExtend = new double[getRunIterations()];
@@ -105,23 +112,28 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
     super.setTime(runNum, time);
 
     int numIterations = getRunIterations();
-    long minTime = this.durationMerge < this.durationExtend
-            ? this.durationMerge
-            : this.durationExtend;
-    if (this.durationCoord > 0 && this.durationCoord < minTime)
-      minTime = this.durationCoord;
-    minTime = minTime / numIterations;
+    long minTime = Long.MAX_VALUE;
+    if (durationExtend > 0) minTime = Math.min(minTime, durationExtend);
+    if (durationMerge > 0) minTime = Math.min(minTime, durationMerge);
+    if (durationCoord > 0) minTime = Math.min(minTime, durationCoord);
+    //minTime = minTime / numIterations;
+    // 100d * ((double)time/(double)minTime - 1d)
+    double mean = (double)durationExtend / numIterations;
+    System.out.println(reportTime(durationMerge > 0 ? "Extend" : "Extendable", this.currentFactory, this.currentSize,
+            this.currentDimension, mean, deviation(mean, durationsExtend),
+            ((double)durationExtend / minTime) - 1d));
 
-    long mean = durationExtend / numIterations;
-    System.out.println(reportTime("Extend", this.currentFactory, this.currentSize,
-            this.currentDimension, mean, (long)deviation((double)mean, durationsExtend), minTime));
-    mean = durationMerge / numIterations;
-    System.out.println(reportTime("Merge ", this.currentFactory, this.currentSize,
-            this.currentDimension, mean, (long)deviation((double)mean, durationsMerge), minTime));
+    if (durationMerge > 0) {
+      mean = durationMerge / numIterations;
+      System.out.println(reportTime("Merge ", this.currentFactory, this.currentSize,
+              this.currentDimension, mean, deviation( mean, durationsMerge),
+              ((double)durationMerge / minTime) - 1d));
+    }
 
     mean = durationCoord / numIterations;
-    System.out.println(reportTime("Coords", this.currentFactory, this.currentSize,
-            this.currentDimension, mean, (long)deviation((double)mean, durationsCoord), minTime));
+    System.out.println(reportTime(durationMerge > 0 ? "Coords" : "Growable  ", this.currentFactory, this.currentSize,
+            this.currentDimension, mean, deviation(mean, durationsCoord),
+            ((double)durationCoord / minTime) - 1d));
     System.out.println(
             "----------------------------------------------------------------------------------------------------------------");
 
@@ -148,22 +160,49 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
     {
       double val = values[i]-mean;
       s2 += (val * val);
-    };
+    }
     return (s2 / values.length);
   }
 
 
 
   private String reportTime(String approach, CoordinateSequenceFactory csf, int size,
-                            int dimension, long time, long devTime, long minTime) {
+                            int dimension, double time, double devTime, double ratio) {
 
     return String.format("%s with %s (size=%d, dim=%d): mean=%s, stddev=%s (%.1f%%).",
             approach, csf.getClass().getSimpleName(), size, dimension,
             PerformanceTestRunner.getTimeString(time),
             PerformanceTestRunner.getTimeString(devTime),
-            100d * ((double)time/(double)minTime - 1d));
+            100d * ratio);
+            //100d * ((double)time/(double)minTime - 1d));
   }
 
+  public void run001_GrowableVsExtendableFloat() {
+    this.currentFactory = PackedCoordinateSequenceFactory.FLOAT_FACTORY;
+    this.currentDimension = 2;
+    ((PackedCoordinateSequenceFactory) this.currentFactory).setDimension(this.currentDimension);
+    performGrowableVsExtendable(currentFactory);
+  }
+  public void run002_GrowableVsExtendableDouble() {
+    this.currentFactory = PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
+    this.currentDimension = 2;
+    ((PackedCoordinateSequenceFactory) this.currentFactory).setDimension(this.currentDimension);
+    performGrowableVsExtendable(currentFactory);
+  }
+
+  public void run003_GrowableVsExtendableCoordinateArray() {
+    this.currentFactory = CoordinateArraySequenceFactory.instance();
+    this.currentDimension = 2;
+    //((PackedCoordinateSequenceFactory) this.currentFactory).setDimension(this.currentDimension);
+    performGrowableVsExtendable(currentFactory);
+  }
+  public void run003_GrowableVsExtendableFloatToCoordinateArray() {
+    this.currentFactory = PackedCoordinateSequenceFactory.FLOAT_FACTORY;
+    this.currentDimension = 2;
+    ((PackedCoordinateSequenceFactory) this.currentFactory).setDimension(this.currentDimension);
+    performGrowableVsExtendable(currentFactory);
+  }
+  /*
   public void run01_CoordinateArraySequenceDim2() {
     this.currentFactory = CoordinateArraySequenceFactory.instance();
     this.currentDimension = 2;
@@ -213,6 +252,29 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
     ((PackedCoordinateSequenceFactory)this.currentFactory).setDimension(this.currentDimension);
     performExtendableVsMerge(currentFactory, currentDimension);
   }
+*/
+
+  private void performGrowableVsExtendable(CoordinateSequenceFactory csf) {
+
+    long start, duration;
+
+    start = System.nanoTime();
+    CoordinateSequence seq3 = createUsingGrowableCoordinateSequence(csf, this.currentSize, RANDOM_SEED);
+    duration = System.nanoTime() - start;
+    durationCoord += duration;
+    durationsCoord[iteration] = (double)duration;
+
+    durationMerge += 0d;
+    durationsMerge[iteration] = 0d;
+
+    start = System.nanoTime();
+    CoordinateSequence seq1 = createUsingExtendable(csf, 2, this.currentSize, RANDOM_SEED);
+    duration = System.nanoTime() - start;
+    durationExtend += duration;
+    durationsExtend[iteration] = (double)duration;
+
+    iteration+=1;
+  }
 
   private void performExtendableVsMerge(CoordinateSequenceFactory csf, int dimension) {
 
@@ -259,18 +321,36 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
     return res;
   }
 
-  private static CoordinateSequence createUsingExtendable(CoordinateSequenceFactory factory, int dimension, int size, int seed) {
+  private static CoordinateSequence createUsingExtendable(CoordinateSequenceFactory factory, int dimension, int size, int seed)
+  {
+    return createUsingExtendable(factory, dimension, size, seed, true);
+  }
+  private static CoordinateSequence createUsingExtendable(CoordinateSequenceFactory factory, int dimension, int size,
+    int seed, boolean useAdd) {
 
-    final ExtendableCoordinateSequence eseq = new ExtendableCoordinateSequence(factory, dimension);
+    final ExtendableCoordinateSequence eseq = new ExtendableCoordinateSequence(factory, 50, dimension);
     final Random rnd = new Random(seed);
 
-    for (int i = 0; i < size; i++) {
-      eseq.setOrdinate(i, CoordinateSequence.X, rnd.nextDouble() * 640);
-      eseq.setOrdinate(i, CoordinateSequence.Y, rnd.nextDouble() * 480);
-      for (int j = 2; j < dimension; j++)
-        eseq.setOrdinate(i, j, rnd.nextDouble() * 10);
+    // add
+    if (useAdd) {
+      if (dimension == 2) {
+        for (int i = 0; i < size; i++)
+          eseq.add(rnd.nextDouble() * 640, rnd.nextDouble() * 640);
+      } else if (dimension == 3) {
+        for (int i = 0; i < size; i++)
+          eseq.add(rnd.nextDouble() * 640, rnd.nextDouble() * 640,rnd.nextDouble() * 10);
+      } else {
+        for (int i = 0; i < size; i++)
+          eseq.add(rnd.nextDouble() * 640, rnd.nextDouble() * 640,rnd.nextDouble() * 10,rnd.nextDouble() * 10);
+      }
+    } else {
+        for (int i = 0; i < size; i++) {
+          eseq.setOrdinate(i, CoordinateSequence.X, rnd.nextDouble() * 640);
+          eseq.setOrdinate(i, CoordinateSequence.Y, rnd.nextDouble() * 480);
+          for (int j = 2; j < dimension; j++)
+            eseq.setOrdinate(i, j, rnd.nextDouble() * 10);
+        }
     }
-
     return eseq;//.truncated();
   }
 
@@ -310,4 +390,16 @@ public class ExtendableCoordinateSequencePerfTest extends PerformanceTestCase {
     return factory.create(points);
   }
 
+  private static CoordinateSequence createUsingGrowableCoordinateSequence(CoordinateSequenceFactory factory, int size, int seed) {
+
+    final Random rnd = new Random(seed);
+    GrowableCoordinateSequence gcs = new GrowableCoordinateSequence();
+
+    for (int i = 0; i < size; i++) {
+      //Coordinate pt = new Coordinate(rnd.nextDouble() * 640, rnd.nextDouble() * 480);
+      gcs.add(rnd.nextDouble() * 640, rnd.nextDouble() * 480);
+    }
+
+    return factory.create(gcs);
+  }
 }

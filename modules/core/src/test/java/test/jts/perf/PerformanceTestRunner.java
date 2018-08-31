@@ -93,6 +93,14 @@ public class PerformanceTestRunner
     return (nanoSeconds/1000000) + " millisec";
   }
 
+  public static String getTimeString(double nanoSeconds) {
+    if (nanoSeconds < 1000)
+      return String.format("%.1f nanosec", nanoSeconds);
+    if (nanoSeconds < 1000000)
+      return String.format("%.1f microsec", (nanoSeconds/1000));
+    return String.format("%.1f millisec", (nanoSeconds/1000000));
+  }
+
   private static Method[] findMethods(Class clz, String methodPrefix)
   {
     List runMeths = new ArrayList();
