@@ -286,10 +286,19 @@
 	  <b>do</b> obey the precision model, but the spatial predicates do not.
 	  <br>	 
 <!--  ---------------------------------------------------------------------- --> 
-      <h3>6. Why does JTS not enforce the specified PrecisionModel when creating
+<h3>6. Why does JTS not enforce the specified PrecisionModel when creating
         new geometry?<a name="D6"></a></h3>
-      This is in order to avoid unnecessary performance overhead, and also to avoid the risk
-      of mutating the supplied coordinate objects.<br>
+
+The PrecisionModel specified in a GeometryFactory is not applied to the coordinates 
+ supplied when creating geomtries with the factory.  This is because:
+ <ol>
+  <li>Changing the precision of coordinates is in general a non-trivial operation,
+      since it can cause topology collapse (see <a href="#D4">D4</a>.  </li>
+  <li>Changing coordinate values adds significant overhead, 
+    since <code>CoordinateSequence</code>s may not be mutable, and thus would require a full copy being made</li>
+  <li>Commonly the input is already precise, and thus changing precision is not required</li>
+</ol> 
+<br>
 <!--  ---------------------------------------------------------------------- --> 
       <h3>7. Why do the overlay operations not obey the axioms of set theory?<a
           name="D7"></a></h3>
