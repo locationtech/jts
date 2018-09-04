@@ -223,8 +223,10 @@ public class ExtendableCoordinateSequence implements CoordinateSequence, Seriali
     if (minCapacity <= oldCapacity)
       return;
 
-    // compute the new capacity (see ArrayList implementation
+    // compute the new capacity (see ArrayList implementation)
     int newCapacity = oldCapacity + (oldCapacity >> 1);
+    // to mimic GrowableCoordinateSequence use this
+    //int newCapacity = oldCapacity + 50;
     if (newCapacity < minCapacity) newCapacity = minCapacity;
 
     // create the new sequence
@@ -235,15 +237,15 @@ public class ExtendableCoordinateSequence implements CoordinateSequence, Seriali
     }
     else if (this.sequence instanceof PackedCoordinateSequence.Double) {
       // performance improvement for PackedCoordinateSequence.Double
-      System.arraycopy(((PackedCoordinateSequence.Double)this.sequence).getRawCoordinates(), 0,
-              ((PackedCoordinateSequence.Double)newSequence).getRawCoordinates(), 0,
-              this.sequence.size() * this.sequence.getDimension());
+      double[] srcSeq = ((PackedCoordinateSequence.Double)this.sequence).getRawCoordinates();
+      double[] tgtSeq = ((PackedCoordinateSequence.Double)newSequence).getRawCoordinates();
+      System.arraycopy(srcSeq, 0, tgtSeq, 0, srcSeq.length);
     }
     else if (this.sequence instanceof PackedCoordinateSequence.Float) {
       // performance improvement for PackedCoordinateSequence.Float
-      System.arraycopy(((PackedCoordinateSequence.Float)this.sequence).getRawCoordinates(), 0,
-              ((PackedCoordinateSequence.Float)newSequence).getRawCoordinates(), 0,
-              this.sequence.size() * this.sequence.getDimension());
+      float[] srcSeq = ((PackedCoordinateSequence.Float)this.sequence).getRawCoordinates();
+      float[] tgtSeq = ((PackedCoordinateSequence.Float)newSequence).getRawCoordinates();
+      System.arraycopy(srcSeq, 0, tgtSeq, 0, srcSeq.length);
     }
     else
     {
@@ -268,7 +270,13 @@ public class ExtendableCoordinateSequence implements CoordinateSequence, Seriali
    * @param y a y-ordinate
    */
   public void add(double x, double y) {
-    add(x, y, Double.NaN);
+    //add(x, y, Double.NaN);
+    // get the index for the new sequence
+    int index = this.size();
+
+    // add x- and y-ordinates
+    this.setOrdinate(index, CoordinateSequence.X, x);
+    this.setOrdinate(index, CoordinateSequence.Y, y);
   }
 
   /**
@@ -278,7 +286,15 @@ public class ExtendableCoordinateSequence implements CoordinateSequence, Seriali
    * @param z a z-ordinate
    */
   public void add(double x, double y, double z) {
-    add(x, y, z, Double.NaN);
+    //add(x, y, z, Double.NaN);
+
+    // get the index for the new sequence
+    int index = this.size();
+    // add x- and y-ordinates
+    this.setOrdinate(index, CoordinateSequence.X, x);
+    this.setOrdinate(index, CoordinateSequence.Y, y);
+    if (getDimension() == 2) return;
+    this.setOrdinate(index, CoordinateSequence.Z, z);
   }
 
   /**
