@@ -130,10 +130,10 @@ public class TrianglePredicate
     if (det > errbound) {
       return true;
     }
-    if (-det > errbound)) {
+    if (-det > errbound) {
       return false;
     }
-    return isInCircleDDSlow(a, b, c, p);
+    return isInCircleDDFast(a, b, c, p);
   }    
   /**
    * Computes twice the area of the oriented triangle (a, b, c), i.e., the area is positive if the
