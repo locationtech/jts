@@ -260,6 +260,7 @@
       ones which contain a lot of precision (e.g. 14-16 significant digits of
       precision), and/or ones which contain line segments which are nearly, but
       not exactly, coincident. <br>
+
       <h3>4. What is a "topology collapse"?<a name="D4"></a></h3>
       A <strong>topology collapse</strong> is a situation in which the
       finite-precision numerical representation used in JTS (Java's IEEE-754
@@ -272,7 +273,9 @@
       Typically this occurs in situations where polygon vertices are very close
       to other line segments. If the vertex is shifted slightly it may cross the
       line segment, resulting in a ring which self-intersects. <br>
+<!--  ---------------------------------------------------------------------- -->
       <h3>5. What is the PrecisionModel for?<a name="D5"></a></h3>
+
       The PrecisionModel specifies the precision of the coordinates used to define geometries.
 	  Note that JTS expects that coordinates are supplied already rounded to the desired
 	  precision model; it does not perform this automatically during geometry creation.
@@ -281,12 +284,13 @@
 	  and in which computed results are constructed.  However, this is not uniform
 	  across all operations.  For instance, the the overlay and buffer operations
 	  <b>do</b> obey the precision model, but the spatial predicates do not.
-	  <br>	  
+	  <br>	 
+<!--  ---------------------------------------------------------------------- --> 
       <h3>6. Why does JTS not enforce the specified PrecisionModel when creating
         new geometry?<a name="D6"></a></h3>
       This is in order to avoid unnecessary performance overhead, and also to avoid the risk
       of mutating the supplied coordinate objects.<br>
-<!-- ----------------------------------------  -->
+<!--  ---------------------------------------------------------------------- --> 
       <h3>7. Why do the overlay operations not obey the axioms of set theory?<a
           name="D7"></a></h3>
 		  
