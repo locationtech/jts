@@ -39,9 +39,53 @@ public class CoordinateArraySequenceTest
   }
 
   @Override
-  CoordinateSequenceFactory getCSFactory() {
+  CoordinateArraySequenceFactory getCSFactory() {
     return CoordinateArraySequenceFactory.instance();
   }
+  
+  public void testFactoryLimits() {
+    // Expected to clip dimension and measure value within factory limits
+    
+    CoordinateArraySequenceFactory factory = getCSFactory();
+    CoordinateSequence sequence = factory.create(10, 4);
+    assertEquals("clipped dimension 3", 3, sequence.getDimension());
+    assertEquals("default measure   0", 0, sequence.getMeasures());
+    assertTrue(sequence.hasZ());
+    assertTrue(!sequence.hasM());
+    
+    sequence = factory.create(10, 4, 0);
+    assertEquals("clipped dimension 3", 3, sequence.getDimension());
+    assertEquals("provided measure  0", 0, sequence.getMeasures());
+    assertTrue(sequence.hasZ());
+    assertTrue(!sequence.hasM());
+
+    sequence = factory.create(10, 4, 2); // note clip to spatial dimension
+    assertEquals("clipped dimension 3", 3, sequence.getDimension());
+    assertEquals("clipped measure   1", 1, sequence.getMeasures());
+    assertTrue(!sequence.hasZ());
+    assertTrue(sequence.hasM());
+    
+    sequence = factory.create(10, 5, 1);
+    assertEquals("clipped dimension 3", 4, sequence.getDimension());
+    assertEquals("provided measure  1", 1, sequence.getMeasures());
+    assertTrue(sequence.hasZ());
+    assertTrue(sequence.hasM());
+
+    // previously this clipped to dimension 3, measure 3
+    sequence = factory.create(10, 1);
+    assertEquals("clipped dimension 2", 2, sequence.getDimension());
+    assertEquals("default measure   0", 0, sequence.getMeasures());
+    assertTrue(!sequence.hasZ());
+    assertTrue(!sequence.hasM());
+
+    sequence = factory.create(10, 2, 1);
+    assertEquals("clipped dimension 3", 3, sequence.getDimension());
+    assertEquals("provided measure  1", 1, sequence.getMeasures());
+    assertTrue(!sequence.hasZ());
+    assertTrue(sequence.hasM());
+  }
+  
+  
   
   public void testDimensionAndMeasure()
   {
