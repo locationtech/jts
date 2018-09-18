@@ -166,13 +166,10 @@ public class CoordinateArraySequenceTest
     copy = factory.create(seq);
     assertTrue(isEqual(copy,array));
     
-    try {
-      seq = factory.create(5, 2, 1);
-      assertEquals(3,seq.getDimension());
-      assertEquals(1,seq.getMeasures());
-      fail("xm not supported");
-    } catch (IllegalArgumentException expected) {
-    }    
+    // dimensions clipped from XM to XYM
+    seq = factory.create(5, 2, 1);
+    assertEquals(3,seq.getDimension());
+    assertEquals(1,seq.getMeasures());
   }
  
   public void testMixedCoordinates()
