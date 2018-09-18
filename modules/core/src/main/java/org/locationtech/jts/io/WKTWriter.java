@@ -18,9 +18,21 @@ import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.EnumSet;
-import java.util.Locale;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.GeometryCollection;
+
 import org.locationtech.jts.util.Assert;
 
 /**
@@ -78,13 +90,13 @@ public class WKTWriter
       for (int i = 0; i < seq.size(); i++) {
         if (i > 0)
           buf.append(", ");
-        buf.append(String.format(Locale.US, "%1$G %2$G", seq.getX(i), seq.getY(i)));
+        buf.append(seq.getX(i) + " " + seq.getY(i));
       }
       buf.append(")");
     }
     return buf.toString();
   }
-  
+
   /**
    * Generates the WKT for a <tt>LINESTRING</tt>
    * specified by a {@link CoordinateSequence}.
@@ -104,7 +116,7 @@ public class WKTWriter
       for (int i = 0; i < coord.length; i++) {
         if (i > 0)
           buf.append(", ");
-        buf.append(String.format(Locale.US, "%1$G %2$G", coord[i].x, coord[i].y));
+        buf.append(coord[i].x + " " + coord[i].y);
       }
       buf.append(")");
     }
