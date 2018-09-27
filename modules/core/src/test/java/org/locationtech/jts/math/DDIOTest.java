@@ -31,7 +31,7 @@ public class DDIOTest extends TestCase {
 	}
 
 
-	public void testStandardNotation() 
+	public void testWriteStandardNotation() 
 	{	
 		// standard cases
 		checkStandardNotation(1.0, "1.0");
@@ -40,7 +40,7 @@ public class DDIOTest extends TestCase {
 		// cases where hi is a power of 10 and lo is negative
 		checkStandardNotation(DD.valueOf(1e12).subtract(DD.valueOf(1)),	"999999999999.0");
 		checkStandardNotation(DD.valueOf(1e14).subtract(DD.valueOf(1)),	"99999999999999.0");
-  	checkStandardNotation(DD.valueOf(1e16).subtract(DD.valueOf(1)),	"9999999999999999.0");
+		checkStandardNotation(DD.valueOf(1e16).subtract(DD.valueOf(1)),	"9999999999999999.0");
 		
 		DD num8Dec = DD.valueOf(-379363639).divide(
 				DD.valueOf(100000000));
@@ -68,7 +68,7 @@ public class DDIOTest extends TestCase {
 		assertEquals(expectedStr, xStr);
 	}
 
-	public void testSciNotation() {
+	public void testWriteSciNotation() {
 		checkSciNotation(0.0, "0.0E0");
 		checkSciNotation(1.05e10, "1.05E10");
 		checkSciNotation(0.34, "3.4000000000000002442490654175344E-1");
@@ -87,28 +87,59 @@ public class DDIOTest extends TestCase {
 		assertEquals(xStr, expectedStr);
 	}
 
-	public void testParse() {
-		checkParse("1.05e10", 1.05E10, 1e-32);
+	public void testParseInt() {
+    checkParse("0", 0, 1e-32);
+    checkParse("00", 0, 1e-32);
+    checkParse("000", 0, 1e-32);
+		
+		checkParse("1", 1, 1e-32);
+    checkParse("100", 100, 1e-32);
+    checkParse("00100", 100, 1e-32);
+		
+    checkParse("-1", -1, 1e-32);
+    checkParse("-01", -1, 1e-32);
+    checkParse("-123", -123, 1e-32);
+    checkParse("-00123", -123, 1e-32);
+	}
+		
+	public void testParseStandardNotation() {
+    checkParse("1.0000000", 1, 1e-32);
+    checkParse("1.0", 1, 1e-32);
+    checkParse("1.", 1, 1e-32);
+    checkParse("01.", 1, 1e-32);
+    
+    checkParse("-1.0", -1, 1e-32);
+    checkParse("-1.", -1, 1e-32);
+    checkParse("-01.0", -1, 1e-32);
+    checkParse("-123.0", -123, 1e-32);
+    
+    /*
+     * The Java double-precision constant 1.4 gives rise to a value which
+     * differs from the exact binary representation down around the 17th decimal
+     * place. Thus it will not compare exactly to the DoubleDouble
+     * representation of the same number. To avoid this, compute the expected
+     * value using full DD precision.
+     */
+    checkParse("1.4",
+        DD.valueOf(14).divide(DD.valueOf(10)), 1e-30);
+
+    // 39.5D can be converted to an exact FP representation
+    checkParse("39.5", 39.5, 1e-30);
+    checkParse("-39.5", -39.5, 1e-30);
+  }
+    
+  public void testParseSciNotation() {
+    checkParse("1.05e10", 1.05E10, 1e-32);
+    checkParse("01.05e10", 1.05E10, 1e-32);
+    checkParse("12.05e10", 1.205E11, 1e-32);
+		
 		checkParse("-1.05e10", -1.05E10, 1e-32);
+		
 		checkParse("1.05e-10", DD.valueOf(105.).divide(
 				DD.valueOf(100.)).divide(DD.valueOf(1.0E10)), 1e-32);
 		checkParse("-1.05e-10", DD.valueOf(105.).divide(
 				DD.valueOf(100.)).divide(DD.valueOf(1.0E10))
 				.negate(), 1e-32);
-
-		/**
-		 * The Java double-precision constant 1.4 gives rise to a value which
-		 * differs from the exact binary representation down around the 17th decimal
-		 * place. Thus it will not compare exactly to the DoubleDouble
-		 * representation of the same number. To avoid this, compute the expected
-		 * value using full DD precision.
-		 */
-		checkParse("1.4",
-				DD.valueOf(14).divide(DD.valueOf(10)), 1e-30);
-
-		// 39.5D can be converted to an exact FP representation
-		checkParse("39.5", 39.5, 1e-30);
-		checkParse("-39.5", -39.5, 1e-30);
 	}
 
 	private void checkParse(String str, double expectedVal, double errBound) {
@@ -119,11 +150,13 @@ public class DDIOTest extends TestCase {
 			double relErrBound) {
 		DD xdd = DD.parse(str);
 		double err = xdd.subtract(expectedVal).doubleValue();
-		double relErr = err / xdd.doubleValue();
+		double xddd = xdd.doubleValue();
+		double relErr = xddd == 0d ? err : Math.abs(err / xddd);
 
 		//System.out.println("Parsed= " + xdd + " rel err= " + relErr);
 
-		assertTrue(err <= relErrBound);
+		assertTrue("parsing '" + str + "' results in " + xdd.toString() + " ( "
+				+ xdd.dump() + ") != " + expectedVal + "\n  err =" + err + ", relerr =" + relErr, relErr <= relErrBound);
 	}
 
 	public void testParseError() {
@@ -142,7 +175,7 @@ public class DDIOTest extends TestCase {
 		assertTrue(foundParseError);
 	}
 
-	public void testRepeatedSqrt()
+	public void tesWritetRepeatedSqrt()
 	{
 		writeRepeatedSqrt(DD.valueOf(1.0));
 		writeRepeatedSqrt(DD.valueOf(.999999999999));
@@ -152,9 +185,9 @@ public class DDIOTest extends TestCase {
 	/**
 	 * This routine simply tests for robustness of the toString function.
 	 * 
-	 * @param xdd
+	 * @param xdd the value to test (write and parse)
 	 */
-	void writeRepeatedSqrt(DD xdd) 
+	private void writeRepeatedSqrt(DD xdd)
 	{
 		int count = 0;
 		while (xdd.doubleValue() > 1e-300) {
@@ -180,7 +213,7 @@ public class DDIOTest extends TestCase {
 		}
 	}
 	
-	public void testRepeatedSqr()
+	public void testWriteRepeatedSqr()
 	{
 		writeRepeatedSqr(DD.valueOf(.9));
 		writeRepeatedSqr(DD.PI.divide(DD.valueOf(10)));
@@ -189,9 +222,9 @@ public class DDIOTest extends TestCase {
 	/**
 	 * This routine simply tests for robustness of the toString function.
 	 * 
-	 * @param xdd
+	 * @param xdd the value to test (write and parse)
 	 */
-	void writeRepeatedSqr(DD xdd) 
+	private void writeRepeatedSqr(DD xdd)
 	{
 		if (xdd.ge(DD.valueOf(1)))
 			throw new IllegalArgumentException("Argument must be < 1");
@@ -212,7 +245,7 @@ public class DDIOTest extends TestCase {
 		}
 	}
 	
-	public void testIOSquaresStress() {
+	public void testWriteSquaresStress() {
 		for (int i = 1; i < 10000; i++) {
 			writeAndReadSqrt(i);
 		}
@@ -222,9 +255,9 @@ public class DDIOTest extends TestCase {
 	 * Tests that printing values with many decimal places works. 
 	 * This tests the correctness and robustness of both output and input.
 	 * 
-	 * @param x
+	 * @param x the value to test
 	 */
-	void writeAndReadSqrt(double x) {
+	private void writeAndReadSqrt(double x) {
 		DD xdd = DD.valueOf(x);
 		DD xSqrt = xdd.sqrt();
 		String s = xSqrt.toString();

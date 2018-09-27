@@ -130,7 +130,7 @@ public class MultiPolygon
     return getFactory().createMultiPolygon(revGeoms);
   }
   
-  public MultiPolygon copy() {
+  protected MultiPolygon copyInternal() {
     Polygon[] polygons = new Polygon[this.geometries.length];
     for (int i = 0; i < polygons.length; i++) {
       polygons[i] = (Polygon) this.geometries[i].copy();

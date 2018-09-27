@@ -17,26 +17,29 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.EnumSet;
 
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.GeometryCollection;
+
 import org.locationtech.jts.util.Assert;
 
 /**
  * Writes the Well-Known Text representation of a {@link Geometry}.
  * The Well-Known Text format is defined in the
- * OGC <A HREF="http://www.opengis.org/techno/specs.htm">
- * <i>Simple Features Specification for SQL</i></A>.
+ * OGC <a href="http://www.opengis.org/techno/specs.htm">
+ * <i>Simple Features Specification for SQL</i></a>.
  * See {@link WKTReader} for a formal specification of the format syntax.
  * <p>
  * The <code>WKTWriter</code> outputs coordinates rounded to the precision
@@ -78,7 +81,7 @@ public class WKTWriter
    */
   public static String toLineString(CoordinateSequence seq)
   {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append("LINESTRING ");
     if (seq.size() == 0)
       buf.append(" EMPTY");
@@ -93,7 +96,7 @@ public class WKTWriter
     }
     return buf.toString();
   }
-  
+
   /**
    * Generates the WKT for a <tt>LINESTRING</tt>
    * specified by a {@link CoordinateSequence}.
@@ -104,7 +107,7 @@ public class WKTWriter
    */
   public static String toLineString(Coordinate[] coord)
   {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append("LINESTRING ");
     if (coord.length == 0)
       buf.append(" EMPTY");
@@ -113,7 +116,7 @@ public class WKTWriter
       for (int i = 0; i < coord.length; i++) {
         if (i > 0)
           buf.append(", ");
-        buf.append(coord[i].x + " " + coord[i].y );
+        buf.append(coord[i].x + " " + coord[i].y);
       }
       buf.append(")");
     }
@@ -135,6 +138,7 @@ public class WKTWriter
   }
 
   private static final int INDENT = 2;
+  private static final int OUTPUT_DIMENSION = 2;
 
   /**
    *  Creates the <code>DecimalFormat</code> used to write <code>double</code>s
@@ -164,43 +168,115 @@ public class WKTWriter
    *@param  count  the number of times to repeat the character
    *@return        a <code>String</code> of characters
    */
-  public static String stringOfChar(char ch, int count) {
-    StringBuffer buf = new StringBuffer();
+  private static String stringOfChar(char ch, int count) {
+    StringBuilder buf = new StringBuilder(count);
     for (int i = 0; i < count; i++) {
       buf.append(ch);
     }
     return buf.toString();
   }
 
-  private int outputDimension = 2;
-  private DecimalFormat formatter;
+  /**
+   * A filter implementation to test if a coordinate sequence actually has
+   * meaningful values for an ordinate bit-pattern
+   */
+  private class CheckOrdinatesFilter implements CoordinateSequenceFilter {
+
+    private final EnumSet<Ordinate> checkOrdinateFlags;
+    private final EnumSet<Ordinate> outputOrdinates;
+
+    /**
+     * Creates an instance of this class
+
+     * @param checkOrdinateFlags the index for the ordinates to test.
+     */
+    private CheckOrdinatesFilter(EnumSet<Ordinate> checkOrdinateFlags) {
+
+      this.outputOrdinates = EnumSet.of(Ordinate.X, Ordinate.Y);
+      this.checkOrdinateFlags = checkOrdinateFlags;
+    }
+
+    /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isGeometryChanged */
+    public void filter(CoordinateSequence seq, int i) {
+
+      if (checkOrdinateFlags.contains(Ordinate.Z) && !outputOrdinates.contains(Ordinate.Z)) {
+        if (!Double.isNaN(seq.getZ(i)))
+          outputOrdinates.add(Ordinate.Z);
+      }
+
+      if (checkOrdinateFlags.contains(Ordinate.M) && !outputOrdinates.contains(Ordinate.M)) {
+        if (!Double.isNaN(seq.getM(i)))
+          outputOrdinates.add(Ordinate.M);
+      }
+    }
+
+    /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isGeometryChanged */
+    public boolean isGeometryChanged() {
+      return false;
+    }
+
+    /** @see org.locationtech.jts.geom.CoordinateSequenceFilter#isDone */
+    public boolean isDone() {
+      return outputOrdinates.equals(checkOrdinateFlags);
+    }
+
+    /**
+     * Gets the evaluated ordinate bit-pattern
+     *
+     * @return A bit-pattern of ordinates with valid values masked by {@link #checkOrdinateFlags}.
+     */
+    EnumSet<Ordinate> getOutputOrdinates() {
+      return outputOrdinates;
+    }
+  }
+
+  private EnumSet<Ordinate> outputOrdinates;
+  private final int outputDimension;
+  private PrecisionModel precisionModel = null;
   private boolean isFormatted = false;
-  private boolean useFormatting = false;
-  private int level = 0;
   private int coordsPerLine = -1;
-  private String indentTabStr = "  ";
+  private String indentTabStr ;
 
   /**
    * Creates a new WKTWriter with default settings
    */
   public WKTWriter()
   {
+    this(OUTPUT_DIMENSION);
   }
 
   /**
    * Creates a writer that writes {@link Geometry}s with
-   * the given output dimension (2 or 3).
-   * If the specified output dimension is 3, the Z value
-   * of coordinates will be written if it is present
-   * (i.e. if it is not <code>Double.NaN</code>).
+   * the given output dimension (2 to 4).
+   * The output follows the following rules:
+   * <ul>
+   *   <li>If the specified <b>output dimension is 3</b> and the <b>z is measure flag
+   *   is set to true</b>, the Z value of coordinates will be written if it is present
+   * (i.e. if it is not <code>Double.NaN</code>)</li>
+   *   <li>If the specified <b>output dimension is 3</b> and the <b>z is measure flag
+   *   is set to false</b>, the Measure value of coordinates will be written if it is present
+   * (i.e. if it is not <code>Double.NaN</code>)</li>
+   *   <li>If the specified <b>output dimension is 4</b>, the Z value of coordinates will
+   *   be written even if it is not present when the Measure value is present.The Measrue
+   *   value of coordinates will be written if it is present
+   * (i.e. if it is not <code>Double.NaN</code>)</li>
+   * </ul>
    *
-   * @param outputDimension the coordinate dimension to output (2 or 3)
+   * @param outputDimension the coordinate dimension to output (2 to 4)
    */
   public WKTWriter(int outputDimension) {
+
+    setTab(INDENT);
     this.outputDimension = outputDimension;
 
-    if (outputDimension < 2 || outputDimension > 3)
-      throw new IllegalArgumentException("Invalid output dimension (must be 2 or 3)");
+    if (outputDimension < 2 || outputDimension > 4)
+      throw new IllegalArgumentException("Invalid output dimension (must be 2 to 4)");
+
+    this.outputOrdinates = EnumSet.of(Ordinate.X, Ordinate.Y);
+    if (outputDimension > 2)
+      outputOrdinates.add(Ordinate.Z);
+    if (outputDimension > 3)
+      outputOrdinates.add(Ordinate.M);
   }
 
   /**
@@ -240,6 +316,60 @@ public class WKTWriter
   }
 
   /**
+   * Sets the {@link Ordinate} that are to be written. Possible members are:
+   * <ul>
+   * <li>{@link Ordinate#X}</li>
+   * <li>{@link Ordinate#Y}</li>
+   * <li>{@link Ordinate#Z}</li>
+   * <li>{@link Ordinate#M}</li>
+   * </ul>
+   * Values of {@link Ordinate#X} and {@link Ordinate#Y} are always assumed and not
+   * particularly checked for.
+   *
+   * @param outputOrdinates A set of {@link Ordinate} values
+   */
+  public void setOutputOrdinates(EnumSet<Ordinate> outputOrdinates) {
+
+    this.outputOrdinates.remove(Ordinate.Z);
+    this.outputOrdinates.remove(Ordinate.M);
+
+    if (this.outputDimension == 3) {
+      if (outputOrdinates.contains(Ordinate.Z))
+        this.outputOrdinates.add(Ordinate.Z);
+      else if (outputOrdinates.contains(Ordinate.M))
+        this.outputOrdinates.add(Ordinate.M);
+    }
+    if (this.outputDimension == 4) {
+      if (outputOrdinates.contains(Ordinate.Z))
+        this.outputOrdinates.add(Ordinate.Z);
+      if (outputOrdinates.contains(Ordinate.M))
+        this.outputOrdinates.add(Ordinate.M);
+    }
+  }
+
+  /**
+   * Gets a bit-pattern defining which ordinates should be
+   * @return an ordinate bit-pattern
+   * @see #setOutputOrdinates(EnumSet)
+   */
+  public EnumSet<Ordinate> getOutputOrdinates() {
+    return this.outputOrdinates;
+  }
+
+
+   /**
+   * Sets a {@link PrecisionModel} that should be used on the ordinates written.
+   * <p>If none/{@code null} is assigned, the precision model of the {@link Geometry#getFactory()}
+   * is used.</p>
+   * <p>Note: The precision model is applied to all ordinate values, not just x and y.</p>
+   * @param precisionModel
+   *    the flag indicating if {@link Coordinate#z}/{} is actually a measure value.
+   */
+  public void setPrecisionModel(PrecisionModel precisionModel) {
+    this.precisionModel = precisionModel;
+  }
+
+  /**
    *  Converts a <code>Geometry</code> to its Well-known Text representation.
    *
    *@param  geometry  a <code>Geometry</code> to process
@@ -249,8 +379,13 @@ public class WKTWriter
   public String write(Geometry geometry)
   {
     Writer sw = new StringWriter();
+
+    // determine the precision model
+    PrecisionModel pm = this.precisionModel;
+    if (pm == null) pm = geometry.getFactory().getPrecisionModel();
+
     try {
-      writeFormatted(geometry, isFormatted, sw);
+      writeFormatted(geometry, false, sw, pm);
     }
     catch (IOException ex) {
       Assert.shouldNeverReachHere();
@@ -266,7 +401,12 @@ public class WKTWriter
   public void write(Geometry geometry, Writer writer)
     throws IOException
   {
-    writeFormatted(geometry, false, writer);
+    // determine the precision model
+    PrecisionModel pm = this.precisionModel;
+    if (pm == null) pm = geometry.getFactory().getPrecisionModel();
+
+    // write the geometry
+    writeFormatted(geometry, isFormatted, writer, pm);
   }
 
   /**
@@ -281,7 +421,7 @@ public class WKTWriter
   {
     Writer sw = new StringWriter();
     try {
-      writeFormatted(geometry, true, sw);
+      writeFormatted(geometry, true, sw, precisionModel);
     }
     catch (IOException ex) {
       Assert.shouldNeverReachHere();
@@ -297,58 +437,100 @@ public class WKTWriter
   public void writeFormatted(Geometry geometry, Writer writer)
     throws IOException
   {
-    writeFormatted(geometry, true, writer);
+    writeFormatted(geometry, true, writer, precisionModel);
   }
   /**
    *  Converts a <code>Geometry</code> to its Well-known Text representation.
    *
    *@param  geometry  a <code>Geometry</code> to process
    */
-  private void writeFormatted(Geometry geometry, boolean useFormatting, Writer writer)
+  private void writeFormatted(Geometry geometry, boolean useFormatting, Writer writer,
+                              PrecisionModel precisionModel)
     throws IOException
   {
-    this.useFormatting = useFormatting;
-    formatter = createFormatter(geometry.getPrecisionModel());
-    appendGeometryTaggedText(geometry, 0, writer);
-  }
+    // ensure we have a precision model
+    if (precisionModel == null)
+      precisionModel = geometry.getPrecisionModel();
 
+    // create the formatter
+    DecimalFormat formatter = createFormatter(precisionModel);
+
+    // append the WKT
+    appendGeometryTaggedText(geometry, useFormatting, writer, formatter);
+  }
 
   /**
    *  Converts a <code>Geometry</code> to &lt;Geometry Tagged Text&gt; format,
    *  then appends it to the writer.
    *
-   *@param  geometry  the <code>Geometry</code> to process
-   *@param  writer    the output writer to append to
+   * @param  geometry           the <code>Geometry</code> to process
+   * @param  useFormatting      flag indicating that the output should be formatted
+   * @param  writer             the output writer to append to
+   * @param  formatter       the <code>DecimalFormatter</code> to use to convert
+   *      from a precise coordinate to an external coordinate
    */
-  private void appendGeometryTaggedText(Geometry geometry, int level, Writer writer)
+  private void appendGeometryTaggedText(Geometry geometry, boolean useFormatting, Writer writer,
+                                        DecimalFormat formatter)
     throws IOException
   {
-    indent(level, writer);
+    // evaluate the ordinates actually present in the geometry
+    CheckOrdinatesFilter cof = new CheckOrdinatesFilter(this.outputOrdinates);
+    geometry.apply(cof);
+
+    // Append the WKT
+    appendGeometryTaggedText(geometry, cof.getOutputOrdinates(), useFormatting,
+            0, writer, formatter);
+  }
+  /**
+   *  Converts a <code>Geometry</code> to &lt;Geometry Tagged Text&gt; format,
+   *  then appends it to the writer.
+   *
+   * @param  geometry           the <code>Geometry</code> to process
+   * @param  useFormatting      flag indicating that the output should be formatted
+   * @param  level              the indentation level
+   * @param  writer             the output writer to append to
+   * @param  formatter       the <code>DecimalFormatter</code> to use to convert
+   *      from a precise coordinate to an external coordinate
+   */
+  private void appendGeometryTaggedText(
+          Geometry geometry, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
+    throws IOException
+
+  {
+    indent(useFormatting, level, writer);
 
     if (geometry instanceof Point) {
-      Point point = (Point) geometry;
-      appendPointTaggedText(point.getCoordinate(), level, writer, point.getPrecisionModel());
+      appendPointTaggedText((Point) geometry, outputOrdinates, useFormatting,
+              level, writer, formatter);
     }
     else if (geometry instanceof LinearRing) {
-      appendLinearRingTaggedText((LinearRing) geometry, level, writer);
+      appendLinearRingTaggedText((LinearRing) geometry, outputOrdinates, useFormatting,
+              level, writer, formatter);
     }
     else if (geometry instanceof LineString) {
-      appendLineStringTaggedText((LineString) geometry, level, writer);
+      appendLineStringTaggedText((LineString) geometry, outputOrdinates, useFormatting,
+              level, writer, formatter);
     }
     else if (geometry instanceof Polygon) {
-      appendPolygonTaggedText((Polygon) geometry, level, writer);
+      appendPolygonTaggedText((Polygon) geometry, outputOrdinates, useFormatting,
+              level, writer, formatter);
     }
     else if (geometry instanceof MultiPoint) {
-      appendMultiPointTaggedText((MultiPoint) geometry, level, writer);
+      appendMultiPointTaggedText((MultiPoint) geometry, outputOrdinates,
+              useFormatting, level, writer, formatter);
     }
     else if (geometry instanceof MultiLineString) {
-      appendMultiLineStringTaggedText((MultiLineString) geometry, level, writer);
+      appendMultiLineStringTaggedText((MultiLineString) geometry, outputOrdinates,
+              useFormatting, level, writer, formatter);
     }
     else if (geometry instanceof MultiPolygon) {
-      appendMultiPolygonTaggedText((MultiPolygon) geometry, level, writer);
+      appendMultiPolygonTaggedText((MultiPolygon) geometry, outputOrdinates,
+              useFormatting, level, writer, formatter);
     }
     else if (geometry instanceof GeometryCollection) {
-      appendGeometryCollectionTaggedText((GeometryCollection) geometry, level, writer);
+      appendGeometryCollectionTaggedText((GeometryCollection) geometry, outputOrdinates,
+              useFormatting, level, writer, formatter);
     }
     else {
       Assert.shouldNeverReachHere("Unsupported Geometry implementation:"
@@ -360,176 +542,207 @@ public class WKTWriter
    *  Converts a <code>Coordinate</code> to &lt;Point Tagged Text&gt; format,
    *  then appends it to the writer.
    *
-   *@param  coordinate      the <code>Coordinate</code> to process
-   *@param  writer          the output writer to append to
-   *@param  precisionModel  the <code>PrecisionModel</code> to use to convert
-   *      from a precise coordinate to an external coordinate
+   * @param  point           the <code>Point</code> to process
+   * @param  useFormatting      flag indicating that the output should be formatted
+   * @param  level              the indentation level
+   * @param  writer             the output writer to append to
+   * @param  formatter          the formatter to use when writing numbers
    */
-  private void appendPointTaggedText(Coordinate coordinate, int level, Writer writer,
-      PrecisionModel precisionModel)
+  private void appendPointTaggedText(
+          Point point, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("POINT ");
-    appendPointText(coordinate, level, writer, precisionModel);
+    appendOrdinateText(outputOrdinates, writer);
+    appendSequenceText(point.getCoordinateSequence(), outputOrdinates, useFormatting,
+            level, false, writer, formatter);
   }
 
   /**
    *  Converts a <code>LineString</code> to &lt;LineString Tagged Text&gt;
    *  format, then appends it to the writer.
    *
-   *@param  lineString  the <code>LineString</code> to process
-   *@param  writer      the output writer to append to
+   * @param  lineString  the <code>LineString</code> to process
+   * @param  useFormatting      flag indicating that the output should be formatted
+   * @param  level              the indentation level
+   * @param  writer             the output writer to append to
+   * @param  formatter       the <code>DecimalFormatter</code> to use to convert
+   *      from a precise coordinate to an external coordinate
    */
-  private void appendLineStringTaggedText(LineString lineString, int level, Writer writer)
+  private void appendLineStringTaggedText(
+          LineString lineString, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("LINESTRING ");
-    appendLineStringText(lineString, level, false, writer);
+    appendOrdinateText(outputOrdinates, writer);
+    appendSequenceText(lineString.getCoordinateSequence(), outputOrdinates, useFormatting,
+            level, false, writer, formatter);
   }
 
   /**
    *  Converts a <code>LinearRing</code> to &lt;LinearRing Tagged Text&gt;
    *  format, then appends it to the writer.
    *
-   *@param  linearRing  the <code>LinearRing</code> to process
-   *@param  writer      the output writer to append to
+   * @param  linearRing  the <code>LinearRing</code> to process
+   * @param  useFormatting      flag indicating that the output should be formatted
+   * @param  level              the indentation level
+   * @param  writer             the output writer to append to
+   * @param  formatter       the <code>DecimalFormatter</code> to use to convert
+   *      from a precise coordinate to an external coordinate
    */
-  private void appendLinearRingTaggedText(LinearRing linearRing, int level, Writer writer)
+  private void appendLinearRingTaggedText(
+          LinearRing linearRing, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("LINEARRING ");
-    appendLineStringText(linearRing, level, false, writer);
+    appendOrdinateText(outputOrdinates, writer);
+    appendSequenceText(linearRing.getCoordinateSequence(), outputOrdinates, useFormatting,
+            level, false, writer, formatter);
   }
 
   /**
    *  Converts a <code>Polygon</code> to &lt;Polygon Tagged Text&gt; format,
    *  then appends it to the writer.
    *
-   *@param  polygon  the <code>Polygon</code> to process
-   *@param  writer   the output writer to append to
+   * @param  polygon  the <code>Polygon</code> to process
+   * @param  useFormatting      flag indicating that the output should be formatted
+   * @param  level              the indentation level
+   * @param  writer             the output writer to append to
+   * @param  formatter       the <code>DecimalFormatter</code> to use to convert
+   *      from a precise coordinate to an external coordinate
    */
-  private void appendPolygonTaggedText(Polygon polygon, int level, Writer writer)
+  private void appendPolygonTaggedText(
+          Polygon polygon, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("POLYGON ");
-    appendPolygonText(polygon, level, false, writer);
+    appendOrdinateText(outputOrdinates, writer);
+    appendPolygonText(polygon, outputOrdinates, useFormatting,
+            level, false, writer, formatter);
   }
 
   /**
    *  Converts a <code>MultiPoint</code> to &lt;MultiPoint Tagged Text&gt;
    *  format, then appends it to the writer.
    *
-   *@param  multipoint  the <code>MultiPoint</code> to process
-   *@param  writer      the output writer to append to
+   * @param  multipoint  the <code>MultiPoint</code> to process
+   * @param  useFormatting      flag indicating that the output should be formatted
+   * @param  level              the indentation level
+   * @param  writer             the output writer to append to
+   * @param  formatter       the <code>DecimalFormatter</code> to use to convert
+   *      from a precise coordinate to an external coordinate
    */
-  private void appendMultiPointTaggedText(MultiPoint multipoint, int level, Writer writer)
+  private void appendMultiPointTaggedText(MultiPoint multipoint, EnumSet<Ordinate> outputOrdinates,
+                                          boolean useFormatting, int level, Writer writer,
+                                          DecimalFormat formatter)
     throws IOException
   {
     writer.write("MULTIPOINT ");
-    appendMultiPointText(multipoint, level, writer);
+    appendOrdinateText(outputOrdinates, writer);
+    appendMultiPointText(multipoint, outputOrdinates, useFormatting, level, writer, formatter);
   }
 
   /**
    *  Converts a <code>MultiLineString</code> to &lt;MultiLineString Tagged
    *  Text&gt; format, then appends it to the writer.
    *
-   *@param  multiLineString  the <code>MultiLineString</code> to process
-   *@param  writer           the output writer to append to
+   * @param  multiLineString  the <code>MultiLineString</code> to process
+   * @param  useFormatting      flag indicating that the output should be formatted
+   * @param  level              the indentation level
+   * @param  writer             the output writer to append to
+   * @param  formatter       the <code>DecimalFormatter</code> to use to convert
+   *      from a precise coordinate to an external coordinate
    */
-  private void appendMultiLineStringTaggedText(MultiLineString multiLineString, int level,
-      Writer writer)
+  private void appendMultiLineStringTaggedText(
+          MultiLineString multiLineString, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("MULTILINESTRING ");
-    appendMultiLineStringText(multiLineString, level, false, writer);
+    appendOrdinateText(outputOrdinates, writer);
+    appendMultiLineStringText(multiLineString, outputOrdinates, useFormatting,
+            level, /*false, */writer, formatter);
   }
 
   /**
    *  Converts a <code>MultiPolygon</code> to &lt;MultiPolygon Tagged Text&gt;
    *  format, then appends it to the writer.
    *
-   *@param  multiPolygon  the <code>MultiPolygon</code> to process
-   *@param  writer        the output writer to append to
+   * @param  multiPolygon  the <code>MultiPolygon</code> to process
+   * @param  useFormatting      flag indicating that the output should be formatted
+   * @param  level              the indentation level
+   * @param  writer             the output writer to append to
+   * @param  formatter       the <code>DecimalFormatter</code> to use to convert
+   *      from a precise coordinate to an external coordinate
    */
-  private void appendMultiPolygonTaggedText(MultiPolygon multiPolygon, int level, Writer writer)
+  private void appendMultiPolygonTaggedText(
+          MultiPolygon multiPolygon, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("MULTIPOLYGON ");
-    appendMultiPolygonText(multiPolygon, level, writer);
+    appendOrdinateText(outputOrdinates, writer);
+    appendMultiPolygonText(multiPolygon, outputOrdinates, useFormatting,
+            level, writer, formatter);
   }
 
   /**
    *  Converts a <code>GeometryCollection</code> to &lt;GeometryCollection
    *  Tagged Text&gt; format, then appends it to the writer.
    *
-   *@param  geometryCollection  the <code>GeometryCollection</code> to process
-   *@param  writer              the output writer to append to
+   * @param  geometryCollection  the <code>GeometryCollection</code> to process
+   * @param  useFormatting      flag indicating that the output should be formatted
+   * @param  level              the indentation level
+   * @param  writer             the output writer to append to
+   * @param  formatter       the <code>DecimalFormatter</code> to use to convert
+   *      from a precise coordinate to an external coordinate
    */
-  private void appendGeometryCollectionTaggedText(GeometryCollection geometryCollection, int level,
-      Writer writer)
+  private void appendGeometryCollectionTaggedText(
+          GeometryCollection geometryCollection, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     writer.write("GEOMETRYCOLLECTION ");
-    appendGeometryCollectionText(geometryCollection, level, writer);
+    appendOrdinateText(outputOrdinates, writer);
+    appendGeometryCollectionText(geometryCollection, outputOrdinates,
+            useFormatting, level, writer, formatter);
   }
 
-  /**
-   *  Converts a <code>Coordinate</code> to &lt;Point Text&gt; format, then
-   *  appends it to the writer.
-   *
-   *@param  coordinate      the <code>Coordinate</code> to process
-   *@param  writer          the output writer to append to
-   *@param  precisionModel  the <code>PrecisionModel</code> to use to convert
-   *      from a precise coordinate to an external coordinate
-   */
-  private void appendPointText(Coordinate coordinate, int level, Writer writer,
-      PrecisionModel precisionModel)
-    throws IOException
-  {
-    if (coordinate == null) {
-      writer.write("EMPTY");
-    }
-    else {
-      writer.write("(");
-      appendCoordinate(coordinate, writer);
-      writer.write(")");
-    }
-  }
-
-  /**
+   /**
    * Appends the i'th coordinate from the sequence to the writer
+   * <p>If the {@code seq} has coordinates that are {@link double.NAN}, these are not written, even though
+   * {@link #outputDimension} suggests this.
    *
-   * @param  seq  the <code>CoordinateSequence</code> to process
-   * @param i     the index of the coordinate to write
-   * @param  writer the output writer to append to
+   * @param  seq        the <code>CoordinateSequence</code> to process
+   * @param  i          the index of the coordinate to write
+   * @param  writer     the output writer to append to
+   * @param  formatter  the formatter to use for writing ordinate values
    */
-  private void appendCoordinate(CoordinateSequence seq, int i, Writer writer)
+  private static void appendCoordinate(
+          CoordinateSequence seq, EnumSet<Ordinate> outputOrdinates, int i,
+          Writer writer, DecimalFormat formatter)
       throws IOException
   {
-    writer.write(writeNumber(seq.getX(i)) + " " + writeNumber(seq.getY(i)));
-    if (outputDimension >= 3 && seq.getDimension() >= 3) {
-      double z = seq.getOrdinate(i, 3);
-      if (! Double.isNaN(z)) {
+    writer.write(writeNumber(seq.getX(i), formatter) + " " +
+            writeNumber(seq.getY(i), formatter));
+
+    if (outputOrdinates.contains(Ordinate.Z)) {
+      double z = seq.getZ(i);
+      if (!Double.isNaN(z)) {
         writer.write(" ");
-        writer.write(writeNumber(z));
+        writer.write(writeNumber(seq.getZ(i), formatter));
+      } else {
+        writer.write(" NaN");
       }
     }
-  }
 
-  /**
-   *  Converts a <code>Coordinate</code> to <code>&lt;Point&gt;</code> format,
-   *  then appends it to the writer.
-   *
-   *@param  coordinate      the <code>Coordinate</code> to process
-   *@param  writer          the output writer to append to
-   */
-  private void appendCoordinate(Coordinate coordinate, Writer writer)
-    throws IOException
-  {
-    writer.write(writeNumber(coordinate.x) + " " + writeNumber(coordinate.y));
-    if (outputDimension >= 3 && ! Double.isNaN(coordinate.z)) {
+    if (outputOrdinates.contains(Ordinate.M)) {
       writer.write(" ");
-      writer.write(writeNumber(coordinate.z));
+      writer.write(writeNumber(seq.getM(i), formatter));
     }
   }
 
@@ -541,65 +754,67 @@ public class WKTWriter
    *@return    the <code>double</code> as a <code>String</code>, not in
    *      scientific notation
    */
-  private String writeNumber(double d) {
+  private static String writeNumber(double d, DecimalFormat formatter) {
     return formatter.format(d);
   }
 
   /**
-   *  Converts a <code>LineString</code> to &lt;LineString Text&gt; format, then
-   *  appends it to the writer.
+   * Appends additional ordinate information. This function may
+   * <ul>
+   *   <li>append 'Z' if in {@code outputOrdinates} the
+   *   {@link Ordinate#Z} value is included
+   *   </li>
+   *   <li>append 'M' if in {@code outputOrdinates} the
+   *   {@link Ordinate#M} value is included
+   *   </li>
+   *   <li> append 'ZM' if in {@code outputOrdinates} the
+   *   {@link Ordinate#Z} and
+   *   {@link Ordinate#M} values are included/li>
+   * </ul>
    *
-   *@param  lineString  the <code>LineString</code> to process
-   *@param  writer      the output writer to append to
+   * @param outputOrdinates  a bit-pattern of ordinates to write.
+   * @param writer         the output writer to append to.
+   * @throws IOException   if an error occurs while using the writer.
    */
-  private void appendSequenceText(CoordinateSequence seq, int level, boolean doIndent, Writer writer)
+  private void appendOrdinateText(EnumSet<Ordinate> outputOrdinates, Writer writer) throws IOException {
+
+    if (outputOrdinates.contains(Ordinate.Z))
+      writer.append('Z');
+    if (outputOrdinates.contains(Ordinate.M))
+      writer.append('M');
+  }
+
+  /**
+   *  Appends all members of a <code>CoordinateSequence</code> to the stream. Each {@code Coordinate} is separated from
+   *  another using a colon, the ordinates of a {@code Coordinate} are separated by a space.
+   *
+   * @param  seq             the <code>CoordinateSequence</code> to process
+   * @param  useFormatting   flag indicating that
+   * @param  level           the indentation level
+   * @param  indentFirst     flag indicating that the first {@code Coordinate} of the sequence should be indented for
+   *                         better visibility
+   * @param  writer          the output writer to append to
+   * @param  formatter       the formatter to use for writing ordinate values.
+   */
+  private void appendSequenceText(CoordinateSequence seq, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+                                  int level, boolean indentFirst, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (seq.size() == 0) {
       writer.write("EMPTY");
     }
     else {
-      if (doIndent) indent(level, writer);
+      if (indentFirst) indent(useFormatting, level, writer);
       writer.write("(");
       for (int i = 0; i < seq.size(); i++) {
         if (i > 0) {
           writer.write(", ");
           if (coordsPerLine > 0
               && i % coordsPerLine == 0) {
-            indent(level + 1, writer);
+            indent(useFormatting, level + 1, writer);
           }
         }
-        appendCoordinate(seq, i, writer);
-      }
-      writer.write(")");
-    }
-  }
-
-  /**
-   *  Converts a <code>LineString</code> to &lt;LineString Text&gt; format, then
-   *  appends it to the writer.
-   *
-   *@param  lineString  the <code>LineString</code> to process
-   *@param  writer      the output writer to append to
-   */
-  private void appendLineStringText(LineString lineString, int level, boolean doIndent, Writer writer)
-    throws IOException
-  {
-    if (lineString.isEmpty()) {
-      writer.write("EMPTY");
-    }
-    else {
-      if (doIndent) indent(level, writer);
-      writer.write("(");
-      for (int i = 0; i < lineString.getNumPoints(); i++) {
-        if (i > 0) {
-          writer.write(", ");
-          if (coordsPerLine > 0
-              && i % coordsPerLine == 0) {
-            indent(level + 1, writer);
-          }
-        }
-        appendCoordinate(lineString.getCoordinateN(i), writer);
+        appendCoordinate(seq, outputOrdinates, i, writer, formatter);
       }
       writer.write(")");
     }
@@ -609,22 +824,31 @@ public class WKTWriter
    *  Converts a <code>Polygon</code> to &lt;Polygon Text&gt; format, then
    *  appends it to the writer.
    *
-   *@param  polygon  the <code>Polygon</code> to process
-   *@param  writer   the output writer to append to
+   * @param  polygon         the <code>Polygon</code> to process
+   * @param  useFormatting   flag indicating that
+   * @param  level           the indentation level
+   * @param  indentFirst     flag indicating that the first {@code Coordinate} of the sequence should be indented for
+   *                         better visibility
+   * @param  writer          the output writer to append to
+   * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendPolygonText(Polygon polygon, int level, boolean indentFirst, Writer writer)
+  private void appendPolygonText(
+          Polygon polygon, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, boolean indentFirst, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (polygon.isEmpty()) {
       writer.write("EMPTY");
     }
     else {
-      if (indentFirst) indent(level, writer);
+      if (indentFirst) indent(useFormatting, level, writer);
       writer.write("(");
-      appendLineStringText(polygon.getExteriorRing(), level, false, writer);
+      appendSequenceText(polygon.getExteriorRing().getCoordinateSequence(), outputOrdinates,
+              useFormatting, level, false, writer, formatter);
       for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
         writer.write(", ");
-        appendLineStringText(polygon.getInteriorRingN(i), level + 1, true, writer);
+        appendSequenceText(polygon.getInteriorRingN(i).getCoordinateSequence(), outputOrdinates,
+              useFormatting,level + 1,true, writer, formatter);
       }
       writer.write(")");
     }
@@ -634,10 +858,15 @@ public class WKTWriter
    *  Converts a <code>MultiPoint</code> to &lt;MultiPoint Text&gt; format, then
    *  appends it to the writer.
    *
-   *@param  multiPoint  the <code>MultiPoint</code> to process
-   *@param  writer      the output writer to append to
+   * @param  multiPoint      the <code>MultiPoint</code> to process
+   * @param  useFormatting   flag indicating that
+   * @param  level           the indentation level
+   * @param  writer          the output writer to append to
+   * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendMultiPointText(MultiPoint multiPoint, int level, Writer writer)
+  private void appendMultiPointText(
+          MultiPoint multiPoint, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (multiPoint.isEmpty()) {
@@ -648,11 +877,10 @@ public class WKTWriter
       for (int i = 0; i < multiPoint.getNumGeometries(); i++) {
         if (i > 0) {
           writer.write(", ");
-          indentCoords(i, level + 1, writer);
+          indentCoords(useFormatting, i, level + 1, writer);
         }
-        writer.write("(");
-        appendCoordinate(((Point) multiPoint.getGeometryN(i)).getCoordinate(), writer);
-        writer.write(")");
+        appendSequenceText(((Point) multiPoint.getGeometryN(i)).getCoordinateSequence(),
+                outputOrdinates, useFormatting, level, false, writer, formatter);
      }
       writer.write(")");
     }
@@ -662,11 +890,16 @@ public class WKTWriter
    *  Converts a <code>MultiLineString</code> to &lt;MultiLineString Text&gt;
    *  format, then appends it to the writer.
    *
-   *@param  multiLineString  the <code>MultiLineString</code> to process
-   *@param  writer           the output writer to append to
+   * @param  multiLineString  the <code>MultiLineString</code> to process
+   * @param  useFormatting    flag indicating that
+   * @param  level            the indentation level
+   * //@param  indentFirst      flag indicating that the first {@code Coordinate} of the sequence should be indented for
+   * //                         better visibility
+   * @param  writer           the output writer to append to
+   * @param  formatter        the formatter to use for writing ordinate values.
    */
-  private void appendMultiLineStringText(MultiLineString multiLineString, int level, boolean indentFirst,
-      Writer writer)
+  private void appendMultiLineStringText(MultiLineString multiLineString, EnumSet<Ordinate> outputOrdinates,
+           boolean useFormatting, int level, /*boolean indentFirst, */Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (multiLineString.isEmpty()) {
@@ -674,7 +907,7 @@ public class WKTWriter
     }
     else {
       int level2 = level;
-      boolean doIndent = indentFirst;
+      boolean doIndent = false;
       writer.write("(");
       for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
         if (i > 0) {
@@ -682,7 +915,8 @@ public class WKTWriter
           level2 = level + 1;
           doIndent = true;
         }
-        appendLineStringText((LineString) multiLineString.getGeometryN(i), level2, doIndent, writer);
+        appendSequenceText(((LineString) multiLineString.getGeometryN(i)).getCoordinateSequence(),
+                outputOrdinates, useFormatting, level2, doIndent, writer, formatter);
       }
       writer.write(")");
     }
@@ -692,10 +926,15 @@ public class WKTWriter
    *  Converts a <code>MultiPolygon</code> to &lt;MultiPolygon Text&gt; format,
    *  then appends it to the writer.
    *
-   *@param  multiPolygon  the <code>MultiPolygon</code> to process
-   *@param  writer        the output writer to append to
+   * @param  multiPolygon  the <code>MultiPolygon</code> to process
+   * @param  useFormatting   flag indicating that
+   * @param  level           the indentation level
+   * @param  writer          the output writer to append to
+   * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendMultiPolygonText(MultiPolygon multiPolygon, int level, Writer writer)
+  private void appendMultiPolygonText(
+          MultiPolygon multiPolygon, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (multiPolygon.isEmpty()) {
@@ -711,7 +950,8 @@ public class WKTWriter
           level2 = level + 1;
           doIndent = true;
         }
-        appendPolygonText((Polygon) multiPolygon.getGeometryN(i), level2, doIndent, writer);
+        appendPolygonText((Polygon) multiPolygon.getGeometryN(i), outputOrdinates,
+                useFormatting, level2, doIndent, writer, formatter);
       }
       writer.write(")");
     }
@@ -721,11 +961,15 @@ public class WKTWriter
    *  Converts a <code>GeometryCollection</code> to &lt;GeometryCollectionText&gt;
    *  format, then appends it to the writer.
    *
-   *@param  geometryCollection  the <code>GeometryCollection</code> to process
-   *@param  writer              the output writer to append to
+   * @param  geometryCollection  the <code>GeometryCollection</code> to process
+   * @param  useFormatting   flag indicating that
+   * @param  level           the indentation level
+   * @param  writer          the output writer to append to
+   * @param  formatter       the formatter to use for writing ordinate values.
    */
-  private void appendGeometryCollectionText(GeometryCollection geometryCollection, int level,
-      Writer writer)
+  private void appendGeometryCollectionText(
+          GeometryCollection geometryCollection, EnumSet<Ordinate> outputOrdinates, boolean useFormatting,
+          int level, Writer writer, DecimalFormat formatter)
     throws IOException
   {
     if (geometryCollection.isEmpty()) {
@@ -739,22 +983,23 @@ public class WKTWriter
           writer.write(", ");
           level2 = level + 1;
         }
-        appendGeometryTaggedText(geometryCollection.getGeometryN(i), level2, writer);
+        appendGeometryTaggedText(geometryCollection.getGeometryN(i), outputOrdinates,
+                useFormatting, level2, writer, formatter);
       }
       writer.write(")");
     }
   }
 
-  private void indentCoords(int coordIndex,  int level, Writer writer)
+  private void indentCoords(boolean useFormatting, int coordIndex,  int level, Writer writer)
     throws IOException
   {
     if (coordsPerLine <= 0
         || coordIndex % coordsPerLine != 0)
       return;
-    indent(level, writer);
+    indent(useFormatting, level, writer);
   }
 
-  private void indent(int level, Writer writer)
+  private void indent(boolean useFormatting, int level, Writer writer)
     throws IOException
   {
     if (! useFormatting || level <= 0)
@@ -764,7 +1009,5 @@ public class WKTWriter
       writer.write(indentTabStr);
     }
   }
-
-
 }
 

@@ -345,9 +345,7 @@ public class SVGWriter
       PrecisionModel precisionModel)
     throws IOException
   {
-      writer.write("(");
-      appendCoordinate(coordinate, writer);
-      writer.write(")");
+    writer.write("<circle cx='" + coordinate.x + "' cy='" + coordinate.y + "' r='1' />\n");
   }
 
   /**
@@ -374,9 +372,9 @@ public class SVGWriter
     throws IOException
   {
     writer.write(writeNumber(coordinate.x) + " " + writeNumber(coordinate.y));
-    if (outputDimension >= 3 && ! Double.isNaN(coordinate.z)) {
+    if (outputDimension >= 3 && ! Double.isNaN(coordinate.getZ())) {
       writer.write(" ");
-      writer.write(writeNumber(coordinate.z));
+      writer.write(writeNumber(coordinate.getZ()));
     }
   }
 
@@ -505,20 +503,16 @@ public class SVGWriter
     throws IOException
   {
     if (multiPoint.isEmpty()) {
-      writer.write("EMPTY");
+      writer.write(" ");
     }
     else {
-      writer.write("(");
+      int level2 = level;
       for (int i = 0; i < multiPoint.getNumGeometries(); i++) {
         if (i > 0) {
-          writer.write(", ");
-          indentCoords(i, level + 1, writer);
+          level2 = level + 1;
         }
-        writer.write("(");
-        appendCoordinate(((Point) multiPoint.getGeometryN(i)).getCoordinate(), writer);
-        writer.write(")");
-     }
-      writer.write(")");
+        appendPoint(multiPoint.getGeometryN(i).getCoordinate(), level2, writer, multiPoint.getPrecisionModel());
+      }
     }
   }
 

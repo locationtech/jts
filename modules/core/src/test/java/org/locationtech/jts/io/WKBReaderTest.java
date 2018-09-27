@@ -17,6 +17,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.locationtech.jts.geom.impl.PackedCoordinateSequence;
+import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 
 
 /**
@@ -33,6 +35,12 @@ public class WKBReaderTest  extends TestCase
 
   private GeometryFactory geomFactory = new GeometryFactory();
   private WKTReader rdr = new WKTReader(geomFactory);
+  private WKTReader rdrM =
+          new WKTReader(new GeometryFactory(PackedCoordinateSequenceFactory.DOUBLE_FACTORY));
+
+  public WKBReaderTest(String name) {
+    super(name);
+  }
 
   public void testShortPolygons() throws ParseException
   {
@@ -41,8 +49,6 @@ public class WKBReaderTest  extends TestCase
     // two point
     checkWKBGeometry("000000000300000001000000024059000000000000406900000000000040590000000000004069000000000000", "POLYGON ((100 200, 100 200, 100 200, 100 200))");
   }
-
-  public WKBReaderTest(String name) { super(name); }
 
   public void testSinglePointLineString() throws ParseException
   {
@@ -193,8 +199,14 @@ public class WKBReaderTest  extends TestCase
     WKBReader wkbReader = new WKBReader(geomFactory);
     byte[] wkb = WKBReader.hexToBytes(wkbHex);
     Geometry g2 = wkbReader.read(wkb);
-    
-    Geometry expected = rdr.read(expectedWKT);
+
+    WKTReader useRdr = rdr;
+    if (expectedWKT.contains("ZM"))
+      useRdr = rdrM;
+    else if (expectedWKT.contains("M(") || expectedWKT.contains("M ("))
+      useRdr = rdrM;
+
+    Geometry expected = useRdr.read(expectedWKT);
     
    boolean isEqual = (expected.compareTo(g2, comp2) == 0);
     if (!isEqual) {System.out.println(g2);System.out.println(expected);}

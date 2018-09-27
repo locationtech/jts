@@ -55,4 +55,22 @@ public interface CoordinateSequenceFactory
    */
   CoordinateSequence create(int size, int dimension);
 
+  /**
+   * Creates a {@link CoordinateSequence} of the specified size and dimension with measure support.
+   * For this to be useful, the {@link CoordinateSequence} implementation must
+   * be mutable.
+   * <p>
+   * If the requested dimension or measures are larger than the CoordinateSequence implementation
+   * can provide, then a sequence of maximum possible dimension should be created.
+   * An error should not be thrown.
+   *
+   * @param size the number of coordinates in the sequence
+   * @param dimension the dimension of the coordinates in the sequence (if user-specifiable,
+   * otherwise ignored)
+   * @param measures the number of measures of the coordinates in the sequence (if user-specifiable,
+   * otherwise ignored)
+   */
+  default CoordinateSequence create(int size, int dimension, int measures) {
+      return create(size, dimension);
+  }
 }

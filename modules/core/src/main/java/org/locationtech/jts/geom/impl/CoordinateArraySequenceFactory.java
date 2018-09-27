@@ -72,10 +72,29 @@ public final class CoordinateArraySequenceFactory
     if (dimension > 3)
       dimension = 3;
       //throw new IllegalArgumentException("dimension must be <= 3");
+    
     // handle bogus dimension
     if (dimension < 2)
-    	// TODO: change to dimension = 2  ???
-      return new CoordinateArraySequence(size);
+      dimension = 2;      
+    
     return new CoordinateArraySequence(size, dimension);
+  }
+  
+  public CoordinateSequence create(int size, int dimension, int measures) {
+    int spatial = dimension - measures;
+    
+    if (measures > 1) {
+      measures = 1; // clip measures
+      //throw new IllegalArgumentException("measures must be <= 1");
+    }
+    if ((spatial) > 3) {
+      spatial = 3; // clip spatial dimension
+      //throw new IllegalArgumentException("spatial dimension must be <= 3");
+    }
+    
+    if (spatial < 2)
+      spatial = 2; // handle bogus spatial dimension
+    
+    return new CoordinateArraySequence(size, spatial+measures, measures);
   }
 }

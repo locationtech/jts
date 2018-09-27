@@ -357,17 +357,11 @@ public class Polygon
     return copy();
   }
   
-  /**
-   * Creates and returns a full copy of this {@link Polygon} object.
-   * (including all coordinates contained by it).
-   *
-   * @return a copy of this instance
-   */
-  public Polygon copy() {
-    LinearRing shellCopy = shell.copy();
+  protected Polygon copyInternal() {
+    LinearRing shellCopy = (LinearRing) shell.copy();
     LinearRing[] holeCopies = new LinearRing[this.holes.length];
     for (int i = 0; i < holes.length; i++) {
-    	holeCopies[i] = holes[i].copy();
+    	holeCopies[i] = (LinearRing) holes[i].copy();
     }
     return new Polygon(shellCopy, holeCopies, factory);
   }
@@ -377,9 +371,9 @@ public class Polygon
   }
 
   public void normalize() {
-    normalize(shell, true);
+    shell = normalized(shell, true);
     for (int i = 0; i < holes.length; i++) {
-      normalize(holes[i], false);
+      holes[i] = normalized(holes[i], false);
     }
     Arrays.sort(holes);
   }
@@ -417,24 +411,26 @@ public class Polygon
     return Geometry.SORTINDEX_POLYGON;
   }
 
+  private LinearRing normalized(LinearRing ring, boolean clockwise) {
+    LinearRing res = (LinearRing) ring.copy();
+    normalize(res, clockwise);
+    return res;
+  }
+
   private void normalize(LinearRing ring, boolean clockwise) {
     if (ring.isEmpty()) {
       return;
     }
-    Coordinate[] uniqueCoordinates = new Coordinate[ring.getCoordinates().length - 1];
-    System.arraycopy(ring.getCoordinates(), 0, uniqueCoordinates, 0, uniqueCoordinates.length);
-    Coordinate minCoordinate = CoordinateArrays.minCoordinate(ring.getCoordinates());
-    CoordinateArrays.scroll(uniqueCoordinates, minCoordinate);
-    System.arraycopy(uniqueCoordinates, 0, ring.getCoordinates(), 0, uniqueCoordinates.length);
-    ring.getCoordinates()[uniqueCoordinates.length] = uniqueCoordinates[0];
-    if (Orientation.isCCW(ring.getCoordinates()) == clockwise) {
-      CoordinateArrays.reverse(ring.getCoordinates());
-    }
+
+    CoordinateSequence seq = ring.getCoordinateSequence();
+    int minCoordinateIndex = CoordinateSequences.minCoordinateIndex(seq, 0, seq.size()-2);
+    CoordinateSequences.scroll(seq, minCoordinateIndex, true);
+    if (Orientation.isCCW(seq) == clockwise)
+      CoordinateSequences.reverse(seq);
   }
 
-  public Geometry reverse()
-  {
-    Polygon poly = copy();
+  public Geometry reverse() {
+    Polygon poly = (Polygon) copy();
     poly.shell = (LinearRing) shell.copy().reverse();
     poly.holes = new LinearRing[holes.length];
     for (int i = 0; i < holes.length; i++) {

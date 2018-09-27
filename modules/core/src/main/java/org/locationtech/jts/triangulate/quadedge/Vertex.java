@@ -68,11 +68,11 @@ public class Vertex
     }
 
     public double getZ() {
-        return p.z;
+        return p.getZ();
     }
 
     public void setZ(double _z) {
-        p.z = _z;
+        p.setZ(_z);
     }
 
     public Coordinate getCoordinate() {
@@ -277,7 +277,7 @@ public class Vertex
     public Vertex midPoint(Vertex a) {
         double xm = (p.x + a.getX()) / 2.0;
         double ym = (p.y + a.getY()) / 2.0;
-        double zm = (p.z + a.getZ()) / 2.0;
+        double zm = (p.getZ() + a.getZ()) / 2.0;
         return new Vertex(xm, ym, zm);
     }
 
@@ -351,7 +351,7 @@ public class Vertex
         double dy = p.y - y0;
         double t = (d * dx - b * dy) / det;
         double u = (-c * dx + a * dy) / det;
-        double z = v0.z + t * (v1.z - v0.z) + u * (v2.z - v0.z);
+        double z = v0.getZ() + t * (v1.getZ() - v0.getZ()) + u * (v2.getZ() - v0.getZ());
         return z;
     }
 
@@ -366,8 +366,8 @@ public class Vertex
     public static double interpolateZ(Coordinate p, Coordinate p0, Coordinate p1) {
         double segLen = p0.distance(p1);
         double ptLen = p.distance(p0);
-        double dz = p1.z - p0.z;
-        double pz = p0.z + dz * (ptLen / segLen);
+        double dz = p1.getZ() - p0.getZ();
+        double pz = p0.getZ() + dz * (ptLen / segLen);
         return pz;
     }
 

@@ -3,12 +3,37 @@
     <parent>
         <groupId>org.locationtech.jts</groupId>
         <artifactId>jts-io</artifactId>
-        <version>1.15.1-SNAPSHOT</version>
+        <version>1.16.1-SNAPSHOT</version>
     </parent>
     <groupId>org.locationtech.jts.io</groupId>
     <artifactId>jts-io-common</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
     <packaging>jar</packaging>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                  <archive>
+                    <manifestEntries>
+                      <Automatic-Module-Name>org.locationtech.jts.io</Automatic-Module-Name>
+                    </manifestEntries>
+                    <manifestSections>
+                      <manifestSection>
+                        <name>org.locationtech.jts.io</name>
+                        <manifestEntries>
+                          <Sealed>true</Sealed>
+                        </manifestEntries>
+                      </manifestSection>
+                    </manifestSections>
+                  </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+
     <dependencies>
         <dependency>
             <groupId>com.googlecode.json-simple</groupId>

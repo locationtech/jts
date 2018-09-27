@@ -431,7 +431,7 @@ public class GeometryStrategies{
 				if(axis.length>1)
 					c.y = axis[1].doubleValue();
 				if(axis.length>2)
-					c.z = axis[2].doubleValue();
+					c.setZ(axis[2].doubleValue());
 				
 				return c;
 			}

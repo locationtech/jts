@@ -164,7 +164,7 @@ public class LengthIndexedLineTest
     LengthIndexedLine indexedLine = new LengthIndexedLine(linearGeom);
     double projIndex = indexedLine.project(new Coordinate(5, 5));
     Coordinate projPt = indexedLine.extractPoint(projIndex);
-    assertTrue(Double.isNaN(projPt.z ));  
+    assertTrue(Double.isNaN(projPt.getZ() ));  
   }
   
   private void checkExtractLine(String wkt, double start, double end, String expected)

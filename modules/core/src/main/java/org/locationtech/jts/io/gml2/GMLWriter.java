@@ -380,7 +380,7 @@ public class GMLWriter {
 		int dim = 2;
 
 		if (coords.length > 0) {
-			if (!(Double.isNaN(coords[0].z)))
+			if (!(Double.isNaN(coords[0].getZ())))
 				dim = 3;
 		}
 
@@ -399,7 +399,7 @@ public class GMLWriter {
 				writer.write(coordinateSeparator);
 				writer.write("" + coords[i].y);
 				writer.write(coordinateSeparator);
-				writer.write("" + coords[i].z);
+				writer.write("" + coords[i].getZ());
 			}
 			writer.write(tupleSeparator);
 

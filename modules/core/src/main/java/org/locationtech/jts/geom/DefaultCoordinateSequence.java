@@ -20,7 +20,7 @@ import java.io.Serializable;
  *
  * @version 1.7
  *
- * @deprecated no longer used
+ * @deprecated No longer used, recommend CoordinateArraySequence for an array backed implementation
  */
 class DefaultCoordinateSequence
     implements CoordinateSequence, Serializable
@@ -122,7 +122,7 @@ class DefaultCoordinateSequence
     switch (ordinateIndex) {
       case CoordinateSequence.X:  return coordinates[index].x;
       case CoordinateSequence.Y:  return coordinates[index].y;
-      case CoordinateSequence.Z:  return coordinates[index].z;
+      case CoordinateSequence.Z:  return coordinates[index].getZ();
     }
     return Double.NaN;
   }
@@ -134,7 +134,7 @@ class DefaultCoordinateSequence
     switch (ordinateIndex) {
       case CoordinateSequence.X:  coordinates[index].x = value; break;
       case CoordinateSequence.Y:  coordinates[index].y = value; break;
-      case CoordinateSequence.Z:  coordinates[index].z = value; break;
+      case CoordinateSequence.Z:  coordinates[index].setZ(value); break;
     }
   }
   /**

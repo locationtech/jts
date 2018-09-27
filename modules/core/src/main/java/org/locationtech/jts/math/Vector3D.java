@@ -35,10 +35,10 @@ public class Vector3D {
 	{
 		double ABx = B.x - A.x;
 		double ABy = B.y - A.y;
-		double ABz = B.z - A.z;
+		double ABz = B.getZ() - A.getZ();
 		double CDx = D.x - C.x;
 		double CDy = D.y - C.y;
-		double CDz = D.z - C.z;
+		double CDz = D.getZ() - C.getZ();
 		return ABx*CDx + ABy*CDy + ABz*CDz;
 	}
 
@@ -71,7 +71,7 @@ public class Vector3D {
 	public Vector3D(Coordinate v) {
 		x = v.x;
 		y = v.y;
-		z = v.z;
+		z = v.getZ();
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class Vector3D {
 	 * @return the dot product of the vectors
 	 */
 	public static double dot(Coordinate v1, Coordinate v2) {
-		return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+		return v1.x * v2.x + v1.y * v2.y + v1.getZ() * v2.getZ();
 	}
 
 	private double x;
@@ -92,7 +92,7 @@ public class Vector3D {
 	public Vector3D(Coordinate from, Coordinate to) {
 		x = to.x - from.x;
 		y = to.y - from.y;
-		z = to.z - from.z;
+		z = to.getZ() - from.getZ();
 	}
 
 	public Vector3D(double x, double y, double z) {
@@ -130,7 +130,7 @@ public class Vector3D {
 	}
 
 	public static double length(Coordinate v) {
-		return Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+		return Math.sqrt(v.x * v.x + v.y * v.y + v.getZ() * v.getZ());
 	}
 
 	public Vector3D normalize() {
@@ -146,7 +146,7 @@ public class Vector3D {
 
 	public static Coordinate normalize(Coordinate v) {
 		double len = length(v);
-		return new Coordinate(v.x / len, v.y / len, v.z / len);
+		return new Coordinate(v.x / len, v.y / len, v.getZ() / len);
 	}
 	  /**
 	   * Gets a string representation of this vector

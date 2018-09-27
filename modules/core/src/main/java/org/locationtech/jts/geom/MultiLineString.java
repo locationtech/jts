@@ -113,7 +113,7 @@ public class MultiLineString
     return getFactory().createMultiLineString(revLines);
   }
   
-  public MultiLineString copy() {
+  protected MultiLineString copyInternal() {
     LineString[] lineStrings = new LineString[this.geometries.length];
     for (int i = 0; i < lineStrings.length; i++) {
       lineStrings[i] = (LineString) this.geometries[i].copy();

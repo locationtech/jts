@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.locationtech.jts</groupId>
     <artifactId>jts</artifactId>
-    <version>1.15.1-SNAPSHOT</version>
+    <version>1.16.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>JTS Topology Suite</name>
@@ -20,13 +20,13 @@
 
     Setup for eclipse development:
        mvn eclipse:eclipse
-       
+
     To build with jts-ora:
        mvn install -Poracle
 
     To build with jts-sde:
        mvn install -Parcsde
-       
+
     To build the release (for Maven Central; committers only)
        mvn install -Drelease
     -->
@@ -38,6 +38,10 @@
         <jump.version>1.2</jump.version>
         <json-simple-version>1.1.1</json-simple-version>
         <sde-version>9.1</sde-version>
+
+        <!-- maven compiler target versions -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <!-- PROJECT INFORMATION -->

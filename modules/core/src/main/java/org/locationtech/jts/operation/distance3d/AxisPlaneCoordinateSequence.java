@@ -93,7 +93,7 @@ public class AxisPlaneCoordinateSequence implements CoordinateSequence {
 	public void getCoordinate(int index, Coordinate coord) {
 		coord.x = getOrdinate(index, X);
 		coord.y = getOrdinate(index, Y);
-		coord.z = getOrdinate(index, Z);
+		coord.setZ(getOrdinate(index, Z));
 	}
 
 	public double getX(int index) {

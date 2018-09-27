@@ -36,17 +36,17 @@ public class JTSVersion {
   /**
    * The minor version number.
    */
-  public static final int MINOR = 15;
+  public static final int MINOR = 16;
 
   /**
    * The patch version number.
    */
-  public static final int PATCH = 0;
+  public static final int PATCH = 1;
 
   /**
    * An optional string providing further release info (such as "alpha 1");
    */
-  private static final String releaseInfo = "";
+  private static final String releaseInfo = "SNAPSHOT";
 
   /**
    * Prints the current JTS version to stdout.

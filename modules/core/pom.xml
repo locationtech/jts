@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.locationtech.jts</groupId>
         <artifactId>jts-modules</artifactId>
-        <version>1.15.1-SNAPSHOT</version>
+        <version>1.16.1-SNAPSHOT</version>
     </parent>
     <artifactId>jts-core</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
@@ -13,9 +13,12 @@
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-				<version>3.0.2</version>
-                <!--configuration>
+		<version>3.0.2</version>
+                <configuration>
                   <archive>
+                    <manifestEntries>
+                      <Automatic-Module-Name>org.locationtech.jts</Automatic-Module-Name>
+                    </manifestEntries>
                     <manifestSections>
                       <manifestSection>
                         <name>org.locationtech.jts</name>
@@ -23,9 +26,9 @@
                           <Sealed>true</Sealed>
                         </manifestEntries>
                       </manifestSection>
-                     </manifestSections>
+                    </manifestSections>
                   </archive>
-                </configuration-->
+                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>

@@ -109,7 +109,7 @@ public class Segment
      */
     public double getStartZ() {
         Coordinate p = ls.getCoordinate(0);
-        return p.z;
+        return p.getZ();
     }
 
     /**
@@ -139,7 +139,7 @@ public class Segment
      */
     public double getEndZ() {
         Coordinate p = ls.getCoordinate(1);
-        return p.z;
+        return p.getZ();
     }
 
     /**

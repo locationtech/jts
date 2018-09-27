@@ -25,11 +25,43 @@ import org.locationtech.jts.math.MathUtil;
  * @version 1.7
  */
 public class CoordinateArrays {
-
   private final static Coordinate[] coordArrayType = new Coordinate[0];
 
   private CoordinateArrays() {}
-
+  
+  /**
+   * Determine dimension based on subclass of {@link Coordinate}.
+   * 
+   * @param pts supplied coordinates
+   * @return number of ordinates recorded
+   */
+  public static int dimension(Coordinate[] pts) {
+    if( pts == null || pts.length == 0) {
+      return 3; // unknown, assume default
+    }
+    int dimension = 0;
+    for(Coordinate coordinate : pts ) {
+      dimension = Math.max(dimension, Coordinates.dimension( coordinate ));
+    }
+    return dimension;
+  }
+  /**
+   * Determine number of measures based on subclass of {@link Coordinate}.
+   * 
+   * @param pts supplied coordinates
+   * @return number of measures recorded
+   */
+  public static int measures(Coordinate[] pts) {
+    if( pts == null || pts.length == 0) {
+      return 0; // unknown, assume default
+    }
+    int measures = 0;
+    for(Coordinate coordinate : pts ) {
+      measures = Math.max(measures, Coordinates.measures( coordinate ));
+    }
+    return measures;
+  }
+  
   /**
    * Tests whether an array of {@link Coordinate}s forms a ring,
    * by checking length and closure. 
@@ -212,7 +244,7 @@ public class CoordinateArrays {
   public static Coordinate[] copyDeep(Coordinate[] coordinates) {
     Coordinate[] copy = new Coordinate[coordinates.length];
     for (int i = 0; i < coordinates.length; i++) {
-      copy[i] = new Coordinate(coordinates[i]);
+      copy[i] = coordinates[i].copy();
     }
     return copy;
   }
@@ -231,7 +263,7 @@ public class CoordinateArrays {
    */
   public static void copyDeep(Coordinate[] src, int srcStart, Coordinate[] dest, int destStart, int length) {
     for (int i = 0; i < length; i++) {
-      dest[destStart + i] = new Coordinate(src[srcStart + i]);
+      dest[destStart + i] = src[srcStart + i].copy();
     }
   }
 

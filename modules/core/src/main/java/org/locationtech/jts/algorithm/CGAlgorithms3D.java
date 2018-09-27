@@ -29,12 +29,12 @@ public class CGAlgorithms3D
 	public static double distance(Coordinate p0, Coordinate p1)
 	{
 		// default to 2D distance if either Z is not set
-		if (Double.isNaN(p0.z) || Double.isNaN(p1.z))
+		if (Double.isNaN(p0.getZ()) || Double.isNaN(p1.getZ()))
 			return p0.distance(p1);
 		
 	    double dx = p0.x - p1.x;
 	    double dy = p0.y - p1.y;
-	    double dz = p0.z - p1.z;
+	    double dz = p0.getZ() - p1.getZ();
 	    return Math.sqrt(dx * dx + dy * dy + dz * dz);
 	}
 
@@ -58,10 +58,10 @@ public class CGAlgorithms3D
 	     *   0<r<1 P is interior to AB
 	     */
 
-	    double len2 = (B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y) + (B.z - A.z) * (B.z - A.z);
+	    double len2 = (B.x - A.x) * (B.x - A.x) + (B.y - A.y) * (B.y - A.y) + (B.getZ() - A.getZ()) * (B.getZ() - A.getZ());
 	    if (Double.isNaN(len2))
 	    	throw new IllegalArgumentException("Ordinates must not be NaN");
-	    double r = ((p.x - A.x) * (B.x - A.x) + (p.y - A.y) * (B.y - A.y) + (p.z - A.z) * (B.z - A.z))
+	    double r = ((p.x - A.x) * (B.x - A.x) + (p.y - A.y) * (B.y - A.y) + (p.getZ() - A.getZ()) * (B.getZ() - A.getZ()))
 	        / len2;
 
 	    if (r <= 0.0)
@@ -72,11 +72,11 @@ public class CGAlgorithms3D
 	    // compute closest point q on line segment
 	    double qx = A.x + r * (B.x - A.x);
 	    double qy = A.y + r * (B.y - A.y);
-	    double qz = A.z + r * (B.z - A.z);
+	    double qz = A.getZ() + r * (B.getZ() - A.getZ());
 	    // result is distance from p to q
 	    double dx = p.x - qx;
 	    double dy = p.y - qy;
-	    double dz = p.z - qz;
+	    double dz = p.getZ() - qz;
 	    return Math.sqrt(dx*dx + dy*dy + dz*dz);
 	}
 	
@@ -149,11 +149,11 @@ public class CGAlgorithms3D
 		 */
 		double x1 = A.x + s * (B.x - A.x);
 		double y1 = A.y + s * (B.y - A.y);
-		double z1 = A.z + s * (B.z - A.z);
+		double z1 = A.getZ() + s * (B.getZ() - A.getZ());
 
 		double x2 = C.x + t * (D.x - C.x);
 		double y2 = C.y + t * (D.y - C.y);
-		double z2 = C.z + t * (D.z - C.z);
+		double z2 = C.getZ() + t * (D.getZ() - C.getZ());
 		
 		// length (p1-p2)
 		return distance(new Coordinate(x1, y1, z1), new Coordinate(x2, y2, z2));

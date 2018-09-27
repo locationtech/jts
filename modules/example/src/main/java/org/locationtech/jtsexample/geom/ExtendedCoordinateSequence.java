@@ -86,7 +86,19 @@ public class ExtendedCoordinateSequence
    * @see org.locationtech.jts.geom.CoordinateSequence#getDimension()
    */
   public int getDimension() { return 4; }
-
+  
+  @Override
+  public int getMeasures()
+  {
+    return 1;
+  }
+  
+  @Override
+  public Coordinate createCoordinate()
+  {
+    return new ExtendedCoordinate();
+  }
+  
   public Coordinate getCoordinate(int i) {
     return coordinates[i];
   }
@@ -103,6 +115,8 @@ public class ExtendedCoordinateSequence
   public void getCoordinate(int index, Coordinate coord) {
     coord.x = coordinates[index].x;
     coord.y = coordinates[index].y;
+    coord.setZ( coordinates[index].getZ());
+    coord.setM( coordinates[index].getM());
   }
 
 
@@ -128,7 +142,7 @@ public class ExtendedCoordinateSequence
     switch (ordinateIndex) {
       case CoordinateSequence.X:  return coordinates[index].x;
       case CoordinateSequence.Y:  return coordinates[index].y;
-      case CoordinateSequence.Z:  return coordinates[index].z;
+      case CoordinateSequence.Z:  return coordinates[index].getZ();
       case CoordinateSequence.M:  return coordinates[index].getM();
     }
     return Double.NaN;
@@ -147,7 +161,7 @@ public class ExtendedCoordinateSequence
         coordinates[index].y = value;
         break;
       case CoordinateSequence.Z:  
-        coordinates[index].z = value;
+        coordinates[index].setZ(value);
         break;
       case CoordinateSequence.M:  
         coordinates[index].setM(value);

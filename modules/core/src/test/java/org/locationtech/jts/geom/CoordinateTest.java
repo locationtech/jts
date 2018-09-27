@@ -31,7 +31,7 @@ public class CoordinateTest extends TestCase
     Coordinate c = new Coordinate(350.2, 4566.8, 5266.3);
     assertEquals(c.x, 350.2);
     assertEquals(c.y, 4566.8);
-    assertEquals(c.z, 5266.3);
+    assertEquals(c.getZ(), 5266.3);
   }
   
   public void testConstructor2D() 
@@ -39,14 +39,14 @@ public class CoordinateTest extends TestCase
     Coordinate c = new Coordinate(350.2, 4566.8);
     assertEquals(c.x, 350.2);
     assertEquals(c.y, 4566.8);
-    assertEquals(c.z, Coordinate.NULL_ORDINATE);
+    assertEquals(c.getZ(), Coordinate.NULL_ORDINATE);
   }
   public void testDefaultConstructor() 
   {
     Coordinate c = new Coordinate();
     assertEquals(c.x, 0.0);
     assertEquals(c.y, 0.0);
-    assertEquals(c.z, Coordinate.NULL_ORDINATE);
+    assertEquals(c.getZ(), Coordinate.NULL_ORDINATE);
   }
   public void testCopyConstructor3D() 
   {
@@ -54,7 +54,7 @@ public class CoordinateTest extends TestCase
     Coordinate c = new Coordinate(orig);
     assertEquals(c.x, 350.2);
     assertEquals(c.y, 4566.8);
-    assertEquals(c.z, 5266.3);
+    assertEquals(c.getZ(), 5266.3);
   }
   public void testSetCoordinate() 
   {
@@ -63,7 +63,7 @@ public class CoordinateTest extends TestCase
     c.setCoordinate(orig);
     assertEquals(c.x, 350.2);
     assertEquals(c.y, 4566.8);
-    assertEquals(c.z, 5266.3);
+    assertEquals(c.getZ(), 5266.3);
   }
   public void testGetOrdinate() 
   {
@@ -163,6 +163,82 @@ public class CoordinateTest extends TestCase
     double distance = coord1.distance3D(coord2);
     assertEquals(distance, 229.128784747792, 0.000001);
   }
-
+  public void testCoordinateXY() {
+    Coordinate xy = new CoordinateXY();    
+    checkZUnsupported(xy);
+    checkMUnsupported(xy);
+    
+    xy = new CoordinateXY(1.0,1.0);        // 2D
+    Coordinate coord = new Coordinate(xy); // copy
+    assertEquals( xy, coord );
+    assertTrue( !xy.equalInZ(coord,0.000001) );    
+    
+    coord = new Coordinate(1.0,1.0,1.0); // 2.5d
+    xy = new CoordinateXY( coord ); // copy
+    assertEquals( xy, coord );
+    assertTrue( !xy.equalInZ(coord,0.000001) );        
+  }
+  public void testCoordinateXYM() {
+      Coordinate xym = new CoordinateXYM();
+      checkZUnsupported(xym);
+      
+      xym.setM(1.0);
+      assertEquals( 1.0, xym.getM());
+      
+      Coordinate coord = new Coordinate(xym); // copy
+      assertEquals( xym, coord );
+      assertTrue( !xym.equalInZ(coord,0.000001) );
+      
+      coord = new Coordinate(1.0,1.0,1.0); // 2.5d
+      xym = new CoordinateXYM( coord ); // copy
+      assertEquals( xym, coord );
+      assertTrue( !xym.equalInZ(coord,0.000001) ); 
+  }
+  public void testCoordinateXYZM() {
+      Coordinate xyzm = new CoordinateXYZM();
+      xyzm.setZ(1.0);
+      assertEquals( 1.0, xyzm.getZ());
+      xyzm.setM(1.0);
+      assertEquals( 1.0, xyzm.getM());
+      
+      Coordinate coord = new Coordinate(xyzm); // copy
+      assertEquals( xyzm, coord );
+      assertTrue( xyzm.equalInZ(coord,0.000001) );
+      assertTrue( Double.isNaN(coord.getM()));
+      
+      coord = new Coordinate(1.0,1.0,1.0); // 2.5d
+      xyzm = new CoordinateXYZM( coord ); // copy
+      assertEquals( xyzm, coord );
+      assertTrue( xyzm.equalInZ(coord,0.000001) ); 
+  }
+  
+  /**
+   * Confirm the z field is not supported by getZ and setZ.
+   */
+  private void checkZUnsupported(Coordinate coord )
+  {
+      try {
+          coord.setZ(0.0);
+          fail(coord.getClass().getSimpleName() + " does not support Z");        
+      }
+      catch(IllegalArgumentException expected) {        
+      }       
+      assertTrue( Double.isNaN(coord.z));
+      coord.z = 0.0;                      // field still public
+      assertTrue( "z field not used", Double.isNaN(coord.getZ())); // but not used
+  }
+  /**
+   * Confirm the z field is not supported by getZ and setZ.
+   */
+  private void checkMUnsupported(Coordinate coord )
+  {
+      try {
+          coord.setM(0.0);
+          fail(coord.getClass().getSimpleName() + " does not support M");        
+      }
+      catch(IllegalArgumentException expected) {        
+      }
+      assertTrue( Double.isNaN(coord.getM()));      
+  }
 
 }

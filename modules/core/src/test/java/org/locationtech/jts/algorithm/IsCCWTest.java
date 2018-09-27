@@ -12,7 +12,9 @@
 package org.locationtech.jts.algorithm;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
@@ -36,13 +38,20 @@ public class IsCCWTest extends TestCase {
   public void testCCW() throws Exception
   {
     Coordinate[] pts = getCoordinates("POLYGON ((60 180, 140 240, 140 240, 140 240, 200 180, 120 120, 60 180))");
-    assertEquals(Orientation.isCCW(pts), false);
+    assertEquals(false, Orientation.isCCW(pts));
+    CoordinateSequence seq = getCoordinateSequence("POLYGON ((60 180, 140 240, 140 240, 140 240, 200 180, 120 120, 60 180))");
+    assertEquals(false, Orientation.isCCW(seq));
 
     Coordinate[] pts2 = getCoordinates("POLYGON ((60 180, 140 120, 100 180, 140 240, 60 180))");
-    assertEquals(Orientation.isCCW(pts2), true);
+    assertEquals(true, Orientation.isCCW(pts2));
+    CoordinateSequence seq2 = getCoordinateSequence("POLYGON ((60 180, 140 120, 100 180, 140 240, 60 180))");
+    assertEquals(true, Orientation.isCCW(seq2));
+
     // same pts list with duplicate top point - check that isCCW still works
-    Coordinate[] pts2x = getCoordinates("POLYGON ((60 180, 140 120, 100 180, 140 240, 140 240, 60 180))");
-    assertEquals(Orientation.isCCW(pts2x), true);
+    Coordinate[] pts2x = getCoordinates(             "POLYGON ((60 180, 140 120, 100 180, 140 240, 140 240, 60 180))");
+    assertEquals(true, Orientation.isCCW(pts2x) );
+    CoordinateSequence seq2x = getCoordinateSequence("POLYGON ((60 180, 140 120, 100 180, 140 240, 140 240, 60 180))");
+    assertEquals(true, Orientation.isCCW(seq2x) );
   }
 
   private Coordinate[] getCoordinates(String wkt)
@@ -50,5 +59,14 @@ public class IsCCWTest extends TestCase {
   {
     Geometry geom = reader.read(wkt);
     return geom.getCoordinates();
+  }
+  private CoordinateSequence getCoordinateSequence(String wkt)
+          throws ParseException
+  {
+    Geometry geom = reader.read(wkt);
+    if (geom.getGeometryType() != "Polygon")
+      throw new IllegalArgumentException("wkt");
+    Polygon poly = (Polygon)geom;
+    return ((Polygon) geom).getExteriorRing().getCoordinateSequence();
   }
 }

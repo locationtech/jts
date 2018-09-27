@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2018 Vivid Solutions
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -45,22 +45,89 @@ import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 public interface CoordinateSequence
     extends Cloneable
 {
-  /**
-   * Standard ordinate index values
-   */
+  /** Standard ordinate index value for, where X is 0 */
   int X = 0;
+
+  /** Standard ordinate index value for, where Y is 1 */
   int Y = 1;
+  
+  /**
+   * Standard ordinate index value for, where Z is 2.
+   *
+   * <p>This constant assumes XYZM coordinate sequence definition, please check this assumption
+   * using {@link #getDimension()} and {@link #getMeasures()} before use.
+   */
+  /** Standard z-ordinate index */
   int Z = 2;
+
+  /**
+   * Standard ordinate index value for, where M is 3.
+   *
+   * <p>This constant assumes XYZM coordinate sequence definition, please check this assumption
+   * using {@link #getDimension()} and {@link #getMeasures()} before use.
+   */
   int M = 3;
 
   /**
-   * Returns the dimension (number of ordinates in each coordinate)
-   * for this sequence.
+   * Returns the dimension (number of ordinates in each coordinate) for this sequence.
+   *
+   * <p>This total includes any measures, indicated by non-zero {@link #getMeasures()}.
    *
    * @return the dimension of the sequence.
    */
   int getDimension();
 
+  /**
+   * Returns the number of measures included in {@link #getDimension()} for each coordinate for this
+   * sequence.
+   * 
+   * For a measured coordinate sequence a non-zero value is returned.
+   * <ul>
+   * <li>For XY sequence measures is zero</li>
+   * <li>For XYM sequence measure is one<li>
+   * <li>For XYZ sequence measure is zero</li>
+   * <li>For XYZM sequence measure is one</li>
+   * <li>Values greater than one are supported</li>
+   * </ul>
+   *
+   * @return the number of measures included in dimension
+   */
+  default int getMeasures() {
+    return 0;
+  }
+  
+  /**
+   * Checks {@link #getDimension()} and {@link #getMeasures()} to determine if {@link #getZ(int)}
+   * is supported.
+   * 
+   * @return true if {@link #getZ(int)} is supported.
+   */
+  default boolean hasZ() {
+      return (getDimension()-getMeasures()) > 2;
+  }
+  
+  /**
+   * Checks {@link #getMeasures()} to determine if {@link #getM(int)}
+   * is supported.
+   * 
+   * @return true if {@link #getM(int)} is supported.
+   */
+  default boolean hasM() {
+      return getDimension()>2 && getMeasures() > 0;
+  }
+
+  /**
+   * Creates a coordinate for use in this sequence.
+   * <p>
+   * The coordinate is created supporting the same number of {@link #getDimension()} and {@link #getMeasures()}
+   * as this sequence and is suitable for use with {@link #getCoordinate(int, Coordinate)}.
+   * </p>
+   * @return coordinate for use with this sequence
+   */
+  default Coordinate createCoordinate() {
+    return Coordinates.create(getDimension(), getMeasures());
+  }
+  
   /**
    * Returns (possibly a copy of) the i'th coordinate in this sequence.
    * Whether or not the Coordinate returned is the actual underlying
@@ -113,10 +180,44 @@ public interface CoordinateSequence
   double getY(int index);
 
   /**
+   * Returns ordinate Z of the specified coordinate if available.
+   * 
+   * @param index
+   * @return the value of the Z ordinate in the index'th coordinate, or Double.NaN if not defined.
+   */
+  default double getZ(int index)
+  {
+    if (hasZ()) {
+        return getOrdinate(index, 2);
+    } else {
+        return Double.NaN;
+    }
+  }
+
+  /**
+   * Returns ordinate M of the specified coordinate if available.
+   * 
+   * @param index
+   * @return the value of the M ordinate in the index'th coordinate, or Double.NaN if not defined.
+   */
+  default double getM(int index)
+  {
+    if (hasM()) {
+      final int mIndex = getDimension()-getMeasures();
+      return getOrdinate( index, mIndex );
+    }
+    else {
+        return Double.NaN;
+    }
+  }
+  
+  /**
    * Returns the ordinate of a coordinate in this sequence.
    * Ordinate indices 0 and 1 are assumed to be X and Y.
+   * <p>
    * Ordinates indices greater than 1 have user-defined semantics
-   * (for instance, they may contain other dimensions or measure values).
+   * (for instance, they may contain other dimensions or measure
+   * values as described by {@link #getDimension()} and {@link #getMeasures()}).
    *
    * @param index  the coordinate index in the sequence
    * @param ordinateIndex the ordinate index in the coordinate (in range [0, dimension-1])
@@ -164,7 +265,7 @@ public interface CoordinateSequence
    * Called by Geometry#clone.
    *
    * @return a copy of the coordinate sequence containing copies of all points
-   * @deprecated
+   * @deprecated Recommend {@link #copy()} 
    */
   Object clone();
   

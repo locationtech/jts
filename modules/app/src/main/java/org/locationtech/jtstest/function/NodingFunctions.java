@@ -27,7 +27,7 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.noding.BasicSegmentString;
 import org.locationtech.jts.noding.FastNodingValidator;
-import org.locationtech.jts.noding.InteriorIntersectionFinder;
+import org.locationtech.jts.noding.NodingIntersectionFinder;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
@@ -92,7 +92,7 @@ public class NodingFunctions
 	  
   public static int interiorIntersectionCount(Geometry geom)
   {
-    InteriorIntersectionFinder intCounter = InteriorIntersectionFinder
+    NodingIntersectionFinder intCounter = NodingIntersectionFinder
     		.createIntersectionCounter( new RobustLineIntersector() );
     Noder noder = new MCIndexNoder( intCounter );
     noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );

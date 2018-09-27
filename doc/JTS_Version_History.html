@@ -22,6 +22,27 @@ This document lists the change history of release versions of the
 The JTS distributions for older versions can be obtained at the
 <a href='http://sourceforge.net/projects/jts-topo-suite/'><b>SourceForge JTS site</b></a>.
 </p>
+
+<!-- ================================================================ -->
+<hr size='4' color='darkblue'>
+<h2>Version 1.16</h2>
+
+<i>Release Date:  September 10, 2018</i>
+
+<h3>API Changes</h3>
+<ul>
+<li>Added XYZM support to <code>CoordinateSequence</code> and <code>CoordinateSequenceFactory</code> with <code>getDimension()</code> and <code>getMeasures()</code> information.</li>
+<li>Introduced <code>Coordinate</code> methods for <code>getX()</code>, <code>getY()</code>, <code>getZ()</code>, and <code>getM()</code>.</li>
+<li>Deprecated <code>Coordiante.z</code field, use <code>Coordinate.getZ()</code>.
+<li><code>Coordinate</code> subclasses introduced for XY, XYM, XYZM representations.</li>
+</ul>
+
+<h3>Functionality Improvements</h3>
+<ul>
+<li>Removed <code>PackedCoordinateSequenceFactory</code> constructor used to supply a default dimension, use appropriate <code>create( size, dimension )</code> instead.</li>
+<li>WKTReader and WKTWriter support for measures</li>
+</ul>
+
 <!-- ================================================================ -->
 <hr size='4' color='darkblue'>
 <h2>Version 1.15</h2>

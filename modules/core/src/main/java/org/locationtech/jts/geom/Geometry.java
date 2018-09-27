@@ -1335,21 +1335,22 @@ public abstract class Geometry
       return OverlayOp.createEmptyResult(OverlayOp.INTERSECTION, this, other, factory);
 
     // compute for GCs
+    // (An inefficient algorithm, but will work)
+    // TODO: improve efficiency of computation for GCs
     if (this.isGeometryCollection()) {
       final Geometry g2 = other;
       return GeometryCollectionMapper.map(
           (GeometryCollection) this,
           new GeometryMapper.MapOp() {
-        public Geometry map(Geometry g) {
-          return g.intersection(g2);
-        }
+            public Geometry map(Geometry g) {
+              return g.intersection(g2);
+            }
       });
     }
-//    if (isGeometryCollection(other))
-//      return other.intersection(this);
-    
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
+
+    // No longer needed since GCs are handled by previous code
+    //checkNotGeometryCollection(this);
+    //checkNotGeometryCollection(other);
     return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.INTERSECTION);
   }
 
@@ -1647,15 +1648,30 @@ public abstract class Geometry
   }
   
   /**
-   * Creates and returns a full copy of this {@link Geometry} object
-   * (including all coordinates contained by it).
-   * Subclasses are responsible for implementing this method and copying
-   * their internal data.
+   * Creates a deep copy of this {@link Geometry} object.
+   * Coordinate sequences contained in it are copied.
+   * All instance fields are copied (i.e. the <tt>SRID</tt> and <tt>userData</tt>).
+   * <p>
+   * <b>NOTE:</b> the userData object reference (if present) is copied,
+   * but the value itself is not copied.
+   * If a deep copy is required this must be performed by the caller. 
    *
-   * @return a clone of this instance
+   * @return a deep copy of this geometry
    */
-  abstract public Geometry copy();
-
+  public Geometry copy() {
+    Geometry copy = copyInternal();
+    copy.SRID = this.SRID;
+    copy.userData = this.userData; 
+    return copy;
+  }
+  
+  /**
+   * An internal method to copy subclass-specific geometry data.
+   * 
+   * @return a copy of the target geometry object.
+   */
+  protected abstract Geometry copyInternal();
+  
   /**
    *  Converts this <code>Geometry</code> to <b>normal form</b> (or <b>
    *  canonical form</b> ). Normal form is a unique representation for <code>Geometry</code>
@@ -1794,16 +1810,16 @@ public abstract class Geometry
   }
 
   /**
-   *  Throws an exception if <code>g</code>'s class is <code>GeometryCollection</code>
-   *  . (Its subclasses do not trigger an exception).
+   *  Throws an exception if <code>g</code>'s type is a <code>GeometryCollection</code>.
+   *  (Its subclasses do not trigger an exception).
    *
-   *@param  g                          the <code>Geometry</code> to check
+   *@param  g the <code>Geometry</code> to check
    *@throws  IllegalArgumentException  if <code>g</code> is a <code>GeometryCollection</code>
    *      but not one of its subclasses
    */
-  protected void checkNotGeometryCollection(Geometry g) {
-    if (isGeometryCollection()) {
-      throw new IllegalArgumentException("This method does not support GeometryCollection arguments");
+  protected static void checkNotGeometryCollection(Geometry g) {
+    if (g.isGeometryCollection()) {
+      throw new IllegalArgumentException("Operation does not support GeometryCollection arguments");
     }
   }
 

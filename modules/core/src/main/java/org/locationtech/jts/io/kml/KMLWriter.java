@@ -356,7 +356,7 @@ public class KMLWriter
     buf.append(COORDINATE_SEPARATOR);
     write(p.y, buf);
 
-    double z = p.z;
+    double z = p.getZ();
     // if altitude was specified directly, use it
     if (!Double.isNaN(zVal))
       z = zVal;
