@@ -842,7 +842,7 @@ public class AffineTransformation
    */
   public AffineTransformation rotate(double sinTheta, double cosTheta, double x, double y)
   {
-    compose(rotationInstance(sinTheta, cosTheta));
+    compose(rotationInstance(sinTheta, cosTheta, x, y));
     return this;
   }
   
