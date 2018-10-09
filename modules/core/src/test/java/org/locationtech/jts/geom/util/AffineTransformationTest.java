@@ -43,10 +43,29 @@ public class AffineTransformationTest
     checkTransformation(-10, -10, t, 10, -10);
   }
 
+  public void testRotate2()
+      throws IOException, ParseException
+  {
+    AffineTransformation t = AffineTransformation.rotationInstance(1, 0);
+    checkTransformation(10, 0, t, 0, 10);
+    checkTransformation(0, 10, t, -10, 0);
+    checkTransformation(-10, -10, t, 10, -10);
+  }
+
   public void testRotateAroundPoint1()
   throws IOException, ParseException
   {
     AffineTransformation t = AffineTransformation.rotationInstance(Math.PI/2, 1, 1);
+    checkTransformation(1, 1, t, 1, 1);
+    checkTransformation(10, 0, t, 2, 10);
+    checkTransformation(0, 10, t, -8, 0);
+    checkTransformation(-10, -10, t, 12, -10);
+  }
+
+  public void testRotateAroundPoint2()
+      throws IOException, ParseException
+  {
+    AffineTransformation t = AffineTransformation.rotationInstance(1, 0, 1, 1);
     checkTransformation(1, 1, t, 1, 1);
     checkTransformation(10, 0, t, 2, 10);
     checkTransformation(0, 10, t, -8, 0);
