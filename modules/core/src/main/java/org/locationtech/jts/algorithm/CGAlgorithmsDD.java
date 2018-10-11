@@ -164,7 +164,7 @@ public class CGAlgorithmsDD
    * @param p2
    * @param q1
    * @param q2
-   * @return
+   * @return an intersection point if one exists
    */
   public static Coordinate intersection(
       Coordinate p1, Coordinate p2,
