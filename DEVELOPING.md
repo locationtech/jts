@@ -71,6 +71,15 @@ There are two kinds of unit tests:
 ### JUnit tests
 
 Used for verifying API code, internal data structures, and ancillary algorithms.
+These tests are written in Java.  
+This allows testing all parts of the codebase,
+and can provide richer error detection and reporting.
+However, the tests are not as readable or portable
+as the XML tests.
+
+* To run the unit tests in a module (`jts-core`):
+
+        mvn test -pl modules/core
 
 ### XML Tests
 
