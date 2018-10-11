@@ -161,6 +161,11 @@ public abstract class AbstractSTRtree implements Serializable {
     return createHigherLevels(parentBoundables, level + 1);
   }
 
+  /**
+   * Gets the root node of the tree.
+   * 
+   * @return the root node
+   */
   public AbstractNode getRoot() 
   {
     build();
@@ -168,7 +173,9 @@ public abstract class AbstractSTRtree implements Serializable {
   }
 
   /**
-   * Returns the maximum number of child nodes that a node may have
+   * Returns the maximum number of child nodes that a node may have.
+   * 
+   * @return the node capacity
    */
   public int getNodeCapacity() { return nodeCapacity; }
 

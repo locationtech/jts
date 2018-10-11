@@ -57,6 +57,8 @@ public abstract class AbstractNode implements Boundable, Serializable {
   /**
    * Returns either child {@link AbstractNode}s, or if this is a leaf node, real data (wrapped
    * in {@link ItemBoundable}s).
+   * 
+   * @return a list of the children
    */
   public List getChildBoundables() {
     return childBoundables;
@@ -89,6 +91,8 @@ public abstract class AbstractNode implements Boundable, Serializable {
   /**
    * Returns 0 if this node is a leaf, 1 if a parent of a leaf, and so on; the
    * root node will have the highest level
+   * 
+   * @return the node level
    */
   public int getLevel() {
     return level;
@@ -117,6 +121,8 @@ public abstract class AbstractNode implements Boundable, Serializable {
   /**
    * Adds either an AbstractNode, or if this is a leaf node, a data object
    * (wrapped in an ItemBoundable)
+   * 
+   * @param childBoundable the child to add
    */
   public void addChildBoundable(Boundable childBoundable) {
     Assert.isTrue(bounds == null);

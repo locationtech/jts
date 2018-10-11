@@ -84,7 +84,10 @@ class BufferBuilder
   private EdgeList edgeList     = new EdgeList();
 
   /**
-   * Creates a new BufferBuilder
+   * Creates a new BufferBuilder,
+   * using the given parameters.
+   * 
+   * @param bufParams the buffer parameters to use
    */
   public BufferBuilder(BufferParameters bufParams)
   {

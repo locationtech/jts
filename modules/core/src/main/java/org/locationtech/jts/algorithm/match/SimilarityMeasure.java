@@ -29,6 +29,11 @@ import org.locationtech.jts.geom.Geometry;
  */
 public interface SimilarityMeasure
 {
-	
+	/**
+	 * Computes the similarity measure between two geometries
+	 * @param g1 a geometry
+	 * @param g2 a geometry
+	 * @return the value of the similarity measure, in [0.0, 1.0]
+	 */
 	double measure(Geometry g1, Geometry g2);
 }

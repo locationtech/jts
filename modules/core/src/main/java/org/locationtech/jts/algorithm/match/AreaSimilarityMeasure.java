@@ -36,6 +36,9 @@ public class AreaSimilarityMeasure
 	}
 	*/
 	
+  /**
+   * Creates a new instance.
+   */
 	public AreaSimilarityMeasure()
 	{
 	}

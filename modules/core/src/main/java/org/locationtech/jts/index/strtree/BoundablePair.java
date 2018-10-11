@@ -159,7 +159,12 @@ class BoundablePair
    * For a pair which is not a leaf 
    * (i.e. has at least one composite boundable)
    * computes a list of new pairs 
-   * from the expansion of the larger boundable.
+   * from the expansion of the larger boundable
+   * with distance less than minDistance
+   * and adds them to a priority queue.
+   * 
+   * @param priQ the priority queue to add the new pairs to
+   * @param minDistance the limit on the distance between added pairs
    * 
    */
   public void expandToQueue(PriorityQueue priQ, double minDistance)
