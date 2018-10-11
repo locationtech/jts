@@ -57,8 +57,7 @@ public class AffineTransformationFactory {
 	 * @param src1
 	 * @param dest0
 	 * @param dest1
-	 * @return the computed transformation
-   * @return null if the control vectors do not determine a well-defined transformation
+	 * @return the computed transformation, or null if the control vectors do not determine a well-defined transformation
 	 */
 	public static AffineTransformation createFromControlVectors(Coordinate src0,
 			Coordinate src1, Coordinate dest0, Coordinate dest1) {

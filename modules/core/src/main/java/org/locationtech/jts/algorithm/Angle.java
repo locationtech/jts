@@ -19,8 +19,17 @@ import org.locationtech.jts.geom.Coordinate;
  */
 public class Angle
 {
+  /**
+   * The value of 2*Pi
+   */
   public static final double PI_TIMES_2 = 2.0 * Math.PI;
+  /**
+   * The value of Pi/2
+   */
   public static final double PI_OVER_2 = Math.PI / 2.0;
+  /**
+   * The value of Pi/4
+   */
   public static final double PI_OVER_4 = Math.PI / 4.0;
 
   /** Constant representing counterclockwise orientation */
@@ -59,6 +68,8 @@ public class Angle
    * relative to the positive X-axis.
    * The angle is normalized to be in the range [ -Pi, Pi ].
    *
+   * @param p0 the initial point of the vector
+   * @param p1 the terminal point of the vector
    * @return the normalized angle (in radians) that p0-p1 makes with the positive x-axis.
    */
   public static double angle(Coordinate p0, Coordinate p1) {
@@ -68,10 +79,11 @@ public class Angle
   }
 
   /**
-   * Returns the angle that the vector from (0,0) to p,
+   * Returns the angle of the vector from (0,0) to p,
    * relative to the positive X-axis.
    * The angle is normalized to be in the range ( -Pi, Pi ].
    *
+   * @param p the terminal point of the vector
    * @return the normalized angle (in radians) that p makes with the positive x-axis.
    */
   public static double angle(Coordinate p) {
@@ -88,6 +100,7 @@ public class Angle
    * @param p0 an endpoint of the angle
    * @param p1 the base of the angle
    * @param p2 the other endpoint of the angle
+   * @return true if the angle is acute
    */
   public static boolean isAcute(Coordinate p0, Coordinate p1, Coordinate p2)
   {
@@ -109,6 +122,7 @@ public class Angle
    * @param p0 an endpoint of the angle
    * @param p1 the base of the angle
    * @param p2 the other endpoint of the angle
+   * @return true if the angle is obtuse
    */
   public static boolean isObtuse(Coordinate p0, Coordinate p1, Coordinate p2)
   {

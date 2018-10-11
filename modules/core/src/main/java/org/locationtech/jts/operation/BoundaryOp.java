@@ -43,12 +43,26 @@ import org.locationtech.jts.geom.Point;
 
 public class BoundaryOp
 {
+  /**
+   * Computes a geometry representing the boundary of a geometry.
+   * 
+   * @param g the input geometry
+   * @return the computed boundary
+   */
   public static Geometry getBoundary(Geometry g)
   {
     BoundaryOp bop = new BoundaryOp(g);
     return bop.getBoundary();
   }
   
+  /**
+   * Computes a geometry representing the boundary of a geometry,
+   * using an explicit {@link BoundaryNodeRule}.
+   * 
+   * @param g the input geometry
+   * @param bnRule the Boundary Node Rule to use
+   * @return the computed boundary
+   */
   public static Geometry getBoundary(Geometry g, BoundaryNodeRule bnRule)
   {
     BoundaryOp bop = new BoundaryOp(g, bnRule);
@@ -59,11 +73,22 @@ public class BoundaryOp
   private GeometryFactory geomFact;
   private BoundaryNodeRule bnRule;
 
+  /**
+   * Creates a new instance for the given geometry.
+   * 
+   * @param geom the input geometry
+   */
   public BoundaryOp(Geometry geom)
   {
     this(geom, BoundaryNodeRule.MOD2_BOUNDARY_RULE);
   }
 
+  /**
+   * Creates a new instance for the given geometry.
+   * 
+   * @param geom the input geometry
+   * @param bnRule the Boundary Node Rule to use
+   */
   public BoundaryOp(Geometry geom, BoundaryNodeRule bnRule)
   {
     this.geom = geom;
@@ -71,6 +96,11 @@ public class BoundaryOp
     this.bnRule = bnRule;
   }
 
+  /**
+   * Gets the computed boundary.
+   * 
+   * @return the boundary geometry
+   */
   public Geometry getBoundary()
   {
     if (geom instanceof LineString) return boundaryLineString((LineString) geom);
