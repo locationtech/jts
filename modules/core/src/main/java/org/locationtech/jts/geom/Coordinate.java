@@ -141,50 +141,74 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   }
 
   /**
-   *  The x-ordinate.
-   */
+   *  Retrieves the value of the X ordinate.
+   *  
+   *  @return the value of the X ordinate
+   */  
   public double getX() {
     return x;
   }
 
+  /**
+   * Sets the X ordinate value.
+   * 
+   * @param x the value to set as X
+   */
   public void setX(double x) {
     this.x = x;
   }
+  
   /**
-   *  The y-ordinate.
+   *  Retrieves the value of the Y ordinate.
+   *  
+   *  @return the value of the Y ordinate
    */  
   public double getY() {
       return y;      
   }
 
+  /**
+   * Sets the Y ordinate value.
+   * 
+   * @param y the value to set as Y
+   */
   public void setY(double y) {
     this.y = y;
   }
+  
   /**
-   *  The z-ordinate.
-   */  
+   *  Retrieves the value of the Z ordinate, if present.
+   *  If no Z value is present returns <tt>NaN</tt>.
+   *  
+   *  @return the value of the Z ordinate, or <tt>NaN</tt>
+   */   
   public double getZ() {
       return z;      
   }
+  
   /**
-   * The z-ordinate.
-   *
-   * @param z
+   * Sets the Z ordinate value.
+   * 
+   * @param z the value to set as Z
    */
   public void setZ(double z) {
     this.z = z;
   }
+  
   /**
-   *  The m-measure, if available.
-   */  
+   *  Retrieves the value of the measure, if present.
+   *  If no measure value is present returns <tt>NaN</tt>.
+   *  
+   *  @return the value of the measure, or <tt>NaN</tt>
+   */    
   public double getM() {
     return Double.NaN;     
   }
   
   /**
-   * The m-measure, if supported.
-   *
-   * @param m
+   * Sets the measure value, if supported.
+   * 
+   * @param m the value to set as M
    */
   public void setM(double m) {
     throw new IllegalArgumentException("Invalid ordinate index: " + M);
@@ -257,10 +281,12 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   }
 
   /**
-   * Tests if another coordinate has the same values for the X and Y ordinates.
+   * Tests if another Coordinate has the same values for the X and Y ordinates,
+   * within a specified tolerance value.
    * The Z ordinate is ignored.
    *
    *@param c a <code>Coordinate</code> with which to do the 2D comparison.
+   *@param tolerance the tolerance value to use
    *@return true if <code>other</code> is a <code>Coordinate</code>
    *      with the same values for X and Y.
    */
@@ -364,8 +390,13 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
     }
   }
   
+  /**
+   * Creates a copy of this Coordinate.
+   * 
+   * @return a copy of this coordinate.
+   */
   public Coordinate copy() {
-	return new Coordinate(this);
+    return new Coordinate(this);
   }
 
   /**
@@ -411,7 +442,8 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
    * Computes a hash code for a double value, using the algorithm from
    * Joshua Bloch's book <i>Effective Java"</i>
    * 
-   * @return a hashcode for the double value
+   * @param x the value to compute for
+   * @return a hashcode for x
    */
   public static int hashCode(double x) {
     long f = Double.doubleToLongBits(x);

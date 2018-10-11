@@ -12,27 +12,27 @@
 package org.locationtech.jts.geom;
 
 /**
- * Coordinate subclass supporting XY ordinate.
+ * Coordinate subclass supporting XY ordinates.
  * <p>
- * This data object is suitable for use with coordinate sequences dimension 3, measures 1.
- * The {@link Coordinate#Z} field is visible, but intended to be ignored.
+ * This data object is suitable for use with coordinate sequences with <tt>dimension</tt> = 2.
+ * <p>
+ * The {@link Coordinate#z} field is visible, but intended to be ignored.
  *
  * @since 1.16
  */
 public class CoordinateXY extends Coordinate {
   private static final long serialVersionUID = 3532307803472313082L;
 
-/** Standard ordinate index value for, where X is 0 */
+  /** Standard ordinate index value for X */
   public static final int X = 0;
 
-  /** Standard ordinate index value for, where Y is 1 */
+  /** Standard ordinate index value for Y */
   public static final int Y = 1;
 
   /** CoordinateXY does not support Z values. */
   public static final int Z = -1;
 
   /** CoordinateXY does not support M measures. */
-   
   public static final int M = -1;
 
   /** Default constructor */
@@ -40,18 +40,39 @@ public class CoordinateXY extends Coordinate {
     super();
   }
 
+  /**
+   * Constructs a CoordinateXY instance with the given ordinates.
+   * 
+   * @param x the X ordinate
+   * @param y the Y ordinate
+   */
   public CoordinateXY(double x, double y) {
     super(x, y, Coordinate.NULL_ORDINATE);
   }
 
+  /**
+   * Constructs a CoordinateXY instance with the x and y ordinates of the given Coordinate.
+   * 
+   * @param coord the Coordinate providing the ordinates
+   */
   public CoordinateXY(Coordinate coord) {
     super(coord.x,coord.y);
   }
 
+  /**
+   * Constructs a CoordinateXY instance with the x and y ordinates of the given CoordinateXY.
+   * 
+   * @param coord the CoordinateXY providing the ordinates
+   */
   public CoordinateXY(CoordinateXY coord) {
     super(coord.x,coord.y);  
   }
 
+  /**
+   * Creates a copy of this CoordinateXY.
+   * 
+   * @return a copy of this CoordinateXY
+   */
   public CoordinateXY copy() {
     return new CoordinateXY(this);
   }

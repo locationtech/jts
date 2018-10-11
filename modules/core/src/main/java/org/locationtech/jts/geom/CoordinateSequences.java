@@ -23,6 +23,8 @@ public class CoordinateSequences {
 
   /**
    * Reverses the coordinates in a sequence in-place.
+   * 
+   * @param seq the coordinate sequence to reverse
    */
   public static void reverse(CoordinateSequence seq)
   {

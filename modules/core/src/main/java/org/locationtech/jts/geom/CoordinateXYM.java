@@ -12,28 +12,30 @@
 package org.locationtech.jts.geom;
 
 /**
- * Coordinate subclass supporting XYM ordinate.
+ * Coordinate subclass supporting XYM ordinates.
  * <p>
- * This data object is suitable for use with coordinate sequences dimension 3, measures 1.
- *
+ * This data object is suitable for use with coordinate sequences with <tt>dimension</tt> = 3 and <tt>measures</tt> = 1.
+ * <p>
+ * The {@link Coordinate#z} field is visible, but intended to be ignored.
+ * 
  * @since 1.16
  */
 public class CoordinateXYM extends Coordinate {
   private static final long serialVersionUID = 2842127537691165613L;
 
-/** Standard ordinate index value for, where X is 0 */
+  /** Standard ordinate index value for X */
   public static final int X = 0;
 
-  /** Standard ordinate index value for, where Y is 1 */
+  /** Standard ordinate index value for Y */
   public static final int Y = 1;
 
   /** CoordinateXYM does not support Z values. */
   public static final int Z = -1;
 
   /**
-   * Standard ordinate index value for, where M is 3.
+   * Standard ordinate index value for M in XYM sequences.
    *
-   * <p>This constant assumes XYM coordinate sequence definition, please check this assumption using
+   * <p>This constant assumes XYM coordinate sequence definition.  Check this assumption using
    * {@link #getDimension()} and {@link #getMeasures()} before use.
    */
   public static final int M = 2;
@@ -44,21 +46,43 @@ public class CoordinateXYM extends Coordinate {
     this.m = 0.0;
   }
 
+  /**
+   * Constructs a CoordinateXYM instance with the given ordinates and measure.
+   * 
+   * @param x the X ordinate
+   * @param y the Y ordinate
+   * @param m the M measure value
+   */
   public CoordinateXYM(double x, double y, double m) {
     super(x, y, Coordinate.NULL_ORDINATE);
     this.m = m;
   }
 
+  /**
+   * Constructs a CoordinateXYM instance with the x and y ordinates of the given Coordinate.
+   * 
+   * @param coord the coordinate providing the ordinates
+   */
   public CoordinateXYM(Coordinate coord) {
     super(coord.x,coord.y);
     m = getM();
   }
 
+  /**
+   * Constructs a CoordinateXY instance with the x and y ordinates of the given CoordinateXYM.
+   * 
+   * @param coord the coordinate providing the ordinates
+   */
   public CoordinateXYM(CoordinateXYM coord) {
     super(coord.x,coord.y);
     m = coord.m;
   }
-
+  
+  /**
+   * Creates a copy of this CoordinateXYM.
+   * 
+   * @return a copy of this CoordinateXYM
+   */
   public CoordinateXYM copy() {
     return new CoordinateXYM(this);
   }
