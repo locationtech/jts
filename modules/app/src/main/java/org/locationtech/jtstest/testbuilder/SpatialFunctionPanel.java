@@ -350,14 +350,14 @@ extends JPanel
       }      
       paramComp[i].setVisible(isUsed);
       paramLabel[i].setVisible(isUsed);
-      SpatialFunctionPanel.setToolTipText(paramComp[i], func, i + 1);      
+      SpatialFunctionPanel.setToolTipText(paramComp[i], func, i);      
     }
   }
   
   private static void setToolTipText(JComponent control, GeometryFunction func, int i) {
     String txt = null;
     if (func.getParameterTypes().length > i) {
-      txt = "Enter an " + func.getParameterTypes()[i].getSimpleName();
+      txt = "Enter a " + func.getParameterTypes()[i].getSimpleName();
     }
     control.setToolTipText(txt);
   }
