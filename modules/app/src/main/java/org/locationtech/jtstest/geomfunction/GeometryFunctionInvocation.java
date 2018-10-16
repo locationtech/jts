@@ -18,18 +18,24 @@ public class GeometryFunctionInvocation {
 
   private GeometryFunction function;
   private Object[] args;
+  private Geometry target;
 
-  public GeometryFunctionInvocation(GeometryFunction function, Object[] args) {
+  public GeometryFunctionInvocation(GeometryFunction function, Geometry target, Object[] args) {
     this.function = function;
+    this.target = target;
     this.args = args;
   }
 
   public String getSignature() {
     if (function == null)
       return null;
+    String funArgs = toString(target);
+    if (args.length > 0) {
+      funArgs += ", " + toString(args);
+    }
     return function.getCategory() 
         + "." + function.getName()
-        + "(" + toString(args) + ")";
+        + "( " + funArgs + " )";
   }
 
   public GeometryFunction getFunction() {
@@ -55,8 +61,11 @@ public class GeometryFunctionInvocation {
   public static String toString(Object o)
   {
     if (o == null) return "null";
-    if (o instanceof Geometry)
-      return ((Geometry) o).getGeometryType();
+    if (o instanceof Geometry) {
+      Geometry g = (Geometry) o;
+      int npts = g.getNumPoints();
+      return g.getGeometryType() + "[" + npts + "]";
+    }
     return o.toString();
   }
 }
