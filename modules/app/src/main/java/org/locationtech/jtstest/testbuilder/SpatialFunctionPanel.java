@@ -14,6 +14,7 @@ package org.locationtech.jtstest.testbuilder;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -98,6 +99,8 @@ extends JPanel
   private JCheckBox displayAAndBCheckBox = new JCheckBox();
   private JButton btnClearResult = new JButton();
 
+  private JLabel lblFunctionName = new JLabel();
+  private JLabel lblEmpty = new JLabel();
   private JLabel lblDistance = new JLabel();
   private JTextField txtDistance = new JTextField();
   private JLabel lblQuadSegs = new JLabel();
@@ -133,11 +136,11 @@ extends JPanel
   	
     this.setLayout(borderLayout1);
     panelParam.setLayout(gridLayout2);
+    gridLayout2.setRows(6);
+    gridLayout2.setColumns(2);
     panelExec.setLayout(flowLayout);
     panelExecParam.setLayout(borderLayout2);
     panelRB.setLayout(gridLayout1);
-    gridLayout2.setRows(5);
-    gridLayout2.setColumns(2);
 
     
     displayAAndBCheckBox.setSelected(true);
@@ -149,6 +152,9 @@ extends JPanel
         }
       });
 
+    lblFunctionName.setHorizontalAlignment(SwingConstants.RIGHT);
+    lblFunctionName.setFont(new java.awt.Font("Dialog", Font.BOLD, 12));
+    
     lblDistance.setText("Distance");
     
     txtDistance.setMaximumSize(new Dimension(25, 2147483647));
@@ -187,6 +193,8 @@ extends JPanel
         }
       });
 
+    panelParam.add(lblFunctionName);
+    panelParam.add(lblEmpty);
     panelParam.add(lblDistance);
     panelParam.add(txtDistance);
     panelParam.add(lblQuadSegs);
@@ -257,6 +265,8 @@ extends JPanel
       }
     };
     geomFuncPanel.addGeometryFunctionListener(gfListener);
+    
+    hideAllParams(paramComp, paramLabel);
   }
 
   static void initLabels(JLabel[] paramLabel)
@@ -314,33 +324,17 @@ extends JPanel
   private void functionChanged(GeometryFunction func)
   {
     currentFunc = func;
+    lblFunctionName.setText(func.getName());
+    lblFunctionName.setToolTipText( GeometryFunctionRegistry.functionDescriptionHTML(func) );
+    
     updateParameters(func, paramComp, paramLabel);
-    execButton.setToolTipText( GeometryFunctionRegistry.functionDescriptionHTML(func) );
+    
     execButton.setEnabled(true);
     execToNewButton.setEnabled(true); 
     btnRepeat.setEnabled(RepeaterGeometryFunction.isRepeatable(func));
   }
- 
   
-  static void OLDupdateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel)
-  {
-    int numNonGeomParams = numNonGeomParams(func);
-    for (int i = 0; i < paramComp.length; i++) {
-      boolean isUsed = numNonGeomParams > i;
-      //SwingUtil.setEnabledWithBackground(paramComp[i], isUsed);
-      //*
-      if (isUsed) {
-        paramLabel[i].setText(func.getParameterNames()[i]);
-      }
-      //*/
-      paramComp[i].setVisible(isUsed);
-      paramLabel[i].setVisible(isUsed);
-      SpatialFunctionPanel.setToolTipText(paramComp[i], func, i + 1);      
-    }
-  }
-  
-  static void updateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel)
-  {
+  static void updateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel) {
     int numNonGeomParams = numNonGeomParams(func);
     int indexOffset = BaseGeometryFunction.firstScalarParamIndex(func);
     for (int i = 0; i < paramComp.length; i++) {
@@ -352,6 +346,13 @@ extends JPanel
       paramLabel[i].setVisible(isUsed);
       SpatialFunctionPanel.setToolTipText(paramComp[i], func, i);      
     }
+  }
+  
+  static void hideAllParams(JComponent[] paramComp, JLabel[] paramLabel) {
+    for (int i = 0; i < paramComp.length; i++) {     
+      paramComp[i].setVisible(false);
+      paramLabel[i].setVisible(false);     
+    }    
   }
   
   private static void setToolTipText(JComponent control, GeometryFunction func, int i) {
