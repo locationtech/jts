@@ -109,7 +109,7 @@ extends JPanel
     
     panelExec.add(execButton);
     
-    panelExecParam.add(panelExec, BorderLayout.NORTH);
+    panelExecParam.add(panelExec, BorderLayout.SOUTH);
     panelExecParam.add(panelParam, BorderLayout.CENTER);
         
     this.add(funcListPanel, BorderLayout.CENTER);

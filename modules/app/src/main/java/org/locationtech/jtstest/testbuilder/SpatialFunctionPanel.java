@@ -56,6 +56,8 @@ import org.locationtech.jtstest.util.ClassUtil;
 public class SpatialFunctionPanel 
 extends JPanel 
 {
+  private static final EmptyBorder LABEL_BORDER = new EmptyBorder(3,5,3,5);
+
   private static final String[] PARAM_DEFAULT = { "10", "0", "0", "0", "0" };
   
   private static String[] capStyleItems = new String[] { "Round", "Flat", "Square" };
@@ -73,7 +75,7 @@ extends JPanel
 
 	
 	
-  JPanel panelRB = new JPanel();
+  JPanel panelExecControl = new JPanel();
 //  GeometryFunctionListPanel geomFuncPanel = new GeometryFunctionListPanel();
   GeometryFunctionTreePanel geomFuncPanel = new GeometryFunctionTreePanel();
   GridLayout gridLayout1 = new GridLayout();
@@ -100,7 +102,7 @@ extends JPanel
   private JButton btnClearResult = new JButton();
 
   private JLabel lblFunctionName = new JLabel();
-  private JLabel lblEmpty = new JLabel();
+  private JLabel lblFunction = new JLabel();
   private JLabel lblDistance = new JLabel();
   private JTextField txtDistance = new JTextField();
   private JLabel lblQuadSegs = new JLabel();
@@ -140,7 +142,6 @@ extends JPanel
     gridLayout2.setColumns(2);
     panelExec.setLayout(flowLayout);
     panelExecParam.setLayout(borderLayout2);
-    panelRB.setLayout(gridLayout1);
 
     
     displayAAndBCheckBox.setSelected(true);
@@ -152,7 +153,11 @@ extends JPanel
         }
       });
 
-    lblFunctionName.setHorizontalAlignment(SwingConstants.RIGHT);
+    lblFunction.setText("Function");
+    lblFunction.setHorizontalAlignment(SwingConstants.RIGHT);
+    lblFunction.setBorder(LABEL_BORDER);//top,left,bottom,right
+    
+    lblFunctionName.setHorizontalAlignment(SwingConstants.LEFT);
     lblFunctionName.setFont(new java.awt.Font("Dialog", Font.BOLD, 12));
     
     lblDistance.setText("Distance");
@@ -179,7 +184,6 @@ extends JPanel
 
     initLabels(paramLabel);
     
-    panelControl.setLayout(flowLayout1);
 
 
     btnClearResult.setToolTipText("");
@@ -193,8 +197,8 @@ extends JPanel
         }
       });
 
+    panelParam.add(lblFunction);
     panelParam.add(lblFunctionName);
-    panelParam.add(lblEmpty);
     panelParam.add(lblDistance);
     panelParam.add(txtDistance);
     panelParam.add(lblQuadSegs);
@@ -206,6 +210,7 @@ extends JPanel
     panelParam.add(lblMitreLimit);
     panelParam.add(txtMitreLimit);
 
+    panelControl.setLayout(flowLayout1);
     panelControl.add(displayAAndBCheckBox, null);
     //panelControl.add(btnClearResult, null);
     
@@ -249,9 +254,17 @@ extends JPanel
     panelExec.add(btnRepeat);
     panelExec.add(txtRepeatCount);
     
-    panelExecParam.add(panelExec, BorderLayout.NORTH);
+    
+    panelExecControl.setLayout(gridLayout1);
+    gridLayout1.setRows(2);
+    gridLayout1.setColumns(1);
+    panelExecControl.add(panelExec);
+    panelExecControl.add(panelControl);
+    
+//    panelExecParam.add(panelExec, BorderLayout.NORTH);
     panelExecParam.add(panelParam, BorderLayout.CENTER);
-    panelExecParam.add(panelControl, BorderLayout.SOUTH);
+//    panelExecParam.add(panelControl, BorderLayout.SOUTH);
+    panelExecParam.add(panelExecControl, BorderLayout.SOUTH);
     
     this.add(geomFuncPanel, BorderLayout.CENTER);
     this.add(panelExecParam, BorderLayout.SOUTH);
@@ -274,7 +287,7 @@ extends JPanel
     for (int i = 0; i < paramLabel.length; i++) {
       JLabel lbl = paramLabel[i];
       lbl.setHorizontalAlignment(SwingConstants.RIGHT);
-      lbl.setBorder(new EmptyBorder(5,5,5,5));
+      lbl.setBorder(LABEL_BORDER);
     }
   }
 
