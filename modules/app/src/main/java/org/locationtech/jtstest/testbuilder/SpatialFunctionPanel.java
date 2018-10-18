@@ -41,6 +41,7 @@ import org.locationtech.jtstest.geomfunction.BaseGeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.geomfunction.RepeaterGeometryFunction;
+import org.locationtech.jtstest.geomfunction.SpreaderGeometryFunction;
 import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionEvent;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
@@ -95,7 +96,8 @@ extends JPanel
   JButton execToNewButton = new JButton();
   
   private final ImageIcon clearIcon = new ImageIcon(this.getClass().getResource("clear.gif"));
-
+  private final ImageIcon executeIcon = new ImageIcon(this.getClass().getResource("Execute.png"));
+  
   private transient Vector spatialFunctionPanelListeners;
   private JPanel panelControl = new JPanel();
   private JCheckBox displayAAndBCheckBox = new JCheckBox();
@@ -121,6 +123,7 @@ extends JPanel
   private Stopwatch timer;
 
   private JButton btnRepeat;
+  private JButton btnExecEach;
   
   public SpatialFunctionPanel() {
     try {
@@ -221,7 +224,7 @@ extends JPanel
     txtRepeatCount.setText("10");
     txtRepeatCount.setHorizontalAlignment(SwingConstants.RIGHT); 
     
-    execButton = SwingUtil.createButton("Compute", "Compute the result of the function",
+    execButton = SwingUtil.createButton(executeIcon, "Compute the result of the function",
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         execButton_actionPerformed(e);
@@ -229,7 +232,7 @@ extends JPanel
     });
     execButton.setEnabled(false);
     
-    execToNewButton = SwingUtil.createButton("Compute New", "Compute function result to a new case",
+    execToNewButton = SwingUtil.createButton("New", executeIcon, "Compute function result to a new case",
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         execToNewButton_actionPerformed(e);
@@ -237,7 +240,15 @@ extends JPanel
     });
     execToNewButton.setEnabled(false); 
     
-    btnRepeat = SwingUtil.createButton("Repeat", "Repeat function a number of times, incrementing the first parameter", 
+    btnExecEach = SwingUtil.createButton("Each", executeIcon, "Compute for each geometry element", 
+        new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        execSpreadFunction();
+      }
+    });
+    btnExecEach.setEnabled(false);
+    
+    btnRepeat = SwingUtil.createButton("N", executeIcon, "Repeat function a number of times, incrementing the first parameter", 
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         int count = SwingUtil.getInteger(txtRepeatCount, 10);
@@ -251,6 +262,7 @@ extends JPanel
     panelExec.add(execButton);
     // disabled until behaviour is worked out
     panelExec.add(execToNewButton);
+    panelExec.add(btnExecEach);
     panelExec.add(btnRepeat);
     panelExec.add(txtRepeatCount);
     
@@ -295,6 +307,7 @@ extends JPanel
   {
     execButton.setEnabled(isEnabled);
     execToNewButton.setEnabled(isEnabled);
+    btnExecEach.setEnabled(isEnabled);
     btnRepeat.setEnabled(isEnabled);
   }
   
@@ -311,12 +324,16 @@ extends JPanel
   }
 
   void execRepeatFunction(int count) {
-
     GeometryFunction f = geomFuncPanel.getFunction();
     RepeaterGeometryFunction fRepeat = new RepeaterGeometryFunction(f, count);
     execFunction(fRepeat, false);
   }
 
+  void execSpreadFunction() {
+    GeometryFunction f = geomFuncPanel.getFunction();
+    GeometryFunction fSpread = new SpreaderGeometryFunction(f);
+    execFunction(fSpread, false);
+  }
   void displayAAndBCheckBox_actionPerformed(ActionEvent e) {
     JTSTestBuilderController.getGeometryEditPanel().setShowingInput(displayAAndBCheckBox.isSelected());
   }
@@ -344,6 +361,7 @@ extends JPanel
     
     execButton.setEnabled(true);
     execToNewButton.setEnabled(true); 
+    btnExecEach.setEnabled(true); 
     btnRepeat.setEnabled(RepeaterGeometryFunction.isRepeatable(func));
   }
   
