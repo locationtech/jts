@@ -17,7 +17,7 @@ public class SpreaderGeometryFunction implements GeometryFunction {
   }
 
   public String getName() {
-    return fun.getName();
+    return fun.getName() + "-Each";
   }
 
   public String getDescription() {
