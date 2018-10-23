@@ -90,6 +90,8 @@ public class RepeaterGeometryFunction implements GeometryFunction {
     for (int i = 1; i <= count; i++) {
       double val = argStart * i;
       Geometry result = (Geometry) fun.invoke(geom, copyArgs(args, repeatArgIndex, val));
+      if (result == null) continue;
+      
       FunctionsUtil.showIndicator(result);
       results[i-1] = result;
     }
