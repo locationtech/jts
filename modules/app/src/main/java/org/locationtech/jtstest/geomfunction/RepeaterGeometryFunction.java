@@ -1,6 +1,11 @@
 package org.locationtech.jtstest.geomfunction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.GeometryMapper;
+import org.locationtech.jts.geom.util.GeometryMapper.MapOp;
 import org.locationtech.jtstest.function.FunctionsUtil;
 import org.locationtech.jtstest.util.ClassUtil;
 
@@ -85,7 +90,7 @@ public class RepeaterGeometryFunction implements GeometryFunction {
     return 0;
   }
   private Object invokeRepeated(Geometry geom, Object[] args, double argStart) {
-    Geometry[] results = new Geometry[count];
+    List results = new ArrayList();
     int repeatArgIndex = repeatableArgIndex(fun);
     for (int i = 1; i <= count; i++) {
       double val = argStart * i;
@@ -93,9 +98,9 @@ public class RepeaterGeometryFunction implements GeometryFunction {
       if (result == null) continue;
       
       FunctionsUtil.showIndicator(result);
-      results[i-1] = result;
+      results.add(result);
     }
-    return geom.getFactory().createGeometryCollection(results);
+    return geom.getFactory().buildGeometry(results);
   }
 
   private Object[] copyArgs(Object[] args, int replaceIndex, double val) {

@@ -1,6 +1,8 @@
 package org.locationtech.jtstest.geomfunction;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.GeometryMapper;
+import org.locationtech.jts.geom.util.GeometryMapper.MapOp;
 import org.locationtech.jtstest.function.FunctionsUtil;
 import org.locationtech.jtstest.util.ClassUtil;
 
@@ -45,6 +47,7 @@ public class SpreaderGeometryFunction implements GeometryFunction {
   }
   
   public Object invoke(Geometry geom, Object[] args) {
+    /*
     int nElt = geom.getNumGeometries();
     Geometry[] results = new Geometry[nElt];
     for (int i = 0; i < nElt; i++) {
@@ -57,6 +60,14 @@ public class SpreaderGeometryFunction implements GeometryFunction {
       results[i] = result;
     }
     return geom.getFactory().createGeometryCollection(results);
+    */
+    return GeometryMapper.map(geom, new MapOp() {
+      public Geometry map(Geometry g)
+      {
+        return (Geometry) fun.invoke(g, args);
+      }
+    });
+
   }
 
 
