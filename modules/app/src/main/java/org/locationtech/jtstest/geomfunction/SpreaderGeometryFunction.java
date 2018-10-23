@@ -50,6 +50,9 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     for (int i = 0; i < nElt; i++) {
       Geometry elt = geom.getGeometryN(i);
       Geometry result = (Geometry) fun.invoke(elt, args);
+      // can't include null results
+      if (result == null) continue;
+      
       //FunctionsUtil.showIndicator(result);
       results[i] = result;
     }
