@@ -85,8 +85,7 @@ public class AffineTransformationBuilder
    * determined by the control point mappings,
    * or <code>null</code> if the control vectors do not determine a well-defined transformation.
    * 
-   * @return an affine transformation
-   * @return null if the control vectors do not determine a well-defined transformation
+   * @return an affine transformation, or null if the control vectors do not determine a well-defined transformation
    */
   public AffineTransformation getTransformation()
   {
@@ -128,8 +127,7 @@ public class AffineTransformationBuilder
    * for the given right-hand side vector.
    * 
    * @param b the vector for the right-hand side of the system
-   * @return the solution vector
-   * @return null if no solution could be determined
+   * @return the solution vector, or <code>null</code> if no solution could be determined
    */
   private double[] solve(double[] b)
   {

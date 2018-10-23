@@ -14,12 +14,15 @@ package org.locationtech.jtstest.testbuilder;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -40,6 +43,7 @@ import org.locationtech.jtstest.geomfunction.BaseGeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.geomfunction.RepeaterGeometryFunction;
+import org.locationtech.jtstest.geomfunction.SpreaderGeometryFunction;
 import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionEvent;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
@@ -55,6 +59,8 @@ import org.locationtech.jtstest.util.ClassUtil;
 public class SpatialFunctionPanel 
 extends JPanel 
 {
+  private static final EmptyBorder LABEL_BORDER = new EmptyBorder(3,5,3,5);
+
   private static final String[] PARAM_DEFAULT = { "10", "0", "0", "0", "0" };
   
   private static String[] capStyleItems = new String[] { "Round", "Flat", "Square" };
@@ -72,7 +78,7 @@ extends JPanel
 
 	
 	
-  JPanel panelRB = new JPanel();
+  JPanel panelExecControl = new JPanel();
 //  GeometryFunctionListPanel geomFuncPanel = new GeometryFunctionListPanel();
   GeometryFunctionTreePanel geomFuncPanel = new GeometryFunctionTreePanel();
   GridLayout gridLayout1 = new GridLayout();
@@ -84,20 +90,29 @@ extends JPanel
 
   JPanel panelParam = new JPanel();
   JPanel panelExec = new JPanel();
+  JPanel panelExecMeta = new JPanel();
   JPanel panelExecParam = new JPanel();
   FlowLayout flowLayout = new FlowLayout();
   FlowLayout flowLayout1 = new FlowLayout();
+  FlowLayout flowLayout2 = new FlowLayout();
   
-  JButton execButton = new JButton();
-  JButton execToNewButton = new JButton();
+  private JButton execButton = new JButton();
+  private JButton execToNewButton = new JButton();
   
   private final ImageIcon clearIcon = new ImageIcon(this.getClass().getResource("clear.gif"));
-
+  private final ImageIcon executeIcon = new ImageIcon(this.getClass().getResource("Execute.png"));
+  private final ImageIcon expandDownIcon = new ImageIcon(this.getClass().getResource("Expand-Down.png"));
+  
   private transient Vector spatialFunctionPanelListeners;
   private JPanel panelControl = new JPanel();
   private JCheckBox displayAAndBCheckBox = new JCheckBox();
+  private JCheckBox cbExecEach = new JCheckBox();
+  private JCheckBox cbExecRepeat = new JCheckBox();
+  private final JTextField txtRepeatCount = new JTextField();
   private JButton btnClearResult = new JButton();
 
+  private JLabel lblFunctionName = new JLabel();
+  private JLabel lblFunction = new JLabel();
   private JLabel lblDistance = new JLabel();
   private JTextField txtDistance = new JTextField();
   private JLabel lblQuadSegs = new JLabel();
@@ -115,7 +130,7 @@ extends JPanel
   private GeometryFunction currentFunc = null;
   private Stopwatch timer;
 
-  private JButton btnRepeat;
+  private JButton btnExecEach;
   
   public SpatialFunctionPanel() {
     try {
@@ -133,11 +148,11 @@ extends JPanel
   	
     this.setLayout(borderLayout1);
     panelParam.setLayout(gridLayout2);
-    panelExec.setLayout(flowLayout);
-    panelExecParam.setLayout(borderLayout2);
-    panelRB.setLayout(gridLayout1);
-    gridLayout2.setRows(5);
+    gridLayout2.setRows(6);
     gridLayout2.setColumns(2);
+    panelExec.setLayout(flowLayout);
+    panelExecMeta.setLayout(flowLayout2);
+    panelExecParam.setLayout(borderLayout2);
 
     
     displayAAndBCheckBox.setSelected(true);
@@ -149,6 +164,13 @@ extends JPanel
         }
       });
 
+    lblFunction.setText("Function");
+    lblFunction.setHorizontalAlignment(SwingConstants.RIGHT);
+    lblFunction.setBorder(LABEL_BORDER);//top,left,bottom,right
+    
+    lblFunctionName.setHorizontalAlignment(SwingConstants.LEFT);
+    lblFunctionName.setFont(new java.awt.Font("Dialog", Font.BOLD, 12));
+    
     lblDistance.setText("Distance");
     
     txtDistance.setMaximumSize(new Dimension(25, 2147483647));
@@ -173,7 +195,6 @@ extends JPanel
 
     initLabels(paramLabel);
     
-    panelControl.setLayout(flowLayout1);
 
 
     btnClearResult.setToolTipText("");
@@ -187,6 +208,8 @@ extends JPanel
         }
       });
 
+    panelParam.add(lblFunction);
+    panelParam.add(lblFunctionName);
     panelParam.add(lblDistance);
     panelParam.add(txtDistance);
     panelParam.add(lblQuadSegs);
@@ -198,17 +221,24 @@ extends JPanel
     panelParam.add(lblMitreLimit);
     panelParam.add(txtMitreLimit);
 
+    panelControl.setLayout(flowLayout1);
     panelControl.add(displayAAndBCheckBox, null);
     //panelControl.add(btnClearResult, null);
     
-    final JTextField txtRepeatCount = new JTextField();
+
+    cbExecEach.setToolTipText("Compute for each geometry element");
+    cbExecEach.setText("Each");
+    
+    cbExecRepeat.setToolTipText("Repeat function a number of times, incrementing the first parameter");
+    cbExecRepeat.setText("Repeat");
+    
     txtRepeatCount.setMaximumSize(new Dimension(25, 2147483647));
     txtRepeatCount.setMinimumSize(new Dimension(30, 21));
     txtRepeatCount.setPreferredSize(new Dimension(30, 21));
     txtRepeatCount.setText("10");
     txtRepeatCount.setHorizontalAlignment(SwingConstants.RIGHT); 
     
-    execButton = SwingUtil.createButton("Compute", "Compute the result of the function",
+    execButton = SwingUtil.createButton(executeIcon, "Compute the result of the function",
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         execButton_actionPerformed(e);
@@ -216,7 +246,7 @@ extends JPanel
     });
     execButton.setEnabled(false);
     
-    execToNewButton = SwingUtil.createButton("Compute New", "Compute function result to a new case",
+    execToNewButton = SwingUtil.createButton("New", executeIcon, "Compute function result to a new case",
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         execToNewButton_actionPerformed(e);
@@ -224,26 +254,41 @@ extends JPanel
     });
     execToNewButton.setEnabled(false); 
     
-    btnRepeat = SwingUtil.createButton("Repeat", "Repeat function a number of times, incrementing the first parameter", 
+    JButton btnShowExecExt = SwingUtil.createButton(expandDownIcon, "Show extended/meta Compute tools",
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        int count = SwingUtil.getInteger(txtRepeatCount, 10);
-        execRepeatFunction(count);
+        clearExtended();
+        panelExecMeta.setVisible(! panelExecMeta.isVisible());
       }
     });
-    // until we know what the function is
-    btnRepeat.setEnabled(false);
-
+    btnShowExecExt.setPreferredSize(new Dimension(20, 20));
+    btnShowExecExt.setBorder(BorderFactory.createEmptyBorder());
+    btnShowExecExt.setContentAreaFilled(false);
+    btnShowExecExt.setFocusable(false);
 
     panelExec.add(execButton);
     // disabled until behaviour is worked out
     panelExec.add(execToNewButton);
-    panelExec.add(btnRepeat);
-    panelExec.add(txtRepeatCount);
+    //panelExec.add(btnShowExecExt);
+
+    JPanel panelExecHolder = new JPanel();
+    panelExecHolder.setLayout(new BorderLayout());
+    panelExecHolder.add(panelExec, BorderLayout.CENTER);
+    panelExecHolder.add(btnShowExecExt, BorderLayout.EAST);
+
+    panelExecMeta.add(cbExecEach);
+    panelExecMeta.add(cbExecRepeat);
+    panelExecMeta.add(txtRepeatCount);
+    panelExecMeta.setVisible(false);
     
-    panelExecParam.add(panelExec, BorderLayout.NORTH);
+    panelExecControl.setLayout(new BoxLayout(panelExecControl, BoxLayout.Y_AXIS));
+    panelExecControl.add(panelExecHolder);
+    panelExecControl.add(panelExecMeta);
+    panelExecControl.add(panelControl);
+    
+
     panelExecParam.add(panelParam, BorderLayout.CENTER);
-    panelExecParam.add(panelControl, BorderLayout.SOUTH);
+    panelExecParam.add(panelExecControl, BorderLayout.SOUTH);
     
     this.add(geomFuncPanel, BorderLayout.CENTER);
     this.add(panelExecParam, BorderLayout.SOUTH);
@@ -257,6 +302,8 @@ extends JPanel
       }
     };
     geomFuncPanel.addGeometryFunctionListener(gfListener);
+    
+    hideAllParams(paramComp, paramLabel);
   }
 
   static void initLabels(JLabel[] paramLabel)
@@ -264,7 +311,7 @@ extends JPanel
     for (int i = 0; i < paramLabel.length; i++) {
       JLabel lbl = paramLabel[i];
       lbl.setHorizontalAlignment(SwingConstants.RIGHT);
-      lbl.setBorder(new EmptyBorder(5,5,5,5));
+      lbl.setBorder(LABEL_BORDER);
     }
   }
 
@@ -272,7 +319,6 @@ extends JPanel
   {
     execButton.setEnabled(isEnabled);
     execToNewButton.setEnabled(isEnabled);
-    btnRepeat.setEnabled(isEnabled);
   }
   
   void clearResultButton_actionPerformed(ActionEvent e) {
@@ -280,20 +326,43 @@ extends JPanel
   }
 
   void execButton_actionPerformed(ActionEvent e) {
-    execFunction(geomFuncPanel.getFunction(), false);
+    execFunction(getMetaFunction(), false);
   }
 
   void execToNewButton_actionPerformed(ActionEvent e) {
-    execFunction(geomFuncPanel.getFunction(), true);
+    execFunction(getMetaFunction(), true);
   }
 
-  void execRepeatFunction(int count) {
-
-    GeometryFunction f = geomFuncPanel.getFunction();
-    RepeaterGeometryFunction fRepeat = new RepeaterGeometryFunction(f, count);
-    execFunction(fRepeat, false);
+  GeometryFunction getMetaFunction() {
+    GeometryFunction funToRun = geomFuncPanel.getFunction();
+    if (! isExtendedFunction()) return funToRun;
+    
+    if (isFunctionRepeated()) {
+      int count = SwingUtil.getInteger(txtRepeatCount, 10);
+      funToRun = new RepeaterGeometryFunction(funToRun, count);
+    }
+    if (isFunctionEach()) {
+      funToRun = new SpreaderGeometryFunction(funToRun);
+    }
+    return funToRun;
   }
 
+
+  private boolean isExtendedFunction() {
+    return panelExecMeta.isVisible();
+  }
+
+  private boolean isFunctionRepeated() {
+    return cbExecRepeat.isSelected();
+  }
+  private boolean isFunctionEach() {
+    return cbExecEach.isSelected();
+  }
+  void clearExtended() {
+    cbExecRepeat.setSelected(false);
+    cbExecEach.setSelected(false);
+  }
+  
   void displayAAndBCheckBox_actionPerformed(ActionEvent e) {
     JTSTestBuilderController.getGeometryEditPanel().setShowingInput(displayAAndBCheckBox.isSelected());
   }
@@ -314,33 +383,16 @@ extends JPanel
   private void functionChanged(GeometryFunction func)
   {
     currentFunc = func;
+    lblFunctionName.setText(func.getName());
+    lblFunctionName.setToolTipText( GeometryFunctionRegistry.functionDescriptionHTML(func) );
+    
     updateParameters(func, paramComp, paramLabel);
-    execButton.setToolTipText( GeometryFunctionRegistry.functionDescriptionHTML(func) );
+    
     execButton.setEnabled(true);
     execToNewButton.setEnabled(true); 
-    btnRepeat.setEnabled(RepeaterGeometryFunction.isRepeatable(func));
-  }
- 
-  
-  static void OLDupdateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel)
-  {
-    int numNonGeomParams = numNonGeomParams(func);
-    for (int i = 0; i < paramComp.length; i++) {
-      boolean isUsed = numNonGeomParams > i;
-      //SwingUtil.setEnabledWithBackground(paramComp[i], isUsed);
-      //*
-      if (isUsed) {
-        paramLabel[i].setText(func.getParameterNames()[i]);
-      }
-      //*/
-      paramComp[i].setVisible(isUsed);
-      paramLabel[i].setVisible(isUsed);
-      SpatialFunctionPanel.setToolTipText(paramComp[i], func, i + 1);      
-    }
   }
   
-  static void updateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel)
-  {
+  static void updateParameters(GeometryFunction func, JComponent[] paramComp, JLabel[] paramLabel) {
     int numNonGeomParams = numNonGeomParams(func);
     int indexOffset = BaseGeometryFunction.firstScalarParamIndex(func);
     for (int i = 0; i < paramComp.length; i++) {
@@ -350,14 +402,21 @@ extends JPanel
       }      
       paramComp[i].setVisible(isUsed);
       paramLabel[i].setVisible(isUsed);
-      SpatialFunctionPanel.setToolTipText(paramComp[i], func, i + 1);      
+      SpatialFunctionPanel.setToolTipText(paramComp[i], func, i);      
     }
+  }
+  
+  static void hideAllParams(JComponent[] paramComp, JLabel[] paramLabel) {
+    for (int i = 0; i < paramComp.length; i++) {     
+      paramComp[i].setVisible(false);
+      paramLabel[i].setVisible(false);     
+    }    
   }
   
   private static void setToolTipText(JComponent control, GeometryFunction func, int i) {
     String txt = null;
     if (func.getParameterTypes().length > i) {
-      txt = "Enter an " + func.getParameterTypes()[i].getSimpleName();
+      txt = "Enter a " + func.getParameterTypes()[i].getSimpleName();
     }
     control.setToolTipText(txt);
   }

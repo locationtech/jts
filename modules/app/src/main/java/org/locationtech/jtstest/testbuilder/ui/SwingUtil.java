@@ -236,5 +236,16 @@ public class SwingUtil {
     if (action != null) btn.addActionListener(action);
     return btn;
   }
+  
+  public static JButton createButton(String title, ImageIcon icon, String tip, ActionListener action ) {
+    JButton btn = new JButton();
+    if (title != null) btn.setText(title);
+    if (tip != null) btn.setToolTipText(tip);
+    if (icon != null) btn.setIcon(icon);
+    btn.setIconTextGap(2);
+    btn.setMargin(new Insets(0, 2, 0, 2));
+    if (action != null) btn.addActionListener(action);
+    return btn;
+  }
 
 }

@@ -53,6 +53,7 @@ public class ResultController
     SpatialFunctionPanel spatialPanel = frame.getTestCasePanel().getSpatialFunctionPanel();
     GeometryFunctionInvocation functionDesc = new GeometryFunctionInvocation(
         spatialPanel.getFunction(), 
+        model.getGeometryEditModel().getGeometry(0),
         spatialPanel.getFunctionParams());
     model.setOpName(functionDesc.getSignature());
     frame.getResultWKTPanel().setOpName(model.getOpName());
@@ -99,10 +100,17 @@ public class ResultController
      JTSTestBuilderController.geometryViewChanged();
      // log it
      if (result != null) {
-       JTSTestBuilderFrame.instance().displayInfo(
-           functionDesc.getSignature() + " : " + timeString, false);
+       resultLogEntry(functionDesc, timeString, result);
      }
    }
+
+  private void resultLogEntry(GeometryFunctionInvocation functionDesc, String timeString, Object result) {
+    String funDesc = functionDesc.getSignature() + " : " + timeString;
+    String resultDesc = GeometryFunctionInvocation.toString(result);
+    JTSTestBuilderFrame.instance().displayInfo(
+        funDesc + "\n ==> " + resultDesc,
+        false);
+  }
   
   private SwingWorker worker = null;
   

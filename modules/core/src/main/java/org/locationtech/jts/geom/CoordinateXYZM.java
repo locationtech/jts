@@ -12,36 +12,59 @@
 package org.locationtech.jts.geom;
 
 /**
- * Coordinate subclass supporting XYZM ordinate.
+ * Coordinate subclass supporting XYZM ordinates.
  * <p>
- * This data object is suitable for use with coordinate sequences dimension 4, measures 1.
+ * This data object is suitable for use with coordinate sequences with <tt>dimension</tt> = 4 and <tt>measures</tt> = 1.
  *
  * @since 1.16
  */
 public class CoordinateXYZM extends Coordinate {
   private static final long serialVersionUID = -8763329985881823442L;
 
-/** Default constructor */
+  /** Default constructor */
   public CoordinateXYZM() {
     super();
     this.m = 0.0;
   }
 
+  /**
+   * Constructs a CoordinateXYZM instance with the given ordinates and measure.
+   * 
+   * @param x the X ordinate
+   * @param y the Y ordinate
+   * @param z the Z ordinate
+   * @param m the M measure value
+   */
   public CoordinateXYZM(double x, double y, double z, double m) {
     super(x, y, z);
     this.m = m;
   }
 
+  /**
+   * Constructs a CoordinateXYZM instance with the ordinates of the given Coordinate.
+   * 
+   * @param coord the coordinate providing the ordinates
+   */
   public CoordinateXYZM(Coordinate coord) {
     super(coord);
     m = getM();
   }
-
+  
+  /**
+   * Constructs a CoordinateXYZM instance with the ordinates of the given CoordinateXYZM.
+   * 
+   * @param coord the coordinate providing the ordinates
+   */
   public CoordinateXYZM(CoordinateXYZM coord) {
     super(coord);
     m = coord.m;
   }
 
+  /**
+   * Creates a copy of this CoordinateXYZM.
+   * 
+   * @return a copy of this CoordinateXYZM
+   */
   public CoordinateXYZM copy() {
     return new CoordinateXYZM(this);
   }
