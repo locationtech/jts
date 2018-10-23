@@ -286,7 +286,6 @@ extends JPanel
     panelExecControl.add(panelExecMeta);
     panelExecControl.add(panelControl);
     
-
     panelExecParam.add(panelParam, BorderLayout.CENTER);
     panelExecParam.add(panelExecControl, BorderLayout.SOUTH);
     
@@ -335,7 +334,7 @@ extends JPanel
 
   GeometryFunction getMetaFunction() {
     GeometryFunction funToRun = geomFuncPanel.getFunction();
-    if (! isExtendedFunction()) return funToRun;
+    if (! isMetaFunctionEnabled()) return funToRun;
     
     if (isFunctionRepeated()) {
       int count = SwingUtil.getInteger(txtRepeatCount, 10);
@@ -348,7 +347,7 @@ extends JPanel
   }
 
 
-  private boolean isExtendedFunction() {
+  private boolean isMetaFunctionEnabled() {
     return panelExecMeta.isVisible();
   }
 
