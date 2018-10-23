@@ -44,6 +44,34 @@ extends LineStringStyle
       Viewport viewport, Graphics2D gr)
   throws Exception
   {
+    if (lineType == POLY_HOLE) 
+      paintHole(lineString, viewport, gr);
+    else 
+      paintShell(lineString, viewport, gr);
+  }
+  
+  private void paintShell(LineString lineString,
+      Viewport viewport, Graphics2D gr)
+  throws Exception
+  {
+    Color dashClr = color.darker().darker(); //new Color(0, 0, 0);
+    Graphics2D gr2 = (Graphics2D) gr.create();
+    gr2.setColor(dashClr);
+    
+    Stroke dashStroke = new BasicStroke((float) 1.5);                   // Dash phase 
+    gr2.setStroke(dashStroke);
+
+      Shape ringShape = GeometryPainter.getConverter(viewport).toShape(lineString);
+      gr2.draw(ringShape);
+
+      //Color shellClr = ColorUtil.saturate(color, 0.9);
+      //gr2.setColor(shellClr);
+      //paintRing(polygon.getExteriorRing(), true, viewport, gr2);
+  }
+  private void paintHole(LineString lineString,
+      Viewport viewport, Graphics2D gr)
+  throws Exception
+  {
     Color dashClr = color.darker().darker(); //new Color(0, 0, 0);
     Graphics2D gr2 = (Graphics2D) gr.create();
     gr2.setColor(dashClr);
@@ -56,13 +84,9 @@ extends LineStringStyle
         0);                   // Dash phase 
     gr2.setStroke(dashStroke);
 
-    if (lineType == POLY_HOLE) {
-      Shape ringShape = GeometryPainter.getConverter(viewport).toShape(lineString);
-      gr2.draw(ringShape);
-    }
-      //Color shellClr = ColorUtil.saturate(color, 0.9);
-      //gr2.setColor(shellClr);
-      //paintRing(polygon.getExteriorRing(), true, viewport, gr2);
+    Shape ringShape = GeometryPainter.getConverter(viewport).toShape(lineString);
+    gr2.draw(ringShape);
+
   }
 
 
