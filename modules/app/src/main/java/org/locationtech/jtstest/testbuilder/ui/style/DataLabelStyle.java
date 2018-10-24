@@ -12,17 +12,17 @@
 
 package org.locationtech.jtstest.testbuilder.ui.style;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jtstest.*;
 import org.locationtech.jtstest.testbuilder.AppConstants;
 import org.locationtech.jtstest.testbuilder.geom.ConstrainedInteriorPoint;
 import org.locationtech.jtstest.testbuilder.ui.GraphicsUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
-import org.locationtech.jtstest.testbuilder.ui.render.GeometryPainter;
 
 
 public class DataLabelStyle implements Style
