@@ -178,6 +178,11 @@ public class Viewport implements PointTransformation
   	return viewEnvInModel.intersects(env);
   }
   
+  public boolean intersectsInModel(Coordinate p0, Coordinate p1)
+  {
+    return viewEnvInModel.intersects(p0, p1);
+  }
+  
   public Point2D toModel(Point2D viewPt) {
     srcPt.x = viewPt.getX();
     srcPt.y = viewPt.getY();
@@ -344,6 +349,19 @@ public class Viewport implements PointTransformation
   public boolean containsInModel(Coordinate p)
   {
     return viewEnvInModel.contains(p);
+  }
+  
+  public boolean containsInModel(Coordinate p0, Coordinate p1)
+  {
+    return viewEnvInModel.contains(p0) && viewEnvInModel.contains(p1);
+  }
+
+  public boolean contains(Point2D p)
+  {
+    if (p.getX() < 0 || p.getY() < 0) return false;
+    if (p.getX() > viewSize.getWidth()) return false;
+    if (p.getY() > viewSize.getHeight()) return false;
+    return true;
   }
 
   private static final int MIN_GRID_RESOLUTION_PIXELS = 2;
