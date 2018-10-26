@@ -44,8 +44,10 @@ public class ArrowLineStyle
   {
   	if (lineType == LINE)
   		paintMidpointArrow(p0, p1, vp, gr);
-  	else
-  		paintOffsetArrow(p0, p1, vp, gr);
+  	else {
+      paintMidArrowHalf(p0, p1, vp, gr);
+      //paintOffsetArrow(p0, p1, vp, gr);
+  	}
   }
 
   protected void paintMidpointArrow(Point2D p0, Point2D p1, Viewport viewport,
@@ -79,10 +81,14 @@ public class ArrowLineStyle
     //      graphics.setStroke(1.0);
     graphics.setStroke(dashStroke);
     
-    
+    GeneralPath arrowhead = arrowHalfOffset(p0, p1);
+    graphics.draw(arrowhead);
+  }
+  
+  private static GeneralPath arrowHalfOffset(Point2D p0, Point2D p1) {
     double dx = p1.getX() - p0.getX();
     double dy = p1.getY() - p0.getY();
-    
+
     double len = Math.sqrt(dx * dx + dy * dy);
     
     double vy = dy / len;
@@ -101,8 +107,53 @@ public class ArrowLineStyle
     arrowhead.moveTo((float) off0x, (float) off0y);
     arrowhead.lineTo((float) off1x, (float) off1y);
     arrowhead.lineTo((float) headx, (float) heady);
+    return arrowhead;
+  }
+  
+  protected void paintMidArrowHalf(Point2D p0, Point2D p1, Viewport viewport,
+      Graphics2D graphics) throws NoninvertibleTransformException 
+  {
+    if (isTooSmallToRender(p0, p1)) return;
     
+    graphics.setColor(color);
+    //      graphics.setStroke(1.0);
+    
+    Point2D mid = new Point2D.Float((float) ((p0.getX() + p1.getX()) / 2),
+        (float) ((p0.getY() + p1.getY()) / 2));
+    GeneralPath arrowhead = arrowHeadHalf(mid, p1, 0, 10, HEAD_ANGLE_RAD, 1.2);
+    arrowhead.closePath();
+    graphics.fill(arrowhead);
     graphics.draw(arrowhead);
+  }
+  
+  private static GeneralPath arrowHeadHalf(Point2D p0, Point2D p1, 
+      double offset, double len, double angle, double rakeFactor
+      ) {
+    double dx = p1.getX() - p0.getX();
+    double dy = p1.getY() - p0.getY();
+    
+    double vlen = Math.sqrt(dx * dx + dy * dy);
+    
+    double vy = dy / vlen;
+    double vx = dx / vlen;
+    
+    double off0x = p0.getX() + offset * vy;
+    double off0y = p0.getY() + offset * -vx;
+    
+    double off1x = p0.getX() + len * vx + offset * vy;
+    double off1y = p0.getY() + len * vy + offset * -vx;
+    
+    double headAngCos = Math.cos(angle);
+    double headAngSin = -Math.sin(angle);
+    double headLen = rakeFactor * Math.abs(len / headAngCos);
+    double headx = off1x + headLen * (headAngCos * vx - headAngSin * vy);
+    double heady = off1y + headLen * (headAngSin * vx + headAngCos * vy);
+    
+    GeneralPath arrowhead = new GeneralPath();
+    arrowhead.moveTo((float) off0x, (float) off0y);
+    arrowhead.lineTo((float) off1x, (float) off1y);
+    arrowhead.lineTo((float) headx, (float) heady);
+    return arrowhead;
   }
 
   private boolean isTooSmallToRender(Point2D p0, Point2D p1)
