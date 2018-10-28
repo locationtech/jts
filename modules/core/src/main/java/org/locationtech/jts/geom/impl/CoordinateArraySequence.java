@@ -220,14 +220,7 @@ public class CoordinateArraySequence
    * @see org.locationtech.jts.geom.CoordinateSequence#getX(int)
    */
   public void getCoordinate(int index, Coordinate coord) {
-    coord.x = coordinates[index].x;
-    coord.y = coordinates[index].y;
-    if( hasZ()) {
-      coord.setZ(coordinates[index].getZ());
-    }
-    if( hasM() && (coord instanceof CoordinateXYM || coord instanceof CoordinateXYZM)) {
-      coord.setM(coordinates[index].getM());
-    }    
+    coord.setCoordinate(coordinates[index]);
   }
 
   /**
