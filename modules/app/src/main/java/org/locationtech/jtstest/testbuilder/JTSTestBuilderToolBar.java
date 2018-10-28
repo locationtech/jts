@@ -475,7 +475,8 @@ public class JTSTestBuilderToolBar {
       jToolBar1.add(Box.createHorizontalStrut(28), null);
       
       jToolBar1.add(zoomButton, null);
-      jToolBar1.add(panButton, null);
+      // remove in favour of using Zoom tool
+      //jToolBar1.add(panButton, null);
       jToolBar1.add(infoButton, null);
       jToolBar1.add(extractComponentButton, null);
       

@@ -32,8 +32,9 @@ import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 public class ZoomTool extends BasicTool 
 {
   private double zoomFactor = 2;
-  private Point zoomBoxStart = null;
-  private Point zoomBoxEnd = null;
+  private Point mouseStart = null;
+  private Point mouseEnd = null;
+  private Point2D panStart;
   
   public ZoomTool(double zoomFactor, Cursor cursor) {
     super(cursor);
@@ -50,8 +51,9 @@ public class ZoomTool extends BasicTool
 
   public void mousePressed(MouseEvent e)
   {
-  	zoomBoxStart = e.getPoint();
-  	zoomBoxEnd= e.getPoint();
+  	mouseStart = e.getPoint();
+  	mouseEnd = e.getPoint();
+  	panStart = isPanGesture(e) ? toModel(mouseStart) : null;
   }
   
   public void mouseReleased(MouseEvent e) {
@@ -60,33 +62,53 @@ public class ZoomTool extends BasicTool
     if (! isSignificantMouseMove(e.getPoint()))
       return;
     
-    // do Pan
-    if (e.isControlDown()) {
-      Point2D destination = toModel(e.getPoint());
-      PanTool.pan(panel(), toModel(zoomBoxStart), destination);
+    if (isPanGesture(e)) {
+      Point2D panEnd = toModel(e.getPoint());
+      PanTool.pan(panel(), panStart, panEnd);
       return;
     }
     // no key -> do Zoom
-    panel().zoom(toModel(zoomBoxStart), toModel(zoomBoxEnd));
+    panel().zoom(toModel(mouseStart), toModel(mouseEnd));
+  }
+
+  private static boolean isPanGesture(MouseEvent e) {
+    return e.isControlDown() || SwingUtilities.isRightMouseButton(e);
+  }
+  private boolean isPanning() {
+    return panStart != null;
   }
   
   public void mouseDragged(MouseEvent e)
   {
     // if panning don't draw zoom box
-    if (e.isControlDown()) return;
+    //if (isPanGesture(e)) return;
     
-  	Point currPoint = e.getPoint();
-  	Graphics g = panel().getGraphics();
-  	g.setColor(AppConstants.BAND_CLR);
-  	g.setXORMode(Color.white);
+  	Graphics g = getBandGraphics();
   	// erase old rectangle
-  	drawRect(g, zoomBoxStart, zoomBoxEnd);
+  	drawBand(g);
 
   	// draw new zoom box
-  	zoomBoxEnd = currPoint;
-  	drawRect(g, zoomBoxStart, zoomBoxEnd);
+  	Point currPoint = e.getPoint();
+  	mouseEnd = currPoint;
+  	drawBand(g);
+  }
+
+  private Graphics getBandGraphics() {
+    Graphics g = panel().getGraphics();
+  	g.setColor(AppConstants.BAND_CLR);
+  	g.setXORMode(Color.white);
+    return g;
   }
   
+  private void drawBand(Graphics g) {
+    if (isPanning()) {
+      drawLine(g, mouseStart, mouseEnd);
+    }
+    else {
+      drawRect(g, mouseStart, mouseEnd);
+    }
+  }
+
   public void mouseWheelMoved(MouseWheelEvent e) {
     double notches = e.getPreciseWheelRotation();
     double zoomFactor = Math.abs(notches) * 2;
@@ -98,14 +120,14 @@ public class ZoomTool extends BasicTool
   
   private boolean isSignificantMouseMove(Point p)
   {
-  	if (Math.abs(zoomBoxStart.x - p.x) < MIN_MOVEMENT)
+  	if (Math.abs(mouseStart.x - p.x) < MIN_MOVEMENT)
   		return false;
-  	if (Math.abs(zoomBoxStart.y - p.y) < MIN_MOVEMENT)
+  	if (Math.abs(mouseStart.y - p.y) < MIN_MOVEMENT)
   		return false;
   	return true;
   }
   
-  public void drawRect(Graphics g, Point p0, Point p1)
+  public static void drawRect(Graphics g, Point p0, Point p1)
   {
   	Point base = new Point(Math.min(p0.x, p1.x),
   			Math.min(p0.y, p1.y));
@@ -113,6 +135,9 @@ public class ZoomTool extends BasicTool
   	int height = Math.abs(p1.y - p0.y);
   	g.drawRect(base.x, base.y, width, height);
   }
-  
+  public static void drawLine(Graphics g, Point p0, Point p1)
+  {
+    g.drawLine(p0.x, p0.y, p1.x, p1.y);
+  }
 }
 

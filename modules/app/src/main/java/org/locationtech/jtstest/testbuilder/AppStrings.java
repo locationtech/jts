@@ -44,7 +44,7 @@ public class AppStrings {
   static final String TIP_ZOOM_TO_B = "Zoom To B";
   static final String TIP_ZOOM_TO_A = "Zoom To A";
   static final String TIP_ZOOM_1_1 = "Zoom 1:1";
-  static final String TIP_ZOOM = "<html>Zoom In/Out<br><br>In = Left-Btn<br>Out = Right-Btn<br>Extent = Shift-Drag<br>Pan = Ctl-Drag</html>";
+  static final String TIP_ZOOM = "<html>Zoom In/Out | Pan<br><br>Zoom In = Left-Btn<br>Zoom Extent = Left-Drag<br>Zoom Out = Right-Btn<br>Pan = Right-Drag | Ctl-Drag</html>";
 
   static final String TIP_INFO = "Show Info on Geometry, Segment, or Point";
 
