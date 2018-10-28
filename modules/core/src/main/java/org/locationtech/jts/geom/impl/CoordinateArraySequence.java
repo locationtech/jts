@@ -13,12 +13,7 @@ package org.locationtech.jts.geom.impl;
 
 import java.io.Serializable;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateArrays;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.Coordinates;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.*;
 
 /**
  * A {@link CoordinateSequence} backed by an array of {@link Coordinate}s.
@@ -225,14 +220,7 @@ public class CoordinateArraySequence
    * @see org.locationtech.jts.geom.CoordinateSequence#getX(int)
    */
   public void getCoordinate(int index, Coordinate coord) {
-    coord.x = coordinates[index].x;
-    coord.y = coordinates[index].y;
-    if( hasZ()) {
-      coord.setZ(coordinates[index].getZ());
-    }
-    if( hasM()) {
-      coord.setM(coordinates[index].getM());
-    }    
+    coord.setCoordinate(coordinates[index]);
   }
 
   /**
