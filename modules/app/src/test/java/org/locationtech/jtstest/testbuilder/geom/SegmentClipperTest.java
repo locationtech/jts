@@ -2,13 +2,10 @@ package org.locationtech.jtstest.testbuilder.geom;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jtstest.testbuilder.geom.ConstrainedInteriorPoint;
 
-import test.jts.GeometryTestCase;
+import junit.framework.TestCase;
 
-public class SegmentClipperTest extends GeometryTestCase {
+public class SegmentClipperTest extends TestCase {
 
   public SegmentClipperTest(String name) {
     super(name);

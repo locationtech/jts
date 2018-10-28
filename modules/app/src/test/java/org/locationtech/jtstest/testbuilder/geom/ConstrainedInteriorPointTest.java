@@ -4,11 +4,11 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jtstest.testbuilder.geom.ConstrainedInteriorPoint;
+import org.locationtech.jtstest.TestUtil;
 
-import test.jts.GeometryTestCase;
+import junit.framework.TestCase;
 
-public class ConstrainedInteriorPointTest extends GeometryTestCase {
+public class ConstrainedInteriorPointTest extends TestCase {
 
   public ConstrainedInteriorPointTest(String name) {
     super(name);
@@ -49,10 +49,10 @@ public class ConstrainedInteriorPointTest extends GeometryTestCase {
   }
   
   private void checkPoint(String wkt, String wktCon, Coordinate ptExpected) {
-    Geometry poly = read(wkt);
+    Geometry poly = TestUtil.readWKT(wkt);
     Coordinate ptActual = null;
     if (wktCon != null) {
-      Envelope envCon = read(wktCon).getEnvelopeInternal();
+      Envelope envCon = TestUtil.readWKT(wktCon).getEnvelopeInternal();
       ptActual = ConstrainedInteriorPoint.getPoint((Polygon) poly, envCon);
     }
     else {
