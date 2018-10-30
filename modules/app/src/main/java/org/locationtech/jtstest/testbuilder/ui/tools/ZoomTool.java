@@ -57,8 +57,7 @@ public class ZoomTool extends BasicTool
   }
   
   public void mouseReleased(MouseEvent e) {
-    // don't process event if the mouse was clicked or dragged a very short
-    // distance
+    // don't process if mouse was dragged a very short distance
     if (! isSignificantMouseMove(e.getPoint()))
       return;
     
@@ -79,15 +78,12 @@ public class ZoomTool extends BasicTool
   }
   
   public void mouseDragged(MouseEvent e)
-  {
-    // if panning don't draw zoom box
-    //if (isPanGesture(e)) return;
-    
+  {   
   	Graphics g = getBandGraphics();
-  	// erase old rectangle
+  	// erase old band
   	drawBand(g);
 
-  	// draw new zoom box
+  	// draw new band
   	Point currPoint = e.getPoint();
   	mouseEnd = currPoint;
   	drawBand(g);
@@ -116,13 +112,12 @@ public class ZoomTool extends BasicTool
     panel().zoom(toModel(e.getPoint()), zoomFactor);
   }
   
-  private static final int MIN_MOVEMENT = 3;
+  private static final int MIN_MOVEMENT = 5;
   
   private boolean isSignificantMouseMove(Point p)
   {
-  	if (Math.abs(mouseStart.x - p.x) < MIN_MOVEMENT)
-  		return false;
-  	if (Math.abs(mouseStart.y - p.y) < MIN_MOVEMENT)
+    int delta = Math.abs(mouseStart.x - p.x) + Math.abs(mouseStart.y - p.y);
+  	if (delta < MIN_MOVEMENT)
   		return false;
   	return true;
   }
