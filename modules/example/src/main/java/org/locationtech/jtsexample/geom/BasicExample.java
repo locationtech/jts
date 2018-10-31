@@ -15,6 +15,7 @@ package org.locationtech.jtsexample.geom;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTReader;
 
 /**
@@ -41,5 +42,13 @@ public class BasicExample
     // compute the intersection of the two geometries
     Geometry g3 = g1.intersection(g2);
     System.out.println("G1 intersection G2: " + g3);
+
+    // create a point
+    Geometry point = new GeometryFactory().createPoint(new Coordinate(1,1));
+    System.out.println("Point Geometry: " + point);
+
+    // compute whether point is on g1
+    System.out.println("Point within g1: " + g1.contains(point));
+
   }
 }
