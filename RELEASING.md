@@ -5,13 +5,21 @@ to assist them in preparing releases of the project.
 
 ## Release Checklist
 
+### Preparation
 1. Create a Release Milestone, and tag it to Issues and PRs wanted in the release
 1. Confirm Maven build executes with no errors
+
+### Update Artifacts
 1. Update the Version History, to record significant changes
 1. Set the version number in the following artifacts:
    1. Java class `org.locationtech.jts.JTSVersion`
    1. Maven POMs (use the Maven release plugin: `mvn versions:set -DnewVersion=<version>` )
 1. Review scripts in `bin` to confirm correctness
+
+### Create Release Artifacts
+1. **Execute the final Maven release build**
+
+### Deploy the Release
 1. Make a [JTS GitHub release](https://github.com/locationtech/jts/releases)
    1. Add release artifacts
    1. Update release notes
