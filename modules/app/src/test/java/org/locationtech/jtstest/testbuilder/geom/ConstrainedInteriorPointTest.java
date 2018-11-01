@@ -19,12 +19,6 @@ public class ConstrainedInteriorPointTest extends TestCase {
     junit.textui.TestRunner.main(testCaseName);
   }
   
-  public void testASimpleConstrained() {
-    checkPoint("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300))",
-        "POLYGON ((350 50, 200 50, 200 200, 350 200, 350 50))",
-        new Coordinate(250, 150));
-  }
-  
   public void testUshape() {
     checkPoint("POLYGON ((100 100, 200 100, 200 200, 300 200, 300 100, 320 100, 320 240, 100 240, 100 100))", new Coordinate(150, 170));
   }
@@ -53,10 +47,10 @@ public class ConstrainedInteriorPointTest extends TestCase {
     Coordinate ptActual = null;
     if (wktCon != null) {
       Envelope envCon = TestUtil.readWKT(wktCon).getEnvelopeInternal();
-      ptActual = ConstrainedInteriorPoint.getPoint((Polygon) poly, envCon);
+      ptActual = ConstrainedInteriorPoint.getCoordinate((Polygon) poly, envCon);
     }
     else {
-      ptActual = ConstrainedInteriorPoint.getPoint((Polygon) poly);
+      ptActual = ConstrainedInteriorPoint.getCoordinate((Polygon) poly);
     }
     //System.out.println(ptActual);
     assertTrue(ptExpected.equals2D(ptActual));
