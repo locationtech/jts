@@ -6,7 +6,8 @@ to assist them in preparing releases of the project.
 ## Release Checklist
 
 ### Preparation
-1. Create a Release Milestone, and tag it to Issues and PRs wanted in the release
+1. Create a [Release Milestone](https://github.com/locationtech/jts/milestones)
+   1. tag it to Issues and PRs wanted in the release
 1. Confirm Maven build executes with no errors
 
 ### Update Artifacts
