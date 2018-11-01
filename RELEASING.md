@@ -10,7 +10,7 @@ to assist them in preparing releases of the project.
 1. Confirm Maven build executes with no errors
 
 ### Update Artifacts
-1. Update the Version History, to record significant changes
+1. Update the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.html), to record significant changes
 1. Set the version number in the following artifacts:
    1. Java class `org.locationtech.jts.JTSVersion`
    1. Maven POMs (run the Maven release plugin at project root: `mvn versions:set -DnewVersion=<version>` )
