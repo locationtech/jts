@@ -42,7 +42,7 @@ public class DataLabelStyle implements Style
     
     Coordinate p = null;
     if (geom instanceof Polygon) {
-      p = ConstrainedInteriorPoint.getPoint((Polygon) geom, viewport.getModelEnv());
+      p = ConstrainedInteriorPoint.getCoordinate((Polygon) geom, viewport.getModelEnv());
     }
     else {
       p = geom.getInteriorPoint().getCoordinate();

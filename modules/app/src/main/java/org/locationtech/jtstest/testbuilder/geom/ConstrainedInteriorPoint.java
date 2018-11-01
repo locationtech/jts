@@ -18,19 +18,24 @@ import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 
 public class ConstrainedInteriorPoint {
   
-  public static Coordinate getPoint(Polygon poly) {
+  public static Coordinate getCoordinate(Polygon poly) {
     ConstrainedInteriorPoint lbl = new ConstrainedInteriorPoint(poly);
-    return lbl.getPoint();
+    return lbl.getCoordinate();
   }
   
-  public static Coordinate getPoint(Polygon poly, Envelope constraint) {
+  public static Coordinate getCoordinate(Polygon poly, Envelope constraint) {
     ConstrainedInteriorPoint lbl = new ConstrainedInteriorPoint(poly, constraint);
-    return lbl.getPoint();
+    return lbl.getCoordinate();
+  }
+  
+  public static Coordinate getCoordinate(Polygon poly, Geometry constraint) {
+    return getCoordinate(poly, constraint.getEnvelopeInternal());
   }
   
   private Polygon poly;
@@ -47,7 +52,7 @@ public class ConstrainedInteriorPoint {
     this.constraint = constraint; 
   }
   
-  public Coordinate getPoint() {
+  public Coordinate getCoordinate() {
     // TODO: check if constraint does not overlap poly - return empty if so
     scanY = findScanY(poly, constraint);
     scan(poly);
