@@ -13,5 +13,5 @@ to assist them in preparing releases of the project.
   * Maven POMs (using the Maven release plugin)
 * Review scripts in `bin` to confirm correctness
 * Review and update the release notes
-* Release to Maven central with the release property and profile ("mvn clean install -Drelease")
+* Release to Maven central with the release property and profile (`mvn clean install -Drelease`)
 
