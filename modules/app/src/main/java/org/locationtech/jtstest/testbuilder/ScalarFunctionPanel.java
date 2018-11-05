@@ -37,7 +37,7 @@ import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
  * @version 1.7
  */
 public class ScalarFunctionPanel 
-extends JPanel 
+extends JPanel implements FunctionPanel 
 {
   private static final String[] PARAM_DEFAULT = { "10" };
   
@@ -184,7 +184,7 @@ extends JPanel
     return null;
   }
   
-  private Object[] getFunctionParams()
+  public Object[] getFunctionParams()
   {
     if (currentFunc == null) return null;
     Class[] paramTypes = currentFunc.getParameterTypes();
@@ -215,6 +215,10 @@ extends JPanel
     return currentFunc.getName();
   }
 
+  public GeometryFunction getFunction() {
+    return currentFunc;
+  }
+  
   public Stopwatch getTimer()
   {
     return timer;
