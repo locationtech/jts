@@ -22,7 +22,7 @@ import org.locationtech.jtstest.testbuilder.ui.Viewport;
 public class ArrowLineStyle 
   extends SegmentStyle
 {
-  private final static double HEAD_ANGLE = 30;
+  private final static double HEAD_ANGLE = 10;
   private final static double HEAD_LENGTH = 8;
 
   private Color color = Color.RED;
@@ -42,12 +42,12 @@ public class ArrowLineStyle
   protected void paint(int index, Point2D p0, Point2D p1, int lineType, Viewport vp, Graphics2D gr)
   throws Exception
   {
-  	if (lineType == LINE)
-  		paintMidpointArrow(p0, p1, vp, gr);
-  	else {
+    if (lineType == LINE)
+      paintMidpointArrow(p0, p1, vp, gr);
+    else {
       paintMidArrowHalf(p0, p1, vp, gr);
-      //paintOffsetArrow(p0, p1, vp, gr);
-  	}
+      //paintOffsetLineArrow(p0, p1, vp, gr);
+    }
   }
 
   protected void paintMidpointArrow(Point2D p0, Point2D p1, Viewport viewport,
@@ -59,7 +59,7 @@ public class ArrowLineStyle
     Point2D mid = new Point2D.Float((float) ((p0.getX() + p1.getX()) / 2),
         (float) ((p0.getY() + p1.getY()) / 2));
     GeneralPath arrowhead = ArrowEndpointStyle.arrowheadPath(p0, p1, mid,
-    		HEAD_LENGTH, HEAD_ANGLE);
+        HEAD_LENGTH, HEAD_ANGLE);
     graphics.draw(arrowhead);
   }
 
@@ -113,35 +113,39 @@ public class ArrowLineStyle
   protected void paintMidArrowHalf(Point2D p0, Point2D p1, Viewport viewport,
       Graphics2D graphics) throws NoninvertibleTransformException 
   {
-    if (isTooSmallToRender(p0, p1)) return;
+    double len = 20;
+    if (isTooSmallToRender(p0, p1, 3 * len)) return;
     
     graphics.setColor(color);
     //      graphics.setStroke(1.0);
     
-    Point2D mid = new Point2D.Float((float) ((p0.getX() + p1.getX()) / 2),
-        (float) ((p0.getY() + p1.getY()) / 2));
-    GeneralPath arrowhead = arrowHeadHalf(mid, p1, 0, 10, HEAD_ANGLE_RAD, 1.2);
+    // place arrow slightly past midpoint
+    Point2D origin = new Point2D.Float(
+        (float) ((p0.getX() + 2 * p1.getX()) / 3),
+        (float) ((p0.getY() + 2 * p1.getY()) / 3) );
+    GeneralPath arrowhead = arrowHeadHalf(origin, p1, 0, len, HEAD_ANGLE_RAD, 1.2);
     arrowhead.closePath();
     graphics.fill(arrowhead);
     graphics.draw(arrowhead);
   }
   
-  private static GeneralPath arrowHeadHalf(Point2D p0, Point2D p1, 
+  private static GeneralPath arrowHeadHalf(Point2D origin, Point2D p1, 
       double offset, double len, double angle, double rakeFactor
       ) {
-    double dx = p1.getX() - p0.getX();
-    double dy = p1.getY() - p0.getY();
+    // TODO: offset is in wrong direction!
+    double dx = p1.getX() - origin.getX();
+    double dy = p1.getY() - origin.getY();
     
     double vlen = Math.sqrt(dx * dx + dy * dy);
     
     double vy = dy / vlen;
     double vx = dx / vlen;
     
-    double off0x = p0.getX() + offset * vy;
-    double off0y = p0.getY() + offset * -vx;
+    double off0x = origin.getX() + offset * vy;
+    double off0y = origin.getY() + offset * -vx;
     
-    double off1x = p0.getX() + len * vx + offset * vy;
-    double off1y = p0.getY() + len * vy + offset * -vx;
+    double off1x = origin.getX() + len * vx + offset * vy;
+    double off1y = origin.getY() + len * vy + offset * -vx;
     
     double headAngCos = Math.cos(angle);
     double headAngSin = -Math.sin(angle);
@@ -156,7 +160,11 @@ public class ArrowLineStyle
     return arrowhead;
   }
 
-  private boolean isTooSmallToRender(Point2D p0, Point2D p1)
+  private static boolean isTooSmallToRender(Point2D p0, Point2D p1) {
+    return isTooSmallToRender(p0, p1, MIN_VISIBLE_LEN);
+  }
+  
+  private static boolean isTooSmallToRender(Point2D p0, Point2D p1, double minLen)
   {
     if (p0.equals(p1)) {
       return true;
@@ -166,7 +174,6 @@ public class ArrowLineStyle
     
     double len = Math.sqrt(dx * dx + dy * dy);
     
-    return len < MIN_VISIBLE_LEN;
-
+    return len < minLen;
   }
 }
