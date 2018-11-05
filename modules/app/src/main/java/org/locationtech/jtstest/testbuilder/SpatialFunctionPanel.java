@@ -57,7 +57,7 @@ import org.locationtech.jtstest.util.ClassUtil;
  * @version 1.7
  */
 public class SpatialFunctionPanel 
-extends JPanel 
+extends JPanel implements FunctionPanel 
 {
   private static final EmptyBorder LABEL_BORDER = new EmptyBorder(3,5,3,5);
 
