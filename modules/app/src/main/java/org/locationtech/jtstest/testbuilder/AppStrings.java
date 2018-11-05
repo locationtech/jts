@@ -67,4 +67,6 @@ public class AppStrings {
 
   static final String TIP_COPY_DATA = "Copy as WKT (Ctl-click for formatted)";
 
+  static final String TIP_EXECUTE = "Compute the result of the function";
+
 }

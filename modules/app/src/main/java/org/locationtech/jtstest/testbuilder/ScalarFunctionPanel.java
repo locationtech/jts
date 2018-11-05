@@ -56,7 +56,7 @@ extends JPanel
   FlowLayout flowLayout1 = new FlowLayout();
   
   JButton execButton = new JButton();
-
+  
   private transient Vector spatialFunctionPanelListeners;
 
   private JLabel lblDistance = new JLabel();
@@ -99,9 +99,8 @@ extends JPanel
     panelParam.add(lblDistance);
     panelParam.add(txtDistance);
     
-    execButton.setText("Compute");
-    execButton.addActionListener(new java.awt.event.ActionListener() {
-
+    execButton = SwingUtil.createButton(AppIcons.EXECUTE, AppStrings.TIP_EXECUTE,
+        new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         execButton_actionPerformed(e);
       }

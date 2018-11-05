@@ -100,7 +100,6 @@ extends JPanel
   private JButton execToNewButton = new JButton();
   
   private final ImageIcon clearIcon = new ImageIcon(this.getClass().getResource("clear.gif"));
-  private final ImageIcon executeIcon = new ImageIcon(this.getClass().getResource("Execute.png"));
   private final ImageIcon expandDownIcon = new ImageIcon(this.getClass().getResource("Expand-Down.png"));
   
   private transient Vector spatialFunctionPanelListeners;
@@ -238,7 +237,7 @@ extends JPanel
     txtRepeatCount.setText("10");
     txtRepeatCount.setHorizontalAlignment(SwingConstants.RIGHT); 
     
-    execButton = SwingUtil.createButton(executeIcon, "Compute the result of the function",
+    execButton = SwingUtil.createButton(AppIcons.EXECUTE, AppStrings.TIP_EXECUTE,
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         execButton_actionPerformed(e);
@@ -246,7 +245,7 @@ extends JPanel
     });
     execButton.setEnabled(false);
     
-    execToNewButton = SwingUtil.createButton("New", executeIcon, "Compute function result to a new case",
+    execToNewButton = SwingUtil.createButton("New", AppIcons.EXECUTE, "Compute function result to a new case",
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         execToNewButton_actionPerformed(e);
