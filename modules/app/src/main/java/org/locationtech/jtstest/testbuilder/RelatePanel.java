@@ -42,22 +42,22 @@ public class RelatePanel extends JPanel {
   Border border1;
   Border border2;
   JPanel jPanel2 = new JPanel();
-  JLabel jLabel17 = new JLabel();
+  JLabel lblCrosses = new JLabel();
   JLabel equalsAB = new JLabel();
-  JLabel jLabel16 = new JLabel();
+  JLabel lblWithin = new JLabel();
   JLabel containsBA = new JLabel();
-  JLabel jLabel15 = new JLabel();
+  JLabel lblTouches = new JLabel();
   JLabel containsAB = new JLabel();
   GridBagLayout gridBagLayout1 = new GridBagLayout();
   JLabel equalsBA = new JLabel();
-  JLabel jLabel6 = new JLabel();
-  JLabel jLabel5 = new JLabel();
+  JLabel lblPredBA = new JLabel();
+  JLabel lblPredAB = new JLabel();
   JPanel predicates = new JPanel();
-  JLabel jLabel3 = new JLabel();
-  JLabel jLabel2 = new JLabel();
-  JLabel jLabel19 = new JLabel();
-  JLabel jLabel1 = new JLabel();
-  JLabel jLabel18 = new JLabel();
+  JLabel lblIntersects = new JLabel();
+  JLabel lblDisjoint = new JLabel();
+  JLabel lblOverlaps = new JLabel();
+  JLabel lblEquals = new JLabel();
+  JLabel lblContains = new JLabel();
   JLabel disjointAB = new JLabel();
   JLabel disjointBA = new JLabel();
   JLabel intersectsAB = new JLabel();
@@ -123,8 +123,8 @@ public class RelatePanel extends JPanel {
     };
   private JLabel coversAB = new JLabel();
   private JLabel coversBA = new JLabel();
-  private JLabel jLabel110 = new JLabel();
-  private JLabel jLabel111 = new JLabel();
+  private JLabel lblCoveredBy = new JLabel();
+  private JLabel lblCovers = new JLabel();
   private JLabel coveredByAB = new JLabel();
   private JLabel coveredByBA = new JLabel();
 
@@ -199,34 +199,28 @@ public class RelatePanel extends JPanel {
       txtAB.setText(im.toString());
       txtBA.setText(imBA.toString());
 
-      setPredicate(equalsAB, im.isEquals(testCase.getGeometry(0).getDimension(),
-          testCase.getGeometry(1).getDimension()));
+      int dimA = testCase.getGeometry(0).getDimension();
+      int dimB = testCase.getGeometry(1).getDimension();
+      
+      setPredicate(equalsAB, im.isEquals(dimA, dimB));
       setPredicate(disjointAB, im.isDisjoint());
       setPredicate(intersectsAB, im.isIntersects());
-      setPredicate(touchesAB, im.isTouches(testCase.getGeometry(0).getDimension(),
-          testCase.getGeometry(1).getDimension()));
-      setPredicate(crossesAB, im.isCrosses(testCase.getGeometry(0).getDimension(),
-          testCase.getGeometry(1).getDimension()));
+      setPredicate(touchesAB, im.isTouches(dimA, dimB));
+      setPredicate(crossesAB, im.isCrosses(dimA, dimB));
       setPredicate(withinAB, im.isWithin());
       setPredicate(containsAB, im.isContains());
-      setPredicate(overlapsAB, im.isOverlaps(testCase.getGeometry(0).getDimension(),
-          testCase.getGeometry(1).getDimension()));
+      setPredicate(overlapsAB, im.isOverlaps(dimA, dimB));
       setPredicate(coversAB, im.isCovers());
       setPredicate(coveredByAB, im.isCoveredBy());
 
-
-      setPredicate(equalsBA, imBA.isEquals(testCase.getGeometry(1).getDimension(),
-          testCase.getGeometry(0).getDimension()));
+      setPredicate(equalsBA, imBA.isEquals(dimB, dimA));
       setPredicate(disjointBA, imBA.isDisjoint());
       setPredicate(intersectsBA, imBA.isIntersects());
-      setPredicate(touchesBA, imBA.isTouches(testCase.getGeometry(1).getDimension(),
-          testCase.getGeometry(0).getDimension()));
-      setPredicate(crossesBA, imBA.isCrosses(testCase.getGeometry(1).getDimension(),
-          testCase.getGeometry(0).getDimension()));
+      setPredicate(touchesBA, imBA.isTouches(dimB, dimA));
+      setPredicate(crossesBA, imBA.isCrosses(dimB, dimA));
       setPredicate(withinBA, imBA.isWithin());
       setPredicate(containsBA, imBA.isContains());
-      setPredicate(overlapsBA, imBA.isOverlaps(testCase.getGeometry(1).getDimension(),
-          testCase.getGeometry(0).getDimension()));
+      setPredicate(overlapsBA, imBA.isOverlaps(dimB, dimA));
       setPredicate(coversBA, imBA.isCovers());
       setPredicate(coveredByBA, imBA.isCoveredBy());
     }
@@ -259,77 +253,9 @@ public class RelatePanel extends JPanel {
         5));
     this.setLayout(gridBagLayout3);
     this.setPreferredSize(new java.awt.Dimension(233, 100));
-    jLabel17.setFont(new java.awt.Font("Dialog", 1, 12));
-    jLabel17.setForeground(Color.blue);
-    jLabel17.setText("Crosses");
-    equalsAB.setFont(new java.awt.Font("Dialog", 1, 12));
-    equalsAB.setToolTipText("");
-    equalsAB.setText("-");
-    jLabel16.setFont(new java.awt.Font("Dialog", 1, 12));
-    jLabel16.setForeground(Color.blue);
-    jLabel16.setToolTipText("");
-    jLabel16.setText("Within");
-    containsBA.setFont(new java.awt.Font("Dialog", 1, 12));
-    containsBA.setText("-");
-    jLabel15.setFont(new java.awt.Font("Dialog", 1, 12));
-    jLabel15.setForeground(Color.blue);
-    jLabel15.setToolTipText("");
-    jLabel15.setText("Touches");
-    containsAB.setFont(new java.awt.Font("Dialog", 1, 12));
-    containsAB.setText("-");
-    equalsBA.setFont(new java.awt.Font("Dialog", 1, 12));
-    equalsBA.setToolTipText("");
-    equalsBA.setText("-");
-    jLabel6.setFont(new java.awt.Font("Dialog", 2, 12));
-    jLabel6.setText("BA");
-    jLabel5.setFont(new java.awt.Font("Dialog", 2, 12));
-    jLabel5.setText("AB");
-    predicates.setLayout(gridBagLayout1);
-    predicates.setBorder(border1);
-    jLabel3.setFont(new java.awt.Font("Dialog", 1, 12));
-    jLabel3.setForeground(Color.blue);
-    jLabel3.setToolTipText("");
-    jLabel3.setText("Intersects");
-    jLabel2.setFont(new java.awt.Font("Dialog", 1, 12));
-    jLabel2.setForeground(Color.blue);
-    jLabel2.setToolTipText("");
-    jLabel2.setText("Disjoint");
-    jLabel19.setFont(new java.awt.Font("Dialog", 1, 12));
-    jLabel19.setForeground(Color.blue);
-    jLabel19.setToolTipText("");
-    jLabel19.setText("Overlaps");
-    jLabel1.setFont(new java.awt.Font("Dialog", 1, 12));
-    jLabel1.setForeground(Color.blue);
-    jLabel1.setText("Equals");
-    jLabel18.setFont(new java.awt.Font("Dialog", 1, 12));
-    jLabel18.setForeground(Color.blue);
-    jLabel18.setToolTipText("");
-    jLabel18.setText("Contains");
-    disjointAB.setFont(new java.awt.Font("Dialog", 1, 12));
-    disjointAB.setToolTipText("");
-    disjointAB.setText("-");
-    disjointBA.setFont(new java.awt.Font("Dialog", 1, 12));
-    disjointBA.setText("-");
-    intersectsAB.setFont(new java.awt.Font("Dialog", 1, 12));
-    intersectsAB.setText("-");
-    intersectsBA.setFont(new java.awt.Font("Dialog", 1, 12));
-    intersectsBA.setText("-");
-    touchesAB.setFont(new java.awt.Font("Dialog", 1, 12));
-    touchesAB.setText("-");
-    touchesBA.setFont(new java.awt.Font("Dialog", 1, 12));
-    touchesBA.setText("-");
-    crossesAB.setFont(new java.awt.Font("Dialog", 1, 12));
-    crossesAB.setText("-");
-    crossesBA.setFont(new java.awt.Font("Dialog", 1, 12));
-    crossesBA.setText("-");
-    withinAB.setFont(new java.awt.Font("Dialog", 1, 12));
-    withinAB.setText("-");
-    withinBA.setFont(new java.awt.Font("Dialog", 1, 12));
-    withinBA.setText("-");
-    overlapsAB.setFont(new java.awt.Font("Dialog", 1, 12));
-    overlapsAB.setText("-");
-    overlapsBA.setFont(new java.awt.Font("Dialog", 1, 12));
-    overlapsBA.setText("-");
+
+
+    
     relateIE.setFont(new java.awt.Font("Dialog", 1, 12));
     relateIE.setText("F");
     relateIB.setFont(new java.awt.Font("Dialog", 1, 12));
@@ -413,24 +339,7 @@ public class RelatePanel extends JPanel {
     jPanel3.setBorder(border3);
     tickCrossLabel.setIcon(clearIcon);
     matrixPanel.setLayout(gridBagLayout5);
-    coversAB.setFont(new java.awt.Font("Dialog", 1, 12));
-    coversAB.setToolTipText("");
-    coversAB.setText("-");
-    coversBA.setFont(new java.awt.Font("Dialog", 1, 12));
-    coversBA.setToolTipText("");
-    coversBA.setText("-");
-    jLabel110.setText("CoveredBy");
-    jLabel110.setToolTipText("");
-    jLabel110.setForeground(Color.blue);
-    jLabel110.setFont(new java.awt.Font("Dialog", 1, 12));
-    jLabel111.setText("Covers");
-    jLabel111.setToolTipText("");
-    jLabel111.setForeground(Color.blue);
-    jLabel111.setFont(new java.awt.Font("Dialog", 1, 12));
-    coveredByAB.setFont(new java.awt.Font("Dialog", 1, 12));
-    coveredByAB.setText("-");
-    coveredByBA.setFont(new java.awt.Font("Dialog", 1, 12));
-    coveredByBA.setText("-");
+
     this.add(jPanel3, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
         GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
     jPanel3.add(jPanel1, new GridBagConstraints(100, 100, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER,
@@ -487,73 +396,76 @@ public class RelatePanel extends JPanel {
     jPanel3.add(matrixPanel, new GridBagConstraints(100, 110, 1, 1, 0.0, 0.0,
         GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0,
         0, 0), 0, 0));
+    
+    
+
+    lblPredBA.setFont(new java.awt.Font("Dialog", 2, 12));
+    lblPredBA.setText("BA");
+    lblPredAB.setFont(new java.awt.Font("Dialog", 2, 12));
+    lblPredAB.setText("AB");
+    predicates.setLayout(gridBagLayout1);
+    predicates.setBorder(border1);
+    
     this.add(jPanel2, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0, GridBagConstraints.SOUTHWEST,
         GridBagConstraints.BOTH, new Insets(0, -6, 0, 6), 0, 0));
     jPanel2.add(predicates, null);
-    predicates.add(equalsAB,         new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(equalsBA,         new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(jLabel5,         new GridBagConstraints(1, 0, 1, 1, 0.1, 0.0
+    
+    
+    predicates.add(lblPredAB,         new GridBagConstraints(1, 0, 1, 1, 0.1, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 0));
-    predicates.add(jLabel6,         new GridBagConstraints(2, 0, 1, 1, 0.1, 0.0
+    predicates.add(lblPredBA,         new GridBagConstraints(2, 0, 1, 1, 0.1, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 0));
-    predicates.add(jLabel1,         new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 10), 0, 0));
-    predicates.add(jLabel2,         new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 10), 0, 0));
-    predicates.add(jLabel3,         new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 5, 0, 10), 0, 0));
-    predicates.add(jLabel15,         new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 10), 0, 0));
-    predicates.add(jLabel17,         new GridBagConstraints(0, 5, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 10), 0, 0));
-    predicates.add(jLabel16,         new GridBagConstraints(0, 6, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 10), 0, 0));
-    predicates.add(jLabel18,         new GridBagConstraints(0, 7, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 10), 0, 0));
-    predicates.add(containsAB,         new GridBagConstraints(1, 7, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(containsBA,         new GridBagConstraints(2, 7, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(disjointAB,         new GridBagConstraints(1, 2, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(disjointBA,         new GridBagConstraints(2, 2, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(intersectsAB,         new GridBagConstraints(1, 3, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(intersectsBA,         new GridBagConstraints(2, 3, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(touchesAB,         new GridBagConstraints(1, 4, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(touchesBA,         new GridBagConstraints(2, 4, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(crossesAB,         new GridBagConstraints(1, 5, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(crossesBA,         new GridBagConstraints(2, 5, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(withinAB,         new GridBagConstraints(1, 6, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(withinBA,         new GridBagConstraints(2, 6, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(overlapsAB,         new GridBagConstraints(1, 8, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(overlapsBA,         new GridBagConstraints(2, 8, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(coversAB,          new GridBagConstraints(1, 9, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(coversBA,         new GridBagConstraints(2, 9, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(jLabel19,         new GridBagConstraints(0, 8, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 10), 0, 0));
-    predicates.add(jLabel110,             new GridBagConstraints(0, 10, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 10), 0, 0));
-    predicates.add(jLabel111,        new GridBagConstraints(0, 9, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.SOUTHEAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 10), 0, 0));
-    predicates.add(coveredByAB,  new GridBagConstraints(1, 10, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    predicates.add(coveredByBA, new GridBagConstraints(2, 10, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+    
+    addPredicate("Equals", lblEquals, equalsAB, equalsBA, 1);
+    
+    setDivider(lblIntersects);
+    addPredicate("Intersects", lblIntersects, intersectsAB, intersectsBA, 2);
+    addPredicate("Disjoint", lblDisjoint, disjointAB, disjointBA, 3);
+
+    setDivider(lblContains);
+    addPredicate("Contains", lblContains, containsAB, containsBA, 4);
+    addPredicate("Within", lblWithin, withinAB, withinBA, 5);
+
+    setDivider(lblCovers);
+    addPredicate("Covers", lblCovers, coversAB, coversBA, 6);
+    addPredicate("CoveredBy", lblCoveredBy, coveredByAB, coveredByBA, 7);  
+    
+    setDivider(lblCrosses);
+    addPredicate("Crosses", lblCrosses, crossesAB, crossesBA, 8);
+    addPredicate("Overlaps", lblOverlaps, overlapsAB, overlapsBA, 9);
+    addPredicate("Touches", lblTouches, touchesAB, touchesBA, 10);
+
+  }
+
+  private void addPredicate(String name, JLabel lblName, JLabel valueAB, JLabel valueBA, int row) {
+    addPredicateName(name, lblName, row);
+    addPredicateValue(valueAB, 1, row);
+    addPredicateValue(valueBA, 2, row);
+  }
+  private void addPredicateName(String name, JLabel lbl, int y) {
+    lbl.setText(name);
+    lbl.setToolTipText("");
+    lbl.setForeground(Color.blue);
+    lbl.setFont(new java.awt.Font("Dialog", 1, 12));
+    
+    predicates.add(lbl,         
+        new GridBagConstraints(0, y, 1, 1, 0.0, 0.0
+        ,GridBagConstraints.EAST, 
+        GridBagConstraints.NONE, new Insets(0, 5, 0, 10), 0, 0));
+  }
+
+  private void addPredicateValue(JLabel lbl, int x, int y) {
+    lbl.setFont(new java.awt.Font("Dialog", 1, 12));
+    lbl.setText("-");
+    
+    predicates.add(lbl, 
+        new GridBagConstraints(x, y, 1, 1, 0.0, 0.0, 
+        GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 0, 0), 0, 0));
+  }
+  
+  private void setDivider(JLabel lbl) {
+    lbl.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
   }
 
 
