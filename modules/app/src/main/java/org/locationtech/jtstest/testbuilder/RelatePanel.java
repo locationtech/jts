@@ -237,9 +237,14 @@ public class RelatePanel extends JPanel {
     lbl.setText(buf.toString());
   }
 
+  private static Color CLR_TRUE = Color.GREEN.darker().darker();
+  private static Color CLR_FALSE = Color.RED.darker();
+  
   void setPredicate(JLabel lbl, boolean b) {
     String val = b ? "T" : "F";
     lbl.setText(val);
+    lbl.setForeground(b ? CLR_TRUE : CLR_FALSE );
+    lbl.setBackground(Color.WHITE);
   }
 
   void jbInit() throws Exception {
