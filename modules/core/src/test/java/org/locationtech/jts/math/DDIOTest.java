@@ -175,7 +175,7 @@ public class DDIOTest extends TestCase {
 		assertTrue(foundParseError);
 	}
 
-	public void tesWritetRepeatedSqrt()
+	public void testWriteRepeatedSqrt()
 	{
 		writeRepeatedSqrt(DD.valueOf(1.0));
 		writeRepeatedSqrt(DD.valueOf(.999999999999));
