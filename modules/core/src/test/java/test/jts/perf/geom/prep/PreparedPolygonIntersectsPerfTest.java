@@ -158,7 +158,7 @@ public class PreparedPolygonIntersectsPerfTest
 
   public int testOriginal(int iter, Geometry g, List lines)
   { 
-	  if (iter == 0) System.out.println("Using orginal JTS algorithm");
+	  if (iter == 0) System.out.println("Using original JTS algorithm");
   	int count = 0;
   	for (Iterator i = lines.iterator(); i.hasNext(); ) {
   		LineString line = (LineString) i.next();

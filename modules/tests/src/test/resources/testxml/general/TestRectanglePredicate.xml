@@ -56,7 +56,7 @@
 </case>
 
 <case>
-  <desc>L overlaps thru Y axis side</desc>
+  <desc>L overlaps through Y axis side</desc>
   <a>
     POLYGON((0 0, 100 0, 100 100, 0 100, 0 0))
   </a>
@@ -67,7 +67,7 @@
 </case>
 
 <case>
-  <desc>L overlaps thru X axis side</desc>
+  <desc>L overlaps through X axis side</desc>
   <a>
     POLYGON((0 0, 100 0, 100 100, 0 100, 0 0))
   </a>

@@ -70,7 +70,7 @@ public class TriangulationFunctions
     }
     catch (LocateFailureException ex) {
       System.out.println(ex);
-      // ignore this exception and drop thru
+      // ignore this exception and drop through
     }
     /**
      * Get the triangles created up until the error

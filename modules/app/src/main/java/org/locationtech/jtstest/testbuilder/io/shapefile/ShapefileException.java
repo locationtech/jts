@@ -22,7 +22,7 @@ package org.locationtech.jtstest.testbuilder.io.shapefile;
 
 /**
  * Thrown when an error relating to the shapefile
- * occures
+ * occurs
  */
 public class ShapefileException extends Exception{
     public ShapefileException(){

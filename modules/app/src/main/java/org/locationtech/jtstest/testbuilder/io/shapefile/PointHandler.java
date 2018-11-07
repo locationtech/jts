@@ -54,7 +54,7 @@ public class PointHandler implements ShapeHandler{
 		actualReadWords += 2;
        
         if (shapeType != myShapeType)
-            throw new InvalidShapefileException("pointhandler.read() - handler's shapetype doesnt match file's");
+            throw new InvalidShapefileException("pointhandler.read() - handler's shapetype doesn't match file's");
         
         double x = file.readDoubleLE();
         double y = file.readDoubleLE();

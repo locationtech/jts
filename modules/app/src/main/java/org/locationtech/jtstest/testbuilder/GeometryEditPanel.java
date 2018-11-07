@@ -212,7 +212,7 @@ public class GeometryEditPanel extends JPanel
 //    if (event.getPoint().x < 100) return null;
     Coordinate pt = viewport.toModelCoordinate(event.getPoint());
     double toleranceInModel = AppConstants.TOLERANCE_PIXELS / getViewport().getScale();
-    // avoid wierd scale issues
+    // avoid weird scale issues
     if (toleranceInModel <= 0.0) return null;
     return GeometryLocationsWriter.writeLocation(getLayerList(), pt, toleranceInModel);
 //    return viewport.toModel(event.getPoint()).toString();

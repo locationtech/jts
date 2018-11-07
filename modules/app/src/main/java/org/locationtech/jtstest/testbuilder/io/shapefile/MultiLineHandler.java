@@ -278,7 +278,7 @@ public class MultiLineHandler implements ShapeHandler{
  * Removed LEDatastream refs and replaced with EndianData[in/out]putstream
  *
  * Revision 1.1  2002/08/27 21:04:58  dblasby
- * orginal
+ * original
  *
  * Revision 1.2  2002/03/05 10:23:59  jmacgill
  * made sure geometries were created using the factory methods
