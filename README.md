@@ -40,6 +40,11 @@ See also:
 * Building and developing with JTS is described in the [**Developing Guide**](DEVELOPING.md).
 * Migrating from previous versions of JTS is described in the [**Upgrade Guide**](MIGRATION.md).
 
+## History
+
+* History from the previous JTS SourceForge repo is in the branch [`_old/history`](https://github.com/locationtech/jts/tree/_old/history)
+* Older versions of JTS can be found on SourceForge and [here](https://github.com/dr-jts/jts-versions)
+
 ## Contributing
 
 If you are interested in contributing to JTS please read the [**Contributing Guide**](CONTRIBUTING.md).
