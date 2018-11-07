@@ -102,7 +102,7 @@ public class PreparedLineIntersectsPerfTest
 
   public int testOriginal(Geometry g, List lines)
   { 
-  	System.out.println("Using orginal JTS algorithm");
+  	System.out.println("Using original JTS algorithm");
   	int count = 0;
   	for (Iterator i = lines.iterator(); i.hasNext(); ) {
   		LineString line = (LineString) i.next();

@@ -102,7 +102,7 @@ public class SineStarFactory
     Coordinate[] pts = new Coordinate[nPts + 1];
     int iPt = 0;
     for (int i = 0; i < nPts; i++) {
-      // the fraction of the way thru the current arm - in [0,1]
+      // the fraction of the way through the current arm - in [0,1]
       double ptArcFrac = (i / (double) nPts) * numArms;
       double armAngFrac = ptArcFrac - Math.floor(ptArcFrac);
       

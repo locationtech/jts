@@ -18,7 +18,7 @@ During that transition, the Java package names and Maven GAVs have changed.  For
 | Maven GroupId | com.vividsolutions        | org.locationtech.jts        |
 | Package names | com.vividsolutions.jts.*  | org.locationtech.jts.*      |
 
-To upgrade a Maven project (or another build tool using Maven dependency management), one can do a find and replace on ```pom.xml``` files (or similiar build files).  In the source code, one could do a find and replace on the package names.  As a concrete example, one could use these two commands to handle most of the migration. 
+To upgrade a Maven project (or another build tool using Maven dependency management), one can do a find and replace on ```pom.xml``` files (or similar build files).  In the source code, one could do a find and replace on the package names.  As a concrete example, one could use these two commands to handle most of the migration. 
 
 ```
 git grep -l com.vividsolutions | grep pom.xml | xargs sed -i "s/com.vividsolutions/org.locationtech.jts/g"

@@ -66,7 +66,7 @@ public class PrecisionReducerCoordinateOperation extends
 		if (removeCollapsed)
 			collapsedCoords = null;
 
-		// return null or orginal length coordinate array
+		// return null or original length coordinate array
 		if (noRepeatedCoords.length < minLength) {
 			return collapsedCoords;
 		}

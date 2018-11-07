@@ -57,7 +57,7 @@ public class SVGWriter
    */
   private static DecimalFormat createFormatter(PrecisionModel precisionModel) {
     // the default number of decimal places is 16, which is sufficient
-    // to accomodate the maximum precision of a double.
+    // to accommodate the maximum precision of a double.
     int decimalPlaces = precisionModel.getMaximumSignificantDigits();
     // specify decimal separator explicitly to avoid problems in other locales
     DecimalFormatSymbols symbols = new DecimalFormatSymbols();

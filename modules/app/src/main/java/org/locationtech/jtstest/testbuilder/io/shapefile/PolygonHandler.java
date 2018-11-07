@@ -222,7 +222,7 @@ public class PolygonHandler implements ShapeHandler{
 
         Geometry result = geometryFactory.createMultiPolygon(polygons);
         // if (!(result.isValid() ))
-        // System.out.println("geom isnt valid");
+        // System.out.println("geom isn't valid");
         return result;
       }
 
@@ -389,7 +389,7 @@ public class PolygonHandler implements ShapeHandler{
  * Removed LEDatastream refs and replaced with EndianData[in/out]putstream
  *
  * Revision 1.1  2002/08/27 21:04:58  dblasby
- * orginal
+ * original
  *
  * Revision 1.3  2002/03/05 10:51:01  andyt
  * removed use of factory from write method
