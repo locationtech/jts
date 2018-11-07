@@ -310,7 +310,7 @@ public class GeometryStrategies{
 				// one child, either a coord
 				// or a coordinate sequence
 
-				if(arg.text == null || "".equals(arg.text))
+				if(arg.text == null || arg.text.length() == 0)
 					throw new SAXException("Cannot create a coordinate sequence without text to parse");
 				
 				String decimal = ".";
@@ -341,8 +341,8 @@ public class GeometryStrategies{
 				if(ptn == null){
 					String ts = new String(toupleSeperator);
 					if(ts.indexOf('\\')>-1){
-							// need to escape it
-							ts = ts.replaceAll("\\","\\\\");
+						// need to escape it
+						ts = ts.replaceAll("\\\\","\\\\\\\\");
 					}
 					if(ts.indexOf('.')>-1){
 						// need to escape it
@@ -386,8 +386,8 @@ public class GeometryStrategies{
 					if(ptn == null){
 						String ts = new String(coordSeperator);
 						if(ts.indexOf('\\')>-1){
-								// need to escape it
-							ts = ts.replaceAll("\\","\\\\");
+							// need to escape it
+							ts = ts.replaceAll("\\\\","\\\\\\\\");
 						}
 						if(ts.indexOf('.')>-1){
 							// need to escape it
