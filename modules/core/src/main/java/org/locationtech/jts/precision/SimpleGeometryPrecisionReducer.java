@@ -141,7 +141,7 @@ public class SimpleGeometryPrecisionReducer
       Coordinate[] collapsedCoords = reducedCoords;
       if (removeCollapsed) collapsedCoords = null;
 
-      // return null or orginal length coordinate array
+      // return null or orignal length coordinate array
       if (noRepeatedCoords.length < minLength) {
           return collapsedCoords;
       }
