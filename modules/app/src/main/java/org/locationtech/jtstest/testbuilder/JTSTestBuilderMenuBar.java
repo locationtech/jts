@@ -251,9 +251,10 @@ public class JTSTestBuilderMenuBar
 
     jMenuFile.add(menuLoadXmlTestFile);
     jMenuFile.add(menuLoadXmlTestFolder);
+    jMenuFile.add(saveAsXmlMenuItem);
+    jMenuFile.addSeparator();
     jMenuFile.add(saveAsPNGMenuItem);
     jMenuFile.add(saveToClipboardMenuItem);
-    jMenuFile.add(saveAsXmlMenuItem);
     //jMenuFile.add(saveAsHtmlMenuItem);
     //jMenuFile.add(generateExpectedValuesMenuItem);
     jMenuFile.addSeparator();
