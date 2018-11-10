@@ -143,38 +143,38 @@ public class JTSTestBuilderMenuBar
     showVerticesMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          JTSTestBuilderController.setShowingVertices(showVerticesMenuItem.isSelected());
+          JTSTestBuilder.controller().setShowingVertices(showVerticesMenuItem.isSelected());
         }
       });
 
     final JMenuItem showLabelMenuItem = menuItemCheck("Labels", true,
         new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          JTSTestBuilderController.setShowingLabel(((JMenuItem)e.getSource()).isSelected());
+          JTSTestBuilder.controller().setShowingLabel(((JMenuItem)e.getSource()).isSelected());
         }
       });
     final JMenuItem basicFillMenuItem = menuItemRadio("Basic Fill", true,
         new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          JTSTestBuilderController.setFillType(DisplayParameters.FILL_BASIC);
+          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_BASIC);
         }
       });
     final JMenuItem varyFillMenuItem = menuItemRadio("Varying Fill", false,
         new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          JTSTestBuilderController.setFillType(DisplayParameters.FILL_VARY);
+          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_VARY);
         }
       });
     final JMenuItem rainbowFillMenuItem = menuItemRadio("Rainbow Fill", false,
         new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          JTSTestBuilderController.setFillType(DisplayParameters.FILL_RAINBOW);
+          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_RAINBOW);
         }
       });
     final JMenuItem rainbowRandomFillMenuItem = menuItemRadio("Random Rainbow Fill", false,
         new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          JTSTestBuilderController.setFillType(DisplayParameters.FILL_RAINBOW_RANDOM);
+          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_RAINBOW_RANDOM);
         }
       });
     showGridMenuItem.setText("Grid");
@@ -189,21 +189,21 @@ public class JTSTestBuilderMenuBar
     showStructureMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          JTSTestBuilderController.setShowingStructure(showStructureMenuItem.isSelected());
+          JTSTestBuilder.controller().setShowingStructure(showStructureMenuItem.isSelected());
         }
       });
     showOrientationsMenuItem.setText("Orientations");
     showOrientationsMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          JTSTestBuilderController.setShowingOrientations(showOrientationsMenuItem.isSelected());
+          JTSTestBuilder.controller().setShowingOrientations(showOrientationsMenuItem.isSelected());
         }
       });
     showVertexIndicesMenuItem.setText("Vertex Indices");
     showVertexIndicesMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          JTSTestBuilderController.setShowingVertices(showVerticesMenuItem.isSelected());
+          JTSTestBuilder.controller().setShowingVertices(showVerticesMenuItem.isSelected());
         }
       });
     menuLoadXmlTestFolder.setText("Open XML Folder(s)...");

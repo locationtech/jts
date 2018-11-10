@@ -104,7 +104,7 @@ public class ResultController
      String timeString = timer != null ? timer.getTimeString() : "";
      frame.getResultWKTPanel().setExecutedTime(timeString);
      frame.getResultWKTPanel().updateResult();
-     JTSTestBuilderController.geometryViewChanged();
+     JTSTestBuilder.controller().geometryViewChanged();
      // log it
      resultLogEntry(function, timeString, result);
    }
@@ -161,7 +161,7 @@ public class ResultController
         Object result = getValue();
         if (createNew) {
           String desc = "Result of " + functionInvoc.getSignature();
-          JTSTestBuilderController.addTestCase(new Geometry[] { (Geometry) result, null }, desc);          
+          JTSTestBuilder.controller().addTestCase(new Geometry[] { (Geometry) result, null }, desc);          
         } else {
           updateResult(functionInvoc, result, timer);
         }

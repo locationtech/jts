@@ -195,6 +195,6 @@ public class LayerControlList extends JPanel
     Layer lyr = lyrList.getLayer(i);
     lyr.setEnabled(isEnabled);
     repaint();
-    JTSTestBuilderController.geometryViewChanged();
+    JTSTestBuilder.controller().geometryViewChanged();
   }
 }

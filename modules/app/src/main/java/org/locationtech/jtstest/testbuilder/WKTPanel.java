@@ -302,13 +302,13 @@ public class WKTPanel extends JPanel
         inspectButton.addActionListener(
             new ActionListener() {
               public void actionPerformed(ActionEvent e) {
-                JTSTestBuilderController.inspectGeometry();
+                JTSTestBuilder.controller().inspectGeometry();
               }
             });
         exchangeButton.addActionListener(
             new ActionListener() {
               public void actionPerformed(ActionEvent e) {
-                JTSTestBuilderController.exchangeGeometry();
+                JTSTestBuilder.controller().exchangeGeometry();
               }
             });
        aCopyButton.addActionListener(
@@ -409,7 +409,7 @@ public class WKTPanel extends JPanel
         tbModel.loadGeometryText(
             getGeometryTextClean(0), 
             getGeometryTextClean(1));
-        JTSTestBuilderController.zoomToInput();
+        JTSTestBuilder.controller().zoomToInput();
       }
       catch (Exception ex) {
         SwingUtil.reportException(this, ex);
@@ -443,7 +443,7 @@ public class WKTPanel extends JPanel
     void paste(int geomIndex) {
       try {
         tbModel.pasteGeometry(geomIndex);
-        JTSTestBuilderController.zoomToInput();
+        JTSTestBuilder.controller().zoomToInput();
       }
       catch (Exception ex) {
         JTSTestBuilderFrame.reportException(ex);
@@ -468,7 +468,7 @@ public class WKTPanel extends JPanel
           try {
             tbModel.loadMultipleGeometriesFromFile(geomIndex, files[0].getCanonicalPath());
             //(textArea).setText(FileUtil.readText(files[0]));
-            JTSTestBuilderController.zoomToInput();
+            JTSTestBuilder.controller().zoomToInput();
           } catch (Exception ex) {
             SwingUtil.reportException(null, ex);
           }
@@ -484,7 +484,7 @@ public class WKTPanel extends JPanel
     private static Color otherBackgroundColor = SystemColor.control;
     
     private void setFocusGeometry(int index) {
-      JTSTestBuilderController.setFocusGeometry(index);
+      JTSTestBuilder.controller().setFocusGeometry(index);
       
       JTextArea focusTA = index == 0 ? aTextArea : bTextArea;
       JTextArea otherTA = index == 0 ? bTextArea : aTextArea;

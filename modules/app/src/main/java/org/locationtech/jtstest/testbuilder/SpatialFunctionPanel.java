@@ -362,7 +362,7 @@ extends JPanel implements FunctionPanel
   }
   
   void displayAAndBCheckBox_actionPerformed(ActionEvent e) {
-    JTSTestBuilderController.getGeometryEditPanel().setShowingInput(displayAAndBCheckBox.isSelected());
+    JTSTestBuilder.controller().getGeometryEditPanel().setShowingInput(displayAAndBCheckBox.isSelected());
   }
 
   private void setCurrentFunction(GeometryFunction func) {
@@ -461,7 +461,7 @@ extends JPanel implements FunctionPanel
 
   private Object getParamValue(int index) {
     if (currentFunc.isBinary() && index == 0)
-      return JTSTestBuilderController.getGeometryB();
+      return JTSTestBuilder.controller().getGeometryB();
     
     int attrIndex = index - attributeParamOffset(currentFunc);
     

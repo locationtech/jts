@@ -144,12 +144,12 @@ extends JPanel implements FunctionPanel
   
   public Object getResult() {
     Object result = null;
-    if (currentFunc == null || JTSTestBuilderController.getGeometryA() == null)
+    if (currentFunc == null || JTSTestBuilder.controller().getGeometryA() == null)
       return null;
     
     try {
       timer = new Stopwatch();
-      result = currentFunc.invoke(JTSTestBuilderController.getGeometryA(), getFunctionParams());
+      result = currentFunc.invoke(JTSTestBuilder.controller().getGeometryA(), getFunctionParams());
       timer.stop();
     }
     catch (Exception ex) {
@@ -165,7 +165,7 @@ extends JPanel implements FunctionPanel
     Class[] paramTypes = currentFunc.getParameterTypes();
     if (paramTypes.length == 1 
         && paramTypes[0] == Geometry.class)
-      return new Object[] { JTSTestBuilderController.getGeometryB() };
+      return new Object[] { JTSTestBuilder.controller().getGeometryB() };
     
     if (paramTypes.length == 1 
         && (paramTypes[0] == Double.class || paramTypes[0] == double.class))
@@ -174,7 +174,7 @@ extends JPanel implements FunctionPanel
     if (paramTypes.length == 2 
         && paramTypes[0] == Geometry.class
       && (paramTypes[1] == Double.class || paramTypes[1] == double.class))
-      return new Object[] { JTSTestBuilderController.getGeometryB(), SwingUtil.getDouble(txtDistance, null) };
+      return new Object[] { JTSTestBuilder.controller().getGeometryB(), SwingUtil.getDouble(txtDistance, null) };
     
     if (paramTypes.length >= 2)
       return new Object[] { 
@@ -199,7 +199,7 @@ extends JPanel implements FunctionPanel
   
   private Object getParamValue(int index) {
     if (currentFunc.isBinary() && index == 0)
-      return JTSTestBuilderController.getGeometryB();
+      return JTSTestBuilder.controller().getGeometryB();
     
     int attrIndex = index - SpatialFunctionPanel.attributeParamOffset(currentFunc);
     

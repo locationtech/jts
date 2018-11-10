@@ -142,7 +142,7 @@ public class InspectorPanel extends TestBuilderPanel  {
 
   }
   private void btnExpand_actionPerformed() {
-    JTSTestBuilderController.inspectGeometryDialog();
+    JTSTestBuilder.controller().inspectGeometryDialog();
   }
   private void btnZoom_actionPerformed(ActionEvent e) {
     JTSTestBuilderFrame.getGeometryEditPanel().zoom(geomTreePanel.getSelectedGeometry());
