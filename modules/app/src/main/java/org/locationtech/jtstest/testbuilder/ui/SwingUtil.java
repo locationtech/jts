@@ -18,7 +18,9 @@ import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.util.Collection;
 import java.awt.datatransfer.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.io.File;
 
 import javax.swing.ImageIcon;
@@ -246,6 +248,10 @@ public class SwingUtil {
     btn.setMargin(new Insets(0, 2, 0, 2));
     if (action != null) btn.addActionListener(action);
     return btn;
+  }
+
+  public static boolean isCtlKeyPressed(ActionEvent e) {
+    return (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK;
   }
 
 }
