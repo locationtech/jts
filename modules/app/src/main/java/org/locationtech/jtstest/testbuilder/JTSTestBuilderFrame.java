@@ -553,7 +553,7 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
-  void menuSaveAsPNG_actionPerformed(ActionEvent e) {
+  void cmdSaveImageAsPNG() {
     initFileChoosers();
     try {
       String fullFileName = SwingUtil.chooseFilenameWithConfirm(this, pngFileChooser);  
@@ -563,17 +563,17 @@ public class JTSTestBuilderFrame extends JFrame
             ImageUtil.IMAGE_FORMAT_NAME_PNG);
     }
     catch (Exception x) {
-      SwingUtil.reportException(this, x);
+      reportException(x);
     }
   }
 
-  void menuSaveScreenToClipboard_actionPerformed(ActionEvent e) {
+  void cmdSaveImageToClipboard() {
     try {
         ImageUtil.saveImageToClipboard(testCasePanel.getGeometryEditPanel(), 
         		ImageUtil.IMAGE_FORMAT_NAME_PNG);
     }
     catch (Exception x) {
-      SwingUtil.reportException(this, x);
+      reportException(x);
     }
   }
 
@@ -646,10 +646,6 @@ public class JTSTestBuilderFrame extends JFrame
   public void setShowingGrid(boolean showGrid) {
     testCasePanel.editPanel.setGridEnabled(showGrid);
     JTSTestBuilder.controller().geometryViewChanged();
-  }
-
-  void showVertexIndicesMenuItem_actionPerformed(ActionEvent e) {
-//    testCasePanel.editPanel.setShowVertexIndices(showVertexIndicesMenuItem.isSelected());
   }
 
   void menuLoadXmlTestFolder_actionPerformed(ActionEvent e) {

@@ -422,7 +422,8 @@ public class JTSTestBuilderToolBar {
         }
       });
 
-      extractComponentButton = createToggleButton(AppStrings.TIP_EXTRACT_COMPONENTS,
+      extractComponentButton = createToggleButton(
+          AppStrings.TIP_EXTRACT_COMPONENTS,
           new ImageIcon(this.getClass().getResource("ExtractComponent.png")), 
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -431,12 +432,22 @@ public class JTSTestBuilderToolBar {
             }
           });
 
-      JToggleButton deleteVertexButton = createToggleButton(AppStrings.TIP_DELETE_VERTEX_COMPONENT,
+      JToggleButton deleteVertexButton = createToggleButton(
+          AppStrings.TIP_DELETE_VERTEX_COMPONENT,
           new ImageIcon(this.getClass().getResource("DeleteVertex.png")), 
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
               tbFrame.actionDeleteVertexButton();
+            }
+          });
+
+      JButton saveImageButton = createButton(
+          AppStrings.TIP_SAVE_IMAGE,  AppIcons.SAVE_IMAGE, 
+          new java.awt.event.ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+              tbFrame.cmdSaveImageToClipboard();
             }
           });
 
@@ -489,6 +500,10 @@ public class JTSTestBuilderToolBar {
       jToolBar1.add(btnEditVertex, null);
       jToolBar1.add(deleteVertexButton, null);
 
+      jToolBar1.add(Box.createHorizontalStrut(28), null);
+      
+      jToolBar1.add(saveImageButton, null);
+      
       return jToolBar1;
   }
   
@@ -535,6 +550,8 @@ public class JTSTestBuilderToolBar {
     btn.setFont(new java.awt.Font("SansSerif", 0, 10));
     btn.setMaximumSize(new Dimension(30, 30));
     btn.addActionListener(actionListener);
+    btn.setFocusable(false);
+    btn.setFocusPainted(false);
     return btn;
   }
   

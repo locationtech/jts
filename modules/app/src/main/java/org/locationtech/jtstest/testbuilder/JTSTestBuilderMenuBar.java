@@ -125,14 +125,14 @@ public class JTSTestBuilderMenuBar
     saveAsPNGMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.menuSaveAsPNG_actionPerformed(e);
+          tbFrame.cmdSaveImageAsPNG();
         }
       });
     saveToClipboardMenuItem.setText("Save Screen To Clipboard");
     saveToClipboardMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.menuSaveScreenToClipboard_actionPerformed(e);
+          tbFrame.cmdSaveImageToClipboard();
         }
       });
     deleteAllTestCasesMenuItem.setText("Delete All Test Cases");
