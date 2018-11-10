@@ -69,4 +69,6 @@ public class AppStrings {
 
   static final String TIP_EXECUTE = "Compute the result of the function";
 
+  public static final String TIP_SAVE_IMAGE = "Save Image to Clipboard";
+
 }
