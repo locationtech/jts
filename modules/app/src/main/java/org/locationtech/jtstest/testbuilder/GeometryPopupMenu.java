@@ -37,7 +37,7 @@ public class GeometryPopupMenu extends JPopupMenu
     extractComponentItem.addActionListener(
           new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              JTSTestBuilderController.extractComponentsToTestCase(clickCoord);
+              JTSTestBuilder.controller().extractComponentsToTestCase(clickCoord);
             }
           });
     add(extractComponentItem);
@@ -46,7 +46,7 @@ public class GeometryPopupMenu extends JPopupMenu
     copyComponentItem.addActionListener(
           new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              JTSTestBuilderController.copyComponentToClipboard(clickCoord);
+              JTSTestBuilder.controller().copyComponentToClipboard(clickCoord);
             }
           });
     add(copyComponentItem);

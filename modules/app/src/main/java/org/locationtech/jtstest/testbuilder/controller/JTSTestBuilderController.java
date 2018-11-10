@@ -25,7 +25,7 @@ import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 
 
 public class JTSTestBuilderController 
-{
+{ 
   /*
   private static boolean autoZoomOnNextChange = false;
 
@@ -35,74 +35,76 @@ public class JTSTestBuilderController
     autoZoomOnNextChange  = true;
   }
   */
- 
-
-  public static void setShowingStructure(boolean showStructure) {
-    DisplayParameters.setShowingStructure(showStructure);
-    JTSTestBuilderController.geometryViewChanged();
+  public JTSTestBuilderController() {
+    
   }
 
-  public static void setShowingOrientations(boolean showingOrientations) {
+  public void setShowingStructure(boolean showStructure) {
+    DisplayParameters.setShowingStructure(showStructure);
+    geometryViewChanged();
+  }
+
+  public void setShowingOrientations(boolean showingOrientations) {
     DisplayParameters.setShowingOrientation(showingOrientations);
-    JTSTestBuilderController.geometryViewChanged();
+    geometryViewChanged();
   }
 
   public void setShowVertexIndices(boolean showVertexIndices) {
     DisplayParameters.setShowingOrientation(showVertexIndices);
-    JTSTestBuilderController.geometryViewChanged();
+    geometryViewChanged();
   }
 
-  public static void setShowingVertices(boolean showingVertices) {
+  public void setShowingVertices(boolean showingVertices) {
     DisplayParameters.setShowingVertices(showingVertices);
-    JTSTestBuilderController.geometryViewChanged();
+    geometryViewChanged();
   }
 
-  public static void setShowingLabel(boolean showLabel) {
+  public void setShowingLabel(boolean showLabel) {
     DisplayParameters.setShowingLabel(showLabel);
-    JTSTestBuilderController.geometryViewChanged();
+    geometryViewChanged();
   }
 
-  public static void setFillType(int fillType) {
+  public void setFillType(int fillType) {
     DisplayParameters.setFillType(fillType);
-    JTSTestBuilderController.geometryViewChanged();
+    geometryViewChanged();
   }
   
-  public static void geometryViewChanged()
+  public void geometryViewChanged()
   {
     getGeometryEditPanel().updateView();
     //TODO: provide autoZoom checkbox on Edit tab to control autozooming (default = on)
   }
 
-  public static GeometryEditPanel getGeometryEditPanel()
+  public GeometryEditPanel getGeometryEditPanel()
   {
     return JTSTestBuilderFrame.getGeometryEditPanel();
   }
 
-  public static Geometry getGeometryA() {
+  public Geometry getGeometryA() {
     return JTSTestBuilder.model().getGeometryEditModel().getGeometry(0);
   }
 
-  public static Geometry getGeometryB() {
+  public Geometry getGeometryB() {
     return JTSTestBuilder.model().getGeometryEditModel().getGeometry(1);
   }
 
-  public static void zoomToFullExtent()
+  public void zoomToFullExtent()
   {
     getGeometryEditPanel().zoomToFullExtent();
   }
   
-  public static void zoomToInput()
+  public void zoomToInput()
   {
     getGeometryEditPanel().zoomToInput();
   }
   
-  public static void addTestCase(Geometry[] geom, String name)
+  public void addTestCase(Geometry[] geom, String name)
   {
     model().addCase(geom, name);
     JTSTestBuilderFrame.instance().updateTestCases();
   }
   
-  public static void extractComponentsToTestCase(Coordinate pt)
+  public void extractComponentsToTestCase(Coordinate pt)
   {
     double toleranceInModel = getGeometryEditPanel().getToleranceInModel();
     LayerList lyrList = model().getLayers();
@@ -113,7 +115,7 @@ public class JTSTestBuilderController
     JTSTestBuilderFrame.instance().updateTestCases();
   }
   
-  public static void extractComponentsToTestCase(Geometry aoi)
+  public void extractComponentsToTestCase(Geometry aoi)
   {
     //double toleranceInModel = JTSTestBuilderFrame.getGeometryEditPanel().getToleranceInModel();
     LayerList lyrList = model().getLayers();
@@ -127,7 +129,7 @@ public class JTSTestBuilderController
     editPanel().setCurrentTool(null);
   }
 
-  public static void copyComponentToClipboard(Coordinate pt)
+  public void copyComponentToClipboard(Coordinate pt)
   {
     double toleranceInModel = getGeometryEditPanel().getToleranceInModel();
     LayerList lyrList = model().getLayers();
@@ -137,38 +139,38 @@ public class JTSTestBuilderController
     SwingUtil.copyToClipboard(comp, false);
   }
   
-  public static void setFocusGeometry(int index) {
+  public void setFocusGeometry(int index) {
     model().getGeometryEditModel().setEditGeomIndex(index);
     toolbar().setFocusGeometry(index);    
   }
 
-  public static void inspectGeometry()
+  public void inspectGeometry()
   {
     JTSTestBuilderFrame.instance().actionInspectGeometry();
   }
-  public static void exchangeGeometry()
+  public void exchangeGeometry()
   {
     JTSTestBuilderFrame.instance().actionExchangeGeoms();
   }
-  public static void inspectGeometryDialog()
+  public void inspectGeometryDialog()
   {
     JTSTestBuilderFrame.instance().actionInspectGeometryDialog();
   }
-  public static void clearResult()
+  public void clearResult()
   {
     JTSTestBuilderFrame.instance().getResultWKTPanel().clearResult();
     model().setResult(null);
     editPanel().updateView();
   }
 
-  private static TestBuilderModel model() {
+  private TestBuilderModel model() {
     return JTSTestBuilderFrame.instance().getModel();
   }
-  private static GeometryEditPanel editPanel() {
+  private GeometryEditPanel editPanel() {
     return JTSTestBuilderFrame.instance().getGeometryEditPanel();
   }
 
-  private static JTSTestBuilderToolBar toolbar() {
+  private JTSTestBuilderToolBar toolbar() {
     return JTSTestBuilderFrame.instance().getToolbar();
   }
   

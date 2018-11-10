@@ -41,7 +41,7 @@ public class LayerCheckBoxList extends JList {
           Layer lyr = (Layer) getModel().getElementAt(index);
           lyr.setEnabled(! lyr.isEnabled());
           repaint();
-          JTSTestBuilderController.geometryViewChanged();
+          JTSTestBuilder.controller().geometryViewChanged();
         }
       }
     });
