@@ -11,20 +11,25 @@
  */
 package org.locationtech.jtstest.testbuilder;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Vector;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.util.Stopwatch;
-import org.locationtech.jtstest.function.*;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
-import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionEvent;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelEvent;

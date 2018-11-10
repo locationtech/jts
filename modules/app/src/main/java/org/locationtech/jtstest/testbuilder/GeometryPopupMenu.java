@@ -20,7 +20,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 
 
 public class GeometryPopupMenu extends JPopupMenu 

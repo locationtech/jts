@@ -12,21 +12,29 @@
 
 package org.locationtech.jtstest.testbuilder;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.SystemColor;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTable;
+import javax.swing.JToggleButton;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
-import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
-
-
-import java.awt.*;
-import java.awt.event.*;
 
 /**
  * Experimental control panel for layers.

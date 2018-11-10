@@ -12,18 +12,28 @@
 package org.locationtech.jtstest.testbuilder;
 
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.util.*;
-import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
-import org.locationtech.jtstest.testbuilder.model.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.util.Memory;
+import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
-import org.locationtech.jtstest.util.*;
+import org.locationtech.jtstest.util.ExceptionFormatter;
 
 
 /**
