@@ -12,7 +12,6 @@
 package org.locationtech.jtstest.testbuilder.ui.tools;
 
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
-import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 
 /**
  * Extracts a component of a geometry to a new Test Case
