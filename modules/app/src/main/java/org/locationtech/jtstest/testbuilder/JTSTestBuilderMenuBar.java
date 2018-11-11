@@ -76,7 +76,7 @@ public class JTSTestBuilderMenuBar
     jMenuFileExit.addActionListener(
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.jMenuFileExit_actionPerformed(e);
+          tbFrame.actionExit();
         }
       });
     menuExchangeGeom.setText("Exchange Geometries");
@@ -125,21 +125,21 @@ public class JTSTestBuilderMenuBar
     saveAsPNGMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.cmdSaveImageAsPNG();
+          tbFrame.actionSaveImageAsPNG();
         }
       });
     saveToClipboardMenuItem.setText("Save Screen To Clipboard");
     saveToClipboardMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.cmdSaveImageToClipboard();
+          tbFrame.actionSaveImageToClipboard();
         }
       });
     deleteAllTestCasesMenuItem.setText("Delete All Test Cases");
     deleteAllTestCasesMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.deleteAllTestCasesMenuItem_actionPerformed(e);
+          tbFrame.actionDeleteAllTestCases();
         }
       });
     showVerticesMenuItem.setText("Vertices");
@@ -214,14 +214,14 @@ public class JTSTestBuilderMenuBar
     menuLoadXmlTestFolder.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.menuLoadXmlTestFolder_actionPerformed(e);
+          tbFrame.actionLoadXmlTestFolder();
         }
       });
     precisionModelMenuItem.setText("Precision Model...");
     precisionModelMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.precisionModelMenuItem_actionPerformed(e);
+          tbFrame.precisionModelMenuItem_actionPerformed();
         }
       });
     removeDuplicatePoints.setText("Remove Duplicate Points");

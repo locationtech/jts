@@ -189,7 +189,7 @@ public class JTSTestBuilderToolBar {
       deleteButton.addActionListener(
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              tbFrame.btnDeleteCase_actionPerformed(e);
+              tbFrame.actionDeleteCase();
             }
           });
            
@@ -206,7 +206,7 @@ public class JTSTestBuilderToolBar {
       drawRectangleButton.addActionListener(
         new java.awt.event.ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            tbFrame.drawRectangleButton_actionPerformed(e);
+            tbFrame.modeDrawRectangle();
           }
         });
       
@@ -224,7 +224,7 @@ public class JTSTestBuilderToolBar {
         new java.awt.event.ActionListener() {
 
           public void actionPerformed(ActionEvent e) {
-            tbFrame.drawPolygonButton_actionPerformed(e);
+            tbFrame.modeDrawPolygon();
           }
         });
       
@@ -241,7 +241,7 @@ public class JTSTestBuilderToolBar {
       drawLineStringButton.addActionListener(
         new java.awt.event.ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            tbFrame.drawLineStringButton_actionPerformed(e);
+            tbFrame.modeDrawLineString();
           }
         });
       drawPointButton.setMargin(new Insets(0, 0, 0, 0));
@@ -257,7 +257,7 @@ public class JTSTestBuilderToolBar {
       drawPointButton.addActionListener(
         new java.awt.event.ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            tbFrame.drawPointButton_actionPerformed(e);
+            tbFrame.modeDrawPoint();
           }
         });
       infoButton.setMargin(new Insets(0, 0, 0, 0));
@@ -273,7 +273,7 @@ public class JTSTestBuilderToolBar {
       infoButton.addActionListener(
         new java.awt.event.ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            tbFrame.infoButton_actionPerformed();
+            tbFrame.modeInfo();
           }
         });
       zoomButton.setMaximumSize(new Dimension(30, 30));
@@ -281,7 +281,7 @@ public class JTSTestBuilderToolBar {
         new java.awt.event.ActionListener() {
 
           public void actionPerformed(ActionEvent e) {
-            tbFrame.zoomInButton_actionPerformed(e);
+            tbFrame.modeZoomIn();
           }
         });
       zoomButton.setToolTipText(AppStrings.TIP_ZOOM);
@@ -302,7 +302,7 @@ public class JTSTestBuilderToolBar {
         new java.awt.event.ActionListener() {
 
           public void actionPerformed(ActionEvent e) {
-            tbFrame.oneToOneButton_actionPerformed(e);
+            tbFrame.zoomOneToOne();
           }
         });
       oneToOneButton.setFont(new java.awt.Font("SansSerif", 0, 10));
@@ -323,7 +323,7 @@ public class JTSTestBuilderToolBar {
         new java.awt.event.ActionListener() {
 
           public void actionPerformed(ActionEvent e) {
-            tbFrame.zoomToInputButton_actionPerformed(e);
+            tbFrame.zoomToInput();
           }
         });
 
@@ -340,7 +340,7 @@ public class JTSTestBuilderToolBar {
         new java.awt.event.ActionListener() {
 
           public void actionPerformed(ActionEvent e) {
-            tbFrame.zoomToInputA_actionPerformed(e);
+            tbFrame.zoomToInputA();
           }
         });
       
@@ -357,7 +357,7 @@ public class JTSTestBuilderToolBar {
         new java.awt.event.ActionListener() {
 
           public void actionPerformed(ActionEvent e) {
-            tbFrame.zoomToInputB_actionPerformed(e);
+            tbFrame.zoomToInputB();
           }
         });
       zoomToInputButton.setMaximumSize(new Dimension(30, 30));
@@ -375,7 +375,7 @@ public class JTSTestBuilderToolBar {
         new java.awt.event.ActionListener() {
 
           public void actionPerformed(ActionEvent e) {
-            tbFrame.zoomToResult_actionPerformed(e);
+            tbFrame.zoomToResult();
           }
         });
       zoomToResultButton.setMaximumSize(new Dimension(30, 30));
@@ -392,7 +392,7 @@ public class JTSTestBuilderToolBar {
         new java.awt.event.ActionListener() {
 
           public void actionPerformed(ActionEvent e) {
-            tbFrame.zoomToFullExtentButton_actionPerformed(e);
+            tbFrame.zoomToFullExtent();
           }
         });
       zoomToFullExtentButton.setMaximumSize(new Dimension(30, 30));
@@ -401,7 +401,7 @@ public class JTSTestBuilderToolBar {
         new java.awt.event.ActionListener() {
 
           public void actionPerformed(ActionEvent e) {
-            tbFrame.panButton_actionPerformed(e);
+            tbFrame.modePan();
           }
         });
       panButton.setMaximumSize(new Dimension(30, 30));
@@ -422,7 +422,7 @@ public class JTSTestBuilderToolBar {
       btnEditVertex.setMnemonic('0');
       btnEditVertex.addActionListener(new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.btnEditVertex_actionPerformed(e);
+          tbFrame.modeEditVertex();
         }
       });
 
@@ -432,7 +432,7 @@ public class JTSTestBuilderToolBar {
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-              tbFrame.actionExtractComponentButton();
+              tbFrame.modeExtractComponent();
             }
           });
 
@@ -441,7 +441,7 @@ public class JTSTestBuilderToolBar {
           new ImageIcon(this.getClass().getResource("DeleteVertex.png")), 
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                tbFrame.actionDeleteVertexButton();
+                tbFrame.modeDeleteVertex();
           }});
 
       JButton saveImageButton = createButton(
@@ -449,9 +449,9 @@ public class JTSTestBuilderToolBar {
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
               if (SwingUtil.isCtlKeyPressed(e)) {
-                tbFrame.cmdSaveImageAsPNG();
+                tbFrame.actionSaveImageAsPNG();
               } else {
-                tbFrame.cmdSaveImageToClipboard();
+                tbFrame.actionSaveImageToClipboard();
               }
           }});
 
