@@ -67,6 +67,7 @@ import org.locationtech.jtstest.testbuilder.ui.tools.PanTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.PointTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.RectangleTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.StreamPolygonTool;
+import org.locationtech.jtstest.testbuilder.ui.tools.Tool;
 import org.locationtech.jtstest.testbuilder.ui.tools.ZoomTool;
 import org.locationtech.jtstest.testrunner.GuiUtil;
 import org.locationtech.jtstest.util.FileUtil;
@@ -157,7 +158,7 @@ public class JTSTestBuilderFrame extends JFrame
       testCasePanel.editCtlPanel.btnSetPrecisionModel.addActionListener(
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              precisionModelMenuItem_actionPerformed(e);
+              precisionModelMenuItem_actionPerformed();
             }
           });
       //testCasePanel.editCtlPanel.cbMagnifyTopo.addActionListener(
@@ -271,7 +272,7 @@ public class JTSTestBuilderFrame extends JFrame
   /**
    *  File | Exit action performed
    */
-  public void jMenuFileExit_actionPerformed(ActionEvent e) {
+  public void actionExit() {
     System.exit(0);
   }
 
@@ -331,7 +332,7 @@ public class JTSTestBuilderFrame extends JFrame
   protected void processWindowEvent(WindowEvent e) {
     super.processWindowEvent(e);
     if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-      jMenuFileExit_actionPerformed(null);
+      actionExit();
     }
   }
 
@@ -388,7 +389,7 @@ public class JTSTestBuilderFrame extends JFrame
     testCasePanel.setTestCase(currentCase());
   }
 
-  void btnDeleteCase_actionPerformed(ActionEvent e) {
+  void actionDeleteCase() {
     tbModel.cases().deleteCase();
     updateTestCaseView();
     testListPanel.populateList();
@@ -553,7 +554,7 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
-  void cmdSaveImageAsPNG() {
+  void actionSaveImageAsPNG() {
     initFileChoosers();
     try {
       String fullFileName = SwingUtil.chooseFilenameWithConfirm(this, pngFileChooser);  
@@ -567,7 +568,7 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
-  void cmdSaveImageToClipboard() {
+  void actionSaveImageToClipboard() {
     try {
         ImageUtil.saveImageToClipboard(testCasePanel.getGeometryEditPanel(), 
         		ImageUtil.IMAGE_FORMAT_NAME_PNG);
@@ -577,67 +578,71 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
-  void drawRectangleButton_actionPerformed(ActionEvent e) {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(RectangleTool.getInstance());
+  void setTool(Tool tool) {
+    testCasePanel.getGeometryEditPanel().setCurrentTool(tool);
+  }
+  void modeDrawRectangle() {
+    setTool(RectangleTool.getInstance());
   }
 
-  void drawPolygonButton_actionPerformed(ActionEvent e) {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(StreamPolygonTool.getInstance());
+  void modeDrawPolygon() {
+    setTool(StreamPolygonTool.getInstance());
   }
 
-  void drawLineStringButton_actionPerformed(ActionEvent e) {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(LineStringTool.getInstance());
+  void modeDrawLineString() {
+    setTool(LineStringTool.getInstance());
   }
 
-  void drawPointButton_actionPerformed(ActionEvent e) {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(PointTool.getInstance());
+  void modeDrawPoint() {
+    setTool(PointTool.getInstance());
   }
 
-  void infoButton_actionPerformed() {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(InfoTool.getInstance());
+  void modeInfo() {
+    setTool(InfoTool.getInstance());
   }
 
-  void actionExtractComponentButton() {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(ExtractComponentTool.getInstance());
+  void modeExtractComponent() {
+    setTool(ExtractComponentTool.getInstance());
   }
 
-  void actionDeleteVertexButton() {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(DeleteVertexTool.getInstance());
+  void modeDeleteVertex() {
+    setTool(DeleteVertexTool.getInstance());
   }
 
-  void zoomInButton_actionPerformed(ActionEvent e) {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(zoomTool);
+  void modeZoomIn() {
+    setTool(zoomTool);
   }
 
-  void oneToOneButton_actionPerformed(ActionEvent e) {
+  void modePan() {
+    setTool(PanTool.getInstance());
+  }
+  
+  void zoomOneToOne() {
     testCasePanel.getGeometryEditPanel().getViewport().zoomToInitialExtent();
   }
 
-  void zoomToFullExtentButton_actionPerformed(ActionEvent e) {
+  void zoomToFullExtent() {
     testCasePanel.getGeometryEditPanel().zoomToFullExtent();
   }
 
-  void zoomToResult_actionPerformed(ActionEvent e) {
+  void zoomToResult() {
     testCasePanel.getGeometryEditPanel().zoomToResult();
   }
 
-  void zoomToInputButton_actionPerformed(ActionEvent e) {
+  void zoomToInput() {
     testCasePanel.getGeometryEditPanel().zoomToInput();
   }
 
-  void zoomToInputA_actionPerformed(ActionEvent e) {
+  void zoomToInputA() {
     testCasePanel.getGeometryEditPanel().zoomToGeometry(0);
   }
 
-  void zoomToInputB_actionPerformed(ActionEvent e) {
+  void zoomToInputB() {
     testCasePanel.getGeometryEditPanel().zoomToGeometry(1);
   }
 
-  void panButton_actionPerformed(ActionEvent e) {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(PanTool.getInstance());
-  }
 
-  void deleteAllTestCasesMenuItem_actionPerformed(ActionEvent e) {
+  void actionDeleteAllTestCases() {
     tbModel.cases().init();
     updateTestCaseView();
     testListPanel.populateList();
@@ -648,7 +653,7 @@ public class JTSTestBuilderFrame extends JFrame
     JTSTestBuilder.controller().geometryViewChanged();
   }
 
-  void menuLoadXmlTestFolder_actionPerformed(ActionEvent e) {
+  void actionLoadXmlTestFolder() {
     try {
       directoryChooser.removeChoosableFileFilter(SwingUtil.JAVA_FILE_FILTER);
       directoryChooser.setDialogTitle("Open Folder(s) Containing XML Test Files");
@@ -662,11 +667,11 @@ public class JTSTestBuilderFrame extends JFrame
       }
     }
     catch (Exception x) {
-      SwingUtil.reportException(this, x);
+      reportException(x);
     }
   }
 
-  void precisionModelMenuItem_actionPerformed(ActionEvent e) {
+  void precisionModelMenuItem_actionPerformed() {
     try {
       PrecisionModelDialog precisionModelDialog = new PrecisionModelDialog(
           this, "Edit Precision Model", true);
@@ -678,7 +683,7 @@ public class JTSTestBuilderFrame extends JFrame
       updateGeometry();
     }
     catch (ParseException pe) {
-      SwingUtil.reportException(this, pe);
+      reportException(pe);
     }
   }
   void revealTopo_actionPerformed() {
@@ -848,7 +853,7 @@ public class JTSTestBuilderFrame extends JFrame
     updateGeometry();
   }
 
-  void btnEditVertex_actionPerformed(ActionEvent e) {
+  void modeEditVertex() {
     testCasePanel.getGeometryEditPanel().setCurrentTool(EditVertexTool.getInstance());
   }
 
