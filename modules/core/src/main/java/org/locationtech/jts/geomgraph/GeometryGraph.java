@@ -292,6 +292,7 @@ public class GeometryGraph
     if (coord.length < 2) {
       hasTooFewPoints = true;
       invalidPoint = coord[0];
+      addPoint(coord[0]);
       return;
     }
 
