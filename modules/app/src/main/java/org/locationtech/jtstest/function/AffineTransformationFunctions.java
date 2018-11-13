@@ -18,6 +18,7 @@ import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class AffineTransformationFunctions 
 {
+  @Metadata(description="Transforms a geometry using one to three control vectors")
 	public static Geometry transformByVectors(Geometry g, Geometry control)
 	{
 		int nControl = control.getNumGeometries();
@@ -33,7 +34,8 @@ public class AffineTransformationFunctions
 		System.out.println(trans);
     return trans.transform(g);    
 	}
-  
+	
+  @Metadata(description="Transforms a geometry by mapping envelope baseline to target vector")
 	public static Geometry transformByBaseline(Geometry g, Geometry destBaseline)
 	{
 		Envelope env = g.getEnvelopeInternal();
