@@ -14,6 +14,7 @@ package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.*;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class AffineTransformationFunctions 
 {
@@ -123,14 +124,20 @@ public class AffineTransformationFunctions
     return trans.transform(g);    
   }
   
-  public static Geometry rotate(Geometry g, double angle)
+  @Metadata(description="Rotate a geometry by an angle in radians")
+  public static Geometry rotate(Geometry g, 
+      @Metadata(title="Angle (radians)")
+      double angle)
   {
     Coordinate centre = envelopeCentre(g);
     AffineTransformation trans = AffineTransformation.rotationInstance(angle, centre.x, centre.y);
     return trans.transform(g);    
   }
   
-  public static Geometry rotateAroundPoint(Geometry g, Geometry pt, double angle)
+  @Metadata(description="Rotate a geometry around a point by an angle in radians")
+  public static Geometry rotateAroundPoint(Geometry g, Geometry pt, 
+      @Metadata(title="Angle (radians)")
+      double angle)
   {
     Coordinate loc;
     if (pt == null) {
