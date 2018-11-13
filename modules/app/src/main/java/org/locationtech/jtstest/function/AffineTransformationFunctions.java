@@ -58,7 +58,7 @@ public class AffineTransformationFunctions
     return new Coordinate(env.getMinX(), env.getMinY());
   }
   
-  public static Geometry viewport(Geometry g, Geometry gViewport)
+  public static Geometry transformToViewport(Geometry g, Geometry gViewport)
   {
     Envelope viewEnv = gViewport.getEnvelopeInternal();
     Envelope env = g.getEnvelopeInternal();
