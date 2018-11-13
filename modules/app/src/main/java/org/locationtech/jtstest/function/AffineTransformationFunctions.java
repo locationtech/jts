@@ -104,14 +104,20 @@ public class AffineTransformationFunctions
     return trans.transform(g);    
   }
   
-  public static Geometry rotateByPiMultiple(Geometry g, double multipleOfPi)
+  @Metadata(description="Rotate a geometry by an multiple of Pi radians")
+  public static Geometry rotateByPiMultiple(Geometry g,
+      @Metadata(title="Angle (multiple of Pi)")
+      double multipleOfPi)
   {
     Coordinate centre = envelopeCentre(g);
     AffineTransformation trans = AffineTransformation.rotationInstance(multipleOfPi * Math.PI, centre.x, centre.y);
     return trans.transform(g);    
   }
   
-  public static Geometry rotateByPiMultipleAroundPoint(Geometry g, Geometry pt, double multipleOfPi)
+  @Metadata(description="Rotate a geometry around a point by an multiple of Pi radians")
+  public static Geometry rotateByPiMultipleAroundPoint(Geometry g, Geometry pt, 
+      @Metadata(title="Angle (multiple of Pi)")
+      double multipleOfPi)
   {
     Coordinate loc;
     if (pt == null) {
