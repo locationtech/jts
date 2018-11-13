@@ -136,6 +136,7 @@ public class CreateRandomShapeFunctions {
     return haltonPointsWithBases(g, nPts, 5, 7);
   }
   
+  @Metadata(description="Create Halton points using provided bases")
   public static Geometry haltonPointsWithBases(Geometry g, int nPts, 
       @Metadata(title="Base 1")
       int basei, 
