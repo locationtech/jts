@@ -123,7 +123,8 @@ public class CreateRandomShapeFunctions {
     }
     return geomFact.buildGeometry(pts);
   }
-
+  
+  @Metadata(description="Create Halton points using bases 2 and 3")
   public static Geometry haltonPoints(Geometry g, int nPts)
   {
     return haltonPointsWithBases(g, nPts, 2, 3);
