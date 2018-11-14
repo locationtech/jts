@@ -92,7 +92,6 @@ public class LengthIndexedLine
    */
   public Geometry extractLine(double startIndex, double endIndex)
   {
-    LocationIndexedLine lil = new LocationIndexedLine(linearGeom);
     double startIndex2 = clampIndex(startIndex);
     double endIndex2 = clampIndex(endIndex);
     // if extracted line is zero-length, resolve start lower as well to ensure they are equal

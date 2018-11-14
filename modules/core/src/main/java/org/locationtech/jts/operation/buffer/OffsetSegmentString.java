@@ -104,9 +104,6 @@ class OffsetSegmentString
     if (ptList.size() < 1) return;
     Coordinate startPt = new Coordinate((Coordinate) ptList.get(0));
     Coordinate lastPt = (Coordinate) ptList.get(ptList.size() - 1);
-    Coordinate last2Pt = null;
-    if (ptList.size() >= 2)
-      last2Pt = (Coordinate) ptList.get(ptList.size() - 2);
     if (startPt.equals(lastPt)) return;
     ptList.add(startPt);
   }

@@ -480,12 +480,12 @@ public class OverlayOp
    */
   private void labelIncompleteNodes()
   {
-  	int nodeCount = 0;
+  	// int nodeCount = 0;
     for (Iterator ni = graph.getNodes().iterator(); ni.hasNext(); ) {
       Node n = (Node) ni.next();
       Label label = n.getLabel();
       if (n.isIsolated()) {
-      	nodeCount++;
+      	// nodeCount++;
         if (label.isNull(0))
           labelIncompleteNode(n, 0);
         else

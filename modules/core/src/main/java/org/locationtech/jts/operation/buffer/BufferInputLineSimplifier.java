@@ -121,8 +121,7 @@ public class BufferInputLineSimplifier
      * This ensures that end caps are generated consistently.
      */
     int index = 1;
-    int maxIndex = inputLine.length - 1;
-    
+
     int midIndex = findNextNonDeletedIndex(index);
     int lastIndex = findNextNonDeletedIndex(midIndex);
     
