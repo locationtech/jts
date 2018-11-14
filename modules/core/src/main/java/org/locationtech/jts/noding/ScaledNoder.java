@@ -107,19 +107,11 @@ public class ScaledNoder
 
   private void rescale(Coordinate[] pts)
   {
-    Coordinate p0 = null;
-    Coordinate p1 = null;
-    
-    if (pts.length == 2) {
-      p0 = new Coordinate(pts[0]);
-      p1 = new Coordinate(pts[1]);
-    }
-
     for (int i = 0; i < pts.length; i++) {
       pts[i].x = pts[i].x / scaleFactor + offsetX;
       pts[i].y = pts[i].y / scaleFactor + offsetY;
     }
-    
+
     if (pts.length == 2 && pts[0].equals2D(pts[1])) {
       System.out.println(pts);
     }
