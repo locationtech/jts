@@ -238,7 +238,6 @@ public class OffsetCurveSetBuilder {
   private boolean isErodedCompletely(LinearRing ring, double bufferDistance)
   {
     Coordinate[] ringCoord = ring.getCoordinates();
-    double minDiam = 0.0;
     // degenerate ring has no area
     if (ringCoord.length < 4)
       return bufferDistance < 0;

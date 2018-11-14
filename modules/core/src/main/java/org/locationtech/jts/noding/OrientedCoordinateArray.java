@@ -91,7 +91,6 @@ public class OrientedCoordinateArray
 
     int i1 = orientation1 ? 0 : pts1.length - 1;
     int i2 = orientation2 ? 0 : pts2.length - 1;
-    int comp = 0;
     while (true) {
       int compPt = pts1[i1].compareTo(pts2[i2]);
       if (compPt != 0)

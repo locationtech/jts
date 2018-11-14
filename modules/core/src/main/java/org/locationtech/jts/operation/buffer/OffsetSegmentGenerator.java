@@ -504,10 +504,9 @@ class OffsetSegmentGenerator
       double mitreLimit)
   {
     Coordinate basePt = seg0.p1;
-    
+
     double ang0 = Angle.angle(basePt, seg0.p0);
-    double ang1 = Angle.angle(basePt, seg1.p1);
-    
+
     // oriented angle between segments
     double angDiff = Angle.angleBetweenOriented(seg0.p0, basePt, seg1.p1);
     // half of the interior angle
