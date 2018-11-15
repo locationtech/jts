@@ -15,6 +15,7 @@ import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -152,7 +153,7 @@ public class JTSTestBuilderFrame extends JFrame
       testCasePanel.scalarFunctionPanel.addSpatialFunctionPanelListener(
           new SpatialFunctionPanelListener() {
             public void functionExecuted(SpatialFunctionPanelEvent e) {
-            	resultController.scalarFunctionPanel_functionExecuted(e);
+            	resultController.executeScalarFunction();
             }
           });
       testCasePanel.editCtlPanel.btnSetPrecisionModel.addActionListener(
@@ -251,6 +252,14 @@ public class JTSTestBuilderFrame extends JFrame
   	SwingUtil.reportException(instance(), e);
   }
 
+  public void setCursorWait() {
+    setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+  }
+  
+  public void setCursorNormal() {
+    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+  }
+  
   public void setCurrentTestCase(TestCaseEdit testCase) {
     tbModel.cases().setCurrent(testCase);
     updateTestCaseView();
