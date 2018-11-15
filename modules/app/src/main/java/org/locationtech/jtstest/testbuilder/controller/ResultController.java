@@ -12,7 +12,6 @@
 
 package org.locationtech.jtstest.testbuilder.controller;
 
-import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
@@ -53,7 +52,7 @@ public class ResultController
   public void spatialFunctionPanel_functionExecuted(SpatialFunctionPanelEvent e) 
   {
     SpatialFunctionPanel spatialPanel = frame.getTestCasePanel().getSpatialFunctionPanel();
-    GeometryFunctionInvocation functionDesc = functionInvocationn(spatialPanel);
+    GeometryFunctionInvocation functionDesc = functionInvocation(spatialPanel);
     model.setOpName(functionDesc.getSignature());
     frame.getResultWKTPanel().setOpName(model.getOpName());
     // initialize UI view
@@ -63,14 +62,14 @@ public class ResultController
   		return;
   	}
 
-    frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+    frame.setCursorWait();
     frame.getTestCasePanel().getSpatialFunctionPanel().enableExecuteControl(false);
     startFunctionMonitor();
     runFunctionWorker(functionDesc, e.isCreateNew());
     frame.showResultWKTTab();
   }
 
-  private GeometryFunctionInvocation functionInvocationn(FunctionPanel functionPanel) {
+  private GeometryFunctionInvocation functionInvocation(FunctionPanel functionPanel) {
     GeometryFunctionInvocation functionDesc = new GeometryFunctionInvocation(
         functionPanel.getFunction(), 
         model.getGeometryEditModel().getGeometry(0),
@@ -97,13 +96,13 @@ public class ResultController
   private void resetUI() {
      frame.getTestCasePanel().getSpatialFunctionPanel()
          .enableExecuteControl(true);
-     frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+     frame.setCursorNormal();
    }
   private void updateResult(GeometryFunctionInvocation function, Object result, Stopwatch timer) {
      model.setResult(result);
      String timeString = timer != null ? timer.getTimeString() : "";
      frame.getResultWKTPanel().setExecutedTime(timeString);
-     frame.getResultWKTPanel().updateResult();
+     frame.getResultWKTPanel().setResult(result);
      JTSTestBuilder.controller().geometryViewChanged();
      // log it
      resultLogEntry(function, timeString, result);
@@ -206,27 +205,28 @@ public class ResultController
     funcTimer.stop();
   }
 
-  public void scalarFunctionPanel_functionExecuted(SpatialFunctionPanelEvent e) 
+  public void executeScalarFunction() 
   {
     /**
      * For now scalar functions are executed on the calling thread.
      * They are expected to be of short duration
      */
     ScalarFunctionPanel scalarPanel = frame.getTestCasePanel().getScalarFunctionPanel();
-    String opName = frame.getTestCasePanel().getScalarFunctionPanel().getOpName();
+    String opName = scalarPanel.getOpName();
     // initialize UI view
     frame.getResultValuePanel().setResult(opName, "", null);
+    frame.showResultValueTab(); 
     
-    frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-    Object result = frame.getTestCasePanel().getScalarFunctionPanel().getResult();
-    Stopwatch timer = frame.getTestCasePanel().getScalarFunctionPanel().getTimer();
+    frame.setCursorWait();
+    Object result = scalarPanel.getResult();
+    frame.setCursorNormal();
+    
+    Stopwatch timer = scalarPanel.getTimer();
     String timeString = timer.getTimeString();
-    frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     
     frame.getResultValuePanel().setResult(opName, timer.getTimeString(), result);
-    frame.showResultValueTab();
-    resultLogEntry(functionInvocationn(scalarPanel), timeString, result);
-  }
 
+    resultLogEntry(functionInvocation(scalarPanel), timeString, result);
+  }
 
 }

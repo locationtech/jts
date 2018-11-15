@@ -168,10 +168,9 @@ extends JPanel
     timeLabel.setText(time);
     memoryLabel.setText(Memory.usedTotalString());   
   }
-  
-  public void updateResult()
+
+  public void setResult(Object o)
   {
-  	Object o = tbModel.getResult();
     if (o == null) {
       setString("");
     }
