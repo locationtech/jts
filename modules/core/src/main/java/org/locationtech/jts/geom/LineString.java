@@ -102,11 +102,16 @@ public class LineString
   }
 
   public int getDimension() {
-    return 1;
+    // Test if geometry is non empty and has several distinct coordinates
+    if (new CoordinateList(points.toCoordinateArray(),false).size()==1)
+      return 0;
+    else
+      // valid or empty LineString return 1
+      return 1;
   }
 
   public int getBoundaryDimension() {
-    if (isClosed()) {
+    if (isClosed() || getDimension() == 0) {
       return Dimension.FALSE;
     }
     return 0;

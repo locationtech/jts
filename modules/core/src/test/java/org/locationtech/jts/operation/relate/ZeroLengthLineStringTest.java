@@ -116,6 +116,7 @@ public class ZeroLengthLineStringTest extends TestCase {
    *
    * @throws Exception
    */
+
   public void testTouchesBetweenLineStringAndItsBoundary()
           throws Exception
   {
@@ -125,8 +126,8 @@ public class ZeroLengthLineStringTest extends TestCase {
     Geometry geom1 = reader.read(a);
     Geometry geom2 = reader.read(b);
     Geometry geom3 = reader.read(c);
-    //assertTrue(geom1.touches(geom2));
-    //assertTrue(geom2.touches(geom1));
+    assertTrue(geom1.touches(geom2));
+    assertTrue(geom2.touches(geom1));
     assertTrue(geom1.touches(geom3));
     assertTrue(geom3.touches(geom1));
   }

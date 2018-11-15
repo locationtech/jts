@@ -40,7 +40,9 @@
   <test><op name="covers"     arg1="A" arg2="B">true</op></test>
   <test><op name="crosses"    arg1="A" arg2="B">false</op></test>
   <test><op name="disjoint"   arg1="A" arg2="B">false</op></test>
-  <test><op name="equalsTopo" arg1="A" arg2="B">false</op></test>
+  <!-- change from false to true for equalsTopo as geometries are
+  defined by the same set of points -->
+  <test><op name="equalsTopo" arg1="A" arg2="B">true</op></test>
   <test><op name="intersects" arg1="A" arg2="B">true</op></test>
   <test><op name="overlaps"   arg1="A" arg2="B">false</op></test>
   <test><op name="touches"    arg1="A" arg2="B">false</op></test>

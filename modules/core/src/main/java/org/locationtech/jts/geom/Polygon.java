@@ -164,11 +164,20 @@ public class Polygon
   }
 
   public int getDimension() {
-    return 2;
+    if (getExteriorRing().getDimension() == 0)
+      return 0;
+    else
+      // Does not handle the case of 1-dimension collapsed polygon
+      // if exteriorRing is empty, returns 2 (not sure why)
+      return 2;
   }
 
   public int getBoundaryDimension() {
-    return 1;
+    if (isEmpty())
+      // Return the same dimension as an empty LinearRing
+      return 1;
+    else
+      return getExteriorRing().getDimension();
   }
 
   public boolean isEmpty() {

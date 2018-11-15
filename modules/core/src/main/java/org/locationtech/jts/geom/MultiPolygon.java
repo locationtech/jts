@@ -67,7 +67,11 @@ public class MultiPolygon
   }
 
   public int getDimension() {
-    return 2;
+    if (isEmpty())
+      return 2;
+    else
+      // super will get the heighest dimension of components
+      return super.getDimension();
   }
 
   public int getBoundaryDimension() {

@@ -292,6 +292,9 @@ public class GeometryGraph
     if (coord.length < 2) {
       hasTooFewPoints = true;
       invalidPoint = coord[0];
+      // If line is made of a single point, geometry is invalid (hasTooFewPoint),
+      // but the point must still be added to the graph in order to be able to be
+      // compute correct predicate (e.g. intersects) with another GeometryGraphe
       addPoint(coord[0]);
       return;
     }
