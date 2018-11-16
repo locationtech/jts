@@ -105,15 +105,19 @@ public interface CoordinateSequence
   default boolean hasZ() {
       return (getDimension()-getMeasures()) > 2;
   }
-  
+
   /**
-   * Checks {@link #getMeasures()} to determine if {@link #getM(int)}
-   * is supported.
-   * 
+   * Tests whether the coordinates in the sequence have measures associated with them. Returns true
+   * if {@link #getMeasures()} > 0. See {@link #getMeasures()} to determine the number of measures
+   * present.
+   *
    * @return true if {@link #getM(int)} is supported.
+   *
+   * @see #getMeasures()
+   * @see #getM(int)
    */
   default boolean hasM() {
-      return getDimension()>2 && getMeasures() > 0;
+      return getMeasures() > 0;
   }
 
   /**
