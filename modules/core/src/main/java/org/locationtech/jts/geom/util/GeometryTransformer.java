@@ -240,7 +240,7 @@ public class GeometryTransformer
 
   protected Geometry transformPolygon(Polygon geom, Geometry parent) {
     boolean isAllValidLinearRings = true;
-    Geometry shell = transformLinearRing((LinearRing) geom.getExteriorRing(), geom);
+    Geometry shell = transformLinearRing(geom.getExteriorRing(), geom);
 
     if (shell == null
         || ! (shell instanceof LinearRing)
@@ -249,7 +249,7 @@ public class GeometryTransformer
 
     ArrayList holes = new ArrayList();
     for (int i = 0; i < geom.getNumInteriorRing(); i++) {
-      Geometry hole = transformLinearRing((LinearRing) geom.getInteriorRingN(i), geom);
+      Geometry hole = transformLinearRing(geom.getInteriorRingN(i), geom);
       if (hole == null || hole.isEmpty()) {
         continue;
       }

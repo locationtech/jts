@@ -326,10 +326,10 @@ public class IsValidOp
 
   private void checkClosedRings(Polygon poly)
   {
-    checkClosedRing((LinearRing) poly.getExteriorRing());
+    checkClosedRing(poly.getExteriorRing());
     if (validErr != null) return;
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      checkClosedRing((LinearRing) poly.getInteriorRingN(i));
+      checkClosedRing(poly.getInteriorRingN(i));
       if (validErr != null) return;
     }
   }
@@ -439,7 +439,7 @@ public class IsValidOp
    */
   private void checkHolesInShell(Polygon p, GeometryGraph graph)
   {
-    LinearRing shell = (LinearRing) p.getExteriorRing();
+    LinearRing shell = p.getExteriorRing();
 
     //PointInRing pir = new SimplePointInRing(shell);
     //PointInRing pir = new SIRtreePointInRing(shell);
@@ -448,7 +448,7 @@ public class IsValidOp
 
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
 
-      LinearRing hole = (LinearRing) p.getInteriorRingN(i);
+      LinearRing hole = p.getInteriorRingN(i);
       Coordinate holePt = findPtNotNode(hole.getCoordinates(), shell, graph);
       /**
        * If no non-node hole vertex can be found, the hole must
@@ -486,7 +486,7 @@ public class IsValidOp
     //SweeplineNestedRingTester nestedTester = new SweeplineNestedRingTester(arg[0]);
 
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
-      LinearRing innerHole = (LinearRing) p.getInteriorRingN(i);
+      LinearRing innerHole = p.getInteriorRingN(i);
       nestedTester.add(innerHole);
     }
     boolean isNonNested = nestedTester.isNonNested();
@@ -513,7 +513,7 @@ public class IsValidOp
   {
     for (int i = 0; i < mp.getNumGeometries(); i++) {
       Polygon p = (Polygon) mp.getGeometryN(i);
-      LinearRing shell = (LinearRing) p.getExteriorRing();
+      LinearRing shell = p.getExteriorRing();
       for (int j = 0; j < mp.getNumGeometries(); j++) {
         if (i == j) continue;
         Polygon p2 = (Polygon) mp.getGeometryN(j);
@@ -536,7 +536,7 @@ public class IsValidOp
   {
     Coordinate[] shellPts = shell.getCoordinates();
     // test if shell is inside polygon shell
-    LinearRing polyShell =  (LinearRing) p.getExteriorRing();
+    LinearRing polyShell = p.getExteriorRing();
     Coordinate[] polyPts = polyShell.getCoordinates();
     Coordinate shellPt = findPtNotNode(shellPts, polyShell, graph);
     // if no point could be found, we can assume that the shell is outside the polygon
@@ -561,7 +561,7 @@ public class IsValidOp
      */
     Coordinate badNestedPt = null;
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
-      LinearRing hole = (LinearRing) p.getInteriorRingN(i);
+      LinearRing hole = p.getInteriorRingN(i);
       badNestedPt = checkShellInsideHole(shell, hole, graph);
       if (badNestedPt == null)
         return;

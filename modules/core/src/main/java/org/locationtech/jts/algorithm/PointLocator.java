@@ -186,14 +186,14 @@ public class PointLocator
   {
     if (poly.isEmpty()) return Location.EXTERIOR;
 
-    LinearRing shell = (LinearRing) poly.getExteriorRing();
+    LinearRing shell = poly.getExteriorRing();
 
     int shellLoc = locateInPolygonRing(p, shell);
     if (shellLoc == Location.EXTERIOR) return Location.EXTERIOR;
     if (shellLoc == Location.BOUNDARY) return Location.BOUNDARY;
     // now test if the point lies in or on the holes
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      LinearRing hole = (LinearRing) poly.getInteriorRingN(i);
+      LinearRing hole = poly.getInteriorRingN(i);
       int holeLoc = locateInPolygonRing(p, hole);
       if (holeLoc == Location.INTERIOR) return Location.EXTERIOR;
       if (holeLoc == Location.BOUNDARY) return Location.BOUNDARY;

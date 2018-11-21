@@ -270,7 +270,7 @@ public class GMLWriter {
 		startLine(level + 1, writer);
 		startGeomTag(GMLConstants.GML_OUTER_BOUNDARY_IS, null, writer);
 
-		writeLinearRing((LinearRing) p.getExteriorRing(), writer, level + 2);
+		writeLinearRing(p.getExteriorRing(), writer, level + 2);
 
 		startLine(level + 1, writer);
 		endGeomTag(GMLConstants.GML_OUTER_BOUNDARY_IS, writer);
@@ -279,7 +279,7 @@ public class GMLWriter {
 			startLine(level + 1, writer);
 			startGeomTag(GMLConstants.GML_INNER_BOUNDARY_IS, null, writer);
 
-			writeLinearRing((LinearRing) p.getInteriorRingN(t), writer, level + 2);
+			writeLinearRing(p.getInteriorRingN(t), writer, level + 2);
 
 			startLine(level + 1, writer);
 			endGeomTag(GMLConstants.GML_INNER_BOUNDARY_IS, writer);

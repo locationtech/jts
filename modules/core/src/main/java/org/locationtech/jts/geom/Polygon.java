@@ -220,7 +220,7 @@ public class Polygon
     return true;
   }
 
-  public LineString getExteriorRing() {
+  public LinearRing getExteriorRing() {
     return shell;
   }
 
@@ -228,7 +228,7 @@ public class Polygon
     return holes.length;
   }
 
-  public LineString getInteriorRingN(int n) {
+  public LinearRing getInteriorRingN(int n) {
     return holes[n];
   }
 

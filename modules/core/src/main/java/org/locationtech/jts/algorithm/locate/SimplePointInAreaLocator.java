@@ -85,13 +85,13 @@ public class SimplePointInAreaLocator
   public static int locatePointInPolygon(Coordinate p, Polygon poly)
   {
     if (poly.isEmpty()) return Location.EXTERIOR;
-    LinearRing shell = (LinearRing) poly.getExteriorRing();
+    LinearRing shell = poly.getExteriorRing();
     int shellLoc = locatePointInRing(p, shell);
     if (shellLoc != Location.INTERIOR) return shellLoc;
     
     // now test if the point lies in or on the holes
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      LinearRing hole = (LinearRing) poly.getInteriorRingN(i);
+      LinearRing hole = poly.getInteriorRingN(i);
       int holeLoc = locatePointInRing(p, hole);
       if (holeLoc == Location.BOUNDARY) return Location.BOUNDARY;
       if (holeLoc == Location.INTERIOR) return Location.EXTERIOR;
