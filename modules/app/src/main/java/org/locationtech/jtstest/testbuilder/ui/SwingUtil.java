@@ -180,14 +180,17 @@ public class SwingUtil {
   
   public static void copyToClipboard(Object o, boolean isFormatted)
   {
+    if (o == null) return;
+    
   	if (o instanceof Geometry) {
   		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
   				new GeometryTransferable((Geometry) o, isFormatted), null);
   	}
-  	else  
+  	else {
   		// transfer as string
   		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(
 				new StringSelection(o.toString()), null);
+  	}
   }
 
   public static Object getFromClipboard() {
