@@ -34,7 +34,7 @@ public class AppStrings {
 
   static final String TIP_EXTRACT_COMPONENTS = "Extract Components to Case";
 
-  static final String TIP_DELETE_VERTEX_COMPONENT = "Delete Vertices or Components";
+  static final String TIP_DELETE_VERTEX_COMPONENT = "<html>Delete Vertices or Components<br><br>Delete Components = Drag<br>Delete Intersecting Components = Ctl-Drag<br>Delete Vertices = Right-Drag</html>";
 
   static final String TIP_MOVE_VERTEX = "<html>Move/Add/Delete Vertex<br><br>Move = Left-Btn<br>Add = Right-Btn<br>Delete = Ctl-Right-Btn</html>";
 

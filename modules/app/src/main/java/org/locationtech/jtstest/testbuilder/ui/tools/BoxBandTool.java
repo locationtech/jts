@@ -39,6 +39,8 @@ public abstract class BoxBandTool extends IndicatorTool
   
   private Point zoomBoxStart = null;
   private Point zoomBoxEnd = null;
+  private boolean isControlKeyDown = false;
+  private boolean isRightButton;
   
   public BoxBandTool() { }
 
@@ -50,6 +52,8 @@ public abstract class BoxBandTool extends IndicatorTool
   {
   	zoomBoxStart = e.getPoint();
   	zoomBoxEnd = null;
+  	isControlKeyDown = e.isControlDown();
+  	isRightButton = SwingUtilities.isRightMouseButton(e);
   }
   
   public void mouseReleased(MouseEvent e)
@@ -58,7 +62,8 @@ public abstract class BoxBandTool extends IndicatorTool
   	// don't process this event if the mouse was clicked or dragged a very short distance
   	if (! isSignificantMouseMove())
   		return;
-  	
+  	isControlKeyDown = e.isControlDown();
+  	isRightButton = SwingUtilities.isRightMouseButton(e);
     gestureFinished();
   }
   
@@ -93,6 +98,14 @@ public abstract class BoxBandTool extends IndicatorTool
       return false;
     return true;
   }  
+  
+  protected boolean isRightButton() {
+    return isRightButton;
+  }
+  
+  protected boolean isControlKeyDown() {
+    return isControlKeyDown;
+  }
   
   /**
    * Gets the envelope of the indicated rectangle,

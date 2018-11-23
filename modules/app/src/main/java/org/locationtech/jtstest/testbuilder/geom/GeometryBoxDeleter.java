@@ -18,6 +18,8 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.geom.util.GeometryEditor;
 
 /**
@@ -36,36 +38,45 @@ import org.locationtech.jts.geom.util.GeometryEditor;
  */
 public class GeometryBoxDeleter 
 {
-  public static Geometry delete(Geometry geom, 
+  public static Geometry deleteComponentsAndVertices(Geometry geom, 
       Envelope env)
   {
-    Geometry gComp = deleteComponents(geom, env);
-    if (gComp != null) return gComp;
+    return deleteComponentsAndVertices(geom, env, false);
+  }
+  
+  public static Geometry deleteComponentsAndVertices(Geometry geom, 
+      Envelope env, boolean deleteIntersectingComponents)
+  {
+    Geometry gComp = deleteComponents(geom, env, deleteIntersectingComponents);
+    if (gComp != geom) return gComp;
+    
+    // if deleting by intersection, don't continue to delete vertices
+    if (deleteIntersectingComponents) return geom;
     
     // otherwise, try and edit vertices
     Geometry gVert = deleteVertices(geom, env);
-    if (gVert != null) return gVert;
+    if (gVert != geom) return gVert;
 
     // no edits - return original
     return geom;
   }
   
-  private static Geometry deleteComponents(Geometry geom, Envelope env)
+  public static Geometry deleteComponents(Geometry geom, Envelope env, boolean deleteIntersecting)
   {
     GeometryEditor editor = new GeometryEditor();
-    BoxDeleteComponentOperation compOp = new BoxDeleteComponentOperation(env);
+    BoxDeleteComponentOperation compOp = new BoxDeleteComponentOperation(env, deleteIntersecting);
     Geometry compEditGeom = editor.edit(geom, compOp);
     if (compOp.isEdited()) return compEditGeom;
-    return null;
+    return geom;
   }
   
-  private static Geometry deleteVertices(Geometry geom, Envelope env)
+  public static Geometry deleteVertices(Geometry geom, Envelope env)
   {
     GeometryEditor editor = new GeometryEditor();
     BoxDeleteVertexOperation vertexOp = new BoxDeleteVertexOperation(env);
     Geometry vertexEditGeom = editor.edit(geom, vertexOp);
     if (vertexOp.isEdited()) return vertexEditGeom;
-    return null;
+    return geom;
   }
   
   private static class BoxDeleteComponentOperation
@@ -73,10 +84,18 @@ public class GeometryBoxDeleter
   {
     private Envelope env;
     private boolean isEdited = false;
+    private boolean deleteIntersecting;
+    private PreparedGeometry envPrepGeom;
     
     public BoxDeleteComponentOperation(Envelope env)
     {
+      this(env, false);
+    }
+    
+    public BoxDeleteComponentOperation(Envelope env, boolean deleteIntersecting)
+    {
       this.env = env;
+      this.deleteIntersecting = deleteIntersecting;
     }
     
     public boolean isEdited() { return isEdited; }
@@ -85,11 +104,31 @@ public class GeometryBoxDeleter
     {
       // Allow any number of components to be deleted
       //if (isEdited) return geometry;
-      if (env.contains(geometry.getEnvelopeInternal())) {
+      
+      // only edit individual components
+      if (geometry.getNumGeometries() > 1) return geometry;
+      
+      boolean isDeleted = false;
+      if (deleteIntersecting) {
+        isDeleted = getEnvelopeGeometry(factory).intersects(geometry);
+      }
+      else {
+        isDeleted = env.contains(geometry.getEnvelopeInternal());
+      }
+          
+      if (isDeleted) {
           isEdited = true;
           return null;
       }
       return geometry;
+    }
+    
+    private PreparedGeometry getEnvelopeGeometry(GeometryFactory geomFactory) {
+      if (envPrepGeom == null) {
+        Geometry envGeom = geomFactory.toGeometry(env);
+        envPrepGeom = PreparedGeometryFactory.prepare(envGeom);
+      }
+      return envPrepGeom;
     }
   }
   

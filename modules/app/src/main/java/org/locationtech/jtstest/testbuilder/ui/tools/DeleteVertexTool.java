@@ -17,7 +17,7 @@ import org.locationtech.jtstest.testbuilder.geom.GeometryBoxDeleter;
 
 
 /**
- * Deletes vertices within a selection box from a geometry component
+ * Deletes vertices or components within a selection box from a geometry component
  * @version 1.7
  */
 public class DeleteVertexTool extends BoxBandTool {
@@ -37,7 +37,19 @@ public class DeleteVertexTool extends BoxBandTool {
   {      
     Envelope env = getBox().getEnvelopeInternal();
     Geometry g = geomModel().getGeometry();
-    Geometry edit = GeometryBoxDeleter.delete(g, env);
+    
+    Geometry edit = null;
+    
+    if (isRightButton()) {
+      edit = GeometryBoxDeleter.deleteVertices(g, env);
+    }
+    else if (isControlKeyDown()) {
+      edit = GeometryBoxDeleter.deleteComponents(g, env, true);
+    }
+    else {
+      edit = GeometryBoxDeleter.deleteComponents(g, env, false);
+    }
+    
     geomModel().setGeometry(edit);
   }
 
