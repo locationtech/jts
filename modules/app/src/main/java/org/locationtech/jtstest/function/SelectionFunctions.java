@@ -137,6 +137,15 @@ public class SelectionFunctions
     });
   }
   
+  public static Geometry interiorPointWithin(Geometry a, final Geometry mask)
+  {
+    return select(a, new GeometryPredicate() {
+      public boolean isTrue(Geometry g) {
+        return g.getInteriorPoint().within(mask);
+      }
+    });
+  }
+  
   private static Geometry select(Geometry geom, GeometryPredicate pred)
   {
     List selected = new ArrayList();
