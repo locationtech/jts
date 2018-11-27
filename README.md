@@ -15,14 +15,14 @@ JTS is a project in the [LocationTech](http://www.locationtech.org) working grou
 ## Locations
 
 ### Code
-
 * [GitHub Repo](https://github.com/locationtech/jts)
+* [Maven Central group](https://mvnrepository.com/artifact/org.locationtech.jts)
 
 ### Websites
 * [LocationTech Home](https://locationtech.org/projects/technology.jts)
 * [GitHub web site](https://locationtech.github.io/jts/)
 
-### Communications
+### Communication
 * [Mailing List](https://locationtech.org/mailman/listinfo/jts-dev)
 * [Gitter Channel](https://gitter.im/locationtech/jts)
 
