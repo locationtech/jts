@@ -444,17 +444,6 @@ public class JTSTestBuilderToolBar {
                 tbFrame.modeDeleteVertex();
           }});
 
-      JButton saveImageButton = createButton(
-          AppStrings.TIP_SAVE_IMAGE,  AppIcons.SAVE_IMAGE, 
-          new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-              if (SwingUtil.isCtlKeyPressed(e)) {
-                tbFrame.actionSaveImageAsPNG();
-              } else {
-                tbFrame.actionSaveImageToClipboard();
-              }
-          }});
-
       group(drawRectangleButton,drawPolygonButton
         ,drawLineStringButton
         ,drawPointButton
@@ -477,19 +466,16 @@ public class JTSTestBuilderToolBar {
         oneToOneButton,
         zoomToInputAButton, zoomToInputBButton, zoomToInputButton,
         zoomToResultButton, zoomToFullExtentButton,
-        strut(28),
+        strut(20),
         zoomButton,
         //jToolBar1.add(panButton  // remove in favour of using Zoom tool right-drag
         infoButton,
         extractComponentButton,
         
-        strut(28),
+        strut(20),
         drawRectangleButton,drawPolygonButton,drawLineStringButton,
         drawPointButton, btnEditVertex,
-        deleteVertexButton,
-  
-        strut(28),
-        saveImageButton
+        deleteVertexButton
       );
       
       return toolbar;

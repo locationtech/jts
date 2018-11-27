@@ -31,11 +31,13 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 
 import org.locationtech.jtstest.testbuilder.event.ValidPanelEvent;
 import org.locationtech.jtstest.testbuilder.event.ValidPanelListener;
 import org.locationtech.jtstest.testbuilder.model.*;
+import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 
 
 
@@ -249,7 +251,8 @@ public class TestCasePanel extends JPanel {
           jTabbedPane1_stateChanged(e);
         }
       });
-    testCaseIndexLabel.setBorder(BorderFactory.createLoweredBevelBorder());
+    //testCaseIndexLabel.setBorder(BorderFactory.createLoweredBevelBorder());
+    testCaseIndexLabel.setBorder(new EmptyBorder(0,4,0,0));
     testCaseIndexLabel.setToolTipText("");
     testCaseIndexLabel.setText("0 of 0");
     casePrecisionModelPanel.setLayout(gridBagLayout2);
@@ -288,8 +291,27 @@ public class TestCasePanel extends JPanel {
     jPanelMagnify.add(Box.createHorizontalGlue());
     jPanelMagnify.setBorder(BorderFactory.createLoweredBevelBorder());
 
-    statusBarPanel.setLayout(new GridLayout(1,2));
-    statusBarPanel.add(testCaseIndexLabel);
+
+    JButton btnSaveImage = SwingUtil.createButton(
+        AppIcons.SAVE_IMAGE, AppStrings.TIP_SAVE_IMAGE,   
+        new java.awt.event.ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            if (SwingUtil.isCtlKeyPressed(e)) {
+              JTSTestBuilder.controller().saveImageAsPNG();
+            } else {
+              JTSTestBuilder.controller().saveImageToClipboard();
+            }
+        }});
+    
+    JPanel panelCase = new JPanel();
+    panelCase.setLayout(new BorderLayout());
+    panelCase.setBorder(BorderFactory.createLoweredBevelBorder());
+    panelCase.add(btnSaveImage, BorderLayout.EAST);
+    panelCase.add(testCaseIndexLabel, BorderLayout.WEST);
+    
+    statusBarPanel.setLayout(new GridLayout(1,4));
+    statusBarPanel.add(panelCase);
+    //statusBarPanel.add(testCaseIndexLabel);
     statusBarPanel.add(jPanelMagnify);
     statusBarPanel.add(lblPrecisionModel);
     statusBarPanel.add(lblMousePos);
