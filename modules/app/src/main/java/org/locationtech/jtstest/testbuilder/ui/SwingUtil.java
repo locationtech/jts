@@ -230,6 +230,8 @@ public class SwingUtil {
     btn.setIcon(icon);
     btn.setMargin(new Insets(0, 0, 0, 0));
     if (action != null) btn.addActionListener(action);
+    btn.setFocusable(false);
+    btn.setFocusPainted(false);
     return btn;
   }
 
@@ -241,15 +243,24 @@ public class SwingUtil {
     if (action != null) btn.addActionListener(action);
     return btn;
   }
-  
   public static JButton createButton(String title, ImageIcon icon, String tip, ActionListener action ) {
+    return createButton(title, icon, tip, action, false);
+  }
+    
+  public static JButton createButton(String title, ImageIcon icon, String tip, ActionListener action, boolean isFocusable ) {
     JButton btn = new JButton();
     if (title != null) btn.setText(title);
     if (tip != null) btn.setToolTipText(tip);
-    if (icon != null) btn.setIcon(icon);
-    btn.setIconTextGap(2);
+    if (icon != null) {
+      btn.setIcon(icon);
+      btn.setIconTextGap(2);
+    }
     btn.setMargin(new Insets(0, 2, 0, 2));
     if (action != null) btn.addActionListener(action);
+    if (! isFocusable) {
+      btn.setFocusable(false);
+      btn.setFocusPainted(false);
+    }
     return btn;
   }
 

@@ -163,6 +163,12 @@ public class JTSTestBuilderController
     editPanel().updateView();
   }
 
+  public void saveImageAsPNG() {
+    JTSTestBuilderFrame.instance().actionSaveImageAsPNG();
+  }
+  public void saveImageToClipboard() {
+    JTSTestBuilderFrame.instance().actionSaveImageToClipboard();
+  }
   private TestBuilderModel model() {
     return JTSTestBuilderFrame.instance().getModel();
   }

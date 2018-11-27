@@ -563,7 +563,7 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
-  void actionSaveImageAsPNG() {
+  public void actionSaveImageAsPNG() {
     initFileChoosers();
     try {
       String fullFileName = SwingUtil.chooseFilenameWithConfirm(this, pngFileChooser);  
@@ -577,7 +577,7 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
-  void actionSaveImageToClipboard() {
+  public void actionSaveImageToClipboard() {
     try {
         ImageUtil.saveImageToClipboard(testCasePanel.getGeometryEditPanel(), 
         		ImageUtil.IMAGE_FORMAT_NAME_PNG);
