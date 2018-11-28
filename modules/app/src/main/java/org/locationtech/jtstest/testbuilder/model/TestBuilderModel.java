@@ -22,6 +22,7 @@ import org.locationtech.jts.util.Assert;
 import org.locationtech.jtstest.test.TestCaseList;
 import org.locationtech.jtstest.test.Testable;
 import org.locationtech.jtstest.testbuilder.AppConstants;
+import org.locationtech.jtstest.testbuilder.GeometryDepiction;
 import org.locationtech.jtstest.testbuilder.ui.*;
 import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
 import org.locationtech.jtstest.testrunner.TestReader;

@@ -18,7 +18,6 @@ import java.awt.Font;
 import javax.swing.ImageIcon;
 
 import org.locationtech.jts.awt.FontGlyphReader;
-import org.locationtech.jtstest.testbuilder.model.GeometryDepiction;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 
 

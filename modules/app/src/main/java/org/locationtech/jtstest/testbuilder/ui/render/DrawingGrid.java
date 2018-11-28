@@ -10,7 +10,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jtstest.testbuilder.model;
+package org.locationtech.jtstest.testbuilder.ui.render;
 
 import java.awt.geom.Point2D;
 

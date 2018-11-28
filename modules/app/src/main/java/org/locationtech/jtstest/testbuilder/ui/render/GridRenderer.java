@@ -22,7 +22,6 @@ import java.text.NumberFormat;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jtstest.testbuilder.AppConstants;
-import org.locationtech.jtstest.testbuilder.model.DrawingGrid;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
