@@ -21,6 +21,9 @@ import javax.swing.*;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.*;
 import org.locationtech.jts.io.gml2.*;
+import org.locationtech.jtstest.testbuilder.io.JavaTestWriter;
+import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
+import org.locationtech.jtstest.testbuilder.io.XMLTestWriter;
 import org.locationtech.jtstest.testbuilder.model.*;
 
 
