@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jtstest.testbuilder.model;
+package org.locationtech.jtstest.testbuilder;
 
 import java.awt.Color;
 
