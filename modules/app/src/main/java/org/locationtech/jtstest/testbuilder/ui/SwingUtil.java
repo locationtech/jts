@@ -33,7 +33,6 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.text.JTextComponent;
 
 import org.locationtech.jts.geom.*;
-import org.locationtech.jtstest.testbuilder.model.GeometryTransferable;
 import org.locationtech.jtstest.util.StringUtil;
 
 
