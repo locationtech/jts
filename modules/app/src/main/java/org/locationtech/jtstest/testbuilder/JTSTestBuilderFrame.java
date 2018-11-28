@@ -382,44 +382,12 @@ public class JTSTestBuilderFrame extends JFrame
     testListPanel.populateList();  
   }
   
-  public void actionExchangeGeoms() {
-    currentCase().exchange();
-    testCasePanel.setTestCase(currentCase());
-  }
-
   void actionDeleteCase() {
     tbModel.cases().deleteCase();
     updateTestCaseView();
     testListPanel.populateList();
   }
-
-  /*
-  void menuLoadTestCases_actionPerformed(ActionEvent e) {
-    try {
-      loadTestCasesDlg.show();
-      TestCaseList tcl = loadTestCasesDlg.getList();
-      loadTestCaseList(tcl, new PrecisionModel());
-      refreshNavBar();
-    }
-    catch (Exception x) {
-      reportException(this, x);
-    }
-  }
-
-  void loadTestCaseList(TestCaseList tcl, PrecisionModel precisionModel) throws Exception {
-    tbModel.setPrecisionModel(precisionModel);
-    if (tcl != null) {
-      loadEditList(tcl);
-    }
-    testListPanel.populateList();
-  }
-*/
   
-  void menuExchangeGeom_actionPerformed(ActionEvent e) {
-    currentCase().exchange();
-    testCasePanel.setTestCase(currentCase());
-  }
-
   void menuViewText_actionPerformed(ActionEvent e) {
     testCaseTextDlg.setTestCase(currentCase());
     testCaseTextDlg.setVisible(true);

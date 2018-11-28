@@ -19,6 +19,7 @@ import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderToolBar;
 import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
+import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
@@ -80,14 +81,23 @@ public class JTSTestBuilderController
     return JTSTestBuilderFrame.getGeometryEditPanel();
   }
 
+  public GeometryEditModel geomEditModel() {
+    return JTSTestBuilder.model().getGeometryEditModel();
+  }
+  
   public Geometry getGeometryA() {
-    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(0);
+    return geomEditModel().getGeometry(0);
   }
 
   public Geometry getGeometryB() {
-    return JTSTestBuilder.model().getGeometryEditModel().getGeometry(1);
+    return geomEditModel().getGeometry(1);
   }
 
+  public void exchangeGeometry() {
+    geomEditModel().exchangeGeometry();
+  }
+
+  
   public void zoomToFullExtent()
   {
     getGeometryEditPanel().zoomToFullExtent();
@@ -148,10 +158,7 @@ public class JTSTestBuilderController
   {
     JTSTestBuilderFrame.instance().actionInspectGeometry();
   }
-  public void exchangeGeometry()
-  {
-    JTSTestBuilderFrame.instance().actionExchangeGeoms();
-  }
+
   public void inspectGeometryDialog()
   {
     JTSTestBuilderFrame.instance().actionInspectGeometryDialog();
