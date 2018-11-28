@@ -42,6 +42,8 @@ public class GeometryEditModel
   
   private transient Vector geometryListeners;
 
+  private UndoBuffer[] undoBuffers = new UndoBuffer[] { new UndoBuffer(), new UndoBuffer() };
+
   public GeometryEditModel()
   {
     
@@ -163,9 +165,10 @@ public class GeometryEditModel
   public void setTestCase(TestCaseEdit testCase)
   {
     this.testCase = testCase;
+    undoClear();
     geomChanged();
   }
-  
+
   public void setGeometry(Geometry g)
   {
     setGeometry(editGeomIndex, g);
@@ -173,6 +176,12 @@ public class GeometryEditModel
   }
   
   public void setGeometry(int i, Geometry g)
+  {
+    undoSave(i, g);
+    setGeometryInternal(i, g);
+  }
+  
+  private void setGeometryInternal(int i, Geometry g)
   {
     testCase.setGeometry(i, g);
     geomChanged();
@@ -182,6 +191,41 @@ public class GeometryEditModel
   {
     setGeometry(i, null);
     geomChanged();
+  }
+  
+  private void undoSave(int i, Geometry g) {
+    UndoBuffer undoBuf = undoBuffers[i];
+    /**
+     * If for some reason old geom is not saved, save it first
+     */
+    if (undoBuf.isEmpty()) {
+      undoBuf.save(getGeometry(i));
+    }
+    undoBuf.save(g);
+  }
+  
+  private void undoClear() {
+    undoBuffers[0].clear();
+    undoBuffers[1].clear();
+  }
+
+  public void undo() {
+    UndoBuffer undoBuf = undoBuffers[editGeomIndex];
+    
+    if (undoBuf.isEmpty()) return;
+    
+    /**
+     * The reason for this odd-looking semantics is that
+     * Undo transactions are captured whenever the geometry
+     * is modified.  So the current geometry
+     * may be on the stack, in which case it needs to be discarded. 
+     */;
+     undoBuf.pop(getGeometry());
+    if (undoBuf.isEmpty()) return;
+    
+    Geometry geom = undoBuf.peek();
+    
+    setGeometryInternal(editGeomIndex, geom);
   }
   
   /**

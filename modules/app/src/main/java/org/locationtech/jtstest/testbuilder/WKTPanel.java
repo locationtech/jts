@@ -58,7 +58,6 @@ public class WKTPanel extends JPanel
 	TestBuilderModel tbModel;
 	
     GridBagLayout gridBagLayout1 = new GridBagLayout();
-    Box panelButtons = Box.createVerticalBox();
     JPanel panelAB = new JPanel();
     JButton loadButton = new JButton();
     JButton inspectButton = new JButton();
@@ -126,19 +125,38 @@ public class WKTPanel extends JPanel
         this.setLayout(gridBagLayout1);
         this.setPreferredSize(new java.awt.Dimension(394, 176));
         
+        loadButton.setMaximumSize(new Dimension(38, 38));
         loadButton.setPreferredSize(new Dimension(38, 38));
         loadButton.setMargin(new Insets(8, 8, 8, 8));
 //        loadButton.setText("Load");
         loadButton.setIcon(loadIcon);
         loadButton.setToolTipText(AppStrings.TIP_WKT_PANEL_LOAD_GEOMETRY);
         
-        inspectButton.setPreferredSize(new Dimension(30, 38));
+        inspectButton.setMaximumSize(new Dimension(38, 30));
+        inspectButton.setPreferredSize(new Dimension(24, 38));
         inspectButton.setToolTipText(AppStrings.TIP_INSPECT_GEOMETRY);
         inspectButton.setIcon(inspectIcon);
         
-        exchangeButton.setPreferredSize(new Dimension(30, 38));
+        exchangeButton.setMaximumSize(new Dimension(38, 30));
+        exchangeButton.setPreferredSize(new Dimension(24, 38));
         exchangeButton.setToolTipText(AppStrings.TIP_EXCHANGE_A_B);
         exchangeButton.setIcon(exchangeGeomsIcon);
+        
+        JButton btnUndo = SwingUtil.createButton(AppIcons.UNDO, "Undo", new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            tbModel.getGeometryEditModel().undo();
+          }        
+        });
+        btnUndo.setMaximumSize(new Dimension(38, 30));
+        Box panelButtons = Box.createVerticalBox();
+        panelButtons.add(loadButton);
+        panelButtons.add(Box.createVerticalStrut(20));
+        panelButtons.add(exchangeButton);
+        panelButtons.add(inspectButton);
+        panelButtons.add(btnUndo);
+        
+
+
         
         panelAB.setLayout(gridBagLayout2);
         
@@ -276,12 +294,6 @@ public class WKTPanel extends JPanel
                 0, 0));
         bScrollPane.getViewport().add(bTextArea, null);
         aScrollPane.getViewport().add(aTextArea, null);
-        
-        panelButtons.add(loadButton);
-        panelButtons.add(Box.createVerticalStrut(20));
-        panelButtons.add(exchangeButton);
-        panelButtons.add(Box.createVerticalStrut(10));
-        panelButtons.add(inspectButton);
         
         this.add(
             panelButtons,

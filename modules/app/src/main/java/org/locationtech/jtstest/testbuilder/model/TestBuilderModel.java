@@ -114,9 +114,12 @@ public class TestBuilderModel
   	else
   		g = (Geometry) obj;
   	
+  	/*
     TestCaseEdit testCaseEdit = getCurrentCase();
     testCaseEdit.setGeometry(geomIndex, g);
     getGeometryEditModel().setTestCase(testCaseEdit);
+    */
+  	getGeometryEditModel().setGeometry(geomIndex, g);
   }
   
   private Geometry readGeometryText(String geomStr) 
