@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jtstest.testbuilder.model;
+package org.locationtech.jtstest.testbuilder.io;
 
 import java.io.File;
 import java.util.Iterator;
@@ -21,6 +21,8 @@ import org.locationtech.jts.util.Assert;
 import org.locationtech.jtstest.test.TestCase;
 import org.locationtech.jtstest.test.TestCaseList;
 import org.locationtech.jtstest.test.Testable;
+import org.locationtech.jtstest.testbuilder.model.TestCaseEdit;
+import org.locationtech.jtstest.testbuilder.model.TestRunnerTestCaseAdapter;
 import org.locationtech.jtstest.util.StringUtil;
 
 

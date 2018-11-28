@@ -11,7 +11,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jtstest.testbuilder.model;
+package org.locationtech.jtstest.testbuilder.io;
 
 import java.awt.Image;
 import java.awt.image.*;
@@ -38,6 +38,8 @@ import org.locationtech.jtstest.test.TestCaseList;
 import org.locationtech.jtstest.test.Testable;
 import org.locationtech.jtstest.testbuilder.BusyDialog;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
+import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
+import org.locationtech.jtstest.testbuilder.model.TestCaseEdit;
 import org.locationtech.jtstest.testrunner.BooleanResult;
 import org.locationtech.jtstest.testrunner.Test;
 import org.locationtech.jtstest.util.FileUtil;
