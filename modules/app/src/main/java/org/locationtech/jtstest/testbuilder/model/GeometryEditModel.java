@@ -187,6 +187,20 @@ public class GeometryEditModel
     geomChanged();
   }
   
+  public void exchangeGeometry() {
+    Geometry g0 = getGeometry(0);
+    Geometry g1 = getGeometry(1);
+    setGeometryInternal(0, g1);
+    setGeometryInternal(1, g0);
+    
+    UndoBuffer undo0 = undoBuffers[0];
+    UndoBuffer undo1 = undoBuffers[1];
+    undoBuffers[0] = undo1;
+    undoBuffers[1] = undo0;
+    
+    geomChanged();
+  }
+  
   public void clear(int i)
   {
     setGeometry(i, null);

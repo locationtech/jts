@@ -40,7 +40,7 @@ public class UndoBuffer {
   }
   
   public void clear() {
-    buffer.empty();
+    buffer.clear();
   }
 
 

@@ -122,13 +122,6 @@ public class TestCaseEdit implements Testable {
     return testable.getWellKnownText(i);
   }
 
-  public void exchange() 
-  {
-    Geometry temp = testable.getGeometry(0);
-    testable.setGeometry(0, testable.getGeometry(1));
-    testable.setGeometry(1, temp);
-  }
-
   public void initGeometry() throws ParseException {
     testable.initGeometry();
   }
