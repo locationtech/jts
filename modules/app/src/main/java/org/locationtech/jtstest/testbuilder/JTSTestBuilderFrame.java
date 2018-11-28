@@ -152,7 +152,7 @@ public class JTSTestBuilderFrame extends JFrame
             	resultController.executeScalarFunction();
             }
           });
-      testCasePanel.cbMagnifyTopo.addActionListener(
+      testCasePanel.cbRevealTopo.addActionListener(
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
               revealTopo_actionPerformed();
@@ -685,10 +685,8 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
   void revealTopo_actionPerformed() {
-    DisplayParameters.setMagnifyingTopology(testCasePanel.cbMagnifyTopo.isSelected());
+    DisplayParameters.setRevealingTopology(testCasePanel.cbRevealTopo.isSelected());
     DisplayParameters.setTopologyStretchSize(testCasePanel.getStretchSize());
-    //tbModel.setMagnifyingTopology(testCasePanel.editCtlPanel.cbMagnifyTopo.isSelected());
-    //tbModel.setTopologyStretchSize(testCasePanel.editCtlPanel.getStretchSize());
     JTSTestBuilder.controller().geometryViewChanged();
   }
 
