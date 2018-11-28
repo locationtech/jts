@@ -35,7 +35,6 @@ public class JTSTestBuilderMenuBar
   JMenu jMenuEdit = new JMenu();
   //JMenu jMenuTools = new JMenu();
   //JMenu jMenuOptions = new JMenu();
-  JMenuItem menuExchangeGeom = new JMenuItem();
   JMenuItem menuViewText = new JMenuItem();
   JMenuItem menuViewGeometry = new JMenuItem();
   JMenuItem menuLoadXmlTestFile = new JMenuItem();
@@ -53,7 +52,6 @@ public class JTSTestBuilderMenuBar
   JMenuItem precisionModelMenuItem = new JMenuItem();
   JMenuItem removeDuplicatePoints = new JMenuItem();
   JMenuItem changeToLines = new JMenuItem();
-  private JMenuItem generateExpectedValuesMenuItem = new JMenuItem();
 
   JTSTestBuilderFrame tbFrame;
   
@@ -77,13 +75,6 @@ public class JTSTestBuilderMenuBar
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           tbFrame.actionExit();
-        }
-      });
-    menuExchangeGeom.setText("Exchange Geometries");
-    menuExchangeGeom.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          tbFrame.menuExchangeGeom_actionPerformed(e);
         }
       });
     menuViewText.setText("Test Case Text...");
@@ -236,12 +227,6 @@ public class JTSTestBuilderMenuBar
         tbFrame.menuChangeToLines_actionPerformed(e);
       }
     });
-    generateExpectedValuesMenuItem.setText("Generate Expected Values");
-    generateExpectedValuesMenuItem.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        //generateExpectedValuesMenuItem_actionPerformed(e);
-      }
-    });
     jMenuFile.setText("File");
     //jMenuOptions.setText("Options");
     //jMenuTools.setText("Tools");
@@ -259,8 +244,6 @@ public class JTSTestBuilderMenuBar
     jMenuFile.addSeparator();
     jMenuFile.add(saveAsPNGMenuItem);
     jMenuFile.add(saveToClipboardMenuItem);
-    //jMenuFile.add(saveAsHtmlMenuItem);
-    //jMenuFile.add(generateExpectedValuesMenuItem);
     jMenuFile.addSeparator();
     jMenuFile.add(jMenuFileExit);
     //==========================
@@ -290,7 +273,6 @@ public class JTSTestBuilderMenuBar
     //==========================    
     jMenuEdit.setText("Edit");
     jMenuEdit.add(deleteAllTestCasesMenuItem);
-    jMenuEdit.add(menuExchangeGeom);
     jMenuEdit.addSeparator();
     jMenuEdit.add(precisionModelMenuItem);
     jMenuEdit.addSeparator();
