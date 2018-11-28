@@ -64,11 +64,11 @@ public class DisplayParameters {
     return showingLabel;
   }
 
-  public static boolean isMagnifyingTopology() {
+  public static boolean isRevealingTopology() {
     return isMagnifyingTopology;
   }
 
-  public static void setMagnifyingTopology(boolean show) {
+  public static void setRevealingTopology(boolean show) {
     isMagnifyingTopology = show;
   }
 

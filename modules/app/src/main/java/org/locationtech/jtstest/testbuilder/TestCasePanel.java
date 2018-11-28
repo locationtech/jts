@@ -83,9 +83,9 @@ public class TestCasePanel extends JPanel {
   JLabel lblPrecisionModel = new JLabel();
   ScalarFunctionPanel scalarFunctionPanel = new ScalarFunctionPanel();
   
-  JPanel jPanelMagnify = new JPanel();
+  JPanel jPanelReveal = new JPanel();
   JSpinner spStretchDist = new JSpinner(new SpinnerNumberModel(5, 0, 99999, 1));
-  JCheckBox cbMagnifyTopo = new JCheckBox();
+  JCheckBox cbRevealTopo = new JCheckBox();
 
   private TestBuilderModel tbModel;
   
@@ -271,17 +271,16 @@ public class TestCasePanel extends JPanel {
     editGroupPanel.add(editFramePanel, BorderLayout.CENTER);
     editGroupPanel.add(statusBarPanel, BorderLayout.SOUTH);
  
-    //cbMagnifyTopo.setText("Magnify");
-    cbMagnifyTopo.setToolTipText("Magnify Topology - Stretches geometries to reveal topological detail");
+    cbRevealTopo.setToolTipText("Reveal Topology - visualize topological detail by stretching geometries");
     spStretchDist.setToolTipText("Stretch Distance (pixels)");
     spStretchDist.setMaximumSize(new Dimension(20,20));
     ((JSpinner.DefaultEditor) spStretchDist.getEditor()).getTextField().setColumns(2);
-    jPanelMagnify.setLayout(new BoxLayout(jPanelMagnify, BoxLayout.LINE_AXIS));
-    jPanelMagnify.add(Box.createHorizontalGlue());
-    jPanelMagnify.add(cbMagnifyTopo);
-    jPanelMagnify.add(spStretchDist);
-    jPanelMagnify.add(Box.createHorizontalGlue());
-    jPanelMagnify.setBorder(BorderFactory.createLoweredBevelBorder());
+    jPanelReveal.setLayout(new BoxLayout(jPanelReveal, BoxLayout.LINE_AXIS));
+    jPanelReveal.add(Box.createHorizontalGlue());
+    jPanelReveal.add(cbRevealTopo);
+    jPanelReveal.add(spStretchDist);
+    jPanelReveal.add(Box.createHorizontalGlue());
+    jPanelReveal.setBorder(BorderFactory.createLoweredBevelBorder());
 
 
     JButton btnSaveImage = SwingUtil.createButton(
@@ -304,7 +303,7 @@ public class TestCasePanel extends JPanel {
     statusBarPanel.setLayout(new GridLayout(1,4));
     statusBarPanel.add(panelCase);
     //statusBarPanel.add(testCaseIndexLabel);
-    statusBarPanel.add(jPanelMagnify);
+    statusBarPanel.add(jPanelReveal);
     statusBarPanel.add(lblPrecisionModel);
     statusBarPanel.add(lblMousePos);
     

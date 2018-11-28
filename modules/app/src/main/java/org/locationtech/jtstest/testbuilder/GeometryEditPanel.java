@@ -380,7 +380,7 @@ public class GeometryEditPanel extends JPanel
    * Draws a mask surround to indicate that geometry is being visually altered
    * @param g
    */
-  private void drawMagnifyMask(Graphics2D g) {
+  private void drawRevealMask(Graphics2D g) {
     double viewWidth = viewport.getWidthInView();
     double viewHeight = viewport.getHeightInView();
     
@@ -531,17 +531,17 @@ public class GeometryEditPanel extends JPanel
   {
     private GeometryStretcherView stretchView = null;
   	private Renderer currentRenderer = null;
-    private boolean isMagnifyingTopology = false; 
+    private boolean isRevealingTopology = false; 
     private boolean isRenderingStretchVertices = false; 
     
   	public GeometryEditPanelRenderer()
   	{
-      if (DisplayParameters.isMagnifyingTopology()) {
+      if (DisplayParameters.isRevealingTopology()) {
         stretchView = new GeometryStretcherView(getGeomModel());
         stretchView.setStretchSize(viewport.toModel(DisplayParameters.getTopologyStretchSize()));
         stretchView.setNearnessTolerance(viewport.toModel(GeometryStretcherView.NEARNESS_TOL_IN_VIEW));
         stretchView.setEnvelope(viewport.getModelEnv());
-        isMagnifyingTopology = DisplayParameters.isMagnifyingTopology();
+        isRevealingTopology = DisplayParameters.isRevealingTopology();
         isRenderingStretchVertices = stretchView.isViewPerformant();
       }  		
   	}
@@ -552,14 +552,14 @@ public class GeometryEditPanel extends JPanel
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
           RenderingHints.VALUE_ANTIALIAS_ON);
       
-      if (isMagnifyingTopology) {
+      if (isRevealingTopology) {
         if (isRenderingStretchVertices) {
           //renderMagnifiedVertexShadows(g2);
           renderMagnifiedVertexMask(g2);
         }
         else {
           // render indicator that shows stretched view is non-performant
-          renderMagnifyWarning(g2);
+          renderRevealTopoWarning(g2);
         }
       }
       
@@ -567,7 +567,7 @@ public class GeometryEditPanel extends JPanel
       
       renderLayers(g2);
       
-      if (isMagnifyingTopology && isRenderingStretchVertices) {
+      if (isRevealingTopology && isRenderingStretchVertices) {
       	renderMagnifiedVertices(g2);
       }
       
@@ -580,7 +580,7 @@ public class GeometryEditPanel extends JPanel
     	LayerList layerList = getLayerList();
     	int n = layerList.size();
     	for (int i = 0; i < n; i++) {
-    		if (isMagnifyingTopology && isRenderingStretchVertices
+    		if (isRevealingTopology && isRenderingStretchVertices
             && stretchView != null && i < 2) {
           //System.out.println("rendering stretch verts");
       		currentRenderer = new LayerRenderer(layerList.getLayer(i),
@@ -651,7 +651,7 @@ public class GeometryEditPanel extends JPanel
       }
     }
     
-    public void renderMagnifyWarning(Graphics2D g)
+    public void renderRevealTopoWarning(Graphics2D g)
     {
       if (stretchView == null) return;
 
