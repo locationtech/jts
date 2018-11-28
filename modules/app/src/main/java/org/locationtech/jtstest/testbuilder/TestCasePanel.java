@@ -62,7 +62,7 @@ public class TestCasePanel extends JPanel {
   JButton btnRunTests = new JButton();
   RelatePanel relatePanel = new RelatePanel();
   BorderLayout borderLayout2 = new BorderLayout();
-  GeometryEditControlPanel editCtlPanel = new GeometryEditControlPanel();
+  //GeometryEditControlPanel editCtlPanel = new GeometryEditControlPanel();
   BorderLayout borderLayout3 = new BorderLayout();
   JPanel jPanel1 = new JPanel();
   JTextField txtDesc = new JTextField();
@@ -108,7 +108,7 @@ public class TestCasePanel extends JPanel {
   	this.tbModel = tbModel; 
   	editPanel.setModel(tbModel);
     // hook up other beans
-    editCtlPanel.setModel(tbModel);
+    //editCtlPanel.setModel(tbModel);
 
   }
   
@@ -120,10 +120,6 @@ public class TestCasePanel extends JPanel {
   public void setMaxTestCaseIndex(int maxTestCaseIndex) {
     this.maxTestCaseIndex = maxTestCaseIndex;
     updateTestCaseIndexLabel();
-  }
-
-  public GeometryEditControlPanel getGeometryEditControlPanel() {
-    return editCtlPanel;
   }
 
   public GeometryEditPanel getGeometryEditPanel() {
@@ -174,7 +170,6 @@ public class TestCasePanel extends JPanel {
   void jTabbedPane1_stateChanged(ChangeEvent e) 
   {
     boolean isFunction = jTabbedPane1.getSelectedComponent() == spatialFunctionPanel;
-    boolean isEdit = jTabbedPane1.getSelectedComponent() == editCtlPanel;
     
     editPanel.setShowingResult(isFunction);
     editPanel.setShowingGeometryA(! isFunction
@@ -183,14 +178,11 @@ public class TestCasePanel extends JPanel {
          || spatialFunctionPanel.shouldShowGeometryB());
 
     editPanel.setHighlightPoint(null);
-    if (jTabbedPane1.getSelectedComponent() == validPanel
-        || jTabbedPane1.getSelectedComponent() == editCtlPanel) {
+    if (jTabbedPane1.getSelectedComponent() == validPanel) {
       editPanel.setHighlightPoint(validPanel.getMarkPoint());
     }
     if (initialized) {
       //avoid infinite loop
-      if (isEdit)
-        JTSTestBuilderFrame.instance().showGeomsTab();
       if (isFunction)
         JTSTestBuilderFrame.instance().showResultWKTTab();
     }

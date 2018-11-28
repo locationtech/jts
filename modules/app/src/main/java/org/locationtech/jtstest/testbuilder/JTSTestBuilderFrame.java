@@ -139,11 +139,7 @@ public class JTSTestBuilderFrame extends JFrame
       enableEvents(AWTEvent.WINDOW_EVENT_MASK);
       setIconImage(appIcon.getImage());
       jbInit();
-      //#setRollover was introduced in Java 1.4 and is not present in 1.3.1. [Jon Aquino]
-      //jToolBar1.setRollover(true);
- //     initList(tcList);
-      //loadEditList(testpp);
-//      testCasePanel.setModel(tbModel);
+
       testCasePanel.spatialFunctionPanel.addSpatialFunctionPanelListener(
           new SpatialFunctionPanelListener() {
             public void functionExecuted(SpatialFunctionPanelEvent e) {
@@ -156,13 +152,6 @@ public class JTSTestBuilderFrame extends JFrame
             	resultController.executeScalarFunction();
             }
           });
-      testCasePanel.editCtlPanel.btnSetPrecisionModel.addActionListener(
-          new java.awt.event.ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-              precisionModelMenuItem_actionPerformed();
-            }
-          });
-      //testCasePanel.editCtlPanel.cbMagnifyTopo.addActionListener(
       testCasePanel.cbMagnifyTopo.addActionListener(
           new java.awt.event.ActionListener() {
             public void actionPerformed(ActionEvent e) {
