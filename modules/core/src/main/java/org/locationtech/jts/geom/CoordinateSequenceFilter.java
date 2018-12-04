@@ -59,8 +59,8 @@ public interface CoordinateSequenceFilter
   
   /**
    * Reports whether the application of this filter can be terminated.
-   * Once this method returns <tt>false</tt>, it should 
-   * continue to return <tt>false</tt> on every subsequent call.
+   * Once this method returns <tt>true</tt>, it must 
+   * continue to return <tt>true</tt> on every subsequent call.
    * 
    * @return true if the application of this filter can be terminated.
    */
