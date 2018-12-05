@@ -27,12 +27,21 @@ import org.locationtech.jts.geom.Polygonal;
 /**
  * Computes the location of points
  * relative to a {@link Polygonal} {@link Geometry},
- * using a simple O(n) algorithm.
- * This algorithm is suitable for use in cases where
- * only one or a few points will be tested against a given area.
+ * using a simple <tt>O(n)</tt> algorithm.
  * <p>
- * The algorithm used is only guaranteed to return correct results
- * for points which are <b>not</b> on the boundary of the Geometry.
+ * The algorithm used reports 
+ * if a point lies in the interior, exterior, 
+ * or exactly on the boundary of the Geometry. 
+ * <p>
+ * Instance methods are provided to implement
+ * the interface {@link PointInAreaLocator}.
+ * However, they provide no performance
+ * advantage over the class methods.
+ * <p>
+ * This algorithm is suitable for use in cases where
+ * only a few points will be tested.
+ * If many points will be tested, 
+ * {@link IndexedPointInAreaLocator} may provide better performance.
  *
  * @version 1.7
  */
@@ -42,8 +51,12 @@ public class SimplePointInAreaLocator
 
   /**
    * Determines the {@link Location} of a point in an areal {@link Geometry}.
-   * Computes {@link Location.BOUNDARY} if the point lies exactly
-   * on a geometry line segment. 
+   * The return value is one of:
+   * <ul>
+   * <li>{@link Location.INTERIOR} if the point is in the geometry interior
+   * <li>{@link Location.BOUNDARY} if the point lies exactly on the boundary 
+   * <li>{@link Location.EXTERIOR} if the point is outside the geometry
+   * </ul>
    * 
    * @param p the point to test
    * @param geom the areal geometry to test
@@ -52,15 +65,38 @@ public class SimplePointInAreaLocator
   public static int locate(Coordinate p, Geometry geom)
   {
     if (geom.isEmpty()) return Location.EXTERIOR;
+    /**
+     * Do a fast check against the geometry envelope first
+     */
+    if (! geom.getEnvelopeInternal().intersects(p))
+      return Location.EXTERIOR;
+    
     return locateInGeometry(p, geom);
   }
 
+  /**
+   * Determines whether a point is contained in a {@link Geometry},
+   * or lies on its boundary.
+   * This is a convenience method for 
+   * <pre>
+   *  Location.EXTERIOR != locate(p, geom)
+   * </pre>
+   * 
+   * @param p the point to test
+   * @param geom the geometry to test
+   * @return true if the point lies in or on the geometry  
+   */
+  public static boolean isContained(Coordinate p, Geometry geom) {
+    return Location.EXTERIOR != locate(p, geom);
+  }
+  
   private static int locateInGeometry(Coordinate p, Geometry geom)
   {
     if (geom instanceof Polygon) {
       return locatePointInPolygon(p, (Polygon) geom);
     }
-    else if (geom instanceof GeometryCollection) {
+    
+    if (geom instanceof GeometryCollection) {
       Iterator geomi = new GeometryCollectionIterator((GeometryCollection) geom);
       while (geomi.hasNext()) {
         Geometry g2 = (Geometry) geomi.next();
@@ -75,12 +111,20 @@ public class SimplePointInAreaLocator
 
   /**
    * Determines the {@link Location} of a point in a {@link Polygon}.
-   * Computes {@link Location.BOUNDARY} if the point lies exactly
-   * on the polygon boundary. 
+   * The return value is one of:
+   * <ul>
+   * <li>{@link Location.INTERIOR} if the point is in the geometry interior
+   * <li>{@link Location.BOUNDARY} if the point lies exactly on the boundary 
+   * <li>{@link Location.EXTERIOR} if the point is outside the geometry
+   * </ul>
+   * 
+   * This method is provided for backwards compatibility only.
+   * Use {@link #locate(Coordinate, Geometry)} instead.
    * 
    * @param p the point to test
    * @param poly the geometry to test
    * @return the Location of the point in the polygon  
+   *
    */
   public static int locatePointInPolygon(Coordinate p, Polygon poly)
   {
@@ -132,10 +176,28 @@ public class SimplePointInAreaLocator
 
 	private Geometry geom;
 
+	/**
+	 * Create an instance of a point-in-area locator,
+	 * using the provided areal geometry.
+	 * 
+	 * @param geom the areal geometry to locate in
+	 */
 	public SimplePointInAreaLocator(Geometry geom) {
 		this.geom = geom;
 	}
 
+  /**
+   * Determines the {@link Location} of a point in an areal {@link Geometry}.
+   * The return value is one of:
+   * <ul>
+   * <li>{@link Location.INTERIOR} if the point is in the geometry interior
+   * <li>{@link Location.BOUNDARY} if the point lies exactly on the boundary 
+   * <li>{@link Location.EXTERIOR} if the point is outside the geometry
+   * </ul> 
+   * 
+   * @param p the point to test
+   * @return the Location of the point in the geometry  
+   */
 	public int locate(Coordinate p) {
 		return SimplePointInAreaLocator.locate(p, geom);
 	}
