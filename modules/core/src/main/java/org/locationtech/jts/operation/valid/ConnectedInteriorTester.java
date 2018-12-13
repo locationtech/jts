@@ -159,6 +159,7 @@ public class ConnectedInteriorTester {
 
   private void visitInteriorRing(LineString ring, PlanarGraph graph)
   {
+    if (ring.isEmpty()) return;
     Coordinate[] pts = ring.getCoordinates();
     Coordinate pt0 = pts[0];
     /**

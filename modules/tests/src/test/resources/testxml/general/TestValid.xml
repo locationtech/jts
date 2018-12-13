@@ -70,6 +70,16 @@
    </case>
 
    <case>
+      <desc>L - empty</desc>
+      <a>
+LINESTRING EMPTY
+  </a>
+      <test>
+         <op name="isValid" arg1="A">    true  </op>
+      </test>
+   </case>
+
+   <case>
       <desc>L - no repeated points</desc>
       <a>
 LINESTRING (40 180, 120 120, 140 200, 200 140, 240 200)
@@ -120,6 +130,14 @@ LINESTRING (40 180, 120 120, 140 200, 140 200, 200 140, 240 200)
       <a>MULTILINESTRING((1 1, 0 0), (0 0, 0 0))</a>
       <test>
          <op name="isValid" arg1="A">      false      </op>
+      </test>
+   </case>
+
+   <case>
+      <desc>mL - MultiLinestring with empty component</desc>
+      <a>MULTILINESTRING((1 1, 0 0), EMPTY)</a>
+      <test>
+         <op name="isValid" arg1="A">      true      </op>
       </test>
    </case>
 
@@ -293,13 +311,21 @@ LINESTRING (40 180, 120 120, 140 200, 140 200, 200 140, 240 200)
       </test>
    </case>
    <case>
+      <desc>A - non-empty shell and empty hole (valid)</desc>
+      <a>POLYGON ((60 280, 260 180, 60 80, 60 280), EMPTY)</a>
+      <test>
+         <op name="isValid" arg1="A">true</op>
+      </test>
+   </case>
+
+   <case>
       <desc>A - empty shell and holes (valid)</desc>
       <a>POLYGON (EMPTY, EMPTY, EMPTY)</a>
       <test>
          <op name="isValid" arg1="A">true</op>
       </test>
    </case>
-
+   
    <case>
       <desc>A - hole overlapping shell at non-vertex</desc>
       <a>
@@ -742,5 +768,12 @@ MULTIPOLYGON (((0 0, 0 8, 8 8, 8 0, 0 0),
       </test>
    </case>
 
+   <case>
+      <desc>mA - non-empty and empty polygon </desc>
+      <a> MULTIPOLYGON (((30 10, 40 40, 20 40, 10 20, 30 10)), EMPTY)  </a>
+      <test>
+         <op name="isValid" arg1="A">      true      </op>
+      </test>
+   </case>
 
 </run>
