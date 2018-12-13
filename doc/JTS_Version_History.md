@@ -16,6 +16,16 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
+# Version 1.17
+
+*Release Date:  ??*
+
+### Bug Fixes
+
+* Fix `IsValidOp` to handle empty components
+
+<!-- ================================================================ -->
+
 # Version 1.16
 
 *Release Date:  September 10, 2018*
