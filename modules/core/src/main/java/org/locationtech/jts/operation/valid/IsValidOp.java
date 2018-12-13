@@ -336,6 +336,7 @@ public class IsValidOp
 
   private void checkClosedRing(LinearRing ring)
   {
+    if (ring.isEmpty()) return;
     if (! ring.isClosed() ) {
     	Coordinate pt = null;
     	if (ring.getNumPoints() >= 1)
@@ -440,7 +441,7 @@ public class IsValidOp
   private void checkHolesInShell(Polygon p, GeometryGraph graph)
   {
     LinearRing shell = p.getExteriorRing();
-
+    boolean isShellEmpty = shell.isEmpty();
     //PointInRing pir = new SimplePointInRing(shell);
     //PointInRing pir = new SIRtreePointInRing(shell);
     //PointInRing pir = new MCPointInRing(shell);
@@ -449,7 +450,9 @@ public class IsValidOp
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
 
       LinearRing hole = p.getInteriorRingN(i);
-      Coordinate holePt = findPtNotNode(hole.getCoordinates(), shell, graph);
+      Coordinate holePt = null;
+      if (hole.isEmpty()) continue;
+      holePt = findPtNotNode(hole.getCoordinates(), shell, graph);
       /**
        * If no non-node hole vertex can be found, the hole must
        * split the polygon into disconnected interiors.
@@ -457,7 +460,7 @@ public class IsValidOp
        */
       if (holePt == null) return;
 
-      boolean outside = Location.EXTERIOR == pir.locate(holePt);
+      boolean outside = isShellEmpty || (Location.EXTERIOR == pir.locate(holePt));
       if ( outside ) {
         validErr = new TopologyValidationError(
                           TopologyValidationError.HOLE_OUTSIDE_SHELL,
@@ -487,6 +490,7 @@ public class IsValidOp
 
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
       LinearRing innerHole = p.getInteriorRingN(i);
+      if (innerHole.isEmpty()) continue;
       nestedTester.add(innerHole);
     }
     boolean isNonNested = nestedTester.isNonNested();
@@ -537,6 +541,7 @@ public class IsValidOp
     Coordinate[] shellPts = shell.getCoordinates();
     // test if shell is inside polygon shell
     LinearRing polyShell = p.getExteriorRing();
+    if (polyShell.isEmpty()) return;
     Coordinate[] polyPts = polyShell.getCoordinates();
     Coordinate shellPt = findPtNotNode(shellPts, polyShell, graph);
     // if no point could be found, we can assume that the shell is outside the polygon

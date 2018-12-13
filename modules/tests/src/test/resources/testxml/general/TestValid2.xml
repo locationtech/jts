@@ -5243,4 +5243,25 @@
   </a>
   <test> <op name="isValid" arg1="A"> true </op> </test>
 </case>
+<case>
+  <desc>Test 752</desc>
+  <a>
+    POLYGON ((180 260, 80 300, 40 180, 160 120, 180 260), EMPTY)
+  </a>
+  <test> <op name="isValid" arg1="A"> true </op> </test>
+</case>
+<case>
+  <desc>Test 753</desc>
+  <a>
+    POLYGON ((180 260, 80 300, 40 180, 160 120, 180 260), EMPTY, EMPTY)
+  </a>
+  <test> <op name="isValid" arg1="A"> true </op> </test>
+</case>
+<case>
+  <desc>Test 754</desc>
+  <a>
+    MultiPolygon(((10 10, 10 20, 20 20, 20 15, 10 10)),((60 60, 70 70, 80 60, 60 60 )), (EMPTY))
+  </a>
+  <test> <op name="isValid" arg1="A"> true </op> </test>
+</case>
 </run>
