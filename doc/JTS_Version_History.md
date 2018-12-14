@@ -23,6 +23,7 @@ Distributions for older JTS versions can be obtained at the
 ### Bug Fixes
 
 * Fix `IsValidOp` to handle empty components
+* Fix `ShapeWriter` to handle Polygons with empty holes
 
 <!-- ================================================================ -->
 
