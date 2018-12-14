@@ -192,6 +192,8 @@ public class ShapeWriter
 
 	private void appendRing(PolygonShape poly, Coordinate[] coords) 
 	{
+	  if (coords.length == 0) return;
+	  
     double prevx = Double.NaN;
     double prevy = Double.NaN;
     Coordinate prev = null;
