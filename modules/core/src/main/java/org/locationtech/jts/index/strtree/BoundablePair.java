@@ -179,33 +179,39 @@ class BoundablePair
      */
     if (isComp1 && isComp2) {
       if (area(boundable1) > area(boundable2)) {
-        expand(boundable1, boundable2, priQ, minDistance);
+        expand(boundable1, boundable2, false, priQ, minDistance);
         return;
       }
       else {
-        expand(boundable2, boundable1, priQ, minDistance);
+        expand(boundable2, boundable1, true, priQ, minDistance);
         return;
       }
     }
     else if (isComp1) {
-      expand(boundable1, boundable2, priQ, minDistance);
+      expand(boundable1, boundable2, false, priQ, minDistance);
       return;
     }
     else if (isComp2) {
-      expand(boundable2, boundable1, priQ, minDistance);
+      expand(boundable2, boundable1, true, priQ, minDistance);
       return;
     }
     
     throw new IllegalArgumentException("neither boundable is composite");
   }
   
-  private void expand(Boundable bndComposite, Boundable bndOther,
+  private void expand(Boundable bndComposite, Boundable bndOther, boolean isFlipped,
       PriorityQueue priQ, double minDistance)
   {
     List children = ((AbstractNode) bndComposite).getChildBoundables();
     for (Iterator i = children.iterator(); i.hasNext(); ) {
       Boundable child = (Boundable) i.next();
-      BoundablePair bp = new BoundablePair(child, bndOther, itemDistance);
+      BoundablePair bp;
+      if (isFlipped) {
+        bp = new BoundablePair(bndOther, child, itemDistance);
+      }
+      else {
+        bp = new BoundablePair(child, bndOther, itemDistance);        
+      }
       // only add to queue if this pair might contain the closest points
       // MD - it's actually faster to construct the object rather than called distance(child, bndOther)!
       if (bp.getDistance() < minDistance) {
