@@ -31,18 +31,20 @@ import org.locationtech.jts.index.strtree.STRtree;
  * <p>
  * This approach provides the following benefits:
  * <ul>
- * <li>Performance is improved due to the effects of the 
+ * <li>Performance is dramatically improved due to the use of the 
  * R-tree index
  * and the pruning due to the Branch-and-Bound approach
- * <li>The spatial index on the target geometry can be cached
- * to allow reuse in an incremental query situation.
+ * <li>The spatial index on the target geometry is cached
+ * which allow reuse in an repeated query situation.
  * </ul>
- * Using this technique can be much more performant 
- * than using {@link Geometry#distance(Geometry)} 
+ * Using this technique is usually much more performant 
+ * than using the brute-force {@link Geometry#distance(Geometry)} 
  * when one or both
  * input geometries are large, 
  * or when evaluating many distance computations against 
  * a single geometry.
+ * <p>
+ * This class is thread-safe.
  * 
  * @author Martin Davis
  *
