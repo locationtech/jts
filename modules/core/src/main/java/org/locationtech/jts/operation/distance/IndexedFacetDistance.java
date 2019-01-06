@@ -43,9 +43,6 @@ import org.locationtech.jts.index.strtree.STRtree;
  * input geometries are large, 
  * or when evaluating many distance computations against 
  * a single geometry.
- * <p>
- * <h3>Known Issues</h3>
- * This class is NOT thread-safe.
  * 
  * @author Martin Davis
  *
@@ -107,11 +104,6 @@ public class IndexedFacetDistance
     STRtree tree2 = FacetSequenceTreeBuilder.build(g);
     Object[] obj = cachedTree.nearestNeighbour(tree2, 
         new FacetSequenceDistance());
-    return facetDistance(obj);
-  }
-  
-  private static double facetDistance(Object[] obj)
-  {
     FacetSequence fs1 = (FacetSequence) obj[0];
     FacetSequence fs2 = (FacetSequence) obj[1];
     return fs1.distance(fs2);

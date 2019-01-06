@@ -37,7 +37,7 @@ import org.locationtech.jts.util.Stopwatch;
  */
 public class TestPerfDistanceLinesPoints 
 {
-  static final boolean USE_INDEXED_DIST = false;
+  static final boolean USE_INDEXED_DIST = true;
   
   static GeometryFactory geomFact = new GeometryFactory();
   
