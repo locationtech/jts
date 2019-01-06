@@ -34,10 +34,6 @@ public class FacetSequence
   private int start;
   private int end;
   
-  // temporary Coordinates to materialize points from the CoordinateSequence
-  private Coordinate pt = new Coordinate();
-  private Coordinate seqPt = new Coordinate();
-  
   /**
    * Creates a new sequence of facets based on a {@link CoordinateSequence}
    * contained in the given {@link Geometry}.
@@ -120,16 +116,16 @@ public class FacetSequence
     double distance;
     
     if (isPoint && isPointOther) {
-      pts.getCoordinate(start, pt);
-      facetSeq.pts.getCoordinate(facetSeq.start, seqPt);
+      Coordinate pt = pts.getCoordinate(start);
+      Coordinate seqPt = facetSeq.pts.getCoordinate(facetSeq.start);
       distance = pt.distance(seqPt);
     }
     else if (isPoint) {
-      pts.getCoordinate(start, pt);      
+      Coordinate pt = pts.getCoordinate(start);      
       distance = computeDistancePointLine(pt, facetSeq, null);
     }
     else if (isPointOther) {
-      facetSeq.pts.getCoordinate(facetSeq.start, seqPt);
+      Coordinate seqPt = facetSeq.pts.getCoordinate(facetSeq.start);
       distance = computeDistancePointLine(seqPt, this, null);
     }
     else {
@@ -152,17 +148,17 @@ public class FacetSequence
     GeometryLocation[] locs = new GeometryLocation[2];
     
     if (isPoint && isPointOther) {
-      pts.getCoordinate(start, pt);
-      facetSeq.pts.getCoordinate(facetSeq.start, seqPt);
+      Coordinate pt = pts.getCoordinate(start);
+      Coordinate seqPt = facetSeq.pts.getCoordinate(facetSeq.start);
       locs[0] = new  GeometryLocation(geom, start, new Coordinate(pt));
       locs[1] = new  GeometryLocation(facetSeq.geom, facetSeq.start, new Coordinate(seqPt));
     }
     else if (isPoint) {
-      pts.getCoordinate(start, pt);      
+      Coordinate pt = pts.getCoordinate(start);      
       computeDistancePointLine(pt, facetSeq, locs);
     }
     else if (isPointOther) {
-      facetSeq.pts.getCoordinate(facetSeq.start, seqPt);
+      Coordinate seqPt = facetSeq.pts.getCoordinate(facetSeq.start);
       computeDistancePointLine(seqPt, this, locs);
       // unflip the locations
       GeometryLocation tmp = locs[0];
@@ -174,12 +170,6 @@ public class FacetSequence
     }
     return locs;    
   }
-  
-  // temporary Coordinates to materialize points from the CoordinateSequence
-  private Coordinate p0 = new Coordinate();
-  private Coordinate p1 = new Coordinate();
-  private Coordinate q0 = new Coordinate();
-  private Coordinate q1 = new Coordinate();
 
   private double computeDistanceLineLine(FacetSequence facetSeq, GeometryLocation[] locs)
   {
@@ -187,11 +177,11 @@ public class FacetSequence
     double minDistance = Double.MAX_VALUE;
 
     for (int i = start; i < end - 1; i++) {
+      Coordinate p0 = pts.getCoordinate(i);
+      Coordinate p1 = pts.getCoordinate(i + 1);
       for (int j = facetSeq.start; j < facetSeq.end - 1; j++) {
-        pts.getCoordinate(i, p0);
-        pts.getCoordinate(i + 1, p1);
-        facetSeq.pts.getCoordinate(j, q0);
-        facetSeq.pts.getCoordinate(j + 1, q1);
+        Coordinate q0 = facetSeq.pts.getCoordinate(j);
+        Coordinate q1 = facetSeq.pts.getCoordinate(j + 1);
         
         double dist = Distance.segmentToSegment(p0, p1, q0, q1);
         if (dist < minDistance) {
@@ -218,8 +208,8 @@ public class FacetSequence
     double minDistance = Double.MAX_VALUE;
 
     for (int i = facetSeq.start; i < facetSeq.end - 1; i++) {
-      facetSeq.pts.getCoordinate(i, q0);
-      facetSeq.pts.getCoordinate(i + 1, q1);
+      Coordinate q0 = facetSeq.pts.getCoordinate(i);
+      Coordinate q1 = facetSeq.pts.getCoordinate(i + 1);
       double dist = Distance.pointToSegment(pt, q0, q1);
       if (dist < minDistance) {
         minDistance = dist;
@@ -231,38 +221,13 @@ public class FacetSequence
   }
   
   private void updateNearestLocationsPointLine(Coordinate pt, 
-      FacetSequence facetSeq, int i, Coordinate q02, Coordinate q12, 
+      FacetSequence facetSeq, int i, Coordinate q0, Coordinate q1, 
       GeometryLocation[] locs) {
     locs[0] = new GeometryLocation(geom, start, new Coordinate(pt));
     LineSegment seg = new LineSegment(q0, q1);
     Coordinate segClosestPoint = seg.closestPoint(pt);
     locs[1] = new  GeometryLocation(facetSeq.geom, i, new Coordinate(segClosestPoint));
   }
-
-
-  /*
-  private GeometryLocation[] computeNearestLocationsPointLine(Coordinate pt, FacetSequence facetSeq) 
-  {
-    double minDistance = Double.MAX_VALUE;
-    
-    GeometryLocation[] locs = new GeometryLocation[2];
-    locs[0] = new GeometryLocation(geom, start, new Coordinate(pt));
-    
-    for (int i = facetSeq.start; i < facetSeq.end - 1; i++) {
-      facetSeq.pts.getCoordinate(i, q0);
-      facetSeq.pts.getCoordinate(i + 1, q1);
-      double dist = Distance.pointToSegment(pt, q0, q1);
-      if (dist < minDistance) {
-        minDistance = dist;
-        LineSegment seg = new LineSegment(q0, q1);
-        Coordinate segClosestPoint = seg.closestPoint(pt);
-        locs[0] = new  GeometryLocation(facetSeq.geom, i, segClosestPoint);
-        if (minDistance <= 0.0) return locs;
-      }
-    }
-    return locs;
-  }
-*/
 
   public String toString()
   {
