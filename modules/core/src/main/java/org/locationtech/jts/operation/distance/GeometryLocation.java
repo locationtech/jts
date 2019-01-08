@@ -14,6 +14,7 @@ package org.locationtech.jts.operation.distance;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTWriter;
 
 /**
  * Represents the location of a point on a Geometry.
@@ -89,4 +90,10 @@ public class GeometryLocation
    * Tests whether this location represents a point inside an area geometry.
    */
   public boolean isInsideArea() { return segIndex == INSIDE_AREA; }
+  
+  public String toString() {
+    return component.getGeometryType() 
+        + "[" + segIndex + "]" 
+        + "-" + WKTWriter.toPoint(pt);
+  }
 }
