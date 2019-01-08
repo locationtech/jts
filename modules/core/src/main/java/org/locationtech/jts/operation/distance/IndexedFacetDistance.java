@@ -69,6 +69,13 @@ public class IndexedFacetDistance
     return dist.distance(g2);
   }
   
+  /**
+   * Computes the nearest points on two geometries.   
+   * 
+   * @param g1 a geometry
+   * @param g2 a geometry
+   * @return the nearest points on the two geometries
+   */
   public static Coordinate[] nearestPoints(Geometry g1, Geometry g2) {
     IndexedFacetDistance dist = new IndexedFacetDistance(g1);
     return dist.nearestPoints(g2);
@@ -85,7 +92,7 @@ public class IndexedFacetDistance
    * In the case of {@link Lineal} and {@link Puntal} inputs,
    * this is equivalent to computing the conventional distance.
    * In the case of {@link Polygonal} inputs, this is equivalent 
-   * to computing the distance to the polygons boundaries. 
+   * to computing the distance to the polygon boundaries. 
    * 
    * @param g1 a Geometry, which may be of any type.
    */
@@ -112,8 +119,8 @@ public class IndexedFacetDistance
   }
   
   /**
-   * Computes the nearest locations from the base geometry
-   * to the given geometry.
+   * Computes the nearest locations on the base geometry
+   * and the given geometry.
    * 
    * @param g the geometry to compute the nearest location to
    * @return the nearest locations
@@ -128,6 +135,13 @@ public class IndexedFacetDistance
     return fs1.nearestLocations(fs2);
   }
 
+  /**
+   * Compute the nearest locations on the target geometry
+   * and the given geometry.
+   * 
+   * @param g the geometry to compute the nearest point to
+   * @return the nearest points
+   */
   public Coordinate[] nearestPoints(Geometry g) {
     GeometryLocation[] minDistanceLocation = nearestLocations(g);
     Coordinate[] nearestPts = new Coordinate[] {
