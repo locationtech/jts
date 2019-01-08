@@ -136,7 +136,7 @@ public class TestPerfDistanceLinesPoints
       bbd = new IndexedFacetDistance(geom);
     for (int i = 0; i < pts.length; i++ ) {
       if (USE_INDEXED_DIST) {
-        double dist = bbd.getDistance(pts[i]);
+        double dist = bbd.distance(pts[i]);
 //        double dist = bbd.getDistanceWithin(pts[i].getCoordinate(), 100000);
       }
       else { 
