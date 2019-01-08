@@ -39,8 +39,7 @@ import org.locationtech.jts.index.strtree.STRtree;
  * </ul>
  * Using this technique is usually much more performant 
  * than using the brute-force {@link Geometry#distance(Geometry)} 
- * when one or both
- * input geometries are large, 
+ * when one or both input geometries are large, 
  * or when evaluating many distance computations against 
  * a single geometry.
  * <p>
