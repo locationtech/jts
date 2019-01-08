@@ -99,7 +99,7 @@ public class TestPerfFastDistanceFile
 
 //         double dist = g1.distance(g2);
 //        double dist = BranchAndBoundFacetDistance.distance(g1, g2);
-        double dist = CachedBABDistance.getDistance(g1, g2);
+        double dist = CachedFastDistance.getDistance(g1, g2);
         // double distFast = SortedBoundsFacetDistance.distance(g1, g2);
 
         // pg.intersects(g2);

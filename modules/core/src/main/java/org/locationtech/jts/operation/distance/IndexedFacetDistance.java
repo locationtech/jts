@@ -12,6 +12,7 @@
 
 package org.locationtech.jts.operation.distance;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Lineal;
 import org.locationtech.jts.geom.Polygonal;
@@ -26,24 +27,23 @@ import org.locationtech.jts.index.strtree.STRtree;
  * using a Branch-and-Bound algorithm.
  * The Branch-and-Bound algorithm operates over a 
  * traversal of R-trees built
- * on the target and possibly also the query geometries.
+ * on the target and the query geometries.
  * <p>
  * This approach provides the following benefits:
  * <ul>
- * <li>Performance is improved due to the effects of the 
+ * <li>Performance is dramatically improved due to the use of the 
  * R-tree index
  * and the pruning due to the Branch-and-Bound approach
- * <li>The spatial index on the target geometry can be cached
- * to allow reuse in an incremental query situation.
+ * <li>The spatial index on the target geometry is cached
+ * which allow reuse in an repeated query situation.
  * </ul>
- * Using this technique can be much more performant 
- * than using {@link #getDistance(Geometry)} 
- * when one or both
- * input geometries are large, 
+ * Using this technique is usually much more performant 
+ * than using the brute-force {@link Geometry#distance(Geometry)} 
+ * when one or both input geometries are large, 
  * or when evaluating many distance computations against 
  * a single geometry.
  * <p>
- * This class is not thread-safe.
+ * This class is thread-safe.
  * 
  * @author Martin Davis
  *
@@ -65,7 +65,19 @@ public class IndexedFacetDistance
   public static double distance(Geometry g1, Geometry g2)
   {
     IndexedFacetDistance dist = new IndexedFacetDistance(g1);
-    return dist.getDistance(g2);
+    return dist.distance(g2);
+  }
+  
+  /**
+   * Computes the nearest points on two geometries.   
+   * 
+   * @param g1 a geometry
+   * @param g2 a geometry
+   * @return the nearest points on the two geometries
+   */
+  public static Coordinate[] nearestPoints(Geometry g1, Geometry g2) {
+    IndexedFacetDistance dist = new IndexedFacetDistance(g1);
+    return dist.nearestPoints(g2);
   }
   
   private STRtree cachedTree;
@@ -79,7 +91,7 @@ public class IndexedFacetDistance
    * In the case of {@link Lineal} and {@link Puntal} inputs,
    * this is equivalent to computing the conventional distance.
    * In the case of {@link Polygonal} inputs, this is equivalent 
-   * to computing the distance to the polygons boundaries. 
+   * to computing the distance to the polygon boundaries. 
    * 
    * @param g1 a Geometry, which may be of any type.
    */
@@ -95,19 +107,46 @@ public class IndexedFacetDistance
    * 
    * @return the computed distance
    */
-  public double getDistance(Geometry g)
+  public double distance(Geometry g)
   {
     STRtree tree2 = FacetSequenceTreeBuilder.build(g);
     Object[] obj = cachedTree.nearestNeighbour(tree2, 
         new FacetSequenceDistance());
-    return facetDistance(obj);
+    FacetSequence fs1 = (FacetSequence) obj[0];
+    FacetSequence fs2 = (FacetSequence) obj[1];
+    return fs1.distance(fs2);
   }
   
-  private static double facetDistance(Object[] obj)
+  /**
+   * Computes the nearest locations on the base geometry
+   * and the given geometry.
+   * 
+   * @param g the geometry to compute the nearest location to
+   * @return the nearest locations
+   */
+  public GeometryLocation[] nearestLocations(Geometry g)
   {
-    Object o1 = obj[0];
-    Object o2 = obj[1];
-    return ((FacetSequence) o1).distance((FacetSequence) o2);
+    STRtree tree2 = FacetSequenceTreeBuilder.build(g);
+    Object[] obj = cachedTree.nearestNeighbour(tree2, 
+        new FacetSequenceDistance());
+    FacetSequence fs1 = (FacetSequence) obj[0];
+    FacetSequence fs2 = (FacetSequence) obj[1];
+    return fs1.nearestLocations(fs2);
+  }
+
+  /**
+   * Compute the nearest locations on the target geometry
+   * and the given geometry.
+   * 
+   * @param g the geometry to compute the nearest point to
+   * @return the nearest points
+   */
+  public Coordinate[] nearestPoints(Geometry g) {
+    GeometryLocation[] minDistanceLocation = nearestLocations(g);
+    Coordinate[] nearestPts = new Coordinate[] {
+        minDistanceLocation[0].getCoordinate(),
+      minDistanceLocation[1].getCoordinate() };
+    return nearestPts;
   }
   
   /**
@@ -162,6 +201,9 @@ public class IndexedFacetDistance
       return fs1.distance(fs2);    
     }
   }
+
+
+
 }
 
 
