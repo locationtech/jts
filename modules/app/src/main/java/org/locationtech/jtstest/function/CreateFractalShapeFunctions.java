@@ -16,6 +16,7 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.shape.fractal.HilbertCurveBuilder;
 import org.locationtech.jts.shape.fractal.KochSnowflakeBuilder;
 import org.locationtech.jts.shape.fractal.SierpinskiCarpetBuilder;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class CreateFractalShapeFunctions 
 {
@@ -35,7 +36,10 @@ public class CreateFractalShapeFunctions
 		return builder.getGeometry();
 	}
 
-  public static Geometry hilberCurveOrder(Geometry g, int order) {
+	@Metadata(description="Generates a Hilbert Curve")
+  public static Geometry hilbertCurveOrder(Geometry g,
+      @Metadata(title="Order (1-16)")
+      int order) {
     HilbertCurveBuilder builder = new HilbertCurveBuilder(FunctionsUtil.getFactoryOrDefault(g));
     builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
     // builder.setNumPoints(n);
