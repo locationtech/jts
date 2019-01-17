@@ -13,6 +13,7 @@
 package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.shape.fractal.HilbertCurveBuilder;
 import org.locationtech.jts.shape.fractal.KochSnowflakeBuilder;
 import org.locationtech.jts.shape.fractal.SierpinskiCarpetBuilder;
 
@@ -33,4 +34,12 @@ public class CreateFractalShapeFunctions
 		builder.setNumPoints(n);
 		return builder.getGeometry();
 	}
+
+  public static Geometry hilberCurveOrder(Geometry g, int order) {
+    HilbertCurveBuilder builder = new HilbertCurveBuilder(FunctionsUtil.getFactoryOrDefault(g));
+    builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
+    // builder.setNumPoints(n);
+    builder.setOrder(order);
+    return builder.getGeometry();
+  }
 }
