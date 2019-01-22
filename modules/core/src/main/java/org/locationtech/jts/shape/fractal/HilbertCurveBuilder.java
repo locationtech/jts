@@ -27,6 +27,23 @@ import org.locationtech.jts.shape.GeometricShapeBuilder;
 public class HilbertCurveBuilder
 extends GeometricShapeBuilder
 {
+  public static final int MAX_ORDER = 16;
+  
+  public static int numPoints(int order) {
+    checkOrder(order);
+    return (int) Math.pow(2, 2 *order);
+  }
+  
+  public static int numPointsSide(int order) {
+    checkOrder(order);
+    return (int) Math.pow(2, order);
+  }
+  
+  private static void checkOrder(int order) {
+    if (order > MAX_ORDER) {
+      throw new IllegalArgumentException("Order must be in range 0 to " + MAX_ORDER);
+    }
+  }
   private int order = -1;
 
   /**
@@ -41,27 +58,28 @@ extends GeometricShapeBuilder
 
   /**
    * Sets the order of curve to generate.
-   * The order should be in the range [0 - 1].
+   * The order must be in the range [0 - 16].
    * 
    * @param order the order of the curve
    */
   public void setOrder(int order) {
+    checkOrder(order);
     this.order = orderClamp(order);
   }
   
   @Override
   public Geometry getGeometry() {
-    int numOnSide = 1;
+    int numPtsOnSide = 1;
     if (order < 0) {
      //TODO:  compute order from numPts
     }
     else {
-      numOnSide = (int) Math.pow(2, order);
-      numPts = numOnSide * numOnSide;
+      numPtsOnSide = numPointsSide(order);
+      numPts = numPtsOnSide * numPtsOnSide;
     }
     LineSegment baseLine = getSquareBaseLine();
     double width = baseLine.getLength();
-    double scale = width / (numOnSide - 1);
+    double scale = width / (numPtsOnSide - 1);
     
     Coordinate[] pts = new Coordinate[numPts];
     for (int i = 0; i < numPts; i++) {
@@ -73,8 +91,8 @@ extends GeometricShapeBuilder
     return geomFactory.createLineString(pts);
   }
   
-  private double scale(double val, double scale, double base) {
-    return val * scale + base;
+  private static double scale(double val, double scale, double offset) {
+    return val * scale + offset;
   }
   
   /**
@@ -161,7 +179,7 @@ extends GeometricShapeBuilder
   private static int orderClamp(int order) {
     // clamp order to [1, 16]
     int ord = order < 1 ? 1 : order;
-    ord = ord > 16 ? 16 : ord;
+    ord = ord > MAX_ORDER ? MAX_ORDER : ord;
     return ord;
   }
   
@@ -174,10 +192,7 @@ extends GeometricShapeBuilder
    * @return the point on the Hilbert curve
    */
   public static Coordinate hilbertPoint(int order, int i) {
-    // Fast Hilbert curve algorithm by http://threadlocalmutex.com/
-    // Ported from C++ https://github.com/rawrunprotected/hilbert_curves (public
-    // domain)
-    
+    checkOrder(order);
     int ord = orderClamp(order);
     
     i = i << (32 - 2 * ord);
