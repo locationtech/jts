@@ -15,6 +15,7 @@ package org.locationtech.jtstest.function;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.shape.fractal.HilbertCurveBuilder;
 import org.locationtech.jts.shape.fractal.KochSnowflakeBuilder;
+import org.locationtech.jts.shape.fractal.MortonCurveBuilder;
 import org.locationtech.jts.shape.fractal.SierpinskiCarpetBuilder;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
@@ -41,9 +42,24 @@ public class CreateFractalShapeFunctions
       @Metadata(title="Order (1-16)")
       int order) {
     HilbertCurveBuilder builder = new HilbertCurveBuilder(FunctionsUtil.getFactoryOrDefault(g));
-    builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
+    if (g != null) {
+      builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
+    }
     // builder.setNumPoints(n);
     builder.setOrder(order);
     return builder.getGeometry();
   }
+	
+	 @Metadata(description="Generates a Morton Curve")
+	  public static Geometry mortonCurveOrder(Geometry g,
+	      @Metadata(title="Order (1-16)")
+	      int order) {
+	   MortonCurveBuilder builder = new MortonCurveBuilder(FunctionsUtil.getFactoryOrDefault(g));
+	    if (g != null) {
+	      builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
+	    }
+	    // builder.setNumPoints(n);
+	    builder.setOrder(order);
+	    return builder.getGeometry();
+	  }
 }

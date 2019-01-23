@@ -19,14 +19,15 @@ import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.shape.GeometricShapeBuilder;
 
 /**
- * Generates Hilbert Curve linestrings.
+ * Generates Morton (Z) Curve linestrings.
  * 
  * @author Martin Davis
  *
  */
-public class HilbertCurveBuilder
+public class MortonCurveBuilder
 extends GeometricShapeBuilder
 {
+
   private int order = -1;
 
   /**
@@ -34,16 +35,18 @@ extends GeometricShapeBuilder
    * 
    * @param geomFactory the geometry factory to use
    */
-  public HilbertCurveBuilder(GeometryFactory geomFactory)
+  public MortonCurveBuilder(GeometryFactory geomFactory)
   {
     super(geomFactory);
     // use a null extent to indicate no transformation
     extent = null;
   }
-  
+
   /**
    * Sets the order of curve to generate.
    * The order must be in the range [0 - 16].
+   * If set this determines the 
+   * number of points in the generated curve.
    * 
    * @param order the order of the curve
    */
@@ -57,8 +60,9 @@ extends GeometricShapeBuilder
      //TODO:  compute order from numPts
     }
     else {
-      numPts = HilbertCurve.size(order);
+      numPts = MortonCurve.size(order);
     }
+    
     double scale = 1;
     double baseX = 0;
     double baseY = 0;
@@ -73,9 +77,9 @@ extends GeometricShapeBuilder
     
     Coordinate[] pts = new Coordinate[numPts];
     for (int i = 0; i < numPts; i++) {
-       Coordinate pt = HilbertCurve.decode(order, i);
-       double x = transform(pt.getX(), scale, baseX );
-       double y = transform(pt.getY(), scale, baseY );
+       Coordinate pt = MortonCurve.decode(i);
+       double x = transform(pt.getX(), scale, baseX);
+       double y = transform(pt.getY(), scale, baseY);
        pts[i] = new Coordinate(x, y);
     }
     return geomFactory.createLineString(pts);
@@ -84,5 +88,5 @@ extends GeometricShapeBuilder
   private static double transform(double val, double scale, double offset) {
     return val * scale + offset;
   }
-  
+
 }
