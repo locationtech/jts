@@ -1,8 +1,10 @@
 package org.locationtech.jts.shape.fractal;
 
+import static org.locationtech.jts.shape.fractal.HilbertCurve.*;
 import org.locationtech.jts.geom.Coordinate;
 
 import junit.framework.TestCase;
+
 
 public class HilbertCurveTest 
 extends TestCase
@@ -16,9 +18,31 @@ extends TestCase
   }
   
   public void testSize() {
-    assertEquals( HilbertCurve.size( 2 ), 16);
-    assertEquals( HilbertCurve.size( 4 ), 256);
-    assertEquals( HilbertCurve.size( 5 ), 1024);
+    assertEquals( size( 0 ), 1);
+    assertEquals( size( 1 ), 4);
+    assertEquals( size( 2 ), 16);
+    assertEquals( size( 3 ), 64);
+    assertEquals( size( 4 ), 256);
+    assertEquals( size( 5 ), 1024);
+    assertEquals( size( 6 ), 4096);
+  }
+  
+  public void testOrder() {
+    assertEquals( order( 4 ), 1);
+    
+    assertEquals( order( 5 ), 2);
+    assertEquals( order( 13 ), 2);
+    assertEquals( order( 15 ), 2);
+    assertEquals( order( 16 ), 2);
+    
+    assertEquals( order( 17 ), 3);
+    assertEquals( order( 63 ), 3);
+    assertEquals( order( 64 ), 3);
+    
+    assertEquals( order( 65 ), 4);
+    assertEquals( order( 255 ), 4);
+    assertEquals( order( 255 ), 4);
+    assertEquals( order( 256 ), 4);
   }
   
   public void testDecode() {
@@ -36,22 +60,22 @@ extends TestCase
   }
   
   private void checkDecode(int order, int index, int x, int y) {
-    Coordinate p = HilbertCurve.decode(order, index);
-    System.out.println(p);
+    Coordinate p = decode(order, index);
+    //System.out.println(p);
     assertEquals( (int) p.getX(), x);
     assertEquals( (int) p.getY(), y);
   }
   
   private void checkDecodeEncode(int order) {
-    int n = HilbertCurve.size(order);
+    int n = size(order);
     for (int i = 0; i < n; i++) {
       checkDecodeEncode(order, i);
     }
   }
 
   private void checkDecodeEncode(int order, int index) {
-    Coordinate p = HilbertCurve.decode(order, index);
-    int encode = HilbertCurve.encode(order, (int) p.getX(), (int) p.getY() );
+    Coordinate p = decode(order, index);
+    int encode = encode(order, (int) p.getX(), (int) p.getY() );
     assertEquals( index, encode);
   }
 

@@ -17,18 +17,17 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.shape.GeometricShapeBuilder;
+import static org.locationtech.jts.shape.fractal.MortonCurve.*;
 
 /**
- * Generates Morton (Z) Curve linestrings.
+ * Generates linestrings representing the {@link MortonCurve}.
  * 
  * @author Martin Davis
- *
+ * @see MortonCurve
  */
 public class MortonCurveBuilder
 extends GeometricShapeBuilder
 {
-
-  private int order = -1;
 
   /**
    * Creates a new instance using the provided {@link GeometryFactory}.
@@ -39,29 +38,26 @@ extends GeometricShapeBuilder
   {
     super(geomFactory);
     // use a null extent to indicate no transformation
+    // (may be set by client)
     extent = null;
   }
 
   /**
    * Sets the order of curve to generate.
    * The order must be in the range [0 - 16].
-   * If set this determines the 
+   * This determines the 
    * number of points in the generated curve.
    * 
    * @param order the order of the curve
    */
   public void setOrder(int order) {
-    this.order = order;
+    this.numPts = size(order);
   }
   
   @Override
   public Geometry getGeometry() {
-    if (order < 0) {
-     //TODO:  compute order from numPts
-    }
-    else {
-      numPts = MortonCurve.size(order);
-    }
+    int order = order(numPts);
+    int nPts = size(order);
     
     double scale = 1;
     double baseX = 0;
@@ -71,13 +67,13 @@ extends GeometricShapeBuilder
       baseX = baseLine.minX();
       baseY = baseLine.minY();
       double width = baseLine.getLength();
-      int maxOrdinate = HilbertCurve.maxOrdinate(order);
+      int maxOrdinate = maxOrdinate(order);
       scale = width / maxOrdinate;
     }
     
-    Coordinate[] pts = new Coordinate[numPts];
-    for (int i = 0; i < numPts; i++) {
-       Coordinate pt = MortonCurve.decode(i);
+    Coordinate[] pts = new Coordinate[nPts];
+    for (int i = 0; i < nPts; i++) {
+       Coordinate pt = decode(i);
        double x = transform(pt.getX(), scale, baseX);
        double y = transform(pt.getY(), scale, baseY);
        pts[i] = new Coordinate(x, y);

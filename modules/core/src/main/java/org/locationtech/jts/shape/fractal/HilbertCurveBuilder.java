@@ -17,12 +17,13 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.shape.GeometricShapeBuilder;
+import static org.locationtech.jts.shape.fractal.HilbertCurve.*;
 
 /**
- * Generates Hilbert Curve linestrings.
+ * Generates linestrings representing the {@link HilbertCurve}.
  * 
  * @author Martin Davis
- *
+ * @see HilbertCurve
  */
 public class HilbertCurveBuilder
 extends GeometricShapeBuilder
@@ -38,6 +39,7 @@ extends GeometricShapeBuilder
   {
     super(geomFactory);
     // use a null extent to indicate no transformation
+    // (may be set by client)
     extent = null;
   }
   
@@ -48,17 +50,13 @@ extends GeometricShapeBuilder
    * @param order the order of the curve
    */
   public void setOrder(int order) {
-    this.order = order;
-  }
+    this.numPts = size(order);  }
   
   @Override
   public Geometry getGeometry() {
-    if (order < 0) {
-     //TODO:  compute order from numPts
-    }
-    else {
-      numPts = HilbertCurve.size(order);
-    }
+    int order = order(numPts);
+    int nPts = size(order);
+    
     double scale = 1;
     double baseX = 0;
     double baseY = 0;
@@ -67,13 +65,13 @@ extends GeometricShapeBuilder
       baseX = baseLine.minX();
       baseY = baseLine.minY();
       double width = baseLine.getLength();
-      int maxOrdinate = HilbertCurve.maxOrdinate(order);
+      int maxOrdinate = maxOrdinate(order);
       scale = width / maxOrdinate;
     }
     
-    Coordinate[] pts = new Coordinate[numPts];
-    for (int i = 0; i < numPts; i++) {
-       Coordinate pt = HilbertCurve.decode(order, i);
+    Coordinate[] pts = new Coordinate[nPts];
+    for (int i = 0; i < nPts; i++) {
+       Coordinate pt = decode(order, i);
        double x = transform(pt.getX(), scale, baseX );
        double y = transform(pt.getY(), scale, baseY );
        pts[i] = new Coordinate(x, y);

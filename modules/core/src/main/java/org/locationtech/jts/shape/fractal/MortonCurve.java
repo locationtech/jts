@@ -15,10 +15,11 @@ package org.locationtech.jts.shape.fractal;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * Morton (Z) Curve encoding.
+ * Morton (Z) Curve encoding and decoding.
  * 
  * @author Martin Davis
  *
+ * @see HilbertCurve
  */
 public class MortonCurve
 {
@@ -34,12 +35,40 @@ public class MortonCurve
     return (int) Math.pow(2, order) - 1;
   }
   
+  public static int order(int numPoints) {
+    int pow2 = (int) ( (Math.log(numPoints)/Math.log(2)));
+    int order = pow2 / 2;
+    int size = size(order);
+    if (size < numPoints) order += 1;
+    return order;
+  }
+  
   private static void checkOrder(int order) {
     if (order > MAX_ORDER) {
       throw new IllegalArgumentException("Order must be in range 0 to " + MAX_ORDER);
     }
   }
+  /**
+   * Computes the index of the point (x,y)
+   * in the Morton curve ordering.
+   * 
+   * @param x the x ordinate of the point
+   * @param y the y ordinate of the point
+   * @return the index of the point along the Morton curve
+   */
+  public static int encode(int x, int y) {
+    return (interleave(y) << 1) + interleave(x);
+  }
   
+  private static int interleave(int x) {
+    x &= 0x0000ffff;                  // x = ---- ---- ---- ---- fedc ba98 7654 3210
+    x = (x ^ (x << 8)) & 0x00ff00ff; // x = ---- ---- fedc ba98 ---- ---- 7654 3210
+    x = (x ^ (x << 4)) & 0x0f0f0f0f; // x = ---- fedc ---- ba98 ---- 7654 ---- 3210
+    x = (x ^ (x << 2)) & 0x33333333; // x = --fe --dc --ba --98 --76 --54 --32 --10
+    x = (x ^ (x << 1)) & 0x55555555; // x = -f-e -d-c -b-a -9-8 -7-6 -5-4 -3-2 -1-0
+    return x;
+  }
+
   /**
    * Computes the point on a Morton curve 
    * for a given index.

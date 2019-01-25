@@ -37,11 +37,47 @@ public class CreateFractalShapeFunctions
 		return builder.getGeometry();
 	}
 
-	@Metadata(description="Generates a Hilbert Curve")
-  public static Geometry hilbertCurveOrder(Geometry g,
+  @Metadata(description="Generates a Hilbert Curve")
+  public static Geometry hilbertCurve(Geometry g,
+      @Metadata(title="Number of points")
+      int n) {
+    HilbertCurveBuilder builder = new HilbertCurveBuilder(FunctionsUtil.getFactoryOrDefault(g));
+    if (g != null) {
+      builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
+    }
+    builder.setNumPoints(n);
+    return builder.getGeometry();
+  }
+  
+	@Metadata(description="Generates a Hilbert Curve from its order")
+  public static Geometry hilbertCurveByOrder(Geometry g,
       @Metadata(title="Order (1-16)")
       int order) {
     HilbertCurveBuilder builder = new HilbertCurveBuilder(FunctionsUtil.getFactoryOrDefault(g));
+    if (g != null) {
+      builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
+    }
+    builder.setOrder(order);
+    return builder.getGeometry();
+  }
+	
+  @Metadata(description="Generates a Morton Curve")
+  public static Geometry mortonCurve(Geometry g,
+      @Metadata(title="Number of points")
+      int n) {
+   MortonCurveBuilder builder = new MortonCurveBuilder(FunctionsUtil.getFactoryOrDefault(g));
+    if (g != null) {
+      builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
+    }
+    builder.setNumPoints(n);
+    return builder.getGeometry();
+  }
+  
+  @Metadata(description="Generates a Morton Curve from its order")
+  public static Geometry mortonCurveByOrder(Geometry g,
+      @Metadata(title="Order (1-16)")
+      int order) {
+   MortonCurveBuilder builder = new MortonCurveBuilder(FunctionsUtil.getFactoryOrDefault(g));
     if (g != null) {
       builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
     }
@@ -49,17 +85,4 @@ public class CreateFractalShapeFunctions
     builder.setOrder(order);
     return builder.getGeometry();
   }
-	
-	 @Metadata(description="Generates a Morton Curve")
-	  public static Geometry mortonCurveOrder(Geometry g,
-	      @Metadata(title="Order (1-16)")
-	      int order) {
-	   MortonCurveBuilder builder = new MortonCurveBuilder(FunctionsUtil.getFactoryOrDefault(g));
-	    if (g != null) {
-	      builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
-	    }
-	    // builder.setNumPoints(n);
-	    builder.setOrder(order);
-	    return builder.getGeometry();
-	  }
 }

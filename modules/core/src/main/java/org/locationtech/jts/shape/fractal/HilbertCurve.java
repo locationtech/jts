@@ -38,6 +38,14 @@ public class HilbertCurve
     return (int) Math.pow(2, order);
   }
   
+  public static int order(int numPoints) {
+    int pow2 = (int) ( (Math.log(numPoints)/Math.log(2)));
+    int order = pow2 / 2;
+    int size = size(order);
+    if (size < numPoints) order += 1;
+    return order;
+  }
+  
   private static void checkOrder(int order) {
     if (order > MAX_ORDER) {
       throw new IllegalArgumentException("Order must be in range 0 to " + MAX_ORDER);
