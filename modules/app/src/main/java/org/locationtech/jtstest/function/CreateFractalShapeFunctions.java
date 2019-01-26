@@ -49,15 +49,15 @@ public class CreateFractalShapeFunctions
     return builder.getGeometry();
   }
   
-	@Metadata(description="Generates a Hilbert Curve from its order")
-  public static Geometry hilbertCurveByOrder(Geometry g,
-      @Metadata(title="Order (1-16)")
-      int order) {
+	@Metadata(description="Generates a Hilbert Curve at a given level")
+  public static Geometry hilbertCurveAtLevel(Geometry g,
+      @Metadata(title="Level (1-16)")
+      int level) {
     HilbertCurveBuilder builder = new HilbertCurveBuilder(FunctionsUtil.getFactoryOrDefault(g));
     if (g != null) {
       builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
     }
-    builder.setOrder(order);
+    builder.setLevel(level);
     return builder.getGeometry();
   }
 	
@@ -73,16 +73,16 @@ public class CreateFractalShapeFunctions
     return builder.getGeometry();
   }
   
-  @Metadata(description="Generates a Morton Curve from its order")
-  public static Geometry mortonCurveByOrder(Geometry g,
-      @Metadata(title="Order (1-16)")
-      int order) {
+  @Metadata(description="Generates a Morton Curve at a given level")
+  public static Geometry mortonCurveAtLevel(Geometry g,
+      @Metadata(title="Level (1-16)")
+      int level) {
    MortonCurveBuilder builder = new MortonCurveBuilder(FunctionsUtil.getFactoryOrDefault(g));
     if (g != null) {
       builder.setExtent(FunctionsUtil.getEnvelopeOrDefault(g));
     }
     // builder.setNumPoints(n);
-    builder.setOrder(order);
+    builder.setLevel(level);
     return builder.getGeometry();
   }
 }

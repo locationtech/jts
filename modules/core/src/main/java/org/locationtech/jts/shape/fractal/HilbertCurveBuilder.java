@@ -16,14 +16,16 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.shape.GeometricShapeBuilder;
-import static org.locationtech.jts.shape.fractal.HilbertCurve.*;
+import static org.locationtech.jts.shape.fractal.HilbertCode.*;
 
 /**
- * Generates linestrings representing the {@link HilbertCurve}.
+ * Generates a {@link LineString} representing the Hilbert Curve
+ * at a given level.
  * 
  * @author Martin Davis
- * @see HilbertCurve
+ * @see HilbertCode
  */
 public class HilbertCurveBuilder
 extends GeometricShapeBuilder
@@ -44,18 +46,18 @@ extends GeometricShapeBuilder
   }
   
   /**
-   * Sets the order of curve to generate.
-   * The order must be in the range [0 - 16].
+   * Sets the level of curve to generate.
+   * The level must be in the range [0 - 16].
    * 
-   * @param order the order of the curve
+   * @param level the order of the curve
    */
-  public void setOrder(int order) {
-    this.numPts = size(order);  }
+  public void setLevel(int level) {
+    this.numPts = size(level);  }
   
   @Override
   public Geometry getGeometry() {
-    int order = order(numPts);
-    int nPts = size(order);
+    int level = level(numPts);
+    int nPts = size(level);
     
     double scale = 1;
     double baseX = 0;
@@ -65,13 +67,13 @@ extends GeometricShapeBuilder
       baseX = baseLine.minX();
       baseY = baseLine.minY();
       double width = baseLine.getLength();
-      int maxOrdinate = maxOrdinate(order);
+      int maxOrdinate = maxOrdinate(level);
       scale = width / maxOrdinate;
     }
     
     Coordinate[] pts = new Coordinate[nPts];
     for (int i = 0; i < nPts; i++) {
-       Coordinate pt = decode(order, i);
+       Coordinate pt = decode(level, i);
        double x = transform(pt.getX(), scale, baseX );
        double y = transform(pt.getY(), scale, baseY );
        pts[i] = new Coordinate(x, y);

@@ -19,57 +19,78 @@ import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.shape.GeometricShapeBuilder;
 
 /**
- * Hilbert Curve encoding and decoding.
+ * Hilbert order encoding and decoding.
+ * The Hilbert Curve is a continuous space-filling curve.
+ * In the limit the Hilbert curve has infinitely many vertices and fills 
+ * the space of the unit square.
+ * There are a set of discrete approximations, determined by
+ * a level number.
+ * The discrete Hilbert curve at level n H<sub>n</sub> has 2<sup>n+1</sup> vertices. 
+ * The curve occupies a square of side 2<sup>n</sup>.
+ * <p>
+ * The discrete Hilbert curve induces an ordering of the 
+ * vertices along the curve.
+ * The index of a vertex along the curve is called the Hilbert code.
+ * This class supports encoding points into the corresponding code,
+ * and computing the point for a given code value.
+ * Codes are represented as 32-bit integers, which allows levels
+ * 0 to 16 to be represented.
+ * <p>
+ * The Hilbert order has the property that it tends to preserve locality.
+ * This means that codes which are near in value will have spatially proximate
+ * points.  The converse is not always true, but does occur often 
+ * enough that the Hilbert order is an effective way of linearizing space 
+ * to support range queries. 
  * 
  * @author Martin Davis
  *
  */
-public class HilbertCurve
+public class HilbertCode
 {
-  public static final int MAX_ORDER = 16;
+  public static final int MAX_LEVEL = 16;
   
-  public static int size(int order) {
-    checkOrder(order);
-    return (int) Math.pow(2, 2 *order);
+  public static int size(int level) {
+    checkLevel(level);
+    return (int) Math.pow(2, 2 *level);
   }
   
-  public static int maxOrdinate(int order) {
-    checkOrder(order);
-    return (int) Math.pow(2, order);
+  public static int maxOrdinate(int level) {
+    checkLevel(level);
+    return (int) Math.pow(2, level) - 1;
   }
   
-  public static int order(int numPoints) {
+  public static int level(int numPoints) {
     int pow2 = (int) ( (Math.log(numPoints)/Math.log(2)));
-    int order = pow2 / 2;
-    int size = size(order);
-    if (size < numPoints) order += 1;
-    return order;
+    int level = pow2 / 2;
+    int size = size(level);
+    if (size < numPoints) level += 1;
+    return level;
   }
   
-  private static void checkOrder(int order) {
-    if (order > MAX_ORDER) {
-      throw new IllegalArgumentException("Order must be in range 0 to " + MAX_ORDER);
+  private static void checkLevel(int level) {
+    if (level > MAX_LEVEL) {
+      throw new IllegalArgumentException("Level must be in range 0 to " + MAX_LEVEL);
     }
   }
 
   /**
    * Computes the index of the point (x,y)
-   * in the Hilbert curve of the given order.
+   * in the Hilbert curve at the given level.
    * 
-   * @param order the Hilbert curve order
+   * @param level the level of the discrete Hilbert curve
    * @param x the x ordinate of the point
    * @param y the y ordinate of the point
    * @return the index of the point along the Hilbert curve
    */
-  public static int encode(int order, int x, int y) {
+  public static int encode(int level, int x, int y) {
     // Fast Hilbert curve algorithm by http://threadlocalmutex.com/
     // Ported from C++ https://github.com/rawrunprotected/hilbert_curves (public
     // domain)
 
-    int ord = orderClamp(order);
+    int lvl = levelClamp(level);
     
-    x = x << (16 - ord);
-    y = y << (16 - ord);
+    x = x << (16 - lvl);
+    y = y << (16 - lvl);
     
     long a = x ^ y;
     long b = 0xFFFF ^ a;
@@ -122,37 +143,37 @@ public class HilbertCurve
     i1 = (i1 | (i1 << 2)) & 0x33333333;
     i1 = (i1 | (i1 << 1)) & 0x55555555;
 
-    long index = ((i1 << 1) | i0) >> (32 - 2 * ord);
+    long index = ((i1 << 1) | i0) >> (32 - 2 * lvl);
     return (int) index;
   }
 
   /**
-   * Clamps an order to the range valid for 
+   * Clamps a level to the range valid for 
    * the index algorithm used.
    * 
-   * @param order the order of a Hilbert curve
-   * @return a valid order
+   * @param level the level of a Hilbert curve
+   * @return a valid level
    */
-  private static int orderClamp(int order) {
+  private static int levelClamp(int level) {
     // clamp order to [1, 16]
-    int ord = order < 1 ? 1 : order;
-    ord = ord > MAX_ORDER ? MAX_ORDER : ord;
-    return ord;
+    int lvl = level < 1 ? 1 : level;
+    lvl = lvl > MAX_LEVEL ? MAX_LEVEL : lvl;
+    return lvl;
   }
   
   /**
    * Computes the point on a Hilbert curve 
-   * of given order for a given index.
+   * of given level for a given code.
    * 
-   * @param order the Hilbert curve order
+   * @param level the Hilbert curve level
    * @param i the index of the point on the curve
    * @return the point on the Hilbert curve
    */
-  public static Coordinate decode(int order, int i) {
-    checkOrder(order);
-    int ord = orderClamp(order);
+  public static Coordinate decode(int level, int i) {
+    checkLevel(level);
+    int lvl = levelClamp(level);
     
-    i = i << (32 - 2 * ord);
+    i = i << (32 - 2 * lvl);
 
     long i0 = deinterleave(i);
     long i1 = deinterleave(i >> 1);
@@ -165,8 +186,8 @@ public class HilbertCurve
 
     long a = (((i0 ^ 0xFFFF) & prefixT1) | (i0 & prefixT0));
 
-    long x = (a ^ i1) >> (16 - ord);
-    long y = (a ^ i0 ^ i1) >> (16 - ord);
+    long x = (a ^ i1) >> (16 - lvl);
+    long y = (a ^ i0 ^ i1) >> (16 - lvl);
     
     return new Coordinate(x, y);
   }

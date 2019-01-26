@@ -1,20 +1,19 @@
 package org.locationtech.jts.shape.fractal;
 
-import static org.locationtech.jts.shape.fractal.HilbertCurve.*;
+import static org.locationtech.jts.shape.fractal.HilbertCode.*;
 import org.locationtech.jts.geom.Coordinate;
 
 import junit.framework.TestCase;
 
-
-public class HilbertCurveTest 
+public class HilbertCodeTest 
 extends TestCase
 {
-  public HilbertCurveTest(String name) {
+  public HilbertCodeTest(String name) {
     super(name);
   }
 
   public static void main(String[] args) {
-    junit.textui.TestRunner.run(HilbertCurveTest.class);
+    junit.textui.TestRunner.run(HilbertCodeTest.class);
   }
   
   public void testSize() {
@@ -27,22 +26,22 @@ extends TestCase
     assertEquals( size( 6 ), 4096);
   }
   
-  public void testOrder() {
-    assertEquals( order( 4 ), 1);
+  public void testLevel() {
+    assertEquals( level( 4 ), 1);
     
-    assertEquals( order( 5 ), 2);
-    assertEquals( order( 13 ), 2);
-    assertEquals( order( 15 ), 2);
-    assertEquals( order( 16 ), 2);
+    assertEquals( level( 5 ), 2);
+    assertEquals( level( 13 ), 2);
+    assertEquals( level( 15 ), 2);
+    assertEquals( level( 16 ), 2);
     
-    assertEquals( order( 17 ), 3);
-    assertEquals( order( 63 ), 3);
-    assertEquals( order( 64 ), 3);
+    assertEquals( level( 17 ), 3);
+    assertEquals( level( 63 ), 3);
+    assertEquals( level( 64 ), 3);
     
-    assertEquals( order( 65 ), 4);
-    assertEquals( order( 255 ), 4);
-    assertEquals( order( 255 ), 4);
-    assertEquals( order( 256 ), 4);
+    assertEquals( level( 65 ), 4);
+    assertEquals( level( 255 ), 4);
+    assertEquals( level( 255 ), 4);
+    assertEquals( level( 256 ), 4);
   }
   
   public void testDecode() {
@@ -66,16 +65,16 @@ extends TestCase
     assertEquals( (int) p.getY(), y);
   }
   
-  private void checkDecodeEncode(int order) {
-    int n = size(order);
+  private void checkDecodeEncode(int level) {
+    int n = size(level);
     for (int i = 0; i < n; i++) {
-      checkDecodeEncode(order, i);
+      checkDecodeEncode(level, i);
     }
   }
 
-  private void checkDecodeEncode(int order, int index) {
-    Coordinate p = decode(order, index);
-    int encode = encode(order, (int) p.getX(), (int) p.getY() );
+  private void checkDecodeEncode(int level, int index) {
+    Coordinate p = decode(level, index);
+    int encode = encode(level, (int) p.getX(), (int) p.getY() );
     assertEquals( index, encode);
   }
 

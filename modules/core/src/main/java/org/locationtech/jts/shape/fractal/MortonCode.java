@@ -15,37 +15,37 @@ package org.locationtech.jts.shape.fractal;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * Morton (Z) Curve encoding and decoding.
+ * Morton (Z) order encoding and decoding.
  * 
  * @author Martin Davis
  *
- * @see HilbertCurve
+ * @see HilbertCode
  */
-public class MortonCurve
+public class MortonCode
 {
-  public static final int MAX_ORDER = 16;
+  public static final int MAX_LEVEL = 16;
   
-  public static int size(int order) {
-    checkOrder(order);
-    return (int) Math.pow(2, 2 *order);
+  public static int size(int level) {
+    checkLevel(level);
+    return (int) Math.pow(2, 2 *level);
   }
   
-  public static int maxOrdinate(int order) {
-    checkOrder(order);
-    return (int) Math.pow(2, order) - 1;
+  public static int maxOrdinate(int level) {
+    checkLevel(level);
+    return (int) Math.pow(2, level) - 1;
   }
   
-  public static int order(int numPoints) {
+  public static int level(int numPoints) {
     int pow2 = (int) ( (Math.log(numPoints)/Math.log(2)));
-    int order = pow2 / 2;
-    int size = size(order);
-    if (size < numPoints) order += 1;
-    return order;
+    int level = pow2 / 2;
+    int size = size(level);
+    if (size < numPoints) level += 1;
+    return level;
   }
   
-  private static void checkOrder(int order) {
-    if (order > MAX_ORDER) {
-      throw new IllegalArgumentException("Order must be in range 0 to " + MAX_ORDER);
+  private static void checkLevel(int level) {
+    if (level > MAX_LEVEL) {
+      throw new IllegalArgumentException("Level must be in range 0 to " + MAX_LEVEL);
     }
   }
   /**
