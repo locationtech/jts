@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.Coordinate;
  * 
  * @author Martin Davis
  *
+ * @see MortonCurveBuilder
  * @see HilbertCode
  */
 public class MortonCode

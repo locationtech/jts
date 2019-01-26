@@ -44,6 +44,8 @@ import org.locationtech.jts.shape.GeometricShapeBuilder;
  * 
  * @author Martin Davis
  *
+ * @see HilbertCurveBuilder
+ * @see MortonCode
  */
 public class HilbertCode
 {
