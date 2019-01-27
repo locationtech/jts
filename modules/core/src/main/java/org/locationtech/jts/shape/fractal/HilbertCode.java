@@ -19,7 +19,7 @@ import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.shape.GeometricShapeBuilder;
 
 /**
- * Implements encoding points and decoding indices along finite planar Hilbert curves.
+ * Encodes points as the index of their position along finite planar Hilbert curves.
  * <p>
  * The planar Hilbert Curve is a continuous space-filling curve.
  * In the limit the Hilbert curve has infinitely many vertices and fills 
