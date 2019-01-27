@@ -45,6 +45,14 @@ extends TestCase
   }
   
   public void testDecode() {
+    checkDecode(1, 0, 0, 0);
+
+    checkDecode(1, 0, 0, 0);
+    checkDecode(1, 1, 0, 1);
+  
+    checkDecode(3, 0, 0, 0);
+    checkDecode(3, 1, 0, 1);
+    
     checkDecode(4,0, 0, 0);
     checkDecode(4, 1, 1, 0);
     

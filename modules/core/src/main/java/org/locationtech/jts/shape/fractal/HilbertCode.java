@@ -19,29 +19,31 @@ import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.shape.GeometricShapeBuilder;
 
 /**
- * Implements encoding points and decoding indexes along finite planar Hilbert curves.
+ * Implements encoding points and decoding indices along finite planar Hilbert curves.
+ * <p>
  * The planar Hilbert Curve is a continuous space-filling curve.
  * In the limit the Hilbert curve has infinitely many vertices and fills 
  * the space of the unit square.
+ * There is a sequence of finite approximations to the infinite Hilbert curve, 
+ * determined by the level number.
+ * The finite Hilbert curve H<sub>n</sub> at level n contains 2<sup>n + 1</sup> points. 
+ * Each finite Hilbert curve defines an ordering of the 
+ * points in the 2-dimensional range square containing the curve.
+ * The index of a point along a Hilbert curve is called the Hilbert code.
  * <p>
- * There is a sequence of finite approximations to the infinite curve, determined by
- * a level number.
- * The finite Hilbert curve H<sub>n</sub> at level n has 2<sup>n + 1</sup> vertices. 
- * The curve occupies a square of side 2<sup>n</sup>.
+ * In this implementation codes are represented as 32-bit integers.  
+ * This allows levels 0 to 16 to be represented.
+ * Curves fills the range square of side 2<sup>level</sup>. 
+ * Curve points have ordinates in the range [0, 2<sup>level</sup> - 1].
+ * The code for a given point depends on the level chosen.
  * <p>
- * Each finite Hilbert curve induces an ordering of the 
- * vertices along the curve.
- * The index of a vertex along a Hilbert curve is called the Hilbert code.
- * Codes are represented as 32-bit integers, which allows levels
- * 0 to 16 to be represented.
- * This class supports encoding points in the range of a given curve level
- * into the corresponding code,
+ * This class supports encoding points in the range of a given level curve
  * and decoding the point for a given code value.
  * <p>
  * The Hilbert order has the property that it tends to preserve locality.
  * This means that codes which are near in value will have spatially proximate
  * points.  The converse is not always true - the delta between 
- * nearby points is not always small.  But the average delta 
+ * codes for nearby points is not always small.  But the average delta 
  * is small enough that the Hilbert order is an effective way of linearizing space 
  * to support range queries. 
  * 
@@ -53,13 +55,14 @@ import org.locationtech.jts.shape.GeometricShapeBuilder;
 public class HilbertCode
 {
   /**
-   * The maximum level supported.
+   * The maximum curve level that can be represented.
    */
   public static final int MAX_LEVEL = 16;
   
   /**
    * The number of vertices in the curve for the given level.
-   * The number of vertices is 2<sup>level + 1</sup>
+   * The number of vertices is 2<sup>level + 1</sup>.
+   * 
    * @param level the level of the curve
    * @return the number of vertices
    */
@@ -69,9 +72,9 @@ public class HilbertCode
   }
   
   /**
-   * The maximum ordinate for points 
-   * in the curve of the given level.
-   * The maximum ordinate is 2<sup>level</sup></i>.
+   * The maximum ordinate value for points 
+   * in the Hilbert curve of the given level.
+   * The maximum ordinate is 2<sup>level</sup></i> - 1.
    * 
    * @param level the level of the curve
    * @return the maximum ordinate value
@@ -82,7 +85,7 @@ public class HilbertCode
   }
   
   /**
-   * The level of finite Hilbert curve which contains at least 
+   * The level of the finite Hilbert curve which contains at least 
    * the given number of points.
    * 
    * @param numPoints the number of points contained in the level
@@ -105,6 +108,7 @@ public class HilbertCode
   /**
    * Computes the index of the point (x,y)
    * in the Hilbert curve at the given level.
+   * The index will lie in the range [0, 2<sup>level + 1</sup>].
    * 
    * @param level the level of the discrete Hilbert curve
    * @param x the x ordinate of the point
@@ -192,20 +196,21 @@ public class HilbertCode
   
   /**
    * Computes the point on a Hilbert curve 
-   * of given level for a given code.
+   * of given level for a given code index.
+   * The point ordinates will lie in the range [0, 2<sup>level</sup></i> - 1].
    * 
    * @param level the Hilbert curve level
-   * @param i the index of the point on the curve
+   * @param index the index of the point on the curve
    * @return the point on the Hilbert curve
    */
-  public static Coordinate decode(int level, int i) {
+  public static Coordinate decode(int level, int index) {
     checkLevel(level);
     int lvl = levelClamp(level);
     
-    i = i << (32 - 2 * lvl);
+    index = index << (32 - 2 * lvl);
 
-    long i0 = deinterleave(i);
-    long i1 = deinterleave(i >> 1);
+    long i0 = deinterleave(index);
+    long i1 = deinterleave(index >> 1);
 
     long t0 = (i0 | i1) ^ 0xFFFF;
     long t1 = i0 & i1;
