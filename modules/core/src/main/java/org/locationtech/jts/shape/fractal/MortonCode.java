@@ -24,18 +24,43 @@ import org.locationtech.jts.geom.Coordinate;
  */
 public class MortonCode
 {
+  /**
+   * The maximum curve level that can be represented.
+   */
   public static final int MAX_LEVEL = 16;
   
+  /**
+   * The number of points in the curve for the given level.
+   * The number of points is 2<sup>level + 1</sup>.
+   * 
+   * @param level the level of the curve
+   * @return the number of points
+   */
   public static int size(int level) {
     checkLevel(level);
     return (int) Math.pow(2, 2 *level);
   }
   
+  /**
+   * The maximum ordinate value for points 
+   * in the curve for the given level.
+   * The maximum ordinate is 2<sup>level</sup></i> - 1.
+   * 
+   * @param level the level of the curve
+   * @return the maximum ordinate value
+   */
   public static int maxOrdinate(int level) {
     checkLevel(level);
     return (int) Math.pow(2, level) - 1;
   }
   
+  /**
+   * The level of the finite Morton curve which contains at least 
+   * the given number of points.
+   * 
+   * @param numPoints the number of points required
+   * @return the level of the curve
+   */
   public static int level(int numPoints) {
     int pow2 = (int) ( (Math.log(numPoints)/Math.log(2)));
     int level = pow2 / 2;

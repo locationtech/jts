@@ -60,11 +60,11 @@ public class HilbertCode
   public static final int MAX_LEVEL = 16;
   
   /**
-   * The number of vertices in the curve for the given level.
-   * The number of vertices is 2<sup>level + 1</sup>.
+   * The number of points in the curve for the given level.
+   * The number of points is 2<sup>level + 1</sup>.
    * 
    * @param level the level of the curve
-   * @return the number of vertices
+   * @return the number of points
    */
   public static int size(int level) {
     checkLevel(level);
@@ -73,7 +73,7 @@ public class HilbertCode
   
   /**
    * The maximum ordinate value for points 
-   * in the Hilbert curve of the given level.
+   * in the curve for the given level.
    * The maximum ordinate is 2<sup>level</sup></i> - 1.
    * 
    * @param level the level of the curve
@@ -88,7 +88,7 @@ public class HilbertCode
    * The level of the finite Hilbert curve which contains at least 
    * the given number of points.
    * 
-   * @param numPoints the number of points contained in the level
+   * @param numPoints the number of points required
    * @return the level of the curve
    */
   public static int level(int numPoints) {
@@ -106,11 +106,12 @@ public class HilbertCode
   }
 
   /**
-   * Computes the index of the point (x,y)
-   * in the Hilbert curve at the given level.
+   * Encodes a point (x,y)
+   * in the range of the the Hilbert curve at a given level 
+   * as the index of the point along the curve.
    * The index will lie in the range [0, 2<sup>level + 1</sup>].
    * 
-   * @param level the level of the discrete Hilbert curve
+   * @param level the level of the Hilbert curve
    * @param x the x ordinate of the point
    * @param y the y ordinate of the point
    * @return the index of the point along the Hilbert curve

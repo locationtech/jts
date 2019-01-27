@@ -28,6 +28,10 @@ extends TestCase
   }
   
   public void testLevel() {
+    assertEquals( level( 1 ), 0);
+    
+    assertEquals( level( 2 ), 1);
+    assertEquals( level( 3 ), 1);
     assertEquals( level( 4 ), 1);
     
     assertEquals( level( 5 ), 2);
@@ -44,9 +48,14 @@ extends TestCase
     assertEquals( level( 255 ), 4);
     assertEquals( level( 256 ), 4);
   }
+  
   public void testDecode() {
-    checkDecode(0, 0, 0);
+    checkDecode(0, 0, 0);    
     checkDecode(1, 1, 0);
+    checkDecode(2, 0, 1);
+    checkDecode(3, 1, 1);
+    checkDecode(4, 2, 0);
+    
     checkDecode(24, 4, 2);
     checkDecode(124, 14, 6);
     checkDecode(255, 15, 15);
@@ -54,7 +63,8 @@ extends TestCase
 
 
   public void testDecodeEncode() {
-    checkDecodeEncode(5);
+    checkDecodeEncodeForLevel(4);
+    checkDecodeEncodeForLevel(5);
   }
   
   private void checkDecode(int index, int x, int y) {
@@ -64,7 +74,7 @@ extends TestCase
     assertEquals( (int) p.getY(), y);
   }
   
-  private void checkDecodeEncode(int level) {
+  private void checkDecodeEncodeForLevel(int level) {
     int n = size(level);
     for (int i = 0; i < n; i++) {
       checkDecodeEncode(level, i);

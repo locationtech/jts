@@ -1,6 +1,8 @@
 package org.locationtech.jts.shape.fractal;
 
 import static org.locationtech.jts.shape.fractal.HilbertCode.*;
+import static org.locationtech.jts.shape.fractal.MortonCode.level;
+
 import org.locationtech.jts.geom.Coordinate;
 
 import junit.framework.TestCase;
@@ -27,6 +29,10 @@ extends TestCase
   }
   
   public void testLevel() {
+    assertEquals( level( 1 ), 0);
+    
+    assertEquals( level( 2 ), 1);
+    assertEquals( level( 3 ), 1);
     assertEquals( level( 4 ), 1);
     
     assertEquals( level( 5 ), 2);
@@ -55,7 +61,6 @@ extends TestCase
     
     checkDecode(4,0, 0, 0);
     checkDecode(4, 1, 1, 0);
-    
     checkDecode(4, 24, 6, 2);
     checkDecode(4, 255, 15, 0);
     
@@ -63,7 +68,8 @@ extends TestCase
   }
 
   public void testDecodeEncode() {
-    checkDecodeEncode(5);
+    checkDecodeEncodeForLevel(4);
+    checkDecodeEncodeForLevel(5);
   }
   
   private void checkDecode(int order, int index, int x, int y) {
@@ -73,7 +79,7 @@ extends TestCase
     assertEquals( (int) p.getY(), y);
   }
   
-  private void checkDecodeEncode(int level) {
+  private void checkDecodeEncodeForLevel(int level) {
     int n = size(level);
     for (int i = 0; i < n; i++) {
       checkDecodeEncode(level, i);
