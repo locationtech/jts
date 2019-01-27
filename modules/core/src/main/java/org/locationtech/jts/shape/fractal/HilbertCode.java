@@ -19,27 +19,30 @@ import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.shape.GeometricShapeBuilder;
 
 /**
- * Hilbert order encoding and decoding.
- * The Hilbert Curve is a continuous space-filling curve.
+ * Implements encoding points and decoding indexes along finite planar Hilbert curves.
+ * The planar Hilbert Curve is a continuous space-filling curve.
  * In the limit the Hilbert curve has infinitely many vertices and fills 
  * the space of the unit square.
- * There are a set of discrete approximations, determined by
+ * <p>
+ * There is a sequence of finite approximations to the infinite curve, determined by
  * a level number.
- * The discrete Hilbert curve at level n H<sub>n</sub> has 2<sup>n+1</sup> vertices. 
+ * The finite Hilbert curve H<sub>n</sub> at level n has 2<sup>n + 1</sup> vertices. 
  * The curve occupies a square of side 2<sup>n</sup>.
  * <p>
- * The discrete Hilbert curve induces an ordering of the 
+ * Each finite Hilbert curve induces an ordering of the 
  * vertices along the curve.
- * The index of a vertex along the curve is called the Hilbert code.
- * This class supports encoding points into the corresponding code,
- * and computing the point for a given code value.
+ * The index of a vertex along a Hilbert curve is called the Hilbert code.
  * Codes are represented as 32-bit integers, which allows levels
  * 0 to 16 to be represented.
+ * This class supports encoding points in the range of a given curve level
+ * into the corresponding code,
+ * and decoding the point for a given code value.
  * <p>
  * The Hilbert order has the property that it tends to preserve locality.
  * This means that codes which are near in value will have spatially proximate
- * points.  The converse is not always true, but does occur often 
- * enough that the Hilbert order is an effective way of linearizing space 
+ * points.  The converse is not always true - the delta between 
+ * nearby points is not always small.  But the average delta 
+ * is small enough that the Hilbert order is an effective way of linearizing space 
  * to support range queries. 
  * 
  * @author Martin Davis
@@ -49,18 +52,42 @@ import org.locationtech.jts.shape.GeometricShapeBuilder;
  */
 public class HilbertCode
 {
+  /**
+   * The maximum level supported.
+   */
   public static final int MAX_LEVEL = 16;
   
+  /**
+   * The number of vertices in the curve for the given level.
+   * The number of vertices is 2<sup>level + 1</sup>
+   * @param level the level of the curve
+   * @return the number of vertices
+   */
   public static int size(int level) {
     checkLevel(level);
     return (int) Math.pow(2, 2 *level);
   }
   
+  /**
+   * The maximum ordinate for points 
+   * in the curve of the given level.
+   * The maximum ordinate is 2<sup>level</sup></i>.
+   * 
+   * @param level the level of the curve
+   * @return the maximum ordinate value
+   */
   public static int maxOrdinate(int level) {
     checkLevel(level);
     return (int) Math.pow(2, level) - 1;
   }
   
+  /**
+   * The level of finite Hilbert curve which contains at least 
+   * the given number of points.
+   * 
+   * @param numPoints the number of points contained in the level
+   * @return the level of the curve
+   */
   public static int level(int numPoints) {
     int pow2 = (int) ( (Math.log(numPoints)/Math.log(2)));
     int level = pow2 / 2;
