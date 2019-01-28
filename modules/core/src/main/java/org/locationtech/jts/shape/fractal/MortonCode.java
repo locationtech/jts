@@ -15,26 +15,25 @@ package org.locationtech.jts.shape.fractal;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * Encodes points as the index of their position along the planar Morton (Z-order) curve.
+ * Encodes points as the index along the planar Morton (Z-order) curve.
  * <p>
  * The planar Morton (Z-order) curve is a continuous space-filling curve.
  * The Morton curve defines an ordering of the 
- * points in the 2-dimensional plane quadrant containing the curve.
+ * points in the positive quadrant of the plane.
  * The index of a point along the Morton curve is called the Morton code.
  * <p>
  * A sequence of subsets of the Morton curve can be defined by a level number.
  * Each level subset occupies a square range.
- * The Morton curve M<sub>n</sub> at level n contains 2<sup>n + 1</sup> points. 
- * <p>
- * In this implementation codes are represented as 32-bit integers.  
- * This allows levels 0 to 16 to be represented.
- * Level curves fill the range square of side 2<sup>level</sup>. 
+ * The curve at level n M<sub>n</sub> contains 2<sup>n + 1</sup> points. 
+ * It fills the range square of side 2<sup>level</sup>. 
  * Curve points have ordinates in the range [0, 2<sup>level</sup> - 1].
- * The code for a given point is identical for all levels.
- * The level simply determines the number of points in the curve
+ * The code for a given point is identical at all levels.
+ * The level simply determines the number of points in the curve subset
  * and the size of the range square.
  * <p>
- * This class supports encoding points
+ * This implementation represents codes using 32-bit integers.  
+ * This allows levels 0 to 16 to be handled.
+ * The class supports encoding points
  * and decoding the point for a given code value.
  * <p>
  * The Morton order has the property that it tends to preserve locality.
@@ -71,7 +70,7 @@ public class MortonCode
   /**
    * The maximum ordinate value for points 
    * in the curve for the given level.
-   * The maximum ordinate is 2<sup>level</sup></i> - 1.
+   * The maximum ordinate is 2<sup>level</sup> - 1.
    * 
    * @param level the level of the curve
    * @return the maximum ordinate value
@@ -123,7 +122,7 @@ public class MortonCode
   }
 
   /**
-   * Computes the point on a Morton curve 
+   * Computes the point on the Morton curve 
    * for a given index.
    * 
    * @param index the index of the point on the curve

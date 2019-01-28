@@ -19,25 +19,24 @@ import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.shape.GeometricShapeBuilder;
 
 /**
- * Encodes points as the index of their position along finite planar Hilbert curves.
+ * Encodes points as the index along finite planar Hilbert curves.
  * <p>
  * The planar Hilbert Curve is a continuous space-filling curve.
  * In the limit the Hilbert curve has infinitely many vertices and fills 
  * the space of the unit square.
- * There is a sequence of finite approximations to the infinite Hilbert curve, 
- * determined by the level number.
- * The finite Hilbert curve H<sub>n</sub> at level n contains 2<sup>n + 1</sup> points. 
+ * A sequence of finite approximations to the infinite Hilbert curve 
+ * is defined by the level number.
+ * The finite Hilbert curve at level n H<sub>n</sub> contains 2<sup>n + 1</sup> points. 
  * Each finite Hilbert curve defines an ordering of the 
  * points in the 2-dimensional range square containing the curve.
- * The index of a point along a Hilbert curve is called the Hilbert code.
- * <p>
- * In this implementation codes are represented as 32-bit integers.  
- * This allows levels 0 to 16 to be represented.
  * Curves fills the range square of side 2<sup>level</sup>. 
  * Curve points have ordinates in the range [0, 2<sup>level</sup> - 1].
- * The code for a given point depends on the level chosen.
+ * The index of a point along a Hilbert curve is called the Hilbert code.
+ * The code for a given point is specific to the level chosen.
  * <p>
- * This class supports encoding points in the range of a given level curve
+ * This implementation represents codes using 32-bit integers.  
+ * This allows levels 0 to 16 to be handled.
+ * The class supports encoding points in the range of a given level curve
  * and decoding the point for a given code value.
  * <p>
  * The Hilbert order has the property that it tends to preserve locality.
@@ -74,7 +73,7 @@ public class HilbertCode
   /**
    * The maximum ordinate value for points 
    * in the curve for the given level.
-   * The maximum ordinate is 2<sup>level</sup></i> - 1.
+   * The maximum ordinate is 2<sup>level</sup> - 1.
    * 
    * @param level the level of the curve
    * @return the maximum ordinate value
