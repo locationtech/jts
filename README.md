@@ -40,11 +40,11 @@ See also:
 
 ## Documentation
 
-* [**Javadoc**](https://locationtech.github.io/jts/javadoc)
-* Frequently Asked Questions are documented in the [**FAQ**](https://locationtech.github.io/jts/jts-faq.html)
-* Installing and using JTS is described in the [**User Guide**](USING.md).
-* Building and developing with JTS is described in the [**Developing Guide**](DEVELOPING.md).
-* Migrating from previous versions of JTS is described in the [**Upgrade Guide**](MIGRATION.md).
+* [**Javadoc**](https://locationtech.github.io/jts/javadoc) for the latest version of JTS
+* [**FAQ**](https://locationtech.github.io/jts/jts-faq.html) - Frequently Asked Questions 
+* [**User Guide**](USING.md) - Installing and using JTS (as a library and using included tools)
+* [**Developing Guide**](DEVELOPING.md) - how to build and develop for JTS
+* [**Upgrade Guide**](MIGRATION.md) - How to migrate from previous versions of JTS
 
 ## History
 
