@@ -97,3 +97,19 @@ module org.foo.baz {
   requires org.locationtech.jts.io.sde;     // jts-io-sde
 }
 ```
+
+## JTS Tools
+
+JTS includes some application tools.
+
+### TestBuilder
+
+The TestBuilder is a GUI application which allows creating and visualizing geometry, and executing JTS functions.
+
+* Run from project root: 
+     
+       java -jar modules/app/target/JTSTestBuilder.jar
+     
+* Run with Metal L&F (useful for Mac)
+
+       java -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel -jar modules/app/target/JTSTestBuilder.jar
