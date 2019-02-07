@@ -12,6 +12,7 @@
 
 package org.locationtech.jtstest.testbuilder.geom;
 
+import org.locationtech.jts.algorithm.Area;
 import org.locationtech.jts.geom.*;
 
 public class GeometryUtil {
@@ -34,8 +35,32 @@ public class GeometryUtil {
 
   public static String metricsSummary(Geometry g)
   {
-    String metrics = "Length = " + g.getLength() + "    Area = " + g.getArea();
+    String metrics = "";
+    if ( hasLength(g) ) metrics += "Len: " + g.getLength(); 
+    if ( hasArea(g) ) metrics += "  Area: " + area(g);
     return metrics;
+  }
+
+  public static boolean hasArea(Geometry geom) {
+    if (geom.getDimension() >= 2) return true;
+    if (geom instanceof LinearRing) return true;
+    return false;
+  }
+
+  public static boolean hasLength(Geometry geom) {
+    if (geom.getDimension() >= 1) return true;
+    return false;
+  }
+
+  public static double area(Geometry geom) {
+    double area = 0;
+    if (geom.getDimension() >= 2) {
+      area = geom.getArea();
+    }
+    else if (geom instanceof LinearRing) {
+      area = Area.ofRing(geom.getCoordinates());
+    }
+    return area;
   }
 
 }

@@ -23,7 +23,6 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import org.locationtech.jts.algorithm.Area;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -33,6 +32,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 
 
 public class GeometryTreeModel implements TreeModel
@@ -148,7 +148,7 @@ abstract class GeometricObjectNode
   public String getText()
   {
     if (index >= 0) {
-      return indexString(index) + " : " + text;
+      return indexString(index) + " " + text;
     }
     return text;
   }
@@ -225,39 +225,11 @@ abstract class GeometryNode extends GeometricObjectNode
         buf.append(" " + sizeString(size));
       }
     }
-    
-    if (hasLength(geom)) {
-    	buf.append("   --     Len: " + geom.getLength());
-    }
-    if (hasArea(geom)) { 
-      buf.append("      Area: " + area(geom));
-    }
+    buf.append("  -  "  + GeometryUtil.metricsSummary(geom) );
     
     return buf.toString();
   }
   
-  private static double area(Geometry geom) {
-    double area = 0;
-    if (geom.getDimension() >= 2) {
-      area = geom.getArea();
-    }
-    else if (geom instanceof LinearRing) {
-      area = Area.ofRing(geom.getCoordinates());
-    }
-    return area;
-  }
-
-  private static boolean hasArea(Geometry geom) {
-	    if (geom.getDimension() >= 2) return true;
-	    if (geom instanceof LinearRing) return true;
-	    return false;
-	  }
-	  
-  private static boolean hasLength(Geometry geom) {
-	    if (geom.getDimension() >= 1) return true;
-	    return false;
-	  }
-	  
   public boolean isLeaf()
   {
     return isLeaf;
