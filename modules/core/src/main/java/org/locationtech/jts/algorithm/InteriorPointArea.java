@@ -195,9 +195,9 @@ public class InteriorPointArea {
   private static class InteriorPointPolygon {
     private Polygon polygon;
     private double interiorPointY;
-    private double interiorSegWidth = -1;
-    private double interiorPointX;
+    private double interiorSegWidth = 0.0;
     private List<Double> crossings = new ArrayList<Double>();
+    private Coordinate interiorPoint = null;
 
     /**
      * Creates a new InteriorPointPolygon instance.
@@ -212,14 +212,16 @@ public class InteriorPointArea {
     /**
      * Gets the computed interior point.
      * 
-     * @return the interior point coordinate
+     * @return the interior point coordinate,
+     *  or <tt>null</tt> if the input is empty
      */
     public Coordinate getInteriorPoint() {
-      return new Coordinate(interiorPointX, interiorPointY);
+      return interiorPoint;
     }
 
     /**
      * Gets the width of the interior horizontal segment containing the interior point.
+     * Used to determine the best point to use.
      * 
      * @return the width
      */
@@ -232,6 +234,13 @@ public class InteriorPointArea {
      * 
      */
     public void process() {
+      if (polygon.isEmpty()) return;
+      
+      /**
+       * set initial interior point in case polygon has zero area
+       */
+      interiorPoint = new Coordinate(polygon.getCoordinate());
+      
       scanRing((LinearRing) polygon.getExteriorRing());
       for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
         scanRing((LinearRing) polygon.getInteriorRingN(i));
@@ -290,7 +299,8 @@ public class InteriorPointArea {
         double width = x2 - x1;
         if ( width > interiorSegWidth ) {
           interiorSegWidth = width;
-          interiorPointX = avg(x1, x2);
+          double interiorPointX = avg(x1, x2);
+          interiorPoint = new Coordinate(interiorPointX, interiorPointY);
         }
       }
     }
