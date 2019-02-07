@@ -12,8 +12,8 @@
 package org.locationtech.jtstest.testbuilder;
 
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.SystemColor;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -21,9 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jtstest.testbuilder.geom.*;
-import org.locationtech.jtstest.testbuilder.model.*;
+import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
+import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 
 
 /**
@@ -83,7 +82,7 @@ extends JPanel
     buf.append(label + " : ");
     buf.append(GeometryUtil.structureSummary(g));
     buf.append("\n");
-    buf.append("    Length = " + g.getLength() + "    Area = " + g.getArea() + "\n");
+    buf.append("    " + GeometryUtil.metricsSummary(g));
     buf.append("\n");
   }
   
