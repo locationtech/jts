@@ -100,7 +100,7 @@ public class LayerRenderer implements Renderer
      */
     for (int i = 0; i < numGeom; i++) {
       if (isCancelled) return;
-      Style customFill = paletteFill(i, pal, layer.getGeometryStyle());
+      BasicStyle customFill = paletteFill(i, pal, layer.getGeometryStyle());
       Style st = new LayerStyle(customFill, layer.getLayerStyle().getDecoratorStyle());
       renderGeom(g, viewport, gc.getGeometryN(i), st);
     }
@@ -141,7 +141,7 @@ public class LayerRenderer implements Renderer
     return pal;
   }
 
-  private static Style paletteFill(int i, HSBPalette pal, BasicStyle style) {
+  private static BasicStyle paletteFill(int i, HSBPalette pal, BasicStyle style) {
     Color clrBase = style.getFillColor();
     int alpha = clrBase.getAlpha();
     Color clr = pal.color(i, alpha);
