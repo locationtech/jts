@@ -155,7 +155,8 @@ public class GeometryPainter
     
 		// handle points in a special way for appearance and speed
 		if (geometry instanceof Point) {
-			g.setStroke(POINT_STROKE);
+		  BasicStroke ptStroke = createPointStroke(stroke);
+			g.setStroke(ptStroke);
 		  g.setColor(lineColor);
 	    g.draw(shape);
 			return;
@@ -194,6 +195,12 @@ public class GeometryPainter
 		  }
 		}
 	}
+
+  private static BasicStroke createPointStroke(Stroke stroke) {
+    BasicStroke bs = (BasicStroke) stroke;
+    BasicStroke ptStroke = new BasicStroke(AppConstants.POINT_SIZE - 1 + bs.getLineWidth());
+    return ptStroke;
+  }
 
 
 

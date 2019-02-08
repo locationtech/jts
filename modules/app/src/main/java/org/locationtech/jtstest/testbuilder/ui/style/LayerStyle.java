@@ -22,7 +22,7 @@ import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 public class LayerStyle implements Style  {
 
-  private Style geomStyle;
+  private BasicStyle geomStyle;
   private StyleList decoratorStyle;
   private VertexStyle vertexStyle;
 
@@ -55,12 +55,12 @@ public class LayerStyle implements Style  {
     setGeometryStyle(geomStyle);
   }
   
-  public LayerStyle(Style geomStyle, StyleList decoratorStyle) {
+  public LayerStyle(BasicStyle geomStyle, StyleList decoratorStyle) {
     this.geomStyle = geomStyle;
     this.decoratorStyle = decoratorStyle;
   }
   
-  public Style getGeomStyle() {
+  public BasicStyle getGeomStyle() {
     return geomStyle;
   }
 
@@ -100,10 +100,17 @@ public class LayerStyle implements Style  {
     return decoratorStyle.isEnabled(vertexStyle);
   }
   
+  public void setDashed(boolean selected) {
+    // TODO Auto-generated method stub
+    
+  }
+  
   public void paint(Geometry geom, Viewport viewport, Graphics2D g) throws Exception {
     geomStyle.paint(geom, viewport, g);
     decoratorStyle.paint(geom, viewport, g);
   }
+
+
 
 
 
