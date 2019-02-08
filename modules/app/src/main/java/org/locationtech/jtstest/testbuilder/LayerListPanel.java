@@ -12,81 +12,124 @@
 package org.locationtech.jtstest.testbuilder;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
-import java.util.Iterator;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListCellRenderer;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jtstest.test.Testable;
 import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
-import org.locationtech.jtstest.testbuilder.model.TestCaseEdit;
-
 
 /**
  * @version 1.7
  */
 public class LayerListPanel extends JPanel {
-    BorderLayout borderLayout1 = new BorderLayout();
-    private DefaultListModel listModel = new DefaultListModel();
-    JScrollPane jScrollPane1 = new JScrollPane();
-    LayerCheckBoxList list = new LayerCheckBoxList(listModel);
-    BorderLayout borderLayout2 = new BorderLayout();
+  
+  JPanel list = new JPanel();
+  private LayerStylePanel lyrStylePanel;
 
-    public LayerListPanel() {
-        try {
-            uiInit();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        registerListSelectionListener();
+  public LayerListPanel() {
+    try {
+      uiInit();
+    } catch (Exception ex) {
+      ex.printStackTrace();
     }
+  }
 
-    private void uiInit() throws Exception {
-        setSize(200, 250);
-        setLayout(borderLayout2);
-        list.setBackground(SystemColor.control);
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list.setSelectionBackground(Color.GRAY);
-        add(jScrollPane1, BorderLayout.CENTER);
-        jScrollPane1.getViewport().add(list, null);
-    }
-
-    private void registerListSelectionListener() {
-        list.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if (list.getSelectedValue() == null)
-                    return;
-//TODO: implement event logic        }
-        }});
-    }
-
-    public void populateList() {
-        listModel.clear();
-        LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
-        
-        for (int i = 0; i < lyrList.size(); i++) {
-          Layer lyr = lyrList.getLayer(i);
-          listModel.addElement(lyr);
-        }
-    }
-
+  private void uiInit() throws Exception {
+    setSize(200, 250);
+    setBackground(SystemColor.control);
     
+    list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
+    list.setBackground(SystemColor.control);
+    list.setBorder(BorderFactory.createEmptyBorder(2,2,2,10));
+
+    JScrollPane jScrollPane1 = new JScrollPane();
+    jScrollPane1.setBackground(SystemColor.control);
+    jScrollPane1.getViewport().add(list, null);
+
+    setLayout(new BorderLayout());
+    add(jScrollPane1, BorderLayout.WEST);
+    lyrStylePanel = new LayerStylePanel();
+    add(lyrStylePanel, BorderLayout.CENTER);
+  }
+
+  JPanel createStylePanel() {
+    JPanel panelStyle = new JPanel();
+    panelStyle.setLayout(new BoxLayout(panelStyle, BoxLayout.Y_AXIS));
+    panelStyle.add(new JLabel("Styling"));
+    panelStyle.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+    return panelStyle;
+  }
+  
+  public void populateList() {
+    LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
+
+    for (int i = 0; i < lyrList.size(); i++) {
+      Layer lyr = lyrList.getLayer(i);
+      LayerItemPanel item = new LayerItemPanel(lyr, lyrStylePanel);
+      list.add(item);
+    }
+    
+    lyrStylePanel.setLayer(lyrList.getLayer(0));
+  }
 }
 
+class LayerItemPanel extends JPanel {
+  private Layer layer;
+  private JCheckBox checkbox;
+  private LayerStylePanel lyrStylePanel;
 
+  LayerItemPanel(Layer lyr, LayerStylePanel lyrStylePanel) {
+    this.layer = lyr;
+    this.lyrStylePanel = lyrStylePanel;
+    try {
+      uiInit();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+
+  private void uiInit() throws Exception {
+    setSize(200, 250);
+    setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+    setBackground(SystemColor.control);
+    setAlignmentX(Component.LEFT_ALIGNMENT);
+
+    checkbox = new JCheckBox();
+    add(checkbox);
+    checkbox.setAlignmentX(Component.LEFT_ALIGNMENT);
+    checkbox.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        layerVisAction();
+      }
+    });
+    checkbox.setSelected(layer.isEnabled());
+
+    JLabel lblName = new JLabel(layer.getName());
+    lblName.setAlignmentX(Component.LEFT_ALIGNMENT);
+    add(lblName);
+    lblName.addMouseListener(new MouseAdapter()  
+    {  
+      public void mouseClicked(MouseEvent e)  
+      {  
+        lyrStylePanel.setLayer(layer);
+      }  
+  }); 
+  }
+
+  private void layerVisAction() {
+    boolean isVisible = checkbox.isSelected();
+    layer.setEnabled(isVisible);
+    repaint();
+    JTSTestBuilder.controller().geometryViewChanged();
+  }
+}

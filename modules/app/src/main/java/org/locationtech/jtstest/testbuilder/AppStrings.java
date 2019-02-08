@@ -71,4 +71,6 @@ public class AppStrings {
 
   public static final String TIP_SAVE_IMAGE = "<html>Save Image to Clipboard<br>Save Image to File = Ctl-Click</html>";
 
+  public static final String STYLE_VERTEX_ENABLE = "Show vertices";
+
 }
