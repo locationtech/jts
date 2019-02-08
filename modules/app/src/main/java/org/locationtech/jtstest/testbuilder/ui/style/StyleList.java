@@ -59,6 +59,10 @@ public class StyleList implements Style
   	entry.setEnabled(isEnabled);
   }
   
+  public boolean isEnabled(VertexStyle style) {
+    return getEntry(style).isEnabled();
+  }
+  
   private StyleEntry getEntry(Style style)
   {
   	int index = getEntryIndex(style);
@@ -79,6 +83,8 @@ public class StyleList implements Style
   public interface StyleFilter {
   	boolean isFiltered(Style style);
   }
+
+
 }
 
 class StyleEntry

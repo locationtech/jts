@@ -30,6 +30,12 @@ Distributions for older JTS versions can be obtained at the
 * Fix `IsValidOp` to handle empty components.
 * Fix `ShapeWriter` to handle Polygons with empty holes.
 
+## JTS TestBuilder
+
+### Functionality Improvements
+
+* Added per-layer style control
+
 <!-- ================================================================ -->
 
 # Version 1.16

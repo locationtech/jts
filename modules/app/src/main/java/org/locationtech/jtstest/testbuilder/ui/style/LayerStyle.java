@@ -13,15 +13,49 @@ package org.locationtech.jtstest.testbuilder.ui.style;
 
 import java.awt.Graphics2D;
 
+import javax.swing.JCheckBox;
+
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
+import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 public class LayerStyle implements Style  {
 
   private Style geomStyle;
-  private Style decoratorStyle;
+  private StyleList decoratorStyle;
+  private VertexStyle vertexStyle;
 
-  public LayerStyle(Style geomStyle, Style decoratorStyle) {
+  private StyleList.StyleFilter vertexFilter = new StyleList.StyleFilter() {
+    public boolean isFiltered(Style style) {
+      return ! DisplayParameters.isShowingVertices();
+    }
+  };
+  
+  private StyleList.StyleFilter decorationFilter = new StyleList.StyleFilter() {
+    public boolean isFiltered(Style style) {
+      return ! DisplayParameters.isShowingOrientation();
+    }
+  };
+    
+  private StyleList.StyleFilter structureFilter = new StyleList.StyleFilter() {
+    public boolean isFiltered(Style style) {
+      return ! DisplayParameters.isShowingStructure();
+    }
+  };
+    
+  private StyleList.StyleFilter labelFilter = new StyleList.StyleFilter() {
+    public boolean isFiltered(Style style) {
+      return ! DisplayParameters.isShowingLabel();
+    }
+  };
+
+  public LayerStyle(BasicStyle geomStyle) {
+    this.geomStyle = geomStyle;
+    setGeometryStyle(geomStyle);
+  }
+  
+  public LayerStyle(Style geomStyle, StyleList decoratorStyle) {
     this.geomStyle = geomStyle;
     this.decoratorStyle = decoratorStyle;
   }
@@ -30,13 +64,47 @@ public class LayerStyle implements Style  {
     return geomStyle;
   }
 
-  public Style getDecoratorStyle() {
+  public StyleList getDecoratorStyle() {
     return decoratorStyle;
   }
 
+  private void setGeometryStyle(BasicStyle style)
+  {
+    vertexStyle = new VertexStyle(style.getLineColor());
+    ArrowLineStyle segArrowStyle = new ArrowLineStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
+    ArrowEndpointStyle lineArrowStyle = new ArrowEndpointStyle(ColorUtil.lighter(style.getLineColor(),0.5), false, true);
+    CircleEndpointStyle lineCircleStyle = new CircleEndpointStyle(style.getLineColor(), 6, true, true);
+    PolygonStructureStyle polyStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
+    SegmentIndexStyle indexStyle = new SegmentIndexStyle(ColorUtil.opaque(style.getLineColor().darker()));
+    DataLabelStyle dataLabelStyle = new DataLabelStyle(ColorUtil.opaque(style.getLineColor().darker()));
+    
+    // order is important here
+    StyleList styleList = new StyleList();
+    styleList.add(vertexStyle, vertexFilter);
+    styleList.add(segArrowStyle, decorationFilter);
+    styleList.add(lineArrowStyle, decorationFilter);
+    styleList.add(lineCircleStyle, decorationFilter);
+    //styleList.add(style);
+    styleList.add(polyStyle, structureFilter);
+    styleList.add(indexStyle, structureFilter);
+    styleList.add(dataLabelStyle, labelFilter);
+    
+    decoratorStyle = styleList;
+  }
+  
+  public void setVertices(boolean show) {
+    decoratorStyle.setEnabled(vertexStyle, show);
+  }
+  
+  public boolean isVertices() {
+    return decoratorStyle.isEnabled(vertexStyle);
+  }
+  
   public void paint(Geometry geom, Viewport viewport, Graphics2D g) throws Exception {
     geomStyle.paint(geom, viewport, g);
     decoratorStyle.paint(geom, viewport, g);
   }
+
+
 
 }
