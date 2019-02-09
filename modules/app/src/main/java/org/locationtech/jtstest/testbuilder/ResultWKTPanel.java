@@ -114,7 +114,7 @@ extends JPanel
     
     txtResult.setWrapStyleWord(true);
     txtResult.setLineWrap(true);
-    txtResult.setBackground(SystemColor.control);
+    txtResult.setBackground(AppColors.BACKGROUND);
     
     labelPanel.setLayout(labelPanelLayout);
     //labelPanel.setBorder(BorderFactory.createEmptyBorder(0,4,2,2));
@@ -195,13 +195,13 @@ extends JPanel
   {
     String  str = tbModel.getResultDisplayString(g);
     txtResult.setText(str);
-    txtResult.setBackground(SystemColor.control);
+    txtResult.setBackground(AppColors.BACKGROUND);
   }
   
   private void setString(String s)
   {
     txtResult.setText(s);
-    txtResult.setBackground(SystemColor.control);
+    txtResult.setBackground(AppColors.BACKGROUND);
   }
   
   private void setError(Throwable ex)

@@ -49,14 +49,14 @@ public class LayerListPanel extends JPanel {
 
   private void uiInit() throws Exception {
     setSize(200, 250);
-    setBackground(AppConstants.CONTROL_CLR);
+    setBackground(AppColors.BACKGROUND);
     
     list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
-    list.setBackground(AppConstants.CONTROL_CLR);
+    list.setBackground(AppColors.BACKGROUND);
     list.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
 
     JScrollPane jScrollPane1 = new JScrollPane();
-    jScrollPane1.setBackground(AppConstants.CONTROL_CLR);
+    jScrollPane1.setBackground(AppColors.BACKGROUND);
     jScrollPane1.setOpaque(true);
     jScrollPane1.getViewport().add(list, null);
 
@@ -83,7 +83,7 @@ class LayerItemPanel extends JPanel {
   private Border BORDER_CONTROL = BorderFactory.createLineBorder(CLR_CONTROL);
   private Border BORDER_HIGHLIGHT = BorderFactory.createLineBorder(Color.DARK_GRAY);
   
-  private static final Color CLR_CONTROL = AppConstants.CONTROL_CLR; //SystemColor.control;
+  private static final Color CLR_CONTROL = AppColors.BACKGROUND;
   private static final Color CLR_HIGHLIGHT = CLR_CONTROL.brighter();
   
   private Layer layer;
@@ -103,7 +103,7 @@ class LayerItemPanel extends JPanel {
   private void uiInit() throws Exception {
     setSize(200, 250);
     setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-    setBackground(AppConstants.CONTROL_CLR);
+    setBackground(AppColors.BACKGROUND);
     setOpaque(true);
     setAlignmentX(Component.LEFT_ALIGNMENT);
     setBorder(BORDER_CONTROL);
@@ -185,13 +185,11 @@ class LayerItemPanel extends JPanel {
     }
     
     public void mouseEntered(MouseEvent e) {
-      //comp.setBackground(CLR_HIGHLIGHT);
       comp.setBorder(BORDER_HIGHLIGHT);
       comp.revalidate();
     }
 
     public void mouseExited(MouseEvent e) {
-      //comp.setBackground(CLR_CONTROL);
       comp.setBorder(BORDER_CONTROL);
       comp.revalidate();
    }

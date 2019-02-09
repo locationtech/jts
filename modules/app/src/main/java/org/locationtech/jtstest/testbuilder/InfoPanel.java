@@ -54,7 +54,7 @@ extends JPanel
 
     txtInfo.setWrapStyleWord(true);
     txtInfo.setLineWrap(true);
-    txtInfo.setBackground(SystemColor.control);
+    txtInfo.setBackground(AppColors.BACKGROUND);
 
     this.add(jScrollPane1, BorderLayout.CENTER);
     

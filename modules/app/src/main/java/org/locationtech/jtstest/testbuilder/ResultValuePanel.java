@@ -58,7 +58,7 @@ extends JPanel
 
     txtResult.setWrapStyleWord(true);
     txtResult.setLineWrap(true);
-    txtResult.setBackground(SystemColor.control);
+    txtResult.setBackground(AppColors.BACKGROUND);
 
     labelPanel.setLayout(labelPanelLayout);
     labelPanel.setBorder(BorderFactory.createEmptyBorder(0,4,2,2));
@@ -97,7 +97,7 @@ extends JPanel
   public void setString(String s)
   {
     txtResult.setText(s);
-    txtResult.setBackground(SystemColor.control);
+    txtResult.setBackground(AppColors.BACKGROUND);
   }
   
   public void setError(Throwable ex)
