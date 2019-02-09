@@ -91,7 +91,7 @@ public class ValidPanel extends JPanel {
     });
     this.setLayout(gridLayout1);
     gridLayout1.setRows(2);
-    txtIsValid.setBackground(SystemColor.control);
+    txtIsValid.setBackground(AppColors.BACKGROUND);
     txtIsValid.setEditable(false);
     txtIsValid.setText("Y");
     txtIsValid.setHorizontalAlignment(SwingConstants.CENTER);
@@ -100,7 +100,7 @@ public class ValidPanel extends JPanel {
     taInvalidMsg.setBorder(BorderFactory.createLoweredBevelBorder());
     taInvalidMsg.setMinimumSize(new Dimension(70, 70));
     taInvalidMsg.setToolTipText("");
-    taInvalidMsg.setBackground(SystemColor.control);
+    taInvalidMsg.setBackground(AppColors.BACKGROUND);
     taInvalidMsg.setEditable(true);
     taInvalidMsg.setFont(new java.awt.Font("SansSerif", 0, 12));
     lblValidSimple.setToolTipText("");

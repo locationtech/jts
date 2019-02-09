@@ -16,7 +16,6 @@ import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.ImageIcon;
-import javax.swing.UIManager;
 
 import org.locationtech.jts.awt.FontGlyphReader;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
@@ -24,8 +23,6 @@ import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 
 public class AppConstants 
 {
-  public static final Color CONTROL_CLR = UIManager.getColor ( "Panel.background" );
-      
   public static final int POINT_SIZE = 5;
   public static final int VERTEX_SIZE = 4;
   public static double HIGHLIGHT_SIZE = 50.0;

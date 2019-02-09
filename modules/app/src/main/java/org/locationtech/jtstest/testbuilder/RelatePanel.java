@@ -278,7 +278,7 @@ public class RelatePanel extends JPanel {
     jLabel10.setForeground(Color.red);
     jLabel10.setToolTipText("");
     jLabel10.setText("Ext");
-    txtAB.setBackground(SystemColor.control);
+    txtAB.setBackground(AppColors.BACKGROUND);
     txtAB.setFont(new java.awt.Font("Dialog", 0, 12));
     txtAB.setMaximumSize(new java.awt.Dimension(100, 21));
     txtAB.setMinimumSize(new java.awt.Dimension(100, 21));
@@ -310,7 +310,7 @@ public class RelatePanel extends JPanel {
     relateBE.setText("F");
     relateEE.setFont(new java.awt.Font("Dialog", 1, 12));
     relateEE.setText("F");
-    txtBA.setBackground(SystemColor.control);
+    txtBA.setBackground(AppColors.BACKGROUND);
     txtBA.setFont(new java.awt.Font("Dialog", 0, 12));
     txtBA.setMaximumSize(new java.awt.Dimension(100, 21));
     txtBA.setMinimumSize(new java.awt.Dimension(100, 21));

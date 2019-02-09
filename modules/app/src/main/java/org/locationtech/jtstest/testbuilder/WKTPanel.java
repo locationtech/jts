@@ -492,7 +492,7 @@ public class WKTPanel extends JPanel
     Border otherBorder = BorderFactory.createMatteBorder(0, 2, 0, 0, Color.white);
     
     private static Color focusBackgroundColor = Color.white; //new Color(240,255,250);
-    private static Color otherBackgroundColor = SystemColor.control;
+    private static Color otherBackgroundColor = AppColors.BACKGROUND;
     
     private void setFocusGeometry(int index) {
       JTSTestBuilder.controller().setFocusGeometry(index);
