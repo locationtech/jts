@@ -18,6 +18,8 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -38,6 +40,7 @@ public class LayerListPanel extends JPanel {
   
   JPanel list = new JPanel();
   private LayerStylePanel lyrStylePanel;
+  List<LayerItemPanel> layerItems = new ArrayList<LayerItemPanel>();
 
   public LayerListPanel() {
     try {
@@ -53,7 +56,7 @@ public class LayerListPanel extends JPanel {
     
     list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
     list.setBackground(AppColors.BACKGROUND);
-    list.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+    list.setBorder(BorderFactory.createEmptyBorder(2,2,2,0));
 
     JScrollPane jScrollPane1 = new JScrollPane();
     jScrollPane1.setBackground(AppColors.BACKGROUND);
@@ -71,11 +74,19 @@ public class LayerListPanel extends JPanel {
 
     for (int i = 0; i < lyrList.size(); i++) {
       Layer lyr = lyrList.getLayer(i);
-      LayerItemPanel item = new LayerItemPanel(lyr, lyrStylePanel);
+      LayerItemPanel item = new LayerItemPanel(lyr, this);
       list.add(item);
+      layerItems.add(item);
     }
-    
-    lyrStylePanel.setLayer(lyrList.getLayer(0));
+    setLayerFocus(layerItems.get(0));
+  }
+  
+  public void setLayerFocus(LayerItemPanel layerItem) {
+    for (LayerItemPanel item : layerItems) {
+      item.setFocusLayer(false);
+    }
+    layerItem.setFocusLayer(true);
+    lyrStylePanel.setLayer(layerItem.getLayer());
   }
 }
 
@@ -88,46 +99,43 @@ class LayerItemPanel extends JPanel {
   
   private Layer layer;
   private JCheckBox checkbox;
-  private LayerStylePanel lyrStylePanel;
+  private LayerListPanel lyrListPanel;
+  private LayerItemPanel self;
+  private JPanel namePanel;
+  private boolean hasFocus;
 
-  LayerItemPanel(Layer lyr, LayerStylePanel lyrStylePanel) {
+  LayerItemPanel(Layer lyr, LayerListPanel lyrListPanel) {
     this.layer = lyr;
-    this.lyrStylePanel = lyrStylePanel;
+    this.lyrListPanel = lyrListPanel;
     try {
       uiInit();
     } catch (Exception ex) {
       ex.printStackTrace();
     }
+    self = this;
   }
 
+  public Layer getLayer() {
+    return layer;
+  }
+
+  public void setFocusLayer(boolean hasFocus) {
+    setBackground(hasFocus ? AppColors.TAB_FOCUS : AppColors.BACKGROUND);
+    revalidate();
+    this.hasFocus = hasFocus;
+  }
+  
+  public boolean isFocusLayer() {
+    return hasFocus;
+  }
+  
   private void uiInit() throws Exception {
     setSize(200, 250);
     setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
     setBackground(AppColors.BACKGROUND);
-    setOpaque(true);
+    //setOpaque(true);
     setAlignmentX(Component.LEFT_ALIGNMENT);
     setBorder(BORDER_CONTROL);
-
-    /*
-    addMouseListener(new MouseListener() {
-      public void mouseEntered(MouseEvent e) {
-        //JPanel panel = (JPanel)e.getSource();
-        setBorder(BORDER_GRAY);
-        revalidate();
-      }
-
-      public void mouseExited(MouseEvent e) {
-        JPanel parent = (JPanel)e.getSource();
-        setBorder(null);
-        revalidate();
-     }
-
-      public void mouseClicked(MouseEvent e) {}
-      public void mousePressed(MouseEvent e) { }
-      public void mouseReleased(MouseEvent e) {}
-    });
-    
-    */
     
     checkbox = new JCheckBox();
     add(checkbox);
@@ -139,10 +147,10 @@ class LayerItemPanel extends JPanel {
     });
     checkbox.setSelected(layer.isEnabled());
 
-    JPanel namePanel = new JPanel();
+    namePanel = new JPanel();
     namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
-    namePanel.setBackground(CLR_CONTROL);
-    namePanel.setOpaque(true);
+    //namePanel.setBackground(CLR_CONTROL);
+    namePanel.setOpaque(false);
     namePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
     namePanel.setMinimumSize(new Dimension(50,12));
     namePanel.setPreferredSize(new Dimension(50,12));
@@ -165,7 +173,7 @@ class LayerItemPanel extends JPanel {
     {  
       public void mouseClicked(MouseEvent e)  
       {  
-        lyrStylePanel.setLayer(layer);
+        lyrListPanel.setLayerFocus(self);
       }
     }); 
   }
@@ -178,20 +186,25 @@ class LayerItemPanel extends JPanel {
   }
   
   class HighlightMouseListener extends MouseAdapter {
-    private JComponent comp;
+    private LayerItemPanel comp;
 
-    HighlightMouseListener(JComponent comp) {
+    HighlightMouseListener(LayerItemPanel comp) {
       this.comp = comp;
     }
     
     public void mouseEntered(MouseEvent e) {
-      comp.setBorder(BORDER_HIGHLIGHT);
+      if (comp.isFocusLayer()) return;
+      comp.setBackground(AppColors.TAB_FOCUS);
+      //comp.setBorder(BORDER_HIGHLIGHT);
       comp.revalidate();
     }
 
     public void mouseExited(MouseEvent e) {
-      comp.setBorder(BORDER_CONTROL);
+      if (comp.isFocusLayer()) return;
+      comp.setBackground(AppColors.BACKGROUND);
+      //comp.setBorder(BORDER_CONTROL);
       comp.revalidate();
    }
   }
+
 }
