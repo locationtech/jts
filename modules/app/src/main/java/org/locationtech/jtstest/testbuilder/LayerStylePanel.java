@@ -113,7 +113,7 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
-    addRow("Width", widthSpinner);
+    addRow("Line Width", widthSpinner);
   }
 
   private void addRow(String title, JComponent comp) {
