@@ -11,6 +11,7 @@
  */
 package org.locationtech.jtstest.function;
 
+import org.locationtech.jts.algorithm.MaximumInnerCircle;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.densify.Densifier;
@@ -40,4 +41,6 @@ public class ConstructionFunctions {
 
   public static Geometry densify(Geometry g, double distance) { return Densifier.densify(g, distance); }
   
+  public static Geometry maximumInnerCircle(Geometry g, double precision) { return MaximumInnerCircle.getCenter(g, precision); }
+
 }
