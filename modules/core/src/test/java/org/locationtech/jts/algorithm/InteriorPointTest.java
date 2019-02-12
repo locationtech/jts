@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.List;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
@@ -27,10 +28,11 @@ import org.locationtech.jts.util.Stopwatch;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import test.jts.GeometryTestCase;
 import test.jts.TestFiles;
 
 
-public class InteriorPointTest extends TestCase
+public class InteriorPointTest extends GeometryTestCase
 {
   public static void main(String args[])
   {
@@ -44,13 +46,16 @@ public class InteriorPointTest extends TestCase
     super(name);
   }
 
+  public void testPolygonZeroArea() {
+    checkInteriorPoint(read("POLYGON ((10 10, 10 10, 10 10, 10 10))"), new Coordinate(10, 10));
+  }
+  
   public void testAll() throws Exception
   {
     checkInteriorPointFile(TestFiles.getResourceFilePath("world.wkt"));
-    checkInteriorPointFile(TestFiles.getResourceFilePath("africa.wkt"));
+    //checkInteriorPointFile(TestFiles.getResourceFilePath("africa.wkt"));
     //checkInteriorPointFile("../../../../../data/africa.wkt");
   }
-
 
   void checkInteriorPointFile(String file) throws Exception
   {
@@ -87,6 +92,12 @@ public class InteriorPointTest extends TestCase
   {
     Point ip = g.getInteriorPoint();
     assertTrue(g.contains(ip));
+  }
+  
+  private void checkInteriorPoint(Geometry g, Coordinate expectedPt)
+  {
+    Point ip = g.getInteriorPoint();
+    assertTrue(ip.getCoordinate().equals2D(expectedPt));
   }
 
 }

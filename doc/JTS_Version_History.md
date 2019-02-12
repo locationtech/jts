@@ -24,6 +24,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Added `HilbertCode` and `HilbertCurveBuilder`.
 * Added 'MortonCode` and `MortonCurveBuilder`.
+* Improved InteriorPointArea algorithm performance and robustness
 
 ### Bug Fixes
 
