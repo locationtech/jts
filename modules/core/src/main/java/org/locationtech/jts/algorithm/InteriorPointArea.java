@@ -12,235 +12,439 @@
  */
 package org.locationtech.jts.algorithm;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Computes a point in the interior of an areal geometry.
+ * The point will lie in the geometry interior
+ * in all except certain pathological cases.
  *
  * <h2>Algorithm</h2>
+ * For each input polygon:
  * <ul>
- *   <li>Find a Y value which is close to the centre of 
- *       the geometry's vertical extent but is different
- *       to any of it's Y ordinates.
- *   <li>Create a horizontal bisector line using the Y value
- *       and the geometry's horizontal extent
- *   <li>Find the intersection between the geometry
- *       and the horizontal bisector line.
- *       The intersection is a collection of lines and points.
- *   <li>Pick the midpoint of the largest intersection geometry  
+ * <li>Determine a horizontal scan line on which the interior
+ * point will be located. 
+ * To increase the chance of the scan line
+ * having non-zero-width intersection with the polygon
+ * the scan line Y ordinate is chosen to be near the centre of the polygon's 
+ * Y extent but distinct from all of vertex Y ordinates.
+ * <li>Compute the sections of the scan line
+ * which lie in the interior of the polygon.
+ * <li>Choose the widest interior section
+ * and take its midpoint as the interior point.
  * </ul>
+ * The final interior point is chosen as
+ * the one occurring in the widest interior section.
+ * <p>
+ * This algorithm is a tradeoff between performance 
+ * and point quality (where points further from the geometry
+ * boundary are considered to be higher quality)
+ * Priority is given to performance. 
+ * This means that the computed interior point
+ * may not be suitable for some uses
+ * (such as label positioning).
+ * <p>
+ * The algorithm handles some kinds of invalid/degenerate geometry,
+ * including zero-area and self-intersecting polygons.
+ * <p>
+ * Empty geometry is handled by returning a <code>null</code> point.
  *
  * <h3>KNOWN BUGS</h3>
  * <ul>
- * <li>If a fixed precision model is used,
- * in some cases this method may return a point
- * which does not lie in the interior.
+ * <li>If a fixed precision model is used, in some cases this method may return
+ * a point which does not lie in the interior.
+ * <li>If the input polygon is <i>extremely</i> narrow the computed point
+ * may not lie in the interior of the polygon.
  * </ul>
  *
- * @version 1.7
+ * @version 1.17
  */
 public class InteriorPointArea {
-
-  private static double avg(double a, double b)
-  {
+  
+  /**
+   * Computes an interior point for the
+   * polygonal components of a Geometry.
+   * 
+   * @param geom the geometry to compute
+   * @return the computed interior point,
+   * or <code>null</code> if the geometry has no polygonal components
+   */
+  public static Coordinate getInteriorPoint(Geometry geom) {
+    InteriorPointArea intPt = new InteriorPointArea(geom);
+    return intPt.getInteriorPoint();
+  }
+  
+  private static double avg(double a, double b) {
     return (a + b) / 2.0;
   }
 
-  private GeometryFactory factory;
   private Coordinate interiorPoint = null;
-  private double maxWidth = 0.0;
+  private double maxWidth = -1;
 
   /**
-   * Creates a new interior point finder
-   * for an areal geometry.
+   * Creates a new interior point finder for an areal geometry.
    * 
    * @param g an areal geometry
    */
-  public InteriorPointArea(Geometry g)
-  {
-    factory = g.getFactory();
-    add(g);
+  public InteriorPointArea(Geometry g) {
+    process(g);
   }
-  
+
   /**
    * Gets the computed interior point.
    * 
    * @return the coordinate of an interior point
+   *  or <code>null</code> if the input geometry is empty
    */
-  public Coordinate getInteriorPoint()
-  {
+  public Coordinate getInteriorPoint() {
     return interiorPoint;
   }
 
   /**
-   * Tests the interior vertices (if any)
-   * defined by an areal Geometry for the best inside point.
-   * If a component Geometry is not of dimension 2 it is not tested.
+   * Processes a geometry to determine 
+   * the best interior point for
+   * all component polygons.
    * 
-   * @param geom the geometry to add
+   * @param geom the geometry to process
    */
-  private void add(Geometry geom)
-  {
-    if (geom instanceof Polygon) {
-      addPolygon(geom);
-    }
-    else if (geom instanceof GeometryCollection) {
+  private void process(Geometry geom) {
+    if ( geom.isEmpty() )
+      return;
+
+    if ( geom instanceof Polygon ) {
+      processPolygon((Polygon) geom);
+    } else if ( geom instanceof GeometryCollection ) {
       GeometryCollection gc = (GeometryCollection) geom;
       for (int i = 0; i < gc.getNumGeometries(); i++) {
-        add(gc.getGeometryN(i));
+        process(gc.getGeometryN(i));
       }
     }
   }
 
   /**
-   * Finds an interior point of a Polygon.
-   * @param geometry the geometry to analyze
+   * Computes an interior point of a component Polygon
+   * and updates current best interior point
+   * if appropriate.
+   * 
+   * @param polygon the polygon to process
    */
-  private void addPolygon(Geometry geometry) {
-    if (geometry.isEmpty())
-      return;
-    
-    Coordinate intPt;
-    double width;
-    
-    LineString bisector = horizontalBisector(geometry);
-    if (bisector.getLength() == 0.0) {
-      width = 0;
-      intPt = bisector.getCoordinate();
-    }
-    else {
-      Geometry intersections = bisector.intersection(geometry);
-      Geometry widestIntersection = widestGeometry(intersections);
-      width = widestIntersection.getEnvelopeInternal().getWidth();
-      intPt = centre(widestIntersection.getEnvelopeInternal());
-    }
-    if (interiorPoint == null || width > maxWidth) {
-      interiorPoint = intPt;
+  private void processPolygon(Polygon polygon) {
+    InteriorPointPolygon intPtPoly = new InteriorPointPolygon(polygon);
+    intPtPoly.process();
+    double width = intPtPoly.getWidth();
+    if ( width > maxWidth ) {
       maxWidth = width;
+      interiorPoint = intPtPoly.getInteriorPoint();
     }
-  }
-
-  //@return if geometry is a collection, the widest sub-geometry; otherwise,
-  //the geometry itself
-  private Geometry widestGeometry(Geometry geometry) {
-    if (!(geometry instanceof GeometryCollection)) {
-        return geometry;
-    }
-    return widestGeometry((GeometryCollection) geometry);
-  }
-
-  private Geometry widestGeometry(GeometryCollection gc) {
-    if (gc.isEmpty()) {
-        return gc;
-    }
-
-    Geometry widestGeometry = gc.getGeometryN(0);
-    // scan remaining geom components to see if any are wider
-    for (int i = 1; i < gc.getNumGeometries(); i++) { 
-        if (gc.getGeometryN(i).getEnvelopeInternal().getWidth() >
-            widestGeometry.getEnvelopeInternal().getWidth()) {
-            widestGeometry = gc.getGeometryN(i);
-        }
-    }
-    return widestGeometry;
-  }
-
-  protected LineString horizontalBisector(Geometry geometry) {
-    Envelope envelope = geometry.getEnvelopeInternal();
-
-    /**
-     * Original algorithm.  Fails when geometry contains a horizontal
-     * segment at the Y midpoint.
-     */
-    // Assert: for areas, minx <> maxx
-    //double avgY = avg(envelope.getMinY(), envelope.getMaxY());
-    
-    double bisectY = SafeBisectorFinder.getBisectorY((Polygon) geometry);
-    return factory.createLineString(new Coordinate[] {
-            new Coordinate(envelope.getMinX(), bisectY),
-            new Coordinate(envelope.getMaxX(), bisectY)
-        });
   }
 
   /**
-   * Returns the centre point of the envelope.
-   * @param envelope the envelope to analyze
-   * @return the centre of the envelope
-   */
-  public static Coordinate centre(Envelope envelope) {
-      return new Coordinate(avg(envelope.getMinX(),
-              envelope.getMaxX()),
-          avg(envelope.getMinY(), envelope.getMaxY()));
-  }
-
-  /**
-   * Finds a safe bisector Y ordinate
-   * by projecting to the Y axis
-   * and finding the Y-ordinate interval
-   * which contains the centre of the Y extent.
-   * The centre of this interval is returned as the bisector Y-ordinate.
+   * Computes an interior point in a single {@link Polygon},
+   * as well as the width of the scan-line section it occurs in
+   * to allow choosing the widest section occurrence.
    * 
    * @author mdavis
    *
    */
-  private static class SafeBisectorFinder 
-  {
-	  public static double getBisectorY(Polygon poly)
-	  {
-		  SafeBisectorFinder finder = new SafeBisectorFinder(poly);
-		  return finder.getBisectorY();
-	  }
-	  
-	  private Polygon poly;
-	  
-	  private double centreY;
-	  private double hiY = Double.MAX_VALUE;
-	  private double loY = -Double.MAX_VALUE;
-	  
-	  public SafeBisectorFinder(Polygon poly) {
-		  this.poly = poly;
-		  
-		  // initialize using extremal values
-		  hiY = poly.getEnvelopeInternal().getMaxY();
-		  loY = poly.getEnvelopeInternal().getMinY();
-		  centreY = avg(loY, hiY);
-	  }
-	  
-	  public double getBisectorY()
-	  {
-		  process(poly.getExteriorRing());
-		  for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-			  process(poly.getInteriorRingN(i));
-		  }
-		  double bisectY = avg(hiY, loY);
-		  return bisectY;
-	  }
+  private static class InteriorPointPolygon {
+    private Polygon polygon;
+    private double interiorPointY;
+    private double interiorSectionWidth = 0.0;
+    private List<Double> crossings = new ArrayList<Double>();
+    private Coordinate interiorPoint = null;
 
-	private void process(LineString line) {
-		CoordinateSequence seq = line.getCoordinateSequence();
-		for (int i = 0; i < seq.size(); i++) {
-			double y = seq.getY(i);
-			updateInterval(y);
-		}
-	}
+    /**
+     * Creates a new InteriorPointPolygon instance.
+     * 
+     * @param polygon the polygon to test
+     */
+    public InteriorPointPolygon(Polygon polygon) {
+      this.polygon = polygon;
+      interiorPointY = ScanLineYOrdinateFinder.getScanLineY(polygon);
+    }
 
-	private void updateInterval(double y) {
-		if (y <= centreY) {
-			if (y > loY)
-				loY = y;
-		}
-		else if (y > centreY) {
-			if (y < hiY) {
-				hiY = y;
-			}
-		}
-	}
+    /**
+     * Gets the computed interior point.
+     * 
+     * @return the interior point coordinate,
+     *  or <code>null</code> if the input geometry is empty
+     */
+    public Coordinate getInteriorPoint() {
+      return interiorPoint;
+    }
+
+    /**
+     * Gets the width of the scanline section containing the interior point.
+     * Used to determine the best point to use.
+     * 
+     * @return the width
+     */
+    public double getWidth() {
+      return interiorSectionWidth;
+    }
+
+    /**
+     * Compute the interior point.
+     * 
+     */
+    public void process() {
+      /**
+       * This results in returning a null Coordinate
+       */
+      if (polygon.isEmpty()) return;
+      
+      /**
+       * set default interior point in case polygon has zero area
+       */
+      interiorPoint = new Coordinate(polygon.getCoordinate());
+      
+      scanRing((LinearRing) polygon.getExteriorRing());
+      for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+        scanRing((LinearRing) polygon.getInteriorRingN(i));
+      }
+      findBestMidpoint(crossings);
+    }
+
+    private void scanRing(LinearRing ring) {
+      // skip rings which don't cross scan line
+      if ( !intersectsHorizontalLine(ring.getEnvelopeInternal(), interiorPointY) )
+        return;
+
+      CoordinateSequence seq = ring.getCoordinateSequence();
+      for (int i = 1; i < seq.size(); i++) {
+        Coordinate ptPrev = seq.getCoordinate(i - 1);
+        Coordinate pt = seq.getCoordinate(i);
+        addEdgeCrossing(ptPrev, pt, interiorPointY, crossings);
+      }
+    }
+
+    private void addEdgeCrossing(Coordinate p0, Coordinate p1, double scanY, List<Double> crossings) {
+      // skip non-crossing segments
+      if ( !intersectsHorizontalLine(p0, p1, scanY) )
+        return;
+      if (! isEdgeCrossingCounted(p0, p1, scanY) )
+        return;
+        
+      // edge intersects scan line, so add a crossing
+      double xInt = intersection(p0, p1, scanY);
+      crossings.add(xInt);
+      //checkIntersectionDD(p0, p1, scanY, xInt);
+    }
+
+    /**
+     * Tests if an edge intersection contributes to the crossing count.
+     * Some crossing situations are not counted,
+     * to ensure that the list of crossings 
+     * captures strict inside/outside topology. 
+     * 
+     * @param p0 an endpoint of the segment
+     * @param p1 an endpoint of the segment
+     * @param scanY the Y-ordinate of the horizontal line
+     * @return true if the edge crossing is counted
+     */
+    private boolean isEdgeCrossingCounted(Coordinate p0, Coordinate p1, double scanY) {
+      // skip horizontal lines
+      if ( p0.getY() == p1.getY() )
+        return false;
+      // handle cases where vertices lie on scan-line
+      // downward segment does not include start point
+      if ( p0.y == scanY && p1.y < scanY )
+        return false;
+      // upward segment does not include endpoint
+      if ( p1.y == scanY && p0.y < scanY )
+        return false;
+      return true;
+    }
+    
+    private void findBestMidpoint(List<Double> crossings) {
+      // zero-area polygons will have no crossings
+      if (crossings.size() == 0) return;
+      
+      // TODO: is there a better way to verify the crossings are correct?
+      Assert.isTrue(0 == crossings.size() % 2, "Interior Point robustness failure: odd number of scanline crossings");
+      
+      crossings.sort(Double::compare);
+      /*
+       * Entries in crossings list are expected to occur in pairs representing a
+       * section of the scan line interior to the polygon (which may be zero-length)
+       */
+      for (int i = 0; i < crossings.size(); i += 2) {
+        double x1 = crossings.get(i);
+        // crossings count must be even so this should be safe
+        double x2 = crossings.get(i + 1);
+
+        double width = x2 - x1;
+        if ( width > interiorSectionWidth ) {
+          interiorSectionWidth = width;
+          double interiorPointX = avg(x1, x2);
+          interiorPoint = new Coordinate(interiorPointX, interiorPointY);
+        }
+      }
+    }
+
+    /**
+     * Computes the intersection of a segment with a horizontal line. 
+     * The segment is expected to cross the horizontal line
+     * - this condition is not checked.
+     * Computation uses regular double-precision arithmetic.
+     * Test seems to indicate this is as good as using DD arithmetic.
+     * 
+     * @param p0 an endpoint of the segment
+     * @param p1 an endpoint of the segment
+     * @param Y  the Y-ordinate of the horizontal line
+     * @return
+     */
+    private static double intersection(Coordinate p0, Coordinate p1, double Y) {
+      double x0 = p0.getX();
+      double x1 = p1.getX();
+
+      if ( x0 == x1 )
+        return x0;
+      
+      // Assert: segDX is non-zero, due to previous equality test
+      double segDX = x1 - x0;
+      double segDY = p1.getY() - p0.getY();
+      double m = segDY / segDX;
+      double x = x0 + ((Y - p0.getY()) / m);
+      return x;
+    }
+
+    /*
+    // for testing only
+    private static void checkIntersectionDD(Coordinate p0, Coordinate p1, double scanY, double xInt) {
+      double xIntDD = intersectionDD(p0, p1, scanY);
+      System.out.println(
+          ((xInt != xIntDD) ? ">>" : "")
+          + "IntPt x - DP: " + xInt + ", DD: " + xIntDD 
+          + "   y: " + scanY + "   " + WKTWriter.toLineString(p0, p1) );
+    }
+
+    private static double intersectionDD(Coordinate p0, Coordinate p1, double Y) {
+      double x0 = p0.getX();
+      double x1 = p1.getX();
+
+      if ( x0 == x1 )
+        return x0;
+      
+      DD segDX = DD.valueOf(x1).selfSubtract(x0);
+      // Assert: segDX is non-zero, due to previous equality test
+      DD segDY = DD.valueOf(p1.getY()).selfSubtract(p0.getY());
+      DD m = segDY.divide(segDX);
+      DD dy = DD.valueOf(Y).selfSubtract(p0.getY());
+      DD dx = dy.divide(m);
+      DD xInt = DD.valueOf(x0).selfAdd(dx);
+      return xInt.doubleValue();
+    }
+  */
+    
+    /**
+     * Tests if an envelope intersects a horizontal line.
+     * 
+     * @param env the envelope to test
+     * @param y the Y-ordinate of the horizontal line
+     * @return true if the envelope and line intersect
+     */
+    private static boolean intersectsHorizontalLine(Envelope env, double y) {
+      if ( y < env.getMinY() )
+        return false;
+      if ( y > env.getMaxY() )
+        return false;
+      return true;
+    }
+    
+    /**
+     * Tests if a line segment intersects a horizontal line.
+     * 
+     * @param p0 a segment endpoint
+     * @param p1 a segment endpoint
+     * @param y the Y-ordinate of the horizontal line
+     * @return true if the segment and line intersect
+     */
+    private static boolean intersectsHorizontalLine(Coordinate p0, Coordinate p1, double y) {
+      // both ends above?
+      if ( p0.getY() > y && p1.getY() > y )
+        return false;
+      // both ends below?
+      if ( p0.getY() < y && p1.getY() < y )
+        return false;
+      // segment must intersect line
+      return true;
+    }
+  }
+  
+  /**
+   * Finds a safe scan line Y ordinate by projecting 
+   * the polygon segments
+   * to the Y axis and finding the
+   * Y-axis interval which contains the centre of the Y extent. 
+   * The centre of
+   * this interval is returned as the scan line Y-ordinate.
+   * <p>
+   * Note that in the case of (degenerate, invalid)
+   * zero-area polygons the computed Y value
+   * may be equal to a vertex Y-ordinate.
+   * 
+   * @author mdavis
+   *
+   */
+  private static class ScanLineYOrdinateFinder {
+    public static double getScanLineY(Polygon poly) {
+      ScanLineYOrdinateFinder finder = new ScanLineYOrdinateFinder(poly);
+      return finder.getScanLineY();
+    }
+
+    private Polygon poly;
+
+    private double centreY;
+    private double hiY = Double.MAX_VALUE;
+    private double loY = -Double.MAX_VALUE;
+
+    public ScanLineYOrdinateFinder(Polygon poly) {
+      this.poly = poly;
+
+      // initialize using extremal values
+      hiY = poly.getEnvelopeInternal().getMaxY();
+      loY = poly.getEnvelopeInternal().getMinY();
+      centreY = avg(loY, hiY);
+    }
+
+    public double getScanLineY() {
+      process(poly.getExteriorRing());
+      for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+        process(poly.getInteriorRingN(i));
+      }
+      double scanLineY = avg(hiY, loY);
+      return scanLineY;
+    }
+
+    private void process(LineString line) {
+      CoordinateSequence seq = line.getCoordinateSequence();
+      for (int i = 0; i < seq.size(); i++) {
+        double y = seq.getY(i);
+        updateInterval(y);
+      }
+    }
+
+    private void updateInterval(double y) {
+      if ( y <= centreY ) {
+        if ( y > loY )
+          loY = y;
+      } else if ( y > centreY ) {
+        if ( y < hiY ) {
+          hiY = y;
+        }
+      }
+    }
   }
 }
