@@ -71,7 +71,20 @@ import org.locationtech.jts.util.Assert;
  * @version 1.17
  */
 public class InteriorPointArea {
-
+  
+  /**
+   * Computes an interior point for the
+   * polygonal components of a Geometry.
+   * 
+   * @param geom the geometry to compute
+   * @return the computed interior point,
+   * or <code>null</code> if the geometry has no polygonal components
+   */
+  public static Coordinate getInteriorPoint(Geometry geom) {
+    InteriorPointArea intPt = new InteriorPointArea(geom);
+    return intPt.getInteriorPoint();
+  }
+  
   private static double avg(double a, double b) {
     return (a + b) / 2.0;
   }
@@ -85,7 +98,7 @@ public class InteriorPointArea {
    * @param g an areal geometry
    */
   public InteriorPointArea(Geometry g) {
-    add(g);
+    process(g);
   }
 
   /**
@@ -99,22 +112,22 @@ public class InteriorPointArea {
   }
 
   /**
-   * Tests the interior vertices (if any) defined by an areal Geometry for the
-   * best inside point. If a component Geometry is not of dimension 2 it is not
-   * tested.
+   * Processes a geometry to determine 
+   * the best interior point for
+   * all component polygons.
    * 
-   * @param geom the geometry to add
+   * @param geom the geometry to process
    */
-  private void add(Geometry geom) {
+  private void process(Geometry geom) {
     if ( geom.isEmpty() )
       return;
 
     if ( geom instanceof Polygon ) {
-      addPolygon((Polygon) geom);
+      processPolygon((Polygon) geom);
     } else if ( geom instanceof GeometryCollection ) {
       GeometryCollection gc = (GeometryCollection) geom;
       for (int i = 0; i < gc.getNumGeometries(); i++) {
-        add(gc.getGeometryN(i));
+        process(gc.getGeometryN(i));
       }
     }
   }
@@ -124,9 +137,9 @@ public class InteriorPointArea {
    * and updates current best interior point
    * if appropriate.
    * 
-   * @param polygon the polygon to analyze
+   * @param polygon the polygon to process
    */
-  private void addPolygon(Polygon polygon) {
+  private void processPolygon(Polygon polygon) {
     InteriorPointPolygon intPtPoly = new InteriorPointPolygon(polygon);
     intPtPoly.process();
     double width = intPtPoly.getWidth();
@@ -138,8 +151,8 @@ public class InteriorPointArea {
 
   /**
    * Computes an interior point in a single {@link Polygon},
-   * as well as the width of the scan segment it occurs in
-   * to allow choosing the widest segment occurence.
+   * as well as the width of the scan-line section it occurs in
+   * to allow choosing the widest section occurrence.
    * 
    * @author mdavis
    *
@@ -186,6 +199,9 @@ public class InteriorPointArea {
      * 
      */
     public void process() {
+      /**
+       * This results in returning a null Coordinate
+       */
       if (polygon.isEmpty()) return;
       
       /**

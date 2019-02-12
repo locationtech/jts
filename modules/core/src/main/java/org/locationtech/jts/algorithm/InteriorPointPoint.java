@@ -26,6 +26,19 @@ import org.locationtech.jts.geom.Point;
  */
 public class InteriorPointPoint {
 
+  /**
+   * Computes an interior point for the
+   * puntal components of a Geometry.
+   * 
+   * @param geom the geometry to compute
+   * @return the computed interior point,
+   * or <code>null</code> if the geometry has no puntal components
+   */
+  public static Coordinate getInteriorPoint(Geometry geom) {
+    InteriorPointPoint intPt = new InteriorPointPoint(geom);
+    return intPt.getInteriorPoint();
+  }
+  
   private Coordinate centroid;
   private double minDistance = Double.MAX_VALUE;
 
