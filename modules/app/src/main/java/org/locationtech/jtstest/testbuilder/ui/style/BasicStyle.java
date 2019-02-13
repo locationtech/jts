@@ -16,16 +16,19 @@ import java.awt.*;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jtstest.*;
+import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 import org.locationtech.jtstest.testbuilder.ui.render.GeometryPainter;
 
 
 public class BasicStyle implements Style
 {
-  private static final float NO_STROKE = -1.0f;
-  
   private Color lineColor;
+  private int lineAlpha = 255;
   private Color fillColor;
+  private int fillAlpha = 150;
+  
+  private boolean isFilled = true;
   private float strokeWidth = 1;
   private boolean isDashed = false;
   private float[] dashes = { 5 };
@@ -40,15 +43,16 @@ public class BasicStyle implements Style
 
   public void paint(Geometry geom, Viewport viewport, Graphics2D g)
   {
-    if (strokeWidth == NO_STROKE) {
-      GeometryPainter.paint(geom, viewport, g, lineColor, fillColor);
-    }
-    else {
-      GeometryPainter.paint(geom, viewport, g, lineColor, fillColor, createStroke());
-    }
+    Stroke stroke = createStroke();
+    Color lineClr = (stroke != null) ? getLineColor() : null;
+    Color fillClr = isFilled ? getFillColor() : null;
+    
+    GeometryPainter.paint(geom, viewport, g, lineClr, fillClr, stroke);
   }
   
   private Stroke createStroke() {
+    if (strokeWidth <= 0) return null;
+    
     if (! isDashed)
       return new BasicStroke(strokeWidth);
     
@@ -67,7 +71,7 @@ public class BasicStyle implements Style
   }
 
   public Color getLineColor() {
-    return lineColor;
+    return ColorUtil.setAlpha(lineColor, lineAlpha);
   }
 
   public void setLineColor(Color color) {
@@ -75,13 +79,21 @@ public class BasicStyle implements Style
   }
 
   public Color getFillColor() {
-    return fillColor;
+    return ColorUtil.setAlpha(fillColor, fillAlpha);
   }
 
   public void setFillColor(Color color) {
     fillColor = color;
   }
 
+  public boolean isFilled() {
+    return isFilled;
+  }
+
+  public void setFilled(boolean isFilled) {
+    this.isFilled = isFilled;
+  }
+  
   public float getStrokeWidth() {
     return strokeWidth;
   }
@@ -106,6 +118,12 @@ public class BasicStyle implements Style
     this.dashes = dashArray;
   }
 
+  public void setFillAlpha(int alpha) {
+    fillAlpha = alpha;
+  }
 
+  public int getFillAlpha() {
+    return fillAlpha;
+  }
 
 }

@@ -34,6 +34,14 @@ public class ColorUtil {
     return lighter(clr, 0.4);
   }
   
+  public static Color darker(Color clr, double fraction)
+  {
+    double r = fraction * clr.getRed();
+    double g = fraction * clr.getGreen();
+    double b = fraction * clr.getBlue();
+    return new Color((int) r, (int) g, (int) b);
+  }
+  
   public static Color lighter(Color clr, double saturationFraction)
   {
     float[] hsb = new float[3];

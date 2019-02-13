@@ -1,6 +1,6 @@
 package org.locationtech.jtstest.testbuilder;
 
-import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -11,10 +11,13 @@ import java.awt.event.ActionEvent;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
@@ -22,7 +25,6 @@ import javax.swing.event.ChangeListener;
 
 import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
-import org.locationtech.jtstest.testbuilder.ui.style.Style;
 
 public class LayerStylePanel extends JPanel {
   private Layer layer;
@@ -33,6 +35,9 @@ public class LayerStylePanel extends JPanel {
   private JCheckBox cbDashed;
   private JSpinner widthSpinner;
   private SpinnerNumberModel widthModel;
+  private JCheckBox cbFilled;
+  private JSlider sliderFill;
+  private JButton btnFillColor;
   
   public LayerStylePanel() {
     
@@ -42,13 +47,18 @@ public class LayerStylePanel extends JPanel {
       ex.printStackTrace();
     } 
   }
-  
+  private BasicStyle geomStyle() {
+    return layer.getLayerStyle().getGeomStyle();
+  }  
   public void setLayer(Layer layer) {
     this.layer = layer;
     this.title.setText("Styling - Layer " + layer.getName());
     cbVertex.setSelected(layer.getLayerStyle().isVertices());
-    cbDashed.setSelected(layer.getLayerStyle().getGeomStyle().isDashed());
-    widthModel.setValue(layer.getLayerStyle().getGeomStyle().getStrokeWidth());
+    cbDashed.setSelected(geomStyle().isDashed());
+    cbFilled.setSelected(geomStyle().isFilled());
+    widthModel.setValue(geomStyle().getStrokeWidth());
+    sliderFill.setValue(geomStyle().getFillAlpha());
+    btnFillColor.setBackground(geomStyle().getFillColor());
   }
   
   private void uiInit() throws Exception {
@@ -83,7 +93,6 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
-    cbVertex.setSelected(true);
     addRow("Vertices", cbVertex);
    
     cbDashed = new JCheckBox();
@@ -92,14 +101,13 @@ public class LayerStylePanel extends JPanel {
     cbDashed.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
-        layer.getLayerStyle().getGeomStyle().setDashed(cbDashed.isSelected());
+        geomStyle().setDashed(cbDashed.isSelected());
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
-    cbVertex.setSelected(true);
     addRow("Dashed", cbDashed);
    
-    widthModel = new SpinnerNumberModel(1.0, 0, 100.0, 0.5);
+    widthModel = new SpinnerNumberModel(1.0, 0, 100.0, 0.2);
     widthSpinner = new JSpinner(widthModel);
     //widthSpinner.setMinimumSize(new Dimension(50,12));
     //widthSpinner.setPreferredSize(new Dimension(50,12));
@@ -109,11 +117,81 @@ public class LayerStylePanel extends JPanel {
     widthSpinner.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         float width = widthModel.getNumber().floatValue();
-        layer.getLayerStyle().getGeomStyle().setStrokeWidth(width);
+        geomStyle().setStrokeWidth(width);
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
     addRow("Line Width", widthSpinner);
+    
+    cbFilled = new JCheckBox();
+    cbFilled.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbFilled.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        geomStyle().setFilled(cbFilled.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+   
+    sliderFill = createOpacitySlider(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        JSlider source = (JSlider)e.getSource();
+        if (! source.getValueIsAdjusting()) {
+          int alpha = (int)source.getValue();
+          geomStyle().setFillAlpha(alpha);
+          JTSTestBuilder.controller().geometryViewChanged();
+        }
+      }
+    });
+
+    btnFillColor = createColorButton(new ColorListener() {
+      public void colorChanged(Color clr) {
+        geomStyle().setFillColor(clr);
+        geomStyle().setLineColor(lineColorFromFill(clr));
+        btnFillColor.setBackground(clr);
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+    addRow("Fill", cbFilled, btnFillColor, sliderFill);
+  }
+ 
+
+  protected static Color lineColorFromFill(Color clr) {
+    return clr.darker();
+  }
+
+
+  private interface ColorListener {
+    void colorChanged(Color clr);
+  }
+  
+  private JButton createColorButton(ColorListener colorListener) {
+    JButton btn = new JButton();
+    Dimension dim = new Dimension(16,16);
+    btn.setMinimumSize(dim);
+    btn.setMaximumSize(dim);
+    btn.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        Color clr = showColorChooser("Fill Color", geomStyle().getFillColor());
+        if (clr != null) {
+          colorListener.colorChanged(clr);
+        }
+      }
+    });    
+    return btn;
+  }
+
+  private Color showColorChooser(String title, Color initColor) {
+    return JColorChooser.showDialog(this, title, initColor);
+  }
+  
+  private JSlider createOpacitySlider(ChangeListener changeListener) {
+    JSlider slide = new JSlider(JSlider.HORIZONTAL, 0, 255, 150);
+    slide.addChangeListener(changeListener);
+    slide.setMajorTickSpacing(32);
+    slide.setPaintTicks(true);
+    return slide;
   }
 
   private void addRow(String title, JComponent comp) {
@@ -123,6 +201,15 @@ public class LayerStylePanel extends JPanel {
     rowIndex++;
   }
 
+  private void addRow(String title, JComponent c1, JComponent c2, JComponent c3) {
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+    panel.add(c1);
+    panel.add(c2);
+    panel.add(c3);
+    addRow(title, panel);
+  }
+  
   private GridBagConstraints gbc(int x, int y, int align, double weightX) {
     // TODO Auto-generated method stub
     return new GridBagConstraints(x, y, 

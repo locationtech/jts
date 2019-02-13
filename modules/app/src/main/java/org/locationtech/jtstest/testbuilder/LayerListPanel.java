@@ -32,6 +32,7 @@ import javax.swing.border.Border;
 
 import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
+import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 
 /**
  * @version 1.7
@@ -95,7 +96,7 @@ class LayerItemPanel extends JPanel {
   private Border BORDER_HIGHLIGHT = BorderFactory.createLineBorder(Color.DARK_GRAY);
   
   private static final Color CLR_CONTROL = AppColors.BACKGROUND;
-  private static final Color CLR_HIGHLIGHT = CLR_CONTROL.brighter();
+  private static final Color CLR_HIGHLIGHT = ColorUtil.darker(CLR_CONTROL, .95);
   
   private Layer layer;
   private JCheckBox checkbox;
@@ -194,7 +195,7 @@ class LayerItemPanel extends JPanel {
     
     public void mouseEntered(MouseEvent e) {
       if (comp.isFocusLayer()) return;
-      comp.setBackground(AppColors.TAB_FOCUS);
+      comp.setBackground(CLR_HIGHLIGHT);
       //comp.setBorder(BORDER_HIGHLIGHT);
       comp.revalidate();
     }
