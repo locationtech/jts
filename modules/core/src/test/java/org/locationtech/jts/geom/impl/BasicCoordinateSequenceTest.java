@@ -14,6 +14,9 @@ package org.locationtech.jts.geom.impl;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateXYM;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 
 import junit.framework.TestCase;
 
@@ -49,5 +52,22 @@ public class BasicCoordinateSequenceTest extends TestCase {
     assertTrue(s1.getDimension() == s2.getDimension());
     assertTrue(s1.getCoordinate(0).equals(s2.getCoordinate(0)));
     assertTrue(s1.getCoordinate(0) != s2.getCoordinate(0));
+  }
+  
+  /**
+   * A simple test that using CoordinateXYM works
+   * for creation and running a basic function.
+   */
+  public void testLengthWithXYM() {
+    CoordinateXYM[] coords = new CoordinateXYM[2];
+
+    coords[0] = new CoordinateXYM(1, 1, 1);
+    coords[1] = new CoordinateXYM(2, 1, 2);
+
+    GeometryFactory factory = new GeometryFactory();
+    LineString line = factory.createLineString(coords);
+
+    double len = line.getLength();
+    assertEquals(1.0, len);
   }
 }
