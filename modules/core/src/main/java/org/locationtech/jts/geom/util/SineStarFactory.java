@@ -32,6 +32,27 @@ import org.locationtech.jts.util.GeometricShapeFactory;
 public class SineStarFactory
 	extends GeometricShapeFactory
 {
+  /**
+   * Creates a sine star with the given parameters.
+   * 
+   * @param origin the origin point
+   * @param size the size of the star
+   * @param nPts the number of points in the star
+   * @param nArms the number of arms to generate
+   * @param armLengthRatio the arm length ratio
+   * @return a sine star shape
+   */
+  public static Geometry create(Coordinate origin, double size, int nPts, int nArms, double armLengthRatio) {
+    SineStarFactory gsf = new SineStarFactory();
+    gsf.setCentre(origin);
+    gsf.setSize(size);
+    gsf.setNumPoints(nPts);
+    gsf.setArmLengthRatio(armLengthRatio);
+    gsf.setNumArms(nArms);
+    Geometry poly = gsf.createSineStar();
+    return poly;
+  }
+  
 	protected int numArms = 8;
 	protected double armLengthRatio = 0.5;
 	
@@ -66,11 +87,11 @@ public class SineStarFactory
   }
   
   /**
-   * Sets the ration of the length of each arm to the distance from the tip
-   * of the arm to the centre of the star.
+   * Sets the ratio of the length of each arm to the radius of the star.
+   * A smaller number makes the arms shorter.
    * Value should be between 0.0 and 1.0
    * 
-   * @param armLengthRatio
+   * @param armLengthRatio the ratio determining the length of them arms.
    */
   public void setArmLengthRatio(double armLengthRatio)
   {
