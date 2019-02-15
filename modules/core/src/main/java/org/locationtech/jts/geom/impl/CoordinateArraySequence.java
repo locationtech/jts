@@ -18,7 +18,8 @@ import org.locationtech.jts.geom.*;
 /**
  * A {@link CoordinateSequence} backed by an array of {@link Coordinate}s.
  * This is the implementation that {@link Geometry}s use by default.
- * Coordinates returned by <code>toCoordinateArray</code> and <code>getCoordinate</code> are live --
+ * Coordinates returned by {@link #toCoordinateArray()} 
+ * and {@link #getCoordinate()} are live --
  * modifications to them are actually changing the
  * CoordinateSequence's underlying data.
  * A dimension may be specified for the coordinates in the sequence,
@@ -51,8 +52,8 @@ public class CoordinateArraySequence
    * of {@link Coordinate}s (the
    * array is not copied).
    * The coordinate dimension and measure count is determined by the coordinates
-   * in the provided array, or is this is not possible 
-   * the sequence will have dimension = 3, measures = 0.
+   * in the provided array, or if this is not possible 
+   * the sequence is assigned dimension = 3, measures = 0.
    * The coordinates in the array must all have the same type.
    *
    * @param coordinates the coordinate array that will be referenced.
@@ -69,8 +70,8 @@ public class CoordinateArraySequence
    * of {@link Coordinate}s (the
    * array is not copied).
    * The coordinate measure count is determined by the coordinates
-   * in the provided array, or is this is not possible 
-   * the sequence will have measures = 0.
+   * in the provided array, or if this is not possible 
+   * the sequence is assigned measures = 0.
    * The coordinates in the array must all have the same type.
    *
    * @param coordinates the coordinate array that will be referenced.
@@ -171,9 +172,15 @@ public class CoordinateArraySequence
   }
 
   /**
-   * Ensure array contents of the same type, making use of {@link #createCoordinate()} as needed.
+   * Check array coordinates are of the same type.
+   * The array is not modified.
+   * {@code null} entries are not reported, 
+   * since it is expected that downstream processing
+   * will report them if needed.
    * 
-   * @param array array is modified in place as needed
+   * @param array the coordinate array to check.
+   * 
+   * @throw IllegalStateException if coordinate types are not identical
    */
   protected void checkArrayConsistency(Coordinate[] array)
   {
@@ -186,8 +193,9 @@ public class CoordinateArraySequence
        if (type == null) {
          type = coordinate.getClass();
        }
-       else  if(!coordinate.getClass().equals(type)) {
-         throw new IllegalStateException("Coordinates in array have different types");
+       else  if(! coordinate.getClass().equals(type)) {
+         throw new IllegalStateException("Coordinates in array have different types: " 
+             + type.getCanonicalName() + " and " + coordinate.getClass().getCanonicalName());
        }
      }
   }
