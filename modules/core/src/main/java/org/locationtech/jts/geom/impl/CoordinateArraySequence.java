@@ -18,13 +18,12 @@ import org.locationtech.jts.geom.*;
 /**
  * A {@link CoordinateSequence} backed by an array of {@link Coordinate}s.
  * This is the implementation that {@link Geometry}s use by default.
- * Coordinates returned by #toArray and #getCoordinate are live --
+ * Coordinates returned by <code>toCoordinateArray</code> and <code>getCoordinate</code> are live --
  * modifications to them are actually changing the
  * CoordinateSequence's underlying data.
  * A dimension may be specified for the coordinates in the sequence,
- * which may be 2 or 3.
- * The actual coordinates will always have 3 ordinates,
- * but the dimension is useful as metadata in some situations. 
+ * which may be 2, 3, or 4.
+ * A measure count may be specified for the coordinates in the sequence.
  *
  * @version 1.7
  */
@@ -48,12 +47,17 @@ public class CoordinateArraySequence
   private Coordinate[] coordinates;
 
   /**
-   * Constructs a sequence based on the given array
+   * Constructs a sequence using the given array
    * of {@link Coordinate}s (the
    * array is not copied).
-   * The coordinate dimension defaults to 3.
+   * The coordinate dimension and measure count is determined by the coordinates
+   * in the provided array, or is this is not possible 
+   * the sequence will have dimension = 3, measures = 0.
+   * The coordinates in the array must all have the same type.
    *
    * @param coordinates the coordinate array that will be referenced.
+   * 
+   * @throw IllegalStateException if coordinate types are not identical
    */
   public CoordinateArraySequence(Coordinate[] coordinates)
   {
@@ -61,24 +65,34 @@ public class CoordinateArraySequence
   }
 
   /**
-   * Constructs a sequence based on the given array 
+   * Constructs a sequence using the given array 
    * of {@link Coordinate}s (the
    * array is not copied).
+   * The coordinate measure count is determined by the coordinates
+   * in the provided array, or is this is not possible 
+   * the sequence will have measures = 0.
+   * The coordinates in the array must all have the same type.
    *
    * @param coordinates the coordinate array that will be referenced.
-   * @param dimension the dimension of the coordinates
+   * @param dimension the dimension of the coordinates in the sequence
+   * 
+   * @throw IllegalStateException if coordinate types are not identical
    */
   public CoordinateArraySequence(Coordinate[] coordinates, int dimension) {
     this(coordinates, dimension, CoordinateArrays.measures(coordinates));    
   }
   
   /**
-   * Constructs a sequence based on the given array 
+   * Constructs a sequence using the given array 
    * of {@link Coordinate}s (the
    * array is not copied).
+   * The coordinates in the array must all have the same type.
    *
    * @param coordinates the coordinate array that will be referenced.
-   * @param dimension the dimension of the coordinates
+   * @param dimension the dimension of the coordinates in the sequence
+   * @param measure the measure of the coordinates in the sequence
+   * 
+   * @throw IllegalStateException if coordinate types are not identical
    */
   public CoordinateArraySequence(Coordinate[] coordinates, int dimension, int measures)
   {
@@ -88,7 +102,7 @@ public class CoordinateArraySequence
     if (coordinates == null) {
       this.coordinates = new Coordinate[0];
     }
-    enforceArrayConsistency( this.coordinates );
+    checkArrayConsistency( this.coordinates );
   }
 
   /**
@@ -161,19 +175,19 @@ public class CoordinateArraySequence
    * 
    * @param array array is modified in place as needed
    */
-  protected void enforceArrayConsistency(Coordinate[] array)
+  protected void checkArrayConsistency(Coordinate[] array)
   {
-     Coordinate sample = createCoordinate();
-     Class<?> type = sample.getClass();
+     Class<?> type = null;
      for( int i = 0; i < array.length; i++) {
        Coordinate coordinate = array[i];
        if( coordinate == null ) {
-         array[i] = createCoordinate();
+         continue;
        }
-       else if(!coordinate.getClass().equals(type)) {
-         Coordinate duplicate = createCoordinate();
-         duplicate.setCoordinate(coordinate);
-         array[i] = duplicate;         
+       if (type == null) {
+         type = coordinate.getClass();
+       }
+       else  if(!coordinate.getClass().equals(type)) {
+         throw new IllegalStateException("Coordinates in array have different types");
        }
      }
   }
