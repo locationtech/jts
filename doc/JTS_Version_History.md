@@ -16,9 +16,9 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
-# Version 1.17
+# Version 1.16.1
 
-*Release Date:  ??*
+*Release Date:  Febuary 19, 2019*
 
 ### Functionality Improvements
 
@@ -30,6 +30,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Fix `IsValidOp` to handle empty components.
 * Fix `ShapeWriter` to handle Polygons with empty holes.
+* Fix `CoordinteArraySequence` to duplicate coordinate array if needed (rather than fix in place)
 
 ## JTS TestBuilder
 
