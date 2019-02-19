@@ -16,6 +16,16 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
+# Version 1.17.0
+
+*Release Date:  TBD*
+
+### API Changes
+
+* Polygon getExteriorRing and getInteriorRingN accessors now return LinearRing. This is a binary incompatible change to the method signature making recompilation necessary, no source code changes are required.
+
+<!-- ================================================================ -->
+
 # Version 1.16.1
 
 *Release Date:  Febuary 19, 2019*
