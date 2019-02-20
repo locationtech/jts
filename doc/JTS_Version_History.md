@@ -1,5 +1,6 @@
 
 JTS TOPOLOGY SUITE
+==================
 
 *Version History*
 
@@ -22,7 +23,7 @@ Distributions for older JTS versions can be obtained at the
 
 ### API Changes
 
-* Polygon getExteriorRing and getInteriorRingN accessors now return LinearRing. This is a binary incompatible change to the method signature making recompilation necessary, no source code changes are required.
+* Change `Polygon` `getExteriorRing` and `getInteriorRingN` accessors to return `LinearRing`. *This is a binary incompatible change to the method signature.  Recompilation is necessary. No source code changes are required.*
 
 <!-- ================================================================ -->
 
@@ -34,13 +35,13 @@ Distributions for older JTS versions can be obtained at the
 
 * Added `HilbertCode` and `HilbertCurveBuilder`.
 * Added 'MortonCode` and `MortonCurveBuilder`.
-* Improved InteriorPointArea algorithm performance and robustness
+* Improved `InteriorPointArea` algorithm performance and robustness
 
 ### Bug Fixes
 
 * Fix `IsValidOp` to handle empty components.
 * Fix `ShapeWriter` to handle Polygons with empty holes.
-* Fix `CoordinteArraySequence` to duplicate coordinate array if needed (rather than fix in place)
+* Fix `CoordinateArraySequence` to duplicate coordinate array if needed to make coordinates consistent (rather than fix in place)
 
 ## JTS TestBuilder
 
