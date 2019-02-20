@@ -243,30 +243,12 @@ public class InteriorPointArea {
     }
 
     /**
-     * Tests if an edge intersection contributes to the crossing count.
-     * Some crossing situations are not counted,
-     * to ensure that the list of crossings 
-     * captures strict inside/outside topology. 
+     * Finds the midpoint of the widest interior section.
+     * Sets the {@link #interiorPoint} location
+     * and the {@link #interiorSectionWidth}
      * 
-     * @param p0 an endpoint of the segment
-     * @param p1 an endpoint of the segment
-     * @param scanY the Y-ordinate of the horizontal line
-     * @return true if the edge crossing is counted
+     * @param crossings the list of scan-line crossing X ordinates
      */
-    private boolean isEdgeCrossingCounted(Coordinate p0, Coordinate p1, double scanY) {
-      // skip horizontal lines
-      if ( p0.getY() == p1.getY() )
-        return false;
-      // handle cases where vertices lie on scan-line
-      // downward segment does not include start point
-      if ( p0.y == scanY && p1.y < scanY )
-        return false;
-      // upward segment does not include endpoint
-      if ( p1.y == scanY && p0.y < scanY )
-        return false;
-      return true;
-    }
-    
     private void findBestMidpoint(List<Double> crossings) {
       // zero-area polygons will have no crossings
       if (crossings.size() == 0) return;
@@ -292,7 +274,34 @@ public class InteriorPointArea {
         }
       }
     }
-
+    
+    /**
+     * Tests if an edge intersection contributes to the crossing count.
+     * Some crossing situations are not counted,
+     * to ensure that the list of crossings 
+     * captures strict inside/outside topology. 
+     * 
+     * @param p0 an endpoint of the segment
+     * @param p1 an endpoint of the segment
+     * @param scanY the Y-ordinate of the horizontal line
+     * @return true if the edge crossing is counted
+     */
+    private static boolean isEdgeCrossingCounted(Coordinate p0, Coordinate p1, double scanY) {
+      double y0 = p0.getY();
+      double y1 = p1.getY();
+      // skip horizontal lines
+      if ( y0 == y1 )
+        return false;
+      // handle cases where vertices lie on scan-line
+      // downward segment does not include start point
+      if ( y0 == scanY && y1 < scanY )
+        return false;
+      // upward segment does not include endpoint
+      if ( y1 == scanY && y0 < scanY )
+        return false;
+      return true;
+    }
+    
     /**
      * Computes the intersection of a segment with a horizontal line. 
      * The segment is expected to cross the horizontal line
@@ -319,34 +328,6 @@ public class InteriorPointArea {
       double x = x0 + ((Y - p0.getY()) / m);
       return x;
     }
-
-    /*
-    // for testing only
-    private static void checkIntersectionDD(Coordinate p0, Coordinate p1, double scanY, double xInt) {
-      double xIntDD = intersectionDD(p0, p1, scanY);
-      System.out.println(
-          ((xInt != xIntDD) ? ">>" : "")
-          + "IntPt x - DP: " + xInt + ", DD: " + xIntDD 
-          + "   y: " + scanY + "   " + WKTWriter.toLineString(p0, p1) );
-    }
-
-    private static double intersectionDD(Coordinate p0, Coordinate p1, double Y) {
-      double x0 = p0.getX();
-      double x1 = p1.getX();
-
-      if ( x0 == x1 )
-        return x0;
-      
-      DD segDX = DD.valueOf(x1).selfSubtract(x0);
-      // Assert: segDX is non-zero, due to previous equality test
-      DD segDY = DD.valueOf(p1.getY()).selfSubtract(p0.getY());
-      DD m = segDY.divide(segDX);
-      DD dy = DD.valueOf(Y).selfSubtract(p0.getY());
-      DD dx = dy.divide(m);
-      DD xInt = DD.valueOf(x0).selfAdd(dx);
-      return xInt.doubleValue();
-    }
-  */
     
     /**
      * Tests if an envelope intersects a horizontal line.
@@ -381,6 +362,34 @@ public class InteriorPointArea {
       // segment must intersect line
       return true;
     }
+    
+    /*
+    // for testing only
+    private static void checkIntersectionDD(Coordinate p0, Coordinate p1, double scanY, double xInt) {
+      double xIntDD = intersectionDD(p0, p1, scanY);
+      System.out.println(
+          ((xInt != xIntDD) ? ">>" : "")
+          + "IntPt x - DP: " + xInt + ", DD: " + xIntDD 
+          + "   y: " + scanY + "   " + WKTWriter.toLineString(p0, p1) );
+    }
+
+    private static double intersectionDD(Coordinate p0, Coordinate p1, double Y) {
+      double x0 = p0.getX();
+      double x1 = p1.getX();
+
+      if ( x0 == x1 )
+        return x0;
+      
+      DD segDX = DD.valueOf(x1).selfSubtract(x0);
+      // Assert: segDX is non-zero, due to previous equality test
+      DD segDY = DD.valueOf(p1.getY()).selfSubtract(p0.getY());
+      DD m = segDY.divide(segDX);
+      DD dy = DD.valueOf(Y).selfSubtract(p0.getY());
+      DD dx = dy.divide(m);
+      DD xInt = DD.valueOf(x0).selfAdd(dx);
+      return xInt.doubleValue();
+    }
+  */
   }
   
   /**
