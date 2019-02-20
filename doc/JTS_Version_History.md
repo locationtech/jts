@@ -36,18 +36,30 @@ Distributions for older JTS versions can be obtained at the
 * Added `HilbertCode` and `HilbertCurveBuilder`.
 * Added 'MortonCode` and `MortonCurveBuilder`.
 * Improved `InteriorPointArea` algorithm performance and robustness
+* Add `IndexedFacetDistance` methods `nearestLocations` and `nearestPoints`
+* Make `IndexedFacetDistance` thread-safe
+* Add `SimplePointInAreaLocator` envelope check
 
 ### Bug Fixes
 
 * Fix `IsValidOp` to handle empty components.
 * Fix `ShapeWriter` to handle Polygons with empty holes.
 * Fix `CoordinateArraySequence` to duplicate coordinate array if needed to make coordinates consistent (rather than fix in place)
+* Fix `AffineTransformation.rotate`
 
 ## JTS TestBuilder
 
 ### Functionality Improvements
 
 * Added per-layer style control
+* Change UI terminology to **Reveal Topology**
+* Add undo capability
+* Add more functions to **Delete Components** tool
+* Add **Save Image to PNG** button
+* Add **Scalar Function** panel logging
+* Add Pan capability to **Zoom Tool**
+* Improve arrow styling
+* Add meta-function options **Each** and **Repeat**
 
 <!-- ================================================================ -->
 
