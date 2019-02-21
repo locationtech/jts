@@ -294,13 +294,13 @@ public abstract class PackedCoordinateSequence
       
       coords = new double[coordinates.length * this.dimension];
       for (int i = 0; i < coordinates.length; i++) {
-        coords[i * this.dimension] = coordinates[i].x;
-        if (this.dimension >= 2)
-          coords[i * this.dimension + 1] = coordinates[i].y;
-        if (this.dimension >= 3)
-          coords[i * this.dimension + 2] = coordinates[i].getOrdinate(2); // Z or M
-        if (this.dimension >= 4)
-          coords[i * this.dimension + 3] = coordinates[i].getOrdinate(3); // M
+        int offset = i * dimension;
+        coords[offset] = coordinates[i].x;
+        coords[offset + 1] = coordinates[i].y;
+        if (dimension >= 3)
+          coords[offset + 2] = coordinates[i].getOrdinate(2); // Z or M
+        if (dimension >= 4)
+          coords[offset + 3] = coordinates[i].getOrdinate(3); // M
       }
     }
     /**
@@ -463,13 +463,15 @@ public abstract class PackedCoordinateSequence
       if (coordinates == null)
         coordinates = new Coordinate[0];
       
-      coords = new float[coordinates.length * this.dimension];
+      coords = new float[coordinates.length * dimension];
       for (int i = 0; i < coordinates.length; i++) {
-        coords[i * this.dimension] = (float) coordinates[i].x;
-        if (this.dimension >= 2)
-          coords[i * this.dimension + 1] = (float) coordinates[i].y;
-        if (this.dimension >= 3)
-          coords[i * this.dimension + 2] = (float) coordinates[i].getZ();
+        int offset = i * dimension;
+        coords[offset] = (float) coordinates[i].x;
+        coords[offset + 1] = (float) coordinates[i].y;
+        if (dimension >= 3)
+          coords[offset + 2] = (float) coordinates[i].getOrdinate(2); // Z or M
+        if (dimension >= 4)
+          coords[offset + 3] = (float) coordinates[i].getOrdinate(3); // M
       }
     }
 
