@@ -68,8 +68,11 @@ extends PerformanceTestCase
   {
     iter = 0;
     sineStar = SineStarFactory.create(new Coordinate(ORG_X, ORG_Y), SIZE, npts, N_ARMS, ARM_RATIO);
-    sinePolyCrinkly = GeometryPrecisionReducer.reduce(sineStar, 
-        new PrecisionModel(SIZE));
+    
+    double scale = npts / SIZE;
+    PrecisionModel pm = new PrecisionModel(scale);
+    
+    sinePolyCrinkly = GeometryPrecisionReducer.reduce(sineStar, pm);
 
     System.out.println("\nRunning with # pts " + sinePolyCrinkly.getNumPoints() );
     //if (size <= 1000) System.out.println(sineStar);
