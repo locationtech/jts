@@ -532,7 +532,9 @@ public abstract class Geometry
    */
   public Point getInteriorPoint()
   {
-    return InteriorPoint.getInteriorPoint(this);
+    if (isEmpty()) return factory.createPoint();
+    Coordinate pt = InteriorPoint.getInteriorPoint(this);
+    return createPointFromInternalCoord(pt, this);
   }
 
   /**
