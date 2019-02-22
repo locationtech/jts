@@ -161,7 +161,6 @@ public class InteriorPointArea {
     private Polygon polygon;
     private double interiorPointY;
     private double interiorSectionWidth = 0.0;
-    private List<Double> crossings = new ArrayList<Double>();
     private Coordinate interiorPoint = null;
 
     /**
@@ -209,14 +208,15 @@ public class InteriorPointArea {
        */
       interiorPoint = new Coordinate(polygon.getCoordinate());
       
-      scanRing((LinearRing) polygon.getExteriorRing());
+      List<Double> crossings = new ArrayList<Double>();
+      scanRing((LinearRing) polygon.getExteriorRing(), crossings);
       for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-        scanRing((LinearRing) polygon.getInteriorRingN(i));
+        scanRing((LinearRing) polygon.getInteriorRingN(i), crossings);
       }
       findBestMidpoint(crossings);
     }
 
-    private void scanRing(LinearRing ring) {
+    private void scanRing(LinearRing ring, List<Double> crossings) {
       // skip rings which don't cross scan line
       if ( !intersectsHorizontalLine(ring.getEnvelopeInternal(), interiorPointY) )
         return;
