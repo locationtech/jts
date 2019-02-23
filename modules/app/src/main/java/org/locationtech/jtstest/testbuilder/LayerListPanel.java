@@ -28,18 +28,23 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
 
 import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
+import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 
 /**
  * @version 1.7
  */
 public class LayerListPanel extends JPanel {
   
+  private static final String LBL_LAYER_STYLE = "Layer Style";
+  
   JPanel list = new JPanel();
+  JTabbedPane tabPane = new JTabbedPane();
   private LayerStylePanel lyrStylePanel;
   List<LayerItemPanel> layerItems = new ArrayList<LayerItemPanel>();
 
@@ -66,8 +71,19 @@ public class LayerListPanel extends JPanel {
 
     setLayout(new BorderLayout());
     add(jScrollPane1, BorderLayout.WEST);
+    
     lyrStylePanel = new LayerStylePanel();
-    add(lyrStylePanel, BorderLayout.CENTER);
+    GeometryViewStylePanel viewStylePanel = new GeometryViewStylePanel();
+    //add(lyrStylePanel, BorderLayout.CENTER);    
+
+    //tabFunctions.setBackground(jTabbedPane1.getBackground());
+    tabPane.add(lyrStylePanel,  LBL_LAYER_STYLE);
+    tabPane.add(viewStylePanel,   "View Style");
+    add(tabPane, BorderLayout.CENTER);
+  }
+  
+  public void showTabLayerStyle() {
+    SwingUtil.showTab(tabPane, LBL_LAYER_STYLE);
   }
   
   public void populateList() {
@@ -87,6 +103,7 @@ public class LayerListPanel extends JPanel {
       item.setFocusLayer(false);
     }
     layerItem.setFocusLayer(true);
+    showTabLayerStyle();
     lyrStylePanel.setLayer(layerItem.getLayer());
   }
 }

@@ -49,6 +49,8 @@ import org.locationtech.jtstest.testbuilder.ui.tools.*;
  */
 public class GeometryEditPanel extends JPanel 
 {	
+  public static Color VIEW_backgroundColor = AppColors.GEOM_VIEW_BACKGROUND;
+  
 	/*
   private static Color[] selectedPointColor = { new Color(0, 64, 128, 255),
       new Color(170, 64, 0, 255) };
@@ -94,7 +96,7 @@ public class GeometryEditPanel extends JPanel
         this_componentResized(e);
       }
     });
-    this.setBackground(Color.white);
+    this.setBackground(VIEW_backgroundColor);
     this.setBorder(BorderFactory.createLoweredBevelBorder());
     this.setLayout(borderLayout1);
     
@@ -128,6 +130,11 @@ public class GeometryEditPanel extends JPanel
     this.tbModel = model;
   }
 
+  public void setViewBackground(Color clr) {
+    VIEW_backgroundColor = clr;
+    updateView();
+  }
+  
   public TestBuilderModel getModel() {
     return tbModel;
   }
@@ -405,7 +412,7 @@ public class GeometryEditPanel extends JPanel
   public void flash(Geometry g)
   {
     Graphics2D gr = (Graphics2D) getGraphics();
-    gr.setXORMode(Color.white);
+    gr.setXORMode(VIEW_backgroundColor);
     Stroke stroke = new BasicStroke(5);
     
     Geometry flashGeom = g;

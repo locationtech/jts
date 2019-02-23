@@ -28,6 +28,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.JTextComponent;
@@ -267,4 +268,8 @@ public class SwingUtil {
     return (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK;
   }
 
+  public static void showTab(JTabbedPane tabPane, String tabName)
+  {
+    tabPane.setSelectedIndex(tabPane.indexOfTab(tabName));
+  }
 }
