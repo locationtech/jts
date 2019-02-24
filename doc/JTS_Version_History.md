@@ -27,7 +27,7 @@ Distributions for older JTS versions can be obtained at the
 
 ### Bug Fixes
 
-* Fix PackedCoordinateSequence.Float Coordinate array constructor (#379)
+* Fix PackedCoordinateSequence.Float construction methods (#379, #381)
 
 <!-- ================================================================ -->
 
