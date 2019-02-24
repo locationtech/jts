@@ -52,30 +52,34 @@ public class PackedCoordinateSequenceTest
   
   public void checkAll(CoordinateSequenceFactory factory)
   {
-    checkDim2(factory);
+    checkDim2(1, factory);
+    checkDim2(5, factory);
     checkDim3(factory);
     checkDim3_M1(factory);
     checkDim4_M1(factory);
     checkDimInvalid(factory);
   }
   
-  public void checkDim2(CoordinateSequenceFactory factory)
+  public void checkDim2(int size, CoordinateSequenceFactory factory)
   {
-    CoordinateSequence seq = factory.create(5, 2);
+    CoordinateSequence seq = factory.create(size, 2);
     initProgression(seq);
     
     assertEquals("Dimension should be 2", 2, seq.getDimension());
     assertTrue("Z should not be present", !seq.hasZ());
     assertTrue("M should not be present", !seq.hasM());
     
-    Coordinate coord = seq.getCoordinate(4);
+    int indexLast = size - 1;
+    double valLast = indexLast;
+    
+    Coordinate coord = seq.getCoordinate(indexLast);
     assertTrue( coord instanceof CoordinateXY);
-    assertEquals( 4.0, coord.getX());
-    assertEquals( 4.0, coord.getY());
+    assertEquals( valLast, coord.getX());
+    assertEquals( valLast, coord.getY());
     
     Coordinate[] array = seq.toCoordinateArray();
-    assertEquals(coord, array[4]);
-    assertTrue(coord != array[4]);
+    assertEquals(coord, array[indexLast]);
+    assertTrue(coord != array[indexLast]);
     assertTrue(isEqual(seq,array));
     
     CoordinateSequence copy = factory.create(array);

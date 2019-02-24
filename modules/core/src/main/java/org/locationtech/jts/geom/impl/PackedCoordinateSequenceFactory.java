@@ -72,7 +72,7 @@ public class PackedCoordinateSequenceFactory implements
   public CoordinateSequence create(Coordinate[] coordinates) {
     int dimension = 3;
     int measures = 0;
-    if (coordinates != null && coordinates.length > 1 && coordinates[0] != null) {
+    if (coordinates != null && coordinates.length > 0 && coordinates[0] != null) {
       Coordinate first = coordinates[0];
       dimension = Coordinates.dimension(first);
       measures = Coordinates.measures(first);
