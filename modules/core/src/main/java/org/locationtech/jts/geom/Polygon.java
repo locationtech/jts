@@ -174,18 +174,6 @@ public class Polygon
   public boolean isEmpty() {
     return shell.isEmpty();
   }
-
-  /**
-   * Tests if a valid polygon is simple.
-   * This method always returns true, since a valid polygon is always simple
-   *
-   * @return <code>true</code>
-   */
-  /*
-  public boolean isSimple() {
-    return true;
-  }
-*/
   
   public boolean isRectangle()
   {
