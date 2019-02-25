@@ -175,7 +175,7 @@ public class Polygon
     return shell.isEmpty();
   }
 
-  /**
+  /*
    * Tests if a valid polygon is simple.
    * This method always returns true, since a valid polygon is always simple
    *
@@ -185,7 +185,7 @@ public class Polygon
   public boolean isSimple() {
     return true;
   }
-*/
+  */
   
   public boolean isRectangle()
   {
