@@ -72,7 +72,7 @@ public class DistanceFunctions {
     return a.getFactory().createLineString(pts);
   }
   
-  public static Geometry nearestPointsIndexedAll(Geometry a, Geometry b) {
+  public static Geometry nearestPointsIndexedEachB(Geometry a, Geometry b) {
     IndexedFacetDistance ifd = new IndexedFacetDistance(a);
     
     int n = b.getNumGeometries();
