@@ -29,17 +29,12 @@ public class PolygonizeFunctions {
     Polygonizer polygonizer = new Polygonizer(extractOnlyPolygonal);
     polygonizer.add(lines);
     return polygonizer.getGeometry();
-    /*
-    Collection polys = polygonizer.getPolygons();
-    Polygon[] polyArray = GeometryFactory.toPolygonArray(polys);
-    return g.getFactory().createGeometryCollection(polyArray);
-    */
   }
   public static Geometry polygonize(Geometry g)
   {
     return polygonize(g, false);
   }
-  public static Geometry polygonizePolygonal(Geometry g)
+  public static Geometry polygonizeValidPolygonal(Geometry g)
   {
     return polygonize(g, true);
   }

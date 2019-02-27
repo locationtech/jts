@@ -72,7 +72,7 @@ public class TestCaseGeometryFunctions
     return polygonize(g, false);
   }
   
-  public static Geometry polygonizeValidArea(Geometry g) {
+  public static Geometry polygonizeValidPolygonal(Geometry g) {
     return polygonize(g, true);
   }
 }
