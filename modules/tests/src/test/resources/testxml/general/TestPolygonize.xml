@@ -1,0 +1,68 @@
+<run>
+  <precisionModel scale="100" offsetx="0.0" offsety="0.0"/>
+
+<case>
+  <desc>P - single point</desc>
+  <a>POINT(0 0)</a>
+  <test>
+    <op name="polygonize" arg1="a">
+        GEOMETRYCOLLECTION EMPTY
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>L - single line segment</desc>
+  <a>LINESTRING(0 0,1 1)</a>
+  <test>
+    <op name="polygonize" arg1="a">
+        GEOMETRYCOLLECTION EMPTY
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>A - square</desc>
+  <a>POLYGON((0 0,0 1,1 1,0 0))</a>
+  <test>
+    <op name="polygonize" arg1="a">
+GEOMETRYCOLLECTION (POLYGON ((0 0, 0 1, 1 1, 0 0)))
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>mA - two squares</desc>
+  <a>
+MULTILINESTRING ((200 200, 100 200, 100 100, 200 100), (200 200, 200 100), (200 200, 300 200, 300 100, 200 100))
+  </a>
+  <test>
+    <op name="polygonize" arg1="a">
+GEOMETRYCOLLECTION (POLYGON ((200 200, 200 100, 100 100, 100 200, 200 200)), POLYGON ((200 200, 300 200, 300 100, 200 100, 200 200)))
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>mA - two squares</desc>
+  <a>
+MULTILINESTRING ((200 200, 100 200, 100 100, 200 100), (200 200, 200 100), (200 200, 300 200, 300 100, 200 100))
+  </a>
+  <test>
+    <op name="polygonize" arg1="a">
+GEOMETRYCOLLECTION (POLYGON ((200 200, 200 100, 100 100, 100 200, 200 200)), POLYGON ((200 200, 300 200, 300 100, 200 100, 200 200)))
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>mA - 4 polygons, one with hole</desc>
+  <a>
+MULTILINESTRING ((200 200, 100 200, 100 100, 200 100), (200 200, 200 179.96666666666667, 200 100), (200 200, 300 200, 300 100, 200 100), (120 180, 180 180, 180 120, 120 120, 120 180), (200 180, 280 180, 280 120, 200 120))  </a>
+  <test>
+    <op name="polygonize" arg1="a">
+GEOMETRYCOLLECTION (POLYGON ((200 100, 100 100, 100 200, 200 200, 200 179.96666666666667, 200 100), (120 180, 120 120, 180 120, 180 180, 120 180)), POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180)), POLYGON ((200 100, 200 179.96666666666667, 200 200, 300 200, 300 100, 200 100)))    </op>
+  </test>
+</case>
+
+</run>
