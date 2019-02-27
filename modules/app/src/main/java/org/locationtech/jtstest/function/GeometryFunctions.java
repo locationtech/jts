@@ -46,7 +46,7 @@ public class GeometryFunctions
   public static Geometry reverse(Geometry g) {      return g.reverse();  }
   public static Geometry normalize(Geometry g) 
   {      
-  	Geometry gNorm = (Geometry) g.clone();
+  	Geometry gNorm = g.copy();
   	gNorm.normalize();
     return gNorm;
   }
@@ -111,6 +111,6 @@ public class GeometryFunctions
 	public static Geometry getCoordinates(Geometry g)
 	{
 		Coordinate[] pts = g.getCoordinates();
-		return g.getFactory().createMultiPoint(pts);
+		return g.getFactory().createMultiPointFromCoords(pts);
 	}
 }

@@ -493,6 +493,7 @@ public class StringUtil
         return result;
     }
 
+    @SuppressWarnings("deprecation")
     public static String escapeHTML(String s) {
         return StringEscapeUtils.escapeHtml4(s);
     }

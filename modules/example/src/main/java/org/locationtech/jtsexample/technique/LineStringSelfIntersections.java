@@ -71,7 +71,7 @@ public class LineStringSelfIntersections {
       }
     }
     Coordinate[] endPts = CoordinateArrays.toCoordinateArray(endPtList);
-    return (new GeometryFactory()).createMultiPoint(endPts);
+    return (new GeometryFactory()).createMultiPointFromCoords(endPts);
   }
 
 
