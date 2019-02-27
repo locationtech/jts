@@ -1,0 +1,106 @@
+<run>
+  <precisionModel scale="100" offsetx="0.0" offsety="0.0"/>
+
+<case>
+  <desc>P - single point</desc>
+  <a>POINT(0 0)</a>
+  <test>
+    <op name="polygonizeValidArea" arg1="a">
+        GEOMETRYCOLLECTION EMPTY
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>L - single line segment</desc>
+  <a>LINESTRING(0 0,1 1)</a>
+  <test>
+    <op name="polygonizeValidArea" arg1="a">
+        GEOMETRYCOLLECTION EMPTY
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>A - square</desc>
+  <a>POLYGON((0 0,0 1,1 1,0 0))</a>
+  <test>
+    <op name="polygonizeValidArea" arg1="a">
+        POLYGON((0 0,0 1,1 1,0 0))
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>polygonizeValidArea - mL</desc>
+  <a>GEOMETRYCOLLECTION(LINESTRING(0 0,0 1,1 1),LINESTRING(1 1,1 0,0 0))</a>
+  <test>
+    <op name="polygonizeValidArea" arg1="a">
+        POLYGON((0 0,0 1,1 1,1 0,0 0))
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>polygonizeValidArea/multipolygon_of_two_polygons_from_linestrings</desc>
+  <a>
+GEOMETRYCOLLECTION(LINESTRING(0 0,0 1,1 1),LINESTRING(1 1,1 0,0 0),LINESTRING(10 0,10 1,11 1),LINESTRING(11 1,11 0,10 0))
+  </a>
+  <test>
+    <op name="polygonizeValidArea" arg1="a">
+MULTIPOLYGON (((10.0 0.0, 10.0 1.0, 11.0 1.0, 11.0 0.0, 10.0 0.0)), ((0.0 0.0, 0.0 1.0, 1.0 1.0, 1.0 0.0, 0.0 0.0)))
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>polygonizeValidArea/polygon_with_hole_from_linestrings</desc>
+  <a>
+GEOMETRYCOLLECTION(LINESTRING(0 0,0 1,1 1),LINESTRING(1 1,1 0,0 0),LINESTRING(0.25 0.25,0.25 0.75,0.75 0.75),LINESTRING(0.75 0.75,0.75 0.25,0.25 0.25))
+  </a>
+  <test>
+    <op name="polygonizeValidArea" arg1="a">
+POLYGON ((0.00 0.00, 0.00 1.00, 1.00 1.00, 1.00 0.00, 0.00 0.00), (0.25 0.25, 0.75 0.25, 0.75 0.75, 0.25 0.75, 0.25 0.25))
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>polygonizeValidArea/polygon_with_hole_and_island_from_linestrings</desc>
+  <a>
+GEOMETRYCOLLECTION(LINESTRING(0 0,0 1,1 1),LINESTRING(1 1,1 0,0 0),LINESTRING(0.25 0.25,0.25 0.75,0.75 0.75),LINESTRING(0.75 0.75,0.75 0.25,0.25 0.25),LINESTRING(0.3 0.3,0.3 0.7,0.7 0.7),LINESTRING(0.7 0.7,0.7 0.3,0.3 0.3))
+  </a>
+  <test>
+    <op name="polygonizeValidArea" arg1="a">
+MULTIPOLYGON (((0.00 0.00, 0.00 1.00, 1.00 1.00, 1.00 0.00, 0.00 0.00), (0.25 0.25, 0.75 0.25, 0.75 0.75, 0.25 0.75, 0.25 0.25)),((0.30 0.30, 0.30 0.70, 0.70 0.70, 0.70 0.30, 0.30 0.30)))
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>A - self-touching</desc>
+  <a>
+GEOMETRYCOLLECTION (LINESTRING (100 100, 100 400, 400 400, 400 100, 100 100), LINESTRING (150 350, 350 350, 350 150, 100 100, 150 350), LINESTRING (200 250, 250 200, 100 100, 200 250), LINESTRING (200 250, 160 290, 150 250, 200 250), LINESTRING (350 350, 200 300, 200 250, 300 250, 350 350))
+  </a>
+  <test>
+    <op name="polygonizeValidArea" arg1="a">
+MULTIPOLYGON (((200 250, 250 200, 100 100, 200 250)), ((100 100, 100 400, 400 400, 400 100, 100 100), (150 350, 100 100, 350 150, 350 350, 150 350)), ((200 250, 150 250, 160 290, 200 250)), ((350 350, 300 250, 200 250, 200 300, 350 350)))
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>A - checkerboard</desc>
+  <a>
+MULTILINESTRING ((50 300, 100 300), (50 300, 50 450, 200 450), (300 50, 300 0, 0 0, 0 300, 50 300), (100 150, 50 150, 50 300), (150 150, 100 150), (100 150, 100 300), (150 100, 100 100, 100 150), (100 300, 150 300), (100 300, 100 400, 200 400), (300 100, 150 100), (150 100, 150 150), (300 50, 150 50, 150 100), (300 150, 150 150), (150 150, 150 300), (150 300, 200 300), (150 300, 150 350, 200 350), (200 300, 300 300, 300 200), (200 300, 200 350), (300 200, 200 200, 200 300), (200 350, 350 350), (200 350, 200 400), (200 400, 350 400), (200 400, 200 450), (200 450, 350 450, 350 400), (200 450, 200 500, 500 500, 500 200, 450 200), (450 200, 450 50, 300 50), (300 100, 300 50), (400 200, 400 100, 300 100), (300 150, 300 100), (350 200, 350 150, 300 150), (300 200, 300 150), (350 200, 300 200), (400 200, 350 200), (350 350, 350 200), (350 350, 400 350), (350 400, 350 350), (350 400, 400 400, 400 350), (450 200, 400 200), (400 350, 400 200), (400 350, 450 350, 450 200))
+  </a>
+  <test>
+    <op name="polygonizeValidArea" arg1="a">
+MULTIPOLYGON (((150 100, 150 50, 300 50, 300 0, 0 0, 0 300, 50 300, 50 150, 100 150, 100 100, 150 100)), ((200 400, 100 400, 100 300, 50 300, 50 450, 200 450, 200 400)), ((100 150, 100 300, 150 300, 150 150, 100 150)), ((150 150, 300 150, 300 100, 150 100, 150 150)), ((200 350, 200 300, 150 300, 150 350, 200 350)), ((300 200, 200 200, 200 300, 300 300, 300 200)), ((350 400, 350 450, 200 450, 200 500, 500 500, 500 200, 450 200, 450 350, 400 350, 400 400, 350 400)), ((200 350, 200 400, 350 400, 350 350, 200 350)), ((450 200, 450 50, 300 50, 300 100, 400 100, 400 200, 450 200)), ((300 150, 300 200, 350 200, 350 150, 300 150)), ((400 350, 400 200, 350 200, 350 350, 400 350)))
+    </op>
+  </test>
+</case>
+
+
+
+</run>

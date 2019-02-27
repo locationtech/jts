@@ -11,10 +11,14 @@
  */
 package org.locationtech.jtstest.geomop;
 
-import org.locationtech.jts.densify.*;
+import java.util.Collection;
+
+import org.locationtech.jts.densify.Densifier;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.locationtech.jts.precision.MinimumClearance;
 
 /**
@@ -57,4 +61,19 @@ public class TestCaseGeometryFunctions
     return MinimumClearance.getLine(g);
   }
 
+  private static Geometry polygonize(Geometry g, boolean extractOnlyPolygonal) {
+    Collection lines = LinearComponentExtracter.getLines(g);
+    Polygonizer polygonizer = new Polygonizer(extractOnlyPolygonal);
+    polygonizer.add(lines);
+    return polygonizer.getGeometry();
+  }
+  
+  public static Geometry polygonize(Geometry g) {
+    return polygonize(g, false);
+  }
+  
+  public static Geometry polygonizeValidArea(Geometry g) {
+    return polygonize(g, true);
+  }
 }
+;
