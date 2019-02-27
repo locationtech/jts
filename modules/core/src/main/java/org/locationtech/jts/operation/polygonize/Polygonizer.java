@@ -37,15 +37,16 @@ import org.locationtech.jts.geom.Polygon;
  * <p>
  * The Polygonizer reports the follow kinds of errors:
  * <ul>
- * <li><b>Dangles</b> - edges which have one or both ends which are not incident on another edge endpoint
- * <li><b>Cut Edges</b> - edges which are connected at both ends but which do not form part of polygon
- * <li><b>Invalid Ring Lines</b> - edges which form rings which are invalid
+ * <li><b>{@link #getDangles() Dangles}</b> - edges which have one or both ends which are not incident on another edge endpoint
+ * <li><b>{@link #getCutEdges() Cut Edges}</b> - edges which are connected at both ends but which do not form part of polygon
+ * <li><b>{@link #getInvalidRingLines() Invalid Ring Lines}</b> - edges which form rings which are invalid
  * (e.g. the component lines contain a self-intersection)
  * </ul>
- * Polygonization supports extracting only polygons which form a valid polygonal geometry.
+ * The {@link #Polygonizer(boolean)} constructor allows
+ * extracting only polygons which form a valid polygonal result.
  * The set of extracted polygons is guaranteed to be edge-disjoint.
- * This is useful for situations where it is known that the input lines form a
- * valid polygonal geometry.
+ * This is useful where it is known that the input lines form a
+ * valid polygonal geometry (which may include holes or nested polygons).
  *
  * @version 1.7
  */
@@ -88,9 +89,7 @@ public class Polygonizer
   private GeometryFactory geomFactory = null;
 
   /**
-   * Creates a polygonizer with the same {@link GeometryFactory}
-   * as the input {@link Geometry}s.
-   * The output mask is {@link #ALL_POLYS}.
+   * Creates a polygonizer that extracts all polygons.
    */
   public Polygonizer()
   {
@@ -98,9 +97,12 @@ public class Polygonizer
   }
   
   /**
-   * Creates a polygonizer and allow specifying if only polygons which form a valid polygonal geometry are to be extracted.
+   * Creates a polygonizer, specifying whether a valid polygonal geometry must be created.
+   * If the argument is <code>true</code>
+   * then areas may be discarded in order to 
+   * ensure that the extracted geometry is a valid polygonal geometry.
    * 
-   * @param extractOnlyPolygonal true if only polygons which form a valid polygonal geometry are to be extracted
+   * @param extractOnlyPolygonal true if a valid polygonal geometry should be extracted
    */
   public Polygonizer(boolean extractOnlyPolygonal)
   {

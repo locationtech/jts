@@ -100,7 +100,7 @@ public class PolygonizeTest extends GeometryTestCase {
     });
   }
 
-  public void testPolygona_OuterOnly_2() {
+  public void testPolygonal_OuterOnly_2() {
     checkPolygonize(true, new String[] {
         "LINESTRING (100 400, 200 400, 200 300)" 
             ,"LINESTRING (200 300, 150 300)"
@@ -139,7 +139,7 @@ public class PolygonizeTest extends GeometryTestCase {
       "LINESTRING (40 30, 40 20)"
   };
       
-  public void testPolygona_OuterOnly_Checkerboard() {
+  public void testPolygonal_OuterOnly_Checkerboard() {
     checkPolygonize(true, LINES_CHECKERBOARD,
     new String[]{
         "POLYGON ((10 20, 20 20, 20 10, 10 10, 10 20))"
