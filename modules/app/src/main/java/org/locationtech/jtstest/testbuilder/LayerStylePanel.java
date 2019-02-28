@@ -49,7 +49,7 @@ public class LayerStylePanel extends JPanel {
   private SpinnerNumberModel widthModel;
   private JCheckBox cbFilled;
   private JSlider sliderFill;
-  private JButton btnFillColor;
+  private JPanel btnFillColor;
   
   public LayerStylePanel() {
     
@@ -155,7 +155,20 @@ public class LayerStylePanel extends JPanel {
         }
       }
     });
-
+    btnFillColor = ColorControl.create(this, 
+        "Fill Color",
+        AppColors.GEOM_VIEW_BACKGROUND,
+        new ColorControl.ColorListener() {
+          public void colorChanged(Color clr) {
+            geomStyle().setFillColor(clr);
+            geomStyle().setLineColor(lineColorFromFill(clr));
+            btnFillColor.setBackground(clr);
+            JTSTestBuilder.controller().geometryViewChanged();
+          }
+        }
+       );
+    
+    /*
     btnFillColor = createColorButton(new ColorListener() {
       public void colorChanged(Color clr) {
         geomStyle().setFillColor(clr);
@@ -164,6 +177,7 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
+    */
     addRow("Fill", cbFilled, btnFillColor, sliderFill);
   }
  

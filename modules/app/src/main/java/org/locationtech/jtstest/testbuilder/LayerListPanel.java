@@ -41,6 +41,8 @@ import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
  */
 public class LayerListPanel extends JPanel {
   
+  private static final int TAB_INDEX_0 = 0;
+
   private static final String LBL_LAYER_STYLE = "Layer Style";
   
   JPanel list = new JPanel();
@@ -82,8 +84,10 @@ public class LayerListPanel extends JPanel {
     add(tabPane, BorderLayout.CENTER);
   }
   
-  public void showTabLayerStyle() {
-    SwingUtil.showTab(tabPane, LBL_LAYER_STYLE);
+  public void showTabLayerStyle(String title) {
+    tabPane.setSelectedIndex(TAB_INDEX_0);
+    tabPane.setTitleAt(0, LBL_LAYER_STYLE + " - " + title);
+    //SwingUtil.showTab(tabPane, LBL_LAYER_STYLE);
   }
   
   public void populateList() {
@@ -103,7 +107,7 @@ public class LayerListPanel extends JPanel {
       item.setFocusLayer(false);
     }
     layerItem.setFocusLayer(true);
-    showTabLayerStyle();
+    showTabLayerStyle(layerItem.getLayer().getName());
     lyrStylePanel.setLayer(layerItem.getLayer());
   }
 }

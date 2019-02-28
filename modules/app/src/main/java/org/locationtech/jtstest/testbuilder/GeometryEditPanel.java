@@ -130,6 +130,10 @@ public class GeometryEditPanel extends JPanel
     this.tbModel = model;
   }
 
+  public Color getViewBackground() {
+    return VIEW_backgroundColor;
+  }
+  
   public void setViewBackground(Color clr) {
     VIEW_backgroundColor = clr;
     updateView();

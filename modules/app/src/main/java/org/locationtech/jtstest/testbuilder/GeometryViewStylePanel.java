@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
+import javax.swing.JComponent;
 
 public class GeometryViewStylePanel extends LabelComponentsPanel {
   
@@ -15,7 +16,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
   
   private JCheckBox cbGrid;
 
-  private JButton btnBackground;
+  private JComponent ctlBackgroundClr;
 
   public GeometryViewStylePanel() {
     try {
@@ -39,14 +40,20 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
     });
     addRow("Grid", cbGrid);
     
-    btnBackground = createColorButton(new ColorListener() {
-      public void colorChanged(Color clr) {
-        btnBackground.setBackground(clr);
-        JTSTestBuilder.controller().getGeometryEditPanel().setViewBackground(clr);
-        JTSTestBuilder.controller().geometryViewChanged();
-      }
-    });
-    addRow("Background", btnBackground);
+    ctlBackgroundClr = ColorControl.create(this, 
+        "Background Color",
+        AppColors.GEOM_VIEW_BACKGROUND,
+        new ColorControl.ColorListener() {
+          public void colorChanged(Color clr) {
+            
+            ctlBackgroundClr.setBackground(clr);
+            
+            JTSTestBuilder.controller().getGeometryEditPanel().setViewBackground(clr);
+            JTSTestBuilder.controller().geometryViewChanged();
+          }
+        }
+       );
+    addRow("Background", ctlBackgroundClr);
   }
   
   private Color showColorChooser(String title, Color initColor) {
