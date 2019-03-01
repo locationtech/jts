@@ -417,7 +417,10 @@ implements SpatialIndex, Serializable
       /**
        * There must be some pair of items in the nodes which 
        * are closer than the max distance,
-       * so can terminate with true
+       * so can terminate with true.
+       * 
+       * NOTE: using the Envelope MinMaxDistance would provide a tighter bound,
+       * but not sure how to compute this!
        */
       if (bndPair.maximumDistance() <= maxDistance)
         return true;
@@ -507,8 +510,6 @@ implements SpatialIndex, Serializable
        * So the current minDistance must be the true minimum,
        * and we are done.
        */
-      
-      
       if (currentDistance >= distanceLowerBound){
     	  break;  
       }
@@ -578,3 +579,4 @@ implements SpatialIndex, Serializable
 	  return items;
   }
 }
+ 

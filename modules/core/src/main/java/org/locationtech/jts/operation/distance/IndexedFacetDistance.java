@@ -95,6 +95,7 @@ public class IndexedFacetDistance
   }
   
   private STRtree cachedTree;
+  private Geometry baseGeometry;
   
   /**
    * Creates a new distance-finding instance for a given target {@link Geometry}.
@@ -107,10 +108,11 @@ public class IndexedFacetDistance
    * In the case of {@link Polygonal} inputs, this is equivalent 
    * to computing the distance to the polygon boundaries. 
    * 
-   * @param g1 a Geometry, which may be of any type.
+   * @param geom a Geometry, which may be of any type.
    */
-  public IndexedFacetDistance(Geometry g1) {
-    cachedTree = FacetSequenceTreeBuilder.build(g1);
+  public IndexedFacetDistance(Geometry geom) {
+    this.baseGeometry = geom;
+    cachedTree = FacetSequenceTreeBuilder.build(geom);
   }
 
   /**
@@ -179,6 +181,11 @@ public class IndexedFacetDistance
    * @return true if the geometry lies with the specified distance
    */
   public boolean isWithinDistance(Geometry g, double maxDistance) {
+    // short-ciruit check
+    double envDist = baseGeometry.getEnvelopeInternal().distance(g.getEnvelopeInternal());
+    if (envDist > maxDistance)
+      return false;
+
     STRtree tree2 = FacetSequenceTreeBuilder.build(g);
     return cachedTree.isWithinDistance(tree2, 
         FACET_SEQ_DIST, maxDistance);

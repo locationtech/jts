@@ -70,35 +70,9 @@ class BoundablePair
    */
   public double maximumDistance()
   {
-    return maximumDistance( 
+    return EnvelopeUtil.maximumDistance( 
         (Envelope) boundable1.getBounds(),
         (Envelope) boundable2.getBounds());       
-  }
-  
-  /**
-   * Computes the maximum distance between the points defining two envelopes.
-   * This is equal to the maximum distance between the horizontal and vertical
-   * edges of the envelopes which are closest to the other envelope.
-   * The reason for this is that an envelope defined by points must have at least one
-   * point lying on each edge.
-   * 
-   * @param env1 an envelope
-   * @param env2 an envelope
-   * @return the maximum distance between the points defining the envelopes
-   */
-  private static double maximumDistance(Envelope env1, Envelope env2)
-  {
-    double minx = Math.min(env1.getMinX(), env2.getMinX());
-    double miny = Math.min(env1.getMinY(), env2.getMinY());
-    double maxx = Math.max(env1.getMaxX(), env2.getMaxX());
-    double maxy = Math.max(env1.getMaxY(), env2.getMaxY());
-    return distance(minx, miny, maxx, maxy);
-  }
-  
-  private static double distance(double x1, double y1, double x2, double y2) {
-    double dx = x2 - x1;
-    double dy = y2 - y1;
-    return Math.sqrt(dx * dx + dy * dy);    
   }
   
   /**
