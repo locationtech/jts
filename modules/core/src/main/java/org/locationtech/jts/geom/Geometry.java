@@ -459,6 +459,11 @@ public abstract class Geometry
     return DistanceOp.isWithinDistance(this, geom, distance);
   }
 
+  /**
+   * Tests whether this is a rectangular {@link Polygon}.
+   * 
+   * @return true if the geometry is a rectangle.
+   */
   public boolean isRectangle()
   {
     // Polygon overrides to check for actual rectangle
