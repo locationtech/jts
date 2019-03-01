@@ -83,7 +83,7 @@ public class PackedCoordinateSequenceDoubleTest
 
     // Add additional dimensions
     Coordinate[] coords = createArray(5, Ordinate.createXY());
-    CoordinateSequence seq = new PackedCoordinateSequence.Double(coords, 5, 2);
+    CoordinateSequence seq = new PackedCoordinateSequence.Float(coords, 5, 2);
 
     assertNotNull(seq);
     assertTrue(seq.size() == 5);
@@ -97,7 +97,7 @@ public class PackedCoordinateSequenceDoubleTest
 
     // remove m-dimension
     coords = createArray(5, Ordinate.createXYZM());
-    seq = new PackedCoordinateSequence.Double(coords, 3, 0);
+    seq = new PackedCoordinateSequence.Float(coords, 3, 0);
 
     assertNotNull(seq);
     assertTrue(seq.size() == 5);
@@ -108,7 +108,7 @@ public class PackedCoordinateSequenceDoubleTest
 
     // remove z-dimension
     coords = createArray(5, Ordinate.createXYZM());
-    seq = new PackedCoordinateSequence.Double(coords, 3, 1);
+    seq = new PackedCoordinateSequence.Float(coords, 3, 1);
 
     assertNotNull(seq);
     assertTrue(seq.size() == 5);
@@ -116,6 +116,33 @@ public class PackedCoordinateSequenceDoubleTest
     assertTrue(seq.getMeasures() == 1);
 
     assertEquals(coords[2].getM(), seq.getM(2));
+
+    // remove z-dimension, add measures
+    coords = createArray(5, Ordinate.createXYZM());
+    seq = new PackedCoordinateSequence.Float(coords, 5, 3);
+
+    assertNotNull(seq);
+    assertTrue(seq.size() == 5);
+    assertTrue(seq.getDimension() == 5);
+    assertTrue(seq.getMeasures() == 3);
+
+    assertEquals(coords[2].getM(), seq.getM(2));
+
+    // add z-dimension, and additional measures
+    double initZ = PackedCoordinateSequence.getInitialZValue();
+    PackedCoordinateSequence.setInitialZValue(Coordinate.NULL_ORDINATE);
+
+    coords = createArray(5, Ordinate.createXYM());
+    seq = new PackedCoordinateSequence.Float(coords, 6, 3);
+
+    assertNotNull(seq);
+    assertTrue(seq.size() == 5);
+    assertTrue(seq.getDimension() == 6);
+    assertTrue(seq.getMeasures() == 3);
+
+    assertEquals(coords[2].getZ(), seq.getZ(2));
+    assertEquals(coords[2].getM(), seq.getM(2));
+    PackedCoordinateSequence.setInitialZValue(initZ);
   }
 
 }

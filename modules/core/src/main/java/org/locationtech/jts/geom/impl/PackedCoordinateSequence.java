@@ -390,6 +390,11 @@ public abstract class PackedCoordinateSequence
       boolean hasZM = this.hasZ() & this.hasM();
 
       int skipJ = Math.max(0, dimension - coordDimension);
+      if (skipJ > 0) {
+        if (removeZ) skipJ +=1;
+        else if (addZ && coordMeasures>0) skipJ-=1;
+      }
+
       coords = new double[coordinates.length * this.dimension];
       for (int i = 0, j = 0; i < coordinates.length; i++, j += skipJ) {
         coords[j++] = coordinates[i].x;
@@ -397,14 +402,15 @@ public abstract class PackedCoordinateSequence
         if (coordDimension == 2 || dimension == 2) continue;
         if (addZ) { // increment counter
           j++;
-        } else if (!removeZ) { // don't skip if z is to be preserved
+        }
+        if (!removeZ) { // don't skip if z is to be preserved
           coords[j++] = coordinates[i].getOrdinate(2); // Z or M
         }
         if (coordDimension == 3 || j%dimension == 0) continue;
         coords[j++] = coordinates[i].getOrdinate(3); // M
       }
 
-      if (!hasZ)
+      if (addZ)
         initializeZValues();
     }
     /**
@@ -457,7 +463,7 @@ public abstract class PackedCoordinateSequence
     public Coordinate getCoordinateInternal(int i) {
       double x = coords[i * dimension];
       double y = coords[i * dimension + 1];
-      if (dimension == 2/* && measures == 0*/) {
+      if (dimension == 2) {
         return new CoordinateXY(x, y);
       } else if (dimension == 3 && measures == 0) {
         double z = coords[i * dimension + 2];
@@ -631,6 +637,11 @@ public abstract class PackedCoordinateSequence
       boolean removeZ = hasZ & !this.hasZ();
 
       int skipJ = Math.max(0, dimension - coordDimension);
+      if (skipJ > 0) {
+        if (removeZ) skipJ +=1;
+        else if (addZ && coordMeasures>0) skipJ-=1;
+      }
+
       coords = new float[coordinates.length * this.dimension];
       for (int i = 0, j = 0; i < coordinates.length; i++, j += skipJ) {
         coords[j++] = (float)coordinates[i].x;
@@ -638,14 +649,15 @@ public abstract class PackedCoordinateSequence
         if (coordDimension == 2 || dimension == 2) continue;
         if (addZ) { // increment counter
           j++;
-        } else if (!removeZ) { // don't skip if z is to be preserved
+        }
+        if (!removeZ) { // don't skip if z is to be preserved
           coords[j++] = (float)coordinates[i].getOrdinate(2); // Z or M
         }
         if (coordDimension == 3 || j%dimension == 0) continue;
         coords[j++] = (float)coordinates[i].getOrdinate(3); // M
       }
 
-      if (!hasZ)
+      if (addZ)
         initializeZValues();
     }
 
@@ -690,7 +702,7 @@ public abstract class PackedCoordinateSequence
     public Coordinate getCoordinateInternal(int i) {
       double x = coords[i * dimension];
       double y = coords[i * dimension + 1];
-      if (dimension == 2 && measures == 0) {
+      if (dimension == 2) {
         return new CoordinateXY(x, y);
       } else if (dimension == 3 && measures == 0) {
         double z = coords[i * dimension + 2];
