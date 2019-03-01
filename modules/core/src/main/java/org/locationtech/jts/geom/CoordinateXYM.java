@@ -32,18 +32,20 @@ public class CoordinateXYM extends Coordinate {
   /** CoordinateXYM does not support Z values. */
   public static final int Z = -1;
 
+  /** Default value for {@link #m} / #getM() when this class is created by the default constructor */
+  static final double DEFAULT_MEASURE_VALUE = 0d;
   /**
    * Standard ordinate index value for M in XYM sequences.
    *
    * <p>This constant assumes XYM coordinate sequence definition.  Check this assumption using
-   * {@link #getDimension()} and {@link #getMeasures()} before use.
+   * {@link CoordinateSequence#getDimension()} and {@link CoordinateSequence#getMeasures()} before use.
    */
   public static final int M = 2;
 
   /** Default constructor */
   public CoordinateXYM() {
     super();
-    this.m = 0.0;
+    this.m = DEFAULT_MEASURE_VALUE;
   }
 
   /**

@@ -51,11 +51,17 @@ public class PackedCoordinateSequenceFactory implements
   public static final PackedCoordinateSequenceFactory FLOAT_FACTORY =
       new PackedCoordinateSequenceFactory(FLOAT);
 
-  private static final int DEFAULT_MEASURES = 0;
+  /**
+   *@Deprecated Use {@link PackedCoordinateSequence#DEFAULT_MEASURES}!
+   */
+  private static final int DEFAULT_MEASURES = PackedCoordinateSequence.DEFAULT_MEASURES;
 
-  private static final int DEFAULT_DIMENSION = 3;
+  /**
+   *@Deprecated Use {@link PackedCoordinateSequence#DEFAULT_DIMENSION}!
+   */
+  private static final int DEFAULT_DIMENSION = PackedCoordinateSequence.DEFAULT_DIMENSION;
 
-  private int type = DOUBLE;
+  private final int type;
 
   /**
    * Creates a new PackedCoordinateSequenceFactory
@@ -72,7 +78,11 @@ public class PackedCoordinateSequenceFactory implements
    * {@linkplain PackedCoordinateSequenceFactory#FLOAT}or
    * {@linkplain PackedCoordinateSequenceFactory#DOUBLE}
    */
-  public PackedCoordinateSequenceFactory(int type){
+  public PackedCoordinateSequenceFactory(int type)
+  {
+    if (!(type == DOUBLE || type == FLOAT))
+      throw new IllegalArgumentException("Unknown subtype of PackedCoordinateSequenceFactory: " + type);
+
     this.type = type;
   }
 
@@ -91,8 +101,8 @@ public class PackedCoordinateSequenceFactory implements
    * @see CoordinateSequenceFactory#create(Coordinate[])
    */
   public CoordinateSequence create(Coordinate[] coordinates) {
-    int dimension = DEFAULT_DIMENSION;
-    int measures = DEFAULT_MEASURES;
+    int dimension = PackedCoordinateSequence.DEFAULT_DIMENSION;
+    int measures = PackedCoordinateSequence.DEFAULT_MEASURES;
     if (coordinates != null && coordinates.length > 0 && coordinates[0] != null) {
       Coordinate first = coordinates[0];
       dimension = Coordinates.dimension(first);
@@ -109,12 +119,10 @@ public class PackedCoordinateSequenceFactory implements
    * @see CoordinateSequenceFactory#create(CoordinateSequence)
    */
   public CoordinateSequence create(CoordinateSequence coordSeq) {
-    int dimension = coordSeq.getDimension();
-    int measures = coordSeq.getMeasures();
     if (type == DOUBLE) {
-      return new PackedCoordinateSequence.Double(coordSeq.toCoordinateArray(), dimension, measures);
+      return new PackedCoordinateSequence.Double(coordSeq);
     } else {
-      return new PackedCoordinateSequence.Float(coordSeq.toCoordinateArray(), dimension, measures);
+      return new PackedCoordinateSequence.Float(coordSeq);
     }
   }
 

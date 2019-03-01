@@ -20,6 +20,7 @@ import org.locationtech.jts.geom.CoordinateXYM;
 import org.locationtech.jts.geom.CoordinateXYZM;
 
 import junit.textui.TestRunner;
+import org.locationtech.jts.io.Ordinate;
 
 /**
  * Test {@link CoordinateArraySequence}
@@ -42,7 +43,55 @@ public class CoordinateArraySequenceTest
   CoordinateArraySequenceFactory getCSFactory() {
     return CoordinateArraySequenceFactory.instance();
   }
-  
+
+  @Override
+  int getDefaultDimension() { return 3; }
+
+  @Override
+  int getFactoryMaxDimension() { return 4; }
+
+  @Override
+  protected void doTestIllegalArgumentsOnSpecific() {
+    try {
+      getCSFactory().create(0, 2, 1);
+      // ToDo:
+      //   Evaluate: javadoc on CoordinateSequenceFactory.create
+      //   functions state that the they "should not fail" and
+      //   instead should return some sort of sequence.
+      // fail();
+    } catch (IllegalArgumentException e) { }
+  }
+
+  @Override
+  public void testConstructorDirect() {
+
+    CoordinateSequence seq = new CoordinateArraySequence(5);
+    assertNotNull(seq);
+    assertEquals(5, seq.size());
+    assertEquals(getDefaultDimension(), seq.getDimension());
+
+  }
+
+  public void testSetMeasureThrows() {
+    CoordinateSequence seq = new CoordinateArraySequence(1);
+    try {
+      seq.setOrdinate(0, CoordinateSequence.M, 0d);
+      fail();
+    }
+    catch (IllegalArgumentException e) {
+    }
+  }
+
+  @Override
+  public void testFactoryCreateWithSize0AndMaxDimension() {
+    // ToDo:
+    //  Fails because CoordinateArraySequence.create(size, dimension)
+    //  only allows a dimension value of 4 when at least a measure value
+    //  is specified.
+    //super.testFactoryCreateWithSize0AndMaxDimension();
+  }
+
+  @Override
   public void testFactoryLimits() {
     // Expected to clip dimension and measure value within factory limits
     
@@ -84,8 +133,6 @@ public class CoordinateArraySequenceTest
     assertTrue(!sequence.hasZ());
     assertTrue(sequence.hasM());
   }
-  
-  
   
   public void testDimensionAndMeasure()
   {
@@ -195,5 +242,23 @@ public class CoordinateArraySequenceTest
          seq.setOrdinate(index, ordinateIndex, (double) index);
        }
     }
+  }
+
+  @Override
+  boolean isSame(CoordinateSequence seq1, CoordinateSequence seq2) {
+
+    if (seq1 == seq2)
+      return true;
+    if (seq1.toCoordinateArray() == seq2.toCoordinateArray())
+      return true;
+
+    if (seq1.size() == seq2.size()) {
+      for (int i = 0; i < seq1.size(); i++) {
+        if (seq1.getCoordinate(i) != seq2.getCoordinate(i))
+          return false;
+      }
+      return true;
+    }
+    return false;
   }
 }

@@ -24,7 +24,7 @@ public class CoordinateXYZM extends Coordinate {
   /** Default constructor */
   public CoordinateXYZM() {
     super();
-    this.m = 0.0;
+    this.m = CoordinateXYM.DEFAULT_MEASURE_VALUE;
   }
 
   /**
