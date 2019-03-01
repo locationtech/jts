@@ -33,25 +33,41 @@ public abstract class AbstractDistanceTest extends GeometryTestCase {
   public void testDisjointCollinearSegments() throws Exception {
     Geometry g1 = reader.read("LINESTRING (0.0 0.0, 9.9 1.4)");
     Geometry g2 = reader.read("LINESTRING (11.88 1.68, 21.78 3.08)");
-    assertEquals(2.23606, g1.distance(g2), 0.0001);
+    
+    double dist = distance(g1, g2);
+    assertEquals(2.23606, dist, 0.0001);
+    
+    assertTrue( ! isWithinDistance(g1, g2, 2) );
+    assertTrue( isWithinDistance(g1, g2, 3) );
+
   }
 
-  public void testEverything() throws Exception {
-    Geometry g1 = reader.read("POLYGON ((40 320, 200 380, 320 80, 40 40, 40 320),  (180 280, 80 280, 100 100, 220 140, 180 280))");
-    Geometry g2 = reader.read("POLYGON ((160 240, 120 240, 120 160, 160 140, 160 240))");
-    assertEquals(18.97366596, g1.distance(g2), 1E-5);
+  public void testEverything() {
+    Geometry g1 = read("POLYGON ((40 320, 200 380, 320 80, 40 40, 40 320),  (180 280, 80 280, 100 100, 220 140, 180 280))");
+    Geometry g2 = read("POLYGON ((160 240, 120 240, 120 160, 160 140, 160 240))");
+    assertEquals(18.97366596, distance(g1, g2), 1E-5);
+    
+    assertTrue( ! isWithinDistance(g1, g2, 0) );
+    assertTrue( ! isWithinDistance(g1, g2, 10) );
+    assertTrue( isWithinDistance(g1, g2, 20) );
 
-    g2 = reader.read("POLYGON ((160 240, 120 240, 120 160, 180 100, 160 240))");
-    assertEquals(0.0, g1.distance(g2), 1E-5);
+    Geometry g3 = read("POLYGON ((160 240, 120 240, 120 160, 180 100, 160 240))");
+    assertEquals(0.0, distance(g1, g3), 1E-5);
+    
+    assertTrue( isWithinDistance(g1, g3, 0.0) );
+  }
+ 
+  public void testLinesIdentical() {
+    LineString l1 = (LineString) read("LINESTRING(10 10, 20 20, 30 40)");
+    assertEquals(0.0, distance(l1, l1), 1E-5);
+    
+    assertTrue( isWithinDistance(l1, l1, 0) );
 
-    LineString l1 = (LineString) reader.read("LINESTRING(10 10, 20 20, 30 40)");
-    LineString l2 = (LineString) reader.read("LINESTRING(10 10, 20 20, 30 40)");
-    assertEquals(0.0, l1.distance(l2), 1E-5);
   }
   
-  public void testEmpty() throws Exception {
-    Geometry g1 = reader.read("POINT (0 0)");
-    Geometry g2 = reader.read("POLYGON EMPTY");
+  public void testEmpty() {
+    Geometry g1 = read("POINT (0 0)");
+    Geometry g2 = read("POLYGON EMPTY");
     assertEquals(0.0, g1.distance(g2), 0.0);
   }
 
@@ -92,6 +108,10 @@ public abstract class AbstractDistanceTest extends GeometryTestCase {
     assertEquals(p1.x, nearestPoints[1].x, TOLERANCE);
     assertEquals(p1.y, nearestPoints[1].y, TOLERANCE);    
   }  
+
+  protected abstract double distance(Geometry g1, Geometry g2);
   
+  protected abstract boolean isWithinDistance(Geometry g1, Geometry g2, double distance);
+
   protected abstract Coordinate[] nearestPoints(Geometry g1, Geometry g2);
 }
