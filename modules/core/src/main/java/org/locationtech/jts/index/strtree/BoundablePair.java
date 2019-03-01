@@ -14,6 +14,7 @@ package org.locationtech.jts.index.strtree;
 import java.util.Iterator;
 import java.util.List;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.util.PriorityQueue;
 
@@ -60,6 +61,19 @@ class BoundablePair
     if (i == 0) return boundable1;
     return boundable2;
   }
+
+  /**
+   * Computes the maximum distance between any
+   * two items in the pair of nodes.
+   * 
+   * @return the maximum distance between items in the pair
+   */
+  public double maximumDistance()
+  {
+    return EnvelopeUtil.maximumDistance( 
+        (Envelope) boundable1.getBounds(),
+        (Envelope) boundable2.getBounds());       
+  }
   
   /**
    * Computes the distance between the {@link Boundable}s in this pair.
@@ -81,36 +95,6 @@ class BoundablePair
     return ((Envelope) boundable1.getBounds()).distance(
         ((Envelope) boundable2.getBounds()));
   }
-
-  
-  /*
-  public double getMaximumDistance()
-  {
-  	if (maxDistance < 0.0)
-  		maxDistance = maxDistance();
-  	return maxDistance;
-  }
-  */
-  
-  /*
-  private double maxDistance()
-  {
-    return maximumDistance( 
-        (Envelope) boundable1.getBounds(),
-        (Envelope) boundable2.getBounds());      	
-  }
-  
-  private static double maximumDistance(Envelope env1, Envelope env2)
-  {
-  	double minx = Math.min(env1.getMinX(), env2.getMinX());
-  	double miny = Math.min(env1.getMinY(), env2.getMinY());
-  	double maxx = Math.max(env1.getMaxX(), env2.getMaxX());
-  	double maxy = Math.max(env1.getMaxY(), env2.getMaxY());
-    Coordinate min = new Coordinate(minx, miny);
-    Coordinate max = new Coordinate(maxx, maxy);
-    return min.distance(max);
-  }
-  */
   
   /**
    * Gets the minimum possible distance between the Boundables in

@@ -91,7 +91,7 @@ public class TestPerfDistanceLinesPoints
     Geometry target = createDiagonalCircles(EXTENT, NUM_TARGET_ITEMS);
     Geometry[] pts = createPoints(target.getEnvelopeInternal(), num);
     
-  	/*
+    /*
     Geometry target = loadData("C:\\data\\martin\\proj\\jts\\testing\\distance\\bc_coast.wkt");
     Envelope bcEnv_Albers = new Envelope(-45838, 1882064, 255756, 1733287);
     Geometry[] pts = createPoints(bcEnv_Albers, num);
@@ -106,14 +106,22 @@ public class TestPerfDistanceLinesPoints
     Envelope bcEnv_Albers = new Envelope(-45838, 1882064, 255756, 1733287);
     Geometry[] pts = createPoints(bcEnv_Albers, num);
     
-    test(pts, target);
+    test(pts, target, true);
   }
   
   public void test(Geometry[] pts, Geometry target)
   {
-    if (verbose) System.out.println("Query points = " + pts.length 
+    if (verbose) {
+      System.out.println();
+      System.out.println("Query points = " + pts.length 
         + "     Target points = " + target.getNumPoints());
-//    if (! verbose) System.out.print(num + ", ");
+    }
+    test(pts, target, true);
+    test(pts, target, false);    
+  }
+  
+  public void test(Geometry[] pts, Geometry target, boolean useFastDist)
+  {
     
     Stopwatch sw = new Stopwatch();
     double dist = 0.0;
@@ -122,10 +130,10 @@ public class TestPerfDistanceLinesPoints
     }
     if (! verbose) System.out.println(sw.getTimeString());
     if (verbose) {
-    	String name = USE_INDEXED_DIST ? "IndexedFacetDistance" : "Distance";
+    	String name = useFastDist ? "IndexedFacetDistance" : "Distance";
       System.out.println(name + " - Run time: " + sw.getTimeString());
       //System.out.println("       (Distance = " + dist + ")\n");
-      System.out.println();
+      //System.out.println();
     }
   }
 

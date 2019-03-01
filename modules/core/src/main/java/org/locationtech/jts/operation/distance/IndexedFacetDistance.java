@@ -50,9 +50,10 @@ import org.locationtech.jts.index.strtree.STRtree;
  */
 public class IndexedFacetDistance 
 {
+  private static final FacetSequenceDistance FACET_SEQ_DIST = new FacetSequenceDistance();
+
   /**
-   * Computes the distance between two geometries using
-   * the indexed approach.
+   * Computes the distance between facets of two geometries.
    * <p>
    * For geometries with many segments or points, 
    * this can be faster than using a simple distance
@@ -60,7 +61,7 @@ public class IndexedFacetDistance
    * 
    * @param g1 a geometry
    * @param g2 a geometry
-   * @return the distance between the two geometries
+   * @return the distance between facets of the geometries
    */
   public static double distance(Geometry g1, Geometry g2)
   {
@@ -69,11 +70,24 @@ public class IndexedFacetDistance
   }
   
   /**
-   * Computes the nearest points on two geometries.   
+   * Tests whether the facets of two geometries lie within a given distance.
    * 
    * @param g1 a geometry
    * @param g2 a geometry
-   * @return the nearest points on the two geometries
+   * @param distance the distance limit
+   * @return true if two facets lie with the given distance
+   */
+  public static boolean isWithinDistance(Geometry g1, Geometry g2, double distance) {
+    IndexedFacetDistance dist = new IndexedFacetDistance(g1);
+    return dist.isWithinDistance(g2, distance);
+  }
+  
+  /**
+   * Computes the nearest points of the facets of two geometries.   
+   * 
+   * @param g1 a geometry
+   * @param g2 a geometry
+   * @return the nearest points on the facets of the geometries
    */
   public static Coordinate[] nearestPoints(Geometry g1, Geometry g2) {
     IndexedFacetDistance dist = new IndexedFacetDistance(g1);
@@ -81,6 +95,7 @@ public class IndexedFacetDistance
   }
   
   private STRtree cachedTree;
+  private Geometry baseGeometry;
   
   /**
    * Creates a new distance-finding instance for a given target {@link Geometry}.
@@ -93,10 +108,11 @@ public class IndexedFacetDistance
    * In the case of {@link Polygonal} inputs, this is equivalent 
    * to computing the distance to the polygon boundaries. 
    * 
-   * @param g1 a Geometry, which may be of any type.
+   * @param geom a Geometry, which may be of any type.
    */
-  public IndexedFacetDistance(Geometry g1) {
-    cachedTree = FacetSequenceTreeBuilder.build(g1);
+  public IndexedFacetDistance(Geometry geom) {
+    this.baseGeometry = geom;
+    cachedTree = FacetSequenceTreeBuilder.build(geom);
   }
 
   /**
@@ -111,7 +127,7 @@ public class IndexedFacetDistance
   {
     STRtree tree2 = FacetSequenceTreeBuilder.build(g);
     Object[] obj = cachedTree.nearestNeighbour(tree2, 
-        new FacetSequenceDistance());
+        FACET_SEQ_DIST);
     FacetSequence fs1 = (FacetSequence) obj[0];
     FacetSequence fs2 = (FacetSequence) obj[1];
     return fs1.distance(fs2);
@@ -128,7 +144,7 @@ public class IndexedFacetDistance
   {
     STRtree tree2 = FacetSequenceTreeBuilder.build(g);
     Object[] obj = cachedTree.nearestNeighbour(tree2, 
-        new FacetSequenceDistance());
+        FACET_SEQ_DIST);
     FacetSequence fs1 = (FacetSequence) obj[0];
     FacetSequence fs2 = (FacetSequence) obj[1];
     return fs1.nearestLocations(fs2);
@@ -143,55 +159,38 @@ public class IndexedFacetDistance
    */
   public Coordinate[] nearestPoints(Geometry g) {
     GeometryLocation[] minDistanceLocation = nearestLocations(g);
-    Coordinate[] nearestPts = new Coordinate[] {
-        minDistanceLocation[0].getCoordinate(),
-      minDistanceLocation[1].getCoordinate() };
+    Coordinate[] nearestPts = toPoints(minDistanceLocation);
     return nearestPts;
   }
-  
-  /**
-   * Computes the distance from the base geometry to 
-   * the given geometry, up to and including a given 
-   * maximum distance.
-   * 
-   * @param g the geometry to compute the distance to
-   * @param maximumDistance the maximum distance to compute.
-   * 
-   * @return the computed distance,
-   *    or <tt>maximumDistance</tt> if the true distance is determined to be greater
-   */
-  // TODO: implement this
-  /*
-  public double getDistanceWithin(Geometry g, double maximumDistance)
-  {
-    STRtree tree2 = FacetSequenceTreeBuilder.build(g);
-    Object[] obj = cachedTree.nearestNeighbours(tree2, 
-        new FacetSequenceDistance());
-    return facetDistance(obj);
+
+  private static Coordinate[] toPoints(GeometryLocation[] locations) {
+    if (locations == null) 
+      return null;
+    Coordinate[] nearestPts = new Coordinate[] {
+        locations[0].getCoordinate(),
+      locations[1].getCoordinate() };
+    return nearestPts;
   }
-  */
-  
 
   /**
    * Tests whether the base geometry lies within
    * a specified distance of the given geometry.
    * 
-//   * @param g the geometry to test
-//   * @param maximumDistance the maximum distance to test
-//   * @return true if the geometry lies with the specified distance
+   * @param g the geometry to test
+   * @param maxDistance the maximum distance to test
+   * @return true if the geometry lies with the specified distance
    */
-  // TODO: implement this
-  /*
-  public boolean isWithinDistance(Geometry g, double maximumDistance)
-  {
-    STRtree tree2 = FacetSequenceTreeBuilder.build(g);
-    double dist = findMinDistance(cachedTree.getRoot(), tree2.getRoot(), maximumDistance);
-    if (dist <= maximumDistance)
+  public boolean isWithinDistance(Geometry g, double maxDistance) {
+    // short-ciruit check
+    double envDist = baseGeometry.getEnvelopeInternal().distance(g.getEnvelopeInternal());
+    if (envDist > maxDistance)
       return false;
-    return true;
-  }
-  */
-  
+
+    STRtree tree2 = FacetSequenceTreeBuilder.build(g);
+    return cachedTree.isWithinDistance(tree2, 
+        FACET_SEQ_DIST, maxDistance);
+  }  
+ 
   private static class FacetSequenceDistance
   implements ItemDistance
   {

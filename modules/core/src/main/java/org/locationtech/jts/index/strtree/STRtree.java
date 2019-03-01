@@ -263,33 +263,7 @@ implements SpatialIndex, Serializable
     BoundablePair bp = new BoundablePair(this.getRoot(), this.getRoot(), itemDist);
     return nearestNeighbour(bp);
   }
-  /**
-   * Finds k items in this tree which are the top k nearest neighbors to the given {@code item}, 
-   * using {@code itemDist} as the distance metric.
-   * A Branch-and-Bound tree traversal algorithm is used
-   * to provide an efficient search.
-   * This method implements the KNN algorithm described in the following paper:
-   * <p>
-   * Roussopoulos, Nick, Stephen Kelley, and Frédéric Vincent. "Nearest neighbor queries."
-   * ACM sigmod record. Vol. 24. No. 2. ACM, 1995.
-   * <p>
-   * The query {@code item} does <b>not</b> have to be 
-   * contained in the tree, but it does 
-   * have to be compatible with the {@code itemDist} 
-   * distance metric. 
-   * 
-   * @param env the envelope of the query item
-   * @param item the item to find the nearest neighbour of
-   * @param itemDist a distance metric applicable to the items in this tree and the query item
-   * @param k the K nearest items in kNearestNeighbour
-   * @return the K nearest items in this tree
-   */
-  public Object[] nearestNeighbour(Envelope env, Object item, ItemDistance itemDist,int k)
-  {
-    Boundable bnd = new ItemBoundable(env, item);
-    BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
-    return nearestNeighbour(bp,k);
-  }
+
   /**
    * Finds the item in this tree which is nearest to the given {@link Object}, 
    * using {@link ItemDistance} as the distance metric.
@@ -335,21 +309,11 @@ implements SpatialIndex, Serializable
   
   private Object[] nearestNeighbour(BoundablePair initBndPair) 
   {
-    return nearestNeighbour(initBndPair, Double.POSITIVE_INFINITY);
-  }
-  private Object[] nearestNeighbour(BoundablePair initBndPair, int k) 
-  {
-    return nearestNeighbour(initBndPair, Double.POSITIVE_INFINITY,k);
-  }
-  private Object[] nearestNeighbour(BoundablePair initBndPair, double maxDistance) 
-  {
-    double distanceLowerBound = maxDistance;
+    double distanceLowerBound = Double.POSITIVE_INFINITY;
     BoundablePair minPair = null;
     
-    // initialize internal structures
+    // initialize search queue
     PriorityQueue priQ = new PriorityQueue();
-
-    // initialize queue
     priQ.add(initBndPair);
 
     while (! priQ.isEmpty() && distanceLowerBound > 0.0) {
@@ -358,8 +322,8 @@ implements SpatialIndex, Serializable
       double currentDistance = bndPair.getDistance();
       
       /**
-       * If the distance for the first node in the queue
-       * is >= the current minimum distance, all other nodes
+       * If the distance for the first pair in the queue
+       * is >= current minimum distance, other nodes
        * in the queue must also have a greater distance.
        * So the current minDistance must be the true minimum,
        * and we are done.
@@ -380,31 +344,150 @@ implements SpatialIndex, Serializable
         minPair = bndPair;
       }
       else {
-        // testing - does allowing a tolerance improve speed?
-        // Ans: by only about 10% - not enough to matter
-        /*
-        double maxDist = bndPair.getMaximumDistance();
-        if (maxDist * .99 < lastComputedDistance) 
-          return;
-        //*/
-
         /**
-         * Otherwise, expand one side of the pair,
-         * (the choice of which side to expand is heuristically determined) 
-         * and insert the new expanded pairs into the queue
+         * Otherwise, expand one side of the pair, 
+         * and insert the expanded pairs into the queue.
+         * The choice of which side to expand is determined heuristically.
          */
         bndPair.expandToQueue(priQ, distanceLowerBound);
       }
     }
+    if (minPair == null) 
+      return null;
     // done - return items with min distance
     return new Object[] {    
           ((ItemBoundable) minPair.getBoundable(0)).getItem(),
           ((ItemBoundable) minPair.getBoundable(1)).getItem()
       };
   }
-  private Object[] nearestNeighbour(BoundablePair initBndPair, double maxDistance, int k) 
+  
+  /**
+   * Tests whether some two items from this tree and another tree
+   * lie within a given distance.
+   * {@link ItemDistance} is used as the distance metric.
+   * A Branch-and-Bound tree traversal algorithm is used
+   * to provide an efficient search.
+   * 
+   * @param tree another tree
+   * @param itemDist a distance metric applicable to the items in the trees
+   * @param maxDistance the distance limit for the search
+   * @return true if there are items within the distance
+   */
+  public boolean isWithinDistance(STRtree tree, ItemDistance itemDist, double maxDistance)
   {
-	double distanceLowerBound = maxDistance;
+    BoundablePair bp = new BoundablePair(this.getRoot(), tree.getRoot(), itemDist);
+    return isWithinDistance(bp, maxDistance);
+  }
+  
+  /**
+   * Performs a withinDistance search on the tree node pairs.
+   * This is a different search algorithm to nearest neighbour.
+   * It can utilize the {@link BoundablePair#maximumDistance()} between
+   * tree nodes to confirm if two internal nodes must
+   * have items closer than the maxDistance,
+   * and short-circuit the search.
+   * 
+   * @param initBndPair the initial pair containing the tree root nodes
+   * @param maxDistance the maximum distance to search for
+   * @return true if two items lie within the given distance
+   */
+  private boolean isWithinDistance(BoundablePair initBndPair, double maxDistance) 
+  {
+    double distanceUpperBound = Double.POSITIVE_INFINITY;
+    
+    // initialize search queue
+    PriorityQueue priQ = new PriorityQueue();
+    priQ.add(initBndPair);
+
+    while (! priQ.isEmpty()) {
+      // pop head of queue and expand one side of pair
+      BoundablePair bndPair = (BoundablePair) priQ.poll();
+      double currentDistance = bndPair.getDistance();
+      
+      /**
+       * If the distance for the first pair in the queue
+       * is >= maxDistance, other pairs
+       * in the queue must also have a greater distance.
+       * So can conclude no items are within the distance
+       * and terminate with false
+       */
+      if (currentDistance > maxDistance) 
+        return false;  
+
+      /**
+       * There must be some pair of items in the nodes which 
+       * are closer than the max distance,
+       * so can terminate with true.
+       * 
+       * NOTE: using the Envelope MinMaxDistance would provide a tighter bound,
+       * but not sure how to compute this!
+       */
+      if (bndPair.maximumDistance() <= maxDistance)
+        return true;
+      /**
+       * If the pair members are leaves
+       * then their distance is an upper bound.
+       * Update the distanceUpperBound to reflect this
+       */
+      if (bndPair.isLeaves()) {
+        // assert: currentDistance < minimumDistanceFound
+        distanceUpperBound = currentDistance;
+        
+        /**
+         * Current pair is closer than maxDistance
+         * so can terminate with true
+         */
+        if (distanceUpperBound <= maxDistance)
+          return true;
+      }
+      else {
+        /**
+         * Otherwise, expand one side of the pair, 
+         * and insert the expanded pairs into the queue.
+         * The choice of which side to expand is determined heuristically.
+         */
+        bndPair.expandToQueue(priQ, distanceUpperBound);
+      }
+    }
+    return false;
+  }
+ 
+  /**
+   * Finds k items in this tree which are the top k nearest neighbors to the given {@code item}, 
+   * using {@code itemDist} as the distance metric.
+   * A Branch-and-Bound tree traversal algorithm is used
+   * to provide an efficient search.
+   * This method implements the KNN algorithm described in the following paper:
+   * <p>
+   * Roussopoulos, Nick, Stephen Kelley, and Frédéric Vincent. "Nearest neighbor queries."
+   * ACM sigmod record. Vol. 24. No. 2. ACM, 1995.
+   * <p>
+   * The query {@code item} does <b>not</b> have to be 
+   * contained in the tree, but it does 
+   * have to be compatible with the {@code itemDist} 
+   * distance metric. 
+   * 
+   * @param env the envelope of the query item
+   * @param item the item to find the nearest neighbour of
+   * @param itemDist a distance metric applicable to the items in this tree and the query item
+   * @param k the K nearest items in kNearestNeighbour
+   * @return the K nearest items in this tree
+   */
+  public Object[] nearestNeighbour(Envelope env, Object item, ItemDistance itemDist,int k)
+  {
+    Boundable bnd = new ItemBoundable(env, item);
+    BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
+    return nearestNeighbourK(bp,k);
+  }
+
+  private Object[] nearestNeighbourK(BoundablePair initBndPair, int k) 
+  {
+    return nearestNeighbourK(initBndPair, Double.POSITIVE_INFINITY,k);
+  }
+  
+  private Object[] nearestNeighbourK(BoundablePair initBndPair, double maxDistance, int k) 
+  {
+    double distanceLowerBound = maxDistance;
     
     // initialize internal structures
     PriorityQueue priQ = new PriorityQueue();
@@ -427,8 +510,6 @@ implements SpatialIndex, Serializable
        * So the current minDistance must be the true minimum,
        * and we are done.
        */
-      
-      
       if (currentDistance >= distanceLowerBound){
     	  break;  
       }
@@ -498,3 +579,4 @@ implements SpatialIndex, Serializable
 	  return items;
   }
 }
+ 

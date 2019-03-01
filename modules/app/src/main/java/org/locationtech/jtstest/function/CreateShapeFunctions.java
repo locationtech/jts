@@ -75,37 +75,61 @@ public class CreateShapeFunctions {
 		return textGeom;
 	}
 	
-	public static Geometry grid(Geometry g, int nCells)
-	{
-		Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
-		GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
-		
-		int nCellsOnSideY = (int) Math.sqrt(nCells);
-		int nCellsOnSideX = nCells / nCellsOnSideY;
-		
-		// alternate: make square cells, with varying grid width/height
-		//double extent = env.minExtent();
-		//double nCellsOnSide = Math.max(nCellsOnSideY, nCellsOnSideX);
-		
-		double cellSizeX = env.getWidth() / nCellsOnSideX;
-		double cellSizeY = env.getHeight() / nCellsOnSideY;
-		
-		List geoms = new ArrayList(); 
+  public static Geometry grid(Geometry g, int nCells)
+  {
+    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
+    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
+    
+    int nCellsOnSideY = (int) Math.sqrt(nCells);
+    int nCellsOnSideX = nCells / nCellsOnSideY;
+    
+    // alternate: make square cells, with varying grid width/height
+    //double extent = env.minExtent();
+    //double nCellsOnSide = Math.max(nCellsOnSideY, nCellsOnSideX);
+    
+    double cellSizeX = env.getWidth() / nCellsOnSideX;
+    double cellSizeY = env.getHeight() / nCellsOnSideY;
+    
+    List geoms = new ArrayList(); 
 
-		for (int i = 0; i < nCellsOnSideX; i++) {
-			for (int j = 0; j < nCellsOnSideY; j++) {
-				double x = env.getMinX() + i * cellSizeX;
-				double y = env.getMinY() + j * cellSizeY;
-				double x2 = env.getMinX() + (i + 1) * cellSizeX;
-				double y2 = env.getMinY() + (j + 1) * cellSizeY;
-			
-				Envelope cellEnv = new Envelope(x, x2, y, y2);
-				geoms.add(geomFact.toGeometry(cellEnv));
-			}
-		}
-		return geomFact.buildGeometry(geoms);
-	}
-	
+    for (int i = 0; i < nCellsOnSideX; i++) {
+      for (int j = 0; j < nCellsOnSideY; j++) {
+        double x = env.getMinX() + i * cellSizeX;
+        double y = env.getMinY() + j * cellSizeY;
+        double x2 = env.getMinX() + (i + 1) * cellSizeX;
+        double y2 = env.getMinY() + (j + 1) * cellSizeY;
+      
+        Envelope cellEnv = new Envelope(x, x2, y, y2);
+        geoms.add(geomFact.toGeometry(cellEnv));
+      }
+    }
+    return geomFact.buildGeometry(geoms);
+  }
+
+  public static Geometry gridPoints(Geometry g, int nCells)
+  {
+    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
+    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
+    
+    int nCellsOnSideY = (int) Math.sqrt(nCells);
+    int nCellsOnSideX = nCells / nCellsOnSideY;
+    
+    double cellSizeX = env.getWidth() / (nCellsOnSideX - 1);
+    double cellSizeY = env.getHeight() / (nCellsOnSideY - 1);
+    
+    CoordinateList pts = new CoordinateList(); 
+
+    for (int i = 0; i < nCellsOnSideX; i++) {
+      for (int j = 0; j < nCellsOnSideY; j++) {
+        double x = env.getMinX() + i * cellSizeX;
+        double y = env.getMinY() + j * cellSizeY;
+      
+        pts.add( new Coordinate(x, y) );
+      }
+    }
+    return geomFact.createMultiPointFromCoords(pts.toCoordinateArray());
+  }
+ 
 	public static Geometry supercircle3(Geometry g, int nPts)
 	{
 		return supercircle(g, nPts, 3);
