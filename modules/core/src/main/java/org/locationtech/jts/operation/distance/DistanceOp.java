@@ -67,6 +67,13 @@ public class DistanceOp
    */
   public static boolean isWithinDistance(Geometry g0, Geometry g1, double distance)
   {
+    // check envelope distance for a short-circuit negative result
+    double envDist = g0.getEnvelopeInternal().distance(g1.getEnvelopeInternal());
+    if (envDist > distance)
+      return false;
+
+    // MD - could improve this further with a positive short-circuit based on envelope MinMaxDist
+    
     DistanceOp distOp = new DistanceOp(g0, g1, distance);
     return distOp.distance() <= distance;
   }
@@ -416,3 +423,4 @@ public class DistanceOp
   }
 
 }
+

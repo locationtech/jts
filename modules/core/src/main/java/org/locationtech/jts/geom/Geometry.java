@@ -456,16 +456,7 @@ public abstract class Geometry
    */
   public boolean isWithinDistance(Geometry geom, double distance)
   {
-    double envDist = getEnvelopeInternal().distance(geom.getEnvelopeInternal());
-    if (envDist > distance)
-      return false;
     return DistanceOp.isWithinDistance(this, geom, distance);
-    /*
-    double geomDist = this.distance(geom);
-    if (geomDist > distance)
-      return false;
-    return true;
-    */
   }
 
   public boolean isRectangle()
