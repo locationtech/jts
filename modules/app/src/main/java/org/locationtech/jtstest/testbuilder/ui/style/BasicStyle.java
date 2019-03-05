@@ -12,10 +12,12 @@
 
 package org.locationtech.jtstest.testbuilder.ui.style;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jtstest.*;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 import org.locationtech.jtstest.testbuilder.ui.render.GeometryPainter;
@@ -77,7 +79,15 @@ public class BasicStyle implements Style
   public void setLineColor(Color color) {
     lineColor = color;
   }
+  
+  public void setLineAlpha(int alpha) {
+    lineAlpha = alpha;
+  }
 
+  public int getLineAlpha() {
+    return lineAlpha;
+  }
+  
   public Color getFillColor() {
     return ColorUtil.setAlpha(fillColor, fillAlpha);
   }
@@ -86,6 +96,14 @@ public class BasicStyle implements Style
     fillColor = color;
   }
 
+  public void setFillAlpha(int alpha) {
+    fillAlpha = alpha;
+  }
+
+  public int getFillAlpha() {
+    return fillAlpha;
+  }
+  
   public boolean isFilled() {
     return isFilled;
   }
@@ -118,12 +136,5 @@ public class BasicStyle implements Style
     this.dashes = dashArray;
   }
 
-  public void setFillAlpha(int alpha) {
-    fillAlpha = alpha;
-  }
-
-  public int getFillAlpha() {
-    return fillAlpha;
-  }
 
 }

@@ -11,6 +11,7 @@
  */
 package org.locationtech.jtstest.testbuilder.ui.style;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import javax.swing.JCheckBox;
@@ -91,7 +92,7 @@ public class LayerStyle implements Style  {
     
     decoratorStyle = styleList;
   }
-  
+
   public void setVertices(boolean show) {
     decoratorStyle.setEnabled(vertexStyle, show);
   }
@@ -100,9 +101,18 @@ public class LayerStyle implements Style  {
     return decoratorStyle.isEnabled(vertexStyle);
   }
   
-  public void setDashed(boolean selected) {
-    // TODO Auto-generated method stub
-    
+  public int getVertexSize() {
+    return vertexStyle.getSize();
+  }
+  public void setVertexSize(int size) {
+    vertexStyle.setSize(size);
+  }
+  
+  public Color getVertexColor() {
+    return vertexStyle.getColor();
+  }
+  public void setVertexColor(Color color) {
+    vertexStyle.setColor(color);
   }
   
   public void paint(Geometry geom, Viewport viewport, Graphics2D g) throws Exception {
