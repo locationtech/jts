@@ -12,10 +12,10 @@ public class EnvelopeUtil
 {
   /**
    * Computes the maximum distance between the points defining two envelopes.
-   * This is the distance between the two corners which are farthest apart.
-   * 
-   * Note that this is NOT the MinMax distance, which is a tighter bound on 
-   * the distance between the points in the envelopes.
+   * It is equal to the length of the diagonal of 
+   * the envelope containing both input envelopes.
+   * This is a coarse upper bound on the distance between 
+   * geometries bounded by the envelopes.
    * 
    * @param env1 an envelope
    * @param env2 an envelope
@@ -36,6 +36,21 @@ public class EnvelopeUtil
     return Math.sqrt(dx * dx + dy * dy);    
   }
   
+  /**
+   * Computes the Min-Max Distance between two {@link Envelope}s.
+   * It is equal to the minimum of the maximum distances between all pairs of
+   * edge segments from the two envelopes.
+   * This is the tight upper bound on the distance between 
+   * geometric items bounded by the envelopes.
+   * <p>
+   * Theoretically this bound can be used in the R-tree nearest-neighbour branch-and-bound search
+   * instead of {@link #maximumDistance(Envelope, Envelope)}.
+   * However, little performance improvement is observed in practice.
+   * 
+   * @param a an envelope
+   * @param b an envelope
+   * @return the min-max-distance between the envelopes
+   */
   public static double minMaxDistance(Envelope a, Envelope b)
   {
     double aminx = a.getMinX();
@@ -68,8 +83,21 @@ public class EnvelopeUtil
     dist = Math.min(dist, maxDistance(amaxx, amaxy, amaxx, aminy, bmaxx, bmaxy, bmaxx, bminy));
     
     return dist;
-}
+  }
 
+  /**
+   * Computes the maximum distance between two line segments.
+   * 
+   * @param ax1 x ordinate of first endpoint of segment 1
+   * @param ay1 y ordinate of first endpoint of segment 1
+   * @param ax2 x ordinate of second endpoint of segment 1
+   * @param ay2 y ordinate of second endpoint of segment 1
+   * @param bx1 x ordinate of first endpoint of segment 2
+   * @param by1 y ordinate of first endpoint of segment 2
+   * @param bx2 x ordinate of second endpoint of segment 2
+   * @param by2 y ordinate of second endpoint of segment 2
+   * @return maximum distance between the segments
+   */
   private static double maxDistance(double ax1, double ay1, double ax2, double ay2, 
       double bx1, double by1, double bx2, double by2) {
     double dist = distance(ax1, ay1, bx1, by1);

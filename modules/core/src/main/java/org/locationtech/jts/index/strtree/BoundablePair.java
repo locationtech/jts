@@ -146,6 +146,12 @@ class BoundablePair
    * from the expansion of the larger boundable
    * with distance less than minDistance
    * and adds them to a priority queue.
+   * <p>
+   * Note that expanded pairs may contain
+   * the same item/node on both sides.
+   * This must be allowed to support distance
+   * functions which have non-zero distances
+   * between the item and itself (non-zero reflexive distance).
    * 
    * @param priQ the priority queue to add the new pairs to
    * @param minDistance the limit on the distance between added pairs

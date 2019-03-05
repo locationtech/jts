@@ -254,12 +254,23 @@ implements SpatialIndex, Serializable
    * using {@link ItemDistance} as the distance metric.
    * A Branch-and-Bound tree traversal algorithm is used
    * to provide an efficient search.
+   * <p>
+   * If the tree is empty, the return value is <code>null</code.
+   * If the tree contains only one item, 
+   * the return value is a pair containing that item.  
+   * <b>
+   * If it is required to find only pairs of distinct items,
+   * the {@link ItemDistance} function must be <b>anti-reflexive</b>.
    * 
    * @param itemDist a distance metric applicable to the items in this tree
    * @return the pair of the nearest items
+   *    or <code>null</code> if the tree is empty
    */
   public Object[] nearestNeighbour(ItemDistance itemDist)
   {
+    if (isEmpty()) return null;
+    
+    // if tree has only one item this will return null
     BoundablePair bp = new BoundablePair(this.getRoot(), this.getRoot(), itemDist);
     return nearestNeighbour(bp);
   }
@@ -279,6 +290,7 @@ implements SpatialIndex, Serializable
    * @param item the item to find the nearest neighbour of
    * @param itemDist a distance metric applicable to the items in this tree and the query item
    * @return the nearest item in this tree
+   *    or <code>null</code> if the tree is empty
    */
   public Object nearestNeighbour(Envelope env, Object item, ItemDistance itemDist)
   {
@@ -300,9 +312,11 @@ implements SpatialIndex, Serializable
    * @param tree another tree
    * @param itemDist a distance metric applicable to the items in the trees
    * @return the pair of the nearest items, one from each tree
+   *    or <code>null</code> if no pair of distinct items can be found
    */
   public Object[] nearestNeighbour(STRtree tree, ItemDistance itemDist)
   {
+    if (isEmpty() || tree.isEmpty()) return null;
     BoundablePair bp = new BoundablePair(this.getRoot(), tree.getRoot(), itemDist);
     return nearestNeighbour(bp);
   }
@@ -319,7 +333,7 @@ implements SpatialIndex, Serializable
     while (! priQ.isEmpty() && distanceLowerBound > 0.0) {
       // pop head of queue and expand one side of pair
       BoundablePair bndPair = (BoundablePair) priQ.poll();
-      double currentDistance = bndPair.getDistance();
+      double pairDistance = bndPair.getDistance();
       
       /**
        * If the distance for the first pair in the queue
@@ -328,7 +342,7 @@ implements SpatialIndex, Serializable
        * So the current minDistance must be the true minimum,
        * and we are done.
        */
-      if (currentDistance >= distanceLowerBound) 
+      if (pairDistance >= distanceLowerBound) 
         break;  
 
       /**
@@ -340,7 +354,7 @@ implements SpatialIndex, Serializable
        */
       if (bndPair.isLeaves()) {
         // assert: currentDistance < minimumDistanceFound
-        distanceLowerBound = currentDistance;
+        distanceLowerBound = pairDistance;
         minPair = bndPair;
       }
       else {
@@ -402,40 +416,43 @@ implements SpatialIndex, Serializable
     while (! priQ.isEmpty()) {
       // pop head of queue and expand one side of pair
       BoundablePair bndPair = (BoundablePair) priQ.poll();
-      double currentDistance = bndPair.getDistance();
+      double pairDistance = bndPair.getDistance();
       
       /**
        * If the distance for the first pair in the queue
-       * is >= maxDistance, other pairs
-       * in the queue must also have a greater distance.
+       * is > maxDistance, all other pairs
+       * in the queue must have a greater distance as well.
        * So can conclude no items are within the distance
-       * and terminate with false
+       * and terminate with result = false
        */
-      if (currentDistance > maxDistance) 
+      if (pairDistance > maxDistance) 
         return false;  
 
       /**
-       * There must be some pair of items in the nodes which 
-       * are closer than the max distance,
-       * so can terminate with true.
+       * If the maximum distance between the nodes
+       * is less than the maxDistance,
+       * than all items in the nodes must be 
+       * closer than the max distance.
+       * Then can terminate with result = true.
        * 
-       * NOTE: using the Envelope MinMaxDistance would provide a tighter bound,
-       * but not sure how to compute this!
+       * NOTE: using Envelope MinMaxDistance 
+       * would provide a tighter bound,
+       * but not much performance improvement has been observed
        */
       if (bndPair.maximumDistance() <= maxDistance)
         return true;
       /**
-       * If the pair members are leaves
-       * then their distance is an upper bound.
+       * If the pair items are leaves
+       * then their actual distance is an upper bound.
        * Update the distanceUpperBound to reflect this
        */
       if (bndPair.isLeaves()) {
         // assert: currentDistance < minimumDistanceFound
-        distanceUpperBound = currentDistance;
+        distanceUpperBound = pairDistance;
         
         /**
-         * Current pair is closer than maxDistance
-         * so can terminate with true
+         * If the items are closer than maxDistance
+         * can terminate with result = true.
          */
         if (distanceUpperBound <= maxDistance)
           return true;
@@ -500,7 +517,7 @@ implements SpatialIndex, Serializable
     while (! priQ.isEmpty() && distanceLowerBound >= 0.0) {
       // pop head of queue and expand one side of pair
       BoundablePair bndPair = (BoundablePair) priQ.poll();
-      double currentDistance = bndPair.getDistance();
+      double pairDistance = bndPair.getDistance();
       
       
       /**
@@ -510,7 +527,7 @@ implements SpatialIndex, Serializable
        * So the current minDistance must be the true minimum,
        * and we are done.
        */
-      if (currentDistance >= distanceLowerBound){
+      if (pairDistance >= distanceLowerBound){
     	  break;  
       }
       /**
@@ -529,7 +546,7 @@ implements SpatialIndex, Serializable
     	  else
     	  {
 
-    		  if(kNearestNeighbors.peek().getDistance()>currentDistance)
+    		  if(kNearestNeighbors.peek().getDistance()>pairDistance)
     		  {
     			  kNearestNeighbors.poll();
     			  kNearestNeighbors.add(bndPair);
@@ -542,14 +559,6 @@ implements SpatialIndex, Serializable
     	  }        
       }
       else {
-        // testing - does allowing a tolerance improve speed?
-        // Ans: by only about 10% - not enough to matter
-        /*
-        double maxDist = bndPair.getMaximumDistance();
-        if (maxDist * .99 < lastComputedDistance) 
-          return;
-        //*/
-
         /**
          * Otherwise, expand one side of the pair,
          * (the choice of which side to expand is heuristically determined) 
