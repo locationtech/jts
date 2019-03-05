@@ -12,10 +12,12 @@
 
 package org.locationtech.jtstest.testbuilder.ui.style;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jtstest.*;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 import org.locationtech.jtstest.testbuilder.ui.render.GeometryPainter;
