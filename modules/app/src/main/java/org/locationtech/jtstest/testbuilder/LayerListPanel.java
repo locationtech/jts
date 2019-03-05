@@ -80,7 +80,7 @@ public class LayerListPanel extends JPanel {
 
     //tabFunctions.setBackground(jTabbedPane1.getBackground());
     tabPane.add(lyrStylePanel,  LBL_LAYER_STYLE);
-    tabPane.add(viewStylePanel,   "View Style");
+    tabPane.add(viewStylePanel,   "View");
     add(tabPane, BorderLayout.CENTER);
   }
   

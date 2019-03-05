@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
@@ -39,43 +40,20 @@ public class ColorControl {
     JPanel ctl = new JPanel();
     ctl.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
     
-    Dimension dim = new Dimension(24, 24);
+    Dimension dim = new Dimension(20, 20);
     ctl.setMinimumSize(dim);
     ctl.setPreferredSize(dim);
     ctl.setMaximumSize(dim);
     ctl.setOpaque(true);
     ctl.setToolTipText(title);
-    ctl.addMouseListener(new java.awt.event.MouseListener() {
+    ctl.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent arg0) {
         Color clr = showColorChooser(comp, title, initColor);
         if (clr != null) {
+          ctl.setBackground(clr);
           colorListener.colorChanged(clr);
         }
-      }
-
-      @Override
-      public void mouseEntered(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-        
-      }
-
-      @Override
-      public void mouseExited(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-        
-      }
-
-      @Override
-      public void mousePressed(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-        
-      }
-
-      @Override
-      public void mouseReleased(MouseEvent arg0) {
-        // TODO Auto-generated method stub
-        
       }
     });    
     return ctl;
@@ -83,5 +61,9 @@ public class ColorControl {
   
   private static Color showColorChooser(Component comp, String title, Color initColor) {
     return JColorChooser.showDialog(comp, title, initColor);
+  }
+
+  public static void update(JPanel ctl, Color clr) {
+    ctl.setBackground(clr);
   }
 }

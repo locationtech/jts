@@ -45,39 +45,11 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
         AppColors.GEOM_VIEW_BACKGROUND,
         new ColorControl.ColorListener() {
           public void colorChanged(Color clr) {
-            
-            ctlBackgroundClr.setBackground(clr);
-            
             JTSTestBuilder.controller().getGeometryEditPanel().setViewBackground(clr);
             JTSTestBuilder.controller().geometryViewChanged();
           }
         }
        );
     addRow("Background", ctlBackgroundClr);
-  }
-  
-  private Color showColorChooser(String title, Color initColor) {
-    return JColorChooser.showDialog(this, title, initColor);
-  }
-  
-  private interface ColorListener {
-    void colorChanged(Color clr);
-  }
-  
-  private JButton createColorButton(ColorListener colorListener) {
-    JButton btn = new JButton();
-    Dimension dim = new Dimension(16,16);
-    btn.setMinimumSize(dim);
-    btn.setMaximumSize(dim);
-    btn.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        Color initClr = JTSTestBuilder.controller().getGeometryEditPanel().VIEW_backgroundColor;
-        Color clr = showColorChooser("Background Color", initClr);
-        if (clr != null) {
-          colorListener.colorChanged(clr);
-        }
-      }
-    });    
-    return btn;
   }
 }
