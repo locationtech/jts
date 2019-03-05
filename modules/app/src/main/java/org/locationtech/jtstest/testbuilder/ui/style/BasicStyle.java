@@ -79,7 +79,15 @@ public class BasicStyle implements Style
   public void setLineColor(Color color) {
     lineColor = color;
   }
+  
+  public void setLineAlpha(int alpha) {
+    lineAlpha = alpha;
+  }
 
+  public int getLineAlpha() {
+    return lineAlpha;
+  }
+  
   public Color getFillColor() {
     return ColorUtil.setAlpha(fillColor, fillAlpha);
   }
@@ -88,6 +96,14 @@ public class BasicStyle implements Style
     fillColor = color;
   }
 
+  public void setFillAlpha(int alpha) {
+    fillAlpha = alpha;
+  }
+
+  public int getFillAlpha() {
+    return fillAlpha;
+  }
+  
   public boolean isFilled() {
     return isFilled;
   }
@@ -120,12 +136,5 @@ public class BasicStyle implements Style
     this.dashes = dashArray;
   }
 
-  public void setFillAlpha(int alpha) {
-    fillAlpha = alpha;
-  }
-
-  public int getFillAlpha() {
-    return fillAlpha;
-  }
 
 }

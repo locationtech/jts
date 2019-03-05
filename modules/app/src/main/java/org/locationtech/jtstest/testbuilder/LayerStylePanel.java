@@ -46,9 +46,10 @@ public class LayerStylePanel extends JPanel {
   private JSpinner widthSpinner;
   private SpinnerNumberModel widthModel;
   private JCheckBox cbFilled;
-  private JSlider sliderFill;
+  private JSlider sliderFillAlpha;
   private JPanel btnFillColor;
   private JPanel btnLineColor;
+  private JSlider sliderLineAlpha;
   
   public LayerStylePanel() {
     
@@ -68,7 +69,8 @@ public class LayerStylePanel extends JPanel {
     cbDashed.setSelected(geomStyle().isDashed());
     cbFilled.setSelected(geomStyle().isFilled());
     widthModel.setValue(geomStyle().getStrokeWidth());
-    sliderFill.setValue(geomStyle().getFillAlpha());
+    sliderLineAlpha.setValue(geomStyle().getLineAlpha());
+    sliderFillAlpha.setValue(geomStyle().getFillAlpha());
     btnLineColor.setBackground(geomStyle().getLineColor());
     btnFillColor.setBackground(geomStyle().getFillColor());
   }
@@ -118,6 +120,7 @@ public class LayerStylePanel extends JPanel {
       }
     });
     addRow("Dashed", cbDashed);
+    //=============================================
 
     btnLineColor = ColorControl.create(this, 
         "Fill",
@@ -144,8 +147,20 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
-    addRow("Line", btnLineColor, widthSpinner);
-    
+
+    sliderLineAlpha = createOpacitySlider(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        JSlider source = (JSlider)e.getSource();
+        if (! source.getValueIsAdjusting()) {
+          int alpha = (int)source.getValue();
+          geomStyle().setLineAlpha(alpha);
+          JTSTestBuilder.controller().geometryViewChanged();
+        }
+      }
+    });
+
+    addRow("Line", btnLineColor, widthSpinner, sliderLineAlpha);
+    //=============================================
     cbFilled = new JCheckBox();
     cbFilled.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbFilled.addActionListener(new java.awt.event.ActionListener() {
@@ -156,7 +171,7 @@ public class LayerStylePanel extends JPanel {
       }
     });
    
-    sliderFill = createOpacitySlider(new ChangeListener() {
+    sliderFillAlpha = createOpacitySlider(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         JSlider source = (JSlider)e.getSource();
         if (! source.getValueIsAdjusting()) {
@@ -178,7 +193,7 @@ public class LayerStylePanel extends JPanel {
           }
         }
        );
-    addRow("Fill", cbFilled, btnFillColor, sliderFill);
+    addRow("Fill", cbFilled, btnFillColor, sliderFillAlpha);
   }
  
   void updateStyle() {
