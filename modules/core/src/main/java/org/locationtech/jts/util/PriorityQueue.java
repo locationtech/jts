@@ -108,6 +108,14 @@ public class PriorityQueue
     return minItem;
   }
 
+  public Object peek() 
+  {
+    if (isEmpty())
+      return null;
+    Object minItem = items.get(1);
+    return minItem;
+  }
+  
   /**
    * Internal method to percolate down in the heap.
    * 

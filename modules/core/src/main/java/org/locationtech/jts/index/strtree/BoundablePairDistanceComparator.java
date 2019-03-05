@@ -28,8 +28,8 @@ public class BoundablePairDistanceComparator implements Comparator<BoundablePair
 	/**
 	 * Instantiates a new boundable pair distance comparator.
 	 *
-	 * @param normalOrder The true means puts the least record at the head of this queue.
-	 * This is the natural order. PriorityQueue peek() will get the least element. Vice versa.
+	 * @param normalOrder true puts the lowest record at the head of this queue.
+	 * This is the natural order. PriorityQueue peek() will get the least element. 
 	 */
 	public BoundablePairDistanceComparator(boolean normalOrder)
 	{

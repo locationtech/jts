@@ -158,67 +158,6 @@ public class STRtreeTest extends TestCase {
     assertEquals(3, tree.size());
   }
  
-  public void testKNearestNeighbors() {
-		int topK = 1000;
-		int totalRecords = 10000;
-		GeometryFactory geometryFactory = new GeometryFactory();
-		Coordinate coordinate = new Coordinate(10.1,-10.1);
-		Point queryCenter = geometryFactory.createPoint(coordinate);
-		int valueRange = 1000;
-		List<Geometry> testDataset = new ArrayList<Geometry>();
-		List<Geometry> correctData = new ArrayList<Geometry>();
-		Random random = new Random();
-		GeometryDistanceComparator distanceComparator = new GeometryDistanceComparator(queryCenter,true);
-		/*
-		 * Generate the random test data set
-		 */
-		for(int i=0;i<totalRecords;i++)
-		{
-		    coordinate = new Coordinate(-100+random.nextInt(valueRange)*1.1,random.nextInt(valueRange)*(-5.1));
-		    Point spatialObject = geometryFactory.createPoint(coordinate);
-		    testDataset.add(spatialObject);
-		}
-		/*
-		 * Sort the original data set and make sure the elements are sorted in an ascending order
-		 */
-		Collections.sort(testDataset,distanceComparator);
-		/*
-		 * Get the correct top K
-		 */
-		for(int i=0;i<topK;i++)
-		{
-			correctData.add(testDataset.get(i));
-		}
-	  
-	  STRtree strtree = new STRtree();
-	  for(int i=0;i<totalRecords;i++)
-		{
-		    strtree.insert(testDataset.get(i).getEnvelopeInternal(), testDataset.get(i));
-		}
-		/*
-		 * Shoot a random query to make sure the STR-Tree is built.
-		 */
-		strtree.query(new Envelope(1+0.1,1+0.1,2+0.1,2+0.1));
-		/*
-		 * Issue the KNN query.
-		 */
-		Object[] testTopK = (Object[])strtree.nearestNeighbour(queryCenter.getEnvelopeInternal(), queryCenter, new GeometryItemDistance(), topK);
-		List topKList = Arrays.asList(testTopK);
-		Collections.sort(topKList,distanceComparator);
-		/*
-		 * Check the difference between correct result and test result. The difference should be 0.
-		 */
-		int difference = 0;
-		for(int i = 0;i<topK;i++)
-		{
-			if(distanceComparator.compare(correctData.get(i), (Geometry)topKList.get(i))!=0)
-			{
-				difference++;
-			}
-		}
-		assertEquals(difference,0);
-	  }
-  
   private void doTestCreateParentsFromVerticalSlice(int childCount,
       int nodeCapacity, int expectedChildrenPerParentBoundable,
       int expectedChildrenOfLastParent) {

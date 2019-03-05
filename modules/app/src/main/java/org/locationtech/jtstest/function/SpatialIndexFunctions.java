@@ -118,6 +118,14 @@ public class SpatialIndexFunctions
     return (Geometry) result;
   }
 
+  public static Geometry strTreeNNInSet(Geometry geoms)
+  {
+    STRtree index = buildSTRtree(geoms);
+    Object[] result = index.nearestNeighbour(new GeometryItemDistance());
+    Geometry[] resultGeoms = new Geometry[] { (Geometry) result[0], (Geometry) result[1] };
+    return geoms.getFactory().createGeometryCollection(resultGeoms);
+  }
+
   public static Geometry strTreeNNk(Geometry geoms, Geometry geom, int k)
   {
     STRtree index = buildSTRtree(geoms);

@@ -15,9 +15,15 @@ package org.locationtech.jts.index.strtree;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * An ItemDistance function for 
+ * An {@link ItemDistance} function for 
  * items which are {@link Geometry}s,
  * using the {@link Geometry#distance(Geometry)} method.
+ * <p>
+ * To make this distance function suitable for
+ * using to query a single index tree,
+ * the distance metric is <i>anti-reflexive</i>.
+ * That is, if the two arguments are the same Geometry object,
+ * the distance returned is {@link Double.MAX_VALUE}.
  * 
  * @author Martin Davis
  *
@@ -35,6 +41,7 @@ implements ItemDistance
    * @throws ClassCastException if either item is not a Geometry
    */
   public double distance(ItemBoundable item1, ItemBoundable item2) {
+    if (item1 == item2) return Double.MAX_VALUE;
     Geometry g1 = (Geometry) item1.getItem();
     Geometry g2 = (Geometry) item2.getItem();
     return g1.distance(g2);    
