@@ -91,7 +91,7 @@ public class LayerStyle implements Style  {
     
     decoratorStyle = styleList;
   }
-  
+
   public void setVertices(boolean show) {
     decoratorStyle.setEnabled(vertexStyle, show);
   }
@@ -100,9 +100,11 @@ public class LayerStyle implements Style  {
     return decoratorStyle.isEnabled(vertexStyle);
   }
   
-  public void setDashed(boolean selected) {
-    // TODO Auto-generated method stub
-    
+  public int getVertexSize() {
+    return vertexStyle.getSize();
+  }
+  public void setVertexSize(int size) {
+    vertexStyle.setSize(size);
   }
   
   public void paint(Geometry geom, Viewport viewport, Graphics2D g) throws Exception {

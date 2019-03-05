@@ -43,13 +43,16 @@ public class LayerStylePanel extends JPanel {
   private JPanel stylePanel;
   private int rowIndex;
   private JCheckBox cbDashed;
-  private JSpinner widthSpinner;
+  private JSpinner spinnerWidth;
   private SpinnerNumberModel widthModel;
   private JCheckBox cbFilled;
   private JSlider sliderFillAlpha;
   private JPanel btnFillColor;
   private JPanel btnLineColor;
   private JSlider sliderLineAlpha;
+  private JSpinner spinnerVertexSize;
+  private SpinnerNumberModel vertexSizeModel;
+
   
   public LayerStylePanel() {
     
@@ -69,6 +72,7 @@ public class LayerStylePanel extends JPanel {
     cbDashed.setSelected(geomStyle().isDashed());
     cbFilled.setSelected(geomStyle().isFilled());
     widthModel.setValue(geomStyle().getStrokeWidth());
+    vertexSizeModel.setValue(layer.getLayerStyle().getVertexSize());
     sliderLineAlpha.setValue(geomStyle().getLineAlpha());
     sliderFillAlpha.setValue(geomStyle().getFillAlpha());
     btnLineColor.setBackground(geomStyle().getLineColor());
@@ -83,7 +87,6 @@ public class LayerStylePanel extends JPanel {
     title = new JLabel("Styling");
     title.setAlignmentX(Component.LEFT_ALIGNMENT);
     add(title);
-    
     
     stylePanel = new JPanel();
     stylePanel.setLayout(new GridBagLayout());
@@ -107,7 +110,22 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
-    addRow("Vertices", cbVertex);
+    
+    vertexSizeModel = new SpinnerNumberModel(4.0, 0, 100.0, 1);
+    spinnerVertexSize = new JSpinner(vertexSizeModel);
+    spinnerVertexSize.setMaximumSize(new Dimension(40,16));
+    spinnerVertexSize.setAlignmentX(Component.LEFT_ALIGNMENT);
+    spinnerVertexSize.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int size = vertexSizeModel.getNumber().intValue();
+        layer.getLayerStyle().setVertexSize(size);
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+
+    
+    addRow("Vertices", cbVertex, spinnerVertexSize);
+    //=============================================
    
     cbDashed = new JCheckBox();
     //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
@@ -134,13 +152,13 @@ public class LayerStylePanel extends JPanel {
        );
 
     widthModel = new SpinnerNumberModel(1.0, 0, 100.0, 0.2);
-    widthSpinner = new JSpinner(widthModel);
+    spinnerWidth = new JSpinner(widthModel);
     //widthSpinner.setMinimumSize(new Dimension(50,12));
     //widthSpinner.setPreferredSize(new Dimension(50,12));
-    widthSpinner.setMaximumSize(new Dimension(40,16));
-    widthSpinner.setAlignmentX(Component.LEFT_ALIGNMENT);
+    spinnerWidth.setMaximumSize(new Dimension(40,16));
+    spinnerWidth.setAlignmentX(Component.LEFT_ALIGNMENT);
     
-    widthSpinner.addChangeListener(new ChangeListener() {
+    spinnerWidth.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         float width = widthModel.getNumber().floatValue();
         geomStyle().setStrokeWidth(width);
@@ -159,7 +177,7 @@ public class LayerStylePanel extends JPanel {
       }
     });
 
-    addRow("Line", btnLineColor, widthSpinner, sliderLineAlpha);
+    addRow("Line", btnLineColor, spinnerWidth, sliderLineAlpha);
     //=============================================
     cbFilled = new JCheckBox();
     cbFilled.setAlignmentX(Component.LEFT_ALIGNMENT);
