@@ -19,12 +19,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.PriorityQueue;
 
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.PriorityQueue;
 
 
 /**
@@ -328,7 +328,7 @@ implements SpatialIndex, Serializable
     BoundablePair minPair = null;
     
     // initialize search queue
-    PriorityQueue<BoundablePair> priQ = new PriorityQueue<BoundablePair>();
+    PriorityQueue priQ = new PriorityQueue();
     priQ.add(initBndPair);
 
     while (! priQ.isEmpty() && distanceLowerBound > 0.0) {
@@ -411,7 +411,7 @@ implements SpatialIndex, Serializable
     double distanceUpperBound = Double.POSITIVE_INFINITY;
     
     // initialize search queue
-    PriorityQueue<BoundablePair> priQ = new PriorityQueue<BoundablePair>();
+    PriorityQueue priQ = new PriorityQueue();
     priQ.add(initBndPair);
 
     while (! priQ.isEmpty()) {

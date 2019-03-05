@@ -13,9 +13,9 @@ package org.locationtech.jts.index.strtree;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.PriorityQueue;
 
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.util.PriorityQueue;
 
 
 /**
@@ -156,7 +156,7 @@ class BoundablePair
    * @param minDistance the limit on the distance between added pairs
    * 
    */
-  public void expandToQueue(PriorityQueue<BoundablePair> priQ, double minDistance)
+  public void expandToQueue(PriorityQueue priQ, double minDistance)
   {
     boolean isComp1 = isComposite(boundable1);
     boolean isComp2 = isComposite(boundable2);
@@ -189,7 +189,7 @@ class BoundablePair
   }
   
   private void expand(Boundable bndComposite, Boundable bndOther, boolean isFlipped,
-      PriorityQueue<BoundablePair> priQ, double minDistance)
+      PriorityQueue priQ, double minDistance)
   {
     List children = ((AbstractNode) bndComposite).getChildBoundables();
     for (Iterator i = children.iterator(); i.hasNext(); ) {
