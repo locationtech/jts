@@ -15,7 +15,7 @@ package test.jts.perf.operation.distance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.index.strtree.EnvelopeUtil;
+import org.locationtech.jts.index.strtree.EnvelopeDistance;
 
 public class TestStressEnvelopeMinMaxDistance 
 {
@@ -55,7 +55,7 @@ public class TestStressEnvelopeMinMaxDistance
 
   private void run(MultiPoint a, MultiPoint b) {
     double distance = a.distance(b);
-    double minMaxDistance = EnvelopeUtil.minMaxDistance(
+    double minMaxDistance = EnvelopeDistance.minMaxDistance(
         a.getEnvelopeInternal(), b.getEnvelopeInternal());
     
     System.out.println("distance: " + distance
