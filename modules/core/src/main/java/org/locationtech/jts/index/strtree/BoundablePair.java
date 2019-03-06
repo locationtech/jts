@@ -69,7 +69,7 @@ class BoundablePair
    */
   public double maximumDistance()
   {
-    return EnvelopeUtil.maximumDistance( 
+    return EnvelopeDistance.maximumDistance( 
         (Envelope) boundable1.getBounds(),
         (Envelope) boundable2.getBounds());       
   }
