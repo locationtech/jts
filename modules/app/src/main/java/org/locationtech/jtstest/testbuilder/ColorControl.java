@@ -19,23 +19,6 @@ public class ColorControl {
     void colorChanged(Color clr);
   }
   
-  public static JButton OLDcreateColorButton(Component comp, Color initColor, ColorListener colorListener) {
-    JButton btn = new JButton();
-    Dimension dim = new Dimension(16,16);
-    btn.setMinimumSize(dim);
-    btn.setMaximumSize(dim);
-    btn.setOpaque(true);
-    btn.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        Color clr = showColorChooser(comp, "Background Color", initColor);
-        if (clr != null) {
-          colorListener.colorChanged(clr);
-        }
-      }
-    });    
-    return btn;
-  }
-  
   public static JPanel create(Component comp, String title, Color initColor, ColorListener colorListener) {
     JPanel ctl = new JPanel();
     ctl.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
@@ -65,5 +48,9 @@ public class ColorControl {
 
   public static void update(JPanel ctl, Color clr) {
     ctl.setBackground(clr);
+  }
+  
+  public static Color getColor(JPanel clrCtl) {
+    return clrCtl.getBackground();
   }
 }

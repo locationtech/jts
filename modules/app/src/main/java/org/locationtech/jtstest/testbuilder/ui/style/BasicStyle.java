@@ -30,6 +30,7 @@ public class BasicStyle implements Style
   private Color fillColor;
   private int fillAlpha = 150;
   
+  private boolean isStroked = true;
   private boolean isFilled = true;
   private float strokeWidth = 1;
   private boolean isDashed = false;
@@ -43,10 +44,22 @@ public class BasicStyle implements Style
   public BasicStyle() {
   }
 
+  public BasicStyle(BasicStyle style) {
+    this.lineColor = style.lineColor;
+    this.lineAlpha = style.lineAlpha;
+    this.fillColor = style.fillColor;
+    this.fillAlpha = style.fillAlpha;
+    this.isStroked = style.isStroked;
+    this.isFilled = style.isFilled;
+    this.strokeWidth = style.strokeWidth;
+    this.isDashed = style.isDashed;
+    this.dashes = style.dashes.clone();
+  }
+
   public void paint(Geometry geom, Viewport viewport, Graphics2D g)
   {
     Stroke stroke = createStroke();
-    Color lineClr = (stroke != null) ? getLineColor() : null;
+    Color lineClr = (isStroked && stroke != null) ? getLineColor() : null;
     Color fillClr = isFilled ? getFillColor() : null;
     
     GeometryPainter.paint(geom, viewport, g, lineClr, fillClr, stroke);
@@ -102,6 +115,14 @@ public class BasicStyle implements Style
 
   public int getFillAlpha() {
     return fillAlpha;
+  }
+
+  public boolean isStroked() {
+    return isStroked;
+  }
+
+  public void setStroked(boolean isStroked) {
+    this.isStroked = isStroked;
   }
   
   public boolean isFilled() {

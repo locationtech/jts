@@ -19,10 +19,12 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -34,6 +36,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.locationtech.jtstest.testbuilder.model.Layer;
+import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
+import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
 
 public class LayerStylePanel extends JPanel {
@@ -52,7 +56,7 @@ public class LayerStylePanel extends JPanel {
   private JSlider sliderLineAlpha;
   private JSpinner spinnerVertexSize;
   private SpinnerNumberModel vertexSizeModel;
-  private JCheckBox cbLine;
+  private JCheckBox cbStroked;
   private JPanel btnVertexColor;
 
   
@@ -72,6 +76,7 @@ public class LayerStylePanel extends JPanel {
     this.title.setText("Styling - Layer " + layer.getName());
     cbVertex.setSelected(layer.getLayerStyle().isVertices());
     cbDashed.setSelected(geomStyle().isDashed());
+    cbStroked.setSelected(geomStyle().isStroked());
     cbFilled.setSelected(geomStyle().isFilled());
     widthModel.setValue(geomStyle().getStrokeWidth());
     vertexSizeModel.setValue(layer.getLayerStyle().getVertexSize());
@@ -141,14 +146,13 @@ public class LayerStylePanel extends JPanel {
     addRow("Vertices", cbVertex, btnVertexColor, spinnerVertexSize);
     //=============================================
 
-    cbLine = new JCheckBox();
-    cbLine.setToolTipText(AppStrings.TIP_STYLE_LINE_ENABLE);
-    cbLine.setAlignmentX(Component.LEFT_ALIGNMENT);
-    cbLine.addActionListener(new java.awt.event.ActionListener() {
+    cbStroked = new JCheckBox();
+    cbStroked.setToolTipText(AppStrings.TIP_STYLE_LINE_ENABLE);
+    cbStroked.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbStroked.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        if (layer == null) return;
-        //layer.getLayerStyle().setVertices(cbVertex.isSelected());
-        //JTSTestBuilder.controller().geometryViewChanged();
+        geomStyle().setStroked(cbStroked.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
       }
     });
 
@@ -162,6 +166,15 @@ public class LayerStylePanel extends JPanel {
           }
         }
        );
+    JButton btnVertexSynch = SwingUtil.createButton("^", "Synch Vertex Color", new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+        if (layer == null) return;
+        Color clr = ColorControl.getColor(btnLineColor);
+        layer.getLayerStyle().setVertexColor(clr);
+        uiUpdate();
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
 
     widthModel = new SpinnerNumberModel(1.0, 0, 100.0, 0.2);
     spinnerWidth = new JSpinner(widthModel);
@@ -189,7 +202,7 @@ public class LayerStylePanel extends JPanel {
       }
     });
 
-    addRow("Line", cbLine, btnLineColor, spinnerWidth, sliderLineAlpha);
+    addRow("Line", cbStroked, btnLineColor, btnVertexSynch, spinnerWidth, sliderLineAlpha);
     //=============================================
     
     cbDashed = new JCheckBox();
@@ -210,7 +223,6 @@ public class LayerStylePanel extends JPanel {
     cbFilled.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbFilled.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        if (layer == null) return;
         geomStyle().setFilled(cbFilled.isSelected());
         JTSTestBuilder.controller().geometryViewChanged();
       }
@@ -232,22 +244,31 @@ public class LayerStylePanel extends JPanel {
         new ColorControl.ColorListener() {
           public void colorChanged(Color clr) {
             geomStyle().setFillColor(clr);
-            geomStyle().setLineColor(lineColorFromFill(clr));
-            updateStyle();
+            //geomStyle().setLineColor(lineColorFromFill(clr));
+            uiUpdate();
             JTSTestBuilder.controller().geometryViewChanged();
           }
         }
        );
-    addRow("Fill", cbFilled, btnFillColor, sliderFillAlpha);
+    JButton btnLineSynch = SwingUtil.createButton("^", "Synch Line Color", new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+        geomStyle().setLineColor(lineColorFromFill( ColorControl.getColor(btnFillColor)) );
+        uiUpdate();
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+    addRow("Fill", cbFilled, btnFillColor, btnLineSynch, sliderFillAlpha);
   }
  
-  void updateStyle() {
+  void uiUpdate() {
+    ColorControl.update(btnVertexColor, layer.getLayerStyle().getVertexColor() );
     ColorControl.update(btnLineColor, geomStyle().getLineColor() );
     ColorControl.update(btnFillColor, geomStyle().getFillColor() );
   }
 
   protected static Color lineColorFromFill(Color clr) {
-    return clr.darker();
+    return ColorUtil.saturate(clr,  1);
+    //return clr.darker();
   }
 
   private JSlider createOpacitySlider(ChangeListener changeListener) {
@@ -268,11 +289,14 @@ public class LayerStylePanel extends JPanel {
   private void addRow(String title, JComponent c1, JComponent c2) {
     addRow(title, c1, c2, null, null);
   }
-  
   private void addRow(String title, JComponent c1, JComponent c2, JComponent c3) {
-    addRow(title, c1, c2, c3, null);
+    addRow(title, c1, c2, c3, null, null);
   }
   private void addRow(String title, JComponent c1, JComponent c2, JComponent c3, JComponent c4) {
+    addRow(title, c1, c2, c3, c4, null);
+  }
+
+  private void addRow(String title, JComponent c1, JComponent c2, JComponent c3, JComponent c4, JComponent c5) {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
     panel.add(c1);
@@ -287,6 +311,10 @@ public class LayerStylePanel extends JPanel {
     if (c4 != null) {
       panel.add(Box.createRigidArea(new Dimension(2,0)));
       panel.add(c4);
+    }
+    if (c5 != null) {
+      panel.add(Box.createRigidArea(new Dimension(2,0)));
+      panel.add(c5);
     }
     addRow(title, panel);
   }

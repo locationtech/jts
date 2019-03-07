@@ -145,7 +145,8 @@ public class LayerRenderer implements Renderer
     Color clrBase = style.getFillColor();
     int alpha = clrBase.getAlpha();
     Color clr = pal.color(i, alpha);
-    BasicStyle st = new BasicStyle(style.getLineColor(), clr);
+    BasicStyle st = new BasicStyle(style);
+    st.setFillColor(clr);
     return st;
   }
 
