@@ -237,7 +237,7 @@ abstract class GeometryNode extends GeometricObjectNode
   
   public ImageIcon getIcon()
   {
-    return context.source == 0 ? AppConstants.ICON_POLYGON : AppConstants.ICON_POLYGON_B;
+    return context.source == 0 ? AppIcons.ICON_POLYGON : AppIcons.ICON_POLYGON_B;
   }
 
   public GeometricObjectNode getChildAt(int index)
@@ -298,7 +298,7 @@ class PolygonNode extends GeometryNode
 
   public ImageIcon getIcon()
   {
-    return context.source == 0 ? AppConstants.ICON_POLYGON : AppConstants.ICON_POLYGON_B;
+    return context.source == 0 ? AppIcons.ICON_POLYGON : AppIcons.ICON_POLYGON_B;
   }
 
   protected void fillChildren()
@@ -331,7 +331,7 @@ class LineStringNode extends GeometryNode
 
   public ImageIcon getIcon()
   {
-    return context.source == 0 ? AppConstants.ICON_LINESTRING : AppConstants.ICON_LINESTRING_B;
+    return context.source == 0 ? AppIcons.ICON_LINESTRING : AppIcons.ICON_LINESTRING_B;
   }
 
   public Geometry getGeometry()
@@ -370,7 +370,7 @@ class LinearRingNode extends LineStringNode
   }
   public ImageIcon getIcon()
   {
-    return context.source == 0 ? AppConstants.ICON_LINEARRING : AppConstants.ICON_LINEARRING_B;
+    return context.source == 0 ? AppIcons.ICON_LINEARRING : AppIcons.ICON_LINEARRING_B;
   }
 }
 
@@ -386,7 +386,7 @@ class PointNode extends GeometryNode
 
   public ImageIcon getIcon()
   {
-    return context.source == 0 ? AppConstants.ICON_POINT : AppConstants.ICON_POINT_B;
+    return context.source == 0 ? AppIcons.ICON_POINT : AppIcons.ICON_POINT_B;
   }
 
   public Geometry getGeometry()
@@ -426,7 +426,7 @@ class GeometryCollectionNode extends GeometryNode
   
   public ImageIcon getIcon()
   {
-    return context.source == 0 ? AppConstants.ICON_COLLECTION : AppConstants.ICON_COLLECTION_B;
+    return context.source == 0 ? AppIcons.ICON_COLLECTION : AppIcons.ICON_COLLECTION_B;
   }
 
 
@@ -478,7 +478,7 @@ class CoordinateNode extends GeometricObjectNode
   }
   public ImageIcon getIcon()
   {
-    return AppConstants.ICON_POINT;
+    return AppIcons.ICON_POINT;
   }
 
   public Geometry getGeometry()
