@@ -112,6 +112,7 @@ public class JTSTestBuilderController
   {
     model().addCase(geom, name);
     JTSTestBuilderFrame.instance().updateTestCases();
+    JTSTestBuilderFrame.instance().showGeomsTab();
   }
   
   public void extractComponentsToTestCase(Coordinate pt)
