@@ -18,6 +18,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -152,7 +153,7 @@ public class RectangleClipPolygon {
         holesClip.add(holeClip);
       }
     }
-    return poly.getFactory().toLinearRingArray(holesClip);
+    return GeometryFactory.toLinearRingArray(holesClip);
   }
 
   private LinearRing clipRing(LinearRing ring) {
@@ -183,17 +184,60 @@ public class RectangleClipPolygon {
   private Coordinate[] clipRingToBox(Coordinate[] ring) {
     Coordinate[] coords = ring;
     for (int edgeIndex = 0; edgeIndex < 4; edgeIndex++) {
+      
+      /*
+       // this is a further optimization to clip entire line
+       // but not clear it makes much difference
+        if (edgeIndex >= 1 && isInsideEdge(currentCoordsEnv, edgeIndex))
+          // all pts inside - skip clipping against this edge
+          continue;
+      */
+      
+      //currentCoordsEnv = new Envelope();
       coords = clipRingToBoxEdge(coords, edgeIndex);
       // check if all points clipped off
       if (coords == null) return null;
+
+      //if (isOutsideEdge(currentCoordsEnv, edgeIndex)) return null;
+
     }
     return coords;
   }
+  
+  private boolean isInsideEdge(Envelope env, int edgeIndex) {
+    switch (edgeIndex) {
+    case ENV_BOTTOM: 
+      return env.getMinY() > clipEnvMinY;
+    case ENV_RIGHT: 
+      return env.getMaxX() < clipEnvMaxX;
+    case ENV_TOP: 
+      return env.getMaxY() < clipEnvMaxY;
+    case ENV_LEFT:
+    default: 
+      return env.getMinX() > clipEnvMinX;
+    }
+  }
+
+  private boolean isOutsideEdge(Envelope env, int edgeIndex) {
+    switch (edgeIndex) {
+    case ENV_BOTTOM: 
+      return env.getMaxY() < clipEnvMinY;
+    case ENV_RIGHT:
+      return env.getMinX() > clipEnvMaxX;
+    case ENV_TOP: 
+      return env.getMinY() > clipEnvMaxY;
+    case ENV_LEFT:
+    default: 
+      return env.getMaxX() < clipEnvMinX;
+    }
+  }
+
+  //Envelope currentCoordsEnv;
 
   /**
-   * Clips ring to a axis-parallel line defined by a single box edge.
+   * Clips ring to an axis-parallel line defined by the given box edge.
    * 
-   * @param coords
+   * @param coords the coordinates for the ring.  Must be closed.
    * @param edgeIndex
    * @return the clipped points, or null if all were clipped
    */
@@ -207,14 +251,19 @@ public class RectangleClipPolygon {
         if ( !isInsideEdge(p0, edgeIndex) ) {
           Coordinate intPt = intersectionPrecise(p0, p1, edgeIndex);
           clipCoords.add( intPt, false);
+          //currentCoordsEnv.expandToInclude(intPt);
         }
         // TODO: avoid copying so much?
-        clipCoords.add( makePrecise(p1.copy()), false);
+        Coordinate p1Precise = makePrecise(p1.copy());
+        clipCoords.add( p1Precise, false);
+        //currentCoordsEnv.expandToInclude(p1Precise);
         
       } else if ( isInsideEdge(p0, edgeIndex) ) {
         Coordinate intPt = intersectionPrecise(p0, p1, edgeIndex);
         clipCoords.add( intPt, false);
+        //currentCoordsEnv.expandToInclude(intPt);
       }
+      // move to next segment
       p0 = p1;
     }
     // check if all points clipped off
@@ -281,14 +330,14 @@ public class RectangleClipPolygon {
 
   private boolean isInsideEdge(Coordinate p, int edgeIndex) {
     switch (edgeIndex) {
-    case ENV_BOTTOM: // bottom
+    case ENV_BOTTOM: 
       return p.y > clipEnvMinY;
-    case ENV_RIGHT: // right
+    case ENV_RIGHT: 
       return p.x < clipEnvMaxX;
-    case ENV_TOP: // top
+    case ENV_TOP: 
       return p.y < clipEnvMaxY;
     case ENV_LEFT:
-    default: // left
+    default: 
       return p.x > clipEnvMinX;
     }
   }
