@@ -76,14 +76,18 @@ public class RectangleClipPolygon {
   }
 
   public Geometry clip(Geometry geom) {
-    // TODO: handle MultiPolygons
-    Polygon polyClip = clipPolygon((Polygon) geom);
-    return fixTopology(polyClip);
+    Geometry geomsClip = clipCollection(geom);
+    
+    if (geomsClip == null) {
+      return geom.getFactory().createPolygon();
+    }
+    
+    return fixTopology(geomsClip);
   }
 
   /**
    * The clipped geometry may be invalid
-   * (due to coincident linework from clipping to edges, 
+   * (due to coincident linework at clip edges, 
    * or due to precision reduction if performed).
    * This method fixed the geometry topology to be valid.
    * 
@@ -103,10 +107,37 @@ public class RectangleClipPolygon {
     return geom.buffer(0);
   }
 
+  public Geometry clipCollection(Geometry geom) {
+    if (isOutsideRectangle(geom)) return null;
+    // TODO: need to precision reduce
+    if (isInsideRectangle(geom)) return (Polygon) geom.copy();
+
+    List<Geometry> geomsClip = new ArrayList<Geometry>(); 
+    for (int i = 0; i < geom.getNumGeometries(); i++) {
+      Geometry poly = geom.getGeometryN(i);
+      if (! (poly instanceof Polygon)) continue;
+      Polygon polyClip = clipPolygon((Polygon) poly);
+      if (polyClip == null) continue;
+      geomsClip.add(polyClip);
+    }
+    
+    if (geomsClip.size() == 0) {
+      return null;
+    }
+    Geometry geomClip = geom.getFactory().buildGeometry(geomsClip);
+    return geomClip;
+  }
+
   private Polygon clipPolygon(Polygon poly) {
+    if (isOutsideRectangle(poly)) return null;
+    // TODO: need to precision reduce
+    if (isInsideRectangle(poly)) return (Polygon) poly.copy();
+
     LinearRing shell = poly.getExteriorRing();
     LinearRing shellClip = clipRing(shell);
-    
+    if (shellClip == null) {
+      return null;
+    }
     LinearRing[] holesClip = clipHoles(poly);
     
     Polygon polyClip = poly.getFactory().createPolygon(shellClip, holesClip);
@@ -125,8 +156,20 @@ public class RectangleClipPolygon {
   }
 
   private LinearRing clipRing(LinearRing ring) {
+    if (isOutsideRectangle(ring)) return null;
+    // TODO: need to precision reduce
+    if (isInsideRectangle(ring)) return (LinearRing) ring.copy();
+    
     Coordinate[] pts = clipRingToBox(ring.getCoordinates()); 
     return ring.getFactory().createLinearRing(pts);
+  }
+
+  private boolean isInsideRectangle(Geometry geom) {
+    return clipEnv.covers(geom.getEnvelopeInternal());
+  }
+
+  private boolean isOutsideRectangle(Geometry geom) {
+    return ! clipEnv.intersects(geom.getEnvelopeInternal());
   }
 
   /**
@@ -135,12 +178,14 @@ public class RectangleClipPolygon {
    * 
    * @param ring
    * @param env
-   * @return
+   * @return the clipped points, or null if all were clipped
    */
   private Coordinate[] clipRingToBox(Coordinate[] ring) {
     Coordinate[] coords = ring;
     for (int edgeIndex = 0; edgeIndex < 4; edgeIndex++) {
       coords = clipRingToBoxEdge(coords, edgeIndex);
+      // check if all points clipped off
+      if (coords == null) return null;
     }
     return coords;
   }
@@ -150,7 +195,7 @@ public class RectangleClipPolygon {
    * 
    * @param coords
    * @param edgeIndex
-   * @return
+   * @return the clipped points, or null if all were clipped
    */
   private Coordinate[] clipRingToBoxEdge(Coordinate[] coords, int edgeIndex) {
     CoordinateList clipCoords = new CoordinateList();
@@ -172,6 +217,8 @@ public class RectangleClipPolygon {
       }
       p0 = p1;
     }
+    // check if all points clipped off
+    if (clipCoords.size() <= 0) return null;
     clipCoords.closeRing();
     return clipCoords.toCoordinateArray();
   }
@@ -217,12 +264,16 @@ public class RectangleClipPolygon {
   }
 
   private double intersectionLineY(Coordinate a, Coordinate b, double y) {
+    // short-circuit segment parallel to Y axis
+    if (b.x == a.x) return a.x;
     double m = (b.x - a.x) / (b.y - a.y);
     double intercept = (y - a.y) * m;
     return a.x + intercept;
   }
 
   private double intersectionLineX(Coordinate a, Coordinate b, double x) {
+    // short-circuit segment parallel to X axis
+    if (b.y == a.y) return a.y;
     double m = (b.y - a.y) / (b.x - a.x);
     double intercept = (x - a.x) * m;
     return a.y + intercept;
