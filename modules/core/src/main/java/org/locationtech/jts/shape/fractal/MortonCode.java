@@ -57,7 +57,7 @@ public class MortonCode
   
   /**
    * The number of points in the curve for the given level.
-   * The number of points is 2<sup>level + 1</sup>.
+   * The number of points is 2<sup>2 * level</sup>.
    * 
    * @param level the level of the curve
    * @return the number of points
