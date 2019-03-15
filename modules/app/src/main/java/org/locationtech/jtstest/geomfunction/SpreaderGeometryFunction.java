@@ -64,7 +64,9 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     return GeometryMapper.map(geom, new MapOp() {
       public Geometry map(Geometry g)
       {
-        return (Geometry) fun.invoke(g, args);
+        Geometry result = (Geometry) fun.invoke(g, args);
+        if (result.isEmpty()) return null;
+        return result;
       }
     });
 
