@@ -32,7 +32,7 @@ public class ColorControl {
     ctl.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent arg0) {
-        Color clr = showColorChooser(comp, title, initColor);
+        Color clr = showColorChooser(comp, title, getColor(ctl));
         if (clr != null) {
           ctl.setBackground(clr);
           colorListener.colorChanged(clr);
