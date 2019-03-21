@@ -24,6 +24,7 @@ public class Layer
   private boolean isEnabled = true;
   
   private LayerStyle layerStyle;
+  private BasicStyle initStyle = null;
     
   public Layer(String name) {
     this.name = name;
@@ -69,6 +70,7 @@ public class Layer
   public void setGeometryStyle(BasicStyle style)
   {
     layerStyle = new LayerStyle(style);
+    if (initStyle == null) initStyle = style.copy();;
   }
   
   public Geometry getGeometry()
@@ -77,6 +79,9 @@ public class Layer
     return geomCont.getGeometry();
   }
 
+  public void resetStyle() {
+    setGeometryStyle(initStyle.copy());
+  }
   
 
 }

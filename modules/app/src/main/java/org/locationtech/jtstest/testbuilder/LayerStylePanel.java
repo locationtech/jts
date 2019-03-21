@@ -12,6 +12,7 @@
  */
 package org.locationtech.jtstest.testbuilder;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -88,25 +89,48 @@ public class LayerStylePanel extends JPanel {
   }
   
   private void uiInit() throws Exception {
-    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+    setLayout(new BorderLayout());
      
      
     title = new JLabel("Styling");
     title.setAlignmentX(Component.LEFT_ALIGNMENT);
-    add(title);
+    add(title, BorderLayout.NORTH);
+    
+
+    add( stylePanel(), BorderLayout.CENTER );
+    
+    JButton btnReset = SwingUtil.createButton(AppIcons.CLEAR, "Reset style to default", new ActionListener() {
+      public void actionPerformed(ActionEvent arg0) {
+        if (layer == null) return;
+        layer.resetStyle();
+        uiUpdate();
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+    JPanel btnPanel = new JPanel();
+    btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.Y_AXIS));
+    btnPanel.add(btnReset);
+    add( btnPanel, BorderLayout.EAST);
+  }
+  
+  private JPanel stylePanel() {
+    JPanel containerPanel = new JPanel();
+    containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
     
     stylePanel = new JPanel();
     stylePanel.setLayout(new GridBagLayout());
     stylePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    add(stylePanel);
-    add(Box.createVerticalGlue());
+    containerPanel.add(Box.createVerticalGlue());
+    containerPanel.add(stylePanel);
     
     Dimension minSize = new Dimension(5, 100);
     Dimension prefSize = new Dimension(5, 100);
     Dimension maxSize = new Dimension(Short.MAX_VALUE, Short.MAX_VALUE);
-    add(new Box.Filler(minSize, prefSize, maxSize));
+    containerPanel.add(new Box.Filler(minSize, prefSize, maxSize));
+
+    
     
     cbVertex = new JCheckBox();
     cbVertex.setToolTipText(AppStrings.TIP_STYLE_VERTEX_ENABLE);
@@ -224,6 +248,7 @@ public class LayerStylePanel extends JPanel {
     cbFilled.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         geomStyle().setFilled(cbFilled.isSelected());
+        layer.resetStyle();
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
@@ -258,6 +283,8 @@ public class LayerStylePanel extends JPanel {
       }
     });
     addRow("Fill", cbFilled, btnFillColor, btnLineSynch, sliderFillAlpha);
+    
+    return containerPanel;
   }
  
   void uiUpdate() {

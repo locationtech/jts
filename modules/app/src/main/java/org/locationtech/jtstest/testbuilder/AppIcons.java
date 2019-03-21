@@ -6,6 +6,7 @@ public class AppIcons {
   public static ImageIcon EXECUTE = IconLoader.icon("Execute.png");
   public static ImageIcon SAVE_IMAGE = IconLoader.icon("SaveImage.png");
   public static ImageIcon UNDO = IconLoader.icon("Undo.png");
+  public static ImageIcon CLEAR = IconLoader.icon("Delete_small.png");
   public final static ImageIcon ICON_COLLECTION 	= IconLoader.icon("Icon_GeomCollection.png");
   public final static ImageIcon ICON_COLLECTION_B 	= IconLoader.icon("Icon_GeomCollection_B.png");
   public final static ImageIcon ICON_LINEARRING 	= IconLoader.icon("Icon_LinearRing.png");
