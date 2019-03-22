@@ -65,8 +65,10 @@ public class ResultController
     frame.setCursorWait();
     frame.getTestCasePanel().getSpatialFunctionPanel().enableExecuteControl(false);
     startFunctionMonitor();
-    runFunctionWorker(functionDesc, e.isCreateNew());
-    frame.showResultWKTTab();
+    boolean isCreateNew = e.isCreateNew();
+    runFunctionWorker(functionDesc, isCreateNew);
+    // show result unless create new, in which case new case is shown
+    if (! isCreateNew) frame.showResultWKTTab();
   }
 
   private GeometryFunctionInvocation functionInvocation(FunctionPanel functionPanel) {
