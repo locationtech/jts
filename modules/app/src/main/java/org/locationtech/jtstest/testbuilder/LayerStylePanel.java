@@ -81,11 +81,15 @@ public class LayerStylePanel extends JPanel {
     cbFilled.setSelected(geomStyle().isFilled());
     widthModel.setValue(geomStyle().getStrokeWidth());
     vertexSizeModel.setValue(layer.getLayerStyle().getVertexSize());
+    updateStyleControls();
+  }
+  
+  void updateStyleControls() {
+    ColorControl.update(btnVertexColor, layer.getLayerStyle().getVertexColor() );
+    ColorControl.update(btnLineColor, geomStyle().getLineColor() );
+    ColorControl.update(btnFillColor, geomStyle().getFillColor() );
     sliderLineAlpha.setValue(geomStyle().getLineAlpha());
     sliderFillAlpha.setValue(geomStyle().getFillAlpha());
-    btnVertexColor.setBackground(layer.getLayerStyle().getVertexColor());
-    btnLineColor.setBackground(geomStyle().getLineColor());
-    btnFillColor.setBackground(geomStyle().getFillColor());
   }
   
   private void uiInit() throws Exception {
@@ -104,7 +108,7 @@ public class LayerStylePanel extends JPanel {
       public void actionPerformed(ActionEvent arg0) {
         if (layer == null) return;
         layer.resetStyle();
-        uiUpdate();
+        updateStyleControls();
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
@@ -193,7 +197,7 @@ public class LayerStylePanel extends JPanel {
         if (layer == null) return;
         Color clr = ColorControl.getColor(btnLineColor);
         layer.getLayerStyle().setVertexColor(clr);
-        uiUpdate();
+        updateStyleControls();
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
@@ -266,7 +270,7 @@ public class LayerStylePanel extends JPanel {
         new ColorControl.ColorListener() {
           public void colorChanged(Color clr) {
             geomStyle().setFillColor(clr);
-            uiUpdate();
+            updateStyleControls();
             JTSTestBuilder.controller().geometryViewChanged();
           }
         }
@@ -274,19 +278,13 @@ public class LayerStylePanel extends JPanel {
     JButton btnLineSynch = SwingUtil.createButton("^", "Synch Line Color", new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
         geomStyle().setLineColor(lineColorFromFill( ColorControl.getColor(btnFillColor)) );
-        uiUpdate();
+        updateStyleControls();
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
     addRow("Fill", cbFilled, btnFillColor, btnLineSynch, sliderFillAlpha);
     
     return containerPanel;
-  }
- 
-  void uiUpdate() {
-    ColorControl.update(btnVertexColor, layer.getLayerStyle().getVertexColor() );
-    ColorControl.update(btnLineColor, geomStyle().getLineColor() );
-    ColorControl.update(btnFillColor, geomStyle().getFillColor() );
   }
 
   protected static Color lineColorFromFill(Color clr) {
