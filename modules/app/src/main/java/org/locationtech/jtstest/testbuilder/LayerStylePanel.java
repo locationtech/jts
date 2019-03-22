@@ -130,8 +130,6 @@ public class LayerStylePanel extends JPanel {
     Dimension maxSize = new Dimension(Short.MAX_VALUE, Short.MAX_VALUE);
     containerPanel.add(new Box.Filler(minSize, prefSize, maxSize));
 
-    
-    
     cbVertex = new JCheckBox();
     cbVertex.setToolTipText(AppStrings.TIP_STYLE_VERTEX_ENABLE);
     cbVertex.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -248,7 +246,6 @@ public class LayerStylePanel extends JPanel {
     cbFilled.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         geomStyle().setFilled(cbFilled.isSelected());
-        layer.resetStyle();
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
@@ -269,7 +266,6 @@ public class LayerStylePanel extends JPanel {
         new ColorControl.ColorListener() {
           public void colorChanged(Color clr) {
             geomStyle().setFillColor(clr);
-            //geomStyle().setLineColor(lineColorFromFill(clr));
             uiUpdate();
             JTSTestBuilder.controller().geometryViewChanged();
           }
