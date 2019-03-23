@@ -55,9 +55,10 @@ public class TestPerfRectangleClipPolygon {
   private void runClip(Geometry data) {
     Envelope dataEnv = data.getEnvelopeInternal();
 
-    for (int x = -180; x < 180; x += 10) {
-      for (int y = -90; y < 90; y += 10) {
-        Envelope env = new Envelope(x, x+10, y, y+10);
+    int gridSize = 20;
+    for (int x = -180; x < 180; x += gridSize) {
+      for (int y = -90; y < 90; y += gridSize) {
+        Envelope env = new Envelope(x, x+gridSize, y, y+gridSize);
         Geometry rect = factory.toGeometry(env);
         runClip(rect, data);
       }
@@ -81,12 +82,11 @@ public class TestPerfRectangleClipPolygon {
     Geometry result;
     if (env.contains(geom.getEnvelopeInternal())) {
       return geom.copy();
-    }
-    if (! env.intersects(geom.getEnvelopeInternal()))
-      return null;
-    if (rect.intersects(geom))
-      return rect.intersection(geom);
-    return null;
+    }    
+    // Use intersects check first as that is faster
+    if (! rect.intersects(geom)) return null;
+    
+    return rect.intersection(geom);
   }
   
   private Envelope envelope(List<Geometry> world) {

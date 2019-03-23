@@ -33,6 +33,14 @@ public class ClipFunctions {
     
     return rectangle.intersection(geom);
   }
+  
+  public static Geometry clipByIntersectionOpt(Geometry geom, Geometry rectangle) {
+    // short-circuit check
+    Envelope rectEnv = rectangle.getEnvelopeInternal();
+    if (rectEnv.contains(geom.getEnvelopeInternal())) return geom.copy();
+    if (! rectangle.intersects(geom)) return null;
+    return rectangle.intersection(geom);
+  }
 
 
 }
