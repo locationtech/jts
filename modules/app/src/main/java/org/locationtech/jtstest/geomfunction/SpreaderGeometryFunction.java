@@ -5,8 +5,6 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.util.GeometryMapper;
-import org.locationtech.jts.geom.util.GeometryMapper.MapOp;
 
 public class SpreaderGeometryFunction implements GeometryFunction {
 
@@ -55,31 +53,6 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     return fun.isBinary();
   }
   
-  public Object OLDinvoke(Geometry geom, Object[] args) {
-    /*
-    int nElt = geom.getNumGeometries();
-    Geometry[] results = new Geometry[nElt];
-    for (int i = 0; i < nElt; i++) {
-      Geometry elt = geom.getGeometryN(i);
-      Geometry result = (Geometry) fun.invoke(elt, args);
-      // can't include null results
-      if (result == null) continue;
-      
-      //FunctionsUtil.showIndicator(result);
-      results[i] = result;
-    }
-    return geom.getFactory().createGeometryCollection(results);
-    */
-    return GeometryMapper.map(geom, new MapOp() {
-      public Geometry map(Geometry g)
-      {
-        Geometry result = (Geometry) fun.invoke(g, args);
-        if (result.isEmpty()) return null;
-        return result;
-      }
-    });
-
-  }
   public Object invoke(Geometry geom, Object[] args) {
     List<Geometry> result = new ArrayList<Geometry>();
     if (isEachA) {
@@ -121,8 +94,8 @@ public class SpreaderGeometryFunction implements GeometryFunction {
   }
 
   private void invokeEachB(Geometry geom, Object[] args, List<Geometry> result) {
-    Geometry geomB = (Geometry) args[0];
     Object[] argsCopy = args.clone();
+    Geometry geomB = (Geometry) args[0];
     int nElt = geomB.getNumGeometries();
     for (int i = 0; i < nElt; i++) {
       Geometry geomBN = geomB.getGeometryN(i);
@@ -133,11 +106,23 @@ public class SpreaderGeometryFunction implements GeometryFunction {
 
   private void invokeFun(Geometry geom, Object[] args, List<Geometry> result) {
     Geometry resultGeom = (Geometry) fun.invoke(geom, args);
-    if (resultGeom == null) return;
-    if (resultGeom.isEmpty()) return;
+    // don't keep null / empty geoms
+    if (resultGeom == null || resultGeom.isEmpty()) return;
     //FunctionsUtil.showIndicator(resultGeom);
     result.add(resultGeom);
   }
 
-
+  /*
+  public Object OLDinvoke(Geometry geom, Object[] args) {
+    return GeometryMapper.map(geom, new MapOp() {
+      public Geometry map(Geometry g)
+      {
+        Geometry result = (Geometry) fun.invoke(g, args);
+        if (result.isEmpty()) return null;
+        return result;
+      }
+    });
+  }
+  */
+  
 }

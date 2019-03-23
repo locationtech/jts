@@ -357,7 +357,7 @@ extends JPanel implements FunctionPanel
     return cbExecRepeat.isSelected();
   }
   private boolean isFunctionEach() {
-    return cbExecEachA.isSelected() || cbExecEachA.isSelected();
+    return cbExecEachA.isSelected() || cbExecEachB.isSelected();
   }
   private boolean isEachA() {
     return cbExecEachA.isSelected();
