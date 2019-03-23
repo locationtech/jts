@@ -11,6 +11,7 @@
  */
 package org.locationtech.jtslab;
 
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jtslab.clip.RectangleClipPolygon;
@@ -24,4 +25,14 @@ public class ClipFunctions {
   public static Geometry clipPolyPrecise(Geometry geom, Geometry rectangle, double scaleFactor) {
     return RectangleClipPolygon.clip(geom, rectangle, new PrecisionModel(scaleFactor));
   }
+  
+  public static Geometry clipByIntersection(Geometry geom, Geometry rectangle) {
+    // short-circuit check
+    Envelope rectEnv = rectangle.getEnvelopeInternal();
+    if (rectEnv.contains(geom.getEnvelopeInternal())) return geom.copy();
+    
+    return rectangle.intersection(geom);
+  }
+
+
 }
