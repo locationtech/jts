@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKTFileReader;
 import org.locationtech.jts.io.WKTReader;
@@ -18,7 +19,7 @@ public class TestPerfRectangleClipPolygon {
   public static void main(String[] args) {
     TestPerfRectangleClipPolygon test = new TestPerfRectangleClipPolygon();
     try {
-      test.test();
+      test.run();
     }
     catch (Exception ex) {
       ex.printStackTrace();
@@ -29,22 +30,30 @@ public class TestPerfRectangleClipPolygon {
     return (List<Geometry>) fileRdr.read();
   }
   
-  private void test() {
-    List<Geometry> world = null;
-    try {
-       world = readWKTFile("testdata/world.wkt");
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+  private void run() {
+    Geometry data = loadData();
+    
+    System.out.println("Dataset: # geometries = " + data.getNumGeometries()
+        + "   # pts = " + data.getNumPoints());
     
     Stopwatch sw = new Stopwatch();
     
-    runClip(world);
+    runClip(data);
     System.out.println("Time: " + sw.getTimeString());
   }
   
-  private void runClip(List<Geometry> data) {
-    Envelope dataEnv = envelope(data);
+  private GeometryCollection loadData() {
+    List<Geometry> data = null;
+    try {
+       data = readWKTFile("testdata/world.wkt");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return factory.createGeometryCollection(GeometryFactory.toGeometryArray(data));
+  }
+  
+  private void runClip(Geometry data) {
+    Envelope dataEnv = data.getEnvelopeInternal();
 
     for (int x = -180; x < 180; x += 10) {
       for (int y = -90; y < 90; y += 10) {
@@ -54,8 +63,9 @@ public class TestPerfRectangleClipPolygon {
       }
     }
   }
-  private void runClip(Geometry rect, List<Geometry> data) {
-    for (Geometry geom : data) {
+  private void runClip(Geometry rect,Geometry data) {
+    for (int i = 0; i < data.getNumGeometries(); i++) {
+      Geometry geom = data.getGeometryN(i);
       clip(rect, geom);
       //rectangleIntersection(rect, geom);
     }

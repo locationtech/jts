@@ -209,11 +209,11 @@ public class RectangleClipPolygon {
       if (coords == null) return null;
 
       //if (isOutsideEdge(currentCoordsEnv, edgeIndex)) return null;
-
     }
     return coords;
   }
   
+  /*
   private boolean isInsideEdge(Envelope env, int edgeIndex) {
     switch (edgeIndex) {
     case ENV_BOTTOM: 
@@ -242,8 +242,9 @@ public class RectangleClipPolygon {
     }
   }
 
-  //Envelope currentCoordsEnv;
-
+  Envelope currentCoordsEnv;
+  */
+  
   /**
    * Clips ring to an axis-parallel line defined by the given box edge.
    * 
