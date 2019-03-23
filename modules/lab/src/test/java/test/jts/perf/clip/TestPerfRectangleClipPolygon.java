@@ -1,0 +1,89 @@
+package test.jts.perf.clip;
+
+import java.util.List;
+
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.WKTFileReader;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.Stopwatch;
+import org.locationtech.jtslab.clip.RectangleClipPolygon;
+
+public class TestPerfRectangleClipPolygon {
+  
+  static GeometryFactory factory = new GeometryFactory();
+  
+  public static void main(String[] args) {
+    TestPerfRectangleClipPolygon test = new TestPerfRectangleClipPolygon();
+    try {
+      test.test();
+    }
+    catch (Exception ex) {
+      ex.printStackTrace();
+    }
+  }
+  public static List<Geometry> readWKTFile(String filename) throws Exception {
+    WKTFileReader fileRdr = new WKTFileReader(filename, new WKTReader());
+    return (List<Geometry>) fileRdr.read();
+  }
+  
+  private void test() {
+    List<Geometry> world = null;
+    try {
+       world = readWKTFile("testdata/world.wkt");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
+    Stopwatch sw = new Stopwatch();
+    
+    runClip(world);
+    System.out.println("Time: " + sw.getTimeString());
+  }
+  
+  private void runClip(List<Geometry> data) {
+    Envelope dataEnv = envelope(data);
+
+    for (int x = -180; x < 180; x += 10) {
+      for (int y = -90; y < 90; y += 10) {
+        Envelope env = new Envelope(x, x+10, y, y+10);
+        Geometry rect = factory.toGeometry(env);
+        runClip(rect, data);
+      }
+    }
+  }
+  private void runClip(Geometry rect, List<Geometry> data) {
+    for (Geometry geom : data) {
+      clip(rect, geom);
+      //rectangleIntersection(rect, geom);
+    }
+  }
+  
+  private Geometry clip(Geometry rect, Geometry geom) {
+    RectangleClipPolygon clipper = new RectangleClipPolygon(rect);
+    return clipper.clip(geom);
+  }
+  
+  private Geometry rectangleIntersection(Geometry rect, Geometry geom) {
+    Envelope env = rect.getEnvelopeInternal();
+    Geometry result;
+    if (env.contains(geom.getEnvelopeInternal())) {
+      return geom.copy();
+    }
+    if (! env.intersects(geom.getEnvelopeInternal()))
+      return null;
+    if (rect.intersects(geom))
+      return rect.intersection(geom);
+    return null;
+  }
+  
+  private Envelope envelope(List<Geometry> world) {
+    Envelope env = new Envelope();
+    for (Geometry geom : world) {
+      env.expandToInclude(geom.getEnvelopeInternal());
+    }
+    return env;
+  }
+}

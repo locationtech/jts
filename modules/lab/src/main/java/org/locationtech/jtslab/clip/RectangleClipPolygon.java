@@ -62,12 +62,20 @@ public class RectangleClipPolygon {
   private double clipEnvMaxX;
   private PrecisionModel precModel;
   
+  public RectangleClipPolygon(Envelope clipEnv) {
+    this(clipEnv, new PrecisionModel(PrecisionModel.FLOATING));
+  }
+  
   public RectangleClipPolygon(Geometry clipRectangle) {
     this(clipRectangle, new PrecisionModel(PrecisionModel.FLOATING));
   }
   
   public RectangleClipPolygon(Geometry clipRectangle, PrecisionModel pm) {
-    clipEnv = clipRectangle.getEnvelopeInternal();
+    this(clipRectangle.getEnvelopeInternal(), pm);
+  }
+
+  public RectangleClipPolygon(Envelope clipEnv, PrecisionModel pm) {
+    this.clipEnv = clipEnv;
     clipEnvMinY = clipEnv.getMinY();
     clipEnvMaxY = clipEnv.getMaxY();
     clipEnvMinX = clipEnv.getMinX();
@@ -111,7 +119,7 @@ public class RectangleClipPolygon {
   public Geometry clipCollection(Geometry geom) {
     if (isOutsideRectangle(geom)) return null;
     // TODO: need to precision reduce
-    if (isInsideRectangle(geom)) return (Polygon) geom.copy();
+    if (isInsideRectangle(geom)) return geom.copy();
 
     List<Geometry> geomsClip = new ArrayList<Geometry>(); 
     for (int i = 0; i < geom.getNumGeometries(); i++) {
@@ -161,7 +169,9 @@ public class RectangleClipPolygon {
     // TODO: need to precision reduce
     if (isInsideRectangle(ring)) return (LinearRing) ring.copy();
     
-    Coordinate[] pts = clipRingToBox(ring.getCoordinates()); 
+    Coordinate[] pts = clipRingToBox(ring.getCoordinates());
+    // check for a collapsed ring
+    if (pts == null || pts.length < 4) return null;
     return ring.getFactory().createLinearRing(pts);
   }
 
