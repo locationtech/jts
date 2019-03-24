@@ -132,6 +132,11 @@ public class SegmentNodeList
     SegmentNode eiPrev = (SegmentNode) it.next();
     while (it.hasNext()) {
       SegmentNode ei = (SegmentNode) it.next();
+
+      if (ei.compareTo(eiPrev) == 0) {
+        continue;
+      }
+
       boolean isCollapsed = findCollapseIndex(eiPrev, ei, collapsedVertexIndex);
       if (isCollapsed)
         collapsedVertexIndexes.add(new Integer(collapsedVertexIndex[0]));
@@ -226,7 +231,12 @@ public class SegmentNodeList
     // add it to the points list as well.
     // (This check is needed because the distance metric is not totally reliable!)
     // The check for point equality is 2D only - Z values are ignored
-    boolean useIntPt1 = ei1.isInterior() || ! ei1.coord.equals2D(lastSegStartPt);
+
+    // Added check for npts being == 2 as in that case NOT using second point
+    // would mean creating a SegmentString with a single point
+    // FIXME: check with mbdavis about this, ie: is it a bug in the caller ?
+    //
+    boolean useIntPt1 = npts == 2 || (ei1.isInterior() || !ei1.coord.equals2D(lastSegStartPt));
     if (! useIntPt1) {
       npts--;
     }
@@ -277,7 +287,12 @@ public class SegmentNodeList
     // add it to the points list as well.
     // (This check is needed because the distance metric is not totally reliable!)
     // The check for point equality is 2D only - Z values are ignored
-    boolean useIntPt1 = ei1.isInterior() || ! ei1.coord.equals2D(lastSegStartPt);
+
+    // Added check for npts being == 2 as in that case NOT using second point
+    // would mean creating a SegmentString with a single point
+    // FIXME: check with mbdavis about this, ie: is it a bug in the caller ?
+    //
+    boolean useIntPt1 = npts == 2 || (ei1.isInterior() || !ei1.coord.equals2D(lastSegStartPt));
     if (! useIntPt1) {
       npts--;
     }
