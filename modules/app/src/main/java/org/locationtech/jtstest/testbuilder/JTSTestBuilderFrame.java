@@ -377,9 +377,17 @@ public class JTSTestBuilderFrame extends JFrame
     if (! (currResult instanceof Geometry))
       return;
     tbModel.addCase(new Geometry[] { (Geometry) currResult, null }, 
-    		"Result of " + tbModel.getOpName());
+        "Result of " + tbModel.getOpName());
     updateTestCaseView();
     testListPanel.populateList();  
+  }
+  
+  public void inspectResult() 
+  {
+    Object currResult = tbModel.getResult();
+    if (! (currResult instanceof Geometry))
+      return;
+    inspectGeometry((Geometry) currResult, 0, "R");
   }
   
   void actionDeleteCase() {
@@ -397,14 +405,18 @@ public class JTSTestBuilderFrame extends JFrame
     int geomIndex = tbModel.getGeometryEditModel().getGeomIndex();
     String tag = geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B;
     Geometry geometry = currentCase().getGeometry(geomIndex);
-    inspectPanel.setGeometry( tag, geometry, geomIndex);
-    showTab(AppStrings.TAB_LABEL_INSPECT);
+    inspectGeometry(geometry, geomIndex, tag);
     /*
     geomInspectorDlg.setGeometry(
         geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B,
         tbModel.getCurrentTestCaseEdit().getGeometry(geomIndex));
         */
     //geomInspectorDlg.setVisible(true);
+  }
+
+  public void inspectGeometry(Geometry geometry, int geomIndex, String tag) {
+    inspectPanel.setGeometry( tag, geometry, geomIndex);
+    showTab(AppStrings.TAB_LABEL_INSPECT);
   }
 
   public void actionInspectGeometryDialog() {

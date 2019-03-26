@@ -155,8 +155,6 @@ public class WKTPanel extends JPanel
         panelButtons.add(btnUndo);
         
 
-
-        
         panelAB.setLayout(gridBagLayout2);
         
         aLabel.setFont(new java.awt.Font("Dialog", 1, 16));

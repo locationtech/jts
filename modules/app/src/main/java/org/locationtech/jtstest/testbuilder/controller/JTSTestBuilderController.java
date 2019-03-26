@@ -160,6 +160,11 @@ public class JTSTestBuilderController
     JTSTestBuilderFrame.instance().actionInspectGeometry();
   }
 
+  public void inspectResult()
+  {
+    JTSTestBuilderFrame.instance().inspectResult();
+  }
+
   public void inspectGeometryDialog()
   {
     JTSTestBuilderFrame.instance().actionInspectGeometryDialog();
