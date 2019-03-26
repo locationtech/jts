@@ -107,7 +107,7 @@ public class WKTPanel extends JPanel
     public WKTPanel(JTSTestBuilderFrame tbFrame) {
       this.tbFrame = tbFrame;
         try {
-            jbInit();
+            uiInit();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -120,10 +120,8 @@ public class WKTPanel extends JPanel
         setFocusGeometry(0);
   }
 
-    void jbInit() throws Exception {
+    void uiInit() throws Exception {
         titledBorder1 = new TitledBorder("");
-        this.setLayout(gridBagLayout1);
-        this.setPreferredSize(new java.awt.Dimension(394, 176));
         
         loadButton.setMaximumSize(new Dimension(38, 38));
         loadButton.setPreferredSize(new Dimension(38, 38));
@@ -149,6 +147,7 @@ public class WKTPanel extends JPanel
         });
         btnUndo.setMaximumSize(new Dimension(38, 30));
         Box panelButtons = Box.createVerticalBox();
+        panelButtons.setPreferredSize(new java.awt.Dimension(30, 30));
         panelButtons.add(loadButton);
         panelButtons.add(Box.createVerticalStrut(20));
         panelButtons.add(exchangeButton);
@@ -268,14 +267,6 @@ public class WKTPanel extends JPanel
         bPanel.add(bScrollPane, BorderLayout.CENTER);
         //bPanel.add(bButtonPanel, BorderLayout.EAST);
         
-        this.add(
-            panelAB,
-            new GridBagConstraints(0, 1, 1, 2,
-                1.0, 1.0,
-                GridBagConstraints.CENTER,
-                GridBagConstraints.BOTH,
-                new Insets(0, 0, 0, 0),
-                0, 0));
         panelAB.add(
         		aPanel,
             new GridBagConstraints(1, 0, 1, 1,
@@ -295,6 +286,17 @@ public class WKTPanel extends JPanel
         bScrollPane.getViewport().add(bTextArea, null);
         aScrollPane.getViewport().add(aTextArea, null);
         
+        /*
+        this.setLayout(gridBagLayout1);
+        this.setPreferredSize(new java.awt.Dimension(394, 176));
+        this.add(
+            panelAB,
+            new GridBagConstraints(0, 1, 1, 2,
+                1.0, 1.0,
+                GridBagConstraints.CENTER,
+                GridBagConstraints.BOTH,
+                new Insets(0, 0, 0, 0),
+                0, 0));
         this.add(
             panelButtons,
             new GridBagConstraints( 1, 1, 1, 1,
@@ -303,6 +305,11 @@ public class WKTPanel extends JPanel
                 GridBagConstraints.NONE,
                 new Insets(2, 2, 0, 2),
                 0, 0));
+        */
+        
+        this.setLayout(new BorderLayout());
+        this.add(panelAB, BorderLayout.CENTER);
+        this.add(panelButtons, BorderLayout.EAST);
         
         loadButton.addActionListener(
             new ActionListener() {
