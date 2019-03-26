@@ -225,7 +225,11 @@ abstract class GeometryNode extends GeometricObjectNode
         buf.append(" " + sizeString(size));
       }
     }
-    buf.append("  -  "  + GeometryUtil.metricsSummary(geom) );
+    String metrics = GeometryUtil.metricsSummary(geom);
+    if (metrics.length() > 0) {
+      buf.append("  -  ");
+    }
+    buf.append( metrics );
     
     return buf.toString();
   }
@@ -511,3 +515,4 @@ class CoordinateNode extends GeometricObjectNode
     throw new IllegalStateException("should not be here");
   }
 }
+
