@@ -41,7 +41,8 @@ public class GeometryResult implements Result {
     Geometry otherGeometryClone =(Geometry) otherGeometry.clone();
     thisGeometryClone.normalize();
     otherGeometryClone.normalize();
-    return thisGeometryClone.equalsExact(otherGeometryClone, tolerance);
+    boolean isEqual = thisGeometryClone.equalsExact(otherGeometryClone, tolerance);
+    return isEqual;
   }
 
   public String toLongString() {
