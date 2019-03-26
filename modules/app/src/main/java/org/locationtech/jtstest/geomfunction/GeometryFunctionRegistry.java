@@ -26,6 +26,7 @@ import org.locationtech.jtstest.function.ConversionFunctions;
 import org.locationtech.jtstest.function.CreateFractalShapeFunctions;
 import org.locationtech.jtstest.function.CreateRandomShapeFunctions;
 import org.locationtech.jtstest.function.CreateShapeFunctions;
+import org.locationtech.jtstest.function.DiffFunctions;
 import org.locationtech.jtstest.function.DissolveFunctions;
 import org.locationtech.jtstest.function.DistanceFunctions;
 import org.locationtech.jtstest.function.DoubleKeyMap;
@@ -83,6 +84,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(SelectionFunctions.class);
     funcRegistry.add(SimplificationFunctions.class);
     funcRegistry.add(AffineTransformationFunctions.class);
+    funcRegistry.add(DiffFunctions.class);
     funcRegistry.add(DissolveFunctions.class);
     funcRegistry.add(DistanceFunctions.class);
     funcRegistry.add(CreateShapeFunctions.class);
