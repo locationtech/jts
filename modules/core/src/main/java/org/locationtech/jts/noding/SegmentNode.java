@@ -79,4 +79,8 @@ public class SegmentNode
     out.print(coord);
     out.print(" seg # = " + segmentIndex);
   }
+  
+  public String toString() {
+    return segmentIndex + ":" + coord.toString();
+  }
 }
