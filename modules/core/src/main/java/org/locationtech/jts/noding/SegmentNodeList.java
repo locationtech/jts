@@ -221,6 +221,16 @@ public class SegmentNodeList
     return new NodedSegmentString(pts, edge.getData());
   }
   
+  /**
+   * Extracts the points for a split edge running between two nodes.
+   * The extracted points should contain no duplicate points.
+   * There should always be at least two points extracted
+   * (which will be the given nodes).
+   * 
+   * @param ei0 the start node of the split edge
+   * @param ei1 the end node of the split edge
+   * @return the points for the split edge
+   */
   private Coordinate[] createSplitEdgePts(SegmentNode ei0, SegmentNode ei1) {
 //Debug.println("\ncreateSplitEdge"); Debug.print(ei0); Debug.print(ei1);
     int npts = ei1.segmentIndex - ei0.segmentIndex + 2;
