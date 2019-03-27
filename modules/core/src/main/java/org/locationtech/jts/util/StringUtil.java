@@ -17,9 +17,12 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Utility methods for working with {@link String}s.
@@ -29,6 +32,41 @@ import java.util.ArrayList;
  */
 public class StringUtil
 {
+
+  private static final DecimalFormatSymbols DECIMAL_FORMAT_SYMBOLS;
+  private static String DECIMAL_FORMAT_PATTERN;
+  private static NumberFormat SIMPLE_ORDINATE_FORMAT;
+
+  /**
+   * Static initialization of {@linkplain #SIMPLE_ORDINATE_FORMAT}
+   */
+  static {
+    DECIMAL_FORMAT_SYMBOLS = new DecimalFormatSymbols(Locale.ENGLISH);
+    setDecimalFormatPattern("0.#");
+  }
+
+  /**
+   * Gets the pattern used to print numbers using {@linkplain #toString(double)} function
+   *
+   * @return the pattern
+   */
+  public static String getDecimalFormatPattern() {
+    return DECIMAL_FORMAT_PATTERN;
+  }
+
+  /**
+   * Sets the pattern used to print numbers using {@linkplain #toString(double)} function
+   *
+   * @param pattern a pattern
+   */
+  public static void setDecimalFormatPattern(String pattern) {
+    DecimalFormat df = new DecimalFormat(pattern, DECIMAL_FORMAT_SYMBOLS);
+    // TODO: is this desired?
+    df.setRoundingMode(RoundingMode.HALF_UP);
+    DECIMAL_FORMAT_PATTERN = pattern;
+    SIMPLE_ORDINATE_FORMAT = df;
+  }
+
   /**
    * Mimics the the Java SE {@link String#split(String)} method.
    *
@@ -83,8 +121,6 @@ public class StringUtil
      return stackTrace;
  }
 
-  private static NumberFormat SIMPLE_ORDINATE_FORMAT = new DecimalFormat("0.#");
-  
   public static String toString(double d)
   {
     return SIMPLE_ORDINATE_FORMAT.format(d);
