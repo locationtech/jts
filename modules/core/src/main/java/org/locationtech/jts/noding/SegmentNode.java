@@ -70,6 +70,11 @@ public class SegmentNode
 
     if (coord.equals2D(other.coord)) return 0;
 
+    // an exterior node is the segment start point, so always sorts first
+    // this guards against a robustness problem where the octants are not reliable
+    //if (! isInterior) return -1;
+    //if (! other.isInterior) return 1;
+    
     return SegmentPointComparator.compare(segmentOctant, coord, other.coord);
     //return segment.compareNodePosition(this, other);
   }

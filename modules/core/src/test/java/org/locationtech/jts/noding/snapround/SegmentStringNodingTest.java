@@ -20,6 +20,7 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.noding.NodedSegmentString;
+import org.locationtech.jts.noding.SegmentString;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
@@ -31,10 +32,15 @@ import junit.textui.TestRunner;
  * This test reveals a bug in SegmentNodeList.createSplitEdge()
  * which can create 1-point Segment Strings
  * if the input is incorrectly noded due to robustness issues.
+ * It also reveals a limitation in SegmentNode sorting which
+ * can cause nodes to sort wrongly if their coordinates are very close 
+ * and they are relatively far off the line segment containing them.
+ * This is actually outside of the operating regime of the SegmentNode comparison,
+ * but in there is a simple fix which handles some cases like these.
  * 
  * See https://github.com/locationtech/jts/pull/395
  *
- * @version 1.7
+ * @version 1.17
  */
 public class SegmentStringNodingTest  extends TestCase {
 
@@ -67,8 +73,25 @@ public class SegmentStringNodingTest  extends TestCase {
     @SuppressWarnings("unchecked")
     List<NodedSegmentString> noded = NodedSegmentString.getNodedSubstrings(strings);
     for (NodedSegmentString s : noded) {
-      assertTrue(s.size() >= 2);
+      assertTrue("Found a 1-point segmentstring", s.size() >= 2);
+      assertTrue("Found a collapsed edge", ! isCollapsed(s) );
     }
+  }
+
+  /**
+   * Test if the segmentString is a collapsed edge 
+   * of the form ABA.
+   * These should not be returned by noding. 
+   *
+   * @param s a segmentString
+   * @return true if the segmentString is collapsed
+   */
+  private boolean isCollapsed(SegmentString s) {
+    if (s.size() != 3) return false;
+    boolean isEndsEqual = s.getCoordinate(0).equals2D(s.getCoordinate(2));
+    boolean isMiddleDifferent = ! s.getCoordinate(0).equals2D(s.getCoordinate(1));
+    boolean isCollapsed = isEndsEqual && isMiddleDifferent;
+    return isCollapsed;
   }
   
 
