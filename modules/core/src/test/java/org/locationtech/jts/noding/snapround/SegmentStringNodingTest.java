@@ -15,14 +15,11 @@ package org.locationtech.jts.noding.snapround;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.noding.NodedSegmentString;
-import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
@@ -51,28 +48,28 @@ public class SegmentStringNodingTest  extends TestCase {
   
   public void testThinTriangle() throws Exception {
     String wkt = "LINESTRING ( 55121.54481117887 42694.49730855581, 55121.54481117887 42694.4973085558, 55121.458748617406 42694.419143944244, 55121.54481117887 42694.49730855581 )";
-    Geometry g = new WKTReader().read(wkt);
-    List<NodedSegmentString> strings = new ArrayList<>();
-    strings.add(new NodedSegmentString(g.getCoordinates(), null));
     PrecisionModel pm = new PrecisionModel(1.1131949079327356E11);
-    new MCIndexSnapRounder(pm).computeNodes(strings);
-    strings.get(0).getNodeList().addSplitEdges(strings);
-    for (NodedSegmentString s : strings) {
-      assertTrue(s.size() >= 2);
-  }
+    checkNodedStrings(wkt, pm);
 }
-  
+
   public void testSegmentLength1Failure() throws Exception {
-    PrecisionModel pm = new PrecisionModel(1.11E10);
     String wkt = "LINESTRING ( -1677607.6366504875 -588231.47100446, -1674050.1010869485 -587435.2186255794, -1670493.6527468169 -586636.7948791061, -1424286.3681743187 -525586.1397894835, -1670493.6527468169 -586636.7948791061, -1674050.1010869485 -587435.2186255795, -1677607.6366504875 -588231.47100446)";
+    PrecisionModel pm = new PrecisionModel(1.11E10);
+    checkNodedStrings(wkt, pm);
+  }
+  
+  private void checkNodedStrings(String wkt, PrecisionModel pm) throws ParseException {
     Geometry g = new WKTReader().read(wkt);
     List<NodedSegmentString> strings = new ArrayList<>();
     strings.add(new NodedSegmentString(g.getCoordinates(), null));
     new MCIndexSnapRounder(pm).computeNodes(strings);
-    strings.get(0).getNodeList().addSplitEdges(strings);
-    for (NodedSegmentString s : strings) {
+    
+    @SuppressWarnings("unchecked")
+    List<NodedSegmentString> noded = NodedSegmentString.getNodedSubstrings(strings);
+    for (NodedSegmentString s : noded) {
       assertTrue(s.size() >= 2);
     }
   }
   
+
 }
