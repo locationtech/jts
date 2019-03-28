@@ -208,7 +208,6 @@ public class SegmentNodeList
     Coordinate ptn = splitnPts[splitnPts.length - 1];
     if (! ptn.equals2D(edgePts[edgePts.length - 1]))
       throw new RuntimeException("bad split edge end point at " + ptn);
-
   }
 
   /**
@@ -216,16 +215,39 @@ public class SegmentNodeList
    * (and including) the two intersections.
    * The label for the new edge is the same as the label for the parent edge.
    */
-  SegmentString createSplitEdge(SegmentNode ei0, SegmentNode ei1)
+  private SegmentString createSplitEdge(SegmentNode ei0, SegmentNode ei1)
   {
+    Coordinate[] pts = createSplitEdgePts(ei0, ei1);
+    return new NodedSegmentString(pts, edge.getData());
+  }
+  
+  /**
+   * Extracts the points for a split edge running between two nodes.
+   * The extracted points should contain no duplicate points.
+   * There should always be at least two points extracted
+   * (which will be the given nodes).
+   * 
+   * @param ei0 the start node of the split edge
+   * @param ei1 the end node of the split edge
+   * @return the points for the split edge
+   */
+  private Coordinate[] createSplitEdgePts(SegmentNode ei0, SegmentNode ei1) {
 //Debug.println("\ncreateSplitEdge"); Debug.print(ei0); Debug.print(ei1);
     int npts = ei1.segmentIndex - ei0.segmentIndex + 2;
 
+    // if only two points in split edge they must be the node points
+    if (npts == 2) return new Coordinate[] { new Coordinate(ei0.coord), new Coordinate(ei1.coord) };
+    
     Coordinate lastSegStartPt = edge.getCoordinate(ei1.segmentIndex);
-    // if the last intersection point is not equal to the its segment start pt,
-    // add it to the points list as well.
-    // (This check is needed because the distance metric is not totally reliable!)
-    // The check for point equality is 2D only - Z values are ignored
+    /**
+     * If the last intersection point is not equal to the its segment start pt,
+     * add it to the points list as well.
+     * This check is needed because the distance metric is not totally reliable!
+     * 
+     * Also ensure that the created edge always has at least 2 points.
+     * 
+     * The check for point equality is 2D only - Z values are ignored
+     */
     boolean useIntPt1 = ei1.isInterior() || ! ei1.coord.equals2D(lastSegStartPt);
     if (! useIntPt1) {
       npts--;
@@ -238,8 +260,7 @@ public class SegmentNodeList
       pts[ipt++] = edge.getCoordinate(i);
     }
     if (useIntPt1) pts[ipt] = new Coordinate(ei1.coord);
-
-    return new NodedSegmentString(pts, edge.getData());
+    return pts;
   }
 
   /**
@@ -270,26 +291,8 @@ public class SegmentNodeList
 
   private void addEdgeCoordinates(SegmentNode ei0, SegmentNode ei1,
       CoordinateList coordList) {
-    int npts = ei1.segmentIndex - ei0.segmentIndex + 2;
-
-    Coordinate lastSegStartPt = edge.getCoordinate(ei1.segmentIndex);
-    // if the last intersection point is not equal to the its segment start pt,
-    // add it to the points list as well.
-    // (This check is needed because the distance metric is not totally reliable!)
-    // The check for point equality is 2D only - Z values are ignored
-    boolean useIntPt1 = ei1.isInterior() || ! ei1.coord.equals2D(lastSegStartPt);
-    if (! useIntPt1) {
-      npts--;
-    }
-
-    int ipt = 0;
-    coordList.add(new Coordinate(ei0.coord), false);
-    for (int i = ei0.segmentIndex + 1; i <= ei1.segmentIndex; i++) {
-      coordList.add(edge.getCoordinate(i));
-    }
-    if (useIntPt1) {
-      coordList.add(new Coordinate(ei1.coord));
-    }
+    Coordinate[] pts = createSplitEdgePts(ei0, ei1);
+    coordList.add(pts, false);
   }
 
   public void print(PrintStream out)
@@ -367,3 +370,4 @@ class NodeVertexIterator
   }
 
 }
+
