@@ -216,7 +216,7 @@ public class LinearLocation
     componentIndex = linear.getNumGeometries() - 1;
     LineString lastLine = (LineString) linear.getGeometryN(componentIndex);
     segmentIndex = lastLine.getNumPoints() - 1;
-    segmentFraction = 1.0;
+    segmentFraction = 0.0;
   }
 
   /**
