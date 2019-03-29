@@ -55,6 +55,24 @@ public class LinearLocationTest
     assertTrue(loc0.compareTo(new LinearLocation(1, 0.1)) == 0);
   }
   
+  public void testEndLocation() throws Exception
+  {
+    Geometry line = reader.read("LINESTRING (10 0, 20 0)");
+    LinearLocation loc0 = LinearLocation.getEndLocation(line);
+    assertTrue(0 == loc0.getSegmentFraction());
+    assertTrue(1 == loc0.getSegmentIndex());
+    
+    LocationIndexedLine indexedLine = new LocationIndexedLine(line);
+    LinearLocation endLoc = indexedLine.getEndIndex();
+    LinearLocation normLoc = new LinearLocation(
+        endLoc.getComponentIndex(), 
+        endLoc.getSegmentIndex(), 
+        endLoc.getSegmentFraction());
+    assertTrue(normLoc.getComponentIndex() == endLoc.getComponentIndex());
+    assertTrue(normLoc.getSegmentIndex() == endLoc.getSegmentIndex());
+    assertTrue(normLoc.getSegmentFraction() == endLoc.getSegmentFraction());
+  }
+
   public void testSameSegmentLineString() throws Exception
   {
     Geometry line = reader.read("LINESTRING (0 0, 10 0, 20 0, 30 0)");
