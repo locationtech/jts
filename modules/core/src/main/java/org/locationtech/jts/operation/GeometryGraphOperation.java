@@ -27,7 +27,7 @@ import org.locationtech.jts.geomgraph.GeometryGraph;
  */
 public class GeometryGraphOperation
 {
-  protected final LineIntersector li = new RobustLineIntersector();
+  protected final LineIntersector li;
   protected PrecisionModel resultPrecisionModel;
 
   /**
@@ -35,16 +35,28 @@ public class GeometryGraphOperation
    */
   protected GeometryGraph[] arg;  // the arg(s) of the operation
 
-  public GeometryGraphOperation(Geometry g0, Geometry g1)
+  /** @deprecated Specify {@linkplain LineIntersector} to use */
+  public GeometryGraphOperation(Geometry g0, Geometry g1) {
+    this(new RobustLineIntersector(), g0, g1);
+  }
+
+  public GeometryGraphOperation(LineIntersector li, Geometry g0, Geometry g1)
   {
-    this(g0, g1,
+    this(li, g0, g1,
          BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE
 //         BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE
          );
   }
+  /** @deprecated Specify {@linkplain LineIntersector} to use */
+  public GeometryGraphOperation(Geometry g0, Geometry g1, BoundaryNodeRule boundaryNodeRule) {
+    this(new RobustLineIntersector(), g0, g1, boundaryNodeRule);
+  }
 
-  public GeometryGraphOperation(Geometry g0, Geometry g1, BoundaryNodeRule boundaryNodeRule)
+  public GeometryGraphOperation(LineIntersector li,  Geometry g0, Geometry g1, BoundaryNodeRule boundaryNodeRule)
   {
+    // assign the line intersector
+    this.li = li;
+
     // use the most precise model for the result
     if (g0.getPrecisionModel().compareTo(g1.getPrecisionModel()) >= 0)
       setComputationPrecision(g0.getPrecisionModel());
@@ -57,10 +69,15 @@ public class GeometryGraphOperation
   }
 
   public GeometryGraphOperation(Geometry g0) {
+    this(new RobustLineIntersector(), g0);
+  }
+
+  public GeometryGraphOperation(LineIntersector li, Geometry g0) {
+    this.li = li;
     setComputationPrecision(g0.getPrecisionModel());
 
     arg = new GeometryGraph[1];
-    arg[0] = new GeometryGraph(0, g0);;
+    arg[0] = new GeometryGraph(0, g0);
   }
 
   public Geometry getArgGeometry(int i) { return arg[i].getGeometry(); }
@@ -68,6 +85,7 @@ public class GeometryGraphOperation
   protected void setComputationPrecision(PrecisionModel pm)
   {
     resultPrecisionModel = pm;
+    if (li == null) throw new IllegalStateException("LineIntersector not set");
     li.setPrecisionModel(resultPrecisionModel);
   }
 }

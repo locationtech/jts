@@ -20,10 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.locationtech.jts.algorithm.BoundaryNodeRule;
-import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.Orientation;
-import org.locationtech.jts.algorithm.PointLocator;
+import org.locationtech.jts.algorithm.*;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
@@ -39,9 +36,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Polygonal;
-import org.locationtech.jts.geomgraph.index.EdgeSetIntersector;
-import org.locationtech.jts.geomgraph.index.SegmentIntersector;
-import org.locationtech.jts.geomgraph.index.SimpleMCSweepLineIntersector;
+import org.locationtech.jts.geomgraph.index.*;
 import org.locationtech.jts.util.Assert;
 
 /**
@@ -106,7 +101,7 @@ public class GeometryGraph
   // for use if geometry is not Polygonal
   private final PointLocator ptLocator = new PointLocator();
   
-  private EdgeSetIntersector createEdgeSetIntersector()
+  private EdgeSetIntersector createEdgeSetIntersector(LineIntersector li)
   {
   // various options for computing intersections, from slowest to fastest
 
@@ -117,7 +112,14 @@ public class GeometryGraph
   //private EdgeSetIntersector esi = new MCSweepLineIntersector();
 
     //return new SimpleEdgeSetIntersector();
-    return new SimpleMCSweepLineIntersector();
+    //return new SimpleMCSweepLineIntersector();
+
+    // ToDo:
+    //  The above signature change is required in order to get
+    //  a suitable edge set intersector for the LineIntersector.
+    //  Since this is private, one might as well call li.create()
+    //  directly from the caller
+    return li.create();
   }
 
   public GeometryGraph(int argIndex, Geometry parentGeom)
@@ -361,7 +363,7 @@ public class GeometryGraph
   {
     SegmentIntersector si = new SegmentIntersector(li, true, false);
     si.setIsDoneIfProperInt(isDoneIfProperInt);
-    EdgeSetIntersector esi = createEdgeSetIntersector();
+    EdgeSetIntersector esi = createEdgeSetIntersector(li);
     // optimize intersection search for valid Polygons and LinearRings
     boolean isRings = parentGeom instanceof LinearRing
 			|| parentGeom instanceof Polygon
@@ -381,8 +383,7 @@ public class GeometryGraph
   {
     SegmentIntersector si = new SegmentIntersector(li, includeProper, true);
     si.setBoundaryNodes(this.getBoundaryNodes(), g.getBoundaryNodes());
-
-    EdgeSetIntersector esi = createEdgeSetIntersector();
+    EdgeSetIntersector esi = createEdgeSetIntersector(li);
     esi.computeIntersections(edges, g.edges, si);
 /*
 for (Iterator i = g.edges.iterator(); i.hasNext();) {

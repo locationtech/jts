@@ -194,7 +194,7 @@ public class RobustLineIntersector
    * removing common significant digits from the calculation to
    * maintain more bits of precision.
    */
-  private Coordinate intersection(
+  protected Coordinate intersection(
     Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2)
   {
     Coordinate intPt = intersectionWithNormalization(p1, p2, q1, q2);
@@ -250,7 +250,7 @@ public class RobustLineIntersector
     }
   }
 
-  private Coordinate intersectionWithNormalization(
+  protected Coordinate intersectionWithNormalization(
     Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2)
     {
       Coordinate n1 = new Coordinate(p1);

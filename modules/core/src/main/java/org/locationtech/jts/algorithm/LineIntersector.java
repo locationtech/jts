@@ -16,6 +16,8 @@ package org.locationtech.jts.algorithm;
  */
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geomgraph.index.EdgeSetIntersector;
+import org.locationtech.jts.geomgraph.index.SimpleMCSweepLineIntersector;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
 
@@ -165,6 +167,15 @@ public abstract class LineIntersector
     pa = intPt[0];
     pb = intPt[1];
     result = 0;
+  }
+
+  /**
+   * Create an EdgeSetIntersector
+   *
+   * @return an EdgeSetIntersector
+   */
+  public EdgeSetIntersector create() {
+    return new SimpleMCSweepLineIntersector();
   }
 
   /**
