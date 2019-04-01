@@ -103,6 +103,13 @@ public class NodedSegmentString
   {
     return pts[0].equals(pts[pts.length - 1]);
   }
+  public boolean hasExtent() {
+    if (pts.length == 0) return false;
+    for (int i = 1; i < pts.length; i++) {
+      if (!pts[0].equals2D(pts[i])) return true;
+    }
+    return false;
+  }
 
   /**
    * Gets the octant of the segment starting at vertex <code>index</code>.

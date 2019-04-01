@@ -28,17 +28,48 @@ public interface SegmentString
    *
    * @return the user-defined data
    */
-  public Object getData();
+  Object getData();
 
   /**
    * Sets the user-defined data for this segment string.
    *
    * @param data an Object containing user-defined data
    */
-  public void setData(Object data);
+  void setData(Object data);
 
-  public int size();
-  public Coordinate getCoordinate(int i);
-  public Coordinate[] getCoordinates();
-  public boolean isClosed();
+  /**
+   * Gets the number of coordinates that make up the segment string
+   *
+   * @return the number of coordinates
+   */
+  int size();
+
+  /**
+   * Get the i'th coordinate of this segment string.
+   *
+   * @param i the index of the coordinate to get. Must be in the range [0, {@linkplain #size()} - 1]
+   * @return a coordinate.
+   */
+  Coordinate getCoordinate(int i);
+
+  /**
+   * Gets the array of coordinates that make up this segment string.
+   *
+   * @return an array of coordinates
+   */
+  Coordinate[] getCoordinates();
+
+  /**
+   * Tests if the segment string is closed, start- and endpoint are the same.
+   *
+   * @return <c>true</c> if the segment string is closed
+   */
+  boolean isClosed();
+
+  /**
+   * Test if this segment has at least two different coordinates.
+   *
+   * @return <c>true</c> if there are at least 2 different points in the sequence
+   */
+  boolean hasExtent();
 }

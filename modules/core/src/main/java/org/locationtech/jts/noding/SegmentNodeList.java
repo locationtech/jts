@@ -182,7 +182,9 @@ public class SegmentNodeList
       if (newEdge.size() < 2)
         throw new RuntimeException("created single point edge: " + newEdge.toString());
       */
-      edgeList.add(newEdge);
+      if (newEdge.hasExtent())
+        edgeList.add(newEdge);
+
       eiPrev = ei;
     }
     //checkSplitEdgesCorrectness(testingSplitEdges);
