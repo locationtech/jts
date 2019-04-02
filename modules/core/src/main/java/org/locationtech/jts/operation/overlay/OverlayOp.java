@@ -17,7 +17,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.PointLocator;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -80,9 +82,24 @@ public class OverlayOp
    * @return the result of the overlay operation
    * @throws TopologyException if a robustness problem is encountered
    */
-  public static Geometry overlayOp(Geometry geom0, Geometry geom1, int opCode)
+  public static Geometry overlayOp(Geometry geom0, Geometry geom1, int opCode) {
+    return overlayOp(new RobustLineIntersector(), geom0, geom1, opCode);
+  }
+
+  /**
+   * Computes an overlay operation for
+   * the given geometry arguments.
+   *
+   * @param li the line intersector argument
+   * @param geom0 the first geometry argument
+   * @param geom1 the second geometry argument
+   * @param opCode the code for the desired overlay operation
+   * @return the result of the overlay operation
+   * @throws TopologyException if a robustness problem is encountered
+   */
+  public static Geometry overlayOp(LineIntersector li, Geometry geom0, Geometry geom1, int opCode)
   {
-    OverlayOp gov = new OverlayOp(geom0, geom1);
+    OverlayOp gov = new OverlayOp(li, geom0, geom1);
     Geometry geomOv = gov.getResultGeometry(opCode);
     return geomOv;
   }
@@ -154,12 +171,30 @@ public class OverlayOp
   /**
    * Constructs an instance to compute a single overlay operation
    * for the given geometries.
-   * 
+   *
    * @param g0 the first geometry argument
    * @param g1 the second geometry argument
    */
   public OverlayOp(Geometry g0, Geometry g1) {
     super(g0, g1);
+    graph = new PlanarGraph(new OverlayNodeFactory());
+    /**
+     * Use factory of primary geometry.
+     * Note that this does NOT handle mixed-precision arguments
+     * where the second arg has greater precision than the first.
+     */
+    geomFact = g0.getFactory();
+  }
+  /**
+   * Constructs an instance to compute a single overlay operation
+   * for the given geometries.
+   *
+   * @param li the line intersector
+   * @param g0 the first geometry argument
+   * @param g1 the second geometry argument
+   */
+  public OverlayOp(LineIntersector li,  Geometry g0, Geometry g1) {
+    super(li, g0, g1);
     graph = new PlanarGraph(new OverlayNodeFactory());
     /**
      * Use factory of primary geometry.

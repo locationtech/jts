@@ -13,16 +13,17 @@
 package org.locationtech.jts.noding.snapround;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.PrecisionModel;
+import junit.framework.Assert;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.WKTReader;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.locationtech.jts.util.StringUtil;
 
 
 /**
@@ -106,14 +107,37 @@ public class SnapRoundingTest  extends TestCase {
   }
 
   static final double SNAP_TOLERANCE = 1.0;
-  
-  void runRounding(String[] wkt)
+
+  void runRounding(String[] wkt) {
+    runRounding(wkt, new PrecisionModel(SNAP_TOLERANCE));
+  }
+
+  void runRounding(String[] wkt, PrecisionModel pm)
   {
     List geoms = fromWKT(wkt);
-    PrecisionModel pm = new PrecisionModel(SNAP_TOLERANCE);
     GeometryNoder noder = new GeometryNoder(pm);
     noder.setValidate(true);
-    List nodedLines = noder.node(geoms);
+    Collection<Geometry> nodedLines = null;
+    for (int i = 0; i < geoms.size(); i++)
+      System.out.println(geoms.get(i));
+
+    try {
+      nodedLines = noder.node(geoms);
+      System.out.println(new GeometryFactory().buildGeometry(nodedLines));
+    }
+    catch (RuntimeException reV) {
+      StringUtil.getStackTrace(reV);
+      try {
+        noder.setValidate(false);
+        nodedLines = noder.node(geoms);
+        System.out.println(new GeometryFactory().buildGeometry(nodedLines));
+      }
+      catch (RuntimeException reNV) {
+      }
+      System.out.println();
+
+      Assert.fail("noding validation failed.");
+    }
 /*
     for (Iterator it = nodedLines.iterator(); it.hasNext(); ) {
       System.out.println(it.next());
@@ -136,10 +160,11 @@ public class SnapRoundingTest  extends TestCase {
     return geomList;
   }
 
-  boolean isSnapped(List lines, double tol)
+  boolean isSnapped(Collection<Geometry> lines, double tol)
   {
-    for (int i = 0; i < lines.size(); i++) {
-      LineString line = (LineString) lines.get(i);
+    Iterator<Geometry> it = lines.iterator();
+    while(it.hasNext()) {
+      LineString line = (LineString) it.next();
       for (int j = 0; j < line.getNumPoints(); j++) {
         Coordinate v = line.getCoordinateN(j);
           if (! isSnapped(v, lines)) return false;
@@ -149,10 +174,11 @@ public class SnapRoundingTest  extends TestCase {
     return true;
   }
 
-  private boolean isSnapped(Coordinate v, List lines)
+  private boolean isSnapped(Coordinate v, Collection<Geometry> lines)
   {
-    for (int i = 0; i < lines.size(); i++) {
-      LineString line = (LineString) lines.get(i);
+    Iterator<Geometry> it = lines.iterator();
+    while(it.hasNext()) {
+      LineString line = (LineString) it.next();
       for (int j = 0; j < line.getNumPoints() - 1; j++) {
         Coordinate p0 = line.getCoordinateN(j);
         Coordinate p1 = line.getCoordinateN(j+1);
