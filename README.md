@@ -42,6 +42,7 @@ See also:
 
 ## Contributing
 
+
 If you are interested in contributing to JTS please read the [**Contributing Guide**](CONTRIBUTING.md).
 
 ## Downstream Projects
