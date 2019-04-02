@@ -95,7 +95,7 @@ public class AnchorPointRobustLineIntersectorTest extends TestCase
   private static final int numRotations = 10;
 
   private static final Coordinate p0 = new Coordinate(-rnd.nextDouble() * 1E10, rnd.nextDouble());
-  private static final Coordinate p1 = new Coordinate(rnd.nextDouble()*1e10, p0.y);
+  private static final Coordinate p1 = new Coordinate(rnd.nextDouble()*1E10, p0.y);
 
 
   private static int computeIntersectionPoints(LineIntersector li) {
@@ -107,11 +107,13 @@ public class AnchorPointRobustLineIntersectorTest extends TestCase
     Coordinate p0s[] = new Coordinate[numRotations];
     Coordinate p1s[] = new Coordinate[numRotations];
 
+    Coordinate tmpP0 = p0.copy();
+    Coordinate tmpP1 = p1.copy();
     for (int i = 0; i < numRotations; i++) {
-      p0s[i] = p0.copy();
-      p1s[i] = p1.copy();
-      af.transform(p0, p0);
-      af.transform(p1, p1);
+      p0s[i] = tmpP0.copy();
+      p1s[i] = tmpP1.copy();
+      af.transform(tmpP0, tmpP0);
+      af.transform(tmpP1, tmpP1);
     }
 
     for (int i = 0; i < numRotations; i++)
