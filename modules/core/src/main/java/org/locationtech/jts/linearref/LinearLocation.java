@@ -420,7 +420,7 @@ public class LinearLocation
     // check for endpoint
     int nseg = lineComp.getNumPoints() - 1;
     return segmentIndex >= nseg
-        || (segmentIndex == nseg && segmentFraction >= 1.0);
+        || (segmentIndex == nseg - 1 && segmentFraction >= 1.0);
   }
   
   /**
