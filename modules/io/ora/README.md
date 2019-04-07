@@ -1,6 +1,6 @@
 The jt-ora module requires the oracle JDBC driver in order to compile.
 
-Download the ojdbc5.jar driver from oracle and install local maven repository:
+Download the ojdbc7.jar driver from oracle and install local maven repository:
 
     mvn install:install-file -Dfile=ojdbc7.jar \
        -DgroupId=com.oracle -DartifactId=ojdbc7 \
