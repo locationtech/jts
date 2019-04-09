@@ -2,6 +2,7 @@ package org.locationtech.jts.util;
 
 import junit.framework.TestCase;
 
+import java.math.RoundingMode;
 import java.util.Locale;
 
 public class StringUtilTest extends TestCase {
@@ -20,6 +21,21 @@ public class StringUtilTest extends TestCase {
     assertEquals("0.#", pattern);
 
     StringUtil.setDecimalFormatPattern("0.00");
+    assertEquals("0.00", StringUtil.getDecimalFormatPattern());
+
+    RoundingMode r = StringUtil.getRoundingMode();
+    if (r != RoundingMode.UNNECESSARY) {
+      StringUtil.setRoundingMode(RoundingMode.UNNECESSARY);
+      assertEquals(RoundingMode.UNNECESSARY, StringUtil.getRoundingMode());
+    }
+    else {
+      StringUtil.setRoundingMode(RoundingMode.UP);
+      assertEquals(RoundingMode.UP, StringUtil.getRoundingMode());
+    }
+
+    StringUtil.setRoundingMode(r);
+    assertEquals(r, StringUtil.getRoundingMode());
+
     assertEquals("0.00", StringUtil.getDecimalFormatPattern());
 
     StringUtil.setDecimalFormatPattern("0.#");

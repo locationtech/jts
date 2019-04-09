@@ -41,7 +41,7 @@ public class StringUtil
    * Static initialization of {@linkplain #SIMPLE_ORDINATE_FORMAT}
    */
   static {
-    DECIMAL_FORMAT_SYMBOLS = new DecimalFormatSymbols(Locale.ENGLISH);
+    DECIMAL_FORMAT_SYMBOLS = new DecimalFormatSymbols(Locale.ROOT);
     setDecimalFormatPattern("0.#");
   }
 
@@ -61,10 +61,23 @@ public class StringUtil
    */
   public static void setDecimalFormatPattern(String pattern) {
     DecimalFormat df = new DecimalFormat(pattern, DECIMAL_FORMAT_SYMBOLS);
-    // TODO: is this desired?
-    df.setRoundingMode(RoundingMode.HALF_UP);
     DECIMAL_FORMAT_PATTERN = pattern;
     SIMPLE_ORDINATE_FORMAT = df;
+  }
+
+  /**
+   * Gets the {@linkplain RoundingMode} applied when using {@link #toString(double)}
+   * @return A rounding mode
+   */
+  public static RoundingMode getRoundingMode() {
+    return SIMPLE_ORDINATE_FORMAT.getRoundingMode();
+  }
+
+  /**
+   * Sets the {@linkplain RoundingMode} to apply when using {@link #toString(double)}
+   */
+  public static void setRoundingMode(RoundingMode roundingMode) {
+    SIMPLE_ORDINATE_FORMAT.setRoundingMode(roundingMode);
   }
 
   /**
@@ -121,6 +134,16 @@ public class StringUtil
      return stackTrace;
  }
 
+  /**
+   * Creates a string of the  provided {@link double} value using
+   * the globally set {@linkplain #SIMPLE_ORDINATE_FORMAT}.
+   *
+   * @param d    a double value.
+   * @return     A numerical string.
+   *
+   * @see #setDecimalFormatPattern(String)
+   * @see #setRoundingMode(RoundingMode)
+   */
   public static String toString(double d)
   {
     return SIMPLE_ORDINATE_FORMAT.format(d);
