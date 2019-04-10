@@ -79,7 +79,7 @@ class BoundablePair
    * The boundables are either composites or leaves.
    * If either is composite, the distance is computed as the minimum distance
    * between the bounds.  
-   * If both are leaves, the distance is computed by {@link #itemDistance(ItemBoundable, ItemBoundable)}.
+   * If both are leaves, the distance is computed by {@link ItemDistance#distance(ItemBoundable, ItemBoundable)}.
    * 
    * @return
    */
