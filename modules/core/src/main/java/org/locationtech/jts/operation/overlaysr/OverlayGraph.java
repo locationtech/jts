@@ -2,7 +2,6 @@ package org.locationtech.jts.operation.overlaysr;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -10,16 +9,15 @@ import org.locationtech.jts.noding.SegmentString;
 
 public class OverlayGraph {
 
-  public static OverlayGraph buildGraph(Collection edges) {
+  public static OverlayGraph buildGraph(Collection<SegmentString> edges) {
     OverlayGraph graph = new OverlayGraph();
-    for (Iterator it = edges.iterator(); it.hasNext(); ) {
-      SegmentString ss = (SegmentString) it.next();
+    for (SegmentString ss : edges) {
       graph.addEdge(ss);
     }
     return graph;
   }
 
-  private Map vertexMap = new HashMap();
+  private Map<Coordinate, OverlayEdge> vertexMap = new HashMap<Coordinate, OverlayEdge>();
   
   public OverlayGraph() {
   }
@@ -114,7 +112,7 @@ public class OverlayGraph {
     }
   }
 
-  public Collection getVertexEdges()
+  public Collection<OverlayEdge> getVertexEdges()
   {
     return vertexMap.values();
   }

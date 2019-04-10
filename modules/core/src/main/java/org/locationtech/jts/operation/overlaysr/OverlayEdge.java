@@ -9,7 +9,8 @@ public class OverlayEdge extends HalfEdge {
   private SegmentString edge;
   
   /**
-   * true indicates direction is forward along segString
+   * <code>true</code> indicates direction is forward along segString
+   * <code>false</code> is reverse direction
    */
   private boolean direction;
   private Coordinate dirPt;
