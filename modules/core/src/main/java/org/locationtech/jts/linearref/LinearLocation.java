@@ -444,7 +444,7 @@ public class LinearLocation
     int nseg = lineComp.getNumPoints() - 1;
     // if not an endpoint can be returned directly
     if (segmentIndex < nseg) return this;
-    return new LinearLocation(componentIndex, nseg, 1.0, false);
+    return new LinearLocation(componentIndex, nseg - 1, 1.0, false);
   }
   
   /**
