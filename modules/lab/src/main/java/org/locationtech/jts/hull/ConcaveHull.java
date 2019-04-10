@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2019 Felix Obermaier.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,26 +11,31 @@
  */
 package org.locationtech.jts.hull;
 
-import java.util.*;
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.locationtech.jts.algorithm.ConvexHull;
 import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.index.ItemVisitor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.quadtree.Quadtree;
-import org.locationtech.jts.index.strtree.*;
+import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.index.strtree.AbstractNode;
+import org.locationtech.jts.index.strtree.ItemBoundable;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.PriorityQueue;
-import org.locationtech.jtslab.clean.HoleRemover;
 
 /**
  * A very fast 2D concave hull algorithm. It generates a general outline of a point set.
  * <p>
- * This is a direct port of <a href="https://github.com/mapbox/concaveman">mapbox's concaveman algorithm</a>
+ * This is a port of <a href="https://github.com/mapbox/concaveman">mapbox's concaveman algorithm</a>
  * which is released under the ISC license.
  * </p>
  * <b>Algorithm</b>
@@ -48,6 +53,7 @@ import org.locationtech.jtslab.clean.HoleRemover;
  * @version 1.17
  * @author Vladimir Agafonkin, Felix Obermaier
  */
+@SuppressWarnings({"ForLoopReplaceableByForEach", "ManualArrayToCollectionCopy"})
 public class ConcaveHull {
   
   private final GeometryFactory factory;
@@ -143,7 +149,7 @@ public class ConcaveHull {
   }
 
   /**
-   * Builds an array of coordinates off of the double linked list started at {@param node}
+   * Builds an array of coordinates off of the double linked list started at {@code first}
    *
    * @param first the first node of the convex hull ring.
    * @return a coordinate array.
@@ -164,7 +170,7 @@ public class ConcaveHull {
   }
 
   /**
-   * Iterates over all segments
+   * Iterates over all segments in {@code nodesQueue} and attempts to dig holes for each
    *
    * @param candidateIndex an index containing all input points that are not part of the concave hull
    * @param segmentIndex   an index containing all segments of the concave hull
@@ -182,7 +188,7 @@ public class ConcaveHull {
       if (length < this.lengthThreshold) continue;
 
       double maxLength = length / this.concavity;
-      Coordinate p = findCandidate((STRtree) candidateIndex,
+      Coordinate p = findCandidate(candidateIndex,
         node.Prev.Point, a, b, node.Next.Next.Point,
         maxLength, segmentIndex);
 
@@ -221,7 +227,9 @@ public class ConcaveHull {
     }
 
     // close linked list
+    //noinspection ConstantConditions
     last.Next = first;
+    //noinspection ConstantConditions
     first.Prev = last;
 
     return res;
@@ -261,6 +269,11 @@ public class ConcaveHull {
   }
 
 
+  /**
+   * Utility function to create a {@link Set<Coordinate>} off of the convex hull points
+   * @param convexHullPoints the coordinates forming the convex hull.
+   * @return a {@link Set<Coordinate>}
+   */
   private static Set<Coordinate> getConvexHullPointSet(Coordinate[] convexHullPoints) {
     Set<Coordinate> res = new HashSet<>();
     for (int i = 0; i < convexHullPoints.length - 1; i++) {
@@ -269,14 +282,35 @@ public class ConcaveHull {
     return res;
   }
 
-  private Coordinate findCandidate(SpatialIndex tree, Coordinate a, Coordinate b, Coordinate c, Coordinate d,
-                                   double maxDistance, SpatialIndex segTree) {
+  /**
+   * Attempts to find a candidate ({@code p}). A candidate must fulfill the following constraints:
+   * <ul>
+   *   <li>Its distance to the segment {@code b}->{@code c} must be {@code <= masDistance}</li>
+   *   <li>Its distance to the segment {@code b}->{@code c} must be {@code < } than to the segments {@code a}->{@code b}
+   *   or {@code c}->{@code d}</li>
+   *   <li>The resulting new edges ({@code b}->{@code p} and {@code p}->{@code c}) must neither
+   *   properly intersect with {@code a}->{@code b} nor {@code c}{@code d}</li>
+   * </ul>
+   *
+   * @param candidatesTree a spatial index of candidate points
+   * @param a the starting point of the previous segment
+   * @param b the starting point of the investigated segment
+   * @param c the end-point of the investigated segment
+   * @param d the end-point of the next segment
+   * @param maxDistance a threshold value for the distance
+   * @param segmentIndex a spatial index of hull edges
+   *
+   * @return a candidate
+   */
+  private Coordinate findCandidate(SpatialIndex candidatesTree,
+                                   Coordinate a, Coordinate b, Coordinate c, Coordinate d,
+                                   double maxDistance, SpatialIndex segmentIndex) {
 
     PriorityQueue queue = new PriorityQueue();
-    AbstractNode node = ((STRtree)tree).getRoot();
+    AbstractNode node = ((STRtree)candidatesTree).getRoot();
 
-    // search through the point R-tree with a depth-first search using a priority queue
-    // in the order of distance to the edge (b, c)
+    // search the candidate index with a depth-first search using a priority queue
+    // in the order of distance to the segment b->c
     while (node != null) {
       List children = node.getChildBoundables();
       for (int i = 0; i < children.size(); i++) {
@@ -304,8 +338,8 @@ public class ConcaveHull {
         double d0 = Distance.pointToSegment(p, a, b);
         double d1 = Distance.pointToSegment(p, c, d);
         if (item.distance < d0 && item.distance < d1 &&
-          noProperIntersections(b, p, segTree) &&
-          noProperIntersections(c, p, segTree)) {
+          noProperIntersections(b, p, segmentIndex) &&
+          noProperIntersections(c, p, segmentIndex)) {
             return p;
         }
       }
@@ -320,6 +354,18 @@ public class ConcaveHull {
     return null;
   }
 
+  /**
+   * Tests if the segment {@code a}-> {code b} does not have any proper intersections with
+   * any other hull segments
+   * @param a the starting point of the segment
+   * @param b the end-point of the segment
+   * @param segmentIndex a spatial index of hull segments
+
+   * @return {@code true} if there are no proper intersections
+   *
+   * @see LineIntersector#hasIntersection()
+   * @see LineIntersector#isProper()
+   */
   private boolean noProperIntersections(Coordinate a, Coordinate b, SpatialIndex segmentIndex) {
 
     Envelope searchEnv = new Envelope(a);
@@ -334,21 +380,11 @@ public class ConcaveHull {
     return true;
   }
 
-  private class PqItemDistance implements Comparable<PqItemDistance>
-  {
-    private final Object item;
-    private final double distance;
-
-    PqItemDistance(Object item, double distance) {
-      this.item = item;
-      this.distance = distance;
-    }
-
-    public int compareTo(PqItemDistance other) {
-      return Double.compare(this.distance, other.distance);
-    }
-  }
-
+  /**
+   * Predicate function to see if a node is a leaf or not.
+   * @param node a node
+   * @return {@code true} if the node is a leaf.
+   */
   private static boolean isLeaf(Object node) {
     if (node instanceof ItemBoundable)
       return true;
@@ -357,6 +393,10 @@ public class ConcaveHull {
     return false;
   }
 
+  /**
+   * Updates the extent of a node
+   * @param node the node
+   */
   private static void updateEnvelope(Node node) {
     node.Envelope.init();
     node.Envelope.expandToInclude(node.Point);
@@ -523,6 +563,21 @@ public class ConcaveHull {
     Node(Coordinate point) {
       Point = point;
       Envelope = new Envelope();
+    }
+  }
+
+  private class PqItemDistance implements Comparable<PqItemDistance>
+  {
+    private final Object item;
+    private final double distance;
+
+    PqItemDistance(Object item, double distance) {
+      this.item = item;
+      this.distance = distance;
+    }
+
+    public int compareTo(PqItemDistance other) {
+      return Double.compare(this.distance, other.distance);
     }
   }
 }

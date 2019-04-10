@@ -220,8 +220,8 @@ public class Distance {
   }
 
   /**
-   * Computes the distance between the segment {@param A}{@param B} and the
-   * { @link Envelope } {@param bounds}
+   * Computes the distance between the segment {@code A}{@code B} and the
+   * { @link Envelope } {@code bounds}
    * @param A the starting point of the segment
    * @param B the end point of the segment
    * @param bounds the bounds
