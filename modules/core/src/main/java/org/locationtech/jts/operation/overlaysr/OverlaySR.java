@@ -9,7 +9,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.precision.GeometryPrecisionReducer;
@@ -45,18 +44,20 @@ public class OverlaySR {
   
   private Geometry getResultGeometry(int overlayOpCode) {
     Geometry resultGeom = computeOverlay(overlayOpCode);
-    //return resultGeom;
-    return TESToverlay(overlayOpCode);
+    return resultGeom;
+    //return TESToverlay(overlayOpCode);
   }
 
   private Geometry TESToverlay(int overlayOpCode) {
+    Geometry gr0 = GeometryPrecisionReducer.reduce(geom[0], pm);
+    Geometry gr1 = GeometryPrecisionReducer.reduce(geom[1], pm);
     if (overlayOpCode == OverlayOp.UNION) {
       
       // **********  TESTIMG ONLY  **********
-      Geometry gr0 = GeometryPrecisionReducer.reduce(geom[0], pm);
-      Geometry gr1 = GeometryPrecisionReducer.reduce(geom[1], pm);
       return gr0.union(gr1);
-      
+    }
+    else if (overlayOpCode == OverlayOp.INTERSECTION) {
+      return gr0.intersection(gr1);
     }
     // MD - will not implement other overlay ops yet
     throw new UnsupportedOperationException();
