@@ -29,9 +29,9 @@ public class OverlaySRTest extends GeometryTestCase {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlaySR.overlayOp(a, b, pm, OverlayOp.UNION);
   }
+  
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlaySR.overlayOp(a, b, pm, OverlayOp.INTERSECTION);
   }
 }
-;;
