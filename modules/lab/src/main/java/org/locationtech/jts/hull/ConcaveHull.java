@@ -16,16 +16,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.locationtech.jts.algorithm.ConvexHull;
-import org.locationtech.jts.algorithm.Distance;
-import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.algorithm.*;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.quadtree.Quadtree;
+import org.locationtech.jts.index.strtree.Boundable;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.index.strtree.AbstractNode;
 import org.locationtech.jts.index.strtree.ItemBoundable;
@@ -35,7 +30,7 @@ import org.locationtech.jts.util.PriorityQueue;
 /**
  * A very fast 2D concave hull algorithm. It generates a general outline of a point set.
  * <p>
- * This is a port of <a href="https://github.com/mapbox/concaveman">mapbox's concaveman algorithm</a>
+ * This is inspired by <a href="https://github.com/mapbox/concaveman">mapbox's concaveman algorithm</a>
  * which is released under the ISC license.
  * </p>
  * <b>Algorithm</b>
@@ -50,8 +45,8 @@ import org.locationtech.jts.util.PriorityQueue;
  * modification of a depth-first kNN R-tree search using a priority queue.
  * </p>
  *
- * @version 1.17
- * @author Vladimir Agafonkin, Felix Obermaier
+ * @since 1.17
+ * @author Felix Obermaier
  */
 @SuppressWarnings({"ForLoopReplaceableByForEach", "ManualArrayToCollectionCopy"})
 public class ConcaveHull {
@@ -131,20 +126,20 @@ public class ConcaveHull {
     Coordinate[] convexHullCoordinates = convexHull.getCoordinates();
 
     // create search index for non-hull points
-    SpatialIndex tree = createCandidatesIndex(this.coordinates, convexHullCoordinates);
+    STRtree tree = createCandidatesTree(this.coordinates, convexHullCoordinates);
 
     // create a double linked list off of the convex hull start solution.
     List<Node> queue = createHullRing(convexHullCoordinates);
     Node first = queue.get(0);
 
     // create an index for the the segments of the (result) concave hull ring
-    SpatialIndex segTree = createSegmentIndex(queue);
+    SpatialIndex segTree = createSegmentTree(queue);
 
     // dig the concave holes
     digConcaveHoles(tree, segTree, queue);
 
     // create the result geometry
-    Coordinate[] arr = toConcaveRingArray(first);
+    CoordinateSequence arr = toConcaveRingSequence(first);
     return factory.createPolygon(arr);
   }
 
@@ -154,58 +149,66 @@ public class ConcaveHull {
    * @param first the first node of the convex hull ring.
    * @return a coordinate array.
    */
-  private static Coordinate[] toConcaveRingArray(Node first) {
+  private CoordinateSequence toConcaveRingSequence(Node first) {
     Node node = first;
     ArrayList<Coordinate> concave = new ArrayList<>();
     do {
-      concave.add(node.Point);
-      node = node.Next;
+      concave.add(node.point);
+      node = node.nextNode;
     } while(node != first);
 
     // close coordinate array
-    concave.add(first.Point);
+    concave.add(first.point);
 
     Coordinate[] arr = new Coordinate[concave.size()];
-    return concave.toArray(arr);
+    return this.factory.getCoordinateSequenceFactory().create(concave.toArray(arr));
   }
 
   /**
    * Iterates over all segments in {@code nodesQueue} and attempts to dig holes for each
    *
-   * @param candidateIndex an index containing all input points that are not part of the concave hull
+   * @param candidatesTree an index containing all input points that are not part of the concave hull
    * @param segmentIndex   an index containing all segments of the concave hull
    * @param nodesQueue     a list of nodes that need to be investigated
    */
-  private void digConcaveHoles(SpatialIndex candidateIndex, SpatialIndex segmentIndex, List<Node> nodesQueue) {
+  private void digConcaveHoles(STRtree candidatesTree, SpatialIndex segmentIndex, List<Node> nodesQueue) {
 
+    // compute thresholds for concavity and segment length
+    double squaredConcavity = this.concavity * this.concavity;
+    double squaredLengthThreshold = this.lengthThreshold * this.lengthThreshold;
+
+    // Examine all hull nodes and their segments
     while(nodesQueue.size() > 0) {
       Node node = nodesQueue.remove(0);
-      Coordinate a = node.Point;
-      Coordinate b = node.Next.Point;
+      Coordinate a = node.point;
+      Coordinate b = node.nextNode.point;
 
-      // skip the edge if it is already short enough
-      double length = a.distance(b);
-      if (length < this.lengthThreshold) continue;
+      // skip the segment if it is already short enough
+      double lengthMeasure = SquaredDistance.pointToPoint(a, b);
+      if (lengthMeasure < squaredLengthThreshold) continue;
 
-      double maxLength = length / this.concavity;
-      Coordinate p = findCandidate(candidateIndex,
-        node.Prev.Point, a, b, node.Next.Next.Point,
-        maxLength, segmentIndex);
+      double maxLengthMeasure = lengthMeasure / squaredConcavity;
+      Coordinate p = findCandidate(candidatesTree,
+        node.prevNode.point, a, b, node.nextNode.nextNode.point,
+        maxLengthMeasure, segmentIndex);
 
       // if we found a connection and it satisfies our concavity measure
-      if (p != null && Math.min(p.distance(a), p.distance(b)) <= maxLength) {
-        // connect the edge endpoints through this point and add 2 new edges to the queue
-        nodesQueue.add(node);
-        nodesQueue.add(createNode(p, node));
+      if (p != null) {
+        double distanceMeasure = Math.min(SquaredDistance.pointToPoint(p, a), SquaredDistance.pointToPoint(p, b));
+        if (distanceMeasure <= maxLengthMeasure) {
+          // connect the edge endpoints through this point and add 2 new edges to the queue
+          nodesQueue.add(node);
+          nodesQueue.add(createNode(p, node));
 
-        // update candidate and segment indexes
-        candidateIndex.remove(new Envelope(p), p);
-        segmentIndex.remove(node.Envelope, node);
+          // update candidate and segment indexes
+          candidatesTree.remove(new Envelope(p), p);
+          segmentIndex.remove(node.envelope, node);
 
-        updateEnvelope(node);
-        segmentIndex.insert(node.Envelope, node);
-        updateEnvelope(node.Next);
-        segmentIndex.insert(node.Next.Envelope, node.Next);
+          updateNodeEnvelope(node);
+          segmentIndex.insert(node.envelope, node);
+          updateNodeEnvelope(node.nextNode);
+          segmentIndex.insert(node.nextNode.envelope, node.nextNode);
+        }
       }
     }
   }
@@ -228,9 +231,9 @@ public class ConcaveHull {
 
     // close linked list
     //noinspection ConstantConditions
-    last.Next = first;
+    last.nextNode = first;
     //noinspection ConstantConditions
-    first.Prev = last;
+    first.prevNode = last;
 
     return res;
   }
@@ -242,7 +245,7 @@ public class ConcaveHull {
    * @param convexHullPoints  an array of the convex hull coordinates that make up the start solution
    * @return A STRtree index of points
    */
-  private static SpatialIndex createCandidatesIndex(Coordinate[] coordinates, Coordinate[] convexHullPoints) {
+  private static STRtree createCandidatesTree(Coordinate[] coordinates, Coordinate[] convexHullPoints) {
     Set<Coordinate> convexHullPointSet = getConvexHullPointSet(convexHullPoints);
     STRtree tree = new STRtree();
     for (int i = 0; i < coordinates.length; i++) {
@@ -258,12 +261,12 @@ public class ConcaveHull {
    * @param queue A list of segment nodes
    * @return a quadtree index of segment nodes
    */
-  private static SpatialIndex createSegmentIndex(List<Node> queue) {
+  private static SpatialIndex createSegmentTree(List<Node> queue) {
     Quadtree res = new Quadtree();
     for (int i = 0; i < queue.size(); i++) {
       Node item = queue.get(i);
-      updateEnvelope(item);
-      res.insert(item.Envelope, item);
+      updateNodeEnvelope(item);
+      res.insert(item.envelope, item);
     }
     return res;
   }
@@ -285,7 +288,7 @@ public class ConcaveHull {
   /**
    * Attempts to find a candidate ({@code p}). A candidate must fulfill the following constraints:
    * <ul>
-   *   <li>Its distance to the segment {@code b}->{@code c} must be {@code <= masDistance}</li>
+   *   <li>Its distance to the segment {@code b}->{@code c} must be {@code <= maxDistanceMeasure}</li>
    *   <li>Its distance to the segment {@code b}->{@code c} must be {@code < } than to the segments {@code a}->{@code b}
    *   or {@code c}->{@code d}</li>
    *   <li>The resulting new edges ({@code b}->{@code p} and {@code p}->{@code c}) must neither
@@ -297,49 +300,47 @@ public class ConcaveHull {
    * @param b the starting point of the investigated segment
    * @param c the end-point of the investigated segment
    * @param d the end-point of the next segment
-   * @param maxDistance a threshold value for the distance
-   * @param segmentIndex a spatial index of hull edges
+   * @param maxDistanceMeasure a threshold value for the distance
+   * @param segmentTree a spatial index of hull edges
    *
    * @return a candidate
    */
-  private Coordinate findCandidate(SpatialIndex candidatesTree,
+  private Coordinate findCandidate(STRtree candidatesTree,
                                    Coordinate a, Coordinate b, Coordinate c, Coordinate d,
-                                   double maxDistance, SpatialIndex segmentIndex) {
+                                   double maxDistanceMeasure, SpatialIndex segmentTree) {
 
     PriorityQueue queue = new PriorityQueue();
-    AbstractNode node = ((STRtree)candidatesTree).getRoot();
+    AbstractNode node = candidatesTree.getRoot();
 
     // search the candidate index with a depth-first search using a priority queue
     // in the order of distance to the segment b->c
     while (node != null) {
       List children = node.getChildBoundables();
       for (int i = 0; i < children.size(); i++) {
-        Object child = children.get(i);
+        Boundable child = (Boundable)children.get(i);
 
-        double dist;
-        if (isLeaf(child))
-          dist = Distance.pointToSegment((Coordinate) ((ItemBoundable)child).getItem(), b, c);
-        else
-          dist = Distance.segmentToEnvelope(b,c, (Envelope)((AbstractNode)child).getBounds());
+        double distancMeasure = isLeaf(child)
+          ? SquaredDistance.pointToSegment((Coordinate) ((ItemBoundable)child).getItem(), b, c)
+          : SquaredDistance.segmentToEnvelope(b, c, (Envelope)child.getBounds());
 
         // skip the node if it's too far away
-        if (dist > maxDistance) continue;
+        if (distancMeasure > maxDistanceMeasure) continue;
 
         // add node to queue
-        queue.add(new PqItemDistance(child, dist));
+        queue.add(new PqItemDistance(child, distancMeasure));
       }
 
       while (queue.size() > 0 && isLeaf(((PqItemDistance)queue.peek()).item)) {
         PqItemDistance item = (PqItemDistance)queue.poll();
         Coordinate p = (Coordinate) ((ItemBoundable)item.item).getItem();
 
-        // skip all points that are as close to adjacent edges (a,b) and (c,d),
+        // skip all points that are as close to adjacent segments a->b and c->d,
         // and points that would introduce self-intersections when connected
-        double d0 = Distance.pointToSegment(p, a, b);
-        double d1 = Distance.pointToSegment(p, c, d);
-        if (item.distance < d0 && item.distance < d1 &&
-          noProperIntersections(b, p, segmentIndex) &&
-          noProperIntersections(c, p, segmentIndex)) {
+        double distancePAB = SquaredDistance.pointToSegment(p, a, b);
+        double distancePCD = SquaredDistance.pointToSegment(p, c, d);
+        if (item.distance < distancePAB && item.distance < distancePCD &&
+          noProperIntersections(b, p, segmentTree) &&
+          noProperIntersections(c, p, segmentTree)) {
             return p;
         }
       }
@@ -374,7 +375,7 @@ public class ConcaveHull {
 
     for (int i = 0; i < edges.size(); i++) {
       Node n = (Node)edges.get(i);
-      lineIntersector.computeIntersection(n.Point, n.Next.Point, a, b);
+      lineIntersector.computeIntersection(n.point, n.nextNode.point, a, b);
       if (lineIntersector.hasIntersection() && lineIntersector.isProper()) return false;
     }
     return true;
@@ -385,7 +386,7 @@ public class ConcaveHull {
    * @param node a node
    * @return {@code true} if the node is a leaf.
    */
-  private static boolean isLeaf(Object node) {
+  private static boolean isLeaf(Boundable node) {
     if (node instanceof ItemBoundable)
       return true;
     if (!(node instanceof AbstractNode))
@@ -394,184 +395,72 @@ public class ConcaveHull {
   }
 
   /**
-   * Updates the extent of a node
+   * Updates the bounds of a node
    * @param node the node
    */
-  private static void updateEnvelope(Node node) {
-    node.Envelope.init();
-    node.Envelope.expandToInclude(node.Point);
-    node.Envelope.expandToInclude(node.Next.Point);
+  private static void updateNodeEnvelope(Node node) {
+    node.envelope.init();
+    node.envelope.expandToInclude(node.point);
+    node.envelope.expandToInclude(node.nextNode.point);
   }
 
-  /*
-  private static boolean hasChildren(Object peek)
-  {
-    PqItemDistance item = (PqItemDistance)peek;
-    if (item.item instanceof AbstractNode) {
-      AbstractNode an = (AbstractNode)item.item;
-      return an.size() > 0;
-    }
-    return false;
-  }
-
-  private static double sqPtPtDistance(Coordinate p0, Coordinate p1) {
-    double dx = p1.x - p0.x;
-    double dy = p1.y - p0.y;
-
-    return dx*dx + dy*dy;
-  }
-
-  private static double sqPtSegDistance(Coordinate p, Coordinate p1, Coordinate p2) {
-
-    double x = p1.x;
-    double y = p1.y;
-    double dx = p2.x - x;
-    double dy = p2.y - y;
-
-    if (dx != 0 || dy != 0) {
-
-      double t = ((p.x - x) * dx + (p.y - y) * dy) / (dx * dx + dy * dy);
-
-      if (t > 1) {
-        x = p2.x;
-        y = p2.y;
-
-      } else if (t > 0) {
-        x += dx * t;
-        y += dy * t;
-      }
-    }
-
-    dx = p.x - x;
-    dy = p.y - y;
-
-    return dx * dx + dy * dy;
-  }
-
-  private static double sqSegSegDistance(Coordinate p1, Coordinate p2,
-                                         double q0x, double q0y, double q1x, double q1y) {
-    return sqSegSegDistance(p1.x, p1.y, p2.x, p2.y, q0x, q0y, q1x, q1y);
-  }
-
-  private static double sqSegSegDistance(double x0, double y0, double x1, double y1,
-                                         double x2, double y2, double x3, double y3) {
-    double ux = x1 - x0;
-    double uy = y1 - y0;
-    double vx = x3 - x2;
-    double vy = y3 - y2;
-    double wx = x0 - x2;
-    double wy = y0 - y2;
-    double a = ux * ux + uy * uy;
-    double b = ux * vx + uy * vy;
-    double c = vx * vx + vy * vy;
-    double d = ux * wx + uy * wy;
-    double e = vx * wx + vy * wy;
-    double D = a * c - b * b;
-
-    double sc, sN, tc, tN;
-    double sD = D;
-    double tD = D;
-
-    if (D == 0) {
-      sN = 0;
-      sD = 1;
-      tN = e;
-      tD = c;
-    } else {
-      sN = b * e - c * d;
-      tN = a * e - b * d;
-      if (sN < 0) {
-        sN = 0;
-        tN = e;
-        tD = c;
-      } else if (sN > sD) {
-        sN = sD;
-        tN = e + b;
-        tD = c;
-      }
-    }
-
-    if (tN < 0.0) {
-      tN = 0.0;
-      if (-d < 0.0) sN = 0.0;
-      else if (-d > a) sN = sD;
-      else {
-        sN = -d;
-        sD = a;
-      }
-    } else if (tN > tD) {
-      tN = tD;
-      if ((-d + b) < 0.0) sN = 0;
-      else if (-d + b > a) sN = sD;
-      else {
-        sN = -d + b;
-        sD = a;
-      }
-    }
-
-    sc = sN == 0 ? 0 : sN / sD;
-    tc = tN == 0 ? 0 : tN / tD;
-
-    double cx = (1 - sc) * x0 + sc * x1;
-    double cy = (1 - sc) * y0 + sc * y1;
-    double cx2 = (1 - tc) * x2 + tc * x3;
-    double cy2 = (1 - tc) * y2 + tc * y3;
-    double dx = cx2 - cx;
-    double dy = cy2 - cy;
-
-    return dx * dx + dy * dy;
-  }
-
-  private static double sqSegBoxDistance(Coordinate a, Coordinate b, Envelope bounds) {
-    if (bounds.contains(a) || bounds.contains(b))
-      return 0;
-    double d1 = sqSegSegDistance(a, b, bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMinY());
-    if (d1 == 0) return 0;
-    double d2 = sqSegSegDistance(a, b, bounds.getMinX(), bounds.getMinY(), bounds.getMinX(), bounds.getMaxY());
-    if (d2 == 0) return 0;
-    double d3 = sqSegSegDistance(a, b, bounds.getMaxX(), bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
-    if (d3 == 0) return 0;
-    double d4 = sqSegSegDistance(a, b, bounds.getMinX(), bounds.getMaxY(), bounds.getMaxX(), bounds.getMaxY());
-    if (d4 == 0) return 0;
-    return Math.min(Math.min(d1, d2), Math.min(d3, d4));
-  }
-  */
-
+  /**
+   * Utility function to create a node for {@code c}.
+   * If {@code previous} is not {@code null}, it will be linked into the chain,
+   * otherwise linked to itself.
+   *
+   * @param c the location of the node
+   * @param previous the previous node, may be {@code null}
+   */
   private static Node createNode(Coordinate c, Node previous) {
     Node res = new Node(c);
 
     if (previous == null) {
-      res.Prev = res;
-      res.Next = res;
+      res.prevNode = res;
+      res.nextNode = res;
     }
     else {
-      res.Next = previous.Next;
-      res.Prev = previous;
-      previous.Next.Prev = res;
-      previous.Next = res;
+      res.nextNode = previous.nextNode;
+      res.prevNode = previous;
+      previous.nextNode.prevNode = res;
+      previous.nextNode = res;
     }
 
     return res;
   }
 
+  /**
+   * A node in a hull ring
+   */
   private static class Node {
-    Node Prev = null;
-    final Envelope Envelope;
-    final Coordinate Point;
-    Node Next = null;
+
+    /** the previous node */
+    Node prevNode = null;
+
+    /** the bounds of the segment from {@linkplain #point} to {@linkplain #nextNode#point} */
+    final Envelope envelope;
+
+    /** the coordinate of this node */
+    final Coordinate point;
+
+    /** the next node in the ring */
+    Node nextNode = null;
 
     Node(Coordinate point) {
-      Point = point;
-      Envelope = new Envelope();
+      this.point = point;
+      envelope = new Envelope();
     }
   }
 
+  /**
+   * An item
+   */
   private class PqItemDistance implements Comparable<PqItemDistance>
   {
-    private final Object item;
+    private final Boundable item;
     private final double distance;
 
-    PqItemDistance(Object item, double distance) {
+    PqItemDistance(Boundable item, double distance) {
       this.item = item;
       this.distance = distance;
     }
