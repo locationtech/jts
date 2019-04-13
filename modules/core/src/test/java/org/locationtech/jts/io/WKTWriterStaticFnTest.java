@@ -85,4 +85,17 @@ public class WKTWriterStaticFnTest extends GeometryTestCase {
       assertEquals(cs[1], cd[1]);
     }
   }
+  
+  public void testPointNoSciNot() {
+    Coordinate coord = new Coordinate(123456789, 987654321);
+    String wkt = WKTWriter.toPoint(coord);
+    assertEquals("POINT ( 123456789 987654321 )", wkt);
+  }
+  
+  public void testLineStringNoSciNot() {
+    Coordinate coord = new Coordinate(123456789, 987654321);
+    Coordinate coord2 = new Coordinate(100000000, 900000000);
+    String wkt = WKTWriter.toLineString(coord, coord2);
+    assertEquals("LINESTRING ( 123456789 987654321, 100000000 900000000 )", wkt);
+  }
 }
