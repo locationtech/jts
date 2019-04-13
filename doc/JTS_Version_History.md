@@ -29,6 +29,7 @@ Distributions for older JTS versions can be obtained at the
 ### Functionality Improvements
 
 * Added `IndexedFacetDistance.isWithinDistance`
+* Added `OrdinateFormat` to ensure that ordinate text output is accurate and consistent
 
 ### Bug Fixes
 
@@ -121,7 +122,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Improve `Quadtree` to handle queries with null envelopes
 * Add `STRtree` K-Nearest Neighbours query
-* Add `Serializable` to ``PackedCoordinateSequence` 
+* Add `Serializable` to ``PackedCoordinateSequence`
 * Add `Envelope.intersects`
 * Add `Geometry.intersects` for `GeometryCollection`
 * Improve `WKBReader` to handle the OGC 06-103r4 specification.
@@ -150,7 +151,7 @@ Distributions for older JTS versions can be obtained at the
 * Added tree view of scalar functions
 * Added ability to repeat functions
 * Added custom fill styling
-* Added `SelectionFunctions` for metrics (area, length) 
+* Added `SelectionFunctions` for metrics (area, length)
 * Added function documentation driven by annotations
 * Some changes to layout of GUI elements (such as toolbar)
 

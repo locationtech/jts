@@ -21,6 +21,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
+import org.locationtech.jts.io.OrdinateFormat;
+
 /**
  * Utility methods for working with {@link String}s.
  * 
@@ -83,11 +85,17 @@ public class StringUtil
      return stackTrace;
  }
 
-  private static NumberFormat SIMPLE_ORDINATE_FORMAT = new DecimalFormat("0.#");
-  
-  public static String toString(double d)
-  {
-    return SIMPLE_ORDINATE_FORMAT.format(d);
+  /**
+   * Returns a string representation of the given number,
+   * using a format compatible with WKT.
+   * 
+   * @param d a number
+   * @return a string 
+   *
+   * @deprecated use {@link OrdinateFormat}
+   */
+  public static String toString(double d) {
+    return OrdinateFormat.DEFAULT.format(d);
   }
 
   public static String spaces(int n)
