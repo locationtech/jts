@@ -33,7 +33,8 @@ Distributions for older JTS versions can be obtained at the
 
 ### Bug Fixes
 
-* Fix PackedCoordinateSequence.Float construction methods (#379, #381)
+* Fix `PackedCoordinateSequence.Float` construction methods (#379, #381)
+* Fix bug in `Quadtree.ensureExtent` (#416)
 
 <!-- ================================================================ -->
 
