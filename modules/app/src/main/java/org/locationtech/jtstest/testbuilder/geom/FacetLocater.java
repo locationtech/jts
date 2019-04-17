@@ -71,7 +71,7 @@ public class FacetLocater
   	if (geom instanceof GeometryCollection) {
   		for (int i = 0; i < geom.getNumGeometries(); i++ ) {
   			Geometry subGeom = geom.getGeometryN(i);
-  			path.push(new Integer(i));
+  			path.push(i);
   			findLocations(path, subGeom, locations);
   			path.pop();
   		}
@@ -98,14 +98,14 @@ public class FacetLocater
   
   private void findLocations(Stack path, Polygon poly, List locations)
   {
-		path.push(new Integer(0));
+		path.push(0);
 		findLocations(path, 
 				poly.getExteriorRing(),
 				poly.getExteriorRing().getCoordinateSequence(), locations);
 		path.pop();
 		
 		for (int i = 0; i < poly.getNumInteriorRing(); i++ ) {
-			path.push(new Integer(i + 1));
+			path.push(i + 1);
 			findLocations(path, 
 					poly.getInteriorRingN(i), 
 					poly.getInteriorRingN(i).getCoordinateSequence(), locations);

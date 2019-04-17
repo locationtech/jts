@@ -442,7 +442,7 @@ public class GeometryStrategies{
 			public Object parse(Handler arg, GeometryFactory gf) throws SAXException {
 				if(arg.text == null)
 					return null;
-				return new Double((arg.text.toString()));
+				return Double.valueOf((arg.text.toString()));
 			}
 		};
 		
