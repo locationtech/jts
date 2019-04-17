@@ -112,7 +112,7 @@ public class SegmentNodeList
       Coordinate p2 = edge.getCoordinate(i + 2);
       if (p0.equals2D(p2)) {
         // add base of collapse as node
-        collapsedVertexIndexes.add(new Integer(i + 1));
+        collapsedVertexIndexes.add(i + 1);
       }
     }
   }
@@ -134,7 +134,7 @@ public class SegmentNodeList
       SegmentNode ei = (SegmentNode) it.next();
       boolean isCollapsed = findCollapseIndex(eiPrev, ei, collapsedVertexIndex);
       if (isCollapsed)
-        collapsedVertexIndexes.add(new Integer(collapsedVertexIndex[0]));
+        collapsedVertexIndexes.add(collapsedVertexIndex[0]);
 
       eiPrev = ei;
     }

@@ -128,7 +128,7 @@ public class SwingUtil {
       val = Integer.parseInt(str);
     } catch (NumberFormatException ex) {
     }
-    return new Integer(val);
+    return val;
   }
   
   public static Double convertDouble(String str) {
@@ -137,7 +137,7 @@ public class SwingUtil {
       val = Double.parseDouble(str);
     } catch (NumberFormatException ex) {
     }
-    return new Double(val);
+    return val;
   }
   
   public static Integer getInteger(JTextField txt, Integer defaultVal) {
@@ -150,7 +150,7 @@ public class SwingUtil {
       val = Integer.parseInt(str);
     } catch (NumberFormatException ex) {
     }
-    return new Integer(val);
+    return val;
   }
   
   public static Double getDouble(JTextField txt, Double defaultVal) {
@@ -163,7 +163,7 @@ public class SwingUtil {
       val = Double.parseDouble(str);
     } catch (NumberFormatException ex) {
     }
-    return new Double(val);
+    return val;
   }
   
   public static String value(JTextComponent txt) {

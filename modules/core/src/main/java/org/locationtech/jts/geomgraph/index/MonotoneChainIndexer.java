@@ -65,10 +65,10 @@ public class MonotoneChainIndexer {
     // find the startpoint (and endpoints) of all monotone chains in this edge
     int start = 0;
     List startIndexList = new ArrayList();
-    startIndexList.add(new Integer(start));
+    startIndexList.add(start);
     do {
       int last = findChainEnd(pts, start);
-      startIndexList.add(new Integer(last));
+      startIndexList.add(last);
       start = last;
     } while (start < pts.length - 1);
     // copy list to an array of ints, for efficiency

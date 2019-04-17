@@ -446,7 +446,7 @@ public class PrecisionModel implements Serializable, Comparable
 
     int sigDigits = getMaximumSignificantDigits();
     int otherSigDigits = other.getMaximumSignificantDigits();
-    return (new Integer(sigDigits)).compareTo(new Integer(otherSigDigits));
+    return Integer.compare(sigDigits, otherSigDigits);
 //    if (sigDigits > otherSigDigits)
 //      return 1;
 //    else if
