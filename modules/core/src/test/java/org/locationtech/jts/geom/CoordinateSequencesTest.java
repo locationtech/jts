@@ -333,7 +333,7 @@ public class CoordinateSequencesTest extends TestCase {
     assertEquals("unexpected x-ordinate at pos " + pos2,
             seq1.getOrdinate(pos1, 0), seq2.getOrdinate(pos2, 0));
     assertEquals("unexpected y-ordinate at pos " + pos2,
-            seq1.getOrdinate(pos1, 0), seq2.getOrdinate(pos2, 0));
+            seq1.getOrdinate(pos1, 1), seq2.getOrdinate(pos2, 1));
 
     // check additional ordinates
     for (int j = 2; j < dim; j++) {
