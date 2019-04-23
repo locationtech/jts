@@ -157,7 +157,7 @@ public class LinearLocation
     }
     if (segmentIndex >= linear.getNumPoints()) {
       LineString line = (LineString) linear.getGeometryN(componentIndex);
-      segmentIndex = line.getNumPoints() - 1;
+      segmentIndex = numSegments(line);
       segmentFraction = 1.0;
     }
   }
@@ -197,7 +197,7 @@ public class LinearLocation
 
     // ensure segment index is valid
     int segIndex = segmentIndex;
-    if (segmentIndex >= lineComp.getNumPoints() - 1)
+    if (segmentIndex >= numSegments(lineComp))
       segIndex = lineComp.getNumPoints() - 2;
 
     Coordinate p0 = lineComp.getCoordinateN(segIndex);
@@ -215,7 +215,7 @@ public class LinearLocation
   {
     componentIndex = linear.getNumGeometries() - 1;
     LineString lastLine = (LineString) linear.getGeometryN(componentIndex);
-    segmentIndex = lastLine.getNumPoints() - 1;
+    segmentIndex = numSegments(lastLine);
     segmentFraction = 0.0;
   }
 
@@ -262,7 +262,7 @@ public class LinearLocation
   {
     LineString lineComp = (LineString) linearGeom.getGeometryN(componentIndex);
     Coordinate p0 = lineComp.getCoordinateN(segmentIndex);
-    if (segmentIndex >= lineComp.getNumPoints() - 1)
+    if (segmentIndex >= numSegments(lineComp))
       return p0;
     Coordinate p1 = lineComp.getCoordinateN(segmentIndex + 1);
     return pointAlongSegmentByFraction(p0, p1, segmentFraction);
@@ -280,7 +280,7 @@ public class LinearLocation
     LineString lineComp = (LineString) linearGeom.getGeometryN(componentIndex);
     Coordinate p0 = lineComp.getCoordinateN(segmentIndex);
     // check for endpoint - return last segment of the line if so
-    if (segmentIndex >= lineComp.getNumPoints() - 1) {
+    if (segmentIndex >= numSegments(lineComp)) {
     	Coordinate prev = lineComp.getCoordinateN(lineComp.getNumPoints() - 2);
       return new LineSegment(prev, p0);
     }
@@ -418,11 +418,11 @@ public class LinearLocation
   {
     LineString lineComp = (LineString) linearGeom.getGeometryN(componentIndex);
     // check for endpoint
-    int nseg = lineComp.getNumPoints() - 1;
+    int nseg = numSegments(lineComp);
     return segmentIndex >= nseg
-        || (segmentIndex == nseg && segmentFraction >= 1.0);
+        || (segmentIndex == nseg - 1 && segmentFraction >= 1.0);
   }
-  
+
   /**
    * Converts a linear location to the lowest equivalent location index.
    * The lowest index has the lowest possible component and segment indices.
@@ -441,10 +441,10 @@ public class LinearLocation
   {
     // TODO: compute lowest component index
     LineString lineComp = (LineString) linearGeom.getGeometryN(componentIndex);
-    int nseg = lineComp.getNumPoints() - 1;
+    int nseg = numSegments(lineComp);
     // if not an endpoint can be returned directly
     if (segmentIndex < nseg) return this;
-    return new LinearLocation(componentIndex, nseg, 1.0, false);
+    return new LinearLocation(componentIndex, nseg - 1, 1.0, false);
   }
   
   /**
@@ -473,5 +473,19 @@ public class LinearLocation
     + componentIndex + ", "
     + segmentIndex + ", "
     + segmentFraction + "]";
+  }
+  
+  /**
+   * Gets the count of the number of line segments
+   * in a {@link LineString}.  This is one less than the 
+   * number of coordinates.
+   * 
+   * @param line a LineString
+   * @return the number of segments
+   */
+  private static int numSegments(LineString line) {
+    int npts = line.getNumPoints();
+    if (npts <= 1) return 0;
+    return npts - 1;
   }
 }
