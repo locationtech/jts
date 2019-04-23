@@ -35,6 +35,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Fix `PackedCoordinateSequence.Float` construction methods (#379, #381)
 * Fix bug in `Quadtree.ensureExtent` (#416)
+* Fix bugs in `LinearLocation` endpoint handling (#421)
 
 <!-- ================================================================ -->
 
