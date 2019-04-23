@@ -423,12 +423,6 @@ public class LinearLocation
         || (segmentIndex == nseg - 1 && segmentFraction >= 1.0);
   }
 
-  private static int numSegments(LineString line) {
-    int npts = line.getNumPoints();
-    if (npts <= 1) return 0;
-    return npts - 1;
-  }
-  
   /**
    * Converts a linear location to the lowest equivalent location index.
    * The lowest index has the lowest possible component and segment indices.
@@ -479,5 +473,19 @@ public class LinearLocation
     + componentIndex + ", "
     + segmentIndex + ", "
     + segmentFraction + "]";
+  }
+  
+  /**
+   * Gets the count of the number of line segments
+   * in a {@link LineString}.  This is one less than the 
+   * number of coordinates.
+   * 
+   * @param line a LineString
+   * @return the number of segments
+   */
+  private static int numSegments(LineString line) {
+    int npts = line.getNumPoints();
+    if (npts <= 1) return 0;
+    return npts - 1;
   }
 }
