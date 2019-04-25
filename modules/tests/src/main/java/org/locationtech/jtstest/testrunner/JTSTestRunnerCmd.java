@@ -177,9 +177,15 @@ public class JTSTestRunnerCmd {
   
   private static List<String> extractTestFilenames(CommandLine commandLine) throws FileNotFoundException, IOException {
     List<String> testFiles = new ArrayList<String>();
+    
+    if (commandLine.hasOption(OptionSpec.OPTION_FREE_ARGS)) {
+      testFiles.addAll(FilesUtil.expand(cmdOptionArgList(commandLine, OptionSpec.OPTION_FREE_ARGS)));
+    }
+    
     if (commandLine.hasOption(OPT_FILES)) {
       testFiles.addAll(FilesUtil.expand(cmdOptionArgList(commandLine, OPT_FILES)));
     }
+    
     if (commandLine.hasOption(OPT_PROPERTIES)) {
       Properties properties = new Properties();
       File file = new File(commandLine.getOption(OPT_PROPERTIES).getArg(0));
@@ -196,6 +202,9 @@ public class JTSTestRunnerCmd {
     CommandLine commandLine = new CommandLine('-');
     OptionSpec os;
 
+    os = new OptionSpec(OptionSpec.OPTION_FREE_ARGS, OptionSpec.NARGS_ONE_OR_MORE);
+    commandLine.addOptionSpec(os);
+
     os = new OptionSpec(OPT_FILES, OptionSpec.NARGS_ONE_OR_MORE);
     commandLine.addOptionSpec(os);
 
@@ -211,23 +220,28 @@ public class JTSTestRunnerCmd {
     return commandLine;
   }
 
+  static final String[] help = new String[] {
+  "",
+  "Usage: java org.locationtech.jtstest.testrunner.JTSTestRunnerCmd",
+  "           [ -geomfunc <classname>]",
+  "           [ -geomop <GeometryOperation classname>]",
+  "           [ -testIndex <number>]",
+  "           [ -verbose]",
+  "           [ -properties <file.properties>]",
+  "           [ -files <.xml file or dir> ...]",
+  "           [ <.xml file or dir> ... ]",
+  "  -files          run a list of .xml files or directories containing .xml files",
+  "  -properties     load .xml filenames from a .properties file",
+  "  -geomfunc       specifies the class providing the geometry operations",
+  "  -geomop         specifies the class providing the geometry operations",
+  "  -testIndex      specfies the index of a single test to run",
+  "  -verbose        display the results of successful tests"
+  };
+  
   private static void printHelp() {
-    System.out.println("");
-    System.out.println("Usage: java com.vividsolutions.jtstest.testrunner.TopologyTestApp ");
-    System.out.println("           [-files <.xml files>] [-gui] ");
-    System.out.println("           [-geomfunc <classname>]");
-    System.out.println("           [-geomop <GeometryOperation classname>]");
-    System.out.println("           [-testIndex <number>]");
-    System.out.println("           [-verbose]");
-    System.out.println("           [-properties <file.properties>]");
-    System.out.println("");
-    System.out.println("  -files          run a list of .xml files or directories");
-    System.out.println("                  containing .xml files");
-    System.out.println("  -properties     load .xml filenames from a .properties file");
-    System.out.println("  -geomfunc       specifies the class providing the geometry operations");
-    System.out.println("  -geomop         specifies the class providing the geometry operations");
-    System.out.println("  -testIndex      specfies the index of a single test to run");
-    System.out.println("  -verbose        display the results of successful tests");
+    for (String s : help) {
+      System.out.println(s);
+    }
   }
 
   public static List<String> cmdOptionArgList(CommandLine commandLine, String optionName) {

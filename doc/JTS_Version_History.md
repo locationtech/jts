@@ -25,7 +25,6 @@ Distributions for older JTS versions can be obtained at the
 
 * Change `Polygon` `getExteriorRing` and `getInteriorRingN` accessors to return `LinearRing`. *This is a binary incompatible change to the method signature.  Recompilation is necessary. No source code changes are required.*
 
-
 ### Functionality Improvements
 
 * Added `IndexedFacetDistance.isWithinDistance`
@@ -36,6 +35,13 @@ Distributions for older JTS versions can be obtained at the
 * Fix `PackedCoordinateSequence.Float` construction methods (#379, #381)
 * Fix bug in `Quadtree.ensureExtent` (#416)
 * Fix bugs in `LinearLocation` endpoint handling (#421)
+
+## JTS TestRunner
+
+### Functionality Improvements
+
+* Allow test files/dirs to be specified as free args
+
 
 <!-- ================================================================ -->
 
