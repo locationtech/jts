@@ -29,6 +29,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Added `IndexedFacetDistance.isWithinDistance`
 * Added `OrdinateFormat` to ensure that ordinate text output is accurate and consistent
+* Improve performance of `UniqueCoordinateFilter` (#422)
 
 ### Bug Fixes
 
