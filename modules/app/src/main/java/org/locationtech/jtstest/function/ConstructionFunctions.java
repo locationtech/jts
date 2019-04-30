@@ -24,12 +24,14 @@ public class ConstructionFunctions {
   public static double minimumDiameterLength(Geometry g) {      return (new MinimumDiameter(g)).getDiameter().getLength();  }
 
   public static Geometry minimumRectangle(Geometry g) { return (new MinimumDiameter(g)).getMinimumRectangle();  }
+  
   public static Geometry minimumBoundingCircle(Geometry g) { return (new MinimumBoundingCircle(g)).getCircle();  }
-  public static Geometry maximumDiameter(Geometry g) {      return 
-      g.getFactory().createLineString((new MinimumBoundingCircle(g)).getExtremalPoints());  }
-  public static Geometry farthestPoints(Geometry g) { 
-      return ((new MinimumBoundingCircle(g)).getFarthestPoints());  }
-  public static double maximumDiameterLength(Geometry g) {      return 2 * (new MinimumBoundingCircle(g)).getRadius();  }
+  public static double minimumBoundingCircleDiameterLen(Geometry g) {      return 2 * (new MinimumBoundingCircle(g)).getRadius();  }
+
+  public static Geometry maximumDiameter(Geometry g) {      return (new MinimumBoundingCircle(g)).getMaximumDiameter();  }
+  public static double maximumDiameterLength(Geometry g) {  
+    return (new MinimumBoundingCircle(g)).getMaximumDiameter().getLength();
+  }
   
   public static Geometry boundary(Geometry g) {      return g.getBoundary();  }
   public static Geometry convexHull(Geometry g) {      return g.convexHull();  }
