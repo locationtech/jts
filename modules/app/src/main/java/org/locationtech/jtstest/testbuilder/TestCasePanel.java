@@ -312,8 +312,8 @@ public class TestCasePanel extends JPanel {
     
     JTabbedPane tabFunctions = new JTabbedPane();
     tabFunctions.setBackground(jTabbedPane1.getBackground());
-    tabFunctions.add(spatialFunctionPanel,  "Geometry Functions");
-    tabFunctions.add(scalarFunctionPanel,   "Scalar Functions");
+    tabFunctions.add(spatialFunctionPanel,  "Geometry");
+    tabFunctions.add(scalarFunctionPanel,   "Scalar");
     
     jTabbedPane1.add(tabFunctions, "Functions");
     jTabbedPane1.add(relateTabPanel, "Predicates");
