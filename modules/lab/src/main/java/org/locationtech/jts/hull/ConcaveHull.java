@@ -30,8 +30,8 @@ import org.locationtech.jts.util.PriorityQueue;
 /**
  * A very fast 2D concave hull algorithm. It generates a general outline of a point set.
  * <p>
- * This is inspired by <a href="https://github.com/mapbox/concaveman">mapbox's concaveman algorithm</a>
- * which is released under the ISC license.
+ * This is inspired by Vladimir Agafonkin's <a href="https://github.com/mapbox/concaveman">
+ * mapbox's concaveman algorithm</a> which is released under the ISC license.
  * </p>
  * <b>Algorithm</b>
  * <p>

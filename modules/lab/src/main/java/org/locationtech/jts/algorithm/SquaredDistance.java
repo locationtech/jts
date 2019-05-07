@@ -16,8 +16,11 @@ import org.locationtech.jts.geom.Envelope;
 
 /**
  * Functions to compute squared distances between basic geometric structures.
- * Squared distances are useful if only the relative value is necessary, i.e. is
+ * Squared distances are useful if only the relative value is of interest, i.e. is
  * point {@code p1} closer to the point {@code p0} than {@code p2}.
+ *
+ * To compute the <i>squared distance</i> is faster than computing the real distance
+ * because there is no call to {@link Math#sqrt(double)} involved.
  *
  * @author Felix Obermaier
  * @since 1.17
@@ -93,7 +96,7 @@ public class SquaredDistance {
    * @param line
    *          a sequence of contiguous line segments defined by their vertices
    *
-   * @return the minimum distance between the point and the line segments
+   * @return the minimum squared distance between the point and the line segments
    */
   public static double pointToSegmentString(Coordinate p, Coordinate[] line)
   {
@@ -129,30 +132,6 @@ public class SquaredDistance {
   public static double segmentToSegment(Coordinate A, Coordinate B, Coordinate C, Coordinate D) {
     return segmentToSegment(A.x, A.y, B.x, B.y, C.x, C.y, D.x, D.y);
   }
-
-//  /**
-//   * Computes the squared distance from a line segment |{@code A}{@code B}| to
-//   * a line segment |{@code C}{@code D}|
-//   *
-//   * Note: NON-ROBUST!
-//   *
-//   * @param A
-//   *          point A of the segment AB
-//   * @param B
-//   *          point B of the segment AB
-//   * @param cx
-//   *          the x-ordinate of point C of the segment CD
-//   * @param cy
-//   *          the y-ordinate of point C of the segment CD
-//   * @param dx
-//   *          the x-ordinate of point D of the segment CD
-//   * @param dy
-//   *          the y-ordinate of point D of the segment CD
-//   */
-//  public static double segmentToSegment(Coordinate A, Coordinate B,
-//                                         double cx, double cy, double dx, double dy) {
-//    return segmentToSegment(A.x, A.y, B.x, B.y, cx, cy, dx, dy);
-//  }
 
   /**
    * Computes the squared distance from a line segment |{@code A}{@code B}| to
