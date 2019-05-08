@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2019 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -66,6 +66,14 @@ import org.locationtech.jts.geom.util.GeometryCombiner;
  */
 public class OverlapUnion 
 {
+  /**
+   * Union a pair of geometries,
+   * using the more performant overlap union algorithm if possible.
+   * 
+   * @param g0 a geometry to union
+   * @param g1 a geometry to union
+   * @return the union of the inputs
+   */
 	public static Geometry union(Geometry g0, Geometry g1)
 	{
 		OverlapUnion union = new OverlapUnion(g0, g1);
@@ -80,6 +88,12 @@ public class OverlapUnion
   private boolean isUnionSafe;
 
 	
+  /**
+   * Creates a new instance for unioning the given geometries.
+   * 
+   * @param g0 a geometry to union
+   * @param g1 a geometry to union
+   */
 	public OverlapUnion(Geometry g0, Geometry g1)
 	{
 		this.g0 = g0;
@@ -87,6 +101,12 @@ public class OverlapUnion
 		geomFactory = g0.getFactory();
 	}
 	
+	/**
+   * Unions the input geometries,
+   * using the more performant overlap union algorithm if possible.	 
+   * 
+   * @return the union of the inputs
+	 */
 	public Geometry union()
 	{
     Envelope overlapEnv = overlapEnvelope(g0,  g1);
