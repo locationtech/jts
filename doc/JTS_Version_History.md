@@ -37,6 +37,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix bug in `Quadtree.ensureExtent` (#416)
 * Fix bugs in `LinearLocation` endpoint handling (#421)
 * Fix bug in `MinimumBoundingCircle` maximum diameter algorithm, and provide method for it
+* Improve robustness of `CascadedPolygonUnion` by adding `OverlapUnion`
 
 ## JTS TestRunner
 
