@@ -26,10 +26,10 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.util.GeometryCombiner;
 
-
 /**
  * Unions MultiPolygons efficiently by
- * using full topological union only for polygons which may overlap.
+ * using full topological union only for polygons which may overlap
+ * by virtue of intersecting the common area of the inputs.
  * Other polygons are simply combined with the union result,
  * which is much more performant.
  * <p>
@@ -51,15 +51,24 @@ import org.locationtech.jts.geom.util.GeometryCombiner;
  * other (since the inputs are valid MultiPolygons).
  * They also do not interact with the Overlapping polygons, 
  * since they are outside their envelope.
- * <p>
- * Note that Overlapping set of polygons will 
- * in general extend beyond the overlap envelope.  This means that the union result
+ * 
+ * <h2>Verification</h2>
+ * In the general case the Overlapping set of polygons will 
+ * extend beyond the overlap envelope.  This means that the union result
  * will extend beyond the overlap region.
  * There is a small chance that the topological 
  * union of the overlap region will shift the result linework enough
  * that the result geometry intersects one of the Disjoint geometries.
  * This case is detected and if it occurs 
  * is remedied by falling back to performing a full union of the original inputs.
+ * Detection is done by a fairly efficient comparison of edge segments which
+ * extend beyond the overlap region.  If any segments have changed
+ * then there is a risk of introduced intersections, and full union is performed.
+ * <p>
+ * This situation has not been observed in JTS using floating precision, 
+ * but it could happen due to snapping.  It has been observed 
+ * in other APIs (e.g. GEOS) due to more aggressive snapping.
+ * And it will be more likely to happen if a snap-rounding overlay is used.
  * 
  * @author mbdavis
  *

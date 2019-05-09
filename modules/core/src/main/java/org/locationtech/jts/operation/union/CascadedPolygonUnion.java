@@ -151,9 +151,6 @@ public class CascadedPolygonUnion
 //    System.out.println(union);
     
     return union;
-//    return repeatedUnion(geoms);
-//    return buffer0Union(geoms);
-    
   }
 
   //========================================================
@@ -299,14 +296,6 @@ public class CascadedPolygonUnion
    */
   private Geometry unionActual(Geometry g0, Geometry g1)
   {
-  	/*
-  	System.out.println(g0.getNumGeometries() + ", " + g1.getNumGeometries());
- 	
-  	if (g0.getNumGeometries() > 5) {
-  		System.out.println(g0);
-  		System.out.println(g1);
-  	}
-  	*/
     Geometry union = OverlapUnion.union(g0, g1);;
   	return restrictToPolygons( union );
   }
