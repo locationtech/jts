@@ -18,8 +18,8 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 
 public class DiffFunctions {
-
-  public static GeometryCollection diffVerticeBoths(Geometry a, Geometry b) {
+  
+  public static GeometryCollection diffVerticesBoth(Geometry a, Geometry b) {
     MultiPoint diffAB = diffVertices(a, b);
     MultiPoint diffBA = diffVertices(b, a);
     
@@ -27,25 +27,42 @@ public class DiffFunctions {
           new Geometry[] { diffAB, diffBA });
   }
   
-  private static MultiPoint diffVertices(Geometry a, Geometry b) {
+  /**
+   * Diff the vertices in A against B to
+   * find vertices in A which are not in B.
+   * 
+   * @param a a Geometry
+   * @param b a Geometry
+   * @return the vertices in A which are not in B
+   */
+  public static MultiPoint diffVertices(Geometry a, Geometry b) {
     
-    Coordinate[] ptsA = a.getCoordinates();
+    Coordinate[] ptsB = b.getCoordinates();
     Set<Coordinate> pts = new HashSet<Coordinate>();
-    for (int i = 0; i < ptsA.length; i++) {
-      pts.add(ptsA[i]);
+    for (int i = 0; i < ptsB.length; i++) {
+      pts.add(ptsB[i]);
     }
 
     CoordinateList diffPts = new CoordinateList();
-    Coordinate[] ptsB = b.getCoordinates();
-    for (int j = 0; j < ptsB.length; j++) {
-      Coordinate p = ptsB[j];
-      if (! pts.contains(p)) {
-        diffPts.add(p);
+    Coordinate[] ptsA = a.getCoordinates();
+    for (int j = 0; j < ptsA.length; j++) {
+      Coordinate pa = ptsA[j];
+      if (! pts.contains(pa)) {
+        diffPts.add(pa);
       }
     }
     return a.getFactory().createMultiPointFromCoords(diffPts.toCoordinateArray());
   }
   
+  public static GeometryCollection diffSegments(Geometry a, Geometry b) {
+    List<LineSegment> segsA = extractSegments(a);
+    List<LineSegment> segsB = extractSegments(b);
+    
+    MultiLineString diffAB = diffSegments( segsA, segsB, a.getFactory() );
+     
+    return diffAB;
+  }
+
   public static GeometryCollection diffSegmentsBoth(Geometry a, Geometry b) {
     List<LineSegment> segsA = extractSegments(a);
     List<LineSegment> segsB = extractSegments(b);
@@ -61,15 +78,15 @@ public class DiffFunctions {
   private static MultiLineString diffSegments(List<LineSegment> segsA, List<LineSegment> segsB, GeometryFactory factory) {
     
     Set<LineSegment> segs = new HashSet<LineSegment>();
-    segs.addAll(segsA);
+    segs.addAll(segsB);
 
-    List<LineSegment> segsDiff = new ArrayList<LineSegment>();
-    for (LineSegment seg : segsB) {
+    List<LineSegment> segsDiffA = new ArrayList<LineSegment>();
+    for (LineSegment seg : segsA) {
       if (! segs.contains(seg)) {
-        segsDiff.add(seg);
+        segsDiffA.add(seg);
       }
     }
-    LineString[] diffLines = toLineStrings( segsDiff,  factory);
+    LineString[] diffLines = toLineStrings( segsDiffA,  factory);
     return factory.createMultiLineString( diffLines );
   }
 
