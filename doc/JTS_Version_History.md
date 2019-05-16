@@ -30,6 +30,7 @@ Distributions for older JTS versions can be obtained at the
 * Added `IndexedFacetDistance.isWithinDistance`
 * Added `OrdinateFormat` to ensure that ordinate text output is accurate and consistent
 * Improve performance of `UniqueCoordinateFilter` (#422)
+* Improve performance of `Polygonizer` (#431)
 
 ### Bug Fixes
 
@@ -1319,5 +1320,3 @@ This version is upwards compatible with Version 1.4
 *Release Date: 30 May 2001*
 
 **Baseline version**
-
-
