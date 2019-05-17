@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.strtree.STRtree;
 
@@ -76,13 +75,13 @@ public class HoleAssigner
   
   private void assignHoleToShell(EdgeRing holeER)
   {
-    EdgeRing shell = findEdgeRingContaining(holeER);
+    EdgeRing shell = findShellContaining(holeER);
     if (shell != null) {
       shell.addHole(holeER);
     }
   }
   
-  private List<EdgeRing> findShells(Envelope ringEnv) {
+  private List<EdgeRing> queryOverlappingShells(Envelope ringEnv) {
     return (List<EdgeRing>) shellIndex.query(ringEnv);
   }
   
@@ -97,14 +96,13 @@ public class HoleAssigner
    * is known to be properly contained in a shell
    * (which is guaranteed to be the case if the hole does not touch its shell)
    *
-   * @return containing EdgeRing, if there is one
+   * @return containing shell EdgeRing, if there is one
    * or null if no containing EdgeRing is found
    */
-  private EdgeRing findEdgeRingContaining(EdgeRing testEr)
+  private EdgeRing findShellContaining(EdgeRing testEr)
   {
-    LinearRing testRing = testEr.getRing();
-    Envelope testEnv = testRing.getEnvelopeInternal();    
-    List<EdgeRing> candidateShells = findShells(testEnv);
+    Envelope testEnv = testEr.getRing().getEnvelopeInternal();   
+    List<EdgeRing> candidateShells = queryOverlappingShells(testEnv);
     return EdgeRing.findEdgeRingContaining(testEr, candidateShells);
   }
 }
