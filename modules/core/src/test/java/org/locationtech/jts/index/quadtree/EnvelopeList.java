@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -9,22 +10,41 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
+package org.locationtech.jts.index.quadtree;
 
-package test.jts.index;
-
-
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
 
 
+
 /**
- * Adapter for different kinds of indexes
  * @version 1.7
  */
-public interface Index
+public class EnvelopeList
 {
-  void insert(Envelope itemEnv, Object item);
-  List query(Envelope searchEnv);
-  void finishInserting();
+  List envList = new ArrayList();
+
+  public EnvelopeList() {
+  }
+
+  public void add(Envelope env)
+  {
+    envList.add(env);
+  }
+
+  public List query(Envelope searchEnv)
+  {
+    List result = new ArrayList();
+    for (Iterator i = envList.iterator(); i.hasNext(); ) {
+      Envelope env = (Envelope) i.next();
+      if (env.intersects(searchEnv))
+        result.add(env);
+    }
+    return result;
+  }
+
+
 }

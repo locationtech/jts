@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -11,26 +10,21 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
 
-package test.jts.junit;
+package test.jts.perf.index;
 
-import junit.framework.TestCase;
-import junit.swingui.TestRunner;
+
+import java.util.List;
+
+import org.locationtech.jts.geom.Envelope;
 
 
 /**
+ * Adapter for different kinds of indexes
  * @version 1.7
  */
-public class SimpleTest extends TestCase {
-
-  public static void main(String args[]) {
-    TestRunner.run(SimpleTest.class);
-  }
-
-  public SimpleTest(String name) { super(name); }
-
-  public void testThisIsATest() throws Exception {
-    assertTrue(true);
-  }
-
+public interface Index
+{
+  void insert(Envelope itemEnv, Object item);
+  List query(Envelope searchEnv);
+  void finishInserting();
 }
-

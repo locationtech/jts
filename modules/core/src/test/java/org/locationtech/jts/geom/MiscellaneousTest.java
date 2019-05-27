@@ -11,7 +11,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
 
-package test.jts.junit;
+package org.locationtech.jts.geom;
 
 import java.util.ArrayList;
 

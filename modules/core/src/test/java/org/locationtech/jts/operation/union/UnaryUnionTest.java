@@ -18,10 +18,10 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 
-import junit.framework.TestCase;
-import test.jts.junit.GeometryUtils;
+import test.jts.GeometryTestCase;
+import test.jts.util.IOUtil;
 
-public class UnaryUnionTest extends TestCase 
+public class UnaryUnionTest extends GeometryTestCase 
 {
 	GeometryFactory geomFact = new GeometryFactory();
 	
@@ -62,13 +62,13 @@ public class UnaryUnionTest extends TestCase
   throws ParseException
   {
   	Geometry result;
-  	Collection geoms = GeometryUtils.readWKT(inputWKT);
+  	Collection geoms = IOUtil.readWKT(inputWKT);
   	if (geoms.size() == 0)
   		result = UnaryUnionOp.union(geoms, geomFact);
   	else
   		result = UnaryUnionOp.union(geoms);
   	
-  	assertTrue(GeometryUtils.isEqual(GeometryUtils.readWKT(expectedWKT), result));
+  	checkEqual(IOUtil.readWKT(expectedWKT), result);
   }
 
 }

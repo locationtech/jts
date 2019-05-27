@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
 import junit.framework.TestCase;
-import test.jts.junit.GeometryUtils;
+import test.jts.util.IOUtil;
 
 /**
  * Large-scale tests of {@link CascadedPolygonUnion}
@@ -45,7 +45,7 @@ public class CascadedPolygonUnionTest extends TestCase
   public void testBoxes()
   throws Exception
   {
-  	runTest(GeometryUtils.readWKT(
+  	runTest(IOUtil.readWKT(
   			new String[] {
   				"POLYGON ((80 260, 200 260, 200 30, 80 30, 80 260))",
   				"POLYGON ((30 180, 300 180, 300 110, 30 110, 30 180))",
