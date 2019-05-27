@@ -12,16 +12,19 @@
  */
 package org.locationtech.jts.operation.buffer;
 
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 
-import junit.framework.TestCase;
+import test.jts.GeometryTestCase;
 
 
 
 /**
  * @version 1.7
  */
-public class BufferTest extends TestCase {
+public class BufferTest extends GeometryTestCase {
 
   public BufferTest(String name) {
     super(name);
@@ -475,4 +478,13 @@ public class BufferTest extends TestCase {
       .test();
   }
 
+  public void testQuickPolygonUnion() throws Exception {
+    Geometry a = read("POLYGON((0 0, 100 0, 100 100, 0 100, 0 0))");
+    Geometry b = read("POLYGON((50 50, 150 50, 150 150, 50 150, 50 50))");
+    Geometry[] polygons = new Geometry[] {a, b};
+    GeometryCollection polygonCollection = new GeometryFactory().createGeometryCollection(polygons);
+    Geometry union = polygonCollection.buffer(0);
+    //System.out.println(union);
+    assertEquals("POLYGON ((0 0, 0 100, 50 100, 50 150, 150 150, 150 50, 100 50, 100 0, 0 0))", union.toString());
+  }
 }

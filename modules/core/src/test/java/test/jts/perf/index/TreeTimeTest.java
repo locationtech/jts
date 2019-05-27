@@ -10,7 +10,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package test.jts.index;
+package test.jts.perf.index;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,6 @@ import java.util.List;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.index.quadtree.Quadtree;
 import org.locationtech.jts.index.strtree.STRtree;
-
 
 
 /**

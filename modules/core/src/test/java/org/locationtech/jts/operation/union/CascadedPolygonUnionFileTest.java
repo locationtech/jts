@@ -20,7 +20,7 @@ import java.util.Collection;
 import org.locationtech.jts.io.ParseException;
 
 import junit.framework.TestCase;
-import test.jts.junit.GeometryUtils;
+import test.jts.util.IOUtil;
 
 /**
  * Large-scale tests of {@link CascadedPolygonUnion}
@@ -58,7 +58,7 @@ public class CascadedPolygonUnionFileTest extends TestCase
   private void runTest(String filename, double minimumMeasure) 
   throws IOException, ParseException
   {
-    Collection geoms = GeometryUtils.readWKTFile(filename);
+    Collection geoms = IOUtil.readWKTFile(filename);
     assertTrue(tester.test(geoms, minimumMeasure));
   }
   private void runTestResource(String resource, double minimumMeasure) 
@@ -67,7 +67,7 @@ public class CascadedPolygonUnionFileTest extends TestCase
     InputStream is = this.getClass().getResourceAsStream(resource);
     // don't bother if file is missing
     if (is == null) return;
-    Collection geoms = GeometryUtils.readWKTFile(new InputStreamReader(is));
+    Collection geoms = IOUtil.readWKTFile(new InputStreamReader(is));
     assertTrue(tester.test(geoms, minimumMeasure));
   }
   

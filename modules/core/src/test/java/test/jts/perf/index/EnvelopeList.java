@@ -10,38 +10,38 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package test.jts.index;
+package test.jts.perf.index;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.index.bintree.Interval;
+import org.locationtech.jts.geom.Envelope;
 
 
 
 /**
  * @version 1.7
  */
-public class IntervalList
+public class EnvelopeList
 {
-  List list = new ArrayList();
+  List envList = new ArrayList();
 
-  public IntervalList() {
+  public EnvelopeList() {
   }
 
-  public void add(Interval interval)
+  public void add(Envelope env)
   {
-    list.add(interval);
+    envList.add(env);
   }
 
-  public List query(Interval searchInterval)
+  public List query(Envelope searchEnv)
   {
     List result = new ArrayList();
-    for (Iterator i = list.iterator(); i.hasNext(); ) {
-      Interval interval = (Interval) i.next();
-      if (interval.overlaps(searchInterval))
-        result.add(interval);
+    for (Iterator i = envList.iterator(); i.hasNext(); ) {
+      Envelope env = (Envelope) i.next();
+      if (env.intersects(searchEnv))
+        result.add(env);
     }
     return result;
   }

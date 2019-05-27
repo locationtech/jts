@@ -19,7 +19,7 @@ import org.locationtech.jts.io.ParseException;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import test.jts.junit.GeometryUtils;
+import test.jts.util.IOUtil;
 
 
 public class EdgeGraphTest extends TestCase {
@@ -64,7 +64,7 @@ public class EdgeGraphTest extends TestCase {
   }
 
   private EdgeGraph build(String[] wkt) throws ParseException {
-    List geoms = GeometryUtils.readWKT(wkt);
+    List geoms = IOUtil.readWKT(wkt);
     return EdgeGraphBuilder.build(geoms);
   }
 

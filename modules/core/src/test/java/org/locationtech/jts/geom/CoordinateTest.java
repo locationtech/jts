@@ -212,6 +212,19 @@ public class CoordinateTest extends TestCase
       assertTrue( xyzm.equalInZ(coord,0.000001) ); 
   }
   
+  public void testCoordinateHash() {
+    doTestCoordinateHash(true, new Coordinate(1, 2), new Coordinate(1, 2));
+    doTestCoordinateHash(false, new Coordinate(1, 2), new Coordinate(3, 4));
+    doTestCoordinateHash(false, new Coordinate(1, 2), new Coordinate(1, 4));
+    doTestCoordinateHash(false, new Coordinate(1, 2), new Coordinate(3, 2));
+    doTestCoordinateHash(false, new Coordinate(1, 2), new Coordinate(2, 1));
+  }
+
+  private void doTestCoordinateHash(boolean equal, Coordinate a, Coordinate b) {
+    assertEquals(equal, a.equals(b));
+    assertEquals(equal, a.hashCode() == b.hashCode());
+  }
+  
   /**
    * Confirm the z field is not supported by getZ and setZ.
    */

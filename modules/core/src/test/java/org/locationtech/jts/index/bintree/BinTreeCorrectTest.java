@@ -10,13 +10,13 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package test.jts.index;
+package org.locationtech.jts.index.bintree;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.index.quadtree.Quadtree;
+import org.locationtech.jts.index.bintree.Bintree;
+import org.locationtech.jts.index.bintree.Interval;
 import org.locationtech.jts.util.Stopwatch;
 
 
@@ -24,48 +24,31 @@ import org.locationtech.jts.util.Stopwatch;
 /**
  * @version 1.7
  */
-public class QuadtreeCorrectTest {
+public class BinTreeCorrectTest {
 
   public static void main(String[] args) throws Exception
   {
     //testBinaryPower();
-    QuadtreeCorrectTest test = new QuadtreeCorrectTest();
+    BinTreeCorrectTest test = new BinTreeCorrectTest();
     test.run();
   }
 
-/*
-  public static void testBinaryPower()
-  {
-    printBinaryPower(1004573397.0);
-    printBinaryPower(100.0);
-    printBinaryPower(0.234);
-    printBinaryPower(0.000003455);
-  }
 
-  public static void printBinaryPower(double num)
-  {
-    BinaryPower pow2 = new BinaryPower();
-    int exp = BinaryPower.exponent(num);
-    double p2 = pow2.power(exp);
-    System.out.println(num + " : pow2 = " +  Math.pow(2.0, exp)
-        + "   exp = " + exp + "   2^exp = " + p2);
-  }
-*/
-  static final int NUM_ITEMS = 2000;
+  static final int NUM_ITEMS = 20000;
   static final double MIN_EXTENT = -1000.0;
   static final double MAX_EXTENT = 1000.0;
 
-  EnvelopeList envList = new EnvelopeList();
-  Quadtree q = new Quadtree();
+  IntervalList intervalList = new IntervalList();
+  Bintree btree = new Bintree();
 
-  public QuadtreeCorrectTest() {
+  public BinTreeCorrectTest() {
   }
 
   public void run()
   {
     fill();
-    System.out.println("depth = " + q.depth()
-      + "  size = " + q.size() );
+    System.out.println("depth = " + btree.depth()
+      + "  size = " + btree.size() );
     runQueries();
   }
 
@@ -83,15 +66,11 @@ public class QuadtreeCorrectTest {
     double cellSize = 2 * gridInc;
 
     for (int i = 0; i < gridSize; i++) {
-      for (int j = 0; j < gridSize; j++) {
         double x = MIN_EXTENT + gridInc * i;
-        double y = MIN_EXTENT + gridInc * j;
-        Envelope env = new Envelope(x, x + cellSize,
-                                    y, y + cellSize);
-        q.insert(env, env);
-        envList.add(env);
+        Interval interval = new Interval(x, x + cellSize   );
+        btree.insert(interval, interval);
+        intervalList.add(interval);
       }
-    }
   }
 
   void runQueries()
@@ -117,43 +96,39 @@ public class QuadtreeCorrectTest {
     double gridInc = extent / gridSize;
 
     for (int i = 0; i < gridSize; i++) {
-      for (int j = 0; j < gridSize; j++) {
         double x = MIN_EXTENT + gridInc * i;
-        double y = MIN_EXTENT + gridInc * j;
-        Envelope env = new Envelope(x, x + cellSize,
-                                    y, y + cellSize);
-        queryTest(env);
+        Interval interval = new Interval(x, x + cellSize);
+        queryTest(interval);
         //queryTime(env);
-      }
     }
     System.out.println("Time = " + sw.getTimeString());
   }
 
-  void queryTime(Envelope env)
+  void queryTime(Interval interval)
   {
     //List finalList = getOverlapping(q.query(env), env);
 
-    List eList = envList.query(env);
+    List eList = intervalList.query(interval);
   }
 
-  void queryTest(Envelope env)
+  void queryTest(Interval interval)
   {
-    List candidateList = q.query(env);
-    List finalList = getOverlapping(candidateList, env);
+    List candidateList = btree.query(interval);
+    List finalList = getOverlapping(candidateList, interval);
 
-    List eList = envList.query(env);
-//System.out.println(finalList.size());
+    List eList = intervalList.query(interval);
+System.out.println(finalList.size());
 
     if (finalList.size() != eList.size() )
       throw new RuntimeException("queries do not match");
   }
 
-  private List getOverlapping(List items, Envelope searchEnv)
+  private List getOverlapping(List items, Interval searchInterval)
   {
     List result = new ArrayList();
     for (int i = 0; i < items.size(); i++) {
-      Envelope env = (Envelope) items.get(i);
-      if (env.intersects(searchEnv)) result.add(env);
+      Interval interval = (Interval) items.get(i);
+      if (interval.overlaps(searchInterval)) result.add(interval);
     }
     return result;
   }

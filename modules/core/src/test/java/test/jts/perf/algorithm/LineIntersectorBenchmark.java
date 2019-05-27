@@ -11,7 +11,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
 
-package test.jts;
+package test.jts.perf.algorithm;
 
 import java.util.Date;
 
