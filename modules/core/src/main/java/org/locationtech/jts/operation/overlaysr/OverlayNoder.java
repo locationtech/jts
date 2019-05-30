@@ -13,19 +13,20 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
 import org.locationtech.jts.topology.Label;
 
 public class OverlayNoder {
 
   private PrecisionModel pm;
-  List segStrings = new ArrayList();
+  List<NodedSegmentString> segStrings = new ArrayList<NodedSegmentString>();
 
   public OverlayNoder(PrecisionModel pm) {
     this.pm = pm;
   }
 
-  public Collection node() {
+  public Collection<SegmentString> node() {
     Noder sr = new MCIndexSnapRounder(pm);
     sr.computeNodes(segStrings);
     

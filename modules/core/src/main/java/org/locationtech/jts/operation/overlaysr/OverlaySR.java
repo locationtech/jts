@@ -9,6 +9,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.precision.GeometryPrecisionReducer;
@@ -64,30 +65,31 @@ public class OverlaySR {
   }
 
   private Geometry computeOverlay(int overlayOpCode) {
-    Collection edges = node();
+    Collection<SegmentString> edges = node();
     OverlayGraph graph = buildTopology(edges);
     
-    //TODO: extract include linework from graph
+    //TODO: extract included linework from graph
     
+    //TODO: build geometries
     return toLines(edges, geomFact );
   }
 
-  private OverlayGraph buildTopology(Collection edges) {
+  private OverlayGraph buildTopology(Collection<SegmentString> edges) {
     OverlayGraph graph = OverlayGraph.buildGraph( edges );
     graph.computeLabelling();
     return graph;
   }
 
-  private Collection node() {
+  private Collection<SegmentString> node() {
     OverlayNoder noder = new OverlayNoder(pm);
     noder.add(geom[0], 0);
     noder.add(geom[1], 1);
-    Collection edges = noder.node();
-    Collection mergedEdges = merge(edges);
+    Collection<SegmentString> edges = noder.node();
+    Collection<SegmentString> mergedEdges = merge(edges);
     return mergedEdges;
   }
   
-  private Collection merge(Collection edges) {
+  private Collection<SegmentString> merge(Collection<SegmentString> edges) {
     // TODO implement merging here
     
     //computeLabelsFromDepths();
@@ -96,10 +98,9 @@ public class OverlaySR {
     return edges;
   }
 
-  private static Geometry toLines(Collection segStrings, GeometryFactory geomFact) {
+  private static Geometry toLines(Collection<SegmentString> segStrings, GeometryFactory geomFact) {
     List lines = new ArrayList();
-    for (Iterator it = segStrings.iterator(); it.hasNext(); ) {
-      SegmentString ss = (SegmentString) it.next();
+    for (SegmentString ss : segStrings ) {
       //Coordinate[] pts = getCoords(nss);
       Coordinate[] pts = ss.getCoordinates();
       
