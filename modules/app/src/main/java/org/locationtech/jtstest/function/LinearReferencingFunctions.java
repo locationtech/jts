@@ -37,9 +37,20 @@ public class LinearReferencingFunctions
   public static Geometry project(Geometry g, Geometry g2)
   {
     LengthIndexedLine ll = new LengthIndexedLine(g);
-    double index = ll.project(g2.getCoordinate());
-    Coordinate p = ll.extractPoint(index);
-    return g.getFactory().createPoint(p);
+    if (g2.getDimension() == 1) {
+      LineString line = (LineString) g2.getGeometryN(0);
+      Coordinate pStart = line.getCoordinateN(0);
+      Coordinate pEnd = line.getCoordinateN(line.getNumPoints() - 1);
+      double indexStart = ll.project(pStart);
+      double indexEnd = ll.project(pEnd);
+      Geometry lineProj = ll.extractLine(indexStart, indexEnd);
+      return lineProj;
+    }
+    else {
+      double index = ll.project(g2.getCoordinate());
+      Coordinate p = ll.extractPoint(index);
+      return g.getFactory().createPoint(p);
+    }
   }
   public static double projectIndex(Geometry g, Geometry g2)
   {
