@@ -35,8 +35,9 @@ import org.locationtech.jts.util.NumberUtil;
  * Apart from the basic accessor functions, JTS supports
  * only specific operations involving the Z-ordinate.</p> 
  * <p>
- * Implementations may optionally support Z-ordiante and M-measure values
- * as appropriate for a CoordinateSeqeunce. Use of {@link #getZ()} and {@link #getM()}
+ * Implementations may optionally support Z-ordinate and M-measure values
+ * as appropriate for a {@link CoordinateSequence}. 
+ * Use of {@link #getZ()} and {@link #getM()}
  * accessors, or {@link #getOrdinate(int)} are recommended.</p> 
  *
  * @version 1.16
@@ -85,7 +86,8 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   
   /**
    * The z-ordinate.
-   * @deprecated Recommend {@link #getZ()}
+   * <p>
+   * Direct access to this field is discouraged; use {@link #getZ()}.
    */
   public double z;
 
