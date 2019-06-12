@@ -21,4 +21,11 @@ public class GraphicsUtil {
     g2d.drawString(s, x - stringLen /2, y); 
 
   }
+  
+  public static void drawStringAlign(Graphics2D g2d, String s, int x, int y, float xalign, float yalign) {
+    int width = (int) g2d.getFontMetrics().getStringBounds(s, g2d).getWidth();
+    int height = (int) g2d.getFontMetrics().getStringBounds(s, g2d).getHeight();
+    g2d.drawString(s, x - xalign*width, y + yalign*height); 
+  }
+
 }
