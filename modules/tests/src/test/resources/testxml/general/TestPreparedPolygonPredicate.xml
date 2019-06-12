@@ -116,6 +116,20 @@
 </case>
 
 <case>
+   <desc>A/mP - one point on boundary, one point interior, one point exterior
+   </desc>
+   <a>
+     POLYGON ((10 10, 60 100, 110 10, 10 10))
+   </a>
+   <b>
+     MULTIPOINT ((10 10), (20 20), (20 40))
+   </b>
+   <test>  <op name="contains"      arg1="A" arg2="B">   false   </op> </test>
+   <test>  <op name="covers"        arg1="A" arg2="B">   false   </op> </test>
+   <test>  <op name="intersects"    arg1="A" arg2="B">   true   </op> </test>
+</case>
+
+<case>
   <desc>mA/L
   	A has 2 shells touching at one vertex and one non-vertex.
   	B passes between the shells, but is wholely contained
