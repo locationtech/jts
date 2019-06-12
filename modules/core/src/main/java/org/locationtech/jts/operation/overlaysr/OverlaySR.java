@@ -8,6 +8,7 @@ import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -19,32 +20,6 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.precision.GeometryPrecisionReducer;
 
 public class OverlaySR {
-
-  /**
-   * The spatial functions supported by this class.
-   * These operations implement various boolean combinations of the resultants of the overlay.
-   */
-    
-    /**
-     * The code for the Intersection overlay operation.
-     */
-    public static final int INTERSECTION  = 1;
-    
-    /**
-     * The code for the Union overlay operation.
-     */
-    public static final int UNION         = 2;
-    
-    /**
-     *  The code for the Difference overlay operation.
-     */
-    public static final int DIFFERENCE    = 3;
-    
-    /**
-     *  The code for the Symmetric Difference overlay operation.
-     */
-    public static final int SYMDIFFERENCE = 4;
-    
   /**
    * Tests whether a point with a given topological {@link Label}
    * relative to two geometries is contained in 
@@ -82,16 +57,16 @@ public class OverlaySR {
     if (loc0 == Location.BOUNDARY) loc0 = Location.INTERIOR;
     if (loc1 == Location.BOUNDARY) loc1 = Location.INTERIOR;
     switch (overlayOpCode) {
-    case INTERSECTION:
+    case OverlayOp.INTERSECTION:
       return loc0 == Location.INTERIOR
           && loc1 == Location.INTERIOR;
-    case UNION:
+    case OverlayOp.UNION:
       return loc0 == Location.INTERIOR
           || loc1 == Location.INTERIOR;
-    case DIFFERENCE:
+    case OverlayOp.DIFFERENCE:
       return loc0 == Location.INTERIOR
           && loc1 != Location.INTERIOR;
-    case SYMDIFFERENCE:
+    case OverlayOp.SYMDIFFERENCE:
       return   (     loc0 == Location.INTERIOR &&  loc1 != Location.INTERIOR)
             || (     loc0 != Location.INTERIOR &&  loc1 == Location.INTERIOR);
     }
@@ -141,7 +116,7 @@ public class OverlaySR {
     else if (overlayOpCode == OverlayOp.INTERSECTION) {
       return gr0.intersection(gr1);
     }
-    // MD - will not implement other overlay ops yet
+    // MD - have not implemented other overlay ops yet
     throw new UnsupportedOperationException();
   }
 
@@ -152,18 +127,23 @@ public class OverlaySR {
     //TODO: extract included linework from graph
     markResultAreaEdges(graph, opCode);
 
-    PolygonBuilder polyBuilder = new PolygonBuilder(graph, geomFact);
-    List<Geometry> resultPolyList = polyBuilder.getPolygons();
-
     //TODO: build geometries
     //return toLines(edges, geomFact );
-        
+    return toLines(graph, geomFact);
+
+    //return createResult(opCode, graph);
+  }
+
+  private Geometry createResult(int opCode, OverlayGraph graph) {
+    PolygonBuilder polyBuilder = new PolygonBuilder(graph, geomFact);
+    List<Polygon> resultPolyList = polyBuilder.getPolygons();
+    
     // gather the results from all calculations into a single Geometry for the result set
-    Geometry resultGeom = computeGeometry(null, null, resultPolyList, opCode);
+    Geometry resultGeom = buildGeometry(null, null, resultPolyList, opCode);
     return resultGeom;
   }
 
-  private Geometry computeGeometry(List resultPointList, List resultLineList, List resultPolyList, int opcode) {
+  private Geometry buildGeometry(List resultPointList, List resultLineList, List resultPolyList, int opcode) {
     List<Geometry> geomList = new ArrayList<Geometry>();
 // element geometries of the result are always in the order P,L,A
     geomList.addAll(resultPointList);
@@ -228,16 +208,16 @@ public class OverlaySR {
     
     int resultDimension = -1;
     switch (opCode) {
-    case INTERSECTION: 
+    case OverlayOp.INTERSECTION: 
       resultDimension = Math.min(dim0, dim1);
       break;
-    case UNION: 
+    case OverlayOp.UNION: 
       resultDimension = Math.max(dim0, dim1);
       break;
-    case DIFFERENCE: 
+    case OverlayOp.DIFFERENCE: 
       resultDimension = dim0;
       break;
-    case SYMDIFFERENCE: 
+    case OverlayOp.SYMDIFFERENCE: 
       /**
        * This result is chosen because
        * <pre>
@@ -281,6 +261,19 @@ public class OverlaySR {
       edge.markInResultArea(overlayOpCode);
       ((OverlayEdge) edge.sym()).markInResultArea(overlayOpCode);      
     }
+  }
+
+  private static Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
+    List lines = new ArrayList();
+    for (OverlayEdge edge : graph.getEdges()) {
+      if (! edge.isInResult()) continue;
+      //Coordinate[] pts = getCoords(nss);
+      Coordinate[] pts = edge.getCoordinates();
+      LineString line = geomFact.createLineString(pts);
+      line.setUserData(edge.getLabel().toString());
+      lines.add(line);
+    }
+    return geomFact.buildGeometry(lines);
   }
 
   private static Geometry toLines(Collection<SegmentString> segStrings, GeometryFactory geomFact) {

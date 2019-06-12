@@ -19,6 +19,11 @@ import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
 public class OverlaySRFunctions {
+  public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    return OverlaySR.overlayOp(a, b, pm, OverlayOp.INTERSECTION);
+  }
+
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlaySR.overlayOp(a, b, pm, OverlayOp.UNION);

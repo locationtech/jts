@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Location;
@@ -82,7 +83,7 @@ public class OverlayNoder {
     // don't bother adding empty holes
     if (lr.isEmpty()) return;
     
-    Coordinate[] pts = round(lr.getCoordinates());
+    Coordinate[] pts = round(lr.getCoordinates(), 4);
 
     int left  = cwLeft;
     int right = cwRight;
@@ -99,8 +100,31 @@ public class OverlayNoder {
     segStrings.add(ss);
   }
 
-  private Coordinate[] round(Coordinate[] pts)  {
-    // TODO: reduce precision, remove repeated pts, ensure 4 pts
-    return pts;
+  private Coordinate[] round(Coordinate[] pts, int minLength)  {
+    CoordinateList noRepeatCoordList = new CoordinateList();
+
+    for (int i = 0; i < pts.length; i++) {
+      Coordinate coord = new Coordinate(pts[i]);
+      pm.makePrecise(coord);
+      noRepeatCoordList.add(coord, false);
+    }
+    Coordinate[] reducedPts = noRepeatCoordList.toCoordinateArray();
+    if (reducedPts.length < minLength) {
+      return pad(reducedPts, minLength);
+    }
+    return reducedPts;
+  }
+
+  private static Coordinate[] pad(Coordinate[] pts, int minLength) {
+    Coordinate[] pts2 = new Coordinate[minLength];
+    for (int i = 0; i < minLength; i++) {
+      if (i < pts.length) {
+        pts2[i] = pts[i];
+      }
+      else {
+        pts2[i] = pts[pts.length - 1];
+      }
+    }
+    return pts2;
   }
 }

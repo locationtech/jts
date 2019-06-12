@@ -55,11 +55,15 @@ public class OverlayEdge extends HalfEdge {
     return label;
   }
 
-  private Coordinate getCoordinate() {
+  public Coordinate getCoordinate() {
     return orig();
   }
   
-  private boolean isInResult() {
+  public Coordinate[] getCoordinates() {
+    return edge.getCoordinates();
+  }
+  
+  public boolean isInResult() {
     return isInResult;
   }
   
@@ -132,7 +136,8 @@ public class OverlayEdge extends HalfEdge {
               label.getLocation(0, Position.RIGHT),
               label.getLocation(1, Position.RIGHT),
               overlayOpCode)) {
-      isInResult  = true;  }
+      isInResult  = true;  
+    }
   }
 
   public void mergeSymLabels() {

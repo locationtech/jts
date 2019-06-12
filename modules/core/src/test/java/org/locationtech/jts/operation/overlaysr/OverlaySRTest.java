@@ -25,6 +25,15 @@ public class OverlaySRTest extends GeometryTestCase {
     
   }
   
+  public void xtestUnionSmoke() {
+    Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
+    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
+    Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
+    Geometry actual = union(a, b, 1);
+    
+    checkEqual(expected, actual);
+  }
+  
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlaySR.overlayOp(a, b, pm, OverlayOp.UNION);

@@ -14,17 +14,24 @@ import org.locationtech.jts.operation.overlay.MaximalEdgeRing;
 public class PolygonBuilder {
 
   private OverlayGraph graph;
-  private GeometryFactory geomFact;
+  private GeometryFactory geometryFactory;
+  private List shellList        = new ArrayList();
 
   public PolygonBuilder(OverlayGraph graph, GeometryFactory geomFact) {
     this.graph = graph;
-    this.geomFact = geomFact;
+    this.geometryFactory = geomFact;
   }
 
   public List<Polygon> getPolygons() {
-    
+    List resultPolyList = computePolygons(shellList);
+    return resultPolyList;    
   }
 
+  private List<Polygon> computePolygons(List shellList)
+  {
+    return null;
+  }
+  
   /**
    * for all DirectedEdges in result, form them into MaximalEdgeRings
    */

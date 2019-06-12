@@ -84,6 +84,17 @@ public class OverlayLabel {
     return bLocOn;
   }
 
+  public boolean hasLocation(int geomIndex) {
+    if (geomIndex == 0) {
+      return aLocLeft != Location.NONE
+          || aLocRight != Location.NONE
+          || aLocOn != Location.NONE;
+    }
+    return bLocLeft != Location.NONE
+        || bLocRight != Location.NONE
+        || bLocOn != Location.NONE;
+  }
+
   public void setLocation(int geomIndex, int position, int location) {
     if (geomIndex == 0) {
       switch (position) {
@@ -131,4 +142,31 @@ public class OverlayLabel {
     if (bLocOn == Location.NONE) bLocOn = lbl.bLocOn;
   }
   
+  public String toString()
+  {
+    StringBuilder buf = new StringBuilder();
+    if (hasLocation(0)) {
+      buf.append("A:");
+      buf.append(locationString(0));
+    }
+    if (hasLocation(1)) {
+      buf.append(" B:");
+      buf.append(locationString(1));
+    }
+    return buf.toString();
+  }
+
+  private String locationString(int index) {
+    StringBuilder buf = new StringBuilder();
+    char lineLoc = Location.toLocationSymbol( index == 0 ? aLocOn : bLocOn );
+    if (isArea(index)) {
+      buf.append( Location.toLocationSymbol( index == 0 ? aLocLeft : bLocLeft ) );
+      buf.append(lineLoc);
+      buf.append( Location.toLocationSymbol( index == 0 ? aLocRight : bLocRight ) );
+    }
+    else {
+      buf.append( lineLoc );
+    }
+    return buf.toString();
+  }
 }
