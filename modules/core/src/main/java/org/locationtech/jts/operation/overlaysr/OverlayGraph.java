@@ -1,7 +1,11 @@
 package org.locationtech.jts.operation.overlaysr;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -17,6 +21,7 @@ public class OverlayGraph {
     return graph;
   }
 
+  private List<OverlayEdge> edges = new ArrayList<OverlayEdge>();
   private Map<Coordinate, OverlayEdge> vertexMap = new HashMap<Coordinate, OverlayEdge>();
   
   public OverlayGraph() {
@@ -25,12 +30,13 @@ public class OverlayGraph {
   /**
    * Creates a single HalfEdge.
    * Override to use a different HalfEdge subclass.
+   * @param lbl 
    * 
    * @param orig the origin location
    * @param direction the direction along the segment string - true is forward
    * @return a new HalfEdge with the given origin
    */
-  protected OverlayEdge createEdge(SegmentString ss, boolean direction)
+  protected OverlayEdge createEdge(SegmentString ss, OverlayLabel lbl, boolean direction)
   {
     Coordinate origin;
     Coordinate dirPt;
@@ -43,13 +49,17 @@ public class OverlayGraph {
       origin = ss.getCoordinate(ilast);
       dirPt = ss.getCoordinate(ilast-1);
     }
-    return new OverlayEdge(origin, dirPt, direction, ss);
+    return new OverlayEdge(origin, dirPt, direction, lbl, ss);
   }
 
   private OverlayEdge create(SegmentString ss)
   {
-    OverlayEdge e0 = createEdge(ss, true);
-    OverlayEdge e1 = createEdge(ss, false);
+    // Note that the same label is used for each half-edge
+    OverlayLabel lbl = new OverlayLabel((OverlayLabel) ss.getData());
+    OverlayEdge e0 = createEdge(ss, lbl, true);
+    
+    OverlayLabel lblOpp = lbl.createFlipped();
+    OverlayEdge e1 = createEdge(ss, lblOpp, false);
     e0.init(e1);
     return e0;
   }
@@ -97,7 +107,7 @@ public class OverlayGraph {
     OverlayEdge e = create(ss);
     insert(e);
     insert((OverlayEdge) e.sym());
-
+    edges.add(e);
     return e;
   }
 
@@ -112,6 +122,11 @@ public class OverlayGraph {
     }
   }
 
+  public List<OverlayEdge> getEdges() 
+  {
+    return edges;
+  }
+  
   public Collection<OverlayEdge> getVertexEdges()
   {
     return vertexMap.values();
@@ -131,8 +146,26 @@ public class OverlayGraph {
     return e.find(dest);
   }
 
+  /**
+   * Computes a full topological labelling for all edges and nodes in the graph.
+   */
   public void computeLabelling() {
-    // TODO Auto-generated method stub
-    
+    // compute labelling using a Left-Right sweepline, to keep things deterministic
+    List<OverlayEdge> nodes = sortedNodes();
+    for (OverlayEdge node : nodes) {
+      node.computeLabelling();
+    }
+  }
+
+  private void mergeSymLabels(List<OverlayEdge> nodes) {
+    for (OverlayEdge node : nodes) {
+      node.mergeSymLabels();
+    }
+  }
+
+  private List<OverlayEdge> sortedNodes() {
+    List<OverlayEdge> edges = new ArrayList<OverlayEdge>(getVertexEdges());
+    edges.sort(OverlayEdge.nodeComparator());
+    return edges;
   }
 }

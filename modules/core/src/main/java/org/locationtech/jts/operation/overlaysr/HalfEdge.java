@@ -12,6 +12,8 @@
 
 package org.locationtech.jts.operation.overlaysr;
 
+import java.util.Comparator;
+
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geomgraph.Quadrant;
@@ -41,6 +43,15 @@ import org.locationtech.jts.util.Assert;
  *
  */
 public class HalfEdge {
+  
+  public static Comparator<HalfEdge> comparator() {
+    return new Comparator<HalfEdge>() {
+      @Override
+      public int compare(HalfEdge e1, HalfEdge e2) {
+        return e1.compareTo(e2);
+      }
+    };
+  }
   
   private Coordinate orig;
   private HalfEdge sym;

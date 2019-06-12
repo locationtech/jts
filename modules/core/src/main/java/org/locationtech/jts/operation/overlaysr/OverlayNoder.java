@@ -31,10 +31,10 @@ public class OverlayNoder {
     sr.computeNodes(segStrings);
     
     //TODO: merge duplicate edges
-    
-    return sr.getNodedSubstrings();
+    Collection<SegmentString> nodedSS = sr.getNodedSubstrings();
+    return nodedSS;
   }
-  
+
   public void add(Geometry g, int index)
   {
     if (g.isEmpty()) return;
@@ -52,6 +52,23 @@ public class OverlayNoder {
     else  throw new UnsupportedOperationException(g.getClass().getName());
   }
 
+  private void addPolygon(Polygon p, int index)
+  {
+    addPolygonRing(
+            (LinearRing) p.getExteriorRing(),
+            Location.EXTERIOR, Location.INTERIOR, index);
+
+    for (int i = 0; i < p.getNumInteriorRing(); i++) {
+      LinearRing hole = (LinearRing) p.getInteriorRingN(i);
+      
+      // Holes are topologically labelled opposite to the shell, since
+      // the interior of the polygon lies on their opposite side
+      // (on the left, if the hole is oriented CW)
+      addPolygonRing(hole,
+          Location.INTERIOR, Location.EXTERIOR, index);
+    }
+  }
+  
   /**
    * Adds a polygon ring to the graph.
    * Empty rings are ignored.
@@ -73,33 +90,15 @@ public class OverlayNoder {
       left = cwRight;
       right = cwLeft;
     }
-    Label lbl = new Label(index, Location.BOUNDARY, left, right);
+    OverlayLabel lbl = new OverlayLabel(index, left, right);
     add(pts, lbl);
   }
 
-  private void add(Coordinate[] pts, Label label) {
+  private void add(Coordinate[] pts, OverlayLabel label) {
     NodedSegmentString ss = new NodedSegmentString(pts, label);
     segStrings.add(ss);
   }
 
-
-  private void addPolygon(Polygon p, int index)
-  {
-    addPolygonRing(
-            (LinearRing) p.getExteriorRing(),
-            Location.EXTERIOR, Location.INTERIOR, index);
-
-    for (int i = 0; i < p.getNumInteriorRing(); i++) {
-      LinearRing hole = (LinearRing) p.getInteriorRingN(i);
-      
-      // Holes are topologically labelled opposite to the shell, since
-      // the interior of the polygon lies on their opposite side
-      // (on the left, if the hole is oriented CW)
-      addPolygonRing(hole,
-          Location.INTERIOR, Location.EXTERIOR, index);
-    }
-  }
-  
   private Coordinate[] round(Coordinate[] pts)  {
     // TODO: reduce precision, remove repeated pts, ensure 4 pts
     return pts;
