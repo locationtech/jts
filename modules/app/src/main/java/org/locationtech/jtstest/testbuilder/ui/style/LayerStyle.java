@@ -91,10 +91,10 @@ public class LayerStyle implements Style  {
     styleList.add(segArrowStyle, decorationFilter);
     styleList.add(lineArrowStyle, decorationFilter);
     styleList.add(lineCircleStyle, decorationFilter);
-    //styleList.add(style);
     styleList.add(polyStyle, structureFilter);
     styleList.add(indexStyle, structureFilter);
     styleList.add(labelStyle, labelFilter);
+    styleList.setEnabled(labelStyle, false);
     
     decoratorStyle = styleList;
   }

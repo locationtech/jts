@@ -249,11 +249,11 @@ public class LayerStylePanel extends JPanel {
         }
       }
     });
-
     addRow("Line", cbStroked, btnLineColor, btnVertexSynch, spinnerWidth, sliderLineAlpha);
+
     //=============================================
-    
     cbDashed = new JCheckBox();
+    //cbDashed.setText("Dashed");
     //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
     cbDashed.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbDashed.addActionListener(new java.awt.event.ActionListener() {
@@ -263,7 +263,8 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
-    addRow("Dashed", cbDashed);
+    // Leave on separate line to allow room for dash style
+    addRow("Line Dash", cbDashed);
     //=============================================
 
     cbFilled = new JCheckBox();
@@ -370,35 +371,24 @@ public class LayerStylePanel extends JPanel {
     rowIndex++;
   }
 
-  private void addRow(String title, JComponent c1, JComponent c2) {
+  /*
+  private void xaddRow(String title, JComponent c1, JComponent c2) {
     addRow(title, c1, c2, null, null);
   }
-  private void addRow(String title, JComponent c1, JComponent c2, JComponent c3) {
+  private void xaddRow(String title, JComponent c1, JComponent c2, JComponent c3) {
     addRow(title, c1, c2, c3, null, null);
   }
-  private void addRow(String title, JComponent c1, JComponent c2, JComponent c3, JComponent c4) {
+  private void xaddRow(String title, JComponent c1, JComponent c2, JComponent c3, JComponent c4) {
     addRow(title, c1, c2, c3, c4, null);
   }
-
-  private void addRow(String title, JComponent c1, JComponent c2, JComponent c3, JComponent c4, JComponent c5) {
+*/
+  
+  private void addRow(String title, JComponent ... comp) {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-    panel.add(c1);
-    if (c2 != null) {
+    for (JComponent c : comp) {
       panel.add(Box.createRigidArea(new Dimension(2,0)));
-      panel.add(c2);
-    }
-    if (c3 != null) {
-      panel.add(Box.createRigidArea(new Dimension(2,0)));
-      panel.add(c3);
-    }
-    if (c4 != null) {
-      panel.add(Box.createRigidArea(new Dimension(2,0)));
-      panel.add(c4);
-    }
-    if (c5 != null) {
-      panel.add(Box.createRigidArea(new Dimension(2,0)));
-      panel.add(c5);
+      panel.add(c);
     }
     addRow(title, panel);
   }
