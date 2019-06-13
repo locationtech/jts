@@ -3,14 +3,11 @@ package org.locationtech.jtstest.testbuilder;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JColorChooser;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 
@@ -29,6 +26,7 @@ public class ColorControl {
     ctl.setMaximumSize(dim);
     ctl.setOpaque(true);
     ctl.setToolTipText(title);
+    ctl.setBackground(initColor);
     ctl.addMouseListener(new MouseAdapter() {
       @Override
       public void mouseClicked(MouseEvent arg0) {
