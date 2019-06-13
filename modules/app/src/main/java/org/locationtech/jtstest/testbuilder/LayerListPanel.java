@@ -100,12 +100,14 @@ public class LayerListPanel extends JPanel {
         "Copy layer to a new layer",
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            Layer copy = JTSTestBuilder.controller().layerCopy(focusLayer);
+            Layer copy = JTSTestBuilder.model().layerCopy(focusLayer);
             populateList();
             setLayerFocus(findLayerItem(copy));
+            JTSTestBuilder.controller().geometryViewChanged();
           }
         });
     buttonPanel.add(btnCopy);
+    
     btnPaste = SwingUtil.createButton(AppIcons.PASTE, 
         "Paste geometry into layer",
             new ActionListener() {
@@ -130,12 +132,14 @@ public class LayerListPanel extends JPanel {
           }
         });
     buttonPanel.add(btnDown);
+    
     btnDelete = SwingUtil.createButton(AppIcons.CLEAR, 
         "Delete layer",
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            JTSTestBuilder.controller().layerDelete(focusLayer);
+            JTSTestBuilder.model().layerDelete(focusLayer);
             populateList();
+            JTSTestBuilder.controller().geometryViewChanged();
          }
         });
     buttonPanel.add(btnDelete);

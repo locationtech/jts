@@ -44,7 +44,6 @@ import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
 
 public class LayerStylePanel extends JPanel {
   private Layer layer;
-  private JCheckBox cbVertex;
   private JLabel title;
   private JPanel stylePanel;
   private int rowIndex;
@@ -56,10 +55,18 @@ public class LayerStylePanel extends JPanel {
   private JPanel btnFillColor;
   private JPanel btnLineColor;
   private JSlider sliderLineAlpha;
+  
+  private JCheckBox cbVertex;
+  private JPanel btnVertexColor;
   private JSpinner spinnerVertexSize;
   private SpinnerNumberModel vertexSizeModel;
+  
+  private JCheckBox cbLabel;
+  private JPanel btnLabelColor;
+  private JSpinner spinnerLabelSize;
+  private SpinnerNumberModel labelSizeModel;
+  
   private JCheckBox cbStroked;
-  private JPanel btnVertexColor;
   private JTextField txtName;
 
   
@@ -79,16 +86,19 @@ public class LayerStylePanel extends JPanel {
     //this.title.setText("Styling - Layer " + layer.getName());
     txtName.setText(layer.getName());
     cbVertex.setSelected(layer.getLayerStyle().isVertices());
+    vertexSizeModel.setValue(layer.getLayerStyle().getVertexSize());
+    cbLabel.setSelected(layer.getLayerStyle().isLabel());
+    labelSizeModel.setValue(layer.getLayerStyle().getLabelSize());
     cbDashed.setSelected(geomStyle().isDashed());
     cbStroked.setSelected(geomStyle().isStroked());
     cbFilled.setSelected(geomStyle().isFilled());
     widthModel.setValue(geomStyle().getStrokeWidth());
-    vertexSizeModel.setValue(layer.getLayerStyle().getVertexSize());
     updateStyleControls();
   }
   
   void updateStyleControls() {
     ColorControl.update(btnVertexColor, layer.getLayerStyle().getVertexColor() );
+    ColorControl.update(btnLabelColor, layer.getLayerStyle().getLabelColor() );
     ColorControl.update(btnLineColor, geomStyle().getLineColor() );
     ColorControl.update(btnFillColor, geomStyle().getFillColor() );
     sliderLineAlpha.setValue(geomStyle().getLineAlpha());
@@ -295,6 +305,47 @@ public class LayerStylePanel extends JPanel {
       }
     });
     addRow("Fill", cbFilled, btnFillColor, btnLineSynch, sliderFillAlpha);
+
+    //=============================================
+
+    cbLabel = new JCheckBox();
+    cbLabel.setToolTipText(AppStrings.TIP_STYLE_VERTEX_ENABLE);
+    cbLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbLabel.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        layer.getLayerStyle().setLabel(cbLabel.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+    btnLabelColor = ColorControl.create(this, 
+        "Label",
+        AppColors.GEOM_VIEW_BACKGROUND,
+        new ColorControl.ColorListener() {
+          public void colorChanged(Color clr) {
+            if (layer == null) return;
+            layer.getLayerStyle().setLabelColor(clr);
+            JTSTestBuilder.controller().geometryViewChanged();
+          }
+        }
+       );
+    
+    labelSizeModel = new SpinnerNumberModel(4.0, 0, 100.0, 1);
+    spinnerLabelSize = new JSpinner(labelSizeModel);
+    spinnerLabelSize.setMaximumSize(new Dimension(40,16));
+    spinnerLabelSize.setAlignmentX(Component.LEFT_ALIGNMENT);
+    spinnerLabelSize.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int size = labelSizeModel.getNumber().intValue();
+        layer.getLayerStyle().setLabelSize(size);
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+
+    
+    addRow("Label", cbLabel, btnLabelColor, spinnerLabelSize);
+    
+    //=============================================
     
     return containerPanel;
   }

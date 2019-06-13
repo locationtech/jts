@@ -13,15 +13,16 @@
 package org.locationtech.jtstest.testbuilder.ui.style;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
+import org.locationtech.jts.awt.FontGlyphReader;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jtstest.testbuilder.AppConstants;
 import org.locationtech.jtstest.testbuilder.geom.ConstrainedInteriorPoint;
 import org.locationtech.jtstest.testbuilder.ui.GraphicsUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
@@ -30,6 +31,8 @@ import org.locationtech.jtstest.testbuilder.ui.Viewport;
 public class DataLabelStyle implements Style
 {
   private Color color;
+  private int size = 12;
+  private Font font = new Font(FontGlyphReader.FONT_SANSSERIF, Font.BOLD, 12);
 
   public DataLabelStyle(Color color) {
     this.color = color;
@@ -38,11 +41,26 @@ public class DataLabelStyle implements Style
   public DataLabelStyle() {
   }
 
+  public Color getColor() {
+    return color;
+  }
+  public void setColor(Color color) {
+    this.color = color;
+  }
+  public int getSize() {
+    return size;
+  }
+  
+  public void setSize(int size) {
+    this.size = size;
+    font = new Font(FontGlyphReader.FONT_SANSSERIF, Font.BOLD, size);
+  }
+
   public void paint(Geometry geom, Viewport viewport, Graphics2D g2d)
   {
     if (geom.getUserData() == null) return;
     g2d.setColor(color);
-    g2d.setFont(AppConstants.FONT_LABEL);
+    g2d.setFont(font);
     
     String label = geom.getUserData().toString();
     
@@ -67,10 +85,6 @@ public class DataLabelStyle implements Style
     Coordinate origin = geom.getInteriorPoint().getCoordinate();
     Point2D vp = viewport.toView(new Point2D.Double(origin.x, origin.y));
     GraphicsUtil.drawStringAlignCenter(g2d, label, (int) vp.getX(), (int) vp.getY()); 
-  }
-
-  public Color getColor() {
-    return color;
   }
 
   private void paintLabelLine(String label, Geometry line, Viewport viewport, Graphics2D g2d) {

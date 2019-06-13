@@ -26,6 +26,7 @@ public class LayerStyle implements Style  {
   private BasicStyle geomStyle;
   private StyleList decoratorStyle;
   private VertexStyle vertexStyle;
+  private DataLabelStyle labelStyle;
 
   private StyleList.StyleFilter vertexFilter = new StyleList.StyleFilter() {
     public boolean isFiltered(Style style) {
@@ -82,7 +83,7 @@ public class LayerStyle implements Style  {
     CircleEndpointStyle lineCircleStyle = new CircleEndpointStyle(style.getLineColor(), 6, true, true);
     PolygonStructureStyle polyStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
     SegmentIndexStyle indexStyle = new SegmentIndexStyle(ColorUtil.opaque(style.getLineColor().darker()));
-    DataLabelStyle dataLabelStyle = new DataLabelStyle(ColorUtil.opaque(style.getLineColor().darker()));
+    labelStyle = new DataLabelStyle(ColorUtil.opaque(style.getLineColor().darker()));
     
     // order is important here
     StyleList styleList = new StyleList();
@@ -93,7 +94,7 @@ public class LayerStyle implements Style  {
     //styleList.add(style);
     styleList.add(polyStyle, structureFilter);
     styleList.add(indexStyle, structureFilter);
-    styleList.add(dataLabelStyle, labelFilter);
+    styleList.add(labelStyle, labelFilter);
     
     decoratorStyle = styleList;
   }
@@ -118,6 +119,28 @@ public class LayerStyle implements Style  {
   }
   public void setVertexColor(Color color) {
     vertexStyle.setColor(color);
+  }
+  
+  public void setLabel(boolean show) {
+    decoratorStyle.setEnabled(labelStyle, show);
+  }
+  
+  public boolean isLabel() {
+    return decoratorStyle.isEnabled(labelStyle);
+  }
+  
+  public int getLabelSize() {
+    return labelStyle.getSize();
+  }
+  public void setLabelSize(int size) {
+    labelStyle.setSize(size);
+  }
+  
+  public Color getLabelColor() {
+    return labelStyle.getColor();
+  }
+  public void setLabelColor(Color color) {
+    labelStyle.setColor(color);
   }
   
   public void paint(Geometry geom, Viewport viewport, Graphics2D g) throws Exception {

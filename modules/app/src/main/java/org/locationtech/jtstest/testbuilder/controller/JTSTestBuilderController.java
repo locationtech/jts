@@ -192,16 +192,6 @@ public class JTSTestBuilderController
 
   private JTSTestBuilderToolBar toolbar() {
     return JTSTestBuilderFrame.instance().getToolbar();
-  }
-
-  public Layer layerCopy(Layer focusLayer) {
-    return model().layerCopy(focusLayer);
-  }
-
-  public void layerDelete(Layer focusLayer) {
-    model().layerDelete(focusLayer);
-    
-  }
-  
+  }  
 
 }
