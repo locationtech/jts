@@ -17,13 +17,16 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -48,9 +51,20 @@ public class LayerListPanel extends JPanel {
   private static final String LBL_VIEW_STYLE = "View Style";
   
   JPanel list = new JPanel();
+  Box buttonPanel = Box.createVerticalBox();
   JTabbedPane tabPane = new JTabbedPane();
   private LayerStylePanel lyrStylePanel;
   List<LayerItemPanel> layerItems = new ArrayList<LayerItemPanel>();
+
+  private JButton btnCopy;
+
+  private JButton btnUp;
+
+  private JButton btnDown;
+
+  private JButton btnDelete;
+
+  private JButton btnPaste;
 
   public LayerListPanel() {
     try {
@@ -63,7 +77,11 @@ public class LayerListPanel extends JPanel {
   private void uiInit() throws Exception {
     setSize(200, 250);
     setBackground(AppColors.BACKGROUND);
+    setLayout(new BorderLayout());
     
+    JPanel panelLeft = new JPanel();
+    panelLeft.setLayout(new BorderLayout());
+
     list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
     list.setBackground(AppColors.BACKGROUND);
     list.setBorder(BorderFactory.createEmptyBorder(2,2,2,0));
@@ -73,8 +91,51 @@ public class LayerListPanel extends JPanel {
     jScrollPane1.setOpaque(true);
     jScrollPane1.getViewport().add(list, null);
 
-    setLayout(new BorderLayout());
-    add(jScrollPane1, BorderLayout.WEST);
+    panelLeft.add(jScrollPane1, BorderLayout.CENTER);
+    panelLeft.add(buttonPanel, BorderLayout.EAST);
+
+    btnCopy = SwingUtil.createButton(AppIcons.COPY, 
+        "Copy layer to a new layer",
+            new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            //execToNewButton_actionPerformed(e);
+          }
+        });
+    buttonPanel.add(btnCopy);
+    btnPaste = SwingUtil.createButton(AppIcons.PASTE, 
+        "Paste geometry into layer",
+            new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            //execToNewButton_actionPerformed(e);
+          }
+        });
+    buttonPanel.add(btnPaste);
+    btnUp = SwingUtil.createButton(AppIcons.UP, 
+        "Move layer up",
+            new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            //execToNewButton_actionPerformed(e);
+          }
+        });
+    buttonPanel.add(btnUp);
+    btnDown = SwingUtil.createButton(AppIcons.DOWN, 
+        "Move layer down",
+            new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            //execToNewButton_actionPerformed(e);
+          }
+        });
+    buttonPanel.add(btnDown);
+    btnDelete = SwingUtil.createButton(AppIcons.CLEAR, 
+        "Delete layer",
+            new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            //execToNewButton_actionPerformed(e);
+          }
+        });
+    buttonPanel.add(btnDelete);
+    
+    add(panelLeft, BorderLayout.WEST);
     
     lyrStylePanel = new LayerStylePanel();
     GeometryViewStylePanel viewStylePanel = new GeometryViewStylePanel();
@@ -111,6 +172,18 @@ public class LayerListPanel extends JPanel {
     layerItem.setFocusLayer(true);
     showTabLayerStyle(layerItem.getLayer().getName());
     lyrStylePanel.setLayer(layerItem.getLayer());
+    updateButtons(true);
+    
+  }
+
+  private void updateButtons(boolean isInternal) {
+    boolean isModifiable = ! isInternal;
+    // every layer is copyable
+    btnCopy.setEnabled(true);
+    btnPaste.setEnabled(isModifiable);
+    btnUp.setEnabled(isModifiable);
+    btnDown.setEnabled(isModifiable);
+    btnDelete.setEnabled(isModifiable);
   }
 }
 
