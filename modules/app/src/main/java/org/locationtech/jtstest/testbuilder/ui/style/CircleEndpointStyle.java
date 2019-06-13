@@ -16,6 +16,7 @@ import java.awt.*;
 import java.awt.geom.*;
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 
@@ -23,38 +24,43 @@ public class CircleEndpointStyle
   extends LineStringEndpointStyle 
 {
 
+  private static final int FILL_ALPHA = 150;
   private final static double DIAMETER = 10;
   private boolean filled = true;
 
   // default in case colour is not set
   private Color color = Color.RED;
   private double diameter = DIAMETER;
+  private static final double OFFSET_SIZE = 8;
 
   public CircleEndpointStyle(Color color, boolean start, boolean filled) {
     super(start);
-    this.color = color;
+    setColor(color);
     this.filled = filled;
   }
 
   public CircleEndpointStyle(Color color, double diameter, boolean start, boolean filled) {
-    super(start);
-    this.color = color;
+    this(color, start, filled);
     this.diameter  = diameter;
-    this.filled = filled;
   }
   
   public void setColor(Color color) {
-    this.color = color;
+    this.color = ColorUtil.setAlpha(color, FILL_ALPHA);;
   }
 
   protected void paint(Point2D terminal, Point2D next, Viewport viewport,
       Graphics2D g) 
   {
-
-      g.setPaint(color);
-
-      Shape circle = toCircle(terminal);
-
+    Point2D offset = AWTUtil.vector(next, terminal, OFFSET_SIZE);
+      Shape circle = toCircle(
+          terminal.getX() - offset.getX(), 
+          terminal.getY() - offset.getY(),
+          diameter
+          );
+      
+     g.setPaint(color);
+      
+ 
       if (filled) {
           g.fill(circle);
       }
@@ -63,9 +69,8 @@ public class CircleEndpointStyle
       }
   }
 
-  private Shape toCircle(Point2D viewPoint) {
-    return new Ellipse2D.Double(viewPoint.getX() - (diameter / 2d),
-        viewPoint.getY() - (diameter / 2d), diameter, diameter);
-}
+  private static Shape toCircle(double x, double y, double diameter) {
+    return new Ellipse2D.Double(x - (diameter / 2d), y - (diameter / 2d), diameter, diameter);
+  }
 
 }

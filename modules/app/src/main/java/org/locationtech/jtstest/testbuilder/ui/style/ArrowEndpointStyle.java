@@ -12,10 +12,13 @@
 
 package org.locationtech.jtstest.testbuilder.ui.style;
 
-import java.awt.*;
-import java.awt.geom.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 
-import org.locationtech.jts.geom.*;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
@@ -23,9 +26,10 @@ import org.locationtech.jtstest.testbuilder.ui.Viewport;
 public class ArrowEndpointStyle 
   extends LineStringEndpointStyle {
 
-  private static final int ARROW_ALPHA = 150;
+  private static final int FILL_ALPHA = 150;
   private final static double ANGLE = 18;
   private final static double LENGTH = 15;
+  private static final double OFFSET_SIZE = 5;
   private boolean filled = true;
 
   // default in case colour is not set
@@ -37,7 +41,7 @@ public class ArrowEndpointStyle
       this.filled = filled;
   }
   public void setColor(Color color) {
-    this.color = ColorUtil.setAlpha(color, ARROW_ALPHA);
+    this.color = ColorUtil.setAlpha(color, FILL_ALPHA);
   }
 
   protected void paint(Point2D terminal, Point2D next, Viewport viewport,
@@ -49,8 +53,8 @@ public class ArrowEndpointStyle
     }
 
     g.setPaint(color);
-    GeneralPath arrowhead = arrowheadPath(next, terminal, terminal, LENGTH,
-        ANGLE);
+    GeneralPath arrowhead = arrowheadPath(next, terminal, LENGTH,
+        ANGLE, OFFSET_SIZE);
     if (filled) {
       arrowhead.closePath();
       g.fill(arrowhead);
@@ -66,12 +70,25 @@ public class ArrowEndpointStyle
   public static GeneralPath arrowheadPath(Point2D p0, Point2D p1, 
       Point2D tipPt,
       double finLength, double finAngle) {
+    return arrowheadPath(p0, tipPt, finLength, finLength, 0);
+  }
+  /**
+   * @param finLength
+   *          required distance from the tip to each fin's tip
+   */
+  public static GeneralPath arrowheadPath(Point2D p0, Point2D tipPt,
+      double finLength, double finAngle, 
+      double offsetSize) {
     GeneralPath arrowhead = new GeneralPath();
+    Point2D offset = AWTUtil.vector(p0, tipPt, offsetSize);
     Point2D finTip1 = fin(tipPt, p0, finLength, finAngle);
     Point2D finTip2 = fin(tipPt, p0, finLength, -finAngle);
-    arrowhead.moveTo((float) finTip1.getX(), (float) finTip1.getY());
-    arrowhead.lineTo((float) tipPt.getX(), (float) tipPt.getY());
-    arrowhead.lineTo((float) finTip2.getX(), (float) finTip2.getY());
+    arrowhead.moveTo((float) finTip1.getX() - offset.getX(), 
+        (float) finTip1.getY() - offset.getY() );
+    arrowhead.lineTo((float) tipPt.getX() - offset.getX(), 
+        (float) tipPt.getY() - offset.getY());
+    arrowhead.lineTo((float) finTip2.getX() - offset.getX(), 
+        (float) finTip2.getY() - offset.getY());
 
     return arrowhead;
   }

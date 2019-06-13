@@ -87,7 +87,7 @@ public class LayerStyle implements Style  {
 
     segArrowStyle = new ArrowLineStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
     lineArrowStyle = new ArrowEndpointStyle(ColorUtil.lighter(style.getLineColor(),0.5), false, true);
-    lineCircleStyle = new CircleEndpointStyle(style.getLineColor(), 6, true, true);
+    lineCircleStyle = new CircleEndpointStyle(ColorUtil.lighter(style.getLineColor(),0.5), 6, true, true);
     orientStyle = new StyleGroup(segArrowStyle, lineArrowStyle, lineCircleStyle);
 
     PolygonStructureStyle polyStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
@@ -110,9 +110,9 @@ public class LayerStyle implements Style  {
   }
 
   public void setColor(Color color) {
-    segArrowStyle.setColor(color);
-    lineArrowStyle.setColor(color);
-    lineCircleStyle.setColor(color);
+    segArrowStyle.setColor( ColorUtil.lighter(color,0.8) );
+    lineArrowStyle.setColor( ColorUtil.lighter(color,0.5) );
+    lineCircleStyle.setColor( ColorUtil.lighter(color,0.5) );
     
   }
   
