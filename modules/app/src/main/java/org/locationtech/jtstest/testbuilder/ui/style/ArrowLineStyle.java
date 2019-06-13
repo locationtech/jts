@@ -42,6 +42,9 @@ public class ArrowLineStyle
   public ArrowLineStyle(Color color) {
     this.color = color;
   }
+  public void setColor(Color color) {
+    this.color = color;
+  }
 
   protected void paint(int index, Point2D p0, Point2D p1, int lineType, Viewport vp, Graphics2D gr)
   throws Exception

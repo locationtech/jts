@@ -51,6 +51,11 @@ public class LayerStyle implements Style  {
       return ! DisplayParameters.isShowingLabel();
     }
   };
+  private StyleGroup orientStyle;
+  private StyleGroup structureStyle;
+  private ArrowLineStyle segArrowStyle;
+  private ArrowEndpointStyle lineArrowStyle;
+  private CircleEndpointStyle lineCircleStyle;
 
   public LayerStyle(BasicStyle geomStyle) {
     this.geomStyle = geomStyle;
@@ -78,27 +83,39 @@ public class LayerStyle implements Style  {
   private void initDecorators(BasicStyle style)
   {
     vertexStyle = new VertexStyle(style.getLineColor());
-    ArrowLineStyle segArrowStyle = new ArrowLineStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
-    ArrowEndpointStyle lineArrowStyle = new ArrowEndpointStyle(ColorUtil.lighter(style.getLineColor(),0.5), false, true);
-    CircleEndpointStyle lineCircleStyle = new CircleEndpointStyle(style.getLineColor(), 6, true, true);
+    labelStyle = new DataLabelStyle(ColorUtil.opaque(style.getLineColor().darker()));
+
+    segArrowStyle = new ArrowLineStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
+    lineArrowStyle = new ArrowEndpointStyle(ColorUtil.lighter(style.getLineColor(),0.5), false, true);
+    lineCircleStyle = new CircleEndpointStyle(style.getLineColor(), 6, true, true);
+    orientStyle = new StyleGroup(segArrowStyle, lineArrowStyle, lineCircleStyle);
+
     PolygonStructureStyle polyStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
     SegmentIndexStyle indexStyle = new SegmentIndexStyle(ColorUtil.opaque(style.getLineColor().darker()));
-    labelStyle = new DataLabelStyle(ColorUtil.opaque(style.getLineColor().darker()));
+    structureStyle = new StyleGroup(polyStyle, indexStyle);
     
     // order is important here
     StyleList styleList = new StyleList();
     styleList.add(vertexStyle, vertexFilter);
-    styleList.add(segArrowStyle, decorationFilter);
-    styleList.add(lineArrowStyle, decorationFilter);
-    styleList.add(lineCircleStyle, decorationFilter);
-    styleList.add(polyStyle, structureFilter);
-    styleList.add(indexStyle, structureFilter);
+    //styleList.add(orientStyle, decorationFilter );
+    //styleList.add(structureStyle, structureFilter);
+    styleList.add(orientStyle);
+    styleList.add(structureStyle);
     styleList.add(labelStyle, labelFilter);
     styleList.setEnabled(labelStyle, false);
+    styleList.setEnabled(orientStyle, false);
+    styleList.setEnabled(structureStyle, false);
     
     decoratorStyle = styleList;
   }
 
+  public void setColor(Color color) {
+    segArrowStyle.setColor(color);
+    lineArrowStyle.setColor(color);
+    lineCircleStyle.setColor(color);
+    
+  }
+  
   public void setVertices(boolean show) {
     decoratorStyle.setEnabled(vertexStyle, show);
   }
@@ -148,6 +165,22 @@ public class LayerStyle implements Style  {
     decoratorStyle.paint(geom, viewport, g);
   }
 
+  public void setOrientations(boolean show) {
+    decoratorStyle.setEnabled(orientStyle, show);
+  }
+  
+  public boolean isOrientations() {
+    return decoratorStyle.isEnabled(orientStyle);
+  }
+  
+  public void setStructure(boolean show) {
+    decoratorStyle.setEnabled(structureStyle, show);
+  }
+  
+  public boolean isStructure() {
+    return decoratorStyle.isEnabled(structureStyle);
+  }
+  
 
 
 

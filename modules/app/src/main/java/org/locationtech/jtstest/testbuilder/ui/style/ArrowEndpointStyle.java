@@ -33,8 +33,11 @@ public class ArrowEndpointStyle
 
   public ArrowEndpointStyle(Color color, boolean start, boolean filled) {
       super(start);
-      this.color = ColorUtil.setAlpha(color, ARROW_ALPHA);
+      setColor(color);
       this.filled = filled;
+  }
+  public void setColor(Color color) {
+    this.color = ColorUtil.setAlpha(color, ARROW_ALPHA);
   }
 
   protected void paint(Point2D terminal, Point2D next, Viewport viewport,

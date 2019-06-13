@@ -34,14 +34,18 @@ public class CircleEndpointStyle
     super(start);
     this.color = color;
     this.filled = filled;
-}
+  }
 
   public CircleEndpointStyle(Color color, double diameter, boolean start, boolean filled) {
     super(start);
     this.color = color;
     this.diameter  = diameter;
     this.filled = filled;
-}
+  }
+  
+  public void setColor(Color color) {
+    this.color = color;
+  }
 
   protected void paint(Point2D terminal, Point2D next, Viewport viewport,
       Graphics2D g) 

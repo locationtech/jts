@@ -68,6 +68,8 @@ public class LayerStylePanel extends JPanel {
   
   private JCheckBox cbStroked;
   private JTextField txtName;
+  private JCheckBox cbOrient;
+  private JCheckBox cbStructure;
 
   
   public LayerStylePanel() {
@@ -92,6 +94,8 @@ public class LayerStylePanel extends JPanel {
     cbDashed.setSelected(geomStyle().isDashed());
     cbStroked.setSelected(geomStyle().isStroked());
     cbFilled.setSelected(geomStyle().isFilled());
+    cbOrient.setSelected(layer.getLayerStyle().isOrientations());
+    cbStructure.setSelected(layer.getLayerStyle().isOrientations());
     widthModel.setValue(geomStyle().getStrokeWidth());
     updateStyleControls();
   }
@@ -210,6 +214,7 @@ public class LayerStylePanel extends JPanel {
         new ColorControl.ColorListener() {
           public void colorChanged(Color clr) {
             geomStyle().setLineColor(clr);
+            layer.getLayerStyle().setColor(clr);
             JTSTestBuilder.controller().geometryViewChanged();
           }
         }
@@ -218,6 +223,7 @@ public class LayerStylePanel extends JPanel {
       public void actionPerformed(ActionEvent arg0) {
         if (layer == null) return;
         Color clr = ColorControl.getColor(btnLineColor);
+        layer.getLayerStyle().setColor(clr);
         layer.getLayerStyle().setVertexColor(clr);
         updateStyleControls();
         JTSTestBuilder.controller().geometryViewChanged();
@@ -300,7 +306,9 @@ public class LayerStylePanel extends JPanel {
        );
     JButton btnLineSynch = SwingUtil.createButton("^", "Synch Line Color", new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
-        geomStyle().setLineColor(lineColorFromFill( ColorControl.getColor(btnFillColor)) );
+        Color clr = lineColorFromFill( ColorControl.getColor(btnFillColor));
+        geomStyle().setLineColor(clr );
+        layer.getLayerStyle().setColor(clr);
         updateStyleControls();
         JTSTestBuilder.controller().geometryViewChanged();
       }
@@ -310,7 +318,7 @@ public class LayerStylePanel extends JPanel {
     //=============================================
 
     cbLabel = new JCheckBox();
-    cbLabel.setToolTipText(AppStrings.TIP_STYLE_VERTEX_ENABLE);
+    //cbLabel.setToolTipText(AppStrings.TIP_STYLE_VERTEX_ENABLE);
     cbLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbLabel.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -343,8 +351,30 @@ public class LayerStylePanel extends JPanel {
       }
     });
 
+    cbOrient = new JCheckBox();
+    cbOrient.setText("Orientation");
+    cbOrient.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbOrient.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        layer.getLayerStyle().setOrientations(cbOrient.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+
+    cbStructure = new JCheckBox();
+    cbStructure.setText("Structure");
+    cbStructure.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbStructure.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        layer.getLayerStyle().setStructure(cbStructure.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+
     
-    addRow("Label", cbLabel, btnLabelColor, spinnerLabelSize);
+    addRow("Label", cbLabel, btnLabelColor, spinnerLabelSize, cbOrient, cbStructure);
     
     //=============================================
     
