@@ -576,34 +576,38 @@ public class GeometryEditPanel extends JPanel
       
       gridRenderer.paint(g2);
       
-      renderLayers(g2);
+      renderLayers(tbModel.getLayersBase(), false, g2);
+      renderLayers(getLayerList(), true, g2);
       
       if (isRevealingTopology && isRenderingStretchVertices) {
       	renderMagnifiedVertices(g2);
       }
       
       drawMark(g2);
-      
     }
     
-    public void renderLayers(Graphics2D g)
+    private void renderLayers(LayerList layerList, boolean allowRevealTopo, Graphics2D g)
     {
-    	LayerList layerList = getLayerList();
     	int n = layerList.size();
     	for (int i = 0; i < n; i++) {
-    		if (isRevealingTopology && isRenderingStretchVertices
-            && stretchView != null && i < 2) {
-          //System.out.println("rendering stretch verts");
-      		currentRenderer = new LayerRenderer(layerList.getLayer(i),
-      				new StaticGeometryContainer(stretchView.getStretchedGeometry(i)),
-      				viewport);
-        }
-    		else {
-    			currentRenderer = new LayerRenderer(layerList.getLayer(i), viewport);
-        }
+    	  Layer layer = layerList.getLayer(i);
+    	  currentRenderer = createRenderer(layer, i, allowRevealTopo);
     		currentRenderer.render(g);
     	}
     	currentRenderer = null;
+    }
+
+    private Renderer createRenderer(Layer layer, int i, boolean isAllowRevealTopo) {
+      if (isAllowRevealTopo && isRevealingTopology && isRenderingStretchVertices
+          && stretchView != null && i < 2) {
+        //System.out.println("rendering stretch verts");
+      	return new LayerRenderer(layer,
+      			new StaticGeometryContainer(stretchView.getStretchedGeometry(i)),
+      			viewport);
+      }
+      else {
+      	return new LayerRenderer(layer, viewport);
+      }
     }
     
     public void renderMagnifiedVertices(Graphics2D g)

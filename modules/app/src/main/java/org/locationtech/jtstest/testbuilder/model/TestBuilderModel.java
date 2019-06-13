@@ -37,7 +37,10 @@ public class TestBuilderModel
   private PrecisionModel precisionModel = new PrecisionModel();
   private GeometryFactory geometryFactory = null;
 	private GeometryEditModel geomEditModel;
-  private LayerList layerList = new LayerList();
+	
+  private LayerList layerList = LayerList.createInternal();
+  private LayerList layerListBase = new LayerList();
+  
   private WKTWriter writer = new WKTWriter();
   private Object currResult = null;
   private String opName = "";
@@ -77,6 +80,8 @@ public class TestBuilderModel
 	}
 	
   public LayerList getLayers() { return layerList; }
+  
+  public LayerList getLayersBase() { return layerListBase; }
   
   private void initLayers()
   {  	
@@ -543,6 +548,18 @@ public class TestBuilderModel
         tcIndex = tcList.size() - 1;
     }  
   
+  }
+
+  public Layer layerCopy(Layer lyr) {
+    return layerListBase.copy(lyr);
+  }
+
+  public void layerDelete(Layer lyr) {
+    layerListBase.remove(lyr);
+  }
+
+  public boolean isLayerFixed(Layer lyr) {
+    return layerList.contains(lyr);
   }
 
 

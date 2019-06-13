@@ -20,6 +20,7 @@ import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderToolBar;
 import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
+import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
@@ -191,6 +192,15 @@ public class JTSTestBuilderController
 
   private JTSTestBuilderToolBar toolbar() {
     return JTSTestBuilderFrame.instance().getToolbar();
+  }
+
+  public Layer layerCopy(Layer focusLayer) {
+    return model().layerCopy(focusLayer);
+  }
+
+  public void layerDelete(Layer focusLayer) {
+    model().layerDelete(focusLayer);
+    
   }
   
 

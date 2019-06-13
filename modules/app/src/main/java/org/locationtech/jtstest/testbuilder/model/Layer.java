@@ -30,6 +30,13 @@ public class Layer
     this.name = name;
   }
 
+  public Layer(Layer layer) {
+    this.name = layer.name + "Copy";
+    this.layerStyle = new LayerStyle(layer.layerStyle);
+    this.isEnabled = layer.isEnabled;
+    this.geomCont = new StaticGeometryContainer(layer.getGeometry());
+  }
+
   public String getName() { return name; }
   
   public String getNameInfo() {
@@ -80,6 +87,7 @@ public class Layer
   }
 
   public void resetStyle() {
+    if (initStyle == null) return;
     setGeometryStyle(initStyle.copy());
   }
   

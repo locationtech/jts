@@ -53,7 +53,7 @@ public class LayerStyle implements Style  {
 
   public LayerStyle(BasicStyle geomStyle) {
     this.geomStyle = geomStyle;
-    setGeometryStyle(geomStyle);
+    initDecorators(geomStyle);
   }
   
   public LayerStyle(BasicStyle geomStyle, StyleList decoratorStyle) {
@@ -61,6 +61,11 @@ public class LayerStyle implements Style  {
     this.decoratorStyle = decoratorStyle;
   }
   
+  public LayerStyle(LayerStyle layerStyle) {
+    this.geomStyle = layerStyle.geomStyle.copy();
+    initDecorators(geomStyle);
+  }
+
   public BasicStyle getGeomStyle() {
     return geomStyle;
   }
@@ -69,7 +74,7 @@ public class LayerStyle implements Style  {
     return decoratorStyle;
   }
 
-  private void setGeometryStyle(BasicStyle style)
+  private void initDecorators(BasicStyle style)
   {
     vertexStyle = new VertexStyle(style.getLineColor());
     ArrowLineStyle segArrowStyle = new ArrowLineStyle(ColorUtil.lighter(style.getLineColor(), 0.8));

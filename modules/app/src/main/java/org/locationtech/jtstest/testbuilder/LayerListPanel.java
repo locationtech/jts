@@ -66,6 +66,8 @@ public class LayerListPanel extends JPanel {
 
   private JButton btnPaste;
 
+  private Layer focusLayer;
+
   public LayerListPanel() {
     try {
       uiInit();
@@ -98,7 +100,9 @@ public class LayerListPanel extends JPanel {
         "Copy layer to a new layer",
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            //execToNewButton_actionPerformed(e);
+            Layer copy = JTSTestBuilder.controller().layerCopy(focusLayer);
+            populateList();
+            setLayerFocus(findLayerItem(copy));
           }
         });
     buttonPanel.add(btnCopy);
@@ -130,8 +134,9 @@ public class LayerListPanel extends JPanel {
         "Delete layer",
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            //execToNewButton_actionPerformed(e);
-          }
+            JTSTestBuilder.controller().layerDelete(focusLayer);
+            populateList();
+         }
         });
     buttonPanel.add(btnDelete);
     
@@ -147,6 +152,13 @@ public class LayerListPanel extends JPanel {
     add(tabPane, BorderLayout.CENTER);
   }
   
+  protected LayerItemPanel findLayerItem(Layer lyr) {
+    for (LayerItemPanel lip : layerItems) {
+      if (lip.getLayer() == lyr) return lip;
+    }
+    return null;
+  }
+
   public void showTabLayerStyle(String title) {
     tabPane.setSelectedIndex(TAB_INDEX_LAYER);
     tabPane.setTitleAt(0, LBL_LAYER_STYLE + " - " + title);
@@ -154,15 +166,22 @@ public class LayerListPanel extends JPanel {
   }
   
   public void populateList() {
+    list.removeAll();
+    layerItems.clear();
+    
     LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
+    addLayers(lyrList);
+    addLayers(JTSTestBuilder.model().getLayersBase());
+    setLayerFocus(layerItems.get(0));
+  }
 
+  private void addLayers(LayerList lyrList) {
     for (int i = 0; i < lyrList.size(); i++) {
       Layer lyr = lyrList.getLayer(i);
       LayerItemPanel item = new LayerItemPanel(lyr, this);
       list.add(item);
       layerItems.add(item);
     }
-    setLayerFocus(layerItems.get(0));
   }
   
   public void setLayerFocus(LayerItemPanel layerItem) {
@@ -170,19 +189,21 @@ public class LayerListPanel extends JPanel {
       item.setFocusLayer(false);
     }
     layerItem.setFocusLayer(true);
-    showTabLayerStyle(layerItem.getLayer().getName());
-    lyrStylePanel.setLayer(layerItem.getLayer());
-    updateButtons(true);
-    
+    Layer layer = layerItem.getLayer();
+    showTabLayerStyle(layer.getName());
+    lyrStylePanel.setLayer(layer);
+    boolean isFixed = JTSTestBuilder.model().isLayerFixed(layer);
+    updateButtons(isFixed);
+    focusLayer = layer;
   }
 
   private void updateButtons(boolean isInternal) {
     boolean isModifiable = ! isInternal;
     // every layer is copyable
     btnCopy.setEnabled(true);
-    btnPaste.setEnabled(isModifiable);
-    btnUp.setEnabled(isModifiable);
-    btnDown.setEnabled(isModifiable);
+    btnPaste.setEnabled(false);
+    btnUp.setEnabled(false);
+    btnDown.setEnabled(false);
     btnDelete.setEnabled(isModifiable);
   }
 }
