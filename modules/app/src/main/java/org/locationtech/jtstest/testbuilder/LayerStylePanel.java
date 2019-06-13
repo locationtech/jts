@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -59,6 +60,7 @@ public class LayerStylePanel extends JPanel {
   private SpinnerNumberModel vertexSizeModel;
   private JCheckBox cbStroked;
   private JPanel btnVertexColor;
+  private JTextField txtName;
 
   
   public LayerStylePanel() {
@@ -74,7 +76,8 @@ public class LayerStylePanel extends JPanel {
   }  
   public void setLayer(Layer layer) {
     this.layer = layer;
-    this.title.setText("Styling - Layer " + layer.getName());
+    //this.title.setText("Styling - Layer " + layer.getName());
+    txtName.setText(layer.getName());
     cbVertex.setSelected(layer.getLayerStyle().isVertices());
     cbDashed.setSelected(geomStyle().isDashed());
     cbStroked.setSelected(geomStyle().isStroked());
@@ -97,9 +100,9 @@ public class LayerStylePanel extends JPanel {
     setLayout(new BorderLayout());
      
      
-    title = new JLabel("Styling");
-    title.setAlignmentX(Component.LEFT_ALIGNMENT);
-    add(title, BorderLayout.NORTH);
+    //title = new JLabel("Styling");
+    //title.setAlignmentX(Component.LEFT_ALIGNMENT);
+    //add(title, BorderLayout.NORTH);
     
 
     add( stylePanel(), BorderLayout.CENTER );
@@ -133,6 +136,15 @@ public class LayerStylePanel extends JPanel {
     Dimension prefSize = new Dimension(5, 100);
     Dimension maxSize = new Dimension(Short.MAX_VALUE, Short.MAX_VALUE);
     containerPanel.add(new Box.Filler(minSize, prefSize, maxSize));
+
+    //=============================================
+    txtName = new JTextField();
+    txtName.setMaximumSize(new Dimension(100,20));
+    txtName.setPreferredSize(new Dimension(100,20));
+    txtName.setMinimumSize(new Dimension(100,20));
+    addRow("Name", txtName);
+
+    //=============================================
 
     cbVertex = new JCheckBox();
     cbVertex.setToolTipText(AppStrings.TIP_STYLE_VERTEX_ENABLE);
