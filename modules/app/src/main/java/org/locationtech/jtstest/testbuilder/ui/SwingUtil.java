@@ -34,7 +34,10 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.text.JTextComponent;
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jtstest.util.ExceptionFormatter;
 import org.locationtech.jtstest.util.StringUtil;
+import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 
 public class SwingUtil {
@@ -217,7 +220,7 @@ public class SwingUtil {
         return null;
     }
   }
-
+    
   public static void reportException(Component c, Exception e) {
     JOptionPane.showMessageDialog(c, StringUtil.wrap(e.toString(), 80), "Exception",
         JOptionPane.ERROR_MESSAGE);

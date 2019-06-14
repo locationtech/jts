@@ -19,4 +19,13 @@ public class ExceptionFormatter {
     return ex.getClass().getName() + " : " + ex.toString();
   }
 
+  public static String condense(String str) {
+    final int N_START = 10;
+    final int N_END = 10;
+    int len = str.length();
+    if (len <= N_START + N_END + 10) return str;
+    return str.substring(0, N_START)
+        + "..."
+        + str.substring(len - N_START, len);
+  }
 }

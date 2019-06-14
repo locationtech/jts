@@ -35,8 +35,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.border.Border;
 
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
+import org.locationtech.jtstest.testbuilder.model.StaticGeometryContainer;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 
@@ -100,10 +102,7 @@ public class LayerListPanel extends JPanel {
         "Copy layer to a new layer",
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            Layer copy = JTSTestBuilder.model().layerCopy(focusLayer);
-            populateList();
-            setLayerFocus(findLayerItem(copy));
-            JTSTestBuilder.controller().geometryViewChanged();
+            layerCopy();
           }
         });
     buttonPanel.add(btnCopy);
@@ -112,7 +111,7 @@ public class LayerListPanel extends JPanel {
         "Paste geometry into layer",
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            //execToNewButton_actionPerformed(e);
+            layerPaste(focusLayer);
           }
         });
     buttonPanel.add(btnPaste);
@@ -137,9 +136,7 @@ public class LayerListPanel extends JPanel {
         "Delete layer",
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            JTSTestBuilder.model().layerDelete(focusLayer);
-            populateList();
-            JTSTestBuilder.controller().geometryViewChanged();
+            layerDelete();
          }
         });
     buttonPanel.add(btnDelete);
@@ -155,7 +152,7 @@ public class LayerListPanel extends JPanel {
     tabPane.add(viewStylePanel,   LBL_VIEW_STYLE);
     add(tabPane, BorderLayout.CENTER);
   }
-  
+
   protected LayerItemPanel findLayerItem(Layer lyr) {
     for (LayerItemPanel lip : layerItems) {
       if (lip.getLayer() == lyr) return lip;
@@ -205,10 +202,35 @@ public class LayerListPanel extends JPanel {
     boolean isModifiable = ! isInternal;
     // every layer is copyable
     btnCopy.setEnabled(true);
-    btnPaste.setEnabled(false);
+    btnPaste.setEnabled(isModifiable);
     btnUp.setEnabled(false);
     btnDown.setEnabled(false);
     btnDelete.setEnabled(isModifiable);
+  }
+
+  private void layerCopy() {
+    Layer copy = JTSTestBuilder.model().layerCopy(focusLayer);
+    populateList();
+    setLayerFocus(findLayerItem(copy));
+    JTSTestBuilder.controller().geometryViewChanged();
+  }
+
+  private void layerDelete() {
+    JTSTestBuilder.model().layerDelete(focusLayer);
+    populateList();
+    JTSTestBuilder.controller().geometryViewChanged();
+  }
+  
+  protected void layerPaste(Layer lyr) {
+    try {
+      Geometry geom = JTSTestBuilder.model().readGeometryFromClipboard();
+      // this will error if layer is not modifiable
+      StaticGeometryContainer src = (StaticGeometryContainer) lyr.getSource();
+      src.setGeometry(geom);
+      JTSTestBuilder.controller().geometryViewChanged();
+    } catch (Exception e) {
+      SwingUtil.reportException(this, e);
+    }
   }
 }
 
