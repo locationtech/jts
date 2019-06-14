@@ -41,11 +41,13 @@ public class OverlayLabel {
     if (geomIndex == 0) {
       aLocLeft = locLeft;
       aLocRight = locRight;
+      aLocOn = Location.BOUNDARY;
       aIsArea = true;
     }
     else {
       bLocLeft = locLeft;
       bLocRight = locRight;
+      bLocOn = Location.BOUNDARY;
       bIsArea = true;
     }
   }
@@ -113,15 +115,15 @@ public class OverlayLabel {
   public OverlayLabel createFlipped() {
     OverlayLabel lbl = new OverlayLabel();
     
-    lbl.aLocLeft = this.bLocLeft;
-    lbl.aLocRight = this.bLocRight;
-    lbl.aLocOn = this.bLocOn;
-    lbl.aIsArea = this.bIsArea;
+    lbl.aLocLeft = this.aLocRight;
+    lbl.aLocRight = this.aLocLeft;
+    lbl.aLocOn = this.aLocOn;
+    lbl.aIsArea = this.aIsArea;
     
-    lbl.bLocLeft = this.aLocLeft;
-    lbl.bLocRight = this.aLocRight;
-    lbl.bLocOn = this.aLocOn;
-    lbl.bIsArea = this.aIsArea;
+    lbl.bLocLeft = this.bLocRight;
+    lbl.bLocRight = this.bLocLeft;
+    lbl.bLocOn = this.bLocOn;
+    lbl.bIsArea = this.bIsArea;
     
     return lbl;
   }

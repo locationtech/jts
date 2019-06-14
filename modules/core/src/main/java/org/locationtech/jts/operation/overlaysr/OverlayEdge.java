@@ -26,7 +26,7 @@ public class OverlayEdge extends HalfEdge {
     };
   }
   
-  private SegmentString edge;
+  private SegmentString segString;
   
   /**
    * <code>true</code> indicates direction is forward along segString
@@ -43,7 +43,7 @@ public class OverlayEdge extends HalfEdge {
     super(orig);
     this.dirPt = dirPt;
     this.direction = direction;
-    this.edge = segString;
+    this.segString = segString;
     this.label = label;
   }
 
@@ -60,7 +60,7 @@ public class OverlayEdge extends HalfEdge {
   }
   
   public Coordinate[] getCoordinates() {
-    return edge.getCoordinates();
+    return segString.getCoordinates();
   }
   
   public boolean isInResult() {
@@ -77,12 +77,14 @@ public class OverlayEdge extends HalfEdge {
   }
 
   private void propagateAreaLabels(int geomIndex) {
-    int currLoc = findLocStart(geomIndex);
+   // initialize currLoc to location of last L side (if any)
+   int currLoc = findLocStart(geomIndex);
 
     // no labelled sides found, so no labels to propagate
     if (currLoc == Location.NONE) return;
 
-    for (OverlayEdge e = this; edge != this; e = (OverlayEdge) e.oNext()) {
+    OverlayEdge e = this;
+    do {
       OverlayLabel label = e.getLabel();
       // set null ON values to be in current location
       if (label.getLocation(geomIndex, Position.ON) == Location.NONE)
@@ -113,7 +115,8 @@ public class OverlayEdge extends HalfEdge {
           label.setLocation(geomIndex, Position.LEFT, currLoc);
         }
       }
-    }
+      e = (OverlayEdge) e.oNext();
+    } while (e != this);
 
   }
 
@@ -121,11 +124,14 @@ public class OverlayEdge extends HalfEdge {
     int locStart = Location.NONE;
     // Edges are stored in CCW order around the node.
     // As we move around the ring we move from the R to the L side of the edge
-    for (OverlayEdge edge = this; edge != this; edge = (OverlayEdge) edge.oNext()) {
-      OverlayLabel label = edge.getLabel();
-      if (label.isArea(geomIndex) && label.getLocation(geomIndex, Position.LEFT) != Location.NONE)
+    OverlayEdge e = this;
+    do {
+      OverlayLabel label = e.getLabel();
+      if (label.isArea(geomIndex) 
+          && label.getLocation(geomIndex, Position.LEFT) != Location.NONE)
         locStart = label.getLocation(geomIndex, Position.LEFT);
-    }
+      e = (OverlayEdge) e.oNext();
+    } while (e != this);
     return locStart;
   }
 
@@ -140,13 +146,21 @@ public class OverlayEdge extends HalfEdge {
     }
   }
 
-  public void mergeSymLabels() {
-    for (OverlayEdge e = this; edge != this; e = (OverlayEdge) e.oNext()) {
+  public void nodeMergeSymLabels() {
+    for (OverlayEdge e = this; e != this; e = (OverlayEdge) e.oNext()) {
       OverlayLabel label = e.getLabel();
       OverlayLabel labelSym = ((OverlayEdge) e.sym()).getLabel();
       label.merge(labelSym);
       labelSym.merge(label);
-      
     }
+  }
+  
+  public String toString() {
+    Coordinate orig = orig();
+    Coordinate dest = dest();
+    return "OE("+orig.x + " " + orig.y
+        + ", "
+        + dest.x + " " + dest.y
+        + ")" + label;
   }
 }

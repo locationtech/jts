@@ -155,11 +155,12 @@ public class OverlayGraph {
     for (OverlayEdge node : nodes) {
       node.computeLabelling();
     }
+    mergeSymLabels(nodes);
   }
 
   private void mergeSymLabels(List<OverlayEdge> nodes) {
     for (OverlayEdge node : nodes) {
-      node.mergeSymLabels();
+      node.nodeMergeSymLabels();
     }
   }
 
