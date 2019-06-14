@@ -30,15 +30,9 @@ public class LineLabelBaseline {
     this.constraintEnv = constraintEnv;
   }
 
-  public LineSegment getBaseline() {
-    // if first point is in window, then use it
-    Coordinate p0 = line.getCoordinateN(0);
-    if (constraintEnv.intersects(p0)) {
-      return clip(p0, line.getCoordinateN(1));
-    }
-    
-    // otherwise iterate over line to find first valid clip segment
-    for (int i = 1; i < line.getNumPoints() - 1; i++) {
+  public LineSegment getBaseline() {    
+    // iterate over line to find first visible clip segment
+    for (int i = 0; i < line.getNumPoints() - 1; i++) {
       Coordinate seg0 = line.getCoordinateN(i);
       Coordinate seg1 = line.getCoordinateN(i + 1);
       LineSegment seg = clip(seg0, seg1);
