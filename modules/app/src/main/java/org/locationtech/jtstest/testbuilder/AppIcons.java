@@ -7,13 +7,16 @@ public class AppIcons {
   public final static ImageIcon SAVE_IMAGE = IconLoader.icon("SaveImage.png");
   public final static ImageIcon UNDO = IconLoader.icon("Undo.png");
   public final static ImageIcon CLEAR = IconLoader.icon("Delete_small.png");
-  public final static ImageIcon INSPECT_GEOM = IconLoader.icon("InspectGeometry.png");
+  public final static ImageIcon GEOM_INSPECT = IconLoader.icon("InspectGeometry.png");
+  public final static ImageIcon GEOM_EXCHANGE = IconLoader.icon("ExchangeGeoms.png");
   public final static ImageIcon DOWN = IconLoader.icon("Down.png");
   public final static ImageIcon UP = IconLoader.icon("Up.png");
   public final static ImageIcon ZOOM = IconLoader.icon("MagnifyCursor.gif");
+  public final static ImageIcon COPY_TO_TEST = IconLoader.icon("CopyToTest.png");
+  public final static ImageIcon COPY = IconLoader.icon("Copy.png");
   public final static ImageIcon PASTE = IconLoader.icon("Paste.png");
-
-  public static ImageIcon COPY = IconLoader.icon("Copy.png");
+  public final static ImageIcon CUT = IconLoader.icon("Delete_small.png");
+  public final static ImageIcon GEOM_LOAD = IconLoader.icon("LoadWKTToTest.png");
   
   public final static ImageIcon ICON_COLLECTION 	= IconLoader.icon("Icon_GeomCollection.png");
   public final static ImageIcon ICON_COLLECTION_B 	= IconLoader.icon("Icon_GeomCollection_B.png");
