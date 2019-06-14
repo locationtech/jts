@@ -147,12 +147,14 @@ public class OverlayEdge extends HalfEdge {
   }
 
   public void nodeMergeSymLabels() {
-    for (OverlayEdge e = this; e != this; e = (OverlayEdge) e.oNext()) {
+    OverlayEdge e = this;
+    do {
       OverlayLabel label = e.getLabel();
       OverlayLabel labelSym = ((OverlayEdge) e.sym()).getLabel();
       label.merge(labelSym);
       labelSym.merge(label);
-    }
+      e = (OverlayEdge) e.oNext();
+    } while (e != this);
   }
   
   public String toString() {
