@@ -85,30 +85,18 @@ public class MCIndexPointSnapper
     }
 
     /**
-<<<<<<< HEAD
-     * Reports whether the HotPixel caused a node to be added in any target
-     * segmentString (including its own). If so, the HotPixel must be added as a
-     * node as well.
-     * 
-     * @return true if a node was added in any target segmentString.
-     */
-    public boolean isNodeAdded() {
-      return isNodeAdded;
-    }
-=======
      * Reports whether the HotPixel caused a
      * node to be added in any target segmentString (including its own).
      * If so, the HotPixel must be added as a node as well.
      * @return true if a node was added in any target segmentString.
      */
     public boolean isNodeAdded() { return isNodeAdded; }
->>>>>>> Fix node reporting bug in SnapRounder
 
     /**
      * Check if a segment of the monotone chain intersects
      * the hot pixel vertex and introduce a snap node if so.
      * Optimized to avoid noding segments which
-     * contain the vertex (which otherwise 
+     * contain the vertex (which otherwise
      * would cause every vertex to be noded).
      */
     public void select(MonotoneChain mc, int startIndex)
@@ -116,28 +104,18 @@ public class MCIndexPointSnapper
     	NodedSegmentString ss = (NodedSegmentString) mc.getContext();
       /**
        * Check to avoid snapping a hotPixel vertex to the its orginal vertex.
-       * This method is called on segments which intersect the 
+       * This method is called on segments which intersect the
        * hot pixel.
        * If either end of the segment is equal to the hot pixel
        * do not snap.
        */
-<<<<<<< HEAD
-      if (parentEdge == ss) {
-        // exit if hotpixel is equal to endpoint of target segment
-        if (startIndex == hotPixelVertexIndex
-            || startIndex + 1 == hotPixelVertexIndex)
-          return;
-      }
-      // snap and record if a node was created
-=======
       if (parentEdge != null && ss == parentEdge) {
-        if (startIndex == hotPixelVertexIndex 
+        if (startIndex == hotPixelVertexIndex
               || startIndex + 1 == hotPixelVertexIndex
             )
           return;
       }
       // records if this HotPixel caused any node to be added
->>>>>>> Fix node reporting bug in SnapRounder
       isNodeAdded |= hotPixel.addSnappedNode(ss, startIndex);
     }
 

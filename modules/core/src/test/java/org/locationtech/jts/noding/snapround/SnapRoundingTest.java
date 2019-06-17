@@ -80,23 +80,12 @@ public class SnapRoundingTest  extends TestCase {
     };
     runRounding(collapse2);
   }
-<<<<<<< HEAD
 
   public void testLineWithManySelfSnaps() {
     String[] line = { "LINESTRING (0 0, 6 4, 8 11, 13 13, 14 12, 11 12, 7 7, 7 3, 4 2)" };
     runRounding(line);
   }
 
-=======
-  
-  public void testCollape3() {
-    String[] collapse3 = {
-        "LINESTRING (0 0, 6 4, 8 11, 13 13, 14 12, 11 12, 7 7, 7 3, 4 2)"
-      };
-      runRounding(collapse3);    
-  }
-  
->>>>>>> Fix node reporting bug in SnapRounder
   public void testBadNoding1() {
     String[] badNoding1 = {
       "LINESTRING ( 76 47, 81 52, 81 53, 85 57, 88 62, 89 64, 57 80, 82 55, 101 74, 76 99, 92 67, 94 68, 99 71, 103 75, 139 111 )"
@@ -122,7 +111,7 @@ public class SnapRoundingTest  extends TestCase {
   }
 
   static final double SNAP_TOLERANCE = 1.0;
-  
+
   void runRounding(String[] wkt)
   {
     List geoms = fromWKT(wkt);
@@ -159,7 +148,7 @@ public class SnapRoundingTest  extends TestCase {
       for (int j = 0; j < line.getNumPoints(); j++) {
         Coordinate v = line.getCoordinateN(j);
           if (! isSnapped(v, lines)) return false;
-        
+
       }
     }
     return true;
@@ -187,6 +176,5 @@ public class SnapRoundingTest  extends TestCase {
     if (dist < SNAP_TOLERANCE / 2.05) return false;
     return true;
   }
-  
-  
+
 }
