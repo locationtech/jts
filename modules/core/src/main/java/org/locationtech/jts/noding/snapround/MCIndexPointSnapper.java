@@ -84,8 +84,24 @@ public class MCIndexPointSnapper
       this.hotPixelVertexIndex = hotPixelVertexIndex;
     }
 
-    public boolean isNodeAdded() { return isNodeAdded; }
+    /**
+     * Reports whether the HotPixel caused a node to be added in any target
+     * segmentString (including its own). If so, the HotPixel must be added as a
+     * node as well.
+     * 
+     * @return true if a node was added in any target segmentString.
+     */
+    public boolean isNodeAdded() {
+      return isNodeAdded;
+    }
 
+    /**
+     * Check if a segment of the monotone chain intersects
+     * the hot pixel vertex and introduce a snap node if so.
+     * Optimized to avoid noding segments which
+     * contain the vertex (which otherwise 
+     * would cause every vertex to be noded).
+     */
     public void select(MonotoneChain mc, int startIndex)
     {
     	NodedSegmentString ss = (NodedSegmentString) mc.getContext();
@@ -99,13 +115,14 @@ public class MCIndexPointSnapper
        * Sep 22 2012 - MD - currently do need to snap to every vertex,
        * since otherwise the testCollapse1 test in SnapRoundingTest fails.
        */
-      if (parentEdge != null) {
-        if (ss == parentEdge && 
-            (startIndex == hotPixelVertexIndex
-                ))
+      if (parentEdge == ss) {
+        // exit if hotpixel is equal to endpoint of target segment
+        if (startIndex == hotPixelVertexIndex
+            || startIndex + 1 == hotPixelVertexIndex)
           return;
       }
-      isNodeAdded = hotPixel.addSnappedNode(ss, startIndex);
+      // snap and record if a node was created
+      isNodeAdded |= hotPixel.addSnappedNode(ss, startIndex);
     }
 
   }
