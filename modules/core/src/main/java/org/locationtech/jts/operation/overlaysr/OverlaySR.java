@@ -126,6 +126,7 @@ public class OverlaySR {
     OverlayGraph graph = buildTopology(edgesMerged);
     //TODO: extract included linework from graph
     markResultAreaEdges(graph, opCode);
+    cancelDuplicateResultEdges(graph);
 
     //TODO: build geometries
     //return toLines(edges, geomFact );
@@ -260,6 +261,14 @@ public class OverlaySR {
     for (OverlayEdge edge : graph.getEdges()) {
       edge.markInResultArea(overlayOpCode);
       ((OverlayEdge) edge.sym()).markInResultArea(overlayOpCode);      
+    }
+  }
+
+  private void cancelDuplicateResultEdges(OverlayGraph graph) {
+    for (OverlayEdge edge : graph.getEdges()) {
+      if ( edge.isInResult()  && edge.symOE().isInResult() )
+      edge.removeFromResult();
+      edge.symOE().removeFromResult();      
     }
   }
 

@@ -63,10 +63,17 @@ public class OverlayEdge extends HalfEdge {
     return segString.getCoordinates();
   }
   
+  public OverlayEdge symOE() {
+    return (OverlayEdge) sym();
+  }
+  
   public boolean isInResult() {
     return isInResult;
   }
   
+  public void removeFromResult() {
+    isInResult = false;
+  }
   /**
    * Scan around node and propagate labels until fully populated.
    * @param node node to compute labelling for
@@ -80,17 +87,17 @@ public class OverlayEdge extends HalfEdge {
    // initialize currLoc to location of last L side (if any)
    int currLoc = findLocStart(geomIndex);
 
-    // no labelled sides found, so no labels to propagate
+    // no labelled sides found, so nothing to propagate
     if (currLoc == Location.NONE) return;
 
     OverlayEdge e = this;
     do {
       OverlayLabel label = e.getLabel();
       // set null ON values to be in current location
-      if (label.getLocation(geomIndex, Position.ON) == Location.NONE)
+      if (! label.hasLocation(geomIndex, Position.ON))
           label.setLocation(geomIndex, Position.ON, currLoc);
       // set side labels (if any)
-      if (label.isArea(geomIndex)) {
+      if (label.isArea()) {
         int leftLoc   = label.getLocation(geomIndex, Position.LEFT);
         int rightLoc  = label.getLocation(geomIndex, Position.RIGHT);
         // if there is a right location, that is the next location to propagate
@@ -104,20 +111,19 @@ public class OverlayEdge extends HalfEdge {
           currLoc = leftLoc;
         }
         else {
-          /** RHS is null - LHS must be null too.
-           *  This must be an edge from the other geometry, which has no location
-           *  labelling for this geometry.  This edge must lie wholly inside or outside
-           *  the other geometry (which is determined by the current location).
-           *  Assign both sides to be the current location.
+          /** 
+           * RHS is null - LHS must be null too.
+           * This must be an edge from the other geometry, which has no location
+           * labelling for this geometry.  This edge must lie wholly inside or outside
+           * the other geometry (which is determined by the current location).
+           * Assign both sides to be the current location.
            */
           Assert.isTrue(label.getLocation(geomIndex, Position.LEFT) == Location.NONE, "found single null side");
-          label.setLocation(geomIndex, Position.RIGHT, currLoc);
-          label.setLocation(geomIndex, Position.LEFT, currLoc);
+          label.setLocationBothSides(geomIndex, currLoc);
         }
       }
       e = (OverlayEdge) e.oNext();
     } while (e != this);
-
   }
 
   private int findLocStart(int geomIndex) {
@@ -128,7 +134,7 @@ public class OverlayEdge extends HalfEdge {
     do {
       OverlayLabel label = e.getLabel();
       if (label.isArea(geomIndex) 
-          && label.getLocation(geomIndex, Position.LEFT) != Location.NONE)
+          && label.hasLocation(geomIndex, Position.LEFT))
         locStart = label.getLocation(geomIndex, Position.LEFT);
       e = (OverlayEdge) e.oNext();
     } while (e != this);

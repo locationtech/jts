@@ -23,7 +23,7 @@ public class PolygonBuilder {
   }
 
   public List<Polygon> getPolygons() {
-    List resultPolyList = computePolygons(shellList);
+    List<Polygon> resultPolyList = computePolygons(shellList);
     return resultPolyList;    
   }
 

@@ -97,6 +97,10 @@ public class OverlayLabel {
         || bLocOn != Location.NONE;
   }
 
+  public boolean hasLocation(int geomIndex, int position) {
+    return Location.NONE != getLocation(geomIndex, position);
+  }
+  
   public void setLocation(int geomIndex, int position, int location) {
     if (geomIndex == 0) {
       switch (position) {
@@ -109,6 +113,17 @@ public class OverlayLabel {
       case Position.LEFT: bLocLeft = location; return;
       case Position.RIGHT: bLocRight = location; return;
       case Position.ON: bLocOn = location; return;
+    }
+  }
+  
+  public void setLocationBothSides(int geomIndex, int loc) {
+    if (geomIndex == 0) {
+      aLocLeft = loc;
+      aLocRight = loc;
+    }
+    else {
+      bLocLeft = loc;
+      bLocRight = loc;
     }
   }
 
@@ -161,7 +176,7 @@ public class OverlayLabel {
   private String locationString(int index) {
     StringBuilder buf = new StringBuilder();
     char lineLoc = Location.toLocationSymbol( index == 0 ? aLocOn : bLocOn );
-    if (isArea(index)) {
+    if (isArea()) {
       buf.append( Location.toLocationSymbol( index == 0 ? aLocLeft : bLocLeft ) );
       buf.append(lineLoc);
       buf.append( Location.toLocationSymbol( index == 0 ? aLocRight : bLocRight ) );
@@ -171,4 +186,5 @@ public class OverlayLabel {
     }
     return buf.toString();
   }
+
 }
