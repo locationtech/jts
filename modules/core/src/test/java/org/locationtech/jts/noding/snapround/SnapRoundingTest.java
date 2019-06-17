@@ -80,7 +80,12 @@ public class SnapRoundingTest  extends TestCase {
     };
     runRounding(collapse2);
   }
-  
+
+  public void testLineWithManySelfSnaps() {
+    String[] line = { "LINESTRING (0 0, 6 4, 8 11, 13 13, 14 12, 11 12, 7 7, 7 3, 4 2)" };
+    runRounding(line);
+  }
+
   public void testBadNoding1() {
     String[] badNoding1 = {
       "LINESTRING ( 76 47, 81 52, 81 53, 85 57, 88 62, 89 64, 57 80, 82 55, 101 74, 76 99, 92 67, 94 68, 99 71, 103 75, 139 111 )"
