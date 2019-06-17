@@ -86,6 +86,11 @@ public class Layer
     return geomCont.getGeometry();
   }
 
+  public boolean hasGeometry() {
+    if (geomCont == null) return false;
+    return null != geomCont.getGeometry();
+
+  }
   public void resetStyle() {
     if (initStyle == null) return;
     setGeometryStyle(initStyle.copy());

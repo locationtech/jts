@@ -133,10 +133,15 @@ public class LayerListPanel extends JPanel {
     buttonPanel.add(btnDown);
     
     btnDelete = SwingUtil.createButton(AppIcons.CLEAR, 
-        "Delete layer",
+        AppStrings.TIP_LAYER_CLEAR,
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            layerDelete();
+            if (SwingUtil.isCtlKeyPressed(e)) {
+              layerDelete(focusLayer);
+            }
+            else {
+              layerClear(focusLayer);
+            }
          }
         });
     buttonPanel.add(btnDelete);
@@ -193,16 +198,15 @@ public class LayerListPanel extends JPanel {
     Layer layer = layerItem.getLayer();
     showTabLayerStyle(layer.getName());
     lyrStylePanel.setLayer(layer);
-    boolean isFixed = JTSTestBuilder.model().isLayerFixed(layer);
-    updateButtons(isFixed);
     focusLayer = layer;
+    updateButtons(focusLayer);
   }
 
-  private void updateButtons(boolean isInternal) {
-    boolean isModifiable = ! isInternal;
+  private void updateButtons(Layer lyr) {
+    boolean isModifiable = ! JTSTestBuilder.model().isLayerFixed(lyr);
     // every layer is copyable
     btnCopy.setEnabled(true);
-    btnPaste.setEnabled(isModifiable);
+    btnPaste.setEnabled(isModifiable && ! lyr.hasGeometry());
     btnUp.setEnabled(false);
     btnDown.setEnabled(false);
     btnDelete.setEnabled(isModifiable);
@@ -215,18 +219,32 @@ public class LayerListPanel extends JPanel {
     JTSTestBuilder.controller().geometryViewChanged();
   }
 
-  private void layerDelete() {
-    JTSTestBuilder.model().layerDelete(focusLayer);
+  private void layerDelete(Layer lyr) {
+    // don't remove if non-empty
+    if (lyr.hasGeometry()) return;
+    
+    JTSTestBuilder.model().layerDelete(lyr);
     populateList();
+    JTSTestBuilder.controller().geometryViewChanged();
+  }
+  
+  private void layerClear(Layer lyr) {
+    StaticGeometryContainer src = (StaticGeometryContainer) lyr.getSource();
+    src.setGeometry(null);
+    updateButtons(focusLayer);
     JTSTestBuilder.controller().geometryViewChanged();
   }
   
   protected void layerPaste(Layer lyr) {
     try {
+      // don't paste into non-empty layers to avoid losing data
+      if (lyr.hasGeometry()) return;
+      
       Geometry geom = JTSTestBuilder.model().readGeometryFromClipboard();
       // this will error if layer is not modifiable
       StaticGeometryContainer src = (StaticGeometryContainer) lyr.getSource();
       src.setGeometry(geom);
+      updateButtons(focusLayer);
       JTSTestBuilder.controller().geometryViewChanged();
     } catch (Exception e) {
       SwingUtil.reportException(this, e);

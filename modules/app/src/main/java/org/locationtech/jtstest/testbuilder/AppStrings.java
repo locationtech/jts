@@ -75,4 +75,6 @@ public class AppStrings {
   public static final String TIP_STYLE_LINE_ENABLE = "Show Line";
   public static final String TIP_STYLE_FILL_ENABLE = "Show Fill";
 
+  public static final String TIP_LAYER_CLEAR = "<html>Clear Layer<br>Remove Layer = Ctl-Click</html>";;
+
 }
