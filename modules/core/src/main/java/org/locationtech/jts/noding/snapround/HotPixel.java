@@ -15,6 +15,7 @@ package org.locationtech.jts.noding.snapround;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.util.Assert;
 
@@ -295,6 +296,10 @@ public class HotPixel
       return true;
     }
     return false;
+  }
+  
+  public String toString() {
+    return "HP(" + WKTWriter.toCoordinate(pt) + ")";
   }
 
 }
