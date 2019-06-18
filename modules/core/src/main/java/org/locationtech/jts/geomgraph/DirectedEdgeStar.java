@@ -342,7 +342,6 @@ public class DirectedEdgeStar
   public void computeDepths(DirectedEdge de)
   {
     int edgeIndex = findIndex(de);
-    Label label = de.getLabel();
     int startDepth = de.getDepth(Position.LEFT);
     int targetLastDepth = de.getDepth(Position.RIGHT);
     // compute the depths from this edge up to the end of the edge array
@@ -366,7 +365,6 @@ public class DirectedEdgeStar
     int currDepth = startDepth;
     for (int i = startIndex; i < endIndex ; i++) {
       DirectedEdge nextDe = (DirectedEdge) edgeList.get(i);
-      Label label = nextDe.getLabel();
       nextDe.setEdgeDepths(Position.RIGHT, currDepth);
       currDepth = nextDe.getDepth(Position.LEFT);
     }
