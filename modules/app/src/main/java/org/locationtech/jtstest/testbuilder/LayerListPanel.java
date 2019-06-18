@@ -98,7 +98,7 @@ public class LayerListPanel extends JPanel {
     panelLeft.add(jScrollPane1, BorderLayout.CENTER);
     panelLeft.add(buttonPanel, BorderLayout.EAST);
 
-    btnCopy = SwingUtil.createButton(AppIcons.COPY, 
+    btnCopy = SwingUtil.createButton(AppIcons.ADD, 
         "Copy layer to a new layer",
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -132,7 +132,7 @@ public class LayerListPanel extends JPanel {
         });
     buttonPanel.add(btnDown);
     
-    btnDelete = SwingUtil.createButton(AppIcons.CLEAR, 
+    btnDelete = SwingUtil.createButton(AppIcons.DELETE, 
         AppStrings.TIP_LAYER_CLEAR,
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
