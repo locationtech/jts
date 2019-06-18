@@ -49,8 +49,8 @@ public class LayerListPanel extends JPanel {
   
   private static final int TAB_INDEX_LAYER = 0;
 
-  private static final String LBL_LAYER_STYLE = "Layer Style";
-  private static final String LBL_VIEW_STYLE = "View Style";
+  private static final String LBL_LAYER = "Style";
+  private static final String LBL_VIEW = "View";
   
   JPanel list = new JPanel();
   Box buttonPanel = Box.createVerticalBox();
@@ -153,8 +153,8 @@ public class LayerListPanel extends JPanel {
     //add(lyrStylePanel, BorderLayout.CENTER);    
 
     //tabFunctions.setBackground(jTabbedPane1.getBackground());
-    tabPane.add(lyrStylePanel,  LBL_LAYER_STYLE);
-    tabPane.add(viewStylePanel,   LBL_VIEW_STYLE);
+    tabPane.add(lyrStylePanel,  LBL_LAYER);
+    tabPane.add(viewStylePanel,   LBL_VIEW);
     add(tabPane, BorderLayout.CENTER);
   }
 
@@ -167,7 +167,7 @@ public class LayerListPanel extends JPanel {
 
   public void showTabLayerStyle(String title) {
     tabPane.setSelectedIndex(TAB_INDEX_LAYER);
-    tabPane.setTitleAt(0, LBL_LAYER_STYLE + " - " + title);
+    tabPane.setTitleAt(0, LBL_LAYER + " - " + title);
     //SwingUtil.showTab(tabPane, LBL_LAYER_STYLE);
   }
   
