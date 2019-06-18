@@ -309,9 +309,12 @@ public class TestCasePanel extends JPanel {
     
     add(jTabbedPane1, BorderLayout.WEST);
     //jTabbedPane1.add(editCtlPanel, "Edit");
+    jTabbedPane1.setOpaque(true);
+    jTabbedPane1.setBackground(AppColors.BACKGROUND);
     
     JTabbedPane tabFunctions = new JTabbedPane();
-    tabFunctions.setBackground(jTabbedPane1.getBackground());
+    tabFunctions.setOpaque(true);
+    tabFunctions.setBackground(AppColors.BACKGROUND);
     tabFunctions.add(spatialFunctionPanel,  "Geometry");
     tabFunctions.add(scalarFunctionPanel,   "Scalar");
     
