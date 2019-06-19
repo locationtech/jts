@@ -70,6 +70,7 @@ public class LayerStylePanel extends JPanel {
   private JTextField txtName;
   private JCheckBox cbOrient;
   private JCheckBox cbStructure;
+  private JCheckBox cbVertexLabel;
 
   
   public LayerStylePanel() {
@@ -88,6 +89,7 @@ public class LayerStylePanel extends JPanel {
     //this.title.setText("Styling - Layer " + layer.getName());
     txtName.setText(layer.getName());
     cbVertex.setSelected(layer.getLayerStyle().isVertices());
+    cbVertexLabel.setSelected(layer.getLayerStyle().isVertexLabels());
     vertexSizeModel.setValue(layer.getLayerStyle().getVertexSize());
     cbLabel.setSelected(layer.getLayerStyle().isLabel());
     labelSizeModel.setValue(layer.getLayerStyle().getLabelSize());
@@ -193,9 +195,20 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
+    cbVertexLabel = new JCheckBox();
+    cbVertexLabel.setToolTipText(AppStrings.TIP_STYLE_VERTEX_LABEL_ENABLE);
+    cbVertexLabel.setText("Label");
+    cbVertexLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbVertexLabel.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        layer.getLayerStyle().setVertexLabels(cbVertexLabel.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
 
     
-    addRow("Vertices", cbVertex, btnVertexColor, spinnerVertexSize);
+    addRow("Vertices", cbVertex, btnVertexColor, spinnerVertexSize, cbVertexLabel);
     //=============================================
 
     cbStroked = new JCheckBox();

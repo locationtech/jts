@@ -56,6 +56,7 @@ public class LayerStyle implements Style  {
   private ArrowLineStyle segArrowStyle;
   private ArrowEndpointStyle lineArrowStyle;
   private CircleEndpointStyle lineCircleStyle;
+  private VertexLabelStyle vertexLabelStyle;
 
   public LayerStyle(BasicStyle geomStyle) {
     this.geomStyle = geomStyle;
@@ -83,6 +84,7 @@ public class LayerStyle implements Style  {
   private void initDecorators(BasicStyle style)
   {
     vertexStyle = new VertexStyle(style.getLineColor());
+    vertexLabelStyle = new VertexLabelStyle(style.getLineColor());
     labelStyle = new DataLabelStyle(ColorUtil.opaque(style.getLineColor().darker()));
 
     segArrowStyle = new ArrowLineStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
@@ -96,6 +98,7 @@ public class LayerStyle implements Style  {
     
     // order is important here
     StyleList styleList = new StyleList();
+    styleList.add(vertexLabelStyle, vertexFilter);
     styleList.add(vertexStyle, vertexFilter);
     //styleList.add(orientStyle, decorationFilter );
     //styleList.add(structureStyle, structureFilter);
@@ -107,6 +110,8 @@ public class LayerStyle implements Style  {
     styleList.setEnabled(structureStyle, false);
     
     decoratorStyle = styleList;
+    setVertexLabels(false);
+    
   }
 
   public void setColor(Color color) {
@@ -136,7 +141,15 @@ public class LayerStyle implements Style  {
   }
   public void setVertexColor(Color color) {
     vertexStyle.setColor(color);
+    vertexLabelStyle.setColor(color);
   }
+  public void setVertexLabels(boolean show) {
+    decoratorStyle.setEnabled(vertexLabelStyle, show);
+  }
+  public boolean isVertexLabels() {
+    return decoratorStyle.isEnabled(vertexLabelStyle);
+  }
+
   
   public void setLabel(boolean show) {
     decoratorStyle.setEnabled(labelStyle, show);
