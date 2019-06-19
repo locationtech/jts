@@ -53,8 +53,19 @@ public class HalfEdge {
     };
   }
   
+  /**
+   * The node where this edge originates
+   */
   private Coordinate orig;
+  
+  /**
+   * The half-edge in the opposite direction
+   */
   private HalfEdge sym;
+  
+  /**
+   * The next edge CCW around the origin node
+   */
   private HalfEdge next;
 
   /**

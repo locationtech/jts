@@ -125,18 +125,20 @@ public class OverlaySR {
     Collection<SegmentString> edgesMerged = merge(edges);
     OverlayGraph graph = buildTopology(edgesMerged);
     //TODO: extract included linework from graph
-    markResultAreaEdges(graph, opCode);
-    cancelDuplicateResultEdges(graph);
-
+    graph.markResultAreaEdges(opCode);
+    graph.cancelDuplicateResultAreaEdges();
+    List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
+    graph.linkResultAreaEdges(resultAreaEdges);
     //TODO: build geometries
     //return toLines(edges, geomFact );
     return toLines(graph, geomFact);
 
-    //return createResult(opCode, graph);
+    //return createResult(opCode, resultAreaEdges);
   }
 
-  private Geometry createResult(int opCode, OverlayGraph graph) {
-    PolygonBuilder polyBuilder = new PolygonBuilder(graph, geomFact);
+  
+  private Geometry createResult(int opCode, List<OverlayEdge> resultAreaEdges) {
+    PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
     List<Polygon> resultPolyList = polyBuilder.getPolygons();
     
     // gather the results from all calculations into a single Geometry for the result set
@@ -234,7 +236,7 @@ public class OverlaySR {
   
   
   private Collection<SegmentString> node() {
-    OverlayNoder noder = new OverlayNoder(pm);
+    OverlaySRNoder noder = new OverlaySRNoder(pm);
     noder.add(geom[0], 0);
     noder.add(geom[1], 1);
     Collection<SegmentString> edges = noder.node();
@@ -257,21 +259,8 @@ public class OverlaySR {
     return graph;
   }
 
-  private void markResultAreaEdges(OverlayGraph graph, int overlayOpCode) {
-    for (OverlayEdge edge : graph.getEdges()) {
-      edge.markInResultArea(overlayOpCode);
-      ((OverlayEdge) edge.sym()).markInResultArea(overlayOpCode);      
-    }
-  }
 
-  private void cancelDuplicateResultEdges(OverlayGraph graph) {
-    for (OverlayEdge edge : graph.getEdges()) {
-      if ( edge.isInResult()  && edge.symOE().isInResult() )
-      edge.removeFromResult();
-      edge.symOE().removeFromResult();      
-    }
-  }
-
+  
   private static Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
     List lines = new ArrayList();
     for (OverlayEdge edge : graph.getEdges()) {

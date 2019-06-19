@@ -169,4 +169,39 @@ public class OverlayGraph {
     edges.sort(OverlayEdge.nodeComparator());
     return edges;
   }
+
+  public void markResultAreaEdges(int overlayOpCode) {
+    for (OverlayEdge edge : getEdges()) {
+      edge.markInResultArea(overlayOpCode);
+      ((OverlayEdge) edge.sym()).markInResultArea(overlayOpCode);      
+    }
+  }
+
+  public void cancelDuplicateResultAreaEdges() {
+    for (OverlayEdge edge : getEdges()) {
+      if ( edge.isInResult()  && edge.symOE().isInResult() )
+      edge.removeFromResult();
+      edge.symOE().removeFromResult();      
+    }
+  }
+
+  public List<OverlayEdge> getResultAreaEdges() {
+    List<OverlayEdge> resultEdges = new ArrayList<OverlayEdge>();
+    for (OverlayEdge edge : getEdges()) {
+      if (edge.isInResult()) {
+        resultEdges.add(edge);
+      }
+    } 
+    return resultEdges;
+  }
+
+  public void linkResultAreaEdges(List<OverlayEdge> resultEdges) {
+    for (OverlayEdge edge : resultEdges ) {
+      // Assert(edge.isInResult());
+      if (! edge.isResultLinked()) {
+        edge.linkOriginResultEdges();
+      }
+    }    
+  }
+
 }

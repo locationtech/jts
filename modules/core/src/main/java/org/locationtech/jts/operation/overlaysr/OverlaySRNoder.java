@@ -18,12 +18,12 @@ import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
 import org.locationtech.jts.topology.Label;
 
-public class OverlayNoder {
+public class OverlaySRNoder {
 
   private PrecisionModel pm;
   List<NodedSegmentString> segStrings = new ArrayList<NodedSegmentString>();
 
-  public OverlayNoder(PrecisionModel pm) {
+  public OverlaySRNoder(PrecisionModel pm) {
     this.pm = pm;
   }
 
