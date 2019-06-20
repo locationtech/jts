@@ -108,10 +108,9 @@ public class LayerStyle implements Style  {
     styleList.setEnabled(labelStyle, false);
     styleList.setEnabled(orientStyle, false);
     styleList.setEnabled(structureStyle, false);
+    styleList.setEnabled(vertexLabelStyle, false);
     
     decoratorStyle = styleList;
-    setVertexLabels(false);
-    
   }
 
   public void setColor(Color color) {
