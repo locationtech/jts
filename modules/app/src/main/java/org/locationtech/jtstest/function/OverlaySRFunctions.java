@@ -24,10 +24,32 @@ public class OverlaySRFunctions {
     return OverlaySR.overlayOp(a, b, pm, OverlayOp.INTERSECTION);
   }
 
+  public static Geometry intersectionLines(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    OverlaySR ovr = new OverlaySR(a, b, pm);
+    ovr.setOutputResultEdges(true);
+    return ovr.getResultGeometry(OverlayOp.INTERSECTION);
+  }
+
+  public static Geometry intersectionAllLines(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    OverlaySR ovr = new OverlaySR(a, b, pm);
+    ovr.setOutputEdges(true);
+    return ovr.getResultGeometry(OverlayOp.INTERSECTION);
+  }
+
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlaySR.overlayOp(a, b, pm, OverlayOp.UNION);
   }
+  
+  public static Geometry unionLines(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    OverlaySR ovr = new OverlaySR(a, b, pm);
+    ovr.setOutputResultEdges(true);
+    return ovr.getResultGeometry(OverlayOp.UNION);
+  }
+
 
   public static Geometry unaryUnion(Geometry a, double scaleFactor) {
     final PrecisionModel pm = new PrecisionModel(scaleFactor);

@@ -15,11 +15,31 @@ public class OverlaySRTest extends GeometryTestCase {
 
   public OverlaySRTest(String name) { super(name); }
   
-  public void testIntersectionSmoke() {
+  public void xtestIntersectionSmoke() {
     Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
     Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
     Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
     Geometry actual = intersection(a, b, 1);
+    
+    checkEqual(expected, actual);
+    
+  }
+  
+  public void xtestIntersection2spikes() {
+    Geometry a = read("POLYGON ((0 100, 40 100, 40 0, 0 0, 0 100))");
+    Geometry b = read("POLYGON ((70 80, 10 80, 60 50, 11 20, 69 11, 70 80))");
+    Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
+    Geometry actual = intersection(a, b, 1);
+    
+    checkEqual(expected, actual);
+    
+  }
+  
+  public void testUnion2spikes() {
+    Geometry a = read("POLYGON ((0 100, 40 100, 40 0, 0 0, 0 100))");
+    Geometry b = read("POLYGON ((70 80, 10 80, 60 50, 11 20, 69 11, 70 80))");
+    Geometry expected = read("POLYGON ((0 100, 40 100, 40 80, 70 80, 69 11, 40 16, 40 0, 0 0, 0 100), (40 62, 40 38, 60 50, 40 62))");
+    Geometry actual = union(a, b, 1);
     
     checkEqual(expected, actual);
     

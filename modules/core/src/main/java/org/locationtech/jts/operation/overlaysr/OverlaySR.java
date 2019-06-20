@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.locationtech.jts.awt.PointShapeFactory.Point;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -92,6 +93,8 @@ public class OverlaySR {
   private Geometry[] geom;
   private GeometryFactory geomFact;
   private PrecisionModel pm;
+  private boolean isOutputEdges;
+  private boolean isOutputResultEdges;
 
   public OverlaySR(Geometry geom0, Geometry geom1, PrecisionModel pm) {
     geom = new Geometry[] { geom0, geom1 };
@@ -99,7 +102,15 @@ public class OverlaySR {
     geomFact = geom0.getFactory();
   }  
   
-  private Geometry getResultGeometry(int overlayOpCode) {
+  public void setOutputEdges(boolean isOutputEdges ) {
+    this.isOutputEdges = isOutputEdges;
+  }
+  
+  public void setOutputResultEdges(boolean isOutputResultEdges ) {
+    this.isOutputResultEdges = isOutputResultEdges;
+  }
+  
+  public Geometry getResultGeometry(int overlayOpCode) {
     Geometry resultGeom = computeOverlay(overlayOpCode);
     return resultGeom;
     //return TESToverlay(overlayOpCode);
@@ -131,9 +142,10 @@ public class OverlaySR {
     graph.linkResultAreaEdges(resultAreaEdges);
     //TODO: build geometries
     //return toLines(edges, geomFact );
-    return toLines(graph, geomFact);
-
-    //return createResult(opCode, resultAreaEdges);
+    if (isOutputEdges || isOutputResultEdges) {
+      return toLines(graph, geomFact);
+    }
+    return createResult(opCode, resultAreaEdges);
   }
 
   
@@ -141,8 +153,10 @@ public class OverlaySR {
     PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
     List<Polygon> resultPolyList = polyBuilder.getPolygons();
     
+    List<LineString> resultLineList = new ArrayList<LineString>();
+    List<Point> resultPointList = new ArrayList<Point>();
     // gather the results from all calculations into a single Geometry for the result set
-    Geometry resultGeom = buildGeometry(null, null, resultPolyList, opCode);
+    Geometry resultGeom = buildGeometry(resultPointList, resultLineList, resultPolyList, opCode);
     return resultGeom;
   }
 
@@ -259,28 +273,17 @@ public class OverlaySR {
     return graph;
   }
 
-
-  
-  private static Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
+  private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
     List lines = new ArrayList();
     for (OverlayEdge edge : graph.getEdges()) {
-      if (! edge.isInResult()) continue;
+      boolean includeEdge = isOutputEdges || edge.isInResult();
+      if (! includeEdge) continue;
       //Coordinate[] pts = getCoords(nss);
-      Coordinate[] pts = edge.getCoordinates();
+      Coordinate[] pts = edge.getCoordinatesOriented();
       LineString line = geomFact.createLineString(pts);
-      line.setUserData(edge.getLabel().toString());
+      line.setUserData(edge.getLabel().toString()
+          + (edge.isInResult() ? " Res" : "") );
       lines.add(line);
-    }
-    return geomFact.buildGeometry(lines);
-  }
-
-  private static Geometry toLines(Collection<SegmentString> segStrings, GeometryFactory geomFact) {
-    List lines = new ArrayList();
-    for (SegmentString ss : segStrings ) {
-      //Coordinate[] pts = getCoords(nss);
-      Coordinate[] pts = ss.getCoordinates();
-      
-      lines.add(geomFact.createLineString(pts));
     }
     return geomFact.buildGeometry(lines);
   }

@@ -56,6 +56,7 @@ public class EdgeRing {
    */
   public void setShell(EdgeRing shell) {
     this.shell = shell;
+    if (shell != null) shell.addHole(this);
   }
   
   /**
@@ -80,25 +81,28 @@ public class EdgeRing {
   public void addHole(EdgeRing ring) { holes.add(ring); }
 
   private void computePoints(OverlayEdge start) {
-    OverlayEdge de = start;
+    OverlayEdge edge = start;
     boolean isFirstEdge = true;
     do {
-      if (de == null)
+      if (edge == null)
         throw new TopologyException("Found null edge in ring");
-      if (de.getEdgeRing() == this)
-        throw new TopologyException("Edge visited twice during ring-building at " + de.getCoordinate());
+      if (edge.getEdgeRing() == this)
+        throw new TopologyException("Edge visited twice during ring-building at " + edge.getCoordinate(), edge.getCoordinate());
 
       //edges.add(de);
 //Debug.println(de);
 //Debug.println(de.getEdge());
-      OverlayLabel label = de.getLabel();
+      OverlayLabel label = edge.getLabel();
       Assert.isTrue(label.isArea());
       //mergeLabel(label);
-      addPoints(de.getCoordinates(), de.isForward(), isFirstEdge);
+      addPoints(edge.getCoordinates(), edge.isForward(), isFirstEdge);
       isFirstEdge = false;
-      de.setEdgeRing(this);
-      de = de.getResultNext();
-    } while (de != startEdge);  
+      edge.setEdgeRing(this);
+      if (edge.getResultNext() == null)
+        throw new TopologyException("Found null edge in ring", edge.dest());
+
+      edge = edge.getResultNext();
+    } while (edge != startEdge);  
   }
   
   private void computeRing(GeometryFactory geometryFactory) {

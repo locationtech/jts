@@ -3,13 +3,16 @@ package org.locationtech.jts.operation.overlaysr;
 import java.util.Comparator;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geomgraph.DirectedEdge;
 import org.locationtech.jts.geomgraph.Label;
 import org.locationtech.jts.geomgraph.Position;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.Debug;
 
 public class OverlayEdge extends HalfEdge {
 
@@ -75,6 +78,16 @@ public class OverlayEdge extends HalfEdge {
     return segString.getCoordinates();
   }
   
+  public Coordinate[] getCoordinatesOriented() {
+    Coordinate[] pts = segString.getCoordinates();
+    if (direction) {
+      return pts;
+    }
+    Coordinate[] copy = pts.clone();
+    CoordinateArrays.reverse(copy);
+    return copy;
+  }
+  
   public OverlayEdge symOE() {
     return (OverlayEdge) sym();
   }
@@ -98,6 +111,10 @@ public class OverlayEdge extends HalfEdge {
   
   public OverlayEdge getResultNext() {
     return nextResultEdge;
+  }
+  
+  public boolean isResultLinked() {
+    return nextResultEdge != null;
   }
   
   public void setEdgeRing(EdgeRing edgeRing) {
@@ -197,16 +214,15 @@ public class OverlayEdge extends HalfEdge {
   
   private final int STATE_SCAN_FOR_INCOMING = 1;
   private final int STATE_LINK_TO_OUTGOING = 2;
-
-  private Object resultNext;
   
   /**
-   * Traverses the star of OverlayEdges sharing this destination node
+   * Traverses the star of OverlayEdges around this node
    * and links result edges together.
-   * To link two edges, the <code>resNext</code> pointer for an incoming result edge
-   * is set to the next outgoing result edge.
+   * To link two edges, the <code>resNext</code> pointer 
+   * for an <b>incoming</b> result edge
+   * is set to the next <b>outgoing</b> result edge.
    * <p>
-   * Edges are only linked if:
+   * Edges are linked only if:
    * <ul>
    * <li>they belong to an area (i.e. they have sides)
    * <li>they are marked as being in the result
@@ -219,41 +235,45 @@ public class OverlayEdge extends HalfEdge {
    * This produces rings with CW orientation.
    * <p>
    * PRECONDITIONS: 
-   * - This edge.sym() (incoming edge) is in the result
-   * - This edge.sym() is not yet linked
+   * - This edge is in the result
+   * - This edge is not yet linked
    * - The edge and its sym are NOT both marked as being in the result
    */
   public void linkOriginResultEdges()
   {
     Assert.isTrue(this.isInResult(), "Attempt to link non-result edge");
+    Assert.isTrue(! this.symOE().isInResult(), "Found both half-edges in result");
 
-    OverlayEdge currResultIn = this;
-    int state = STATE_LINK_TO_OUTGOING;
+    OverlayEdge currResultIn = null;
+    int state = STATE_SCAN_FOR_INCOMING;
     // link edges in CCW order
-    OverlayEdge currOut = this;
-    OverlayEdge end = currOut;
+    OverlayEdge endOut = this.oNextOE();
+    OverlayEdge currOut = endOut;
+Debug.println("\n------  Linking... ");
+Debug.print(this.toStringNode());
     do {
-      OverlayEdge nextOut = currOut.oNextOE();
-      OverlayEdge nextIn = nextOut.symOE();
-
+      OverlayEdge currIn = currOut.symOE();
+ 
       // skip edges not in a result area
       //if (! nextOut.getLabel().isArea()) continue;
 
       switch (state) {
       case STATE_SCAN_FOR_INCOMING:
-        if (! nextIn.isInResult()) break;
-        currResultIn = nextIn;
+        if (! currIn.isInResult()) break;
+        currResultIn = currIn;
+        Debug.println("Found result in-edge:  " + currResultIn);
         state = STATE_LINK_TO_OUTGOING;
         break;
       case STATE_LINK_TO_OUTGOING:
-        if (! nextOut.isInResult()) break;
-        currResultIn.setResultNext(nextOut);
+        if (! currOut.isInResult()) break;
+        currResultIn.setResultNext(currOut);
+        Debug.println("Linked:  " + currResultIn + " -> " + currOut);
         state = STATE_SCAN_FOR_INCOMING;
         break;
       }
-      currOut = nextOut;
-    } while (currOut != this);
-//Debug.print(this);
+      currOut = currOut.oNextOE();
+    } while (currOut != endOut);
+    Debug.print(this.toStringNode());
     if (state == STATE_LINK_TO_OUTGOING) {
 //Debug.print(firstOut == null, this);
       throw new TopologyException("no outgoing dirEdge found", getCoordinate());
@@ -264,15 +284,36 @@ public class OverlayEdge extends HalfEdge {
   public String toString() {
     Coordinate orig = orig();
     Coordinate dest = dest();
-    return "OE("+orig.x + " " + orig.y
-        + ", "
-        + dest.x + " " + dest.y
-        + ")" + label;
+    return "OE( "+ WKTWriter.format(orig)
+        + ", " + WKTWriter.format(directionPt())
+        + ".." + WKTWriter.format(dest)
+        + " ) " + label 
+        + (isInResult ? " Res" : "");
   }
 
-  public boolean isResultLinked() {
-    return resultNext != null;
+  public String toStringNode() {
+    Coordinate orig = orig();
+    Coordinate dest = dest();
+    StringBuilder sb = new StringBuilder();
+    sb.append("Node( "+WKTWriter.format(orig) + " )" + "\n");
+    for (OverlayEdge e = this; e.oNextOE() != this; e = e.oNextOE() ) {
+      sb.append("  -> " + e);
+      if (e.isResultLinked()) {
+        sb.append(" Link: ");
+        sb.append(e.getResultNext());
+      }
+      sb.append("\n");
+    }
+    return sb.toString(); 
   }
+
+  private String toStringNodeEdge() {
+    return "  -> (" + WKTWriter.format(dest()) 
+    + " " + getLabel() 
+    + (isInResult() ? " Res" : "-") + "/" + (symOE().isInResult() ? " Res" : "-")
+    ;
+  }
+
 
 
 }

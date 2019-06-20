@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.noding.SegmentString;
+import org.locationtech.jts.util.Assert;
 
 public class OverlayGraph {
 
@@ -107,11 +108,11 @@ public class OverlayGraph {
     OverlayEdge e = create(ss);
     insert(e);
     insert((OverlayEdge) e.sym());
-    edges.add(e);
     return e;
   }
 
   private void insert(OverlayEdge e) {
+    edges.add(e);
     OverlayEdge eAdj = (OverlayEdge) vertexMap.get(e.orig());
     if (eAdj != null) {
       eAdj.insert(e);
@@ -173,15 +174,15 @@ public class OverlayGraph {
   public void markResultAreaEdges(int overlayOpCode) {
     for (OverlayEdge edge : getEdges()) {
       edge.markInResultArea(overlayOpCode);
-      ((OverlayEdge) edge.sym()).markInResultArea(overlayOpCode);      
     }
   }
 
   public void cancelDuplicateResultAreaEdges() {
     for (OverlayEdge edge : getEdges()) {
-      if ( edge.isInResult()  && edge.symOE().isInResult() )
-      edge.removeFromResult();
-      edge.symOE().removeFromResult();      
+      if ( edge.isInResult()  && edge.symOE().isInResult() ) {
+        edge.removeFromResult();
+        edge.symOE().removeFromResult();      
+      }
     }
   }
 
@@ -197,10 +198,9 @@ public class OverlayGraph {
 
   public void linkResultAreaEdges(List<OverlayEdge> resultEdges) {
     for (OverlayEdge edge : resultEdges ) {
-      // Assert(edge.isInResult());
-      if (! edge.isResultLinked()) {
-        edge.linkOriginResultEdges();
-      }
+      //Assert.isTrue(edge.isInResult());
+      // TODO: find some way to skip nodes which are already linked
+      edge.linkOriginResultEdges();
     }    
   }
 

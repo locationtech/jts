@@ -64,7 +64,8 @@ public class HalfEdge {
   private HalfEdge sym;
   
   /**
-   * The next edge CCW around the origin node
+   * The next edge CCW around the origin node, 
+   * originating at the node.
    */
   private HalfEdge next;
 
