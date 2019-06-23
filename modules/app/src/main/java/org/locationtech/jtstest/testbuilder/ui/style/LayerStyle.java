@@ -53,9 +53,9 @@ public class LayerStyle implements Style  {
   };
   private StyleGroup orientStyle;
   private StyleGroup structureStyle;
-  private ArrowLineStyle segArrowStyle;
-  private ArrowEndpointStyle lineArrowStyle;
-  private CircleEndpointStyle lineCircleStyle;
+  private ArrowSegmentStyle segArrowStyle;
+  private ArrowLineEndStyle lineArrowStyle;
+  private CircleLineEndStyle lineCircleStyle;
   private VertexLabelStyle vertexLabelStyle;
 
   public LayerStyle(BasicStyle geomStyle) {
@@ -87,9 +87,9 @@ public class LayerStyle implements Style  {
     vertexLabelStyle = new VertexLabelStyle(style.getLineColor());
     labelStyle = new DataLabelStyle(ColorUtil.opaque(style.getLineColor().darker()));
 
-    segArrowStyle = new ArrowLineStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
-    lineArrowStyle = new ArrowEndpointStyle(ColorUtil.lighter(style.getLineColor(),0.5), false, true);
-    lineCircleStyle = new CircleEndpointStyle(ColorUtil.lighter(style.getLineColor(),0.5), 6, true, true);
+    segArrowStyle = new ArrowSegmentStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
+    lineArrowStyle = new ArrowLineEndStyle(ColorUtil.lighter(style.getLineColor(),0.5), false, true);
+    lineCircleStyle = new CircleLineEndStyle(ColorUtil.lighter(style.getLineColor(),0.5), 6, true, true);
     orientStyle = new StyleGroup(segArrowStyle, lineArrowStyle, lineCircleStyle);
 
     PolygonStructureStyle polyStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));

@@ -23,8 +23,8 @@ import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 
-public class ArrowEndpointStyle 
-  extends LineStringEndpointStyle {
+public class ArrowLineEndStyle 
+  extends LineEndStyle {
 
   private static final int FILL_ALPHA = 150;
   private final static double ANGLE = 18;
@@ -35,7 +35,7 @@ public class ArrowEndpointStyle
   // default in case colour is not set
   private Color color = Color.RED;
 
-  public ArrowEndpointStyle(Color color, boolean start, boolean filled) {
+  public ArrowLineEndStyle(Color color, boolean start, boolean filled) {
       super(start);
       setColor(color);
       this.filled = filled;

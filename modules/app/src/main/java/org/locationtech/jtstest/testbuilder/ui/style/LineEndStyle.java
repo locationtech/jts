@@ -19,10 +19,10 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 
-public abstract class LineStringEndpointStyle extends LineStringStyle  {
+public abstract class LineEndStyle extends LineStringStyle  {
     private boolean start;
 
-    public LineStringEndpointStyle(boolean start) {               
+    public LineEndStyle(boolean start) {               
         this.start = start;
     }    
 

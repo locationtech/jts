@@ -20,8 +20,8 @@ import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 
-public class CircleEndpointStyle 
-  extends LineStringEndpointStyle 
+public class CircleLineEndStyle 
+  extends LineEndStyle 
 {
 
   private static final int FILL_ALPHA = 150;
@@ -33,13 +33,13 @@ public class CircleEndpointStyle
   private double diameter = DIAMETER;
   private static final double OFFSET_SIZE = 8;
 
-  public CircleEndpointStyle(Color color, boolean start, boolean filled) {
+  public CircleLineEndStyle(Color color, boolean start, boolean filled) {
     super(start);
     setColor(color);
     this.filled = filled;
   }
 
-  public CircleEndpointStyle(Color color, double diameter, boolean start, boolean filled) {
+  public CircleLineEndStyle(Color color, double diameter, boolean start, boolean filled) {
     this(color, start, filled);
     this.diameter  = diameter;
   }

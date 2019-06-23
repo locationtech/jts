@@ -47,7 +47,7 @@ public class MidArrowLineStyle
     //      graphics.setStroke(1.0);
     Point2D mid = new Point2D.Float((float) ((p0.getX() + p1.getX()) / 2),
         (float) ((p0.getY() + p1.getY()) / 2));
-    GeneralPath arrowhead = ArrowEndpointStyle.arrowheadPath(p0, p1, mid,
+    GeneralPath arrowhead = ArrowLineEndStyle.arrowheadPath(p0, p1, mid,
     		HEAD_LENGTH, HEAD_ANGLE);
     graphics.draw(arrowhead);
   }
