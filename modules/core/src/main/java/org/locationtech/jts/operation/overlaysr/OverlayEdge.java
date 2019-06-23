@@ -124,14 +124,21 @@ public class OverlayEdge extends HalfEdge {
     return edgeRing;
   } 
   /**
-   * Scan around node and propagate labels until fully populated.
+   * Scan around node CCW and propagate labels until fully populated.
    * @param node node to compute labelling for
    */
   public void computeLabelling() {
     propagateAreaLabels(0);
     propagateAreaLabels(1);
+    nodeMergeSymLabels();
   }
 
+  /**
+   * Scan around node CCW and propagate labels for given geometry index
+   * until fully populated.
+   * 
+   * @param geomIndex index of the geometry to propagate
+   */
   private void propagateAreaLabels(int geomIndex) {
    // initialize currLoc to location of last L side (if any)
    int currLoc = findLocStart(geomIndex);
@@ -140,6 +147,8 @@ public class OverlayEdge extends HalfEdge {
     if (currLoc == Location.NONE) return;
 
     OverlayEdge e = this;
+Debug.println("\nPropagating labels for index " + geomIndex + " : " + this);
+Debug.print("BEFORE: " + e.toStringNode());
     do {
       OverlayLabel label = e.getLabel();
       // set null ON values to be in current location
@@ -152,8 +161,12 @@ public class OverlayEdge extends HalfEdge {
         // if there is a right location, that is the next location to propagate
         if (rightLoc != Location.NONE) {
 //Debug.print(rightLoc != currLoc, this);
-          if (rightLoc != currLoc)
+          if (rightLoc != currLoc) {
+            Debug.println("side location conflict: " 
+          + Location.toLocationSymbol(rightLoc) + " <> " + Location.toLocationSymbol(currLoc) 
+          + " for " + e);
             throw new TopologyException("side location conflict", e.getCoordinate());
+          }
           if (leftLoc == Location.NONE) {
             Assert.shouldNeverReachHere("found single null side (at " + e.getCoordinate() + ")");
           }
@@ -173,6 +186,7 @@ public class OverlayEdge extends HalfEdge {
       }
       e = (OverlayEdge) e.oNext();
     } while (e != this);
+    Debug.print("AFTER: " + e.toStringNode());
   }
 
   private int findLocStart(int geomIndex) {
@@ -206,8 +220,8 @@ public class OverlayEdge extends HalfEdge {
     do {
       OverlayLabel label = e.getLabel();
       OverlayLabel labelSym = ((OverlayEdge) e.sym()).getLabel();
-      label.merge(labelSym);
-      labelSym.merge(label);
+      label.mergeFlip(labelSym);
+      labelSym.mergeFlip(label);
       e = (OverlayEdge) e.oNext();
     } while (e != this);
   }
@@ -250,7 +264,7 @@ public class OverlayEdge extends HalfEdge {
     OverlayEdge endOut = this.oNextOE();
     OverlayEdge currOut = endOut;
 Debug.println("\n------  Linking... ");
-Debug.print(this.toStringNode());
+Debug.print("BEFORE: " + this.toStringNode());
     do {
       OverlayEdge currIn = currOut.symOE();
  
@@ -273,7 +287,7 @@ Debug.print(this.toStringNode());
       }
       currOut = currOut.oNextOE();
     } while (currOut != endOut);
-    Debug.print(this.toStringNode());
+    Debug.print("AFTER: " + this.toStringNode());
     if (state == STATE_LINK_TO_OUTGOING) {
 //Debug.print(firstOut == null, this);
       throw new TopologyException("no outgoing dirEdge found", getCoordinate());
@@ -284,8 +298,11 @@ Debug.print(this.toStringNode());
   public String toString() {
     Coordinate orig = orig();
     Coordinate dest = dest();
+    String dirPtStr = (segString.size() > 2)
+        ? ", " + WKTWriter.format(directionPt())
+            : "";
     return "OE( "+ WKTWriter.format(orig)
-        + ", " + WKTWriter.format(directionPt())
+        + dirPtStr
         + ".." + WKTWriter.format(dest)
         + " ) " + label 
         + (isInResult ? " Res" : "");
@@ -296,14 +313,16 @@ Debug.print(this.toStringNode());
     Coordinate dest = dest();
     StringBuilder sb = new StringBuilder();
     sb.append("Node( "+WKTWriter.format(orig) + " )" + "\n");
-    for (OverlayEdge e = this; e.oNextOE() != this; e = e.oNextOE() ) {
+    OverlayEdge e = this;
+    do {
       sb.append("  -> " + e);
       if (e.isResultLinked()) {
         sb.append(" Link: ");
         sb.append(e.getResultNext());
       }
       sb.append("\n");
-    }
+      e = e.oNextOE();
+    } while (e != this);
     return sb.toString(); 
   }
 

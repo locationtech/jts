@@ -35,7 +35,7 @@ public class OverlaySRTest extends GeometryTestCase {
     
   }
   
-  public void testUnion2spikes() {
+  public void xtestUnion2spikes() {
     Geometry a = read("POLYGON ((0 100, 40 100, 40 0, 0 0, 0 100))");
     Geometry b = read("POLYGON ((70 80, 10 80, 60 50, 11 20, 69 11, 70 80))");
     Geometry expected = read("POLYGON ((0 100, 40 100, 40 80, 70 80, 69 11, 40 16, 40 0, 0 0, 0 100), (40 62, 40 38, 60 50, 40 62))");
@@ -43,6 +43,15 @@ public class OverlaySRTest extends GeometryTestCase {
     
     checkEqual(expected, actual);
     
+  }
+  
+  public void testIntersectionTriBox() {
+    Geometry a = read("POLYGON ((68 35, 35 42, 40 9, 68 35))");
+    Geometry b = read("POLYGON ((20 60, 50 60, 50 30, 20 30, 20 60))");
+    Geometry expected = read("POLYGON ((0 100, 40 100, 40 80, 70 80, 69 11, 40 16, 40 0, 0 0, 0 100), (40 62, 40 38, 60 50, 40 62))");
+    Geometry actual = intersection(a, b, 1);
+    
+    checkEqual(expected, actual);
   }
   
   public void xtestUnionSmoke() {

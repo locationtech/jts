@@ -159,6 +159,22 @@ public class OverlayLabel {
     if (bLocOn == Location.NONE) bLocOn = lbl.bLocOn;
   }
   
+  public void mergeFlip(OverlayLabel lbl)
+  {
+    /**
+     * Lines can change into Areas, but not vice-versa
+     */
+    if (lbl.aIsArea) this.aIsArea = true;
+    if (aLocLeft == Location.NONE) aLocLeft = lbl.aLocRight;
+    if (aLocRight == Location.NONE) aLocRight = lbl.aLocLeft;
+    if (aLocOn == Location.NONE) aLocOn = lbl.aLocOn;
+    
+    if (lbl.bIsArea) this.bIsArea = true;
+    if (bLocLeft == Location.NONE) bLocLeft = lbl.bLocRight;
+    if (bLocRight == Location.NONE) bLocRight = lbl.bLocLeft;
+    if (bLocOn == Location.NONE) bLocOn = lbl.bLocOn;
+  }
+  
   public String toString()
   {
     StringBuilder buf = new StringBuilder();

@@ -23,7 +23,7 @@ public class OverlayGraph {
   }
 
   private List<OverlayEdge> edges = new ArrayList<OverlayEdge>();
-  private Map<Coordinate, OverlayEdge> vertexMap = new HashMap<Coordinate, OverlayEdge>();
+  private Map<Coordinate, OverlayEdge> nodeMap = new HashMap<Coordinate, OverlayEdge>();
   
   public OverlayGraph() {
   }
@@ -113,13 +113,14 @@ public class OverlayGraph {
 
   private void insert(OverlayEdge e) {
     edges.add(e);
-    OverlayEdge eAdj = (OverlayEdge) vertexMap.get(e.orig());
-    if (eAdj != null) {
-      eAdj.insert(e);
+    OverlayEdge nodeEdge = (OverlayEdge) nodeMap.get(e.orig());
+    if (nodeEdge != null) {
+      nodeEdge.insert(e);
     }
     else {
-      // add new halfedges to to map
-      vertexMap.put(e.orig(), e);
+      // add edge origin to node map
+      // (sym is also added in separate call)
+      nodeMap.put(e.orig(), e);
     }
   }
 
@@ -130,7 +131,7 @@ public class OverlayGraph {
   
   public Collection<OverlayEdge> getVertexEdges()
   {
-    return vertexMap.values();
+    return nodeMap.values();
   }
 
   /**
@@ -142,7 +143,7 @@ public class OverlayGraph {
    * @return an edge with the given orig and dest, or null if none exists
    */
   public HalfEdge findEdge(Coordinate orig, Coordinate dest) {
-    HalfEdge e = (HalfEdge) vertexMap.get(orig);
+    HalfEdge e = (HalfEdge) nodeMap.get(orig);
     if (e == null) return null;
     return e.find(dest);
   }
@@ -152,6 +153,7 @@ public class OverlayGraph {
    */
   public void computeLabelling() {
     // compute labelling using a Left-Right sweepline, to keep things deterministic
+    // TODO: is this useful/needed ?
     List<OverlayEdge> nodes = sortedNodes();
     for (OverlayEdge node : nodes) {
       node.computeLabelling();

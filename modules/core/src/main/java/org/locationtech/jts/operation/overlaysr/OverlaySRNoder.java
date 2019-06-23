@@ -8,8 +8,10 @@ import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.noding.NodedSegmentString;
@@ -41,16 +43,22 @@ public class OverlaySRNoder {
     if (g.isEmpty()) return;
 
     if (g instanceof Polygon)                 addPolygon((Polygon) g, index);
-    /*
                         // LineString also handles LinearRings
-    else if (g instanceof LineString)         addLineString((LineString) g);
-    else if (g instanceof Point)              addPoint((Point) g);
-    else if (g instanceof MultiPoint)         addCollection((MultiPoint) g);
-    else if (g instanceof MultiLineString)    addCollection((MultiLineString) g);
-    else if (g instanceof MultiPolygon)       addCollection((MultiPolygon) g);
-    else if (g instanceof GeometryCollection) addCollection((GeometryCollection) g);
-    */
+    //else if (g instanceof LineString)         addLineString((LineString) g);
+    //else if (g instanceof Point)              addPoint((Point) g);
+    //else if (g instanceof MultiPoint)         addCollection((MultiPoint) g);
+    //else if (g instanceof MultiLineString)    addCollection((MultiLineString) g);
+    else if (g instanceof MultiPolygon)       addCollection((MultiPolygon) g, index);
+    //else if (g instanceof GeometryCollection) addCollection((GeometryCollection) g);
     else  throw new UnsupportedOperationException(g.getClass().getName());
+  }
+  
+  private void addCollection(GeometryCollection gc, int index)
+  {
+    for (int i = 0; i < gc.getNumGeometries(); i++) {
+      Geometry g = gc.getGeometryN(i);
+      add(g, index);
+    }
   }
 
   private void addPolygon(Polygon p, int index)
