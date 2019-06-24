@@ -29,7 +29,7 @@ public class OverlayGraphTest extends GeometryTestCase {
   }
 
   private void checkCCW(OverlayEdge e) {
-    boolean isCCW = e.isCCWAroundOrigin();
+    boolean isCCW = e.isCCWAtOrigin();
     assertTrue(isCCW);
     //, "Found non-CCW edges around node at " + this.toStringNode()
   }

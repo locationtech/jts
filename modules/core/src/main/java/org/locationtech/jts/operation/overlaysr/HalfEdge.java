@@ -275,47 +275,37 @@ public class HalfEdge {
    * @param e the edge to insert
    */
   public void insert(HalfEdge e) {
-    // No other edge around origin, so just insert it after this
+    // Case 1: No other edge around origin, so just insert it after this
     if (oNext() == this) {
       // set linkage so ring is correct
       insertAfter(e);
       return;
     }
     
-    // TODO: optimize - no need to scan for highest if 
-    HalfEdge eHigh = findHighestAroundOrigin();
-    // if e is higher than highest insert it after highest
-    if (1 == e.compareTo(eHigh)) {
-      eHigh.insertAfter(e);
-      return;      
-    }
-    
-    // otherwise, scan lower edges
-    // and insert when a higher one is found
-    HalfEdge ePrev = eHigh;
+    // Scan edges
+    // until insertion point is found
+    HalfEdge ePrev = insertionPoint(e);
+    ePrev.insertAfter(e);
+  }
+
+  private HalfEdge insertionPoint(HalfEdge e) {
+    HalfEdge ePrev = this;
     do {
       HalfEdge eNext = ePrev.oNext();
       // if eNext is higher insert edge here
-      if (1 == eNext.compareTo(e)) {
-        ePrev.insertAfter(e);
-        return; 
+      if (eNext.compareTo(ePrev) <= 0
+          && (e.compareTo(eNext) <= 0 || e.compareTo(ePrev) >= 0)) {
+        return ePrev; 
+      }
+      if (eNext.compareTo(ePrev) > 0 
+          && e.compareTo(ePrev) >= 0
+          && e.compareTo(eNext) <= 0) { 
+        return ePrev;         
       }
       ePrev = eNext;
-    } while (ePrev != eHigh);
+    } while (ePrev != this);
     Assert.shouldNeverReachHere();
-  }
-  
-  private HalfEdge findHighestAroundOrigin() {
-    HalfEdge e = this;
-    HalfEdge eNext = oNext();
-    do {
-      // found when the increasing edge values get lower again
-      if (-1 == eNext.compareTo(e)) return e;
-      // move to next edge
-      e = eNext;
-      eNext = eNext.oNext();
-    } while (e != this);
-    return this;
+    return null;
   }
   
   /**
@@ -326,14 +316,14 @@ public class HalfEdge {
    * @param e the edge to insert (with same origin)
    */
   private void insertAfter(HalfEdge e) {
-    Assert.equals(orig, e.orig());
     HalfEdge save = oNext();
     sym.setNext(e);
     e.sym().setNext(save);
-    //Assert.isTrue(this.isCCWAroundOrigin(), "Found non-CCW edges around node at " + this.toStringNode());
+    //Assert.isTrue(orig.equals2D( e.orig() ));
+    Assert.isTrue(this.isCCWAtOrigin(), "Found non-CCW edges inserting " + e + " into " + this.toStringNode());
   }
 
-  boolean isCCWAroundOrigin() {
+  boolean isCCWAtOrigin() {
     // degree <= 2 has no orientation
     if (degree() <= 2) return true;
     
@@ -342,12 +332,25 @@ public class HalfEdge {
     do {
       HalfEdge eNext = e.oNext();
       HalfEdge eNext2 = eNext.oNext();
-      int orientIndex = Orientation.index(
-          e.directionPt(), eNext.directionPt(), eNext2.directionPt());
-      if (orientIndex != Orientation.COUNTERCLOCKWISE) return false;
+      if (! isCCW(e, eNext, eNext2)) return false;
       e = eNext;
     } while (e != this);
     return true;
+  }
+
+  /**
+   * Tests if the edges e1,e2,e3 are oriented CCW 
+   * around their origin (using their direction points).
+   * 
+   * @param e1 a half-edge
+   * @param e2 a half-edge
+   * @param e3 a half-edge
+   * @return true if the edge triplet is oriented CCW
+   */
+  private boolean isCCW(HalfEdge e1, HalfEdge e2, HalfEdge e3) {
+    int orientIndex = Orientation.index(
+        e1.directionPt(), e2.directionPt(), e3.directionPt());
+    return orientIndex == Orientation.COUNTERCLOCKWISE;
   }
 
   /**
