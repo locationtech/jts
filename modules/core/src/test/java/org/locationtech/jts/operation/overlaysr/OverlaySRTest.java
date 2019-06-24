@@ -15,34 +15,36 @@ public class OverlaySRTest extends GeometryTestCase {
 
   public OverlaySRTest(String name) { super(name); }
   
-  public void xtestIntersectionSmoke() {
+  public void testIntersectionBoxTri() {
     Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
     Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
     Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
     Geometry actual = intersection(a, b, 1);
-    
     checkEqual(expected, actual);
-    
   }
   
-  public void xtestIntersection2spikes() {
+  public void testUnionBoxTri() {
+    Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
+    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
+    Geometry expected = read("POLYGON ((0 6, 4 6, 4 2, 3 2, 3 0, 1 0, 1 2, 0 2, 0 6))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testIntersection2spikes() {
     Geometry a = read("POLYGON ((0 100, 40 100, 40 0, 0 0, 0 100))");
     Geometry b = read("POLYGON ((70 80, 10 80, 60 50, 11 20, 69 11, 70 80))");
-    Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
+    Geometry expected = read("MULTIPOLYGON (((40 80, 40 62, 10 80, 40 80)), ((40 38, 40 16, 11 20, 40 38)))");
     Geometry actual = intersection(a, b, 1);
-    
     checkEqual(expected, actual);
-    
   }
   
-  public void xtestUnion2spikes() {
+  public void testUnion2spikes() {
     Geometry a = read("POLYGON ((0 100, 40 100, 40 0, 0 0, 0 100))");
     Geometry b = read("POLYGON ((70 80, 10 80, 60 50, 11 20, 69 11, 70 80))");
     Geometry expected = read("POLYGON ((0 100, 40 100, 40 80, 70 80, 69 11, 40 16, 40 0, 0 0, 0 100), (40 62, 40 38, 60 50, 40 62))");
     Geometry actual = union(a, b, 1);
-    
     checkEqual(expected, actual);
-    
   }
   
   public void testIntersectionTriBox() {
@@ -50,18 +52,11 @@ public class OverlaySRTest extends GeometryTestCase {
     Geometry b = read("POLYGON ((20 60, 50 60, 50 30, 20 30, 20 60))");
     Geometry expected = read("POLYGON ((37 30, 35 42, 50 39, 50 30, 37 30))");
     Geometry actual = intersection(a, b, 1);
-    
     checkEqual(expected, actual);
   }
   
-  public void xtestUnionSmoke() {
-    Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
-    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
-    Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
-    Geometry actual = union(a, b, 1);
-    
-    checkEqual(expected, actual);
-  }
+
+  
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
