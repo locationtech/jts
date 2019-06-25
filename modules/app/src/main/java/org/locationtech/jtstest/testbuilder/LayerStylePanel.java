@@ -71,6 +71,7 @@ public class LayerStylePanel extends JPanel {
   private JCheckBox cbOrient;
   private JCheckBox cbStructure;
   private JCheckBox cbVertexLabel;
+  private JCheckBox cbOffset;
 
   
   public LayerStylePanel() {
@@ -94,6 +95,7 @@ public class LayerStylePanel extends JPanel {
     cbLabel.setSelected(layer.getLayerStyle().isLabel());
     labelSizeModel.setValue(layer.getLayerStyle().getLabelSize());
     cbDashed.setSelected(geomStyle().isDashed());
+    cbOffset.setSelected(layer.getLayerStyle().isOffset());
     cbStroked.setSelected(geomStyle().isStroked());
     cbFilled.setSelected(geomStyle().isFilled());
     cbOrient.setSelected(layer.getLayerStyle().isOrientations());
@@ -272,7 +274,7 @@ public class LayerStylePanel extends JPanel {
 
     //=============================================
     cbDashed = new JCheckBox();
-    //cbDashed.setText("Dashed");
+    cbDashed.setText("Dashed");
     //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
     cbDashed.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbDashed.addActionListener(new java.awt.event.ActionListener() {
@@ -282,8 +284,19 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
+    cbOffset = new JCheckBox();
+    cbOffset.setText("Offset");
+    //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
+    cbOffset.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbOffset.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        layer.getLayerStyle().setOffset(cbOffset.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
     // Leave on separate line to allow room for dash style
-    addRow("Line Dash", cbDashed);
+    addRow("", cbDashed, cbOffset);
     //=============================================
 
     cbFilled = new JCheckBox();

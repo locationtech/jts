@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2019 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -16,7 +16,11 @@ import java.awt.Graphics2D;
 
 import javax.swing.JCheckBox;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
 import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
@@ -57,6 +61,7 @@ public class LayerStyle implements Style  {
   private ArrowLineEndStyle lineArrowStyle;
   private CircleLineEndStyle lineCircleStyle;
   private VertexLabelStyle vertexLabelStyle;
+  private boolean isOffsetLine;
 
   public LayerStyle(BasicStyle geomStyle) {
     this.geomStyle = geomStyle;
@@ -100,8 +105,6 @@ public class LayerStyle implements Style  {
     StyleList styleList = new StyleList();
     styleList.add(vertexLabelStyle, vertexFilter);
     styleList.add(vertexStyle, vertexFilter);
-    //styleList.add(orientStyle, decorationFilter );
-    //styleList.add(structureStyle, structureFilter);
     styleList.add(orientStyle);
     styleList.add(structureStyle);
     styleList.add(labelStyle, labelFilter);
@@ -149,7 +152,6 @@ public class LayerStyle implements Style  {
     return decoratorStyle.isEnabled(vertexLabelStyle);
   }
 
-  
   public void setLabel(boolean show) {
     decoratorStyle.setEnabled(labelStyle, show);
   }
@@ -173,10 +175,24 @@ public class LayerStyle implements Style  {
   }
   
   public void paint(Geometry geom, Viewport viewport, Graphics2D g) throws Exception {
-    geomStyle.paint(geom, viewport, g);
-    decoratorStyle.paint(geom, viewport, g);
+    Geometry transformGeom = geom;
+    if (isOffsetLine && geom instanceof LineString) {
+      transformGeom = offsetCurve(geom, 10);
+    }
+    geomStyle.paint(transformGeom, viewport, g);
+    decoratorStyle.paint(transformGeom, viewport, g);
   }
 
+  public void setOffset(boolean show) {
+    isOffsetLine = show;
+    //decoratorStyle.setEnabled(offsetLineStyle, show);
+  }
+  
+  public boolean isOffset() {
+    return isOffsetLine;
+    //return decoratorStyle.isEnabled(offsetLineStyle);
+  }
+  
   public void setOrientations(boolean show) {
     decoratorStyle.setEnabled(orientStyle, show);
   }
@@ -193,7 +209,16 @@ public class LayerStyle implements Style  {
     return decoratorStyle.isEnabled(structureStyle);
   }
   
-
+  static Geometry offsetCurve(Geometry geom, double distance)
+  {
+    BufferParameters bufParams = new BufferParameters();
+    OffsetCurveBuilder ocb = new OffsetCurveBuilder(
+        geom.getFactory().getPrecisionModel(), bufParams
+        );
+    Coordinate[] pts = ocb.getOffsetCurve(geom.getCoordinates(), distance);
+    Geometry curve = geom.getFactory().createLineString(pts);
+    return curve;
+  }
 
 
 
