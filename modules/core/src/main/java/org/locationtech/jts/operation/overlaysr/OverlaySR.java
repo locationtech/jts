@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.awt.PointShapeFactory.Point;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -101,6 +102,7 @@ public class OverlaySR {
     return geomOv;
   }
 
+  private static final PointLocator ptLocator = new PointLocator();
   private Geometry[] geom;
   private GeometryFactory geomFact;
   private PrecisionModel pm;
@@ -124,29 +126,12 @@ public class OverlaySR {
   public Geometry getResultGeometry(int overlayOpCode) {
     Geometry resultGeom = computeOverlay(overlayOpCode);
     return resultGeom;
-    //return TESToverlay(overlayOpCode);
-  }
-
-  private Geometry TESToverlay(int overlayOpCode) {
-    Geometry gr0 = GeometryPrecisionReducer.reduce(geom[0], pm);
-    Geometry gr1 = GeometryPrecisionReducer.reduce(geom[1], pm);
-    if (overlayOpCode == OverlayOp.UNION) {
-      
-      // **********  TESTING ONLY  **********
-      return gr0.union(gr1);
-    }
-    else if (overlayOpCode == OverlayOp.INTERSECTION) {
-      return gr0.intersection(gr1);
-    }
-    // MD - have not implemented other overlay ops yet
-    throw new UnsupportedOperationException();
   }
 
   private Geometry computeOverlay(int opCode) {
     Collection<SegmentString> edges = node();
     Collection<SegmentString> edgesMerged = merge(edges);
     OverlayGraph graph = buildTopology(edgesMerged);
-    //TODO: extract included linework from graph
     graph.markResultAreaEdges(opCode);
     graph.cancelDuplicateResultAreaEdges();
     List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
@@ -281,9 +266,28 @@ public class OverlaySR {
   private OverlayGraph buildTopology(Collection<SegmentString> edges) {
     OverlayGraph graph = OverlayGraph.buildGraph( edges );
     graph.computeLabelling();
+    labelIsolatedNodes(graph.getNodeEdges());
     return graph;
   }
 
+  private void labelIsolatedNodes(Collection<OverlayEdge> collection) {
+    for (OverlayEdge edge : collection) {
+      if (edge.getLabel().isUnknown(0)) {
+        labelIsolatedNode(edge, 0);
+      }
+      else if (edge.getLabel().isUnknown(1)) {
+        labelIsolatedNode(edge, 1);
+      }
+    }
+  }
+
+  private void labelIsolatedNode(OverlayEdge edge, int geomIndex) {
+    // TODO: use indexed locator here?
+    int loc = ptLocator.locate(edge.orig(), geom[geomIndex]);
+    edge.getLabel().setLocationsAll(geomIndex, loc);
+    edge.nodeMergeSymLabels();
+  }
+  
   private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
     List lines = new ArrayList();
     for (OverlayEdge edge : graph.getEdges()) {

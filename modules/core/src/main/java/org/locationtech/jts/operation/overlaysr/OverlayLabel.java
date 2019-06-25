@@ -73,6 +73,25 @@ public class OverlayLabel {
     }
     return bIsArea;
   }
+  public boolean isInteriorArea() {
+    return isArea() && (isInteriorArea(0) || isInteriorArea(1));
+  }
+    
+  public boolean isInteriorArea(int geomIndex) {
+    return getLocation(geomIndex, Position.LEFT) == Location.INTERIOR
+        && getLocation(geomIndex, Position.RIGHT) == Location.INTERIOR;
+  }
+  
+  public boolean isIncomplete() {
+    return isUnknown(0) || isUnknown(1);
+  }
+
+  boolean isUnknown(int geomIndex) {
+    if (geomIndex == 0) {
+      return aLocLeft == Location.NONE && aLocRight == Location.NONE && aLocOn == Location.NONE;
+    }
+    return bLocLeft == Location.NONE && bLocRight == Location.NONE && bLocOn == Location.NONE;
+  }
 
   public int getLocation(int geomIndex, int position) {
     if (geomIndex == 0) {
@@ -138,6 +157,19 @@ public class OverlayLabel {
     }
   }
 
+  public void setLocationsAll(int geomIndex, int loc) {
+    if (geomIndex == 0) {
+      aLocLeft = loc;
+      aLocRight = loc;
+      aLocOn = loc;
+    }
+    else {
+      bLocLeft = loc;
+      bLocRight = loc;
+      bLocOn = loc;
+    }
+  }
+  
   public OverlayLabel createFlipped() {
     OverlayLabel lbl = new OverlayLabel();
     
@@ -213,5 +245,6 @@ public class OverlayLabel {
     }
     return buf.toString();
   }
+
 
 }

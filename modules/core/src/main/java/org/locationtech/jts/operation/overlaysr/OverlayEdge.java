@@ -217,7 +217,7 @@ Debug.print("BEFORE: " + e.toStringNode());
 
   public void markInResultArea(int overlayOpCode) {
     if (label.isArea()
-        //&& ! edge.isInteriorAreaEdge()
+        //&& ! label.isInteriorArea()
         && OverlaySR.isResultOfOp(
               label.getLocation(0, Position.RIGHT),
               label.getLocation(1, Position.RIGHT),
@@ -343,7 +343,5 @@ Debug.print("BEFORE: " + this.toStringNode());
     + (isInResult() ? " Res" : "-") + "/" + (symOE().isInResult() ? " Res" : "-")
     ;
   }
-
-
 
 }

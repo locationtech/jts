@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.util.Assert;
@@ -140,7 +141,7 @@ public class OverlayGraph {
     return edges;
   }
   
-  public Collection<OverlayEdge> getVertexEdges()
+  public Collection<OverlayEdge> getNodeEdges()
   {
     return nodeMap.values();
   }
@@ -166,10 +167,14 @@ public class OverlayGraph {
     // compute labelling using a Left-Right sweepline, to keep things deterministic
     // TODO: is this useful/needed ?
     List<OverlayEdge> nodes = sortedNodes();
+    computeLabelling(nodes);
+    mergeSymLabels(nodes);
+  }
+
+  private void computeLabelling(List<OverlayEdge> nodes) {
     for (OverlayEdge node : nodes) {
       node.computeLabelling();
     }
-    mergeSymLabels(nodes);
   }
 
   private void mergeSymLabels(List<OverlayEdge> nodes) {
@@ -179,7 +184,7 @@ public class OverlayGraph {
   }
 
   private List<OverlayEdge> sortedNodes() {
-    List<OverlayEdge> edges = new ArrayList<OverlayEdge>(getVertexEdges());
+    List<OverlayEdge> edges = new ArrayList<OverlayEdge>(getNodeEdges());
     edges.sort(OverlayEdge.nodeComparator());
     return edges;
   }
