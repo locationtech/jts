@@ -27,11 +27,13 @@ import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 public class VertexLabelStyle  implements Style
 {
-  private static final int DEFAULT_FONT_SIZE = 10;
+  private static final int DEFAULT_FONT_SIZE = 11;
 
   private static final int LABEL_OFFSET = 4;
 
-  private Font font = new Font(FontGlyphReader.FONT_SANSSERIF, Font.PLAIN, DEFAULT_FONT_SIZE);
+  private static final double MIN_VEW_DIST_SQ = 900;
+
+  private Font font = new Font(FontGlyphReader.FONT_SERIF, Font.PLAIN, DEFAULT_FONT_SIZE);
   
   private Color color;
   private int size;
@@ -75,6 +77,7 @@ public class VertexLabelStyle  implements Style
     // don't label duplicate closing point
     if (coordinates[0].equals2D(coordinates[len -1])) len--;
     
+    Point2D lastDrawnPV = new Point2D.Double();;
     for (int i = 0; i < len; i++) {
       Coordinate pt = coordinates[i];
       if (! viewport.containsInModel(pt)) {
@@ -82,6 +85,9 @@ public class VertexLabelStyle  implements Style
       }       
       pM.setLocation(pt.x, pt.y);
       viewport.toView(pM, pV);
+      if (i > 0 && isTooClose(lastDrawnPV, pV)) continue;
+      lastDrawnPV.setLocation(pV);
+      
       String label = WKTWriter.format(pt);
       
       int dir = 2;  // Use N for points
@@ -90,13 +96,24 @@ public class VertexLabelStyle  implements Style
         Coordinate p2 = coordinates[ (i >= len - 1) ? len - 2 : i+1 ];
         dir = labelDirection(pt, p1, p2);
       }
+      /*
       System.out.println( pt + "   dir= " + dir + "  " 
           + DIR_ALIGN[dir][0] + "  " + DIR_ALIGN[dir][1] );
+      */
       GraphicsUtil.drawStringAlign(g, label, (int) pV.getX(), (int) pV.getY(),
-          DIR_ALIGN[dir][0], DIR_ALIGN[dir][1], LABEL_OFFSET ); 
+          DIR_ALIGN[dir][0], DIR_ALIGN[dir][1], LABEL_OFFSET );
     }
   }
   
+  private boolean isTooClose(Point2D p0, Point2D p1) {
+    double dx = p1.getX() - p0.getX();
+    double dy = p1.getY() - p0.getY();
+    
+    double len = dx * dx + dy * dy;
+    
+    return len < MIN_VEW_DIST_SQ;
+  }
+
   private static float[][] DIR_ALIGN = {
       { 0, 0.5f },  // 0 - E
       { 0, 0 },     // 1 - NE
