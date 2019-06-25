@@ -167,7 +167,7 @@ public class LayerListPanel extends JPanel {
 
   public void showTabLayerStyle(String title) {
     tabPane.setSelectedIndex(TAB_INDEX_LAYER);
-    tabPane.setTitleAt(0, LBL_LAYER + " - " + title);
+    //tabPane.setTitleAt(0, LBL_LAYER + " - " + title);
     //SwingUtil.showTab(tabPane, LBL_LAYER_STYLE);
   }
   
@@ -257,7 +257,7 @@ class LayerItemPanel extends JPanel {
   private static Font FONT_NORMAL = new java.awt.Font("Dialog", Font.PLAIN, 12);
   
   private Border BORDER_CONTROL = BorderFactory.createLineBorder(CLR_CONTROL);
-  private Border BORDER_HIGHLIGHT = BorderFactory.createLineBorder(Color.DARK_GRAY);
+  private Border BORDER_HIGHLIGHT = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
   
   private static final Color CLR_CONTROL = AppColors.BACKGROUND;
   private static final Color CLR_HIGHLIGHT = ColorUtil.darker(CLR_CONTROL, .95);
@@ -287,6 +287,7 @@ class LayerItemPanel extends JPanel {
 
   public void setFocusLayer(boolean hasFocus) {
     setBackground(hasFocus ? AppColors.TAB_FOCUS : AppColors.BACKGROUND);
+    setBorder(hasFocus ? BORDER_HIGHLIGHT : BORDER_CONTROL );
     lblName.setFont(hasFocus ? FONT_FOCUS : FONT_NORMAL);
     revalidate();
     this.hasFocus = hasFocus;
@@ -313,6 +314,7 @@ class LayerItemPanel extends JPanel {
       }
     });
     checkbox.setSelected(layer.isEnabled());
+    checkbox.setOpaque(false);
 
     namePanel = new JPanel();
     namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
@@ -322,7 +324,7 @@ class LayerItemPanel extends JPanel {
     namePanel.setMinimumSize(new Dimension(50,12));
     namePanel.setPreferredSize(new Dimension(50,12));
     namePanel.setMaximumSize(new Dimension(50,12));
-    //namePanel.setBorder(BORDER_GRAY);;
+    //namePanel.setBorder(BORDER_HIGHLIGHT);;
     add(namePanel);
     
     

@@ -284,6 +284,29 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
+    
+    cbOrient = new JCheckBox();
+    cbOrient.setText("Orientation");
+    cbOrient.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbOrient.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        layer.getLayerStyle().setOrientations(cbOrient.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+
+    cbStructure = new JCheckBox();
+    cbStructure.setText("Structure");
+    cbStructure.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbStructure.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        layer.getLayerStyle().setStructure(cbStructure.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+
     cbOffset = new JCheckBox();
     cbOffset.setText("Offset");
     //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
@@ -296,7 +319,7 @@ public class LayerStylePanel extends JPanel {
       }
     });
     // Leave on separate line to allow room for dash style
-    addRow("", cbDashed, cbOffset);
+    addRow("", cbDashed, cbOrient, cbStructure, cbOffset);
     //=============================================
 
     cbFilled = new JCheckBox();
@@ -377,30 +400,9 @@ public class LayerStylePanel extends JPanel {
       }
     });
 
-    cbOrient = new JCheckBox();
-    cbOrient.setText("Orientation");
-    cbOrient.setAlignmentX(Component.LEFT_ALIGNMENT);
-    cbOrient.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (layer == null) return;
-        layer.getLayerStyle().setOrientations(cbOrient.isSelected());
-        JTSTestBuilder.controller().geometryViewChanged();
-      }
-    });
-
-    cbStructure = new JCheckBox();
-    cbStructure.setText("Structure");
-    cbStructure.setAlignmentX(Component.LEFT_ALIGNMENT);
-    cbStructure.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (layer == null) return;
-        layer.getLayerStyle().setStructure(cbStructure.isSelected());
-        JTSTestBuilder.controller().geometryViewChanged();
-      }
-    });
 
     
-    addRow("Label", cbLabel, btnLabelColor, spinnerLabelSize, cbOrient, cbStructure);
+    addRow("Label", cbLabel, btnLabelColor, spinnerLabelSize);
     
     //=============================================
     
