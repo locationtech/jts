@@ -14,8 +14,6 @@ package org.locationtech.jtstest.testbuilder.ui.style;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-import javax.swing.JCheckBox;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;

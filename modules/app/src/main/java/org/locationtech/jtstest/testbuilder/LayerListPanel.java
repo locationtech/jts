@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2016 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,7 +28,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -52,7 +51,7 @@ public class LayerListPanel extends JPanel {
   private static final String LBL_LAYER = "Style";
   private static final String LBL_VIEW = "View";
   
-  JPanel list = new JPanel();
+  JPanel listPanel = new JPanel();
   Box buttonPanel = Box.createVerticalBox();
   JTabbedPane tabPane = new JTabbedPane();
   private LayerStylePanel lyrStylePanel;
@@ -79,21 +78,22 @@ public class LayerListPanel extends JPanel {
   }
 
   private void uiInit() throws Exception {
-    setSize(200, 250);
+    //setSize(300, 250);
     setBackground(AppColors.BACKGROUND);
     setLayout(new BorderLayout());
     
     JPanel panelLeft = new JPanel();
     panelLeft.setLayout(new BorderLayout());
 
-    list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
-    list.setBackground(AppColors.BACKGROUND);
-    list.setBorder(BorderFactory.createEmptyBorder(2,2,2,0));
+    listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+    listPanel.setBackground(AppColors.BACKGROUND);
+    listPanel.setBorder(BorderFactory.createEmptyBorder(2,2,2,0));
 
     JScrollPane jScrollPane1 = new JScrollPane();
     jScrollPane1.setBackground(AppColors.BACKGROUND);
     jScrollPane1.setOpaque(true);
-    jScrollPane1.getViewport().add(list, null);
+    jScrollPane1.getViewport().add(listPanel, null);
+    jScrollPane1.setPreferredSize(new Dimension(150, 250));
 
     panelLeft.add(jScrollPane1, BorderLayout.CENTER);
     panelLeft.add(buttonPanel, BorderLayout.EAST);
@@ -172,7 +172,7 @@ public class LayerListPanel extends JPanel {
   }
   
   public void populateList() {
-    list.removeAll();
+    listPanel.removeAll();
     layerItems.clear();
     
     LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
@@ -181,11 +181,17 @@ public class LayerListPanel extends JPanel {
     setLayerFocus(layerItems.get(0));
   }
 
+  public void updateList() {
+    for (LayerItemPanel layerItemPanel : layerItems) {
+      layerItemPanel.update();
+    }
+  }
+
   private void addLayers(LayerList lyrList) {
     for (int i = 0; i < lyrList.size(); i++) {
       Layer lyr = lyrList.getLayer(i);
       LayerItemPanel item = new LayerItemPanel(lyr, this);
-      list.add(item);
+      listPanel.add(item);
       layerItems.add(item);
     }
   }
@@ -269,6 +275,7 @@ class LayerItemPanel extends JPanel {
   private JPanel namePanel;
   private boolean hasFocus;
   private JLabel lblName;
+  private JPanel swatch;
 
   LayerItemPanel(Layer lyr, LayerListPanel lyrListPanel) {
     this.layer = lyr;
@@ -297,8 +304,12 @@ class LayerItemPanel extends JPanel {
     return hasFocus;
   }
   
+  public void update() {
+    LayerStyleSwatchControl.update(swatch, layer);
+  }
+  
   private void uiInit() throws Exception {
-    setSize(200, 250);
+    setSize(250, 250);
     setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
     setBackground(AppColors.BACKGROUND);
     //setOpaque(true);
@@ -316,29 +327,14 @@ class LayerItemPanel extends JPanel {
     checkbox.setSelected(layer.isEnabled());
     checkbox.setOpaque(false);
 
-    namePanel = new JPanel();
-    namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
-    //namePanel.setBackground(CLR_CONTROL);
-    namePanel.setOpaque(false);
-    namePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-    namePanel.setMinimumSize(new Dimension(50,12));
-    namePanel.setPreferredSize(new Dimension(50,12));
-    namePanel.setMaximumSize(new Dimension(50,12));
-    //namePanel.setBorder(BORDER_HIGHLIGHT);;
-    add(namePanel);
-    
     
     lblName = new JLabel(layer.getName());
     lblName.setAlignmentX(Component.LEFT_ALIGNMENT);
-    lblName.setMinimumSize(new Dimension(50,12));
-    lblName.setPreferredSize(new Dimension(50,12));
-    lblName.setMaximumSize(new Dimension(50,12));
+    lblName.setMinimumSize(new Dimension(100,12));
+    lblName.setPreferredSize(new Dimension(100,12));
+    lblName.setMaximumSize(new Dimension(100,12));
     lblName.setFont(FONT_NORMAL);
-
-    namePanel.add(lblName);
-    namePanel.addMouseListener(new HighlightMouseListener(this));
     lblName.addMouseListener(new HighlightMouseListener(this));
-    
     lblName.addMouseListener(new MouseAdapter()  
     {  
       public void mouseClicked(MouseEvent e)  
@@ -346,6 +342,24 @@ class LayerItemPanel extends JPanel {
         lyrListPanel.setLayerFocus(self);
       }
     }); 
+    
+    swatch = LayerStyleSwatchControl.create(layer);
+    
+    namePanel = new JPanel();
+    add(namePanel);
+    namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.X_AXIS));
+    //namePanel.setBackground(CLR_CONTROL);
+    namePanel.setOpaque(false);
+    namePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+    namePanel.setMinimumSize(new Dimension(100,14));
+    namePanel.setPreferredSize(new Dimension(100,14));
+    namePanel.setMaximumSize(new Dimension(100,14));
+    //namePanel.setBorder(BORDER_HIGHLIGHT);;
+    namePanel.addMouseListener(new HighlightMouseListener(this));
+    
+    namePanel.add(swatch);
+    namePanel.add(Box.createRigidArea(new Dimension(4,0)));
+    namePanel.add(lblName);
   }
 
   private void layerVisAction() {
@@ -377,4 +391,32 @@ class LayerItemPanel extends JPanel {
    }
   }
 
+}
+
+
+class LayerStyleSwatchControl {
+
+  public static JPanel create(Layer layer) {
+    JPanel ctl = new JPanel();
+    Dimension dim = new Dimension(16,16);
+    ctl.setMinimumSize(dim);
+    ctl.setPreferredSize(dim);
+    ctl.setMaximumSize(dim);
+    ctl.setOpaque(true);
+    update(ctl, layer);  
+    return ctl;
+  }
+
+  public static void update(JPanel ctl, Layer layer) {
+    Color fillClr = Color.WHITE;
+    if (layer.getGeometryStyle().isFilled())
+      fillClr = layer.getGeometryStyle().getFillColor();
+
+    int lineWidth = 1;
+    if (layer.getGeometryStyle().getStrokeWidth() > 1)
+      lineWidth = 2;
+    
+    ctl.setBackground( fillClr );  
+    ctl.setBorder(BorderFactory.createLineBorder(layer.getGeometryStyle().getLineColor(), lineWidth));
+  }
 }

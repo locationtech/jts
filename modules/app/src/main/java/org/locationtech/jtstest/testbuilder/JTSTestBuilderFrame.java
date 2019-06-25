@@ -784,6 +784,9 @@ public class JTSTestBuilderFrame extends JFrame
     updateStatsPanelIfVisible();
   }
 
+  public void updateLayerList() {
+    layerListPanel.updateList();
+  }
   public void displayInfo(Coordinate modelPt)
   {
     displayInfo(

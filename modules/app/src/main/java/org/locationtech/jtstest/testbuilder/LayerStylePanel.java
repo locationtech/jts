@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Martin Davis.
  *
@@ -48,8 +47,8 @@ public class LayerStylePanel extends JPanel {
   private JPanel stylePanel;
   private int rowIndex;
   private JCheckBox cbDashed;
-  private JSpinner spinnerWidth;
-  private SpinnerNumberModel widthModel;
+  private JSpinner spinnerLineWidth;
+  private SpinnerNumberModel lineWidthModel;
   private JCheckBox cbFilled;
   private JSlider sliderFillAlpha;
   private JPanel btnFillColor;
@@ -100,7 +99,7 @@ public class LayerStylePanel extends JPanel {
     cbFilled.setSelected(geomStyle().isFilled());
     cbOrient.setSelected(layer.getLayerStyle().isOrientations());
     cbStructure.setSelected(layer.getLayerStyle().isOrientations());
-    widthModel.setValue(geomStyle().getStrokeWidth());
+    lineWidthModel.setValue(geomStyle().getStrokeWidth());
     updateStyleControls();
   }
   
@@ -111,6 +110,7 @@ public class LayerStylePanel extends JPanel {
     ColorControl.update(btnFillColor, geomStyle().getFillColor() );
     sliderLineAlpha.setValue(geomStyle().getLineAlpha());
     sliderFillAlpha.setValue(geomStyle().getFillAlpha());
+    JTSTestBuilder.controller().updateLayerList();
   }
   
   private void uiInit() throws Exception {
@@ -231,6 +231,7 @@ public class LayerStylePanel extends JPanel {
             geomStyle().setLineColor(clr);
             layer.getLayerStyle().setColor(clr);
             JTSTestBuilder.controller().geometryViewChanged();
+            JTSTestBuilder.controller().updateLayerList();
           }
         }
        );
@@ -245,18 +246,19 @@ public class LayerStylePanel extends JPanel {
       }
     });
 
-    widthModel = new SpinnerNumberModel(1.0, 0, 100.0, 0.2);
-    spinnerWidth = new JSpinner(widthModel);
+    lineWidthModel = new SpinnerNumberModel(1.0, 0, 100.0, 0.2);
+    spinnerLineWidth = new JSpinner(lineWidthModel);
     //widthSpinner.setMinimumSize(new Dimension(50,12));
     //widthSpinner.setPreferredSize(new Dimension(50,12));
-    spinnerWidth.setMaximumSize(new Dimension(40,16));
-    spinnerWidth.setAlignmentX(Component.LEFT_ALIGNMENT);
+    spinnerLineWidth.setMaximumSize(new Dimension(40,16));
+    spinnerLineWidth.setAlignmentX(Component.LEFT_ALIGNMENT);
     
-    spinnerWidth.addChangeListener(new ChangeListener() {
+    spinnerLineWidth.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
-        float width = widthModel.getNumber().floatValue();
+        float width = lineWidthModel.getNumber().floatValue();
         geomStyle().setStrokeWidth(width);
         JTSTestBuilder.controller().geometryViewChanged();
+        JTSTestBuilder.controller().updateLayerList();
       }
     });
 
@@ -267,10 +269,11 @@ public class LayerStylePanel extends JPanel {
           int alpha = (int)source.getValue();
           geomStyle().setLineAlpha(alpha);
           JTSTestBuilder.controller().geometryViewChanged();
+          JTSTestBuilder.controller().updateLayerList();
         }
       }
     });
-    addRow("Line", cbStroked, btnLineColor, btnVertexSynch, spinnerWidth, sliderLineAlpha);
+    addRow("Line", cbStroked, btnLineColor, btnVertexSynch, spinnerLineWidth, sliderLineAlpha);
 
     //=============================================
     cbDashed = new JCheckBox();
@@ -329,6 +332,7 @@ public class LayerStylePanel extends JPanel {
       public void actionPerformed(ActionEvent e) {
         geomStyle().setFilled(cbFilled.isSelected());
         JTSTestBuilder.controller().geometryViewChanged();
+        JTSTestBuilder.controller().updateLayerList();
       }
     });
    
@@ -339,6 +343,7 @@ public class LayerStylePanel extends JPanel {
           int alpha = (int)source.getValue();
           geomStyle().setFillAlpha(alpha);
           JTSTestBuilder.controller().geometryViewChanged();
+          JTSTestBuilder.controller().updateLayerList();
         }
       }
     });
@@ -350,6 +355,7 @@ public class LayerStylePanel extends JPanel {
             geomStyle().setFillColor(clr);
             updateStyleControls();
             JTSTestBuilder.controller().geometryViewChanged();
+            JTSTestBuilder.controller().updateLayerList();
           }
         }
        );
@@ -452,7 +458,6 @@ public class LayerStylePanel extends JPanel {
   }
   
   private GridBagConstraints gbc(int x, int y, int align, double weightX) {
-    // TODO Auto-generated method stub
     return new GridBagConstraints(x, y, 
         1, 1, 
         weightX, 1, //weights

@@ -20,7 +20,6 @@ import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderToolBar;
 import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
-import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
@@ -183,6 +182,13 @@ public class JTSTestBuilderController
   public void saveImageToClipboard() {
     JTSTestBuilderFrame.instance().actionSaveImageToClipboard();
   }
+  
+  public void updateLayerList() {
+    JTSTestBuilderFrame.instance().updateLayerList();
+  }
+  
+  //================================
+      
   private TestBuilderModel model() {
     return JTSTestBuilderFrame.instance().getModel();
   }
