@@ -299,7 +299,7 @@ public class HotPixel
   }
   
   public String toString() {
-    return "HP(" + WKTWriter.toCoordinate(pt) + ")";
+    return "HP(" + WKTWriter.format(pt) + ")";
   }
 
 }
