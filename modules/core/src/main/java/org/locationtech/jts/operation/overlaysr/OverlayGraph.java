@@ -13,16 +13,12 @@ package org.locationtech.jts.operation.overlaysr;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.noding.SegmentString;
-import org.locationtech.jts.util.Assert;
 
 public class OverlayGraph {
 

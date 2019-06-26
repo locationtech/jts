@@ -158,7 +158,7 @@ public class OverlayEdge extends HalfEdge {
     if (currLoc == Location.NONE) return;
 
     OverlayEdge e = this;
-Debug.println("\nPropagating labels for index " + geomIndex + " : " + this);
+Debug.println("\npropagateAreaLabels geomIndex = " + geomIndex + " : " + this);
 Debug.print("BEFORE: " + e.toStringNode());
     do {
       OverlayLabel label = e.getLabel();
@@ -227,6 +227,8 @@ Debug.print("BEFORE: " + e.toStringNode());
   }
 
   public void nodeMergeSymLabels() {
+    Debug.println("\nnodeMergeSymLabels-------- ");
+    Debug.println("BEFORE: " + this.toStringNode());
     OverlayEdge e = this;
     do {
       OverlayLabel label = e.getLabel();
@@ -235,6 +237,7 @@ Debug.print("BEFORE: " + e.toStringNode());
       labelSym.mergeFlip(label);
       e = (OverlayEdge) e.oNext();
     } while (e != this);
+    Debug.println("AFTER: " + this.toStringNode());
   }
   
   private final int STATE_SCAN_FOR_INCOMING = 1;
@@ -274,7 +277,7 @@ Debug.print("BEFORE: " + e.toStringNode());
     // link edges in CCW order
     OverlayEdge endOut = this.oNextOE();
     OverlayEdge currOut = endOut;
-Debug.println("\n------  Linking... ");
+Debug.println("\n------  Linking result area edges... ");
 Debug.print("BEFORE: " + this.toStringNode());
     do {
       OverlayEdge currIn = currOut.symOE();
@@ -316,6 +319,7 @@ Debug.print("BEFORE: " + this.toStringNode());
         + dirPtStr
         + ".." + WKTWriter.format(dest)
         + " ) " + label 
+        + " Sym: " + symOE().getLabel()
         + (isInResult ? " Res" : "");
   }
 
@@ -339,7 +343,7 @@ Debug.print("BEFORE: " + this.toStringNode());
 
   private String toStringNodeEdge() {
     return "  -> (" + WKTWriter.format(dest()) 
-    + " " + getLabel() 
+    + " " + getLabel() + " Sym: " + symOE().getLabel()
     + (isInResult() ? " Res" : "-") + "/" + (symOE().isInResult() ? " Res" : "-")
     ;
   }

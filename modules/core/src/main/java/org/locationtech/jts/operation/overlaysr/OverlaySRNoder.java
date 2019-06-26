@@ -20,8 +20,10 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -29,7 +31,6 @@ import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
-import org.locationtech.jts.topology.Label;
 
 public class OverlaySRNoder {
 
@@ -45,38 +46,39 @@ public class OverlaySRNoder {
     sr.computeNodes(segStrings);
     
     //TODO: merge duplicate edges
+    @SuppressWarnings("unchecked")
     Collection<SegmentString> nodedSS = sr.getNodedSubstrings();
     return nodedSS;
   }
 
-  public void add(Geometry g, int index)
+  public void add(Geometry g, int geomIndex)
   {
     if (g.isEmpty()) return;
 
-    if (g instanceof Polygon)                 addPolygon((Polygon) g, index);
-                        // LineString also handles LinearRings
-    //else if (g instanceof LineString)         addLineString((LineString) g);
+    if (g instanceof Polygon)                 addPolygon((Polygon) g, geomIndex);
+    // LineString also handles LinearRings
+    else if (g instanceof LineString)         addLineString((LineString) g, geomIndex);
     //else if (g instanceof Point)              addPoint((Point) g);
     //else if (g instanceof MultiPoint)         addCollection((MultiPoint) g);
-    //else if (g instanceof MultiLineString)    addCollection((MultiLineString) g);
-    else if (g instanceof MultiPolygon)       addCollection((MultiPolygon) g, index);
+    else if (g instanceof MultiLineString)    addCollection((MultiLineString) g, geomIndex);
+    else if (g instanceof MultiPolygon)       addCollection((MultiPolygon) g, geomIndex);
     //else if (g instanceof GeometryCollection) addCollection((GeometryCollection) g);
-    else  throw new UnsupportedOperationException(g.getClass().getName());
+    else throw new UnsupportedOperationException(g.getClass().getName());
   }
   
-  private void addCollection(GeometryCollection gc, int index)
+  private void addCollection(GeometryCollection gc, int geomIndex)
   {
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       Geometry g = gc.getGeometryN(i);
-      add(g, index);
+      add(g, geomIndex);
     }
   }
 
-  private void addPolygon(Polygon p, int index)
+  private void addPolygon(Polygon p, int geomIndex)
   {
     addPolygonRing(
             (LinearRing) p.getExteriorRing(),
-            Location.EXTERIOR, Location.INTERIOR, index);
+            Location.EXTERIOR, Location.INTERIOR, geomIndex);
 
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
       LinearRing hole = (LinearRing) p.getInteriorRingN(i);
@@ -85,7 +87,7 @@ public class OverlaySRNoder {
       // the interior of the polygon lies on their opposite side
       // (on the left, if the hole is oriented CW)
       addPolygonRing(hole,
-          Location.INTERIOR, Location.EXTERIOR, index);
+          Location.INTERIOR, Location.EXTERIOR, geomIndex);
     }
   }
   
@@ -99,7 +101,7 @@ public class OverlaySRNoder {
    */
   private void addPolygonRing(LinearRing lr, int cwLeft, int cwRight, int index)
   {
-    // don't bother adding empty holes
+    // don't add empty holes
     if (lr.isEmpty()) return;
     
     Coordinate[] pts = round(lr.getCoordinates(), 4);
@@ -110,10 +112,25 @@ public class OverlaySRNoder {
       left = cwRight;
       right = cwLeft;
     }
-    OverlayLabel lbl = new OverlayLabel(index, left, right);
+    OverlayLabel lbl = OverlayLabel.createRingLabel(index, left, right);
     add(pts, lbl);
   }
 
+  private void addLineString(LineString line, int geomIndex)
+  {
+    // don't add empty lines
+    if (line.isEmpty()) return;
+    
+    Coordinate[] pts = round(line.getCoordinates(), 1);
+
+    if (pts.length < 2) {
+      // don't bother adding collapsed lines
+      return;
+    }
+    OverlayLabel lbl = OverlayLabel.createLineLabel(geomIndex);
+    add(pts, lbl);
+  }
+  
   private void add(Coordinate[] pts, OverlayLabel label) {
     NodedSegmentString ss = new NodedSegmentString(pts, label);
     segStrings.add(ss);

@@ -13,9 +13,17 @@ package org.locationtech.jts.operation.overlaysr;
 
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geomgraph.Position;
-import org.locationtech.jts.geomgraph.TopologyLocation;
 
 public class OverlayLabel {
+  
+  public static OverlayLabel createRingLabel(int geomIndex, int locLeft, int locRight) {
+    return new OverlayLabel(geomIndex, locLeft, locRight);
+  }
+  
+  public static OverlayLabel createLineLabel(int geomIndex) {
+    return new OverlayLabel(geomIndex);
+  }
+  
   
   private int aLocLeft = Location.NONE;
   private int aLocRight = Location.NONE;
@@ -30,6 +38,12 @@ public class OverlayLabel {
   public OverlayLabel(int geomIndex, int locLeft, int locRight)
   {
     setLocations(geomIndex, locLeft, locRight);
+  }
+
+  public OverlayLabel(int geomIndex)
+  {
+    setLocation(geomIndex, Position.ON, Location.INTERIOR);
+    setLine(geomIndex);
   }
 
   public OverlayLabel()
@@ -63,6 +77,24 @@ public class OverlayLabel {
     }
   }
 
+  private void setArea(int geomIndex) {
+    if (geomIndex == 0) {
+      aIsArea = true;
+    }
+    else {
+      bIsArea = true;
+    } 
+  }
+  
+  private void setLine(int geomIndex) {
+    if (geomIndex == 0) {
+      aIsArea = false;
+    }
+    else {
+      bIsArea = false;
+    } 
+  }
+  
   public boolean isArea() {
     return aIsArea || bIsArea;
   }
@@ -159,11 +191,17 @@ public class OverlayLabel {
 
   public void setLocationsAll(int geomIndex, int loc) {
     if (geomIndex == 0) {
+      if (aLocOn == Location.NONE && loc == Location.INTERIOR) {
+        aIsArea = true;
+      }
       aLocLeft = loc;
       aLocRight = loc;
       aLocOn = loc;
     }
     else {
+      if (bLocOn == Location.NONE && loc == Location.INTERIOR) {
+        bIsArea = true;
+      }
       bLocLeft = loc;
       bLocRight = loc;
       bLocOn = loc;
@@ -191,15 +229,19 @@ public class OverlayLabel {
     /**
      * Lines can change into Areas, but not vice-versa
      */
-    if (lbl.aIsArea) this.aIsArea = true;
-    if (aLocLeft == Location.NONE) aLocLeft = lbl.aLocLeft;
-    if (aLocRight == Location.NONE) aLocRight = lbl.aLocRight;
     if (aLocOn == Location.NONE) aLocOn = lbl.aLocOn;
+    if (lbl.aIsArea) {
+      aIsArea = true;
+      if (aLocLeft == Location.NONE) aLocLeft = lbl.aLocLeft;
+      if (aLocRight == Location.NONE) aLocRight = lbl.aLocRight;
+    }
     
-    if (lbl.bIsArea) this.bIsArea = true;
-    if (bLocLeft == Location.NONE) bLocLeft = lbl.bLocLeft;
-    if (bLocRight == Location.NONE) bLocRight = lbl.bLocRight;
     if (bLocOn == Location.NONE) bLocOn = lbl.bLocOn;
+    if (lbl.bIsArea) {
+      bIsArea = true;
+      if (bLocLeft == Location.NONE) bLocLeft = lbl.bLocLeft;
+      if (bLocRight == Location.NONE) bLocRight = lbl.bLocRight;
+    }
   }
   
   public void mergeFlip(OverlayLabel lbl)
@@ -207,15 +249,19 @@ public class OverlayLabel {
     /**
      * Lines can change into Areas, but not vice-versa
      */
-    if (lbl.aIsArea) this.aIsArea = true;
-    if (aLocLeft == Location.NONE) aLocLeft = lbl.aLocRight;
-    if (aLocRight == Location.NONE) aLocRight = lbl.aLocLeft;
     if (aLocOn == Location.NONE) aLocOn = lbl.aLocOn;
+    if (lbl.aIsArea) {
+      aIsArea = true;
+      if (aLocLeft == Location.NONE) aLocLeft = lbl.aLocRight;
+      if (aLocRight == Location.NONE) aLocRight = lbl.aLocLeft;
+    }
     
-    if (lbl.bIsArea) this.bIsArea = true;
-    if (bLocLeft == Location.NONE) bLocLeft = lbl.bLocRight;
-    if (bLocRight == Location.NONE) bLocRight = lbl.bLocLeft;
     if (bLocOn == Location.NONE) bLocOn = lbl.bLocOn;
+    if (lbl.bIsArea) {
+      bIsArea = true;
+      if (bLocLeft == Location.NONE) bLocLeft = lbl.bLocRight;
+      if (bLocRight == Location.NONE) bLocRight = lbl.bLocLeft;
+    }
   }
   
   public String toString()
@@ -235,7 +281,7 @@ public class OverlayLabel {
   private String locationString(int index) {
     StringBuilder buf = new StringBuilder();
     char lineLoc = Location.toLocationSymbol( index == 0 ? aLocOn : bLocOn );
-    if (isArea()) {
+    if (isArea(index)) {
       buf.append( Location.toLocationSymbol( index == 0 ? aLocLeft : bLocLeft ) );
       buf.append(lineLoc);
       buf.append( Location.toLocationSymbol( index == 0 ? aLocRight : bLocRight ) );

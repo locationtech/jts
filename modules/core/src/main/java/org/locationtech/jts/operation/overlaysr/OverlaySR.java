@@ -17,12 +17,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.PointLocator;
-import org.locationtech.jts.awt.PointShapeFactory.Point;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geomgraph.Label;
@@ -31,6 +31,7 @@ import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.precision.GeometryPrecisionReducer;
+import org.locationtech.jts.util.Debug;
 
 public class OverlaySR {
   /**
@@ -108,6 +109,7 @@ public class OverlaySR {
   private PrecisionModel pm;
   private boolean isOutputEdges;
   private boolean isOutputResultEdges;
+  private OverlayGraph graph;
 
   public OverlaySR(Geometry geom0, Geometry geom1, PrecisionModel pm) {
     geom = new Geometry[] { geom0, geom1 };
@@ -131,44 +133,45 @@ public class OverlaySR {
   private Geometry computeOverlay(int opCode) {
     Collection<SegmentString> edges = node();
     Collection<SegmentString> edgesMerged = merge(edges);
-    OverlayGraph graph = buildTopology(edgesMerged);
+    graph = buildTopology(edgesMerged);
     graph.markResultAreaEdges(opCode);
     graph.cancelDuplicateResultAreaEdges();
     List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
     graph.linkResultAreaEdges(resultAreaEdges);
-    //TODO: build geometries
+    
     //return toLines(edges, geomFact );
     if (isOutputEdges || isOutputResultEdges) {
       return toLines(graph, geomFact);
     }
+    
     return createResult(opCode, resultAreaEdges);
   }
 
-  
   private Geometry createResult(int opCode, List<OverlayEdge> resultAreaEdges) {
     PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
     List<Polygon> resultPolyList = polyBuilder.getPolygons();
     
-    List<LineString> resultLineList = new ArrayList<LineString>();
+    LineBuilder lineBuilder = new LineBuilder(graph, opCode, geomFact, ptLocator);
+    List<LineString> resultLineList = lineBuilder.getLines();
+
+    //List<LineString> resultLineList = new ArrayList<LineString>();
     List<Point> resultPointList = new ArrayList<Point>();
     // gather the results from all calculations into a single Geometry for the result set
     Geometry resultGeom = buildGeometry(resultPointList, resultLineList, resultPolyList, opCode);
     return resultGeom;
   }
 
-  private Geometry buildGeometry(List resultPointList, List resultLineList, List resultPolyList, int opcode) {
+  private Geometry buildGeometry(List<Point> resultPointList, List<LineString> resultLineList, List<Polygon> resultPolyList, int opcode) {
     List<Geometry> geomList = new ArrayList<Geometry>();
-// element geometries of the result are always in the order P,L,A
+    // element geometries of the result are always in the order P,L,A
     geomList.addAll(resultPointList);
     geomList.addAll(resultLineList);
     geomList.addAll(resultPolyList);
 
-//*
     if ( geomList.isEmpty() )
       return createEmptyResult(opcode, geom[0], geom[1], geomFact);
-//*/
 
-// build the most specific geometry possible
+    // build the most specific geometry possible
     return geomFact.buildGeometry(geomList);
   }
 
@@ -266,26 +269,29 @@ public class OverlaySR {
   private OverlayGraph buildTopology(Collection<SegmentString> edges) {
     OverlayGraph graph = OverlayGraph.buildGraph( edges );
     graph.computeLabelling();
-    labelIsolatedNodes(graph.getNodeEdges());
+    labelIncompleteNodes(graph.getNodeEdges());
     return graph;
   }
 
-  private void labelIsolatedNodes(Collection<OverlayEdge> collection) {
+  private void labelIncompleteNodes(Collection<OverlayEdge> collection) {
     for (OverlayEdge edge : collection) {
       if (edge.getLabel().isUnknown(0)) {
-        labelIsolatedNode(edge, 0);
+        labelIncompleteNode(edge, 0);
       }
       else if (edge.getLabel().isUnknown(1)) {
-        labelIsolatedNode(edge, 1);
+        labelIncompleteNode(edge, 1);
       }
     }
   }
 
-  private void labelIsolatedNode(OverlayEdge edge, int geomIndex) {
+  private void labelIncompleteNode(OverlayEdge edge, int geomIndex) {
+    Debug.println("\n------  labelIsolatedNode ");
+    Debug.print("BEFORE: " + edge.toStringNode());
     // TODO: use indexed locator here?
     int loc = ptLocator.locate(edge.orig(), geom[geomIndex]);
-    edge.getLabel().setLocationsAll(geomIndex, loc);
+    edge.getLabel().setLocation(geomIndex, Position.ON, loc);
     edge.nodeMergeSymLabels();
+    Debug.print("AFTER: " + edge.toStringNode());
   }
   
   private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
