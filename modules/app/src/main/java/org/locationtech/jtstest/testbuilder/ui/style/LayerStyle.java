@@ -17,6 +17,7 @@ import java.awt.Graphics2D;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.linearref.LengthIndexedLine;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
 import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
@@ -25,6 +26,8 @@ import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 public class LayerStyle implements Style  {
 
+  public static final int INIT_OFFSET_SIZE = 5;
+  
   private BasicStyle geomStyle;
   private StyleList decoratorStyle;
   private VertexStyle vertexStyle;
@@ -60,6 +63,7 @@ public class LayerStyle implements Style  {
   private CircleLineEndStyle lineCircleStyle;
   private VertexLabelStyle vertexLabelStyle;
   private boolean isOffsetLine;
+  private int offsetSize = INIT_OFFSET_SIZE;
 
   public LayerStyle(BasicStyle geomStyle) {
     this.geomStyle = geomStyle;
@@ -173,24 +177,36 @@ public class LayerStyle implements Style  {
   }
   
   public void paint(Geometry geom, Viewport viewport, Graphics2D g) throws Exception {
-    Geometry transformGeom = geom;
-    if (isOffsetLine && geom instanceof LineString) {
-      transformGeom = offsetLine(geom, 5);
-      transformGeom.setUserData(geom.getUserData());
-    }
+    Geometry transformGeom = transform(geom, viewport);
     geomStyle.paint(transformGeom, viewport, g);
     decoratorStyle.paint(transformGeom, viewport, g);
   }
 
+  private Geometry transform(Geometry geom, Viewport viewport) {
+    Geometry transformGeom = geom;
+    if (isOffsetLine && geom instanceof LineString) {
+      double offsetDistance = viewport.toModel(offsetSize);
+      transformGeom = offsetLine(geom, offsetDistance);
+      transformGeom.setUserData(geom.getUserData());
+    }
+    return transformGeom;
+  }
+
   public void setOffset(boolean show) {
     isOffsetLine = show;
-    //decoratorStyle.setEnabled(offsetLineStyle, show);
   }
   
   public boolean isOffset() {
     return isOffsetLine;
-    //return decoratorStyle.isEnabled(offsetLineStyle);
   }
+  
+  public void setOffsetSize(int offsetSize) {
+    this.offsetSize = offsetSize;
+  }
+  
+  public int getOffsetSize() {
+    return offsetSize;
+   }
   
   public void setOrientations(boolean show) {
     decoratorStyle.setEnabled(orientStyle, show);
@@ -215,8 +231,16 @@ public class LayerStyle implements Style  {
         geom.getFactory().getPrecisionModel(), bufParams
         );
     Coordinate[] pts = ocb.getOffsetCurve(geom.getCoordinates(), distance);
-    Geometry curve = geom.getFactory().createLineString(pts);
-    return curve;
+    Geometry offsetLine = geom.getFactory().createLineString(pts);
+    Geometry trimLine = trimLine(offsetLine, Math.abs(distance * 1.5) );
+    return trimLine;
+  }
+
+  private static Geometry trimLine(Geometry line, double distance) {
+    double len = line.getLength();
+    if (len < 2 * distance) return null;
+    LengthIndexedLine indLine = new LengthIndexedLine(line);
+    return indLine.extractLine(distance, len - distance);
   }
 
 

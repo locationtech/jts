@@ -40,6 +40,7 @@ import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
+import org.locationtech.jtstest.testbuilder.ui.style.LayerStyle;
 
 public class LayerStylePanel extends JPanel {
   private Layer layer;
@@ -71,6 +72,8 @@ public class LayerStylePanel extends JPanel {
   private JCheckBox cbStructure;
   private JCheckBox cbVertexLabel;
   private JCheckBox cbOffset;
+  private JSpinner spinnerOffsetSize;
+  private SpinnerNumberModel offsetSizeModel;
 
   
   public LayerStylePanel() {
@@ -95,6 +98,7 @@ public class LayerStylePanel extends JPanel {
     labelSizeModel.setValue(layer.getLayerStyle().getLabelSize());
     cbDashed.setSelected(geomStyle().isDashed());
     cbOffset.setSelected(layer.getLayerStyle().isOffset());
+    offsetSizeModel.setValue( layer.getLayerStyle().getOffsetSize() );
     cbStroked.setSelected(geomStyle().isStroked());
     cbFilled.setSelected(geomStyle().isFilled());
     cbOrient.setSelected(layer.getLayerStyle().isOrientations());
@@ -321,8 +325,20 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
-    // Leave on separate line to allow room for dash style
-    addRow("", cbDashed, cbOrient, cbStructure, cbOffset);
+    offsetSizeModel = new SpinnerNumberModel(LayerStyle.INIT_OFFSET_SIZE, -100, 100.0, 1);
+    spinnerOffsetSize = new JSpinner(offsetSizeModel);
+    spinnerOffsetSize.setMaximumSize(new Dimension(40,16));
+    spinnerOffsetSize.setAlignmentX(Component.LEFT_ALIGNMENT);
+    spinnerOffsetSize.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int size = offsetSizeModel.getNumber().intValue();
+        layer.getLayerStyle().setOffsetSize(size);
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+    
+   // Leave on separate line to allow room for dash style
+    addRow("", cbDashed, cbOrient, cbStructure, cbOffset, spinnerOffsetSize);
     //=============================================
 
     cbFilled = new JCheckBox();
