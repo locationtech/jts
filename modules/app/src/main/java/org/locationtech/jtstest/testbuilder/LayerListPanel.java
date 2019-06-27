@@ -16,6 +16,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -344,6 +345,8 @@ class LayerItemPanel extends JPanel {
     }); 
     
     swatch = LayerStyleSwatchControl.create(layer);
+    add(swatch);
+    add(Box.createRigidArea(new Dimension(4,0)));
     
     namePanel = new JPanel();
     add(namePanel);
@@ -357,8 +360,6 @@ class LayerItemPanel extends JPanel {
     //namePanel.setBorder(BORDER_HIGHLIGHT);;
     namePanel.addMouseListener(new HighlightMouseListener(this));
     
-    namePanel.add(swatch);
-    namePanel.add(Box.createRigidArea(new Dimension(4,0)));
     namePanel.add(lblName);
   }
 
@@ -403,11 +404,12 @@ class LayerStyleSwatchControl {
     ctl.setPreferredSize(dim);
     ctl.setMaximumSize(dim);
     ctl.setOpaque(true);
-    update(ctl, layer);  
+    //update(ctl, layer);  
     return ctl;
   }
 
   public static void update(JPanel ctl, Layer layer) {
+    
     Color fillClr = Color.WHITE;
     if (layer.getGeometryStyle().isFilled())
       fillClr = layer.getGeometryStyle().getFillColor();
@@ -416,6 +418,12 @@ class LayerStyleSwatchControl {
     if (layer.getGeometryStyle().getStrokeWidth() > 1)
       lineWidth = 2;
     
+    /*
+    Graphics2D gr = (Graphics2D) ctl.getGraphics();
+    gr.setColor(fillClr);
+    gr.setPaint(fillClr);
+    gr.fillRect(0, 0, 10, 10);
+*/
     ctl.setBackground( fillClr );  
     ctl.setBorder(BorderFactory.createLineBorder(layer.getGeometryStyle().getLineColor(), lineWidth));
   }
