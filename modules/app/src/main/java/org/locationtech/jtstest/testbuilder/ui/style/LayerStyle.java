@@ -33,29 +33,6 @@ public class LayerStyle implements Style  {
   private VertexStyle vertexStyle;
   private DataLabelStyle labelStyle;
 
-  private StyleList.StyleFilter vertexFilter = new StyleList.StyleFilter() {
-    public boolean isFiltered(Style style) {
-      return ! DisplayParameters.isShowingVertices();
-    }
-  };
-  
-  private StyleList.StyleFilter decorationFilter = new StyleList.StyleFilter() {
-    public boolean isFiltered(Style style) {
-      return ! DisplayParameters.isShowingOrientation();
-    }
-  };
-    
-  private StyleList.StyleFilter structureFilter = new StyleList.StyleFilter() {
-    public boolean isFiltered(Style style) {
-      return ! DisplayParameters.isShowingStructure();
-    }
-  };
-    
-  private StyleList.StyleFilter labelFilter = new StyleList.StyleFilter() {
-    public boolean isFiltered(Style style) {
-      return ! DisplayParameters.isShowingLabel();
-    }
-  };
   private StyleGroup orientStyle;
   private StyleGroup structureStyle;
   private ArrowSegmentStyle segArrowStyle;
@@ -105,11 +82,12 @@ public class LayerStyle implements Style  {
     
     // order is important here
     StyleList styleList = new StyleList();
-    styleList.add(vertexLabelStyle, vertexFilter);
-    styleList.add(vertexStyle, vertexFilter);
+    styleList.add(vertexLabelStyle);
+    styleList.add(vertexStyle);
     styleList.add(orientStyle);
     styleList.add(structureStyle);
     styleList.add(labelStyle);
+    
     styleList.setEnabled(labelStyle, false);
     styleList.setEnabled(orientStyle, false);
     styleList.setEnabled(structureStyle, false);

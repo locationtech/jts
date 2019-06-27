@@ -40,31 +40,6 @@ public class JTSTestBuilderController
     
   }
 
-  public void setShowingStructure(boolean showStructure) {
-    DisplayParameters.setShowingStructure(showStructure);
-    geometryViewChanged();
-  }
-
-  public void setShowingOrientations(boolean showingOrientations) {
-    DisplayParameters.setShowingOrientation(showingOrientations);
-    geometryViewChanged();
-  }
-
-  public void setShowVertexIndices(boolean showVertexIndices) {
-    DisplayParameters.setShowingOrientation(showVertexIndices);
-    geometryViewChanged();
-  }
-
-  public void setShowingVertices(boolean showingVertices) {
-    DisplayParameters.setShowingVertices(showingVertices);
-    geometryViewChanged();
-  }
-
-  public void setShowingLabel(boolean showLabel) {
-    DisplayParameters.setShowingLabel(showLabel);
-    geometryViewChanged();
-  }
-
   public void setFillType(int fillType) {
     DisplayParameters.setFillType(fillType);
     geometryViewChanged();
