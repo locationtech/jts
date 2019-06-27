@@ -126,6 +126,22 @@ public class OverlaySR
     this.isOutputResultEdges = isOutputResultEdges;
   }
   
+  private int resultAreaIndex(int overlayOpCode) {
+    int areaIndex = -1;
+    if (dimension(0) == 2) areaIndex = 0;
+    if (dimension(1) == 2) areaIndex = 1;
+    
+    if (areaIndex < 0) return -1;
+    
+    switch (overlayOpCode) {
+    case OverlayOp.INTERSECTION: return -1;
+    case OverlayOp.UNION: return areaIndex;
+    case OverlayOp.DIFFERENCE: return (areaIndex <= 0) ? 0 : -1;
+    case OverlayOp.SYMDIFFERENCE: return areaIndex;
+    }
+    return -1;
+  }
+  
   public Geometry getResultGeometry() {
     Geometry resultGeom = computeOverlay();
     return resultGeom;
@@ -163,7 +179,7 @@ public class OverlaySR
     PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
     List<Polygon> resultPolyList = polyBuilder.getPolygons();
     
-    LineBuilder lineBuilder = new LineBuilder(graph, opCode, geomFact, ptLocator);
+    LineBuilder lineBuilder = new LineBuilder(graph, opCode, geomFact, resultAreaIndex(opCode), ptLocator);
     List<LineString> resultLineList = lineBuilder.getLines();
 
     //List<LineString> resultLineList = new ArrayList<LineString>();

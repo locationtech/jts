@@ -18,19 +18,23 @@ import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geomgraph.Position;
+import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.topology.Label;
 
 public class LineBuilder {
-
+  
   private GeometryFactory geometryFactory;
   private OverlayGraph graph;
   private int opCode;
+  private int resultAreaIndex;
 
-  public LineBuilder(OverlayGraph graph, int opCode, GeometryFactory geomFact, PointLocator ptlocator) {
+  public LineBuilder(OverlayGraph graph, int opCode, GeometryFactory geomFact, int resultAreaIndex, PointLocator ptlocator) {
     this.graph = graph;
     this.opCode = opCode;
     this.geometryFactory = geomFact;
+    this.resultAreaIndex = resultAreaIndex;
   }
 
   public List<LineString> getLines() {
@@ -62,12 +66,21 @@ public class LineBuilder {
     if (edge.isInResult() || edge.symOE().isInResult()) return false;
     OverlayLabel lbl = edge.getLabel();
     if (! lbl.isLine()) return false;
-
+    if (isCoveredByResultArea(lbl)) return false;
+    
     boolean isInResult = OverlaySR.isResultOfOp(
         lbl.getLocation(0,  Position.ON), 
         lbl.getLocation(1,  Position.ON), 
         opCode);
     return isInResult;
+  }
+
+  private boolean isCoveredByResultArea(OverlayLabel lbl) {
+    // Note: probably only one side needs to be checked?
+    boolean isCovered =
+        lbl.getLocation(resultAreaIndex, Position.LEFT) == Location.INTERIOR
+        || lbl.getLocation(resultAreaIndex, Position.RIGHT) == Location.INTERIOR;
+    return isCovered;
   }
 
   private void markVisited(OverlayEdge edge) {
