@@ -20,6 +20,7 @@ import java.awt.geom.Point2D;
 import org.locationtech.jts.awt.FontGlyphReader;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.OrdinateFormat;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jtstest.testbuilder.ui.GraphicsUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
@@ -88,7 +89,7 @@ public class VertexLabelStyle  implements Style
       if (i > 0 && isTooClose(lastDrawnPV, pV)) continue;
       lastDrawnPV.setLocation(pV);
       
-      String label = WKTWriter.format(pt);
+      String label = format(pt);
       
       int dir = 2;  // Use N for points
       if (len > 1) {
@@ -103,6 +104,10 @@ public class VertexLabelStyle  implements Style
       GraphicsUtil.drawStringAlign(g, label, (int) pV.getX(), (int) pV.getY(),
           DIR_ALIGN[dir][0], DIR_ALIGN[dir][1], LABEL_OFFSET );
     }
+  }
+  
+  private static String format(Coordinate p) {
+    return OrdinateFormat.DEFAULT.format(p.x) + "," + OrdinateFormat.DEFAULT.format(p.y);
   }
   
   private boolean isTooClose(Point2D p0, Point2D p1) {
