@@ -22,57 +22,12 @@ import org.locationtech.jts.noding.SegmentString;
 
 public class OverlayGraph {
 
-  public static OverlayGraph buildGraph(Collection<SegmentString> edges) {
-    OverlayGraph graph = new OverlayGraph();
-    for (SegmentString ss : edges) {
-      graph.addEdge(ss);
-    }
-    return graph;
-  }
-
   private List<OverlayEdge> edges = new ArrayList<OverlayEdge>();
   private Map<Coordinate, OverlayEdge> nodeMap = new HashMap<Coordinate, OverlayEdge>();
   
   public OverlayGraph() {
   }
 
-  /**
-   * Creates a single HalfEdge.
-   * Override to use a different HalfEdge subclass.
-   * @param lbl 
-   * 
-   * @param orig the origin location
-   * @param direction the direction along the segment string - true is forward
-   * @return a new HalfEdge with the given origin
-   */
-  protected OverlayEdge createEdge(SegmentString ss, OverlayLabel lbl, boolean direction)
-  {
-    Coordinate origin;
-    Coordinate dirPt;
-    if (direction) {
-      origin = ss.getCoordinate(0);
-      dirPt = ss.getCoordinate(1);
-    }
-    else {
-      int ilast = ss.size() - 1;
-      origin = ss.getCoordinate(ilast);
-      dirPt = ss.getCoordinate(ilast-1);
-    }
-    return new OverlayEdge(origin, dirPt, direction, lbl, ss);
-  }
-
-  private OverlayEdge create(SegmentString ss)
-  {
-    // Note that the same label is used for each half-edge
-    OverlayLabel lbl = new OverlayLabel((OverlayLabel) ss.getData());
-    OverlayEdge e0 = createEdge(ss, lbl, true);
-    
-    OverlayLabel lblOpp = lbl.createFlipped();
-    OverlayEdge e1 = createEdge(ss, lblOpp, false);
-    e0.init(e1);
-    return e0;
-  }
-  
   /**
    * Adds an edge between the coordinates orig and dest
    * to this graph.
@@ -85,10 +40,20 @@ public class OverlayGraph {
    * 
    * @see #isValidEdge(Coordinate, Coordinate)
    */
-  public OverlayEdge addEdge(SegmentString ss) {
+  public OverlayEdge addEdge(Coordinate[] pts, OverlayLabel lbl) {
     //if (! isValidEdge(orig, dest)) return null;
-    OverlayEdge e = insert(ss);
+    OverlayEdge e = createEdges(pts, lbl);
+    insert(e);
+    insert((OverlayEdge) e.sym());
     return e;
+  }
+  
+  private OverlayEdge createEdges(Coordinate[] pts, OverlayLabel lbl)
+  {
+    OverlayEdge e0 = OverlayEdge.createEdge(pts, lbl.copy(), true);
+    OverlayEdge e1 = OverlayEdge.createEdge(pts, lbl.copyFlip(), false);
+    e0.init(e1);
+    return e0;
   }
 
   /**
@@ -101,22 +66,6 @@ public class OverlayGraph {
   public static boolean isValidEdge(Coordinate orig, Coordinate dest) {
     int cmp = dest.compareTo(orig);
     return cmp != 0;
-  }
-
-  /**
-   * Inserts an edge not already present into the graph.
-   * 
-   * @param orig the edge origin location
-   * @param dest the edge destination location
-   * @param eAdj an existing edge with same orig (if any)
-   * @return the created edge
-   */
-  private OverlayEdge insert(SegmentString ss) {
-    // edge does not exist, so create it and insert in graph
-    OverlayEdge e = create(ss);
-    insert(e);
-    insert((OverlayEdge) e.sym());
-    return e;
   }
 
   private void insert(OverlayEdge e) {

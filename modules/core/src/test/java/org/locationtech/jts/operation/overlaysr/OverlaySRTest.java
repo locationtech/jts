@@ -90,6 +90,14 @@ public class OverlaySRTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
+  public void testBoxLineUnion() {
+    Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
+    Geometry b = read("LINESTRING (50 150, 150 150)");
+    Geometry expected = read("GEOMETRYCOLLECTION (LINESTRING (50 150, 100 150), POLYGON ((100 200, 200 200, 200 100, 100 100, 100 150, 100 200)))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
 
   
   

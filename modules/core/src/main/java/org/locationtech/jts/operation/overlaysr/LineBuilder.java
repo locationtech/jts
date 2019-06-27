@@ -59,8 +59,10 @@ public class LineBuilder {
   }
 
   private boolean isResultLine(OverlayEdge edge) {
+    if (edge.isInResult() || edge.symOE().isInResult()) return false;
     OverlayLabel lbl = edge.getLabel();
     if (! lbl.isLine()) return false;
+
     boolean isInResult = OverlaySR.isResultOfOp(
         lbl.getLocation(0,  Position.ON), 
         lbl.getLocation(1,  Position.ON), 

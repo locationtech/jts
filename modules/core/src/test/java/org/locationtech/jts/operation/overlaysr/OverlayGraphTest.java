@@ -40,18 +40,13 @@ public class OverlayGraphTest extends GeometryTestCase {
   }
 
   private void checkCCW(OverlayEdge e) {
-    boolean isCCW = e.isCCWAtOrigin();
-    assertTrue(isCCW);
-    //, "Found non-CCW edges around node at " + this.toStringNode()
+    boolean isCCW = e.isCCW();
+    assertTrue("Found non-CCW edges around node " + e.toStringNode(), isCCW); 
   }
 
   private OverlayEdge addEdge(OverlayGraph graph, double... ord) {
-    SegmentString ss = createSegmentString(toCoordinates(ord));
-    return graph.addEdge(ss);
-  }
-
-  private SegmentString createSegmentString(Coordinate[] pts) {
-    return new BasicSegmentString(pts, new OverlayLabel());
+    Coordinate[] pts = toCoordinates(ord);
+    return graph.addEdge(pts, new OverlayLabel());
   }
 
   private Coordinate[] toCoordinates(double[] ord) {

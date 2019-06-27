@@ -320,10 +320,10 @@ public class HalfEdge {
     sym.setNext(e);
     e.sym().setNext(save);
     //Assert.isTrue(orig.equals2D( e.orig() ));
-    Assert.isTrue(this.isCCWAtOrigin(), "Found non-CCW edges inserting " + e + " into " + this.toStringNode());
+    Assert.isTrue(this.isCCW(), "Found non-CCW edges inserting " + e + " into " + this.toStringNode());
   }
 
-  boolean isCCWAtOrigin() {
+  boolean isCCW() {
     // degree <= 2 has no orientation
     if (degree() <= 2) return true;
     

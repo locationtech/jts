@@ -17,15 +17,37 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.TopologyException;
-import org.locationtech.jts.geomgraph.DirectedEdge;
-import org.locationtech.jts.geomgraph.Label;
 import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.Debug;
 
 public class OverlayEdge extends HalfEdge {
+
+  /**
+   * Creates a single OverlayEdge.
+   * 
+   * @param pts
+   * @param lbl 
+   * @param direction
+   * 
+   * @return a new edge based on the given coordinates and direction
+   */
+  public static OverlayEdge createEdge(Coordinate[] pts, OverlayLabel lbl, boolean direction)
+  {
+    Coordinate origin;
+    Coordinate dirPt;
+    if (direction) {
+      origin = pts[0];
+      dirPt = pts[1];
+    }
+    else {
+      int ilast = pts.length - 1;
+      origin = pts[ilast];
+      dirPt = pts[ilast-1];
+    }
+    return new OverlayEdge(origin, dirPt, direction, lbl, pts);
+  }
 
   /**
    * Gets a {@link Comparator} which sorts by the origin Coordinates.
@@ -41,7 +63,7 @@ public class OverlayEdge extends HalfEdge {
     };
   }
   
-  private SegmentString segString;
+  private Coordinate[] pts;
   
   /**
    * <code>true</code> indicates direction is forward along segString
@@ -62,11 +84,11 @@ public class OverlayEdge extends HalfEdge {
 
   private EdgeRing edgeRing;
 
-  public OverlayEdge(Coordinate orig, Coordinate dirPt, boolean direction, OverlayLabel label, SegmentString segString) {
+  public OverlayEdge(Coordinate orig, Coordinate dirPt, boolean direction, OverlayLabel label, Coordinate[] pts) {
     super(orig);
     this.dirPt = dirPt;
     this.direction = direction;
-    this.segString = segString;
+    this.pts = pts;
     this.label = label;
   }
 
@@ -86,11 +108,10 @@ public class OverlayEdge extends HalfEdge {
   }
   
   public Coordinate[] getCoordinates() {
-    return segString.getCoordinates();
+    return pts;
   }
   
   public Coordinate[] getCoordinatesOriented() {
-    Coordinate[] pts = segString.getCoordinates();
     if (direction) {
       return pts;
     }
@@ -324,7 +345,7 @@ Debug.print("BEFORE: " + this.toStringNode());
   public String toString() {
     Coordinate orig = orig();
     Coordinate dest = dest();
-    String dirPtStr = (segString.size() > 2)
+    String dirPtStr = (pts.length > 2)
         ? ", " + WKTWriter.format(directionPt())
             : "";
     return "OE( "+ WKTWriter.format(orig)

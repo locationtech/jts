@@ -26,11 +26,13 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geomgraph.Label;
+import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.util.Debug;
 
-public class OverlaySR {
+public class OverlaySR 
+{
   /**
    * Tests whether a point with a given topological {@link Label}
    * relative to two geometries is contained in 
@@ -43,13 +45,13 @@ public class OverlaySR {
    * @param opCode the code for the overlay operation to test
    * @return true if the label locations correspond to the overlayOpCode
    */
-  public static boolean isResultOfOp(OverlayLabel label, int opCode)
+  public static boolean isResultOfOpPoint(OverlayLabel label, int opCode)
   {
     int loc0 = label.getLocation(0);
     int loc1 = label.getLocation(1);
     return isResultOfOp(loc0, loc1, opCode);
   }
-
+  
   /**
    * Tests whether a point with given {@link Location}s
    * relative to two geometries is contained in 
@@ -99,10 +101,6 @@ public class OverlaySR {
     Geometry geomOv = gov.getResultGeometry();
     return geomOv;
   }
-  
-  private static final int DIM_UNKNOWN = -1;
-  private static final int DIM_LINE = Dimension.L;
-  private static final int DIM_AREA = Dimension.A;
 
   private static final PointLocator ptLocator = new PointLocator();
   private Geometry[] geom;
@@ -281,9 +279,17 @@ public class OverlaySR {
   }
 
   private OverlayGraph buildTopology(Collection<SegmentString> edges) {
-    OverlayGraph graph = OverlayGraph.buildGraph( edges );
+    OverlayGraph graph = buildGraph( edges );
     graph.computeLabelling();
     labelIncompleteNodes(graph.getNodeEdges());
+    return graph;
+  }
+
+  public static OverlayGraph buildGraph(Collection<SegmentString> edges) {
+    OverlayGraph graph = new OverlayGraph();
+    for (SegmentString ss : edges) {
+      graph.addEdge(ss.getCoordinates(), (OverlayLabel) ss.getData());
+    }
     return graph;
   }
 
@@ -302,7 +308,7 @@ public class OverlaySR {
     Debug.println("\n------  labelIsolatedNode ");
     Debug.print("BEFORE: " + edge.toStringNode());
     int loc = locatePoint(edge.orig(), geomIndex);
-    if (DIM_LINE == dimension(geomIndex)) {
+    if (OverlayLabel.DIM_LINE == dimension(geomIndex)) {
       edge.getLabel().setLocationLine(geomIndex, loc);
     }
     else { // assume DIM_AREA

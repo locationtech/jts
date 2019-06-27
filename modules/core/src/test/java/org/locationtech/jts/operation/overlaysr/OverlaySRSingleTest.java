@@ -27,10 +27,16 @@ public class OverlaySRSingleTest extends GeometryTestCase {
   public OverlaySRSingleTest(String name) { super(name); }
   
   
+  public void testNestedShellsIntersection() {
+    Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
+    Geometry b = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
+    Geometry expected = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
   
   
-  
-  public void testBoxLineIntersection() {
+  public void XtestBoxLineIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("LINESTRING (50 150, 150 150)");
     Geometry expected = read("LINESTRING (100 150, 150 150)");
