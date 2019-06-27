@@ -105,7 +105,7 @@ public class LayerStyle implements Style  {
     styleList.add(vertexStyle, vertexFilter);
     styleList.add(orientStyle);
     styleList.add(structureStyle);
-    styleList.add(labelStyle, labelFilter);
+    styleList.add(labelStyle);
     styleList.setEnabled(labelStyle, false);
     styleList.setEnabled(orientStyle, false);
     styleList.setEnabled(structureStyle, false);
@@ -175,7 +175,8 @@ public class LayerStyle implements Style  {
   public void paint(Geometry geom, Viewport viewport, Graphics2D g) throws Exception {
     Geometry transformGeom = geom;
     if (isOffsetLine && geom instanceof LineString) {
-      transformGeom = offsetCurve(geom, 10);
+      transformGeom = offsetLine(geom, 5);
+      transformGeom.setUserData(geom.getUserData());
     }
     geomStyle.paint(transformGeom, viewport, g);
     decoratorStyle.paint(transformGeom, viewport, g);
@@ -207,7 +208,7 @@ public class LayerStyle implements Style  {
     return decoratorStyle.isEnabled(structureStyle);
   }
   
-  static Geometry offsetCurve(Geometry geom, double distance)
+  static Geometry offsetLine(Geometry geom, double distance)
   {
     BufferParameters bufParams = new BufferParameters();
     OffsetCurveBuilder ocb = new OffsetCurveBuilder(
