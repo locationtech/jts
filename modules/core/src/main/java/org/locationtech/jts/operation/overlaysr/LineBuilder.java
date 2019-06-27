@@ -15,19 +15,62 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.PointLocator;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geomgraph.Position;
+import org.locationtech.jts.topology.Label;
 
 public class LineBuilder {
 
   private GeometryFactory geometryFactory;
+  private OverlayGraph graph;
+  private int opCode;
 
   public LineBuilder(OverlayGraph graph, int opCode, GeometryFactory geomFact, PointLocator ptlocator) {
+    this.graph = graph;
+    this.opCode = opCode;
     this.geometryFactory = geomFact;
   }
 
   public List<LineString> getLines() {
-    return new ArrayList<LineString>();
+    ArrayList<LineString> lines = new ArrayList<LineString>();
+    addResultLines(lines);
+    return lines;
+  }
+
+  private void addResultLines(ArrayList<LineString> lines) {
+    List<OverlayEdge> edges = graph.getEdges();
+    for (OverlayEdge edge : edges) {
+      if (edge.isVisited()) continue;
+      if (! isResultLine(edge)) continue;
+      
+      LineString line = createLine(edge);
+      lines.add(line);
+      markVisited(edge);
+    }
+  }
+
+  private LineString createLine(OverlayEdge edge) {
+    OverlayEdge forward = edge.isForward() ? edge : edge.symOE();
+    Coordinate[] pts = forward.getCoordinates();
+    LineString line = geometryFactory.createLineString(pts);
+    return line;
+  }
+
+  private boolean isResultLine(OverlayEdge edge) {
+    OverlayLabel lbl = edge.getLabel();
+    if (! lbl.isLine()) return false;
+    boolean isInResult = OverlaySR.isResultOfOp(
+        lbl.getLocation(0,  Position.ON), 
+        lbl.getLocation(1,  Position.ON), 
+        opCode);
+    return isInResult;
+  }
+
+  private void markVisited(OverlayEdge edge) {
+    edge.setVisited(true);
+    edge.symOE().setVisited(true);
   }
 
 }

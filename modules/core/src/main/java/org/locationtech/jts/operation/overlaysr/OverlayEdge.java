@@ -138,81 +138,87 @@ public class OverlayEdge extends HalfEdge {
    * Scan around node CCW and propagate labels until fully populated.
    * @param node node to compute labelling for
    */
-  public void computeLabelling() {
-    propagateAreaLabels(0);
-    propagateAreaLabels(1);
-    nodeMergeSymLabels();
+  public void nodeComputeLabelling() {
+    nodePropagateAreaLabels(0);
+    nodePropagateAreaLabels(1);
+    
+    // this now is not needed - done during propagation
+    //nodeMergeSymLabels();
   }
 
   /**
-   * Scan around node CCW and propagate labels for given geometry index
-   * until fully populated.
+   * Scans around a node CCW, propagating the labels
+   * for a given area geometry to all edges (and their sym)
+   * with unknown locations for that geometry.
    * 
-   * @param geomIndex index of the geometry to propagate
+   * @param geomIndex the geometry to propagate locations for
    */
-  private void propagateAreaLabels(int geomIndex) {
-   // initialize currLoc to location of last L side (if any)
-   int currLoc = findLocStart(geomIndex);
+  private void nodePropagateAreaLabels(int geomIndex) {
+    OverlayEdge eStart = nodeFindPropStartEdge(geomIndex);
+    // no labelled edge found, so nothing to propagate
+    if ( eStart == null )
+      return;
+    
+    // initialize currLoc to location of L side
+    int currLoc = eStart.getLabel().getLocation(geomIndex, Position.LEFT);
+    OverlayEdge e = eStart.oNextOE();
 
-    // no labelled sides found, so nothing to propagate
-    if (currLoc == Location.NONE) return;
-
-    OverlayEdge e = this;
-Debug.println("\npropagateAreaLabels geomIndex = " + geomIndex + " : " + this);
-Debug.print("BEFORE: " + e.toStringNode());
+    Debug.println("\npropagateAreaLabels geomIndex = " + geomIndex + " : " + eStart);
+    Debug.print("BEFORE: " + eStart.toStringNode());
+    
     do {
       OverlayLabel label = e.getLabel();
-      // set null ON values to be in current location
-      if (! label.hasLocation(geomIndex, Position.ON))
-          label.setLocation(geomIndex, Position.ON, currLoc);
-      // set side labels (if any)
-      if (label.isArea()) {
-        int leftLoc   = label.getLocation(geomIndex, Position.LEFT);
-        int rightLoc  = label.getLocation(geomIndex, Position.RIGHT);
-        // if there is a right location, that is the next location to propagate
-        if (rightLoc != Location.NONE) {
-//Debug.print(rightLoc != currLoc, this);
-          if (rightLoc != currLoc) {
-            Debug.println("side location conflict: " 
-          + Location.toLocationSymbol(rightLoc) + " <> " + Location.toLocationSymbol(currLoc) 
-          + " for " + e);
-            throw new TopologyException("side location conflict", e.getCoordinate());
-          }
-          if (leftLoc == Location.NONE) {
-            Assert.shouldNeverReachHere("found single null side (at " + e.getCoordinate() + ")");
-          }
-          currLoc = leftLoc;
+      /**
+       * If location is unknown 
+       * they are all set to current location
+       */
+      if ( ! label.hasLocation(geomIndex) ) {
+        e.setLocationAreaBoth(geomIndex, currLoc);
+      }
+      else {
+        /**
+         *  Location is known, so update curr loc
+         *  (which may change moving from R to L across the edge
+         */
+        int locRight = e.getLabel().getLocation(geomIndex, Position.RIGHT);
+        if (locRight != currLoc) {
+          Debug.println("side location conflict: edge R loc " 
+        + Location.toLocationSymbol(locRight) + " <>  curr loc " + Location.toLocationSymbol(currLoc) 
+        + " for " + e);
+          throw new TopologyException("side location conflict", e.getCoordinate());
         }
-        else {
-          /** 
-           * RHS is null - LHS must be null too.
-           * This must be an edge from the other geometry, which has no location
-           * labelling for this geometry.  This edge must lie wholly inside or outside
-           * the other geometry (which is determined by the current location).
-           * Assign both sides to be the current location.
-           */
-          Assert.isTrue(label.getLocation(geomIndex, Position.LEFT) == Location.NONE, "found single null side");
-          label.setLocationBothSides(geomIndex, currLoc);
+        int locLeft = e.getLabel().getLocation(geomIndex, Position.LEFT);
+        if (locLeft == Location.NONE) {
+          Assert.shouldNeverReachHere("found single null side at " + e);
         }
+        currLoc = locLeft;
+      }
+      e = e.oNextOE();
+    } while (e != eStart);
+    Debug.print("AFTER: " + eStart.toStringNode());
+  }
+  
+  public void setLocationAreaBoth(int geomIndex, int loc) {
+    getLabel().setLocationArea(geomIndex, loc, loc, loc);
+    symOE().getLabel().setLocationArea(geomIndex, loc, loc, loc);
+  }
+
+  /**
+   * Finds a node edge which has a labelling for this geom.
+   * 
+   * @param geomIndex
+   * @return labelled edge, or null if no edges are labelled
+   */
+  private OverlayEdge nodeFindPropStartEdge(int geomIndex) {
+    OverlayEdge e = this;
+    do {
+      OverlayLabel label = e.getLabel();
+      if (label.hasLocation(geomIndex)) {
+        return e;
       }
       e = (OverlayEdge) e.oNext();
     } while (e != this);
-    Debug.print("AFTER: " + e.toStringNode());
-  }
-
-  private int findLocStart(int geomIndex) {
-    int locStart = Location.NONE;
-    // Edges are stored in CCW order around the node.
-    // As we move around the ring we move from the R to the L side of the edge
-    OverlayEdge e = this;
-    do {
-      OverlayLabel label = e.getLabel();
-      if (label.isArea(geomIndex) 
-          && label.hasLocation(geomIndex, Position.LEFT))
-        locStart = label.getLocation(geomIndex, Position.LEFT);
-      e = (OverlayEdge) e.oNext();
-    } while (e != this);
-    return locStart;
+    return null;
   }
 
   public void markInResultArea(int overlayOpCode) {
@@ -231,17 +237,23 @@ Debug.print("BEFORE: " + e.toStringNode());
     Debug.println("BEFORE: " + this.toStringNode());
     OverlayEdge e = this;
     do {
-      OverlayLabel label = e.getLabel();
-      OverlayLabel labelSym = ((OverlayEdge) e.sym()).getLabel();
-      label.mergeFlip(labelSym);
-      labelSym.mergeFlip(label);
+      e.mergeSymLabels();
       e = (OverlayEdge) e.oNext();
     } while (e != this);
     Debug.println("AFTER: " + this.toStringNode());
   }
+
+  public void mergeSymLabels() {
+    OverlayLabel label = getLabel();
+    OverlayLabel labelSym = symOE().getLabel();
+    label.mergeFlip(labelSym);
+    labelSym.mergeFlip(label);
+  }
   
   private final int STATE_SCAN_FOR_INCOMING = 1;
   private final int STATE_LINK_TO_OUTGOING = 2;
+
+  private boolean isVisited;
   
   /**
    * Traverses the star of OverlayEdges around this node
@@ -346,6 +358,14 @@ Debug.print("BEFORE: " + this.toStringNode());
     + " " + getLabel() + " Sym: " + symOE().getLabel()
     + (isInResult() ? " Res" : "-") + "/" + (symOE().isInResult() ? " Res" : "-")
     ;
+  }
+
+  public boolean isVisited() {
+    return isVisited;
+  }
+  
+  public void setVisited(boolean b) {
+    isVisited = true;
   }
 
 }

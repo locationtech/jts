@@ -112,7 +112,7 @@ public class OverlaySRNoder {
       left = cwRight;
       right = cwLeft;
     }
-    OverlayLabel lbl = OverlayLabel.createRingLabel(index, left, right);
+    OverlayLabel lbl = OverlayLabel.createAreaLabel(index, left, right);
     add(pts, lbl);
   }
 

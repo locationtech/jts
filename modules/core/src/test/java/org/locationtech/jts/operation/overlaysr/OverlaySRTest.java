@@ -85,7 +85,7 @@ public class OverlaySRTest extends GeometryTestCase {
   public void testBoxLineIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("LINESTRING (50 150, 150 150)");
-    Geometry expected = read("LINESTRING (50 150, 150 150)");
+    Geometry expected = read("LINESTRING (100 150, 150 150)");
     Geometry actual = intersection(a, b, 1);
     checkEqual(expected, actual);
   }
@@ -95,11 +95,11 @@ public class OverlaySRTest extends GeometryTestCase {
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlayOp(a, b, pm, OverlayOp.UNION);
+    return OverlaySR.overlay(a, b, pm, OverlayOp.UNION);
   }
   
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlayOp(a, b, pm, OverlayOp.INTERSECTION);
+    return OverlaySR.overlay(a, b, pm, OverlayOp.INTERSECTION);
   }
 }

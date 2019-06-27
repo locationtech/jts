@@ -14,36 +14,52 @@ package org.locationtech.jts.operation.overlaysr;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geomgraph.Position;
 
+/**
+ * A label for an {@link OverlayEdge} which records
+ * the topological information for the edge
+ * in its {@link OverlayGraph}.
+ * 
+ * A label contains the topological {@link Location}s for 
+ * the two overlay input geometries.
+ * An input geometry may be either a Line or an Area.
+ * In both cases, the label locations are populated
+ * with the locations for the edge {@link Position}s
+ * once they are computed by topological evaluation.
+ * The label also records the dimension of each geometry.
+ * 
+ * @author mdavis
+ *
+ */
 public class OverlayLabel {
   
-  public static OverlayLabel createRingLabel(int geomIndex, int locLeft, int locRight) {
+  public static OverlayLabel createAreaLabel(int geomIndex, int locLeft, int locRight) {
     return new OverlayLabel(geomIndex, locLeft, locRight);
   }
   
   public static OverlayLabel createLineLabel(int geomIndex) {
-    return new OverlayLabel(geomIndex);
+    return new OverlayLabel(geomIndex, Location.INTERIOR);
   }
   
+  private static int LOC_UNKNOWN = Location.NONE;
   
-  private int aLocLeft = Location.NONE;
-  private int aLocRight = Location.NONE;
-  private int aLocOn = Location.NONE;
+  private int aLocLeft = LOC_UNKNOWN;
+  private int aLocRight = LOC_UNKNOWN;
+  private int aLocOn = LOC_UNKNOWN;
   private boolean aIsArea = false;
   
-  private int bLocLeft = Location.NONE;
-  private int bLocRight = Location.NONE;
-  private int bLocOn = Location.NONE;
-  private boolean bIsArea = false;;
+  private int bLocLeft = LOC_UNKNOWN;
+  private int bLocRight = LOC_UNKNOWN;
+  private int bLocOn = LOC_UNKNOWN;
+  private boolean bIsArea = false;
   
   public OverlayLabel(int geomIndex, int locLeft, int locRight)
   {
-    setLocations(geomIndex, locLeft, locRight);
+    setLocationArea(geomIndex, locLeft, locRight);
   }
 
-  public OverlayLabel(int geomIndex)
+  public OverlayLabel(int geomIndex, int locOn)
   {
-    setLocation(geomIndex, Position.ON, Location.INTERIOR);
-    setLine(geomIndex);
+    setLocationLine(geomIndex, locOn);
   }
 
   public OverlayLabel()
@@ -62,21 +78,41 @@ public class OverlayLabel {
     this.bIsArea = lbl.bIsArea;
   }
 
-  private void setLocations(int geomIndex, int locLeft, int locRight) {
+  public void setLocationArea(int geomIndex, int locLeft, int locRight) {
+    setLocationArea(geomIndex, Location.BOUNDARY,locLeft, locRight);
+  }
+
+  public void setLocationArea(int geomIndex, int locOn, int locLeft, int locRight) {
     if (geomIndex == 0) {
       aLocLeft = locLeft;
       aLocRight = locRight;
-      aLocOn = Location.BOUNDARY;
+      aLocOn = locOn;
       aIsArea = true;
     }
     else {
       bLocLeft = locLeft;
       bLocRight = locRight;
-      bLocOn = Location.BOUNDARY;
+      bLocOn = locOn;
       bIsArea = true;
     }
   }
 
+  public void setLocationLine(int geomIndex, int loc) {
+    if (geomIndex == 0) {
+      aLocOn = loc;
+      aLocLeft = Location.EXTERIOR;
+      aLocRight = Location.EXTERIOR;
+      aIsArea = false;
+    }
+    else {
+      bLocOn = loc;
+      bLocLeft = Location.EXTERIOR;
+      bLocRight = Location.EXTERIOR;
+      bIsArea = false;
+    }
+  }
+
+  /*
   private void setArea(int geomIndex) {
     if (geomIndex == 0) {
       aIsArea = true;
@@ -93,6 +129,18 @@ public class OverlayLabel {
     else {
       bIsArea = false;
     } 
+  }
+  */
+  
+  public boolean isLine(int geomIndex) {
+    if (geomIndex == 0) {
+      return ! aIsArea;
+    }
+    return ! bIsArea;
+  }
+
+  public boolean isLine() {
+    return ! aIsArea || ! bIsArea;
   }
   
   public boolean isArea() {
@@ -119,10 +167,13 @@ public class OverlayLabel {
   }
 
   boolean isUnknown(int geomIndex) {
+    /*
     if (geomIndex == 0) {
-      return aLocLeft == Location.NONE && aLocRight == Location.NONE && aLocOn == Location.NONE;
+      return aLocLeft == LOC_UNKNOWN && aLocRight == LOC_UNKNOWN && aLocOn == LOC_UNKNOWN;
     }
-    return bLocLeft == Location.NONE && bLocRight == Location.NONE && bLocOn == Location.NONE;
+    return bLocLeft == LOC_UNKNOWN && bLocRight == LOC_UNKNOWN && bLocOn == LOC_UNKNOWN;
+    */
+    return ! hasLocation(geomIndex);
   }
 
   public int getLocation(int geomIndex, int position) {
@@ -138,7 +189,7 @@ public class OverlayLabel {
       case Position.RIGHT: return bLocRight;
       case Position.ON: return bLocOn;
     }
-    return Location.NONE;
+    return LOC_UNKNOWN;
   }
 
   public int getLocation(int geomIndex) {
@@ -150,17 +201,17 @@ public class OverlayLabel {
 
   public boolean hasLocation(int geomIndex) {
     if (geomIndex == 0) {
-      return aLocLeft != Location.NONE
-          || aLocRight != Location.NONE
-          || aLocOn != Location.NONE;
+      return aLocLeft != LOC_UNKNOWN
+          || aLocRight != LOC_UNKNOWN
+          || aLocOn != LOC_UNKNOWN;
     }
-    return bLocLeft != Location.NONE
-        || bLocRight != Location.NONE
-        || bLocOn != Location.NONE;
+    return bLocLeft != LOC_UNKNOWN
+        || bLocRight != LOC_UNKNOWN
+        || bLocOn != LOC_UNKNOWN;
   }
 
   public boolean hasLocation(int geomIndex, int position) {
-    return Location.NONE != getLocation(geomIndex, position);
+    return LOC_UNKNOWN != getLocation(geomIndex, position);
   }
   
   public void setLocation(int geomIndex, int position, int location) {
@@ -191,7 +242,7 @@ public class OverlayLabel {
 
   public void setLocationsAll(int geomIndex, int loc) {
     if (geomIndex == 0) {
-      if (aLocOn == Location.NONE && loc == Location.INTERIOR) {
+      if (aLocOn == LOC_UNKNOWN && loc == Location.INTERIOR) {
         aIsArea = true;
       }
       aLocLeft = loc;
@@ -199,7 +250,7 @@ public class OverlayLabel {
       aLocOn = loc;
     }
     else {
-      if (bLocOn == Location.NONE && loc == Location.INTERIOR) {
+      if (bLocOn == LOC_UNKNOWN && loc == Location.INTERIOR) {
         bIsArea = true;
       }
       bLocLeft = loc;
@@ -229,39 +280,30 @@ public class OverlayLabel {
     /**
      * Lines can change into Areas, but not vice-versa
      */
-    if (aLocOn == Location.NONE) aLocOn = lbl.aLocOn;
+    if (aLocOn == LOC_UNKNOWN) aLocOn = lbl.aLocOn;
     if (lbl.aIsArea) {
       aIsArea = true;
-      if (aLocLeft == Location.NONE) aLocLeft = lbl.aLocLeft;
-      if (aLocRight == Location.NONE) aLocRight = lbl.aLocRight;
+      if (aLocLeft == LOC_UNKNOWN) aLocLeft = lbl.aLocLeft;
+      if (aLocRight == LOC_UNKNOWN) aLocRight = lbl.aLocRight;
     }
     
-    if (bLocOn == Location.NONE) bLocOn = lbl.bLocOn;
+    if (bLocOn == LOC_UNKNOWN) bLocOn = lbl.bLocOn;
     if (lbl.bIsArea) {
       bIsArea = true;
-      if (bLocLeft == Location.NONE) bLocLeft = lbl.bLocLeft;
-      if (bLocRight == Location.NONE) bLocRight = lbl.bLocRight;
+      if (bLocLeft == LOC_UNKNOWN) bLocLeft = lbl.bLocLeft;
+      if (bLocRight == LOC_UNKNOWN) bLocRight = lbl.bLocRight;
     }
   }
   
   public void mergeFlip(OverlayLabel lbl)
   {
-    /**
-     * Lines can change into Areas, but not vice-versa
-     */
-    if (aLocOn == Location.NONE) aLocOn = lbl.aLocOn;
-    if (lbl.aIsArea) {
-      aIsArea = true;
-      if (aLocLeft == Location.NONE) aLocLeft = lbl.aLocRight;
-      if (aLocRight == Location.NONE) aLocRight = lbl.aLocLeft;
-    }
+    if (aLocOn == LOC_UNKNOWN) aLocOn = lbl.aLocOn;
+    if (aLocLeft == LOC_UNKNOWN) aLocLeft = lbl.aLocRight;
+    if (aLocRight == LOC_UNKNOWN) aLocRight = lbl.aLocLeft;
     
-    if (bLocOn == Location.NONE) bLocOn = lbl.bLocOn;
-    if (lbl.bIsArea) {
-      bIsArea = true;
-      if (bLocLeft == Location.NONE) bLocLeft = lbl.bLocRight;
-      if (bLocRight == Location.NONE) bLocRight = lbl.bLocLeft;
-    }
+    if (bLocOn == LOC_UNKNOWN) bLocOn = lbl.bLocOn;
+    if (bLocLeft == LOC_UNKNOWN) bLocLeft = lbl.bLocRight;
+    if (bLocRight == LOC_UNKNOWN) bLocRight = lbl.bLocLeft;
   }
   
   public String toString()
@@ -272,7 +314,7 @@ public class OverlayLabel {
       buf.append(locationString(0));
     }
     if (hasLocation(1)) {
-      buf.append(" B:");
+      buf.append("/B:");
       buf.append(locationString(1));
     }
     return buf.toString();
@@ -280,17 +322,14 @@ public class OverlayLabel {
 
   private String locationString(int index) {
     StringBuilder buf = new StringBuilder();
-    char lineLoc = Location.toLocationSymbol( index == 0 ? aLocOn : bLocOn );
-    if (isArea(index)) {
-      buf.append( Location.toLocationSymbol( index == 0 ? aLocLeft : bLocLeft ) );
-      buf.append(lineLoc);
-      buf.append( Location.toLocationSymbol( index == 0 ? aLocRight : bLocRight ) );
-    }
-    else {
-      buf.append( lineLoc );
-    }
+    buf.append( Location.toLocationSymbol( index == 0 ? aLocLeft : bLocLeft ) );
+    buf.append( Location.toLocationSymbol( index == 0 ? aLocOn : bLocOn ));
+    buf.append( Location.toLocationSymbol( index == 0 ? aLocRight : bLocRight ) );
+    boolean isArea = index == 0 ? aIsArea : bIsArea;
+    buf.append(isArea ? 'A' : 'L');
     return buf.toString();
   }
 
 
 }
+;

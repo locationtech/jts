@@ -169,7 +169,7 @@ public class OverlayGraph {
 
   private void computeLabelling(List<OverlayEdge> nodes) {
     for (OverlayEdge node : nodes) {
-      node.computeLabelling();
+      node.nodeComputeLabelling();
     }
   }
 

@@ -21,33 +21,33 @@ import org.locationtech.jts.operation.union.UnionFunction;
 public class OverlaySRFunctions {
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlayOp(a, b, pm, OverlayOp.INTERSECTION);
+    return OverlaySR.overlay(a, b, pm, OverlayOp.INTERSECTION);
   }
 
   public static Geometry intersectionLines(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlaySR ovr = new OverlaySR(a, b, pm);
+    OverlaySR ovr = new OverlaySR(a, b, pm, OverlayOp.INTERSECTION);
     ovr.setOutputResultEdges(true);
-    return ovr.getResultGeometry(OverlayOp.INTERSECTION);
+    return ovr.getResultGeometry();
   }
 
   public static Geometry intersectionAllLines(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlaySR ovr = new OverlaySR(a, b, pm);
+    OverlaySR ovr = new OverlaySR(a, b, pm, OverlayOp.INTERSECTION);
     ovr.setOutputEdges(true);
-    return ovr.getResultGeometry(OverlayOp.INTERSECTION);
+    return ovr.getResultGeometry();
   }
 
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlayOp(a, b, pm, OverlayOp.UNION);
+    return OverlaySR.overlay(a, b, pm, OverlayOp.UNION);
   }
   
   public static Geometry unionLines(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlaySR ovr = new OverlaySR(a, b, pm);
+    OverlaySR ovr = new OverlaySR(a, b, pm, OverlayOp.UNION);
     ovr.setOutputResultEdges(true);
-    return ovr.getResultGeometry(OverlayOp.UNION);
+    return ovr.getResultGeometry();
   }
 
 
@@ -56,7 +56,7 @@ public class OverlaySRFunctions {
     UnionFunction unionSRFun = new UnionFunction() {
 
       public Geometry union(Geometry g0, Geometry g1) {
-        return OverlaySR.overlayOp(g0, g1, pm, OverlayOp.UNION);
+        return OverlaySR.overlay(g0, g1, pm, OverlayOp.UNION);
       }
       
     };
