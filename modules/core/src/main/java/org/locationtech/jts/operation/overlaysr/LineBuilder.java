@@ -63,7 +63,10 @@ public class LineBuilder {
   }
 
   private boolean isResultLine(OverlayEdge edge) {
-    if (edge.isInResult() || edge.symOE().isInResult()) return false;
+    // edge is already in result
+    if (edge.isInResult() || edge.symOE().isInResult()) 
+      return false;
+    
     OverlayLabel lbl = edge.getLabel();
     if (! lbl.isLine()) return false;
     if (isCoveredByResultArea(lbl)) return false;
@@ -76,6 +79,8 @@ public class LineBuilder {
   }
 
   private boolean isCoveredByResultArea(OverlayLabel lbl) {
+    // no area is in result
+    if (resultAreaIndex < 0) return false;
     // Note: probably only one side needs to be checked?
     boolean isCovered =
         lbl.getLocation(resultAreaIndex, Position.LEFT) == Location.INTERIOR
