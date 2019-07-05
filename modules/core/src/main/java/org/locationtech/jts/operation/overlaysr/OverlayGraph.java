@@ -117,14 +117,15 @@ public class OverlayGraph {
   }
 
   private void computeLabelling(List<OverlayEdge> nodes) {
-    for (OverlayEdge node : nodes) {
-      node.nodeComputeLabelling();
+    for (OverlayEdge nodeEdge : nodes) {
+      //nodeEdge.nodeComputeLabelling();
+      OverlayNode.computeLabelling(nodeEdge);
     }
   }
 
   private void mergeSymLabels(List<OverlayEdge> nodes) {
     for (OverlayEdge node : nodes) {
-      node.nodeMergeSymLabels();
+      OverlayNode.mergeSymLabels(node);
     }
   }
 
@@ -163,7 +164,7 @@ public class OverlayGraph {
     for (OverlayEdge edge : resultEdges ) {
       //Assert.isTrue(edge.isInResult());
       // TODO: find some way to skip nodes which are already linked
-      edge.linkOriginResultEdges();
+      OverlayNode.linkResultAreaEdges(edge);
     }    
   }
 

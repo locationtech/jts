@@ -30,8 +30,6 @@ import org.locationtech.jts.util.Assert;
 
 public class EdgeRing {
   
-
-  
   private OverlayEdge startEdge;
   private List<Coordinate> pts = new ArrayList<Coordinate>();
   private LinearRing ring;
