@@ -50,7 +50,21 @@ public class OverlaySRFunctions {
     return ovr.getResultGeometry();
   }
 
+  public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    return OverlaySR.overlay(a, b, pm, OverlayOp.DIFFERENCE);
+  }
 
+  public static Geometry differenceBA(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    return OverlaySR.overlay(b, a, pm, OverlayOp.DIFFERENCE);
+  }
+
+  public static Geometry symDifference(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    return OverlaySR.overlay(a, b, pm, OverlayOp.SYMDIFFERENCE);
+  }
+  
   public static Geometry unaryUnion(Geometry a, double scaleFactor) {
     final PrecisionModel pm = new PrecisionModel(scaleFactor);
     UnionFunction unionSRFun = new UnionFunction() {
