@@ -51,7 +51,7 @@ public class PolygonBuilder {
    */
   private List buildEdgeRings(Collection<OverlayEdge> edges)
   {
-    List edgeRings     = new ArrayList();
+    List edgeRings = new ArrayList();
     for (OverlayEdge e : edges) {
       if (e.isInResult() && e.getLabel().isArea() ) {
         // if this edge has not yet been processed
