@@ -37,8 +37,23 @@ public class EdgeGraphTest extends TestCase {
         new Coordinate[] { new Coordinate(1, 0),
       new Coordinate(0, 1), new Coordinate(-1, 0)
         });
+    checkCCW(graph, new Coordinate(0, 0), new Coordinate(1, 0));
     checkEdge(graph, new Coordinate(0, 0), new Coordinate(1, 0));
   }
+
+  /**
+   * This test produced an error using the original buggy sorting algorithm
+   * (in {@link HalfEdge#insert(HalfEdge)}).
+   */
+  public void testCCWAfterInserts() {
+    EdgeGraph graph = new EdgeGraph();
+    HalfEdge e1 = addEdge(graph, 50, 39, 35, 42);
+    addEdge(graph, 50, 39, 50, 60);
+    addEdge(graph, 50, 39, 68, 35);
+    checkCCW(e1);
+  }
+
+
 
   private void checkEdgeRing(EdgeGraph graph, Coordinate p,
       Coordinate[] dest) {
@@ -52,13 +67,21 @@ public class EdgeGraphTest extends TestCase {
    
   }
 
-
   private void checkEdge(EdgeGraph graph, Coordinate p0, Coordinate p1) {
     HalfEdge e = graph.findEdge(p0, p1);
     assertNotNull(e);
   }
 
+  private void checkCCW(EdgeGraph graph, Coordinate p0, Coordinate p1) {
+    HalfEdge e = graph.findEdge(p0, p1);
+    assertTrue(e.isCCW());
+  }
 
+
+  private void checkCCW(HalfEdge e) {
+    assertTrue(e.isCCW());
+  }
+  
   private EdgeGraph build(String wkt) throws ParseException {
     return build(new String[] { wkt });
   }
@@ -68,4 +91,7 @@ public class EdgeGraphTest extends TestCase {
     return EdgeGraphBuilder.build(geoms);
   }
 
+  private HalfEdge addEdge(EdgeGraph graph, double p0x, double p0y, double p1x, double p1y) {
+    return graph.addEdge(new Coordinate(p0x, p0y), new Coordinate(p1x, p1y));
+  }
 }

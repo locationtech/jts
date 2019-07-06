@@ -39,6 +39,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix bugs in `LinearLocation` endpoint handling (#421)
 * Fix bug in `MinimumBoundingCircle` maximum diameter algorithm, and provide method for it
 * Improve robustness of `CascadedPolygonUnion` by adding `OverlapUnion`
+* Fix bug in `HalfEdge.insert` method which caused CCW order not to be preserved in some cases
 
 ## JTS TestRunner
 
