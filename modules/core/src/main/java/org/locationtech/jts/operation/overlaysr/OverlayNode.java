@@ -146,9 +146,11 @@ public class OverlayNode {
     Assert.isTrue(! nodeEdge.symOE().isInResult(), "Found both half-edges in result");
 
     /**
-     * Since the node edge is an out edge, 
+     * Since the node edge is an out-edge, 
      * make it the last edge to be linked
      * by starting at the next edge.
+     * The node edge cannot be an in-edge as well, 
+     * but the next one may be the first in-edge.
      */
     OverlayEdge endOut = nodeEdge.oNextOE();
     OverlayEdge currOut = endOut;
