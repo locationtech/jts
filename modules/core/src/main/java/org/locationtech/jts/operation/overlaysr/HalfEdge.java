@@ -321,7 +321,7 @@ public class HalfEdge {
     sym.setNext(e);
     e.sym().setNext(save);
     //Assert.isTrue(orig.equals2D( e.orig() ));
-    Assert.isTrue(this.isEdgesSorted(), "Found non-sorted edges inserting " + e + " into " + this.toStringNode());
+    Assert.isTrue(this.isEdgesSorted(), "Found non-sorted or non-unique edges inserting " + e + " into " + this.toStringNode());
   }
 
   /**
@@ -345,7 +345,7 @@ public class HalfEdge {
       if (eNext == lowest) break;
       boolean isSorted = eNext.compareTo(e) > 0;
       if (! isSorted) {
-        int comp = eNext.compareTo(e);
+        //int comp = eNext.compareTo(e);
         return false;
       }
       e = eNext;
@@ -353,6 +353,12 @@ public class HalfEdge {
     return true;
   }  
   
+  /**
+   * Finds the lowest edge around the origin,
+   * using the standard edge ordering.
+   * 
+   * @return the lowest edge around the origin
+   */
   private HalfEdge findLowest() {
     HalfEdge lowest = this;
     HalfEdge e = this.oNext();
