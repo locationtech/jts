@@ -23,21 +23,19 @@ import org.locationtech.jts.util.Assert;
 public class PolygonBuilder {
 
   private GeometryFactory geometryFactory;
-  private List<OverlayEdge> resultAreaEdges;
   private List<EdgeRing> shellList = new ArrayList<EdgeRing>();
   private List<EdgeRing> freeHoleList = new ArrayList<EdgeRing>();
 
   public PolygonBuilder(List<OverlayEdge> resultAreaEdges, GeometryFactory geomFact) {
-    this.resultAreaEdges = resultAreaEdges;
     this.geometryFactory = geomFact;
+    buildRings(resultAreaEdges);
   }
 
   public List<Polygon> getPolygons() {
-    buildRings();
     return computePolygons(shellList);  
   }
 
-  private void buildRings()
+  private void buildRings(List<OverlayEdge> resultAreaEdges)
   {
     linkResultAreaEdgesMax(resultAreaEdges);
     // assumes that minimal edge rings have been linked
