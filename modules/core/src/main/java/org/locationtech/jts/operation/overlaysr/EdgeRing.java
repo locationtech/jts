@@ -107,10 +107,10 @@ public class EdgeRing {
       addPoints(edge.getCoordinates(), edge.isForward(), isFirstEdge);
       isFirstEdge = false;
       edge.setEdgeRing(this);
-      if (edge.getResultNext() == null)
+      if (edge.nextResult() == null)
         throw new TopologyException("Found null edge in ring", edge.dest());
 
-      edge = edge.getResultNext();
+      edge = edge.nextResult();
     } while (edge != startEdge);  
   }
   

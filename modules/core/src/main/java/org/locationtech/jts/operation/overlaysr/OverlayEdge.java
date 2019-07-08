@@ -81,6 +81,10 @@ public class OverlayEdge extends HalfEdge {
 
   private EdgeRing edgeRing;
 
+  private MaximalEdgeRing maxEdgeRing;
+
+  private OverlayEdge nextResultMaxEdge;
+
   public OverlayEdge(Coordinate orig, Coordinate dirPt, boolean direction, OverlayLabel label, Coordinate[] pts) {
     super(orig);
     this.dirPt = dirPt;
@@ -138,12 +142,25 @@ public class OverlayEdge extends HalfEdge {
     nextResultEdge = e;
   }
   
-  public OverlayEdge getResultNext() {
+  public OverlayEdge nextResult() {
     return nextResultEdge;
   }
   
   public boolean isResultLinked() {
     return nextResultEdge != null;
+  }
+  
+  void setResultNextMax(OverlayEdge e) {
+    // Assert: e.orig() == this.dest();
+    nextResultMaxEdge = e;
+  }
+  
+  public OverlayEdge nextResultMax() {
+    return nextResultMaxEdge;
+  }
+
+  public boolean isResultMaxLinked() {
+    return nextResultMaxEdge != null;
   }
   
   public boolean isVisited() {
@@ -160,6 +177,14 @@ public class OverlayEdge extends HalfEdge {
   public EdgeRing getEdgeRing() {
     return edgeRing;
   } 
+  
+  public MaximalEdgeRing getEdgeRingMax() {
+    return maxEdgeRing;
+  }
+
+  public void setEdgeRingMax(MaximalEdgeRing maximalEdgeRing) {
+    maxEdgeRing = maximalEdgeRing;
+  }
   
   public void setLocationAreaBoth(int geomIndex, int loc) {
     getLabel().setLocationArea(geomIndex, loc, loc, loc);
@@ -192,11 +217,13 @@ public class OverlayEdge extends HalfEdge {
             : "";
     return "OE( "+ WKTWriter.format(orig)
         + dirPtStr
-        + ".." + WKTWriter.format(dest)
-        + " ) " + label 
-        + " Sym: " + symOE().getLabel()
-        + (isInResult ? " Res" : "");
+        + " .. " + WKTWriter.format(dest)
+        + " ) " 
+        + label + (isInResult ? " Res" : "")
+        + " / Sym: " + symOE().getLabel()+ (symOE().isInResult() ? " Res" : "")
+        ;
   }
+
 
 
 }

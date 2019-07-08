@@ -160,12 +160,4 @@ public class OverlayGraph {
     return resultEdges;
   }
 
-  public void linkResultAreaEdges(List<OverlayEdge> resultEdges) {
-    for (OverlayEdge edge : resultEdges ) {
-      //Assert.isTrue(edge.isInResult());
-      // TODO: find some way to skip nodes which are already linked
-      OverlayNode.linkResultAreaEdges(edge);
-    }    
-  }
-
 }

@@ -26,8 +26,23 @@ public class OverlaySRSingleTest extends GeometryTestCase {
 
   public OverlaySRSingleTest(String name) { super(name); }
   
+  public void testBoxTriUnion() {
+    Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
+    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
+    Geometry expected = read("POLYGON ((0 6, 4 6, 4 2, 3 2, 3 0, 1 0, 1 2, 0 2, 0 6))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
   
-  public void testNestedShellsIntersection() {
+  public void XtestBoxTriIntersection() {
+    Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
+    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
+    Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void XtestNestedShellsIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
     Geometry expected = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");

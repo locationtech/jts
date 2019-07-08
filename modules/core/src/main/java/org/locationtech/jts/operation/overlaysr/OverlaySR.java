@@ -164,14 +164,13 @@ public class OverlaySR
     graph = buildTopology(edgesMerged);
     graph.markResultAreaEdges(opCode);
     graph.cancelDuplicateResultAreaEdges();
-    List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
-    graph.linkResultAreaEdges(resultAreaEdges);
     
     //return toLines(edges, geomFact );
     if (isOutputEdges || isOutputResultEdges) {
       return toLines(graph, geomFact);
     }
     
+    List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
     return createResult(opCode, resultAreaEdges);
   }
 
