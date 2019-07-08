@@ -26,11 +26,36 @@ public class OverlaySRSingleTest extends GeometryTestCase {
 
   public OverlaySRSingleTest(String name) { super(name); }
   
-  public void testBoxTriUnion() {
+  public void XtestBoxTriUnion() {
     Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
     Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
     Geometry expected = read("POLYGON ((0 6, 4 6, 4 2, 3 2, 3 0, 1 0, 1 2, 0 2, 0 6))");
     Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void xtestMultiHoleBoxUnion() {
+    Geometry a = read("MULTIPOLYGON (((0 200, 200 200, 200 0, 0 0, 0 200), (50 50, 190 50, 50 200, 50 50), (20 20, 20 50, 50 50, 50 20, 20 20)), ((60 100, 50 50, 100 60, 60 100)))");
+    Geometry b = read("POLYGON ((60 110, 100 110, 100 60, 60 60, 60 110))");
+    Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testNestedPolysUnion() {
+    Geometry a = read("MULTIPOLYGON (((0 200, 200 200, 200 0, 0 0, 0 200), (50 50, 190 50, 50 200, 50 50)), ((60 100, 100 60, 50 50, 60 100)))");
+    Geometry b = read("POLYGON ((135 176, 180 176, 180 130, 135 130, 135 176))");
+    Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  // TODO: check this when it has be implemented...
+  public void xtestMultiHoleSideTouchingBoxUnion() {
+    Geometry a = read("MULTIPOLYGON (((0 200, 200 200, 200 0, 0 0, 0 200), (50 50, 190 50, 50 200, 50 50), (20 20, 20 50, 50 50, 50 20, 20 20)))");
+    Geometry b = read("POLYGON ((100 100, 100 50, 50 50, 50 100, 100 100))");
+    Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
+    Geometry actual = intersection(a, b, 1);
     checkEqual(expected, actual);
   }
   
@@ -49,7 +74,6 @@ public class OverlaySRSingleTest extends GeometryTestCase {
     Geometry actual = intersection(a, b, 1);
     checkEqual(expected, actual);
   }
-  
   
   public void XtestBoxLineIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");

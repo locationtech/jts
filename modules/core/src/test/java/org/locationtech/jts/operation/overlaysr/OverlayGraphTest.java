@@ -12,9 +12,6 @@
 package org.locationtech.jts.operation.overlaysr;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.noding.BasicSegmentString;
-import org.locationtech.jts.noding.SegmentString;
-import org.locationtech.jts.util.Assert;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -36,12 +33,12 @@ public class OverlayGraphTest extends GeometryTestCase {
     OverlayEdge e1 = addEdge(graph, 50, 39, 35, 42, 37, 30);
     addEdge(graph, 50, 39, 50, 60, 20, 60);
     addEdge(graph, 50, 39, 68, 35);
-    checkCCW(e1);
+    checkNodeValid(e1);
   }
 
-  private void checkCCW(OverlayEdge e) {
-    boolean isCCW = e.isCCW();
-    assertTrue("Found non-CCW edges around node " + e.toStringNode(), isCCW); 
+  private void checkNodeValid(OverlayEdge e) {
+    boolean isNodeValid = e.isEdgesSorted();
+    assertTrue("Found non-sorted edges around node " + e.toStringNode(), isNodeValid); 
   }
 
   private OverlayEdge addEdge(OverlayGraph graph, double... ord) {

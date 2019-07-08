@@ -82,6 +82,22 @@ public class OverlaySRTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
+  public void testTouchingHoleUnion() {
+    Geometry a = read("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300), (200 200, 150 200, 200 300, 200 200))");
+    Geometry b = read("POLYGON ((130 160, 260 160, 260 120, 130 120, 130 160))");
+    Geometry expected = read("POLYGON ((100 100, 100 300, 200 300, 300 300, 300 100, 100 100), (150 200, 200 200, 200 300, 150 200))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testTouchingMultiHoleUnion() {
+    Geometry a = read("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300), (200 200, 150 200, 200 300, 200 200), (250 230, 216 236, 250 300, 250 230), (235 198, 300 200, 237 175, 235 198))");
+    Geometry b = read("POLYGON ((130 160, 260 160, 260 120, 130 120, 130 160))");
+    Geometry expected = read("POLYGON ((100 300, 200 300, 250 300, 300 300, 300 200, 300 100, 100 100, 100 300), (200 300, 150 200, 200 200, 200 300), (250 300, 216 236, 250 230, 250 300), (300 200, 235 198, 237 175, 300 200))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
   public void testBoxLineIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("LINESTRING (50 150, 150 150)");

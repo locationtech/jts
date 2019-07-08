@@ -15,6 +15,7 @@ package org.locationtech.jts.operation.overlaysr;
 import java.util.Comparator;
 
 import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.edgegraph.EdgeGraph;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geomgraph.Quadrant;
 import org.locationtech.jts.io.WKTWriter;
@@ -320,37 +321,47 @@ public class HalfEdge {
     sym.setNext(e);
     e.sym().setNext(save);
     //Assert.isTrue(orig.equals2D( e.orig() ));
-    Assert.isTrue(this.isCCW(), "Found non-CCW edges inserting " + e + " into " + this.toStringNode());
-  }
-
-  boolean isCCW() {
-    // degree <= 2 has no orientation
-    if (degree() <= 2) return true;
-    
-    // test each triangle of consecutive direction points to confirm it is CCW
-    HalfEdge e = this;
-    do {
-      HalfEdge eNext = e.oNext();
-      HalfEdge eNext2 = eNext.oNext();
-      if (! isCCW(e, eNext, eNext2)) return false;
-      e = eNext;
-    } while (e != this);
-    return true;
+    Assert.isTrue(this.isEdgesSorted(), "Found non-sorted edges inserting " + e + " into " + this.toStringNode());
   }
 
   /**
-   * Tests if the edges e1,e2,e3 are oriented CCW 
-   * around their origin (using their direction points).
+   * Tests whether the edges around the origin
+   * are sorted correctly.
+   * Note that edges must be strictly increasing,
+   * which implies no two edges can have the same direction point.
    * 
-   * @param e1 a half-edge
-   * @param e2 a half-edge
-   * @param e3 a half-edge
-   * @return true if the edge triplet is oriented CCW
+   * @return true if the origin edges are sorted correctly
    */
-  private boolean isCCW(HalfEdge e1, HalfEdge e2, HalfEdge e3) {
-    int orientIndex = Orientation.index(
-        e1.directionPt(), e2.directionPt(), e3.directionPt());
-    return orientIndex == Orientation.COUNTERCLOCKWISE;
+  boolean isEdgesSorted() {
+    // degree <= 2 is trivially CCW
+    if (degree() <= 2) return true;
+    
+    // find lowest edge at origin
+    HalfEdge lowest = findLowest();
+    HalfEdge e = lowest;
+    // check that all edges are sorted
+    do {
+      HalfEdge eNext = e.oNext();
+      if (eNext == lowest) break;
+      boolean isSorted = eNext.compareTo(e) > 0;
+      if (! isSorted) {
+        int comp = eNext.compareTo(e);
+        return false;
+      }
+      e = eNext;
+    } while (e != lowest);
+    return true;
+  }  
+  
+  private HalfEdge findLowest() {
+    HalfEdge lowest = this;
+    HalfEdge e = this.oNext();
+    do {
+      if (e.compareTo(lowest) < 0)
+        lowest = e;
+      e = e.oNext();
+    } while (e != this);
+    return lowest;
   }
 
   /**
@@ -399,8 +410,8 @@ public class HalfEdge {
     if (dx == dx2 && dy == dy2)
       return 0;
     
-    double quadrant = Quadrant.quadrant(dx, dy);
-    double quadrant2 = Quadrant.quadrant(dx2, dy2);
+    int quadrant = Quadrant.quadrant(dx, dy);
+    int quadrant2 = Quadrant.quadrant(dx2, dy2);
     /*
     Coordinate dir1 = directionPt();
     Coordinate dir2 = e.directionPt();
