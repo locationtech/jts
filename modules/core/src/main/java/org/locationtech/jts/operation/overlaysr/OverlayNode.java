@@ -119,8 +119,8 @@ public class OverlayNode {
    * Traverses the star of OverlayEdges 
    * originating at this node
    * and links result edges together
-   * to form maximal edge rings.
-   * To link two edges the <code>resNext</code> pointer 
+   * into maximal edge rings.
+   * To link two edges the <code>resultNextMax</code> pointer 
    * for an <b>incoming</b> result edge
    * is set to the next <b>outgoing</b> result edge.
    * <p>
@@ -155,7 +155,7 @@ public class OverlayNode {
      */
     OverlayEdge endOut = nodeEdge.oNextOE();
     OverlayEdge currOut = endOut;
-Debug.println("\n------  Linking node result area MAX edges");
+Debug.println("\n------  Linking node MAX edges");
 Debug.println("BEFORE: " + toString(nodeEdge));
     int state = STATE_FIND_INCOMING;
     OverlayEdge currResultIn = null;
@@ -204,15 +204,11 @@ Debug.println("BEFORE: " + toString(nodeEdge));
     OverlayEdge endOut = nodeEdge;
     OverlayEdge currMaxRingOut = endOut;
     OverlayEdge currOut = endOut.oNextOE();
-Debug.println("\n------  Linking node result area MIN ring edges");
+Debug.println("\n------  Linking node MIN ring edges");
 Debug.println("BEFORE: " + toString(nodeEdge));
     do {
-      /**
-       * If edge is linked in a min ring
-       * this node has already been processed
-       * so skip further processing
-       */
-      if (currOut.symOE().getEdgeRing() != null) return;
+      if (isAlreadyLinked(currOut.symOE(), maxRing)) 
+        return;
 
       if (currMaxRingOut == null) {
         currMaxRingOut = selectMaxOutEdge(currOut, maxRing);
@@ -226,6 +222,21 @@ Debug.println("BEFORE: " + toString(nodeEdge));
     if ( currMaxRingOut != null ) {
       throw new TopologyException("Unmatched edge found during min-ring linking", nodeEdge.getCoordinate());
     }    
+  }
+
+  /**
+   * Tests if an edge of the maximal edge ring is already linked into
+   * a minimal {@link EdgeRing}.  If so, this node has already been processed
+   * earlier in the maximal edgering linking scan.
+   * 
+   * @param edge an edge of a maximal edgering
+   * @param maxRing the maximal edgering
+   * @return true if the edge has already been linked into a minimal edgering.
+   */
+  private static boolean isAlreadyLinked(OverlayEdge edge, MaximalEdgeRing maxRing) {
+    boolean isLinked = edge.getEdgeRingMax() == maxRing
+        && edge.isResultLinked();
+    return isLinked;
   }
 
   private static OverlayEdge selectMaxOutEdge(OverlayEdge currOut, MaximalEdgeRing maxEdgeRing) {

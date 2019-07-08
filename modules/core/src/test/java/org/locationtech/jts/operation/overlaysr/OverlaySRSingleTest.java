@@ -45,7 +45,7 @@ public class OverlaySRSingleTest extends GeometryTestCase {
   public void testNestedPolysUnion() {
     Geometry a = read("MULTIPOLYGON (((0 200, 200 200, 200 0, 0 0, 0 200), (50 50, 190 50, 50 200, 50 50)), ((60 100, 100 60, 50 50, 60 100)))");
     Geometry b = read("POLYGON ((135 176, 180 176, 180 130, 135 130, 135 176))");
-    Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
+    Geometry expected = read("MULTIPOLYGON (((0 0, 0 200, 50 200, 200 200, 200 0, 0 0), (50 50, 190 50, 50 200, 50 50)), ((50 50, 60 100, 100 60, 50 50)))");
     Geometry actual = union(a, b, 1);
     checkEqual(expected, actual);
   }

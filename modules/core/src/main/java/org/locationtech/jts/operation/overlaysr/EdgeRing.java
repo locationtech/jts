@@ -93,8 +93,6 @@ public class EdgeRing {
     OverlayEdge edge = start;
     boolean isFirstEdge = true;
     do {
-      if (edge == null)
-        throw new TopologyException("Found null edge in ring");
       if (edge.getEdgeRing() == this)
         throw new TopologyException("Edge visited twice during ring-building at " + edge.getCoordinate(), edge.getCoordinate());
 

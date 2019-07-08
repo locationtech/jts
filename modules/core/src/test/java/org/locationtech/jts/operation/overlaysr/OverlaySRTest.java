@@ -82,6 +82,22 @@ public class OverlaySRTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
+  public void testATouchingNestedPolyUnion() {
+    Geometry a = read("MULTIPOLYGON (((0 200, 200 200, 200 0, 0 0, 0 200), (50 50, 190 50, 50 200, 50 50)), ((60 100, 100 60, 50 50, 60 100)))");
+    Geometry b = read("POLYGON ((135 176, 180 176, 180 130, 135 130, 135 176))");
+    Geometry expected = read("MULTIPOLYGON (((0 0, 0 200, 50 200, 200 200, 200 0, 0 0), (50 50, 190 50, 50 200, 50 50)), ((50 50, 60 100, 100 60, 50 50)))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+
+  public void testTouchingPolyDifference() {
+    Geometry a = read("POLYGON ((200 200, 200 0, 0 0, 0 200, 200 200), (100 100, 50 100, 50 200, 100 100))");
+    Geometry b = read("POLYGON ((150 100, 100 100, 150 200, 150 100))");
+    Geometry expected = read("MULTIPOLYGON (((0 0, 0 200, 50 200, 50 100, 100 100, 150 100, 150 200, 200 200, 200 0, 0 0)), ((50 200, 150 200, 100 100, 50 200)))");
+    Geometry actual = difference(a, b, 1);
+    checkEqual(expected, actual);
+  }
+
   public void testTouchingHoleUnion() {
     Geometry a = read("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300), (200 200, 150 200, 200 300, 200 200))");
     Geometry b = read("POLYGON ((130 160, 260 160, 260 120, 130 120, 130 160))");
@@ -116,14 +132,19 @@ public class OverlaySRTest extends GeometryTestCase {
   
 
   
-  
-  public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlay(a, b, pm, OverlayOp.UNION);
+    return OverlaySR.overlay(a, b, pm, OverlayOp.DIFFERENCE);
   }
   
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlaySR.overlay(a, b, pm, OverlayOp.INTERSECTION);
   }
+  
+  public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    return OverlaySR.overlay(a, b, pm, OverlayOp.UNION);
+  }
+  
 }
