@@ -36,6 +36,14 @@ public class OverlayGraphTest extends GeometryTestCase {
     checkNodeValid(e1);
   }
 
+  public void testCCWAfterInserts2() {
+    OverlayGraph graph = new OverlayGraph();
+    OverlayEdge e1 = addEdge(graph, 50, 200, 0, 200);
+    addEdge(graph, 50, 200, 190, 50, 50, 50);
+    addEdge(graph, 50, 200, 200, 200, 0, 200);
+    checkNodeValid(e1);
+  }
+
   private void checkNodeValid(OverlayEdge e) {
     boolean isNodeValid = e.isEdgesSorted();
     assertTrue("Found non-sorted edges around node " + e.toStringNode(), isNodeValid); 
