@@ -51,7 +51,7 @@ public class OverlayGraphTest extends GeometryTestCase {
 
   private OverlayEdge addEdge(OverlayGraph graph, double... ord) {
     Coordinate[] pts = toCoordinates(ord);
-    return graph.addEdge(pts, new OverlayLabel());
+    return graph.addEdge(new Edge(pts, new OverlayLabel()));
   }
 
   private Coordinate[] toCoordinates(double[] ord) {

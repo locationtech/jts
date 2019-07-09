@@ -147,7 +147,6 @@ public class OverlaySR
     return resultGeom;
   }
 
-
   private int dimension(int geomIndex) {
     // TODO: any edge cases that need to be handled?
     return geom[geomIndex].getDimension();
@@ -159,9 +158,12 @@ public class OverlaySR
   }
   
   private Geometry computeOverlay() {
-    Collection<SegmentString> edges = node();
-    Collection<SegmentString> edgesMerged = merge(edges);
-    graph = buildTopology(edgesMerged);
+    
+    //--- Noding phase
+    List<Edge> edges = node();
+    
+    //--- Topology phase
+    graph = buildTopology(edges);
     graph.markResultAreaEdges(opCode);
     graph.cancelDuplicateResultAreaEdges();
     
@@ -170,25 +172,27 @@ public class OverlaySR
       return toLines(graph, geomFact);
     }
     
-    List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
-    return createResult(opCode, resultAreaEdges);
+    return createResult(opCode);
   }
 
-  private Geometry createResult(int opCode, List<OverlayEdge> resultAreaEdges) {
+  private Geometry createResult(int opCode) {
+    //--- Build polygons
+    List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
     PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
     List<Polygon> resultPolyList = polyBuilder.getPolygons();
     
+    //--- Build lines
     LineBuilder lineBuilder = new LineBuilder(graph, opCode, geomFact, resultAreaIndex(opCode), ptLocator);
     List<LineString> resultLineList = lineBuilder.getLines();
 
-    //List<LineString> resultLineList = new ArrayList<LineString>();
+    //--- Build points
     List<Point> resultPointList = new ArrayList<Point>();
-    // gather the results from all calculations into a single Geometry for the result set
-    Geometry resultGeom = buildGeometry(resultPointList, resultLineList, resultPolyList, opCode);
+    
+    Geometry resultGeom = buildResultGeometry(opCode, resultPointList, resultLineList, resultPolyList);
     return resultGeom;
   }
 
-  private Geometry buildGeometry(List<Point> resultPointList, List<LineString> resultLineList, List<Polygon> resultPolyList, int opcode) {
+  private Geometry buildResultGeometry(int opcode, List<Point> resultPointList, List<LineString> resultLineList, List<Polygon> resultPolyList) {
     List<Geometry> geomList = new ArrayList<Geometry>();
     // element geometries of the result are always in the order P,L,A
     geomList.addAll(resultPointList);
@@ -264,7 +268,7 @@ public class OverlaySR
       /**
        * This result is chosen because
        * <pre>
-       * SymDiff = Union(Diff(A, B), Diff(B, A)
+       * SymDiff = Union( Diff(A, B), Diff(B, A) )
        * </pre>
        * and Union has the dimension of the highest-dimension argument.
        */
@@ -274,36 +278,37 @@ public class OverlaySR
     return resultDimension;
   }
   
-  
-  private Collection<SegmentString> node() {
+  private List<Edge> node() {
     OverlaySRNoder noder = new OverlaySRNoder(pm);
     noder.add(geom[0], 0);
     noder.add(geom[1], 1);
-    Collection<SegmentString> edges = noder.node();
-    Collection<SegmentString> mergedEdges = merge(edges);
+    Collection<SegmentString> nodedSegStrings = noder.node();
+    List<Edge> edges = createEdges(nodedSegStrings);
+    List<Edge> mergedEdges = EdgeMerger.merge(edges);
     return mergedEdges;
   }
-  
-  private Collection<SegmentString> merge(Collection<SegmentString> edges) {
-    // TODO implement merging here
-    
-    //computeLabelsFromDepths();
-    //replaceCollapsedEdges();
-    
+
+  private static List<Edge> createEdges(Collection<SegmentString> segStrings) {
+    List<Edge> edges = new ArrayList<Edge>();
+    for (SegmentString ss : segStrings) {
+      OverlayLabel lbl = (OverlayLabel) ss.getData();
+      // copy label since it may be updated during edge merging
+      edges.add(new Edge(ss.getCoordinates(), lbl.copy()));
+    }
     return edges;
   }
 
-  private OverlayGraph buildTopology(Collection<SegmentString> edges) {
+  private OverlayGraph buildTopology(Collection<Edge> edges) {
     OverlayGraph graph = buildGraph( edges );
     graph.computeLabelling();
     labelIncompleteNodes(graph.getNodeEdges());
     return graph;
   }
 
-  public static OverlayGraph buildGraph(Collection<SegmentString> edges) {
+  public static OverlayGraph buildGraph(Collection<Edge> edges) {
     OverlayGraph graph = new OverlayGraph();
-    for (SegmentString ss : edges) {
-      graph.addEdge(ss.getCoordinates(), (OverlayLabel) ss.getData());
+    for (Edge e : edges) {
+      graph.addEdge(e);
     }
     return graph;
   }

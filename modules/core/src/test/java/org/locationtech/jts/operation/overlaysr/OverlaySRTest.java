@@ -130,7 +130,13 @@ public class OverlaySRTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-
+  public void testAdjacentBoxes() {
+    Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
+    Geometry b = read("POLYGON ((300 200, 300 100, 200 100, 200 200, 300 200))");
+    Geometry expected = read("POLYGON ((100 100, 100 200, 200 200, 300 200, 300 100, 200 100, 100 100))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
   
   public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);

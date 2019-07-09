@@ -308,14 +308,10 @@ public class OverlayLabel {
   public String toString()
   {
     StringBuilder buf = new StringBuilder();
-    if (hasLocation(0)) {
-      buf.append("A:");
-      buf.append(locationString(0));
-    }
-    if (hasLocation(1)) {
-      buf.append("/B:");
-      buf.append(locationString(1));
-    }
+    buf.append("A:");
+    buf.append(locationString(0));
+    buf.append("/B:");
+    buf.append(locationString(1));
     return buf.toString();
   }
 
@@ -333,7 +329,7 @@ public class OverlayLabel {
     case DIM_LINE: return 'L';
     case DIM_AREA: return 'A';
     }
-    return '?';
+    return '#';
   }
 
 }

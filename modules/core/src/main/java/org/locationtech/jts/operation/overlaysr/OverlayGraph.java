@@ -40,9 +40,9 @@ public class OverlayGraph {
    * 
    * @see #isValidEdge(Coordinate, Coordinate)
    */
-  public OverlayEdge addEdge(Coordinate[] pts, OverlayLabel lbl) {
+  public OverlayEdge addEdge(Edge edge) {
     //if (! isValidEdge(orig, dest)) return null;
-    OverlayEdge e = createEdges(pts, lbl);
+    OverlayEdge e = createEdges(edge.getCoordinates(), edge.getLabel());
     insert(e);
     insert((OverlayEdge) e.sym());
     return e;

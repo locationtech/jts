@@ -26,6 +26,14 @@ public class OverlaySRSingleTest extends GeometryTestCase {
 
   public OverlaySRSingleTest(String name) { super(name); }
   
+  public void testAdjacentBoxes() {
+    Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
+    Geometry b = read("POLYGON ((300 200, 300 100, 200 100, 200 200, 300 200))");
+    Geometry expected = read("POLYGON ((100 100, 100 200, 200 200, 300 200, 300 100, 200 100, 100 100))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
   public void XtestBoxTriUnion() {
     Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
     Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
@@ -42,7 +50,7 @@ public class OverlaySRSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testNestedPolysUnion() {
+  public void xtestNestedPolysUnion() {
     Geometry a = read("MULTIPOLYGON (((0 200, 200 200, 200 0, 0 0, 0 200), (50 50, 190 50, 50 200, 50 50)), ((60 100, 100 60, 50 50, 60 100)))");
     Geometry b = read("POLYGON ((135 176, 180 176, 180 130, 135 130, 135 176))");
     Geometry expected = read("MULTIPOLYGON (((0 0, 0 200, 50 200, 200 200, 200 0, 0 0), (50 50, 190 50, 50 200, 50 50)), ((50 50, 60 100, 100 60, 50 50)))");
