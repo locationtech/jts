@@ -54,7 +54,7 @@ extends PerformanceTestCase
   public void startRun(int npts)
   {
     iter = 0;
-    precisionModel = new PrecisionModel(100000);
+    precisionModel = new PrecisionModel(1000000);
 
     geomA = SineStarFactory.create(new Coordinate(ORG_X, ORG_Y), SIZE, npts, N_ARMS, ARM_RATIO);
 
@@ -83,8 +83,8 @@ extends PerformanceTestCase
   public void runTest1()
   {
     for (Geometry b : geomB) {
-      //OverlaySR.overlay(geomA, b, precisionModel, OverlayOp.INTERSECTION);
-      geomA.intersection(b);
+      OverlaySR.overlay(geomA, b, precisionModel, OverlayOp.INTERSECTION);
+      //geomA.intersection(b);
     }
   }
 }
