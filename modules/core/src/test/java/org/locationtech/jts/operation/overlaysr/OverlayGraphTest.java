@@ -11,6 +11,10 @@
  */
 package org.locationtech.jts.operation.overlaysr;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.locationtech.jts.geom.Coordinate;
 
 import junit.textui.TestRunner;
@@ -29,29 +33,43 @@ public class OverlayGraphTest extends GeometryTestCase {
    * (in {@link HalfEdge#insert(HalfEdge)}).
    */
   public void testCCWAfterInserts() {
-    OverlayGraph graph = new OverlayGraph();
-    OverlayEdge e1 = addEdge(graph, 50, 39, 35, 42, 37, 30);
-    addEdge(graph, 50, 39, 50, 60, 20, 60);
-    addEdge(graph, 50, 39, 68, 35);
-    checkNodeValid(e1);
+    Edge e1 = createEdge(50, 39, 35, 42, 37, 30);
+    Edge e2 = createEdge(50, 39, 50, 60, 20, 60);
+    Edge e3 = createEdge(50, 39, 68, 35);
+ 
+    OverlayGraph graph = new OverlayGraph(createEdgeList(e1, e2, e3));
+    OverlayEdge node = graph.getNodeEdge(new Coordinate(50, 39));
+    checkNodeValid(node);
   }
+
+
 
   public void testCCWAfterInserts2() {
-    OverlayGraph graph = new OverlayGraph();
-    OverlayEdge e1 = addEdge(graph, 50, 200, 0, 200);
-    addEdge(graph, 50, 200, 190, 50, 50, 50);
-    addEdge(graph, 50, 200, 200, 200, 0, 200);
-    checkNodeValid(e1);
+    Edge e1 = createEdge(50, 200, 0, 200);
+    Edge e2 = createEdge(50, 200, 190, 50, 50, 50);
+    Edge e3 = createEdge(50, 200, 200, 200, 0, 200);
+    
+    OverlayGraph graph = new OverlayGraph(createEdgeList(e1, e2, e3));
+    OverlayEdge node = graph.getNodeEdge(new Coordinate(50, 200));
+    checkNodeValid(node);
   }
-
+  
   private void checkNodeValid(OverlayEdge e) {
     boolean isNodeValid = e.isEdgesSorted();
     assertTrue("Found non-sorted edges around node " + e.toStringNode(), isNodeValid); 
   }
 
-  private OverlayEdge addEdge(OverlayGraph graph, double... ord) {
+  private Collection<Edge> createEdgeList(Edge... edges) {
+    List<Edge> edgeList = new ArrayList<Edge>();
+    for (Edge e : edges) {
+      edgeList.add(e);
+    }
+    return edgeList;
+  }
+  
+  private Edge createEdge(double... ord) {
     Coordinate[] pts = toCoordinates(ord);
-    return graph.addEdge(new Edge(pts, new OverlayLabel()));
+    return new Edge(pts, new OverlayLabel());
   }
 
   private Coordinate[] toCoordinates(double[] ord) {
@@ -62,3 +80,4 @@ public class OverlayGraphTest extends GeometryTestCase {
     return pts;
   }
 }
+;

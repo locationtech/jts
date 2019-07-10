@@ -18,16 +18,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.noding.SegmentString;
 
 public class OverlayGraph {
-
+  
   private List<OverlayEdge> edges = new ArrayList<OverlayEdge>();
   private Map<Coordinate, OverlayEdge> nodeMap = new HashMap<Coordinate, OverlayEdge>();
   
-  public OverlayGraph() {
+  public OverlayGraph(Collection<Edge> edges) {
+    build(edges);
   }
 
+  public void build(Collection<Edge> edges) {
+    for (Edge e : edges) {
+      addEdge(e);
+    }
+  }
+  
   /**
    * Adds an edge between the coordinates orig and dest
    * to this graph.
@@ -86,11 +92,26 @@ public class OverlayGraph {
     return edges;
   }
   
+  /**
+   * Gets the collection of edges representing the nodes in this graph.
+   * 
+   * @return the collection of node edges
+   */
   public Collection<OverlayEdge> getNodeEdges()
   {
     return nodeMap.values();
   }
 
+  /**
+   * Gets an edge originating at the given node point.
+   * 
+   * @param nodePt the node coordinate to query
+   * @return an edge originating at the point, or null if none exists
+   */
+  public OverlayEdge getNodeEdge(Coordinate nodePt) {
+    return nodeMap.get(nodePt);
+  }
+  
   /**
    * Computes a full topological labelling for all edges and nodes in the graph.
    */
@@ -130,7 +151,7 @@ public class OverlayGraph {
     }
   }
 
-  public void cancelDuplicateResultAreaEdges() {
+  public void removeDuplicateResultAreaEdges() {
     for (OverlayEdge edge : getEdges()) {
       if ( edge.isInResult()  && edge.symOE().isInResult() ) {
         edge.removeFromResult();
@@ -148,5 +169,6 @@ public class OverlayGraph {
     } 
     return resultEdges;
   }
+
 
 }

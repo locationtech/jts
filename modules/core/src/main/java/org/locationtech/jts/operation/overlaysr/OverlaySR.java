@@ -165,9 +165,12 @@ public class OverlaySR
     List<Edge> edges = mergeEdges(nodedSegStrings);
     
     //--- Topology phase
-    graph = buildTopology(edges);
+    graph = new OverlayGraph( edges );
+    graph.computeLabelling();
+    labelIncompleteNodes(graph.getNodeEdges());
+    
     graph.markResultAreaEdges(opCode);
-    graph.cancelDuplicateResultAreaEdges();
+    graph.removeDuplicateResultAreaEdges();
     
     //return toLines(edges, geomFact );
     if (isOutputEdges || isOutputResultEdges) {
@@ -302,21 +305,6 @@ public class OverlaySR
       edges.add(new Edge(ss.getCoordinates(), lbl.copy()));
     }
     return edges;
-  }
-
-  private OverlayGraph buildTopology(Collection<Edge> edges) {
-    OverlayGraph graph = buildGraph( edges );
-    graph.computeLabelling();
-    labelIncompleteNodes(graph.getNodeEdges());
-    return graph;
-  }
-
-  public static OverlayGraph buildGraph(Collection<Edge> edges) {
-    OverlayGraph graph = new OverlayGraph();
-    for (Edge e : edges) {
-      graph.addEdge(e);
-    }
-    return graph;
   }
 
   private void labelIncompleteNodes(Collection<OverlayEdge> collection) {
