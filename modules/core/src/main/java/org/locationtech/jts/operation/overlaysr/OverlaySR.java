@@ -160,7 +160,9 @@ public class OverlaySR
   private Geometry computeOverlay() {
     
     //--- Noding phase
-    List<Edge> edges = node();
+    Collection<SegmentString> nodedSegStrings = node();
+    
+    List<Edge> edges = mergeEdges(nodedSegStrings);
     
     //--- Topology phase
     graph = buildTopology(edges);
@@ -278,11 +280,15 @@ public class OverlaySR
     return resultDimension;
   }
   
-  private List<Edge> node() {
+  private Collection<SegmentString> node() {
     OverlaySRNoder noder = new OverlaySRNoder(pm);
     noder.add(geom[0], 0);
     noder.add(geom[1], 1);
     Collection<SegmentString> nodedSegStrings = noder.node();
+    return nodedSegStrings;
+  }
+
+  private List<Edge> mergeEdges(Collection<SegmentString> nodedSegStrings) {
     List<Edge> edges = createEdges(nodedSegStrings);
     List<Edge> mergedEdges = EdgeMerger.merge(edges);
     return mergedEdges;

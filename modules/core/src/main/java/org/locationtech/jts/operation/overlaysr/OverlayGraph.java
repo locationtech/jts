@@ -92,49 +92,38 @@ public class OverlayGraph {
   }
 
   /**
-   * Finds an edge in this graph with the given origin
-   * and destination, if one exists.
-   * 
-   * @param orig the origin location
-   * @param dest the destination location.
-   * @return an edge with the given orig and dest, or null if none exists
-   */
-  public HalfEdge findEdge(Coordinate orig, Coordinate dest) {
-    HalfEdge e = (HalfEdge) nodeMap.get(orig);
-    if (e == null) return null;
-    return e.find(dest);
-  }
-
-  /**
    * Computes a full topological labelling for all edges and nodes in the graph.
    */
   public void computeLabelling() {
     // compute labelling using a Left-Right sweepline, to keep things deterministic
-    // TODO: is this useful/needed ?
-    List<OverlayEdge> nodes = sortedNodes();
+    // MD - not technically needed, so skip to improve performance
+    //List<OverlayEdge> nodes = sortedNodes();
+    Collection<OverlayEdge> nodes = getNodeEdges();
     computeLabelling(nodes);
     mergeSymLabels(nodes);
   }
 
-  private void computeLabelling(List<OverlayEdge> nodes) {
-    for (OverlayEdge nodeEdge : nodes) {
-      //nodeEdge.nodeComputeLabelling();
-      OverlayNode.computeLabelling(nodeEdge);
-    }
-  }
-
-  private void mergeSymLabels(List<OverlayEdge> nodes) {
-    for (OverlayEdge node : nodes) {
-      OverlayNode.mergeSymLabels(node);
-    }
-  }
-
+  /*
   private List<OverlayEdge> sortedNodes() {
     List<OverlayEdge> edges = new ArrayList<OverlayEdge>(getNodeEdges());
     edges.sort(OverlayEdge.nodeComparator());
     return edges;
   }
+*/
+  
+  private void computeLabelling(Collection<OverlayEdge> nodes) {
+    for (OverlayEdge nodeEdge : nodes) {
+      OverlayNode.computeLabelling(nodeEdge);
+    }
+  }
 
+  private void mergeSymLabels(Collection<OverlayEdge> nodes) {
+    for (OverlayEdge node : nodes) {
+      OverlayNode.mergeSymLabels(node);
+    }
+  }
+
+  
   public void markResultAreaEdges(int overlayOpCode) {
     for (OverlayEdge edge : getEdges()) {
       edge.markInResultArea(overlayOpCode);
