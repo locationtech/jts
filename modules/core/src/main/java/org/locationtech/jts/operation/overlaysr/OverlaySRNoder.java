@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
@@ -27,9 +29,12 @@ import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.noding.IntersectionAdder;
+import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
+import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
 
 public class OverlaySRNoder {
@@ -42,15 +47,32 @@ public class OverlaySRNoder {
   }
 
   public Collection<SegmentString> node() {
-    Noder sr = new MCIndexSnapRounder(pm);
-    sr.computeNodes(segStrings);
+    Noder noder = getSRNoder();
+    //Noder noder = getSimpleNoder(true);
+    noder.computeNodes(segStrings);
     
-    //TODO: merge duplicate edges
     @SuppressWarnings("unchecked")
-    Collection<SegmentString> nodedSS = sr.getNodedSubstrings();
+    Collection<SegmentString> nodedSS = noder.getNodedSubstrings();
     return nodedSS;
   }
 
+  private Noder getSRNoder() {
+    Noder noder = new MCIndexSnapRounder(pm);
+    return noder;
+  }
+  
+  private Noder getSimpleNoder(boolean doValidation) {
+    MCIndexNoder mcNoder = new MCIndexNoder();
+    LineIntersector li = new RobustLineIntersector();
+    mcNoder.setSegmentIntersector(new IntersectionAdder(li));
+    
+    Noder noder = mcNoder;
+    if (doValidation) {
+      noder = new ValidatingNoder( mcNoder);
+    }
+    return noder;
+  }
+  
   public void add(Geometry g, int geomIndex)
   {
     if (g.isEmpty()) return;

@@ -325,8 +325,8 @@ public class OverlaySR
   }
 
   private void labelIncompleteNode(OverlayEdge edge, int geomIndex) {
-    Debug.println("\n------  labelIsolatedNode ");
-    Debug.print("BEFORE: " + edge.toStringNode());
+    //Debug.println("\n------  labelIsolatedNode ");
+    //Debug.print("BEFORE: " + edge.toStringNode());
     int loc = locatePoint(edge.orig(), geomIndex);
     if (OverlayLabel.DIM_LINE == dimension(geomIndex)) {
       edge.getLabel().setLocationLine(geomIndex, loc);
@@ -335,7 +335,7 @@ public class OverlaySR
       edge.getLabel().setLocationArea(geomIndex, loc, loc);
     }
     edge.mergeSymLabels();
-    Debug.print("AFTER: " + edge.toStringNode());
+    //Debug.print("AFTER: " + edge.toStringNode());
   }
 
   

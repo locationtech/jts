@@ -58,8 +58,8 @@ public class OverlayNode {
     int currLoc = eStart.getLabel().getLocation(geomIndex, Position.LEFT);
     OverlayEdge e = eStart.oNextOE();
 
-    Debug.println("\npropagateAreaLabels geomIndex = " + geomIndex + " : " + eStart);
-    Debug.print("BEFORE: " + toString(eStart));
+    //Debug.println("\npropagateAreaLabels geomIndex = " + geomIndex + " : " + eStart);
+    //Debug.print("BEFORE: " + toString(eStart));
     
     do {
       OverlayLabel label = e.getLabel();
@@ -77,9 +77,11 @@ public class OverlayNode {
          */
         int locRight = e.getLabel().getLocation(geomIndex, Position.RIGHT);
         if (locRight != currLoc) {
+          /*
           Debug.println("side location conflict: edge R loc " 
         + Location.toLocationSymbol(locRight) + " <>  curr loc " + Location.toLocationSymbol(currLoc) 
         + " for " + e);
+        */
           throw new TopologyException("side location conflict", e.getCoordinate());
         }
         int locLeft = e.getLabel().getLocation(geomIndex, Position.LEFT);
@@ -90,7 +92,7 @@ public class OverlayNode {
       }
       e = e.oNextOE();
     } while (e != eStart);
-    Debug.print("AFTER: " + toString(eStart));
+    //Debug.print("AFTER: " + toString(eStart));
   }
 
   /**
@@ -155,8 +157,8 @@ public class OverlayNode {
      */
     OverlayEdge endOut = nodeEdge.oNextOE();
     OverlayEdge currOut = endOut;
-Debug.println("\n------  Linking node MAX edges");
-Debug.println("BEFORE: " + toString(nodeEdge));
+//Debug.println("\n------  Linking node MAX edges");
+//Debug.println("BEFORE: " + toString(nodeEdge));
     int state = STATE_FIND_INCOMING;
     OverlayEdge currResultIn = null;
     do {
@@ -173,19 +175,19 @@ Debug.println("BEFORE: " + toString(nodeEdge));
         if (! currIn.isInResult()) break;
         currResultIn = currIn;
         state = STATE_LINK_OUTGOING;
-        Debug.println("Found result in-edge:  " + currResultIn);
+        //Debug.println("Found result in-edge:  " + currResultIn);
         break;
       case STATE_LINK_OUTGOING:
         if (! currOut.isInResult()) break;
         // link the in edge to the out edge
         currResultIn.setResultNextMax(currOut);
         state = STATE_FIND_INCOMING;
-        Debug.println("Linked Max edge:  " + currResultIn + " -> " + currOut);
+        //Debug.println("Linked Max edge:  " + currResultIn + " -> " + currOut);
         break;
       }
       currOut = currOut.oNextOE();
     } while (currOut != endOut);
-    Debug.println("AFTER: " + toString(nodeEdge));
+    //Debug.println("AFTER: " + toString(nodeEdge));
     if (state == STATE_LINK_OUTGOING) {
 //Debug.print(firstOut == null, this);
       throw new TopologyException("no outgoing edge found", nodeEdge.getCoordinate());
@@ -204,8 +206,8 @@ Debug.println("BEFORE: " + toString(nodeEdge));
     OverlayEdge endOut = nodeEdge;
     OverlayEdge currMaxRingOut = endOut;
     OverlayEdge currOut = endOut.oNextOE();
-Debug.println("\n------  Linking node MIN ring edges");
-Debug.println("BEFORE: " + toString(nodeEdge));
+//Debug.println("\n------  Linking node MIN ring edges");
+//Debug.println("BEFORE: " + toString(nodeEdge));
     do {
       if (isAlreadyLinked(currOut.symOE(), maxRing)) 
         return;
@@ -218,7 +220,7 @@ Debug.println("BEFORE: " + toString(nodeEdge));
       }
       currOut = currOut.oNextOE();
     } while (currOut != endOut);
-    Debug.println("AFTER: " + toString(nodeEdge));
+    //Debug.println("AFTER: " + toString(nodeEdge));
     if ( currMaxRingOut != null ) {
       throw new TopologyException("Unmatched edge found during min-ring linking", nodeEdge.getCoordinate());
     }    
@@ -256,23 +258,23 @@ Debug.println("BEFORE: " + toString(nodeEdge));
     if (currIn.getEdgeRingMax() !=  maxEdgeRing) 
       return currMaxRingOut;
      
-    Debug.println("Found result in-edge:  " + currIn);
+    //Debug.println("Found result in-edge:  " + currIn);
     
     currIn.setResultNext(currMaxRingOut);
-    Debug.println("Linked Min Edge:  " + currIn + " -> " + currMaxRingOut);
+    //Debug.println("Linked Min Edge:  " + currIn + " -> " + currMaxRingOut);
     // return null to indicate to scan for the next max-ring out-edge
     return null;
   }
 
   public static void mergeSymLabels(OverlayEdge nodeEdge) {
-    Debug.println("\nnodeMergeSymLabels-------- ");
-    Debug.println("BEFORE: " + toString(nodeEdge));
+    //Debug.println("\nnodeMergeSymLabels-------- ");
+    //Debug.println("BEFORE: " + toString(nodeEdge));
     OverlayEdge e = nodeEdge;
     do {
       e.mergeSymLabels();
       e = (OverlayEdge) e.oNext();
     } while (e != nodeEdge);
-    Debug.println("AFTER: " + toString(nodeEdge));
+    //Debug.println("AFTER: " + toString(nodeEdge));
   }
   
   public static String toString(OverlayEdge nodeEdge) {

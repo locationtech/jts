@@ -13,6 +13,8 @@ import test.jts.perf.PerformanceTestRunner;
 public class TestPerfOverlaySR 
 extends PerformanceTestCase
 {
+  private static final int PREC_SCALE_FACTOR = 1000000;
+
   private static final int N_ITER = 1;
   
   static double ORG_X = 100;
@@ -54,7 +56,7 @@ extends PerformanceTestCase
   public void startRun(int npts)
   {
     iter = 0;
-    precisionModel = new PrecisionModel(1000000);
+    precisionModel = new PrecisionModel(PREC_SCALE_FACTOR);
 
     geomA = SineStarFactory.create(new Coordinate(ORG_X, ORG_Y), SIZE, npts, N_ARMS, ARM_RATIO);
 
@@ -80,11 +82,30 @@ extends PerformanceTestCase
 
   private int iter = 0;
   
-  public void runTest1()
+  public void runIntersection()
   {
     for (Geometry b : geomB) {
       OverlaySR.overlay(geomA, b, precisionModel, OverlayOp.INTERSECTION);
-      //geomA.intersection(b);
+    }
+  }  
+  
+  public void runIntersectionOLD()
+  {
+    for (Geometry b : geomB) {
+      geomA.intersection(b);
+    }
+  }  
+  
+  public void runUnion()
+  {
+    for (Geometry b : geomB) {
+      OverlaySR.overlay(geomA, b, precisionModel, OverlayOp.UNION);
+    }
+  }
+  public void runUnionOLD()
+  {
+    for (Geometry b : geomB) {
+      geomA.union(b);
     }
   }
 }
