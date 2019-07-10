@@ -321,7 +321,7 @@ public class HalfEdge {
     sym.setNext(e);
     e.sym().setNext(save);
     //Assert.isTrue(orig.equals2D( e.orig() ));
-    Assert.isTrue(this.isEdgesSorted(), "Found non-sorted or non-unique edges inserting " + e + " into " + this.toStringNode());
+    //Assert.isTrue(this.isEdgesSorted(), "Found non-sorted or non-unique edges inserting " + e + " into " + this.toStringNode());
   }
 
   /**
@@ -418,22 +418,15 @@ public class HalfEdge {
     
     int quadrant = Quadrant.quadrant(dx, dy);
     int quadrant2 = Quadrant.quadrant(dx2, dy2);
-    /*
-    Coordinate dir1 = directionPt();
-    Coordinate dir2 = e.directionPt();
-    
-    // same vector
-    if (dir1.equals2D(dir2))
-      return 0;
-    
-    double quadrant = Quadrant.quadrant(orig, dir1);
-    double quadrant2 = Quadrant.quadrant(orig, dir2);
-    */
-    // if the vectors are in different quadrants, determining the ordering is trivial
+
+    /**
+     * If the direction vectors are in different quadrants, 
+     * that determines the ordering
+     */
     if (quadrant > quadrant2) return 1;
     if (quadrant < quadrant2) return -1;
     
-    // vectors are in the same quadrant
+    //--- vectors are in the same quadrant
     // Check relative orientation of direction vectors
     // this is > e if it is CCW of e
     Coordinate dir1 = directionPt();
@@ -455,7 +448,15 @@ public class HalfEdge {
    */
   public double directionY() { return directionPt().y - orig.y; }
   
-
+  /**
+   * Gets the direction point of this edge.
+   * In the base case this is the dest coordinate 
+   * of the edge.
+   * Subclasses may override to 
+   * allow a HalfEdge to represent an edge with more than two coordinates.
+   * 
+   * @return the direction point for the edge
+   */
   protected Coordinate directionPt() {
     // default is to assume edges have only 2 vertices
     // subclasses may override to provide an internal direction point
