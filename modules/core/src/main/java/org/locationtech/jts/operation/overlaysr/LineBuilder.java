@@ -12,6 +12,7 @@
 package org.locationtech.jts.operation.overlaysr;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.PointLocator;
@@ -20,8 +21,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geomgraph.Position;
-import org.locationtech.jts.operation.overlay.OverlayOp;
-import org.locationtech.jts.topology.Label;
 
 public class LineBuilder {
   
@@ -44,14 +43,16 @@ public class LineBuilder {
   }
 
   private void addResultLines(ArrayList<LineString> lines) {
-    List<OverlayEdge> edges = graph.getEdges();
+    Collection<OverlayEdge> edges = graph.getEdges();
     for (OverlayEdge edge : edges) {
+      // already included as a line
       if (edge.isVisited()) continue;
+      markVisited(edge);
+  
       if (! isResultLine(edge)) continue;
       
       LineString line = createLine(edge);
       lines.add(line);
-      markVisited(edge);
     }
   }
 
@@ -71,6 +72,8 @@ public class LineBuilder {
     if (! lbl.isLine()) return false;
     if (isCoveredByResultArea(lbl)) return false;
     
+    //TODO: can this be replaced by a check on the isLine(i) value for each geom?
+    // This would eliminate the need for the ON label position
     boolean isInResult = OverlaySR.isResultOfOp(
         lbl.getLocation(0,  Position.ON), 
         lbl.getLocation(1,  Position.ON), 

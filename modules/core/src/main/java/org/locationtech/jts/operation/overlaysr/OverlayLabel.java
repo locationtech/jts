@@ -37,6 +37,8 @@ public class OverlayLabel {
   public static final int DIM_LINE = Dimension.L;
   public static final int DIM_AREA = Dimension.A;
   
+  private static int LOC_UNKNOWN = Location.NONE;
+  
   public static OverlayLabel createAreaLabel(int index, int locLeft, int locRight) {
     return new OverlayLabel(index, locLeft, locRight);
   }
@@ -44,8 +46,6 @@ public class OverlayLabel {
   public static OverlayLabel createLineLabel(int index) {
     return new OverlayLabel(index, Location.INTERIOR);
   }
-  
-  private static int LOC_UNKNOWN = Location.NONE;
   
   private int aLocLeft = LOC_UNKNOWN;
   private int aLocRight = LOC_UNKNOWN;
@@ -117,6 +117,10 @@ public class OverlayLabel {
     }
   }
   
+  public boolean isLine() {
+    return aDim == DIM_LINE || bDim == DIM_LINE;
+  }
+  
   public boolean isLine(int index) {
     if (index == 0) {
       return aDim == DIM_LINE;
@@ -124,10 +128,6 @@ public class OverlayLabel {
     return bDim == DIM_LINE;
   }
 
-  public boolean isLine() {
-    return aDim == DIM_LINE || bDim == DIM_LINE;
-  }
-  
   public boolean isArea() {
     return aDim == DIM_AREA || bDim == DIM_AREA;
   }
@@ -138,6 +138,7 @@ public class OverlayLabel {
     }
     return bDim == DIM_AREA;
   }
+  
   public boolean isInteriorArea() {
     return isArea() && (isInteriorArea(0) || isInteriorArea(1));
   }

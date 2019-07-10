@@ -28,66 +28,12 @@ public class OverlayGraph {
     build(edges);
   }
 
-  public void build(Collection<Edge> edges) {
-    for (Edge e : edges) {
-      addEdge(e);
-    }
-  }
-  
   /**
-   * Adds an edge between the coordinates orig and dest
-   * to this graph.
-   * Only valid edges can be added (in particular, zero-length segments cannot be added)
+   * Gets the set of edges in this graph.
    * 
-   * @param orig the edge origin location
-   * @param dest the edge destination location.
-   * @return the created edge
-   * @return null if the edge was invalid and not added
-   * 
-   * @see #isValidEdge(Coordinate, Coordinate)
+   * @return the collection of edges in this graph
    */
-  public OverlayEdge addEdge(Edge edge) {
-    //if (! isValidEdge(orig, dest)) return null;
-    OverlayEdge e = createEdges(edge.getCoordinates(), edge.getLabel());
-    insert(e);
-    insert((OverlayEdge) e.sym());
-    return e;
-  }
-  
-  private OverlayEdge createEdges(Coordinate[] pts, OverlayLabel lbl)
-  {
-    OverlayEdge e0 = OverlayEdge.createEdge(pts, lbl.copy(), true);
-    OverlayEdge e1 = OverlayEdge.createEdge(pts, lbl.copyFlip(), false);
-    e0.init(e1);
-    return e0;
-  }
-
-  /**
-   * Tests if the given coordinates form a valid edge (with non-zero length).
-   * 
-   * @param orig the start coordinate
-   * @param dest the end coordinate
-   * @return true if the edge formed is valid
-   */
-  public static boolean isValidEdge(Coordinate orig, Coordinate dest) {
-    int cmp = dest.compareTo(orig);
-    return cmp != 0;
-  }
-
-  private void insert(OverlayEdge e) {
-    edges.add(e);
-    OverlayEdge nodeEdge = (OverlayEdge) nodeMap.get(e.orig());
-    if (nodeEdge != null) {
-      nodeEdge.insert(e);
-    }
-    else {
-      // add edge origin to node map
-      // (sym is also added in separate call)
-      nodeMap.put(e.orig(), e);
-    }
-  }
-
-  public List<OverlayEdge> getEdges() 
+  public Collection<OverlayEdge> getEdges() 
   {
     return edges;
   }
@@ -110,6 +56,65 @@ public class OverlayGraph {
    */
   public OverlayEdge getNodeEdge(Coordinate nodePt) {
     return nodeMap.get(nodePt);
+  }
+  
+  private void build(Collection<Edge> edges) {
+    for (Edge e : edges) {
+      addEdge(e);
+    }
+  }
+  
+  /**
+   * Adds an edge between the coordinates orig and dest
+   * to this graph.
+   * Only valid edges can be added (in particular, zero-length segments cannot be added)
+   * 
+   * @param orig the edge origin location
+   * @param dest the edge destination location.
+   * @return the created edge
+   * @return null if the edge was invalid and not added
+   * 
+   * @see #isValidEdge(Coordinate, Coordinate)
+   */
+  private OverlayEdge addEdge(Edge edge) {
+    //if (! isValidEdge(orig, dest)) return null;
+    OverlayEdge e = createEdges(edge.getCoordinates(), edge.getLabel());
+    insert(e);
+    insert((OverlayEdge) e.sym());
+    return e;
+  }
+  
+  private OverlayEdge createEdges(Coordinate[] pts, OverlayLabel lbl)
+  {
+    OverlayEdge e0 = OverlayEdge.createEdge(pts, lbl.copy(), true);
+    OverlayEdge e1 = OverlayEdge.createEdge(pts, lbl.copyFlip(), false);
+    e0.init(e1);
+    return e0;
+  }
+
+  /**
+   * Tests if the given coordinates form a valid edge (with non-zero length).
+   * 
+   * @param orig the start coordinate
+   * @param dest the end coordinate
+   * @return true if the edge formed is valid
+   */
+  private static boolean isValidEdge(Coordinate orig, Coordinate dest) {
+    int cmp = dest.compareTo(orig);
+    return cmp != 0;
+  }
+
+  private void insert(OverlayEdge e) {
+    edges.add(e);
+    OverlayEdge nodeEdge = (OverlayEdge) nodeMap.get(e.orig());
+    if (nodeEdge != null) {
+      nodeEdge.insert(e);
+    }
+    else {
+      // add edge origin to node map
+      // (sym is also added in separate call)
+      nodeMap.put(e.orig(), e);
+    }
   }
   
   /**
