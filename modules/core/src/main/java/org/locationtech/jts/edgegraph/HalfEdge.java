@@ -287,34 +287,47 @@ public class HalfEdge {
     e.sym().setNext(save);
   }
 
-  boolean isCCW() {
-    // degree <= 2 has no orientation
-    if (degree() <= 2) return true;
-    
-    // test each triangle of consecutive direction points to confirm it is CCW
-    HalfEdge e = this;
+  /**
+   * Tests whether the edges around the origin
+   * are sorted correctly.
+   * Note that edges must be strictly increasing,
+   * which implies no two edges can have the same direction point.
+   * 
+   * @return true if the origin edges are sorted correctly
+   */
+  boolean isEdgesSorted() {
+    // find lowest edge at origin
+    HalfEdge lowest = findLowest();
+    HalfEdge e = lowest;
+    // check that all edges are sorted
     do {
       HalfEdge eNext = e.oNext();
-      HalfEdge eNext2 = eNext.oNext();
-      if (! isCCW(e, eNext, eNext2)) return false;
+      if (eNext == lowest) break;
+      boolean isSorted = eNext.compareTo(e) > 0;
+      if (! isSorted) {
+        //int comp = eNext.compareTo(e);
+        return false;
+      }
       e = eNext;
-    } while (e != this);
+    } while (e != lowest);
     return true;
-  }
-
+  }  
+  
   /**
-   * Tests if the edges e1,e2,e3 are oriented CCW 
-   * around their origin (using their direction points).
+   * Finds the lowest edge around the origin,
+   * using the standard edge ordering.
    * 
-   * @param e1 a half-edge
-   * @param e2 a half-edge
-   * @param e3 a half-edge
-   * @return true if the edge triplet is oriented CCW
+   * @return the lowest edge around the origin
    */
-  private boolean isCCW(HalfEdge e1, HalfEdge e2, HalfEdge e3) {
-    int orientIndex = Orientation.index(
-        e1.dest(), e2.dest(), e3.dest());
-    return orientIndex == Orientation.COUNTERCLOCKWISE;
+  private HalfEdge findLowest() {
+    HalfEdge lowest = this;
+    HalfEdge e = this.oNext();
+    do {
+      if (e.compareTo(lowest) < 0)
+        lowest = e;
+      e = e.oNext();
+    } while (e != this);
+    return lowest;
   }
   
   /**

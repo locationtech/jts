@@ -37,7 +37,7 @@ public class EdgeGraphTest extends TestCase {
         new Coordinate[] { new Coordinate(1, 0),
       new Coordinate(0, 1), new Coordinate(-1, 0)
         });
-    checkCCW(graph, new Coordinate(0, 0), new Coordinate(1, 0));
+    checkNodeValid(graph, new Coordinate(0, 0), new Coordinate(1, 0));
     checkEdge(graph, new Coordinate(0, 0), new Coordinate(1, 0));
   }
 
@@ -50,9 +50,16 @@ public class EdgeGraphTest extends TestCase {
     HalfEdge e1 = addEdge(graph, 50, 39, 35, 42);
     addEdge(graph, 50, 39, 50, 60);
     addEdge(graph, 50, 39, 68, 35);
-    checkCCW(e1);
+    checkNodeValid(e1);
   }
 
+  public void testCCWAfterInserts2() {
+    EdgeGraph graph = new EdgeGraph();
+    HalfEdge e1 = addEdge(graph, 50, 200, 0, 200);
+    addEdge(graph, 50, 200, 190, 50);
+    addEdge(graph, 50, 200, 200, 200);
+    checkNodeValid(e1);
+  }
 
 
   private void checkEdgeRing(EdgeGraph graph, Coordinate p,
@@ -72,14 +79,16 @@ public class EdgeGraphTest extends TestCase {
     assertNotNull(e);
   }
 
-  private void checkCCW(EdgeGraph graph, Coordinate p0, Coordinate p1) {
+  private void checkNodeValid(EdgeGraph graph, Coordinate p0, Coordinate p1) {
     HalfEdge e = graph.findEdge(p0, p1);
-    assertTrue(e.isCCW());
+    boolean isNodeValid = e.isEdgesSorted();
+    assertTrue("Found non-sorted edges around node " + e, isNodeValid); 
   }
 
 
-  private void checkCCW(HalfEdge e) {
-    assertTrue(e.isCCW());
+  private void checkNodeValid(HalfEdge e) {
+    boolean isNodeValid = e.isEdgesSorted();
+    assertTrue("Found non-sorted edges around node " + e, isNodeValid); 
   }
   
   private EdgeGraph build(String wkt) throws ParseException {
@@ -94,4 +103,5 @@ public class EdgeGraphTest extends TestCase {
   private HalfEdge addEdge(EdgeGraph graph, double p0x, double p0y, double p1x, double p1y) {
     return graph.addEdge(new Coordinate(p0x, p0y), new Coordinate(p1x, p1y));
   }
+
 }
