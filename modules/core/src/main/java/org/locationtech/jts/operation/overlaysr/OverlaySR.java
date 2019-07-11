@@ -167,7 +167,7 @@ public class OverlaySR
     //--- Topology phase
     graph = new OverlayGraph( edges );
     graph.computeLabelling();
-    labelIncompleteNodes(graph.getNodeEdges());
+    labelIncompleteEdges(graph.getEdges());
     
     graph.markResultAreaEdges(opCode);
     graph.removeDuplicateResultAreaEdges();
@@ -307,32 +307,38 @@ public class OverlaySR
     return edges;
   }
 
-  private void labelIncompleteNodes(Collection<OverlayEdge> collection) {
-    for (OverlayEdge edge : collection) {
+  private void labelIncompleteEdges(Collection<OverlayEdge> edges) {
+    for (OverlayEdge edge : edges) {
+      Debug.println("\n------  labelIncompleteNode for " + edge);
       if (edge.getLabel().isUnknown(0)) {
-        labelIncompleteNode(edge, 0);
+        labelIncompleteEdge(edge, 0);
       }
       if (edge.getLabel().isUnknown(1)) {
-        labelIncompleteNode(edge, 1);
+        labelIncompleteEdge(edge, 1);
       }
     }
   }
 
-  private void labelIncompleteNode(OverlayEdge edge, int geomIndex) {
-    //Debug.println("\n------  labelIsolatedNode ");
-    //Debug.print("BEFORE: " + edge.toStringNode());
-    int loc = locatePoint(edge.orig(), geomIndex);
-    if (OverlayLabel.DIM_LINE == dimension(geomIndex)) {
-      edge.getLabel().setLocationLine(geomIndex, loc);
+  private void labelIncompleteEdge(OverlayEdge edge, int geomIndex) {
+    Debug.println("\n------  labelIncompleteNode - geomIndex= " + geomIndex);
+    Debug.print("BEFORE: " + edge.toStringNode());
+    int otherGeomDim = dimension(geomIndex);
+    if (OverlayLabel.DIM_LINE == otherGeomDim) {
+      edge.getLabel().setLocationLine(geomIndex, Location.EXTERIOR);
     }
     else { // assume DIM_AREA
+      int loc = locatePoint(edge.orig(), geomIndex);
       edge.getLabel().setLocationArea(geomIndex, loc, loc);
     }
     edge.mergeSymLabels();
-    //Debug.print("AFTER: " + edge.toStringNode());
+    Debug.print("AFTER: " + edge.toStringNode());
   }
 
   
+  private static int otherIndex(int geomIndex) {
+    return 1 - geomIndex;
+  }
+
   private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
     List lines = new ArrayList();
     for (OverlayEdge edge : graph.getEdges()) {

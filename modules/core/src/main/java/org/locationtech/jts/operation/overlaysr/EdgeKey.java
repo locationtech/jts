@@ -20,34 +20,7 @@ class EdgeKey implements Comparable<EdgeKey> {
   public static EdgeKey create(Edge edge) {
     return new EdgeKey(edge);
   }
-  
-  public static boolean direction(Edge ss) {
-    Coordinate[] pts = ss.getCoordinates();
-    if (pts.length < 2) {
-      throw new IllegalStateException("Edge must have >= 2 points");
-    }
-    Coordinate p0 = pts[0];
-    Coordinate p1 = pts[1];
     
-    Coordinate pn0 = pts[pts.length - 1];
-    Coordinate pn1 = pts[pts.length - 2];
-    
-    int cmp = 0;
-    int cmp0 = p0.compareTo(pn0);
-    if (cmp0 != 0) cmp = cmp0;
-    
-    if (cmp == 0) {
-      int cmp1 = p1.compareTo(pn1);
-      if (cmp1 != 0) cmp = cmp1;
-    }
-    
-    if (cmp == 0) {
-      throw new IllegalStateException("Edge direction cannot be determined because endpoints are equal");
-    }
-    
-    return cmp == -1 ? true : false;
-  }
-  
   private Edge edge;
   private Coordinate p0;
   private Coordinate p1;
@@ -58,7 +31,7 @@ class EdgeKey implements Comparable<EdgeKey> {
   }
 
   private void initPoints(Edge edge) {
-    boolean direction = direction(edge);
+    boolean direction = edge.direction();
     if (direction) {
       p0 = edge.getCoordinate(0);
       p1 = edge.getCoordinate(1);

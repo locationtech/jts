@@ -138,6 +138,53 @@ public class OverlaySRTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
+  public void testCollapseBoxGoreIntersection() {
+    Geometry a = read("MULTIPOLYGON (((1 1, 5 1, 5 0, 1 0, 1 1)), ((1 1, 5 2, 5 4, 1 4, 1 1)))");
+    Geometry b = read("POLYGON ((1 0, 1 2, 2 2, 2 0, 1 0))");
+    Geometry expected = read("POLYGON ((2 0, 1 0, 1 1, 1 2, 2 2, 2 1, 2 0))");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testCollapseBoxGoreUnion() {
+    Geometry a = read("MULTIPOLYGON (((1 1, 5 1, 5 0, 1 0, 1 1)), ((1 1, 5 2, 5 4, 1 4, 1 1)))");
+    Geometry b = read("POLYGON ((1 0, 1 2, 2 2, 2 0, 1 0))");
+    Geometry expected = read("POLYGON ((2 0, 1 0, 1 1, 1 2, 1 4, 5 4, 5 2, 2 1, 5 1, 5 0, 2 0))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  public void testSnapBoxGoreIntersection() {
+    Geometry a = read("MULTIPOLYGON (((1 1, 5 1, 5 0, 1 0, 1 1)), ((1 1, 5 2, 5 4, 1 4, 1 1)))");
+    Geometry b = read("POLYGON ((4 3, 5 3, 5 0, 4 0, 4 3))");
+    Geometry expected = read("MULTIPOLYGON (((4 3, 5 3, 5 2, 4 2, 4 3)), ((4 0, 4 1, 5 1, 5 0, 4 0)))");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testSnapBoxGoreUnion() {
+    Geometry a = read("MULTIPOLYGON (((1 1, 5 1, 5 0, 1 0, 1 1)), ((1 1, 5 2, 5 4, 1 4, 1 1)))");
+    Geometry b = read("POLYGON ((4 3, 5 3, 5 0, 4 0, 4 3))");
+    Geometry expected = read("POLYGON ((1 1, 1 4, 5 4, 5 3, 5 2, 5 1, 5 0, 4 0, 1 0, 1 1), (1 1, 4 1, 4 2, 1 1))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testCollapseTriBoxIntersection() {
+    Geometry a = read("POLYGON ((1 2, 1 1, 9 1, 1 2))");
+    Geometry b = read("POLYGON ((9 2, 9 1, 8 1, 8 2, 9 2))");
+    Geometry expected = read("LINESTRING (8 1, 9 1)");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testCollapseTriBoxUnion() {
+    Geometry a = read("POLYGON ((1 2, 1 1, 9 1, 1 2))");
+    Geometry b = read("POLYGON ((9 2, 9 1, 8 1, 8 2, 9 2))");
+    Geometry expected = read("MULTIPOLYGON (((1 1, 1 2, 8 1, 1 1)), ((8 1, 8 2, 9 2, 9 1, 8 1)))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+
   public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlaySR.overlay(a, b, pm, OverlayOp.DIFFERENCE);

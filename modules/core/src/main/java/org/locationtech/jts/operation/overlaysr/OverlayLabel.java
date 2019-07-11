@@ -37,7 +37,7 @@ public class OverlayLabel {
   public static final int DIM_LINE = Dimension.L;
   public static final int DIM_AREA = Dimension.A;
   
-  private static int LOC_UNKNOWN = Location.NONE;
+  public static int LOC_UNKNOWN = Location.NONE;
   
   public static OverlayLabel createAreaLabel(int index, int locLeft, int locRight) {
     return new OverlayLabel(index, locLeft, locRight);
@@ -83,6 +83,11 @@ public class OverlayLabel {
     this.bDim = lbl.bDim;
   }
 
+  public int getDimension(int index) {
+    if (index == 0)
+      return aDim;
+    return bDim;
+  }
   public void setLocationArea(int index, int locLeft, int locRight) {
     setLocationArea(index, Location.BOUNDARY,locLeft, locRight);
   }
@@ -113,6 +118,21 @@ public class OverlayLabel {
       bLocOn = loc;
       bLocLeft = Location.EXTERIOR;
       bLocRight = Location.EXTERIOR;
+      bDim = DIM_LINE;
+    }
+  }
+  
+  public void setLocationLine(int index, int locOn, int locSides) {
+    if (index == 0) {
+      aLocOn = locOn;
+      aLocLeft = locSides;
+      aLocRight = locSides;
+      aDim = DIM_LINE;
+    }
+    else {
+      bLocOn = locOn;
+      bLocLeft = locSides;
+      bLocRight = locSides;
       bDim = DIM_LINE;
     }
   }
@@ -189,6 +209,15 @@ public class OverlayLabel {
       return aLocOn;
     }
     return bLocOn;
+  }
+
+  public boolean hasSideLocation(int index) {
+    if (index == 0) {
+      return aLocLeft != LOC_UNKNOWN
+          || aLocRight != LOC_UNKNOWN;
+    }
+    return bLocLeft != LOC_UNKNOWN
+        || bLocRight != LOC_UNKNOWN;
   }
 
   public boolean hasLocation(int index) {
@@ -325,7 +354,7 @@ public class OverlayLabel {
     return buf.toString();
   }
 
-  private char dimensionSymbol(int dim) {
+  public static char dimensionSymbol(int dim) {
     switch (dim) {
     case DIM_LINE: return 'L';
     case DIM_AREA: return 'A';

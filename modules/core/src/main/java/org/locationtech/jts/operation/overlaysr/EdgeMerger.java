@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.locationtech.jts.util.Debug;
+
 /**
  * Performs merging on the noded edges of the input geometries.
  * Merging takes place on edges which are coincident 
@@ -55,24 +57,27 @@ public class EdgeMerger {
   }
   
   public ArrayList<Edge> merge() {
-    for (Edge ss : edges) {
-      EdgeKey edgeKey = EdgeKey.create(ss);
+    for (Edge edge : edges) {
+      EdgeKey edgeKey = EdgeKey.create(edge);
       Edge existing = edgeMap.get(edgeKey);
       if (existing == null) {
-        edgeMap.put(edgeKey, ss);
+        edgeMap.put(edgeKey, edge);
       }
       else {
-        // TODO: check that edges are identical (up to direction)
-        mergeLabel(existing, ss);
+        // Assert: edges are identical (up to direction)
+        existing.mergeEdge(edge);
+        Debug.println("edge merged: " + existing);
+        //mergeLabel(existing, ss);
       }
     }
     return new ArrayList<Edge>(edgeMap.values());
   }
   
+  /*
   private void mergeLabel(Edge target, Edge edge) {
     OverlayLabel lblTarget = target.getLabel();
     OverlayLabel lblToMerge = edge.getLabel();
-    boolean relDir = relativeDirection(target, edge);
+    boolean relDir = target.relativeDirection(edge);
     if (relDir) {
       lblTarget.merge(lblToMerge);
     }
@@ -80,22 +85,6 @@ public class EdgeMerger {
       lblTarget.mergeFlip(lblToMerge);
     }
   }
-
-  /**
-   * Compares two coincident edges to determine
-   * whether they have the same or opposite direction.
-   * 
-   * @param edge1 an edge
-   * @param edge2 an edge
-   * @return true if the edges have the same direction, false if not
-   */
-  private static boolean relativeDirection(Edge edge1, Edge edge2) {
-    // assert: the edges match (have the same coordinates up to direction)
-    if (! edge1.getCoordinate(0).equals2D(edge2.getCoordinate(0)))
-      return false;
-    if (! edge1.getCoordinate(1).equals2D(edge2.getCoordinate(1)))
-      return false;
-    return true;
-  }
+  */
 
 }

@@ -36,19 +36,19 @@ public class OverlayNode {
    * @param e node to compute labelling for
    */
   public static void computeLabelling(OverlayEdge nodeEdge) {
-    propagateAreaLabels(nodeEdge, 0);
-    propagateAreaLabels(nodeEdge, 1);
+    propagateSideLabels(nodeEdge, 0);
+    propagateSideLabels(nodeEdge, 1);
   }
 
   /**
-   * Scans around a node CCW, propagating the labels
+   * Scans around a node CCW, propagating the side labels
    * for a given area geometry to all edges (and their sym)
    * with unknown locations for that geometry.
    * @param e2 
    * 
    * @param geomIndex the geometry to propagate locations for
    */
-  private static void propagateAreaLabels(OverlayEdge nodeEdge, int geomIndex) {
+  private static void propagateSideLabels(OverlayEdge nodeEdge, int geomIndex) {
     OverlayEdge eStart = findPropagationStartEdge(nodeEdge, geomIndex);
     // no labelled edge found, so nothing to propagate
     if ( eStart == null )
@@ -58,8 +58,8 @@ public class OverlayNode {
     int currLoc = eStart.getLabel().getLocation(geomIndex, Position.LEFT);
     OverlayEdge e = eStart.oNextOE();
 
-    //Debug.println("\npropagateAreaLabels geomIndex = " + geomIndex + " : " + eStart);
-    //Debug.print("BEFORE: " + toString(eStart));
+    Debug.println("\npropagateSideLabels geomIndex = " + geomIndex + " : " + eStart);
+    Debug.print("BEFORE: " + toString(eStart));
     
     do {
       OverlayLabel label = e.getLabel();
@@ -67,7 +67,7 @@ public class OverlayNode {
        * If location is unknown 
        * they are all set to current location
        */
-      if ( ! label.hasLocation(geomIndex) ) {
+      if ( ! label.hasSideLocation(geomIndex) ) {
         e.setLocationAreaBoth(geomIndex, currLoc);
       }
       else {
@@ -77,11 +77,11 @@ public class OverlayNode {
          */
         int locRight = e.getLabel().getLocation(geomIndex, Position.RIGHT);
         if (locRight != currLoc) {
-          /*
-          Debug.println("side location conflict: edge R loc " 
+          //*
+          Debug.println("side location conflict: index= " + geomIndex + " R loc " 
         + Location.toLocationSymbol(locRight) + " <>  curr loc " + Location.toLocationSymbol(currLoc) 
         + " for " + e);
-        */
+        //*/
           throw new TopologyException("side location conflict", e.getCoordinate());
         }
         int locLeft = e.getLabel().getLocation(geomIndex, Position.LEFT);
@@ -92,7 +92,7 @@ public class OverlayNode {
       }
       e = e.oNextOE();
     } while (e != eStart);
-    //Debug.print("AFTER: " + toString(eStart));
+    Debug.print("AFTER: " + toString(eStart));
   }
 
   /**
@@ -106,7 +106,7 @@ public class OverlayNode {
     OverlayEdge eStart = nodeEdge;
     do {
       OverlayLabel label = eStart.getLabel();
-      if (label.hasLocation(geomIndex)) {
+      if (label.hasSideLocation(geomIndex)) {
         return eStart;
       }
       eStart = (OverlayEdge) eStart.oNext();

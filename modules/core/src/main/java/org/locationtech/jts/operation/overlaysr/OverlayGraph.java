@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.util.Debug;
 
 public class OverlayGraph {
   
@@ -78,7 +79,8 @@ public class OverlayGraph {
    */
   private OverlayEdge addEdge(Edge edge) {
     //if (! isValidEdge(orig, dest)) return null;
-    OverlayEdge e = createEdges(edge.getCoordinates(), edge.getLabel());
+    OverlayEdge e = createEdges(edge.getCoordinates(), edge.getMergedLabel());
+    Debug.println("added edge: " + e);
     insert(e);
     insert((OverlayEdge) e.sym());
     return e;
