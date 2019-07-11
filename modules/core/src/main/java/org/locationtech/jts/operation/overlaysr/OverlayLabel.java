@@ -254,10 +254,12 @@ public class OverlayLabel {
     if (index == 0) {
       aLocLeft = loc;
       aLocRight = loc;
+      if (aLocOn == LOC_UNKNOWN) aLocOn = loc;
     }
     else {
       bLocLeft = loc;
       bLocRight = loc;
+      if (bLocOn == LOC_UNKNOWN) bLocOn = loc;
     }
   }
 

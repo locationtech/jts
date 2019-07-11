@@ -164,7 +164,7 @@ public class OverlaySR
     
     List<Edge> edges = mergeEdges(nodedSegStrings);
     
-    //--- Topology phase
+    //--- Topology building phase
     graph = new OverlayGraph( edges );
     graph.computeLabelling();
     labelIncompleteEdges(graph.getEdges());
@@ -309,7 +309,7 @@ public class OverlaySR
 
   private void labelIncompleteEdges(Collection<OverlayEdge> edges) {
     for (OverlayEdge edge : edges) {
-      Debug.println("\n------  labelIncompleteNode for " + edge);
+      Debug.println("\n------  checking for Incomplete edge " + edge);
       if (edge.getLabel().isUnknown(0)) {
         labelIncompleteEdge(edge, 0);
       }
@@ -320,7 +320,7 @@ public class OverlaySR
   }
 
   private void labelIncompleteEdge(OverlayEdge edge, int geomIndex) {
-    Debug.println("\n------  labelIncompleteNode - geomIndex= " + geomIndex);
+    Debug.println("\n------  labelIncompleteEdge - geomIndex= " + geomIndex);
     Debug.print("BEFORE: " + edge.toStringNode());
     int otherGeomDim = dimension(geomIndex);
     if (OverlayLabel.DIM_LINE == otherGeomDim) {

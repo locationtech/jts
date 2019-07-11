@@ -42,7 +42,15 @@ public class OverlaySRSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void XtestCollapseTriBoxIntersection() {
+  public void testCollapseBoxGoreIntersection() {
+    Geometry a = read("MULTIPOLYGON (((1 1, 5 1, 5 0, 1 0, 1 1)), ((1 1, 5 2, 5 4, 1 4, 1 1)))");
+    Geometry b = read("POLYGON ((1 0, 1 2, 2 2, 2 0, 1 0))");
+    Geometry expected = read("POLYGON ((2 0, 1 0, 1 1, 1 2, 2 2, 2 1, 2 0))");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void xtestCollapseTriBoxIntersection() {
     Geometry a = read("POLYGON ((1 2, 1 1, 9 1, 1 2))");
     Geometry b = read("POLYGON ((9 2, 9 1, 8 1, 8 2, 9 2))");
     Geometry expected = read("LINESTRING (8 1, 9 1)");
@@ -115,7 +123,7 @@ public class OverlaySRSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testBoxLineIntersection() {
+  public void xtestBoxLineIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("LINESTRING (50 150, 150 150)");
     Geometry expected = read("LINESTRING (100 150, 150 150)");

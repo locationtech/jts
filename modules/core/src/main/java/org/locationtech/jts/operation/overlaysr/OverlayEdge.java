@@ -186,9 +186,9 @@ public class OverlayEdge extends HalfEdge {
     maxEdgeRing = maximalEdgeRing;
   }
   
-  public void setLocationAreaBoth(int geomIndex, int loc) {
-    getLabel().setLocationArea(geomIndex, loc, loc, loc);
-    symOE().getLabel().setLocationArea(geomIndex, loc, loc, loc);
+  public void setLocationBothSides(int geomIndex, int loc) {
+    getLabel().setLocationBothSides(geomIndex, loc);
+    symOE().getLabel().setLocationBothSides(geomIndex, loc);
   }
 
   public void markInResultArea(int overlayOpCode) {

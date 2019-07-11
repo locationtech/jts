@@ -68,7 +68,7 @@ public class OverlayNode {
        * they are all set to current location
        */
       if ( ! label.hasSideLocation(geomIndex) ) {
-        e.setLocationAreaBoth(geomIndex, currLoc);
+        e.setLocationBothSides(geomIndex, currLoc);
       }
       else {
         /**
