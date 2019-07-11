@@ -270,7 +270,7 @@ public class TWKBWriterTest extends TestCase {
         check(reader3,"POINT M(1 2 3)", 5, 5, 0, false, false, "a10816c09a0c80b51806");
     }
 
-    private CoordinateSequenceFactory factory = new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE, 2);
+    private CoordinateSequenceFactory factory = PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
     private GeometryFactory geometryFactory = new GeometryFactory(factory);
     private TWKBWriter writer = new TWKBWriter();
     private WKTReader reader = new WKTReader(geometryFactory);
@@ -352,8 +352,7 @@ public class TWKBWriterTest extends TestCase {
 
     private void checkTWKBGeometry(String twkbHex, int dimension, String expectedWKT) throws ParseException
     {
-        CoordinateSequenceFactory csf =
-                new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE ,dimension);
+        CoordinateSequenceFactory csf = PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
         GeometryFactory geomFactory = new GeometryFactory(csf);
         WKTReader rdr = new WKTReader(geomFactory);
 
