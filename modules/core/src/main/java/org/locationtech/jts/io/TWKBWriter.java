@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2018 James Hughes
+ * Copyright (c) 2019 Gabriel Roldan
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -11,384 +12,156 @@
  */
 package org.locationtech.jts.io;
 
-import com.google.protobuf.CodedOutputStream;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.util.Assert;
-
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Objects;
 
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.TWKBIO.TWKBOutputStream;
+
+/**
+ * <pre>
+ * {@code
+ * 
+ * twkb                    := <header> <geometry_body>
+ * header                  := <type_and_precision> <metadata_header> [extended_dimensions_header] [geometry_body_size]
+ * type_and_precision      := byte := <type_mask OR precision_mask>)
+ * type_mask               := <ubyte> (0b0000XXXX -> 1=point, 2=linestring, 3=polygon, 4=multipoint, 
+ *                                     5=multilinestring, 6=multipolygon, 7=geometry collection)
+ * precision_mask          := <signed byte> (zig-zag encoded 4-bit signed integer, 0bXXXX0000. Number of base-10 decimal places 
+ *                                           stored. A positive retaining information to the right of the decimal place, negative 
+ *                                           rounding up to the left of the decimal place)  
+ * metadata_header := byte := <bbox_flag OR  size_flag OR idlist_flag OR extended_precision_flag OR empty_geometry_flag>
+ * bbox_flag               := 0b00000001
+ * size_flag               := 0b00000010
+ * idlist_flag             := 0b00000100
+ * extended_precision_flag := 0b00001000
+ * empty_geometry_flag     := 0b00010000
+ * 
+ * # extended_dimensions_header present iif extended_precision_flag == 1
+ * extended_dimensions_header  := byte := <Z_coordinates_presence_flag OR M_coordinates_presence_flag OR Z_precision OR M_precision>
+ * Z_coordinates_presence_flag := 0b00000001 
+ * M_coordinates_presence_flag := 0b00000010
+ * Z_precision                 := 0b000XXX00 3-bit unsigned integer using bits 3-5 
+ * M_precision                 := 0bXXX00000 3-bit unsigned integer using bits 6-8
+ * 
+ * # geometry_body_size present iif size_flag == 1 
+ * geometry_body_size := uint32 # size in bytes of <geometry_body>
+ * 
+ * # geometry_body present iif empty_geometry_flag == 0
+ * geometry_body := [bounds] [idlist] <geometry>
+ * # bounds present iff bbox_flag == 1 
+ * # 2 signed varints per dimension. i.e.:
+ * # [xmin, deltax, ymin, deltay]                              iif Z_coordinates_presence_flag == 0 AND M_coordinates_presence_flag == 0
+ * # [xmin, deltax, ymin, deltay, zmin, deltaz]                iif Z_coordinates_presence_flag == 1 AND M_coordinates_presence_flag == 0
+ * # [xmin, deltax, ymin, deltay, zmin, deltaz, mmin, deltam]  iif Z_coordinates_presence_flag == 1 AND M_coordinates_presence_flag == 1
+ * # [xmin, deltax, ymin, deltay, mmin, deltam]                iif Z_coordinates_presence_flag == 0 AND M_coordinates_presence_flag == 1
+ * bounds          := sint32[4] | sint32[6] | sint32[8] 
+ * geometry        := point | linestring | polygon | multipoint | multilinestring | multipolygon | geomcollection
+ * point           := sint32[dimension]
+ * linestring      := <npoints:uint32> [point[npoints]]
+ * polygon         := <nrings:uint32> [linestring]
+ * multipoint      := <nmembers:uint32> [idlist:<sint32[nmembers]>] [point[nmembers]]
+ * multilinestring := <nmembers:uint32> [idlist:<sint32[nmembers]>] [linestring[nmembers]]
+ * multipolygon    := <nmembers:uint32> [idlist:<sint32[nmembers]>] [polygon[nmembers]]
+ * geomcollection  := <nmembers:uint32> [idlist:<sint32[nmembers]>] [twkb[nmembers]]
+ * 
+ * uint32 := <Unsigned variable-length encoded integer>
+ * sint32 := <Signed variable-length, zig-zag encoded integer>
+ * byte := <Single octect>
+ * 
+ * }
+ * </pre>
+ */
 public class TWKBWriter {
 
-    private ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
-    //private OutStream byteArrayOutStream = new OutputStreamOutStream(byteArrayOS);
-
-    private byte[] buf = new byte[8];
-    private int outputDimension = 2;
-
-    public TWKBWriter(int outputDimension) {
-        this.outputDimension = outputDimension;
-    }
+    private TWKBHeader paramsHeader = TWKBHeader.builder().build();
 
     public TWKBWriter() {
     }
 
-    public byte[] write(Geometry geom) {
-        return write(geom, 0, 0, 0, false, false);
-    }
-
-    public byte[] write(Geometry geom,
-                        int xyprecision,
-                        int zprecision,
-                        int mprecision,
-                        boolean includeSize,
-                        boolean includeBbox)
-    {
-        CodedOutputStream cos = CodedOutputStream.newInstance(byteArrayOS);
-        try {
-            byteArrayOS.reset();
-            write(geom, cos, xyprecision, zprecision, mprecision, includeSize, includeBbox, null);
-            cos.flush();
-        }
-        catch (IOException ex) {
-            throw new RuntimeException("Unexpected IO exception: " + ex.getMessage());
-        }
-        return byteArrayOS.toByteArray();
-    }
-
     /**
-     * Writes a {@link Geometry} to an {@link OutStream}.
-     *
-     * @param geom the geometry to write
-     * @param os the out stream to write to
-     * @throws IOException if an I/O error occurs
+     * Number of base-10 decimal places stored.
+     * <p>
+     * A positive retaining information to the right of the decimal place, negative rounding up to
+     * the left of the decimal place).
+     * <p>
+     * Defaults to {@code 7}
      */
-    public double[] write(Geometry geom, CodedOutputStream os,
-                      int xyprecision,
-                      int zprecision,
-                      int mprecision,
-                      boolean includeSize,
-                      boolean includeBbox,
-                      double[] inputValueArray) throws IOException
-    {
-        writeHeader(geom, os, xyprecision, zprecision, mprecision, includeSize, includeBbox);
-        if (geom instanceof Point)
-            return writePoint((Point) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
-            // LinearRings will be written as LineStrings
-        else if (geom instanceof LineString)
-            return writeLineString((LineString) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
-        else if (geom instanceof Polygon)
-            return writePolygon((Polygon) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
-        else if (geom instanceof MultiPoint)
-            return writeMultiPoint((MultiPoint) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
-        else if (geom instanceof MultiLineString)
-            return writeMultiLineString((MultiLineString) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
-        else if (geom instanceof MultiPolygon)
-            return writeMultiPolygon((MultiPolygon) geom, os, xyprecision, zprecision, mprecision, inputValueArray);
-        else if (geom instanceof GeometryCollection)
-            return writeGeometryCollection((GeometryCollection) geom, os, xyprecision, zprecision, mprecision, includeSize, includeBbox, inputValueArray);
-        else {
-            Assert.shouldNeverReachHere("Unknown Geometry type");
-            return null;
+    public TWKBWriter setXYPrecision(int xyprecision) {
+        if (xyprecision < -7 || xyprecision > 7) {
+            throw new IllegalArgumentException(
+                    "X/Z precision cannot be greater than 7 or less than -7");
         }
+        paramsHeader = paramsHeader.withXyPrecision(xyprecision);
+        return this;
     }
 
-    private double[] writePoint(Point pt, CodedOutputStream os,
-                            int xyprecision,
-                            int zprecision,
-                            int mprecision,
-                            double[] inputValueArray) throws IOException
-    {
-        // Handle empty geometries first?
-
-        return writeCoordinateSequence(pt.getCoordinateSequence(), false, os,
-                xyprecision, zprecision, mprecision, inputValueArray);
+    public TWKBWriter setEncodeZ(boolean includeZDimension) {
+        paramsHeader = paramsHeader.withHasZ(includeZDimension);
+        return this;
     }
 
-    private double[] writeLineString(LineString line, CodedOutputStream os,
-                            int xyprecision,
-                            int zprecision,
-                            int mprecision,
-                            double[] inputValueArray) throws IOException
-    {
-        // Handle empty geometries first?
-        if (!line.isEmpty()) {
-            os.writeInt32NoTag(line.getNumPoints());
-            return writeCoordinateSequence(line.getCoordinateSequence(), false, os,
-                    xyprecision, zprecision, mprecision, inputValueArray);
-        }
-        return null;
+    public TWKBWriter setEncodeM(boolean includeMDimension) {
+        paramsHeader = paramsHeader.withHasM(includeMDimension);
+        return this;
     }
 
-    private double[] writePolygon(Polygon polygon, CodedOutputStream os,
-                                 int xyprecision,
-                                 int zprecision,
-                                 int mprecision,
-                                 double[] inputValueArray) throws IOException
-    {
-        // Handle empty geometries first?
-        if (!polygon.isEmpty()) {
-                        os.writeInt32NoTag(polygon.getNumInteriorRing() + 1);
-            inputValueArray = writeLineString(polygon.getExteriorRing(), os,
-                    xyprecision, zprecision, mprecision, inputValueArray);
-
-            for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-                inputValueArray = writeLineString(polygon.getInteriorRingN(i), os,
-                        xyprecision, zprecision, mprecision, inputValueArray);
-            }
+    public TWKBWriter setZPrecision(int zprecision) {
+        if (zprecision < 0 || zprecision > 7) {
+            throw new IllegalArgumentException("Z precision cannot be negative or greater than 7");
         }
-        return inputValueArray;
+        paramsHeader = paramsHeader.withZPrecision(zprecision);
+        return this;
     }
 
-    private double[] writeMultiPoint(MultiPoint mpt, CodedOutputStream os,
-                            int xyprecision,
-                            int zprecision,
-                            int mprecision,
-                            double[] inputValueArray) throws IOException
-    {
-        // Handle empty geometries first?
-        if (!mpt.isEmpty()) {
-            os.writeInt32NoTag(mpt.getNumGeometries());
-            for (int i = 0; i < mpt.getNumGeometries(); i++) {
-                inputValueArray = writePoint((Point) mpt.getGeometryN(i), os, xyprecision, zprecision, mprecision, inputValueArray);
-            }
+    public TWKBWriter setMPrecision(int mprecision) {
+        if (mprecision < 0 || mprecision > 7) {
+            throw new IllegalArgumentException("M precision cannot be negative or greater than 7");
         }
-        return inputValueArray;
+        paramsHeader = paramsHeader.withMPrecision(mprecision);
+        return this;
     }
 
-    private double[] writeMultiLineString(MultiLineString multiLineString, CodedOutputStream os,
-                                 int xyprecision,
-                                 int zprecision,
-                                 int mprecision,
-                                 double[] inputValueArray) throws IOException
-    {
-        // Handle empty geometries first?
-        if (!multiLineString.isEmpty()) {
-            os.writeInt32NoTag(multiLineString.getNumGeometries());
-            for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
-                inputValueArray = writeLineString((LineString) multiLineString.getGeometryN(i), os, xyprecision, zprecision, mprecision, inputValueArray);
-            }
-        }
-        return inputValueArray;
+    public TWKBWriter setIncludeSize(boolean includeSize) {
+        paramsHeader = paramsHeader.withHasSize(includeSize);
+        return this;
     }
 
-    private double[] writeMultiPolygon(MultiPolygon multiPolygon, CodedOutputStream os,
-                                      int xyprecision,
-                                      int zprecision,
-                                      int mprecision,
-                                      double[] inputValueArray) throws IOException
-    {
-        if (!multiPolygon.isEmpty()) {
-            os.writeInt32NoTag(multiPolygon.getNumGeometries());
-            for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
-                inputValueArray = writePolygon((Polygon) multiPolygon.getGeometryN(i), os, xyprecision, zprecision, mprecision, inputValueArray);
-            }
-        }
-        return inputValueArray;
+    public TWKBWriter setIncludeBbox(boolean includeBbox) {
+        paramsHeader = paramsHeader.withHasBBOX(includeBbox);
+        return this;
     }
 
-    private double[] writeGeometryCollection(GeometryCollection geometryCollection, CodedOutputStream os,
-                                   int xyprecision,
-                                   int zprecision,
-                                   int mprecision,
-                                   boolean includeSize,
-                                   boolean includeBbox,
-                                   double[] inputValueArray) throws IOException
-    {
-        if (!geometryCollection.isEmpty()) {
-            os.writeInt32NoTag(geometryCollection.getNumGeometries());
-            for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
-                write(geometryCollection.getGeometryN(i), os, xyprecision, zprecision, mprecision, includeSize, includeBbox, null);
-            }
-        }
-        return inputValueArray;
+    public TWKBWriter setOptimizedEncoding(boolean optimizedEncoding) {
+        paramsHeader = paramsHeader.withOptimizedEncoding(optimizedEncoding);
+        return this;
     }
 
-
-    private int getDimension(Geometry g) {
-        if (g.isEmpty()) {
-            return 2;  // Why not?!
+    public byte[] write(Geometry geom) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            write(geom, out);
+        } catch (IOException ex) {
+            throw new RuntimeException("Unexpected IOException caught: " + ex.getMessage(), ex);
         }
-
-        if (g instanceof Point) {
-            return ((Point) g).getCoordinateSequence().getDimension();
-        } else if (g instanceof LineString) {
-            return (((LineString) g).getCoordinateSequence().getDimension());
-        } else if (g instanceof Polygon) {
-            return (((Polygon) g).getExteriorRing().getCoordinateSequence().getDimension());
-        } else {
-            return getDimension(g.getGeometryN(0));
-        }
-
+        return out.toByteArray();
     }
 
-    private void writeHeader(Geometry g, CodedOutputStream os,
-                             int xyprecision,
-                             int zprecision,
-                             int mprecision,
-                             boolean includeSize,
-                             boolean includeBbox) throws IOException {
-        int dim = 2;
-        // Write Geometry Type and Precision Byte
-
-        // Calculate type
-        // TODO: Calculate type correctly
-        byte geometryType = 0;
-        dim = getDimension(g);
-        // TODO: Clean up as Constants
-        if (g instanceof Point) {
-            geometryType = TWKBReader.twkbPoint;
-            //dim = ((Point) g).getCoordinateSequence().getDimension();
-        } else if (g instanceof LineString){
-            geometryType = TWKBReader.twkbLineString;
-            //dim = ((LineString) g).getCoordinateSequence().getDimension();
-        } else if (g instanceof Polygon) {
-            geometryType = TWKBReader.twkbPolygon;
-            //dim = ((Polygon) g).getExteriorRing().getCoordinateSequence().getDimension();
-        } else if (g instanceof MultiPoint) {
-            geometryType = TWKBReader.twkbMultiPoint;
-           // dim = ((Point)(g.getGeometryN(0))).getCoordinateSequence().getDimension();
-        } else if (g instanceof MultiLineString) {
-            geometryType = TWKBReader.twkbMultiLineString;
-            //dim = ((LineString)(g.getGeometryN(0))).getCoordinateSequence().getDimension();
-        } else if (g instanceof MultiPolygon) {
-            geometryType = TWKBReader.twkbMultiPolygon;
-            //dim = ((Polygon)(g.getGeometryN(0))).getExteriorRing().getCoordinateSequence().getDimension();
-        } else if (g instanceof GeometryCollection) {
-            geometryType = TWKBReader.twkbGeometryCollection;
-            //dim = getDimension(g);
-        }
-
-
-        byte typePrecision = (byte)((CodedOutputStream.encodeZigZag32(xyprecision ) << 4) | geometryType);
-
-        buf[0] = typePrecision;
-        //os.write(buf, 1);
-
-        // Write Metadata byte
-
-        // TODO: Compute metadata byte correctly.
-        buf[1] = 0x00;
-
-        if (includeBbox) { buf[1] |= 0x01; }
-        if (includeSize) { buf[1] |= 0x02; }
-        //if (There is an id list!   0x04; }
-        if (dim > 2)     { buf[1] |= 0x08; }
-        if (g.isEmpty()) { buf[1] |= 0x10; }
-
-        os.writeRawBytes(buf, 0, 2);
-
-        // Optionally, write extended dimension data
-        byte optionalDimesions = 0;
-        if (dim > 2) {
-            optionalDimesions |= 0x01; // has Z
-            optionalDimesions |= (zprecision << 2);
-            if (dim == 4) {
-                optionalDimesions |= 0x02; // has M
-                optionalDimesions |= (mprecision << 5);
-            }
-            os.writeRawByte(optionalDimesions);
-        }
-
-
-
-        // Optionally, write size byte
-        // TODO:  This requires computing the size of the rest of the geometry!
-//        if (includeSize) {
-//            os.writeRawByte(CodedOutputStream.encodeZigZag32(g.getNumGeometries()));
-//        }
-
-        // Optionally, write bbox
-        // TODO: Handle multiple dimensions
-        if (includeBbox) {
-            double[] prestorage = new double[dim * 2];
-
-            Envelope env = g.getEnvelopeInternal();
-            prestorage[0] = env.getMinX();
-            prestorage[1] = env.getMaxX() - prestorage[0];
-
-            prestorage[2] = env.getMinY();
-            prestorage[3] = env.getMaxY() - prestorage[2];
-
-
-            if (dim > 2) {
-                Coordinate[] coords = g.getCoordinates();
-                double min[] = new double[dim - 2];
-                double max[] = new double[dim - 2];
-
-                for (int i = 0; i < coords.length; i++) {
-                    prestorage[4] = Double.MAX_VALUE;
-                    prestorage[5] = Double.MIN_VALUE;
-
-                    for (int j = 2; j < dim; j++) {
-                        // TODO: HANDLE ZM CASE
-                        double value = coords[i].getOrdinate(j);
-                        if (value < prestorage[4]) {
-                            prestorage[4] = value;
-                        }
-                        if (value > prestorage[5]) {
-                            prestorage[5] = value;
-                        }
-                    }
-                }
-                prestorage[5] -= prestorage[4];
-            }
-
-            for (int i = 0; i < dim * 2; i++){
-                int precision = 0;
-                if (i < 4) { precision = xyprecision; }
-                if (i == 4 || i == 5) { precision = zprecision; }
-
-                long longToWrite = Math.round((prestorage[i] * Math.pow(10, precision)));
-                System.out.println(" Writing bbox " + i + " : " + longToWrite);
-                os.writeSInt64NoTag(longToWrite);
-            }
-        }
-
-        // Optionally, write id-array
-
+    public void write(Geometry geom, OutputStream out) throws IOException {
+        write(geom, (DataOutput) new DataOutputStream(out));
     }
 
-    private double[] writeCoordinateSequence(CoordinateSequence seq, boolean writeSize, CodedOutputStream os,
-                                         int xyprecision,
-                                         int zprecision,
-                                         int mprecision,
-                                         double[] inputValueArray)
-            throws IOException
-    {
-        // TODO: Wire through output dimensions
+    public void write(Geometry geom, DataOutput out) throws IOException {
+        writeInternal(geom, out);
+    }
 
-        double[] valueArray = new double[seq.getDimension()];
-
-        if (inputValueArray != null) {
-            valueArray = inputValueArray;
-        }
-
-        double value;
-        double valueToWrite;
-
-        for (int i = 0; i < seq.size(); i++) {
-            for (int j = 0; j < seq.getDimension(); j++) {
-                int precision = xyprecision;
-                // TODO: Fix this!
-                if (j == 2) { precision = zprecision; }
-                if (j == 3) { precision = mprecision; }
-
-                value = seq.getOrdinate(i, j) * Math.pow(10, precision);
-
-                if (i == 0 && inputValueArray == null) {
-                    valueToWrite = value;
-                } else {
-                    valueToWrite = value - valueArray[j];
-                }
-                valueArray[j] = value;
-
-                long longToWrite = Math.round(valueToWrite);
-
-                System.out.println("writing value " + longToWrite);
-                os.writeSInt64NoTag(longToWrite);
-            }
-        }
-        return valueArray;
+    final /* @VisibleForTesting */ TWKBHeader writeInternal(Geometry geom, DataOutput out)
+            throws IOException {
+        Objects.requireNonNull(geom, "geometry is null");
+        return TWKBIO.write(geom, TWKBOutputStream.of(out), paramsHeader);
     }
 }

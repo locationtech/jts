@@ -117,9 +117,16 @@
                 <version>11.1.0.7.0</version>
             </dependency>
             <dependency>
-                <groupId>com.google.protobuf</groupId>
-                <artifactId>protobuf-java</artifactId>
-                <version>3.5.1</version>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>1.18.4</version>
+              <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>1.7</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

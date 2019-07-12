@@ -1,395 +1,296 @@
+/*
+ * Copyright (c) 2018 James Hughes
+ * Copyright (c) 2019 Gabriel Roldan
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package org.locationtech.jts.io;
 
-import junit.framework.TestCase;
-import junit.textui.TestRunner;
-import org.locationtech.jts.geom.CoordinateSequenceComparator;
-import org.locationtech.jts.geom.CoordinateSequenceFactory;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
-public class TWKBWriterTest extends TestCase {
-    public static void main(String args[]) {
-        TestRunner.run(TWKBWriterTest.class);
-    }
+import org.junit.Ignore;
+import org.junit.Rule;
+import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.TWKBTestSupport.TWKBTestData;
 
-    public void testPoints() throws ParseException {
-      /*
-        check("POINT(1 2)", -1, 0, 0, false, true, "1101000000000000");
-        check("POINT(1 2)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1 2)", -1, 1, 0, false, true, "1101000000000000");
-        check("POINT(1 2)", -1, 1, 0, false, false, "11000000");
-        check("POINT(1 2)", -1, 5, 0, false, true, "1101000000000000");
-        check("POINT(1 2)", -1, 5, 0, false, false, "11000000");
-    */
-        check("POINT(1 2)", 0, 0, 0, false, true, "0101020004000204");
-        check("POINT(1 2)", 0, 0, 0, false, false, "01000204");
-        check("POINT(1 2)", 0, 1, 0, false, true, "0101020004000204");
-        check("POINT(1 2)", 0, 1, 0, false, false, "01000204");
-        check("POINT(1 2)", 0, 5, 0, false, true, "0101020004000204");
-        check("POINT(1 2)", 0, 5, 0, false, false, "01000204");
+public class TWKBWriterTest {
 
-        check("POINT(1 2)", 1, 0, 0, false, true, "2101140028001428");
-        check("POINT(1 2)", 1, 0, 0, false, false, "21001428");
-        check("POINT(1 2)", 1, 1, 0, false, true, "2101140028001428");
-        check("POINT(1 2)", 1, 1, 0, false, false, "21001428");
-        check("POINT(1 2)", 1, 5, 0, false, true, "2101140028001428");
-        check("POINT(1 2)", 1, 5, 0, false, false, "21001428");
-        check("POINT(1 2)", 5, 0, 0, false, true, "a101c09a0c0080b51800c09a0c80b518");
-        check("POINT(1 2)", 5, 0, 0, false, false, "a100c09a0c80b518");
-        check("POINT(1 2)", 5, 1, 0, false, true, "a101c09a0c0080b51800c09a0c80b518");
-        check("POINT(1 2)", 5, 1, 0, false, false, "a100c09a0c80b518");
-        check("POINT(1 2)", 5, 5, 0, false, true, "a101c09a0c0080b51800c09a0c80b518");
-        check("POINT(1 2)", 5, 5, 0, false, false, "a100c09a0c80b518");
+    public @Rule TWKBTestSupport testSupport = new TWKBTestSupport();
 
-        /*        check("POINT(1234.567891234 98765.54321)", -1, 0, 0, false, true, "1101f60100aa9a0100f601aa9a01");
-        check("POINT(1234.567891234 98765.54321)", -1, 0, 0, false, false, "1100f601aa9a01");
-        check("POINT(1234.567891234 98765.54321)", -1, 1, 0, false, true, "1101f60100aa9a0100f601aa9a01");
-        check("POINT(1234.567891234 98765.54321)", -1, 1, 0, false, false, "1100f601aa9a01");
-        check("POINT(1234.567891234 98765.54321)", -1, 5, 0, false, true, "1101f60100aa9a0100f601aa9a01");
-        check("POINT(1234.567891234 98765.54321)", -1, 5, 0, false, false, "1100f601aa9a01");
-   */
+    private TWKBWriter writer = new TWKBWriter();
 
-        check("POINT(1.0 2.40)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1.0 2.40)", 0, 0, 0, false, false, "01000204");
-        check("POINT(1.0 2.40)", 1, 0, 0, false, false, "21001430");
-        check("POINT(1.0 2.40)", 5, 0, 0, false, false, "a100c09a0c80a61d");
-        check("POINT(1.1 2.41)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1.1 2.41)", 0, 0, 0, false, false, "01000204");
-        check("POINT(1.1 2.41)", 1, 0, 0, false, false, "21001630");
-        check("POINT(1.1 2.41)", 5, 0, 0, false, false, "a100e0b60dd0b51d");
-        check("POINT(1.2 2.42)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1.2 2.42)", 0, 0, 0, false, false, "01000204");
-        check("POINT(1.2 2.42)", 1, 0, 0, false, false, "21001830");
-        check("POINT(1.2 2.42)", 5, 0, 0, false, false, "a10080d30ea0c51d");
-        check("POINT(1.3 2.43)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1.3 2.43)", 0, 0, 0, false, false, "01000204");
-        check("POINT(1.3 2.43)", 1, 0, 0, false, false, "21001a30");
-        check("POINT(1.3 2.43)", 5, 0, 0, false, false, "a100a0ef0ff0d41d");
-        check("POINT(1.4 2.44)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1.4 2.44)", 0, 0, 0, false, false, "01000204");
-        check("POINT(1.4 2.44)", 1, 0, 0, false, false, "21001c30");
-        check("POINT(1.4 2.44)", 5, 0, 0, false, false, "a100c08b11c0e41d");
-        check("POINT(1.5 2.45)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1.5 2.45)", 0, 0, 0, false, false, "01000404");
-        check("POINT(1.5 2.45)", 1, 0, 0, false, false, "21001e32");
-        check("POINT(1.5 2.45)", 5, 0, 0, false, false, "a100e0a71290f41d");
-        check("POINT(1.6 2.46)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1.6 2.46)", 0, 0, 0, false, false, "01000404");
-        check("POINT(1.6 2.46)", 1, 0, 0, false, false, "21002032");
-        check("POINT(1.6 2.46)", 5, 0, 0, false, false, "a10080c413e0831e");
-        check("POINT(1.7 2.47)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1.7 2.47)", 0, 0, 0, false, false, "01000404");
-        check("POINT(1.7 2.47)", 1, 0, 0, false, false, "21002232");
-        check("POINT(1.7 2.47)", 5, 0, 0, false, false, "a100a0e014b0931e");
-        check("POINT(1.8 2.48)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1.8 2.48)", 0, 0, 0, false, false, "01000404");
-        check("POINT(1.8 2.48)", 1, 0, 0, false, false, "21002432");
-        check("POINT(1.8 2.48)", 5, 0, 0, false, false, "a100c0fc1580a31e");
-        check("POINT(1.9 2.49)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1.9 2.49)", 0, 0, 0, false, false, "01000404");
-        check("POINT(1.9 2.49)", 1, 0, 0, false, false, "21002632");
-        check("POINT(1.9 2.49)", 5, 0, 0, false, false, "a100e09817d0b21e");
-
-        //
-
-        check("POINT(1234.567891234 98765.54321)", 0, 0, 0, false, true, "0101a613009c870c00a6139c870c");
-        check("POINT(1234.567891234 98765.54321)", 0, 0, 0, false, false, "0100a6139c870c");
-        check("POINT(1234.567891234 98765.54321)", 0, 1, 0, false, true, "0101a613009c870c00a6139c870c");
-        check("POINT(1234.567891234 98765.54321)", 0, 1, 0, false, false, "0100a6139c870c");
-        check("POINT(1234.567891234 98765.54321)", 0, 5, 0, false, true, "0101a613009c870c00a6139c870c");
-        check("POINT(1234.567891234 98765.54321)", 0, 5, 0, false, false, "0100a6139c870c");
-        check("POINT(1234.567891234 98765.54321)", 1, 0, 0, false, true, "2101f4c001008ec87800f4c0018ec878");
-        check("POINT(1234.567891234 98765.54321)", 1, 0, 0, false, false, "2100f4c0018ec878");
-        check("POINT(1234.567891234 98765.54321)", 1, 1, 0, false, true, "2101f4c001008ec87800f4c0018ec878");
-        check("POINT(1234.567891234 98765.54321)", 1, 1, 0, false, false, "2100f4c0018ec878");
-        check("POINT(1234.567891234 98765.54321)", 1, 5, 0, false, true, "2101f4c001008ec87800f4c0018ec878");
-        check("POINT(1234.567891234 98765.54321)", 1, 5, 0, false, false, "2100f4c0018ec878");
-        check("POINT(1234.567891234 98765.54321)", 5, 0, 0, false, true, "a101aab4de7500a28982cb4900aab4de75a28982cb49");
-        check("POINT(1234.567891234 98765.54321)", 5, 0, 0, false, false, "a100aab4de75a28982cb49");
-        check("POINT(1234.567891234 98765.54321)", 5, 1, 0, false, true, "a101aab4de7500a28982cb4900aab4de75a28982cb49");
-        check("POINT(1234.567891234 98765.54321)", 5, 1, 0, false, false, "a100aab4de75a28982cb49");
-        check("POINT(1234.567891234 98765.54321)", 5, 5, 0, false, true, "a101aab4de7500a28982cb4900aab4de75a28982cb49");
-        check("POINT(1234.567891234 98765.54321)", 5, 5, 0, false, false, "a100aab4de75a28982cb49");
-    }
-
-    public void testAllTypes() throws ParseException {
-        /*
+    public @Test void testEmptyGeometries() throws ParseException {
         check("POINT EMPTY", -1, 0, 0, false, false, "1110");
         check("POINT EMPTY", 0, 0, 0, false, false, "0110");
         check("POINT EMPTY", 1, 0, 0, false, false, "2110");
         check("POINT EMPTY", 5, 0, 0, false, false, "a110");
-        check("POINT(1 2)", -1, 0, 0, false, false, "11000000");
-        check("POINT(1 2)", 0, 0, 0, false, false, "01000204");
-        check("POINT(1 2)", 1, 0, 0, false, false, "21001428");
-        check("POINT(1 2)", 5, 0, 0, false, false, "a100c09a0c80b518");
+
         check("LINESTRING EMPTY", -1, 0, 0, false, false, "1210");
         check("LINESTRING EMPTY", 0, 0, 0, false, false, "0210");
         check("LINESTRING EMPTY", 1, 0, 0, false, false, "2210");
         check("LINESTRING EMPTY", 5, 0, 0, false, false, "a210");
-        */
 
-//        check("LINESTRING(1 2, 3 4, 5 6, 1 2)", -1, 0, 0, false, false, "1200040000000002020101");
-        check("LINESTRING(1 2, 3 4, 5 6, 1 2)", 0, 0, 0, false, false, "0200040204040404040707");
-        check("LINESTRING(1 2, 3 4, 5 6, 1 2)", 1, 0, 0, false, false, "2200041428282828284f4f");
-        check("LINESTRING(1 2, 3 4, 5 6, 1 2)", 5, 0, 0, false, false, "a20004c09a0c80b51880b51880b51880b51880b518ffe930ffe930");
-
-        check("LINESTRING(1 2, 3 4)", -1, 0, 0, false, false, "12000200000000");
-        check("LINESTRING(1 2, 3 4)", 0, 0, 0, false, false, "02000202040404");
-        check("LINESTRING(1 2, 3 4)", 1, 0, 0, false, false, "22000214282828");
-        check("LINESTRING(1 2, 3 4)", 5, 0, 0, false, false, "a20002c09a0c80b51880b51880b518");
         check("POLYGON EMPTY", -1, 0, 0, false, false, "1310");
         check("POLYGON EMPTY", 0, 0, 0, false, false, "0310");
         check("POLYGON EMPTY", 1, 0, 0, false, false, "2310");
         check("POLYGON EMPTY", 5, 0, 0, false, false, "a310");
 
-//        check("POLYGON((1 2, 3 4, 5 6, 1 2))", -1, 0, 0, false, false, "130001040000000002020101");
-        check("POLYGON((1 2, 3 4, 5 6, 1 2))", 0, 0, 0, false, false, "030001040204040404040707");
-        check("POLYGON((1 2, 3 4, 5 6, 1 2))", 1, 0, 0, false, false, "230001041428282828284f4f");
-        check("POLYGON((1 2, 3 4, 5 6, 1 2))", 5, 0, 0, false, false, "a3000104c09a0c80b51880b51880b51880b51880b518ffe930ffe930");
-
-//        check("POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12))", -1, 0, 0, false, false, "130002040000000002020101040202000002020101");
-
-        check("POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12))", 0, 0, 0, false, false, "030002040204040404040707041414040404040707");
-        check("POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12))", 1, 0, 0, false, false, "230002041428282828284f4f04c801c801282828284f4f");
-        check("POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12))", 5, 0, 0, false, false, "a3000204c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930");
-//        check("POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22))", -1, 0, 0, false, false, "130003040000000002020101040202000002020101040202000002020101");
-        check("POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22))", 0, 0, 0, false, false, "030003040204040404040707041414040404040707041414040404040707");
-        check("POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22))", 1, 0, 0, false, false, "230003041428282828284f4f04c801c801282828284f4f04c801c801282828284f4f");
-        check("POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22))", 5, 0, 0, false, false, "a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930");
         check("MULTIPOINT EMPTY", -1, 0, 0, false, false, "1410");
         check("MULTIPOINT EMPTY", 0, 0, 0, false, false, "0410");
         check("MULTIPOINT EMPTY", 1, 0, 0, false, false, "2410");
         check("MULTIPOINT EMPTY", 5, 0, 0, false, false, "a410");
-        check("MULTIPOINT(1 2)", -1, 0, 0, false, false, "1400010000");
-        check("MULTIPOINT(1 2)", 0, 0, 0, false, false, "0400010204");
-        check("MULTIPOINT(1 2)", 1, 0, 0, false, false, "2400011428");
-        check("MULTIPOINT(1 2)", 5, 0, 0, false, false, "a40001c09a0c80b518");
-        check("MULTIPOINT(1 2, 3 4)", -1, 0, 0, false, false, "14000200000000");
-        check("MULTIPOINT(1 2, 3 4)", 0, 0, 0, false, false, "04000202040404");
-        check("MULTIPOINT(1 2, 3 4)", 1, 0, 0, false, false, "24000214282828");
-        check("MULTIPOINT(1 2, 3 4)", 5, 0, 0, false, false, "a40002c09a0c80b51880b51880b518");
+
         check("MULTILINESTRING EMPTY", -1, 0, 0, false, false, "1510");
         check("MULTILINESTRING EMPTY", 0, 0, 0, false, false, "0510");
         check("MULTILINESTRING EMPTY", 1, 0, 0, false, false, "2510");
         check("MULTILINESTRING EMPTY", 5, 0, 0, false, false, "a510");
-        check("MULTILINESTRING((1 2, 3 4))", -1, 0, 0, false, false, "1500010200000000");
-        check("MULTILINESTRING((1 2, 3 4))", 0, 0, 0, false, false, "0500010202040404");
-        check("MULTILINESTRING((1 2, 3 4))", 1, 0, 0, false, false, "2500010214282828");
-        check("MULTILINESTRING((1 2, 3 4))", 5, 0, 0, false, false, "a5000102c09a0c80b51880b51880b518");
-//        check("MULTILINESTRING((1 2, 3 4), (5 6, 7 8))", -1, 0, 0, false, false, "15000202000000000202020000");
-        check("MULTILINESTRING((1 2, 3 4), (5 6, 7 8))", 0, 0, 0, false, false, "05000202020404040204040404");
-        check("MULTILINESTRING((1 2, 3 4), (5 6, 7 8))", 1, 0, 0, false, false, "25000202142828280228282828");
-        check("MULTILINESTRING((1 2, 3 4), (5 6, 7 8))", 5, 0, 0, false, false, "a5000202c09a0c80b51880b51880b5180280b51880b51880b51880b518");
+
         check("MULTIPOLYGON EMPTY", -1, 0, 0, false, false, "1610");
         check("MULTIPOLYGON EMPTY", 0, 0, 0, false, false, "0610");
         check("MULTIPOLYGON EMPTY", 1, 0, 0, false, false, "2610");
         check("MULTIPOLYGON EMPTY", 5, 0, 0, false, false, "a610");
-//        check("MULTIPOLYGON(((1 2, 3 4, 5 6, 1 2)))", -1, 0, 0, false, false, "16000101040000000002020101");
-        check("MULTIPOLYGON(((1 2, 3 4, 5 6, 1 2)))", 0, 0, 0, false, false, "06000101040204040404040707");
-        check("MULTIPOLYGON(((1 2, 3 4, 5 6, 1 2)))", 1, 0, 0, false, false, "26000101041428282828284f4f");
-        check("MULTIPOLYGON(((1 2, 3 4, 5 6, 1 2)))", 5, 0, 0, false, false, "a600010104c09a0c80b51880b51880b51880b51880b518ffe930ffe930");
-//        check("MULTIPOLYGON(((1 2, 3 4, 5 6, 1 2)), ((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22)))", -1, 0, 0, false, false, "1600020104000000000202010103040000000002020101040202000002020101040202000002020101");
-        check("MULTIPOLYGON(((1 2, 3 4, 5 6, 1 2)), ((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22)))", 0, 0, 0, false, false, "0600020104020404040404070703040000040404040707041414040404040707041414040404040707");
-        check("MULTIPOLYGON(((1 2, 3 4, 5 6, 1 2)), ((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22)))", 1, 0, 0, false, false, "26000201041428282828284f4f03040000282828284f4f04c801c801282828284f4f04c801c801282828284f4f");
-        check("MULTIPOLYGON(((1 2, 3 4, 5 6, 1 2)), ((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22)))", 5, 0, 0, false, false, "a600020104c09a0c80b51880b51880b51880b51880b518ffe930ffe9300304000080b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930");
+
         check("GEOMETRYCOLLECTION EMPTY", -1, 0, 0, false, false, "1710");
         check("GEOMETRYCOLLECTION EMPTY", 0, 0, 0, false, false, "0710");
         check("GEOMETRYCOLLECTION EMPTY", 1, 0, 0, false, false, "2710");
         check("GEOMETRYCOLLECTION EMPTY", 5, 0, 0, false, false, "a710");
-//        check("GEOMETRYCOLLECTION(POINT(1 2))", -1, 0, 0, false, false, "17000111000000");
-        check("GEOMETRYCOLLECTION(POINT(1 2))", 0, 0, 0, false, false, "07000101000204");
-        check("GEOMETRYCOLLECTION(POINT(1 2))", 1, 0, 0, false, false, "27000121001428");
-        check("GEOMETRYCOLLECTION(POINT(1 2))", 5, 0, 0, false, false, "a70001a100c09a0c80b518");
-        check("GEOMETRYCOLLECTION(POINT(1 2), LINESTRING(1 2, 3 4))", -1, 0, 0, false, false, "1700021100000012000200000000");
-        check("GEOMETRYCOLLECTION(POINT(1 2), LINESTRING(1 2, 3 4))", 0, 0, 0, false, false, "0700020100020402000202040404");
-        check("GEOMETRYCOLLECTION(POINT(1 2), LINESTRING(1 2, 3 4))", 1, 0, 0, false, false, "2700022100142822000214282828");
-        check("GEOMETRYCOLLECTION(POINT(1 2), LINESTRING(1 2, 3 4))", 5, 0, 0, false, false, "a70002a100c09a0c80b518a20002c09a0c80b51880b51880b518");
-//        check("GEOMETRYCOLLECTION(POINT(1 2), LINESTRING(1 2, 3 4), POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22)))", -1, 0, 0, false, false, "1700031100000012000200000000130003040000000002020101040202000002020101040202000002020101");
-        check("GEOMETRYCOLLECTION(POINT(1 2), LINESTRING(1 2, 3 4), POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22)))", 0, 0, 0, false, false, "0700030100020402000202040404030003040204040404040707041414040404040707041414040404040707");
-        check("GEOMETRYCOLLECTION(POINT(1 2), LINESTRING(1 2, 3 4), POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22)))", 1, 0, 0, false, false, "2700032100142822000214282828230003041428282828284f4f04c801c801282828284f4f04c801c801282828284f4f");
-        check("GEOMETRYCOLLECTION(POINT(1 2), LINESTRING(1 2, 3 4), POLYGON((1 2, 3 4, 5 6, 1 2), (11 12, 13 14, 15 16, 11 12), (21 22, 23 24, 25 26, 21 22)))", 5, 0, 0, false, false, "a70003a100c09a0c80b518a20002c09a0c80b51880b51880b518a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930");
+    }
+
+    public @Test void testXYPrecision() throws ParseException {
+        final String encodeWKT = "POINT (12345678.12345678 0)";
+
+        testXYPrecision(0, encodeWKT, "01009c85e30b00");
+        testXYPrecision(1, encodeWKT, "21009ab4de7500");
+        testXYPrecision(2, encodeWKT, "4100888ab0990900");
+        testXYPrecision(3, encodeWKT, "6100d6e4e0fd5b00");
+        testXYPrecision(4, encodeWKT, "8100e6eec7e9970700");
+        testXYPrecision(5, encodeWKT, "a100f4d3ce9fee4700");
+        testXYPrecision(6, encodeWKT, "c10082c792bccece0500");
+        testXYPrecision(7, encodeWKT, "e10090c6b9d990923800");
+
+        testXYPrecision(-1, encodeWKT, "110090da960100");
+        testXYPrecision(-2, encodeWKT, "310082890f00");
+        testXYPrecision(-3, encodeWKT, "5100f4c00100");
+        testXYPrecision(-4, encodeWKT, "7100a61300");
+        testXYPrecision(-5, encodeWKT, "9100f60100");
+        testXYPrecision(-6, encodeWKT, "b1001800");
+        testXYPrecision(-7, encodeWKT, "d1000200");
+    }
+
+    private void testXYPrecision(int xyprecision, String encodeWKT, String expectedHex)
+            throws ParseException {
+        boolean noSize = false;
+        boolean noBbox = false;
+        int zprecision = 0;
+        int mprecision = 0;
+
+        check(encodeWKT, xyprecision, zprecision, mprecision, noSize, noBbox, expectedHex);
+    }
+
+    public @Test void testZMPrecision() throws ParseException {
+        final String encodeWKT = "POINT ZM (0 0 12345678.12345678 12345678.12345678)";
+
+        testZMPrecision(0, encodeWKT, "01080300009c85e30b9c85e30b");
+        testZMPrecision(1, encodeWKT, "01082700009ab4de759ab4de75");
+        testZMPrecision(2, encodeWKT, "01084b0000888ab09909888ab09909");
+        testZMPrecision(3, encodeWKT, "01086f0000d6e4e0fd5bd6e4e0fd5b");
+        testZMPrecision(4, encodeWKT, "0108930000e6eec7e99707e6eec7e99707");
+        testZMPrecision(5, encodeWKT, "0108b70000f4d3ce9fee47f4d3ce9fee47");
+        testZMPrecision(6, encodeWKT, "0108db000082c792bccece0582c792bccece05");
+        testZMPrecision(7, encodeWKT, "0108ff000090c6b9d990923890c6b9d9909238");
+    }
+
+    private void testZMPrecision(int zmprecision, String encodeWKT, String expectedHex)
+            throws ParseException {
+        boolean noSize = false;
+        boolean noBbox = false;
+        int xyprecision = 0;
+        check(encodeWKT, xyprecision, zmprecision, zmprecision, noSize, noBbox, expectedHex);
+    }
+
+    public @Test void testIncludeSizeOnEmptyGeometries() throws ParseException {
+        final boolean withSize = true;
+        final boolean noBbox = false;
+        check("POINT EMPTY", -1, 0, 0, withSize, noBbox, "111200");
+        check("LINESTRING EMPTY", -1, 0, 0, withSize, noBbox, "121200");
+        check("LINESTRING EMPTY", 5, 0, 0, withSize, noBbox, "a21200");
+        check("POLYGON EMPTY", 5, 0, 0, withSize, noBbox, "a31200");
+        check("MULTIPOINT EMPTY", 0, 0, 0, withSize, noBbox, "041200");
+        check("MULTILINESTRING EMPTY", 1, 0, 0, withSize, noBbox, "251200");
+        check("MULTIPOLYGON EMPTY", -1, 0, 0, withSize, noBbox, "161200");
+        check("GEOMETRYCOLLECTION EMPTY", 0, 0, 0, withSize, noBbox, "071200");
+    }
+
+    public @Test void testEmptyGeometriesIncludeBboxIgnored() throws ParseException {
+        final boolean withBbox = true;
+        check("POINT EMPTY", -1, 0, 0, false, withBbox, "1110");
+        check("POINT EMPTY", -1, 0, 0, true, withBbox, "111200");
+
+        check("LINESTRING EMPTY", -1, 0, 0, false, withBbox, "1210");
+        check("LINESTRING EMPTY", -1, 0, 0, true, withBbox, "121200");
+
+        check("LINESTRING EMPTY", 5, 0, 0, false, withBbox, "a210");
+        check("LINESTRING EMPTY", 5, 0, 0, true, withBbox, "a21200");
+
+        check("POLYGON EMPTY", 5, 0, 0, false, withBbox, "a310");
+        check("POLYGON EMPTY", 5, 0, 0, true, withBbox, "a31200");
+
+        check("MULTIPOINT EMPTY", 0, 0, 0, false, withBbox, "0410");
+        check("MULTIPOINT EMPTY", 0, 0, 0, true, withBbox, "041200");
+
+        check("MULTILINESTRING EMPTY", 1, 0, 0, false, withBbox, "2510");
+        check("MULTILINESTRING EMPTY", 1, 0, 0, true, withBbox, "251200");
+
+        check("MULTIPOLYGON EMPTY", -1, 0, 0, false, withBbox, "1610");
+        check("MULTIPOLYGON EMPTY", -1, 0, 0, true, withBbox, "161200");
+
+        check("GEOMETRYCOLLECTION EMPTY", 0, 0, 0, false, withBbox, "0710");
+        check("GEOMETRYCOLLECTION EMPTY", 0, 0, 0, true, withBbox, "071200");
+    }
+
+    @Ignore
+    public @Test void testOptimizations() {
+        fail("Implement me");
+    }
+
+    public @Test void testPoints() {
+        // disable optimization, test data created with postgis doesn't have it
+        writer.setOptimizedEncoding(false);
+        testEncode(testSupport.getPoints());
+    }
+
+    public @Test void testPointsOptimized() throws ParseException {
+        writer.setOptimizedEncoding(true);
+        check("POINTZ(1 2 3)", 0, 0, 0, false, true, "010801020406");
+
+        writer.setOptimizedEncoding(false);
+        check("POINTZ(1 2 3)", 0, 0, 0, false, true, "010901020004000600020406");
+
+        writer.setOptimizedEncoding(false);
+        check("POINT(1 2)", 0, 0, 0, false, true, "0101020004000204");
+
+        writer.setOptimizedEncoding(true);
+        check("POINT(1 2)", 0, 0, 0, false, true, "01000204");
 
     }
 
-    public void testPointsZ() throws ParseException {
-        check(reader3,"POINT Z(1 2 3)", -1, 0, 0, false, true, "110901000000000600000006");
-        check(reader3,"POINT Z(1 2 3)", -1, 0, 0, false, false, "110801000006");
-        check(reader3,"POINT Z(1 2 3)", -1, 1, 0, false, true, "110905000000003c0000003c");
-        check(reader3,"POINT Z(1 2 3)", -1, 1, 0, false, false, "11080500003c");
-        check(reader3,"POINT Z(1 2 3)", -1, 5, 0, false, true, "11091500000000c0cf24000000c0cf24");
-        check(reader3,"POINT Z(1 2 3)", -1, 5, 0, false, false, "1108150000c0cf24");
-        check(reader3,"POINT Z(1 2 3)", 0, 0, 0, false, true, "010901020004000600020406");
-        check(reader3,"POINT Z(1 2 3)", 0, 0, 0, false, false, "010801020406");
-        check(reader3,"POINT Z(1 2 3)", 0, 1, 0, false, true, "010905020004003c0002043c");
-        check(reader3,"POINT Z(1 2 3)", 0, 1, 0, false, false, "01080502043c");
-        check(reader3,"POINT Z(1 2 3)", 0, 5, 0, false, true, "01091502000400c0cf24000204c0cf24");
-        check(reader3,"POINT Z(1 2 3)", 0, 5, 0, false, false, "0108150204c0cf24");
-        check(reader3,"POINT Z(1 2 3)", 1, 0, 0, false, true, "210901140028000600142806");
-        check(reader3,"POINT Z(1 2 3)", 1, 0, 0, false, false, "210801142806");
-        check(reader3,"POINT Z(1 2 3)", 1, 1, 0, false, true, "210905140028003c0014283c");
-        check(reader3,"POINT Z(1 2 3)", 1, 1, 0, false, false, "21080514283c");
-        check(reader3,"POINT Z(1 2 3)", 1, 5, 0, false, true, "21091514002800c0cf24001428c0cf24");
-        check(reader3,"POINT Z(1 2 3)", 1, 5, 0, false, false, "2108151428c0cf24");
-        check(reader3,"POINT Z(1 2 3)", 5, 0, 0, false, true, "a10901c09a0c0080b518000600c09a0c80b51806");
-        check(reader3,"POINT Z(1 2 3)", 5, 0, 0, false, false, "a10801c09a0c80b51806");
-        check(reader3,"POINT Z(1 2 3)", 5, 1, 0, false, true, "a10905c09a0c0080b518003c00c09a0c80b5183c");
-        check(reader3,"POINT Z(1 2 3)", 5, 1, 0, false, false, "a10805c09a0c80b5183c");
-        check(reader3,"POINT Z(1 2 3)", 5, 5, 0, false, true, "a10915c09a0c0080b51800c0cf2400c09a0c80b518c0cf24");
-        check(reader3,"POINT Z(1 2 3)", 5, 5, 0, false, false, "a10815c09a0c80b518c0cf24");
+    public @Test void testMultiPoints() {
+        // disable optimization, test data created with postgis doesn't have it
+        writer.setOptimizedEncoding(false);
+        testEncode(testSupport.getMultiPoints());
     }
 
-    public void testPointsZandM() throws ParseException {
-/*
-            check(reader3,"POINT Z(1 2 3)", -1, 0, 0, false, false, "110801000006");
-            check(reader3,"POINT Z(1 2 3)", -1, 1, 0, false, false, "11080500003c");
-            check(reader3,"POINT Z(1 2 3)", -1, 5, 0, false, false, "1108150000c0cf24");
-            check(reader3,"POINT Z(1 2 3)", 0, 0, 0, false, false, "010801020406");
-            check(reader3,"POINT Z(1 2 3)", 0, 1, 0, false, false, "01080502043c");
-            check(reader3,"POINT Z(1 2 3)", 0, 5, 0, false, false, "0108150204c0cf24");
-            check(reader3,"POINT Z(1 2 3)", 1, 0, 0, false, false, "210801142806");
-            check(reader3,"POINT Z(1 2 3)", 1, 1, 0, false, false, "21080514283c");
-            check(reader3,"POINT Z(1 2 3)", 1, 5, 0, false, false, "2108151428c0cf24");
-            check(reader3,"POINT Z(1 2 3)", 5, 0, 0, false, false, "a10801c09a0c80b51806");
-            check(reader3,"POINT Z(1 2 3)", 5, 1, 0, false, false, "a10805c09a0c80b5183c");
-            check(reader3,"POINT Z(1 2 3)", 5, 5, 0, false, false, "a10815c09a0c80b518c0cf24");
-*/
-        check(reader3,"POINT M(1 2 3)", -1, 0, 0, false, false, "110802000006");
-        check(reader3,"POINT M(1 2 3)", -1, 1, 0, false, false, "110806000006");
-        check(reader3,"POINT M(1 2 3)", -1, 5, 0, false, false, "110816000006");
-        check(reader3,"POINT M(1 2 3)", 0, 0, 0, false, false, "010802020406");
-        check(reader3,"POINT M(1 2 3)", 0, 1, 0, false, false, "010806020406");
-        check(reader3,"POINT M(1 2 3)", 0, 5, 0, false, false, "010816020406");
-        check(reader3,"POINT M(1 2 3)", 1, 0, 0, false, false, "210802142806");
-        check(reader3,"POINT M(1 2 3)", 1, 1, 0, false, false, "210806142806");
-        check(reader3,"POINT M(1 2 3)", 1, 5, 0, false, false, "210816142806");
-        check(reader3,"POINT M(1 2 3)", 5, 0, 0, false, false, "a10802c09a0c80b51806");
-        check(reader3,"POINT M(1 2 3)", 5, 1, 0, false, false, "a10806c09a0c80b51806");
-        check(reader3,"POINT M(1 2 3)", 5, 5, 0, false, false, "a10816c09a0c80b51806");
+    public @Test void testLineStrings() {
+        // disable optimization, test data created with postgis doesn't have it
+        writer.setOptimizedEncoding(true);
+        testEncode(testSupport.getLineStrings());
     }
 
-    private CoordinateSequenceFactory factory = PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
-    private GeometryFactory geometryFactory = new GeometryFactory(factory);
-    private TWKBWriter writer = new TWKBWriter();
-    private WKTReader reader = new WKTReader(geometryFactory);
-    private WKTReader reader3 = new WKTReader();
-
-    private void check(String wkt,
-                       int xyprecision,
-                       int zprecision,
-                       int mprecision,
-                       boolean includeSize,
-                       boolean includeBbox,
-                       String expectedTWKB) throws ParseException {
-        check(this.reader, wkt, xyprecision, zprecision, mprecision, includeSize, includeBbox, expectedTWKB);
+    public @Test void testMultiLineStrings() {
+        // disable optimization, test data created with postgis doesn't have it
+        writer.setOptimizedEncoding(true);
+        testEncode(testSupport.getMultiLineStrings());
     }
 
-    private void check(WKTReader reader,
-                       String wkt,
-                       int xyprecision,
-                       int zprecision,
-                       int mprecision,
-                       boolean includeSize,
-                       boolean includeBbox,
-                       String expectedTWKB) throws ParseException {
+    public @Test void testPolyongs() {
+        // disable optimization, test data created with postgis doesn't have it
+        writer.setOptimizedEncoding(false);
+        testEncode(testSupport.getPolygons());
+    }
 
-        Geometry geom = reader.read(wkt);
-        byte[] written = writer.write(geom, xyprecision, zprecision, mprecision, includeSize, includeBbox);
+    public @Test void testMultiPolyongs() {
+        // disable optimization, test data created with postgis doesn't have it
+        writer.setOptimizedEncoding(false);
+        testEncode(testSupport.getMultiPolygons());
+    }
+
+    public @Test void testGeometryCollections() {
+        // disable optimization, test data created with postgis doesn't have it
+        writer.setOptimizedEncoding(false);
+        testEncode(testSupport.getGeometryCollections());
+    }
+
+    private void testEncode(List<TWKBTestData> testData) {
+        testData.forEach(this::testEncode);
+    }
+
+    private void testEncode(TWKBTestData testData) {
+        String input = testData.getInputWKT();
+        int xyprecision = testData.getXyprecision();
+        int zprecision = testData.getZprecision();
+        int mprecision = testData.getMprecision();
+        boolean includeSize = testData.isIncludeSize();
+        boolean includeBbox = testData.isIncludeBbox();
+        String expectedTWKB = testData.getExpectedTWKBHex();
+        try {
+            check(input, xyprecision, zprecision, mprecision, includeSize, includeBbox,
+                    expectedTWKB);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void check(String inputWKT, int xyprecision, int zprecision, int mprecision,
+            boolean includeSize, boolean includeBbox, String expectedTWKB) throws ParseException {
+
+        Geometry geom = testSupport.parseWKT(inputWKT);
         byte[] twkb = WKBReader.hexToBytes(expectedTWKB);
 
-        boolean isEqualHex = Arrays.equals(twkb, written);
-
-        if (!isEqualHex) {
-            System.out.println("Expected    " + expectedTWKB);
-            System.out.println("Output:     " + javax.xml.bind.DatatypeConverter.printHexBinary(written));
-        }
-        assertTrue(isEqualHex);
-    }
-
-//    private GeometryFactory geomFactory = new GeometryFactory();
-//    private WKTReader rdr = new WKTReader(geomFactory);
-
-//    GeometryFactory geomFactory = new GeometryFactory(
-//            new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE, 2));
-//    WKTReader rdr = new WKTReader(geomFactory);
-
-
-//    public void testTWKB() throws ParseException {
-//        checkTWKBGeometry("0110", "POINT EMPTY");
-//        checkTWKBGeometry("a100c09a0c80b518", "POINT(1 2)");
-//        checkTWKBGeometry("a210", "LINESTRING EMPTY");
-//        checkTWKBGeometry("a20002c09a0c80b51880b51880b518", "LINESTRING(1 2,3 4)");
-//        checkTWKBGeometry("a310", "POLYGON EMPTY");
-//        checkTWKBGeometry("a3000104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2))");
-//        checkTWKBGeometry("a3000204c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12))");
-//        checkTWKBGeometry("a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22))");
-//        checkTWKBGeometry("a410", "MULTIPOINT EMPTY");
-//        checkTWKBGeometry("a40001c09a0c80b518", "MULTIPOINT(1 2)");
-//        checkTWKBGeometry("a40002c09a0c80b51880b51880b518", "MULTIPOINT(1 2,3 4)");
-//        checkTWKBGeometry("a510", "MULTILINESTRING EMPTY");
-//        checkTWKBGeometry("a5000102c09a0c80b51880b51880b518", "MULTILINESTRING((1 2,3 4))");
-//        checkTWKBGeometry("a5000202c09a0c80b51880b51880b5180280b51880b51880b51880b518", "MULTILINESTRING((1 2,3 4),(5 6,7 8))");
-//        checkTWKBGeometry("a610", "MULTIPOLYGON EMPTY");
-//        checkTWKBGeometry("a600010104c09a0c80b51880b51880b51880b51880b518ffe930ffe930", "MULTIPOLYGON(((1 2,3 4,5 6,1 2)))");
-//        checkTWKBGeometry("a600020104c09a0c80b51880b51880b51880b51880b518ffe930ffe9300304000080b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "MULTIPOLYGON(((1 2,3 4,5 6,1 2)),((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22)))");
-//        checkTWKBGeometry("a710", "GEOMETRYCOLLECTION EMPTY");
-//        checkTWKBGeometry("a70001a100c09a0c80b518", "GEOMETRYCOLLECTION(POINT(1 2))");
-//        checkTWKBGeometry("a70002a100c09a0c80b518a20002c09a0c80b51880b51880b518", "GEOMETRYCOLLECTION(POINT(1 2),LINESTRING(1 2,3 4))");
-//        checkTWKBGeometry("a70003a100c09a0c80b518a20002c09a0c80b51880b51880b518a3000304c09a0c80b51880b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe9300480897a80897a80b51880b51880b51880b518ffe930ffe930", "GEOMETRYCOLLECTION(POINT(1 2),LINESTRING(1 2,3 4),POLYGON((1 2,3 4,5 6,1 2),(11 12,13 14,15 16,11 12),(21 22,23 24,25 26,21 22)))");
-//    }
-
-    private static CoordinateSequenceComparator comp2 = new CoordinateSequenceComparator(2);
-    private static CoordinateSequenceComparator comp3 = new CoordinateSequenceComparator(3);
-    private static CoordinateSequenceComparator comp4 = new CoordinateSequenceComparator(4);
-
-    private void checkTWKBGeometry(String twkbHex, String expectedWKT) throws ParseException
-    {
-        checkTWKBGeometry(twkbHex, 2, expectedWKT);
-        checkTWKBGeometry(twkbHex, 3, expectedWKT);
-    }
-
-    private void checkTWKBGeometry(String twkbHex, int dimension, String expectedWKT) throws ParseException
-    {
-        CoordinateSequenceFactory csf = PackedCoordinateSequenceFactory.DOUBLE_FACTORY;
-        GeometryFactory geomFactory = new GeometryFactory(csf);
-        WKTReader rdr = new WKTReader(geomFactory);
-
-        Geometry g = rdr.read(expectedWKT);
-
-        TWKBWriter twkbWriter = new TWKBWriter();
-        byte[] twkb = WKBReader.hexToBytes(twkbHex);
-        byte[] written = twkbWriter.write(g);
+        writer.setXYPrecision(xyprecision);
+        writer.setZPrecision(zprecision);
+        writer.setMPrecision(mprecision);
+        writer.setIncludeSize(includeSize);
+        writer.setIncludeBbox(includeBbox);
+        byte[] written = writer.write(geom);
 
         boolean isEqualHex = Arrays.equals(twkb, written);
 
+        String expected = expectedTWKB;
+        String actual = testSupport.toHexString(written);
+
         if (!isEqualHex) {
-            System.out.println("Input:      " + twkbHex);
-            System.out.println("Expected " + javax.xml.bind.DatatypeConverter.printHexBinary(written));
+            log("precision[xy: %d, z: %d, m: %d], include size: %s, include bbox: %s", xyprecision,
+                    zprecision, mprecision, includeSize, includeBbox);
+            log("input   : %s", inputWKT);
+            log("expected: %s", expected);
+            log("encoded : %s", actual);
+            try {
+                TWKBHeader resultHeader = writer.writeInternal(geom,
+                        (DataOutput) new DataOutputStream(new ByteArrayOutputStream()));
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                resultHeader.writeTo(new DataOutputStream(out));
+                log("header  : %s", testSupport.toHexString(out.toByteArray()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            log("----------");
+            log("\\set g '%s'", inputWKT);
+            log("SELECT :'g' AS input, %d AS xy, %d AS z, %d AS m, %s AS size, %s AS bbox,",
+                    xyprecision, zprecision, mprecision, includeSize, includeBbox);
+            log("\tST_AsText(ST_GeomFromTWKB( ST_AsTWKB(:'g'::Geometry, %d, %d, %d, %s, %s))) AS expected_wkt,",
+                    xyprecision, zprecision, mprecision, includeSize, includeBbox);
+            log("\tST_AsTWKB(:'g'::Geometry, %d, %d, %d, %s, %s) AS expected_twkb;", xyprecision,
+                    zprecision, mprecision, includeSize, includeBbox);
+            assertEquals(expected, actual);
         }
-
-        TWKBReader reader = new TWKBReader();
-        Geometry g2 = reader.read(written);
-
-        CoordinateSequenceComparator comp = null;
-        switch (dimension) {
-            case 2: comp = comp2; break;
-            case 3: comp = comp3; break;
-            case 4: comp = comp4; break;
-            //default: throw new Exception("Never gonna get here!");
-        }
-        boolean isEqual = (g.compareTo(g2, comp) == 0);
-
-        if (!isEqual || !isEqualHex) {
-            System.out.println("isEqual: " + isEqual + " isEqualHex: " + isEqualHex);
-            System.out.println("Input:      " + expectedWKT);
-            System.out.println("Round-trip: " + g2);
-            System.out.println("Expected " + twkbHex);
-            System.out.println("Written  " + javax.xml.bind.DatatypeConverter.printHexBinary(written));
-        }
-        assertTrue(isEqualHex);
-        assertTrue(isEqual);
     }
 
+    private void log(String fmt, Object... args) {
+        System.err.printf(fmt + "\n", args);
+    }
 }
