@@ -258,7 +258,7 @@ public class OverlaySR
   }
   
   private List<Edge> nodeAndMerge() {
-    OverlaySRNoder noder = new OverlaySRNoder(pm);
+    OverlayNoder noder = new OverlayNoder(pm);
     noder.add(inputGeom.getGeometry(0), 0);
     noder.add(inputGeom.getGeometry(1), 1);
     Collection<SegmentString> nodedSegStrings = noder.node();

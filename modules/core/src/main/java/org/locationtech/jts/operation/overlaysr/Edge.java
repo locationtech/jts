@@ -167,7 +167,8 @@ public class Edge {
   }
 
   private int locationRight(int depthDelta) {
-    switch (depthDelta) {
+    int delSign = delSign(depthDelta);
+    switch (delSign) {
     case 0: return OverlayLabel.LOC_UNKNOWN;
     case 1: return Location.INTERIOR;
     case -1: return Location.EXTERIOR;
@@ -176,13 +177,21 @@ public class Edge {
   }
 
   private int locationLeft(int depthDelta) {
-    switch (depthDelta) {
+    // TODO: is it always safe to ignore larger depth deltas?
+    int delSign = delSign(depthDelta);
+    switch (delSign) {
     case 0: return OverlayLabel.LOC_UNKNOWN;
     case 1: return Location.EXTERIOR;
     case -1: return Location.INTERIOR;
     }
-    throw new IllegalStateException("found illegal depth delta " + depthDelta);
+    throw new IllegalStateException("found illegal depth delta " + depthDelta + " in edge " + this);
 
+  }
+
+  private static int delSign(int depthDel) {
+    if(depthDel > 0) return 1;
+    if (depthDel < 0) return -1;
+    return 0;
   }
 
   private static int depthDelta(OverlayLabel label, int index) {

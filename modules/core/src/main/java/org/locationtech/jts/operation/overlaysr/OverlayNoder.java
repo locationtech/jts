@@ -37,12 +37,12 @@ import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
 
-public class OverlaySRNoder {
+public class OverlayNoder {
 
   private PrecisionModel pm;
   List<NodedSegmentString> segStrings = new ArrayList<NodedSegmentString>();
 
-  public OverlaySRNoder(PrecisionModel pm) {
+  public OverlayNoder(PrecisionModel pm) {
     this.pm = pm;
   }
 
@@ -123,7 +123,7 @@ public class OverlaySRNoder {
    */
   private void addPolygonRing(LinearRing lr, int cwLeft, int cwRight, int index)
   {
-    // don't add empty holes
+    // don't add empty rings
     if (lr.isEmpty()) return;
     
     Coordinate[] ptsRaw = lr.getCoordinates();
@@ -132,8 +132,12 @@ public class OverlaySRNoder {
      * since topology collapse can make the orientation computation give the wrong answer
      */
     boolean isCCW = Orientation.isCCW(ptsRaw);
-    Coordinate[] pts = round(ptsRaw, 4);
-
+    Coordinate[] pts = round(ptsRaw);
+    if (pts.length < 4) {
+      // don't add collapsed rings
+      return;
+    }
+    
     int left  = cwLeft;
     int right = cwRight;
     if (isCCW) {
@@ -149,10 +153,10 @@ public class OverlaySRNoder {
     // don't add empty lines
     if (line.isEmpty()) return;
     
-    Coordinate[] pts = round(line.getCoordinates(), 1);
+    Coordinate[] pts = round(line.getCoordinates());
 
     if (pts.length < 2) {
-      // don't bother adding collapsed lines
+      // don't add collapsed lines
       return;
     }
     OverlayLabel lbl = OverlayLabel.createForLine(geomIndex);
@@ -164,6 +168,19 @@ public class OverlaySRNoder {
     segStrings.add(ss);
   }
 
+  private Coordinate[] round(Coordinate[] pts)  {
+    CoordinateList noRepeatCoordList = new CoordinateList();
+
+    for (int i = 0; i < pts.length; i++) {
+      Coordinate coord = new Coordinate(pts[i]);
+      pm.makePrecise(coord);
+      noRepeatCoordList.add(coord, false);
+    }
+    Coordinate[] reducedPts = noRepeatCoordList.toCoordinateArray();
+    return reducedPts;
+  }  
+  
+  /*
   private Coordinate[] round(Coordinate[] pts, int minLength)  {
     CoordinateList noRepeatCoordList = new CoordinateList();
 
@@ -173,12 +190,13 @@ public class OverlaySRNoder {
       noRepeatCoordList.add(coord, false);
     }
     Coordinate[] reducedPts = noRepeatCoordList.toCoordinateArray();
-    if (reducedPts.length < minLength) {
+    if (minLength > 0 && reducedPts.length < minLength) {
       return pad(reducedPts, minLength);
     }
     return reducedPts;
   }
-
+*/
+  
   private static Coordinate[] pad(Coordinate[] pts, int minLength) {
     Coordinate[] pts2 = new Coordinate[minLength];
     for (int i = 0; i < minLength; i++) {
