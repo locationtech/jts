@@ -16,6 +16,7 @@ import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.topology.Position;
+import org.locationtech.jts.util.Debug;
 
 /**
  * Represents a single edge in a topology graph,
@@ -25,6 +26,17 @@ import org.locationtech.jts.topology.Position;
  *
  */
 public class Edge {
+  
+  public static boolean isValidPoints(Coordinate[] pts) {
+    if (pts.length < 2) return false;
+    if (pts[0].equals2D(pts[1])) return false;
+    // TODO: is pts > 2 with equal points ever expected?
+    if (pts.length > 2) {
+      if ( pts[ pts.length-1 ].equals2D(pts[ pts.length - 2 ])) return false;
+    }
+    return true;
+  }
+  
   private Coordinate[] pts;
   private OverlayLabel label;
   
@@ -205,6 +217,9 @@ public class Edge {
     int flipFactor = relDir ? 1 : -1;
     aDepthDelta += flipFactor * edge.aDepthDelta;
     bDepthDelta += flipFactor * edge.bDepthDelta;
+    if (aDepthDelta > 1) {
+      Debug.println(this);
+    }
   }
 
   public String toString() {

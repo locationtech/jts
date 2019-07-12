@@ -126,11 +126,17 @@ public class OverlaySRNoder {
     // don't add empty holes
     if (lr.isEmpty()) return;
     
-    Coordinate[] pts = round(lr.getCoordinates(), 4);
+    Coordinate[] ptsRaw = lr.getCoordinates();
+    /**
+     * Important to compute orientation BEFORE rounding,
+     * since topology collapse can make the orientation computation give the wrong answer
+     */
+    boolean isCCW = Orientation.isCCW(ptsRaw);
+    Coordinate[] pts = round(ptsRaw, 4);
 
     int left  = cwLeft;
     int right = cwRight;
-    if (Orientation.isCCW(pts)) {
+    if (isCCW) {
       left = cwRight;
       right = cwLeft;
     }

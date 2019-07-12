@@ -15,9 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -26,7 +24,6 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geomgraph.Label;
-import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.util.Debug;
@@ -140,9 +137,7 @@ public class OverlaySR
   private Geometry computeOverlay() {
     
     //--- Noding phase
-    Collection<SegmentString> nodedSegStrings = node();
-    
-    List<Edge> edges = mergeEdges(nodedSegStrings);
+    List<Edge> edges = nodeAndMerge();
     
     //--- Topology building phase
     graph = new OverlayGraph( edges );
@@ -262,12 +257,15 @@ public class OverlaySR
     return resultDimension;
   }
   
-  private Collection<SegmentString> node() {
+  private List<Edge> nodeAndMerge() {
     OverlaySRNoder noder = new OverlaySRNoder(pm);
     noder.add(inputGeom.getGeometry(0), 0);
     noder.add(inputGeom.getGeometry(1), 1);
     Collection<SegmentString> nodedSegStrings = noder.node();
-    return nodedSegStrings;
+    
+    // nodedSegStrings are no longer needed, and will be GCed
+    List<Edge> edges = mergeEdges(nodedSegStrings);
+    return edges;
   }
 
   private List<Edge> mergeEdges(Collection<SegmentString> nodedSegStrings) {
@@ -279,6 +277,10 @@ public class OverlaySR
   private static List<Edge> createEdges(Collection<SegmentString> segStrings) {
     List<Edge> edges = new ArrayList<Edge>();
     for (SegmentString ss : segStrings) {
+      Coordinate[] pts = ss.getCoordinates();
+      // don't create edges from collapsed lines
+      // TODO: perhaps convert these to points to be included in overlay?
+      if (! Edge.isValidPoints(pts)) continue;
       OverlayLabel lbl = (OverlayLabel) ss.getData();
       // copy label since it may be updated during edge merging
       edges.add(new Edge(ss.getCoordinates(), lbl.copy()));
