@@ -5,7 +5,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.SineStarFactory;
 import org.locationtech.jts.operation.overlay.OverlayOp;
-import org.locationtech.jts.operation.overlaysr.OverlaySR;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
 
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
@@ -85,7 +85,7 @@ extends PerformanceTestCase
   public void runIntersection()
   {
     for (Geometry b : geomB) {
-      OverlaySR.overlay(geomA, b, precisionModel, OverlayOp.INTERSECTION);
+      OverlayNG.overlay(geomA, b, precisionModel, OverlayOp.INTERSECTION);
     }
   }  
   
@@ -99,7 +99,7 @@ extends PerformanceTestCase
   public void runUnion()
   {
     for (Geometry b : geomB) {
-      OverlaySR.overlay(geomA, b, precisionModel, OverlayOp.UNION);
+      OverlayNG.overlay(geomA, b, precisionModel, OverlayOp.UNION);
     }
   }
   public void runUnionOLD()

@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.operation.overlaysr;
+package org.locationtech.jts.operation.overlayng;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,7 +38,7 @@ public class LineBuilder {
     this.opCode = opCode;
     this.geometryFactory = geomFact;
     this.resultAreaIndex = resultAreaIndex(opCode);
-    resultDimension = OverlaySR.resultDimension(opCode, 
+    resultDimension = OverlayNG.resultDimension(opCode, 
         inputGeom.getGeometry(0), inputGeom.getGeometry(0));
   }
 
@@ -113,7 +113,7 @@ public class LineBuilder {
     int aLoc = locationWithInteriorCollapses(0, lbl);
     int bLoc = locationWithInteriorCollapses(1, lbl);
     
-    boolean isInResult = OverlaySR.isResultOfOp(aLoc, bLoc, opCode);
+    boolean isInResult = OverlayNG.isResultOfOp(aLoc, bLoc, opCode);
     return isInResult;
   }
 

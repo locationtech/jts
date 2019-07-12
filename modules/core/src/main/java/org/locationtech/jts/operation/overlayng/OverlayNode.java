@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.operation.overlaysr;
+package org.locationtech.jts.operation.overlayng;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Location;

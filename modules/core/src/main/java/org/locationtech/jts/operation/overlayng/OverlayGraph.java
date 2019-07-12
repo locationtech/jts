@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.operation.overlaysr;
+package org.locationtech.jts.operation.overlayng;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -163,7 +163,7 @@ public class OverlayGraph {
     OverlayLabel label = e.getLabel();
     if (label.isArea()
         //&& ! label.isInteriorArea()
-        && OverlaySR.isResultOfOp(
+        && OverlayNG.isResultOfOp(
               label.getLocationSideOrLine(0, Position.RIGHT),
               label.getLocationSideOrLine(1, Position.RIGHT),
               overlayOpCode)) {

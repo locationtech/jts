@@ -9,11 +9,12 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.operation.overlaysr;
+package org.locationtech.jts.operation.overlayng;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.overlay.OverlayOp;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -154,11 +155,11 @@ public class OverlaySRSingleTest extends GeometryTestCase {
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlay(a, b, pm, OverlayOp.UNION);
+    return OverlayNG.overlay(a, b, pm, OverlayOp.UNION);
   }
   
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlay(a, b, pm, OverlayOp.INTERSECTION);
+    return OverlayNG.overlay(a, b, pm, OverlayOp.INTERSECTION);
   }
 }

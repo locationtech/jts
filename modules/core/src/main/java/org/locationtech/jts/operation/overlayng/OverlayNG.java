@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.operation.overlaysr;
+package org.locationtech.jts.operation.overlayng;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +28,7 @@ import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.util.Debug;
 
-public class OverlaySR 
+public class OverlayNG 
 {
   /**
    * Tests whether a point with a given topological {@link Label}
@@ -94,7 +94,7 @@ public class OverlaySR
    */
   public static Geometry overlay(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode)
   {
-    OverlaySR gov = new OverlaySR(geom0, geom1, pm, opCode);
+    OverlayNG gov = new OverlayNG(geom0, geom1, pm, opCode);
     Geometry geomOv = gov.getResultGeometry();
     return geomOv;
   }
@@ -107,7 +107,7 @@ public class OverlaySR
   private OverlayGraph graph;
   private int opCode;
 
-  public OverlaySR(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode) {
+  public OverlayNG(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode) {
     this.pm = pm;
     this.opCode = opCode;
     geomFact = geom0.getFactory();

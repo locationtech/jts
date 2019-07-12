@@ -14,55 +14,55 @@ package org.locationtech.jtstest.function;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.overlay.OverlayOp;
-import org.locationtech.jts.operation.overlaysr.OverlaySR;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
-public class OverlaySRFunctions {
+public class OverlayNGFunctions {
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlay(a, b, pm, OverlayOp.INTERSECTION);
+    return OverlayNG.overlay(a, b, pm, OverlayOp.INTERSECTION);
   }
 
   public static Geometry intersectionLines(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlaySR ovr = new OverlaySR(a, b, pm, OverlayOp.INTERSECTION);
+    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
     ovr.setOutputResultEdges(true);
     return ovr.getResultGeometry();
   }
 
   public static Geometry intersectionAllLines(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlaySR ovr = new OverlaySR(a, b, pm, OverlayOp.INTERSECTION);
+    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
     ovr.setOutputEdges(true);
     return ovr.getResultGeometry();
   }
 
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlay(a, b, pm, OverlayOp.UNION);
+    return OverlayNG.overlay(a, b, pm, OverlayOp.UNION);
   }
   
   public static Geometry unionLines(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlaySR ovr = new OverlaySR(a, b, pm, OverlayOp.UNION);
+    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.UNION);
     ovr.setOutputResultEdges(true);
     return ovr.getResultGeometry();
   }
 
   public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlay(a, b, pm, OverlayOp.DIFFERENCE);
+    return OverlayNG.overlay(a, b, pm, OverlayOp.DIFFERENCE);
   }
 
   public static Geometry differenceBA(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlay(b, a, pm, OverlayOp.DIFFERENCE);
+    return OverlayNG.overlay(b, a, pm, OverlayOp.DIFFERENCE);
   }
 
   public static Geometry symDifference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlaySR.overlay(a, b, pm, OverlayOp.SYMDIFFERENCE);
+    return OverlayNG.overlay(a, b, pm, OverlayOp.SYMDIFFERENCE);
   }
   
   public static Geometry unaryUnion(Geometry a, double scaleFactor) {
@@ -70,7 +70,7 @@ public class OverlaySRFunctions {
     UnionFunction unionSRFun = new UnionFunction() {
 
       public Geometry union(Geometry g0, Geometry g1) {
-        return OverlaySR.overlay(g0, g1, pm, OverlayOp.UNION);
+        return OverlayNG.overlay(g0, g1, pm, OverlayOp.UNION);
       }
       
     };

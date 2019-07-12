@@ -9,13 +9,18 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.operation.overlaysr;
+package org.locationtech.jts.operation.overlayng;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.operation.overlayng.Edge;
+import org.locationtech.jts.operation.overlayng.HalfEdge;
+import org.locationtech.jts.operation.overlayng.OverlayEdge;
+import org.locationtech.jts.operation.overlayng.OverlayGraph;
+import org.locationtech.jts.operation.overlayng.OverlayLabel;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;

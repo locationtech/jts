@@ -1,4 +1,4 @@
-package org.locationtech.jts.operation.overlaysr;
+package org.locationtech.jts.operation.overlayng;
 
 import java.util.ArrayList;
 import java.util.List;
