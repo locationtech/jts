@@ -218,26 +218,4 @@ public class Distance {
   
     return Math.abs(s) * Math.sqrt(len2);
   }
-
-  /**
-   * Computes the distance between the segment {@code A}{@code B} and the
-   * { @link Envelope } {@code bounds}
-   * @param A the starting point of the segment
-   * @param B the end point of the segment
-   * @param bounds the bounds
-   * @return the distance between AB and the envelope.
-   */
-  public static double segmentToEnvelope(Coordinate A, Coordinate B, Envelope bounds) {
-    if (bounds.contains(A) || bounds.contains(B))
-      return 0;
-    double d1 = segmentToSegment(A, B, new Coordinate(bounds.getMinX(), bounds.getMinY()), new Coordinate(bounds.getMaxX(), bounds.getMinY()));
-    if (d1 == 0) return 0;
-    double d2 = segmentToSegment(A, B, new Coordinate(bounds.getMinX(), bounds.getMinY()), new Coordinate(bounds.getMinX(), bounds.getMaxY()));
-    if (d2 == 0) return 0;
-    double d3 = segmentToSegment(A, B, new Coordinate(bounds.getMaxX(), bounds.getMinY()), new Coordinate(bounds.getMaxX(), bounds.getMaxY()));
-    if (d3 == 0) return 0;
-    double d4 = segmentToSegment(A, B, new Coordinate(bounds.getMinX(), bounds.getMaxY()), new Coordinate(bounds.getMaxX(), bounds.getMaxY()));
-    if (d4 == 0) return 0;
-    return Math.min(Math.min(d1, d2), Math.min(d3, d4));
-  }
 }

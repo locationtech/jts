@@ -24,13 +24,13 @@ import test.jts.TestFiles;
 import java.io.IOException;
 import java.util.List;
 
-public class ConcaveHullTest extends GeometryTestCase {
+public class ConcaveHullExcavatorTest extends GeometryTestCase {
 
   public static void main(String args[]) {
-    TestRunner.run(ConcaveHullTest.class);
+    TestRunner.run(ConcaveHullExcavatorTest.class);
   }
   
-  public ConcaveHullTest(String name) {
+  public ConcaveHullExcavatorTest(String name) {
     super(name);
   }
 
@@ -46,7 +46,7 @@ public class ConcaveHullTest extends GeometryTestCase {
 
     Geometry input = read("MULTIPOINT((0 0), (0 1), (0 4))");
     Geometry expected = new ConvexHull(input).getConvexHull();
-    Geometry actual = ConcaveHull.compute(input);
+    Geometry actual = ConcaveHullExcavator.compute(input);
 
     assertEquals(expected, actual);
   }
@@ -55,7 +55,7 @@ public class ConcaveHullTest extends GeometryTestCase {
 
     Geometry input = read("MULTIPOINT((0 0), (0 1), (0 0), (1 1))");
     Geometry expected = new ConvexHull(input).getConvexHull();
-    Geometry actual = ConcaveHull.compute(input);
+    Geometry actual = ConcaveHullExcavator.compute(input);
 
     assertEquals(expected, actual);
   }
@@ -65,7 +65,7 @@ public class ConcaveHullTest extends GeometryTestCase {
     Geometry input = read(inputWKT);
     Geometry expected = read(expectedWKT);
     expected.normalize();
-    Geometry actual = ConcaveHull.compute(input, tolerance, 1.5);
+    Geometry actual = ConcaveHullExcavator.compute(input, tolerance, 1.5);
     actual.normalize();
     checkEqual(expected, actual);
   }
@@ -86,7 +86,7 @@ public class ConcaveHullTest extends GeometryTestCase {
     String resultPath = TestFiles.getResourceFilePath("points-1k-hull.wkt");
     Geometry expected = readFromFile(resultPath);
 
-    Geometry actual = ConcaveHull.compute(input);
+    Geometry actual = ConcaveHullExcavator.compute(input);
     compareGeometries(expected, actual, 0.0001);
     assertTrue(actual.contains(input));
   }
@@ -98,7 +98,7 @@ public class ConcaveHullTest extends GeometryTestCase {
     String resultPath = TestFiles.getResourceFilePath("points-1k-hull2.wkt");
     Geometry expected = readFromFile(resultPath);
 
-    Geometry actual = ConcaveHull.compute(input, 0.01);
+    Geometry actual = ConcaveHullExcavator.compute(input, 0.01);
     compareGeometries(expected, actual, 0.0001);
     assertTrue(actual.contains(input));
 

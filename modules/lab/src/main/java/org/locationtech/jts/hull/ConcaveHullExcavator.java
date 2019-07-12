@@ -49,7 +49,7 @@ import org.locationtech.jts.util.PriorityQueue;
  * @author Felix Obermaier
  */
 @SuppressWarnings({"ForLoopReplaceableByForEach", "ManualArrayToCollectionCopy"})
-public class ConcaveHull {
+public class ConcaveHullExcavator {
   
   private final GeometryFactory factory;
   private final LineIntersector lineIntersector = new RobustLineIntersector();
@@ -57,6 +57,21 @@ public class ConcaveHull {
   private final Coordinate[] coordinates;
   private final double concavity;
   private final double lengthThreshold;
+
+  private static double defaultConcavity = 0.5;
+
+  /**
+   * Set the default concavity value that is used when no specific concavity
+   * value is set in the {@link ConcaveHullExcavator#compute(Geometry)} and
+   * {@link ConcaveHullExcavator#compute(Geometry, double)} functions.
+   * <p/>
+   * If not set using this method, a value of {@code 0.5} is used.
+   * @param concavity
+   */
+  public static void setDefaultConcavity(double concavity) {
+    defaultConcavity = concavity;
+  }
+
 
   /**
    * Computes a concave hull for the given geometry
@@ -71,22 +86,29 @@ public class ConcaveHull {
    * Computes a concave hull for the given geometry
    *
    * @param geom            the input geometry
-   * @param lengthThreshold when a segment goes below this length threshold, it won't be drilled down further
+   * @param lengthThreshold when a segment's length goes below this value
+   *                        it won't be drilled down any further
    */
   public static Geometry compute(Geometry geom, double lengthThreshold) {
-    return compute(geom, lengthThreshold, 2);
+    return compute(geom, lengthThreshold, defaultConcavity);
   }
 
   /**
    * Computes a concave hull for the given geometry
    *
    * @param geom            the input geometry
-   * @param lengthThreshold when a segment goes below this length threshold, it won't be drilled down further
-   * @param concavity       a relative measure of concavity; higher value means simpler hull
+   * @param lengthThreshold when a segment's length goes below this value
+   *                        it won't be drilled down any further
+   * @param concavity       a relative measure of concavity; smaller values imply simpler hull
    */
   public static Geometry compute(Geometry geom, double lengthThreshold, double concavity)
   {
-    ConcaveHull ch = new ConcaveHull(geom.getFactory(), geom.getCoordinates(), concavity, lengthThreshold);
+    if (lengthThreshold < 0d)
+      throw new IllegalArgumentException("lengthThreshold must be >= 0.0");
+    if (concavity <= 0d)
+      throw new IllegalArgumentException("concavity must be > 0.0");
+
+    ConcaveHullExcavator ch = new ConcaveHullExcavator(geom.getFactory(), geom.getCoordinates(), concavity, lengthThreshold);
     return ch.getConcaveHull();
   }
 
@@ -95,16 +117,16 @@ public class ConcaveHull {
    *
    * @param factory         the factory to use when creating the result geometry
    * @param coordinates     the input coordinates
-   * @param concavity       a relative measure of concavity; higher value means simpler hull
-   * @param lengthThreshold when a segment goes below this length threshold, it won't be drilled down further
+   * @param concavity       a relative measure of concavity; smaller value imply simpler hull
+   * @param lengthThreshold when a segment's length goes below this value it won't be drilled down any further
    */
-  private ConcaveHull(GeometryFactory factory, Coordinate[] coordinates, double concavity, double lengthThreshold) {
+  private ConcaveHullExcavator(GeometryFactory factory, Coordinate[] coordinates, double concavity, double lengthThreshold) {
 
     this.factory = factory;
     this.coordinates = coordinates;
 
     concavity = Math.max(0, concavity);
-    this.concavity = concavity;
+    this.concavity = 1.d / concavity;
     this.lengthThreshold = lengthThreshold;
   }
 
@@ -184,7 +206,7 @@ public class ConcaveHull {
       Coordinate b = node.nextNode.point;
 
       // skip the segment if it is already short enough
-      double lengthMeasure = SquaredDistance.pointToPoint(a, b);
+      double lengthMeasure = DistanceSquared.pointToPoint(a, b);
       if (lengthMeasure < squaredLengthThreshold) continue;
 
       double maxLengthMeasure = lengthMeasure / squaredConcavity;
@@ -194,7 +216,7 @@ public class ConcaveHull {
 
       // if we found a connection and it satisfies our concavity measure
       if (p != null) {
-        double distanceMeasure = Math.min(SquaredDistance.pointToPoint(p, a), SquaredDistance.pointToPoint(p, b));
+        double distanceMeasure = Math.min(DistanceSquared.pointToPoint(p, a), DistanceSquared.pointToPoint(p, b));
         if (distanceMeasure <= maxLengthMeasure) {
           // connect the edge endpoints through this point and add 2 new edges to the queue
           nodesQueue.add(node);
@@ -320,8 +342,8 @@ public class ConcaveHull {
         Boundable child = (Boundable)children.get(i);
 
         double distancMeasure = isLeaf(child)
-          ? SquaredDistance.pointToSegment((Coordinate) ((ItemBoundable)child).getItem(), b, c)
-          : SquaredDistance.segmentToEnvelope(b, c, (Envelope)child.getBounds());
+          ? DistanceSquared.pointToSegment((Coordinate) ((ItemBoundable)child).getItem(), b, c)
+          : DistanceSquared.segmentToEnvelope(b, c, (Envelope)child.getBounds());
 
         // skip the node if it's too far away
         if (distancMeasure > maxDistanceMeasure) continue;
@@ -336,8 +358,8 @@ public class ConcaveHull {
 
         // skip all points that are as close to adjacent segments a->b and c->d,
         // and points that would introduce self-intersections when connected
-        double distancePAB = SquaredDistance.pointToSegment(p, a, b);
-        double distancePCD = SquaredDistance.pointToSegment(p, c, d);
+        double distancePAB = DistanceSquared.pointToSegment(p, a, b);
+        double distancePCD = DistanceSquared.pointToSegment(p, c, d);
         if (item.distance < distancePAB && item.distance < distancePCD &&
           noProperIntersections(b, p, segmentTree) &&
           noProperIntersections(c, p, segmentTree)) {

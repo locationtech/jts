@@ -26,7 +26,7 @@ import org.locationtech.jts.geom.Envelope;
  * @since 1.17
  *
  */
-public class SquaredDistance {
+public class DistanceSquared {
 
   /**
    * Computes the squared distance from a point {@code p0} to a point {@code p1}
