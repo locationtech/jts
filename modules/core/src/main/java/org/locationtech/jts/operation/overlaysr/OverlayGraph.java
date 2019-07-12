@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.util.Debug;
 
 public class OverlayGraph {
@@ -154,10 +155,22 @@ public class OverlayGraph {
   
   public void markResultAreaEdges(int overlayOpCode) {
     for (OverlayEdge edge : getEdges()) {
-      edge.markInResultArea(overlayOpCode);
+      markInResultArea(edge, overlayOpCode);
     }
   }
 
+  public void markInResultArea(OverlayEdge e, int overlayOpCode) {
+    OverlayLabel label = e.getLabel();
+    if (label.isArea()
+        //&& ! label.isInteriorArea()
+        && OverlaySR.isResultOfOp(
+              label.getLocationSideOrLine(0, Position.RIGHT),
+              label.getLocationSideOrLine(1, Position.RIGHT),
+              overlayOpCode)) {
+      e.markInResult();  
+    }
+  }
+  
   public void removeDuplicateResultAreaEdges() {
     for (OverlayEdge edge : getEdges()) {
       if ( edge.isInResult()  && edge.symOE().isInResult() ) {

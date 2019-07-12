@@ -186,20 +186,13 @@ public class OverlayEdge extends HalfEdge {
     maxEdgeRing = maximalEdgeRing;
   }
   
-  public void setLocationBothSides(int geomIndex, int loc) {
-    getLabel().setLocationBothSides(geomIndex, loc);
-    symOE().getLabel().setLocationBothSides(geomIndex, loc);
+  public void setLocationInArea(int geomIndex, int loc) {
+    getLabel().setLocationInArea(geomIndex, loc);
+    symOE().getLabel().setLocationInArea(geomIndex, loc);
   }
 
-  public void markInResultArea(int overlayOpCode) {
-    if (label.isArea()
-        //&& ! label.isInteriorArea()
-        && OverlaySR.isResultOfOp(
-              label.getLocation(0, Position.RIGHT),
-              label.getLocation(1, Position.RIGHT),
-              overlayOpCode)) {
-      isInResult  = true;  
-    }
+  public void markInResult() {
+    isInResult  = true;
   }
 
   public void mergeSymLabels() {
@@ -223,6 +216,7 @@ public class OverlayEdge extends HalfEdge {
         + " / Sym: " + symOE().getLabel()+ (symOE().isInResult() ? " Res" : "")
         ;
   }
+
 
 
 

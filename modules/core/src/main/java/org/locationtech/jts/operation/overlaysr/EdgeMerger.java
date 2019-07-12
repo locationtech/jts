@@ -72,19 +72,5 @@ public class EdgeMerger {
     }
     return new ArrayList<Edge>(edgeMap.values());
   }
-  
-  /*
-  private void mergeLabel(Edge target, Edge edge) {
-    OverlayLabel lblTarget = target.getLabel();
-    OverlayLabel lblToMerge = edge.getLabel();
-    boolean relDir = target.relativeDirection(edge);
-    if (relDir) {
-      lblTarget.merge(lblToMerge);
-    }
-    else {
-      lblTarget.mergeFlip(lblToMerge);
-    }
-  }
-  */
 
 }

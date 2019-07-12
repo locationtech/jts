@@ -134,7 +134,7 @@ public class OverlaySRNoder {
       left = cwRight;
       right = cwLeft;
     }
-    OverlayLabel lbl = OverlayLabel.createAreaLabel(index, left, right);
+    OverlayLabel lbl = OverlayLabel.createForAreaBoundary(index, left, right);
     add(pts, lbl);
   }
 
@@ -149,7 +149,7 @@ public class OverlaySRNoder {
       // don't bother adding collapsed lines
       return;
     }
-    OverlayLabel lbl = OverlayLabel.createLineLabel(geomIndex);
+    OverlayLabel lbl = OverlayLabel.createForLine(geomIndex);
     add(pts, lbl);
   }
   

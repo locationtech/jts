@@ -42,7 +42,7 @@ public class OverlaySRSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testCollapseBoxGoreIntersection() {
+  public void xtestCollapseBoxGoreIntersection() {
     Geometry a = read("MULTIPOLYGON (((1 1, 5 1, 5 0, 1 0, 1 1)), ((1 1, 5 2, 5 4, 1 4, 1 1)))");
     Geometry b = read("POLYGON ((1 0, 1 2, 2 2, 2 0, 1 0))");
     Geometry expected = read("POLYGON ((2 0, 1 0, 1 1, 1 2, 2 2, 2 1, 2 0))");
@@ -50,7 +50,7 @@ public class OverlaySRSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void xtestCollapseTriBoxIntersection() {
+  public void testCollapseTriBoxIntersection() {
     Geometry a = read("POLYGON ((1 2, 1 1, 9 1, 1 2))");
     Geometry b = read("POLYGON ((9 2, 9 1, 8 1, 8 2, 9 2))");
     Geometry expected = read("LINESTRING (8 1, 9 1)");
@@ -74,7 +74,16 @@ public class OverlaySRSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void XtestBoxTriUnion() {
+  public void xtestBoxTriIntersection() {
+    Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
+    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
+    Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+
+  public void xtestBoxTriUnion() {
     Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
     Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
     Geometry expected = read("POLYGON ((0 6, 4 6, 4 2, 3 2, 3 0, 1 0, 1 2, 0 2, 0 6))");
@@ -130,7 +139,15 @@ public class OverlaySRSingleTest extends GeometryTestCase {
     Geometry actual = intersection(a, b, 1);
     checkEqual(expected, actual);
   }
+  public void xtestBoxLineUnion() {
+    Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
+    Geometry b = read("LINESTRING (50 150, 150 150)");
+    Geometry expected = read("GEOMETRYCOLLECTION (LINESTRING (50 150, 100 150), POLYGON ((100 200, 200 200, 200 100, 100 100, 100 150, 100 200)))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
   
+
   
   
   

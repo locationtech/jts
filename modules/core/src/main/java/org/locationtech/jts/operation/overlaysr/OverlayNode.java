@@ -63,17 +63,19 @@ public class OverlayNode {
     
     do {
       OverlayLabel label = e.getLabel();
+      if ( ! label.isAreaBoundary(geomIndex) ) {
       /**
-       * If location is unknown 
-       * they are all set to current location
+       * If edge is not a boundary edge, 
+       * its location is now known for this area
        */
-      if ( ! label.hasSideLocation(geomIndex) ) {
-        e.setLocationBothSides(geomIndex, currLoc);
+        e.setLocationInArea(geomIndex, currLoc);
       }
       else {
+        Assert.isTrue(label.hasSides(geomIndex));
         /**
-         *  Location is known, so update curr loc
-         *  (which may change moving from R to L across the edge
+         *  This is a boundary edge for the area geom.
+         *  Update the current location from its labels,
+         *  checking for topology consistency
          */
         int locRight = e.getLabel().getLocation(geomIndex, Position.RIGHT);
         if (locRight != currLoc) {
@@ -106,7 +108,8 @@ public class OverlayNode {
     OverlayEdge eStart = nodeEdge;
     do {
       OverlayLabel label = eStart.getLabel();
-      if (label.hasSideLocation(geomIndex)) {
+      if (label.isAreaBoundary(geomIndex)) {
+        Assert.isTrue(label.hasSides(geomIndex));
         return eStart;
       }
       eStart = (OverlayEdge) eStart.oNext();

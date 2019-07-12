@@ -21,6 +21,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geomgraph.Position;
+import org.locationtech.jts.operation.overlay.OverlayOp;
 
 public class LineBuilder {
   
@@ -28,12 +29,17 @@ public class LineBuilder {
   private OverlayGraph graph;
   private int opCode;
   private int resultAreaIndex;
+  private InputGeometry inputGeom;
+  private int resultDimension;
 
-  public LineBuilder(OverlayGraph graph, int opCode, GeometryFactory geomFact, int resultAreaIndex, PointLocator ptlocator) {
+  public LineBuilder(InputGeometry inputGeom, OverlayGraph graph, int opCode, GeometryFactory geomFact) {
+    this.inputGeom = inputGeom;
     this.graph = graph;
     this.opCode = opCode;
     this.geometryFactory = geomFact;
-    this.resultAreaIndex = resultAreaIndex;
+    this.resultAreaIndex = resultAreaIndex(opCode);
+    resultDimension = OverlaySR.resultDimension(opCode, 
+        inputGeom.getGeometry(0), inputGeom.getGeometry(0));
   }
 
   public List<LineString> getLines() {
@@ -51,11 +57,19 @@ public class LineBuilder {
   
       if (! isResultLine(edge)) continue;
       
+      // mark edge as in result for future reference
+      edge.markInResult();
+      
       LineString line = createLine(edge);
       lines.add(line);
     }
   }
-
+  
+  private void markVisited(OverlayEdge edge) {
+    edge.setVisited(true);
+    edge.symOE().setVisited(true);
+  }
+  
   private LineString createLine(OverlayEdge edge) {
     OverlayEdge forward = edge.isForward() ? edge : edge.symOE();
     Coordinate[] pts = forward.getCoordinates();
@@ -63,37 +77,104 @@ public class LineBuilder {
     return line;
   }
 
+  private int resultAreaIndex(int overlayOpCode) {
+    int areaIndex = -1;
+    if (inputGeom.getDimension(0) == 2) areaIndex = 0;
+    if (inputGeom.getDimension(1) == 2) areaIndex = 1;
+    
+    if (areaIndex < 0) return -1;
+    
+    switch (overlayOpCode) {
+    case OverlayOp.INTERSECTION: return -1;
+    case OverlayOp.UNION: return areaIndex;
+    case OverlayOp.DIFFERENCE: return (areaIndex <= 0) ? 0 : -1;
+    case OverlayOp.SYMDIFFERENCE: return areaIndex;
+    }
+    return -1;
+  }
+  
   private boolean isResultLine(OverlayEdge edge) {
-    // edge is already in result
-    if (edge.isInResult() || edge.symOE().isInResult()) 
+    // edge is already in result as a boundary edge
+    if (isInResult(edge)) 
       return false;
     
     OverlayLabel lbl = edge.getLabel();
     if (! lbl.isLine()) return false;
-    if (isCoveredByResultArea(lbl)) return false;
     
-    //TODO: can this be replaced by a check on the isLine(i) value for each geom?
-    // This would eliminate the need for the ON label position
-    boolean isInResult = OverlaySR.isResultOfOp(
-        lbl.getLocation(0,  Position.ON), 
-        lbl.getLocation(1,  Position.ON), 
-        opCode);
+    if (isCoveredByResultArea(edge)) return false;
+    
+    /**
+     * Interior collapsed edges are discarded, 
+     * since they will be covered by the result area
+     */
+    if (isInteriorCollapse(0, lbl)) return false;
+    if (isInteriorCollapse(1, lbl)) return false;
+    
+    int aLoc = locationWithInteriorCollapses(0, lbl);
+    int bLoc = locationWithInteriorCollapses(1, lbl);
+    
+    boolean isInResult = OverlaySR.isResultOfOp(aLoc, bLoc, opCode);
     return isInResult;
   }
 
-  private boolean isCoveredByResultArea(OverlayLabel lbl) {
-    // no area is in result
+  /**
+   * Determines the effective location for this line,
+   * forcing collapses to be considered as INTERIOR
+   * so they will be included in the result.
+   * 
+   * @param geomIndex index of parent geometry
+   * @param lbl label of line
+   * @return the effective location of the line
+   */
+  private int locationWithInteriorCollapses(int geomIndex, OverlayLabel lbl) {
+    if (isCollapse(geomIndex, lbl))
+      return Location.INTERIOR;
+    return lbl.getLineLocation(geomIndex);
+  }
+
+  private static boolean isInResult(OverlayEdge edge) {
+    return edge.isInResult() || edge.symOE().isInResult();
+  }
+
+  private boolean isInteriorCollapse(int geomIndex, OverlayLabel lbl) {
+    return isCollapse(geomIndex, lbl)
+        && lbl.getLineLocation(geomIndex) == Location.INTERIOR;
+  }
+
+  private boolean isCollapse(int geomIndex, OverlayLabel lbl) {
+    return lbl.isCollapse(geomIndex, inputGeom.getDimension(geomIndex));
+  }
+
+  /**
+   * Tests whether a line edge is covered by the result area (if any).
+   * In this case the line will not be added to the result.
+   * 
+   * @param lbl the line label
+   * @return true if the edge lies in the interior of the result area
+   */
+  private boolean isCoveredByResultArea(OverlayEdge edge) {
+    /**
+     * If result is not an area, edge can't be covered
+     */
+    if (resultDimension < 2) return false;
+    /**
+     * If no inputs are areas, edge can't be covered
+     */
     if (resultAreaIndex < 0) return false;
-    // Note: probably only one side needs to be checked?
-    boolean isCovered =
-        lbl.getLocation(resultAreaIndex, Position.LEFT) == Location.INTERIOR
-        || lbl.getLocation(resultAreaIndex, Position.RIGHT) == Location.INTERIOR;
+    
+    //TODO: handle situation when line collapse is an isolated line inside parent geom
+    /**
+     * It can happen that both inputs are areas, and there end up
+     * being collapsed L edges isolated inside the result area. 
+     * 
+     */
+
+    // TODO: does this need to be computed using the actual result area?
+    
+    OverlayLabel lbl = edge.getLabel();
+    boolean isCovered = lbl.isInArea(resultAreaIndex);
     return isCovered;
   }
 
-  private void markVisited(OverlayEdge edge) {
-    edge.setVisited(true);
-    edge.symOE().setVisited(true);
-  }
 
 }

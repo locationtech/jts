@@ -102,29 +102,47 @@ public class Edge {
   public OverlayLabel getMergedLabel() {
     OverlayLabel lbl = new OverlayLabel();
     
-    // if location is not known label is not populated for it
+    /**
+     * if location for an input geom is not known, 
+     * the label will have dimension = DIM_NOT_PART = DIM_UNKNOWN.
+     * 
+     * The effective dimension of an edge is:
+     * - A, if the edge is an area boundary, indicated by depthDelta != 0
+     * - L, if the edge is from a line.  In this case the inArea location
+     *      is known to be INTERIOR
+     * - L, if the edge is an area collapse.  In this case the inArea location
+     *      is not known (since the collapse could be inside or outside the 
+     *      resultant reduced area)
+     *
+     */
     
     // -----  A label
     if (isKnown(0)) {
-      int aDimEff = aDepthDelta == 0 ? Dimension.L : Dimension.A;
-      switch (aDimEff) {
+      int aDimMerge = aDepthDelta == 0 ? Dimension.L : Dimension.A;
+      boolean aIsCollape = aDepthDelta == 0 && aDim == Dimension.A;
+      switch (aDimMerge) {
       case Dimension.A: 
-        lbl.setLocationArea(0, locationLeft(aDepthDelta), locationRight(aDepthDelta));
+        lbl.setAreaBoundary(0, locationLeft(aDepthDelta), locationRight(aDepthDelta));
         break;
       case Dimension.L:
-        lbl.setLocationLine(0, Location.INTERIOR, OverlayLabel.LOC_UNKNOWN);
+        int lineLoc = aIsCollape ? OverlayLabel.LOC_UNKNOWN : Location.INTERIOR;
+        lbl.setLine(0, lineLoc);
+        break;
       }
     }
     
     // -----  B label
     if (isKnown(1)) {
-      int bDimEff = bDepthDelta == 0 ? Dimension.L : Dimension.A;
-      switch (bDimEff) {
+      int bDimMerge = bDepthDelta == 0 ? Dimension.L : Dimension.A;
+      boolean bIsCollape = bDepthDelta == 0 && bDim == Dimension.A;
+      switch (bDimMerge) {
       case Dimension.A: 
-        lbl.setLocationArea(1, locationLeft(bDepthDelta), locationRight(bDepthDelta));
+        lbl.setAreaBoundary(1, locationLeft(bDepthDelta), locationRight(bDepthDelta));
         break;
       case Dimension.L:
-        lbl.setLocationLine(1, Location.INTERIOR, OverlayLabel.LOC_UNKNOWN);
+        int lineLoc = bIsCollape ? OverlayLabel.LOC_UNKNOWN : Location.INTERIOR;
+        lbl.setLine(1, lineLoc);
+        break;
       }
     }
     return lbl;
@@ -172,10 +190,10 @@ public class Edge {
   }
 
   private void initEdgeLabel(OverlayLabel label) {
-    aDim = label.getDimension(0);
+    aDim = label.dimension(0);
     aDepthDelta = depthDelta(label, 0);
     
-    bDim = label.getDimension(1);
+    bDim = label.dimension(1);
     bDepthDelta = depthDelta(label, 1);
   }
   

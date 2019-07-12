@@ -102,8 +102,7 @@ public class OverlaySR
     return geomOv;
   }
 
-  private static final PointLocator ptLocator = new PointLocator();
-  private Geometry[] geom;
+  private InputGeometry inputGeom;
   private GeometryFactory geomFact;
   private PrecisionModel pm;
   private boolean isOutputEdges;
@@ -115,7 +114,7 @@ public class OverlaySR
     this.pm = pm;
     this.opCode = opCode;
     geomFact = geom0.getFactory();
-    geom = new Geometry[] { geom0, geom1 };
+    inputGeom = new InputGeometry( geom0, geom1 );
   }  
   
   public void setOutputEdges(boolean isOutputEdges ) {
@@ -126,36 +125,17 @@ public class OverlaySR
     this.isOutputResultEdges = isOutputResultEdges;
   }
   
-  private int resultAreaIndex(int overlayOpCode) {
-    int areaIndex = -1;
-    if (dimension(0) == 2) areaIndex = 0;
-    if (dimension(1) == 2) areaIndex = 1;
-    
-    if (areaIndex < 0) return -1;
-    
-    switch (overlayOpCode) {
-    case OverlayOp.INTERSECTION: return -1;
-    case OverlayOp.UNION: return areaIndex;
-    case OverlayOp.DIFFERENCE: return (areaIndex <= 0) ? 0 : -1;
-    case OverlayOp.SYMDIFFERENCE: return areaIndex;
-    }
-    return -1;
-  }
-  
   public Geometry getResultGeometry() {
     Geometry resultGeom = computeOverlay();
     return resultGeom;
   }
 
+  /*
   private int dimension(int geomIndex) {
     // TODO: any edge cases that need to be handled?
     return geom[geomIndex].getDimension();
   }
-
-  private int locatePoint(Coordinate pt, int geomIndex) {
-    // TODO: use indexed locator here?
-    return ptLocator.locate(pt, geom[geomIndex]);
-  }
+*/
   
   private Geometry computeOverlay() {
     
@@ -187,7 +167,7 @@ public class OverlaySR
     List<Polygon> resultPolyList = polyBuilder.getPolygons();
     
     //--- Build lines
-    LineBuilder lineBuilder = new LineBuilder(graph, opCode, geomFact, resultAreaIndex(opCode), ptLocator);
+    LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, opCode, geomFact);
     List<LineString> resultLineList = lineBuilder.getLines();
 
     //--- Build points
@@ -205,13 +185,12 @@ public class OverlaySR
     geomList.addAll(resultPolyList);
 
     if ( geomList.isEmpty() )
-      return createEmptyResult(opcode, geom[0], geom[1], geomFact);
+      return createEmptyResult(opcode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), geomFact);
 
     // build the most specific geometry possible
     return geomFact.buildGeometry(geomList);
   }
 
-  
   /**
    * Creates an empty result geometry of the appropriate dimension,
    * based on the given overlay operation and the dimensions of the inputs.
@@ -253,7 +232,7 @@ public class OverlaySR
     return result;
   }
   
-  private static int resultDimension(int opCode, Geometry g0, Geometry g1)
+  public static int resultDimension(int opCode, Geometry g0, Geometry g1)
   {
     int dim0 = g0.getDimension();
     int dim1 = g1.getDimension();
@@ -285,8 +264,8 @@ public class OverlaySR
   
   private Collection<SegmentString> node() {
     OverlaySRNoder noder = new OverlaySRNoder(pm);
-    noder.add(geom[0], 0);
-    noder.add(geom[1], 1);
+    noder.add(inputGeom.getGeometry(0), 0);
+    noder.add(inputGeom.getGeometry(1), 1);
     Collection<SegmentString> nodedSegStrings = noder.node();
     return nodedSegStrings;
   }
@@ -310,10 +289,10 @@ public class OverlaySR
   private void labelIncompleteEdges(Collection<OverlayEdge> edges) {
     for (OverlayEdge edge : edges) {
       Debug.println("\n------  checking for Incomplete edge " + edge);
-      if (edge.getLabel().isUnknown(0)) {
+      if (edge.getLabel().isUnknownLineLocation(0)) {
         labelIncompleteEdge(edge, 0);
       }
-      if (edge.getLabel().isUnknown(1)) {
+      if (edge.getLabel().isUnknownLineLocation(1)) {
         labelIncompleteEdge(edge, 1);
       }
     }
@@ -322,21 +301,14 @@ public class OverlaySR
   private void labelIncompleteEdge(OverlayEdge edge, int geomIndex) {
     Debug.println("\n------  labelIncompleteEdge - geomIndex= " + geomIndex);
     Debug.print("BEFORE: " + edge.toStringNode());
-    int otherGeomDim = dimension(geomIndex);
-    if (OverlayLabel.DIM_LINE == otherGeomDim) {
-      edge.getLabel().setLocationLine(geomIndex, Location.EXTERIOR);
-    }
-    else { // assume DIM_AREA
-      int loc = locatePoint(edge.orig(), geomIndex);
-      edge.getLabel().setLocationArea(geomIndex, loc, loc);
+    int geomDim = inputGeom.getDimension(geomIndex);
+    if (OverlayLabel.DIM_AREA == geomDim) {
+      // TODO: locate in the result area, not original geometry, in case of collapse
+      int loc = inputGeom.locatePoint(geomIndex, edge.orig());
+      edge.getLabel().setLocationInArea(geomIndex, loc);
     }
     edge.mergeSymLabels();
     Debug.print("AFTER: " + edge.toStringNode());
-  }
-
-  
-  private static int otherIndex(int geomIndex) {
-    return 1 - geomIndex;
   }
 
   private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
