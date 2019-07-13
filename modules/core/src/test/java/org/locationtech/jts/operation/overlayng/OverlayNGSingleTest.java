@@ -19,13 +19,13 @@ import org.locationtech.jts.operation.overlayng.OverlayNG;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class OverlaySRSingleTest extends GeometryTestCase {
+public class OverlayNGSingleTest extends GeometryTestCase {
 
   public static void main(String args[]) {
-    TestRunner.run(OverlaySRSingleTest.class);
+    TestRunner.run(OverlayNGSingleTest.class);
   }
 
-  public OverlaySRSingleTest(String name) { super(name); }
+  public OverlayNGSingleTest(String name) { super(name); }
   
   public void xtestBoxGoreIntersection() {
     Geometry a = read("MULTIPOLYGON (((1 1, 5 1, 5 0, 1 0, 1 1)), ((1 1, 5 2, 5 4, 1 4, 1 1)))");

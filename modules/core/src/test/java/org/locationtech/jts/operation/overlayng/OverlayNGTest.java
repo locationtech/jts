@@ -19,13 +19,13 @@ import org.locationtech.jts.operation.overlayng.OverlayNG;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class OverlaySRTest extends GeometryTestCase {
+public class OverlayNGTest extends GeometryTestCase {
 
   public static void main(String args[]) {
-    TestRunner.run(OverlaySRTest.class);
+    TestRunner.run(OverlayNGTest.class);
   }
 
-  public OverlaySRTest(String name) { super(name); }
+  public OverlayNGTest(String name) { super(name); }
   
   public void testBoxTriIntersection() {
     Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");

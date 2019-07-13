@@ -42,8 +42,10 @@ public class OverlayNoder {
   private PrecisionModel pm;
   List<NodedSegmentString> segStrings = new ArrayList<NodedSegmentString>();
 
-  public OverlayNoder(PrecisionModel pm) {
+  public OverlayNoder(Geometry a, Geometry b, PrecisionModel pm) {
     this.pm = pm;
+    add(a, 0);
+    add(b, 1);
   }
 
   public Collection<SegmentString> node() {
@@ -73,7 +75,7 @@ public class OverlayNoder {
     return noder;
   }
   
-  public void add(Geometry g, int geomIndex)
+  private void add(Geometry g, int geomIndex)
   {
     if (g.isEmpty()) return;
 

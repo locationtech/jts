@@ -258,9 +258,10 @@ public class OverlayNG
   }
   
   private List<Edge> nodeAndMerge() {
-    OverlayNoder noder = new OverlayNoder(pm);
-    noder.add(inputGeom.getGeometry(0), 0);
-    noder.add(inputGeom.getGeometry(1), 1);
+    OverlayNoder noder = new OverlayNoder(
+        inputGeom.getGeometry(0),
+        inputGeom.getGeometry(1),
+        pm);
     Collection<SegmentString> nodedSegStrings = noder.node();
     
     // nodedSegStrings are no longer needed, and will be GCed
