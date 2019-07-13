@@ -11,8 +11,13 @@
  */
 package org.locationtech.jtstest.function;
 
+import java.util.List;
+
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.util.LineStringExtracter;
+import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
@@ -37,7 +42,7 @@ public class OverlayNGFunctions {
     ovr.setOutputEdges(true);
     return ovr.getResultGeometry();
   }
-
+  
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlayNG.overlay(a, b, pm, OverlayOp.UNION);
@@ -79,4 +84,42 @@ public class OverlayNGFunctions {
     return op.union();
   }
 
+  public static Geometry reducePrecision(Geometry a, double scaleFactor) {
+    Point emptyPoint = a.getFactory().createPoint();
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    
+    /**
+     * This ONLY works if the input GeometryCollection 
+     * is a non-overlapping polygonal coverage!
+     */
+    Geometry homoGeom = forceHomo(a);
+    Geometry union = OverlayNG.overlay(homoGeom, emptyPoint, pm, OverlayOp.UNION);
+    
+    List components = null;
+    switch (a.getDimension()) {
+      case 2: 
+        components = PolygonExtracter.getPolygons(union);
+        break;
+      case 1:
+        components = LineStringExtracter.getLines(union);
+        break;
+    }
+    Geometry result = a.getFactory().buildGeometry(components);
+    return result;
+  }
+
+  private static Geometry forceHomo(Geometry geom) {
+    int resultDimension = geom.getDimension();
+    List components = null;
+    switch (resultDimension) {
+    case 2: 
+      components = PolygonExtracter.getPolygons(geom);
+      break;
+    case 1:
+      components = LineStringExtracter.getLines(geom);
+      break;
+    }
+    Geometry result = geom.getFactory().buildGeometry(components);
+    return result;
+  }
 }
