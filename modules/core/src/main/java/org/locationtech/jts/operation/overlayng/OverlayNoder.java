@@ -50,6 +50,7 @@ public class OverlayNoder {
 
   public Collection<SegmentString> node() {
     Noder noder = getSRNoder();
+    //Noder noder = getSimpleNoder(false);
     //Noder noder = getSimpleNoder(true);
     noder.computeNodes(segStrings);
     

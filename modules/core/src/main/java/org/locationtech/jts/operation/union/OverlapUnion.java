@@ -82,11 +82,12 @@ public class OverlapUnion
    * 
    * @param g0 a geometry to union
    * @param g1 a geometry to union
+   * @param unionFun 
    * @return the union of the inputs
    */
-	public static Geometry union(Geometry g0, Geometry g1)
+	public static Geometry union(Geometry g0, Geometry g1, UnionFunction unionFun)
 	{
-		OverlapUnion union = new OverlapUnion(g0, g1);
+		OverlapUnion union = new OverlapUnion(g0, g1, unionFun);
 		return union.union();
 	}
 
@@ -97,6 +98,8 @@ public class OverlapUnion
 
   private boolean isUnionSafe;
 
+  private UnionFunction unionFun;
+
 	
   /**
    * Creates a new instance for unioning the given geometries.
@@ -106,12 +109,17 @@ public class OverlapUnion
    */
 	public OverlapUnion(Geometry g0, Geometry g1)
 	{
-		this.g0 = g0;
-		this.g1 = g1;
-		geomFactory = g0.getFactory();
+		this(g0, g1, UnionFunction.CLASSIC);
 	}
 	
-	/**
+	public OverlapUnion(Geometry g0, Geometry g1, UnionFunction unionFun) {
+    this.g0 = g0;
+    this.g1 = g1;
+    geomFactory = g0.getFactory();
+    this.unionFun = unionFun;
+  }
+
+  /**
    * Unions the input geometries,
    * using the more performant overlap union algorithm if possible.	 
    * 
@@ -197,16 +205,9 @@ public class OverlapUnion
   }
   
   private Geometry unionFull(Geometry geom0, Geometry geom1) {
-    try {
-      return geom0.union(geom1);
-    } 
-    catch (TopologyException ex) {
-      /**
-       * If the overlay union fails,
-       * try a buffer union, which often succeeds
-       */
-      return unionBuffer(geom0, geom1);
-    }
+    Geometry union = unionFun.union(geom0, geom1);
+    //Geometry union = geom0.union(geom1);
+    return union;
   }
 
   /**

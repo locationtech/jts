@@ -66,7 +66,7 @@ public class EdgeMerger {
       else {
         // Assert: edges are identical (up to direction)
         existing.mergeEdge(edge);
-        Debug.println("edge merged: " + existing);
+        //Debug.println("edge merged: " + existing);
         //mergeLabel(existing, ss);
       }
     }

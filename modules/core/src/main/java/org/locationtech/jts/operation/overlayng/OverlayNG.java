@@ -291,7 +291,7 @@ public class OverlayNG
 
   private void labelIncompleteEdges(Collection<OverlayEdge> edges) {
     for (OverlayEdge edge : edges) {
-      Debug.println("\n------  checking for Incomplete edge " + edge);
+      //Debug.println("\n------  checking for Incomplete edge " + edge);
       if (edge.getLabel().isUnknownLineLocation(0)) {
         labelIncompleteEdge(edge, 0);
       }
@@ -302,16 +302,16 @@ public class OverlayNG
   }
 
   private void labelIncompleteEdge(OverlayEdge edge, int geomIndex) {
-    Debug.println("\n------  labelIncompleteEdge - geomIndex= " + geomIndex);
-    Debug.print("BEFORE: " + edge.toStringNode());
+    //Debug.println("\n------  labelIncompleteEdge - geomIndex= " + geomIndex);
+    //Debug.print("BEFORE: " + edge.toStringNode());
     int geomDim = inputGeom.getDimension(geomIndex);
-    if (OverlayLabel.DIM_AREA == geomDim) {
+    if (geomDim == OverlayLabel.DIM_AREA) {
       // TODO: locate in the result area, not original geometry, in case of collapse
       int loc = inputGeom.locatePoint(geomIndex, edge.orig());
       edge.getLabel().setLocationInArea(geomIndex, loc);
     }
     edge.mergeSymLabels();
-    Debug.print("AFTER: " + edge.toStringNode());
+    //Debug.print("AFTER: " + edge.toStringNode());
   }
 
   private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {

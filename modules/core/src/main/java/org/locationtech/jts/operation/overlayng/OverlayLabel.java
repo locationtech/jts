@@ -156,9 +156,11 @@ public class OverlayLabel {
   
   boolean isUnknownLineLocation(int index) {
     if (index == 0) {
+      if (aDim == DIM_AREA) return false;
       return aLocInArea == LOC_UNKNOWN;
     }
     else {
+      if (bDim == DIM_AREA) return false;
       return bLocInArea == LOC_UNKNOWN;
     }
   }

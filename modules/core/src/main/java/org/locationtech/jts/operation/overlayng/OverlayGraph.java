@@ -81,7 +81,7 @@ public class OverlayGraph {
   private OverlayEdge addEdge(Edge edge) {
     //if (! isValidEdge(orig, dest)) return null;
     OverlayEdge e = createEdges(edge.getCoordinates(), edge.getMergedLabel());
-    Debug.println("added edge: " + e);
+    //Debug.println("added edge: " + e);
     insert(e);
     insert((OverlayEdge) e.sym());
     return e;

@@ -10,7 +10,7 @@ import org.locationtech.jts.operation.overlayng.OverlayNG;
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
 
-public class TestPerfOverlaySR 
+public class TestPerfOverlayNG 
 extends PerformanceTestCase
 {
   private static final int PREC_SCALE_FACTOR = 1000000;
@@ -34,10 +34,10 @@ extends PerformanceTestCase
   private PrecisionModel precisionModel;
   
   public static void main(String args[]) {
-    PerformanceTestRunner.run(TestPerfOverlaySR.class);
+    PerformanceTestRunner.run(TestPerfOverlayNG.class);
   }
   
-  public TestPerfOverlaySR(String name) {
+  public TestPerfOverlayNG(String name) {
     super(name);
     setRunSize(new int[] { 100, 1000, 10000, 100000 });
     setRunIterations(N_ITER);

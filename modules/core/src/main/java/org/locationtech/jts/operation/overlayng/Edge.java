@@ -226,9 +226,11 @@ public class Edge {
     int flipFactor = relDir ? 1 : -1;
     aDepthDelta += flipFactor * edge.aDepthDelta;
     bDepthDelta += flipFactor * edge.bDepthDelta;
+    /*
     if (aDepthDelta > 1) {
       Debug.println(this);
     }
+    */
   }
 
   public String toString() {

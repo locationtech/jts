@@ -58,8 +58,8 @@ public class OverlayNode {
     int currLoc = eStart.getLabel().getLocation(geomIndex, Position.LEFT);
     OverlayEdge e = eStart.oNextOE();
 
-    Debug.println("\npropagateSideLabels geomIndex = " + geomIndex + " : " + eStart);
-    Debug.print("BEFORE: " + toString(eStart));
+    //Debug.println("\npropagateSideLabels geomIndex = " + geomIndex + " : " + eStart);
+    //Debug.print("BEFORE: " + toString(eStart));
     
     do {
       OverlayLabel label = e.getLabel();
@@ -79,7 +79,7 @@ public class OverlayNode {
          */
         int locRight = e.getLabel().getLocation(geomIndex, Position.RIGHT);
         if (locRight != currLoc) {
-          //*
+          /*
           Debug.println("side location conflict: index= " + geomIndex + " R loc " 
         + Location.toLocationSymbol(locRight) + " <>  curr loc " + Location.toLocationSymbol(currLoc) 
         + " for " + e);
@@ -94,7 +94,7 @@ public class OverlayNode {
       }
       e = e.oNextOE();
     } while (e != eStart);
-    Debug.print("AFTER: " + toString(eStart));
+    //Debug.print("AFTER: " + toString(eStart));
   }
 
   /**

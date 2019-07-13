@@ -304,7 +304,7 @@ public class CascadedPolygonUnion
    */
   private Geometry unionActual(Geometry g0, Geometry g1)
   {
-    Geometry union = OverlapUnion.union(g0, g1);;
+    Geometry union = OverlapUnion.union(g0, g1, unionFun);
   	return restrictToPolygons( union );
   }
 
