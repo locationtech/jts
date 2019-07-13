@@ -142,7 +142,7 @@ public class OverlayNG
     //--- Topology building phase
     graph = new OverlayGraph( edges );
     graph.computeLabelling();
-    labelIncompleteEdges(graph.getEdges());
+    graph.labelIncompleteEdges(inputGeom);
     
     graph.markResultAreaEdges(opCode);
     graph.removeDuplicateResultAreaEdges();
@@ -287,31 +287,6 @@ public class OverlayNG
       edges.add(new Edge(ss.getCoordinates(), lbl.copy()));
     }
     return edges;
-  }
-
-  private void labelIncompleteEdges(Collection<OverlayEdge> edges) {
-    for (OverlayEdge edge : edges) {
-      //Debug.println("\n------  checking for Incomplete edge " + edge);
-      if (edge.getLabel().isUnknownLineLocation(0)) {
-        labelIncompleteEdge(edge, 0);
-      }
-      if (edge.getLabel().isUnknownLineLocation(1)) {
-        labelIncompleteEdge(edge, 1);
-      }
-    }
-  }
-
-  private void labelIncompleteEdge(OverlayEdge edge, int geomIndex) {
-    //Debug.println("\n------  labelIncompleteEdge - geomIndex= " + geomIndex);
-    //Debug.print("BEFORE: " + edge.toStringNode());
-    int geomDim = inputGeom.getDimension(geomIndex);
-    if (geomDim == OverlayLabel.DIM_AREA) {
-      // TODO: locate in the result area, not original geometry, in case of collapse
-      int loc = inputGeom.locatePoint(geomIndex, edge.orig());
-      edge.getLabel().setLocationInArea(geomIndex, loc);
-    }
-    edge.mergeSymLabels();
-    //Debug.print("AFTER: " + edge.toStringNode());
   }
 
   private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
