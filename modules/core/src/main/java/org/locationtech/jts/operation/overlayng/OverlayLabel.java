@@ -60,12 +60,12 @@ public class OverlayLabel {
   
   public OverlayLabel(int index, int locLeft, int locRight)
   {
-    setAreaBoundary(index, locLeft, locRight);
+    setToAreaBoundary(index, locLeft, locRight);
   }
 
   public OverlayLabel(int index)
   {
-    setLine(index, Location.INTERIOR);
+    setToLine(index, Location.INTERIOR);
   }
 
   public OverlayLabel()
@@ -90,48 +90,55 @@ public class OverlayLabel {
     return bDim;
   }
   
-  public void setAreaBoundary(int index, int locLeft, int locRight) {
+  public void setToAreaBoundary(int index, int locLeft, int locRight) {
     if (index == 0) {
       aLocLeft = locLeft;
       aLocRight = locRight;
+      aLocInArea = Location.INTERIOR;
       aDim = DIM_AREA;
     }
     else {
       bLocLeft = locLeft;
       bLocRight = locRight;
+      bLocInArea = Location.INTERIOR;
       bDim = DIM_AREA;
     }
   }
+  
+  public void setToLine(int index, int locInArea) {
+    int loc = normalizeLocation(locInArea);
+    if (index == 0) {
+      aDim = DIM_LINE;
+      aLocInArea = loc;
+    }
+    else {
+      bDim = DIM_LINE;
+      bLocInArea = loc;
+    }
+  }
+  
+  public void setLineLocation(int index, int locInArea) {
+    // Assert: label dim is L
+    int loc = normalizeLocation(locInArea);
+    if (index == 0) {
+      aLocInArea = loc;
+    }
+    else {
+      bLocInArea = loc;
+    }
+  }
+  
+  /**
+   * For overlay topology purposes BOUNDARY is the same as INTERIOR.
+   * 
+   * @param loc the location to normalize
+   * @return the normalized location
+   */
+  private static int normalizeLocation(int loc) {
+    if (loc == Location.BOUNDARY) return Location.INTERIOR;
+    return loc;
+  }
 
-  public void setLine(int index) {
-    if (index == 0) {
-      aDim = DIM_LINE;
-    }
-    else {
-      bDim = DIM_LINE;
-    }
-  }
-  
-  public void setLine(int index, int locInArea) {
-    if (index == 0) {
-      aDim = DIM_LINE;
-      aLocInArea = locInArea;
-    }
-    else {
-      bDim = DIM_LINE;
-      bLocInArea = locInArea;
-    }
-  }
-  
-  public void setLocationInArea(int index, int locInArea) {
-    if (index == 0) {
-      aLocInArea = locInArea;
-    }
-    else {
-      bLocInArea = locInArea;
-    }
-  }
-  
   public boolean isLine() {
     return aDim == DIM_LINE || bDim == DIM_LINE;
   }
@@ -156,11 +163,11 @@ public class OverlayLabel {
   
   boolean isUnknownLineLocation(int index) {
     if (index == 0) {
-      if (aDim == DIM_AREA) return false;
+      //if (aDim == DIM_AREA) return false;
       return aLocInArea == LOC_UNKNOWN;
     }
     else {
-      if (bDim == DIM_AREA) return false;
+      //if (bDim == DIM_AREA) return false;
       return bLocInArea == LOC_UNKNOWN;
     }
   }

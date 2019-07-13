@@ -171,13 +171,12 @@ public class OverlayGraph {
     if (geomDim == OverlayLabel.DIM_AREA) {
       // TODO: locate in the result area, not original geometry, in case of collapse
       int loc = inputGeom.locatePoint(geomIndex, edge.orig());
-      edge.getLabel().setLocationInArea(geomIndex, loc);
+      edge.getLabel().setLineLocation(geomIndex, loc);
     }
     edge.mergeSymLabels();
     //Debug.print("AFTER: " + edge.toStringNode());
   }
 
-  
   public void markResultAreaEdges(int overlayOpCode) {
     for (OverlayEdge edge : getEdges()) {
       markInResultArea(edge, overlayOpCode);

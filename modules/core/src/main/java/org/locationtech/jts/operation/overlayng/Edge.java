@@ -134,11 +134,11 @@ public class Edge {
       boolean aIsCollape = aDepthDelta == 0 && aDim == Dimension.A;
       switch (aDimMerge) {
       case Dimension.A: 
-        lbl.setAreaBoundary(0, locationLeft(aDepthDelta), locationRight(aDepthDelta));
+        lbl.setToAreaBoundary(0, locationLeft(aDepthDelta), locationRight(aDepthDelta));
         break;
       case Dimension.L:
         int lineLoc = aIsCollape ? OverlayLabel.LOC_UNKNOWN : Location.INTERIOR;
-        lbl.setLine(0, lineLoc);
+        lbl.setToLine(0, lineLoc);
         break;
       }
     }
@@ -149,11 +149,11 @@ public class Edge {
       boolean bIsCollape = bDepthDelta == 0 && bDim == Dimension.A;
       switch (bDimMerge) {
       case Dimension.A: 
-        lbl.setAreaBoundary(1, locationLeft(bDepthDelta), locationRight(bDepthDelta));
+        lbl.setToAreaBoundary(1, locationLeft(bDepthDelta), locationRight(bDepthDelta));
         break;
       case Dimension.L:
         int lineLoc = bIsCollape ? OverlayLabel.LOC_UNKNOWN : Location.INTERIOR;
-        lbl.setLine(1, lineLoc);
+        lbl.setToLine(1, lineLoc);
         break;
       }
     }

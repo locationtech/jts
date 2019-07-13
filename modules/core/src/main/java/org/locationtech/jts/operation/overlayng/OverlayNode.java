@@ -68,7 +68,7 @@ public class OverlayNode {
        * If edge is not a boundary edge, 
        * its location is now known for this area
        */
-        e.setLocationInArea(geomIndex, currLoc);
+        e.setLocationLine(geomIndex, currLoc);
       }
       else {
         Assert.isTrue(label.hasSides(geomIndex));

@@ -155,6 +155,53 @@ public class OverlayNG
     return createResult(opCode);
   }
 
+  private List<Edge> nodeAndMerge() {
+    OverlayNoder noder = new OverlayNoder(
+        inputGeom.getGeometry(0),
+        inputGeom.getGeometry(1),
+        pm);
+    Collection<SegmentString> nodedSegStrings = noder.node();
+    
+    // nodedSegStrings are no longer needed, and will be GCed
+    List<Edge> edges = mergeEdges(nodedSegStrings);
+    return edges;
+  }
+
+  private List<Edge> mergeEdges(Collection<SegmentString> nodedSegStrings) {
+    List<Edge> edges = createEdges(nodedSegStrings);
+    List<Edge> mergedEdges = EdgeMerger.merge(edges);
+    return mergedEdges;
+  }
+
+  private static List<Edge> createEdges(Collection<SegmentString> segStrings) {
+    List<Edge> edges = new ArrayList<Edge>();
+    for (SegmentString ss : segStrings) {
+      Coordinate[] pts = ss.getCoordinates();
+      // don't create edges from collapsed lines
+      // TODO: perhaps convert these to points to be included in overlay?
+      if (! Edge.isValidPoints(pts)) continue;
+      OverlayLabel lbl = (OverlayLabel) ss.getData();
+      // copy label since it may be updated during edge merging
+      edges.add(new Edge(ss.getCoordinates(), lbl.copy()));
+    }
+    return edges;
+  }
+
+  private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
+    List lines = new ArrayList();
+    for (OverlayEdge edge : graph.getEdges()) {
+      boolean includeEdge = isOutputEdges || edge.isInResult();
+      if (! includeEdge) continue;
+      //Coordinate[] pts = getCoords(nss);
+      Coordinate[] pts = edge.getCoordinatesOriented();
+      LineString line = geomFact.createLineString(pts);
+      line.setUserData(edge.getLabel().toString()
+          + (edge.isInResult() ? " Res" : "") );
+      lines.add(line);
+    }
+    return geomFact.buildGeometry(lines);
+  }
+
   private Geometry createResult(int opCode) {
     //--- Build polygons
     List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
@@ -256,52 +303,5 @@ public class OverlayNG
     }
     return resultDimension;
   }
-  
-  private List<Edge> nodeAndMerge() {
-    OverlayNoder noder = new OverlayNoder(
-        inputGeom.getGeometry(0),
-        inputGeom.getGeometry(1),
-        pm);
-    Collection<SegmentString> nodedSegStrings = noder.node();
-    
-    // nodedSegStrings are no longer needed, and will be GCed
-    List<Edge> edges = mergeEdges(nodedSegStrings);
-    return edges;
-  }
-
-  private List<Edge> mergeEdges(Collection<SegmentString> nodedSegStrings) {
-    List<Edge> edges = createEdges(nodedSegStrings);
-    List<Edge> mergedEdges = EdgeMerger.merge(edges);
-    return mergedEdges;
-  }
-
-  private static List<Edge> createEdges(Collection<SegmentString> segStrings) {
-    List<Edge> edges = new ArrayList<Edge>();
-    for (SegmentString ss : segStrings) {
-      Coordinate[] pts = ss.getCoordinates();
-      // don't create edges from collapsed lines
-      // TODO: perhaps convert these to points to be included in overlay?
-      if (! Edge.isValidPoints(pts)) continue;
-      OverlayLabel lbl = (OverlayLabel) ss.getData();
-      // copy label since it may be updated during edge merging
-      edges.add(new Edge(ss.getCoordinates(), lbl.copy()));
-    }
-    return edges;
-  }
-
-  private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
-    List lines = new ArrayList();
-    for (OverlayEdge edge : graph.getEdges()) {
-      boolean includeEdge = isOutputEdges || edge.isInResult();
-      if (! includeEdge) continue;
-      //Coordinate[] pts = getCoords(nss);
-      Coordinate[] pts = edge.getCoordinatesOriented();
-      LineString line = geomFact.createLineString(pts);
-      line.setUserData(edge.getLabel().toString()
-          + (edge.isInResult() ? " Res" : "") );
-      lines.add(line);
-    }
-    return geomFact.buildGeometry(lines);
-  }
-
+ 
 }
