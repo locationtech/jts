@@ -131,7 +131,15 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testAdjacentBoxes() {
+  public void testAdjacentBoxesIntersection() {
+    Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
+    Geometry b = read("POLYGON ((300 200, 300 100, 200 100, 200 200, 300 200))");
+    Geometry expected = read("LINESTRING (200 100, 200 200)");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testAdjacentBoxesUnion() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("POLYGON ((300 200, 300 100, 200 100, 200 200, 300 200))");
     Geometry expected = read("POLYGON ((100 100, 100 200, 200 200, 300 200, 300 100, 200 100, 100 100))");
