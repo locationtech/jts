@@ -33,6 +33,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve performance of `Polygonizer` (#431)
 * Added `Triangle.circumcentreDD`
 * Added `DD.determinant` methods
+* Added `Envelope.getDiameter`
 
 ### Bug Fixes
 
@@ -43,6 +44,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve robustness of `CascadedPolygonUnion` by adding `OverlapUnion`
 * Fix bug in `HalfEdge.insert` method which caused CCW order not to be preserved in some cases
 * Fix generation of Voronoi diagrams for cases with sites in a square (#447)
+* Fix use of clipping envelope in `VoronoiDiagramBuilder`
 
 ## JTS TestRunner
 

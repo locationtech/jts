@@ -209,9 +209,21 @@ public class EnvelopeTest extends TestCase {
 				poly10);
 		checkExpectedEnvelopeGeometry("POLYGON ((5 10, 10 6, 5 0, 0 6, 5 10))",
 				poly10);
-
-		
 	}
+	
+  public void testMetrics() {
+    Envelope env = new Envelope(0, 4, 0, 3);
+    assertEquals(env.getWidth(), 4.0);
+    assertEquals(env.getHeight(), 3.0);
+    assertEquals(env.getDiameter(), 5.0);
+  }
+
+  public void testEmptyMetrics() {
+    Envelope env = new Envelope();
+    assertEquals(env.getWidth(), 0.0);
+    assertEquals(env.getHeight(), 0.0);
+    assertEquals(env.getDiameter(), 0.0);
+  }
 
 	private void checkIntersectsPermuted(double a1x, double a1y, double a2x, double a2y, double b1x, double b1y, double b2x, double b2y, boolean expected) {
 		checkIntersects(a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, expected);
