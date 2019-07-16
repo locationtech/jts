@@ -31,6 +31,8 @@ Distributions for older JTS versions can be obtained at the
 * Added `OrdinateFormat` to ensure that ordinate text output is accurate and consistent
 * Improve performance of `UniqueCoordinateFilter` (#422)
 * Improve performance of `Polygonizer` (#431)
+* Added `Triangle.circumcentreDD`
+* Added `DD.determinant` methods
 
 ### Bug Fixes
 
@@ -40,6 +42,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix bug in `MinimumBoundingCircle` maximum diameter algorithm, and provide method for it
 * Improve robustness of `CascadedPolygonUnion` by adding `OverlapUnion`
 * Fix bug in `HalfEdge.insert` method which caused CCW order not to be preserved in some cases
+* Fix generation of Voronoi diagrams for cases with sites in a square (#447)
 
 ## JTS TestRunner
 

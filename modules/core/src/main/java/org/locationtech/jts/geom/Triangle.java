@@ -14,6 +14,7 @@ package org.locationtech.jts.geom;
 import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.HCoordinate;
 import org.locationtech.jts.algorithm.Orientation;
+import org.locationtech.jts.math.DD;
 
 /**
  * Represents a planar triangle, and provides methods for calculating various
@@ -143,6 +144,46 @@ public class Triangle
 
     double ccx = cx - numx / denom;
     double ccy = cy + numy / denom;
+
+    return new Coordinate(ccx, ccy);
+  }
+
+  /**
+   * Computes the circumcentre of a triangle. The circumcentre is the centre of
+   * the circumcircle, the smallest circle which encloses the triangle. It is
+   * also the common intersection point of the perpendicular bisectors of the
+   * sides of the triangle, and is the only point which has equal distance to
+   * all three vertices of the triangle.
+   * <p>
+   * The circumcentre does not necessarily lie within the triangle. For example,
+   * the circumcentre of an obtuse isosceles triangle lies outside the triangle.
+   * <p>
+   * This method uses {@link DD} extended-precision arithmetic to 
+   * provide more accurate results than {@link #circumcentre(Coordinate, Coordinate, Coordinate)}
+   * 
+   * @param a
+   *          a vertex of the triangle
+   * @param b
+   *          a vertex of the triangle
+   * @param c
+   *          a vertex of the triangle
+   * @return the circumcentre of the triangle
+   */
+  public static Coordinate circumcentreDD(Coordinate a, Coordinate b, Coordinate c)
+  {
+    DD ax = DD.valueOf(a.x).subtract(c.x);
+    DD ay = DD.valueOf(a.y).subtract(c.y);
+    DD bx = DD.valueOf(b.x).subtract(c.x);
+    DD by = DD.valueOf(b.y).subtract(c.y);
+
+    DD denom = DD.determinant(ax, ay, bx, by).multiply(2);
+    DD asqr = ax.sqr().add( ay.sqr());
+    DD bsqr = bx.sqr().add( by.sqr());
+    DD numx = DD.determinant(ay, asqr, by, bsqr);
+    DD numy = DD.determinant(ax, asqr, bx, bsqr);
+
+    double ccx = DD.valueOf(c.x).subtract( numx.divide(denom) ).doubleValue();
+    double ccy = DD.valueOf(c.y).add( numy.divide(denom) ).doubleValue();
 
     return new Coordinate(ccx, ccy);
   }
