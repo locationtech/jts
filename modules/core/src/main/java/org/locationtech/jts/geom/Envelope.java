@@ -284,6 +284,19 @@ public class Envelope
   }
 
   /**
+   * Gets the length of the diameter (diagonal) of the envelope.
+   * 
+   * @return the diameter length
+   */
+  public double getDiameter() {
+    if (isNull()) {
+      return 0;
+    }
+    double w = getWidth();
+    double h = getHeight();
+    return Math.sqrt(w*w + h*h);
+  }
+  /**
    *  Returns the <code>Envelope</code>s minimum x-value. min x &gt; max x
    *  indicates that this is a null <code>Envelope</code>.
    *

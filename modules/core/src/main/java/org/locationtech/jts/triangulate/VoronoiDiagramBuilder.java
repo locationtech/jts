@@ -110,13 +110,19 @@ public class VoronoiDiagramBuilder
 		if (subdiv != null) return;
 		
 		Envelope siteEnv = DelaunayTriangulationBuilder.envelope(siteCoords);
-		diagramEnv = siteEnv;
-		// add a buffer around the final envelope
-		double expandBy = Math.max(diagramEnv.getWidth(), diagramEnv.getHeight());
-		diagramEnv.expandBy(expandBy);
-		if (clipEnv != null)
-			diagramEnv.expandToInclude(clipEnv);
-		
+		diagramEnv = clipEnv;
+		if (diagramEnv == null) {
+		  /** 
+		   * If no user-provided clip env, 
+		   * create one which encloses all the sites,
+		   * with a buffer around the edges.
+		   */
+  		diagramEnv = siteEnv;
+  		// add a buffer around the sites envelope
+  		double expandBy = diagramEnv.getDiameter();
+  		diagramEnv.expandBy(expandBy);
+		}
+
 		List vertices = DelaunayTriangulationBuilder.toVertices(siteCoords);
 		subdiv = new QuadEdgeSubdivision(siteEnv, tolerance);
 		IncrementalDelaunayTriangulator triangulator = new IncrementalDelaunayTriangulator(subdiv);
