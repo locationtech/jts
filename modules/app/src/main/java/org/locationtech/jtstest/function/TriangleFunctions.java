@@ -41,6 +41,18 @@ public class TriangleFunctions {
       }});
   }
   
+  public static Geometry circumcentreDD(Geometry g)
+  {
+    return GeometryMapper.map(g, 
+        new GeometryMapper.MapOp() {
+      public Geometry map(Geometry g) {
+        Coordinate[] pts = trianglePts(g);
+        Coordinate cc = Triangle.circumcentreDD(pts[0], pts[1], pts[2]);
+        GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
+        return geomFact.createPoint(cc);
+      }});
+  }
+  
   public static Geometry perpendicularBisectors(Geometry g)
   {
     Coordinate[] pts = trianglePts(g);

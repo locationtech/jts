@@ -37,7 +37,7 @@ public abstract class GeometryTestCase extends TestCase{
 
   final GeometryFactory geomFactory;
   
-  final WKTReader reader;
+  final WKTReader readerWKT;
 
   protected GeometryTestCase(String name)
   {
@@ -47,7 +47,7 @@ public abstract class GeometryTestCase extends TestCase{
   protected GeometryTestCase(String name, CoordinateSequenceFactory coordinateSequenceFactory) {
     super(name);
     geomFactory = new GeometryFactory(coordinateSequenceFactory);
-    reader = new WKTReader(geomFactory);
+    readerWKT = new WKTReader(geomFactory);
   }
 
   protected void checkEqual(Geometry expected, Geometry actual) {
@@ -86,7 +86,8 @@ public abstract class GeometryTestCase extends TestCase{
   }
 
   protected Geometry read(String wkt) {
-    return read(reader, wkt);
+    //return read(readerWKT, wkt);
+    return WKTorBReader.read(wkt, geomFactory);
   }
 
   public static Geometry read(WKTReader reader, String wkt) {
