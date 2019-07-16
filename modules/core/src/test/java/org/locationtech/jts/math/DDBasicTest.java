@@ -112,6 +112,31 @@ public class DDBasicTest
   	checkReciprocal(314159269.0, 0);
   }
   
+  /**
+   * A basic test for determinant correctness
+   */
+  public void testDeterminant() {
+    checkDeterminant(3, 8, 4, 6, -14, 0);
+    checkDeterminantDD(3, 8, 4, 6, -14, 0);
+  }
+  
+  public void testDeterminantRobust() {
+    checkDeterminant(1.0e9, 1.0e9 - 1, 1.0e9 - 1, 1.0e9 - 2, -1, 0);
+    checkDeterminantDD(1.0e9, 1.0e9 - 1, 1.0e9 - 1, 1.0e9 - 2, -1, 0);
+  }
+  
+  private void checkDeterminant(double x1, double y1, double x2, double y2, double expected, double errBound) {
+    DD det = DD.determinant(x1, y1, x2, y2);
+    checkErrorBound("Determinant", det, DD.valueOf(expected), errBound);
+  }
+
+  private void checkDeterminantDD(double x1, double y1, double x2, double y2, double expected, double errBound) {
+    DD det = DD.determinant(
+        DD.valueOf(x1), DD.valueOf(y1), 
+        DD.valueOf(x2), DD.valueOf(y2));
+    checkErrorBound("Determinant", det, DD.valueOf(expected), errBound);
+  }
+
   public void testBinom()
   {
   	checkBinomialSquare(100.0, 1.0);
@@ -159,6 +184,12 @@ public class DDBasicTest
   	DD err = x.subtract(y).abs();
   	//System.out.println(tag + " err=" + err);
   	boolean isWithinEps = err.doubleValue() <= errBound;
+  	if (! isWithinEps) {
+  	  System.out.println("checkErrorBound: " + tag 
+          + " val1 = " + x
+          + " val2 = " + y
+  	      + "  err=" + err);
+  	}
   	assertTrue(isWithinEps);
   }
   
