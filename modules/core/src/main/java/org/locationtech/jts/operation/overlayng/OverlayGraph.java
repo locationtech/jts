@@ -155,10 +155,10 @@ public class OverlayGraph {
   public void labelIncompleteEdges(InputGeometry inputGeom) {
     for (OverlayEdge edge : edges) {
       //Debug.println("\n------  checking for Incomplete edge " + edge);
-      if (edge.getLabel().isUnknownLineLocation(0)) {
+      if (edge.getLabel().isLineLocationUnknown(0)) {
         labelIncompleteEdge(edge, 0, inputGeom);
       }
-      if (edge.getLabel().isUnknownLineLocation(1)) {
+      if (edge.getLabel().isLineLocationUnknown(1)) {
         labelIncompleteEdge(edge, 1, inputGeom);
       }
     }
@@ -171,7 +171,7 @@ public class OverlayGraph {
     if (geomDim == OverlayLabel.DIM_AREA) {
       // TODO: locate in the result area, not original geometry, in case of collapse
       int loc = inputGeom.locatePoint(geomIndex, edge.orig());
-      edge.getLabel().setLineLocation(geomIndex, loc);
+      edge.getLabel().setLocationAll(geomIndex, loc);
     }
     edge.mergeSymLabels();
     //Debug.print("AFTER: " + edge.toStringNode());
@@ -185,7 +185,7 @@ public class OverlayGraph {
 
   public void markInResultArea(OverlayEdge e, int overlayOpCode) {
     OverlayLabel label = e.getLabel();
-    if (label.isArea()
+    if (label.isAreaBoundary()
         //&& ! label.isInteriorArea()
         && OverlayNG.isResultOfOp(
               label.getLocationSideOrLine(0, Position.RIGHT),

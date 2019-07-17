@@ -100,7 +100,7 @@ public class EdgeRing {
 //Debug.println(de);
 //Debug.println(de.getEdge());
       OverlayLabel label = edge.getLabel();
-      Assert.isTrue(label.isArea());
+      Assert.isTrue(label.isAreaBoundary());
       //mergeLabel(label);
       addPoints(edge.getCoordinates(), edge.isForward(), isFirstEdge);
       isFirstEdge = false;

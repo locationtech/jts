@@ -58,8 +58,8 @@ public class OverlayNode {
     int currLoc = eStart.getLabel().getLocation(geomIndex, Position.LEFT);
     OverlayEdge e = eStart.oNextOE();
 
-    //Debug.println("\npropagateSideLabels geomIndex = " + geomIndex + " : " + eStart);
-    //Debug.print("BEFORE: " + toString(eStart));
+    Debug.println("\npropagateSideLabels geomIndex = " + geomIndex + " : " + eStart);
+    Debug.print("BEFORE: " + toString(eStart));
     
     do {
       OverlayLabel label = e.getLabel();
@@ -68,7 +68,7 @@ public class OverlayNode {
        * If edge is not a boundary edge, 
        * its location is now known for this area
        */
-        e.setLocationLine(geomIndex, currLoc);
+        e.setLocationAll(geomIndex, currLoc);
       }
       else {
         Assert.isTrue(label.hasSides(geomIndex));
@@ -94,7 +94,7 @@ public class OverlayNode {
       }
       e = e.oNextOE();
     } while (e != eStart);
-    //Debug.print("AFTER: " + toString(eStart));
+    Debug.print("AFTER: " + toString(eStart));
   }
 
   /**

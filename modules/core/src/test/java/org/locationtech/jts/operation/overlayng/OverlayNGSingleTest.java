@@ -67,7 +67,7 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void XtestAdjacentBoxes() {
+  public void XtestAdjacentBoxesUnion() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("POLYGON ((300 200, 300 100, 200 100, 200 200, 300 200))");
     Geometry expected = read("POLYGON ((100 100, 100 200, 200 200, 300 200, 300 100, 200 100, 100 100))");
@@ -148,7 +148,7 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testAdjacentBoxesIntersection() {
+  public void xtestAdjacentBoxesIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("POLYGON ((300 200, 300 100, 200 100, 200 200, 300 200))");
     Geometry expected = read("LINESTRING (200 100, 200 200)");
@@ -156,8 +156,21 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
+  public void testBoxContainingPolygonCollapseIntersection() {
+    Geometry a = read("POLYGON ((100 200, 300 200, 300 0, 100 0, 100 200))");
+    Geometry b = read("POLYGON ((250 100, 150 100, 150 100.4, 250 100))");
+    Geometry expected = read("LINESTRING (150 100, 250 100)");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
   
-  
+  public void testBoxContainingPolygonCollapseManyPtsIntersection() {
+    Geometry a = read("POLYGON ((100 200, 300 200, 300 0, 100 0, 100 200))");
+    Geometry b = read("POLYGON ((250 100, 150 100, 150 100.4, 160 100.2, 170 100.1, 250 100))");
+    Geometry expected = read("MULTILINESTRING ((150 100, 160 100), (160 100, 170 100), (170 100, 250 100))");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);

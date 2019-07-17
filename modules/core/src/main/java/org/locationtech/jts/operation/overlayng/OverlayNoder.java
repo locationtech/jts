@@ -130,23 +130,45 @@ public class OverlayNoder {
     if (lr.isEmpty()) return;
     
     Coordinate[] ptsRaw = lr.getCoordinates();
+    
     /**
+     * Compute the orientation of the ring, to
+     * allow assigning side interior/exterior labels correctly.
+     * JTS canonical orientation is that shells are CW, holes are CCW.
+     * 
      * Important to compute orientation BEFORE rounding,
-     * since topology collapse can make the orientation computation give the wrong answer
+     * since topology collapse can make the orientation computation give the wrong answer.
      */
     boolean isCCW = Orientation.isCCW(ptsRaw);
+    
+    /**
+     * Round the input points, to ensure they match the requested precision.
+     * This may cause collapsing to occur,
+     * but it is handled by the overlay processing.
+     */
     Coordinate[] pts = round(ptsRaw);
+    
+    /**
+     * For now, keep all collapsed lines,
+     * so that they can be included in the result if applicable
+     */
+    /*
+    // TODO: this is inconsistent since there may be collapsed rings with > 4 points which are added
     if (pts.length < 4) {
       // don't add collapsed rings
       return;
     }
+    //*/
     
-    int left  = cwLeft;
-    int right = cwRight;
-    if (isCCW) {
-      left = cwRight;
-      right = cwLeft;
+    /**
+     * Don't add edges that collapse to a point
+     */
+    if (pts.length < 2) {
+      return;
     }
+    
+    int left  = isCCW ? cwRight : cwLeft;
+    int right = isCCW ? cwLeft : cwRight;
     OverlayLabel lbl = OverlayLabel.createForAreaBoundary(index, left, right);
     add(pts, lbl);
   }
@@ -158,8 +180,10 @@ public class OverlayNoder {
     
     Coordinate[] pts = round(line.getCoordinates());
 
+    /**
+     * Don't add edges that collapse to a point
+     */
     if (pts.length < 2) {
-      // don't add collapsed lines
       return;
     }
     OverlayLabel lbl = OverlayLabel.createForLine(geomIndex);

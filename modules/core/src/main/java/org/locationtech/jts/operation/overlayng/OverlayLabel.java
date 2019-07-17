@@ -50,12 +50,12 @@ public class OverlayLabel {
   
   private int aLocLeft = LOC_UNKNOWN;
   private int aLocRight = LOC_UNKNOWN;
-  private int aLocInArea = LOC_UNKNOWN;
+  private int aLocLine = LOC_UNKNOWN;
   private int aDim = DIM_NOT_PART;
   
   private int bLocLeft = LOC_UNKNOWN;
   private int bLocRight = LOC_UNKNOWN;
-  private int bLocInArea = LOC_UNKNOWN;
+  private int bLocLine = LOC_UNKNOWN;
   private int bDim = DIM_NOT_PART;
   
   public OverlayLabel(int index, int locLeft, int locRight)
@@ -75,12 +75,12 @@ public class OverlayLabel {
   public OverlayLabel(OverlayLabel lbl) {
     this.aLocLeft = lbl.aLocLeft;
     this.aLocRight = lbl.aLocRight;
-    this.aLocInArea = lbl.aLocInArea;
+    this.aLocLine = lbl.aLocLine;
     this.aDim = lbl.aDim;
     
     this.bLocLeft = lbl.bLocLeft;
     this.bLocRight = lbl.bLocRight;
-    this.bLocInArea = lbl.bLocInArea;
+    this.bLocLine = lbl.bLocLine;
     this.bDim = lbl.bDim;
   }
 
@@ -94,13 +94,13 @@ public class OverlayLabel {
     if (index == 0) {
       aLocLeft = locLeft;
       aLocRight = locRight;
-      aLocInArea = Location.INTERIOR;
+      aLocLine = Location.INTERIOR;
       aDim = DIM_AREA;
     }
     else {
       bLocLeft = locLeft;
       bLocRight = locRight;
-      bLocInArea = Location.INTERIOR;
+      bLocLine = Location.INTERIOR;
       bDim = DIM_AREA;
     }
   }
@@ -109,22 +109,54 @@ public class OverlayLabel {
     int loc = normalizeLocation(locInArea);
     if (index == 0) {
       aDim = DIM_LINE;
-      aLocInArea = loc;
+      aLocLine = loc;
     }
     else {
       bDim = DIM_LINE;
-      bLocInArea = loc;
+      bLocLine = loc;
     }
   }
   
-  public void setLineLocation(int index, int locInArea) {
-    // Assert: label dim is L
+  /*
+   // Not needed so far
+  public void setToNonPart(int index, int locInArea) {
     int loc = normalizeLocation(locInArea);
     if (index == 0) {
+      aDim = DIM_NOT_PART;
       aLocInArea = loc;
+      aLocLeft = loc;
+      aLocRight = loc;
     }
     else {
+      bDim = DIM_NOT_PART;
       bLocInArea = loc;
+      aLocLeft = loc;
+      aLocRight = loc;
+    }
+  }
+  */
+  
+  /**
+   * Sets all positions for this line.
+   * Does not change the line dimension.
+   * 
+   * This is used to set the locations for lines 
+   * encountered during area label propagation.
+   * 
+   * @param index source to update
+   * @param loc location to set
+   */
+  public void setLocationAll(int index, int loc) {
+    int locNorm = normalizeLocation(loc);
+    if (index == 0) {
+      aLocLine = locNorm;
+      aLocLeft = locNorm;
+      aLocRight = locNorm;
+    }
+    else {
+      bLocLine = locNorm;
+      bLocLeft = locNorm;
+      bLocRight = locNorm;
     }
   }
   
@@ -150,8 +182,12 @@ public class OverlayLabel {
     return bDim == DIM_LINE;
   }
 
-  public boolean isArea() {
+  public boolean isAreaBoundary() {
     return aDim == DIM_AREA || bDim == DIM_AREA;
+  }
+  
+  public boolean isAreaBoundaryBoth() {
+    return aDim == DIM_AREA && bDim == DIM_AREA;
   }
   
   public boolean isAreaBoundary(int index) {
@@ -161,14 +197,12 @@ public class OverlayLabel {
     return bDim == DIM_AREA;
   }
   
-  boolean isUnknownLineLocation(int index) {
+  boolean isLineLocationUnknown(int index) {
     if (index == 0) {
-      //if (aDim == DIM_AREA) return false;
-      return aLocInArea == LOC_UNKNOWN;
+      return aLocLine == LOC_UNKNOWN;
     }
     else {
-      //if (bDim == DIM_AREA) return false;
-      return bLocInArea == LOC_UNKNOWN;
+      return bLocLine == LOC_UNKNOWN;
     }
   }
 
@@ -186,18 +220,18 @@ public class OverlayLabel {
   
   public int getLineLocation(int index) {
     if (index == 0) {
-      return aLocInArea;
+      return aLocLine;
     }
     else {
-      return bLocInArea;
+      return bLocLine;
     }
   }
   
   public boolean isInArea(int index) {
     if (index == 0) {
-      return aLocInArea == Location.INTERIOR;
+      return aLocLine == Location.INTERIOR;
     }
-    return bLocInArea == Location.INTERIOR;
+    return bLocLine == Location.INTERIOR;
   }
   
   public int getLocation(int index, int position) {
@@ -205,13 +239,13 @@ public class OverlayLabel {
       switch (position) {
         case Position.LEFT: return aLocLeft;
         case Position.RIGHT: return aLocRight;
-        case Position.ON: return aLocInArea;
+        case Position.ON: return aLocLine;
       }
     }
     switch (position) {
       case Position.LEFT: return bLocLeft;
       case Position.RIGHT: return bLocRight;
-      case Position.ON: return bLocInArea;
+      case Position.ON: return bLocLine;
     }
     return LOC_UNKNOWN;
   }
@@ -224,7 +258,7 @@ public class OverlayLabel {
           case Position.RIGHT: return aLocRight;
         }
       }
-      return aLocInArea;
+      return aLocLine;
     }
     if (isAreaBoundary(index)) {
       switch (position) {
@@ -232,7 +266,7 @@ public class OverlayLabel {
         case Position.RIGHT: return bLocRight;
       }
     }
-    return bLocInArea;
+    return bLocLine;
   }
 
   /**
@@ -243,9 +277,9 @@ public class OverlayLabel {
    */
   public int getLocation(int index) {
     if (index == 0) {
-      return aLocInArea;
+      return aLocLine;
     }
-    return bLocInArea;
+    return bLocLine;
   }
 
   public boolean hasSides(int index) {
@@ -283,12 +317,12 @@ public class OverlayLabel {
     
     lbl.aLocLeft = this.aLocRight;
     lbl.aLocRight = this.aLocLeft;
-    lbl.aLocInArea = this.aLocInArea;
+    lbl.aLocLine = this.aLocLine;
     lbl.aDim = this.aDim;
     
     lbl.bLocLeft = this.bLocRight;
     lbl.bLocRight = this.bLocLeft;
-    lbl.bLocInArea = this.bLocInArea;
+    lbl.bLocLine = this.bLocLine;
     lbl.bDim = this.bDim;
     
     return lbl;
@@ -324,13 +358,13 @@ public class OverlayLabel {
    */
   public void mergeFlip(OverlayLabel lbl)
   {
-    if (aLocInArea == LOC_UNKNOWN) aLocInArea = lbl.aLocInArea;
+    if (aLocLine == LOC_UNKNOWN) aLocLine = lbl.aLocLine;
     if (aLocLeft == LOC_UNKNOWN) aLocLeft = lbl.aLocRight;
     if (aLocRight == LOC_UNKNOWN) aLocRight = lbl.aLocLeft;
     // TODO: should this error if dim is different?
     if (aDim == DIM_UNKNOWN) aDim = lbl.aDim;
    
-    if (bLocInArea == LOC_UNKNOWN) bLocInArea = lbl.bLocInArea;
+    if (bLocLine == LOC_UNKNOWN) bLocLine = lbl.bLocLine;
     if (bLocLeft == LOC_UNKNOWN) bLocLeft = lbl.bLocRight;
     if (bLocRight == LOC_UNKNOWN) bLocRight = lbl.bLocLeft;
     // TODO: should this error if dim is different?
@@ -354,7 +388,7 @@ public class OverlayLabel {
       buf.append( Location.toLocationSymbol( index == 0 ? aLocRight : bLocRight ) );
     }
     else {
-      buf.append( Location.toLocationSymbol( index == 0 ? aLocInArea : bLocInArea ));
+      buf.append( Location.toLocationSymbol( index == 0 ? aLocLine : bLocLine ));
     }
     buf.append( dimensionSymbol(index == 0 ? aDim : bDim) );
     return buf.toString();

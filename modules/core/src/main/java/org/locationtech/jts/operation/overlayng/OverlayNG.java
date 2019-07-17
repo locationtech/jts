@@ -207,9 +207,9 @@ public class OverlayNG
     List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
     PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
     List<Polygon> resultPolyList = polyBuilder.getPolygons();
-    
+    boolean hasResultArea = resultPolyList.size() > 0;
     //--- Build lines
-    LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, opCode, geomFact);
+    LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
     List<LineString> resultLineList = lineBuilder.getLines();
 
     //--- Build points

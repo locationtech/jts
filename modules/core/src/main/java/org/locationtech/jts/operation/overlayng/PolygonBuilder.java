@@ -60,7 +60,7 @@ public class PolygonBuilder {
   {
     List<MaximalEdgeRing> edgeRings = new ArrayList<MaximalEdgeRing>();
     for (OverlayEdge e : edges) {
-      if (e.isInResult() && e.getLabel().isArea() ) {
+      if (e.isInResult() && e.getLabel().isAreaBoundary() ) {
         // if this edge has not yet been processed
         if (e.getEdgeRingMax() == null) {
           MaximalEdgeRing er = new MaximalEdgeRing(e);
