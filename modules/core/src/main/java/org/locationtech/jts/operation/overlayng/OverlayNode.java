@@ -58,8 +58,8 @@ public class OverlayNode {
     int currLoc = eStart.getLabel().getLocation(geomIndex, Position.LEFT);
     OverlayEdge e = eStart.oNextOE();
 
-    Debug.println("\npropagateSideLabels geomIndex = " + geomIndex + " : " + eStart);
-    Debug.print("BEFORE: " + toString(eStart));
+    //Debug.println("\npropagateSideLabels geomIndex = " + geomIndex + " : " + eStart);
+    //Debug.print("BEFORE: " + toString(eStart));
     
     do {
       OverlayLabel label = e.getLabel();
@@ -94,7 +94,7 @@ public class OverlayNode {
       }
       e = e.oNextOE();
     } while (e != eStart);
-    Debug.print("AFTER: " + toString(eStart));
+    //Debug.print("AFTER: " + toString(eStart));
   }
 
   /**
