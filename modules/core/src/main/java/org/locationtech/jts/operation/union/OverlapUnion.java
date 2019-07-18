@@ -109,7 +109,7 @@ public class OverlapUnion
    */
 	public OverlapUnion(Geometry g0, Geometry g1)
 	{
-		this(g0, g1, UnionFunction.CLASSIC);
+		this(g0, g1, CascadedPolygonUnion.CLASSIC_UNION);
 	}
 	
 	public OverlapUnion(Geometry g0, Geometry g1, UnionFunction unionFun) {

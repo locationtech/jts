@@ -56,6 +56,21 @@ import org.locationtech.jts.index.strtree.STRtree;
  */
 public class CascadedPolygonUnion
 {
+  final static  UnionFunction CLASSIC_UNION = new UnionFunction() {
+    public Geometry union(Geometry g0, Geometry g1) {
+      return g0.union(g1);
+    }
+  };
+  
+  private final static UnionFunction OVERLAP_UNION = new UnionFunction() {
+
+    @Override
+    public Geometry union(Geometry g0, Geometry g1) {
+      return OverlapUnion.union(g0, g1, CLASSIC_UNION);
+    }
+    
+  };
+  
   /**
    * Computes the union of
    * a collection of {@link Polygonal} {@link Geometry}s.
@@ -92,7 +107,7 @@ public class CascadedPolygonUnion
    */
   public CascadedPolygonUnion(Collection polys)
   {
-    this(polys, UnionFunction.CLASSIC);
+    this(polys, OVERLAP_UNION );
   }
 
 	 /**
@@ -304,7 +319,7 @@ public class CascadedPolygonUnion
    */
   private Geometry unionActual(Geometry g0, Geometry g1)
   {
-    Geometry union = OverlapUnion.union(g0, g1, unionFun);
+    Geometry union = unionFun.union(g0, g1);
   	return restrictToPolygons( union );
   }
 
