@@ -107,14 +107,14 @@ public class TestReader
     /**
      *  Creates a List of Test's from the given <test> Element's.
      */
-    private List parseTests(
+    private List<Test> parseTests(
         List testElements,
         int caseIndex,
         File testFile,
         TestCase testCase,
         double tolerance)
         throws TestParseException {
-        List tests = new ArrayList();
+        List<Test> tests = new ArrayList<Test>();
         int testIndex = 0;
         for (Iterator i = testElements.iterator(); i.hasNext();) {
             Element testElement = (Element) i.next();
@@ -150,7 +150,7 @@ public class TestReader
                             ? null
                             : opElement.getAttribute("pattern").getValue().trim();
                 }
-                ArrayList arguments = new ArrayList();
+                List<String> arguments = new ArrayList<String>();
                 if (arg2 != null) {
                     arguments.add(arg2);
                 }
