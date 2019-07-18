@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2019 Martin Davis.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package org.locationtech.jtstest.testbuilder.cmd;
 
 import java.io.IOException;
@@ -97,6 +108,10 @@ public class TestBuilderOpCmd {
     }
     Object funArgs[] = createFunctionArgs(func, geomB, cmdArgs.arg1);
     
+    if (isVerbose) {
+      System.out.println(opSummary(cmdArgs, geomA, geomB));
+    }
+
     Stopwatch timer = new Stopwatch();
     Object result = null;
     try {
@@ -110,6 +125,22 @@ public class TestBuilderOpCmd {
     if (cmdArgs.output != null) {
       printResult(result, cmdArgs.output);
     }
+  }
+
+  private String opSummary(CmdArgs cmdArgs, Geometry geomA, Geometry geomB) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Operation: " + cmdArgs.operation);
+    if (cmdArgs.geomAFilename != null) {
+      sb.append(" A=" + cmdArgs.geomAFilename);
+      // TODO: print geometry summary
+    }
+    if (cmdArgs.geomBFilename != null) {
+      sb.append(" B=" + cmdArgs.geomBFilename);
+    }
+    if (cmdArgs.arg1 != null) {
+      sb.append(" arg1=" + cmdArgs.arg1);
+    }
+    return sb.toString();
   }
 
   private void printResult(Object result, String outputFormat) {
