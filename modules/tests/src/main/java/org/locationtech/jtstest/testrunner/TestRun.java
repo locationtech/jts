@@ -29,7 +29,7 @@ public class TestRun implements Runnable
 	// default is to run all cases
 	private int testCaseIndexToRun = -1;
   private String description;
-  private List testCases = new ArrayList();
+  private List<TestCase> testCases = new ArrayList<TestCase>();
   private PrecisionModel precisionModel;
   private GeometryOperation geomOp = null;
   private ResultMatcher resultMatcher = null;
@@ -76,8 +76,7 @@ public class TestRun implements Runnable
 
   public int getTestCount() {
     int count = 0;
-    for (Iterator i = testCases.iterator(); i.hasNext(); ) {
-      TestCase testCase = (TestCase) i.next();
+    for (TestCase testCase : testCases) {
       count += testCase.getTestCount();
     }
     return count;
@@ -115,7 +114,7 @@ public class TestRun implements Runnable
   	return resultMatcher;
   }
   
-  public List getTestCases() {
+  public List<TestCase> getTestCases() {
     return Collections.unmodifiableList(testCases);
   }
 
@@ -123,13 +122,18 @@ public class TestRun implements Runnable
     return testFile;
   }
 
+  public String getTestFileName() {
+    if (testFile == null) 
+      return "";
+    return testFile.getName();
+  }
+
   public void addTestCase(TestCase testCase) {
     testCases.add(testCase);
   }
 
   public void run() {
-    for (Iterator j = testCases.iterator(); j.hasNext(); ) {
-      TestCase testCase = (TestCase) j.next();
+    for (TestCase testCase : testCases ) {
       if (testCaseIndexToRun < 0 || testCase.getCaseIndex() == testCaseIndexToRun)
       	testCase.run();
     }

@@ -60,6 +60,15 @@ public class CommandLine {
     return spec.getOption(0);
   }
 
+  public String getOptionArg(String name, int argIndex)
+  {
+    OptionSpec spec = getOptionSpec(name);
+    if (spec == null) return null;
+    Option opt = spec.getOption(0);
+    if (opt == null) return null;
+    return opt.getArg(0);
+  }
+
   public Iterator getOptions(String name)
   {
     OptionSpec spec = getOptionSpec(name);

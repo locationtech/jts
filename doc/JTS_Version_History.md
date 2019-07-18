@@ -46,11 +46,18 @@ Distributions for older JTS versions can be obtained at the
 * Fix generation of Voronoi diagrams for cases with sites in a square (#447)
 * Fix use of clipping envelope in `VoronoiDiagramBuilder`
 
+## JTS TestBuilder
+
+### Functionality Improvements
+
+* Add a CLI to run operations on file input
+
 ## JTS TestRunner
 
 ### Functionality Improvements
 
 * Allow test files/dirs to be specified as free args
+* Add cmd options to run operation on file input
 
 
 <!-- ================================================================ -->

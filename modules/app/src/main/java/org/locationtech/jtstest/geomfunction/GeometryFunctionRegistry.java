@@ -322,4 +322,20 @@ public class GeometryFunctionRegistry
     }
     return null;
   }
+  /**
+   * Finds the first function which matches the given category and name.
+   * 
+   * @param name
+   * @return a matching function, or null
+   */
+  public GeometryFunction find(String category, String name)
+  {
+    for (Iterator i = functions.iterator(); i.hasNext(); ) {
+      GeometryFunction func = (GeometryFunction) i.next();
+      String funcName = func.getName();
+      if (category.equalsIgnoreCase(func.getCategory()) && funcName.equalsIgnoreCase(name))
+        return func;
+    }
+    return null;
+  }
 }

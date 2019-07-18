@@ -87,7 +87,9 @@ private boolean verbose;
     else if (! test.isPassed()) {
       reportBuf.write("Test Failed (" + id + ")" + "\n");
       if (verbose) {
-        reportBuf.write("  Expected: " + test.getExpectedResult().toFormattedString() + "\n");
+        if (test.hasExpectedResult()) {
+          reportBuf.write("  Expected: " + test.getExpectedResult().toFormattedString() + "\n");
+        }
         try {
           reportBuf.write("  Actual: " + test.getActualResult().toFormattedString() + "\n");
         }
@@ -144,7 +146,7 @@ private boolean verbose;
       return;
     }
     reportBuf.write("\n");
-    reportBuf.write(LABEL_TEST_CASE + " " + testCase.getTestRun().getTestFile().getName()
+    reportBuf.write(LABEL_TEST_CASE + " " + testCase.getTestRun().getTestFileName()
                     + " - #" + testCase.getCaseIndex()
                     + " (" + testCase.getLineNumber() + ")"
         + (testCase.getDescription().length() > 0 ? ": " + testCase.getDescription() :

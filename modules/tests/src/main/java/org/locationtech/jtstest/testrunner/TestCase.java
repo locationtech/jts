@@ -12,10 +12,9 @@
 package org.locationtech.jtstest.testrunner;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
@@ -34,7 +33,7 @@ public class TestCase implements Runnable {
   private String description;
   private Geometry a;
   private Geometry b;
-  private Vector tests = new Vector();
+  private List<Test> tests = new ArrayList<Test>();
   private TestRun testRun;
   private int caseIndex;
   private int lineNumber;
@@ -96,7 +95,7 @@ public class TestCase implements Runnable {
     return tests.size();
   }
 
-  public List getTests() {
+  public List<Test> getTests() {
     return Collections.unmodifiableList(tests);
   }
 
@@ -125,8 +124,7 @@ public class TestCase implements Runnable {
 
   public void run() {
   	isRun = true;
-    for (Iterator i = tests.iterator(); i.hasNext(); ) {
-      Test test = (Test) i.next();
+    for (Test test : tests ) {
       test.run();
     }
   }
@@ -141,8 +139,7 @@ public class TestCase implements Runnable {
     }
     xml += xml("a", a, aWktFile, writer) + StringUtil.newLine;
     xml += xml("b", b, bWktFile, writer);
-    for (Iterator i = tests.iterator(); i.hasNext(); ) {
-      Test test = (Test) i.next();
+    for (Test test : tests ) {
       xml += test.toXml();
     }
     xml += "</case>" + StringUtil.newLine;
