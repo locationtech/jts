@@ -12,6 +12,10 @@
 package org.locationtech.jtstest.testbuilder.cmd;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -22,17 +26,20 @@ import org.locationtech.jtstest.command.CommandLine;
 import org.locationtech.jtstest.command.Option;
 import org.locationtech.jtstest.command.OptionSpec;
 import org.locationtech.jtstest.command.ParseException;
+import org.locationtech.jtstest.function.DoubleKeyMap;
+import org.locationtech.jtstest.geomfunction.BaseGeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.util.io.IOUtil;
 
 public class TestBuilderOpCmd {
-  static final String[] help = new String[] {
+  static final String[] helpDoc = new String[] {
   "",
   "Usage: java org.locationtech.jtstest.testrunner.JTSTestRunnerCmd",
   "           [ -geomfunc <classname>]",
   "           [ -verbose]",
+  "           [ -help]",
   "           [ -op <op name>]",
   "           [ -afile <filename.ext>]",
   "           [ -bfile <filename.ext>]",
@@ -42,35 +49,67 @@ public class TestBuilderOpCmd {
   "  -afile          name of the file containing geometry A (extension: WKT, WKB, GeoJSON, GML, SHP)",
   "  -bfile          name of the file containing geometry B (extension: WKT, WKB, GeoJSON, GML, SHP)",
   "  -output         output format to use (WKT, WKB, GML)",
-  "  -verbose        display information about execution"
+  "  -verbose        display information about execution",
+  "  -help           print a list of available operations"
   };
 
   public static void main(String[] args)
-  {
-    if (args.length == 0) {
-      printHelp();
-      System.exit(0);
-    }
-    
+  {    
     TestBuilderOpCmd cmd = new TestBuilderOpCmd();
     try {
       CmdArgs cmdArgs = parseArgs(args);
+      
+      if (args.length == 0 || isHelp) {
+        printHelp(isHelp);
+        System.exit(0);
+      }
+
       cmd.execute(cmdArgs);
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  private static void printHelp() {
-    for (String s : help) {
+  private static void printHelp(boolean showFunctions) {
+    for (String s : helpDoc) {
       System.out.println(s);
     }
+    if (showFunctions) {
+      System.out.println();
+      System.out.println("Operations:");
+      printFunctions();
+   }
   }
   
+  private static void printFunctions() {
+    //TODO: include any loaded functions
+    DoubleKeyMap funcMap = funcRegistry.getCategorizedGeometryFunctions();
+    Collection categories = funcMap.keySet();
+    for (Iterator i = categories.iterator(); i.hasNext();) {
+      String category = (String) i.next();
+
+      Collection funcs = funcMap.values(category);
+      for (Iterator j = funcs.iterator(); j.hasNext();) {
+        GeometryFunction fun = (GeometryFunction) j.next();
+        System.out.println(category + "." + functionDesc(fun));
+      }
+    }
+  }
+
+  private static String functionDesc(GeometryFunction fun) {
+    // TODO: display this in a command arg style
+    BaseGeometryFunction geomFun = (BaseGeometryFunction) fun;
+    return geomFun.getSignature();
+    //return geomFun.getName();
+  }
+
   private static GeometryFactory geomFactory = new GeometryFactory();
   
   private static GeometryFunctionRegistry funcRegistry = GeometryFunctionRegistry.createTestBuilderRegistry();
   private static CommandLine commandLine = createCmdLine();
+
+  private static boolean isHelp = false;
+  private static boolean isVerbose = false;  
   
   private static class CmdArgs {
     String operation;
@@ -78,18 +117,15 @@ public class TestBuilderOpCmd {
     public String geomBFilename;
     public String arg1;
     
-    boolean isVerbose = false;
     String output = null;
   }
 
-  private boolean isVerbose;  
   
   public TestBuilderOpCmd() {
     
   }
   
   private void execute(CmdArgs cmdArgs) throws IOException, Exception {
-    isVerbose = cmdArgs.isVerbose;
     
     Geometry geomA = null;
     Geometry geomB = null;
@@ -228,7 +264,8 @@ public class TestBuilderOpCmd {
       cmdArgs.arg1 = commandLine.getOption(CommandOptions.ARG1).getArg(0);
     }
     cmdArgs.output = commandLine.getOptionArg(CommandOptions.OUTPUT, 0);
-    cmdArgs.isVerbose = commandLine.hasOption(CommandOptions.VERBOSE);
+    isVerbose = commandLine.hasOption(CommandOptions.VERBOSE);
+    isHelp = commandLine.hasOption(CommandOptions.HELP);
 
     return cmdArgs;
   }
@@ -237,6 +274,7 @@ public class TestBuilderOpCmd {
     commandLine = new CommandLine('-');
     commandLine.addOptionSpec(new OptionSpec(CommandOptions.GEOMFUNC, OptionSpec.NARGS_ONE_OR_MORE));
     commandLine.addOptionSpec(new OptionSpec(CommandOptions.VERBOSE, 0));
+    commandLine.addOptionSpec(new OptionSpec(CommandOptions.HELP, 0));
     commandLine.addOptionSpec(new OptionSpec(CommandOptions.OP, 1));
     commandLine.addOptionSpec(new OptionSpec(CommandOptions.GEOMAFILE, 1));
     commandLine.addOptionSpec(new OptionSpec(CommandOptions.GEOMBFILE, 1));

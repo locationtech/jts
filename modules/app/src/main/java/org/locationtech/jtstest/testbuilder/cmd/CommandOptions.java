@@ -20,5 +20,6 @@ public class CommandOptions {
   public static final String GEOMBFILE = "bfile";
   public static final String ARG1 = "arg1";
   public static final String OUTPUT = "output";
+  public static final String HELP = "help";
 
 }
