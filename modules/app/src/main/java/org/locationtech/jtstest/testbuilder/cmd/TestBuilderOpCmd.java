@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKBWriter;
@@ -33,6 +31,21 @@ import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.util.io.IOUtil;
 
+/**
+ * A simple CLI to run TestBuilder operations.
+ * Allows easier execution of JTS functions on test data for debugging purposes.
+ * <p>
+ * Examples:
+ * 
+ * <pre>
+ * -op Overlay.unaryUnion -afile some-file-with-geom.wkt -output wkb
+ * -op Overlay.union -afile some-file-with-geom.wkt -bfile some-other-geom.wkb -output wkt
+ * -op Buffer.buffer -afile some-file-with-geom.wkt -arg1 10 -output wkb
+ * </pre>
+ * 
+ * @author Admin
+ *
+ */
 public class TestBuilderOpCmd {
   static final String[] helpDoc = new String[] {
   "",
