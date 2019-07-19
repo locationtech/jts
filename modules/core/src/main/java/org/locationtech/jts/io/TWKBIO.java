@@ -254,8 +254,8 @@ class TWKBIO {
 
     private static Point readPoint(GeometryFactory factory, DataInput in, TWKBHeader header)
             throws IOException {
+        CoordinateSequence seq = createCoordinateSequence(factory, 1, header);
         final int dimensions = header.getDimensions();
-        CoordinateSequence seq = factory.getCoordinateSequenceFactory().create(1, dimensions);
         for (int d = 0; d < dimensions; d++) {
             long preciseOrdinate = Varint.readSignedVarLong(in);
             int precision = header.getPrecision(d);
@@ -393,9 +393,8 @@ class TWKBIO {
     private static CoordinateSequence readCoordinateSequence(GeometryFactory factory, DataInput in,
             int size, TWKBHeader header, long[] prev) throws IOException {
 
+        CoordinateSequence sequence = createCoordinateSequence(factory, size, header);
         final int dimensions = header.getDimensions();
-        CoordinateSequence sequence = factory.getCoordinateSequenceFactory().create(size,
-                dimensions);
         for (int coordIndex = 0; coordIndex < size; coordIndex++) {
             for (int ordinateIndex = 0; ordinateIndex < dimensions; ordinateIndex++) {
                 int precision = header.getPrecision(ordinateIndex);
@@ -406,6 +405,25 @@ class TWKBIO {
                 prev[ordinateIndex] = preciseOrdinate;
                 sequence.setOrdinate(coordIndex, ordinateIndex, ordinate);
             }
+        }
+        return sequence;
+    }
+
+    private static CoordinateSequence createCoordinateSequence(GeometryFactory factory, int size,
+            final TWKBHeader header) {
+
+        final int dim = header.getDimensions();
+        final int measures = header.hasM() ? 1 : 0;
+        CoordinateSequence sequence = factory.getCoordinateSequenceFactory().create(size, dim,
+                measures);
+        if (sequence.getDimension() != dim) {
+            throw new IllegalStateException(
+                    "Provided CoordinateSequenceFactory does not support the required dimension. Requested "
+                            + header + ", returned " + sequence.getDimension());
+        }
+        if (measures != sequence.getMeasures()) {
+            throw new IllegalStateException("CoordinateSequenceFactory error: requested " + measures
+                    + " measures, returned " + sequence.getMeasures());
         }
         return sequence;
     }

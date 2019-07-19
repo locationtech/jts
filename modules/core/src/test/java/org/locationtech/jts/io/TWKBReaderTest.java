@@ -23,6 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 import org.locationtech.jts.io.TWKBTestSupport.TWKBTestData;
 
 /**
@@ -73,9 +74,12 @@ public class TWKBReaderTest {
         fail("Implement me");
     }
 
-    @Ignore
-    public @Test void testProvidedGeometryFactory() {
-        fail("Implement me");
+    public @Test void testProvidedGeometryFactory() throws ParseException {
+        this.geomFactory = new GeometryFactory();
+        testReadAll(testSupport.getPoints());
+
+        this.geomFactory = new GeometryFactory(PackedCoordinateSequenceFactory.DOUBLE_FACTORY);
+        testReadAll(testSupport.getPoints());
     }
 
     public @Test void testPoints() throws ParseException {
