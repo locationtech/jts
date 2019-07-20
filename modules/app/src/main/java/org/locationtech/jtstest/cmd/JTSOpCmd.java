@@ -176,13 +176,13 @@ public class JTSOpCmd {
 
     if (cmdArgs.geomA != null) {
       geomA = readGeometry(cmdArgs.geomA);
+      printGeometrySummary("A", geomA, cmdArgs.geomA);
     }
     if (cmdArgs.geomB != null) {
       geomB = readGeometry(cmdArgs.geomB);
+      printGeometrySummary("B", geomB, cmdArgs.geomB);
     }
     // TODO: Handle option -ab
-    printGeometrySummary("A", geomA, cmdArgs.geomA);
-    printGeometrySummary("B", geomB, cmdArgs.geomB);
     
     
     Object result = null;
@@ -234,6 +234,7 @@ public class JTSOpCmd {
   }
 
   private boolean isFilename(String arg) {
+    if (arg == null) return false;
     if (MultiFormatReader.isWKB(arg)) return false;
     if (isWKT(arg)) return false;
     /*
@@ -303,7 +304,7 @@ public class JTSOpCmd {
   private void printGeometrySummary(String label, Geometry geom, String arg) {
     if (! isVerbose) return;
     String filename = "";
-    if (isFilename(arg)) filename = " -- " + arg;
+    if (arg != null & isFilename(arg)) filename = " -- " + arg;
     System.out.println( writeGeometrySummary(label, geom) + filename);
   }
   
