@@ -71,7 +71,7 @@ public class JTSOpCmd {
   
   static final String[] helpDoc = new String[] {
   "",
-  "Usage: jtsop",
+  "Usage: jtsop - CLI for JTS operations",
   "           [ -a <wkt> | <wkb> | <filename.ext>]",
   "           [ -b <wkt> | <wkb> | <filename.ext>]",
   "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
@@ -84,7 +84,7 @@ public class JTSOpCmd {
   "",
   "  -a              A geometry or name of file containing it (extension: WKT, WKB, GeoJSON, GML, SHP)",
   "  -b              B geometry or name of file containing it (extension: WKT, WKB, GeoJSON, GML, SHP)",
-  "  -f              output format to use (WKT, WKB, GML).  if omitted output is silent",
+  "  -f              output format to use.  If omitted output is silent",
   "  -geomfunc       (optional) specifies the class providing the geometry operations",
   "  -v, -verbose    display information about execution",
   "  -help           print a list of available operations"
@@ -234,10 +234,21 @@ public class JTSOpCmd {
   }
 
   private boolean isFilename(String arg) {
+    if (MultiFormatReader.isWKB(arg)) return false;
+    if (isWKT(arg)) return false;
+    /*
     if (arg.indexOf("/") > 0
         || arg.indexOf("\\") > 0
         || arg.indexOf(":") > 0)
       return true;
+      */
+    return true;
+  }
+
+  private static boolean isWKT(String arg) {
+    // TODO: make this smarter
+    boolean hasParen = (arg.indexOf("(") > 0) && arg.indexOf(")") > 0;
+    if (hasParen) return true;
     return false;
   }
 
