@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jtstest.testbuilder.cmd;
+package org.locationtech.jtstest.cmd;
 
 import java.io.IOException;
 import java.util.Collection;

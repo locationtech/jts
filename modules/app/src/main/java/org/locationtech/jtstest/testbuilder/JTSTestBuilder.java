@@ -19,12 +19,12 @@ import javax.swing.UIManager;
 
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jtstest.cmd.CommandOptions;
 import org.locationtech.jtstest.command.CommandLine;
 import org.locationtech.jtstest.command.Option;
 import org.locationtech.jtstest.command.OptionSpec;
 import org.locationtech.jtstest.command.ParseException;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
-import org.locationtech.jtstest.testbuilder.cmd.CommandOptions;
 import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 
