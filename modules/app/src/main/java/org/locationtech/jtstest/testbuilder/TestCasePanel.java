@@ -169,11 +169,11 @@ public class TestCasePanel extends JPanel {
 
   void jTabbedPane1_stateChanged(ChangeEvent e) 
   {
+    boolean isFunction = jTabbedPane1.getSelectedComponent() == spatialFunctionPanel;
     /*
     // don't bother being clever about what user should see
     // code is buggy anyway - next line is checking wrong panel
     // Plus, should now synch Layer List UI when doing this
-    boolean isFunction = jTabbedPane1.getSelectedComponent() == spatialFunctionPanel;
     
     editPanel.setShowingResult(isFunction);
     editPanel.setShowingGeometryA(! isFunction
