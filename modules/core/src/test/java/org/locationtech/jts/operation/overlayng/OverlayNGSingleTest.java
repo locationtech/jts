@@ -156,7 +156,7 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testBoxContainingPolygonCollapseIntersection() {
+  public void xtestBoxContainingPolygonCollapseIntersection() {
     Geometry a = read("POLYGON ((100 200, 300 200, 300 0, 100 0, 100 200))");
     Geometry b = read("POLYGON ((250 100, 150 100, 150 100.4, 250 100))");
     Geometry expected = read("LINESTRING (150 100, 250 100)");
@@ -164,11 +164,19 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testBoxContainingPolygonCollapseManyPtsIntersection() {
+  public void xtestBoxContainingPolygonCollapseManyPtsIntersection() {
     Geometry a = read("POLYGON ((100 200, 300 200, 300 0, 100 0, 100 200))");
     Geometry b = read("POLYGON ((250 100, 150 100, 150 100.4, 160 100.2, 170 100.1, 250 100))");
     Geometry expected = read("MULTILINESTRING ((150 100, 160 100), (160 100, 170 100), (170 100, 250 100))");
     Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testPolygonsSpikeCollapseIntersection() {
+    Geometry a = read("POLYGON ((2.33906 48.78994, 2.33768 48.78857, 2.33768 48.78788, 2.33974 48.78719, 2.34009 48.78616, 2.33974 48.78513, 2.33871 48.78479, 2.33734 48.78479, 2.33631 48.78445, 2.33597 48.78342, 2.33631 48.78239, 2.337 48.7817, 2.33734 48.78067, 2.33734 48.7793, 2.337 48.77827, 2.3178 48.7849, 2.32099 48.79376, 2.33906 48.78994))");
+    Geometry b = read("POLYGON ((2.33768 48.78857, 2.33768 48.78788, 2.33974 48.78719, 2.34009 48.78616, 2.33974 48.78513, 2.33871 48.78479, 2.33734 48.78479, 2.33631 48.78445, 2.3362 48.7841, 2.33562 48.78582, 2.33425 48.78719, 2.33768 48.78857))");
+    Geometry expected = read("MULTILINESTRING ((150 100, 160 100), (160 100, 170 100), (170 100, 250 100))");
+    Geometry actual = intersection(a, b, 100000);
     checkEqual(expected, actual);
   }
   

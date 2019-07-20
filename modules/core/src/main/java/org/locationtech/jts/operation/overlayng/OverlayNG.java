@@ -106,6 +106,7 @@ public class OverlayNG
   private boolean isOutputResultEdges;
   private OverlayGraph graph;
   private int opCode;
+  private boolean isOutputNodedEdges;
 
   public OverlayNG(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode) {
     this.pm = pm;
@@ -116,6 +117,11 @@ public class OverlayNG
   
   public void setOutputEdges(boolean isOutputEdges ) {
     this.isOutputEdges = isOutputEdges;
+  }
+  
+  public void setOutputNodedEdges(boolean isOutputNodedEdges ) {
+    this.isOutputEdges = true;
+    this.isOutputNodedEdges = isOutputNodedEdges;
   }
   
   public void setOutputResultEdges(boolean isOutputResultEdges ) {
@@ -141,13 +147,16 @@ public class OverlayNG
     
     //--- Topology building phase
     graph = new OverlayGraph( edges );
+    if (isOutputNodedEdges) {
+      return toLines(graph, geomFact);
+    }
+
     graph.computeLabelling();
     graph.labelIncompleteEdges(inputGeom);
     
     graph.markResultAreaEdges(opCode);
     graph.removeDuplicateResultAreaEdges();
     
-    //return toLines(edges, geomFact );
     if (isOutputEdges || isOutputResultEdges) {
       return toLines(graph, geomFact);
     }

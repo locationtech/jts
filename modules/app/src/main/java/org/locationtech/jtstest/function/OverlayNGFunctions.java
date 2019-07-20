@@ -24,6 +24,15 @@ import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
 public class OverlayNGFunctions {
+  
+  public static Geometry nodedEdges(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    // op should not matter, since edges are captured pre-result
+    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.UNION);
+    ovr.setOutputNodedEdges(true);
+    return ovr.getResultGeometry();
+  }
+
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlayNG.overlay(a, b, pm, OverlayOp.INTERSECTION);
