@@ -18,6 +18,7 @@ import java.util.Iterator;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKBWriter;
+import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.locationtech.jts.io.gml2.GMLWriter;
 import org.locationtech.jts.util.Stopwatch;
 import org.locationtech.jtstest.command.CommandLine;
@@ -28,8 +29,10 @@ import org.locationtech.jtstest.function.DoubleKeyMap;
 import org.locationtech.jtstest.geomfunction.BaseGeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
+import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.util.io.IOUtil;
+import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 /**
  * A simple CLI to run TestBuilder operations.
@@ -38,37 +41,55 @@ import org.locationtech.jtstest.util.io.IOUtil;
  * Examples:
  * 
  * <pre>
- * -op Overlay.unaryUnion -afile some-file-with-geom.wkt -output wkb
- * -op Overlay.union -afile some-file-with-geom.wkt -bfile some-other-geom.wkb -output wkt
- * -op Buffer.buffer -afile some-file-with-geom.wkt -arg1 10 -output wkb
+ * jtsop -a some-file-with-geom.wkt -f txt area 
+ * 
+ * jtsop -a some-file-with-geom.wkt -f wkb Overlay.unaryUnion 
+ * 
+ * jtsop -a some-file-with-geom.wkt -b some-other-geom.wkb -f wkt Overlay.unaryUnion
+ * 
+ * jtsop -a some-file-with-geom.wkt -f geojson Buffer.buffer 10
+ * 
+ * jtsop -a "POINT (10 10)" -f wkt Buffer.buffer 10
+ * 
+ * jtsop -a "POINT (10 10)" -f geojson
  * </pre>
  * 
- * @author Admin
+ * @author Martin Davis
  *
  */
-public class TestBuilderOpCmd {
+public class JTSOpCmd {
+
   static final String[] helpDoc = new String[] {
   "",
-  "Usage: java org.locationtech.jtstest.testrunner.JTSTestRunnerCmd",
+  "Usage: jtsop",
+  "           [ -a <wkt> | <wkb> | <filename.ext>]",
+  "           [ -b <wkt> | <wkb> | <filename.ext>]",
+  "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
   "           [ -geomfunc <classname>]",
-  "           [ -verbose]",
+  "           [ -v, -verbose]",
   "           [ -help]",
-  "           [ -op <op name>]",
-  "           [ -afile <filename.ext>]",
-  "           [ -bfile <filename.ext>]",
-  "           [ -output ( wkt | wkb | geojson | gml ) ]",
+  "           [ op [ args... ]]",
+  "  op              name of the operation (Category.op)",
+  "  args            one or more scalar arguments to the operation",
+  "",
+  "  -a              A geometry or name of file containing it (extension: WKT, WKB, GeoJSON, GML, SHP)",
+  "  -b              B geometry or name of file containing it (extension: WKT, WKB, GeoJSON, GML, SHP)",
+  "  -f              output format to use (WKT, WKB, GML).  if omitted output is silent",
   "  -geomfunc       (optional) specifies the class providing the geometry operations",
-  "  -op             name of the operation (Category.op)",
-  "  -afile          name of the file containing geometry A (extension: WKT, WKB, GeoJSON, GML, SHP)",
-  "  -bfile          name of the file containing geometry B (extension: WKT, WKB, GeoJSON, GML, SHP)",
-  "  -output         output format to use (WKT, WKB, GML)",
-  "  -verbose        display information about execution",
+  "  -v, -verbose    display information about execution",
   "  -help           print a list of available operations"
   };
 
+  private static final String FORMAT_GML = "gml";
+  private static final String FORMAT_WKB = "wkb";
+  private static final String FORMAT_TXT = "txt";
+  private static final String FORMAT_WKT = "wkt";
+  private static final String FORMAT_GEOJSON = "geojson";
+  private static final String FORMAT_SVG = "svg";
+
   public static void main(String[] args)
   {    
-    TestBuilderOpCmd cmd = new TestBuilderOpCmd();
+    JTSOpCmd cmd = new JTSOpCmd();
     try {
       CmdArgs cmdArgs = parseArgs(args);
       
@@ -126,15 +147,15 @@ public class TestBuilderOpCmd {
   
   private static class CmdArgs {
     String operation;
-    String geomAFilename;
-    public String geomBFilename;
+    String geomA;
+    public String geomB;
     public String arg1;
     
-    String output = null;
+    String format = null;
   }
 
   
-  public TestBuilderOpCmd() {
+  public JTSOpCmd() {
     
   }
   
@@ -143,17 +164,33 @@ public class TestBuilderOpCmd {
     Geometry geomA = null;
     Geometry geomB = null;
 
-    if (cmdArgs.geomAFilename != null) {
-      geomA = IOUtil.readFile(cmdArgs.geomAFilename,geomFactory );
+    if (cmdArgs.geomA != null) {
+      geomA = readGeometry(cmdArgs.geomA);
     }
-    if (cmdArgs.geomBFilename != null) {
-      geomB = IOUtil.readFile(cmdArgs.geomBFilename,geomFactory );
+    if (cmdArgs.geomB != null) {
+      geomB = readGeometry(cmdArgs.geomB);
     }
     
+    Object result = null;
+    if (cmdArgs.operation != null) {
+      result = executeFunction(cmdArgs, geomA, geomB);
+    }
+    else {
+      // no op specified, so just output A (allows format conversion)
+      result = geomA;
+    }
+    if (result == null) return;
+    
+    if (cmdArgs.format != null) {
+      printResult(result, cmdArgs.format);
+    }
+  }
+
+  private Object executeFunction(CmdArgs cmdArgs, Geometry geomA, Geometry geomB) {
     GeometryFunction func = getFunction(cmdArgs.operation);
     if (func == null) {
       System.err.println("Function not found: " + cmdArgs.operation);
-      return;
+      return null;
     }
     Object funArgs[] = createFunctionArgs(func, geomB, cmdArgs.arg1);
     
@@ -171,23 +208,37 @@ public class TestBuilderOpCmd {
     if (isVerbose) {
       System.out.println("Time: " + timer.getTimeString());
     }
-    if (cmdArgs.output != null) {
-      printResult(result, cmdArgs.output);
+    return result;
+  }
+
+  private Geometry readGeometry(String arg) throws Exception, IOException {
+    if (isFilename(arg)) {
+      return IOUtil.readFile(arg ,geomFactory );
     }
+    MultiFormatReader rdr = new MultiFormatReader(geomFactory);
+    return rdr.read(arg);
+  }
+
+  private boolean isFilename(String arg) {
+    if (arg.indexOf("/") > 0
+        || arg.indexOf("\\") > 0
+        || arg.indexOf(":") > 0)
+      return true;
+    return false;
   }
 
   private String opSummary(CmdArgs cmdArgs, Geometry geomA, Geometry geomB) {
     StringBuilder sb = new StringBuilder();
-    sb.append("Operation: " + cmdArgs.operation);
-    if (cmdArgs.geomAFilename != null) {
-      sb.append(" A=" + cmdArgs.geomAFilename);
+    sb.append("Op: " + cmdArgs.operation);
+    if (cmdArgs.arg1 != null) {
+      sb.append(" " + cmdArgs.arg1);
+    }
+    if (cmdArgs.geomA != null) {
+      sb.append(" A=" + cmdArgs.geomA);
       // TODO: print geometry summary
     }
-    if (cmdArgs.geomBFilename != null) {
-      sb.append(" B=" + cmdArgs.geomBFilename);
-    }
-    if (cmdArgs.arg1 != null) {
-      sb.append(" arg1=" + cmdArgs.arg1);
+    if (cmdArgs.geomB != null) {
+      sb.append(" B=" + cmdArgs.geomB);
     }
     return sb.toString();
   }
@@ -204,17 +255,31 @@ public class TestBuilderOpCmd {
   
   private void printGeometry(Geometry geom, String outputFormat) {
     String txt = null;
-    if (outputFormat.equalsIgnoreCase("wkt")) {
+    if (outputFormat.equalsIgnoreCase(FORMAT_WKT)
+        || outputFormat.equalsIgnoreCase(FORMAT_TXT)) {
       txt = geom.toString();
     }
-    if (outputFormat.equalsIgnoreCase("wkb")) {
+    else if (outputFormat.equalsIgnoreCase(FORMAT_WKB)) {
       txt = WKBWriter.toHex((new WKBWriter().write(geom)));
     }
-    if (outputFormat.equalsIgnoreCase("gml")) {
+    else if (outputFormat.equalsIgnoreCase(FORMAT_GML)) {
       txt = (new GMLWriter()).write(geom);
     }
+    else if (outputFormat.equalsIgnoreCase(FORMAT_GEOJSON)) {
+      txt = writeGeoJSON(geom);
+    }
+    else if (outputFormat.equalsIgnoreCase(FORMAT_SVG)) {
+      txt = SVGTestWriter.getSVG(geom, null);
+    }
+    
     if (txt == null) return;
     System.out.println(txt);
+  }
+
+  private String writeGeoJSON(Geometry geom) {
+    GeoJsonWriter writer = new GeoJsonWriter();
+    writer.setEncodeCRS(false);
+    return writer.write(geom);
   }
 
   private Object[] createFunctionArgs(GeometryFunction func, Geometry geomB, String arg1) {
@@ -262,37 +327,39 @@ public class TestBuilderOpCmd {
     }
     
     cmdArgs.operation = commandLine.getOptionArg(CommandOptions.OP, 0);
-/*
-    if (commandLine.hasOption(CommandOptions.OP)) {
-      cmdArgs.operation = commandLine.getOption(CommandOptions.OP).getArg(0);
-    }
-    */
-    if (commandLine.hasOption(CommandOptions.GEOMAFILE)) {
-      cmdArgs.geomAFilename = commandLine.getOption(CommandOptions.GEOMAFILE).getArg(0);
-    }
-    if (commandLine.hasOption(CommandOptions.GEOMBFILE)) {
-      cmdArgs.geomBFilename = commandLine.getOption(CommandOptions.GEOMBFILE).getArg(0);
-    }
-    if (commandLine.hasOption(CommandOptions.ARG1)) {
-      cmdArgs.arg1 = commandLine.getOption(CommandOptions.ARG1).getArg(0);
-    }
-    cmdArgs.output = commandLine.getOptionArg(CommandOptions.OUTPUT, 0);
-    isVerbose = commandLine.hasOption(CommandOptions.VERBOSE);
+    cmdArgs.geomA = commandLine.getOptionArg(CommandOptions.GEOMA, 0);
+    cmdArgs.geomB = commandLine.getOptionArg(CommandOptions.GEOMB, 0);
+    cmdArgs.arg1 = commandLine.getOptionArg(CommandOptions.ARG1, 0);
+    cmdArgs.format = commandLine.getOptionArg(CommandOptions.FORMAT, 0);
+    isVerbose = commandLine.hasOption(CommandOptions.VERBOSE)
+                  || commandLine.hasOption(CommandOptions.V);
     isHelp = commandLine.hasOption(CommandOptions.HELP);
 
+    String[] freeArgs = commandLine.getOptionArgs(OptionSpec.OPTION_FREE_ARGS);
+    if (freeArgs != null) {
+      if (freeArgs.length >= 1) {
+        cmdArgs.operation = freeArgs[0];
+      }
+      if (freeArgs.length >= 2) {
+        cmdArgs.arg1 = freeArgs[1];
+      }
+    }
+    
     return cmdArgs;
   }
   
   private static CommandLine createCmdLine() {
     commandLine = new CommandLine('-');
-    commandLine.addOptionSpec(new OptionSpec(CommandOptions.GEOMFUNC, OptionSpec.NARGS_ONE_OR_MORE));
-    commandLine.addOptionSpec(new OptionSpec(CommandOptions.VERBOSE, 0));
-    commandLine.addOptionSpec(new OptionSpec(CommandOptions.HELP, 0));
-    commandLine.addOptionSpec(new OptionSpec(CommandOptions.OP, 1));
-    commandLine.addOptionSpec(new OptionSpec(CommandOptions.GEOMAFILE, 1));
-    commandLine.addOptionSpec(new OptionSpec(CommandOptions.GEOMBFILE, 1));
-    commandLine.addOptionSpec(new OptionSpec(CommandOptions.ARG1, 1));
-    commandLine.addOptionSpec(new OptionSpec(CommandOptions.OUTPUT, 1));
+    commandLine.addOptionSpec(new OptionSpec(CommandOptions.GEOMFUNC, OptionSpec.NARGS_ONE_OR_MORE))
+    .addOptionSpec(new OptionSpec(CommandOptions.VERBOSE, 0))
+    .addOptionSpec(new OptionSpec(CommandOptions.V, 0))
+    .addOptionSpec(new OptionSpec(CommandOptions.HELP, 0))
+    .addOptionSpec(new OptionSpec(CommandOptions.OP, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.GEOMA, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.GEOMB, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.ARG1, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.FORMAT, 1))
+    .addOptionSpec(new OptionSpec(OptionSpec.OPTION_FREE_ARGS, OptionSpec.NARGS_ONE_OR_MORE));
     return commandLine;
   }
 
