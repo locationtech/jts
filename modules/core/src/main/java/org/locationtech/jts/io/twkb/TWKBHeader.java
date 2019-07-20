@@ -1,4 +1,4 @@
-package org.locationtech.jts.io;
+package org.locationtech.jts.io.twkb;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -17,7 +17,7 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.TWKBIO.TWKBOutputStream;
+import org.locationtech.jts.io.twkb.TWKBIO.TWKBOutputStream;
 
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

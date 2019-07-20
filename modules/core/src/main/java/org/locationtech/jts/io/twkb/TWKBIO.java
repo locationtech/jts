@@ -9,9 +9,9 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.io;
+package org.locationtech.jts.io.twkb;
 
-import static org.locationtech.jts.io.TWKBHeader.GeometryType.POINT;
+import static org.locationtech.jts.io.twkb.TWKBHeader.GeometryType.POINT;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
@@ -36,7 +36,7 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
-import org.locationtech.jts.io.TWKBHeader.GeometryType;
+import org.locationtech.jts.io.twkb.TWKBHeader.GeometryType;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

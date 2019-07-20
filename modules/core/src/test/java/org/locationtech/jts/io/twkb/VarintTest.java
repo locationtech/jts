@@ -9,17 +9,17 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.io;
+package org.locationtech.jts.io.twkb;
 
 import static org.junit.Assert.assertEquals;
-import static org.locationtech.jts.io.Varint.readSignedVarInt;
-import static org.locationtech.jts.io.Varint.readSignedVarLong;
-import static org.locationtech.jts.io.Varint.readUnsignedVarInt;
-import static org.locationtech.jts.io.Varint.readUnsignedVarLong;
-import static org.locationtech.jts.io.Varint.writeSignedVarInt;
-import static org.locationtech.jts.io.Varint.writeSignedVarLong;
-import static org.locationtech.jts.io.Varint.writeUnsignedVarInt;
-import static org.locationtech.jts.io.Varint.writeUnsignedVarLong;
+import static org.locationtech.jts.io.twkb.Varint.readSignedVarInt;
+import static org.locationtech.jts.io.twkb.Varint.readSignedVarLong;
+import static org.locationtech.jts.io.twkb.Varint.readUnsignedVarInt;
+import static org.locationtech.jts.io.twkb.Varint.readUnsignedVarLong;
+import static org.locationtech.jts.io.twkb.Varint.writeSignedVarInt;
+import static org.locationtech.jts.io.twkb.Varint.writeSignedVarLong;
+import static org.locationtech.jts.io.twkb.Varint.writeUnsignedVarInt;
+import static org.locationtech.jts.io.twkb.Varint.writeUnsignedVarLong;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

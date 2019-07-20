@@ -17,7 +17,7 @@
  * 
  * Original file: https://svn.apache.org/repos/asf/mahout/branches/mahout-0.8/core/src/main/java/org/apache/mahout/math/Varint.java
  */
-package org.locationtech.jts.io;
+package org.locationtech.jts.io.twkb;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -36,7 +36,7 @@ import java.io.IOException;
  * "compatible" with variable-length encoding.
  * </p>
  */
-public final class Varint {
+final class Varint {
 
     private Varint() {
     }

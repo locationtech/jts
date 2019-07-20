@@ -10,7 +10,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.io;
+package org.locationtech.jts.io.twkb;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
@@ -20,6 +20,7 @@ import java.io.InputStream;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
 
 public class TWKBReader {
 

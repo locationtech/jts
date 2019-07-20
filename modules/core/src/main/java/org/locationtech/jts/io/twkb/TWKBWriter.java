@@ -10,7 +10,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.io;
+package org.locationtech.jts.io.twkb;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
@@ -20,7 +20,7 @@ import java.io.OutputStream;
 import java.util.Objects;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.TWKBIO.TWKBOutputStream;
+import org.locationtech.jts.io.twkb.TWKBIO.TWKBOutputStream;
 
 /**
  * <pre>
