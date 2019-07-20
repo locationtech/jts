@@ -193,33 +193,7 @@ class TWKBHeader {
 
     /////////////////////// custom optimizations ///////////////////////
 
-    /**
-     * Apply the following optimizations at encode time:
-     * <ul>
-     * <li>The xy, m, and z precision of an {@link Geometry#isEmpty() empty} geometry are set to
-     * {@code 0}, despite the values of {@link #xyPrecision()}, {@link #zPrecision()}, and
-     * {@link #mPrecision()}
-     * <li>BBOX is not encoded for {@link Point} geometries, despite {@link #hasBBOX()} being
-     * {@code true}
-     * <li>{@link #hasZ()} is forcedly encoded as {@code false} if the input geometry has no Z
-     * dimension (as per {@link CoordinateSequence#hasZ()}), even if {@code hasZ() == true}, and
-     * consequently {@link #zPrecision()} is not set (defaulting to 0). This fixes a possible
-     * mismatch in the metadata where a dimension precision may be present in the header where the
-     * geometry doesn't really have that dimension.
-     * <li>{@link #hasM()} is forcedly encoded as {@code false} if the input geometry has no M
-     * dimension (as per {@link CoordinateSequence#hasM()}), even if {@code hasM() == true}, and
-     * consequently {@link #mPrecision()} is not set (defaulting to 0). This fixes a possible
-     * mismatch in the metadata where a dimension precision may be present in the header where the
-     * geometry doesn't really have that dimension.
-     * <p>
-     * For a <strong>Polygon</strong> geometry, all its {@link LinearRing}s get their last
-     * coordinate removed. Following the specification's suggestion, the last coordinate of a
-     * {@link LinearRing} is removed and therefore it's encoded as a {@link LineString} with one
-     * less coordinate. When parsing, such line strings are automatically closed to form a
-     * {@code LinearRing}
-     * </ul>
-     * Disabling these optimizations make the encoding consistent with PostGIS TWKB encoding.
-     */
+    // See TWKBWriter.setOptimizedEncoding for a description of this flag
     private @Builder.Default boolean optimizedEncoding = true;
 
     public int getDimensions() {

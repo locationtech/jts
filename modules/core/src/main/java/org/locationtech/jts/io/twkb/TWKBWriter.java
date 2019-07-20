@@ -19,7 +19,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.twkb.TWKBIO.TWKBOutputStream;
 
 /**
@@ -136,6 +140,38 @@ public class TWKBWriter {
         return this;
     }
 
+    /**
+     * Enables or disables the following optimizations at encoding time, defaults to {@code true}:
+     * <ul>
+     * <li>The {@code xy}, {@code m}, and {@code z} precision of an {@link Geometry#isEmpty() empty}
+     * geometry are set to {@code 0}, despite the values of {@link #xyPrecision()},
+     * {@link #zPrecision()}, and {@link #mPrecision()}
+     * <li>BBOX is not encoded for {@link Point} geometries, despite {@link #hasBBOX()} being
+     * {@code true}, and the {@code hasBBOX} flag is encoded as {@code false}
+     * <li>{@link #hasZ()} is forcedly encoded as {@code false} if the input geometry has no Z
+     * dimension (as per {@link CoordinateSequence#hasZ()}), even if {@code hasZ() == true}, and
+     * consequently {@link #zPrecision()} is not set (defaulting to 0 if there's an M dimension).
+     * This fixes a possible mismatch in the metadata where a dimension precision may be present in
+     * the header where the geometry doesn't really have that dimension.
+     * <li>{@link #hasM()} is forcedly encoded as {@code false} if the input geometry has no M
+     * dimension (as per {@link CoordinateSequence#hasM()}), even if {@code hasM() == true}, and
+     * consequently {@link #mPrecision()} is not set (defaulting to 0 if there's a Z dimension).
+     * This fixes a possible mismatch in the metadata where a dimension precision may be present in
+     * the header where the geometry doesn't really have that dimension.
+     * <li>For a <strong>Polygon</strong> geometry, all its {@link LinearRing}s get their last
+     * coordinate removed, as long as that wouldn't result in an invalid geometry. Following the
+     * specification's suggestion, the last coordinate of a {@link LinearRing} is removed and
+     * therefore it's encoded as a {@link LineString} with one less coordinate. When parsing, such
+     * line strings are automatically closed to form a {@code LinearRing}
+     * <li>Consecutive coordinates of a {@link CoordinateSequence} that, due to loss of precision,
+     * collapse to a single point, are merged into a single coordinate, as long as that doesn't
+     * result in an invalid geometry. For example,
+     * {@code LINESTRING(0.1 0.1, 0.15 0.15, 1.2 1.2, 1.29 1.29)}, encoded with an {@code xy}
+     * precision of {@code 1} decimal places, is collapsed to {@code LINESTRING(0.1 0.1, 1.2 1.2)}
+     * instead of {@code LINESTRING(0.1 0.1, 0.1 0.1, 1.2 1.2, 1.2 1.2)}
+     * </ul>
+     * Disabling these optimizations make the encoding consistent with PostGIS TWKB encoding.
+     */
     public TWKBWriter setOptimizedEncoding(boolean optimizedEncoding) {
         paramsHeader = paramsHeader.withOptimizedEncoding(optimizedEncoding);
         return this;
