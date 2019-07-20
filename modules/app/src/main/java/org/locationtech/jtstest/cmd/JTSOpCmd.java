@@ -29,6 +29,7 @@ import org.locationtech.jtstest.function.DoubleKeyMap;
 import org.locationtech.jtstest.geomfunction.BaseGeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
+import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.util.io.IOUtil;
@@ -41,16 +42,22 @@ import org.locationtech.jtstest.util.io.MultiFormatReader;
  * Examples:
  * 
  * <pre>
+ * --- Compute the area of a WKT geometry, output it
  * jtsop -a some-file-with-geom.wkt -f txt area 
  * 
+ * --- Compute the unary union of a WKT geometry, output as WKB
  * jtsop -a some-file-with-geom.wkt -f wkb Overlay.unaryUnion 
  * 
- * jtsop -a some-file-with-geom.wkt -b some-other-geom.wkb -f wkt Overlay.unaryUnion
+ * --- Compute the union of two geometries in WKT and WKB, output as WKT
+ * jtsop -a some-file-with-geom.wkt -b some-other-geom.wkb -f wkt Overlay.Union
  * 
+ * --- Compute the buffer of distance 10 of a WKT geometry, output as GeoJSON
  * jtsop -a some-file-with-geom.wkt -f geojson Buffer.buffer 10
  * 
+ * --- Compute the buffer of a literal geometry, output as WKT
  * jtsop -a "POINT (10 10)" -f wkt Buffer.buffer 10
  * 
+ * --- Output a literal geometry as GeoJSON
  * jtsop -a "POINT (10 10)" -f geojson
  * </pre>
  * 
@@ -59,6 +66,9 @@ import org.locationtech.jtstest.util.io.MultiFormatReader;
  */
 public class JTSOpCmd {
 
+  // TODO: add option -ab to read both geoms from a file
+  // TODO: allow -a stdin  to indicate reading from stdin.  
+  
   static final String[] helpDoc = new String[] {
   "",
   "Usage: jtsop",
@@ -170,6 +180,10 @@ public class JTSOpCmd {
     if (cmdArgs.geomB != null) {
       geomB = readGeometry(cmdArgs.geomB);
     }
+    // TODO: Handle option -ab
+    printGeometrySummary("A", geomA, cmdArgs.geomA);
+    printGeometrySummary("B", geomB, cmdArgs.geomB);
+    
     
     Object result = null;
     if (cmdArgs.operation != null) {
@@ -195,7 +209,7 @@ public class JTSOpCmd {
     Object funArgs[] = createFunctionArgs(func, geomB, cmdArgs.arg1);
     
     if (isVerbose) {
-      System.out.println(opSummary(cmdArgs, geomA, geomB));
+      System.out.println(writeOpSummary(cmdArgs));
     }
 
     Stopwatch timer = new Stopwatch();
@@ -227,18 +241,11 @@ public class JTSOpCmd {
     return false;
   }
 
-  private String opSummary(CmdArgs cmdArgs, Geometry geomA, Geometry geomB) {
+  private String writeOpSummary(CmdArgs cmdArgs) {
     StringBuilder sb = new StringBuilder();
     sb.append("Op: " + cmdArgs.operation);
     if (cmdArgs.arg1 != null) {
       sb.append(" " + cmdArgs.arg1);
-    }
-    if (cmdArgs.geomA != null) {
-      sb.append(" A=" + cmdArgs.geomA);
-      // TODO: print geometry summary
-    }
-    if (cmdArgs.geomB != null) {
-      sb.append(" B=" + cmdArgs.geomB);
     }
     return sb.toString();
   }
@@ -282,6 +289,24 @@ public class JTSOpCmd {
     return writer.write(geom);
   }
 
+  private void printGeometrySummary(String label, Geometry geom, String arg) {
+    if (! isVerbose) return;
+    String filename = "";
+    if (isFilename(arg)) filename = " -- " + arg;
+    System.out.println( writeGeometrySummary(label, geom) + filename);
+  }
+  
+  private String writeGeometrySummary(String label,
+      Geometry g)
+  {
+    if (g == null) return "";
+    StringBuilder buf = new StringBuilder();
+    buf.append(label + " : ");
+    buf.append(GeometryUtil.structureSummary(g));
+    buf.append("    " + GeometryUtil.metricsSummary(g));
+    return buf.toString();
+  }
+  
   private Object[] createFunctionArgs(GeometryFunction func, Geometry geomB, String arg1) {
     Class[] paramTypes = func.getParameterTypes();
     Object[] paramVal = new Object[paramTypes.length];
