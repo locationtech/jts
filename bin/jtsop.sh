@@ -7,4 +7,4 @@ fi
 #---------------------------#
 # run the program           #
 #---------------------------#
-java -cp ${JTS_LIB_DIR}/JTSTestBuilder.jar org.locationtech.jtstest.testbuilder.cmd.TestBuilderOpCmd $@
+java -cp ${JTS_LIB_DIR}/JTSTestBuilder.jar org.locationtech.jtstest.testbuilder.cmd.JTSOpCmd $@
