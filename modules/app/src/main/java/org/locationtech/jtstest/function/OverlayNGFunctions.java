@@ -38,14 +38,14 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, pm, OverlayOp.INTERSECTION);
   }
 
-  public static Geometry intersectionLines(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry intersectionResultEdges(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
     ovr.setOutputResultEdges(true);
     return ovr.getResultGeometry();
   }
 
-  public static Geometry intersectionAllLines(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry intersectionAllEdges(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
     ovr.setOutputEdges(true);
