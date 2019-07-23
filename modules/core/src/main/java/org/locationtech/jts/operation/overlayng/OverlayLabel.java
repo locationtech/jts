@@ -137,8 +137,8 @@ public class OverlayLabel {
   */
   
   /**
-   * Sets all positions for this line.
-   * Does not change the line dimension.
+   * Sets all positions for this label.
+   * Does not change the label dimension.
    * 
    * This is used to set the locations for lines 
    * encountered during area label propagation.
@@ -197,7 +197,7 @@ public class OverlayLabel {
     return bDim == DIM_AREA;
   }
   
-  boolean isLineLocationUnknown(int index) {
+  public boolean isLineLocationUnknown(int index) {
     if (index == 0) {
       return aLocLine == LOC_UNKNOWN;
     }
