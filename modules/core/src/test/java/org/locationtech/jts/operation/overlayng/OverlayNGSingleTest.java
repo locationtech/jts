@@ -172,11 +172,34 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testPolygonsSpikeCollapseIntersection() {
+  public void xtestPolygonsSpikeCollapseIntersection() {
     Geometry a = read("POLYGON ((2.33906 48.78994, 2.33768 48.78857, 2.33768 48.78788, 2.33974 48.78719, 2.34009 48.78616, 2.33974 48.78513, 2.33871 48.78479, 2.33734 48.78479, 2.33631 48.78445, 2.33597 48.78342, 2.33631 48.78239, 2.337 48.7817, 2.33734 48.78067, 2.33734 48.7793, 2.337 48.77827, 2.3178 48.7849, 2.32099 48.79376, 2.33906 48.78994))");
     Geometry b = read("POLYGON ((2.33768 48.78857, 2.33768 48.78788, 2.33974 48.78719, 2.34009 48.78616, 2.33974 48.78513, 2.33871 48.78479, 2.33734 48.78479, 2.33631 48.78445, 2.3362 48.7841, 2.33562 48.78582, 2.33425 48.78719, 2.33768 48.78857))");
     Geometry expected = read("MULTILINESTRING ((150 100, 160 100), (160 100, 170 100), (170 100, 250 100))");
     Geometry actual = intersection(a, b, 100000);
+    checkEqual(expected, actual);
+  }
+  
+  /**
+   * Fails because polygon A collapses totally, but one
+   * L edge is still labelled with location A:iL due to being located
+   * inside original A polygon by PiP test for incomplete edges.
+   * That edge is then marked as in-result-area, but result ring can't
+   * be formed because ring is incomplete
+   */
+  public void testCollapseAIncompleteRing() {
+    Geometry a = read("POLYGON ((0.9 1.7, 1.3 1.4, 2.1 1.4, 2.1 0.9, 1.3 0.9, 0.9 0, 0.9 1.7))");
+    Geometry b = read("POLYGON ((1 2, 2 2, 2 1, 1.3 0.9, 1 0.4, 1 2))");
+    Geometry expected = read("MULTILINESTRING ((1 2, 1 1), (1 1, 2 1), (1 1, 1 0))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testCollapseResultShouldNotHavePolygon() {
+    Geometry a = read("POLYGON ((1 2.2, 1.3 1.4, 2.1 1.4, 2 0.9, 1.3 0.9, 1 -0.2, 0.8 1.3, 1 2.2))");
+    Geometry b = read("POLYGON ((1 1.9, 1.9 1.9, 2 1.2, 1.7 1, 1.3 0.9, 1 0.4, 1 1.9))");
+    Geometry expected = read("MULTILINESTRING ((1 2, 1 1), (1 1, 2 1), (1 1, 1 0))");
+    Geometry actual = union(a, b, 1);
     checkEqual(expected, actual);
   }
   

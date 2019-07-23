@@ -194,6 +194,29 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
 
+  /**
+   * Fails because polygon A collapses totally, but one
+   * L edge is still labelled with location A:iL due to being located
+   * inside original A polygon by PiP test for incomplete edges.
+   * That edge is then marked as in-result-area, but result ring can't
+   * be formed because ring is incomplete
+   */
+  public void testCollapseAIncompleteRing() {
+    Geometry a = read("POLYGON ((0.9 1.7, 1.3 1.4, 2.1 1.4, 2.1 0.9, 1.3 0.9, 0.9 0, 0.9 1.7))");
+    Geometry b = read("POLYGON ((1 2, 2 2, 2 1, 1.3 0.9, 1 0.4, 1 2))");
+    Geometry expected = read("MULTILINESTRING ((1 2, 1 1), (1 1, 2 1), (1 1, 1 0))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testCollapseResultShouldNotHavePolygon() {
+    Geometry a = read("POLYGON ((1 2.2, 1.3 1.4, 2.1 1.4, 2 0.9, 1.3 0.9, 1 -0.2, 0.8 1.3, 1 2.2))");
+    Geometry b = read("POLYGON ((1 1.9, 1.9 1.9, 2 1.2, 1.7 1, 1.3 0.9, 1 0.4, 1 1.9))");
+    Geometry expected = read("MULTILINESTRING ((1 2, 1 1), (1 1, 2 1), (1 1, 1 0))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+
   public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlayNG.overlay(a, b, pm, OverlayOp.DIFFERENCE);
