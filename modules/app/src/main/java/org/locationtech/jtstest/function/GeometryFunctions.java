@@ -100,14 +100,6 @@ public class GeometryFunctions
 		return null;
 	}
 
-	public static Geometry convertToPolygon(Geometry g)
-	{
-		if (g instanceof Polygonal) return g;
-		// TODO: ensure ring is valid
-		LinearRing ring = g.getFactory().createLinearRing(g.getCoordinates());
-		return g.getFactory().createPolygon(ring, null);
-	}
-
 	public static Geometry getCoordinates(Geometry g)
 	{
 		Coordinate[] pts = g.getCoordinates();
