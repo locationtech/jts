@@ -101,20 +101,14 @@ public class JTSOpCmd {
   {    
     JTSOpCmd cmd = new JTSOpCmd();
     try {
-      CmdArgs cmdArgs = parseArgs(args);
-      
-      if (args.length == 0 || isHelp) {
-        printHelp(isHelp);
-        System.exit(0);
-      }
-
+      CmdArgs cmdArgs = cmd.parseArgs(args);
       cmd.execute(cmdArgs);
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
-  private static void printHelp(boolean showFunctions) {
+  private void printHelp(boolean showFunctions) {
     for (String s : helpDoc) {
       System.out.println(s);
     }
@@ -125,7 +119,7 @@ public class JTSOpCmd {
    }
   }
   
-  private static void printFunctions() {
+  private void printFunctions() {
     //TODO: include any loaded functions
     DoubleKeyMap funcMap = funcRegistry.getCategorizedGeometryFunctions();
     Collection categories = funcMap.keySet();
@@ -147,15 +141,16 @@ public class JTSOpCmd {
     //return geomFun.getName();
   }
 
-  private static GeometryFactory geomFactory = new GeometryFactory();
+  private GeometryFactory geomFactory = new GeometryFactory();
   
-  private static GeometryFunctionRegistry funcRegistry = GeometryFunctionRegistry.createTestBuilderRegistry();
-  private static CommandLine commandLine = createCmdLine();
+  private GeometryFunctionRegistry funcRegistry = GeometryFunctionRegistry.createTestBuilderRegistry();
+  private CommandLine commandLine = createCmdLine();
 
-  private static boolean isHelp = false;
-  private static boolean isVerbose = false;  
+  private boolean isHelp = false;
+  private boolean isHelpWithFunctions = false;
+  private boolean isVerbose = false;  
   
-  private static class CmdArgs {
+  static class CmdArgs {
     String operation;
     String geomA;
     public String geomB;
@@ -164,12 +159,15 @@ public class JTSOpCmd {
     String format = null;
   }
 
-  
   public JTSOpCmd() {
     
   }
   
-  private void execute(CmdArgs cmdArgs) throws IOException, Exception {
+  void execute(CmdArgs cmdArgs) throws IOException, Exception {
+    if (isHelp || isHelpWithFunctions) {
+      printHelp(isHelpWithFunctions);
+      return;
+    }
     
     Geometry geomA = null;
     Geometry geomB = null;
@@ -345,11 +343,16 @@ public class JTSOpCmd {
     return funcRegistry.find(category, name);
   }
 
-  private static CmdArgs parseArgs(String[] args) throws ParseException, ClassNotFoundException {
-    commandLine.parse(args);
-
+  CmdArgs parseArgs(String[] args) throws ParseException, ClassNotFoundException {
     CmdArgs cmdArgs = new CmdArgs();
     
+    if (args.length == 0) {
+      isHelp = true;
+      return cmdArgs;
+    }
+    
+    commandLine.parse(args);
+
     if (commandLine.hasOption(CommandOptions.GEOMFUNC)) {
       Option opt = commandLine.getOption(CommandOptions.GEOMFUNC);
       for (int i = 0; i < opt.getNumArgs(); i++) {
@@ -370,7 +373,7 @@ public class JTSOpCmd {
     cmdArgs.format = commandLine.getOptionArg(CommandOptions.FORMAT, 0);
     isVerbose = commandLine.hasOption(CommandOptions.VERBOSE)
                   || commandLine.hasOption(CommandOptions.V);
-    isHelp = commandLine.hasOption(CommandOptions.HELP);
+    isHelpWithFunctions = commandLine.hasOption(CommandOptions.HELP);
 
     String[] freeArgs = commandLine.getOptionArgs(OptionSpec.OPTION_FREE_ARGS);
     if (freeArgs != null) {
@@ -385,7 +388,7 @@ public class JTSOpCmd {
     return cmdArgs;
   }
   
-  private static CommandLine createCmdLine() {
+  private CommandLine createCmdLine() {
     commandLine = new CommandLine('-');
     commandLine.addOptionSpec(new OptionSpec(CommandOptions.GEOMFUNC, OptionSpec.NARGS_ONE_OR_MORE))
     .addOptionSpec(new OptionSpec(CommandOptions.VERBOSE, 0))
