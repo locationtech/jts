@@ -55,6 +55,9 @@ public class LayerStyle implements Style  {
   public LayerStyle(LayerStyle layerStyle) {
     this.geomStyle = layerStyle.geomStyle.copy();
     initDecorators(geomStyle);
+    update(layerStyle);
+    isOffsetLine = layerStyle.isOffsetLine;
+    offsetSize = layerStyle.offsetSize;
   }
 
   public BasicStyle getGeomStyle() {
@@ -94,6 +97,14 @@ public class LayerStyle implements Style  {
     styleList.setEnabled(vertexLabelStyle, false);
     
     decoratorStyle = styleList;
+  }
+
+  private void update(LayerStyle layerStyle) {
+    setStructure(layerStyle.isStructure());
+    setOrientations(layerStyle.isOrientations());
+    setLabel(layerStyle.isLabel());
+    setLabelSize(layerStyle.getLabelSize());
+    setVertexLabels(layerStyle.isVertexLabels());
   }
 
   public void setColor(Color color) {
