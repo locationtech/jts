@@ -104,6 +104,8 @@ public class LayerStyle implements Style  {
     setOrientations(layerStyle.isOrientations());
     setLabel(layerStyle.isLabel());
     setLabelSize(layerStyle.getLabelSize());
+    setVertices(layerStyle.isVertices());
+    setVertexSize(layerStyle.getVertexSize());
     setVertexLabels(layerStyle.isVertexLabels());
   }
 
