@@ -35,6 +35,8 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
@@ -87,10 +89,13 @@ public class LayerStylePanel extends JPanel {
   private BasicStyle geomStyle() {
     return layer.getLayerStyle().getGeomStyle();
   }  
-  public void setLayer(Layer layer) {
+  public void setLayer(Layer layer, boolean isModifiable) {
     this.layer = layer;
     //this.title.setText("Styling - Layer " + layer.getName());
     txtName.setText(layer.getName());
+    txtName.setEditable(isModifiable);
+    txtName.setFocusable(isModifiable);
+
     cbVertex.setSelected(layer.getLayerStyle().isVertices());
     cbVertexLabel.setSelected(layer.getLayerStyle().isVertexLabels());
     vertexSizeModel.setValue(layer.getLayerStyle().getVertexSize());
@@ -165,6 +170,24 @@ public class LayerStylePanel extends JPanel {
     txtName.setPreferredSize(new Dimension(100,20));
     txtName.setMinimumSize(new Dimension(100,20));
     addRow("Name", txtName);
+    
+    txtName.getDocument().addDocumentListener(new DocumentListener() {
+      public void changedUpdate(DocumentEvent e) {
+        update();
+      }
+      public void removeUpdate(DocumentEvent e) {
+        update();
+      }
+      public void insertUpdate(DocumentEvent e) {
+        update();
+      }
+
+      public void update() {
+        String name = txtName.getText();
+        layer.setName(name);
+        JTSTestBuilder.controller().updateLayerList();
+      }
+    });
 
     //=============================================
 

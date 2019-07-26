@@ -202,14 +202,16 @@ public class LayerListPanel extends JPanel {
     }
     layerItem.setFocusLayer(true);
     Layer layer = layerItem.getLayer();
+    boolean isModifiable = ! JTSTestBuilder.model().isLayerFixed(layer);
     showTabLayerStyle(layer.getName());
-    lyrStylePanel.setLayer(layer);
+    lyrStylePanel.setLayer(layer, isModifiable);
     focusLayer = layer;
     updateButtons(focusLayer);
   }
 
   private void updateButtons(Layer lyr) {
     boolean isModifiable = ! JTSTestBuilder.model().isLayerFixed(lyr);
+
     // every layer is copyable
     btnCopy.setEnabled(true);
     btnPaste.setEnabled(isModifiable && ! lyr.hasGeometry());
@@ -320,6 +322,7 @@ class LayerItemPanel extends JPanel {
   
   public void update() {
     LayerStyleSwatchControl.update(swatch, layer);
+    lblName.setText( layer.getName());
   }
   
   private void uiInit() throws Exception {

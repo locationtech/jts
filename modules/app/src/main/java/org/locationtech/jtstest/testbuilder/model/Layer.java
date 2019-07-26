@@ -39,6 +39,10 @@ public class Layer
 
   public String getName() { return name; }
   
+  public void setName(String name) { 
+    this.name = name; 
+  }
+  
   public String getNameInfo() {
     if (geomCont.getGeometry() == null) return getName();
     return getName()
