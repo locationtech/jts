@@ -20,6 +20,13 @@ import org.locationtech.jts.geom.util.PolygonExtracter;
 
 public class ConversionFunctions 
 {
+  public static Geometry pointsToLine(Geometry g)
+  {
+    Coordinate[] pts = g.getCoordinates();
+    LineString line = g.getFactory().createLineString(pts);
+    return line;
+  }
+  
   public static Geometry lineToPolygon(Geometry g)
   {
     if (g instanceof Polygonal) return g;
