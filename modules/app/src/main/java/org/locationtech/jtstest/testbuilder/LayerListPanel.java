@@ -120,7 +120,7 @@ public class LayerListPanel extends JPanel {
         "Move layer up",
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            //execToNewButton_actionPerformed(e);
+            layerUp(focusLayer);
           }
         });
     buttonPanel.add(btnUp);
@@ -128,7 +128,7 @@ public class LayerListPanel extends JPanel {
         "Move layer down",
             new ActionListener() {
           public void actionPerformed(ActionEvent e) {
-            //execToNewButton_actionPerformed(e);
+            layerDown(focusLayer);
           }
         });
     buttonPanel.add(btnDown);
@@ -176,8 +176,7 @@ public class LayerListPanel extends JPanel {
     listPanel.removeAll();
     layerItems.clear();
     
-    LayerList lyrList = JTSTestBuilderFrame.instance().getModel().getLayers();
-    addLayers(lyrList);
+    addLayers(JTSTestBuilder.model().getLayers());
     addLayers(JTSTestBuilder.model().getLayersBase());
     setLayerFocus(layerItems.get(0));
   }
@@ -214,8 +213,8 @@ public class LayerListPanel extends JPanel {
     // every layer is copyable
     btnCopy.setEnabled(true);
     btnPaste.setEnabled(isModifiable && ! lyr.hasGeometry());
-    btnUp.setEnabled(false);
-    btnDown.setEnabled(false);
+    btnUp.setEnabled(isModifiable);
+    btnDown.setEnabled(isModifiable);
     btnDelete.setEnabled(isModifiable);
   }
 
@@ -232,6 +231,20 @@ public class LayerListPanel extends JPanel {
     
     JTSTestBuilder.model().layerDelete(lyr);
     populateList();
+    JTSTestBuilder.controller().geometryViewChanged();
+  }
+  
+  private void layerUp(Layer lyr) {
+    JTSTestBuilder.model().layerUp(lyr);
+    populateList();
+    setLayerFocus(findLayerItem(lyr));
+    JTSTestBuilder.controller().geometryViewChanged();
+  }
+  
+  private void layerDown(Layer lyr) {
+    JTSTestBuilder.model().layerDown(lyr);
+    populateList();
+    setLayerFocus(findLayerItem(lyr));
     JTSTestBuilder.controller().geometryViewChanged();
   }
   

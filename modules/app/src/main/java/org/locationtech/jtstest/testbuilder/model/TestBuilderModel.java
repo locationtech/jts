@@ -496,6 +496,14 @@ public class TestBuilderModel
     layerListBase.remove(lyr);
   }
 
+  public void layerUp(Layer lyr) {
+    layerListBase.moveUp(lyr);
+  }
+
+  public void layerDown(Layer lyr) {
+    layerListBase.moveDown(lyr);
+  }
+
   public boolean isLayerFixed(Layer lyr) {
     return layerList.contains(lyr);
   }

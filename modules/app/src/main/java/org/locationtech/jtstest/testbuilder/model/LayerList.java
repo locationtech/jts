@@ -128,4 +128,20 @@ public class LayerList
   public boolean contains(Layer lyr) {
     return layer.contains(lyr);
   }
+
+  public void moveUp(Layer lyr) {
+    int i = layer.indexOf(lyr);
+    if (i <= 0) return;
+    Layer tmp = layer.get(i-1);
+    layer.set(i-1, lyr);
+    layer.set(i, tmp);
+  }
+
+  public void moveDown(Layer lyr) {
+    int i = layer.indexOf(lyr);
+    if (i >= layer.size() - 1) return;
+    Layer tmp = layer.get(i+1);
+    layer.set(i+1, lyr);
+    layer.set(i, tmp);
+  }
 }
