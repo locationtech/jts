@@ -57,7 +57,7 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, pm, OverlayOp.UNION);
   }
   
-  public static Geometry unionLines(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry unionResultEdges(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.UNION);
     ovr.setOutputResultEdges(true);
