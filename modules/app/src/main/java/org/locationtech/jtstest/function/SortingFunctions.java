@@ -61,7 +61,8 @@ public class SortingFunctions
   {
     List<Geometry> geoms = components(g);
     Envelope env = g.getEnvelopeInternal();
-    int level = 16;
+    // use level one less than max to avoid hitting negative integers
+    int level = 15;
     int maxOrd = HilbertCode.maxOrdinate(level);
     
     double strideX = env.getWidth() / maxOrd;
@@ -84,7 +85,8 @@ public class SortingFunctions
   {
     List<Geometry> geoms = components(g);
     Envelope env = g.getEnvelopeInternal();
-    int level = 16;
+    // use level one less than max to avoid hitting negative integers
+    int level = 15;
     int maxOrd = MortonCode.maxOrdinate(level);
     
     double strideX = env.getWidth() / maxOrd;
