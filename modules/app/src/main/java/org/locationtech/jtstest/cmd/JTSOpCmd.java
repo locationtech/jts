@@ -11,6 +11,7 @@
  */
 package org.locationtech.jtstest.cmd;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -103,7 +104,13 @@ public class JTSOpCmd {
     try {
       CmdArgs cmdArgs = cmd.parseArgs(args);
       cmd.execute(cmdArgs);
-    } catch (Exception e) {
+    } 
+    catch (CommandError e) {
+      // for command errors, just print the message
+      System.err.println(e.getMessage() );
+    }
+    catch (Exception e) {
+      // unexpected errors get a stack track to help debugging
       e.printStackTrace();
     }
   }
@@ -225,7 +232,12 @@ public class JTSOpCmd {
 
   private Geometry readGeometry(String arg) throws Exception, IOException {
     if (isFilename(arg)) {
-      return IOUtil.readFile(arg ,geomFactory );
+      try {
+        return IOUtil.readFile(arg ,geomFactory );
+      }
+      catch (FileNotFoundException ex) {
+        throw new CommandError("File not found: " + arg);
+      }
     }
     MultiFormatReader rdr = new MultiFormatReader(geomFactory);
     return rdr.read(arg);

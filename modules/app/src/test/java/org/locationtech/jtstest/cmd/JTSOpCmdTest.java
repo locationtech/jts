@@ -16,6 +16,14 @@ public class JTSOpCmdTest extends TestCase {
     runCmd("-help");
   }
   
+  public void testFileNotFoundA() {
+    runCmdError("-a", "foo.wkt");
+  }
+  
+  public void testFileNotFoundB() {
+    runCmdError("-b", "foo.wkt");
+  }
+  
   public void runCmd(String ... args)
   {    
     JTSOpCmd cmd = new JTSOpCmd();
@@ -25,5 +33,21 @@ public class JTSOpCmdTest extends TestCase {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+  public void runCmdError(String ... args)
+  {    
+    JTSOpCmd cmd = new JTSOpCmd();
+    try {
+      JTSOpCmd.CmdArgs cmdArgs = cmd.parseArgs(args);
+      cmd.execute(cmdArgs);
+    } 
+    catch (CommandError e) {
+      // expected result
+      return;
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+    assertTrue("Expected error but command completed successfully", false);
   }
 }
