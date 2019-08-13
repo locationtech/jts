@@ -69,5 +69,6 @@ If you are interested in contributing to JTS please read the [**Contributing Gui
 * [**rgeo**](https://github.com/rgeo/rgeo) - Ruby wrapper of GEOS
 * [**GEOSwift**](https://github.com/GEOSwift/GEOSwift)- Swift library using GEOS
 
+There are many projects using GEOS - for a list see the [GEOS wiki](https://trac.osgeo.org/geos/wiki/Applications).
 
 
