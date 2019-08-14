@@ -11,6 +11,8 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
+import java.util.Deque;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.TopologyException;
@@ -35,9 +37,9 @@ public class OverlayNode {
    * 
    * @param e node to compute labelling for
    */
-  public static void computeLabelling(OverlayEdge nodeEdge) {
-    propagateSideLabels(nodeEdge, 0);
-    propagateSideLabels(nodeEdge, 1);
+  public static void labelAreaNodeEdges(OverlayEdge nodeEdge) {
+    propagateAreaLabels(nodeEdge, 0);
+    propagateAreaLabels(nodeEdge, 1);
   }
 
   /**
@@ -48,7 +50,7 @@ public class OverlayNode {
    * 
    * @param geomIndex the geometry to propagate locations for
    */
-  private static void propagateSideLabels(OverlayEdge nodeEdge, int geomIndex) {
+  private static void propagateAreaLabels(OverlayEdge nodeEdge, int geomIndex) {
     OverlayEdge eStart = findPropagationStartEdge(nodeEdge, geomIndex);
     // no labelled edge found, so nothing to propagate
     if ( eStart == null )
@@ -79,7 +81,7 @@ public class OverlayNode {
          */
         int locRight = e.getLabel().getLocation(geomIndex, Position.RIGHT);
         if (locRight != currLoc) {
-          /*
+          //*
           Debug.println("side location conflict: index= " + geomIndex + " R loc " 
         + Location.toLocationSymbol(locRight) + " <>  curr loc " + Location.toLocationSymbol(currLoc) 
         + " for " + e);
@@ -115,6 +117,39 @@ public class OverlayNode {
       eStart = (OverlayEdge) eStart.oNext();
     } while (eStart != nodeEdge);
     return null;
+  }
+  
+  static void propagateLineLocation(OverlayEdge eStart, int index, 
+      Deque<OverlayEdge> edgeStack, InputGeometry inputGeometry) {
+    OverlayEdge e = eStart.oNextOE();
+    int lineLoc = eStart.getLabel().getLineLocation(index);
+    
+    /**
+     * If the parent geom is an L (dim 1) 
+     * then only propagate EXTERIOR locations.
+     */
+    if (! inputGeometry.isArea(index) 
+        && lineLoc != Location.EXTERIOR) return;
+    
+    do {
+      OverlayLabel label = e.getLabel();
+      Debug.println("propagateLineLocationAtNode - checking " + index + ": " + e);
+      if ( label.isLineLocationUnknown(index) ) {
+        /**
+         * If edge is not a boundary edge, 
+         * its location is now known for this area
+         */
+        e.setLocationAll(index, lineLoc);
+        Debug.println("propagateLineLocationAtNode - setting "+ index + ": " + e);
+
+        /**
+         * Add sym edge to stack for graph traversal
+         * (Don't add e itself, since e origin node has now been scanned)
+         */
+        edgeStack.addFirst( e.symOE() );
+      }
+      e = e.oNextOE();
+    } while (e != eStart);
   }
   
   private static final int STATE_FIND_INCOMING = 1;

@@ -100,11 +100,11 @@ public class LineBuilder {
      * Interior collapsed edges are discarded, 
      * since they will be covered by the result area
      */
-    //if (isInteriorCollapse(0, lbl)) return false;
-    //if (isInteriorCollapse(1, lbl)) return false;
+    if (isInteriorCollapse(0, lbl)) return false;
+    if (isInteriorCollapse(1, lbl)) return false;
     
-    int aLoc = locationWithInteriorCollapses(0, lbl);
-    int bLoc = locationWithInteriorCollapses(1, lbl);
+    int aLoc = effectiveLocation(0, lbl);
+    int bLoc = effectiveLocation(1, lbl);
     
     boolean isInResult = OverlayNG.isResultOfOp(aLoc, bLoc, opCode);
     return isInResult;
@@ -179,8 +179,10 @@ public class LineBuilder {
    * @param lbl label of line
    * @return the effective location of the line
    */
-  private int locationWithInteriorCollapses(int geomIndex, OverlayLabel lbl) {
+  private int effectiveLocation(int geomIndex, OverlayLabel lbl) {
     if (isCollapse(geomIndex, lbl))
+      return Location.INTERIOR;
+    if (inputGeom.isLine(geomIndex) && lbl.isLine(geomIndex))
       return Location.INTERIOR;
     return lbl.getLineLocation(geomIndex);
   }

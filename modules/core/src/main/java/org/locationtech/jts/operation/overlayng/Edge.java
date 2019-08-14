@@ -44,6 +44,8 @@ public class Edge {
   private int bDim = OverlayLabel.DIM_UNKNOWN;
   private int aDepthDelta = 0;
   private int bDepthDelta = 0;
+  private boolean aIsHole = false;
+  private boolean bIsHole = false;
 
   public Edge(Coordinate[] pts, OverlayLabel lbl) {
     this.pts = pts;
@@ -111,54 +113,134 @@ public class Edge {
     return true;
   }
   
+  public int dimension(int geomIndex) {
+    if (geomIndex == 0) return aDim;
+    return bDim;
+  }
+  
   public OverlayLabel getMergedLabel() {
     OverlayLabel lbl = new OverlayLabel();
-    
-    /**
-     * if location for an input geom is not known, 
-     * the label will have dimension = DIM_NOT_PART = DIM_UNKNOWN.
-     * 
-     * The effective dimension of an edge is:
-     * - A, if the edge is an area boundary, indicated by depthDelta != 0
-     * - L, if the edge is from a line.  In this case the inArea location
-     *      is known to be INTERIOR
-     * - L, if the edge is an area collapse.  In this case the inArea location
-     *      is not known (since the collapse could be inside or outside the 
-     *      resultant reduced area)
-     *
-     */
-    
-    // -----  A label
-    if (isKnown(0)) {
-      int aDimMerge = aDepthDelta == 0 ? Dimension.L : Dimension.A;
-      boolean aIsCollape = aDepthDelta == 0 && aDim == Dimension.A;
-      switch (aDimMerge) {
-      case Dimension.A: 
-        lbl.setToAreaBoundary(0, locationLeft(aDepthDelta), locationRight(aDepthDelta));
-        break;
-      case Dimension.L:
-        int lineLoc = aIsCollape ? OverlayLabel.LOC_UNKNOWN : Location.INTERIOR;
-        lbl.setToLine(0, lineLoc);
-        break;
-      }
-    }
-    
-    // -----  B label
-    if (isKnown(1)) {
-      int bDimMerge = bDepthDelta == 0 ? Dimension.L : Dimension.A;
-      boolean bIsCollape = bDepthDelta == 0 && bDim == Dimension.A;
-      switch (bDimMerge) {
-      case Dimension.A: 
-        lbl.setToAreaBoundary(1, locationLeft(bDepthDelta), locationRight(bDepthDelta));
-        break;
-      case Dimension.L:
-        int lineLoc = bIsCollape ? OverlayLabel.LOC_UNKNOWN : Location.INTERIOR;
-        lbl.setToLine(1, lineLoc);
-        break;
-      }
-    }
+    setInputLabel(lbl, 0, aDim, aDepthDelta, aIsHole);
+    setInputLabel(lbl, 1, bDim, bDepthDelta, bIsHole);
     return lbl;
   }
+
+  /**
+   * 
+   * If location for an input geom is not known, 
+   * the label has dimension = DIM_NOT_PART = DIM_UNKNOWN.
+   * 
+   * The effective dimension of an edge is:
+   * - A, if the edge is an area boundary, indicated by depthDelta != 0
+   * - L, if the edge is from a line.  In this case the inArea location
+   *      is known to be INTERIOR
+   * - L, if the edge is an area collapse.  In this case the inArea location
+   *      is not known (since the collapse could be inside or outside the 
+   *      resultant reduced area)
+
+   * @param lbl
+   * @param geomIndex
+   * @param dim
+   * @param depthDelta
+   */
+  /*
+  private void OLDsetInputLabel(OverlayLabel lbl, int geomIndex, int dim, int depthDelta, boolean isHole) {
+    if (dim == OverlayLabel.DIM_UNKNOWN) return;
+    boolean isCollapse = depthDelta == 0 && dim == Dimension.A;
+    
+    int dimMerge = depthDelta == 0 ? Dimension.L : Dimension.A;
+    switch (dimMerge) {
+    case Dimension.A: 
+      lbl.setToAreaBoundary(geomIndex, locationLeft(depthDelta), locationRight(depthDelta), isHole);
+      break;
+    case Dimension.L:
+      int lineLoc = isCollapse ? OverlayLabel.LOC_UNKNOWN : Location.INTERIOR;
+      lbl.setToLine(geomIndex, lineLoc, isHole);
+      break;
+    }
+  } 
+  */ 
+  
+  /**
+   * Sets the label for an input geometry.
+   * 
+   * <ul>
+   * <li>If the edge is not part of the input, the label is left as NOT_PART
+   * <li>If input is an Area and the edge is on the boundary
+   * (which may include some collapses),
+   * edge is marked as an AREA edge and side locations are assigned
+   * <li>If input is an Area and the edge is collapsed
+   * (depth delta = 0), 
+   * the label is set to LINE
+   * <li>If input is a Line edge is set to a LINE edge
+   * </ul>
+   * For collapsed edges (where the parent is an Area) 
+   * the location will be determined later
+   * by evaluating the final graph topology.
+   * For line edges the line location is not significant
+   * (since there is no parent area for which to determine location).
+   * 
+   * @param lbl
+   * @param geomIndex
+   * @param dim
+   * @param depthDelta
+   */
+  private void setInputLabel(OverlayLabel lbl, int geomIndex, int dim, int depthDelta, boolean isHole) {
+    // not part of the input ==> NOT_PART
+    if (dim == OverlayLabel.DIM_UNKNOWN) return;
+    
+    boolean isCollapse = depthDelta == 0 && dim == Dimension.A;
+    int dimMerged = depthDelta == 0 ? Dimension.L : Dimension.A;
+    
+    switch (dimMerged) {
+    case Dimension.A: 
+      lbl.setToAreaBoundary(geomIndex, locationLeft(depthDelta), locationRight(depthDelta), isHole);
+      break;
+    case Dimension.L:
+      //int lineLoc = isCollapse ? OverlayLabel.LOC_UNKNOWN : Location.INTERIOR;
+      int lineLoc = OverlayLabel.LOC_UNKNOWN;
+      lbl.setToLine(geomIndex, lineLoc, isHole);
+      break;
+    }
+  }
+
+  /**
+   * Sets the label for an input geometry.
+   * 
+   * <ul>
+   * <li>If the edge is not part of the input, the label is left as NOT_PART
+   * <li>If input is an Area and the edge is a complete collapse
+   * (depth delta = 0), 
+   * the label is left as NOT_PART
+   * <li>If input is an Area and the edge is a partial collapse,
+   * edge is marked as an Area edge and side locations are assigned
+   * <li>If input is a Line edge is marked as a Line edge
+   * </ul>
+   * 
+   * @param lbl
+   * @param geomIndex
+   * @param dim
+   * @param depthDelta
+   */
+  /*
+  private void SKIP_COLLAPSE_setInputLabel(OverlayLabel lbl, int geomIndex, int dim, int depthDelta, boolean isHole) {
+    // not part of the input ==> NOT_PART
+    if (dim == OverlayLabel.DIM_UNKNOWN) return;
+    
+    // Area input and collapsed edge ==> NOT_PART
+    boolean isCollapse = dim == Dimension.A && depthDelta == 0; 
+    if (isCollapse) return;
+    
+    switch (dim) {
+    case Dimension.A: 
+      lbl.setToAreaBoundary(geomIndex, locationLeft(depthDelta), locationRight(depthDelta), isHole);
+      break;
+    case Dimension.L:
+      lbl.setToLine(geomIndex, Location.INTERIOR);
+      break;
+    }
+  }
+  */
   
   private boolean isKnown(int index) {
     if (index == 0) 
@@ -166,6 +248,12 @@ public class Edge {
     return bDim != OverlayLabel.DIM_UNKNOWN;
   }
 
+  private boolean isHole(int index) {
+    if (index == 0) 
+      return aIsHole;
+    return bIsHole;    
+  }
+  
   private int locationRight(int depthDelta) {
     int delSign = delSign(depthDelta);
     switch (delSign) {
@@ -212,16 +300,25 @@ public class Edge {
 
   private void initEdgeLabel(OverlayLabel label) {
     aDim = label.dimension(0);
+    aIsHole = label.isHole(0);
     aDepthDelta = depthDelta(label, 0);
     
     bDim = label.dimension(1);
+    bIsHole = label.isHole(1);
     bDepthDelta = depthDelta(label, 1);
   }
   
   public void mergeEdge(Edge edge) {
     if (edge.aDim > aDim) aDim = edge.aDim;
     if (edge.bDim > bDim) bDim = edge.bDim;
-     
+    
+    /**
+     * Marks this
+     * as a shell edge if any contributing edge is a shell.
+     */
+    aIsHole = mergedRingRole(0, this, edge);
+    bIsHole = mergedRingRole(1, this, edge);
+
     boolean relDir = relativeDirection(edge);
     int flipFactor = relDir ? 1 : -1;
     aDepthDelta += flipFactor * edge.aDepthDelta;
@@ -233,6 +330,19 @@ public class Edge {
     */
   }
 
+  private boolean mergedRingRole(int geomIndex, Edge edge1, Edge edge2) {
+    // TOD: this might be clearer with tri-state logic for isHole
+    boolean isShell1 = edge1.isArea(geomIndex) && ! edge1.isHole(geomIndex);
+    boolean isShell2 = edge1.isArea(geomIndex) && ! edge1.isHole(geomIndex);
+    boolean isShellMerged = isShell1 || isShell2;
+    return ! isShellMerged;
+  }
+
+  private boolean isArea(int geomIndex) {
+    if (geomIndex == 0) return aDim == OverlayLabel.DIM_AREA;
+    return bDim == OverlayLabel.DIM_AREA;
+  }
+
   public String toString() {
     Coordinate orig = pts[0];
     Coordinate dest = pts[pts.length - 1];
@@ -242,10 +352,19 @@ public class Edge {
     String ptsStr = WKTWriter.format(orig)
         + dirPtStr
         + " .. " + WKTWriter.format(dest);
-    String aInfo = "A:" + aDepthDelta + OverlayLabel.dimensionSymbol(aDim);
-    String bInfo = "B:" + bDepthDelta + OverlayLabel.dimensionSymbol(bDim);
+    String aInfo = "A:" + aDepthDelta 
+        + ringRoleSymbol( aDim, aIsHole )
+        + OverlayLabel.dimensionSymbol(aDim);
+    String bInfo = "B:" + bDepthDelta 
+        + ringRoleSymbol( bDim, bIsHole )
+        + OverlayLabel.dimensionSymbol(bDim);
+
     return "Edge( " + ptsStr
         + " ) " + aInfo + "/" + bInfo;
+  }
 
+  private String ringRoleSymbol(int dim, boolean isHole) {
+    if (dim == OverlayLabel.DIM_NOT_PART) return "";
+    return "" + OverlayLabel.ringRoleSymbol(isHole);
   }
 }

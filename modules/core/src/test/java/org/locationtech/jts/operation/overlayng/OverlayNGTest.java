@@ -198,22 +198,52 @@ public class OverlayNGTest extends GeometryTestCase {
    * Fails because polygon A collapses totally, but one
    * L edge is still labelled with location A:iL due to being located
    * inside original A polygon by PiP test for incomplete edges.
-   * That edge is then marked as in-result-area, but result ring can't
+   * That edge is then marked as in-result-area, but 
+   * it is the only edge marked in-result, so result ring can't
    * be formed because ring is incomplete
    */
-  public void testCollapseAIncompleteRing() {
+  public void testCollapseAIncompleteRingUnion() {
     Geometry a = read("POLYGON ((0.9 1.7, 1.3 1.4, 2.1 1.4, 2.1 0.9, 1.3 0.9, 0.9 0, 0.9 1.7))");
-    Geometry b = read("POLYGON ((1 2, 2 2, 2 1, 1.3 0.9, 1 0.4, 1 2))");
-    Geometry expected = read("MULTILINESTRING ((1 2, 1 1), (1 1, 2 1), (1 1, 1 0))");
+    Geometry b = read("POLYGON ((1 3, 3 3, 3 1, 1.3 0.9, 1 0.4, 1 3))");
+    Geometry expected = read("GEOMETRYCOLLECTION (LINESTRING (1 0, 1 1), POLYGON ((1 1, 1 2, 1 3, 3 3, 3 1, 2 1, 1 1)))");
     Geometry actual = union(a, b, 1);
     checkEqual(expected, actual);
   }
   
-  public void testCollapseResultShouldNotHavePolygon() {
-    Geometry a = read("POLYGON ((1 2.2, 1.3 1.4, 2.1 1.4, 2 0.9, 1.3 0.9, 1 -0.2, 0.8 1.3, 1 2.2))");
-    Geometry b = read("POLYGON ((1 1.9, 1.9 1.9, 2 1.2, 1.7 1, 1.3 0.9, 1 0.4, 1 1.9))");
-    Geometry expected = read("MULTILINESTRING ((1 2, 1 1), (1 1, 2 1), (1 1, 1 0))");
+  /**
+   * Fails because edge of B is computed as Interior to A because it
+   * is checked against full precision input, rather than collapsed linework.
+   * 
+   * Probably need to determine location against output rings
+   */
+  public void testCollapseResultShouldHavePolygonUnion() {
+    Geometry a = read("POLYGON ((1 3.3, 1.3 1.4, 3.1 1.4, 3.1 0.9, 1.3 0.9, 1 -0.2, 0.8 1.3, 1 3.3))");
+    Geometry b = read("POLYGON ((1 2.9, 2.9 2.9, 2.9 1.3, 1.7 1, 1.3 0.9, 1 0.4, 1 2.9))");
+    Geometry expected = read("POLYGON ((1 3, 3 3, 3 1, 1 1, 1 3))");
     Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  /**
+   * Fails because current isResultAreaEdge does not accept L edges as result area boundary
+   */
+  public void testCollapseHoleAlongEdgeOfBIntersection() {
+    Geometry a = read("POLYGON ((0 3, 3 3, 3 0, 0 0, 0 3), (1 1.2, 1 1.1, 2.3 1.1, 1 1.2))");
+    Geometry b = read("POLYGON ((1 1, 2 1, 2 0, 1 0, 1 1))");
+    Geometry expected = read("POLYGON ((1 1, 2 1, 2 0, 1 0, 1 1))");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+
+  /**
+   * Fails because A holes collapse to L edges, and are not computed as in Int of A,
+   * so are not included as result area edges.
+   */
+  public void testCollapseHolesAlongAllEdgesOfBIntersection() {
+    Geometry a = read("POLYGON ((0 3, 3 3, 3 0, 0 0, 0 3), (1 2.2, 1 2.1, 2 2.1, 1 2.2), (2.1 2, 2.2 2, 2.1 1, 2.1 2), (2 0.9, 2 0.8, 1 0.9, 2 0.9), (0.9 1, 0.8 1, 0.9 2, 0.9 1))");
+    Geometry b = read("POLYGON ((1 2, 2 2, 2 1, 1 1, 1 2))");
+    Geometry expected = read("POLYGON ((1 2, 2 2, 2 1, 1 1, 1 2))");
+    Geometry actual = intersection(a, b, 1);
     checkEqual(expected, actual);
   }
 

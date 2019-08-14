@@ -10,25 +10,32 @@ import org.locationtech.jts.geom.TopologyException;
 public class MaximalEdgeRing {
 
   private OverlayEdge startEdge;
+  private boolean isValid = false;
 
   public MaximalEdgeRing(OverlayEdge e) {
     this.startEdge = e;
-    assignEdgeRing(e);
+    attachRingtoEdges(e);
   }
 
-  private void assignEdgeRing(OverlayEdge startEdge) {
+  private void attachRingtoEdges(OverlayEdge startEdge) {
     OverlayEdge edge = startEdge;
     do {
       if (edge == null)
         throw new TopologyException("Found null edge in ring");
       if (edge.getEdgeRingMax() == this)
         throw new TopologyException("Edge visited twice during ring-building at " + edge.getCoordinate(), edge.getCoordinate());
-      if (edge.nextResultMax() == null)
-        throw new TopologyException("Found null edge in ring", edge.dest());
-
+      if (edge.nextResultMax() == null) {
+        return;
+        // throw new TopologyException("Found null edge in ring", edge.dest());
+      }
       edge.setEdgeRingMax(this);
       edge = edge.nextResultMax();
     } while (edge != startEdge);  
+    isValid = true;
+  }
+  
+  public boolean isValid() {
+    return isValid;
   }
   
   private void linkMinimalRings() {

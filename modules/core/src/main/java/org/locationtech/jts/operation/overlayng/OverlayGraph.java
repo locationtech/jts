@@ -11,20 +11,27 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geomgraph.Position;
+import org.locationtech.jts.operation.overlay.OverlayOp;
+import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.Debug;
 
 public class OverlayGraph {
   
   private List<OverlayEdge> edges = new ArrayList<OverlayEdge>();
   private Map<Coordinate, OverlayEdge> nodeMap = new HashMap<Coordinate, OverlayEdge>();
+  private InputGeometry inputGeometry;
   
   public OverlayGraph(Collection<Edge> edges) {
     build(edges);
@@ -121,15 +128,26 @@ public class OverlayGraph {
   }
   
   /**
-   * Computes a full topological labelling for all edges and nodes in the graph.
+   * Computes the topological labelling for the edges in the graph.
+   * 
    */
-  public void computeLabelling() {
+  public void computeLabelling(InputGeometry inputGeom) {
+    this.inputGeometry = inputGeom;
     // compute labelling using a Left-Right sweepline, to keep things deterministic
     // MD - not technically needed, so skip to improve performance
     //List<OverlayEdge> nodes = sortedNodes();
+    
     Collection<OverlayEdge> nodes = getNodeEdges();
-    computeLabelling(nodes);
-    mergeSymLabels(nodes);
+    labelAreaNodeEdges(nodes);
+    labelConnectedLineEdges();
+    // TODO: is there a way to avoid this merging step?  Single label object perhaps?
+    mergeNodeSymLabels(nodes);
+    
+    //TODO: is there a way to avoid scanning all edges in these steps?
+    labelCollapsedEdges();
+    labelConnectedLineEdges();
+    
+    labelIncompleteEdges();
   }
 
   /*
@@ -139,42 +157,166 @@ public class OverlayGraph {
     return edges;
   }
 */
+  /**
+   * There can be edges which have unknown location
+   * but are connected to a Line edge with known location.
+   * In this case line location is propagated to the connected edges.
+   */
+  private void labelConnectedLineEdges() {
+    propagateLineLocations(0);
+    propagateLineLocations(1);
+  }
+
+  private void propagateLineLocations(int geomIndex) {
+    // find L edges
+    List<OverlayEdge> lineEdges = findLineEdgesWithLocation(geomIndex);
+    Deque<OverlayEdge> edgeStack = new ArrayDeque<OverlayEdge>(lineEdges);
+    
+    propagateLineLocations(geomIndex, edgeStack);
+  }
+
+  /*
+  private void propagateLineLocations(int geomIndex, OverlayEdge lineEdge) {
+    Deque<OverlayEdge> edgeStack = new ArrayDeque<OverlayEdge>();
+    edgeStack.push(lineEdge);
+    
+    propagateLineLocations(geomIndex, edgeStack);
+  }
+*/
   
-  private void computeLabelling(Collection<OverlayEdge> nodes) {
+  private void propagateLineLocations(int geomIndex, Deque<OverlayEdge> edgeStack) {
+    // traverse line edges, labelling unknown ones that are connected
+    while (! edgeStack.isEmpty()) {
+      OverlayEdge lineEdge = edgeStack.removeFirst();
+      // assert: lineEdge.getLabel().isLine(geomIndex);
+      
+      // for any edges around origin with unknown location for this geomIndex,
+      // mark them as Exterior
+      // add those edges to stack to continue traversal
+      OverlayNode.propagateLineLocation(lineEdge, geomIndex, edgeStack, inputGeometry);
+    }
+  }
+  
+  
+  /**
+   * Finds all OverlayEdges which are labelled as L dimension.
+   * 
+   * @param geomIndex
+   * @return list of L edges
+   */
+  private List<OverlayEdge> findLineEdgesWithLocation(int geomIndex) {
+    List<OverlayEdge> lineEdges = new ArrayList<OverlayEdge>();
+    for (OverlayEdge edge : edges) {
+      OverlayLabel lbl = edge.getLabel();
+      if (lbl.isLine(geomIndex)
+          && ! lbl.isLineLocationUnknown(geomIndex)) {
+        lineEdges.add(edge);
+      }
+    }
+    return lineEdges;
+  }
+
+  private void labelAreaNodeEdges(Collection<OverlayEdge> nodes) {
     for (OverlayEdge nodeEdge : nodes) {
-      OverlayNode.computeLabelling(nodeEdge);
+      OverlayNode.labelAreaNodeEdges(nodeEdge);
     }
   }
 
-  private void mergeSymLabels(Collection<OverlayEdge> nodes) {
+  private void mergeNodeSymLabels(Collection<OverlayEdge> nodes) {
     for (OverlayEdge node : nodes) {
       OverlayNode.mergeSymLabels(node);
     }
   }
 
-  public void labelIncompleteEdges(InputGeometry inputGeom) {
+  private void labelCollapsedEdges() {
     for (OverlayEdge edge : edges) {
       //Debug.println("\n------  checking for Incomplete edge " + edge);
       if (edge.getLabel().isLineLocationUnknown(0)) {
-        labelIncompleteEdge(edge, 0, inputGeom);
+        labelCollapsedEdge(edge, 0);
       }
       if (edge.getLabel().isLineLocationUnknown(1)) {
-        labelIncompleteEdge(edge, 1, inputGeom);
+        labelCollapsedEdge(edge, 1);
       }
     }
   }
 
-  private void labelIncompleteEdge(OverlayEdge edge, int geomIndex, InputGeometry inputGeom) {
-    //Debug.println("\n------  labelIncompleteEdge - geomIndex= " + geomIndex);
+  private void labelCollapsedEdge(OverlayEdge edge, int geomIndex) {
+    //Debug.println("\n------  labelCollapsedEdge - geomIndex= " + geomIndex);
     //Debug.print("BEFORE: " + edge.toStringNode());
-    int geomDim = inputGeom.getDimension(geomIndex);
-    if (geomDim == OverlayLabel.DIM_AREA) {
-      // TODO: locate in the result area, not original geometry, in case of collapse
-      int loc = inputGeom.locatePoint(geomIndex, edge.orig());
-      edge.getLabel().setLocationAll(geomIndex, loc);
-    }
+    int geomDim = inputGeometry.getDimension(geomIndex);
+    
+    /**
+     * Line inputs cannot have collapses
+     */
+    if (geomDim != 2) return;
+    
+    OverlayLabel label = edge.getLabel();
+    boolean isCollapse = label.isCollapse(geomIndex, geomDim);
+    if (! isCollapse) return;
+      /**
+       * This must be a collapsed edge which is disconnected
+       * from any area edges (e.g. a fully collapsed shell or hole).
+       * This can be labelled according to its parent source ring role. 
+       */
+    int edgeLoc = label.isHole(geomIndex) ? Location.INTERIOR : Location.EXTERIOR;
+    label.setLocationAll(geomIndex, edgeLoc);
     edge.mergeSymLabels();
     //Debug.print("AFTER: " + edge.toStringNode());
+  }
+
+  private void labelIncompleteEdges() {
+    for (OverlayEdge edge : edges) {
+      //Debug.println("\n------  checking for Incomplete edge " + edge);
+      if (edge.getLabel().isLineLocationUnknown(0)) {
+        labelIncompleteEdge(edge, 0);
+      }
+      if (edge.getLabel().isLineLocationUnknown(1)) {
+        labelIncompleteEdge(edge, 1);
+      }
+    }
+  }
+
+  private void labelIncompleteEdge(OverlayEdge edge, int geomIndex) {
+    //Debug.println("\n------  labelIncompleteEdge - geomIndex= " + geomIndex);
+    //Debug.print("BEFORE: " + edge.toStringNode());
+    int geomDim = inputGeometry.getDimension(geomIndex);
+    
+    /**
+     * Line inputs do not provide a location for edges
+     */
+    if (geomDim != 2) return;
+    
+    OverlayLabel label = edge.getLabel();
+    // TODO: ??? locate in the result area, not original geometry, in case of collapse 
+    /**
+     * This must be a boundary edge which is disconnected from  
+     * the current input geometry.
+     */
+    int edgeLoc = locateEdge(geomIndex, edge);
+    label.setLocationAll(geomIndex, edgeLoc);
+    edge.mergeSymLabels();
+    //Debug.print("AFTER: " + edge.toStringNode());
+  }
+
+  /**
+   * Determines the {@link Location} for an edge within an Area geometry
+   * via point location.
+   * 
+   * @param geomIndex the parent geometry index
+   * @param edge the edge to locate
+   * @return the location of the edge
+   */
+  private int locateEdge(int geomIndex, OverlayEdge edge) {
+    /*
+     * To improve the robustness of the point location,
+     * check both ends of the edge.
+     * Edge is only labelled INTERIOR if both ends are.
+     */
+    int loc1 = inputGeometry.locatePoint(geomIndex, edge.orig());
+    int loc2 = inputGeometry.locatePoint(geomIndex, edge.dest());
+    boolean bothInterior = loc1 == Location.INTERIOR && loc2 == Location.INTERIOR;
+    int edgeLoc = bothInterior ? Location.INTERIOR : Location.EXTERIOR;
+    return edgeLoc;
   }
 
   public void markResultAreaEdges(int overlayOpCode) {
@@ -185,15 +327,33 @@ public class OverlayGraph {
 
   public void markInResultArea(OverlayEdge e, int overlayOpCode) {
     OverlayLabel label = e.getLabel();
-    if (label.isAreaBoundary()
-        //&& ! label.isInteriorArea()
+    if ( //isResultAreaEdge(label, overlayOpCode)
+        label.isAreaBoundaryEither()
         && OverlayNG.isResultOfOp(
-              label.getLocationSideOrLine(0, Position.RIGHT),
-              label.getLocationSideOrLine(1, Position.RIGHT),
+              label.getLocationAreaOrLine(0, Position.RIGHT),
+              label.getLocationAreaOrLine(1, Position.RIGHT),
               overlayOpCode)) {
       e.markInResult();  
     }
+    Debug.println("markInResultArea: " + e);
   }
+  
+  /*
+   // MD - too restrictive.  L edges can be in result boundary (e.g. collapsed hole)
+  private boolean isResultAreaEdge(OverlayLabel label, int overlayOpCode) {
+    switch (overlayOpCode) {
+    case OverlayOp.INTERSECTION:
+      return label.isAreaBoundaryOrNotPart(0) && label.isAreaBoundaryOrNotPart(1);
+    case OverlayOp.UNION:
+      return label.isAreaBoundaryOrNotPart(0) || label.isAreaBoundaryOrNotPart(1);
+    case OverlayOp.DIFFERENCE:
+      return label.isAreaBoundaryOrNotPart(0);
+    case OverlayOp.SYMDIFFERENCE:
+      return label.isAreaBoundaryOrNotPart(0) || label.isAreaBoundaryOrNotPart(1);
+    }
+    return false;
+  }
+  */
   
   public void removeDuplicateResultAreaEdges() {
     for (OverlayEdge edge : getEdges()) {

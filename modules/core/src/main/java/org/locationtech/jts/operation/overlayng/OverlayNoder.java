@@ -102,7 +102,7 @@ public class OverlayNoder {
   private void addPolygon(Polygon p, int geomIndex)
   {
     addPolygonRing(
-            (LinearRing) p.getExteriorRing(),
+            (LinearRing) p.getExteriorRing(), false,
             Location.EXTERIOR, Location.INTERIOR, geomIndex);
 
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
@@ -111,7 +111,7 @@ public class OverlayNoder {
       // Holes are topologically labelled opposite to the shell, since
       // the interior of the polygon lies on their opposite side
       // (on the left, if the hole is oriented CW)
-      addPolygonRing(hole,
+      addPolygonRing(hole, true,
           Location.INTERIOR, Location.EXTERIOR, geomIndex);
     }
   }
@@ -124,9 +124,11 @@ public class OverlayNoder {
    * If the ring is in the opposite orientation,
    * the left and right locations must be interchanged.
    */
-  private void addPolygonRing(LinearRing lr, int cwLeft, int cwRight, int index)
+  private void addPolygonRing(LinearRing lr, boolean isHole, int cwLeft, int cwRight, int index)
   {
-    // don't add empty rings
+    /**
+     * Empty rings are not added.
+     */
     if (lr.isEmpty()) return;
     
     Coordinate[] ptsRaw = lr.getCoordinates();
@@ -169,7 +171,7 @@ public class OverlayNoder {
     
     int left  = isCCW ? cwRight : cwLeft;
     int right = isCCW ? cwLeft : cwRight;
-    OverlayLabel lbl = OverlayLabel.createForAreaBoundary(index, left, right);
+    OverlayLabel lbl = OverlayLabel.createForAreaBoundary(index, left, right, isHole);
     add(pts, lbl);
   }
 

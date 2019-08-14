@@ -151,8 +151,7 @@ public class OverlayNG
       return toLines(graph, geomFact);
     }
 
-    graph.computeLabelling();
-    graph.labelIncompleteEdges(inputGeom);
+    graph.computeLabelling(inputGeom);
     
     graph.markResultAreaEdges(opCode);
     graph.removeDuplicateResultAreaEdges();
@@ -204,11 +203,15 @@ public class OverlayNG
       //Coordinate[] pts = getCoords(nss);
       Coordinate[] pts = edge.getCoordinatesOriented();
       LineString line = geomFact.createLineString(pts);
-      line.setUserData(edge.getLabel().toString()
-          + (edge.isInResult() ? " Res" : "") );
+      line.setUserData(labelForResult(edge) );
       lines.add(line);
     }
     return geomFact.buildGeometry(lines);
+  }
+
+  private String labelForResult(OverlayEdge edge) {
+    return edge.getLabel().toString()
+        + (edge.isInResult() ? " Res" : "");
   }
 
   private Geometry createResult(int opCode) {
@@ -224,16 +227,16 @@ public class OverlayNG
     //--- Build points
     List<Point> resultPointList = new ArrayList<Point>();
     
-    Geometry resultGeom = buildResultGeometry(opCode, resultPointList, resultLineList, resultPolyList);
+    Geometry resultGeom = buildResultGeometry(opCode, resultPolyList, resultLineList, resultPointList);
     return resultGeom;
   }
 
-  private Geometry buildResultGeometry(int opcode, List<Point> resultPointList, List<LineString> resultLineList, List<Polygon> resultPolyList) {
+  private Geometry buildResultGeometry(int opcode, List<Polygon> resultPolyList, List<LineString> resultLineList, List<Point> resultPointList) {
     List<Geometry> geomList = new ArrayList<Geometry>();
     // element geometries of the result are always in the order P,L,A
-    geomList.addAll(resultPointList);
-    geomList.addAll(resultLineList);
     geomList.addAll(resultPolyList);
+    geomList.addAll(resultLineList);
+    geomList.addAll(resultPointList);
 
     if ( geomList.isEmpty() )
       return createEmptyResult(opcode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), geomFact);

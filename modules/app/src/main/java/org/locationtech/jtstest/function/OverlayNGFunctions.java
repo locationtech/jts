@@ -25,7 +25,7 @@ import org.locationtech.jts.operation.union.UnionFunction;
 
 public class OverlayNGFunctions {
   
-  public static Geometry nodedEdges(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry edgesNoded(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // op should not matter, since edges are captured pre-result
     OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.UNION);
@@ -38,14 +38,14 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, pm, OverlayOp.INTERSECTION);
   }
 
-  public static Geometry intersectionResultEdges(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry edgesIntersectionResult(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
     ovr.setOutputResultEdges(true);
     return ovr.getResultGeometry();
   }
 
-  public static Geometry intersectionAllEdges(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry edgesIntersectionAll(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
     ovr.setOutputEdges(true);
@@ -57,7 +57,7 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, pm, OverlayOp.UNION);
   }
   
-  public static Geometry unionResultEdges(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry edgesUnionResult(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.UNION);
     ovr.setOutputResultEdges(true);

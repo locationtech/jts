@@ -37,6 +37,10 @@ public class InputGeometry {
     return geom[geomIndex].getDimension() == 2;
   }
   
+  public boolean isLine(int geomIndex) {
+    return geom[geomIndex].getDimension() == 1;
+  }
+  
   public int locatePoint(int geomIndex, Coordinate pt) {
     return ptLocator.locate(pt, geom[geomIndex]);
   }
