@@ -70,6 +70,9 @@ public class JTSOpCmd {
   // TODO: add option -ab to read both geoms from a file
   // TODO: allow -a stdin  to indicate reading from stdin.  
   
+  private static final String ERR_FILE_NOT_FOUND = "File not found: ";
+  private static final String ERR_FUNCTION_NOT_FOUND = "Function not found: ";
+
   static final String[] helpDoc = new String[] {
   "",
   "Usage: jtsop - CLI for JTS operations",
@@ -117,11 +120,11 @@ public class JTSOpCmd {
 
   private void printHelp(boolean showFunctions) {
     for (String s : helpDoc) {
-      System.out.println(s);
+      out.println(s);
     }
     if (showFunctions) {
-      System.out.println();
-      System.out.println("Operations:");
+      out.println();
+      out.println("Operations:");
       printFunctions();
    }
   }
@@ -129,14 +132,11 @@ public class JTSOpCmd {
   private void printFunctions() {
     //TODO: include any loaded functions
     DoubleKeyMap funcMap = funcRegistry.getCategorizedGeometryFunctions();
-    Collection categories = funcMap.keySet();
-    for (Iterator i = categories.iterator(); i.hasNext();) {
-      String category = (String) i.next();
-
-      Collection funcs = funcMap.values(category);
-      for (Iterator j = funcs.iterator(); j.hasNext();) {
-        GeometryFunction fun = (GeometryFunction) j.next();
-        System.out.println(category + "." + functionDesc(fun));
+    Collection<String> categories = funcMap.keySet();
+    for (String category : categories) {
+      Collection<GeometryFunction> funcs = funcMap.values(category);
+      for (GeometryFunction fun : funcs) {
+        out.println(category + "." + functionDesc(fun));
       }
     }
   }
@@ -155,14 +155,15 @@ public class JTSOpCmd {
 
   private boolean isHelp = false;
   private boolean isHelpWithFunctions = false;
-  private boolean isVerbose = false;  
+  private boolean isVerbose = false;
+
+  private CommandOutput out = new CommandOutput(); 
   
   static class CmdArgs {
     String operation;
     String geomA;
     public String geomB;
     public String arg1;
-    
     String format = null;
   }
 
@@ -170,6 +171,13 @@ public class JTSOpCmd {
     
   }
   
+  public void captureOutput() {
+    out = new CommandOutput(true);
+  }
+  
+  public String getOutput() {
+    return out.getOutput();
+  }
   void execute(CmdArgs cmdArgs) throws IOException, Exception {
     if (isHelp || isHelpWithFunctions) {
       printHelp(isHelpWithFunctions);
@@ -208,13 +216,12 @@ public class JTSOpCmd {
   private Object executeFunction(CmdArgs cmdArgs, Geometry geomA, Geometry geomB) {
     GeometryFunction func = getFunction(cmdArgs.operation);
     if (func == null) {
-      System.err.println("Function not found: " + cmdArgs.operation);
-      return null;
+      throw new CommandError(ERR_FUNCTION_NOT_FOUND + cmdArgs.operation);
     }
     Object funArgs[] = createFunctionArgs(func, geomB, cmdArgs.arg1);
     
     if (isVerbose) {
-      System.out.println(writeOpSummary(cmdArgs));
+      out.println(writeOpSummary(cmdArgs));
     }
 
     Stopwatch timer = new Stopwatch();
@@ -225,7 +232,7 @@ public class JTSOpCmd {
       timer.stop();
     }
     if (isVerbose) {
-      System.out.println("Time: " + timer.getTimeString());
+      out.println("Time: " + timer.getTimeString());
     }
     return result;
   }
@@ -236,7 +243,7 @@ public class JTSOpCmd {
         return IOUtil.readFile(arg ,geomFactory );
       }
       catch (FileNotFoundException ex) {
-        throw new CommandError("File not found: " + arg);
+        throw new CommandError(ERR_FILE_NOT_FOUND + arg);
       }
     }
     MultiFormatReader rdr = new MultiFormatReader(geomFactory);
@@ -279,7 +286,7 @@ public class JTSOpCmd {
       printGeometry((Geometry) result, outputFormat);
       return;
     }
-    System.out.println(result);
+    out.println(result);
   }
   
   private void printGeometry(Geometry geom, String outputFormat) {
@@ -302,7 +309,7 @@ public class JTSOpCmd {
     }
     
     if (txt == null) return;
-    System.out.println(txt);
+    out.println(txt);
   }
 
   private String writeGeoJSON(Geometry geom) {
@@ -315,7 +322,7 @@ public class JTSOpCmd {
     if (! isVerbose) return;
     String filename = "";
     if (arg != null & isFilename(arg)) filename = " -- " + arg;
-    System.out.println( writeGeometrySummary(label, geom) + filename);
+    out.println( writeGeometrySummary(label, geom) + filename);
   }
   
   private String writeGeometrySummary(String label,
@@ -371,9 +378,9 @@ public class JTSOpCmd {
         String geomFuncClassname = opt.getArg(i);
         try {
           funcRegistry.add(geomFuncClassname);
-          System.out.println("Added Geometry Functions from: " + geomFuncClassname);
+          out.println("Added Geometry Functions from: " + geomFuncClassname);
         } catch (ClassNotFoundException ex) {
-          System.out.println("Unable to load function class: " + geomFuncClassname);
+          out.println("Unable to load function class: " + geomFuncClassname);
         }
       }
     }
