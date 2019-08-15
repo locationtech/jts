@@ -19,16 +19,38 @@ public class JTSOpCmdTest extends TestCase {
   }
   
   public void testErrorFileNotFoundA() {
-    runCmdError( args("-a", "foo.wkt"), "File not found" );
+    runCmdError( args("-a", "missing.wkt"), 
+        JTSOpCmd.ERR_FILE_NOT_FOUND );
   }
   
   public void testErrorFileNotFoundB() {
-    runCmdError( args("-b", "foo.wkt"), "File not found"  );
+    runCmdError( args("-b", "missing.wkt"), 
+        JTSOpCmd.ERR_FILE_NOT_FOUND );
   }
   
-  public void testErrorMissingOpArg() {
+  public void testErrorFunctioNotFound() {
     runCmdError( args("-a", "POINT ( 1 1 )", "buffer" ),
-        "Function not found: buffer");
+        JTSOpCmd.ERR_FUNCTION_NOT_FOUND );
+  }
+  
+  public void testErrorMissingArgBuffer() {
+    runCmdError( args("-a", "POINT ( 1 1 )", "Buffer.buffer" ),
+        JTSOpCmd.ERR_WRONG_ARG_COUNT );
+  }
+  
+  public void testErrorMissingGeomABuffer() {
+    runCmdError( args("Buffer.buffer", "10" ),
+        JTSOpCmd.ERR_REQUIRED_A );
+  }
+  
+  public void testErrorMissingGeomBUnion() {
+    runCmdError( args("-a", "POINT ( 1 1 )", "Overlay.union" ),
+        JTSOpCmd.ERR_REQUIRED_B );
+  }
+  
+  public void testErrorMissingGeomAUnion() {
+    runCmdError( args("-b", "POINT ( 1 1 )", "Overlay.union" ),
+        JTSOpCmd.ERR_REQUIRED_A );
   }
   
   public void testOpEnvelope() {

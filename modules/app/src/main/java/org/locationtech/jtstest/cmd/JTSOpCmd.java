@@ -70,8 +70,12 @@ public class JTSOpCmd {
   // TODO: add option -ab to read both geoms from a file
   // TODO: allow -a stdin  to indicate reading from stdin.  
   
-  private static final String ERR_FILE_NOT_FOUND = "File not found: ";
-  private static final String ERR_FUNCTION_NOT_FOUND = "Function not found: ";
+  public static final String ERR_FILE_NOT_FOUND = "File not found";
+  public static final String ERR_FUNCTION_NOT_FOUND = "Function not found";
+  public static final String ERR_REQUIRED_A = "Geometry A may be required";
+  public static final String ERR_REQUIRED_B = "Geometry B is required";
+  public static final String ERR_WRONG_ARG_COUNT = "Arguments and parameters do not match";
+  public static final String ERR_FUNCTION_ERR = "Error executing function";
 
   static final String[] helpDoc = new String[] {
   "",
@@ -216,8 +220,9 @@ public class JTSOpCmd {
   private Object executeFunction(CmdArgs cmdArgs, Geometry geomA, Geometry geomB) {
     GeometryFunction func = getFunction(cmdArgs.operation);
     if (func == null) {
-      throw new CommandError(ERR_FUNCTION_NOT_FOUND + cmdArgs.operation);
+      throw new CommandError(ERR_FUNCTION_NOT_FOUND, cmdArgs.operation);
     }
+    checkFunctionArgs(func, geomB, cmdArgs.arg1);
     Object funArgs[] = createFunctionArgs(func, geomB, cmdArgs.arg1);
     
     if (isVerbose) {
@@ -228,7 +233,14 @@ public class JTSOpCmd {
     Object result = null;
     try {
       result = func.invoke(geomA, funArgs);
-    } finally {
+    } 
+    catch (NullPointerException ex) {
+      if (geomA == null)
+        throw new CommandError(ERR_REQUIRED_A, cmdArgs.operation); 
+      // if A is present then must be something else
+      throw new CommandError(ERR_FUNCTION_ERR, ex.getMessage());
+    }
+    finally {
       timer.stop();
     }
     if (isVerbose) {
@@ -243,7 +255,7 @@ public class JTSOpCmd {
         return IOUtil.readFile(arg ,geomFactory );
       }
       catch (FileNotFoundException ex) {
-        throw new CommandError(ERR_FILE_NOT_FOUND + arg);
+        throw new CommandError(ERR_FILE_NOT_FOUND, arg);
       }
     }
     MultiFormatReader rdr = new MultiFormatReader(geomFactory);
@@ -335,6 +347,30 @@ public class JTSOpCmd {
     buf.append("    " + GeometryUtil.metricsSummary(g));
     return buf.toString();
   }
+
+  private void checkFunctionArgs(GeometryFunction func, Geometry geomB, String arg1) {
+    Class[] paramTypes = func.getParameterTypes();
+    int nParam = paramTypes.length;
+    
+    if (func.isBinary() && geomB == null)
+      throw new CommandError(ERR_REQUIRED_B);
+    /**
+    // MD not sure whether to check this?
+    if (! func.isBinary() && geomB != null)
+      throw new CommandError(ERR_REQUIRED_B);
+      */
+    
+    /*
+     * check count of supplied args.
+     * Assumes B has been checked.
+     */
+    int argCount = 0;
+    if (func.isBinary() && geomB != null) argCount++;
+    if (arg1 != null) argCount++;
+    if (nParam != argCount) {
+      throw new CommandError(ERR_WRONG_ARG_COUNT, func.getName());
+    }
+  }
   
   private Object[] createFunctionArgs(GeometryFunction func, Geometry geomB, String arg1) {
     Class[] paramTypes = func.getParameterTypes();
@@ -345,6 +381,7 @@ public class JTSOpCmd {
       paramVal[0] = geomB;
       iparam++;
     }
+    // just handling one scalar arg for now
     if (iparam < paramVal.length) {
       paramVal[iparam] = SwingUtil.coerce(arg1, paramTypes[iparam]);
     }
