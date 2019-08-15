@@ -6,3 +6,5 @@ cache:
   directories:
   - $HOME/.m2
 install: mvn install -B -V
+dist: trusty
+
