@@ -14,7 +14,6 @@ package org.locationtech.jtstest.cmd;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -37,7 +36,7 @@ import org.locationtech.jtstest.util.io.IOUtil;
 import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 /**
- * A simple CLI to run TestBuilder operations.
+ * A CLI to run JTS TestBuilder operations.
  * Allows easier execution of JTS functions on test data for debugging purposes.
  * <p>
  * Examples:
