@@ -213,40 +213,33 @@ public class OverlayLabel {
   */
   
   /**
-   * Sets all positions for this label.
-   * Does not change the label dimension.
+   * Sets the line location.
    * 
-   * This is used to set the locations for lines 
+   * This is used to set the locations for linear edges 
    * encountered during area label propagation.
    * 
    * @param index source to update
    * @param loc location to set
    */
   public void setLocationLine(int index, int loc) {
-    int locNorm = normalizeLocation(loc);
     if (index == 0) {
-      aLocLine = locNorm;
-      //aLocLeft = locNorm;
-      //aLocRight = locNorm;
+      aLocLine = loc;
     }
     else {
-      bLocLine = locNorm;
-      //bLocLeft = locNorm;
-      //bLocRight = locNorm;
+      bLocLine = loc;
     }
   }
   
   public void setLocationAll(int index, int loc) {
-    int locNorm = normalizeLocation(loc);
     if (index == 0) {
-      aLocLine = locNorm;
-      aLocLeft = locNorm;
-      aLocRight = locNorm;
+      aLocLine = loc;
+      aLocLeft = loc;
+      aLocRight = loc;
     }
     else {
-      bLocLine = locNorm;
-      bLocLeft = locNorm;
-      bLocRight = locNorm;
+      bLocLine = loc;
+      bLocLeft = loc;
+      bLocRight = loc;
     }
   }
   
@@ -259,17 +252,6 @@ public class OverlayLabel {
       bLocLine = loc;
     }
   }   
-  
-  /**
-   * For overlay topology purposes BOUNDARY is the same as INTERIOR.
-   * 
-   * @param loc the location to normalize
-   * @return the normalized location
-   */
-  private static int normalizeLocation(int loc) {
-    if (loc == Location.BOUNDARY) return Location.INTERIOR;
-    return loc;
-  }
 
   public boolean isLine() {
     return aDim == DIM_LINE || bDim == DIM_LINE;
@@ -329,33 +311,11 @@ public class OverlayLabel {
     }
   }
   
-  /**
-   * A collapsed edge is indicated when the parent geometry
-   * has dim = A but the label has dim = L.
-   * 
-   * @param index the index of the parent geometry
-   * @param parentDim the dimension of the parent geometry
-   * @return true if this label indicates a collapsed edge for the parent geometry
-   */
-  public boolean XisCollapse(int index, int parentDim) {
-    //return parentDim == 2 && isLine(index);
-    return dimension(index) == DIM_COLLAPSE;
-  }
-  
   public boolean isCollapse(int index) {
     return dimension(index) == DIM_COLLAPSE;
   }
   
   public int getLineLocation(int index) {
-    if (index == 0) {
-      return aLocLine;
-    }
-    else {
-      return bLocLine;
-    }
-  }
-  
-  public int getLocationNotPart(int index) {
     if (index == 0) {
       return aLocLine;
     }
