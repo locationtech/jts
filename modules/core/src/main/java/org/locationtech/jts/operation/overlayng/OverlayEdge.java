@@ -79,7 +79,7 @@ public class OverlayEdge extends HalfEdge {
    */
   private OverlayEdge nextResultEdge;
 
-  private EdgeRing edgeRing;
+  private OverlayEdgeRing edgeRing;
 
   private MaximalEdgeRing maxEdgeRing;
 
@@ -171,10 +171,10 @@ public class OverlayEdge extends HalfEdge {
     isVisited = true;
   }
   
-  public void setEdgeRing(EdgeRing edgeRing) {
+  public void setEdgeRing(OverlayEdgeRing edgeRing) {
     this.edgeRing = edgeRing;
   } 
-  public EdgeRing getEdgeRing() {
+  public OverlayEdgeRing getEdgeRing() {
     return edgeRing;
   } 
   

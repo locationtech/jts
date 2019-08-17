@@ -266,7 +266,7 @@ public class OverlayNode {
 
   /**
    * Tests if an edge of the maximal edge ring is already linked into
-   * a minimal {@link EdgeRing}.  If so, this node has already been processed
+   * a minimal {@link OverlayEdgeRing}.  If so, this node has already been processed
    * earlier in the maximal edgering linking scan.
    * 
    * @param edge an edge of a maximal edgering

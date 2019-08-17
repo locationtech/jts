@@ -46,15 +46,15 @@ public class MaximalEdgeRing {
     } while (e != startEdge);
   }
   
-  public List<EdgeRing> buildMinimalRings(GeometryFactory geometryFactory)
+  public List<OverlayEdgeRing> buildMinimalRings(GeometryFactory geometryFactory)
   {
     linkMinimalRings();
     
-    List<EdgeRing> minEdgeRings = new ArrayList<EdgeRing>();
+    List<OverlayEdgeRing> minEdgeRings = new ArrayList<OverlayEdgeRing>();
     OverlayEdge e = startEdge;
     do {
       if (e.getEdgeRing() == null) {
-        EdgeRing minEr = new EdgeRing(e, geometryFactory);
+        OverlayEdgeRing minEr = new OverlayEdgeRing(e, geometryFactory);
         minEdgeRings.add(minEr);
       }
       e = e.nextResultMax();

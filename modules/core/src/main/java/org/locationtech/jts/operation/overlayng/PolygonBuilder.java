@@ -23,8 +23,8 @@ import org.locationtech.jts.util.Assert;
 public class PolygonBuilder {
 
   private GeometryFactory geometryFactory;
-  private List<EdgeRing> shellList = new ArrayList<EdgeRing>();
-  private List<EdgeRing> freeHoleList = new ArrayList<EdgeRing>();
+  private List<OverlayEdgeRing> shellList = new ArrayList<OverlayEdgeRing>();
+  private List<OverlayEdgeRing> freeHoleList = new ArrayList<OverlayEdgeRing>();
 
   public PolygonBuilder(List<OverlayEdge> resultAreaEdges, GeometryFactory geomFact) {
     this.geometryFactory = geomFact;
@@ -75,12 +75,12 @@ public class PolygonBuilder {
   private void buildMinimalRings(List<MaximalEdgeRing> maxRings)
   {
     for (MaximalEdgeRing erMax : maxRings) {
-      List<EdgeRing> minRings = erMax.buildMinimalRings(geometryFactory);
+      List<OverlayEdgeRing> minRings = erMax.buildMinimalRings(geometryFactory);
       assignShellsAndHoles(minRings);
     }
   }
 
-  private void assignShellsAndHoles(List<EdgeRing> minRings) {
+  private void assignShellsAndHoles(List<OverlayEdgeRing> minRings) {
     /**
      * Two situations may occur:
      * - the rings are a shell and some holes
@@ -88,7 +88,7 @@ public class PolygonBuilder {
      * This code identifies the situation
      * and places the rings appropriately 
      */
-    EdgeRing shell = findSingleShell(minRings);
+    OverlayEdgeRing shell = findSingleShell(minRings);
     if (shell != null) {
       placeHoles(shell, minRings);
       shellList.add(shell);
@@ -109,11 +109,11 @@ public class PolygonBuilder {
    * @return the shell EdgeRing, if there is one
    * or null, if all the rings are holes
    */
-  private EdgeRing findSingleShell(List<EdgeRing> edgeRings)
+  private OverlayEdgeRing findSingleShell(List<OverlayEdgeRing> edgeRings)
   {
     int shellCount = 0;
-    EdgeRing shell = null;
-    for ( EdgeRing er : edgeRings ) {
+    OverlayEdgeRing shell = null;
+    for ( OverlayEdgeRing er : edgeRings ) {
       if (! er.isHole()) {
         shell = er;
         shellCount++;
@@ -134,9 +134,9 @@ public class PolygonBuilder {
    * PIP test
    * </ul>
    */
-  private void placeHoles(EdgeRing shell, List<EdgeRing> minEdgeRings)
+  private void placeHoles(OverlayEdgeRing shell, List<OverlayEdgeRing> minEdgeRings)
   {
-    for (EdgeRing er : minEdgeRings) {
+    for (OverlayEdgeRing er : minEdgeRings) {
       if (er.isHole()) {
         er.setShell(shell);
       }
@@ -156,12 +156,12 @@ public class PolygonBuilder {
    *
    * @throws TopologyException if a hole cannot be assigned to a shell
    */
-  private void placeFreeHoles(List<EdgeRing> shellList, List<EdgeRing> freeHoleList)
+  private void placeFreeHoles(List<OverlayEdgeRing> shellList, List<OverlayEdgeRing> freeHoleList)
   {
-    for (EdgeRing hole : freeHoleList ) {
+    for (OverlayEdgeRing hole : freeHoleList ) {
       // only place this hole if it doesn't yet have a shell
       if (hole.getShell() == null) {
-        EdgeRing shell = hole.findEdgeRingContaining(shellList);
+        OverlayEdgeRing shell = hole.findEdgeRingContaining(shellList);
         if (shell == null)
           throw new TopologyException("unable to assign free hole to a shell", hole.getCoordinate());
 //        Assert.isTrue(shell != null, "unable to assign hole to a shell");
@@ -170,11 +170,11 @@ public class PolygonBuilder {
     }
   }
 
-  private List<Polygon> computePolygons(List<EdgeRing> shellList)
+  private List<Polygon> computePolygons(List<OverlayEdgeRing> shellList)
   {
     List<Polygon> resultPolyList = new ArrayList<Polygon>();
     // add Polygons for all shells
-    for (EdgeRing er : shellList ) {
+    for (OverlayEdgeRing er : shellList ) {
       Polygon poly = er.toPolygon(geometryFactory);
       resultPolyList.add(poly);
     }

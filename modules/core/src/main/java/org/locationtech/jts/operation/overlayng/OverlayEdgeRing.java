@@ -28,7 +28,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.util.Assert;
 
-public class EdgeRing {
+public class OverlayEdgeRing {
   
   private OverlayEdge startEdge;
   private List<Coordinate> pts = new ArrayList<Coordinate>();
@@ -36,10 +36,10 @@ public class EdgeRing {
   private boolean isHole;
   private Coordinate[] ringPts;
   private IndexedPointInAreaLocator locator;
-  private EdgeRing shell;
-  private List<EdgeRing> holes = new ArrayList<EdgeRing>(); // a list of EdgeRings which are holes in this EdgeRing
+  private OverlayEdgeRing shell;
+  private List<OverlayEdgeRing> holes = new ArrayList<OverlayEdgeRing>(); // a list of EdgeRings which are holes in this EdgeRing
 
-  public EdgeRing(OverlayEdge start, GeometryFactory geometryFactory) {
+  public OverlayEdgeRing(OverlayEdge start, GeometryFactory geometryFactory) {
     startEdge = start;
     computePoints(start);
     computeRing(geometryFactory);
@@ -63,7 +63,7 @@ public class EdgeRing {
    * 
    * @param shell the shell ring
    */
-  public void setShell(EdgeRing shell) {
+  public void setShell(OverlayEdgeRing shell) {
     this.shell = shell;
     if (shell != null) shell.addHole(this);
   }
@@ -82,12 +82,12 @@ public class EdgeRing {
    * 
    * @return the shell for this ring
    */
-  public EdgeRing getShell() {
+  public OverlayEdgeRing getShell() {
     if (isHole()) return shell;
     return this;
   }
 
-  public void addHole(EdgeRing ring) { holes.add(ring); }
+  public void addHole(OverlayEdgeRing ring) { holes.add(ring); }
 
   private void computePoints(OverlayEdge start) {
     OverlayEdge edge = start;
@@ -174,16 +174,16 @@ public class EdgeRing {
    * @return containing EdgeRing, if there is one
    * or null if no containing EdgeRing is found
    */
-  public EdgeRing findEdgeRingContaining(List erList)
+  public OverlayEdgeRing findEdgeRingContaining(List erList)
   {
     LinearRing testRing = this.getRing();
     Envelope testEnv = testRing.getEnvelopeInternal();
     Coordinate testPt = testRing.getCoordinateN(0);
 
-    EdgeRing minRing = null;
+    OverlayEdgeRing minRing = null;
     Envelope minRingEnv = null;
     for (Iterator it = erList.iterator(); it.hasNext(); ) {
-      EdgeRing tryEdgeRing = (EdgeRing) it.next();
+      OverlayEdgeRing tryEdgeRing = (OverlayEdgeRing) it.next();
       LinearRing tryRing = tryEdgeRing.getRing();
       Envelope tryShellEnv = tryRing.getEnvelopeInternal();
       // the hole envelope cannot equal the shell envelope
