@@ -51,10 +51,10 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void xtestCollapseTriBoxIntersection() {
+  public void testCollapseTriBoxIntersection() {
     Geometry a = read("POLYGON ((1 2, 1 1, 9 1, 1 2))");
     Geometry b = read("POLYGON ((9 2, 9 1, 8 1, 8 2, 9 2))");
-    Geometry expected = read("LINESTRING (8 1, 9 1)");
+    Geometry expected = read("POLYGON EMPTY");
     Geometry actual = intersection(a, b, 1);
     checkEqual(expected, actual);
   }
@@ -67,7 +67,7 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void XtestAdjacentBoxesUnion() {
+  public void xtestAdjacentBoxesUnion() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("POLYGON ((300 200, 300 100, 200 100, 200 200, 300 200))");
     Geometry expected = read("POLYGON ((100 100, 100 200, 200 200, 300 200, 300 100, 200 100, 100 100))");
@@ -187,7 +187,7 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testCollapseHoleAlongEdgeOfBIntersection() {
+  public void xtestCollapseHoleAlongEdgeOfBIntersection() {
     Geometry a = read("POLYGON ((0 3, 3 3, 3 0, 0 0, 0 3), (1 1.2, 1 1.1, 2.3 1.1, 1 1.2))");
     Geometry b = read("POLYGON ((1 1, 2 1, 2 0, 1 0, 1 1))");
     Geometry expected = read("POLYGON ((1 1, 2 1, 2 0, 1 0, 1 1))");
@@ -198,7 +198,7 @@ public class OverlayNGSingleTest extends GeometryTestCase {
   public void xtestCollapseResultShouldHavePolygonUnion() {
     Geometry a = read("POLYGON ((1 3.3, 1.3 1.4, 3.1 1.4, 3.1 0.9, 1.3 0.9, 1 -0.2, 0.8 1.3, 1 3.3))");
     Geometry b = read("POLYGON ((1 2.9, 2.9 2.9, 2.9 1.3, 1.7 1, 1.3 0.9, 1 0.4, 1 2.9))");
-    Geometry expected = read("POLYGON ((1 3, 3 3, 3 1, 1 1, 1 3))");
+    Geometry expected = read("POLYGON ((1 1, 1 3, 3 3, 3 1, 2 1, 1 1))");
     Geometry actual = union(a, b, 1);
     checkEqual(expected, actual);
   }

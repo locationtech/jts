@@ -208,7 +208,7 @@ public class OverlayGraph {
     List<OverlayEdge> lineEdges = new ArrayList<OverlayEdge>();
     for (OverlayEdge edge : edges) {
       OverlayLabel lbl = edge.getLabel();
-      if (lbl.isLine(geomIndex)
+      if (lbl.isLineOrCollapse(geomIndex)
           && ! lbl.isLineLocationUnknown(geomIndex)) {
         lineEdges.add(edge);
       }
@@ -230,7 +230,6 @@ public class OverlayGraph {
 
   private void labelCollapsedEdges() {
     for (OverlayEdge edge : edges) {
-      //Debug.println("\n------  checking for Incomplete edge " + edge);
       if (edge.getLabel().isLineLocationUnknown(0)) {
         labelCollapsedEdge(edge, 0);
       }
@@ -243,23 +242,14 @@ public class OverlayGraph {
   private void labelCollapsedEdge(OverlayEdge edge, int geomIndex) {
     //Debug.println("\n------  labelCollapsedEdge - geomIndex= " + geomIndex);
     //Debug.print("BEFORE: " + edge.toStringNode());
-    int geomDim = inputGeometry.getDimension(geomIndex);
-    
-    /**
-     * Line inputs cannot have collapses
-     */
-    if (geomDim != 2) return;
-    
     OverlayLabel label = edge.getLabel();
-    boolean isCollapse = label.isCollapse(geomIndex, geomDim);
-    if (! isCollapse) return;
+    if (! label.isCollapse(geomIndex)) return;
       /**
        * This must be a collapsed edge which is disconnected
        * from any area edges (e.g. a fully collapsed shell or hole).
-       * This can be labelled according to its parent source ring role. 
+       * It can be labelled according to its parent source ring role. 
        */
-    int edgeLoc = label.isHole(geomIndex) ? Location.INTERIOR : Location.EXTERIOR;
-    label.setLocationAll(geomIndex, edgeLoc);
+    label.setLocationCollapse(geomIndex);
     edge.mergeSymLabels();
     //Debug.print("AFTER: " + edge.toStringNode());
   }
@@ -276,21 +266,20 @@ public class OverlayGraph {
     }
   }
 
-  private void labelIncompleteEdge(OverlayEdge edge, int geomIndex) {
+  private void labelIncompleteEdge(OverlayEdge edge, int geomIndex) {    
+    /**
+     * Only area geometries provide a location for edges
+     */
+    if (! inputGeometry.isArea(geomIndex)) return;
+    
     //Debug.println("\n------  labelIncompleteEdge - geomIndex= " + geomIndex);
     //Debug.print("BEFORE: " + edge.toStringNode());
-    int geomDim = inputGeometry.getDimension(geomIndex);
-    
-    /**
-     * Line inputs do not provide a location for edges
-     */
-    if (geomDim != 2) return;
     
     OverlayLabel label = edge.getLabel();
     // TODO: ??? locate in the result area, not original geometry, in case of collapse 
     /**
      * This must be a boundary edge which is disconnected from  
-     * the current input geometry.
+     * the given input geometry.
      */
     int edgeLoc = locateEdge(geomIndex, edge);
     label.setLocationAll(geomIndex, edgeLoc);

@@ -70,7 +70,7 @@ public class OverlayNode {
        * If edge is not a boundary edge, 
        * its location is now known for this area
        */
-        e.setLocationAll(geomIndex, currLoc);
+        e.setLocationLine(geomIndex, currLoc);
       }
       else {
         Assert.isTrue(label.hasSides(geomIndex));
@@ -139,7 +139,7 @@ public class OverlayNode {
          * If edge is not a boundary edge, 
          * its location is now known for this area
          */
-        e.setLocationAll(index, lineLoc);
+        e.setLocationLine(index, lineLoc);
         Debug.println("propagateLineLocationAtNode - setting "+ index + ": " + e);
 
         /**

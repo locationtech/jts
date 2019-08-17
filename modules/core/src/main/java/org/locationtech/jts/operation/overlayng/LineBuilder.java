@@ -67,7 +67,7 @@ public class LineBuilder {
       if (! isResultLine(edge)) continue;
       
       /**
-       * When a line edge is in result, both sides are included
+       * When a line edge is in result, both edges are marked
        */
       edge.markInResultBoth();
       
@@ -85,14 +85,13 @@ public class LineBuilder {
       return false;
     
     OverlayLabel lbl = edge.getLabel();
-    /**
-     * Filter out any edges not in result
-     * which are an area boundary of one geom
-     */
     boolean isEffectiveLine = lbl.isLine() || lbl.isAreaBoundaryBoth();
     if (! isEffectiveLine) 
       return false;
     
+    /**
+     * Skip edges inside result area
+     */
     if (hasResultArea && isCoveredByResultArea(edge)) 
       return false;
     
@@ -197,7 +196,7 @@ public class LineBuilder {
   }
 
   private boolean isCollapse(int geomIndex, OverlayLabel lbl) {
-    return lbl.isCollapse(geomIndex, inputGeom.getDimension(geomIndex));
+    return lbl.isCollapse(geomIndex);
   }
 
 
