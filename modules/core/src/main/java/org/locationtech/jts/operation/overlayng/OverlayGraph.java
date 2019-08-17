@@ -208,7 +208,7 @@ public class OverlayGraph {
     List<OverlayEdge> lineEdges = new ArrayList<OverlayEdge>();
     for (OverlayEdge edge : edges) {
       OverlayLabel lbl = edge.getLabel();
-      if (lbl.isLineOrCollapse(geomIndex)
+      if (lbl.isLinear(geomIndex)
           && ! lbl.isLineLocationUnknown(geomIndex)) {
         lineEdges.add(edge);
       }
@@ -317,10 +317,10 @@ public class OverlayGraph {
   public void markInResultArea(OverlayEdge e, int overlayOpCode) {
     OverlayLabel label = e.getLabel();
     if ( //isResultAreaEdge(label, overlayOpCode)
-        label.isAreaBoundaryEither()
+        label.isBoundaryEither()
         && OverlayNG.isResultOfOp(
-              label.getLocationAreaOrLine(0, Position.RIGHT),
-              label.getLocationAreaOrLine(1, Position.RIGHT),
+              label.getLocationBoundaryOrLine(0, Position.RIGHT),
+              label.getLocationBoundaryOrLine(1, Position.RIGHT),
               overlayOpCode)) {
       e.markInResult();  
     }

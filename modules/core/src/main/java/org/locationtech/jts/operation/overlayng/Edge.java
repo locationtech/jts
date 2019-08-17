@@ -193,14 +193,14 @@ public class Edge {
     case OverlayLabel.DIM_NOT_PART:
       // assumes label is initialized correctly
       break;
-    case OverlayLabel.DIM_AREA: 
-      lbl.initAsAreaBoundary(geomIndex, locationLeft(depthDelta), locationRight(depthDelta), isHole);
+    case OverlayLabel.DIM_BOUNDARY: 
+      lbl.initBoundary(geomIndex, locationLeft(depthDelta), locationRight(depthDelta), isHole);
       break;
     case OverlayLabel.DIM_COLLAPSE: 
-      lbl.initAsCollapse(geomIndex, isHole);
+      lbl.initCollapse(geomIndex, isHole);
       break;
     case OverlayLabel.DIM_LINE:
-      lbl.initAsLine(geomIndex);
+      lbl.initLine(geomIndex);
       break;
     }
   }
@@ -216,7 +216,7 @@ public class Edge {
     boolean isCollapse = depthDelta == 0;
     if (isCollapse) return OverlayLabel.DIM_COLLAPSE;
         
-    return OverlayLabel.DIM_AREA;
+    return OverlayLabel.DIM_BOUNDARY;
   }
 
   /**
@@ -354,8 +354,8 @@ public class Edge {
   }
 
   private boolean isArea(int geomIndex) {
-    if (geomIndex == 0) return aDim == OverlayLabel.DIM_AREA;
-    return bDim == OverlayLabel.DIM_AREA;
+    if (geomIndex == 0) return aDim == OverlayLabel.DIM_BOUNDARY;
+    return bDim == OverlayLabel.DIM_BOUNDARY;
   }
 
   public String toString() {

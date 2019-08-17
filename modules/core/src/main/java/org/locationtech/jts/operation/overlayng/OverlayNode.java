@@ -65,7 +65,7 @@ public class OverlayNode {
     
     do {
       OverlayLabel label = e.getLabel();
-      if ( ! label.isAreaBoundary(geomIndex) ) {
+      if ( ! label.isBoundary(geomIndex) ) {
       /**
        * If edge is not a boundary edge, 
        * its location is now known for this area
@@ -110,7 +110,7 @@ public class OverlayNode {
     OverlayEdge eStart = nodeEdge;
     do {
       OverlayLabel label = eStart.getLabel();
-      if (label.isAreaBoundary(geomIndex)) {
+      if (label.isBoundary(geomIndex)) {
         Assert.isTrue(label.hasSides(geomIndex));
         return eStart;
       }

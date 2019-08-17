@@ -85,7 +85,7 @@ public class LineBuilder {
       return false;
     
     OverlayLabel lbl = edge.getLabel();
-    boolean isEffectiveLine = lbl.isLine() || lbl.isAreaBoundaryBoth();
+    boolean isEffectiveLine = lbl.isLine() || lbl.isBoundaryBoth();
     if (! isEffectiveLine) 
       return false;
     

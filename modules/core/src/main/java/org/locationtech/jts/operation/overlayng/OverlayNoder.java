@@ -171,7 +171,7 @@ public class OverlayNoder {
     
     int left  = isCCW ? cwRight : cwLeft;
     int right = isCCW ? cwLeft : cwRight;
-    OverlayLabel lbl = OverlayLabel.createForAreaBoundary(index, left, right, isHole);
+    OverlayLabel lbl = OverlayLabel.createForBoundary(index, left, right, isHole);
     add(pts, lbl);
   }
 

@@ -11,7 +11,6 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
-import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geomgraph.Position;
 
@@ -35,7 +34,7 @@ import org.locationtech.jts.geomgraph.Position;
  * <ul>
  * <li>A boundary edge of an input Area (polygon).  
  *   <ul>
- *   <li><code>dim</code> = DIM_AREA</li>
+ *   <li><code>dim</code> = DIM_BOUNDARY</li>
  *   <li><code>locLeft, locRight</code> : the locations of the edge sides for the area parent input geometry</li>
  *   <li><code>isHole</code> : whether the 
  * edge was in a shell or a hole</li>
@@ -44,7 +43,7 @@ import org.locationtech.jts.geomgraph.Position;
  * <li>A <b>collapsed</b> edge of an input Area 
  * (which has two or more parent edges)
  *   <ul>
- *   <li><code>dim</code> = DIM_LINE</li>
+ *   <li><code>dim</code> = DIM_COLLAPSE</li>
  *   <li><code>locLine</code> : the location of the 
  * edge relative to the area parent input geometry</li>
  *   <li><code>isHole</code> : whether some 
@@ -59,12 +58,20 @@ import org.locationtech.jts.geomgraph.Position;
  *   <li><code>isHole</code> : not applicable</li>
  *   </ul>
  * </li>
+ * <li>An edge which is not part of a parent geometry.
+ *   <ul>
+ *   <li><code>dim</code> = NOT_PART</li>
+ *   <li><code>locLine</code> : the location of the 
+ * edge relative to the area parent input geometry</li>
+ *   <li><code>isHole</code> : not applicable</li>
+ *   </ul>
+ * </li>
  * </ul>
  * Note that:
  * <ul>
- * <li>an edge can never be both an Area edge collapse and a Line edge, because each input geometry must be homogeneous.
- * <li>an edge may be an Area edge in one parent and a Line edge in the other
- * <li>it is not possible to distinguish between a collapsed Area edge in the interior of a geometry and a Line edge
+ * <li>an edge can never be both a Collapse edge and a Line edge in the same parent, 
+ * because each input geometry must be homogeneous.
+ * <li>an edge may be an Boundary edge in one parent and a Line or Collapse edge in the other
  * </ul>
  * 
  * @author mdavis
@@ -72,10 +79,14 @@ import org.locationtech.jts.geomgraph.Position;
  */
 public class OverlayLabel {
   
+  private static final char SYM_UNKNOWN = '#';
+  private static final char SYM_BOUNDARY = 'B';
+  private static final char SYM_COLLAPSE = 'C';
+  private static final char SYM_LINE = 'L';
   public static final int DIM_UNKNOWN = -1;
   public static final int DIM_NOT_PART = DIM_UNKNOWN;
-  public static final int DIM_LINE = Dimension.L;
-  public static final int DIM_AREA = Dimension.A;
+  public static final int DIM_LINE = 1;
+  public static final int DIM_BOUNDARY = 2;
   public static final int DIM_COLLAPSE = 3;
   
   /**
@@ -83,7 +94,7 @@ public class OverlayLabel {
    */
   public static int LOC_UNKNOWN = Location.NONE;
   
-  public static OverlayLabel createForAreaBoundary(int index, int locLeft, int locRight, boolean isHole) {
+  public static OverlayLabel createForBoundary(int index, int locLeft, int locRight, boolean isHole) {
     return new OverlayLabel(index, locLeft, locRight, isHole);
   }
   
@@ -106,12 +117,12 @@ public class OverlayLabel {
   
   public OverlayLabel(int index, int locLeft, int locRight, boolean isHole)
   {
-    initAsAreaBoundary(index, locLeft, locRight, isHole);
+    initBoundary(index, locLeft, locRight, isHole);
   }
 
   public OverlayLabel(int index)
   {
-    initAsLine(index);
+    initLine(index);
   }
 
   public OverlayLabel()
@@ -138,16 +149,16 @@ public class OverlayLabel {
     return bDim;
   }
   
-  public void initAsAreaBoundary(int index, int locLeft, int locRight, boolean isHole) {
+  public void initBoundary(int index, int locLeft, int locRight, boolean isHole) {
     if (index == 0) {
-      aDim = DIM_AREA;
+      aDim = DIM_BOUNDARY;
       aIsHole = isHole;
       aLocLeft = locLeft;
       aLocRight = locRight;
       aLocLine = Location.INTERIOR;
     }
     else {
-      bDim = DIM_AREA;
+      bDim = DIM_BOUNDARY;
       bIsHole = isHole;
       bLocLeft = locLeft;
       bLocRight = locRight;
@@ -155,7 +166,7 @@ public class OverlayLabel {
     }
   }
   
-  public void initAsCollapse(int index, boolean isHole) {
+  public void initCollapse(int index, boolean isHole) {
     if (index == 0) {
       aDim = DIM_COLLAPSE;
       aIsHole = isHole;
@@ -166,7 +177,7 @@ public class OverlayLabel {
     }
   }
   
-  public void initAsLine(int index) {
+  public void initLine(int index) {
     if (index == 0) {
       aDim = DIM_LINE;
     }
@@ -278,26 +289,33 @@ public class OverlayLabel {
     return bDim == DIM_LINE;
   }
 
-  public boolean isLineOrCollapse(int index) {
+  public boolean isLinear(int index) {
     if (index == 0) {
       return aDim == DIM_LINE || aDim == DIM_COLLAPSE;
     }
     return bDim == DIM_LINE || bDim == DIM_COLLAPSE;
   }
 
-  public boolean isAreaBoundaryEither() {
-    return aDim == DIM_AREA || bDim == DIM_AREA;
-  }
-  
-  public boolean isAreaBoundaryBoth() {
-    return aDim == DIM_AREA && bDim == DIM_AREA;
-  }
-  
-  public boolean isAreaBoundary(int index) {
+  public boolean isKnown(int index) {
     if (index == 0) {
-      return aDim == DIM_AREA;
+      return aDim != DIM_UNKNOWN;
     }
-    return bDim == DIM_AREA;
+    return bDim != DIM_UNKNOWN;
+  }
+
+  public boolean isBoundaryEither() {
+    return aDim == DIM_BOUNDARY || bDim == DIM_BOUNDARY;
+  }
+  
+  public boolean isBoundaryBoth() {
+    return aDim == DIM_BOUNDARY && bDim == DIM_BOUNDARY;
+  }
+  
+  public boolean isBoundary(int index) {
+    if (index == 0) {
+      return aDim == DIM_BOUNDARY;
+    }
+    return bDim == DIM_BOUNDARY;
   }
   
   public boolean isLineLocationUnknown(int index) {
@@ -376,9 +394,9 @@ public class OverlayLabel {
     return LOC_UNKNOWN;
   }
   
-  public int getLocationAreaOrLine(int index, int position) {
+  public int getLocationBoundaryOrLine(int index, int position) {
     if (index == 0) {
-      if (isAreaBoundary(index)) {
+      if (isBoundary(index)) {
         switch (position) {
           case Position.LEFT: return aLocLeft;
           case Position.RIGHT: return aLocRight;
@@ -386,7 +404,7 @@ public class OverlayLabel {
       }
       return aLocLine;
     }
-    if (isAreaBoundary(index)) {
+    if (isBoundary(index)) {
       switch (position) {
         case Position.LEFT: return bLocLeft;
         case Position.RIGHT: return bLocRight;
@@ -404,6 +422,7 @@ public class OverlayLabel {
    * @param position
    * @return the location of the label position, or Location.NONE
    */
+  /*
   public int getLocationAreaNotLine(int index, int position) {
     if (isAreaBoundary(index)) {
       return getLocation(index, position);
@@ -411,7 +430,8 @@ public class OverlayLabel {
     if (isLine(index)) return Location.NONE;
     return getLocationNotPart(index);
   }
-
+*/
+  
   /**
    * Gets the area location for the given source.
    * 
@@ -526,14 +546,15 @@ public class OverlayLabel {
 
   private String locationString(int index) {
     StringBuilder buf = new StringBuilder();
-    if (isAreaBoundary(index)) {
+    if (isBoundary(index)) {
       buf.append( Location.toLocationSymbol( index == 0 ? aLocLeft : bLocLeft ) );
       buf.append( Location.toLocationSymbol( index == 0 ? aLocRight : bLocRight ) );
     }
     else {
       buf.append( Location.toLocationSymbol( index == 0 ? aLocLine : bLocLine ));
     }
-    buf.append( dimensionSymbol(index == 0 ? aDim : bDim) );
+    if (isKnown(index))
+      buf.append( dimensionSymbol(index == 0 ? aDim : bDim) );
     if (isCollapse(index)) {
       buf.append( ringRoleSymbol( index == 0 ? aIsHole : bIsHole ));
     }
@@ -546,11 +567,11 @@ public class OverlayLabel {
 
   public static char dimensionSymbol(int dim) {
     switch (dim) {
-    case DIM_LINE: return 'L';
-    case DIM_COLLAPSE: return 'C';
-    case DIM_AREA: return 'A';
+    case DIM_LINE: return SYM_LINE;
+    case DIM_COLLAPSE: return SYM_COLLAPSE;
+    case DIM_BOUNDARY: return SYM_BOUNDARY;
     }
-    return '#';
+    return SYM_UNKNOWN;
   }
 
 
