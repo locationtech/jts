@@ -15,7 +15,6 @@ import java.util.Comparator;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
-import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.io.WKTWriter;
 
 public class OverlayEdge extends HalfEdge {
