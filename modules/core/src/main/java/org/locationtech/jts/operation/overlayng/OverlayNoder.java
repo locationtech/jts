@@ -102,8 +102,7 @@ public class OverlayNoder {
   private void addPolygon(Polygon p, int geomIndex)
   {
     addPolygonRing(
-            (LinearRing) p.getExteriorRing(), false,
-            Location.EXTERIOR, Location.INTERIOR, geomIndex);
+            (LinearRing) p.getExteriorRing(), false, geomIndex);
 
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
       LinearRing hole = (LinearRing) p.getInteriorRingN(i);
@@ -111,20 +110,15 @@ public class OverlayNoder {
       // Holes are topologically labelled opposite to the shell, since
       // the interior of the polygon lies on their opposite side
       // (on the left, if the hole is oriented CW)
-      addPolygonRing(hole, true,
-          Location.INTERIOR, Location.EXTERIOR, geomIndex);
+      addPolygonRing(hole, true, geomIndex);
     }
   }
   
   /**
    * Adds a polygon ring to the graph.
    * Empty rings are ignored.
-   * 
-   * The left and right topological location arguments assume that the ring is oriented CW.
-   * If the ring is in the opposite orientation,
-   * the left and right locations must be interchanged.
    */
-  private void addPolygonRing(LinearRing lr, boolean isHole, int cwLeft, int cwRight, int index)
+  private void addPolygonRing(LinearRing lr, boolean isHole, int index)
   {
     /**
      * Empty rings are not added.
@@ -151,28 +145,34 @@ public class OverlayNoder {
     Coordinate[] pts = round(ptsRaw);
     
     /**
-     * For now, keep all collapsed lines,
-     * so that they can be included in the result if applicable
-     */
-    /*
-    // TODO: this is inconsistent since there may be collapsed rings with > 4 points which are added
-    if (pts.length < 4) {
-      // don't add collapsed rings
-      return;
-    }
-    //*/
-    
-    /**
      * Don't add edges that collapse to a point
      */
     if (pts.length < 2) {
       return;
     }
     
-    int left  = isCCW ? cwRight : cwLeft;
-    int right = isCCW ? cwLeft : cwRight;
-    OverlayLabel lbl = OverlayLabel.createForBoundary(index, left, right, isHole);
-    add(pts, lbl);
+    int depthDelta = 1;
+    
+    /**
+     * Compute whether ring is in canonical orientation or not.
+     * Canonical orientation for the overlay process is
+     * Shells : CW, Holes: CCW
+     */
+    boolean isOriented = true;
+    if (! isHole)
+      isOriented = ! isCCW;
+    else {
+      isOriented = isCCW;
+    }
+    /**
+     * Depth delta can now be computed. 
+     * Canonical depth delta is 1 (Exterior on L, Interior on R).
+     * It is flipped to -1 if the ring is oppositely oriented.
+     */
+    int depthDeltaFinal = isOriented ? depthDelta : -1 * depthDelta;
+    
+    EdgeInfo info = new EdgeInfo(index, depthDeltaFinal, isHole);
+    add(pts, info);
   }
 
   private void addLineString(LineString line, int geomIndex)
@@ -188,12 +188,12 @@ public class OverlayNoder {
     if (pts.length < 2) {
       return;
     }
-    OverlayLabel lbl = OverlayLabel.createForLine(geomIndex);
-    add(pts, lbl);
+    EdgeInfo info = new EdgeInfo(geomIndex);
+    add(pts, info);
   }
   
-  private void add(Coordinate[] pts, OverlayLabel label) {
-    NodedSegmentString ss = new NodedSegmentString(pts, label);
+  private void add(Coordinate[] pts, EdgeInfo info) {
+    NodedSegmentString ss = new NodedSegmentString(pts, info);
     segStrings.add(ss);
   }
 

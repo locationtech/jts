@@ -20,7 +20,7 @@ import org.locationtech.jts.util.Debug;
 
 /**
  * Represents a single edge in a topology graph,
- * carrying the location label derived from the parent geometr(ies).
+ * carrying the location label derived from the two parent geometries.
  * 
  * @author mdavis
  *
@@ -29,6 +29,7 @@ public class Edge {
   
   public static boolean isValidPoints(Coordinate[] pts) {
     if (pts.length < 2) return false;
+    // zero-length line
     if (pts[0].equals2D(pts[1])) return false;
     // TODO: is pts > 2 with equal points ever expected?
     if (pts.length > 2) {
@@ -47,9 +48,9 @@ public class Edge {
   private int bDepthDelta = 0;
   private boolean bIsHole = false;
 
-  public Edge(Coordinate[] pts, OverlayLabel lbl) {
+  public Edge(Coordinate[] pts, EdgeInfo info) {
     this.pts = pts;
-    initEdgeLabel(lbl);
+    initEdgeInfo(info);
   }
   
   public Coordinate[] getCoordinates() {
@@ -115,8 +116,8 @@ public class Edge {
   
   public OverlayLabel getMergedLabel() {
     OverlayLabel lbl = new OverlayLabel();
-    computeInputLabel(lbl, 0, aDim, aDepthDelta, aIsHole);
-    computeInputLabel(lbl, 1, bDim, bDepthDelta, bIsHole);
+    initInputLabel(lbl, 0, aDim, aDepthDelta, aIsHole);
+    initInputLabel(lbl, 1, bDim, bDepthDelta, bIsHole);
     return lbl;
   }
   
@@ -143,7 +144,7 @@ public class Edge {
    * @param dim
    * @param depthDelta
    */
-  private void computeInputLabel(OverlayLabel lbl, int geomIndex, int dim, int depthDelta, boolean isHole) {
+  private void initInputLabel(OverlayLabel lbl, int geomIndex, int dim, int depthDelta, boolean isHole) {
     // not part of the input ==> leave label as NOT_PART
     
     int dimLabel = labelDim(dim, depthDelta);
@@ -177,12 +178,6 @@ public class Edge {
         
     return OverlayLabel.DIM_BOUNDARY;
   }
-  
-  private boolean isKnown(int index) {
-    if (index == 0) 
-      return aDim != OverlayLabel.DIM_UNKNOWN;
-    return bDim != OverlayLabel.DIM_UNKNOWN;
-  }
 
   private boolean isHole(int index) {
     if (index == 0) 
@@ -214,7 +209,6 @@ public class Edge {
     case -1: return Location.INTERIOR;
     }
     throw new IllegalStateException("found illegal depth delta " + depthDelta + " in edge " + this);
-
   }
 
   private static int delSign(int depthDel) {
@@ -223,30 +217,17 @@ public class Edge {
     return 0;
   }
 
-  private static int depthDelta(OverlayLabel label, int index) {
-    int locL = label.getLocation(index, Position.LEFT);
-    int locR = label.getLocation(index, Position.RIGHT);
-    
-    int delta = locationDepth(locR) - locationDepth(locL);
-    return delta;
-  }
-
-  private static int locationDepth(int location) {
-    switch (location) {
-    case Location.EXTERIOR: return 0;
-    case Location.INTERIOR: return 1;
+  private void initEdgeInfo(EdgeInfo info) {
+    if (info.getIndex() == 0) {
+      aDim = info.getDimension();
+      aIsHole = info.isHole();
+      aDepthDelta = info.getDepthDelta();
     }
-    return -1;
-  }
-
-  private void initEdgeLabel(OverlayLabel label) {
-    aDim = label.dimension(0);
-    aIsHole = label.isHole(0);
-    aDepthDelta = depthDelta(label, 0);
-    
-    bDim = label.dimension(1);
-    bIsHole = label.isHole(1);
-    bDepthDelta = depthDelta(label, 1);
+    else {
+      bDim = info.getDimension();
+      bIsHole = info.isHole();
+      bDepthDelta = info.getDepthDelta();
+    }
   }
   
   public void mergeEdge(Edge edge) {

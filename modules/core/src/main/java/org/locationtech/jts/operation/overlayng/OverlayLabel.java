@@ -90,17 +90,10 @@ public class OverlayLabel {
   public static final int DIM_COLLAPSE = 3;
   
   /**
-   * A value indicating that the location is as yet unknown
+   * Indicates that the location is currently unknown
    */
   public static int LOC_UNKNOWN = Location.NONE;
   
-  public static OverlayLabel createForBoundary(int index, int locLeft, int locRight, boolean isHole) {
-    return new OverlayLabel(index, locLeft, locRight, isHole);
-  }
-  
-  public static OverlayLabel createForLine(int index) {
-    return new OverlayLabel(index);
-  }
   
   private int aDim = DIM_NOT_PART;
   private boolean aIsHole = false;

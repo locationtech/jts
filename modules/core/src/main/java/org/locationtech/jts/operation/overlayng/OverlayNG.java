@@ -185,12 +185,13 @@ public class OverlayNG
     List<Edge> edges = new ArrayList<Edge>();
     for (SegmentString ss : segStrings) {
       Coordinate[] pts = ss.getCoordinates();
+      
       // don't create edges from collapsed lines
       // TODO: perhaps convert these to points to be included in overlay?
       if (! Edge.isValidPoints(pts)) continue;
-      OverlayLabel lbl = (OverlayLabel) ss.getData();
-      // copy label since it may be updated during edge merging
-      edges.add(new Edge(ss.getCoordinates(), lbl.copy()));
+      
+      EdgeInfo info = (EdgeInfo) ss.getData();
+      edges.add(new Edge(ss.getCoordinates(), info));
     }
     return edges;
   }

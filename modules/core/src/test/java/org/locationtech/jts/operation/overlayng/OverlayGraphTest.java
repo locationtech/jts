@@ -16,11 +16,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.operation.overlayng.Edge;
-import org.locationtech.jts.operation.overlayng.HalfEdge;
-import org.locationtech.jts.operation.overlayng.OverlayEdge;
-import org.locationtech.jts.operation.overlayng.OverlayGraph;
-import org.locationtech.jts.operation.overlayng.OverlayLabel;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -74,7 +69,7 @@ public class OverlayGraphTest extends GeometryTestCase {
   
   private Edge createEdge(double... ord) {
     Coordinate[] pts = toCoordinates(ord);
-    return new Edge(pts, new OverlayLabel());
+    return new Edge(pts, new EdgeInfo(0));
   }
 
   private Coordinate[] toCoordinates(double[] ord) {
