@@ -199,13 +199,6 @@ public class OverlayEdge extends HalfEdge {
     symOE().isInResult = true;
   }
 
-  public void mergeSymLabels() {
-    OverlayLabel label = getLabel();
-    OverlayLabel labelSym = symOE().getLabel();
-    label.mergeFlip(labelSym);
-    labelSym.mergeFlip(label);
-  }
-
   public String toString() {
     Coordinate orig = orig();
     Coordinate dest = dest();
@@ -216,8 +209,10 @@ public class OverlayEdge extends HalfEdge {
         + dirPtStr
         + " .. " + WKTWriter.format(dest)
         + " ) " 
-        + label + (isInResult ? " Res" : "")
-        + " / Sym: " + symOE().getLabel()+ (symOE().isInResult() ? " Res" : "")
+        + label.toString(direction) 
+        + (isInResult ? " Res" : "")
+        + " / Sym: " + symOE().getLabel().toString(direction)
+        + (symOE().isInResult() ? " Res" : "")
         ;
   }
 

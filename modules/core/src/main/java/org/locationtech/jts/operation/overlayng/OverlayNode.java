@@ -57,7 +57,7 @@ public class OverlayNode {
       return;
     
     // initialize currLoc to location of L side
-    int currLoc = eStart.getLabel().getLocation(geomIndex, Position.LEFT);
+    int currLoc = eStart.getLabel().getLocation(geomIndex, Position.LEFT, eStart.isForward());
     OverlayEdge e = eStart.oNextOE();
 
     //Debug.println("\npropagateSideLabels geomIndex = " + geomIndex + " : " + eStart);
@@ -79,7 +79,7 @@ public class OverlayNode {
          *  Update the current location from its labels,
          *  checking for topology consistency
          */
-        int locRight = e.getLabel().getLocation(geomIndex, Position.RIGHT);
+        int locRight = e.getLabel().getLocation(geomIndex, Position.RIGHT, e.isForward());
         if (locRight != currLoc) {
           //*
           Debug.println("side location conflict: index= " + geomIndex + " R loc " 
@@ -88,7 +88,7 @@ public class OverlayNode {
         //*/
           throw new TopologyException("side location conflict", e.getCoordinate());
         }
-        int locLeft = e.getLabel().getLocation(geomIndex, Position.LEFT);
+        int locLeft = e.getLabel().getLocation(geomIndex, Position.LEFT, e.isForward());
         if (locLeft == Location.NONE) {
           Assert.shouldNeverReachHere("found single null side at " + e);
         }
@@ -302,17 +302,6 @@ public class OverlayNode {
     //Debug.println("Linked Min Edge:  " + currIn + " -> " + currMaxRingOut);
     // return null to indicate to scan for the next max-ring out-edge
     return null;
-  }
-
-  public static void mergeSymLabels(OverlayEdge nodeEdge) {
-    //Debug.println("\nnodeMergeSymLabels-------- ");
-    //Debug.println("BEFORE: " + toString(nodeEdge));
-    OverlayEdge e = nodeEdge;
-    do {
-      e.mergeSymLabels();
-      e = (OverlayEdge) e.oNext();
-    } while (e != nodeEdge);
-    //Debug.println("AFTER: " + toString(nodeEdge));
   }
   
   public static String toString(OverlayEdge nodeEdge) {

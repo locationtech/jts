@@ -96,8 +96,8 @@ public class OverlayGraph {
   
   private OverlayEdge createEdges(Coordinate[] pts, OverlayLabel lbl)
   {
-    OverlayEdge e0 = OverlayEdge.createEdge(pts, lbl.copy(), true);
-    OverlayEdge e1 = OverlayEdge.createEdge(pts, lbl.copyFlip(), false);
+    OverlayEdge e0 = OverlayEdge.createEdge(pts, lbl, true);
+    OverlayEdge e1 = OverlayEdge.createEdge(pts, lbl, false);
     e0.init(e1);
     return e0;
   }
@@ -140,8 +140,6 @@ public class OverlayGraph {
     Collection<OverlayEdge> nodes = getNodeEdges();
     labelAreaNodeEdges(nodes);
     labelConnectedLineEdges();
-    // TODO: is there a way to avoid this merging step?  Single label object perhaps?
-    mergeNodeSymLabels(nodes);
     
     //TODO: is there a way to avoid scanning all edges in these steps?
     labelCollapsedEdges();
@@ -222,12 +220,6 @@ public class OverlayGraph {
     }
   }
 
-  private void mergeNodeSymLabels(Collection<OverlayEdge> nodes) {
-    for (OverlayEdge node : nodes) {
-      OverlayNode.mergeSymLabels(node);
-    }
-  }
-
   private void labelCollapsedEdges() {
     for (OverlayEdge edge : edges) {
       if (edge.getLabel().isLineLocationUnknown(0)) {
@@ -250,7 +242,6 @@ public class OverlayGraph {
        * It can be labelled according to its parent source ring role. 
        */
     label.setLocationCollapse(geomIndex);
-    edge.mergeSymLabels();
     //Debug.print("AFTER: " + edge.toStringNode());
   }
 
@@ -283,7 +274,6 @@ public class OverlayGraph {
      */
     int edgeLoc = locateEdge(geomIndex, edge);
     label.setLocationAll(geomIndex, edgeLoc);
-    edge.mergeSymLabels();
     //Debug.print("AFTER: " + edge.toStringNode());
   }
 
@@ -319,8 +309,8 @@ public class OverlayGraph {
     if ( //isResultAreaEdge(label, overlayOpCode)
         label.isBoundaryEither()
         && OverlayNG.isResultOfOp(
-              label.getLocationBoundaryOrLine(0, Position.RIGHT),
-              label.getLocationBoundaryOrLine(1, Position.RIGHT),
+              label.getLocationBoundaryOrLine(0, Position.RIGHT, e.isForward()),
+              label.getLocationBoundaryOrLine(1, Position.RIGHT, e.isForward()),
               overlayOpCode)) {
       e.markInResult();  
     }

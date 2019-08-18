@@ -331,39 +331,27 @@ public class OverlayLabel {
     return bLocLine == Location.INTERIOR;
   }
   
-  public int getLocation(int index, int position) {
+  public int getLocation(int index, int position, boolean isForward) {
     if (index == 0) {
       switch (position) {
-        case Position.LEFT: return aLocLeft;
-        case Position.RIGHT: return aLocRight;
+        case Position.LEFT: return isForward ? aLocLeft : aLocRight;
+        case Position.RIGHT: return isForward ? aLocRight : aLocLeft;
         case Position.ON: return aLocLine;
       }
     }
     switch (position) {
-      case Position.LEFT: return bLocLeft;
-      case Position.RIGHT: return bLocRight;
+      case Position.LEFT: return isForward ? bLocLeft : bLocRight;
+      case Position.RIGHT: return isForward ? bLocRight : bLocLeft;
       case Position.ON: return bLocLine;
     }
     return LOC_UNKNOWN;
   }
   
-  public int getLocationBoundaryOrLine(int index, int position) {
-    if (index == 0) {
-      if (isBoundary(index)) {
-        switch (position) {
-          case Position.LEFT: return aLocLeft;
-          case Position.RIGHT: return aLocRight;
-        }
-      }
-      return aLocLine;
-    }
+  public int getLocationBoundaryOrLine(int index, int position, boolean isForward) {
     if (isBoundary(index)) {
-      switch (position) {
-        case Position.LEFT: return bLocLeft;
-        case Position.RIGHT: return bLocRight;
-      }
+      return getLocation(index, position, isForward);
     }
-    return bLocLine;
+    return getLineLocation(index);
   }
 
   /**
@@ -465,43 +453,27 @@ public class OverlayLabel {
     if (bDim == DIM_UNKNOWN) bDim = lbl.bDim;
   }
   */
-  
-  /**
-   * Merge a label into this label, 
-   * flipping the side values.
-   * 
-   * @param lbl
-   */
-  public void mergeFlip(OverlayLabel lbl)
-  {
-    if (aLocLine == LOC_UNKNOWN) aLocLine = lbl.aLocLine;
-    if (aLocLeft == LOC_UNKNOWN) aLocLeft = lbl.aLocRight;
-    if (aLocRight == LOC_UNKNOWN) aLocRight = lbl.aLocLeft;
-    // TODO: should this error if dim is different?
-    if (aDim == DIM_UNKNOWN) aDim = lbl.aDim;
-   
-    if (bLocLine == LOC_UNKNOWN) bLocLine = lbl.bLocLine;
-    if (bLocLeft == LOC_UNKNOWN) bLocLeft = lbl.bLocRight;
-    if (bLocRight == LOC_UNKNOWN) bLocRight = lbl.bLocLeft;
-    // TODO: should this error if dim is different?
-    if (bDim == DIM_UNKNOWN) bDim = lbl.bDim;
-  }
-  
+    
   public String toString()
+  {
+    return toString(true);
+  }
+
+  public String toString(boolean isForward)
   {
     StringBuilder buf = new StringBuilder();
     buf.append("A:");
-    buf.append(locationString(0));
+    buf.append(locationString(0, isForward));
     buf.append("/B:");
-    buf.append(locationString(1));
+    buf.append(locationString(1, isForward));
     return buf.toString();
   }
 
-  private String locationString(int index) {
+  private String locationString(int index, boolean isForward) {
     StringBuilder buf = new StringBuilder();
     if (isBoundary(index)) {
-      buf.append( Location.toLocationSymbol( index == 0 ? aLocLeft : bLocLeft ) );
-      buf.append( Location.toLocationSymbol( index == 0 ? aLocRight : bLocRight ) );
+      buf.append( Location.toLocationSymbol( getLocation(index, Position.LEFT, isForward) ) );
+      buf.append( Location.toLocationSymbol( getLocation(index, Position.RIGHT, isForward) ) );
     }
     else {
       buf.append( Location.toLocationSymbol( index == 0 ? aLocLine : bLocLine ));
