@@ -139,13 +139,27 @@ public class OverlayGraph {
     
     Collection<OverlayEdge> nodes = getNodeEdges();
     labelAreaNodeEdges(nodes);
-    labelConnectedLineEdges();
+    labelConnectedLinearEdges();
     
+    /**
+     * At this point collapsed edges with unknown location
+     * must be disconnected
+     * from the area edges of the parent.
+     * They can be located based on their parent ring role (shell or hole).
+     * 
+     * Note that this can NOT be done via a PIP location check,
+     * because that is done against the unreduced input geometry,
+     * which may give an invalid result due to topology collapse.
+     * 
+     * The labelling is propagated to other connected edges, 
+     * since there may be NOT_PART edges which are connected, 
+     * and they need to be labelled in the same way.
+     */
     //TODO: is there a way to avoid scanning all edges in these steps?
     labelCollapsedEdges();
-    labelConnectedLineEdges();
+    labelConnectedLinearEdges();
     
-    labelIncompleteEdges();
+    labelDisconnectedEdges();
   }
 
   /*
@@ -160,27 +174,19 @@ public class OverlayGraph {
    * but are connected to a Line edge with known location.
    * In this case line location is propagated to the connected edges.
    */
-  private void labelConnectedLineEdges() {
+  private void labelConnectedLinearEdges() {
+    //TODO: can these be merged to avoid two scans?
     propagateLineLocations(0);
     propagateLineLocations(1);
   }
 
   private void propagateLineLocations(int geomIndex) {
     // find L edges
-    List<OverlayEdge> lineEdges = findLineEdgesWithLocation(geomIndex);
+    List<OverlayEdge> lineEdges = findLinearEdgesWithLocation(geomIndex);
     Deque<OverlayEdge> edgeStack = new ArrayDeque<OverlayEdge>(lineEdges);
     
     propagateLineLocations(geomIndex, edgeStack);
   }
-
-  /*
-  private void propagateLineLocations(int geomIndex, OverlayEdge lineEdge) {
-    Deque<OverlayEdge> edgeStack = new ArrayDeque<OverlayEdge>();
-    edgeStack.push(lineEdge);
-    
-    propagateLineLocations(geomIndex, edgeStack);
-  }
-*/
   
   private void propagateLineLocations(int geomIndex, Deque<OverlayEdge> edgeStack) {
     // traverse line edges, labelling unknown ones that are connected
@@ -202,7 +208,7 @@ public class OverlayGraph {
    * @param geomIndex
    * @return list of L edges
    */
-  private List<OverlayEdge> findLineEdgesWithLocation(int geomIndex) {
+  private List<OverlayEdge> findLinearEdgesWithLocation(int geomIndex) {
     List<OverlayEdge> lineEdges = new ArrayList<OverlayEdge>();
     for (OverlayEdge edge : edges) {
       OverlayLabel lbl = edge.getLabel();
@@ -245,32 +251,40 @@ public class OverlayGraph {
     //Debug.print("AFTER: " + edge.toStringNode());
   }
 
-  private void labelIncompleteEdges() {
+  private void labelDisconnectedEdges() {
     for (OverlayEdge edge : edges) {
-      //Debug.println("\n------  checking for Incomplete edge " + edge);
+      //Debug.println("\n------  checking for Disconnected edge " + edge);
       if (edge.getLabel().isLineLocationUnknown(0)) {
-        labelIncompleteEdge(edge, 0);
+        labelDisconnectedEdge(edge, 0);
       }
       if (edge.getLabel().isLineLocationUnknown(1)) {
-        labelIncompleteEdge(edge, 1);
+        labelDisconnectedEdge(edge, 1);
       }
     }
   }
 
-  private void labelIncompleteEdge(OverlayEdge edge, int geomIndex) {    
+  /**
+   * Labels edges which are disconnected from other
+   * edges which could provide location information.
+   * The location is determined by checking 
+   * if the edge lies inside the given input area (if any)
+   * @param edge
+   * @param geomIndex
+   */
+  private void labelDisconnectedEdge(OverlayEdge edge, int geomIndex) {    
     /**
      * Only area geometries provide a location for edges
      */
     if (! inputGeometry.isArea(geomIndex)) return;
     
-    //Debug.println("\n------  labelIncompleteEdge - geomIndex= " + geomIndex);
+    //Debug.println("\n------  labelDisconnectedEdge - geomIndex= " + geomIndex);
     //Debug.print("BEFORE: " + edge.toStringNode());
     
     OverlayLabel label = edge.getLabel();
     // TODO: ??? locate in the result area, not original geometry, in case of collapse 
     /**
-     * This must be a boundary edge which is disconnected from  
-     * the given input geometry.
+     * This must be an edge which is disconnected from  
+     * the given input geometry area.
      */
     int edgeLoc = locateEdge(geomIndex, edge);
     label.setLocationAll(geomIndex, edgeLoc);
