@@ -57,7 +57,7 @@ public class OverlayNode {
       return;
     
     // initialize currLoc to location of L side
-    int currLoc = eStart.getLabel().getLocation(geomIndex, Position.LEFT, eStart.isForward());
+    int currLoc = eStart.getLocation(geomIndex, Position.LEFT);
     OverlayEdge e = eStart.oNextOE();
 
     //Debug.println("\npropagateSideLabels geomIndex = " + geomIndex + " : " + eStart);
@@ -79,7 +79,7 @@ public class OverlayNode {
          *  Update the current location from its labels,
          *  checking for topology consistency
          */
-        int locRight = e.getLabel().getLocation(geomIndex, Position.RIGHT, e.isForward());
+        int locRight = e.getLocation(geomIndex, Position.RIGHT);
         if (locRight != currLoc) {
           //*
           Debug.println("side location conflict: index= " + geomIndex + " R loc " 
@@ -88,7 +88,7 @@ public class OverlayNode {
         //*/
           throw new TopologyException("side location conflict", e.getCoordinate());
         }
-        int locLeft = e.getLabel().getLocation(geomIndex, Position.LEFT, e.isForward());
+        int locLeft = e.getLocation(geomIndex, Position.LEFT);
         if (locLeft == Location.NONE) {
           Assert.shouldNeverReachHere("found single null side at " + e);
         }

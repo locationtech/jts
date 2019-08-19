@@ -103,6 +103,10 @@ public class OverlayEdge extends HalfEdge {
     return label;
   }
 
+  public int getLocation(int index, int position) {
+    return label.getLocation(index, position, direction);
+  }
+
   public Coordinate getCoordinate() {
     return orig();
   }
