@@ -24,6 +24,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geomgraph.Label;
+import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.util.Debug;
@@ -94,8 +95,16 @@ public class OverlayNG
    */
   public static Geometry overlay(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode)
   {
-    OverlayNG gov = new OverlayNG(geom0, geom1, pm, opCode);
-    Geometry geomOv = gov.getResultGeometry();
+    OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
+    Geometry geomOv = ov.getResultGeometry();
+    return geomOv;
+  }
+
+  public static Geometry overlay(Geometry geom0, Geometry geom1, PrecisionModel pm, Noder noder, int opCode)
+  {
+    OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
+    ov.setNoder(noder);
+    Geometry geomOv = ov.getResultGeometry();
     return geomOv;
   }
 
@@ -107,6 +116,7 @@ public class OverlayNG
   private OverlayGraph graph;
   private int opCode;
   private boolean isOutputNodedEdges;
+  private Noder noder;
 
   public OverlayNG(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode) {
     this.pm = pm;
@@ -128,6 +138,10 @@ public class OverlayNG
     this.isOutputResultEdges = isOutputResultEdges;
   }
   
+  public void setNoder(Noder noder) {
+    this.noder = noder;
+  }
+  
   public Geometry getResultGeometry() {
     Geometry resultGeom = computeOverlay();
     return resultGeom;
@@ -147,6 +161,7 @@ public class OverlayNG
     
     //--- Topology building phase
     graph = new OverlayGraph( edges );
+    
     if (isOutputNodedEdges) {
       return toLines(graph, geomFact);
     }
@@ -164,11 +179,12 @@ public class OverlayNG
   }
 
   private List<Edge> nodeAndMerge() {
-    OverlayNoder noder = new OverlayNoder(
+    OverlayNoder ovNoder = new OverlayNoder(
         inputGeom.getGeometry(0),
         inputGeom.getGeometry(1),
         pm);
-    Collection<SegmentString> nodedSegStrings = noder.node();
+    if (noder != null) ovNoder.setNoder(noder);
+    Collection<SegmentString> nodedSegStrings = ovNoder.node();
     
     // nodedSegStrings are no longer needed, and will be GCed
     List<Edge> edges = mergeEdges(nodedSegStrings);
@@ -197,7 +213,7 @@ public class OverlayNG
   }
 
   private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
-    List lines = new ArrayList();
+    List<LineString> lines = new ArrayList<LineString>();
     for (OverlayEdge edge : graph.getEdges()) {
       boolean includeEdge = isOutputEdges || edge.isInResult();
       if (! includeEdge) continue;
@@ -211,16 +227,18 @@ public class OverlayNG
   }
 
   private String labelForResult(OverlayEdge edge) {
-    return edge.getLabel().toString()
+    return edge.getLabel().toString(edge.isForward())
         + (edge.isInResult() ? " Res" : "");
   }
 
   private Geometry createResult(int opCode) {
+    
     //--- Build polygons
     List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
     PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
     List<Polygon> resultPolyList = polyBuilder.getPolygons();
     boolean hasResultArea = resultPolyList.size() > 0;
+    
     //--- Build lines
     LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
     List<LineString> resultLineList = lineBuilder.getLines();

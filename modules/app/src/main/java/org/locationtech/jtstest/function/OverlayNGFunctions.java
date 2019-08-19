@@ -13,11 +13,17 @@ package org.locationtech.jtstest.function;
 
 import java.util.List;
 
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.LineStringExtracter;
 import org.locationtech.jts.geom.util.PolygonExtracter;
+import org.locationtech.jts.noding.IntersectionAdder;
+import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
@@ -130,5 +136,31 @@ public class OverlayNGFunctions {
     }
     Geometry result = geom.getFactory().buildGeometry(components);
     return result;
+  }
+  
+  public static Geometry unaryUnionClassicNoding(Geometry a) {
+    UnionFunction unionSRFun = new UnionFunction() {
+
+      public Geometry union(Geometry g0, Geometry g1) {
+        Noder noder = getSimpleNoder(false);
+        return OverlayNG.overlay(g0, g1, null, noder, OverlayOp.UNION );
+      }
+      
+    };
+    UnaryUnionOp op = new UnaryUnionOp(a);
+    op.setUnionFunction(unionSRFun);
+    return op.union();
+  }
+  
+  private static Noder getSimpleNoder(boolean doValidation) {
+    MCIndexNoder mcNoder = new MCIndexNoder();
+    LineIntersector li = new RobustLineIntersector();
+    mcNoder.setSegmentIntersector(new IntersectionAdder(li));
+    
+    Noder noder = mcNoder;
+    if (doValidation) {
+      noder = new ValidatingNoder( mcNoder);
+    }
+    return noder;
   }
 }

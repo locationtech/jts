@@ -41,15 +41,21 @@ public class OverlayNoder {
 
   private PrecisionModel pm;
   List<NodedSegmentString> segStrings = new ArrayList<NodedSegmentString>();
+  private Noder customNoder;
 
   public OverlayNoder(Geometry a, Geometry b, PrecisionModel pm) {
     this.pm = pm;
     add(a, 0);
     add(b, 1);
   }
+  
+  public void setNoder(Noder noder) {
+    this.customNoder = noder;
+  }
 
   public Collection<SegmentString> node() {
-    Noder noder = getSRNoder();
+    Noder noder = getNoder();
+    //Noder noder = getSRNoder();
     //Noder noder = getSimpleNoder(false);
     //Noder noder = getSimpleNoder(true);
     noder.computeNodes(segStrings);
@@ -57,6 +63,11 @@ public class OverlayNoder {
     @SuppressWarnings("unchecked")
     Collection<SegmentString> nodedSS = noder.getNodedSubstrings();
     return nodedSS;
+  }
+
+  private Noder getNoder() {
+    if (customNoder != null) return customNoder;
+    return getSRNoder();
   }
 
   private Noder getSRNoder() {
@@ -198,17 +209,24 @@ public class OverlayNoder {
   }
 
   private Coordinate[] round(Coordinate[] pts)  {
+    
     CoordinateList noRepeatCoordList = new CoordinateList();
 
     for (int i = 0; i < pts.length; i++) {
       Coordinate coord = new Coordinate(pts[i]);
-      pm.makePrecise(coord);
+      makePrecise(coord);
       noRepeatCoordList.add(coord, false);
     }
     Coordinate[] reducedPts = noRepeatCoordList.toCoordinateArray();
     return reducedPts;
   }  
   
+  private void makePrecise(Coordinate coord) {
+    // this allows clients to avoid rounding if needed by the noder
+    if (pm != null)
+      pm.makePrecise(coord);
+  }
+
   /*
   private Coordinate[] round(Coordinate[] pts, int minLength)  {
     CoordinateList noRepeatCoordList = new CoordinateList();
