@@ -22,6 +22,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.util.Debug;
 
 
 /**
@@ -318,6 +319,7 @@ public class CascadedPolygonUnion
   private Geometry unionActual(Geometry g0, Geometry g1)
   {
     Geometry union = unionFun.union(g0, g1);
+    //Debug.println("Union: A: " + g0.getNumPoints() + " B: " + g1.getNumPoints() + "  Result: " + union.getNumPoints());
   	return restrictToPolygons( union );
   }
 
