@@ -21,11 +21,7 @@ import java.util.Map;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Location;
-import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geomgraph.Position;
-import org.locationtech.jts.operation.overlay.OverlayOp;
-import org.locationtech.jts.util.Assert;
-import org.locationtech.jts.util.Debug;
 
 public class OverlayGraph {
   
@@ -87,7 +83,7 @@ public class OverlayGraph {
    */
   private OverlayEdge addEdge(Edge edge) {
     //if (! isValidEdge(orig, dest)) return null;
-    OverlayEdge e = createEdges(edge.getCoordinates(), edge.getMergedLabel());
+    OverlayEdge e = createEdges(edge.getCoordinates(), edge.computeLabel());
     //Debug.println("added edge: " + e);
     insert(e);
     insert((OverlayEdge) e.sym());
@@ -339,7 +335,12 @@ public class OverlayGraph {
 
   /**
    * Determines the {@link Location} for an edge within an Area geometry
-   * via point location.
+   * via point-in-polygon location.
+   * <p>
+   * This is only safe to use for disconnected edges,
+   * since the test is carried out against the original input geometry,
+   * and precision reduction may cause incorrect results for edges
+   * which are close enough to a boundary to become connected. 
    * 
    * @param geomIndex the parent geometry index
    * @param edge the edge to locate
@@ -352,22 +353,9 @@ public class OverlayGraph {
      * Edge is only labelled INTERIOR if both ends are.
      */
     int loc = inputGeometry.locatePoint(geomIndex, edge.orig());
-    int edgeLoc = loc == Location.INTERIOR ? Location.INTERIOR : Location.EXTERIOR;
+    int edgeLoc = loc != Location.EXTERIOR ? Location.INTERIOR : Location.EXTERIOR;
     return edgeLoc;
   } 
-  
-  private int TEST_locateEdge(int geomIndex, OverlayEdge edge) {
-    /*
-     * To improve the robustness of the point location,
-     * check both ends of the edge.
-     * Edge is only labelled INTERIOR if both ends are.
-     */
-    int loc1 = inputGeometry.locatePoint(geomIndex, edge.orig());
-    int loc2 = inputGeometry.locatePoint(geomIndex, edge.dest());
-    boolean bothInterior = loc1 == Location.INTERIOR && loc2 == Location.INTERIOR;
-    int edgeLoc = bothInterior ? Location.INTERIOR : Location.EXTERIOR;
-    return edgeLoc;
-  }
 
   public void markResultAreaEdges(int overlayOpCode) {
     for (OverlayEdge edge : getEdges()) {
@@ -384,7 +372,7 @@ public class OverlayGraph {
               overlayOpCode)) {
       e.markInResult();  
     }
-    Debug.println("markInResultArea: " + e);
+    //Debug.println("markInResultArea: " + e);
   }
   
   public void removeDuplicateResultAreaEdges() {
@@ -405,6 +393,5 @@ public class OverlayGraph {
     } 
     return resultEdges;
   }
-
 
 }

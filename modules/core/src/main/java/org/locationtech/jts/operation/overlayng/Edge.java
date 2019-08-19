@@ -114,15 +114,15 @@ public class Edge {
     return bDim;
   }
   
-  public OverlayLabel getMergedLabel() {
+  public OverlayLabel computeLabel() {
     OverlayLabel lbl = new OverlayLabel();
-    initInputLabel(lbl, 0, aDim, aDepthDelta, aIsHole);
-    initInputLabel(lbl, 1, bDim, bDepthDelta, bIsHole);
+    initLabel(lbl, 0, aDim, aDepthDelta, aIsHole);
+    initLabel(lbl, 1, bDim, bDepthDelta, bIsHole);
     return lbl;
   }
   
   /**
-   * Computes the label for an edge resulting from an input geometry.
+   * Populates the label for an edge resulting from an input geometry.
    * 
    * <ul>
    * <li>If the edge is not part of the input, the label is left as NOT_PART
@@ -144,14 +144,12 @@ public class Edge {
    * @param dim
    * @param depthDelta
    */
-  private void initInputLabel(OverlayLabel lbl, int geomIndex, int dim, int depthDelta, boolean isHole) {
-    // not part of the input ==> leave label as NOT_PART
-    
+  private void initLabel(OverlayLabel lbl, int geomIndex, int dim, int depthDelta, boolean isHole) {
     int dimLabel = labelDim(dim, depthDelta);
     
     switch (dimLabel) {
     case OverlayLabel.DIM_NOT_PART:
-      // assumes label is initialized correctly
+      lbl.initNotPart(geomIndex);
       break;
     case OverlayLabel.DIM_BOUNDARY: 
       lbl.initBoundary(geomIndex, locationLeft(depthDelta), locationRight(depthDelta), isHole);
@@ -197,7 +195,7 @@ public class Edge {
     case 1: return Location.INTERIOR;
     case -1: return Location.EXTERIOR;
     }
-    throw new IllegalStateException("found illegal depth delta " + depthDelta);
+    return OverlayLabel.LOC_UNKNOWN;
   }
 
   private int locationLeft(int depthDelta) {
@@ -208,7 +206,7 @@ public class Edge {
     case 1: return Location.EXTERIOR;
     case -1: return Location.INTERIOR;
     }
-    throw new IllegalStateException("found illegal depth delta " + depthDelta + " in edge " + this);
+    return OverlayLabel.LOC_UNKNOWN;
   }
 
   private static int delSign(int depthDel) {

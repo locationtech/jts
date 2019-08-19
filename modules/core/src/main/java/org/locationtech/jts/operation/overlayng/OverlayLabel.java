@@ -179,6 +179,16 @@ public class OverlayLabel {
     }
   }
   
+  public void initNotPart(int index) {
+    // this assumes locations are initialized to UNKNOWN
+    if (index == 0) {
+      aDim = DIM_NOT_PART;
+    }
+    else {
+      bDim = DIM_NOT_PART;
+    }
+  }
+  
   /*
   public void initAsLine(int index, int locInArea) {
     int loc = normalizeLocation(locInArea);
