@@ -278,6 +278,13 @@ public class OverlayLabel {
     return bDim != DIM_UNKNOWN;
   }
 
+  public boolean isNotPart(int index) {
+    if (index == 0) {
+      return aDim == DIM_NOT_PART;
+    }
+    return bDim == DIM_NOT_PART;
+  }
+
   public boolean isBoundaryEither() {
     return aDim == DIM_BOUNDARY || bDim == DIM_BOUNDARY;
   }

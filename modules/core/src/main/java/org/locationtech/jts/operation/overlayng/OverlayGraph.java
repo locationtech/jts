@@ -139,8 +139,8 @@ public class OverlayGraph {
     
     Collection<OverlayEdge> nodes = getNodeEdges();
     labelAreaNodeEdges(nodes);
-    labelConnectedLinearEdges();
     
+    //TODO: is there a way to avoid scanning all edges in these steps?
     /**
      * At this point collapsed edges with unknown location
      * must be disconnected
@@ -155,9 +155,7 @@ public class OverlayGraph {
      * since there may be NOT_PART edges which are connected, 
      * and they need to be labelled in the same way.
      */
-    //TODO: is there a way to avoid scanning all edges in these steps?
     labelCollapsedEdges();
-    labelConnectedLinearEdges();
     
     labelDisconnectedEdges();
   }
@@ -220,12 +218,42 @@ public class OverlayGraph {
     return lineEdges;
   }
 
+  /**
+   * Labels node edges based on the arrangement
+   * of boundary edges incident on them.
+   * Also propagates the labelling to connected linear edges.
+   *  
+   * @param nodes the nodes to label
+   */
   private void labelAreaNodeEdges(Collection<OverlayEdge> nodes) {
     for (OverlayEdge nodeEdge : nodes) {
       OverlayNode.labelAreaEdges(nodeEdge);
     }
+    labelConnectedLinearEdges();
   }
 
+  /**
+   * At this point collapsed edges with unknown location
+   * must be disconnected from the boundary edges of the parent
+   * (because otherwise the location would have
+   * been propagated from them).
+   * They can be now located based on their parent ring role (shell or hole).
+   * (This cannot be done earlier, because the location
+   * based on the boundary edges must take precedence.
+   * There are situations where a collapsed edge has a location 
+   * which is different to its ring role - 
+   * e.g. a narrow gore in a polygon, which is in 
+   * the interior of the reduced polygon, but whose
+   * ring role would imply the location EXTERIOR.)
+   * 
+   * Note that collapsed edges can NOT have location determined via a PIP location check,
+   * because that is done against the unreduced input geometry,
+   * which may give an invalid result due to topology collapse.
+   * 
+   * The labelling is propagated to other connected edges, 
+   * since there may be NOT_PART edges which are connected, 
+   * and they need to be labelled in the same way.
+   */
   private void labelCollapsedEdges() {
     for (OverlayEdge edge : edges) {
       if (edge.getLabel().isLineLocationUnknown(0)) {
@@ -235,6 +263,7 @@ public class OverlayGraph {
         labelCollapsedEdge(edge, 1);
       }
     }
+    labelConnectedLinearEdges();
   }
 
   private void labelCollapsedEdge(OverlayEdge edge, int geomIndex) {
@@ -251,6 +280,16 @@ public class OverlayGraph {
     //Debug.print("AFTER: " + edge.toStringNode());
   }
 
+  /**
+   * At this point there may still be edges which have unknown location
+   * relative to an input geometry.
+   * This must be because they are NOT_PART edges for that geometry, 
+   * and are disconnected from any edges of that geometry.
+   * 
+   * If the input geometry is an Area the edge location can
+   * be determined via a PIP test.
+   * If the input is not an Area the location is EXTERIOR. 
+   */
   private void labelDisconnectedEdges() {
     for (OverlayEdge edge : edges) {
       //Debug.println("\n------  checking for Disconnected edge " + edge);
@@ -264,27 +303,34 @@ public class OverlayGraph {
   }
 
   /**
-   * Labels edges which are disconnected from other
+   * Labels an edge which is disconnected from other
    * edges which could provide location information.
    * The location is determined by checking 
-   * if the edge lies inside the given input area (if any)
-   * @param edge
-   * @param geomIndex
+   * if the edge lies inside the given input area (if any).
+   * 
+   * @param edge the edge to label
+   * @param geomIndex the input geometry to label against
    */
-  private void labelDisconnectedEdge(OverlayEdge edge, int geomIndex) {    
+  private void labelDisconnectedEdge(OverlayEdge edge, int geomIndex) { 
+     OverlayLabel label = edge.getLabel();
+   //Assert.isTrue(label.isNotPart(geomIndex));
+    
     /**
-     * Only area geometries provide a location for edges
+     * if input geom is not an area edge must be EXTERIOR
      */
-    if (! inputGeometry.isArea(geomIndex)) return;
+    if (! inputGeometry.isArea(geomIndex)) {
+      label.setLocationAll(geomIndex, Location.EXTERIOR);
+      return;
+    };
     
     //Debug.println("\n------  labelDisconnectedEdge - geomIndex= " + geomIndex);
     //Debug.print("BEFORE: " + edge.toStringNode());
-    
-    OverlayLabel label = edge.getLabel();
-    // TODO: ??? locate in the result area, not original geometry, in case of collapse 
     /**
-     * This must be an edge which is disconnected from  
-     * the given input geometry area.
+     * Locate edge in input area using a Point-In-Poly check.
+     * This should be safe even with precision reduction, 
+     * because since the edge has remained disconnected
+     * its interior-exterior relationship 
+     * can be determined relative to the original input geometry.
      */
     int edgeLoc = locateEdge(geomIndex, edge);
     label.setLocationAll(geomIndex, edgeLoc);
@@ -305,6 +351,17 @@ public class OverlayGraph {
      * check both ends of the edge.
      * Edge is only labelled INTERIOR if both ends are.
      */
+    int loc = inputGeometry.locatePoint(geomIndex, edge.orig());
+    int edgeLoc = loc == Location.INTERIOR ? Location.INTERIOR : Location.EXTERIOR;
+    return edgeLoc;
+  } 
+  
+  private int TEST_locateEdge(int geomIndex, OverlayEdge edge) {
+    /*
+     * To improve the robustness of the point location,
+     * check both ends of the edge.
+     * Edge is only labelled INTERIOR if both ends are.
+     */
     int loc1 = inputGeometry.locatePoint(geomIndex, edge.orig());
     int loc2 = inputGeometry.locatePoint(geomIndex, edge.dest());
     boolean bothInterior = loc1 == Location.INTERIOR && loc2 == Location.INTERIOR;
@@ -320,8 +377,7 @@ public class OverlayGraph {
 
   public void markInResultArea(OverlayEdge e, int overlayOpCode) {
     OverlayLabel label = e.getLabel();
-    if ( //isResultAreaEdge(label, overlayOpCode)
-        label.isBoundaryEither()
+    if ( label.isBoundaryEither()
         && OverlayNG.isResultOfOp(
               label.getLocationBoundaryOrLinear(0, Position.RIGHT, e.isForward()),
               label.getLocationBoundaryOrLinear(1, Position.RIGHT, e.isForward()),
@@ -330,23 +386,6 @@ public class OverlayGraph {
     }
     Debug.println("markInResultArea: " + e);
   }
-  
-  /*
-   // MD - too restrictive.  L edges can be in result boundary (e.g. collapsed hole)
-  private boolean isResultAreaEdge(OverlayLabel label, int overlayOpCode) {
-    switch (overlayOpCode) {
-    case OverlayOp.INTERSECTION:
-      return label.isAreaBoundaryOrNotPart(0) && label.isAreaBoundaryOrNotPart(1);
-    case OverlayOp.UNION:
-      return label.isAreaBoundaryOrNotPart(0) || label.isAreaBoundaryOrNotPart(1);
-    case OverlayOp.DIFFERENCE:
-      return label.isAreaBoundaryOrNotPart(0);
-    case OverlayOp.SYMDIFFERENCE:
-      return label.isAreaBoundaryOrNotPart(0) || label.isAreaBoundaryOrNotPart(1);
-    }
-    return false;
-  }
-  */
   
   public void removeDuplicateResultAreaEdges() {
     for (OverlayEdge edge : getEdges()) {

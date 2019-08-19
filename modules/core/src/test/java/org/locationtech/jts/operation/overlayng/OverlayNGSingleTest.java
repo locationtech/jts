@@ -51,7 +51,7 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testCollapseTriBoxIntersection() {
+  public void xtestCollapseTriBoxIntersection() {
     Geometry a = read("POLYGON ((1 2, 1 1, 9 1, 1 2))");
     Geometry b = read("POLYGON ((9 2, 9 1, 8 1, 8 2, 9 2))");
     Geometry expected = read("POLYGON EMPTY");
@@ -117,11 +117,19 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void XtestNestedShellsIntersection() {
+  public void testNestedShellsIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
     Geometry expected = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
     Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void xtestNestedShellsUnion() {
+    Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
+    Geometry b = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
+    Geometry expected = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
+    Geometry actual = union(a, b, 1);
     checkEqual(expected, actual);
   }
   
