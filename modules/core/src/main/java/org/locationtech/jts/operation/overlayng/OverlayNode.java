@@ -22,11 +22,12 @@ import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.Debug;
 
 /**
- * An overlay node is a "virtual" concept, 
+ * An overlay node is a vertex at which one or more edges terminate.
+ * It is a "virtual" concept, 
  * which is represented by a single {@link OverlayEdge}
  * originating at the node coordinate. 
  * 
- * @author mdavis
+ * @author Martin Davis
  *
  */
 public class OverlayNode {
@@ -37,7 +38,7 @@ public class OverlayNode {
    * 
    * @param e node to compute labelling for
    */
-  public static void labelAreaNodeEdges(OverlayEdge nodeEdge) {
+  public static void labelAreaEdges(OverlayEdge nodeEdge) {
     propagateAreaLabels(nodeEdge, 0);
     propagateAreaLabels(nodeEdge, 1);
   }
@@ -100,11 +101,11 @@ public class OverlayNode {
   }
 
   /**
-   * Finds a node edge which has a labelling for this geom.
-   * @param e2 
+   * Finds a boundary edge for this geom, if one exists
    * 
-   * @param geomIndex
-   * @return labelled edge, or null if no edges are labelled
+   * @param nodeEdge an edge for this node
+   * @param geomIndex the parent geometry index
+   * @return a boundary edge, or null if no boundary edge exists
    */
   private static OverlayEdge findPropagationStartEdge(OverlayEdge nodeEdge, int geomIndex) {
     OverlayEdge eStart = nodeEdge;
@@ -306,9 +307,8 @@ public class OverlayNode {
   
   public static String toString(OverlayEdge nodeEdge) {
     Coordinate orig = nodeEdge.orig();
-    Coordinate dest = nodeEdge.dest();
     StringBuilder sb = new StringBuilder();
-    sb.append("Node( "+WKTWriter.format(orig) + " )" + "\n");
+    sb.append("Node( "+ WKTWriter.format(orig) + " )" + "\n");
     OverlayEdge e = nodeEdge;
     do {
       sb.append("  -> " + e);
@@ -322,24 +322,4 @@ public class OverlayNode {
     return sb.toString(); 
   }
 
-  private static String toStringNodeEdge(OverlayEdge e) {
-    return "  -> (" + WKTWriter.format(e.dest()) 
-    + " " + e.getLabel() + " Sym: " + e.symOE().getLabel()
-    + (e.isInResult() ? " Res" : "-") + "/" + (e.symOE().isInResult() ? " Res" : "-")
-    ;
-  }
-
-  /*
-  public static int outgoingDegree(OverlayEdge nodeEdge,
-      MaximalEdgeRing maximalEdgeRing) {
-    int degree = 0;
-    OverlayEdge e = nodeEdge;
-    do {
-      if (e.getEdgeRingMax() == maximalEdgeRing)
-        degree++;
-      e = (OverlayEdge) e.oNext();
-    } while (e != nodeEdge);
-    return degree;
-  }
-  */
 }

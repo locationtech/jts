@@ -347,37 +347,18 @@ public class OverlayLabel {
     return LOC_UNKNOWN;
   }
   
-  public int getLocationBoundaryOrLine(int index, int position, boolean isForward) {
+  public int getLocationBoundaryOrLinear(int index, int position, boolean isForward) {
     if (isBoundary(index)) {
       return getLocation(index, position, isForward);
     }
     return getLineLocation(index);
   }
-
-  /**
-   * Gets the location for given input geometry index
-   * and position, if the label is an area label for that geometry.
-   * If the label is a line label, returns {@link Location#NONE}.
-   * 
-   * @param index
-   * @param position
-   * @return the location of the label position, or Location.NONE
-   */
-  /*
-  public int getLocationAreaNotLine(int index, int position) {
-    if (isAreaBoundary(index)) {
-      return getLocation(index, position);
-    }
-    if (isLine(index)) return Location.NONE;
-    return getLocationNotPart(index);
-  }
-*/
   
   /**
-   * Gets the area location for the given source.
+   * Gets the linear location for the given source.
    * 
    * @param index the source index
-   * @return the area location for the source
+   * @return the linear location for the source
    */
   public int getLocation(int index) {
     if (index == 0) {

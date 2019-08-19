@@ -222,7 +222,7 @@ public class OverlayGraph {
 
   private void labelAreaNodeEdges(Collection<OverlayEdge> nodes) {
     for (OverlayEdge nodeEdge : nodes) {
-      OverlayNode.labelAreaNodeEdges(nodeEdge);
+      OverlayNode.labelAreaEdges(nodeEdge);
     }
   }
 
@@ -323,8 +323,8 @@ public class OverlayGraph {
     if ( //isResultAreaEdge(label, overlayOpCode)
         label.isBoundaryEither()
         && OverlayNG.isResultOfOp(
-              label.getLocationBoundaryOrLine(0, Position.RIGHT, e.isForward()),
-              label.getLocationBoundaryOrLine(1, Position.RIGHT, e.isForward()),
+              label.getLocationBoundaryOrLinear(0, Position.RIGHT, e.isForward()),
+              label.getLocationBoundaryOrLinear(1, Position.RIGHT, e.isForward()),
               overlayOpCode)) {
       e.markInResult();  
     }
