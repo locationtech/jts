@@ -4,7 +4,7 @@ JTS includes some application tools to make it easier to work with geometry and 
 
 ## TestBuilder
 
-The TestBuilder is a GUI application which allows creating and visualizing geometry, and executing JTS functions.
+The TestBuilder is a GUI application which allows creating, editing and visualizing geometries, and executing JTS functions on them.
 
 * Run (from project root): 
      
