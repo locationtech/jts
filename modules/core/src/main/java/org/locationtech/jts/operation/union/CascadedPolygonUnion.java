@@ -325,9 +325,9 @@ public class CascadedPolygonUnion
    */
   private Geometry unionActual(Geometry g0, Geometry g1)
   {
-    Debug.print("Union: A: " + g0.getNumPoints() + " / B: " + g1.getNumPoints() + "  ---  "  );
+    if (Debug.isDebugging()) Debug.print("Union: A: " + g0.getNumPoints() + " / B: " + g1.getNumPoints() + "  ---  "  );
     Geometry union = unionFun.union(g0, g1);
-    Debug.println(" Result: " + union.getNumPoints());
+    if (Debug.isDebugging()) Debug.println(" Result: " + union.getNumPoints());
   	return restrictToPolygons( union );
   }
 
