@@ -98,6 +98,9 @@ public class CascadedPolygonUnion
 	private GeometryFactory geomFactory = null;
   private UnionFunction unionFun;
 
+  private int countRemainder = 0;
+  private int countInput = 0;
+
   /**
    * Creates a new instance to union
    * the given collection of {@link Geometry}s.
@@ -122,6 +125,8 @@ public class CascadedPolygonUnion
     // guard against null input
     if (inputPolys == null)
       inputPolys = new ArrayList();
+    this.countInput = inputPolys.size();
+    this.countRemainder = countInput;
   }
   /**
    * The effectiveness of the index is somewhat sensitive
@@ -306,6 +311,8 @@ public class CascadedPolygonUnion
   	if (g1 == null)
   		return g0.copy();
 
+  	countRemainder--;
+  	Debug.println("Remainder: " + countRemainder + " out of " + countInput);
   	return unionActual( g0, g1 );
   }
 
@@ -318,8 +325,9 @@ public class CascadedPolygonUnion
    */
   private Geometry unionActual(Geometry g0, Geometry g1)
   {
+    Debug.print("Union: A: " + g0.getNumPoints() + " / B: " + g1.getNumPoints() + "  ---  "  );
     Geometry union = unionFun.union(g0, g1);
-    //Debug.println("Union: A: " + g0.getNumPoints() + " B: " + g1.getNumPoints() + "  Result: " + union.getNumPoints());
+    Debug.println(" Result: " + union.getNumPoints());
   	return restrictToPolygons( union );
   }
 
