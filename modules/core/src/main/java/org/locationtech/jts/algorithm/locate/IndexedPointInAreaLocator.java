@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.algorithm.locate;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -106,11 +107,15 @@ public class IndexedPointInAreaLocator
   
   private static class IntervalIndexedGeometry
   {
-    private final SortedPackedIntervalRTree index= new SortedPackedIntervalRTree();
+    private boolean isEmpty = false;
+    private SortedPackedIntervalRTree index= new SortedPackedIntervalRTree();
 
     public IntervalIndexedGeometry(Geometry geom)
     {
-      init(geom);
+      if (geom.isEmpty())
+        isEmpty = true;
+      else
+        init(geom);
     }
     
     private void init(Geometry geom)
@@ -135,6 +140,9 @@ public class IndexedPointInAreaLocator
     
     public List query(double min, double max)
     {
+     if (isEmpty) 
+        return new ArrayList();
+      
       ArrayListVisitor visitor = new ArrayListVisitor();
       index.query(min, max, visitor);
       return visitor.getItems();
@@ -142,6 +150,8 @@ public class IndexedPointInAreaLocator
     
     public void query(double min, double max, ItemVisitor visitor)
     {
+      if (isEmpty) 
+        return;
       index.query(min, max, visitor);
     }
   }

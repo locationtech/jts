@@ -14,6 +14,7 @@ package org.locationtech.jts.algorithm.locate;
 import org.locationtech.jts.algorithm.AbstractPointInRingTest;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.io.WKTReader;
 
 import junit.textui.TestRunner;
@@ -43,4 +44,13 @@ public class IndexedPointInAreaLocatorTest extends AbstractPointInRingTest {
     assertEquals(expectedLoc, result);
   }
 
+   /**
+    * See JTS GH Issue #19.
+    * Used to infinite-loop on empty geometries.
+    * 
+    * @throws Exception
+    */
+   public void testEmpty() throws Exception {
+     runPtInRing(Location.EXTERIOR, new Coordinate(0,0), "POLYGON EMPTY");
+  }
 }
