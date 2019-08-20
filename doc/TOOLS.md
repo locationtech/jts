@@ -1,6 +1,6 @@
 # JTS Tools
 
-JTS includes some application tools.
+JTS includes some application tools to make it easier to work with geometry and JTS functions.
 
 ## TestBuilder
 
