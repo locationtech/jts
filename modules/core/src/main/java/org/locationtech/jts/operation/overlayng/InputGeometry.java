@@ -16,6 +16,7 @@ import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Location;
 
 public class InputGeometry {
   
@@ -47,9 +48,17 @@ public class InputGeometry {
   
   public int locatePointInArea(int geomIndex, Coordinate pt) {
     // Assert: only called if dimension(geomIndex) = 2
+    
     //return ptLocator.locate(pt, geom[geomIndex]);
+    
+    //*
+    // this check is important, because IndexedPointInAreaLocator can't handle empty polygons
+    if (getGeometry(geomIndex).isEmpty()) 
+      return Location.EXTERIOR;
+    
     PointOnGeometryLocator ptLocator = getLocator(geomIndex);
     return ptLocator.locate(pt);
+    //*/
   }
 
   private PointOnGeometryLocator getLocator(int geomIndex) {
