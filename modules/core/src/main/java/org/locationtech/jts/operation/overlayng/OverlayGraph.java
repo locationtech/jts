@@ -352,7 +352,7 @@ public class OverlayGraph {
      * check both ends of the edge.
      * Edge is only labelled INTERIOR if both ends are.
      */
-    int loc = inputGeometry.locatePoint(geomIndex, edge.orig());
+    int loc = inputGeometry.locatePointInArea(geomIndex, edge.orig());
     int edgeLoc = loc != Location.EXTERIOR ? Location.INTERIOR : Location.EXTERIOR;
     return edgeLoc;
   } 

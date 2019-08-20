@@ -157,7 +157,8 @@ public class OverlayEdgeRing {
   }
 
   /**
-   * Find the innermost enclosing shell EdgeRing containing the argument EdgeRing, if any.
+   * Finds the innermost enclosing shell OverlayEdgeRing
+   * containing this OverlayEdgeRing, if any.
    * The innermost enclosing ring is the <i>smallest</i> enclosing ring.
    * The algorithm used depends on the fact that:
    * <br>
@@ -174,7 +175,7 @@ public class OverlayEdgeRing {
    * @return containing EdgeRing, if there is one
    * or null if no containing EdgeRing is found
    */
-  public OverlayEdgeRing findEdgeRingContaining(List erList)
+  public OverlayEdgeRing findEdgeRingContaining(List<OverlayEdgeRing> erList)
   {
     LinearRing testRing = this.getRing();
     Envelope testEnv = testRing.getEnvelopeInternal();
@@ -182,8 +183,7 @@ public class OverlayEdgeRing {
 
     OverlayEdgeRing minRing = null;
     Envelope minRingEnv = null;
-    for (Iterator it = erList.iterator(); it.hasNext(); ) {
-      OverlayEdgeRing tryEdgeRing = (OverlayEdgeRing) it.next();
+    for (OverlayEdgeRing tryEdgeRing: erList ) {
       LinearRing tryRing = tryEdgeRing.getRing();
       Envelope tryShellEnv = tryRing.getEnvelopeInternal();
       // the hole envelope cannot equal the shell envelope

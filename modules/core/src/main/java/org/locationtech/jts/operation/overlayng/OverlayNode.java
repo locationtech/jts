@@ -82,7 +82,7 @@ public class OverlayNode {
          */
         int locRight = e.getLocation(geomIndex, Position.RIGHT);
         if (locRight != currLoc) {
-          //*
+          /*
           Debug.println("side location conflict: index= " + geomIndex + " R loc " 
         + Location.toLocationSymbol(locRight) + " <>  curr loc " + Location.toLocationSymbol(currLoc) 
         + " for " + e);
@@ -134,14 +134,14 @@ public class OverlayNode {
     
     do {
       OverlayLabel label = e.getLabel();
-      Debug.println("propagateLineLocationAtNode - checking " + index + ": " + e);
+      //Debug.println("propagateLineLocationAtNode - checking " + index + ": " + e);
       if ( label.isLineLocationUnknown(index) ) {
         /**
          * If edge is not a boundary edge, 
          * its location is now known for this area
          */
         e.setLocationLine(index, lineLoc);
-        Debug.println("propagateLineLocationAtNode - setting "+ index + ": " + e);
+        //Debug.println("propagateLineLocationAtNode - setting "+ index + ": " + e);
 
         /**
          * Add sym edge to stack for graph traversal

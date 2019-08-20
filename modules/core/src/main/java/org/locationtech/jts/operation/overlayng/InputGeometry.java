@@ -12,14 +12,18 @@
 package org.locationtech.jts.operation.overlayng;
 
 import org.locationtech.jts.algorithm.PointLocator;
+import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
+import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 
 public class InputGeometry {
   
-  private static final PointLocator ptLocator = new PointLocator();
+  //private static final PointLocator ptLocator = new PointLocator();
 
-  public Geometry[] geom;
+  private Geometry[] geom = new Geometry[2];
+  private PointOnGeometryLocator ptLocatorA;
+  private PointOnGeometryLocator ptLocatorB;
   
   public InputGeometry(Geometry geomA, Geometry geomB) {
     geom = new Geometry[] { geomA, geomB };
@@ -41,7 +45,24 @@ public class InputGeometry {
     return geom[geomIndex].getDimension() == 1;
   }
   
-  public int locatePoint(int geomIndex, Coordinate pt) {
-    return ptLocator.locate(pt, geom[geomIndex]);
+  public int locatePointInArea(int geomIndex, Coordinate pt) {
+    // Assert: only called if dimension(geomIndex) = 2
+    //return ptLocator.locate(pt, geom[geomIndex]);
+    PointOnGeometryLocator ptLocator = getLocator(geomIndex);
+    return ptLocator.locate(pt);
   }
+
+  private PointOnGeometryLocator getLocator(int geomIndex) {
+    if (geomIndex == 0) {
+      if (ptLocatorA == null)
+        ptLocatorA = new IndexedPointInAreaLocator(getGeometry(geomIndex));
+      return ptLocatorA;
+    }
+    else {
+      if (ptLocatorB == null)
+        ptLocatorB = new IndexedPointInAreaLocator(getGeometry(geomIndex));
+      return ptLocatorB;
+    } 
+  }
+
 }

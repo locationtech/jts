@@ -90,7 +90,7 @@ public class PolygonBuilder {
      */
     OverlayEdgeRing shell = findSingleShell(minRings);
     if (shell != null) {
-      placeHoles(shell, minRings);
+      assignHoles(shell, minRings);
       shellList.add(shell);
     }
     else {
@@ -124,9 +124,9 @@ public class PolygonBuilder {
   }
   
   /**
-   * This method assigns the holes for a Polygon (formed from a list of
-   * EdgeRings) to its shell.
-   * Determining the holes for a EdgeRing polygon serves two purposes:
+   * Assigns the holes for a Polygon (formed from a list of
+   * OverlayEdgeRing) to its shell.
+   * Determining the holes for a OverlayEdgeRing polygon serves two purposes:
    * <ul>
    * <li>it is faster than using a point-in-polygon check later on.
    * <li>it ensures correctness, since if the PIP test was used the point
@@ -134,7 +134,7 @@ public class PolygonBuilder {
    * PIP test
    * </ul>
    */
-  private void placeHoles(OverlayEdgeRing shell, List<OverlayEdgeRing> minEdgeRings)
+  private void assignHoles(OverlayEdgeRing shell, List<OverlayEdgeRing> minEdgeRings)
   {
     for (OverlayEdgeRing er : minEdgeRings) {
       if (er.isHole()) {
@@ -144,8 +144,7 @@ public class PolygonBuilder {
   }
 
   /**
-   * This method determines finds a containing shell for all holes
-   * which have not yet been assigned to a shell.
+   * Place holes have not yet been assigned to a shell.
    * These "free" holes should
    * all be <b>properly</b> contained in their parent shells, so it is safe to use the
    * <code>findEdgeRingContaining</code> method.
