@@ -27,6 +27,11 @@ It has the following features:
 
 ### Examples
 
+ * Print usage instructions
+      
+       jtsop
+       jtsop -help
+       
  * Compute the area of a WKT geometry, output it
       
        jtsop -a some-geom.wkt -f txt area 
