@@ -45,6 +45,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix bug in `HalfEdge.insert` method which caused CCW order not to be preserved in some cases
 * Fix generation of Voronoi diagrams for cases with sites in a square (#447)
 * Fix use of clipping envelope in `VoronoiDiagramBuilder`
+* Fix infinite loop on empty input in `IndexedPointInAreaLocator` and `SortedPackedIntervalRTree` (#462) 
 
 ## JTS TestBuilder
 
@@ -58,6 +59,11 @@ Distributions for older JTS versions can be obtained at the
 
 * Allow test files/dirs to be specified as free args
 * Add cmd options to run operation on file input
+
+## JtsOp 
+
+Add new command-line utility
+
 
 
 <!-- ================================================================ -->
