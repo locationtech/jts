@@ -32,27 +32,31 @@ It has the following features:
        jtsop
        jtsop -help
        
- * Compute the area of a WKT geometry, output it
+ * Compute the area of a WKT geometry and output it
       
        jtsop -a some-geom.wkt -f txt area 
       
- * Compute the unary union of a WKT geometry, output as WKB
+ * Compute the unary union of a WKT geometry and output as WKB
  
        jtsop -a some-geom.wkt -f wkb Overlay.unaryUnion 
  
- * Compute the union of two geometries in WKT and WKB, output as WKT
+ * Compute the union of two geometries in WKT and WKB and output as WKT
       
        jtsop -a some-geom.wkt -b some-other-geom.wkb -f wkt Overlay.Union
  
- * Compute the buffer of distance 10 of a WKT geometry, output as GeoJSON
+ * Compute the buffer of distance 10 of a WKT geometry and output as GeoJSON
     
        jtsop -a some-geom.wkt -f geojson Buffer.buffer 10
  
- * Compute the buffer of a literal geometry, output as WKT
+ * Compute the buffer of a literal geometry and output as WKT
  
        jtsop -a "POINT (10 10)" -f wkt Buffer.buffer 10
   
  * Output a literal geometry as GeoJSON
     
        jtsop -a "POINT (10 10)" -f geojson
+       
+ * Compute an operation on a geometry and output only geometry metrics and timing
+ 
+       jtsop -v -a some-geom.wkt Buffer.buffer 10
 
