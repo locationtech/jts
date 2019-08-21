@@ -42,7 +42,8 @@ See also:
 
 * [**Javadoc**](https://locationtech.github.io/jts/javadoc) for the latest version of JTS
 * [**FAQ**](https://locationtech.github.io/jts/jts-faq.html) - Frequently Asked Questions 
-* [**User Guide**](USING.md) - Installing and using JTS (as a library and using included tools)
+* [**User Guide**](USING.md) - Installing and using JTS 
+* [**Tools**](doc/TOOLS.md) - Guide to tools included with JTS
 * [**Developing Guide**](DEVELOPING.md) - how to build and develop for JTS
 * [**Upgrade Guide**](MIGRATION.md) - How to migrate from previous versions of JTS
 
