@@ -76,7 +76,7 @@ Add new command-line utility
 ### Functionality Improvements
 
 * Added `HilbertCode` and `HilbertCurveBuilder`.
-* Added 'MortonCode` and `MortonCurveBuilder`.
+* Added `MortonCode` and `MortonCurveBuilder`.
 * Improved `InteriorPointArea` algorithm performance and robustness
 * Add `IndexedFacetDistance` methods `nearestLocations` and `nearestPoints`
 * Make `IndexedFacetDistance` thread-safe
