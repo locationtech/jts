@@ -32,6 +32,9 @@ It has the following features:
  * Print usage instructions
       
        jtsop
+       
+ * Print usage instructions and list of available operations
+ 
        jtsop -help
        
  * Compute the area of a WKT geometry and output it
