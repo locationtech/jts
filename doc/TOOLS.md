@@ -2,6 +2,8 @@
 
 JTS includes some application tools to make it easier to work with geometry and JTS functions.
 
+Tools are run using shell scripts in the JTS `bin` directory.
+
 ## TestBuilder
 
 The TestBuilder is a GUI application which allows creating, editing and visualizing geometries, and executing JTS functions on them.
