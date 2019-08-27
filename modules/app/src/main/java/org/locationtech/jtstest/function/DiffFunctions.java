@@ -1,9 +1,11 @@
 package org.locationtech.jtstest.function;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -55,8 +57,8 @@ public class DiffFunctions {
   }
   
   public static GeometryCollection diffSegments(Geometry a, Geometry b) {
-    List<LineSegment> segsA = extractSegments(a);
-    List<LineSegment> segsB = extractSegments(b);
+    List<LineSegment> segsA = extractSegmentsNorm(a);
+    List<LineSegment> segsB = extractSegmentsNorm(b);
     
     MultiLineString diffAB = diffSegments( segsA, segsB, a.getFactory() );
      
@@ -64,8 +66,8 @@ public class DiffFunctions {
   }
 
   public static GeometryCollection diffSegmentsBoth(Geometry a, Geometry b) {
-    List<LineSegment> segsA = extractSegments(a);
-    List<LineSegment> segsB = extractSegments(b);
+    List<LineSegment> segsA = extractSegmentsNorm(a);
+    List<LineSegment> segsB = extractSegmentsNorm(b);
     
     MultiLineString diffAB = diffSegments( segsA, segsB, a.getFactory() );
     MultiLineString diffBA = diffSegments( segsB, segsA, a.getFactory() );
@@ -73,6 +75,51 @@ public class DiffFunctions {
     
     return a.getFactory().createGeometryCollection(
         new Geometry[] { diffAB, diffBA });
+  }
+
+  public static GeometryCollection duplicateSegments(Geometry a) {
+    List<LineSegment> segsA = extractSegmentsNorm(a);    
+    MultiLineString dupA = dupSegments( segsA, a.getFactory() );
+    return dupA;
+  }
+
+  public static GeometryCollection singleSegments(Geometry a) {
+    List<LineSegment> segsA = extractSegmentsNorm(a);    
+    Map<LineSegment, Integer> segCounts = countSegments( segsA, a.getFactory() );
+    List<LineSegment> singleSegs = new ArrayList<LineSegment>();
+    for (LineSegment seg : segCounts.keySet()) {
+      int count = segCounts.get(seg);
+      if (count == 1) {
+        singleSegs.add(seg);
+      }
+    }
+    return toMultiLineString( singleSegs,  a.getFactory());
+  }
+
+  private static MultiLineString dupSegments(List<LineSegment> segs, GeometryFactory factory) {
+    Set<LineSegment> segsAll = new HashSet<LineSegment>();
+    List<LineSegment> segsDup = new ArrayList<LineSegment>();
+    for (LineSegment seg : segs) {
+      if (segsAll.contains(seg)) {
+        segsDup.add(seg);
+      }
+      else {
+        segsAll.add(seg);
+      }
+    }
+    return toMultiLineString( segsDup,  factory);
+  }
+
+  private static Map<LineSegment, Integer> countSegments(List<LineSegment> segs, GeometryFactory factory) {
+    Map<LineSegment, Integer> segsAll = new HashMap<LineSegment, Integer>();
+    for (LineSegment seg : segs) {
+      int count = 1;
+      if (segsAll.containsKey(seg)) {
+        count = 1 + segsAll.get(seg);
+      }
+      segsAll.put(seg, count);
+    }
+    return segsAll;
   }
 
   private static MultiLineString diffSegments(List<LineSegment> segsA, List<LineSegment> segsB, GeometryFactory factory) {
@@ -86,32 +133,28 @@ public class DiffFunctions {
         segsDiffA.add(seg);
       }
     }
-    LineString[] diffLines = toLineStrings( segsDiffA,  factory);
-    return factory.createMultiLineString( diffLines );
+    return toMultiLineString( segsDiffA,  factory);
   }
 
-  private static LineString[] toLineStrings(List<LineSegment> segs, GeometryFactory factory) {
+  private static MultiLineString toMultiLineString(List<LineSegment> segs, GeometryFactory factory) {
     LineString[] lines = new LineString[ segs.size() ];
     int i = 0;
     for (LineSegment seg : segs) {
       lines[i++] = seg.toGeometry(factory);
     }
-    return lines;
+    return factory.createMultiLineString( lines );
   }
 
-  private static List<LineSegment> extractSegments(Geometry geom) {
+  private static List<LineSegment> extractSegmentsNorm(Geometry geom) {
     List<LineSegment> segs = new ArrayList<LineSegment>();
-    List lines = LinearComponentExtracter.getLines(geom);
-    for (Iterator lineIt = lines.iterator(); lineIt.hasNext(); ) {
-      LineString line = (LineString) lineIt.next();
-      
+    List<LineString> lines = LinearComponentExtracter.getLines(geom);
+    for (LineString line : lines ) {
       Coordinate[] pts = line.getCoordinates();
       for (int i = 0; i < pts.length - 1; i++) {
         LineSegment seg = new LineSegment(pts[i], pts[i + 1]);
         seg.normalize();
         segs.add(seg);
       }
-      
     }
     return segs;
   }
