@@ -5,7 +5,7 @@ import org.locationtech.jts.geom.Geometry;
 
 import junit.textui.TestRunner;
 
-public class IndexedFacetDistanceTest extends AbstractDistanceTest {
+public class IndexedFacetDistanceTest extends BaseDistanceTest {
 
   public static void main(String args[]) {
     TestRunner.run(IndexedFacetDistanceTest.class);

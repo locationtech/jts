@@ -14,35 +14,27 @@ package org.locationtech.jts.operation.distance;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
 
 import test.jts.GeometryTestCase;
 
-public abstract class AbstractDistanceTest extends GeometryTestCase {
+public abstract class BaseDistanceTest extends GeometryTestCase {
 
-  private PrecisionModel precisionModel = new PrecisionModel(1);
-  private GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
-  WKTReader reader = new WKTReader(geometryFactory);
-
-  public AbstractDistanceTest(String name) { super(name); }
+  public BaseDistanceTest(String name) { super(name); }
 
   public void testDisjointCollinearSegments() throws Exception {
-    Geometry g1 = reader.read("LINESTRING (0.0 0.0, 9.9 1.4)");
-    Geometry g2 = reader.read("LINESTRING (11.88 1.68, 21.78 3.08)");
+    Geometry g1 = read("LINESTRING (0.0 0.0, 9.9 1.4)");
+    Geometry g2 = read("LINESTRING (11.88 1.68, 21.78 3.08)");
     
     double dist = distance(g1, g2);
-    assertEquals(2.23606, dist, 0.0001);
+    assertEquals(1.9996999774966246, dist, 0.0001);
     
-    assertTrue( ! isWithinDistance(g1, g2, 2) );
-    assertTrue( isWithinDistance(g1, g2, 3) );
-
+    assertTrue( ! isWithinDistance(g1, g2, 1) );
+    assertTrue(   isWithinDistance(g1, g2, 3) );
   }
 
-  public void testEverything() {
+  public void testPolygonsDisjoint() {
     Geometry g1 = read("POLYGON ((40 320, 200 380, 320 80, 40 40, 40 320),  (180 280, 80 280, 100 100, 220 140, 180 280))");
     Geometry g2 = read("POLYGON ((160 240, 120 240, 120 160, 160 140, 160 240))");
     assertEquals(18.97366596, distance(g1, g2), 1E-5);
@@ -50,10 +42,13 @@ public abstract class AbstractDistanceTest extends GeometryTestCase {
     assertTrue( ! isWithinDistance(g1, g2, 0) );
     assertTrue( ! isWithinDistance(g1, g2, 10) );
     assertTrue( isWithinDistance(g1, g2, 20) );
-
+  }
+ 
+  public void testPolygonsOverlapping() {
+    Geometry g1 = read("POLYGON ((40 320, 200 380, 320 80, 40 40, 40 320),  (180 280, 80 280, 100 100, 220 140, 180 280))");
     Geometry g3 = read("POLYGON ((160 240, 120 240, 120 160, 180 100, 160 240))");
-    assertEquals(0.0, distance(g1, g3), 1E-5);
-    
+
+    assertEquals(0.0, distance(g1, g3), 1E-9);
     assertTrue( isWithinDistance(g1, g3, 0.0) );
   }
  
