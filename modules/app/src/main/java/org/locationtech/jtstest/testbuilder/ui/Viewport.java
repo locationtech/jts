@@ -140,7 +140,7 @@ public class Viewport implements PointTransformation
     double pow10 = Math.floor(MathUtil.log10(scaleRaw) + ROUND_ERROR_REMOVAL);
     double nearestLowerPow10 = Math.pow(10, pow10);
     
-    int scaleDigit = (int) (scaleRaw / nearestLowerPow10);
+    int scaleDigit = (int) ( (scaleRaw +   + ROUND_ERROR_REMOVAL) / nearestLowerPow10);
     double scale = scaleDigit * nearestLowerPow10;
     
     //System.out.println("requested scale = " + scaleRaw + " scale = " + scale  + "   Pow10 = " + pow10);
