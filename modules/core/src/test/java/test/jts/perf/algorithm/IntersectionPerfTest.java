@@ -96,15 +96,15 @@ public class IntersectionPerfTest extends PerformanceTestCase {
     // unrolled computation
     DD px = new DD(p1.y).selfSubtract(p2.y);
     DD py = new DD(p2.x).selfSubtract(p1.x);
-    DD pw = new DD(p1.x).selfMultiply(p2.y).subtract(new DD(p2.x).selfMultiply(p1.y));
+    DD pw = new DD(p1.x).selfMultiply(p2.y).selfSubtract(new DD(p2.x).selfMultiply(p1.y));
 
     DD qx = new DD(q1.y).selfSubtract(q2.y);
     DD qy = new DD(q2.x).selfSubtract(q1.x);
-    DD qw = new DD(q1.x).selfMultiply(q2.y).subtract(new DD(q2.x).selfMultiply(q1.y));
+    DD qw = new DD(q1.x).selfMultiply(q2.y).selfSubtract(new DD(q2.x).selfMultiply(q1.y));
 
-    DD x = py.multiply(qw).subtract(qy.multiply(pw));
-    DD y = qx.multiply(pw).subtract(px.multiply(qw));
-    DD w = px.multiply(qy).subtract(qx.multiply(py));
+    DD x = py.multiply(qw).selfSubtract(qy.multiply(pw));
+    DD y = qx.multiply(pw).selfSubtract(px.multiply(qw));
+    DD w = px.multiply(qy).selfSubtract(qx.multiply(py));
 
     double xInt = x.selfDivide(w).doubleValue();
     double yInt = y.selfDivide(w).doubleValue();
