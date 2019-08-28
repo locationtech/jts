@@ -59,7 +59,7 @@ public class IntersectionStressTest {
   private void printStats(String tag, Coordinate intPt, Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2) {
     double distP = Distance.pointToLinePerpendicular(intPt, p1, p2);    
     double distQ = Distance.pointToLinePerpendicular(intPt, q1, q2);
-    System.out.println(tag = " : Dist P = " + distP + "    Dist Q = " + distQ);
+    System.out.println(tag + " : Dist P = " + distP + "    Dist Q = " + distQ);
   }
 
   private Coordinate computeVector(Coordinate basePt, double angle, double len) {
