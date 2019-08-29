@@ -2,6 +2,7 @@ package test.jts.perf.algorithm;
 
 import java.util.Random;
 
+import org.locationtech.jts.algorithm.CGAlgorithmsDD;
 import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.algorithm.HCoordinate;
 import org.locationtech.jts.algorithm.NotRepresentableException;
@@ -50,10 +51,12 @@ public class IntersectionStressTest {
         + WKTWriter.toLineString(q1, q2 ) );
     
     Coordinate intPt = HCoordinate.intersection(p1, p2, q1, q2);
-    Coordinate intPtDD = IntersectionPerfTest.intersectionDD(p1, p2, q1, q2);
+    Coordinate intPtDD = CGAlgorithmsDD.intersection(p1, p2, q1, q2);
+    Coordinate intPtDDFast = IntersectionPerfTest.intersectionDD(p1, p2, q1, q2);
     //Coordinate intPtDD = IntersectionPerfTest.intersectionDDWithFilter(p1, p2, q1, q2);
-    printStats("DP", intPt, p1, p2, q1, q2);
-    printStats("DD", intPtDD, p1, p2, q1, q2);
+    printStats("DP    ", intPt, p1, p2, q1, q2);
+    printStats("DD    ", intPtDD, p1, p2, q1, q2);
+    printStats("DDfast", intPtDDFast, p1, p2, q1, q2);
   }
   
   private void printStats(String tag, Coordinate intPt, Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2) {
