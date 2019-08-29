@@ -16,6 +16,7 @@ import org.locationtech.jts.algorithm.CGAlgorithmsDD;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineSegment;
 
 public class LineSegmentFunctions
 {
@@ -68,4 +69,30 @@ public class LineSegmentFunctions
     Coordinate intPt = CGAlgorithmsDD.intersection(pt1[0], pt1[1], pt2[0], pt2[1]);
     return g1.getFactory().createPoint(intPt);
   }
+  
+  public static Geometry lineIntersection(Geometry g1, Geometry g2)
+  {
+    Coordinate[] pt1 = g1.getCoordinates();
+    Coordinate[] pt2 = g2.getCoordinates();
+    
+    LineSegment line1 = new LineSegment(pt1[0], pt1[1]);
+    LineSegment line2 = new LineSegment(pt2[0], pt2[1]);
+    
+    Coordinate intPt = line1.lineIntersection(line2);
+    return g1.getFactory().createPoint(intPt);
+  }
+
+  public static Geometry lineIntersectionDD(Geometry g1, Geometry g2)
+  {
+    Coordinate[] pt1 = g1.getCoordinates();
+    Coordinate[] pt2 = g2.getCoordinates();
+    
+    Coordinate intPt = CGAlgorithmsDD.intersection(pt1[0], pt1[1], pt2[0], pt2[1] );
+    // handle parallel case
+    if (Double.isNaN(intPt.getX())) {
+      intPt = null;
+    }
+    return g1.getFactory().createPoint(intPt);
+  }
+
 }
