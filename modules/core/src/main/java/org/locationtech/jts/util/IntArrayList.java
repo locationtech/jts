@@ -11,6 +11,9 @@
  */
 package org.locationtech.jts.util;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * An extendable array of primitive <code>int</code> values.
  * 
@@ -25,7 +28,7 @@ public class IntArrayList {
    * Constructs an empty list.
    */
   public IntArrayList() {
-    data = new int[10];
+    this(10);
   }
 
   /**
@@ -38,9 +41,9 @@ public class IntArrayList {
   }
 
   /**
-   * Returns the number of ints in this list.
+   * Returns the number of values in this list.
    * 
-   * @return the number of ints in the list
+   * @return the number of values in the list
    */
   public int size() {
     return size;
@@ -48,32 +51,40 @@ public class IntArrayList {
 
   /**
    * Increases the capacity of this list instance, if necessary, 
-   * to ensure that it can hold at least the number of elements specified by the capacity argument.
+   * to ensure that it can hold at least the number of elements 
+   * specified by the capacity argument.
    * 
    * @param capacity the desired capacity
    */
   public void ensureCapacity(final int capacity) {
-    if (capacity <= data.length)
-      return;
-    int[] newData = new int[capacity];
+    if (capacity <= data.length) return;
+    int newLength  = Math.max(capacity, data.length * 2);
     //System.out.println("IntArrayList: copying " + size + " ints to new array of length " + capacity);
-    System.arraycopy(data, 0, newData, 0, size);
-    data = newData;
+    data = Arrays.copyOf(data, newLength);
   }
-
   /**
-   * Adds an int value to the end of this list.
+   * Adds a value to the end of this list.
    * 
    * @param value the value to add
    */
   public void add(final int value) {
-    if (size == data.length) {
-      // Increase size by 2x
-      ensureCapacity(2 * data.length);
-    }
+    ensureCapacity(size + 1);
     data[size] = value;
     ++size;
   }
+  
+  /**
+   * Adds all values in an array to the end of this list.
+   * 
+   * @param values an array of values
+   */
+  public void addAll(final int[] values) {
+    if (values == null) return;
+    if (values.length == 0) return;
+    ensureCapacity(size + values.length);
+    System.arraycopy(values, 0, data, size, values.length);
+    size += values.length;
+   }
   
   /**
    * Returns a int array containing a copy of
