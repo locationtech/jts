@@ -82,6 +82,7 @@ public class JTSOpCmd {
   "           [ -a <wkt> | <wkb> | <filename.ext>]",
   "           [ -b <wkt> | <wkb> | <filename.ext>]",
   "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
+  "           [ -repeat <num>]",
   "           [ -geomfunc <classname>]",
   "           [ -v, -verbose]",
   "           [ -help]",
@@ -92,7 +93,8 @@ public class JTSOpCmd {
   "  -a              A geometry or name of file containing it (extension: WKT, WKB, GeoJSON, GML, SHP)",
   "  -b              B geometry or name of file containing it (extension: WKT, WKB, GeoJSON, GML, SHP)",
   "  -f              output format to use.  If omitted output is silent",
-  "  -geomfunc       (optional) specifies the class providing the geometry operations",
+  "  -repeat         repeats the operation N times",
+  "  -geomfunc       specifies the class providing the geometry operations",
   "  -v, -verbose    display information about execution",
   "  -help           print a list of available operations"
   };
@@ -168,6 +170,7 @@ public class JTSOpCmd {
     public String geomB;
     public String arg1;
     String format = null;
+    public Integer repeat;
   }
 
   public JTSOpCmd() {
@@ -209,11 +212,7 @@ public class JTSOpCmd {
       // no op specified, so just output A (allows format conversion)
       result = geomA;
     }
-    if (result == null) return;
-    
-    if (cmdArgs.format != null) {
-      printResult(result, cmdArgs.format);
-    }
+    printResult(result, cmdArgs.format);
   }
 
   private Object executeFunction(CmdArgs cmdArgs, Geometry geomA, Geometry geomB) {
@@ -227,7 +226,17 @@ public class JTSOpCmd {
     if (isVerbose) {
       out.println(writeOpSummary(cmdArgs));
     }
+    Object result = null;
+    for (int i = 0; i < cmdArgs.repeat; i++) {
+      if (cmdArgs.repeat > 1) {
+        out.print("Run: " + (i+1) + " of " + cmdArgs.repeat + "   ");
+      }
+      result = executeFunctionOnce(cmdArgs, geomA, func, funArgs);
+    }
+    return result;
+  }
 
+  private Object executeFunctionOnce(CmdArgs cmdArgs, Geometry geomA, GeometryFunction func, Object[] funArgs) {
     Stopwatch timer = new Stopwatch();
     Object result = null;
     try {
@@ -292,6 +301,7 @@ public class JTSOpCmd {
 
   private void printResult(Object result, String outputFormat) {
     if (result == null) return;
+    if (outputFormat == null) return;
     
     if (result instanceof Geometry) {
       printGeometry((Geometry) result, outputFormat);
@@ -426,6 +436,11 @@ public class JTSOpCmd {
     cmdArgs.geomB = commandLine.getOptionArg(CommandOptions.GEOMB, 0);
     cmdArgs.arg1 = commandLine.getOptionArg(CommandOptions.ARG1, 0);
     cmdArgs.format = commandLine.getOptionArg(CommandOptions.FORMAT, 0);
+    
+    cmdArgs.repeat = commandLine.hasOption(CommandOptions.REPEAT)
+        ? commandLine.getOptionArgAsInt(CommandOptions.REPEAT, 0)
+            : 1;
+    
     isVerbose = commandLine.hasOption(CommandOptions.VERBOSE)
                   || commandLine.hasOption(CommandOptions.V);
     isHelpWithFunctions = commandLine.hasOption(CommandOptions.HELP);
@@ -454,6 +469,7 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMB, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.ARG1, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.FORMAT, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.REPEAT, 1))
     .addOptionSpec(new OptionSpec(OptionSpec.OPTION_FREE_ARGS, OptionSpec.NARGS_ONE_OR_MORE));
     return commandLine;
   }

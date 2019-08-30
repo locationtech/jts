@@ -22,5 +22,6 @@ public class CommandOptions {
   public static final String FORMAT = "f";
   public static final String HELP = "help";
   public static final String V = "v";
+  public static final String REPEAT = "repeat";
 
 }
