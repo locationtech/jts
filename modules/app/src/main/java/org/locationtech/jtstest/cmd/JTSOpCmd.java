@@ -233,6 +233,9 @@ public class JTSOpCmd {
       }
       result = executeFunctionOnce(cmdArgs, geomA, func, funArgs);
     }
+    if (isVerbose && result instanceof Geometry) {
+      printGeometrySummary("Result", (Geometry) result, null);
+    }
     return result;
   }
 
