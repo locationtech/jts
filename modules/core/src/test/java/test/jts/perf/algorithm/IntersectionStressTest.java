@@ -1,5 +1,7 @@
 package test.jts.perf.algorithm;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import org.locationtech.jts.algorithm.CGAlgorithmsDD;
@@ -11,11 +13,18 @@ import org.locationtech.jts.io.WKTWriter;
 
 public class IntersectionStressTest {
   
+  /**
+   * 1 is fully parallel
+   */
+  private static final double PARALLEL_FACTOR = 0.9999999999;
+  
   private static final int MAX_ITER = 1000;
   private static final double MAX_ORD = 1000000;
   private static final double SEG_LEN = 100;
   // make results reproducible
   static Random randGen = new Random(123456);
+  
+  Map<String, Double> distMap = new HashMap<String, Double>();
 
   public static void main(String args[]) {
     IntersectionStressTest test = new IntersectionStressTest();
@@ -31,6 +40,7 @@ public class IntersectionStressTest {
         e.printStackTrace();
       }
     }
+    printAverage();
   }
 
   private void doIntersectionTest(int i) throws NotRepresentableException {
@@ -38,13 +48,13 @@ public class IntersectionStressTest {
     
     double baseAngle = 2 * Math.PI * randGen.nextDouble();
     
-    Coordinate p1 = computeVector(basePt, baseAngle, SEG_LEN);
-    Coordinate p2 = computeVector(basePt, baseAngle, 2 * SEG_LEN);
+    Coordinate p1 = computeVector(basePt, baseAngle, 0.1 * SEG_LEN);
+    Coordinate p2 = computeVector(basePt, baseAngle, 1.1 * SEG_LEN);
     
-    double angleTest = baseAngle + 0.99 * Math.PI; 
+    double angleTest = baseAngle + PARALLEL_FACTOR * Math.PI; 
     
-    Coordinate q1 = computeVector(basePt, angleTest, SEG_LEN);
-    Coordinate q2 = computeVector(basePt, angleTest, 2 * SEG_LEN);
+    Coordinate q1 = computeVector(basePt, angleTest, 0.1 * SEG_LEN);
+    Coordinate q2 = computeVector(basePt, angleTest, 1.1 * SEG_LEN);
     
     System.out.println(i + ":  Lines: "
         + WKTWriter.toLineString(p1, p2) + "  -  "
@@ -52,9 +62,14 @@ public class IntersectionStressTest {
     
     Coordinate intPt = HCoordinate.intersection(p1, p2, q1, q2);
     Coordinate intPtDD = CGAlgorithmsDD.intersection(p1, p2, q1, q2);
-    Coordinate intPtDDFast = IntersectionPerfTest.intersectionDD(p1, p2, q1, q2);
+    Coordinate intPtDDFast = IntersectionAlgorithms.intersectionDD(p1, p2, q1, q2);
+    Coordinate intPtCB = IntersectionAlgorithms.intersectionCB(p1, p2, q1, q2);
+    Coordinate intPtNorm = IntersectionAlgorithms.intersectionNorm(p1, p2, q1, q2);
     //Coordinate intPtDD = IntersectionPerfTest.intersectionDDWithFilter(p1, p2, q1, q2);
+    
     printStats("DP    ", intPt, p1, p2, q1, q2);
+    printStats("CB    ", intPtCB, p1, p2, q1, q2);
+    printStats("Norm  ", intPtNorm, p1, p2, q1, q2);
     printStats("DD    ", intPtDD, p1, p2, q1, q2);
     printStats("DDfast", intPtDDFast, p1, p2, q1, q2);
   }
@@ -62,9 +77,30 @@ public class IntersectionStressTest {
   private void printStats(String tag, Coordinate intPt, Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2) {
     double distP = Distance.pointToLinePerpendicular(intPt, p1, p2);    
     double distQ = Distance.pointToLinePerpendicular(intPt, q1, q2);
-    System.out.println(tag + " : Dist P = " + distP + "    Dist Q = " + distQ);
+    addStat(tag, distP);
+    addStat(tag, distQ);
+    System.out.println(tag + " : " 
+        + WKTWriter.toPoint(intPt)
+        + " -- Dist P = " + distP + "    Dist Q = " + distQ);
   }
 
+  private void addStat(String tag, double dist) {
+    double distTotal = 0.0;
+    if (distMap.containsKey(tag)) {
+      distTotal = distMap.get(tag);
+    }
+    distTotal += dist;
+    distMap.put(tag, distTotal);
+  }
+  
+  private void printAverage() {
+    System.out.println("Average distance from lines");
+    for (String key : distMap.keySet()) {
+      double distTotal = distMap.get(key);
+      double avg = distTotal / MAX_ITER;
+      System.out.println(key + " : " + avg );
+    }
+  }
   private Coordinate computeVector(Coordinate basePt, double angle, double len) {
     double x = basePt.getX() + len * Math.cos(angle);
     double y = basePt.getY() + len * Math.sin(angle);
