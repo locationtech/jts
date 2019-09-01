@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2019 Martin Davis
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package test.jts.perf.algorithm;
 
 import java.util.HashMap;
@@ -7,6 +18,7 @@ import java.util.Random;
 import org.locationtech.jts.algorithm.CGAlgorithmsDD;
 import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.algorithm.HCoordinate;
+import org.locationtech.jts.algorithm.Intersection;
 import org.locationtech.jts.algorithm.NotRepresentableException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.io.WKTWriter;
@@ -60,18 +72,15 @@ public class IntersectionStressTest {
         + WKTWriter.toLineString(p1, p2) + "  -  "
         + WKTWriter.toLineString(q1, q2 ) );
     
-    Coordinate intPt = HCoordinate.intersection(p1, p2, q1, q2);
+    Coordinate intPt = IntersectionAlgorithms.intersectionBasic(p1, p2, q1, q2);
     Coordinate intPtDD = CGAlgorithmsDD.intersection(p1, p2, q1, q2);
-    Coordinate intPtDDFast = IntersectionAlgorithms.intersectionDD(p1, p2, q1, q2);
     Coordinate intPtCB = IntersectionAlgorithms.intersectionCB(p1, p2, q1, q2);
-    Coordinate intPtNorm = IntersectionAlgorithms.intersectionNorm(p1, p2, q1, q2);
-    //Coordinate intPtDD = IntersectionPerfTest.intersectionDDWithFilter(p1, p2, q1, q2);
+    Coordinate intPtCond = Intersection.intersection(p1, p2, q1, q2);
     
     printStats("DP    ", intPt, p1, p2, q1, q2);
     printStats("CB    ", intPtCB, p1, p2, q1, q2);
-    printStats("Norm  ", intPtNorm, p1, p2, q1, q2);
+    printStats("Cond  ", intPtCond, p1, p2, q1, q2);
     printStats("DD    ", intPtDD, p1, p2, q1, q2);
-    printStats("DDfast", intPtDDFast, p1, p2, q1, q2);
   }
   
   private void printStats(String tag, Coordinate intPt, Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2) {

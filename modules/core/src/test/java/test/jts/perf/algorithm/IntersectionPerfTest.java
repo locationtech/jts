@@ -1,12 +1,20 @@
+/*
+ * Copyright (c) 2019 Martin Davis
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package test.jts.perf.algorithm;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.algorithm.CGAlgorithmsDD;
-import org.locationtech.jts.algorithm.Distance;
-import org.locationtech.jts.algorithm.HCoordinate;
+import org.locationtech.jts.algorithm.Intersection;
 import org.locationtech.jts.algorithm.NotRepresentableException;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.math.DD;
 
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
@@ -45,17 +53,12 @@ public class IntersectionPerfTest extends PerformanceTestCase {
   
   public void runDP() throws NotRepresentableException
   {
-    Coordinate intPt = HCoordinate.intersection(p0, p1, q0, q1);
+    Coordinate intPt = IntersectionAlgorithms.intersectionBasic(p0, p1, q0, q1);
   }
   
   public void runDD() 
   {
     Coordinate intPt = CGAlgorithmsDD.intersection(p0, p1, q0, q1);
-  }
-  
-  public void runDDFast() throws NotRepresentableException 
-  {
-    Coordinate intPt = IntersectionAlgorithms.intersectionDD(p0, p1, q0, q1);
   }
   
   public void runDDWithFilter() throws NotRepresentableException 
@@ -68,21 +71,24 @@ public class IntersectionPerfTest extends PerformanceTestCase {
     Coordinate intPt = IntersectionAlgorithms.intersectionCB(p0, p1, q0, q1);
   }
   
-  public void runNorm() throws NotRepresentableException 
+  public void runCond() throws NotRepresentableException 
   {
-    Coordinate intPt = IntersectionAlgorithms.intersectionNorm(p0, p1, q0, q1);
+    Coordinate intPt = Intersection.intersection(p0, p1, q0, q1);
   }
-  
-  
   
   public void runDP_easy() throws NotRepresentableException
   {
-    Coordinate intPt = HCoordinate.intersection(a0, a1, b0, b1);
+    Coordinate intPt = IntersectionAlgorithms.intersectionBasic(a0, a1, b0, b1);
   }
   
-  public void runDDFast_easy() throws NotRepresentableException
+  public void runCond_easy() throws NotRepresentableException
   {
-    Coordinate intPt = IntersectionAlgorithms.intersectionDD(a0, a1, b0, b1);
+    Coordinate intPt = Intersection.intersection(a0, a1, b0, b1);
+  }
+  
+  public void runDD_easy() throws NotRepresentableException
+  {
+    Coordinate intPt = CGAlgorithmsDD.intersection(a0, a1, b0, b1);
   }
   
   public void runDDWithFilter_easy() throws NotRepresentableException 
