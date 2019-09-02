@@ -35,6 +35,8 @@ Distributions for older JTS versions can be obtained at the
 * Added `Triangle.circumcentreDD`
 * Added `DD.determinant` methods
 * Added `Envelope.getDiameter`
+* Added `Intersection` class (#468)
+* Avoid use of `ArrayList` in MonotoneChain builders
 
 ### Bug Fixes
 
@@ -47,6 +49,8 @@ Distributions for older JTS versions can be obtained at the
 * Fix generation of Voronoi diagrams for cases with sites in a square (#447)
 * Fix use of clipping envelope in `VoronoiDiagramBuilder`
 * Fix infinite loop on empty input in `IndexedPointInAreaLocator` and `SortedPackedIntervalRTree` (#462) 
+* Fix WKT parsing in Turkish locale (#456)
+* Improve accuracy of `LineSegment.lineIntersection` (#468)
 
 ## JTS TestBuilder
 
