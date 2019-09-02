@@ -51,7 +51,7 @@ public class IntersectionPerfTest extends PerformanceTestCase {
     q1 = new Coordinate(35613479.856073894, 4257165.9236917039);
   }
   
-  public void runDP() throws NotRepresentableException
+  public void runDP()
   {
     Coordinate intPt = IntersectionAlgorithms.intersectionBasic(p0, p1, q0, q1);
   }
@@ -61,37 +61,37 @@ public class IntersectionPerfTest extends PerformanceTestCase {
     Coordinate intPt = CGAlgorithmsDD.intersection(p0, p1, q0, q1);
   }
   
-  public void runDDWithFilter() throws NotRepresentableException 
+  public void runDDWithFilter() 
   {
     Coordinate intPt = IntersectionAlgorithms.intersectionDDWithFilter(p0, p1, q0, q1);
   }
   
-  public void runCB() throws NotRepresentableException 
+  public void runCB()  
   {
     Coordinate intPt = IntersectionAlgorithms.intersectionCB(p0, p1, q0, q1);
   }
   
-  public void runCond() throws NotRepresentableException 
+  public void runCond()  
   {
     Coordinate intPt = Intersection.intersection(p0, p1, q0, q1);
   }
   
-  public void runDP_easy() throws NotRepresentableException
+  public void runDP_easy() 
   {
     Coordinate intPt = IntersectionAlgorithms.intersectionBasic(a0, a1, b0, b1);
   }
   
-  public void runCond_easy() throws NotRepresentableException
+  public void runCond_easy() 
   {
     Coordinate intPt = Intersection.intersection(a0, a1, b0, b1);
   }
   
-  public void runDD_easy() throws NotRepresentableException
+  public void runDD_easy() 
   {
     Coordinate intPt = CGAlgorithmsDD.intersection(a0, a1, b0, b1);
   }
   
-  public void runDDWithFilter_easy() throws NotRepresentableException 
+  public void runDDWithFilter_easy()  
   {
     Coordinate intPt = IntersectionAlgorithms.intersectionDDWithFilter(a0, a1, b0, b1);
   }

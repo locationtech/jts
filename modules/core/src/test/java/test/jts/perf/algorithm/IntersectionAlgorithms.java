@@ -70,7 +70,7 @@ public class IntersectionAlgorithms {
   }
 
   public static Coordinate intersectionCB(Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2)
-      throws NotRepresentableException {
+  {
     Coordinate common = computeCommonCoord(p1, p2, q1, q2);
     p1 = subtractCoord(p1, common);
     p2 = subtractCoord(p2, common);
@@ -94,9 +94,8 @@ public class IntersectionAlgorithms {
     double yInt = y / w;
 
     if ((Double.isNaN(xInt)) || (Double.isInfinite(xInt) || Double.isNaN(yInt)) || (Double.isInfinite(yInt))) {
-      throw new NotRepresentableException();
+      return null;
     }
-
     return new Coordinate(xInt + common.x, yInt + common.y);
   }
 

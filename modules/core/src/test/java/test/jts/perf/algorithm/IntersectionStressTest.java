@@ -45,17 +45,12 @@ public class IntersectionStressTest {
 
   private void run() {
     for (int i = 0; i < MAX_ITER; i++) {
-      try {
-        doIntersectionTest(i);
-      } catch (NotRepresentableException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+      doIntersectionTest(i);
     }
     printAverage();
   }
 
-  private void doIntersectionTest(int i) throws NotRepresentableException {
+  private void doIntersectionTest(int i) {
     Coordinate basePt = randomCoordinate();
     
     double baseAngle = 2 * Math.PI * randGen.nextDouble();
