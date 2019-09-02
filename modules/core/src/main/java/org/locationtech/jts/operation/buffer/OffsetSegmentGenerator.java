@@ -13,6 +13,7 @@ package org.locationtech.jts.operation.buffer;
 
 import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.HCoordinate;
+import org.locationtech.jts.algorithm.Intersection;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.NotRepresentableException;
 import org.locationtech.jts.algorithm.Orientation;
@@ -453,37 +454,23 @@ class OffsetSegmentGenerator
       LineSegment offset0, 
       LineSegment offset1,
       double distance)
-  {
-    boolean isMitreWithinLimit = true;
-    Coordinate intPt = null;
-  
+  { 
     /**
      * This computation is unstable if the offset segments are nearly collinear.
-     * However, this situation should have been eliminated earlier by the check for
-     * whether the offset segment endpoints are almost coincident
+     * However, this situation should have been eliminated earlier by the check
+     * for whether the offset segment endpoints are almost coincident
      */
-    try {
-     intPt = HCoordinate.intersection(offset0.p0, 
-        offset0.p1, offset1.p0, offset1.p1);
-     
-     double mitreRatio = distance <= 0.0 ? 1.0
-         : intPt.distance(p) / Math.abs(distance);
-     
-     if (mitreRatio > bufParams.getMitreLimit())
-       isMitreWithinLimit = false;
+    Coordinate intPt = Intersection.intersection(offset0.p0, offset0.p1, offset1.p0, offset1.p1);
+    if (intPt != null) {
+      double mitreRatio = distance <= 0.0 ? 1.0 : intPt.distance(p) / Math.abs(distance);
+      if (mitreRatio <= bufParams.getMitreLimit()) {
+        segList.addPt(intPt);
+        return;
+      }
     }
-    catch (NotRepresentableException ex) {
-      intPt = new Coordinate(0,0);
-      isMitreWithinLimit = false;
-    }
-    
-    if (isMitreWithinLimit) {
-      segList.addPt(intPt);
-    }
-    else {
-      addLimitedMitreJoin(offset0, offset1, distance, bufParams.getMitreLimit());
+    // at this point either intersection failed or mitre limit was exceeded
+    addLimitedMitreJoin(offset0, offset1, distance, bufParams.getMitreLimit());
 //      addBevelJoin(offset0, offset1);
-    }
   }
   
   
