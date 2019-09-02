@@ -13,7 +13,6 @@ package test.jts.perf.algorithm;
 
 import org.locationtech.jts.algorithm.CGAlgorithmsDD;
 import org.locationtech.jts.algorithm.Intersection;
-import org.locationtech.jts.algorithm.NotRepresentableException;
 import org.locationtech.jts.geom.Coordinate;
 
 import test.jts.perf.PerformanceTestCase;
