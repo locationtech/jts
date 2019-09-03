@@ -18,6 +18,35 @@ import org.locationtech.jts.geom.Coordinate;
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
 
+/**
+ * Performance test for various line intersection implementations.
+ * These include:
+ * <ul>
+ * <li>DP - a basic double-precision (DP) implementation, with no attempt at reducing the effects of numerical round-off
+ * <li>DP-Cond - a DP implementation in which the inputs are conditioned by translating them to around the origin
+ * <li>DP-CB - a DP implementation using the {@link CommonBitsRemover} functionality
+ * <li>DD - an implementation using extended-precision {@link DoubleDouble} arithmetic
+ * <li>DDFilter - an experimental implementation using extended-precision {@link DoubleDouble} arithmetic
+ * along with a filter that uses DP if the accuracy is sufficient
+ * </ul>
+ * <h2>Results</h2>
+ * <ul>
+ * <li>DP-Basic is the fastest but least accurate
+ * <li>DP-Cond is fairly fast
+ * <li>DP-CB is similar in performance to DP-Cond (but less accurate)
+ * <li>DD is the slowest implementation
+ * <li>the performance of DP-Filter is similar to DP or DD, depending on which method is chosen by the filter
+ * <ul>
+ * 
+ * This test is evaluated together with the accuracy results from {@link IntersectionStressTest}.
+ * The conclusion is that the best combination of accuracy and performance 
+ * is provided by DP-Cond.
+ * 
+ * @author Martin Davis
+ * 
+ * @see IntersectionStressTest
+ *
+ */
 public class IntersectionPerfTest extends PerformanceTestCase {
   private static final int N_ITER = 1000000;
   
