@@ -114,7 +114,6 @@ public class UnaryUnionOp
   private InputExtracter extracter;
   private UnionFunction unionFunction = UnionFunction.CLASSIC;
 
-	
 	/**
 	 * Constructs a unary union operation for a {@link Collection} 
 	 * of {@link Geometry}s.

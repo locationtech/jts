@@ -17,12 +17,15 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.util.Debug;
+import org.locationtech.jts.util.TestBuilderProxy;
 
 
 /**
@@ -61,11 +64,28 @@ public class CascadedPolygonUnion
     }
   };
   
-  private final static UnionFunction OVERLAP_UNION = new UnionFunction() {
+  final static  UnionFunction CLASSIC_UNION_SAFE = new UnionFunction() {
+    public Geometry union(Geometry g0, Geometry g1) {
+      try {
+        return g0.union(g1);
+      }
+      catch (TopologyException ex) {
+        return unionByBuffer(g0, g1);
+      }
+    }
+  };
+  
+  private static Geometry unionByBuffer(Geometry g0, Geometry g1) {
+    GeometryCollection coll = g0.getFactory().createGeometryCollection(
+        new Geometry[] { g0, g1 });
+    return coll.buffer(0);
+  }
+  
+  final static UnionFunction OVERLAP_CLASSIC_UNION = new UnionFunction() {
 
     @Override
     public Geometry union(Geometry g0, Geometry g1) {
-      return OverlapUnion.union(g0, g1, CLASSIC_UNION);
+      return OverlapUnion.union(g0, g1, CLASSIC_UNION_SAFE);
     }
     
   };
@@ -109,7 +129,7 @@ public class CascadedPolygonUnion
    */
   public CascadedPolygonUnion(Collection polys)
   {
-    this(polys, OVERLAP_UNION );
+    this(polys, OVERLAP_CLASSIC_UNION );
   }
 
 	 /**
@@ -312,8 +332,17 @@ public class CascadedPolygonUnion
   		return g0.copy();
 
   	countRemainder--;
-  	Debug.println("Remainder: " + countRemainder + " out of " + countInput);
-  	return unionActual( g0, g1 );
+  	if (Debug.isDebugging()) {
+  	  Debug.println("Remainder: " + countRemainder + " out of " + countInput);
+      Debug.print("Union: A: " + g0.getNumPoints() + " / B: " + g1.getNumPoints() + "  ---  "  );
+  	}
+
+  	Geometry union = unionActual( g0, g1 );
+  	
+    if (Debug.isDebugging()) Debug.println(" Result: " + union.getNumPoints());
+    //if (TestBuilderProxy.isActive()) TestBuilderProxy.showIndicator(union);
+    
+    return union;
   }
 
   /**
@@ -325,10 +354,9 @@ public class CascadedPolygonUnion
    */
   private Geometry unionActual(Geometry g0, Geometry g1)
   {
-    if (Debug.isDebugging()) Debug.print("Union: A: " + g0.getNumPoints() + " / B: " + g1.getNumPoints() + "  ---  "  );
     Geometry union = unionFun.union(g0, g1);
-    if (Debug.isDebugging()) Debug.println(" Result: " + union.getNumPoints());
-  	return restrictToPolygons( union );
+    Geometry unionPoly = restrictToPolygons( union );;
+  	return unionPoly;
   }
 
   /**

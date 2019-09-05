@@ -12,13 +12,19 @@
  */
 package org.locationtech.jts.noding.snapround;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.noding.InteriorIntersectionFinderAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
@@ -53,6 +59,10 @@ public class SimpleSnapRounder
   private LineIntersector li;
   private final double scaleFactor;
   private Collection nodedSegStrings;
+  private Map<Coordinate, HotPixel> hotPixelMap = new HashMap<Coordinate, HotPixel>();
+  private List<HotPixel> hotPixels;
+  
+  private List<SegmentString> snapped;
 
   public SimpleSnapRounder(PrecisionModel pm) {
     this.pm = pm;
@@ -67,7 +77,7 @@ public class SimpleSnapRounder
 	 */
   public Collection getNodedSubstrings()
   {
-    return  NodedSegmentString.getNodedSubstrings(nodedSegStrings);
+    return NodedSegmentString.getNodedSubstrings(snapped);
   }
 
   /**
@@ -92,11 +102,53 @@ public class SimpleSnapRounder
       ex.printStackTrace();
     }
   }
-  private void snapRound(Collection segStrings, LineIntersector li)
+  private List<SegmentString> snapRound(Collection<NodedSegmentString> segStrings, LineIntersector li)
   {
-    List intersections = findInteriorIntersections(segStrings, li);
-    computeSnaps(segStrings, intersections);
-    computeVertexSnaps(segStrings);
+    List<Coordinate> intersections = findInteriorIntersections(segStrings, li);
+    addHotPixels(intersections);
+    
+    addVertexPixels(segStrings);
+    
+    hotPixels = new ArrayList<HotPixel>(hotPixelMap.values());
+
+    snapped = computeSnaps(segStrings);
+    return snapped;
+  }
+
+  private void addVertexPixels(Collection<NodedSegmentString> segStrings) {
+    for (NodedSegmentString nss : segStrings) {
+      Coordinate[] pts = nss.getCoordinates();
+      addHotPixels(pts);
+    }
+  }
+
+  private boolean hasHotPixel(Coordinate pt) {
+    return hotPixelMap.containsKey(pt);
+  }
+
+  private void addHotPixels(Coordinate[] pts) {
+    for (Coordinate pt : pts) {
+      createHotPixel( round(pt) );
+    }
+  }
+  private void addHotPixels(List<Coordinate> pts) {
+    for (Coordinate pt : pts) {
+      createHotPixel( round(pt) );
+    }
+  }
+
+  private Coordinate round(Coordinate pt) {
+    Coordinate p2 = pt.copy();
+    pm.makePrecise(p2);
+    return p2;
+  }
+
+  private HotPixel createHotPixel(Coordinate p) {
+    HotPixel hp = hotPixelMap.get(p);
+    if (hp != null) return hp;
+    hp = new HotPixel(p, scaleFactor, li);
+    hotPixelMap.put(p,  hp);
+    return hp;
   }
 
   /**
@@ -107,7 +159,7 @@ public class SimpleSnapRounder
    *
    * @return a list of Coordinates for the intersections
    */
-  private List findInteriorIntersections(Collection segStrings, LineIntersector li)
+  private List<Coordinate> findInteriorIntersections(Collection segStrings, LineIntersector li)
   {
     InteriorIntersectionFinderAdder intFinderAdder = new InteriorIntersectionFinderAdder(li);
     SinglePassNoder noder = new MCIndexNoder();
@@ -120,66 +172,79 @@ public class SimpleSnapRounder
   /**
    * Computes nodes introduced as a result of snapping segments to snap points (hot pixels)
    * @param li
+   * @return 
    */
-  private void computeSnaps(Collection segStrings, Collection snapPts)
+  private List<SegmentString> computeSnaps(Collection<NodedSegmentString> segStrings)
   {
-    for (Iterator i0 = segStrings.iterator(); i0.hasNext(); ) {
-      NodedSegmentString ss = (NodedSegmentString) i0.next();
-      computeSnaps(ss, snapPts);
+    List<SegmentString> snapped = new ArrayList<SegmentString>();
+    for (NodedSegmentString ss : segStrings ) {
+      SegmentString snappedSS = computeSnaps(ss, snapped);
+      snapped.add(snappedSS);
     }
+    return snapped;
   }
 
-  private void computeSnaps(NodedSegmentString ss, Collection snapPts)
+  private SegmentString computeSnaps(NodedSegmentString ss, List<SegmentString> snapped)
   {
-    for (Iterator it = snapPts.iterator(); it.hasNext(); ) {
-      Coordinate snapPt = (Coordinate) it.next();
-      HotPixel hotPixel = new HotPixel(snapPt, scaleFactor, li);
-      for (int i = 0; i < ss.size() - 1; i++) {
-      	hotPixel.addSnappedNode(ss, i);
-      }
+    CoordinateList snapPts = new CoordinateList();
+    Coordinate[] pts = ss.getCoordinates();
+    
+    NodedSegmentString snapSS = round(pts, ss.getData());
+    
+    int snapSSIndex = 0;
+    for (int i = 0; i < pts.length - 1; i++ ) {
+      Coordinate currSnap = snapSS.getCoordinate(snapSSIndex);
+
+      /**
+       * If this segment has collapsed completely, skip it
+       */
+      Coordinate p0 = pts[i];
+      Coordinate p1 = pts[i+1];
+      Coordinate p1Round = round(p1);
+      if (p1Round.equals2D(currSnap))
+        continue;
+      
+      /**
+       * Add any HP intersections to corresponding snapSS segment
+       */
+      
+      snapSegment( p0, p1, snapSS, snapSSIndex);
+        
+      snapSSIndex++;
     }
+    return snapSS;
+  }
+
+  private NodedSegmentString round(Coordinate[] pts, Object data) {
+    CoordinateList roundPts = new CoordinateList();
+    
+    for (int i = 0; i < pts.length; i++ ) {
+      roundPts.add( round( pts[i] ), false);
+    }
+    return new NodedSegmentString( roundPts.toCoordinateArray(), data );
+
   }
 
   /**
-   * Computes nodes introduced as a result of
-   * snapping segments to vertices of other segments
-   *
-   * @param edges the list of segment strings to snap together
+   * This is where all the work of snapping to hot pixels gets done
+   * (in a very inefficient brute-force way).
+   * 
+   * @param coordinate
+   * @param coordinate2
+   * @param snapPts
    */
-  public void computeVertexSnaps(Collection edges)
-  {
-    for (Iterator i0 = edges.iterator(); i0.hasNext(); ) {
-      NodedSegmentString edge0 = (NodedSegmentString) i0.next();
-      for (Iterator i1 = edges.iterator(); i1.hasNext(); ) {
-        NodedSegmentString edge1 = (NodedSegmentString) i1.next();
-        computeVertexSnaps(edge0, edge1);
-      }
+  private void snapSegment(Coordinate p0, Coordinate p1, NodedSegmentString ss, int segIndex) {
+    for (HotPixel hp : hotPixels) {
+      snapSegment(p0, p1, hp, ss, segIndex);
     }
   }
 
-  /**
-   * Performs a brute-force comparison of every segment in each {@link SegmentString}.
-   * This has n^2 performance.
-   */
-  private void computeVertexSnaps(NodedSegmentString e0, NodedSegmentString e1)
-  {
-    Coordinate[] pts0 = e0.getCoordinates();
-    Coordinate[] pts1 = e1.getCoordinates();
-    for (int i0 = 0; i0 < pts0.length - 1; i0++) {
-      HotPixel hotPixel = new HotPixel(pts0[i0], scaleFactor, li);
-      for (int i1 = 0; i1 < pts1.length - 1; i1++) {
-        // don't snap a vertex to itself
-        if (e0 == e1) {
-          if (i0 == i1) continue;
-        }
-        //System.out.println("trying " + pts0[i0] + " against " + pts1[i1] + pts1[i1 + 1]);
-        boolean isNodeAdded = hotPixel.addSnappedNode(e1, i1);
-        // if a node is created for a vertex, that vertex must be noded too
-        if (isNodeAdded) {
-          e0.addIntersection(pts0[i0], i0);
-        }
-      }
+  private void snapSegment(Coordinate p0, Coordinate p1, HotPixel hp, NodedSegmentString ss, int segIndex) {
+    if (hp.intersects(p0, p1)) {
+      ss.addIntersection( hp.getCoordinate(), segIndex );
     }
   }
+
+
 
 }

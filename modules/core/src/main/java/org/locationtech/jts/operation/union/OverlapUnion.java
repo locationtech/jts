@@ -91,6 +91,17 @@ public class OverlapUnion
 		return union.union();
 	}
 
+	public static UnionFunction wrap(final UnionFunction unionFun) {
+	  return new UnionFunction() {
+
+      @Override
+      public Geometry union(Geometry g0, Geometry g1) {
+        return OverlapUnion.union(g0, g1, unionFun);
+      }
+	    
+	  };
+	}
+	
 	private GeometryFactory geomFactory;
 	
 	private Geometry g0;

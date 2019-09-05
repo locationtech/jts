@@ -51,6 +51,8 @@ public class HotPixel
   private double miny;
   private double maxy;
   
+  private int snapCount = 0;
+  
   /**
    * The corners of the hot pixel, in the order:
    *  10
@@ -85,6 +87,13 @@ public class HotPixel
     initCorners(this.pt);
   }
 
+  public void incrementSnapCount() {
+    snapCount++;
+  }
+  public int getSnapCount() {
+    return snapCount;
+  }
+  
   /**
    * Gets the coordinate this hot pixel is based at.
    * 

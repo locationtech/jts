@@ -26,6 +26,7 @@ import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.union.OverlapUnion;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
@@ -94,8 +95,10 @@ public class OverlayNGFunctions {
       }
       
     };
+    UnionFunction overlapSRFun = OverlapUnion.wrap(unionSRFun);
     UnaryUnionOp op = new UnaryUnionOp(a);
-    op.setUnionFunction(unionSRFun);
+    //op.setUnionFunction( overlapSRFun );
+    op.setUnionFunction( unionSRFun );
     return op.union();
   }
 
