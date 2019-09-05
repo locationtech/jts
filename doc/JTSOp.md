@@ -3,11 +3,15 @@
 `JtsOp` is a CLI (command-line interface) to JTS and the TestBuilder.
 It has the following features:
 
-* read A and B geometries from the commandline or files in various formats (WKT, WKB, GeoJSON, GML, SHP)
+* read A and B geometries from:
+  * WKT or WKB literals on the command line
+  * standard input (WKT or WKB)
+  * files in various formats (WKT, WKB, GeoJSON, GML, SHP)
 * execute any spatial or scalar function available in the TestBuilder
 * output the result in the formats WKT, WKB, GeoJSON, GML, SVG
 * display information about the input geometries and function timing
 * load other functions dynamically with `-geomfunc` parameter (as a Java class with static methods)
+* chain operations together by reading input from stdin
 
 ## Examples
 
