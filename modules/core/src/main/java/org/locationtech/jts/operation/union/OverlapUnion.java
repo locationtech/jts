@@ -24,6 +24,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geom.util.GeometryCombiner;
 
 /**
@@ -196,10 +197,35 @@ public class OverlapUnion
   }
   
   private Geometry unionFull(Geometry geom0, Geometry geom1) {
-    Geometry union = geom0.union(geom1);
-    return union;
+    try {
+      return geom0.union(geom1);
+    } 
+    catch (TopologyException ex) {
+      /**
+       * If the overlay union fails,
+       * try a buffer union, which often succeeds
+       */
+      return unionBuffer(geom0, geom1);
+    }
   }
 
+  /**
+   * Implements union using the buffer-by-zero trick.
+   * This seems to be more robust than overlay union,
+   * for reasons somewhat unknown.
+   * 
+   * @param g0 a geometry
+   * @param g1 a geometry
+   * @return the union of the geometries
+   */
+  private static Geometry unionBuffer(Geometry g0, Geometry g1)
+  {
+    GeometryFactory factory = g0.getFactory();
+    Geometry gColl = factory.createGeometryCollection(new Geometry[] { g0, g1 } );
+    Geometry union = gColl.buffer(0.0);
+    return union;
+  }
+  
   private boolean isBorderSegmentsSame(Geometry result, Envelope env) {
     List<LineSegment> segsBefore = extractBorderSegments(g0, g1, env);
     
