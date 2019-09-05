@@ -13,6 +13,8 @@ package org.locationtech.jtstest.cmd;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collection;
 
 import org.locationtech.jts.geom.Geometry;
@@ -33,6 +35,7 @@ import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.util.io.IOUtil;
+import org.locationtech.jtstest.util.io.MultiFormatBufferedReader;
 import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 /**
@@ -70,6 +73,7 @@ public class JTSOpCmd {
   // TODO: allow -a stdin  to indicate reading from stdin.  
   
   public static final String ERR_FILE_NOT_FOUND = "File not found";
+  public static final String ERR_INPUT = "Unable to read input";
   public static final String ERR_FUNCTION_NOT_FOUND = "Function not found";
   public static final String ERR_REQUIRED_A = "Geometry A may be required";
   public static final String ERR_REQUIRED_B = "Geometry B is required";
@@ -79,8 +83,8 @@ public class JTSOpCmd {
   static final String[] helpDoc = new String[] {
   "",
   "Usage: jtsop - CLI for JTS operations",
-  "           [ -a <wkt> | <wkb> | <filename.ext>]",
-  "           [ -b <wkt> | <wkb> | <filename.ext>]",
+  "           [ -a <wkt> | <wkb> | stdin | <filename.ext>]",
+  "           [ -b <wkt> | <wkb> | stdin | <filename.ext>]",
   "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
   "           [ -repeat <num>]",
   "           [ -geomfunc <classname>]",
@@ -90,11 +94,11 @@ public class JTSOpCmd {
   "  op              name of the operation (Category.op)",
   "  args            one or more scalar arguments to the operation",
   "",
-  "  -a              A geometry or name of file containing it (extension: WKT, WKB, GeoJSON, GML, SHP)",
-  "  -b              B geometry or name of file containing it (extension: WKT, WKB, GeoJSON, GML, SHP)",
+  "  -a              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
+  "  -b              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
   "  -f              output format to use.  If omitted output is silent",
-  "  -repeat         repeats the operation N times",
-  "  -geomfunc       specifies the class providing the geometry operations",
+  "  -repeat         repeat the operation N times",
+  "  -geomfunc       specifies class providing geometry operations",
   "  -v, -verbose    display information about execution",
   "  -help           print a list of available operations"
   };
@@ -105,6 +109,7 @@ public class JTSOpCmd {
   private static final String FORMAT_WKT = "wkt";
   private static final String FORMAT_GEOJSON = "geojson";
   private static final String FORMAT_SVG = "svg";
+  private static final String STDIN = "stdin";
 
   public static void main(String[] args)
   {    
@@ -162,7 +167,8 @@ public class JTSOpCmd {
   private boolean isHelpWithFunctions = false;
   private boolean isVerbose = false;
 
-  private CommandOutput out = new CommandOutput(); 
+  private CommandOutput out = new CommandOutput();
+  private InputStream stdIn = System.in; 
   
   static class CmdArgs {
     String operation;
@@ -179,6 +185,10 @@ public class JTSOpCmd {
   
   public void captureOutput() {
     out = new CommandOutput(true);
+  }
+  
+  public void replaceStdIn(InputStream inStream) {
+    stdIn  = inStream;
   }
   
   public String getOutput() {
@@ -261,7 +271,10 @@ public class JTSOpCmd {
   }
 
   private Geometry readGeometry(String arg) throws Exception, IOException {
-    if (isFilename(arg)) {
+    if (arg.equalsIgnoreCase(STDIN)){
+      return readStdin();     
+    }
+    else if (isFilename(arg)) {
       try {
         return IOUtil.readFile(arg ,geomFactory );
       }
@@ -269,8 +282,22 @@ public class JTSOpCmd {
         throw new CommandError(ERR_FILE_NOT_FOUND, arg);
       }
     }
+    // read a literal from the argument
     MultiFormatReader rdr = new MultiFormatReader(geomFactory);
     return rdr.read(arg);
+  }
+
+  private Geometry readStdin() {
+    try {
+      MultiFormatBufferedReader rdr = new MultiFormatBufferedReader();
+      return rdr.read(new InputStreamReader(stdIn));
+    }
+    catch (org.locationtech.jts.io.ParseException ex) {
+      throw new CommandError(ERR_INPUT + " - " + ex.getMessage());
+    }
+    catch (Exception ex) {
+      throw new CommandError(ERR_INPUT);
+    }
   }
 
   private boolean isFilename(String arg) {

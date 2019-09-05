@@ -1,5 +1,11 @@
 package org.locationtech.jtstest.cmd;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+
 import junit.framework.TestCase;
 
 public class JTSOpCmdTest extends TestCase {
@@ -88,14 +94,50 @@ public class JTSOpCmdTest extends TestCase {
         "<gml:LineString>" );
   }
   
+  public void testStdInWKT() {
+    runCmd( args("-a", "stdin", "-f", "wkt", "envelope"), 
+        stdin("LINESTRING ( 1 1, 2 2)"),
+        "POLYGON" );
+  }
+  
+  public void testStdInWKB() {
+    runCmd( args("-a", "stdin", "-f", "wkt", "envelope"), 
+        stdin("000000000200000005405900000000000040590000000000004072C000000000004062C00000000000405900000000000040690000000000004072C00000000000406F40000000000040590000000000004072C00000000000"),
+        "POLYGON" );
+  }
+  
+  public void testStdInBadFormat() {
+    runCmdError( args("-a", "stdin", "-f", "wkt", "envelope"), 
+        stdin("<gml fdlfld >"),
+        JTSOpCmd.ERR_INPUT );
+  }
+  
   private String[] args(String ... args) {
     return args;
   }
 
+  private static InputStream stdin(String data) {
+    InputStream instr = new ByteArrayInputStream(data.getBytes(Charset.forName("UTF-8")));
+    return instr;
+  }
+  private static InputStream stdinFile(String filename) {
+    try {
+      return new FileInputStream(filename);
+    }
+    catch (FileNotFoundException ex) {
+      throw new RuntimeException("File not found: " + filename);
+    }
+  }
+  
   public void runCmd(String[] args, String expected)
   {    
+    runCmd(args, null, expected);
+  }
+
+  private void runCmd(String[] args, InputStream stdin, String expected) {
     JTSOpCmd cmd = new JTSOpCmd();
     cmd.captureOutput();
+    if (stdin != null) cmd.replaceStdIn(stdin);
     try {
       JTSOpCmd.CmdArgs cmdArgs = cmd.parseArgs(args);
       cmd.execute(cmdArgs);
@@ -109,10 +151,14 @@ public class JTSOpCmdTest extends TestCase {
     runCmdError(args, null);
   }
 
-  
-  public void runCmdError(String[] args, String expected)
+  public void runCmdError(String[] args, String expected) {
+    runCmdError(args, null, expected);
+  }
+
+  public void runCmdError(String[] args, InputStream stdin, String expected)
   {    
     JTSOpCmd cmd = new JTSOpCmd();
+    if (stdin != null) cmd.replaceStdIn(stdin);
     try {
       JTSOpCmd.CmdArgs cmdArgs = cmd.parseArgs(args);
       cmd.execute(cmdArgs);
