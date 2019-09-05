@@ -74,6 +74,11 @@ public class JTSOpCmdTest extends TestCase {
         "MULTILINESTRING ((1 0, 2 0), (2 0, 3 0))" );
   }
   
+  public void testOpNoArg() {
+    runCmd( args("-f", "wkt", "CreateRandomShape.randomPoints", "10"), 
+        "MULTIPOINT" );
+  }
+  
   public void testFormatWKB() {
     runCmd( args("-a", "LINESTRING ( 1 1, 2 2)", "-f", "wkb"), 
         "0000000002000000023FF00000000000003FF000000000000040000000000000004000000000000000" );

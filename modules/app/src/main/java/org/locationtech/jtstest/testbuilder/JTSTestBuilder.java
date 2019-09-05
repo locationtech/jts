@@ -75,6 +75,11 @@ public class JTSTestBuilder
   
   public static GeometryFactory getGeometryFactory() 
   { 
+    /**
+     * Allow this to work even if TestBuilder is not initialized
+     */
+    if (instance() == null) 
+      return new GeometryFactory();
     return model().getGeometryFactory();
   }
   
