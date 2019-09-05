@@ -209,6 +209,15 @@ public class OverlapUnion
     }
   }
 
+  /**
+   * Implements union using the buffer-by-zero trick.
+   * This seems to be more robust than overlay union,
+   * for reasons somewhat unknown.
+   * 
+   * @param g0 a geometry
+   * @param g1 a geometry
+   * @return the union of the geometries
+   */
   private static Geometry unionBuffer(Geometry g0, Geometry g1)
   {
     GeometryFactory factory = g0.getFactory();
