@@ -46,3 +46,7 @@ It has the following features:
  * Compute an operation on a geometry and output only geometry metrics and timing
  
        jtsop -v -a some-geom.wkt Buffer.buffer 10
+ 
+ * Chain operations using a pipe
+ 
+       jtsop -f wkb CreateRandomShape.randomPoints 10 | jtsop -a stdin -f wkt Buffer.buffer 1
