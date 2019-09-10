@@ -38,7 +38,6 @@ public class PolygonBuilder {
   private void buildRings(List<OverlayEdge> resultAreaEdges)
   {
     linkResultAreaEdgesMax(resultAreaEdges);
-    // assumes that minimal edge rings have been linked
     List<MaximalEdgeRing> maxRings = buildMaximalRings(resultAreaEdges);
     buildMinimalRings(maxRings);
     placeFreeHoles(shellList, freeHoleList);

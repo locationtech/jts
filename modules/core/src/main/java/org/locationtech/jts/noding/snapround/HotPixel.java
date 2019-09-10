@@ -239,16 +239,22 @@ public class HotPixel
 
     li.computeIntersection(p0, p1, corner[1], corner[2]);
     if (li.isProper()) return true;
-    if (li.hasIntersection()) intersectsLeft = true;
+    if (li.hasIntersection()) {
+      intersectsLeft = true;
+    }
 
     li.computeIntersection(p0, p1, corner[2], corner[3]);
     if (li.isProper()) return true;
-    if (li.hasIntersection()) intersectsBottom = true;
+    if (li.hasIntersection()) {
+      intersectsBottom = true;
+    }
 
     li.computeIntersection(p0, p1, corner[3], corner[0]);
     if (li.isProper()) return true;
 
-    if (intersectsLeft && intersectsBottom) return true;
+    if (intersectsLeft || intersectsBottom) {
+      return true;
+    }
 
     if (p0.equals(pt)) return true;
     if (p1.equals(pt)) return true;
