@@ -78,6 +78,34 @@ public class JTSOpCmdTest extends TestCase {
     runCmd( args("-f", "wkt", "CreateRandomShape.randomPoints", "10"), 
         "MULTIPOINT" );
   }
+  //===========================================
+
+  public void testOpEachA() {
+    runCmd( args("-a", "MULTILINESTRING((0 0, 10 10), (100 100, 110 110))", 
+        "-each", "a",
+        "-f", "wkt", "envelope"), 
+        "GEOMETRYCOLLECTION (POLYGON ((0 0, 0 10, 10 10, 10 0, 0 0)), POLYGON ((100 100, 100 110, 110 110, 110 100, 100 100)))" );
+  }
+
+  public void testOpEachAB() {
+    runCmd( args(
+        "-a", "MULTIPOINT((0 0), (0 1))", 
+        "-b", "MULTIPOINT((9 9), (8 8))", 
+        "-each", "ab",
+        "-f", "wkt", "Distance.nearestPoints"), 
+        "GEOMETRYCOLLECTION (LINESTRING (0 0, 9 9), LINESTRING (0 0, 8 8), LINESTRING (0 1, 9 9), LINESTRING (0 1, 8 8))" );
+  }
+
+  public void testOpEachB() {
+    runCmd( args(
+        "-a", "MULTIPOINT((0 0), (0 1))", 
+        "-b", "MULTIPOINT((9 9), (8 8))", 
+        "-each", "b",
+        "-f", "wkt", "Distance.nearestPoints" ), 
+        "GEOMETRYCOLLECTION (LINESTRING (0 1, 9 9), LINESTRING (0 1, 8 8))" );
+  }
+
+  //===========================================
   
   public void testFormatWKB() {
     runCmd( args("-a", "LINESTRING ( 1 1, 2 2)", "-f", "wkb"), 
@@ -99,6 +127,8 @@ public class JTSOpCmdTest extends TestCase {
         "<gml:LineString>" );
   }
   
+  //===========================================
+
   public void testStdInWKT() {
     runCmd( args("-a", "stdin", "-f", "wkt", "envelope"), 
         stdin("LINESTRING ( 1 1, 2 2)"),

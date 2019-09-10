@@ -31,6 +31,7 @@ import org.locationtech.jtstest.function.DoubleKeyMap;
 import org.locationtech.jtstest.geomfunction.BaseGeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
+import org.locationtech.jtstest.geomfunction.SpreaderGeometryFunction;
 import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
@@ -60,6 +61,12 @@ import org.locationtech.jtstest.util.io.MultiFormatReader;
  * --- Compute the buffer of a literal geometry, output as WKT
  * jtsop -a "POINT (10 10)" -f wkt Buffer.buffer 10
  * 
+ * --- Compute multiple buffers
+ * jtsop -a "POINT (10 10)" -args 10 20 30 -f wkt Buffer.buffer
+ * 
+ * --- Run op for each A 
+ * jtsop -a "MULTIPOINT ((10 10), (20 20))" -each A -f wkt Buffer.buffer
+ * 
  * --- Output a literal geometry as GeoJSON
  * jtsop -a "POINT (10 10)" -f geojson
  * </pre>
@@ -73,11 +80,12 @@ public class JTSOpCmd {
   // TODO: allow -a stdin  to indicate reading from stdin.  
   
   public static final String ERR_FILE_NOT_FOUND = "File not found";
+  public static final String ERR_INVALID_PARAMETER = "Invalid Parameter";
   public static final String ERR_INPUT = "Unable to read input";
   public static final String ERR_FUNCTION_NOT_FOUND = "Function not found";
   public static final String ERR_REQUIRED_A = "Geometry A may be required";
   public static final String ERR_REQUIRED_B = "Geometry B is required";
-  public static final String ERR_WRONG_ARG_COUNT = "Arguments and parameters do not match";
+  public static final String ERR_WRONG_ARG_COUNT = "Function arguments and parameters do not match";
   public static final String ERR_FUNCTION_ERR = "Error executing function";
 
   static final String[] helpDoc = new String[] {
@@ -85,6 +93,8 @@ public class JTSOpCmd {
   "Usage: jtsop - CLI for JTS operations",
   "           [ -a <wkt> | <wkb> | stdin | <filename.ext>]",
   "           [ -b <wkt> | <wkb> | stdin | <filename.ext>]",
+  "           [ -each ( a | b | ab ) ]",
+  "           [ -args val1 ... valn",
   "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
   "           [ -repeat <num>]",
   "           [ -geomfunc <classname>]",
@@ -96,6 +106,8 @@ public class JTSOpCmd {
   "",
   "  -a              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
   "  -b              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
+  "  -each           execute op on each component of A and/or B",
+  "  -args           execute op once for each argument in list",
   "  -f              output format to use.  If omitted output is silent",
   "  -repeat         repeat the operation N times",
   "  -geomfunc       specifies class providing geometry operations",
@@ -177,6 +189,9 @@ public class JTSOpCmd {
     public String arg1;
     String format = null;
     public Integer repeat;
+    public boolean eachA = false;
+    public boolean eachB = false;
+    public String[] argList;
   }
 
   public JTSOpCmd() {
@@ -214,27 +229,39 @@ public class JTSOpCmd {
     // TODO: Handle option -ab
     
     
-    Object result = null;
     if (cmdArgs.operation != null) {
-      result = executeFunction(cmdArgs, geomA, geomB);
+      executeFunction(cmdArgs, geomA, geomB);
     }
     else {
       // no op specified, so just output A (allows format conversion)
-      result = geomA;
+      printResult(geomA, cmdArgs.format);
     }
-    printResult(result, cmdArgs.format);
   }
 
-  private Object executeFunction(CmdArgs cmdArgs, Geometry geomA, Geometry geomB) {
+  private void executeFunction(CmdArgs cmdArgs, Geometry geomA, Geometry geomB) {
     GeometryFunction func = getFunction(cmdArgs.operation);
+    func = decorateFunctionEach(cmdArgs, func);
+    
     if (func == null) {
       throw new CommandError(ERR_FUNCTION_NOT_FOUND, cmdArgs.operation);
     }
-    checkFunctionArgs(func, geomB, cmdArgs.arg1);
-    Object funArgs[] = createFunctionArgs(func, geomB, cmdArgs.arg1);
+    
+    if (cmdArgs.argList != null) {
+      for (String arg : cmdArgs.argList) {
+        executeFunctionWithArg(cmdArgs, func, geomA, geomB, arg);
+      }
+    }
+    else {
+      executeFunctionWithArg(cmdArgs, func, geomA, geomB, cmdArgs.arg1);
+    }
+  }
+
+  private void executeFunctionWithArg(CmdArgs cmdArgs, GeometryFunction func, Geometry geomA, Geometry geomB, String arg) {
+    checkFunctionArgs(func, geomB, arg);
+    Object funArgs[] = createFunctionArgs(func, geomB, arg);
     
     if (isVerbose) {
-      out.println(writeOpSummary(cmdArgs));
+      out.println( opSummary(func.getName(), arg) );
     }
     Object result = null;
     for (int i = 0; i < cmdArgs.repeat; i++) {
@@ -246,7 +273,7 @@ public class JTSOpCmd {
     if (isVerbose && result instanceof Geometry) {
       printGeometrySummary("Result", (Geometry) result, null);
     }
-    return result;
+    printResult(result, cmdArgs.format);
   }
 
   private Object executeFunctionOnce(CmdArgs cmdArgs, Geometry geomA, GeometryFunction func, Object[] funArgs) {
@@ -320,11 +347,11 @@ public class JTSOpCmd {
     return false;
   }
 
-  private String writeOpSummary(CmdArgs cmdArgs) {
+  private String opSummary(String funcName, String arg) {
     StringBuilder sb = new StringBuilder();
-    sb.append("Op: " + cmdArgs.operation);
-    if (cmdArgs.arg1 != null) {
-      sb.append(" " + cmdArgs.arg1);
+    sb.append("Op: " + funcName );
+    if (arg != null) {
+      sb.append(" " + arg);
     }
     return sb.toString();
   }
@@ -335,9 +362,10 @@ public class JTSOpCmd {
     
     if (result instanceof Geometry) {
       printGeometry((Geometry) result, outputFormat);
-      return;
     }
-    out.println(result);
+    else {
+      out.println(result);
+    }
   }
   
   private void printGeometry(Geometry geom, String outputFormat) {
@@ -427,6 +455,12 @@ public class JTSOpCmd {
     return paramVal;
   }
 
+
+  private GeometryFunction decorateFunctionEach(CmdArgs cmdArgs, GeometryFunction func) {
+    if (! (cmdArgs.eachA || cmdArgs.eachB)) return func;
+    return new SpreaderGeometryFunction(func, cmdArgs.eachA, cmdArgs.eachB );
+  }
+  
   private GeometryFunction getFunction(String operation) {
     String category = "Geometry";
     String name = operation;
@@ -448,6 +482,39 @@ public class JTSOpCmd {
     
     commandLine.parse(args);
 
+    cmdArgs.operation = commandLine.getOptionArg(CommandOptions.OP, 0);
+    cmdArgs.geomA = commandLine.getOptionArg(CommandOptions.GEOMA, 0);
+    cmdArgs.geomB = commandLine.getOptionArg(CommandOptions.GEOMB, 0);
+    cmdArgs.arg1 = commandLine.getOptionArg(CommandOptions.ARG1, 0);
+    cmdArgs.format = commandLine.getOptionArg(CommandOptions.FORMAT, 0);
+    
+    cmdArgs.repeat = commandLine.hasOption(CommandOptions.REPEAT)
+        ? commandLine.getOptionArgAsInt(CommandOptions.REPEAT, 0)
+            : 1;
+    
+    cmdArgs.argList = commandLine.getOptionArgs(CommandOptions.ARGS);
+        
+    if (commandLine.hasOption(CommandOptions.EACH)) {
+      String each = commandLine.getOptionArg(CommandOptions.EACH, 0);
+
+      if (each.equalsIgnoreCase("a")) {
+        cmdArgs.eachA = true;
+      }
+      else if (each.equalsIgnoreCase("b")) {
+        cmdArgs.eachB = true;
+      }
+      else if (each.equalsIgnoreCase("ab")) {
+        cmdArgs.eachA = true;
+        cmdArgs.eachB = true;
+      }
+      else {
+        throw new CommandError(ERR_INVALID_PARAMETER, "-each " + each);
+      }
+    }
+    isVerbose = commandLine.hasOption(CommandOptions.VERBOSE)
+                  || commandLine.hasOption(CommandOptions.V);
+    isHelpWithFunctions = commandLine.hasOption(CommandOptions.HELP);
+
     if (commandLine.hasOption(CommandOptions.GEOMFUNC)) {
       Option opt = commandLine.getOption(CommandOptions.GEOMFUNC);
       for (int i = 0; i < opt.getNumArgs(); i++) {
@@ -461,20 +528,6 @@ public class JTSOpCmd {
       }
     }
     
-    cmdArgs.operation = commandLine.getOptionArg(CommandOptions.OP, 0);
-    cmdArgs.geomA = commandLine.getOptionArg(CommandOptions.GEOMA, 0);
-    cmdArgs.geomB = commandLine.getOptionArg(CommandOptions.GEOMB, 0);
-    cmdArgs.arg1 = commandLine.getOptionArg(CommandOptions.ARG1, 0);
-    cmdArgs.format = commandLine.getOptionArg(CommandOptions.FORMAT, 0);
-    
-    cmdArgs.repeat = commandLine.hasOption(CommandOptions.REPEAT)
-        ? commandLine.getOptionArgAsInt(CommandOptions.REPEAT, 0)
-            : 1;
-    
-    isVerbose = commandLine.hasOption(CommandOptions.VERBOSE)
-                  || commandLine.hasOption(CommandOptions.V);
-    isHelpWithFunctions = commandLine.hasOption(CommandOptions.HELP);
-
     String[] freeArgs = commandLine.getOptionArgs(OptionSpec.OPTION_FREE_ARGS);
     if (freeArgs != null) {
       if (freeArgs.length >= 1) {
@@ -497,7 +550,8 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.OP, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMA, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMB, 1))
-    .addOptionSpec(new OptionSpec(CommandOptions.ARG1, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.EACH, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.ARGS, OptionSpec.NARGS_ONE_OR_MORE))
     .addOptionSpec(new OptionSpec(CommandOptions.FORMAT, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.REPEAT, 1))
     .addOptionSpec(new OptionSpec(OptionSpec.OPTION_FREE_ARGS, OptionSpec.NARGS_ONE_OR_MORE));
