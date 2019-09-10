@@ -5,6 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.List;
+
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 
 import junit.framework.TestCase;
 
@@ -105,6 +109,24 @@ public class JTSOpCmdTest extends TestCase {
         "GEOMETRYCOLLECTION (LINESTRING (0 1, 9 9), LINESTRING (0 1, 8 8))" );
   }
 
+  public void testOpArgsBuffer() {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "POINT(0 0)", 
+        "-args", "1", "2", "3", "4",
+        "-f", "wkt", 
+        "Buffer.buffer" ), 
+        null, null );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertTrue( results.size() == 4);
+    assertEquals( computeArea(results), 93.6, 1);
+  }
+
+  private double computeArea(List<Geometry> results) {
+    GeometryFactory fact = new GeometryFactory();
+    Geometry geom = fact.buildGeometry(results);
+    return geom.getArea();
+  }
+
   //===========================================
   
   public void testFormatWKB() {
@@ -169,9 +191,10 @@ public class JTSOpCmdTest extends TestCase {
     runCmd(args, null, expected);
   }
 
-  private void runCmd(String[] args, InputStream stdin, String expected) {
+  private JTSOpCmd runCmd(String[] args, InputStream stdin, String expected) {
     JTSOpCmd cmd = new JTSOpCmd();
     cmd.captureOutput();
+    cmd.captureResult();
     if (stdin != null) cmd.replaceStdIn(stdin);
     try {
       JTSOpCmd.CmdArgs cmdArgs = cmd.parseArgs(args);
@@ -180,6 +203,7 @@ public class JTSOpCmdTest extends TestCase {
       e.printStackTrace();
     }
     checkExpected( cmd.getOutput(), expected);
+    return cmd;
   }
   
   public void runCmdError(String[] args) {
@@ -209,6 +233,8 @@ public class JTSOpCmdTest extends TestCase {
   }
 
   private void checkExpected(String actual, String expected) {
+    if (expected == null) return;
+    
     boolean found = actual.contains(expected);
     if (isVerbose  && ! found) {
       System.out.println("Expected: " + expected);

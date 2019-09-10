@@ -15,7 +15,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -180,7 +182,9 @@ public class JTSOpCmd {
   private boolean isVerbose = false;
 
   private CommandOutput out = new CommandOutput();
-  private InputStream stdIn = System.in; 
+  private InputStream stdIn = System.in;
+  private boolean captureGeometry = false;
+  private List<Geometry> resultGeoms = new ArrayList<Geometry>();
   
   static class CmdArgs {
     String operation;
@@ -200,6 +204,14 @@ public class JTSOpCmd {
   
   public void captureOutput() {
     out = new CommandOutput(true);
+  }
+  
+  public void captureResult() {
+    captureGeometry  = true;
+  }
+  
+  public List<Geometry> getResultGeometry() {
+    return resultGeoms;
   }
   
   public void replaceStdIn(InputStream inStream) {
@@ -361,6 +373,9 @@ public class JTSOpCmd {
     if (outputFormat == null) return;
     
     if (result instanceof Geometry) {
+      if (captureGeometry) {
+        resultGeoms.add((Geometry) result);
+      }
       printGeometry((Geometry) result, outputFormat);
     }
     else {
