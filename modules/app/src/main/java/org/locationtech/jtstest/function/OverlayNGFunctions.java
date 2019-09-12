@@ -32,12 +32,27 @@ import org.locationtech.jts.operation.union.UnionFunction;
 
 public class OverlayNGFunctions {
   
-  public static Geometry edgesNoded(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry debugEdgesNoded(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
+    // force non-null inputs
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
     // op should not matter, since edges are captured pre-result
     OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.UNION);
     ovr.setOutputNodedEdges(true);
     return ovr.getResultGeometry();
+  }
+
+  private static Geometry sameOrEmpty(Geometry a, Geometry b) {
+    if (a != null) return a;
+    // return empty geom of same type
+    if (b.getDimension() == 2) {
+      return b.getFactory().createPolygon();
+    }
+    if (b.getDimension() == 1) {
+      return b.getFactory().createLineString();
+    }
+    return b.getFactory().createPoint();
   }
 
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
@@ -45,16 +60,22 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, pm, OverlayOp.INTERSECTION);
   }
 
-  public static Geometry edgesIntersectionResult(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry debugEdgesIntersectionResult(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
+    // force non-null inputs
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
+   OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
     ovr.setOutputResultEdges(true);
     return ovr.getResultGeometry();
   }
 
-  public static Geometry edgesIntersectionAll(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry debugEdgesIntersectionAll(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
+    // force non-null inputs
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
+   OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
     ovr.setOutputEdges(true);
     return ovr.getResultGeometry();
   }
@@ -64,8 +85,11 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, pm, OverlayOp.UNION);
   }
   
-  public static Geometry edgesUnionResult(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry debugEdgesUnionResult(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
+    // force non-null inputs
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
     OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.UNION);
     ovr.setOutputResultEdges(true);
     return ovr.getResultGeometry();
