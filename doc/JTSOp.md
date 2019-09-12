@@ -8,10 +8,15 @@ It has the following features:
   * standard input (WKT or WKB)
   * files in various formats (WKT, WKB, GeoJSON, GML, SHP)
 * execute any spatial or scalar function available in the TestBuilder
+* "spread" execution over each geometry component from one or both inputs 
+  * `-each [ a | b | ab ]`
+* run op multiple times using a list of op argument values
+  * `-args v1 v2 v3 ...`
+* repeat operation execution multiple times, to provide better timing results
 * output the result in the formats WKT, WKB, GeoJSON, GML, SVG
 * display information about the input geometries and function timing
 * load other functions dynamically with `-geomfunc` parameter (as a Java class with static methods)
-* chain operations together by reading input from stdin
+* chain operations together by writing/reading input from `stdin` and using OS piping
 
 ## Examples
 
