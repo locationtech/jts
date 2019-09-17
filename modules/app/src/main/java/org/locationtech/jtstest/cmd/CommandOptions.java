@@ -25,5 +25,12 @@ public class CommandOptions {
   public static final String REPEAT = "repeat";
   public static final String EACH = "each";
   public static final String ARGS = "args";
+  public static final String STDIN = "stdin";
+  public static final String FORMAT_GML = "gml";
+  public static final String FORMAT_WKB = "wkb";
+  public static final String FORMAT_TXT = "txt";
+  public static final String FORMAT_WKT = "wkt";
+  public static final String FORMAT_GEOJSON = "geojson";
+  public static final String FORMAT_SVG = "svg";
 
 }

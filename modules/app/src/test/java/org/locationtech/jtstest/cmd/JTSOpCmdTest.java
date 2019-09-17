@@ -11,8 +11,9 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
 import junit.framework.TestCase;
+import test.jts.GeometryTestCase;
 
-public class JTSOpCmdTest extends TestCase {
+public class JTSOpCmdTest extends GeometryTestCase {
   private boolean isVerbose = true;
 
   public JTSOpCmdTest(String Name_) {
@@ -62,6 +63,7 @@ public class JTSOpCmdTest extends TestCase {
     runCmdError( args("-b", "POINT ( 1 1 )", "Overlay.union" ),
         JTSOpCmd.ERR_REQUIRED_A );
   }
+  //===========================================
   
   public void testOpEnvelope() {
     runCmd( args("-a", "LINESTRING ( 1 1, 2 2)", "-f", "wkt", "envelope"), 
@@ -88,7 +90,7 @@ public class JTSOpCmdTest extends TestCase {
     runCmd( args("-a", "MULTILINESTRING((0 0, 10 10), (100 100, 110 110))", 
         "-each", "a",
         "-f", "wkt", "envelope"), 
-        "GEOMETRYCOLLECTION (POLYGON ((0 0, 0 10, 10 10, 10 0, 0 0)), POLYGON ((100 100, 100 110, 110 110, 110 100, 100 100)))" );
+        "POLYGON ((0 0, 0 10, 10 10, 10 0, 0 0))\nPOLYGON ((100 100, 100 110, 110 110, 110 100, 100 100))" );
   }
 
   public void testOpEachAB() {
@@ -97,7 +99,7 @@ public class JTSOpCmdTest extends TestCase {
         "-b", "MULTIPOINT((9 9), (8 8))", 
         "-each", "ab",
         "-f", "wkt", "Distance.nearestPoints"), 
-        "GEOMETRYCOLLECTION (LINESTRING (0 0, 9 9), LINESTRING (0 0, 8 8), LINESTRING (0 1, 9 9), LINESTRING (0 1, 8 8))" );
+        "LINESTRING (0 0, 9 9)\nLINESTRING (0 0, 8 8)\nLINESTRING (0 1, 9 9)\nLINESTRING (0 1, 8 8)" );
   }
 
   public void testOpEachB() {
@@ -106,19 +108,18 @@ public class JTSOpCmdTest extends TestCase {
         "-b", "MULTIPOINT((9 9), (8 8))", 
         "-each", "b",
         "-f", "wkt", "Distance.nearestPoints" ), 
-        "GEOMETRYCOLLECTION (LINESTRING (0 1, 9 9), LINESTRING (0 1, 8 8))" );
+        "LINESTRING (0 1, 9 9)\nLINESTRING (0 1, 8 8)" );
   }
 
-  public void testOpArgsBuffer() {
+  public void testOpBufferVals() {
     JTSOpCmd cmd = runCmd( args(
         "-a", "POINT(0 0)", 
-        "-args", "1", "2", "3", "4",
         "-f", "wkt", 
-        "Buffer.buffer" ), 
+        "Buffer.buffer", "val(1,2,3,4)" ), 
         null, null );
     List<Geometry> results = cmd.getResultGeometry();
-    assertTrue( results.size() == 4);
-    assertEquals( computeArea(results), 93.6, 1);
+    assertTrue("Not enough results for arg values",  results.size() == 4 );
+    assertEquals("Incorrect summary value for arg values",  computeArea(results), 93.6, 1);
   }
 
   private double computeArea(List<Geometry> results) {
@@ -177,6 +178,7 @@ public class JTSOpCmdTest extends TestCase {
     InputStream instr = new ByteArrayInputStream(data.getBytes(Charset.forName("UTF-8")));
     return instr;
   }
+  
   private static InputStream stdinFile(String filename) {
     try {
       return new FileInputStream(filename);
@@ -240,6 +242,6 @@ public class JTSOpCmdTest extends TestCase {
       System.out.println("Expected: " + expected);
       System.out.println("Actual: " + actual);
     }
-    assertTrue( found );
+    assertTrue( "Output does not contain string " + expected, found );
   }
 }
