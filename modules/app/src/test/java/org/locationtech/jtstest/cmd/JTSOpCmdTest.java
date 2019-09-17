@@ -11,9 +11,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
 import junit.framework.TestCase;
-import test.jts.GeometryTestCase;
 
-public class JTSOpCmdTest extends GeometryTestCase {
+public class JTSOpCmdTest extends TestCase {
   private boolean isVerbose = true;
 
   public JTSOpCmdTest(String Name_) {
