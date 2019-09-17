@@ -25,43 +25,39 @@ public class JTSOpCmdTest extends GeometryTestCase {
     junit.textui.TestRunner.main(testCaseName);
   }
   
-  public void testHelp() {
-    runCmd( args("-help"), "Usage");
-  }
-  
   public void testErrorFileNotFoundA() {
     runCmdError( args("-a", "missing.wkt"), 
-        JTSOpCmd.ERR_FILE_NOT_FOUND );
+        JTSOpRunner.ERR_FILE_NOT_FOUND );
   }
   
   public void testErrorFileNotFoundB() {
     runCmdError( args("-b", "missing.wkt"), 
-        JTSOpCmd.ERR_FILE_NOT_FOUND );
+        JTSOpRunner.ERR_FILE_NOT_FOUND );
   }
   
   public void testErrorFunctioNotFound() {
     runCmdError( args("-a", "POINT ( 1 1 )", "buffer" ),
-        JTSOpCmd.ERR_FUNCTION_NOT_FOUND );
+        JTSOpRunner.ERR_FUNCTION_NOT_FOUND );
   }
   
   public void testErrorMissingArgBuffer() {
     runCmdError( args("-a", "POINT ( 1 1 )", "Buffer.buffer" ),
-        JTSOpCmd.ERR_WRONG_ARG_COUNT );
+        JTSOpRunner.ERR_WRONG_ARG_COUNT );
   }
   
   public void testErrorMissingGeomABuffer() {
     runCmdError( args("Buffer.buffer", "10" ),
-        JTSOpCmd.ERR_REQUIRED_A );
+        JTSOpRunner.ERR_REQUIRED_A );
   }
   
   public void testErrorMissingGeomBUnion() {
     runCmdError( args("-a", "POINT ( 1 1 )", "Overlay.union" ),
-        JTSOpCmd.ERR_REQUIRED_B );
+        JTSOpRunner.ERR_REQUIRED_B );
   }
   
   public void testErrorMissingGeomAUnion() {
     runCmdError( args("-b", "POINT ( 1 1 )", "Overlay.union" ),
-        JTSOpCmd.ERR_REQUIRED_A );
+        JTSOpRunner.ERR_REQUIRED_A );
   }
   //===========================================
   
@@ -167,7 +163,7 @@ public class JTSOpCmdTest extends GeometryTestCase {
   public void testStdInBadFormat() {
     runCmdError( args("-a", "stdin", "-f", "wkt", "envelope"), 
         stdin("<gml fdlfld >"),
-        JTSOpCmd.ERR_INPUT );
+        JTSOpRunner.ERR_INPUT );
   }
   
   private String[] args(String ... args) {
@@ -199,7 +195,7 @@ public class JTSOpCmdTest extends GeometryTestCase {
     cmd.captureResult();
     if (stdin != null) cmd.replaceStdIn(stdin);
     try {
-      JTSOpCmd.CmdArgs cmdArgs = cmd.parseArgs(args);
+      JTSOpRunner.OpParams cmdArgs = cmd.parseArgs(args);
       cmd.execute(cmdArgs);
     } catch (Exception e) {
       e.printStackTrace();
@@ -221,7 +217,7 @@ public class JTSOpCmdTest extends GeometryTestCase {
     JTSOpCmd cmd = new JTSOpCmd();
     if (stdin != null) cmd.replaceStdIn(stdin);
     try {
-      JTSOpCmd.CmdArgs cmdArgs = cmd.parseArgs(args);
+      JTSOpRunner.OpParams cmdArgs = cmd.parseArgs(args);
       cmd.execute(cmdArgs);
     } 
     catch (CommandError e) {
