@@ -22,6 +22,7 @@ import java.util.Map;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geomgraph.Position;
+import org.locationtech.jts.util.Debug;
 
 public class OverlayGraph {
   
@@ -354,6 +355,18 @@ public class OverlayGraph {
      */
     int loc = inputGeometry.locatePointInArea(geomIndex, edge.orig());
     int edgeLoc = loc != Location.EXTERIOR ? Location.INTERIOR : Location.EXTERIOR;
+    return edgeLoc;
+  }   
+  private int locateEdgeBoth(int geomIndex, OverlayEdge edge) {
+    /*
+     * To improve the robustness of the point location,
+     * check both ends of the edge.
+     * Edge is only labelled INTERIOR if both ends are.
+     */
+    int locOrig = inputGeometry.locatePointInArea(geomIndex, edge.orig());
+    int locDest = inputGeometry.locatePointInArea(geomIndex, edge.dest());
+    boolean isInt = locOrig != Location.EXTERIOR && locDest != Location.EXTERIOR;
+    int edgeLoc = isInt ? Location.INTERIOR : Location.EXTERIOR;
     return edgeLoc;
   } 
 

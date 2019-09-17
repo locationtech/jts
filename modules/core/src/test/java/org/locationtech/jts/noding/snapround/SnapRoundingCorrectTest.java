@@ -37,24 +37,24 @@ import test.jts.GeometryTestCase;
  *
  * @version 1.17
  */
-public class SnapRoundingCorrectnessTest  extends GeometryTestCase {
+public class SnapRoundingCorrectTest  extends GeometryTestCase {
 
   GeometryFactory geomFact = new GeometryFactory();
   
   public static void main(String args[]) {
-    TestRunner.run(SnapRoundingCorrectnessTest.class);
+    TestRunner.run(SnapRoundingCorrectTest.class);
   }
 
-  public SnapRoundingCorrectnessTest(String name) { super(name); }
+  public SnapRoundingCorrectTest(String name) { super(name); }
 
-  public void xtestNearbyCorner() {
+  public void testNearbyCorner() {
 
     String wkt = "MULTILINESTRING ((0.2 1.1, 1.6 1.4, 1.9 2.9), (0.9 0.9, 2.3 1.7))";
     String expected = "MULTILINESTRING ((0 1, 1 1), (1 1, 2 1), (1 1, 2 1), (2 1, 2 2), (2 1, 2 2), (2 2, 2 3))";
     checkRounding(wkt, 1.0, expected);
   }
 
-  public void xtestNearbyShape() {
+  public void testNearbyShape() {
 
     String wkt = "MULTILINESTRING ((1.3 0.1, 2.4 3.9), (0 1, 1.53 1.48, 0 4))";
     String expected = "MULTILINESTRING ((1 0, 2 1), (2 1, 2 4), (0 1, 2 1), (2 1, 0 4))";
@@ -63,12 +63,45 @@ public class SnapRoundingCorrectnessTest  extends GeometryTestCase {
 
   /**
    * Currently fails, perhaps due to intersection lying right on a grid cell corner?
+   * Fixed by ensuring intersections are forced into segments
    */
   public void testIntOnGridCorner() {
 
     String wkt = "MULTILINESTRING ((4.30166242 45.53438188, 4.30166243 45.53438187), (4.3011475 45.5328371, 4.3018341 45.5348969))";
     String expected = null;
     checkRounding(wkt, 100000000, expected);
+  }
+
+  /**
+   * Currently fails, does not node correctly
+   */
+  public void testVertexCrossesLine() {
+
+    String wkt = "MULTILINESTRING ((2.2164917 48.8864136, 2.2175217 48.8867569), (2.2175217 48.8867569, 2.2182083 48.8874435), (2.2182083 48.8874435, 2.2161484 48.8853836))";
+    String expected = null;
+    checkRounding(wkt, 1000000, expected);
+  }
+
+  /**
+   * Currently fails, does not node correctly.
+   * Fixed by NOT rounding lines extracted by Overlay
+   */
+  public void testVertexCrossesLine2() {
+
+    String wkt = "MULTILINESTRING ((2.276916574988164 49.06082147500638, 2.2769165 49.0608215), (2.2769165 49.0608215, 2.2755432 49.0608215), (2.2762299 49.0615082, 2.276916574988164 49.06082147500638))";
+    String expected = null;
+    checkRounding(wkt, 1000000, expected);
+  }
+
+  /**
+   * Looks like a very short line is stretched between two grid points, 
+   * and for some reason the node at one end is not inserted in a line snapped to it
+   */
+  public void testShortLineNodeNotAdded() {
+
+    String wkt = "LINESTRING (2.1279144 48.8445282, 2.126884443750796 48.84555818124935, 2.1268845 48.8455582, 2.1268845 48.8462448)";
+    String expected = "MULTILINESTRING ((2.127914 48.844528, 2.126885 48.845558), (2.126885 48.845558, 2.126884 48.845558), (2.126884 48.845558, 2.126885 48.845558), (2.126885 48.845558, 2.126885 48.846245))";
+    checkRounding(wkt, 1000000, expected);
   }
 
   void checkRounding(String wkt, double scale, String expectedWKT)
@@ -96,11 +129,13 @@ public class SnapRoundingCorrectnessTest  extends GeometryTestCase {
     ssr.computeNodes(ssList);
     Collection<NodedSegmentString> nodedList = ssr.getNodedSubstrings();
     
+    MultiLineString result = toLines(nodedList);
+    System.out.println(result);
+    
     // validate noding
     NodingValidator nv = new NodingValidator(nodedList);
     nv.checkValid();
 
-    MultiLineString result = toLines(nodedList);
     return result;
   }
 

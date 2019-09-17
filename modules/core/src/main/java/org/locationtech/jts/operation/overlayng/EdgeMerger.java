@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.Debug;
 
 /**
@@ -59,15 +60,24 @@ public class EdgeMerger {
   public ArrayList<Edge> merge() {
     for (Edge edge : edges) {
       EdgeKey edgeKey = EdgeKey.create(edge);
-      Edge existing = edgeMap.get(edgeKey);
-      if (existing == null) {
+      Edge baseEdge = edgeMap.get(edgeKey);
+      if (baseEdge == null) {
+        // this is the first (and maybe only) edge for this line
         edgeMap.put(edgeKey, edge);
+        //Debug.println("edge added: " + edge);
+        //Debug.println(edge.toLineString());
       }
       else {
+        // found an existing edge
+        
         // Assert: edges are identical (up to direction)
-        existing.mergeEdge(edge);
+        // this is a fast (but incomplete) sanity check
+        Assert.isTrue(baseEdge.size() == edge.size(),
+            "Merge of edges of different sizes - probable noding error.");
+        
+        baseEdge.mergeEdge(edge);
         //Debug.println("edge merged: " + existing);
-        //mergeLabel(existing, ss);
+        //Debug.println(edge.toLineString());
       }
     }
     return new ArrayList<Edge>(edgeMap.values());

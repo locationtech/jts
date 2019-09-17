@@ -32,14 +32,21 @@ import org.locationtech.jts.util.Assert;
  */
 public class HotPixel
 {
+
+
   // testing only
 //  public static int nTests = 0;
 
+
+  private static final int UPPER_RIGHT = 0;
+  private static final int UPPER_LEFT = 1;
+  private static final int LOWER_LEFT = 2;
+  private static final int LOWER_RIGHT = 3;
+
   private LineIntersector li;
 
-  private Coordinate pt;
+  private Coordinate ptHot;
   private Coordinate originalPt;
-  private Coordinate ptScaled;
 
   private Coordinate p0Scaled;
   private Coordinate p1Scaled;
@@ -73,18 +80,18 @@ public class HotPixel
    */
   public HotPixel(Coordinate pt, double scaleFactor, LineIntersector li) {
     originalPt = pt;
-    this.pt = pt;
+    this.ptHot = pt;
     this.scaleFactor = scaleFactor;
     this.li = li;
     //tolerance = 0.5;
     if (scaleFactor <= 0) 
       throw new IllegalArgumentException("Scale factor must be non-zero");
     if (scaleFactor != 1.0) {
-      this.pt = new Coordinate(scale(pt.x), scale(pt.y));
+      this.ptHot = scaleRound(pt);
       p0Scaled = new Coordinate();
       p1Scaled = new Coordinate();
     }
-    initCorners(this.pt);
+    initCorners(this.ptHot);
   }
 
   public void incrementSnapCount() {
@@ -131,15 +138,35 @@ public class HotPixel
     miny = pt.y - tolerance;
     maxy = pt.y + tolerance;
 
-    corner[0] = new Coordinate(maxx, maxy);
-    corner[1] = new Coordinate(minx, maxy);
-    corner[2] = new Coordinate(minx, miny);
-    corner[3] = new Coordinate(maxx, miny);
+    corner[UPPER_RIGHT] = new Coordinate(maxx, maxy);
+    corner[UPPER_LEFT] = new Coordinate(minx, maxy);
+    corner[LOWER_LEFT] = new Coordinate(minx, miny);
+    corner[LOWER_RIGHT] = new Coordinate(maxx, miny);
   }
 
-  private double scale(double val)
+  private double scaleRound(double val)
   {
     return (double) Math.round(val * scaleFactor);
+  }
+
+  private Coordinate scaleRound(Coordinate p)
+  {
+    return new Coordinate(scaleRound(p.x), scaleRound(p.y));
+  }
+
+  /**
+   * Scale without rounding. 
+   * This ensures intersections are checked against original
+   * linework.
+   * This is required to ensure that intersections are not missed
+   * because the segment is moved by snapping.
+   * 
+   * @param val
+   * @return
+   */
+  private double scale(double val)
+  {
+    return val * scaleFactor;
   }
 
   /**
@@ -173,13 +200,15 @@ public class HotPixel
     double segMiny = Math.min(p0.y, p1.y);
     double segMaxy = Math.max(p0.y, p1.y);
 
+    // report false if segment env does not intersect hit pixel env
     boolean isOutsidePixelEnv =  maxx < segMinx
                          || minx > segMaxx
                          || maxy < segMiny
                          || miny > segMaxy;
     if (isOutsidePixelEnv)
       return false;
-    boolean intersects = intersectsToleranceSquare(p0, p1);
+    
+    boolean intersects = intersectsToleranceSquareScaled(p0, p1);
 //    boolean intersectsPixelClosure = intersectsPixelClosure(p0, p1);
 
 //    if (intersectsPixel != intersects) {
@@ -222,45 +251,73 @@ public class HotPixel
    * (which detects the case where the segment intersects the bottom left hot pixel corner)
    * <li>an intersection between a segment endpoint and the hot pixel coordinate
    * </ul>
-   *
-   * @param p0
-   * @param p1
-   * @return
+   * Note that it is critical that the tolerance square be partially open.
+   * In particular, the top-left and bottom-right corners must be open, 
+   * because otherwise too much snapping will occcur.
+   * 
+   * @param p0 an endpoint of the line segment, scaled
+   * @param p1 an endpoint of the line segment, scale
+   * @return true if the line segment intersects this hot pixel
    */
-  private boolean intersectsToleranceSquare(Coordinate p0, Coordinate p1)
+  private boolean intersectsToleranceSquareScaled(Coordinate p0, Coordinate p1)
   {
+    //System.out.println("Hot Pixel: " + this + " - [ " + WKTWriter.toLineString(corner));
+    //System.out.println("Segment: " + WKTWriter.toLineString(p0, p1));
+    
     boolean intersectsLeft = false;
     boolean intersectsBottom = false;
-    //System.out.println("Hot Pixel: " + WKTWriter.toLineString(corner));
-    //System.out.println("Line: " + WKTWriter.toLineString(p0, p1));
     
-    li.computeIntersection(p0, p1, corner[0], corner[1]);
+    li.computeIntersection(p0, p1, corner[UPPER_RIGHT], corner[UPPER_LEFT]);
     if (li.isProper()) return true;
 
-    li.computeIntersection(p0, p1, corner[1], corner[2]);
+    li.computeIntersection(p0, p1, corner[UPPER_LEFT], corner[LOWER_LEFT]);
     if (li.isProper()) return true;
     if (li.hasIntersection()) {
       intersectsLeft = true;
     }
 
-    li.computeIntersection(p0, p1, corner[2], corner[3]);
+    li.computeIntersection(p0, p1, corner[LOWER_LEFT], corner[LOWER_RIGHT]);
     if (li.isProper()) return true;
     if (li.hasIntersection()) {
       intersectsBottom = true;
     }
 
-    li.computeIntersection(p0, p1, corner[3], corner[0]);
+    li.computeIntersection(p0, p1, corner[LOWER_RIGHT], corner[UPPER_RIGHT]);
     if (li.isProper()) return true;
 
-    if (intersectsLeft || intersectsBottom) {
+    if (intersectsLeft && intersectsBottom) {
       return true;
     }
 
-    if (p0.equals(pt)) return true;
-    if (p1.equals(pt)) return true;
+    /**
+     * Tests if either endpoint snaps to this pixel.
+     * This is needed because a (un-rounded) segment may
+     * terminate in a hot pixel without actually crossing a live edge
+     * (e.g. it may enter from top or right, or
+     * may actually be exactly collinear with left or bottom edge,
+     */
+    if (equalsPointScaled(p0)) return true;
+    if (equalsPointScaled(p1)) return true;
+    
+    
+    //if (p0.equals(pt)) return true;
+    //if (p1.equals(pt)) return true;
 
     return false;
   }
+  
+  /**
+   * Tests if a scaled coordinate snaps (rounds) to this pixel.
+   * 
+   * @param p the point to test
+   * @return true if the coordinate snaps to this pixel
+   */
+  private boolean equalsPointScaled(Coordinate p) {
+    double x = Math.round(p.x);
+    double y = Math.round(p.y);
+    return x == ptHot.x && y == ptHot.y;
+  }
+  
   /**
    * Test whether the given segment intersects
    * the closure of this hot pixel.
@@ -314,7 +371,7 @@ public class HotPixel
   }
   
   public String toString() {
-    return "HP(" + WKTWriter.format(pt) + ")";
+    return "HP(" + WKTWriter.format(ptHot) + ")";
   }
 
 }

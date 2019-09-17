@@ -3,8 +3,11 @@ package org.locationtech.jts.operation.overlayng;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.io.WKTWriter;
 
 
 public class MaximalEdgeRing {
@@ -25,8 +28,8 @@ public class MaximalEdgeRing {
       if (edge.getEdgeRingMax() == this)
         throw new TopologyException("Edge visited twice during ring-building at " + edge.getCoordinate(), edge.getCoordinate());
       if (edge.nextResultMax() == null) {
-        return;
-        // throw new TopologyException("Found null edge in ring", edge.dest());
+        //return;
+        throw new TopologyException("Found null edge in ring", edge.dest());
       }
       edge.setEdgeRingMax(this);
       edge = edge.nextResultMax();
@@ -60,5 +63,27 @@ public class MaximalEdgeRing {
       e = e.nextResultMax();
     } while (e != startEdge);
     return minEdgeRings;
+  }
+  
+  public String toString() {
+    Coordinate[] pts = getCoordinates();
+    return WKTWriter.toLineString(pts);
+  }
+
+  private Coordinate[] getCoordinates() {
+    CoordinateList coords = new CoordinateList();
+    OverlayEdge edge = startEdge;
+    do {
+      coords.add(edge.orig());
+      if (edge == null)
+        break;
+      if (edge.nextResultMax() == null) {
+        break;
+      }
+      edge = edge.nextResultMax();
+    } while (edge != startEdge); 
+    // add last coordinate
+    coords.add(edge.dest());
+    return coords.toCoordinateArray();
   }
 }

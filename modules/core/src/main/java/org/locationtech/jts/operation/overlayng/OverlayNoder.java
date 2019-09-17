@@ -24,7 +24,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
@@ -43,6 +42,8 @@ public class OverlayNoder {
   private PrecisionModel pm;
   List<NodedSegmentString> segStrings = new ArrayList<NodedSegmentString>();
   private Noder customNoder;
+  private boolean hasEdgesA;
+  private boolean hasEdgesB;
 
   public OverlayNoder(Geometry a, Geometry b, PrecisionModel pm) {
     this.pm = pm;
@@ -63,9 +64,41 @@ public class OverlayNoder {
     
     @SuppressWarnings("unchecked")
     Collection<SegmentString> nodedSS = noder.getNodedSubstrings();
+    
+    scanForCollapse(nodedSS);
+    
     return nodedSS;
   }
 
+  private void scanForCollapse(Collection<SegmentString> segStrings) {
+    for (SegmentString ss : segStrings) {
+      EdgeInfo info = (EdgeInfo) ss.getData();
+      int geomIndex = info.getIndex();
+      if (geomIndex == 0)
+        hasEdgesA = true;
+      else if (geomIndex == 1) {
+        hasEdgesB = true;
+      }
+      // short-circuit if both have been found
+      if (hasEdgesA && hasEdgesB) return;
+    }
+  }
+
+  /**
+   * Reports whether there are noded edges
+   * for the given input geometry.
+   * If there are none, this indicates that either
+   * the geometry was empty, or has completely collapsed
+   * (because it is smaller than the noding precision).
+   * 
+   * @param geomIndex index of input geometry
+   * @return true if there are edges for the geometry
+   */
+  public boolean hasEdgesFor(int geomIndex ) {
+    if (geomIndex == 0) return hasEdgesA;
+    return hasEdgesB;
+  }
+  
   private Noder getNoder() {
     if (customNoder != null) return customNoder;
     return getSRNoder();
@@ -74,6 +107,7 @@ public class OverlayNoder {
   private Noder getSRNoder() {
     //Noder noder = new MCIndexSnapRounder(pm);
     Noder noder = new SimpleSnapRounder(pm);
+    //Noder noder = new ValidatingNoder(new SimpleSnapRounder(pm));
     return noder;
   }
   
@@ -216,7 +250,9 @@ public class OverlayNoder {
 
     for (int i = 0; i < pts.length; i++) {
       Coordinate coord = new Coordinate(pts[i]);
-      makePrecise(coord);
+      
+      // MD - disable for now to test improved snap-rounding
+      //makePrecise(coord);
       noRepeatCoordList.add(coord, false);
     }
     Coordinate[] reducedPts = noRepeatCoordList.toCoordinateArray();

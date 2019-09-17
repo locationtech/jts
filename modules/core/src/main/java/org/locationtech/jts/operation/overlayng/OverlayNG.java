@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geomgraph.Label;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
@@ -175,10 +176,34 @@ public class OverlayNG
       return toLines(graph, geomFact);
     }
     
-    return createResult(opCode);
+    Geometry result = createResult(opCode);
+    // only enable for debugging
+    //checkSanity(result);
+    return result;
+  }
+
+  private void checkSanity(Geometry result) {
+    // for Union, area should be greater than largest of inputs
+    double areaA = inputGeom.getGeometry(0).getArea();
+    double areaB = inputGeom.getGeometry(1).getArea();
+    double area = result.getArea();
+    
+    // if result is empty probably had a complete collapse, so can't use this check
+    if (area == 0) return;
+    
+    if (opCode == OverlayOp.UNION) {
+      double minAreaLimit = 0.5 * Math.max(areaA, areaB);
+      if (area < minAreaLimit ) {
+        throw new TopologyException("Result area sanity issue");
+      }
+    }
+    
   }
 
   private List<Edge> nodeAndMerge() {
+    /**
+     * Node the edges, using whatever noder is being used
+     */
     OverlayNoder ovNoder = new OverlayNoder(
         inputGeom.getGeometry(0),
         inputGeom.getGeometry(1),
@@ -186,17 +211,31 @@ public class OverlayNG
     if (noder != null) ovNoder.setNoder(noder);
     Collection<SegmentString> nodedSegStrings = ovNoder.node();
     
+    /**
+     * Record if there are no edges for either input geometry.
+     * This is used to avoid checking disconnected edges
+     * against geometry which has collapsed completely.
+     */
+    inputGeom.setEdgesExist(0, ovNoder.hasEdgesFor(0));
+    inputGeom.setEdgesExist(1, ovNoder.hasEdgesFor(1));
+    
+    /**
+     * Merge the noded edges to eliminate duplicates.
+     * Labels will be combined.
+     */
     // nodedSegStrings are no longer needed, and will be GCed
-    List<Edge> edges = mergeEdges(nodedSegStrings);
-    return edges;
-  }
-
-  private List<Edge> mergeEdges(Collection<SegmentString> nodedSegStrings) {
     List<Edge> edges = createEdges(nodedSegStrings);
     List<Edge> mergedEdges = EdgeMerger.merge(edges);
     return mergedEdges;
   }
 
+  /*
+  private List<Edge> mergeEdges(Collection<SegmentString> nodedSegStrings) {
+    List<Edge> edges = createEdges(nodedSegStrings);
+    List<Edge> mergedEdges = EdgeMerger.merge(edges);
+    return mergedEdges;
+  }
+*/
   private static List<Edge> createEdges(Collection<SegmentString> segStrings) {
     List<Edge> edges = new ArrayList<Edge>();
     for (SegmentString ss : segStrings) {
@@ -336,3 +375,4 @@ public class OverlayNG
   }
  
 }
+

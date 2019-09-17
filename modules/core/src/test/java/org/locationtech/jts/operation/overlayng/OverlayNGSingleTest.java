@@ -117,7 +117,7 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testNestedShellsIntersection() {
+  public void xtestNestedShellsIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
     Geometry expected = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
@@ -208,6 +208,27 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     Geometry b = read("POLYGON ((1 2.9, 2.9 2.9, 2.9 1.3, 1.7 1, 1.3 0.9, 1 0.4, 1 2.9))");
     Geometry expected = read("POLYGON ((1 1, 1 3, 3 3, 3 1, 2 1, 1 1))");
     Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void xtestVerySmallBIntersection() {
+    Geometry a = read("POLYGON ((2.526855443750341 48.82324221874807, 2.5258255 48.8235855, 2.5251389 48.8242722, 2.5241089 48.8246155, 2.5254822 48.8246155, 2.5265121 48.8242722, 2.526855443750341 48.82324221874807))");
+    Geometry b = read("POLYGON ((2.526512100000002 48.824272199999996, 2.5265120999999953 48.8242722, 2.5265121 48.8242722, 2.526512100000002 48.824272199999996))");
+    Geometry expected = read("POLYGON EMPTY");
+    Geometry actual = intersection(a, b, 100000000);
+    checkEqual(expected, actual);
+  }
+  
+  /**
+   * Currently noding is incorrect, producing one 2pt edge which is coincident
+   * with a 3-pt edge.  The EdgeMerger doesn't check that merged edges are identical,
+   * so merges the 3pt edge into the 2-pt edge 
+   */
+  public void testEdgeDisappears() {
+    Geometry a = read("LINESTRING (2.1279144 48.8445282, 2.126884443750796 48.84555818124935, 2.1268845 48.8455582, 2.1268845 48.8462448)");
+    Geometry b = read("LINESTRING EMPTY");
+    Geometry expected = read("LINESTRING EMPTY");
+    Geometry actual = intersection(a, b, 1000000);
     checkEqual(expected, actual);
   }
   

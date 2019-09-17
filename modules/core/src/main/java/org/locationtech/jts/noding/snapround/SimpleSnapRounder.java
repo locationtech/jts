@@ -26,6 +26,7 @@ import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.noding.InteriorIntersectionFinderAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.NodedSegmentString;
@@ -33,6 +34,7 @@ import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.NodingValidator;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.SinglePassNoder;
+import org.locationtech.jts.util.Debug;
 
 /**
  * Uses Snap Rounding to compute a rounded,
@@ -58,11 +60,10 @@ public class SimpleSnapRounder
   private final PrecisionModel pm;
   private LineIntersector li;
   private final double scaleFactor;
-  private Collection nodedSegStrings;
   private Map<Coordinate, HotPixel> hotPixelMap = new HashMap<Coordinate, HotPixel>();
   private List<HotPixel> hotPixels;
   
-  private List<SegmentString> snapped;
+  private List<NodedSegmentString> snappedResult;
 
   public SimpleSnapRounder(PrecisionModel pm) {
     this.pm = pm;
@@ -77,7 +78,7 @@ public class SimpleSnapRounder
 	 */
   public Collection getNodedSubstrings()
   {
-    return NodedSegmentString.getNodedSubstrings(snapped);
+    return NodedSegmentString.getNodedSubstrings(snappedResult);
   }
 
   /**
@@ -85,14 +86,26 @@ public class SimpleSnapRounder
    */
   public void computeNodes(Collection inputSegmentStrings)
   {
-    this.nodedSegStrings = inputSegmentStrings;
-    snapRound(inputSegmentStrings, li);
+    /**
+     * Determine intersections at full precision.  
+     * Rounding happens during Hot Pixel creation.
+     */
+    LineIntersector liFullPrec = new RobustLineIntersector();
+    snappedResult = snapRound(inputSegmentStrings, liFullPrec);
 
     // testing purposes only - remove in final version
     //checkCorrectness(inputSegmentStrings);
+    //if (Debug.isDebugging()) dumpNodedLines(inputSegmentStrings);
+    //if (Debug.isDebugging()) dumpNodedLines(snappedResult);
   }
 
-  private void checkCorrectness(Collection inputSegmentStrings)
+  private void dumpNodedLines(Collection<NodedSegmentString> segStrings) {
+    for (NodedSegmentString nss : segStrings) {
+      Debug.println( WKTWriter.toLineString(nss.getNodeList().getSplitCoordinates()));
+    }
+  }
+
+  private void checkValidNoding(Collection inputSegmentStrings)
   {
     Collection resultSegStrings = NodedSegmentString.getNodedSubstrings(inputSegmentStrings);
     NodingValidator nv = new NodingValidator(resultSegStrings);
@@ -102,21 +115,34 @@ public class SimpleSnapRounder
       ex.printStackTrace();
     }
   }
-  private List<SegmentString> snapRound(Collection<NodedSegmentString> segStrings, LineIntersector li)
+  private List<NodedSegmentString> snapRound(Collection<SegmentString> segStrings, LineIntersector li)
   {
-    List<Coordinate> intersections = findInteriorIntersections(segStrings, li);
+    List<NodedSegmentString> inputSS = createNodedStrings(segStrings);
+    /**
+     * Determine hot pixels for intersections and vertices.
+     * This is done BEFORE the input lines are rounded,
+     * to avoid distorting the line arrangement 
+     * (rounding can cause vertices to move across edges).
+     */
+    List<Coordinate> intersections = findInteriorIntersections(inputSS, li);
     addHotPixels(intersections);
-    
     addVertexPixels(segStrings);
-    
     hotPixels = new ArrayList<HotPixel>(hotPixelMap.values());
 
-    snapped = computeSnaps(segStrings);
+    List<NodedSegmentString> snapped = computeSnaps(inputSS);
     return snapped;
   }
 
-  private void addVertexPixels(Collection<NodedSegmentString> segStrings) {
-    for (NodedSegmentString nss : segStrings) {
+  private static List<NodedSegmentString> createNodedStrings(Collection<SegmentString> segStrings) {
+    List<NodedSegmentString> nodedStrings = new ArrayList<NodedSegmentString>();
+    for (SegmentString ss : segStrings) {
+      nodedStrings.add( new NodedSegmentString(ss) );
+    }
+    return nodedStrings;
+  }
+
+  private void addVertexPixels(Collection<SegmentString> segStrings) {
+    for (SegmentString nss : segStrings) {
       Coordinate[] pts = nss.getCoordinates();
       addHotPixels(pts);
     }
@@ -131,6 +157,7 @@ public class SimpleSnapRounder
       createHotPixel( round(pt) );
     }
   }
+  
   private void addHotPixels(List<Coordinate> pts) {
     for (Coordinate pt : pts) {
       createHotPixel( round(pt) );
@@ -143,6 +170,22 @@ public class SimpleSnapRounder
     return p2;
   }
 
+  /**
+   * Gets a list of the rounded coordinates.
+   * Duplicate (collapsed) coordinates are removed.
+   * 
+   * @param pts the coordinates to round
+   * @return array of rounded coordinates
+   */
+  private Coordinate[] round(Coordinate[] pts) {
+    CoordinateList roundPts = new CoordinateList();
+    
+    for (int i = 0; i < pts.length; i++ ) {
+      roundPts.add( round( pts[i] ), false);
+    }
+    return roundPts.toCoordinateArray();
+  }
+  
   private HotPixel createHotPixel(Coordinate p) {
     HotPixel hp = hotPixelMap.get(p);
     if (hp != null) return hp;
@@ -155,45 +198,49 @@ public class SimpleSnapRounder
    * Computes all interior intersections in the collection of {@link SegmentString}s,
    * and returns their {@link Coordinate}s.
    *
-   * Does NOT node the segStrings.
+   * Also adds the intersection nodes to the segments.
    *
    * @return a list of Coordinates for the intersections
    */
-  private List<Coordinate> findInteriorIntersections(Collection segStrings, LineIntersector li)
+  private List<Coordinate> findInteriorIntersections(List<NodedSegmentString> inputSS, LineIntersector li)
   {
-    InteriorIntersectionFinderAdder intFinderAdder = new InteriorIntersectionFinderAdder(li);
+    SnapIntersectionAdder intAdder = new SnapIntersectionAdder(pm);
     SinglePassNoder noder = new MCIndexNoder();
-    noder.setSegmentIntersector(intFinderAdder);
-    noder.computeNodes(segStrings);
-    return intFinderAdder.getInteriorIntersections();
+    noder.setSegmentIntersector(intAdder);
+    noder.computeNodes(inputSS);
+    return intAdder.getInteriorIntersections();
   }
-
 
   /**
    * Computes nodes introduced as a result of snapping segments to snap points (hot pixels)
    * @param li
    * @return 
    */
-  private List<SegmentString> computeSnaps(Collection<NodedSegmentString> segStrings)
+  private List<NodedSegmentString> computeSnaps(Collection<NodedSegmentString> segStrings)
   {
-    List<SegmentString> snapped = new ArrayList<SegmentString>();
+    List<NodedSegmentString> snapped = new ArrayList<NodedSegmentString>();
     for (NodedSegmentString ss : segStrings ) {
-      SegmentString snappedSS = computeSnaps(ss, snapped);
+      NodedSegmentString snappedSS = computeSnaps(ss);
       snapped.add(snappedSS);
     }
     return snapped;
   }
 
-  private SegmentString computeSnaps(NodedSegmentString ss, List<SegmentString> snapped)
+  private NodedSegmentString computeSnaps(NodedSegmentString ss)
   {
-    CoordinateList snapPts = new CoordinateList();
-    Coordinate[] pts = ss.getCoordinates();
+    //Coordinate[] pts = ss.getCoordinates();
+    /**
+     * Get edge coordinates, including previously detected interior intersection nodes.
+     * At this point these are rounded to the grid.
+     */
+    Coordinate[] pts = ss.getNodedCoordinates();
+    // round all the points at last
+    Coordinate[] ptsRound = round(pts);
+    NodedSegmentString snapSS = new NodedSegmentString(ptsRound, ss.getData());
     
-    NodedSegmentString snapSS = round(pts, ss.getData());
-    
-    int snapSSIndex = 0;
+    int snapSSsegIndex = 0;
     for (int i = 0; i < pts.length - 1; i++ ) {
-      Coordinate currSnap = snapSS.getCoordinate(snapSSIndex);
+      Coordinate currSnap = snapSS.getCoordinate(snapSSsegIndex);
 
       /**
        * If this segment has collapsed completely, skip it
@@ -205,25 +252,14 @@ public class SimpleSnapRounder
         continue;
       
       /**
-       * Add any HP intersections to corresponding snapSS segment
+       * Add any Hot Pixel intersections with original segment to rounded segment
        */
-      
-      snapSegment( p0, p1, snapSS, snapSSIndex);
-        
-      snapSSIndex++;
+      snapSegment( p0, p1, snapSS, snapSSsegIndex);      
+      snapSSsegIndex++;
     }
     return snapSS;
   }
 
-  private NodedSegmentString round(Coordinate[] pts, Object data) {
-    CoordinateList roundPts = new CoordinateList();
-    
-    for (int i = 0; i < pts.length; i++ ) {
-      roundPts.add( round( pts[i] ), false);
-    }
-    return new NodedSegmentString( roundPts.toCoordinateArray(), data );
-
-  }
 
   /**
    * This is where all the work of snapping to hot pixels gets done

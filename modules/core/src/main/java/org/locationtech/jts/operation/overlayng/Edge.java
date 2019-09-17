@@ -268,12 +268,16 @@ public class Edge {
     return "Edge( " + ptsStr  + " ) " 
         + aInfo + "/" + bInfo;
   }
-
+  public String toLineString() {
+    return WKTWriter.toLineString(pts);
+  }
+  
   private String info(int depthDelta, int dim, boolean isHole) {
-    return depthDelta 
+    return Integer.toString(depthDelta)  // force to string
     + OverlayLabel.dimensionSymbol(dim)
     + ringRoleSymbol( dim, isHole );
   }
+  
   private static String toStringPts(Coordinate[] pts) {
     Coordinate orig = pts[0];
     Coordinate dest = pts[pts.length - 1];

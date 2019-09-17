@@ -25,6 +25,7 @@ public class InputGeometry {
   private Geometry[] geom = new Geometry[2];
   private PointOnGeometryLocator ptLocatorA;
   private PointOnGeometryLocator ptLocatorB;
+  private boolean[] hasEdges = new boolean[2];
   
   public InputGeometry(Geometry geomA, Geometry geomB) {
     geom = new Geometry[] { geomA, geomB };
@@ -47,13 +48,17 @@ public class InputGeometry {
   }
   
   public int locatePointInArea(int geomIndex, Coordinate pt) {
+    if ( ! hasEdges[geomIndex]) 
+      return Location.EXTERIOR;
+
     // Assert: only called if dimension(geomIndex) = 2
     
     //return ptLocator.locate(pt, geom[geomIndex]);
     
     //*
     // this check is important, because IndexedPointInAreaLocator can't handle empty polygons
-    if (getGeometry(geomIndex).isEmpty()) 
+    if (getGeometry(geomIndex).isEmpty()  
+        || ! hasEdges[geomIndex]) 
       return Location.EXTERIOR;
     
     PointOnGeometryLocator ptLocator = getLocator(geomIndex);
@@ -73,5 +78,10 @@ public class InputGeometry {
       return ptLocatorB;
     } 
   }
+
+  public void setEdgesExist(int geomIndex, boolean hasEdgesFor) {
+    hasEdges[geomIndex] = hasEdgesFor;
+  }
+  
 
 }
