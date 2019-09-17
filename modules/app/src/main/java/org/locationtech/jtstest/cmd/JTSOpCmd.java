@@ -89,32 +89,8 @@ public class JTSOpCmd {
   public static final String ERR_REQUIRED_B = "Geometry B is required";
   public static final String ERR_WRONG_ARG_COUNT = "Function arguments and parameters do not match";
   public static final String ERR_FUNCTION_ERR = "Error executing function";
+  public static final String ERR_INVALID_RESULT = "Result is invalid";
 
-  static final String[] helpDoc = new String[] {
-  "",
-  "Usage: jtsop - CLI for JTS operations",
-  "           [ -a <wkt> | <wkb> | stdin | <filename.ext>]",
-  "           [ -b <wkt> | <wkb> | stdin | <filename.ext>]",
-  "           [ -each ( a | b | ab ) ]",
-  "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
-  "           [ -repeat <num>]",
-  "           [ -geomfunc <classname>]",
-  "           [ -v, -verbose]",
-  "           [ -help]",
-  "           [ op [ args... ]]",
-  "  op              name of the operation (Category.op)",
-  "  args            one or more scalar arguments to the operation",
-  "                  - Use val(v1,v2,v3,..) for multiple arguments",
-  "",
-  "  -a              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
-  "  -b              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
-  "  -each           execute op on each component of A and/or B",
-  "  -f              output format to use.  If omitted output is silent",
-  "  -repeat         repeat the operation N times",
-  "  -geomfunc       specifies class providing geometry operations",
-  "  -v, -verbose    display information about execution",
-  "  -help           print a list of available operations"
-  };
   private static final String MACRO_VAL = "val";
 
   public static void main(String[] args)
@@ -192,6 +168,7 @@ public class JTSOpCmd {
     public boolean eachA = false;
     public boolean eachB = false;
     public String[] argList;
+    public boolean validate = false;
   }
 
   public JTSOpCmd() {
@@ -347,6 +324,12 @@ public class JTSOpCmd {
     }
     if (isVerbose) {
       out.println("Time: " + timer.getTimeString());
+    }
+    if (cmdArgs.validate && result instanceof Geometry) {
+      Geometry resGeom = (Geometry) result;
+      if (! resGeom.isValid()) {
+        throw new CommandError(ERR_INVALID_RESULT);
+      }
     }
     printResult(result, cmdArgs.format);
     return result;
@@ -504,9 +487,8 @@ public class JTSOpCmd {
     cmdArgs.repeat = commandLine.hasOption(CommandOptions.REPEAT)
         ? commandLine.getOptionArgAsInt(CommandOptions.REPEAT, 0)
             : 1;
-    
-    cmdArgs.argList = commandLine.getOptionArgs(CommandOptions.ARGS);
-        
+    cmdArgs.validate  = commandLine.hasOption(CommandOptions.VALIDATE);
+
     if (commandLine.hasOption(CommandOptions.EACH)) {
       String each = commandLine.getOptionArg(CommandOptions.EACH, 0);
 
@@ -584,8 +566,37 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.EACH, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.FORMAT, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.REPEAT, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.VALIDATE, 0))
     .addOptionSpec(new OptionSpec(OptionSpec.OPTION_FREE_ARGS, OptionSpec.NARGS_ONE_OR_MORE));
     return commandLine;
   }
+
+  static final String[] helpDoc = new String[] {
+  "",
+  "Usage: jtsop - CLI for JTS operations",
+  "           [ -a <wkt> | <wkb> | stdin | <filename.ext> ]",
+  "           [ -b <wkt> | <wkb> | stdin | <filename.ext> ]",
+  "           [ -each ( a | b | ab ) ]",
+  "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
+  "           [ -repeat <num> ]",
+  "           [ -validate ]",
+  "           [ -geomfunc <classname> ]",
+  "           [ -v, -verbose ]",
+  "           [ -help]",
+  "           [ op [ args... ]]",
+  "  op              name of the operation (Category.op)",
+  "  args            one or more scalar arguments to the operation",
+  "                  - Use val(v1,v2,v3,..) for multiple arguments",
+  "",
+  "  -a              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
+  "  -b              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
+  "  -each           execute op on each component of A and/or B",
+  "  -f              output format to use.  If omitted output is silent",
+  "  -repeat         repeat the operation N times",
+  "  -validate       validate the result of each operation",
+  "  -geomfunc       specifies class providing geometry operations",
+  "  -v, -verbose    display information about execution",
+  "  -help           print a list of available operations"
+  };
 
 }
