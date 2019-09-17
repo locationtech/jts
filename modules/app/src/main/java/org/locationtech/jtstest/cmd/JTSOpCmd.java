@@ -325,14 +325,21 @@ public class JTSOpCmd {
     if (isVerbose) {
       out.println("Time: " + timer.getTimeString());
     }
-    if (cmdArgs.validate && result instanceof Geometry) {
-      Geometry resGeom = (Geometry) result;
-      if (! resGeom.isValid()) {
-        throw new CommandError(ERR_INVALID_RESULT);
-      }
+    if (cmdArgs.validate) {
+      validate(result);
     }
     printResult(result, cmdArgs.format);
     return result;
+  }
+
+  private void validate(Object result) {
+    if (! ( result instanceof Geometry)) return;
+    Geometry resGeom = (Geometry) result;
+    
+    // TODO: print invalidity reason
+    if (! resGeom.isValid()) {
+      throw new CommandError(ERR_INVALID_RESULT);
+    }
   }
 
   private Geometry readGeometry(String arg) throws Exception, IOException {
@@ -450,12 +457,6 @@ public class JTSOpCmd {
       paramVal[iparam] = SwingUtil.coerce(arg1, paramTypes[iparam]);
     }
     return paramVal;
-  }
-
-
-  private GeometryFunction decorateFunctionEach(CmdArgs cmdArgs, GeometryFunction func) {
-    if (! (cmdArgs.eachA || cmdArgs.eachB)) return func;
-    return new SpreaderGeometryFunction(func, cmdArgs.eachA, cmdArgs.eachB );
   }
   
   private GeometryFunction getFunction(String operation) {
