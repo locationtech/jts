@@ -233,6 +233,9 @@ public class JTSOpRunner {
     }
     if (isVerbose) {
       out.println("Time: " + timer.getTimeString());
+      if (result instanceof Geometry) {
+        geomOut.printGeometrySummary("Result", (Geometry) result, null);
+      }
     }
     if (cmdArgs.validate) {
       validate(result);
@@ -301,7 +304,6 @@ public class JTSOpRunner {
     }
   }
 
-
   private static String opSummary(String funcName, String arg) {
     StringBuilder sb = new StringBuilder();
     sb.append("Op: " + funcName );
@@ -318,9 +320,6 @@ public class JTSOpRunner {
     if (result instanceof Geometry) {
       if (captureGeometry) {
         resultGeoms.add((Geometry) result);
-      }
-      if (isVerbose) {
-        geomOut.printGeometrySummary("Result", (Geometry) result, null);
       }
       geomOut.printGeometry((Geometry) result, outputFormat);
     }
