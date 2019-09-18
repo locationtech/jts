@@ -264,16 +264,19 @@ public class HotPixel
     //System.out.println("Hot Pixel: " + this + " - [ " + WKTWriter.toLineString(corner));
     //System.out.println("Segment: " + WKTWriter.toLineString(p0, p1));
     
-    boolean intersectsLeft = false;
+    boolean intersectsTop = false;
     boolean intersectsBottom = false;
     
-    li.computeIntersection(p0, p1, corner[UPPER_RIGHT], corner[UPPER_LEFT]);
-    if (li.isProper()) return true;
-
     li.computeIntersection(p0, p1, corner[UPPER_LEFT], corner[LOWER_LEFT]);
     if (li.isProper()) return true;
+    
+    li.computeIntersection(p0, p1, corner[LOWER_RIGHT], corner[UPPER_RIGHT]);
+    if (li.isProper()) return true;
+
+    li.computeIntersection(p0, p1, corner[UPPER_RIGHT], corner[UPPER_LEFT]);
+    if (li.isProper()) return true;
     if (li.hasIntersection()) {
-      intersectsLeft = true;
+      intersectsTop = true;
     }
 
     li.computeIntersection(p0, p1, corner[LOWER_LEFT], corner[LOWER_RIGHT]);
@@ -282,26 +285,22 @@ public class HotPixel
       intersectsBottom = true;
     }
 
-    li.computeIntersection(p0, p1, corner[LOWER_RIGHT], corner[UPPER_RIGHT]);
-    if (li.isProper()) return true;
-
-    if (intersectsLeft && intersectsBottom) {
+    /**
+     * Check for an edge crossing pixel exactly on a diagonal.
+     * The code handles both diagonals.
+     */
+    if (intersectsTop && intersectsBottom) {
       return true;
     }
 
     /**
      * Tests if either endpoint snaps to this pixel.
      * This is needed because a (un-rounded) segment may
-     * terminate in a hot pixel without actually crossing a live edge
-     * (e.g. it may enter from top or right, or
-     * may actually be exactly collinear with left or bottom edge,
+     * terminate in a hot pixel without crossing a pixel edge interior
+     * (e.g. it may enter through a corner)
      */
     if (equalsPointScaled(p0)) return true;
     if (equalsPointScaled(p1)) return true;
-    
-    
-    //if (p0.equals(pt)) return true;
-    //if (p1.equals(pt)) return true;
 
     return false;
   }

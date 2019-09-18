@@ -104,6 +104,38 @@ public class SnapRoundingCorrectTest  extends GeometryTestCase {
     checkRounding(wkt, 1000000, expected);
   }
 
+  /**
+   * This test will fail if the diagonals of hot pixels are not checked.
+   * Note that the nearby vertex is far enough from the long segment
+   * to avoid being snapped as an intersection.
+   */
+  public void testDiagonalNotNodedRightUp() {
+
+    String wkt = "MULTILINESTRING ((0 0, 10 10), ( 0 2, 4.55 5.4, 9 10 ))";
+    String expected = null;
+    checkRounding(wkt, 1, expected);
+  }
+
+  /**
+   * Same diagonal test but flipped to test other diagonal
+   */
+  public void testDiagonalNotNodedLeftUp() {
+
+    String wkt = "MULTILINESTRING ((10 0, 0 10), ( 10 2, 5.45 5.45, 1 10 ))";
+    String expected = null;
+    checkRounding(wkt, 1, expected);
+  }
+
+  /**
+   * Original full-precision diagonal line case
+   */
+  public void testDiagonalNotNodedOriginal() {
+
+    String wkt = "MULTILINESTRING (( 2.45167 48.96709, 2.45768 48.9731 ), (2.4526978 48.968811, 2.4537277 48.9691544, 2.4578476 48.9732742))";
+    String expected = null;
+    checkRounding(wkt, 100000, expected);
+  }
+  
   void checkRounding(String wkt, double scale, String expectedWKT)
   {
     Geometry geom = read(wkt);

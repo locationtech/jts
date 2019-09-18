@@ -208,7 +208,7 @@ public class SimpleSnapRounder
     SinglePassNoder noder = new MCIndexNoder();
     noder.setSegmentIntersector(intAdder);
     noder.computeNodes(inputSS);
-    return intAdder.getInteriorIntersections();
+    return intAdder.getIntersections();
   }
 
   /**

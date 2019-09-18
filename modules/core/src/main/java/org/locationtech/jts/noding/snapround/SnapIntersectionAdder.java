@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2016 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -28,12 +28,8 @@ import org.locationtech.jts.noding.SegmentString;
  * Finds <b>interior</b> intersections between line segments in {@link NodedSegmentString}s,
  * and adds them as nodes
  * using {@link NodedSegmentString#addIntersection(LineIntersector, int, int, int)}.
- * <p>
- * This class is used primarily for Snap-Rounding.  
- * For general-purpose noding, use {@link IntersectionAdder}.
  *
  * @version 1.7
- * @see IntersectionAdder
  */
 public class SnapIntersectionAdder
     implements SegmentIntersector
@@ -45,25 +41,26 @@ public class SnapIntersectionAdder
   private static final int NEARNESS_FACTOR = 10;
   
   private LineIntersector li;
-  private final List interiorIntersections;
+  private final List intersections;
   private PrecisionModel precModel;
   private double nearnessTol;
 
 
   /**
-   * Creates an intersection finder which finds all proper intersections
+   * Creates an intersector which finds all snapped interior intersections,
+   * and adds them as nodes.
    *
-   * @param li the LineIntersector to use
+   * @param pm the precision mode to use
    */
   public SnapIntersectionAdder(PrecisionModel pm)
   {
     precModel = pm;
     nearnessTol = 1/precModel.getScale() / NEARNESS_FACTOR;
     li = new RobustLineIntersector();
-    interiorIntersections = new ArrayList();
+    intersections = new ArrayList();
   }
 
-  public List getInteriorIntersections()  {    return interiorIntersections;  }
+  public List getIntersections()  {    return intersections;  }
 
   /**
    * This method is called by clients
@@ -92,7 +89,7 @@ public class SnapIntersectionAdder
     if (li.hasIntersection()) {
       if (li.isInteriorIntersection()) {
         for (int intIndex = 0; intIndex < li.getIntersectionNum(); intIndex++) {
-          interiorIntersections.add(li.getIntersection(intIndex));
+          intersections.add(li.getIntersection(intIndex));
         }
         ((NodedSegmentString) e0).addIntersections(li, segIndex0, 0);
         ((NodedSegmentString) e1).addIntersections(li, segIndex1, 1);
@@ -140,7 +137,7 @@ public class SnapIntersectionAdder
     
     double distSeg = Distance.pointToSegment(p, p0, p1);
     if (distSeg < nearnessTol) {
-      interiorIntersections.add(p);
+      intersections.add(p);
       ((NodedSegmentString) edge).addIntersection(p, segIndex);
     }
   }
