@@ -63,7 +63,7 @@ public class ArgumentConverter
     else if (destClass == Double.class || destClass == double.class) {
       // try as an int
       try {
-        return new Double(src);
+        return Double.valueOf(src);
       }
       catch (NumberFormatException e) {
         // eat this exception - it will be reported below

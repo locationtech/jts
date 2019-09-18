@@ -93,7 +93,7 @@ public class ClassUtil
     } catch (ClassCastException e) {
       return null;
     }
-    return new Double(d);
+    return d;
   }
 
   public static boolean isDouble(Class clz) {

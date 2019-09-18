@@ -52,7 +52,7 @@ public class NodingFunctions
    * @param scaleFactor the precision model scale factor to use
    * @return the noded, snap-rounded linework
    */
-  public static Geometry snapRoundWithPointwisePrecisionReduction(
+  public static Geometry snapRoundWithPrecision(
       Geometry geom, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
 

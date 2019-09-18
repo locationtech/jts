@@ -42,14 +42,16 @@ See also:
 
 * [**Javadoc**](https://locationtech.github.io/jts/javadoc) for the latest version of JTS
 * [**FAQ**](https://locationtech.github.io/jts/jts-faq.html) - Frequently Asked Questions 
-* [**User Guide**](USING.md) - Installing and using JTS (as a library and using included tools)
+* [**User Guide**](USING.md) - Installing and using JTS 
+* [**Tools**](doc/TOOLS.md) - Guide to tools included with JTS
 * [**Developing Guide**](DEVELOPING.md) - how to build and develop for JTS
 * [**Upgrade Guide**](MIGRATION.md) - How to migrate from previous versions of JTS
 
 ## History
 
 * History from the previous JTS SourceForge repo is in the branch [`_old/history`](https://github.com/locationtech/jts/tree/_old/history)
-* Older versions of JTS can be found on SourceForge and [here](https://github.com/dr-jts/jts-versions)
+* Older versions of JTS can be found on SourceForge
+* There is an archive of distros of older versions [here](https://github.com/dr-jts/jts-versions)
 
 ## Contributing
 
@@ -57,7 +59,7 @@ If you are interested in contributing to JTS please read the [**Contributing Gui
 
 ## Downstream Projects
 
-### Derivative (ports to other languages)
+### Derivatives (ports to other languages)
 * [**GEOS**](https://trac.osgeo.org/geos) - C++
 * [**NetTopologySuite**](https://github.com/NetTopologySuite/NetTopologySuite) - .NET
 * [**JSTS**](https://github.com/bjornharrtell/jsts) - JavaScript
@@ -68,5 +70,6 @@ If you are interested in contributing to JTS please read the [**Contributing Gui
 * [**rgeo**](https://github.com/rgeo/rgeo) - Ruby wrapper of GEOS
 * [**GEOSwift**](https://github.com/GEOSwift/GEOSwift)- Swift library using GEOS
 
+There are many projects using GEOS - for a list see the [GEOS wiki](https://trac.osgeo.org/geos/wiki/Applications).
 
 

@@ -252,7 +252,8 @@ public class Polygonizer
     //Debug.printTime("Validate Rings");
     
     findShellsAndHoles(validEdgeRingList);
-    assignHolesToShells(holeList, shellList);
+    HoleAssigner.assignHolesToShells(holeList, shellList);
+    
     // order the shells to make any subsequent processing deterministic
     Collections.sort(shellList, new EdgeRing.EnvelopeComparator());
 
@@ -288,27 +289,6 @@ public class Polygonizer
         holeList.add(er);
       else
         shellList.add(er);
-    }
-  }
-
-  private static void assignHolesToShells(List holeList, List shellList)
-  {
-    for (Iterator i = holeList.iterator(); i.hasNext(); ) {
-      EdgeRing holeER = (EdgeRing) i.next();
-      assignHoleToShell(holeER, shellList);
-      /*
-      if ( ! holeER.hasShell()) {
-        System.out.println("DEBUG: Outer hole: " + holeER);
-      }
-      */
-    }
-  }
-
-  private static void assignHoleToShell(EdgeRing holeER, List shellList)
-  {
-    EdgeRing shell = EdgeRing.findEdgeRingContaining(holeER, shellList);
-    if (shell != null) {
-      shell.addHole(holeER);
     }
   }
 

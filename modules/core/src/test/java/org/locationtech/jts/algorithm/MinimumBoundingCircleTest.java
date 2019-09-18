@@ -19,14 +19,14 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import test.jts.GeometryTestCase;
 
 
 /**
  * @version 1.7
  */
-public class MinimumBoundingCircleTest extends TestCase {
+public class MinimumBoundingCircleTest extends GeometryTestCase {
 
   private PrecisionModel precisionModel = new PrecisionModel(1);
   private GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
@@ -75,8 +75,24 @@ public class MinimumBoundingCircleTest extends TestCase {
         new Coordinate(26284.84180271327, 65267.114509082545), 247.4360455914027 );
   }
 
+  public void testMinDiameterLine() {
+    doMinDiameterTest("LINESTRING (100 200, 300 100)", "LINESTRING (100 200, 300 100)");
+  }
+  
+  public void testMinDiameterPolygon() {
+    doMinDiameterTest("POLYGON ((100 200, 300 150, 110 100, 100 200))", "LINESTRING (300 150, 100 200)");
+  }
+  
   static final double TOLERANCE = 1.0e-5;
   
+  private void doMinDiameterTest(String wkt, String expectedWKT) {
+    MinimumBoundingCircle mbc = new MinimumBoundingCircle(read(wkt));
+    Geometry diamActual = mbc.getMaximumDiameter();
+    Geometry expected = read(expectedWKT);
+
+    checkEqual(expected, diamActual);
+  }
+
   private void doMinimumBoundingCircleTest(String wkt, String expectedWKT) throws ParseException 
   {
   	doMinimumBoundingCircleTest(wkt, expectedWKT, null, -1);
@@ -84,18 +100,17 @@ public class MinimumBoundingCircleTest extends TestCase {
   
   private void doMinimumBoundingCircleTest(String wkt, String expectedWKT,
   		Coordinate expectedCentre, double expectedRadius)
-  throws ParseException 
   {
-  	MinimumBoundingCircle mbc = new MinimumBoundingCircle(reader.read(wkt));
+  	MinimumBoundingCircle mbc = new MinimumBoundingCircle(read(wkt));
   	Coordinate[] exPts = mbc.getExtremalPoints();
-  	Geometry actual = geometryFactory.createMultiPoint(exPts);
+  	Geometry actual = geometryFactory.createMultiPointFromCoords(exPts);
   	double actualRadius = mbc.getRadius();
   	Coordinate actualCentre = mbc.getCentre();
   	//System.out.println( 
   	//		"   Centre = " + actualCentre
   	//		+ "   Radius = " + actualRadius);
 
-  	Geometry expected = reader.read(expectedWKT);
+  	Geometry expected = read(expectedWKT);
   	boolean isEqual = actual.equals(expected);
   	// need this hack because apparently equals does not work for MULTIPOINT EMPTY
   	if (actual.isEmpty() && expected.isEmpty())

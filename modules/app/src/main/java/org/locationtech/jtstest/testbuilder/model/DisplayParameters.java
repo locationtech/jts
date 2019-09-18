@@ -16,29 +16,9 @@ import org.locationtech.jtstest.testbuilder.AppConstants;
 public class DisplayParameters {
   
   protected static boolean showingGrid = true;
-  protected static boolean showingStructure = false;
-  protected static boolean showingOrientation = false;
-  protected static boolean showingVertices = true;
-  protected static boolean showingLabel = true;
   protected static boolean showingCoordinates = true;
   protected static boolean isMagnifyingTopology = false;
   protected static double topologyStretchSize = AppConstants.TOPO_STRETCH_VIEW_DIST;
-
-  public static boolean isShowingStructure() {
-    return showingStructure;
-  }
-
-  public static void setShowingStructure(boolean show) {
-    showingStructure = show;
-  }
-
-  public static boolean isShowingOrientation() {
-    return showingOrientation;
-  }
-
-  public static void setShowingOrientation(boolean show) {
-    showingOrientation = show;
-  }
 
   public static boolean isShowingGrid() {
     return showingGrid;
@@ -46,22 +26,6 @@ public class DisplayParameters {
 
   public static void setShowingGrid(boolean show) {
     showingGrid = show;
-  }
-
-  public static boolean isShowingVertices() {
-    return showingVertices;
-  }
-
-  public static void setShowingVertices(boolean show) {
-    showingVertices = show;
-  }
-
-  public static void setShowingLabel(boolean show) {
-    showingLabel = show;
-  }
-
-  public static boolean isShowingLabel() {
-    return showingLabel;
   }
 
   public static boolean isRevealingTopology() {

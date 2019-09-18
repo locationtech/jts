@@ -627,7 +627,7 @@ public class QuadEdgeSubdivision {
 			Coordinate c = triEdges[2].orig().getCoordinate();
 			
 			// TODO: choose the most accurate circumcentre based on the edges
-      Coordinate cc = Triangle.circumcentre(a, b, c);
+      Coordinate cc = Triangle.circumcentreDD(a, b, c);
 			Vertex ccVertex = new Vertex(cc);
 			// save the circumcentre as the origin for the dual edges originating in this triangle
 			for (int i = 0; i < 3; i++) {

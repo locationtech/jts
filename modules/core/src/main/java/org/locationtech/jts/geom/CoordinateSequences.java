@@ -11,7 +11,8 @@
  */
 package org.locationtech.jts.geom;
 
-import org.locationtech.jts.util.StringUtil;
+import org.locationtech.jts.io.OrdinateFormat;
+import org.locationtech.jts.util.NumberUtil;
 
 
 /**
@@ -216,7 +217,7 @@ public class CoordinateSequences {
       if (i > 0) builder.append(" ");
       for (int d = 0; d < dim; d++) {
         if (d > 0) builder.append(",");
-        builder.append(StringUtil.toString(cs.getOrdinate(i, d)));
+        builder.append( OrdinateFormat.DEFAULT.format(cs.getOrdinate(i, d)) );
       }
     }
     builder.append(')');

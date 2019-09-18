@@ -18,7 +18,21 @@
 </case>
 
 <case>
-  <desc>A/P - point equal to start point of polygon
+  <desc>A/P - point in polygon interior
+  </desc>
+  <a>
+    POLYGON ((10 10, 60 100, 110 10, 10 10))
+  </a>
+  <b>
+    POINT (20 20)
+  </b>
+  <test>  <op name="contains"       arg1="A" arg2="B">   true  </op> </test>
+  <test>  <op name="covers"         arg1="A" arg2="B">   true  </op> </test>
+  <test>  <op name="intersects"     arg1="A" arg2="B">   true  </op> </test>
+</case>
+
+<case>
+  <desc>A/P - point outside of polygon
   </desc>
   <a>
     POLYGON ((10 10, 60 100, 110 10, 10 10))
@@ -26,9 +40,93 @@
   <b>
       POINT (10 20)
   </b>
-<test>  <op name="contains"   		arg1="A" arg2="B">   false  </op> </test>
-<test>  <op name="covers"     		arg1="A" arg2="B">   false  </op> </test>
-<test>  <op name="intersects" 		arg1="A" arg2="B">   false  </op> </test>
+<test>  <op name="contains"       arg1="A" arg2="B">   false  </op> </test>
+<test>  <op name="covers"         arg1="A" arg2="B">   false  </op> </test>
+<test>  <op name="intersects"     arg1="A" arg2="B">   false  </op> </test>
+</case>
+
+<case>
+  <desc>A/mP - both points equal to polygon vertices
+  </desc>
+  <a>
+    POLYGON ((10 10, 60 100, 110 10, 10 10))
+  </a>
+  <b>
+    MULTIPOINT ((10 10), (60 100))
+  </b>
+  <test>  <op name="contains"       arg1="A" arg2="B">   false  </op> </test>
+  <test>  <op name="covers"         arg1="A" arg2="B">   true   </op> </test>
+  <test>  <op name="intersects"     arg1="A" arg2="B">   true   </op> </test>
+</case>
+
+<case>
+  <desc>A/mP - both points in polygon interior
+  </desc>
+  <a>
+    POLYGON ((10 10, 60 100, 110 10, 10 10))
+  </a>
+  <b>
+    MULTIPOINT ((20 20), (21 21))
+  </b>
+  <test>  <op name="contains"       arg1="A" arg2="B">   true   </op> </test>
+  <test>  <op name="covers"         arg1="A" arg2="B">   true   </op> </test>
+  <test>  <op name="intersects"     arg1="A" arg2="B">   true   </op> </test>
+</case>
+
+<case>
+  <desc>A/mP - one point interior, one point equal to a polygon vertex
+  </desc>
+  <a>
+    POLYGON ((10 10, 60 100, 110 10, 10 10))
+  </a>
+  <b>
+    MULTIPOINT ((60 100), (21 21))
+  </b>
+  <test>  <op name="contains"       arg1="A" arg2="B">   true   </op> </test>
+  <test>  <op name="covers"         arg1="A" arg2="B">   true   </op> </test>
+  <test>  <op name="intersects"     arg1="A" arg2="B">   true   </op> </test>
+</case>
+
+<case>
+  <desc>A/mP - one point interior, one point exterior
+  </desc>
+  <a>
+    POLYGON ((10 10, 60 100, 110 10, 10 10))
+  </a>
+  <b>
+    MULTIPOINT ((20 20), (500 500))
+  </b>
+  <test>  <op name="contains"       arg1="A" arg2="B">   false   </op> </test>
+  <test>  <op name="covers"         arg1="A" arg2="B">   false   </op> </test>
+  <test>  <op name="intersects"     arg1="A" arg2="B">   true   </op> </test>
+</case>
+
+<case>
+  <desc>A/mP - one point equal to a polygon vertex, one point exterior
+  </desc>
+  <a>
+    POLYGON ((10 10, 60 100, 110 10, 10 10))
+  </a>
+  <b>
+    MULTIPOINT ((10 10), (500 500))
+  </b>
+  <test>  <op name="contains"       arg1="A" arg2="B">   false   </op> </test>
+  <test>  <op name="covers"         arg1="A" arg2="B">   false   </op> </test>
+  <test>  <op name="intersects"     arg1="A" arg2="B">   true   </op> </test>
+</case>
+
+<case>
+   <desc>A/mP - one point on boundary, one point interior, one point exterior
+   </desc>
+   <a>
+     POLYGON ((10 10, 60 100, 110 10, 10 10))
+   </a>
+   <b>
+     MULTIPOINT ((10 10), (20 20), (20 40))
+   </b>
+   <test>  <op name="contains"      arg1="A" arg2="B">   false   </op> </test>
+   <test>  <op name="covers"        arg1="A" arg2="B">   false   </op> </test>
+   <test>  <op name="intersects"    arg1="A" arg2="B">   true   </op> </test>
 </case>
 
 <case>

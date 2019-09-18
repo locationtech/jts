@@ -33,6 +33,8 @@ public class HCoordinate
    * lie outside the envelope of the line segments themselves.  In order
    * to increase the precision of the calculation input points should be normalized
    * before passing them to this routine.
+   * 
+   * @deprecated use {@link Intersection#intersection(Coordinate, Coordinate, Coordinate, Coordinate)}
    */
   public static Coordinate intersection(
       Coordinate p1, Coordinate p2,

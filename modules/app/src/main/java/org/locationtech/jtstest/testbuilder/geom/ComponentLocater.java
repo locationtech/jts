@@ -69,7 +69,7 @@ public class ComponentLocater {
     if (geom instanceof GeometryCollection) {
       for (int i = 0; i < geom.getNumGeometries(); i++ ) {
         Geometry subGeom = geom.getGeometryN(i);
-  			path.push(new Integer(i));
+  			path.push(i);
         findComponents(path, subGeom, components);
         path.pop();
       }

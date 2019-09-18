@@ -30,6 +30,13 @@ public class AWTUtil
     return new Point2D.Double(v.getX() * x, v.getY() * x);
   }
 
+  public static Point2D vector(Point2D a, Point2D b, double size) {
+    double dx = b.getX() - a.getX();
+    double dy = b.getY() - a.getY();
+    double len = Math.sqrt(dx*dx + dy*dy);
+    return new Point2D.Double(size * dx/len, size * dy/len);
+  }
+
   public static void setStroke(Graphics2D g, double width) {
     Stroke newStroke = new BasicStroke((float) width);
     g.setStroke(newStroke);

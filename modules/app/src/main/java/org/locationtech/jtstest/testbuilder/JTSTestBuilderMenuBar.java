@@ -43,11 +43,6 @@ public class JTSTestBuilderMenuBar
   JMenuItem saveAsPNGMenuItem = new JMenuItem();
   JMenuItem saveToClipboardMenuItem = new JMenuItem();
   JMenuItem deleteAllTestCasesMenuItem = new JMenuItem();
-  JCheckBoxMenuItem showVerticesMenuItem = new JCheckBoxMenuItem();
-  JCheckBoxMenuItem showGridMenuItem = new JCheckBoxMenuItem();
-  JCheckBoxMenuItem showOrientationsMenuItem = new JCheckBoxMenuItem();
-  JCheckBoxMenuItem showStructureMenuItem = new JCheckBoxMenuItem();
-  JCheckBoxMenuItem showVertexIndicesMenuItem = new JCheckBoxMenuItem();
   JMenuItem menuLoadXmlTestFolder = new JMenuItem();
   JMenuItem precisionModelMenuItem = new JMenuItem();
   JMenuItem removeDuplicatePoints = new JMenuItem();
@@ -133,21 +128,7 @@ public class JTSTestBuilderMenuBar
           tbFrame.actionDeleteAllTestCases();
         }
       });
-    showVerticesMenuItem.setText("Vertices");
-    showVerticesMenuItem.setSelected(true);
-    showVerticesMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setShowingVertices(showVerticesMenuItem.isSelected());
-        }
-      });
 
-    final JMenuItem showLabelMenuItem = menuItemCheck("Labels", true,
-        new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setShowingLabel(((JMenuItem)e.getSource()).isSelected());
-        }
-      });
     final JMenuItem basicFillMenuItem = menuItemRadio("Basic Fill", true,
         new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -172,35 +153,7 @@ public class JTSTestBuilderMenuBar
           JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_RAINBOW_RANDOM);
         }
       });
-    showGridMenuItem.setText("Grid");
-    showGridMenuItem.setSelected(true);
-    showGridMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          tbFrame.setShowingGrid(showGridMenuItem.isSelected());
-        }
-      });
-    showStructureMenuItem.setText("Geometry Structure");
-    showStructureMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setShowingStructure(showStructureMenuItem.isSelected());
-        }
-      });
-    showOrientationsMenuItem.setText("Orientations");
-    showOrientationsMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setShowingOrientations(showOrientationsMenuItem.isSelected());
-        }
-      });
-    showVertexIndicesMenuItem.setText("Vertex Indices");
-    showVertexIndicesMenuItem.addActionListener(
-      new java.awt.event.ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setShowingVertices(showVerticesMenuItem.isSelected());
-        }
-      });
+
     menuLoadXmlTestFolder.setText("Open XML Folder(s)...");
     menuLoadXmlTestFolder.addActionListener(
       new java.awt.event.ActionListener() {
@@ -252,20 +205,11 @@ public class JTSTestBuilderMenuBar
     jMenuHelp.add(jMenuAbout);
     //==========================
     jMenuView.setText("View");
-    jMenuView.add(showVerticesMenuItem);
-    //jMenuOptions.add(showVertexIndicesMenuItem);
-    jMenuView.add(showStructureMenuItem);
-    jMenuView.add(showOrientationsMenuItem);
-    jMenuView.add(showLabelMenuItem);
-    
-    jMenuView.addSeparator();
+
     jMenuView.add(basicFillMenuItem);
     jMenuView.add(varyFillMenuItem);
     jMenuView.add(rainbowFillMenuItem);
     jMenuView.add(rainbowRandomFillMenuItem);
-    
-    jMenuView.addSeparator();
-    jMenuView.add(showGridMenuItem);
     
     jMenuView.addSeparator();
     jMenuView.add(menuViewText);

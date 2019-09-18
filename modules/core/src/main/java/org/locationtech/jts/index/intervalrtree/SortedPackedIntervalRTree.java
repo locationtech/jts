@@ -38,6 +38,13 @@ import org.locationtech.jts.io.WKTWriter;
 public class SortedPackedIntervalRTree 
 {
   private List leaves = new ArrayList();
+  
+  /**
+   * If root is null that indicates
+   * that the tree has not yet been built,   
+   * OR nothing has been added to the tree.
+   * In both cases, the tree is still open for insertions.
+   */
 	private IntervalRTreeNode root = null;
 	
 	public SortedPackedIntervalRTree()
@@ -63,7 +70,15 @@ public class SortedPackedIntervalRTree
 	
   private void init()
   {
+    // already built
     if (root != null) return;
+    
+    /**
+     * if leaves is empty then nothing has been inserted.
+     * In this case it is safe to leave the tree in an open state
+     */
+    if (leaves.size() == 0) return;
+    
     buildRoot();
   }
   
@@ -134,7 +149,11 @@ public class SortedPackedIntervalRTree
 	public void query(double min, double max, ItemVisitor visitor)
 	{
     init();
-
+    
+    // if root is null tree must be empty
+    if (root == null) 
+      return;
+    
 		root.query(min, max, visitor);
 	}
   

@@ -95,13 +95,6 @@ public class WKTPanel extends JPanel
     JTextArea bTextArea = new JTextArea();
     ButtonGroup editMode = new ButtonGroup();
 
-    private final ImageIcon copyIcon = new ImageIcon(this.getClass().getResource("Copy.png"));
-    private final ImageIcon pasteIcon = new ImageIcon(this.getClass().getResource("Paste.png"));
-    private final ImageIcon cutIcon = new ImageIcon(this.getClass().getResource("Delete_small.png"));
-    private final ImageIcon loadIcon = new ImageIcon(this.getClass().getResource("LoadWKTToTest.png"));
-    private final ImageIcon inspectIcon = new ImageIcon(this.getClass().getResource("InspectGeometry.png"));
-    private final ImageIcon exchangeGeomsIcon = new ImageIcon(this.getClass().getResource("ExchangeGeoms.png"));
-
     protected JTSTestBuilderFrame tbFrame;
 
     public WKTPanel(JTSTestBuilderFrame tbFrame) {
@@ -127,18 +120,18 @@ public class WKTPanel extends JPanel
         loadButton.setPreferredSize(new Dimension(38, 38));
         loadButton.setMargin(new Insets(8, 8, 8, 8));
 //        loadButton.setText("Load");
-        loadButton.setIcon(loadIcon);
+        loadButton.setIcon(AppIcons.GEOM_LOAD);
         loadButton.setToolTipText(AppStrings.TIP_WKT_PANEL_LOAD_GEOMETRY);
         
         inspectButton.setMaximumSize(new Dimension(38, 30));
         inspectButton.setPreferredSize(new Dimension(24, 38));
         inspectButton.setToolTipText(AppStrings.TIP_INSPECT_GEOMETRY);
-        inspectButton.setIcon(inspectIcon);
+        inspectButton.setIcon(AppIcons.GEOM_INSPECT);
         
         exchangeButton.setMaximumSize(new Dimension(38, 30));
         exchangeButton.setPreferredSize(new Dimension(24, 38));
         exchangeButton.setToolTipText(AppStrings.TIP_EXCHANGE_A_B);
-        exchangeButton.setIcon(exchangeGeomsIcon);
+        exchangeButton.setIcon(AppIcons.GEOM_EXCHANGE);
         
         JButton btnUndo = SwingUtil.createButton(AppIcons.UNDO, "Undo", new ActionListener() {
           public void actionPerformed(ActionEvent e) {
@@ -195,15 +188,15 @@ public class WKTPanel extends JPanel
         });
         
         aCopyButton.setToolTipText(AppStrings.TIP_COPY_DATA);
-        aCopyButton.setIcon(copyIcon);
+        aCopyButton.setIcon(AppIcons.COPY);
         aCopyButton.setMargin(new Insets(0, 0, 0, 0));
 
         aPasteButton.setToolTipText(AppStrings.TIP_PASTE_DATA);
-        aPasteButton.setIcon(pasteIcon);
+        aPasteButton.setIcon(AppIcons.PASTE);
         aPasteButton.setMargin(new Insets(0, 0, 0, 0));
 
         aCutButton.setToolTipText("Clear");
-        aCutButton.setIcon(cutIcon);
+        aCutButton.setIcon(AppIcons.CUT);
         aCutButton.setMargin(new Insets(0, 0, 0, 0));
 
         aButtonPanelLayout.setVgap(1);
@@ -231,15 +224,15 @@ public class WKTPanel extends JPanel
         //aPanel.add(aButtonPanel, BorderLayout.EAST);
         
         bCopyButton.setToolTipText(AppStrings.TIP_COPY_DATA);
-        bCopyButton.setIcon(copyIcon);
+        bCopyButton.setIcon(AppIcons.COPY);
         bCopyButton.setMargin(new Insets(0, 0, 0, 0));
 
         bPasteButton.setToolTipText(AppStrings.TIP_PASTE_DATA);
-        bPasteButton.setIcon(pasteIcon);
+        bPasteButton.setIcon(AppIcons.PASTE);
         bPasteButton.setMargin(new Insets(0, 0, 0, 0));
 
         bCutButton.setToolTipText("Clear");
-        bCutButton.setIcon(cutIcon);
+        bCutButton.setIcon(AppIcons.CUT);
         bCutButton.setMargin(new Insets(0, 0, 0, 0));
 
         bButtonPanelLayout.setVgap(1);

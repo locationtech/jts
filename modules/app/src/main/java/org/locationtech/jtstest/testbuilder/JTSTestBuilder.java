@@ -19,6 +19,7 @@ import javax.swing.UIManager;
 
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jtstest.cmd.CommandOptions;
 import org.locationtech.jtstest.command.CommandLine;
 import org.locationtech.jtstest.command.Option;
 import org.locationtech.jtstest.command.OptionSpec;
@@ -46,8 +47,6 @@ public class JTSTestBuilder
 {
   private static final String PROP_SWING_DEFAULTLAF = "swing.defaultlaf";
 
-  private static final String OPT_GEOMFUNC = "geomfunc";
-
   private static final JTSTestBuilderController CONTROLLER = new JTSTestBuilderController();
   
   public static JTSTestBuilder instance()
@@ -63,12 +62,6 @@ public class JTSTestBuilder
   private static GeometryFunctionRegistry funcRegistry = GeometryFunctionRegistry.createTestBuilderRegistry();
   private static CommandLine commandLine = createCmdLine();
   public static JTSTestBuilder app;
-  
-  private static CommandLine createCmdLine() {
-    commandLine = new CommandLine('-');
-    commandLine.addOptionSpec(new OptionSpec(OPT_GEOMFUNC, OptionSpec.NARGS_ONE_OR_MORE));
-    return commandLine;
-  }
 
   public static GeometryFunctionRegistry getFunctionRegistry()
   {
@@ -82,6 +75,11 @@ public class JTSTestBuilder
   
   public static GeometryFactory getGeometryFactory() 
   { 
+    /**
+     * Allow this to work even if TestBuilder is not initialized
+     */
+    if (instance() == null) 
+      return new GeometryFactory();
     return model().getGeometryFactory();
   }
   
@@ -166,12 +164,18 @@ public class JTSTestBuilder
     });
   }
 
+  private static CommandLine createCmdLine() {
+    commandLine = new CommandLine('-');
+    commandLine.addOptionSpec(new OptionSpec(CommandOptions.GEOMFUNC, OptionSpec.NARGS_ONE_OR_MORE));
+    return commandLine;
+  }
+  
   private static void readArgs(String[] args) throws ParseException,
 			ClassNotFoundException {
 		commandLine.parse(args);
 
-		if (commandLine.hasOption(OPT_GEOMFUNC)) {
-			Option opt = commandLine.getOption(OPT_GEOMFUNC);
+		if (commandLine.hasOption(CommandOptions.GEOMFUNC)) {
+			Option opt = commandLine.getOption(CommandOptions.GEOMFUNC);
 			for (int i = 0; i < opt.getNumArgs(); i++) {
 				String geomFuncClassname = opt.getArg(i);
 				try {

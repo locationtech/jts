@@ -2,13 +2,10 @@ package org.locationtech.jtstest.testbuilder;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
-import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 public class GeometryViewStylePanel extends LabelComponentsPanel {
   
@@ -16,7 +13,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
   
   private JCheckBox cbGrid;
 
-  private JComponent ctlBackgroundClr;
+  private JPanel ctlBackgroundClr;
 
   public GeometryViewStylePanel() {
     try {

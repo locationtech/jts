@@ -170,13 +170,18 @@ public class TestCasePanel extends JPanel {
   void jTabbedPane1_stateChanged(ChangeEvent e) 
   {
     boolean isFunction = jTabbedPane1.getSelectedComponent() == spatialFunctionPanel;
+    /*
+    // don't bother being clever about what user should see
+    // code is buggy anyway - next line is checking wrong panel
+    // Plus, should now synch Layer List UI when doing this
     
     editPanel.setShowingResult(isFunction);
     editPanel.setShowingGeometryA(! isFunction
          || spatialFunctionPanel.shouldShowGeometryA());
     editPanel.setShowingGeometryB(! isFunction
          || spatialFunctionPanel.shouldShowGeometryB());
-
+*/
+    
     editPanel.setHighlightPoint(null);
     if (jTabbedPane1.getSelectedComponent() == validPanel) {
       editPanel.setHighlightPoint(validPanel.getMarkPoint());
@@ -309,11 +314,14 @@ public class TestCasePanel extends JPanel {
     
     add(jTabbedPane1, BorderLayout.WEST);
     //jTabbedPane1.add(editCtlPanel, "Edit");
+    jTabbedPane1.setOpaque(true);
+    jTabbedPane1.setBackground(AppColors.BACKGROUND);
     
     JTabbedPane tabFunctions = new JTabbedPane();
-    tabFunctions.setBackground(jTabbedPane1.getBackground());
-    tabFunctions.add(spatialFunctionPanel,  "Geometry Functions");
-    tabFunctions.add(scalarFunctionPanel,   "Scalar Functions");
+    tabFunctions.setOpaque(true);
+    tabFunctions.setBackground(AppColors.BACKGROUND);
+    tabFunctions.add(spatialFunctionPanel,  "Geometry");
+    tabFunctions.add(scalarFunctionPanel,   "Scalar");
     
     jTabbedPane1.add(tabFunctions, "Functions");
     jTabbedPane1.add(relateTabPanel, "Predicates");

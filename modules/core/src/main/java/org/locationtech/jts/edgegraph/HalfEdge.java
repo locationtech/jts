@@ -24,6 +24,8 @@ import org.locationtech.jts.util.Assert;
  * and terminate at a <b>destination</b> vertex.
  * HalfEdges always occur in symmetric pairs, with the {@link #sym()} method
  * giving access to the oppositely-oriented component.
+ * HalfEdges with the same origin are ordered 
+ * so that the ring of their dest points is oriented CCW.
  * HalfEdges and the methods on them form an edge algebra,
  * which can be used to traverse and query the topology
  * of the graph formed by the edges.
@@ -126,7 +128,7 @@ public class HalfEdge {
   }
   
   /**
-   * Sets the sym edge.
+   * Sets the symmetric (opposite) edge to this edge.
    * 
    * @param e the sym edge to set
    */
@@ -136,7 +138,8 @@ public class HalfEdge {
 
   /**
    * Gets the next edge CCW around the 
-   * destination vertex of this edge.
+   * destination vertex of this edge,
+   * with the dest vertex as its origin.
    * If the vertex has degree 1 then this is the <b>sym</b> edge.
    * 
    * @return the next edge
@@ -147,7 +150,7 @@ public class HalfEdge {
   }
   
   /**
-   * Returns the edge previous to this one
+   * Gets the edge previous to this one
    * (with dest being the same as this orig).
    * 
    * @return the previous edge to this one
@@ -156,13 +159,24 @@ public class HalfEdge {
     return sym.next().sym;
   }
 
+  /**
+   * Gets the next edge CCW around the origin of this edge,
+   * with the same origin.
+   * 
+   * @return the next edge around the origin
+   */
+  public HalfEdge oNext() {
+    return sym.next;
+  }
+  
+  /**
+   * Sets the next edge CCW around the destination vertex of this edge.
+   * 
+   * @param e the next edge
+   */
   public void setNext(HalfEdge e)
   {
     next = e;
-  }
-  
-  public HalfEdge oNext() {
-    return sym.next;
   }
 
   /**
@@ -198,32 +212,65 @@ public class HalfEdge {
   
   /**
    * Inserts an edge
-   * into the ring of edges around the origin vertex of this edge.
+   * into the ring of edges around the origin vertex of this edge,
+   * ensuring that the edges remain ordered CCW.
    * The inserted edge must have the same origin as this edge.
    * 
-   * @param e the edge to insert
+   * @param eAdd the edge to insert
    */
-  public void insert(HalfEdge e) {
-    // if no other edge around origin
+  public void insert(HalfEdge eAdd) {
+    // If this is only edge at origin, insert it after this
     if (oNext() == this) {
       // set linkage so ring is correct
-      insertAfter(e);
+      insertAfter(eAdd);
       return;
     }
     
-    // otherwise, find edge to insert after
-    int ecmp = compareTo(e);
+    // Scan edges
+    // until insertion point is found
+    HalfEdge ePrev = insertionEdge(eAdd);
+    ePrev.insertAfter(eAdd);
+  }
+
+  /**
+   * Finds the insertion edge for a edge
+   * being added to this origin,
+   * ensuring that the star of edges
+   * around the origin remains fully CCW.
+   * 
+   * @param eAdd the edge being added
+   * @return the edge to insert after
+   */
+  private HalfEdge insertionEdge(HalfEdge eAdd) {
     HalfEdge ePrev = this;
     do {
-      HalfEdge oNext = ePrev.oNext();
-      int cmp = oNext.compareTo(e);
-      if (cmp != ecmp || oNext == this) {
-        ePrev.insertAfter(e);
-        return;
+      HalfEdge eNext = ePrev.oNext();
+      /**
+       * Case 1: General case,
+       * with eNext higher than ePrev.
+       * 
+       * Insert edge here if it lies between ePrev and eNext.  
+       */
+      if (eNext.compareTo(ePrev) > 0 
+          && eAdd.compareTo(ePrev) >= 0
+          && eAdd.compareTo(eNext) <= 0) { 
+        return ePrev;         
       }
-      ePrev = oNext;
+      /**
+       * Case 2: Origin-crossing case,
+       * indicated by eNext <= ePrev.
+       * 
+       * Insert edge here if it lies
+       * in the gap between ePrev and eNext across the origin. 
+       */
+      if (eNext.compareTo(ePrev) <= 0
+          && (eAdd.compareTo(eNext) <= 0 || eAdd.compareTo(ePrev) >= 0)) {
+        return ePrev; 
+      }
+      ePrev = eNext;
     } while (ePrev != this);
     Assert.shouldNeverReachHere();
+    return null;
   }
   
   /**
@@ -240,6 +287,49 @@ public class HalfEdge {
     e.sym().setNext(save);
   }
 
+  /**
+   * Tests whether the edges around the origin
+   * are sorted correctly.
+   * Note that edges must be strictly increasing,
+   * which implies no two edges can have the same direction point.
+   * 
+   * @return true if the origin edges are sorted correctly
+   */
+  boolean isEdgesSorted() {
+    // find lowest edge at origin
+    HalfEdge lowest = findLowest();
+    HalfEdge e = lowest;
+    // check that all edges are sorted
+    do {
+      HalfEdge eNext = e.oNext();
+      if (eNext == lowest) break;
+      boolean isSorted = eNext.compareTo(e) > 0;
+      if (! isSorted) {
+        //int comp = eNext.compareTo(e);
+        return false;
+      }
+      e = eNext;
+    } while (e != lowest);
+    return true;
+  }  
+  
+  /**
+   * Finds the lowest edge around the origin,
+   * using the standard edge ordering.
+   * 
+   * @return the lowest edge around the origin
+   */
+  private HalfEdge findLowest() {
+    HalfEdge lowest = this;
+    HalfEdge e = this.oNext();
+    do {
+      if (e.compareTo(lowest) < 0)
+        lowest = e;
+      e = e.oNext();
+    } while (e != this);
+    return lowest;
+  }
+  
   /**
    * Compares edges which originate at the same vertex
    * based on the angle they make at their origin vertex with the positive X-axis.

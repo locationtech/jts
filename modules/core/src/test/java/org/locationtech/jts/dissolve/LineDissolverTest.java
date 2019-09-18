@@ -19,7 +19,7 @@ import org.locationtech.jts.io.ParseException;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import test.jts.junit.GeometryUtils;
+import test.jts.util.IOUtil;
 
 
 public class LineDissolverTest  extends TestCase {
@@ -133,8 +133,8 @@ public class LineDissolverTest  extends TestCase {
   }
 
   private void checkDissolve(String[] wkt, String expectedWKT) throws ParseException {
-    List geoms = GeometryUtils.readWKT(wkt);
-    Geometry expected = GeometryUtils.readWKT(expectedWKT);
+    List geoms = IOUtil.readWKT(wkt);
+    Geometry expected = IOUtil.readWKT(expectedWKT);
     checkDissolve(geoms, expected);
   }
 

@@ -26,9 +26,9 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.util.Memory;
 
-import test.jts.junit.GeometryUtils;
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
+import test.jts.util.IOUtil;
 
 
 public class LineDissolvePerfTest  extends PerformanceTestCase 
@@ -48,7 +48,7 @@ public class LineDissolvePerfTest  extends PerformanceTestCase
   public void setUp() throws IOException, ParseException
   {
     System.out.println("Loading data...");
-    data = GeometryUtils.readWKTFile("/Users/mdavis/myproj/jts/svn/jts-topo-suite/trunk/jts/testdata/world.wkt");
+    data = IOUtil.readWKTFile("/Users/mdavis/myproj/jts/svn/jts-topo-suite/trunk/jts/testdata/world.wkt");
   }
   
   public void runDissolver_World()

@@ -59,7 +59,7 @@ public class StyleList implements Style
   	entry.setEnabled(isEnabled);
   }
   
-  public boolean isEnabled(VertexStyle style) {
+  public boolean isEnabled(Style style) {
     return getEntry(style).isEnabled();
   }
   

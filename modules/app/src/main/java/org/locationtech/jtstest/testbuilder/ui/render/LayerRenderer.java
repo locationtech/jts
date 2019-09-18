@@ -133,7 +133,7 @@ public class LayerRenderer implements Renderer
           );
     }
     else if (DisplayParameters.FILL_RAINBOW == DisplayParameters.fillType()) {
-      return HSBPalette.createRainbowSequential(numHues, 0.4f, 1);
+      return HSBPalette.createRainbow(numHues, 0.4f, 1);
     }
     else if (DisplayParameters.FILL_RAINBOW_RANDOM == DisplayParameters.fillType()) {
       return PAL_RAINBOW_INCREMENTAL;

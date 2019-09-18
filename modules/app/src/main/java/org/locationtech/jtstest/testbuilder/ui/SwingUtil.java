@@ -34,7 +34,10 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.text.JTextComponent;
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jtstest.util.ExceptionFormatter;
 import org.locationtech.jtstest.util.StringUtil;
+import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 
 public class SwingUtil {
@@ -128,7 +131,7 @@ public class SwingUtil {
       val = Integer.parseInt(str);
     } catch (NumberFormatException ex) {
     }
-    return new Integer(val);
+    return val;
   }
   
   public static Double convertDouble(String str) {
@@ -137,7 +140,7 @@ public class SwingUtil {
       val = Double.parseDouble(str);
     } catch (NumberFormatException ex) {
     }
-    return new Double(val);
+    return val;
   }
   
   public static Integer getInteger(JTextField txt, Integer defaultVal) {
@@ -150,7 +153,7 @@ public class SwingUtil {
       val = Integer.parseInt(str);
     } catch (NumberFormatException ex) {
     }
-    return new Integer(val);
+    return val;
   }
   
   public static Double getDouble(JTextField txt, Double defaultVal) {
@@ -163,7 +166,7 @@ public class SwingUtil {
       val = Double.parseDouble(str);
     } catch (NumberFormatException ex) {
     }
-    return new Double(val);
+    return val;
   }
   
   public static String value(JTextComponent txt) {
@@ -217,7 +220,7 @@ public class SwingUtil {
         return null;
     }
   }
-
+    
   public static void reportException(Component c, Exception e) {
     JOptionPane.showMessageDialog(c, StringUtil.wrap(e.toString(), 80), "Exception",
         JOptionPane.ERROR_MESSAGE);

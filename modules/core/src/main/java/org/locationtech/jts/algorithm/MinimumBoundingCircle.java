@@ -35,17 +35,26 @@ import org.locationtech.jts.util.Assert;
  * <li>As a centre point and a radius
  * <li>By the set of points defining the circle.
  * Depending on the number of points in the input
- * and their relative positions, this
- * will be specified by anywhere from 0 to 3 points. 
+ * and their relative positions, this set
+ * contains from 0 to 3 points. 
  * <ul>
  * <li>0 or 1 points indicate an empty or trivial input point arrangement.
- * <li>2 or 3 points define a circle which contains 
- * all the input points.
+ * <li>2 points define the diameter of the minimum bounding circle.
+ * <li>3 points define an inscribed triangle of the minimum bounding circle.
  * </ul>
  * </ul>
  * The class can also output a {@link Geometry} which approximates the
- * shape of the MBC (although as an approximation 
+ * shape of the Minimum Bounding Circle (although as an approximation 
  * it is <b>not</b> guaranteed to <tt>cover</tt> all the input points.)
+ * <p>
+ * The Maximum Diameter of the input point set can
+ * be computed as well.  The Maximum Diameter is
+ * defined by the pair of input points with maximum distance between them.
+ * The points of the maximum diameter are two of the extremal points of the Minimum Bounding Circle.
+ * They lie on the convex hull of the input.
+ * However, that the maximum diameter is not a diameter
+ * of the Minimum Bounding Circle in the case where the MBC is 
+ * defined by an inscribed triangle.
  * 
  * @author Martin Davis
  * 
@@ -101,26 +110,62 @@ public class MinimumBoundingCircle
 	}
 
   /**
-   * Gets a geometry representing a line between the two farthest points
-   * in the input.
-   * These points will be two of the extremal points of the Minimum Bounding Circle.
-   * They also lie on the convex hull of the input.
+   * Gets a geometry representing the maximum diameter of the 
+   * input. The maximum diameter is the longest line segment
+   * between any two points of the input.
+   * <p>
+   * The points are two of the extremal points of the Minimum Bounding Circle.
+   * They lie on the convex hull of the input.
    * 
    * @return a LineString between the two farthest points of the input
    * @return a empty LineString if the input is empty
    * @return a Point if the input is a point
    */
-  public Geometry getFarthestPoints() {
+  public Geometry getMaximumDiameter() {
     compute();
     switch (extremalPts.length) {
     case 0:
       return input.getFactory().createLineString();
     case 1:
       return input.getFactory().createPoint(centre);
+    case 2:
+      return input.getFactory().createLineString(
+          new Coordinate[] { extremalPts[0], extremalPts[1] });
+    default: // case 3
+      Coordinate[] maxDiameter = farthestPoints(extremalPts);
+      return input.getFactory().createLineString(maxDiameter);
     }
-    Coordinate p0 = extremalPts[0];
-    Coordinate p1 = extremalPts[extremalPts.length - 1];
-    return input.getFactory().createLineString(new Coordinate[] { p0, p1 });
+  }
+
+  /**
+   * Gets a geometry representing a line between the two farthest points
+   * in the input.
+   * <p>
+   * The points are two of the extremal points of the Minimum Bounding Circle.
+   * They lie on the convex hull of the input.
+   * 
+   * @return a LineString between the two farthest points of the input
+   * @return a empty LineString if the input is empty
+   * @return a Point if the input is a point
+   * 
+   * @deprecated use #getMaximumDiameter()
+   */
+  public Geometry getFarthestPoints() {
+    return getMaximumDiameter();
+  }
+
+  /**
+   * Finds the farthest pair out of 3 extremal points
+   * @param pts the array of extremal points
+   * @return the pair of farthest points
+   */
+  private static Coordinate[] farthestPoints(Coordinate[] pts) {
+    double dist01 = pts[0].distance(pts[1]);
+    double dist12 = pts[0].distance(pts[1]);
+    if (dist12 > dist01) {
+      return new Coordinate[] { pts[0], pts[1] };
+    }
+    return new Coordinate[] { pts[1], pts[2] };
   }
 
   /**
@@ -147,30 +192,34 @@ public class MinimumBoundingCircle
   }
 
 	/**
-	 * Gets the extremal points which define the computed Minimum Bounding Circle.
-	 * There may be zero, one, two or three of these points,
-	 * depending on the number of points in the input
-	 * and the geometry of those points.
-	 * 
-	 * @return the points defining the Minimum Bounding Circle
-	 */
+   * Gets the extremal points which define the computed Minimum Bounding Circle.
+   * There may be zero, one, two or three of these points, depending on the number
+   * of points in the input and the geometry of those points.
+   * <ul>
+   * <li>0 or 1 points indicate an empty or trivial input point arrangement.
+   * <li>2 points define the diameter of the Minimum Bounding Circle.
+   * <li>3 points define an inscribed triangle of which the Minimum Bounding Circle is the circumcircle.
+   * The longest chords of the circle are the line segments [0-1] and [1-2]
+   * </ul>
+   * 
+   * @return the points defining the Minimum Bounding Circle
+   */
 	public Coordinate[] getExtremalPoints() 
 	{
 		compute();
 		return extremalPts;
 	}
 	
-        /**
-         * Gets the centre point of the computed Minimum Bounding Circle.
-         * 
-         * @return the centre point of the Minimum Bounding Circle
-         * @return null if the input is empty
-         */
-        public Coordinate getCentre() 
-        {
-                compute();
-                return centre;
-        }
+  /**
+   * Gets the centre point of the computed Minimum Bounding Circle.
+   * 
+   * @return the centre point of the Minimum Bounding Circle
+   * @return null if the input is empty
+   */
+  public Coordinate getCentre() {
+    compute();
+    return centre;
+  }
                 
 	/**
 	 * Gets the radius of the computed Minimum Bounding Circle.
@@ -344,3 +393,5 @@ public class MinimumBoundingCircle
 		
 	}
 }
+
+  

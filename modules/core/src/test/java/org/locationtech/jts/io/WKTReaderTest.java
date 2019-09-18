@@ -21,6 +21,7 @@ import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
 import java.util.EnumSet;
+import java.util.Locale;
 
 
 /**
@@ -422,6 +423,18 @@ public class WKTReaderTest extends TestCase {
     CoordinateSequence point2 = geometryFactory.createPoint(new Coordinate(123456789.01234567890, 10)).getCoordinateSequence();
     assertEquals(point1.getOrdinate(0, CoordinateSequence.X), point2.getOrdinate(0, CoordinateSequence.X), 1E-7);
     assertEquals(point1.getOrdinate(0, CoordinateSequence.Y), point2.getOrdinate(0, CoordinateSequence.Y), 1E-7);
+  }
+
+  public void testTurkishLocale() throws Exception {
+      Locale original = Locale.getDefault();
+      try {
+          Locale.setDefault(Locale.forLanguageTag("tr"));
+          Point point = (Point) reader2D.read("point (10 20)");
+          assertEquals(10.0, point.getX(), 1E-7);
+          assertEquals(20.0, point.getY(), 1E-7);
+      } finally {
+          Locale.setDefault(original);
+      }
   }
 
   private static CoordinateSequence createSequence(EnumSet<Ordinate> ordinateFlags, double[] xy) {

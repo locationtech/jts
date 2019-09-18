@@ -52,5 +52,18 @@ public class IsValidTest extends TestCase {
     assertEquals(false, valid);
   }
 
+  public void testZeroAreaPolygon() throws Exception {
+    Geometry g = reader.read(
+          "POLYGON((0 0, 0 0, 0 0, 0 0, 0 0))");
+    g.isValid();
+    assertTrue(true); //No exception thrown [Jon Aquino]
+  }
+
+  public void testLineString() throws Exception {
+    Geometry g = reader.read(
+          "LINESTRING(0 0, 0 0)");
+    g.isValid();
+    assertTrue(true); //No exception thrown [Jon Aquino]
+  }
 
 }

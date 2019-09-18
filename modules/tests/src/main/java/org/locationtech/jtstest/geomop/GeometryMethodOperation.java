@@ -174,7 +174,7 @@ public class GeometryMethodOperation
     if (destClass == Double.class || destClass == double.class) {
       // try as an int
       try {
-        convArg[0] = new Double(srcStr);
+        convArg[0] = Double.valueOf(srcStr);
         return true;
       }
       catch (NumberFormatException e) {

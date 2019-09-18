@@ -100,16 +100,5 @@ module org.foo.baz {
 
 ## JTS Tools
 
-JTS includes some application tools.
+JTS includes various application tools, which are documented [here](doc/TOOLS.md).
 
-### TestBuilder
-
-The TestBuilder is a GUI application which allows creating and visualizing geometry, and executing JTS functions.
-
-* Run from project root: 
-     
-       java -jar modules/app/target/JTSTestBuilder.jar
-     
-* Run with Metal L&F (useful for Mac)
-
-       java -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel -jar modules/app/target/JTSTestBuilder.jar

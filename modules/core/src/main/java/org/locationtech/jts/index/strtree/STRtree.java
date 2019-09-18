@@ -41,7 +41,11 @@ import org.locationtech.jts.util.PriorityQueue;
  * <i>Spatial Databases With Application To GIS</i>.
  * Morgan Kaufmann, San Francisco, 2002.
  * <p>
- * This class is thread-safe.  Building the tree is synchronized, 
+ * <b>Note that inserting items into a tree is not thread-safe.</b>
+ * Inserting performed on more than one thread must be synchronized externally.
+ * <p>
+ * Querying a tree is thread-safe.  
+ * The building phase is done synchronously, 
  * and querying is stateless.
  *
  * @version 1.7

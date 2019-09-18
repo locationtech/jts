@@ -19,7 +19,7 @@ import org.locationtech.jts.io.ParseException;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
-import test.jts.junit.GeometryUtils;
+import test.jts.util.IOUtil;
 
 
 public class EdgeGraphTest extends TestCase {
@@ -37,8 +37,30 @@ public class EdgeGraphTest extends TestCase {
         new Coordinate[] { new Coordinate(1, 0),
       new Coordinate(0, 1), new Coordinate(-1, 0)
         });
+    checkNodeValid(graph, new Coordinate(0, 0), new Coordinate(1, 0));
     checkEdge(graph, new Coordinate(0, 0), new Coordinate(1, 0));
   }
+
+  /**
+   * This test produced an error using the original buggy sorting algorithm
+   * (in {@link HalfEdge#insert(HalfEdge)}).
+   */
+  public void testCCWAfterInserts() {
+    EdgeGraph graph = new EdgeGraph();
+    HalfEdge e1 = addEdge(graph, 50, 39, 35, 42);
+    addEdge(graph, 50, 39, 50, 60);
+    addEdge(graph, 50, 39, 68, 35);
+    checkNodeValid(e1);
+  }
+
+  public void testCCWAfterInserts2() {
+    EdgeGraph graph = new EdgeGraph();
+    HalfEdge e1 = addEdge(graph, 50, 200, 0, 200);
+    addEdge(graph, 50, 200, 190, 50);
+    addEdge(graph, 50, 200, 200, 200);
+    checkNodeValid(e1);
+  }
+
 
   private void checkEdgeRing(EdgeGraph graph, Coordinate p,
       Coordinate[] dest) {
@@ -52,20 +74,34 @@ public class EdgeGraphTest extends TestCase {
    
   }
 
-
   private void checkEdge(EdgeGraph graph, Coordinate p0, Coordinate p1) {
     HalfEdge e = graph.findEdge(p0, p1);
     assertNotNull(e);
   }
 
+  private void checkNodeValid(EdgeGraph graph, Coordinate p0, Coordinate p1) {
+    HalfEdge e = graph.findEdge(p0, p1);
+    boolean isNodeValid = e.isEdgesSorted();
+    assertTrue("Found non-sorted edges around node " + e, isNodeValid); 
+  }
 
+
+  private void checkNodeValid(HalfEdge e) {
+    boolean isNodeValid = e.isEdgesSorted();
+    assertTrue("Found non-sorted edges around node " + e, isNodeValid); 
+  }
+  
   private EdgeGraph build(String wkt) throws ParseException {
     return build(new String[] { wkt });
   }
 
   private EdgeGraph build(String[] wkt) throws ParseException {
-    List geoms = GeometryUtils.readWKT(wkt);
+    List geoms = IOUtil.readWKT(wkt);
     return EdgeGraphBuilder.build(geoms);
+  }
+
+  private HalfEdge addEdge(EdgeGraph graph, double p0x, double p0y, double p1x, double p1y) {
+    return graph.addEdge(new Coordinate(p0x, p0y), new Coordinate(p1x, p1y));
   }
 
 }

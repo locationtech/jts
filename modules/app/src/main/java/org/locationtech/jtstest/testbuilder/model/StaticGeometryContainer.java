@@ -23,8 +23,12 @@ public class StaticGeometryContainer implements GeometryContainer {
 		this.geometry = geometry;
 	}
 	
-	public Geometry getGeometry() {
-		return geometry;
-	}
+  public Geometry getGeometry() {
+    return geometry;
+  }
+  
+  public void setGeometry(Geometry geom) {
+    geometry = geom;;
+  }
 
 }

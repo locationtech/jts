@@ -16,9 +16,8 @@ package org.locationtech.jts.geom;
 import java.io.Serializable;
 
 import org.locationtech.jts.algorithm.Distance;
-import org.locationtech.jts.algorithm.HCoordinate;
+import org.locationtech.jts.algorithm.Intersection;
 import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.NotRepresentableException;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 
@@ -558,14 +557,8 @@ public class LineSegment
    */
   public Coordinate lineIntersection(LineSegment line)
   {
-    try {
-      Coordinate intPt = HCoordinate.intersection(p0, p1, line.p0, line.p1);
-      return intPt;
-    }
-    catch (NotRepresentableException ex) {
-      // eat this exception, and return null;
-    }
-    return null;
+    Coordinate intPt = Intersection.intersection(p0, p1, line.p0, line.p1);
+    return intPt;
   }
 
   /**

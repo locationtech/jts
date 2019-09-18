@@ -25,24 +25,33 @@ import org.locationtech.jtstest.testbuilder.geom.GeometryLocation;
 
 public class LayerList 
 {
+  public static LayerList createInternal() {
+    LayerList list = new LayerList();
+    list.initFixed();
+    return list;
+  }
+  
   public static final int LYR_A = 0;
   public static final int LYR_B = 1;
   public static final int LYR_RESULT = 2;
   
-  private Layer[] layer = new Layer[3];
+  private List<Layer> layer = new ArrayList<Layer>();
   
   public LayerList() 
   {
-    layer[0] = new Layer("A");
-    layer[1] = new Layer("B");
-    layer[2] = new Layer("Result");
   }
 
-  public int size() { return layer.length; }
+  void initFixed() {
+    layer.add(new Layer("A"));
+    layer.add(new Layer("B"));
+    layer.add(new Layer("Result"));
+
+  }
+  public int size() { return layer.size(); }
   
   public Layer getLayer(int i)
   { 
-    return layer[i];
+    return layer.get(i);
   }
   
   /**
@@ -104,5 +113,35 @@ public class LayerList
       geoms.add(loc.getComponent());
     }
     return geoms;
+  }
+
+  public Layer copy(Layer focusLayer) {
+    Layer lyr = new Layer(focusLayer);
+    layer.add(lyr);
+    return lyr;
+  }
+
+  public void remove(Layer lyr) {
+    layer.remove(lyr);
+  }
+
+  public boolean contains(Layer lyr) {
+    return layer.contains(lyr);
+  }
+
+  public void moveUp(Layer lyr) {
+    int i = layer.indexOf(lyr);
+    if (i <= 0) return;
+    Layer tmp = layer.get(i-1);
+    layer.set(i-1, lyr);
+    layer.set(i, tmp);
+  }
+
+  public void moveDown(Layer lyr) {
+    int i = layer.indexOf(lyr);
+    if (i >= layer.size() - 1) return;
+    Layer tmp = layer.get(i+1);
+    layer.set(i+1, lyr);
+    layer.set(i, tmp);
   }
 }
