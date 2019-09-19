@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
@@ -174,7 +175,6 @@ public class JTSOpRunner {
 
   private void executeFunction(OpParams cmdArgs, Geometry geomA, Geometry geomB) {
     GeometryFunction func = getFunction(cmdArgs.operation);
-    //func = decorateFunctionEach(cmdArgs, func);
     
     if (func == null) {
       throw new CommandError(ERR_FUNCTION_NOT_FOUND, cmdArgs.operation);
@@ -456,9 +456,12 @@ class IndexedGeometry
   @SuppressWarnings("unchecked")
   public List<Integer> query(Geometry geom)
   {
-    if (index != null)
-      return index.query(geom.getEnvelopeInternal());
-    
+    if (index != null) {
+      List<Integer> vals = index.query(geom.getEnvelopeInternal());
+      // sort indices in ascending order for readability
+      Collections.sort(vals);
+      return vals;
+    }
     return allIndexes;
   }
 }
