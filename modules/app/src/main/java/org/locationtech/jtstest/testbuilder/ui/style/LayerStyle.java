@@ -178,7 +178,9 @@ public class LayerStyle implements Style  {
     if (isOffsetLine && geom instanceof LineString) {
       double offsetDistance = viewport.toModel(offsetSize);
       transformGeom = offsetLine(geom, offsetDistance);
-      transformGeom.setUserData(geom.getUserData());
+      if (transformGeom != null) {
+        transformGeom.setUserData(geom.getUserData());
+      }
     }
     return transformGeom;
   }
@@ -229,7 +231,7 @@ public class LayerStyle implements Style  {
 
   private static Geometry trimLine(Geometry line, double distance) {
     double len = line.getLength();
-    if (len < 2 * distance) return null;
+    if (len < 2 * distance) return line;
     LengthIndexedLine indLine = new LengthIndexedLine(line);
     return indLine.extractLine(distance, len - distance);
   }
