@@ -8,8 +8,10 @@ It has the following features:
   * standard input (WKT or WKB)
   * files in various formats (WKT, WKB, GeoJSON, GML, SHP)
 * execute any spatial or scalar function available in the TestBuilder
-* "spread" execution over each geometry component from one or both inputs 
-  * `-each [ a | b | ab ]`
+* "spread" execution over each geometry component from one or both inputs
+  * `-each [ a | b | ab | aa ]`
+  * the `-each aa` parameter uses the A input for both arguments for binary operations
+  * the `-index` parameter uses a spatial index for binary operations
 * run op multiple times using a list of op argument values
   * `-args v1 v2 v3 ...`
 * repeat operation execution multiple times, to provide better timing results
@@ -55,6 +57,10 @@ It has the following features:
  * Compute an operation on a geometry and output only geometry metrics and timing
  
        jtsop -v -a some-geom.wkt Buffer.buffer 10
+       
+ * Compute the intersection of all pairs of geometries from A and B, using a spatial index
+ 
+       jtsop -v -a geomA.wkt --b geomB.wkt -each ab -index Overlay.intersection 
  
  * Chain operations using a pipe
  
