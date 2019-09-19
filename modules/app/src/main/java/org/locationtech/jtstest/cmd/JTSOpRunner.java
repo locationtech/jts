@@ -12,7 +12,6 @@
 package org.locationtech.jtstest.cmd;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -20,7 +19,8 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.index.SpatialIndex;
+import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.util.Stopwatch;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
@@ -48,6 +48,9 @@ public class JTSOpRunner {
   public static final String ERR_WRONG_ARG_COUNT = "Function arguments and parameters do not match";
   public static final String ERR_FUNCTION_ERR = "Error executing function";
   public static final String ERR_INVALID_RESULT = "Result is invalid";
+  
+  private static final String SYM_A = "A";
+  private static final String SYM_B = "B";
 
   private GeometryFactory geomFactory = new GeometryFactory();
   
@@ -61,6 +64,9 @@ public class JTSOpRunner {
   
   private CommandOutput out = new CommandOutput();
   private GeometryOutput geomOut = new GeometryOutput(out);
+  private String symGeom2 = SYM_B;
+
+  private IndexedGeometry geomIndexB;
   
   static class OpParams {
     String operation;
@@ -73,8 +79,10 @@ public class JTSOpRunner {
     public Integer repeat;
     public boolean eachA = false;
     public boolean eachB = false;
+    public boolean eachAA = false;
     public String[] argList;
     public boolean validate = false;
+    public boolean isIndexed;
   }
 
   public JTSOpRunner() {
@@ -124,6 +132,16 @@ public class JTSOpRunner {
     }
     // TODO: Handle option -ab
     
+    //--- If -each aa specified, use A for B
+    if (cmdArgs.eachAA) {
+      geomB = geomA;
+      symGeom2  = SYM_A;
+    }
+    
+    // index B if requested
+    if (cmdArgs.eachB) {
+      geomIndexB = new IndexedGeometry(geomB, cmdArgs.isIndexed);
+    }
     
     if (cmdArgs.operation != null) {
       executeFunction(cmdArgs, geomA, geomB);
@@ -173,7 +191,7 @@ public class JTSOpRunner {
     // spread over A
     for (int i = 0; i < num; i++) {
       Geometry comp = geomA.getGeometryN(i);
-      String hdr = header + "\n" + GeometryOutput.writeGeometrySummary("A[" + i + "]", comp);
+      String hdr = header + "\n" + GeometryOutput.writeGeometrySummary(SYM_A + "[" + i + "]", comp);
       executeFunctionSpreadB(cmdArgs, comp, func, funArgs, hdr);
     }
   }
@@ -185,7 +203,10 @@ public class JTSOpRunner {
       geomB = (Geometry) funArgs[0];
       num = geomB.getNumGeometries();
     }
-    boolean isSpread = geomB != null && cmdArgs.eachB && num > 1;
+    boolean isSpread = geomB != null 
+        && (cmdArgs.eachB || cmdArgs.eachAA )
+        && num > 1;
+        
     if (! isSpread) {
       executeFunctionRepeat(cmdArgs, geomA, func, funArgs, header);
       return;
@@ -194,9 +215,10 @@ public class JTSOpRunner {
     // spread over B
     // copy args array since it will be modified to set B components
     Object[] funArgsB = funArgs.clone();
-    for (int i = 0; i < num; i++) {
-      Geometry comp = geomB.getGeometryN(i);
-      String hdr = header + "\n" + GeometryOutput.writeGeometrySummary("B[" + i + "]", comp);
+    List<Integer> targetB = geomIndexB.query(geomA);
+    for (int index : targetB) {
+      Geometry comp = geomB.getGeometryN(index);
+      String hdr = header + "\n" + GeometryOutput.writeGeometrySummary(symGeom2 + "[" + index + "]", comp);
       funArgsB[0] = comp;
       executeFunctionRepeat(cmdArgs, geomA, func, funArgsB, hdr);
     }
@@ -378,7 +400,45 @@ public class JTSOpRunner {
     }
     return funcRegistry.find(category, name);
   }
+}
 
+class IndexedGeometry
+{
+  private SpatialIndex index = null;
+  private List<Integer> allIndexes = null;
+  
+  public IndexedGeometry(Geometry geom, boolean isIndexed)
+  {
+    if (isIndexed) {
+      initIndex(geom);
+    }
+    else {
+      initList(geom);
+    }
+  }
+  
+  private void initList(Geometry geom) {
+    allIndexes = new ArrayList<Integer>();
+    for (int i = 0; i < geom.getNumGeometries(); i++) {
+      allIndexes.add(i);
+    }
+  }
 
-
+  private void initIndex(Geometry geom)
+  {
+    index = new STRtree();
+    for (int i = 0; i < geom.getNumGeometries(); i++) {
+      Geometry comp = geom.getGeometryN(i);
+      index.insert(comp.getEnvelopeInternal(), new Integer(i));
+    }
+  }
+  
+  @SuppressWarnings("unchecked")
+  public List<Integer> query(Geometry geom)
+  {
+    if (index != null)
+      return index.query(geom.getEnvelopeInternal());
+    
+    return allIndexes;
+  }
 }

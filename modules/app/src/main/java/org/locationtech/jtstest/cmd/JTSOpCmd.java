@@ -11,7 +11,6 @@
  */
 package org.locationtech.jtstest.cmd;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
@@ -97,6 +96,7 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMA, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMB, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.EACH, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.INDEX, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.FORMAT, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.REPEAT, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.VALIDATE, 0))
@@ -109,10 +109,11 @@ public class JTSOpCmd {
   "Usage: jtsop - CLI for JTS operations",
   "           [ -a <wkt> | <wkb> | stdin | <filename.ext> ]",
   "           [ -b <wkt> | <wkb> | stdin | <filename.ext> ]",
-  "           [ -each ( a | b | ab ) ]",
-  "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
+  "           [ -each ( a | b | ab | aa ) ]",
+  "           [ -index ]",
   "           [ -repeat <num> ]",
   "           [ -validate ]",
+  "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
   "           [ -geomfunc <classname> ]",
   "           [ -v, -verbose ]",
   "           [ -help]",
@@ -123,10 +124,11 @@ public class JTSOpCmd {
   "",
   "  -a              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
   "  -b              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
-  "  -each           execute op on each component of A and/or B",
-  "  -f              output format to use.  If omitted output is silent",
+  "  -each           execute op on each component of A, B, both A & B, or A & A",
+  "  -index          index geometry B",
   "  -repeat         repeat the operation N times",
   "  -validate       validate the result of each operation",
+  "  -f              output format to use.  If omitted output is silent",
   "  -geomfunc       specifies class providing geometry operations",
   "  -v, -verbose    display information about execution",
   "  -help           print a list of available operations"
@@ -258,6 +260,8 @@ public class JTSOpCmd {
     
     cmdArgs.format = commandLine.getOptionArg(CommandOptions.FORMAT, 0);
     
+    cmdArgs.isIndexed = commandLine.hasOption(CommandOptions.INDEX);
+    
     cmdArgs.repeat = commandLine.hasOption(CommandOptions.REPEAT)
         ? commandLine.getOptionArgAsInt(CommandOptions.REPEAT, 0)
             : 1;
@@ -275,6 +279,11 @@ public class JTSOpCmd {
       else if (each.equalsIgnoreCase("ab")) {
         cmdArgs.eachA = true;
         cmdArgs.eachB = true;
+      }
+      else if (each.equalsIgnoreCase("aa")) {
+        cmdArgs.eachA = true;
+        cmdArgs.eachB = true;
+        cmdArgs.eachAA = true;
       }
       else {
         throw new CommandError(ERR_INVALID_PARAMETER, "-each " + each);

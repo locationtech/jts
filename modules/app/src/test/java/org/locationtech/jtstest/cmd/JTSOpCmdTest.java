@@ -106,6 +106,24 @@ public class JTSOpCmdTest extends TestCase {
         "LINESTRING (0 1, 9 9)\nLINESTRING (0 1, 8 8)" );
   }
 
+  public void testOpEachAA() {
+    runCmd( args(
+        "-a", "MULTIPOINT((0 0), (0 1))", 
+        "-each", "aa",
+        "-f", "wkt", "Distance.nearestPoints"), 
+        "LINESTRING (0 0, 0 0)\nLINESTRING (0 0, 0 1)\nLINESTRING (0 1, 0 0)\nLINESTRING (0 1, 0 1)" );
+  }
+
+  public void testOpEachABIndexed() {
+    runCmd( args(
+        "-a", "MULTILINESTRING((0 0, 5 5), (10 0, 15 5))", 
+        "-b", "MULTIPOINT((1 1), (11 1))", 
+        "-each", "ab",
+        "-index",
+        "-f", "wkt", "Distance.nearestPoints"), 
+        "LINESTRING (1 1, 1 1)\nLINESTRING (11 1, 11 1)" );
+  }
+
   public void testOpBufferVals() {
     JTSOpCmd cmd = runCmd( args(
         "-a", "POINT(0 0)", 
