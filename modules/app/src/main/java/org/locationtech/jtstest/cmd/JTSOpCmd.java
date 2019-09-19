@@ -333,11 +333,18 @@ public class JTSOpCmd {
   }
   
   private String[] parseOpArg(String arg) {
+    
+    // multi-value arg
+    if (arg.startsWith("(")) 
+      return parseValues(arg);
     if (arg.startsWith(MACRO_VAL + "(")) 
       return parseValues(arg);
+    
     // no other macros, for now
     if (arg.contains("(")) 
         throw new CommandError(ERR_INVALID_PARAMETER, arg); 
+    
+    // simple arg value
     return new String[] { arg };
   }
 

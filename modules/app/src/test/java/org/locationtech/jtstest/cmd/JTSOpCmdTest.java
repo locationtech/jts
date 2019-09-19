@@ -135,6 +135,17 @@ public class JTSOpCmdTest extends TestCase {
     assertEquals("Incorrect summary value for arg values",  computeArea(results), 93.6, 1);
   }
 
+  public void testOpBufferMultiArg() {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "POINT(0 0)", 
+        "-f", "wkt", 
+        "Buffer.buffer", "(1,2,3,4)" ), 
+        null, null );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertTrue("Not enough results for arg values",  results.size() == 4 );
+    assertEquals("Incorrect summary value for arg values",  computeArea(results), 93.6, 1);
+  }
+
   private double computeArea(List<Geometry> results) {
     GeometryFactory fact = new GeometryFactory();
     Geometry geom = fact.buildGeometry(results);
