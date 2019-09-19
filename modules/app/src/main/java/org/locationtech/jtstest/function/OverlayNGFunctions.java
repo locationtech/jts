@@ -16,7 +16,9 @@ import java.util.List;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.LineStringExtracter;
 import org.locationtech.jts.geom.util.PolygonExtracter;
@@ -43,6 +45,35 @@ public class OverlayNGFunctions {
     return ovr.getResultGeometry();
   }
 
+  public static Geometry debugUnionIntSymDiff(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    // force non-null inputs
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
+    // op should not matter, since edges are captured pre-result
+    Geometry inter = extractPoly( OverlayNG.overlay(a, b, pm, OverlayOp.INTERSECTION) );
+    Geometry symDiff = extractPoly( OverlayNG.overlay(a, b, pm, OverlayOp.SYMDIFFERENCE) );
+    Geometry union = extractPoly( OverlayNG.overlay(inter, symDiff, pm, OverlayOp.UNION) );
+    return union;
+  }
+
+  public static Geometry debugUnionIntSymDiffClassic(Geometry a, Geometry b) {
+    // force non-null inputs
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
+    // op should not matter, since edges are captured pre-result
+    Geometry inter = extractPoly( a.intersection(b) );
+    Geometry symDiff = extractPoly( a.symDifference(b) );
+    Geometry union = extractPoly( inter.union(symDiff) );
+    return union;
+  }
+
+  private static Geometry extractPoly(Geometry g) {
+    if (g instanceof Polygon) return g;
+    if (g instanceof MultiPolygon) return g;
+    return ConversionFunctions.toMultiPolygon(g, null);
+  }
+  
   private static Geometry sameOrEmpty(Geometry a, Geometry b) {
     if (a != null) return a;
     // return empty geom of same type
