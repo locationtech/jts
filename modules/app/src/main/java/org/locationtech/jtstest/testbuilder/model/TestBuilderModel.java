@@ -39,6 +39,7 @@ public class TestBuilderModel
 	private GeometryEditModel geomEditModel;
 	
   private LayerList layerList = LayerList.createInternal();
+  private LayerList layerListTop = new LayerList();
   private LayerList layerListBase = new LayerList();
   
   private WKTWriter writer = new WKTWriter();
@@ -81,6 +82,7 @@ public class TestBuilderModel
 	
   public LayerList getLayers() { return layerList; }
   
+  public LayerList getLayersTop() { return layerListTop; }
   public LayerList getLayersBase() { return layerListBase; }
   
   private void initLayers()
@@ -489,19 +491,49 @@ public class TestBuilderModel
   }
 
   public Layer layerCopy(Layer lyr) {
+    if (layerListTop.contains(lyr)) {
+      return layerListTop.copy(lyr);
+    }
+    // get here if copying a base layer, OR copying a fixed layer
     return layerListBase.copy(lyr);
   }
 
   public void layerDelete(Layer lyr) {
-    layerListBase.remove(lyr);
+    if (layerListBase.contains(lyr)) {
+      layerListBase.remove(lyr);
+    }
+    else if (layerListTop.contains(lyr)) {
+      layerListTop.remove(lyr);
+    } 
   }
 
   public void layerUp(Layer lyr) {
-    layerListBase.moveUp(lyr);
+    if (layerListBase.contains(lyr)) {
+      if (layerListBase.isTop(lyr)) {
+        layerListBase.remove(lyr);
+        layerListTop.addBottom(lyr);
+      }
+      else {
+        layerListBase.moveUp(lyr);
+      }
+    }
+    else if (layerListTop.contains(lyr)) {
+      layerListTop.moveUp(lyr);
+    } 
   }
 
   public void layerDown(Layer lyr) {
-    layerListBase.moveDown(lyr);
+    if (layerListBase.contains(lyr)) {
+      layerListBase.moveDown(lyr);
+    }
+    else if (layerListTop.contains(lyr)) {
+      if (layerListTop.isBottom(lyr)) {
+        layerListTop.remove(lyr);
+        layerListBase.addTop(lyr);
+      }
+      layerListTop.moveDown(lyr);
+    } 
+    
   }
 
   public boolean isLayerFixed(Layer lyr) {

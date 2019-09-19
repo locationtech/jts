@@ -578,6 +578,7 @@ public class GeometryEditPanel extends JPanel
       
       renderLayers(tbModel.getLayersBase(), false, g2);
       renderLayers(getLayerList(), true, g2);
+      renderLayers(tbModel.getLayersTop(), false, g2);
       
       if (isRevealingTopology && isRenderingStretchVertices) {
       	renderMagnifiedVertices(g2);

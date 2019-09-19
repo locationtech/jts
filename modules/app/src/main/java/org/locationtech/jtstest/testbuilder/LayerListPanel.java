@@ -176,6 +176,7 @@ public class LayerListPanel extends JPanel {
     listPanel.removeAll();
     layerItems.clear();
     
+    addLayers(JTSTestBuilder.model().getLayersTop());
     addLayers(JTSTestBuilder.model().getLayers());
     addLayers(JTSTestBuilder.model().getLayersBase());
     setLayerFocus(layerItems.get(0));

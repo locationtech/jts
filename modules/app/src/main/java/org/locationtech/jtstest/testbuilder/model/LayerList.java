@@ -129,6 +129,24 @@ public class LayerList
     return layer.contains(lyr);
   }
 
+  public boolean isTop(Layer lyr) {
+    if (layer.isEmpty()) return false;
+    return layer.get(0) == lyr;
+  }
+
+  public boolean isBottom(Layer lyr) {
+    if (layer.isEmpty()) return false;
+    return layer.get(layer.size() - 1) == lyr;
+  }
+
+  public void addTop(Layer lyr) {
+    layer.add(0, lyr);
+  }
+  
+  public void addBottom(Layer lyr) {
+    layer.add(lyr);
+  }
+  
   public void moveUp(Layer lyr) {
     int i = layer.indexOf(lyr);
     if (i <= 0) return;
