@@ -46,7 +46,7 @@ import org.locationtech.jts.util.Debug;
  * and all the input vertices must be rounded to that precision.
  * <p>
  * This implementation uses simple iteration over the line segments.
- * This is not the most efficient approach for large sets of segments.
+ * This is not an efficient approach for large sets of segments.
  * <p>
  * This implementation appears to be fully robust using an integer precision model.
  * It will function with non-integer precision models, but the
@@ -90,8 +90,7 @@ public class SimpleSnapRounder
      * Determine intersections at full precision.  
      * Rounding happens during Hot Pixel creation.
      */
-    LineIntersector liFullPrec = new RobustLineIntersector();
-    snappedResult = snapRound(inputSegmentStrings, liFullPrec);
+    snappedResult = snapRound(inputSegmentStrings);
 
     // testing purposes only - remove in final version
     //checkCorrectness(inputSegmentStrings);
@@ -115,7 +114,7 @@ public class SimpleSnapRounder
       ex.printStackTrace();
     }
   }
-  private List<NodedSegmentString> snapRound(Collection<SegmentString> segStrings, LineIntersector li)
+  private List<NodedSegmentString> snapRound(Collection<SegmentString> segStrings)
   {
     List<NodedSegmentString> inputSS = createNodedStrings(segStrings);
     /**
@@ -124,7 +123,7 @@ public class SimpleSnapRounder
      * to avoid distorting the line arrangement 
      * (rounding can cause vertices to move across edges).
      */
-    List<Coordinate> intersections = findInteriorIntersections(inputSS, li);
+    List<Coordinate> intersections = findInteriorIntersections(inputSS);
     addHotPixels(intersections);
     addVertexPixels(segStrings);
     hotPixels = new ArrayList<HotPixel>(hotPixelMap.values());
@@ -202,7 +201,7 @@ public class SimpleSnapRounder
    *
    * @return a list of Coordinates for the intersections
    */
-  private List<Coordinate> findInteriorIntersections(List<NodedSegmentString> inputSS, LineIntersector li)
+  private List<Coordinate> findInteriorIntersections(List<NodedSegmentString> inputSS)
   {
     SnapIntersectionAdder intAdder = new SnapIntersectionAdder(pm);
     SinglePassNoder noder = new MCIndexNoder();

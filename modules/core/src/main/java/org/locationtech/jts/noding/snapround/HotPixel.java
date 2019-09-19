@@ -239,21 +239,15 @@ public class HotPixel
 
   /**
    * Tests whether the segment p0-p1 intersects the hot pixel tolerance square.
-   * Because the tolerance square point set is partially open (along the
-   * top and right) the test needs to be more sophisticated than
-   * simply checking for any intersection.  
-   * However, it can take advantage of the fact that the hot pixel edges
-   * do not lie on the coordinate grid.  
    * It is sufficient to check if any of the following occur:
    * <ul>
-   * <li>a proper intersection between the segment and any hot pixel edge
-   * <li>an intersection between the segment and <b>both</b> the left and bottom hot pixel edges
-   * (which detects the case where the segment intersects the bottom left hot pixel corner)
-   * <li>an intersection between a segment endpoint and the hot pixel coordinate
+   * <li>a proper intersection between the segment and any pixel edge
+   * <li>an intersection between the segment and <b>both</b> the top and bottom hot pixel edges
+   * (which detects the case where the segment lies exactly on the diagonal of the pixel)
+   * <li>an intersection between a segment endpoint and the pixel
    * </ul>
-   * Note that it is critical that the tolerance square be partially open.
-   * In particular, the top-left and bottom-right corners must be open, 
-   * because otherwise too much snapping will occcur.
+   * Intersections between pixel corners and segments are not 
+   * reported, because this causes too much snapping.
    * 
    * @param p0 an endpoint of the line segment, scaled
    * @param p1 an endpoint of the line segment, scale

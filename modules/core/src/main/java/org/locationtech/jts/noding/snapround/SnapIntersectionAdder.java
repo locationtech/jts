@@ -25,23 +25,31 @@ import org.locationtech.jts.noding.SegmentIntersector;
 import org.locationtech.jts.noding.SegmentString;
 
 /**
- * Finds <b>interior</b> intersections between line segments in {@link NodedSegmentString}s,
- * and adds them as nodes
- * using {@link NodedSegmentString#addIntersection(LineIntersector, int, int, int)}.
+ * Finds intersections between line segments which will be snap-rounded,
+ * and adds them as nodes.
+ * <p>
+ * Intersections are detected and computed using full precision.
+ * Snapping takes place in a subsequent phase.
+ * To avoid robustness issues with vertices which lie very close to line segments,
+ * the following heuristic is used:
+ * nodes are created if a vertex lies within a tolerance distance
+ * of the interior of a segment.
+ * The tolerance distance is chosen to be significantly below the snap-rounding grid size.
+ * This has empirically proven to eliminate noding failures.
  *
- * @version 1.7
+ * @version 1.17
  */
 public class SnapIntersectionAdder
     implements SegmentIntersector
 {
   /**
    * The division factor used to determine
-   * nearness for snapped intersection detection.
+   * nearness distance tolerance for interior intersection detection.
    */
   private static final int NEARNESS_FACTOR = 10;
   
   private LineIntersector li;
-  private final List intersections;
+  private final List<Coordinate> intersections;
   private PrecisionModel precModel;
   private double nearnessTol;
 
@@ -55,12 +63,27 @@ public class SnapIntersectionAdder
   public SnapIntersectionAdder(PrecisionModel pm)
   {
     precModel = pm;
-    nearnessTol = 1/precModel.getScale() / NEARNESS_FACTOR;
+    /**
+     * Nearness distance tolerance is a small fraction of the snap grid size
+     */
+    double snapGridSize = 1.0 / precModel.getScale();
+    nearnessTol =  snapGridSize / NEARNESS_FACTOR;
+    
+    /**
+     * Intersections are detected and computed using full precision.
+     * They are snapped in a subsequent phase.
+     */
     li = new RobustLineIntersector();
     intersections = new ArrayList();
   }
 
-  public List getIntersections()  {    return intersections;  }
+  /**
+   * Gets the created intersection nodes, 
+   * so they can be processed as hot pixels.
+   * 
+   * @return a list of the intersection points
+   */
+  public List<Coordinate> getIntersections()  {    return intersections;  }
 
   /**
    * This method is called by clients
@@ -93,12 +116,15 @@ public class SnapIntersectionAdder
         }
         ((NodedSegmentString) e0).addIntersections(li, segIndex0, 0);
         ((NodedSegmentString) e1).addIntersections(li, segIndex1, 1);
+        return;
       }
     }
     
     /**
+     * Segments did not actually intersect, within the limits of orientation index robustness.
+     * 
      * To avoid certain robustness issues in snap-rounding, 
-     * also treat very near vertex-segment situations as intersections
+     * also treat very near vertex-segment situations as intersections.
      */
     processNearVertex(p00, e1, segIndex1, p10, p11 );
     processNearVertex(p01, e1, segIndex1, p10, p11 );
@@ -128,9 +154,9 @@ public class SnapIntersectionAdder
   private void processNearVertex(Coordinate p, SegmentString edge, int segIndex, Coordinate p0, Coordinate p1) {
     
     /**
-     * Don't add intersection if candidate point is near endpoints of segment.
+     * Don't add intersection if candidate vertex is near endpoints of segment.
      * This avoids creating "zig-zag" linework
-     * (since the point could actually be outside the segment envelope).
+     * (since the vertex could actually be outside the segment envelope).
      */
     if (p.distance(p0) < nearnessTol) return;
     if (p.distance(p1) < nearnessTol) return;

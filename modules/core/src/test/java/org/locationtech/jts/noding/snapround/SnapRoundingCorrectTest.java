@@ -136,6 +136,17 @@ public class SnapRoundingCorrectTest  extends GeometryTestCase {
     checkRounding(wkt, 100000, expected);
   }
   
+  /**
+   * An A vertex lies very close to a B segment.
+   * The vertex is snapped across the segment, but the segment is not noded.
+   * FIXED by adding intersection detection for near vertices to segments
+   */
+  public void testNearVertexNotNoded() {
+    String wkt = "MULTILINESTRING ((2.4829102 48.8726807, 2.4830818249999997 48.873195575, 2.4839401 48.8723373), ( 2.4829102 48.8726807, 2.4832535 48.8737106 ))";
+    String expected = null;
+    checkRounding(wkt, 100000000, expected);
+  }
+  
   void checkRounding(String wkt, double scale, String expectedWKT)
   {
     Geometry geom = read(wkt);
