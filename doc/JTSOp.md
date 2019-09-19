@@ -7,6 +7,7 @@ It has the following features:
   * WKT or WKB literals on the command line
   * standard input (WKT or WKB)
   * files in various formats (WKT, WKB, GeoJSON, GML, SHP)
+  * a single input can supply both A and B (option `-ab`)
 * execute any spatial or scalar function available in the TestBuilder
 * "spread" execution over each geometry component from one or both inputs
   * `-each [ a | b | ab | aa ]`
