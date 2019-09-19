@@ -95,6 +95,7 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.OP, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMA, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMB, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.GEOMAB, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.EACH, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.INDEX, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.FORMAT, 1))
@@ -107,8 +108,9 @@ public class JTSOpCmd {
   static final String[] helpDoc = new String[] {
   "",
   "Usage: jtsop - CLI for JTS operations",
-  "           [ -a <wkt> | <wkb> | stdin | <filename.ext> ]",
-  "           [ -b <wkt> | <wkb> | stdin | <filename.ext> ]",
+  "           [ -a  <wkt> | <wkb> | stdin | <filename.ext> ]",
+  "           [ -b  <wkt> | <wkb> | stdin | <filename.ext> ]",
+  "           [ -ab <wkt> | <wkb> | stdin | <filename.ext> ]",
   "           [ -each ( a | b | ab | aa ) ]",
   "           [ -index ]",
   "           [ -repeat <num> ]",
@@ -255,6 +257,16 @@ public class JTSOpCmd {
       }
       else {
         cmdArgs.geomB = argB;
+      }
+    }
+    String argAB = commandLine.getOptionArg(CommandOptions.GEOMAB, 0);
+    if (argAB != null) {
+      cmdArgs.isGeomAB = true;
+      if (isFilename(argAB)) {
+        cmdArgs.fileA = argAB;
+      }
+      else {
+        cmdArgs.geomA = argAB;
       }
     }
     

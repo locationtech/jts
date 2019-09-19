@@ -18,7 +18,7 @@ public class CommandOptions {
   public static final String OP = "op";
   public static final String GEOMA = "a";
   public static final String GEOMB = "b";
-  public static final String ARG1 = "arg1";
+  public static final String GEOMAB = "ab";
   public static final String FORMAT = "f";
   public static final String HELP = "help";
   public static final String V = "v";

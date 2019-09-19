@@ -67,6 +67,8 @@ public class JTSOpRunner {
   private String symGeom2 = SYM_B;
 
   private IndexedGeometry geomIndexB;
+  private Geometry geomA;
+  private Geometry geomB;
   
   static class OpParams {
     String operation;
@@ -74,6 +76,7 @@ public class JTSOpRunner {
     String geomA;
     public String fileB;
     public String geomB;
+    public boolean isGeomAB = false;
     //public String[] arg1;
     String format = null;
     public Integer repeat;
@@ -82,7 +85,7 @@ public class JTSOpRunner {
     public boolean eachAA = false;
     public String[] argList;
     public boolean validate = false;
-    public boolean isIndexed;
+    public boolean isIndexed = false;
   }
 
   public JTSOpRunner() {
@@ -117,39 +120,56 @@ public class JTSOpRunner {
   public String getOutput() {
     return out.getOutput();
   }
-  void execute(OpParams cmdArgs) {
+  void execute(OpParams param) {
     
-    Geometry geomA = null;
-    Geometry geomB = null;
+    geomA = null;
+    geomB = null;
 
-    geomA = readGeometry(cmdArgs.fileA, cmdArgs.geomA);
+    loadGeometry(param);
     if (geomA != null) {
-      if (isVerbose) geomOut.printGeometrySummary("A", geomA, cmdArgs.fileA);
+      if (isVerbose) geomOut.printGeometrySummary("A", geomA, param.fileA);
     }
-    geomB = readGeometry(cmdArgs.fileB, cmdArgs.geomB);
     if (geomB != null) {
-      if (isVerbose) geomOut.printGeometrySummary("B", geomB, cmdArgs.fileB);
+      if (isVerbose) geomOut.printGeometrySummary("B", geomB, param.fileB);
     }
-    // TODO: Handle option -ab
     
     //--- If -each aa specified, use A for B
-    if (cmdArgs.eachAA) {
+    if (param.eachAA) {
       geomB = geomA;
       symGeom2  = SYM_A;
     }
-    
+
     // index B if requested
-    if (cmdArgs.eachB) {
-      geomIndexB = new IndexedGeometry(geomB, cmdArgs.isIndexed);
+    if (param.eachB) {
+      geomIndexB = new IndexedGeometry(geomB, param.isIndexed);
     }
     
-    if (cmdArgs.operation != null) {
-      executeFunction(cmdArgs, geomA, geomB);
+    if (param.operation != null) {
+      executeFunction(param, geomA, geomB);
     }
     else {
       // no op specified, so just output A (allows format conversion)
-      printResult(geomA, cmdArgs.format);
+      printResult(geomA, param.format);
     }
+  }
+
+  private void loadGeometry(OpParams param) {
+    if (param.isGeomAB) {
+      loadGeometryAB(param);
+    }
+    else {
+      geomA = readGeometry(param.fileA, param.geomA);
+      geomB = readGeometry(param.fileB, param.geomB);
+    }
+  }
+
+  private void loadGeometryAB(OpParams param) {
+    Geometry geomAB = readGeometry(param.fileA, param.geomA);
+    if (geomAB.getNumGeometries() < 2) {
+      throw new CommandError(ERR_REQUIRED_B);
+    }
+    geomA = geomAB.getGeometryN(0);
+    geomB = geomAB.getGeometryN(1);
   }
 
   private void executeFunction(OpParams cmdArgs, Geometry geomA, Geometry geomB) {

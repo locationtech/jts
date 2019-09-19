@@ -177,7 +177,14 @@ public class JTSOpCmdTest extends TestCase {
         "POLYGON" );
   }
   
-  public void testStdInBadFormat() {
+  public void testGeomABStdIn() {
+    runCmd( args("-ab", "stdin", "-f", "wkt", "Overlay.intersection"), 
+        stdin("MULTILINESTRING (( 1 1, 3 3), (1 3, 3 1))"),
+        "POINT (2 2)" );
+  }
+  
+
+  public void testErrorStdInBadFormat() {
     runCmdError( args("-a", "stdin", "-f", "wkt", "envelope"), 
         stdin("<gml fdlfld >"),
         JTSOpRunner.ERR_INPUT );
