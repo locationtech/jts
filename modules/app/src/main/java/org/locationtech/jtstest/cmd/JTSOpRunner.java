@@ -70,6 +70,7 @@ public class JTSOpRunner {
   private IndexedGeometry geomIndexB;
   private Geometry geomA;
   private Geometry geomB;
+  private OpParams param;
   
   static class OpParams {
     String operation;
@@ -122,11 +123,12 @@ public class JTSOpRunner {
     return out.getOutput();
   }
   void execute(OpParams param) {
+    this.param = param;
     
     geomA = null;
     geomB = null;
 
-    loadGeometry(param);
+    loadGeometry();
     if (geomA != null) {
       if (isVerbose) geomOut.printGeometrySummary("A", geomA, param.fileA);
     }
@@ -146,7 +148,7 @@ public class JTSOpRunner {
     }
     
     if (param.operation != null) {
-      executeFunction(param, geomA, geomB);
+      executeFunction();
     }
     else {
       // no op specified, so just output A (allows format conversion)
@@ -154,9 +156,9 @@ public class JTSOpRunner {
     }
   }
 
-  private void loadGeometry(OpParams param) {
+  private void loadGeometry() {
     if (param.isGeomAB) {
-      loadGeometryAB(param);
+      loadGeometryAB();
     }
     else {
       geomA = readGeometry(param.fileA, param.geomA);
@@ -164,7 +166,7 @@ public class JTSOpRunner {
     }
   }
 
-  private void loadGeometryAB(OpParams param) {
+  private void loadGeometryAB() {
     Geometry geomAB = readGeometry(param.fileA, param.geomA);
     if (geomAB.getNumGeometries() < 2) {
       throw new CommandError(ERR_REQUIRED_B);
@@ -173,92 +175,94 @@ public class JTSOpRunner {
     geomB = geomAB.getGeometryN(1);
   }
 
-  private void executeFunction(OpParams cmdArgs, Geometry geomA, Geometry geomB) {
-    GeometryFunction func = getFunction(cmdArgs.operation);
+  private void executeFunction() {
+    GeometryFunction func = getFunction(param.operation);
     
     if (func == null) {
-      throw new CommandError(ERR_FUNCTION_NOT_FOUND, cmdArgs.operation);
+      throw new CommandError(ERR_FUNCTION_NOT_FOUND, param.operation);
     }
-    
-    if (cmdArgs.argList != null) {
-      for (String arg : cmdArgs.argList) {
-        executeFunctionWithArg(cmdArgs, func, geomA, geomB, arg);
-      }
-    }
-    else {
-      executeFunctionWithArg(cmdArgs, func, geomA, geomB, null);
-    }
-  }
+    String[] argList = param.argList;
+    checkFunctionArgs(func, geomB, argList);
 
-  private void executeFunctionWithArg(OpParams cmdArgs, GeometryFunction func, Geometry geomA, Geometry geomB, String arg) {
-    checkFunctionArgs(func, geomB, arg);
-    Object funArgs[] = createFunctionArgs(func, geomB, arg);
-    String header = "-- " + opSummary(func.getName(), arg) + "  ------------------------";
-    executeFunctionSpreadA(cmdArgs, geomA, func, funArgs, header);
+    FunctionInvoker fun = new FunctionInvoker(func, argList);
+    executeFunctionSpreadA(fun);
   }
-
-  private void executeFunctionSpreadA(OpParams cmdArgs, Geometry geomA, GeometryFunction func, Object[] funArgs, String header) {
+  
+  private void executeFunctionSpreadA(FunctionInvoker fun) {
     int num = 1;
     if (geomA != null) {
       num = geomA.getNumGeometries(); 
     }
-    boolean isSpread = cmdArgs.eachA && num > 1;
+    String header = "\n";
+    boolean isSpread = param.eachA && num > 1;
     if (! isSpread) {
-      executeFunctionSpreadB(cmdArgs, geomA, func, funArgs, header);
+      executeFunctionSpreadB(geomA, fun, header);
       return;
     }
     
     // spread over A
     for (int i = 0; i < num; i++) {
       Geometry comp = geomA.getGeometryN(i);
-      String hdr = header + "\n" + GeometryOutput.writeGeometrySummary(SYM_A + "[" + i + "]", comp);
-      executeFunctionSpreadB(cmdArgs, comp, func, funArgs, hdr);
+      String hdr =  "\n" + GeometryOutput.writeGeometrySummary(SYM_A + "[" + i + "]", comp);
+      executeFunctionSpreadB(comp, fun, hdr);
     }
   }
   
-  private void executeFunctionSpreadB(OpParams cmdArgs, Geometry geomA, GeometryFunction func, Object[] funArgs, String header) {
-    Geometry geomB = null;
+  private void executeFunctionSpreadB(Geometry geomA, FunctionInvoker fun, String header) {
     int num = 1;
-    if (funArgs.length > 0 && funArgs[0] instanceof Geometry) {
-      geomB = (Geometry) funArgs[0];
+    if (fun.isBinaryGeom()) {
       num = geomB.getNumGeometries();
     }
     boolean isSpread = geomB != null 
-        && (cmdArgs.eachB || cmdArgs.eachAA )
+        && (param.eachB || param.eachAA )
         && num > 1;
         
     if (! isSpread) {
-      executeFunctionRepeat(cmdArgs, geomA, func, funArgs, header);
+      fun.setB(geomB);
+      executeFunctionArgs(geomA, fun, header);
       return;
     }
     
     // spread over B
-    // copy args array since it will be modified to set B components
-    Object[] funArgsB = funArgs.clone();
     List<Integer> targetB = geomIndexB.query(geomA);
     for (int index : targetB) {
       Geometry comp = geomB.getGeometryN(index);
       String hdr = header + "\n" + GeometryOutput.writeGeometrySummary(symGeom2 + "[" + index + "]", comp);
-      funArgsB[0] = comp;
-      executeFunctionRepeat(cmdArgs, geomA, func, funArgsB, hdr);
+      fun.setB(comp);
+      executeFunctionArgs(geomA, fun, hdr);
     }
   }
-
-  private Object executeFunctionRepeat(OpParams cmdArgs, Geometry geomA, GeometryFunction func, Object[] funArgs, String hdr) {
+  
+  private void executeFunctionArgs(Geometry geomA, FunctionInvoker fun, String hdr) {
     if (isVerbose) {
       out.println(hdr);
     }
-    Object result = null;
-    for (int i = 0; i < cmdArgs.repeat; i++) {
-      if (cmdArgs.repeat > 1) {
-        out.print("Run: " + (i+1) + " of " + cmdArgs.repeat + "   ");
+    for (int i = 0; i < fun.getNumInvocations(); i++) {
+      Object funArgs[] = fun.getArgs(i);
+      GeometryFunction func = fun.getFunction();
+      String arg = fun.getValue(i);
+      if (isVerbose) {
+        String opDesc = "-- " + opSummary(func.getName(), arg) + "  ------------------------";
+        out.println(opDesc);
       }
-      result = executeFunctionOnce(cmdArgs, geomA, func, funArgs);
+      executeFunctionRepeat(geomA, func, funArgs);
+    }
+  }
+  
+  private Object executeFunctionRepeat(Geometry geomA, GeometryFunction func, Object[] funArgs) {
+    Object result = null;
+    for (int i = 0; i < param.repeat; i++) {
+      if (param.repeat > 1) {
+        out.print("Run: " + (i+1) + " of " + param.repeat + "   ");
+      }
+      result = executeFunctionOnce(geomA, func, funArgs);
     }
     return result;
   }
 
-  private Object executeFunctionOnce(OpParams cmdArgs, Geometry geomA, GeometryFunction func, Object[] funArgs) {
+
+  
+  private Object executeFunctionOnce(Geometry geomA, GeometryFunction func, Object[] funArgs) {
     Stopwatch timer = new Stopwatch();
     Object result = null;
     try {
@@ -266,7 +270,7 @@ public class JTSOpRunner {
     } 
     catch (NullPointerException ex) {
       if (geomA == null)
-        throw new CommandError(ERR_REQUIRED_A, cmdArgs.operation); 
+        throw new CommandError(ERR_REQUIRED_A, param.operation); 
       // if A is present then must be something else
       throw new CommandError(ERR_FUNCTION_ERR, ex.getMessage());
     }
@@ -279,10 +283,10 @@ public class JTSOpRunner {
         geomOut.printGeometrySummary("Result", (Geometry) result, null);
       }
     }
-    if (cmdArgs.validate) {
+    if (param.validate) {
       validate(result);
     }
-    printResult(result, cmdArgs.format);
+    printResult(result, param.format);
     return result;
   }
 
@@ -370,7 +374,7 @@ public class JTSOpRunner {
     }
   }
   
-  private void checkFunctionArgs(GeometryFunction func, Geometry geomB, String arg1) {
+  private void checkFunctionArgs(GeometryFunction func, Geometry geomB, String[] argList) {
     Class[] paramTypes = func.getParameterTypes();
     int nParam = paramTypes.length;
     
@@ -388,10 +392,62 @@ public class JTSOpRunner {
      */
     int argCount = 0;
     if (func.isBinary() && geomB != null) argCount++;
-    if (arg1 != null) argCount++;
+    if (argList != null) argCount++;
     if (nParam != argCount) {
       throw new CommandError(ERR_WRONG_ARG_COUNT, func.getName());
     }
+  }
+  
+
+  
+  private GeometryFunction getFunction(String operation) {
+    String category = "Geometry";
+    String name = operation;
+    String[] opCatName = operation.split("\\.");
+    if (opCatName.length == 2) {
+      category = opCatName[0];
+      name = opCatName[1];
+    }
+    return funcRegistry.find(category, name);
+  }
+}
+
+class FunctionInvoker {
+  private GeometryFunction func;
+  private Geometry b;
+  private String[] args;
+
+  public FunctionInvoker(GeometryFunction fun, String[] args) {
+    this.func = fun;
+    this.args = args;
+  }
+  
+  public void setB(Geometry geom) {
+    this.b = geom;
+  }
+
+  public boolean isBinaryGeom() {
+    return func.isBinary();
+  }
+
+  public GeometryFunction getFunction() {
+    return func;
+  }
+
+  public int getNumInvocations() {
+    if (args == null) return 1;
+    return args.length;
+  }
+  
+  public String getValue(int i) {
+    if (args == null) {
+      return null;
+    }
+    return args[i];
+  }
+  public Object[] getArgs(int i) {
+    String arg = args == null ? null : args[i];
+    return createFunctionArgs(func, b, arg);
   }
   
   private Object[] createFunctionArgs(GeometryFunction func, Geometry geomB, String arg1) {
@@ -409,19 +465,7 @@ public class JTSOpRunner {
     }
     return paramVal;
   }
-  
-  private GeometryFunction getFunction(String operation) {
-    String category = "Geometry";
-    String name = operation;
-    String[] opCatName = operation.split("\\.");
-    if (opCatName.length == 2) {
-      category = opCatName[0];
-      name = opCatName[1];
-    }
-    return funcRegistry.find(category, name);
-  }
 }
-
 class IndexedGeometry
 {
   private SpatialIndex index = null;
