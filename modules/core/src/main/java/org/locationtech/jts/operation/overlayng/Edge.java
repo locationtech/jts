@@ -253,7 +253,7 @@ public class Edge {
   private boolean mergedRingRole(int geomIndex, Edge edge1, Edge edge2) {
     // TOD: this might be clearer with tri-state logic for isHole
     boolean isShell1 = edge1.isBoundary(geomIndex) && ! edge1.isHole(geomIndex);
-    boolean isShell2 = edge1.isBoundary(geomIndex) && ! edge1.isHole(geomIndex);
+    boolean isShell2 = edge2.isBoundary(geomIndex) && ! edge2.isHole(geomIndex);
     boolean isShellMerged = isShell1 || isShell2;
     return ! isShellMerged;
   }
