@@ -6,6 +6,8 @@
 * Chain together sequences of JTS operations to accomplish a spatial processing task
 * Extract and transform geometry from data files
 * Convert geometry from one format into another
+* Generate geometry for testing or display purposes
+* Summarize the contents of geometry datafiles
 * Test the functionality or performance of JTS operations
 
 It has the following features:
