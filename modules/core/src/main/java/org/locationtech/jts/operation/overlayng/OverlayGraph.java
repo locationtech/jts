@@ -300,20 +300,25 @@ public class OverlayGraph {
   }
 
   /**
-   * Labels an edge which is disconnected from other
-   * edges which could provide location information.
+   * Determines the location of an edge relative to a target input geometry.
+   * The edge has no location information
+   * because it is disconnected from other
+   * edges that would provide that information.
    * The location is determined by checking 
-   * if the edge lies inside the given input area (if any).
+   * if the edge lies inside the target geometry area (if any).
    * 
    * @param edge the edge to label
    * @param geomIndex the input geometry to label against
    */
   private void labelDisconnectedEdge(OverlayEdge edge, int geomIndex) { 
      OverlayLabel label = edge.getLabel();
-   //Assert.isTrue(label.isNotPart(geomIndex));
+     //Assert.isTrue(label.isNotPart(geomIndex));
     
     /**
-     * if input geom is not an area edge must be EXTERIOR
+     * if target geom is not an area then 
+     * edge must be EXTERIOR, since to be 
+     * INTERIOR it would have been labelled
+     * when it was created.
      */
     if (! inputGeometry.isArea(geomIndex)) {
       label.setLocationAll(geomIndex, Location.EXTERIOR);
@@ -329,7 +334,8 @@ public class OverlayGraph {
      * its interior-exterior relationship 
      * can be determined relative to the original input geometry.
      */
-    int edgeLoc = locateEdge(geomIndex, edge);
+    //int edgeLoc = locateEdge(geomIndex, edge);
+    int edgeLoc = locateEdgeBothEnds(geomIndex, edge);
     label.setLocationAll(geomIndex, edgeLoc);
     //Debug.print("AFTER: " + edge.toStringNode());
   }
@@ -338,7 +344,7 @@ public class OverlayGraph {
    * Determines the {@link Location} for an edge within an Area geometry
    * via point-in-polygon location.
    * <p>
-   * This is only safe to use for disconnected edges,
+   * NOTE this is only safe to use for disconnected edges,
    * since the test is carried out against the original input geometry,
    * and precision reduction may cause incorrect results for edges
    * which are close enough to a boundary to become connected. 
@@ -348,16 +354,27 @@ public class OverlayGraph {
    * @return the location of the edge
    */
   private int locateEdge(int geomIndex, OverlayEdge edge) {
-    /*
-     * To improve the robustness of the point location,
-     * check both ends of the edge.
-     * Edge is only labelled INTERIOR if both ends are.
-     */
     int loc = inputGeometry.locatePointInArea(geomIndex, edge.orig());
     int edgeLoc = loc != Location.EXTERIOR ? Location.INTERIOR : Location.EXTERIOR;
     return edgeLoc;
-  }   
-  private int locateEdgeBoth(int geomIndex, OverlayEdge edge) {
+  }  
+  
+  /**
+   * Determines the {@link Location} for an edge within an Area geometry
+   * via point-in-polygon location,
+   * by checking that both endpoints are interior to the target geometry.
+   * Checking both endpoints ensures correct results in the presence of topology collapse.
+   * <p>
+   * NOTE this is only safe to use for disconnected edges,
+   * since the test is carried out against the original input geometry,
+   * and precision reduction may cause incorrect results for edges
+   * which are close enough to a boundary to become connected. 
+   * 
+   * @param geomIndex the parent geometry index
+   * @param edge the edge to locate
+   * @return the location of the edge
+   */
+  private int locateEdgeBothEnds(int geomIndex, OverlayEdge edge) {
     /*
      * To improve the robustness of the point location,
      * check both ends of the edge.
