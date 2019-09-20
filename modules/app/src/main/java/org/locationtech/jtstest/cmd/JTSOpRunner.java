@@ -14,6 +14,8 @@ package org.locationtech.jtstest.cmd;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -71,6 +73,7 @@ public class JTSOpRunner {
   private Geometry geomA;
   private Geometry geomB;
   private OpParams param;
+  private String hdrSave;
   
   static class OpParams {
     String operation;
@@ -189,19 +192,19 @@ public class JTSOpRunner {
   }
   
   private void executeFunctionSpreadA(FunctionInvoker fun) {
-    int num = 1;
+    int numGeom = 1;
     if (geomA != null) {
-      num = geomA.getNumGeometries(); 
+      numGeom = geomA.getNumGeometries(); 
     }
     String header = "\n";
-    boolean isSpread = param.eachA && num > 1;
+    boolean isSpread = param.eachA && numGeom > 1;
     if (! isSpread) {
       executeFunctionSpreadB(geomA, fun, header);
       return;
     }
     
     // spread over A
-    for (int i = 0; i < num; i++) {
+    for (int i = 0; i < numGeom; i++) {
       Geometry comp = geomA.getGeometryN(i);
       String hdr =  "\n" + GeometryOutput.writeGeometrySummary(SYM_A + "[" + i + "]", comp);
       executeFunctionSpreadB(comp, fun, hdr);
@@ -209,13 +212,13 @@ public class JTSOpRunner {
   }
   
   private void executeFunctionSpreadB(Geometry geomA, FunctionInvoker fun, String header) {
-    int num = 1;
+    int numGeom = 1;
     if (fun.isBinaryGeom()) {
-      num = geomB.getNumGeometries();
+      numGeom = geomB.getNumGeometries();
     }
     boolean isSpread = geomB != null 
         && (param.eachB || param.eachAA )
-        && num > 1;
+        && numGeom > 1;
         
     if (! isSpread) {
       fun.setB(geomB);
@@ -234,6 +237,8 @@ public class JTSOpRunner {
   }
   
   private void executeFunctionArgs(Geometry geomA, FunctionInvoker fun, String hdr) {
+    // Set saved hdr to blank in case verbose is on
+    hdrSave = "";
     if (isVerbose) {
       out.println(hdr);
     }
@@ -241,9 +246,13 @@ public class JTSOpRunner {
       Object funArgs[] = fun.getArgs(i);
       GeometryFunction func = fun.getFunction();
       String arg = fun.getValue(i);
+      
+      String opDesc = "-- " + opSummary(func.getName(), arg) + "  ------------------------";
       if (isVerbose) {
-        String opDesc = "-- " + opSummary(func.getName(), arg) + "  ------------------------";
         out.println(opDesc);
+      }
+      else {
+        hdrSave = hdr + "\n" + opDesc;
       }
       executeFunctionRepeat(geomA, func, funArgs);
     }
@@ -259,8 +268,6 @@ public class JTSOpRunner {
     }
     return result;
   }
-
-
   
   private Object executeFunctionOnce(Geometry geomA, GeometryFunction func, Object[] funArgs) {
     Stopwatch timer = new Stopwatch();
@@ -272,7 +279,10 @@ public class JTSOpRunner {
       if (geomA == null)
         throw new CommandError(ERR_REQUIRED_A, param.operation); 
       // if A is present then must be something else
-      throw new CommandError(ERR_FUNCTION_ERR, ex.getMessage());
+      logError( errorMsg(ex) );
+    }
+    catch (Exception ex) {
+      logError( errorMsg(ex) );
     }
     finally {
       timer.stop();
@@ -290,13 +300,33 @@ public class JTSOpRunner {
     return result;
   }
 
+  private String errorMsg(Throwable ex) {
+    String msg = "ERROR excuting function: " + ex.getMessage() + "\n";
+    msg += toStrackString(ex);
+    return msg;
+  }
+
+  private String toStrackString(Throwable ex) {
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter(sw);
+    ex.printStackTrace(pw);
+    String stack = sw.toString();
+    return stack;
+  }
+  
+  private void logError(String msg) {
+    // this will be blank if already printed in verbose mode
+    out.println(hdrSave);
+    out.println(msg);
+  }
+
   private void validate(Object result) {
     if (! ( result instanceof Geometry)) return;
     Geometry resGeom = (Geometry) result;
     
     // TODO: print invalidity reason
     if (! resGeom.isValid()) {
-      throw new CommandError(ERR_INVALID_RESULT);
+      logError("Result is invalid");
     }
   }
 
