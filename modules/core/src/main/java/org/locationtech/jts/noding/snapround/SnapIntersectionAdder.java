@@ -46,7 +46,7 @@ public class SnapIntersectionAdder
    * The division factor used to determine
    * nearness distance tolerance for interior intersection detection.
    */
-  private static final int NEARNESS_FACTOR = 10;
+  private static final int NEARNESS_FACTOR = 100;
   
   private LineIntersector li;
   private final List<Coordinate> intersections;

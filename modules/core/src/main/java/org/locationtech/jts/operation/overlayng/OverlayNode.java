@@ -87,7 +87,7 @@ public class OverlayNode {
         + Location.toLocationSymbol(locRight) + " <>  curr loc " + Location.toLocationSymbol(currLoc) 
         + " for " + e);
         //*/
-          throw new TopologyException("side location conflict", e.getCoordinate());
+          throw new TopologyException("side location conflict: arg " + geomIndex, e.getCoordinate());
         }
         int locLeft = e.getLocation(geomIndex, Position.LEFT);
         if (locLeft == Location.NONE) {

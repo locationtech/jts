@@ -272,7 +272,8 @@ public class OverlayNGTest extends GeometryTestCase {
   /**
    * Probably due to B collapsing completely and disconnected edges being located incorrectly in B interior.
    * Have seen other cases of this as well.
-   * Also - a B edge is marked as a Hole, which is incorrect
+   * Also - a B edge is marked as a Hole, which is incorrect.
+   * 
    * FIXED - copy-paste error in Edge.mergedRingRole
    */
   public void testBcollapseLocateIssue() {
@@ -294,11 +295,28 @@ public class OverlayNGTest extends GeometryTestCase {
    * 
    * FIXED by computing location of both edge endpoints.
    */
-  public void testBcollapseLocateIssue2() {
+  public void testBcollapseEdgeLabeledInterior() {
     Geometry a = read("POLYGON ((2.384376506250038 48.91765596875102, 2.3840332 48.916626, 2.3840332 48.9138794, 2.3833466 48.9118195, 2.3812866 48.9111328, 2.37854 48.9111328, 2.3764801 48.9118195, 2.3723602 48.9159393, 2.3703003 48.916626, 2.3723602 48.9173126, 2.3737335 48.9186859, 2.3757935 48.9193726, 2.3812866 48.9193726, 2.3833466 48.9186859, 2.384376506250038 48.91765596875102))");
     Geometry b = read("MULTIPOLYGON (((2.3751067666731345 48.919143677778855, 2.3757935 48.9193726, 2.3812866 48.9193726, 2.3812866 48.9179993, 2.3809433 48.9169693, 2.3799133 48.916626, 2.3771667 48.916626, 2.3761368 48.9169693, 2.3754501 48.9190292, 2.3751067666731345 48.919143677778855)), ((2.3826108673454116 48.91893115612326, 2.3833466 48.9186859, 2.3840331750033394 48.91799930833141, 2.3830032 48.9183426, 2.3826108673454116 48.91893115612326)))");
     Geometry expected = read("POLYGON ((2.375 48.91833333333334, 2.375 48.92, 2.381666666666667 48.92, 2.381666666666667 48.91833333333334, 2.381666666666667 48.916666666666664, 2.38 48.916666666666664, 2.3766666666666665 48.916666666666664, 2.375 48.91833333333334))");
     Geometry actual = intersection(a, b, 600);
+    checkEqual(expected, actual);
+  }
+  
+  /**
+   * This failure is due to B inverting due to an snapped intersection being added 
+   * to a segment by a nearby vertex, and the snap vertex "jumped" across another segment.
+   * This is because the nearby snap intersection tolerance in SnapIntersectionAdder was too large (FACTOR = 10).
+   * FIXED by reducing the tolerance factor to 100 solved the issue.
+   * 
+   * However, it may be that there is no safe tolerance level?  
+   * Perhaps there can always be situations where a snap intersection will jump across a segment?
+   */
+  public void testBNearVertexSnappingCausesInversion() {
+    Geometry a = read("POLYGON ((2.2494507 48.8864136, 2.2484207 48.8867569, 2.2477341 48.8874435, 2.2470474 48.8874435, 2.2463608 48.8853836, 2.2453308 48.8850403, 2.2439575 48.8850403, 2.2429276 48.8853836, 2.2422409 48.8860703, 2.2360611 48.8970566, 2.2504807 48.8956833, 2.2494507 48.8864136))");
+    Geometry b = read("POLYGON ((2.247734099999997 48.8874435, 2.2467041 48.8877869, 2.2453308 48.8877869, 2.2443008 48.8881302, 2.243957512499544 48.888473487500455, 2.2443008 48.8888168, 2.2453308 48.8891602, 2.2463608 48.8888168, 2.247734099999997 48.8874435))");
+    Geometry expected = read("POLYGON EMPTY");
+    Geometry actual = intersection(a, b, 200);
     checkEqual(expected, actual);
   }
   
