@@ -147,10 +147,6 @@ public class SimpleSnapRounder
     }
   }
 
-  private boolean hasHotPixel(Coordinate pt) {
-    return hotPixelMap.containsKey(pt);
-  }
-
   private void addHotPixels(Coordinate[] pts) {
     for (Coordinate pt : pts) {
       createHotPixel( round(pt) );
@@ -204,7 +200,7 @@ public class SimpleSnapRounder
   private List<Coordinate> findInteriorIntersections(List<NodedSegmentString> inputSS)
   {
     SnapIntersectionAdder intAdder = new SnapIntersectionAdder(pm);
-    SinglePassNoder noder = new MCIndexNoder();
+    MCIndexNoder noder = new MCIndexNoder();
     noder.setSegmentIntersector(intAdder);
     noder.computeNodes(inputSS);
     return intAdder.getIntersections();
@@ -220,7 +216,8 @@ public class SimpleSnapRounder
     List<NodedSegmentString> snapped = new ArrayList<NodedSegmentString>();
     for (NodedSegmentString ss : segStrings ) {
       NodedSegmentString snappedSS = computeSnaps(ss);
-      snapped.add(snappedSS);
+      if (snappedSS != null)
+        snapped.add(snappedSS);
     }
     return snapped;
   }
@@ -229,32 +226,41 @@ public class SimpleSnapRounder
   {
     //Coordinate[] pts = ss.getCoordinates();
     /**
-     * Get edge coordinates, including previously detected interior intersection nodes.
-     * At this point these are rounded to the grid.
+     * Get edge coordinates, including added intersection nodes.
+     * The coordinates are now rounded to the grid,
+     * in preparation for snapping to the Hot Pixels
      */
     Coordinate[] pts = ss.getNodedCoordinates();
-    // round all the points at last
     Coordinate[] ptsRound = round(pts);
+    
+    // if complete collapse this edge can be eliminated
+    if (ptsRound.length <= 1) 
+      return null;
+    
+    // Create new nodedSS to allow adding any hot pixel nodes
     NodedSegmentString snapSS = new NodedSegmentString(ptsRound, ss.getData());
     
-    int snapSSsegIndex = 0;
+    int snapSSindex = 0;
     for (int i = 0; i < pts.length - 1; i++ ) {
-      Coordinate currSnap = snapSS.getCoordinate(snapSSsegIndex);
+      Coordinate currSnap = snapSS.getCoordinate(snapSSindex);
 
       /**
-       * If this segment has collapsed completely, skip it
+       * If the segment has collapsed completely, skip it
        */
-      Coordinate p0 = pts[i];
       Coordinate p1 = pts[i+1];
       Coordinate p1Round = round(p1);
       if (p1Round.equals2D(currSnap))
         continue;
       
+      Coordinate p0 = pts[i];
+      
       /**
-       * Add any Hot Pixel intersections with original segment to rounded segment
+       * Add any Hot Pixel intersections with *original* segment to rounded segment.
+       * (It is important to check original segment because rounding can
+       * move it enough to intersect other hot pixels not intersecting original segment)
        */
-      snapSegment( p0, p1, snapSS, snapSSsegIndex);      
-      snapSSsegIndex++;
+      snapSegment( p0, p1, snapSS, snapSSindex);      
+      snapSSindex++;
     }
     return snapSS;
   }
@@ -270,16 +276,10 @@ public class SimpleSnapRounder
    */
   private void snapSegment(Coordinate p0, Coordinate p1, NodedSegmentString ss, int segIndex) {
     for (HotPixel hp : hotPixels) {
-      snapSegment(p0, p1, hp, ss, segIndex);
+      if (hp.intersects(p0, p1)) {
+        ss.addIntersection( hp.getCoordinate(), segIndex );
+      }
     }
   }
-
-  private void snapSegment(Coordinate p0, Coordinate p1, HotPixel hp, NodedSegmentString ss, int segIndex) {
-    if (hp.intersects(p0, p1)) {
-      ss.addIntersection( hp.getCoordinate(), segIndex );
-    }
-  }
-
-
 
 }

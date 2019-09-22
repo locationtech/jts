@@ -307,7 +307,8 @@ public class OverlayNGTest extends GeometryTestCase {
    * This failure is due to B inverting due to an snapped intersection being added 
    * to a segment by a nearby vertex, and the snap vertex "jumped" across another segment.
    * This is because the nearby snap intersection tolerance in SnapIntersectionAdder was too large (FACTOR = 10).
-   * FIXED by reducing the tolerance factor to 100 solved the issue.
+   * 
+   * FIXED by reducing the tolerance factor to 100.
    * 
    * However, it may be that there is no safe tolerance level?  
    * Perhaps there can always be situations where a snap intersection will jump across a segment?
