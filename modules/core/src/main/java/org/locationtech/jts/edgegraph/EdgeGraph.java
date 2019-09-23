@@ -58,7 +58,7 @@ public class EdgeGraph
   {
     HalfEdge e0 = createEdge(p0);
     HalfEdge e1 = createEdge(p1);
-    HalfEdge.init(e0, e1);
+    e0.link(e1);
     return e0;
   }
   
