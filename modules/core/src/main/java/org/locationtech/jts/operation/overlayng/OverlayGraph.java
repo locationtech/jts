@@ -95,7 +95,7 @@ public class OverlayGraph {
   {
     OverlayEdge e0 = OverlayEdge.createEdge(pts, lbl, true);
     OverlayEdge e1 = OverlayEdge.createEdge(pts, lbl, false);
-    e0.init(e1);
+    e0.link(e1);
     return e0;
   }
 

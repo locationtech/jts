@@ -13,6 +13,7 @@ package org.locationtech.jts.operation.overlayng;
 
 import java.util.Comparator;
 
+import org.locationtech.jts.edgegraph.HalfEdge;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.io.WKTWriter;
