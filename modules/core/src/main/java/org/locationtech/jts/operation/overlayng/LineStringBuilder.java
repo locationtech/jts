@@ -15,15 +15,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
-import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 
-public class LineBuilder {
+public class LineStringBuilder {
   
   private GeometryFactory geometryFactory;
   private OverlayGraph graph;
@@ -33,7 +31,7 @@ public class LineBuilder {
   private int resultDimension;
   private boolean hasResultArea;
 
-  public LineBuilder(InputGeometry inputGeom, OverlayGraph graph, boolean hasResultArea, int opCode, GeometryFactory geomFact) {
+  public LineStringBuilder(InputGeometry inputGeom, OverlayGraph graph, boolean hasResultArea, int opCode, GeometryFactory geomFact) {
     this.inputGeom = inputGeom;
     this.graph = graph;
     this.opCode = opCode;

@@ -279,7 +279,7 @@ public class OverlayNG
     boolean hasResultArea = resultPolyList.size() > 0;
     
     //--- Build lines
-    LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
+    LineStringBuilder lineBuilder = new LineStringBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
     List<LineString> resultLineList = lineBuilder.getLines();
 
     //--- Build points
