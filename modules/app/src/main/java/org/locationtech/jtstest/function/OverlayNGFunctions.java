@@ -45,6 +45,17 @@ public class OverlayNGFunctions {
     return ovr.getResultGeometry();
   }
 
+  public static Geometry debugEdgesNodedInt(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    // force non-null inputs
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
+    // op should not matter, since edges are captured pre-result
+    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
+    ovr.setOutputNodedEdges(true);
+    return ovr.getResultGeometry();
+  }
+
   public static Geometry debugUnionIntSymDiff(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs

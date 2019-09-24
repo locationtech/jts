@@ -44,17 +44,20 @@ public class OverlayNoder {
   private Noder customNoder;
   private boolean hasEdgesA;
   private boolean hasEdgesB;
+  private SegmentLimiter limiter;
 
-  public OverlayNoder(Geometry a, Geometry b, PrecisionModel pm) {
+  public OverlayNoder(PrecisionModel pm) {
     this.pm = pm;
-    add(a, 0);
-    add(b, 1);
   }
   
   public void setNoder(Noder noder) {
     this.customNoder = noder;
   }
 
+  public void setLimiter(SegmentLimiter limiter) {
+    this.limiter = limiter;
+  }
+  
   public Collection<SegmentString> node() {
     Noder noder = getNoder();
     //Noder noder = getSRNoder();
@@ -123,7 +126,7 @@ public class OverlayNoder {
     return noder;
   }
   
-  private void add(Geometry g, int geomIndex)
+  public void add(Geometry g, int geomIndex)
   {
     if (g.isEmpty()) return;
 
@@ -240,6 +243,22 @@ public class OverlayNoder {
   }
   
   private void add(Coordinate[] pts, EdgeInfo info) {
+    if (limiter != null) {
+      addPointsLimited(pts, info);
+    }
+    else {
+      adddPoints(pts, info);
+    }
+  }
+
+  private void addPointsLimited(Coordinate[] pts, EdgeInfo info) {
+    List<Coordinate[]> limited = limiter.limit(pts);
+    for (Coordinate[] ptsSection : limited) {
+      adddPoints(ptsSection, info);
+    }
+  }
+
+  private void adddPoints(Coordinate[] pts, EdgeInfo info) {
     NodedSegmentString ss = new NodedSegmentString(pts, info);
     segStrings.add(ss);
   }

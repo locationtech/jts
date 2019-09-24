@@ -19,13 +19,13 @@ import org.locationtech.jts.operation.overlayng.OverlayNG;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class OverlayNGSingleTest extends GeometryTestCase {
+public class OverlayNGOneTest extends GeometryTestCase {
 
   public static void main(String args[]) {
-    TestRunner.run(OverlayNGSingleTest.class);
+    TestRunner.run(OverlayNGOneTest.class);
   }
 
-  public OverlayNGSingleTest(String name) { super(name); }
+  public OverlayNGOneTest(String name) { super(name); }
   
   public void xtestBoxGoreIntersection() {
     Geometry a = read("MULTIPOLYGON (((1 1, 5 1, 5 0, 1 0, 1 1)), ((1 1, 5 2, 5 4, 1 4, 1 1)))");
@@ -117,7 +117,7 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void xtestNestedShellsIntersection() {
+  public void testNestedShellsIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
     Geometry expected = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
@@ -264,7 +264,7 @@ public class OverlayNGSingleTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
 
-  public void testBcollapseNullEdgeInRingIssue() {
+  public void xtestBcollapseNullEdgeInRingIssue() {
     Geometry a = read("POLYGON ((2.2494507 48.8864136, 2.2484207 48.8867569, 2.2477341 48.8874435, 2.2470474 48.8874435, 2.2463608 48.8853836, 2.2453308 48.8850403, 2.2439575 48.8850403, 2.2429276 48.8853836, 2.2422409 48.8860703, 2.2360611 48.8970566, 2.2504807 48.8956833, 2.2494507 48.8864136))");
     Geometry b = read("POLYGON ((2.247734099999997 48.8874435, 2.2467041 48.8877869, 2.2453308 48.8877869, 2.2443008 48.8881302, 2.243957512499544 48.888473487500455, 2.2443008 48.8888168, 2.2453308 48.8891602, 2.2463608 48.8888168, 2.247734099999997 48.8874435))");
     Geometry expected = read("POLYGON EMPTY");

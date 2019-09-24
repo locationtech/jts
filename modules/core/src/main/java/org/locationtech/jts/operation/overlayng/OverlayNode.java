@@ -52,6 +52,11 @@ public class OverlayNode {
    * @param geomIndex the geometry to propagate locations for
    */
   private static void propagateAreaLabels(OverlayEdge nodeEdge, int geomIndex) {
+    /**
+     * This handles dangling edges created by overlap limiting
+     */
+    if (nodeEdge.degree() == 1) return;
+    
     OverlayEdge eStart = findPropagationStartEdge(nodeEdge, geomIndex);
     // no labelled edge found, so nothing to propagate
     if ( eStart == null )

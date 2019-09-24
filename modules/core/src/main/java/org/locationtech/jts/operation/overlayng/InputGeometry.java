@@ -15,6 +15,7 @@ import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Location;
 
@@ -25,7 +26,7 @@ public class InputGeometry {
   private Geometry[] geom = new Geometry[2];
   private PointOnGeometryLocator ptLocatorA;
   private PointOnGeometryLocator ptLocatorB;
-  private boolean[] hasEdges = new boolean[2];
+  private boolean[] isCollapsed = new boolean[2];
   
   public InputGeometry(Geometry geomA, Geometry geomB) {
     geom = new Geometry[] { geomA, geomB };
@@ -39,6 +40,14 @@ public class InputGeometry {
     return geom[geomIndex];
   }
 
+  public Envelope getEnvelope(int geomIndex) {
+    return geom[geomIndex].getEnvelopeInternal();
+  }
+
+  public boolean isEmpty(int geomIndex) {
+    return geom[geomIndex].isEmpty();
+  }
+  
   public boolean isArea(int geomIndex) {
     return geom[geomIndex].getDimension() == 2;
   }
@@ -48,17 +57,18 @@ public class InputGeometry {
   }
   
   public int locatePointInArea(int geomIndex, Coordinate pt) {
-    if ( ! hasEdges[geomIndex]) 
+    // Assert: only called if dimension(geomIndex) = 2
+    
+    if ( isCollapsed[geomIndex]) 
       return Location.EXTERIOR;
 
-    // Assert: only called if dimension(geomIndex) = 2
     
     //return ptLocator.locate(pt, geom[geomIndex]);
     
     //*
-    // this check is important, because IndexedPointInAreaLocator can't handle empty polygons
+    // this check is required because IndexedPointInAreaLocator can't handle empty polygons
     if (getGeometry(geomIndex).isEmpty()  
-        || ! hasEdges[geomIndex]) 
+        || isCollapsed[geomIndex]) 
       return Location.EXTERIOR;
     
     PointOnGeometryLocator ptLocator = getLocator(geomIndex);
@@ -79,8 +89,8 @@ public class InputGeometry {
     } 
   }
 
-  public void setEdgesExist(int geomIndex, boolean hasEdgesFor) {
-    hasEdges[geomIndex] = hasEdgesFor;
+  public void setCollapsed(int geomIndex, boolean isGeomCollapsed) {
+    isCollapsed[geomIndex] = isGeomCollapsed;
   }
   
 

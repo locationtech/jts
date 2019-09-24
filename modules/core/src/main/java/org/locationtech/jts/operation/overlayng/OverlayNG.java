@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -28,6 +29,7 @@ import org.locationtech.jts.geomgraph.Label;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.overlay.OverlayOp;
+import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.Debug;
 
 public class OverlayNG 
@@ -109,15 +111,19 @@ public class OverlayNG
     return geomOv;
   }
 
+  private int opCode;
   private InputGeometry inputGeom;
   private GeometryFactory geomFact;
   private PrecisionModel pm;
   private boolean isOutputEdges;
   private boolean isOutputResultEdges;
-  private OverlayGraph graph;
-  private int opCode;
   private boolean isOutputNodedEdges;
+  private boolean isOptimized = true;
+  
+  // internal state
+  private OverlayGraph graph;
   private Noder noder;
+  private Geometry resultGeom;
 
   public OverlayNG(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode) {
     this.pm = pm;
@@ -125,6 +131,18 @@ public class OverlayNG
     geomFact = geom0.getFactory();
     inputGeom = new InputGeometry( geom0, geom1 );
   }  
+  
+  /**
+   * Sets whether overlay processing optimizations are enabled.
+   * It may be useful to disable optimizations
+   * for testing purposes.
+   * Default is TRUE (optimization enabled).
+   * 
+   * @param isOptimized whether to optimize processing
+   */
+  public void setOptimized(boolean isOptimized) {
+    this.isOptimized = isOptimized;
+  }
   
   public void setOutputEdges(boolean isOutputEdges ) {
     this.isOutputEdges = isOutputEdges;
@@ -144,7 +162,8 @@ public class OverlayNG
   }
   
   public Geometry getResultGeometry() {
-    Geometry resultGeom = computeOverlay();
+    computeOverlay();
+    
     return resultGeom;
   }
 
@@ -155,16 +174,23 @@ public class OverlayNG
   }
 */
   
-  private Geometry computeOverlay() {
+  private void computeOverlay() {
+    if (isEmptyResult()) {
+      resultGeom = createEmptyResult();
+      return;
+    }
     
+    SegmentLimiter limiter = optimizeByLimiter();
+
     //--- Noding phase
-    List<Edge> edges = nodeAndMerge();
+    List<Edge> edges = nodeAndMerge(limiter);
     
     //--- Topology building phase
     graph = new OverlayGraph( edges );
     
     if (isOutputNodedEdges) {
-      return toLines(graph, geomFact);
+      resultGeom = toLines(graph, geomFact);
+      return;
     }
 
     graph.computeLabelling(inputGeom);
@@ -173,13 +199,51 @@ public class OverlayNG
     graph.removeDuplicateResultAreaEdges();
     
     if (isOutputEdges || isOutputResultEdges) {
-      return toLines(graph, geomFact);
+      resultGeom = toLines(graph, geomFact);
+      return;
     }
     
-    Geometry result = createResult(opCode);
-    // only enable for debugging
-    //checkSanity(result);
-    return result;
+    resultGeom = createResult(opCode);
+    // only used for debugging
+    //checkSanity(resultGeom);
+  }
+
+  private boolean isEmptyResult() {
+    switch (opCode) {
+    case OverlayOp.INTERSECTION:
+      if ( inputGeom.isEmpty(0) || inputGeom.isEmpty(1) )
+        return true;
+    case OverlayOp.DIFFERENCE:
+      if ( inputGeom.isEmpty(0) )     
+        return true;
+    }
+    return false;
+  }
+
+  private Geometry createEmptyResult() {
+    return createEmptyResult(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), geomFact);
+  }
+
+  private SegmentLimiter optimizeByLimiter() {
+    if (! isOptimized) 
+      return null;
+    
+    SegmentLimiter limiter = null;
+    
+    /** 
+     * This optimization is conservative.
+     * It could be extended to compute the overlap envelope 
+     * for both geometries, for any shape.
+     * Perhaps could also be used for difference.
+     */
+    if (opCode == OverlayOp.INTERSECTION 
+        && inputGeom.getGeometry(1).isRectangle()) {
+      Envelope limitEnv = new Envelope( inputGeom.getGeometry(1).getEnvelopeInternal() );
+      double envBufDist = 2 * 1.0 / pm.getScale();
+      limitEnv.expandBy(envBufDist);
+      limiter = new SegmentLimiter(limitEnv);
+    }
+    return limiter;
   }
 
   private void checkSanity(Geometry result) {
@@ -200,24 +264,29 @@ public class OverlayNG
     
   }
 
-  private List<Edge> nodeAndMerge() {
+  private List<Edge> nodeAndMerge(SegmentLimiter limiter) {
     /**
      * Node the edges, using whatever noder is being used
      */
-    OverlayNoder ovNoder = new OverlayNoder(
-        inputGeom.getGeometry(0),
-        inputGeom.getGeometry(1),
-        pm);
+    OverlayNoder ovNoder = new OverlayNoder(pm);
+    
     if (noder != null) ovNoder.setNoder(noder);
+    
+    if (limiter != null) {
+      ovNoder.setLimiter( limiter );
+    }
+    
+    ovNoder.add(inputGeom.getGeometry(0), 0);
+    ovNoder.add(inputGeom.getGeometry(1), 1);
     Collection<SegmentString> nodedSegStrings = ovNoder.node();
     
     /**
-     * Record if there are no edges for either input geometry.
-     * This is used to avoid checking disconnected edges
-     * against geometry which has collapsed completely.
+     * Record if an input geometry has collapsed.
+     * This is used to avoid trying to locate disconnected edges
+     * against a geometry which has collapsed completely.
      */
-    inputGeom.setEdgesExist(0, ovNoder.hasEdgesFor(0));
-    inputGeom.setEdgesExist(1, ovNoder.hasEdgesFor(1));
+    inputGeom.setCollapsed(0, isCollapsed(0, ovNoder, limiter));
+    inputGeom.setCollapsed(1, isCollapsed(1, ovNoder, limiter));
     
     /**
      * Merge the noded edges to eliminate duplicates.
@@ -229,13 +298,24 @@ public class OverlayNG
     return mergedEdges;
   }
 
-  /*
-  private List<Edge> mergeEdges(Collection<SegmentString> nodedSegStrings) {
-    List<Edge> edges = createEdges(nodedSegStrings);
-    List<Edge> mergedEdges = EdgeMerger.merge(edges);
-    return mergedEdges;
+  private boolean isCollapsed(int geomIndex, OverlayNoder ovNoder, SegmentLimiter limiter) {
+    if (limiter != null) {
+      /**
+       * If the geometry is bigger than the limit env, it can't have collapsed.
+       * Need this check because if geometry linework is wholly outside
+       * limiter env, there will be no edges present for it.
+       */
+      Envelope geomEnv = inputGeom.getEnvelope( geomIndex );
+      if (! limiter.isWithinLimit( geomEnv ))
+        return false;
+    }
+    /**
+     * Otherwise, if no edges remain after noding, 
+     * this geom must have collapsed.
+     */
+    return ! ovNoder.hasEdgesFor(geomIndex);
   }
-*/
+
   private static List<Edge> createEdges(Collection<SegmentString> segStrings) {
     List<Edge> edges = new ArrayList<Edge>();
     for (SegmentString ss : segStrings) {
@@ -265,7 +345,7 @@ public class OverlayNG
     return geomFact.buildGeometry(lines);
   }
 
-  private String labelForResult(OverlayEdge edge) {
+  private static String labelForResult(OverlayEdge edge) {
     return edge.getLabel().toString(edge.isForward())
         + (edge.isInResult() ? " Res" : "");
   }
@@ -291,13 +371,16 @@ public class OverlayNG
 
   private Geometry buildResultGeometry(int opcode, List<Polygon> resultPolyList, List<LineString> resultLineList, List<Point> resultPointList) {
     List<Geometry> geomList = new ArrayList<Geometry>();
+    
+    // TODO: return Multi geoms for all output dimensions
+    
     // element geometries of the result are always in the order P,L,A
     geomList.addAll(resultPolyList);
     geomList.addAll(resultLineList);
     geomList.addAll(resultPointList);
 
     if ( geomList.isEmpty() )
-      return createEmptyResult(opcode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), geomFact);
+      return createEmptyResult();
 
     // build the most specific geometry possible
     return geomFact.buildGeometry(geomList);
@@ -315,7 +398,7 @@ public class OverlayNG
    * <li>{@link #UNION} - result has the dimension of the highest input dimension
    * <li>{@link #DIFFERENCE} - result has the dimension of the left-hand input
    * <li>{@link #SYMDIFFERENCE} - result has the dimension of the highest input dimension
-   * (since the symmetric Difference is the union of the differences).
+   * (since the Symmetric Difference is the Union of the Differences).
    * </ul>
    * 
    * @param overlayOpCode the code for the overlay operation being performed
@@ -324,13 +407,10 @@ public class OverlayNG
    * @param geomFact the geometry factory being used for the operation
    * @return an empty atomic geometry of the appropriate dimension
    */
-  public static Geometry createEmptyResult(int overlayOpCode, Geometry a, Geometry b, GeometryFactory geomFact)
+  private static Geometry createEmptyResult(int overlayOpCode, Geometry a, Geometry b, GeometryFactory geomFact)
   {
     Geometry result = null;
     switch (resultDimension(overlayOpCode, a, b)) {
-    case -1:
-      result = geomFact.createGeometryCollection();
-      break;
     case 0:
       result =  geomFact.createPoint();
       break;
@@ -340,6 +420,8 @@ public class OverlayNG
     case 2:
       result =  geomFact.createPolygon();
       break;
+    default:
+      Assert.shouldNeverReachHere("Unable to determine overlay result geometry dimension");
     }
     return result;
   }
