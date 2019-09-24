@@ -98,6 +98,13 @@ public class OverlayNGTestFunctions {
     return union;
   }
 
+  public static Geometry intersectionNoOpt(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
+    ovr.setOptimized(false);
+    return ovr.getResultGeometry();
+  }
+
   public static Geometry unionIntSymDiffOriginal(Geometry a, Geometry b) {
     // force non-null inputs
     a = OverlayNGFunctions.sameOrEmpty(a, b);

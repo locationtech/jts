@@ -227,23 +227,54 @@ public class OverlayNG
   private SegmentLimiter optimizeByLimiter() {
     if (! isOptimized) 
       return null;
+    if (opCode != OverlayOp.INTERSECTION)
+      return null;
     
-    SegmentLimiter limiter = null;
+    //Envelope limitEnv = limitRectangle();
+    Envelope limitEnv = limitOverlap();
     
-    /** 
-     * This optimization is conservative.
-     * It could be extended to compute the overlap envelope 
-     * for both geometries, for any shape.
-     * Perhaps could also be used for difference.
-     */
-    if (opCode == OverlayOp.INTERSECTION 
-        && inputGeom.getGeometry(1).isRectangle()) {
-      Envelope limitEnv = new Envelope( inputGeom.getGeometry(1).getEnvelopeInternal() );
-      double envBufDist = 2 * 1.0 / pm.getScale();
-      limitEnv.expandBy(envBufDist);
-      limiter = new SegmentLimiter(limitEnv);
-    }
+    if (limitEnv == null) return null;
+    SegmentLimiter limiter = new SegmentLimiter(limitEnv);
     return limiter;
+  }
+
+  /**
+   * Computes a limiter envelope based 
+   * on the envelope of overlap of the two inputs.
+   * This is the most aggressive limiter optimization strategy.
+   * 
+   * @return a limiter envelope of the input overlap envelope
+   */
+  private Envelope limitOverlap() {
+    Envelope envA = safeOverlapEnv( inputGeom.getGeometry(0).getEnvelopeInternal() );
+    Envelope envB = safeOverlapEnv( inputGeom.getGeometry(1).getEnvelopeInternal() );
+    Envelope limitEnv = envA.intersection(envB);
+    return limitEnv;
+  }
+  
+  /**
+   * Computes a limiter envelope for one of the inputs 
+   * which is a rectangle.
+   * This is a conservative limiter optimization strategy.
+   * 
+   * @return the limit envelope for a rectangle input
+   */
+  private Envelope limitRectangle() {
+    int rectGeomIndex = -1;
+    if (inputGeom.getGeometry(0).isRectangle()) rectGeomIndex = 0;
+    if (inputGeom.getGeometry(1).isRectangle()) rectGeomIndex = 1;
+    
+    if (rectGeomIndex < 0) return null;
+
+    Envelope limitEnv = safeOverlapEnv( inputGeom.getGeometry(rectGeomIndex).getEnvelopeInternal() );
+    return limitEnv;
+  }
+
+  private Envelope safeOverlapEnv(Envelope originalEnv) {
+    double envBufDist = 2 * 1.0 / pm.getScale();
+    Envelope safeEnv = new Envelope(originalEnv);
+    safeEnv.expandBy(envBufDist);
+    return safeEnv;
   }
 
   private void checkSanity(Geometry result) {
@@ -457,4 +488,5 @@ public class OverlayNG
   }
  
 }
+
 
