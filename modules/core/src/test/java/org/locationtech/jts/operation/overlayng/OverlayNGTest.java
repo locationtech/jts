@@ -51,14 +51,6 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testEmptyResultIntersection() {
-    Geometry a = read("POLYGON ((60 90, 90 90, 90 60, 60 60, 60 90))");
-    Geometry b = read("POLYGON ((200 300, 300 300, 300 200, 200 200, 200 300))");
-    Geometry expected = read("POLYGON EMPTY");
-    Geometry actual = intersection(a, b, 1);
-    checkEqual(expected, actual);
-  }
-  
   public void testEmptyADifference() {
     Geometry a = read("POLYGON EMPTY");
     Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
@@ -72,6 +64,14 @@ public class OverlayNGTest extends GeometryTestCase {
     Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
     Geometry expected = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
     Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testEmptyASymDifference() {
+    Geometry a = read("POLYGON EMPTY");
+    Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
+    Geometry expected = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
+    Geometry actual = symDifference(a, b, 1);
     checkEqual(expected, actual);
   }
   
@@ -96,6 +96,22 @@ public class OverlayNGTest extends GeometryTestCase {
     Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
     Geometry expected = read("POINT EMPTY");
     Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testDisjointIntersection() {
+    Geometry a = read("POLYGON ((60 90, 90 90, 90 60, 60 60, 60 90))");
+    Geometry b = read("POLYGON ((200 300, 300 300, 300 200, 200 200, 200 300))");
+    Geometry expected = read("POLYGON EMPTY");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testDisjointIntersectionNoOpt() {
+    Geometry a = read("POLYGON ((60 90, 90 90, 90 60, 60 60, 60 90))");
+    Geometry b = read("POLYGON ((200 300, 300 300, 300 200, 200 200, 200 300))");
+    Geometry expected = read("POLYGON EMPTY");
+    Geometry actual = intersectionNoOpt(a, b, 1);
     checkEqual(expected, actual);
   }
   
@@ -398,9 +414,21 @@ public class OverlayNGTest extends GeometryTestCase {
     return OverlayNG.overlay(a, b, pm, OverlayOp.DIFFERENCE);
   }
   
+  public static Geometry symDifference(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    return OverlayNG.overlay(a, b, pm, OverlayOp.SYMDIFFERENCE);
+  }
+  
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlayNG.overlay(a, b, pm, OverlayOp.INTERSECTION);
+  }
+  
+  public static Geometry intersectionNoOpt(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    OverlayNG ov = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
+    ov.setOptimized(false);
+    return ov.getResultGeometry();
   }
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
