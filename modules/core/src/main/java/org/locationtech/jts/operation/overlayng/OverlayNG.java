@@ -230,8 +230,9 @@ public class OverlayNG
     if (opCode != OverlayOp.INTERSECTION)
       return null;
     
-    //Envelope limitEnv = limitRectangle();
     Envelope limitEnv = limitOverlap();
+    // a conservative limit - seems to be ok to use more aggressive one tho
+    //Envelope limitEnv = limitRectangle();
     
     if (limitEnv == null) return null;
     SegmentLimiter limiter = new SegmentLimiter(limitEnv);
@@ -241,7 +242,7 @@ public class OverlayNG
   /**
    * Computes a limiter envelope based 
    * on the envelope of overlap of the two inputs.
-   * This is the most aggressive limiter optimization strategy.
+   * This is the most aggressive limiter optimization strategy for intersection.
    * 
    * @return a limiter envelope of the input overlap envelope
    */
