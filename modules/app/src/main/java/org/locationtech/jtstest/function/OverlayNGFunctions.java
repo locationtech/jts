@@ -13,79 +13,20 @@ package org.locationtech.jtstest.function;
 
 import java.util.List;
 
-import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.LineStringExtracter;
 import org.locationtech.jts.geom.util.PolygonExtracter;
-import org.locationtech.jts.noding.IntersectionAdder;
-import org.locationtech.jts.noding.MCIndexNoder;
-import org.locationtech.jts.noding.Noder;
-import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
-import org.locationtech.jts.operation.union.OverlapUnion;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
 public class OverlayNGFunctions {
   
-  public static Geometry debugEdgesNoded(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    // force non-null inputs
-    a = sameOrEmpty(a, b);
-    b = sameOrEmpty(b, a);
-    // op should not matter, since edges are captured pre-result
-    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.UNION);
-    ovr.setOutputNodedEdges(true);
-    return ovr.getResultGeometry();
-  }
-
-  public static Geometry debugEdgesNodedInt(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    // force non-null inputs
-    a = sameOrEmpty(a, b);
-    b = sameOrEmpty(b, a);
-    // op should not matter, since edges are captured pre-result
-    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
-    ovr.setOutputNodedEdges(true);
-    return ovr.getResultGeometry();
-  }
-
-  public static Geometry debugUnionIntSymDiff(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    // force non-null inputs
-    a = sameOrEmpty(a, b);
-    b = sameOrEmpty(b, a);
-    // op should not matter, since edges are captured pre-result
-    Geometry inter = extractPoly( OverlayNG.overlay(a, b, pm, OverlayOp.INTERSECTION) );
-    Geometry symDiff = extractPoly( OverlayNG.overlay(a, b, pm, OverlayOp.SYMDIFFERENCE) );
-    Geometry union = extractPoly( OverlayNG.overlay(inter, symDiff, pm, OverlayOp.UNION) );
-    return union;
-  }
-
-  public static Geometry debugUnionIntSymDiffClassic(Geometry a, Geometry b) {
-    // force non-null inputs
-    a = sameOrEmpty(a, b);
-    b = sameOrEmpty(b, a);
-    // op should not matter, since edges are captured pre-result
-    Geometry inter = extractPoly( a.intersection(b) );
-    Geometry symDiff = extractPoly( a.symDifference(b) );
-    Geometry union = extractPoly( inter.union(symDiff) );
-    return union;
-  }
-
-  private static Geometry extractPoly(Geometry g) {
-    if (g instanceof Polygon) return g;
-    if (g instanceof MultiPolygon) return g;
-    return ConversionFunctions.toMultiPolygon(g, null);
-  }
-  
-  private static Geometry sameOrEmpty(Geometry a, Geometry b) {
+ 
+  static Geometry sameOrEmpty(Geometry a, Geometry b) {
     if (a != null) return a;
     // return empty geom of same type
     if (b.getDimension() == 2) {
@@ -101,42 +42,12 @@ public class OverlayNGFunctions {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlayNG.overlay(a, b, pm, OverlayOp.INTERSECTION);
   }
-
-  public static Geometry debugEdgesIntersectionResult(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    // force non-null inputs
-    a = sameOrEmpty(a, b);
-    b = sameOrEmpty(b, a);
-   OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
-    ovr.setOutputResultEdges(true);
-    return ovr.getResultGeometry();
-  }
-
-  public static Geometry debugEdgesIntersectionAll(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    // force non-null inputs
-    a = sameOrEmpty(a, b);
-    b = sameOrEmpty(b, a);
-   OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
-    ovr.setOutputEdges(true);
-    return ovr.getResultGeometry();
-  }
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlayNG.overlay(a, b, pm, OverlayOp.UNION);
   }
   
-  public static Geometry debugEdgesUnionResult(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    // force non-null inputs
-    a = sameOrEmpty(a, b);
-    b = sameOrEmpty(b, a);
-    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.UNION);
-    ovr.setOutputResultEdges(true);
-    return ovr.getResultGeometry();
-  }
-
   public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlayNG.overlay(a, b, pm, OverlayOp.DIFFERENCE);
@@ -161,9 +72,11 @@ public class OverlayNGFunctions {
       }
       
     };
-    UnionFunction overlapSRFun = OverlapUnion.wrap(unionSRFun);
-    UnaryUnionOp op = new UnaryUnionOp(a);
+    
+    //UnionFunction overlapSRFun = OverlapUnion.wrap(unionSRFun);
     //op.setUnionFunction( overlapSRFun );
+    
+    UnaryUnionOp op = new UnaryUnionOp(a);
     op.setUnionFunction( unionSRFun );
     return op.union();
   }
@@ -207,29 +120,4 @@ public class OverlayNGFunctions {
     return result;
   }
   
-  public static Geometry unaryUnionClassicNoding(Geometry a) {
-    UnionFunction unionSRFun = new UnionFunction() {
-
-      public Geometry union(Geometry g0, Geometry g1) {
-        Noder noder = getSimpleNoder(false);
-        return OverlayNG.overlay(g0, g1, null, noder, OverlayOp.UNION );
-      }
-      
-    };
-    UnaryUnionOp op = new UnaryUnionOp(a);
-    op.setUnionFunction(unionSRFun);
-    return op.union();
-  }
-  
-  private static Noder getSimpleNoder(boolean doValidation) {
-    MCIndexNoder mcNoder = new MCIndexNoder();
-    LineIntersector li = new RobustLineIntersector();
-    mcNoder.setSegmentIntersector(new IntersectionAdder(li));
-    
-    Noder noder = mcNoder;
-    if (doValidation) {
-      noder = new ValidatingNoder( mcNoder);
-    }
-    return noder;
-  }
 }
