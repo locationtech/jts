@@ -34,7 +34,7 @@ import org.locationtech.jts.operation.distance.GeometryLocation;
  * The distance computation also finds a pair of points in the input geometries
  * which have the minimum distance between them. If a point lies in the interior
  * of a line segment, the coordinate computed is a close approximation to the
- * exact point.
+ * exact point for X and Y ordinates. Z ordinate is not interpolated.
  * <p>
  * The algorithms used are straightforward O(n^2) comparisons. This worst-case
  * performance could be improved on by using Voronoi techniques or spatial
@@ -189,7 +189,7 @@ public class Distance3DOp {
 		minDistanceLocation = new GeometryLocation[2];
 		
 		int geomIndex = mostPolygonalIndex();
-		boolean flip = geomIndex == 0;
+		boolean flip = geomIndex == 1;
 		computeMinDistanceMultiMulti(geom[geomIndex], geom[1-geomIndex], flip);
 	}
 
