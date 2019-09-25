@@ -39,17 +39,6 @@ public class OverlayNGTestFunctions {
     return ovr.getResultGeometry();
   }
 
-  public static Geometry edgesNodedInt(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    // force non-null inputs
-    a = OverlayNGFunctions.sameOrEmpty(a, b);
-    b = OverlayNGFunctions.sameOrEmpty(b, a);
-    // op should not matter, since edges are captured pre-result
-    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
-    ovr.setOutputNodedEdges(true);
-    return ovr.getResultGeometry();
-  }
-
   private static Geometry extractPoly(Geometry g) {
     if (g instanceof Polygon) return g;
     if (g instanceof MultiPolygon) return g;
@@ -71,7 +60,7 @@ public class OverlayNGTestFunctions {
     // force non-null inputs
     a = OverlayNGFunctions.sameOrEmpty(a, b);
     b = OverlayNGFunctions.sameOrEmpty(b, a);
-   OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
+    OverlayNG ovr = new OverlayNG(a, b, pm, OverlayOp.INTERSECTION);
     ovr.setOutputEdges(true);
     return ovr.getResultGeometry();
   }
