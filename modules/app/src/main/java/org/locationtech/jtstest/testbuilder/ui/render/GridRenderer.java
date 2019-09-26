@@ -57,8 +57,21 @@ public class GridRenderer {
     drawAxes(g);
     drawLinedGrid(g);
 //    drawDottedGrid(g);
-    drawGridSizeLabel(g, viewport.gridMagnitudeModel());
+    //drawGridSizeLabel(g, viewport.gridMagnitudeModel());
     }
+    // guards against crazy data causing problems
+    catch (ArithmeticException ex) {
+      return;
+    }
+  }
+
+  public void paintTop(Graphics2D g) {
+    if (! isEnabled)
+      return;
+    try {
+      drawGridSizeLabel(g);
+      drawScaleBar(g);
+  }
     // guards against crazy data causing problems
     catch (ArithmeticException ex) {
       return;
@@ -318,26 +331,75 @@ public class GridRenderer {
         gridSize10View/2);
   }
   
-  private void drawGridSizeLabel(Graphics2D g, int gridMagModel)
+  static final int BAR_OFFSET_X = 3;
+  static final int BAR_OFFSET_Y = 3;
+  static final int LBL_OFFSET_X = BAR_OFFSET_X + 5;
+  static final int LBL_OFFSET_Y = BAR_OFFSET_Y + 5;
+  static final int EXP_OFFSET_X = LBL_OFFSET_X + 15;
+  static final int EXP_OFFSET_Y = LBL_OFFSET_Y + 6;
+
+  private void drawGridSizeLabel(Graphics2D g)
   {
     /**
      * Draw grid size text
      */
-    g.setColor(Color.BLUE);
+    g.setColor(Color.BLACK);
+    g.setStroke(new BasicStroke(AppConstants.AXIS_WIDTH));
 
+    int gridMagModel = viewport.gridMagnitudeModel();
   	int viewHeight = (int) viewport.getHeightInView();
-  	int viewWidth = (int) viewport.getWidthInView();
+  	//int viewWidth = (int) viewport.getWidthInView();
   	
+    double gridSizeModel = Math.pow(10, gridMagModel);
+  	    
+    ///---- draw label
   	if (Math.abs(gridMagModel) <= 3) {
   		// display as number
-  		double gridSize = Math.pow(10, gridMagModel);
-  		g.drawString(gridSizeFormat.format(gridSize), 2, viewHeight - 1);
+  		g.drawString(gridSizeFormat.format(gridSizeModel), LBL_OFFSET_X, viewHeight - LBL_OFFSET_Y);
   	}
   	else {
   		// display as exponent
-  		g.drawString("10", 2, viewHeight - 1);
-  		g.drawString(gridMagModel + "", 20, viewHeight - 8);
+  		g.drawString("10", LBL_OFFSET_X, viewHeight - LBL_OFFSET_Y);
+  		g.drawString(gridMagModel + "", EXP_OFFSET_X, viewHeight - EXP_OFFSET_Y);
   	}
+  }
+  private void drawScaleBar(Graphics2D g)
+  {
+  	//--- draw simple scale bar
+    // compute X for bar to line up with grid
+    int gridMagModel = viewport.gridMagnitudeModel();
+    double gridSizeModel = Math.pow(10, gridMagModel);
+    double gridSizeView = viewport.toView(gridSizeModel);
+    int viewHeight = (int) viewport.getHeightInView();
+    
+    PrecisionModel pmGrid = new PrecisionModel(1.0/gridSizeModel);
+    Envelope modelEnv = viewport.getModelEnv();
+    double basexModel = pmGrid.makePrecise(modelEnv.getMinX());
+    double baseyModel = pmGrid.makePrecise(modelEnv.getMinY());
+    Point2D basePtView = viewport.toView(new Coordinate(basexModel, baseyModel));
+
+    float x = BAR_OFFSET_X;
+    // (float) (basePtView.getX());
+    // ensure line is fully visible
+    //if (x < LBL_OFFSET_X) x += gridSizeView;
+    
+    float y = viewHeight - BAR_OFFSET_Y;
+    
+    Stroke strokeMajor2 = new BasicStroke(3, // Width of stroke
+        BasicStroke.CAP_BUTT,  // End cap style
+        BasicStroke.JOIN_MITER, // Join style
+        10,                  // Miter limit
+        null, // Dash pattern
+        0);                   // Dash phase 
+    g.setStroke(strokeMajor2);
+
+    for (int i = 0; i < 10; i++) {
+      g.setColor( i % 2 == 1 ? Color.BLACK : Color.WHITE);
+    // X axis
+      g.draw(new Line2D.Double(x + i * gridSizeView, y, x + (i+1) * gridSizeView, y));
+    // Y axis
+      g.draw(new Line2D.Double(x, y - i * gridSizeView, x, y - (i+1) * gridSizeView));
+    }
   }
 
   private void drawFixedGrid(Graphics2D g) {
