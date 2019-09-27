@@ -11,6 +11,8 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
+import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -131,6 +133,26 @@ public class OverlayNG
     return geomOv;
   }
 
+  /**
+   * Reduces the precision of a geometry by rounding it to the
+   * supplied precision model.
+   * <p> 
+   * The output is always a valid geometry (so that input polygons
+   * may end up being merged).
+   * <p>
+   * The output is fully noded.  
+   * This is an effective way to node and snap-rounding a collection of {@link LineString}s.
+   * 
+   * @param geom the geometry to reduce
+   * @param pm the precision model to use
+   * @return the reduced geometry
+   */
+  public static Geometry reducePrecision(Geometry geom, PrecisionModel pm) {
+    Point emptyPoint = geom.getFactory().createPoint();
+    Geometry reduced = OverlayNG.overlay(geom, emptyPoint, pm, UNION);
+    return reduced;
+  }
+  
   private static final int SAFE_ENV_EXPAND_FACTOR = 3;
 
   private int opCode;

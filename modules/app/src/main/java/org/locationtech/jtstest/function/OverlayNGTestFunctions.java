@@ -26,7 +26,6 @@ import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ValidatingNoder;
-import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;

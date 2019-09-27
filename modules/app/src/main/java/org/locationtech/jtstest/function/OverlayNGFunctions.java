@@ -86,6 +86,10 @@ public class OverlayNGFunctions {
   }
 
   public static Geometry reducePrecision(Geometry a, double scaleFactor) {
+    return OverlayNG.reducePrecision(a, new PrecisionModel(scaleFactor));
+  }
+  
+  public static Geometry reducePrecisionGC(Geometry a, double scaleFactor) {
     Point emptyPoint = a.getFactory().createPoint();
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     
