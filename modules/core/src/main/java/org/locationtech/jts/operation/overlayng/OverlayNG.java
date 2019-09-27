@@ -111,6 +111,8 @@ public class OverlayNG
     return geomOv;
   }
 
+  private static final int SAFE_ENV_EXPAND_FACTOR = 3;
+
   private int opCode;
   private InputGeometry inputGeom;
   private GeometryFactory geomFact;
@@ -166,13 +168,6 @@ public class OverlayNG
     
     return resultGeom;
   }
-
-  /*
-  private int dimension(int geomIndex) {
-    // TODO: any edge cases that need to be handled?
-    return geom[geomIndex].getDimension();
-  }
-*/
   
   private void computeOverlay() {
     if (isEmptyResult()) {
@@ -180,10 +175,10 @@ public class OverlayNG
       return;
     }
     
-    SegmentLimiter limiter = optimizeByLimiter();
+    LineClipper clipper = optimizeByClipper();
 
     //--- Noding phase
-    List<Edge> edges = nodeAndMerge(limiter);
+    List<Edge> edges = nodeAndMerge(clipper);
     
     //--- Topology building phase
     graph = new OverlayGraph( edges );
@@ -224,19 +219,27 @@ public class OverlayNG
     return createEmptyResult(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), geomFact);
   }
 
-  private SegmentLimiter optimizeByLimiter() {
+  private LineClipper optimizeByClipper() {
     if (! isOptimized) 
       return null;
-    if (opCode != OverlayOp.INTERSECTION)
-      return null;
     
-    Envelope limitEnv = limitOverlap();
+    Envelope clipEnv = null;
+    switch (opCode) {
+    case OverlayOp.INTERSECTION:
+      Envelope envA = safeOverlapEnv( inputGeom.getGeometry(0).getEnvelopeInternal() );
+      Envelope envB = safeOverlapEnv( inputGeom.getGeometry(1).getEnvelopeInternal() );
+      clipEnv = envA.intersection(envB);   
+      break;
+    case OverlayOp.DIFFERENCE:
+      clipEnv = safeOverlapEnv( inputGeom.getGeometry(0).getEnvelopeInternal() );
+      break;
+    }
     // a conservative limit - seems to be ok to use more aggressive one tho
     //Envelope limitEnv = limitRectangle();
     
-    if (limitEnv == null) return null;
-    SegmentLimiter limiter = new SegmentLimiter(limitEnv);
-    return limiter;
+    if (clipEnv == null) return null;
+    LineClipper clipper = new LineClipper(clipEnv);
+    return clipper;
   }
 
   /**
@@ -272,7 +275,15 @@ public class OverlayNG
   }
 
   private Envelope safeOverlapEnv(Envelope originalEnv) {
-    double envBufDist = 2 * 1.0 / pm.getScale();
+    double envBufDist = 0;
+    // if PM is FLOAT then there is no scale factor, so add 10%
+    if (pm == null || pm.isFloating()) {
+      double minSize = Math.min(originalEnv.getHeight(), originalEnv.getWidth());
+      envBufDist = 0.1 * minSize;
+    }
+    else {
+      envBufDist = SAFE_ENV_EXPAND_FACTOR * 1.0 / pm.getScale();
+    }
     Envelope safeEnv = new Envelope(originalEnv);
     safeEnv.expandBy(envBufDist);
     return safeEnv;
@@ -296,7 +307,7 @@ public class OverlayNG
     
   }
 
-  private List<Edge> nodeAndMerge(SegmentLimiter limiter) {
+  private List<Edge> nodeAndMerge(LineClipper clipper) {
     /**
      * Node the edges, using whatever noder is being used
      */
@@ -304,8 +315,8 @@ public class OverlayNG
     
     if (noder != null) ovNoder.setNoder(noder);
     
-    if (limiter != null) {
-      ovNoder.setLimiter( limiter );
+    if (clipper != null) {
+      ovNoder.setLimiter( clipper );
     }
     
     ovNoder.add(inputGeom.getGeometry(0), 0);
@@ -317,8 +328,8 @@ public class OverlayNG
      * This is used to avoid trying to locate disconnected edges
      * against a geometry which has collapsed completely.
      */
-    inputGeom.setCollapsed(0, isCollapsed(0, ovNoder, limiter));
-    inputGeom.setCollapsed(1, isCollapsed(1, ovNoder, limiter));
+    inputGeom.setCollapsed(0, isCollapsed(0, ovNoder, clipper));
+    inputGeom.setCollapsed(1, isCollapsed(1, ovNoder, clipper));
     
     /**
      * Merge the noded edges to eliminate duplicates.
@@ -330,16 +341,18 @@ public class OverlayNG
     return mergedEdges;
   }
 
-  private boolean isCollapsed(int geomIndex, OverlayNoder ovNoder, SegmentLimiter limiter) {
-    if (limiter != null) {
+  private boolean isCollapsed(int geomIndex, OverlayNoder ovNoder, LineClipper clipper) {
+    if (clipper != null) {
       /**
        * If the geometry is bigger than the limit env, it can't have collapsed.
        * Need this check because if geometry linework is wholly outside
        * limiter env, there will be no edges present for it.
        */
+      /*
       Envelope geomEnv = inputGeom.getEnvelope( geomIndex );
       if (! limiter.isWithinLimit( geomEnv ))
         return false;
+        */
     }
     /**
      * Otherwise, if no edges remain after noding, 

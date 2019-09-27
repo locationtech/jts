@@ -20,6 +20,7 @@ import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
@@ -44,7 +45,7 @@ public class OverlayNoder {
   private Noder customNoder;
   private boolean hasEdgesA;
   private boolean hasEdgesB;
-  private SegmentLimiter limiter;
+  private LineClipper clipper;
 
   public OverlayNoder(PrecisionModel pm) {
     this.pm = pm;
@@ -54,8 +55,8 @@ public class OverlayNoder {
     this.customNoder = noder;
   }
 
-  public void setLimiter(SegmentLimiter limiter) {
-    this.limiter = limiter;
+  public void setLimiter(LineClipper clipper) {
+    this.clipper = clipper;
   }
   
   public Collection<SegmentString> node() {
@@ -129,6 +130,9 @@ public class OverlayNoder {
   public void add(Geometry g, int geomIndex)
   {
     if (g.isEmpty()) return;
+    if (isClippedCompletely(g.getEnvelopeInternal())) 
+      return;
+
 
     if (g instanceof Polygon)                 addPolygon((Polygon) g, geomIndex);
     // LineString also handles LinearRings
@@ -145,17 +149,18 @@ public class OverlayNoder {
   {
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       Geometry g = gc.getGeometryN(i);
+      
       add(g, geomIndex);
     }
   }
 
-  private void addPolygon(Polygon p, int geomIndex)
+  private void addPolygon(Polygon poly, int geomIndex)
   {
     addPolygonRing(
-            (LinearRing) p.getExteriorRing(), false, geomIndex);
+            (LinearRing) poly.getExteriorRing(), false, geomIndex);
 
-    for (int i = 0; i < p.getNumInteriorRing(); i++) {
-      LinearRing hole = (LinearRing) p.getInteriorRingN(i);
+    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+      LinearRing hole = (LinearRing) poly.getInteriorRingN(i);
       
       // Holes are topologically labelled opposite to the shell, since
       // the interior of the polygon lies on their opposite side
@@ -163,26 +168,29 @@ public class OverlayNoder {
       addPolygonRing(hole, true, geomIndex);
     }
   }
-  
+
   /**
    * Adds a polygon ring to the graph.
    * Empty rings are ignored.
    */
-  private void addPolygonRing(LinearRing lr, boolean isHole, int index)
+  private void addPolygonRing(LinearRing ring, boolean isHole, int index)
   {
     /**
      * Empty rings are not added.
      */
-    if (lr.isEmpty()) return;
+    if (ring.isEmpty()) return;
     
-    Coordinate[] ptsRaw = lr.getCoordinates();
+    if (isClippedCompletely(ring.getEnvelopeInternal())) 
+      return;
+    
+    Coordinate[] ptsRaw = ring.getCoordinates();
     
     /**
      * Compute the orientation of the ring, to
      * allow assigning side interior/exterior labels correctly.
      * JTS canonical orientation is that shells are CW, holes are CCW.
      * 
-     * Important to compute orientation BEFORE rounding,
+     * It is important to compute orientation on the original ring,
      * since topology collapse can make the orientation computation give the wrong answer.
      */
     boolean isCCW = Orientation.isCCW(ptsRaw);
@@ -192,7 +200,8 @@ public class OverlayNoder {
      * This may cause collapsing to occur,
      * but it is handled by the overlay processing.
      */
-    Coordinate[] pts = round(ptsRaw);
+    //Coordinate[] pts = round(ptsRaw);
+    Coordinate[] pts = clip(ptsRaw);
     
     /**
      * Don't add edges that collapse to a point
@@ -222,7 +231,7 @@ public class OverlayNoder {
     int depthDeltaFinal = isOriented ? depthDelta : -1 * depthDelta;
     
     EdgeInfo info = new EdgeInfo(index, depthDeltaFinal, isHole);
-    add(pts, info);
+    addEdge(pts, info);
   }
 
   private void addLineString(LineString line, int geomIndex)
@@ -230,7 +239,11 @@ public class OverlayNoder {
     // don't add empty lines
     if (line.isEmpty()) return;
     
-    Coordinate[] pts = round(line.getCoordinates());
+    if (isClippedCompletely(line.getEnvelopeInternal())) 
+      return;
+    
+    //Coordinate[] pts = round(line.getCoordinates());
+    Coordinate[] pts = clip( line.getCoordinates() );
 
     /**
      * Don't add edges that collapse to a point
@@ -239,29 +252,26 @@ public class OverlayNoder {
       return;
     }
     EdgeInfo info = new EdgeInfo(geomIndex);
-    add(pts, info);
-  }
-  
-  private void add(Coordinate[] pts, EdgeInfo info) {
-    if (limiter != null) {
-      addPointsLimited(pts, info);
-    }
-    else {
-      adddPoints(pts, info);
-    }
+    addEdge(pts, info);
   }
 
-  private void addPointsLimited(Coordinate[] pts, EdgeInfo info) {
-    List<Coordinate[]> limited = limiter.limit(pts);
-    for (Coordinate[] ptsSection : limited) {
-      adddPoints(ptsSection, info);
-    }
-  }
-
-  private void adddPoints(Coordinate[] pts, EdgeInfo info) {
+  private void addEdge(Coordinate[] pts, EdgeInfo info) {
     NodedSegmentString ss = new NodedSegmentString(pts, info);
     segStrings.add(ss);
   }
+
+  private boolean isClippedCompletely(Envelope env) {
+    if (clipper == null) return false;
+    return clipper.isClippedCompletely(env);
+  }
+  
+  private Coordinate[] clip(Coordinate[] pts) {
+    if (clipper == null) {
+      return pts;
+    }
+    return clipper.clip(pts);
+  }
+
 
   private Coordinate[] round(Coordinate[] pts)  {
     
