@@ -35,6 +35,26 @@ import org.locationtech.jts.util.Debug;
 public class OverlayNG 
 {
   /**
+   * The code for the Intersection overlay operation.
+   */
+  public static final int INTERSECTION  = OverlayOp.INTERSECTION;
+  
+  /**
+   * The code for the Union overlay operation.
+   */
+  public static final int UNION         = OverlayOp.UNION;
+  
+  /**
+   *  The code for the Difference overlay operation.
+   */
+  public static final int DIFFERENCE    = OverlayOp.DIFFERENCE;
+  
+  /**
+   *  The code for the Symmetric Difference overlay operation.
+   */
+  public static final int SYMDIFFERENCE = OverlayOp.SYMDIFFERENCE;
+
+  /**
    * Tests whether a point with a given topological {@link Label}
    * relative to two geometries is contained in 
    * the result of overlaying the geometries using
@@ -46,7 +66,7 @@ public class OverlayNG
    * @param opCode the code for the overlay operation to test
    * @return true if the label locations correspond to the overlayOpCode
    */
-  public static boolean isResultOfOpPoint(OverlayLabel label, int opCode)
+  static boolean isResultOfOpPoint(OverlayLabel label, int opCode)
   {
     int loc0 = label.getLocation(0);
     int loc1 = label.getLocation(1);
@@ -66,21 +86,21 @@ public class OverlayNG
    * @param overlayOpCode the code for the overlay operation to test
    * @return true if the locations correspond to the overlayOpCode
    */
-  public static boolean isResultOfOp(int loc0, int loc1, int overlayOpCode)
+  static boolean isResultOfOp(int loc0, int loc1, int overlayOpCode)
   {
     if (loc0 == Location.BOUNDARY) loc0 = Location.INTERIOR;
     if (loc1 == Location.BOUNDARY) loc1 = Location.INTERIOR;
     switch (overlayOpCode) {
-    case OverlayOp.INTERSECTION:
+    case INTERSECTION:
       return loc0 == Location.INTERIOR
           && loc1 == Location.INTERIOR;
-    case OverlayOp.UNION:
+    case UNION:
       return loc0 == Location.INTERIOR
           || loc1 == Location.INTERIOR;
-    case OverlayOp.DIFFERENCE:
+    case DIFFERENCE:
       return loc0 == Location.INTERIOR
           && loc1 != Location.INTERIOR;
-    case OverlayOp.SYMDIFFERENCE:
+    case SYMDIFFERENCE:
       return   (     loc0 == Location.INTERIOR &&  loc1 != Location.INTERIOR)
             || (     loc0 != Location.INTERIOR &&  loc1 == Location.INTERIOR);
     }
@@ -205,10 +225,10 @@ public class OverlayNG
 
   private boolean isEmptyResult() {
     switch (opCode) {
-    case OverlayOp.INTERSECTION:
+    case INTERSECTION:
       if ( inputGeom.isEmpty(0) || inputGeom.isEmpty(1) )
         return true;
-    case OverlayOp.DIFFERENCE:
+    case DIFFERENCE:
       if ( inputGeom.isEmpty(0) )     
         return true;
     }
@@ -225,12 +245,12 @@ public class OverlayNG
     
     Envelope clipEnv = null;
     switch (opCode) {
-    case OverlayOp.INTERSECTION:
+    case INTERSECTION:
       Envelope envA = safeOverlapEnv( inputGeom.getGeometry(0).getEnvelopeInternal() );
       Envelope envB = safeOverlapEnv( inputGeom.getGeometry(1).getEnvelopeInternal() );
       clipEnv = envA.intersection(envB);   
       break;
-    case OverlayOp.DIFFERENCE:
+    case DIFFERENCE:
       clipEnv = safeOverlapEnv( inputGeom.getGeometry(0).getEnvelopeInternal() );
       break;
     }
@@ -298,7 +318,7 @@ public class OverlayNG
     // if result is empty probably had a complete collapse, so can't use this check
     if (area == 0) return;
     
-    if (opCode == OverlayOp.UNION) {
+    if (opCode == UNION) {
       double minAreaLimit = 0.5 * Math.max(areaA, areaB);
       if (area < minAreaLimit ) {
         throw new TopologyException("Result area sanity issue");
@@ -478,16 +498,16 @@ public class OverlayNG
     
     int resultDimension = -1;
     switch (opCode) {
-    case OverlayOp.INTERSECTION: 
+    case INTERSECTION: 
       resultDimension = Math.min(dim0, dim1);
       break;
-    case OverlayOp.UNION: 
+    case UNION: 
       resultDimension = Math.max(dim0, dim1);
       break;
-    case OverlayOp.DIFFERENCE: 
+    case DIFFERENCE: 
       resultDimension = dim0;
       break;
-    case OverlayOp.SYMDIFFERENCE: 
+    case SYMDIFFERENCE: 
       /**
        * This result is chosen because
        * <pre>

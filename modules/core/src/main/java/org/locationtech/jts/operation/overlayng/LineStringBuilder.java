@@ -159,10 +159,10 @@ public class LineStringBuilder {
     if (areaIndex < 0) return -1;
     
     switch (overlayOpCode) {
-    case OverlayOp.INTERSECTION: return -1;
-    case OverlayOp.UNION: return areaIndex;
-    case OverlayOp.DIFFERENCE: return (areaIndex <= 0) ? 0 : -1;
-    case OverlayOp.SYMDIFFERENCE: return areaIndex;
+    case OverlayNG.INTERSECTION: return -1;
+    case OverlayNG.UNION: return areaIndex;
+    case OverlayNG.DIFFERENCE: return (areaIndex <= 0) ? 0 : -1;
+    case OverlayNG.SYMDIFFERENCE: return areaIndex;
     }
     return -1;
   }
