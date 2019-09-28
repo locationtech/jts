@@ -11,19 +11,25 @@
  */
 package org.locationtech.jtstest.testbuilder;
 
-import java.text.NumberFormat;
-import java.util.List;
-
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.text.NumberFormat;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -32,12 +38,24 @@ import javax.swing.SwingUtilities;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.util.Assert;
-import org.locationtech.jtstest.testbuilder.model.*;
-import org.locationtech.jtstest.testbuilder.ui.*;
-import org.locationtech.jtstest.testbuilder.ui.render.*;
+import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
+import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
+import org.locationtech.jtstest.testbuilder.model.GeometryStretcherView;
+import org.locationtech.jtstest.testbuilder.model.Layer;
+import org.locationtech.jtstest.testbuilder.model.LayerList;
+import org.locationtech.jtstest.testbuilder.model.StaticGeometryContainer;
+import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
+import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
+import org.locationtech.jtstest.testbuilder.ui.GeometryLocationsWriter;
+import org.locationtech.jtstest.testbuilder.ui.Viewport;
+import org.locationtech.jtstest.testbuilder.ui.render.DrawingGrid;
+import org.locationtech.jtstest.testbuilder.ui.render.GeometryPainter;
+import org.locationtech.jtstest.testbuilder.ui.render.GridRenderer;
+import org.locationtech.jtstest.testbuilder.ui.render.LayerRenderer;
+import org.locationtech.jtstest.testbuilder.ui.render.RenderManager;
+import org.locationtech.jtstest.testbuilder.ui.render.Renderer;
 import org.locationtech.jtstest.testbuilder.ui.style.AWTUtil;
-import org.locationtech.jtstest.testbuilder.ui.tools.*;
+import org.locationtech.jtstest.testbuilder.ui.tools.Tool;
 
 
 /**

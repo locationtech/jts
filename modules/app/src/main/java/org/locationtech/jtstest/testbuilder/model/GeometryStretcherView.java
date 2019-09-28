@@ -36,7 +36,7 @@ public class GeometryStretcherView
    * will be magnified.
    * 
    */
-  public static final  double NEARNESS_TOL_IN_VIEW = 1;
+  public static final  double NEARNESS_TOL_IN_VIEW = 2;
   
 	private GeometryEditModel geomModel;
 	private Geometry[] stretchGeom = new Geometry[2];

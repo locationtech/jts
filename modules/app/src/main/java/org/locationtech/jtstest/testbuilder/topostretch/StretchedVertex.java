@@ -33,8 +33,6 @@ public class StretchedVertex
 	// TODO: also provide information about the segments around the facet the vertex is near to, to allow smarter adjustment 
 	
 	private Coordinate vertexPt;
-	private Coordinate[] parentLine;
-	private int parentIndex;
 	private Coordinate nearPt = null;
   private Coordinate[] nearPts = null;
   private int nearIndex = -1;
@@ -44,12 +42,10 @@ public class StretchedVertex
 	/**
 	 * Creates a vertex which lies near a vertex
 	 */
-	public StretchedVertex(Coordinate vertexPt, Coordinate[] parentLine, int parentIndex, 
+	public StretchedVertex(Coordinate vertexPt,  
       Coordinate nearPt, Coordinate[] nearPts, int nearIndex)
 	{
 		this.vertexPt = vertexPt;
-		this.parentLine = parentLine;
-		this.parentIndex = parentIndex;
 		this.nearPt = nearPt;
     this.nearPts = nearPts;
     this.nearIndex = nearIndex;
@@ -62,12 +58,10 @@ public class StretchedVertex
 	 * @param parentIndex
 	 * @param nearSeg
 	 */
-	public StretchedVertex(Coordinate vertexPt, Coordinate[] parentLine, int parentIndex, 
+	public StretchedVertex(Coordinate vertexPt, 
 			LineSegment nearSeg)
 	{
 		this.vertexPt = vertexPt;
-		this.parentLine = parentLine;
-		this.parentIndex = parentIndex;
 		this.nearSeg = nearSeg;
 	}
 	
