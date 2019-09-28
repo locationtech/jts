@@ -13,7 +13,10 @@
 package org.locationtech.jtstest.testbuilder.ui;
 
 import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.util.Collection;
@@ -274,5 +277,11 @@ public class SwingUtil {
   public static void showTab(JTabbedPane tabPane, String tabName)
   {
     tabPane.setSelectedIndex(tabPane.indexOfTab(tabName));
+  }
+  
+  public static void setAntiAlias(Graphics2D g, boolean isOn) {
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        isOn ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
+
   }
 }

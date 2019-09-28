@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jtstest.testbuilder.AppConstants;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
+import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 
@@ -51,8 +52,7 @@ public class GridRenderer {
   }
 
   public void paint(Graphics2D g) {
-    if (! isEnabled)
-      return;
+    if (! isEnabled) return;
     try {
     drawAxes(g);
     drawLinedGrid(g);
@@ -66,12 +66,10 @@ public class GridRenderer {
   }
 
   public void paintTop(Graphics2D g) {
-    if (! isEnabled)
-      return;
+    if (! isEnabled) return;
     try {
-      drawGridSizeLabel(g);
       drawScaleBar(g);
-  }
+    }
     // guards against crazy data causing problems
     catch (ArithmeticException ex) {
       return;
@@ -331,14 +329,14 @@ public class GridRenderer {
         gridSize10View/2);
   }
   
-  static final int BAR_OFFSET_X = 3;
+  static final int BAR_OFFSET_X = 5;
   static final int BAR_OFFSET_Y = 3;
   static final int LBL_OFFSET_X = BAR_OFFSET_X + 5;
-  static final int LBL_OFFSET_Y = BAR_OFFSET_Y + 5;
-  static final int EXP_OFFSET_X = LBL_OFFSET_X + 15;
-  static final int EXP_OFFSET_Y = LBL_OFFSET_Y + 6;
+  static final int LBL_OFFSET_Y = 1; //BAR_OFFSET_Y + 5;
+  static final int EXP_OFFSET_X = 15;
+  static final int EXP_OFFSET_Y = 6;
 
-  private void drawGridSizeLabel(Graphics2D g)
+  private void drawScaleLabel(Graphics2D g)
   {
     /**
      * Draw grid size text
@@ -347,20 +345,28 @@ public class GridRenderer {
     g.setStroke(new BasicStroke(AppConstants.AXIS_WIDTH));
 
     int gridMagModel = viewport.gridMagnitudeModel();
+    double gridSizeModel = Math.pow(10, gridMagModel);
+    double gridSizeView = viewport.toView(gridSizeModel);
+    
+    // scale bar is 10 units long
+    int scaleMag = gridMagModel + 1;
+    double scaleSize = Math.pow(10, scaleMag);;
+    
   	int viewHeight = (int) viewport.getHeightInView();
   	//int viewWidth = (int) viewport.getWidthInView();
-  	
-    double gridSizeModel = Math.pow(10, gridMagModel);
-  	    
+  	 
     ///---- draw label
-  	if (Math.abs(gridMagModel) <= 3) {
+  	float x = (float) (10 * gridSizeView + LBL_OFFSET_X);
+  	float y = LBL_OFFSET_Y;
+  	
+  	if (Math.abs(scaleMag) <= 3) {
   		// display as number
-  		g.drawString(gridSizeFormat.format(gridSizeModel), LBL_OFFSET_X, viewHeight - LBL_OFFSET_Y);
+  		g.drawString(gridSizeFormat.format(scaleSize), x, viewHeight - y);
   	}
   	else {
   		// display as exponent
-  		g.drawString("10", LBL_OFFSET_X, viewHeight - LBL_OFFSET_Y);
-  		g.drawString(gridMagModel + "", EXP_OFFSET_X, viewHeight - EXP_OFFSET_Y);
+  		g.drawString("10", x, viewHeight - LBL_OFFSET_Y);
+  		g.drawString(scaleMag + "", x + EXP_OFFSET_X, viewHeight - (y + EXP_OFFSET_Y));
   	}
   }
   private void drawScaleBar(Graphics2D g)
@@ -385,21 +391,37 @@ public class GridRenderer {
     
     float y = viewHeight - BAR_OFFSET_Y;
     
-    Stroke strokeMajor2 = new BasicStroke(3, // Width of stroke
+    int barWidth = 3;
+    int boxWidth = barWidth + 2;
+    
+    SwingUtil.setAntiAlias(g, false);
+    Stroke strokeBox = new BasicStroke(boxWidth, // Width of stroke
         BasicStroke.CAP_BUTT,  // End cap style
         BasicStroke.JOIN_MITER, // Join style
         10,                  // Miter limit
         null, // Dash pattern
         0);                   // Dash phase 
-    g.setStroke(strokeMajor2);
+    g.setStroke(strokeBox);
+    g.setColor(Color.BLACK);
+    g.drawRect((int) x, (int) y, (int) (10 * gridSizeView), boxWidth + 2);
+    
+    Stroke strokeDash = new BasicStroke(barWidth, // Width of stroke
+        BasicStroke.CAP_BUTT,  // End cap style
+        BasicStroke.JOIN_MITER, // Join style
+        10,                  // Miter limit
+        null, // Dash pattern
+        0);                   // Dash phase 
+    g.setStroke(strokeDash);
 
-    for (int i = 0; i < 10; i++) {
-      g.setColor( i % 2 == 1 ? Color.BLACK : Color.WHITE);
+    g.setColor( Color.WHITE);
+    for (int i = 0; i < 10; i += 2) {
     // X axis
       g.draw(new Line2D.Double(x + i * gridSizeView, y, x + (i+1) * gridSizeView, y));
     // Y axis
-      g.draw(new Line2D.Double(x, y - i * gridSizeView, x, y - (i+1) * gridSizeView));
+      //g.draw(new Line2D.Double(x, y - i * gridSizeView, x, y - (i+1) * gridSizeView));
     }
+    SwingUtil.setAntiAlias(g, true);
+    drawScaleLabel(g);
   }
 
   private void drawFixedGrid(Graphics2D g) {
