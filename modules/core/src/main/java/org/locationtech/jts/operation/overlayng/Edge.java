@@ -114,7 +114,7 @@ public class Edge {
     return bDim;
   }
   
-  public OverlayLabel computeLabel() {
+  public OverlayLabel createLabel() {
     OverlayLabel lbl = new OverlayLabel();
     initLabel(lbl, 0, aDim, aDepthDelta, aIsHole);
     initLabel(lbl, 1, bDim, bDepthDelta, bIsHole);
