@@ -396,7 +396,7 @@ public class OverlayGraph {
   public void markInResultArea(OverlayEdge e, int overlayOpCode) {
     OverlayLabel label = e.getLabel();
     if ( label.isBoundaryEither()
-        && OverlayNG.isResultOfOp(
+        && OverlayNGOp.isResultOfOp(
               label.getLocationBoundaryOrLinear(0, Position.RIGHT, e.isForward()),
               label.getLocationBoundaryOrLinear(1, Position.RIGHT, e.isForward()),
               overlayOpCode)) {

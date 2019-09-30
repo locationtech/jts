@@ -11,15 +11,15 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.INTERSECTION;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.UNION;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.DIFFERENCE;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.SYMDIFFERENCE;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.overlay.OverlayOp;
-import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGOp;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -279,11 +279,11 @@ public class OverlayNGOneTest extends GeometryTestCase {
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, UNION);
+    return OverlayNGOp.overlay(a, b, pm, UNION);
   }
   
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, INTERSECTION);
+    return OverlayNGOp.overlay(a, b, pm, INTERSECTION);
   }
 }

@@ -11,10 +11,10 @@
  */
 package org.locationtech.jtstest.function;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.INTERSECTION;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.UNION;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.DIFFERENCE;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.SYMDIFFERENCE;
 
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
@@ -26,7 +26,7 @@ import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ValidatingNoder;
-import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGOp;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
@@ -38,7 +38,7 @@ public class OverlayNGTestFunctions {
     a = OverlayNGFunctions.sameOrEmpty(a, b);
     b = OverlayNGFunctions.sameOrEmpty(b, a);
     // op should not matter, since edges are captured pre-result
-    OverlayNG ovr = new OverlayNG(a, b, pm, UNION);
+    OverlayNGOp ovr = new OverlayNGOp(a, b, pm, UNION);
     ovr.setOutputNodedEdges(true);
     return ovr.getResultGeometry();
   }
@@ -49,7 +49,7 @@ public class OverlayNGTestFunctions {
     a = OverlayNGFunctions.sameOrEmpty(a, b);
     b = OverlayNGFunctions.sameOrEmpty(b, a);
     // op should not matter, since edges are captured pre-result
-    OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
+    OverlayNGOp ovr = new OverlayNGOp(a, b, pm, INTERSECTION);
     ovr.setOutputNodedEdges(true);
     return ovr.getResultGeometry();
   }
@@ -60,7 +60,7 @@ public class OverlayNGTestFunctions {
     a = OverlayNGFunctions.sameOrEmpty(a, b);
     b = OverlayNGFunctions.sameOrEmpty(b, a);
     // op should not matter, since edges are captured pre-result
-    OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
+    OverlayNGOp ovr = new OverlayNGOp(a, b, pm, INTERSECTION);
     ovr.setOutputNodedEdges(true);
     ovr.setOptimized(false);
     return ovr.getResultGeometry();
@@ -77,7 +77,7 @@ public class OverlayNGTestFunctions {
     // force non-null inputs
     a = OverlayNGFunctions.sameOrEmpty(a, b);
     b = OverlayNGFunctions.sameOrEmpty(b, a);
-   OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
+   OverlayNGOp ovr = new OverlayNGOp(a, b, pm, INTERSECTION);
     ovr.setOutputResultEdges(true);
     return ovr.getResultGeometry();
   }
@@ -87,7 +87,7 @@ public class OverlayNGTestFunctions {
     // force non-null inputs
     a = OverlayNGFunctions.sameOrEmpty(a, b);
     b = OverlayNGFunctions.sameOrEmpty(b, a);
-    OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
+    OverlayNGOp ovr = new OverlayNGOp(a, b, pm, INTERSECTION);
     ovr.setOutputEdges(true);
     return ovr.getResultGeometry();
   }
@@ -97,7 +97,7 @@ public class OverlayNGTestFunctions {
     // force non-null inputs
     a = OverlayNGFunctions.sameOrEmpty(a, b);
     b = OverlayNGFunctions.sameOrEmpty(b, a);
-    OverlayNG ovr = new OverlayNG(a, b, pm, UNION);
+    OverlayNGOp ovr = new OverlayNGOp(a, b, pm, UNION);
     ovr.setOutputResultEdges(true);
     return ovr.getResultGeometry();
   }
@@ -108,15 +108,15 @@ public class OverlayNGTestFunctions {
     a = OverlayNGFunctions.sameOrEmpty(a, b);
     b = OverlayNGFunctions.sameOrEmpty(b, a);
     // op should not matter, since edges are captured pre-result
-    Geometry inter = extractPoly( OverlayNG.overlay(a, b, pm, INTERSECTION) );
-    Geometry symDiff = extractPoly( OverlayNG.overlay(a, b, pm, SYMDIFFERENCE) );
-    Geometry union = extractPoly( OverlayNG.overlay(inter, symDiff, pm, UNION) );
+    Geometry inter = extractPoly( OverlayNGOp.overlay(a, b, pm, INTERSECTION) );
+    Geometry symDiff = extractPoly( OverlayNGOp.overlay(a, b, pm, SYMDIFFERENCE) );
+    Geometry union = extractPoly( OverlayNGOp.overlay(inter, symDiff, pm, UNION) );
     return union;
   }
 
   public static Geometry intersectionNoOpt(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
+    OverlayNGOp ovr = new OverlayNGOp(a, b, pm, INTERSECTION);
     ovr.setOptimized(false);
     return ovr.getResultGeometry();
   }
@@ -134,12 +134,12 @@ public class OverlayNGTestFunctions {
 
   public static Geometry unionClassicNoding(Geometry a, Geometry b, double scaleFactor) {
     Noder noder = getSimpleNoder(false);
-    return OverlayNG.overlay(a, b, null, noder, UNION );
+    return OverlayNGOp.overlay(a, b, null, noder, UNION );
   }
 
   public static Geometry intersectionClassicNoding(Geometry a, Geometry b, double scaleFactor) {
     Noder noder = getSimpleNoder(false);
-    return OverlayNG.overlay(a, b, null, noder, INTERSECTION );
+    return OverlayNGOp.overlay(a, b, null, noder, INTERSECTION );
   }
 
   public static Geometry unaryUnionClassicNoding(Geometry a) {
@@ -147,7 +147,7 @@ public class OverlayNGTestFunctions {
 
       public Geometry union(Geometry g0, Geometry g1) {
         Noder noder = getSimpleNoder(false);
-        return OverlayNG.overlay(g0, g1, null, noder, UNION );
+        return OverlayNGOp.overlay(g0, g1, null, noder, UNION );
       }
       
     };

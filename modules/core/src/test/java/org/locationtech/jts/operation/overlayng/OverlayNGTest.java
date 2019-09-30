@@ -11,10 +11,10 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.DIFFERENCE;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.INTERSECTION;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.SYMDIFFERENCE;
+import static org.locationtech.jts.operation.overlayng.OverlayNGOp.UNION;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -414,29 +414,29 @@ public class OverlayNGTest extends GeometryTestCase {
   
   public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, DIFFERENCE);
+    return OverlayNGOp.overlay(a, b, pm, DIFFERENCE);
   }
   
   public static Geometry symDifference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, SYMDIFFERENCE);
+    return OverlayNGOp.overlay(a, b, pm, SYMDIFFERENCE);
   }
   
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, INTERSECTION);
+    return OverlayNGOp.overlay(a, b, pm, INTERSECTION);
   }
   
   public static Geometry intersectionNoOpt(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlayNG ov = new OverlayNG(a, b, pm, INTERSECTION);
+    OverlayNGOp ov = new OverlayNGOp(a, b, pm, INTERSECTION);
     ov.setOptimized(false);
     return ov.getResultGeometry();
   }
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, UNION);
+    return OverlayNGOp.overlay(a, b, pm, UNION);
   }
   
 }
