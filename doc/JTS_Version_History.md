@@ -37,6 +37,7 @@ Distributions for older JTS versions can be obtained at the
 * Added `Envelope.getDiameter`
 * Added `Intersection` class (#468)
 * Avoid use of `ArrayList` in MonotoneChain builders
+* Added `CoordinateList.toCoordinateArray(isForward)`
 
 ### Bug Fixes
 
