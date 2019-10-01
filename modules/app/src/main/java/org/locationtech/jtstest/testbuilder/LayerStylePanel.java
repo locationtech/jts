@@ -21,6 +21,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -76,6 +77,7 @@ public class LayerStylePanel extends JPanel {
   private JCheckBox cbOffset;
   private JSpinner spinnerOffsetSize;
   private SpinnerNumberModel offsetSizeModel;
+  private JCheckBox cbEndpoint;
 
   
   public LayerStylePanel() {
@@ -101,6 +103,7 @@ public class LayerStylePanel extends JPanel {
     vertexSizeModel.setValue(layer.getLayerStyle().getVertexSize());
     cbLabel.setSelected(layer.getLayerStyle().isLabel());
     labelSizeModel.setValue(layer.getLayerStyle().getLabelSize());
+    cbEndpoint.setSelected(layer.getLayerStyle().isEndpoints());
     cbDashed.setSelected(geomStyle().isDashed());
     cbOffset.setSelected(layer.getLayerStyle().isOffset());
     offsetSizeModel.setValue( layer.getLayerStyle().getOffsetSize() );
@@ -315,6 +318,17 @@ public class LayerStylePanel extends JPanel {
       }
     });
     
+    cbEndpoint = new JCheckBox();
+    cbEndpoint.setText("Endpoints");
+    cbEndpoint.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbEndpoint.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        layer.getLayerStyle().setEndpoints(cbEndpoint.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+    
     cbOrient = new JCheckBox();
     cbOrient.setText("Orientation");
     cbOrient.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -361,7 +375,7 @@ public class LayerStylePanel extends JPanel {
     });
     
    // Leave on separate line to allow room for dash style
-    addRow("", cbDashed, cbOrient, cbStructure, cbOffset, spinnerOffsetSize);
+    addRow("", cbDashed, cbEndpoint, cbOrient, cbStructure, cbOffset, spinnerOffsetSize);
     //=============================================
 
     cbFilled = new JCheckBox();

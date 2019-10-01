@@ -42,6 +42,12 @@ public class LayerStyle implements Style  {
   private boolean isOffsetLine;
   private int offsetSize = INIT_OFFSET_SIZE;
 
+  private CircleLineEndStyle startPointStyle;
+
+  private CircleLineEndStyle endPointStyle;
+
+  private StyleGroup endPointsStyle;
+
   public LayerStyle(BasicStyle geomStyle) {
     this.geomStyle = geomStyle;
     initDecorators(geomStyle);
@@ -76,9 +82,14 @@ public class LayerStyle implements Style  {
 
     segArrowStyle = new ArrowSegmentStyle(ColorUtil.lighter(style.getLineColor(), 0.8));
     lineArrowStyle = new ArrowLineEndStyle(ColorUtil.lighter(style.getLineColor(),0.5), false, true);
-    lineCircleStyle = new CircleLineEndStyle(ColorUtil.lighter(style.getLineColor(),0.5), 6, true, true);
+    lineCircleStyle = new CircleLineEndStyle(ColorUtil.lighter(style.getLineColor(),0.5), 6, 8, true, true);
     orientStyle = new StyleGroup(segArrowStyle, lineArrowStyle, lineCircleStyle);
-
+    
+    double endPtSize = 2 * vertexStyle.getSize();
+    startPointStyle = new CircleLineEndStyle(style.getLineColor(), endPtSize, true, true);
+    endPointStyle = new CircleLineEndStyle(style.getLineColor(), endPtSize, false, true);
+    endPointsStyle = new StyleGroup(startPointStyle, endPointStyle);
+        
     PolygonStructureStyle polyStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
     SegmentIndexStyle indexStyle = new SegmentIndexStyle(ColorUtil.opaque(style.getLineColor().darker()));
     structureStyle = new StyleGroup(polyStyle, indexStyle);
@@ -87,10 +98,12 @@ public class LayerStyle implements Style  {
     StyleList styleList = new StyleList();
     styleList.add(vertexLabelStyle);
     styleList.add(vertexStyle);
+    styleList.add(endPointsStyle);
     styleList.add(orientStyle);
     styleList.add(structureStyle);
     styleList.add(labelStyle);
     
+    styleList.setEnabled(endPointsStyle, false);
     styleList.setEnabled(labelStyle, false);
     styleList.setEnabled(orientStyle, false);
     styleList.setEnabled(structureStyle, false);
@@ -107,6 +120,7 @@ public class LayerStyle implements Style  {
     setVertices(layerStyle.isVertices());
     setVertexSize(layerStyle.getVertexSize());
     setVertexLabels(layerStyle.isVertexLabels());
+    setEndpoints(layerStyle.isEndpoints());
   }
 
   public void setColor(Color color) {
@@ -124,11 +138,21 @@ public class LayerStyle implements Style  {
     return decoratorStyle.isEnabled(vertexStyle);
   }
   
+  public void setEndpoints(boolean show) {
+    decoratorStyle.setEnabled(endPointsStyle, show);
+  }
+  
+  public boolean isEndpoints() {
+    return decoratorStyle.isEnabled(endPointsStyle);
+  }
+  
   public int getVertexSize() {
     return vertexStyle.getSize();
   }
   public void setVertexSize(int size) {
     vertexStyle.setSize(size);
+    startPointStyle.setSize(2 * size);
+    endPointStyle.setSize(2 * size);
   }
   
   public Color getVertexColor() {
@@ -137,6 +161,8 @@ public class LayerStyle implements Style  {
   public void setVertexColor(Color color) {
     vertexStyle.setColor(color);
     vertexLabelStyle.setColor(color);
+    startPointStyle.setColor(color);
+    endPointStyle.setColor(color);
   }
   public void setVertexLabels(boolean show) {
     decoratorStyle.setEnabled(vertexLabelStyle, show);
