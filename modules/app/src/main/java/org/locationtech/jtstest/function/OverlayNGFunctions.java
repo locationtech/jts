@@ -11,10 +11,10 @@
  */
 package org.locationtech.jtstest.function;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.DIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.INTERSECTION;
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.SYMDIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.UNION;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.LineStringExtracter;
 import org.locationtech.jts.geom.util.PolygonExtracter;
-import org.locationtech.jts.operation.overlayng.OverlayNGOp;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
@@ -44,27 +44,27 @@ public class OverlayNGFunctions {
 
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNGOp.overlay(a, b, pm, INTERSECTION);
+    return OverlayNG.overlay(a, b, pm, INTERSECTION);
   }
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNGOp.overlay(a, b, pm, UNION);
+    return OverlayNG.overlay(a, b, pm, UNION);
   }
   
   public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNGOp.overlay(a, b, pm, DIFFERENCE);
+    return OverlayNG.overlay(a, b, pm, DIFFERENCE);
   }
 
   public static Geometry differenceBA(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNGOp.overlay(b, a, pm, DIFFERENCE);
+    return OverlayNG.overlay(b, a, pm, DIFFERENCE);
   }
 
   public static Geometry symDifference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNGOp.overlay(a, b, pm, SYMDIFFERENCE);
+    return OverlayNG.overlay(a, b, pm, SYMDIFFERENCE);
   }
   
   public static Geometry unaryUnion(Geometry a, double scaleFactor) {
@@ -72,7 +72,7 @@ public class OverlayNGFunctions {
     UnionFunction unionSRFun = new UnionFunction() {
 
       public Geometry union(Geometry g0, Geometry g1) {
-        return OverlayNGOp.overlay(g0, g1, pm, UNION);
+        return OverlayNG.overlay(g0, g1, pm, UNION);
       }
       
     };
@@ -86,7 +86,7 @@ public class OverlayNGFunctions {
   }
 
   public static Geometry reducePrecision(Geometry a, double scaleFactor) {
-    return OverlayNGOp.reducePrecision(a, new PrecisionModel(scaleFactor));
+    return OverlayNG.reducePrecision(a, new PrecisionModel(scaleFactor));
   }
   
   public static Geometry reducePrecisionGC(Geometry a, double scaleFactor) {
@@ -98,7 +98,7 @@ public class OverlayNGFunctions {
      * is a non-overlapping polygonal coverage!
      */
     Geometry homoGeom = forceHomo(a);
-    Geometry union = OverlayNGOp.overlay(homoGeom, emptyPoint, pm, UNION);
+    Geometry union = OverlayNG.overlay(homoGeom, emptyPoint, pm, UNION);
     
     List components = null;
     switch (a.getDimension()) {

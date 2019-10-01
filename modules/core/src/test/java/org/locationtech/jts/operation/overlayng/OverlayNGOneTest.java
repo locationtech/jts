@@ -11,8 +11,8 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.INTERSECTION;
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.UNION;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -323,11 +323,11 @@ public class OverlayNGOneTest extends GeometryTestCase {
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNGOp.overlay(a, b, pm, UNION);
+    return OverlayNG.overlay(a, b, pm, UNION);
   }
   
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNGOp.overlay(a, b, pm, INTERSECTION);
+    return OverlayNG.overlay(a, b, pm, INTERSECTION);
   }
 }

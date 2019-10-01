@@ -32,7 +32,7 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.Debug;
 
-public class OverlayNGOp 
+public class OverlayNG 
 {
   /**
    * The code for the Intersection overlay operation.
@@ -118,14 +118,14 @@ public class OverlayNGOp
    */
   public static Geometry overlay(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode)
   {
-    OverlayNGOp ov = new OverlayNGOp(geom0, geom1, pm, opCode);
+    OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
     Geometry geomOv = ov.getResultGeometry();
     return geomOv;
   }
 
   public static Geometry overlay(Geometry geom0, Geometry geom1, PrecisionModel pm, Noder noder, int opCode)
   {
-    OverlayNGOp ov = new OverlayNGOp(geom0, geom1, pm, opCode);
+    OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
     ov.setNoder(noder);
     Geometry geomOv = ov.getResultGeometry();
     return geomOv;
@@ -147,7 +147,7 @@ public class OverlayNGOp
    */
   public static Geometry reducePrecision(Geometry geom, PrecisionModel pm) {
     Point emptyPoint = geom.getFactory().createPoint();
-    Geometry reduced = OverlayNGOp.overlay(geom, emptyPoint, pm, UNION);
+    Geometry reduced = OverlayNG.overlay(geom, emptyPoint, pm, UNION);
     return reduced;
   }
   
@@ -167,7 +167,7 @@ public class OverlayNGOp
   private Noder noder;
   private Geometry resultGeom;
 
-  public OverlayNGOp(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode) {
+  public OverlayNG(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode) {
     this.pm = pm;
     this.opCode = opCode;
     geomFact = geom0.getFactory();

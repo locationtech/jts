@@ -66,7 +66,7 @@ public class LineStringBuilder {
     this.resultAreaIndex = resultAreaIndex(opCode);
     this.hasResultArea = hasResultArea;
     
-    resultDimension = OverlayNGOp.resultDimension(opCode, 
+    resultDimension = OverlayNG.resultDimension(opCode, 
         inputGeom.getGeometry(0), inputGeom.getGeometry(0));
   }
 
@@ -251,7 +251,7 @@ public class LineStringBuilder {
     int aLoc = effectiveLocation(0, lbl);
     int bLoc = effectiveLocation(1, lbl);
     
-    boolean isInResult = OverlayNGOp.isResultOfOp(aLoc, bLoc, opCode);
+    boolean isInResult = OverlayNG.isResultOfOp(aLoc, bLoc, opCode);
     return isInResult;
   }
 
@@ -295,10 +295,10 @@ public class LineStringBuilder {
     if (areaIndex < 0) return -1;
     
     switch (overlayOpCode) {
-    case OverlayNGOp.INTERSECTION: return -1;
-    case OverlayNGOp.UNION: return areaIndex;
-    case OverlayNGOp.DIFFERENCE: return (areaIndex <= 0) ? 0 : -1;
-    case OverlayNGOp.SYMDIFFERENCE: return areaIndex;
+    case OverlayNG.INTERSECTION: return -1;
+    case OverlayNG.UNION: return areaIndex;
+    case OverlayNG.DIFFERENCE: return (areaIndex <= 0) ? 0 : -1;
+    case OverlayNG.SYMDIFFERENCE: return areaIndex;
     }
     return -1;
   }

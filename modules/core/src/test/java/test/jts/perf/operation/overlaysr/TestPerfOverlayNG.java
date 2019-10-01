@@ -1,16 +1,16 @@
 package test.jts.perf.operation.overlaysr;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.INTERSECTION;
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.UNION;
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.DIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.SYMDIFFERENCE;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.SineStarFactory;
 import org.locationtech.jts.operation.overlay.OverlayOp;
-import org.locationtech.jts.operation.overlayng.OverlayNGOp;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
 
 import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
@@ -90,7 +90,7 @@ extends PerformanceTestCase
   public void runIntersection()
   {
     for (Geometry b : geomB) {
-      OverlayNGOp.overlay(geomA, b, precisionModel, INTERSECTION);
+      OverlayNG.overlay(geomA, b, precisionModel, INTERSECTION);
     }
   }  
   
@@ -104,7 +104,7 @@ extends PerformanceTestCase
   public void runUnion()
   {
     for (Geometry b : geomB) {
-      OverlayNGOp.overlay(geomA, b, precisionModel, UNION);
+      OverlayNG.overlay(geomA, b, precisionModel, UNION);
     }
   }
   public void runUnionOLD()
