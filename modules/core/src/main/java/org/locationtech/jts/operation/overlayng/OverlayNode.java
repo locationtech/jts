@@ -189,8 +189,8 @@ public class OverlayNode {
    */
   public static void linkResultAreaEdgesMax(OverlayEdge nodeEdge)
   {
-    Assert.isTrue(nodeEdge.isInResult(), "Attempt to link non-result edge");
-    Assert.isTrue(! nodeEdge.symOE().isInResult(), "Found both half-edges in result");
+    Assert.isTrue(nodeEdge.isInResultArea(), "Attempt to link non-result edge");
+    Assert.isTrue(! nodeEdge.symOE().isInResultArea(), "Found both half-edges in result");
 
     /**
      * Since the node edge is an out-edge, 
@@ -216,13 +216,13 @@ public class OverlayNode {
       switch (state) {
       case STATE_FIND_INCOMING:
         OverlayEdge currIn = currOut.symOE();
-        if (! currIn.isInResult()) break;
+        if (! currIn.isInResultArea()) break;
         currResultIn = currIn;
         state = STATE_LINK_OUTGOING;
         //Debug.println("Found result in-edge:  " + currResultIn);
         break;
       case STATE_LINK_OUTGOING:
-        if (! currOut.isInResult()) break;
+        if (! currOut.isInResultArea()) break;
         // link the in edge to the out edge
         currResultIn.setResultNextMax(currOut);
         state = STATE_FIND_INCOMING;

@@ -13,13 +13,9 @@ package org.locationtech.jts.operation.overlayng;
 
 import static org.locationtech.jts.operation.overlayng.OverlayNGOp.INTERSECTION;
 import static org.locationtech.jts.operation.overlayng.OverlayNGOp.UNION;
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.DIFFERENCE;
-import static org.locationtech.jts.operation.overlayng.OverlayNGOp.SYMDIFFERENCE;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.operation.overlay.OverlayOp;
-import org.locationtech.jts.operation.overlayng.OverlayNGOp;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -122,7 +118,7 @@ public class OverlayNGOneTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testNestedShellsIntersection() {
+  public void xtestNestedShellsIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
     Geometry expected = read("POLYGON ((120 180, 180 180, 180 120, 120 120, 120 180))");
@@ -274,6 +270,54 @@ public class OverlayNGOneTest extends GeometryTestCase {
     Geometry b = read("POLYGON ((2.247734099999997 48.8874435, 2.2467041 48.8877869, 2.2453308 48.8877869, 2.2443008 48.8881302, 2.243957512499544 48.888473487500455, 2.2443008 48.8888168, 2.2453308 48.8891602, 2.2463608 48.8888168, 2.247734099999997 48.8874435))");
     Geometry expected = read("POLYGON EMPTY");
     Geometry actual = intersection(a, b, 200);
+    checkEqual(expected, actual);
+  }
+  
+  public void xtestLineUnion() {
+    Geometry a = read("LINESTRING (0 0, 1 1)");
+    Geometry b = read("LINESTRING (1 1, 2 2)");
+    Geometry expected = read("LINESTRING (0 0, 1 1, 2 2)");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void xtestLine2Union() {
+    Geometry a = read("LINESTRING (0 0, 1 1, 0 1)");
+    Geometry b = read("LINESTRING (1 1, 2 2, 3 3)");
+    Geometry expected = read("MULTILINESTRING ((0 0, 1 1), (0 1, 1 1), (1 1, 2 2, 3 3))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void xtestLine3Union() {
+    Geometry a = read("MULTILINESTRING ((0 1, 1 1), (2 2, 2 0))");
+    Geometry b = read("LINESTRING (0 0, 1 1, 2 2, 3 3)");
+    Geometry expected = read("MULTILINESTRING ((0 0, 1 1), (0 1, 1 1), (1 1, 2 2), (2 0, 2 2), (2 2, 3 3))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void xtestLine4Union() {
+    Geometry a = read("LINESTRING (100 300, 200 300, 200 100, 100 100)");
+    Geometry b = read("LINESTRING (300 300, 200 300, 200 300, 200 100, 300 100)");
+    Geometry expected = read("MULTILINESTRING ((200 100, 100 100), (300 300, 200 300), (200 300, 200 100), (200 100, 300 100), (100 300, 200 300))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testLineFigure8Union() {
+    Geometry a = read("LINESTRING (5 1, 2 2, 5 3, 2 4, 5 5)");
+    Geometry b = read("LINESTRING (5 1, 8 2, 5 3, 8 4, 5 5)");
+    Geometry expected = read("MULTILINESTRING ((5 3, 2 2, 5 1, 8 2, 5 3), (5 3, 2 4, 5 5, 8 4, 5 3))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testLineRingUnion() {
+    Geometry a = read("LINESTRING (1 1, 5 5, 9 1)");
+    Geometry b = read("LINESTRING (1 1, 9 1)");
+    Geometry expected = read("LINESTRING (1 1, 5 5, 9 1, 1 1)");
+    Geometry actual = union(a, b, 1);
     checkEqual(expected, actual);
   }
   

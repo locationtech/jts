@@ -16,11 +16,37 @@ import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
-import org.locationtech.jts.operation.overlay.OverlayOp;
+import org.locationtech.jts.util.Debug;
 
+/**
+ * Builds overlay result lines from the overlay graph.
+ * Output linework has the following semantics:
+ * <ol>
+ * <li>Linework is fully noded
+ * <li>Lines are as long as possible between nodes
+ * </ol>
+ * 
+ * Various strategies are possible for how to 
+ * merge graph edges into lines.
+ * This implementation uses the approach
+ * of having output lines run contiguously from node to node.
+ * For rings a node point is chosen arbitrarily.
+ * <p>
+ * Another possible strategy would be to preserve input linework 
+ * as far as possible (i.e. any sections of input lines which are not 
+ * coincident with other linework would be preserved).
+ * <p>
+ * It would also be possible to output LinearRings, 
+ * if the input is a LinearRing and is unchanged.
+ * This will require additional info from the input linework.
+ * 
+ * @author Martin Davis
+ *
+ */
 public class LineStringBuilder {
   
   private GeometryFactory geometryFactory;
@@ -30,7 +56,8 @@ public class LineStringBuilder {
   private InputGeometry inputGeom;
   private int resultDimension;
   private boolean hasResultArea;
-
+  private List<LineString> lines = new ArrayList<LineString>();
+  
   public LineStringBuilder(InputGeometry inputGeom, OverlayGraph graph, boolean hasResultArea, int opCode, GeometryFactory geomFact) {
     this.inputGeom = inputGeom;
     this.graph = graph;
@@ -44,42 +71,164 @@ public class LineStringBuilder {
   }
 
   public List<LineString> getLines() {
-    ArrayList<LineString> lines = new ArrayList<LineString>();
-    addResultLines(lines);
+    markResultLines();
+    addResultLines();
     return lines;
   }
 
-  private void addResultLines(ArrayList<LineString> lines) {
+  private void markResultLines() {
     Collection<OverlayEdge> edges = graph.getEdges();
     for (OverlayEdge edge : edges) {
-      // already included as a line
-      if (edge.isVisited()) continue;
-      markVisited(edge);
+      if (edge.isInResultLine()) 
+        continue;
+      if (isResultLine(edge)) {
+        edge.markInResultLineBoth();
+        //Debug.println(edge);
+      }
+    }
+  }
   
+  private void addResultLines() {
+    addResultLinesAtNodes();
+    addResultLinesRings();
+  }
+  
+  /**
+   * To implement a strategy preserving input lines,
+   * the label must carry an id for each input LineString.
+   * The ids are zeroed out whenever two input edges are merged.
+   * Additional result nodes are created where there are changes in id
+   * at degree-2 nodes.
+   * (degree>=3 nodes must be kept as nodes to ensure 
+   * output linework is fully noded.
+   */
+  
+  private void addResultLinesAtNodes() {
+    Collection<OverlayEdge> edges = graph.getEdges();
+    for (OverlayEdge edge : edges) {
+      if (! edge.isInResultLine()) continue;
+      if (edge.isVisited()) continue;
+      
       /**
-       * Only forward edges need to be considered.
-       * This ensures that orientation will be preserved for lines
+       * Choose start point as a node.
+       * Nodes are degree-1 or degree>=3 edges.
+       * 
+       * This will find all lines originating at nodes
        */
-      if (! edge.isForward()) continue;
-      
-      if (! isResultLine(edge)) continue;
-      
-      /**
-       * When a line edge is in result, both edges are marked
-       */
-      edge.markInResultBoth();
-      
-      LineString line = createLine(edge);
-      lines.add(line);
+      if (degreeLine(edge) != 2) {
+        lines.add( buildLine( edge ));
+        //Debug.println(edge);
+      }
     }
   }
  
+  /**
+   * Adds lines which form rings (i.e. have only degree-2 vertices).
+   */
+  private void addResultLinesRings() {
+    // TODO: an ordering could be imposed on the endpoints to make this more repeatable
+    
+    // TODO: preserve input LinearRings if possible?  Would require marking them as such
+    Collection<OverlayEdge> edges = graph.getEdges();
+    for (OverlayEdge edge : edges) {
+      if (! edge.isInResultLine()) continue;
+      if (edge.isVisited()) continue;
+      
+      lines.add( buildLine( edge ));
+      //Debug.println(edge);
+    }
+  }
+ 
+  /**
+   * Traverses edges from edgeStart which
+   * lie in a single line (have degree = 2).
+   * 
+   * The direction of the linework is preserved as far as possible.
+   * Specifically, the direction of the line is determined 
+   * by the start edge direction. This implies
+   * that if all edges are reversed, the created line
+   * will be reversed to match.
+   * (Other more complex strategies would be possible.
+   * E.g. using the direction of the majority of segments,
+   * or preferring the direction of the A edges.)
+   * 
+   * @param node
+   * @return 
+   */
+  private LineString buildLine(OverlayEdge node) {
+    // assert: edgeStart degree = 1
+    // assert: edgeStart direction = forward
+    CoordinateList pts = new CoordinateList();
+    pts.add(node.orig(), false);
+    
+    boolean isForward = node.isForward();
+    
+    OverlayEdge e = node;
+    do {
+      e.markVisitedBoth();
+      pts.add(e.dest(), false);
+      
+      // end line if next vertex is a node
+      if (degreeLine(e.symOE()) != 2) {
+        break;
+      }
+      e = nextLineEdgeUnvisited(e.symOE());
+      // e will be null if next edge has been visited, which indicates a ring
+    }
+    while (e != null);
+    
+    // add final point of line, if not a ring
+    if (e != null)
+      pts.add(e.dest(), false);
+    //Coordinate[] ptsOut = pts.toCoordinateArray(isForward);
+    Coordinate[] ptsOut = pts.toCoordinateArray();
+    
+    LineString line = geometryFactory.createLineString(ptsOut);
+    return line;
+  }
+
+  /**
+   * Finds the next edge around a node which forms
+   * part of a result line.
+   * 
+   * @param node a line edge originating at the node to be scanned
+   * @return the next line edge, or null if there is none
+   */
+  private OverlayEdge nextLineEdgeUnvisited(OverlayEdge node) {
+    OverlayEdge e = node;
+    do {
+      e = e.oNextOE();
+      if (e.isVisited()) continue;
+      if (e.isInResultLine()) {
+        return e;
+      }
+    } while (e != node);
+    return null;
+  }
+
+  /**
+   * Computes the degree of the line edges incident on a node
+   * @param node node to compute degree for
+   * @return degree of the node
+   */
+  private int degreeLine(OverlayEdge node) {
+    int degree = 0;
+    OverlayEdge e = node;
+    do {
+      if (e.isInResultLine()) {
+        degree++;
+      }
+      e = e.oNextOE();
+    } while (e != node);
+    return degree;
+  }
+  
   private boolean isResultLine(OverlayEdge edge) {
     /**
      * Skip if edge is already in result,
      * either as a area edge or already as a line
      */
-    if (isInResult(edge)) 
+    if (isInResultArea(edge)) 
       return false;
     
     OverlayLabel lbl = edge.getLabel();
@@ -138,18 +287,6 @@ public class LineStringBuilder {
     boolean isCovered = lbl.isInArea(resultAreaIndex);
     return isCovered;
   }
-  
-  private void markVisited(OverlayEdge edge) {
-    edge.setVisited(true);
-    edge.symOE().setVisited(true);
-  }
-  
-  private LineString createLine(OverlayEdge edge) {
-    OverlayEdge forward = edge.isForward() ? edge : edge.symOE();
-    Coordinate[] pts = forward.getCoordinates();
-    LineString line = geometryFactory.createLineString(pts);
-    return line;
-  }
 
   private int resultAreaIndex(int overlayOpCode) {
     int areaIndex = -1;
@@ -184,8 +321,8 @@ public class LineStringBuilder {
     return lbl.getLineLocation(geomIndex);
   }
 
-  private static boolean isInResult(OverlayEdge edge) {
-    return edge.isInResult() || edge.symOE().isInResult();
+  private static boolean isInResultArea(OverlayEdge edge) {
+    return edge.isInResultArea() || edge.symOE().isInResultArea();
   }
 
   private boolean isInteriorCollapse(int geomIndex, OverlayLabel lbl) {

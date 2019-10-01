@@ -400,16 +400,16 @@ public class OverlayGraph {
               label.getLocationBoundaryOrLinear(0, Position.RIGHT, e.isForward()),
               label.getLocationBoundaryOrLinear(1, Position.RIGHT, e.isForward()),
               overlayOpCode)) {
-      e.markInResult();  
+      e.markInResultArea();  
     }
     //Debug.println("markInResultArea: " + e);
   }
   
   public void removeDuplicateResultAreaEdges() {
     for (OverlayEdge edge : getEdges()) {
-      if ( edge.isInResult()  && edge.symOE().isInResult() ) {
-        edge.removeFromResult();
-        edge.symOE().removeFromResult();      
+      if ( edge.isInResultArea()  && edge.symOE().isInResultArea() ) {
+        edge.removeFromResultArea();
+        edge.symOE().removeFromResultArea();      
       }
     }
   }
@@ -417,7 +417,7 @@ public class OverlayGraph {
   public List<OverlayEdge> getResultAreaEdges() {
     List<OverlayEdge> resultEdges = new ArrayList<OverlayEdge>();
     for (OverlayEdge edge : getEdges()) {
-      if (edge.isInResult()) {
+      if (edge.isInResultArea()) {
         resultEdges.add(edge);
       }
     } 

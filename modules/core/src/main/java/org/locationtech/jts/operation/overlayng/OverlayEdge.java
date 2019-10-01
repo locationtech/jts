@@ -70,8 +70,9 @@ public class OverlayEdge extends HalfEdge {
   private Coordinate dirPt;
   private OverlayLabel label;
 
-  private boolean isInResult = false;
-  private boolean isVisited;
+  private boolean isInResultArea = false;
+  private boolean isInResultLine = false;
+  private boolean isVisited = false;
 
   /**
    * Link to next edge in the result.
@@ -84,6 +85,7 @@ public class OverlayEdge extends HalfEdge {
   private MaximalEdgeRing maxEdgeRing;
 
   private OverlayEdge nextResultMaxEdge;
+
 
   public OverlayEdge(Coordinate orig, Coordinate dirPt, boolean direction, OverlayLabel label, Coordinate[] pts) {
     super(orig);
@@ -133,12 +135,34 @@ public class OverlayEdge extends HalfEdge {
     return (OverlayEdge) oNext();
   }
   
-  public boolean isInResult() {
-    return isInResult;
+  public boolean isInResultArea() {
+    return isInResultArea;
   }
   
-  public void removeFromResult() {
-    isInResult = false;
+  public void removeFromResultArea() {
+    isInResultArea = false;
+  }
+  
+  public void markInResultArea() {
+    isInResultArea  = true;
+  }
+
+  public void markInResultAreaBoth() {
+    isInResultArea  = true;
+    symOE().isInResultArea = true;
+  }
+  
+  public boolean isInResultLine() {
+    return isInResultLine;
+  }
+  
+  private void markInResultLine() {
+    isInResultLine  = true;
+  }
+
+  public void markInResultLineBoth() {
+    isInResultLine  = true;
+    symOE().isInResultLine = true;
   }
   
   void setResultNext(OverlayEdge e) {
@@ -171,13 +195,19 @@ public class OverlayEdge extends HalfEdge {
     return isVisited;
   }
   
-  public void setVisited(boolean b) {
+  private void markVisited() {
     isVisited = true;
+  }
+  
+  public void markVisitedBoth() {
+    markVisited();
+    symOE().markVisited();
   }
   
   public void setEdgeRing(OverlayEdgeRing edgeRing) {
     this.edgeRing = edgeRing;
   } 
+  
   public OverlayEdgeRing getEdgeRing() {
     return edgeRing;
   } 
@@ -195,30 +225,28 @@ public class OverlayEdge extends HalfEdge {
     symOE().getLabel().setLocationLine(geomIndex, loc);
   }
 
-  public void markInResult() {
-    isInResult  = true;
-  }
-
-  public void markInResultBoth() {
-    isInResult  = true;
-    symOE().isInResult = true;
-  }
-
   public String toString() {
     Coordinate orig = orig();
     Coordinate dest = dest();
     String dirPtStr = (pts.length > 2)
         ? ", " + WKTWriter.format(directionPt())
             : "";
+
     return "OE( "+ WKTWriter.format(orig)
         + dirPtStr
         + " .. " + WKTWriter.format(dest)
         + " ) " 
         + label.toString(direction) 
-        + (isInResult ? " Res" : "")
+        + resultSymbol()
         + " / Sym: " + symOE().getLabel().toString(direction)
-        + (symOE().isInResult() ? " Res" : "")
+        + symOE().resultSymbol()
         ;
+  }
+  
+  private String resultSymbol() {
+    if (isInResultArea) return " resA";
+    if (isInResultLine) return " resL";
+    return "";
   }
 
 

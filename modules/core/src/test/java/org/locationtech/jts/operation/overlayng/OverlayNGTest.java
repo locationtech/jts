@@ -412,6 +412,54 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
+  public void testLineUnion() {
+    Geometry a = read("LINESTRING (0 0, 1 1)");
+    Geometry b = read("LINESTRING (1 1, 2 2)");
+    Geometry expected = read("LINESTRING (0 0, 1 1, 2 2)");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testLine2Union() {
+    Geometry a = read("LINESTRING (0 0, 1 1, 0 1)");
+    Geometry b = read("LINESTRING (1 1, 2 2, 3 3)");
+    Geometry expected = read("MULTILINESTRING ((0 0, 1 1), (0 1, 1 1), (1 1, 2 2, 3 3))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testLine3Union() {
+    Geometry a = read("MULTILINESTRING ((0 1, 1 1), (2 2, 2 0))");
+    Geometry b = read("LINESTRING (0 0, 1 1, 2 2, 3 3)");
+    Geometry expected = read("MULTILINESTRING ((0 0, 1 1), (0 1, 1 1), (1 1, 2 2), (2 0, 2 2), (2 2, 3 3))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testLine4Union() {
+    Geometry a = read("LINESTRING (100 300, 200 300, 200 100, 100 100)");
+    Geometry b = read("LINESTRING (300 300, 200 300, 200 300, 200 100, 300 100)");
+    Geometry expected = read("MULTILINESTRING ((200 100, 100 100), (300 300, 200 300), (200 300, 200 100), (200 100, 300 100), (100 300, 200 300))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testLineFigure8Union() {
+    Geometry a = read("LINESTRING (5 1, 2 2, 5 3, 2 4, 5 5)");
+    Geometry b = read("LINESTRING (5 1, 8 2, 5 3, 8 4, 5 5)");
+    Geometry expected = read("MULTILINESTRING ((5 3, 2 2, 5 1, 8 2, 5 3), (5 3, 2 4, 5 5, 8 4, 5 3))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testLineRingUnion() {
+    Geometry a = read("LINESTRING (1 1, 5 5, 9 1)");
+    Geometry b = read("LINESTRING (1 1, 9 1)");
+    Geometry expected = read("LINESTRING (1 1, 5 5, 9 1, 1 1)");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+
   public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlayNGOp.overlay(a, b, pm, DIFFERENCE);

@@ -419,7 +419,7 @@ public class OverlayNGOp
   private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
     List<LineString> lines = new ArrayList<LineString>();
     for (OverlayEdge edge : graph.getEdges()) {
-      boolean includeEdge = isOutputEdges || edge.isInResult();
+      boolean includeEdge = isOutputEdges || edge.isInResultArea();
       if (! includeEdge) continue;
       //Coordinate[] pts = getCoords(nss);
       Coordinate[] pts = edge.getCoordinatesOriented();
@@ -432,7 +432,7 @@ public class OverlayNGOp
 
   private static String labelForResult(OverlayEdge edge) {
     return edge.getLabel().toString(edge.isForward())
-        + (edge.isInResult() ? " Res" : "");
+        + (edge.isInResultArea() ? " Res" : "");
   }
 
   private Geometry createResult(int opCode) {
