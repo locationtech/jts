@@ -438,7 +438,8 @@ public class GeometryEditPanel extends JPanel
     Stroke stroke = new BasicStroke(5);
     
     Geometry flashGeom = g;
-    if (g instanceof org.locationtech.jts.geom.Point)
+    double vSize = viewSize(g);
+    if (vSize <= 2 || g instanceof org.locationtech.jts.geom.Point)
       flashGeom = flashPointGeom(g);
     
     try {
@@ -451,7 +452,12 @@ public class GeometryEditPanel extends JPanel
     }
     gr.setPaintMode();
   }
-    
+  
+  private double viewSize(Geometry geom) {
+    Envelope env = geom.getEnvelopeInternal();
+    return viewport.toView(env.getDiameter());
+  }
+  
   private Geometry flashPointGeom(Geometry g)
   {
     double ptRadius = viewport.toModel(4);
