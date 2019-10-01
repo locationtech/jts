@@ -218,6 +218,27 @@ public class CoordinateList
   }
 
   /**
+   * Creates an array containing the coordinates in this list,
+   * oriented in the given direction (forward or reverse).
+   * 
+   * @param direction the direction value: true for forward, false for reverse
+   * @return an oriented array of coordinates
+   */
+  public Coordinate[] toCoordinateArray(boolean isForward)
+  {
+    if (isForward) {
+      return (Coordinate[]) toArray(coordArrayType);
+    }
+    // construct reversed array
+    int size = size();
+    Coordinate[] pts = new Coordinate[size];
+    for (int i = 0; i < size; i++) {
+      pts[i] = get(size - i - 1);
+    }
+    return pts;
+  }
+
+  /**
    * Returns a deep copy of this <tt>CoordinateList</tt> instance.
    *
    * @return a clone of this <tt>CoordinateList</tt> instance
