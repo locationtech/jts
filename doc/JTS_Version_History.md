@@ -37,7 +37,10 @@ Distributions for older JTS versions can be obtained at the
 * Added `Envelope.getDiameter`
 * Added `Intersection` class (#468)
 * Avoid use of `ArrayList` in MonotoneChain builders
-* Added `CoordinateList.toCoordinateArray(isForward)`
+* Added `Intersection` class, refactored library to use it (#468)
+* Added `CascadedPolygonUnion` union-by-buffer on error capability (#470)
+* Added `HalfEdge` support for direction points (#479)
+* Added `CoordinateList.toCoordinateArray(isForward)` (#482)
 
 ### Bug Fixes
 
@@ -52,23 +55,24 @@ Distributions for older JTS versions can be obtained at the
 * Fix infinite loop on empty input in `IndexedPointInAreaLocator` and `SortedPackedIntervalRTree` (#462) 
 * Fix WKT parsing in Turkish locale (#456)
 * Improve accuracy of `LineSegment.lineIntersection` (#468)
+* Fix `Distance3DOp` coordinate ordering (#480) 
 
 ## JTS TestBuilder
 
 ### Functionality Improvements
 
-* Add a CLI to run operations on file input
+* Allow creating additional view layers
+* Support points in Reveal Topology mode
 
 ## JTS TestRunner
 
 ### Functionality Improvements
 
 * Allow test files/dirs to be specified as free args
-* Add cmd options to run operation on file input
 
 ## JtsOp 
 
-Add new command-line utility
+* Added command-line utility to run JTS operations
 
 
 
