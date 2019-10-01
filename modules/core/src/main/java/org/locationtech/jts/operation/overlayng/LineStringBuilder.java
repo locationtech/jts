@@ -180,8 +180,7 @@ public class LineStringBuilder {
     // add final point of line, if not a ring
     if (e != null)
       pts.add(e.dest(), false);
-    //Coordinate[] ptsOut = pts.toCoordinateArray(isForward);
-    Coordinate[] ptsOut = pts.toCoordinateArray();
+    Coordinate[] ptsOut = pts.toCoordinateArray(isForward);
     
     LineString line = geometryFactory.createLineString(ptsOut);
     return line;
