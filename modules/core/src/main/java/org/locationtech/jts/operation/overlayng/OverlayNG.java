@@ -215,10 +215,8 @@ public class OverlayNG
       return;
     }
     
-    LineClipper clipper = optimizeByClipper();
-
     //--- Noding phase
-    List<Edge> edges = nodeAndMerge(clipper);
+    List<Edge> edges = nodeAndMerge();
     
     //--- Topology building phase
     graph = new OverlayGraph( edges );
@@ -347,7 +345,7 @@ public class OverlayNG
     
   }
 
-  private List<Edge> nodeAndMerge(LineClipper clipper) {
+  private List<Edge> nodeAndMerge() {
     /**
      * Node the edges, using whatever noder is being used
      */
@@ -355,47 +353,36 @@ public class OverlayNG
     
     if (noder != null) ovNoder.setNoder(noder);
     
-    if (clipper != null) {
-      ovNoder.setLimiter( clipper );
+    LineClipper clipper = optimizeByClipper();
+    if ( clipper != null ) {
+      ovNoder.setLimiter(clipper);
     }
     
     ovNoder.add(inputGeom.getGeometry(0), 0);
     ovNoder.add(inputGeom.getGeometry(1), 1);
-    Collection<SegmentString> nodedSegStrings = ovNoder.node();
+    Collection<SegmentString> nodedLines = ovNoder.node();
     
     /**
      * Record if an input geometry has collapsed.
      * This is used to avoid trying to locate disconnected edges
      * against a geometry which has collapsed completely.
      */
-    inputGeom.setCollapsed(0, isCollapsed(0, ovNoder, clipper));
-    inputGeom.setCollapsed(1, isCollapsed(1, ovNoder, clipper));
+    inputGeom.setCollapsed(0, isCollapsed(0, ovNoder));
+    inputGeom.setCollapsed(1, isCollapsed(1, ovNoder));
     
     /**
      * Merge the noded edges to eliminate duplicates.
      * Labels will be combined.
      */
     // nodedSegStrings are no longer needed, and will be GCed
-    List<Edge> edges = createEdges(nodedSegStrings);
+    List<Edge> edges = createEdges(nodedLines);
     List<Edge> mergedEdges = EdgeMerger.merge(edges);
     return mergedEdges;
   }
 
-  private boolean isCollapsed(int geomIndex, OverlayNoder ovNoder, LineClipper clipper) {
-    if (clipper != null) {
-      /**
-       * If the geometry is bigger than the limit env, it can't have collapsed.
-       * Need this check because if geometry linework is wholly outside
-       * limiter env, there will be no edges present for it.
-       */
-      /*
-      Envelope geomEnv = inputGeom.getEnvelope( geomIndex );
-      if (! limiter.isWithinLimit( geomEnv ))
-        return false;
-        */
-    }
+  private boolean isCollapsed(int geomIndex, OverlayNoder ovNoder) {
     /**
-     * Otherwise, if no edges remain after noding, 
+     * If no edges remain after noding, 
      * this geom must have collapsed.
      */
     return ! ovNoder.hasEdgesFor(geomIndex);
