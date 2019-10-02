@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2019 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -20,6 +20,7 @@ import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.noding.IntersectionAdder;
@@ -27,6 +28,7 @@ import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.SegmentExtractingNoder;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
@@ -142,6 +144,13 @@ public class OverlayNGTestFunctions {
     return OverlayNG.overlay(a, b, null, noder, INTERSECTION );
   }
 
+  public static Geometry unionCoverage(Geometry geom) {
+    Geometry cov = OverlayNGFunctions.extractHomo(geom);
+    Noder noder = new SegmentExtractingNoder();
+    Point emptyPoint = cov.getFactory().createPoint();
+    return OverlayNG.overlay(cov, emptyPoint, null, noder, UNION );
+  }
+  
   public static Geometry unaryUnionClassicNoding(Geometry a) {
     UnionFunction unionSRFun = new UnionFunction() {
 

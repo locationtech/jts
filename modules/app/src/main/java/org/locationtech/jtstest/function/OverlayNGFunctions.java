@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2019 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -97,7 +97,7 @@ public class OverlayNGFunctions {
      * This ONLY works if the input GeometryCollection 
      * is a non-overlapping polygonal coverage!
      */
-    Geometry homoGeom = forceHomo(a);
+    Geometry homoGeom = extractHomo(a);
     Geometry union = OverlayNG.overlay(homoGeom, emptyPoint, pm, UNION);
     
     List components = null;
@@ -112,8 +112,13 @@ public class OverlayNGFunctions {
     Geometry result = a.getFactory().buildGeometry(components);
     return result;
   }
-
-  private static Geometry forceHomo(Geometry geom) {
+  /**
+   * Extracts homogeneous components with largest dimension.
+   * 
+   * @param geom
+   * @return a homogeneous collection
+   */
+  static Geometry extractHomo(Geometry geom) {
     int resultDimension = geom.getDimension();
     List components = null;
     switch (resultDimension) {
