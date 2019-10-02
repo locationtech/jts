@@ -26,8 +26,9 @@ Overlay operations include:
 <li><b>Overlay operations</b> with specified output precision
 <li><b>Optimizations</b> - including:
   <ul>
-  <li>envelope overlap short-circuiting
-  <li>Overlap envelope clipping 
+  <li>Short-circuit for disjoint input envelopes
+  <li>Reduction of input size via clipping to overlap envelope
+  (this is a generalization of rectangle clipping optimization)
   <li>Optimizations can be disabled if required (e.g. for testing or performance evaluation)
   </ul>
 <li><b>Precision Reduction</b> - in a topologically correct way.  Implemented by unioning a single input with an empty geometry

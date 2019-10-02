@@ -167,15 +167,17 @@ public class OverlayNG
    * Reduces the precision of a geometry by rounding it to the
    * supplied precision model.
    * <p> 
-   * The output is always a valid geometry (so that input polygons
-   * may end up being merged).
+   * The output is always a valid geometry.  This implies that input components
+   * may end up being merged together if they are closer than the grid precision.
+   * if merging is not desired, then the individual geometry components
+   * should be processed separately.
    * <p>
    * The output is fully noded.  
-   * This is an effective way to node and snap-rounding a collection of {@link LineString}s.
+   * This is an effective way to node / snap-round a collection of {@link LineString}s.
    * 
    * @param geom the geometry to reduce
    * @param pm the precision model to use
-   * @return the reduced geometry
+   * @return the precision-reduced geometry
    */
   public static Geometry reducePrecision(Geometry geom, PrecisionModel pm) {
     Point emptyPoint = geom.getFactory().createPoint();
