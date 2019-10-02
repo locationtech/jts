@@ -76,7 +76,7 @@ public class OverlayNGOneTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void xtestBoxTriIntersection() {
+  public void testBoxTriIntersection() {
     Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
     Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
     Geometry expected = read("POLYGON ((3 2, 1 2, 2 5, 3 2))");
@@ -305,7 +305,7 @@ public class OverlayNGOneTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testLineFigure8Union() {
+  public void xtestLineFigure8Union() {
     Geometry a = read("LINESTRING (5 1, 2 2, 5 3, 2 4, 5 5)");
     Geometry b = read("LINESTRING (5 1, 8 2, 5 3, 8 4, 5 5)");
     Geometry expected = read("MULTILINESTRING ((5 3, 2 2, 5 1, 8 2, 5 3), (5 3, 2 4, 5 5, 8 4, 5 3))");
@@ -313,7 +313,7 @@ public class OverlayNGOneTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testLineRingUnion() {
+  public void xtestLineRingUnion() {
     Geometry a = read("LINESTRING (1 1, 5 5, 9 1)");
     Geometry b = read("LINESTRING (1 1, 9 1)");
     Geometry expected = read("LINESTRING (1 1, 5 5, 9 1, 1 1)");

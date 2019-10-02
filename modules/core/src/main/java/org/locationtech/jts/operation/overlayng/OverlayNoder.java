@@ -35,6 +35,7 @@ import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.ValidatingNoder;
+import org.locationtech.jts.noding.snapround.FastSnapRounder;
 import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
 import org.locationtech.jts.noding.snapround.SimpleSnapRounder;
 
@@ -110,7 +111,8 @@ public class OverlayNoder {
 
   private Noder getSRNoder() {
     //Noder noder = new MCIndexSnapRounder(pm);
-    Noder noder = new SimpleSnapRounder(pm);
+    //Noder noder = new SimpleSnapRounder(pm);
+    Noder noder = new FastSnapRounder(pm);
     //Noder noder = new ValidatingNoder(new SimpleSnapRounder(pm));
     return noder;
   }

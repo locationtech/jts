@@ -1,11 +1,10 @@
-
 /*
- * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2019 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License 2.0
+ * are made available under the terms of the Eclipse Public License v1.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -39,32 +38,27 @@ import org.locationtech.jts.util.Debug;
  * Snap Rounding assumes that all vertices lie on a uniform grid;
  * hence the precision model of the input must be fixed precision,
  * and all the input vertices must be rounded to that precision.
- * <p>
- * This implementation uses simple iteration over the line segments.
- * This is not an efficient approach for large sets of segments.
- * <p>
- * This implementation appears to be fully robust using an integer precision model.
- * It will function with non-integer precision models, but the
- * results are not 100% guaranteed to be correctly noded.
  *
  * @version 1.7
  */
-public class SimpleSnapRounder
+public class FastSnapRounder
     implements Noder
 {
   private final PrecisionModel pm;
   private LineIntersector li;
   private final double scaleFactor;
-  private Map<Coordinate, HotPixel> hotPixelMap = new HashMap<Coordinate, HotPixel>();
-  private List<HotPixel> hotPixels;
+  //private Map<Coordinate, HotPixel> hotPixelMap = new HashMap<Coordinate, HotPixel>();
+  //private List<HotPixel> hotPixels;
+  private HotPixelIndex pixelIndex;
   
   private List<NodedSegmentString> snappedResult;
 
-  public SimpleSnapRounder(PrecisionModel pm) {
+  public FastSnapRounder(PrecisionModel pm) {
     this.pm = pm;
     li = new RobustLineIntersector();
     li.setPrecisionModel(pm);
     scaleFactor = pm.getScale();
+    pixelIndex = new HotPixelIndex(pm);
   }
 
   /**
@@ -121,7 +115,6 @@ public class SimpleSnapRounder
     List<Coordinate> intersections = findInteriorIntersections(inputSS);
     addHotPixels(intersections);
     addVertexPixels(segStrings);
-    hotPixels = new ArrayList<HotPixel>(hotPixelMap.values());
 
     List<NodedSegmentString> snapped = computeSnaps(inputSS);
     return snapped;
@@ -144,13 +137,13 @@ public class SimpleSnapRounder
 
   private void addHotPixels(Coordinate[] pts) {
     for (Coordinate pt : pts) {
-      createHotPixel( round(pt) );
+      pixelIndex.add(pt);
     }
   }
   
   private void addHotPixels(List<Coordinate> pts) {
     for (Coordinate pt : pts) {
-      createHotPixel( round(pt) );
+      pixelIndex.add(pt);
     }
   }
 
@@ -174,14 +167,6 @@ public class SimpleSnapRounder
       roundPts.add( round( pts[i] ), false);
     }
     return roundPts.toCoordinateArray();
-  }
-  
-  private HotPixel createHotPixel(Coordinate p) {
-    HotPixel hp = hotPixelMap.get(p);
-    if (hp != null) return hp;
-    hp = new HotPixel(p, scaleFactor, li);
-    hotPixelMap.put(p,  hp);
-    return hp;
   }
 
   /**
@@ -270,7 +255,8 @@ public class SimpleSnapRounder
    * @param snapPts
    */
   private void snapSegment(Coordinate p0, Coordinate p1, NodedSegmentString ss, int segIndex) {
-    for (HotPixel hp : hotPixels) {
+    List<HotPixel> pixels = pixelIndex.query(p0, p1);
+    for (HotPixel hp : pixels) {
       if (hp.intersects(p0, p1)) {
         ss.addIntersection( hp.getCoordinate(), segIndex );
       }
