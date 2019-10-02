@@ -32,13 +32,18 @@ import org.locationtech.jts.util.Debug;
 
 /**
  * Uses Snap Rounding to compute a rounded,
- * fully noded arrangement from a set of {@link SegmentString}s.
+ * fully noded arrangement from a set of {@link SegmentString}s,
+ * in a performant way.
+ * <p>
  * Implements the Snap Rounding technique described in 
  * the papers by Hobby, Guibas &amp; Marimont, and Goodrich et al.
- * Snap Rounding assumes that all vertices lie on a uniform grid;
- * hence the precision model of the input must be fixed precision,
- * and all the input vertices must be rounded to that precision.
+ * Snap Rounding enforces that all output vertices lie on a uniform grid,
+ * which is determined by the provided {@link PrecisionModel}.
+ * Input vertices do not have to be rounded to this grid; 
+ * this will be done during the snap-rounding process.
  *
+ * @see SimpleSnapRounder
+ * 
  * @version 1.7
  */
 public class FastSnapRounder
@@ -46,9 +51,6 @@ public class FastSnapRounder
 {
   private final PrecisionModel pm;
   private LineIntersector li;
-  private final double scaleFactor;
-  //private Map<Coordinate, HotPixel> hotPixelMap = new HashMap<Coordinate, HotPixel>();
-  //private List<HotPixel> hotPixels;
   private HotPixelIndex pixelIndex;
   
   private List<NodedSegmentString> snappedResult;
@@ -57,7 +59,6 @@ public class FastSnapRounder
     this.pm = pm;
     li = new RobustLineIntersector();
     li.setPrecisionModel(pm);
-    scaleFactor = pm.getScale();
     pixelIndex = new HotPixelIndex(pm);
   }
 

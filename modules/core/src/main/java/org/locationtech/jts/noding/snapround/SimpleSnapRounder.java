@@ -34,11 +34,13 @@ import org.locationtech.jts.util.Debug;
 /**
  * Uses Snap Rounding to compute a rounded,
  * fully noded arrangement from a set of {@link SegmentString}s.
+ * <p>
  * Implements the Snap Rounding technique described in 
  * the papers by Hobby, Guibas &amp; Marimont, and Goodrich et al.
- * Snap Rounding assumes that all vertices lie on a uniform grid;
- * hence the precision model of the input must be fixed precision,
- * and all the input vertices must be rounded to that precision.
+ * Snap Rounding enforces that all output vertices lie on a uniform grid,
+ * which is determined by the provided {@link PrecisionModel}.
+ * Input vertices do not have to be rounded to this grid; 
+ * this will be done during the snap-rounding process.
  * <p>
  * This implementation uses simple iteration over the line segments.
  * This is not an efficient approach for large sets of segments.

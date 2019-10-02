@@ -11,7 +11,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.index.strtree.STRtree;
 
-public class HotPixelIndex {
+class HotPixelIndex {
   private PrecisionModel precModel;
   private LineIntersector li;
   private double scaleFactor;
@@ -50,6 +50,7 @@ public class HotPixelIndex {
   }
  
   public List<HotPixel> query(Coordinate p0, Coordinate p1) {
+    // TODO: is it possible to avoid envelope creation?
     Envelope queryEnv = new Envelope(p0, p1);
     List<HotPixel> pixels = index.query(queryEnv);
     return pixels;
