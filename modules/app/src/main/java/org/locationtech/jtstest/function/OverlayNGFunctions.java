@@ -49,6 +49,7 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, INTERSECTION, pm);
   }
   
+  @Metadata(description="Intersection using automatic precision")
   public static Geometry intersectionAuto(Geometry a, Geometry b) {
     return OverlayNG.overlay(a, b, INTERSECTION);
   }
@@ -59,6 +60,7 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, UNION, pm);
   }
   
+  @Metadata(description="Union using automatic precision")
   public static Geometry unionAuto(Geometry a, Geometry b) {
     return OverlayNG.overlay(a, b, UNION);
   }
@@ -69,6 +71,12 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, DIFFERENCE, pm);
   }
 
+  public static Geometry differenceAuto(Geometry a, Geometry b, 
+      @Metadata(title="Grid Scale") double scaleFactor) {
+    return OverlayNG.overlay(a, b, DIFFERENCE);
+  }
+
+  @Metadata(description="Difference using automatic precision")
   public static Geometry differenceBA(Geometry a, Geometry b, 
       @Metadata(title="Grid Scale") double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
@@ -100,6 +108,7 @@ public class OverlayNGFunctions {
     return op.union();
   }
 
+  @Metadata(description="Unaru union using automatic precision")
   public static Geometry unaryUnionAuto(Geometry a) {
     PrecisionModel pm = OverlayNG.precisionModel(a, null);
     UnionFunction unionSRFun = new UnionFunction() {
@@ -122,6 +131,7 @@ public class OverlayNGFunctions {
       @Metadata(title="Grid Scale") double scaleFactor) {
     return OverlayNG.reducePrecision(a, new PrecisionModel(scaleFactor));
   }
+  
   @Metadata(description="Reduce precision of max dimension in a GC")
   public static Geometry reducePrecisionGC(Geometry a, 
       @Metadata(title="Grid Scale") double scaleFactor) {
