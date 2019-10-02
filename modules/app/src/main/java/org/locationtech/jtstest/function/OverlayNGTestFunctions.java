@@ -110,9 +110,9 @@ public class OverlayNGTestFunctions {
     a = OverlayNGFunctions.sameOrEmpty(a, b);
     b = OverlayNGFunctions.sameOrEmpty(b, a);
     // op should not matter, since edges are captured pre-result
-    Geometry inter = extractPoly( OverlayNG.overlay(a, b, pm, INTERSECTION) );
-    Geometry symDiff = extractPoly( OverlayNG.overlay(a, b, pm, SYMDIFFERENCE) );
-    Geometry union = extractPoly( OverlayNG.overlay(inter, symDiff, pm, UNION) );
+    Geometry inter = extractPoly( OverlayNG.overlay(a, b, INTERSECTION, pm) );
+    Geometry symDiff = extractPoly( OverlayNG.overlay(a, b, SYMDIFFERENCE, pm) );
+    Geometry union = extractPoly( OverlayNG.overlay(inter, symDiff, UNION, pm) );
     return union;
   }
 
@@ -136,19 +136,19 @@ public class OverlayNGTestFunctions {
 
   public static Geometry unionClassicNoding(Geometry a, Geometry b, double scaleFactor) {
     Noder noder = getSimpleNoder(false);
-    return OverlayNG.overlay(a, b, null, noder, UNION );
+    return OverlayNG.overlay(a, b, UNION, null, noder );
   }
 
   public static Geometry intersectionClassicNoding(Geometry a, Geometry b, double scaleFactor) {
     Noder noder = getSimpleNoder(false);
-    return OverlayNG.overlay(a, b, null, noder, INTERSECTION );
+    return OverlayNG.overlay(a, b, INTERSECTION, null, noder );
   }
 
   public static Geometry unionCoverage(Geometry geom) {
     Geometry cov = OverlayNGFunctions.extractHomo(geom);
     Noder noder = new SegmentExtractingNoder();
     Point emptyPoint = cov.getFactory().createPoint();
-    return OverlayNG.overlay(cov, emptyPoint, null, noder, UNION );
+    return OverlayNG.overlay(cov, emptyPoint, UNION, null, noder );
   }
   
   public static Geometry unaryUnionClassicNoding(Geometry a) {
@@ -156,7 +156,7 @@ public class OverlayNGTestFunctions {
 
       public Geometry union(Geometry g0, Geometry g1) {
         Noder noder = getSimpleNoder(false);
-        return OverlayNG.overlay(g0, g1, null, noder, UNION );
+        return OverlayNG.overlay(g0, g1, UNION, null, noder );
       }
       
     };

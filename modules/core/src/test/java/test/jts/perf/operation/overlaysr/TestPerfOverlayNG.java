@@ -90,7 +90,7 @@ extends PerformanceTestCase
   public void runIntersection()
   {
     for (Geometry b : geomB) {
-      OverlayNG.overlay(geomA, b, precisionModel, INTERSECTION);
+      OverlayNG.overlay(geomA, b, INTERSECTION, precisionModel);
     }
   }  
   
@@ -104,7 +104,7 @@ extends PerformanceTestCase
   public void runUnion()
   {
     for (Geometry b : geomB) {
-      OverlayNG.overlay(geomA, b, precisionModel, UNION);
+      OverlayNG.overlay(geomA, b, UNION, precisionModel);
     }
   }
   public void runUnionOLD()

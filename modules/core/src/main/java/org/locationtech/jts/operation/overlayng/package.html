@@ -20,10 +20,29 @@ Overlay operations include:
 <li>Symmetric Difference</li>
 </ul>
 </p>
-<p>
- 
+<h2>Features</h2>
+<h3>Functionality</h3>
+<ul>
+<li><b>Overlay operations</b> with specified output precision
+<li><b>Optimizations</b> - including:
+  <ul>
+  <li>envelope overlap short-circuiting
+  <li>Overlap envelope clipping 
+  <li>Optimizations can be disabled if required (e.g. for testing or performance evaluation)
+  </ul>
+<li><b>Precision Reduction</b> - in a topologically correct way.  Implemented by unioning a single input with an empty geometry
+<li><b>Fast Coverage Union</b> - of polygonal and linear coverages
+<li><b>Pluggable Noding</b> - allows different noders to change characteristics of performance and accuracy
+</ul>
+
+<h3>Codebase</h3>
+<ul>
+<li>Simpler topology model
+<li>SSimpler graph structure (based on winged edge model)
+<li>SSeparation of noding and topology-build phases
+</ul>
 </p>
-<p>
+<h2>Algorithm</h2>
 An overview of the overlay algorithm is:
 
 <ol>

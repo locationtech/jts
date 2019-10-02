@@ -26,6 +26,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geomgraph.Label;
+import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.overlay.OverlayOp;
@@ -109,26 +110,57 @@ public class OverlayNG
   
   /**
    * Computes an overlay operation for 
-   * the given geometry arguments.
+   * the given geometry operands.
    * 
    * @param geom0 the first geometry argument
    * @param geom1 the second geometry argument
    * @param opCode the code for the desired overlay operation
+   * @param pm the precision model to use
    * @return the result of the overlay operation
    */
-  public static Geometry overlay(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode)
+  public static Geometry overlay(Geometry geom0, Geometry geom1, int opCode, PrecisionModel pm)
   {
     OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
     Geometry geomOv = ov.getResultGeometry();
     return geomOv;
   }
 
-  public static Geometry overlay(Geometry geom0, Geometry geom1, PrecisionModel pm, Noder noder, int opCode)
+  /**
+   * Computes an overlay operation for the given geometry operands, 
+   * using a supplied {@link Noder}.
+   * 
+   * @param geom0 the first geometry argument
+   * @param geom1 the second geometry argument
+   * @param opCode the code for the desired overlay operation
+   * @param pm the precision model to use (which may be null if the noder does not use one)
+   * @param noder the noder to use
+   * @return the result of the overlay operation
+   */
+  public static Geometry overlay(Geometry geom0, Geometry geom1, int opCode, PrecisionModel pm, Noder noder)
   {
     OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
     ov.setNoder(noder);
     Geometry geomOv = ov.getResultGeometry();
     return geomOv;
+  }
+
+  /**
+   * Computes an overlay operation for 
+   * the given geometry operands,
+   * using an automatically-determined precision model.
+   * 
+   * @param geom0 the first geometry argument
+   * @param geom1 the second geometry argument
+   * @param opCode the code for the desired overlay operation
+   * @return the result of the overlay operation
+   */
+  public static Geometry overlay(Geometry geom0, Geometry geom1, int opCode)
+  {
+    PrecisionModel pm = precisionModel(geom0, geom1);
+    //System.out.println("Precision Model: " + pm);
+    
+    OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
+    return ov.getResultGeometry();
   }
 
   /**
@@ -147,9 +179,67 @@ public class OverlayNG
    */
   public static Geometry reducePrecision(Geometry geom, PrecisionModel pm) {
     Point emptyPoint = geom.getFactory().createPoint();
-    Geometry reduced = OverlayNG.overlay(geom, emptyPoint, pm, UNION);
+    Geometry reduced = OverlayNG.overlay(geom, emptyPoint, UNION, pm);
     return reduced;
   }
+  
+  /**
+   * Determines a suitable precision model to 
+   * use for overlay operations for one or two input geometries.
+   * The precision scale factor is chosen to maximize 
+   * output precision while avoiding round-off issues.
+   * <p>
+   * NOTE: this is a heuristic determination, so is not guaranteed to 
+   * eliminate precision issues.
+   * 
+   * @param a a geometry
+   * @param b a geometry (which may be null)
+   * @return a suitable precision model for overlay
+   */
+  public static PrecisionModel precisionModel(
+      Geometry a, Geometry b) {
+    return new PrecisionModel( precisionScaleFactor( a, b));
+  }
+  
+  private static double precisionScaleFactor(
+      Geometry a, Geometry b) {
+    Envelope env = new Envelope(a.getEnvelopeInternal());
+    if (b != null) {
+      env.expandToInclude(b.getEnvelopeInternal());
+    }
+    return precisionScaleFactor(env, MAX_PRECISION_DIGITS);
+  }
+  
+  private static double precisionScaleFactor(Envelope env, int maxPrecisionDigits) {
+    double maxVal = MathUtil.max(
+        Math.abs(env.getMaxX()), 
+            Math.abs(env.getMaxY()), 
+                Math.abs(env.getMinX()), 
+                    Math.abs(env.getMinY())
+            );
+    return precisionScaleFactor(maxVal, maxPrecisionDigits);
+  }
+
+  /**
+   * A number of digits of precision which leaves some computational "headroom"
+   * for floating point operations.
+   * 
+   * This value should be less than the decimal precision of double-precision values (16).
+   */
+  private static int MAX_PRECISION_DIGITS = 14;
+  
+  // TODO: move to PrecisionModel
+  private static double precisionScaleFactor(
+      double maxValue, int maxPrecisionDigits)
+  {
+    // the smallest power of 10 greater than the buffer envelope
+    int bufEnvPrecisionDigits = (int) (Math.log(maxValue) / Math.log(10) + 1.0);
+    int minUnitLog10 = maxPrecisionDigits - bufEnvPrecisionDigits;
+    
+    double scaleFactor = Math.pow(10.0, minUnitLog10);
+    return scaleFactor;
+  }
+  
   
   private static final int SAFE_ENV_EXPAND_FACTOR = 3;
 

@@ -323,11 +323,11 @@ public class OverlayNGOneTest extends GeometryTestCase {
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, UNION);
+    return OverlayNG.overlay(a, b, UNION, pm);
   }
   
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, INTERSECTION);
+    return OverlayNG.overlay(a, b, INTERSECTION, pm);
   }
 }

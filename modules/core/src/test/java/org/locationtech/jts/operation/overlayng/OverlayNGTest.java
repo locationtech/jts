@@ -462,17 +462,17 @@ public class OverlayNGTest extends GeometryTestCase {
 
   public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, DIFFERENCE);
+    return OverlayNG.overlay(a, b, DIFFERENCE, pm);
   }
   
   public static Geometry symDifference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, SYMDIFFERENCE);
+    return OverlayNG.overlay(a, b, SYMDIFFERENCE, pm);
   }
   
   public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, INTERSECTION);
+    return OverlayNG.overlay(a, b, INTERSECTION, pm);
   }
   
   public static Geometry intersectionNoOpt(Geometry a, Geometry b, double scaleFactor) {
@@ -484,7 +484,7 @@ public class OverlayNGTest extends GeometryTestCase {
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, pm, UNION);
+    return OverlayNG.overlay(a, b, UNION, pm);
   }
   
 }
