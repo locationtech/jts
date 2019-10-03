@@ -73,16 +73,15 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, DIFFERENCE, pm);
   }
 
-  public static Geometry differenceAuto(Geometry a, Geometry b, 
-      @Metadata(title="Grid Scale") double scaleFactor) {
-    return OverlayNG.overlay(a, b, DIFFERENCE);
-  }
-
-  @Metadata(description="Difference using automatic precision")
   public static Geometry differenceBA(Geometry a, Geometry b, 
       @Metadata(title="Grid Scale") double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlayNG.overlay(b, a, DIFFERENCE, pm);
+  }
+
+  @Metadata(description="Difference using automatic precision")
+  public static Geometry differenceAuto(Geometry a, Geometry b) {
+    return OverlayNG.overlay(a, b, DIFFERENCE);
   }
 
   public static Geometry symDifference(Geometry a, Geometry b, 
