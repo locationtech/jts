@@ -144,13 +144,6 @@ public class OverlayNGTestFunctions {
     return OverlayNG.overlay(a, b, INTERSECTION, null, noder );
   }
 
-  public static Geometry unionCoverage(Geometry geom) {
-    Geometry cov = OverlayNGFunctions.extractHomo(geom);
-    Noder noder = new SegmentExtractingNoder();
-    Point emptyPoint = cov.getFactory().createPoint();
-    return OverlayNG.overlay(cov, emptyPoint, UNION, null, noder );
-  }
-  
   public static Geometry unaryUnionClassicNoding(Geometry a) {
     UnionFunction unionSRFun = new UnionFunction() {
 

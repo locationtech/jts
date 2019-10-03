@@ -23,7 +23,9 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.LineStringExtracter;
 import org.locationtech.jts.geom.util.PolygonExtracter;
+import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.SegmentExtractingNoder;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 import org.locationtech.jtstest.geomfunction.Metadata;
@@ -108,7 +110,7 @@ public class OverlayNGFunctions {
     return op.union();
   }
 
-  @Metadata(description="Unaru union using automatic precision")
+  @Metadata(description="Unary union using automatic precision")
   public static Geometry unaryUnionAuto(Geometry a) {
     PrecisionModel pm = OverlayNG.precisionModel(a, null);
     UnionFunction unionSRFun = new UnionFunction() {
@@ -127,6 +129,14 @@ public class OverlayNGFunctions {
     return op.union();
   }
 
+  @Metadata(description="Union a noded coverage (polygons or lines)")
+  public static Geometry unionCoverage(Geometry geom) {
+    Geometry cov = OverlayNGFunctions.extractHomo(geom);
+    Noder noder = new SegmentExtractingNoder();
+    Point emptyPoint = cov.getFactory().createPoint();
+    return OverlayNG.overlay(cov, emptyPoint, UNION, null, noder );
+  }
+  
   public static Geometry reducePrecision(Geometry a, 
       @Metadata(title="Grid Scale") double scaleFactor) {
     return OverlayNG.reducePrecision(a, new PrecisionModel(scaleFactor));
