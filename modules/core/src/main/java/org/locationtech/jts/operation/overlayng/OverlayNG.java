@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -198,50 +199,11 @@ public class OverlayNG
    * @param b a geometry (which may be null)
    * @return a suitable precision model for overlay
    */
-  public static PrecisionModel precisionModel(
-      Geometry a, Geometry b) {
-    return new PrecisionModel( precisionScaleFactor( a, b));
-  }
-  
-  private static double precisionScaleFactor(
-      Geometry a, Geometry b) {
-    Envelope env = new Envelope(a.getEnvelopeInternal());
-    if (b != null) {
-      env.expandToInclude(b.getEnvelopeInternal());
-    }
-    return precisionScaleFactor(env, MAX_PRECISION_DIGITS);
-  }
-  
-  private static double precisionScaleFactor(Envelope env, int maxPrecisionDigits) {
-    double maxVal = MathUtil.max(
-        Math.abs(env.getMaxX()), 
-            Math.abs(env.getMaxY()), 
-                Math.abs(env.getMinX()), 
-                    Math.abs(env.getMinY())
-            );
-    return precisionScaleFactor(maxVal, maxPrecisionDigits);
+  public static PrecisionModel precisionModel(Geometry a, Geometry b) {
+    double scale = Scale.autoScale(a, b);
+    return new PrecisionModel( scale );
   }
 
-  /**
-   * A number of digits of precision which leaves some computational "headroom"
-   * for floating point operations.
-   * 
-   * This value should be less than the decimal precision of double-precision values (16).
-   */
-  private static int MAX_PRECISION_DIGITS = 14;
-  
-  // TODO: move to PrecisionModel
-  private static double precisionScaleFactor(
-      double maxValue, int maxPrecisionDigits)
-  {
-    // the smallest power of 10 greater than the buffer envelope
-    int bufEnvPrecisionDigits = (int) (Math.log(maxValue) / Math.log(10) + 1.0);
-    int minUnitLog10 = maxPrecisionDigits - bufEnvPrecisionDigits;
-    
-    double scaleFactor = Math.pow(10.0, minUnitLog10);
-    return scaleFactor;
-  }
-  
   
   private static final int SAFE_ENV_EXPAND_FACTOR = 3;
 

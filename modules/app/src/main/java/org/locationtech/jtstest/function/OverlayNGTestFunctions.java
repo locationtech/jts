@@ -28,11 +28,23 @@ import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
-import org.locationtech.jts.operation.overlayng.SegmentExtractingNoder;
+import org.locationtech.jts.operation.overlayng.Scale;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
 public class OverlayNGTestFunctions {
+  
+  public static double scaleAuto(Geometry a, Geometry b) {
+    return Scale.autoScale(a, b);
+  }
+  
+  public static double scaleInherent(Geometry a, Geometry b) {
+    return Scale.inherentScale(a, b);
+  }
+  
+  public static double scaleSafe(Geometry a, Geometry b) {
+    return Scale.safeScale(a, b);
+  }
   
   public static Geometry edgesNoded(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
