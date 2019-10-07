@@ -203,6 +203,15 @@ public class Envelope
   }
 
   /**
+   * Creates a copy of this envelope object.
+   * 
+   * @return a copy of this envelope
+   */
+  public Envelope copy() {
+    return new Envelope(this);
+  }
+  
+  /**
    *  Initialize an <code>Envelope</code> to a region defined by two Coordinates.
    *
    *@param  p1  the first Coordinate
@@ -530,8 +539,8 @@ public class Envelope
   }
 
   /**
-   *  Check if the region defined by <code>other</code>
-   *  intersects the region of this <code>Envelope</code>.
+   * Tests if the region defined by <code>other</code>
+   * intersects the region of this <code>Envelope</code>.
    *
    *@param  other  the <code>Envelope</code> which this <code>Envelope</code> is
    *          being checked for intersecting
@@ -544,9 +553,11 @@ public class Envelope
         other.miny > maxy ||
         other.maxy < miny);
   }
+  
+  
   /**
-   *  Check if the extent defined by two extremal points
-   *  intersects the extent of this <code>Envelope</code>.
+   * Tests if the extent defined by two extremal points
+   * intersects the extent of this <code>Envelope</code>.
    *
    *@param a a point
    *@param b another point
@@ -569,6 +580,24 @@ public class Envelope
     
     return true;
   }
+  
+  /**
+   * Tests if the region defined by <code>other</code>
+   * is disjoint from the region of this <code>Envelope</code>.
+   *
+   *@param  other  the <code>Envelope</code> being checked for disjointness
+   *@return        <code>true</code> if the <code>Envelope</code>s are disjoint
+   *
+   *@see #intersects(Envelope)
+   */
+  public boolean disjoint(Envelope other) {
+      if (isNull() || other.isNull()) { return true; }
+    return other.minx > maxx ||
+        other.maxx < minx ||
+        other.miny > maxy ||
+        other.maxy < miny;
+  }
+  
   /**
    * @deprecated Use #intersects instead. In the future, #overlaps may be
    * changed to be a true overlap check; that is, whether the intersection is
@@ -579,8 +608,8 @@ public class Envelope
   }
 
   /**
-   *  Check if the point <code>p</code>
-   *  intersects (lies inside) the region of this <code>Envelope</code>.
+   * Tests if the point <code>p</code>
+   * intersects (lies inside) the region of this <code>Envelope</code>.
    *
    *@param  p  the <code>Coordinate</code> to be tested
    *@return <code>true</code> if the point intersects this <code>Envelope</code>
