@@ -45,8 +45,12 @@ public class LineClipper {
     clipEnvMaxX = clipEnv.getMaxX();
   }
 
-  public boolean isClippedCompletely(Envelope env) {
-    return ! env.intersects(clipEnv);
+  public boolean isDisjoint(Envelope env) {
+    return clipEnv.disjoint(env);
+  }
+  
+  public boolean covers(Envelope env) {
+    return clipEnv.covers(env);
   }
   
   /**

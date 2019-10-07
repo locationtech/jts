@@ -382,7 +382,7 @@ public class OverlayNG
     else {
       envBufDist = SAFE_ENV_EXPAND_FACTOR * 1.0 / pm.getScale();
     }
-    Envelope safeEnv = new Envelope(originalEnv);
+    Envelope safeEnv = originalEnv.copy();
     safeEnv.expandBy(envBufDist);
     return safeEnv;
   }

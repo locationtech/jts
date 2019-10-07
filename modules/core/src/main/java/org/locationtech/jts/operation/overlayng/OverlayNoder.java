@@ -132,7 +132,7 @@ public class OverlayNoder {
   public void add(Geometry g, int geomIndex)
   {
     if (g.isEmpty()) return;
-    if (isClippedCompletely(g.getEnvelopeInternal())) 
+    if (isClippedToEmpty(g.getEnvelopeInternal())) 
       return;
 
 
@@ -182,10 +182,8 @@ public class OverlayNoder {
      */
     if (ring.isEmpty()) return;
     
-    if (isClippedCompletely(ring.getEnvelopeInternal())) 
+    if (isClippedToEmpty(ring.getEnvelopeInternal())) 
       return;
-    
-    Coordinate[] ptsRaw = ring.getCoordinates();
     
     /**
      * Compute the orientation of the ring, to
@@ -195,7 +193,7 @@ public class OverlayNoder {
      * It is important to compute orientation on the original ring,
      * since topology collapse can make the orientation computation give the wrong answer.
      */
-    boolean isCCW = Orientation.isCCW(ptsRaw);
+    boolean isCCW = Orientation.isCCW( ring.getCoordinateSequence() );
     
     /**
      * Round the input points, to ensure they match the requested precision.
@@ -203,7 +201,7 @@ public class OverlayNoder {
      * but it is handled by the overlay processing.
      */
     //Coordinate[] pts = round(ptsRaw);
-    Coordinate[] pts = clip(ptsRaw);
+    Coordinate[] pts = clip( ring );
     
     /**
      * Don't add edges that collapse to a point
@@ -241,11 +239,11 @@ public class OverlayNoder {
     // don't add empty lines
     if (line.isEmpty()) return;
     
-    if (isClippedCompletely(line.getEnvelopeInternal())) 
+    if (isClippedToEmpty(line.getEnvelopeInternal())) 
       return;
     
     //Coordinate[] pts = round(line.getCoordinates());
-    Coordinate[] pts = clip( line.getCoordinates() );
+    Coordinate[] pts = clip( line );
 
     /**
      * Don't add edges that collapse to a point
@@ -262,13 +260,21 @@ public class OverlayNoder {
     segStrings.add(ss);
   }
 
-  private boolean isClippedCompletely(Envelope env) {
+  private boolean isClippedToEmpty(Envelope env) {
     if (clipper == null) return false;
-    return clipper.isClippedCompletely(env);
+    return clipper.isDisjoint(env);
   }
   
-  private Coordinate[] clip(Coordinate[] pts) {
+  private Coordinate[] clip(LineString line) {
+    Coordinate[] pts = line.getCoordinates();
     if (clipper == null) {
+      return pts;
+    }
+    Envelope env = line.getEnvelopeInternal();
+    /**
+     * If line is completely contained then no need to clip
+     */
+    if (clipper.covers(env)) {
       return pts;
     }
     return clipper.clip(pts);
