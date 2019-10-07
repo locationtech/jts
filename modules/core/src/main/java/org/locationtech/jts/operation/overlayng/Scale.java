@@ -4,6 +4,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.OrdinateFormat;
 import org.locationtech.jts.math.MathUtil;
 
 public class Scale {
@@ -105,7 +106,11 @@ public class Scale {
    * @return the number of decimal places
    */
   private static int numDecimals(double value) {
-    String s = Double.toString(value);
+    /**
+     * Ensure that scientific notation is NOT used
+     * (it would skew the number of fraction digits)
+     */
+    String s = OrdinateFormat.DEFAULT.format(value);
     if (s.endsWith(".0")) 
       return 0;
     int len = s.length();
@@ -126,7 +131,7 @@ public class Scale {
     if (safeScale < scale) {
       scale = safeScale;
     }
-    System.out.println("Scale = " + scale);
+    //System.out.println("Scale = " + scale);
     return scale;
   }
 
@@ -147,7 +152,7 @@ public class Scale {
     private void updateScaleMax(double value) {
       double scaleVal = Scale.inherentScale( value );
       if (scaleVal > scale) {
-        System.out.println("Value " + value + " has scale: " + scaleVal);
+        //System.out.println("Value " + value + " has scale: " + scaleVal);
         scale = scaleVal;
       }
     }
