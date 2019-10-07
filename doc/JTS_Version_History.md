@@ -30,17 +30,19 @@ Distributions for older JTS versions can be obtained at the
 
 * Added `IndexedFacetDistance.isWithinDistance`
 * Added `OrdinateFormat` to ensure that ordinate text output is accurate and consistent
-* Improve performance of `UniqueCoordinateFilter` (#422)
-* Improve performance of `Polygonizer` (#431)
 * Added `Triangle.circumcentreDD`
 * Added `DD.determinant` methods
 * Added `Envelope` methods `getDiameter`, `copy`, `disjoint` (#483)
-* Added `Intersection` class (#468)
-* Avoid use of `ArrayList` in MonotoneChain builders
 * Added `Intersection` class, refactored library to use it (#468)
 * Added `CascadedPolygonUnion` union-by-buffer on error capability (#470)
 * Added `HalfEdge` support for direction points (#479)
 * Added `CoordinateList.toCoordinateArray(isForward)` (#482)
+
+### Performance Improvements
+
+* Improve performance of `UniqueCoordinateFilter` (#422)
+* Improve performance of `Polygonizer` (#431)
+* Avoid use of `ArrayList` in MonotoneChain builders
 
 ### Bug Fixes
 
