@@ -111,7 +111,7 @@ public class OverlayNGFunctions {
 
   @Metadata(description="Unary union using automatic precision")
   public static Geometry unaryUnionAuto(Geometry a) {
-    PrecisionModel pm = OverlayNG.precisionModel(a, null);
+    PrecisionModel pm = OverlayNG.autoPM(a, null);
     UnionFunction unionSRFun = new UnionFunction() {
 
       public Geometry union(Geometry g0, Geometry g1) {

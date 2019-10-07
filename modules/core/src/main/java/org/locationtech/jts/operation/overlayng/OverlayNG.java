@@ -157,7 +157,7 @@ public class OverlayNG
    */
   public static Geometry overlay(Geometry geom0, Geometry geom1, int opCode)
   {
-    PrecisionModel pm = precisionModel(geom0, geom1);
+    PrecisionModel pm = autoPM(geom0, geom1);
     //System.out.println("Precision Model: " + pm);
     
     OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
@@ -199,12 +199,11 @@ public class OverlayNG
    * @param b a geometry (which may be null)
    * @return a suitable precision model for overlay
    */
-  public static PrecisionModel precisionModel(Geometry a, Geometry b) {
+  public static PrecisionModel autoPM(Geometry a, Geometry b) {
     double scale = Scale.autoScale(a, b);
     return new PrecisionModel( scale );
   }
 
-  
   private static final int SAFE_ENV_EXPAND_FACTOR = 3;
 
   private int opCode;
@@ -300,11 +299,18 @@ public class OverlayNG
     case INTERSECTION:
       if ( inputGeom.isEmpty(0) || inputGeom.isEmpty(1) )
         return true;
+      if (isInputDisjoint()) 
+        return true;
     case DIFFERENCE:
       if ( inputGeom.isEmpty(0) )     
         return true;
     }
     return false;
+  }
+
+  private boolean isInputDisjoint() {
+    boolean intersects = inputGeom.getEnvelope(0).intersects(inputGeom.getEnvelope(1));
+    return ! intersects;
   }
 
   private Geometry createEmptyResult() {
