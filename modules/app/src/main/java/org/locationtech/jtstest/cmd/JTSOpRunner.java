@@ -74,6 +74,7 @@ public class JTSOpRunner {
   private Geometry geomB;
   private OpParams param;
   private String hdrSave;
+  private long totalTime;
   
   static class OpParams {
     String operation;
@@ -133,10 +134,10 @@ public class JTSOpRunner {
 
     loadGeometry();
     if (geomA != null) {
-      if (isVerbose) geomOut.printGeometrySummary("A", geomA, param.fileA);
+      printGeometrySummary("A", geomA, param.fileA);
     }
     if (geomB != null) {
-      if (isVerbose) geomOut.printGeometrySummary("B", geomB, param.fileB);
+      printGeometrySummary("B", geomB, param.fileB);
     }
     
     //--- If -each aa specified, use A for B
@@ -189,6 +190,8 @@ public class JTSOpRunner {
 
     FunctionInvoker fun = new FunctionInvoker(func, argList);
     executeFunctionSpreadA(fun);
+    
+    printlnInfo("\nTotal Time: " + Stopwatch.getTimeString( totalTime ));
   }
   
   private void executeFunctionSpreadA(FunctionInvoker fun) {
@@ -239,9 +242,7 @@ public class JTSOpRunner {
   private void executeFunctionArgs(Geometry geomA, FunctionInvoker fun, String hdr) {
     // Set saved hdr to blank in case verbose is on
     hdrSave = "";
-    if (isVerbose) {
-      out.println(hdr);
-    }
+    printlnInfo(hdr);
     for (int i = 0; i < fun.getNumInvocations(); i++) {
       Object funArgs[] = fun.getArgs(i);
       GeometryFunction func = fun.getFunction();
@@ -262,7 +263,7 @@ public class JTSOpRunner {
     Object result = null;
     for (int i = 0; i < param.repeat; i++) {
       if (param.repeat > 1) {
-        out.print("Run: " + (i+1) + " of " + param.repeat + "   ");
+        printlnInfo("Run: " + (i+1) + " of " + param.repeat + "   ");
       }
       result = executeFunctionOnce(geomA, func, funArgs);
     }
@@ -287,11 +288,11 @@ public class JTSOpRunner {
     finally {
       timer.stop();
     }
-    if (isVerbose) {
-      out.println("Time: " + timer.getTimeString());
-      if (result instanceof Geometry) {
-        geomOut.printGeometrySummary("Result", (Geometry) result, null);
-      }
+    totalTime += timer.getTime();
+    printlnInfo("Time: " + timer.getTimeString());
+
+    if (result instanceof Geometry) {
+      printGeometrySummary("Result", (Geometry) result, null);
     }
     if (param.validate) {
       validate(result);
@@ -402,6 +403,20 @@ public class JTSOpRunner {
     else {
       out.println(result);
     }
+  }
+  
+  private void printlnInfo(String s) {
+    if (! isVerbose) return;
+    out.println(s);
+  }
+  
+  private void printGeometrySummary(String label, Geometry geom, String source) {
+    // short-circuit to avoid cost
+    if (! isVerbose) return;
+    
+    String srcname = "";
+    if (source != null) srcname = " -- " + source;
+    printlnInfo( GeometryOutput.writeGeometrySummary(label, geom) + srcname);
   }
   
   private void checkFunctionArgs(GeometryFunction func, Geometry geomB, String[] argList) {

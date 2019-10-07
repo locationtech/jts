@@ -7,6 +7,12 @@ import org.locationtech.jts.io.gml2.GMLWriter;
 import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
 
+/**
+ * Outputs geometry in a specified format.
+ * 
+ * @author Admin
+ *
+ */
 public class GeometryOutput {
   private CommandOutput out;
 
@@ -41,12 +47,6 @@ public class GeometryOutput {
     GeoJsonWriter writer = new GeoJsonWriter();
     writer.setEncodeCRS(false);
     return writer.write(geom);
-  }
-
-  public void printGeometrySummary(String label, Geometry geom, String source) {
-    String srcname = "";
-    if (source != null) srcname = " -- " + source;
-    out.println( writeGeometrySummary(label, geom) + srcname);
   }
   
   public static String writeGeometrySummary(String label,

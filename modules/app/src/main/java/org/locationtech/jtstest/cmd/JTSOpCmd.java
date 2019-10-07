@@ -92,7 +92,7 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.VERBOSE, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.V, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.HELP, 0))
-    .addOptionSpec(new OptionSpec(CommandOptions.OP, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.OP, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMA, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMB, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMAB, 1))
@@ -118,7 +118,8 @@ public class JTSOpCmd {
   "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
   "           [ -geomfunc <classname> ]",
   "           [ -v, -verbose ]",
-  "           [ -help]",
+  "           [ -help ]",
+  "           [ -op ]",
   "           [ op [ args... ]]",
   "  op              name of the operation (Category.op)",
   "  args            one or more scalar arguments to the operation",
@@ -133,7 +134,8 @@ public class JTSOpCmd {
   "  -f              output format to use.  If omitted output is silent",
   "  -geomfunc       specifies class providing geometry operations",
   "  -v, -verbose    display information about execution",
-  "  -help           print a list of available operations"
+  "  -help           print a list of available operations",
+  "  -op             separator for op arguments"
   };
   
   private void printHelp(boolean showFunctions) {
@@ -238,8 +240,6 @@ public class JTSOpCmd {
     commandLine.parse(args);
 
     JTSOpRunner.OpParams cmdArgs = new JTSOpRunner.OpParams();
-    cmdArgs.operation = commandLine.getOptionArg(CommandOptions.OP, 0);
-    
     
     String argA = commandLine.getOptionArg(CommandOptions.GEOMA, 0);
     if (argA != null) {
