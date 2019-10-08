@@ -639,22 +639,13 @@ public class OverlayOp
    */
   public static Geometry createEmptyResult(int overlayOpCode, Geometry a, Geometry b, GeometryFactory geomFact)
   {
-  	Geometry result = null;
-  	switch (resultDimension(overlayOpCode, a, b)) {
-  	case -1:
-  		result = geomFact.createGeometryCollection();
-  		break;
-  	case 0:
-  		result =  geomFact.createPoint();
-  		break;
-  	case 1:
-  		result =  geomFact.createLineString();
-  		break;
-  	case 2:
-  		result =  geomFact.createPolygon();
-  		break;
-  	}
-		return result;
+    Geometry result = null;
+    int resultDim = resultDimension(overlayOpCode, a, b);
+
+    /**
+     * Handles resultSDim = -1, although should not happen
+     */
+    return result =  geomFact.createEmpty(resultDim);
   }
   
   private static int resultDimension(int opCode, Geometry g0, Geometry g1)
