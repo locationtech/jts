@@ -113,11 +113,12 @@ public class UnaryUnionOp
 		return op.union();
 	}
 	
-	private List polygons = new ArrayList();
-	private List lines = new ArrayList();
-	private List points = new ArrayList();
+	//private List polygons = new ArrayList();
+	//private List lines = new ArrayList();
+	//private List points = new ArrayList();
 	
 	private GeometryFactory geomFact = null;
+  private InputExtracter extracter;
 	
 	/**
 	 * Constructs a unary union operation for a {@link Collection} 
@@ -156,43 +157,49 @@ public class UnaryUnionOp
 	
 	private void extract(Collection geoms)
 	{
-		for (Iterator i = geoms.iterator(); i.hasNext();) {
-			Geometry geom = (Geometry) i.next();
-			extract(geom);
-		}
+	  extracter = InputExtracter.extract(geoms);
 	}
 	
 	private void extract(Geometry geom)
 	{
-		if (geomFact == null)
-			geomFact = geom.getFactory();
-		
-		/*
-		PolygonExtracter.getPolygons(geom, polygons);
-		LineStringExtracter.getLines(geom, lines);
-		PointExtracter.getPoints(geom, points);
-		*/
-		GeometryExtracter.extract(geom, Polygon.class, polygons);
-		GeometryExtracter.extract(geom, LineString.class, lines);
-		GeometryExtracter.extract(geom, Point.class, points);
+		extracter = InputExtracter.extract(geom);
 	}
 
 	/**
 	 * Gets the union of the input geometries.
-	 * If no input geometries were provided but a {@link GeometryFactory} was provided, 
+	 * <p>
+	 * The result of empty input is determined as follows:
+	 * <ol>
+	 * <li>If the input is empty and a dimension can be
+	 * determined (i.e. an empty geometry is present), 
+	 * an empty atomic geometry of that dimension is returned.
+	 * <li>If no input geometries were provided but a {@link GeometryFactory} was provided, 
 	 * an empty {@link GeometryCollection} is returned.
-	 * Otherwise, the return value is <code>null</code>.
+	 * <li>Otherwise, the return value is <code>null</code>.
+	 * </ol>
 	 * 
 	 * @return a Geometry containing the union,
-	 * or an empty GEOMETRYCOLLECTION if no geometries were provided in the input,
+	 * or an empty atomic geometry, or an empty GEOMETRYCOLLECTION,
 	 * or <code>null</code> if no GeometryFactory was provided
 	 */
 	public Geometry union()
 	{
+	  if (geomFact == null)
+	    geomFact = extracter.getFactory();
+	  
+	  // Case 3
 		if (geomFact == null) {
 			return null;
 		}
 		
+		// Case 1 & 2
+		if (extracter.isEmpty()) {
+		  return geomFact.createEmpty( extracter.getDimension() );
+		}
+    List points = extracter.getExtract(0);
+    List lines = extracter.getExtract(1);
+    List polygons = extracter.getExtract(2);
+    
 		/**
 		 * For points and lines, only a single union operation is 
 		 * required, since the OGC model allows self-intersecting

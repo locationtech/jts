@@ -39,6 +39,12 @@ public class UnaryUnionTest extends GeometryTestCase
     doTest(new String[]{}, "GEOMETRYCOLLECTION EMPTY");
   }
 
+  public void testEmptyPolygon()
+  throws Exception
+  {
+    doTest("POLYGON EMPTY", "POLYGON EMPTY");
+  }
+
   public void testPoints()
   throws Exception
   {
@@ -61,14 +67,23 @@ public class UnaryUnionTest extends GeometryTestCase
   private void doTest(String[] inputWKT, String expectedWKT) 
   throws ParseException
   {
-  	Geometry result;
-  	Collection geoms = IOUtil.readWKT(inputWKT);
-  	if (geoms.size() == 0)
-  		result = UnaryUnionOp.union(geoms, geomFact);
-  	else
-  		result = UnaryUnionOp.union(geoms);
-  	
-  	checkEqual(IOUtil.readWKT(expectedWKT), result);
+    Geometry result;
+    Collection geoms = readList(inputWKT);
+    if (geoms.size() == 0)
+      result = UnaryUnionOp.union(geoms, geomFact);
+    else
+      result = UnaryUnionOp.union(geoms);
+    
+    checkEqual(read(expectedWKT), result);
+  }
+
+  private void doTest(String inputWKT, String expectedWKT) 
+  throws ParseException
+  {
+    Geometry geom = read(inputWKT);
+    Geometry result = UnaryUnionOp.union(geom);
+    
+    checkEqual(read(expectedWKT), result);
   }
 
 }
