@@ -50,6 +50,26 @@ public class GeometryFactoryTest extends TestCase {
     checkCreateGeometryExact("GEOMETRYCOLLECTION (POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200)), LINESTRING (250 100, 350 200), POINT (350 150))");
   }
   
+  public void testCreateEmpty() {
+    checkEmpty( geometryFactory.createEmpty(0), Point.class);
+    checkEmpty( geometryFactory.createEmpty(1), LineString.class);
+    checkEmpty( geometryFactory.createEmpty(2), Polygon.class);
+    
+    checkEmpty( geometryFactory.createPoint(), Point.class);
+    checkEmpty( geometryFactory.createLineString(), LineString.class);
+    checkEmpty( geometryFactory.createPolygon(), Polygon.class);
+    
+    checkEmpty( geometryFactory.createMultiPoint(), MultiPoint.class);
+    checkEmpty( geometryFactory.createMultiLineString(), MultiLineString.class);
+    checkEmpty( geometryFactory.createMultiPolygon(), MultiPolygon.class);
+    checkEmpty( geometryFactory.createGeometryCollection(), GeometryCollection.class);
+  }
+  
+  private void checkEmpty(Geometry geom, Class clz) {
+    assertTrue(geom.isEmpty());
+    assertTrue( geom.getClass() == clz );
+  }
+
   public void testDeepCopy() throws ParseException
   {
     Point g = (Point) read("POINT ( 10 10) ");
