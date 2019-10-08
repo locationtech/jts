@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2019 Martin Davis.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package org.locationtech.jts.operation.union;
 
 import java.util.ArrayList;
@@ -27,12 +38,24 @@ import org.locationtech.jts.util.Assert;
  */
 class InputExtracter implements GeometryFilter 
 {
+  /**
+   * Extracts elements from a collection of geometries.
+   * 
+   * @param geoms a collection of geometries
+   * @return an extracter over the geometries
+   */
   public static InputExtracter extract(Collection<Geometry> geoms) {
     InputExtracter extracter = new InputExtracter();
     extracter.add(geoms);
     return extracter;
   }
   
+  /**
+   * Extracts elements from a geometry.
+   * 
+   * @param geoms a geometry to extract from
+   * @return an extracter over the geometry
+   */
   public static InputExtracter extract(Geometry geom) {
     InputExtracter extracter = new InputExtracter();
     extracter.add(geom);
@@ -53,20 +76,43 @@ class InputExtracter implements GeometryFilter
     
   }
   
+  /**
+   * Tests whether there were any non-empty geometries extracted.
+   * 
+   * @return true if there is a non-empty geometry present
+   */
   public boolean isEmpty() {
     return polygons.isEmpty() 
         && lines.isEmpty()
         && points.isEmpty();
   }
   
+  /**
+   * Gets the maximum dimension extracted.
+   * 
+   * @return the maximum extracted dimension
+   */
   public int getDimension() {
     return dimension;
   }
   
+  /**
+   * Gets the geometry factory from the extracted geometry,
+   * if there is one.
+   * If an empty collection was extracted, will return <code>null</code>.
+   * 
+   * @return a geometry factory, or null if one could not be determined
+   */
   public GeometryFactory getFactory() {
     return geomFactory;
   }
   
+  /**
+   * Gets the extracted atomic geometries of the given dimension <code>dim</code>.
+   * 
+   * @param dim the dimension of geometry to return
+   * @return a list of the extracted geometries of dimension dim.
+   */
   public List getExtract(int dim) {
     switch (dim) {
     case 0: return points;
