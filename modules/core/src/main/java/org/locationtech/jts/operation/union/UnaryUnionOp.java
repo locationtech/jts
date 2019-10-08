@@ -112,7 +112,7 @@ public class UnaryUnionOp
 	private GeometryFactory geomFact = null;
 
   private InputExtracter extracter;
-  private UnionFunction unionFunction = UnionFunction.CLASSIC;
+  private UnionFunction unionFunction = CascadedPolygonUnion.OVERLAP_CLASSIC_UNION;
 
 	/**
 	 * Constructs a unary union operation for a {@link Collection} 
