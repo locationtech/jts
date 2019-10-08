@@ -39,10 +39,12 @@ public class Scale {
   }
   
   public static double safeScale(Geometry a, Geometry b) {
-    double maxBndA = maxBound( a.getEnvelopeInternal());
-    double maxBndB = maxBound( b.getEnvelopeInternal());
-    double maxBndBoth = Math.max(maxBndA,  maxBndB);
-    double scale = Scale.safeScale(maxBndBoth);
+    double maxBnd = maxBound( a.getEnvelopeInternal());
+    if (b != null) {
+      double maxBndB = maxBound( b.getEnvelopeInternal());
+      maxBnd = Math.max(maxBnd,  maxBndB);
+    }
+    double scale = Scale.safeScale(maxBnd);
     return scale;
   }
   

@@ -17,6 +17,11 @@ public class ScaleTest extends GeometryTestCase {
         1, 1e12, 1 );
   }
 
+  public void testBNull() {
+    checkScaleAuto("POINT(1 1)", null, 
+        1, 1e13, 1 );
+  }
+
   public void testPower10() {
     checkScaleAuto("POINT(100 100)", "POINT(1000 1000)", 
         1, 1e11, 1 );
@@ -70,7 +75,10 @@ public class ScaleTest extends GeometryTestCase {
   private void checkScaleAuto(String wktA, String wktB, double autoscaleExpected,
       double safeScaleExpected, double inherentScaleExpected ) {
     Geometry a = read(wktA);
-    Geometry b = read(wktB);
+    Geometry b = null;
+    if (wktB != null) {
+      b = read(wktB);
+    }
     double autoScale = Scale.autoScale(a, b);
     assertEquals("Auto scale: ", autoscaleExpected, autoScale );
     assertEquals("Inherent scale: ", inherentScaleExpected, Scale.inherentScale(a, b) );
