@@ -75,6 +75,7 @@ public class JTSOpRunner {
   private OpParams param;
   private String hdrSave;
   private long totalTime;
+  private int opCount = 0;
   
   static class OpParams {
     String operation;
@@ -191,7 +192,8 @@ public class JTSOpRunner {
     FunctionInvoker fun = new FunctionInvoker(func, argList);
     executeFunctionSpreadA(fun);
     
-    printlnInfo("\nTotal Time: " + Stopwatch.getTimeString( totalTime ));
+    printlnInfo("\nOperations: " + opCount
+        + "  Total Time: " + Stopwatch.getTimeString( totalTime ));
   }
   
   private void executeFunctionSpreadA(FunctionInvoker fun) {
@@ -290,7 +292,8 @@ public class JTSOpRunner {
     }
     totalTime += timer.getTime();
     printlnInfo("Time: " + timer.getTimeString());
-
+    opCount++;
+    
     if (result instanceof Geometry) {
       printGeometrySummary("Result", (Geometry) result, null);
     }
