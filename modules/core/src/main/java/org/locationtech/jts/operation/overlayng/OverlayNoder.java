@@ -70,12 +70,19 @@ public class OverlayNoder {
     @SuppressWarnings("unchecked")
     Collection<SegmentString> nodedSS = noder.getNodedSubstrings();
     
-    scanForCollapse(nodedSS);
+    scanForHasEdges(nodedSS);
     
     return nodedSS;
   }
 
-  private void scanForCollapse(Collection<SegmentString> segStrings) {
+  /**
+   * Records if each geometry has edges present after noding.
+   * If a geometry has collapsed to a point due to low precision,
+   * no edges will be present.
+   * 
+   * @param segStrings noded edges to scan
+   */
+  private void scanForHasEdges(Collection<SegmentString> segStrings) {
     for (SegmentString ss : segStrings) {
       EdgeInfo info = (EdgeInfo) ss.getData();
       int geomIndex = info.getIndex();
