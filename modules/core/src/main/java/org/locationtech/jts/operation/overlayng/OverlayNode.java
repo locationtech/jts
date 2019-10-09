@@ -30,7 +30,7 @@ import org.locationtech.jts.util.Debug;
  * @author Martin Davis
  *
  */
-public class OverlayNode {
+class OverlayNode {
 
   /**
    * Scan around node CCW and propagate side locations

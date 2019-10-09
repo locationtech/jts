@@ -39,7 +39,7 @@ import org.locationtech.jts.noding.snapround.FastSnapRounder;
 import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
 import org.locationtech.jts.noding.snapround.SimpleSnapRounder;
 
-public class OverlayNoder {
+class OverlayNoder {
 
   private PrecisionModel pm;
   List<NodedSegmentString> segStrings = new ArrayList<NodedSegmentString>();

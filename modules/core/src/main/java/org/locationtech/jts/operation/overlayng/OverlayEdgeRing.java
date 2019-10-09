@@ -28,7 +28,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.util.Assert;
 
-public class OverlayEdgeRing {
+class OverlayEdgeRing {
   
   private OverlayEdge startEdge;
   private List<Coordinate> pts = new ArrayList<Coordinate>();

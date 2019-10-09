@@ -47,7 +47,7 @@ import org.locationtech.jts.util.Debug;
  * @author Martin Davis
  *
  */
-public class LineStringBuilder {
+class LineStringBuilder {
   
   private GeometryFactory geometryFactory;
   private OverlayGraph graph;

@@ -18,7 +18,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.io.WKTWriter;
 
-public class OverlayEdge extends HalfEdge {
+class OverlayEdge extends HalfEdge {
 
   /**
    * Creates a single OverlayEdge.

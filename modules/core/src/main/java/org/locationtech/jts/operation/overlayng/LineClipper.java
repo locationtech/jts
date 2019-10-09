@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.Envelope;
  * @author Martin Davis
  *
  */
-public class LineClipper {
+class LineClipper {
   
   private static final int BOX_LEFT = 3;
   private static final int BOX_TOP = 2;

@@ -20,7 +20,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.util.Assert;
 
-public class PolygonBuilder {
+class PolygonBuilder {
 
   private GeometryFactory geometryFactory;
   private List<OverlayEdgeRing> shellList = new ArrayList<OverlayEdgeRing>();

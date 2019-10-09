@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.Location;
  * @author mdavis
  *
  */
-public class EdgeInfo {
+class EdgeInfo {
   private int index;
   private int dim = -1;
   private boolean isHole = false;

@@ -10,7 +10,7 @@ import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.io.WKTWriter;
 
 
-public class MaximalEdgeRing {
+class MaximalEdgeRing {
 
   private OverlayEdge startEdge;
   private boolean isValid = false;

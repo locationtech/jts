@@ -25,7 +25,7 @@ import org.locationtech.jts.util.Debug;
  * @author mdavis
  *
  */
-public class Edge {
+class Edge {
   
   public static boolean isValidPoints(Coordinate[] pts) {
     if (pts.length < 2) return false;

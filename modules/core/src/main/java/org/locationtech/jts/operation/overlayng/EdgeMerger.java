@@ -43,7 +43,7 @@ import org.locationtech.jts.util.Debug;
  * @author mdavis
  *
  */
-public class EdgeMerger {
+class EdgeMerger {
 
   public static List<Edge> merge(List<Edge> edges) {
     EdgeMerger merger = new EdgeMerger(edges);

@@ -24,7 +24,7 @@ import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.util.Debug;
 
-public class OverlayGraph {
+class OverlayGraph {
   
   private List<OverlayEdge> edges = new ArrayList<OverlayEdge>();
   private Map<Coordinate, OverlayEdge> nodeMap = new HashMap<Coordinate, OverlayEdge>();

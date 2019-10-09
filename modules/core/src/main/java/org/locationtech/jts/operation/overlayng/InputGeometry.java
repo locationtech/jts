@@ -19,7 +19,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Location;
 
-public class InputGeometry {
+class InputGeometry {
   
   //private static final PointLocator ptLocator = new PointLocator();
 

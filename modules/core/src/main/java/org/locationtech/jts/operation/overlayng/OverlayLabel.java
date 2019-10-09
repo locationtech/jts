@@ -20,19 +20,21 @@ import org.locationtech.jts.geomgraph.Position;
  * in the {@link OverlayGraph} containing it.
  * <p>
  * A label contains the topological {@link Location}s for 
- * the two overlay parent geometries.
- * A parent geometry may be either a Line or an Area.
+ * the two overlay input geometries.
+ * A labelled input geometry may be either a Line or an Area.
  * In both cases, the label locations are populated
  * with the locations for the edge {@link Position}s
  * once they are computed by topological evaluation.
  * The label also records the dimension of each geometry,
  * and in the case of area boundary edges, the role
  * of the originating ring (which allows
- * determination of the edge position in collapse cases).
+ * determination of the edge role in collapse cases).
  * <p>
- * A label describes the following situations:
+ * For each input geometry, a label indicates that an edge is in one of the following states
+ * (denoted by the <code>dim</code> field),
+ * and contains some ancillary information for each state:
  * <ul>
- * <li>A boundary edge of an input Area (polygon).  
+ * <li>A <b>Boundary</b> edge of an input Area (polygon)
  *   <ul>
  *   <li><code>dim</code> = DIM_BOUNDARY</li>
  *   <li><code>locLeft, locRight</code> : the locations of the edge sides for the area parent input geometry</li>
@@ -40,44 +42,41 @@ import org.locationtech.jts.geomgraph.Position;
  * edge was in a shell or a hole</li>
  *   </ul>
  * </li>
- * <li>A <b>collapsed</b> edge of an input Area 
- * (which has two or more parent edges)
+ * <li>A <b>Collapsed</b> edge of an input Area 
+ * (which had two or more parent edges)
  *   <ul>
  *   <li><code>dim</code> = DIM_COLLAPSE</li>
  *   <li><code>locLine</code> : the location of the 
  * edge relative to the area parent input geometry</li>
  *   <li><code>isHole</code> : whether some 
- * contributing edge was in a shell, 
- * or otherwise that all were in holes</li>
+ * contributing edge was in a shell (<code>false</code>), 
+ * or otherwise that all were in holes</li> (<code>true</code>)
  *   </ul>
  * </li>
- * <li>An edge from an input Line.
+ * <li>An edge from an input <b>Line</b>
  *   <ul>
  *   <li><code>dim</code> = DIM_LINE</li>
  *   <li><code>locLine</code> : INTERIOR</li>
- *   <li><code>isHole</code> : not applicable</li>
  *   </ul>
  * </li>
- * <li>An edge which is not part of a parent geometry.
+ * <li>An edge which is <b>Not Part</b> of the input geometry
+ * (and hence must be part of the other geometry).
  *   <ul>
  *   <li><code>dim</code> = NOT_PART</li>
- *   <li><code>locLine</code> : the location of the 
- * edge relative to the area parent input geometry</li>
- *   <li><code>isHole</code> : not applicable</li>
  *   </ul>
  * </li>
  * </ul>
  * Note that:
  * <ul>
- * <li>an edge can never be both a Collapse edge and a Line edge in the same parent, 
+ * <li>an edge can not be both a Collapse edge and a Line edge in the same input geometry, 
  * because each input geometry must be homogeneous.
- * <li>an edge may be an Boundary edge in one parent and a Line or Collapse edge in the other
+ * <li>an edge may be an Boundary edge in one input and a Line or Collapse edge in the other
  * </ul>
  * 
- * @author mdavis
+ * @author Martin Davis
  *
  */
-public class OverlayLabel {
+class OverlayLabel {
   
   private static final char SYM_UNKNOWN = '#';
   private static final char SYM_BOUNDARY = 'B';
