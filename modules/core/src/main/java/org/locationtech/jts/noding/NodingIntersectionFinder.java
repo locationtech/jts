@@ -54,13 +54,21 @@ public class NodingIntersectionFinder
 	 * @param li a line intersector
 	 * @return a intersection finder which finds all interior intersections.
 	 */
-	public static NodingIntersectionFinder createAllIntersectionsFinder(LineIntersector li)
-	{
-		NodingIntersectionFinder finder = new NodingIntersectionFinder(li);
-		finder.setFindAllIntersections(true);
-		return finder;
-	}
-	
+  public static NodingIntersectionFinder createAllIntersectionsFinder(LineIntersector li)
+  {
+    NodingIntersectionFinder finder = new NodingIntersectionFinder(li);
+    finder.setFindAllIntersections(true);
+    return finder;
+  }
+  
+  public static NodingIntersectionFinder createInteriorIntersectionsFinder(LineIntersector li)
+  {
+    NodingIntersectionFinder finder = new NodingIntersectionFinder(li);
+    finder.setFindAllIntersections(true);
+    finder.setInteriorIntersectionsOnly(true);
+    return finder;
+  }
+  
 	/**
 	 * Creates an intersection finder which counts all interior intersections.
 	 * The intersections are note recorded to reduce memory usage.
@@ -84,6 +92,7 @@ public class NodingIntersectionFinder
   private List intersections = new ArrayList();
   private int intersectionCount = 0;
   private boolean keepIntersections = true;
+  private boolean isInteriorIntersectionsOnly = false;
 
   /**
    * Creates an intersection finder which finds an interior intersection
@@ -155,7 +164,12 @@ public class NodingIntersectionFinder
    */
   public void setCheckEndSegmentsOnly(boolean isCheckEndSegmentsOnly)
   {
-  	this.isCheckEndSegmentsOnly = isCheckEndSegmentsOnly;
+    this.isCheckEndSegmentsOnly = isCheckEndSegmentsOnly;
+  }
+  
+  public void setInteriorIntersectionsOnly(boolean isInteriorIntersectionsOnly)
+  {
+    this.isInteriorIntersectionsOnly  = isInteriorIntersectionsOnly;
   }
   
   /**
@@ -240,9 +254,12 @@ public class NodingIntersectionFinder
     /**
      * Check for an intersection between two vertices which are not both endpoints.
      */
-    boolean isAdjacentSegment = isSameSegString && Math.abs(segIndex1 - segIndex0) <= 1;
-    boolean isInteriorVertexInt = (! isAdjacentSegment) && isInteriorVertexIntersection(p00, p01, p10, p11,
-        isEnd00, isEnd01, isEnd10, isEnd11);
+    boolean isInteriorVertexInt = false;
+    if (! isInteriorIntersectionsOnly) {
+      boolean isAdjacentSegment = isSameSegString && Math.abs(segIndex1 - segIndex0) <= 1;
+      isInteriorVertexInt = (! isAdjacentSegment) && isInteriorVertexIntersection(p00, p01, p10, p11,
+          isEnd00, isEnd01, isEnd10, isEnd11);
+    }
     
     if (isInteriorInt || isInteriorVertexInt) {
       // found an intersection!

@@ -93,10 +93,21 @@ public class NodingFunctions
   public static int interiorIntersectionCount(Geometry geom)
   {
     NodingIntersectionFinder intCounter = NodingIntersectionFinder
-    		.createIntersectionCounter( new RobustLineIntersector() );
+        .createIntersectionCounter( new RobustLineIntersector() );
     Noder noder = new MCIndexNoder( intCounter );
     noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
     return intCounter.count();
+  }
+
+  public static Geometry findInteriorIntersections(Geometry geom)
+  {
+    NodingIntersectionFinder intFinder = NodingIntersectionFinder
+        .createInteriorIntersectionsFinder( new RobustLineIntersector() );
+    Noder noder = new MCIndexNoder( intFinder );
+    noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
+    List intPts = intFinder.getIntersections();
+    return FunctionsUtil.getFactoryOrDefault(null)
+        .createMultiPointFromCoords(CoordinateArrays.toCoordinateArray(intPts));
   }
 
   public static Geometry MCIndexNodingWithPrecision(Geometry geom, double scaleFactor)
