@@ -47,7 +47,7 @@ extends PerformanceTestCase
   
   public TestPerfOverlayNG(String name) {
     super(name);
-    setRunSize(new int[] { 1000, 10000, 100000 });
+    setRunSize(new int[] { 1000, 10000, 100000, 200000 });
     setRunIterations(N_ITER);
   }
 
@@ -130,13 +130,6 @@ extends PerformanceTestCase
     }
   }
   
-  public void runIntersectionOLDOpt2()
-  {
-    for (Geometry b : geomB) {
-      intersectionOpt2(geomA, b);
-    }
-  }
-  
   public void runIntersectionNG()
   {
     for (Geometry b : geomB) {
@@ -147,7 +140,7 @@ extends PerformanceTestCase
   public void runIntersectionNGOpt()
   {
     for (Geometry b : geomB) {
-      intersectionNGOpt2(geomA, b);
+      intersectionNGOpt(geomA, b);
     }
   }
   
@@ -159,9 +152,11 @@ extends PerformanceTestCase
   }
   
   /**
-   * Switching input order doesn't make much difference
+   * Switching input order doesn't make much difference.
+   * Update: actually it looks like having the smaller geometry
+   * as the prepared one is faster (by a variable amount)
    */
-  public void xrunIntersectionNGPrepNoCacheBA()
+  public void runIntersectionNGPrepNoCacheBA()
   {
     for (Geometry b : geomB) {
       intersectionNGPrepNoCache(b, geomA);
@@ -169,20 +164,11 @@ extends PerformanceTestCase
   }
   
   public Geometry intersectionNGOpt(Geometry a, Geometry b) {
-    if (! a.intersects(b)) return null;
-    if (a.covers(b)) return b.copy();
-    if (b.covers(a)) return a.copy();
+    Geometry intFast = fastIntersect(a, b);
+    if (intFast != null) return intFast;
     return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION, precisionModel);
   }
-  
-  public Geometry intersectionNGOpt2(Geometry a, Geometry b) {
-    IntersectionMatrix im = a.relate(b);
-    if (! im.isIntersects()) return null;
-    if (im.isCovers()) return b.copy();
-    if (im.isCoveredBy()) return a.copy();
-    return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION, precisionModel);
-  }
-  
+
   public Geometry intersectionNGPrep(Geometry a, Geometry b) {
     PreparedGeometry pg = cacheFetch(a);
     if (! pg.intersects(b)) return null;
@@ -191,12 +177,40 @@ extends PerformanceTestCase
   }
   
   public Geometry intersectionNGPrepNoCache(Geometry a, Geometry b) {
-    PreparedGeometry pg = (new PreparedGeometryFactory()).create(a);
-    if (! pg.intersects(b)) return null;
-    if (pg.covers(b)) return b.copy();
+    Geometry intFast = fastintersectsPrepNoCache(a, b);
+    if (intFast != null) return intFast;
+ 
     return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION, precisionModel);
   }
 
+  private Geometry fastintersectsPrepNoCache(Geometry a, Geometry b) {
+    PreparedGeometry aPG = (new PreparedGeometryFactory()).create(a);
+    
+    if (! aPG.intersects(b)) {
+      return a.getFactory().createEmpty(a.getDimension());
+    }
+    if (aPG.covers(b)) {
+      return b.copy();
+    }
+    if (b.covers(a)) { 
+      return a.copy();
+    }
+    // null indicates full overlay required
+    return null;
+  }
+
+  private static Geometry fastIntersect(Geometry a, Geometry b) {
+    IntersectionMatrix im = a.relate(b);
+    if (! im.isIntersects()) 
+      return a.getFactory().createEmpty(a.getDimension());
+    if (im.isCovers()) 
+      return b.copy();
+    if (im.isCoveredBy()) 
+      return a.copy();
+    // null indicates full overlay required
+    return null;
+  }
+  
   /**
    * Use spatial predicates as a filter
    * in front of intersection.
@@ -206,24 +220,14 @@ extends PerformanceTestCase
    * @return the intersection of the geometries
    */
   public static Geometry intersectionOpt(Geometry a, Geometry b) {
-    if (! a.intersects(b)) return null;
-    if (a.covers(b)) return b.copy();
-    if (b.covers(a)) return a.copy();
-    return a.intersection(b);
-  }
-  
-  public static Geometry intersectionOpt2(Geometry a, Geometry b) {
-    IntersectionMatrix im = a.relate(b);
-    if (! im.isIntersects()) return null;
-    if (im.isCovers()) return b.copy();
-    if (im.isCoveredBy()) return a.copy();
+    Geometry intFast = fastIntersect(a, b);
+    if (intFast != null) return intFast;
     return a.intersection(b);
   }
   
   public Geometry intersectionOptPrepNoCache(Geometry a, Geometry b) {
-    PreparedGeometry pg = (new PreparedGeometryFactory()).create(a);
-    if (! pg.intersects(b)) return null;
-    if (pg.covers(b)) return b.copy();
+    Geometry intFast = fastintersectsPrepNoCache(a, b);
+    if (intFast != null) return intFast;
     return a.intersection(b);
   }
 

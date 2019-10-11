@@ -12,6 +12,7 @@
 package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.IntersectionMatrix;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
@@ -26,6 +27,15 @@ import org.locationtech.jts.operation.overlayng.OverlayNG;
  */
 public class OverlayNGOptFunctions {
   
+  private static Geometry fastIntersect(Geometry a, Geometry b) {
+    IntersectionMatrix im = a.relate(b);
+    if (! im.isIntersects()) return a.getFactory().createEmpty(a.getDimension());
+    if (im.isCovers()) return b.copy();
+    if (im.isCoveredBy()) return a.copy();
+    // null indicates full overlay required
+    return null;
+  }
+  
   /**
    * Use spatial predicates as a filter
    * in front of intersection.
@@ -35,9 +45,8 @@ public class OverlayNGOptFunctions {
    * @return the intersection of the geometries
    */
   public static Geometry intersectionOrigClassic(Geometry a, Geometry b) {
-    if (! a.intersects(b)) return null;
-    if (a.covers(b)) return b.copy();
-    if (b.covers(a)) return a.copy();
+    Geometry intFast = fastIntersect(a, b);
+    if (intFast != null) return intFast;
     return a.intersection(b);
   }
   
@@ -65,9 +74,8 @@ public class OverlayNGOptFunctions {
   }
   
   public static Geometry intersection(Geometry a, Geometry b) {
-    if (! a.intersects(b)) return null;
-    if (a.covers(b)) return b.copy();
-    if (b.covers(a)) return a.copy();
+    Geometry intFast = fastIntersect(a, b);
+    if (intFast != null) return intFast;
     return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION);
   }
   
