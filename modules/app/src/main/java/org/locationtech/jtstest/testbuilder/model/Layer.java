@@ -32,7 +32,7 @@ public class Layer
 
   public Layer(Layer layer) {
     this.name = layer.name + "Copy";
-    this.layerStyle = new LayerStyle(layer.layerStyle);
+    this.layerStyle = layer.layerStyle.copy();
     this.isEnabled = layer.isEnabled;
     this.geomCont = new StaticGeometryContainer(layer.getGeometry());
   }

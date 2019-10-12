@@ -66,6 +66,10 @@ public class LayerStyle implements Style  {
     offsetSize = layerStyle.offsetSize;
   }
 
+  public LayerStyle copy() {
+    return new LayerStyle(this);
+  }
+  
   public BasicStyle getGeomStyle() {
     return geomStyle;
   }
