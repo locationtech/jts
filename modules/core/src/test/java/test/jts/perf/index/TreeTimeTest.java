@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.index.hprtree.HPRtree;
 import org.locationtech.jts.index.quadtree.Quadtree;
 import org.locationtech.jts.index.strtree.STRtree;
 
@@ -50,7 +51,8 @@ public class TreeTimeTest {
     ArrayList indexResults = new ArrayList();
     System.out.println("# items = " + items.size());
     indexResults.add(run(new QuadtreeIndex(), items));
-    indexResults.add(run(new STRtreeIndex(10), items));
+    indexResults.add(run(new STRtreeIndex(4), items));
+    indexResults.add(run(new HPRtreeIndex(4), items));
     //indexResults.add(run(new QXtreeIndex(), n));
     //indexResults.add(run(new EnvelopeListIndex(), n));
     return indexResults;
@@ -62,29 +64,54 @@ public class TreeTimeTest {
   }
 
   class STRtreeIndex
-    implements Index
+  implements Index
+{
+  public String toString() { return "STR[M=" + index.getNodeCapacity() + "]"; }
+//  public String toString() { return "" + index.getNodeCapacity() + ""; }
+  public STRtreeIndex(int nodeCapacity)
   {
-    public String toString() { return "STR[M=" + index.getNodeCapacity() + "]"; }
-//    public String toString() { return "" + index.getNodeCapacity() + ""; }
-    public STRtreeIndex(int nodeCapacity)
-    {
-      index = new STRtree(nodeCapacity);
-    }
-    STRtree index;
-
-    public void insert(Envelope itemEnv, Object item)
-    {
-      index.insert(itemEnv, item);
-    }
-    public List query(Envelope searchEnv)
-    {
-      return index.query(searchEnv);
-    }
-    public void finishInserting()
-    {
-      index.build();
-    }
+    index = new STRtree(nodeCapacity);
   }
+  STRtree index;
+
+  public void insert(Envelope itemEnv, Object item)
+  {
+    index.insert(itemEnv, item);
+  }
+  public List query(Envelope searchEnv)
+  {
+    return index.query(searchEnv);
+  }
+  public void finishInserting()
+  {
+    index.build();
+  }
+}
+
+  class HPRtreeIndex
+  implements Index
+{
+  public String toString() { return "HPR[M=4]"; }
+//  public String toString() { return "" + index.getNodeCapacity() + ""; }
+  public HPRtreeIndex(int nodeCapacity)
+  {
+    index = new HPRtree(nodeCapacity);
+  }
+  HPRtree index;
+
+  public void insert(Envelope itemEnv, Object item)
+  {
+    index.insert(itemEnv, item);
+  }
+  public List query(Envelope searchEnv)
+  {
+    return index.query(searchEnv);
+  }
+  public void finishInserting()
+  {
+    index.build();
+  }
+}
 
   class QuadtreeIndex
     implements Index

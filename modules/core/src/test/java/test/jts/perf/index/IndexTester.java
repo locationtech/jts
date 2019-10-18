@@ -44,8 +44,6 @@ public class IndexTester {
     public long queryMilliseconds;
   }
 
-  private static List victoriaItems = null;
-
   public IndexResult testAll(List items)
   {
     IndexResult result = new IndexResult(index.toString());
