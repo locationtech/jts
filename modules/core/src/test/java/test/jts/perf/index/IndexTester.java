@@ -50,15 +50,19 @@ public class IndexTester {
     System.out.print(index.toString() + "           ");
     System.gc();
     Stopwatch sw = new Stopwatch();
+    
     sw.start();
     loadGrid(items);
     String loadTime = sw.getTimeString();
     result.loadMilliseconds = sw.getTime();
+    
     System.gc();
+    
     sw.start();
     //runQueries();
     runSelfQuery(items);
     String queryTime = sw.getTimeString();
+    
     result.queryMilliseconds = sw.getTime();
     System.out.println("  Load Time = " + loadTime + "  Query Time = " + queryTime);
     return result;

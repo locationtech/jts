@@ -12,6 +12,7 @@
 package test.jts.perf.index;
 
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.hprtree.HPRtree;
 import org.locationtech.jts.util.Stopwatch;
 
@@ -41,18 +42,23 @@ extends PerformanceTestCase {
   public void startRun(int size)
   {
     System.out.println("----- Tree size: " + size);
-    index = new HPRtree(size);
+    
+    index = new HPRtree();
     int side = (int) Math.sqrt(size);
-    for (int i = 0; i < side; i++) {
-      for (int j = 0; j < side; j++) {
-        Envelope env = new Envelope(i, i+1, j, j+1);
-        index.insert(env, i+"-"+j);
-      }
-    }
-    //index.setFanOut(8);
+    loadGrid(side, index);
+    
     Stopwatch sw = new Stopwatch();
     index.build();
     System.out.println("Build time = " + sw.getTimeString());
+  }
+
+  private void loadGrid(int side, SpatialIndex index) {
+    for (int i = 0; i < side; i++) {
+      for (int j = 0; j < side; j++) {
+        Envelope env = new Envelope(i, i+10, j, j+10);
+        index.insert(env, i+"-"+j);
+      }
+    }
   }
   
   public void runQueries() {

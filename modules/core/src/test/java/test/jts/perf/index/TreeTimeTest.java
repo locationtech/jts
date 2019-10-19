@@ -25,11 +25,11 @@ import org.locationtech.jts.index.strtree.STRtree;
  * @version 1.7
  */
 public class TreeTimeTest {
-  public static final int NUM_ITEMS = 10000;
+  public static final int NUM_ITEMS = 100000;
 
   public static void main(String[] args) throws Exception
   {
-    int n = 10000;
+    int n = NUM_ITEMS;
     TreeTimeTest test = new TreeTimeTest();
     List items = IndexTester.createGridItems(n);
     System.out.println("----------------------------------------------");
@@ -50,9 +50,9 @@ public class TreeTimeTest {
   {
     ArrayList indexResults = new ArrayList();
     System.out.println("# items = " + items.size());
-    indexResults.add(run(new QuadtreeIndex(), items));
-    indexResults.add(run(new STRtreeIndex(4), items));
     indexResults.add(run(new HPRtreeIndex(4), items));
+    indexResults.add(run(new STRtreeIndex(4), items));
+    //indexResults.add(run(new QuadtreeIndex(), items));
     //indexResults.add(run(new QXtreeIndex(), n));
     //indexResults.add(run(new EnvelopeListIndex(), n));
     return indexResults;
@@ -91,8 +91,6 @@ public class TreeTimeTest {
   class HPRtreeIndex
   implements Index
 {
-  public String toString() { return "HPR[M=4]"; }
-//  public String toString() { return "" + index.getNodeCapacity() + ""; }
   public HPRtreeIndex(int nodeCapacity)
   {
     index = new HPRtree(nodeCapacity);
@@ -111,6 +109,7 @@ public class TreeTimeTest {
   {
     index.build();
   }
+  public String toString() { return "HPR[M=4]"; }
 }
 
   class QuadtreeIndex

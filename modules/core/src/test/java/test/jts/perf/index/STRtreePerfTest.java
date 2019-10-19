@@ -45,7 +45,7 @@ extends PerformanceTestCase {
     int side = (int) Math.sqrt(size);
     for (int i = 0; i < side; i++) {
       for (int j = 0; j < side; j++) {
-        Envelope env = new Envelope(i, i+1, j, j+1);
+        Envelope env = new Envelope(i, i+10, j, j+10 );
         index.insert(env, i+"-"+j);
       }
     }
