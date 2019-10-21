@@ -68,7 +68,7 @@ extends PerformanceTestCase {
         //System.out.println(visitor.count);
       }
     }
-    System.out.println("Node compares = " + index.nodeIntersectsCount);
+    //System.out.println("Node compares = " + index.nodeIntersectsCount);
     System.out.println("Total query result items = " + visitor.count);
 
   };
