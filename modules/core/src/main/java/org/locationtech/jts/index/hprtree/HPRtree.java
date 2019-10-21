@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.index.ArrayListVisitor;
 import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.SpatialIndex;
@@ -37,8 +38,7 @@ public class HPRtree
   
   private List<Item> items = new ArrayList<Item>();
   
-  private int itemCount = 0;
-  private int fanOut = FANOUT;
+  private int nodeCapacity = FANOUT;
 
   private Envelope totalExtent = new Envelope();
 
@@ -54,12 +54,14 @@ public class HPRtree
 
   private boolean isBuilt = false;
 
+  public int nodeIntersectsCount;
+
   public HPRtree() {
     
   }
   
   public HPRtree(int fanOut) {
-    this.fanOut = fanOut;
+    this.nodeCapacity = fanOut;
   }
   
   public int size() {
@@ -74,7 +76,6 @@ public class HPRtree
     if (items != null) {
       items.add( new Item(itemEnv, item) );
       totalExtent.expandToInclude(itemEnv);
-      itemCount++;
     }
     else {
       //TODO: add item to list to be built later
@@ -113,44 +114,43 @@ public class HPRtree
     }
   }
 
-  private void queryNode(int layerIndex, int i, Envelope searchEnv, ItemVisitor visitor) {
+  private void queryNode(int layerIndex, int nodeOffset, Envelope searchEnv, ItemVisitor visitor) {
     int layerStart = layerStartIndex[layerIndex];
-    int nodeIndex = layerStart + i;
+    int nodeIndex = layerStart + nodeOffset;
     if (! intersectsBounds(nodeIndex, searchEnv)) return;
+    int childNodesOffset = nodeOffset * nodeCapacity;
     if (layerIndex == 0) {
-      queryItems(i * fanOut, searchEnv, visitor);
+      queryItems(childNodesOffset, searchEnv, visitor);
     }
     else 
-      queryNodeSpan(layerIndex - 1, i * fanOut, searchEnv, visitor);
+      queryNodeChildren(layerIndex - 1, childNodesOffset, searchEnv, visitor);
   }
 
-  private void queryNodeSpan(int layerIndex, int nodeSpanStart, Envelope searchEnv, ItemVisitor visitor) {
-    int layerEnd = layerEndIndex(layerIndex);
-    for (int i = 0; i < fanOut; i++) {
-      int nodeIndex = nodeSpanStart + i; 
-      // don't query past layer
-      if (nodeIndex >= layerEnd) break;
+  private void queryNodeChildren(int layerIndex, int nodeSpanOffset, Envelope searchEnv, ItemVisitor visitor) {
+    int layerStart = layerStartIndex[layerIndex];
+    int layerEnd = layerStartIndex[layerIndex + 1];
+    for (int i = 0; i < nodeCapacity; i++) {
+      int nodeOffset = nodeSpanOffset + i; 
+      // don't query past layer end
+      if (layerStart + nodeOffset >= layerEnd) break;
       
-      queryNode(layerIndex, nodeIndex, searchEnv, visitor);
+      queryNode(layerIndex, nodeOffset, searchEnv, visitor);
     }
   }
 
   private void queryItems(int itemSpanStart, Envelope searchEnv, ItemVisitor visitor) {
-    for (int i = 0; i < fanOut; i++) {
+    for (int i = 0; i < nodeCapacity; i++) {
       int itemIndex = itemSpanStart + i; 
       // don't query past end of items
       if (itemIndex >= items.size()) break;
       
       // query the item if its envelope intersects search env
       Item item = items.get(itemIndex);
+      nodeIntersectsCount++;
       if (item.getEnvelope().intersects(searchEnv)) {
         visitor.visitItem(item.getItem());
       }
     }    
-  }
-
-  private int layerEndIndex(int layerIndex) {
-    return layerStartIndex[layerIndex + 1];
   }
 
   private int layerSize(int layerIndex) {
@@ -170,10 +170,12 @@ public class HPRtree
     if (isBuilt) return;
     isBuilt  = true;
     // don't need to build an empty or very small tree
-    if (items.size() <= fanOut) return;
+    if (items.size() <= nodeCapacity) return;
 
     sortItems();
-    layerStartIndex = computeLayerIndices(items.size(), fanOut);
+    //dumpItems(items);
+    
+    layerStartIndex = computeLayerIndices(items.size(), nodeCapacity);
     // allocate storage
     int nodeCount = layerStartIndex[ layerStartIndex.length - 1 ];
     nodeMinX = createBoundArray(nodeCount, Double.MAX_VALUE);
@@ -185,6 +187,23 @@ public class HPRtree
     computeLeafNodes(layerStartIndex[1]);
     for (int i = 1; i < layerStartIndex.length - 1; i++) {
       computeLayerNodes(i);
+    }
+    //dumpNodes();
+  }
+
+  private void dumpNodes() {
+    GeometryFactory fact = new GeometryFactory();
+    for (int i = 0; i < nodeMinX.length; i++) {
+      Envelope env = new Envelope(nodeMinX[i], nodeMaxX[i], nodeMinY[i], nodeMaxY[i]);;
+      System.out.println(fact.toGeometry(env));
+    }
+  }
+
+  private static void dumpItems(List<Item> items) {
+    GeometryFactory fact = new GeometryFactory();
+    for (Item item : items) {
+      Envelope env = item.getEnvelope();
+      System.out.println(fact.toGeometry(env));
     }
   }
 
@@ -200,14 +219,14 @@ public class HPRtree
     int layerSize = layerEnd - layerStart;
     int childLayerEnd = layerStart;
     for (int i = 0; i < layerSize; i++) {
-      int childStart = layerStartIndex[layerIndex - 1] + fanOut * i;
+      int childStart = layerStartIndex[layerIndex - 1] + nodeCapacity * i;
       computeNodeBounds(layerStart + i, childStart, childLayerEnd);
       //System.out.println("Layer: " + layerIndex + " node: " + i + " - " + getNodeEnvelope(layerStart + i));
     }
   }
 
   private void computeNodeBounds(int nodeIndex, int nodeSpanStart, int nodeMaxIndex) {
-    for (int i = 0; i <= fanOut; i++ ) {
+    for (int i = 0; i <= nodeCapacity; i++ ) {
       int index = nodeSpanStart + i;
       if (index >= nodeMaxIndex) break;
       updateNodeBounds(nodeIndex, nodeMinX[index], nodeMinY[index], nodeMaxX[index], nodeMaxY[index]);
@@ -216,12 +235,12 @@ public class HPRtree
 
   private void computeLeafNodes(int layerSize) {
     for (int i = 0; i < layerSize; i++) {
-      computeLeafNodeBounds(i, fanOut * i);
+      computeLeafNodeBounds(i, nodeCapacity * i);
     }
   }
 
   private void computeLeafNodeBounds(int nodeIndex, int itemSpanStart) {
-    for (int i = 0; i <= fanOut; i++ ) {
+    for (int i = 0; i <= nodeCapacity; i++ ) {
       int itemIndex = itemSpanStart + i;
       if (itemIndex >= items.size()) break;
       Envelope env = items.get(itemIndex).getEnvelope();
@@ -237,6 +256,7 @@ public class HPRtree
   }
 
   private boolean intersectsBounds(int i, Envelope env) {
+    nodeIntersectsCount++;
     if (env.getMaxX() < nodeMinX[i]) return false;
     if (env.getMaxY() < nodeMinY[i]) return false;
     if (env.getMinX() > nodeMaxX[i]) return false;

@@ -29,7 +29,7 @@ extends PerformanceTestCase {
 
   public STRtreePerfTest(String name) {
     super(name);
-    setRunSize(new int[] { 100, 10000,  1000000 });
+    setRunSize(new int[] { 100, 10000, 100000 });
     setRunIterations(1);
   }
 
@@ -45,7 +45,7 @@ extends PerformanceTestCase {
     int side = (int) Math.sqrt(size);
     for (int i = 0; i < side; i++) {
       for (int j = 0; j < side; j++) {
-        Envelope env = new Envelope(i, i+10, j, j+10 );
+        Envelope env = new Envelope(i, i + 10, j, j + 10 );
         index.insert(env, i+"-"+j);
       }
     }
@@ -60,7 +60,7 @@ extends PerformanceTestCase {
     
     int size = index.size();
     int side = (int) Math.sqrt(size);
-    side = 10;
+    //side = 10;
     for (int i = 0; i < side; i++) {
       for (int j = 0; j < side; j++) {
         Envelope env = new Envelope(i, i+40, j, j+40);
@@ -68,6 +68,8 @@ extends PerformanceTestCase {
         //System.out.println(visitor.count);
       }
     }
+    System.out.println("Node compares = " + index.nodeIntersectsCount);
+    System.out.println("Total query result items = " + visitor.count);
 
   };
 }

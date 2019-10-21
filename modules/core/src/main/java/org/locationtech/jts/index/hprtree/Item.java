@@ -30,4 +30,8 @@ public class Item {
   public Object getItem() {
     return item;
   }
+  
+  public String toString() {
+    return "Item: " + env.toString();
+  }
 }

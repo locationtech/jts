@@ -83,7 +83,7 @@ public class HPRtreeTest extends TestCase {
     }
   }
 
-  public void xtestQuery() throws Throwable {
+  public void testQuery() throws Throwable {
     ArrayList geometries = new ArrayList();
     geometries.add(factory.createLineString(new Coordinate[]{
         new Coordinate(0, 0), new Coordinate(10, 10)}));
@@ -110,8 +110,18 @@ public class HPRtreeTest extends TestCase {
     }
   }
 
+  public void testQuery3() throws Throwable {
+    HPRtree t = new HPRtree();
+    for (int i = 0; i < 3; i++ ) {
+      t.insert(new Envelope(i, i+1, i, i+1), i);
+    }
+    t.query(new Envelope(0,1,0,1));
+    assertEquals(3, t.query(new Envelope(1, 2, 1, 2)).size());
+    assertEquals(0, t.query(new Envelope(9, 10, 9, 10)).size());
+  }
+
   public void testQuery10() throws Throwable {
-    HPRtree t = new HPRtree(10);
+    HPRtree t = new HPRtree();
     for (int i = 0; i < 10; i++ ) {
       t.insert(new Envelope(i, i+1, i, i+1), i);
     }
@@ -123,8 +133,19 @@ public class HPRtreeTest extends TestCase {
   }
 
   public void testQuery100() throws Throwable {
-    HPRtree t = new HPRtree(100);
-    for (int i = 0; i < 100; i++ ) {
+    queryGrid( 100, new HPRtree() );
+  }
+
+  public void testQuery100cap8() throws Throwable {
+    queryGrid( 100, new HPRtree(8) );
+  }
+
+  public void testQuery100cap2() throws Throwable {
+    queryGrid( 100, new HPRtree(2) );
+  }
+
+  private void queryGrid(int size, HPRtree t) {
+    for (int i = 0; i < size; i++ ) {
       t.insert(new Envelope(i, i+1, i, i+1), i);
     }
     t.query(new Envelope(0,1,0,1));

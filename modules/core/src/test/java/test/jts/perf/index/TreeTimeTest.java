@@ -31,36 +31,39 @@ public class TreeTimeTest {
   {
     int n = NUM_ITEMS;
     TreeTimeTest test = new TreeTimeTest();
-    List items = IndexTester.createGridItems(n);
+    //List items = IndexTester.createGridItems(n);
+    List items = IndexTester.createRandomBoxes(n);
+    List queries = IndexTester.createRandomBoxes(n);
+    
     System.out.println("----------------------------------------------");
     System.out.println("Dummy run to ensure classes are loaded before real run");
     System.out.println("----------------------------------------------");
-    test.run(items);
+    test.run(items, queries);
     System.out.println("----------------------------------------------");
     System.out.println("Real run");
     System.out.println("----------------------------------------------");
-    test.run(items);
+    test.run(items, queries);
   }
 
   public TreeTimeTest()
   {
   }
 
-  public List run(List items) throws Exception
+  public List run(List items, List queries) throws Exception
   {
     ArrayList indexResults = new ArrayList();
     System.out.println("# items = " + items.size());
-    indexResults.add(run(new HPRtreeIndex(4), items));
-    indexResults.add(run(new STRtreeIndex(4), items));
+    indexResults.add(run(new HPRtreeIndex(4), items, queries));
+    indexResults.add(run(new STRtreeIndex(4), items, queries));
     //indexResults.add(run(new QuadtreeIndex(), items));
     //indexResults.add(run(new QXtreeIndex(), n));
     //indexResults.add(run(new EnvelopeListIndex(), n));
     return indexResults;
   }
 
-  public IndexTester.IndexResult run(Index index, List items) throws Exception
+  public IndexTester.IndexResult run(Index index, List items, List queries) throws Exception
   {
-    return new IndexTester(index).testAll(items);
+    return new IndexTester(index).testAll(items, queries);
   }
 
   class STRtreeIndex
@@ -91,8 +94,11 @@ public class TreeTimeTest {
   class HPRtreeIndex
   implements Index
 {
+  private int nodeCapacity;
+
   public HPRtreeIndex(int nodeCapacity)
   {
+    this.nodeCapacity = nodeCapacity;
     index = new HPRtree(nodeCapacity);
   }
   HPRtree index;
@@ -109,7 +115,7 @@ public class TreeTimeTest {
   {
     index.build();
   }
-  public String toString() { return "HPR[M=4]"; }
+  public String toString() { return "HPR[M=" + nodeCapacity + "]"; }
 }
 
   class QuadtreeIndex

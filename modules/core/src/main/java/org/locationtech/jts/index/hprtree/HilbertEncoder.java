@@ -38,7 +38,7 @@ public class HilbertEncoder {
     double midx = env.getWidth()/2 + env.getMinX();
     int x = (int) ((midx - minx) / strideX);
 
-    double midy = env.getWidth()/2 + env.getMinX();
+    double midy = env.getHeight()/2 + env.getMinY();
     int y = (int) ((midy - miny) / strideY);
       
     return HilbertCode.encode(level, x, y);
