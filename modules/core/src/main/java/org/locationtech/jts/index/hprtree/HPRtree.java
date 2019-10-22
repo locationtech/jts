@@ -25,6 +25,30 @@ import org.locationtech.jts.index.SpatialIndex;
 
 /**
  * A Hilbert-Packed R-tree.
+ * <p>
+ * The tree is constructed by sorting the tree items
+ * by the Hilbert code of their index.  
+ * Then, a set of internal layers is created recursively
+ * as follows:
+ * <ul>
+ * <li>The items/nodes of the previous are partitioned into blocks 
+ * of size <code>nodeCapacity</code>
+ * <li>For each block a layer node is created with range
+ * equal to the envelope of the items/nodess in the block
+ * </ul>
+ * The internal layers are stored using arrays to
+ * store the envelope ranges.
+ * The link between a node and its children is 
+ * stored implicitly in the indexes of the arrays.
+ * For efficiency, the offsets to the layers
+ * within the node arrays are pre-computed and stored explicitly.
+ * <p>
+ * NOTE: Based on performance testing, it appears that 
+ * the HPRtree does not offer much if any performance advantage 
+ * over the {@link STRtree} packed R-tree index.
+ * 
+ * @see STRtree
+ * 
  * 
  * @author Martin Davis
  *
@@ -60,8 +84,8 @@ public class HPRtree
     
   }
   
-  public HPRtree(int fanOut) {
-    this.nodeCapacity = fanOut;
+  public HPRtree(int nodeCapacity) {
+    this.nodeCapacity = nodeCapacity;
   }
   
   public int size() {
@@ -73,13 +97,8 @@ public class HPRtree
     if (isBuilt) {
       throw new IllegalStateException("Cannot insert items after tree is built.");
     }
-    if (items != null) {
-      items.add( new Item(itemEnv, item) );
-      totalExtent.expandToInclude(itemEnv);
-    }
-    else {
-      //TODO: add item to list to be built later
-    }
+    items.add( new Item(itemEnv, item) );
+    totalExtent.expandToInclude(itemEnv);
   }
 
   @Override
@@ -126,11 +145,11 @@ public class HPRtree
       queryNodeChildren(layerIndex - 1, childNodesOffset, searchEnv, visitor);
   }
 
-  private void queryNodeChildren(int layerIndex, int nodeSpanOffset, Envelope searchEnv, ItemVisitor visitor) {
+  private void queryNodeChildren(int layerIndex, int blockOffset, Envelope searchEnv, ItemVisitor visitor) {
     int layerStart = layerStartIndex[layerIndex];
     int layerEnd = layerStartIndex[layerIndex + 1];
     for (int i = 0; i < nodeCapacity; i++) {
-      int nodeOffset = nodeSpanOffset + i; 
+      int nodeOffset = blockOffset + i; 
       // don't query past layer end
       if (layerStart + nodeOffset >= layerEnd) break;
       
@@ -138,9 +157,9 @@ public class HPRtree
     }
   }
 
-  private void queryItems(int itemSpanStart, Envelope searchEnv, ItemVisitor visitor) {
+  private void queryItems(int blockStart, Envelope searchEnv, ItemVisitor visitor) {
     for (int i = 0; i < nodeCapacity; i++) {
-      int itemIndex = itemSpanStart + i; 
+      int itemIndex = blockStart + i; 
       // don't query past end of items
       if (itemIndex >= items.size()) break;
       
@@ -225,9 +244,9 @@ public class HPRtree
     }
   }
 
-  private void computeNodeBounds(int nodeIndex, int nodeSpanStart, int nodeMaxIndex) {
+  private void computeNodeBounds(int nodeIndex, int blockStart, int nodeMaxIndex) {
     for (int i = 0; i <= nodeCapacity; i++ ) {
-      int index = nodeSpanStart + i;
+      int index = blockStart + i;
       if (index >= nodeMaxIndex) break;
       updateNodeBounds(nodeIndex, nodeMinX[index], nodeMinY[index], nodeMaxX[index], nodeMaxY[index]);
     } 
@@ -239,9 +258,9 @@ public class HPRtree
     }
   }
 
-  private void computeLeafNodeBounds(int nodeIndex, int itemSpanStart) {
+  private void computeLeafNodeBounds(int nodeIndex, int blockStart) {
     for (int i = 0; i <= nodeCapacity; i++ ) {
-      int itemIndex = itemSpanStart + i;
+      int itemIndex = blockStart + i;
       if (itemIndex >= items.size()) break;
       Envelope env = items.get(itemIndex).getEnvelope();
       updateNodeBounds(nodeIndex, env.getMinX(), env.getMinY(), env.getMaxX(), env.getMaxY());
