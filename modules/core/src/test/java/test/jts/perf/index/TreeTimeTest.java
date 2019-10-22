@@ -53,7 +53,7 @@ public class TreeTimeTest {
   {
     ArrayList indexResults = new ArrayList();
     System.out.println("# items = " + items.size());
-    indexResults.add(run(new HPRtreeIndex(4), items, queries));
+    indexResults.add(run(new HPRtreeIndex(16), items, queries));
     indexResults.add(run(new STRtreeIndex(4), items, queries));
     //indexResults.add(run(new QuadtreeIndex(), items));
     //indexResults.add(run(new QXtreeIndex(), n));

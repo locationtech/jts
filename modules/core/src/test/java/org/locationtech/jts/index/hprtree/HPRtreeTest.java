@@ -42,14 +42,14 @@ public class HPRtreeTest extends TestCase {
     junit.textui.TestRunner.main(testCaseName);
   }
 
-  public void xtestEmptyTreeUsingListQuery()  
+  public void testEmptyTreeUsingListQuery()  
   {
     HPRtree tree = new HPRtree();
     List list = tree.query(new Envelope(0, 0, 1, 1));
     assertTrue(list.isEmpty());
   }
   
-  public void xtestEmptyTreeUsingItemVisitorQuery()  
+  public void testEmptyTreeUsingItemVisitorQuery()  
   {
     HPRtree tree = new HPRtree(0);
     tree.query(new Envelope(0,0,1,1), new ItemVisitor() {
@@ -59,7 +59,7 @@ public class HPRtreeTest extends TestCase {
     });  
   }
 
-  public void xtestSpatialIndex()
+  public void testSpatialIndex()
   throws Exception
   {
     SpatialIndexTester tester = new SpatialIndexTester();
@@ -69,7 +69,7 @@ public class HPRtreeTest extends TestCase {
     assertTrue(tester.isSuccess());
   }
 
-  public void xtestDisallowedInserts() {
+  public void testDisallowedInserts() {
     HPRtree t = new HPRtree(3);
     t.insert(new Envelope(0, 0, 0, 0), new Object());
     t.insert(new Envelope(0, 0, 0, 0), new Object());

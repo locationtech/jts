@@ -62,7 +62,7 @@ public class IndexTester {
     Stopwatch sw2 = new Stopwatch();
     
     //runGridQuery(1000);
-    //runSelfQuery(items);
+    //runQuery(items);
     runQuery(queries);
     
     String queryTime = sw2.getTimeString();
