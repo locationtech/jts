@@ -30,13 +30,13 @@ import org.locationtech.jts.util.Assert;
 
 
 /**
- * A class which supports creating new {@link Geometry}s 
+ * A class which supports creating new {@link Geometry}s
  * which are modifications of existing ones,
  * maintaining the same type structure.
  * Geometry objects are intended to be treated as immutable.
  * This class "modifies" Geometrys
  * by traversing them, applying a user-defined
- * {@link GeometryEditorOperation}, {@link CoordinateSequenceOperation} or {@link CoordinateOperation}  
+ * {@link GeometryEditorOperation}, {@link CoordinateSequenceOperation} or {@link CoordinateOperation}
  * and creating new Geometrys with the same structure but
  * (possibly) modified components.
  * <p>
@@ -58,19 +58,19 @@ import org.locationtech.jts.util.Assert;
  * If changing the structure is required, use a {@link GeometryTransformer}.
  * <p>
  * This class supports creating an edited Geometry
- * using a different <code>GeometryFactory</code> via the {@link #GeometryEditor(GeometryFactory)}
- * constructor.  
- * Examples of situations where this is required is if the geometry is 
+ * using a different <code>GeometryFactory</code> via the {@link #GeometryEditorEx(GeometryFactory)}
+ * constructor.
+ * Examples of situations where this is required is if the geometry is
  * transformed to a new SRID and/or a new PrecisionModel.
  * <p>
  * <b>Usage Notes</b>
  * <ul>
  * <li>The resulting Geometry is not checked for validity.
- * If validity needs to be enforced, the new Geometry's 
+ * If validity needs to be enforced, the new Geometry's
  * {@link Geometry#isValid} method should be called.
  * <li>By default the UserData of the input geometry is not copied to the result.
  * </ul>
- * 
+ *
  * @see GeometryTransformer
  * @see Geometry#isValid
  *
@@ -108,9 +108,9 @@ public class GeometryEditorEx
 
   /**
    * Creates a GeometryEditor which edits geometries using
-   * a given {@link GeometryOperation}
+   * a given {@link GeometryEditorOperation}
    * and the same {@link GeometryFactory} as the input Geometry.
-   * 
+   *
    * @param operation the edit operation to use
    */
   public GeometryEditorEx(GeometryEditorOperation operation)
@@ -120,12 +120,12 @@ public class GeometryEditorEx
 
   /**
    * Creates a GeometryEditor which edits geometries using
-   * a given {@link GeometryOperation}
+   * a given {@link GeometryEditorOperation}
    * and the given {@link GeometryFactory}.
-   * 
+   *
    * @param operation the edit operation to use
    * @param targetFactory the GeometryFactory to create  edited Geometrys with
-   * 
+   *
    */
   public GeometryEditorEx(GeometryEditorOperation operation, GeometryFactory targetFactory)
   {
@@ -137,14 +137,14 @@ public class GeometryEditorEx
   /**
    * Sets whether the User Data is copied to the edit result.
    * Only the object reference is copied.
-   * 
+   *
    * @param isUserDataCopied true if the input user data should be copied.
    */
   public void setCopyUserData(boolean isUserDataCopied)
   {
     this.isUserDataCopied = isUserDataCopied;
   }
-  
+
   /**
    * Edit a {@link Geometry}.
    * Clients can create subclasses of {@link GeometryEditorOperation} or
@@ -157,14 +157,14 @@ public class GeometryEditorEx
   {
     // nothing to do
     if (geometry == null) return null;
-    
+
     Geometry result = editInternal(geometry);
     if (isUserDataCopied) {
       result.setUserData(geometry.getUserData());
     }
     return result;
   }
-  
+
   private Geometry editInternal(Geometry geometry)
   {
     // if client did not supply a GeometryFactory, use the one from the input Geometry
@@ -203,7 +203,7 @@ public class GeometryEditorEx
     }
     return newGeom;
   }
-  
+
   private LineString editLineString(LineString geom) {
     LineString newGeom = (LineString) operation.edit(geom, targetFactory);
     if (newGeom == null) {
@@ -216,7 +216,7 @@ public class GeometryEditorEx
     }
     return newGeom;
   }
-  
+
   private LinearRing editLinearRing(LinearRing geom) {
     LinearRing newGeom = (LinearRing) operation.edit(geom, targetFactory);
     if (newGeom == null) {
@@ -229,7 +229,7 @@ public class GeometryEditorEx
     }
     return newGeom;
   }
-  
+
   private Polygon editPolygon(Polygon polygon) {
     Polygon newPolygon = (Polygon) operation.edit(polygon, targetFactory);
     // create one if needed
@@ -246,7 +246,7 @@ public class GeometryEditorEx
 
     LinearRing shell = (LinearRing) edit(newPolygon.getExteriorRing());
     if (shell == null || shell.isEmpty()) {
-      return targetFactory.createPolygon(null, null);
+      return targetFactory.createPolygon((LinearRing) null, null);
     }
 
     ArrayList holes = new ArrayList();
@@ -268,11 +268,11 @@ public class GeometryEditorEx
     // MD - not sure why this is done - could just check original collection?
     GeometryCollection collectionForType = (GeometryCollection) operation.edit(collection,
         targetFactory);
-    
+
     if (collectionForType != collection) {
       return collectionForType;
     }
-    
+
     // edit the component geometries
     ArrayList geometries = new ArrayList();
     for (int i = 0; i < collectionForType.getNumGeometries(); i++) {
@@ -315,7 +315,7 @@ public class GeometryEditorEx
      * It may be <code>null</code> if the geometry is to be deleted.
      *
      * @param geometry the Geometry to modify
-     * @param factory the factory with which to construct the modified Geometry
+     * @param targetFactory the factory with which to construct the modified Geometry
      * (may be different to the factory of the input geometry)
      * @return a new Geometry which is a modification of the input Geometry
      * @return null if the Geometry is to be deleted completely
@@ -326,9 +326,9 @@ public class GeometryEditorEx
   /**
    * A GeometryEditorOperation which does not modify
    * the input geometry.
-   * This can be used for simple changes of 
+   * This can be used for simple changes of
    * GeometryFactory (including PrecisionModel and SRID).
-   * 
+   *
    * @author mbdavis
    *
    */
@@ -340,7 +340,7 @@ public class GeometryEditorEx
   		return geometry;
   	}
   }
-  
+
   /**
    * A {@link GeometryEditorOperation} which edits the coordinate list of a {@link Geometry}.
    * Operates on Geometry subclasses which contains a single coordinate list.
@@ -384,7 +384,7 @@ public class GeometryEditorEx
     public abstract Coordinate[] edit(Coordinate[] coordinates,
                                       Geometry geometry);
   }
-  
+
   /**
    * A {@link GeometryEditorOperation} which edits the {@link CoordinateSequence}
    * of a {@link Geometry}.
@@ -418,7 +418,7 @@ public class GeometryEditorEx
     /**
      * Edits a {@link CoordinateSequence} from a {@link Geometry}.
      *
-     * @param coordseq the coordinate array to operate on
+     * @param coordSeq the coordinate array to operate on
      * @param geometry the geometry containing the coordinate list
      * @return an edited coordinate sequence (which may be the same as the input)
      */

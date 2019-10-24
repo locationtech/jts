@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
 import org.locationtech.jts.geom.util.GeometryEditor;
 import org.locationtech.jts.util.Assert;
@@ -36,10 +37,87 @@ public class GeometryFactory
     implements Serializable
 {
   private static final long serialVersionUID = -6820524753094095635L;
-  private PrecisionModel precisionModel;
 
+  /** Value indicating that the desired ring orientation for polygon shells has not been set yet */
+  private final static int RING_ORIENTATION_UNSET = -1;
+
+  /**
+   * Value indicating that there is no need for a specific ring orientation for polygon rings,
+   * both exterior (shell) and interior (holes). They don't need to differ, too.
+   * This is the default value.
+   */
+  public final static int RING_ORIENTATION_DONTCARE = 0;
+  /**
+   * Value indicating that the exterior ring (shell) of a polygon should be oriented clockwise.
+   * This implies that the interior rings are oriented counter-clockwise.
+   * @see #RING_ORIENTATION_RIGHT_HAND_RULE
+   */
+  public final static int RING_ORIENTATION_CW = 1;
+  /**
+   * Value indicating that the exterior ring (shell) of a polygon should be oriented following
+   * the right-hand-rule. <i>If you surround the polygons on its exterior the way it is coded,
+   * your right hand will (always) be inside the polygon</i>.
+   * This implies that the interior rings are oriented following the left-hand-rule.
+   * @see #RING_ORIENTATION_CW
+   */
+  public final static int RING_ORIENTATION_RIGHT_HAND_RULE = 1;
+  /**
+   * Value indicating that the exterior ring (shell) of a polygon should be oriented counter-clockwise.
+   * This implies that the interior rings are oriented clockwise.
+   * @see #RING_ORIENTATION_LEFT_HAND_RULE
+   */
+  public final static int RING_ORIENTATION_CCW = 2;
+  /**
+   * Value indicating that the exterior ring (shell) of a polygon should be oriented following
+   * the left-hand-rule. <i>If you surround the polygons on its exterior the way it is coded,
+   * your left hand will (always) be inside the polygon</i>.
+   * This implies that the interior rings are oriented following the right-hand-rule.
+   * @see #RING_ORIENTATION_CCW
+   */
+  public final static int RING_ORIENTATION_LEFT_HAND_RULE = 2;
+
+  private PrecisionModel precisionModel;
   private CoordinateSequenceFactory coordinateSequenceFactory;
 
+  /** Don't use this value directly, use {@link #getRingOrientationForPolygonShell()} */
+  private int ringOrientationForPolygonShell = RING_ORIENTATION_UNSET;
+
+  /**
+   * Get the configured ring orientation for <code>Polygon</code> shells.
+   * Calling this function will set return {@link #RING_ORIENTATION_DONTCARE} 
+   * if {@link #setRingOrientationForPolygonShell(int)} has not been called
+   * prior.
+   *
+   * {@see getRingOrientationForPolygonShell}
+   */
+  int getRingOrientationForPolygonShell() {
+    if (this.ringOrientationForPolygonShell == RING_ORIENTATION_UNSET)
+      this.ringOrientationForPolygonShell = RING_ORIENTATION_DONTCARE;
+    return ringOrientationForPolygonShell;
+  }
+
+  /**
+   * Set the desired ring orientation for <code>Polygon</code> shells
+   * <p>
+   *   Note: this value can only be set once and this <b>must</b> happen before
+   *   {@link #getRingOrientationForPolygonShell()} will be first called. This is
+   *   usually the case when any {@link Polygon} geometry is created.
+   * </p>
+   * @param ringOrientationForPolygonShell
+   *  the desired orientation.
+   * {@see getRingOrientationForPolygonShell}
+   */
+  public void setRingOrientationForPolygonShell(int ringOrientationForPolygonShell) {
+    if (ringOrientationForPolygonShell < 0 || ringOrientationForPolygonShell > 2)
+      throw new IllegalArgumentException("ringOrientationForPolygonShell");
+
+    if (this.ringOrientationForPolygonShell >= 0) {
+      if (ringOrientationForPolygonShell != this.ringOrientationForPolygonShell)
+        throw new IllegalStateException("Ring orientation for polygon shell has already been set and can't be changed");
+    }
+
+    this.ringOrientationForPolygonShell = ringOrientationForPolygonShell;
+  }
 
   public static Point createPointFromInternalCoord(Coordinate coord, Geometry exemplar)
   {
@@ -150,6 +228,8 @@ public class GeometryFactory
 
   /**
    *  Converts the <code>List</code> to an array.
+   *  <b>Note:</b> This static utility method does not care about the ring
+   *  orientation of the polygons!
    *
    *@param  polygons  the <code>List</code> of Polygons to convert
    *@return           the <code>List</code> in array format
@@ -194,7 +274,7 @@ public class GeometryFactory
 
   /**
    * Creates a {@link Geometry} with the same extent as the given envelope.
-   * The Geometry returned is guaranteed to be valid.  
+   * The Geometry returned is guaranteed to be valid.
    * To provide this behaviour, the following cases occur:
    * <p>
    * If the <code>Envelope</code> is:
@@ -205,24 +285,24 @@ public class GeometryFactory
    * <li>a rectangle : returns a {@link Polygon} whose points are (minx, miny),
    *  (minx, maxy), (maxx, maxy), (maxx, miny), (minx, miny).
    * </ul>
-   * 
+   *
    *@param  envelope the <code>Envelope</code> to convert
-   *@return an empty <code>Point</code> (for null <code>Envelope</code>s), 
+   *@return an empty <code>Point</code> (for null <code>Envelope</code>s),
    *	a <code>Point</code> (when min x = max x and min y = max y) or a
    *      <code>Polygon</code> (in all other cases)
    */
-  public Geometry toGeometry(Envelope envelope) 
+  public Geometry toGeometry(Envelope envelope)
   {
   	// null envelope - return empty point geometry
     if (envelope.isNull()) {
       return createPoint();
     }
-    
+
     // point?
     if (envelope.getMinX() == envelope.getMaxX() && envelope.getMinY() == envelope.getMaxY()) {
       return createPoint(new Coordinate(envelope.getMinX(), envelope.getMinY()));
     }
-    
+
     // vertical or horizontal line?
     if (envelope.getMinX() == envelope.getMaxX()
     		|| envelope.getMinY() == envelope.getMaxY()) {
@@ -232,20 +312,20 @@ public class GeometryFactory
           });
     }
 
-    // create a CW ring for the polygon 
+    // create a CW ring for the polygon
     return createPolygon(createLinearRing(new Coordinate[]{
         new Coordinate(envelope.getMinX(), envelope.getMinY()),
         new Coordinate(envelope.getMinX(), envelope.getMaxY()),
         new Coordinate(envelope.getMaxX(), envelope.getMaxY()),
         new Coordinate(envelope.getMaxX(), envelope.getMinY()),
         new Coordinate(envelope.getMinX(), envelope.getMinY())
-        }), null);
+        }, getRingOrientationForPolygonShell()), null);
   }
 
   /**
    * Returns the PrecisionModel that Geometries created by this factory
    * will be associated with.
-   * 
+   *
    * @return the PrecisionModel for this factory
    */
   public PrecisionModel getPrecisionModel() {
@@ -254,17 +334,17 @@ public class GeometryFactory
 
   /**
    * Constructs an empty {@link Point} geometry.
-   * 
+   *
    * @return an empty Point
    */
   public Point createPoint() {
 	return createPoint(getCoordinateSequenceFactory().create(new Coordinate[]{}));
   }
-  
+
   /**
    * Creates a Point using the given Coordinate.
    * A null Coordinate creates an empty Geometry.
-   * 
+   *
    * @param coordinate a Coordinate, or null
    * @return the created Point
    */
@@ -275,17 +355,17 @@ public class GeometryFactory
   /**
    * Creates a Point using the given CoordinateSequence; a null or empty
    * CoordinateSequence will create an empty Point.
-   * 
+   *
    * @param coordinates a CoordinateSequence (possibly empty), or null
    * @return the created Point
    */
   public Point createPoint(CoordinateSequence coordinates) {
   	return new Point(coordinates, this);
   }
-  
+
   /**
    * Constructs an empty {@link MultiLineString} geometry.
-   * 
+   *
    * @return an empty MultiLineString
    */
   public MultiLineString createMultiLineString() {
@@ -295,17 +375,17 @@ public class GeometryFactory
   /**
    * Creates a MultiLineString using the given LineStrings; a null or empty
    * array will create an empty MultiLineString.
-   * 
+   *
    * @param lineStrings LineStrings, each of which may be empty but not null
    * @return the created MultiLineString
    */
   public MultiLineString createMultiLineString(LineString[] lineStrings) {
   	return new MultiLineString(lineStrings, this);
   }
-  
+
   /**
    * Constructs an empty {@link GeometryCollection} geometry.
-   * 
+   *
    * @return an empty GeometryCollection
    */
   public GeometryCollection createGeometryCollection() {
@@ -315,17 +395,17 @@ public class GeometryFactory
   /**
    * Creates a GeometryCollection using the given Geometries; a null or empty
    * array will create an empty GeometryCollection.
-   * 
+   *
    * @param geometries an array of Geometries, each of which may be empty but not null, or null
    * @return the created GeometryCollection
    */
   public GeometryCollection createGeometryCollection(Geometry[] geometries) {
   	return new GeometryCollection(geometries, this);
   }
-  
+
   /**
    * Constructs an empty {@link MultiPolygon} geometry.
-   * 
+   *
    * @return an empty MultiPolygon
    */
   public MultiPolygon createMultiPolygon() {
@@ -346,10 +426,10 @@ public class GeometryFactory
   public MultiPolygon createMultiPolygon(Polygon[] polygons) {
     return new MultiPolygon(polygons, this);
   }
-  
+
   /**
    * Constructs an empty {@link LinearRing} geometry.
-   * 
+   *
    * @return an empty LinearRing
    */
   public LinearRing createLinearRing() {
@@ -358,33 +438,97 @@ public class GeometryFactory
 
   /**
    * Creates a {@link LinearRing} using the given {@link Coordinate}s.
-   * A null or empty array creates an empty LinearRing. 
-   * The points must form a closed and simple linestring. 
+   * A null or empty array creates an empty LinearRing.
+   * The points must form a closed and simple linestring.
    * @param coordinates an array without null elements, or an empty array, or null
    * @return the created LinearRing
    * @throws IllegalArgumentException if the ring is not closed, or has too few points
    */
   public LinearRing createLinearRing(Coordinate[] coordinates) {
-    return createLinearRing(coordinates != null ? getCoordinateSequenceFactory().create(coordinates) : null);
+    return createLinearRing(coordinates, RING_ORIENTATION_DONTCARE);
   }
 
   /**
-   * Creates a {@link LinearRing} using the given {@link CoordinateSequence}. 
-   * A null or empty array creates an empty LinearRing. 
-   * The points must form a closed and simple linestring. 
-   * 
+   * Creates a {@link LinearRing} using the given {@link Coordinate}s.
+   * A null or empty array creates an empty LinearRing.
+   * The points must form a closed and simple linestring.
+   * @param coordinates an array without null elements, or an empty array, or null
+   * @param ringOrientation the orientation of the ring.
+   * @return the created LinearRing
+   * @throws IllegalArgumentException if the ring is not closed, or has too few points
+   */
+  protected LinearRing createLinearRing(Coordinate[] coordinates, int ringOrientation) {
+    CoordinateSequence seq = coordinates != null
+      ? getCoordinateSequenceFactory().create(coordinates)
+      : null;
+
+    return createLinearRing(seq, ringOrientation);
+  }
+
+  /**
+   * Creates a {@link LinearRing} using the given {@link CoordinateSequence}.
+   * A null or empty array creates an empty LinearRing.
+   * The points must form a closed and simple linestring.
+   *
    * @param coordinates a CoordinateSequence (possibly empty), or null
    * @return the created LinearRing
    * @throws IllegalArgumentException if the ring is not closed, or has too few points
    */
   public LinearRing createLinearRing(CoordinateSequence coordinates) {
+    return createLinearRing(coordinates, RING_ORIENTATION_DONTCARE);
+  }
+
+  /**
+   * Creates a {@link LinearRing} using the given coordinates.
+   * A null or empty {@link CoordinateSequence} creates an empty LinearRing.
+   * The points must form a closed and simple linestring.
+   * <para>
+   * If the ordering of the coordinates does not adhere to the desired ring orientation,
+   * the coordinate sequence is reversed in place!
+   * </para>
+   * @param coordinates an array without null elements, or an empty array, or null
+   * @param ringOrientation the orientation of the ring.
+   * @return the created LinearRing
+   * @throws IllegalArgumentException if the ring is not closed, has too few points or
+   * the provided <code>ringOrientation</code> value is invalid.
+   */
+  protected LinearRing createLinearRing(CoordinateSequence coordinates, int ringOrientation) {
+    if (ringOrientation == RING_ORIENTATION_CCW) {
+      if (!Orientation.isCCW(coordinates))
+        CoordinateSequences.reverse(coordinates);
+    }
+    else if (ringOrientation == RING_ORIENTATION_CW) {
+      if (Orientation.isCCW(coordinates))
+        CoordinateSequences.reverse(coordinates);
+    }
+    else if (ringOrientation != RING_ORIENTATION_DONTCARE) {
+      throw new IllegalArgumentException("ringOrientation");
+    }
+
     return new LinearRing(coordinates, this);
   }
-  
+
+  /**
+   * Utility function to make a set of coordinate sequences adhere to the desired ring orientation
+   *
+   * @param coordinateSequences an array of {@link CoordinateSequence}s
+   * @param ringOrientation the desired ring orientation.
+   *
+   * @return A ring of correctly oriented <code>LinearRing</code>s.
+   */
+  private LinearRing[] createLinearRings(CoordinateSequence[] coordinateSequences, int ringOrientation) {
+    if (coordinateSequences == null)
+      return null;
+
+    LinearRing[] res = new LinearRing[coordinateSequences.length];
+    for (int i = 0; i < coordinateSequences.length; i++)
+      res[i] = createLinearRing(coordinateSequences[i], ringOrientation);
+
+    return res;
+  }
+
   /**
    * Constructs an empty {@link MultiPoint} geometry.
-   * 
-   * @return an empty MultiPoint
    */
   public MultiPoint createMultiPoint() {
     return new MultiPoint(null, this);
@@ -429,7 +573,7 @@ public class GeometryFactory
   }
 
   /**
-   * Creates a {@link MultiPoint} using the 
+   * Creates a {@link MultiPoint} using the
    * points in the given {@link CoordinateSequence}.
    * A <code>null</code> or empty CoordinateSequence creates an empty MultiPoint.
    *
@@ -451,34 +595,10 @@ public class GeometryFactory
   }
 
   /**
-   * Constructs a <code>Polygon</code> with the given exterior boundary and
-   * interior boundaries.
-   *
-   * @param shell
-   *            the outer boundary of the new <code>Polygon</code>, or
-   *            <code>null</code> or an empty <code>LinearRing</code> if
-   *            the empty geometry is to be created.
-   * @param holes
-   *            the inner boundaries of the new <code>Polygon</code>, or
-   *            <code>null</code> or empty <code>LinearRing</code> s if
-   *            the empty geometry is to be created.
-   * @throws IllegalArgumentException if a ring is invalid
+   * Constructs an empty <code>Polygon</code>
    */
-  public Polygon createPolygon(LinearRing shell, LinearRing[] holes) {
-    return new Polygon(shell, holes, this);
-  }
-
-  /**
-   * Constructs a <code>Polygon</code> with the given exterior boundary.
-   *
-   * @param shell
-   *            the outer boundary of the new <code>Polygon</code>, or
-   *            <code>null</code> or an empty <code>LinearRing</code> if
-   *            the empty geometry is to be created.
-   * @throws IllegalArgumentException if the boundary ring is invalid
-   */
-  public Polygon createPolygon(CoordinateSequence shell) {
-    return createPolygon(createLinearRing(shell));
+  public Polygon createPolygon() {
+    return createPolygon(getRingOrientationForPolygonShell(), null, null);
   }
 
   /**
@@ -491,7 +611,20 @@ public class GeometryFactory
    * @throws IllegalArgumentException if the boundary ring is invalid
    */
   public Polygon createPolygon(Coordinate[] shell) {
-    return createPolygon(createLinearRing(shell));
+    return createPolygon(getRingOrientationForPolygonShell(), getCoordinateSequenceFactory().create(shell), null);
+  }
+
+  /**
+   * Constructs a <code>Polygon</code> with the given exterior boundary.
+   *
+   * @param shell
+   *            the outer boundary of the new <code>Polygon</code>, or
+   *            <code>null</code> or an empty <code>LinearRing</code> if
+   *            the empty geometry is to be created.
+   * @throws IllegalArgumentException if the boundary ring is invalid
+   */
+  public Polygon createPolygon(CoordinateSequence shell) {
+    return createPolygon(getRingOrientationForPolygonShell(), shell, null);
   }
 
   /**
@@ -506,14 +639,92 @@ public class GeometryFactory
   public Polygon createPolygon(LinearRing shell) {
     return createPolygon(shell, null);
   }
-  
+
   /**
-   * Constructs an empty {@link Polygon} geometry.
-   * 
-   * @return an empty polygon
+   * Constructs a <code>Polygon</code> with the given exterior boundary and
+   * interior boundaries.
+   *
+   * @param shell
+   *            the outer boundary of the new <code>Polygon</code>, or
+   *            <code>null</code> or an empty <code>LinearRing</code> if
+   *            the empty geometry is to be created.
+   * @param holes
+   *            the inner boundaries of the new <code>Polygon</code>, or
+   *            <code>null</code> or empty <code>LinearRing</code> s if
+   *            the empty geometry is to be created.
+   * @throws IllegalArgumentException if a ring is invalid
    */
-  public Polygon createPolygon() {
-    return createPolygon(null, null);
+  public Polygon createPolygon(LinearRing shell, LinearRing[] holes) {
+    if (shell == null)
+      shell = createLinearRing();
+
+    // Shall we make a copy of the sequences?
+    // Assumption: The rings were made for this polygon if created
+    // by this factory.
+    boolean makeCopy = shell.factory != this;
+    CoordinateSequence shellSequence = makeCopy
+      ? shell.getCoordinateSequence().copy()
+      : shell.getCoordinateSequence();
+
+    return createPolygon(getRingOrientationForPolygonShell(), shellSequence,
+                         GetLinearRingSequences(holes, makeCopy));
+  }
+
+  /**
+   * Constructs a <code>Polygon</code> with the given exterior boundary and
+   * interior boundaries.
+   *
+   * @param shell
+   *            the outer boundary of the new <code>Polygon</code>, or
+   *            <code>null</code> or an empty <code>LinearRing</code> if
+   *            the empty geometry is to be created.
+   * @param holes
+   *            the inner boundaries of the new <code>Polygon</code>, or
+   *            <code>null</code> or empty <code>LinearRing</code> s if
+   *            the empty geometry is to be created.
+   * @throws IllegalArgumentException if a ring is invalid
+   */
+  public Polygon createPolygon(CoordinateSequence shell, CoordinateSequence[] holes) {
+    return createPolygon(getRingOrientationForPolygonShell(), shell, holes);
+  }
+
+  /**
+   * Constructs a <code>Polygon</code> with the given exterior boundary and
+   * interior boundaries.
+   *
+   * @param shellRingOrientation
+   *            defines the orientation of the shell ring. If its value
+   *            is {@link #RING_ORIENTATION_DONTCARE}, no adjustments are made
+   *            to the input sequences, otherwise ring orientation will be
+   *            changed (if necessary) to follow suit. The orientation of the
+   *            interior rings are -in that case- opposite that of the shell.
+   * @param shell
+   *            the outer boundary of the new <code>Polygon</code>, or
+   *            <code>null</code> or an empty <code>LinearRing</code> if
+   *            the empty geometry is to be created.
+   * @param holes
+   *            the inner boundaries of the new <code>Polygon</code>, or
+   *            <code>null</code> or empty <code>LinearRing</code> s if
+   *            the empty geometry is to be created.
+   * @throws IllegalArgumentException if a ring is invalid
+   */
+  protected Polygon createPolygon(int shellRingOrientation, CoordinateSequence shell, CoordinateSequence[] holes) {
+    if (shellRingOrientation == RING_ORIENTATION_DONTCARE)
+      return new Polygon(createLinearRing(shell, RING_ORIENTATION_DONTCARE),
+                         createLinearRings(holes, RING_ORIENTATION_DONTCARE),
+                 this);
+
+    if (shellRingOrientation == RING_ORIENTATION_CCW)
+      return new Polygon(createLinearRing(shell, RING_ORIENTATION_CCW),
+        createLinearRings(holes, RING_ORIENTATION_CW),
+        this);
+
+    if (shellRingOrientation == RING_ORIENTATION_CW)
+      return new Polygon(createLinearRing(shell, RING_ORIENTATION_CW),
+        createLinearRings(holes, RING_ORIENTATION_CCW),
+        this);
+
+    throw new IllegalArgumentException("shellRingOrientation");
   }
 
   /**
@@ -544,10 +755,9 @@ public class GeometryFactory
    *      .
    */
   public Geometry buildGeometry(Collection geomList) {
-  	
-  	/**
-  	 * Determine some facts about the geometries in the list
-  	 */
+    /*
+     * Determine some facts about the geometries in the list
+     */
     Class geomClass = null;
     boolean isHeterogeneous = false;
     boolean hasGeometryCollection = false;
@@ -563,8 +773,8 @@ public class GeometryFactory
       if (geom instanceof GeometryCollection)
         hasGeometryCollection = true;
     }
-    
-    /**
+
+    /*
      * Now construct an appropriate geometry to return
      */
     // for the empty geometry, return an empty GeometryCollection
@@ -593,10 +803,10 @@ public class GeometryFactory
     }
     return geom0;
   }
-  
+
   /**
    * Constructs an empty {@link LineString} geometry.
-   * 
+   *
    * @return an empty LineString
    */
   public LineString createLineString() {
@@ -605,8 +815,8 @@ public class GeometryFactory
 
   /**
    * Creates a LineString using the given Coordinates.
-   * A null or empty array creates an empty LineString. 
-   * 
+   * A null or empty array creates an empty LineString.
+   *
    * @param coordinates an array without null elements, or an empty array, or null
    */
   public LineString createLineString(Coordinate[] coordinates) {
@@ -614,8 +824,8 @@ public class GeometryFactory
   }
   /**
    * Creates a LineString using the given CoordinateSequence.
-   * A null or empty CoordinateSequence creates an empty LineString. 
-   * 
+   * A null or empty CoordinateSequence creates an empty LineString.
+   *
    * @param coordinates a CoordinateSequence (possibly empty), or null
    */
   public LineString createLineString(CoordinateSequence coordinates) {
@@ -625,7 +835,7 @@ public class GeometryFactory
   /**
    * Creates an empty atomic geometry of the given dimension.
    * If passed a dimension of -1 will create an empty {@link GeometryCollection}.
-   * 
+   *
    * @param dimension the required dimension (-1, 0, 1 or 2)
    * @return an empty atomic geometry of given dimension
    */
@@ -639,7 +849,7 @@ public class GeometryFactory
       throw new IllegalArgumentException("Invalid dimension: " + dimension);
     }
   }
-  
+
   /**
    * Creates a deep copy of the input {@link Geometry}.
    * The {@link CoordinateSequenceFactory} defined for this factory
@@ -647,15 +857,15 @@ public class GeometryFactory
    * of the input geometry.
    * <p>
    * This is a convenient way to change the <tt>CoordinateSequence</tt>
-   * used to represent a geometry, or to change the 
+   * used to represent a geometry, or to change the
    * factory used for a geometry.
    * <p>
    * {@link Geometry#copy()} can also be used to make a deep copy,
    * but it does not allow changing the CoordinateSequence type.
-   * 
+   *
    * @return a deep copy of the input geometry, using the CoordinateSequence type of this factory
-   * 
-   * @see Geometry#copy() 
+   *
+   * @see Geometry#copy()
    */
   public Geometry createGeometry(Geometry g)
   {
@@ -675,7 +885,7 @@ public class GeometryFactory
 
   /**
    * Gets the SRID value defined for this factory.
-   * 
+   *
    * @return the factory SRID value
    */
   public int getSRID() {
@@ -688,5 +898,22 @@ public class GeometryFactory
     return coordinateSequenceFactory;
   }
 
+  /**
+   * Utility function to extract the coordinate sequences from an array of linear rings.
+   *
+   * @param rings an array of <code>LinearRing</code>s.
+   * @param makeCopy a flag indicating that the sequences are to be copied.
+   * @return An array of <code>CoordinateSequence</code>s.
+   */
+  private static CoordinateSequence[] GetLinearRingSequences(LinearRing[] rings, boolean makeCopy) {
+    if (rings == null)
+      return null;
+
+    CoordinateSequence[] res = new CoordinateSequence[rings.length];
+    for (int i = 0; i < rings.length; i++)
+      res[i] = makeCopy ? rings[i].getCoordinateSequence().copy() : rings[i].getCoordinateSequence();
+
+    return res;
+  }
 }
 
