@@ -45,6 +45,12 @@ public class UnaryUnionTest extends GeometryTestCase
     doTest("POLYGON EMPTY", "POLYGON EMPTY");
   }
 
+  public void testEmptyPointWithLine()
+  throws Exception
+  {
+    doTest(new String[]{ "POINT EMPTY", "LINESTRING (0 0, 1 1)"}, "LINESTRING (0 0, 1 1)");
+  }
+
   public void testPoints()
   throws Exception
   {
