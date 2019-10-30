@@ -539,7 +539,7 @@ public class OverlayNG
    * @param geomFact the geometry factory being used for the operation
    * @return an empty atomic geometry of the appropriate dimension
    */
-  private static Geometry createEmptyResult(int overlayOpCode, Geometry a, Geometry b, GeometryFactory geomFact)
+  static Geometry createEmptyResult(int overlayOpCode, Geometry a, Geometry b, GeometryFactory geomFact)
   {
     Geometry result = null;
     switch (resultDimension(overlayOpCode, a, b)) {
