@@ -31,9 +31,9 @@ public class ExtractComponentTool extends BoxBandTool {
   }
 
   protected void gestureFinished() 
-  {      
-    JTSTestBuilder.controller().extractComponentsToTestCase(getBox());  
+  {  
+    boolean isSegments = isControlKeyDown();
+    JTSTestBuilder.controller().extractComponentsToTestCase(getBox(), isSegments);
   }
-
 
 }

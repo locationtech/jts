@@ -32,7 +32,7 @@ public class AppStrings {
   public static final String TIP_WKT_PANEL_LOAD_GEOMETRY = "Load geometries";
   public static final String TIP_INSPECT_GEOMETRY = "Inspect Geometry";
 
-  static final String TIP_EXTRACT_COMPONENTS = "Extract Components to Case";
+  static final String TIP_EXTRACT_COMPONENTS = "<html>Extract Components/Segments to Case<br><br>Components = Drag<br>Segments = Ctl-Drag</html>";
 
   static final String TIP_DELETE_VERTEX_COMPONENT = "<html>Delete Components/Vertices<br><br>Delete Components = Drag<br>Delete Intersecting Components = Ctl-Drag<br>Delete Vertices = Right-Drag</html>";
 

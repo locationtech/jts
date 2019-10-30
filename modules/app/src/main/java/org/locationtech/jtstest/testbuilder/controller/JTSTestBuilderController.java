@@ -101,11 +101,12 @@ public class JTSTestBuilderController
     JTSTestBuilderFrame.instance().updateTestCases();
   }
   
-  public void extractComponentsToTestCase(Geometry aoi)
+  public void extractComponentsToTestCase(Geometry aoi, boolean isSegments)
   {
     //double toleranceInModel = JTSTestBuilderFrame.getGeometryEditPanel().getToleranceInModel();
     LayerList lyrList = model().getLayers();
-    Geometry[] comp = lyrList.getComponents(aoi);
+    Geometry[] comp;
+    comp = lyrList.getComponents(aoi, isSegments);
     if (comp == null) 
       return;
     model().addCase(comp);
