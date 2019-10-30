@@ -11,6 +11,8 @@
  */
 package org.locationtech.jtstest.testbuilder.ui.tools;
 
+import java.awt.Cursor;
+
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 
 /**
@@ -27,7 +29,7 @@ public class ExtractComponentTool extends BoxBandTool {
   }
 
   private ExtractComponentTool() {
-    super();
+    super(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
   }
 
   protected void gestureFinished() 

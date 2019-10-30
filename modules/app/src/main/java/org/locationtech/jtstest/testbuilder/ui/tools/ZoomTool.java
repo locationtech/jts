@@ -21,9 +21,7 @@ import java.awt.geom.Point2D;
 import javax.swing.SwingUtilities;
 
 import org.locationtech.jtstest.testbuilder.AppConstants;
-import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
-import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
-
+import org.locationtech.jtstest.testbuilder.AppCursors;
 
 
 /**
@@ -31,6 +29,14 @@ import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
  */
 public class ZoomTool extends BasicTool 
 {
+  private static ZoomTool singleton = null;
+
+  public static ZoomTool getInstance() {
+    if (singleton == null)
+      singleton = new ZoomTool(2, AppCursors.ZOOM);
+    return singleton;
+  }
+  
   private double zoomFactor = 2;
   private Point mouseStart = null;
   private Point mouseEnd = null;

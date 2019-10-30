@@ -15,6 +15,7 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
@@ -481,7 +482,12 @@ public class GeometryEditPanel extends JPanel
   public void setCurrentTool(Tool newTool) {
     if (currentTool != null) currentTool.deactivate();
     currentTool = newTool;
-    if (currentTool != null) currentTool.activate(this);
+    if (currentTool != null) {
+      currentTool.activate(this);
+    }
+    else {
+      setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
   }
 
   public void zoomToGeometry(int i) {
