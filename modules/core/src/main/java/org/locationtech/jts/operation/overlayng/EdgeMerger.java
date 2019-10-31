@@ -75,7 +75,7 @@ class EdgeMerger {
         Assert.isTrue(baseEdge.size() == edge.size(),
             "Merge of edges of different sizes - probable noding error.");
         
-        baseEdge.mergeEdge(edge);
+        baseEdge.merge(edge);
         //Debug.println("edge merged: " + existing);
         //Debug.println(edge.toLineString());
       }

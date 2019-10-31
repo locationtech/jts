@@ -188,6 +188,20 @@ class Edge {
     return bDim == OverlayLabel.DIM_BOUNDARY;
   }
   
+  /**
+   * Tests whether the edge is part of a shell in the given geometry.
+   * This is only the case if the edge is a boundary.
+   * 
+   * @param geomIndex the index of the geometry
+   * @return true if this edge is a boundary and part of a shell
+   */
+  private boolean isShell(int geomIndex) {
+    if (geomIndex == 0) {
+      return aDim == OverlayLabel.DIM_BOUNDARY && ! aIsHole;
+    }
+    return bDim == OverlayLabel.DIM_BOUNDARY && ! bIsHole;
+  }
+  
   private int locationRight(int depthDelta) {
     int delSign = delSign(depthDelta);
     switch (delSign) {
@@ -228,17 +242,24 @@ class Edge {
     }
   }
   
-  public void mergeEdge(Edge edge) {
-    if (edge.aDim > aDim) aDim = edge.aDim;
-    if (edge.bDim > bDim) bDim = edge.bDim;
-    
+  /**
+   * Merges an edge into this edge,
+   * updating the topology info accordingly.
+   * 
+   * @param edge
+   */
+  public void merge(Edge edge) {
     /**
      * Marks this
      * as a shell edge if any contributing edge is a shell.
+     * Update hole status first, since it depends on edge dim
      */
-    aIsHole = mergedRingRole(0, this, edge);
-    bIsHole = mergedRingRole(1, this, edge);
+    aIsHole = isHoleMerged(0, this, edge);
+    bIsHole = isHoleMerged(1, this, edge);
 
+    if (edge.aDim > aDim) aDim = edge.aDim;
+    if (edge.bDim > bDim) bDim = edge.bDim;
+    
     boolean relDir = relativeDirection(edge);
     int flipFactor = relDir ? 1 : -1;
     aDepthDelta += flipFactor * edge.aDepthDelta;
@@ -250,11 +271,12 @@ class Edge {
     */
   }
 
-  private boolean mergedRingRole(int geomIndex, Edge edge1, Edge edge2) {
-    // TOD: this might be clearer with tri-state logic for isHole
-    boolean isShell1 = edge1.isBoundary(geomIndex) && ! edge1.isHole(geomIndex);
-    boolean isShell2 = edge2.isBoundary(geomIndex) && ! edge2.isHole(geomIndex);
+  private static boolean isHoleMerged(int geomIndex, Edge edge1, Edge edge2) {
+    // TOD: this might be clearer with tri-state logic for isHole?
+    boolean isShell1 = edge1.isShell(geomIndex);
+    boolean isShell2 = edge2.isShell(geomIndex);
     boolean isShellMerged = isShell1 || isShell2;
+    // flip since isHole is stored
     return ! isShellMerged;
   }
 
@@ -262,20 +284,14 @@ class Edge {
     
     String ptsStr = toStringPts(pts);
     
-    String aInfo = "A:" + info(aDepthDelta, aDim, aIsHole );
-    String bInfo = "B:" + info(bDepthDelta, bDim, bIsHole );
+    String aInfo = info(0, aDim, aIsHole, aDepthDelta );
+    String bInfo = info(1, bDim, bIsHole, bDepthDelta );
 
     return "Edge( " + ptsStr  + " ) " 
         + aInfo + "/" + bInfo;
   }
   public String toLineString() {
     return WKTWriter.toLineString(pts);
-  }
-  
-  private String info(int depthDelta, int dim, boolean isHole) {
-    return Integer.toString(depthDelta)  // force to string
-    + OverlayLabel.dimensionSymbol(dim)
-    + ringRoleSymbol( dim, isHole );
   }
   
   private static String toStringPts(Coordinate[] pts) {
@@ -290,7 +306,15 @@ class Edge {
     return ptsStr;
   }
 
-  private static String ringRoleSymbol(int dim, boolean isHole) {
+  public static String info(int index, int dim, boolean isHole, int depthDelta) {
+    return
+        (index == 0 ? "A:" : "B:")
+        + OverlayLabel.dimensionSymbol(dim)
+        + ringRoleSymbol( dim, isHole )
+        + Integer.toString(depthDelta);  // force to string
+  }
+  
+  public static String ringRoleSymbol(int dim, boolean isHole) {
     if (hasAreaParent(dim)) return "" + OverlayLabel.ringRoleSymbol(isHole);
     return "";
   }

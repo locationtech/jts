@@ -55,4 +55,8 @@ class EdgeInfo {
   public boolean isHole() {
     return isHole;
   }
+  
+  public String toString() {
+    return Edge.info(index, dim, isHole, depthDelta);
+  }
 }

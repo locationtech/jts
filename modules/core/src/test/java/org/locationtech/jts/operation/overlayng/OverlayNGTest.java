@@ -412,6 +412,21 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
+  /**
+   * Failure due to B hole collapsing and edges being labeled Exterior.
+   * They are coincident with an A hole edge, but because labeled E are not
+   * included in Intersection result.
+   * This occurred because of a very subtle instance field update sequence bug 
+   * in Edge.mergeEdge.
+   */
+  public void testBCollapsedHoleEdgeLabelledExterior() {
+    Geometry a = read("POLYGON ((309500 3477900, 309900 3477900, 309900 3477600, 309500 3477600, 309500 3477900), (309741.87561330193 3477680.6737848604, 309745.53718649445 3477677.607851833, 309779.0333599192 3477653.585555199, 309796.8051681937 3477642.143583868, 309741.87561330193 3477680.6737848604))");
+    Geometry b = read("POLYGON ((309500 3477900, 309900 3477900, 309900 3477600, 309500 3477600, 309500 3477900), (309636.40806633036 3477777.2910157656, 309692.56085444096 3477721.966349552, 309745.53718649445 3477677.607851833, 309779.0333599192 3477653.585555199, 309792.0991800499 3477645.1734264474, 309779.03383125085 3477653.5853248164, 309745.53756275156 3477677.6076231804, 309692.5613257677 3477721.966119165, 309636.40806633036 3477777.2910157656))");
+    Geometry expected = read("POLYGON ((309500 3477600, 309500 3477900, 309900 3477900, 309900 3477600, 309500 3477600), (309741.88 3477680.67, 309745.54 3477677.61, 309779.03 3477653.59, 309792.1 3477645.17, 309796.81 3477642.14, 309741.88 3477680.67))");
+    Geometry actual = intersection(a, b, 100);
+    checkEqual(expected, actual);
+  }
+  
   public void testLineUnion() {
     Geometry a = read("LINESTRING (0 0, 1 1)");
     Geometry b = read("LINESTRING (1 1, 2 2)");
