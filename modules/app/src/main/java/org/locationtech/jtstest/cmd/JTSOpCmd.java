@@ -48,8 +48,8 @@ import org.locationtech.jtstest.util.io.MultiFormatReader;
  * --- Compute the buffer of a literal geometry, output as WKT
  * jtsop -a "POINT (10 10)" -f wkt Buffer.buffer 10
  * 
- * --- Compute multiple buffers
- * jtsop -a "POINT (10 10)" -f wkt Buffer.buffer val(1,10,100)
+ * --- Compute buffers of multiple sizes
+ * jtsop -a "POINT (10 10)" -f wkt Buffer.buffer 1,10,100
  * 
  * --- Run op for each A 
  * jtsop -a "MULTIPOINT ((10 10), (20 20))" -each A -f wkt Buffer.buffer
@@ -65,7 +65,7 @@ public class JTSOpCmd {
 
   // TODO: add option -ab to read both geoms from a file
   // TODO: allow -a stdin  to indicate reading from stdin.  
-  public static final String ERR_INVALID_PARAMETER = "Invalid Parameter";
+  public static final String ERR_INVALID_ARG_PARAM = "Invalid argument parameter";
 
   private static final String MACRO_VAL = "val";
 
@@ -123,7 +123,7 @@ public class JTSOpCmd {
   "           [ op [ args... ]]",
   "  op              name of the operation (Category.op)",
   "  args            one or more scalar arguments to the operation",
-  "                  - Use val(v1,v2,v3,..) for multiple arguments",
+  "                  - To run over multiple arguments use v1,v2,v3 OR val(v1,v2,v3,..)",
   "",
   "  -a              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
   "  -b              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
@@ -298,7 +298,7 @@ public class JTSOpCmd {
         cmdArgs.eachAA = true;
       }
       else {
-        throw new CommandError(ERR_INVALID_PARAMETER, "-each " + each);
+        throw new CommandError(ERR_INVALID_ARG_PARAM, "-each " + each);
       }
     }
     boolean isVerbose = commandLine.hasOption(CommandOptions.VERBOSE)
@@ -333,29 +333,63 @@ public class JTSOpCmd {
   }
   
   private String[] parseOpArg(String arg) {
-    
-    // multi-value arg
-    if (arg.startsWith("(")) 
+    if (isArgMultiValues(arg)) {
       return parseValues(arg);
-    if (arg.startsWith(MACRO_VAL + "(")) 
-      return parseValues(arg);
+    }
     
     // no other macros, for now
     if (arg.contains("(")) 
-        throw new CommandError(ERR_INVALID_PARAMETER, arg); 
+        throw new CommandError(ERR_INVALID_ARG_PARAM, arg); 
     
-    // simple arg value
+    // default is a single arg value
     return new String[] { arg };
   }
 
-  private String[] parseValues(String arg) {
-    int indexLeft = arg.indexOf('(');
-    int indexRight = arg.indexOf(')');
-    if (indexRight <= 0) 
-      throw new CommandError(ERR_INVALID_PARAMETER, arg);  
+  /**
+   * Detects various syntaxes for values:
+   * - (1,2,3)
+   * - val(1,2,3)
+   * - 1,2,3
+   * 
+   * @param arg
+   * @return
+   */
+  private boolean isArgMultiValues(String arg) {
+    
+    if (arg.startsWith("(")) return true;
+    if (arg.startsWith(MACRO_VAL + "(")) return true;
+    
+    boolean hasParen = arg.indexOf('(') >= 0;
+    boolean hasComma = arg.indexOf(',') >= 0;
+    
+    if (hasComma && ! hasParen) return true;
+    
+    return false;
+  }
+
+  private String[] parseValues(String valuesExpr) {
+    boolean hasParenL = valuesExpr.indexOf('(') >= 0;
+    boolean hasParenR = valuesExpr.indexOf(')') >= 0;
+    boolean hasParen = hasParenL || hasParenR;
+
+    if (hasParen) {
+      return parseMacroArgs(valuesExpr);
+    }
+    // assume expr is an arg list
+    return valuesExpr.split(",");
+  }
+
+  private String[] parseMacroArgs(String macroTerm) {
+    int indexLeft = macroTerm.indexOf('(');
+    int indexRight = macroTerm.indexOf(')');
+    
+    // check for missing L or R parent
+    if (indexLeft < 0 || indexRight <= 0) 
+      throw new CommandError(ERR_INVALID_ARG_PARAM, macroTerm);  
+    
     // TODO: error if no R paren
-    String content = arg.substring(indexLeft + 1, indexRight);
-    return content.split(",");
+    String args = macroTerm.substring(indexLeft + 1, indexRight);
+    return args.split(",");
   }
 
 

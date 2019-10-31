@@ -44,6 +44,16 @@ public class JTSOpCmdTest extends TestCase {
         JTSOpRunner.ERR_WRONG_ARG_COUNT );
   }
   
+  public void testErrorbadMultiArgsNoRParen() {
+    runCmdError( args("-a", "POINT ( 1 1 )", "Buffer.buffer", "(1,2,3" ),
+        JTSOpCmd.ERR_INVALID_ARG_PARAM );
+  }
+  
+  public void testErrorbadMultiArgsNoLParen() {
+    runCmdError( args("-a", "POINT ( 1 1 )", "Buffer.buffer", "1,2,3)" ),
+        JTSOpCmd.ERR_INVALID_ARG_PARAM );
+  }
+  
   public void testErrorMissingGeomABuffer() {
     runCmdError( args("Buffer.buffer", "10" ),
         JTSOpRunner.ERR_REQUIRED_A );
@@ -135,11 +145,22 @@ public class JTSOpCmdTest extends TestCase {
     assertEquals("Incorrect summary value for arg values",  computeArea(results), 93.6, 1);
   }
 
-  public void testOpBufferMultiArg() {
+  public void testOpBufferMultiArgParen() {
     JTSOpCmd cmd = runCmd( args(
         "-a", "POINT(0 0)", 
         "-f", "wkt", 
         "Buffer.buffer", "(1,2,3,4)" ), 
+        null, null );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertTrue("Not enough results for arg values",  results.size() == 4 );
+    assertEquals("Incorrect summary value for arg values",  computeArea(results), 93.6, 1);
+  }
+
+  public void testOpBufferMultiArgNoParen() {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "POINT(0 0)", 
+        "-f", "wkt", 
+        "Buffer.buffer", "1,2,3,4" ), 
         null, null );
     List<Geometry> results = cmd.getResultGeometry();
     assertTrue("Not enough results for arg values",  results.size() == 4 );
