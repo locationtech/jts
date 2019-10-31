@@ -20,7 +20,8 @@ import org.locationtech.jts.math.MathUtil;
 
 /**
  * Functions for computing scale factors
- * for geometry operations, in particular operations 
+ * for ensuring robust geometry operations.
+ * In particular these can be used for operations 
  * using limited-precision noding (such as {@link OverlayNG}).
  * These functions can be used to automatically determine
  * appropriate scale factors for use in geometric operations.
@@ -42,8 +43,8 @@ public class Scale
    * Computes a scale factor which maximizes 
    * the digits of precision but which is 
    * still safe to use for overlay operations.
-   * If possible the inherent scale of the geometries
-   * is returned, but if this 
+   * The auto scale is taken as the minimum of the 
+   * inherent scale and the safe scale factors.
    * 
    * @param a a geometry 
    * @param b a geometry
