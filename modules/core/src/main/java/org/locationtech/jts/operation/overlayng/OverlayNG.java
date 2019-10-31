@@ -455,7 +455,7 @@ public class OverlayNG
       
       // don't create edges from collapsed lines
       // TODO: perhaps convert these to points to be included in overlay?
-      if (! Edge.isValidPoints(pts)) continue;
+      if ( Edge.isCollapsed(pts) ) continue;
       
       EdgeInfo info = (EdgeInfo) ss.getData();
       edges.add(new Edge(ss.getCoordinates(), info));

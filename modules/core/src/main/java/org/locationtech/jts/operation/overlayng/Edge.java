@@ -20,22 +20,31 @@ import org.locationtech.jts.util.Debug;
 
 /**
  * Represents a single edge in a topology graph,
- * carrying the location label derived from the two parent geometries.
+ * carrying the topology information 
+ * derived from the two parent geometries.
  * 
  * @author mdavis
  *
  */
 class Edge {
   
-  public static boolean isValidPoints(Coordinate[] pts) {
-    if (pts.length < 2) return false;
+  /**
+   * Tests if the given point sequence
+   * is a collapsed line.
+   * A collapsed edge has fewer than two distinct points.
+   * 
+   * @param pts the point sequence to check
+   * @return true if the points form a collapsed line
+   */
+  public static boolean isCollapsed(Coordinate[] pts) {
+    if (pts.length < 2) return true;
     // zero-length line
-    if (pts[0].equals2D(pts[1])) return false;
+    if (pts[0].equals2D(pts[1])) return true;
     // TODO: is pts > 2 with equal points ever expected?
     if (pts.length > 2) {
-      if ( pts[ pts.length-1 ].equals2D(pts[ pts.length - 2 ])) return false;
+      if ( pts[ pts.length-1 ].equals2D(pts[ pts.length - 2 ])) return true;
     }
-    return true;
+    return false;
   }
   
   private Coordinate[] pts;
