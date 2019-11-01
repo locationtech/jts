@@ -19,13 +19,14 @@ import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.LineStringExtracter;
 import org.locationtech.jts.geom.util.PolygonExtracter;
-import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
-import org.locationtech.jts.operation.overlayng.SegmentExtractingNoder;
+import org.locationtech.jts.operation.overlayng.PrecisionReducer;
+import org.locationtech.jts.operation.overlayng.PrecisionUtil;
+import org.locationtech.jts.operation.overlayng.UnaryUnionNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 import org.locationtech.jtstest.geomfunction.Metadata;
@@ -47,112 +48,80 @@ public class OverlayNGFunctions {
 
   public static Geometry intersection(Geometry a, Geometry b, 
       @Metadata(title="Grid Scale") double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, INTERSECTION, pm);
-  }
-  
-  @Metadata(description="Intersection using automatic precision")
-  public static Geometry intersectionAuto(Geometry a, Geometry b) {
-    return OverlayNG.overlay(a, b, INTERSECTION);
+    return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(scaleFactor));
   }
   
   public static Geometry union(Geometry a, Geometry b, 
       @Metadata(title="Grid Scale") double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, UNION, pm);
-  }
-  
-  @Metadata(description="Union using automatic precision")
-  public static Geometry unionAuto(Geometry a, Geometry b) {
-    return OverlayNG.overlay(a, b, UNION);
+    return OverlayNG.overlay(a, b, UNION, new PrecisionModel(scaleFactor));
   }
   
   public static Geometry difference(Geometry a, Geometry b, 
       @Metadata(title="Grid Scale") double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, DIFFERENCE, pm);
+    return OverlayNG.overlay(a, b, DIFFERENCE, new PrecisionModel(scaleFactor));
   }
 
   public static Geometry differenceBA(Geometry a, Geometry b, 
       @Metadata(title="Grid Scale") double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(b, a, DIFFERENCE, pm);
-  }
-
-  @Metadata(description="Difference using automatic precision")
-  public static Geometry differenceAuto(Geometry a, Geometry b) {
-    return OverlayNG.overlay(a, b, DIFFERENCE);
+    return OverlayNG.overlay(b, a, DIFFERENCE, new PrecisionModel(scaleFactor));
   }
 
   public static Geometry symDifference(Geometry a, Geometry b, 
       @Metadata(title="Grid Scale") double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    return OverlayNG.overlay(a, b, SYMDIFFERENCE, pm);
+    return OverlayNG.overlay(a, b, SYMDIFFERENCE, new PrecisionModel(scaleFactor));
   }
   
+  @Metadata(description="Unary union a collection of geometries")
   public static Geometry unaryUnion(Geometry a, 
       @Metadata(title="Grid Scale") double scaleFactor) {
-    final PrecisionModel pm = new PrecisionModel(scaleFactor);
-    UnionFunction unionSRFun = new UnionFunction() {
-
-      public Geometry union(Geometry g0, Geometry g1) {
-        return OverlayNG.overlay(g0, g1, UNION, pm);
-      }
-      
-    };
-    
-    //UnionFunction overlapSRFun = OverlapUnion.wrap(unionSRFun);
-    //op.setUnionFunction( overlapSRFun );
-    
-    UnaryUnionOp op = new UnaryUnionOp(a);
-    op.setUnionFunction( unionSRFun );
-    return op.union();
+    return UnaryUnionNG.union(a, new PrecisionModel(scaleFactor));
   }
 
-  @Metadata(description="Unary union using automatic precision")
-  public static Geometry unaryUnionAuto(Geometry a) {
-    PrecisionModel pm = OverlayNG.autoPM(a, null);
-    UnionFunction unionSRFun = new UnionFunction() {
-
-      public Geometry union(Geometry g0, Geometry g1) {
-        return OverlayNG.overlay(g0, g1, UNION, pm);
-      }
-      
-    };
-    
-    //UnionFunction overlapSRFun = OverlapUnion.wrap(unionSRFun);
-    //op.setUnionFunction( overlapSRFun );
-    
-    UnaryUnionOp op = new UnaryUnionOp(a);
-    op.setUnionFunction( unionSRFun );
-    return op.union();
+  
+  
+  @Metadata(description="Intersection with automatically-determined maximum precision")
+  public static Geometry intersectionAutoPM(Geometry a, Geometry b) {
+    return OverlayNG.overlay(a, b, INTERSECTION);
   }
-
-  @Metadata(description="Union a noded coverage (polygons or lines)")
+  
+  @Metadata(description="Union with automatically-determined maximum precision")
+  public static Geometry unionAutoPM(Geometry a, Geometry b) {
+    return OverlayNG.overlay(a, b, UNION);
+  }
+  
+  @Metadata(description="Difference with automatically-determined maximum precision")
+  public static Geometry differenceAutoPM(Geometry a, Geometry b) {
+    return OverlayNG.overlay(a, b, DIFFERENCE);
+  }  
+  
+  @Metadata(description="Unary union with automatically-determined maximum precision")
+  public static Geometry unaryUnionAutoPM(Geometry a) {
+    return UnaryUnionNG.union(a);
+  }
+  
+  
+  
+  @Metadata(description="Union a fully-noded coverage (polygons or lines)")
   public static Geometry unionCoverage(Geometry geom) {
     Geometry cov = OverlayNGFunctions.extractHomo(geom);
-    Noder noder = new SegmentExtractingNoder();
-    Point emptyPoint = cov.getFactory().createPoint();
-    return OverlayNG.overlay(cov, emptyPoint, UNION, null, noder );
+    return CoverageUnion.union(cov);
   }
-  
+
   public static Geometry reducePrecision(Geometry a, 
       @Metadata(title="Grid Scale") double scaleFactor) {
-    return OverlayNG.reducePrecision(a, new PrecisionModel(scaleFactor));
+    return PrecisionReducer.reducePrecision(a, new PrecisionModel(scaleFactor));
   }
   
-  @Metadata(description="Reduce precision of max dimension in a GC")
+  @Metadata(description="Reduce precision of the max dimension components in a GeometryCollection")
   public static Geometry reducePrecisionGC(Geometry a, 
       @Metadata(title="Grid Scale") double scaleFactor) {
-    Point emptyPoint = a.getFactory().createPoint();
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
     
     /**
      * This ONLY works if the input GeometryCollection 
      * is a non-overlapping polygonal coverage!
      */
     Geometry homoGeom = extractHomo(a);
-    Geometry union = OverlayNG.overlay(homoGeom, emptyPoint, UNION, pm);
+    Geometry union = PrecisionReducer.reducePrecision(a, new PrecisionModel(scaleFactor));
     
     List components = null;
     switch (a.getDimension()) {

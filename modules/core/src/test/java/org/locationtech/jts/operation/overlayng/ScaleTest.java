@@ -79,10 +79,10 @@ public class ScaleTest extends GeometryTestCase {
     if (wktB != null) {
       b = read(wktB);
     }
-    double autoScale = Scale.autoScale(a, b);
+    double autoScale = PrecisionUtil.robustScale(a, b);
     assertEquals("Auto scale: ", autoscaleExpected, autoScale );
-    assertEquals("Inherent scale: ", inherentScaleExpected, Scale.inherentScale(a, b) );
-    assertEquals("Safe scale: ", safeScaleExpected, Scale.safeScale(a, b) );
+    assertEquals("Inherent scale: ", inherentScaleExpected, PrecisionUtil.inherentScale(a, b) );
+    assertEquals("Safe scale: ", safeScaleExpected, PrecisionUtil.safeScale(a, b) );
   }
 
 }

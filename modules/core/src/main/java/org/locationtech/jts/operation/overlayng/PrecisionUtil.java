@@ -15,45 +15,99 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.OrdinateFormat;
 import org.locationtech.jts.math.MathUtil;
 
 /**
- * Functions for computing scale factors
- * for ensuring robust geometry operations.
- * In particular these can be used for operations 
+ * Functions for computing precision model scale factors
+ * that ensure robust geometry operations.
+ * In particular, these can be used to
+ * automatically determine appropriate scale factors for operations 
  * using limited-precision noding (such as {@link OverlayNG}).
- * These functions can be used to automatically determine
- * appropriate scale factors for use in geometric operations.
  * 
- * @author mdavis
+ * @author Martin Davis
  *
  */
-public class Scale 
+public class PrecisionUtil 
 {  
   /**
    * A number of digits of precision which leaves some computational "headroom"
-   * for floating point operations.
+   * to ensure robust evaluation of certain double-precision floating point geometric operations.
    * 
-   * This value should be less than the decimal precision of double-precision values (16).
+   * This value should be less than the maximum decimal precision of double-precision values (16).
    */
-  public static int MAX_PRECISION_DIGITS = 14;
+  public static int MAX_ROBUST_DP_DIGITS = 14;
   
   /**
-   * Computes a scale factor which maximizes 
-   * the digits of precision but which is 
-   * still safe to use for overlay operations.
-   * The auto scale is taken as the minimum of the 
+   * Determines a precision model to 
+   * use for robust overlay operations.
+   * The precision scale factor is chosen to maximize 
+   * output precision while avoiding round-off issues.
+   * <p>
+   * NOTE: this is a heuristic determination, so is not guaranteed to 
+   * eliminate precision issues.
+   * 
+   * @param a a geometry
+   * @param b a geometry
+   * @return a suitable precision model for overlay
+   */
+  public static PrecisionModel robustPM(Geometry a, Geometry b) {
+    double scale = PrecisionUtil.robustScale(a, b);
+    return new PrecisionModel( scale );
+  }
+  
+  /**
+   * Determines a precision model to 
+   * use for robust overlay operations for one geometry.
+   * The precision scale factor is chosen to maximize 
+   * output precision while avoiding round-off issues.
+   * <p>
+   * NOTE: this is a heuristic determination, so is not guaranteed to 
+   * eliminate precision issues.
+   * 
+   * @param a a geometry
+   * @return a suitable precision model for overlay
+   */
+  public static PrecisionModel robustPM(Geometry a) {
+    double scale = PrecisionUtil.robustScale(a);
+    return new PrecisionModel( scale );
+  }
+  
+  /**
+   * Determines a scale factor which maximizes 
+   * the digits of precision and is 
+   * safe to use for overlay operations.
+   * The robust scale is the minimum of the 
    * inherent scale and the safe scale factors.
    * 
    * @param a a geometry 
    * @param b a geometry
    * @return a scale factor for use in overlay operations
    */
-  public static double autoScale(Geometry a, Geometry b) {
+  public static double robustScale(Geometry a, Geometry b) {
     double inherentScale = inherentScale(a, b);
     double safeScale = safeScale(a, b);
-    
+    return robustScale(inherentScale, safeScale);
+  }
+  
+  /**
+   * Determines a scale factor which maximizes 
+   * the digits of precision and is 
+   * safe to use for overlay operations.
+   * The robust scale is the minimum of the 
+   * inherent scale and the safe scale factors.
+   * 
+   * @param a a geometry 
+   * @return a scale factor for use in overlay operations
+   */
+  public static double robustScale(Geometry a) {
+    double inherentScale = inherentScale(a);
+    double safeScale = safeScale(a);
+    return robustScale(inherentScale, safeScale);
+  }
+  
+  private static double robustScale(double inherentScale, double safeScale) {
     /**
      * Use safe scale if lower, 
      * since it is important to preserve some precision for robustness
@@ -76,7 +130,7 @@ public class Scale
    */
   public static double safeScale(double value)
   {
-    return precisionScale(value, MAX_PRECISION_DIGITS);
+    return precisionScale(value, MAX_ROBUST_DP_DIGITS);
   }
   
   /**
@@ -90,7 +144,7 @@ public class Scale
    */
   public static double safeScale(Geometry geom)
   {
-    return safeScale( maxAbsBound( geom.getEnvelopeInternal() ));
+    return safeScale( maxBoundMagnitude( geom.getEnvelopeInternal() ));
   }
   
   /**
@@ -100,29 +154,29 @@ public class Scale
    * digits of precision.
    * 
    * @param a a geometry
-   * @param b a geometry
+   * @param b a geometry (which may be null)
    * @return a safe scale factor for the geometry ordinates
    */
   public static double safeScale(Geometry a, Geometry b) {
-    double maxBnd = maxAbsBound( a.getEnvelopeInternal());
+    double maxBnd = maxBoundMagnitude( a.getEnvelopeInternal());
     if (b != null) {
-      double maxBndB = maxAbsBound( b.getEnvelopeInternal());
+      double maxBndB = maxBoundMagnitude( b.getEnvelopeInternal());
       maxBnd = Math.max(maxBnd,  maxBndB);
     }
-    double scale = Scale.safeScale(maxBnd);
+    double scale = PrecisionUtil.safeScale(maxBnd);
     return scale;
   }
   
   /**
-   * Determines the maximum bound in absolute value
+   * Determines the maximum magnitude (absolute value) of the bounds of an
    * of an envelope.
-   * This indicates the largest ordinate value
+   * This is equal to the largest ordinate value
    * which must be accommodated by a scale factor.
    * 
    * @param env an envelope
-   * @return the maximum bound in absolute value
+   * @return the value of the maximum bound magnitude
    */
-  private static double maxAbsBound(Envelope env) {
+  private static double maxBoundMagnitude(Envelope env) {
     return MathUtil.max(
         Math.abs(env.getMaxX()), 
         Math.abs(env.getMaxY()), 
@@ -216,9 +270,9 @@ public class Scale
    * @return the inherent scale factor of the two geometries
    */
   public static double inherentScale(Geometry a, Geometry b) {
-    double scale = Scale.inherentScale(a);
+    double scale = PrecisionUtil.inherentScale(a);
     if (b != null) {
-      double scaleB = Scale.inherentScale(b);
+      double scaleB = PrecisionUtil.inherentScale(b);
       scale = Math.max(scale, scaleB);
     }
     return scale;
@@ -288,7 +342,7 @@ public class Scale
     }
     
     private void updateScaleMax(double value) {
-      double scaleVal = Scale.inherentScale( value );
+      double scaleVal = PrecisionUtil.inherentScale( value );
       if (scaleVal > scale) {
         //System.out.println("Value " + value + " has scale: " + scaleVal);
         scale = scaleVal;

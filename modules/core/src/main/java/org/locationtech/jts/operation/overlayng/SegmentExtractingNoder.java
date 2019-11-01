@@ -21,16 +21,15 @@ import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
 
 /**
- * A noder which simply extracts all line segments 
- * as individual {@link SegmentString}s.
- * <p>
- * This enables fast overlay of data which is known to be already noded.
+ * A noder which extracts all line segments 
+ * as {@link SegmentString}s.
+ * This enables fast overlay of geometries which are known to be already fully noded.
  * In particular, it provides fast union of polygonal and linear coverages.
  * Unioning a noded set of lines is an effective way 
  * to perform line merging and line dissolving.
  * <p>
  * No precision reduction is carried out. 
- * If that is required, another noder such as a snap-rounding noder must be used,
+ * If that is required, another noder must be used (such as a snap-rounding noder),
  * or the input must be precision-reduced beforehand.
  * 
  * @author Martin Davis
@@ -39,6 +38,13 @@ import org.locationtech.jts.noding.SegmentString;
 public class SegmentExtractingNoder implements Noder {
 
   private List segList;
+  
+  /**
+   * Creates a new segment-extracting noder.
+   */
+  public SegmentExtractingNoder() {
+    
+  }
 
   @Override
   public void computeNodes(Collection segStrings) {

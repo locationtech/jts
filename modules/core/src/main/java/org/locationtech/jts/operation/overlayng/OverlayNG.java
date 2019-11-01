@@ -16,7 +16,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -27,13 +26,20 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geomgraph.Label;
-import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.Debug;
 
+/**
+ * Computes the geometric overlay of two {@link Geometry}s, 
+ * using an explicit precision model to provide robust computation. 
+ * The overlay can be used to determine any boolean combination of the geometries.
+ * 
+ * @author mdavis
+ *
+ */
 public class OverlayNG 
 {
   /**
@@ -157,7 +163,7 @@ public class OverlayNG
    */
   public static Geometry overlay(Geometry geom0, Geometry geom1, int opCode)
   {
-    PrecisionModel pm = autoPM(geom0, geom1);
+    PrecisionModel pm = PrecisionUtil.robustPM(geom0, geom1);
     //System.out.println("Precision Model: " + pm);
     
     OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
@@ -165,43 +171,19 @@ public class OverlayNG
   }
 
   /**
-   * Reduces the precision of a geometry by rounding it to the
-   * supplied precision model.
-   * <p> 
-   * The output is always a valid geometry.  This implies that input components
-   * may end up being merged together if they are closer than the grid precision.
-   * if merging is not desired, then the individual geometry components
-   * should be processed separately.
-   * <p>
-   * The output is fully noded.  
-   * This is an effective way to node / snap-round a collection of {@link LineString}s.
+   * Computes a union operation for 
+   * the given geometry, with the supplied precision model.
    * 
-   * @param geom the geometry to reduce
+   * @param geom0 the geometry
    * @param pm the precision model to use
-   * @return the precision-reduced geometry
+   * @return the result of the union operation
    */
-  public static Geometry reducePrecision(Geometry geom, PrecisionModel pm) {
+  public static Geometry union(Geometry geom, PrecisionModel pm)
+  {    
     Point emptyPoint = geom.getFactory().createPoint();
-    Geometry reduced = OverlayNG.overlay(geom, emptyPoint, UNION, pm);
-    return reduced;
-  }
-  
-  /**
-   * Determines a suitable precision model to 
-   * use for overlay operations for one or two input geometries.
-   * The precision scale factor is chosen to maximize 
-   * output precision while avoiding round-off issues.
-   * <p>
-   * NOTE: this is a heuristic determination, so is not guaranteed to 
-   * eliminate precision issues.
-   * 
-   * @param a a geometry
-   * @param b a geometry (which may be null)
-   * @return a suitable precision model for overlay
-   */
-  public static PrecisionModel autoPM(Geometry a, Geometry b) {
-    double scale = Scale.autoScale(a, b);
-    return new PrecisionModel( scale );
+    OverlayNG ov = new OverlayNG(geom, emptyPoint, pm, UNION);
+    Geometry geomOv = ov.getResultGeometry();
+    return geomOv;
   }
 
   private static final int SAFE_ENV_EXPAND_FACTOR = 3;
