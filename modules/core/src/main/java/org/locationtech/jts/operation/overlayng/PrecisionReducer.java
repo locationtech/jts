@@ -47,4 +47,7 @@ public class PrecisionReducer {
     return reduced;
   }
 
+  private PrecisionReducer() {
+    // no instantiation for now
+  }
 }

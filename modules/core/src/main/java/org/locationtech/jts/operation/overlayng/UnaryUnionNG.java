@@ -19,7 +19,7 @@ import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
 /**
- * Unions a collection of geometries in an 
+ * Unions a collection of geometries in an
  * efficient way, using {@link OverlayNG}
  * to ensure robust computation.
  * 
@@ -29,7 +29,7 @@ import org.locationtech.jts.operation.union.UnionFunction;
 public class UnaryUnionNG {
   
   /**
-   * Unions a collection of geometries,
+   * Unions a collection of geometries
    * using a given precision model.
    * 
    * @param geom the geometry to union
@@ -50,7 +50,7 @@ public class UnaryUnionNG {
   }
   
   /**
-   * Unions a collection of geometries,
+   * Unions a collection of geometries
    * using a precision model optimized to provide maximum
    * precision while ensuring robust computation.
    * 
@@ -60,5 +60,9 @@ public class UnaryUnionNG {
   public static Geometry union(Geometry geom) {
     PrecisionModel pm = PrecisionUtil.robustPM(geom);
     return UnaryUnionNG.union(geom, pm);
+  }
+  
+  private UnaryUnionNG() {
+    // no instantiation for now
   }
 }

@@ -18,25 +18,28 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.noding.Noder;
 
 /**
- * Unions a valid, fully-noded homogeneous coverage of polygons or lines
- * in an efficient way.   
+ * Unions a valid coverage of polygons or lines
+ * in a robust, efficient way.   
  * <p>
- * A valid coverage is determined by the following criteria:
+ * A valid coverage is determined by the following conditions:
  * <ul>
- * <li><b>Homogeneous</b> - all elements of the collection must have the same dimension
- * <li><b>Fully noded</b> - Linestrings within the collection must not cross
- * (in either a proper intersection or at interior segment string endpoints)
- * <li><b>No overlaps</b> - No two elements in the collection can overlap
+ * <li><b>Homogeneous</b> - all elements of the collection must have the same dimension.
+ * <li><b>Fully noded</b> - Line segemnts within the collection 
+ * must either be identical or intersect only at endpoints.
+ * <li><b>Non-overlapping</b> - (Polygonal coverage only) No two polygons
+ * may overlap. Equivalently, polygons must be interior-disjoint.
  * </ul>
- * Currently no explicit checking is done to determine
- * whether the input coverage is valid.
- * If the input is not a valid coverage 
- * then an error <i>may</i> thrown, if this situation can be detected.
- * Otherwise the output may be invalid.
  * <p>
- * Unioning a valid coverage implies that no new vertices are created,
- * so a precision model does not need to be supplied,
- * and the precision of the output vertices is not changed.
+ * Currently no checking is done to determine
+ * whether the input is a valid coverage.
+ * If the input is not a valid coverage 
+ * then in some cases this will detected during processing 
+ * and a error will be thrown.
+ * Otherwise, the computation will produce output, but it will be invalid.
+ * <p>
+ * Unioning a valid coverage implies that no new vertices are created.
+ * This means that a precision model does not need to be specified.
+ * The precision of the vertices in the output geometry is not changed.
  * 
  * @author Martin Davis
  * 
@@ -58,4 +61,7 @@ public class CoverageUnion
     return OverlayNG.overlay(coverage, emptyPoint, UNION, null, noder );
   }
 
+  private CoverageUnion() {
+    // No instantiation for now
+  }
 }
