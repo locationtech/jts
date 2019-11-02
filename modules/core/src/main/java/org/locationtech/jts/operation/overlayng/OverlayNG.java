@@ -173,10 +173,20 @@ public class OverlayNG
   /**
    * Computes a union operation for 
    * the given geometry, with the supplied precision model.
+   * <p>
+   * The input must be a valid geometry.
+   * GeometryCollections are not supported.
+   * To union an overlapping set of polygons use {@link UnaryUnionNG}.
+   * <p>
+   * To union a coverage in a more performant way, 
+   * use {@link CoverageUnion}.
    * 
    * @param geom0 the geometry
    * @param pm the precision model to use
    * @return the result of the union operation
+   * 
+   * @see CoverageUnion
+   * @see UnaryUnionNG
    */
   public static Geometry union(Geometry geom, PrecisionModel pm)
   {    
