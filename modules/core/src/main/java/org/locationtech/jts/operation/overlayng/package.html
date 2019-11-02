@@ -19,36 +19,45 @@ Overlay operations include:
 <li>Difference</li>
 <li>Symmetric Difference</li>
 </ul>
+<p>
+Additional operations include:
+<ul>
+<li>Unary Union</li>
+<li>Coverage Union</li>
+<li>Precision Reduction</li>
+</ul>
 </p>
 <h2>Features</h2>
 <h3>Functionality</h3>
 <ul>
-<li><b>Overlay operations</b> with specified output precision
-<li><b>Optimizations</b> - including:
+<li><p>Precision Model</b> - operations are performed using a defined precision model
+<li>Provides fully robust computation when an appropriate noder is used
+<li><b>Performance optimizations</b> - including:
   <ul>
   <li>Short-circuit for disjoint input envelopes
   <li>Reduction of input size via clipping to overlap envelope
-      (this is a generalization of rectangle clipping optimization)
   <li>Optimizations can be disabled if required (e.g. for testing or performance evaluation)
   </ul>
-<li><b>Precision Reduction</b> - in a topologically correct way.  Implemented by unioning a single input with an empty geometry
-<li><b>Fast Coverage Union</b> - of polygonal and linear coverages
 <li><b>Pluggable Noding</b> - allows different noders to change characteristics of performance and accuracy
+<li><b>Precision Reduction</b> - in a topologically correct way.  
+Implemented by unioning a single input with an empty geometry
+<li><b>Fast Coverage Union</b> - of valid polygonal and linear coverages
 </ul>
 
 <h3>Codebase</h3>
 <ul>
-<li>Simpler topology model
-<li>SSimpler graph structure (based on winged edge model)
-<li>SSeparation of noding and topology-build phases
+<li>Defines a simpler topology model, with clear semantics
+<li>Uses a simpler topology graph data structure (based on winged edge model)
+<li>Decouples noding and topology-build phases, 
+which allows alternate implementations and semantics for each
 </ul>
 </p>
 <h2>Algorithm</h2>
 An overview of the overlay algorithm is:
-
+<p>
 <ol>
+<li>Check for empty input geometries, and return a result appropriate for the specified operation
 <li>Extract linework and points from input geometries, with topology location information
-<li>Check for empty input geometries, and return an empty result if appropriate for the specified operation
 <li>(If optimization enabled) Apply overlap envelope optimizations:
   <ol>
   <li>For Intersection, check if the input envelopes are disjoint (using an envelope expansion adjustment to account for the precision grid).  
