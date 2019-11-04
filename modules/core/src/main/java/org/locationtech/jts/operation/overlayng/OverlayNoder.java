@@ -113,12 +113,12 @@ class OverlayNoder {
   
   private Noder getNoder() {
     if (customNoder != null) return customNoder;
-    if (pm == null)
+    if (pm == null || pm.isFloating())
       return createFloatingPrecisionNoder(true);
-    return createSRNoder(pm);
+    return createFixedNoder(pm);
   }
 
-  private static Noder createSRNoder(PrecisionModel pm) {
+  private static Noder createFixedNoder(PrecisionModel pm) {
     //Noder noder = new MCIndexSnapRounder(pm);
     //Noder noder = new SimpleSnapRounder(pm);
     Noder noder = new FastSnapRounder(pm);
@@ -141,13 +141,12 @@ class OverlayNoder {
   public void add(Geometry g, int geomIndex)
   {
     if (g.isEmpty()) return;
-    if (isClippedToEmpty(g.getEnvelopeInternal())) 
+    if (isClipResultEmpty(g.getEnvelopeInternal())) 
       return;
-
 
     if (g instanceof Polygon)                 addPolygon((Polygon) g, geomIndex);
     // LineString also handles LinearRings
-    else if (g instanceof LineString)         addLineString((LineString) g, geomIndex);
+    else if (g instanceof LineString)         addLine((LineString) g, geomIndex);
     //else if (g instanceof Point)              addPoint((Point) g);
     //else if (g instanceof MultiPoint)         addCollection((MultiPoint) g);
     else if (g instanceof MultiLineString)    addCollection((MultiLineString) g, geomIndex);
@@ -186,14 +185,17 @@ class OverlayNoder {
    */
   private void addPolygonRing(LinearRing ring, boolean isHole, int index)
   {
-    /**
-     * Empty rings are not added.
-     */
-    if (ring.isEmpty()) return;
+    Coordinate[] pts = prepareEdgePoints(ring);
+    // points do not form a valid edge
+    if (pts == null) return;
     
-    if (isClippedToEmpty(ring.getEnvelopeInternal())) 
-      return;
+    int depthDelta = computeDepthDelta(ring, isHole);
     
+    EdgeInfo info = new EdgeInfo(index, depthDelta, isHole);
+    addEdge(pts, info);
+  }
+
+  private static int computeDepthDelta(LinearRing ring, boolean isHole) {
     /**
      * Compute the orientation of the ring, to
      * allow assigning side interior/exterior labels correctly.
@@ -203,24 +205,6 @@ class OverlayNoder {
      * since topology collapse can make the orientation computation give the wrong answer.
      */
     boolean isCCW = Orientation.isCCW( ring.getCoordinateSequence() );
-    
-    /**
-     * Round the input points, to ensure they match the requested precision.
-     * This may cause collapsing to occur,
-     * but it is handled by the overlay processing.
-     */
-    //Coordinate[] pts = round(ptsRaw);
-    Coordinate[] pts = clip( ring );
-    
-    /**
-     * Don't add edges that collapse to a point
-     */
-    if (pts.length < 2) {
-      return;
-    }
-    
-    int depthDelta = 1;
-    
     /**
      * Compute whether ring is in canonical orientation or not.
      * Canonical orientation for the overlay process is
@@ -237,29 +221,16 @@ class OverlayNoder {
      * Canonical depth delta is 1 (Exterior on L, Interior on R).
      * It is flipped to -1 if the ring is oppositely oriented.
      */
-    int depthDeltaFinal = isOriented ? depthDelta : -1 * depthDelta;
-    
-    EdgeInfo info = new EdgeInfo(index, depthDeltaFinal, isHole);
-    addEdge(pts, info);
+    int depthDelta = isOriented ? 1 : -1;
+    return depthDelta;
   }
 
-  private void addLineString(LineString line, int geomIndex)
+  private void addLine(LineString line, int geomIndex)
   {
-    // don't add empty lines
-    if (line.isEmpty()) return;
+    Coordinate[] pts = prepareEdgePoints(line);
+    // points do not form a valid edge
+    if (pts == null) return;
     
-    if (isClippedToEmpty(line.getEnvelopeInternal())) 
-      return;
-    
-    //Coordinate[] pts = round(line.getCoordinates());
-    Coordinate[] pts = clip( line );
-
-    /**
-     * Don't add edges that collapse to a point
-     */
-    if (pts.length < 2) {
-      return;
-    }
     EdgeInfo info = new EdgeInfo(geomIndex);
     addEdge(pts, info);
   }
@@ -268,12 +239,46 @@ class OverlayNoder {
     NodedSegmentString ss = new NodedSegmentString(pts, info);
     segStrings.add(ss);
   }
+  
+  /**
+   * Prepare the points forming an edge, 
+   * clipping them if required
+   * and checking for lines that should be discarded.
+   * 
+   * @param lineOrRing
+   * @return the edge points, or null if the points do not form a valid edge
+   */
+  private Coordinate[] prepareEdgePoints(LineString lineOrRing) {
+    // don't add empty lines
+    if (lineOrRing.isEmpty()) return null;
+    
+    if (isClipResultEmpty(lineOrRing.getEnvelopeInternal())) 
+      return null;
+    
+    Coordinate[] pts = clip( lineOrRing );
 
-  private boolean isClippedToEmpty(Envelope env) {
+    /**
+     * Don't add edges that collapse to a point
+     */
+    if (pts.length < 2) {
+      return null;
+    }
+    return pts;
+  }
+
+
+  private boolean isClipResultEmpty(Envelope env) {
     if (clipper == null) return false;
     return clipper.isDisjoint(env);
   }
   
+  /**
+   * If a clipper is provided, 
+   * clip the line to the clip envelope.
+   * 
+   * @param line the line to clip
+   * @return the points in the clipped line
+   */
   private Coordinate[] clip(LineString line) {
     Coordinate[] pts = line.getCoordinates();
     if (clipper == null) {
@@ -289,7 +294,10 @@ class OverlayNoder {
     return clipper.clip(pts);
   }
 
-
+  /*
+  
+  // rounding is carried out by Noder, if needed
+   
   private Coordinate[] round(Coordinate[] pts)  {
     
     CoordinateList noRepeatCoordList = new CoordinateList();
@@ -311,7 +319,6 @@ class OverlayNoder {
       pm.makePrecise(coord);
   }
 
-  /*
   private Coordinate[] round(Coordinate[] pts, int minLength)  {
     CoordinateList noRepeatCoordList = new CoordinateList();
 
@@ -326,7 +333,7 @@ class OverlayNoder {
     }
     return reducedPts;
   }
-*/
+
   
   private static Coordinate[] pad(Coordinate[] pts, int minLength) {
     Coordinate[] pts2 = new Coordinate[minLength];
@@ -340,4 +347,5 @@ class OverlayNoder {
     }
     return pts2;
   }
+  */
 }
