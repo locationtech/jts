@@ -81,17 +81,17 @@ public class OverlayNGFunctions {
   
   @Metadata(description="Intersection with automatically-determined maximum precision")
   public static Geometry intersectionAutoPM(Geometry a, Geometry b) {
-    return OverlayNG.overlay(a, b, INTERSECTION);
+    return OverlayNG.overlayFixedPrecision(a, b, INTERSECTION);
   }
   
   @Metadata(description="Union with automatically-determined maximum precision")
   public static Geometry unionAutoPM(Geometry a, Geometry b) {
-    return OverlayNG.overlay(a, b, UNION);
+    return OverlayNG.overlayFixedPrecision(a, b, UNION);
   }
   
   @Metadata(description="Difference with automatically-determined maximum precision")
   public static Geometry differenceAutoPM(Geometry a, Geometry b) {
-    return OverlayNG.overlay(a, b, DIFFERENCE);
+    return OverlayNG.overlayFixedPrecision(a, b, DIFFERENCE);
   }  
   
   @Metadata(description="Unary union with automatically-determined maximum precision")
@@ -106,14 +106,9 @@ public class OverlayNGFunctions {
     Geometry cov = OverlayNGFunctions.extractHomo(geom);
     return CoverageUnion.union(cov);
   }
-
-  public static Geometry reducePrecision(Geometry a, 
-      @Metadata(title="Grid Scale") double scaleFactor) {
-    return PrecisionReducer.reducePrecision(a, new PrecisionModel(scaleFactor));
-  }
   
-  @Metadata(description="Reduce precision of the max dimension components in a GeometryCollection")
-  public static Geometry reducePrecisionGC(Geometry a, 
+  @Metadata(description="Reduce precision of a geometry")
+  public static Geometry reducePrecision(Geometry a, 
       @Metadata(title="Grid Scale") double scaleFactor) {
     
     /**
@@ -121,8 +116,11 @@ public class OverlayNGFunctions {
      * is a non-overlapping polygonal coverage!
      */
     Geometry homoGeom = extractHomo(a);
-    Geometry union = PrecisionReducer.reducePrecision(a, new PrecisionModel(scaleFactor));
-    
+    Geometry reduced = PrecisionReducer.reducePrecision(homoGeom, new PrecisionModel(scaleFactor));
+    return reduced;
+    /*
+    // Not sure why this is needed? 
+    // Should be part of precision reducer, or Overlay (strict mode)
     List components = null;
     switch (a.getDimension()) {
       case 2: 
@@ -134,6 +132,7 @@ public class OverlayNGFunctions {
     }
     Geometry result = a.getFactory().buildGeometry(components);
     return result;
+    */
   }
   
   /**

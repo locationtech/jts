@@ -113,10 +113,12 @@ class OverlayNoder {
   
   private Noder getNoder() {
     if (customNoder != null) return customNoder;
-    return getSRNoder();
+    if (pm == null)
+      return createFloatingPrecisionNoder(true);
+    return createSRNoder(pm);
   }
 
-  private Noder getSRNoder() {
+  private static Noder createSRNoder(PrecisionModel pm) {
     //Noder noder = new MCIndexSnapRounder(pm);
     //Noder noder = new SimpleSnapRounder(pm);
     Noder noder = new FastSnapRounder(pm);
@@ -124,7 +126,7 @@ class OverlayNoder {
     return noder;
   }
   
-  private Noder getSimpleNoder(boolean doValidation) {
+  static Noder createFloatingPrecisionNoder(boolean doValidation) {
     MCIndexNoder mcNoder = new MCIndexNoder();
     LineIntersector li = new RobustLineIntersector();
     mcNoder.setSegmentIntersector(new IntersectionAdder(li));

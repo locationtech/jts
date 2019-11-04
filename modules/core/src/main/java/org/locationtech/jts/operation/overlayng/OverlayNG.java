@@ -125,7 +125,8 @@ public class OverlayNG
    * @param pm the precision model to use
    * @return the result of the overlay operation
    */
-  public static Geometry overlay(Geometry geom0, Geometry geom1, int opCode, PrecisionModel pm)
+  public static Geometry overlay(Geometry geom0, Geometry geom1, 
+      int opCode, PrecisionModel pm)
   {
     OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
     Geometry geomOv = ov.getResultGeometry();
@@ -143,7 +144,8 @@ public class OverlayNG
    * @param noder the noder to use
    * @return the result of the overlay operation
    */
-  public static Geometry overlay(Geometry geom0, Geometry geom1, int opCode, PrecisionModel pm, Noder noder)
+  public static Geometry overlay(Geometry geom0, Geometry geom1, 
+      int opCode, PrecisionModel pm, Noder noder)
   {
     OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
     ov.setNoder(noder);
@@ -154,19 +156,41 @@ public class OverlayNG
   /**
    * Computes an overlay operation for 
    * the given geometry operands,
-   * using an automatically-determined precision model.
+   * using an automatically-determined fixed precision model
+   * which maximises precision while ensuring robust computation.
    * 
    * @param geom0 the first geometry argument
    * @param geom1 the second geometry argument
    * @param opCode the code for the desired overlay operation
    * @return the result of the overlay operation
    */
-  public static Geometry overlay(Geometry geom0, Geometry geom1, int opCode)
+  public static Geometry overlayFixedPrecision(Geometry geom0, Geometry geom1, int opCode)
   {
     PrecisionModel pm = PrecisionUtil.robustPM(geom0, geom1);
     //System.out.println("Precision Model: " + pm);
     
     OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
+    return ov.getResultGeometry();
+  }
+
+  /**
+   * Computes an overlay operation for 
+   * the given geometry operands,
+   * using the floating precision model
+   * and an appropriate noder.
+   * <p>
+   * This computation may not be robust.
+   * If errors occur a {@link TopologyException} is thrown.
+   * 
+   * @param geom0 the first geometry argument
+   * @param geom1 the second geometry argument
+   * @param opCode the code for the desired overlay operation
+   * @return the result of the overlay operation
+   */
+  public static Geometry overlayFloatingPrecision(Geometry geom0, Geometry geom1, int opCode)
+  {
+    OverlayNG ov = new OverlayNG(geom0, geom1, null, opCode);
+    ov.setNoder( OverlayNoder.createFloatingPrecisionNoder(true) );
     return ov.getResultGeometry();
   }
 

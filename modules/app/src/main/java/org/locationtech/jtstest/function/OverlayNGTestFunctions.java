@@ -116,6 +116,13 @@ public class OverlayNGTestFunctions {
     return ovr.getResultGeometry();
   }
   
+  public static Geometry intersectionNoOpt(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
+    ovr.setOptimized(false);
+    return ovr.getResultGeometry();
+  }
+
   public static Geometry unionIntSymDiff(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs
@@ -126,13 +133,6 @@ public class OverlayNGTestFunctions {
     Geometry symDiff = extractPoly( OverlayNG.overlay(a, b, SYMDIFFERENCE, pm) );
     Geometry union = extractPoly( OverlayNG.overlay(inter, symDiff, UNION, pm) );
     return union;
-  }
-
-  public static Geometry intersectionNoOpt(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
-    ovr.setOptimized(false);
-    return ovr.getResultGeometry();
   }
 
   public static Geometry unionIntSymDiffOriginal(Geometry a, Geometry b) {
@@ -146,22 +146,20 @@ public class OverlayNGTestFunctions {
     return union;
   }
 
-  public static Geometry unionClassicNoding(Geometry a, Geometry b, double scaleFactor) {
-    Noder noder = getSimpleNoder(false);
+  public static Geometry unionClassicNoderNoValid(Geometry a, Geometry b) {
+    Noder noder = createClassicNoder(false);
     return OverlayNG.overlay(a, b, UNION, null, noder );
   }
 
-  public static Geometry intersectionClassicNoding(Geometry a, Geometry b, double scaleFactor) {
-    Noder noder = getSimpleNoder(false);
-    return OverlayNG.overlay(a, b, INTERSECTION, null, noder );
+  public static Geometry intersectionClassicNoderNoValid(Geometry a, Geometry b) {
+    return OverlayNG.overlayFloatingPrecision(a, b, INTERSECTION );
   }
 
-  public static Geometry unaryUnionClassicNoding(Geometry a) {
+  public static Geometry unaryUnionFloatPM(Geometry a) {
     UnionFunction unionSRFun = new UnionFunction() {
 
       public Geometry union(Geometry g0, Geometry g1) {
-        Noder noder = getSimpleNoder(false);
-        return OverlayNG.overlay(g0, g1, UNION, null, noder );
+         return OverlayNG.overlayFloatingPrecision(g0, g1, UNION );
       }
       
     };
@@ -170,7 +168,7 @@ public class OverlayNGTestFunctions {
     return op.union();
   }
   
-  private static Noder getSimpleNoder(boolean doValidation) {
+  static Noder createClassicNoder(boolean doValidation) {
     MCIndexNoder mcNoder = new MCIndexNoder();
     LineIntersector li = new RobustLineIntersector();
     mcNoder.setSegmentIntersector(new IntersectionAdder(li));

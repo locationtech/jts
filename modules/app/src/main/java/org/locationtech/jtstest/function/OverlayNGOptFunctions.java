@@ -76,21 +76,21 @@ public class OverlayNGOptFunctions {
   public static Geometry intersection(Geometry a, Geometry b) {
     Geometry intFast = fastIntersect(a, b);
     if (intFast != null) return intFast;
-    return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION);
+    return OverlayNG.overlayFixedPrecision(a, b, OverlayNG.INTERSECTION);
   }
   
   public static Geometry intersectionPrep(Geometry a, Geometry b) {
     PreparedGeometry pg = cacheFetch(a);
     if (! pg.intersects(b)) return null;
     if (pg.covers(b)) return b.copy();
-    return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION);
+    return OverlayNG.overlayFixedPrecision(a, b, OverlayNG.INTERSECTION);
   }
   
   public static Geometry intersectionPrepNoCache(Geometry a, Geometry b) {
     PreparedGeometry pg = (new PreparedGeometryFactory()).create(a);
     if (! pg.intersects(b)) return null;
     if (pg.covers(b)) return b.copy();
-    return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION);
+    return OverlayNG.overlayFixedPrecision(a, b, OverlayNG.INTERSECTION);
   }
   
   private static Geometry cacheKey = null;
