@@ -18,6 +18,7 @@ import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
@@ -27,6 +28,7 @@ import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ValidatingNoder;
+import org.locationtech.jts.operation.overlayng.RingClipper;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.PrecisionUtil;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
@@ -178,5 +180,11 @@ public class OverlayNGTestFunctions {
       noder = new ValidatingNoder( mcNoder);
     }
     return noder;
+  }
+  
+  public static Geometry clip(Geometry line, Geometry box) {
+    RingClipper clipper = new RingClipper(box.getEnvelopeInternal());
+    Coordinate[] pts = clipper.clip(line.getCoordinates());
+    return line.getFactory().createLineString(pts);
   }
 }

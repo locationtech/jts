@@ -19,7 +19,6 @@ import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
@@ -41,12 +40,18 @@ import org.locationtech.jts.noding.snapround.SimpleSnapRounder;
 
 class OverlayNoder {
 
+  /**
+   * There is no advantage to clipping short lines
+   */
+  private static final int MIN_CLIP_PTS = 20;
+  
   private PrecisionModel pm;
   List<NodedSegmentString> segStrings = new ArrayList<NodedSegmentString>();
   private Noder customNoder;
   private boolean hasEdgesA;
   private boolean hasEdgesB;
-  private LineClipper clipper;
+  private RingClipper clipper;
+  private Envelope clipEnv = null;
 
   public OverlayNoder(PrecisionModel pm) {
     this.pm = pm;
@@ -56,8 +61,9 @@ class OverlayNoder {
     this.customNoder = noder;
   }
 
-  public void setLimiter(LineClipper clipper) {
-    this.clipper = clipper;
+  public void setClipEnvelope(Envelope clipEnv) {
+    this.clipEnv = clipEnv;
+    clipper = new RingClipper(clipEnv);
   }
   
   public Collection<SegmentString> node() {
@@ -70,7 +76,7 @@ class OverlayNoder {
     @SuppressWarnings("unchecked")
     Collection<SegmentString> nodedSS = noder.getNodedSubstrings();
     
-    scanForHasEdges(nodedSS);
+    scanForEdges(nodedSS);
     
     return nodedSS;
   }
@@ -82,7 +88,7 @@ class OverlayNoder {
    * 
    * @param segStrings noded edges to scan
    */
-  private void scanForHasEdges(Collection<SegmentString> segStrings) {
+  private void scanForEdges(Collection<SegmentString> segStrings) {
     for (SegmentString ss : segStrings) {
       EdgeInfo info = (EdgeInfo) ss.getData();
       int geomIndex = info.getIndex();
@@ -113,16 +119,15 @@ class OverlayNoder {
   
   private Noder getNoder() {
     if (customNoder != null) return customNoder;
-    if (pm == null || pm.isFloating())
+    if (pm.isFloating())
       return createFloatingPrecisionNoder(true);
-    return createFixedNoder(pm);
+    return createFixedPrecisionNoder(pm);
   }
 
-  private static Noder createFixedNoder(PrecisionModel pm) {
+  private static Noder createFixedPrecisionNoder(PrecisionModel pm) {
     //Noder noder = new MCIndexSnapRounder(pm);
     //Noder noder = new SimpleSnapRounder(pm);
     Noder noder = new FastSnapRounder(pm);
-    //Noder noder = new ValidatingNoder(new SimpleSnapRounder(pm));
     return noder;
   }
   
@@ -141,7 +146,8 @@ class OverlayNoder {
   public void add(Geometry g, int geomIndex)
   {
     if (g.isEmpty()) return;
-    if (isClipResultEmpty(g.getEnvelopeInternal())) 
+    
+    if (isClippedCompletely(g.getEnvelopeInternal())) 
       return;
 
     if (g instanceof Polygon)                 addPolygon((Polygon) g, geomIndex);
@@ -159,18 +165,17 @@ class OverlayNoder {
   {
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       Geometry g = gc.getGeometryN(i);
-      
       add(g, geomIndex);
     }
   }
 
   private void addPolygon(Polygon poly, int geomIndex)
   {
-    addPolygonRing(
-            (LinearRing) poly.getExteriorRing(), false, geomIndex);
+    LinearRing shell = poly.getExteriorRing();
+    addPolygonRing(shell, false, geomIndex);
 
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      LinearRing hole = (LinearRing) poly.getInteriorRingN(i);
+      LinearRing hole = poly.getInteriorRingN(i);
       
       // Holes are topologically labelled opposite to the shell, since
       // the interior of the polygon lies on their opposite side
@@ -185,12 +190,24 @@ class OverlayNoder {
    */
   private void addPolygonRing(LinearRing ring, boolean isHole, int index)
   {
-    Coordinate[] pts = prepareEdgePoints(ring);
-    // points do not form a valid edge
-    if (pts == null) return;
+    // don't add empty lines
+    if (ring.isEmpty()) return;
+    
+    if (isClippedCompletely(ring.getEnvelopeInternal())) 
+      return;
+    
+    Coordinate[] pts = clip( ring );
+
+    /**
+     * Don't add edges that collapse to a point
+     */
+    if (pts.length < 2) {
+      return;
+    }
+    
+    //if (pts.length < ring.getNumPoints()) System.out.println("Ring clipped: " + ring.getNumPoints() + " => " + pts.length);
     
     int depthDelta = computeDepthDelta(ring, isHole);
-    
     EdgeInfo info = new EdgeInfo(index, depthDelta, isHole);
     addEdge(pts, info);
   }
@@ -227,9 +244,13 @@ class OverlayNoder {
 
   private void addLine(LineString line, int geomIndex)
   {
-    Coordinate[] pts = prepareEdgePoints(line);
-    // points do not form a valid edge
-    if (pts == null) return;
+    // don't add empty lines
+    if (line.isEmpty()) return;
+    
+    if (isClippedCompletely(line.getEnvelopeInternal())) 
+      return;
+    
+    Coordinate[] pts = line.getCoordinates();
     
     EdgeInfo info = new EdgeInfo(geomIndex);
     addEdge(pts, info);
@@ -239,52 +260,25 @@ class OverlayNoder {
     NodedSegmentString ss = new NodedSegmentString(pts, info);
     segStrings.add(ss);
   }
-  
-  /**
-   * Prepare the points forming an edge, 
-   * clipping them if required
-   * and checking for lines that should be discarded.
-   * 
-   * @param lineOrRing
-   * @return the edge points, or null if the points do not form a valid edge
-   */
-  private Coordinate[] prepareEdgePoints(LineString lineOrRing) {
-    // don't add empty lines
-    if (lineOrRing.isEmpty()) return null;
-    
-    if (isClipResultEmpty(lineOrRing.getEnvelopeInternal())) 
-      return null;
-    
-    Coordinate[] pts = clip( lineOrRing );
 
-    /**
-     * Don't add edges that collapse to a point
-     */
-    if (pts.length < 2) {
-      return null;
-    }
-    return pts;
-  }
-
-
-  private boolean isClipResultEmpty(Envelope env) {
-    if (clipper == null) return false;
-    return clipper.isDisjoint(env);
+  private boolean isClippedCompletely(Envelope env) {
+    if (clipEnv == null) return false;
+    return clipEnv.disjoint(env);
   }
   
   /**
    * If a clipper is provided, 
    * clip the line to the clip envelope.
    * 
-   * @param line the line to clip
+   * @param ring the line to clip
    * @return the points in the clipped line
    */
-  private Coordinate[] clip(LineString line) {
-    Coordinate[] pts = line.getCoordinates();
-    if (clipper == null) {
+  private Coordinate[] clip(LinearRing ring) {
+    Coordinate[] pts = ring.getCoordinates();
+    if (clipper == null || pts.length <= MIN_CLIP_PTS) {
       return pts;
     }
-    Envelope env = line.getEnvelopeInternal();
+    Envelope env = ring.getEnvelopeInternal();
     /**
      * If line is completely contained then no need to clip
      */

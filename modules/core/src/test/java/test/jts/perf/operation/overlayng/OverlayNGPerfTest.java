@@ -144,6 +144,13 @@ extends PerformanceTestCase
     }
   }
   
+  public void runIntersectionNGNoClip()
+  {
+    for (Geometry b : geomB) {
+      intersectionNGNoClip(geomA, b);
+    }
+  }
+  
   public void runIntersectionNGPrepNoCache()
   {
     for (Geometry b : geomB) {
@@ -167,6 +174,12 @@ extends PerformanceTestCase
     Geometry intFast = fastIntersect(a, b);
     if (intFast != null) return intFast;
     return OverlayNG.overlay(a, b, OverlayNG.INTERSECTION, precisionModel);
+  }
+
+  public Geometry intersectionNGNoClip(Geometry a, Geometry b) {
+    OverlayNG overlay = new OverlayNG(a, b, precisionModel, OverlayNG.INTERSECTION);
+    overlay.setOptimized(false);
+    return overlay.getResultGeometry();
   }
 
   public Geometry intersectionNGPrep(Geometry a, Geometry b) {

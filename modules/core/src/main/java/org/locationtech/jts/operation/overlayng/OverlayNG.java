@@ -1,4 +1,4 @@
-/*
+  /*
  * Copyright (c) 2019 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
@@ -134,7 +134,7 @@ public class OverlayNG
   }
 
   /**
-   * Computes an overlay operation for the given geometry operands, 
+   * Computes an overlay operation on the given geometry operands, 
    * using a supplied {@link Noder}.
    * 
    * @param geom0 the first geometry argument
@@ -154,7 +154,7 @@ public class OverlayNG
   }
 
   /**
-   * Computes an overlay operation for 
+   * Computes an overlay operation on 
    * the given geometry operands,
    * using an automatically-determined fixed precision model
    * which maximises precision while ensuring robust computation.
@@ -174,7 +174,7 @@ public class OverlayNG
   }
 
   /**
-   * Computes an overlay operation for 
+   * Computes an overlay operation on 
    * the given geometry operands,
    * using the floating precision model
    * and an appropriate noder.
@@ -189,13 +189,13 @@ public class OverlayNG
    */
   public static Geometry overlayFloatingPrecision(Geometry geom0, Geometry geom1, int opCode)
   {
-    OverlayNG ov = new OverlayNG(geom0, geom1, null, opCode);
+    OverlayNG ov = new OverlayNG(geom0, geom1, opCode);
     ov.setNoder( OverlayNoder.createFloatingPrecisionNoder(true) );
     return ov.getResultGeometry();
   }
 
   /**
-   * Computes a union operation for 
+   * Computes a union operation on 
    * the given geometry, with the supplied precision model.
    * <p>
    * The input must be a valid geometry.
@@ -236,11 +236,32 @@ public class OverlayNG
   private Noder noder;
   private Geometry resultGeom;
 
+  /**
+   * Creates an overlay operation on the given geometries,
+   * with a defined precision model.
+   * 
+   * @param geom0 the A operand geometry
+   * @param geom1 the B operand geometry
+   * @param pm the precision model to use
+   * @param opCode the overlay opcode
+   */
   public OverlayNG(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode) {
     this.pm = pm;
     this.opCode = opCode;
     geomFact = geom0.getFactory();
     inputGeom = new InputGeometry( geom0, geom1 );
+  }  
+  
+  /**
+   * Creates an overlay operation on the given geometries,
+   * with a floating precision model.
+   * 
+   * @param geom0 the A operand geometry
+   * @param geom1 the B operand geometry
+   * @param opCode the overlay opcode
+   */
+  public OverlayNG(Geometry geom0, Geometry geom1, int opCode) {
+    this(geom0, geom1, new PrecisionModel(), opCode);
   }  
   
   /**
@@ -333,10 +354,7 @@ public class OverlayNG
     return createEmptyResult(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), geomFact);
   }
 
-  private LineClipper optimizeByClipper() {
-    if (! isOptimized) 
-      return null;
-    
+  private Envelope optimizeEnvelope() {   
     Envelope clipEnv = null;
     switch (opCode) {
     case INTERSECTION:
@@ -350,48 +368,13 @@ public class OverlayNG
     }
     // a conservative limit - seems to be ok to use more aggressive one tho
     //Envelope limitEnv = limitRectangle();
-    
-    if (clipEnv == null) return null;
-    LineClipper clipper = new LineClipper(clipEnv);
-    return clipper;
-  }
-
-  /**
-   * Computes a limiter envelope based 
-   * on the envelope of overlap of the two inputs.
-   * This is the most aggressive limiter optimization strategy for intersection.
-   * 
-   * @return a limiter envelope of the input overlap envelope
-   */
-  private Envelope limitOverlap() {
-    Envelope envA = safeOverlapEnv( inputGeom.getGeometry(0).getEnvelopeInternal() );
-    Envelope envB = safeOverlapEnv( inputGeom.getGeometry(1).getEnvelopeInternal() );
-    Envelope limitEnv = envA.intersection(envB);
-    return limitEnv;
-  }
-  
-  /**
-   * Computes a limiter envelope for one of the inputs 
-   * which is a rectangle.
-   * This is a conservative limiter optimization strategy.
-   * 
-   * @return the limit envelope for a rectangle input
-   */
-  private Envelope limitRectangle() {
-    int rectGeomIndex = -1;
-    if (inputGeom.getGeometry(0).isRectangle()) rectGeomIndex = 0;
-    if (inputGeom.getGeometry(1).isRectangle()) rectGeomIndex = 1;
-    
-    if (rectGeomIndex < 0) return null;
-
-    Envelope limitEnv = safeOverlapEnv( inputGeom.getGeometry(rectGeomIndex).getEnvelopeInternal() );
-    return limitEnv;
+    return clipEnv;
   }
 
   private Envelope safeOverlapEnv(Envelope originalEnv) {
     double envBufDist = 0;
     // if PM is FLOAT then there is no scale factor, so add 10%
-    if (pm == null || pm.isFloating()) {
+    if (pm.isFloating()) {
       double minSize = Math.min(originalEnv.getHeight(), originalEnv.getWidth());
       envBufDist = 0.1 * minSize;
     }
@@ -429,9 +412,10 @@ public class OverlayNG
     
     if (noder != null) ovNoder.setNoder(noder);
     
-    LineClipper clipper = optimizeByClipper();
-    if ( clipper != null ) {
-      ovNoder.setLimiter(clipper);
+    if ( isOptimized ) {
+      Envelope clipEnv = optimizeEnvelope();
+      if (clipEnv != null)
+        ovNoder.setClipEnvelope( clipEnv );
     }
     
     ovNoder.add(inputGeom.getGeometry(0), 0);

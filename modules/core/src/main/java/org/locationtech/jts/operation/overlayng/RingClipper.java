@@ -12,18 +12,19 @@
 package org.locationtech.jts.operation.overlayng;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * Clips a line (array of points) to a box (envelope).
+ * Clips a ring (array of points) to a box (envelope).
  * Uses a variant of Cohen-Sutherland clipping.
+ * <p>
+ * This code is not suitable for clipping linestrings.
  * 
  * @author Martin Davis
  *
  */
-class LineClipper {
+public class RingClipper {
   
   private static final int BOX_LEFT = 3;
   private static final int BOX_TOP = 2;
@@ -37,7 +38,7 @@ class LineClipper {
   private double clipEnvMaxX;
 
   
-  public LineClipper(Envelope clipEnv) {
+  public RingClipper(Envelope clipEnv) {
     this.clipEnv = clipEnv;
     clipEnvMinY = clipEnv.getMinY();
     clipEnvMaxY = clipEnv.getMaxY();
@@ -54,17 +55,15 @@ class LineClipper {
   }
   
   /**
-   * Clips a list of points to the rectangle box.
+   * Clips a list of points to the clipping rectangle box.
    * 
    * @param ring
    * @param env
    * @return
    */
   public Coordinate[] clip(Coordinate[] pts) {
-    boolean isRing = CoordinateArrays.isRing(pts);
-    
     for (int edgeIndex = 0; edgeIndex < 4; edgeIndex++) {
-      boolean closeRing = edgeIndex == 3 && isRing;
+      boolean closeRing = edgeIndex == 3;
       pts = clipToBoxEdge(pts, edgeIndex, closeRing);
       if (pts.length == 0) return pts;
     }
@@ -102,6 +101,7 @@ class LineClipper {
       
       p0 = p1;
     }
+    
     // add closing point if required
     if (closeRing && ptsClip.size() > 0) {
       Coordinate start = ptsClip.get(0);
@@ -123,17 +123,22 @@ class LineClipper {
    * @return the intersection point with the box edge
    */
   private Coordinate intersection(Coordinate a, Coordinate b, int edgeIndex) {
+    Coordinate intPt;
     switch (edgeIndex) {
     case BOX_BOTTOM:
-      return new Coordinate(intersectionLineY(a, b, clipEnvMinY), clipEnvMinY);
+      intPt = new Coordinate(intersectionLineY(a, b, clipEnvMinY), clipEnvMinY);
+      break;
     case BOX_RIGHT:
-      return new Coordinate(clipEnvMaxX, intersectionLineX(a, b, clipEnvMaxX));
+      intPt = new Coordinate(clipEnvMaxX, intersectionLineX(a, b, clipEnvMaxX));
+      break;
     case BOX_TOP:
-      return new Coordinate(intersectionLineY(a, b, clipEnvMaxY), clipEnvMaxY);
+      intPt = new Coordinate(intersectionLineY(a, b, clipEnvMaxY), clipEnvMaxY);
+      break;
     case BOX_LEFT:
     default:
-      return new Coordinate(clipEnvMinX, intersectionLineX(a, b, clipEnvMinX));
+      intPt = new Coordinate(clipEnvMinX, intersectionLineX(a, b, clipEnvMinX));
     }
+    return intPt;
   }
 
   private double intersectionLineY(Coordinate a, Coordinate b, double y) {
@@ -149,17 +154,22 @@ class LineClipper {
   }
 
   private boolean isInsideEdge(Coordinate p, int edgeIndex) {
+    boolean isInside = false;
     switch (edgeIndex) {
     case BOX_BOTTOM: // bottom
-      return p.y > clipEnvMinY;
+      isInside = p.y > clipEnvMinY;
+      break;
     case BOX_RIGHT: // right
-      return p.x < clipEnvMaxX;
+      isInside = p.x < clipEnvMaxX;
+      break;
     case BOX_TOP: // top
-      return p.y < clipEnvMaxY;
+      isInside = p.y < clipEnvMaxY;
+      break;
     case BOX_LEFT:
     default: // left
-      return p.x > clipEnvMinX;
+      isInside = p.x > clipEnvMinX;
     }
+    return isInside;
   }
 
 }
