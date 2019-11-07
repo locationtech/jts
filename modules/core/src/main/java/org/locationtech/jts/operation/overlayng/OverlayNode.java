@@ -32,16 +32,6 @@ import org.locationtech.jts.util.Debug;
  */
 class OverlayNode {
 
-  /**
-   * Scan around node CCW and propagate side locations
-   * until the labels of incident edges are fully populated.
-   * 
-   * @param e node to compute labelling for
-   */
-  public static void labelAreaEdges(OverlayEdge nodeEdge) {
-    propagateAreaLabels(nodeEdge, 0);
-    propagateAreaLabels(nodeEdge, 1);
-  }
 
   /**
    * Scans around a node CCW, propagating the side labels
@@ -51,7 +41,7 @@ class OverlayNode {
    * 
    * @param geomIndex the geometry to propagate locations for
    */
-  private static void propagateAreaLabels(OverlayEdge nodeEdge, int geomIndex) {
+  public static void propagateAreaLabels(OverlayEdge nodeEdge, int geomIndex) {
     /**
      * This handles dangling edges created by overlap limiting
      */

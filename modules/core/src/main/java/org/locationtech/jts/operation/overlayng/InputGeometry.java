@@ -56,6 +56,17 @@ class InputGeometry {
     return geom[geomIndex].getDimension() == 1;
   }
   
+  /**
+   * Tests if an input geometry has edges.
+   * This indicates that topology needs to be computed for them.
+   * 
+   * @param geomIndex
+   * @return true if the input geometry has edges
+   */
+  public boolean hasEdges(int geomIndex) {
+    return geom[geomIndex].getDimension() > 0;
+  }
+  
   public  boolean isDisjointEnv() {
     if (isEmpty(0) || isEmpty(1)) return true;
     boolean intersects = getEnvelope(0).intersects(getEnvelope(1));
@@ -98,6 +109,5 @@ class InputGeometry {
   public void setCollapsed(int geomIndex, boolean isGeomCollapsed) {
     isCollapsed[geomIndex] = isGeomCollapsed;
   }
-  
 
 }

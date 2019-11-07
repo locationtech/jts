@@ -164,7 +164,9 @@ class OverlayGraph {
   private void labelConnectedLinearEdges() {
     //TODO: can these be merged to avoid two scans?
     propagateLineLocations(0);
-    propagateLineLocations(1);
+    if (inputGeometry.hasEdges(1)) {
+      propagateLineLocations(1);
+    }
   }
 
   private void propagateLineLocations(int geomIndex) {
@@ -216,7 +218,10 @@ class OverlayGraph {
    */
   private void labelAreaNodeEdges(Collection<OverlayEdge> nodes) {
     for (OverlayEdge nodeEdge : nodes) {
-      OverlayNode.labelAreaEdges(nodeEdge);
+      OverlayNode.propagateAreaLabels(nodeEdge, 0);
+      if (inputGeometry.hasEdges(1)) {
+        OverlayNode.propagateAreaLabels(nodeEdge, 1);
+      }
     }
     labelConnectedLinearEdges();
   }
