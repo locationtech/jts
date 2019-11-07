@@ -335,18 +335,13 @@ public class OverlayNG
     case INTERSECTION:
       if ( inputGeom.isEmpty(0) || inputGeom.isEmpty(1) )
         return true;
-      if (isInputDisjoint()) 
+      if (inputGeom.isDisjointEnv()) 
         return true;
     case DIFFERENCE:
       if ( inputGeom.isEmpty(0) )     
         return true;
     }
     return false;
-  }
-
-  private boolean isInputDisjoint() {
-    boolean intersects = inputGeom.getEnvelope(0).intersects(inputGeom.getEnvelope(1));
-    return ! intersects;
   }
 
   private Geometry createEmptyResult() {

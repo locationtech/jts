@@ -143,14 +143,6 @@ class OverlayGraph {
      * must be disconnected
      * from the area edges of the parent.
      * They can be located based on their parent ring role (shell or hole).
-     * 
-     * Note that this can NOT be done via a PIP location check,
-     * because that is done against the unreduced input geometry,
-     * which may give an invalid result due to topology collapse.
-     * 
-     * The labelling is propagated to other connected edges, 
-     * since there may be NOT_PART edges which are connected, 
-     * and they need to be labelled in the same way.
      */
     labelCollapsedEdges();
     

@@ -56,6 +56,12 @@ class InputGeometry {
     return geom[geomIndex].getDimension() == 1;
   }
   
+  public  boolean isDisjointEnv() {
+    if (isEmpty(0) || isEmpty(1)) return true;
+    boolean intersects = getEnvelope(0).intersects(getEnvelope(1));
+    return ! intersects;
+  }
+  
   public int locatePointInArea(int geomIndex, Coordinate pt) {
     // Assert: only called if dimension(geomIndex) = 2
     

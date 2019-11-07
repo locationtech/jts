@@ -73,8 +73,8 @@ class OverlayNode {
       OverlayLabel label = e.getLabel();
       if ( ! label.isBoundary(geomIndex) ) {
       /**
-       * If edge is not a boundary edge, 
-       * its location is now known for this area
+       * If edge is not a boundary edge for the current input, 
+       * its location is now known for this input area
        */
         e.setLocationLine(geomIndex, currLoc);
       }
