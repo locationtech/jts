@@ -190,7 +190,6 @@ public class OverlayNG
   public static Geometry overlayFloatingPrecision(Geometry geom0, Geometry geom1, int opCode)
   {
     OverlayNG ov = new OverlayNG(geom0, geom1, opCode);
-    ov.setNoder( OverlayNoder.createFloatingPrecisionNoder(true) );
     return ov.getResultGeometry();
   }
 
