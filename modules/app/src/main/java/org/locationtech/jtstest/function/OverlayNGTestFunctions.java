@@ -125,6 +125,12 @@ public class OverlayNGTestFunctions {
     return ovr.getResultGeometry();
   }
 
+  public static Geometry intersectionFloatPMNoOpt(Geometry a, Geometry b) {
+    OverlayNG ovr = new OverlayNG(a, b, INTERSECTION);
+    ovr.setOptimized(false);
+    return ovr.getResultGeometry();
+  }
+
   public static Geometry unionIntSymDiff(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs
@@ -153,7 +159,7 @@ public class OverlayNGTestFunctions {
     return OverlayNG.overlay(a, b, UNION, null, noder );
   }
 
-  public static Geometry intersectionClassicNoderNoValid(Geometry a, Geometry b) {
+  public static Geometry intersectionFloatPM(Geometry a, Geometry b) {
     return OverlayNG.overlayFloatingPrecision(a, b, INTERSECTION );
   }
 
