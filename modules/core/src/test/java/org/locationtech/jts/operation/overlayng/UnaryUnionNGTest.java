@@ -39,6 +39,12 @@ public class UnaryUnionNGTest extends GeometryTestCase
         "POLYGON ((1 9, 6 9, 9 9, 9 1, 6 4, 6 1, 1 1, 1 9))");
   }
 
+  public void testPolygonsOverlapping( ) {
+    checkUnaryUnion("GEOMETRYCOLLECTION (POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200)), POLYGON ((250 250, 250 150, 150 150, 150 250, 250 250)))",
+        1, 
+        "POLYGON ((100 200, 150 200, 150 250, 250 250, 250 150, 200 150, 200 100, 100 100, 100 200))");
+  }
+
   private void checkUnaryUnion(String wkt, double scaleFactor, String wktExpected) {
     Geometry geom = read(wkt);
     Geometry expected = read(wktExpected);
