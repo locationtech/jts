@@ -251,7 +251,7 @@ class LineStringBuilder {
     int aLoc = effectiveLocation(0, lbl);
     int bLoc = effectiveLocation(1, lbl);
     
-    boolean isInResult = OverlayNG.isResultOfOp(aLoc, bLoc, opCode);
+    boolean isInResult = OverlayNG.isResultOfOp(opCode, aLoc, bLoc);
     return isInResult;
   }
 

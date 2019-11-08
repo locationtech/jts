@@ -78,7 +78,7 @@ public class OverlayNG
   {
     int loc0 = label.getLocation(0);
     int loc1 = label.getLocation(1);
-    return isResultOfOp(loc0, loc1, opCode);
+    return isResultOfOp(opCode, loc0, loc1);
   }
   
   /**
@@ -88,13 +88,13 @@ public class OverlayNG
    * a given overlay operation.
    * <p>
    * The method handles arguments of {@link Location#NONE} correctly
-   *
+   * @param overlayOpCode the code for the overlay operation to test
    * @param loc0 the code for the location in the first geometry 
    * @param loc1 the code for the location in the second geometry 
-   * @param overlayOpCode the code for the overlay operation to test
+   *
    * @return true if the locations correspond to the overlayOpCode
    */
-  static boolean isResultOfOp(int loc0, int loc1, int overlayOpCode)
+  static boolean isResultOfOp(int overlayOpCode, int loc0, int loc1)
   {
     if (loc0 == Location.BOUNDARY) loc0 = Location.INTERIOR;
     if (loc1 == Location.BOUNDARY) loc1 = Location.INTERIOR;

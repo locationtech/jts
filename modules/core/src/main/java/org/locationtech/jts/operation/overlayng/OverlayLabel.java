@@ -363,7 +363,18 @@ class OverlayLabel {
     return LOC_UNKNOWN;
   }
   
-  public int getLocationBoundaryOrLinear(int index, int position, boolean isForward) {
+  /**
+   * Gets the location for this label for either
+   * a Boundary or a Line edge.
+   * This supports a simple determination of
+   * whether the edge should be included as a result edge.
+   * 
+   * @param index the source index
+   * @param position the position for a boundary label
+   * @param isForward the direction for a boundary label
+   * @return the location for the specified position
+   */
+  public int getLocationBoundaryOrLine(int index, int position, boolean isForward) {
     if (isBoundary(index)) {
       return getLocation(index, position, isForward);
     }

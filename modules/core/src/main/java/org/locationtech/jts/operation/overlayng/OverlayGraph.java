@@ -390,18 +390,33 @@ class OverlayGraph {
     }
   }
 
+  /**
+   * Marks an edge which forms part of the boundary of the result area.
+   * This is determined by the overlay operation being executed,
+   * and the location of the edge.
+   * The location is either the RIGHT side of a boundary edge,
+   * or the line location of a non-boundary edge.
+   * 
+   * @param e
+   * @param overlayOpCode
+   */
   public void markInResultArea(OverlayEdge e, int overlayOpCode) {
     OverlayLabel label = e.getLabel();
     if ( label.isBoundaryEither()
         && OverlayNG.isResultOfOp(
-              label.getLocationBoundaryOrLinear(0, Position.RIGHT, e.isForward()),
-              label.getLocationBoundaryOrLinear(1, Position.RIGHT, e.isForward()),
-              overlayOpCode)) {
+              overlayOpCode,
+              label.getLocationBoundaryOrLine(0, Position.RIGHT, e.isForward()),
+              label.getLocationBoundaryOrLine(1, Position.RIGHT, e.isForward()))) {
       e.markInResultArea();  
     }
     //Debug.println("markInResultArea: " + e);
   }
   
+  /**
+   * Removes edges where the sym edge is also marked as in the result.
+   * This has the effect of merging edge-adjacent result areas,
+   * as required by polygon validity rules.
+   */
   public void removeDuplicateResultAreaEdges() {
     for (OverlayEdge edge : getEdges()) {
       if ( edge.isInResultArea()  && edge.symOE().isInResultArea() ) {
