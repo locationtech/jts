@@ -48,6 +48,7 @@ extends PerformanceTestCase
   public OverlayNGPerfTest(String name) {
     super(name);
     setRunSize(new int[] { 1000, 10000, 100000, 200000 });
+    //setRunSize(new int[] { 200000 });
     setRunIterations(N_ITER);
   }
 
@@ -137,6 +138,13 @@ extends PerformanceTestCase
     }
   }  
   
+  public void runIntersectionNGFloating()
+  {
+    for (Geometry b : geomB) {
+      intersectionNGFloating(geomA, b);
+    }
+  }  
+  
   public void runIntersectionNGOpt()
   {
     for (Geometry b : geomB) {
@@ -144,14 +152,14 @@ extends PerformanceTestCase
     }
   }
   
-  public void runIntersectionNGNoClip()
+  public void xrunIntersectionNGNoClip()
   {
     for (Geometry b : geomB) {
       intersectionNGNoClip(geomA, b);
     }
   }
   
-  public void runIntersectionNGPrepNoCache()
+  public void xrunIntersectionNGPrepNoCache()
   {
     for (Geometry b : geomB) {
       intersectionNGPrepNoCache(geomA, b);
@@ -163,7 +171,7 @@ extends PerformanceTestCase
    * Update: actually it looks like having the smaller geometry
    * as the prepared one is faster (by a variable amount)
    */
-  public void runIntersectionNGPrepNoCacheBA()
+  public void xrunIntersectionNGPrepNoCacheBA()
   {
     for (Geometry b : geomB) {
       intersectionNGPrepNoCache(b, geomA);
@@ -178,6 +186,12 @@ extends PerformanceTestCase
 
   public Geometry intersectionNGNoClip(Geometry a, Geometry b) {
     OverlayNG overlay = new OverlayNG(a, b, precisionModel, OverlayNG.INTERSECTION);
+    overlay.setOptimized(false);
+    return overlay.getResultGeometry();
+  }
+
+  public Geometry intersectionNGFloating(Geometry a, Geometry b) {
+    OverlayNG overlay = new OverlayNG(a, b, OverlayNG.INTERSECTION);
     overlay.setOptimized(false);
     return overlay.getResultGeometry();
   }
