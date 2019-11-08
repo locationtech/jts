@@ -348,7 +348,7 @@ public class OverlayNG
     return createEmptyResult(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), geomFact);
   }
 
-  private Envelope optimizeEnvelope() {   
+  private Envelope clippingEnvelope(InputGeometry inputGeom, int opCode) {   
     Envelope clipEnv = null;
     switch (opCode) {
     case INTERSECTION:
@@ -365,19 +365,26 @@ public class OverlayNG
     return clipEnv;
   }
 
-  private Envelope safeOverlapEnv(Envelope originalEnv) {
-    double envBufDist = 0;
-    // if PM is FLOAT then there is no scale factor, so add 10%
+  private Envelope safeOverlapEnv(Envelope env) {
+    double envExpandDist = expandDistance(env, pm);
+    Envelope safeEnv = env.copy();
+    safeEnv.expandBy(envExpandDist);
+    return safeEnv;
+  }
+
+  private static double expandDistance(Envelope env, PrecisionModel pm) {
+    double envExpandDist;
     if (pm.isFloating()) {
-      double minSize = Math.min(originalEnv.getHeight(), originalEnv.getWidth());
-      envBufDist = 0.1 * minSize;
+      // if PM is FLOAT then there is no scale factor, so add 10%
+      double minSize = Math.min(env.getHeight(), env.getWidth());
+      envExpandDist = 0.1 * minSize;
     }
     else {
-      envBufDist = SAFE_ENV_EXPAND_FACTOR * 1.0 / pm.getScale();
+      // if PM is fixed, add a small multiple of the grid size
+      double gridSize = 1.0 / pm.getScale();
+      envExpandDist = SAFE_ENV_EXPAND_FACTOR * gridSize;
     }
-    Envelope safeEnv = originalEnv.copy();
-    safeEnv.expandBy(envBufDist);
-    return safeEnv;
+    return envExpandDist;
   }
 
   private void checkSanity(Geometry result) {
@@ -395,7 +402,6 @@ public class OverlayNG
         throw new TopologyException("Result area sanity issue");
       }
     }
-    
   }
 
   private List<Edge> nodeAndMerge() {
@@ -407,7 +413,7 @@ public class OverlayNG
     if (noder != null) ovNoder.setNoder(noder);
     
     if ( isOptimized ) {
-      Envelope clipEnv = optimizeEnvelope();
+      Envelope clipEnv = clippingEnvelope(inputGeom, opCode);
       if (clipEnv != null)
         ovNoder.setClipEnvelope( clipEnv );
     }
