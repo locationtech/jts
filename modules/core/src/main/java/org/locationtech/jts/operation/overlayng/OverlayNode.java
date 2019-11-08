@@ -63,17 +63,17 @@ class OverlayNode {
       OverlayLabel label = e.getLabel();
       if ( ! label.isBoundary(geomIndex) ) {
       /**
-       * If edge is not a boundary edge for the current input, 
-       * its location is now known for this input area
+       * If this is not a Boundary edge for this input area, 
+       * its location is now known relative to this input area
        */
-        e.setLocationLine(geomIndex, currLoc);
+        label.setLocationLine(geomIndex, currLoc);
       }
       else {
         Assert.isTrue(label.hasSides(geomIndex));
         /**
-         *  This is a boundary edge for the area geom.
-         *  Update the current location from its labels,
-         *  checking for topology consistency
+         *  This is a boundary edge for the input area geom.
+         *  Update the current location from its labels.
+         *  Also check for topological consistency.
          */
         int locRight = e.getLocation(geomIndex, Position.RIGHT);
         if (locRight != currLoc) {
@@ -135,7 +135,7 @@ class OverlayNode {
          * If edge is not a boundary edge, 
          * its location is now known for this area
          */
-        e.setLocationLine(index, lineLoc);
+        label.setLocationLine(index, lineLoc);
         //Debug.println("propagateLineLocationAtNode - setting "+ index + ": " + e);
 
         /**

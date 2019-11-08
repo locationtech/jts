@@ -220,11 +220,6 @@ class OverlayEdge extends HalfEdge {
     maxEdgeRing = maximalEdgeRing;
   }
 
-  public void setLocationLine(int geomIndex, int loc) {
-    getLabel().setLocationLine(geomIndex, loc);
-    symOE().getLabel().setLocationLine(geomIndex, loc);
-  }
-
   public String toString() {
     Coordinate orig = orig();
     Coordinate dest = dest();
