@@ -413,15 +413,15 @@ class OverlayGraph {
   }
   
   /**
-   * Removes edges where the sym edge is also marked as in the result.
+   * Unmarks result area edges where the sym edge 
+   * is also marked as in the result.
    * This has the effect of merging edge-adjacent result areas,
    * as required by polygon validity rules.
    */
-  public void removeDuplicateResultAreaEdges() {
+  public void unmarkDuplicateEdgesFromResultArea() {
     for (OverlayEdge edge : getEdges()) {
-      if ( edge.isInResultArea()  && edge.symOE().isInResultArea() ) {
-        edge.removeFromResultArea();
-        edge.symOE().removeFromResultArea();      
+      if ( edge.isInResultAreaBoth() ) {
+        edge.unmarkFromResultAreaBoth();     
       }
     }
   }

@@ -139,8 +139,13 @@ class OverlayEdge extends HalfEdge {
     return isInResultArea;
   }
   
-  public void removeFromResultArea() {
+  public boolean isInResultAreaBoth() {
+    return isInResultArea && symOE().isInResultArea;
+  }
+  
+  public void unmarkFromResultAreaBoth() {
     isInResultArea = false;
+    symOE().isInResultArea = false;
   }
   
   public void markInResultArea() {
@@ -155,12 +160,8 @@ class OverlayEdge extends HalfEdge {
   public boolean isInResultLine() {
     return isInResultLine;
   }
-  
-  private void markInResultLine() {
-    isInResultLine  = true;
-  }
 
-  public void markInResultLineBoth() {
+  public void markInResultLine() {
     isInResultLine  = true;
     symOE().isInResultLine = true;
   }

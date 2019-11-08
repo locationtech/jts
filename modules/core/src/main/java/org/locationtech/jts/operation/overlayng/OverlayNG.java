@@ -318,7 +318,7 @@ public class OverlayNG
     graph.computeLabelling(inputGeom);
     
     graph.markResultAreaEdges(opCode);
-    graph.removeDuplicateResultAreaEdges();
+    graph.unmarkDuplicateEdgesFromResultArea();
     
     if (isOutputEdges || isOutputResultEdges) {
       resultGeom = toLines(graph, geomFact);
@@ -417,29 +417,22 @@ public class OverlayNG
     Collection<SegmentString> nodedLines = ovNoder.node();
     
     /**
-     * Record if an input geometry has collapsed.
-     * This is used to avoid trying to locate disconnected edges
-     * against a geometry which has collapsed completely.
-     */
-    inputGeom.setCollapsed(0, isCollapsed(0, ovNoder));
-    inputGeom.setCollapsed(1, isCollapsed(1, ovNoder));
-    
-    /**
      * Merge the noded edges to eliminate duplicates.
      * Labels will be combined.
      */
     // nodedSegStrings are no longer needed, and will be GCed
     List<Edge> edges = createEdges(nodedLines);
     List<Edge> mergedEdges = EdgeMerger.merge(edges);
-    return mergedEdges;
-  }
-
-  private boolean isCollapsed(int geomIndex, OverlayNoder ovNoder) {
+    
     /**
-     * If no edges remain after noding, 
-     * this geom must have collapsed.
+     * Record if an input geometry has collapsed.
+     * This is used to avoid trying to locate disconnected edges
+     * against a geometry which has collapsed completely.
      */
-    return ! ovNoder.hasEdgesFor(geomIndex);
+    inputGeom.setCollapsed(0, ! ovNoder.hasEdgesFor(0) );
+    inputGeom.setCollapsed(1, ! ovNoder.hasEdgesFor(0) );
+    
+    return mergedEdges;
   }
 
   private static List<Edge> createEdges(Collection<SegmentString> segStrings) {

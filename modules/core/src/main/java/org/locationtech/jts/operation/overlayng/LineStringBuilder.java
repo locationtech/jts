@@ -82,7 +82,7 @@ class LineStringBuilder {
       if (edge.isInResultLine()) 
         continue;
       if (isResultLine(edge)) {
-        edge.markInResultLineBoth();
+        edge.markInResultLine();
         //Debug.println(edge);
       }
     }
