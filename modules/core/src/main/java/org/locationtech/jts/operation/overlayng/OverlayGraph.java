@@ -394,11 +394,11 @@ class OverlayGraph {
    * Marks an edge which forms part of the boundary of the result area.
    * This is determined by the overlay operation being executed,
    * and the location of the edge.
-   * The location is either the RIGHT side of a boundary edge,
+   * The relevant location is either the right side of a boundary edge,
    * or the line location of a non-boundary edge.
    * 
-   * @param e
-   * @param overlayOpCode
+   * @param e the edge to mark
+   * @param overlayOpCode the overlay operation
    */
   public void markInResultArea(OverlayEdge e, int overlayOpCode) {
     OverlayLabel label = e.getLabel();
