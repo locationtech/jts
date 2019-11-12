@@ -92,7 +92,7 @@ class PolygonBuilder {
       shellList.add(shell);
     }
     else {
-      // rings must all be holes
+      // all rings are holes; their shell will be found later
       freeHoleList.addAll(minRings);
     }
   }
@@ -122,9 +122,9 @@ class PolygonBuilder {
   }
   
   /**
-   * Assigns the holes for a Polygon (formed from a list of
-   * OverlayEdgeRing) to its shell.
-   * Determining the holes for a OverlayEdgeRing polygon serves two purposes:
+   * For the set of minimal rings comprising a maximal ring, 
+   * assigns the holes to the shell known to contain them.
+   * Assigning the holes directly to the shell serves two purposes:
    * <ul>
    * <li>it is faster than using a point-in-polygon check later on.
    * <li>it ensures correctness, since if the PIP test was used the point
@@ -132,9 +132,9 @@ class PolygonBuilder {
    * PIP test
    * </ul>
    */
-  private void assignHoles(OverlayEdgeRing shell, List<OverlayEdgeRing> minEdgeRings)
+  private void assignHoles(OverlayEdgeRing shell, List<OverlayEdgeRing> edgeRings)
   {
-    for (OverlayEdgeRing er : minEdgeRings) {
+    for (OverlayEdgeRing er : edgeRings) {
       if (er.isHole()) {
         er.setShell(shell);
       }
