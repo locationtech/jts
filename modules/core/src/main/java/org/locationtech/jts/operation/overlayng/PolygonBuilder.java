@@ -63,9 +63,7 @@ class PolygonBuilder {
         // if this edge has not yet been processed
         if (e.getEdgeRingMax() == null) {
           MaximalEdgeRing er = new MaximalEdgeRing(e);
-          boolean isValid = er.isValid();
-          if (isValid)
-            edgeRings.add(er);
+          edgeRings.add(er);
         }
       }
     }

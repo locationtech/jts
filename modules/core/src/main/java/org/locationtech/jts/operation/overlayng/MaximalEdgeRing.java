@@ -13,7 +13,6 @@ import org.locationtech.jts.io.WKTWriter;
 class MaximalEdgeRing {
 
   private OverlayEdge startEdge;
-  private boolean isValid = false;
 
   public MaximalEdgeRing(OverlayEdge e) {
     this.startEdge = e;
@@ -28,23 +27,17 @@ class MaximalEdgeRing {
       if (edge.getEdgeRingMax() == this)
         throw new TopologyException("Edge visited twice during ring-building at " + edge.getCoordinate(), edge.getCoordinate());
       if (edge.nextResultMax() == null) {
-        //return;
         throw new TopologyException("Found null edge in ring", edge.dest());
       }
       edge.setEdgeRingMax(this);
       edge = edge.nextResultMax();
     } while (edge != startEdge);  
-    isValid = true;
-  }
-  
-  public boolean isValid() {
-    return isValid;
   }
   
   private void linkMinimalRings() {
     OverlayEdge e = startEdge;
     do {
-      OverlayNode.linkResultAreaEdges(e, this);
+      OverlayNode.linkMinRingEdges(e, this);
       e = e.nextResultMax();
     } while (e != startEdge);
   }
