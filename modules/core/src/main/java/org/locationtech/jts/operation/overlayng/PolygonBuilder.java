@@ -48,7 +48,7 @@ class PolygonBuilder {
     for (OverlayEdge edge : resultEdges ) {
       //Assert.isTrue(edge.isInResult());
       // TODO: find some way to skip nodes which are already linked
-      OverlayNode.linkResultAreaEdgesMax(edge);
+      MaximalEdgeRing.linkResultAreaEdgesMax(edge);
     }    
   }
   

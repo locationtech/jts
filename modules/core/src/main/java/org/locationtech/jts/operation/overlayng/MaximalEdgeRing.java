@@ -8,9 +8,91 @@ import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.util.Assert;
 
 
 class MaximalEdgeRing {
+
+  private static final int STATE_FIND_INCOMING = 1;
+  private static final int STATE_LINK_OUTGOING = 2;
+
+  /**
+   * Traverses the star of OverlayEdges 
+   * originating at this node
+   * and links result edges together
+   * into <b>maximal</b> edge rings.
+   * To link two edges the <code>resultNextMax</code> pointer 
+   * for an <b>incoming</b> result edge
+   * is set to the next <b>outgoing</b> result edge.
+   * <p>
+   * Edges are linked when:
+   * <ul>
+   * <li>they belong to an area (i.e. they have sides)
+   * <li>they are marked as being in the result
+   * </ul>
+   * <p>
+   * Edges are linked in CCW order 
+   * (which is the order they are linked in the underlying graph).
+   * This means that rings have their face on the Right
+   * (in other words,
+   * the topological location of the face is given by the RHS label of the DirectedEdge).
+   * This produces rings with CW orientation.
+   * <p>
+   * PRECONDITIONS: 
+   * - This edge is in the result
+   * - This edge is not yet linked
+   * - The edge and its sym are NOT both marked as being in the result
+   */
+  public static void linkResultAreaEdgesMax(OverlayEdge nodeEdge)
+  {
+    Assert.isTrue(nodeEdge.isInResultArea(), "Attempt to link non-result edge");
+    //Assert.isTrue(! nodeEdge.symOE().isInResultArea(), "Found both half-edges in result");
+
+    /**
+     * Since the node edge is an out-edge, 
+     * make it the last edge to be linked
+     * by starting at the next edge.
+     * The node edge cannot be an in-edge as well, 
+     * but the next one may be the first in-edge.
+     */
+    OverlayEdge endOut = nodeEdge.oNextOE();
+    OverlayEdge currOut = endOut;
+//Debug.println("\n------  Linking node MAX edges");
+//Debug.println("BEFORE: " + toString(nodeEdge));
+    int state = STATE_FIND_INCOMING;
+    OverlayEdge currResultIn = null;
+    do {
+      /**
+       * If an edge is linked this node has already been processed
+       * so can skip further processing
+       */
+      if (currResultIn != null && currResultIn.isResultMaxLinked())
+        return;
+      
+      switch (state) {
+      case STATE_FIND_INCOMING:
+        OverlayEdge currIn = currOut.symOE();
+        if (! currIn.isInResultArea()) break;
+        currResultIn = currIn;
+        state = STATE_LINK_OUTGOING;
+        //Debug.println("Found result in-edge:  " + currResultIn);
+        break;
+      case STATE_LINK_OUTGOING:
+        if (! currOut.isInResultArea()) break;
+        // link the in edge to the out edge
+        currResultIn.setResultNextMax(currOut);
+        state = STATE_FIND_INCOMING;
+        //Debug.println("Linked Max edge:  " + currResultIn + " -> " + currOut);
+        break;
+      }
+      currOut = currOut.oNextOE();
+    } while (currOut != endOut);
+    //Debug.println("AFTER: " + toString(nodeEdge));
+    if (state == STATE_LINK_OUTGOING) {
+//Debug.print(firstOut == null, this);
+      throw new TopologyException("no outgoing edge found", nodeEdge.getCoordinate());
+    }    
+  }
 
   private OverlayEdge startEdge;
 
