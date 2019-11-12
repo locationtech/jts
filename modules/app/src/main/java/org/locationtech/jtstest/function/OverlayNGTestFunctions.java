@@ -56,7 +56,7 @@ public class OverlayNGTestFunctions {
     // op should not matter, since edges are captured pre-result
     OverlayNG ovr = new OverlayNG(a, b, pm, UNION);
     ovr.setOutputNodedEdges(true);
-    return ovr.getResultGeometry();
+    return ovr.getResult();
   }
 
   public static Geometry edgesNodedIntersection(Geometry a, Geometry b, double scaleFactor) {
@@ -67,7 +67,7 @@ public class OverlayNGTestFunctions {
     // op should not matter, since edges are captured pre-result
     OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
     ovr.setOutputNodedEdges(true);
-    return ovr.getResultGeometry();
+    return ovr.getResult();
   }
 
   public static Geometry edgesNodedIntNoOpt(Geometry a, Geometry b, double scaleFactor) {
@@ -79,7 +79,7 @@ public class OverlayNGTestFunctions {
     OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
     ovr.setOutputNodedEdges(true);
     ovr.setOptimized(false);
-    return ovr.getResultGeometry();
+    return ovr.getResult();
   }
 
   private static Geometry extractPoly(Geometry g) {
@@ -95,7 +95,7 @@ public class OverlayNGTestFunctions {
     b = OverlayNGFunctions.sameOrEmpty(b, a);
    OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
     ovr.setOutputResultEdges(true);
-    return ovr.getResultGeometry();
+    return ovr.getResult();
   }
 
   public static Geometry edgesIntersectionAll(Geometry a, Geometry b, double scaleFactor) {
@@ -105,7 +105,7 @@ public class OverlayNGTestFunctions {
     b = OverlayNGFunctions.sameOrEmpty(b, a);
     OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
     ovr.setOutputEdges(true);
-    return ovr.getResultGeometry();
+    return ovr.getResult();
   }
   
   public static Geometry edgesUnionResult(Geometry a, Geometry b, double scaleFactor) {
@@ -115,20 +115,20 @@ public class OverlayNGTestFunctions {
     b = OverlayNGFunctions.sameOrEmpty(b, a);
     OverlayNG ovr = new OverlayNG(a, b, pm, UNION);
     ovr.setOutputResultEdges(true);
-    return ovr.getResultGeometry();
+    return ovr.getResult();
   }
   
   public static Geometry intersectionNoOpt(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
     ovr.setOptimized(false);
-    return ovr.getResultGeometry();
+    return ovr.getResult();
   }
 
   public static Geometry intersectionFloatPMNoOpt(Geometry a, Geometry b) {
     OverlayNG ovr = new OverlayNG(a, b, INTERSECTION);
     ovr.setOptimized(false);
-    return ovr.getResultGeometry();
+    return ovr.getResult();
   }
 
   public static Geometry unionIntSymDiff(Geometry a, Geometry b, double scaleFactor) {

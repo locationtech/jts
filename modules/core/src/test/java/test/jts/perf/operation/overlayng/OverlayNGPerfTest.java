@@ -187,13 +187,13 @@ extends PerformanceTestCase
   public Geometry intersectionNGNoClip(Geometry a, Geometry b) {
     OverlayNG overlay = new OverlayNG(a, b, precisionModel, OverlayNG.INTERSECTION);
     overlay.setOptimized(false);
-    return overlay.getResultGeometry();
+    return overlay.getResult();
   }
 
   public Geometry intersectionNGFloating(Geometry a, Geometry b) {
     OverlayNG overlay = new OverlayNG(a, b, OverlayNG.INTERSECTION);
     overlay.setOptimized(false);
-    return overlay.getResultGeometry();
+    return overlay.getResult();
   }
 
   public Geometry intersectionNGPrep(Geometry a, Geometry b) {

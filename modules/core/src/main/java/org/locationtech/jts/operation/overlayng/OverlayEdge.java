@@ -75,7 +75,7 @@ class OverlayEdge extends HalfEdge {
   private boolean isVisited = false;
 
   /**
-   * Link to next edge in the result.
+   * Link to next edge in the result ring.
    * The origin of the edge is the dest of this edge.
    */
   private OverlayEdge nextResultEdge;

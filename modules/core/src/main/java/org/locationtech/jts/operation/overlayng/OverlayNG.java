@@ -129,7 +129,7 @@ public class OverlayNG
       int opCode, PrecisionModel pm)
   {
     OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
-    Geometry geomOv = ov.getResultGeometry();
+    Geometry geomOv = ov.getResult();
     return geomOv;
   }
 
@@ -149,7 +149,7 @@ public class OverlayNG
   {
     OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
     ov.setNoder(noder);
-    Geometry geomOv = ov.getResultGeometry();
+    Geometry geomOv = ov.getResult();
     return geomOv;
   }
 
@@ -170,7 +170,7 @@ public class OverlayNG
     //System.out.println("Precision Model: " + pm);
     
     OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
-    return ov.getResultGeometry();
+    return ov.getResult();
   }
 
   /**
@@ -190,7 +190,7 @@ public class OverlayNG
   public static Geometry overlayFloatingPrecision(Geometry geom0, Geometry geom1, int opCode)
   {
     OverlayNG ov = new OverlayNG(geom0, geom1, opCode);
-    return ov.getResultGeometry();
+    return ov.getResult();
   }
 
   /**
@@ -215,7 +215,7 @@ public class OverlayNG
   {    
     Point emptyPoint = geom.getFactory().createPoint();
     OverlayNG ov = new OverlayNG(geom, emptyPoint, pm, UNION);
-    Geometry geomOv = ov.getResultGeometry();
+    Geometry geomOv = ov.getResult();
     return geomOv;
   }
 
@@ -292,7 +292,7 @@ public class OverlayNG
     this.noder = noder;
   }
   
-  public Geometry getResultGeometry() {
+  public Geometry getResult() {
     computeOverlay();
     
     return resultGeom;
@@ -441,7 +441,7 @@ public class OverlayNG
     return mergedEdges;
   }
 
-  private static List<Edge> createEdges(Collection<SegmentString> segStrings) {
+  static List<Edge> createEdges(Collection<SegmentString> segStrings) {
     List<Edge> edges = new ArrayList<Edge>();
     for (SegmentString ss : segStrings) {
       Coordinate[] pts = ss.getCoordinates();

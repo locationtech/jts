@@ -218,9 +218,9 @@ class OverlayGraph {
    */
   private void labelAreaNodeEdges(Collection<OverlayEdge> nodes) {
     for (OverlayEdge nodeEdge : nodes) {
-      OverlayNode.propagateAreaLabels(nodeEdge, 0);
+      OverlayNode.propagateAreaLocations(nodeEdge, 0);
       if (inputGeometry.hasEdges(1)) {
-        OverlayNode.propagateAreaLabels(nodeEdge, 1);
+        OverlayNode.propagateAreaLocations(nodeEdge, 1);
       }
     }
     labelConnectedLinearEdges();

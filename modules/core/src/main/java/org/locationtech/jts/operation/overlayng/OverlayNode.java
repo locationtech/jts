@@ -41,7 +41,7 @@ class OverlayNode {
    * 
    * @param geomIndex the geometry to propagate locations for
    */
-  public static void propagateAreaLabels(OverlayEdge nodeEdge, int geomIndex) {
+  public static void propagateAreaLocations(OverlayEdge nodeEdge, int geomIndex) {
     /**
      * This handles dangling edges created by overlap limiting
      */
@@ -155,18 +155,19 @@ class OverlayNode {
    * Traverses the star of OverlayEdges 
    * originating at this node
    * and links result edges together
-   * into maximal edge rings.
+   * into <b>maximal</b> edge rings.
    * To link two edges the <code>resultNextMax</code> pointer 
    * for an <b>incoming</b> result edge
    * is set to the next <b>outgoing</b> result edge.
    * <p>
-   * Edges are linked only if:
+   * Edges are linked when:
    * <ul>
    * <li>they belong to an area (i.e. they have sides)
    * <li>they are marked as being in the result
    * </ul>
    * <p>
-   * Edges are linked in CCW order (the order they are stored).
+   * Edges are linked in CCW order 
+   * (which is the order they are linked in the underlying graph).
    * This means that rings have their face on the Right
    * (in other words,
    * the topological location of the face is given by the RHS label of the DirectedEdge).
@@ -180,7 +181,7 @@ class OverlayNode {
   public static void linkResultAreaEdgesMax(OverlayEdge nodeEdge)
   {
     Assert.isTrue(nodeEdge.isInResultArea(), "Attempt to link non-result edge");
-    Assert.isTrue(! nodeEdge.symOE().isInResultArea(), "Found both half-edges in result");
+    //Assert.isTrue(! nodeEdge.symOE().isInResultArea(), "Found both half-edges in result");
 
     /**
      * Since the node edge is an out-edge, 
@@ -228,7 +229,21 @@ class OverlayNode {
     }    
   }
 
-  public static void linkResultAreaEdges(OverlayEdge nodeEdge, MaximalEdgeRing maxRing)
+  /**
+   * Links the edges of a {@link MaximalEdgeRing} around this node
+   * into minimal edge rings ({@link OverlayEdgeRing}s).
+   * Minimal ring edges are linked in the opposite orientation (CW)
+   * to the maximal ring.
+   * This changes self-touching rings into a two or more separate rings,
+   * as per the OGC SFS polygon topology semantics.
+   * This relinking must be done to each max ring separately,
+   * rather than all the node result edges, since there may be 
+   * more than one max ring incident at the node.
+   * 
+   * @param nodeEdge an edge originating at this node
+   * @param maxRing the maximal ring to link
+   */
+  public static void linkMinRingEdges(OverlayEdge nodeEdge, MaximalEdgeRing maxRing)
   {
     //Assert.isTrue(nodeEdge.isInResult(), "Attempt to link non-result edge");
 

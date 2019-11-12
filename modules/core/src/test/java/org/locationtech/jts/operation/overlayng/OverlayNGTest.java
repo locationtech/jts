@@ -494,7 +494,7 @@ public class OverlayNGTest extends GeometryTestCase {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     OverlayNG ov = new OverlayNG(a, b, pm, INTERSECTION);
     ov.setOptimized(false);
-    return ov.getResultGeometry();
+    return ov.getResult();
   }
   
   public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
