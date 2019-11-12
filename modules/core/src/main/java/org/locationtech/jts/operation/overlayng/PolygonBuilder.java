@@ -98,14 +98,13 @@ class PolygonBuilder {
   }
   
   /**
-   * This method takes a list of EdgeRings derived from a MaximalEdgeRing,
-   * and tests whether they form a Polygon.  This is the case if there is a single shell
-   * in the list.  In this case the shell is returned.
-   * The other possibility is that they are a series of connected holes, in which case
-   * no shell is returned.
+   * Finds the single shell, if any, out of 
+   * a list of minimal rings derived from a maximal ring.
+   * The other possibility is that they are a set of (connected) holes, 
+   * in which case no shell will be found.
    *
-   * @return the shell EdgeRing, if there is one
-   * or null, if all the rings are holes
+   * @return the shell ring, if there is one
+   * or null, if all rings are holes
    */
   private OverlayEdgeRing findSingleShell(List<OverlayEdgeRing> edgeRings)
   {
