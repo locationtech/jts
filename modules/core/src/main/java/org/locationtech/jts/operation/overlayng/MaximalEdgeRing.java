@@ -17,9 +17,8 @@ class MaximalEdgeRing {
   private static final int STATE_LINK_OUTGOING = 2;
 
   /**
-   * Traverses the star of OverlayEdges 
-   * originating at this node
-   * and links result edges together
+   * Traverses the star of edges originating at a node
+   * and links consecutive result edges together
    * into <b>maximal</b> edge rings.
    * To link two edges the <code>resultNextMax</code> pointer 
    * for an <b>incoming</b> result edge
@@ -43,7 +42,7 @@ class MaximalEdgeRing {
    * - This edge is not yet linked
    * - The edge and its sym are NOT both marked as being in the result
    */
-  public static void linkResultAreaEdgesMax(OverlayEdge nodeEdge)
+  public static void linkResultAreaMaxRingAtNode(OverlayEdge nodeEdge)
   {
     Assert.isTrue(nodeEdge.isInResultArea(), "Attempt to link non-result edge");
     //Assert.isTrue(! nodeEdge.symOE().isInResultArea(), "Found both half-edges in result");
@@ -98,10 +97,10 @@ class MaximalEdgeRing {
 
   public MaximalEdgeRing(OverlayEdge e) {
     this.startEdge = e;
-    attachRingtoEdges(e);
+    attachEdges(e);
   }
 
-  private void attachRingtoEdges(OverlayEdge startEdge) {
+  private void attachEdges(OverlayEdge startEdge) {
     OverlayEdge edge = startEdge;
     do {
       if (edge == null)
@@ -135,7 +134,7 @@ class MaximalEdgeRing {
   private void linkMinimalRings() {
     OverlayEdge e = startEdge;
     do {
-      linkMinRingEdges(e, this);
+      linkMinRingEdgesAtNode(e, this);
       e = e.nextResultMax();
     } while (e != startEdge);
   }
@@ -154,7 +153,7 @@ class MaximalEdgeRing {
    * @param nodeEdge an edge originating at this node
    * @param maxRing the maximal ring to link
    */
-  private static void linkMinRingEdges(OverlayEdge nodeEdge, MaximalEdgeRing maxRing)
+  private static void linkMinRingEdgesAtNode(OverlayEdge nodeEdge, MaximalEdgeRing maxRing)
   {
     //Assert.isTrue(nodeEdge.isInResult(), "Attempt to link non-result edge");
 
