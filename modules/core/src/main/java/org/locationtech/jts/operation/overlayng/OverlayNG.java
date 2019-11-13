@@ -315,10 +315,10 @@ public class OverlayNG
       return;
     }
 
-    graph.computeLabelling(inputGeom);
-    
-    graph.markResultAreaEdges(opCode);
-    graph.unmarkDuplicateEdgesFromResultArea();
+    OverlayLabeller labeller = new OverlayLabeller(graph, inputGeom);
+    labeller.computeLabelling();
+    labeller.markResultAreaEdges(opCode);
+    labeller.unmarkDuplicateEdgesFromResultArea();
     
     if (isOutputEdges || isOutputResultEdges) {
       resultGeom = toLines(graph, geomFact);
