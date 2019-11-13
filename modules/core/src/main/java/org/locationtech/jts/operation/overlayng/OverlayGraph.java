@@ -415,6 +415,11 @@ class OverlayGraph {
     }
   }
 
+  /**
+   * Gets the edges marked as being in the result area.
+   * 
+   * @return the result area edges
+   */
   public List<OverlayEdge> getResultAreaEdges() {
     List<OverlayEdge> resultEdges = new ArrayList<OverlayEdge>();
     for (OverlayEdge edge : getEdges()) {
