@@ -12,7 +12,6 @@
 package org.locationtech.jts.operation.overlayng;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
@@ -99,9 +98,10 @@ class OverlayEdgeRing {
       //edges.add(de);
 //Debug.println(de);
 //Debug.println(de.getEdge());
-      OverlayLabel label = edge.getLabel();
-      Assert.isTrue(label.isBoundaryEither());
-      //mergeLabel(label);
+      
+      // only valid for polygonal output
+      //Assert.isTrue(edge.getLabel().isBoundaryEither());
+      
       addPoints(edge.getCoordinates(), edge.isForward(), isFirstEdge);
       isFirstEdge = false;
       edge.setEdgeRing(this);
@@ -244,5 +244,9 @@ class OverlayEdgeRing {
     }
     Polygon poly = factory.createPolygon(ring, holeLR);
     return poly;
+  }
+
+  public OverlayEdge getEdge() {
+    return startEdge;
   }
 }

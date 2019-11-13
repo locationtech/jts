@@ -25,9 +25,15 @@ class PolygonBuilder {
   private GeometryFactory geometryFactory;
   private List<OverlayEdgeRing> shellList = new ArrayList<OverlayEdgeRing>();
   private List<OverlayEdgeRing> freeHoleList = new ArrayList<OverlayEdgeRing>();
+  private boolean isEnforcePolygonal = true;
 
   public PolygonBuilder(List<OverlayEdge> resultAreaEdges, GeometryFactory geomFact) {
+    this(resultAreaEdges, geomFact, true);
+  }
+  
+  public PolygonBuilder(List<OverlayEdge> resultAreaEdges, GeometryFactory geomFact, boolean isEnforcePolygonal) {
     this.geometryFactory = geomFact;
+    this.isEnforcePolygonal = isEnforcePolygonal;
     buildRings(resultAreaEdges);
   }
 
@@ -35,6 +41,21 @@ class PolygonBuilder {
     return computePolygons(shellList);  
   }
 
+  public List<OverlayEdgeRing> getShellRings() {
+    return shellList;  
+  }
+
+  private List<Polygon> computePolygons(List<OverlayEdgeRing> shellList)
+  {
+    List<Polygon> resultPolyList = new ArrayList<Polygon>();
+    // add Polygons for all shells
+    for (OverlayEdgeRing er : shellList ) {
+      Polygon poly = er.toPolygon(geometryFactory);
+      resultPolyList.add(poly);
+    }
+    return resultPolyList;
+  }
+  
   private void buildRings(List<OverlayEdge> resultAreaEdges)
   {
     linkResultAreaEdgesMax(resultAreaEdges);
@@ -131,7 +152,7 @@ class PolygonBuilder {
    * PIP test
    * </ul>
    */
-  private void assignHoles(OverlayEdgeRing shell, List<OverlayEdgeRing> edgeRings)
+  private static void assignHoles(OverlayEdgeRing shell, List<OverlayEdgeRing> edgeRings)
   {
     for (OverlayEdgeRing er : edgeRings) {
       if (er.isHole()) {
@@ -154,27 +175,18 @@ class PolygonBuilder {
    */
   private void placeFreeHoles(List<OverlayEdgeRing> shellList, List<OverlayEdgeRing> freeHoleList)
   {
+    // TODO: use a spatial index to improve performance
     for (OverlayEdgeRing hole : freeHoleList ) {
       // only place this hole if it doesn't yet have a shell
       if (hole.getShell() == null) {
         OverlayEdgeRing shell = hole.findEdgeRingContaining(shellList);
-        if (shell == null)
+        // only when building a polygon-valid result
+        if (isEnforcePolygonal  && shell == null) {
           throw new TopologyException("unable to assign free hole to a shell", hole.getCoordinate());
-//        Assert.isTrue(shell != null, "unable to assign hole to a shell");
+        }
         hole.setShell(shell);
       }
     }
-  }
-
-  private List<Polygon> computePolygons(List<OverlayEdgeRing> shellList)
-  {
-    List<Polygon> resultPolyList = new ArrayList<Polygon>();
-    // add Polygons for all shells
-    for (OverlayEdgeRing er : shellList ) {
-      Polygon poly = er.toPolygon(geometryFactory);
-      resultPolyList.add(poly);
-    }
-    return resultPolyList;
   }
 
 }

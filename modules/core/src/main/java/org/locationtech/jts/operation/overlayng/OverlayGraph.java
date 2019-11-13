@@ -130,18 +130,14 @@ class OverlayGraph {
    */
   public void computeLabelling(InputGeometry inputGeom) {
     this.inputGeometry = inputGeom;
-    // compute labelling using a Left-Right sweepline, to keep things deterministic
-    // MD - not technically needed, so skip to improve performance
-    //List<OverlayEdge> nodes = sortedNodes();
     
     Collection<OverlayEdge> nodes = getNodeEdges();
     labelAreaNodeEdges(nodes);
     
     //TODO: is there a way to avoid scanning all edges in these steps?
     /**
-     * At this point collapsed edges with unknown location
-     * must be disconnected
-     * from the area edges of the parent.
+     * At this point collapsed edges labeled with location UNKNOWN
+     * must be disconnected from the area edges of the parent.
      * They can be located based on their parent ring role (shell or hole).
      */
     labelCollapsedEdges();
@@ -149,13 +145,6 @@ class OverlayGraph {
     labelDisconnectedEdges();
   }
 
-  /*
-  private List<OverlayEdge> sortedNodes() {
-    List<OverlayEdge> edges = new ArrayList<OverlayEdge>(getNodeEdges());
-    edges.sort(OverlayEdge.nodeComparator());
-    return edges;
-  }
-*/
   /**
    * There can be edges which have unknown location
    * but are connected to a Line edge with known location.

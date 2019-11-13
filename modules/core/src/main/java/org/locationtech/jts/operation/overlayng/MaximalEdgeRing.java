@@ -45,6 +45,7 @@ class MaximalEdgeRing {
   public static void linkResultAreaMaxRingAtNode(OverlayEdge nodeEdge)
   {
     Assert.isTrue(nodeEdge.isInResultArea(), "Attempt to link non-result edge");
+    // assertion is only valid if building a polygonal geometry (ie not a coverage)
     //Assert.isTrue(! nodeEdge.symOE().isInResultArea(), "Found both half-edges in result");
 
     /**
