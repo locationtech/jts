@@ -32,7 +32,7 @@ public class LineLimiter {
   private Coordinate lastOutside = null;
   private List<Coordinate[]> sections = null;
 
-  LineLimiter(Envelope env) {
+  public LineLimiter(Envelope env) {
     this.limitEnv = env;
   }
   
@@ -48,7 +48,7 @@ public class LineLimiter {
     return limitEnv.covers(env);
   }
   
-  List<Coordinate[]> limit(Coordinate[] pts) {
+  public List<Coordinate[]> limit(Coordinate[] pts) {
     lastOutside = null;
     ptList = null;
     sections = new ArrayList<Coordinate[]>();

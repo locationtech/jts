@@ -50,8 +50,10 @@ class OverlayNoder {
   private Noder customNoder;
   private boolean hasEdgesA;
   private boolean hasEdgesB;
-  private RingClipper clipper;
+  
   private Envelope clipEnv = null;
+  private RingClipper clipper;
+  private LineLimiter limiter;
 
   public OverlayNoder(PrecisionModel pm) {
     this.pm = pm;
@@ -64,6 +66,7 @@ class OverlayNoder {
   public void setClipEnvelope(Envelope clipEnv) {
     this.clipEnv = clipEnv;
     clipper = new RingClipper(clipEnv);
+    limiter = new LineLimiter(clipEnv);
   }
   
   public Collection<SegmentString> node() {
@@ -157,7 +160,7 @@ class OverlayNoder {
     //else if (g instanceof MultiPoint)         addCollection((MultiPoint) g);
     else if (g instanceof MultiLineString)    addCollection((MultiLineString) g, geomIndex);
     else if (g instanceof MultiPolygon)       addCollection((MultiPolygon) g, geomIndex);
-    //else if (g instanceof GeometryCollection) addCollection((GeometryCollection) g);
+    else if (g instanceof GeometryCollection) addCollection((GeometryCollection) g, geomIndex);
     else throw new UnsupportedOperationException(g.getClass().getName());
   }
   
@@ -250,12 +253,29 @@ class OverlayNoder {
     if (isClippedCompletely(line.getEnvelopeInternal())) 
       return;
     
-    Coordinate[] pts = line.getCoordinates();
+    if (isLimited(line)) {
+      List<Coordinate[]> sections = limit( line );
+      for (Coordinate[] pts : sections) {
+        addLine( pts, geomIndex );
+      }
+    }
+    else {
+      addLine( line.getCoordinates(), geomIndex );
+    }
+  }
+
+  private void addLine(Coordinate[] pts, int geomIndex) {
+    /**
+     * Don't add edges that collapse to a point
+     */
+    if (pts.length < 2) {
+      return;
+    }
     
     EdgeInfo info = new EdgeInfo(geomIndex);
     addEdge(pts, info);
   }
-
+  
   private void addEdge(Coordinate[] pts, EdgeInfo info) {
     NodedSegmentString ss = new NodedSegmentString(pts, info);
     segStrings.add(ss);
@@ -267,7 +287,7 @@ class OverlayNoder {
   }
   
   /**
-   * If a clipper is provided, 
+   * If clipper is present, 
    * clip the line to the clip envelope.
    * 
    * @param ring the line to clip
@@ -282,10 +302,37 @@ class OverlayNoder {
     /**
      * If line is completely contained then no need to clip
      */
-    if (clipper.covers(env)) {
+    if (clipEnv.covers(env)) {
       return pts;
     }
     return clipper.clip(pts);
+  }
+
+  private boolean isLimited(LineString line) {
+    Coordinate[] pts = line.getCoordinates();
+    if (limiter == null || pts.length <= MIN_CLIP_PTS) {
+      return false;
+    }
+    Envelope env = line.getEnvelopeInternal();
+    /**
+     * If line is completely contained then no need to clip
+     */
+    if (clipEnv.covers(env)) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * If limiter is provided, 
+   * limit the line to the clip envelope.
+   * 
+   * @param line the line to clip
+   * @return the point sections in the clipped line
+   */
+  private List<Coordinate[]> limit(LineString line) {
+    Coordinate[] pts = line.getCoordinates();
+    return limiter.limit(pts);
   }
 
   /*

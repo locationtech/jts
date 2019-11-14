@@ -13,6 +13,9 @@ package org.locationtech.jtstest.function;
 
 import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
+
+import java.util.List;
+
 import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 
@@ -20,6 +23,8 @@ import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
@@ -29,6 +34,7 @@ import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlayng.RingClipper;
+import org.locationtech.jts.operation.overlayng.LineLimiter;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.PrecisionUtil;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
@@ -188,9 +194,26 @@ public class OverlayNGTestFunctions {
     return noder;
   }
   
-  public static Geometry clip(Geometry line, Geometry box) {
+  public static Geometry clipRing(Geometry line, Geometry box) {
     RingClipper clipper = new RingClipper(box.getEnvelopeInternal());
     Coordinate[] pts = clipper.clip(line.getCoordinates());
     return line.getFactory().createLineString(pts);
+  }
+  
+  public static Geometry limitLine(Geometry line, Geometry box) {
+    LineLimiter limiter = new LineLimiter(box.getEnvelopeInternal());
+    List<Coordinate[]> sections = limiter.limit(line.getCoordinates());
+   
+    return toLines(sections, line.getFactory());
+  }
+
+  private static Geometry toLines(List<Coordinate[]> sections, GeometryFactory factory) {
+    LineString[] lines = new LineString[sections.size()];
+    int i = 0;
+    for (Coordinate[] pts : sections) {
+      lines[i++] = factory.createLineString(pts);
+    }
+    if (lines.length == 1) return lines[0];
+    return factory.createMultiLineString(lines);
   }
 }

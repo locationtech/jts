@@ -67,12 +67,30 @@ class InputGeometry {
     return geom[geomIndex].getDimension() > 0;
   }
   
+  /**
+   * Tests if the envelopes of the input geometries
+   * are disjoint.  
+   * This is also true if either geometry is empty.
+   * 
+   * @return true if the geometry envelopes are disjoint
+   */
   public  boolean isDisjointEnv() {
     if (isEmpty(0) || isEmpty(1)) return true;
     boolean intersects = getEnvelope(0).intersects(getEnvelope(1));
     return ! intersects;
   }
   
+  /**
+   * Determines the location within an area geometry.
+   * This allows disconnected edges to be fully 
+   * located.  
+   * 
+   * @param geomIndex the index of the geometry
+   * @param pt the coordinate to locate
+   * @return the location of the coordinate
+   * 
+   * @see Location
+   */
   public int locatePointInArea(int geomIndex, Coordinate pt) {
     // Assert: only called if dimension(geomIndex) = 2
     
