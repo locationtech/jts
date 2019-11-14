@@ -15,14 +15,6 @@ public class RingClipperTest extends GeometryTestCase {
   }
 
   public RingClipperTest(String name) { super(name); }
-  
-  public void xtestLineCorner3() {
-    checkClip(
-        "LINESTRING (80 120, 90 160, 120 190, 170 210)",
-        "POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))",
-        "LINESTRING (160 200, 100 140, 100 170)"
-        );
-  }
 
   public void testClipCompletely() {
     checkClip(
