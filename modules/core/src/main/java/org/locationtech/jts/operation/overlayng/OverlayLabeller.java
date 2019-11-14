@@ -15,17 +15,20 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.util.Assert;
-import org.locationtech.jts.util.Debug;
 
+/**
+ * Implements the logic to compute the full labeling
+ * for the edges in an {@link OverlayGraph}.
+ *  
+ * @author mdavis
+ *
+ */
 class OverlayLabeller {
   private OverlayGraph graph;
   private InputGeometry inputGeometry;
@@ -174,9 +177,9 @@ class OverlayLabeller {
    * because that is done against the unreduced input geometry,
    * which may give an invalid result due to topology collapse.
    * 
-   * The labelling is propagated to other connected edges, 
+   * The labeling is propagated to other connected edges, 
    * since there may be NOT_PART edges which are connected, 
-   * and they need to be labelled in the same way.
+   * and they need to be labeled in the same way.
    */
   private void labelCollapsedEdges() {
     for (OverlayEdge edge : edges) {
@@ -198,7 +201,7 @@ class OverlayLabeller {
       /**
        * This must be a collapsed edge which is disconnected
        * from any area edges (e.g. a fully collapsed shell or hole).
-       * It can be labelled according to its parent source ring role. 
+       * It can be labeled according to its parent source ring role. 
        */
     label.setLocationCollapse(geomIndex);
     //Debug.print("AFTER: " + edge.toStringNode());
@@ -294,6 +297,10 @@ class OverlayLabeller {
    * relative to an input geometry.
    * This must be because they are NOT_PART edges for that geometry, 
    * and are disconnected from any edges of that geometry.
+   * An example of this is rings of one geometry wholly contained
+   * in another geometry.
+   * The location must be fully determined to compute a 
+   * correct result for all overlay operations.
    * 
    * If the input geometry is an Area the edge location can
    * be determined via a PIP test.
