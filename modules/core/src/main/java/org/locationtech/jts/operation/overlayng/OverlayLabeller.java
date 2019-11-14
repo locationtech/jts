@@ -56,90 +56,6 @@ class OverlayLabeller {
     labelDisconnectedEdges();
   }
 
-  /**
-   * There can be edges which have unknown location
-   * but are connected to a Line edge with known location.
-   * In this case line location is propagated to the connected edges.
-   */
-  private void labelConnectedLinearEdges() {
-    //TODO: can these be merged to avoid two scans?
-    propagateLineLocations(0);
-    if (inputGeometry.hasEdges(1)) {
-      propagateLineLocations(1);
-    }
-  }
-
-  private void propagateLineLocations(int geomIndex) {
-    // find L edges
-    List<OverlayEdge> lineEdges = findLinearEdgesWithLocation(geomIndex);
-    Deque<OverlayEdge> edgeStack = new ArrayDeque<OverlayEdge>(lineEdges);
-    
-    propagateLineLocations(geomIndex, edgeStack);
-  }
-  
-  private void propagateLineLocations(int geomIndex, Deque<OverlayEdge> edgeStack) {
-    // traverse line edges, labelling unknown ones that are connected
-    while (! edgeStack.isEmpty()) {
-      OverlayEdge lineEdge = edgeStack.removeFirst();
-      // assert: lineEdge.getLabel().isLine(geomIndex);
-      
-      // for any edges around origin with unknown location for this geomIndex,
-      // mark them as Exterior
-      // add those edges to stack to continue traversal
-      propagateLineLocation(lineEdge, geomIndex, edgeStack, inputGeometry);
-    }
-  }
-  
-  private static void propagateLineLocation(OverlayEdge eStart, int index, 
-      Deque<OverlayEdge> edgeStack, InputGeometry inputGeometry) {
-    OverlayEdge e = eStart.oNextOE();
-    int lineLoc = eStart.getLabel().getLineLocation(index);
-    
-    /**
-     * If the parent geom is an L (dim 1) 
-     * then only propagate EXTERIOR locations.
-     */
-    if (! inputGeometry.isArea(index) 
-        && lineLoc != Location.EXTERIOR) return;
-    
-    do {
-      OverlayLabel label = e.getLabel();
-      //Debug.println("propagateLineLocationAtNode - checking " + index + ": " + e);
-      if ( label.isLineLocationUnknown(index) ) {
-        /**
-         * If edge is not a boundary edge, 
-         * its location is now known for this area
-         */
-        label.setLocationLine(index, lineLoc);
-        //Debug.println("propagateLineLocationAtNode - setting "+ index + ": " + e);
-
-        /**
-         * Add sym edge to stack for graph traversal
-         * (Don't add e itself, since e origin node has now been scanned)
-         */
-        edgeStack.addFirst( e.symOE() );
-      }
-      e = e.oNextOE();
-    } while (e != eStart);
-  }
-  
-  /**
-   * Finds all OverlayEdges which are labelled as L dimension.
-   * 
-   * @param geomIndex
-   * @return list of L edges
-   */
-  private List<OverlayEdge> findLinearEdgesWithLocation(int geomIndex) {
-    List<OverlayEdge> lineEdges = new ArrayList<OverlayEdge>();
-    for (OverlayEdge edge : edges) {
-      OverlayLabel lbl = edge.getLabel();
-      if (lbl.isLinear(geomIndex)
-          && ! lbl.isLineLocationUnknown(geomIndex)) {
-        lineEdges.add(edge);
-      }
-    }
-    return lineEdges;
-  }
 
   /**
    * Labels node edges based on the arrangement
@@ -286,6 +202,91 @@ class OverlayLabeller {
        */
     label.setLocationCollapse(geomIndex);
     //Debug.print("AFTER: " + edge.toStringNode());
+  }
+
+  /**
+   * There can be edges which have unknown location
+   * but are connected to a Line edge with known location.
+   * In this case line location is propagated to the connected edges.
+   */
+  private void labelConnectedLinearEdges() {
+    //TODO: can these be merged to avoid two scans?
+    propagateLineLocations(0);
+    if (inputGeometry.hasEdges(1)) {
+      propagateLineLocations(1);
+    }
+  }
+
+  private void propagateLineLocations(int geomIndex) {
+    // find L edges
+    List<OverlayEdge> lineEdges = findLinearEdgesWithLocation(geomIndex);
+    Deque<OverlayEdge> edgeStack = new ArrayDeque<OverlayEdge>(lineEdges);
+    
+    propagateLineLocations(geomIndex, edgeStack);
+  }
+  
+  private void propagateLineLocations(int geomIndex, Deque<OverlayEdge> edgeStack) {
+    // traverse line edges, labelling unknown ones that are connected
+    while (! edgeStack.isEmpty()) {
+      OverlayEdge lineEdge = edgeStack.removeFirst();
+      // assert: lineEdge.getLabel().isLine(geomIndex);
+      
+      // for any edges around origin with unknown location for this geomIndex,
+      // mark them as Exterior
+      // add those edges to stack to continue traversal
+      propagateLineLocation(lineEdge, geomIndex, edgeStack, inputGeometry);
+    }
+  }
+  
+  private static void propagateLineLocation(OverlayEdge eStart, int index, 
+      Deque<OverlayEdge> edgeStack, InputGeometry inputGeometry) {
+    OverlayEdge e = eStart.oNextOE();
+    int lineLoc = eStart.getLabel().getLineLocation(index);
+    
+    /**
+     * If the parent geom is an L (dim 1) 
+     * then only propagate EXTERIOR locations.
+     */
+    if (! inputGeometry.isArea(index) 
+        && lineLoc != Location.EXTERIOR) return;
+    
+    do {
+      OverlayLabel label = e.getLabel();
+      //Debug.println("propagateLineLocationAtNode - checking " + index + ": " + e);
+      if ( label.isLineLocationUnknown(index) ) {
+        /**
+         * If edge is not a boundary edge, 
+         * its location is now known for this area
+         */
+        label.setLocationLine(index, lineLoc);
+        //Debug.println("propagateLineLocationAtNode - setting "+ index + ": " + e);
+
+        /**
+         * Add sym edge to stack for graph traversal
+         * (Don't add e itself, since e origin node has now been scanned)
+         */
+        edgeStack.addFirst( e.symOE() );
+      }
+      e = e.oNextOE();
+    } while (e != eStart);
+  }
+  
+  /**
+   * Finds all OverlayEdges which are labelled as L dimension.
+   * 
+   * @param geomIndex
+   * @return list of L edges
+   */
+  private List<OverlayEdge> findLinearEdgesWithLocation(int geomIndex) {
+    List<OverlayEdge> lineEdges = new ArrayList<OverlayEdge>();
+    for (OverlayEdge edge : edges) {
+      OverlayLabel lbl = edge.getLabel();
+      if (lbl.isLinear(geomIndex)
+          && ! lbl.isLineLocationUnknown(geomIndex)) {
+        lineEdges.add(edge);
+      }
+    }
+    return lineEdges;
   }
 
   /**
