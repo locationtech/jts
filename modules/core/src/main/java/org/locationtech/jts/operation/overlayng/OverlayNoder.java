@@ -41,9 +41,9 @@ import org.locationtech.jts.noding.snapround.SimpleSnapRounder;
 class OverlayNoder {
 
   /**
-   * There is no advantage to clipping short lines
+   * Limiting can be skipped for Lines with few vertices 
    */
-  private static final int MIN_CLIP_PTS = 20;
+  private static final int MIN_LIMIT_PTS = 20;
   
   private PrecisionModel pm;
   List<NodedSegmentString> segStrings = new ArrayList<NodedSegmentString>();
@@ -289,13 +289,19 @@ class OverlayNoder {
   /**
    * If clipper is present, 
    * clip the line to the clip envelope.
+   * <p>
+   * If clipping is enabled, then every ring MUST 
+   * be clipped, to ensure that holes are clipped to
+   * be inside the shell.  
+   * This means it is not possible to skip 
+   * clipping for rings with few vertices.
    * 
    * @param ring the line to clip
    * @return the points in the clipped line
    */
   private Coordinate[] clip(LinearRing ring) {
     Coordinate[] pts = ring.getCoordinates();
-    if (clipper == null || pts.length <= MIN_CLIP_PTS) {
+    if (clipper == null) {
       return pts;
     }
     Envelope env = ring.getEnvelopeInternal();
@@ -310,7 +316,7 @@ class OverlayNoder {
 
   private boolean isLimited(LineString line) {
     Coordinate[] pts = line.getCoordinates();
-    if (limiter == null || pts.length <= MIN_CLIP_PTS) {
+    if (limiter == null || pts.length <= MIN_LIMIT_PTS) {
       return false;
     }
     Envelope env = line.getEnvelopeInternal();
