@@ -17,12 +17,15 @@ import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.util.Assert;
 
 /**
  * Limits the segments in a segment string
  * to those which intersect (overlap) a given envelope.
- * The result is zero or more subsections of the input segment sequences.
+ * The result is zero or more subsections of the input segment sequences,
+ * containing only line segments which intersect the limit envelope.
+ * Segments are not clipped, since that happens in the overlay anyway.
+ * This can substantially reduce the number of vertices which need to be
+ * processed during overlay.
  * 
  * @author Martin Davis
  *
