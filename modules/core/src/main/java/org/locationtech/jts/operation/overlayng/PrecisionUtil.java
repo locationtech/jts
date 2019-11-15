@@ -47,6 +47,8 @@ public class PrecisionUtil
    * <p>
    * NOTE: this is a heuristic determination, so is not guaranteed to 
    * eliminate precision issues.
+   * <p>
+   * WARNING: this is quite slow.
    * 
    * @param a a geometry
    * @param b a geometry
@@ -65,6 +67,8 @@ public class PrecisionUtil
    * <p>
    * NOTE: this is a heuristic determination, so is not guaranteed to 
    * eliminate precision issues.
+   * <p>
+   * WARNING: this is quite slow.
    * 
    * @param a a geometry
    * @return a suitable precision model for overlay
