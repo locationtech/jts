@@ -17,11 +17,12 @@ import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.util.Assert;
 
 /**
  * Limits the segments in a segment string
  * to those which intersect (overlap) a given envelope.
- * The result is zero or more subsections of the input segments.
+ * The result is zero or more subsections of the input segment sequences.
  * 
  * @author Martin Davis
  *
@@ -32,6 +33,11 @@ public class LineLimiter {
   private Coordinate lastOutside = null;
   private List<Coordinate[]> sections = null;
 
+  /**
+   * Creates a new limiter for the given envelope.
+   * 
+   * @param env the envelope to limit to
+   */
   public LineLimiter(Envelope env) {
     this.limitEnv = env;
   }
@@ -48,6 +54,12 @@ public class LineLimiter {
     return limitEnv.covers(env);
   }
   
+  /**
+   * Limits a coordinate sequence.
+   * 
+   * @param pts the coordinate sequence to limit
+   * @return the subsequences which intersect the limit envelope
+   */
   public List<Coordinate[]> limit(Coordinate[] pts) {
     lastOutside = null;
     ptList = null;
@@ -55,8 +67,8 @@ public class LineLimiter {
     
     for (int i = 0; i < pts.length; i++) {
       Coordinate p = pts[i];
-      if (limitEnv.contains(p)) 
-        addInside(p);
+      if ( limitEnv.intersects(p) ) 
+        addPoint(p);
       else {
         addOutside(p);
       }
@@ -66,6 +78,48 @@ public class LineLimiter {
     return sections;
   }
 
+  private void addPoint(Coordinate p) {
+    if (p == null) return;
+    startSection();
+    ptList.add(p, false);
+  }
+
+  private void addOutside(Coordinate p) {
+    boolean segIntersects = isLastSegmentIntersecting(p);
+    if ( ! segIntersects  ) {
+      finishSection();
+    }
+    else {
+      addPoint(lastOutside);
+      addPoint(p);
+    }
+    lastOutside = p;
+  }
+  
+  private boolean isLastSegmentIntersecting(Coordinate p) {
+    if (lastOutside == null) {
+      // last point must have been inside
+      if (isSectionOpen())
+        return true;
+      return false;
+    }
+    return limitEnv.intersects(lastOutside, p);
+  }
+
+  private boolean isSectionOpen() {
+    return ptList != null;
+  }
+
+  private void startSection() {
+    if (ptList == null) {
+      ptList = new CoordinateList();
+    }
+    if (lastOutside != null) {
+      ptList.add(lastOutside, false);
+    }
+    lastOutside = null;
+  }  
+  
   private void finishSection() {
     if (ptList == null) 
       return;
@@ -79,48 +133,5 @@ public class LineLimiter {
     sections.add(section);
     ptList = null;
   }
-  
-  private void startSection() {
-    if (ptList == null) {
-      ptList = new CoordinateList();
-    }
-    if (lastOutside != null) {
-      ptList.add(lastOutside, false);
-    }
-    lastOutside = null;
-  }
 
-  private void addInside(Coordinate p) {
-    startSection();
-    ptList.add(p, false);
-  }
-
-  private void addOutside(Coordinate p) {
-    if (ptList != null) {
-      if (lastOutside != null) {
-        finishSection();
-        lastOutside = p;
-        return;
-      }
-      else { // lastOutside is null
-        // keep this coordinate until next pt is checked
-        lastOutside = p;
-        return;
-      }
-    }
-    else {
-      // if ptList is null, check if this segment crosses the env
-      if (lastOutside != null) {
-        boolean segIntersects = limitEnv.intersects(lastOutside, p);
-        if (segIntersects) {
-          Coordinate[] section = new Coordinate[] { lastOutside, p};
-          sections.add(section);
-          lastOutside = p;
-          return;
-        }
-      }
-    }
-    lastOutside = p;
-  }
-  
 }

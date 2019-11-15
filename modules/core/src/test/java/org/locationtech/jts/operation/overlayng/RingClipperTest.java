@@ -16,6 +16,22 @@ public class RingClipperTest extends GeometryTestCase {
 
   public RingClipperTest(String name) { super(name); }
 
+  public void testEmptyEnv() {
+    checkClip(
+        "POLYGON ((2 9, 7 27, 26 34, 45 10, 26 9, 17 -7, 14 4, 2 9))",
+        new Envelope(),
+        "LINESTRING EMPTY"
+        );
+  }
+
+  public void testPointEnv() {
+    checkClip(
+        "POLYGON ((2 9, 7 27, 26 34, 45 10, 26 9, 17 -7, 14 4, 2 9))",
+        new Envelope(10,10,10,10),
+        "LINESTRING EMPTY"
+        );
+  }
+
   public void testClipCompletely() {
     checkClip(
         "POLYGON ((2 9, 7 27, 26 34, 45 10, 26 9, 17 -7, 14 4, 2 9))",
