@@ -21,7 +21,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.SpatialIndexTester;
-import org.locationtech.jts.util.AssertionFailedException;
 
 import junit.framework.TestCase;
 
@@ -33,8 +32,8 @@ import junit.framework.TestCase;
 public class HPRtreeTest extends TestCase {
   private GeometryFactory factory = new GeometryFactory();
 
-  public HPRtreeTest(String Name_) {
-    super(Name_);
+  public HPRtreeTest(String name) {
+    super(name);
   }
 
   public static void main(String[] args) {
