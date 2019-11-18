@@ -66,11 +66,11 @@ public class HPRtree
 
   private static final int HILBERT_LEVEL = 12;
 
-  private static int FANOUT = 4;
+  private static int DEFAULT_NODE_CAPACITY = 16;
   
   private List<Item> items = new ArrayList<Item>();
   
-  private int nodeCapacity = FANOUT;
+  private int nodeCapacity = DEFAULT_NODE_CAPACITY;
 
   private Envelope totalExtent = new Envelope();
 
@@ -82,14 +82,27 @@ public class HPRtree
 
   //public int nodeIntersectsCount;
 
+  /**
+   * Creates a new index with the default node capacity.
+   */
   public HPRtree() {
-    
+    this(DEFAULT_NODE_CAPACITY);
   }
   
+  /**
+   * Creates a new index with the given node capacity.
+   * 
+   * @param nodeCapacity the node capacity to use
+   */
   public HPRtree(int nodeCapacity) {
     this.nodeCapacity = nodeCapacity;
   }
   
+  /**
+   * Gets the number of items in the index.
+   * 
+   * @return the number of items
+   */
   public int size() {
     return items.size();
   }
@@ -215,6 +228,9 @@ public class HPRtree
     return false;
   }
   
+  /**
+   * Builds the index, if not already built.
+   */
   public synchronized void build() {
     // skip if already built
     if (isBuilt) return;
@@ -223,7 +239,7 @@ public class HPRtree
     if (items.size() <= nodeCapacity) return;
 
     sortItems();
-    //dumpItems(items);
+    dumpItems(items);
     
     layerStartIndex = computeLayerIndices(items.size(), nodeCapacity);
     // allocate storage
@@ -349,6 +365,23 @@ public class HPRtree
     return array;
   }
 
+  /**
+   * Gets the extents of the internal index nodes
+   * 
+   * @return a list of the internal node extents
+   */
+  public Envelope[] getBounds() {
+    int numNodes = nodeBounds.length / 4;
+    Envelope[] bounds = new Envelope[numNodes];
+    // create from largest to smallest
+    for (int i = numNodes - 1; i >= 0; i--) {
+      int boundIndex = 4 * i;
+      bounds[i] = new Envelope( nodeBounds[boundIndex], nodeBounds[boundIndex+2],
+          nodeBounds[boundIndex+1], nodeBounds[boundIndex+3]);
+    }
+    return bounds;
+  }
+  
   private void sortItems() {
     ItemComparator comp = new ItemComparator(new HilbertEncoder(HILBERT_LEVEL, totalExtent));
     Collections.sort(items, comp);
