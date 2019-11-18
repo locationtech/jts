@@ -20,7 +20,7 @@ import org.locationtech.jts.geom.Envelope;
 
 /**
  * Limits the segments in a segment string
- * to those which intersect (overlap) a given envelope.
+ * to those which intersect an envelope.
  * The result is zero or more subsections of the input segment sequences,
  * containing only line segments which intersect the limit envelope.
  * Segments are not clipped, since that happens in the overlay anyway.
@@ -29,6 +29,7 @@ import org.locationtech.jts.geom.Envelope;
  * 
  * @author Martin Davis
  *
+ * @see RingClipper
  */
 public class LineLimiter {
   private Envelope limitEnv;
@@ -43,18 +44,6 @@ public class LineLimiter {
    */
   public LineLimiter(Envelope env) {
     this.limitEnv = env;
-  }
-  
-  /**
-   * Test whether an envelope is within the limit envelope.
-   * This can be used to determine if a geometry
-   * has significant extent, and thus is not collapsed completely.
-   * 
-   * @param env an envelope
-   * @return true if the envelope is covered by the limit envelope
-   */
-  public boolean isWithinLimit(Envelope env) {
-    return limitEnv.covers(env);
   }
   
   /**

@@ -35,7 +35,7 @@ import org.locationtech.jts.noding.SegmentString;
  * @author Martin Davis
  *
  */
-public class SegmentExtractingNoder implements Noder {
+class SegmentExtractingNoder implements Noder {
 
   private List segList;
   

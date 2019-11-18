@@ -16,10 +16,20 @@ import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * Clips a ring (array of points) to a box (envelope).
+ * Clips a ring of points to an envelope.
  * Uses a variant of Cohen-Sutherland clipping.
  * <p>
+ * In general the output is not topologically valid.
+ * In particular, the output may contain coincident non-noded line segments
+ * along the clipping envelope sides.
+ * However, the output is sufficiently well-structured
+ * that it can be used as input to the overlay algorithm
+ * (which is able to handle coincident linework due
+ * to the need to handle topology collapse under precision reduction).
+ * <p>
  * This code is not suitable for clipping linestrings.
+ * 
+ * @see LineLimiter
  * 
  * @author Martin Davis
  *
@@ -37,21 +47,17 @@ public class RingClipper {
   private double clipEnvMinX;
   private double clipEnvMaxX;
 
-  
+  /**
+   * Creates a new clipper for the given envelope.
+   * 
+   * @param clipEnv the clipping envelope
+   */
   public RingClipper(Envelope clipEnv) {
     this.clipEnv = clipEnv;
     clipEnvMinY = clipEnv.getMinY();
     clipEnvMaxY = clipEnv.getMaxY();
     clipEnvMinX = clipEnv.getMinX();
     clipEnvMaxX = clipEnv.getMaxX();
-  }
-
-  public boolean isDisjoint(Envelope env) {
-    return clipEnv.disjoint(env);
-  }
-  
-  public boolean covers(Envelope env) {
-    return clipEnv.covers(env);
   }
   
   /**
