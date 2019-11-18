@@ -22,6 +22,7 @@ import test.jts.perf.PerformanceTestRunner;
 public class HPRtreePerfTest
 extends PerformanceTestCase {
 
+  private static final int NODE_SIZE = 32;
   private static final int ITEM_ENV_SIZE = 10;
   private static final int QUERY_ENV_SIZE = 40;
 
@@ -46,7 +47,7 @@ extends PerformanceTestCase {
   {
     System.out.println("----- Tree size: " + size);
     
-    index = new HPRtree(32);
+    index = new HPRtree(NODE_SIZE);
     int side = (int) Math.sqrt(size);
     loadGrid(side, index);
     
