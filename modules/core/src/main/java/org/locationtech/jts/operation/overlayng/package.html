@@ -12,7 +12,7 @@ Overlay operations are used in spatial analysis for computing set-theoretic
 operations (boolean combinations) of input {@link Geometry}s.
 </p>
 <p>
-Overlay operations include:
+The {@link OverlayNG} class provides the standard Simple Features overlay operations, including:
 <ul>
 <li><b>Intersection</b></li>
 <li><b>Union</b></li>
@@ -22,10 +22,10 @@ Overlay operations include:
 <p>
 Additional operations include:
 <ul>
-<li><b>Unary Union</b> of geometry collections, in an efficient way</li>
-<li><b>Coverage Union</b> for valid polygonal and lineal coverages
+<li><b>Unary Union</b> of collections of geometries in an efficient way</li>
+<li><b>Coverage Union</b> for valid polygonal and lineal coverages,
 providing optimized performance</li>
-<li><b>Precision Reduction</b> of a geometry to a given precision model 
+<li><b>Precision Reduction</b> of a geometry to a precision model 
 in a topologically valid way</li>
 </ul>
 </p>
@@ -90,11 +90,11 @@ Other kinds of noder can be used as well (for instance, the same noding algorith
     </ol>
   <li>Build result linework
     <ol>
-    <li>Mark edges which should be included in the result lines
+    <li>Mark edges to be included in the result lines
     <li>Construct node-to-node linework
     </ol>
   <li>Build result points - MORE DETAIL NEEDED
-  <li>Collect result elements into the final result geometry
+  <li>Collect result elements into the result geometry
   </ol>
 </ol>
 
