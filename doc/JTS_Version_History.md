@@ -37,6 +37,7 @@ Distributions for older JTS versions can be obtained at the
 * Added `CascadedPolygonUnion` union-by-buffer on error capability (#470)
 * Added `HalfEdge` support for direction points (#479)
 * Added `CoordinateList.toCoordinateArray(isForward)` (#482)
+* Addded `HPRtree` Hilbert Packed R-tree (#494)
 
 ### Performance Improvements
 
