@@ -12,7 +12,6 @@
 package org.locationtech.jts.index.hprtree;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -22,12 +21,15 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.index.ArrayListVisitor;
 import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.SpatialIndex;
+import org.locationtech.jts.index.strtree.STRtree;
 
 /**
- * A Hilbert-Packed R-tree.
+ * A Hilbert-Packed R-tree.  This is a static R-tree
+ * which is packed by using the Hilbert ordering 
+ * of the tree items.
  * <p>
- * The tree is constructed by sorting the tree items
- * by the Hilbert code of their index.  
+ * The tree is constructed by sorting the items
+ * by the Hilbert code of the midpoint of their envelope.  
  * Then, a set of internal layers is created recursively
  * as follows:
  * <ul>
@@ -45,8 +47,10 @@ import org.locationtech.jts.index.SpatialIndex;
  * <p>
  * NOTE: Based on performance testing, 
  * the HPRtree is somewhat faster than the STRtree.
- * However, it is not clear that this 
- * could produce a significant improvement 
+ * It should also be more memory-efficent,
+ * due to fewer object allocations.
+ * However, it is not clear whether this 
+ * will produce a significant improvement 
  * for use in JTS operations.
  * 
  * @see STRtree
@@ -76,7 +80,7 @@ public class HPRtree
 
   private boolean isBuilt = false;
 
-  public int nodeIntersectsCount;
+  //public int nodeIntersectsCount;
 
   public HPRtree() {
     
@@ -148,7 +152,7 @@ public class HPRtree
   }
 
   private boolean intersects(int nodeIndex, Envelope env) {
-    nodeIntersectsCount++;
+    //nodeIntersectsCount++;
     boolean isBeyond = (env.getMaxX() < nodeBounds[nodeIndex]) 
     || (env.getMaxY() < nodeBounds[nodeIndex+1]) 
     || (env.getMinX() > nodeBounds[nodeIndex+2]) 
@@ -174,15 +178,31 @@ public class HPRtree
       // don't query past end of items
       if (itemIndex >= items.size()) break;
       
-      // query the item if its envelope intersects search env
+      // visit the item if its envelope intersects search env
       Item item = items.get(itemIndex);
-      nodeIntersectsCount++;
-      if (item.getEnvelope().intersects(searchEnv)) {
+      //nodeIntersectsCount++;
+      if (intersects( item.getEnvelope(), searchEnv) ) {
+      //if (item.getEnvelope().intersects(searchEnv)) {
         visitor.visitItem(item.getItem());
       }
     }    
   }
 
+  /**
+   * Tests whether two envelopes intersect.
+   * Avoids the null check in {@link Envelope#intersects(Envelope)}.
+   * 
+   * @param env1 an envelope
+   * @param env2 an envelope
+   * @return true if the envelopes intersect
+   */
+  private static boolean intersects(Envelope env1, Envelope env2) {
+    return !(env2.getMinX() > env1.getMaxX() ||
+        env2.getMaxX() < env1.getMinX() ||
+        env2.getMinY() > env1.getMaxY() ||
+        env2.getMaxY() < env1.getMinY());
+  }
+  
   private int layerSize(int layerIndex) {
     int layerStart = layerStartIndex[layerIndex];
     int layerEnd = layerStartIndex[layerIndex + 1];
