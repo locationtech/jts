@@ -15,6 +15,7 @@ package test.jts.perf.index;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.util.Assert;
@@ -44,23 +45,28 @@ public class IndexTester {
     public long queryMilliseconds;
   }
 
-  private static List victoriaItems = null;
-
-  public IndexResult testAll(List items)
+  public IndexResult testAll(List items, List queries)
   {
     IndexResult result = new IndexResult(index.toString());
     System.out.print(index.toString() + "           ");
     System.gc();
     Stopwatch sw = new Stopwatch();
+    
     sw.start();
-    loadGrid(items);
+    loadTree(items);
     String loadTime = sw.getTimeString();
     result.loadMilliseconds = sw.getTime();
+    
     System.gc();
-    sw.start();
-    //runQueries();
-    runSelfQuery(items);
-    String queryTime = sw.getTimeString();
+    
+    Stopwatch sw2 = new Stopwatch();
+    
+    //runGridQuery(1000);
+    //runQuery(items);
+    runQuery(queries);
+    
+    String queryTime = sw2.getTimeString();
+    
     result.queryMilliseconds = sw.getTime();
     System.out.println("  Load Time = " + loadTime + "  Query Time = " + queryTime);
     return result;
@@ -85,8 +91,34 @@ public class IndexTester {
     }
     return items;
   }
+  private static final int SEED = 613;
+  
+  public static List createRandomBoxes(int n) {
+    return createRandomBoxes(SEED, n);
+  }
+  
+  public static List createRandomBoxes(int seed, int n) {
+    Random random = new Random(seed);
+    ArrayList items = new ArrayList();
+    for (int i = 0; i < n; i++) {
+      items.add(createBox(random));
+    }
+    return items;
+  }
+  
+  private static Envelope createBox(Random random) {
+    double minX = randomDouble(random, -100, 100);
+    double minY = randomDouble(random, -100, 100);
+    double sizeX = randomDouble(random, 0.0, 10);
+    double sizeY = randomDouble(random, 0.0, 10);
+    return new Envelope(minX, minX + sizeX, minY, minY + sizeY);
+  }
 
-  void loadGrid(List items)
+  private static double randomDouble(Random random, double min, double max) {
+    return min + random.nextDouble() * (max - min);
+  }
+  
+  void loadTree(List items)
   {
     for (Iterator i = items.iterator(); i.hasNext(); ) {
       Envelope item = (Envelope) i.next();
@@ -94,20 +126,21 @@ public class IndexTester {
     }
     index.finishInserting();
   }
-  void runSelfQuery(List items)
+  
+  void runQuery(List queries)
   {
     double querySize = 0.0;
-    for (int i = 0; i < items.size(); i++) {
-      Envelope env = (Envelope) items.get(i);
+    for (int i = 0; i < queries.size(); i++) {
+      Envelope env = (Envelope) queries.get(i);
       List list = index.query(env);
       Assert.isTrue(!list.isEmpty());
       querySize += list.size();
     }
-    System.out.println("Avg query size = " + querySize / items.size());
+    System.out.println("Avg query size = " + querySize / queries.size());
   }
-  void runGridQuery()
+  
+  void runGridQuery(int nGridCells)
   {
-    int nGridCells = 100;
     int cellSize = (int) Math.sqrt((double) NUM_ITEMS);
     double extent = EXTENT_MAX - EXTENT_MIN;
     double queryCellSize =  2.0 * extent / cellSize;
@@ -133,5 +166,7 @@ public class IndexTester {
       }
     }
   }
+
+
 
 }

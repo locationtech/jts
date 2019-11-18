@@ -24,6 +24,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.GeometryFilter;
+import org.locationtech.jts.index.SpatialIndex;
+import org.locationtech.jts.index.hprtree.HPRtree;
 import org.locationtech.jts.index.kdtree.KdTree;
 import org.locationtech.jts.index.quadtree.Quadtree;
 import org.locationtech.jts.index.strtree.AbstractNode;
@@ -65,7 +67,8 @@ public class SpatialIndexFunctions
   
   public static Geometry strTreeBounds(Geometry geoms)
   {
-    STRtree index = buildSTRtree(geoms);
+    STRtree index = new STRtree();
+    loadIndex(geoms, index);
     List bounds = new ArrayList();
     addBounds(index.getRoot(), bounds, geoms.getFactory());
     return geoms.getFactory().buildGeometry(bounds);
@@ -88,17 +91,17 @@ public class SpatialIndexFunctions
     }
   }
 
-  public static Geometry strTreeQuery(Geometry geoms, Geometry queryEnv)
+  public static Geometry hprTreeQuery(Geometry geoms, Geometry queryEnv)
   {
-    STRtree index = buildSTRtree(geoms);
+    HPRtree index = new HPRtree();
+    loadIndex(geoms, index);
     // if no query env provided query everything inserted 
     if (queryEnv == null) queryEnv = geoms;
     List result = index.query(queryEnv.getEnvelopeInternal());
     return geoms.getFactory().buildGeometry(result);
   }
 
-  private static STRtree buildSTRtree(Geometry geom) {
-    final STRtree index = new STRtree();
+  private static void loadIndex(Geometry geom, SpatialIndex index) {
     geom.apply(new GeometryFilter() {
 
       public void filter(Geometry geom) {
@@ -108,19 +111,44 @@ public class SpatialIndexFunctions
       }
       
     });
-    return index;
+  }
+
+  public static Geometry hprTreeBounds(Geometry geoms)
+  {
+    HPRtree index = new HPRtree();
+    loadIndex(geoms, index);
+    index.build();
+    Envelope[] bounds = index.getBounds();
+    Geometry[] polys = new Geometry[bounds.length];
+    int i = 0;
+    for (Envelope env : bounds) {
+      polys[i++] = geoms.getFactory().toGeometry(env);
+    }
+    return geoms.getFactory().createGeometryCollection(polys);
+  }
+  
+  public static Geometry strTreeQuery(Geometry geoms, Geometry queryEnv)
+  {
+    STRtree index = new STRtree();
+    loadIndex(geoms, index);
+    // if no query env provided query everything inserted 
+    if (queryEnv == null) queryEnv = geoms;
+    List result = index.query(queryEnv.getEnvelopeInternal());
+    return geoms.getFactory().buildGeometry(result);
   }
   
   public static Geometry strTreeNN(Geometry geoms, Geometry geom)
   {
-    STRtree index = buildSTRtree(geoms);
+    STRtree index = new STRtree();
+    loadIndex(geoms, index);
     Object result = index.nearestNeighbour(geom.getEnvelopeInternal(), geom, new GeometryItemDistance());
     return (Geometry) result;
   }
 
   public static Geometry strTreeNNInSet(Geometry geoms)
   {
-    STRtree index = buildSTRtree(geoms);
+    STRtree index = new STRtree();
+    loadIndex(geoms, index);
     Object[] result = index.nearestNeighbour(new GeometryItemDistance());
     Geometry[] resultGeoms = new Geometry[] { (Geometry) result[0], (Geometry) result[1] };
     return geoms.getFactory().createGeometryCollection(resultGeoms);
@@ -128,7 +156,8 @@ public class SpatialIndexFunctions
 
   public static Geometry strTreeNNk(Geometry geoms, Geometry geom, int k)
   {
-    STRtree index = buildSTRtree(geoms);
+    STRtree index = new STRtree();
+    loadIndex(geoms, index);
     Object[] knnObjects = index.nearestNeighbour(geom.getEnvelopeInternal(), geom, new GeometryItemDistance(), k);
     List knnGeoms = new ArrayList(Arrays.asList(knnObjects));
     Geometry geometryCollection = geoms.getFactory().buildGeometry(knnGeoms);
