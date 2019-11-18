@@ -239,7 +239,7 @@ public class HPRtree
     if (items.size() <= nodeCapacity) return;
 
     sortItems();
-    dumpItems(items);
+    //dumpItems(items);
     
     layerStartIndex = computeLayerIndices(items.size(), nodeCapacity);
     // allocate storage
