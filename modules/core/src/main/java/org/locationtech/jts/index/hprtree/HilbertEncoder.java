@@ -23,7 +23,7 @@ public class HilbertEncoder {
 
   public HilbertEncoder(int level, Envelope extent) {
     this.level = level;
-    int hside = (int) Math.pow(2, level);
+    int hside = (int) Math.pow(2, level) - 1;
     
     minx = extent.getMinX();
     double extentX = extent.getWidth();
