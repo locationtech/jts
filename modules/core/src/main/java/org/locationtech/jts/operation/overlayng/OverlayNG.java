@@ -295,13 +295,15 @@ public class OverlayNG
       return createEmptyResult();
     }
 
-    /*
     if (inputGeom.isAllPoints()) {
       return OverlayPoints.overlay(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), pm);
     }
-    */
     
     computeEdgeOverlay();
+    
+    /**
+     * Output graph edges instead of final result if requested
+     */
     if (outputEdges != null) return outputEdges;
     
     if (resultPolyList.size() == 0 && resultLineList.size() == 0 && resultPointList.size() == 0)

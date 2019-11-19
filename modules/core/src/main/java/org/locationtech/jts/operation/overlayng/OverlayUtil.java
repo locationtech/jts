@@ -60,6 +60,16 @@ class OverlayUtil {
     return clipEnv;
   }
 
+  /**
+   * Tests if the result can be determined to be empty
+   * based on simple properties of the input geometries
+   * (such as whether one or both are empty, 
+   * or their envelopes are disjoint).
+   * 
+   * @param opCode the overlay operation
+   * @param inputGeom the input geometries
+   * @return true if the overlay result is determined to be empty
+   */
   static boolean isEmptyResult(int opCode, InputGeometry inputGeom) {
     switch (opCode) {
     case OverlayNG.INTERSECTION:
