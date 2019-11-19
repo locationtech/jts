@@ -55,6 +55,10 @@ class InputGeometry {
   public boolean isLine(int geomIndex) {
     return geom[geomIndex].getDimension() == 1;
   }
+
+  public boolean isAllPoints() {
+    return getDimension(0) == 0 && getDimension(1) == 0;
+  }
   
   /**
    * Tests if an input geometry has edges.
@@ -127,5 +131,6 @@ class InputGeometry {
   public void setCollapsed(int geomIndex, boolean isGeomCollapsed) {
     isCollapsed[geomIndex] = isGeomCollapsed;
   }
+
 
 }

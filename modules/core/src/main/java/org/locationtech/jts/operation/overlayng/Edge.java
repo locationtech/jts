@@ -11,10 +11,15 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.topology.Position;
 import org.locationtech.jts.util.Debug;
 
@@ -27,6 +32,21 @@ import org.locationtech.jts.util.Debug;
  *
  */
 class Edge {
+  
+  public static List<Edge> createEdges(Collection<SegmentString> segStrings) {
+    List<Edge> edges = new ArrayList<Edge>();
+    for (SegmentString ss : segStrings) {
+      Coordinate[] pts = ss.getCoordinates();
+      
+      // don't create edges from collapsed lines
+      // TODO: perhaps convert these to points to be included in overlay?
+      if ( isCollapsed(pts) ) continue;
+      
+      EdgeInfo info = (EdgeInfo) ss.getData();
+      edges.add(new Edge(ss.getCoordinates(), info));
+    }
+    return edges;
+  }
   
   /**
    * Tests if the given point sequence
@@ -302,7 +322,7 @@ class Edge {
   public String toLineString() {
     return WKTWriter.toLineString(pts);
   }
-  
+
   private static String toStringPts(Coordinate[] pts) {
     Coordinate orig = pts[0];
     Coordinate dest = pts[pts.length - 1];

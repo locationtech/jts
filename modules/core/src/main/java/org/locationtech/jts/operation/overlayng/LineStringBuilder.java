@@ -66,8 +66,8 @@ class LineStringBuilder {
     this.resultAreaIndex = resultAreaIndex(opCode);
     this.hasResultArea = hasResultArea;
     
-    resultDimension = OverlayNG.resultDimension(opCode, 
-        inputGeom.getGeometry(0), inputGeom.getGeometry(0));
+    resultDimension = OverlayUtil.resultDimension(opCode, 
+        inputGeom.getDimension(0), inputGeom.getDimension(0));
   }
 
   public List<LineString> getLines() {

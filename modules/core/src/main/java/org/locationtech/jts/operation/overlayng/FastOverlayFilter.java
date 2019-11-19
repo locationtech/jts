@@ -44,7 +44,9 @@ public class FastOverlayFilter {
   }
 
   private Geometry createEmpty(Geometry geom) {
-    return OverlayNG.createEmptyResult(OverlayNG.INTERSECTION, geom, geom, geom.getFactory());
+    int dim = geom.getDimension();
+    int resultDim = OverlayUtil.resultDimension(OverlayNG.INTERSECTION, dim, dim);
+    return OverlayUtil.createEmptyResult(resultDim, geom.getFactory());
   }
 
   private Geometry intersectionRectangle(Geometry geom) {

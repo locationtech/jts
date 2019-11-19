@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -29,7 +28,6 @@ import org.locationtech.jts.geomgraph.Label;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.overlay.OverlayOp;
-import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.Debug;
 
 /**
@@ -211,7 +209,7 @@ public class OverlayNG
    * @see CoverageUnion
    * @see UnaryUnionNG
    */
-  public static Geometry union(Geometry geom, PrecisionModel pm)
+  static Geometry union(Geometry geom, PrecisionModel pm)
   {    
     Point emptyPoint = geom.getFactory().createPoint();
     OverlayNG ov = new OverlayNG(geom, emptyPoint, pm, UNION);
@@ -219,21 +217,21 @@ public class OverlayNG
     return geomOv;
   }
 
-  private static final int SAFE_ENV_EXPAND_FACTOR = 3;
-
   private int opCode;
   private InputGeometry inputGeom;
   private GeometryFactory geomFact;
   private PrecisionModel pm;
-  private boolean isOutputEdges;
-  private boolean isOutputResultEdges;
-  private boolean isOutputNodedEdges;
-  private boolean isOptimized = true;
-  
-  // internal state
-  private OverlayGraph graph;
   private Noder noder;
-  private Geometry resultGeom;
+  private boolean isOptimized = true;
+  private boolean isOutputEdges = false;
+  private boolean isOutputResultEdges = false;
+  private boolean isOutputNodedEdges = false;
+
+  private List<Polygon> resultPolyList;
+  private List<LineString> resultLineList;
+  private List<Point> resultPointList;
+
+  private Geometry outputEdges;
 
   /**
    * Creates an overlay operation on the given geometries,
@@ -293,118 +291,48 @@ public class OverlayNG
   }
   
   public Geometry getResult() {
-    computeOverlay();
+    if (OverlayUtil.isEmptyResult(opCode, inputGeom)) {
+      return createEmptyResult();
+    }
+
+    /*
+    if (inputGeom.isAllPoints()) {
+      return OverlayPoints.overlay(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), pm);
+    }
+    */
     
+    computeEdgeOverlay();
+    if (outputEdges != null) return outputEdges;
+    
+    if (resultPolyList.size() == 0 && resultLineList.size() == 0 && resultPointList.size() == 0)
+      return createEmptyResult();
+    
+    Geometry resultGeom = OverlayUtil.buildResultGeometry(opCode, resultPolyList, resultLineList, resultPointList, geomFact);
     return resultGeom;
   }
   
-  private void computeOverlay() {
-    if (isEmptyResult()) {
-      resultGeom = createEmptyResult();
-      return;
-    }
+  private void computeEdgeOverlay() {
     
-    //--- Noding phase
-    List<Edge> edges = nodeAndMerge();
-    
-    //--- Topology building phase
-    graph = new OverlayGraph( edges );
+    OverlayGraph graph = buildGraph();
     
     if (isOutputNodedEdges) {
-      resultGeom = toLines(graph, geomFact);
+      outputEdges = OverlayUtil.toLines(graph, isOutputEdges, geomFact);
       return;
     }
 
-    OverlayLabeller labeller = new OverlayLabeller(graph, inputGeom);
-    labeller.computeLabelling();
-    labeller.markResultAreaEdges(opCode);
-    labeller.unmarkDuplicateEdgesFromResultArea();
+    labelGraph(graph);
     
     if (isOutputEdges || isOutputResultEdges) {
-      resultGeom = toLines(graph, geomFact);
+      outputEdges =  OverlayUtil.toLines(graph, isOutputEdges, geomFact);
       return;
     }
     
-    resultGeom = createResult(opCode);
+    extractResult(opCode, graph);
     // only used for debugging
     //checkSanity(resultGeom);
   }
 
-  private boolean isEmptyResult() {
-    switch (opCode) {
-    case INTERSECTION:
-      if ( inputGeom.isEmpty(0) || inputGeom.isEmpty(1) )
-        return true;
-      if (inputGeom.isDisjointEnv()) 
-        return true;
-    case DIFFERENCE:
-      if ( inputGeom.isEmpty(0) )     
-        return true;
-    }
-    return false;
-  }
-
-  private Geometry createEmptyResult() {
-    return createEmptyResult(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), geomFact);
-  }
-
-  private Envelope clippingEnvelope(InputGeometry inputGeom, int opCode) {   
-    Envelope clipEnv = null;
-    switch (opCode) {
-    case INTERSECTION:
-      Envelope envA = safeOverlapEnv( inputGeom.getGeometry(0).getEnvelopeInternal() );
-      Envelope envB = safeOverlapEnv( inputGeom.getGeometry(1).getEnvelopeInternal() );
-      clipEnv = envA.intersection(envB);   
-      break;
-    case DIFFERENCE:
-      clipEnv = safeOverlapEnv( inputGeom.getGeometry(0).getEnvelopeInternal() );
-      break;
-    }
-    // a conservative limit - seems to be ok to use more aggressive one tho
-    //Envelope limitEnv = limitRectangle();
-    return clipEnv;
-  }
-
-  private Envelope safeOverlapEnv(Envelope env) {
-    double envExpandDist = expandDistance(env, pm);
-    Envelope safeEnv = env.copy();
-    safeEnv.expandBy(envExpandDist);
-    return safeEnv;
-  }
-
-  private static double expandDistance(Envelope env, PrecisionModel pm) {
-    double envExpandDist;
-    if (pm.isFloating()) {
-      // if PM is FLOAT then there is no scale factor, so add 10%
-      double minSize = Math.min(env.getHeight(), env.getWidth());
-      envExpandDist = 0.1 * minSize;
-    }
-    else {
-      // if PM is fixed, add a small multiple of the grid size
-      double gridSize = 1.0 / pm.getScale();
-      envExpandDist = SAFE_ENV_EXPAND_FACTOR * gridSize;
-    }
-    return envExpandDist;
-  }
-
-  private void checkSanity(Geometry result) {
-    // for Union, area should be greater than largest of inputs
-    double areaA = inputGeom.getGeometry(0).getArea();
-    double areaB = inputGeom.getGeometry(1).getArea();
-    double area = result.getArea();
-    
-    // if result is empty probably had a complete collapse, so can't use this check
-    if (area == 0) return;
-    
-    if (opCode == UNION) {
-      double minAreaLimit = 0.5 * Math.max(areaA, areaB);
-      if (area < minAreaLimit ) {
-        throw new TopologyException("Result area sanity issue");
-      }
-    }
-  }
-
-  private List<Edge> nodeAndMerge() {
+  private OverlayGraph buildGraph() {
     /**
      * Node the edges, using whatever noder is being used
      */
@@ -413,7 +341,7 @@ public class OverlayNG
     if (noder != null) ovNoder.setNoder(noder);
     
     if ( isOptimized ) {
-      Envelope clipEnv = clippingEnvelope(inputGeom, opCode);
+      Envelope clipEnv = OverlayUtil.clippingEnvelope(opCode, inputGeom, pm);
       if (clipEnv != null)
         ovNoder.setClipEnvelope( clipEnv );
     }
@@ -427,7 +355,7 @@ public class OverlayNG
      * Labels will be combined.
      */
     // nodedSegStrings are no longer needed, and will be GCed
-    List<Edge> edges = createEdges(nodedLines);
+    List<Edge> edges = Edge.createEdges(nodedLines);
     List<Edge> mergedEdges = EdgeMerger.merge(edges);
     
     /**
@@ -438,147 +366,37 @@ public class OverlayNG
     inputGeom.setCollapsed(0, ! ovNoder.hasEdgesFor(0) );
     inputGeom.setCollapsed(1, ! ovNoder.hasEdgesFor(0) );
     
-    return mergedEdges;
+    return new OverlayGraph( mergedEdges );
   }
 
-  static List<Edge> createEdges(Collection<SegmentString> segStrings) {
-    List<Edge> edges = new ArrayList<Edge>();
-    for (SegmentString ss : segStrings) {
-      Coordinate[] pts = ss.getCoordinates();
-      
-      // don't create edges from collapsed lines
-      // TODO: perhaps convert these to points to be included in overlay?
-      if ( Edge.isCollapsed(pts) ) continue;
-      
-      EdgeInfo info = (EdgeInfo) ss.getData();
-      edges.add(new Edge(ss.getCoordinates(), info));
-    }
-    return edges;
+  private void labelGraph(OverlayGraph graph) {
+    OverlayLabeller labeller = new OverlayLabeller(graph, inputGeom);
+    labeller.computeLabelling();
+    labeller.markResultAreaEdges(opCode);
+    labeller.unmarkDuplicateEdgesFromResultArea();
   }
 
-  private Geometry toLines(OverlayGraph graph, GeometryFactory geomFact) {
-    List<LineString> lines = new ArrayList<LineString>();
-    for (OverlayEdge edge : graph.getEdges()) {
-      boolean includeEdge = isOutputEdges || edge.isInResultArea();
-      if (! includeEdge) continue;
-      //Coordinate[] pts = getCoords(nss);
-      Coordinate[] pts = edge.getCoordinatesOriented();
-      LineString line = geomFact.createLineString(pts);
-      line.setUserData(labelForResult(edge) );
-      lines.add(line);
-    }
-    return geomFact.buildGeometry(lines);
-  }
-
-  private static String labelForResult(OverlayEdge edge) {
-    return edge.getLabel().toString(edge.isForward())
-        + (edge.isInResultArea() ? " Res" : "");
-  }
-
-  private Geometry createResult(int opCode) {
+  private void extractResult(int opCode, OverlayGraph graph) {
     
     //--- Build polygons
     List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
     PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
-    List<Polygon> resultPolyList = polyBuilder.getPolygons();
+    resultPolyList = polyBuilder.getPolygons();
     boolean hasResultArea = resultPolyList.size() > 0;
     
     //--- Build lines
     LineStringBuilder lineBuilder = new LineStringBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
-    List<LineString> resultLineList = lineBuilder.getLines();
+    resultLineList = lineBuilder.getLines();
 
     //--- Build points
-    List<Point> resultPointList = new ArrayList<Point>();
+    resultPointList = new ArrayList<Point>();
     
-    Geometry resultGeom = buildResultGeometry(opCode, resultPolyList, resultLineList, resultPointList);
-    return resultGeom;
   }
 
-  private Geometry buildResultGeometry(int opcode, List<Polygon> resultPolyList, List<LineString> resultLineList, List<Point> resultPointList) {
-    List<Geometry> geomList = new ArrayList<Geometry>();
-    
-    // TODO: return Multi geoms for all output dimensions
-    
-    // element geometries of the result are always in the order P,L,A
-    geomList.addAll(resultPolyList);
-    geomList.addAll(resultLineList);
-    geomList.addAll(resultPointList);
-
-    if ( geomList.isEmpty() )
-      return createEmptyResult();
-
-    // build the most specific geometry possible
-    return geomFact.buildGeometry(geomList);
-  }
-
-  /**
-   * Creates an empty result geometry of the appropriate dimension,
-   * based on the given overlay operation and the dimensions of the inputs.
-   * The created geometry is always an atomic geometry, 
-   * not a collection.
-   * <p>
-   * The empty result is constructed using the following rules:
-   * <ul>
-   * <li>{@link #INTERSECTION} - result has the dimension of the lowest input dimension
-   * <li>{@link #UNION} - result has the dimension of the highest input dimension
-   * <li>{@link #DIFFERENCE} - result has the dimension of the left-hand input
-   * <li>{@link #SYMDIFFERENCE} - result has the dimension of the highest input dimension
-   * (since the Symmetric Difference is the Union of the Differences).
-   * </ul>
-   * 
-   * @param overlayOpCode the code for the overlay operation being performed
-   * @param a an input geometry
-   * @param b an input geometry
-   * @param geomFact the geometry factory being used for the operation
-   * @return an empty atomic geometry of the appropriate dimension
-   */
-  static Geometry createEmptyResult(int overlayOpCode, Geometry a, Geometry b, GeometryFactory geomFact)
-  {
-    Geometry result = null;
-    switch (resultDimension(overlayOpCode, a, b)) {
-    case 0:
-      result =  geomFact.createPoint();
-      break;
-    case 1:
-      result =  geomFact.createLineString();
-      break;
-    case 2:
-      result =  geomFact.createPolygon();
-      break;
-    default:
-      Assert.shouldNeverReachHere("Unable to determine overlay result geometry dimension");
-    }
-    return result;
-  }
-  
-  public static int resultDimension(int opCode, Geometry g0, Geometry g1)
-  {
-    int dim0 = g0.getDimension();
-    int dim1 = g1.getDimension();
-    
-    int resultDimension = -1;
-    switch (opCode) {
-    case INTERSECTION: 
-      resultDimension = Math.min(dim0, dim1);
-      break;
-    case UNION: 
-      resultDimension = Math.max(dim0, dim1);
-      break;
-    case DIFFERENCE: 
-      resultDimension = dim0;
-      break;
-    case SYMDIFFERENCE: 
-      /**
-       * This result is chosen because
-       * <pre>
-       * SymDiff = Union( Diff(A, B), Diff(B, A) )
-       * </pre>
-       * and Union has the dimension of the highest-dimension argument.
-       */
-      resultDimension = Math.max(dim0, dim1);
-      break;
-    }
-    return resultDimension;
+  private Geometry createEmptyResult() {
+    return OverlayUtil.createEmptyResult(
+        OverlayUtil.resultDimension(opCode, inputGeom.getDimension(0), inputGeom.getDimension(1))
+        , geomFact);
   }
  
 }
