@@ -18,6 +18,7 @@ import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryMapper;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.geom.util.GeometryMapper.MapOp;
@@ -198,6 +199,22 @@ public class BufferFunctions {
       double startDist,
       @Metadata(title="End distance")
       double endDist) {
+    if (line instanceof Polygon) {
+      line = ((Polygon) line).getExteriorRing();
+    }
     return VariableBuffer.buffer(line, startDist, endDist);
+  }
+  
+  @Metadata(description="Buffer a line by a distance varying along the line, with distances for start/end and the middle")
+  public static Geometry variableBufferMid(Geometry line,
+      @Metadata(title="Start distance")
+      double startDist,
+      @Metadata(title="Middle distance")
+      double midDist)  
+  {
+    if (line instanceof Polygon) {
+      line = ((Polygon) line).getExteriorRing();
+    }
+    return VariableBuffer.buffer(line, startDist, midDist, startDist);
   }
 }
