@@ -130,7 +130,6 @@ public class VariableBuffer {
     List<Geometry> parts = new ArrayList<Geometry>();
 
     Coordinate[] pts = line.getCoordinates();
-    int npts = pts.length;
     // construct segment buffers
     for (int i = 1; i < pts.length; i++) {
       double dist0 = distance[i - 1];
