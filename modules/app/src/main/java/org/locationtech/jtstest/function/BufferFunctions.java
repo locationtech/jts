@@ -27,6 +27,7 @@ import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
 import org.locationtech.jts.operation.buffer.OffsetCurveSetBuilder;
+import org.locationtech.jts.operation.buffer.VariableBuffer;
 import org.locationtech.jts.operation.buffer.validate.BufferResultValidator;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
@@ -189,5 +190,14 @@ public class BufferFunctions {
 
   public static Geometry bufferAndInverse(Geometry g, double distance) {
     return g.buffer(distance).buffer(-distance);
+  }
+  
+  @Metadata(description="Buffer a line by a distance varying along the line")
+  public static Geometry variableBuffer(Geometry line,
+      @Metadata(title="Start distance")
+      double startDist,
+      @Metadata(title="End distance")
+      double endDist) {
+    return VariableBuffer.buffer(line, startDist, endDist);
   }
 }

@@ -109,6 +109,19 @@ public class LineSegmentTest extends TestCase {
   	return true;
   }
   
+  public void testReflect() {
+    checkReflect(0, 0, 10, 10, 1,2, 2 ,1 );
+    checkReflect(0, 1, 10, 1, 1, 2, 1, 0 );
+  }
+  
+  void checkReflect(double x0, double y0, double x1, double y1, double x, double y, 
+      double expectedX, double expectedY)
+  {
+    LineSegment seg = new LineSegment(x0, y0, x1, y1);
+    Coordinate p = seg.reflect(new Coordinate(x, y));
+    assertTrue(equalsTolerance(new Coordinate(expectedX, expectedY), p, 0.000001));
+  }
+  
   public void testOrientationIndexCoordinate()
   {
   	LineSegment seg = new LineSegment(0, 0, 10, 10);
