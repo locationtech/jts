@@ -444,6 +444,32 @@ public class LineSegment
 
     return new LineSegment(newp0, newp1);
   }
+  
+  /**
+   * Computes the reflection of a point in the line defined
+   * by this line segment.
+   * 
+   * @param p the point to reflect
+   * @return the reflected point
+   */
+  public Coordinate reflect(Coordinate p) {
+    // general line equation
+    double A = p1.getY() - p0.getY();
+    double B = p0.getX() - p1.getX();
+    double C = p0.getY() * (p1.getX() - p0.getX()) - p0.getX()*( p1.getY() - p0.getY() );
+    
+    // compute reflected point
+    double A2plusB2 = A*A + B*B;
+    double A2subB2 = A*A - B*B;
+    
+    double x = p.getX();
+    double y = p.getY();
+    double rx = ( -A2subB2*x - 2*A*B*y - 2*A*C ) / A2plusB2;
+    double ry = ( A2subB2*y - 2*A*B*x - 2*B*C ) / A2plusB2;
+    
+    return new Coordinate(rx, ry);
+  }
+  
   /**
    * Computes the closest point on this line segment to another point.
    * @param p the point to find the closest point to

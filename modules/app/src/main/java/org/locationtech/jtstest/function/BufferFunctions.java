@@ -193,7 +193,7 @@ public class BufferFunctions {
   }
   
   @Metadata(description="Buffer a line by a distance varying along the line")
-  public static Geometry bufferVariable(Geometry line,
+  public static Geometry variableBuffer(Geometry line,
       @Metadata(title="Start distance")
       double startDist,
       @Metadata(title="End distance")

@@ -95,4 +95,15 @@ public class LineSegmentFunctions
     return g1.getFactory().createPoint(intPt);
   }
 
+  public static Geometry reflectPoint(Geometry g1, Geometry g2)
+  {
+    Coordinate[] line = g1.getCoordinates();
+    Coordinate pt = g2.getCoordinate();
+    
+    LineSegment seg = new LineSegment(line[0], line[1]);
+    Coordinate reflectPt = seg.reflect(pt);
+    
+    return g1.getFactory().createPoint(reflectPt);
+  }
+
 }

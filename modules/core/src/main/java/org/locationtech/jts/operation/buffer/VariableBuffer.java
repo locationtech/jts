@@ -23,7 +23,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.WKTWriter;
 
 /**
  * Creates a buffer polygon with a varying buffer distance 
@@ -122,6 +121,11 @@ public class VariableBuffer {
     }
   }
 
+  /**
+   * Computes the buffer polygon.
+   * 
+   * @return a buffer polygon
+   */
   public Geometry getResult() {
     List<Geometry> parts = new ArrayList<Geometry>();
 
@@ -133,7 +137,8 @@ public class VariableBuffer {
       double dist1 = distance[i];
       if (dist0 > 0 || dist1 > 0) {
         Polygon poly = segmentBuffer(pts[i - 1], pts[i], dist0, dist1);
-        parts.add(poly);
+        if (poly != null)
+          parts.add(poly);
       }
     }
 
@@ -148,18 +153,50 @@ public class VariableBuffer {
     return buffer;
   }
 
+  /**
+   * Computes a variable buffer polygon for a single segment,
+   * with the given endpoints and buffer distances.
+   * The individual segment buffers are unioned
+   * to form the final buffer.
+   * 
+   * @param p0 the segment start point
+   * @param p1 the segment end point
+   * @param dist0 the buffer distance at the start point
+   * @param dist1 the buffer distance at the end point
+   * @return the segment buffer.
+   */
   private Polygon segmentBuffer(Coordinate p0, Coordinate p1,
       double dist0, double dist1) {
-    CoordinateList coords = new CoordinateList();
-    
+    /**
+     * Compute for increasing distance only, so flip if needed
+     */
+    if (dist0 > dist1) {
+      return segmentBuffer(p1, p0, dist1, dist0);
+    }
+        
     // forward tangent line
-    Coordinate t0 = new Coordinate();
-    Coordinate t1 = new Coordinate();
-    outerTangent(p0, dist0, p1, dist1, t0, t1);
-    // reverse tangent line on other side of segment
-    Coordinate tr0 = reflect(t0, p0, p1);
-    Coordinate tr1 = reflect(t1, p0, p1);
+    LineSegment tangent = outerTangent(p0, dist0, p1, dist1);
     
+    // if tangent is null then compute a buffer for largest circle
+    if (tangent == null) {
+      Coordinate center = p0;
+      double dist = dist0;
+      if (dist1 > dist0) {
+        center = p1;
+        dist = dist1;
+      }
+      return circle(center, dist);
+    }
+    
+    Coordinate t0 = tangent.getCoordinate(0);
+    Coordinate t1 = tangent.getCoordinate(1);
+
+    // reverse tangent line on other side of segment
+    LineSegment seg = new LineSegment(p0, p1);
+    Coordinate tr0 = seg.reflect(t0);
+    Coordinate tr1 = seg.reflect(t1);
+    
+    CoordinateList coords = new CoordinateList();
     coords.add(t0);
     coords.add(t1);
 
@@ -180,39 +217,82 @@ public class VariableBuffer {
     return polygon;
   }
   
-  private void addCap(Coordinate p, double r, Coordinate t1, Coordinate t2, CoordinateList coords) {
-    double angCap = angleOfCap(p, t1, t2);  
-    double filletAngInc = Math.PI / 2 / quadrantSegs;
-    int npts = (int) (angCap / filletAngInc) - 1;
-    double angInc = angCap / npts;
-    
-    double angStart = Angle.angle(p,  t1);
-    for (int i = 1; i < npts; i++) {
-      // use negative increment to create points CW
-      double ang = angStart - i * angInc;
-      double x = p.getX() + r * Math.cos(ang);
-      double y = p.getY() + r * Math.sin(ang);
-      coords.add( new Coordinate(x,y) );
+  /**
+   * Returns a circular polygon.
+   * 
+   * @param center the circle center point
+   * @param radius the radius 
+   * @return a polygon, or null if the radius is 0
+   */
+  private Polygon circle(Coordinate center, double radius) {
+    if (radius <= 0) 
+      return null;
+    int nPts = 4 * quadrantSegs; 
+    Coordinate[] pts = new Coordinate[nPts + 1];
+    double angInc = Math.PI / 2 / quadrantSegs;
+    for (int i = 0; i < nPts; i++) {
+      pts[i] = projectPolar(center, radius, i * angInc);
     }
+    pts[pts.length - 1] = pts[0].copy();
+    return geomFactory.createPolygon(pts);
   }
 
   /**
-   * Computes the angle which subtends the 
-   * cap based at p and running CCW from tangent point t1
-   * to tangent point t2.
+   * Adds a semi-circular cap CCW around the point p.
    * 
-   * @param p the base point of the cap
-   * @param t1 the first tangent point
-   * @param t2 the second tangent point
-   * @return the angle subtended by the cap
+   * @param p the centre point of the cap
+   * @param r the cap radius
+   * @param t1 the starting point of the cap
+   * @param t2 the ending point of the cap
+   * @param coords the coordinate list to add to
    */
-  private double angleOfCap(Coordinate p, Coordinate t1, Coordinate t2) {
-    double ang = Angle.angleBetweenOriented(t1, p, t2);
-    // if ang is CCW, use other circle angle
-    if (ang > 0) return 2 * Math.PI - ang;
+  private void addCap(Coordinate p, double r, Coordinate t1, Coordinate t2, CoordinateList coords) {
     
-    // ang is CW (negative)
-    return -ang;
+    double angStart = Angle.angle(p, t1);
+    double angEnd = Angle.angle(p, t2);
+    if (angStart < angEnd)
+      angStart += 2 * Math.PI;
+    
+    int indexStart = capAngleIndex(angStart);
+    int indexEnd = capAngleIndex(angEnd);
+    
+    for (int i = indexStart; i > indexEnd; i--) {
+      // use negative increment to create points CW
+      double ang = capAngle(i);
+      coords.add( projectPolar(p, r, ang) );
+    }
+  }  
+  
+  /**
+   * Computes the angle for the given cap point index.
+   * 
+   * @param index the fillet angle index
+   * @return
+   */
+  private double capAngle(int index) {
+    double capSegAng = Math.PI / 2 / quadrantSegs;
+    return index * capSegAng;
+  }
+
+  /**
+   * Computes the canonical cap point index for a given angle.
+   * The angle is rounded down to the next lower
+   * index.
+   * <p>
+   * In order to reduce the number of points created by overlapping end caps,
+   * cap points are generated at the same locations around a circle.
+   * The index is the index of the points around the circle, 
+   * with 0 being the point at (1,0).
+   * The total number of points around the circle is 
+   * <code>4 * quadrantSegs</code>.
+   *  
+   * @param ang the angle 
+   * @return the index for the angle.
+   */
+  private int capAngleIndex(double ang) {
+    double capSegAng = Math.PI / 2 / quadrantSegs;
+    int index = (int) (ang / capSegAng);
+    return index;
   }
 
   /**
@@ -225,13 +305,15 @@ public class VariableBuffer {
    * @param r1 the radius of circle 1
    * @param c2 the centre of circle 2
    * @param r2 the center of circle 2
-   * @param p1 the computed tangent circumference point on circle 1
-   * @param p2 the computed tangent circumference point on circle 2
+   * @return the outer tangent line segment, or null if none exists
    */
-  private static void outerTangent(Coordinate c1, double r1, Coordinate c2, double r2, Coordinate p1, Coordinate p2) {
+  private static LineSegment outerTangent(Coordinate c1, double r1, Coordinate c2, double r2) {
+    /**
+     * If distances are inverted then flip to compute and flip result back.
+     */
     if (r1 > r2) {
-      outerTangent(c2, r2, c1, r1, p2, p1);
-      return;
+      LineSegment seg = outerTangent(c2, r2, c1, r1);
+      return new LineSegment(seg.p1, seg.p0);
     }
     double x1 = c1.getX();
     double y1 = c1.getY();
@@ -244,6 +326,9 @@ public class VariableBuffer {
     double d = Math.sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
     
     double a2 = Math.asin(dr / d);
+    // check if no tangent exists
+    if (Double.isNaN(a2))
+      return null;
     
     double a1 = a3 - a2;
     
@@ -252,37 +337,29 @@ public class VariableBuffer {
     double y3 = y1 + r1 * Math.sin(aa);
     double x4 = x2 + r2 * Math.cos(aa);
     double y4 = y2 + r2 * Math.sin(aa);
-    p1.setX(x3);
-    p1.setY(y3);
-    p2.setX(x4);
-    p2.setY(y4);
-  }
-  
-  /**
-   * Computes the reflection of a point in a line defined
-   * by two points.
-   * 
-   * @param p the point to reflect
-   * @param p1 a point on the line of reflection
-   * @param p2 a point on the line of reflection
-   * @return the reflected point
-   */
-  private static Coordinate reflect(Coordinate p, Coordinate p1, Coordinate p2) {
-    // general line equation
-    double A = p2.getY() - p1.getY();
-    double B = p1.getX() - p2.getX();
-    double C = p1.getY() * (p2.getX() - p1.getX()) - p1.getX()*( p2.getY() - p1.getY() );
     
-    // compute reflected point
-    double A2plusB2 = A*A + B*B;
-    double A2subB2 = A*A - B*B;
-    
-    double x = p.getX();
-    double y = p.getY();
-    double rx = ( -A2subB2*x - 2*A*B*y - 2*A*C ) / A2plusB2;
-    double ry = ( A2subB2*y - 2*A*B*x - 2*B*C ) / A2plusB2;
-    
-    return new Coordinate(rx, ry);
+    return new LineSegment(x3, y3, x4, y4);
   }
 
+
+  private static Coordinate projectPolar(Coordinate p, double r, double ang) {
+    double x = p.getX() + r * snapTrig(Math.cos(ang));
+    double y = p.getY() + r * snapTrig(Math.sin(ang));
+    return new Coordinate(x, y);
+  }
+  
+  private static final double SNAP_TRIG_TOL = 1e-6;
+  
+  /**
+   * Snap trig values to integer values for better consistency.
+   * 
+   * @param x the result of a trigonometric function
+   * @return x snapped to the integer interval
+   */
+  private static double snapTrig(double x) {
+    if (x > (1 - SNAP_TRIG_TOL)) return 1;
+    if (x < (-1 + SNAP_TRIG_TOL)) return -1;
+    if (Math.abs(x) < SNAP_TRIG_TOL) return 0;
+    return x;
+  }
 }
