@@ -29,7 +29,7 @@ import org.locationtech.jts.geom.Polygon;
  * at each vertex along a line.
  * <p>
  * Only single lines are supported as input, since buffer widths 
- * generally need to be specified individually for each line.
+ * are typically specified individually for each line.
  * 
  * @author Martin Davis
  *
@@ -43,12 +43,35 @@ public class VariableBuffer {
    * @param line the line to buffer
    * @param startDistance the buffer width at the start of the line
    * @param endDistance the buffer width at the end of the line
-   * @return the variable-width buffer polygon
+   * @return the variable-distance buffer polygon
    */
   public static Geometry buffer(Geometry line, double startDistance,
       double endDistance) {
-    double[] distance = VariableBuffer.interpolate((LineString) line,
+    double[] distance = interpolate((LineString) line,
         startDistance, endDistance);
+    VariableBuffer vb = new VariableBuffer(line, distance);
+    return vb.getResult();
+  }
+
+  /**
+   * Creates a buffer polygon along a line with the buffer distance interpolated
+   * between a start distance, a middle distance and an end distance.
+   * The middle distance is attained at
+   * the vertex at or just past the half-length of the line.
+   * For smooth buffering of a {@link LinearRing} (or the rings of a {@link Polygon})
+   * the start distance and end distance should be equal.
+   *  
+   * @param line the line to buffer
+   * @param startDistance the buffer width at the start of the line
+   * @param midDistance the buffer width at the middle vertex of the line
+   * @param endDistance the buffer width at the end of the line
+   * @return the variable-distance buffer polygon
+   */
+  public static Geometry buffer(Geometry line, double startDistance,
+      double midDistance,
+      double endDistance) {
+    double[] distance = interpolate((LineString) line,
+        startDistance, midDistance, endDistance);
     VariableBuffer vb = new VariableBuffer(line, distance);
     return vb.getResult();
   }
@@ -59,7 +82,7 @@ public class VariableBuffer {
    * 
    * @param line the line to buffer
    * @param distance the buffer distance for each vertex of the line
-   * @return the buffer polygon
+   * @return the variable-distance buffer polygon
    */
   public static Geometry buffer(Geometry line, double[] distance) {
     VariableBuffer vb = new VariableBuffer(line, distance);
@@ -90,7 +113,7 @@ public class VariableBuffer {
     double totalLen = line.getLength();
     Coordinate[] pts = line.getCoordinates();
     double currLen = 0;
-    for (int i = 1; i < values.length; i++) {
+    for (int i = 1; i < values.length - 1; i++) {
       double segLen = pts[i].distance(pts[i - 1]);
       currLen += segLen;
       double lenFrac = currLen / totalLen;
@@ -100,6 +123,81 @@ public class VariableBuffer {
     return values;
   }
   
+  /**
+   * Computes a list of values for the points along a line by
+   * interpolating between values for the start, middle and end points.
+   * The interpolation is
+   * based on the distance of each point along the line
+   * relative to the total line length.
+   * The middle distance is attained at
+   * the vertex at or just past the half-length of the line.
+   * 
+   * @param line the line to interpolate along
+   * @param startValue the start value 
+   * @param midValue the start value 
+   * @param endValue the end value
+   * @return the array of interpolated values
+   */
+  private static double[] interpolate(LineString line, 
+      double startValue,
+      double midValue,
+      double endValue) 
+  {
+    startValue = Math.abs(startValue);
+    midValue = Math.abs(midValue);
+    endValue = Math.abs(endValue);
+    
+    double[] values = new double[line.getNumPoints()];
+    values[0] = startValue;
+    values[values.length - 1] = endValue;
+
+    Coordinate[] pts = line.getCoordinates();
+    double lineLen = line.getLength();
+    int midIndex = indexAtLength(pts, lineLen / 2 );
+    
+    double delMidStart = midValue - startValue;
+    double delEndMid = endValue - midValue;
+    
+    double lenSM = length(pts, 0, midIndex);
+    double currLen = 0;
+    for (int i = 1; i <= midIndex; i++) {
+      double segLen = pts[i].distance(pts[i - 1]);
+      currLen += segLen;
+      double lenFrac = currLen / lenSM;
+      double val = startValue + lenFrac * delMidStart;
+      values[i] = val;
+    }
+    
+    double lenME = length(pts, midIndex, pts.length - 1);
+    currLen = 0;
+    for (int i = midIndex + 1; i < values.length - 1; i++) {
+      double segLen = pts[i].distance(pts[i - 1]);
+      currLen += segLen;
+      double lenFrac = currLen / lenME;
+      double val = midValue + lenFrac * delEndMid;       
+      values[i] = val;
+    }
+    return values;
+  }
+  
+  private static int indexAtLength(Coordinate[] pts, double targetLen) {
+    double len  = 0;
+    for (int i = 1; i < pts.length; i++) {
+      len += pts[i].distance(pts[i-1]);
+      if (len > targetLen)
+        return i;
+    }
+    return pts.length - 1;
+  }
+
+  private static double length(Coordinate[] pts, int i1, int i2) {
+    double len = 0;
+    for (int i = i1 + 1; i <= i2; i++) {
+      len += pts[i].distance(pts[i-1]);
+    }
+    return len;
+  }
+
   private LineString line;
   private double[] distance;
   private GeometryFactory geomFactory;
