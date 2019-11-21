@@ -37,6 +37,7 @@ public class CommandController {
    
   private static void loadResult(String output) {
     MultiFormatReader reader = new MultiFormatReader(new GeometryFactory());
+    reader.setStrict(false);
     try {
       Geometry result = reader.read(output);
       

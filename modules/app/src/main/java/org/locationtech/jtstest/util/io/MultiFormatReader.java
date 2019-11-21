@@ -85,8 +85,7 @@ public class MultiFormatReader
   private static final int MAX_CHARS_TO_CHECK = 6;
 
   private GeometryFactory geomFactory;
-  private WKTReader wktReader;
-  private WKBReader wkbReader;
+  private boolean isStrict = true;
 
   public MultiFormatReader()
   {
@@ -96,10 +95,12 @@ public class MultiFormatReader
   public MultiFormatReader(GeometryFactory geomFactory)
   {
     this.geomFactory = geomFactory;
-    wktReader = new WKTReader(geomFactory);
-    wkbReader = new WKBReader(geomFactory);
   }
 
+  public void setStrict(boolean isStrict) {
+    this.isStrict = isStrict;
+  }
+  
   public Geometry read(String geomStr)
       throws ParseException, IOException
   {
@@ -113,7 +114,7 @@ public class MultiFormatReader
     if (isGeoJSON(trimStr))
       return readGeoJSON(trimStr);
       
-    return IOUtil.readWKTString(trimStr, geomFactory);
+    return IOUtil.readWKTString(trimStr, geomFactory, isStrict);
   }
   
   private Geometry readGeoJSON(String str)

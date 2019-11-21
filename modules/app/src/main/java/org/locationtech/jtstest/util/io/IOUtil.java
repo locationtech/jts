@@ -111,8 +111,16 @@ public class IOUtil
   public static Geometry readWKTString(String wkt, GeometryFactory geomFact)
   throws ParseException, IOException 
   {
+    return readWKTString(wkt, geomFact, true);
+  }
+  
+  public static Geometry readWKTString(String wkt, GeometryFactory geomFact, 
+      boolean isStrict)
+  throws ParseException, IOException 
+  {
     WKTReader reader = new WKTReader(geomFact);
     WKTFileReader fileReader = new WKTFileReader(new StringReader(wkt), reader);
+    fileReader.setStrictParsing(isStrict);
     List geomList = fileReader.read();
     
     if (geomList.size() == 1)

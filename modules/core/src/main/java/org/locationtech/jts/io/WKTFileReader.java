@@ -41,6 +41,7 @@ public class WKTFileReader
 	private int count = 0;
 	private int limit = -1;
 	private int offset = 0;
+  private boolean isStrictParsing = true;
 	
   /**
    * Creates a new <tt>WKTFileReader</tt> given the <tt>File</tt> to read from 
@@ -78,16 +79,28 @@ public class WKTFileReader
     this.wktReader = wktReader;
   }
   
-	/**
-	 * Sets the maximum number of geometries to read.
+  /**
+   * Sets the maximum number of geometries to read.
    * 
-	 * @param limit the maximum number of geometries to read
-	 */
-	public void setLimit(int limit)
-	{
-		this.limit = limit;
-	}
-	
+   * @param limit the maximum number of geometries to read
+   */
+  public void setLimit(int limit)
+  {
+    this.limit = limit;
+  }
+  
+  /**
+   * Allows ignoring WKT parse errors 
+   * after at least one geometry has been read,
+   * to return a partial result.
+   * 
+   * @param isLenient whether to ignore parse errors
+   */
+  public void setStrictParsing(boolean isStrict)
+  {
+    this.isStrictParsing = isStrict;
+  }
+  
 	/**
 	 * Sets the number of geometries to skip before storing.
    * 
@@ -127,18 +140,30 @@ public class WKTFileReader
 		}
 	}
 	
-	private List read(BufferedReader bufferedReader) throws IOException,
-			ParseException {
-		List geoms = new ArrayList();
-		while (! isAtEndOfFile(bufferedReader) && ! isAtLimit(geoms)) {
-			Geometry g = wktReader.read(bufferedReader);
-			if (count >= offset)
-				geoms.add(g);
-			count++;
-		}
-		return geoms;
-	}
-	
+  private List read(BufferedReader bufferedReader) 
+      throws IOException, ParseException {
+    List geoms = new ArrayList();
+    try {
+      read(bufferedReader, geoms);
+    }
+    catch (ParseException ex) {
+      // throw if strict or error is on first geometry
+      if (isStrictParsing || geoms.size() == 0)
+        throw ex;
+    }
+    return geoms;
+  }
+
+  private void read(BufferedReader bufferedReader, List geoms) 
+      throws IOException, ParseException {
+    while (!isAtEndOfFile(bufferedReader) && !isAtLimit(geoms)) {
+      Geometry g = wktReader.read(bufferedReader);
+      if ( count >= offset )
+        geoms.add(g);
+      count++;
+    }
+  }
+
 	private boolean isAtLimit(List geoms)
 	{
 		if (limit < 0) return false;
