@@ -29,7 +29,12 @@ public class CommandController {
     try {
       JTSTestBuilderController.frame().showResultWKTTab();
       output = CommandController.exec(cmd);
-      loadResult(output);
+      if (output == null) {
+        JTSTestBuilder.controller().clearResult();
+      }
+      else {
+        loadResult(output);
+      }
     } catch (Exception e) {
       showError(e);
     }
