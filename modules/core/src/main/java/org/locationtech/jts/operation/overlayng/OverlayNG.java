@@ -302,7 +302,7 @@ public class OverlayNG
     computeEdgeOverlay();
     
     /**
-     * Output graph edges instead of final result if requested
+     * If requested, output graph edges instead of final result 
      */
     if (outputEdges != null) return outputEdges;
     
