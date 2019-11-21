@@ -100,6 +100,7 @@ public class JTSTestBuilderFrame extends JFrame
   BorderLayout borderLayout3 = new BorderLayout();
   JPanel testPanel = new JPanel();
   WKTPanel wktPanel = new WKTPanel(this);
+  CommandPanel commandPanel = new CommandPanel();
   InspectorPanel inspectPanel = new InspectorPanel();
   TestListPanel testListPanel = new TestListPanel(this);
   //LayerListPanel layerListPanel = new LayerListPanel();
@@ -636,6 +637,7 @@ public class JTSTestBuilderFrame extends JFrame
     inputTabbedPane.add(wktPanel,  AppStrings.TAB_LABEL_INPUT);
     inputTabbedPane.add(resultWKTPanel, AppStrings.TAB_LABEL_RESULT);
     inputTabbedPane.add(resultValuePanel, AppStrings.TAB_LABEL_VALUE);
+    inputTabbedPane.add(commandPanel,  AppStrings.TAB_LABEL_COMMAND);
     inputTabbedPane.add(inspectPanel,  AppStrings.TAB_LABEL_INSPECT);
     inputTabbedPane.add(statsPanel, AppStrings.TAB_LABEL_STATS);
     inputTabbedPane.add(logPanel, AppStrings.TAB_LABEL_LOG);

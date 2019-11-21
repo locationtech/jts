@@ -12,8 +12,12 @@
 
 package org.locationtech.jtstest.testbuilder.controller;
 
+import java.io.IOException;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
@@ -34,6 +38,7 @@ import org.locationtech.jtstest.testbuilder.ui.tools.RectangleTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.StreamPolygonTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.Tool;
 import org.locationtech.jtstest.testbuilder.ui.tools.ZoomTool;
+import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 
 public class JTSTestBuilderController 
@@ -161,11 +166,16 @@ public class JTSTestBuilderController
   }
   public void clearResult()
   {
-    JTSTestBuilderFrame.instance().getResultWKTPanel().clearResult();
+    frame().getResultWKTPanel().clearResult();
     model().setResult(null);
     editPanel().updateView();
   }
-
+  public void setResult(Object result) {
+    model().setResult(result);
+    frame().getResultWKTPanel().setExecutedTime("");
+    frame().getResultWKTPanel().setResult(result);
+    geometryViewChanged();
+  }
   public void saveImageAsPNG() {
     JTSTestBuilderFrame.instance().actionSaveImageAsPNG();
   }
@@ -272,4 +282,20 @@ public class JTSTestBuilderController
     model().cases().deleteCase();
     frame().updateTestCases();
   }
+
+  /*
+  public void execCommand(String cmd) {
+    System.out.println(cmd);
+    String output = OSCommand.exec(cmd);
+    System.out.println(output);
+    
+    MultiFormatReader reader = new MultiFormatReader(new GeometryFactory());
+    try {
+      Geometry result = reader.read(output);
+      setResult(result);
+    } catch (ParseException | IOException e) {
+      e.printStackTrace();
+    }
+  }
+  */
 }
