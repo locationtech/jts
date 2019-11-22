@@ -23,12 +23,13 @@ import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 public class CommandController {
 
-  public static void execCommand(String cmd) {
+  public static void execCommand(String cmdIn) {
     //System.out.println(cmd);
     String output;
     try {
       JTSTestBuilderController.frame().showResultWKTTab();
-      output = CommandController.exec(cmd);
+      String cmd = expandCommand(cmdIn);
+      output = exec(cmd);
       if (output == null) {
         JTSTestBuilder.controller().clearResult();
       }
@@ -39,7 +40,33 @@ public class CommandController {
       showError(e);
     }
   }
-   
+  public static final String VAR_A = "$A";
+  public static final String VAR_A_WKT = "$A.wkt";
+  
+  private static String expandCommand(String cmdSrc) {
+    String cmdLine = removeNewline(cmdSrc);
+    
+    String cmd = cmdLine;
+    
+    if (cmdLine.contains(VAR_A)) {
+      cmd = cmd.replace(VAR_A, valueWKT(0));
+    }
+    if (cmdLine.contains(VAR_A_WKT)) {
+      cmd = cmd.replace(VAR_A_WKT, valueWKT(0));
+    }
+    return cmd;
+  }
+
+  private static String valueWKT(int i) {
+    Geometry geom = JTSTestBuilderController.model().getCurrentCase().getGeometry(i);
+    if (geom == null) return "";
+    return geom.toString();
+  }
+
+  private static String removeNewline(String s) {
+    return s.replace('\n', ' ');
+  }
+  
   private static void loadResult(String output) {
     MultiFormatReader reader = new MultiFormatReader(new GeometryFactory());
     reader.setStrict(false);
@@ -58,44 +85,61 @@ public class CommandController {
     JTSTestBuilder.controller().setResult(e);
   }
   
+  /**
+   * Executes a command and returns the contents of stdout as a string.
+   * The command should be a single line, otherwise things seem to hang.
+   * 
+   * @param cmd command to execute (should be a single line)
+   * @return text of stdout
+   * @throws IOException
+   * @throws InterruptedException
+   */
   public static String exec(String cmd) throws IOException, InterruptedException {
+    // ensure cmd is single line (seems to hang otherwise
+    
     boolean isWindows = System.getProperty("os.name")
         .toLowerCase().startsWith("windows");
+    // -- Linux --
+    // Run a shell command
+    // Process process = Runtime.getRuntime().exec("ls /home/foo/");
+    // Run a shell script
+    // Process process = Runtime.getRuntime().exec("path/to/hello.sh");
+
+    // -- Windows --
+    // Run a command
+    //Process process = Runtime.getRuntime().exec("cmd /c dir C:\\Users\\foo");
     
-    String osShellPrefix = isWindows ? "cmd /c" : "";
-    String osCmd = osShellPrefix + " " + cmd;
+    /**
+     * Use array form of exec args, because that doesn't do weird things with quotes
+     */
+    String[] osCmd = new String[3];
+    if (isWindows) {
+      osCmd[0] = "cmd";
+      osCmd[1] = "/c";     
+    }
+    else {  // assume *nix
+      osCmd[0] = "sh";
+      osCmd[1] = "-c";
+    }
+    osCmd[2] = cmd;
+    
+    Process process = Runtime.getRuntime().exec( osCmd );
 
-      // -- Linux --
-      
-      // Run a shell command
-      // Process process = Runtime.getRuntime().exec("ls /home/foo/");
+    StringBuilder output = new StringBuilder();
 
-      // Run a shell script
-      // Process process = Runtime.getRuntime().exec("path/to/hello.sh");
+    BufferedReader reader = new BufferedReader(
+        new InputStreamReader(process.getInputStream()));
 
-      // -- Windows --
-      
-      // Run a command
-      //Process process = Runtime.getRuntime().exec("cmd /c dir C:\\Users\\foo");
+    String line;
+    while ((line = reader.readLine()) != null) {
+      output.append(line + "\n");
+    }
 
-      //Run a bat file
-      Process process = Runtime.getRuntime().exec( osCmd );
-
-      StringBuilder output = new StringBuilder();
-
-      BufferedReader reader = new BufferedReader(
-          new InputStreamReader(process.getInputStream()));
-
-      String line;
-      while ((line = reader.readLine()) != null) {
-        output.append(line + "\n");
-      }
-
-      int exitVal = process.waitFor();
-      if (exitVal != 0) {
-        // TODO: handle error
-        return null;
-      }
-      return output.toString();
+    int exitVal = process.waitFor();
+    if (exitVal != 0) {
+      // TODO: handle error
+      return null;
+    }
+    return output.toString();
   }
 }
