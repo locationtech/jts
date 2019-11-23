@@ -26,6 +26,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.controller.CommandController;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 
@@ -86,6 +87,18 @@ extends JPanel
       }
     });
     
+    JButton btnPaste = SwingUtil.createButton(AppIcons.PASTE, "Paste Command", new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        txtCmd.setText(getPaste());
+      }
+    });
+    
+    JButton btnClear = SwingUtil.createButton(AppIcons.CUT, "Clear Command", new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        txtCmd.setText("");
+      }
+    });
+    
     /*
     Box btnPanel = Box.createVerticalBox();
     btnPanel.setPreferredSize(new java.awt.Dimension(30, 30));
@@ -103,9 +116,24 @@ extends JPanel
     labelPanel.add(lblCommand);
     labelPanel.add(btnRun);
 
+    JPanel btnPanel = new JPanel();
+    btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.Y_AXIS));
+    //btnPanel.setBorder(BorderFactory.createEmptyBorder(0,4,2,2));
+    btnPanel.add(btnPaste);
+    btnPanel.add(btnClear);
 
+
+    this.add(btnPanel, BorderLayout.WEST);
     this.add(labelPanel, BorderLayout.NORTH);
     this.add(textPanel, BorderLayout.CENTER);
+  }
+  
+  private String getPaste() {
+    Object obj = SwingUtil.getFromClipboard();
+    if ( obj instanceof String ) {
+      return (String) obj;
+    }
+    return "";
   }
   
   public void setError(String msg) {
