@@ -56,6 +56,9 @@ public class JTSTestBuilder
   public static JTSTestBuilderController controller() {
     return CONTROLLER;
   }
+  public static JTSTestBuilderFrame frame() {
+    return JTSTestBuilderFrame.instance();
+  }
   
   public static TestBuilderModel model() { return instance().tbModel; }
 

@@ -170,12 +170,18 @@ public class JTSTestBuilderController
     model().setResult(null);
     editPanel().updateView();
   }
+  
   public void setResult(Object result) {
     model().setResult(result);
     frame().getResultWKTPanel().setExecutedTime("");
     frame().getResultWKTPanel().setResult(result);
     geometryViewChanged();
   }
+  
+  public void setCommandErr(String msg) {
+    frame().getCommandPanel().setError(msg);
+  }
+  
   public void saveImageAsPNG() {
     JTSTestBuilderFrame.instance().actionSaveImageAsPNG();
   }

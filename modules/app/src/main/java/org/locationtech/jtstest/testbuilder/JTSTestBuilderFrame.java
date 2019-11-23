@@ -268,6 +268,10 @@ public class JTSTestBuilderFrame extends JFrame
     return resultValuePanel;
   }
   
+  public CommandPanel getCommandPanel() {
+    return commandPanel;
+  }
+  
   /**
    *  File | Exit action performed
    */

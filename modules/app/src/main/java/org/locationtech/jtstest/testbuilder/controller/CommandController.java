@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016 Martin Davis.
+ * Copyright (c) 2019 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -19,25 +19,30 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
+import org.locationtech.jtstest.util.CommandRunner;
 import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 public class CommandController {
 
   public static void execCommand(String cmdIn) {
+    String cmd = expandCommand(cmdIn);
     //System.out.println(cmd);
-    String output;
+    int retval = -1;
+    String errMsg = "";
+    CommandRunner runner = new CommandRunner();
     try {
-      JTSTestBuilderController.frame().showResultWKTTab();
-      String cmd = expandCommand(cmdIn);
-      output = exec(cmd);
-      if (output == null) {
-        JTSTestBuilder.controller().clearResult();
-      }
-      else {
-        loadResult(output);
-      }
+       retval = runner.exec(cmd);
+       errMsg = runner.getStderr();
     } catch (Exception e) {
-      showError(e);
+      errMsg = e.getClass().getName() + " : " + e.getMessage();
+      //showError(e);
+    }
+    if (retval == 0) {
+      loadResult( runner.getStdout() );
+    }
+    else {
+      //JTSTestBuilder.controller().clearResult();
+      JTSTestBuilder.frame().getCommandPanel().setError(errMsg);
     }
   }
   public static final String VAR_A = "$A";
@@ -68,13 +73,12 @@ public class CommandController {
   }
   
   private static void loadResult(String output) {
+    JTSTestBuilder.frame().showResultWKTTab();
     MultiFormatReader reader = new MultiFormatReader(new GeometryFactory());
     reader.setStrict(false);
     try {
       Geometry result = reader.read(output);
-      
       JTSTestBuilder.controller().setResult(result);
-      
     } catch (ParseException | IOException e) {
       showError(e);
     }
@@ -85,6 +89,8 @@ public class CommandController {
     JTSTestBuilder.controller().setResult(e);
   }
   
+  // NOT USED
+  
   /**
    * Executes a command and returns the contents of stdout as a string.
    * The command should be a single line, otherwise things seem to hang.
@@ -94,7 +100,7 @@ public class CommandController {
    * @throws IOException
    * @throws InterruptedException
    */
-  public static String exec(String cmd) throws IOException, InterruptedException {
+  private static String exec(String cmd) throws IOException, InterruptedException {
     // ensure cmd is single line (seems to hang otherwise
     
     boolean isWindows = System.getProperty("os.name")

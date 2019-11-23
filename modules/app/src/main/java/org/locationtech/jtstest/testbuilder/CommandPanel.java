@@ -13,6 +13,7 @@ package org.locationtech.jtstest.testbuilder;
 
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -35,8 +36,10 @@ import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 public class CommandPanel 
 extends JPanel 
 {
-	
-	public CommandPanel() {
+	private JTextArea txtCmd;
+  private JTextArea txtErr;
+
+  public CommandPanel() {
 		try {
 			jbInit();
 		} catch (Exception ex) {
@@ -48,13 +51,37 @@ extends JPanel
     
     this.setLayout(new BorderLayout());
 
-    JTextArea txtCmd = new JTextArea();
+    JPanel textPanel = new JPanel();
+    textPanel.setLayout(new BorderLayout());
+    
+    txtCmd = new JTextArea();
     txtCmd.setWrapStyleWord(true);
     txtCmd.setLineWrap(true);
     //txtResult.setBackground(AppColors.BACKGROUND);
 
+    JScrollPane jScrollPane = new JScrollPane();
+    jScrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
+    jScrollPane.getViewport().add(txtCmd, null);
+    
+    txtErr = new JTextArea();
+    txtErr.setWrapStyleWord(true);
+    txtErr.setLineWrap(true);
+    txtErr.setBackground(AppColors.BACKGROUND);
+    txtErr.setEditable(false);
+    txtErr.setPreferredSize(new Dimension(100,60));
+
+    JScrollPane jScrollPaneErr = new JScrollPane();
+    jScrollPaneErr.setBorder(BorderFactory.createLoweredBevelBorder());
+    jScrollPaneErr.getViewport().add(txtErr, null);
+    
+    textPanel.add(jScrollPane, BorderLayout.CENTER);
+    textPanel.add(jScrollPaneErr, BorderLayout.SOUTH);
+    
+    
     JButton btnRun = SwingUtil.createButton(AppIcons.EXECUTE, "Run Command", new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        txtErr.setText("");
+        txtErr.repaint();
         CommandController.execCommand( txtCmd.getText() );
       }
     });
@@ -75,15 +102,17 @@ extends JPanel
     labelPanel.setBorder(BorderFactory.createEmptyBorder(0,4,2,2));
     labelPanel.add(lblCommand);
     labelPanel.add(btnRun);
-    
-    JScrollPane jScrollPane = new JScrollPane();
-    jScrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
-    jScrollPane.getViewport().add(txtCmd, null);
 
-    this.add(jScrollPane, BorderLayout.CENTER);
+
     this.add(labelPanel, BorderLayout.NORTH);
+    this.add(textPanel, BorderLayout.CENTER);
   }
   
+  public void setError(String msg) {
+    txtErr.setText(msg);
+    // scroll to top
+    txtErr.setCaretPosition(0);
+  }
 
 
   
