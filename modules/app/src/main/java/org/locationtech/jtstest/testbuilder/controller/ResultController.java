@@ -116,7 +116,7 @@ public class ResultController
     String entry = funTimeLine;
     String resultDesc = GeometryFunctionInvocation.toString(result);
     if (resultDesc != null & resultDesc.length() < 40) entry += "\n ==> " + resultDesc;
-    JTSTestBuilderFrame.instance().displayInfo(entry, false);
+    JTSTestBuilder.controller().displayInfo(entry, false);
   }
   
   

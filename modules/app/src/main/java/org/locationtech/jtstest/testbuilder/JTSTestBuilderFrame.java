@@ -268,6 +268,10 @@ public class JTSTestBuilderFrame extends JFrame
     return resultValuePanel;
   }
   
+  public InfoPanel getLogPanel() {
+    return logPanel;
+  }
+  
   public CommandPanel getCommandPanel() {
     return commandPanel;
   }
@@ -700,23 +704,6 @@ public class JTSTestBuilderFrame extends JFrame
 
   public void updateLayerList() {
     layerListPanel.updateList();
-  }
-  public void displayInfo(Coordinate modelPt)
-  {
-    displayInfo(
-        testCasePanel.getGeometryEditPanel().getInfo(modelPt)
-        );
-  }
-  
-  public void displayInfo(String s)
-  {
-    displayInfo(s, true);
-  }
-  
-  public void displayInfo(String s, boolean showTab)
-  {
-    logPanel.addInfo(s);
-    if (showTab) showInfoTab();
   }
   
   private void reportProblemsParsingXmlTestFile(List parsingProblems) {

@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jtstest.geomfunction.GeometryFunctionInvocation;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.util.CommandRunner;
 import org.locationtech.jtstest.util.io.MultiFormatReader;
@@ -29,6 +30,7 @@ public class CommandController {
     //System.out.println(cmd);
     int returnCode = -1;
     String errMsg = "";
+    Geometry result = null;
     CommandRunner runner = new CommandRunner();
     try {
        returnCode = runner.exec(cmd);
@@ -40,7 +42,7 @@ public class CommandController {
     boolean isSuccess = returnCode == 0 && errMsg.length() == 0;
     
     if (isSuccess) {
-      loadResult( runner.getStdout() );
+      result = loadResult( runner.getStdout() );
     }
     else {
       if (errMsg.length() == 0)
@@ -48,6 +50,21 @@ public class CommandController {
       //JTSTestBuilder.controller().clearResult();
       JTSTestBuilder.frame().getCommandPanel().setError(errMsg);
     }
+    logCommand(cmdIn, result, errMsg);
+
+  }
+  private static void logCommand(String cmd, Geometry geom, String errMsg) {
+    String cmdLog = "Command: " + limitLength( cmd, 200);
+    if (geom != null) {
+      String geomLog = GeometryFunctionInvocation.toString(geom);
+      cmdLog += "\n ==> " + geomLog;
+    }
+    if (errMsg.length() > 0) {
+      String errLog = limitLength( errMsg, 200);
+      cmdLog += "\n ERROR: " + errLog;
+    }
+    
+    JTSTestBuilder.controller().displayInfo(cmdLog, false);
   }
   public static final String VAR_A = "$A";
   public static final String VAR_A_WKT = "$A.wkt";
@@ -76,16 +93,23 @@ public class CommandController {
     return s.replace('\n', ' ');
   }
   
-  private static void loadResult(String output) {
+  private static String limitLength(String s, int n) {
+    if (s.length() <= n) return s;
+    return s.substring(0, n) + "...";
+  }
+  
+  private static Geometry loadResult(String output) {
     JTSTestBuilder.frame().showResultWKTTab();
     MultiFormatReader reader = new MultiFormatReader(new GeometryFactory());
     reader.setStrict(false);
+    Geometry result = null;
     try {
-      Geometry result = reader.read(output);
+      result = reader.read(output);
       JTSTestBuilder.controller().setResult(result);
     } catch (ParseException | IOException e) {
       showError(e);
     }
+    return result;
   }
   
   private static void showError(Exception e) {

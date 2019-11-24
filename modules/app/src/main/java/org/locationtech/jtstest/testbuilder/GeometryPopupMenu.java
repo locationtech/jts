@@ -54,7 +54,7 @@ public class GeometryPopupMenu extends JPopupMenu
     infoItem.addActionListener(
           new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-              JTSTestBuilderFrame.instance().displayInfo(clickCoord);
+              JTSTestBuilder.controller().displayInfo(clickCoord);
             }
           });
     add(infoItem);

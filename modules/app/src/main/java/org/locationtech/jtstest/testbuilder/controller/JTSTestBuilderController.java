@@ -288,20 +288,22 @@ public class JTSTestBuilderController
     model().cases().deleteCase();
     frame().updateTestCases();
   }
-
-  /*
-  public void execCommand(String cmd) {
-    System.out.println(cmd);
-    String output = OSCommand.exec(cmd);
-    System.out.println(output);
-    
-    MultiFormatReader reader = new MultiFormatReader(new GeometryFactory());
-    try {
-      Geometry result = reader.read(output);
-      setResult(result);
-    } catch (ParseException | IOException e) {
-      e.printStackTrace();
-    }
+  
+  //========================================
+  
+  public void displayInfo(Coordinate modelPt)
+  {
+    displayInfo( editPanel().getInfo(modelPt) );
   }
-  */
+  
+  public void displayInfo(String s)
+  {
+    displayInfo(s, true);
+  }
+  
+  public void displayInfo(String s, boolean showTab)
+  {
+    frame().getLogPanel().addInfo(s);
+    if (showTab) frame().showInfoTab();
+  }
 }
