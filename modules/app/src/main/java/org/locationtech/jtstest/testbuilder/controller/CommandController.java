@@ -27,20 +27,24 @@ public class CommandController {
   public static void execCommand(String cmdIn) {
     String cmd = expandCommand(cmdIn);
     //System.out.println(cmd);
-    int retval = -1;
+    int returnCode = -1;
     String errMsg = "";
     CommandRunner runner = new CommandRunner();
     try {
-       retval = runner.exec(cmd);
+       returnCode = runner.exec(cmd);
        errMsg = runner.getStderr();
     } catch (Exception e) {
       errMsg = e.getClass().getName() + " : " + e.getMessage();
       //showError(e);
     }
-    if (retval == 0) {
+    boolean isSuccess = returnCode == 0 && errMsg.length() == 0;
+    
+    if (isSuccess) {
       loadResult( runner.getStdout() );
     }
     else {
+      if (errMsg.length() == 0)
+        errMsg = "Return code = " + returnCode;
       //JTSTestBuilder.controller().clearResult();
       JTSTestBuilder.frame().getCommandPanel().setError(errMsg);
     }
