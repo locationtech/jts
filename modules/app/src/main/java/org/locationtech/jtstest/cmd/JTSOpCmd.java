@@ -72,18 +72,24 @@ public class JTSOpCmd {
   public static void main(String[] args)
   {    
     JTSOpCmd cmd = new JTSOpCmd();
+    int rc = 1;
     try {
       JTSOpRunner.OpParams cmdArgs = cmd.parseArgs(args);
       cmd.execute(cmdArgs);
+      rc = 0;
     } 
     catch (CommandError e) {
       // for command errors, just print the message
+      System.err.println(e.getMessage() );
+    }
+    catch (ParseException e) {
       System.err.println(e.getMessage() );
     }
     catch (Exception e) {
       // unexpected errors get a stack track to help debugging
       e.printStackTrace();
     }
+    System.exit(rc);  // err code
   }
 
   private static CommandLine createCmdLine() {

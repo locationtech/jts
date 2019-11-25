@@ -45,6 +45,7 @@ public class JTSOpRunner {
   
   public static final String ERR_FILE_NOT_FOUND = "File not found";
   public static final String ERR_INPUT = "Unable to read input";
+  public static final String ERR_PARSE_GEOM = "Unable to parse geometry";
   public static final String ERR_FUNCTION_NOT_FOUND = "Function not found";
   public static final String ERR_REQUIRED_A = "Geometry A may be required";
   public static final String ERR_REQUIRED_B = "Geometry B is required";
@@ -166,13 +167,13 @@ public class JTSOpRunner {
       loadGeometryAB();
     }
     else {
-      geomA = readGeometry(param.fileA, param.geomA);
-      geomB = readGeometry(param.fileB, param.geomB);
+      geomA = readGeometry("A", param.fileA, param.geomA);
+      geomB = readGeometry("B", param.fileB, param.geomB);
     }
   }
 
   private void loadGeometryAB() {
-    Geometry geomAB = readGeometry(param.fileA, param.geomA);
+    Geometry geomAB = readGeometry("AB", param.fileA, param.geomA);
     if (geomAB.getNumGeometries() < 2) {
       throw new CommandError(ERR_REQUIRED_B);
     }
@@ -336,21 +337,28 @@ public class JTSOpRunner {
 
   /**
    * Reads a geometry from a literal or a filename.
-   * If neither are provided this geometry is not present.'
+   * If neither are provided this geometry is not present.
    * 
+   * @param geomLabel label for geometry being read
    * @param filename the filename to read from, if present
    * @param geom the geometry literal, if present
+   * @param geomA2 
    * @return the geometry read, or null
    * @throws Exception
    */
-  private Geometry readGeometry(String filename, String geom) {
+  private Geometry readGeometry(String geomLabel, String filename, String geom) {
+    String geomDesc = " " + geomLabel + " ";
     if (geom != null) {
       // read a literal from the argument
       MultiFormatReader rdr = new MultiFormatReader(geomFactory);
       try {
         return rdr.read(geom);
-      } catch (Exception e) {
-        throw new CommandError(ERR_INPUT, filename);
+      } 
+      catch (org.locationtech.jts.io.ParseException ex) {
+        throw new CommandError(ERR_PARSE_GEOM + geomDesc + " - " + ex.getMessage());
+      }
+      catch (Exception e) {
+        throw new CommandError(ERR_PARSE_GEOM + geomDesc, limitLength(geom, 50));
       }
     }
     // no parameter supplied
@@ -367,7 +375,7 @@ public class JTSOpRunner {
     catch (FileNotFoundException ex) {
       throw new CommandError(ERR_FILE_NOT_FOUND, filename);
     } catch (Exception e) {
-      throw new CommandError(ERR_INPUT, filename);
+      throw new CommandError(ERR_PARSE_GEOM + geomDesc, filename);
     }
   }
 
@@ -377,13 +385,18 @@ public class JTSOpRunner {
       return rdr.read(new InputStreamReader(stdIn));
     }
     catch (org.locationtech.jts.io.ParseException ex) {
-      throw new CommandError(ERR_INPUT + " - " + ex.getMessage());
+      throw new CommandError(ERR_PARSE_GEOM + " - " + ex.getMessage());
     }
     catch (Exception ex) {
       throw new CommandError(ERR_INPUT);
     }
   }
 
+  private static String limitLength(String s, int n) {
+    if (s.length() <= n) return s;
+    return s.substring(0, n) + "...";
+  }
+  
   private static String opSummary(String funcName, String arg) {
     StringBuilder sb = new StringBuilder();
     sb.append("Op: " + funcName );
