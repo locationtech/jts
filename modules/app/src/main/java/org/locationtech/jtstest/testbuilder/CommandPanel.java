@@ -110,11 +110,21 @@ extends JPanel
     lblCommand.setText("Command");
     lblCommand.setBorder(new EmptyBorder(2,2,2,20));//top,left,bottom,right
     
+    JLabel lblVars = new JLabel();
+    lblVars.setText("Vars: "
+        + "  " + CommandController.VAR_A
+        + "  " + CommandController.VAR_A_WKB
+        + "  " + CommandController.VAR_B
+        + "  " + CommandController.VAR_B_WKB
+        );
+    lblVars.setBorder(new EmptyBorder(2,30,2,2));//top,left,bottom,right
+    
     JPanel labelPanel = new JPanel();
     labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
     labelPanel.setBorder(BorderFactory.createEmptyBorder(0,4,2,2));
     labelPanel.add(lblCommand);
     labelPanel.add(btnRun);
+    labelPanel.add(lblVars);
 
     JPanel btnPanel = new JPanel();
     btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.Y_AXIS));

@@ -18,6 +18,7 @@ import java.io.InputStreamReader;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBWriter;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionInvocation;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.util.CommandRunner;
@@ -66,8 +67,10 @@ public class CommandController {
     
     JTSTestBuilder.controller().displayInfo(cmdLog, false);
   }
-  public static final String VAR_A = "$A";
-  public static final String VAR_A_WKT = "$A.wkt";
+  public static final String VAR_A = "#a#";
+  public static final String VAR_A_WKB = "#awkb#";
+  public static final String VAR_B = "#b#";
+  public static final String VAR_B_WKB = "#bwkb#";
   
   private static String expandCommand(String cmdSrc) {
     String cmdLine = removeNewline(cmdSrc);
@@ -75,18 +78,33 @@ public class CommandController {
     String cmd = cmdLine;
     
     if (cmdLine.contains(VAR_A)) {
-      cmd = cmd.replace(VAR_A, valueWKT(0));
+      cmd = cmd.replace(VAR_A, valueWKT(getGeometry(0)));
     }
-    if (cmdLine.contains(VAR_A_WKT)) {
-      cmd = cmd.replace(VAR_A_WKT, valueWKT(0));
+    if (cmdLine.contains(VAR_A_WKB)) {
+      cmd = cmd.replace(VAR_A_WKB, valueWKB(getGeometry(0)));;
+    }
+    if (cmdLine.contains(VAR_B_WKB)) {
+      cmd = cmd.replace(VAR_B_WKB, valueWKB(getGeometry(1)));;
+    }
+    if (cmdLine.contains(VAR_B_WKB)) {
+      cmd = cmd.replace(VAR_B_WKB, valueWKB(getGeometry(1)));;
     }
     return cmd;
   }
 
-  private static String valueWKT(int i) {
-    Geometry geom = JTSTestBuilderController.model().getCurrentCase().getGeometry(i);
+  private static Geometry getGeometry(int i) {
+    return JTSTestBuilderController.model().getCurrentCase().getGeometry(i);
+  }
+  
+  private static String valueWKT(Geometry geom) {
     if (geom == null) return "";
     return geom.toString();
+  }
+
+  private static String valueWKB(Geometry geom) {
+    if (geom == null) return "";
+    WKBWriter wkbWriter = new WKBWriter();
+    return WKBWriter.toHex(wkbWriter.write(geom));
   }
 
   private static String removeNewline(String s) {
