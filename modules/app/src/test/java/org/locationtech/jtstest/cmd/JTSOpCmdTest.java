@@ -219,7 +219,7 @@ public class JTSOpCmdTest extends TestCase {
   public void testErrorStdInBadFormat() {
     runCmdError( args("-a", "stdin", "-f", "wkt", "envelope"), 
         stdin("<gml fdlfld >"),
-        JTSOpRunner.ERR_INPUT );
+        JTSOpRunner.ERR_PARSE_GEOM );
   }
   
   private String[] args(String ... args) {

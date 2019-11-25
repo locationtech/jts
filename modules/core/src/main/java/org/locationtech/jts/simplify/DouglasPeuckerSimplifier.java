@@ -199,7 +199,7 @@ static class DPTransformer
    */
   private Geometry createValidArea(Geometry rawAreaGeom)
   {
-  	if ( isEnsureValidTopology && ! rawAreaGeom.isValid())
+  	if ( isEnsureValidTopology)
   		return rawAreaGeom.buffer(0.0);
   	return rawAreaGeom;
   }
