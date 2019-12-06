@@ -61,6 +61,17 @@ public abstract class GeometryTestCase extends TestCase{
     assertTrue(equal);
   }
 
+  protected void checkEqual(Geometry expected, Geometry actual, double tolerance) {
+    Geometry actualNorm = actual.norm();
+    Geometry expectedNorm = expected.norm();
+    boolean equal = actualNorm.equalsExact(expectedNorm, tolerance);
+    if (! equal) {
+      System.out.println("FAIL - Expected = " + expectedNorm
+          + " actual = " + actualNorm );
+    }
+    assertTrue(equal);
+  }
+
   protected void checkEqual(Collection expected, Collection actual) {
     checkEqual(toGeometryCollection(expected),toGeometryCollection(actual) );
   }

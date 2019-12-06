@@ -17,6 +17,8 @@ import test.jts.GeometryTestCase;
 
 public class VariableBufferTest extends GeometryTestCase {
 
+  private static final double DEFAULT_TOLERANCE = 1.0e-6;
+
   public VariableBufferTest(String name) {
     super(name);
   }
@@ -82,6 +84,6 @@ public class VariableBufferTest extends GeometryTestCase {
 
   private void checkBuffer(Geometry actual, String wktExpected) {
     Geometry expected = read(wktExpected);
-    checkEqual(expected, actual);
+    checkEqual(expected, actual, DEFAULT_TOLERANCE);
   }
 }
