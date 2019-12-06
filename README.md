@@ -23,7 +23,7 @@ JTS is a project in the [LocationTech](http://www.locationtech.org) working grou
 * [GitHub web site](https://locationtech.github.io/jts/)
 
 ### Communication
-* [Mailing List](https://locationtech.org/mailman/listinfo/jts-dev)
+* [Mailing List](https://accounts.eclipse.org/mailing-list/jts-dev)
 * [Gitter Channel](https://gitter.im/locationtech/jts)
 
 ## License
