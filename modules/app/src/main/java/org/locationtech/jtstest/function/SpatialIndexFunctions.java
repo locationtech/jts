@@ -46,6 +46,22 @@ public class SpatialIndexFunctions
     return pts.getFactory().createMultiPoint(resultCoords);
   }
 
+  private static KdTree indexKDcache = null;
+  private static Geometry indexKDGeom = null;
+  
+  public static Geometry kdTreeQueryCached(Geometry pts, Geometry queryEnv, double tolerance)
+  {
+    if (indexKDGeom != pts || indexKDcache == null) {
+      indexKDcache = buildKdTree(pts, tolerance);
+      indexKDGeom = pts;
+    }
+    // if no query env provided query everything inserted 
+    if (queryEnv == null) queryEnv = pts;
+    List result = indexKDcache.query(queryEnv.getEnvelopeInternal());
+    Coordinate[] resultCoords = KdTree.toCoordinates(result);
+    return pts.getFactory().createMultiPoint(resultCoords);
+  }
+
   public static Geometry kdTreeQueryRepeated(Geometry pts, Geometry queryEnv, double tolerance)
   {
     KdTree index = buildKdTree(pts, tolerance);
@@ -101,6 +117,22 @@ public class SpatialIndexFunctions
     return geoms.getFactory().buildGeometry(result);
   }
 
+  private static HPRtree indexHPRcache = null;
+  private static Geometry indexHPRGeom = null;
+  
+  public static Geometry hprTreeQueryCached(Geometry geoms, Geometry queryEnv)
+  {
+    if (indexHPRGeom != geoms || indexHPRcache == null) {
+      indexHPRcache = new HPRtree();
+      loadIndex(geoms, indexHPRcache);
+      indexHPRGeom = geoms;
+    }
+    // if no query env provided query everything inserted 
+    if (queryEnv == null) queryEnv = geoms;
+    List result = indexHPRcache.query(queryEnv.getEnvelopeInternal());
+    return geoms.getFactory().buildGeometry(result);
+  }
+
   private static void loadIndex(Geometry geom, SpatialIndex index) {
     geom.apply(new GeometryFilter() {
 
@@ -125,6 +157,22 @@ public class SpatialIndexFunctions
       polys[i++] = geoms.getFactory().toGeometry(env);
     }
     return geoms.getFactory().createGeometryCollection(polys);
+  }
+  
+  private static STRtree indexSTRcache = null;
+  private static Geometry indexSTRGeom = null;
+  
+  public static Geometry strTreeQueryCached(Geometry geoms, Geometry queryEnv)
+  {
+    if (indexSTRGeom != geoms || indexSTRcache == null) {
+      indexSTRcache = new STRtree();
+      loadIndex(geoms, indexSTRcache);
+      indexSTRGeom = geoms;
+    }
+    // if no query env provided query everything inserted 
+    if (queryEnv == null) queryEnv = geoms;
+    List result = indexSTRcache.query(queryEnv.getEnvelopeInternal());
+    return geoms.getFactory().buildGeometry(result);
   }
   
   public static Geometry strTreeQuery(Geometry geoms, Geometry queryEnv)
