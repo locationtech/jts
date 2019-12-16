@@ -1629,7 +1629,8 @@ public abstract class Geometry
   /**
    * Creates a deep copy of this {@link Geometry} object.
    * Coordinate sequences contained in it are copied.
-   * All instance fields are copied (i.e. the <tt>SRID</tt> and <tt>userData</tt>).
+   * All instance fields are copied 
+   * (i.e. <code>envelope</code>, <tt>SRID</tt> and <tt>userData</tt>).
    * <p>
    * <b>NOTE:</b> the userData object reference (if present) is copied,
    * but the value itself is not copied.
@@ -1639,6 +1640,7 @@ public abstract class Geometry
    */
   public Geometry copy() {
     Geometry copy = copyInternal();
+    copy.envelope = envelope == null ? null : envelope.copy();
     copy.SRID = this.SRID;
     copy.userData = this.userData; 
     return copy;
