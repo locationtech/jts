@@ -17,6 +17,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryEditor;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.valid.IsValidOp;
 
 /**
  * Reduces the precision of a {@link Geometry}
@@ -126,7 +128,7 @@ public class GeometryPrecisionReducer
     	return reducePW;
     
     // Geometry is polygonal - test if topology needs to be fixed
-    if (reducePW.isValid()) return reducePW;
+    if (IsValidOp.isValid(reducePW)) return reducePW;
     
     // hack to fix topology.  
     // TODO: implement snap-rounding and use that.
@@ -169,7 +171,7 @@ public class GeometryPrecisionReducer
   		geomToBuffer = changePM(geom, targetPM);
   	}
   	
-  	Geometry bufGeom = geomToBuffer.buffer(0);
+  	Geometry bufGeom = BufferOp.bufferOp(geomToBuffer, 0);
   	
   	Geometry finalGeom = bufGeom;
   	if (! changePrecisionModel) {
