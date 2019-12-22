@@ -113,6 +113,13 @@ public class Vector3D {
 		return z;
 	}
 
+	public Vector3D add(Vector3D v) {
+		return create(x + v.x, y + v.y, z + v.z);
+	}
+
+	public Vector3D subtract(Vector3D v) {
+		return create(x - v.x, y - v.y, z - v.z);
+	}
 
 	/**
 	 * Computes the dot-product of two vectors
