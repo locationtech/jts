@@ -18,17 +18,17 @@ import java.util.ArrayList;
 /**
  * Models a collection of {@link Polygon}s.
  * <p>
- * As per the OGC SFS specification, 
- * the Polygons in a MultiPolygon may not overlap, 
+ * As per the OGC SFS specification,
+ * the Polygons in a MultiPolygon may not overlap,
  * and may only touch at single points.
  * This allows the topological point-set semantics
  * to be well-defined.
- *  
+ *
  *
  *@version 1.7
  */
-public class MultiPolygon 
-	extends GeometryCollection 
+public class MultiPolygon
+	extends GeometryCollection
 	implements Polygonal
 {
   private static final long serialVersionUID = -551033529766975875L;
@@ -83,7 +83,7 @@ public class MultiPolygon
     return true;
   }
 */
-  
+
   /**
    * Computes the boundary of this geometry
    *
@@ -112,7 +112,7 @@ public class MultiPolygon
     }
     return super.equalsExact(other, tolerance);
   }
-  
+
   /**
    * Creates a {@link MultiPolygon} with
    * every component reversed.
@@ -120,16 +120,20 @@ public class MultiPolygon
    *
    * @return a MultiPolygon in the reverse order
    */
-  public Geometry reverse()
-  {
-    int n = geometries.length;
-    Polygon[] revGeoms = new Polygon[n];
-    for (int i = 0; i < geometries.length; i++) {
-      revGeoms[i] = (Polygon) geometries[i].reverse();
-    }
-    return getFactory().createMultiPolygon(revGeoms);
+  public Geometry reverse() {
+    return super.reverse();
   }
-  
+  /*
+  protected Geometry reverseInternal()
+  {
+    int numGeometries = getNumGeometries();
+    Polygon[] reversed = new Polygon[numGeometries];
+    for (int i = 0; i < numGeometries; i++) {
+      reversed[i] = (Polygon) geometries[i].reverse();
+    }
+    return getFactory().createMultiPolygon(reversed);
+  }
+  */
   protected MultiPolygon copyInternal() {
     Polygon[] polygons = new Polygon[this.geometries.length];
     for (int i = 0; i < polygons.length; i++) {

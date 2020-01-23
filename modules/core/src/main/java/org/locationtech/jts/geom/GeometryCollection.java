@@ -13,8 +13,7 @@
  */
 package org.locationtech.jts.geom;
 
-import java.util.Arrays;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.locationtech.jts.util.Assert;
 
@@ -22,7 +21,7 @@ import org.locationtech.jts.util.Assert;
 /**
  * Models a collection of {@link Geometry}s of
  * arbitrary type and dimension.
- * 
+ *
  *
  *@version 1.7
  */
@@ -218,7 +217,7 @@ public class GeometryCollection extends Geometry {
   public Object clone() {
     return copy();
   }
-  
+
   protected GeometryCollection copyInternal() {
     Geometry[] geometries = new Geometry[this.geometries.length];
     for (int i = 0; i < geometries.length; i++) {
@@ -266,11 +265,11 @@ public class GeometryCollection extends Geometry {
     return 0;
 
   }
-  
+
   protected int getSortIndex() {
     return Geometry.SORTINDEX_GEOMETRYCOLLECTION;
   }
-  
+
   /**
    * Creates a {@link GeometryCollection} with
    * every component reversed.
@@ -278,14 +277,18 @@ public class GeometryCollection extends Geometry {
    *
    * @return a {@link GeometryCollection} in the reverse order
    */
-  public Geometry reverse()
+  public Geometry reverse() {
+    return super.reverse();
+  }
+
+  protected Geometry reverseInternal()
   {
-    int n = geometries.length;
-    Geometry[] revGeoms = new Geometry[n];
-    for (int i = 0; i < geometries.length; i++) {
-      revGeoms[i] = geometries[i].reverse();
+    int numGeometries = geometries.length;
+    Collection<Geometry> reversed = new ArrayList<>(numGeometries);
+    for (int i = 0; i < numGeometries; i++) {
+      reversed.add(geometries[i].reverse());
     }
-    return getFactory().createGeometryCollection(revGeoms);
+    return getFactory().buildGeometry(reversed);
   }
 }
 
