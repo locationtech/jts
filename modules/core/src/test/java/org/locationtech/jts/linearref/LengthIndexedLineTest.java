@@ -50,7 +50,7 @@ public class LengthIndexedLineTest
   public void testExtractLineReverseMulti()
   {
     checkExtractLine("MULTILINESTRING ((0 0, 10 0), (20 0, 25 0, 30 0))",
-                     19, 1, "MULTILINESTRING ((29 0, 25 0, 20 0), (10 0, 1 0))");
+                     19, 1, "MULTILINESTRING ((10 0, 1 0), (29 0, 25 0, 20 0))");
   }
 
   public void testExtractLineNegative()
@@ -151,9 +151,9 @@ public class LengthIndexedLineTest
     double projIndex = indexedLine.project(new Coordinate(5, 5));
     Coordinate projPt = indexedLine.extractPoint(projIndex);
 //    System.out.println(projPt);
-    assertTrue(projPt.equals3D(new Coordinate(5, 5, 5)));  
+    assertTrue(projPt.equals3D(new Coordinate(5, 5, 5)));
   }
-  
+
   /**
    * Tests that if the input does not have Z ordinates, neither does the output.
    *
@@ -164,9 +164,9 @@ public class LengthIndexedLineTest
     LengthIndexedLine indexedLine = new LengthIndexedLine(linearGeom);
     double projIndex = indexedLine.project(new Coordinate(5, 5));
     Coordinate projPt = indexedLine.extractPoint(projIndex);
-    assertTrue(Double.isNaN(projPt.getZ() ));  
+    assertTrue(Double.isNaN(projPt.getZ() ));
   }
-  
+
   private void checkExtractLine(String wkt, double start, double end, String expected)
   {
     Geometry linearGeom = read(wkt);
@@ -186,30 +186,30 @@ public class LengthIndexedLineTest
   protected boolean indexOfAfterCheck(Geometry linearGeom, Coordinate testPt)
   {
     LengthIndexedLine indexedLine = new LengthIndexedLine(linearGeom);
-    
+
     // check locations are consecutive
     double loc1 = indexedLine.indexOf(testPt);
     double loc2 = indexedLine.indexOfAfter(testPt, loc1);
     if (loc2 <= loc1) return false;
-    
+
     // check extracted points are the same as the input
     Coordinate pt1 = indexedLine.extractPoint(loc1);
     Coordinate pt2 = indexedLine.extractPoint(loc2);
     if (! pt1.equals2D(testPt)) return false;
     if (! pt2.equals2D(testPt)) return false;
-    
+
     return true;
   }
 
   protected boolean indexOfAfterCheck(Geometry linearGeom, Coordinate testPt, Coordinate checkPt)
   {
     LengthIndexedLine indexedLine = new LengthIndexedLine(linearGeom);
-    
+
     // check that computed location is after check location
     double checkLoc = indexedLine.indexOf(checkPt);
     double testLoc = indexedLine.indexOfAfter(testPt, checkLoc);
     if (testLoc < checkLoc) return false;
-    
+
     return true;
   }
 
