@@ -179,6 +179,7 @@ public class LineString
    * order of this objects
    *
    * @return a {@link LineString} with coordinates in the reverse order
+   * @deprecated
    */
   public Geometry reverse() {
     return super.reverse();

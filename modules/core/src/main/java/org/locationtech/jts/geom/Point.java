@@ -190,6 +190,7 @@ public class Point
     return new Point(coordinates.copy(), factory);
   }
 
+  /** @deprecated */
   public Geometry reverse() {
     return super.reverse();
   }

@@ -13,7 +13,10 @@
  */
 package org.locationtech.jts.geom;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.TreeSet;
 
 import org.locationtech.jts.util.Assert;
 
@@ -276,6 +279,7 @@ public class GeometryCollection extends Geometry {
    * The order of the components in the collection are not reversed.
    *
    * @return a {@link GeometryCollection} in the reverse order
+   * @deprecated
    */
   public Geometry reverse() {
     return super.reverse();

@@ -132,6 +132,7 @@ public class LinearRing extends LineString
     return new LinearRing(points.copy(), factory);
   }
 
+  /** @deprecated */
   public Geometry reverse()
   {
     return super.reverse();

@@ -417,6 +417,7 @@ public class Polygon
       CoordinateSequences.reverse(seq);
   }
 
+  /** @deprecated */
   public Geometry reverse() {
     return super.reverse();
   }

@@ -119,21 +119,12 @@ public class MultiPolygon
    * The order of the components in the collection are not reversed.
    *
    * @return a MultiPolygon in the reverse order
+   * @deprecated
    */
   public Geometry reverse() {
     return super.reverse();
   }
-  /*
-  protected Geometry reverseInternal()
-  {
-    int numGeometries = getNumGeometries();
-    Polygon[] reversed = new Polygon[numGeometries];
-    for (int i = 0; i < numGeometries; i++) {
-      reversed[i] = (Polygon) geometries[i].reverse();
-    }
-    return getFactory().createMultiPolygon(reversed);
-  }
-  */
+
   protected MultiPolygon copyInternal() {
     Polygon[] polygons = new Polygon[this.geometries.length];
     for (int i = 0; i < polygons.length; i++) {

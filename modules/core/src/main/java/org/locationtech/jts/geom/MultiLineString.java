@@ -102,19 +102,11 @@ public class MultiLineString
    * are reversed.
    *
    * @return a {@link MultiLineString} in the reverse order
+   * @deprecated
    */
   public Geometry reverse() {
     return super.reverse();
   }
-  /*
-  protected Geometry reverseInternal() {
-    int numGeometries = getNumGeometries();
-    LineString[] revLines = new LineString[numGeometries];
-    for (int i = 0; i < numGeometries; i++) {
-      revLines[numGeometries - 1 - i] = (LineString)geometries[i].reverse();
-    }
-    return getFactory().createMultiLineString(revLines);
-  }*/
 
   protected MultiLineString copyInternal() {
     LineString[] lineStrings = new LineString[this.geometries.length];
