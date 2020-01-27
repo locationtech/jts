@@ -61,6 +61,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix WKT parsing in Turkish locale (#456)
 * Improve accuracy of `LineSegment.lineIntersection` (#468)
 * Fix `Distance3DOp` coordinate ordering (#480) 
+* Fix `Geometry.reverse()` to have consistent behaviour and to copy all fields (#513)
 
 ## JTS TestBuilder
 
