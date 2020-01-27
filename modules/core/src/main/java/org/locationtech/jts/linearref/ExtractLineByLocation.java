@@ -16,7 +16,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.Lineal;
 import org.locationtech.jts.util.Assert;
 
 /**
@@ -66,10 +66,9 @@ class ExtractLineByLocation
 
   private Geometry reverse(Geometry linear)
   {
-    if (linear instanceof LineString)
-      return ((LineString) linear).reverse();
-    if (linear instanceof MultiLineString)
-      return ((MultiLineString) linear).reverse();
+    if (linear instanceof Lineal)
+      return linear.reverse();
+
     Assert.shouldNeverReachHere("non-linear geometry encountered");
     return null;
   }

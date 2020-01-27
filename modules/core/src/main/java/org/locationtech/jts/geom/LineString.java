@@ -18,21 +18,21 @@ import org.locationtech.jts.operation.BoundaryOp;
  *  Models an OGC-style <code>LineString</code>.
  *  A LineString consists of a sequence of two or more vertices,
  *  along with all points along the linearly-interpolated curves
- *  (line segments) between each 
+ *  (line segments) between each
  *  pair of consecutive vertices.
  *  Consecutive vertices may be equal.
- *  The line segments in the line may intersect each other (in other words, 
+ *  The line segments in the line may intersect each other (in other words,
  *  the linestring may "curl back" in itself and self-intersect.
- *  Linestrings with exactly two identical points are invalid. 
- *  <p> 
- * A linestring must have either 0 or 2 or more points.  
- * If these conditions are not met, the constructors throw 
+ *  Linestrings with exactly two identical points are invalid.
+ *  <p>
+ * A linestring must have either 0 or 2 or more points.
+ * If these conditions are not met, the constructors throw
  * an {@link IllegalArgumentException}
  *
  *@version 1.7
  */
-public class LineString 
-	extends Geometry 
+public class LineString
+	extends Geometry
 	implements Lineal
 {
   private static final long serialVersionUID = 3110669828065365560L;
@@ -62,9 +62,9 @@ public class LineString
 
   /**
    * Constructs a <code>LineString</code> with the given points.
-   *  
+   *
    *@param  points the points of the linestring, or <code>null</code>
-   *      to create the empty geometry. 
+   *      to create the empty geometry.
    * @throws IllegalArgumentException if too few points are provided
    */
   public LineString(CoordinateSequence points, GeometryFactory factory) {
@@ -78,7 +78,7 @@ public class LineString
       points = getFactory().getCoordinateSequenceFactory().create(new Coordinate[]{});
     }
     if (points.size() == 1) {
-      throw new IllegalArgumentException("Invalid number of points in LineString (found " 
+      throw new IllegalArgumentException("Invalid number of points in LineString (found "
       		+ points.size() + " - must be 0 or >= 2)");
     }
     this.points = points;
@@ -179,13 +179,17 @@ public class LineString
    * order of this objects
    *
    * @return a {@link LineString} with coordinates in the reverse order
+   * @deprecated
    */
-  public Geometry reverse()
+  public Geometry reverse() {
+    return super.reverse();
+  }
+
+  protected Geometry reverseInternal()
   {
     CoordinateSequence seq = points.copy();
     CoordinateSequences.reverse(seq);
-    LineString revLine = getFactory().createLineString(seq);
-    return revLine;
+    return getFactory().createLineString(seq);
   }
 
   /**
@@ -233,7 +237,7 @@ public class LineString
       }
   }
 
-  public void apply(CoordinateSequenceFilter filter) 
+  public void apply(CoordinateSequenceFilter filter)
   {
     if (points.size() == 0)
       return;
@@ -264,7 +268,7 @@ public class LineString
   public Object clone() {
     return copy();
   }
-  
+
   protected LineString copyInternal() {
     return new LineString(points.copy(), factory);
   }
@@ -322,7 +326,7 @@ public class LineString
     LineString line = (LineString) o;
     return comp.compare(this.points, line.points);
   }
-  
+
   protected int getSortIndex() {
     return Geometry.SORTINDEX_LINESTRING;
   }

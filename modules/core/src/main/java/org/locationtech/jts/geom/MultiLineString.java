@@ -20,7 +20,7 @@ import org.locationtech.jts.operation.BoundaryOp;
  *
  *@version 1.7
  */
-public class MultiLineString 
+public class MultiLineString
 	extends GeometryCollection
 	implements Lineal
 	{
@@ -102,17 +102,12 @@ public class MultiLineString
    * are reversed.
    *
    * @return a {@link MultiLineString} in the reverse order
+   * @deprecated
    */
-  public Geometry reverse()
-  {
-    int nLines = geometries.length;
-    LineString[] revLines = new LineString[nLines];
-    for (int i = 0; i < geometries.length; i++) {
-      revLines[nLines - 1 - i] = (LineString)geometries[i].reverse();
-    }
-    return getFactory().createMultiLineString(revLines);
+  public Geometry reverse() {
+    return super.reverse();
   }
-  
+
   protected MultiLineString copyInternal() {
     LineString[] lineStrings = new LineString[this.geometries.length];
     for (int i = 0; i < lineStrings.length; i++) {
