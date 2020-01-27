@@ -20,12 +20,17 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBWriter;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionInvocation;
+import org.locationtech.jtstest.testbuilder.CommandPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.util.CommandRunner;
 import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 public class CommandController {
 
+  public static CommandPanel ui() {
+    return JTSTestBuilder.frame().getCommandPanel();
+  }
+  
   public static void execCommand(String cmdIn) {
     String cmd = expandCommand(cmdIn);
     //System.out.println(cmd);
@@ -43,13 +48,20 @@ public class CommandController {
     boolean isSuccess = returnCode == 0 && errMsg.length() == 0;
     
     if (isSuccess) {
-      result = loadResult( runner.getStdout() );
+      /**
+       * Save successful command in history
+       * (although the result parsing may still fail)
+       */
+      ui().saveCommand(cmdIn);
+      String resultStr = runner.getStdout();
+      ui().setOutput(limitLength(resultStr, 200));
+      result = loadResult( resultStr );
     }
     else {
       if (errMsg.length() == 0)
         errMsg = "Return code = " + returnCode;
       //JTSTestBuilder.controller().clearResult();
-      JTSTestBuilder.frame().getCommandPanel().setError(errMsg);
+      ui().setError(errMsg);
     }
     logCommand(cmdIn, result, errMsg);
 
@@ -123,7 +135,7 @@ public class CommandController {
     Geometry result = null;
     try {
       result = reader.read(output);
-      JTSTestBuilder.controller().setResult(result);
+      JTSTestBuilder.controller().setResult("Command", result);
     } catch (ParseException | IOException e) {
       showError(e);
     }
@@ -132,7 +144,7 @@ public class CommandController {
   
   private static void showError(Exception e) {
     //String msg = e.getClass().getName() + " : " + e.getMessage();
-    JTSTestBuilder.controller().setResult(e);
+    JTSTestBuilder.controller().setResult("Command", e);
   }
   
   // NOT USED

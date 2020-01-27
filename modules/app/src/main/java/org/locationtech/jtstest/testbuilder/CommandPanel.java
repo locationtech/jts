@@ -16,6 +16,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -25,6 +27,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.controller.CommandController;
@@ -38,8 +42,14 @@ public class CommandPanel
 extends JPanel 
 {
 	private JTextArea txtCmd;
-  private JTextArea txtErr;
+  private JTextArea txtOutput;
 
+  private List<String> commandLog = new ArrayList<String>();
+  
+  private int historyIndex = 1;
+  protected String commandSave;
+  private boolean isCommandSavedOnUpdate;
+  
   public CommandPanel() {
 		try {
 			jbInit();
@@ -59,21 +69,47 @@ extends JPanel
     txtCmd.setWrapStyleWord(true);
     txtCmd.setLineWrap(true);
     //txtResult.setBackground(AppColors.BACKGROUND);
+    // save command whenever it is changed
+    txtCmd.getDocument().addDocumentListener(new DocumentListener() {
+      public void changedUpdate(DocumentEvent e) {
+        save();
+      }
+      public void removeUpdate(DocumentEvent e) {
+        //save();
+      }
+      public void insertUpdate(DocumentEvent e) {
+        save();
+      }
+
+      public void save() {
+        /**
+         * If the change occurred via internal setting, 
+         * don't copy to the save buffer.
+         */
+        if (! isCommandSavedOnUpdate) {
+          isCommandSavedOnUpdate = true;
+          return;
+        }
+        
+        commandSave = txtCmd.getText();
+        historyIndex = -1;
+      }
+    });
 
     JScrollPane jScrollPane = new JScrollPane();
     jScrollPane.setBorder(BorderFactory.createLoweredBevelBorder());
     jScrollPane.getViewport().add(txtCmd, null);
     
-    txtErr = new JTextArea();
-    txtErr.setWrapStyleWord(true);
-    txtErr.setLineWrap(true);
-    txtErr.setBackground(AppColors.BACKGROUND);
-    txtErr.setEditable(false);
-    txtErr.setPreferredSize(new Dimension(100,60));
+    txtOutput = new JTextArea();
+    txtOutput.setWrapStyleWord(true);
+    txtOutput.setLineWrap(true);
+    txtOutput.setBackground(AppColors.BACKGROUND);
+    txtOutput.setEditable(false);
+    txtOutput.setPreferredSize(new Dimension(100,60));
 
     JScrollPane jScrollPaneErr = new JScrollPane();
     jScrollPaneErr.setBorder(BorderFactory.createLoweredBevelBorder());
-    jScrollPaneErr.getViewport().add(txtErr, null);
+    jScrollPaneErr.getViewport().add(txtOutput, null);
     
     textPanel.add(jScrollPane, BorderLayout.CENTER);
     textPanel.add(jScrollPaneErr, BorderLayout.SOUTH);
@@ -81,21 +117,45 @@ extends JPanel
     
     JButton btnRun = SwingUtil.createButton(AppIcons.EXECUTE, "Run Command", new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        txtErr.setText("");
-        txtErr.repaint();
-        CommandController.execCommand( txtCmd.getText() );
+        doRun();
       }
     });
     
     JButton btnPaste = SwingUtil.createButton(AppIcons.PASTE, "Paste Command", new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        txtCmd.setText(getPaste());
+        setCommandText(getPaste());
       }
     });
     
     JButton btnClear = SwingUtil.createButton(AppIcons.CUT, "Clear Command", new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        txtCmd.setText("");
+        setCommandText("");
+      }
+    });
+    
+    JButton btnPrev = SwingUtil.createButton(AppIcons.LEFT, "Previous Command", new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (historyIndex == -1) {
+          historyIndex = commandLog.size()-1;
+        }
+        else if (historyIndex > 0) {
+          historyIndex--;
+        }
+        setCommandTextNoSave(commandLog.get(historyIndex));
+      }
+    });
+    
+    JButton btnNext = SwingUtil.createButton(AppIcons.RIGHT, "Next Command", new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (historyIndex == -1) return;
+        if (historyIndex == commandLog.size()-1) {
+          historyIndex = -1;
+          setCommandTextNoSave(commandSave);
+        }
+        else {
+          historyIndex += 1;
+          setCommandTextNoSave(commandLog.get(historyIndex));
+        }
       }
     });
     
@@ -131,6 +191,8 @@ extends JPanel
     //btnPanel.setBorder(BorderFactory.createEmptyBorder(0,4,2,2));
     btnPanel.add(btnPaste);
     btnPanel.add(btnClear);
+    btnPanel.add(btnPrev);
+    btnPanel.add(btnNext);
 
 
     this.add(btnPanel, BorderLayout.WEST);
@@ -138,6 +200,16 @@ extends JPanel
     this.add(textPanel, BorderLayout.CENTER);
   }
   
+  private void doRun() {
+    txtOutput.setText("");
+    txtOutput.setBackground(AppColors.BACKGROUND);
+    txtOutput.repaint();
+    String cmd = txtCmd.getText();
+    // do not save on every run, only on success
+    //log(cmd);
+    CommandController.execCommand( cmd );
+  }
+
   private String getPaste() {
     Object obj = SwingUtil.getFromClipboard();
     if ( obj instanceof String ) {
@@ -147,11 +219,38 @@ extends JPanel
   }
   
   public void setError(String msg) {
-    txtErr.setText(msg);
+    txtOutput.setText(msg);
     // scroll to top
-    txtErr.setCaretPosition(0);
+    txtOutput.setCaretPosition(0);
+    txtOutput.setBackground(AppColors.BACKGROUND_ERROR);
   }
-
-
+  public void setOutput(String msg) {
+    txtOutput.setText(msg);
+    // scroll to top
+    txtOutput.setCaretPosition(0);
+    txtOutput.setBackground(AppColors.BACKGROUND);
+  }
+  
+  private String getCommandText() {
+    return txtCmd.getText();
+  }
+  private void setCommandText(String cmd) {
+    isCommandSavedOnUpdate = true;
+    commandSave = cmd;
+    txtCmd.setText(cmd);
+  }
+  private void setCommandTextNoSave(String cmd) {
+    isCommandSavedOnUpdate = false;
+    txtCmd.setText(cmd);
+  }
+  
+  /**
+   * Record the command in history, but only if it is different to ones already there
+   * @param cmd
+   */
+  public void saveCommand(String cmd) {
+    if (commandLog.contains(cmd)) return;
+    commandLog.add(cmd);
+  }
   
 }

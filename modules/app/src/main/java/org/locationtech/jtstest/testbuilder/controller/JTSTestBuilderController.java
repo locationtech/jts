@@ -171,8 +171,10 @@ public class JTSTestBuilderController
     editPanel().updateView();
   }
   
-  public void setResult(Object result) {
+  public void setResult(String opName, Object result) {
     model().setResult(result);
+    model().setOpName(opName);
+    frame().getResultWKTPanel().setOpName(opName);
     frame().getResultWKTPanel().setExecutedTime("");
     frame().getResultWKTPanel().setResult(result);
     geometryViewChanged();
