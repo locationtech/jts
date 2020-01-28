@@ -107,6 +107,23 @@ public class TriangulationFunctions
     return diagram;
   }
 
+  public static Geometry voronoiRelaxation(Geometry sitesGeom, Geometry clipGeom, int nIter) {
+    Geometry voronoiPolys = null;
+    for (int i = 0; i < nIter; i++) {
+      voronoiPolys = voronoiDiagram(sitesGeom, clipGeom);
+      sitesGeom = centroids(voronoiPolys);
+    }
+    return voronoiPolys;
+  }
+
+  private static Geometry centroids(Geometry polygons) {
+    int npolys = polygons.getNumGeometries();
+    Point[] centroids = new Point[npolys];
+    for (int i = 0; i < npolys; i++) {
+      centroids[i] = polygons.getGeometryN(i).getCentroid();
+    }
+    return polygons.getFactory().createMultiPoint(centroids);
+  }
 
   public static Geometry conformingDelaunayEdges(Geometry sites, Geometry constraints)
   {
