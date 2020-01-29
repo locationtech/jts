@@ -28,7 +28,8 @@ import org.locationtech.jts.util.Assert;
  * Note that the factory constructor methods do <b>not</b> change the input coordinates in any way.
  * In particular, they are not rounded to the supplied <tt>PrecisionModel</tt>.
  * It is assumed that input Coordinates meet the given precision.
- *
+ * <p>
+ * Instances of this class are thread-safe.
  *
  * @version 1.7
  */

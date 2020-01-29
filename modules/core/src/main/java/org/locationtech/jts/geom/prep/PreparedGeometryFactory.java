@@ -23,7 +23,8 @@ import org.locationtech.jts.geom.Puntal;
  * <p>
  * In the future, the factory may accept hints that indicate
  * special optimizations which can be performed.
- * 
+ * <p>
+ * Instances of this class are thread-safe. 
  * 
  * @author Martin Davis
  *
