@@ -49,6 +49,7 @@ extends JPanel
   private int historyIndex = 1;
   protected String commandSave;
   private boolean isCommandSavedOnUpdate;
+  private JLabel lblCommand;
   
   public CommandPanel() {
 		try {
@@ -93,6 +94,7 @@ extends JPanel
         
         commandSave = txtCmd.getText();
         historyIndex = -1;
+        update();
       }
     });
 
@@ -124,12 +126,14 @@ extends JPanel
     JButton btnPaste = SwingUtil.createButton(AppIcons.PASTE, "Paste Command", new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         setCommandText(getPaste());
+        update();
       }
     });
     
     JButton btnClear = SwingUtil.createButton(AppIcons.CUT, "Clear Command", new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         setCommandText("");
+        update();
       }
     });
     
@@ -142,6 +146,7 @@ extends JPanel
           historyIndex--;
         }
         setCommandTextNoSave(commandLog.get(historyIndex));
+        update();
       }
     });
     
@@ -156,6 +161,7 @@ extends JPanel
           historyIndex += 1;
           setCommandTextNoSave(commandLog.get(historyIndex));
         }
+        update();
       }
     });
     
@@ -166,8 +172,8 @@ extends JPanel
     this.add(btnPanel, BorderLayout.EAST);
     */
     
-    JLabel lblCommand = new JLabel();
-    lblCommand.setText("Command");
+    lblCommand = new JLabel();
+    lblCommand.setText("Command 1");
     lblCommand.setBorder(new EmptyBorder(2,2,2,20));//top,left,bottom,right
     
     JLabel lblVars = new JLabel();
@@ -200,6 +206,16 @@ extends JPanel
     this.add(textPanel, BorderLayout.CENTER);
   }
   
+  private void update() {
+    lblCommand.setText(getCommandName());
+  }
+  
+  public String getCommandName() {
+    int commandIndex = historyIndex + 1;
+    if (commandIndex <= 0) commandIndex = commandLog.size() + 1;
+    return "Command " + commandIndex;
+  }
+  
   private void doRun() {
     txtOutput.setText("");
     txtOutput.setBackground(AppColors.BACKGROUND);
@@ -207,7 +223,7 @@ extends JPanel
     String cmd = txtCmd.getText();
     // do not save on every run, only on success
     //log(cmd);
-    CommandController.execCommand( cmd );
+    CommandController.execCommand( getCommandName(), cmd );
   }
 
   private String getPaste() {

@@ -31,7 +31,7 @@ public class CommandController {
     return JTSTestBuilder.frame().getCommandPanel();
   }
   
-  public static void execCommand(String cmdIn) {
+  public static void execCommand(String name, String cmdIn) {
     String cmd = expandCommand(cmdIn);
     //System.out.println(cmd);
     int returnCode = -1;
@@ -55,7 +55,7 @@ public class CommandController {
       ui().saveCommand(cmdIn);
       String resultStr = runner.getStdout();
       ui().setOutput(limitLength(resultStr, 200));
-      result = loadResult( resultStr );
+      result = loadResult( name, resultStr );
     }
     else {
       if (errMsg.length() == 0)
@@ -63,11 +63,11 @@ public class CommandController {
       //JTSTestBuilder.controller().clearResult();
       ui().setError(errMsg);
     }
-    logCommand(cmdIn, result, errMsg);
+    logCommand(name, cmdIn, result, errMsg);
 
   }
-  private static void logCommand(String cmd, Geometry geom, String errMsg) {
-    String cmdLog = "Command: " + limitLength( cmd, 200);
+  private static void logCommand(String name, String cmd, Geometry geom, String errMsg) {
+    String cmdLog = name + ": " + limitLength( cmd, 200);
     if (geom != null) {
       String geomLog = GeometryFunctionInvocation.toString(geom);
       cmdLog += "\n ==> " + geomLog;
@@ -128,23 +128,23 @@ public class CommandController {
     return s.substring(0, n) + "...";
   }
   
-  private static Geometry loadResult(String output) {
+  private static Geometry loadResult(String name, String output) {
     JTSTestBuilder.frame().showResultWKTTab();
     MultiFormatReader reader = new MultiFormatReader(new GeometryFactory());
     reader.setStrict(false);
     Geometry result = null;
     try {
       result = reader.read(output);
-      JTSTestBuilder.controller().setResult("Command", result);
+      JTSTestBuilder.controller().setResult(name, result);
     } catch (ParseException | IOException e) {
-      showError(e);
+      showError(name, e);
     }
     return result;
   }
   
-  private static void showError(Exception e) {
+  private static void showError(String name, Exception e) {
     //String msg = e.getClass().getName() + " : " + e.getMessage();
-    JTSTestBuilder.controller().setResult("Command", e);
+    JTSTestBuilder.controller().setResult(name, e);
   }
   
   // NOT USED
