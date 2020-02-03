@@ -182,22 +182,30 @@ extends JPanel
     lblVars.setText("Vars ");
     lblVars.setBorder(new EmptyBorder(2,30,2,2));//top,left,bottom,right
     
-    JButton btnAwkt = SwingUtil.createButton("A-WKT", "Insert variable for A as WKT", new ActionListener() {
+    JButton btnAwkt = SwingUtil.createButton("A-WKT", 
+        "Insert variable " + CommandController.VAR_A + " for A as WKT", 
+        new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         insertCmdText(CommandController.VAR_A);
       }
     });
-    JButton btnAwkb = SwingUtil.createButton("A-WKB", "Insert variable for A as WKB", new ActionListener() {
+    JButton btnAwkb = SwingUtil.createButton("A-WKB", 
+        "Insert variable " + CommandController.VAR_A_WKB + " for A as WKB", 
+        new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         insertCmdText(CommandController.VAR_A_WKB);
       }
     });
-    JButton btnBwkt = SwingUtil.createButton("B-WKT", "Insert variable for B as WKT", new ActionListener() {
+    JButton btnBwkt = SwingUtil.createButton("B-WKT", 
+        "Insert variable " + CommandController.VAR_B + " for B as WKT", 
+        new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         insertCmdText(CommandController.VAR_B);
       }
     });
-    JButton btnBwkb = SwingUtil.createButton("B-WKB", "Insert variable for B as WKB", new ActionListener() {
+    JButton btnBwkb = SwingUtil.createButton("B-WKB", 
+        "Insert variable " + CommandController.VAR_B_WKB + " for B as WKB", 
+        new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         insertCmdText(CommandController.VAR_B_WKB);
       }
