@@ -29,6 +29,8 @@ import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.controller.CommandController;
@@ -177,13 +179,29 @@ extends JPanel
     lblCommand.setBorder(new EmptyBorder(2,2,2,20));//top,left,bottom,right
     
     JLabel lblVars = new JLabel();
-    lblVars.setText("Vars: "
-        + "  " + CommandController.VAR_A
-        + "  " + CommandController.VAR_A_WKB
-        + "  " + CommandController.VAR_B
-        + "  " + CommandController.VAR_B_WKB
-        );
+    lblVars.setText("Vars ");
     lblVars.setBorder(new EmptyBorder(2,30,2,2));//top,left,bottom,right
+    
+    JButton btnAwkt = SwingUtil.createButton("A-WKT", "Insert variable for A as WKT", new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        insertCmdText(CommandController.VAR_A);
+      }
+    });
+    JButton btnAwkb = SwingUtil.createButton("A-WKB", "Insert variable for A as WKB", new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        insertCmdText(CommandController.VAR_A_WKB);
+      }
+    });
+    JButton btnBwkt = SwingUtil.createButton("B-WKT", "Insert variable for B as WKT", new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        insertCmdText(CommandController.VAR_B);
+      }
+    });
+    JButton btnBwkb = SwingUtil.createButton("B-WKB", "Insert variable for B as WKB", new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        insertCmdText(CommandController.VAR_B_WKB);
+      }
+    });
     
     JPanel labelPanel = new JPanel();
     labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
@@ -191,6 +209,11 @@ extends JPanel
     labelPanel.add(lblCommand);
     labelPanel.add(btnRun);
     labelPanel.add(lblVars);
+    labelPanel.add(btnAwkt);
+    labelPanel.add(btnAwkb);
+    labelPanel.add(btnBwkt);
+    labelPanel.add(btnBwkb);
+    
 
     JPanel btnPanel = new JPanel();
     btnPanel.setLayout(new BoxLayout(btnPanel, BoxLayout.Y_AXIS));
@@ -205,6 +228,22 @@ extends JPanel
     this.add(labelPanel, BorderLayout.NORTH);
     this.add(textPanel, BorderLayout.CENTER);
   }
+  
+  private void insertCmdText(String text)
+  {
+    int pos = txtCmd.getCaretPosition();
+    Document doc = txtCmd.getDocument();
+    try {
+        doc.insertString(pos, text, null);
+    }
+    catch (BadLocationException e) {
+      // TODO - ok to ignore this exception?
+      e.printStackTrace();
+    }
+    // help user by switching focus to inserted text
+    boolean gotFocus = txtCmd.requestFocusInWindow();
+  }
+
   
   private void update() {
     lblCommand.setText(getCommandName());
