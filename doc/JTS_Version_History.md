@@ -67,6 +67,7 @@ Distributions for older JTS versions can be obtained at the
 
 ### Functionality Improvements
 
+* Add a UI to run external commands
 * Allow creating additional view layers
 * Support points in Reveal Topology mode
 
