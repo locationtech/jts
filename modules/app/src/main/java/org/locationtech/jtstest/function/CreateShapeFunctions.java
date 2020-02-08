@@ -14,8 +14,10 @@ package org.locationtech.jtstest.function;
 
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.awt.*;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.*;
@@ -240,5 +242,50 @@ public class CreateShapeFunctions {
 	return geomFact.createPolygon(pts);
   }
   
-
+  public static Geometry pointFieldCentroidStar(Geometry ptsGeom)
+  {
+    Coordinate[] pts = ptsGeom.getCoordinates();
+    Geometry centroid = ptsGeom.getCentroid();
+    return pointFieldStar(ptsGeom, centroid);
+  }
+  
+  public static Geometry pointFieldStar(Geometry ptsGeom, Geometry centrePt)
+  {
+    Coordinate[] pts = ptsGeom.getCoordinates();
+    Coordinate centre = centrePt.getCoordinate();
+    
+    List<OrderedPoint> orderedPts = new ArrayList<OrderedPoint>();
+    for (Coordinate p : pts) {
+      double ang = Angle.angle(centre, p);
+      orderedPts.add(new OrderedPoint(p, ang));
+    }
+    Collections.sort(orderedPts);
+    int n = pts.length+1;
+    Coordinate[] ring = new Coordinate[n];
+    int i = 0;
+    for (OrderedPoint op : orderedPts) {
+      ring[i++] = op.pt;
+    }
+    // close ring
+    ring[n-1] = ring[0].copy();
+    return ptsGeom.getFactory().createPolygon(ring);
+  }
+  
+  private static class OrderedPoint implements Comparable {
+    Coordinate pt;
+    double index;
+    
+    public OrderedPoint(Coordinate p, double index) {
+      this.pt = p;
+      this.index = index;
+    }
+    
+    @Override
+    public int compareTo(Object o) {
+      OrderedPoint other = (OrderedPoint) o;
+      return Double.compare(index,  other.index);
+    }
+    
+    
+  }
 }
