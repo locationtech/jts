@@ -124,7 +124,7 @@
         <repository>
             <id>central.maven.org</id>
             <name>Central Maven repository</name>
-            <url>http://central.maven.org/maven2</url>
+            <url>https://central.maven.org/maven2</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
