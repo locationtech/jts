@@ -440,13 +440,14 @@ public class IsValidOp
    */
   private void checkHolesInShell(Polygon p, GeometryGraph graph)
   {
+    // skip test if no holes are present
+    if (p.getNumInteriorRing() <= 0) return;
+    
     LinearRing shell = p.getExteriorRing();
     boolean isShellEmpty = shell.isEmpty();
-    //PointInRing pir = new SimplePointInRing(shell);
-    //PointInRing pir = new SIRtreePointInRing(shell);
-    //PointInRing pir = new MCPointInRing(shell);
+    //PointInRing pir = new SimplePointInRing(shell); // testing only
     PointOnGeometryLocator pir = new IndexedPointInAreaLocator(shell);
-
+    
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
 
       LinearRing hole = p.getInteriorRingN(i);
@@ -484,6 +485,9 @@ public class IsValidOp
    */
   private void checkHolesNotNested(Polygon p, GeometryGraph graph)
   {
+    // skip test if no holes are present
+    if (p.getNumInteriorRing() <= 0) return;
+    
     IndexedNestedRingTester nestedTester = new IndexedNestedRingTester(graph);
     //SimpleNestedRingTester nestedTester = new SimpleNestedRingTester(arg[0]);
     //SweeplineNestedRingTester nestedTester = new SweeplineNestedRingTester(arg[0]);
