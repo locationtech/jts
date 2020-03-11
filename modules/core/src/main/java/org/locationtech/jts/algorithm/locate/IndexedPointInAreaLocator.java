@@ -50,7 +50,9 @@ import org.locationtech.jts.index.intervalrtree.SortedPackedIntervalRTree;
 public class IndexedPointInAreaLocator 
   implements PointOnGeometryLocator
 {
-  private final IntervalIndexedGeometry index;
+  
+  private Geometry geom;
+  private IntervalIndexedGeometry index = null;
   
   /**
    * Creates a new locator for a given {@link Geometry}.
@@ -63,7 +65,9 @@ public class IndexedPointInAreaLocator
   {
     if (! (g instanceof Polygonal  || g instanceof LinearRing))
       throw new IllegalArgumentException("Argument must be Polygonal or LinearRing");
-    index = new IntervalIndexedGeometry(g);
+    geom = g;
+//    index = new IntervalIndexedGeometry(geom);
+
   }
     
   /**
@@ -74,6 +78,11 @@ public class IndexedPointInAreaLocator
    */
   public int locate(Coordinate p)
   {
+    if (index == null) {
+      index = new IntervalIndexedGeometry(geom);
+      // no need to hold onto geom
+      geom = null;
+    }
     RayCrossingCounter rcc = new RayCrossingCounter(p);
     
     SegmentVisitor visitor = new SegmentVisitor(rcc);

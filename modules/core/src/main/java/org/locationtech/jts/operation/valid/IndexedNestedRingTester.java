@@ -15,9 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.PointLocation;
+import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geomgraph.GeometryGraph;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.strtree.STRtree;
@@ -94,6 +96,53 @@ public class IndexedNestedRingTester
     }
     return true;
   }
+
+  /**
+   * An implementation of an optimization introduced in GEOS
+   * https://github.com/libgeos/geos/pull/255/commits/1bf16cdf5a4827b483a1f712e0597ccb243f58cb
+   * 
+   * Not used for now, since improvement is small and very data-dependent.
+   * 
+   * @return
+   */
+  /*
+  private boolean isNonNestedWithIndex()
+  {
+    buildIndex();
+
+    for (int i = 0; i < rings.size(); i++) {
+      LinearRing outerRing = (LinearRing) rings.get(i);
+      Coordinate[] outerRingPts = outerRing.getCoordinates();
+
+      IndexedPointInAreaLocator ptLocator = new IndexedPointInAreaLocator(outerRing);
+      List results = index.query(outerRing.getEnvelopeInternal());
+//System.out.println(results.size());
+      for (int j = 0; j < results.size(); j++) {
+        LinearRing searchRing = (LinearRing) results.get(j);
+        if (outerRing == searchRing)
+          continue;
+        
+        if (! outerRing.getEnvelopeInternal().intersects(searchRing.getEnvelopeInternal()))
+          continue;
+
+        Coordinate[] searchRingPts = searchRing.getCoordinates();
+        Coordinate innerRingPt = IsValidOp.findPtNotNode(searchRingPts, outerRing, graph);
+        
+        if (innerRingPt == null)
+          continue;
+
+        boolean isInside = Location.EXTERIOR != ptLocator.locate(innerRingPt);
+        //boolean isInside = PointLocation.isInRing(innerRingPt, outerRingPts);
+        
+        if (isInside) {
+          nestedPt = innerRingPt;
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  */
 
   private void buildIndex()
   {
