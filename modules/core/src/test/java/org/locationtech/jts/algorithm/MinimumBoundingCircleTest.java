@@ -78,13 +78,14 @@ public class MinimumBoundingCircleTest extends GeometryTestCase {
   public void testMinDiameterLine() {
     doMinDiameterTest("LINESTRING (100 200, 300 100)", "LINESTRING (100 200, 300 100)");
   }
-  
+
   public void testMinDiameterPolygon() {
     doMinDiameterTest("POLYGON ((100 200, 300 150, 110 100, 100 200))", "LINESTRING (300 150, 100 200)");
+    doMinDiameterTest("POLYGON ((110 200, 300 150, 100 100, 110 200))", "LINESTRING (300 150, 100 100)");
   }
-  
+
   static final double TOLERANCE = 1.0e-5;
-  
+
   private void doMinDiameterTest(String wkt, String expectedWKT) {
     MinimumBoundingCircle mbc = new MinimumBoundingCircle(read(wkt));
     Geometry diamActual = mbc.getMaximumDiameter();
@@ -93,11 +94,11 @@ public class MinimumBoundingCircleTest extends GeometryTestCase {
     checkEqual(expected, diamActual);
   }
 
-  private void doMinimumBoundingCircleTest(String wkt, String expectedWKT) throws ParseException 
+  private void doMinimumBoundingCircleTest(String wkt, String expectedWKT) throws ParseException
   {
-  	doMinimumBoundingCircleTest(wkt, expectedWKT, null, -1);
+    doMinimumBoundingCircleTest(wkt, expectedWKT, null, -1);
   }
-  
+
   private void doMinimumBoundingCircleTest(String wkt, String expectedWKT,
   		Coordinate expectedCentre, double expectedRadius)
   {
@@ -106,7 +107,7 @@ public class MinimumBoundingCircleTest extends GeometryTestCase {
   	Geometry actual = geometryFactory.createMultiPointFromCoords(exPts);
   	double actualRadius = mbc.getRadius();
   	Coordinate actualCentre = mbc.getCentre();
-  	//System.out.println( 
+  	//System.out.println(
   	//		"   Centre = " + actualCentre
   	//		+ "   Radius = " + actualRadius);
 
@@ -119,7 +120,7 @@ public class MinimumBoundingCircleTest extends GeometryTestCase {
   	  System.out.println("Actual = " + actual + ", Expected = " + expected);
   	}
   	assertTrue(isEqual);
-  	
+
   	if (expectedCentre != null) {
   		assertTrue(expectedCentre.distance(actualCentre) < TOLERANCE);
   	}
@@ -127,6 +128,6 @@ public class MinimumBoundingCircleTest extends GeometryTestCase {
   		assertTrue(Math.abs(expectedRadius - actualRadius) < TOLERANCE);
   	}
   }
-  
+
 
 }

@@ -24,9 +24,9 @@ import org.locationtech.jts.util.Assert;
  * Computes the <b>Minimum Bounding Circle</b> (MBC)
  * for the points in a {@link Geometry}.
  * The MBC is the smallest circle which <tt>cover</tt>s
- * all the input points 
+ * all the input points
  * (this is also known as the <b>Smallest Enclosing Circle</b>).
- * This is equivalent to computing the Maximum Diameter 
+ * This is equivalent to computing the Maximum Diameter
  * of the input point set.
  * <p>
  * The computed circle can be specified in two equivalent ways,
@@ -36,7 +36,7 @@ import org.locationtech.jts.util.Assert;
  * <li>By the set of points defining the circle.
  * Depending on the number of points in the input
  * and their relative positions, this set
- * contains from 0 to 3 points. 
+ * contains from 0 to 3 points.
  * <ul>
  * <li>0 or 1 points indicate an empty or trivial input point arrangement.
  * <li>2 points define the diameter of the minimum bounding circle.
@@ -44,7 +44,7 @@ import org.locationtech.jts.util.Assert;
  * </ul>
  * </ul>
  * The class can also output a {@link Geometry} which approximates the
- * shape of the Minimum Bounding Circle (although as an approximation 
+ * shape of the Minimum Bounding Circle (although as an approximation
  * it is <b>not</b> guaranteed to <tt>cover</tt> all the input points.)
  * <p>
  * The Maximum Diameter of the input point set can
@@ -53,53 +53,53 @@ import org.locationtech.jts.util.Assert;
  * The points of the maximum diameter are two of the extremal points of the Minimum Bounding Circle.
  * They lie on the convex hull of the input.
  * However, that the maximum diameter is not a diameter
- * of the Minimum Bounding Circle in the case where the MBC is 
+ * of the Minimum Bounding Circle in the case where the MBC is
  * defined by an inscribed triangle.
- * 
+ *
  * @author Martin Davis
- * 
+ *
  * @see MinimumDiameter
  *
  */
-public class MinimumBoundingCircle 
+public class MinimumBoundingCircle
 {
   /*
-   * The algorithm used is based on the one by Jon Rokne in 
+   * The algorithm used is based on the one by Jon Rokne in
    * the article "An Easy Bounding Circle" in <i>Graphic Gems II</i>.
    */
-	
+
 	private Geometry input;
 	private Coordinate[] extremalPts = null;
 	private Coordinate centre = null;
 	private double radius = 0.0;
-	
+
 	/**
 	 * Creates a new object for computing the minimum bounding circle for the
 	 * point set defined by the vertices of the given geometry.
-	 * 
-	 * @param geom the geometry to use to obtain the point set 
+	 *
+	 * @param geom the geometry to use to obtain the point set
 	 */
 	public MinimumBoundingCircle(Geometry geom)
 	{
 		this.input = geom;
 	}
-	
+
 	/**
 	 * Gets a geometry which represents the Minimum Bounding Circle.
 	 * If the input is degenerate (empty or a single unique point),
 	 * this method will return an empty geometry or a single Point geometry.
-	 * Otherwise, a Polygon will be returned which approximates the 
-	 * Minimum Bounding Circle. 
-	 * (Note that because the computed polygon is only an approximation, 
+	 * Otherwise, a Polygon will be returned which approximates the
+	 * Minimum Bounding Circle.
+	 * (Note that because the computed polygon is only an approximation,
 	 * it may not precisely contain all the input points.)
-	 * 
+	 *
 	 * @return a Geometry representing the Minimum Bounding Circle.
 	 */
 	public Geometry getCircle()
 	{
 		//TODO: ensure the output circle contains the extermal points.
 		//TODO: or maybe even ensure that the returned geometry contains ALL the input points?
-		
+
 		compute();
 		if (centre == null)
 			return input.getFactory().createPolygon();
@@ -110,13 +110,13 @@ public class MinimumBoundingCircle
 	}
 
   /**
-   * Gets a geometry representing the maximum diameter of the 
+   * Gets a geometry representing the maximum diameter of the
    * input. The maximum diameter is the longest line segment
    * between any two points of the input.
    * <p>
    * The points are two of the extremal points of the Minimum Bounding Circle.
    * They lie on the convex hull of the input.
-   * 
+   *
    * @return a LineString between the two farthest points of the input
    * @return a empty LineString if the input is empty
    * @return a Point if the input is a point
@@ -143,11 +143,11 @@ public class MinimumBoundingCircle
    * <p>
    * The points are two of the extremal points of the Minimum Bounding Circle.
    * They lie on the convex hull of the input.
-   * 
+   *
    * @return a LineString between the two farthest points of the input
    * @return a empty LineString if the input is empty
    * @return a Point if the input is a point
-   * 
+   *
    * @deprecated use #getMaximumDiameter()
    */
   public Geometry getFarthestPoints() {
@@ -161,17 +161,16 @@ public class MinimumBoundingCircle
    */
   private static Coordinate[] farthestPoints(Coordinate[] pts) {
     double dist01 = pts[0].distance(pts[1]);
-    double dist12 = pts[0].distance(pts[1]);
-    if (dist12 > dist01) {
-      return new Coordinate[] { pts[0], pts[1] };
-    }
-    return new Coordinate[] { pts[1], pts[2] };
+    double dist12 = pts[1].distance(pts[2]);
+    return dist01 > dist12
+      ? new Coordinate[] { pts[0], pts[1] }
+      : new Coordinate[] { pts[1], pts[2] };
   }
 
   /**
    * Gets a geometry representing the diameter of the computed Minimum Bounding
    * Circle.
-   * 
+   *
    * @return the diameter LineString of the Minimum Bounding Circle
    * @return a empty LineString if the input is empty
    * @return a Point if the input is a point
@@ -201,18 +200,18 @@ public class MinimumBoundingCircle
    * <li>3 points define an inscribed triangle of which the Minimum Bounding Circle is the circumcircle.
    * The longest chords of the circle are the line segments [0-1] and [1-2]
    * </ul>
-   * 
+   *
    * @return the points defining the Minimum Bounding Circle
    */
-	public Coordinate[] getExtremalPoints() 
+	public Coordinate[] getExtremalPoints()
 	{
 		compute();
 		return extremalPts;
 	}
-	
+
   /**
    * Gets the centre point of the computed Minimum Bounding Circle.
-   * 
+   *
    * @return the centre point of the Minimum Bounding Circle
    * @return null if the input is empty
    */
@@ -220,19 +219,19 @@ public class MinimumBoundingCircle
     compute();
     return centre;
   }
-                
+
 	/**
 	 * Gets the radius of the computed Minimum Bounding Circle.
-	 * 
+	 *
 	 * @return the radius of the Minimum Bounding Circle
 	 */
-	public double getRadius() 
+	public double getRadius()
 	{
 		compute();
 		return radius;
 	}
-	
-	private void computeCentre() 
+
+	private void computeCentre()
 	{
 		switch (extremalPts.length) {
 		case 0:
@@ -252,9 +251,9 @@ public class MinimumBoundingCircle
 			break;
 		}
 	}
-	
+
 	private void compute()
-	{		
+	{
 		if (extremalPts != null) return;
 
 		computeCirclePoints();
@@ -262,7 +261,7 @@ public class MinimumBoundingCircle
 		if (centre != null)
 			radius = centre.distance(extremalPts[0]);
 	}
-	
+
 	private void computeCirclePoints()
 	{
 		// handle degenerate or trivial cases
@@ -275,22 +274,22 @@ public class MinimumBoundingCircle
 			extremalPts = new Coordinate[] { new Coordinate(pts[0]) };
 			return;
 		}
-		
+
 		/**
 		 * The problem is simplified by reducing to the convex hull.
 		 * Computing the convex hull also has the useful effect of eliminating duplicate points
 		 */
 		Geometry convexHull = input.convexHull();
-		
+
 		Coordinate[] hullPts = convexHull.getCoordinates();
-		
+
 		// strip duplicate final point, if any
 		Coordinate[] pts = hullPts;
 		if (hullPts[0].equals2D(hullPts[hullPts.length - 1])) {
 			pts = new Coordinate[hullPts.length - 1];
 			CoordinateArrays.copyDeep(hullPts, 0, pts, 0, hullPts.length - 1);
 		}
-		
+
 		/**
 		 * Optimization for the trivial case where the CH has fewer than 3 points
 		 */
@@ -298,23 +297,23 @@ public class MinimumBoundingCircle
 			extremalPts = CoordinateArrays.copyDeep(pts);
 			return;
 		}
-		
+
 		// find a point P with minimum Y ordinate
 		Coordinate P = lowestPoint(pts);
-		
+
 		// find a point Q such that the angle that PQ makes with the x-axis is minimal
 		Coordinate Q = pointWitMinAngleWithX(pts, P);
-		
+
 		/**
-		 * Iterate over the remaining points to find 
+		 * Iterate over the remaining points to find
 		 * a pair or triplet of points which determine the minimal circle.
-		 * By the design of the algorithm, 
-		 * at most <tt>pts.length</tt> iterations are required to terminate 
+		 * By the design of the algorithm,
+		 * at most <tt>pts.length</tt> iterations are required to terminate
 		 * with a correct result.
-		 */ 
+		 */
 		for (int i = 0; i < pts.length; i++) {
 			Coordinate R = pointWithMinAngleWithSegment(pts, P, Q);
-			
+
 			// if PRQ is obtuse, then MBC is determined by P and Q
 			if (Angle.isObtuse(P, R, Q)) {
 				extremalPts = new Coordinate[] { new Coordinate(P), new Coordinate(Q) };
@@ -334,9 +333,9 @@ public class MinimumBoundingCircle
 			extremalPts = new Coordinate[] { new Coordinate(P), new Coordinate(Q), new Coordinate(R) };
 			return;
 		}
-		Assert.shouldNeverReachHere("Logic failure in Minimum Bounding Circle algorithm!"); 
+		Assert.shouldNeverReachHere("Logic failure in Minimum Bounding Circle algorithm!");
 	}
-	
+
 	private static Coordinate lowestPoint(Coordinate[] pts)
 	{
 		Coordinate min = pts[0];
@@ -346,16 +345,16 @@ public class MinimumBoundingCircle
 		}
 		return min;
 	}
-	
+
 	private static Coordinate pointWitMinAngleWithX(Coordinate[] pts, Coordinate P)
 	{
 		double minSin = Double.MAX_VALUE;
 		Coordinate minAngPt = null;
 		for (int i = 0; i < pts.length; i++) {
-			
+
 			Coordinate p = pts[i];
 			if (p == P) continue;
-			
+
 			/**
 			 * The sin of the angle is a simpler proxy for the angle itself
 			 */
@@ -364,7 +363,7 @@ public class MinimumBoundingCircle
 			if (dy < 0) dy = -dy;
 			double len = Math.sqrt(dx * dx + dy * dy);
 			double sin = dy / len;
-			
+
 			if (sin < minSin) {
 				minSin = sin;
 				minAngPt = p;
@@ -372,17 +371,17 @@ public class MinimumBoundingCircle
 		}
 		return minAngPt;
 	}
-	
+
 	private static Coordinate pointWithMinAngleWithSegment(Coordinate[] pts, Coordinate P, Coordinate Q)
 	{
 		double minAng = Double.MAX_VALUE;
 		Coordinate minAngPt = null;
 		for (int i = 0; i < pts.length; i++) {
-			
+
 			Coordinate p = pts[i];
 			if (p == P) continue;
 			if (p == Q) continue;
-			
+
 			double ang = Angle.angleBetween(P, p, Q);
 			if (ang < minAng) {
 				minAng = ang;
@@ -390,8 +389,7 @@ public class MinimumBoundingCircle
 			}
 		}
 		return minAngPt;
-		
+
 	}
 }
 
-  
