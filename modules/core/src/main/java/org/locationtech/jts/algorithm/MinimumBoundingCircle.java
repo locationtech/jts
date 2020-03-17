@@ -161,8 +161,8 @@ public class MinimumBoundingCircle
    */
   private static Coordinate[] farthestPoints(Coordinate[] pts) {
     double dist01 = pts[0].distance(pts[1]);
-    double dist12 = pts[0].distance(pts[1]);
-    if (dist12 > dist01) {
+    double dist12 = pts[1].distance(pts[2]);
+    if (dist01 >= dist12) {
       return new Coordinate[] { pts[0], pts[1] };
     }
     return new Coordinate[] { pts[1], pts[2] };
