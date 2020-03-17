@@ -62,6 +62,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve accuracy of `LineSegment.lineIntersection` (#468)
 * Fix `Distance3DOp` coordinate ordering (#480) 
 * Fix `Geometry.reverse()` to have consistent behaviour and to copy all fields (#513)
+* Fix `MinimumBoundingCircle.farthestPoints` to work correctly (#522)
 
 ## JTS TestBuilder
 
