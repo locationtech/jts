@@ -79,9 +79,9 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>repo.locationtech.org</id>
+            <id>repo.eclipse.org</id>
             <name>JTS Repository - Snapshots</name>
-            <url>https://repo.locationtech.org/content/repositories/jts-snapshots/</url>
+            <url>https://repo.eclipse.org/content/repositories/jts-snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>ossrh</id>
