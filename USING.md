@@ -38,14 +38,14 @@ JTS snapshot artifacts are published to the LocationTech Maven repository. To in
 <repositories>
   <repository>
     <id>locationtech-releases</id>
-    <url>https://repo.locationtech.org/content/groups/releases</url>
+    <url>https://repo.eclipse.org/content/groups/releases</url>
     <snapshots>
       <enabled>false</enabled>
     </snapshots>
   </repository>
   <repository>
     <id>jts-snapshots</id>
-    <url>https://repo.locationtech.org/content/repositories/jts-snapshots</url>
+    <url>https://repo.eclipse.org/content/repositories/jts-snapshots</url>
     <releases>
       <enabled>false</enabled>
     </releases>
