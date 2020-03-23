@@ -44,9 +44,9 @@ public class BufferTest extends GeometryTestCase {
    * does not suffer from numeric "slop-over".
    * See GEOS PR #282.
    */
-  public void testQuadrantSegmentCount() {
+  public void testPointBufferSegmentCount() {
     Geometry g = read("POINT ( 100 100 )");
-    //checkPointBufferSegmentCount(g, 80, 53);
+    checkPointBufferSegmentCount(g, 80, 53);
     checkPointBufferSegmentCount(g, 80, 129);
   }
   
