@@ -38,6 +38,8 @@ import org.locationtech.jts.geom.util.PolygonExtracter;
  * the coordinate computed is a close
  * approximation to the exact point.
  * <p>
+ * Empty geometry collection components are ignored.
+ * <p>
  * The algorithms used are straightforward O(n^2)
  * comparisons.  This worst-case performance could be improved on
  * by using Voronoi techniques or spatial indexes.
