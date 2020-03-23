@@ -41,7 +41,10 @@ import org.locationtech.jts.index.intervalrtree.SortedPackedIntervalRTree;
  * <p>
  * {@link Polygonal} and {@link LinearRing} geometries
  * are supported.
- * 
+ * <p>
+ * The index is lazy-loaded, which allows
+ * creating instances even if they are not used.
+ * <p>
  * Thread-safe and immutable.
  *
  * @author Martin Davis
@@ -66,8 +69,6 @@ public class IndexedPointInAreaLocator
     if (! (g instanceof Polygonal  || g instanceof LinearRing))
       throw new IllegalArgumentException("Argument must be Polygonal or LinearRing");
     geom = g;
-//    index = new IntervalIndexedGeometry(geom);
-
   }
     
   /**
