@@ -135,40 +135,20 @@ public class OffsetCurveSetBuilder {
   
   private void addLineString(LineString line)
   {
-    if (curveBuilder.isCurveEmpty(distance)) return;
+    if (curveBuilder.isLineOffsetEmpty(distance)) return;
     
     Coordinate[] coord = CoordinateArrays.removeRepeatedPoints(line.getCoordinates());
     
     if (CoordinateArrays.isRing(coord)) {
-      addLinearRing(coord);
-      return;
+      addRingBothSides(coord, distance);
     }
-    Coordinate[] curve = curveBuilder.getLineCurve(coord, distance);
-    addCurve(curve, Location.EXTERIOR, Location.INTERIOR);
-
+    else {
+      Coordinate[] curve = curveBuilder.getLineCurve(coord, distance);
+      addCurve(curve, Location.EXTERIOR, Location.INTERIOR);
+    }
     // TESTING
     //Coordinate[] curveTrim = BufferCurveLoopPruner.prune(curve); 
     //addCurve(curveTrim, Location.EXTERIOR, Location.INTERIOR);
-  }
-
-  private void addLinearRing(Coordinate[] coord)
-  {
-    double offsetDistance = distance;
-    int offsetSide = Position.LEFT;
-
-    addRingCurve(
-            coord,
-            offsetDistance,
-            offsetSide,
-            Location.EXTERIOR,
-            Location.INTERIOR);
-    /* Add the opposite side of the ring  */
-    addRingCurve(
-          coord,
-          offsetDistance,
-          Position.opposite(offsetSide),
-          Location.INTERIOR,
-          Location.EXTERIOR);
   }
   
   private void addPolygon(Polygon p)
@@ -190,7 +170,7 @@ public class OffsetCurveSetBuilder {
     if (distance <= 0.0 && shellCoord.length < 3)
     	return;
 
-    addRingCurve(
+    addRingSide(
             shellCoord,
             offsetDistance,
             offsetSide,
@@ -210,7 +190,7 @@ public class OffsetCurveSetBuilder {
       // Holes are topologically labelled opposite to the shell, since
       // the interior of the polygon lies on their opposite side
       // (on the left, if the hole is oriented CCW)
-      addRingCurve(
+      addRingSide(
             holeCoord,
             offsetDistance,
             Position.opposite(offsetSide),
@@ -219,12 +199,27 @@ public class OffsetCurveSetBuilder {
     }
   }
   
+  private void addRingBothSides(Coordinate[] coord, double distance)
+  {
+    addRingSide(coord, distance,
+      Position.LEFT, 
+      Location.EXTERIOR, Location.INTERIOR);
+    /* Add the opposite side of the ring.
+     * Since the ring is assumed to be in CW orientation
+     * as per contract for the addRingCurve method,
+     * this is the hole curve (if any)
+    */
+    addRingSide(coord, distance,
+      Position.RIGHT,
+      Location.INTERIOR, Location.EXTERIOR);
+  }
+  
   /**
-   * Adds an offset curve for a ring.
+   * Adds an offset curve for one side of a ring.
    * The side and left and right topological location arguments
-   * assume that the ring is oriented CW.
-   * If the ring is in the opposite orientation,
-   * the left and right locations must be interchanged and the side flipped.
+   * are provided assuming that the ring is oriented CW.
+   * (If the ring is in the opposite orientation,
+   * the left and right locations are interchanged and the side flipped.)
    *
    * @param coord the coordinates of the ring (must not contain repeated points)
    * @param offsetDistance the positive distance at which to create the buffer
@@ -232,7 +227,7 @@ public class OffsetCurveSetBuilder {
    * @param cwLeftLoc the location on the L side of the ring (if it is CW)
    * @param cwRightLoc the location on the R side of the ring (if it is CW)
    */
-  private void addRingCurve(Coordinate[] coord, double offsetDistance, int side, int cwLeftLoc, int cwRightLoc)
+  private void addRingSide(Coordinate[] coord, double offsetDistance, int side, int cwLeftLoc, int cwRightLoc)
   {
     // don't bother adding ring if it is "flat" and will disappear in the output
     if (offsetDistance == 0.0 && coord.length < LinearRing.MINIMUM_VALID_SIZE)

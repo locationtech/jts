@@ -69,7 +69,7 @@ public class OffsetCurveBuilder
   {
     this.distance = distance;
     
-    if (isCurveEmpty(distance)) return null;
+    if (isLineOffsetEmpty(distance)) return null;
 
     double posDistance = Math.abs(distance);
     OffsetSegmentGenerator segGen = getSegGen(posDistance);
@@ -91,14 +91,17 @@ public class OffsetCurveBuilder
 
   /**
    * Tests whether the offset curve for line or point geometries
-   * at the given distance is empty.
-   * This is the case if the distance is zero, 
-   * or for the case of non-singled-sided buffers if it is negative.
+   * at the given offset distance is empty (does not exist).
+   * This is the case if:
+   * <ul>
+   * <li>the distance is zero, 
+   * <li>the distance is negative, except for the case of singled-sided buffers
+   * </ul>
    * 
    * @param distance the offset curve distance
-   * @return true if the offset curve line is empty
+   * @return true if the offset curve is empty
    */
-  public boolean isCurveEmpty(double distance) {
+  public boolean isLineOffsetEmpty(double distance) {
     // a zero width buffer of a line or point is empty
     if (distance == 0.0) return true;
     // a negative width buffer of a line or point is empty,
