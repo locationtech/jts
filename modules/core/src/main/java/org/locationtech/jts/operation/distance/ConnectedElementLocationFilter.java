@@ -27,6 +27,7 @@ import org.locationtech.jts.geom.Polygon;
  * (e.g. a polygon, linestring or point)
  * and returns them in a list. The elements of the list are 
  * {@link org.locationtech.jts.operation.distance.GeometryLocation}s.
+ * Empty geometries do not provide a location item.
  *
  * @version 1.7
  */
@@ -56,6 +57,8 @@ public class ConnectedElementLocationFilter
 
   public void filter(Geometry geom)
   {
+    // empty geometries do not provide a location
+    if (geom.isEmpty()) return;
     if (geom instanceof Point
       || geom instanceof LineString
       || geom instanceof Polygon )
