@@ -139,7 +139,15 @@ public class OffsetCurveSetBuilder {
     
     Coordinate[] coord = CoordinateArrays.removeRepeatedPoints(line.getCoordinates());
     
-    if (CoordinateArrays.isRing(coord)) {
+    /**
+     * Rings (closed lines) are generated with a continuous curve, 
+     * with no end arcs. This produces better quality linework, 
+     * and avoids noding issues with arcs around almost-parallel end segments.
+     * See JTS #523 and #518.
+     * 
+     * Singled-sided buffers currently treat rings as if they are lines.
+     */
+    if (CoordinateArrays.isRing(coord) && ! curveBuilder.getBufferParameters().isSingleSided()) {
       addRingBothSides(coord, distance);
     }
     else {
@@ -166,7 +174,7 @@ public class OffsetCurveSetBuilder {
     // if the polygon would be completely eroded
     if (distance < 0.0 && isErodedCompletely(shell, distance))
         return;
-    // don't attemtp to buffer a polygon with too few distinct vertices
+    // don't attempt to buffer a polygon with too few distinct vertices
     if (distance <= 0.0 && shellCoord.length < 3)
     	return;
 
@@ -204,10 +212,7 @@ public class OffsetCurveSetBuilder {
     addRingSide(coord, distance,
       Position.LEFT, 
       Location.EXTERIOR, Location.INTERIOR);
-    /* Add the opposite side of the ring.
-     * Since the ring is assumed to be in CW orientation
-     * as per contract for the addRingCurve method,
-     * this is the hole curve (if any)
+    /* Add the opposite side of the ring
     */
     addRingSide(coord, distance,
       Position.RIGHT,
@@ -217,9 +222,10 @@ public class OffsetCurveSetBuilder {
   /**
    * Adds an offset curve for one side of a ring.
    * The side and left and right topological location arguments
-   * are provided assuming that the ring is oriented CW.
+   * are provided as if the ring is oriented CW.
    * (If the ring is in the opposite orientation,
-   * the left and right locations are interchanged and the side flipped.)
+   * this is detected and 
+   * the left and right locations are interchanged and the side is flipped.)
    *
    * @param coord the coordinates of the ring (must not contain repeated points)
    * @param offsetDistance the positive distance at which to create the buffer
