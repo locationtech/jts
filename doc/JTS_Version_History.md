@@ -39,7 +39,7 @@ Distributions for older JTS versions can be obtained at the
 * Added `CoordinateList.toCoordinateArray(isForward)` (#482)
 * Addded `HPRtree` Hilbert Packed R-tree (#494)
 * Added `VariableBuffer` class for computing varying-distance buffers (#495)
-^ Added `LineSegment.reflect` method (#495)
+* Added `LineSegment.reflect` method (#495)
 
 ### Performance Improvements
 
