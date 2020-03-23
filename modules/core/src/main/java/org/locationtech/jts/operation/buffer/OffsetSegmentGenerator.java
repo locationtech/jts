@@ -598,23 +598,17 @@ class OffsetSegmentGenerator
 
     if (nSegs < 1) return;    // no segments because angle is less than increment - nothing to do!
 
-    double initAngle, currAngleInc;
+     // choose angle increment so that each segment has equal length
+    double angleInc = totalAngle / nSegs;
 
-    // choose angle increment so that each segment has equal length
-    initAngle = 0.0;
-    currAngleInc = totalAngle / nSegs;
-
-    double currAngle = initAngle;
     Coordinate pt = new Coordinate();
-    while (currAngle < totalAngle) {
-      double angle = startAngle + directionFactor * currAngle;
+    for (int i = 0; i < nSegs; i++) {
+      double angle = startAngle + directionFactor * i * angleInc;
       pt.x = p.x + radius * Math.cos(angle);
       pt.y = p.y + radius * Math.sin(angle);
       segList.addPt(pt);
-      currAngle += currAngleInc;
     }
   }
-
 
   /**
    * Creates a CW circle around a point

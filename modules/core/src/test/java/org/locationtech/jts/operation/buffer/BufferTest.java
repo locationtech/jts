@@ -39,6 +39,23 @@ public class BufferTest extends GeometryTestCase {
     testMultiLineString_separateBuffers_floatingSingle();
   }
   
+  /**
+   * This tests that the algorithm used to generate fillet curves
+   * does not suffer from numeric "slop-over".
+   * See GEOS PR #282.
+   */
+  public void testPointBufferSegmentCount() {
+    Geometry g = read("POINT ( 100 100 )");
+    checkPointBufferSegmentCount(g, 80, 53);
+    checkPointBufferSegmentCount(g, 80, 129);
+  }
+  
+  private void checkPointBufferSegmentCount(Geometry g, double dist, int quadSegs) {
+    Geometry buf = g.buffer(dist, quadSegs);
+    int segsExpected = 4 * quadSegs + 1;
+    assertEquals(segsExpected, buf.getNumPoints());
+  }
+
   public void testMultiLineString_depthFailure() throws Exception {
     new BufferValidator(
       15,
