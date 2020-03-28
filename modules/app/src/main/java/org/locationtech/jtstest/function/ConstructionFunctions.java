@@ -11,12 +11,13 @@
  */
 package org.locationtech.jtstest.function;
 
-import org.locationtech.jts.algorithm.MaximumInnerCircle;
+import org.locationtech.jts.algorithm.MaximumInscribedCircle;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.densify.Densifier;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.OctagonalEnvelope;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class ConstructionFunctions {
   public static Geometry octagonalEnvelope(Geometry g) { return OctagonalEnvelope.octagonalEnvelope(g); }
@@ -41,6 +42,29 @@ public class ConstructionFunctions {
 
   public static Geometry densify(Geometry g, double distance) { return Densifier.densify(g, distance); }
   
-  public static Geometry maximumInnerCircle(Geometry g, double precision) { return MaximumInnerCircle.getCenter(g, precision); }
+  @Metadata(description="Computes Maximum Inscribe Circle center point")
+  public static Geometry maximumInscribedCircleCenter(Geometry g,
+      @Metadata(title="Distance tolerance")
+      double tolerance) { 
+    return MaximumInscribedCircle.getCenter(g, tolerance); 
+  }
+  
+  @Metadata(description="Computes Maximum Inscribe Circle boundary point")
+  public static Geometry maximumInscribedCircleBoundaryPoint(Geometry g,
+      @Metadata(title="Distance tolerance")
+      double tolerance) { 
+    MaximumInscribedCircle mic = new MaximumInscribedCircle(g, tolerance); 
+    return mic.getBoundaryPoint(); 
+  }
+  
+  @Metadata(description="Computes Maximum Inscribe Circle radius")
+  public static double maximumInscribedCircleRadius(Geometry g, 
+      @Metadata(title="Distance tolerance")
+      double tolerance) { 
+    MaximumInscribedCircle mic = new MaximumInscribedCircle(g, tolerance); 
+    Geometry center = mic.getCenter();
+    Geometry radiusPt = mic.getBoundaryPoint();
+    return center.distance(radiusPt);
+  }
 
 }

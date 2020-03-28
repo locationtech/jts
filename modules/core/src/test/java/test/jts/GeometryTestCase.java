@@ -80,6 +80,17 @@ public abstract class GeometryTestCase extends TestCase{
     return geomFactory.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
   }
   
+  protected void checkEqualXY(Coordinate expected, Coordinate actual, double tolerance) {
+    checkOrdinate(expected.getX(), actual.getX(), tolerance);
+    checkOrdinate(expected.getY(), actual.getY(), tolerance); 
+  }
+  
+  protected void checkOrdinate(double x1, double x2, double tolerance) {
+    double diff = Math.abs(x1 - x2);
+    boolean isEqual = diff <= tolerance;
+    assertTrue(isEqual);
+  }
+  
   /**
    * Reads a {@link Geometry} from a WKT string using a custom {@link GeometryFactory}.
    *  
