@@ -46,6 +46,22 @@ public class MaximumInscibedCircleTest extends GeometryTestCase {
        0.01, 411.38, 149.99, 78.75 );
   }
 
+  /**
+   * Invalid polygon collapsed to a line
+   */
+  public void testCollapsedLine() {
+    checkMIC("POLYGON ((100 100, 200 200, 100 100, 100 100))", 
+       0.01, 150, 150, 0 );
+  }
+
+  /**
+   * Invalid polygon collapsed to a point
+   */
+  public void testCollapsedPoint() {
+    checkMIC("POLYGON ((100 100, 100 100, 100 100, 100 100))", 
+       0.01, 100, 100, 0 );
+  }
+  
   private void checkMIC(String wkt, double tolerance, 
       double x, double y, double expectedRadius) {
     checkMIC(read(wkt), tolerance, x, y, expectedRadius);

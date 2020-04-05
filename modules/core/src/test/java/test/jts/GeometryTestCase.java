@@ -81,14 +81,8 @@ public abstract class GeometryTestCase extends TestCase{
   }
   
   protected void checkEqualXY(Coordinate expected, Coordinate actual, double tolerance) {
-    checkOrdinate(expected.getX(), actual.getX(), tolerance);
-    checkOrdinate(expected.getY(), actual.getY(), tolerance); 
-  }
-  
-  protected void checkOrdinate(double x1, double x2, double tolerance) {
-    double diff = Math.abs(x1 - x2);
-    boolean isEqual = diff <= tolerance;
-    assertTrue(isEqual);
+    assertEquals("Coordinate X", expected.getX(), actual.getX(), tolerance);
+    assertEquals("Coordinate Y", expected.getY(), actual.getY(), tolerance);
   }
   
   /**
