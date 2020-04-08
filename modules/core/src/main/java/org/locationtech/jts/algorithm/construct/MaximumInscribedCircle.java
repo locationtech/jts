@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.algorithm;
+package org.locationtech.jts.algorithm.construct;
 
 import java.util.PriorityQueue;
 
@@ -18,6 +18,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
@@ -25,8 +26,8 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 
 /**
- * Computes the Maximum Inscribed Circle for a 
- * polygonal area {@link Geometry}, up to a specified tolerance.
+ * Constructs the Maximum Inscribed Circle for a 
+ * polygonal {@link Geometry}, up to a specified tolerance.
  * The Maximum Inscribed Circle is determined by a point in the interior of the area 
  * which has the farthest distance from the area boundary,
  * along with a boundary point at that distance.
@@ -50,8 +51,8 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 public class MaximumInscribedCircle {
 
   /**
-   * Computes the center point of the Maximum Inscribed Circle of
-   * a polygonal geometry, up to a given tolerance distance.
+   * Computes the center point of the Maximum Inscribed Circle
+   * of a polygonal geometry, up to a given tolerance distance.
    * 
    * @param polygonal a polygonal geometry
    * @param tolerance the distance tolerance for computing the center point
@@ -62,6 +63,19 @@ public class MaximumInscribedCircle {
     return mic.getCenter();
   }
 
+  /**
+   * Computes a radius line of the Maximum Inscribed Circle
+   * of a polygonal geometry, up to a given tolerance distance.
+   * 
+   * @param polygonal a polygonal geometry
+   * @param tolerance the distance tolerance for computing the center point
+   * @return a line from the center to a point on the circle
+   */
+  public static LineString getRadiusLine(Geometry polygonal, double tolerance) {
+    MaximumInscribedCircle mic = new MaximumInscribedCircle(polygonal, tolerance);
+    return mic.getRadiusLine();
+  }
+  
   private Geometry inputGeom;
   private double tolerance;
 
@@ -70,9 +84,10 @@ public class MaximumInscribedCircle {
   private IndexedFacetDistance indexedDistance;
   private Cell centerCell = null;
   private Point centerPoint = null;
+  private Point radiusPoint;
 
   /**
-   * Creates a new instance of a Maximum Inscribe Circle computation.
+   * Creates a new instance of a Maximum Inscribed Circle computation.
    * 
    * @param polygonal an areal geometry
    * @param tolerance the distance tolerance for computing the centre point
@@ -104,30 +119,40 @@ public class MaximumInscribedCircle {
   }
   
   /**
-   * Gets a point on the area boundary which 
-   * is on the boundary of the maximum inscribed circle.
-   * This is an area boundary point which is closest
-   * to the circle center (up to the tolerance distance).
-   * The line segment from the center point to this point
-   * is a radius of the maximum inscribed circle.
+   * Gets a point defining the radius of the Maximum Inscribed Circle.
+   * This is a point on the boundary which is 
+   * nearest to the computed center of the Maximum Inscribed Circle.
+   * The line segment from the center to this point
+   * is a radius of the constructed circle, and this point
+   * lies on the boundary of the circle.
    * 
-   * @return a point on the boundary of the maximum inscribed circle
+   * @return a point defining the radius of the Maximum Inscribed Circle
    */
-  public Point getBoundaryPoint() {
+  public Point getRadiusPoint() {
     compute();
-    Coordinate[] nearestPts = indexedDistance.nearestPoints(centerPoint);
-    Coordinate boundaryPt = nearestPts[0];
-    return factory.createPoint(boundaryPt);
+    return radiusPoint;
   }
   
   /**
-   * Computes the distance from a point to the area boundary.
+   * Gets a line representing a radius of the Largest Empty Circle.
+   * 
+   * @return a line from the center of the circle to a point on the edge
+   */
+  public LineString getRadiusLine() {
+    compute();
+    LineString radiusLine = factory.createLineString(
+        new Coordinate[] { centerPoint.getCoordinate().copy(), radiusPoint.getCoordinate().copy() });
+    return radiusLine;
+  }
+  
+  /**
+   * Computes the signed distance from a point to the area boundary.
    * Points outside the polygon are assigned a negative distance. 
    * Their containing cells will be last in the priority queue
    * (but may still end up being tested since they may need to be refined).
    * 
    * @param p the point to compute the distance for
-   * @return the distance to the area boundary
+   * @return the signed distance to the area boundary (negative indicates outside the area)
    */
   private double distanceToBoundary(Point p) {
     double dist = indexedDistance.distance(p);
@@ -189,6 +214,10 @@ public class MaximumInscribedCircle {
     // the farthest cell is the best approximation to the MIC center
     centerCell = farthestCell;
     centerPoint = createPoint(centerCell.getX(), centerCell.getY());
+    // compute radius point
+    Coordinate[] nearestPts = indexedDistance.nearestPoints(centerPoint);
+    Coordinate radiusPt = nearestPts[0];
+    radiusPoint = factory.createPoint(radiusPt);
   }
 
   /**

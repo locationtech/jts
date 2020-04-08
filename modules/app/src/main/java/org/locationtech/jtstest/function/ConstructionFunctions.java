@@ -12,9 +12,10 @@
 package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.algorithm.Angle;
-import org.locationtech.jts.algorithm.MaximumInscribedCircle;
 import org.locationtech.jts.algorithm.MinimumBoundingCircle;
 import org.locationtech.jts.algorithm.MinimumDiameter;
+import org.locationtech.jts.algorithm.construct.LargestEmptyCircle;
+import org.locationtech.jts.algorithm.construct.MaximumInscribedCircle;
 import org.locationtech.jts.densify.Densifier;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -45,42 +46,47 @@ public class ConstructionFunctions {
 
   public static Geometry densify(Geometry g, double distance) { return Densifier.densify(g, distance); }
   
-  @Metadata(description="Constructs the center point of the Maximum Inscribed Circle")
+  @Metadata(description="Constructs the center point of the Maximum Inscribed Circle of a polygonal geometry")
   public static Geometry maximumInscribedCircleCenter(Geometry g,
       @Metadata(title="Distance tolerance")
       double tolerance) { 
     return MaximumInscribedCircle.getCenter(g, tolerance); 
   }
   
-  @Metadata(description="Constructs the boundary point of the Maximum Inscribed Circle ")
-  public static Geometry maximumInscribedCircleBoundaryPoint(Geometry g,
+  @Metadata(description="Constructs a radius line of the Maximum Inscribed Circle of a polygonal geometry")
+  public static Geometry maximumInscribedCircleRadius(Geometry g,
       @Metadata(title="Distance tolerance")
       double tolerance) { 
     MaximumInscribedCircle mic = new MaximumInscribedCircle(g, tolerance); 
-    return mic.getBoundaryPoint(); 
+    return mic.getRadiusLine(); 
   }
   
-  @Metadata(description="Constructs the Maximum Inscribed Circle of a Polygon")
+  @Metadata(description="Constructs the Maximum Inscribed Circle of a polygonal geometry")
   public static Geometry maximumInscribedCircle(Geometry g,
       @Metadata(title="Distance tolerance")
       double tolerance) { 
     MaximumInscribedCircle mic = new MaximumInscribedCircle(g, tolerance); 
     Coordinate center = mic.getCenter().getCoordinate();
-    Coordinate radiusPt = mic.getBoundaryPoint().getCoordinate();
+    Coordinate radiusPt = mic.getRadiusPoint().getCoordinate();
     LineString radiusLine = g.getFactory().createLineString(new Coordinate[] { center, radiusPt });
     return circleByRadiusLine(radiusLine, 60);
   }
-  
-  @Metadata(description="Computes the radius length of the Maximum Inscribe Circle")
-  public static double maximumInscribedCircleRadius(Geometry g, 
+
+  @Metadata(description="Computes a radius line of the Largest Empty Circle in a set of obstacles")
+  public static Geometry largestEmptyCircleRadius(Geometry g, 
       @Metadata(title="Distance tolerance")
       double tolerance) { 
-    MaximumInscribedCircle mic = new MaximumInscribedCircle(g, tolerance); 
-    Geometry center = mic.getCenter();
-    Geometry radiusPt = mic.getBoundaryPoint();
-    return center.distance(radiusPt);
+    return LargestEmptyCircle.getRadiusLine(g, tolerance); 
   }
-
+  
+  @Metadata(description="Constructs the Largest Empty Circle in a set of obstacles")
+  public static Geometry largestEmptyCircle(Geometry g,
+      @Metadata(title="Distance tolerance")
+      double tolerance) { 
+    LineString radiusLine = LargestEmptyCircle.getRadiusLine(g, tolerance);
+    return circleByRadiusLine(radiusLine, 60);
+  }
+  
   @Metadata(description="Constructs an n-point circle from a 2-point line giving the radius")
   public static Geometry circleByRadiusLine(Geometry radiusLine,
       @Metadata(title="Number of vertices")
@@ -102,4 +108,5 @@ public class ConstructionFunctions {
     }
     return radiusLine.getFactory().createPolygon(circlePts);
   }
+ 
 }
