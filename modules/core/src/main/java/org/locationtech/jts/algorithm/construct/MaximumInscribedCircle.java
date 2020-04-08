@@ -45,6 +45,11 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * Point containment and distance to boundary are computed in a performant
  * way by using spatial indexes.
  * 
+ * <h3>Future Enhancements</h3>
+ * <ul>
+ * <li>Support a polygonal constraint on placement of center
+ * </ul>
+ * 
  * @author Martin Davis
  *
  */

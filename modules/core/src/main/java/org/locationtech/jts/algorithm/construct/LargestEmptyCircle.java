@@ -42,7 +42,7 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * Point containment and distance to boundary are computed in a performant
  * way by using spatial indexes.
  * <p>
- * <h3>FUTURE WORK</h3>
+ * <h3>Future Enhancements</h3>
  * <ul>
  * <li>Support polygons as obstacles
  * <li>Support a client-defined boundary polygon

@@ -46,6 +46,19 @@ public class ConstructionFunctions {
 
   public static Geometry densify(Geometry g, double distance) { return Densifier.densify(g, distance); }
   
+  //--------------------------------------------
+  
+  @Metadata(description="Constructs the Maximum Inscribed Circle of a polygonal geometry")
+  public static Geometry maximumInscribedCircle(Geometry g,
+      @Metadata(title="Distance tolerance")
+      double tolerance) { 
+    MaximumInscribedCircle mic = new MaximumInscribedCircle(g, tolerance); 
+    Coordinate center = mic.getCenter().getCoordinate();
+    Coordinate radiusPt = mic.getRadiusPoint().getCoordinate();
+    LineString radiusLine = g.getFactory().createLineString(new Coordinate[] { center, radiusPt });
+    return circleByRadiusLine(radiusLine, 60);
+  }
+  
   @Metadata(description="Constructs the center point of the Maximum Inscribed Circle of a polygonal geometry")
   public static Geometry maximumInscribedCircleCenter(Geometry g,
       @Metadata(title="Distance tolerance")
@@ -60,24 +73,8 @@ public class ConstructionFunctions {
     MaximumInscribedCircle mic = new MaximumInscribedCircle(g, tolerance); 
     return mic.getRadiusLine(); 
   }
-  
-  @Metadata(description="Constructs the Maximum Inscribed Circle of a polygonal geometry")
-  public static Geometry maximumInscribedCircle(Geometry g,
-      @Metadata(title="Distance tolerance")
-      double tolerance) { 
-    MaximumInscribedCircle mic = new MaximumInscribedCircle(g, tolerance); 
-    Coordinate center = mic.getCenter().getCoordinate();
-    Coordinate radiusPt = mic.getRadiusPoint().getCoordinate();
-    LineString radiusLine = g.getFactory().createLineString(new Coordinate[] { center, radiusPt });
-    return circleByRadiusLine(radiusLine, 60);
-  }
 
-  @Metadata(description="Computes a radius line of the Largest Empty Circle in a set of obstacles")
-  public static Geometry largestEmptyCircleRadius(Geometry g, 
-      @Metadata(title="Distance tolerance")
-      double tolerance) { 
-    return LargestEmptyCircle.getRadiusLine(g, tolerance); 
-  }
+  //--------------------------------------------
   
   @Metadata(description="Constructs the Largest Empty Circle in a set of obstacles")
   public static Geometry largestEmptyCircle(Geometry g,
@@ -87,6 +84,22 @@ public class ConstructionFunctions {
     return circleByRadiusLine(radiusLine, 60);
   }
   
+  @Metadata(description="Computes a radius line of the Largest Empty Circle in a set of obstacles")
+  public static Geometry largestEmptyCircleCenter(Geometry g, 
+      @Metadata(title="Distance tolerance")
+      double tolerance) { 
+    return LargestEmptyCircle.getCenter(g, tolerance); 
+  }
+  
+  @Metadata(description="Computes a radius line of the Largest Empty Circle in a set of obstacles")
+  public static Geometry largestEmptyCircleRadius(Geometry g, 
+      @Metadata(title="Distance tolerance")
+      double tolerance) { 
+    return LargestEmptyCircle.getRadiusLine(g, tolerance); 
+  }
+
+  //--------------------------------------------
+
   @Metadata(description="Constructs an n-point circle from a 2-point line giving the radius")
   public static Geometry circleByRadiusLine(Geometry radiusLine,
       @Metadata(title="Number of vertices")
