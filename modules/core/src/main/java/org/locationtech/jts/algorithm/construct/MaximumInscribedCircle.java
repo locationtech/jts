@@ -34,15 +34,15 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * <p>
  * In the context of geography the center of the Maximum Inscribed Circle 
  * is known as the <b>Pole of Inaccessibility</b>.
- * A cartographic use case is to determine a suitable point within a polygon
- * to place a map label.
+ * A cartographic use case is to determine a suitable point 
+ * to place a map label within a polygon.
  * <p>
  * The class handles polygons with holes and multipolygons.
  * <p>
  * The implementation uses a successive-approximation technique
  * over a grid of square cells covering the area geometry.
  * The grid is refined using a branch-and-bound algorithm. 
- * Point containment and distance to boundary are computed in a performant
+ * Point containment and distance are computed in a performant
  * way by using spatial indexes.
  * 
  * <h3>Future Enhancements</h3>

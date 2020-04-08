@@ -24,7 +24,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.operation.distance.IndexedFacetDistance;
 
 /**
- * Constructs the Largest Empty Circle in a set
+ * Constructs the Largest Empty Circle for a set
  * of obstacle geometries, up to a specified tolerance.
  * The obstacles are point and line geometries.
  * <p>
@@ -39,7 +39,7 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * The implementation uses a successive-approximation technique
  * over a grid of square cells covering the obstacles and boundary.
  * The grid is refined using a branch-and-bound algorithm. 
- * Point containment and distance to boundary are computed in a performant
+ * Point containment and distance are computed in a performant
  * way by using spatial indexes.
  * <p>
  * <h3>Future Enhancements</h3>
