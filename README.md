@@ -14,7 +14,7 @@ JTS is a project in the [LocationTech](http://www.locationtech.org) working grou
 
 ## Requirements
 
-JTS targets Java 1.8 and above.
+Currently JTS targets Java 1.8 and above.
 
 ## Resources
 
