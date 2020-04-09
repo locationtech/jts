@@ -2,6 +2,7 @@ package org.locationtech.jts.algorithm.construct;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -50,13 +51,13 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   }
 
   public void testPoint() {
-    checkCircleRadius("POINT (100 100)", 
-       0.01, 0 );
+    checkCircleZeroRadius("POINT (100 100)", 
+       0.01 );
   }
 
   public void testLineFlat() {
-    checkCircleRadius("LINESTRING (0 0, 50 50)", 
-       0.01, 0 );
+    checkCircleZeroRadius("LINESTRING (0 0, 50 50)", 
+       0.01 );
   }
 
   
@@ -67,28 +68,35 @@ public class LargestEmptyCircleTest extends GeometryTestCase {
   
   private void checkCircle(Geometry geom, double tolerance, 
       double x, double y, double expectedRadius) {
-    LargestEmptyCircle mic = new LargestEmptyCircle(geom, tolerance); 
-    Geometry centerPt = mic.getCenter();
-    Coordinate center = centerPt.getCoordinate();
+    LargestEmptyCircle lec = new LargestEmptyCircle(geom, tolerance); 
+    Geometry centerPoint = lec.getCenter();
+    Coordinate centerPt = centerPoint.getCoordinate();
     Coordinate expectedCenter = new Coordinate(x, y);
-    checkEqualXY(expectedCenter, center, tolerance);
+    checkEqualXY(expectedCenter, centerPt, tolerance);
     
-    Geometry radiusPt = mic.getRadiusPoint();
-    double actualRadius = centerPt.distance(radiusPt);
+    LineString radiusLine = lec.getRadiusLine();
+    double actualRadius = radiusLine.getLength();
     assertEquals("Radius: ", expectedRadius, actualRadius, tolerance);
+    
+    checkEqualXY("Radius line center point: ", centerPt, radiusLine.getCoordinateN(0));
+    Coordinate radiusPt = lec.getRadiusPoint().getCoordinate();
+    checkEqualXY("Radius line endpoint point: ", radiusPt, radiusLine.getCoordinateN(1));
   }
   
-  private void checkCircleRadius(String wkt, double tolerance,double expectedRadius) {
-    checkCircleRadius(read(wkt), tolerance, expectedRadius);
+  private void checkCircleZeroRadius(String wkt, double tolerance) {
+    checkCircleZeroRadius(read(wkt), tolerance);
   }
 
-  private void checkCircleRadius(Geometry geom, double tolerance, 
-      double expectedRadius) {
-    LargestEmptyCircle mic = new LargestEmptyCircle(geom, tolerance); 
-    Geometry centerPt = mic.getCenter();
+  private void checkCircleZeroRadius(Geometry geom, double tolerance) {
+    LargestEmptyCircle lec = new LargestEmptyCircle(geom, tolerance); 
 
-    Geometry radiusPt = mic.getRadiusPoint();
-    double actualRadius = centerPt.distance(radiusPt);
-    assertEquals("Radius: ", expectedRadius, actualRadius, tolerance);
+    LineString radiusLine = lec.getRadiusLine();
+    double actualRadius = radiusLine.getLength();
+    assertEquals("Radius: ", 0.0, actualRadius, tolerance);
+    
+    Coordinate centerPt = lec.getCenter().getCoordinate();
+    checkEqualXY("Radius line center point: ", centerPt, radiusLine.getCoordinateN(0));
+    Coordinate radiusPt = lec.getRadiusPoint().getCoordinate();
+    checkEqualXY("Radius line endpoint point: ", radiusPt, radiusLine.getCoordinateN(1));
   }
 }

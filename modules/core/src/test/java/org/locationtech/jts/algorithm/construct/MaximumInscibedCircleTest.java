@@ -3,6 +3,7 @@ package org.locationtech.jts.algorithm.construct;
 import org.locationtech.jts.algorithm.construct.MaximumInscribedCircle;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -71,13 +72,18 @@ public class MaximumInscibedCircleTest extends GeometryTestCase {
   private void checkCircle(Geometry geom, double tolerance, 
       double x, double y, double expectedRadius) {
     MaximumInscribedCircle mic = new MaximumInscribedCircle(geom, tolerance); 
-    Geometry centerPt = mic.getCenter();
-    Coordinate center = centerPt.getCoordinate();
+    Geometry centerPoint = mic.getCenter();
+    Coordinate centerPt = centerPoint.getCoordinate();
     Coordinate expectedCenter = new Coordinate(x, y);
-    checkEqualXY(expectedCenter, center, tolerance);
+    checkEqualXY(expectedCenter, centerPt, tolerance);
     
-    Geometry radiusPt = mic.getRadiusPoint();
-    double actualRadius = centerPt.distance(radiusPt);
+    LineString radiusLine = mic.getRadiusLine();
+    double actualRadius = radiusLine.getLength();
     assertEquals("Radius: ", expectedRadius, actualRadius, tolerance);
+    
+    checkEqualXY("Radius line center point: ", centerPt, radiusLine.getCoordinateN(0));
+    Coordinate radiusPt = mic.getRadiusPoint().getCoordinate();
+    checkEqualXY("Radius line endpoint point: ", radiusPt, radiusLine.getCoordinateN(1));
+
   }
 }

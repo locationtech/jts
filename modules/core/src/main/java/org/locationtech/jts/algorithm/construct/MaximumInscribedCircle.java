@@ -179,6 +179,7 @@ public class MaximumInscribedCircle {
   }
   
   private void compute() {
+    // check if already computed
     if (centerCell != null) return;
     
     // Priority queue of cells, ordered by maximum distance from boundary

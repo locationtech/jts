@@ -193,13 +193,15 @@ public class LargestEmptyCircle {
   }
   
   private void compute() {
-    // already computed
+    // check if already computed
     if (centerCell != null) return;
     
-    // if no ptLocater result is degenerate (represented as zero-radius circle)
+    // if ptLocater is not present then result is degenerate (represented as zero-radius circle)
     if (ptLocater == null) {
       Coordinate pt = obstacles.getCoordinate();
+      centerPt = pt.copy();
       centerPoint = factory.createPoint(pt);
+      radiusPt = pt.copy();
       radiusPoint = factory.createPoint(pt);
       return;
     }
