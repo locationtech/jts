@@ -21,6 +21,8 @@ Distributions for older JTS versions can be obtained at the
 
 *Release Date:  TBD*
 
+*Java Version: 1.8*
+
 ### API Changes
 
 * Change `Polygon` `getExteriorRing` and `getInteriorRingN` accessors to return `LinearRing`. 
