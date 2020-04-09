@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.util.GeometryMapper;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.geom.util.GeometryMapper.MapOp;
@@ -216,5 +217,12 @@ public class BufferFunctions {
       line = ((Polygon) line).getExteriorRing();
     }
     return VariableBuffer.buffer(line, startDist, midDist, startDist);
+  }
+  
+  public static Geometry bufferRadius(Geometry radiusLine) {
+    double distance = radiusLine.getLength();
+    Coordinate centrePt = radiusLine.getCoordinate();
+    Point centre = radiusLine.getFactory().createPoint(centrePt);
+    return centre.buffer(distance);
   }
 }
