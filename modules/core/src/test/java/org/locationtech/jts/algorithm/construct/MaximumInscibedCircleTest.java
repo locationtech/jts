@@ -1,6 +1,5 @@
 package org.locationtech.jts.algorithm.construct;
 
-import org.locationtech.jts.algorithm.construct.MaximumInscribedCircle;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
