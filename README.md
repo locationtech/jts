@@ -12,7 +12,11 @@ JTS is a project in the [LocationTech](http://www.locationtech.org) working grou
 
 ![LocationTech](locationtech_mark.png) 
 
-## Locations
+## Requirements
+
+JTS targets Java 1.8 and above.
+
+## Resources
 
 ### Code
 * [GitHub Repo](https://github.com/locationtech/jts)
