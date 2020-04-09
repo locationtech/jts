@@ -22,7 +22,6 @@ org.locationtech.jts.index.quadtree
 org.locationtech.jts.index.strtree
 org.locationtech.jts.index.sweepline
 org.locationtech.jts.io
-org.locationtech.jts.io.geojson
 org.locationtech.jts.io.gml2
 org.locationtech.jts.io.kml
 org.locationtech.jts.linearref
