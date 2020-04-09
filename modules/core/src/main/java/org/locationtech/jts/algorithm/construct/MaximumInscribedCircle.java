@@ -37,7 +37,11 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * A cartographic use case is to determine a suitable point 
  * to place a map label within a polygon.
  * <p>
- * The class handles polygons with holes and multipolygons.
+ * The radius length of the Maximum Inscribed Circle is a 
+ * measure of how "narrow" a polygon is. It is the 
+ * distance at which the negative buffer becomes empty.
+ * <p>
+ * The class supports polygons with holes and multipolygons.
  * <p>
  * The implementation uses a successive-approximation technique
  * over a grid of square cells covering the area geometry.
@@ -88,7 +92,9 @@ public class MaximumInscribedCircle {
   private IndexedPointInAreaLocator ptLocater;
   private IndexedFacetDistance indexedDistance;
   private Cell centerCell = null;
-  private Point centerPoint = null;
+  private Coordinate centerPt = null;
+  private Coordinate radiusPt;
+  private Point centerPoint;
   private Point radiusPoint;
 
   /**
@@ -146,7 +152,7 @@ public class MaximumInscribedCircle {
   public LineString getRadiusLine() {
     compute();
     LineString radiusLine = factory.createLineString(
-        new Coordinate[] { centerPoint.getCoordinate().copy(), radiusPoint.getCoordinate().copy() });
+        new Coordinate[] { centerPt.copy(), radiusPt.copy() });
     return radiusLine;
   }
   
@@ -167,12 +173,9 @@ public class MaximumInscribedCircle {
   }
 
   private double distanceToBoundary(double x, double y) {
-    return distanceToBoundary(createPoint(x, y));
-  }
-    
-  private Point createPoint(double x, double y) {
     Coordinate coord = new Coordinate(x, y);
-    return factory.createPoint(coord);
+    Point pt = factory.createPoint(coord);
+    return distanceToBoundary(pt);
   }
   
   private void compute() {
@@ -218,10 +221,11 @@ public class MaximumInscribedCircle {
     }
     // the farthest cell is the best approximation to the MIC center
     centerCell = farthestCell;
-    centerPoint = createPoint(centerCell.getX(), centerCell.getY());
+    centerPt = new Coordinate(centerCell.getX(), centerCell.getY());
+    centerPoint = factory.createPoint(centerPt);
     // compute radius point
     Coordinate[] nearestPts = indexedDistance.nearestPoints(centerPoint);
-    Coordinate radiusPt = nearestPts[0];
+    radiusPt = nearestPts[0].copy();
     radiusPoint = factory.createPoint(radiusPt);
   }
 

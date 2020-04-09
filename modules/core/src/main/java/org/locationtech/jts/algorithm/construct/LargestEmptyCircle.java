@@ -89,7 +89,9 @@ public class LargestEmptyCircle {
   private Cell farthestCell;
   
   private Cell centerCell = null;
+  private Coordinate centerPt;
   private Point centerPoint = null;
+  private Coordinate radiusPt;
   private Point radiusPoint = null;
 
   /**
@@ -160,7 +162,7 @@ public class LargestEmptyCircle {
   public LineString getRadiusLine() {
     compute();
     LineString radiusLine = factory.createLineString(
-        new Coordinate[] { centerPoint.getCoordinate().copy(), radiusPoint.getCoordinate().copy() });
+        new Coordinate[] { centerPt.copy(), radiusPt.copy() });
     return radiusLine;
   }
   
@@ -185,12 +187,9 @@ public class LargestEmptyCircle {
   }
 
   private double distanceToConstraints(double x, double y) {
-    return distanceToConstraints(createPoint(x, y));
-  }
-    
-  private Point createPoint(double x, double y) {
     Coordinate coord = new Coordinate(x, y);
-    return factory.createPoint(coord);
+    Point pt = factory.createPoint(coord);
+    return distanceToConstraints(pt);
   }
   
   private void compute() {
@@ -247,10 +246,11 @@ public class LargestEmptyCircle {
     // the farthest cell is the best approximation to the LEC center
     centerCell = farthestCell;
     // compute center point
-    centerPoint = createPoint(centerCell.getX(), centerCell.getY());
+    centerPt = new Coordinate(centerCell.getX(), centerCell.getY());
+    centerPoint = factory.createPoint(centerPt);
     // compute radius point
     Coordinate[] nearestPts = obstacleDistance.nearestPoints(centerPoint);
-    Coordinate radiusPt = nearestPts[0];
+    radiusPt = nearestPts[0].copy();
     radiusPoint = factory.createPoint(radiusPt);
   }
   
