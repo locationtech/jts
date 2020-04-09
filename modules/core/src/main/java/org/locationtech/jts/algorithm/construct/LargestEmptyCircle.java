@@ -330,7 +330,7 @@ public class LargestEmptyCircle {
   /**
    * A square grid cell centered on a given point 
    * with a given side half-length, 
-   * and having a provided distance from the center point to the constraints.
+   * and having a given distance from the center point to the constraints.
    * The maximum possible distance from any point in the cell to the
    * constraints can be computed.
    * This is used as the ordering and upper-bound function in

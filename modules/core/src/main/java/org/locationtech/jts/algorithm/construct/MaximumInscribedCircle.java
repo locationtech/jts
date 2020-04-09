@@ -198,7 +198,8 @@ public class MaximumInscribedCircle {
     while (! cellQueue.isEmpty()) {
       // pick the most promising cell from the queue
       Cell cell = cellQueue.remove();
-
+      //System.out.println(factory.toGeometry(cell.getEnvelope()));
+      
       // update the center cell if the candidate is further from the boundary
       if (cell.getDistance() > farthestCell.getDistance()) {
         farthestCell = cell;
@@ -210,13 +211,14 @@ public class MaximumInscribedCircle {
        * since no point in it is further than
        * the current farthest distance.
        */
-      if (cell.getMaxDistance() - farthestCell.getDistance() > tolerance) {
+      double potentialIncrease = cell.getMaxDistance() - farthestCell.getDistance();
+      if (potentialIncrease > tolerance) {
         // split the cell into four sub-cells
-        double r2 = cell.getRadius() / 2;
-        cellQueue.add( createCell( cell.getX() - r2, cell.getY() - r2, r2));
-        cellQueue.add( createCell( cell.getX() + r2, cell.getY() - r2, r2));
-        cellQueue.add( createCell( cell.getX() - r2, cell.getY() + r2, r2));
-        cellQueue.add( createCell( cell.getX() + r2, cell.getY() + r2, r2));
+        double h2 = cell.getHSide() / 2;
+        cellQueue.add( createCell( cell.getX() - h2, cell.getY() - h2, h2));
+        cellQueue.add( createCell( cell.getX() + h2, cell.getY() - h2, h2));
+        cellQueue.add( createCell( cell.getX() - h2, cell.getY() + h2, h2));
+        cellQueue.add( createCell( cell.getX() + h2, cell.getY() + h2, h2));
         //totalCells += 4;
       }
     }
@@ -245,18 +247,18 @@ public class MaximumInscribedCircle {
     double width = env.getWidth();
     double height = env.getHeight();
     double cellSize = Math.min(width, height);
-    double radius = cellSize / 2.0;
+    double hSide = cellSize / 2.0;
 
     // compute initial grid of cells to cover area
     for (double x = minX; x < maxX; x += cellSize) {
       for (double y = minY; y < maxY; y += cellSize) {
-        cellQueue.add(createCell(x + radius, y + radius, radius));
+        cellQueue.add(createCell(x + hSide, y + hSide, hSide));
       }
     }
   }
 
-  private Cell createCell(double x, double y, double radius) {
-    return new Cell(x, y, radius, distanceToBoundary(x, y));
+  private Cell createCell(double x, double y, double hSide) {
+    return new Cell(x, y, hSide, distanceToBoundary(x, y));
   }
 
   // create a cell centered on area centroid
@@ -267,7 +269,7 @@ public class MaximumInscribedCircle {
 
   /**
    * A square grid cell centered on a given point, 
-   * with a given radius, and having a computed distance
+   * with a given half-side size, and having a given distance
    * to the area boundary.
    * The maximum possible distance from any point in the cell to the
    * boundary can be computed, and is used
@@ -281,22 +283,26 @@ public class MaximumInscribedCircle {
 
     private double x;
     private double y;
-    private double radius;
+    private double hSide;
     private double distance;
     private double maxDist;
 
-    Cell(double x, double y, double radius, double distanceToBoundary) {
+    Cell(double x, double y, double hSide, double distanceToBoundary) {
       this.x = x; // cell center x
       this.y = y; // cell center y
-      this.radius = radius; // half the cell size
+      this.hSide = hSide; // half the cell size
 
       // the distance from cell center to area boundary
       distance = distanceToBoundary;
 
       // the maximum possible distance to area boundary for points in this cell
-      this.maxDist = distance + radius * SQRT2;
+      this.maxDist = distance + hSide * SQRT2;
     }
 
+    public Envelope getEnvelope() {
+      return new Envelope(x - hSide, x + hSide, y - hSide, y + hSide);
+    }
+    
     public double getMaxDistance() {
       return maxDist;
     }
@@ -305,8 +311,8 @@ public class MaximumInscribedCircle {
       return distance;
     }
 
-    public double getRadius() {
-      return radius;
+    public double getHSide() {
+      return hSide;
     }
 
     public double getX() {
@@ -323,6 +329,7 @@ public class MaximumInscribedCircle {
     public int compareTo(Cell o) {
       return (int) (o.maxDist - this.maxDist);
     }
+    
   }
 
 }
