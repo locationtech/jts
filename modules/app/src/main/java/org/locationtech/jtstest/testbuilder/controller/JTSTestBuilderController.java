@@ -308,4 +308,17 @@ public class JTSTestBuilderController
     frame().getLogPanel().addInfo(s);
     if (showTab) frame().showInfoTab();
   }
+  
+  //========================================
+
+  public void showGrid(boolean showGrid) {
+    editPanel().setGridEnabled(showGrid);
+    geometryViewChanged();
+  }
+  
+  public void showLegend(boolean show) {
+    editPanel().setLegendEnabled(show);
+    geometryViewChanged();
+  }
+
 }

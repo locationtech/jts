@@ -11,10 +11,6 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
   
   JTSTestBuilderFrame tbFrame;
   
-  private JCheckBox cbGrid;
-
-  private JPanel ctlBackgroundClr;
-
   public GeometryViewStylePanel() {
     try {
       uiInit();
@@ -25,19 +21,27 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
 
   private void uiInit() {
     
-    cbGrid = new JCheckBox();
+    JCheckBox cbGrid = new JCheckBox();
     cbGrid.setSelected(true);
     cbGrid.setAlignmentX(Component.LEFT_ALIGNMENT);
     cbGrid.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        JTSTestBuilderFrame.instance().setShowingGrid( cbGrid.isSelected() );
-        JTSTestBuilder.controller().geometryViewChanged();
-        
+        JTSTestBuilder.controller().showGrid( cbGrid.isSelected() );
       }
     });
     addRow("Grid", cbGrid);
     
-    ctlBackgroundClr = ColorControl.create(this, 
+    JCheckBox cbLegend = new JCheckBox();
+    cbLegend.setSelected(false);
+    cbLegend.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbLegend.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        JTSTestBuilder.controller().showLegend( cbLegend.isSelected() );
+      }
+    });
+    addRow("Legend", cbLegend);
+    
+    JPanel ctlBackgroundClr = ColorControl.create(this, 
         "Background Color",
         AppColors.GEOM_VIEW_BACKGROUND,
         new ColorControl.ColorListener() {

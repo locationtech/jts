@@ -53,6 +53,7 @@ import org.locationtech.jtstest.testbuilder.ui.render.DrawingGrid;
 import org.locationtech.jtstest.testbuilder.ui.render.GeometryPainter;
 import org.locationtech.jtstest.testbuilder.ui.render.GridRenderer;
 import org.locationtech.jtstest.testbuilder.ui.render.LayerRenderer;
+import org.locationtech.jtstest.testbuilder.ui.render.LegendRenderer;
 import org.locationtech.jtstest.testbuilder.ui.render.RenderManager;
 import org.locationtech.jtstest.testbuilder.ui.render.Renderer;
 import org.locationtech.jtstest.testbuilder.ui.style.AWTUtil;
@@ -79,6 +80,7 @@ public class GeometryEditPanel extends JPanel
   
   private DrawingGrid grid = new DrawingGrid();
   private GridRenderer gridRenderer;
+  private LegendRenderer legendRenderer;
 
   boolean stateAddingPoints = false;
 
@@ -99,6 +101,7 @@ public class GeometryEditPanel extends JPanel
 
   public GeometryEditPanel() {
     gridRenderer = new GridRenderer(viewport, grid);
+    legendRenderer = new LegendRenderer(viewport);
     try {
       initUI();
     } catch (Exception ex) {
@@ -168,6 +171,10 @@ public class GeometryEditPanel extends JPanel
 
   public void setGridEnabled(boolean isEnabled) {
     gridRenderer.setEnabled(isEnabled);
+  }
+
+  public void setLegendEnabled(boolean isEnabled) {
+    legendRenderer.setEnabled(isEnabled);
   }
 
   public Viewport getViewport() { return viewport; }
@@ -587,9 +594,8 @@ public class GeometryEditPanel extends JPanel
       }  		
   	}
   	
-    public void render(Graphics2D g)
+    public void render(Graphics2D g2)
     {
-      Graphics2D g2 = g;
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
           RenderingHints.VALUE_ANTIALIAS_ON);
       
@@ -606,27 +612,41 @@ public class GeometryEditPanel extends JPanel
       
       gridRenderer.paint(g2);
       
-      renderLayers(tbModel.getLayersBase(), false, g2);
+      renderLayersTheme(tbModel.getLayersBase(), g2);
       renderLayers(getLayerList(), true, g2);
-      renderLayers(tbModel.getLayersTop(), false, g2);
+      renderLayersTheme(tbModel.getLayersTop(), g2);
       
       if (isRevealingTopology && isRenderingStretchVertices) {
       	renderMagnifiedVertices(g2);
       }
       
       gridRenderer.paintTop(g2);
+      
+      legendRenderer.paint(tbModel.getLayersLegend(), g2);
+      
       drawMark(g2);
     }
     
     private void renderLayers(LayerList layerList, boolean allowRevealTopo, Graphics2D g)
     {
-    	int n = layerList.size();
-    	for (int i = 0; i < n; i++) {
-    	  Layer layer = layerList.getLayer(i);
-    	  currentRenderer = createRenderer(layer, i, allowRevealTopo);
-    		currentRenderer.render(g);
-    	}
-    	currentRenderer = null;
+      int n = layerList.size();
+      for (int i = 0; i < n; i++) {
+        Layer layer = layerList.getLayer(i);
+        currentRenderer = createRenderer(layer, i, allowRevealTopo);
+        currentRenderer.render(g);
+      }
+      currentRenderer = null;
+    }
+
+    private void renderLayersTheme(LayerList layerList, Graphics2D g)
+    {
+      int n = layerList.size();
+      for (int i = n - 1; i >= 0; i--) {
+        Layer layer = layerList.getLayer(i);
+        currentRenderer = createRenderer(layer, i, false);
+        currentRenderer.render(g);
+      }
+      currentRenderer = null;
     }
 
     private Renderer createRenderer(Layer layer, int i, boolean isAllowRevealTopo) {

@@ -543,11 +543,6 @@ public class JTSTestBuilderFrame extends JFrame
     testListPanel.populateList();
   }
 
-  public void setShowingGrid(boolean showGrid) {
-    testCasePanel.editPanel.setGridEnabled(showGrid);
-    JTSTestBuilder.controller().geometryViewChanged();
-  }
-
   void actionLoadXmlTestFolder() {
     try {
       directoryChooser.removeChoosableFileFilter(SwingUtil.JAVA_FILE_FILTER);

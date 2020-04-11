@@ -85,6 +85,22 @@ public class TestBuilderModel
   public LayerList getLayersTop() { return layerListTop; }
   public LayerList getLayersBase() { return layerListBase; }
   
+  public List<Layer> getLayersLegend() {
+    List<Layer> layers = new ArrayList<Layer>();
+    addLegendLayers(layerList, layers);
+    addLegendLayers(layerListTop, layers);
+    addLegendLayers(layerListBase, layers);
+    return layers;
+  }
+  
+  private void addLegendLayers(LayerList layerList, List<Layer> layers) {
+    for (int i = 0; i < layerList.size(); i++) {
+      if (layerList.getLayer(i).hasGeometry() 
+          && layerList.getLayer(i).isEnabled())
+        layers.add(layerList.getLayer(i));
+    }
+  }
+  
   private void initLayers()
   {  	
   	GeometryContainer geomCont0 = new IndexedGeometryContainer(geomEditModel, 0);
