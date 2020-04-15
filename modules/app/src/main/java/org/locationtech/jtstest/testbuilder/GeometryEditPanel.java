@@ -19,6 +19,7 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.event.ComponentEvent;
@@ -167,7 +168,6 @@ public class GeometryEditPanel extends JPanel
   
   public void setViewStyle(ViewStyle viewStyle) {
     this.viewStyle = viewStyle;
-    titleElement.setTitle(viewStyle.getTitle());
   }
   
   public Color getBackgroundColor() {
@@ -267,18 +267,20 @@ public class GeometryEditPanel extends JPanel
     renderMgr.copyImage(g);
   }
   
-  /*
-   // MD - obsolete
-  public void render(Graphics g)
-  {
-    Graphics2D g2 = (Graphics2D) g;
-    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        RenderingHints.VALUE_ANTIALIAS_ON);
+  private void drawBorder(Graphics2D g, Color clr) {    
+    Stroke strokeBox = new BasicStroke(1, // Width of stroke
+        BasicStroke.CAP_BUTT,  // End cap style
+        BasicStroke.JOIN_MITER, // Join style
+        10,                  // Miter limit
+        null, // Dash pattern
+        0);                   // Dash phase 
+    g.setStroke(strokeBox);
+    g.setPaint(clr);
     
-    gridRenderer.paint(g2);
-    getLayerList().paint((Graphics2D) g2, viewport);
+    int height = (int) viewport.getHeightInView();
+    int width = (int) viewport.getWidthInView();
+    g.drawRect(0,0,width - 1, height - 1);
   }
-  */
   
   private static int VERTEX_SIZE = AppConstants.VERTEX_SIZE + 1;
   private static double VERTEX_SIZE_OVER_2 = VERTEX_SIZE / 2;
@@ -601,6 +603,9 @@ public class GeometryEditPanel extends JPanel
       if (viewStyle.isGridEnabled()) {
         gridElement.paint(g2);
       }
+      if (viewStyle.isBorderEnabled()) {
+        drawBorder(g2, viewStyle.getBorderColor());
+      }
       
       renderLayersTheme(tbModel.getLayersBase(), g2);
       renderLayers(getLayerList(), true, g2);
@@ -618,10 +623,14 @@ public class GeometryEditPanel extends JPanel
       
       if (viewStyle.isLegendEnabled()) {
         legendElement.setBorderEnabled(viewStyle.isLegendBorderEnabled());
+        legendElement.setBorderColor(viewStyle.getBorderColor());
         legendElement.paint(tbModel.getLayersLegend(), g2);
       }
       if (viewStyle.isTitleEnabled()) {
+        titleElement.setFill(viewStyle.getTitleFill());
+        titleElement.setBorderColor(viewStyle.getBorderColor());
         titleElement.setBorderEnabled(viewStyle.isTitleBorderEnabled());
+        titleElement.setTitle(viewStyle.getTitle());
         titleElement.paint(g2);
       }
       

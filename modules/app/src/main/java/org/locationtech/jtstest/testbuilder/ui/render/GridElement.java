@@ -322,9 +322,9 @@ public class GridElement {
   }
   
   static final int BAR_OFFSET_X = 5;
-  static final int BAR_OFFSET_Y = 3;
+  static final int BAR_OFFSET_Y = 5;
   static final int LBL_OFFSET_X = BAR_OFFSET_X + 5;
-  static final int LBL_OFFSET_Y = 1; //BAR_OFFSET_Y + 5;
+  static final int LBL_OFFSET_Y = 2; //BAR_OFFSET_Y + 5;
   static final int EXP_OFFSET_X = 15;
   static final int EXP_OFFSET_Y = 6;
 
@@ -383,21 +383,16 @@ public class GridElement {
     
     float y = viewHeight - BAR_OFFSET_Y;
     
-    int barWidth = 3;
-    int boxWidth = barWidth + 2;
+    int barHeight = 3;
+    int boxHeight = barHeight + 2;
     
+    // draw black bar
     SwingUtil.setAntiAlias(g, false);
-    Stroke strokeBox = new BasicStroke(boxWidth, // Width of stroke
-        BasicStroke.CAP_BUTT,  // End cap style
-        BasicStroke.JOIN_MITER, // Join style
-        10,                  // Miter limit
-        null, // Dash pattern
-        0);                   // Dash phase 
-    g.setStroke(strokeBox);
     g.setColor(Color.BLACK);
-    g.drawRect((int) x, (int) y, (int) (10 * gridSizeView), boxWidth + 2);
+    g.fillRect((int) x - 1, (int) y - 2, (int) (10 * gridSizeView), boxHeight);
     
-    Stroke strokeDash = new BasicStroke(barWidth, // Width of stroke
+    // draw white dashes
+    Stroke strokeDash = new BasicStroke(barHeight, // Width of stroke
         BasicStroke.CAP_BUTT,  // End cap style
         BasicStroke.JOIN_MITER, // Join style
         10,                  // Miter limit

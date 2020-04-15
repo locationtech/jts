@@ -42,6 +42,8 @@ public class LegendElement {
 
   private boolean isBorderEnabled;
 
+  private Color borderColor;
+
   public LegendElement(Viewport viewport) {
     this.viewport = viewport;
   }
@@ -52,6 +54,10 @@ public class LegendElement {
   
   public void setBorder(int borderSize) {
     this.borderSize  = borderSize;
+  }
+  
+  public void setBorderColor(Color clr) {
+    borderColor = clr;
   }
   
   public void paint(List<Layer> layerList, Graphics2D g) {
@@ -182,7 +188,7 @@ public class LegendElement {
           null, // Dash pattern
           0);                   // Dash phase 
       g.setStroke(strokeBox);
-      g.setPaint(Color.GRAY);
+      g.setPaint(borderColor);
       g.draw(box);
     }
   }
@@ -212,6 +218,8 @@ public class LegendElement {
     }
     return width;
   }
+
+
 
 
 

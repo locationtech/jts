@@ -26,12 +26,20 @@ public class ViewStyle {
   // the default values here are the ones shown in UI on app startup
   
   private boolean isGridEnabled = true;
+  
   private boolean isLegendEnabled = false;
   private boolean isLegendBorderEnabled = true;
+  
   private boolean isTitleEnabled = false;
   private boolean isTitleBorderEnabled = true;
+  private Color titleFillClr = Color.WHITE;
   private String title = "";
+  
   private Color clrBackground = AppColors.GEOM_VIEW_BACKGROUND;
+
+  private boolean isBorderEnabled;
+
+  private Color borderClr = Color.GRAY;
 
   public ViewStyle() {
     
@@ -77,21 +85,40 @@ public class ViewStyle {
     return clrBackground;
   }
 
-  public void setLegendBorderEnabled(boolean selected) {
-    isLegendBorderEnabled = selected;
+  public void setLegendBorderEnabled(boolean isEnabled) {
+    isLegendBorderEnabled = isEnabled;
   }
 
   public boolean isLegendBorderEnabled() {
     return isLegendBorderEnabled;
   }
 
-  public void setTitleBorderEnabled(boolean selected) {
-    isTitleBorderEnabled = selected;
+  public void setTitleBorderEnabled(boolean isEnabled) {
+    isTitleBorderEnabled = isEnabled;
   }
 
   public boolean isTitleBorderEnabled() {
     return isTitleBorderEnabled;
   }
 
-  
+  public void setTitleFill(Color fillClr) {
+    this.titleFillClr = fillClr;
+  }
+  public Color getTitleFill() {
+    return titleFillClr;
+  }
+
+  public boolean isBorderEnabled() {
+    return isBorderEnabled;
+  }
+  public void setBorderEnabled(boolean isEnabled) {
+    isBorderEnabled = isEnabled;
+  }
+
+  public void setBorderColor(Color clr) {
+    borderClr = clr;
+  }
+  public Color getBorderColor() {
+    return borderClr;
+  }
 }

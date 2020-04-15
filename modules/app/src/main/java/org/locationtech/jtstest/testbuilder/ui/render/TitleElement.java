@@ -15,6 +15,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Rectangle;
 import java.awt.Stroke;
 
@@ -34,6 +35,10 @@ public class TitleElement {
 
   private boolean isBorderEnabled = true;
 
+  private Color fillClr = Color.WHITE;
+
+  private Paint borderColor;;
+
   public TitleElement(Viewport viewport) {
     this.viewport = viewport;
   }
@@ -43,7 +48,12 @@ public class TitleElement {
   public void setBorder(int borderSize) {
     this.borderSize = borderSize;
   }
-  
+  public void setBorderColor(Color clr) {
+    borderColor = clr;
+  }
+  public void setFill(Color clr) {
+    this.fillClr  = clr;
+  }
   public void setTitle(String title) {
     this.title = title;
   }
@@ -70,7 +80,7 @@ public class TitleElement {
   }
 
   private void drawBox(Rectangle box, Graphics2D g) {    
-    g.setPaint(Color.WHITE);
+    g.setPaint(fillClr);
     g.fill(box);
     
     if (isBorderEnabled && borderSize > 0) {
@@ -81,8 +91,10 @@ public class TitleElement {
           null, // Dash pattern
           0);                   // Dash phase 
       g.setStroke(strokeBox);
-      g.setPaint(Color.GRAY);
+      g.setPaint(borderColor);
       g.draw(box);
     }
   }
+
+
 }
