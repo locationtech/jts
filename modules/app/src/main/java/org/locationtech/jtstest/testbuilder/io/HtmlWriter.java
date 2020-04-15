@@ -66,7 +66,7 @@ public class HtmlWriter {
 
   public HtmlWriter() {
     geometryEditPanel.setSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-    geometryEditPanel.setGridEnabled(false);
+    //geometryEditPanel.setGridEnabled(false);
     geometryEditPanel.setBorder(BorderFactory.createEmptyBorder());
     frame.getContentPane().add(geometryEditPanel);
   }

@@ -27,6 +27,7 @@ import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
+import org.locationtech.jtstest.testbuilder.ui.render.ViewStyle;
 import org.locationtech.jtstest.testbuilder.ui.tools.DeleteVertexTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.EditVertexTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.ExtractComponentTool;
@@ -310,14 +311,9 @@ public class JTSTestBuilderController
   }
   
   //========================================
-
-  public void showGrid(boolean showGrid) {
-    editPanel().setGridEnabled(showGrid);
-    geometryViewChanged();
-  }
   
-  public void showLegend(boolean show) {
-    editPanel().setLegendEnabled(show);
+  public void setViewStyle(ViewStyle viewStyle) {
+    editPanel().setViewStyle(viewStyle);
     geometryViewChanged();
   }
 

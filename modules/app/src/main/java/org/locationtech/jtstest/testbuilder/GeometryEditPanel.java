@@ -51,11 +51,13 @@ import org.locationtech.jtstest.testbuilder.ui.GeometryLocationsWriter;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 import org.locationtech.jtstest.testbuilder.ui.render.DrawingGrid;
 import org.locationtech.jtstest.testbuilder.ui.render.GeometryPainter;
-import org.locationtech.jtstest.testbuilder.ui.render.GridRenderer;
+import org.locationtech.jtstest.testbuilder.ui.render.GridElement;
 import org.locationtech.jtstest.testbuilder.ui.render.LayerRenderer;
-import org.locationtech.jtstest.testbuilder.ui.render.LegendRenderer;
+import org.locationtech.jtstest.testbuilder.ui.render.LegendElement;
 import org.locationtech.jtstest.testbuilder.ui.render.RenderManager;
 import org.locationtech.jtstest.testbuilder.ui.render.Renderer;
+import org.locationtech.jtstest.testbuilder.ui.render.TitleElement;
+import org.locationtech.jtstest.testbuilder.ui.render.ViewStyle;
 import org.locationtech.jtstest.testbuilder.ui.style.AWTUtil;
 import org.locationtech.jtstest.testbuilder.ui.tools.Tool;
 
@@ -69,18 +71,12 @@ import org.locationtech.jtstest.testbuilder.ui.tools.Tool;
  */
 public class GeometryEditPanel extends JPanel 
 {	
-  public static Color VIEW_backgroundColor = AppColors.GEOM_VIEW_BACKGROUND;
-  
-	/*
-  private static Color[] selectedPointColor = { new Color(0, 64, 128, 255),
-      new Color(170, 64, 0, 255) };
-*/
-
   private TestBuilderModel tbModel;
   
   private DrawingGrid grid = new DrawingGrid();
-  private GridRenderer gridRenderer;
-  private LegendRenderer legendRenderer;
+  private GridElement gridElement;
+  private LegendElement legendElement;
+  private TitleElement titleElement;
 
   boolean stateAddingPoints = false;
 
@@ -99,9 +95,14 @@ public class GeometryEditPanel extends JPanel
   
   GeometryPopupMenu menu = new GeometryPopupMenu();
 
+  private ViewStyle viewStyle;
+
   public GeometryEditPanel() {
-    gridRenderer = new GridRenderer(viewport, grid);
-    legendRenderer = new LegendRenderer(viewport);
+    viewStyle = new ViewStyle();
+    gridElement = new GridElement(viewport, grid);
+    legendElement = new LegendElement(viewport);
+    titleElement = new TitleElement(viewport);
+    
     try {
       initUI();
     } catch (Exception ex) {
@@ -118,7 +119,7 @@ public class GeometryEditPanel extends JPanel
         this_componentResized(e);
       }
     });
-    this.setBackground(VIEW_backgroundColor);
+    this.setBackground(viewStyle.getBackground());
     this.setBorder(BorderFactory.createLoweredBevelBorder());
     this.setLayout(borderLayout1);
     
@@ -151,15 +152,6 @@ public class GeometryEditPanel extends JPanel
   public void setModel(TestBuilderModel model) {
     this.tbModel = model;
   }
-
-  public Color getViewBackground() {
-    return VIEW_backgroundColor;
-  }
-  
-  public void setViewBackground(Color clr) {
-    VIEW_backgroundColor = clr;
-    updateView();
-  }
   
   public TestBuilderModel getModel() {
     return tbModel;
@@ -169,14 +161,19 @@ public class GeometryEditPanel extends JPanel
     return tbModel.getGeometryEditModel();
   }
 
-  public void setGridEnabled(boolean isEnabled) {
-    gridRenderer.setEnabled(isEnabled);
+  public ViewStyle getViewStyle() {
+    return viewStyle;
   }
-
-  public void setLegendEnabled(boolean isEnabled) {
-    legendRenderer.setEnabled(isEnabled);
+  
+  public void setViewStyle(ViewStyle viewStyle) {
+    this.viewStyle = viewStyle;
+    titleElement.setTitle(viewStyle.getTitle());
   }
-
+  
+  public Color getBackgroundColor() {
+    return viewStyle.getBackground();
+  }
+  
   public Viewport getViewport() { return viewport; }
 
   public void updateView()
@@ -226,11 +223,6 @@ public class GeometryEditPanel extends JPanel
     forceRepaint();
   }
 
-  public void setGridSize(double gridSize) {
-    grid.setGridSize(gridSize);
-    forceRepaint();
-  }
-
   public void setHighlightPoint(Coordinate pt) {
     markPoint = pt;
   }
@@ -267,10 +259,6 @@ public class GeometryEditPanel extends JPanel
     GeometryLocationsWriter writer = new GeometryLocationsWriter();
     writer.setHtml(false);
     return writer.writeLocationString(getLayerList(), pt, toleranceInModel);
-  }
-
-  public double getGridSize() {
-    return grid.getGridSize();
   }
 
   public void paintComponent(Graphics g) {
@@ -442,7 +430,7 @@ public class GeometryEditPanel extends JPanel
   public void flash(Geometry g)
   {
     Graphics2D gr = (Graphics2D) getGraphics();
-    gr.setXORMode(VIEW_backgroundColor);
+    gr.setXORMode(viewStyle.getBackground());
     Stroke stroke = new BasicStroke(5);
     
     Geometry flashGeom = g;
@@ -610,7 +598,9 @@ public class GeometryEditPanel extends JPanel
         }
       }
       
-      gridRenderer.paint(g2);
+      if (viewStyle.isGridEnabled()) {
+        gridElement.paint(g2);
+      }
       
       renderLayersTheme(tbModel.getLayersBase(), g2);
       renderLayers(getLayerList(), true, g2);
@@ -620,11 +610,21 @@ public class GeometryEditPanel extends JPanel
       	renderMagnifiedVertices(g2);
       }
       
-      gridRenderer.paintTop(g2);
-      
-      legendRenderer.paint(tbModel.getLayersLegend(), g2);
+      if (viewStyle.isGridEnabled()) {
+        gridElement.paintTop(g2);
+      }
       
       drawMark(g2);
+      
+      if (viewStyle.isLegendEnabled()) {
+        legendElement.setBorderEnabled(viewStyle.isLegendBorderEnabled());
+        legendElement.paint(tbModel.getLayersLegend(), g2);
+      }
+      if (viewStyle.isTitleEnabled()) {
+        titleElement.setBorderEnabled(viewStyle.isTitleBorderEnabled());
+        titleElement.paint(g2);
+      }
+      
     }
     
     private void renderLayers(LayerList layerList, boolean allowRevealTopo, Graphics2D g)
@@ -743,6 +743,12 @@ public class GeometryEditPanel extends JPanel
   	}
 
   }
+
+
+
+
+
+
 }
 
 

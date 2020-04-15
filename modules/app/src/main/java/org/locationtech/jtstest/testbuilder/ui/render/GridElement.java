@@ -27,37 +27,30 @@ import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 
-public class GridRenderer {
+public class GridElement {
   private static final int MIN_VIEW_GRID_SIZE = 5;
 
 
   private Viewport viewport;
 
   private DrawingGrid grid;
-
-  private boolean isEnabled = true;
   
   private NumberFormat gridSizeFormat;
 
 
-  public GridRenderer(Viewport viewport, DrawingGrid grid) {
+  public GridElement(Viewport viewport, DrawingGrid grid) {
     this.viewport = viewport;
     this.grid = grid;
     gridSizeFormat = NumberFormat.getInstance();
     gridSizeFormat.setGroupingUsed(false);
   }
 
-  public void setEnabled(boolean isEnabled) {
-    this.isEnabled = isEnabled;
-  }
-
   public void paint(Graphics2D g) {
-    if (! isEnabled) return;
     try {
-    drawAxes(g);
-    drawLinedGrid(g);
-//    drawDottedGrid(g);
-    //drawGridSizeLabel(g, viewport.gridMagnitudeModel());
+      drawAxes(g);
+      drawLinedGrid(g);
+  //    drawDottedGrid(g);
+      //drawGridSizeLabel(g, viewport.gridMagnitudeModel());
     }
     // guards against crazy data causing problems
     catch (ArithmeticException ex) {
@@ -66,7 +59,6 @@ public class GridRenderer {
   }
 
   public void paintTop(Graphics2D g) {
-    if (! isEnabled) return;
     try {
       drawScaleBar(g);
     }

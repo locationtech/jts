@@ -102,7 +102,7 @@ public class RenderManager
 		int height = image.getHeight(null);
 		
 		Graphics2D g = (Graphics2D) image.getGraphics();
-		g.setColor( GeometryEditPanel.VIEW_backgroundColor );
+		g.setColor( panel.getBackgroundColor() );
 
 		Rectangle2D.Double r = new Rectangle2D.Double(0, 0, width, height);
 		g.fill(r);

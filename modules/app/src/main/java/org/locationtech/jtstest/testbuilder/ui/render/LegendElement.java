@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2020 Martin Davis.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package org.locationtech.jtstest.testbuilder.ui.render;
 
 import java.awt.BasicStroke;
@@ -14,29 +25,36 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
-public class LegendRenderer {
+public class LegendElement {
+  
   private static final Color NAME_CLR = Color.BLACK;
-  private static final int BOX_OFFSET = 6;
-  private static final int BOX_MARGIN = 10;
-  private static final int DEFAULT_FONT_SIZE = 12;
-  private static final int BORDER_WIDTH = 1;
+  
+  private static final int BOX_OFFSET = 1;
+  private static final int BOX_MARGIN = 8;
   private static final int SWATCH_SIZE = 10;
   private static final int SWATCH_MARGIN = 6;
   
-  private boolean isEnabled = false;
+  private static final int DEFAULT_FONT_SIZE = 12;
+
   private Viewport viewport;
   private Font font = new Font(FontGlyphReader.FONT_SANSERIF, Font.PLAIN, DEFAULT_FONT_SIZE);
+  private int borderSize = 1;
 
-  public LegendRenderer(Viewport viewport) {
+  private boolean isBorderEnabled;
+
+  public LegendElement(Viewport viewport) {
     this.viewport = viewport;
   }
-
-  public void setEnabled(boolean isEnabled) {
-    this.isEnabled = isEnabled;
+  
+  public void setBorderEnabled(boolean isBorderEnabled) {
+    this.isBorderEnabled = isBorderEnabled;
+  }
+  
+  public void setBorder(int borderSize) {
+    this.borderSize  = borderSize;
   }
   
   public void paint(List<Layer> layerList, Graphics2D g) {
-    if (! isEnabled ) return;
 
     if (layerList.size() <= 0) return;
     
@@ -51,7 +69,7 @@ public class LegendRenderer {
 
     int nameX = box.x + BOX_MARGIN + SWATCH_SIZE + SWATCH_MARGIN;
     // have to account for width of outline
-    int baseY = box.y + BOX_MARGIN - 2 * BORDER_WIDTH;
+    int baseY = box.y + BOX_MARGIN - 2 * borderSize;
     int lineHeight = DEFAULT_FONT_SIZE + 4;
     int n = layerList.size();
     for (int i = 0; i < n; i++) {
@@ -156,15 +174,17 @@ public class LegendRenderer {
     g.setPaint(Color.WHITE);
     g.fill(box);
     
-    Stroke strokeBox = new BasicStroke(BORDER_WIDTH, // Width of stroke
-        BasicStroke.CAP_BUTT,  // End cap style
-        BasicStroke.JOIN_MITER, // Join style
-        10,                  // Miter limit
-        null, // Dash pattern
-        0);                   // Dash phase 
-    g.setStroke(strokeBox);
-    g.setPaint(NAME_CLR);
-    g.draw(box);
+    if (isBorderEnabled && borderSize > 0) {
+      Stroke strokeBox = new BasicStroke(borderSize, // Width of stroke
+          BasicStroke.CAP_BUTT,  // End cap style
+          BasicStroke.JOIN_MITER, // Join style
+          10,                  // Miter limit
+          null, // Dash pattern
+          0);                   // Dash phase 
+      g.setStroke(strokeBox);
+      g.setPaint(Color.GRAY);
+      g.draw(box);
+    }
   }
   
   private Rectangle computeBox(List<Layer> layerList, Graphics2D g) {
@@ -192,6 +212,7 @@ public class LegendRenderer {
     }
     return width;
   }
+
 
 
 
