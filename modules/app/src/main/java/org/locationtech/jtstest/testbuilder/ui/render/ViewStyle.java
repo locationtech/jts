@@ -29,6 +29,7 @@ public class ViewStyle {
   
   private boolean isLegendEnabled = false;
   private boolean isLegendBorderEnabled = true;
+  private Color legendFillClr = Color.WHITE;
   
   private boolean isTitleEnabled = false;
   private boolean isTitleBorderEnabled = true;
@@ -38,8 +39,8 @@ public class ViewStyle {
   private Color clrBackground = AppColors.GEOM_VIEW_BACKGROUND;
 
   private boolean isBorderEnabled;
-
   private Color borderClr = Color.GRAY;
+
 
   public ViewStyle() {
     
@@ -97,6 +98,12 @@ public class ViewStyle {
     isTitleBorderEnabled = isEnabled;
   }
 
+  public Color getLegendFill() {
+    return legendFillClr;
+  }
+  public void setLegendFill(Color fillClr) {
+    legendFillClr = fillClr;
+  }
   public boolean isTitleBorderEnabled() {
     return isTitleBorderEnabled;
   }
@@ -121,4 +128,5 @@ public class ViewStyle {
   public Color getBorderColor() {
     return borderClr;
   }
+
 }

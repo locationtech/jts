@@ -624,12 +624,13 @@ public class GeometryEditPanel extends JPanel
       if (viewStyle.isLegendEnabled()) {
         legendElement.setBorderEnabled(viewStyle.isLegendBorderEnabled());
         legendElement.setBorderColor(viewStyle.getBorderColor());
+        legendElement.setFill(viewStyle.getLegendFill());
         legendElement.paint(tbModel.getLayersLegend(), g2);
       }
       if (viewStyle.isTitleEnabled()) {
-        titleElement.setFill(viewStyle.getTitleFill());
         titleElement.setBorderColor(viewStyle.getBorderColor());
         titleElement.setBorderEnabled(viewStyle.isTitleBorderEnabled());
+        titleElement.setFill(viewStyle.getTitleFill());
         titleElement.setTitle(viewStyle.getTitle());
         titleElement.paint(g2);
       }

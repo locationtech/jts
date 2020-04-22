@@ -25,6 +25,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
   private JPanel ctlTitleFillClr;
   private JCheckBox cbViewBorder;
   private JPanel ctlBorderClr;
+  private JPanel ctlLegendFillClr;
 
   public GeometryViewStylePanel() {
     try {
@@ -82,7 +83,16 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
       public void actionPerformed(ActionEvent e) {
         updateView();      }
     });
-    addRow("Legend", cbLegend, "Border", cbLegendBorder );
+    ctlLegendFillClr = ColorControl.create(this, 
+        "Legend fill color",
+        viewStyle.getLegendFill(),
+        new ColorControl.ColorListener() {
+          public void colorChanged(Color clr) {
+            updateView();
+          }
+        }
+       );
+    addRow("Legend", cbLegend, "Border", cbLegendBorder, ctlLegendFillClr );
     
     cbViewBorder = new JCheckBox();
     cbViewBorder.setSelected(viewStyle.isBorderEnabled());
@@ -134,6 +144,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
     viewStyle.setTitle(txtTitle.getText());
     viewStyle.setLegendEnabled(cbLegend.isSelected());
     viewStyle.setLegendBorderEnabled(cbLegendBorder.isSelected());
+    viewStyle.setLegendFill(ctlLegendFillClr.getBackground());
     
     JTSTestBuilder.controller().setViewStyle(viewStyle);
 

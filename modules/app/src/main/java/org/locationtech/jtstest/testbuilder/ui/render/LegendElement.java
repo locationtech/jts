@@ -44,6 +44,8 @@ public class LegendElement {
 
   private Color borderColor;
 
+  private Color fillClr = Color.WHITE;
+
   public LegendElement(Viewport viewport) {
     this.viewport = viewport;
   }
@@ -59,7 +61,9 @@ public class LegendElement {
   public void setBorderColor(Color clr) {
     borderColor = clr;
   }
-  
+  public void setFill(Color clr) {
+    this.fillClr  = clr;
+  }
   public void paint(List<Layer> layerList, Graphics2D g) {
 
     if (layerList.size() <= 0) return;
@@ -177,7 +181,7 @@ public class LegendElement {
   }
   
   private void drawBox(Rectangle box, Graphics2D g) {    
-    g.setPaint(Color.WHITE);
+    g.setPaint(fillClr);
     g.fill(box);
     
     if (isBorderEnabled && borderSize > 0) {
