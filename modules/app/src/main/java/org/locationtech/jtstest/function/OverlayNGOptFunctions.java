@@ -11,11 +11,15 @@
  */
 package org.locationtech.jtstest.function;
 
+import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
+
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.IntersectionMatrix;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 /**
  * Functions to test using spatial predicates 
@@ -73,13 +77,30 @@ public class OverlayNGOptFunctions {
     return a.intersection(b);
   }
   
-  public static Geometry intersection(Geometry a, Geometry b) {
+  public static Geometry intersection(Geometry a, Geometry b, 
+      @Metadata(title="Grid Scale") double scaleFactor) {
     Geometry intFast = fastIntersect(a, b);
     if (intFast != null) return intFast;
-    return OverlayNG.overlayFixedPrecision(a, b, OverlayNG.INTERSECTION);
+    return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(scaleFactor));
   }
   
-  public static Geometry intersectionPrep(Geometry a, Geometry b) {
+  public static Geometry intersectionPrep(Geometry a, Geometry b,
+      @Metadata(title="Grid Scale") double scaleFactor) {
+    PreparedGeometry pg = cacheFetch(a);
+    if (! pg.intersects(b)) return null;
+    if (pg.covers(b)) return b.copy();
+    return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(scaleFactor));
+  }
+  
+  /**
+   * Using auto slows things down quite a bit (due to need to scan to find
+   * scale factor), so not recommended.
+   * 
+   * @param a
+   * @param b
+   * @return
+   */
+  public static Geometry intersectionPrepAuto(Geometry a, Geometry b) {
     PreparedGeometry pg = cacheFetch(a);
     if (! pg.intersects(b)) return null;
     if (pg.covers(b)) return b.copy();
