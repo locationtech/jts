@@ -475,6 +475,14 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
 
+  public void testPolygonMultiLineUnion() {
+    Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
+    Geometry b = read("MULTILINESTRING ((150 250, 150 50), (250 250, 250 50))");
+    Geometry expected = read("GEOMETRYCOLLECTION (LINESTRING (150 50, 150 100), LINESTRING (150 200, 150 250), LINESTRING (250 50, 250 250), POLYGON ((100 100, 100 200, 150 200, 200 200, 200 100, 150 100, 100 100)))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
   public static Geometry difference(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     return OverlayNG.overlay(a, b, DIFFERENCE, pm);
