@@ -66,7 +66,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve accuracy of `LineSegment.lineIntersection` (#468)
 * Fix `Distance3DOp` coordinate ordering (#480) 
 * Fix `Geometry.reverse()` to have consistent behaviour and to copy all fields (#513)
-* Fix `MinimumBoundingCircle.farthestPoints` to work correctly (#522)
+* Fix `MinimumBoundingCircle.farthestPoints` to work correctly (#522 and #533)
 * Fix `DistanceOp` handling of geometry collections with empty components (#524)
 
 ## JTS TestBuilder
@@ -75,6 +75,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Add a UI to run external commands
 * Allow creating additional view layers
+* Add map view title, legend and border options
 * Support points in Reveal Topology mode
 
 ## JTS TestRunner
