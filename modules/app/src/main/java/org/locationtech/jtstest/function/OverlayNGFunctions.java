@@ -25,26 +25,10 @@ import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.PrecisionReducer;
-import org.locationtech.jts.operation.overlayng.PrecisionUtil;
 import org.locationtech.jts.operation.overlayng.UnaryUnionNG;
-import org.locationtech.jts.operation.union.UnaryUnionOp;
-import org.locationtech.jts.operation.union.UnionFunction;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class OverlayNGFunctions {
-  
- 
-  static Geometry sameOrEmpty(Geometry a, Geometry b) {
-    if (a != null) return a;
-    // return empty geom of same type
-    if (b.getDimension() == 2) {
-      return b.getFactory().createPolygon();
-    }
-    if (b.getDimension() == 1) {
-      return b.getFactory().createLineString();
-    }
-    return b.getFactory().createPoint();
-  }
 
   public static Geometry intersection(Geometry a, Geometry b, 
       @Metadata(title="Grid Scale") double scaleFactor) {
@@ -76,30 +60,6 @@ public class OverlayNGFunctions {
       @Metadata(title="Grid Scale") double scaleFactor) {
     return UnaryUnionNG.union(a, new PrecisionModel(scaleFactor));
   }
-
-  
-  
-  @Metadata(description="Intersection with automatically-determined maximum precision")
-  public static Geometry intersectionAutoPM(Geometry a, Geometry b) {
-    return OverlayNG.overlayFixedPrecision(a, b, INTERSECTION);
-  }
-  
-  @Metadata(description="Union with automatically-determined maximum precision")
-  public static Geometry unionAutoPM(Geometry a, Geometry b) {
-    return OverlayNG.overlayFixedPrecision(a, b, UNION);
-  }
-  
-  @Metadata(description="Difference with automatically-determined maximum precision")
-  public static Geometry differenceAutoPM(Geometry a, Geometry b) {
-    return OverlayNG.overlayFixedPrecision(a, b, DIFFERENCE);
-  }  
-  
-  @Metadata(description="Unary union with automatically-determined maximum precision")
-  public static Geometry unaryUnionAutoPM(Geometry a) {
-    return UnaryUnionNG.union(a);
-  }
-  
-  
   
   @Metadata(description="Union a fully-noded coverage (polygons or lines)")
   public static Geometry unionCoverage(Geometry geom) {

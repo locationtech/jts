@@ -42,6 +42,18 @@ import org.locationtech.jts.operation.union.UnionFunction;
 
 public class OverlayNGTestFunctions {
   
+  static Geometry sameOrEmpty(Geometry a, Geometry b) {
+    if (a != null) return a;
+    // return empty geom of same type
+    if (b.getDimension() == 2) {
+      return b.getFactory().createPolygon();
+    }
+    if (b.getDimension() == 1) {
+      return b.getFactory().createLineString();
+    }
+    return b.getFactory().createPoint();
+  }
+  
   public static double scaleAuto(Geometry a, Geometry b) {
     return PrecisionUtil.robustScale(a, b);
   }
@@ -57,8 +69,8 @@ public class OverlayNGTestFunctions {
   public static Geometry edgesNoded(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs
-    a = OverlayNGFunctions.sameOrEmpty(a, b);
-    b = OverlayNGFunctions.sameOrEmpty(b, a);
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
     // op should not matter, since edges are captured pre-result
     OverlayNG ovr = new OverlayNG(a, b, pm, UNION);
     ovr.setOutputNodedEdges(true);
@@ -68,8 +80,8 @@ public class OverlayNGTestFunctions {
   public static Geometry edgesNodedIntersection(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs
-    a = OverlayNGFunctions.sameOrEmpty(a, b);
-    b = OverlayNGFunctions.sameOrEmpty(b, a);
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
     // op should not matter, since edges are captured pre-result
     OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
     ovr.setOutputNodedEdges(true);
@@ -79,8 +91,8 @@ public class OverlayNGTestFunctions {
   public static Geometry edgesNodedIntNoOpt(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs
-    a = OverlayNGFunctions.sameOrEmpty(a, b);
-    b = OverlayNGFunctions.sameOrEmpty(b, a);
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
     // op should not matter, since edges are captured pre-result
     OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
     ovr.setOutputNodedEdges(true);
@@ -97,8 +109,8 @@ public class OverlayNGTestFunctions {
   public static Geometry edgesIntersectionResult(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs
-    a = OverlayNGFunctions.sameOrEmpty(a, b);
-    b = OverlayNGFunctions.sameOrEmpty(b, a);
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
    OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
     ovr.setOutputResultEdges(true);
     return ovr.getResult();
@@ -107,8 +119,8 @@ public class OverlayNGTestFunctions {
   public static Geometry edgesIntersectionAll(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs
-    a = OverlayNGFunctions.sameOrEmpty(a, b);
-    b = OverlayNGFunctions.sameOrEmpty(b, a);
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
     OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
     ovr.setOutputEdges(true);
     return ovr.getResult();
@@ -117,8 +129,8 @@ public class OverlayNGTestFunctions {
   public static Geometry edgesUnionResult(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs
-    a = OverlayNGFunctions.sameOrEmpty(a, b);
-    b = OverlayNGFunctions.sameOrEmpty(b, a);
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
     OverlayNG ovr = new OverlayNG(a, b, pm, UNION);
     ovr.setOutputResultEdges(true);
     return ovr.getResult();
@@ -140,8 +152,8 @@ public class OverlayNGTestFunctions {
   public static Geometry unionIntSymDiff(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs
-    a = OverlayNGFunctions.sameOrEmpty(a, b);
-    b = OverlayNGFunctions.sameOrEmpty(b, a);
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
     // op should not matter, since edges are captured pre-result
     Geometry inter = extractPoly( OverlayNG.overlay(a, b, INTERSECTION, pm) );
     Geometry symDiff = extractPoly( OverlayNG.overlay(a, b, SYMDIFFERENCE, pm) );
@@ -151,8 +163,8 @@ public class OverlayNGTestFunctions {
 
   public static Geometry unionIntSymDiffOriginal(Geometry a, Geometry b) {
     // force non-null inputs
-    a = OverlayNGFunctions.sameOrEmpty(a, b);
-    b = OverlayNGFunctions.sameOrEmpty(b, a);
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
     // op should not matter, since edges are captured pre-result
     Geometry inter = extractPoly( a.intersection(b) );
     Geometry symDiff = extractPoly( a.symDifference(b) );
