@@ -50,6 +50,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve performance of `UniqueCoordinateFilter` (#422)
 * Improve performance of `Polygonizer` (#431)
 * Avoid use of `ArrayList` in MonotoneChain builders
+* Add DistanceOp line-line envelope short-circuit optimizations (#534)
 
 ### Bug Fixes
 
