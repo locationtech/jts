@@ -1,5 +1,4 @@
 <run>
-  <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/>
 
 <case>
   <desc>PP - point contained in both A and B</desc>
@@ -115,16 +114,6 @@
     POINT(80 200)
   </b>
 <test>
-  <op name="getboundary" arg1="A">
-    GEOMETRYCOLLECTION EMPTY
-  </op>
-</test>
-<test>
-  <op name="convexhull" arg1="A">
-    POINT(80 200)
-  </op>
-</test>
-<test>
   <op name="intersection" arg1="A" arg2="B">
     POINT(80 200)
   </op>
@@ -154,16 +143,6 @@
   <b>
     POINT(260 80)
   </b>
-<test>
-  <op name="getboundary" arg1="A">
-    GEOMETRYCOLLECTION EMPTY
-  </op>
-</test>
-<test>
-  <op name="convexhull" arg1="A">
-    POINT(80 200)
-  </op>
-</test>
 <test>
   <op name="intersection" arg1="A" arg2="B">
     POINT EMPTY
@@ -195,16 +174,6 @@
     POINT(120 260)
   </b>
 <test>
-  <op name="getboundary" arg1="A">
-    GEOMETRYCOLLECTION EMPTY
-  </op>
-</test>
-<test>
-  <op name="convexhull" arg1="A">
-    POINT(60 260)
-  </op>
-</test>
-<test>
   <op name="intersection" arg1="A" arg2="B">
     POINT EMPTY
   </op>
@@ -234,16 +203,6 @@
   <b>
     POINT(80 280)
   </b>
-<test>
-  <op name="getboundary" arg1="A">
-    GEOMETRYCOLLECTION EMPTY
-  </op>
-</test>
-<test>
-  <op name="convexhull" arg1="A">
-    POINT(80 80)
-  </op>
-</test>
 <test>
   <op name="intersection" arg1="A" arg2="B">
     POINT EMPTY

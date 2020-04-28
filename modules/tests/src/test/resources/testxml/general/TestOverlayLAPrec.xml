@@ -1,0 +1,185 @@
+<run>
+  <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/>
+
+<case>
+  <desc>LA - line and sliver intersecting, dimensional collapse</desc>
+  <a>
+    POLYGON(
+      (95 9, 81 414, 87 414, 95 9))
+  </a>
+  <b>
+    LINESTRING(93 13, 96 13)
+  </b>
+<test>
+  <op name="intersection" arg1="A" arg2="B">
+    POINT(95 13)
+  </op>
+</test>
+<test>
+  <op name="union" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION(
+      LINESTRING(95 9, 95 13), 
+      POLYGON(
+        (95 13, 81 414, 87 414, 95 13)), 
+      LINESTRING(93 13, 95 13), 
+      LINESTRING(95 13, 96 13))
+  </op>
+</test>
+<test>
+  <op name="difference" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION(
+      LINESTRING(95 9, 95 13), 
+      POLYGON(
+        (95 13, 81 414, 87 414, 95 13)))
+  </op>
+</test>
+<test>
+  <op name="symdifference" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION(
+      LINESTRING(95 9, 95 13), 
+      POLYGON(
+        (95 13, 81 414, 87 414, 95 13)), 
+      LINESTRING(93 13, 95 13), 
+      LINESTRING(95 13, 96 13))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LA - A and B simple</desc>
+  <a>
+    LINESTRING(240 190, 120 120)
+  </a>
+  <b>
+    POLYGON(
+      (110 240, 50 80, 240 70, 110 240))
+  </b>
+<test>
+  <op name="intersection" arg1="A" arg2="B">
+    LINESTRING(177 153, 120 120)
+  </op>
+</test>
+<test>
+  <op name="union" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION(
+      LINESTRING(240 190, 177 153), 
+      POLYGON(
+        (177 153, 240 70, 50 80, 110 240, 177 153)))
+  </op>
+</test>
+<test>
+  <op name="difference" arg1="A" arg2="B">
+    LINESTRING(240 190, 177 153)
+  </op>
+</test>
+<test>
+  <op name="symdifference" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION(
+      LINESTRING(240 190, 177 153), 
+      POLYGON(
+        (177 153, 240 70, 50 80, 110 240, 177 153)))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LA - A intersects B-hole</desc>
+  <a>
+    LINESTRING(0 100, 100 100, 200 200)
+  </a>
+  <b>
+    POLYGON(
+      (30 240, 260 30, 30 30, 30 240), 
+      (80 140, 80 80, 140 80, 80 140))
+  </b>
+<test>
+  <op name="intersection" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (30 100, 80 100), 
+      (110 110, 140 140))
+  </op>
+</test>
+<test>
+  <op name="union" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION(
+      LINESTRING(0 100, 30 100), 
+      LINESTRING(80 100, 100 100, 110 110), 
+      LINESTRING(140 140, 200 200), 
+      POLYGON(
+        (30 240, 140 140, 260 30, 30 30, 30 100, 30 240), 
+        (80 140, 80 100, 80 80, 140 80, 110 110, 80 140)))
+  </op>
+</test>
+<test>
+  <op name="difference" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (0 100, 30 100), 
+      (80 100, 100 100, 110 110), 
+      (140 140, 200 200))
+  </op>
+</test>
+<test>
+  <op name="symdifference" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION(
+      LINESTRING(0 100, 30 100), 
+      LINESTRING(80 100, 100 100, 110 110), 
+      LINESTRING(140 140, 200 200), 
+      POLYGON(
+        (30 240, 140 140, 260 30, 30 30, 30 100, 30 240), 
+        (80 140, 80 100, 80 80, 140 80, 110 110, 80 140)))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LA - A intersects B-hole #2</desc>
+  <a>
+    LINESTRING(40 340, 200 250, 120 180, 160 110, 270 40)
+  </a>
+  <b>
+    POLYGON(
+      (160 330, 60 260, 20 150, 60 40, 190 20, 270 130, 260 250, 160 330), 
+      (140 240, 80 190, 90 100, 160 70, 210 130, 210 210, 140 240))
+  </b>
+<test>
+  <op name="intersection" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (114 298, 200 250, 173 226), 
+      (182 96, 225 68))
+  </op>
+</test>
+<test>
+  <op name="union" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION(
+      LINESTRING(40 340, 114 298), 
+      LINESTRING(173 226, 120 180, 160 110, 182 96), 
+      LINESTRING(225 68, 270 40), 
+      POLYGON(
+        (114 298, 160 330, 260 250, 270 130, 225 68, 190 20, 60 40, 20 150, 60 260, 
+        114 298), 
+        (140 240, 80 190, 90 100, 160 70, 182 96, 210 130, 210 210, 173 226, 140 240)))
+  </op>
+</test>
+<test>
+  <op name="difference" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (40 340, 114 298), 
+      (173 226, 120 180, 160 110, 182 96), 
+      (225 68, 270 40))
+  </op>
+</test>
+<test>
+  <op name="symdifference" arg1="A" arg2="B">
+    GEOMETRYCOLLECTION(
+      LINESTRING(40 340, 114 298), 
+      LINESTRING(173 226, 120 180, 160 110, 182 96), 
+      LINESTRING(225 68, 270 40), 
+      POLYGON(
+        (114 298, 160 330, 260 250, 270 130, 225 68, 190 20, 60 40, 20 150, 60 260, 
+        114 298), 
+        (140 240, 80 190, 90 100, 160 70, 182 96, 210 130, 210 210, 173 226, 140 240)))
+  </op>
+</test>
+</case>
+
+</run>

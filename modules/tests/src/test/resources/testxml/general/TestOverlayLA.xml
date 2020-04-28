@@ -1,142 +1,4 @@
 <run>
-  <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/>
-
-<case>
-  <desc>LA - A and B simple</desc>
-  <a>
-    LINESTRING(240 190, 120 120)
-  </a>
-  <b>
-    POLYGON(
-      (110 240, 50 80, 240 70, 110 240))
-  </b>
-<test>
-  <op name="intersection" arg1="A" arg2="B">
-    LINESTRING(177 153, 120 120)
-  </op>
-</test>
-<test>
-  <op name="union" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION(
-      LINESTRING(240 190, 177 153), 
-      POLYGON(
-        (177 153, 240 70, 50 80, 110 240, 177 153)))
-  </op>
-</test>
-<test>
-  <op name="difference" arg1="A" arg2="B">
-    LINESTRING(240 190, 177 153)
-  </op>
-</test>
-<test>
-  <op name="symdifference" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION(
-      LINESTRING(240 190, 177 153), 
-      POLYGON(
-        (177 153, 240 70, 50 80, 110 240, 177 153)))
-  </op>
-</test>
-</case>
-
-<case>
-  <desc>LA - A intersects B-hole</desc>
-  <a>
-    LINESTRING(0 100, 100 100, 200 200)
-  </a>
-  <b>
-    POLYGON(
-      (30 240, 260 30, 30 30, 30 240), 
-      (80 140, 80 80, 140 80, 80 140))
-  </b>
-<test>
-  <op name="intersection" arg1="A" arg2="B">
-    MULTILINESTRING(
-      (30 100, 80 100), 
-      (110 110, 140 140))
-  </op>
-</test>
-<test>
-  <op name="union" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION(
-      LINESTRING(0 100, 30 100), 
-      LINESTRING(80 100, 100 100, 110 110), 
-      LINESTRING(140 140, 200 200), 
-      POLYGON(
-        (30 240, 140 140, 260 30, 30 30, 30 100, 30 240), 
-        (80 140, 80 100, 80 80, 140 80, 110 110, 80 140)))
-  </op>
-</test>
-<test>
-  <op name="difference" arg1="A" arg2="B">
-    MULTILINESTRING(
-      (0 100, 30 100), 
-      (80 100, 100 100, 110 110), 
-      (140 140, 200 200))
-  </op>
-</test>
-<test>
-  <op name="symdifference" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION(
-      LINESTRING(0 100, 30 100), 
-      LINESTRING(80 100, 100 100, 110 110), 
-      LINESTRING(140 140, 200 200), 
-      POLYGON(
-        (30 240, 140 140, 260 30, 30 30, 30 100, 30 240), 
-        (80 140, 80 100, 80 80, 140 80, 110 110, 80 140)))
-  </op>
-</test>
-</case>
-
-<case>
-  <desc>LA - A intersects B-hole #2</desc>
-  <a>
-    LINESTRING(40 340, 200 250, 120 180, 160 110, 270 40)
-  </a>
-  <b>
-    POLYGON(
-      (160 330, 60 260, 20 150, 60 40, 190 20, 270 130, 260 250, 160 330), 
-      (140 240, 80 190, 90 100, 160 70, 210 130, 210 210, 140 240))
-  </b>
-<test>
-  <op name="intersection" arg1="A" arg2="B">
-    MULTILINESTRING(
-      (114 298, 200 250, 173 226), 
-      (182 96, 225 68))
-  </op>
-</test>
-<test>
-  <op name="union" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION(
-      LINESTRING(40 340, 114 298), 
-      LINESTRING(173 226, 120 180, 160 110, 182 96), 
-      LINESTRING(225 68, 270 40), 
-      POLYGON(
-        (114 298, 160 330, 260 250, 270 130, 225 68, 190 20, 60 40, 20 150, 60 260, 
-        114 298), 
-        (140 240, 80 190, 90 100, 160 70, 182 96, 210 130, 210 210, 173 226, 140 240)))
-  </op>
-</test>
-<test>
-  <op name="difference" arg1="A" arg2="B">
-    MULTILINESTRING(
-      (40 340, 114 298), 
-      (173 226, 120 180, 160 110, 182 96), 
-      (225 68, 270 40))
-  </op>
-</test>
-<test>
-  <op name="symdifference" arg1="A" arg2="B">
-    GEOMETRYCOLLECTION(
-      LINESTRING(40 340, 114 298), 
-      LINESTRING(173 226, 120 180, 160 110, 182 96), 
-      LINESTRING(225 68, 270 40), 
-      POLYGON(
-        (114 298, 160 330, 260 250, 270 130, 225 68, 190 20, 60 40, 20 150, 60 260, 
-        114 298), 
-        (140 240, 80 190, 90 100, 160 70, 182 96, 210 130, 210 210, 173 226, 140 240)))
-  </op>
-</test>
-</case>
 
 <case>
   <desc>mLmA - A and B complex, disjoint</desc>
@@ -154,20 +16,6 @@
       (40 360, 40 60, 340 60, 40 360, 40 20), 
       (120 120, 120 140, 100 140, 100 120, 140 120))
   </b>
-<test>
-  <op name="convexhull" pattern="FFFFFFFFF" arg1="A">
-    POLYGON(
-      (60 80, 60 320, 300 80, 60 80))
-  </op>
-</test>
-<test>
-  <op name="getboundary" pattern="FFFFFFFFF" arg1="A">
-    MULTILINESTRING(
-      (60 320, 60 80, 300 80, 60 320), 
-      (80 280, 80 100, 260 100, 80 280), 
-      (120 160, 140 160, 140 140, 120 160))
-  </op>
-</test>
 <test>
   <op name="symdifference" pattern="FFFFFFFFF" arg1="A" arg2="B">
     GEOMETRYCOLLECTION(
@@ -233,21 +81,6 @@
       (40 260, 240 260, 240 240, 40 240, 40 220, 240 220), 
       (120 300, 120 80, 140 80, 140 300, 140 80, 120 80, 120 320))
   </b>
-  <test>
-    <op name="getboundary" arg1="A">
-      MULTILINESTRING(
-        (60 260, 60 120, 220 120, 220 260, 60 260), 
-        (80 240, 80 140, 200 140, 200 240, 80 240), 
-        (100 220, 100 160, 180 160, 180 220, 100 220), 
-        (120 200, 120 180, 160 180, 160 200, 120 200))
-          </op>
-  </test>
-  <test>
-    <op name="convexhull" arg1="A">
-      POLYGON(
-        (60 120, 60 260, 220 260, 220 120, 60 120))
-          </op>
-  </test>
   <test>
     <op name="intersection" arg1="A" arg2="B">
       MULTILINESTRING(
@@ -348,7 +181,9 @@
           (120 200, 120 180, 140 180, 160 180, 160 200, 140 200, 120 200)))
           </op>
   </test>
-</case><case>
+</case>
+
+<case>
   <desc>mLmA - A and B complex, overlapping and touching #2</desc>
   <a>
     MULTIPOLYGON(
@@ -365,21 +200,6 @@
       (80 300, 80 160, 260 160, 260 300, 80 300, 80 140), 
       (220 360, 220 240, 300 240, 300 360))
   </b>
-<test>
-  <op name="convexhull" pattern="FFFFFFFFF" arg1="A">
-    POLYGON(
-      (60 120, 60 320, 280 400, 320 400, 320 220, 280 120, 60 120))
-  </op>
-</test>
-<test>
-  <op name="getboundary" pattern="FFFFFFFFF" arg1="A">
-    MULTILINESTRING(
-      (60 320, 60 120, 280 120, 280 320, 60 320), 
-      (120 260, 120 180, 240 180, 240 260, 120 260), 
-      (280 400, 320 400, 320 360, 280 360, 280 400), 
-      (300 240, 300 220, 320 220, 320 240, 300 240))
-  </op>
-</test>
 <test>
   <op name="symdifference" pattern="FFFFFFFFF" arg1="A" arg2="B">
     GEOMETRYCOLLECTION(
@@ -457,19 +277,6 @@
       (60 300, 60 40), 
       (100 100, 140 100))
   </b>
-<test>
-  <op name="convexhull" pattern="FFFFFFFFF" arg1="A">
-    POLYGON(
-      (60 80, 100 240, 140 240, 180 80, 60 80))
-  </op>
-</test>
-<test>
-  <op name="getboundary" pattern="FFFFFFFFF" arg1="A">
-    MULTILINESTRING(
-      (120 180, 60 80, 180 80, 120 180), 
-      (100 240, 140 240, 120 220, 100 240))
-  </op>
-</test>
 <test>
   <op name="symdifference" pattern="FFFFFFFFF" arg1="A" arg2="B">
     GEOMETRYCOLLECTION(

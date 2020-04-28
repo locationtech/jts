@@ -1,5 +1,4 @@
 <run>
-  <precisionModel scale="1.0" offsetx="0.0" offsety="0.0"/>
 
 <case>
   <desc>PA - point contained in simple polygon</desc>
@@ -29,19 +28,6 @@
   <b>
     MULTIPOINT((120 320), (180 260), (180 320), (180 200), (300 200), (200 220))
   </b>
-<test>
-  <op name="getboundary" arg1="A">
-    MULTILINESTRING(
-      (120 320, 180 200, 240 320, 120 320), 
-      (180 200, 240 80, 300 200, 180 200))
-  </op>
-</test>
-<test>
-  <op name="convexhull" arg1="A">
-    POLYGON(
-      (240 80, 120 320, 240 320, 300 200, 240 80))
-  </op>
-</test>
 <test>
   <op name="intersection" arg1="A" arg2="B">
     MULTIPOINT((120 320), (180 200), (180 260), (180 320), (300 200))
@@ -93,21 +79,6 @@
     MULTIPOINT((200 360), (420 340), (400 100), (340 120), (200 140), (200 160), (220 180), (260 200), (200 360), 
     (420 340), (400 100), (340 120), (200 140), (200 160), (220 180), (260 200))
   </b>
-<test>
-  <op name="getboundary" arg1="A">
-    MULTILINESTRING(
-      (120 80, 420 80, 420 340, 120 340, 120 80), 
-      (160 300, 160 120, 380 120, 380 300, 160 300), 
-      (200 260, 200 160, 340 160, 340 260, 200 260), 
-      (240 220, 240 200, 300 200, 300 220, 240 220))
-  </op>
-</test>
-<test>
-  <op name="convexhull" arg1="A">
-    POLYGON(
-      (120 80, 120 340, 420 340, 420 80, 120 80))
-  </op>
-</test>
 <test>
   <op name="intersection" arg1="A" arg2="B">
     MULTIPOINT((200 160), (220 180), (260 200), (340 120), (400 100), (420 340))
