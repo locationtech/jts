@@ -386,15 +386,15 @@ public class DistanceOp
     for (int i = 0; i < coord0.length - 1; i++) {
       
       // short-circuit if line segment is far from line
-      Envelope env0 = new Envelope(coord0[i], coord0[i + 1]);
-      if (env0.distance(line1.getEnvelopeInternal()) > minDistance)
+      Envelope segEnv0 = new Envelope(coord0[i], coord0[i + 1]);
+      if (segEnv0.distance(line1.getEnvelopeInternal()) > minDistance)
         continue;
       
       for (int j = 0; j < coord1.length - 1; j++) {
         
         // short-circuit if line segments are far apart
-        Envelope env1 = new Envelope(coord1[j], coord1[j + 1]);
-        if (env0.distance(env1) > minDistance)
+        Envelope segEnv1 = new Envelope(coord1[j], coord1[j + 1]);
+        if (segEnv0.distance(segEnv1) > minDistance)
           continue;
 
         double dist = Distance.segmentToSegment(
