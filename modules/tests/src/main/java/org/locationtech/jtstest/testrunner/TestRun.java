@@ -97,9 +97,9 @@ public class TestRun implements Runnable
   public GeometryOperation getGeometryOperation()
   {
   	// use the main one if it was user-specified or this run does not have an op specified
-  	if (TopologyTestApp.isGeometryOperationSpecified()
+  	if (JTSTestRunnerCmd.isGeometryOperationSpecified()
   			|| geomOp == null)
-  		return TopologyTestApp.getGeometryOperation();
+  		return JTSTestRunnerCmd.getGeometryOperation();
   	
   	return geomOp;
   }
@@ -107,9 +107,9 @@ public class TestRun implements Runnable
   public ResultMatcher getResultMatcher()
   {
   	// use the main one if it was user-specified or this run does not have an op specified
-  	if (TopologyTestApp.isResultMatcherSpecified()
+  	if (JTSTestRunnerCmd.isResultMatcherSpecified()
   			|| resultMatcher == null)
-  		return TopologyTestApp.getResultMatcher();
+  		return JTSTestRunnerCmd.getResultMatcher();
   	
   	return resultMatcher;
   }

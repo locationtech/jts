@@ -48,29 +48,29 @@ public class TestReader
     {
     }
 
-    public GeometryOperation getGeometryOperation()
+    private GeometryOperation getGeometryOperation()
     {
     	// use the main one if it was user-specified or this run does not have an op specified
-    	if (TopologyTestApp.isGeometryOperationSpecified()
+    	if (JTSTestRunnerCmd.isGeometryOperationSpecified()
     			|| geomOp == null)
-    		return TopologyTestApp.getGeometryOperation();
+    		return JTSTestRunnerCmd.getGeometryOperation();
     	
     	return geomOp;
     }
 
-    public boolean isBooleanFunction(String name) {
+    private boolean isBooleanFunction(String name) {
         return getGeometryOperation().getReturnType(name) == boolean.class;
     }
 
-    public boolean isIntegerFunction(String name) {
+    private boolean isIntegerFunction(String name) {
         return getGeometryOperation().getReturnType(name) == int.class;
     }
 
-    public boolean isDoubleFunction(String name) {
+    private boolean isDoubleFunction(String name) {
         return getGeometryOperation().getReturnType(name) == double.class;
     }
 
-    public boolean isGeometryFunction(String name) 
+    private boolean isGeometryFunction(String name) 
     {
     	Class returnType = getGeometryOperation().getReturnType(name);
     	if (returnType == null)
