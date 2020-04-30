@@ -14,10 +14,14 @@ package org.locationtech.jts.operation.overlayng;
 import org.locationtech.jts.geom.Dimension;
 
 /**
- * Records topological information about the source of 
- * geometry edge linework.
- * This information is preserved through noding
- * and used to construct the overlay topology graph labels.
+ * Records topological information about an 
+ * edge representing a piece of linework (lineString or polygon ring)
+ * from a single source geometry.
+ * This information is carried through the noding process
+ * (which may result in many noded edges sharing the same information object).
+ * It is then used to populate the topology info fields
+ * in {@link Edge}s (possibly via merging).
+ * That information is used to construct the topology graph {@link OverlayLabel}s.
  * 
  * @author mdavis
  *
