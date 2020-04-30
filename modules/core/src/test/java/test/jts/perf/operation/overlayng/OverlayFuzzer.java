@@ -26,7 +26,7 @@ import org.locationtech.jts.operation.overlayng.OverlayNG;
  * Runs overlay operations on pairs of random polygonal geometries
  * to see if errors occur.
  * 
- * When using OverlayNG a spectrum of scale factors is used
+ * For OverlayNG a spectrum of scale factors is used.
  * Using a Floating precision model can be optionally specified.
  * 
  * @author mdavis
