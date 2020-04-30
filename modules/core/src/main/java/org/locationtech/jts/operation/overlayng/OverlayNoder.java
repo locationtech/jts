@@ -93,7 +93,7 @@ class OverlayNoder {
    */
   private void scanForEdges(Collection<SegmentString> segStrings) {
     for (SegmentString ss : segStrings) {
-      EdgeInfo info = (EdgeInfo) ss.getData();
+      EdgeSourceInfo info = (EdgeSourceInfo) ss.getData();
       int geomIndex = info.getIndex();
       if (geomIndex == 0)
         hasEdgesA = true;
@@ -211,7 +211,7 @@ class OverlayNoder {
     //if (pts.length < ring.getNumPoints()) System.out.println("Ring clipped: " + ring.getNumPoints() + " => " + pts.length);
     
     int depthDelta = computeDepthDelta(ring, isHole);
-    EdgeInfo info = new EdgeInfo(index, depthDelta, isHole);
+    EdgeSourceInfo info = new EdgeSourceInfo(index, depthDelta, isHole);
     addEdge(pts, info);
   }
 
@@ -272,11 +272,11 @@ class OverlayNoder {
       return;
     }
     
-    EdgeInfo info = new EdgeInfo(geomIndex);
+    EdgeSourceInfo info = new EdgeSourceInfo(geomIndex);
     addEdge(pts, info);
   }
   
-  private void addEdge(Coordinate[] pts, EdgeInfo info) {
+  private void addEdge(Coordinate[] pts, EdgeSourceInfo info) {
     NodedSegmentString ss = new NodedSegmentString(pts, info);
     segStrings.add(ss);
   }

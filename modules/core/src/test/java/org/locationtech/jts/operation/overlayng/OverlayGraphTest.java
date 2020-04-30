@@ -69,7 +69,7 @@ public class OverlayGraphTest extends GeometryTestCase {
   
   private Edge createEdge(double... ord) {
     Coordinate[] pts = toCoordinates(ord);
-    return new Edge(pts, new EdgeInfo(0));
+    return new Edge(pts, new EdgeSourceInfo(0));
   }
 
   private Coordinate[] toCoordinates(double[] ord) {

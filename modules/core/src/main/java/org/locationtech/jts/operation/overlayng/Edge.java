@@ -27,6 +27,12 @@ import org.locationtech.jts.util.Debug;
  * Represents a single edge in a topology graph,
  * carrying the topology information 
  * derived from the two parent geometries.
+ * The edge may be the result of the merger of 
+ * two or more edges which happen to have the same underlying linework
+ * (although possibly different orientations).  
+ * In this case the topology information is 
+ * derived from the merging of the information in the 
+ * constituent edges.
  * 
  * @author mdavis
  *
@@ -42,7 +48,7 @@ class Edge {
       // TODO: perhaps convert these to points to be included in overlay?
       if ( isCollapsed(pts) ) continue;
       
-      EdgeInfo info = (EdgeInfo) ss.getData();
+      EdgeSourceInfo info = (EdgeSourceInfo) ss.getData();
       edges.add(new Edge(ss.getCoordinates(), info));
     }
     return edges;
@@ -77,9 +83,9 @@ class Edge {
   private int bDepthDelta = 0;
   private boolean bIsHole = false;
 
-  public Edge(Coordinate[] pts, EdgeInfo info) {
+  public Edge(Coordinate[] pts, EdgeSourceInfo info) {
     this.pts = pts;
-    initEdgeInfo(info);
+    copyInfo(info);
   }
   
   public Coordinate[] getCoordinates() {
@@ -173,7 +179,7 @@ class Edge {
    * @param dim
    * @param depthDelta
    */
-  private void initLabel(OverlayLabel lbl, int geomIndex, int dim, int depthDelta, boolean isHole) {
+  private static void initLabel(OverlayLabel lbl, int geomIndex, int dim, int depthDelta, boolean isHole) {
     int dimLabel = labelDim(dim, depthDelta);
     
     switch (dimLabel) {
@@ -192,7 +198,7 @@ class Edge {
     }
   }
 
-  private int labelDim(int dim, int depthDelta) {
+  private static int labelDim(int dim, int depthDelta) {
     if (dim == Dimension.FALSE) 
       return OverlayLabel.DIM_NOT_PART;
 
@@ -231,7 +237,7 @@ class Edge {
     return bDim == OverlayLabel.DIM_BOUNDARY && ! bIsHole;
   }
   
-  private int locationRight(int depthDelta) {
+  private static int locationRight(int depthDelta) {
     int delSign = delSign(depthDelta);
     switch (delSign) {
     case 0: return OverlayLabel.LOC_UNKNOWN;
@@ -241,7 +247,7 @@ class Edge {
     return OverlayLabel.LOC_UNKNOWN;
   }
 
-  private int locationLeft(int depthDelta) {
+  private static int locationLeft(int depthDelta) {
     // TODO: is it always safe to ignore larger depth deltas?
     int delSign = delSign(depthDelta);
     switch (delSign) {
@@ -258,7 +264,7 @@ class Edge {
     return 0;
   }
 
-  private void initEdgeInfo(EdgeInfo info) {
+  private void copyInfo(EdgeSourceInfo info) {
     if (info.getIndex() == 0) {
       aDim = info.getDimension();
       aIsHole = info.isHole();
@@ -313,8 +319,8 @@ class Edge {
     
     String ptsStr = toStringPts(pts);
     
-    String aInfo = info(0, aDim, aIsHole, aDepthDelta );
-    String bInfo = info(1, bDim, bIsHole, bDepthDelta );
+    String aInfo = infoString(0, aDim, aIsHole, aDepthDelta );
+    String bInfo = infoString(1, bDim, bIsHole, bDepthDelta );
 
     return "Edge( " + ptsStr  + " ) " 
         + aInfo + "/" + bInfo;
@@ -335,7 +341,7 @@ class Edge {
     return ptsStr;
   }
 
-  public static String info(int index, int dim, boolean isHole, int depthDelta) {
+  public static String infoString(int index, int dim, boolean isHole, int depthDelta) {
     return
         (index == 0 ? "A:" : "B:")
         + OverlayLabel.dimensionSymbol(dim)

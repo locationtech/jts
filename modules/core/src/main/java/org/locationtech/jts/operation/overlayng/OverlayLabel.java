@@ -15,9 +15,13 @@ import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geomgraph.Position;
 
 /**
- * A label for an {@link OverlayEdge} which records
+ * A label for a pair of {@link OverlayEdge}s which records
  * the topological information for the edge
  * in the {@link OverlayGraph} containing it.
+ * The label is shared between both OverlayEdges
+ * of a symmetric pair. 
+ * This means that accessors for orientation-sensitive information
+ * need to provide the orientation of the containing OverlayEdge.
  * <p>
  * A label contains the topological {@link Location}s for 
  * the two overlay input geometries.
@@ -30,7 +34,7 @@ import org.locationtech.jts.geomgraph.Position;
  * of the originating ring (which allows
  * determination of the edge role in collapse cases).
  * <p>
- * For each input geometry, a label indicates that an edge is in one of the following states
+ * For each input geometry, the label indicates that an edge is in one of the following states
  * (denoted by the <code>dim</code> field),
  * and contains some ancillary information for each state:
  * <ul>
@@ -68,9 +72,10 @@ import org.locationtech.jts.geomgraph.Position;
  * </ul>
  * Note that:
  * <ul>
- * <li>an edge can not be both a Collapse edge and a Line edge in the same input geometry, 
+ * <li>an edge cannot be both a Collapse edge and a Line edge in the same input geometry, 
  * because each input geometry must be homogeneous.
- * <li>an edge may be an Boundary edge in one input and a Line or Collapse edge in the other
+ * <li>an edge may be an Boundary edge in one input geometry 
+ * and a Line or Collapse edge in the other input.
  * </ul>
  * 
  * @author Martin Davis
@@ -82,6 +87,7 @@ class OverlayLabel {
   private static final char SYM_BOUNDARY = 'B';
   private static final char SYM_COLLAPSE = 'C';
   private static final char SYM_LINE = 'L';
+  
   public static final int DIM_UNKNOWN = -1;
   public static final int DIM_NOT_PART = DIM_UNKNOWN;
   public static final int DIM_LINE = 1;
@@ -403,23 +409,6 @@ class OverlayLabel {
         || bLocRight != LOC_UNKNOWN;
   }
   
-  /*
-  public void setLocation(int index, int position, int location) {
-    if (index == 0) {
-      switch (position) {
-        case Position.LEFT: aLocLeft = location; return;
-        case Position.RIGHT: aLocRight = location; return;
-        case Position.ON: aLocInArea = location; return;
-      }
-    }
-    switch (position) {
-      case Position.LEFT: bLocLeft = location; return;
-      case Position.RIGHT: bLocRight = location; return;
-      case Position.ON: bLocInArea = location; return;
-    }
-  }
-  */
-  
   public OverlayLabel copy() {
     return new OverlayLabel(this);
   }
@@ -439,28 +428,6 @@ class OverlayLabel {
     
     return lbl;
   }
-  
-  /**
-   * Merge a label into this label. 
-   * 
-   * @param lbl
-   */
-  /*
-  public void merge(OverlayLabel lbl)
-  {
-    if (aLocInArea == LOC_UNKNOWN) aLocInArea = lbl.aLocInArea;
-    if (aLocLeft == LOC_UNKNOWN) aLocLeft = lbl.aLocLeft;
-    if (aLocRight == LOC_UNKNOWN) aLocRight = lbl.aLocRight;
-    // TODO: should this error if dim is different?
-    if (aDim == DIM_UNKNOWN) aDim = lbl.aDim;
-    
-    if (bLocInArea == LOC_UNKNOWN) bLocInArea = lbl.bLocInArea;
-    if (bLocLeft == LOC_UNKNOWN) bLocLeft = lbl.bLocLeft;
-    if (bLocRight == LOC_UNKNOWN) bLocRight = lbl.bLocRight;
-    // TODO: should this error if dim is different?
-    if (bDim == DIM_UNKNOWN) bDim = lbl.bDim;
-  }
-  */
     
   public String toString()
   {

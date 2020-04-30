@@ -12,10 +12,9 @@
 package org.locationtech.jts.operation.overlayng;
 
 import org.locationtech.jts.geom.Dimension;
-import org.locationtech.jts.geom.Location;
 
 /**
- * Records information about the origin of 
+ * Records topological information about the source of 
  * geometry edge linework.
  * This information is preserved through noding
  * and used to construct the overlay topology graph labels.
@@ -23,20 +22,20 @@ import org.locationtech.jts.geom.Location;
  * @author mdavis
  *
  */
-class EdgeInfo {
+class EdgeSourceInfo {
   private int index;
   private int dim = -999;
   private boolean isHole = false;
   private int depthDelta = 0;
   
-  public EdgeInfo(int index, int depthDelta, boolean isHole) {
+  public EdgeSourceInfo(int index, int depthDelta, boolean isHole) {
     this.index = index;
     this.dim = Dimension.A;
     this.depthDelta = depthDelta;
     this.isHole = isHole;
   }
   
-  public EdgeInfo(int index) {
+  public EdgeSourceInfo(int index) {
     this.index = index;
     this.dim = Dimension.L;
   }
@@ -57,6 +56,6 @@ class EdgeInfo {
   }
   
   public String toString() {
-    return Edge.info(index, dim, isHole, depthDelta);
+    return Edge.infoString(index, dim, isHole, depthDelta);
   }
 }

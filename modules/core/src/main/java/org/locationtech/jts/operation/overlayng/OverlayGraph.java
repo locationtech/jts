@@ -19,20 +19,36 @@ import java.util.Map;
 
 import org.locationtech.jts.geom.Coordinate;
 
+/**
+ * A planar graph of {@link OverlayEdge}s, representing
+ * the topology resulting from an overlay operation.
+ * Each source {@link Edge} is represented
+ * by two OverlayEdges, with opposite orientation.
+ * A single {@link OverlayLabel} is created for each symmetric pair of OverlayEdges.
+ * 
+ * @author mdavis
+ *
+ */
 class OverlayGraph {
   
   private List<OverlayEdge> edges = new ArrayList<OverlayEdge>();
   private Map<Coordinate, OverlayEdge> nodeMap = new HashMap<Coordinate, OverlayEdge>();
-  private InputGeometry inputGeometry;
   
+  /**
+   * Creates a new graph for a set of noded, labelled {@link Edge}s.
+   * 
+   * @param edges the edges on which to build the graph
+   */
   public OverlayGraph(Collection<Edge> edges) {
     build(edges);
   }
 
   /**
    * Gets the set of edges in this graph.
+   * Only one of each symmetric pair of OverlayEdges is included. 
+   * The opposing edge can be found by using {@link OverlayEdge#sym()}.
    * 
-   * @return the collection of edges in this graph
+   * @return the collection of representative edges in this graph
    */
   public Collection<OverlayEdge> getEdges() 
   {
@@ -41,8 +57,11 @@ class OverlayGraph {
   
   /**
    * Gets the collection of edges representing the nodes in this graph.
+   * For each star of edges originating at a node
+   * a single representative edge is included.
+   * The other edges around the node can be found by following the next and prev links.
    * 
-   * @return the collection of node edges
+   * @return the collection of representative node edges
    */
   public Collection<OverlayEdge> getNodeEdges()
   {
@@ -57,6 +76,21 @@ class OverlayGraph {
    */
   public OverlayEdge getNodeEdge(Coordinate nodePt) {
     return nodeMap.get(nodePt);
+  }
+  
+  /**
+   * Gets the representative edges marked as being in the result area.
+   * 
+   * @return the result area edges
+   */
+  public List<OverlayEdge> getResultAreaEdges() {
+    List<OverlayEdge> resultEdges = new ArrayList<OverlayEdge>();
+    for (OverlayEdge edge : getEdges()) {
+      if (edge.isInResultArea()) {
+        resultEdges.add(edge);
+      }
+    } 
+    return resultEdges;
   }
   
   private void build(Collection<Edge> edges) {
@@ -117,21 +151,6 @@ class OverlayGraph {
       // (sym is also added in separate call)
       nodeMap.put(e.orig(), e);
     }
-  }
-
-  /**
-   * Gets the edges marked as being in the result area.
-   * 
-   * @return the result area edges
-   */
-  public List<OverlayEdge> getResultAreaEdges() {
-    List<OverlayEdge> resultEdges = new ArrayList<OverlayEdge>();
-    for (OverlayEdge edge : getEdges()) {
-      if (edge.isInResultArea()) {
-        resultEdges.add(edge);
-      }
-    } 
-    return resultEdges;
   }
 
 }
