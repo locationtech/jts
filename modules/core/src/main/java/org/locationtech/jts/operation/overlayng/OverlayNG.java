@@ -387,11 +387,12 @@ public class OverlayNG
     boolean hasResultArea = resultPolyList.size() > 0;
     
     //--- Build lines
-    LineStringBuilder lineBuilder = new LineStringBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
+    LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
     resultLineList = lineBuilder.getLines();
 
     //--- Build points
-    resultPointList = new ArrayList<Point>();
+    PointBuilder pointBuilder = new PointBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
+    resultPointList = pointBuilder.getPoints();
     
   }
 

@@ -11,6 +11,7 @@
  */
 package org.locationtech.jtstest.function;
 
+import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
@@ -35,6 +36,11 @@ public class OverlayNGAutoPMFunctions {
   @Metadata(description="Difference with automatically-determined maximum precision")
   public static Geometry difference(Geometry a, Geometry b) {
     return OverlayNG.overlayFixedPrecision(a, b, DIFFERENCE);
+  }  
+  
+  @Metadata(description="Symmetric Difference with automatically-determined maximum precision")
+  public static Geometry symDifference(Geometry a, Geometry b) {
+    return OverlayNG.overlayFixedPrecision(a, b, SYMDIFFERENCE);
   }  
   
   @Metadata(description="Unary union with automatically-determined maximum precision")

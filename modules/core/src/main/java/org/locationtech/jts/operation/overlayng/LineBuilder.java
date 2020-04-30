@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
@@ -47,7 +48,7 @@ import org.locationtech.jts.util.Debug;
  * @author Martin Davis
  *
  */
-class LineStringBuilder {
+class LineBuilder {
   
   private GeometryFactory geometryFactory;
   private OverlayGraph graph;
@@ -58,16 +59,17 @@ class LineStringBuilder {
   private boolean hasResultArea;
   private List<LineString> lines = new ArrayList<LineString>();
   
-  public LineStringBuilder(InputGeometry inputGeom, OverlayGraph graph, boolean hasResultArea, int opCode, GeometryFactory geomFact) {
+  public LineBuilder(InputGeometry inputGeom, OverlayGraph graph, boolean hasResultArea, int opCode, GeometryFactory geomFact) {
     this.inputGeom = inputGeom;
     this.graph = graph;
     this.opCode = opCode;
     this.geometryFactory = geomFact;
-    this.resultAreaIndex = resultAreaIndex(opCode);
+    this.resultAreaIndex = resultAreaIndex(inputGeom, opCode);
     this.hasResultArea = hasResultArea;
     
     resultDimension = OverlayUtil.resultDimension(opCode, 
-        inputGeom.getDimension(0), inputGeom.getDimension(0));
+        inputGeom.getDimension(0), 
+        inputGeom.getDimension(1));
   }
 
   public List<LineString> getLines() {
@@ -94,7 +96,7 @@ class LineStringBuilder {
   }
   
   /**
-   * To implement a strategy preserving input lines,
+   * FUTURE: To implement a strategy preserving input lines,
    * the label must carry an id for each input LineString.
    * The ids are zeroed out whenever two input edges are merged.
    * Additional result nodes are created where there are changes in id
@@ -274,11 +276,10 @@ class LineStringBuilder {
     
     OverlayLabel lbl = edge.getLabel();
     
-    //TODO: handle situation when line collapse is an isolated line inside parent geom
     /**
      * It can happen that both inputs are areas, and there end up
-     * being collapsed L edges isolated inside the result area. 
-     * 
+     * being collapsed L edges isolated inside the result area
+     * (e.g. caused by narrow holes collapsing). 
      */
 
     // TODO: does this need to be computed using the actual result area?
@@ -287,7 +288,13 @@ class LineStringBuilder {
     return isCovered;
   }
 
-  private int resultAreaIndex(int overlayOpCode) {
+  /**
+   * 
+   * @param inputGeom
+   * @param overlayOpCode
+   * @return
+   */
+  private static int resultAreaIndex(InputGeometry inputGeom, int overlayOpCode) {
     int areaIndex = -1;
     if (inputGeom.getDimension(0) == 2) areaIndex = 0;
     if (inputGeom.getDimension(1) == 2) areaIndex = 1;
@@ -324,12 +331,12 @@ class LineStringBuilder {
     return edge.isInResultArea() || edge.symOE().isInResultArea();
   }
 
-  private boolean isInteriorCollapse(int geomIndex, OverlayLabel lbl) {
+  private static boolean isInteriorCollapse(int geomIndex, OverlayLabel lbl) {
     return isCollapse(geomIndex, lbl)
         && lbl.getLineLocation(geomIndex) == Location.INTERIOR;
   }
 
-  private boolean isCollapse(int geomIndex, OverlayLabel lbl) {
+  private static boolean isCollapse(int geomIndex, OverlayLabel lbl) {
     return lbl.isCollapse(geomIndex);
   }
 

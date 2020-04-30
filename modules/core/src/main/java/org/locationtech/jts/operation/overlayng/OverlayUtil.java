@@ -124,6 +124,16 @@ class OverlayUtil {
     return result;
   }
 
+  /**
+   * Computes the dimension of the result of
+   * applying the given operation to inputs
+   * with the given dimensions.
+   * 
+   * @param opCode the overlay operation
+   * @param dim0 dimension of the LH input
+   * @param dim1 dimension of the RH input
+   * @return
+   */
   public static int resultDimension(int opCode, int dim0, int dim1)
   { 
     int resultDimension = -1;

@@ -20,8 +20,8 @@ import org.locationtech.jts.geomgraph.Position;
  * in the {@link OverlayGraph} containing it.
  * The label is shared between both OverlayEdges
  * of a symmetric pair. 
- * This means that accessors for orientation-sensitive information
- * need to provide the orientation of the containing OverlayEdge.
+ * Accessors for orientation-sensitive information
+ * require the orientation of the containing OverlayEdge.
  * <p>
  * A label contains the topological {@link Location}s for 
  * the two overlay input geometries.
@@ -35,13 +35,13 @@ import org.locationtech.jts.geomgraph.Position;
  * determination of the edge role in collapse cases).
  * <p>
  * For each input geometry, the label indicates that an edge is in one of the following states
- * (denoted by the <code>dim</code> field),
- * and contains some ancillary information for each state:
+ * (denoted by the <code>dim</code> field).
+ * Each state has some additional information about the edge.
  * <ul>
  * <li>A <b>Boundary</b> edge of an input Area (polygon)
  *   <ul>
  *   <li><code>dim</code> = DIM_BOUNDARY</li>
- *   <li><code>locLeft, locRight</code> : the locations of the edge sides for the area parent input geometry</li>
+ *   <li><code>locLeft, locRight</code> : the locations of the edge sides for the input Area</li>
  *   <li><code>isHole</code> : whether the 
  * edge was in a shell or a hole</li>
  *   </ul>
@@ -51,7 +51,7 @@ import org.locationtech.jts.geomgraph.Position;
  *   <ul>
  *   <li><code>dim</code> = DIM_COLLAPSE</li>
  *   <li><code>locLine</code> : the location of the 
- * edge relative to the area parent input geometry</li>
+ * edge relative to the input Area</li>
  *   <li><code>isHole</code> : whether some 
  * contributing edge was in a shell (<code>false</code>), 
  * or otherwise that all were in holes</li> (<code>true</code>)
@@ -63,8 +63,8 @@ import org.locationtech.jts.geomgraph.Position;
  *   <li><code>locLine</code> : INTERIOR</li>
  *   </ul>
  * </li>
- * <li>An edge which is <b>Not Part</b> of the input geometry
- * (and hence must be part of the other geometry).
+ * <li>An edge which is <b>Not Part</b> of an input geometry
+ * (and thus must be part of the other geometry).
  *   <ul>
  *   <li><code>dim</code> = NOT_PART</li>
  *   </ul>
@@ -346,6 +346,12 @@ class OverlayLabel {
     }
   }
   
+  /**
+   * Tests if a line is in the interior of a source area.
+   * 
+   * @param index source geometry
+   * @return true if the label is a line and is in the area
+   */
   public boolean isInArea(int index) {
     if (index == 0) {
       return aLocLine == Location.INTERIOR;
