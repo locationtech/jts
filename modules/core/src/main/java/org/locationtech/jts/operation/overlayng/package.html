@@ -23,11 +23,11 @@ These operations are supported for all combinations of the basic geometry types 
 <p>
 Additional operations include:
 <ul>
-<li><b>Unary Union</b> of collections of geometries in an efficient way</li>
-<li><b>Coverage Union</b> for valid polygonal and lineal coverages,
-providing optimized performance</li>
-<li><b>Precision Reduction</b> of a geometry to a precision model 
-in a topologically valid way</li>
+<li>{@link UnaryUnion} unions collections of geometries in an efficient way</li>
+<li>{@link CoverageUnion} provides enhanced performance for unioning
+valid polygonal and lineal coverages</li>
+<li>{@link PrecisionReducer} allows reducing the precision of a geometry
+in a topologically-valid way</li>
 </ul>
 </p>
 <h2>Features</h2>
@@ -50,11 +50,13 @@ Implemented by unioning a single input with an empty geometry
 
 <h3>Codebase</h3>
 <ul>
-<li>All optimizations are implemented internall
-<li>Defines a simpler topology model, with clear semantics
-<li>Uses a simpler topology graph data structure (based on winged edge model)
-<li>Decouples noding and topology-build phases, 
-which allows alternate implementations and semantics for each
+<li>Defines a simpler topology model, with clear semantics.</li>
+<li>Uses a simpler topology graph data structure (based on winged edge pattern).</li>
+<li>Decouples noding and topology-build phases.
+This makes the code clearer, and makes it possible
+to allow supplying alternate implementations and semantics for each phase.</li>
+<li>All optimizations are implemented internally,
+so that clients do not have to add checks such as envelope overlap<./li>
 </ul>
 </p>
 <h2>Algorithm</h2>
