@@ -197,8 +197,8 @@ public class OverlayNG
    * <p>
    * The input must be a valid geometry.
    * GeometryCollections are not supported.
-   * To union an overlapping set of polygons use {@link UnaryUnionNG}.
    * <p>
+   * To union an overlapping set of polygons in a more performant way use {@link UnaryUnionNG}.
    * To union a coverage in a more performant way, 
    * use {@link CoverageUnion}.
    * 
@@ -211,6 +211,7 @@ public class OverlayNG
    */
   static Geometry union(Geometry geom, PrecisionModel pm)
   {    
+    // empty geometries are not included in the overlay
     Point emptyPoint = geom.getFactory().createPoint();
     OverlayNG ov = new OverlayNG(geom, emptyPoint, pm, UNION);
     Geometry geomOv = ov.getResult();
@@ -390,10 +391,14 @@ public class OverlayNG
     LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
     resultLineList = lineBuilder.getLines();
 
-    //--- Build points
-    PointBuilder pointBuilder = new PointBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
-    resultPointList = pointBuilder.getPoints();
-    
+    //--- Build points for INTERSECTION op only
+    if (opCode == INTERSECTION) {
+      IntersectionPointBuilder pointBuilder = new IntersectionPointBuilder(graph, geomFact);
+      resultPointList = pointBuilder.getPoints();
+    }
+    else {
+      resultPointList = new ArrayList<Point>();
+    }
   }
 
   private Geometry createEmptyResult() {
