@@ -54,18 +54,6 @@ public class OverlayNGTestFunctions {
     return b.getFactory().createPoint();
   }
   
-  public static double scaleAuto(Geometry a, Geometry b) {
-    return PrecisionUtil.robustScale(a, b);
-  }
-  
-  public static double scaleInherent(Geometry a, Geometry b) {
-    return PrecisionUtil.inherentScale(a, b);
-  }
-  
-  public static double scaleSafe(Geometry a, Geometry b) {
-    return PrecisionUtil.safeScale(a, b);
-  }
-  
   public static Geometry edgesNoded(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs
@@ -143,12 +131,6 @@ public class OverlayNGTestFunctions {
     return ovr.getResult();
   }
 
-  public static Geometry intersectionFloatPMNoOpt(Geometry a, Geometry b) {
-    OverlayNG ovr = new OverlayNG(a, b, INTERSECTION);
-    ovr.setOptimized(false);
-    return ovr.getResult();
-  }
-
   public static Geometry unionIntSymDiff(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs
@@ -177,22 +159,6 @@ public class OverlayNGTestFunctions {
     return OverlayNG.overlay(a, b, UNION, null, noder );
   }
 
-  public static Geometry intersectionFloatPM(Geometry a, Geometry b) {
-    return OverlayNG.overlayFloatingPrecision(a, b, INTERSECTION );
-  }
-
-  public static Geometry unaryUnionFloatPM(Geometry a) {
-    UnionFunction unionSRFun = new UnionFunction() {
-
-      public Geometry union(Geometry g0, Geometry g1) {
-         return OverlayNG.overlayFloatingPrecision(g0, g1, UNION );
-      }
-      
-    };
-    UnaryUnionOp op = new UnaryUnionOp(a);
-    op.setUnionFunction(unionSRFun);
-    return op.union();
-  }
   
   static Noder createClassicNoder(boolean doValidation) {
     MCIndexNoder mcNoder = new MCIndexNoder();

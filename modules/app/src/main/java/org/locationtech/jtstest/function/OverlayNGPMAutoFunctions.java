@@ -18,10 +18,11 @@ import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.PrecisionUtil;
 import org.locationtech.jts.operation.overlayng.UnaryUnionNG;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
-public class OverlayNGAutoPMFunctions {
+public class OverlayNGPMAutoFunctions {
   
   @Metadata(description="Intersection with automatically-determined maximum precision")
   public static Geometry intersection(Geometry a, Geometry b) {
@@ -48,6 +49,16 @@ public class OverlayNGAutoPMFunctions {
     return UnaryUnionNG.union(a);
   }
   
-
+  public static double scaleAuto(Geometry a, Geometry b) {
+    return PrecisionUtil.robustScale(a, b);
+  }
+  
+  public static double scaleInherent(Geometry a, Geometry b) {
+    return PrecisionUtil.inherentScale(a, b);
+  }
+  
+  public static double scaleSafe(Geometry a, Geometry b) {
+    return PrecisionUtil.safeScale(a, b);
+  }
   
 }
