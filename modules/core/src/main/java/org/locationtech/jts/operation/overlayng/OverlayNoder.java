@@ -45,6 +45,27 @@ class OverlayNoder {
    */
   private static final int MIN_LIMIT_PTS = 20;
   
+  private static final boolean IS_NODING_VALIDATED = true;
+  
+  private static Noder createFixedPrecisionNoder(PrecisionModel pm) {
+    //Noder noder = new MCIndexSnapRounder(pm);
+    //Noder noder = new SimpleSnapRounder(pm);
+    Noder noder = new FastSnapRounder(pm);
+    return noder;
+  }
+  
+  private static Noder createFloatingPrecisionNoder(boolean doValidation) {
+    MCIndexNoder mcNoder = new MCIndexNoder();
+    LineIntersector li = new RobustLineIntersector();
+    mcNoder.setSegmentIntersector(new IntersectionAdder(li));
+    
+    Noder noder = mcNoder;
+    if (doValidation) {
+      noder = new ValidatingNoder( mcNoder);
+    }
+    return noder;
+  }
+  
   private PrecisionModel pm;
   List<NodedSegmentString> segStrings = new ArrayList<NodedSegmentString>();
   private Noder customNoder;
@@ -120,30 +141,22 @@ class OverlayNoder {
     return hasEdgesB;
   }
   
+  /**
+   * Gets a noder appropriate for the precision model supplied.
+   * This is one of:
+   * <ul>
+   * <li>Fixed precision: a snap-rounding noder (which should be fully robust)
+   * <li>Floating precision: a conventional nodel (which may be non-robust).
+   * In this case, a validation step is applied to the output from the noder.
+   * </ul> 
+   * 
+   * @return
+   */
   private Noder getNoder() {
     if (customNoder != null) return customNoder;
     if (pm.isFloating())
-      return createFloatingPrecisionNoder(true);
+      return createFloatingPrecisionNoder(IS_NODING_VALIDATED);
     return createFixedPrecisionNoder(pm);
-  }
-
-  private static Noder createFixedPrecisionNoder(PrecisionModel pm) {
-    //Noder noder = new MCIndexSnapRounder(pm);
-    //Noder noder = new SimpleSnapRounder(pm);
-    Noder noder = new FastSnapRounder(pm);
-    return noder;
-  }
-  
-  static Noder createFloatingPrecisionNoder(boolean doValidation) {
-    MCIndexNoder mcNoder = new MCIndexNoder();
-    LineIntersector li = new RobustLineIntersector();
-    mcNoder.setSegmentIntersector(new IntersectionAdder(li));
-    
-    Noder noder = mcNoder;
-    if (doValidation) {
-      noder = new ValidatingNoder( mcNoder);
-    }
-    return noder;
   }
   
   public void add(Geometry g, int geomIndex)
