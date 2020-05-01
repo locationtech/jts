@@ -166,6 +166,10 @@ class OverlayEdge extends HalfEdge {
     symOE().isInResultLine = true;
   }
   
+  public boolean isInResult() {
+    return isInResultArea || isInResultLine;
+  }
+
   void setResultNext(OverlayEdge e) {
     // Assert: e.orig() == this.dest();
     nextResultEdge = e;
