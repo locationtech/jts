@@ -128,6 +128,7 @@ class OverlayUtil {
    * Computes the dimension of the result of
    * applying the given operation to inputs
    * with the given dimensions.
+   * This assumes that complete collapse does not occur.
    * 
    * @param opCode the overlay operation
    * @param dim0 dimension of the LH input

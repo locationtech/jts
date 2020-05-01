@@ -178,9 +178,11 @@ class OverlayLabel {
   public void initLine(int index) {
     if (index == 0) {
       aDim = DIM_LINE;
+      aLocLine = Location.INTERIOR;
     }
     else {
       bDim = DIM_LINE;
+      bLocLine = Location.INTERIOR;
     }
   }
   
@@ -347,12 +349,12 @@ class OverlayLabel {
   }
   
   /**
-   * Tests if a line is in the interior of a source area.
+   * Tests if a line is in the interior of a source geometry.
    * 
    * @param index source geometry
-   * @return true if the label is a line and is in the area
+   * @return true if the label is a line and is interior
    */
-  public boolean isInArea(int index) {
+  public boolean isLineInterior(int index) {
     if (index == 0) {
       return aLocLine == Location.INTERIOR;
     }

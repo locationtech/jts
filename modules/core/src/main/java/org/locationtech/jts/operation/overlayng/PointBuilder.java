@@ -4,10 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 
-public class PointBuilder {
+class PointBuilder {
 
   private GeometryFactory geometryFactory;
   private OverlayGraph graph;

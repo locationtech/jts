@@ -52,6 +52,20 @@ class InputGeometry {
     return geom[geomIndex].getDimension() == 2;
   }
   
+  /**
+   * Gets the index of an input which is an area,
+   * if one exists.
+   * Otherwise returns -1.
+   * If both inputs are areas, returns the index of the first one (0).
+   * 
+   * @return the index of an area input, or -1
+   */
+  public int getAreaIndex() {
+    if (getDimension(0) == 2) return 0;
+    if (getDimension(1) == 2) return 1;
+    return -1;
+  }
+  
   public boolean isLine(int geomIndex) {
     return geom[geomIndex].getDimension() == 1;
   }

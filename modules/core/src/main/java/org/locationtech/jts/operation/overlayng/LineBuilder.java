@@ -25,14 +25,22 @@ import org.locationtech.jts.util.Debug;
 
 /**
  * Builds overlay result lines from the overlay graph.
- * Output linework has the following semantics:
+ * Result lines are determined by:
+ * <ul>
+ * <li>Linear inputs which are not covered by the result area
+ * <li>For intersection only, coincident boundary edges
+ *     which are not part of the result area (if any)
+ * <li>Collapsed edges do <b>not</b> form result lines.
+ * </ul>
+ *
+ * Result linework has the following semantics:
  * <ol>
- * <li>Linework is fully noded
- * <li>Lines are as long as possible between nodes
+ * <li>Linework is fully noded.
+ * <li>Lines are as long as possible between nodes.
  * </ol>
  * 
  * Various strategies are possible for how to 
- * merge graph edges into lines.
+ * merge graph edges into output lines.
  * This implementation uses the approach
  * of having output lines run contiguously from node to node.
  * For rings a node point is chosen arbitrarily.
@@ -53,9 +61,8 @@ class LineBuilder {
   private GeometryFactory geometryFactory;
   private OverlayGraph graph;
   private int opCode;
-  private int resultAreaIndex;
+  private int inputAreaIndex;
   private InputGeometry inputGeom;
-  private int resultDimension;
   private boolean hasResultArea;
   private List<LineString> lines = new ArrayList<LineString>();
   
@@ -64,12 +71,8 @@ class LineBuilder {
     this.graph = graph;
     this.opCode = opCode;
     this.geometryFactory = geomFact;
-    this.resultAreaIndex = resultAreaIndex(inputGeom, opCode);
     this.hasResultArea = hasResultArea;
-    
-    resultDimension = OverlayUtil.resultDimension(opCode, 
-        inputGeom.getDimension(0), 
-        inputGeom.getDimension(1));
+    this.inputAreaIndex = inputGeom.getAreaIndex();
   }
 
   public List<LineString> getLines() {
@@ -90,6 +93,75 @@ class LineBuilder {
     }
   }
   
+  private boolean isResultLine(OverlayEdge edge) {
+    /**
+     * Skip if edge is already in result,
+     * either as a area edge or as a line
+     */
+    if (isInResultArea(edge)) 
+      return false;
+    
+    /**
+     * Result lines are only provided by 
+     * source Line edges, or coincident boundary edges.
+     * In particular, linework from collapsed edges is
+     * not output as result lines.
+     */
+    OverlayLabel lbl = edge.getLabel();
+    boolean isRetainedLine = lbl.isLine() || lbl.isBoundaryBoth();
+    if (! isRetainedLine) 
+      return false;
+    
+    /**
+     * Skip Line edges covered by result area
+     */
+    if (isCoveredByResultArea(edge)) 
+      return false;
+    
+    /**
+     * Interior collapsed edges are discarded, 
+     * since they will be covered by the result area
+     */
+    // MD - not needed?  Since Collapsed edges are not retained above
+    //if (isInteriorCollapse(0, lbl)) return false;
+    //if (isInteriorCollapse(1, lbl)) return false;
+    
+    int aLoc = lbl.getLineLocation(0);
+    int bLoc = lbl.getLineLocation(1);
+    
+    boolean isInResult = OverlayNG.isResultOfOp(opCode, aLoc, bLoc);
+    return isInResult;
+  }
+
+  /**
+   * Tests whether a line edge is covered by the result area (if any).
+   * In this case the edge will not be added to the result.
+   * 
+   * @param lineEdge the line edge
+   * @return true if the line edge lies in the interior of the result area
+   */
+  private boolean isCoveredByResultArea(OverlayEdge lineEdge) { 
+    // no result area, so can't be covered
+    if (! hasResultArea) return false;
+    
+    // TODO: does this need to be computed using the actual result area?
+    // Assert: resultAreaSourceIndex is valid (>= 0)
+    OverlayLabel lbl = lineEdge.getLabel();
+    boolean isCovered = lbl.isLineInterior(inputAreaIndex);
+    return isCovered;
+  }
+
+  private static boolean isInResultArea(OverlayEdge edge) {
+    return edge.isInResultArea() || edge.symOE().isInResultArea();
+  }
+
+  /*
+  private static boolean isInteriorCollapse(int geomIndex, OverlayLabel lbl) {
+    return lbl.isCollapse(geomIndex)
+        && lbl.getLineLocation(geomIndex) == Location.INTERIOR;
+  }
+   */
+  
   private void addResultLines() {
     addResultLinesAtNodes();
     addResultLinesRings();
@@ -98,13 +170,23 @@ class LineBuilder {
   /**
    * FUTURE: To implement a strategy preserving input lines,
    * the label must carry an id for each input LineString.
-   * The ids are zeroed out whenever two input edges are merged.
+   * The ids are zeroed out whenever two input edges are merged,
+   * which means that merged edges will be sewn together
+   * to make maximal lines.
    * Additional result nodes are created where there are changes in id
    * at degree-2 nodes.
-   * (degree>=3 nodes must be kept as nodes to ensure 
+   * Degree>=3 nodes must be kept as nodes to ensure 
    * output linework is fully noded.
    */
   
+  /**
+   * Adds lines originating at node points
+   * (degree-1 or degree-3 points)
+   * and running to another node point.
+   * This ensures lines have maximal length.
+   * 
+   * Line rings  have no nodes, and are found in a subsequent step.
+   */
   private void addResultLinesAtNodes() {
     Collection<OverlayEdge> edges = graph.getEdges();
     for (OverlayEdge edge : edges) {
@@ -112,10 +194,10 @@ class LineBuilder {
       if (edge.isVisited()) continue;
       
       /**
-       * Choose start point as a node.
+       * Line start point is a node.
        * Nodes are degree-1 or degree>=3 edges.
        * 
-       * This will find all lines originating at nodes
+       * This finds all lines originating at nodes
        */
       if (degreeLine(edge) != 2) {
         lines.add( buildLine( edge ));
@@ -224,123 +306,4 @@ class LineBuilder {
     return degree;
   }
   
-  private boolean isResultLine(OverlayEdge edge) {
-    /**
-     * Skip if edge is already in result,
-     * either as a area edge or already as a line
-     */
-    if (isInResultArea(edge)) 
-      return false;
-    
-    OverlayLabel lbl = edge.getLabel();
-    boolean isEffectiveLine = lbl.isLine() || lbl.isBoundaryBoth();
-    if (! isEffectiveLine) 
-      return false;
-    
-    /**
-     * Skip edges inside result area
-     */
-    if (hasResultArea && isCoveredByResultArea(edge)) 
-      return false;
-    
-    /**
-     * Interior collapsed edges are discarded, 
-     * since they will be covered by the result area
-     */
-    if (isInteriorCollapse(0, lbl)) return false;
-    if (isInteriorCollapse(1, lbl)) return false;
-    
-    int aLoc = effectiveLocation(0, lbl);
-    int bLoc = effectiveLocation(1, lbl);
-    
-    boolean isInResult = OverlayNG.isResultOfOp(opCode, aLoc, bLoc);
-    return isInResult;
-  }
-
-  /**
-   * Tests whether a line edge is covered by the result area (if any).
-   * In this case the line will not be added to the result.
-   * 
-   * @param lbl the line label
-   * @return true if the edge lies in the interior of the result area
-   */
-  private boolean isCoveredByResultArea(OverlayEdge edge) {
-    /**
-     * If result is not an area, edge can't be covered
-     */
-    if (resultDimension < 2) return false;
-    /**
-     * If no inputs are areas, edge can't be covered
-     */
-    if (resultAreaIndex < 0) return false;
-    
-    OverlayLabel lbl = edge.getLabel();
-    
-    /**
-     * It can happen that both inputs are areas, and there end up
-     * being collapsed L edges isolated inside the result area
-     * (e.g. caused by narrow holes collapsing). 
-     */
-
-    // TODO: does this need to be computed using the actual result area?
-    
-    boolean isCovered = lbl.isInArea(resultAreaIndex);
-    return isCovered;
-  }
-
-  /**
-   * 
-   * @param inputGeom
-   * @param overlayOpCode
-   * @return
-   */
-  private static int resultAreaIndex(InputGeometry inputGeom, int overlayOpCode) {
-    int areaIndex = -1;
-    if (inputGeom.getDimension(0) == 2) areaIndex = 0;
-    if (inputGeom.getDimension(1) == 2) areaIndex = 1;
-    
-    if (areaIndex < 0) return -1;
-    
-    switch (overlayOpCode) {
-    case OverlayNG.INTERSECTION: return -1;
-    case OverlayNG.UNION: return areaIndex;
-    case OverlayNG.DIFFERENCE: return (areaIndex <= 0) ? 0 : -1;
-    case OverlayNG.SYMDIFFERENCE: return areaIndex;
-    }
-    return -1;
-  }
-  
-  /**
-   * Determines the effective location for this line,
-   * forcing collapses to be considered as INTERIOR
-   * so they will be included in the result.
-   * 
-   * @param geomIndex index of parent geometry
-   * @param lbl label of line
-   * @return the effective location of the line
-   */
-  private int effectiveLocation(int geomIndex, OverlayLabel lbl) {
-    if (isCollapse(geomIndex, lbl))
-      return Location.INTERIOR;
-    if (inputGeom.isLine(geomIndex) && lbl.isLine(geomIndex))
-      return Location.INTERIOR;
-    return lbl.getLineLocation(geomIndex);
-  }
-
-  private static boolean isInResultArea(OverlayEdge edge) {
-    return edge.isInResultArea() || edge.symOE().isInResultArea();
-  }
-
-  private static boolean isInteriorCollapse(int geomIndex, OverlayLabel lbl) {
-    return isCollapse(geomIndex, lbl)
-        && lbl.getLineLocation(geomIndex) == Location.INTERIOR;
-  }
-
-  private static boolean isCollapse(int geomIndex, OverlayLabel lbl) {
-    return lbl.isCollapse(geomIndex);
-  }
-
-
-
-
 }
