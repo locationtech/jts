@@ -24,7 +24,7 @@ import org.locationtech.jts.noding.Noder;
  * A valid coverage is determined by the following conditions:
  * <ul>
  * <li><b>Homogeneous</b> - all elements of the collection must have the same dimension.
- * <li><b>Fully noded</b> - Line segemnts within the collection 
+ * <li><b>Fully noded</b> - Line segments within the collection 
  * must either be identical or intersect only at endpoints.
  * <li><b>Non-overlapping</b> - (Polygonal coverage only) No two polygons
  * may overlap. Equivalently, polygons must be interior-disjoint.
@@ -48,7 +48,6 @@ import org.locationtech.jts.noding.Noder;
  */
 public class CoverageUnion 
 {
-
   /**
    * Unions a valid polygonal or lineal coverage.
    * 
