@@ -38,13 +38,30 @@ import org.locationtech.jts.noding.snapround.FastSnapRounder;
 import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
 import org.locationtech.jts.noding.snapround.SimpleSnapRounder;
 
+/**
+ * The overlay noder does the following:
+ * <ul>
+ * <li>Extracts input edges, and attaches topological information
+ * <li>if clipping is enabled, handles clipping or limiting input geometry
+ * <li>chooses a Noder based on provided precision model, unless a custom one is supplied
+ * <li>calls the chosen Noder, with precision model
+ * <li>removes any fully collapsed noded edges
+ * </ul>
+ * 
+ * @author mdavis
+ *
+ */
 class OverlayNoder {
 
   /**
-   * Limiting can be skipped for Lines with few vertices 
+   * Limiting is skipped for Lines with few vertices,
+   * to avoid additional copying.
    */
   private static final int MIN_LIMIT_PTS = 20;
   
+  /**
+   * Indicates whether floating precision noder output is validated.
+   */
   private static final boolean IS_NODING_VALIDATED = true;
   
   private static Noder createFixedPrecisionNoder(PrecisionModel pm) {
@@ -266,7 +283,7 @@ class OverlayNoder {
     if (isClippedCompletely(line.getEnvelopeInternal())) 
       return;
     
-    if (isLimited(line)) {
+    if (isToBeLimited(line)) {
       List<Coordinate[]> sections = limit( line );
       for (Coordinate[] pts : sections) {
         addLine( pts, geomIndex );
@@ -294,6 +311,13 @@ class OverlayNoder {
     segStrings.add(ss);
   }
 
+  /**
+   * Tests whether a geometry (represented by its envelope)
+   * lies completely outside the clip extent(if any).
+   * 
+   * @param env the geometry envelope
+   * @return true if the geometry envelope is outside the clip extent.
+   */
   private boolean isClippedCompletely(Envelope env) {
     if (clipEnv == null) return false;
     return clipEnv.disjoint(env);
@@ -301,7 +325,7 @@ class OverlayNoder {
   
   /**
    * If clipper is present, 
-   * clip the line to the clip envelope.
+   * clip the line to the clip extent.
    * <p>
    * If clipping is enabled, then every ring MUST 
    * be clipped, to ensure that holes are clipped to
@@ -327,14 +351,22 @@ class OverlayNoder {
     return clipper.clip(pts);
   }
 
-  private boolean isLimited(LineString line) {
+  /**
+   * Tests whether it is worth limiting a line.
+   * Lines that have few vertices or are covered
+   * by the clip extent do not need to be limited.
+   * 
+   * @param line line to test
+   * @return true if the line should be limited
+   */
+  private boolean isToBeLimited(LineString line) {
     Coordinate[] pts = line.getCoordinates();
     if (limiter == null || pts.length <= MIN_LIMIT_PTS) {
       return false;
     }
     Envelope env = line.getEnvelopeInternal();
     /**
-     * If line is completely contained then no need to clip
+     * If line is completely contained then no need to limit
      */
     if (clipEnv.covers(env)) {
       return false;

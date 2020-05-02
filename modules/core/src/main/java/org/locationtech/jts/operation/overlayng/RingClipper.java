@@ -16,18 +16,20 @@ import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * Clips a ring of points to an envelope.
+ * Clips a ring of points to an rectangle.
  * Uses a variant of Cohen-Sutherland clipping.
  * <p>
  * In general the output is not topologically valid.
  * In particular, the output may contain coincident non-noded line segments
- * along the clipping envelope sides.
+ * along the clip rectangle sides.
  * However, the output is sufficiently well-structured
  * that it can be used as input to the overlay algorithm
  * (which is able to handle coincident linework due
  * to the need to handle topology collapse under precision reduction).
  * <p>
- * This code is not suitable for clipping linestrings.
+ * Because of the likelihood of creating 
+ * line segments along the rectangle side, 
+ * this code is not suitable for clipping linestrings.
  * 
  * @see LineLimiter
  * 

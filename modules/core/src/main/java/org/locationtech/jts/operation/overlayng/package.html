@@ -67,13 +67,16 @@ An overview of the overlay algorithm is:
 <li>Extract linework and points from input geometries, with topology location information
 <li>(If optimization enabled) Apply overlap envelope optimizations:
   <ol>
-  <li>For Intersection, check if the input envelopes are disjoint (using an envelope expansion adjustment to account for the precision grid).  
-  <li>For Intersection and Difference, clip / limit the linework of the input geometries to the overlap envelope.  
+  <li>For Intersection, check if the input envelopes are disjoint 
+      (using an envelope expansion adjustment to account for the precision grid).  
+  <li>For Intersection and Difference, clip or limit the linework of the input geometries to the overlap envelope.  
   <li>If the optimized linework is empty, return an empty result of appropriate type. 
   </ol>
 <li>Node the linework and points.  For full robustness snap-rounding noding is used. 
-Other kinds of noder can be used as well (for instance, the same noding algorithm as the original overlay code).
-<li>Merge noded edges.  Coincident edges from the two input geometries are merged, along with their topological labelling. Topology collapses are detected in this step, and are flagged in the labelling so they can be handled appropriately duing result polygon extraction
+Other kinds of noder can be used as well (for instance, the full-precision noding algorithm as the original overlay code).
+<li>Merge noded edges.  
+    Coincident edges from the two input geometries are merged, along with their topological labelling. 
+    Topology collapses are detected in this step, and are flagged in the labelling so they can be handled appropriately duing result polygon extraction
 <li>Build a fully-labelled topology graph.  This includes:
   <ol>
   <li>Create a graph structure on the noded, merged edges
@@ -96,7 +99,10 @@ Other kinds of noder can be used as well (for instance, the same noding algorith
     <li>Mark edges to be included in the result lines
     <li>Construct node-to-node linework
     </ol>
-  <li>Build result points - MORE DETAIL NEEDED
+  <li>Build result points
+    <ol>
+    <li>For intersection only, output point occur where the input touch at single points
+    </ol>
   <li>Collect result elements into the result geometry
   </ol>
 </ol>
