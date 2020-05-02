@@ -11,8 +11,6 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
-
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.noding.Noder;
@@ -30,8 +28,9 @@ import org.locationtech.jts.noding.Noder;
  * may overlap. Equivalently, polygons must be interior-disjoint.
  * </ul>
  * <p>
- * Currently no checking is done to determine
- * whether the input is a valid coverage.
+ * Currently no checking is done to determine whether the input is a valid coverage.
+ * This is because coverage validation involves segment intersection detection,
+ * which is much more expensive than the union phase.
  * If the input is not a valid coverage 
  * then in some cases this will detected during processing 
  * and a error will be thrown.
@@ -40,6 +39,10 @@ import org.locationtech.jts.noding.Noder;
  * Unioning a valid coverage implies that no new vertices are created.
  * This means that a precision model does not need to be specified.
  * The precision of the vertices in the output geometry is not changed.
+ * Because of this no precision reduction is performed.
+ * <p>
+ * Unioning a linear network is a way of performing 
+ * line merging and line dissolving.
  * 
  * @author Martin Davis
  * 
@@ -49,7 +52,7 @@ import org.locationtech.jts.noding.Noder;
 public class CoverageUnion 
 {
   /**
-   * Unions a valid polygonal or lineal coverage.
+   * Unions a valid polygonal coverage or linear network.
    * 
    * @param coverage a coverage of polygons or lines
    * @return the union of the coverage
@@ -57,7 +60,8 @@ public class CoverageUnion
   public static Geometry union(Geometry coverage) {
     Noder noder = new SegmentExtractingNoder();
     Point emptyPoint = coverage.getFactory().createPoint();
-    return OverlayNG.overlay(coverage, emptyPoint, UNION, null, noder );
+    // a precision model is not needed since no noding is done
+    return OverlayNG.overlay(coverage, emptyPoint, OverlayNG.UNION, null, noder );
   }
 
   private CoverageUnion() {
