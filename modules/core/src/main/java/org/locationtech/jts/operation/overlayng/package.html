@@ -60,7 +60,7 @@ so that clients do not have to add checks such as envelope overlap<./li>
 </ul>
 </p>
 <h2>Algorithm</h2>
-An overview of the overlay algorithm is:
+For non-point inputs the overlay algorithm is:
 <p>
 <ol>
 <li>Check for empty input geometries, and return a result appropriate for the specified operation
@@ -72,7 +72,7 @@ An overview of the overlay algorithm is:
   <li>For Intersection and Difference, clip or limit the linework of the input geometries to the overlap envelope.  
   <li>If the optimized linework is empty, return an empty result of appropriate type. 
   </ol>
-<li>Node the linework and points.  For full robustness snap-rounding noding is used. 
+<li>Node the linework.  For full robustness snap-rounding noding is used. 
 Other kinds of noder can be used as well (for instance, the full-precision noding algorithm as the original overlay code).
 <li>Merge noded edges.  
     Coincident edges from the two input geometries are merged, along with their topological labelling. 
@@ -81,7 +81,8 @@ Other kinds of noder can be used as well (for instance, the full-precision nodin
   <ol>
   <li>Create a graph structure on the noded, merged edges
   <li>Propagate topology locations around nodes in the graph
-  <li>Label edges that have incomplete topology locations.  These occur when edges from an input geometry are isolated (disjoint from the edges of the other geometry in the graph)
+  <li>Label edges that have incomplete topology locations.  
+      These occur when edges from an input geometry are isolated (disjoint from the edges of the other geometry in the graph).
   </ol>
 <li>If result is empty return an empty geometry of appropriate type
 <li>Generate the result geometry from the labelled graph:
