@@ -32,8 +32,37 @@ import org.locationtech.jts.util.Debug;
 
 /**
  * Computes the geometric overlay of two {@link Geometry}s, 
- * using an explicit precision model to provide robust computation. 
- * The overlay can be used to determine any boolean combination of the geometries.
+ * using an explicit precision model to allow robust computation. 
+ * The overlay can be used to determine any of the 
+ * following set-theoretic operations (boolean combinations) of the geometries:
+ * <ul>
+ * <li>{@link INTERSECTION} - all points which lie in both geometries
+ * <li>{@link UNION} - all points which lie in at least one geometry
+ * <li>{@link DIFFERENCE} - all points which lie in the first geometry but not the second
+ * <li>{@link SYMDIFFERENCE} - all points which lie in one geometry but not both
+ * </ul>
+ * Input geometries may have different dimension.  
+ * Collections must be homogeneous
+ * (all elements must have the same dimension).
+ * <p>
+ * The precision model used for the computation can be supplied 
+ * independent of the precision model of the input geometry.
+ * The main use for this is to allow using a fixed precision 
+ * for geometry with a floating precision model.
+ * This does two things: ensures robust computation;
+ * and forces the output to be validly rounded to the precision model. 
+ * <p>
+ * For fixed precision models noding is performed using snap-rounding.
+ * This provides robust computation (as long as precision is limited to
+ * around 13 decimal digits).
+ * <p>
+ * For floating precision the conventional JTS noder is used. 
+ * This is not fully robust, so can sometimes result in 
+ * {@link TopologyException}s being thrown. 
+ * <p>
+ * A custom {@link Noder} can be supplied.
+ * This allows using a more performant noding strategy in specific cases, 
+ * for instance in {@link CoverageUnion}.
  * 
  * @author mdavis
  *
@@ -174,18 +203,26 @@ public class OverlayNG
   /**
    * Computes an overlay operation on 
    * the given geometry operands,
-   * using the floating precision model
+   * using the precision model of the geometry.
    * and an appropriate noder.
    * <p>
-   * This computation may not be robust.
+   * The noder is chosen according to the precision model specified.
+   * <ul>
+   * <li>For {@link PrecisionModel#FIXED}
+   * a snap-rounding noder is used, and the computation is robust.
+   * <li>For {@link PrecisionModel#FLOATING}
+   * a non-snapping noder is used,
+   * and this computation may not be robust.
    * If errors occur a {@link TopologyException} is thrown.
+   * </ul>
    * 
-   * @param geom0 the first geometry argument
-   * @param geom1 the second geometry argument
+   * 
+   * @param geom0 the first argument geometry
+   * @param geom1 the second argument geometry
    * @param opCode the code for the desired overlay operation
    * @return the result of the overlay operation
    */
-  public static Geometry overlayFloatingPrecision(Geometry geom0, Geometry geom1, int opCode)
+  public static Geometry overlay(Geometry geom0, Geometry geom1, int opCode)
   {
     OverlayNG ov = new OverlayNG(geom0, geom1, opCode);
     return ov.getResult();
@@ -194,18 +231,21 @@ public class OverlayNG
   /**
    * Computes a union operation on 
    * the given geometry, with the supplied precision model.
+   * The primary use for this is to perform precision reduction
+   * (round the geometry to the supplied precision).
    * <p>
    * The input must be a valid geometry.
-   * GeometryCollections are not supported.
+   * Collections must be homogeneous.
    * <p>
    * To union an overlapping set of polygons in a more performant way use {@link UnaryUnionNG}.
-   * To union a coverage in a more performant way, 
+   * To union a polyonal coverage or linear network in a more performant way, 
    * use {@link CoverageUnion}.
    * 
    * @param geom0 the geometry
    * @param pm the precision model to use
    * @return the result of the union operation
    * 
+   * @see PrecisionReducer
    * @see CoverageUnion
    * @see UnaryUnionNG
    */
@@ -251,15 +291,25 @@ public class OverlayNG
   }  
   
   /**
-   * Creates an overlay operation on the given geometries,
-   * with a floating precision model.
-   * 
+   * Creates an overlay operation on the given geometries
+   * using the precision model of the geometries.
+   * <p>
+   * The noder is chosen according to the precision model specified.
+   * <ul>
+   * <li>For {@link PrecisionModel#FIXED}
+   * a snap-rounding noder is used, and the computation is robust.
+   * <li>For {@link PrecisionModel#FLOATING}
+   * a non-snapping noder is used,
+   * and this computation may not be robust.
+   * If errors occur a {@link TopologyException} is thrown.
+   * </ul>
+   *  
    * @param geom0 the A operand geometry
    * @param geom1 the B operand geometry
    * @param opCode the overlay opcode
    */
   public OverlayNG(Geometry geom0, Geometry geom1, int opCode) {
-    this(geom0, geom1, new PrecisionModel(), opCode);
+    this(geom0, geom1, geom0.getFactory().getPrecisionModel(), opCode);
   }  
   
   /**
@@ -287,7 +337,7 @@ public class OverlayNG
     this.isOutputResultEdges = isOutputResultEdges;
   }
   
-  public void setNoder(Noder noder) {
+  private void setNoder(Noder noder) {
     this.noder = noder;
   }
   

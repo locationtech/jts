@@ -29,6 +29,6 @@ public class OverlayNGFloatingPrecisionTest extends GeometryTestCase {
   }
   
   static Geometry intersection(Geometry a, Geometry b) {
-    return OverlayNG.overlayFloatingPrecision(a, b, INTERSECTION);
+    return OverlayNG.overlay(a, b, INTERSECTION);
   }
 }

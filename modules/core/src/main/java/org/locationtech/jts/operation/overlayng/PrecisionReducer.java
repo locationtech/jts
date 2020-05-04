@@ -13,14 +13,13 @@ package org.locationtech.jts.operation.overlayng;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
 
 /**
  * Functions to reduce the precision of a geometry
  * by rounding it to a given precision model.
  * 
- * @author mdavis
+ * @author Martin Davis
  *
  */
 public class PrecisionReducer {

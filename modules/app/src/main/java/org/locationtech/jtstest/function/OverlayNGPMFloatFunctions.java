@@ -26,18 +26,18 @@ import org.locationtech.jtstest.geomfunction.Metadata;
 public class OverlayNGPMFloatFunctions {
   
   public static Geometry intersection(Geometry a, Geometry b) {
-    return OverlayNG.overlayFloatingPrecision(a, b, INTERSECTION );
+    return OverlayNG.overlay(a, b, INTERSECTION );
   }
 
   public static Geometry union(Geometry a, Geometry b) {
-    return OverlayNG.overlayFloatingPrecision(a, b, UNION );
+    return OverlayNG.overlay(a, b, UNION );
   }
 
   public static Geometry unaryUnion(Geometry a) {
     UnionFunction unionSRFun = new UnionFunction() {
 
       public Geometry union(Geometry g0, Geometry g1) {
-         return OverlayNG.overlayFloatingPrecision(g0, g1, UNION );
+         return OverlayNG.overlay(g0, g1, UNION );
       }
       
     };
