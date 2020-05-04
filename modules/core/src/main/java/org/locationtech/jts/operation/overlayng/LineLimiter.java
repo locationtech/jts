@@ -19,11 +19,11 @@ import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * Limits the segments in a segment string
+ * Limits the segments in a list of segments
  * to those which intersect an envelope.
- * The result is zero or more subsections of the input segment sequences,
+ * This creates zero or more sections of the input segment sequences,
  * containing only line segments which intersect the limit envelope.
- * Segments are not clipped, since that happens in the overlay anyway.
+ * Segments are not clipped, since that happens in the overlay.
  * This can substantially reduce the number of vertices which need to be
  * processed during overlay.
  * 
@@ -38,7 +38,7 @@ public class LineLimiter {
   private List<Coordinate[]> sections = null;
 
   /**
-   * Creates a new limiter for the given envelope.
+   * Creates a new limiter for a given envelope.
    * 
    * @param env the envelope to limit to
    */
@@ -47,10 +47,10 @@ public class LineLimiter {
   }
   
   /**
-   * Limits a coordinate sequence.
+   * Limits a list of segments.
    * 
-   * @param pts the coordinate sequence to limit
-   * @return the subsequences which intersect the limit envelope
+   * @param pts the segment sequence to limit
+   * @return the sections which intersect the limit envelope
    */
   public List<Coordinate[]> limit(Coordinate[] pts) {
     lastOutside = null;
