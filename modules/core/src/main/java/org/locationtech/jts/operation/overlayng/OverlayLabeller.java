@@ -235,7 +235,6 @@ class OverlayLabeller {
       // assert: lineEdge.getLabel().isLine(geomIndex);
       
       // for any edges around origin with unknown location for this geomIndex,
-      // mark them as Exterior
       // add those edges to stack to continue traversal
       propagateLineLocation(lineEdge, geomIndex, edgeStack, inputGeometry);
     }
@@ -250,7 +249,7 @@ class OverlayLabeller {
      * If the parent geom is an L (dim 1) 
      * then only propagate EXTERIOR locations.
      */
-    if (! inputGeometry.isArea(index) 
+    if (inputGeometry.isLine(index) 
         && lineLoc != Location.EXTERIOR) return;
     
     do {

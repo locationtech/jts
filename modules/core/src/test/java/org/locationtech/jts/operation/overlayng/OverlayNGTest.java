@@ -491,6 +491,22 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
+  public void testLinePolygonUnionAlongPolyBoundary() {
+    Geometry a = read("LINESTRING (150 300, 250 300)");
+    Geometry b = read("POLYGON ((100 400, 200 400, 200 300, 100 300, 100 400))");
+    Geometry expected = read("GEOMETRYCOLLECTION (LINESTRING (200 300, 250 300), POLYGON ((200 300, 150 300, 100 300, 100 400, 200 400, 200 300)))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testLinePolygonIntersectionAlongPolyBoundary() {
+    Geometry a = read("LINESTRING (150 300, 250 300)");
+    Geometry b = read("POLYGON ((100 400, 200 400, 200 300, 100 300, 100 400))");
+    Geometry expected = read("LINESTRING (200 300, 150 300)");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
   //============================================================
   
   

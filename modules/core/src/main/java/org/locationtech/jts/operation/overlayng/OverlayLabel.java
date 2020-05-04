@@ -178,11 +178,11 @@ class OverlayLabel {
   public void initLine(int index) {
     if (index == 0) {
       aDim = DIM_LINE;
-      aLocLine = Location.INTERIOR;
+      aLocLine = LOC_UNKNOWN;
     }
     else {
       bDim = DIM_LINE;
-      bLocLine = Location.INTERIOR;
+      bLocLine = LOC_UNKNOWN;
     }
   }
   
@@ -326,6 +326,13 @@ class OverlayLabel {
     }
   }
 
+  public boolean isInArea(int index) {
+    if (index == 0) {
+      return aLocLine == Location.INTERIOR;
+    }
+    return bLocLine == Location.INTERIOR;
+  }
+  
   public boolean isHole(int index) {
     if (index == 0) {
       return aIsHole;
