@@ -238,7 +238,7 @@ class OverlayEdge extends HalfEdge {
         + " ) " 
         + label.toString(direction) 
         + resultSymbol()
-        + " / Sym: " + symOE().getLabel().toString(direction)
+        + " / Sym: " + symOE().getLabel().toString(symOE().direction)
         + symOE().resultSymbol()
         ;
   }
