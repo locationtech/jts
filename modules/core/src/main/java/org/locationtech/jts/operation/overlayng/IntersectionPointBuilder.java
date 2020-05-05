@@ -19,12 +19,20 @@ import org.locationtech.jts.geom.Point;
 
 /**
  * Extracts Point resultants from an overlay graph
- * resulting from an Intersection operation.
- * Intersection is the only operation which can 
- * result in Points arising from non-Point inputs
- * (since a Lines or Areas may touch each other at single points).
+ * created by an Intersection operation
+ * between non-Point inputs.
+ * Points may be created during intersection
+ * if lines or areas touch one another at single points.
+ * Intersection is the only overlay operation which can 
+ * result in Points from non-Point inputs.
+ * <p>
+ * Overlay operations where one or more inputs 
+ * are Points are handled via a different code path.
  * 
- * @author mdavis
+ * 
+ * @author Martin Davis
+ * 
+ * @see OverlayPoints
  *
  */
 class IntersectionPointBuilder {
