@@ -54,7 +54,6 @@ class LineBuilder {
   private OverlayGraph graph;
   private int opCode;
   private int inputAreaIndex;
-  private int resultDimension;
   private boolean hasResultArea;
   private List<LineString> lines = new ArrayList<LineString>();
   
@@ -72,12 +71,8 @@ class LineBuilder {
     this.graph = graph;
     this.opCode = opCode;
     this.geometryFactory = geomFact;
-    this.inputAreaIndex = inputGeom.getAreaIndex();
     this.hasResultArea = hasResultArea;
-    
-    resultDimension = OverlayUtil.resultDimension(opCode, 
-        inputGeom.getDimension(0), 
-        inputGeom.getDimension(1));
+    inputAreaIndex = inputGeom.getAreaIndex();
   }
 
   public List<LineString> getLines() {
@@ -89,25 +84,34 @@ class LineBuilder {
   private void markResultLines() {
     Collection<OverlayEdge> edges = graph.getEdges();
     for (OverlayEdge edge : edges) {
-      if (edge.isInResultLine()) 
+      if (isInResult(edge)) 
         continue;
-      if (isResultLine(edge)) {
+      if (isResultLine(edge.getLabel())) {
         edge.markInResultLine();
         //Debug.println(edge);
       }
     }
   }
   
-  private boolean isResultLine(OverlayEdge edge) {
-    /**
-     * Skip if edge is already in result,
-     * either as a area edge or already as a line
-     */
-    if (isInResultArea(edge)) 
-      return false;
-    
-    OverlayLabel lbl = edge.getLabel();
-    
+  /**
+   * If the edge linework is already in the result, 
+   * this edge does not need to be included as a line.
+   * 
+   * @param edge an edge of the topology graph
+   * @return true if the edge linework is already in the result
+   */
+  private static boolean isInResult(OverlayEdge edge) {
+    return edge.isInResult() || edge.symOE().isInResult();
+  }
+  
+  /**
+   * Checks if the topology indicated by an edge label
+   * determines that this edge should be part of a result line.
+   * 
+   * @param lbl the label for an edge
+   * @return true if the edge should be included in the result
+   */
+  private boolean isResultLine(OverlayLabel lbl) {
     /**
      * Edges which are just collapses along boundaries
      * are not output.
@@ -117,9 +121,9 @@ class LineBuilder {
     if (lbl.isBoundaryCollapse()) return false;
     
     /**
-     * Skip edges inside result area
+     * Skip edges that are inside result area (if there is one)
      */
-    if (hasResultArea && isCoveredByResultArea(edge)) 
+    if (hasResultArea && lbl.isInArea(inputAreaIndex)) 
       return false;
     
     int aLoc = effectiveLocation(0, lbl);
@@ -127,41 +131,6 @@ class LineBuilder {
     
     boolean isInResult = OverlayNG.isResultOfOp(opCode, aLoc, bLoc);
     return isInResult;
-  }
-
-  private static boolean isInResultArea(OverlayEdge edge) {
-    return edge.isInResultArea() || edge.symOE().isInResultArea();
-  }
-  
-  /**
-   * Tests whether a line edge is covered by the result area (if any).
-   * In this case the line will not be added to the result.
-   * 
-   * @param lbl the line label
-   * @return true if the edge lies in the interior of the result area
-   */
-  private boolean isCoveredByResultArea(OverlayEdge edge) {
-    /**
-     * If result is not an area, edge can't be covered
-     */
-    if (resultDimension < 2) return false;
-    /**
-     * If no inputs are areas, edge can't be covered
-     */
-    if (inputAreaIndex < 0) return false;
-    
-    OverlayLabel lbl = edge.getLabel();
-    
-    /**
-     * It can happen that both inputs are areas, and there end up
-     * being collapsed L edges isolated inside the result area
-     * (e.g. caused by narrow holes collapsing). 
-     */
-
-    // TODO: does this need to be computed using the actual result area?
-    
-    boolean isCovered = lbl.isInArea(inputAreaIndex);
-    return isCovered;
   }
   
   /**
@@ -189,7 +158,7 @@ class LineBuilder {
   //----  Maximal line extraction methods
   
   private void addResultLines() {
-    addResultLinesAtNodes();
+    addResultLinesForNodes();
     addResultLinesRings();
   }
   
@@ -203,19 +172,19 @@ class LineBuilder {
    * output linework is fully noded.
    */
   
-  private void addResultLinesAtNodes() {
+  private void addResultLinesForNodes() {
     Collection<OverlayEdge> edges = graph.getEdges();
     for (OverlayEdge edge : edges) {
       if (! edge.isInResultLine()) continue;
       if (edge.isVisited()) continue;
       
       /**
-       * Choose start point as a node.
-       * Nodes are degree-1 or degree>=3 edges.
+       * Choose line start point as a node.
+       * Nodes in the line graph are degree-1 or degree >= 3 edges.
        * 
        * This will find all lines originating at nodes
        */
-      if (degreeLine(edge) != 2) {
+      if (degreeOfLines(edge) != 2) {
         lines.add( buildLine( edge ));
         //Debug.println(edge);
       }
@@ -269,7 +238,7 @@ class LineBuilder {
       pts.add(e.dest(), false);
       
       // end line if next vertex is a node
-      if (degreeLine(e.symOE()) != 2) {
+      if (degreeOfLines(e.symOE()) != 2) {
         break;
       }
       e = nextLineEdgeUnvisited(e.symOE());
@@ -293,7 +262,7 @@ class LineBuilder {
    * @param node a line edge originating at the node to be scanned
    * @return the next line edge, or null if there is none
    */
-  private OverlayEdge nextLineEdgeUnvisited(OverlayEdge node) {
+  private static OverlayEdge nextLineEdgeUnvisited(OverlayEdge node) {
     OverlayEdge e = node;
     do {
       e = e.oNextOE();
@@ -308,9 +277,9 @@ class LineBuilder {
   /**
    * Computes the degree of the line edges incident on a node
    * @param node node to compute degree for
-   * @return degree of the node
+   * @return degree of the node line edges
    */
-  private int degreeLine(OverlayEdge node) {
+  private static int degreeOfLines(OverlayEdge node) {
     int degree = 0;
     OverlayEdge e = node;
     do {
