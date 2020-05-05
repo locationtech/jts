@@ -24,7 +24,7 @@ import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.util.Debug;
 
 /**
- * Builds overlay result lines from the overlay graph.
+ * Finds and builds overlay result lines from the overlay graph.
  * Output linework has the following semantics:
  * <ol>
  * <li>Linework is fully noded
@@ -53,18 +53,26 @@ class LineBuilder {
   private GeometryFactory geometryFactory;
   private OverlayGraph graph;
   private int opCode;
-  private int resultAreaIndex;
-  private InputGeometry inputGeom;
+  private int inputAreaIndex;
   private int resultDimension;
   private boolean hasResultArea;
   private List<LineString> lines = new ArrayList<LineString>();
   
+  /**
+   * Creates a builder for linear elements which may be present 
+   * in the overlay result.
+   * 
+   * @param inputGeom the input geometries
+   * @param graph the topology graph
+   * @param hasResultArea true if an area has been generated for the result
+   * @param opCode the overlay operation code
+   * @param geomFact the output geometry factory
+   */
   public LineBuilder(InputGeometry inputGeom, OverlayGraph graph, boolean hasResultArea, int opCode, GeometryFactory geomFact) {
-    this.inputGeom = inputGeom;
     this.graph = graph;
     this.opCode = opCode;
     this.geometryFactory = geomFact;
-    this.resultAreaIndex = resultAreaIndex(inputGeom, opCode);
+    this.inputAreaIndex = inputGeom.getAreaIndex();
     this.hasResultArea = hasResultArea;
     
     resultDimension = OverlayUtil.resultDimension(opCode, 
@@ -99,22 +107,20 @@ class LineBuilder {
       return false;
     
     OverlayLabel lbl = edge.getLabel();
-    boolean isEffectiveLine = lbl.isLine() || lbl.isBoundaryBoth();
-    if (! isEffectiveLine) 
-      return false;
+    
+    /**
+     * Edges which are just collapses along boundaries
+     * are not output.
+     * In other words, an edge must be from a source line
+     * or two (coincident) area boundaries.
+     */
+    if (lbl.isBoundaryCollapse()) return false;
     
     /**
      * Skip edges inside result area
      */
     if (hasResultArea && isCoveredByResultArea(edge)) 
       return false;
-    
-    /**
-     * Interior collapsed edges are discarded, 
-     * since they will be covered by the result area
-     */
-    if (isInteriorCollapse(0, lbl)) return false;
-    if (isInteriorCollapse(1, lbl)) return false;
     
     int aLoc = effectiveLocation(0, lbl);
     int bLoc = effectiveLocation(1, lbl);
@@ -123,6 +129,10 @@ class LineBuilder {
     return isInResult;
   }
 
+  private static boolean isInResultArea(OverlayEdge edge) {
+    return edge.isInResultArea() || edge.symOE().isInResultArea();
+  }
+  
   /**
    * Tests whether a line edge is covered by the result area (if any).
    * In this case the line will not be added to the result.
@@ -138,7 +148,7 @@ class LineBuilder {
     /**
      * If no inputs are areas, edge can't be covered
      */
-    if (resultAreaIndex < 0) return false;
+    if (inputAreaIndex < 0) return false;
     
     OverlayLabel lbl = edge.getLabel();
     
@@ -150,58 +160,34 @@ class LineBuilder {
 
     // TODO: does this need to be computed using the actual result area?
     
-    boolean isCovered = lbl.isInArea(resultAreaIndex);
+    boolean isCovered = lbl.isInArea(inputAreaIndex);
     return isCovered;
-  }
-
-  /**
-   * 
-   * @param inputGeom
-   * @param overlayOpCode
-   * @return
-   */
-  private static int resultAreaIndex(InputGeometry inputGeom, int overlayOpCode) {
-    int areaIndex = -1;
-    if (inputGeom.getDimension(0) == 2) areaIndex = 0;
-    if (inputGeom.getDimension(1) == 2) areaIndex = 1;
-    
-    if (areaIndex < 0) return -1;
-    
-    switch (overlayOpCode) {
-    case OverlayNG.INTERSECTION: return -1;
-    case OverlayNG.UNION: return areaIndex;
-    case OverlayNG.DIFFERENCE: return (areaIndex <= 0) ? 0 : -1;
-    case OverlayNG.SYMDIFFERENCE: return areaIndex;
-    }
-    return -1;
   }
   
   /**
-   * Determines the effective location for this line,
-   * forcing collapses to be considered as INTERIOR
-   * so they will be included in the result.
+   * Determines the effective location for a line,
+   * for the purpose of overlay operation evaluation.
+   * Line edges and Collapses are reported as INTERIOR
+   * so they may be included in the result
+   * if warranted by the effect of the operation
+   * on the two edges.
+   * (For instance, the intersection of line edge and a collapsed boundary
+   * is included in the result).
    * 
    * @param geomIndex index of parent geometry
    * @param lbl label of line
    * @return the effective location of the line
    */
-  private int effectiveLocation(int geomIndex, OverlayLabel lbl) {
+  private static int effectiveLocation(int geomIndex, OverlayLabel lbl) {
     if (lbl.isCollapse(geomIndex))
       return Location.INTERIOR;
-    if (inputGeom.isLine(geomIndex) && lbl.isLine(geomIndex))
+    if (lbl.isLine(geomIndex))
       return Location.INTERIOR;
     return lbl.getLineLocation(geomIndex);
   }
 
-  private static boolean isInResultArea(OverlayEdge edge) {
-    return edge.isInResultArea() || edge.symOE().isInResultArea();
-  }
-
-  private static boolean isInteriorCollapse(int geomIndex, OverlayLabel lbl) {
-    return lbl.isCollapse(geomIndex)
-        && lbl.getLineLocation(geomIndex) == Location.INTERIOR;
-  }
-
+  //----  Maximal line extraction methods
+  
   private void addResultLines() {
     addResultLinesAtNodes();
     addResultLinesRings();

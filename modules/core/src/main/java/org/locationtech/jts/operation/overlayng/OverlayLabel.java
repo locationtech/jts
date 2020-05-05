@@ -270,6 +270,11 @@ class OverlayLabel {
     }
   }   
 
+  /**
+   * Tests whether at least one of the sources is a Line.
+   * 
+   * @return true if at least one source is a line
+   */
   public boolean isLine() {
     return aDim == DIM_LINE || bDim == DIM_LINE;
   }
@@ -308,6 +313,11 @@ class OverlayLabel {
   
   public boolean isBoundaryBoth() {
     return aDim == DIM_BOUNDARY && bDim == DIM_BOUNDARY;
+  }
+  
+  public boolean isBoundaryCollapse() {
+    if (isLine()) return false;
+    return ! isBoundaryBoth();
   }
   
   public boolean isBoundary(int index) {
