@@ -11,20 +11,28 @@
  */
 package org.locationtech.jtstest.function;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.noding.IntersectionAdder;
+import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
-import org.locationtech.jts.operation.overlayng.UnaryUnionNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
-import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class OverlayNGPMFloatFunctions {
   
+  public static Geometry difference(Geometry a, Geometry b) {
+    return OverlayNG.overlay(a, b, DIFFERENCE );
+  }
+
   public static Geometry intersection(Geometry a, Geometry b) {
     return OverlayNG.overlay(a, b, INTERSECTION );
   }
@@ -50,5 +58,22 @@ public class OverlayNGPMFloatFunctions {
     OverlayNG ovr = new OverlayNG(a, b, INTERSECTION);
     ovr.setOptimized(false);
     return ovr.getResult();
+  }
+  
+  public static Geometry intersectionNoValid(Geometry a, Geometry b) {
+    Noder noder = createFloatingPrecisionNoder(false);
+    return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(), noder);
+  }
+  
+  private static Noder createFloatingPrecisionNoder(boolean doValidation) {
+    MCIndexNoder mcNoder = new MCIndexNoder();
+    LineIntersector li = new RobustLineIntersector();
+    mcNoder.setSegmentIntersector(new IntersectionAdder(li));
+    
+    Noder noder = mcNoder;
+    if (doValidation) {
+      noder = new ValidatingNoder( mcNoder);
+    }
+    return noder;
   }
 }
