@@ -65,6 +65,13 @@ public class OverlayNGPMFloatFunctions {
     return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(), noder);
   }
   
+  public static Geometry intersectionIsValid(Geometry a, Geometry b) {
+    Noder noder = createFloatingPrecisionNoder(false);
+    Geometry geom = OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(), noder);
+    if (geom.isValid()) return geom;
+    return null;
+  }
+  
   private static Noder createFloatingPrecisionNoder(boolean doValidation) {
     MCIndexNoder mcNoder = new MCIndexNoder();
     LineIntersector li = new RobustLineIntersector();
