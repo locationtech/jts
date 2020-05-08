@@ -110,16 +110,20 @@ public class OverlayNG
   
   /**
    * Tests whether a point with given {@link Location}s
-   * relative to two geometries is contained in 
+   * relative to two geometries would be contained in 
    * the result of overlaying the geometries using
    * a given overlay operation.
+   * This is used to determine whether components
+   * computed during the overlay process should be
+   * included in the result geometry.
    * <p>
-   * The method handles arguments of {@link Location#NONE} correctly
+   * The method handles arguments of {@link Location#NONE} correctly.
+   * 
    * @param overlayOpCode the code for the overlay operation to test
    * @param loc0 the code for the location in the first geometry 
    * @param loc1 the code for the location in the second geometry 
    *
-   * @return true if the locations correspond to the overlayOpCode
+   * @return true if a point with given locations is in the result of the overlay operation
    */
   static boolean isResultOfOp(int overlayOpCode, int loc0, int loc1)
   {
@@ -268,11 +272,7 @@ public class OverlayNG
   private boolean isOutputResultEdges = false;
   private boolean isOutputNodedEdges = false;
 
-  private List<Polygon> resultPolyList;
-  private List<LineString> resultLineList;
-  private List<Point> resultPointList;
-
-  private Geometry outputEdges;
+  //private Geometry outputEdges;
 
   /**
    * Creates an overlay operation on the given geometries,
@@ -350,39 +350,26 @@ public class OverlayNG
       return OverlayPoints.overlay(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), pm);
     }
     
-    computeEdgeOverlay();
+    Geometry result = computeEdgeOverlay();
     
-    /**
-     * If requested, output graph edges instead of final result 
-     */
-    if (outputEdges != null) return outputEdges;
-    
-    if (resultPolyList.size() == 0 && resultLineList.size() == 0 && resultPointList.size() == 0)
-      return createEmptyResult();
-    
-    Geometry resultGeom = OverlayUtil.buildResultGeometry(opCode, resultPolyList, resultLineList, resultPointList, geomFact);
-    return resultGeom;
+    return result;
   }
   
-  private void computeEdgeOverlay() {
+  private Geometry computeEdgeOverlay() {
     
     OverlayGraph graph = buildGraph();
     
     if (isOutputNodedEdges) {
-      outputEdges = OverlayUtil.toLines(graph, isOutputEdges, geomFact);
-      return;
+      return OverlayUtil.toLines(graph, isOutputEdges, geomFact);
     }
 
     labelGraph(graph);
     
     if (isOutputEdges || isOutputResultEdges) {
-      outputEdges =  OverlayUtil.toLines(graph, isOutputEdges, geomFact);
-      return;
+      return  OverlayUtil.toLines(graph, isOutputEdges, geomFact);
     }
     
-    extractResult(opCode, graph);
-    // only used for debugging
-    //checkSanity(resultGeom);
+    return extractResult(opCode, graph);
   }
 
   private OverlayGraph buildGraph() {
@@ -429,18 +416,19 @@ public class OverlayNG
     labeller.unmarkDuplicateEdgesFromResultArea();
   }
 
-  private void extractResult(int opCode, OverlayGraph graph) {
+  private Geometry extractResult(int opCode, OverlayGraph graph) {
     
     //--- Build polygons
     List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
     PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
-    resultPolyList = polyBuilder.getPolygons();
+    List<Polygon> resultPolyList = polyBuilder.getPolygons();
     boolean hasResultArea = resultPolyList.size() > 0;
     
     //--- Build lines
     LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
-    resultLineList = lineBuilder.getLines();
+    List<LineString> resultLineList = lineBuilder.getLines();
 
+    List<Point> resultPointList;
     //--- Build points for INTERSECTION op only
     if (opCode == INTERSECTION) {
       IntersectionPointBuilder pointBuilder = new IntersectionPointBuilder(graph, geomFact);
@@ -449,6 +437,12 @@ public class OverlayNG
     else {
       resultPointList = new ArrayList<Point>();
     }
+    
+    if (resultPolyList.size() == 0 && resultLineList.size() == 0 && resultPointList.size() == 0)
+      return createEmptyResult();
+    
+    Geometry resultGeom = OverlayUtil.buildResultGeometry(opCode, resultPolyList, resultLineList, resultPointList, geomFact);
+    return resultGeom;
   }
 
   private Geometry createEmptyResult() {
