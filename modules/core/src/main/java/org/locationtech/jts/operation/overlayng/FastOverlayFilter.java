@@ -3,6 +3,8 @@ package org.locationtech.jts.operation.overlayng;
 import org.locationtech.jts.geom.Geometry;
 
 public class FastOverlayFilter {
+  // superceded by rectangle clipping
+  
   private Geometry targetGeom;
   private boolean isTargetRectangle;
 
@@ -44,9 +46,8 @@ public class FastOverlayFilter {
   }
 
   private Geometry createEmpty(Geometry geom) {
-    int dim = geom.getDimension();
-    int resultDim = OverlayUtil.resultDimension(OverlayNG.INTERSECTION, dim, dim);
-    return OverlayUtil.createEmptyResult(resultDim, geom.getFactory());
+    // empty result has dimension of non-rectangle input
+    return OverlayUtil.createEmptyResult(geom.getDimension(), geom.getFactory());
   }
 
   private Geometry intersectionRectangle(Geometry geom) {
