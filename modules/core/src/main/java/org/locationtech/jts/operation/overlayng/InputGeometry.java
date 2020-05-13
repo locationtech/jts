@@ -11,7 +11,6 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
-import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
@@ -19,6 +18,14 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Location;
 
+/**
+ * Manages the input geometries for an overlay operation.
+ * The second geometry is allowed to be null, 
+ * to support for instance precision reduction.
+ * 
+ * @author Martin Davis
+ *
+ */
 class InputGeometry {
   
   //private static final PointLocator ptLocator = new PointLocator();
@@ -32,7 +39,12 @@ class InputGeometry {
     geom = new Geometry[] { geomA, geomB };
   }
   
+  public boolean isSingle() {
+    return geom[1] == null;
+  }
+  
   public int getDimension(int index) {
+    if (geom[index] == null) return -1;
     return geom[index].getDimension();
   }
 
@@ -49,7 +61,7 @@ class InputGeometry {
   }
   
   public boolean isArea(int geomIndex) {
-    return geom[geomIndex].getDimension() == 2;
+    return geom[geomIndex] != null && geom[geomIndex].getDimension() == 2;
   }
   
   /**
@@ -71,7 +83,12 @@ class InputGeometry {
   }
 
   public boolean isAllPoints() {
-    return getDimension(0) == 0 && getDimension(1) == 0;
+    return getDimension(0) == 0 
+        && geom[1] != null && getDimension(1) == 0;
+  }
+  
+  public boolean hasPoints() {
+    return getDimension(0) == 0 || getDimension(1) == 0;
   }
   
   /**
@@ -82,20 +99,7 @@ class InputGeometry {
    * @return true if the input geometry has edges
    */
   public boolean hasEdges(int geomIndex) {
-    return geom[geomIndex].getDimension() > 0;
-  }
-  
-  /**
-   * Tests if the envelopes of the input geometries
-   * are disjoint.  
-   * This is also true if either geometry is empty.
-   * 
-   * @return true if the geometry envelopes are disjoint
-   */
-  public  boolean isDisjointEnv() {
-    if (isEmpty(0) || isEmpty(1)) return true;
-    boolean intersects = getEnvelope(0).intersects(getEnvelope(1));
-    return ! intersects;
+    return geom[geomIndex] != null && geom[geomIndex].getDimension() > 0;
   }
   
   /**

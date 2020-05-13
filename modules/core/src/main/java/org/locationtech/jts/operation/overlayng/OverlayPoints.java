@@ -159,13 +159,13 @@ class OverlayPoints {
     for (int i = 0; i < geom.getNumGeometries(); i++) {
       Geometry elt = geom.getGeometryN(i);
       if (! (elt instanceof Point) ) {
-        throw new IllegalArgumentException("Non-point geometry encountered in overlay");
+        throw new IllegalArgumentException("Non-point geometry input to point overlay");
       }
       // don't add empty points
       if (elt.isEmpty()) continue;
       
       Point pt = (Point) elt;
-      Coordinate p = roundCoord(pt);
+      Coordinate p = roundCoord(pt, pm);
       /**
        * Only add first occurrence of a point.
        * This provides the merging semantics of overlay
@@ -183,7 +183,7 @@ class OverlayPoints {
    * @param pt
    * @return
    */
-  private Coordinate roundCoord(Point pt) {
+  static Coordinate roundCoord(Point pt, PrecisionModel pm) {
     Coordinate p = pt.getCoordinate();
     if (pm.isFloating()) 
       return p;

@@ -28,7 +28,23 @@ public class OverlayNGOneTest extends GeometryTestCase {
 
   public OverlayNGOneTest(String name) { super(name); }
   
-  public void testLinePolygonIntersectionAlongCollapse() {
+  public void xtestPolygonPointIntersection() {
+    Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
+    Geometry b = read("MULTIPOINT ((150 150), (250 150))");
+    Geometry expected = read("POINT (150 150)");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testPolygonPointUnion() {
+    Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
+    Geometry b = read("MULTIPOINT ((150 150), (250 150))");
+    Geometry expected = read("GEOMETRYCOLLECTION (POINT (250 150), POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200)))");
+    Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void xtestLinePolygonIntersectionAlongCollapse() {
     Geometry a = read("POLYGON ((100 300, 300 300, 300 200, 130 200, 300 199.9, 300 100, 100 100, 100 300))");
     Geometry b = read("LINESTRING (130 200, 200 200)");
     Geometry expected = read("LINESTRING (130 200, 200 200)");

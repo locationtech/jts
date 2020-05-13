@@ -70,20 +70,37 @@ class OverlayUtil {
    * @param inputGeom the input geometries
    * @return true if the overlay result is determined to be empty
    */
-  static boolean isEmptyResult(int opCode, InputGeometry inputGeom) {
+  static boolean isEmptyResult(int opCode, Geometry a, Geometry b) {
     switch (opCode) {
     case OverlayNG.INTERSECTION:
-      if ( inputGeom.isEmpty(0) || inputGeom.isEmpty(1) )
+      if (isEnvDisjoint(a, b)) 
         return true;
-      if (inputGeom.isDisjointEnv()) 
-        return true;
+      break;
     case OverlayNG.DIFFERENCE:
-      if ( inputGeom.isEmpty(0) )     
+      if ( a.isEmpty() )     
         return true;
+      break;
+    case OverlayNG.UNION:
+    case OverlayNG.SYMDIFFERENCE:
+      if ( a.isEmpty() && b.isEmpty() )     
+        return true;
+      break;
     }
     return false;
   }
   
+  /**
+   * Tests if the geometry envelopes are disjoint, or empty.
+   * 
+   * @param a a geometry
+   * @param b a geometry
+   * @return true if the geometry envelopes are disjoint or empty
+   */
+  static boolean isEnvDisjoint(Geometry a, Geometry b) {
+    if (a.isEmpty() || b.isEmpty()) return true;
+    return a.getEnvelopeInternal().disjoint(b.getEnvelopeInternal());
+  }
+
   /**
    * Creates an empty result geometry of the appropriate dimension,
    * based on the given overlay operation and the dimensions of the inputs.
@@ -162,17 +179,27 @@ class OverlayUtil {
     return resultDimension;
   }
 
-  static Geometry buildResultGeometry(int opcode, List<Polygon> resultPolyList, List<LineString> resultLineList, List<Point> resultPointList, GeometryFactory geometryFactory) {
+  /**
+   * Creates an overlay result geometry for homogeneous or mixed components.
+   *  
+   * @param resultPolyList the list of result polygons (may be empty or null)
+   * @param resultLineList the list of result lines (may be empty or null)
+   * @param resultPointList the list of result points (may be empty or null)
+   * @param geometryFactory the geometry factory to use
+   * @return a geometry structured according to the overlay result semantics
+   */
+  static Geometry createResultGeometry(List<Polygon> resultPolyList, List<LineString> resultLineList, List<Point> resultPointList, GeometryFactory geometryFactory) {
     List<Geometry> geomList = new ArrayList<Geometry>();
     
-    // TODO: return Multi geoms for all output dimensions
+    // TODO: for mixed dimension, return collection of Multigeom for each dimension (breaking change)
     
-    // element geometries of the result are always in the order P,L,A
-    geomList.addAll(resultPolyList);
-    geomList.addAll(resultLineList);
-    geomList.addAll(resultPointList);
+    // element geometries of the result are always in the order A,L,P
+    if (resultPolyList != null) geomList.addAll(resultPolyList);
+    if (resultLineList != null) geomList.addAll(resultLineList);
+    if (resultPointList != null) geomList.addAll(resultPointList);
   
     // build the most specific geometry possible
+    // TODO: perhaps do this internally to give more control?
     return geometryFactory.buildGeometry(geomList);
   }
 
@@ -195,6 +222,21 @@ class OverlayUtil {
         + (edge.isInResultArea() ? " Res" : "");
   }
 
+  /**
+   * Round the key point if precision model is fixed.
+   * Note: return value is only copied if rounding is performed.
+   * 
+   * @param pt
+   * @return
+   */
+  public static Coordinate round(Point pt, PrecisionModel pm) {
+    Coordinate p = pt.getCoordinate().copy();
+    if (! pm.isFloating()) {
+      pm.makePrecise(p);
+    }
+    return p;
+  }
+  
   /*
   private void checkSanity(Geometry result) {
     // for Union, area should be greater than largest of inputs

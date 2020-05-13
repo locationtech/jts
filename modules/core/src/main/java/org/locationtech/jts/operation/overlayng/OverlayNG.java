@@ -256,8 +256,8 @@ public class OverlayNG
   static Geometry union(Geometry geom, PrecisionModel pm)
   {    
     // empty geometries are not included in the overlay
-    Point emptyPoint = geom.getFactory().createPoint();
-    OverlayNG ov = new OverlayNG(geom, emptyPoint, pm, UNION);
+    //Point emptyPoint = geom.getFactory().createPoint();
+    OverlayNG ov = new OverlayNG(geom, pm);
     Geometry geomOv = ov.getResult();
     return geomOv;
   }
@@ -312,6 +312,13 @@ public class OverlayNG
     this(geom0, geom1, geom0.getFactory().getPrecisionModel(), opCode);
   }  
   
+  private OverlayNG(Geometry geom0, PrecisionModel pm) {
+    this.pm = pm;
+    this.opCode = UNION;
+    geomFact = geom0.getFactory();
+    inputGeom = new InputGeometry( geom0, null );
+  }  
+  
   /**
    * Sets whether overlay processing optimizations are enabled.
    * It may be useful to disable optimizations
@@ -342,12 +349,18 @@ public class OverlayNG
   }
   
   public Geometry getResult() {
-    if (OverlayUtil.isEmptyResult(opCode, inputGeom)) {
+    if (OverlayUtil.isEmptyResult(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1))) {
       return createEmptyResult();
     }
 
+    // special logic for Point-Point inputs
     if (inputGeom.isAllPoints()) {
       return OverlayPoints.overlay(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), pm);
+    }
+    
+    // special logic for Point-nonPoint inputs 
+    if (! inputGeom.isSingle() &&  inputGeom.hasPoints()) {
+      return OverlayMixedPoints.overlay(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), pm);
     }
     
     Geometry result = computeEdgeOverlay();
@@ -428,27 +441,28 @@ public class OverlayNG
     LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
     List<LineString> resultLineList = lineBuilder.getLines();
 
-    List<Point> resultPointList;
+    List<Point> resultPointList = null;
     //--- Build points for INTERSECTION op only
     if (opCode == INTERSECTION) {
       IntersectionPointBuilder pointBuilder = new IntersectionPointBuilder(graph, geomFact);
       resultPointList = pointBuilder.getPoints();
     }
-    else {
-      resultPointList = new ArrayList<Point>();
-    }
     
-    if (resultPolyList.size() == 0 && resultLineList.size() == 0 && resultPointList.size() == 0)
+    if ((resultPolyList == null || resultPolyList.size() == 0) 
+        && (resultLineList == null || resultLineList.size() == 0) 
+        && (resultPointList == null || resultPointList.size() == 0) )
       return createEmptyResult();
     
-    Geometry resultGeom = OverlayUtil.buildResultGeometry(opCode, resultPolyList, resultLineList, resultPointList, geomFact);
+    Geometry resultGeom = OverlayUtil.createResultGeometry(resultPolyList, resultLineList, resultPointList, geomFact);
     return resultGeom;
   }
 
   private Geometry createEmptyResult() {
     return OverlayUtil.createEmptyResult(
-        OverlayUtil.resultDimension(opCode, inputGeom.getDimension(0), inputGeom.getDimension(1))
-        , geomFact);
+        OverlayUtil.resultDimension(opCode, 
+            inputGeom.getDimension(0), 
+            inputGeom.getDimension(1)), 
+          geomFact);
   }
  
 }

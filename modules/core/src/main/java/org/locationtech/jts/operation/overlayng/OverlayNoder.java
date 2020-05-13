@@ -178,7 +178,7 @@ class OverlayNoder {
   
   public void add(Geometry g, int geomIndex)
   {
-    if (g.isEmpty()) return;
+    if (g == null || g.isEmpty()) return;
     
     if (isClippedCompletely(g.getEnvelopeInternal())) 
       return;
@@ -186,12 +186,12 @@ class OverlayNoder {
     if (g instanceof Polygon)                 addPolygon((Polygon) g, geomIndex);
     // LineString also handles LinearRings
     else if (g instanceof LineString)         addLine((LineString) g, geomIndex);
-    //else if (g instanceof Point)              addPoint((Point) g);
-    //else if (g instanceof MultiPoint)         addCollection((MultiPoint) g);
     else if (g instanceof MultiLineString)    addCollection((MultiLineString) g, geomIndex);
     else if (g instanceof MultiPolygon)       addCollection((MultiPolygon) g, geomIndex);
     else if (g instanceof GeometryCollection) addCollection((GeometryCollection) g, geomIndex);
-    else throw new UnsupportedOperationException(g.getClass().getName());
+    else {
+      // ignore Point geometries - they are handled elsewhere
+    }
   }
   
   private void addCollection(GeometryCollection gc, int geomIndex)
