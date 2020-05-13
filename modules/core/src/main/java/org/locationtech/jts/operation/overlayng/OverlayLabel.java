@@ -61,7 +61,7 @@ import org.locationtech.jts.geomgraph.Position;
  *   <ul>
  *   <li><code>dim</code> = DIM_LINE</li>
  *   <li><code>locLine</code> : initialized to LOC_UNKNOWN, 
- *          to simplify handling logic.  </li>
+ *          to simplify logic.</li>
  *   </ul>
  * </li>
  * <li>An edge which is <b>Not Part</b> of an input geometry

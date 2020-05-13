@@ -433,7 +433,8 @@ public class OverlayNG
    * Extracts the result geometry components from the fully labelled topology graph.
    * <p>
    * This method implements the semantic that the result of an 
-   * intersection operation is homogeneous.  In other words, 
+   * intersection operation is homogeneous with highest dimension.  
+   * In other words, 
    * if an intersection has components of a given dimension
    * no lower-dimension components are output.
    * For example, if two polygons intersect in an area, 
