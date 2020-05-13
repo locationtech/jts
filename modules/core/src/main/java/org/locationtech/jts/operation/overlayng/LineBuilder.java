@@ -107,6 +107,10 @@ class LineBuilder {
   /**
    * Checks if the topology indicated by an edge label
    * determines that this edge should be part of a result line.
+   * <p>
+   * Note that the logic here relies on the semantic
+   * that for intersection lines are only returned if
+   * there is no result area components.
    * 
    * @param lbl the label for an edge
    * @return true if the edge should be included in the result
@@ -121,9 +125,16 @@ class LineBuilder {
     if (lbl.isBoundaryCollapse()) return false;
     
     /**
-     * Skip edges that are inside result area (if there is one)
+     * Skip edges that are inside result area, if there is one.
+     * It is sufficient to check against an input area rather 
+     * than the result area, since 
+     * if lines are being included then the result area
+     * must be the same as the input area. 
+     * This logic relies on the semantic that if both inputs 
+     * are areas, lines are only output if there is no 
+     * result area.
      */
-    if (hasResultArea && lbl.isInArea(inputAreaIndex)) 
+    if (hasResultArea && lbl.isLineInArea(inputAreaIndex)) 
       return false;
     
     int aLoc = effectiveLocation(0, lbl);

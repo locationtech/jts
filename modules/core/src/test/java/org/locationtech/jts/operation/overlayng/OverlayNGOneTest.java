@@ -36,11 +36,19 @@ public class OverlayNGOneTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testPolygonPointUnion() {
+  public void xtestPolygonPointUnion() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("MULTIPOINT ((150 150), (250 150))");
     Geometry expected = read("GEOMETRYCOLLECTION (POINT (250 150), POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200)))");
     Geometry actual = union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testPolygoPolygonWithLineTouchIntersection() {
+    Geometry a = read("POLYGON ((360 200, 220 200, 220 180, 300 180, 300 160, 300 140, 360 200))");
+    Geometry b = read("MULTIPOLYGON (((280 180, 280 160, 300 160, 300 180, 280 180)), ((220 230, 240 230, 240 180, 220 180, 220 230)))");
+    Geometry expected = read("POLYGON ((220 200, 240 200, 240 180, 220 180, 220 200))");
+    Geometry actual = intersection(a, b, 1);
     checkEqual(expected, actual);
   }
   

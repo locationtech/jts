@@ -60,7 +60,8 @@ import org.locationtech.jts.geomgraph.Position;
  * <li>An edge from an input <b>Line</b>
  *   <ul>
  *   <li><code>dim</code> = DIM_LINE</li>
- *   <li><code>locLine</code> : INTERIOR</li>
+ *   <li><code>locLine</code> : initialized to LOC_UNKNOWN, 
+ *          to simplify handling logic.  </li>
  *   </ul>
  * </li>
  * <li>An edge which is <b>Not Part</b> of an input geometry
@@ -315,6 +316,13 @@ class OverlayLabel {
     return aDim == DIM_BOUNDARY && bDim == DIM_BOUNDARY;
   }
   
+  /**
+   * Tests if the label is for a collapsed
+   * edge of an area 
+   * which is coincident with the boundary of the other area.
+   * 
+   * @return true if the label is for a collapse coincident with a boundary
+   */
   public boolean isBoundaryCollapse() {
     if (isLine()) return false;
     return ! isBoundaryBoth();
@@ -336,7 +344,12 @@ class OverlayLabel {
     }
   }
 
-  public boolean isInArea(int index) {
+  /**
+   * Tests if a line edge is inside 
+   * @param index
+   * @return
+   */
+  public boolean isLineInArea(int index) {
     if (index == 0) {
       return aLocLine == Location.INTERIOR;
     }

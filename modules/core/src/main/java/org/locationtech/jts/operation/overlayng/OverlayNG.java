@@ -429,21 +429,45 @@ public class OverlayNG
     labeller.unmarkDuplicateEdgesFromResultArea();
   }
 
+  /**
+   * Extracts the result geometry components from the fully labelled topology graph.
+   * <p>
+   * This method implements the semantic that the result of an 
+   * intersection operation is homogeneous.  In other words, 
+   * if an intersection has components of a given dimension
+   * no lower-dimension components are output.
+   * For example, if two polygons intersect in an area, 
+   * no linestrings or points are included in the result, 
+   * even if portions of the input do meet in lines or points.
+   * This semantic choice makes more sense for typical usage, 
+   * in which only the highest dimension components are of interest.
+   * 
+   * @param opCode the overlay operation
+   * @param graph the topology graph
+   * @return the result geometry
+   */
   private Geometry extractResult(int opCode, OverlayGraph graph) {
     
     //--- Build polygons
     List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
     PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
     List<Polygon> resultPolyList = polyBuilder.getPolygons();
-    boolean hasResultArea = resultPolyList.size() > 0;
+    boolean hasResultComponents = resultPolyList.size() > 0;
     
     //--- Build lines
-    LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultArea, opCode, geomFact);
-    List<LineString> resultLineList = lineBuilder.getLines();
-
+    List<LineString> resultLineList = null;
+    if (opCode != INTERSECTION || ! hasResultComponents) {
+      LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultComponents, opCode, geomFact);
+      resultLineList = lineBuilder.getLines();
+      hasResultComponents = resultLineList.size() > 0;
+    }
+    /**
+     * Since operations with point inputs are handled elsewhere,
+     * this only handles the case where non-point inputs 
+     * intersect in points ONLY. 
+     */
     List<Point> resultPointList = null;
-    //--- Build points for INTERSECTION op only
-    if (opCode == INTERSECTION) {
+    if (opCode == INTERSECTION && ! hasResultComponents) {
       IntersectionPointBuilder pointBuilder = new IntersectionPointBuilder(graph, geomFact);
       resultPointList = pointBuilder.getPoints();
     }
