@@ -32,7 +32,7 @@ import org.locationtech.jts.operation.overlayng.OverlayNG;
  * @author mdavis
  *
  */
-public class OverlayFuzzer {
+public class RandomPolygonOverlayFuzzer {
   
   static final boolean IS_VERBOSE = false;
   
@@ -62,7 +62,7 @@ public class OverlayFuzzer {
   }
   
   public static void main(String args[]) {
-    (new OverlayFuzzer()).run();
+    (new RandomPolygonOverlayFuzzer()).run();
   }
 
   private int testIndex = 0;
