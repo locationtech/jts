@@ -3,7 +3,8 @@ package org.locationtech.jts.operation.overlayng;
 import org.locationtech.jts.geom.Geometry;
 
 public class FastOverlayFilter {
-  // superceded by rectangle clipping
+  // superceded by overlap clipping?
+  // TODO: perhaps change this to RectangleClipping, with fast/looser semantics?
   
   private Geometry targetGeom;
   private boolean isTargetRectangle;
