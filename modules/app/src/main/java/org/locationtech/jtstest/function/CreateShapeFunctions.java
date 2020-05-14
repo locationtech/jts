@@ -285,7 +285,52 @@ public class CreateShapeFunctions {
       OrderedPoint other = (OrderedPoint) o;
       return Double.compare(index,  other.index);
     }
+  }
+  
+  @Metadata(description="Construct a spiral")
+  public static Geometry spiral(Geometry geom, 
+      @Metadata(title="Num Cycles")
+      int nCycles, 
+      @Metadata(title="Quadrant Segs")
+      int quadrantSegs) {
+    Envelope env = FunctionsUtil.getEnvelopeOrDefault(geom);
+    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(geom);
+
+    double width = Math.min(env.getHeight(), env.getWidth())/2;
+    double pitch = width / nCycles;
     
+    Coordinate centre = env.centre();
     
+    CoordinateList inside = new CoordinateList();
+    CoordinateList outside = new CoordinateList();
+    for (int i = 1; i <= nCycles; i++) {
+      Coordinate[] inCycle = genSpiralCycle(centre, i * pitch - pitch/2, (i+1) * pitch - pitch/2, quadrantSegs);
+      inside.add(inCycle, false);
+      Coordinate[] outCycle = genSpiralCycle(centre, i * pitch, (i+1) * pitch, quadrantSegs);
+      outside.add(outCycle, false);
+    }
+    CoordinateList all = new CoordinateList();
+    all.add(inside.toCoordinateArray(), false);
+    Coordinate[] outsidePts = outside.toCoordinateArray();
+    CoordinateArrays.reverse(outsidePts);
+    all.add(outsidePts, false);
+    all.closeRing();
+    return geomFact.createPolygon(all.toCoordinateArray());
+  }
+
+  private static Coordinate[] genSpiralCycle(Coordinate centre, 
+      double radiusStart, double radiusEnd, int quadrantSegs) {
+    int nPts = quadrantSegs * 4 + 1;
+    Coordinate[] pts = new Coordinate[nPts];
+    double angInc = 2 * Math.PI / (nPts - 1);
+    double radiusInc = (radiusEnd - radiusStart) / (nPts - 1);
+    for (int i = 0; i < nPts; i++) {
+      double radius = radiusStart + i * radiusInc;
+      double x = radius * Math.cos(i *angInc);
+      double y = radius * Math.sin(i *angInc);
+      Coordinate pt = new Coordinate(centre.getX() + x, centre.getY() + y);
+      pts[i] = pt;
+    }
+    return pts;
   }
 }
