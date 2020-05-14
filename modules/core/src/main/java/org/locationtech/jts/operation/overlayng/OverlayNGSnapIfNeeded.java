@@ -63,7 +63,7 @@ public class OverlayNGSnapIfNeeded
     }
     catch (TopologyException ex) {
     	// ignore this exception, since the operation will be rerun
-      System.out.println("Overlay failed");
+      //System.out.println("Overlay failed");
     }
     // on failure retry with a "safe" fixed PM
   	// this should not throw an exception, but if it does just let it go
