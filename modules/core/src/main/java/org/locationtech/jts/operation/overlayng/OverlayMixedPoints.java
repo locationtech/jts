@@ -35,14 +35,17 @@ import org.locationtech.jts.util.Assert;
  * <ul>
  * <li>Duplicates are removed from Point output 
  * <li>Non-point output is rounded and noded using the given precision model
+ * <ii>An empty result is an empty atomic geometry 
+ * with dimension determined by the inputs and the operation
  * <li>
  * </ul>
  * For efficiency the following optimizations are used:
  * <ul>
- * <li>Input points are not included in the noding
+ * <li>Input points are not included in the noding of the non-point input geometry
  * (in particular, they do not participate in snap-rounding if that is used).
  * <li>If the non-point input geometry is not included in the output
- * it is not rounded and noded
+ * it is not rounded and noded.  This means that points 
+ * are compared to the non-rounded geometry, which will be apparent in the result.
  * </ul>
  * This means that overlay is efficient to use for finding points
  * within or outside a polygon.

@@ -29,9 +29,9 @@ import org.locationtech.jts.geom.PrecisionModel;
  * Semantics are:
  * <ul>
  * <li>Points are rounded to the precision model if provided
- * <li>Points with identical XY values are merged
+ * <li>Points with identical XY values are merged to a single point
  * <li>Extended ordinate values are preserved in the output, 
- * up to merging
+ * apart from merging
  * <li>An empty result is returned as <code>POINT EMPTY</code>
  * </ul>
  * 
