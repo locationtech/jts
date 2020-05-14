@@ -21,6 +21,7 @@ import org.locationtech.jts.geom.util.AffineTransformation;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGSnapIfNeeded;
 
 /**
  * Runs overlay operations on pairs of random polygonal geometries
@@ -40,7 +41,7 @@ public class RandomPolygonOverlayFuzzer {
   
   static final int N_PTS = 100;
 
-  static final int N_TESTS = 100000;
+  static final int N_TESTS = 100;
   
   static double SCALE = 100000000;
   
@@ -74,6 +75,7 @@ public class RandomPolygonOverlayFuzzer {
       testIndex = i;
       overlayPolys();
     }
+    System.out.println("\n============================");
     System.out.printf("Tests: %d  Errors: %d\n", N_TESTS, errCount);
   }
 
@@ -85,9 +87,11 @@ public class RandomPolygonOverlayFuzzer {
 
   private void process(Geometry poly1, Geometry poly2) {
     try {
-      //overlayOrig(poly1, poly2);
+      overlayOrig(poly1, poly2);
       //overlayNoSnap(poly1, poly2);
-      overlayNG(poly1, poly2);
+      //overlayNGFloat(poly1, poly2);
+      //overlayNGSnapIfNeeded(poly1, poly2);
+      //overlayNG(poly1, poly2);
     }
     catch (TopologyException ex) {
       errCount ++;
@@ -134,6 +138,23 @@ public class RandomPolygonOverlayFuzzer {
     return new PrecisionModel(scale);
   }
 
+  private void overlayNGFloat(Geometry poly1, Geometry poly2) {
+    OverlayNG.overlay(poly1, poly2, OverlayNG.INTERSECTION);
+    //Geometry diff1 = poly1.difference(poly2);
+    //Geometry diff2 = poly2.difference(poly1);
+    //Geometry union = inter.union(diff1).union(diff2);
+  }
+
+  private void overlayNGSnapIfNeeded(Geometry poly1, Geometry poly2) {
+    OverlayNGSnapIfNeeded.intersection(poly1, poly2);
+    poly1.intersection(poly2);
+    //Geometry diff1 = poly1.difference(poly2);
+    //Geometry diff2 = poly2.difference(poly1);
+    //Geometry union = inter.union(diff1).union(diff2);
+  }
+  
+
+  
   private void overlayOrig(Geometry poly1, Geometry poly2) {
     poly1.intersection(poly2);
     //Geometry diff1 = poly1.difference(poly2);

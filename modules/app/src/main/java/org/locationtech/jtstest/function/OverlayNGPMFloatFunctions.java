@@ -24,6 +24,7 @@ import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGSnapIfNeeded;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
@@ -54,6 +55,19 @@ public class OverlayNGPMFloatFunctions {
     return op.union();
   }
 
+  public static Geometry unaryUnionSnapIfNeeded(Geometry a) {
+    UnionFunction unionSRFun = new UnionFunction() {
+
+      public Geometry union(Geometry g0, Geometry g1) {
+         return OverlayNGSnapIfNeeded.overlay(g0, g1, UNION );
+      }
+      
+    };
+    UnaryUnionOp op = new UnaryUnionOp(a);
+    op.setUnionFunction(unionSRFun);
+    return op.union();
+  }
+  
   public static Geometry intersectionFloatPMNoOpt(Geometry a, Geometry b) {
     OverlayNG ovr = new OverlayNG(a, b, INTERSECTION);
     ovr.setOptimized(false);
