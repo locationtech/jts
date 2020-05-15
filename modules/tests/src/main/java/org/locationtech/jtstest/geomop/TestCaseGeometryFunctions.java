@@ -18,6 +18,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.locationtech.jts.precision.MinimumClearance;
 
@@ -74,6 +75,19 @@ public class TestCaseGeometryFunctions
   
   public static Geometry polygonizeValidPolygonal(Geometry g) {
     return polygonize(g, true);
+  }
+  
+  public static Geometry intersectionNG(Geometry geom0, Geometry geom1) {
+    return OverlayNG.overlay(geom0, geom1, OverlayNG.INTERSECTION);
+  }
+  public static Geometry unionNG(Geometry geom0, Geometry geom1) {
+    return OverlayNG.overlay(geom0, geom1, OverlayNG.UNION);
+  }
+  public static Geometry differenceNG(Geometry geom0, Geometry geom1) {
+    return OverlayNG.overlay(geom0, geom1, OverlayNG.DIFFERENCE);
+  }
+  public static Geometry symDifferenceNG(Geometry geom0, Geometry geom1) {
+    return OverlayNG.overlay(geom0, geom1, OverlayNG.SYMDIFFERENCE);
   }
 }
 ;
