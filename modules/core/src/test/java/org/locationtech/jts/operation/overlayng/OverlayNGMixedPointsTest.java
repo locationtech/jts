@@ -63,4 +63,19 @@ public class OverlayNGMixedPointsTest extends GeometryTestCase {
     checkEqual(expected, OverlayNGTest.intersection(a, b, 1));
   }
 
+  public void testPointEmptyLinestringUnion() {
+    Geometry a = read("LINESTRING EMPTY");
+    Geometry b = read("POINT (10 10)");
+    Geometry expected = read("POINT (10 10)");
+    Geometry actual = OverlayNGTest.union(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testLinestringEmptyPointUnion() {
+    Geometry a = read("LINESTRING (10 10, 20 20)");
+    Geometry b = read("POINT EMPTY");
+    Geometry expected = read("LINESTRING (10 10, 20 20)");
+    Geometry actual = OverlayNGTest.union(a, b, 1);
+    checkEqual(expected, actual);
+  }
 }

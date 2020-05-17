@@ -19,6 +19,7 @@ import java.util.Set;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -160,6 +161,9 @@ class OverlayMixedPoints {
   }
   
   private Geometry createPointResult(List<Point> points) {
+    if (points.size() == 0) {
+      return geometryFactory.createEmpty(0);
+    }
     return geometryFactory.buildGeometry(points);
   }
 
@@ -204,20 +208,24 @@ class OverlayMixedPoints {
   }
   
   private static Coordinate[] extractCoordinates(Geometry points, PrecisionModel pm) {
+    CoordinateList coords = new CoordinateList();
     int n = points.getNumGeometries();
-    Coordinate[] coords = new Coordinate[n];
     for (int i = 0; i < n; i++) {
       Point point = (Point) points.getGeometryN(i);
+      if (point.isEmpty()) continue;
       Coordinate coord = OverlayUtil.round(point, pm);
-      coords[i] = coord;
+      coords.add(coord, true);
     }
-    return coords;
+    return coords.toCoordinateArray();
   }
   
   private static List<Polygon> extractPolygons(Geometry geom) {
     List<Polygon> list = new ArrayList<Polygon>();
     for (int i = 0; i < geom.getNumGeometries(); i++) {
-      list.add((Polygon) geom.getGeometryN(i));
+      Polygon poly = (Polygon) geom.getGeometryN(i);
+      if(! poly.isEmpty()) {
+        list.add(poly);
+      }
     }
     return list;
   }
@@ -225,7 +233,10 @@ class OverlayMixedPoints {
   private static List<LineString> extractLines(Geometry geom) {
     List<LineString> list = new ArrayList<LineString>();
     for (int i = 0; i < geom.getNumGeometries(); i++) {
-      list.add((LineString) geom.getGeometryN(i));
+      LineString line = (LineString) geom.getGeometryN(i);
+      if (! line.isEmpty()) {
+        list.add(line);
+      }
     }
     return list;
   }

@@ -77,18 +77,22 @@ class OverlayUtil {
         return true;
       break;
     case OverlayNG.DIFFERENCE:
-      if ( a.isEmpty() )     
+      if ( isEmpty(a) )     
         return true;
       break;
     case OverlayNG.UNION:
     case OverlayNG.SYMDIFFERENCE:
-      if ( a.isEmpty() && b.isEmpty() )     
+      if ( isEmpty(a) && isEmpty(b) )     
         return true;
       break;
     }
     return false;
   }
   
+  private static boolean isEmpty(Geometry geom) {
+    return geom == null || geom.isEmpty();
+  }
+
   /**
    * Tests if the geometry envelopes are disjoint, or empty.
    * 
@@ -97,7 +101,7 @@ class OverlayUtil {
    * @return true if the geometry envelopes are disjoint or empty
    */
   static boolean isEnvDisjoint(Geometry a, Geometry b) {
-    if (a.isEmpty() || b.isEmpty()) return true;
+    if (isEmpty(a) || isEmpty(b)) return true;
     return a.getEnvelopeInternal().disjoint(b.getEnvelopeInternal());
   }
 
@@ -226,10 +230,11 @@ class OverlayUtil {
    * Round the key point if precision model is fixed.
    * Note: return value is only copied if rounding is performed.
    * 
-   * @param pt
-   * @return
+   * @param pt the Point to round
+   * @return the rounded point coordinate, or null if empty
    */
   public static Coordinate round(Point pt, PrecisionModel pm) {
+    if (pt.isEmpty()) return null;
     Coordinate p = pt.getCoordinate().copy();
     if (! pm.isFloating()) {
       pm.makePrecise(p);
