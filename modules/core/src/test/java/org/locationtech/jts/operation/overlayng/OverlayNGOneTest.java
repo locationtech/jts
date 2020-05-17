@@ -28,6 +28,14 @@ public class OverlayNGOneTest extends GeometryTestCase {
 
   public OverlayNGOneTest(String name) { super(name); }
   
+  public void testLineLineIntersectionFloat() {
+    Geometry a = read("LINESTRING (10 10, 20 20)");
+    Geometry b = read("LINESTRING (13 13, 10 10, 10 20, 20 20, 17 17)");
+    Geometry expected = read("LINESTRING (17 17, 20 20, 10 20, 10 10, 13 13, 17 17)");
+    Geometry actual = OverlayNG.overlay(a, b, UNION);
+    checkEqual(expected, actual);
+  }
+  
   public void xtestPolygonPointIntersection() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("MULTIPOINT ((150 150), (250 150))");
@@ -44,7 +52,7 @@ public class OverlayNGOneTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testPolygoPolygonWithLineTouchIntersection() {
+  public void xtestPolygoPolygonWithLineTouchIntersection() {
     Geometry a = read("POLYGON ((360 200, 220 200, 220 180, 300 180, 300 160, 300 140, 360 200))");
     Geometry b = read("MULTIPOLYGON (((280 180, 280 160, 300 160, 300 180, 280 180)), ((220 230, 240 230, 240 180, 220 180, 220 230)))");
     Geometry expected = read("POLYGON ((220 200, 240 200, 240 180, 220 180, 220 200))");

@@ -246,7 +246,7 @@ class LineBuilder {
     OverlayEdge e = node;
     do {
       e.markVisitedBoth();
-      pts.add(e.dest(), false);
+      e.addCoordinates(pts);
       
       // end line if next vertex is a node
       if (degreeOfLines(e.symOE()) != 2) {
@@ -257,9 +257,6 @@ class LineBuilder {
     }
     while (e != null);
     
-    // add final point of line, if not a ring
-    if (e != null)
-      pts.add(e.dest(), false);
     Coordinate[] ptsOut = pts.toCoordinateArray(isForward);
     
     LineString line = geometryFactory.createLineString(ptsOut);

@@ -1,0 +1,128 @@
+<run>
+
+<case>
+  <desc>LL - same line</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+LINESTRING (10 10, 20 20)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - crossing</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+LINESTRING (10 20, 20 10)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POINT (15 15)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+MULTILINESTRING ((10 10, 15 15), (15 15, 20 20), (10 20, 15 15), (15 15, 20 10))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 15 15, 20 20)
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING (10 20, 15 15, 20 10)
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((10 10, 15 15), (15 15, 20 20), (10 20, 15 15), (15 15, 20 10))
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - touching</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+LINESTRING (20 20, 30 30)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POINT (20 20)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20, 30 30)
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING (20 20, 30 30)
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20, 30 30)
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - overlapping</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+LINESTRING (15 15, 30 30)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+LINESTRING (15 15, 20 20)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING (10 10, 15 15, 20 20, 30 30)
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 15 15)
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING (20 20, 30 30)
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((10 10, 15 15), (20 20, 30 30))
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - loop overlapping at vertices</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+LINESTRING (13 13, 10 10, 10 20, 20 20, 17 17)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+MULTILINESTRING ((17 17, 20 20), (10 10, 13 13))
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING (17 17, 20 20, 10 20, 10 10, 13 13, 17 17)
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING (13 13, 17 17)
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING (10 10, 10 20, 20 20)
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((10 10, 10 20, 20 20), (13 13, 17 17))
+  </op></test>
+</case>
+
+</run>

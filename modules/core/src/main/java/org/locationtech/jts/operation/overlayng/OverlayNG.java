@@ -11,7 +11,6 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 

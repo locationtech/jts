@@ -130,7 +130,7 @@ class OverlayEdgeRing {
     return ringPts;
   }
   
-  private Coordinate[] toCoordinateArray(List<Coordinate> pts) {
+  private static Coordinate[] toCoordinateArray(List<Coordinate> pts) {
     Coordinate[] coord = new Coordinate[pts.size()];
     for (int i = 0; i < pts.size(); i++) {
       coord[i] = (Coordinate) pts.get(i);

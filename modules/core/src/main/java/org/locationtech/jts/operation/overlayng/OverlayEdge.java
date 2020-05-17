@@ -12,10 +12,12 @@
 package org.locationtech.jts.operation.overlayng;
 
 import java.util.Comparator;
+import java.util.List;
 
 import org.locationtech.jts.edgegraph.HalfEdge;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.io.WKTWriter;
 
 class OverlayEdge extends HalfEdge {
@@ -125,6 +127,34 @@ class OverlayEdge extends HalfEdge {
     Coordinate[] copy = pts.clone();
     CoordinateArrays.reverse(copy);
     return copy;
+  }
+  
+  /**
+   * Adds the coordinates of this edge to the given list,
+   * in the direction of the edge.
+   * Duplicate coordinates are removed
+   * (which means that this is safe to use for a path 
+   * of connected edges in the topology graph).
+   * 
+   * @param coords the coordinate list to add to
+   */
+  public void addCoordinates(CoordinateList coords)
+  {
+    boolean isFirstEdge = coords.size() > 0;
+    if (direction) {
+      int startIndex = 1;
+      if (isFirstEdge) startIndex = 0;
+      for (int i = startIndex; i < pts.length; i++) {
+        coords.add(pts[i], false);
+      }
+    }
+    else { // is backward
+      int startIndex = pts.length - 2;
+      if (isFirstEdge) startIndex = pts.length - 1;
+      for (int i = startIndex; i >= 0; i--) {
+        coords.add(pts[i], false);
+      }
+    }
   }
   
   public OverlayEdge symOE() {

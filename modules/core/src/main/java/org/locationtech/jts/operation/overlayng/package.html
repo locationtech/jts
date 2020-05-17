@@ -30,6 +30,17 @@ valid polygonal and lineal coverages</li>
 in a topologically-valid way</li>
 </ul>
 </p>
+<p>
+<h2>Semantics</h2>
+The semantics of operation results are:
+<ul>
+<li>Results are always valid geometries
+<li>Empty results are empty atomic geometries of appropriate dimension
+<li>Duplicate vertices are removed
+<li>Linear results are merged node-to-node (e.g. are of maximial length)
+<li>Polygon edges which collapse completely due to rounding are not output
+</ul>
+</p>
 <h2>Features</h2>
 <h3>Functionality</h3>
 <ul>
