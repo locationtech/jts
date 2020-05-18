@@ -19,18 +19,17 @@ import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.TopologyException;
-import org.locationtech.jts.util.Assert;
 
 class OverlayEdgeRing {
   
   private OverlayEdge startEdge;
-  private List<Coordinate> pts = new ArrayList<Coordinate>();
   private LinearRing ring;
   private boolean isHole;
   private Coordinate[] ringPts;
@@ -40,8 +39,8 @@ class OverlayEdgeRing {
 
   public OverlayEdgeRing(OverlayEdge start, GeometryFactory geometryFactory) {
     startEdge = start;
-    computePoints(start);
-    computeRing(geometryFactory);
+    ringPts = computeRingPts(start);
+    computeRing(ringPts, geometryFactory);
   }
 
   public LinearRing getRing() {
@@ -88,9 +87,9 @@ class OverlayEdgeRing {
 
   public void addHole(OverlayEdgeRing ring) { holes.add(ring); }
 
-  private void computePoints(OverlayEdge start) {
+  private Coordinate[] computeRingPts(OverlayEdge start) {
     OverlayEdge edge = start;
-    boolean isFirstEdge = true;
+    CoordinateList pts = new CoordinateList();
     do {
       if (edge.getEdgeRing() == this)
         throw new TopologyException("Edge visited twice during ring-building at " + edge.getCoordinate(), edge.getCoordinate());
@@ -102,19 +101,19 @@ class OverlayEdgeRing {
       // only valid for polygonal output
       //Assert.isTrue(edge.getLabel().isBoundaryEither());
       
-      addPoints(edge.getCoordinates(), edge.isForward(), isFirstEdge);
-      isFirstEdge = false;
+      edge.addCoordinates(pts);
       edge.setEdgeRing(this);
       if (edge.nextResult() == null)
         throw new TopologyException("Found null edge in ring", edge.dest());
 
       edge = edge.nextResult();
-    } while (edge != startEdge);  
+    } while (edge != start);
+    pts.closeRing();
+    return pts.toCoordinateArray();
   }
   
-  private void computeRing(GeometryFactory geometryFactory) {
+  private void computeRing(Coordinate[] ringPts, GeometryFactory geometryFactory) {
     if (ring != null) return;   // don't compute more than once
-    ringPts = toCoordinateArray(pts);
     ring = geometryFactory.createLinearRing(ringPts);
     isHole = Orientation.isCCW(ring.getCoordinates());
   }
@@ -130,32 +129,6 @@ class OverlayEdgeRing {
     return ringPts;
   }
   
-  private static Coordinate[] toCoordinateArray(List<Coordinate> pts) {
-    Coordinate[] coord = new Coordinate[pts.size()];
-    for (int i = 0; i < pts.size(); i++) {
-      coord[i] = (Coordinate) pts.get(i);
-    }
-    return coord;
-  }
-  
-  protected void addPoints(Coordinate[] edgePts, boolean isForward, boolean isFirstEdge)
-  {
-    if (isForward) {
-      int startIndex = 1;
-      if (isFirstEdge) startIndex = 0;
-      for (int i = startIndex; i < edgePts.length; i++) {
-        pts.add(edgePts[i]);
-      }
-    }
-    else { // is backward
-      int startIndex = edgePts.length - 2;
-      if (isFirstEdge) startIndex = edgePts.length - 1;
-      for (int i = startIndex; i >= 0; i--) {
-        pts.add(edgePts[i]);
-      }
-    }
-  }
-
   /**
    * Finds the innermost enclosing shell OverlayEdgeRing
    * containing this OverlayEdgeRing, if any.
