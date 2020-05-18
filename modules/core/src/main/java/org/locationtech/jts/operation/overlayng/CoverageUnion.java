@@ -59,9 +59,8 @@ public class CoverageUnion
    */
   public static Geometry union(Geometry coverage) {
     Noder noder = new SegmentExtractingNoder();
-    Point emptyPoint = coverage.getFactory().createPoint();
     // a precision model is not needed since no noding is done
-    return OverlayNG.overlay(coverage, emptyPoint, OverlayNG.UNION, null, noder );
+    return OverlayNG.union(coverage, null, noder );
   }
 
   private CoverageUnion() {

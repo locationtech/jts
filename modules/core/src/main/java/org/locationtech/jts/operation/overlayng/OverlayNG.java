@@ -249,18 +249,35 @@ public class OverlayNG
    * @return the result of the union operation
    * 
    * @see PrecisionReducer
-   * @see CoverageUnion
    * @see UnaryUnionNG
    */
   static Geometry union(Geometry geom, PrecisionModel pm)
   {    
-    // empty geometries are not included in the overlay
-    //Point emptyPoint = geom.getFactory().createPoint();
     OverlayNG ov = new OverlayNG(geom, pm);
     Geometry geomOv = ov.getResult();
     return geomOv;
   }
 
+  /**
+   * Computes a union of a single geometry using a custom noder.
+   * <p>
+   * The primary use of this is to support coverage union.
+   * 
+   * @param geom the geometry to union
+   * @param pm the precision model to use (maybe be null)
+   * @param noder the noder to use
+   * @return the result geometry
+   * 
+   * @see CoverageUnion
+   */
+  static Geometry union(Geometry geom, PrecisionModel pm, Noder noder)
+  {    
+    OverlayNG ov = new OverlayNG(geom, pm);
+    ov.setNoder(noder);
+    Geometry geomOv = ov.getResult();
+    return geomOv;
+  }
+  
   private int opCode;
   private InputGeometry inputGeom;
   private GeometryFactory geomFact;
