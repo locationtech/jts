@@ -433,7 +433,7 @@ public class OverlayNG
      * against a geometry which has collapsed completely.
      */
     inputGeom.setCollapsed(0, ! ovNoder.hasEdgesFor(0) );
-    inputGeom.setCollapsed(1, ! ovNoder.hasEdgesFor(0) );
+    inputGeom.setCollapsed(1, ! ovNoder.hasEdgesFor(1) );
     
     return new OverlayGraph( mergedEdges );
   }
