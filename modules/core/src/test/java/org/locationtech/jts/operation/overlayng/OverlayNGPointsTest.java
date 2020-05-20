@@ -66,6 +66,13 @@ public class OverlayNGPointsTest extends GeometryTestCase {
     checkEqual(expected, OverlayNGTest.union(a, b));
   }
   
+  public void testDisjointPointsRoundedIntersection() {
+    Geometry a = read("POINT (10.1 10)");
+    Geometry b = read("POINT (10 10.1)");
+    Geometry expected = read("POINT (10 10)");
+    checkEqual(expected, OverlayNGTest.intersection(a, b, 1));
+  }
+  
   public void testEmptyIntersection() {
     Geometry a = read("MULTIPOINT ((1 1), (3 1))");
     Geometry b = read("POINT (2 1)");

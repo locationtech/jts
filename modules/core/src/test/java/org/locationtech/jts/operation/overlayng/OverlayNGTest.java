@@ -483,6 +483,13 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
 
+  public void testDisjointLinesRoundedIntersection() {
+    Geometry a = read("LINESTRING (3 2, 3 4)");
+    Geometry b = read("LINESTRING (1.1 1.6, 3.8 1.9)");
+    Geometry expected = read("POINT (3 2)");
+    checkEqual(expected, OverlayNGTest.intersection(a, b, 1));
+  }
+  
   public void testPolygonMultiLineUnion() {
     Geometry a = read("POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))");
     Geometry b = read("MULTILINESTRING ((150 250, 150 50), (250 250, 250 50))");

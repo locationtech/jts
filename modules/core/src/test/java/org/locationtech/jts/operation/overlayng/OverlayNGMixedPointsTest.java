@@ -78,4 +78,15 @@ public class OverlayNGMixedPointsTest extends GeometryTestCase {
     Geometry actual = OverlayNGTest.union(a, b, 1);
     checkEqual(expected, actual);
   }
+  
+  /**
+   * Result is empty because Line is not rounded.
+   */
+  public void testPointLineIntersectionPrec() {
+    Geometry a = read("POINT (10.1 10.4)");
+    Geometry b = read("LINESTRING (9.6 10, 20.1 19.6)");
+    Geometry expected = read("POINT EMPTY");
+    checkEqual(expected, OverlayNGTest.intersection(a, b, 1));
+  }
+
 }

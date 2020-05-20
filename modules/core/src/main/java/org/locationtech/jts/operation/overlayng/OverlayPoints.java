@@ -35,7 +35,7 @@ import org.locationtech.jts.geom.PrecisionModel;
  * <li>An empty result is returned as <code>POINT EMPTY</code>
  * </ul>
  * 
- * @author mdavis
+ * @author Martin Davis
  *
  */
 class OverlayPoints {

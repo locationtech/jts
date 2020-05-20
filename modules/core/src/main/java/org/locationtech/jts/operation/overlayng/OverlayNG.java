@@ -365,7 +365,10 @@ public class OverlayNG
   }
   
   public Geometry getResult() {
-    if (OverlayUtil.isEmptyResult(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1))) {
+    if (OverlayUtil.isEmptyResult(opCode, 
+        inputGeom.getGeometry(0), 
+        inputGeom.getGeometry(1),
+        pm)) {
       return createEmptyResult();
     }
 

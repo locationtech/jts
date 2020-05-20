@@ -28,7 +28,21 @@ public class OverlayNGOneTest extends GeometryTestCase {
 
   public OverlayNGOneTest(String name) { super(name); }
   
-  public void testLineLineIntersectionFloat() {
+  public void testRoundedLinesIntersection() {
+    Geometry a = read("LINESTRING (3 2, 3 4)");
+    Geometry b = read("LINESTRING (1.1 1.6, 3.8 1.9)");
+    Geometry expected = read("POINT (3 2)");
+    checkEqual(expected, OverlayNGTest.intersection(a, b, 1));
+  }
+  
+  public void testRoundedPointsIntersection() {
+    Geometry a = read("POINT (10.1 10)");
+    Geometry b = read("POINT (10 10.1)");
+    Geometry expected = read("POINT (10 10)");
+    checkEqual(expected, OverlayNGTest.intersection(a, b, 1));
+  }
+  
+  public void xtestLineLineIntersectionFloat() {
     Geometry a = read("LINESTRING (10 10, 20 20)");
     Geometry b = read("LINESTRING (13 13, 10 10, 10 20, 20 20, 17 17)");
     Geometry expected = read("LINESTRING (17 17, 20 20, 10 20, 10 10, 13 13, 17 17)");

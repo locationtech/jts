@@ -70,10 +70,10 @@ class OverlayUtil {
    * @param inputGeom the input geometries
    * @return true if the overlay result is determined to be empty
    */
-  static boolean isEmptyResult(int opCode, Geometry a, Geometry b) {
+  static boolean isEmptyResult(int opCode, Geometry a, Geometry b, PrecisionModel pm) {
     switch (opCode) {
     case OverlayNG.INTERSECTION:
-      if (isEnvDisjoint(a, b)) 
+      if (isEnvDisjoint(a, b, pm)) 
         return true;
       break;
     case OverlayNG.DIFFERENCE:
@@ -95,14 +95,38 @@ class OverlayUtil {
 
   /**
    * Tests if the geometry envelopes are disjoint, or empty.
+   * The disjoint test must take into account the precision model
+   * being used, since geometry coordinates may shift under rounding.
    * 
    * @param a a geometry
    * @param b a geometry
+   * @param pm the precision model being used
    * @return true if the geometry envelopes are disjoint or empty
    */
-  static boolean isEnvDisjoint(Geometry a, Geometry b) {
+  static boolean isEnvDisjoint(Geometry a, Geometry b, PrecisionModel pm) {
     if (isEmpty(a) || isEmpty(b)) return true;
-    return a.getEnvelopeInternal().disjoint(b.getEnvelopeInternal());
+    if (pm.isFloating()) {
+      return a.getEnvelopeInternal().disjoint(b.getEnvelopeInternal());
+    }
+    return isDisjoint(a.getEnvelopeInternal(), b.getEnvelopeInternal(), pm);
+  }
+
+  /**
+   * Tests for disjoint envelopes adjusting for rounding 
+   * caused by a fixed precision model.
+   * Assumes envelopes are non-empty.
+   * 
+   * @param envA an envelope
+   * @param envB an envelope
+   * @param pm the precision model
+   * @return true if the envelopes are disjoint
+   */
+  private static boolean isDisjoint(Envelope envA, Envelope envB, PrecisionModel pm) {
+    if (pm.makePrecise(envB.getMinX()) > pm.makePrecise(envA.getMaxX())) return true;
+    if (pm.makePrecise(envB.getMaxX()) < pm.makePrecise(envA.getMinX())) return true;
+    if (pm.makePrecise(envB.getMinY()) > pm.makePrecise(envA.getMaxY())) return true;
+    if (pm.makePrecise(envB.getMaxY()) < pm.makePrecise(envA.getMinY())) return true;
+    return false;
   }
 
   /**
