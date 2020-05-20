@@ -1,0 +1,81 @@
+<run>
+<!--  Precision must be specified for each operation.
+      rather than a global precision model, 
+      since that rounds input coordinates -->  
+
+<case>
+  <desc>LL - intersecting in points</desc>
+  <a>
+LINESTRING (1 1, 4 4)
+  </a>
+  <b>
+MULTILINESTRING ((2.5 1, 2.4 2.1, 4 2), (2.5 4, 2.6 2.9, 1 3))
+  </b>
+<test>  <op name="intersectionNGPrec" arg1="A" arg2="B" arg3="1">
+MULTIPOINT ((2 2), (3 3))
+  </op></test>
+<test>  <op name="unionNGPrec" arg1="A" arg2="B" arg3="1">
+MULTILINESTRING ((1 1, 2 2), (2 2, 3 3), (3 3, 4 4), (2 2, 4 2), (3 1, 2 2), (3 4, 3 3), (3 3, 1 3))
+  </op></test>
+<test>  <op name="differenceNGPrec" arg1="A" arg2="B" arg3="1">
+LINESTRING (1 1, 2 2, 3 3, 4 4)
+  </op></test>
+<test>  <op name="differenceNGPrec" arg1="B" arg2="A" arg3="1">
+MULTILINESTRING ((3 1, 2 2, 4 2), (3 4, 3 3, 1 3))
+  </op></test>
+<test>  <op name="symDifferenceNGPrec" arg1="A" arg2="B" arg3="1">
+MULTILINESTRING ((1 1, 2 2), (2 2, 3 3), (3 3, 4 4), (2 2, 4 2), (3 1, 2 2), (3 4, 3 3), (3 3, 1 3))
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - intersecting in line</desc>
+  <a>
+LINESTRING (1.1 1.3, 2.6 2.8, 3.8 3.3)
+  </a>
+  <b>
+LINESTRING (0.3 2.8, 1.4 1.9, 2.7 2.6, 2.9 3.8)
+  </b>
+<test>  <op name="intersectionNGPrec" arg1="A" arg2="B" arg3="1">
+LINESTRING (1 2, 2 2, 3 3)
+  </op></test>
+<test>  <op name="unionNGPrec" arg1="A" arg2="B" arg3="1">
+MULTILINESTRING ((1 1, 1 2), (1 2, 2 2, 3 3), (3 3, 4 3), (0 3, 1 2), (3 3, 3 4))
+  </op></test>
+<test>  <op name="differenceNGPrec" arg1="A" arg2="B" arg3="1">
+MULTILINESTRING ((1 1, 1 2), (3 3, 4 3))
+  </op></test>
+<test>  <op name="differenceNGPrec" arg1="B" arg2="A" arg3="1">
+MULTILINESTRING ((0 3, 1 2), (3 3, 3 4))
+  </op></test>
+<test>  <op name="symDifferenceNGPrec" arg1="A" arg2="B" arg3="1">
+MULTILINESTRING ((1 1, 1 2, 0 3), (3 4, 3 3, 4 3))
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - one with collapse</desc>
+  <a>
+LINESTRING (0 0, 1.8 2.3, 1.1 1.1, 3 3)
+  </a>
+  <b>
+LINESTRING (0.7 0.7, 2.8 2.6)
+  </b>
+<test>  <op name="intersectionNGPrec" arg1="A" arg2="B" arg3="1">
+LINESTRING (1 1, 2 2, 3 3)
+  </op></test>
+<test>  <op name="unionNGPrec" arg1="A" arg2="B" arg3="1">
+LINESTRING (0 0, 1 1, 2 2, 3 3)
+  </op></test>
+<test>  <op name="differenceNGPrec" arg1="A" arg2="B" arg3="1">
+LINESTRING (0 0, 1 1)
+  </op></test>
+<test>  <op name="differenceNGPrec" arg1="B" arg2="A" arg3="1">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="symDifferenceNGPrec" arg1="A" arg2="B" arg3="1">
+LINESTRING (0 0, 1 1)
+  </op></test>
+</case>
+
+</run>

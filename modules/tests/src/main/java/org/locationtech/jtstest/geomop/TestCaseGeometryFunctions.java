@@ -15,6 +15,7 @@ import java.util.Collection;
 
 import org.locationtech.jts.densify.Densifier;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
@@ -89,5 +90,23 @@ public class TestCaseGeometryFunctions
   public static Geometry symDifferenceNG(Geometry geom0, Geometry geom1) {
     return OverlayNG.overlay(geom0, geom1, OverlayNG.SYMDIFFERENCE);
   }
+  
+  public static Geometry intersectionNGPrec(Geometry geom0, Geometry geom1, double scale) {
+    PrecisionModel pm = new PrecisionModel(scale);
+    return OverlayNG.overlay(geom0, geom1, OverlayNG.INTERSECTION, pm);
+  }
+  public static Geometry unionNGPrec(Geometry geom0, Geometry geom1, double scale) {
+    PrecisionModel pm = new PrecisionModel(scale);
+    return OverlayNG.overlay(geom0, geom1, OverlayNG.UNION, pm);
+  }
+  public static Geometry differenceNGPrec(Geometry geom0, Geometry geom1, double scale) {
+    PrecisionModel pm = new PrecisionModel(scale);
+    return OverlayNG.overlay(geom0, geom1, OverlayNG.DIFFERENCE, pm);
+  }
+  public static Geometry symDifferenceNGPrec(Geometry geom0, Geometry geom1, double scale) {
+    PrecisionModel pm = new PrecisionModel(scale);
+    return OverlayNG.overlay(geom0, geom1, OverlayNG.SYMDIFFERENCE, pm);
+  }
+
 }
 ;
