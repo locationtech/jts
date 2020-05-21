@@ -38,7 +38,13 @@ import test.jts.GeometryTestCase;
  * @version 1.17
  */
 public class SnapRoundingCorrectTest  extends GeometryTestCase {
-
+  
+  private static Noder getSnapRounder(PrecisionModel pm) {
+    //return new SimpleSnapRounder(pm);
+    //return new MCIndexSnapRounder(pm);
+    return new FastSnapRounder(pm);
+  }
+  
   GeometryFactory geomFact = new GeometryFactory();
   
   public static void main(String args[]) {
@@ -47,6 +53,21 @@ public class SnapRoundingCorrectTest  extends GeometryTestCase {
 
   public SnapRoundingCorrectTest(String name) { super(name); }
 
+  /**
+   * This test checks the HotPixel test for overlapping horizontal line
+   */
+  public void testHorizontalLinesWithMiddleNode() {
+    String wkt =      "MULTILINESTRING ((2.5117493 49.0278625,                      2.5144958 49.0278625), (2.511749 49.027863, 2.513123 49.027863, 2.514496 49.027863))";
+    String expected = "MULTILINESTRING ((2.511749 49.027863, 2.513123 49.027863), (2.511749 49.027863, 2.513123 49.027863), (2.513123 49.027863, 2.514496 49.027863), (2.513123 49.027863, 2.514496 49.027863))";
+    checkRounding(wkt, 1_000_000.0, expected);
+  }
+
+  public void testSlantAndHorizontalLineWithMiddleNode() {
+    String wkt =      "MULTILINESTRING ((0.1565552 49.5277405, 0.1579285 49.5277405, 0.1593018 49.5277405), (0.1568985 49.5280838, 0.1589584 49.5273972))";
+    String expected = "MULTILINESTRING ((0.156555 49.527741, 0.157928 49.527741), (0.156899 49.528084, 0.157928 49.527741), (0.157928 49.527741, 0.157929 49.527741), (0.157928 49.527741, 0.158958 49.527397), (0.157929 49.527741, 0.159302 49.527741))";
+    checkRounding(wkt, 1_000_000.0, expected);
+  }
+  
   public void testNearbyCorner() {
 
     String wkt = "MULTILINESTRING ((0.2 1.1, 1.6 1.4, 1.9 2.9), (0.9 0.9, 2.3 1.7))";
@@ -180,11 +201,6 @@ public class SnapRoundingCorrectTest  extends GeometryTestCase {
     nv.checkValid();
 
     return result;
-  }
-
-  private Noder getSnapRounder(PrecisionModel pm) {
-    return new SimpleSnapRounder(pm);
-    //return new MCIndexSnapRounder(pm);
   }
 
   private MultiLineString toLines(Collection<NodedSegmentString> nodedList) {

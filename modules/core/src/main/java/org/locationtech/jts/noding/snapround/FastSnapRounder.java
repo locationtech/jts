@@ -121,7 +121,7 @@ public class FastSnapRounder
      * (rounding can cause vertices to move across edges).
      */
     List<Coordinate> intersections = findInteriorIntersections(inputSS);
-    addHotPixels(intersections);
+    pixelIndex.add(intersections);
     addVertexPixels(segStrings);
 
     List<NodedSegmentString> snapped = computeSnaps(inputSS);
@@ -139,21 +139,11 @@ public class FastSnapRounder
   private void addVertexPixels(Collection<SegmentString> segStrings) {
     for (SegmentString nss : segStrings) {
       Coordinate[] pts = nss.getCoordinates();
-      addHotPixels(pts);
+      pixelIndex.add(pts);
     }
   }
 
-  private void addHotPixels(Coordinate[] pts) {
-    for (Coordinate pt : pts) {
-      pixelIndex.add(pt);
-    }
-  }
-  
-  private void addHotPixels(List<Coordinate> pts) {
-    for (Coordinate pt : pts) {
-      pixelIndex.add(pt);
-    }
-  }
+
 
   private Coordinate round(Coordinate pt) {
     Coordinate p2 = pt.copy();
@@ -279,6 +269,7 @@ public class FastSnapRounder
       public void visitItem(Object item) {
         HotPixel hp = (HotPixel) item;
         if (hp.intersects(p0, p1)) {
+          //System.out.println("Added intersection: " + hp.getCoordinate());
           ss.addIntersection( hp.getCoordinate(), segIndex );
         }
  

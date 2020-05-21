@@ -19,11 +19,9 @@ import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.geom.util.LineStringExtracter;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
@@ -40,6 +38,13 @@ import test.jts.GeometryTestCase;
  */
 public class SnapRoundingCorrectSingleTest  extends GeometryTestCase {
 
+
+  private static Noder getSnapRounder(PrecisionModel pm) {
+    return new FastSnapRounder(pm);
+    //return new SimpleSnapRounder(pm);
+    //return new MCIndexSnapRounder(pm);
+  }
+  
   GeometryFactory geomFact = new GeometryFactory();
   
   public static void main(String args[]) {
@@ -47,6 +52,18 @@ public class SnapRoundingCorrectSingleTest  extends GeometryTestCase {
   }
 
   public SnapRoundingCorrectSingleTest(String name) { super(name); }
+
+  public void testSlantAndHorizontalLineWithMiddleNode() {
+    String wkt =      "MULTILINESTRING ((0.1565552 49.5277405, 0.1579285 49.5277405, 0.1593018 49.5277405), (0.1568985 49.5280838, 0.1589584 49.5273972))";
+    String expected = "MULTILINESTRING ((0.156555 49.527741, 0.157928 49.527741), (0.156899 49.528084, 0.157928 49.527741), (0.157928 49.527741, 0.157929 49.527741), (0.157928 49.527741, 0.158958 49.527397), (0.157929 49.527741, 0.159302 49.527741))";
+    checkRounding(wkt, 1_000_000.0, expected);
+  }
+  
+  public void xtestFlatLinesWithMiddleNode() {
+    String wkt =      "MULTILINESTRING ((2.5117493 49.0278625,                      2.5144958 49.0278625), (2.511749 49.027863, 2.513123 49.027863, 2.514496 49.027863))";
+    String expected = "MULTILINESTRING ((2.511749 49.027863, 2.513123 49.027863), (2.511749 49.027863, 2.513123 49.027863), (2.513123 49.027863, 2.514496 49.027863), (2.513123 49.027863, 2.514496 49.027863))";
+    checkRounding(wkt, 1_000_000.0, expected);
+  }
 
   public void xtestNearbyCorner() {
 
@@ -115,7 +132,7 @@ public class SnapRoundingCorrectSingleTest  extends GeometryTestCase {
    * The vertex is snapped across the segment, but the segment is not noded.
    * FIXED by adding intersection detection for near vertices to segments
    */
-  public void testNearVertexNotNoded() {
+  public void xtestNearVertexNotNoded() {
     String wkt = "MULTILINESTRING ((2.4829102 48.8726807, 2.4830818249999997 48.873195575, 2.4839401 48.8723373), ( 2.4829102 48.8726807, 2.4832535 48.8737106 ))";
     String expected = null;
     checkRounding(wkt, 100000000, expected);
@@ -170,11 +187,6 @@ public class SnapRoundingCorrectSingleTest  extends GeometryTestCase {
     nv.checkValid();
 
     return result;
-  }
-
-  private Noder getSnapRounder(PrecisionModel pm) {
-    return new SimpleSnapRounder(pm);
-    //return new MCIndexSnapRounder(pm);
   }
 
   private MultiLineString toLines(Collection<NodedSegmentString> nodedList) {

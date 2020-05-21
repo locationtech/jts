@@ -32,6 +32,18 @@ class HotPixelIndex {
     scaleFactor = pm.getScale();
   }
   
+  public void add(Coordinate[] pts) {
+    for (Coordinate pt : pts) {
+      add(pt);
+    }
+  }
+  
+  public void add(List<Coordinate> pts) {
+    for (Coordinate pt : pts) {
+      add(pt);
+    }
+  }
+  
   public HotPixel add(Coordinate p) {
     // TODO: is there a faster way of doing this?
     Coordinate pRound = round(p);

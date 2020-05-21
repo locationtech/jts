@@ -18,6 +18,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.Debug;
 
 /**
  * Implements a "hot pixel" as used in the Snap Rounding algorithm.
@@ -209,13 +210,15 @@ public class HotPixel
       return false;
     
     boolean intersects = intersectsToleranceSquareScaled(p0, p1);
-//    boolean intersectsPixelClosure = intersectsPixelClosure(p0, p1);
+/*
+    // Debugging code
+    boolean intersectsPixelClosure = intersectsPixelClosure(p0, p1);
 
-//    if (intersectsPixel != intersects) {
-//      Debug.println("Found hot pixel intersection mismatch at " + pt);
-//      Debug.println("Test segment: " + p0 + " " + p1);
-//    }
-
+    if (intersectsPixelClosure != intersects) {
+      System.out.println("Found hot pixel intersection mismatch at " + originalPt);
+      System.out.println("Test segment: " + p0 + " " + p1);
+    }
+//*/
 /*
     if (scaleFactor != 1.0) {
       boolean intersectsScaled = intersectsScaledTest(p0, p1);
@@ -261,22 +264,42 @@ public class HotPixel
     boolean intersectsTop = false;
     boolean intersectsBottom = false;
     
+    // check intersection with pixel left edge
     li.computeIntersection(p0, p1, corner[UPPER_LEFT], corner[LOWER_LEFT]);
     if (li.isProper()) return true;
     
+    // check intersection with pixel right edge
     li.computeIntersection(p0, p1, corner[LOWER_RIGHT], corner[UPPER_RIGHT]);
     if (li.isProper()) return true;
 
+    // check intersection with pixel top edge
     li.computeIntersection(p0, p1, corner[UPPER_RIGHT], corner[UPPER_LEFT]);
     if (li.isProper()) return true;
     if (li.hasIntersection()) {
       intersectsTop = true;
     }
 
+    // check intersection with pixel bottom edge
     li.computeIntersection(p0, p1, corner[LOWER_LEFT], corner[LOWER_RIGHT]);
     if (li.isProper()) return true;
     if (li.hasIntersection()) {
       intersectsBottom = true;
+    }
+    // check intersection of vertical segment overlapping pixel left edge
+    if (p0.getX() == corner[LOWER_LEFT].getX()
+        && p1.getX() == corner[LOWER_LEFT].getX()) {
+      if (p0.getY() < corner[UPPER_LEFT].getY()
+          || p1.getY() < corner[UPPER_LEFT].getY()) {
+        return true;
+      }
+    }
+    // check intersection of horizontal segment overlapping pixel bottome edge
+    if (p0.getY() == corner[LOWER_LEFT].getY()
+        && p1.getY() == corner[LOWER_LEFT].getY()) {
+      if (p0.getX() < corner[LOWER_RIGHT].getX()
+          || p1.getX() < corner[LOWER_RIGHT].getX()) {
+        return true;
+      }
     }
 
     /**
