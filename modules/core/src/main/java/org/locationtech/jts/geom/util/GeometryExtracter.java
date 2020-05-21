@@ -40,6 +40,7 @@ public class GeometryExtracter
    * 
    * @param geom the geometry from which to extract
    * @param list the list to add the extracted elements to
+   * @deprecated Use {@link GeometryExtracter#extract(Geometry, String, List)}
    */
   public static List extract(Geometry geom, Class clz, List list)
   {
@@ -97,7 +98,7 @@ public class GeometryExtracter
    * and returns them in a {@link List}.
    * 
    * @param geom the geometry from which to extract
-   * @deprecated Use {@link GeometryExtracter#extract(Geometry, String, List)}
+   * @deprecated Use {@link GeometryExtracter#extract(Geometry, String)}
    */
   public static List extract(Geometry geom, Class clz)
   {
