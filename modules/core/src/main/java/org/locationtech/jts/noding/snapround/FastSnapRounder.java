@@ -22,6 +22,7 @@ import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.NodedSegmentString;
@@ -39,10 +40,13 @@ import org.locationtech.jts.util.Debug;
  * the papers by Hobby, Guibas &amp; Marimont, and Goodrich et al.
  * Snap Rounding enforces that all output vertices lie on a uniform grid,
  * which is determined by the provided {@link PrecisionModel}.
- * Input vertices do not have to be rounded to this grid; 
- * this will be done during the snap-rounding process.
- *
- * @see SimpleSnapRounder
+ * Input vertices do not have to be rounded to the grid; 
+ * this is done during the snap-rounding process.
+ * In fact, rounding cannot be done a priori,
+ * since rounding vertices alone can distort the rounded topology
+ * of the arrangement (by moving segments away from hot pixels
+ * that would otherwise intersect them, or by moving vertices
+ * across segments).
  * 
  * @version 1.7
  */
@@ -88,6 +92,7 @@ public class FastSnapRounder
     //if (Debug.isDebugging()) dumpNodedLines(snappedResult);
   }
 
+  /*
   private void dumpNodedLines(Collection<NodedSegmentString> segStrings) {
     for (NodedSegmentString nss : segStrings) {
       Debug.println( WKTWriter.toLineString(nss.getNodeList().getSplitCoordinates()));
@@ -104,6 +109,8 @@ public class FastSnapRounder
       ex.printStackTrace();
     }
   }
+  */
+  
   private List<NodedSegmentString> snapRound(Collection<SegmentString> segStrings)
   {
     List<NodedSegmentString> inputSS = createNodedStrings(segStrings);
@@ -188,9 +195,11 @@ public class FastSnapRounder
   }
 
   /**
-   * Computes nodes introduced as a result of snapping segments to snap points (hot pixels)
-   * @param li
-   * @return 
+   * Computes new segment strings which are rounded and contain
+   * any intersections added as a result of snapping segments to snap points (hot pixels).
+   * 
+   * @param segStrings segments to snap
+   * @return the snapped segment strings
    */
   private List<NodedSegmentString> computeSnaps(Collection<NodedSegmentString> segStrings)
   {
@@ -203,6 +212,14 @@ public class FastSnapRounder
     return snapped;
   }
 
+  /**
+   * Add snapped vertices to a segemnt string.
+   * If the segment string collapses completely due to rounding,
+   * null is returned.
+   * 
+   * @param ss the segment string to snap
+   * @return the snapped segment string, or null if it collapses completely
+   */
   private NodedSegmentString computeSnaps(NodedSegmentString ss)
   {
     //Coordinate[] pts = ss.getCoordinates();
@@ -248,20 +265,27 @@ public class FastSnapRounder
 
 
   /**
-   * This is where all the work of snapping to hot pixels gets done
-   * (in a very inefficient brute-force way).
+   * Snaps a segment to HotPixels that it intersects.
    * 
-   * @param coordinate
-   * @param coordinate2
-   * @param snapPts
+   * @param p0 the segment start coordinate
+   * @param p1 the segment end coordinate
+   * @param ss the segment string to add intersections to
+   * @param segIndex the index of the segment
    */
   private void snapSegment(Coordinate p0, Coordinate p1, NodedSegmentString ss, int segIndex) {
-    List<HotPixel> pixels = pixelIndex.query(p0, p1);
-    for (HotPixel hp : pixels) {
-      if (hp.intersects(p0, p1)) {
-        ss.addIntersection( hp.getCoordinate(), segIndex );
+    pixelIndex.query(p0, p1, new ItemVisitor() {
+
+      @Override
+      public void visitItem(Object item) {
+        HotPixel hp = (HotPixel) item;
+        if (hp.intersects(p0, p1)) {
+          ss.addIntersection( hp.getCoordinate(), segIndex );
+        }
+ 
       }
-    }
+      
+    });
+
   }
 
 }

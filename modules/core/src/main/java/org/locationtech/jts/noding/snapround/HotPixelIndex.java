@@ -9,6 +9,7 @@ import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.strtree.STRtree;
 
 class HotPixelIndex {
@@ -53,11 +54,18 @@ class HotPixelIndex {
     return p2;
   }
  
+  /*
+  // not used for now
   public List<HotPixel> query(Coordinate p0, Coordinate p1) {
-    // TODO: is it possible to avoid envelope creation?
     Envelope queryEnv = new Envelope(p0, p1);
     List<HotPixel> pixels = index.query(queryEnv);
     return pixels;
+  }
+  */
+  
+  public void query(Coordinate p0, Coordinate p1, ItemVisitor visitor) {
+    Envelope queryEnv = new Envelope(p0, p1);
+    index.query(queryEnv, visitor);
   }
   
 }
