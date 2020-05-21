@@ -26,6 +26,31 @@ POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
 </case>
 
 <case>
+  <desc>AA - empty polygons</desc>
+  <a>
+POLYGON EMPTY
+  </a>
+  <b>
+POLYGON EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+</case>
+
+<case>
   <desc>mAA - empty area component</desc>
   <a>
     MULTIPOLYGON (((10 10, 10 30, 30 30, 30 10, 10 10)), EMPTY)
@@ -153,6 +178,31 @@ LINESTRING (10 10, 20 20)
 </case>
 
 <case>
+  <desc>LL - empty lines</desc>
+  <a>
+LINESTRING EMPTY
+  </a>
+  <b>
+LINESTRING EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+</case>
+
+<case>
   <desc>LP - empty point</desc>
   <a>
 LINESTRING (10 10, 20 20)
@@ -269,6 +319,31 @@ POINT EMPTY
   </op></test>
 <test>  <op name="symdifferenceNG" arg1="A" arg2="B">
 POINT (10 10)
+  </op></test>
+</case>
+
+<case>
+  <desc>PP - empty points</desc>
+  <a>
+POINT EMPTY
+  </a>
+  <b>
+POINT EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+POINT EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POINT EMPTY
   </op></test>
 </case>
 
