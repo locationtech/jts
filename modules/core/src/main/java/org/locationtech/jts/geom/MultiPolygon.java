@@ -75,7 +75,7 @@ public class MultiPolygon
   }
 
   public String getGeometryType() {
-    return "MultiPolygon";
+    return Geometry.TYPENAME_MULTIPOLYGON;
   }
 
   /*
@@ -133,8 +133,8 @@ public class MultiPolygon
     return new MultiPolygon(polygons, factory);
   }
 
-  protected int getSortIndex() {
-    return Geometry.SORTINDEX_MULTIPOLYGON;
+  protected int getTypeCode() {
+    return Geometry.TYPECODE_MULTIPOLYGON;
   }
 }
 

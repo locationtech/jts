@@ -121,11 +121,11 @@ public class LinearRing extends LineString
 
 
   public String getGeometryType() {
-    return "LinearRing";
+    return Geometry.TYPENAME_LINEARRING;
   }
-
-  protected int getSortIndex() {
-    return Geometry.SORTINDEX_LINEARRING;
+  
+  protected int getTypeCode() {
+    return Geometry.TYPECODE_LINEARRING;
   }
 
   protected LinearRing copyInternal() {

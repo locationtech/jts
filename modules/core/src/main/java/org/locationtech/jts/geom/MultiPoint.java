@@ -61,7 +61,7 @@ public class MultiPoint
   }
 
   public String getGeometryType() {
-    return "MultiPoint";
+    return Geometry.TYPENAME_MULTIPOINT;
   }
 
   /**
@@ -106,8 +106,8 @@ public class MultiPoint
     return new MultiPoint(points, factory);
   }
   
-  protected int getSortIndex() {
-    return Geometry.SORTINDEX_MULTIPOINT;
+  protected int getTypeCode() {
+    return Geometry.TYPECODE_MULTIPOINT;
   }
 
 }

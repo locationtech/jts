@@ -150,7 +150,7 @@ public class LineString
   }
 
   public String getGeometryType() {
-    return "LineString";
+    return Geometry.TYPENAME_LINESTRING;
   }
 
   /**
@@ -326,9 +326,9 @@ public class LineString
     LineString line = (LineString) o;
     return comp.compare(this.points, line.points);
   }
-
-  protected int getSortIndex() {
-    return Geometry.SORTINDEX_LINESTRING;
+  
+  protected int getTypeCode() {
+    return Geometry.TYPECODE_LINESTRING;
   }
 
 }
