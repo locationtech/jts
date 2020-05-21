@@ -16,6 +16,10 @@ class HotPixelIndex {
   private LineIntersector li;
   private double scaleFactor;
 
+  /**
+   * HotPixels have an extent, so a suitable index must be used here 
+   * (i.e. a KD-tree won't work)
+   */
   private STRtree index = new STRtree();
   
   private Map<Coordinate, HotPixel> hotPixelMap = new HashMap<Coordinate, HotPixel>();
