@@ -20,13 +20,13 @@ import org.locationtech.jts.geom.PrecisionModel;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class OverlayNGOneTest extends GeometryTestCase {
+public class OverlayNGTestOne extends GeometryTestCase {
 
   public static void main(String args[]) {
-    TestRunner.run(OverlayNGOneTest.class);
+    TestRunner.run(OverlayNGTestOne.class);
   }
 
-  public OverlayNGOneTest(String name) { super(name); }
+  public OverlayNGTestOne(String name) { super(name); }
   
   public void testRoundedLinesIntersection() {
     Geometry a = read("LINESTRING (3 2, 3 4)");
