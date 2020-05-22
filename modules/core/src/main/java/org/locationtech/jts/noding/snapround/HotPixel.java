@@ -22,9 +22,15 @@ import org.locationtech.jts.util.Debug;
 
 /**
  * Implements a "hot pixel" as used in the Snap Rounding algorithm.
- * A hot pixel contains the interior of the tolerance square and
+ * A hot pixel is a square region centred 
+ * on the rounded valud of the coordinate given,
+ * and of width equal to the size of the scale factor.
+ * It is a partially open region, which contains 
+ * the interior of the tolerance square and
  * the boundary
  * <b>minus</b> the top and right segments.
+ * This ensures that every point of the space lies in a unique hot pixel.
+ * It also matches the rounding semantics for numbers.
  * <p>
  * The hot pixel operations are all computed in the integer domain
  * to avoid rounding problems.
@@ -201,10 +207,14 @@ public class HotPixel
     double segMiny = Math.min(p0.y, p1.y);
     double segMaxy = Math.max(p0.y, p1.y);
 
-    // report false if segment env does not intersect hit pixel env
-    boolean isOutsidePixelEnv =  maxx < segMinx
+    /**
+     * Report false if segment env does not intersect hit pixel env.
+     * This check reflects the fact that the pixel top and right sides
+     * are open (not part of the pixel).
+     */
+    boolean isOutsidePixelEnv =  maxx <= segMinx
                          || minx > segMaxx
-                         || maxy < segMiny
+                         || maxy <= segMiny
                          || miny > segMaxy;
     if (isOutsidePixelEnv)
       return false;
@@ -242,15 +252,16 @@ public class HotPixel
 
   /**
    * Tests whether the segment p0-p1 intersects the hot pixel tolerance square.
+   * <p>
+   * The pixel tolerance square is open on the Top and Right sides.
    * It is sufficient to check if any of the following occur:
    * <ul>
-   * <li>a proper intersection between the segment and any pixel edge
-   * <li>an intersection between the segment and <b>both</b> the top and bottom hot pixel edges
+   * <li>a proper intersection between the segment and any pixel side.
+   * <li>an intersection between a segment coincident with some or all of the Left or Bottom sides.
+   * <li>an intersection between the segment and <b>both</b> the Top and Bottom pixel sides
    * (which detects the case where the segment lies exactly on the diagonal of the pixel)
-   * <li>an intersection between a segment endpoint and the pixel
+   * <li>an intersection between a segment endpoint and the pixel interior
    * </ul>
-   * Intersections between pixel corners and segments are not 
-   * reported, because this causes too much snapping.
    * 
    * @param p0 an endpoint of the line segment, scaled
    * @param p1 an endpoint of the line segment, scale
@@ -264,61 +275,61 @@ public class HotPixel
     boolean intersectsTop = false;
     boolean intersectsBottom = false;
     
-    // check intersection with pixel left edge
+    // check intersection with pixel Left side
     li.computeIntersection(p0, p1, corner[UPPER_LEFT], corner[LOWER_LEFT]);
     if (li.isProper()) return true;
     
-    // check intersection with pixel right edge
+    // check intersection with pixel Right side
     li.computeIntersection(p0, p1, corner[LOWER_RIGHT], corner[UPPER_RIGHT]);
     if (li.isProper()) return true;
 
-    // check intersection with pixel top edge
+    // check intersection with pixel Top side
     li.computeIntersection(p0, p1, corner[UPPER_RIGHT], corner[UPPER_LEFT]);
     if (li.isProper()) return true;
     if (li.hasIntersection()) {
       intersectsTop = true;
     }
 
-    // check intersection with pixel bottom edge
+    // check intersection with pixel Bottom side
     li.computeIntersection(p0, p1, corner[LOWER_LEFT], corner[LOWER_RIGHT]);
     if (li.isProper()) return true;
     if (li.hasIntersection()) {
       intersectsBottom = true;
     }
-    // check intersection of vertical segment overlapping pixel left edge
-    if (p0.getX() == corner[LOWER_LEFT].getX()
-        && p1.getX() == corner[LOWER_LEFT].getX()) {
-      if (p0.getY() < corner[UPPER_LEFT].getY()
-          || p1.getY() < corner[UPPER_LEFT].getY()) {
-        return true;
-      }
-    }
-    // check intersection of horizontal segment overlapping pixel bottome edge
-    if (p0.getY() == corner[LOWER_LEFT].getY()
-        && p1.getY() == corner[LOWER_LEFT].getY()) {
-      if (p0.getX() < corner[LOWER_RIGHT].getX()
-          || p1.getX() < corner[LOWER_RIGHT].getX()) {
-        return true;
-      }
-    }
-
+    
     /**
-     * Check for an edge crossing pixel exactly on a diagonal.
-     * The code handles both diagonals.
+     * Check for an edge crossing pixel on a diagonal.
+     * The check handles both diagonals.
+     * It relies on segments which lie along Top or Right sides
+     * already being reported as not intersecting.
      */
     if (intersectsTop && intersectsBottom) {
       return true;
+    }
+    
+    // check intersection of vertical segment overlapping pixel Left side
+    if (p0.getX() == minx && p1.getX() == minx) {
+      if (p0.getY() < maxy || p1.getY() < maxy) {
+        return true;
+      }
+    }
+    // check intersection of horizontal segment overlapping pixel Bottom side
+    if (p0.getY() == miny && p1.getY() == miny) {
+      if (p0.getX() < maxx || p1.getX() < maxx) {
+        return true;
+      }
     }
 
     /**
      * Tests if either endpoint snaps to this pixel.
      * This is needed because a (un-rounded) segment may
-     * terminate in a hot pixel without crossing a pixel edge interior
-     * (e.g. it may enter through a corner)
+     * terminate inside the pixel without crossing a pixel edge interior
+     * (i.e. it may enter through a corner)
      */
     if (equalsPointScaled(p0)) return true;
     if (equalsPointScaled(p1)) return true;
 
+    // segment does not intersect pixel
     return false;
   }
   
@@ -330,17 +341,18 @@ public class HotPixel
    */
   private boolean equalsPointScaled(Coordinate p) {
     double x = Math.round(p.x);
+    if (x != ptHot.x) return false;
     double y = Math.round(p.y);
-    return x == ptHot.x && y == ptHot.y;
+    return y == ptHot.y;
   }
   
   /**
-   * Test whether the given segment intersects
+   * Test whether a segment intersects
    * the closure of this hot pixel.
    * This is NOT the test used in the standard snap-rounding
-   * algorithm, which uses the partially closed tolerance square
+   * algorithm, which uses the partially-open tolerance square
    * instead.
-   * This routine is provided for testing purposes only.
+   * This method is provided for testing purposes only.
    *
    * @param p0 the start point of a line segment
    * @param p1 the end point of a line segment

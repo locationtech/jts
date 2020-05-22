@@ -25,45 +25,142 @@ public class HotPixelTest extends TestCase {
         1, 1.011, 3, 1.5);
   }
 
-  public void testRightEdgeVerticalTouchAbove() {
+  public void testRightSideVerticalTouchAbove() {
     checkIntersects(false, 1.2, 1.2, 10, 
         1.25, 1.25, 1.25, 2);
   }
 
-  public void testRightEdgeVerticalTouchBelow() {
+  public void testRightSideVerticalTouchBelow() {
     checkIntersects(false, 1.2, 1.2, 10, 
         1.25, 0, 1.25, 1.15);
   }
 
-  public void testRightEdgeVerticalOverlap() {
+  public void testRightSideVerticalOverlap() {
     checkIntersects(false, 1.2, 1.2, 10, 
-        1.25, 1.2, 1.25, 0);
+        1.25, 0, 1.25, 1.5);
   }
 
-  public void testLeftEdgeVerticalTouchAbove() {
+  //-----------------------------
+
+  public void testTopSideHorizontalTouchRight() {
+    checkIntersects(false, 1.2, 1.2, 10, 
+        1.25, 1.25, 2, 1.25);
+  }
+
+  public void testTopSideHorizontalTouchLeft() {
+    checkIntersects(false, 1.2, 1.2, 10, 
+        0, 1.25, 1.15, 1.25);
+  }
+
+  public void testTopSideHorizontalOverlap() {
+    checkIntersects(false, 1.2, 1.2, 10, 
+        0, 1.25, 1.9, 1.25);
+  }
+  
+  //-----------------------------
+
+  public void testLeftSideVerticalTouchAbove() {
     checkIntersects(false, 1.2, 1.2, 10, 
         1.15, 1.25, 1.15, 2);
   }
 
-  public void testLeftEdgeVerticalOverlap() {
+  public void testLeftSideVerticalOverlap() {
     checkIntersects(true, 1.2, 1.2, 10, 
-        1.15, 1.2, 1.15, 0);
+        1.15, 0, 1.15, 1.8);
   }
 
-  public void testLeftEdgeVerticalTouchBelow() {
+  public void testLeftSideVerticalTouchBelow() {
     checkIntersects(true, 1.2, 1.2, 10, 
         1.15, 0, 1.15, 1.15);
   }
 
-  public void testLeftEdgeCrossRight() {
+  public void testLeftSideCrossRight() {
     checkIntersects(true, 1.2, 1.2, 10, 
         0, 1.19, 2, 1.21);
   }
 
-  public void testLeftEdgeCrossTop() {
+  public void testLeftSideCrossTop() {
     checkIntersects(true, 1.2, 1.2, 10, 
         0.8, 0.8, 1.3, 1.39);
   }
+
+  public void testLeftSideCrossBottom() {
+    checkIntersects(true, 1.2, 1.2, 10, 
+        1, 1.5, 1.3, 0.9 );
+  }
+
+  //-----------------------------
+  
+  public void testBottomSideHorizontalTouchRight() {
+    checkIntersects(false, 1.2, 1.2, 10, 
+        1.25, 1.15, 2, 1.15);
+  }
+
+  public void testBottomSideHorizontalTouchLeft() {
+    checkIntersects(true, 1.2, 1.2, 10, 
+        0, 1.15, 1.15, 1.15);
+  }
+
+  public void testBottomSideHorizontalOverlapLeft() {
+    checkIntersects(true, 1.2, 1.2, 10, 
+        0, 1.15, 1.2, 1.15);
+  }
+
+  public void testBottomSideHorizontalOverlap() {
+    checkIntersects(true, 1.2, 1.2, 10, 
+        0, 1.15, 1.9, 1.15);
+  }
+
+  public void testBottomSideHorizontalOverlapRight() {
+    checkIntersects(true, 1.2, 1.2, 10, 
+        1.2, 1.15, 1.4, 1.15);
+  }
+  
+  public void testBottomSideCrossRight() {
+    checkIntersects(true, 1.2, 1.2, 10, 
+        1.1, 1, 1.4, 1.4);
+  }
+
+  public void testBottomSideCrossTop() {
+    checkIntersects(true, 1.2, 1.2, 10, 
+        1.1, 0.9, 1.3, 1.6);
+  }
+  
+  //-----------------------------
+  
+  public void testDiagonalDown() {
+    checkIntersects(true, 1.2, 1.2, 10, 
+        0.9, 1.5, 1.4, 1 );
+  }
+  
+  public void testDiagonalUp() {
+    checkIntersects(true, 1.2, 1.2, 10, 
+        0.9, 0.9, 1.5, 1.5 );
+  }
+  
+  //-----------------------------
+  // Test segments entering through a corder and terminating inside pixel
+  
+  public void testCornerULEndInside() {
+    checkIntersects(true, 1, 1, 10, 
+        0.7, 1.3, 0.98, 1.02 );
+  }
+  
+  public void testCornerLLEndInside() {
+    checkIntersects(true, 1, 1, 10, 
+        0.8, 0.8, 0.98, 0.98 );
+  }
+  
+  public void testCornerURStartInside() {
+    checkIntersects(true, 1, 1, 10, 
+        1.02, 1.02, 1.3, 1.3 );
+  }
+  
+  public void testCornerLRStartInside() {
+    checkIntersects(true, 1, 1, 10, 
+        1.02, 0.98, 1.3, 0.7 );
+  }
+  
 
   //================================================
   
