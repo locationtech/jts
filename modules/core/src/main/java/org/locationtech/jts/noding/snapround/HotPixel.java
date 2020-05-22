@@ -12,6 +12,7 @@
 
 package org.locationtech.jts.noding.snapround;
 
+import org.locationtech.jts.algorithm.CGAlgorithmsDD;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -208,7 +209,7 @@ public class HotPixel
     double segMaxy = Math.max(p0.y, p1.y);
 
     /**
-     * Report false if segment env does not intersect hit pixel env.
+     * Report false if segment env does not intersect pixel env.
      * This check reflects the fact that the pixel top and right sides
      * are open (not part of the pixel).
      */
@@ -250,6 +251,119 @@ public class HotPixel
     //return intersectsPixelClosure;
   }
 
+  private boolean intersectsToleranceSquareScaled(Coordinate p0, Coordinate p1) {
+    // determine oriented segment
+    double px = p0.x;
+    double py = p0.y;
+    double qx = p1.x;
+    double qy = p1.y;
+    if (px > qx) {
+      px = p1.x;
+      py = p1.y;
+      qx = p0.x;
+      qy = p0.y;
+    }  
+    
+    // vertical segment
+    if (px == qx) {
+      if (px < minx) return false;
+      if (px >= maxx) return false;
+      
+      double segminy = Math.min(py, qy);
+      double segmaxy = Math.max(py, qy);
+      if (segmaxy < miny) return false;
+      if (segminy >= maxy) return false;
+      return true;
+    }
+    // horizontal segment
+    if (py == qy) {
+      if (py < miny) return false;
+      if (py >= maxy) return false;
+      
+      double segminx = Math.min(px, qx);
+      double segmaxx = Math.max(px, qx);
+      if (segmaxx < minx) return false;
+      if (segminx >= maxx) return false;
+      return true;
+    }
+
+    /**
+     * Now know segment is not horizontal or vertical.
+     * 
+     * Compute orientation WRT each pixel corner.
+     * If corner orientation == 0, 
+     * segment intersects that corner.  
+     * Depending on corner and whether segment is up or down,
+     * can determine intersection or not.
+     * 
+     * Otherwise, check whether segment crosses interior of pixel side
+     * This is the case if the orientations for each corner of the side are different.
+     */
+    
+    int orientUL = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, minx, maxy);
+    if (orientUL == 0) {
+      if (py < qy) return false;
+      return true;
+    }
+    
+    int orientUR = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, maxx, maxy);
+    if (orientUR == 0) {
+      if (py > qy) return false;
+      return true;
+    }
+    // crosses Top side
+    if (orientUL != orientUR) {
+      return true;
+    }
+    
+    int orientLL = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, minx, miny);
+    if (orientUL == 0) {
+      // LL corner is in pixel
+      return true;
+    }
+    // crosses Left side
+    if (orientLL != orientUL) {
+      return true;
+    }
+    
+    int orientLR = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, maxx, miny);
+    if (orientLR == 0) {
+      if (py < qy) return false;
+      return true;
+    }
+
+    // crosses Bottom side
+    if (orientLL != orientLR) {
+      return true;
+    }
+    // crosses Right side
+    if (orientLR != orientUR) {
+      return true;
+    }
+    
+    
+    /**
+     * Check for an edge crossing pixel on a diagonal.
+     * The check handles both diagonals.
+     * It relies on segments which lie along Top or Right sides
+     * already being reported as not intersecting.
+     */
+    //if (intersectsTop && intersectsBottom) {
+    //  return true;
+    //}
+    
+    /**
+     * Tests if either endpoint snaps to this pixel.
+     * This is needed because a (un-rounded) segment may
+     * terminate inside the pixel without crossing a pixel edge interior
+     * (i.e. it may enter through a corner)
+     */
+    //if (equalsPointScaled(p0)) return true;
+    //if (equalsPointScaled(p1)) return true;
+
+    // segment does not intersect pixel
+    return false;
+  }
   /**
    * Tests whether the segment p0-p1 intersects the hot pixel tolerance square.
    * <p>
@@ -267,7 +381,7 @@ public class HotPixel
    * @param p1 an endpoint of the line segment, scale
    * @return true if the line segment intersects this hot pixel
    */
-  private boolean intersectsToleranceSquareScaled(Coordinate p0, Coordinate p1)
+  private boolean OLDintersectsToleranceSquareScaled(Coordinate p0, Coordinate p1)
   {
     //System.out.println("Hot Pixel: " + this + " - [ " + WKTWriter.toLineString(corner));
     //System.out.println("Segment: " + WKTWriter.toLineString(p0, p1));

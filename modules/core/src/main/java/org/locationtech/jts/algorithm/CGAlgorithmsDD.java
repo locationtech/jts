@@ -53,6 +53,25 @@ public class CGAlgorithmsDD
     return dx1.selfMultiply(dy2).selfSubtract(dy1.selfMultiply(dx2)).signum();
   }
   
+  public static int orientationIndex(double p1x, double p1y,
+      double p2x, double p2y,
+      double qx, double qy)
+  {
+    // fast filter for orientation index
+    // avoids use of slow extended-precision arithmetic in many cases
+    int index = orientationIndexFilter(p1x, p1y, p2x, p2y, qx, qy);
+    if (index <= 1) return index;
+    
+    // normalize coordinates
+    DD dx1 = DD.valueOf(p2x).selfAdd(-p1x);
+    DD dy1 = DD.valueOf(p2y).selfAdd(-p1y);
+    DD dx2 = DD.valueOf(qx).selfAdd(-p2x);
+    DD dy2 = DD.valueOf(qy).selfAdd(-p2y);
+
+    // sign of determinant - unrolled for performance
+    return dx1.selfMultiply(dy2).selfSubtract(dy1.selfMultiply(dx2)).signum();
+  }
+  
   /**
    * Computes the sign of the determinant of the 2x2 matrix
    * with the given entries.
@@ -118,6 +137,43 @@ public class CGAlgorithmsDD
 
     double detleft = (pa.x - pc.x) * (pb.y - pc.y);
     double detright = (pa.y - pc.y) * (pb.x - pc.x);
+    double det = detleft - detright;
+
+    if (detleft > 0.0) {
+      if (detright <= 0.0) {
+        return signum(det);
+      }
+      else {
+        detsum = detleft + detright;
+      }
+    }
+    else if (detleft < 0.0) {
+      if (detright >= 0.0) {
+        return signum(det);
+      }
+      else {
+        detsum = -detleft - detright;
+      }
+    }
+    else {
+      return signum(det);
+    }
+
+    double errbound = DP_SAFE_EPSILON * detsum;
+    if ((det >= errbound) || (-det >= errbound)) {
+      return signum(det);
+    }
+
+    return 2;
+  }
+
+  private static int orientationIndexFilter(double pax, double pay,
+      double pbx, double pby, double pcx, double pcy) 
+  {
+    double detsum;
+
+    double detleft = (pax - pcx) * (pby - pcy);
+    double detright = (pay - pcy) * (pbx - pcx);
     double det = detleft - detright;
 
     if (detleft > 0.0) {
