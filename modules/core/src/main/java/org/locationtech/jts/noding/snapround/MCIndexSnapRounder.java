@@ -119,7 +119,7 @@ public class MCIndexSnapRounder
   {
     for (Iterator it = snapPts.iterator(); it.hasNext(); ) {
       Coordinate snapPt = (Coordinate) it.next();
-      HotPixel hotPixel = new HotPixel(snapPt, scaleFactor, li);
+      HotPixel hotPixel = new HotPixel(snapPt, scaleFactor);
       pointSnapper.snap(hotPixel);
     }
   }
@@ -144,7 +144,7 @@ public class MCIndexSnapRounder
   {
     Coordinate[] pts0 = e.getCoordinates();
     for (int i = 0; i < pts0.length ; i++) {
-      HotPixel hotPixel = new HotPixel(pts0[i], scaleFactor, li);
+      HotPixel hotPixel = new HotPixel(pts0[i], scaleFactor);
       boolean isNodeAdded = pointSnapper.snap(hotPixel, e, i);
       // if a node is created for a vertex, that vertex must be noded too
       if (isNodeAdded) {

@@ -167,8 +167,7 @@ public class HotPixelTest extends TestCase {
   private void checkIntersects(boolean expected, 
       double x, double y, double scale, 
       double x1, double y1, double x2, double y2) {
-    RobustLineIntersector li = new RobustLineIntersector();
-    HotPixel hp = new HotPixel(new Coordinate(x,y), scale, li);
+    HotPixel hp = new HotPixel(new Coordinate(x,y), scale);
     Coordinate p1 = new Coordinate(x1,y1);
     Coordinate p2 = new Coordinate(x2,y2);
     boolean actual = hp.intersects(p1, p2);

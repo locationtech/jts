@@ -53,7 +53,7 @@ class HotPixelIndex {
       return hp;
     
     // not found, so create a new one
-    hp = new HotPixel(pRound, scaleFactor, li);
+    hp = new HotPixel(pRound, scaleFactor);
     hotPixelMap.put(pRound,  hp);
     Envelope hpEnv = hp.getSafeEnvelope();
     index.insert(hpEnv, hp);

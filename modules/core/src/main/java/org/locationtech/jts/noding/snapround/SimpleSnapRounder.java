@@ -181,7 +181,7 @@ public class SimpleSnapRounder
   private HotPixel createHotPixel(Coordinate p) {
     HotPixel hp = hotPixelMap.get(p);
     if (hp != null) return hp;
-    hp = new HotPixel(p, scaleFactor, li);
+    hp = new HotPixel(p, scaleFactor);
     hotPixelMap.put(p,  hp);
     return hp;
   }

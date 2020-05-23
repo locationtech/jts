@@ -12,6 +12,7 @@
 
 package org.locationtech.jts.noding.snapround;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.SpatialIndex;
@@ -116,9 +117,34 @@ public class MCIndexPointSnapper
           return;
       }
       // records if this HotPixel caused any node to be added
-      isNodeAdded |= hotPixel.addSnappedNode(ss, startIndex);
+      isNodeAdded |= addSnappedNode(hotPixel, ss, startIndex);
     }
 
+    /**
+     * Adds a new node (equal to the snap pt) to the specified segment
+     * if the segment passes through the hot pixel
+     *
+     * @param segStr
+     * @param segIndex
+     * @return true if a node was added to the segment
+     */
+    public boolean addSnappedNode(HotPixel hotPixel, 
+        NodedSegmentString segStr,
+        int segIndex
+        )
+    {
+      Coordinate p0 = segStr.getCoordinate(segIndex);
+      Coordinate p1 = segStr.getCoordinate(segIndex + 1);
+
+      if (hotPixel.intersects(p0, p1)) {
+        //System.out.println("snapped: " + snapPt);
+        //System.out.println("POINT (" + snapPt.x + " " + snapPt.y + ")");
+        segStr.addIntersection(hotPixel.getCoordinate(), segIndex);
+
+        return true;
+      }
+      return false;
+    }
   }
 
 }
