@@ -13,9 +13,9 @@ package org.locationtech.jts.index.strtree;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.PriorityQueue;
 
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.util.PriorityQueue;
 
 
 /**
