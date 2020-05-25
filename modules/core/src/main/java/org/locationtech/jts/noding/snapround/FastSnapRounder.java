@@ -13,23 +13,17 @@ package org.locationtech.jts.noding.snapround;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.index.ItemVisitor;
-import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.index.kdtree.KdNode;
+import org.locationtech.jts.index.kdtree.KdNodeVisitor;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
-import org.locationtech.jts.noding.NodingValidator;
 import org.locationtech.jts.noding.SegmentString;
-import org.locationtech.jts.util.Debug;
 
 /**
  * Uses Snap Rounding to compute a rounded,
@@ -54,15 +48,12 @@ public class FastSnapRounder
     implements Noder
 {
   private final PrecisionModel pm;
-  private LineIntersector li;
   private HotPixelIndex pixelIndex;
   
   private List<NodedSegmentString> snappedResult;
 
   public FastSnapRounder(PrecisionModel pm) {
     this.pm = pm;
-    li = new RobustLineIntersector();
-    li.setPrecisionModel(pm);
     pixelIndex = new HotPixelIndex(pm);
   }
 
@@ -142,8 +133,6 @@ public class FastSnapRounder
       pixelIndex.add(pts);
     }
   }
-
-
 
   private Coordinate round(Coordinate pt) {
     Coordinate p2 = pt.copy();
@@ -255,7 +244,7 @@ public class FastSnapRounder
 
 
   /**
-   * Snaps a segment to HotPixels that it intersects.
+   * Snaps a segment in a segmentString to HotPixels that it intersects.
    * 
    * @param p0 the segment start coordinate
    * @param p1 the segment end coordinate
@@ -263,16 +252,17 @@ public class FastSnapRounder
    * @param segIndex the index of the segment
    */
   private void snapSegment(Coordinate p0, Coordinate p1, NodedSegmentString ss, int segIndex) {
-    pixelIndex.query(p0, p1, new ItemVisitor() {
+    pixelIndex.query(p0, p1, new KdNodeVisitor() {
 
       @Override
-      public void visitItem(Object item) {
-        HotPixel hp = (HotPixel) item;
+      public void visit(KdNode node) {
+        // TODO Auto-generated method stub
+        HotPixel hp = (HotPixel) node.getData();
         if (hp.intersects(p0, p1)) {
           //System.out.println("Added intersection: " + hp.getCoordinate());
           ss.addIntersection( hp.getCoordinate(), segIndex );
         }
- 
+
       }
       
     });

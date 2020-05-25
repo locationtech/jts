@@ -1,34 +1,46 @@
+/*
+ * Copyright (c) 2019 Martin Davis.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package org.locationtech.jts.noding.snapround;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.index.ItemVisitor;
-import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.index.kdtree.KdNode;
+import org.locationtech.jts.index.kdtree.KdNodeVisitor;
+import org.locationtech.jts.index.kdtree.KdTree;
 
+/**
+ * An index which creates {@link HotPixel}s for provided points,
+ * and allows performing range queries on them.
+ * 
+ * @author mdavis
+ *
+ */
 class HotPixelIndex {
   private PrecisionModel precModel;
-  private LineIntersector li;
   private double scaleFactor;
 
   /**
-   * HotPixels have an extent, so a suitable index must be used here 
-   * (i.e. a KD-tree won't work)
+   * Use a kd-tree to index the pixel centers for optimum performance.
+   * Since HotPixels have an extent, queries to the
+   * index must enlarge the query range by a suitable value 
+   * (using the pixel width is safest).
    */
-  private STRtree index = new STRtree();
+  private KdTree index = new KdTree();
   
-  private Map<Coordinate, HotPixel> hotPixelMap = new HashMap<Coordinate, HotPixel>();
-
   public HotPixelIndex(PrecisionModel pm) {
     this.precModel = pm;
-    li = new RobustLineIntersector();
-    li.setPrecisionModel(pm);
     scaleFactor = pm.getScale();
   }
   
@@ -48,36 +60,34 @@ class HotPixelIndex {
     // TODO: is there a faster way of doing this?
     Coordinate pRound = round(p);
     
-    HotPixel hp = hotPixelMap.get(pRound);
+    HotPixel hp = find(p);
     if (hp != null) 
       return hp;
     
     // not found, so create a new one
     hp = new HotPixel(pRound, scaleFactor);
-    hotPixelMap.put(pRound,  hp);
-    Envelope hpEnv = hp.getSafeEnvelope();
-    index.insert(hpEnv, hp);
+    index.insert(hp.getCoordinate(), hp);
     return hp;
   }
 
+  private HotPixel find(Coordinate pixelPt) {
+    KdNode kdNode = index.query(pixelPt);
+    if (kdNode == null) 
+      return null;
+    return (HotPixel) kdNode.getData();
+  }
+  
   private Coordinate round(Coordinate pt) {
     Coordinate p2 = pt.copy();
     precModel.makePrecise(p2);
     return p2;
   }
- 
-  /*
-  // not used for now
-  public List<HotPixel> query(Coordinate p0, Coordinate p1) {
-    Envelope queryEnv = new Envelope(p0, p1);
-    List<HotPixel> pixels = index.query(queryEnv);
-    return pixels;
-  }
-  */
   
-  public void query(Coordinate p0, Coordinate p1, ItemVisitor visitor) {
+  public void query(Coordinate p0, Coordinate p1, KdNodeVisitor visitor) {
     Envelope queryEnv = new Envelope(p0, p1);
+    // expand query range to account for HotPixel extent
+    // expand by full width of one pixel to be safe
+    queryEnv.expandBy( 1.0 / scaleFactor );
     index.query(queryEnv, visitor);
   }
-  
 }

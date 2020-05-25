@@ -18,7 +18,6 @@ import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.noding.NodedSegmentString;
 
 /**
  * Implements a "hot pixel" as used in the Snap Rounding algorithm.
@@ -89,28 +88,24 @@ public class HotPixel
    */
   public Coordinate getCoordinate() { return originalPt; }
 
-  private static final double SAFE_ENV_EXPANSION_FACTOR = 0.75;
-  
   /**
-   * Returns a "safe" envelope that is guaranteed to contain the hot pixel.
-   * The envelope returned will be larger than the exact envelope of the 
-   * pixel.
+   * Gets the scale factor for the precision grid for this pixel.
    * 
-   * @return an envelope which contains the hot pixel
+   * @return the pixel scale factor
    */
-  public Envelope getSafeEnvelope()
-  {
-    if (safeEnv == null) {
-      double safeTolerance = SAFE_ENV_EXPANSION_FACTOR / scaleFactor;
-      safeEnv = new Envelope(originalPt.x - safeTolerance,
-                             originalPt.x + safeTolerance,
-                             originalPt.y - safeTolerance,
-                             originalPt.y + safeTolerance
-                             );
-    }
-    return safeEnv;
+  public double getScaleFactor() {
+    return scaleFactor;
   }
 
+  /**
+   * Gets the width of the hot pixel in the original coordinate system.
+   * 
+   * @return the width of the hot pixel tolerance square
+   */
+  public double getWidth() {
+    return 1.0 / scaleFactor;
+  }
+  
   private double scaleRound(double val)
   {
     return (double) Math.round(val * scaleFactor);

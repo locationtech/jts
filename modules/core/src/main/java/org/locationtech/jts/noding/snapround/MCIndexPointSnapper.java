@@ -51,7 +51,7 @@ public class MCIndexPointSnapper
    */
   public boolean snap(HotPixel hotPixel, SegmentString parentEdge, int hotPixelVertexIndex)
   {
-    final Envelope pixelEnv = hotPixel.getSafeEnvelope();
+    final Envelope pixelEnv = getSafeEnvelope(hotPixel);
     final HotPixelSnapAction hotPixelSnapAction = new HotPixelSnapAction(hotPixel, parentEdge, hotPixelVertexIndex);
 
     index.query(pixelEnv, new ItemVisitor() {
@@ -69,6 +69,23 @@ public class MCIndexPointSnapper
     return snap(hotPixel, null, -1);
   }
 
+  private static final double SAFE_ENV_EXPANSION_FACTOR = 0.75;
+  
+  /**
+   * Returns a "safe" envelope that is guaranteed to contain the hot pixel.
+   * The envelope returned is larger than the exact envelope of the 
+   * pixel by a safe margin.
+   * 
+   * @return an envelope which contains the hot pixel
+   */
+  public Envelope getSafeEnvelope(HotPixel hp)
+  {
+    double safeTolerance = SAFE_ENV_EXPANSION_FACTOR / hp.getScaleFactor();
+    Envelope safeEnv = new Envelope(hp.getCoordinate());
+    safeEnv.expandBy(safeTolerance);
+    return safeEnv;
+  }
+  
   public static class HotPixelSnapAction
       extends MonotoneChainSelectAction
   {

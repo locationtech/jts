@@ -305,6 +305,32 @@ public class KdTree {
 
   }
 
+  private KdNode queryNodePoint(KdNode currentNode,
+      Coordinate queryPt, boolean odd) {
+    if (currentNode == null)
+      return null;
+    if (currentNode.getCoordinate().equals2D(queryPt))
+      return currentNode;
+    
+    double ord;
+    double discriminant;
+    if (odd) {
+      ord = queryPt.getX();
+      discriminant = currentNode.getX();
+    } else {
+      ord = queryPt.getY();
+      discriminant = currentNode.getY();
+    }
+    boolean searchLeft = ord < discriminant;
+
+    if (searchLeft) {
+      return queryNodePoint(currentNode.getLeft(), queryPt, !odd);
+    }
+    else {
+      return queryNodePoint(currentNode.getRight(), queryPt, !odd);
+    }
+  }
+
   /**
    * Performs a range search of the points in the index and visits all nodes found.
    * 
@@ -346,4 +372,15 @@ public class KdTree {
       
     });
   }
+
+  /**
+   * Searches for a given point in the index and returns its node if found.
+   * 
+   * @param queryPt the point to query
+   * @return the point node, if it is found in the index, or null if not
+   */
+  public KdNode query(Coordinate queryPt) {
+    return queryNodePoint(root, queryPt, true);
+  }
+
 }
