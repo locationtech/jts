@@ -47,7 +47,7 @@ extends PerformanceTestCase
   
   public OverlayNGPerfTest(String name) {
     super(name);
-    setRunSize(new int[] { 1000, 10000, 100000, 200000 });
+    setRunSize(new int[] { 100, 1000, 10000, 100000, 200000 });
     //setRunSize(new int[] { 200000 });
     setRunIterations(N_ITER);
   }
