@@ -40,6 +40,15 @@ import org.locationtech.jts.operation.overlayng.OverlayNGSnapIfNeeded;
  */
 public class RandomPolygonOverlayFuzzer {
   
+  private void overlay(Geometry poly1, Geometry poly2) {
+    //overlayOrig(poly1, poly2);
+    //overlayOrigNoSnap(poly1, poly2);
+    //overlayNGFloat(poly1, poly2);
+    //overlayNGSnapIfNeeded(poly1, poly2);
+    //overlayNG(poly1, poly2);
+    overlayNGSnapping(poly1, poly2);
+  }
+  
   static final boolean IS_VERBOSE = false;
   
   static final boolean IS_SAME_VORONOI = false;
@@ -76,9 +85,16 @@ public class RandomPolygonOverlayFuzzer {
   private String testDesc = "";
 
   private void run() {
-    for (int i = 0; i < N_TESTS; i++) {
+    for (int i = 1; i <= N_TESTS; i++) {
       testIndex = i;
       overlayPolys();
+      
+      if( (i+1) % 100 == 0) {
+        System.out.print(".");
+        if( (i+1) % 10000 == 0) {
+          System.out.println();
+        }
+      }
     }
     System.out.println("\n============================");
     System.out.printf("Tests: %d  Errors: %d\n", N_TESTS, errCount);
@@ -92,22 +108,21 @@ public class RandomPolygonOverlayFuzzer {
 
   private void process(Geometry poly1, Geometry poly2) {
     try {
-      //overlayOrig(poly1, poly2);
-      overlayOrigNoSnap(poly1, poly2);
-      //overlayNGFloat(poly1, poly2);
-      //overlayNGSnapIfNeeded(poly1, poly2);
-      //overlayNG(poly1, poly2);
-      //overlayNGSnapping(poly1, poly2);
+      overlay(poly1, poly2);
     }
     catch (TopologyException ex) {
       errCount ++;
-      System.out.printf("\nTest %d: %s   (# errs: %d)\n", testIndex, testDesc, errCount);
+      System.out.println(stats());
       System.out.printf("ERROR - %s\n", ex.getMessage());
       System.out.println(poly1);
       System.out.println(poly2);
     }
   }
  
+  private String stats() {
+    return String.format("\nTest %d: %s   (# errs: %d = %d%%)\n", testIndex, testDesc, 
+        errCount, (int) (100 * errCount) / testIndex );
+  }
 
   private void overlayNG(Geometry poly1, Geometry poly2) {
     log("Test: " + testIndex + "  --------------------");
