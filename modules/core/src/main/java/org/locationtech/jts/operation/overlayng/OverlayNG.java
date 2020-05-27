@@ -248,8 +248,10 @@ public class OverlayNG
    * @param pm the precision model to use
    * @return the result of the union operation
    * 
+   * @see OverlayMixedPoints
    * @see PrecisionReducer
    * @see UnaryUnionNG
+   * @see CoverageUnion
    */
   static Geometry union(Geometry geom, PrecisionModel pm)
   {    
