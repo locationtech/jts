@@ -11,19 +11,19 @@ POINT (10.1 10)
   <b>
 POINT (10 10.1)
   </b>
-<test>  <op name="intersectionNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="intersectionSR" arg1="A" arg2="B" arg3="1">
 POINT (10 10)
   </op></test>
-<test>  <op name="unionNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="unionSR" arg1="A" arg2="B" arg3="1">
 POINT (10 10)
   </op></test>
-<test>  <op name="differenceNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="differenceSR" arg1="A" arg2="B" arg3="1">
 POINT EMPTY
   </op></test>
-<test>  <op name="differenceNGPrec" arg1="B" arg2="A" arg3="1">
+<test>  <op name="differenceSR" arg1="B" arg2="A" arg3="1">
 POINT EMPTY
   </op></test>
-<test>  <op name="symdifferenceNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="symdifferenceSR" arg1="A" arg2="B" arg3="1">
 POINT EMPTY
   </op></test>
 </case>
@@ -36,19 +36,19 @@ POINT (10.1 10.4)
   <b>
 POINT (10.5 10.6)
   </b>
-<test>  <op name="intersectionNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="intersectionSR" arg1="A" arg2="B" arg3="1">
 POINT EMPTY
   </op></test>
-<test>  <op name="unionNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="unionSR" arg1="A" arg2="B" arg3="1">
 MULTIPOINT ((10 10), (11 11))
   </op></test>
-<test>  <op name="differenceNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="differenceSR" arg1="A" arg2="B" arg3="1">
 POINT (10 10)
   </op></test>
-<test>  <op name="differenceNGPrec" arg1="B" arg2="A" arg3="1">
+<test>  <op name="differenceSR" arg1="B" arg2="A" arg3="1">
 POINT (11 11)
   </op></test>
-<test>  <op name="symdifferenceNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="symdifferenceSR" arg1="A" arg2="B" arg3="1">
 MULTIPOINT ((10 10), (11 11))
   </op></test>
 </case>
@@ -61,19 +61,19 @@ POINT (10.1 10.4)
   <b>
 LINESTRING (9.6 10, 20.1 19.6)
   </b>
-<test>  <op name="intersectionNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="intersectionSR" arg1="A" arg2="B" arg3="1">
 POINT EMPTY
   </op></test>
-<test>  <op name="unionNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="unionSR" arg1="A" arg2="B" arg3="1">
 LINESTRING (10 10, 20 20)
   </op></test>
-<test>  <op name="differenceNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="differenceSR" arg1="A" arg2="B" arg3="1">
 POINT (10 10)
   </op></test>
-<test>  <op name="differenceNGPrec" arg1="B" arg2="A" arg3="1">
+<test>  <op name="differenceSR" arg1="B" arg2="A" arg3="1">
 LINESTRING (10 10, 20 20)
   </op></test>
-<test>  <op name="symdifferenceNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="symdifferenceSR" arg1="A" arg2="B" arg3="1">
 LINESTRING (10 10, 20 20)
   </op></test>
 </case>
@@ -86,19 +86,19 @@ POINT (3.2 1.5)
   <b>
 POLYGON ((1 4, 1 1, 3 1, 3.6 3.6, 1 4))
   </b>
-<test>  <op name="intersectionNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="intersectionSR" arg1="A" arg2="B" arg3="1">
 POINT (3 2)
   </op></test>
-<test>  <op name="unionNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="unionSR" arg1="A" arg2="B" arg3="1">
 POLYGON ((1 1, 1 4, 4 4, 3 1, 1 1))
   </op></test>
-<test>  <op name="differenceNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="differenceSR" arg1="A" arg2="B" arg3="1">
 POINT EMPTY
   </op></test>
-<test>  <op name="differenceNGPrec" arg1="B" arg2="A" arg3="1">
+<test>  <op name="differenceSR" arg1="B" arg2="A" arg3="1">
 POLYGON ((1 1, 1 4, 4 4, 3 1, 1 1))
   </op></test>
-<test>  <op name="symdifferenceNGPrec" arg1="A" arg2="B" arg3="1">
+<test>  <op name="symdifferenceSR" arg1="A" arg2="B" arg3="1">
 POLYGON ((1 1, 1 4, 4 4, 3 1, 1 1))
   </op></test>
 </case>

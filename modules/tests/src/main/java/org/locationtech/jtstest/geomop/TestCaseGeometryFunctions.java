@@ -91,19 +91,19 @@ public class TestCaseGeometryFunctions
     return OverlayNG.overlay(geom0, geom1, OverlayNG.SYMDIFFERENCE);
   }
   
-  public static Geometry intersectionNGPrec(Geometry geom0, Geometry geom1, double scale) {
+  public static Geometry intersectionSR(Geometry geom0, Geometry geom1, double scale) {
     PrecisionModel pm = new PrecisionModel(scale);
     return OverlayNG.overlay(geom0, geom1, OverlayNG.INTERSECTION, pm);
   }
-  public static Geometry unionNGPrec(Geometry geom0, Geometry geom1, double scale) {
+  public static Geometry unionSr(Geometry geom0, Geometry geom1, double scale) {
     PrecisionModel pm = new PrecisionModel(scale);
     return OverlayNG.overlay(geom0, geom1, OverlayNG.UNION, pm);
   }
-  public static Geometry differenceNGPrec(Geometry geom0, Geometry geom1, double scale) {
+  public static Geometry differenceSR(Geometry geom0, Geometry geom1, double scale) {
     PrecisionModel pm = new PrecisionModel(scale);
     return OverlayNG.overlay(geom0, geom1, OverlayNG.DIFFERENCE, pm);
   }
-  public static Geometry symDifferenceNGPrec(Geometry geom0, Geometry geom1, double scale) {
+  public static Geometry symDifferenceSR(Geometry geom0, Geometry geom1, double scale) {
     PrecisionModel pm = new PrecisionModel(scale);
     return OverlayNG.overlay(geom0, geom1, OverlayNG.SYMDIFFERENCE, pm);
   }
