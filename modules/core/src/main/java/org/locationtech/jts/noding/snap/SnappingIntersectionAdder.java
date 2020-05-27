@@ -33,7 +33,7 @@ public class SnappingIntersectionAdder
 
   private double snapTolerance;
 
-  private SnapVertexIndex snapIndex;
+  private SnapPointIndex snapIndex;
 
 
   /**
@@ -42,7 +42,7 @@ public class SnappingIntersectionAdder
    *
    * @param pm the precision mode to use
    */
-  public SnappingIntersectionAdder(SnapVertexIndex snapIndex)
+  public SnappingIntersectionAdder(SnapPointIndex snapIndex)
   {
     this.snapIndex = snapIndex;
     this.snapTolerance = snapIndex.getTolerance();

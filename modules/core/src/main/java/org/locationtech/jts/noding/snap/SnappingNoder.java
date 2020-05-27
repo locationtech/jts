@@ -36,13 +36,13 @@ import org.locationtech.jts.util.Debug;
 public class SnappingNoder
     implements Noder
 {
-  private static SnapVertexIndex snapIndex;
+  private static SnapPointIndex snapIndex;
   private double snapTolerance;
   private List<NodedSegmentString> nodedResult;
 
   public SnappingNoder(double snapTolerance) {
     this.snapTolerance = snapTolerance;
-    snapIndex = new SnapVertexIndex(snapTolerance);
+    snapIndex = new SnapPointIndex(snapTolerance);
   }
 
   /**
@@ -119,9 +119,7 @@ public class SnappingNoder
   private Collection computeIntersections(List<NodedSegmentString> inputSS)
   {
     SnappingIntersectionAdder intAdder = new SnappingIntersectionAdder(snapIndex);
-    MCIndexNoder noder = new MCIndexNoder();
-    noder.setToleranceDistance(2 * snapTolerance);
-    noder.setSegmentIntersector(intAdder);
+    MCIndexNoder noder = new MCIndexNoder( intAdder, 2 * snapTolerance );
     noder.computeNodes(inputSS);
     return noder.getNodedSubstrings();
   }

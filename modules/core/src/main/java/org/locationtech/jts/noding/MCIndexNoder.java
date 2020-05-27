@@ -1,6 +1,7 @@
 
 /*
  * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2020 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -30,6 +31,10 @@ import org.locationtech.jts.index.strtree.STRtree;
  * The {@link SpatialIndex} used should be something that supports
  * envelope (range) queries efficiently (such as a <code>Quadtree</code>}
  * or {@link STRtree} (which is the default index provided).
+ * <p>
+ * The noder supports using an overlap tolerance distance .
+ * This allows determining segment intersection using a buffer for uses
+ * involving snapping with a distance tolerance.
  *
  * @version 1.7
  */
@@ -42,7 +47,7 @@ public class MCIndexNoder
   private Collection nodedSegStrings;
   // statistics
   private int nOverlaps = 0;
-  private double tolerance  = 0;
+  private double overlapTolerance = 0;
 
   public MCIndexNoder()
   {
@@ -53,8 +58,17 @@ public class MCIndexNoder
     super(si);
   }
 
-  public void setToleranceDistance(double tolerance) {
-    this.tolerance   = tolerance;
+  /**
+   * Creates a new noder with a given {@link SegmentIntersector}
+   * and an overlap tolerance distance to expand intersection tests with.
+   * 
+   * @param si the segment intersector
+   * @param overlapTolerance the expansion distance for overlap tests
+   */
+  public MCIndexNoder(SegmentIntersector si, double overlapTolerance)
+  {
+    super(si);
+    this.overlapTolerance = overlapTolerance;
   }
 
   public List getMonotoneChains() { return monoChains; }
@@ -82,7 +96,7 @@ public class MCIndexNoder
 
     for (Iterator i = monoChains.iterator(); i.hasNext(); ) {
       MonotoneChain queryChain = (MonotoneChain) i.next();
-      Envelope queryEnv = expandTol( queryChain.getEnvelope() );
+      Envelope queryEnv = queryChain.getEnvelope(overlapTolerance);
       List overlapChains = index.query(queryEnv);
       for (Iterator j = overlapChains.iterator(); j.hasNext(); ) {
         MonotoneChain testChain = (MonotoneChain) j.next();
@@ -91,7 +105,7 @@ public class MCIndexNoder
          * and that we don't compare a chain to itself
          */
         if (testChain.getId() > queryChain.getId()) {
-          queryChain.computeOverlaps(testChain, overlapAction);
+          queryChain.computeOverlaps(testChain, overlapTolerance, overlapAction);
           nOverlaps++;
         }
         // short-circuit if possible
@@ -101,21 +115,14 @@ public class MCIndexNoder
     }
   }
 
-  private Envelope expandTol(Envelope env) {
-    if (tolerance == 0) return env;
-    Envelope envTol = env.copy();
-    envTol.expandBy(tolerance);
-    return envTol;
-  }
-
   private void add(SegmentString segStr)
   {
     List segChains = MonotoneChainBuilder.getChains(segStr.getCoordinates(), segStr);
     for (Iterator i = segChains.iterator(); i.hasNext(); ) {
       MonotoneChain mc = (MonotoneChain) i.next();
       mc.setId(idCounter++);
-      mc.setOverlapTolerance(tolerance);
-      index.insert(mc.getEnvelope(), mc);
+      //mc.setOverlapDistance(overlapDistance);
+      index.insert(mc.getEnvelope(overlapTolerance), mc);
       monoChains.add(mc);
     }
   }

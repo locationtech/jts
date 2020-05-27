@@ -15,15 +15,15 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.index.kdtree.KdNode;
 import org.locationtech.jts.index.kdtree.KdTree;
 
-public class SnapVertexIndex {
+public class SnapPointIndex {
 
   private double snapTolerance;
 
-  private KdTree snapVertexIndex;
+  private KdTree snapPointIndex;
   
-  SnapVertexIndex(double snapTolerance) {
+  SnapPointIndex(double snapTolerance) {
     this.snapTolerance = snapTolerance;
-    snapVertexIndex = new KdTree(snapTolerance);
+    snapPointIndex = new KdTree(snapTolerance);
   }
   
   public Coordinate snap(Coordinate p) {
@@ -31,7 +31,7 @@ public class SnapVertexIndex {
      * Inserting the coordinate snaps it to any existing
      * one within tolerance, or adds it.
      */
-    KdNode node = snapVertexIndex.insert(p);
+    KdNode node = snapPointIndex.insert(p);
     return node.getCoordinate();
   }
 

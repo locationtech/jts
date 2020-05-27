@@ -31,28 +31,28 @@ public class OverlayNGSnappingTestOne extends GeometryTestCase {
 
   public OverlayNGSnappingTestOne(String name) { super(name); }
   
-  public void xtestRectanglesOneAjarUnion() {
+  public void testRectanglesOneAjarUnion() {
     Geometry a = read("POLYGON ((10 10, 10 5, 5 5, 5 10, 10 10))");
     Geometry b = read("POLYGON ((10 15, 15 15, 15 7, 10.01 7, 10 15))");
     Geometry expected = read("POLYGON ((5 5, 5 10, 10 10, 10 15, 15 15, 15 7, 10.01 7, 10 5, 5 5))");
     checkEqual(expected, union(a, b, 1));
   }
   
-  public void xtestRectanglesBothAjarUnion() {
+  public void testRectanglesBothAjarUnion() {
     Geometry a = read("POLYGON ((10.01 10, 10 5, 5 5, 5 10, 10.01 10))");
     Geometry b = read("POLYGON ((10 15, 15 15, 15 7, 10.01 7, 10 15))");
     Geometry expected = read("POLYGON ((5 5, 5 10, 10.01 10, 10 15, 15 15, 15 7, 10.01 7, 10 5, 5 5))");
     checkEqual(expected, union(a, b, 1));
   }
   
-  public void xtestRandomrUnion() {
+  public void testRandomUnion() {
     Geometry a = read("POLYGON ((85.55954154387994 100, 92.87214039753759 100, 94.7254728121147 100, 98.69765702432045 96.38825885127041, 85.55954154387994 100))");
     Geometry b = read("POLYGON ((80.20688423699171 99.99999999999999, 100.00000000000003 99.99999999999997, 100.00000000000003 88.87471526860915, 80.20688423699171 99.99999999999999))");
-    Geometry expected = read("POLYGON ((5 5, 5 10, 10.01 10, 10 15, 15 15, 15 7, 10.01 7, 10 5, 5 5))");
+    Geometry expected = read("POLYGON ((80.20688423699171 99.99999999999999, 85.55954154387994 100, 92.87214039753759 100, 94.7254728121147 100, 100.00000000000003 99.99999999999997, 100.00000000000003 88.87471526860915, 80.20688423699171 99.99999999999999))");
     checkEqual(expected, union(a, b, 0.00000001));
   }
   
-  public void xtestTrianglesBSegmentsDisplacedSmallTolUnion() {
+  public void testTrianglesBSegmentsDisplacedSmallTolUnion() {
     Geometry a = read("POLYGON ((100 200, 200 0, 300 200, 100 200))");
     Geometry b = read("POLYGON ((150 200.01, 200 200.01, 260 200.01, 200 100, 150 200.01))");
     Geometry expected = read("POLYGON ((150 200.01, 200 200.01, 260 200.01, 300 200, 200 0, 100 200, 150 200.01))");
