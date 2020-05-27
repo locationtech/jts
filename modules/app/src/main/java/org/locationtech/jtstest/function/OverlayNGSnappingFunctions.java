@@ -11,6 +11,8 @@
  */
 package org.locationtech.jtstest.function;
 
+import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
 import org.locationtech.jts.geom.Geometry;
@@ -23,9 +25,16 @@ import org.locationtech.jts.operation.union.UnionFunction;
 
 public class OverlayNGSnappingFunctions {
 
+  public static Geometry difference(Geometry a, Geometry b, double tolerance) {
+    return OverlayNG.overlay(a, b, DIFFERENCE, null, getNoder(tolerance) );
+  }
+
+  public static Geometry intersection(Geometry a, Geometry b, double tolerance) {
+    return OverlayNG.overlay(a, b, INTERSECTION, null, getNoder(tolerance) );
+  }
+
   public static Geometry union(Geometry a, Geometry b, double tolerance) {
-    Noder noder = getNoder(tolerance);
-    return OverlayNG.overlay(a, b, UNION, null, noder );
+    return OverlayNG.overlay(a, b, UNION, null, getNoder(tolerance) );
   }
 
   private static Noder getNoder(double tolerance) {
@@ -33,11 +42,30 @@ public class OverlayNGSnappingFunctions {
     return new ValidatingNoder(snapNoder);
   }
   
+
+
   public static Geometry unaryUnion(Geometry a, double tolerance) {
     UnionFunction unionSRFun = new UnionFunction() {
 
       public Geometry union(Geometry g0, Geometry g1) {
          return OverlayNGSnappingFunctions.union(g0, g1, tolerance );
+      }
+      
+    };
+    UnaryUnionOp op = new UnaryUnionOp(a);
+    op.setUnionFunction(unionSRFun);
+    return op.union();
+  }
+  
+  public static Geometry unionNoValid(Geometry a, Geometry b, double tolerance) {
+    return OverlayNG.overlay(a, b, UNION, null, new SnappingNoder(tolerance) );
+  }
+  
+  public static Geometry unaryUnionNoValid(Geometry a, double tolerance) {
+    UnionFunction unionSRFun = new UnionFunction() {
+
+      public Geometry union(Geometry g0, Geometry g1) {
+         return OverlayNGSnappingFunctions.unionNoValid(g0, g1, tolerance );
       }
       
     };
