@@ -15,13 +15,13 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.index.kdtree.KdNode;
 import org.locationtech.jts.index.kdtree.KdTree;
 
-public class SnapPointIndex {
+public class SnappingPointIndex {
 
   private double snapTolerance;
 
   private KdTree snapPointIndex;
   
-  SnapPointIndex(double snapTolerance) {
+  SnappingPointIndex(double snapTolerance) {
     this.snapTolerance = snapTolerance;
     snapPointIndex = new KdTree(snapTolerance);
   }

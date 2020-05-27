@@ -36,13 +36,13 @@ import org.locationtech.jts.util.Debug;
 public class SnappingNoder
     implements Noder
 {
-  private static SnapPointIndex snapIndex;
+  private static SnappingPointIndex snapIndex;
   private double snapTolerance;
   private List<NodedSegmentString> nodedResult;
 
   public SnappingNoder(double snapTolerance) {
     this.snapTolerance = snapTolerance;
-    snapIndex = new SnapPointIndex(snapTolerance);
+    snapIndex = new SnappingPointIndex(snapTolerance);
   }
 
   /**
