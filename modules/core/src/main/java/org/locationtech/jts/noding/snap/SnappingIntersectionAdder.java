@@ -32,41 +32,19 @@ public class SnappingIntersectionAdder
 
   private double snapTolerance;
 
-  private SnappingPointIndex snapIndex;
-
+  private SnappingPointIndex snapPointIndex;
 
   /**
-   * Creates an intersector which finds all snapped intersections,
+   * Creates an intersector which finds intersections, snaps them,
    * and adds them as nodes.
    *
-   * @param pm the precision mode to use
+   * @param snapTolerance the snapping tolerance distance
+   * @param snapPointIndex the snapPointIndex
    */
-  public SnappingIntersectionAdder(double snapTolerance, SnappingPointIndex snapIndex)
+  public SnappingIntersectionAdder(double snapTolerance, SnappingPointIndex snapPointIndex)
   {
-    this.snapIndex = snapIndex;
+    this.snapPointIndex = snapPointIndex;
     this.snapTolerance = snapTolerance;
-  }
-
-  /**
-   * Test if two segments are adjacent segments on the same SegmentString.
-   * Note that closed edges require a special check for the point shared by the beginning
-   * and end segments.
-   */
-  private static boolean isAdjacent(SegmentString e0, int segIndex0, SegmentString e1, int segIndex1)
-  {
-    if (e0 != e1) return false;
-    
-    boolean isAdjacent = Math.abs(segIndex0 - segIndex1) == 1;
-    if (isAdjacent)
-      return true;
-    if (e0.isClosed()) {
-      int maxSegIndex = e0.size() - 1;
-      if (    (segIndex0 == 0 && segIndex1 == maxSegIndex)
-          ||  (segIndex1 == 0 && segIndex0 == maxSegIndex) ) {
-        return true;
-      }
-    }
-    return false;
   }
   
   /**
@@ -105,7 +83,7 @@ public class SnappingIntersectionAdder
       if (! isAdjacent(seg0, segIndex0, seg1, segIndex1)) {
         
         Coordinate intPt = li.getIntersection(0);
-        Coordinate snapPt = snapIndex.snap(intPt);
+        Coordinate snapPt = snapPointIndex.snap(intPt);
         
         ((NodedSegmentString) seg0).addIntersection(snapPt, segIndex0);
         ((NodedSegmentString) seg1).addIntersection(snapPt, segIndex1);
@@ -113,9 +91,7 @@ public class SnappingIntersectionAdder
     }
     
     /**
-     * Segments do not actually intersect, within the limits of orientation index robustness.
-     * 
-     * The segments must still be snapped to the segment endpoints.
+     * The segments must also be snapped to the other segment endpoints.
      */
     processNearVertex(seg0, segIndex0, p00, seg1, segIndex1, p10, p11 );
     processNearVertex(seg0, segIndex0, p01, seg1, segIndex1, p10, p11 );
@@ -137,30 +113,53 @@ public class SnappingIntersectionAdder
    * without a node being introduced.
    * 
    * @param p
-   * @param edge
+   * @param ss
    * @param segIndex
    * @param p0
    * @param p1
    */
-  private void processNearVertex(SegmentString srcSS, int srcIndex, Coordinate p, SegmentString edge, int segIndex, Coordinate p0, Coordinate p1) {
-    
+  private void processNearVertex(SegmentString srcSS, int srcIndex, Coordinate p, SegmentString ss, int segIndex, Coordinate p0, Coordinate p1) 
+  {
     /**
      * Don't add intersection if candidate vertex is near endpoints of segment.
      * This avoids creating "zig-zag" linework
      * (since the vertex could actually be outside the segment envelope).
+     * Also, this should have already been snapped.
      */
     if (p.distance(p0) < snapTolerance) return;
     if (p.distance(p1) < snapTolerance) return;
     
     double distSeg = Distance.pointToSegment(p, p0, p1);
     if (distSeg < snapTolerance) {
-      // add vertex to target segment
-      ((NodedSegmentString) edge).addIntersection(p, segIndex);
-      // add node at vertext to source SS
+      // add node to target segment
+      ((NodedSegmentString) ss).addIntersection(p, segIndex);
+      // add node at vertex to source SS
       ((NodedSegmentString) srcSS).addIntersection(p, srcIndex);
     }
   }
 
+  /**
+   * Tests if segments are adjacent on the same SegmentString.
+   * Closed segStrings require a check for the point shared by the beginning
+   * and end segments.
+   */
+  private static boolean isAdjacent(SegmentString ss0, int segIndex0, SegmentString ss1, int segIndex1)
+  {
+    if (ss0 != ss1) return false;
+    
+    boolean isAdjacent = Math.abs(segIndex0 - segIndex1) == 1;
+    if (isAdjacent)
+      return true;
+    if (ss0.isClosed()) {
+      int maxSegIndex = ss0.size() - 1;
+      if (   (segIndex0 == 0 && segIndex1 == maxSegIndex)
+          || (segIndex1 == 0 && segIndex0 == maxSegIndex) ) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
   /**
    * Always process all intersections
    * 
