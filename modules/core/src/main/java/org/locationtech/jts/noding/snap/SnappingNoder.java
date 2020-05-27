@@ -17,13 +17,10 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
-import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
-import org.locationtech.jts.noding.NodingValidator;
 import org.locationtech.jts.noding.SegmentString;
-import org.locationtech.jts.util.Debug;
 
 /**
  * Nodes a set of segment strings,
