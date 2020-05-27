@@ -15,10 +15,21 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.index.kdtree.KdNode;
 import org.locationtech.jts.index.kdtree.KdTree;
 
+/**
+ * An index providing fast creating and lookup of snap points.
+ * 
+ * @author mdavis
+ *
+ */
 public class SnappingPointIndex {
 
   private double snapTolerance;
 
+  /**
+   * Since points are added incrementally, this index needs to be dynamic.
+   * This class also makes use of the KdTree support for a tolerance distance
+   * for point equality.
+   */
   private KdTree snapPointIndex;
   
   SnappingPointIndex(double snapTolerance) {

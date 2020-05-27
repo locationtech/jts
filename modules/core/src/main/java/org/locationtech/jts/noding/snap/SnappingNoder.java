@@ -23,13 +23,21 @@ import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
 
 /**
- * Nodes a set of segment strings,
- * using a snap tolerance distance to snap vertices and node points together.
+ * Nodes a set of segment strings
+ * snap vertices and node points together if
+ * they lie within the given snap tolerance distance.
  * This produces a much more robust noded output.
+ * The noded output produces segment strings which run node-to-node
+ * (i.e. are of maximal length in the output arrangement).
  * <p>
- * The snap tolerance should be chosen to be as small as possible.
- * It probably only needs to be a factor of 10e-12
+ * The snap tolerance should be chosen to be as small as possible
+ * while still producing a robust result.
+ * It probably only needs to be a factor of about 10e-12
  * smaller than the magnitude of the segment coordinates. 
+ * <p>
+ * This snapping algorithm may not be fully robust, 
+ * but so far no failure cases have been found, 
+ * given a suitably small enough snap tolerance.
  * 
  * @version 1.17
  */
