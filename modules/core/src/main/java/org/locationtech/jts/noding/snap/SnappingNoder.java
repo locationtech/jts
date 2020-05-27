@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Martin Davis.
+ * Copyright (c) 2020 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -26,17 +26,20 @@ import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.util.Debug;
 
 /**
- * Uses regular noding but with snapping vertices
- * to nearby segments.
+ * Nodes a set of segment strings,
+ * using a snap tolerance distance to snap vertices and node points together.
+ * This produces a much more robust noded output.
+ * <p>
+ * The snap tolerance should be chosen to be as small as possible.
+ * It probably only needs to be a factor of 10e-12
+ * smaller than the magnitude of the segment coordinates. 
  * 
- * EXPERIMENTAL
- * 
- * @version 1.7
+ * @version 1.17
  */
 public class SnappingNoder
     implements Noder
 {
-  private static SnappingPointIndex snapIndex;
+  private SnappingPointIndex snapIndex;
   private double snapTolerance;
   private List<NodedSegmentString> nodedResult;
 
@@ -55,21 +58,15 @@ public class SnappingNoder
   }
 
   /**
-   * @param inputSegmentStrings a Collection of NodedSegmentStrings
+   * @param inputSegStrings a Collection of SegmentStrings
    */
-  public void computeNodes(Collection inputSegmentStrings)
+  public void computeNodes(Collection inputSegStrings)
   {
-    List<NodedSegmentString> snappedSS = snapVertices(inputSegmentStrings);
-
-    nodedResult = (List<NodedSegmentString>) computeIntersections(snappedSS);
-
-    // testing purposes only - remove in final version
-    //checkCorrectness(inputSegmentStrings);
-    //if (Debug.isDebugging()) dumpNodedLines(inputSegmentStrings);
-    //if (Debug.isDebugging()) dumpNodedLines(snappedResult);
+    List<NodedSegmentString> snappedSS = snapVertices(inputSegStrings);
+    nodedResult = (List<NodedSegmentString>) snapIntersections(snappedSS);
   }
 
-  private static List<NodedSegmentString> snapVertices(Collection<SegmentString> segStrings) {
+  private List<NodedSegmentString> snapVertices(Collection<SegmentString> segStrings) {
     List<NodedSegmentString> nodedStrings = new ArrayList<NodedSegmentString>();
     for (SegmentString ss : segStrings) {
       nodedStrings.add( snapVertices(ss) );
@@ -77,12 +74,12 @@ public class SnappingNoder
     return nodedStrings;
   }
 
-  private static NodedSegmentString snapVertices(SegmentString ss) {
+  private NodedSegmentString snapVertices(SegmentString ss) {
     Coordinate[] snapCoords = snap(ss.getCoordinates());
     return new NodedSegmentString(snapCoords, ss.getData());
   }
   
-  private static Coordinate[] snap(Coordinate[] coords) {
+  private Coordinate[] snap(Coordinate[] coords) {
     CoordinateList snapCoords = new CoordinateList();
     for (int i = 0 ; i < coords.length; i++) {
       Coordinate pt = snapIndex.snap(coords[i]);
@@ -90,24 +87,7 @@ public class SnappingNoder
     }
     return snapCoords.toCoordinateArray();
   }
-
-  private void dumpNodedLines(Collection<NodedSegmentString> segStrings) {
-    for (NodedSegmentString nss : segStrings) {
-      Debug.println( WKTWriter.toLineString(nss.getNodeList().getSplitCoordinates()));
-    }
-  }
-
-  private void checkValidNoding(Collection inputSegmentStrings)
-  {
-    Collection resultSegStrings = NodedSegmentString.getNodedSubstrings(inputSegmentStrings);
-    NodingValidator nv = new NodingValidator(resultSegStrings);
-    try {
-      nv.checkValid();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
-
+  
   /**
    * Computes all interior intersections in the collection of {@link SegmentString}s,
    * and returns their {@link Coordinate}s.
@@ -116,9 +96,13 @@ public class SnappingNoder
    *
    * @return a list of Coordinates for the intersections
    */
-  private Collection computeIntersections(List<NodedSegmentString> inputSS)
+  private Collection snapIntersections(List<NodedSegmentString> inputSS)
   {
-    SnappingIntersectionAdder intAdder = new SnappingIntersectionAdder(snapIndex);
+    SnappingIntersectionAdder intAdder = new SnappingIntersectionAdder(snapTolerance, snapIndex);
+    /**
+     * Use an overlap tolerance to ensure all 
+     * possible snapped intersections are found
+     */
     MCIndexNoder noder = new MCIndexNoder( intAdder, 2 * snapTolerance );
     noder.computeNodes(inputSS);
     return noder.getNodedSubstrings();

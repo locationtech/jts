@@ -28,8 +28,7 @@ import org.locationtech.jts.noding.SegmentString;
 public class SnappingIntersectionAdder
     implements SegmentIntersector
 {
-  
-  private LineIntersector li;
+  private LineIntersector li = new RobustLineIntersector();;
 
   private double snapTolerance;
 
@@ -37,42 +36,34 @@ public class SnappingIntersectionAdder
 
 
   /**
-   * Creates an intersector which finds all snapped interior intersections,
+   * Creates an intersector which finds all snapped intersections,
    * and adds them as nodes.
    *
    * @param pm the precision mode to use
    */
-  public SnappingIntersectionAdder(SnappingPointIndex snapIndex)
+  public SnappingIntersectionAdder(double snapTolerance, SnappingPointIndex snapIndex)
   {
     this.snapIndex = snapIndex;
-    this.snapTolerance = snapIndex.getTolerance();
-    
-    /**
-     * Intersections are detected and computed using full precision.
-     */
-    li = new RobustLineIntersector();
+    this.snapTolerance = snapTolerance;
   }
 
   /**
-   * A trivial intersection is an apparent self-intersection which in fact
-   * is the point shared by adjacent segments of a SegmentString.
+   * Test if two segments are adjacent segments on the same SegmentString.
    * Note that closed edges require a special check for the point shared by the beginning
    * and end segments.
    */
-  private boolean isAdjacentIntersection(SegmentString e0, int segIndex0, SegmentString e1, int segIndex1)
+  private static boolean isAdjacent(SegmentString e0, int segIndex0, SegmentString e1, int segIndex1)
   {
-    if (e0 == e1) {
-      if (li.getIntersectionNum() == 1) {
-        boolean isAdjacent = Math.abs(segIndex0 - segIndex1) == 1;
-        if (isAdjacent)
-          return true;
-        if (e0.isClosed()) {
-          int maxSegIndex = e0.size() - 1;
-          if (    (segIndex0 == 0 && segIndex1 == maxSegIndex)
-              ||  (segIndex1 == 0 && segIndex0 == maxSegIndex) ) {
-            return true;
-          }
-        }
+    if (e0 != e1) return false;
+    
+    boolean isAdjacent = Math.abs(segIndex0 - segIndex1) == 1;
+    if (isAdjacent)
+      return true;
+    if (e0.isClosed()) {
+      int maxSegIndex = e0.size() - 1;
+      if (    (segIndex0 == 0 && segIndex1 == maxSegIndex)
+          ||  (segIndex1 == 0 && segIndex0 == maxSegIndex) ) {
+        return true;
       }
     }
     return false;
@@ -104,17 +95,14 @@ public class SnappingIntersectionAdder
 
     /**
      * Process single point intersections only.
-     * Two-point ones will be handled by the near-vertex code
+     * Two-point (collinear) ones are handled by the near-vertex code
      */
     if (li.hasIntersection() && li.getIntersectionNum() == 1) {
-      /*
-      if (li.isInteriorIntersection()) {
-        ((NodedSegmentString) e0).addIntersections(li, segIndex0, 0);
-        ((NodedSegmentString) e1).addIntersections(li, segIndex1, 1);
-        return;
-      }
-      */
-      if (! isAdjacentIntersection(seg0, segIndex0, seg1, segIndex1)) {
+      /**
+       * Don't node intersections which are just 
+       * due to the shared vertex of adjacent segments.
+       */
+      if (! isAdjacent(seg0, segIndex0, seg1, segIndex1)) {
         
         Coordinate intPt = li.getIntersection(0);
         Coordinate snapPt = snapIndex.snap(intPt);
@@ -127,8 +115,7 @@ public class SnappingIntersectionAdder
     /**
      * Segments do not actually intersect, within the limits of orientation index robustness.
      * 
-     * To avoid certain robustness issues in snapping, 
-     * also treat very near vertex-segment situations as intersections.
+     * The segments must still be snapped to the segment endpoints.
      */
     processNearVertex(seg0, segIndex0, p00, seg1, segIndex1, p10, p11 );
     processNearVertex(seg0, segIndex0, p01, seg1, segIndex1, p10, p11 );
