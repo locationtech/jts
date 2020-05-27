@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.chain.MonotoneChain;
 import org.locationtech.jts.index.chain.MonotoneChainBuilder;
@@ -41,13 +42,19 @@ public class MCIndexNoder
   private Collection nodedSegStrings;
   // statistics
   private int nOverlaps = 0;
+  private double tolerance  = 0;
 
   public MCIndexNoder()
   {
   }
+  
   public MCIndexNoder(SegmentIntersector si)
   {
     super(si);
+  }
+
+  public void setToleranceDistance(double tolerance) {
+    this.tolerance   = tolerance;
   }
 
   public List getMonotoneChains() { return monoChains; }
@@ -75,7 +82,8 @@ public class MCIndexNoder
 
     for (Iterator i = monoChains.iterator(); i.hasNext(); ) {
       MonotoneChain queryChain = (MonotoneChain) i.next();
-      List overlapChains = index.query(queryChain.getEnvelope());
+      Envelope queryEnv = expandTol( queryChain.getEnvelope() );
+      List overlapChains = index.query(queryEnv);
       for (Iterator j = overlapChains.iterator(); j.hasNext(); ) {
         MonotoneChain testChain = (MonotoneChain) j.next();
         /**
@@ -93,12 +101,20 @@ public class MCIndexNoder
     }
   }
 
+  private Envelope expandTol(Envelope env) {
+    if (tolerance == 0) return env;
+    Envelope envTol = env.copy();
+    envTol.expandBy(tolerance);
+    return envTol;
+  }
+
   private void add(SegmentString segStr)
   {
     List segChains = MonotoneChainBuilder.getChains(segStr.getCoordinates(), segStr);
     for (Iterator i = segChains.iterator(); i.hasNext(); ) {
       MonotoneChain mc = (MonotoneChain) i.next();
       mc.setId(idCounter++);
+      mc.setOverlapTolerance(tolerance);
       index.insert(mc.getEnvelope(), mc);
       monoChains.add(mc);
     }

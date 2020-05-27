@@ -11,6 +11,8 @@
  */
 package test.jts.perf.operation.overlayng;
 
+import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
+
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
@@ -19,6 +21,9 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geom.util.AffineTransformation;
 import org.locationtech.jts.geom.util.PolygonExtracter;
+import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.ValidatingNoder;
+import org.locationtech.jts.noding.snap.SnappingNoder;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGSnapIfNeeded;
@@ -41,7 +46,7 @@ public class RandomPolygonOverlayFuzzer {
   
   static final int N_PTS = 100;
 
-  static final int N_TESTS = 100;
+  static final int N_TESTS = 10000;
   
   static double SCALE = 100000000;
   
@@ -87,15 +92,16 @@ public class RandomPolygonOverlayFuzzer {
 
   private void process(Geometry poly1, Geometry poly2) {
     try {
-      overlayOrig(poly1, poly2);
-      //overlayNoSnap(poly1, poly2);
+      //overlayOrig(poly1, poly2);
+      overlayOrigNoSnap(poly1, poly2);
       //overlayNGFloat(poly1, poly2);
       //overlayNGSnapIfNeeded(poly1, poly2);
       //overlayNG(poly1, poly2);
+      //overlayNGSnapping(poly1, poly2);
     }
     catch (TopologyException ex) {
       errCount ++;
-      System.out.printf("\nTest %d: %s\n", testIndex, testDesc);
+      System.out.printf("\nTest %d: %s   (# errs: %d)\n", testIndex, testDesc, errCount);
       System.out.printf("ERROR - %s\n", ex.getMessage());
       System.out.println(poly1);
       System.out.println(poly2);
@@ -162,10 +168,23 @@ public class RandomPolygonOverlayFuzzer {
     //Geometry union = inter.union(diff1).union(diff2);
   }
   
-  private void overlayNoSnap(Geometry a, Geometry b) {
+  private void overlayOrigNoSnap(Geometry a, Geometry b) {
     OverlayOp.overlayOp(a, b, OverlayOp.INTERSECTION);
   }
   
+  private void overlayNGSnapping(Geometry a, Geometry b) {
+    unionSnap(a, b, 0.00001);
+  }
+  
+  public static Geometry unionSnap(Geometry a, Geometry b, double tolerance) {
+    Noder noder = getNoder(tolerance);
+    return OverlayNG.overlay(a, b, UNION, null, noder );
+  }
+
+  private static Noder getNoder(double tolerance) {
+    SnappingNoder snapNoder = new SnappingNoder(tolerance);
+    return new ValidatingNoder(snapNoder);
+  }
   //=======================================
   
   private static Geometry[] createPolygons(int npts, boolean isUseSameBase) {

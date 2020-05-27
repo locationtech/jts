@@ -9,14 +9,20 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.noding;
+package org.locationtech.jts.noding.snap;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.NodedSegmentString;
+import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.NodingValidator;
+import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.util.Debug;
 
 /**
@@ -30,11 +36,13 @@ import org.locationtech.jts.util.Debug;
 public class SnappingNoder
     implements Noder
 {
+  private static SnapVertexIndex snapIndex;
   private double snapTolerance;
   private List<NodedSegmentString> nodedResult;
 
   public SnappingNoder(double snapTolerance) {
     this.snapTolerance = snapTolerance;
+    snapIndex = new SnapVertexIndex(snapTolerance);
   }
 
   /**
@@ -51,14 +59,9 @@ public class SnappingNoder
    */
   public void computeNodes(Collection inputSegmentStrings)
   {
-    List<NodedSegmentString> inputSS = createNodedStrings(inputSegmentStrings);
-    /**
-     * Determine hot pixels for intersections and vertices.
-     * This is done BEFORE the input lines are rounded,
-     * to avoid distorting the line arrangement 
-     * (rounding can cause vertices to move across edges).
-     */
-    nodedResult = (List<NodedSegmentString>) computeIntersections(inputSS);
+    List<NodedSegmentString> snappedSS = snapVertices(inputSegmentStrings);
+
+    nodedResult = (List<NodedSegmentString>) computeIntersections(snappedSS);
 
     // testing purposes only - remove in final version
     //checkCorrectness(inputSegmentStrings);
@@ -66,13 +69,28 @@ public class SnappingNoder
     //if (Debug.isDebugging()) dumpNodedLines(snappedResult);
   }
 
-  private static List<NodedSegmentString> createNodedStrings(Collection<SegmentString> segStrings) {
+  private static List<NodedSegmentString> snapVertices(Collection<SegmentString> segStrings) {
     List<NodedSegmentString> nodedStrings = new ArrayList<NodedSegmentString>();
     for (SegmentString ss : segStrings) {
-      nodedStrings.add( new NodedSegmentString(ss) );
+      nodedStrings.add( snapVertices(ss) );
     }
     return nodedStrings;
   }
+
+  private static NodedSegmentString snapVertices(SegmentString ss) {
+    Coordinate[] snapCoords = snap(ss.getCoordinates());
+    return new NodedSegmentString(snapCoords, ss.getData());
+  }
+  
+  private static Coordinate[] snap(Coordinate[] coords) {
+    CoordinateList snapCoords = new CoordinateList();
+    for (int i = 0 ; i < coords.length; i++) {
+      Coordinate pt = snapIndex.snap(coords[i]);
+      snapCoords.add(pt, false);
+    }
+    return snapCoords.toCoordinateArray();
+  }
+
   private void dumpNodedLines(Collection<NodedSegmentString> segStrings) {
     for (NodedSegmentString nss : segStrings) {
       Debug.println( WKTWriter.toLineString(nss.getNodeList().getSplitCoordinates()));
@@ -100,8 +118,9 @@ public class SnappingNoder
    */
   private Collection computeIntersections(List<NodedSegmentString> inputSS)
   {
-    SnappingIntersectionAdder intAdder = new SnappingIntersectionAdder(snapTolerance);
+    SnappingIntersectionAdder intAdder = new SnappingIntersectionAdder(snapIndex);
     MCIndexNoder noder = new MCIndexNoder();
+    noder.setToleranceDistance(2 * snapTolerance);
     noder.setSegmentIntersector(intAdder);
     noder.computeNodes(inputSS);
     return noder.getNodedSubstrings();

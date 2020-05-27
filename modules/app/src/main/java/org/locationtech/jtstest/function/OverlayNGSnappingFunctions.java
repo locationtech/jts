@@ -15,9 +15,11 @@ import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.noding.Noder;
-import org.locationtech.jts.noding.SnappingNoder;
 import org.locationtech.jts.noding.ValidatingNoder;
+import org.locationtech.jts.noding.snap.SnappingNoder;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.operation.union.UnionFunction;
 
 public class OverlayNGSnappingFunctions {
 
@@ -31,4 +33,16 @@ public class OverlayNGSnappingFunctions {
     return new ValidatingNoder(snapNoder);
   }
   
+  public static Geometry unaryUnion(Geometry a, double tolerance) {
+    UnionFunction unionSRFun = new UnionFunction() {
+
+      public Geometry union(Geometry g0, Geometry g1) {
+         return OverlayNGSnappingFunctions.union(g0, g1, tolerance );
+      }
+      
+    };
+    UnaryUnionOp op = new UnaryUnionOp(a);
+    op.setUnionFunction(unionSRFun);
+    return op.union();
+  }
 }
