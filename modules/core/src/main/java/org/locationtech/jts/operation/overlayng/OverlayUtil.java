@@ -25,7 +25,7 @@ class OverlayUtil {
 
   static double expandDistance(Envelope env, PrecisionModel pm) {
     double envExpandDist;
-    if (pm.isFloating()) {
+    if (pm ==null || pm.isFloating()) {
       // if PM is FLOAT then there is no scale factor, so add 10%
       double minSize = Math.min(env.getHeight(), env.getWidth());
       envExpandDist = 0.1 * minSize;
@@ -105,7 +105,7 @@ class OverlayUtil {
    */
   static boolean isEnvDisjoint(Geometry a, Geometry b, PrecisionModel pm) {
     if (isEmpty(a) || isEmpty(b)) return true;
-    if (pm.isFloating()) {
+    if (pm == null || pm.isFloating()) {
       return a.getEnvelopeInternal().disjoint(b.getEnvelopeInternal());
     }
     return isDisjoint(a.getEnvelopeInternal(), b.getEnvelopeInternal(), pm);
