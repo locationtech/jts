@@ -200,7 +200,7 @@ class OverlayEdge extends HalfEdge {
     return isInResultArea || isInResultLine;
   }
 
-  void setResultNext(OverlayEdge e) {
+  void setNextResult(OverlayEdge e) {
     // Assert: e.orig() == this.dest();
     nextResultEdge = e;
   }
@@ -213,7 +213,7 @@ class OverlayEdge extends HalfEdge {
     return nextResultEdge != null;
   }
   
-  void setResultNextMax(OverlayEdge e) {
+  void setNextResultMax(OverlayEdge e) {
     // Assert: e.orig() == this.dest();
     nextResultMaxEdge = e;
   }

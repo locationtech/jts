@@ -80,7 +80,7 @@ class MaximalEdgeRing {
       case STATE_LINK_OUTGOING:
         if (! currOut.isInResultArea()) break;
         // link the in edge to the out edge
-        currResultIn.setResultNextMax(currOut);
+        currResultIn.setNextResultMax(currOut);
         state = STATE_FIND_INCOMING;
         //Debug.println("Linked Max edge:  " + currResultIn + " -> " + currOut);
         break;
@@ -220,7 +220,7 @@ class MaximalEdgeRing {
      
     //Debug.println("Found result in-edge:  " + currIn);
     
-    currIn.setResultNext(currMaxRingOut);
+    currIn.setNextResult(currMaxRingOut);
     //Debug.println("Linked Min Edge:  " + currIn + " -> " + currMaxRingOut);
     // return null to indicate to scan for the next max-ring out-edge
     return null;
