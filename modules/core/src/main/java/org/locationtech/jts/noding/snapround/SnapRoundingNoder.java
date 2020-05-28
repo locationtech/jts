@@ -44,7 +44,7 @@ import org.locationtech.jts.noding.SegmentString;
  * 
  * @version 1.7
  */
-public class FastSnapRounder
+public class SnapRoundingNoder
     implements Noder
 {
   private final PrecisionModel pm;
@@ -52,7 +52,7 @@ public class FastSnapRounder
   
   private List<NodedSegmentString> snappedResult;
 
-  public FastSnapRounder(PrecisionModel pm) {
+  public SnapRoundingNoder(PrecisionModel pm) {
     this.pm = pm;
     pixelIndex = new HotPixelIndex(pm);
   }
@@ -166,7 +166,7 @@ public class FastSnapRounder
    */
   private List<Coordinate> findInteriorIntersections(List<NodedSegmentString> inputSS)
   {
-    SnapIntersectionAdder intAdder = new SnapIntersectionAdder(pm);
+    SnapRoundingIntersectionAdder intAdder = new SnapRoundingIntersectionAdder(pm);
     MCIndexNoder noder = new MCIndexNoder();
     noder.setSegmentIntersector(intAdder);
     noder.computeNodes(inputSS);

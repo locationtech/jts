@@ -196,7 +196,7 @@ public class SimpleSnapRounder
    */
   private List<Coordinate> findInteriorIntersections(List<NodedSegmentString> inputSS)
   {
-    SnapIntersectionAdder intAdder = new SnapIntersectionAdder(pm);
+    SnapRoundingIntersectionAdder intAdder = new SnapRoundingIntersectionAdder(pm);
     MCIndexNoder noder = new MCIndexNoder();
     noder.setSegmentIntersector(intAdder);
     noder.computeNodes(inputSS);

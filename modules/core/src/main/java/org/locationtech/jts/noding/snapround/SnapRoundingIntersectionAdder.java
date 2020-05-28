@@ -39,7 +39,7 @@ import org.locationtech.jts.noding.SegmentString;
  *
  * @version 1.17
  */
-public class SnapIntersectionAdder
+public class SnapRoundingIntersectionAdder
     implements SegmentIntersector
 {
   /**
@@ -60,7 +60,7 @@ public class SnapIntersectionAdder
    *
    * @param pm the precision mode to use
    */
-  public SnapIntersectionAdder(PrecisionModel pm)
+  public SnapRoundingIntersectionAdder(PrecisionModel pm)
   {
     precModel = pm;
     /**

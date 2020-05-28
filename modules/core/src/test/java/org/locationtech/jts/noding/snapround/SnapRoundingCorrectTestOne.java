@@ -40,7 +40,7 @@ public class SnapRoundingCorrectTestOne  extends GeometryTestCase {
 
 
   private static Noder getSnapRounder(PrecisionModel pm) {
-    return new FastSnapRounder(pm);
+    return new SnapRoundingNoder(pm);
     //return new SimpleSnapRounder(pm);
     //return new MCIndexSnapRounder(pm);
   }

@@ -42,7 +42,7 @@ public class SnapRoundingCorrectTest  extends GeometryTestCase {
   private static Noder getSnapRounder(PrecisionModel pm) {
     //return new SimpleSnapRounder(pm);
     //return new MCIndexSnapRounder(pm);
-    return new FastSnapRounder(pm);
+    return new SnapRoundingNoder(pm);
   }
   
   GeometryFactory geomFact = new GeometryFactory();
