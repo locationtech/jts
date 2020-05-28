@@ -24,20 +24,25 @@ import org.locationtech.jts.noding.SegmentString;
 
 /**
  * Nodes a set of segment strings
- * snap vertices and node points together if
+ * snapping vertices and intersection points together if
  * they lie within the given snap tolerance distance.
- * This produces a much more robust noded output.
- * The noded output produces segment strings which run node-to-node
- * (i.e. are of maximal length in the output arrangement).
+ * Vertices take priority over intersection points for snapping.
+ * Input segment strings are generally only split at true node points
+ * (i.e. the output segment strings are of maximal length in the output arrangement).
  * <p>
  * The snap tolerance should be chosen to be as small as possible
- * while still producing a robust result.
- * It probably only needs to be a factor of about 10e-12
+ * while still producing a correct result.
+ * It probably only needs to be small enough to eliminate 
+ * "nearly-coincident" segments, for which intersection points cannot be computed accurately.
+ * This implies a factor of about 10e-12
  * smaller than the magnitude of the segment coordinates. 
  * <p>
- * This snapping algorithm may not be fully robust, 
- * but so far no failure cases have been found, 
- * given a suitably small enough snap tolerance.
+ * With an appropriate snap tolerance this algorithm appears to be very robust.
+ * So far no failure cases have been found, 
+ * given a small enough snap tolerance.
+ * <p>
+ * The correctness of the output is not verified by this noder. 
+ * If required this can be done by {@link ValidatingNoder}. 
  * 
  * @version 1.17
  */
