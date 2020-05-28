@@ -38,10 +38,10 @@ import org.locationtech.jts.noding.SegmentString;
  * <p>
  * This implementation uses a monotone chains and a spatial index to
  * speed up the intersection tests.
- * <p>
- * This implementation appears to be fully robust using an integer precision model.
- * It will function with non-integer precision models, but the
- * results are not 100% guaranteed to be correctly noded.
+ * 
+ * <h3>KNOWN BUGS</h3>
+ * This implementation is not fully robust.
+ * Use {@link SnapRoundingNoder} instead.
  *
  * @version 1.7
  */
