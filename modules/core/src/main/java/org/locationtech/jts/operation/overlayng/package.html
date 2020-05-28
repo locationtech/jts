@@ -59,6 +59,20 @@ Implemented by unioning a single input with an empty geometry
 <li><b>Fast Coverage Union</b> - of valid polygonal and linear coverages
 </ul>
 
+<h3>Pluggable Noding</h3>
+
+The noding phase of overlay uses a  {@link Noder} subclass.
+This is determine automatically based on the precision model of the input.
+Or it can be provided explicity, which allows changing characteristics
+of performance and robustness.
+Examples of relevant noders include:
+<ul>
+<li>{@link SegmentExtractingNoder} - requires node-clean input, and provides very fast noding</li>
+<li>{@link SnappingNoder} - a very robust full-precision noder</li>
+<li>{@link ValidatingNoder} - a wrapper which can be used to verify the noding
+prior to topology building</li> 
+</ul>
+
 <h3>Codebase</h3>
 <ul>
 <li>Defines a simpler topology model, with clear semantics.</li>
