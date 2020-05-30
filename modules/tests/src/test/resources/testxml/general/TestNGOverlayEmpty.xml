@@ -1,5 +1,8 @@
 <run>
-
+<desc>Tests for OverlayNG operations with empty input.
+Covers topological situations with no precision collapse.
+Uses a floating precision model.
+</desc>
 <case>
   <desc>AA - empty polygon</desc>
   <a>

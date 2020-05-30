@@ -1,4 +1,8 @@
 <run>
+<desc>Tests for OverlayNG operations with point inputs.
+Covers topological situations with precision collapse,
+Uses snap-rounding.
+</desc>
 <!--  Precision must be specified for each operation.
       rather than a global precision model, 
       since that rounds input coordinates --> 

@@ -1,5 +1,8 @@
 <run>
-
+<desc>Tests for OverlayNG operations with all area inputs.
+Covers topological situations with no precision collapse.
+Uses a floating precision model.
+</desc>
 <case>
   <desc>AA - simple overlapping</desc>
   <a>
