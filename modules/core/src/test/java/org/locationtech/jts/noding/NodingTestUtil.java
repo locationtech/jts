@@ -23,7 +23,8 @@ import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.util.LineStringExtracter;
 
 public class NodingTestUtil {
-  public static MultiLineString toLines(Collection<NodedSegmentString> nodedList, 
+  
+  public static Geometry toLines(Collection<NodedSegmentString> nodedList, 
       GeometryFactory geomFact) {
     LineString[] lines = new LineString[ nodedList.size() ];
     int i = 0;
@@ -32,6 +33,7 @@ public class NodingTestUtil {
       LineString line = geomFact.createLineString(pts);
       lines[i++] = line;
     }
+    if (lines.length == 1) return lines[0];
     return geomFact.createMultiLineString(lines);
   }
 
@@ -66,7 +68,7 @@ public class NodingTestUtil {
     noderValid.computeNodes(ssList);
     Collection<NodedSegmentString> nodedList = noder.getNodedSubstrings();
     
-    MultiLineString result = toLines(nodedList, geom1.getFactory());
+    Geometry result = toLines(nodedList, geom1.getFactory());
     return result;
   }
 }

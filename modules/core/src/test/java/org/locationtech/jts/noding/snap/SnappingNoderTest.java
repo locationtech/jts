@@ -34,6 +34,12 @@ public class SnappingNoderTest extends GeometryTestCase {
     checkRounding(wkt1, null, 1, expected);
   }
   
+  public void testLineDensePointsSelfSnap() {
+    String wkt1 = "LINESTRING (1 1, 1.3 1, 1.6 1, 1.9 1, 2.2 1, 2.5 1, 2.8 1, 3.1 1, 3.5 1, 4 1)";
+    String expected = "LINESTRING (1 1, 2.2 1, 3.5 1)";
+    checkRounding(wkt1, null, 1, expected);
+  }
+  
   void checkRounding(String wkt1, String wkt2, double snapDist, String expectedWKT)
   {
     Geometry geom1 = read(wkt1);
