@@ -36,7 +36,7 @@ import test.jts.GeometryTestCase;
  *
  * @version 1.17
  */
-public class SnapRoundingCorrectTestOne  extends GeometryTestCase {
+public class SnapRoundingNoderTestOne  extends GeometryTestCase {
 
 
   private static Noder getSnapRounder(PrecisionModel pm) {
@@ -48,10 +48,10 @@ public class SnapRoundingCorrectTestOne  extends GeometryTestCase {
   GeometryFactory geomFact = new GeometryFactory();
   
   public static void main(String args[]) {
-    TestRunner.run(SnapRoundingCorrectTestOne.class);
+    TestRunner.run(SnapRoundingNoderTestOne.class);
   }
 
-  public SnapRoundingCorrectTestOne(String name) { super(name); }
+  public SnapRoundingNoderTestOne(String name) { super(name); }
 
   public void testSlantAndHorizontalLineWithMiddleNode() {
     String wkt =      "MULTILINESTRING ((0.1565552 49.5277405, 0.1579285 49.5277405, 0.1593018 49.5277405), (0.1568985 49.5280838, 0.1589584 49.5273972))";

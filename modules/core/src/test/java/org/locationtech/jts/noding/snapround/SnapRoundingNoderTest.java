@@ -37,7 +37,7 @@ import test.jts.GeometryTestCase;
  *
  * @version 1.17
  */
-public class SnapRoundingCorrectTest  extends GeometryTestCase {
+public class SnapRoundingNoderTest  extends GeometryTestCase {
   
   private static Noder getSnapRounder(PrecisionModel pm) {
     //return new SimpleSnapRounder(pm);
@@ -48,10 +48,10 @@ public class SnapRoundingCorrectTest  extends GeometryTestCase {
   GeometryFactory geomFact = new GeometryFactory();
   
   public static void main(String args[]) {
-    TestRunner.run(SnapRoundingCorrectTest.class);
+    TestRunner.run(SnapRoundingNoderTest.class);
   }
 
-  public SnapRoundingCorrectTest(String name) { super(name); }
+  public SnapRoundingNoderTest(String name) { super(name); }
 
   /**
    * This test checks the HotPixel test for overlapping horizontal line
@@ -194,7 +194,7 @@ public class SnapRoundingCorrectTest  extends GeometryTestCase {
     Collection<NodedSegmentString> nodedList = ssr.getNodedSubstrings();
     
     MultiLineString result = toLines(nodedList);
-    System.out.println(result);
+    //System.out.println(result);
     
     // validate noding
     NodingValidator nv = new NodingValidator(nodedList);
