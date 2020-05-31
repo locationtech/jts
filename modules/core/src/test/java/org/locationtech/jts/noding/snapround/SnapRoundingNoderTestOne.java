@@ -12,20 +12,11 @@
 
 package org.locationtech.jts.noding.snapround;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.geom.util.LinearComponentExtracter;
-import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
-import org.locationtech.jts.noding.NodingValidator;
+import org.locationtech.jts.noding.NodingTestUtil;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -41,8 +32,6 @@ public class SnapRoundingNoderTestOne  extends GeometryTestCase {
 
   private static Noder getSnapRounder(PrecisionModel pm) {
     return new SnapRoundingNoder(pm);
-    //return new SimpleSnapRounder(pm);
-    //return new MCIndexSnapRounder(pm);
   }
   
   GeometryFactory geomFact = new GeometryFactory();
@@ -157,58 +146,14 @@ public class SnapRoundingNoderTestOne  extends GeometryTestCase {
   void checkRounding(String wkt, double scale, String expectedWKT)
   {
     Geometry geom = read(wkt);
-    Geometry result = snap(geom, scale);
-/*
-    for (Iterator it = nodedLines.iterator(); it.hasNext(); ) {
-      System.out.println(it.next());
-    }
-    */    
+    PrecisionModel pm = new PrecisionModel(scale);
+    Noder noder = getSnapRounder(pm);
+    Geometry result = NodingTestUtil.nodeValidated(geom, null, noder);  
     
     // only check if expected was provided
     if (expectedWKT == null) return;
     Geometry expected = read(expectedWKT);
     checkEqual(expected, result);
   }
-
-  private Geometry snap(Geometry geom, double scale) {
-    PrecisionModel pm = new PrecisionModel(scale);
-    List<LineString> lines = LinearComponentExtracter.getLines(geom);
-    List ssList = getSegmentStrings(lines);
-    
-    Noder ssr = getSnapRounder(pm);
-    ssr.computeNodes(ssList);
-    Collection<NodedSegmentString> nodedList = ssr.getNodedSubstrings();
-    
-    MultiLineString result = toLines(nodedList);
-    System.out.println(result);
-    
-    // validate noding
-    NodingValidator nv = new NodingValidator(nodedList);
-    nv.checkValid();
-
-    return result;
-  }
-
-  private MultiLineString toLines(Collection<NodedSegmentString> nodedList) {
-    LineString[] lines = new LineString[ nodedList.size() ];
-    int i = 0;
-    for (NodedSegmentString nss : nodedList) {
-      Coordinate[] pts = nss.getCoordinates();
-      LineString line = geomFact.createLineString(pts);
-      lines[i++] = line;
-    }
-    return geomFact.createMultiLineString(lines);
-  }
-
-  private List<NodedSegmentString> getSegmentStrings(List<LineString> lines) {
-    List<NodedSegmentString> nssList = new ArrayList<NodedSegmentString>();
-    for (LineString line : lines) {
-      NodedSegmentString nss = new NodedSegmentString(line.getCoordinates(), line);
-      nssList.add(nss);
-    }
-    return nssList;
-  }
-
-
 
 }
