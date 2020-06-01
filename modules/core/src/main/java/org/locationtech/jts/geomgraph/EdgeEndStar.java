@@ -25,6 +25,7 @@ import org.locationtech.jts.algorithm.BoundaryNodeRule;
 import org.locationtech.jts.algorithm.locate.SimplePointInAreaLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.util.Assert;
 

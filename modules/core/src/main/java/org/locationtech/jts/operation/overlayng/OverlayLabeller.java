@@ -18,8 +18,8 @@ import java.util.Deque;
 import java.util.List;
 
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geom.TopologyException;
-import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.util.Assert;
 
 /**

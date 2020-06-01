@@ -1,6 +1,3 @@
-
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -12,19 +9,16 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.topology;
+package org.locationtech.jts.geom;
 
 /**
- * @version 1.7
- */
-import org.locationtech.jts.geom.Coordinate;
-
-/**
- * Utility functions for working with quadrants, which are numbered as follows:
+ * Utility functions for working with quadrants of the Euclidean plane.
+ * <p>
+ * Quadrants are referenced and numbered as follows:
  * <pre>
- * 1 | 0
- * --+--
- * 2 | 3
+ * 1 - NW | 0 - NE
+ * -------+-------
+ * 2 - SW | 3 - SE
  * </pre>
  *
  * @version 1.7

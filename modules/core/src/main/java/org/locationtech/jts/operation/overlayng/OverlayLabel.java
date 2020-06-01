@@ -12,7 +12,7 @@
 package org.locationtech.jts.operation.overlayng;
 
 import org.locationtech.jts.geom.Location;
-import org.locationtech.jts.geomgraph.Position;
+import org.locationtech.jts.geom.Position;
 
 /**
  * A label for a pair of {@link OverlayEdge}s which records

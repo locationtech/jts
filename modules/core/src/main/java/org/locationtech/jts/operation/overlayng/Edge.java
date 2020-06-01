@@ -20,7 +20,6 @@ import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.noding.SegmentString;
-import org.locationtech.jts.topology.Position;
 import org.locationtech.jts.util.Debug;
 
 /**

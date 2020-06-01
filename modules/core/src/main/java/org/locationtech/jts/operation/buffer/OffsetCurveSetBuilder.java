@@ -35,9 +35,9 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.geomgraph.Label;
-import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.SegmentString;
 
