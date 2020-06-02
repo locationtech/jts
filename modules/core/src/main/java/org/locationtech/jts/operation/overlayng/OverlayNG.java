@@ -184,6 +184,25 @@ public class OverlayNG
   }
 
   /**
+   * Computes an overlay operation on the given geometry operands, 
+   * using a supplied {@link Noder}.
+   * 
+   * @param geom0 the first geometry argument
+   * @param geom1 the second geometry argument
+   * @param opCode the code for the desired overlay operation
+   * @param noder the noder to use
+   * @return the result of the overlay operation
+   */
+  public static Geometry overlay(Geometry geom0, Geometry geom1, 
+      int opCode, Noder noder)
+  {
+    OverlayNG ov = new OverlayNG(geom0, geom1, null, opCode);
+    ov.setNoder(noder);
+    Geometry geomOv = ov.getResult();
+    return geomOv;
+  }
+
+  /**
    * Computes an overlay operation on 
    * the given geometry operands,
    * using an automatically-determined fixed precision model
