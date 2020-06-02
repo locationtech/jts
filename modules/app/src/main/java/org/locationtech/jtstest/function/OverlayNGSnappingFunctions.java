@@ -57,7 +57,7 @@ public class OverlayNGSnappingFunctions {
     return op.union();
   }
   
-  public static Geometry unionNoValid(Geometry a, Geometry b, double tolerance) {
+  private static Geometry unionNoValid(Geometry a, Geometry b, double tolerance) {
     return OverlayNG.overlay(a, b, UNION, null, new SnappingNoder(tolerance) );
   }
   
