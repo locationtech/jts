@@ -189,6 +189,10 @@ public class TestReader
 
     private Result toResult(String value, String name, TestRun testRun)
         throws TestParseException, ParseException {
+        // no expected result provided
+        if (value.length() == 0) {
+          return null; 
+        }
         if (isBooleanFunction(name)) {
             return toBooleanResult(value);
         }
@@ -203,7 +207,6 @@ public class TestReader
         }
         throw new TestParseException(
             "Unknown operation name '" + name + "'");
-//        return null;
     }
 
     private BooleanResult toBooleanResult(String value) throws TestParseException {
