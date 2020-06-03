@@ -24,28 +24,29 @@ import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGSnapIfNeeded;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionFunction;
 
-public class OverlayNGPMFloatFunctions {
+public class OverlayNGSnapIfNeededFunctions {
   
   public static Geometry difference(Geometry a, Geometry b) {
-    return OverlayNG.overlay(a, b, DIFFERENCE );
+    return OverlayNGSnapIfNeeded.overlay(a, b, DIFFERENCE );
   }
 
   public static Geometry intersection(Geometry a, Geometry b) {
-    return OverlayNG.overlay(a, b, INTERSECTION );
+    return OverlayNGSnapIfNeeded.overlay(a, b, INTERSECTION );
   }
 
   public static Geometry union(Geometry a, Geometry b) {
-    return OverlayNG.overlay(a, b, UNION );
+    return OverlayNGSnapIfNeeded.overlay(a, b, UNION );
   }
 
   public static Geometry unaryUnion(Geometry a) {
     UnionFunction unionSRFun = new UnionFunction() {
 
       public Geometry union(Geometry g0, Geometry g1) {
-         return OverlayNG.overlay(g0, g1, UNION );
+         return OverlayNGSnapIfNeeded.overlay(g0, g1, UNION );
       }
       
     };
@@ -54,33 +55,4 @@ public class OverlayNGPMFloatFunctions {
     return op.union();
   }
   
-  public static Geometry intersectionFloatPMNoOpt(Geometry a, Geometry b) {
-    OverlayNG ovr = new OverlayNG(a, b, INTERSECTION);
-    ovr.setOptimized(false);
-    return ovr.getResult();
-  }
-  
-  public static Geometry intersectionNoValid(Geometry a, Geometry b) {
-    Noder noder = createFloatingPrecisionNoder(false);
-    return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(), noder);
-  }
-  
-  public static Geometry intersectionIsValid(Geometry a, Geometry b) {
-    Noder noder = createFloatingPrecisionNoder(false);
-    Geometry geom = OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(), noder);
-    if (geom.isValid()) return geom;
-    return null;
-  }
-  
-  private static Noder createFloatingPrecisionNoder(boolean doValidation) {
-    MCIndexNoder mcNoder = new MCIndexNoder();
-    LineIntersector li = new RobustLineIntersector();
-    mcNoder.setSegmentIntersector(new IntersectionAdder(li));
-    
-    Noder noder = mcNoder;
-    if (doValidation) {
-      noder = new ValidatingNoder( mcNoder);
-    }
-    return noder;
-  }
 }
