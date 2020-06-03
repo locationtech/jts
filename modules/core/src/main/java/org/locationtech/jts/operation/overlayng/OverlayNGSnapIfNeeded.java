@@ -109,7 +109,7 @@ public class OverlayNGSnapIfNeeded
     Geometry result;
     try {
       Noder noder = createSnappingtNoder(snapTol);
-      System.out.println("Snapping with " + snapTol);
+      //System.out.println("Snapping with " + snapTol);
 
       result = OverlayNG.overlay(geom0, geom1, opCode, noder);
       return result;
