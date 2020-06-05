@@ -23,9 +23,15 @@ import org.locationtech.jts.geom.Envelope;
  * to those which intersect an envelope.
  * This creates zero or more sections of the input segment sequences,
  * containing only line segments which intersect the limit envelope.
- * Segments are not clipped, since that happens in the overlay.
+ * Segments are not clipped, since that can move 
+ * line segments enough to alter topology,
+ * and it happens in the overlay in any case.
  * This can substantially reduce the number of vertices which need to be
  * processed during overlay.
+ * <p>
+ * This optimization is only applicable to Line geometries,
+ * since it does not maintain the closed topology of rings.
+ * Polygonal geometries are optimized using the {@link RingClipper}.
  * 
  * @author Martin Davis
  *
