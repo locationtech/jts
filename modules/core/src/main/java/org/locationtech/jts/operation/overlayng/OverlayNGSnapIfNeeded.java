@@ -20,19 +20,12 @@ import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
-import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.noding.snap.SnappingNoder;
 
 
 /**
  * Performs an overlay operation using full precision
- * if possible, and snap-rounding only as a fall-back for failure.
- * <p>
- * <b>WARNING</b> - this approach can produce artifacts 
- * when unioning polygonal coverages. 
- * The issue occurs when one group of polygons is snapped,
- * and an adjacent polygon is not.  A gap can be 
- * introduced between snapped and non-snapped segments.
+ * if possible, and snapping only as a fall-back for failure.
  *     
  * @author Martin Davis
  */
@@ -68,9 +61,12 @@ public class OverlayNGSnapIfNeeded
     Geometry result;
     RuntimeException exOriginal;
     try {
-      // start with operation using floating PM
       result = OverlayNG.overlay(geom0, geom1, opCode, PM_FLOAT ); 
-      //result = OverlayNG.overlay(geom0, geom1, opCode, createFloatingNoder()); 
+      
+      // Simple noding with no validation
+      // There are cases where this succeeds with invalid noding (e.g. STMLF 1608).
+      // So currently it is NOT safe to run overlay without noding validation
+      //result = OverlayNG.overlay(geom0, geom1, opCode, createFloatingNoValidNoder()); 
       return result;
     }
     catch (RuntimeException ex) {
@@ -92,7 +88,15 @@ public class OverlayNGSnapIfNeeded
     throw exOriginal;
   }
 
-  private static Noder createFloatingNoder() {
+  /**
+   * Creates a noder using simple floating noding 
+   * with no validation phase.
+   * This is twice as fast, and should be safe since 
+   * OverlayNG is more sensitive to invalid noding.
+   * 
+   * @return a floating noder with no validation
+   */
+  private static Noder createFloatingNoValidNoder() {
     MCIndexNoder noder = new MCIndexNoder();
     LineIntersector li = new RobustLineIntersector();
     noder.setSegmentIntersector(new IntersectionAdder(li));
