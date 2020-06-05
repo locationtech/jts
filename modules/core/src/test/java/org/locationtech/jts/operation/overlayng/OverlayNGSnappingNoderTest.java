@@ -22,13 +22,19 @@ import org.locationtech.jts.noding.snap.SnappingNoder;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class OverlayNGSnappingTest extends GeometryTestCase {
+/**
+ * Tests {@link OverlayNG} using the {@link SnappingNoder}.
+ * 
+ * @author mdavis
+ *
+ */
+public class OverlayNGSnappingNoderTest extends GeometryTestCase {
 
   public static void main(String args[]) {
-    TestRunner.run(OverlayNGSnappingTest.class);
+    TestRunner.run(OverlayNGSnappingNoderTest.class);
   }
 
-  public OverlayNGSnappingTest(String name) { super(name); }
+  public OverlayNGSnappingNoderTest(String name) { super(name); }
   
   public void testRectanglesOneAjarUnion() {
     Geometry a = read("POLYGON ((10 10, 10 5, 5 5, 5 10, 10 10))");
