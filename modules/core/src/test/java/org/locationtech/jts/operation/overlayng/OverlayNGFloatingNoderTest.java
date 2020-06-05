@@ -20,7 +20,7 @@ public class OverlayNGFloatingNoderTest extends GeometryTestCase {
 
   public OverlayNGFloatingNoderTest(String name) { super(name); }
   
-  public void testTriangleIntersectionn() {
+  public void testTriangleIntersection() {
     Geometry a = read("POLYGON ((0 0, 8 0, 8 3, 0 0))");
     Geometry b = read("POLYGON ((0 5, 5 0, 0 0, 0 5))");
     Geometry expected = read("POLYGON ((0 0, 3.6363636363636362 1.3636363636363635, 5 0, 0 0))");
