@@ -13,12 +13,12 @@ import test.jts.GeometryTestCase;
  * @author Martin Davis
  *
  */
-public class OverlayNGFloatingPrecisionTest extends GeometryTestCase {
+public class OverlayNGFloatingNoderTest extends GeometryTestCase {
   public static void main(String args[]) {
-    TestRunner.run(OverlayNGFloatingPrecisionTest.class);
+    TestRunner.run(OverlayNGFloatingNoderTest.class);
   }
 
-  public OverlayNGFloatingPrecisionTest(String name) { super(name); }
+  public OverlayNGFloatingNoderTest(String name) { super(name); }
   
   public void testTriangleIntersectionn() {
     Geometry a = read("POLYGON ((0 0, 8 0, 8 3, 0 0))");
