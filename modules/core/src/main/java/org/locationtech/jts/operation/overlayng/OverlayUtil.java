@@ -21,30 +21,6 @@ import org.locationtech.jts.util.Assert;
  */
 class OverlayUtil {
 
-  private static final int SAFE_ENV_EXPAND_FACTOR = 3;
-
-  static double expandDistance(Envelope env, PrecisionModel pm) {
-    double envExpandDist;
-    if (pm ==null || pm.isFloating()) {
-      // if PM is FLOAT then there is no scale factor, so add 10%
-      double minSize = Math.min(env.getHeight(), env.getWidth());
-      envExpandDist = 0.1 * minSize;
-    }
-    else {
-      // if PM is fixed, add a small multiple of the grid size
-      double gridSize = 1.0 / pm.getScale();
-      envExpandDist = SAFE_ENV_EXPAND_FACTOR * gridSize;
-    }
-    return envExpandDist;
-  }
-
-  static Envelope safeOverlapEnv(Envelope env, PrecisionModel pm) {
-    double envExpandDist = expandDistance(env, pm);
-    Envelope safeEnv = env.copy();
-    safeEnv.expandBy(envExpandDist);
-    return safeEnv;
-  }
-
   static Envelope clippingEnvelope(int opCode, InputGeometry inputGeom, PrecisionModel pm) {   
     Envelope clipEnv = null;
     switch (opCode) {
@@ -60,6 +36,41 @@ class OverlayUtil {
     return clipEnv;
   }
 
+  /**
+   * Determines a safe geometry envelope for clipping,
+   * taking into account the precision model being used.
+   * 
+   * @param env a geometry envelope
+   * @param pm the precision model
+   * @return a safe envelope to use for clipping
+   */
+  private static Envelope safeOverlapEnv(Envelope env, PrecisionModel pm) {
+    double envExpandDist = safeExpandDistance(env, pm);
+    Envelope safeEnv = env.copy();
+    safeEnv.expandBy(envExpandDist);
+    return safeEnv;
+  }
+  
+  private static final double SAFE_ENV_BUFFER_FACTOR = 0.1;
+
+  private static final int SAFE_ENV_GRID_FACTOR = 3;
+
+  private static double safeExpandDistance(Envelope env, PrecisionModel pm) {
+    double envExpandDist;
+    if (pm ==null || pm.isFloating()) {
+      // if PM is FLOAT then there is no scale factor, so add 10%
+      double minSize = Math.min(env.getHeight(), env.getWidth());
+      envExpandDist = SAFE_ENV_BUFFER_FACTOR * minSize;
+    }
+    else {
+      // if PM is fixed, add a small multiple of the grid size
+      double gridSize = 1.0 / pm.getScale();
+      envExpandDist = SAFE_ENV_GRID_FACTOR * gridSize;
+    }
+    return envExpandDist;
+  }
+
+  
   /**
    * Tests if the result can be determined to be empty
    * based on simple properties of the input geometries
