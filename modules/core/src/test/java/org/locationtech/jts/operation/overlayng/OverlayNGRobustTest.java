@@ -32,6 +32,17 @@ public class OverlayNGRobustTest extends GeometryTestCase {
    * <p>
    * The test check here is a heuristic that detects the presence of a large
    * polygon in the output.
+   * <p>
+   * There are several possible fixes:
+   * <ul>
+   * <li>Improve clipping to avoid clipping line segments which may intersect
+   * other geometry (by computing a large enough clipping envelope)</li>
+   * <li>Improve choosing a point for disconnected edge location; 
+   * i.e. by finding one that is far from the other geometry edges.
+   * However, this still creates a result which may not reflect the 
+   * actual input topology.
+   * </li>
+   * </ul>
    * 
    */
   public void testPolygonsWithClippingPerturbationIntersection() {
