@@ -21,15 +21,22 @@ public class OverlayNGRobustTest extends GeometryTestCase {
   public OverlayNGRobustTest(String name) { super(name); }
   
   /**
-   * Tests a case where ring clipping caused a clipped line segment to move slightly.
-   * This caused the clipped edges to become disjoint.  
-   * However, during the overlay labelling for the disconnected edge in geometry B,
-   * the chosen edge coordinate had its location computed as inside the original polygon.
-   * This is because the chosen coordinate happened to be the one that the 
-   * clipped edge crossed over.
-   * This caused the edge ring to be labelled as Interior to both polygon, 
-   * and hence resulted in output of a much larger polygon than is correct.
+   * Tests a case where ring clipping causes an incorrect result.
    * <p>
+   * The incorrect result occurs because:
+   * <ol>
+   * <li>Ring Clipping causes a clipped A line segment to move slightly.
+   * <li>This causes the clipped A and B edges to become disjoint
+   * (whereas in the original geometry they intersected).  
+   * <li>Both edge rings are thus determined to be disconnected during overlay labeling.
+   * <li>For the overlay labeling for the disconnected edge in geometry B,
+   * the chosen edge coordinate has its location computed as inside the original A polygon.
+   * This is because the chosen coordinate happens to be the one that the 
+   * clipped edge crossed over.
+   * <li>This causes the (clipped) B edge ring to be labelled as Interior to the A polygon. 
+   * <li>The B edge ring thus is computed as being in the intersection, 
+   * and the entire ring is output, producing a much larger polygon than is correct.
+   * </ol>
    * The test check here is a heuristic that detects the presence of a large
    * polygon in the output.
    * <p>
