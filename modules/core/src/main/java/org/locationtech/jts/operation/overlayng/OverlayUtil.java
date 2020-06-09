@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2020 Martin Davis.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package org.locationtech.jts.operation.overlayng;
 
 import java.util.ArrayList;
@@ -22,18 +33,34 @@ import org.locationtech.jts.util.Assert;
 class OverlayUtil {
 
   static Envelope clippingEnvelope(int opCode, InputGeometry inputGeom, PrecisionModel pm) {   
-    Envelope clipEnv = null;
+    Envelope overlapEnv = overlapEnvelope(opCode, inputGeom, pm);
+    if (overlapEnv == null) 
+      return null;
+    
+    Envelope clipEnv = RobustClipEnvelopeComputer.getEnvelope(
+        inputGeom.getGeometry(0), 
+        inputGeom.getGeometry(1), 
+        overlapEnv);
+    
+    Envelope safeEnv = safeEnv( clipEnv, pm );
+    return safeEnv;
+  }
+
+  private static Envelope overlapEnvelope(int opCode, InputGeometry inputGeom, PrecisionModel pm) {
+    Envelope overlapEnv = null;
     switch (opCode) {
     case OverlayNG.INTERSECTION:
-      Envelope envA = safeOverlapEnv( inputGeom.getEnvelope(0), pm );
-      Envelope envB = safeOverlapEnv( inputGeom.getEnvelope(1), pm );
-      clipEnv = envA.intersection(envB);   
+      // use safe envelopes for intersection to ensure they contain rounded coordinates
+      Envelope envA = safeEnv( inputGeom.getEnvelope(0), pm);
+      Envelope envB = safeEnv( inputGeom.getEnvelope(1), pm);
+      overlapEnv = envA.intersection(envB);   
       break;
     case OverlayNG.DIFFERENCE:
-      clipEnv = safeOverlapEnv( inputGeom.getEnvelope(0), pm );
+      overlapEnv = safeEnv( inputGeom.getEnvelope(0), pm);
       break;
     }
-    return clipEnv;
+    // return null for UNION and SYMDIFFERENCE to indicate no clipping
+    return overlapEnv;
   }
 
   /**
@@ -44,7 +71,7 @@ class OverlayUtil {
    * @param pm the precision model
    * @return a safe envelope to use for clipping
    */
-  private static Envelope safeOverlapEnv(Envelope env, PrecisionModel pm) {
+  private static Envelope safeEnv(Envelope env, PrecisionModel pm) {
     double envExpandDist = safeExpandDistance(env, pm);
     Envelope safeEnv = env.copy();
     safeEnv.expandBy(envExpandDist);

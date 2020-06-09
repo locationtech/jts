@@ -28,14 +28,21 @@ public class OverlayNGTestOne extends GeometryTestCase {
 
   public OverlayNGTestOne(String name) { super(name); }
   
-  public void testRoundedLinesIntersection() {
+  public void testRoundedBoxesIntersection() {
+    Geometry a = read("POLYGON ((0.6 0.1, 0.6 1.9, 2.9 1.9, 2.9 0.1, 0.6 0.1))");
+    Geometry b = read("POLYGON ((1.1 3.9, 2.9 3.9, 2.9 2.1, 1.1 2.1, 1.1 3.9))");
+    Geometry expected = read("LINESTRING (1 2, 3 2)");
+    checkEqual(expected, OverlayNGTest.intersection(a, b, 1));
+  }
+  
+  public void xtestRoundedLinesIntersection() {
     Geometry a = read("LINESTRING (3 2, 3 4)");
     Geometry b = read("LINESTRING (1.1 1.6, 3.8 1.9)");
     Geometry expected = read("POINT (3 2)");
     checkEqual(expected, OverlayNGTest.intersection(a, b, 1));
   }
   
-  public void testRoundedPointsIntersection() {
+  public void xtestRoundedPointsIntersection() {
     Geometry a = read("POINT (10.1 10)");
     Geometry b = read("POINT (10 10.1)");
     Geometry expected = read("POINT (10 10)");

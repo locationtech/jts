@@ -1,4 +1,4 @@
-  /*
+/*
  * Copyright (c) 2019 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials

@@ -280,7 +280,7 @@ public class OverlayNGTest extends GeometryTestCase {
   public void testCollapseTriBoxIntersection() {
     Geometry a = read("POLYGON ((1 2, 1 1, 9 1, 1 2))");
     Geometry b = read("POLYGON ((9 2, 9 1, 8 1, 8 2, 9 2))");
-    Geometry expected = read("POLYGON EMPTY");
+    Geometry expected = read("POINT (8 1)");
     Geometry actual = intersection(a, b, 1);
     checkEqual(expected, actual);
   }
