@@ -86,8 +86,8 @@ public class OverlayNGSnapIfNeededFunctions {
    */
   public static double areaDelta(Geometry a, Geometry b) {
     
-    double areaA = a.getArea();
-    double areaB = b.getArea();
+    double areaA = a == null ? 0 : a.getArea();
+    double areaB = b == null ? 0 : b.getArea();
     
     // if an input is non-polygonal delta is 0
     if (areaA == 0 || areaB == 0)

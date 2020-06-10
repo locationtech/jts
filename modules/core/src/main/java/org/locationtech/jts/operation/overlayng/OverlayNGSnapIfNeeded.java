@@ -205,6 +205,7 @@ public class OverlayNGSnapIfNeeded
    * @return the magnitude of the largest ordinate
    */
   private static double ordinateMagnitude(Geometry geom) {
+    if (geom == null) return 0;
     Envelope env = geom.getEnvelopeInternal();
     double magMax = Math.max(
         Math.abs(env.getMaxX()), Math.abs(env.getMaxY()));
