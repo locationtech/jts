@@ -44,9 +44,9 @@ public class RandomPolygonOverlayFuzzer {
     //overlayOrig(poly1, poly2);
     //overlayOrigNoSnap(poly1, poly2);
     //overlayNGFloat(poly1, poly2);
-    //overlayNGSnapIfNeeded(poly1, poly2);
+    overlayNGSnapIfNeeded(poly1, poly2);
     //overlayNG(poly1, poly2);
-    overlayNGSnapping(poly1, poly2);
+    //overlayNGSnapping(poly1, poly2);
   }
   
   static final boolean IS_VERBOSE = false;
@@ -85,6 +85,8 @@ public class RandomPolygonOverlayFuzzer {
   private String testDesc = "";
 
   private void run() {
+    System.out.printf("Running %d tests\n", N_TESTS);
+    
     for (int i = 1; i <= N_TESTS; i++) {
       testIndex = i;
       overlayPolys();
