@@ -24,15 +24,29 @@ import org.locationtech.jts.noding.snap.SnappingNoder;
 
 
 /**
- * Performs an overlay operation using full precision
- * if possible, and snapping only as a fall-back for failure.
+ * Performs an overlay operation, increasing robustness by using a series of
+ * increasingly aggressive (and slower) noding strategies.
+ * <p>
+ * This relies on each overlay operation attempt 
+ * throwing a {@link TopologyException} if it is unable
+ * to compute the overlay correctly.
+ * Generally this occurs because the noding phase does 
+ * not produce a valid noding.
+ * It seems that this requires the use of a {@link ValidatingNoder}
+ * in order to check the results of using a floating noder.
+ * <p>
+ * The noding strategies used are:
+ * <ol>
+ * <li>A simple fast noder using FLOATING precision
+ * <li>A {@link SnappingNoder} using an automatically-determined snap tolerance
+ * <li>First snapping each geometry to itself, and then overlaying them wih a SnappingNoder
+ * <li>The above two strategies are repeated with increasing snap tolerance, up to a limit
+ * </ol>
  *     
  * @author Martin Davis
  */
 public class OverlayNGSnapIfNeeded
 {
-
-  private static final double SNAP_TOL_FACTOR = 1e12;
 
   public static Geometry intersection(Geometry g0, Geometry g1)
   {
@@ -60,6 +74,14 @@ public class OverlayNGSnapIfNeeded
   {
     Geometry result;
     RuntimeException exOriginal;
+    
+    /**
+     * First try overlay with a FLOAT noder, which is fastest and causes least
+     * change to geometry coordinates
+     * By default the noder is validated, which is required in order
+     * to detect certain invalid noding situations which otherwise
+     * cause incorrect overlay output.
+     */
     try {
       result = OverlayNG.overlay(geom0, geom1, opCode, PM_FLOAT ); 
       
@@ -67,77 +89,121 @@ public class OverlayNGSnapIfNeeded
       // There are cases where this succeeds with invalid noding (e.g. STMLF 1608).
       // So currently it is NOT safe to run overlay without noding validation
       //result = OverlayNG.overlay(geom0, geom1, opCode, createFloatingNoValidNoder()); 
+      
       return result;
     }
     catch (RuntimeException ex) {
+      /**
+       * Capture original exception,
+       * so it can be rethrown if the remaining strategies all fail.
+       */
       exOriginal = ex;
-    	// ignore this exception, since the operation will be rerun
-      //System.out.println("Overlay failed");
     }
-    // on failure retry using snapping noding with a "safe" tolerance
-  	// if this throws an exception just let it go
     
-    double snapTol = snapTolerance(geom0, geom1);
-    for (int i = 0; i < 5; i++) {
-      result = overlaySnapping(geom0, geom1, opCode, snapTol);
-      if (result != null) return result;
-      snapTol = snapTol * 10;
-    }
-    System.out.println(geom0);
-    System.out.println(geom1);
+    /**
+     * On failure retry using snapping noding with a "safe" tolerance.
+     * if this throws an exception just let it go,
+     * since it is something that is not a TopologyException
+     */
+    result = overlaySnapTries(geom0, geom1, opCode);
+    if (result != null)
+      return result;
+    
     throw exOriginal;
   }
 
-  /**
-   * Creates a noder using simple floating noding 
-   * with no validation phase.
-   * This is twice as fast, and should be safe since 
-   * OverlayNG is more sensitive to invalid noding.
-   * 
-   * @return a floating noder with no validation
-   */
-  private static Noder createFloatingNoValidNoder() {
-    MCIndexNoder noder = new MCIndexNoder();
-    LineIntersector li = new RobustLineIntersector();
-    noder.setSegmentIntersector(new IntersectionAdder(li));
-    return noder;
-  }
+  private static final int NUM_SNAP_TRIES = 5;
+
+  private static Geometry overlaySnapTries(Geometry geom0, Geometry geom1, int opCode) {
+    Geometry result;
+    double snapTol = snapTolerance(geom0, geom1);
     
-  private static Noder createSnappingtNoder(double tolerance) {
-    SnappingNoder snapNoder = new SnappingNoder(tolerance);
-    return snapNoder;
-    //return new ValidatingNoder(snapNoder);
+    for (int i = 0; i < NUM_SNAP_TRIES; i++) {
+      
+      result = overlaySnapping(geom0, geom1, opCode, snapTol);
+      if (result != null) return result;
+      
+      /**
+       * Now try snapping each input individually, 
+       * and then doing the overlay.
+       */
+      result = overlaySnapBoth(geom0, geom1, opCode, snapTol);
+      if (result != null) return result;
+      
+      // increase the snap tolerance and try again
+      snapTol = snapTol * 10;
+    }
+    // failed to compute overlay
+    return null;
   }
 
   private static Geometry overlaySnapping(Geometry geom0, Geometry geom1, int opCode, double snapTol) {
-    Geometry result;
     try {
-      Noder noder = createSnappingtNoder(snapTol);
-      //System.out.println("Snapping with " + snapTol);
-
-      result = OverlayNG.overlay(geom0, geom1, opCode, noder);
-      return result;
+      return overlaySnapTol(geom0, geom1, opCode, snapTol);
     }
     catch (TopologyException ex) {
-      System.out.println("Snapping with " + snapTol + " - FAILED");
-      //System.out.println(geom0);
-      //System.out.println(geom1);
+      //---- ignore this exception, just return a null result
+      
+      //System.out.println("Snapping with " + snapTol + " - FAILED");
+      //log("Snapping with " + snapTol + " - FAILED", geom0, geom1);
     }
     return null;
   }
 
-  private static double snapTolerance(Geometry geom0, Geometry geom1) {
+  private static Geometry overlaySnapBoth(Geometry geom0, Geometry geom1, int opCode, double snapTol) {
+    try {
+      Geometry snap0 = overlaySnapTol(geom0, null, OverlayNG.UNION, snapTol);
+      Geometry snap1 = overlaySnapTol(geom1, null, OverlayNG.UNION, snapTol); 
+      //log("Snapping BOTH with " + snapTol, geom0, geom1);
+      
+      return overlaySnapTol(snap0, snap1, opCode, snapTol);
+    }
+    catch (TopologyException ex) {
+      //---- ignore this exception, just return a null result
+    }
+    return null;
+  }
+
+  private static Geometry overlaySnapTol(Geometry geom0, Geometry geom1, int opCode, double snapTol) {
+    SnappingNoder snapNoder = new SnappingNoder(snapTol);
+    return OverlayNG.overlay(geom0, geom1, opCode, snapNoder);
+  }
+  
+  //============================================
+  
+  /**
+   * A factor for a snapping tolerance distance which 
+   * should allow noding to be computed robustly.
+   */
+  private static final double SNAP_TOL_FACTOR = 1e12;
+
+  /**
+   * Computes a heuristic snap tolerance distance
+   * for overlaying a pair of geometries using a {@link SnappingNoder}.
+   * 
+   * @param geom0
+   * @param geom1
+   * @return
+   */
+  public static double snapTolerance(Geometry geom0, Geometry geom1) {
     double tol0 = snapTolerance(geom0);
     double tol1 = snapTolerance(geom1);
     double snapTol = Math.max(tol0,  tol1);
     return snapTol;
   }
   
-  public static double snapTolerance(Geometry geom) {
+  private static double snapTolerance(Geometry geom) {
     double magnitude = ordinateMagnitude(geom);
     return magnitude / SNAP_TOL_FACTOR;
   }
   
+  /**
+   * Computes the largest magnitude of the ordinates of a geometry,
+   * based on the geometry envelope.
+   * 
+   * @param geom a geometry
+   * @return the magnitude of the largest ordinate
+   */
   private static double ordinateMagnitude(Geometry geom) {
     Envelope env = geom.getEnvelopeInternal();
     double magMax = Math.max(
@@ -147,7 +213,44 @@ public class OverlayNGSnapIfNeeded
     return Math.max(magMax, magMin);
   }
   
-  public static Geometry overlaySR(Geometry geom0, Geometry geom1, int opCode)
+  //===============================================
+  
+  private static void log(String msg, Geometry geom0, Geometry geom1) {
+    System.out.println(msg);
+    System.out.println(geom0);
+    System.out.println(geom1);
+  }
+  
+  /**
+   * Creates a noder using simple floating noding 
+   * with no validation phase.
+   * This is twice as fast, but can cause
+   * invalid overlay results.
+   * 
+   * @return a floating noder with no validation
+   */
+  /*
+  private static Noder createFloatingNoValidNoder() {
+    MCIndexNoder noder = new MCIndexNoder();
+    LineIntersector li = new RobustLineIntersector();
+    noder.setSegmentIntersector(new IntersectionAdder(li));
+    return noder;
+  }
+  */
+  
+  /**
+   * Overlay using Snap-Rounding with an automatically-determined
+   * scale factor.
+   * <p>
+   * NOTE: currently this strategy is not used, since all known
+   * test cases work using one of the Snapping strategies.
+   * 
+   * @param geom0
+   * @param geom1
+   * @param opCode
+   * @return
+   */
+  private static Geometry overlaySR(Geometry geom0, Geometry geom1, int opCode)
   {
     Geometry result;
     try {

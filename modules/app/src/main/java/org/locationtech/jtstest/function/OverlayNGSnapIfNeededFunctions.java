@@ -37,18 +37,18 @@ public class OverlayNGSnapIfNeededFunctions {
 
   public static Geometry intersection(Geometry a, Geometry b) {
     areatest(a, b);
-    System.out.println(areaDelta(a, b));
+    //System.out.println(areaDelta(a, b));
     return overlay(a, b, INTERSECTION );
   }
 
   public static Geometry union(Geometry a, Geometry b) {
     areatest(a, b);
-    System.out.println(areaDelta(a, b));
+    //System.out.println(areaDelta(a, b));
     return overlay(a, b, UNION );
   }
 
   public static Geometry symDifference(Geometry a, Geometry b) {
-    System.out.println(areaDelta(a, b));
+    //System.out.println(areaDelta(a, b));
     return overlay(a, b, SYMDIFFERENCE );
   }
   
