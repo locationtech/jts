@@ -23,9 +23,9 @@ public class OverlayNGFloatingNoderTest extends GeometryTestCase {
   public void testTriangleIntersection() {
     Geometry a = read("POLYGON ((0 0, 8 0, 8 3, 0 0))");
     Geometry b = read("POLYGON ((0 5, 5 0, 0 0, 0 5))");
-    Geometry expected = read("POLYGON ((0 0, 3.6363636363636362 1.3636363636363635, 5 0, 0 0))");
+    Geometry expected = read("POLYGON ((0 0, 3.6363636363636367 1.3636363636363638, 5 0, 0 0))");
     Geometry actual = intersection(a, b);
-    checkEqual(expected, actual);
+    checkEqual(expected, actual, 1e-10);
   }
   
   static Geometry intersection(Geometry a, Geometry b) {
