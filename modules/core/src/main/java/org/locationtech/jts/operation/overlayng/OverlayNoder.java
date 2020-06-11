@@ -19,6 +19,7 @@ import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
@@ -223,7 +224,7 @@ class OverlayNoder {
    */
   private void addPolygonRing(LinearRing ring, boolean isHole, int index)
   {
-    // don't add empty lines
+    // don't add empty rings
     if (ring.isEmpty()) return;
     
     if (isClippedCompletely(ring.getEnvelopeInternal())) 
@@ -338,16 +339,17 @@ class OverlayNoder {
    */
   private Coordinate[] clip(LinearRing ring) {
     Coordinate[] pts = ring.getCoordinates();
-    if (clipper == null) {
-      return pts;
-    }
     Envelope env = ring.getEnvelopeInternal();
+    
     /**
-     * If line is completely contained then no need to clip
+     * If no clipper or ring is completely contained then no need to clip.
+     * But repeated points must be removed to ensure correct noding.
      */
-    if (clipEnv.covers(env)) {
-      return pts;
+    if (clipper == null || clipEnv.covers(env)) {
+      Coordinate[] ptsNoRepeat = CoordinateArrays.removeRepeatedPoints(pts);
+      return ptsNoRepeat;
     }
+
     return clipper.clip(pts);
   }
 

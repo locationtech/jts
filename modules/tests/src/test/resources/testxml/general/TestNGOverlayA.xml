@@ -594,4 +594,26 @@ POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
 </test>
 </case>
 
+<case>
+  <desc>AA - repeated points</desc>
+  <a>
+POLYGON ((100 200, 200 200, 200 100, 100 100, 100 151, 100 151, 100 151, 100 151, 100 200))
+  </a>
+  <b>
+POLYGON ((300 200, 300 100, 200 100, 200 200, 200 200, 300 200))
+  </b>
+<test> <op name="intersectionNG" arg1="A" arg2="B">
+    LINESTRING (200 200, 200 100)
+  </op></test>
+<test> <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((200 200, 300 200, 300 100, 200 100, 100 100, 100 151, 100 200, 200 200))
+  </op></test>
+<test> <op name="differenceNG" arg1="A" arg2="B">
+   POLYGON ((200 200, 200 100, 100 100, 100 151, 100 200, 200 200))
+  </op></test>
+<test> <op name="symdifferenceNG" arg1="A" arg2="B">
+    POLYGON ((200 200, 300 200, 300 100, 200 100, 100 100, 100 151, 100 200, 200 200))
+  </op></test>
+</case>
+
 </run>
