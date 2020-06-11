@@ -46,6 +46,14 @@ public class OverlayNGFloatingNoderTest extends GeometryTestCase {
     checkEqual(expected, actual, 1e-10);
   }
   
+  public void testLineWithRepeatedPointIntersection() {
+    Geometry a = read("LINESTRING (100 100, 200 200, 200 200, 200 200, 200 200, 300 300, 400 200)");
+    Geometry b = read("LINESTRING (190 110, 120 180)");
+    Geometry expected = read("POINT (150 150)");
+    Geometry actual = intersection(a, b);
+    checkEqual(expected, actual, 1e-10);
+  }
+  
   /**
    * Tests a case where ring clipping causes an incorrect result.
    * <p>

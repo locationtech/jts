@@ -246,6 +246,59 @@ class OverlayNoder {
     addEdge(pts, info);
   }
 
+  /**
+   * Tests whether a geometry (represented by its envelope)
+   * lies completely outside the clip extent(if any).
+   * 
+   * @param env the geometry envelope
+   * @return true if the geometry envelope is outside the clip extent.
+   */
+  private boolean isClippedCompletely(Envelope env) {
+    if (clipEnv == null) return false;
+    return clipEnv.disjoint(env);
+  }
+  
+  /**
+   * If a clipper is present, 
+   * clip the line to the clip extent.
+   * Otherwise, remove duplicate points from the ring.
+   * <p>
+   * If clipping is enabled, then every ring MUST 
+   * be clipped, to ensure that holes are clipped to
+   * be inside the shell.  
+   * This means it is not possible to skip 
+   * clipping for rings with few vertices.
+   * 
+   * @param ring the line to clip
+   * @return the points in the clipped line
+   */
+  private Coordinate[] clip(LinearRing ring) {
+    Coordinate[] pts = ring.getCoordinates();
+    Envelope env = ring.getEnvelopeInternal();
+    
+    /**
+     * If no clipper or ring is completely contained then no need to clip.
+     * But repeated points must be removed to ensure correct noding.
+     */
+    if (clipper == null || clipEnv.covers(env)) {
+      return removeRepeatedPoints(ring);
+    }
+
+    return clipper.clip(pts);
+  }
+  
+  /**
+   * Removes any repeated points from a linear component.
+   * This is required so that noding can be computed correctly.
+   * 
+   * @param line the line to process
+   * @return the points of the line with repeated points removed
+   */
+  private static Coordinate[] removeRepeatedPoints(LineString line) {
+    Coordinate[] pts = line.getCoordinates();
+    return CoordinateArrays.removeRepeatedPoints(pts);
+  }
+  
   private static int computeDepthDelta(LinearRing ring, boolean isHole) {
     /**
      * Compute the orientation of the ring, to
@@ -276,6 +329,13 @@ class OverlayNoder {
     return depthDelta;
   }
 
+  /**
+   * Adds a line geometry, limiting it if enabled,
+   * and otherwise removing repeated points.
+   * 
+   * @param line the line to add
+   * @param geomIndex the index of the parent geometry
+   */
   private void addLine(LineString line, int geomIndex)
   {
     // don't add empty lines
@@ -291,9 +351,11 @@ class OverlayNoder {
       }
     }
     else {
-      addLine( line.getCoordinates(), geomIndex );
+      Coordinate[] ptsNoRepeat = removeRepeatedPoints(line);
+      addLine( ptsNoRepeat, geomIndex );
     }
   }
+
 
   private void addLine(Coordinate[] pts, int geomIndex) {
     /**
@@ -310,47 +372,6 @@ class OverlayNoder {
   private void addEdge(Coordinate[] pts, EdgeSourceInfo info) {
     NodedSegmentString ss = new NodedSegmentString(pts, info);
     segStrings.add(ss);
-  }
-
-  /**
-   * Tests whether a geometry (represented by its envelope)
-   * lies completely outside the clip extent(if any).
-   * 
-   * @param env the geometry envelope
-   * @return true if the geometry envelope is outside the clip extent.
-   */
-  private boolean isClippedCompletely(Envelope env) {
-    if (clipEnv == null) return false;
-    return clipEnv.disjoint(env);
-  }
-  
-  /**
-   * If clipper is present, 
-   * clip the line to the clip extent.
-   * <p>
-   * If clipping is enabled, then every ring MUST 
-   * be clipped, to ensure that holes are clipped to
-   * be inside the shell.  
-   * This means it is not possible to skip 
-   * clipping for rings with few vertices.
-   * 
-   * @param ring the line to clip
-   * @return the points in the clipped line
-   */
-  private Coordinate[] clip(LinearRing ring) {
-    Coordinate[] pts = ring.getCoordinates();
-    Envelope env = ring.getEnvelopeInternal();
-    
-    /**
-     * If no clipper or ring is completely contained then no need to clip.
-     * But repeated points must be removed to ensure correct noding.
-     */
-    if (clipper == null || clipEnv.covers(env)) {
-      Coordinate[] ptsNoRepeat = CoordinateArrays.removeRepeatedPoints(pts);
-      return ptsNoRepeat;
-    }
-
-    return clipper.clip(pts);
   }
 
   /**
