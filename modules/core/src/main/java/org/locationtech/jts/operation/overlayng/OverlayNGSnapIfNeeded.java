@@ -11,15 +11,11 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
-import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
-import org.locationtech.jts.noding.IntersectionAdder;
-import org.locationtech.jts.noding.MCIndexNoder;
-import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.noding.snap.SnappingNoder;
 
 
@@ -27,22 +23,25 @@ import org.locationtech.jts.noding.snap.SnappingNoder;
  * Performs an overlay operation, increasing robustness by using a series of
  * increasingly aggressive (and slower) noding strategies.
  * <p>
- * This relies on each overlay operation attempt 
+ * The noding strategies used are:
+ * <ol>
+ * <li>A simple, fast noder using FLOATING precision.
+ * <li>A {@link SnappingNoder} using an automatically-determined snap tolerance
+ * <li>First snapping each geometry to itself, 
+ * and then overlaying them using a SnappingNoder.
+ * <li>The above two strategies are repeated with increasing snap tolerance, up to a limit.
+ * </ol>
+ * If the above heuristics still fail to compute a valid overlay, 
+ * the original {@link TopologyException} is thrown. 
+ * <p>
+ * This algorithm relies on each overlay operation execution 
  * throwing a {@link TopologyException} if it is unable
  * to compute the overlay correctly.
  * Generally this occurs because the noding phase does 
  * not produce a valid noding.
- * It seems that this requires the use of a {@link ValidatingNoder}
+ * This requires the use of a {@link ValidatingNoder}
  * in order to check the results of using a floating noder.
- * <p>
- * The noding strategies used are:
- * <ol>
- * <li>A simple fast noder using FLOATING precision
- * <li>A {@link SnappingNoder} using an automatically-determined snap tolerance
- * <li>First snapping each geometry to itself, and then overlaying them wih a SnappingNoder
- * <li>The above two strategies are repeated with increasing snap tolerance, up to a limit
- * </ol>
- *     
+ * 
  * @author Martin Davis
  */
 public class OverlayNGSnapIfNeeded

@@ -29,16 +29,20 @@ import org.locationtech.jts.geom.util.GeometryCombiner;
 
 /**
  * Unions MultiPolygons efficiently by
- * using full topological union only for polygons which may overlap
- * by virtue of intersecting the common area of the inputs.
- * Other polygons are simply combined with the union result,
+ * using full topological union only for polygons which may overlap,
+ * and combining with the remaining polygons.
+ * Polygons which may overlap are those which intersect the common extent of the inputs.
+ * Polygons wholly outside this extent must be disjoint to the computed union.
+ * They can thus be simply combined with the union result,
  * which is much more performant.
+ * (There is one caveat to this, which is discussed below).
  * <p>
  * This situation is likely to occur during cascaded polygon union,
  * since the partitioning of polygons is done heuristically
  * and thus may group disjoint polygons which can lie far apart.
  * It may also occur in real world data which contains many disjoint polygons
  * (e.g. polygons representing parcels on different street blocks).
+ * 
  * <h2>Algorithm</h2>
  * The overlap region is determined as the common envelope of intersection.
  * The input polygons are partitioned into two sets:
@@ -53,14 +57,14 @@ import org.locationtech.jts.geom.util.GeometryCombiner;
  * They also do not interact with the Overlapping polygons, 
  * since they are outside their envelope.
  * 
- * <h2>Verification</h2>
- * In the general case the Overlapping set of polygons will 
+ * <h2>Discussion</h2>
+ * In general the Overlapping set of polygons will 
  * extend beyond the overlap envelope.  This means that the union result
  * will extend beyond the overlap region.
  * There is a small chance that the topological 
  * union of the overlap region will shift the result linework enough
  * that the result geometry intersects one of the Disjoint geometries.
- * This case is detected and if it occurs 
+ * This situation is detected and if it occurs 
  * is remedied by falling back to performing a full union of the original inputs.
  * Detection is done by a fairly efficient comparison of edge segments which
  * extend beyond the overlap region.  If any segments have changed
@@ -69,7 +73,7 @@ import org.locationtech.jts.geom.util.GeometryCombiner;
  * This situation has not been observed in JTS using floating precision, 
  * but it could happen due to snapping.  It has been observed 
  * in other APIs (e.g. GEOS) due to more aggressive snapping.
- * And it will be more likely to happen if a snap-rounding overlay is used.
+ * It is more likely to happen if a Snap-Rounding overlay is used.
  * 
  * @author mbdavis
  *
