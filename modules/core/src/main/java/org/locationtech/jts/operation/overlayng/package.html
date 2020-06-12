@@ -7,12 +7,14 @@
 </head>
 <body bgcolor="white">
 <p>
-Contains classes that perform topological overlay to compute boolean spatial functions.
+Contains classes that perform vector overlay 
+to compute boolean set-theoretic spatial functions.
 Overlay operations are used in spatial analysis for computing set-theoretic 
 operations (boolean combinations) of input {@link Geometry}s.
 </p>
 <p>
-The {@link OverlayNG} class provides the standard Simple Features boolean set-theoretic overlay operations, including:
+The {@link OverlayNG} class provides the standard Simple Features 
+boolean set-theoretic overlay operations, including:
 <ul>
 <li><b>Intersection</b></li>
 <li><b>Union</b></li>
@@ -33,13 +35,30 @@ in a topologically-valid way</li>
 <p>
 <h2>Semantics</h2>
 The semantics of operation results are:
+
 <ul>
-<li>Results are always valid geometries
-<li>Empty results are empty atomic geometries of appropriate dimension
-<li>Duplicate vertices are removed
-<li>Linear results are merged node-to-node (e.g. are of maximial length)
-<li>Polygon edges which collapse completely due to rounding are not output
+<li>Results are always valid geometries. 
+In particular, result <code>MultiPolygon</code>s are valid.</li>
+<li>Empty results are <code>EMPTY</code> atomic geometries of appropriate dimension.</li>
+<li>Repeated vertices are removed.</li>
+<li>Linear results are merged node-to-node (e.g. are of maximial length).</li>
+<li>Polygon edges which collapse completely due to rounding are not output.</li>
+<li>The <code>intersection</code> and <code>difference</code> operations
+always produce a homogeneous result. 
+The result dimension is equal to or less than the maximum dimension of the inputs.
+(For instance, the intersection of a <code>Polygon</code> 
+and a <code>LineString</code> might produce a <code>Point</code> result.)</li>
+<li>The <code>union</code> and <code>symmetric difference</code> operations
+may produce heterogeneous results 
+(i.e. a collection containing components of different dimension).</li>
+<li>Homogeneous results are output as <code>Multi</code> geometries.</li>
+<li>Heterogeneous results are in the form of a <code>GeometryCollection</code>
+containing a set of atomic geometries.  This provides backwards compatibility
+with the original JTS overlay implementation.
+However, this loses the information that the polygonal results 
+have valid <code>MultiPolygon</code> topology.</li>
 </ul>
+
 </p>
 <h2>Features</h2>
 <h3>Functionality</h3>
@@ -67,16 +86,23 @@ Or it can be provided explicity, which allows changing characteristics
 of performance and robustness.
 Examples of relevant noders include:
 <ul>
-<li>{@link SegmentExtractingNoder} - requires node-clean input, and provides very fast noding</li>
-<li>{@link SnappingNoder} - a very robust full-precision noder</li>
-<li>{@link ValidatingNoder} - a wrapper which can be used to verify the noding
-prior to topology building</li> 
+<li>{@link MCIndexNoder} - a fast full-precision noder, which however may not produce 
+a valid noding in some situations.
+Should be combined with a {@link ValidatingNoder} wrapper to detect
+noding failures.</li>
+<li>{@link SnappingNoder} - a robust full-precision noder</li>
+<li>{@link SnapRoundingNoder} - a noder which enforces a supplied fixed precision model 
+by snapping vertices and intersections to a grid</li>
+<li>{@link SegmentExtractingNoder} - a special-purpose noder that provides very fast noding
+for valid polygonal coverages. Requires node-clean input to operate correctly. </li> 
 </ul>
 
 <h3>Codebase</h3>
 <ul>
-<li>Defines a simpler topology model, with clear semantics.</li>
-<li>Uses a simpler topology graph data structure (based on winged edge pattern).</li>
+<li>Defines a simple, full-featured topology model, with clear semantics.
+The topology model incorporates handling topology collapse, which is
+essential for snapping and fixed-precision noding.</li>
+<li>Uses a simple topology graph data structure (based on the winged edge pattern).</li>
 <li>Decouples noding and topology-build phases.
 This makes the code clearer, and makes it possible
 to allow supplying alternate implementations and semantics for each phase.</li>
