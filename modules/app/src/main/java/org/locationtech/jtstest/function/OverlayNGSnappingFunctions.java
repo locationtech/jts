@@ -21,7 +21,7 @@ import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.noding.snap.SnappingNoder;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
-import org.locationtech.jts.operation.union.UnionFunction;
+import org.locationtech.jts.operation.union.UnionStrategy;
 
 public class OverlayNGSnappingFunctions {
 
@@ -45,10 +45,15 @@ public class OverlayNGSnappingFunctions {
 
 
   public static Geometry unaryUnion(Geometry a, double tolerance) {
-    UnionFunction unionSRFun = new UnionFunction() {
+    UnionStrategy unionSRFun = new UnionStrategy() {
 
       public Geometry union(Geometry g0, Geometry g1) {
          return OverlayNGSnappingFunctions.union(g0, g1, tolerance );
+      }
+
+      @Override
+      public boolean isFloatingPrecision() {
+        return true;
       }
       
     };
@@ -62,10 +67,15 @@ public class OverlayNGSnappingFunctions {
   }
   
   public static Geometry unaryUnionNoValid(Geometry a, double tolerance) {
-    UnionFunction unionSRFun = new UnionFunction() {
+    UnionStrategy unionSRFun = new UnionStrategy() {
 
       public Geometry union(Geometry g0, Geometry g1) {
          return OverlayNGSnappingFunctions.unionNoValid(g0, g1, tolerance );
+      }
+
+      @Override
+      public boolean isFloatingPrecision() {
+        return true;
       }
       
     };

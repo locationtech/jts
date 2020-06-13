@@ -16,7 +16,7 @@ import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
-import org.locationtech.jts.operation.union.UnionFunction;
+import org.locationtech.jts.operation.union.UnionStrategy;
 
 /**
  * Unions a collection of geometries in an
@@ -37,10 +37,15 @@ public class UnaryUnionNG {
    * @return the union of the geometries
    */
   public static Geometry union(Geometry geom, PrecisionModel pm) {
-    UnionFunction unionSRFun = new UnionFunction() {
+    UnionStrategy unionSRFun = new UnionStrategy() {
 
       public Geometry union(Geometry g0, Geometry g1) {
         return OverlayNG.overlay(g0, g1, UNION, pm);
+      }
+
+      @Override
+      public boolean isFloatingPrecision() {
+         return pm.isFloating();
       }
       
     };

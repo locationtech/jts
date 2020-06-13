@@ -38,7 +38,7 @@ import org.locationtech.jts.operation.overlayng.LineLimiter;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.PrecisionUtil;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
-import org.locationtech.jts.operation.union.UnionFunction;
+import org.locationtech.jts.operation.union.UnionStrategy;
 
 public class OverlayNGTestFunctions {
   

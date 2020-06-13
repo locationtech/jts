@@ -24,8 +24,8 @@ import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
 import org.locationtech.jts.util.Debug;
-import org.locationtech.jts.util.TestBuilderProxy;
 
 
 /**
@@ -58,37 +58,45 @@ import org.locationtech.jts.util.TestBuilderProxy;
  */
 public class CascadedPolygonUnion
 {
-  final static  UnionFunction CLASSIC_UNION = new UnionFunction() {
-    public Geometry union(Geometry g0, Geometry g1) {
-      return g0.union(g1);
-    }
-  };
-  
-  final static  UnionFunction CLASSIC_UNION_SAFE = new UnionFunction() {
+  /**
+   * A union strategy that uses the classic JTS {@link SnapIfNeededOverlayOp},
+   * and for polygonal geometries a robustness fallback using <cod>buffer(0)</code>.
+   */
+  final static  UnionStrategy CLASSIC_UNION = new UnionStrategy() {
     public Geometry union(Geometry g0, Geometry g1) {
       try {
-        return g0.union(g1);
+        return SnapIfNeededOverlayOp.union(g0, g1);
       }
       catch (TopologyException ex) {
-        return unionByBuffer(g0, g1);
+        // union-by-buffer only works for polygons
+        if (g0.getDimension() != 2 || g1.getDimension() != 2)
+          throw ex;
+        return unionPolygonsByBuffer(g0, g1);
       }
     }
-  };
-  
-  private static Geometry unionByBuffer(Geometry g0, Geometry g1) {
-    GeometryCollection coll = g0.getFactory().createGeometryCollection(
-        new Geometry[] { g0, g1 });
-    return coll.buffer(0);
-  }
-  
-  final static UnionFunction OVERLAP_CLASSIC_UNION = new UnionFunction() {
 
     @Override
-    public Geometry union(Geometry g0, Geometry g1) {
-      return OverlapUnion.union(g0, g1, CLASSIC_UNION_SAFE);
+    public boolean isFloatingPrecision() {
+      return true;
     }
     
+    /**
+     * An alternative way of unioning polygonal geometries 
+     * by using <code>bufer(0)</code>.
+     * Only worth using if regular overlay union fails.
+     * 
+     * @param g0 a polygonal geometry
+     * @param g1 a polygonal geometry
+     * @return the union of the geometries
+     */
+    private Geometry unionPolygonsByBuffer(Geometry g0, Geometry g1) {
+      //System.out.println("Unioning by buffer");
+      GeometryCollection coll = g0.getFactory().createGeometryCollection(
+          new Geometry[] { g0, g1 });
+      return coll.buffer(0);
+    }
   };
+
   
   /**
    * Computes the union of
@@ -108,7 +116,7 @@ public class CascadedPolygonUnion
    *
    * @param polys a collection of {@link Polygonal} {@link Geometry}s
    */
-  public static Geometry union(Collection polys, UnionFunction unionFun)
+  public static Geometry union(Collection polys, UnionStrategy unionFun)
   {
     CascadedPolygonUnion op = new CascadedPolygonUnion(polys, unionFun);
     return op.union();
@@ -116,7 +124,7 @@ public class CascadedPolygonUnion
 
 	private Collection inputPolys;
 	private GeometryFactory geomFactory = null;
-  private UnionFunction unionFun;
+  private UnionStrategy unionFun;
 
   private int countRemainder = 0;
   private int countInput = 0;
@@ -129,7 +137,7 @@ public class CascadedPolygonUnion
    */
   public CascadedPolygonUnion(Collection polys)
   {
-    this(polys, OVERLAP_CLASSIC_UNION );
+    this(polys, CLASSIC_UNION );
   }
 
 	 /**
@@ -138,7 +146,7 @@ public class CascadedPolygonUnion
    *
    * @param polys a collection of {@link Polygonal} {@link Geometry}s
    */
-  public CascadedPolygonUnion(Collection polys, UnionFunction unionFun)
+  public CascadedPolygonUnion(Collection polys, UnionStrategy unionFun)
   {
     this.inputPolys = polys;
     this.unionFun = unionFun;
@@ -220,7 +228,7 @@ public class CascadedPolygonUnion
   /*
    * The following methods are for experimentation only
    */
-
+/*
   private Geometry repeatedUnion(List geoms)
   {
   	Geometry union = null;
@@ -233,6 +241,7 @@ public class CascadedPolygonUnion
   	}
   	return union;
   }
+  */
 
   //=======================================
 
@@ -354,8 +363,15 @@ public class CascadedPolygonUnion
    */
   private Geometry unionActual(Geometry g0, Geometry g1)
   {
-    Geometry union = unionFun.union(g0, g1);
-    Geometry unionPoly = restrictToPolygons( union );;
+    Geometry union;
+  
+    if (unionFun.isFloatingPrecision()) {
+      union = OverlapUnion.union(g0, g1, unionFun);
+    }
+    else { 
+      union = unionFun.union(g0, g1);
+    }
+    Geometry unionPoly = restrictToPolygons( union );
   	return unionPoly;
   }
 

@@ -19,7 +19,7 @@ import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.overlayng.OverlayNGSnapIfNeeded;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
-import org.locationtech.jts.operation.union.UnionFunction;
+import org.locationtech.jts.operation.union.UnionStrategy;
 
 public class OverlayNGSnapIfNeededFunctions {
   
@@ -53,10 +53,15 @@ public class OverlayNGSnapIfNeededFunctions {
   }
   
   public static Geometry unaryUnion(Geometry a) {
-    UnionFunction unionSRFun = new UnionFunction() {
+    UnionStrategy unionSRFun = new UnionStrategy() {
 
       public Geometry union(Geometry g0, Geometry g1) {
          return overlay(g0, g1, UNION );
+      }
+
+      @Override
+      public boolean isFloatingPrecision() {
+        return true;
       }
       
     };

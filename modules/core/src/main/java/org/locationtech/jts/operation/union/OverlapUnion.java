@@ -89,21 +89,10 @@ public class OverlapUnion
    * @param unionFun 
    * @return the union of the inputs
    */
-	public static Geometry union(Geometry g0, Geometry g1, UnionFunction unionFun)
+	public static Geometry union(Geometry g0, Geometry g1, UnionStrategy unionFun)
 	{
 		OverlapUnion union = new OverlapUnion(g0, g1, unionFun);
 		return union.union();
-	}
-
-	public static UnionFunction wrap(final UnionFunction unionFun) {
-	  return new UnionFunction() {
-
-      @Override
-      public Geometry union(Geometry g0, Geometry g1) {
-        return OverlapUnion.union(g0, g1, unionFun);
-      }
-	    
-	  };
 	}
 	
 	private GeometryFactory geomFactory;
@@ -113,7 +102,7 @@ public class OverlapUnion
 
   private boolean isUnionSafe;
 
-  private UnionFunction unionFun;
+  private UnionStrategy unionFun;
 
 	
   /**
@@ -127,7 +116,7 @@ public class OverlapUnion
 		this(g0, g1, CascadedPolygonUnion.CLASSIC_UNION);
 	}
 	
-	public OverlapUnion(Geometry g0, Geometry g1, UnionFunction unionFun) {
+	public OverlapUnion(Geometry g0, Geometry g1, UnionStrategy unionFun) {
     this.g0 = g0;
     this.g1 = g1;
     geomFactory = g0.getFactory();
@@ -220,6 +209,11 @@ public class OverlapUnion
   }
   
   private Geometry unionFull(Geometry geom0, Geometry geom1) {
+    // if both are empty collections, just return a copy of one of them
+    if (geom0.getNumGeometries() == 0 
+        && geom1.getNumGeometries() == 0)
+      return geom0.copy();
+    
     Geometry union = unionFun.union(geom0, geom1);
     //Geometry union = geom0.union(geom1);
     return union;

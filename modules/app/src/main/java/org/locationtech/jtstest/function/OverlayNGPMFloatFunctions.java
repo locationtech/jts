@@ -25,7 +25,7 @@ import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
-import org.locationtech.jts.operation.union.UnionFunction;
+import org.locationtech.jts.operation.union.UnionStrategy;
 
 public class OverlayNGPMFloatFunctions {
   
@@ -42,15 +42,17 @@ public class OverlayNGPMFloatFunctions {
   }
 
   public static Geometry unaryUnion(Geometry a) {
-    UnionFunction unionSRFun = new UnionFunction() {
+    /*
+    UnionStrategy unionSRFun = new UnionStrategy() {
 
       public Geometry union(Geometry g0, Geometry g1) {
          return OverlayNG.overlay(g0, g1, UNION );
       }
       
     };
+    */
     UnaryUnionOp op = new UnaryUnionOp(a);
-    op.setUnionFunction(unionSRFun);
+    //op.setUnionFunction(unionSRFun);
     return op.union();
   }
   
