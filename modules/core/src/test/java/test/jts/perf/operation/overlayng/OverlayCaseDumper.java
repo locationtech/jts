@@ -22,6 +22,7 @@ import java.util.List;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBHexFileReader;
 import org.locationtech.jts.io.WKBReader;
@@ -85,7 +86,8 @@ public class OverlayCaseDumper {
       outStream = new PrintStream(new File(outputFilename));
     }
     
-    List<Geometry> geoms = readWKBFile(inFilename);
+    List<Geometry> geomsIn = readWKBFile(inFilename);
+    List<Geometry> geoms = flatten(geomsIn);
     System.out.println("Number of geoms read: " + geoms.size());
     
     List<Geometry> geomsFilt = filter(geoms);
@@ -101,6 +103,19 @@ public class OverlayCaseDumper {
     outStream.close();
   }
 
+
+  private List<Geometry> flatten(List<Geometry> geoms) {
+    List<Geometry> flat = new ArrayList<Geometry>();
+    for (Geometry geom : geoms) {
+      if (geom.getNumGeometries() == 1) {
+        flat.add(geom);
+      }
+      else {
+        PolygonExtracter.getPolygons(geom, flat);
+      }
+    }
+    return flat;
+  }
 
   private void doIntersections(List<Geometry> geoms) {
     caseCount = 0;
