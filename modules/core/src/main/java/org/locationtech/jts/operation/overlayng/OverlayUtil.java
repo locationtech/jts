@@ -170,21 +170,11 @@ class OverlayUtil {
   /**
    * Creates an empty result geometry of the appropriate dimension,
    * based on the given overlay operation and the dimensions of the inputs.
-   * The created geometry is always an atomic geometry, 
-   * not a collection.
-   * <p>
-   * The empty result is constructed using the following rules:
-   * <ul>
-   * <li>{@link OverlayNG#INTERSECTION} - result has the dimension of the lowest input dimension
-   * <li>{@link OverlayNG#UNION} - result has the dimension of the highest input dimension
-   * <li>{@link OverlayNG#DIFFERENCE} - result has the dimension of the left-hand input
-   * <li>{@link OverlayNG#SYMDIFFERENCE} - result has the dimension of the highest input dimension
-   * (since the Symmetric Difference is the Union of the Differences).
-   * </ul>
+   * The created geometry is an atomic geometry, 
+   * not a collection (unless the dimension is -1,
+   * in which case a <code>GEOMETRYCOLLECTION EMPTY</code> is created.)
    * 
-   * @param overlayOpCode the code for the overlay operation being performed
-   * @param a an input geometry
-   * @param b an input geometry
+   * @param dim the dimension of the empty geometry to create
    * @param geomFact the geometry factory being used for the operation
    * @return an empty atomic geometry of the appropriate dimension
    */
@@ -201,6 +191,9 @@ class OverlayUtil {
     case 2:
       result =  geomFact.createPolygon();
       break;
+    case -1:
+      result =  geomFact.createGeometryCollection();
+      break;
     default:
       Assert.shouldNeverReachHere("Unable to determine overlay result geometry dimension");
     }
@@ -212,11 +205,20 @@ class OverlayUtil {
    * applying the given operation to inputs
    * with the given dimensions.
    * This assumes that complete collapse does not occur.
+   * <p>
+   * The result dimension is computed according to the following rules:
+   * <ul>
+   * <li>{@link OverlayNG#INTERSECTION} - result has the dimension of the lowest input dimension
+   * <li>{@link OverlayNG#UNION} - result has the dimension of the highest input dimension
+   * <li>{@link OverlayNG#DIFFERENCE} - result has the dimension of the left-hand input
+   * <li>{@link OverlayNG#SYMDIFFERENCE} - result has the dimension of the highest input dimension
+   * (since the Symmetric Difference is the Union of the Differences).
+   * </ul>
    * 
    * @param opCode the overlay operation
    * @param dim0 dimension of the LH input
    * @param dim1 dimension of the RH input
-   * @return
+   * @return the dimension of the result
    */
   public static int resultDimension(int opCode, int dim0, int dim1)
   { 

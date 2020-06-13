@@ -30,6 +30,14 @@ public class OverlayNGTest extends GeometryTestCase {
 
   public OverlayNGTest(String name) { super(name); }
   
+  public void testEmptyGCBothIntersection() {
+    Geometry a = read("GEOMETRYCOLLECTION EMPTY");
+    Geometry b = read("GEOMETRYCOLLECTION EMPTY");
+    Geometry expected = read("GEOMETRYCOLLECTION EMPTY");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
   public void testEmptyAPolygonIntersection() {
     Geometry a = read("POLYGON EMPTY");
     Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");

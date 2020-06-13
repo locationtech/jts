@@ -3,6 +3,7 @@
 Covers topological situations with no precision collapse.
 Uses a floating precision model.
 </desc>
+
 <case>
   <desc>AA - empty polygon</desc>
   <a>
@@ -347,6 +348,107 @@ POINT EMPTY
   </op></test>
 <test>  <op name="symdifferenceNG" arg1="A" arg2="B">
 POINT EMPTY
+  </op></test>
+</case>
+
+
+<case>
+  <desc>CC - empty geometry collections are handled</desc>
+  <a>
+GEOMETRYCOLLECTION EMPTY
+  </a>
+  <b>
+GEOMETRYCOLLECTION EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+</case>
+
+<case>
+  <desc>PC - empty point and empty GC</desc>
+  <a>
+POINT EMPTY
+  </a>
+  <b>
+GEOMETRYCOLLECTION EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+</case>
+
+<case>
+  <desc>LC - empty line and empty GC</desc>
+  <a>
+LINESTRING EMPTY
+  </a>
+  <b>
+GEOMETRYCOLLECTION EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+</case>
+
+<case>
+  <desc>AC - empty polygon and empty GC</desc>
+  <a>
+POLYGON EMPTY
+  </a>
+  <b>
+GEOMETRYCOLLECTION EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POLYGON EMPTY
   </op></test>
 </case>
 
