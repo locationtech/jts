@@ -11,12 +11,16 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
+import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
+
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.noding.snap.SnappingNoder;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.operation.union.UnionStrategy;
 
 
 /**
@@ -65,6 +69,24 @@ public class OverlayNGSnapIfNeeded
   public static Geometry symDifference(Geometry g0, Geometry g1)
   {
      return overlay(g0, g1, OverlayNG.SYMDIFFERENCE);
+  }
+  
+  public static Geometry union(Geometry a) {
+    UnionStrategy unionSRFun = new UnionStrategy() {
+
+      public Geometry union(Geometry g0, Geometry g1) {
+         return overlay(g0, g1, UNION );
+      }
+
+      @Override
+      public boolean isFloatingPrecision() {
+        return true;
+      }
+      
+    };
+    UnaryUnionOp op = new UnaryUnionOp(a);
+    op.setUnionFunction(unionSRFun);
+    return op.union();
   }
   
   private static PrecisionModel PM_FLOAT = new PrecisionModel();
