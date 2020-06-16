@@ -16,10 +16,10 @@ operations (boolean combinations) of input {@link Geometry}s.
 The {@link OverlayNG} class provides the standard Simple Features 
 boolean set-theoretic overlay operations, including:
 <ul>
-<li><b>Intersection</b></li>
-<li><b>Union</b></li>
-<li><b>Difference</b></li>
-<li><b>Symmetric Difference</b></li>
+<li><b>Intersection</b> - all points which lie in both geometries</li>
+<li><b>Union</b> - all points which lie in at least one geometry</li>
+<li><b>Difference</b> - all points which lie in the first geometry but not the second</li>
+<li><b>Symmetric Difference</b> - all points which lie in one geometry but not both</li>
 </ul>
 These operations are supported for all combinations of the basic geometry types and their homogeneous collections.
 <p>
@@ -35,13 +35,18 @@ in a topologically-valid way</li>
 <p>
 <h2>Semantics</h2>
 The semantics of inputs are:
+
 <ul>
-<li>Polygons may contain some kinds of invalid topology: 
-coincident line segments (topology collapse) 
-and self-touching rings (inverted shells and exverted holes).
-These invalidities are corrected during the overlay process.
-This allows the OverlayNG API to serve as a topology correcter for these
-kinds of invalidities.
+<li>Input geometries may have different dimension.</li>
+<li>Collections must be homogeneous
+  (all elements must have the same dimension).</li>
+<li>In general, inputs must be valid geometries.</li>
+<li>However, polygonal inputs may contain the following two kinds of "mild" invalid topology: 
+  <ul>
+  <li>rings which self-touch at discrete points (sometimes called inverted shells and exverted holes).</li>
+  <li>rings which touch along line segments (i.e. topology collapse).</li>
+  </ul>
+</li>
 </ul>
 
 <p>
@@ -86,6 +91,8 @@ have valid <code>MultiPolygon</code> topology.</li>
 <li><b>Pluggable Noding</b> - allows using different noders to change characteristics of performance and accuracy
 <li><b>Precision Reduction</b> - in a topologically correct way.  
 Implemented by unioning a single input with an empty geometry
+<li><b>Topology Correction / Conversion</b> - handles certain kinds
+of polygonal inputs which are invalid
 <li><b>Fast Coverage Union</b> - of valid polygonal and linear coverages
 </ul>
 
@@ -107,6 +114,22 @@ by snapping vertices and intersections to a grid</li>
 <li>{@link SegmentExtractingNoder} - a special-purpose noder that provides very fast noding
 for valid polygonal coverages. Requires node-clean input to operate correctly. </li> 
 </ul>
+
+<h3>Topology Correction / Conversion</h3>
+
+As noted above, the overlay process
+can handle polygonal inputs which are invalid according to the OGC topology model
+in certain limited ways.
+These invalid conditions are:
+  <ul>
+  <li>rings which self-touch at discrete points (sometimes called inverted shells and exverted holes).</li>
+  <li>rings which touch along line segments (i.e. topology collapse).</li>
+  </ul>
+These invalidities are corrected during the overlay process.</li>
+<p>
+Some of these invalidities are considered as valid in other geometry models.
+By peforming a self-overlay these inputs can be converted
+into the JTS OGC topological model.
 
 <h3>Codebase</h3>
 <ul>
