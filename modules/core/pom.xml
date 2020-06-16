@@ -49,6 +49,7 @@
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Bundle-Version>${project.version}</Bundle-Version>
+                        <Export-Package>org.locationtech.jts.*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
