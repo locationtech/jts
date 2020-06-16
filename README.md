@@ -53,6 +53,7 @@ See also:
 
 ## History
 
+* [**Version History**](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md)
 * History from the previous JTS SourceForge repo is in the branch [`_old/history`](https://github.com/locationtech/jts/tree/_old/history)
 * Older versions of JTS can be found on SourceForge
 * There is an archive of distros of older versions [here](https://github.com/dr-jts/jts-versions)
