@@ -143,7 +143,7 @@ class OverlayPoints {
 
   private Point copyPoint(Point pt) {
     // if pm is floating, the point coordinate is not changed
-    if (pm.isFloating()) 
+    if (OverlayUtil.isFloating(pm))
       return (Point) pt.copy();
     
     // pm is fixed.  Round off X&Y ordinates, copy other ordinates unchanged
@@ -185,7 +185,7 @@ class OverlayPoints {
    */
   static Coordinate roundCoord(Point pt, PrecisionModel pm) {
     Coordinate p = pt.getCoordinate();
-    if (pm.isFloating()) 
+    if (OverlayUtil.isFloating(pm)) 
       return p;
     Coordinate p2 = p.copy();
     pm.makePrecise(p2);

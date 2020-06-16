@@ -45,7 +45,7 @@ public class UnaryUnionNG {
 
       @Override
       public boolean isFloatingPrecision() {
-         return pm.isFloating();
+         return OverlayUtil.isFloating(pm);
       }
       
     };

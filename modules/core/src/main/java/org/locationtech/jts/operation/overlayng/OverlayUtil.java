@@ -32,6 +32,10 @@ import org.locationtech.jts.util.Assert;
  */
 class OverlayUtil {
 
+  static boolean isFloating(PrecisionModel pm) {
+    if (pm == null) return true;
+    return pm.isFloating();
+  }
   static Envelope clippingEnvelope(int opCode, InputGeometry inputGeom, PrecisionModel pm) {   
     Envelope overlapEnv = overlapEnvelope(opCode, inputGeom, pm);
     if (overlapEnv == null) 
@@ -84,7 +88,7 @@ class OverlayUtil {
 
   private static double safeExpandDistance(Envelope env, PrecisionModel pm) {
     double envExpandDist;
-    if (pm ==null || pm.isFloating()) {
+    if (isFloating(pm)) {
       // if PM is FLOAT then there is no scale factor, so add 10%
       double minSize = Math.min(env.getHeight(), env.getWidth());
       envExpandDist = SAFE_ENV_BUFFER_FACTOR * minSize;
@@ -143,7 +147,7 @@ class OverlayUtil {
    */
   static boolean isEnvDisjoint(Geometry a, Geometry b, PrecisionModel pm) {
     if (isEmpty(a) || isEmpty(b)) return true;
-    if (pm == null || pm.isFloating()) {
+    if (isFloating(pm)) {
       return a.getEnvelopeInternal().disjoint(b.getEnvelopeInternal());
     }
     return isDisjoint(a.getEnvelopeInternal(), b.getEnvelopeInternal(), pm);
@@ -300,7 +304,7 @@ class OverlayUtil {
   public static Coordinate round(Point pt, PrecisionModel pm) {
     if (pt.isEmpty()) return null;
     Coordinate p = pt.getCoordinate().copy();
-    if (! pm.isFloating()) {
+    if (! isFloating(pm)) {
       pm.makePrecise(p);
     }
     return p;

@@ -172,7 +172,7 @@ class OverlayNoder {
    */
   private Noder getNoder() {
     if (customNoder != null) return customNoder;
-    if (pm.isFloating())
+    if (OverlayUtil.isFloating(pm))
       return createFloatingPrecisionNoder(IS_NODING_VALIDATED);
     return createFixedPrecisionNoder(pm);
   }
