@@ -34,6 +34,17 @@ in a topologically-valid way</li>
 </p>
 <p>
 <h2>Semantics</h2>
+The semantics of inputs are:
+<ul>
+<li>Polygons may contain some kinds of invalid topology: 
+coincident line segments (topology collapse) 
+and self-touching rings (inverted shells and exverted holes).
+These invalidities are corrected during the overlay process.
+This allows the OverlayNG API to serve as a topology correcter for these
+kinds of invalidities.
+</ul>
+
+<p>
 The semantics of operation results are:
 
 <ul>
