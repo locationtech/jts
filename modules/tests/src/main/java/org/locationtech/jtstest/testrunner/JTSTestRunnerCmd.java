@@ -86,6 +86,8 @@ public class JTSTestRunnerCmd {
   private static final String OPT_GEOMAFILE = "afile";
   private static final String OPT_GEOMBFILE = "bfile";
   private static final String OPT_ARG1 = "arg1";
+
+  private static final String FILENAME_EXTENSION = "xml";
   
   
 
@@ -259,11 +261,11 @@ public class JTSTestRunnerCmd {
     List<String> testFiles = new ArrayList<String>();
     
     if (commandLine.hasOption(OptionSpec.OPTION_FREE_ARGS)) {
-      testFiles.addAll(FilesUtil.expand(cmdOptionArgList(commandLine, OptionSpec.OPTION_FREE_ARGS)));
+      testFiles.addAll(FilesUtil.expand(cmdOptionArgList(commandLine, OptionSpec.OPTION_FREE_ARGS), FILENAME_EXTENSION));
     }
     
     if (commandLine.hasOption(OPT_FILES)) {
-      testFiles.addAll(FilesUtil.expand(cmdOptionArgList(commandLine, OPT_FILES)));
+      testFiles.addAll(FilesUtil.expand(cmdOptionArgList(commandLine, OPT_FILES), FILENAME_EXTENSION));
     }
     
     if (commandLine.hasOption(OPT_PROPERTIES)) {
