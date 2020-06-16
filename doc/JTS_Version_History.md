@@ -84,6 +84,7 @@ Distributions for older JTS versions can be obtained at the
 ### Functionality Improvements
 
 * Allow test files/dirs to be specified as free args
+* Only load `.xml` files from directories
 
 ## JtsOp 
 
