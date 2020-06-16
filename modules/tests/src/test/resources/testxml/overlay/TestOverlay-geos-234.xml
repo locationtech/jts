@@ -1,0 +1,26 @@
+<run>
+  <desc>
+http://trac.osgeo.org/geos/ticket/234
+  </desc>
+  <precisionModel type="FLOATING" />
+
+<case>
+  <desc>
+http://trac.osgeo.org/geos/ticket/234
+Assertion failed on intersecting collection with empty component
+  </desc>
+  <a>
+MULTIPOLYGON (((1 1, 1 5, 5 5, 5 1, 1 1), EMPTY))
+  </a>
+  <b>
+MULTIPOLYGON (((3 3, 3 4, 4 4, 4 3, 3 3)))
+  </b>
+<test>
+ <op name="intersection" arg1="A" arg2="B">
+POLYGON ((3 3, 3 4, 4 4, 4 3, 3 3))
+ </op>
+</test>
+</case>
+
+
+</run>
