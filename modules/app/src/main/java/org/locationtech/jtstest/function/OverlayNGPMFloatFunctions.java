@@ -42,17 +42,20 @@ public class OverlayNGPMFloatFunctions {
   }
 
   public static Geometry unaryUnion(Geometry a) {
-    /*
     UnionStrategy unionSRFun = new UnionStrategy() {
 
       public Geometry union(Geometry g0, Geometry g1) {
          return OverlayNG.overlay(g0, g1, UNION );
       }
+
+      @Override
+      public boolean isFloatingPrecision() {
+        return true;
+      }
       
     };
-    */
     UnaryUnionOp op = new UnaryUnionOp(a);
-    //op.setUnionFunction(unionSRFun);
+    op.setUnionFunction(unionSRFun);
     return op.union();
   }
   
