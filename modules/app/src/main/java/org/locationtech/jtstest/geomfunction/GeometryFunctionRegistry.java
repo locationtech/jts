@@ -39,7 +39,6 @@ import org.locationtech.jtstest.function.NodingFunctions;
 import org.locationtech.jtstest.function.OffsetCurveFunctions;
 import org.locationtech.jtstest.function.OrientationFunctions;
 import org.locationtech.jtstest.function.OverlayFunctions;
-import org.locationtech.jtstest.function.OverlayNGPMAutoFunctions;
 import org.locationtech.jtstest.function.OverlayNGPMFloatFunctions;
 import org.locationtech.jtstest.function.OverlayNGSnapIfNeededFunctions;
 import org.locationtech.jtstest.function.OverlayNoSnapFunctions;
@@ -109,7 +108,6 @@ public class GeometryFunctionRegistry
     funcRegistry.add(OverlayFunctions.class);
     
     funcRegistry.add(OverlayNGFunctions.class);
-    funcRegistry.add(OverlayNGPMAutoFunctions.class);
     funcRegistry.add(OverlayNGPMFloatFunctions.class);
     funcRegistry.add(OverlayNGSnapIfNeededFunctions.class);
     funcRegistry.add(OverlayNGSnappingFunctions.class);

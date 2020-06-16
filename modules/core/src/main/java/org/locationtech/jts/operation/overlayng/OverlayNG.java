@@ -206,7 +206,9 @@ public class OverlayNG
    * Computes an overlay operation on 
    * the given geometry operands,
    * using an automatically-determined fixed precision model
-   * which maximises precision while ensuring robust computation.
+   * which maximizes precision while ensuring robust computation.
+   * <p>
+   * WARNING: This is quite slow, so not recommended for production use.
    * 
    * @param geom0 the first geometry argument
    * @param geom1 the second geometry argument
