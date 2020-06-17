@@ -38,6 +38,12 @@ public class SnapRoundingNoderTest  extends GeometryTestCase {
 
   public SnapRoundingNoderTest(String name) { super(name); }
 
+  public void testSimple() {
+    String wkt =      "MULTILINESTRING ((1 1, 9 2), (3 3, 3 0))";
+    String expected = "MULTILINESTRING ((1 1, 3 1), (3 1, 9 2), (3 3, 3 1), (3 1, 3 0))";
+    checkRounding(wkt, 1, expected);
+  }
+  
   /**
    * This test checks the HotPixel test for overlapping horizontal line
    */
