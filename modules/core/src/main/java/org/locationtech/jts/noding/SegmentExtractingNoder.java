@@ -9,16 +9,13 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.operation.overlayng;
+package org.locationtech.jts.noding;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.noding.BasicSegmentString;
-import org.locationtech.jts.noding.Noder;
-import org.locationtech.jts.noding.SegmentString;
 
 /**
  * A noder which extracts all line segments 

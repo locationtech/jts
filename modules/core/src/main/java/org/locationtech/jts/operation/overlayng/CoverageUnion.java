@@ -14,6 +14,7 @@ package org.locationtech.jts.operation.overlayng;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.SegmentExtractingNoder;
 
 /**
  * Unions a valid coverage of polygons or lines
