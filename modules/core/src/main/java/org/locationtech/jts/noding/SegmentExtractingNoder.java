@@ -32,7 +32,7 @@ import org.locationtech.jts.geom.Coordinate;
  * @author Martin Davis
  *
  */
-class SegmentExtractingNoder implements Noder {
+public class SegmentExtractingNoder implements Noder {
 
   private List segList;
   
