@@ -51,19 +51,27 @@ import org.locationtech.jts.util.Debug;
  * This does two things: ensures robust computation;
  * and forces the output to be validly rounded to the precision model. 
  * <p>
- * For fixed precision models noding is performed using snap-rounding.
+ * For fixed precision models noding is performed using a {@link SnapRoundingNoder}.
  * This provides robust computation (as long as precision is limited to
  * around 13 decimal digits).
  * <p>
- * For floating precision the conventional JTS noder is used. 
+ * For floating precision an {@link MCIndexNoder} is used. 
  * This is not fully robust, so can sometimes result in 
  * {@link TopologyException}s being thrown. 
+ * For robust full-precision overlay see {@link OverlayNGSnapIfNeeded}.
  * <p>
  * A custom {@link Noder} can be supplied.
  * This allows using a more performant noding strategy in specific cases, 
  * for instance in {@link CoverageUnion}.
+ * <p>
+ * <b>Note:</b If a {@link SnappingNoder} is used 
+ * it is best to specify a fairly small snap tolerance,
+ * since the intersection clipping optimization can 
+ * interact with the snapping to alter the result.
  * 
  * @author mdavis
+ * 
+ * @see OverlayNGSnapIfNeeded
  *
  */
 public class OverlayNG 
@@ -147,7 +155,8 @@ public class OverlayNG
   
   /**
    * Computes an overlay operation for 
-   * the given geometry operands.
+   * the given geometry operands, with the
+   * noding strategy determined by the precision model.
    * 
    * @param geom0 the first geometry argument
    * @param geom1 the second geometry argument
@@ -316,6 +325,7 @@ public class OverlayNG
   /**
    * Creates an overlay operation on the given geometries,
    * with a defined precision model.
+   * The noding strategy is determined by the precision model.
    * 
    * @param geom0 the A operand geometry
    * @param geom1 the B operand geometry
