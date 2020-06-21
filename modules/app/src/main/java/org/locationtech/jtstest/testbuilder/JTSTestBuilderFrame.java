@@ -89,7 +89,7 @@ public class JTSTestBuilderFrame extends JFrame
   private JTSTestBuilderToolBar tbToolBar = new JTSTestBuilderToolBar(this);
   //---------------------------------------------
   JPanel contentPane;
-  BorderLayout borderLayout1 = new BorderLayout();
+  BorderLayout contentLayout = new BorderLayout();
   Border border4;
   JSplitPane jSplitPane1 = new JSplitPane();
   JPanel panelTop = new JPanel();
@@ -587,6 +587,10 @@ public class JTSTestBuilderFrame extends JFrame
    *  Component initialization
    */
   private void jbInit() throws Exception {
+    this.setSize(new Dimension(800, 800));
+    this.setTitle("JTS TestBuilder");
+    this.setJMenuBar(tbMenuBar.getMenuBar());
+   
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     fileChooser.setMultiSelectionEnabled(false);
     fileAndDirectoryChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -597,35 +601,22 @@ public class JTSTestBuilderFrame extends JFrame
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     
     //---------------------------------------------------
-    contentPane = (JPanel) this.getContentPane();
-    border4 = BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.white,
-        Color.white, new Color(93, 93, 93), new Color(134, 134, 134));
-    contentPane.setLayout(borderLayout1);
-    this.setSize(new Dimension(800, 800));
-    this.setTitle("JTS TestBuilder");
     
-    /*
-    testCasePanel.editPanel.addGeometryListener(
-      new com.vividsolutions.jtstest.testbuilder.model.GeometryListener() {
-
-        public void geometryChanged(GeometryEvent e) {
-          editPanel_geometryChanged(e);
-        }
-      });
-*/    
-    
-    jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
-    jSplitPane1.setPreferredSize(new Dimension(601, 690));
-    panelTop.setLayout(borderLayout2);
-    panelTop.setMinimumSize(new Dimension(431, 0));
-    contentPane.setPreferredSize(new Dimension(601, 690));
-    panelBottom.setLayout(borderLayout3);
     wktPanel.setMinimumSize(new Dimension(111, 0));
     wktPanel.setPreferredSize(new Dimension(600, 100));
     testPanel.setLayout(gridBagLayout2);
     gridLayout1.setRows(4);
     gridLayout1.setColumns(1);
     
+    panelTop.setLayout(borderLayout2);
+    panelTop.setMinimumSize(new Dimension(431, 0));
+    panelTop.add(testCasePanel, BorderLayout.CENTER);
+    
+    panelBottom.setLayout(borderLayout3);
+    panelBottom.setMinimumSize(new Dimension(431, 0));
+    panelBottom.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
+    panelBottom.add(inputTabbedPane, BorderLayout.CENTER);
+      
     //---- Input tabs
     inputTabbedPane.setTabPlacement(JTabbedPane.LEFT);
     inputTabbedPane.add(testListPanel, AppStrings.TAB_LABEL_CASES);
@@ -646,19 +637,24 @@ public class JTSTestBuilderFrame extends JFrame
     });   
     
     //--- main frame
-    contentPane.add(jSplitPane1, BorderLayout.CENTER);
-    jSplitPane1.add(panelTop, JSplitPane.TOP);
-    panelTop.add(testCasePanel, BorderLayout.CENTER);
-    jSplitPane1.add(panelBottom, JSplitPane.BOTTOM);
-    panelBottom.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
-    panelBottom.add(inputTabbedPane, BorderLayout.CENTER);
+  
+    jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+    jSplitPane1.setPreferredSize(new Dimension(601, 690));
     jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
     jSplitPane1.setResizeWeight(1);
-
-    
     jSplitPane1.setDividerLocation(500);
-    this.setJMenuBar(tbMenuBar.getMenuBar());
-    //contentPane.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
+    jSplitPane1.add(panelTop, JSplitPane.TOP);
+    jSplitPane1.add(panelBottom, JSplitPane.BOTTOM);
+    
+    /*
+    border4 = BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.white,
+        Color.white, new Color(93, 93, 93), new Color(134, 134, 134));
+        */
+    contentPane = (JPanel) this.getContentPane();
+    contentPane.setLayout(contentLayout);
+    contentPane.setPreferredSize(new Dimension(601, 690));
+    contentPane.add(jSplitPane1, BorderLayout.CENTER);
+
   }
 
   public JTSTestBuilderToolBar getToolbar()
