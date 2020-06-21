@@ -92,10 +92,10 @@ public class JTSTestBuilderFrame extends JFrame
   BorderLayout borderLayout1 = new BorderLayout();
   Border border4;
   JSplitPane jSplitPane1 = new JSplitPane();
-  JPanel jPanel1 = new JPanel();
+  JPanel panelTop = new JPanel();
   BorderLayout borderLayout2 = new BorderLayout();
   TestCasePanel testCasePanel = new TestCasePanel();
-  JPanel jPanel2 = new JPanel();
+  JPanel panelBottom = new JPanel();
   JTabbedPane inputTabbedPane = new JTabbedPane();
   BorderLayout borderLayout3 = new BorderLayout();
   JPanel testPanel = new JPanel();
@@ -616,26 +616,18 @@ public class JTSTestBuilderFrame extends JFrame
     
     jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
     jSplitPane1.setPreferredSize(new Dimension(601, 690));
-    jPanel1.setLayout(borderLayout2);
-    jPanel1.setMinimumSize(new Dimension(431, 0));
+    panelTop.setLayout(borderLayout2);
+    panelTop.setMinimumSize(new Dimension(431, 0));
     contentPane.setPreferredSize(new Dimension(601, 690));
-    inputTabbedPane.setTabPlacement(JTabbedPane.LEFT);
-    jPanel2.setLayout(borderLayout3);
+    panelBottom.setLayout(borderLayout3);
     wktPanel.setMinimumSize(new Dimension(111, 0));
     wktPanel.setPreferredSize(new Dimension(600, 100));
-    wktPanel.setToolTipText(AppStrings.TIP_TEXT_ENTRY);
     testPanel.setLayout(gridBagLayout2);
     gridLayout1.setRows(4);
     gridLayout1.setColumns(1);
     
-    contentPane.add(jSplitPane1, BorderLayout.CENTER);
-    jSplitPane1.add(jPanel1, JSplitPane.TOP);
-    jPanel1.add(testCasePanel, BorderLayout.CENTER);
-    jSplitPane1.add(jPanel2, JSplitPane.BOTTOM);
-    jPanel2.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
-    jPanel2.add(inputTabbedPane, BorderLayout.CENTER);
-    jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
-    jSplitPane1.setResizeWeight(0.5);
+    //---- Input tabs
+    inputTabbedPane.setTabPlacement(JTabbedPane.LEFT);
     inputTabbedPane.add(testListPanel, AppStrings.TAB_LABEL_CASES);
     inputTabbedPane.add(wktPanel,  AppStrings.TAB_LABEL_INPUT);
     inputTabbedPane.add(resultWKTPanel, AppStrings.TAB_LABEL_RESULT);
@@ -651,7 +643,18 @@ public class JTSTestBuilderFrame extends JFrame
       {
         updateStatsPanelIfVisible();
         }
-    });
+    });   
+    
+    //--- main frame
+    contentPane.add(jSplitPane1, BorderLayout.CENTER);
+    jSplitPane1.add(panelTop, JSplitPane.TOP);
+    panelTop.add(testCasePanel, BorderLayout.CENTER);
+    jSplitPane1.add(panelBottom, JSplitPane.BOTTOM);
+    panelBottom.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
+    panelBottom.add(inputTabbedPane, BorderLayout.CENTER);
+    jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
+    jSplitPane1.setResizeWeight(1);
+
     
     jSplitPane1.setDividerLocation(500);
     this.setJMenuBar(tbMenuBar.getMenuBar());
