@@ -29,7 +29,8 @@ public class AppStrings {
   static final String TAB_LABEL_CASES = "Cases";
   public static final Object TAB_LABEL_COMMAND = "Command";
 
-  public static final String TIP_TEXT_ENTRY = "Enter WKT, WKB GeoJSON, or GML, or drag-n-drop a WKT, WKB, GeoJSON, GML or SHP file";
+  public static final String TIP_TEXT_ENTRY = "<html>Enter WKT, WKB, GeoJSON, or GML"
+      + "<br>Drop a WKT, WKB, GeoJSON, GML or SHP file</html>";
   public static final String TIP_WKT_PANEL_LOAD_GEOMETRY = "Load geometries";
   public static final String TIP_INSPECT_GEOMETRY = "Inspect Geometry";
 
