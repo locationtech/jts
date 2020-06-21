@@ -40,11 +40,11 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jtstest.testbuilder.io.IOUtil;
 import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.GeometryType;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
-import org.locationtech.jtstest.testbuilder.ui.IOUtil;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.dnd.FileDrop;
 import org.locationtech.jtstest.util.GeometryTextCleaner;

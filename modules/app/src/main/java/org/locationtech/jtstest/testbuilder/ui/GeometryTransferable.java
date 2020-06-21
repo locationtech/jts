@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.*;
+import org.locationtech.jtstest.testbuilder.io.IOUtil;
 
 public class GeometryTransferable implements Transferable 
 {
@@ -61,14 +62,7 @@ public class GeometryTransferable implements Transferable
       return geom;
   }
   if (flavor.equals(DataFlavor.stringFlavor)) {
-    if (isFormatted) {
-      WKTWriter writer = new WKTWriter();
-      writer.setFormatted(true);
-      writer.setMaxCoordinatesPerLine(5);
-      String wkt = writer.writeFormatted(geom);
-      return wkt;
-    }
-    return geom.toString();
+    return IOUtil.toWKT(geom, isFormatted);
   }
   throw new UnsupportedFlavorException(flavor);
 

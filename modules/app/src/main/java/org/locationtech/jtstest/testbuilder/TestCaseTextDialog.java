@@ -21,6 +21,7 @@ import javax.swing.*;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.*;
 import org.locationtech.jts.io.gml2.*;
+import org.locationtech.jtstest.testbuilder.io.IOUtil;
 import org.locationtech.jtstest.testbuilder.io.JavaTestWriter;
 import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
 import org.locationtech.jtstest.testbuilder.io.XMLTestWriter;
@@ -225,9 +226,9 @@ public class TestCaseTextDialog extends JDialog {
     
     void rbWKB_actionPerformed(ActionEvent e) {
     	writeView(
-    			convertToWKB(test.getGeometry(0)),
-    			convertToWKB(test.getGeometry(1)),
-    			convertToWKB(test.getResult())
+    			IOUtil.toWKBHex(test.getGeometry(0)),
+    			IOUtil.toWKBHex(test.getGeometry(1)),
+    			IOUtil.toWKBHex(test.getResult())
     			);
     }
     
@@ -241,17 +242,17 @@ public class TestCaseTextDialog extends JDialog {
     
     void rbWKTFormatted_actionPerformed(ActionEvent e) {
     	writeView(
-    			convertToWKT(test.getGeometry(0), true),
-    			convertToWKT(test.getGeometry(1), true),
-    			convertToWKT(test.getResult(), true)
+    	    IOUtil.toWKT(test.getGeometry(0), true),
+    	    IOUtil.toWKT(test.getGeometry(1), true),
+    	    IOUtil.toWKT(test.getResult(), true)
     			);
   }
     
     void rbGML_actionPerformed(ActionEvent e) {
       writeView(
-          convertToGML(test.getGeometry(0)),
-          convertToGML(test.getGeometry(1)),
-          convertToGML(test.getResult())
+          IOUtil.toGML(test.getGeometry(0)),
+          IOUtil.toGML(test.getGeometry(1)),
+          IOUtil.toGML(test.getResult())
           );
   }
     
@@ -271,27 +272,4 @@ public class TestCaseTextDialog extends JDialog {
 		txtGeomView.append("\n\n");
   }
   
-    private String convertToWKT(Geometry g, boolean isFormatted)
-    {
-    	if (g == null) return "";
-    	if (! isFormatted)
-    		return g.toString();
-    	WKTWriter writer = new WKTWriter();
-    	writer.setFormatted(isFormatted);
-    	writer.setMaxCoordinatesPerLine(5);
-    	return writer.write(g);
-    }
-    
-    private String convertToWKB(Geometry g)
-    {
-    	if (g == null) return "";
-    	return WKBWriter.toHex((new WKBWriter().write(g)));
-    }
-    
-    private String convertToGML(Geometry g)
-    {
-      if (g == null) return "";
-      return (new GMLWriter()).write(g);
-    }
-    
 }
