@@ -274,6 +274,10 @@ public class SwingUtil {
     return (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK;
   }
 
+  public static boolean isShiftKeyPressed(ActionEvent e) {
+    return (e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK;
+  }
+
   public static void showTab(JTabbedPane tabPane, String tabName)
   {
     tabPane.setSelectedIndex(tabPane.indexOfTab(tabName));

@@ -44,6 +44,7 @@ import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.GeometryType;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
+import org.locationtech.jtstest.testbuilder.ui.IOUtil;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.dnd.FileDrop;
 import org.locationtech.jtstest.util.GeometryTextCleaner;
@@ -435,10 +436,16 @@ public class WKTPanel extends JPanel
     
     void copy(ActionEvent e, int geomIndex)
     {
-      boolean isFormatted = 0 != (e.getModifiers() & ActionEvent.CTRL_MASK);
       Geometry g = tbModel.getCurrentCase().getGeometry(geomIndex);
-      if (g != null)
-        SwingUtil.copyToClipboard(g, isFormatted);
+      if (g == null) return;
+      
+      if (SwingUtil.isShiftKeyPressed(e)) {
+        String wkb = IOUtil.toWKBHex(g);
+        SwingUtil.copyToClipboard(wkb, false);
+        return;
+      }
+      boolean isFormatted = SwingUtil.isCtlKeyPressed(e);
+      SwingUtil.copyToClipboard(g, isFormatted);
     }
     
     void aPasteButton_actionPerformed(ActionEvent e)
