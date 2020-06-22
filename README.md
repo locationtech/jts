@@ -5,7 +5,7 @@ The JTS Topology Suite is a Java library for creating and manipulating vector ge
 
 ![JTS logo](jts_logo.png)
 
-[![Travis Build Status](https://api.travis-ci.org/locationtech/jts.svg)](http://travis-ci.org/locationtech/jts) [![GitHub Action Status](https://github.com/locationtech/jts/workflows/GitHub%20CI/badge.svg)](https://github.com/locationtech/jts/actions)[![Join the chat at https://gitter.im/locationtech/jts](https://badges.gitter.im/locationtech/jts.svg)](https://gitter.im/locationtech/jts?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Travis Build Status](https://api.travis-ci.org/locationtech/jts.svg)](http://travis-ci.org/locationtech/jts) [![GitHub Action Status](https://github.com/locationtech/jts/workflows/GitHub%20CI/badge.svg)](https://github.com/locationtech/jts/actions) [![Join the chat at https://gitter.im/locationtech/jts](https://badges.gitter.im/locationtech/jts.svg)](https://gitter.im/locationtech/jts?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
 JTS is a project in the [LocationTech](http://www.locationtech.org) working group of the Eclipse Foundation.
