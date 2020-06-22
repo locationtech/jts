@@ -341,7 +341,7 @@ public class GeometryStrategies{
 				 * Remove spaces after commas, for when they are used as separators (default).
 				 * This prevents coordinates being split by the tuple separator
 				 */
-				t = t.replaceAll(",\\s+", ",");
+				t = t.replaceAll("\\s*,\\s*", ",");
 				
 				Pattern ptn = (Pattern) patterns.get(toupleSeperator);
 				if(ptn == null){

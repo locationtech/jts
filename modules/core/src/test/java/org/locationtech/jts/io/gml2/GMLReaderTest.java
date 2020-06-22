@@ -43,9 +43,23 @@ public class GMLReaderTest extends GeometryTestCase {
         "POINT (45.67 88.56)");
   }
 
-  public void testPointWithCoordSepMultiSpace() {
+  public void testPointWithCoordSepMultiSpaceAfter() {
     checkRead("<gml:Point>"
         + "    <gml:coordinates>45.67,     88.56</gml:coordinates>"
+        + " </gml:Point>", 
+        "POINT (45.67 88.56)");
+  }
+
+  public void testPointWithCoordSepMultiSpaceBefore() {
+    checkRead("<gml:Point>"
+        + "    <gml:coordinates>45.67   ,88.56</gml:coordinates>"
+        + " </gml:Point>", 
+        "POINT (45.67 88.56)");
+  }
+
+  public void testPointWithCoordSepMultiSpaceBoth() {
+    checkRead("<gml:Point>"
+        + "    <gml:coordinates>45.67   ,   88.56</gml:coordinates>"
         + " </gml:Point>", 
         "POINT (45.67 88.56)");
   }
