@@ -336,6 +336,11 @@ public class GeometryStrategies{
 				// now to start parse
 				String t = arg.text.toString();
 				t = t.replaceAll("\\s"," ");
+				/**
+				 * Remove spaces after commas, for when they are used as separators (default).
+				 * This prevents coordinates being split by the tuple separator
+				 */
+				t = t.replaceAll(",\\s+", ",");
 				
 				Pattern ptn = (Pattern) patterns.get(toupleSeperator);
 				if(ptn == null){
