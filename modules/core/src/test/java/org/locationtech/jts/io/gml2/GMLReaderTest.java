@@ -55,6 +55,13 @@ public class GMLReaderTest extends GeometryTestCase {
         "LINESTRING (45.67 88.56, 55.56 89.44)");
   }
 
+  public void testLineStringWithManySpaces() {
+    checkRead( "<gml:LineString>"
+        + "    <gml:coordinates>45.67,   88.56    55.56,89.44</gml:coordinates>"
+        + " </gml:LineString >",
+        "LINESTRING (45.67 88.56, 55.56 89.44)");
+  }
+
   private void checkRead(String gml, String wktExpected) {
     GMLReader gr = new GMLReader();
     Geometry g = null;
