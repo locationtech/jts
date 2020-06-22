@@ -69,6 +69,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `Geometry.reverse()` to have consistent behaviour and to copy all fields (#513)
 * Fix `MinimumBoundingCircle.farthestPoints` to work correctly (#522 and #533)
 * Fix `DistanceOp` handling of geometry collections with empty components (#524)
+* Fix GML parsing of coordinates and SRS name (#553)
 
 ## JTS TestBuilder
 
