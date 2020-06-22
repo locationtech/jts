@@ -14,6 +14,7 @@ package org.locationtech.jts.io.gml2;
 import java.util.HashMap;
 import java.util.List;
 import java.util.WeakHashMap;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -336,6 +337,11 @@ public class GeometryStrategies{
 				// now to start parse
 				String t = arg.text.toString();
 				t = t.replaceAll("\\s"," ");
+				/**
+				 * Remove spaces after commas, for when they are used as separators (default).
+				 * This prevents coordinates being split by the tuple separator
+				 */
+				t = t.replaceAll("\\s*,\\s*", ",");
 				
 				Pattern ptn = (Pattern) patterns.get(toupleSeperator);
 				if(ptn == null){
@@ -485,6 +491,7 @@ public class GeometryStrategies{
 		return strats;
 	}
 	
+	
 	static int getSrid(Attributes attrs, int defaultValue){
 		String srs = null;
 		if(attrs.getIndex(GMLConstants.GML_ATTR_SRSNAME)>=0)
@@ -498,20 +505,29 @@ public class GeometryStrategies{
 				try{
 					return Integer.parseInt(srs);
 				}catch(NumberFormatException e){
-					// rip out the end, uri's are used here sometimes
-					int index = srs.lastIndexOf('#');
-					if(index > -1)
-						srs = srs.substring(index);
-					try{
-						return Integer.parseInt(srs);
-					}catch(NumberFormatException e2){
-						// ignore
-					}
+				  String srsNum = extractIntSuffix(srs);
+				  if (srsNum != null) {
+  					try{
+  						return Integer.parseInt(srsNum);
+  					}catch(NumberFormatException e2){
+  						// ignore
+  					}
+				  }
 				}
 			}
 		}
 		
 		return defaultValue;
+	}
+	
+	static Pattern PATT_SUFFIX_INT = Pattern.compile("(\\d+)$");
+
+	static String extractIntSuffix(String s) {
+	  Matcher matcher = PATT_SUFFIX_INT.matcher(s);
+	  if (matcher.find()) {
+	      return matcher.group(1);
+	  }
+	  return null;
 	}
 	
 	/**
