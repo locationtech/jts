@@ -79,6 +79,7 @@ Distributions for older JTS versions can be obtained at the
 * Allow creating additional view layers
 * Add map view title, legend and border options
 * Support points in Reveal Topology mode
+* Add WKT panel **Copy as WKB** via Ctl-click
 
 ## JTS TestRunner
 
