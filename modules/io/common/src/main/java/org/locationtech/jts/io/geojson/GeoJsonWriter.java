@@ -34,7 +34,7 @@ import org.locationtech.jts.util.Assert;
 
 
 /**
- * Writes {@link Geometry}s as JSON fragments in GeoJson format.
+ * Writes {@link Geometry}s, {@link Feature}s, and {@link FeatureCollection}s as JSON fragments in GeoJson format.
  * 
  * @author Martin Davis
  * @author Paul Howells, Vivid Solutions
@@ -106,12 +106,112 @@ public class GeoJsonWriter {
    *           throws an IOException when unable to write the JSON string
    */
   public void write(Geometry geometry, Writer writer) throws IOException {
-    Map<String, Object> map = create(geometry, isEncodeCRS);
+    Map<String, Object> map = createGeometry(geometry, isEncodeCRS);
     JSONObject.writeJSONString(map, writer);
     writer.flush();
   }
 
-  private Map<String, Object> create(Geometry geometry, boolean encodeCRS) {
+  /**
+   * Writes a {@link Feature} in GeoJson format to a String.
+   *
+   * @param feature the feature to write
+   * @return String GeoJson Encoded Feature
+   */
+  public String write(Feature feature) {
+
+    StringWriter writer = new StringWriter();
+    try {
+      write(feature, writer);
+    } catch (IOException ex) {
+      Assert.shouldNeverReachHere();
+    }
+
+    return writer.toString();
+  }
+
+  /**
+   * Writes a {@link Feature} in GeoJson format into a {@link Writer}.
+   *
+   * @param feature
+   *          Feature to encode
+   * @param writer
+   *          Stream to encode to.
+   * @throws IOException
+   *           throws an IOException when unable to write the JSON string
+   */
+  public void write(Feature feature, Writer writer) throws IOException {
+    Map<String, Object> map = createFeature(feature, isEncodeCRS);
+    JSONObject.writeJSONString(map, writer);
+    writer.flush();
+  }
+
+  /**
+   * Writes a {@link FeatureCollection} in GeoJson format to a String.
+   *
+   * @param collection the feature collection to write
+   * @return String GeoJson Encoded FeatureCollection
+   */
+  public String write(FeatureCollection collection) {
+
+    StringWriter writer = new StringWriter();
+    try {
+      write(collection, writer);
+    } catch (IOException ex) {
+      Assert.shouldNeverReachHere();
+    }
+
+    return writer.toString();
+  }
+
+  /**
+   * Writes a {@link FeatureCollection} in GeoJson format into a {@link Writer}.
+   *
+   * @param collection
+   *          FeatureCollection to encode
+   * @param writer
+   *          Stream to encode to.
+   * @throws IOException
+   *           throws an IOException when unable to write the JSON string
+   */
+  public void write(FeatureCollection collection, Writer writer) throws IOException {
+    Map<String, Object> map = createFeatureCollection(collection, isEncodeCRS);
+    JSONObject.writeJSONString(map, writer);
+    writer.flush();
+  }
+
+  private Map<String, Object> createFeatureCollection(FeatureCollection collection, boolean isEncodeCRS) {
+    Map<String, Object> result = new LinkedHashMap<String, Object>();
+    result.put(GeoJsonConstants.NAME_TYPE, GeoJsonConstants.NAME_FEATURECOLLECTION);
+
+    List<Object> features = new ArrayList<Object>();
+    for (Feature feature: collection) {
+        features.add(createFeature(feature, isEncodeCRS));
+    }
+    result.put(GeoJsonConstants.NAME_FEATURES, features);
+
+    return result;
+  }
+
+  private Map<String, Object> createFeature(Feature feature, boolean isEncodeCRS) {
+
+      Map<String, Object> result = new LinkedHashMap<String, Object>();
+      result.put(GeoJsonConstants.NAME_TYPE, GeoJsonConstants.NAME_FEATURE);
+
+      String id = feature.getId();
+      if (id != null) {
+          result.put(GeoJsonConstants.NAME_ID, id);
+      }
+
+      Map<String, Object> properties = feature.getProperties();
+      result.put(GeoJsonConstants.NAME_PROPERTIES, properties);
+
+      Map<String, Object> geometry = createGeometry(feature.getGeometry(), isEncodeCRS);
+      result.put(GeoJsonConstants.NAME_GEOMETRY, geometry);
+
+      return result;
+  }
+
+  private Map<String, Object> createGeometry(Geometry geometry, boolean encodeCRS) {
 
     Map<String, Object> result = new LinkedHashMap<String, Object>();
     result.put(GeoJsonConstants.NAME_TYPE, geometry.getGeometryType());
@@ -168,7 +268,7 @@ public class GeoJsonWriter {
           geometryCollection.getNumGeometries());
 
       for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
-        geometries.add(create(geometryCollection.getGeometryN(i), false));
+        geometries.add(createGeometry(geometryCollection.getGeometryN(i), false));
       }
 
       result.put(GeoJsonConstants.NAME_GEOMETRIES, geometries);

@@ -19,6 +19,8 @@ import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import test.jts.GeometryTestCase;
 
+import java.util.HashMap;
+
 
 public class GeoJsonWriterTest extends GeometryTestCase {
 
@@ -100,14 +102,6 @@ public class GeoJsonWriterTest extends GeometryTestCase {
     runTest("GEOMETRYCOLLECTION EMPTY","{'type':'GeometryCollection','geometries':[]}");
   }
 
-  private void runTest(String wkt) throws ParseException {
-    Geometry expected = read(wkt);
-    geoJsonWriter.setEncodeCRS(false);
-    String json = this.geoJsonWriter.write(expected);
-    System.out.println('"' + json.replace('"', '\'') + '"');
-    //checkEqual(result, expected);
-  }
- 
   private void runTest(String wkt, String expectedGeojson) throws ParseException {
     runTest(wkt, 0, false, expectedGeojson);
   }

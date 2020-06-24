@@ -20,6 +20,8 @@ import org.locationtech.jts.io.geojson.GeoJsonWriter;
 
 import test.jts.GeometryTestCase;
 
+import java.util.HashMap;
+
 
 public class GeoJsonTest extends GeometryTestCase {
 
@@ -92,6 +94,33 @@ public class GeoJsonTest extends GeometryTestCase {
     runTest("GEOMETRYCOLLECTION EMPTY");
   }
 
+  public void testFeature() throws ParseException {
+    runTest(new Feature("123", read("POINT (1 1)"), new HashMap<String, Object>()),
+            "{'type':'Feature','id':'123','properties':{},'geometry':{'type':'Point','coordinates':[1,1]}}");
+  }
+
+  public void testFeatureNullId() throws ParseException {
+    runTest(new Feature(null, read("POINT (1 1)"), new HashMap<String, Object>()),
+            "{'type':'Feature','properties':{},'geometry':{'type':'Point','coordinates':[1,1]}}");
+  }
+
+  public void testFeatureNullProperties() throws ParseException {
+    runTest(new Feature("test", read("POINT (1 1)"), null),
+            "{'type':'Feature','id':'test','properties':null,'geometry':{'type':'Point','coordinates':[1,1]}}");
+  }
+
+  public void testFeatureCollection() throws ParseException {
+    FeatureCollection collection = new FeatureCollection(
+            new Feature(null, read("POINT (1 1)"), null));
+    runTest(collection,
+            "{'type':'FeatureCollection','features':[{'type':'Feature','properties':null,'geometry':{'type':'Point','coordinates':[1,1]}}]}");
+  }
+
+  public void testFeatureCollectionEmpty() throws ParseException {
+    FeatureCollection collection = new FeatureCollection();
+    runTest(collection, "{'type':'FeatureCollection','features':[]}");
+  }
+
   private void runTest(String wkt) throws ParseException {
     Geometry expected = read(wkt);
     String json = this.geoJsonWriter.write(expected);
@@ -99,4 +128,21 @@ public class GeoJsonTest extends GeometryTestCase {
     checkEqual(result, expected);
   }
 
+  private void runTest(Feature feature, String expectedGeojson) throws ParseException {
+    geoJsonWriter.setEncodeCRS(false);
+    String json = geoJsonWriter.write(feature);
+    String escaped = json.replace('"', '\'');
+    assertEquals(escaped, expectedGeojson);
+    Feature result = geoJsonReader.readFeature(json);
+    assertEquals(feature, result);
+  }
+
+  private void runTest(FeatureCollection collection, String expectedGeojson) throws ParseException {
+    geoJsonWriter.setEncodeCRS(false);
+    String json = geoJsonWriter.write(collection);
+    String escaped = json.replace('"', '\'');
+    assertEquals(escaped, expectedGeojson);
+    FeatureCollection result = geoJsonReader.readFeatureCollection(json);
+    assertEquals(collection, result);
+  }
 }

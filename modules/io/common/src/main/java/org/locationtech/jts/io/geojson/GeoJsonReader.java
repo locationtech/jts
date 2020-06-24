@@ -31,7 +31,7 @@ import org.locationtech.jts.io.ParseException;
 
 
 /**
- * Reads a GeoJson Geometry from a JSON fragment into a {@link Geometry}.
+ * Reads a GeoJson Geometry from a JSON fragment into a {@link Geometry}, {@link Feature}, or {@link FeatureCollection}.
  * <p>
  * A specification of the GeoJson format can be found at the GeoJson web site:
  * <a href='http://geojson.org/geojson-spec.html'>http://geojson.org/geojson-spec.html</a>.
@@ -117,7 +117,7 @@ public class GeoJsonReader {
         geometryFactory = this.gf;
       }
 
-      result = create(geometryMap, geometryFactory);
+      result = createGeometry(geometryMap, geometryFactory);
 
     } catch (org.json.simple.parser.ParseException e) {
       throw new ParseException(e);
@@ -128,7 +128,160 @@ public class GeoJsonReader {
     return result;
   }
 
-  private Geometry create(Map<String, Object> geometryMap,
+  /**
+   * Reads a GeoJson Feature from a <tt>String</tt> into a single
+   * {@link Feature}.
+   *
+   *
+   * @param json
+   *          The GeoJson String to parse
+   * @return the resulting Feature
+   *
+   * @throws ParseException
+   *           throws a ParseException if the JSON string cannot be parsed
+   */
+  public Feature readFeature(String json) throws ParseException {
+    Feature result = readFeature(new StringReader(json));
+    return result;
+  }
+
+  /**
+   * Reads a GeoJson Feature from a {@link Reader} into a single
+   * {@link Feature}.
+   *
+   *
+   * @param reader
+   *          The input source
+   * @return The resulting Feature
+   *
+   * @throws ParseException
+   *           throws a ParseException if the JSON string cannot be parsed
+   */
+  public Feature readFeature(Reader reader) throws ParseException {
+    Feature result = null;
+
+    JSONParser parser = new JSONParser();
+    try {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> featureMap = (Map<String, Object>) parser
+              .parse(reader);
+
+      result = createFeature(featureMap);
+
+    } catch (org.json.simple.parser.ParseException e) {
+      throw new ParseException(e);
+    } catch (IOException e) {
+      throw new ParseException(e);
+    }
+
+    return result;
+  }
+
+  /**
+   * Reads a GeoJson FeatureCollection from a <tt>String</tt> into a single
+   * {@link FeatureCollection}.
+   *
+   *
+   * @param json
+   *          The GeoJson String to parse
+   * @return the resulting FeatureCollection
+   *
+   * @throws ParseException
+   *           throws a ParseException if the JSON string cannot be parsed
+   */
+  public FeatureCollection readFeatureCollection(String json) throws ParseException {
+    FeatureCollection result = readFeatureCollection(new StringReader(json));
+    return result;
+  }
+
+  /**
+   * Reads a GeoJson FeatureCollection from a {@link Reader} into a single
+   * {@link FeatureCollection}.
+   *
+   *
+   * @param reader
+   *          The input source
+   * @return The resulting FeatureCollection
+   *
+   * @throws ParseException
+   *           throws a ParseException if the JSON string cannot be parsed
+   */
+  public FeatureCollection readFeatureCollection(Reader reader) throws ParseException {
+    FeatureCollection result = null;
+
+    JSONParser parser = new JSONParser();
+    try {
+      @SuppressWarnings("unchecked")
+      Map<String, Object> collectionMap = (Map<String, Object>) parser
+              .parse(reader);
+
+      result = createFeatureCollection(collectionMap);
+
+    } catch (org.json.simple.parser.ParseException e) {
+      throw new ParseException(e);
+    } catch (IOException e) {
+      throw new ParseException(e);
+    }
+
+    return result;
+  }
+
+  private FeatureCollection createFeatureCollection(Map<String, Object> collectionMap) throws ParseException {
+    FeatureCollection result = new FeatureCollection();
+
+    String type = (String) collectionMap.get(GeoJsonConstants.NAME_TYPE);
+    if (!type.equals(GeoJsonConstants.NAME_FEATURECOLLECTION)) {
+      throw new ParseException(
+              "Could not parse FeatureCollection from GeoJson string.  Invalid 'type':"
+                      + type);
+    }
+
+    List<Object> features = (List<Object>) collectionMap.get(GeoJsonConstants.NAME_FEATURES);
+    for (Object feature: features) {
+        Map<String, Object> featureMap = (Map<String, Object>) feature;
+        result.add(createFeature(featureMap));
+    }
+
+    return result;
+  }
+
+  private Feature createFeature(Map<String, Object> featureMap) throws ParseException {
+    Feature result = null;
+
+    String type = (String) featureMap.get(GeoJsonConstants.NAME_TYPE);
+    if (!type.equals(GeoJsonConstants.NAME_FEATURE)) {
+      throw new ParseException(
+              "Could not parse Feature from GeoJson string.  Invalid 'type':"
+                      + type);
+    }
+
+    @SuppressWarnings("unchecked")
+    Map<String, Object> geometryMap = (Map<String, Object>)featureMap.get(GeoJsonConstants.NAME_GEOMETRY);
+
+    GeometryFactory geometryFactory = null;
+    if (this.gf == null) {
+      geometryFactory = this.getGeometryFactory(geometryMap);
+    } else {
+      geometryFactory = this.gf;
+    }
+    Geometry geometry = createGeometry(geometryMap, geometryFactory);
+
+    Map<String, Object> properties = null;
+    if (featureMap.containsKey(GeoJsonConstants.NAME_PROPERTIES)) {
+      properties = (Map<String, Object>) featureMap.get(GeoJsonConstants.NAME_PROPERTIES);
+    }
+
+    String id = null;
+    if (featureMap.containsKey(GeoJsonConstants.NAME_ID)) {
+      id = (String) featureMap.get(GeoJsonConstants.NAME_ID);
+    }
+
+    result = new Feature(id, geometry, properties);
+
+    return result;
+  }
+
+  private Geometry createGeometry(Map<String, Object> geometryMap,
       GeometryFactory geometryFactory) throws ParseException {
 
     Geometry result = null;
@@ -187,7 +340,7 @@ public class GeoJsonReader {
       int i = 0;
       for (Map<String, Object> map : geometriesList) {
 
-        geometries[i] = this.create(map, geometryFactory);
+        geometries[i] = this.createGeometry(map, geometryFactory);
 
         ++i;
       }
