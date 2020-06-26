@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGSnapIfNeeded;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 /**
@@ -84,7 +85,7 @@ public class OverlayNGOptFunctions {
     return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(scaleFactor));
   }
   
-  public static Geometry intersectionPrep(Geometry a, Geometry b,
+  public static Geometry intersectionPrepSR(Geometry a, Geometry b,
       @Metadata(title="Grid Scale") double scaleFactor) {
     PreparedGeometry pg = cacheFetch(a);
     if (! pg.intersects(b)) return null;
@@ -100,18 +101,18 @@ public class OverlayNGOptFunctions {
    * @param b
    * @return
    */
-  public static Geometry intersectionPrepAuto(Geometry a, Geometry b) {
+  public static Geometry intersectionPrep(Geometry a, Geometry b) {
     PreparedGeometry pg = cacheFetch(a);
     if (! pg.intersects(b)) return null;
     if (pg.covers(b)) return b.copy();
-    return OverlayNG.overlayFixedPrecision(a, b, OverlayNG.INTERSECTION);
+    return OverlayNGSnapIfNeeded.intersection(a, b);
   }
   
   public static Geometry intersectionPrepNoCache(Geometry a, Geometry b) {
     PreparedGeometry pg = (new PreparedGeometryFactory()).create(a);
     if (! pg.intersects(b)) return null;
     if (pg.covers(b)) return b.copy();
-    return OverlayNG.overlayFixedPrecision(a, b, OverlayNG.INTERSECTION);
+    return OverlayNGSnapIfNeeded.intersection(a, b);
   }
   
   private static Geometry cacheKey = null;
