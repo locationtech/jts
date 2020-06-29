@@ -47,8 +47,8 @@
     <!-- PROJECT INFORMATION -->
     <licenses>
         <license>
-            <name>Eclipse Publish License, Version 1.0</name>
-            <url>https://github.com/locationtech/jts/blob/master/LICENSE_EPLv1.txt</url>
+            <name>Eclipse Public License, Version 2.0</name>
+            <url>https://github.com/locationtech/jts/blob/master/LICENSE_EPLv2.txt</url>
         </license>
         <license>
             <name>Eclipse Distribution License - v 1.0</name>

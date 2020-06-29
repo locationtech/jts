@@ -36,7 +36,7 @@ Currently JTS targets Java 1.8 and above.
 
 JTS is open source software.  It is dual-licensed under:
 
-* [Eclipse Public License 1.0](https://www.eclipse.org/legal/epl-v10.html)
+* [Eclipse Public License 2.0](https://www.eclipse.org/legal/epl-v20.html)
 * [Eclipse Distribution License 1.0](http://www.eclipse.org/org/documents/edl-v10.php) (a BSD Style License)
 
 See also:
