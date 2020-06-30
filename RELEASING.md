@@ -14,7 +14,7 @@ to assist them in preparing releases of the project.
 ### Update Artifacts
 1. Update the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.html), to record significant changes
 1. Set the version number in the following artifacts:
-   1. Java class `org.locationtech.jts.JTSVersion`
+   1. Java class [`org.locationtech.jts.JTSVersion`](https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/JTSVersion.java)
    1. Maven POMs (run the Maven release plugin at project root: `mvn versions:set -DnewVersion=<version>` )
 1. Review scripts in `bin` to confirm correctness
 1. Commit changes back to the repo
