@@ -5,7 +5,14 @@ import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 
-public class IndexedPointOnLineLocator implements PointOnGeometryLocator {
+/**
+ * Locates points on a linear geometry,
+ * using a spatial index to provide good performance.
+ * 
+ * @author mdavis
+ *
+ */
+class IndexedPointOnLineLocator implements PointOnGeometryLocator {
 
   private Geometry inputGeom;
 
