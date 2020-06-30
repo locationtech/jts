@@ -21,7 +21,9 @@ to assist them in preparing releases of the project.
 
 On master:
 
-1. Update the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md), to record significant changes
+1. Update the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md)
+   1. Record significant changes (should have been done ongoing)
+   2. Enter date of release
 
 2. Set the version number in Java class: [`org.locationtech.jts.JTSVersion`](https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/JTSVersion.java)
    
@@ -50,7 +52,7 @@ On master:
    git push
    ```
    
-   This is the commit that will form our GitHub release below.
+   This is the commit that will form the GitHub release below.
 
 ### Create Release Artifacts
 
@@ -66,12 +68,12 @@ On master:
 
    1. Add release artifacts (from the `target` folders):
       
-      * jts-core-1.16.1-javadoc.jar
-      * jts-core-1.16.1-sources.jar
-      * jts-core-1.16.1.jar
-      * jts-io-common-1.16.1-javadoc.jar
-      * jts-io-common-1.16.1-sources.jar
-      * jts-io-common-1.16.1.jar
+      * jts-core-1.18.0-javadoc.jar
+      * jts-core-1.18.0-sources.jar
+      * jts-core-1.18.0.jar
+      * jts-io-common-1.18.0-javadoc.jar
+      * jts-io-common-1.18.0-sources.jar
+      * jts-io-common-1.18.0.jar
       * JTSTestBuilder.jar
 
    2. Copy the release notes from `JTS_Version_History.md`
@@ -122,12 +124,13 @@ Update master to the next release version:
 2. Update version number in Maven POMs (run the Maven release plugin at project root:
    
    ```
-   mvn versions:set -DnewVersion=1.18.1-SNAPSHOT
+   mvn versions:set -DnewVersion=1.19.0-SNAPSHOT
    ```
-
+ 
 3. Commit this change.
 
    ```
-   git commit -m "Version 1.18.1-SNAPSHOT"
+   git commit -m "Version 1.19.0-SNAPSHOT"
    git push
    ```
+4. Add a new version entry to the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md)
