@@ -25,13 +25,13 @@ On master:
 
 2. Set the version number in Java class: [`org.locationtech.jts.JTSVersion`](https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/JTSVersion.java)
    
-   Before has SNAPSHOT:
+   Change SNAPSHOT version:
    
    ```
    private static final String RELEASE_INFO = "SNAPSHOT";
    ```
    
-   After remove SNAPSHOT:
+   To release version:
    
    ```
    private static final String RELEASE_INFO = "";
@@ -95,3 +95,39 @@ On master:
    * copy new Javadoc
    * commit
 
+### Post release
+
+Update master to the next release version:
+
+1. Set the version number in Java class: [`org.locationtech.jts.JTSVersion`](https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/JTSVersion.java)
+   
+   Change release version:
+   
+   ```
+   public static final int MAJOR = 1;
+   public static final int MINOR = 18;
+   public static final int PATCH = 0;
+   private static final String RELEASE_INFO = "";
+   ```
+   
+   To next SNAPSHOT version:
+   
+   ```
+   public static final int MAJOR = 1;
+   public static final int MINOR = 19;
+   public static final int PATCH = 0;
+   private static final String RELEASE_INFO = "SNAPSHOT";
+   ```
+   
+2. Update version number in Maven POMs (run the Maven release plugin at project root:
+   
+   ```
+   mvn versions:set -DnewVersion=1.18.1-SNAPSHOT
+   ```
+
+3. Commit this change.
+
+   ```
+   git commit -m "Version 1.18.1-SNAPSHOT"
+   git push
+   ```
