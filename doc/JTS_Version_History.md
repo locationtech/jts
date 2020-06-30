@@ -19,7 +19,7 @@ Distributions for older JTS versions can be obtained at the
 
 # Version 1.17.0
 
-*Release Date:  TBD*
+*Release Date:  July 1, 2020*
 
 *Java Version: 1.8*
 
