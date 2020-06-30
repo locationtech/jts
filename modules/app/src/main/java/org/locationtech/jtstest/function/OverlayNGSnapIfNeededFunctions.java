@@ -36,13 +36,13 @@ public class OverlayNGSnapIfNeededFunctions {
   }
 
   public static Geometry intersection(Geometry a, Geometry b) {
-    areatest(a, b);
+    //areatest(a, b);
     //System.out.println(areaDelta(a, b));
     return overlay(a, b, INTERSECTION );
   }
 
   public static Geometry union(Geometry a, Geometry b) {
-    areatest(a, b);
+    //areatest(a, b);
     //System.out.println(areaDelta(a, b));
     return overlay(a, b, UNION );
   }
@@ -70,12 +70,13 @@ public class OverlayNGSnapIfNeededFunctions {
     return op.union();
   }
   
-  public static double areatest(Geometry a, Geometry b) {
+  public static Geometry union(Geometry a) {
+    return unaryUnion(a);
+  }
+  
+  public static boolean overlayAreaTest(Geometry a, Geometry b) {
     double areaDelta = areaDelta(a, b);
-    if (areaDelta > 1e-6) 
-      throw new RuntimeException("areatest delta too large: "+ areaDelta);
-    
-    return areaDelta;
+    return areaDelta < 1e-6; 
   }
   
   /**
