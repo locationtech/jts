@@ -31,14 +31,19 @@ import org.locationtech.jts.util.Assert;
 
 /**
  * Computes an overlay where one input is Point(s) and one is not.
+ * This class supports overlay being used as an efficient way
+ * to find points within or outside a polygon.
  * <p>
- * The semantics are:
+ * Input semantics are:
  * <ul>
  * <li>Duplicates are removed from Point output 
  * <li>Non-point output is rounded and noded using the given precision model
+ * </ul>
+ * Output semantics are:
+ * <ul>
  * <ii>An empty result is an empty atomic geometry 
- * with dimension determined by the inputs and the operation
- * <li>
+ *     with dimension determined by the inputs and the operation,
+ *     as per overlay semantics<li>
  * </ul>
  * For efficiency the following optimizations are used:
  * <ul>
@@ -46,10 +51,9 @@ import org.locationtech.jts.util.Assert;
  * (in particular, they do not participate in snap-rounding if that is used).
  * <li>If the non-point input geometry is not included in the output
  * it is not rounded and noded.  This means that points 
- * are compared to the non-rounded geometry, which will be apparent in the result.
+ * are compared to the non-rounded geometry.
+ * This will be apparent in the result.
  * </ul>
- * This means that overlay is efficient to use for finding points
- * within or outside a polygon.
  * 
  * @author Martin Davis
  *
@@ -79,7 +83,6 @@ class OverlayMixedPoints {
     geometryFactory = geom0.getFactory();
     resultDim = OverlayUtil.resultDimension(opCode, geom0.getDimension(), geom1.getDimension());
 
-    
     // name the dimensional geometries
     if (geom0.getDimension() == 0) {
       this.geomPoint = geom0;
@@ -97,7 +100,7 @@ class OverlayMixedPoints {
     // reduce precision of non-point input, if required
     geomNonPoint = prepareNonPoint(geomNonPointInput);
     geomNonPointDim = geomNonPoint.getDimension();
-    createLocator(geomNonPoint);
+    locator = createLocator(geomNonPoint);
     
     Coordinate[] coords = extractCoordinates(geomPoint, pm);
 
@@ -115,12 +118,12 @@ class OverlayMixedPoints {
     return null;
   }
 
-  private void createLocator(Geometry geomNonPoint) {
+  private PointOnGeometryLocator createLocator(Geometry geomNonPoint) {
     if (geomNonPointDim == 2) {
-      locator = new IndexedPointInAreaLocator(geomNonPoint);
+      return new IndexedPointInAreaLocator(geomNonPoint);
     }
     else {
-      locator = new IndexedPointOnLineLocator(geomNonPoint);
+      return new IndexedPointOnLineLocator(geomNonPoint);
     }
   }
 
@@ -164,7 +167,11 @@ class OverlayMixedPoints {
     if (points.size() == 0) {
       return geometryFactory.createEmpty(0);
     }
-    return geometryFactory.buildGeometry(points);
+    else if (points.size() == 1) {
+      return points.get(0);
+    }
+    Point[] pointsArray = GeometryFactory.toPointArray(points);
+    return geometryFactory.createMultiPoint( pointsArray );
   }
 
   private List<Point> findPoints(boolean isCovered, Coordinate[] coords) {
@@ -172,7 +179,8 @@ class OverlayMixedPoints {
     // keep only points contained
     for (Coordinate coord : coords) {
       if (hasLocation(isCovered, coord)) {
-        resultCoords.add(coord);
+        // copy coordinate to avoid aliasing
+        resultCoords.add(coord.copy());
       }
     }
     return createPoints(resultCoords);
