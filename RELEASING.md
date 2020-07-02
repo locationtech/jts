@@ -7,23 +7,39 @@ to assist them in preparing releases of the project.
 
 ### Preparation
 
-1. Create a [Release Milestone](https://github.com/locationtech/jts/milestones)
+1. Locate the [Release Milestone](https://github.com/locationtech/jts/milestones) for the release.
    
-2. Use milestone to tag it to Issues and PRs wanted in the release
+2. Apply this milestone Issues and PRs included in the release.
 
-3. Confirm Maven build executes with no errors
+3. Update the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md)
 
-   ```
-   mvn clean install
-   ```
+   1. Record significant changes (should have been done ongoing)
+   
+   2. Enter date of release
+
+4. Start an eclipse release process
+
+   Example review: [1.17.0-release-review](https://projects.eclipse.org/projects/locationtech.jts/reviews/1.17.0-release-review) page
+   
+   * Use the text from [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md) to quickly write the describe the release.
+   
+   * Email review page to locationtech-pmc [like this](locationtech-pmc/msg01095.html) for PMC approval.
+
+   * Email review page emo@eclipse.org when ready, to save time you can link to the PMC approval thread.
+   
+   * EMO opens a [bug ticket like this](https://bugs.eclipse.org/bugs/show_bug.cgi?id=564358) to track progress
+   
+   The release process takes around two weeks, and are scheduled for the 1st and 15th of each month.
 
 ### Update Artifacts
 
 On master:
 
-1. Update the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md)
-   1. Record significant changes (should have been done ongoing)
-   2. Enter date of release
+1. Before you start check that the Maven build executes with no errors
+
+   ```
+   mvn clean install
+   ```
 
 2. Set the version number in Java class: [`org.locationtech.jts.JTSVersion`](https://github.com/locationtech/jts/blob/master/modules/core/src/main/java/org/locationtech/jts/JTSVersion.java)
    
@@ -51,22 +67,69 @@ On master:
    git commit -m "Release version 1.18.0"
    git push
    ```
-   
+      
+4. Tag this commit, and push the tag to GitHub.
+
+   ```
+   git tag -a 1.18.0 -m "Release version 1.18.0"
+   ```
+
    This is the commit that will form the GitHub release below.
 
 ### Create Release Artifacts
 
-1. **Execute the final Maven release build**
+1. Before you start double check that you have `gpg` installed and configured, with your public key distributed.
+   
+   References: [Working with PGP Signatures](https://central.sonatype.org/pages/working-with-pgp-signatures.html)
+   
+
+2. The `gpg-agent` will remember a passphrase for a short duration.
+   
+   To interact with the agent (so it asks you the passphrase):
+   
+   ````
+   gpg --use-agent --armor --detach-sign --output $output pom.xml
+   rm pom.xml.asc
+   ```
+   
+   Reference: [Configuring GPG/PGP for Maven Releases to Sonatype on Mac OS X](https://nblair.github.io/2015/10/29/maven-gpg-sonatype/)
+    
+2. Execute the final Maven release build which will sign jars:
    
    ```
-   mvn clean install
+   mvn clean install -Drelease
    ```
 
 ### Deploy the Release
 
-1. Create a [JTS GitHub release](https://github.com/locationtech/jts/releases):
+1. Deploy to Maven Central, using credentials in your `~/.m2/settings.xml`:
+   
+   ```
+   <server>
+      <id>ossrh</id>
+      <username>jira_user</username>
+      <password>jira_password</password>
+   </server>
+   ```
+   
+   Reference: [Deploying to OSSRH with Apache Maven](https://central.sonatype.org/pages/apache-maven.html)
+   
+2. Deploy to Maven Central with the release property and profile 
+   
+   ```
+   mvn deploy -Drelease
+   ```
 
-   1. Add release artifacts (from the `target` folders):
+4. Create a [JTS GitHub release](https://github.com/locationtech/jts/releases)
+
+   1. Navigate to https://github.com/locationtech/jts/releases and use "Draft new Release"
+      based on your tag. 
+   
+   2. Copy the release notes from `JTS_Version_History.md`
+   
+      Example: [1.17.0](https://github.com/locationtech/jts/releases/tag/1.17.0]
+
+   3. Add release artifacts (from the `target` folders):
       
       * jts-core-1.18.0-javadoc.jar
       * jts-core-1.18.0-sources.jar
@@ -75,22 +138,16 @@ On master:
       * jts-io-common-1.18.0-sources.jar
       * jts-io-common-1.18.0.jar
       * JTSTestBuilder.jar
+   
+   4. Tip: Mark as a draft release (until Eclipse review process completes)
 
-   2. Copy the release notes from `JTS_Version_History.md`
-   
-   3. Tip: Mark as a draft release (until Eclipse review process completes)
-   
-2. Release to Maven Central with the release property and profile 
-   
-   ```
-   mvn clean install -Drelease
-   ```
+### Publish Javadocs
 
-2. Update [Javadoc on JTS Github IO](http://locationtech.github.io/jts/javadoc/):
+Update [Javadoc on JTS Github IO](http://locationtech.github.io/jts/javadoc/):
 
-   Javadoc is generated by the Maven build.
+1. Javadoc is generated by the Maven build above.
    
-   Update branch [`gh-pages`](https://github.com/locationtech/jts/tree/gh-pages):
+2. Update branch [`gh-pages`](https://github.com/locationtech/jts/tree/gh-pages):
    
    * clone
    * branch
