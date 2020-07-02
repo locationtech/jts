@@ -134,3 +134,10 @@ Update master to the next release version:
    git push
    ```
 4. Add a new version entry to the [Version History](https://github.com/locationtech/jts/blob/master/doc/JTS_Version_History.md)
+
+### Announcing
+
+* Message to [JTS Dev mail list](https://accounts.eclipse.org/mailing-list/jts-dev)
+* Comment on [Gitter channel](https://gitter.im/locationtech/jts)
+* Social media?
+* Others?
