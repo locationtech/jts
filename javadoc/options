@@ -1,0 +1,36 @@
+-encoding
+'UTF-8'
+-public
+-sourcepath
+'D:/proj/jts/git/jts-md/modules/core/src/main/java;D:/proj/jts/git/jts-md/modules/core/target/generated-sources/annotations;D:/proj/jts/git/jts-md/modules/core/src/main/javadoc'
+-author
+-bottom
+'Copyright &#169; 2020. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'D:/proj/jts/git/jts-md/modules/core/target/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'org.locationtech.jts:jts-core 1.17.0 API'
+-footer
+'org.locationtech.jts:jts-core 1.17.0'
+-group
+'Core - Geometry' 'org.locationtech.jts.geom:org.locationtech.jts.geom.*'
+-group
+'Core - I/O' 'org.locationtech.jts.io'
+-group
+'Core - Algorithms' 'org.locationtech.jts.algorithm:org.locationtech.jts.algorithm.*:org.locationtech.jts.densify:org.locationtech.jts.dissolve:org.locationtech.jts.linearref:org.locationtech.jts.operation.*:org.locationtech.jts.simplify:org.locationtech.jts.triangulate'
+-group
+'Core - Other' 'org.locationtech.jts:org.locationtech.jts.*'
+-group
+'I/O - Common' 'org.locationtech.jts.io.*'
+-header
+'org.locationtech.jts:jts-core 1.17.0'
+-linkoffline
+'http://docs.oracle.com/javase/8/docs/api' 'D:/proj/jts/git/jts-md/modules/core/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'org.locationtech.jts:jts-core 1.17.0 API'

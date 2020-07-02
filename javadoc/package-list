@@ -1,5 +1,6 @@
 org.locationtech.jts
 org.locationtech.jts.algorithm
+org.locationtech.jts.algorithm.construct
 org.locationtech.jts.algorithm.distance
 org.locationtech.jts.algorithm.locate
 org.locationtech.jts.algorithm.match
@@ -16,6 +17,7 @@ org.locationtech.jts.geomgraph.index
 org.locationtech.jts.index
 org.locationtech.jts.index.bintree
 org.locationtech.jts.index.chain
+org.locationtech.jts.index.hprtree
 org.locationtech.jts.index.intervalrtree
 org.locationtech.jts.index.kdtree
 org.locationtech.jts.index.quadtree
