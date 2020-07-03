@@ -20,13 +20,14 @@ import java.util.Map;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * A planar graph of {@link OverlayEdge}s, representing
+ * A planar graph of edges, representing
  * the topology resulting from an overlay operation.
- * Each source {@link Edge} is represented
- * by two OverlayEdges, with opposite orientation.
- * A single {@link OverlayLabel} is created for each symmetric pair of OverlayEdges.
+ * Each source edge is represented
+ * by a pair of {@link OverlayEdge}s, with opposite (symmetric) orientation.
+ * The pair of OverlayEdges share the edge coordinates
+ * and a single {@link OverlayLabel}.
  * 
- * @author mdavis
+ * @author Martin Davis
  *
  */
 class OverlayGraph {
@@ -35,12 +36,9 @@ class OverlayGraph {
   private Map<Coordinate, OverlayEdge> nodeMap = new HashMap<Coordinate, OverlayEdge>();
   
   /**
-   * Creates a new graph for a set of noded, labelled {@link Edge}s.
-   * 
-   * @param edges the edges on which to build the graph
+   * Creates an empty graph.
    */
-  public OverlayGraph(Collection<Edge> edges) {
-    build(edges);
+  public OverlayGraph() {
   }
 
   /**
@@ -93,62 +91,43 @@ class OverlayGraph {
     return resultEdges;
   }
   
-  private void build(Collection<Edge> edges) {
-    for (Edge e : edges) {
-      addEdge(e);
-    }
-  }
-  
   /**
-   * Adds an edge between the coordinates orig and dest
-   * to this graph.
-   * Only valid edges can be added (in particular, zero-length segments cannot be added)
+   * Adds a new edge to this graph, for the given linework and topology information.
+   * A pair of {@link OverlayEdge}s with opposite (symmetric) orientation is added,
+   * sharing the same {@link OverlayLabel}.
    * 
-   * @param orig the edge origin location
-   * @param dest the edge destination location.
-   * @return the created edge
-   * @return null if the edge was invalid and not added
-   * 
-   * @see #isValidEdge(Coordinate, Coordinate)
+   * @param pts the edge vertices
+   * @param label the edge topology information
+   * @return the created graph edge with same orientation as the linework
    */
-  private OverlayEdge addEdge(Edge edge) {
+  public OverlayEdge addEdge(Coordinate[] pts, OverlayLabel label) {
     //if (! isValidEdge(orig, dest)) return null;
-    OverlayEdge e = createEdges(edge.getCoordinates(), edge.createLabel());
+    OverlayEdge e = OverlayEdge.createEdgePair(pts, label);
     //Debug.println("added edge: " + e);
-    insert(e);
-    insert((OverlayEdge) e.sym());
+    insert( e );
+    insert( e.symOE() );
     return e;
   }
-  
-  private OverlayEdge createEdges(Coordinate[] pts, OverlayLabel lbl)
-  {
-    OverlayEdge e0 = OverlayEdge.createEdge(pts, lbl, true);
-    OverlayEdge e1 = OverlayEdge.createEdge(pts, lbl, false);
-    e0.link(e1);
-    return e0;
-  }
-
+ 
   /**
-   * Tests if the given coordinates form a valid edge (with non-zero length).
+   * Inserts a single half-edge into the graph.
+   * The sym edge must also be inserted.
    * 
-   * @param orig the start coordinate
-   * @param dest the end coordinate
-   * @return true if the edge formed is valid
+   * @param e the half-edge to insert
    */
-  private static boolean isValidEdge(Coordinate orig, Coordinate dest) {
-    int cmp = dest.compareTo(orig);
-    return cmp != 0;
-  }
-
   private void insert(OverlayEdge e) {
     edges.add(e);
+    
+    /**
+     * If the edge origin node is already in the graph, 
+     * insert the edge into the star of edges around the node.
+     * Otherwise, add a new node for the origin.
+     */
     OverlayEdge nodeEdge = (OverlayEdge) nodeMap.get(e.orig());
     if (nodeEdge != null) {
       nodeEdge.insert(e);
     }
     else {
-      // add edge origin to node map
-      // (sym is also added in separate call)
       nodeMap.put(e.orig(), e);
     }
   }

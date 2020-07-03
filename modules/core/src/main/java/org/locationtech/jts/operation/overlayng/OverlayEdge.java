@@ -47,6 +47,14 @@ class OverlayEdge extends HalfEdge {
     return new OverlayEdge(origin, dirPt, direction, lbl, pts);
   }
 
+  public static OverlayEdge createEdgePair(Coordinate[] pts, OverlayLabel lbl)
+  {
+    OverlayEdge e0 = OverlayEdge.createEdge(pts, lbl, true);
+    OverlayEdge e1 = OverlayEdge.createEdge(pts, lbl, false);
+    e0.link(e1);
+    return e0;
+  }
+  
   /**
    * Gets a {@link Comparator} which sorts by the origin Coordinates.
    * 

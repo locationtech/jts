@@ -36,23 +36,25 @@ import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.noding.snapround.SnapRoundingNoder;
-import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
-import org.locationtech.jts.noding.snapround.SimpleSnapRounder;
 
 /**
- * The overlay noder does the following:
+ * Builds a set of noded, unique, labelled Edges from 
+ * the edges of the two input geometries.
+ * <p> 
+ * It performs the following steps:
  * <ul>
  * <li>Extracts input edges, and attaches topological information
  * <li>if clipping is enabled, handles clipping or limiting input geometry
- * <li>chooses a Noder based on provided precision model, unless a custom one is supplied
+ * <li>chooses a {@link Noder} based on provided precision model, unless a custom one is supplied
  * <li>calls the chosen Noder, with precision model
  * <li>removes any fully collapsed noded edges
+ * <li>builds {@link Edge}s and merges them
  * </ul>
  * 
  * @author mdavis
  *
  */
-class OverlayNoder {
+class EdgeNodingBuilder {
 
   /**
    * Limiting is skipped for Lines with few vertices,
@@ -85,80 +87,29 @@ class OverlayNoder {
   }
   
   private PrecisionModel pm;
-  List<NodedSegmentString> segStrings = new ArrayList<NodedSegmentString>();
+  List<NodedSegmentString> inputEdges = new ArrayList<NodedSegmentString>();
   private Noder customNoder;
-  private boolean hasEdgesA;
-  private boolean hasEdgesB;
   
   private Envelope clipEnv = null;
   private RingClipper clipper;
   private LineLimiter limiter;
 
-  public OverlayNoder(PrecisionModel pm) {
+  private boolean[] hasEdges = new boolean[2];
+
+
+  /**
+   * Creates a new builder, with an optional custom noder.
+   * If the noder is not provided, a suitable one will 
+   * be used based on the supplied precision model.
+   * 
+   * @param pm the precision model to use
+   * @param noder an optional custom noder to use (may be null)
+   */
+  public EdgeNodingBuilder(PrecisionModel pm, Noder noder) {
     this.pm = pm;
-  }
-  
-  public void setNoder(Noder noder) {
     this.customNoder = noder;
   }
 
-  public void setClipEnvelope(Envelope clipEnv) {
-    this.clipEnv = clipEnv;
-    clipper = new RingClipper(clipEnv);
-    limiter = new LineLimiter(clipEnv);
-  }
-  
-  public Collection<SegmentString> node() {
-    Noder noder = getNoder();
-    //Noder noder = getSRNoder();
-    //Noder noder = getSimpleNoder(false);
-    //Noder noder = getSimpleNoder(true);
-    noder.computeNodes(segStrings);
-    
-    @SuppressWarnings("unchecked")
-    Collection<SegmentString> nodedSS = noder.getNodedSubstrings();
-    
-    scanForEdges(nodedSS);
-    
-    return nodedSS;
-  }
-
-  /**
-   * Records if each geometry has edges present after noding.
-   * If a geometry has collapsed to a point due to low precision,
-   * no edges will be present.
-   * 
-   * @param segStrings noded edges to scan
-   */
-  private void scanForEdges(Collection<SegmentString> segStrings) {
-    for (SegmentString ss : segStrings) {
-      EdgeSourceInfo info = (EdgeSourceInfo) ss.getData();
-      int geomIndex = info.getIndex();
-      if (geomIndex == 0)
-        hasEdgesA = true;
-      else if (geomIndex == 1) {
-        hasEdgesB = true;
-      }
-      // short-circuit if both have been found
-      if (hasEdgesA && hasEdgesB) return;
-    }
-  }
-
-  /**
-   * Reports whether there are noded edges
-   * for the given input geometry.
-   * If there are none, this indicates that either
-   * the geometry was empty, or has completely collapsed
-   * (because it is smaller than the noding precision).
-   * 
-   * @param geomIndex index of input geometry
-   * @return true if there are edges for the geometry
-   */
-  public boolean hasEdgesFor(int geomIndex ) {
-    if (geomIndex == 0) return hasEdgesA;
-    return hasEdgesB;
-  }
-  
   /**
    * Gets a noder appropriate for the precision model supplied.
    * This is one of:
@@ -177,7 +128,93 @@ class OverlayNoder {
     return createFixedPrecisionNoder(pm);
   }
   
-  public void add(Geometry g, int geomIndex)
+  public void setClipEnvelope(Envelope clipEnv) {
+    this.clipEnv = clipEnv;
+    clipper = new RingClipper(clipEnv);
+    limiter = new LineLimiter(clipEnv);
+  }
+  
+  /**
+   * Reports whether there are noded edges
+   * for the given input geometry.
+   * If there are none, this indicates that either
+   * the geometry was empty, or has completely collapsed
+   * (because it is smaller than the noding precision).
+   * 
+   * @param geomIndex index of input geometry
+   * @return true if there are edges for the geometry
+   */
+  public boolean hasEdgesFor(int geomIndex ) {
+    return hasEdges[geomIndex];
+  }
+  
+  /**
+   * Creates a set of labelled {Edge}s.
+   * representing the fully noded edges of the input geometries.
+   * Coincident edges (from the same or both geometries) 
+   * are merged along with their labels
+   * into a single unique, fully labelled edge.
+   * 
+   * @param geom0 the first geometry
+   * @param geom1 the second geometry
+   * @return the noded, merged, labelled edges
+   */
+  public List<Edge> build(Geometry geom0, Geometry geom1) {
+    add(geom0, 0);
+    add(geom1, 1);
+    List<Edge> nodedEdges = node(inputEdges);
+    
+    /**
+     * Merge the noded edges to eliminate duplicates.
+     * Labels are combined.
+     */
+    List<Edge> mergedEdges = EdgeMerger.merge(nodedEdges);
+    return mergedEdges;
+  }
+  
+  /**
+   * Nodes a set of segment strings and creates {@link Edge}s from the result.
+   * The input segment strings each carry a {@link EdgeSourceInfo} object,
+   * which is used to provide source topology info to the constructed Edges
+   * (and is then discarded).
+   * 
+   * @param segStrings
+   * @return
+   */
+  private List<Edge> node(List<NodedSegmentString> segStrings) {
+    Noder noder = getNoder();
+    noder.computeNodes(segStrings);
+    
+    @SuppressWarnings("unchecked")
+    Collection<SegmentString> nodedSS = noder.getNodedSubstrings();
+    
+    //scanForEdges(nodedSS);
+    
+    List<Edge> edges = createEdges(nodedSS);
+
+    return edges;
+  }
+
+  private List<Edge> createEdges(Collection<SegmentString> segStrings) {
+    List<Edge> edges = new ArrayList<Edge>();
+    for (SegmentString ss : segStrings) {
+      Coordinate[] pts = ss.getCoordinates();
+      
+      // don't create edges from collapsed lines
+      if ( Edge.isCollapsed(pts) ) continue;
+      
+      EdgeSourceInfo info = (EdgeSourceInfo) ss.getData();
+      /**
+       * Record that a non-collapsed edge exists for the parent geometry
+       */
+      hasEdges[ info.getIndex() ] = true;
+      
+      edges.add(new Edge(ss.getCoordinates(), info));
+    }
+    return edges;
+  }
+  
+  private void add(Geometry g, int geomIndex)
   {
     if (g == null || g.isEmpty()) return;
     
@@ -190,9 +227,7 @@ class OverlayNoder {
     else if (g instanceof MultiLineString)    addCollection((MultiLineString) g, geomIndex);
     else if (g instanceof MultiPolygon)       addCollection((MultiPolygon) g, geomIndex);
     else if (g instanceof GeometryCollection) addCollection((GeometryCollection) g, geomIndex);
-    else {
-      // ignore Point geometries - they are handled elsewhere
-    }
+    // ignore Point geometries - they are handled elsewhere
   }
   
   private void addCollection(GeometryCollection gc, int geomIndex)
@@ -371,7 +406,7 @@ class OverlayNoder {
   
   private void addEdge(Coordinate[] pts, EdgeSourceInfo info) {
     NodedSegmentString ss = new NodedSegmentString(pts, info);
-    segStrings.add(ss);
+    inputEdges.add(ss);
   }
 
   /**
@@ -409,58 +444,4 @@ class OverlayNoder {
     return limiter.limit(pts);
   }
 
-  /*
-  
-  // rounding is carried out by Noder, if needed
-   
-  private Coordinate[] round(Coordinate[] pts)  {
-    
-    CoordinateList noRepeatCoordList = new CoordinateList();
-
-    for (int i = 0; i < pts.length; i++) {
-      Coordinate coord = new Coordinate(pts[i]);
-      
-      // MD - disable for now to test improved snap-rounding
-      //makePrecise(coord);
-      noRepeatCoordList.add(coord, false);
-    }
-    Coordinate[] reducedPts = noRepeatCoordList.toCoordinateArray();
-    return reducedPts;
-  }  
-  
-  private void makePrecise(Coordinate coord) {
-    // this allows clients to avoid rounding if needed by the noder
-    if (pm != null)
-      pm.makePrecise(coord);
-  }
-
-  private Coordinate[] round(Coordinate[] pts, int minLength)  {
-    CoordinateList noRepeatCoordList = new CoordinateList();
-
-    for (int i = 0; i < pts.length; i++) {
-      Coordinate coord = new Coordinate(pts[i]);
-      pm.makePrecise(coord);
-      noRepeatCoordList.add(coord, false);
-    }
-    Coordinate[] reducedPts = noRepeatCoordList.toCoordinateArray();
-    if (minLength > 0 && reducedPts.length < minLength) {
-      return pad(reducedPts, minLength);
-    }
-    return reducedPts;
-  }
-
-  
-  private static Coordinate[] pad(Coordinate[] pts, int minLength) {
-    Coordinate[] pts2 = new Coordinate[minLength];
-    for (int i = 0; i < minLength; i++) {
-      if (i < pts.length) {
-        pts2[i] = pts[i];
-      }
-      else {
-        pts2[i] = pts[pts.length - 1];
-      }
-    }
-    return pts2;
-  }
-  */
 }

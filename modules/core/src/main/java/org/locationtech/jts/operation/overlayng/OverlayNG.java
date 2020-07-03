@@ -24,10 +24,11 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geomgraph.Label;
+import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
-import org.locationtech.jts.noding.SegmentString;
+import org.locationtech.jts.noding.snap.SnappingNoder;
+import org.locationtech.jts.noding.snapround.SnapRoundingNoder;
 import org.locationtech.jts.operation.overlay.OverlayOp;
-import org.locationtech.jts.util.Debug;
 
 /**
  * Computes the geometric overlay of two {@link Geometry}s, 
@@ -422,7 +423,9 @@ public class OverlayNG
   
   private Geometry computeEdgeOverlay() {
     
-    OverlayGraph graph = buildGraph();
+    List<Edge> edges = nodeEdges();
+    
+    OverlayGraph graph = buildGraph(edges);
     
     if (isOutputNodedEdges) {
       return OverlayUtil.toLines(graph, isOutputEdges, geomFact);
@@ -437,43 +440,41 @@ public class OverlayNG
     return extractResult(opCode, graph);
   }
 
-  private OverlayGraph buildGraph() {
+  private List<Edge> nodeEdges() {
     /**
      * Node the edges, using whatever noder is being used
      */
-    OverlayNoder ovNoder = new OverlayNoder(pm);
-    
-    if (noder != null) ovNoder.setNoder(noder);
+    EdgeNodingBuilder nodingBuilder = new EdgeNodingBuilder(pm, noder);
     
     if ( isOptimized ) {
       Envelope clipEnv = OverlayUtil.clippingEnvelope(opCode, inputGeom, pm);
       if (clipEnv != null)
-        ovNoder.setClipEnvelope( clipEnv );
+        nodingBuilder.setClipEnvelope( clipEnv );
     }
     
-    ovNoder.add(inputGeom.getGeometry(0), 0);
-    ovNoder.add(inputGeom.getGeometry(1), 1);
-    Collection<SegmentString> nodedLines = ovNoder.node();
-    
-    /**
-     * Merge the noded edges to eliminate duplicates.
-     * Labels will be combined.
-     */
-    // nodedSegStrings are no longer needed, and will be GCed
-    List<Edge> edges = Edge.createEdges(nodedLines);
-    List<Edge> mergedEdges = EdgeMerger.merge(edges);
+    List<Edge> mergedEdges = nodingBuilder.build(
+        inputGeom.getGeometry(0), 
+        inputGeom.getGeometry(1));
     
     /**
      * Record if an input geometry has collapsed.
      * This is used to avoid trying to locate disconnected edges
      * against a geometry which has collapsed completely.
      */
-    inputGeom.setCollapsed(0, ! ovNoder.hasEdgesFor(0) );
-    inputGeom.setCollapsed(1, ! ovNoder.hasEdgesFor(1) );
+    inputGeom.setCollapsed(0, ! nodingBuilder.hasEdgesFor(0) );
+    inputGeom.setCollapsed(1, ! nodingBuilder.hasEdgesFor(1) );
     
-    return new OverlayGraph( mergedEdges );
+    return mergedEdges;
   }
 
+  private OverlayGraph buildGraph(Collection<Edge> edges) {
+    OverlayGraph graph = new OverlayGraph();
+    for (Edge e : edges) {
+      graph.addEdge(e.getCoordinates(), e.createLabel());
+    }
+    return graph;
+  }
+  
   private void labelGraph(OverlayGraph graph) {
     OverlayLabeller labeller = new OverlayLabeller(graph, inputGeom);
     labeller.computeLabelling();

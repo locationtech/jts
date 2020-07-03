@@ -11,47 +11,34 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.noding.SegmentString;
-import org.locationtech.jts.util.Debug;
 
 /**
- * Represents a single edge in a topology graph,
- * carrying the topology information 
+ * Represents the underlying linework for edges in a topology graph,
+ * and carries the topology information 
  * derived from the two parent geometries.
- * The edge may be the result of the merger of 
- * two or more edges which happen to have the same underlying linework
+ * The edge may be the result of the merging of 
+ * two or more edges which have the same underlying linework
  * (although possibly different orientations).  
  * In this case the topology information is 
  * derived from the merging of the information in the 
- * constituent edges.
- * 
+ * source edges.
+ * Merged edges can occur in the following situations
+ * <ul>
+ * <li>Due to topology collapse caused by snapping or rounding
+ * of polygonal geometries. 
+ * <li>Due to coincident linework in a linear input
+ * </ul>
+ * The source edges may have the same parent geometry,
+ * or different ones, or a mix of the two.
+ *  
  * @author mdavis
  *
  */
 class Edge {
-  
-  public static List<Edge> createEdges(Collection<SegmentString> segStrings) {
-    List<Edge> edges = new ArrayList<Edge>();
-    for (SegmentString ss : segStrings) {
-      Coordinate[] pts = ss.getCoordinates();
-      
-      // don't create edges from collapsed lines
-      // TODO: perhaps convert these to points to be included in overlay?
-      if ( isCollapsed(pts) ) continue;
-      
-      EdgeSourceInfo info = (EdgeSourceInfo) ss.getData();
-      edges.add(new Edge(ss.getCoordinates(), info));
-    }
-    return edges;
-  }
   
   /**
    * Tests if the given point sequence
