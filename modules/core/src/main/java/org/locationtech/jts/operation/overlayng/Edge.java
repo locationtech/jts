@@ -17,20 +17,19 @@ import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.io.WKTWriter;
 
 /**
- * Represents the underlying linework for edges in a topology graph,
- * and carries the topology information 
- * derived from the two parent geometries.
- * The edge may be the result of the merging of 
- * two or more edges which have the same underlying linework
+ * Represents the linework for edges in the topology 
+ * derived from (up to) two parent geometries.
+ * An edge may be the result of the merging of 
+ * two or more edges which have the same linework
  * (although possibly different orientations).  
  * In this case the topology information is 
  * derived from the merging of the information in the 
  * source edges.
  * Merged edges can occur in the following situations
  * <ul>
+ * <li>Due to coincident edges of polygonal or linear geometries. 
  * <li>Due to topology collapse caused by snapping or rounding
  * of polygonal geometries. 
- * <li>Due to coincident linework in a linear input
  * </ul>
  * The source edges may have the same parent geometry,
  * or different ones, or a mix of the two.
@@ -130,11 +129,6 @@ class Edge {
     return true;
   }
   
-  public int dimension(int geomIndex) {
-    if (geomIndex == 0) return aDim;
-    return bDim;
-  }
-  
   public OverlayLabel createLabel() {
     OverlayLabel lbl = new OverlayLabel();
     initLabel(lbl, 0, aDim, aDepthDelta, aIsHole);
@@ -196,17 +190,6 @@ class Edge {
     if (isCollapse) return OverlayLabel.DIM_COLLAPSE;
         
     return OverlayLabel.DIM_BOUNDARY;
-  }
-
-  private boolean isHole(int index) {
-    if (index == 0) 
-      return aIsHole;
-    return bIsHole;    
-  }
-  
-  private boolean isBoundary(int geomIndex) {
-    if (geomIndex == 0) return aDim == OverlayLabel.DIM_BOUNDARY;
-    return bDim == OverlayLabel.DIM_BOUNDARY;
   }
   
   /**
@@ -311,6 +294,7 @@ class Edge {
     return "Edge( " + ptsStr  + " ) " 
         + aInfo + "/" + bInfo;
   }
+  
   public String toLineString() {
     return WKTWriter.toLineString(pts);
   }
@@ -335,7 +319,7 @@ class Edge {
         + Integer.toString(depthDelta);  // force to string
   }
   
-  public static String ringRoleSymbol(int dim, boolean isHole) {
+  private static String ringRoleSymbol(int dim, boolean isHole) {
     if (hasAreaParent(dim)) return "" + OverlayLabel.ringRoleSymbol(isHole);
     return "";
   }
