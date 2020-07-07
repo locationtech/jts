@@ -205,8 +205,8 @@ public class TestReader
         if (isGeometryFunction(name)) {
             return toGeometryResult(value, testRun);
         }
-        throw new TestParseException(
-            "Unknown operation name '" + name + "'");
+        return null;
+        //throw new TestParseException("Unknown operation name '" + name + "'");
     }
 
     private BooleanResult toBooleanResult(String value) throws TestParseException {
