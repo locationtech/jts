@@ -64,6 +64,10 @@
     
        jtsop -a some-geom.wkt -f geojson Buffer.buffer 10
  
+ * Compute the buffer of a MultiPoint WKT literal for multiple distances and output the individual polygons as a list of geometries in WKT 
+ 
+       jtsop -a "MULTIPOINT ( (0 0), (10 10) )" -f wkt -explode -op Buffer.buffer 1,2,3,4
+ 
  * Compute the buffer of a literal geometry and output as WKT
  
        jtsop -a "POINT (10 10)" -f wkt Buffer.buffer 10
