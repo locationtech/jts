@@ -14,22 +14,26 @@
 
 `JtsOp` has the following functionality:
 
-* read A and B geometries from:
+* Read A and B geometries from:
   * WKT or WKB literals on the command line
   * standard input (WKT or WKB)
   * files in various formats (WKT, WKB, GeoJSON, GML, SHP)
   * a single input containing two geometries can supply both A and B (option `-ab`)
-* execute any spatial or scalar function available in the TestBuilder
+* Execute any spatial or scalar function available in the TestBuilder
 * "spread" execution over each geometry component from one or both inputs
   * `-each [ a | b | ab | aa ]`
   * the `-each aa` parameter uses the A input for both arguments for binary operations
   * the `-index` parameter uses a spatial index for binary operations
-* run op multiple times using a list of op argument values
+* Run an operation multiple times using a sequence of different argument values
   * `-args v1 v2 v3 ...`
-* repeat operation execution multiple times, to provide better timing results
-* output the result in the formats WKT, WKB, GeoJSON, GML, SVG
-* display information about the input geometries and function timing
-* load other functions dynamically with `-geomfunc` parameter (as a Java class with static methods)
+* Repeat operation execution multiple times, to provide better timing results
+  * `-repeat n`
+* Output the result in the formats WKT, WKB, GeoJSON, GML, SVG
+  * `-f wkt | wkb | geojson | svg`
+* Display information about the input geometries and function timing
+  * `-v`
+* Load extenal spatial functions dynamically (as a Java class with static methods)
+  * `-geomfunc classname` 
 * chain operations together by writing/reading input from `stdin` and using OS piping
 
 ## Examples
