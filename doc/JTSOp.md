@@ -25,7 +25,7 @@
   * the `-each aa` parameter uses the A input for both arguments for binary operations
   * the `-index` parameter uses a spatial index for binary operations
 * Run an operation multiple times using a sequence of different argument values
-  * `-args v1 v2 v3 ...`
+  * `-args v1,v2,v3 ...`
 * Repeat operation execution multiple times, to provide better timing results
   * `-repeat n`
 * Output the result in the formats WKT, WKB, GeoJSON, GML, SVG
