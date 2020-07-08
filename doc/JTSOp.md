@@ -30,6 +30,8 @@
   * `-repeat n`
 * Output the result in the formats WKT, WKB, GeoJSON, GML, SVG
   * `-f wkt | wkb | geojson | svg`
+* Explode output into a list of atomic geometries instead of a single geometry collection
+  * `-explode`
 * Display information about the input geometries and function timing
   * `-v`
 * Load external spatial functions dynamically (as a Java class with static methods)
