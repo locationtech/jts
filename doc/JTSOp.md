@@ -10,7 +10,9 @@
 * Summarize the contents of geometry datafiles
 * Test the functionality or performance of JTS operations
 
-It has the following features:
+## Functionality
+
+`JtsOp` has the following functionality:
 
 * read A and B geometries from:
   * WKT or WKB literals on the command line
