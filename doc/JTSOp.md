@@ -19,7 +19,7 @@
   * standard input (WKT or WKB)
   * files in various formats (WKT, WKB, GeoJSON, GML, SHP)
   * a single input containing two geometries can supply both A and B (option `-ab`)
-* Execute any spatial or scalar function available in the TestBuilder
+* Execute any spatial or scalar function available in the JTS TestBuilder
 * "spread" execution over each geometry component from one or both inputs
   * `-each [ a | b | ab | aa ]`
   * the `-each aa` parameter uses the A input for both arguments for binary operations
