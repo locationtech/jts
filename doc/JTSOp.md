@@ -16,7 +16,7 @@ It has the following features:
   * WKT or WKB literals on the command line
   * standard input (WKT or WKB)
   * files in various formats (WKT, WKB, GeoJSON, GML, SHP)
-  * a single input can supply both A and B (option `-ab`)
+  * a single input containing two geometries can supply both A and B (option `-ab`)
 * execute any spatial or scalar function available in the TestBuilder
 * "spread" execution over each geometry component from one or both inputs
   * `-each [ a | b | ab | aa ]`
@@ -40,7 +40,7 @@ It has the following features:
  
        jtsop -help
        
- * Compute the area of a WKT geometry and output it
+ * Compute the area of a WKT geometry and output it as text
       
        jtsop -a some-geom.wkt -f txt area 
       
