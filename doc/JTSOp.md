@@ -32,7 +32,7 @@
   * `-f wkt | wkb | geojson | svg`
 * Display information about the input geometries and function timing
   * `-v`
-* Load extenal spatial functions dynamically (as a Java class with static methods)
+* Load external spatial functions dynamically (as a Java class with static methods)
   * `-geomfunc classname` 
 * chain operations together by writing/reading input from `stdin` and using OS piping
 
