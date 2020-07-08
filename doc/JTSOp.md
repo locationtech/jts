@@ -1,6 +1,6 @@
 # JtsOp User Guide
 
-`JtsOp` is a CLI (command-line interface) to JTS and the TestBuilder. It can be used to:
+`JtsOp` is a CLI (command-line interface) to JTS. It can be used to:
 
 * Execute JTS operations on geometry to produce the results, in various spatial formats
 * Chain together sequences of JTS operations to accomplish a spatial processing task
