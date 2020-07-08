@@ -167,10 +167,16 @@ public class JTSOpCmdTest extends TestCase {
     assertEquals("Incorrect summary value for arg values",  computeArea(results), 93.6, 1);
   }
 
-  private double computeArea(List<Geometry> results) {
-    GeometryFactory fact = new GeometryFactory();
-    Geometry geom = fact.buildGeometry(results);
-    return geom.getArea();
+  public void testOpIntersectionExplode() {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "LINESTRING(0 0, 10 10)", 
+        "-b", "LINESTRING(0 10, 10 0)", 
+        "-explode", 
+        "-f", "wkt", 
+        "Overlay.union" ), 
+        null, null );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertEquals("Not enough results for explode",  results.size(), 4 );
   }
 
   //===========================================
@@ -295,5 +301,11 @@ public class JTSOpCmdTest extends TestCase {
       System.out.println("Actual: " + actual);
     }
     assertTrue( "Output does not contain string " + expected, found );
+  }
+  
+  private static double computeArea(List<Geometry> results) {
+    GeometryFactory fact = new GeometryFactory();
+    Geometry geom = fact.buildGeometry(results);
+    return geom.getArea();
   }
 }

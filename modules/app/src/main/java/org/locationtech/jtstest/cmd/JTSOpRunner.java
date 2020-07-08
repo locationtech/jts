@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.strtree.STRtree;
@@ -94,6 +95,7 @@ public class JTSOpRunner {
     public String[] argList;
     public boolean validate = false;
     public boolean isIndexed = false;
+    public boolean isExplode = false;
   }
 
   public JTSOpRunner() {
@@ -158,7 +160,7 @@ public class JTSOpRunner {
     }
     else {
       // no op specified, so just output A (allows format conversion)
-      printResult(geomA, param.format);
+      outputResult(geomA, param.isExplode, param.format);
     }
   }
 
@@ -301,7 +303,7 @@ public class JTSOpRunner {
     if (param.validate) {
       validate(result);
     }
-    printResult(result, param.format);
+    outputResult(result, param.isExplode, param.format);
     return result;
   }
 
@@ -406,19 +408,33 @@ public class JTSOpRunner {
     return sb.toString();
   }
 
-  private void printResult(Object result, String outputFormat) {
+  private void outputResult(Object result, boolean isExplode, String outputFormat) {
     if (result == null) return;
     if (outputFormat == null) return;
     
-    if (result instanceof Geometry) {
-      if (captureGeometry) {
-        resultGeoms.add((Geometry) result);
+    if (! (result instanceof Geometry)) {
+      out.println(result);
+      return;
+    }
+    Geometry geom = (Geometry) result;
+    if (isExplode && geom instanceof GeometryCollection) {
+      for (int i = 0; i < geom.getNumGeometries(); i++) {
+        printGeometry(geom.getGeometryN(i), outputFormat);
       }
-      geomOut.printGeometry((Geometry) result, outputFormat);
     }
     else {
-      out.println(result);
+      printGeometry(geom, outputFormat);
     }
+  }
+  
+  private void printGeometry(Geometry geom, String outputFormat) {
+    if (geom == null) return;
+    if (outputFormat == null) return;
+    
+    if (captureGeometry) {
+      resultGeoms.add((Geometry) geom);
+    }
+    geomOut.printGeometry((Geometry) geom, outputFormat);
   }
   
   private void printlnInfo(String s) {

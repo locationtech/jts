@@ -104,6 +104,7 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMAB, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.EACH, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.INDEX, 0))
+    .addOptionSpec(new OptionSpec(CommandOptions.EXPLODE, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.FORMAT, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.REPEAT, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.VALIDATE, 0))
@@ -121,6 +122,7 @@ public class JTSOpCmd {
   "           [ -index ]",
   "           [ -repeat <num> ]",
   "           [ -validate ]",
+  "           [ -explode",
   "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
   "           [ -geomfunc <classname> ]",
   "           [ -v, -verbose ]",
@@ -137,6 +139,7 @@ public class JTSOpCmd {
   "  -index          index geometry B",
   "  -repeat         repeat the operation N times",
   "  -validate       validate the result of each operation",
+  "  -explode        output atomic geometries",
   "  -f              output format to use.  If omitted output is silent",
   "  -geomfunc       specifies class providing geometry operations",
   "  -v, -verbose    display information about execution",
@@ -275,6 +278,8 @@ public class JTSOpCmd {
         cmdArgs.geomA = argAB;
       }
     }
+    
+    cmdArgs.isExplode = commandLine.hasOption(CommandOptions.EXPLODE);
     
     cmdArgs.format = commandLine.getOptionArg(CommandOptions.FORMAT, 0);
     
