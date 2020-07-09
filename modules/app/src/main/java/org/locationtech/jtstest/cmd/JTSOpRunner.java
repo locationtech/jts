@@ -23,6 +23,8 @@ import java.util.List;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.util.Stopwatch;
@@ -96,6 +98,7 @@ public class JTSOpRunner {
     public boolean validate = false;
     public boolean isIndexed = false;
     public boolean isExplode = false;
+    public int srid;
   }
 
   public JTSOpRunner() {
@@ -133,6 +136,7 @@ public class JTSOpRunner {
   void execute(OpParams param) {
     this.param = param;
     
+    geomFactory = createGeometryFactory(param.srid);
     geomA = null;
     geomB = null;
 
@@ -162,6 +166,13 @@ public class JTSOpRunner {
       // no op specified, so just output A (allows format conversion)
       outputResult(geomA, param.isExplode, param.format);
     }
+  }
+
+  private GeometryFactory createGeometryFactory(int srid) {
+    if (srid > 0) {
+      return new GeometryFactory(new PrecisionModel(), srid);
+    }
+    return new GeometryFactory();
   }
 
   private void loadGeometry() {

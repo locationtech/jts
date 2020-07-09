@@ -167,7 +167,18 @@ public class JTSOpCmdTest extends TestCase {
     assertEquals("Incorrect summary value for arg values",  computeArea(results), 93.6, 1);
   }
 
-  public void testOpIntersectionExplode() {
+  public void testSRID() {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "POINT(0 0)", 
+        "-srid", "4326",
+        "-f", "wkt", 
+        "Buffer.buffer", "1,2,3,4" ), 
+        null, null );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertEquals("Incorrect SRID",  results.get(0).getSRID(), 4326);
+  }
+
+  public void testExplode() {
     JTSOpCmd cmd = runCmd( args(
         "-a", "LINESTRING(0 0, 10 10)", 
         "-b", "LINESTRING(0 10, 10 0)", 
@@ -177,6 +188,28 @@ public class JTSOpCmdTest extends TestCase {
         null, null );
     List<Geometry> results = cmd.getResultGeometry();
     assertEquals("Not enough results for explode",  results.size(), 4 );
+  }
+
+  public void testLiteralEmptyLinestring() {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "LINESTRING EMPTY", 
+        "-f", "wkt", 
+        "Construction.boundary" ), 
+        null, null );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertEquals("Too many results for operation",  results.size(), 1 );
+    assertTrue("Expected empty result",  results.get(0).isEmpty() );
+  }
+
+  public void testLiteralEmptyPoint() {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "POINT EMPTY", 
+        "-f", "wkt", 
+        "Construction.boundary" ), 
+        null, null );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertEquals("Too many results for operation",  results.size(), 1 );
+    assertTrue("Expected empty result",  results.get(0).isEmpty() );
   }
 
   //===========================================

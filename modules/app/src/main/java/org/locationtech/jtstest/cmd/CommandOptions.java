@@ -24,6 +24,7 @@ public class CommandOptions {
   public static final String HELP = "help";
   public static final String V = "v";
   public static final String REPEAT = "repeat";
+  public static final String SRID = "srid";
   public static final String EACH = "each";
   public static final String ARGS = "args";
   public static final String VALIDATE = "validate";

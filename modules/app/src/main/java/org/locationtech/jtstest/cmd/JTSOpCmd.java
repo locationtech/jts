@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTConstants;
 import org.locationtech.jtstest.command.CommandLine;
 import org.locationtech.jtstest.command.Option;
 import org.locationtech.jtstest.command.OptionSpec;
@@ -102,6 +103,7 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMA, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMB, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMAB, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.SRID, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.EACH, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.INDEX, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.EXPLODE, 0))
@@ -118,6 +120,7 @@ public class JTSOpCmd {
   "           [ -a  <wkt> | <wkb> | stdin | <filename.ext> ]",
   "           [ -b  <wkt> | <wkb> | stdin | <filename.ext> ]",
   "           [ -ab <wkt> | <wkb> | stdin | <filename.ext> ]",
+  "           [ -srid <SRID> ]",
   "           [ -each ( a | b | ab | aa ) ]",
   "           [ -index ]",
   "           [ -repeat <num> ]",
@@ -135,6 +138,7 @@ public class JTSOpCmd {
   "",
   "  -a              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
   "  -b              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
+  "  -srid           Sets the SRID on output geometries",
   "  -each           execute op on each component of A, B, both A & B, or A & A",
   "  -index          index geometry B",
   "  -repeat         repeat the operation N times",
@@ -225,9 +229,10 @@ public class JTSOpCmd {
   }
 
   private static boolean isWKT(String arg) {
-    // TODO: make this smarter
+    // TODO: make this smarter?
     boolean hasParen = (arg.indexOf("(") > 0) && arg.indexOf(")") > 0;
     if (hasParen) return true;
+    if (arg.toUpperCase().endsWith(" " + WKTConstants.EMPTY)) return true;
     return false;
   }
 
@@ -282,6 +287,10 @@ public class JTSOpCmd {
     cmdArgs.isExplode = commandLine.hasOption(CommandOptions.EXPLODE);
     
     cmdArgs.format = commandLine.getOptionArg(CommandOptions.FORMAT, 0);
+    
+    cmdArgs.srid = commandLine.hasOption(CommandOptions.SRID)
+        ? commandLine.getOptionArgAsInt(CommandOptions.SRID, 0)
+            : -1;
     
     cmdArgs.isIndexed = commandLine.hasOption(CommandOptions.INDEX);
     
