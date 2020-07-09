@@ -9,6 +9,8 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBReader;
 
 import junit.framework.TestCase;
 
@@ -167,15 +169,24 @@ public class JTSOpCmdTest extends TestCase {
     assertEquals("Incorrect summary value for arg values",  computeArea(results), 93.6, 1);
   }
 
-  public void testSRID() {
+  public void testSRID() throws ParseException {
     JTSOpCmd cmd = runCmd( args(
         "-a", "POINT(0 0)", 
         "-srid", "4326",
-        "-f", "wkt", 
-        "Buffer.buffer", "1,2,3,4" ), 
+        "-f", "wkb", 
+        "Buffer.buffer", "1" ), 
         null, null );
     List<Geometry> results = cmd.getResultGeometry();
     assertEquals("Incorrect SRID",  results.get(0).getSRID(), 4326);
+    
+    Geometry outGeom = readWKB(cmd.getOutput());
+    assertEquals("Incorrect SRID in WKB",  outGeom.getSRID(), 4326);
+  }
+
+  private Geometry readWKB(String wkbHex) throws ParseException {
+    byte[] wkb = WKBReader.hexToBytes(wkbHex);
+    WKBReader rdr = new WKBReader();
+    return rdr.read(wkb);
   }
 
   public void testExplode() {

@@ -20,14 +20,14 @@ public class GeometryOutput {
     this.out = out;
   }
   
-  public void printGeometry(Geometry geom, String outputFormat) {
+  public void printGeometry(Geometry geom, int srid, String outputFormat) {
     String txt = null;
     if (outputFormat.equalsIgnoreCase(CommandOptions.FORMAT_WKT)
         || outputFormat.equalsIgnoreCase(CommandOptions.FORMAT_TXT)) {
       txt = geom.toString();
     }
     else if (outputFormat.equalsIgnoreCase(CommandOptions.FORMAT_WKB)) {
-      txt = WKBWriter.toHex((new WKBWriter().write(geom)));
+      txt = writeWKB(geom, srid); //
     }
     else if (outputFormat.equalsIgnoreCase(CommandOptions.FORMAT_GML)) {
       txt = (new GMLWriter()).write(geom);
@@ -41,6 +41,17 @@ public class GeometryOutput {
     
     if (txt == null) return;
     out.println(txt);
+  }
+
+  private String writeWKB(Geometry geom, int srid) {
+    WKBWriter writer;
+    if (JTSOpRunner.isCustomSRID(srid)) {
+      writer = new WKBWriter(2, true);
+    }
+    else {
+      writer = new WKBWriter();
+    }
+    return WKBWriter.toHex(writer.write(geom));
   }
 
   private static String writeGeoJSON(Geometry geom) {

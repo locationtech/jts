@@ -430,22 +430,22 @@ public class JTSOpRunner {
     Geometry geom = (Geometry) result;
     if (isExplode && geom instanceof GeometryCollection) {
       for (int i = 0; i < geom.getNumGeometries(); i++) {
-        printGeometry(geom.getGeometryN(i), outputFormat);
+        printGeometry(geom.getGeometryN(i), param.srid, outputFormat);
       }
     }
     else {
-      printGeometry(geom, outputFormat);
+      printGeometry(geom, param.srid, outputFormat);
     }
   }
   
-  private void printGeometry(Geometry geom, String outputFormat) {
+  private void printGeometry(Geometry geom, int srid, String outputFormat) {
     if (geom == null) return;
     if (outputFormat == null) return;
     
     if (captureGeometry) {
       resultGeoms.add((Geometry) geom);
     }
-    geomOut.printGeometry((Geometry) geom, outputFormat);
+    geomOut.printGeometry((Geometry) geom, srid, outputFormat);
   }
   
   private void printlnInfo(String s) {
@@ -497,6 +497,10 @@ public class JTSOpRunner {
       name = opCatName[1];
     }
     return funcRegistry.find(category, name);
+  }
+
+  public static boolean isCustomSRID(int srid) {
+    return srid > 0;
   }
 }
 
