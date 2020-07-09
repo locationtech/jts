@@ -215,6 +215,11 @@ public class JTSOpCmd {
     return opRunner.getOutput();
   }
   
+  public String[] getOutputLines() {
+    String outAll = opRunner.getOutput();
+    return outAll.split("\n");
+  }
+  
   public static boolean isFilename(String arg) {
     if (arg == null) return false;
     if (MultiFormatReader.isWKB(arg)) return false;

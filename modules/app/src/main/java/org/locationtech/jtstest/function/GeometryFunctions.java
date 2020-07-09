@@ -30,7 +30,8 @@ public class GeometryFunctions
 {
 	public static String lengthDescription = "Computes the length of perimeter of a Geometry";
 	public static double length(Geometry g)				{		return g.getLength();	}
-	public static double area(Geometry g)					{		return g.getArea();	}
+  public static double area(Geometry g)         {   return g.getArea(); }
+  public static double SRID(Geometry g)         {   return g.getSRID(); }
   
 	public static boolean isSimple(Geometry g)		{		return g.isSimple();	}
 	public static boolean isValid(Geometry g)			{		return g.isValid();	}

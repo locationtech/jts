@@ -169,7 +169,9 @@ public class JTSOpCmdTest extends TestCase {
     assertEquals("Incorrect summary value for arg values",  computeArea(results), 93.6, 1);
   }
 
-  public void testSRID() throws ParseException {
+  //----------------------------------------------------------------
+  
+  public void testSRIDBuffer() throws ParseException {
     JTSOpCmd cmd = runCmd( args(
         "-a", "POINT(0 0)", 
         "-srid", "4326",
@@ -182,6 +184,27 @@ public class JTSOpCmdTest extends TestCase {
     Geometry outGeom = readWKB(cmd.getOutput());
     assertEquals("Incorrect SRID in WKB",  outGeom.getSRID(), 4326);
   }
+
+  public void testSRIDPolygonize() throws ParseException {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "MULTILINESTRING ((1 1, 9 9), (9 9, 9 1), (9 1, 1 1), (9 1, 16 9), (9 9, 16 9))", 
+        "-srid", "4326",
+        "-explode",
+        "-f", "wkb", 
+        "Polygonize.polygonize" ), 
+        null, null );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertEquals("Incorrect SRID",  results.get(0).getSRID(), 4326);
+    assertEquals("Incorrect SRID",  results.get(1).getSRID(), 4326);
+    
+    String[] output = cmd.getOutputLines();
+    for (String out : output) {
+      Geometry outGeom = readWKB(out);
+      assertEquals("Incorrect SRID in WKB",  outGeom.getSRID(), 4326);
+    }
+  }
+
+  //----------------------------------------------------------------
 
   private Geometry readWKB(String wkbHex) throws ParseException {
     byte[] wkb = WKBReader.hexToBytes(wkbHex);
