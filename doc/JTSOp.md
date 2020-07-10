@@ -28,6 +28,8 @@
   * `-args v1,v2,v3 ...`
 * Repeat operation execution multiple times, to provide better timing results
   * `-repeat n`
+* Set the SRID of the output geometries
+  * `-srid <SRID>`
 * Output the result in the formats WKT, WKB, GeoJSON, GML, SVG
   * `-f wkt | wkb | geojson | svg`
 * Explode output into a list of atomic geometries instead of a single geometry collection
@@ -64,13 +66,21 @@
     
        jtsop -a some-geom.wkt -f geojson Buffer.buffer 10
  
- * Compute the buffer of a MultiPoint WKT literal for multiple distances and output the individual polygons as a list of geometries in WKT 
+ * Compute the buffer of a WKT literal for multiple distances 
  
-       jtsop -a "MULTIPOINT ( (0 0), (10 10) )" -f wkt -explode -op Buffer.buffer 1,2,3,4
+       jtsop -a "MULTIPOINT ( (0 0), (10 10) )" -f wkt -op Buffer.buffer 1,2,3,4
  
- * Compute the buffer of a literal geometry and output as WKT
+ * Compute the buffer of a WKT literal and output the individual polygons as a list of geometries in WKT 
  
-       jtsop -a "POINT (10 10)" -f wkt Buffer.buffer 10
+       jtsop -a "MULTIPOINT ( (0 0), (10 10) )" -f wkt -explode -op Buffer.buffer 1
+ 
+ * Compute the buffer of a WKB literal and output as WKT
+ 
+       jtsop -a 000000000140240000000000004024000000000000 -f wkt Buffer.buffer 10
+  
+ * Compute the buffer of a WKT literal and output as WKB, with SRID set to 4326
+ 
+       jtsop -a  "POINT (10 10)" -srid 4326 -f wkt Buffer.buffer 10
   
  * Output a literal geometry as GeoJSON
     
