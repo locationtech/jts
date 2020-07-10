@@ -179,10 +179,24 @@ public class JTSOpCmdTest extends TestCase {
         "Buffer.buffer", "1" ), 
         null, null );
     List<Geometry> results = cmd.getResultGeometry();
-    assertEquals("Incorrect SRID",  results.get(0).getSRID(), 4326);
+    assertEquals("Incorrect SRID", 4326, results.get(0).getSRID());
     
     Geometry outGeom = readWKB(cmd.getOutput());
-    assertEquals("Incorrect SRID in WKB",  outGeom.getSRID(), 4326);
+    assertEquals("Incorrect SRID in WKB", 4326, outGeom.getSRID());
+  }
+
+  public void testSRIDStdIn() throws ParseException {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "stdin", 
+        "-srid", "4326",
+        "-f", "wkb", 
+        "Buffer.buffer", "1" ), 
+        stdin("POINT(0 0)"), null );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertEquals("Incorrect SRID", 4326, results.get(0).getSRID());
+    
+    Geometry outGeom = readWKB(cmd.getOutput());
+    assertEquals("Incorrect SRID in WKB", 4326, outGeom.getSRID());
   }
 
   public void testSRIDPolygonize() throws ParseException {
@@ -194,8 +208,8 @@ public class JTSOpCmdTest extends TestCase {
         "Polygonize.polygonize" ), 
         null, null );
     List<Geometry> results = cmd.getResultGeometry();
-    assertEquals("Incorrect SRID",  results.get(0).getSRID(), 4326);
-    assertEquals("Incorrect SRID",  results.get(1).getSRID(), 4326);
+    assertEquals("Incorrect SRID", 4326,  results.get(0).getSRID());
+    assertEquals("Incorrect SRID", 4326,  results.get(1).getSRID());
     
     String[] output = cmd.getOutputLines();
     for (String out : output) {
@@ -203,6 +217,7 @@ public class JTSOpCmdTest extends TestCase {
       assertEquals("Incorrect SRID in WKB",  outGeom.getSRID(), 4326);
     }
   }
+
 
   //----------------------------------------------------------------
 

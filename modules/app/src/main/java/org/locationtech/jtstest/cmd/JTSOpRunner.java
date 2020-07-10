@@ -24,7 +24,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.util.Stopwatch;
@@ -383,7 +382,7 @@ public class JTSOpRunner {
     }
     
     try {
-      return IOUtil.readFile(filename ,geomFactory );
+      return IOUtil.readFile(filename,  geomFactory );
     }
     catch (FileNotFoundException ex) {
       throw new CommandError(ERR_FILE_NOT_FOUND, filename);
@@ -394,7 +393,7 @@ public class JTSOpRunner {
 
   private Geometry readStdin() {
     try {
-      MultiFormatBufferedReader rdr = new MultiFormatBufferedReader();
+      MultiFormatBufferedReader rdr = new MultiFormatBufferedReader(geomFactory);
       return rdr.read(new InputStreamReader(stdIn));
     }
     catch (org.locationtech.jts.io.ParseException ex) {
