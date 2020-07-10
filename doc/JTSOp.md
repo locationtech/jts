@@ -38,7 +38,7 @@
   * `-v`
 * Load external spatial functions dynamically (as a Java class with static methods)
   * `-geomfunc classname` 
-* chain operations together by writing/reading input from `stdin` and using OS piping
+* chain operations together by writing/reading input from `stdin` and using shell piping
 
 ## Examples
 
@@ -94,6 +94,6 @@
  
        jtsop -v -a geomA.wkt --b geomB.wkt -each ab -index Overlay.intersection 
  
- * Chain operations using a pipe
+ * Chain operations using a shell pipe
  
        jtsop -f wkb CreateRandomShape.randomPoints 10 | jtsop -a stdin -f wkt Buffer.buffer 1
