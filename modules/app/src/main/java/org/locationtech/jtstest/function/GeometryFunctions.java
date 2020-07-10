@@ -12,12 +12,16 @@
 package org.locationtech.jtstest.function;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.operation.overlay.snap.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFilter;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 
 
 /**
