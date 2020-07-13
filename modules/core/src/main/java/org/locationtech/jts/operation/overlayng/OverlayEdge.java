@@ -165,10 +165,22 @@ class OverlayEdge extends HalfEdge {
     }
   }
   
+  /**
+   * Gets the symmetric pair edge of this edge.
+   * 
+   * @return the symmetric pair edge
+   */
   public OverlayEdge symOE() {
     return (OverlayEdge) sym();
   }
   
+  /**
+   * Gets the next edge CCW around the origin of this edge,
+   * with the same origin.
+   * If the origin vertex has degree 1 then this is the edge itself.
+   * 
+   * @return the next edge around the origin
+   */
   public OverlayEdge oNextOE() {
     return (OverlayEdge) oNext();
   }

@@ -156,12 +156,22 @@ public class HalfEdge {
   }
 
   /**
+   * Sets the next edge CCW around the destination vertex of this edge.
+   * 
+   * @param e the next edge
+   */
+  private void setNext(HalfEdge e)
+  {
+    next = e;
+  }
+  
+  /**
    * Gets the next edge CCW around the 
    * destination vertex of this edge,
-   * with the dest vertex as its origin.
-   * If the vertex has degree 1 then this is the <b>sym</b> edge.
+   * originating at that vertex.
+   * If the destination vertex has degree 1 then this is the <b>sym</b> edge.
    * 
-   * @return the next edge
+   * @return the next outgoing edge CCW around the destination vertex
    */
   public HalfEdge next()
   {
@@ -169,10 +179,11 @@ public class HalfEdge {
   }
   
   /**
-   * Gets the edge previous to this one
-   * (with dest being the same as this orig).
+   * Gets the previous edge CW around the origin
+   * vertex of this edge, 
+   * with that vertex being its destination.
    * 
-   * @return the previous edge to this one
+   * @return the previous edge CW around the origin vertex
    */
   public HalfEdge prev() {
     return sym.next().sym;
@@ -181,21 +192,12 @@ public class HalfEdge {
   /**
    * Gets the next edge CCW around the origin of this edge,
    * with the same origin.
+   * If the origin vertex has degree 1 then this is the edge itself.
    * 
    * @return the next edge around the origin
    */
   public HalfEdge oNext() {
     return sym.next;
-  }
-  
-  /**
-   * Sets the next edge CCW around the destination vertex of this edge.
-   * 
-   * @param e the next edge
-   */
-  public void setNext(HalfEdge e)
-  {
-    next = e;
   }
 
   /**
@@ -245,8 +247,7 @@ public class HalfEdge {
       return;
     }
     
-    // Scan edges
-    // until insertion point is found
+    // Scan edges until insertion point is found
     HalfEdge ePrev = insertionEdge(eAdd);
     ePrev.insertAfter(eAdd);
   }
@@ -414,7 +415,7 @@ public class HalfEdge {
   }
   
   /**
-   * Computes a string representation of a HalfEdge.
+   * Provides a string representation of a HalfEdge.
    * 
    * @return a string representation
    */
@@ -426,6 +427,13 @@ public class HalfEdge {
         + ")";
   }
 
+  /**
+   * Provides a string representation of the edges around
+   * the origin node of this edge.
+   * Uses the subclass representation for each edge.
+   * 
+   * @return a string showing the edges around the origin
+   */
   public String toStringNode() {
     Coordinate orig = orig();
     Coordinate dest = dest();
@@ -438,10 +446,6 @@ public class HalfEdge {
       e = e.oNext();
     } while (e != this);
     return sb.toString();
-  }
-
-  private String toStringNodeEdge() {
-    return "  -> (" + WKTWriter.format(dest());
   }
   
   /**
