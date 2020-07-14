@@ -15,26 +15,27 @@ import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Position;
 
 /**
- * A label for a pair of {@link OverlayEdge}s which records
- * the topological information for the edge
- * in the {@link OverlayGraph} containing it.
- * The label is shared between both OverlayEdges
- * of a symmetric pair. 
- * Accessors for orientation-sensitive information
- * require the orientation of the containing OverlayEdge.
- * <p>
+ * A structure recording the topological situation
+ * for an edge in a topology graph 
+ * used during overlay processing. 
  * A label contains the topological {@link Location}s for 
- * the two overlay input geometries.
- * A labelled input geometry may be either a Line or an Area.
- * In both cases, the label locations are populated
- * with the locations for the edge {@link Position}s
- * once they are computed by topological evaluation.
- * The label also records the dimension of each geometry,
- * and in the case of area boundary edges, the role
- * of the originating ring (which allows
- * determination of the edge role in collapse cases).
+ * one or two input geometries to an overlay operation.
+ * An input geometry may be either a Line or an Area.
+ * The label locations for each input geometry are populated
+ * with the {@Location}s for the edge {@link Position}s
+ * when they are created or once they are computed by topological evaluation.
+ * A label also records the (effective) dimension of each input geometry.
+ * For area edges the role (shell or hole)
+ * of the originating ring is recorded, to allow
+ * determination of edge handling in collapse cases.
  * <p>
- * For each input geometry, the label indicates that an edge is in one of the following states
+ * In an {@link OverlayGraph} a single label is shared between 
+ * the two oppositely-oriented {@ link OverlayEdge}s of a symmetric pair. 
+ * Accessors for orientation-sensitive information
+ * are parameterized by the orientation of the containing edge.
+ * <p>
+ * For each input geometry, the label records
+ * that an edge is in one of the following states
  * (denoted by the <code>dim</code> field).
  * Each state has some additional information about the edge.
  * <ul>
@@ -43,7 +44,7 @@ import org.locationtech.jts.geom.Position;
  *   <li><code>dim</code> = DIM_BOUNDARY</li>
  *   <li><code>locLeft, locRight</code> : the locations of the edge sides for the input Area</li>
  *   <li><code>isHole</code> : whether the 
- * edge was in a shell or a hole</li>
+ * edge was in a shell or a hole (the ring role)</li>
  *   </ul>
  * </li>
  * <li>A <b>Collapsed</b> edge of an input Area 
@@ -57,11 +58,12 @@ import org.locationtech.jts.geom.Position;
  * or otherwise that all were in holes</li> (<code>true</code>)
  *   </ul>
  * </li>
- * <li>An edge from an input <b>Line</b>
+ * <li>A <b>Line</b> edge from an input line
  *   <ul>
  *   <li><code>dim</code> = DIM_LINE</li>
- *   <li><code>locLine</code> : initialized to LOC_UNKNOWN, 
- *          to simplify logic.</li>
+ *   <li><code>locLine</code> : the location of the 
+ * edge relative to the input Line. 
+ * Initialized to LOC_UNKNOWN to simplify logic.</li>
  *   </ul>
  * </li>
  * <li>An edge which is <b>Not Part</b> of an input geometry
@@ -74,7 +76,7 @@ import org.locationtech.jts.geom.Position;
  * Note that:
  * <ul>
  * <li>an edge cannot be both a Collapse edge and a Line edge in the same input geometry, 
- * because each input geometry must be homogeneous.
+ * because input geometries must be homogeneous in dimension.
  * <li>an edge may be an Boundary edge in one input geometry 
  * and a Line or Collapse edge in the other input.
  * </ul>
