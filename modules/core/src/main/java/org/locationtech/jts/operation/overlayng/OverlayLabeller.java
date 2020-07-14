@@ -52,7 +52,8 @@ class OverlayLabeller {
     /**
      * At this point collapsed edges labeled with location UNKNOWN
      * must be disconnected from the area edges of the parent.
-     * They can be located based on their parent ring role (shell or hole).
+     * This can occur with a collapsed hole or shell.
+     * The edges can be labeled based on their parent ring role (shell or hole).
      */
     labelCollapsedEdges();
     
@@ -61,8 +62,8 @@ class OverlayLabeller {
 
 
   /**
-   * Labels node edges based on the arrangement
-   * of boundary edges incident on them.
+   * Labels edges around nodes based on the arrangement
+   * of incident area boundary edges.
    * Also propagates the labelling to connected linear edges.
    *  
    * @param nodes the nodes to label
@@ -177,9 +178,11 @@ class OverlayLabeller {
    * because that is done against the unreduced input geometry,
    * which may give an invalid result due to topology collapse.
    * 
-   * The labeling is propagated to other connected edges, 
+   * The labeling is propagated to other connected linear edges, 
    * since there may be NOT_PART edges which are connected, 
-   * and they need to be labeled in the same way.
+   * and they can be labeled in the same way.
+   * (These would get labeled anyway during subsequent disconnected labeling pass,
+   * but may be more efficient and accurate to do it here.)
    */
   private void labelCollapsedEdges() {
     for (OverlayEdge edge : edges) {
@@ -209,59 +212,62 @@ class OverlayLabeller {
 
   /**
    * There can be edges which have unknown location
-   * but are connected to a Line edge with known location.
-   * In this case line location is propagated to the connected edges.
+   * but are connected to a linear edge with known location.
+   * In this case linear location is propagated to the connected edges.
    */
   private void labelConnectedLinearEdges() {
     //TODO: can these be merged to avoid two scans?
-    propagateLineLocations(0);
+    propagateLinearLocations(0);
     if (inputGeometry.hasEdges(1)) {
-      propagateLineLocations(1);
+      propagateLinearLocations(1);
     }
   }
 
-  private void propagateLineLocations(int geomIndex) {
-    // find L edges
-    List<OverlayEdge> lineEdges = findLinearEdgesWithLocation(geomIndex);
-    Deque<OverlayEdge> edgeStack = new ArrayDeque<OverlayEdge>(lineEdges);
+  /**
+   * Performs a breadth-first graph traversal to find and label
+   * connected linear edges.
+   * 
+   * @param geomIndex the index of the input geometry to label
+   */
+  private void propagateLinearLocations(int geomIndex) {
+    // find located linear edges
+    List<OverlayEdge> linearEdges = findLinearEdgesWithLocation(edges, geomIndex);
+    if (linearEdges.size() <= 0) return;
     
-    propagateLineLocations(geomIndex, edgeStack);
-  }
-  
-  private void propagateLineLocations(int geomIndex, Deque<OverlayEdge> edgeStack) {
-    // traverse line edges, labelling unknown ones that are connected
+    Deque<OverlayEdge> edgeStack = new ArrayDeque<OverlayEdge>(linearEdges);
+    boolean isInputLine = inputGeometry.isLine(geomIndex);
+    // traverse connected linear edges, labeling unknown ones
     while (! edgeStack.isEmpty()) {
       OverlayEdge lineEdge = edgeStack.removeFirst();
       // assert: lineEdge.getLabel().isLine(geomIndex);
       
       // for any edges around origin with unknown location for this geomIndex,
       // add those edges to stack to continue traversal
-      propagateLineLocation(lineEdge, geomIndex, edgeStack, inputGeometry);
+      propagateLinearLocationAtNode(lineEdge, geomIndex, isInputLine, edgeStack);
     }
   }
   
-  private static void propagateLineLocation(OverlayEdge eStart, int index, 
-      Deque<OverlayEdge> edgeStack, InputGeometry inputGeometry) {
-    OverlayEdge e = eStart.oNextOE();
-    int lineLoc = eStart.getLabel().getLineLocation(index);
-    
+  private static void propagateLinearLocationAtNode(OverlayEdge eNode, 
+      int geomIndex, boolean isInputLine, 
+      Deque<OverlayEdge> edgeStack) {
+    int lineLoc = eNode.getLabel().getLineLocation(geomIndex);
     /**
-     * If the parent geom is an L (dim 1) 
+     * If the parent geom is a Line 
      * then only propagate EXTERIOR locations.
      */
-    if (inputGeometry.isLine(index) 
-        && lineLoc != Location.EXTERIOR) return;
+    if (isInputLine && lineLoc != Location.EXTERIOR) return;
     
+    OverlayEdge e = eNode.oNextOE();
     do {
       OverlayLabel label = e.getLabel();
-      //Debug.println("propagateLineLocationAtNode - checking " + index + ": " + e);
-      if ( label.isLineLocationUnknown(index) ) {
+      //Debug.println("propagateLinearLocationAtNode - checking " + index + ": " + e);
+      if ( label.isLineLocationUnknown(geomIndex) ) {
         /**
          * If edge is not a boundary edge, 
          * its location is now known for this area
          */
-        label.setLocationLine(index, lineLoc);
-        //Debug.println("propagateLineLocationAtNode - setting "+ index + ": " + e);
+        label.setLocationLine(geomIndex, lineLoc);
+        //Debug.println("propagateLinearLocationAtNode - setting "+ index + ": " + e);
 
         /**
          * Add sym edge to stack for graph traversal
@@ -270,25 +276,29 @@ class OverlayLabeller {
         edgeStack.addFirst( e.symOE() );
       }
       e = e.oNextOE();
-    } while (e != eStart);
+    } while (e != eNode);
   }
   
   /**
-   * Finds all OverlayEdges which are labelled as L dimension.
+   * Finds all OverlayEdges which are linear 
+   * (i.e. line or collapsed) and have a known location
+   * for the given input geometry.
    * 
-   * @param geomIndex
-   * @return list of L edges
+   * @param geomIndex the index of the input geometry
+   * @return list of linear edges with known location
    */
-  private List<OverlayEdge> findLinearEdgesWithLocation(int geomIndex) {
-    List<OverlayEdge> lineEdges = new ArrayList<OverlayEdge>();
+  private static List<OverlayEdge> findLinearEdgesWithLocation(
+      Collection<OverlayEdge>edges, int geomIndex) {
+    List<OverlayEdge> linearEdges = new ArrayList<OverlayEdge>();
     for (OverlayEdge edge : edges) {
       OverlayLabel lbl = edge.getLabel();
+      // keep if linear with known location
       if (lbl.isLinear(geomIndex)
           && ! lbl.isLineLocationUnknown(geomIndex)) {
-        lineEdges.add(edge);
+        linearEdges.add(edge);
       }
     }
-    return lineEdges;
+    return linearEdges;
   }
 
   /**
