@@ -17,6 +17,20 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
+# Version 1.18.0
+
+*Release Date:  TBD*
+
+*Java Version: 1.8*
+
+## JTS TestRunner
+
+### Functionality Improvements
+
+* Enhance `-geomfunc` to load multiple function classes
+
+<!-- ================================================================ -->
+
 # Version 1.17.0
 
 *Release Date:  July 1, 2020*
