@@ -70,8 +70,12 @@ public class OverlayNGSnapIfNeededFunctions {
     return op.union();
   }
   
-  public static Geometry union(Geometry a) {
-    return unaryUnion(a);
+  public static double unionArea(Geometry a) {
+    return unaryUnion(a).getArea();
+  }
+  
+  public static double unionLength(Geometry a) {
+    return unaryUnion(a).getLength();
   }
   
   public static boolean overlayAreaTest(Geometry a, Geometry b) {
