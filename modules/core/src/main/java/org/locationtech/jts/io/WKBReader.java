@@ -13,6 +13,7 @@ package org.locationtech.jts.io;
 
 import java.io.IOException;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFactory;
 import org.locationtech.jts.geom.CoordinateSequences;
@@ -254,6 +255,9 @@ public class WKBReader
   private Point readPoint() throws IOException
   {
     CoordinateSequence pts = readCoordinateSequence(1);
+    if (Double.isNaN(pts.getX(0)) || Double.isNaN(pts.getY(0))) {
+      return factory.createPoint();
+    }
     return factory.createPoint(pts);
   }
 

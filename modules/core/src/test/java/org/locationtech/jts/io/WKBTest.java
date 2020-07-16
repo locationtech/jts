@@ -50,15 +50,19 @@ public class WKBTest
     runWKBTest("MULTIPOINT ((0 0), (1 4), (100 200))");
   }
 
-	public void testPointPCS() throws IOException, ParseException {
-		runWKBTestPackedCoordinate("POINT (1 2)");
-	}
-	
-	public void testPoint() throws IOException, ParseException {
-		runWKBTest("POINT (1 2)");
-	}
+  public void testPointPCS() throws IOException, ParseException {
+    runWKBTestPackedCoordinate("POINT (1 2)");
+  }
 
-	public void testLineString()
+  public void testPoint() throws IOException, ParseException {
+    runWKBTest("POINT (1 2)");
+  }
+
+  public void testPointEmpty() throws IOException, ParseException {
+    runWKBTest("POINT EMPTY");
+  }
+
+  public void testLineString()
       throws IOException, ParseException
   {
     runWKBTest("LINESTRING (1 2, 10 20, 100 200)");

@@ -330,11 +330,13 @@ public class WKBWriter
 
   private void writePoint(Point pt, OutStream os) throws IOException
   {
-    if (pt.getCoordinateSequence().size() == 0)
-      throw new IllegalArgumentException("Empty Points cannot be represented in WKB");
     writeByteOrder(os);
     writeGeometryType(WKBConstants.wkbPoint, pt, os);
-    writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
+    if (pt.getCoordinateSequence().size() == 0) {
+      writeNaNs(2, os);
+    } else {
+      writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
+    }
   }
 
   private void writeLineString(LineString line, OutStream os)
@@ -393,6 +395,15 @@ public class WKBWriter
   {
     ByteOrderValues.putInt(intValue, buf, byteOrder);
     os.write(buf, 4);
+  }
+
+  private void writeNaNs(int numNaNs, OutStream os)
+      throws IOException
+  {
+    for (int i = 0; i < numNaNs; i++) {
+      ByteOrderValues.putDouble(Double.NaN, buf, byteOrder);
+      os.write(buf, 8);
+    }
   }
 
   private void writeCoordinateSequence(CoordinateSequence seq, boolean writeSize, OutStream os)
