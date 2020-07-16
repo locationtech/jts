@@ -56,7 +56,7 @@ public class JTSTestRunnerCmd {
   static final String[] help = new String[] {
   "",
   "Usage: java org.locationtech.jtstest.testrunner.JTSTestRunnerCmd",
-  "           [ -geomfunc <classname>]",
+  "           [ -geomfunc <classpath>...]",
   "           [ -geomop <GeometryOperation classname>]",
   "           [ -testIndex <number>]",
   "           [ -verbose]",
@@ -68,7 +68,7 @@ public class JTSTestRunnerCmd {
   "           [ <.xml file or dir> ... ]",
   "  -files          run a list of .xml files or directories containing .xml files",
   "  -properties     load .xml filenames from a .properties file",
-  "  -geomfunc       specifies the class providing the geometry operations",
+  "  -geomfunc       specifies class(es) with static methods overriding or adding geometry functions",
   "  -geomop         specifies the class providing the geometry operations",
   "  -testIndex      specfies the index of a single test to run",
   "  -verbose        display the results of successful tests"
@@ -221,9 +221,11 @@ public class JTSTestRunnerCmd {
     }
 
     if (commandLine.hasOption(OPT_GEOMFUNC)) {
-      String geomFuncClassname = commandLine.getOption(OPT_GEOMFUNC).getArg(0);
-      System.out.println("Adding Geometry Functions from: " + geomFuncClassname);
-      funcRegistry.add(geomFuncClassname);
+      String[] geomFuncClassnames = commandLine.getOption(OPT_GEOMFUNC).getArgs();
+      for (String cls : geomFuncClassnames) {
+        System.out.println("Adding Geometry Functions from: " + cls);
+        funcRegistry.add(cls);
+      }
     }
 
     if (commandLine.hasOption(OPT_TESTCASEINDEX)) {
@@ -293,7 +295,7 @@ public class JTSTestRunnerCmd {
     commandLine.addOptionSpec(new OptionSpec(OPT_PROPERTIES, 1));
 
     commandLine.addOptionSpec(new OptionSpec(OPT_GEOMOP, 1));
-    commandLine.addOptionSpec(new OptionSpec(OPT_GEOMFUNC, 1));
+    commandLine.addOptionSpec(new OptionSpec(OPT_GEOMFUNC, OptionSpec.NARGS_ONE_OR_MORE));
 
     commandLine.addOptionSpec(new OptionSpec(OPT_TESTCASEINDEX, 1));
     commandLine.addOptionSpec(new OptionSpec(OPT_VERBOSE, 0));
