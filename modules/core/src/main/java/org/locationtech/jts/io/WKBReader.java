@@ -34,9 +34,12 @@ import org.locationtech.jts.geom.PrecisionModel;
  * with arbitrary byte stream sources.
  * <p>
  * This class reads the format describe in {@link WKBWriter}.  
- * It also partially handles
+ * It partially handles
  * the <b>Extended WKB</b> format used by PostGIS, 
  * by parsing and storing SRID values.
+ * Although not defined in the WKB spec, empty points
+ * are handled if they are represented as a Point with <code>NaN</code> X and Y ordinates.
+ * <p>
  * The reader repairs structurally-invalid input
  * (specifically, LineStrings and LinearRings which contain
  * too few points have vertices added,
@@ -254,6 +257,10 @@ public class WKBReader
   private Point readPoint() throws IOException
   {
     CoordinateSequence pts = readCoordinateSequence(1);
+    // If X and Y are NaN create a empty point
+    if (Double.isNaN(pts.getX(0)) || Double.isNaN(pts.getY(0))) {
+      return factory.createPoint();
+    }
     return factory.createPoint(pts);
   }
 

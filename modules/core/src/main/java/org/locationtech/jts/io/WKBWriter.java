@@ -44,9 +44,7 @@ import org.locationtech.jts.util.Assert;
  * by setting the third bit of the <tt>wkbType</tt> word.
  * EWKB format is upward compatible with the original SFS WKB format.
  * <p>
- * Empty Points cannot be represented in WKB; an
- * {@link IllegalArgumentException} will be thrown if one is
- * written. 
+ * Empty Points are output as a Point with <code>NaN</code> X and Y ordinate values. 
  * <p>
  * The WKB specification does not support representing {@link LinearRing}s;
  * they will be written as {@link LineString}s.
@@ -330,11 +328,13 @@ public class WKBWriter
 
   private void writePoint(Point pt, OutStream os) throws IOException
   {
-    if (pt.getCoordinateSequence().size() == 0)
-      throw new IllegalArgumentException("Empty Points cannot be represented in WKB");
     writeByteOrder(os);
     writeGeometryType(WKBConstants.wkbPoint, pt, os);
-    writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
+    if (pt.getCoordinateSequence().size() == 0) {
+      writeNaNs(2, os);
+    } else {
+      writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
+    }
   }
 
   private void writeLineString(LineString line, OutStream os)
@@ -421,6 +421,15 @@ public class WKBWriter
     	if (seq.getDimension() >= 3)
     		ordVal = seq.getOrdinate(index, 2);
       ByteOrderValues.putDouble(ordVal, buf, byteOrder);
+      os.write(buf, 8);
+    }
+  }
+  
+  private void writeNaNs(int numNaNs, OutStream os)
+      throws IOException
+  {
+    for (int i = 0; i < numNaNs; i++) {
+      ByteOrderValues.putDouble(Double.NaN, buf, byteOrder);
       os.write(buf, 8);
     }
   }
