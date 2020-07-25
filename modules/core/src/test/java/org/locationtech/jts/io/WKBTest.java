@@ -57,7 +57,11 @@ public class WKBTest
 	public void testPoint() throws IOException, ParseException {
 		runWKBTest("POINT (1 2)");
 	}
-
+	
+  public void testPointEmpty() throws IOException, ParseException {
+    runWKBTest("POINT EMPTY");
+  }
+  
 	public void testLineString()
       throws IOException, ParseException
   {
