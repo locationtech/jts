@@ -29,19 +29,23 @@ package org.locationtech.jts.geom;
  *  </UL>
  *  <P>
  *
- *  For a description of the DE-9IM and the spatial predicates derived from it, 
- *  see the <i><A
- *  HREF="http://www.opengis.org/techno/specs.htm">OGC 99-049 OpenGIS Simple Features
- *  Specification for SQL</A></i>, as well as
- *  <i>OGC 06-103r4 OpenGIS 
- *  Implementation Standard for Geographic information - 
- *  Simple feature access - Part 1: Common architecture</i>
- *  (which provides some further details on certain predicate specifications).
- * <p>
  * The entries of the matrix are defined by the constants in the {@link Dimension} class.
  * The indices of the matrix represent the topological locations 
  * that occur in a geometry (Interior, Boundary, Exterior).  
  * These are provided as constants in the {@link Location} class.
+ * <p>
+ * For a description of the DE-9IM and the spatial predicates derived from it, 
+ * see the following references:
+ * <ul>
+ * <li><i><a href="http://www.opengis.org/techno/specs.htm">
+ * OGC 99-049 OpenGIS Simple Features Specification for SQL</a></i>
+ * , Section 2.1.13</li>
+ * <li><i><a href="http://portal.opengeospatial.org/files/?artifact_id=25355">
+ * OGC 06-103r4 OpenGIS Implementation Standard for Geographic information - Simple feature access - Part 1: Common architecture</a></i>
+ * , Section 6.1.15 (which provides some further details on certain predicate specifications).
+ * </li>
+ * <li>Wikipedia article on <a href="https://en.wikipedia.org/wiki/DE-9IM">DE-9IM</a></li>
+ * </ul>
  *  
  *
  *@version 1.7
