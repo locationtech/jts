@@ -3,6 +3,7 @@
 http://trac.osgeo.org/geos/ticket/392
   </desc>
   <precisionModel type="FLOATING" />
+  <tolerance>.01</tolerance>
 
 <case>
   <desc>
@@ -16,9 +17,7 @@ Throws TopologyException
   <op name="isValid" arg1="A">true</op>
 </test>
 <test>
- <op name="union" arg1="A">
-
- </op>
+ <op name="unionLength" arg1="A"> 0.2973 </op>
 </test>
 </case>
 
