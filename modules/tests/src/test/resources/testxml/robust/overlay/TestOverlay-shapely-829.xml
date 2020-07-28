@@ -4,6 +4,7 @@
     Overlay Topology Exception
   </desc>
   <precisionModel type="FLOATING" />
+  <tolerance>0.01</tolerance>
 
 <case>
   <desc>
@@ -292,9 +293,7 @@ POLYGON ((-69.35306977078629 615.8994842678701, -70.79090531006571 617.289674528
 )
 </a>
 <test>
-  <op name='union' arg1='A' >
-
-  </op>
+  <op name='unionArea' arg1='A' > 27.047624273104926 </op>
 </test>
 </case>
 
