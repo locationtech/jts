@@ -32,6 +32,7 @@ Distributions for older JTS versions can be obtained at the
 ### Functionality Improvements
 
 * Enhance `-geomfunc` to load multiple function classes
+* Fix function registry to replace matching loaded functions (#569)
 
 <!-- ================================================================ -->
 
