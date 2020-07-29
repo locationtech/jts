@@ -78,7 +78,6 @@ public class GeometryFunctionRegistry
 		add(geomFuncClass);
 	}
 	
-
 	public void add(Collection funcs)
 	{
 		for (Iterator i = funcs.iterator(); i.hasNext(); ) {
@@ -116,23 +115,36 @@ public class GeometryFunctionRegistry
 	 */
 	public void add(GeometryFunction func)
 	{
-		functions.add(func);
+	  int index = findIndex(func);
+	  if (index >= 0) {
+	    functions.set(index, func);
+	  }
+	  else {
+	    functions.add(func);
+	  }
 	}
 	
-	
-	/*
-		int index = functions.indexOf(func);
-		if (index == -1) {
-			sortedFunctions.put(func.getName(), func);
-		}
-		else {
-			functions.set(index, func);
-		}	
-	}
-	*/
+	public int findIndex(GeometryFunction func) {
+    return findIndex(func.getName(), func.getParameterTypes().length);
+  }
 
-	
+  public int findIndex(String name, int argCount)
+  {
+    for (int i = 0; i < functions.size(); i++ ) {
+      GeometryFunction func = (GeometryFunction) functions.get(i);
+      if (isResolved(func, name, argCount)) {
+        return i;
+      }
+    }
+    return -1;
+  }
   
+  private static boolean isResolved(GeometryFunction func, String name, int argCount) {
+    String funcName = func.getName();
+    return funcName.equalsIgnoreCase(name) 
+        && func.getParameterTypes().length == argCount;
+  }
+
   /**
    * Finds the first function which matches the given name and argument count.
    * 
@@ -141,15 +153,13 @@ public class GeometryFunctionRegistry
    */
   public GeometryFunction find(String name, int argCount)
   {
-    for (Iterator i = functions.iterator(); i.hasNext(); ) {
-      GeometryFunction func = (GeometryFunction) i.next();
-      String funcName = func.getName();
-      if (funcName.equalsIgnoreCase(name) 
-      		&& func.getParameterTypes().length == argCount)
-        return func;
+    int index = findIndex(name, argCount);
+    if (index >= 0) {
+      return (GeometryFunction) functions.get(index);
     }
     return null;
   }
+  
   /**
    * Finds the first function which matches the given name.
    * 
