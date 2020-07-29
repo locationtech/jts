@@ -23,6 +23,10 @@ Distributions for older JTS versions can be obtained at the
 
 *Java Version: 1.8*
 
+### Functionality Improvements
+
+* Add `WKBReader` and `WKBWriter` support for `POINT EMPTY` (#567)
+
 ## JTS TestRunner
 
 ### Functionality Improvements
