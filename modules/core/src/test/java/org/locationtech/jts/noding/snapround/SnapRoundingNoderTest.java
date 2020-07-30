@@ -45,6 +45,15 @@ public class SnapRoundingNoderTest  extends GeometryTestCase {
   }
   
   /**
+   * A diagonal line is snapped to a vertex half a grid cell away
+   */
+  public void testSnappedDiagonalLine() {
+    String wkt =      "LINESTRING (2 3, 3 3, 3 2, 2 3)";
+    String expected = "MULTILINESTRING ((2 3, 3 3), (2 3, 3 3), (3 2, 3 3), (3 2, 3 3))";
+    checkRounding(wkt, 1.0, expected);
+  }
+  
+  /**
    * This test checks the HotPixel test for overlapping horizontal line
    */
   public void testHorizontalLinesWithMiddleNode() {

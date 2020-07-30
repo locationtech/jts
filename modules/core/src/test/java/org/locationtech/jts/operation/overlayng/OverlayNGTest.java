@@ -134,6 +134,24 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
+  /**
+   * Note this result is different to old overlay, because the top-right diagonal line
+   * gets snapped to the vertex above it.
+   */
+  public void testTriangleFillingHoleUnion() {
+    Geometry a = read("POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 1, 1 1), (1 2, 1 3, 2 3, 1 2), (2 3, 3 3, 3 2, 2 3))");
+    Geometry b = read("POLYGON ((2 1, 3 1, 3 2, 2 1))");
+    Geometry expected = read("POLYGON ((0 0, 0 4, 4 4, 4 0, 0 0), (1 2, 1 1, 2 1, 1 2), (2 3, 1 3, 1 2, 2 3))");
+    checkEqual(expected, OverlayNGTest.union(a, b, 1));
+  }
+  
+  public void testTriangleFillingHoleUnionPrec10() {
+    Geometry a = read("POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 1, 1 1), (1 2, 1 3, 2 3, 1 2), (2 3, 3 3, 3 2, 2 3))");
+    Geometry b = read("POLYGON ((2 1, 3 1, 3 2, 2 1))");
+    Geometry expected = read("POLYGON ((0 0, 0 4, 4 4, 4 0, 0 0), (1 2, 1 1, 2 1, 1 2), (2 3, 1 3, 1 2, 2 3), (3 2, 3 3, 2 3, 3 2))");
+    checkEqual(expected, OverlayNGTest.union(a, b, 10));
+  }
+  
   public void testBoxTriIntersection() {
     Geometry a = read("POLYGON ((0 6, 4 6, 4 2, 0 2, 0 6))");
     Geometry b = read("POLYGON ((1 0, 2 5, 3 0, 1 0))");
