@@ -65,10 +65,9 @@ The semantics of operation output are:
 <li>The <code>difference</code> operation produces a homogeneous result. 
   The result dimension is that of the left-hand operand.</li>
 <li>The <code>union</code> and <code>symmetric difference</code> operations
-  may produce a heterogeneous result if the inputs are of mixed dimension 
-  (i.e. a collection containing components of different dimension).</li>
+  may produce a heterogeneous result if the inputs are of mixed dimension.</li>
 <li>Homogeneous results are output as <code>Multi</code> geometries.</li>
-<li>Heterogeneous results are in the form of a <code>GeometryCollection</code>
+<li>Heterogeneous results are output as a <code>GeometryCollection</code>
   containing a set of atomic geometries.  This provides backwards compatibility
   with the original JTS overlay implementation.
   (However, this loses the information that the polygonal results 
