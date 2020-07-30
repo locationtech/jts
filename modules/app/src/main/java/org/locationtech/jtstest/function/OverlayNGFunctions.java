@@ -13,107 +13,87 @@ package org.locationtech.jtstest.function;
 
 import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
-import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
-import java.util.List;
-
+import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.geom.util.LineStringExtracter;
-import org.locationtech.jts.geom.util.PolygonExtracter;
+import org.locationtech.jts.noding.IntersectionAdder;
+import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
-import org.locationtech.jts.operation.overlayng.PrecisionReducer;
-import org.locationtech.jts.operation.overlayng.UnaryUnionNG;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.operation.union.UnionStrategy;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class OverlayNGFunctions {
-
-  public static Geometry intersection(Geometry a, Geometry b, 
-      @Metadata(title="Grid Scale") double scaleFactor) {
-    return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(scaleFactor));
-  }
   
-  public static Geometry union(Geometry a, Geometry b, 
-      @Metadata(title="Grid Scale") double scaleFactor) {
-    return OverlayNG.overlay(a, b, UNION, new PrecisionModel(scaleFactor));
-  }
-  
-  public static Geometry difference(Geometry a, Geometry b, 
-      @Metadata(title="Grid Scale") double scaleFactor) {
-    return OverlayNG.overlay(a, b, DIFFERENCE, new PrecisionModel(scaleFactor));
+  public static Geometry difference(Geometry a, Geometry b) {
+    return OverlayNG.overlay(a, b, DIFFERENCE );
   }
 
-  public static Geometry differenceBA(Geometry a, Geometry b, 
-      @Metadata(title="Grid Scale") double scaleFactor) {
-    return OverlayNG.overlay(b, a, DIFFERENCE, new PrecisionModel(scaleFactor));
+  public static Geometry intersection(Geometry a, Geometry b) {
+    return OverlayNG.overlay(a, b, INTERSECTION );
   }
 
-  public static Geometry symDifference(Geometry a, Geometry b, 
-      @Metadata(title="Grid Scale") double scaleFactor) {
-    return OverlayNG.overlay(a, b, SYMDIFFERENCE, new PrecisionModel(scaleFactor));
+  public static Geometry union(Geometry a, Geometry b) {
+    return OverlayNG.overlay(a, b, UNION );
+  }
+
+  public static Geometry unaryUnion(Geometry a) {
+    UnionStrategy unionSRFun = new UnionStrategy() {
+
+      public Geometry union(Geometry g0, Geometry g1) {
+         return OverlayNG.overlay(g0, g1, UNION );
+      }
+
+      @Override
+      public boolean isFloatingPrecision() {
+        return true;
+      }
+      
+    };
+    UnaryUnionOp op = new UnaryUnionOp(a);
+    op.setUnionFunction(unionSRFun);
+    return op.union();
   }
   
-  @Metadata(description="Unary union a collection of geometries")
-  public static Geometry unaryUnion(Geometry a, 
-      @Metadata(title="Grid Scale") double scaleFactor) {
-    return UnaryUnionNG.union(a, new PrecisionModel(scaleFactor));
+  public static Geometry intersectionNoOpt(Geometry a, Geometry b) {
+    OverlayNG ovr = new OverlayNG(a, b, INTERSECTION);
+    ovr.setOptimized(false);
+    return ovr.getResult();
   }
   
-  @Metadata(description="Union a fully-noded coverage (polygons or lines)")
+  public static Geometry intersectionNoValid(Geometry a, Geometry b) {
+    Noder noder = createFloatingPrecisionNoder(false);
+    return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(), noder);
+  }
+  
+  public static Geometry intersectionIsValid(Geometry a, Geometry b) {
+    Noder noder = createFloatingPrecisionNoder(false);
+    Geometry geom = OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(), noder);
+    if (geom.isValid()) return geom;
+    return null;
+  }
+  
+  private static Noder createFloatingPrecisionNoder(boolean doValidation) {
+    MCIndexNoder mcNoder = new MCIndexNoder();
+    LineIntersector li = new RobustLineIntersector();
+    mcNoder.setSegmentIntersector(new IntersectionAdder(li));
+    
+    Noder noder = mcNoder;
+    if (doValidation) {
+      noder = new ValidatingNoder( mcNoder);
+    }
+    return noder;
+  }
+  
+  @Metadata(description="Fast Union of a fully-noded coverage (polygons or lines)")
   public static Geometry unionCoverage(Geometry geom) {
-    Geometry cov = OverlayNGFunctions.extractHomo(geom);
+    Geometry cov = OverlayNGSRFunctions.extractHomo(geom);
     return CoverageUnion.union(cov);
   }
-  
-  @Metadata(description="Reduce precision of a geometry")
-  public static Geometry reducePrecision(Geometry a, 
-      @Metadata(title="Grid Scale") double scaleFactor) {
-    
-    /**
-     * This ONLY works if the input GeometryCollection 
-     * is a non-overlapping polygonal coverage!
-     */
-    Geometry homoGeom = extractHomo(a);
-    Geometry reduced = PrecisionReducer.reducePrecision(homoGeom, new PrecisionModel(scaleFactor));
-    return reduced;
-    /*
-    // Not sure why this is needed? 
-    // Should be part of precision reducer, or Overlay (strict mode)
-    List components = null;
-    switch (a.getDimension()) {
-      case 2: 
-        components = PolygonExtracter.getPolygons(union);
-        break;
-      case 1:
-        components = LineStringExtracter.getLines(union);
-        break;
-    }
-    Geometry result = a.getFactory().buildGeometry(components);
-    return result;
-    */
-  }
-  
-  /**
-   * Extracts homogeneous components with largest dimension.
-   * 
-   * @param geom
-   * @return a homogeneous collection
-   */
-  static Geometry extractHomo(Geometry geom) {
-    int resultDimension = geom.getDimension();
-    List components = null;
-    switch (resultDimension) {
-    case 2: 
-      components = PolygonExtracter.getPolygons(geom);
-      break;
-    case 1:
-      components = LineStringExtracter.getLines(geom);
-      break;
-    }
-    Geometry result = geom.getFactory().buildGeometry(components);
-    return result;
-  }
-  
 }
