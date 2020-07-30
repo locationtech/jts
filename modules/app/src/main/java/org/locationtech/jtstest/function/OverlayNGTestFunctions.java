@@ -124,13 +124,43 @@ public class OverlayNGTestFunctions {
     return ovr.getResult();
   }
   
-  public static Geometry intersectionNoOpt(Geometry a, Geometry b, double scaleFactor) {
+  public static Geometry intersectionSRNoOpt(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
     ovr.setOptimized(false);
     return ovr.getResult();
   }
 
+  public static Geometry intersectionNoOpt(Geometry a, Geometry b) {
+    OverlayNG ovr = new OverlayNG(a, b, INTERSECTION);
+    ovr.setOptimized(false);
+    return ovr.getResult();
+  }
+  
+  public static Geometry intersectionNoValid(Geometry a, Geometry b) {
+    Noder noder = createFloatingPrecisionNoder(false);
+    return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(), noder);
+  }
+  
+  public static Geometry intersectionIsValid(Geometry a, Geometry b) {
+    Noder noder = createFloatingPrecisionNoder(false);
+    Geometry geom = OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(), noder);
+    if (geom.isValid()) return geom;
+    return null;
+  }
+  
+  private static Noder createFloatingPrecisionNoder(boolean doValidation) {
+    MCIndexNoder mcNoder = new MCIndexNoder();
+    LineIntersector li = new RobustLineIntersector();
+    mcNoder.setSegmentIntersector(new IntersectionAdder(li));
+    
+    Noder noder = mcNoder;
+    if (doValidation) {
+      noder = new ValidatingNoder( mcNoder);
+    }
+    return noder;
+  }
+  
   public static Geometry unionIntSymDiff(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     // force non-null inputs

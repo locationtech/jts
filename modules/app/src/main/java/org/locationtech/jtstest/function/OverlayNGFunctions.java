@@ -14,6 +14,7 @@ package org.locationtech.jtstest.function;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
@@ -35,8 +36,16 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, DIFFERENCE );
   }
 
+  public static Geometry differenceBA(Geometry a, Geometry b) {
+      return OverlayNG.overlay(b, a, DIFFERENCE );
+  }
+
   public static Geometry intersection(Geometry a, Geometry b) {
     return OverlayNG.overlay(a, b, INTERSECTION );
+  }
+
+  public static Geometry symDifference(Geometry a, Geometry b) {
+    return OverlayNG.overlay(a, b, SYMDIFFERENCE );
   }
 
   public static Geometry union(Geometry a, Geometry b) {
@@ -59,36 +68,6 @@ public class OverlayNGFunctions {
     UnaryUnionOp op = new UnaryUnionOp(a);
     op.setUnionFunction(unionSRFun);
     return op.union();
-  }
-  
-  public static Geometry intersectionNoOpt(Geometry a, Geometry b) {
-    OverlayNG ovr = new OverlayNG(a, b, INTERSECTION);
-    ovr.setOptimized(false);
-    return ovr.getResult();
-  }
-  
-  public static Geometry intersectionNoValid(Geometry a, Geometry b) {
-    Noder noder = createFloatingPrecisionNoder(false);
-    return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(), noder);
-  }
-  
-  public static Geometry intersectionIsValid(Geometry a, Geometry b) {
-    Noder noder = createFloatingPrecisionNoder(false);
-    Geometry geom = OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(), noder);
-    if (geom.isValid()) return geom;
-    return null;
-  }
-  
-  private static Noder createFloatingPrecisionNoder(boolean doValidation) {
-    MCIndexNoder mcNoder = new MCIndexNoder();
-    LineIntersector li = new RobustLineIntersector();
-    mcNoder.setSegmentIntersector(new IntersectionAdder(li));
-    
-    Noder noder = mcNoder;
-    if (doValidation) {
-      noder = new ValidatingNoder( mcNoder);
-    }
-    return noder;
   }
   
   @Metadata(description="Fast Union of a fully-noded coverage (polygons or lines)")
