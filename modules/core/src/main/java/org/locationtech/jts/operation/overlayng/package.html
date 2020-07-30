@@ -50,29 +50,31 @@ The semantics of inputs are:
 </ul>
 
 <p>
-The semantics of operation results are:
+The semantics of operation output are:
 
 <ul>
 <li>Results are always valid geometries. 
-In particular, result <code>MultiPolygon</code>s are valid.</li>
-<li>Empty results are <code>EMPTY</code> atomic geometries of appropriate dimension.</li>
+  In particular, result <code>MultiPolygon</code>s are valid.</li>
 <li>Repeated vertices are removed.</li>
-<li>Linear results are merged node-to-node (e.g. are of maximial length).</li>
+<li>Linear results are merged node-to-node (e.g. are of maximal length).</li>
 <li>Polygon edges which collapse completely due to rounding are not output.</li>
-<li>The <code>intersection</code> and <code>difference</code> operations
-always produce a homogeneous result. 
-The result dimension is equal to or less than the maximum dimension of the inputs.
-(For instance, the intersection of a <code>Polygon</code> 
-and a <code>LineString</code> might produce a <code>Point</code> result.)</li>
+<li>The <code>intersection</code> operation produces a homogeneous result. 
+  The result contains the components of highest dimension in the intersection.
+  (For instance, the intersection of a <code>Polygon</code> 
+  and a <code>LineString</code> might produce a <code>Point</code> result.)</li>
+<li>The <code>difference</code> operation produces a homogeneous result. 
+  The result dimension is that of the left-hand operand.</li>
 <li>The <code>union</code> and <code>symmetric difference</code> operations
-may produce heterogeneous results 
-(i.e. a collection containing components of different dimension).</li>
+  may produce a heterogeneous result if the inputs are of mixed dimension 
+  (i.e. a collection containing components of different dimension).</li>
 <li>Homogeneous results are output as <code>Multi</code> geometries.</li>
 <li>Heterogeneous results are in the form of a <code>GeometryCollection</code>
-containing a set of atomic geometries.  This provides backwards compatibility
-with the original JTS overlay implementation.
-However, this loses the information that the polygonal results 
-have valid <code>MultiPolygon</code> topology.</li>
+  containing a set of atomic geometries.  This provides backwards compatibility
+  with the original JTS overlay implementation.
+  (However, this loses the information that the polygonal results 
+  have valid <code>MultiPolygon</code> topology.)</li>
+<li>Empty results are atomic <code>EMPTY</code> geometries 
+  of dimension appropriate to the operation.</li>
 </ul>
 
 </p>
