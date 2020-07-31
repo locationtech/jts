@@ -17,32 +17,35 @@ import org.locationtech.jts.noding.SegmentExtractingNoder;
 
 /**
  * Unions a valid coverage of polygons or lines
- * in a robust, efficient way.   
+ * in an efficient way.   
  * <p>
- * A valid coverage is determined by the following conditions:
- * <ul>
- * <li><b>Homogeneous</b> - all elements of the collection must have the same dimension.
- * <li><b>Fully noded</b> - Line segments within the collection 
+ * A valid polygonal coverage is a collection of {@link Polygon}s
+ * which satisfy the following conditions:
+ * <ol>
+ * <li><b>Vector-clean</b> - Line segments within the collection 
  * must either be identical or intersect only at endpoints.
- * <li><b>Non-overlapping</b> - (Polygonal coverage only) No two polygons
+ * <li><b>Non-overlapping</b> - No two polygons
  * may overlap. Equivalently, polygons must be interior-disjoint.
- * </ul>
+ * </ol>
+ * <p>
+ * A valid linear coverage is a collection of {@link LineString}s
+ * which satisfies the <b>Vector-clean</b> condition.
+ * Note that this does not require the LineStrings to be fully noded
+ * - i.e. they may contain coincident linework.  
+ * Coincident line segments are dissolved by the union.
+ * Currently linear output is not merged (this may be added in a future release.)
  * <p>
  * Currently no checking is done to determine whether the input is a valid coverage.
  * This is because coverage validation involves segment intersection detection,
  * which is much more expensive than the union phase.
  * If the input is not a valid coverage 
- * then in some cases this will detected during processing 
- * and a error will be thrown.
+ * then in some cases this will be detected during processing 
+ * and a {@link TopologyException} is thrown.
  * Otherwise, the computation will produce output, but it will be invalid.
  * <p>
  * Unioning a valid coverage implies that no new vertices are created.
  * This means that a precision model does not need to be specified.
  * The precision of the vertices in the output geometry is not changed.
- * Because of this no precision reduction is performed.
- * <p>
- * Unioning a linear network is a way of performing 
- * line merging and line dissolving.
  * 
  * @author Martin Davis
  * 
@@ -56,6 +59,8 @@ public class CoverageUnion
    * 
    * @param coverage a coverage of polygons or lines
    * @return the union of the coverage
+   * 
+   * @throws TopologyException in some cases if the coverage is invalid
    */
   public static Geometry union(Geometry coverage) {
     Noder noder = new SegmentExtractingNoder();
