@@ -28,7 +28,21 @@ public class OverlayNGTestOne extends GeometryTestCase {
 
   public OverlayNGTestOne(String name) { super(name); }
   
-  public void testRoundedBoxesIntersection() {
+  public void testBoxHoleCollapseAlongBEdgeDifference() {
+    Geometry a = read("POLYGON ((0 3, 3 3, 3 0, 0 0, 0 3), (1 1.2, 1 1.1, 2.3 1.1, 1 1.2))");
+    Geometry b = read("POLYGON ((1 1, 2 1, 2 0, 1 0, 1 1))");
+    Geometry expected = read("POLYGON EMPTY");
+    checkEqual(expected, OverlayNGTest.difference(b, a, 1));
+  }
+  
+  public void xtestBoxHoleCollapseAlongBEdgeUnion() {
+    Geometry a = read("POLYGON ((0 3, 3 3, 3 0, 0 0, 0 3), (1 1.2, 1 1.1, 2.3 1.1, 1 1.2))");
+    Geometry b = read("POLYGON ((1 1, 2 1, 2 0, 1 0, 1 1))");
+    Geometry expected = read("POLYGON ((0 0, 0 3, 3 3, 3 0, 2 0, 1 0, 0 0))");
+    checkEqual(expected, OverlayNGTest.union(b, a, 1));
+  }
+  
+  public void xtestRoundedBoxesIntersection() {
     Geometry a = read("POLYGON ((0.6 0.1, 0.6 1.9, 2.9 1.9, 2.9 0.1, 0.6 0.1))");
     Geometry b = read("POLYGON ((1.1 3.9, 2.9 3.9, 2.9 2.1, 1.1 2.1, 1.1 3.9))");
     Geometry expected = read("LINESTRING (1 2, 3 2)");

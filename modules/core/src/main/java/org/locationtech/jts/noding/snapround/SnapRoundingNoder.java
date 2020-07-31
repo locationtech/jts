@@ -28,19 +28,29 @@ import org.locationtech.jts.noding.SegmentString;
 /**
  * Uses Snap Rounding to compute a rounded,
  * fully noded arrangement from a set of {@link SegmentString}s,
- * in a performant way.
+ * in a performant way, and avoiding unnecessary noding.
  * <p>
  * Implements the Snap Rounding technique described in 
  * the papers by Hobby, Guibas &amp; Marimont, and Goodrich et al.
  * Snap Rounding enforces that all output vertices lie on a uniform grid,
  * which is determined by the provided {@link PrecisionModel}.
- * Input vertices do not have to be rounded to the grid; 
+ * <p>
+ * Input vertices do not have to be rounded to the grid beforehand; 
  * this is done during the snap-rounding process.
  * In fact, rounding cannot be done a priori,
- * since rounding vertices alone can distort the rounded topology
- * of the arrangement (by moving segments away from hot pixels
+ * since rounding vertices by themselves can distort the rounded topology
+ * of the arrangement (i.e. by moving segments away from hot pixels
  * that would otherwise intersect them, or by moving vertices
  * across segments).
+ * <p>
+ * To minimize the number of introduced nodes,
+ * the Snap-Rounding Noder avoids creating nodes
+ * at edge vertices if there is no intersection or snap at that location.
+ * However, if two different input edges contain identical segments,
+ * each of the segment vertices will be noded.
+ * This still provides fully-noded output.
+ * This is the same behaviour provided by other noders,
+ * such as {@link MCIndexNoder} and {@link SnappingNoder}.
  * 
  * @version 1.7
  */
@@ -67,67 +77,58 @@ public class SnapRoundingNoder
   }
 
   /**
+   * Computes the nodes in the snap-rounding line arrangement.
+   * The nodes are added to the {@link NodedSegmentString}s provided as the input.
+   * 
    * @param inputSegmentStrings a Collection of NodedSegmentStrings
    */
   public void computeNodes(Collection inputSegmentStrings)
   {
-    /**
-     * Determine intersections at full precision.  
-     * Rounding happens during Hot Pixel creation.
-     */
     snappedResult = snapRound(inputSegmentStrings);
-
-    // testing purposes only - remove in final version
-    //checkCorrectness(inputSegmentStrings);
-    //if (Debug.isDebugging()) dumpNodedLines(inputSegmentStrings);
-    //if (Debug.isDebugging()) dumpNodedLines(snappedResult);
   }
-
-  /*
-  private void dumpNodedLines(Collection<NodedSegmentString> segStrings) {
-    for (NodedSegmentString nss : segStrings) {
-      Debug.println( WKTWriter.toLineString(nss.getNodeList().getSplitCoordinates()));
-    }
-  }
-
-  private void checkValidNoding(Collection inputSegmentStrings)
-  {
-    Collection resultSegStrings = NodedSegmentString.getNodedSubstrings(inputSegmentStrings);
-    NodingValidator nv = new NodingValidator(resultSegStrings);
-    try {
-      nv.checkValid();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
-  */
   
-  private List<NodedSegmentString> snapRound(Collection<SegmentString> segStrings)
+  private List<NodedSegmentString> snapRound(Collection<NodedSegmentString> segStrings)
   {
-    List<NodedSegmentString> inputSS = createNodedStrings(segStrings);
     /**
      * Determine hot pixels for intersections and vertices.
      * This is done BEFORE the input lines are rounded,
      * to avoid distorting the line arrangement 
      * (rounding can cause vertices to move across edges).
      */
-    List<Coordinate> intersections = findInteriorIntersections(inputSS);
-    pixelIndex.add(intersections);
+    addIntersectionPixels(segStrings);
     addVertexPixels(segStrings);
 
-    List<NodedSegmentString> snapped = computeSnaps(inputSS);
+    List<NodedSegmentString> snapped = computeSnaps(segStrings);
     return snapped;
   }
 
-  private static List<NodedSegmentString> createNodedStrings(Collection<SegmentString> segStrings) {
-    List<NodedSegmentString> nodedStrings = new ArrayList<NodedSegmentString>();
-    for (SegmentString ss : segStrings) {
-      nodedStrings.add( new NodedSegmentString(ss) );
-    }
-    return nodedStrings;
+  /**
+   * Detects interior intersections in the collection of {@link SegmentString}s,
+   * and adds nodes for them to the segment strings.
+   * Also creates HotPixel nodes for the intersection points.
+   * 
+   * @param segStrings the input NodedSegmentStrings
+   */
+  private void addIntersectionPixels(Collection<NodedSegmentString> segStrings)
+  {
+    SnapRoundingIntersectionAdder intAdder = new SnapRoundingIntersectionAdder(pm);
+    MCIndexNoder noder = new MCIndexNoder();
+    noder.setSegmentIntersector(intAdder);
+    noder.computeNodes(segStrings);
+    List<Coordinate> intPts = intAdder.getIntersections();
+    pixelIndex.addNodes(intPts);
   }
-
-  private void addVertexPixels(Collection<SegmentString> segStrings) {
+  
+  /**
+   * Creates HotPixels for each vertex in the input segStrings.
+   * The HotPixels are not marked as nodes, since they will
+   * only be nodes in the final line arrangement
+   * if they interact with other segments (or they are already
+   * created as intersection nodes).
+   * 
+   * @param segStrings the input NodedSegmentStrings
+   */
+  private void addVertexPixels(Collection<NodedSegmentString> segStrings) {
     for (SegmentString nss : segStrings) {
       Coordinate[] pts = nss.getCoordinates();
       pixelIndex.add(pts);
@@ -157,25 +158,8 @@ public class SnapRoundingNoder
   }
 
   /**
-   * Computes all interior intersections in the collection of {@link SegmentString}s,
-   * and returns their {@link Coordinate}s.
-   *
-   * Also adds the intersection nodes to the segments.
-   *
-   * @return a list of Coordinates for the intersections
-   */
-  private List<Coordinate> findInteriorIntersections(List<NodedSegmentString> inputSS)
-  {
-    SnapRoundingIntersectionAdder intAdder = new SnapRoundingIntersectionAdder(pm);
-    MCIndexNoder noder = new MCIndexNoder();
-    noder.setSegmentIntersector(intAdder);
-    noder.computeNodes(inputSS);
-    return intAdder.getIntersections();
-  }
-
-  /**
    * Computes new segment strings which are rounded and contain
-   * any intersections added as a result of snapping segments to snap points (hot pixels).
+   * intersections added as a result of snapping segments to snap points (hot pixels).
    * 
    * @param segStrings segments to snap
    * @return the snapped segment strings
@@ -184,22 +168,29 @@ public class SnapRoundingNoder
   {
     List<NodedSegmentString> snapped = new ArrayList<NodedSegmentString>();
     for (NodedSegmentString ss : segStrings ) {
-      NodedSegmentString snappedSS = computeSnaps(ss);
+      NodedSegmentString snappedSS = computeSegmentSnaps(ss);
       if (snappedSS != null)
         snapped.add(snappedSS);
+    }
+    /**
+     * Some intersection hot pixels may have been marked as nodes in the previous
+     * loop, so add nodes for them.
+     */
+    for (NodedSegmentString ss : snapped ) {
+      addVertexNodeSnaps(ss);
     }
     return snapped;
   }
 
   /**
-   * Add snapped vertices to a segemnt string.
+   * Add snapped vertices to a segment string.
    * If the segment string collapses completely due to rounding,
    * null is returned.
    * 
    * @param ss the segment string to snap
    * @return the snapped segment string, or null if it collapses completely
    */
-  private NodedSegmentString computeSnaps(NodedSegmentString ss)
+  private NodedSegmentString computeSegmentSnaps(NodedSegmentString ss)
   {
     //Coordinate[] pts = ss.getCoordinates();
     /**
@@ -256,17 +247,63 @@ public class SnapRoundingNoder
 
       @Override
       public void visit(KdNode node) {
-        // TODO Auto-generated method stub
         HotPixel hp = (HotPixel) node.getData();
+        
+        /**
+         * If the hot pixel is not a node, and it contains one of the segment vertices,
+         * then that vertex is the source for the hot pixel.
+         * To avoid over-noding a node is not added at this point. 
+         * The hot pixel may be subsequently marked as a node,
+         * in which case the intersection will be added during the final vertex noding phase.
+         */
+        if (! hp.isNode()) {
+          if (hp.intersects(p0) || hp.intersects(p1))
+            return;
+        }
+        /**
+         * Add a node if the segment intersects the pixel.
+         * Mark the HotPixel as a node (since it may not have been one before).
+         * This ensures the vertex for it is added as a node during the final vertex noding phase.
+         */
         if (hp.intersects(p0, p1)) {
           //System.out.println("Added intersection: " + hp.getCoordinate());
           ss.addIntersection( hp.getCoordinate(), segIndex );
+          hp.setToNode();
         }
+      }
+    });
+  }
 
+  /**
+   * Add nodes for any vertices in hot pixels that were
+   * added as nodes during segment noding.
+   * 
+   * @param ss a noded segment string
+   */
+  private void addVertexNodeSnaps(NodedSegmentString ss)
+  {
+    Coordinate[] pts = ss.getCoordinates();
+    for (int i = 1; i < pts.length - 1; i++ ) {
+      Coordinate p0 = pts[i];
+      snapVertexNode( p0, ss, i);      
+    }
+  }
+
+  private void snapVertexNode(Coordinate p0, NodedSegmentString ss, int segIndex) {
+    pixelIndex.query(p0, p0, new KdNodeVisitor() {
+
+      @Override
+      public void visit(KdNode node) {
+        HotPixel hp = (HotPixel) node.getData();
+        /**
+         * If vertex pixel is a node, add it.
+         */
+        if (hp.isNode() && hp.getCoordinate().equals2D(p0)) {
+          ss.addIntersection( p0, segIndex );
+        }
       }
       
     });
-
   }
 
 }

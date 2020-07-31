@@ -3,6 +3,7 @@
 Covers topological situations with no precision collapse.
 Uses a floating precision model.
 </desc>
+
 <case>
   <desc>LL - same line</desc>
   <a>
@@ -43,10 +44,10 @@ POINT (15 15)
 MULTILINESTRING ((10 10, 15 15), (15 15, 20 20), (10 20, 15 15), (15 15, 20 10))
   </op></test>
 <test>  <op name="differenceNG" arg1="A" arg2="B">
-LINESTRING (10 10, 15 15, 20 20)
+MULTILINESTRING ((10 10, 15 15), (15 15, 20 20))
   </op></test>
 <test>  <op name="differenceNG" arg1="B" arg2="A">
-LINESTRING (10 20, 15 15, 20 10)
+MULTILINESTRING ((10 20, 15 15), (15 15, 20 10))
   </op></test>
 <test>  <op name="symdifferenceNG" arg1="A" arg2="B">
 MULTILINESTRING ((10 10, 15 15), (15 15, 20 20), (10 20, 15 15), (15 15, 20 10))
@@ -65,7 +66,7 @@ LINESTRING (20 20, 30 30)
 POINT (20 20)
   </op></test>
 <test>  <op name="unionNG" arg1="A" arg2="B">
-LINESTRING (10 10, 20 20, 30 30)
+MULTILINESTRING ((20 20, 30 30), (10 10, 20 20))
   </op></test>
 <test>  <op name="differenceNG" arg1="A" arg2="B">
 LINESTRING (10 10, 20 20)
@@ -74,7 +75,7 @@ LINESTRING (10 10, 20 20)
 LINESTRING (20 20, 30 30)
   </op></test>
 <test>  <op name="symdifferenceNG" arg1="A" arg2="B">
-LINESTRING (10 10, 20 20, 30 30)
+MULTILINESTRING ((20 20, 30 30), (10 10, 20 20))
   </op></test>
 </case>
 
@@ -90,7 +91,7 @@ LINESTRING (15 15, 30 30)
 LINESTRING (15 15, 20 20)
   </op></test>
 <test>  <op name="unionNG" arg1="A" arg2="B">
-LINESTRING (10 10, 15 15, 20 20, 30 30)
+MULTILINESTRING ((10 10, 15 15), (15 15, 20 20), (20 20, 30 30))
   </op></test>
 <test>  <op name="differenceNG" arg1="A" arg2="B">
 LINESTRING (10 10, 15 15)
@@ -115,7 +116,7 @@ LINESTRING (13 13, 10 10, 10 20, 20 20, 17 17)
 MULTILINESTRING ((17 17, 20 20), (10 10, 13 13))
   </op></test>
 <test>  <op name="unionNG" arg1="A" arg2="B">
-LINESTRING (17 17, 20 20, 10 20, 10 10, 13 13, 17 17)
+MULTILINESTRING ((17 17, 20 20), (10 10, 10 20, 20 20), (13 13, 17 17), (10 10, 13 13))
   </op></test>
 <test>  <op name="differenceNG" arg1="A" arg2="B">
 LINESTRING (13 13, 17 17)
@@ -149,7 +150,7 @@ MULTILINESTRING ((0 10, 10 10, 20 20), (30 30, 40 30))
 MULTILINESTRING ((20 0, 20 20), (30 30, 30 40))
   </op></test>
 <test>  <op name="symdifferenceNG" arg1="A" arg2="B">
-MULTILINESTRING ((0 10, 10 10, 20 20, 20 0), (40 30, 30 30, 30 40))
+MULTILINESTRING ((0 10, 10 10, 20 20), (20 0, 20 20), (30 30, 30 40), (30 30, 40 30))
   </op></test>
 </case>
 
@@ -168,13 +169,13 @@ LINESTRING (0 0, 3 3)
 MULTILINESTRING ((5 5, 1 9), (0 0, 3 3), (5 5, 10 10), (3 3, 8 2, 5 5), (3 3, 5 5))
   </op></test>
 <test>  <op name="differenceNG" arg1="A" arg2="B">
-LINESTRING (3 3, 5 5, 10 10)
+MULTILINESTRING ((5 5, 10 10), (3 3, 5 5))
   </op></test>
 <test>  <op name="differenceNG" arg1="B" arg2="A">
-LINESTRING (3 3, 8 2, 5 5, 1 9)
+MULTILINESTRING ((5 5, 1 9), (3 3, 8 2, 5 5))
   </op></test>
 <test>  <op name="symdifferenceNG" arg1="A" arg2="B">
-MULTILINESTRING ((5 5, 1 9), (5 5, 10 10), (5 5, 8 2, 3 3, 5 5))
+MULTILINESTRING ((5 5, 1 9), (5 5, 10 10), (3 3, 8 2, 5 5), (3 3, 5 5))
   </op></test>
 </case>
 
@@ -193,10 +194,10 @@ POINT (150 150)
 MULTILINESTRING ((150 150, 200 200, 300 300, 400 200), (100 100, 150 150), (190 110, 150 150), (150 150, 120 180))
   </op></test>
 <test>  <op name="differenceNG" arg1="A" arg2="B">
-LINESTRING (100 100, 150 150, 200 200, 300 300, 400 200)
+MULTILINESTRING ((150 150, 200 200, 300 300, 400 200), (100 100, 150 150))
   </op></test>
 <test>  <op name="differenceNG" arg1="B" arg2="A">
-LINESTRING (190 110, 150 150, 120 180)
+MULTILINESTRING ((190 110, 150 150), (150 150, 120 180))
   </op></test>
 <test>  <op name="symdifferenceNG" arg1="A" arg2="B">
 MULTILINESTRING ((150 150, 200 200, 300 300, 400 200), (100 100, 150 150), (190 110, 150 150), (150 150, 120 180))

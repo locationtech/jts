@@ -19,19 +19,21 @@ import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.SegmentIntersector;
 import org.locationtech.jts.noding.SegmentString;
 
 /**
  * Finds intersections between line segments which will be snap-rounded,
- * and adds them as nodes.
+ * and adds them as nodes to the segments.
  * <p>
  * Intersections are detected and computed using full precision.
  * Snapping takes place in a subsequent phase.
- * To avoid robustness issues with vertices which lie very close to line segments,
- * the following heuristic is used:
+ * <p>
+ * The intersection points are recorded, so that HotPixels can be created for them.
+ * <p>
+ * To avoid robustness issues with vertices which lie very close to line segments
+ * a heuristic is used: 
  * nodes are created if a vertex lies within a tolerance distance
  * of the interior of a segment.
  * The tolerance distance is chosen to be significantly below the snap-rounding grid size.

@@ -44,27 +44,56 @@ class HotPixelIndex {
     scaleFactor = pm.getScale();
   }
   
+  /**
+   * Adds a list of points as non-node pixels.
+   * 
+   * @param pts the points to add
+   */
   public void add(Coordinate[] pts) {
     for (Coordinate pt : pts) {
       add(pt);
     }
   }
   
-  public void add(List<Coordinate> pts) {
+  /**
+   * Adds a list of points as node pixels.
+   * 
+   * @param pts the points to add
+   */
+  public void addNodes(List<Coordinate> pts) {
     for (Coordinate pt : pts) {
-      add(pt);
+      HotPixel hp = add(pt);
+      hp.setToNode();
     }
   }
   
+  /**
+   * Adds a point as a Hot Pixel.
+   * If the point has been added already, it is marked as a node.
+   * 
+   * @param p the point to add
+   * @return the HotPixel for the point
+   */
   public HotPixel add(Coordinate p) {
     // TODO: is there a faster way of doing this?
     Coordinate pRound = round(p);
     
-    HotPixel hp = find(p);
-    if (hp != null) 
+    HotPixel hp = find(pRound);
+    /**
+     * Hot Pixels which are added more than once 
+     * must have more than one vertex in them
+     * and thus must be nodes.
+     */
+    if (hp != null) {
+      hp.setToNode();
       return hp;
+    }
     
-    // not found, so create a new one
+    /**
+     * A pixel containing the point was not found, so create a new one.
+     * It is initially set to NOT be a node
+     * (but may become one later on).
+     */
     hp = new HotPixel(pRound, scaleFactor);
     index.insert(hp.getCoordinate(), hp);
     return hp;
@@ -83,6 +112,15 @@ class HotPixelIndex {
     return p2;
   }
   
+  /**
+   * Visits all the hot pixels which may intersect a segment (p0-p1).
+   * The visitor must determine whether each hot pixel actually intersects
+   * the segment.
+   *  
+   * @param p0 the segment start point
+   * @param p1 the segment end point
+   * @param visitor the visitor to apply
+   */
   public void query(Coordinate p0, Coordinate p1, KdNodeVisitor visitor) {
     Envelope queryEnv = new Envelope(p0, p1);
     // expand query range to account for HotPixel extent

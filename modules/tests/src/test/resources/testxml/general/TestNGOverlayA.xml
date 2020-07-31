@@ -258,7 +258,7 @@ Uses a floating precision model.
   </b>
 <test>
   <op name="intersectionNG" arg1="A" arg2="B">
-    LINESTRING (27 27, 27 13, 13 13, 13 27, 27 27)
+    MULTILINESTRING ((27 27, 27 13), (27 13, 13 13), (13 27, 27 27), (13 13, 13 27))
   </op>
 </test>
 <test>

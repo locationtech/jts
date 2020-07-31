@@ -17,11 +17,9 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Location;
-import org.locationtech.jts.util.Debug;
 
 /**
  * Finds and builds overlay result lines from the overlay graph.
@@ -165,23 +163,44 @@ class LineBuilder {
       return Location.INTERIOR;
     return lbl.getLineLocation(geomIndex);
   }
-
-  //----  Maximal line extraction methods
   
   private void addResultLines() {
+    Collection<OverlayEdge> edges = graph.getEdges();
+    for (OverlayEdge edge : edges) {
+      if (! edge.isInResultLine()) continue;
+      if (edge.isVisited()) continue;
+      
+      lines.add( toLine( edge ));
+      edge.markVisitedBoth();
+    }
+  }
+  
+  private LineString toLine(OverlayEdge edge) {
+    boolean isForward = edge.isForward();
+    CoordinateList pts = new CoordinateList();
+    pts.add(edge.orig(), false);
+    edge.addCoordinates(pts);
+    
+    Coordinate[] ptsOut = pts.toCoordinateArray(isForward);
+    LineString line = geometryFactory.createLineString(ptsOut);
+    return line;
+  }
+  
+  //-----------------------------------------------
+  //----  Maximal line extraction logic
+  //-----------------------------------------------
+  /**
+   * NOT USED currently.
+   * Instead the raw noded edges are output.
+   * This matches the original overlay semantics.
+   * It is also faster.
+   */
+  /// FUTURE: enable merging via an option switch on OverlayNG
+  
+  private void addResultLinesMerged() {
     addResultLinesForNodes();
     addResultLinesRings();
   }
-  
-  /**
-   * FUTURE: To implement a strategy preserving input lines,
-   * the label must carry an id for each input LineString.
-   * The ids are zeroed out whenever two input edges are merged.
-   * Additional result nodes are created where there are changes in id
-   * at degree-2 nodes.
-   * (degree>=3 nodes must be kept as nodes to ensure 
-   * output linework is fully noded.
-   */
   
   private void addResultLinesForNodes() {
     Collection<OverlayEdge> edges = graph.getEdges();
@@ -236,8 +255,6 @@ class LineBuilder {
    * @return 
    */
   private LineString buildLine(OverlayEdge node) {
-    // assert: edgeStart degree = 1
-    // assert: edgeStart direction = forward
     CoordinateList pts = new CoordinateList();
     pts.add(node.orig(), false);
     

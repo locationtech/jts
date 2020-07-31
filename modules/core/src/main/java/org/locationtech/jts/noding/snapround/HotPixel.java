@@ -16,7 +16,6 @@ import org.locationtech.jts.algorithm.CGAlgorithmsDD;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.WKTWriter;
 
 /**
@@ -33,6 +32,10 @@ import org.locationtech.jts.io.WKTWriter;
  * <p>
  * The hot pixel operations are all computed in the integer domain
  * to avoid rounding problems.
+ * <p>
+ * Hot Pixels support being marked as nodes.
+ * This is used to prevent introducing nodes at line vertices
+ * which do not have other lines snapped to them.
  *
  * @version 1.7
  */
@@ -40,19 +43,22 @@ public class HotPixel
 {
   // testing only
 //  public static int nTests = 0;
+  
   private static double TOLERANCE = 0.5;
 
   private Coordinate ptHot;
   private Coordinate originalPt;
-
+  /**
+   * Indicates if this hot pixel must be a node in the output
+   */
+  private boolean isNode = false;
+  
   private double scaleFactor;
 
   private double minx;
   private double maxx;
   private double miny;
   private double maxy;
-  
-  private Envelope safeEnv = null;
 
   /**
    * Creates a new hot pixel, using a given scale factor.
@@ -106,6 +112,23 @@ public class HotPixel
     return 1.0 / scaleFactor;
   }
   
+  /**
+   * Tests whether this pixel has been marked as a node.
+   * 
+   * @return true if the pixel is marked as a node
+   */
+  public boolean isNode() {
+    return isNode;
+  }
+  
+  /**
+   * Sets this pixel to be a node.
+   */
+  public void setToNode() {
+    //System.out.println(this + " set to Node");
+    isNode = true;
+  }
+  
   private double scaleRound(double val)
   {
     return (double) Math.round(val * scaleFactor);
@@ -129,6 +152,25 @@ public class HotPixel
   private double scale(double val)
   {
     return val * scaleFactor;
+  }
+
+  /**
+   * Tests whether a coordinate lies in (intersects) this hot pixel.
+   * 
+   * @param p the coordinate to test
+   * @return true if the coordinate intersects this hot pixel
+   */
+  public boolean intersects(Coordinate p) {
+    double x = scale(p.x);
+    double y = scale(p.y);
+    if (x >= maxx) return false;
+    // check Left side
+    if (x < minx) return false;
+    // check Top side
+    if (y >= maxy) return false;
+    // check Bottom side
+    if (y < miny) return false;
+    return true;
   }
 
   /**

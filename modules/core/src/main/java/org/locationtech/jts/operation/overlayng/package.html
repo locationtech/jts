@@ -14,7 +14,8 @@ operations (boolean combinations) of input {@link Geometry}s.
 </p>
 <p>
 The {@link OverlayNG} class provides the standard Simple Features 
-boolean set-theoretic overlay operations, including:
+boolean set-theoretic overlay operations.
+These are:
 <ul>
 <li><b>Intersection</b> - all points which lie in both geometries</li>
 <li><b>Union</b> - all points which lie in at least one geometry</li>
@@ -34,7 +35,7 @@ in a topologically-valid way</li>
 </p>
 <p>
 <h2>Semantics</h2>
-The semantics of inputs are:
+The requirements for overlay input are:
 
 <ul>
 <li>Input geometries may have different dimension.</li>
@@ -50,13 +51,15 @@ The semantics of inputs are:
 </ul>
 
 <p>
-The semantics of operation output are:
+The semantics of overlay output are:
 
 <ul>
 <li>Results are always valid geometries. 
   In particular, result <code>MultiPolygon</code>s are valid.</li>
 <li>Repeated vertices are removed.</li>
-<li>Linear results are merged node-to-node (e.g. are of maximal length).</li>
+<li>Linear results include all nodes (endpoints) present in the input.
+  In some cases more nodes will be present.
+  (If merged lines are required see {@link LineMerger}.)</li>
 <li>Polygon edges which collapse completely due to rounding are not output.</li>
 <li>The <code>intersection</code> operation produces a homogeneous result. 
   The result contains the components of highest dimension in the intersection.
@@ -68,9 +71,9 @@ The semantics of operation output are:
   may produce a heterogeneous result if the inputs are of mixed dimension.</li>
 <li>Homogeneous results are output as <code>Multi</code> geometries.</li>
 <li>Heterogeneous results are output as a <code>GeometryCollection</code>
-  containing a set of atomic geometries.  This provides backwards compatibility
-  with the original JTS overlay implementation.
-  (However, this loses the information that the polygonal results 
+  containing a set of atomic geometries.  
+  (This provides backwards compatibility with the original overlay implementation.
+  However, it loses the information that the polygonal results 
   have valid <code>MultiPolygon</code> topology.)</li>
 <li>Empty results are atomic <code>EMPTY</code> geometries 
   of dimension appropriate to the operation.</li>
@@ -184,11 +187,11 @@ Other kinds of noder can be used as well (for instance, the full-precision nodin
   <li>Build result linework
     <ol>
     <li>Mark edges to be included in the result lines
-    <li>Construct node-to-node linework
+    <li>Extract edges as lines
     </ol>
-  <li>Build result points
+  <li>Build result points (certain intersection situations only)
     <ol>
-    <li>For intersection only, output point occur where the input touch at single points
+    <li>Output points occur where the inputs touch at single points
     </ol>
   <li>Collect result elements into the result geometry
   </ol>

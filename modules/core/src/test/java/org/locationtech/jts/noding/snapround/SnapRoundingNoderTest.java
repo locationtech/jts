@@ -64,7 +64,7 @@ public class SnapRoundingNoderTest  extends GeometryTestCase {
 
   public void testSlantAndHorizontalLineWithMiddleNode() {
     String wkt =      "MULTILINESTRING ((0.1565552 49.5277405, 0.1579285 49.5277405, 0.1593018 49.5277405), (0.1568985 49.5280838, 0.1589584 49.5273972))";
-    String expected = "MULTILINESTRING ((0.156555 49.527741, 0.157928 49.527741), (0.156899 49.528084, 0.157928 49.527741), (0.157928 49.527741, 0.157929 49.527741), (0.157928 49.527741, 0.158958 49.527397), (0.157929 49.527741, 0.159302 49.527741))";
+    String expected = "MULTILINESTRING ((0.156555 49.527741, 0.157928 49.527741), (0.156899 49.528084, 0.157928 49.527741), (0.157928 49.527741, 0.157929 49.527741, 0.159302 49.527741), (0.157928 49.527741, 0.158958 49.527397))";
     checkRounding(wkt, 1_000_000.0, expected);
   }
   
@@ -155,6 +155,12 @@ public class SnapRoundingNoderTest  extends GeometryTestCase {
     String wkt = "MULTILINESTRING (( 2.45167 48.96709, 2.45768 48.9731 ), (2.4526978 48.968811, 2.4537277 48.9691544, 2.4578476 48.9732742))";
     String expected = null;
     checkRounding(wkt, 100000, expected);
+  }
+  
+  public void testLoopBackCreatesNode() {
+    String wkt = "LINESTRING (2 2, 5 2, 8 4, 5 6, 4.8 2.3, 2 5)";
+    String expected = "MULTILINESTRING ((2 2, 5 2), (5 2, 8 4, 5 6, 5 2), (5 2, 2 5))";
+    checkRounding(wkt, 1, expected);
   }
   
   /**

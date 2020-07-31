@@ -464,7 +464,7 @@ public class OverlayNGTest extends GeometryTestCase {
   public void testLineUnion() {
     Geometry a = read("LINESTRING (0 0, 1 1)");
     Geometry b = read("LINESTRING (1 1, 2 2)");
-    Geometry expected = read("LINESTRING (0 0, 1 1, 2 2)");
+    Geometry expected = read("MULTILINESTRING ((0 0, 1 1), (1 1, 2 2))");
     Geometry actual = union(a, b, 1);
     checkEqual(expected, actual);
   }
@@ -496,7 +496,7 @@ public class OverlayNGTest extends GeometryTestCase {
   public void testLineFigure8Union() {
     Geometry a = read("LINESTRING (5 1, 2 2, 5 3, 2 4, 5 5)");
     Geometry b = read("LINESTRING (5 1, 8 2, 5 3, 8 4, 5 5)");
-    Geometry expected = read("MULTILINESTRING ((5 3, 2 2, 5 1, 8 2, 5 3), (5 3, 2 4, 5 5, 8 4, 5 3))");
+    Geometry expected = read("MULTILINESTRING ((5 1, 2 2, 5 3), (5 1, 8 2, 5 3), (5 3, 2 4, 5 5), (5 3, 8 4, 5 5))");
     Geometry actual = union(a, b, 1);
     checkEqual(expected, actual);
   }
@@ -504,7 +504,7 @@ public class OverlayNGTest extends GeometryTestCase {
   public void testLineRingUnion() {
     Geometry a = read("LINESTRING (1 1, 5 5, 9 1)");
     Geometry b = read("LINESTRING (1 1, 9 1)");
-    Geometry expected = read("LINESTRING (1 1, 5 5, 9 1, 1 1)");
+    Geometry expected = read("MULTILINESTRING ((1 1, 5 5, 9 1), (1 1, 9 1))");
     Geometry actual = union(a, b, 1);
     checkEqual(expected, actual);
   }
