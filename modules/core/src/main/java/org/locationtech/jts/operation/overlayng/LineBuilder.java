@@ -25,23 +25,26 @@ import org.locationtech.jts.geom.Location;
  * Finds and builds overlay result lines from the overlay graph.
  * Output linework has the following semantics:
  * <ol>
- * <li>Linework is fully noded
- * <li>Lines are as long as possible between nodes
+ * <li>Linework is fully noded</li>
+ * <li>Nodes in the input are preserved in the output</li>
+ * <li>Output may contain more nodes than in the input (in particular, 
+ * sequences of coincident line segments are noded at each vertex</li>
  * </ol>
  * 
  * Various strategies are possible for how to 
  * merge graph edges into lines.
- * This implementation uses the approach
- * of having output lines run contiguously from node to node.
+ * <ul>
+ * <li>This implementation uses the simplest approach of
+ * maintaining all nodes arising from noding (which includes
+ * all nodes in the input, and possibly others).
+ * This matches the current JTS overlay output semantics.</li>
+ * <li>Another option is to fully merge output lines
+ * from node to node.
  * For rings a node point is chosen arbitrarily.
- * <p>
- * Another possible strategy would be to preserve input linework 
- * as far as possible (i.e. any sections of input lines which are not 
- * coincident with other linework would be preserved).
- * <p>
  * It would also be possible to output LinearRings, 
  * if the input is a LinearRing and is unchanged.
- * This will require additional info from the input linework.
+ * This will require additional info from the input linework.</li>
+ * </ul>
  * 
  * @author Martin Davis
  *
