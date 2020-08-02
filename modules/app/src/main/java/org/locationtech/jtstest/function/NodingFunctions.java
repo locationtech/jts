@@ -31,6 +31,7 @@ import org.locationtech.jts.noding.FastNodingValidator;
 import org.locationtech.jts.noding.NodingIntersectionFinder;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ScaledNoder;
 import org.locationtech.jts.noding.SegmentStringUtil;
@@ -140,7 +141,7 @@ public class NodingFunctions
     List lines = LinearComponentExtracter.getLines(geom);
     for (Iterator i = lines.iterator(); i.hasNext(); ) {
       LineString line = (LineString) i.next();
-      segs.add(new BasicSegmentString(line.getCoordinates(), null));
+      segs.add(new NodedSegmentString(line.getCoordinates(), null));
     }
     return segs;
   }
