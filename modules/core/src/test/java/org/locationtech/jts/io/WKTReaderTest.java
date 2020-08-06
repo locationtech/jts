@@ -12,16 +12,27 @@
 
 package org.locationtech.jts.io;
 
-import org.locationtech.jts.geom.*;
+import java.util.EnumSet;
+import java.util.Locale;
+
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
-
-import java.util.EnumSet;
-import java.util.Locale;
 
 
 /**
@@ -29,14 +40,14 @@ import java.util.Locale;
  *
  * @version 1.7
  */
-public class WKTReaderTest extends TestCase {
+public class WKTReaderTest extends GeometryTestCase {
 
   // WKT readers used throughout this test
-  private final WKTReader reader2D;
-  private final WKTReader reader2DOld;
-  private final WKTReader reader3D;
-  private final WKTReader reader2DM;
-  private final WKTReader reader3DM;
+  private final WKTReader readerXY;
+  private final WKTReader readerXYOld;
+  private final WKTReader readerXYZ;
+  private final WKTReader readerXYM;
+  private final WKTReader readerXYZM;
 
   public static void main(String args[]) {
     TestRunner.run(suite());
@@ -45,35 +56,21 @@ public class WKTReaderTest extends TestCase {
   public WKTReaderTest(String name) {
     super(name);
 
-    reader2D = GeometryTestCase.getWKTReader(Ordinate.createXY(), 1d);
-    reader2D.setIsOldJtsCoordinateSyntaxAllowed(false);
-    reader2DOld = GeometryTestCase.getWKTReader(Ordinate.createXY(), 1d);
-    reader2DOld.setIsOldJtsCoordinateSyntaxAllowed(true);
-    reader3D = GeometryTestCase.getWKTReader(Ordinate.createXYZ(), 1d);
-    reader2DM = GeometryTestCase.getWKTReader(Ordinate.createXYM(), 1d);
-    reader3DM = GeometryTestCase.getWKTReader(Ordinate.createXYZM(), 1d);
+    readerXY = getWKTReader(Ordinate.createXY(), 1d);
+    readerXY.setIsOldJtsCoordinateSyntaxAllowed(false);
+    
+    readerXYOld = getWKTReader(Ordinate.createXY(), 1d);
+    // set this explicitly because GeometryTestCase default is false
+    readerXYOld.setIsOldJtsCoordinateSyntaxAllowed(true);
+
+    readerXYZ = getWKTReader(Ordinate.createXYZ(), 1d);
+    readerXYM = getWKTReader(Ordinate.createXYM(), 1d);
+    readerXYZM = getWKTReader(Ordinate.createXYZM(), 1d);
   }
 
   public static Test suite() { return new TestSuite(WKTReaderTest.class); }
 
-  public void testReadNaN() throws Exception {
-
-    // arrange
-    CoordinateSequence seq = createSequence(Ordinate.createXYZ(), new double[] {10, 10});
-    seq.setOrdinate(0, CoordinateSequence.Z, Double.NaN);
-
-    // act
-    Point pt1 = (Point)reader2DOld.read("POINT (10 10 NaN)");
-    Point pt2 = (Point)reader2DOld.read("POINT (10 10 nan)");
-    Point pt3 = (Point)reader2DOld.read("POINT (10 10 NAN)");
-
-    // assert
-    assertTrue(GeometryTestCase.checkEqual(seq, pt1.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seq, pt2.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seq, pt3.getCoordinateSequence()));
-  }
-
-  public void testReadPoint() throws Exception {
+  public void testPoint() throws Exception {
 
     // arrange
     double[] coordinates = new double[] {10, 10};
@@ -84,21 +81,21 @@ public class WKTReaderTest extends TestCase {
     CoordinateSequence seqPt3DM = createSequence(Ordinate.createXYZM(), coordinates);
 
     // act
-    Point pt2D = (Point) reader2D.read("POINT (10 10)");
-    Point pt2DE = (Point) reader2D.read("POINT EMPTY");
-    Point pt3D = (Point) reader3D.read("POINT Z(10 10 10)");
-    Point pt2DM = (Point) reader2DM.read("POINT M(10 10 11)");
-    Point pt3DM = (Point) reader3DM.read("POINT ZM(10 10 10 11)");
+    Point pt2D = (Point) readerXY.read("POINT (10 10)");
+    Point pt2DE = (Point) readerXY.read("POINT EMPTY");
+    Point pt3D = (Point) readerXYZ.read("POINT Z(10 10 10)");
+    Point pt2DM = (Point) readerXYM.read("POINT M(10 10 11)");
+    Point pt3DM = (Point) readerXYZM.read("POINT ZM(10 10 10 11)");
 
     // assert
-    assertTrue(GeometryTestCase.checkEqual(seqPt2D, pt2D.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqPt2DE, pt2DE.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqPt3D, pt3D.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqPt2DM, pt2DM.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqPt3DM, pt3DM.getCoordinateSequence()));
+    assertTrue(checkEqual(seqPt2D, pt2D.getCoordinateSequence()));
+    assertTrue(checkEqual(seqPt2DE, pt2DE.getCoordinateSequence()));
+    assertTrue(checkEqual(seqPt3D, pt3D.getCoordinateSequence()));
+    assertTrue(checkEqual(seqPt2DM, pt2DM.getCoordinateSequence()));
+    assertTrue(checkEqual(seqPt3DM, pt3DM.getCoordinateSequence()));
   }
 
-  public void testReadLineString() throws Exception {
+  public void testLineString() throws Exception {
 
     // arrange
     double[] coordinates = new double[] {10, 10, 20, 20, 30, 40};
@@ -109,26 +106,26 @@ public class WKTReaderTest extends TestCase {
     CoordinateSequence seqLs3DM = createSequence(Ordinate.createXYZM(), coordinates);
 
     // act
-    LineString ls2D = (LineString) reader2D
+    LineString ls2D = (LineString) readerXY
             .read("LINESTRING (10 10, 20 20, 30 40)");
-    LineString ls2DE = (LineString) reader2D
+    LineString ls2DE = (LineString) readerXY
             .read("LINESTRING EMPTY");
-    LineString ls3D = (LineString) reader3D
+    LineString ls3D = (LineString) readerXYZ
             .read("LINESTRING Z(10 10 10, 20 20 10, 30 40 10)");
-    LineString ls2DM = (LineString) reader2DM
+    LineString ls2DM = (LineString) readerXYM
             .read("LINESTRING M(10 10 11, 20 20 11, 30 40 11)");
-    LineString ls3DM = (LineString) reader3DM
+    LineString ls3DM = (LineString) readerXYZM
             .read("LINESTRING ZM(10 10 10 11, 20 20 10 11, 30 40 10 11)");
 
     // assert
-    assertTrue(GeometryTestCase.checkEqual(seqLs2D, ls2D.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqLs2DE, ls2DE.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqLs3D, ls3D.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqLs2DM, ls2DM.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqLs3DM, ls3DM.getCoordinateSequence()));
+    assertTrue(checkEqual(seqLs2D, ls2D.getCoordinateSequence()));
+    assertTrue(checkEqual(seqLs2DE, ls2DE.getCoordinateSequence()));
+    assertTrue(checkEqual(seqLs3D, ls3D.getCoordinateSequence()));
+    assertTrue(checkEqual(seqLs2DM, ls2DM.getCoordinateSequence()));
+    assertTrue(checkEqual(seqLs3DM, ls3DM.getCoordinateSequence()));
   }
 
-  public void testReadLinearRing() throws Exception {
+  public void testLinearRing() throws Exception {
 
     double[] coordinates = new double[] {10, 10, 20, 20, 30, 40, 10, 10};
     CoordinateSequence seqLs2D = createSequence(Ordinate.createXY(), coordinates);
@@ -138,26 +135,28 @@ public class WKTReaderTest extends TestCase {
     CoordinateSequence seqLs3DM = createSequence(Ordinate.createXYZM(), coordinates);
 
     // act
-    LineString ls2D = (LineString) reader2D
+    LineString ls2D = (LineString) readerXY
             .read("LINEARRING (10 10, 20 20, 30 40, 10 10)");
-    LineString ls2DE = (LineString) reader2D
+    LineString ls2DE = (LineString) readerXY
             .read("LINEARRING EMPTY");
-    LineString ls3D = (LineString) reader3D
+    LineString ls3D = (LineString) readerXYZ
             .read("LINEARRING Z(10 10 10, 20 20 10, 30 40 10, 10 10 10)");
-    LineString ls2DM = (LineString) reader2DM
+    LineString ls2DM = (LineString) readerXYM
             .read("LINEARRING M(10 10 11, 20 20 11, 30 40 11, 10 10 11)");
-    LineString ls3DM = (LineString) reader3DM
+    LineString ls3DM = (LineString) readerXYZM
             .read("LINEARRING ZM(10 10 10 11, 20 20 10 11, 30 40 10 11, 10 10 10 11)");
 
     // assert
-    assertTrue(GeometryTestCase.checkEqual(seqLs2D, ls2D.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqLs2DE, ls2DE.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqLs3D, ls3D.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqLs2DM, ls2DM.getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(seqLs3DM, ls3DM.getCoordinateSequence()));
+    assertTrue(checkEqual(seqLs2D, ls2D.getCoordinateSequence()));
+    assertTrue(checkEqual(seqLs2DE, ls2DE.getCoordinateSequence()));
+    assertTrue(checkEqual(seqLs3D, ls3D.getCoordinateSequence()));
+    assertTrue(checkEqual(seqLs2DM, ls2DM.getCoordinateSequence()));
+    assertTrue(checkEqual(seqLs3DM, ls3DM.getCoordinateSequence()));
+  }
 
+  public void testLinearRingNotClosed() {
     try {
-      reader2D.read("LINEARRING (10 10, 20 20, 30 40, 10 99)");
+      readerXY.read("LINEARRING (10 10, 20 20, 30 40, 10 99)");
       fail();
     }
     catch (Throwable e) {
@@ -166,7 +165,7 @@ public class WKTReaderTest extends TestCase {
     }
   }
 
-  public void testReadPolygon() throws Exception {
+  public void testPolygon() throws Exception {
     double[] shell = new double[] {10, 10, 10, 20, 20, 20, 20, 15, 10, 10};
     double[] ring1 = new double[] {11, 11, 12, 11, 12, 12, 12, 11, 11, 11};
     double[] ring2 = new double[] {11, 19, 11, 18, 12, 18, 12, 19, 11, 19};
@@ -189,199 +188,203 @@ public class WKTReaderTest extends TestCase {
             createSequence(Ordinate.createXYZM(), ring1),
             createSequence(Ordinate.createXYZM(), ring2)};
     
-    WKTReader rdr = reader2D;
+    WKTReader rdr = readerXY;
     Polygon[] poly2D = new Polygon[]{
             (Polygon) rdr.read("POLYGON ((10 10, 10 20, 20 20, 20 15, 10 10))"),
             (Polygon) rdr.read("POLYGON ((10 10, 10 20, 20 20, 20 15, 10 10), (11 11, 12 11, 12 12, 12 11, 11 11))"),
             (Polygon) rdr.read("POLYGON ((10 10, 10 20, 20 20, 20 15, 10 10), (11 11, 12 11, 12 12, 12 11, 11 11), (11 19, 11 18, 12 18, 12 19, 11 19))")
     };
     Polygon poly2DE = (Polygon) rdr.read("POLYGON EMPTY");
-    rdr =  reader3D;
+    rdr =  readerXYZ;
     Polygon[] poly3D = new Polygon[]{
             (Polygon) rdr.read("POLYGON Z((10 10 10, 10 20 10, 20 20 10, 20 15 10, 10 10 10))"),
             (Polygon) rdr.read("POLYGON Z((10 10 10, 10 20 10, 20 20 10, 20 15 10, 10 10 10), (11 11 10, 12 11 10, 12 12 10, 12 11 10, 11 11 10))"),
             (Polygon) rdr.read("POLYGON Z((10 10 10, 10 20 10, 20 20 10, 20 15 10, 10 10 10), (11 11 10, 12 11 10, 12 12 10, 12 11 10, 11 11 10), (11 19 10, 11 18 10, 12 18 10, 12 19 10, 11 19 10))")
     };
-    rdr =  reader2DM;
+    rdr =  readerXYM;
     Polygon[] poly2DM = new Polygon[]{
             (Polygon) rdr.read("POLYGON M((10 10 11, 10 20 11, 20 20 11, 20 15 11, 10 10 11))"),
             (Polygon) rdr.read("POLYGON M((10 10 11, 10 20 11, 20 20 11, 20 15 11, 10 10 11), (11 11 11, 12 11 11, 12 12 11, 12 11 11, 11 11 11))"),
             (Polygon) rdr.read("POLYGON M((10 10 11, 10 20 11, 20 20 11, 20 15 11, 10 10 11), (11 11 11, 12 11 11, 12 12 11, 12 11 11, 11 11 11), (11 19 11, 11 18 11, 12 18 11, 12 19 11, 11 19 11))")
     };
-    rdr =  reader3DM;
+    rdr =  readerXYZM;
     Polygon[] poly3DM = new Polygon[]{
             (Polygon) rdr.read("POLYGON ZM((10 10 10 11, 10 20 10 11, 20 20 10 11, 20 15 10 11, 10 10 10 11))"),
             (Polygon) rdr.read("POLYGON ZM((10 10 10 11, 10 20 10 11, 20 20 10 11, 20 15 10 11, 10 10 10 11), (11 11 10 11, 12 11 10 11, 12 12 10 11, 12 11 10 11, 11 11 10 11))"),
             (Polygon) rdr.read("POLYGON ZM((10 10 10 11, 10 20 10 11, 20 20 10 11, 20 15 10 11, 10 10 10 11), (11 11 10 11, 12 11 10 11, 12 12 10 11, 12 11 10 11, 11 11 10 11), (11 19 10 11, 11 18 10 11, 12 18 10 11, 12 19 10 11, 11 19 10 11))")
     };
     // assert
-    assertTrue(GeometryTestCase.checkEqual(csPoly2D[0], poly2D[2].getExteriorRing().getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly2D[1], poly2D[2].getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly2D[2], poly2D[2].getInteriorRingN(1).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly2DE, poly2DE.getExteriorRing().getCoordinateSequence(), 2));
+    assertTrue(checkEqual(csPoly2D[0], poly2D[2].getExteriorRing().getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly2D[1], poly2D[2].getInteriorRingN(0).getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly2D[2], poly2D[2].getInteriorRingN(1).getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly2DE, poly2DE.getExteriorRing().getCoordinateSequence(), 2));
 
-    assertTrue(GeometryTestCase.checkEqual(csPoly3D[0], poly3D[2].getExteriorRing().getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly3D[1], poly3D[2].getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly3D[2], poly3D[2].getInteriorRingN(1).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly2DM[0], poly2DM[2].getExteriorRing().getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly2DM[1], poly2DM[2].getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly2DM[2], poly2DM[2].getInteriorRingN(1).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly3DM[0], poly3DM[2].getExteriorRing().getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly3DM[1], poly3DM[2].getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly3DM[2], poly3DM[2].getInteriorRingN(1).getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly3D[0], poly3D[2].getExteriorRing().getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly3D[1], poly3D[2].getInteriorRingN(0).getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly3D[2], poly3D[2].getInteriorRingN(1).getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly2DM[0], poly2DM[2].getExteriorRing().getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly2DM[1], poly2DM[2].getInteriorRingN(0).getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly2DM[2], poly2DM[2].getInteriorRingN(1).getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly3DM[0], poly3DM[2].getExteriorRing().getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly3DM[1], poly3DM[2].getInteriorRingN(0).getCoordinateSequence()));
+    assertTrue(checkEqual(csPoly3DM[2], poly3DM[2].getInteriorRingN(1).getCoordinateSequence()));
   }
 
-  public void testReadMultiPoint() throws Exception {
-
-    // arrange
-    double[][] coordinates = new double[][] { new double[] {10, 10}, new double[] {20, 20}};
-    CoordinateSequence[] csMP2D = new CoordinateSequence[] {
-            createSequence(Ordinate.createXY(), coordinates[0]),
-            createSequence(Ordinate.createXY(), coordinates[1])};
-    CoordinateSequence[] csMP3D = new CoordinateSequence[] {
-            createSequence(Ordinate.createXYZ(), coordinates[0]),
-            createSequence(Ordinate.createXYZ(), coordinates[1])};
-    CoordinateSequence[] csMP2DM = new CoordinateSequence[] {
-            createSequence(Ordinate.createXYM(), coordinates[0]),
-            createSequence(Ordinate.createXYM(), coordinates[1])};
-    CoordinateSequence[] csMP3DM = new CoordinateSequence[] {
-            createSequence(Ordinate.createXYZM(), coordinates[0]),
-            createSequence(Ordinate.createXYZM(), coordinates[1])};
-
-    // act
-    WKTReader rdr = reader2D;
-    MultiPoint mP2D = (MultiPoint) rdr.read("MULTIPOINT ((10 10), (20 20))");
-    MultiPoint mP2DE = (MultiPoint) rdr.read("MULTIPOINT EMPTY");
-    rdr =  reader3D;
-    MultiPoint mP3D = (MultiPoint) rdr.read("MULTIPOINT Z((10 10 10), (20 20 10))");
-    rdr =  reader2DM;
-    MultiPoint mP2DM = (MultiPoint) rdr.read("MULTIPOINT M((10 10 11), (20 20 11))");
-    rdr =  reader3DM;
-    MultiPoint mP3DM = (MultiPoint) rdr.read("MULTIPOINT ZM((10 10 10 11), (20 20 10 11))");
-
-    // assert
-    assertTrue(GeometryTestCase.checkEqual(csMP2D[0], ((Point)mP2D.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMP2D[1], ((Point)mP2D.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(mP2DE.isEmpty());
-    assertTrue(mP2DE.getNumGeometries() == 0);
-    assertTrue(GeometryTestCase.checkEqual(csMP3D[0], ((Point)mP3D.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMP3D[1], ((Point)mP3D.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMP2DM[0], ((Point)mP2DM.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMP2DM[1], ((Point)mP2DM.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMP3DM[0], ((Point)mP3DM.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMP3DM[1], ((Point)mP3DM.getGeometryN(1)).getCoordinateSequence()));
+  static double[][] mpCoords = new double[][] { 
+    new double[] {10, 10}, 
+    new double[] {20, 20}};
+  
+  public void testMultiPointXY() throws Exception {
+    MultiPoint mp = (MultiPoint) readerXY.read("MULTIPOINT ((10 10), (20 20))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXY(), mpCoords);
+    checkCS(cs[0], mp.getGeometryN(0));
+    checkCS(cs[1], mp.getGeometryN(1));
+  }
+  
+  public void testMultiPointXYOldSyntax() throws Exception {
+    MultiPoint mp = (MultiPoint) readerXY.read("MULTIPOINT (10 10, 20 20)");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXY(), mpCoords);
+    checkCS(cs[0], mp.getGeometryN(0));
+    checkCS(cs[1], mp.getGeometryN(1));
+  }
+    
+  public void testMultiPointXY_Empty() throws Exception {
+    MultiPoint mp = (MultiPoint) readerXY.read("MULTIPOINT EMPTY");
+    checkEmpty(mp);
+  }
+  
+  public void testMultiPointXY_WithEmpty() throws Exception {
+    MultiPoint mp = (MultiPoint) readerXY.read("MULTIPOINT ((10 10), EMPTY, (20 20))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXY(), mpCoords);
+    checkCS(cs[0], mp.getGeometryN(0));
+    checkEmpty(mp.getGeometryN(1));
+    checkCS(cs[1], mp.getGeometryN(2));
   }
 
-  public void testReadMultiLineString() throws Exception {
-
-    // arrange
-    double[][] coordinates = new double[][] { new double[] {10, 10, 20, 20}, new double[] {15, 15, 30, 15}};
-    CoordinateSequence[] csMls2D = new CoordinateSequence[] {
-            createSequence(Ordinate.createXY(), coordinates[0]),
-            createSequence(Ordinate.createXY(), coordinates[1])};
-    CoordinateSequence[] csMls3D = new CoordinateSequence[] {
-            createSequence(Ordinate.createXYZ(), coordinates[0]),
-            createSequence(Ordinate.createXYZ(), coordinates[1])};
-    CoordinateSequence[] csMls2DM = new CoordinateSequence[] {
-            createSequence(Ordinate.createXYM(), coordinates[0]),
-            createSequence(Ordinate.createXYM(), coordinates[1])};
-    CoordinateSequence[] csMls3DM = new CoordinateSequence[] {
-            createSequence(Ordinate.createXYZM(), coordinates[0]),
-            createSequence(Ordinate.createXYZM(), coordinates[1])};
-
-    // act
-    WKTReader rdr = reader2D;
-    MultiLineString mLs2D = (MultiLineString) rdr.read("MULTILINESTRING ((10 10, 20 20), (15 15, 30 15))");
-    MultiLineString mLs2DE = (MultiLineString) rdr.read("MULTILINESTRING EMPTY");
-    rdr =  reader3D;
-    MultiLineString mLs3D = (MultiLineString) rdr.read("MULTILINESTRING Z((10 10 10, 20 20 10), (15 15 10, 30 15 10))");
-    rdr = reader2DM;
-    MultiLineString mLs2DM = (MultiLineString) rdr.read("MULTILINESTRING M((10 10 11, 20 20 11), (15 15 11, 30 15 11))");
-    rdr = reader3DM;
-    MultiLineString mLs3DM = (MultiLineString) rdr.read("MULTILINESTRING ZM((10 10 10 11, 20 20 10 11), (15 15 10 11, 30 15 10 11))");
-
-    // assert
-    assertTrue(GeometryTestCase.checkEqual(csMls2D[0], ((LineString)mLs2D.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMls2D[1], ((LineString)mLs2D.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(mLs2DE.isEmpty());
-    assertTrue(mLs2DE.getNumGeometries() == 0);
-    assertTrue(GeometryTestCase.checkEqual(csMls3D[0], ((LineString)mLs3D.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMls3D[1], ((LineString)mLs3D.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMls2DM[0], ((LineString)mLs2DM.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMls2DM[1], ((LineString)mLs2DM.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMls3DM[0], ((LineString)mLs3DM.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csMls3DM[1], ((LineString)mLs3DM.getGeometryN(1)).getCoordinateSequence()));
+  public void testMultiPointXYM() throws Exception {
+    MultiPoint mp = (MultiPoint) readerXYM.read("MULTIPOINT M((10 10 11), (20 20 11))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXYM(), mpCoords);
+    checkCS(cs[0], mp.getGeometryN(0));
+    checkCS(cs[1], mp.getGeometryN(1));
   }
 
-  public void testReadMultiPolygon() throws Exception {
-
-    double[] shell1 = new double[] {10, 10, 10, 20, 20, 20, 20, 15, 10, 10};
-    double[] ring1 = new double[] {11, 11, 12, 11, 12, 12, 12, 11, 11, 11};
-    double[] shell2 = new double[] {60, 60, 70, 70, 80, 60, 60, 60};
-
-    CoordinateSequence[] csPoly2D = new CoordinateSequence[] {
-            createSequence(Ordinate.createXY(), shell1),
-            createSequence(Ordinate.createXY(), ring1),
-            createSequence(Ordinate.createXY(), shell2)};
-    CoordinateSequence[] csPoly3D = new CoordinateSequence[] {
-            createSequence(Ordinate.createXYZ(), shell1),
-            createSequence(Ordinate.createXYZ(), ring1),
-            createSequence(Ordinate.createXYZ(), shell2)};
-    CoordinateSequence[] csPoly2DM = new CoordinateSequence[] {
-            createSequence(Ordinate.createXYM(), shell1),
-            createSequence(Ordinate.createXYM(), ring1),
-            createSequence(Ordinate.createXYM(), shell2)};
-    CoordinateSequence[] csPoly3DM = new CoordinateSequence[] {
-            createSequence(Ordinate.createXYZM(), shell1),
-            createSequence(Ordinate.createXYZM(), ring1),
-            createSequence(Ordinate.createXYZM(), shell2)};
-
-    WKTReader rdr = reader2D;
-    MultiPolygon[] poly2D = new MultiPolygon[]{
-            (MultiPolygon) rdr.read("MULTIPOLYGON (((10 10, 10 20, 20 20, 20 15, 10 10)))"),
-            (MultiPolygon) rdr.read("MULTIPOLYGON (((10 10, 10 20, 20 20, 20 15, 10 10), (11 11, 12 11, 12 12, 12 11, 11 11)))"),
-            (MultiPolygon) rdr.read("MULTIPOLYGON (((10 10, 10 20, 20 20, 20 15, 10 10), (11 11, 12 11, 12 12, 12 11, 11 11)), ((60 60, 70 70, 80 60, 60 60)))")
-    };
-    MultiPolygon poly2DE = (MultiPolygon) rdr.read("MULTIPOLYGON EMPTY");
-    rdr =  reader3D;
-    MultiPolygon[] poly3D = new MultiPolygon[]{
-            (MultiPolygon) rdr.read("MULTIPOLYGON Z(((10 10 10, 10 20 10, 20 20 10, 20 15 10, 10 10 10)))"),
-            (MultiPolygon) rdr.read("MULTIPOLYGON Z(((10 10 10, 10 20 10, 20 20 10, 20 15 10, 10 10 10), (11 11 10, 12 11 10, 12 12 10, 12 11 10, 11 11 10)))"),
-            (MultiPolygon) rdr.read("MULTIPOLYGON Z(((10 10 10, 10 20 10, 20 20 10, 20 15 10, 10 10 10), (11 11 10, 12 11 10, 12 12 10, 12 11 10, 11 11 10)), ((60 60 10, 70 70 10, 80 60 10, 60 60 10)))")
-    };
-    MultiPolygon[] poly2DM = new MultiPolygon[]{
-            (MultiPolygon) rdr.read("MULTIPOLYGON M(((10 10 11, 10 20 11, 20 20 11, 20 15 11, 10 10 11)))"),
-            (MultiPolygon) rdr.read("MULTIPOLYGON M(((10 10 11, 10 20 11, 20 20 11, 20 15 11, 10 10 11), (11 11 11, 12 11 11, 12 12 11, 12 11 11, 11 11 11)))"),
-            (MultiPolygon) rdr.read("MULTIPOLYGON M(((10 10 11, 10 20 11, 20 20 11, 20 15 11, 10 10 11), (11 11 11, 12 11 11, 12 12 11, 12 11 11, 11 11 11)), ((60 60 11, 70 70 11, 80 60 11, 60 60 11)))")
-    };
-    rdr =  reader3DM;
-    MultiPolygon[] poly3DM = new MultiPolygon[]{
-            (MultiPolygon) rdr.read("MULTIPOLYGON ZM(((10 10 10 11, 10 20 10 11, 20 20 10 11, 20 15 10 11, 10 10 10 11)))"),
-            (MultiPolygon) rdr.read("MULTIPOLYGON ZM(((10 10 10 11, 10 20 10 11, 20 20 10 11, 20 15 10 11, 10 10 10 11), (11 11 10 11, 12 11 10 11, 12 12 10 11, 12 11 10 11, 11 11 10 11)))"),
-            (MultiPolygon) rdr.read("MULTIPOLYGON ZM(((10 10 10 11, 10 20 10 11, 20 20 10 11, 20 15 10 11, 10 10 10 11), (11 11 10 11, 12 11 10 11, 12 12 10 11, 12 11 10 11, 11 11 10 11)), ((60 60 10 11, 70 70 10 11, 80 60 10 11, 60 60 10 11)))")
-    };
-
-    // assert
-    assertTrue(GeometryTestCase.checkEqual(csPoly2D[0], ((Polygon)poly2D[2].getGeometryN(0)).getExteriorRing().getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly2D[1], ((Polygon)poly2D[2].getGeometryN(0)).getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly2D[2], ((Polygon)poly2D[2].getGeometryN(1)).getExteriorRing().getCoordinateSequence()));
-    assertTrue(poly2DE.isEmpty());
-    assertTrue(poly2DE.getNumGeometries() == 0);
-
-    assertTrue(GeometryTestCase.checkEqual(csPoly3D[0],((Polygon)poly3D[2].getGeometryN(0)).getExteriorRing().getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly3D[1], ((Polygon)poly3D[2].getGeometryN(0)).getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly3D[2], ((Polygon)poly3D[2].getGeometryN(1)).getExteriorRing().getCoordinateSequence()));
-
-    assertTrue(GeometryTestCase.checkEqual(csPoly2DM[0], ((Polygon)poly2DM[2].getGeometryN(0)).getExteriorRing().getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly2DM[1], ((Polygon)poly2DM[2].getGeometryN(0)).getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly2DM[2], ((Polygon)poly2DM[2].getGeometryN(1)).getExteriorRing().getCoordinateSequence()));
-
-    assertTrue(GeometryTestCase.checkEqual(csPoly3DM[0], ((Polygon)poly3DM[2].getGeometryN(0)).getExteriorRing().getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly3DM[1], ((Polygon)poly3DM[2].getGeometryN(0)).getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(csPoly3DM[2], ((Polygon)poly3DM[2].getGeometryN(1)).getExteriorRing().getCoordinateSequence()));
+  public void testMultiPointXYZ() throws Exception {
+    MultiPoint mp = (MultiPoint) readerXYZ.read("MULTIPOINT Z((10 10 10), (20 20 10))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXYZ(), mpCoords);
+    checkCS(cs[0], mp.getGeometryN(0));
+    checkCS(cs[1], mp.getGeometryN(1));
   }
 
-  public void testReadGeometryCollection() throws Exception {
+  public void testMultiPointXYZM() throws Exception {
+    MultiPoint mp = (MultiPoint) readerXYZM.read("MULTIPOINT ZM((10 10 10 11), (20 20 10 11))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXYZM(), mpCoords);
+    checkCS(cs[0], mp.getGeometryN(0));
+    checkCS(cs[1], mp.getGeometryN(1));
+  }
+
+  double[][] mLcoords = new double[][] { 
+    new double[] {10, 10, 20, 20}, 
+    new double[] {15, 15, 30, 15}};
+
+  public void testMultiLineStringXY() throws Exception {
+    MultiLineString mp = (MultiLineString) readerXY.read("MULTILINESTRING ((10 10, 20 20), (15 15, 30 15))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXY(), mLcoords);
+    checkCS(cs[0], mp.getGeometryN(0));
+    checkCS(cs[1], mp.getGeometryN(1));
+  }
+  
+  public void testMultiLineStringXY_Empty() throws Exception {
+    MultiLineString mp = (MultiLineString) readerXY.read("MULTILINESTRING EMPTY");
+    checkEmpty(mp);
+  }
+  
+  public void testMultiLineStringXY_WithEmpty() throws Exception {
+    MultiLineString mp = (MultiLineString) readerXY.read("MULTILINESTRING ((10 10, 20 20), EMPTY, (15 15, 30 15))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXY(), mLcoords);
+    checkCS(cs[0], mp.getGeometryN(0));
+    checkEmpty(mp.getGeometryN(1));
+    checkCS(cs[1], mp.getGeometryN(2));
+  }
+
+  public void testMultiLineStringXYM() throws Exception {
+    MultiLineString mp = (MultiLineString) readerXYM.read("MULTILINESTRING M((10 10 11, 20 20 11), (15 15 11, 30 15 11))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXYM(), mLcoords);
+    checkCS(cs[0], mp.getGeometryN(0));
+    checkCS(cs[1], mp.getGeometryN(1));
+  }
+
+  public void testMultiLineStringXYZ() throws Exception {
+    MultiLineString mp = (MultiLineString) readerXYZ.read("MULTILINESTRING Z((10 10 10, 20 20 10), (15 15 10, 30 15 10))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXYZ(), mLcoords);
+    checkCS(cs[0], mp.getGeometryN(0));
+    checkCS(cs[1], mp.getGeometryN(1));
+  }
+
+  public void testMultiLineStringYZM() throws Exception {
+    MultiLineString mp = (MultiLineString) readerXYZM.read("MULTILINESTRING ZM((10 10 10 11, 20 20 10 11), (15 15 10 11, 30 15 10 11))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXYZM(), mLcoords);
+    checkCS(cs[0], mp.getGeometryN(0));
+    checkCS(cs[1], mp.getGeometryN(1));
+  }
+
+  double[][] mAcoords = new double[][] { 
+    new double[] {10, 10, 10, 20, 20, 20, 20, 15, 10, 10}, 
+    new double[] {11, 11, 12, 11, 12, 12, 12, 11, 11, 11},
+    new double[] {60, 60, 70, 70, 80, 60, 60, 60}
+    };
+
+  public void testMultiPolygonXY() throws Exception {
+    MultiPolygon mp = (MultiPolygon) readerXY.read(
+        "MULTIPOLYGON (((10 10, 10 20, 20 20, 20 15, 10 10), (11 11, 12 11, 12 12, 12 11, 11 11)), ((60 60, 70 70, 80 60, 60 60)))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXY(), mAcoords);
+    checkCS(cs[0], ((Polygon)mp.getGeometryN(0)).getExteriorRing());
+    checkCS(cs[1], ((Polygon)mp.getGeometryN(0)).getInteriorRingN(0));
+    checkCS(cs[2], ((Polygon)mp.getGeometryN(1)).getExteriorRing());
+  }
+  
+  public void testMultiPolygonXY_Empty() throws Exception {
+    MultiPolygon mp = (MultiPolygon) readerXY.read("MULTIPOLYGON EMPTY");
+    checkEmpty(mp);
+  }
+  
+  public void testMultiPolygonXY_WithEmpty() throws Exception {
+    MultiPolygon mp = (MultiPolygon) readerXY.read(
+        "MULTIPOLYGON (((10 10, 10 20, 20 20, 20 15, 10 10), (11 11, 12 11, 12 12, 12 11, 11 11)), EMPTY, ((60 60, 70 70, 80 60, 60 60)))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXY(), mAcoords);
+    checkCS(cs[0], ((Polygon)mp.getGeometryN(0)).getExteriorRing());
+    checkCS(cs[1], ((Polygon)mp.getGeometryN(0)).getInteriorRingN(0));
+    checkEmpty(((Polygon)mp.getGeometryN(1)));
+    checkCS(cs[2], ((Polygon)mp.getGeometryN(2)).getExteriorRing());
+  }
+
+  public void testMultiPolygonXYM() throws Exception {
+    MultiPolygon mp = (MultiPolygon) readerXYM.read(
+        "MULTIPOLYGON M(((10 10 11, 10 20 11, 20 20 11, 20 15 11, 10 10 11), (11 11 11, 12 11 11, 12 12 11, 12 11 11, 11 11 11)), ((60 60 11, 70 70 11, 80 60 11, 60 60 11)))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXYM(), mAcoords);
+    checkCS(cs[0], ((Polygon)mp.getGeometryN(0)).getExteriorRing());
+    checkCS(cs[1], ((Polygon)mp.getGeometryN(0)).getInteriorRingN(0));
+    checkCS(cs[2], ((Polygon)mp.getGeometryN(1)).getExteriorRing());
+  }
+
+  public void testMultiPolygonXYZ() throws Exception {
+    MultiPolygon mp = (MultiPolygon) readerXYZ.read(
+        "MULTIPOLYGON Z(((10 10 10, 10 20 10, 20 20 10, 20 15 10, 10 10 10), (11 11 10, 12 11 10, 12 12 10, 12 11 10, 11 11 10)), ((60 60 10, 70 70 10, 80 60 10, 60 60 10)))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXYZ(), mAcoords);
+    checkCS(cs[0], ((Polygon)mp.getGeometryN(0)).getExteriorRing());
+    checkCS(cs[1], ((Polygon)mp.getGeometryN(0)).getInteriorRingN(0));
+    checkCS(cs[2], ((Polygon)mp.getGeometryN(1)).getExteriorRing());
+  }
+
+  public void testMultiPolygonYZM() throws Exception {
+    MultiPolygon mp = (MultiPolygon) readerXYZM.read(
+        "MULTIPOLYGON ZM(((10 10 10 11, 10 20 10 11, 20 20 10 11, 20 15 10 11, 10 10 10 11), (11 11 10 11, 12 11 10 11, 12 12 10 11, 12 11 10 11, 11 11 10 11)), ((60 60 10 11, 70 70 10 11, 80 60 10 11, 60 60 10 11)))");
+    CoordinateSequence[] cs = createSequences(Ordinate.createXYZM(), mAcoords);
+    checkCS(cs[0], ((Polygon)mp.getGeometryN(0)).getExteriorRing());
+    checkCS(cs[1], ((Polygon)mp.getGeometryN(0)).getInteriorRingN(0));
+    checkCS(cs[2], ((Polygon)mp.getGeometryN(1)).getExteriorRing());
+  }
+
+  public void testGeometryCollection() throws Exception {
 
     // arrange
     double[][] coordinates = new double[][] { new double[] {10, 10}, new double[] {30, 30},
@@ -396,26 +399,43 @@ public class WKTReaderTest extends TestCase {
     };
 
     // arrange
-    WKTReader rdr = GeometryTestCase.getWKTReader(Ordinate.createXY(), 1);
+    WKTReader rdr = getWKTReader(Ordinate.createXY(), 1);
     GeometryCollection gc0 = (GeometryCollection)rdr.read("GEOMETRYCOLLECTION (POINT (10 10), POINT (30 30), LINESTRING (15 15, 20 20))");
     GeometryCollection gc1 = (GeometryCollection)rdr.read("GEOMETRYCOLLECTION (POINT (10 10), LINEARRING EMPTY, LINESTRING (15 15, 20 20))");
     GeometryCollection gc2 = (GeometryCollection)rdr.read("GEOMETRYCOLLECTION (POINT (10 10), LINEARRING (10 10, 20 20, 30 40, 10 10), LINESTRING (15 15, 20 20))");
     GeometryCollection gc3 = (GeometryCollection)rdr.read("GEOMETRYCOLLECTION EMPTY");
 
     // assert
-    assertTrue(GeometryTestCase.checkEqual(css[0], ((Point)gc0.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(css[1], ((Point)gc0.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(css[2], ((LineString)gc0.getGeometryN(2)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(css[0], ((Point)gc1.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(css[3], ((LinearRing)gc1.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(css[2], ((LineString)gc1.getGeometryN(2)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(css[0], ((Point)gc2.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(css[4], ((LinearRing)gc2.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(GeometryTestCase.checkEqual(css[2], ((LineString)gc2.getGeometryN(2)).getCoordinateSequence()));
+    assertTrue(checkEqual(css[0], ((Point)gc0.getGeometryN(0)).getCoordinateSequence()));
+    assertTrue(checkEqual(css[1], ((Point)gc0.getGeometryN(1)).getCoordinateSequence()));
+    assertTrue(checkEqual(css[2], ((LineString)gc0.getGeometryN(2)).getCoordinateSequence()));
+    assertTrue(checkEqual(css[0], ((Point)gc1.getGeometryN(0)).getCoordinateSequence()));
+    assertTrue(checkEqual(css[3], ((LinearRing)gc1.getGeometryN(1)).getCoordinateSequence()));
+    assertTrue(checkEqual(css[2], ((LineString)gc1.getGeometryN(2)).getCoordinateSequence()));
+    assertTrue(checkEqual(css[0], ((Point)gc2.getGeometryN(0)).getCoordinateSequence()));
+    assertTrue(checkEqual(css[4], ((LinearRing)gc2.getGeometryN(1)).getCoordinateSequence()));
+    assertTrue(checkEqual(css[2], ((LineString)gc2.getGeometryN(2)).getCoordinateSequence()));
     assertTrue(gc3.isEmpty());
   }
 
-  public void testReadLargeNumbers() throws Exception {
+  public void testNaN() throws Exception {
+
+    // arrange
+    CoordinateSequence seq = createSequence(Ordinate.createXYZ(), new double[] {10, 10});
+    seq.setOrdinate(0, CoordinateSequence.Z, Double.NaN);
+
+    // act
+    Point pt1 = (Point)readerXYOld.read("POINT (10 10 NaN)");
+    Point pt2 = (Point)readerXYOld.read("POINT (10 10 nan)");
+    Point pt3 = (Point)readerXYOld.read("POINT (10 10 NAN)");
+
+    // assert
+    assertTrue(checkEqual(seq, pt1.getCoordinateSequence()));
+    assertTrue(checkEqual(seq, pt2.getCoordinateSequence()));
+    assertTrue(checkEqual(seq, pt3.getCoordinateSequence()));
+  }
+
+  public void testLargeNumbers() throws Exception {
     PrecisionModel precisionModel = new PrecisionModel(1E9);
     GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
     WKTReader reader = new WKTReader(geometryFactory);
@@ -429,12 +449,38 @@ public class WKTReaderTest extends TestCase {
       Locale original = Locale.getDefault();
       try {
           Locale.setDefault(Locale.forLanguageTag("tr"));
-          Point point = (Point) reader2D.read("point (10 20)");
+          Point point = (Point) readerXY.read("point (10 20)");
           assertEquals(10.0, point.getX(), 1E-7);
           assertEquals(20.0, point.getY(), 1E-7);
       } finally {
           Locale.setDefault(original);
       }
+  }
+  
+
+  private void checkCS(CoordinateSequence cs, Geometry geom) {
+    assertTrue( checkEqual( cs, extractCS(geom)));
+  }
+
+  private CoordinateSequence extractCS(Geometry geom) {
+    if (geom instanceof Point) return ((Point)geom).getCoordinateSequence();
+    if (geom instanceof LineString) return ((LineString)geom).getCoordinateSequence();
+    throw new IllegalArgumentException("Can't extract coordinate sequence from geometry of type " + geom.getGeometryType());
+  }
+  
+  private void checkEmpty(Geometry geom) {
+    assertTrue(geom.isEmpty());
+    if (geom instanceof GeometryCollection) {
+      assertTrue(geom.getNumGeometries() == 0);
+    }
+  }
+  
+  private static CoordinateSequence[] createSequences(EnumSet<Ordinate> ordinateFlags, double[][] xyarray) {
+    CoordinateSequence[] csarray = new CoordinateSequence[xyarray.length];
+    for (int i = 0; i < xyarray.length; i++) {
+      csarray[i] = createSequence(ordinateFlags, xyarray[i]);
+    }
+    return csarray;
   }
 
   private static CoordinateSequence createSequence(EnumSet<Ordinate> ordinateFlags, double[] xy) {
@@ -452,7 +498,7 @@ public class WKTReaderTest extends TestCase {
     int size = ordinateValues.length / dimension;
 
     // create a sequence capable of storing all ordinate values.
-    CoordinateSequence res = GeometryTestCase.getCSFactory(ordinateFlags)
+    CoordinateSequence res = getCSFactory(ordinateFlags)
             .create(size, requiredDimension(ordinateFlags));
 
     // fill in values
