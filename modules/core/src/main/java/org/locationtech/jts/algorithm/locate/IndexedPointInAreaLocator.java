@@ -79,11 +79,7 @@ public class IndexedPointInAreaLocator
    */
   public int locate(Coordinate p)
   {
-    if (index == null) {
-      index = new IntervalIndexedGeometry(geom);
-      // no need to hold onto geom
-      geom = null;
-    }
+    createIndex();
     RayCrossingCounter rcc = new RayCrossingCounter(p);
     
     SegmentVisitor visitor = new SegmentVisitor(rcc);
@@ -96,6 +92,17 @@ public class IndexedPointInAreaLocator
     */
     
     return rcc.getLocation();
+  }
+
+  /**
+   * Creates the indexed geometry, creating it if necessary.
+   */
+  private synchronized void createIndex() {
+    if (index == null) {
+      index = new IntervalIndexedGeometry(geom);
+      // no need to hold onto geom
+      geom = null;
+    }
   }
   
   private static class SegmentVisitor
