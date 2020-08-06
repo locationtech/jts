@@ -79,7 +79,9 @@ public class IndexedPointInAreaLocator
    */
   public int locate(Coordinate p)
   {
-    createIndex();
+    // avoid calling synchronized method improves performance
+    if (index == null) createIndex();
+    
     RayCrossingCounter rcc = new RayCrossingCounter(p);
     
     SegmentVisitor visitor = new SegmentVisitor(rcc);
