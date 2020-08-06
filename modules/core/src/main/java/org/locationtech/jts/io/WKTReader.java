@@ -889,8 +889,35 @@ S   */
    */
   private MultiPoint readMultiPointText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException
   {
+    String nextToken = getNextEmptyOrOpener(tokenizer);
+    if (nextToken.equals(WKTConstants.EMPTY)) {
+      return geometryFactory.createMultiPoint(new Point[0]);
+    }
+    
+    // check for old-style JTS syntax and parse it if present
+    // MD 2009-02-21 - this is only provided for backwards compatibility for a few versions
+    if (ALLOW_OLD_JTS_MULTIPOINT_SYNTAX) {
+      String nextWord = lookAheadWord(tokenizer);
+      if (nextWord != L_PAREN) {
+        return geometryFactory.createMultiPoint(getCoordinateSequence(tokenizer, ordinateFlags, this.isAllowOldJtsMultipointSyntax));
+      }
+    }
+    
+    ArrayList points = new ArrayList();
+    Point point = readPointText(tokenizer, ordinateFlags);
+    points.add(point);
+    nextToken = getNextCloserOrComma(tokenizer);
+    while (nextToken.equals(COMMA)) {
+      point = readPointText(tokenizer, ordinateFlags);
+      points.add(point);
+      nextToken = getNextCloserOrComma(tokenizer);
+    }
+    Point[] array = new Point[points.size()];
+    return geometryFactory.createMultiPoint((Point[]) points.toArray(array));
+    /*
     return geometryFactory.createMultiPoint(
             getCoordinateSequence(tokenizer, ordinateFlags, this.isAllowOldJtsMultipointSyntax));
+            */
   }
 
 
