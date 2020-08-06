@@ -27,17 +27,17 @@ Distributions for older JTS versions can be obtained at the
 
 * Add `WKBReader` and `WKBWriter` support for `POINT EMPTY` (#567)
 
+### Bug Fixes
+
+* Fix `IndexedPointInAreaLocator` thread-safety (#572)
+* Fix `WKTReader` to handle MultiPoints containing EMPTY (#575)
+
 ## JTS TestRunner
 
 ### Functionality Improvements
 
 * Enhance `-geomfunc` to load multiple function classes
 * Fix function registry to replace matching loaded functions (#569)
-
-### Bug Fixes
-
-* Fix `IndexedPointInAreaLocator` thread-safety (#572)
-* Fix `WKTReader` to handle MultiPoints containing EMPTY (#575)
 
 <!-- ================================================================ -->
 
