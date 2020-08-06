@@ -37,6 +37,7 @@ Distributions for older JTS versions can be obtained at the
 ### Bug Fixes
 
 * Fix `IndexedPointInAreaLocator` thread-safety (#572)
+* Fix `WKTReader` to handle MultiPoints containing EMPTY (#575)
 
 <!-- ================================================================ -->
 
