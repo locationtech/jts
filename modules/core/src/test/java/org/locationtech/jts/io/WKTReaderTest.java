@@ -58,8 +58,11 @@ public class WKTReaderTest extends GeometryTestCase {
 
     readerXY = getWKTReader(Ordinate.createXY(), 1d);
     readerXY.setIsOldJtsCoordinateSyntaxAllowed(false);
+    
     readerXYOld = getWKTReader(Ordinate.createXY(), 1d);
+    // set this explicitly because GeometryTestCase default is false
     readerXYOld.setIsOldJtsCoordinateSyntaxAllowed(true);
+
     readerXYZ = getWKTReader(Ordinate.createXYZ(), 1d);
     readerXYM = getWKTReader(Ordinate.createXYM(), 1d);
     readerXYZM = getWKTReader(Ordinate.createXYZM(), 1d);
@@ -231,13 +234,20 @@ public class WKTReaderTest extends GeometryTestCase {
     new double[] {10, 10}, 
     new double[] {20, 20}};
   
-  public void testMultiPointXY() throws Exception {
-    MultiPoint mp = (MultiPoint) readerXY.read("MULTIPOINT ((10 10), (20 20))");
-    CoordinateSequence[] cs = createSequences(Ordinate.createXY(), mpCoords);
-    checkCS(cs[0], mp.getGeometryN(0));
-    checkCS(cs[1], mp.getGeometryN(1));
-  }
-  
+    public void testMultiPointXY() throws Exception {
+      MultiPoint mp = (MultiPoint) readerXY.read("MULTIPOINT ((10 10), (20 20))");
+      CoordinateSequence[] cs = createSequences(Ordinate.createXY(), mpCoords);
+      checkCS(cs[0], mp.getGeometryN(0));
+      checkCS(cs[1], mp.getGeometryN(1));
+    }
+    
+    public void testMultiPointXYOld() throws Exception {
+      MultiPoint mp = (MultiPoint) readerXY.read("MULTIPOINT (10 10, 20 20)");
+      CoordinateSequence[] cs = createSequences(Ordinate.createXY(), mpCoords);
+      checkCS(cs[0], mp.getGeometryN(0));
+      checkCS(cs[1], mp.getGeometryN(1));
+    }
+    
   public void testMultiPointXY_Empty() throws Exception {
     MultiPoint mp = (MultiPoint) readerXY.read("MULTIPOINT EMPTY");
     checkEmpty(mp);

@@ -324,33 +324,38 @@ public class WKTReader
    */
   private CoordinateSequence getCoordinateSequence(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
           throws IOException, ParseException {
-    return getCoordinateSequence(tokenizer, ordinateFlags, false);
-  }
+    if (getNextEmptyOrOpener(tokenizer).equals(WKTConstants.EMPTY))
+      return this.csFactory.create(0, toDimension(ordinateFlags), ordinateFlags.contains(Ordinate.M) ? 1 : 0);
+    
+    ArrayList coordinates = new ArrayList();
+    do {
+      coordinates.add(getCoordinate(tokenizer, ordinateFlags, false));
+    } while (getNextCloserOrComma(tokenizer).equals(COMMA));
+
+    return mergeSequences(coordinates, ordinateFlags);  }
 
   /**
-   * Reads a <code>CoordinateSequence</Code> from a stream using the given {@link StreamTokenizer}.
+   * Reads a <code>CoordinateSequence</Code> from a stream using the given {@link StreamTokenizer}
+   * for an old-style JTS MultiPoint (Point coordinates not enclosed in parentheses).
    * <p>
-   *   All ordinate values are read, but -depending on the {@link CoordinateSequenceFactory} of the
-   *   underlying {@link GeometryFactory}- not necessarily all can be handled. Those are silently dropped.
+   * All ordinate values are read, but -depending on the {@link CoordinateSequenceFactory} of the
+   * underlying {@link GeometryFactory}- not necessarily all can be handled. Those are silently dropped.
    * </p>
    * @param tokenizer the tokenizer to use
    * @param ordinateFlags a bit-mask defining the ordinates to read.
    * @param tryParen a value indicating if a starting {@link #L_PAREN} should be probed for each coordinate.
+   * @param isReadEmptyOrOpener indicates if an opening paren or EMPTY should be scanned for
    * @return a {@link CoordinateSequence} of length 1 containing the read ordinate values
    *
-   *@throws  IOException     if an I/O error occurs
-   *@throws  ParseException  if an unexpected token was encountered
-S   */
-  private CoordinateSequence getCoordinateSequence(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags,
-                                                   boolean tryParen)
+   * @throws  IOException     if an I/O error occurs
+   * @throws  ParseException  if an unexpected token was encountered
+S  */
+  private CoordinateSequence getCoordinateSequenceOldMultiPoint(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
           throws IOException, ParseException {
-
-    if (getNextEmptyOrOpener(tokenizer).equals(WKTConstants.EMPTY))
-      return this.csFactory.create(0, toDimension(ordinateFlags), ordinateFlags.contains(Ordinate.M) ? 1 : 0);
 
     ArrayList coordinates = new ArrayList();
     do {
-      coordinates.add(getCoordinate(tokenizer, ordinateFlags, tryParen));
+      coordinates.add(getCoordinate(tokenizer, ordinateFlags, true));
     } while (getNextCloserOrComma(tokenizer).equals(COMMA));
 
     return mergeSequences(coordinates, ordinateFlags);
@@ -894,12 +899,13 @@ S   */
       return geometryFactory.createMultiPoint(new Point[0]);
     }
     
-    // check for old-style JTS syntax and parse it if present
+    // check for old-style JTS syntax (no parentheses surrounding Point coordinates) and parse it if present
     // MD 2009-02-21 - this is only provided for backwards compatibility for a few versions
-    if (ALLOW_OLD_JTS_MULTIPOINT_SYNTAX) {
+    if (isAllowOldJtsMultipointSyntax) {
       String nextWord = lookAheadWord(tokenizer);
       if (nextWord != L_PAREN) {
-        return geometryFactory.createMultiPoint(getCoordinateSequence(tokenizer, ordinateFlags, this.isAllowOldJtsMultipointSyntax));
+        return geometryFactory.createMultiPoint(
+            getCoordinateSequenceOldMultiPoint(tokenizer, ordinateFlags));
       }
     }
     
@@ -914,10 +920,6 @@ S   */
     }
     Point[] array = new Point[points.size()];
     return geometryFactory.createMultiPoint((Point[]) points.toArray(array));
-    /*
-    return geometryFactory.createMultiPoint(
-            getCoordinateSequence(tokenizer, ordinateFlags, this.isAllowOldJtsMultipointSyntax));
-            */
   }
 
 
