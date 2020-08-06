@@ -34,6 +34,10 @@ Distributions for older JTS versions can be obtained at the
 * Enhance `-geomfunc` to load multiple function classes
 * Fix function registry to replace matching loaded functions (#569)
 
+### Bug Fixes
+
+* Fix `IndexedPointInAreaLocator` thread-safety (#572)
+
 <!-- ================================================================ -->
 
 # Version 1.17.0
