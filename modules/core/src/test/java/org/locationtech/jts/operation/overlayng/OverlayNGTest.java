@@ -126,10 +126,18 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public void testPolygoPolygonWithLineTouchIntersection() {
+  public void testAreaLineIntersection() {
     Geometry a = read("POLYGON ((360 200, 220 200, 220 180, 300 180, 300 160, 300 140, 360 200))");
     Geometry b = read("MULTIPOLYGON (((280 180, 280 160, 300 160, 300 180, 280 180)), ((220 230, 240 230, 240 180, 220 180, 220 230)))");
-    Geometry expected = read("POLYGON ((220 200, 240 200, 240 180, 220 180, 220 200))");
+    Geometry expected = read("GEOMETRYCOLLECTION (LINESTRING (280 180, 300 180), LINESTRING (300 160, 300 180), POLYGON ((220 180, 220 200, 240 200, 240 180, 220 180)))");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testAreaLinePointIntersection() {
+    Geometry a = read("POLYGON ((100 100, 200 100, 200 150, 250 100, 300 100, 300 150, 350 100, 350 200, 100 200, 100 100))");
+    Geometry b = read("POLYGON ((100 140, 170 140, 200 100, 400 100, 400 30, 100 30, 100 140))");
+    Geometry expected = read("GEOMETRYCOLLECTION (POINT (350 100), LINESTRING (250 100, 300 100), POLYGON ((100 100, 100 140, 170 140, 200 100, 100 100)))");
     Geometry actual = intersection(a, b, 1);
     checkEqual(expected, actual);
   }

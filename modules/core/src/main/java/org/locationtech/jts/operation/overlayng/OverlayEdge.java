@@ -220,6 +220,10 @@ class OverlayEdge extends HalfEdge {
     return isInResultArea || isInResultLine;
   }
 
+  public boolean isInResultEither() {
+    return isInResult() || symOE().isInResult();
+  }
+
   void setNextResult(OverlayEdge e) {
     // Assert: e.orig() == this.dest();
     nextResultEdge = e;

@@ -133,7 +133,8 @@ Uses a floating precision model.
   </b>
 <test>
   <op name="intersectionNG" arg1="A" arg2="B">
-    LINESTRING (30 25, 30 20)
+GEOMETRYCOLLECTION (LINESTRING (30 25, 30 20), 
+  POINT (30 15))
   </op>
 </test>
 <test>
@@ -163,7 +164,8 @@ Uses a floating precision model.
   </b>
 <test>
   <op name="intersectionNG" arg1="A" arg2="B">
-    POLYGON ((30 25, 30 20, 25 25, 30 25))
+GEOMETRYCOLLECTION (POLYGON ((25 25, 30 25, 30 20, 25 25)), 
+  LINESTRING (30 15, 30 10))
   </op>
 </test>
 <test>
@@ -479,7 +481,10 @@ POLYGON ((13 27, 27 27, 27 13, 13 13, 13 27), (15 25, 20 25, 20 20, 15 20, 15 25
   </b>
 <test>
   <op name="intersectionNG" arg1="A" arg2="B">
-MULTIPOLYGON (((22 22, 27 22, 27 20, 20 20, 20 25, 20 27, 22 27, 22 22)), ((15 13, 15 15, 13 15, 13 20, 15 20, 20 20, 20 13, 15 13)))
+GEOMETRYCOLLECTION (POLYGON ((22 22, 27 22, 27 20, 20 20, 20 25, 20 27, 22 27, 22 22)), 
+  POLYGON ((15 20, 20 20, 20 13, 15 13, 15 15, 13 15, 13 20, 15 20)), 
+  LINESTRING (22 27, 27 27), 
+  LINESTRING (27 27, 27 22))
   </op>
 </test>
 <test>

@@ -85,24 +85,19 @@ class LineBuilder {
   private void markResultLines() {
     Collection<OverlayEdge> edges = graph.getEdges();
     for (OverlayEdge edge : edges) {
-      if (isInResult(edge)) 
+      /**
+       * If the edge linework is already marked as in the result,
+       * it is not included as a line.
+       * This occurs when an edge either is in a result area
+       * or has already been included as a line.
+       */
+      if (edge.isInResultEither()) 
         continue;
       if (isResultLine(edge.getLabel())) {
         edge.markInResultLine();
         //Debug.println(edge);
       }
     }
-  }
-  
-  /**
-   * If the edge linework is already in the result, 
-   * this edge does not need to be included as a line.
-   * 
-   * @param edge an edge of the topology graph
-   * @return true if the edge linework is already in the result
-   */
-  private static boolean isInResult(OverlayEdge edge) {
-    return edge.isInResult() || edge.symOE().isInResult();
   }
   
   /**
@@ -118,12 +113,16 @@ class LineBuilder {
    */
   private boolean isResultLine(OverlayLabel lbl) {
     /**
-     * Edges which are just collapses along boundaries
-     * are not output.
-     * In other words, an edge must be from a source line
-     * or two (coincident) area boundaries.
+     * Edges which are collapses along boundaries are not output.
+     * I.e a result line edge must be from a input line
+     * or two coincident area boundaries.
      */
     if (lbl.isBoundaryCollapse()) return false;
+    
+    if (OverlayNG.ALLOW_INT_MIXED_INT_RESULT 
+        && opCode == OverlayNG.INTERSECTION && lbl.isBoundaryTouch()) {
+      return true;
+    }
     
     /**
      * Skip edges that are inside result area, if there is one.
@@ -138,8 +137,8 @@ class LineBuilder {
     if (hasResultArea && lbl.isLineInArea(inputAreaIndex)) 
       return false;
     
-    int aLoc = effectiveLocation(0, lbl);
-    int bLoc = effectiveLocation(1, lbl);
+    int aLoc = effectiveLocation(lbl, 0);
+    int bLoc = effectiveLocation(lbl, 1);
     
     boolean isInResult = OverlayNG.isResultOfOp(opCode, aLoc, bLoc);
     return isInResult;
@@ -150,16 +149,16 @@ class LineBuilder {
    * for the purpose of overlay operation evaluation.
    * Line edges and Collapses are reported as INTERIOR
    * so they may be included in the result
-   * if warranted by the effect of the operation
-   * on the two edges.
-   * (For instance, the intersection of line edge and a collapsed boundary
+   * if warranted by the effect of the operation on the two edges.
+   * (For instance, the intersection of a line edge and a collapsed boundary
    * is included in the result).
    * 
-   * @param geomIndex index of parent geometry
    * @param lbl label of line
+   * @param geomIndex index of input geometry
+   * 
    * @return the effective location of the line
    */
-  private static int effectiveLocation(int geomIndex, OverlayLabel lbl) {
+  private static int effectiveLocation(OverlayLabel lbl, int geomIndex) {
     if (lbl.isCollapse(geomIndex))
       return Location.INTERIOR;
     if (lbl.isLine(geomIndex))

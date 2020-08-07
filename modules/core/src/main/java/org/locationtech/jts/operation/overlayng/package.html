@@ -61,10 +61,8 @@ The semantics of overlay output are:
   In some cases more nodes will be present.
   (If merged lines are required see {@link LineMerger}.)</li>
 <li>Polygon edges which collapse completely due to rounding are not output.</li>
-<li>The <code>intersection</code> operation produces a homogeneous result. 
-  The result contains the components of highest dimension in the intersection.
-  (For instance, the intersection of a <code>Polygon</code> 
-  and a <code>LineString</code> might produce a <code>Point</code> result.)</li>
+<li>The <code>intersection</code> operation may produce a heterogenous result. 
+  The result contains all the dimensional components of the intersection.</li>
 <li>The <code>difference</code> operation produces a homogeneous result. 
   The result dimension is that of the left-hand operand.</li>
 <li>The <code>union</code> and <code>symmetric difference</code> operations

@@ -36,34 +36,33 @@ import org.locationtech.jts.geom.Position;
  * <p>
  * For each input geometry, the label records
  * that an edge is in one of the following states
- * (denoted by the <code>dim</code> field).
- * Each state has some additional information about the edge.
+ * (identified by the <code>dim</code> field).
+ * Each state has additional information about the edge topology.
  * <ul>
- * <li>A <b>Boundary</b> edge of an input Area (polygon)
+ * <li>A <b>Boundary</b> edge of an Area (polygon)
  *   <ul>
  *   <li><code>dim</code> = DIM_BOUNDARY</li>
- *   <li><code>locLeft, locRight</code> : the locations of the edge sides for the input Area</li>
+ *   <li><code>locLeft, locRight</code> : the locations of the edge sides for the Area</li>
+ *   <li><code>locLine</code> : INTERIOR</li>
  *   <li><code>isHole</code> : whether the 
  * edge was in a shell or a hole (the ring role)</li>
  *   </ul>
  * </li>
  * <li>A <b>Collapsed</b> edge of an input Area 
- * (which had two or more parent edges)
+ * (formed by merging two or more parent edges)
  *   <ul>
  *   <li><code>dim</code> = DIM_COLLAPSE</li>
- *   <li><code>locLine</code> : the location of the 
- * edge relative to the input Area</li>
+ *   <li><code>locLine</code> : the location of the edge relative to the Area</li>
  *   <li><code>isHole</code> : whether some 
- * contributing edge was in a shell (<code>false</code>), 
- * or otherwise that all were in holes</li> (<code>true</code>)
+ *       contributing edge was in a shell (<code>false</code>). 
+ *       Otherwise all parent edges were in holes</li> (<code>true</code>)
  *   </ul>
  * </li>
  * <li>A <b>Line</b> edge from an input line
  *   <ul>
  *   <li><code>dim</code> = DIM_LINE</li>
- *   <li><code>locLine</code> : the location of the 
- * edge relative to the input Line. 
- * Initialized to LOC_UNKNOWN to simplify logic.</li>
+ *   <li><code>locLine</code> : the location of the edge relative to the Line. 
+ *   Initialized to LOC_UNKNOWN to simplify logic.</li>
  *   </ul>
  * </li>
  * <li>An edge which is <b>Not Part</b> of an input geometry
@@ -413,9 +412,8 @@ class OverlayLabel {
   }
   
   /**
-   * Tests if the label is for a collapsed
-   * edge of an area 
-   * which is coincident with the boundary of the other area.
+   * Tests if the label is for a collapsed area edge 
+   * and is a (non-collapsed) boundary edge of the other area.
    * 
    * @return true if the label is for a collapse coincident with a boundary
    */
@@ -423,6 +421,18 @@ class OverlayLabel {
     if (isLine()) return false;
     return ! isBoundaryBoth();
   }
+  
+  /**
+   * Tests if a label is for an edge where two 
+   * area touch along their boundary.
+   * 
+   * @return true if the edge is a boundary touch
+   */
+  public boolean isBoundaryTouch() {
+    return isBoundaryBoth()
+        && getLocation(0, Position.RIGHT, true) != getLocation(1, Position.RIGHT, true);
+  }
+
   
   /**
    * Tests if a label is for an edge which is in the boundary of a source geometry.
@@ -601,27 +611,6 @@ class OverlayLabel {
     return new OverlayLabel(this);
   }
     
-  /**
-   * Creates a flipped copy of this label.
-   * 
-   * @return a flipped copy of the label
-   */
-  public OverlayLabel copyFlip() {
-    OverlayLabel lbl = new OverlayLabel();
-    
-    lbl.aLocLeft = this.aLocRight;
-    lbl.aLocRight = this.aLocLeft;
-    lbl.aLocLine = this.aLocLine;
-    lbl.aDim = this.aDim;
-    
-    lbl.bLocLeft = this.bLocRight;
-    lbl.bLocRight = this.bLocLeft;
-    lbl.bLocLine = this.bLocLine;
-    lbl.bDim = this.bDim;
-    
-    return lbl;
-  }
-    
   public String toString()
   {
     return toString(true);
@@ -666,6 +655,5 @@ class OverlayLabel {
     }
     return SYM_UNKNOWN;
   }
-
 
 }

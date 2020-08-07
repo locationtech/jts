@@ -28,11 +28,25 @@ public class OverlayNGTestOne extends GeometryTestCase {
 
   public OverlayNGTestOne(String name) { super(name); }
   
-  public void testBoxHoleCollapseAlongBEdgeDifference() {
+  public void xtestParallelSpikes() {
+    Geometry a = read("POLYGON ((1 3.3, 1.3 1.4, 3.1 1.4, 3.1 0.9, 1.3 0.9, 1 -0.2, 0.8 1.3, 1 3.3))");
+    Geometry b = read("POLYGON ((1 2.9, 2.9 2.9, 2.9 1.3, 1.7 1, 1.3 0.9, 1 0.4, 1 2.9))");
+    Geometry expected = read("POLYGON EMPTY");
+    checkEqual(expected, OverlayNGTest.intersection(a, b, 1));
+  }
+  
+  public void xtestBoxHoleCollapseAlongBEdgeDifference() {
     Geometry a = read("POLYGON ((0 3, 3 3, 3 0, 0 0, 0 3), (1 1.2, 1 1.1, 2.3 1.1, 1 1.2))");
     Geometry b = read("POLYGON ((1 1, 2 1, 2 0, 1 0, 1 1))");
     Geometry expected = read("POLYGON EMPTY");
     checkEqual(expected, OverlayNGTest.difference(b, a, 1));
+  }
+  
+  public void testPolyPolyTouchIntersection() {
+    Geometry a = read("POLYGON ((300 0, 100 0, 100 100, 300 100, 300 0))");
+    Geometry b = read("POLYGON ((100 200, 300 200, 300 100, 200 100, 200 0, 100 0, 100 200))");
+    Geometry expected = read("GEOMETRYCOLLECTION (LINESTRING (200 100, 300 100), POLYGON ((200 0, 100 0, 100 100, 200 100, 200 0)))");
+    checkEqual(expected, OverlayNGTest.intersection(a, b, 1));
   }
   
   public void xtestBoxHoleCollapseAlongBEdgeUnion() {

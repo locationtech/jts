@@ -17,10 +17,13 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.List;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.util.Debug;
 
 /**
  * Implements the logic to compute the full labeling
@@ -257,17 +260,18 @@ class OverlayLabeller {
      */
     if (isInputLine && lineLoc != Location.EXTERIOR) return;
     
+    //Debug.println("propagateLinearLocationAtNode ----- using location for " + geomIndex + " from: " + eNode);
     OverlayEdge e = eNode.oNextOE();
     do {
       OverlayLabel label = e.getLabel();
-      //Debug.println("propagateLinearLocationAtNode - checking " + index + ": " + e);
+      //Debug.println("check " + geomIndex + ": " + e);
       if ( label.isLineLocationUnknown(geomIndex) ) {
         /**
          * If edge is not a boundary edge, 
          * its location is now known for this area
          */
         label.setLocationLine(geomIndex, lineLoc);
-        //Debug.println("propagateLinearLocationAtNode - setting "+ index + ": " + e);
+        //Debug.println("*** setting "+ geomIndex + ": " + e);
 
         /**
          * Add sym edge to stack for graph traversal
@@ -457,4 +461,20 @@ class OverlayLabeller {
     }
   }
 
+  public static String toString(OverlayEdge nodeEdge) {
+    Coordinate orig = nodeEdge.orig();
+    StringBuilder sb = new StringBuilder();
+    sb.append("Node( "+ WKTWriter.format(orig) + " )" + "\n");
+    OverlayEdge e = nodeEdge;
+    do {
+      sb.append("  -> " + e);
+      if (e.isResultLinked()) {
+        sb.append(" Link: ");
+        sb.append(e.nextResult());
+      }
+      sb.append("\n");
+      e = e.oNextOE();
+    } while (e != nodeEdge);
+    return sb.toString(); 
+  }
 }

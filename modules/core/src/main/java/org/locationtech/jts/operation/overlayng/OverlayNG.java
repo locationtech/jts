@@ -98,6 +98,15 @@ public class OverlayNG
   public static final int SYMDIFFERENCE = OverlayOp.SYMDIFFERENCE;
 
   /**
+   * Indicates whether intersections are allowed to produce
+   * heterogeneous results.
+   * True provides the classic JTS semantics
+   * (for proper boundary touches only - 
+   * touching along collapses are not output).
+   */
+  static final boolean ALLOW_INT_MIXED_INT_RESULT = true;
+
+  /**
    * Tests whether a point with a given topological {@link Label}
    * relative to two geometries is contained in 
    * the result of overlaying the geometries using
@@ -432,6 +441,7 @@ public class OverlayNG
     }
 
     labelGraph(graph);
+    //for (OverlayEdge e : graph.getEdges()) {  Debug.println(e);  }
     
     if (isOutputEdges || isOutputResultEdges) {
       return  OverlayUtil.toLines(graph, isOutputEdges, geomFact);
@@ -510,31 +520,38 @@ public class OverlayNG
     
     //--- Build lines
     List<LineString> resultLineList = null;
-    if (opCode != INTERSECTION || ! hasResultComponents) {
+    boolean allowMixedIntResult = ! hasResultComponents || ALLOW_INT_MIXED_INT_RESULT;
+    if (opCode != INTERSECTION || allowMixedIntResult) {
       LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultComponents, opCode, geomFact);
       resultLineList = lineBuilder.getLines();
-      hasResultComponents = resultLineList.size() > 0;
     }
+    hasResultComponents = hasResultComponents || resultLineList.size() > 0;
     /**
      * Since operations with point inputs are handled elsewhere,
      * this only handles the case where non-point inputs 
-     * intersect in points ONLY. 
+     * intersect in points. 
      */
     List<Point> resultPointList = null;
-    if (opCode == INTERSECTION && ! hasResultComponents) {
+    allowMixedIntResult = ! hasResultComponents || ALLOW_INT_MIXED_INT_RESULT;
+    if (opCode == INTERSECTION && allowMixedIntResult) {
+    //if (opCode == INTERSECTION) {
       IntersectionPointBuilder pointBuilder = new IntersectionPointBuilder(graph, geomFact);
       resultPointList = pointBuilder.getPoints();
     }
     
-    if ((resultPolyList == null || resultPolyList.size() == 0) 
-        && (resultLineList == null || resultLineList.size() == 0) 
-        && (resultPointList == null || resultPointList.size() == 0) )
+    if (isEmpty(resultPolyList) 
+        && isEmpty(resultLineList) 
+        && isEmpty(resultPointList))
       return createEmptyResult();
     
     Geometry resultGeom = OverlayUtil.createResultGeometry(resultPolyList, resultLineList, resultPointList, geomFact);
     return resultGeom;
   }
 
+  private static boolean isEmpty(List list) {
+    return list == null || list.size() == 0;
+  }
+  
   private Geometry createEmptyResult() {
     return OverlayUtil.createEmptyResult(
         OverlayUtil.resultDimension(opCode, 
