@@ -27,6 +27,10 @@ Distributions for older JTS versions can be obtained at the
 
 * Add `WKBReader` and `WKBWriter` support for `POINT EMPTY` (#567)
 
+### Performance Improvements
+
+* Improve performance of `PreparedPolygon` `covers` and `contains` for point inputs (#577)
+
 ### Bug Fixes
 
 * Fix `IndexedPointInAreaLocator` thread-safety (#572)
