@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -639,22 +639,13 @@ public class OverlayOp
    */
   public static Geometry createEmptyResult(int overlayOpCode, Geometry a, Geometry b, GeometryFactory geomFact)
   {
-  	Geometry result = null;
-  	switch (resultDimension(overlayOpCode, a, b)) {
-  	case -1:
-  		result = geomFact.createGeometryCollection();
-  		break;
-  	case 0:
-  		result =  geomFact.createPoint();
-  		break;
-  	case 1:
-  		result =  geomFact.createLineString();
-  		break;
-  	case 2:
-  		result =  geomFact.createPolygon();
-  		break;
-  	}
-		return result;
+    Geometry result = null;
+    int resultDim = resultDimension(overlayOpCode, a, b);
+
+    /**
+     * Handles resultSDim = -1, although should not happen
+     */
+    return result =  geomFact.createEmpty(resultDim);
   }
   
   private static int resultDimension(int opCode, Geometry g0, Geometry g1)

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -37,7 +37,11 @@ public class TestBuilderModel
   private PrecisionModel precisionModel = new PrecisionModel();
   private GeometryFactory geometryFactory = null;
 	private GeometryEditModel geomEditModel;
-  private LayerList layerList = new LayerList();
+	
+  private LayerList layerList = LayerList.createInternal();
+  private LayerList layerListTop = new LayerList();
+  private LayerList layerListBase = new LayerList();
+  
   private WKTWriter writer = new WKTWriter();
   private Object currResult = null;
   private String opName = "";
@@ -78,6 +82,25 @@ public class TestBuilderModel
 	
   public LayerList getLayers() { return layerList; }
   
+  public LayerList getLayersTop() { return layerListTop; }
+  public LayerList getLayersBase() { return layerListBase; }
+  
+  public List<Layer> getLayersLegend() {
+    List<Layer> layers = new ArrayList<Layer>();
+    addLegendLayers(layerList, layers);
+    addLegendLayers(layerListTop, layers);
+    addLegendLayers(layerListBase, layers);
+    return layers;
+  }
+  
+  private void addLegendLayers(LayerList layerList, List<Layer> layers) {
+    for (int i = 0; i < layerList.size(); i++) {
+      if (layerList.getLayer(i).hasGeometry() 
+          && layerList.getLayer(i).isEnabled())
+        layers.add(layerList.getLayer(i));
+    }
+  }
+  
   private void initLayers()
   {  	
   	GeometryContainer geomCont0 = new IndexedGeometryContainer(geomEditModel, 0);
@@ -103,46 +126,36 @@ public class TestBuilderModel
         GeometryDepiction.GEOM_RESULT_FILL_CLR));
   }
 
-  public void pasteGeometry(int geomIndex)
-  	throws Exception
-  {
-  	Object obj = SwingUtil.getFromClipboard();
-  	Geometry g = null;
-  	if (obj instanceof String) {
-  		g = readGeometryText((String) obj);
-  	}
-  	else
-  		g = (Geometry) obj;
-  	
-  	getGeometryEditModel().setGeometry(geomIndex, g);
+  public void pasteGeometry(int geomIndex) throws Exception {
+    Geometry g = readGeometryFromClipboard();
+    getGeometryEditModel().setGeometry(geomIndex, g);
   }
   
-  private Geometry readGeometryText(String geomStr) 
+  public Geometry readGeometryFromClipboard() throws Exception {
+    Object obj = SwingUtil.getFromClipboard();
+    Geometry g = null;
+    if ( obj instanceof String ) {
+      return readGeometryText((String) obj, getGeometryFactory());
+    } else
+      return (Geometry) obj;
+  }
+    
+  private static Geometry readGeometryText(String geomStr, GeometryFactory geomFact) 
   throws Exception
   {
     Geometry g = null;
     if (geomStr.length() > 0) {
       try {
-        MultiFormatReader reader = new MultiFormatReader(getGeometryFactory());
+        MultiFormatReader reader = new MultiFormatReader(geomFact);
         g = reader.read(geomStr);
       } catch (ParseException ex) {
-        String msg = "Unable to parse data: '" + condense(geomStr) + "'";  
+        String msg = "Unable to parse data: '" + ExceptionFormatter.condense(geomStr) + "'";  
         throw new IllegalArgumentException(msg); 
       }
     }
     return g;
-  }
-
-  private String condense(String str) {
-    final int N_START = 10;
-    final int N_END = 10;
-    int len = str.length();
-    if (len <= N_START + N_END + 10) return str;
-    return str.substring(0, N_START)
-        + "..."
-        + str.substring(len - N_START, len);
-  }
-
+    }
+    
   public void loadMultipleGeometriesFromFile(int geomIndex, String filename)
   throws Exception 
   {
@@ -173,58 +186,6 @@ public class TestBuilderModel
     testCaseEdit.setGeometry(1, g1);
     getGeometryEditModel().setTestCase(testCaseEdit);
   }
-
-
-
-  /*
-  public Geometry readMultipleGeometriesFromFile(String filename)
-  throws Exception, IOException 
-  {
-    String ext = FileUtil.extension(filename);
-    if (ext.equalsIgnoreCase("shp"))
-      return readMultipleGeometriesFromShapefile(filename);
-    return readMultipleGeometryFromWKT(filename);
-  }
-    
-  private Geometry readMultipleGeometriesFromShapefile(String filename)
-  throws Exception 
-  {
-    Shapefile shpfile = new Shapefile(new FileInputStream(filename));
-    GeometryFactory geomFact = getGeometryFactory();
-    shpfile.readStream(geomFact);
-    List geomList = new ArrayList();
-    do {
-      Geometry geom = shpfile.next();
-      if (geom == null)
-        break;
-      geomList.add(geom);
-    } while (true);
-    
-    return geomFact.createGeometryCollection(GeometryFactory.toGeometryArray(geomList));
-  }
-  
-  private Geometry readMultipleGeometryFromWKT(String filename)
-  throws ParseException, IOException 
-  {
-    return readMultipleGeometryFromWKTString(FileUtil.readText(filename));
-  }
-  
-  private Geometry readMultipleGeometryFromWKTString(String geoms)
-  throws ParseException, IOException 
-  {
-    GeometryFactory geomFact = getGeometryFactory();
-    WKTReader reader = new WKTReader(geomFact);
-    WKTFileReader fileReader = new WKTFileReader(new StringReader(geoms), reader);
-    List geomList = fileReader.read();
-    
-    if (geomList.size() == 1)
-      return (Geometry) geomList.get(0);
-    
-    // TODO: turn polygons into a GC   
-    return geomFact.buildGeometry(geomList);
-  }
-  
-  */
   
   //=============================================================
   
@@ -543,6 +504,56 @@ public class TestBuilderModel
         tcIndex = tcList.size() - 1;
     }  
   
+  }
+
+  public Layer layerCopy(Layer lyr) {
+    if (layerListTop.contains(lyr)) {
+      return layerListTop.copy(lyr);
+    }
+    // get here if copying a base layer, OR copying a fixed layer
+    return layerListBase.copy(lyr);
+  }
+
+  public void layerDelete(Layer lyr) {
+    if (layerListBase.contains(lyr)) {
+      layerListBase.remove(lyr);
+    }
+    else if (layerListTop.contains(lyr)) {
+      layerListTop.remove(lyr);
+    } 
+  }
+
+  public void layerUp(Layer lyr) {
+    if (layerListBase.contains(lyr)) {
+      if (layerListBase.isTop(lyr)) {
+        layerListBase.remove(lyr);
+        layerListTop.addBottom(lyr);
+      }
+      else {
+        layerListBase.moveUp(lyr);
+      }
+    }
+    else if (layerListTop.contains(lyr)) {
+      layerListTop.moveUp(lyr);
+    } 
+  }
+
+  public void layerDown(Layer lyr) {
+    if (layerListBase.contains(lyr)) {
+      layerListBase.moveDown(lyr);
+    }
+    else if (layerListTop.contains(lyr)) {
+      if (layerListTop.isBottom(lyr)) {
+        layerListTop.remove(lyr);
+        layerListBase.addTop(lyr);
+      }
+      layerListTop.moveDown(lyr);
+    } 
+    
+  }
+
+  public boolean isLayerFixed(Layer lyr) {
+    return layerList.contains(lyr);
   }
 
 

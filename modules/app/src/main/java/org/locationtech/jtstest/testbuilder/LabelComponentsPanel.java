@@ -1,10 +1,12 @@
 package org.locationtech.jtstest.testbuilder;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -24,13 +26,35 @@ public class LabelComponentsPanel extends JPanel {
     cellInsets = insets;
   }
   
-  public void addRow(String title, JComponent comp) {
+  public JLabel label(String name) {
+    JLabel lbl = new JLabel(name);
+    return lbl;
+  }
+  
+  public void addRowInternal(String title, JComponent comp) {
     JLabel lbl = new JLabel(title);
     add(lbl, gbc(0, rowIndex, GridBagConstraints.EAST, lblWeight));
     add(comp, gbc(1, rowIndex, GridBagConstraints.WEST, 1));
     rowIndex ++;
   }
 
+  public void addRow(String title, Object... comp) {
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+    for (Object o : comp) {
+      panel.add(Box.createRigidArea(new Dimension(2,0)));
+      JComponent c;
+      if (o instanceof String) {
+        c = label((String) o);
+      }
+      else {
+        c = (JComponent) o;
+      }
+      panel.add(c);
+    }
+    addRowInternal(title, panel);
+  }
+  /*
   public void addRow(String title, JComponent c1, JComponent c2, JComponent c3) {
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
@@ -39,6 +63,7 @@ public class LabelComponentsPanel extends JPanel {
     panel.add(c3);
     addRow(title, panel);
   }
+  */
   
   private GridBagConstraints gbc(int x, int y, int align, double weightX) {
     // TODO Auto-generated method stub

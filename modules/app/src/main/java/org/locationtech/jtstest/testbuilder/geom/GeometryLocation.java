@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -13,6 +13,8 @@
 package org.locationtech.jtstest.testbuilder.geom;
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.util.NumberUtil;
 
 /**
  * Models the location of a point on a Geometry
@@ -149,20 +151,10 @@ public class GeometryLocation
 		buf.append("]  ");
 		
 		// facet value
-    buf.append(isVertex() ? "POINT " : "LINESTRING ");
+    buf.append(isVertex() ? 
+        WKTWriter.toPoint(pt)
+        : WKTWriter.toLineString(pt, component.getCoordinates()[index + 1]));
 
-    buf.append("( ");
-		buf.append(pt.x);
-		buf.append(" ");
-		buf.append(pt.y);
-		if (! isVertex()) {
-			Coordinate p1 = component.getCoordinates()[index + 1];
-  		buf.append(", ");
-  		buf.append(p1.x);
-  		buf.append(" ");
-  		buf.append(p1.y);		
-		}
-    buf.append(" )");
 		return buf.toString();
 	}
 

@@ -2,7 +2,7 @@
 
 JTS is dual-licensed under:
 
-* the [Eclipse Public License 1.0](https://www.eclipse.org/legal/epl-v10.html) ("EPL") 
+* the [Eclipse Public License 2.0](https://www.eclipse.org/legal/epl-v20.html) ("EPL") 
 * the [Eclipse Distribution License 1.0](http://www.eclipse.org/org/documents/edl-v10.php) (a Revised BSD-style license). 
 
 More detail is provided in the [LICENSES](LICENSES.md) document.

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -20,6 +20,8 @@ import java.io.StringReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+
+import org.locationtech.jts.io.OrdinateFormat;
 
 /**
  * Utility methods for working with {@link String}s.
@@ -83,11 +85,17 @@ public class StringUtil
      return stackTrace;
  }
 
-  private static NumberFormat SIMPLE_ORDINATE_FORMAT = new DecimalFormat("0.#");
-  
-  public static String toString(double d)
-  {
-    return SIMPLE_ORDINATE_FORMAT.format(d);
+  /**
+   * Returns a string representation of the given number,
+   * using a format compatible with WKT.
+   * 
+   * @param d a number
+   * @return a string 
+   *
+   * @deprecated use {@link OrdinateFormat}
+   */
+  public static String toString(double d) {
+    return OrdinateFormat.DEFAULT.format(d);
   }
 
   public static String spaces(int n)

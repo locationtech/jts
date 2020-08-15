@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -14,15 +14,17 @@
 package org.locationtech.jts.util;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateFilter;
 
 
 /**
- *  A {@link CoordinateFilter} that builds a set of <code>Coordinate</code>s.
- *  The set of coordinates contains no duplicate points.
+ *  A {@link CoordinateFilter} that extracts a unique array of <code>Coordinate</code>s.
+ *  The array of coordinates contains no duplicate points.
  *  It preserves the order of the input points.
  *
  *@version 1.7
@@ -44,8 +46,9 @@ public class UniqueCoordinateArrayFilter implements CoordinateFilter
     return filter.getCoordinates();
   }
   
-  TreeSet treeSet = new TreeSet();
-  ArrayList list = new ArrayList();
+  private Set<Coordinate> coordSet = new HashSet<Coordinate>();
+  // Use an auxiliary list as well in order to preserve coordinate order
+  private List<Coordinate> list = new ArrayList<Coordinate>();
 
   public UniqueCoordinateArrayFilter() { }
 
@@ -59,10 +62,12 @@ public class UniqueCoordinateArrayFilter implements CoordinateFilter
     return (Coordinate[]) list.toArray(coordinates);
   }
 
+  /**
+   * @see CoordinateFilter#filter(Coordinate)
+   */
   public void filter(Coordinate coord) {
-    if (!treeSet.contains(coord)) {
+    if (coordSet.add(coord)) {
       list.add(coord);
-      treeSet.add(coord);
     }
   }
 }

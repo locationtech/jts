@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -158,49 +158,38 @@ public class CGAlgorithmsDD
   /**
    * Computes an intersection point between two lines
    * using DD arithmetic.
-   * Currently does not handle case of parallel lines.
+   * If the lines are parallel (either identical
+   * or separate) a null value is returned.
    * 
-   * @param p1
-   * @param p2
-   * @param q1
-   * @param q2
-   * @return an intersection point if one exists
+   * @param p1 an endpoint of line segment 1
+   * @param p2 an endpoint of line segment 1
+   * @param q1 an endpoint of line segment 2
+   * @param q2 an endpoint of line segment 2
+   * @return an intersection point if one exists, or null if the lines are parallel
    */
   public static Coordinate intersection(
       Coordinate p1, Coordinate p2,
       Coordinate q1, Coordinate q2)
   {
-    DD denom1 = DD.valueOf(q2.y).selfSubtract(q1.y)
-    .selfMultiply(DD.valueOf(p2.x).selfSubtract(p1.x));
-    DD denom2 = DD.valueOf(q2.x).selfSubtract(q1.x)
-    .selfMultiply(DD.valueOf(p2.y).selfSubtract(p1.y));
-    DD denom = denom1.subtract(denom2);
-    
-    /**
-     * Cases:
-     * - denom is 0 if lines are parallel
-     * - intersection point lies within line segment p if fracP is between 0 and 1
-     * - intersection point lies within line segment q if fracQ is between 0 and 1
-     */
-    
-    DD numx1 = DD.valueOf(q2.x).selfSubtract(q1.x)
-    .selfMultiply(DD.valueOf(p1.y).selfSubtract(q1.y));
-    DD numx2 = DD.valueOf(q2.y).selfSubtract(q1.y)
-    .selfMultiply(DD.valueOf(p1.x).selfSubtract(q1.x));
-    DD numx = numx1.subtract(numx2);
-    double fracP = numx.selfDivide(denom).doubleValue();
-    
-    double x = DD.valueOf(p1.x).selfAdd(DD.valueOf(p2.x).selfSubtract(p1.x).selfMultiply(fracP)).doubleValue();
-    
-    DD numy1 = DD.valueOf(p2.x).selfSubtract(p1.x)
-    .selfMultiply(DD.valueOf(p1.y).selfSubtract(q1.y));
-    DD numy2 = DD.valueOf(p2.y).selfSubtract(p1.y)
-    .selfMultiply(DD.valueOf(p1.x).selfSubtract(q1.x));
-    DD numy = numy1.subtract(numy2);
-    double fracQ = numy.selfDivide(denom).doubleValue();
-    
-    double y = DD.valueOf(q1.y).selfAdd(DD.valueOf(q2.y).selfSubtract(q1.y).selfMultiply(fracQ)).doubleValue();
+    DD px = new DD(p1.y).selfSubtract(p2.y);
+    DD py = new DD(p2.x).selfSubtract(p1.x);
+    DD pw = new DD(p1.x).selfMultiply(p2.y).selfSubtract(new DD(p2.x).selfMultiply(p1.y));
 
-    return new Coordinate(x,y);
+    DD qx = new DD(q1.y).selfSubtract(q2.y);
+    DD qy = new DD(q2.x).selfSubtract(q1.x);
+    DD qw = new DD(q1.x).selfMultiply(q2.y).selfSubtract(new DD(q2.x).selfMultiply(q1.y));
+
+    DD x = py.multiply(qw).selfSubtract(qy.multiply(pw));
+    DD y = qx.multiply(pw).selfSubtract(px.multiply(qw));
+    DD w = px.multiply(qy).selfSubtract(qx.multiply(py));
+
+    double xInt = x.selfDivide(w).doubleValue();
+    double yInt = y.selfDivide(w).doubleValue();
+
+    if ((Double.isNaN(xInt)) || (Double.isInfinite(xInt) || Double.isNaN(yInt)) || (Double.isInfinite(yInt))) {
+      return null;
+    }
+
+    return new Coordinate(xInt, yInt);
   }
 }

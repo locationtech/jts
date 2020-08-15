@@ -2,9 +2,9 @@
  * Copyright (c) 2018 Vivid Solutions
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -35,8 +35,9 @@ import org.locationtech.jts.util.NumberUtil;
  * Apart from the basic accessor functions, JTS supports
  * only specific operations involving the Z-ordinate.</p> 
  * <p>
- * Implementations may optionally support Z-ordiante and M-measure values
- * as appropriate for a CoordinateSeqeunce. Use of {@link #getZ()} and {@link #getM()}
+ * Implementations may optionally support Z-ordinate and M-measure values
+ * as appropriate for a {@link CoordinateSequence}. 
+ * Use of {@link #getZ()} and {@link #getM()}
  * accessors, or {@link #getOrdinate(int)} are recommended.</p> 
  *
  * @version 1.16
@@ -85,7 +86,8 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   
   /**
    * The z-ordinate.
-   * @deprecated Recommend {@link #getZ()}
+   * <p>
+   * Direct access to this field is discouraged; use {@link #getZ()}.
    */
   public double z;
 

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -13,6 +13,7 @@ package org.locationtech.jts.operation.buffer;
 
 import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.HCoordinate;
+import org.locationtech.jts.algorithm.Intersection;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.NotRepresentableException;
 import org.locationtech.jts.algorithm.Orientation;
@@ -453,37 +454,23 @@ class OffsetSegmentGenerator
       LineSegment offset0, 
       LineSegment offset1,
       double distance)
-  {
-    boolean isMitreWithinLimit = true;
-    Coordinate intPt = null;
-  
+  { 
     /**
      * This computation is unstable if the offset segments are nearly collinear.
-     * However, this situation should have been eliminated earlier by the check for
-     * whether the offset segment endpoints are almost coincident
+     * However, this situation should have been eliminated earlier by the check
+     * for whether the offset segment endpoints are almost coincident
      */
-    try {
-     intPt = HCoordinate.intersection(offset0.p0, 
-        offset0.p1, offset1.p0, offset1.p1);
-     
-     double mitreRatio = distance <= 0.0 ? 1.0
-         : intPt.distance(p) / Math.abs(distance);
-     
-     if (mitreRatio > bufParams.getMitreLimit())
-       isMitreWithinLimit = false;
+    Coordinate intPt = Intersection.intersection(offset0.p0, offset0.p1, offset1.p0, offset1.p1);
+    if (intPt != null) {
+      double mitreRatio = distance <= 0.0 ? 1.0 : intPt.distance(p) / Math.abs(distance);
+      if (mitreRatio <= bufParams.getMitreLimit()) {
+        segList.addPt(intPt);
+        return;
+      }
     }
-    catch (NotRepresentableException ex) {
-      intPt = new Coordinate(0,0);
-      isMitreWithinLimit = false;
-    }
-    
-    if (isMitreWithinLimit) {
-      segList.addPt(intPt);
-    }
-    else {
-      addLimitedMitreJoin(offset0, offset1, distance, bufParams.getMitreLimit());
+    // at this point either intersection failed or mitre limit was exceeded
+    addLimitedMitreJoin(offset0, offset1, distance, bufParams.getMitreLimit());
 //      addBevelJoin(offset0, offset1);
-    }
   }
   
   
@@ -611,23 +598,17 @@ class OffsetSegmentGenerator
 
     if (nSegs < 1) return;    // no segments because angle is less than increment - nothing to do!
 
-    double initAngle, currAngleInc;
+     // choose angle increment so that each segment has equal length
+    double angleInc = totalAngle / nSegs;
 
-    // choose angle increment so that each segment has equal length
-    initAngle = 0.0;
-    currAngleInc = totalAngle / nSegs;
-
-    double currAngle = initAngle;
     Coordinate pt = new Coordinate();
-    while (currAngle < totalAngle) {
-      double angle = startAngle + directionFactor * currAngle;
+    for (int i = 0; i < nSegs; i++) {
+      double angle = startAngle + directionFactor * i * angleInc;
       pt.x = p.x + radius * Math.cos(angle);
       pt.y = p.y + radius * Math.sin(angle);
       segList.addPt(pt);
-      currAngle += currAngleInc;
     }
   }
-
 
   /**
    * Creates a CW circle around a point

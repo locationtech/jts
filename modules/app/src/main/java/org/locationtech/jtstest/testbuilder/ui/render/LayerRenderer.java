@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -133,7 +133,7 @@ public class LayerRenderer implements Renderer
           );
     }
     else if (DisplayParameters.FILL_RAINBOW == DisplayParameters.fillType()) {
-      return HSBPalette.createRainbowSequential(numHues, 0.4f, 1);
+      return HSBPalette.createRainbow(numHues, 0.4f, 1);
     }
     else if (DisplayParameters.FILL_RAINBOW_RANDOM == DisplayParameters.fillType()) {
       return PAL_RAINBOW_INCREMENTAL;
@@ -145,7 +145,7 @@ public class LayerRenderer implements Renderer
     Color clrBase = style.getFillColor();
     int alpha = clrBase.getAlpha();
     Color clr = pal.color(i, alpha);
-    BasicStyle st = new BasicStyle(style);
+    BasicStyle st = style.copy();
     st.setFillColor(clr);
     return st;
   }

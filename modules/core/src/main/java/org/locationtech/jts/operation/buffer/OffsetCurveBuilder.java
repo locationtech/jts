@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -69,9 +69,7 @@ public class OffsetCurveBuilder
   {
     this.distance = distance;
     
-    // a zero or negative width buffer of a line/point is empty
-    if (distance < 0.0 && ! bufParams.isSingleSided()) return null;
-    if (distance == 0.0) return null;
+    if (isLineOffsetEmpty(distance)) return null;
 
     double posDistance = Math.abs(distance);
     OffsetSegmentGenerator segGen = getSegGen(posDistance);
@@ -92,10 +90,34 @@ public class OffsetCurveBuilder
   }
 
   /**
+   * Tests whether the offset curve for line or point geometries
+   * at the given offset distance is empty (does not exist).
+   * This is the case if:
+   * <ul>
+   * <li>the distance is zero, 
+   * <li>the distance is negative, except for the case of singled-sided buffers
+   * </ul>
+   * 
+   * @param distance the offset curve distance
+   * @return true if the offset curve is empty
+   */
+  public boolean isLineOffsetEmpty(double distance) {
+    // a zero width buffer of a line or point is empty
+    if (distance == 0.0) return true;
+    // a negative width buffer of a line or point is empty,
+    // except for single-sided buffers, where the sign indicates the side
+    if (distance < 0.0 && ! bufParams.isSingleSided()) return true;
+    return false;
+  }
+
+  /**
    * This method handles the degenerate cases of single points and lines,
-   * as well as rings.
+   * as well as valid rings.
    *
-   * @return a Coordinate array representing the curve
+   * @param inputPts the coordinates of the ring (must not contain repeated points)
+   * @param side side the side {@link Position} of the ring on which to construct the buffer line
+   * @param distance the positive distance at which to create the offset
+   * @return a Coordinate array representing the curve,
    * or null if the curve is empty
    */
   public Coordinate[] getRingCurve(Coordinate[] inputPts, int side, double distance)
@@ -211,33 +233,6 @@ public class OffsetCurveBuilder
 
     segGen.closeRing();
   }
-
-  /*
-  private void OLDcomputeLineBufferCurve(Coordinate[] inputPts)
-  {
-    int n = inputPts.length - 1;
-    
-    // compute points for left side of line
-    initSideSegments(inputPts[0], inputPts[1], Position.LEFT);
-    for (int i = 2; i <= n; i++) {
-      addNextSegment(inputPts[i], true);
-    }
-    addLastSegment();
-    // add line cap for end of line
-    addLineEndCap(inputPts[n - 1], inputPts[n]);
-
-    // compute points for right side of line
-    initSideSegments(inputPts[n], inputPts[n - 1], Position.LEFT);
-    for (int i = n - 2; i >= 0; i--) {
-      addNextSegment(inputPts[i], true);
-    }
-    addLastSegment();
-    // add line cap for start of line
-    addLineEndCap(inputPts[1], inputPts[0]);
-
-    vertexList.closeRing();
-  }
-  */
   
   private void computeSingleSidedBufferCurve(Coordinate[] inputPts, boolean isRightSide, OffsetSegmentGenerator segGen)
   {

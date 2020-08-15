@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -627,7 +627,7 @@ public class QuadEdgeSubdivision {
 			Coordinate c = triEdges[2].orig().getCoordinate();
 			
 			// TODO: choose the most accurate circumcentre based on the edges
-      Coordinate cc = Triangle.circumcentre(a, b, c);
+      Coordinate cc = Triangle.circumcentreDD(a, b, c);
 			Vertex ccVertex = new Vertex(cc);
 			// save the circumcentre as the origin for the dual edges originating in this triangle
 			for (int i = 0; i < 3; i++) {

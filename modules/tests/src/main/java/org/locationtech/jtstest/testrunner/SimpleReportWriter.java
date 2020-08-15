@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -87,7 +87,9 @@ private boolean verbose;
     else if (! test.isPassed()) {
       reportBuf.write("Test Failed (" + id + ")" + "\n");
       if (verbose) {
-        reportBuf.write("  Expected: " + test.getExpectedResult().toFormattedString() + "\n");
+        if (test.hasExpectedResult()) {
+          reportBuf.write("  Expected: " + test.getExpectedResult().toFormattedString() + "\n");
+        }
         try {
           reportBuf.write("  Actual: " + test.getActualResult().toFormattedString() + "\n");
         }
@@ -144,7 +146,7 @@ private boolean verbose;
       return;
     }
     reportBuf.write("\n");
-    reportBuf.write(LABEL_TEST_CASE + " " + testCase.getTestRun().getTestFile().getName()
+    reportBuf.write(LABEL_TEST_CASE + " " + testCase.getTestRun().getTestFileName()
                     + " - #" + testCase.getCaseIndex()
                     + " (" + testCase.getLineNumber() + ")"
         + (testCase.getDescription().length() > 0 ? ": " + testCase.getDescription() :

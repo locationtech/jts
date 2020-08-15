@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -38,6 +38,13 @@ import org.locationtech.jts.io.WKTWriter;
 public class SortedPackedIntervalRTree 
 {
   private List leaves = new ArrayList();
+  
+  /**
+   * If root is null that indicates
+   * that the tree has not yet been built,   
+   * OR nothing has been added to the tree.
+   * In both cases, the tree is still open for insertions.
+   */
 	private IntervalRTreeNode root = null;
 	
 	public SortedPackedIntervalRTree()
@@ -63,7 +70,15 @@ public class SortedPackedIntervalRTree
 	
   private void init()
   {
+    // already built
     if (root != null) return;
+    
+    /**
+     * if leaves is empty then nothing has been inserted.
+     * In this case it is safe to leave the tree in an open state
+     */
+    if (leaves.size() == 0) return;
+    
     buildRoot();
   }
   
@@ -134,7 +149,11 @@ public class SortedPackedIntervalRTree
 	public void query(double min, double max, ItemVisitor visitor)
 	{
     init();
-
+    
+    // if root is null tree must be empty
+    if (root == null) 
+      return;
+    
 		root.query(min, max, visitor);
 	}
   

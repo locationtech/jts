@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -18,6 +18,8 @@ import org.locationtech.jts.geom.CoordinateSequenceFactory;
 import org.locationtech.jts.geom.CoordinateXY;
 import org.locationtech.jts.geom.CoordinateXYM;
 import org.locationtech.jts.geom.CoordinateXYZM;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
 
 import junit.textui.TestRunner;
 
@@ -170,6 +172,28 @@ public class PackedCoordinateSequenceTest
     CoordinateSequence copy2 = factory.create(seq);
     assertTrue(isEqual(copy2, array));    
   }  
+  
+  /**
+   * Disable for now until solution can be found.
+   * See Issue 434.
+   */
+  public void XtestMixedFactoryWithXY() {
+    GeometryFactory factoryPacked = new GeometryFactory(new PackedCoordinateSequenceFactory());
+    Polygon polygonPacked = factoryPacked
+        .createPolygon(
+            new Coordinate[] { 
+                 new CoordinateXY(0, 0), new CoordinateXY(10, 0), new CoordinateXY(10, 10),
+                 new CoordinateXY(0, 10), new CoordinateXY(0, 0) });
+    GeometryFactory factoryDefault = new GeometryFactory();
+    Polygon polygonArray = factoryDefault.createPolygon(
+        new Coordinate[] { new CoordinateXY(5, 5),
+            new CoordinateXY(15, 5), new CoordinateXY(15, 15), new CoordinateXY(5, 15), new CoordinateXY(5, 5) });
+
+    polygonArray.intersection(polygonPacked);
+    
+    // this fails as of 2019-June-7
+    polygonPacked.intersection(polygonArray);
+  }
   
   public void checkDimInvalid(CoordinateSequenceFactory factory)
   {

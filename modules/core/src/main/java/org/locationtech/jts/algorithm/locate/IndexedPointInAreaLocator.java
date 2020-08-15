@@ -2,15 +2,16 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
 package org.locationtech.jts.algorithm.locate;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,7 +41,10 @@ import org.locationtech.jts.index.intervalrtree.SortedPackedIntervalRTree;
  * <p>
  * {@link Polygonal} and {@link LinearRing} geometries
  * are supported.
- * 
+ * <p>
+ * The index is lazy-loaded, which allows
+ * creating instances even if they are not used.
+ * <p>
  * Thread-safe and immutable.
  *
  * @author Martin Davis
@@ -49,7 +53,9 @@ import org.locationtech.jts.index.intervalrtree.SortedPackedIntervalRTree;
 public class IndexedPointInAreaLocator 
   implements PointOnGeometryLocator
 {
-  private final IntervalIndexedGeometry index;
+  
+  private Geometry geom;
+  private IntervalIndexedGeometry index = null;
   
   /**
    * Creates a new locator for a given {@link Geometry}.
@@ -62,7 +68,7 @@ public class IndexedPointInAreaLocator
   {
     if (! (g instanceof Polygonal  || g instanceof LinearRing))
       throw new IllegalArgumentException("Argument must be Polygonal or LinearRing");
-    index = new IntervalIndexedGeometry(g);
+    geom = g;
   }
     
   /**
@@ -73,6 +79,9 @@ public class IndexedPointInAreaLocator
    */
   public int locate(Coordinate p)
   {
+    // avoid calling synchronized method improves performance
+    if (index == null) createIndex();
+    
     RayCrossingCounter rcc = new RayCrossingCounter(p);
     
     SegmentVisitor visitor = new SegmentVisitor(rcc);
@@ -85,6 +94,17 @@ public class IndexedPointInAreaLocator
     */
     
     return rcc.getLocation();
+  }
+
+  /**
+   * Creates the indexed geometry, creating it if necessary.
+   */
+  private synchronized void createIndex() {
+    if (index == null) {
+      index = new IntervalIndexedGeometry(geom);
+      // no need to hold onto geom
+      geom = null;
+    }
   }
   
   private static class SegmentVisitor
@@ -106,11 +126,15 @@ public class IndexedPointInAreaLocator
   
   private static class IntervalIndexedGeometry
   {
-    private final SortedPackedIntervalRTree index= new SortedPackedIntervalRTree();
+    private boolean isEmpty = false;
+    private SortedPackedIntervalRTree index= new SortedPackedIntervalRTree();
 
     public IntervalIndexedGeometry(Geometry geom)
     {
-      init(geom);
+      if (geom.isEmpty())
+        isEmpty = true;
+      else
+        init(geom);
     }
     
     private void init(Geometry geom)
@@ -135,6 +159,9 @@ public class IndexedPointInAreaLocator
     
     public List query(double min, double max)
     {
+     if (isEmpty) 
+        return new ArrayList();
+      
       ArrayListVisitor visitor = new ArrayListVisitor();
       index.query(min, max, visitor);
       return visitor.getItems();
@@ -142,6 +169,8 @@ public class IndexedPointInAreaLocator
     
     public void query(double min, double max, ItemVisitor visitor)
     {
+      if (isEmpty) 
+        return;
       index.query(min, max, visitor);
     }
   }

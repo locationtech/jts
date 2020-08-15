@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -30,6 +30,7 @@ import org.locationtech.jtstest.function.DiffFunctions;
 import org.locationtech.jtstest.function.DissolveFunctions;
 import org.locationtech.jtstest.function.DistanceFunctions;
 import org.locationtech.jtstest.function.DoubleKeyMap;
+import org.locationtech.jtstest.function.EditFunctions;
 import org.locationtech.jtstest.function.GeometryFunctions;
 import org.locationtech.jtstest.function.JTSFunctions;
 import org.locationtech.jtstest.function.LineHandlingFunctions;
@@ -74,6 +75,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(BufferByUnionFunctions.class);
     funcRegistry.add(ConstructionFunctions.class);
     funcRegistry.add(ConversionFunctions.class);
+    funcRegistry.add(EditFunctions.class);
     funcRegistry.add(LinearReferencingFunctions.class);
     funcRegistry.add(LineHandlingFunctions.class);
     funcRegistry.add(NodingFunctions.class);
@@ -318,6 +320,22 @@ public class GeometryFunctionRegistry
       GeometryFunction func = (GeometryFunction) i.next();
       String funcName = func.getName();
       if (funcName.equalsIgnoreCase(name))
+        return func;
+    }
+    return null;
+  }
+  /**
+   * Finds the first function which matches the given category and name.
+   * 
+   * @param name
+   * @return a matching function, or null
+   */
+  public GeometryFunction find(String category, String name)
+  {
+    for (Iterator i = functions.iterator(); i.hasNext(); ) {
+      GeometryFunction func = (GeometryFunction) i.next();
+      String funcName = func.getName();
+      if (category.equalsIgnoreCase(func.getCategory()) && funcName.equalsIgnoreCase(name))
         return func;
     }
     return null;

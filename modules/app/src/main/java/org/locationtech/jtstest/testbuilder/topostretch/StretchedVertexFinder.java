@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -20,10 +20,10 @@ import org.locationtech.jts.geom.util.*;
 
 class StretchedVertexFinder 
 {
-	public static List findNear(Collection linestrings, double tolerance, Envelope mask)
+	public static List findNear(Collection linestrings, double tolerance, Envelope mask, Coordinate[] pts)
 	{
 		StretchedVertexFinder finder = new StretchedVertexFinder(linestrings, tolerance, mask);
-		return finder.getNearVertices();
+		return finder.getNearVertices(pts);
 	}
 	
 	private Collection linestrings;
@@ -37,15 +37,30 @@ class StretchedVertexFinder
 		this.tolerance = tolerance;
 	}
 	
+	/**
+	 * Creates a finder for a given set of linework, using the specified tolerance distance
+	 * and within a given limiting envelope.
+	 * 
+	 * @param linestrings the linework to stretch away from
+	 * @param tolerance the distance tolerance for points to be stretched
+	 * @param limitEnv the envelope to limit searching to
+	 */
 	public StretchedVertexFinder(Collection linestrings, double tolerance, Envelope limitEnv)
 	{
 		this(linestrings, tolerance);
 		this.limitEnv = limitEnv;
 	}
 	
-	public List getNearVertices()
+	/**
+	 * Determines points that lie close to the test linestrings,
+	 * and computes a {link StretchVertex} for each one.
+	 * 
+	 * @param pts the points to test for stretching
+	 * @return a list of StretchedVertexes
+	 */
+	public List getNearVertices(Coordinate[] pts)
 	{
-		findNearVertices();
+		findNearVertices(pts);
 		return nearVerts;
 	}
 	
@@ -55,7 +70,6 @@ class StretchedVertexFinder
 			LineString line = (LineString) i.next();
 			findNearVertices(line);
 		}
-		
 	}
 	
   private static int geomPointsLen(Coordinate[] pts)
@@ -71,18 +85,22 @@ class StretchedVertexFinder
 	{
 		Coordinate[] pts = targetLine.getCoordinates();
     // don't process the last point of a ring twice
+    findNearVertices(pts);
+	}
+
+  private void findNearVertices(Coordinate[] pts) {
     int n = geomPointsLen(pts);
 		for (int i = 0; i < n; i++) {
       if (limitEnv.intersects(pts[i]))
-        findNearVertex(pts, i);
+        findNearVertex(pts[i]);
 		}
-	}
+  }
 	
-	private void findNearVertex(Coordinate[] linePts, int index)
+	private void findNearVertex(Coordinate linePt)
 	{
 		for (Iterator i = linestrings.iterator(); i.hasNext(); ) {
 			LineString testLine = (LineString) i.next();
-			findNearVertex(linePts, index, testLine);
+			findNearVertex(linePt, testLine);
 		}
 	}
 
@@ -96,13 +114,11 @@ class StretchedVertexFinder
    * If there are several near points, the stretched
    * geometry is likely to be distorted anyway.
    * 
-   * @param targetPts
-   * @param index
+   * @param targetPt
    * @param testLine
    */
-	private void findNearVertex(Coordinate[] targetPts, int index, LineString testLine)
+	private void findNearVertex(Coordinate targetPt, LineString testLine)
 	{
-    Coordinate targetPt = targetPts[index];
 		Coordinate[] testPts = testLine.getCoordinates();
     // don't process the last point of a ring twice
     int n = geomPointsLen(testPts);
@@ -114,7 +130,7 @@ class StretchedVertexFinder
 			// is near to vertex?
 			double dist = testPt.distance(targetPt);
 			if (dist <= tolerance && dist != 0.0) {
-				stretchVert = new StretchedVertex(targetPt, targetPts, index, testPt, testPts, i);
+				stretchVert = new StretchedVertex(targetPt, testPt, testPts, i);
 			}
       // is near segment?
 			else if (i < testPts.length - 1) {
@@ -133,7 +149,7 @@ class StretchedVertexFinder
 				// Here we know point is not near the segment endpoints.
 				// Check if it is near the segment at all.
 				if (isPointNearButNotOnSeg(targetPt, testPt, segEndPt, tolerance)) {
-					stretchVert = new StretchedVertex(targetPt, targetPts, i, new LineSegment(testPt, testPts[i + 1]));
+					stretchVert = new StretchedVertex(targetPt, new LineSegment(testPt, testPts[i + 1]));
 				}
 			}
 			if (stretchVert != null)

@@ -2,28 +2,36 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
 package org.locationtech.jtstest.testbuilder;
 
-import java.text.NumberFormat;
-import java.util.List;
-
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Polygon;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.text.NumberFormat;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -32,12 +40,27 @@ import javax.swing.SwingUtilities;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.util.Assert;
-import org.locationtech.jtstest.testbuilder.model.*;
-import org.locationtech.jtstest.testbuilder.ui.*;
-import org.locationtech.jtstest.testbuilder.ui.render.*;
+import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
+import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
+import org.locationtech.jtstest.testbuilder.model.GeometryStretcherView;
+import org.locationtech.jtstest.testbuilder.model.Layer;
+import org.locationtech.jtstest.testbuilder.model.LayerList;
+import org.locationtech.jtstest.testbuilder.model.StaticGeometryContainer;
+import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
+import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
+import org.locationtech.jtstest.testbuilder.ui.GeometryLocationsWriter;
+import org.locationtech.jtstest.testbuilder.ui.Viewport;
+import org.locationtech.jtstest.testbuilder.ui.render.DrawingGrid;
+import org.locationtech.jtstest.testbuilder.ui.render.GeometryPainter;
+import org.locationtech.jtstest.testbuilder.ui.render.GridElement;
+import org.locationtech.jtstest.testbuilder.ui.render.LayerRenderer;
+import org.locationtech.jtstest.testbuilder.ui.render.LegendElement;
+import org.locationtech.jtstest.testbuilder.ui.render.RenderManager;
+import org.locationtech.jtstest.testbuilder.ui.render.Renderer;
+import org.locationtech.jtstest.testbuilder.ui.render.TitleElement;
+import org.locationtech.jtstest.testbuilder.ui.render.ViewStyle;
 import org.locationtech.jtstest.testbuilder.ui.style.AWTUtil;
-import org.locationtech.jtstest.testbuilder.ui.tools.*;
+import org.locationtech.jtstest.testbuilder.ui.tools.Tool;
 
 
 /**
@@ -49,17 +72,12 @@ import org.locationtech.jtstest.testbuilder.ui.tools.*;
  */
 public class GeometryEditPanel extends JPanel 
 {	
-  public static Color VIEW_backgroundColor = AppColors.GEOM_VIEW_BACKGROUND;
-  
-	/*
-  private static Color[] selectedPointColor = { new Color(0, 64, 128, 255),
-      new Color(170, 64, 0, 255) };
-*/
-
   private TestBuilderModel tbModel;
   
   private DrawingGrid grid = new DrawingGrid();
-  private GridRenderer gridRenderer;
+  private GridElement gridElement;
+  private LegendElement legendElement;
+  private TitleElement titleElement;
 
   boolean stateAddingPoints = false;
 
@@ -78,8 +96,14 @@ public class GeometryEditPanel extends JPanel
   
   GeometryPopupMenu menu = new GeometryPopupMenu();
 
+  private ViewStyle viewStyle;
+
   public GeometryEditPanel() {
-    gridRenderer = new GridRenderer(viewport, grid);
+    viewStyle = new ViewStyle();
+    gridElement = new GridElement(viewport, grid);
+    legendElement = new LegendElement(viewport);
+    titleElement = new TitleElement(viewport);
+    
     try {
       initUI();
     } catch (Exception ex) {
@@ -96,7 +120,7 @@ public class GeometryEditPanel extends JPanel
         this_componentResized(e);
       }
     });
-    this.setBackground(VIEW_backgroundColor);
+    this.setBackground(viewStyle.getBackground());
     this.setBorder(BorderFactory.createLoweredBevelBorder());
     this.setLayout(borderLayout1);
     
@@ -129,15 +153,6 @@ public class GeometryEditPanel extends JPanel
   public void setModel(TestBuilderModel model) {
     this.tbModel = model;
   }
-
-  public Color getViewBackground() {
-    return VIEW_backgroundColor;
-  }
-  
-  public void setViewBackground(Color clr) {
-    VIEW_backgroundColor = clr;
-    updateView();
-  }
   
   public TestBuilderModel getModel() {
     return tbModel;
@@ -147,10 +162,18 @@ public class GeometryEditPanel extends JPanel
     return tbModel.getGeometryEditModel();
   }
 
-  public void setGridEnabled(boolean isEnabled) {
-    gridRenderer.setEnabled(isEnabled);
+  public ViewStyle getViewStyle() {
+    return viewStyle;
   }
-
+  
+  public void setViewStyle(ViewStyle viewStyle) {
+    this.viewStyle = viewStyle;
+  }
+  
+  public Color getBackgroundColor() {
+    return viewStyle.getBackground();
+  }
+  
   public Viewport getViewport() { return viewport; }
 
   public void updateView()
@@ -200,11 +223,6 @@ public class GeometryEditPanel extends JPanel
     forceRepaint();
   }
 
-  public void setGridSize(double gridSize) {
-    grid.setGridSize(gridSize);
-    forceRepaint();
-  }
-
   public void setHighlightPoint(Coordinate pt) {
     markPoint = pt;
   }
@@ -243,28 +261,26 @@ public class GeometryEditPanel extends JPanel
     return writer.writeLocationString(getLayerList(), pt, toleranceInModel);
   }
 
-  public double getGridSize() {
-    return grid.getGridSize();
-  }
-
   public void paintComponent(Graphics g) {
     super.paintComponent(g);
     renderMgr.render();
     renderMgr.copyImage(g);
   }
   
-  /*
-   // MD - obsolete
-  public void render(Graphics g)
-  {
-    Graphics2D g2 = (Graphics2D) g;
-    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-        RenderingHints.VALUE_ANTIALIAS_ON);
+  private void drawBorder(Graphics2D g, Color clr) {    
+    Stroke strokeBox = new BasicStroke(1, // Width of stroke
+        BasicStroke.CAP_BUTT,  // End cap style
+        BasicStroke.JOIN_MITER, // Join style
+        10,                  // Miter limit
+        null, // Dash pattern
+        0);                   // Dash phase 
+    g.setStroke(strokeBox);
+    g.setPaint(clr);
     
-    gridRenderer.paint(g2);
-    getLayerList().paint((Graphics2D) g2, viewport);
+    int height = (int) viewport.getHeightInView();
+    int width = (int) viewport.getWidthInView();
+    g.drawRect(0,0,width - 1, height - 1);
   }
-  */
   
   private static int VERTEX_SIZE = AppConstants.VERTEX_SIZE + 1;
   private static double VERTEX_SIZE_OVER_2 = VERTEX_SIZE / 2;
@@ -416,11 +432,12 @@ public class GeometryEditPanel extends JPanel
   public void flash(Geometry g)
   {
     Graphics2D gr = (Graphics2D) getGraphics();
-    gr.setXORMode(VIEW_backgroundColor);
+    gr.setXORMode(viewStyle.getBackground());
     Stroke stroke = new BasicStroke(5);
     
     Geometry flashGeom = g;
-    if (g instanceof org.locationtech.jts.geom.Point)
+    double vSize = viewSize(g);
+    if (vSize <= 2 || g instanceof org.locationtech.jts.geom.Point)
       flashGeom = flashPointGeom(g);
     
     try {
@@ -433,7 +450,12 @@ public class GeometryEditPanel extends JPanel
     }
     gr.setPaintMode();
   }
-    
+  
+  private double viewSize(Geometry geom) {
+    Envelope env = geom.getEnvelopeInternal();
+    return viewport.toView(env.getDiameter());
+  }
+  
   private Geometry flashPointGeom(Geometry g)
   {
     double ptRadius = viewport.toModel(4);
@@ -457,7 +479,12 @@ public class GeometryEditPanel extends JPanel
   public void setCurrentTool(Tool newTool) {
     if (currentTool != null) currentTool.deactivate();
     currentTool = newTool;
-    if (currentTool != null) currentTool.activate(this);
+    if (currentTool != null) {
+      currentTool.activate(this);
+    }
+    else {
+      setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
   }
 
   public void zoomToGeometry(int i) {
@@ -557,9 +584,8 @@ public class GeometryEditPanel extends JPanel
       }  		
   	}
   	
-    public void render(Graphics2D g)
+    public void render(Graphics2D g2)
     {
-      Graphics2D g2 = g;
       g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
           RenderingHints.VALUE_ANTIALIAS_ON);
       
@@ -574,36 +600,76 @@ public class GeometryEditPanel extends JPanel
         }
       }
       
-      gridRenderer.paint(g2);
+      if (viewStyle.isGridEnabled()) {
+        gridElement.paint(g2);
+      }
+      if (viewStyle.isBorderEnabled()) {
+        drawBorder(g2, viewStyle.getBorderColor());
+      }
       
-      renderLayers(g2);
+      renderLayersTheme(tbModel.getLayersBase(), g2);
+      renderLayers(getLayerList(), true, g2);
+      renderLayersTheme(tbModel.getLayersTop(), g2);
       
       if (isRevealingTopology && isRenderingStretchVertices) {
       	renderMagnifiedVertices(g2);
       }
       
+      if (viewStyle.isGridEnabled()) {
+        gridElement.paintTop(g2);
+      }
+      
       drawMark(g2);
+      
+      if (viewStyle.isLegendEnabled()) {
+        legendElement.setBorderEnabled(viewStyle.isLegendBorderEnabled());
+        legendElement.setBorderColor(viewStyle.getBorderColor());
+        legendElement.setFill(viewStyle.getLegendFill());
+        legendElement.paint(tbModel.getLayersLegend(), g2);
+      }
+      if (viewStyle.isTitleEnabled()) {
+        titleElement.setBorderColor(viewStyle.getBorderColor());
+        titleElement.setBorderEnabled(viewStyle.isTitleBorderEnabled());
+        titleElement.setFill(viewStyle.getTitleFill());
+        titleElement.setTitle(viewStyle.getTitle());
+        titleElement.paint(g2);
+      }
       
     }
     
-    public void renderLayers(Graphics2D g)
+    private void renderLayers(LayerList layerList, boolean allowRevealTopo, Graphics2D g)
     {
-    	LayerList layerList = getLayerList();
-    	int n = layerList.size();
-    	for (int i = 0; i < n; i++) {
-    		if (isRevealingTopology && isRenderingStretchVertices
-            && stretchView != null && i < 2) {
-          //System.out.println("rendering stretch verts");
-      		currentRenderer = new LayerRenderer(layerList.getLayer(i),
-      				new StaticGeometryContainer(stretchView.getStretchedGeometry(i)),
-      				viewport);
-        }
-    		else {
-    			currentRenderer = new LayerRenderer(layerList.getLayer(i), viewport);
-        }
-    		currentRenderer.render(g);
-    	}
-    	currentRenderer = null;
+      int n = layerList.size();
+      for (int i = 0; i < n; i++) {
+        Layer layer = layerList.getLayer(i);
+        currentRenderer = createRenderer(layer, i, allowRevealTopo);
+        currentRenderer.render(g);
+      }
+      currentRenderer = null;
+    }
+
+    private void renderLayersTheme(LayerList layerList, Graphics2D g)
+    {
+      int n = layerList.size();
+      for (int i = n - 1; i >= 0; i--) {
+        Layer layer = layerList.getLayer(i);
+        currentRenderer = createRenderer(layer, i, false);
+        currentRenderer.render(g);
+      }
+      currentRenderer = null;
+    }
+
+    private Renderer createRenderer(Layer layer, int i, boolean isAllowRevealTopo) {
+      if (isAllowRevealTopo && isRevealingTopology && isRenderingStretchVertices
+          && stretchView != null && i < 2) {
+        //System.out.println("rendering stretch verts");
+      	return new LayerRenderer(layer,
+      			new StaticGeometryContainer(stretchView.getStretchedGeometry(i)),
+      			viewport);
+      }
+      else {
+      	return new LayerRenderer(layer, viewport);
+      }
     }
     
     public void renderMagnifiedVertices(Graphics2D g)
@@ -687,6 +753,12 @@ public class GeometryEditPanel extends JPanel
   	}
 
   }
+
+
+
+
+
+
 }
 
 

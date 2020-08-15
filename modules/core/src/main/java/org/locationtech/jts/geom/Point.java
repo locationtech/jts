@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -20,13 +20,13 @@ import org.locationtech.jts.util.Assert;
  *
  * A <code>Point</code> is topologically valid if and only if:
  * <ul>
- * <li>the coordinate which defines it (if any) is a valid coordinate 
+ * <li>the coordinate which defines it (if any) is a valid coordinate
  * (i.e. does not have an <code>NaN</code> X or Y ordinate)
  * </ul>
- * 
+ *
  *@version 1.7
  */
-public class Point 
+public class Point
 	extends Geometry
 	implements Puntal
 {
@@ -116,7 +116,7 @@ public class Point
   }
 
   public String getGeometryType() {
-    return "Point";
+    return Geometry.TYPENAME_POINT;
   }
 
   /**
@@ -158,7 +158,7 @@ public class Point
 	    filter.filter(getCoordinate());
 	  }
 
-  public void apply(CoordinateSequenceFilter filter) 
+  public void apply(CoordinateSequenceFilter filter)
   {
 	    if (isEmpty())
         return;
@@ -185,19 +185,24 @@ public class Point
   public Object clone() {
     return copy();
   }
-  
+
   protected Point copyInternal() {
     return new Point(coordinates.copy(), factory);
   }
 
-  public Geometry reverse()
-  {
-    return copy();
+  /** @deprecated */
+  public Geometry reverse() {
+    return super.reverse();
   }
-  
-  public void normalize() 
-  { 
-    // a Point is always in normalized form 
+
+  protected Geometry reverseInternal()
+  {
+    return getFactory().createPoint(coordinates.copy());
+  }
+
+  public void normalize()
+  {
+    // a Point is always in normalized form
   }
 
   protected int compareToSameClass(Object other) {
@@ -211,8 +216,8 @@ public class Point
     return comp.compare(this.coordinates, point.coordinates);
   }
   
-  protected int getSortIndex() {
-    return Geometry.SORTINDEX_POINT;
+  protected int getTypeCode() {
+    return Geometry.TYPECODE_POINT;
   }
 
   public CoordinateSequence getCoordinateSequence() {

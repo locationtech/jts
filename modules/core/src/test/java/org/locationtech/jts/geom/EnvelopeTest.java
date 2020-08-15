@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -76,17 +76,24 @@ public class EnvelopeTest extends TestCase {
 		assertTrue(e1.intersects(e4));
 	}
 
-	public void testIntersects() {
-		checkIntersectsPermuted(1,1, 2,2, 2,2, 3,3, true);
-		checkIntersectsPermuted(1,1, 2,2, 3,3, 4,4, false);
-	}
+  public void testIntersects() {
+    checkIntersectsPermuted(1,1, 2,2, 2,2, 3,3, true);
+    checkIntersectsPermuted(1,1, 2,2, 3,3, 4,4, false);
+  }
 
-	public void testIntersectsEmpty() {
-		assertTrue(!new Envelope(-5, 5, -5, 5).intersects(new Envelope()));
-		assertTrue(!new Envelope().intersects(new Envelope(-5, 5, -5, 5)));
-		assertTrue(!new Envelope().intersects(new Envelope(100, 101, 100, 101)));
-		assertTrue(!new Envelope(100, 101, 100, 101).intersects(new Envelope()));
-	}
+  public void testIntersectsEmpty() {
+    assertTrue(!new Envelope(-5, 5, -5, 5).intersects(new Envelope()));
+    assertTrue(!new Envelope().intersects(new Envelope(-5, 5, -5, 5)));
+    assertTrue(!new Envelope().intersects(new Envelope(100, 101, 100, 101)));
+    assertTrue(!new Envelope(100, 101, 100, 101).intersects(new Envelope()));
+  }
+
+  public void testDisjointEmpty() {
+    assertTrue(new Envelope(-5, 5, -5, 5).disjoint(new Envelope()));
+    assertTrue(new Envelope().disjoint(new Envelope(-5, 5, -5, 5)));
+    assertTrue(new Envelope().disjoint(new Envelope(100, 101, 100, 101)));
+    assertTrue(new Envelope(100, 101, 100, 101).disjoint(new Envelope()));
+  }
 
 	public void testContainsEmpty() {
 		assertTrue(!new Envelope(-5, 5, -5, 5).contains(new Envelope()));
@@ -185,14 +192,27 @@ public class EnvelopeTest extends TestCase {
 		assertTrue(!new Envelope(1, 2, 1.5, 2).equals(new Envelope(1, 2, 1, 2)));
 	}
 
-	public void testCopyConstructor() throws Exception {
-		Envelope e1 = new Envelope(1, 2, 3, 4);
-		Envelope e2 = new Envelope(e1);
-		assertEquals(1, e2.getMinX(), 1E-5);
-		assertEquals(2, e2.getMaxX(), 1E-5);
-		assertEquals(3, e2.getMinY(), 1E-5);
-		assertEquals(4, e2.getMaxY(), 1E-5);
-	}
+  public void testCopyConstructor() throws Exception {
+    Envelope e1 = new Envelope(1, 2, 3, 4);
+    Envelope e2 = new Envelope(e1);
+    assertEquals(1, e2.getMinX(), 1E-5);
+    assertEquals(2, e2.getMaxX(), 1E-5);
+    assertEquals(3, e2.getMinY(), 1E-5);
+    assertEquals(4, e2.getMaxY(), 1E-5);
+  }
+
+  public void testCopy() throws Exception {
+    Envelope e1 = new Envelope(1, 2, 3, 4);
+    Envelope e2 = e1.copy();
+    assertEquals(1, e2.getMinX(), 1E-5);
+    assertEquals(2, e2.getMaxX(), 1E-5);
+    assertEquals(3, e2.getMinY(), 1E-5);
+    assertEquals(4, e2.getMaxY(), 1E-5);
+    
+    Envelope eNull = new Envelope();
+    Envelope eNullCopy = eNull.copy();
+    assertTrue(eNullCopy.isNull());
+  }
 
 	public void testGeometryFactoryCreateEnvelope()
 	throws Exception
@@ -209,9 +229,21 @@ public class EnvelopeTest extends TestCase {
 				poly10);
 		checkExpectedEnvelopeGeometry("POLYGON ((5 10, 10 6, 5 0, 0 6, 5 10))",
 				poly10);
-
-		
 	}
+	
+  public void testMetrics() {
+    Envelope env = new Envelope(0, 4, 0, 3);
+    assertEquals(env.getWidth(), 4.0);
+    assertEquals(env.getHeight(), 3.0);
+    assertEquals(env.getDiameter(), 5.0);
+  }
+
+  public void testEmptyMetrics() {
+    Envelope env = new Envelope();
+    assertEquals(env.getWidth(), 0.0);
+    assertEquals(env.getHeight(), 0.0);
+    assertEquals(env.getDiameter(), 0.0);
+  }
 
 	private void checkIntersectsPermuted(double a1x, double a1y, double a2x, double a2y, double b1x, double b1y, double b2x, double b2y, boolean expected) {
 		checkIntersects(a1x, a1y, a2x, a2y, b1x, b1y, b2x, b2y, expected);
@@ -222,13 +254,14 @@ public class EnvelopeTest extends TestCase {
 	private void checkIntersects(double a1x, double a1y, double a2x, double a2y, double b1x, double b1y, double b2x, double b2y, boolean expected) {
 		Envelope a = new Envelope(a1x, a2x, a1y, a2y); 
 		Envelope b = new Envelope(b1x, b2x, b1y, b2y); 
-		assertEquals(expected, a.intersects(b));
+    assertEquals(expected, a.intersects(b));
+    assertEquals(expected, ! a.disjoint(b));
 		
 		Coordinate a1 = new Coordinate(a1x, a1y);
 		Coordinate a2 = new Coordinate(a2x, a2y);
 		Coordinate b1 = new Coordinate(b1x, b1y);
 		Coordinate b2 = new Coordinate(b2x, b2y);
-		assertEquals(expected, Envelope.intersects(a1, a2, b1, b2));
+    assertEquals(expected, Envelope.intersects(a1, a2, b1, b2));
 		
 		assertEquals(expected, a.intersects(b1, b2));
 	}

@@ -145,7 +145,7 @@
 </case>
 
 <case>
-  <desc>mP - multipolygon (invalid) with topology collapse</desc>
+  <desc>mA - multipolygon (invalid) with topology collapse</desc>
   <a>    MULTIPOLYGON (((0 0, 150 0, 150 1, 0 0)), 
   ((180 0, 20 0, 20 100, 180 100, 180 0)))
   </a>
@@ -156,6 +156,82 @@
   </test>
 </case>
 
+<case>
+  <desc>P - empty Point</desc>
+  <a> POINT EMPTY
+  </a>
+  <test>
+    <op name="union" arg1="A">
+  POINT EMPTY
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>L - empty LineString</desc>
+  <a> LINESTRING EMPTY
+  </a>
+  <test>
+    <op name="union" arg1="A">
+  LINESTRING EMPTY
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>A - empty Polygon</desc>
+  <a> POLYGON EMPTY
+  </a>
+  <test>
+    <op name="union" arg1="A">
+  POLYGON EMPTY
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>mP - empty MultiPoint</desc>
+  <a> MULTIPOINT EMPTY
+  </a>
+  <test>
+    <op name="union" arg1="A">
+  POINT EMPTY
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>mL - empty MultiLineString</desc>
+  <a>    MULTILINESTRING EMPTY
+  </a>
+  <test>
+    <op name="union" arg1="A">
+  LINESTRING EMPTY
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>mA - empty MultiPolygon</desc>
+  <a>    MULTIPOLYGON EMPTY
+  </a>
+  <test>
+    <op name="union" arg1="A">
+  POLYGON EMPTY
+    </op>
+  </test>
+</case>
+
+<case>
+  <desc>GC - empty GeometryCollection</desc>
+  <a>    GEOMETRYCOLLECTION EMPTY
+  </a>
+  <test>
+    <op name="union" arg1="A">
+  GEOMETRYCOLLECTION EMPTY
+    </op>
+  </test>
+</case>
 
 
 </run>

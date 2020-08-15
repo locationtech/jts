@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -21,12 +21,12 @@ import org.locationtech.jts.algorithm.Orientation;
 
 /**
  * Represents a polygon with linear edges, which may include holes.
- * The outer boundary (shell) 
+ * The outer boundary (shell)
  * and inner boundaries (holes) of the polygon are represented by {@link LinearRing}s.
  * The boundary rings of the polygon may have any orientation.
  * Polygons are closed, simple geometries by definition.
  * <p>
- * The polygon model conforms to the assertions specified in the 
+ * The polygon model conforms to the assertions specified in the
  * <A HREF="http://www.opengis.org/techno/specs.htm">OpenGIS Simple Features
  * Specification for SQL</A>.
  * <p>
@@ -37,15 +37,15 @@ import org.locationtech.jts.algorithm.Orientation;
  * (i.e. are closed and do not self-intersect)
  * <li>holes touch the shell or another hole at at most one point
  * (which implies that the rings of the shell and holes must not cross)
- * <li>the interior of the polygon is connected,  
- * or equivalently no sequence of touching holes 
+ * <li>the interior of the polygon is connected,
+ * or equivalently no sequence of touching holes
  * makes the interior of the polygon disconnected
  * (i.e. effectively split the polygon into two pieces).
  * </ul>
  *
  *@version 1.7
  */
-public class Polygon 
+public class Polygon
 	extends Geometry
 	implements Polygonal
 {
@@ -174,7 +174,7 @@ public class Polygon
   public boolean isEmpty() {
     return shell.isEmpty();
   }
-  
+
   public boolean isRectangle()
   {
     if (getNumInteriorRing() != 0) return false;
@@ -221,7 +221,7 @@ public class Polygon
   }
 
   public String getGeometryType() {
-    return "Polygon";
+    return Geometry.TYPENAME_POLYGON;
   }
 
   /**
@@ -307,13 +307,13 @@ public class Polygon
 	    }
 	  }
 
-  public void apply(CoordinateSequenceFilter filter) 
+  public void apply(CoordinateSequenceFilter filter)
   {
 	    shell.apply(filter);
       if (! filter.isDone()) {
         for (int i = 0; i < holes.length; i++) {
           holes[i].apply(filter);
-          if (filter.isDone()) 
+          if (filter.isDone())
             break;
         }
       }
@@ -344,7 +344,7 @@ public class Polygon
 
     return copy();
   }
-  
+
   protected Polygon copyInternal() {
     LinearRing shellCopy = (LinearRing) shell.copy();
     LinearRing[] holeCopies = new LinearRing[this.holes.length];
@@ -395,8 +395,8 @@ public class Polygon
     return 0;
   }
   
-  protected int getSortIndex() {
-    return Geometry.SORTINDEX_POLYGON;
+  protected int getTypeCode() {
+    return Geometry.TYPECODE_POLYGON;
   }
 
   private LinearRing normalized(LinearRing ring, boolean clockwise) {
@@ -417,14 +417,20 @@ public class Polygon
       CoordinateSequences.reverse(seq);
   }
 
+  /** @deprecated */
   public Geometry reverse() {
-    Polygon poly = (Polygon) copy();
-    poly.shell = (LinearRing) shell.copy().reverse();
-    poly.holes = new LinearRing[holes.length];
+    return super.reverse();
+  }
+
+  protected Geometry reverseInternal()
+  {
+    LinearRing shell = (LinearRing) getExteriorRing().reverse();
+    LinearRing[] holes = new LinearRing[getNumInteriorRing()];
     for (int i = 0; i < holes.length; i++) {
-      poly.holes[i] = (LinearRing) holes[i].copy().reverse();
+      holes[i] = (LinearRing) getInteriorRingN(i).reverse();
     }
-    return poly;// return the clone
+
+    return getFactory().createPolygon(shell, holes);
   }
 }
 

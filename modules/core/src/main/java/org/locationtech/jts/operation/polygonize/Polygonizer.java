@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -252,7 +252,8 @@ public class Polygonizer
     //Debug.printTime("Validate Rings");
     
     findShellsAndHoles(validEdgeRingList);
-    assignHolesToShells(holeList, shellList);
+    HoleAssigner.assignHolesToShells(holeList, shellList);
+    
     // order the shells to make any subsequent processing deterministic
     Collections.sort(shellList, new EdgeRing.EnvelopeComparator());
 
@@ -288,27 +289,6 @@ public class Polygonizer
         holeList.add(er);
       else
         shellList.add(er);
-    }
-  }
-
-  private static void assignHolesToShells(List holeList, List shellList)
-  {
-    for (Iterator i = holeList.iterator(); i.hasNext(); ) {
-      EdgeRing holeER = (EdgeRing) i.next();
-      assignHoleToShell(holeER, shellList);
-      /*
-      if ( ! holeER.hasShell()) {
-        System.out.println("DEBUG: Outer hole: " + holeER);
-      }
-      */
-    }
-  }
-
-  private static void assignHoleToShell(EdgeRing holeER, List shellList)
-  {
-    EdgeRing shell = EdgeRing.findEdgeRingContaining(holeER, shellList);
-    if (shell != null) {
-      shell.addHole(holeER);
     }
   }
 

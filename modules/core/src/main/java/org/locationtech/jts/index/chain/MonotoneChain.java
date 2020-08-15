@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -58,6 +58,12 @@ import org.locationtech.jts.geomgraph.index.MonotoneChainEdge;
  * is not necessary to build lists of instantiated objects to represent the segments
  * returned by the query.
  * Queries made in this manner are thread-safe.
+ * 
+ * MonotoneChains support being assigned an integer id value
+ * to provide a total ordering for a set of chains.
+ * This can be used during some kinds of processing to 
+ * avoid redundant comparisons
+ * (i.e. by comparing only chains where the first id is less than the second).
  *
  * @version 1.7
  */
@@ -69,6 +75,13 @@ public class MonotoneChain {
   private Object context = null;// user-defined information
   private int id;// useful for optimizing chain comparisons
 
+  /**
+   * Creates a new MonotoneChain based on the given array of points.
+   * @param pts the points containing the chain
+   * @param start the index of the first coordinate in the chain
+   * @param end the index of the last coordinate in the chain 
+   * @param context a user-defined data object
+   */
   public MonotoneChain(Coordinate[] pts, int start, int end, Object context)
   {
     this.pts    = pts;
@@ -77,14 +90,40 @@ public class MonotoneChain {
     this.context = context;
   }
 
+  /**
+   * Sets the id of this chain.
+   * Useful for assigning an ordering to a set of 
+   * chains, which can be used to avoid redundant processing.
+   * 
+   * @param id an id value
+   */
   public void setId(int id) { this.id = id; }
+  
+  /**
+   * Gets the id of this chain.
+   * 
+   * @return the id value
+   */
   public int getId() { return id; }
 
+  /**
+   * Gets the user-defined context data value.
+   * 
+   * @return a data value
+   */
   public Object getContext() { return context; }
 
+  /**
+   * Gets the envelope of the chain.
+   * 
+   * @return the envelope of the chain
+   */
   public Envelope getEnvelope()
   {
     if (env == null) {
+      /**
+       * The monotonicity property allows fast envelope determination
+       */
       Coordinate p0 = pts[start];
       Coordinate p1 = pts[end];
       env = new Envelope(p0, p1);
@@ -92,7 +131,20 @@ public class MonotoneChain {
     return env;
   }
 
+  /**
+   * Gets the index of the start of the monotone chain
+   * in the underlying array of points.
+   * 
+   * @return the start index of the chain
+   */
   public int getStartIndex()  { return start; }
+  
+  /**
+   * Gets the index of the end of the monotone chain
+   * in the underlying array of points.
+   * 
+   * @return the end index of the chain
+   */
   public int getEndIndex()    { return end; }
 
   /**
@@ -191,6 +243,18 @@ public class MonotoneChain {
     computeOverlaps(start, end, mc, mc.start, mc.end, mco);
   }
 
+  /**
+   * Uses an efficient mutual binary search strategy 
+   * to determine which pairs of chain segments 
+   * may overlap, and calls the given overlap action on them.
+   * 
+   * @param start0 the start index of this chain section
+   * @param end0 the end index of this chain section
+   * @param mc the target monotone chain
+   * @param start1 the start index of the target chain section
+   * @param end1 the end index of the target chain section  
+   * @param mco the overlap action to execute on selected segments
+   */
   private void computeOverlaps(
     int start0, int end0,
     MonotoneChain mc,
@@ -221,14 +285,20 @@ public class MonotoneChain {
       if (mid1 < end1)   computeOverlaps(mid0,   end0, mc, mid1,    end1, mco);
     }
   }
+  
   /**
-   * Tests whether the envelopes of two chain sections overlap (intersect).
+   * Tests whether the envelope of a section of the chain 
+   * overlaps (intersects) the envelope of a section of another target chain.
+   * This test is efficient due to the monotonicity property 
+   * of the sections (i.e. the envelopes can be are determined 
+   * from the section endpoints
+   * rather than a full scan).
    * 
-   * @param start0
-   * @param end0
-   * @param mc
-   * @param start1
-   * @param end1
+   * @param start0 the start index of this chain section
+   * @param end0 the end index of this chain section
+   * @param mc the target monotone chain
+   * @param start1 the start index of the target chain section
+   * @param end1 the end index of the target chain section
    * @return true if the section envelopes overlap
    */
   private boolean overlaps(

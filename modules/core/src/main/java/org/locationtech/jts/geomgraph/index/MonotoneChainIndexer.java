@@ -5,9 +5,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geomgraph.Quadrant;
+import org.locationtech.jts.util.IntArrayList;
 
 
 /**
@@ -64,11 +65,28 @@ public class MonotoneChainIndexer {
   {
     // find the startpoint (and endpoints) of all monotone chains in this edge
     int start = 0;
-    List startIndexList = new ArrayList();
-    startIndexList.add(new Integer(start));
+    IntArrayList startIndexList = new IntArrayList(pts.length / 2);
+    // use heuristic to size initial array
+    //startIndexList.ensureCapacity(pts.length / 4);
+    startIndexList.add(start);
     do {
       int last = findChainEnd(pts, start);
-      startIndexList.add(new Integer(last));
+      startIndexList.add(last);
+      start = last;
+    } while (start < pts.length - 1);
+    // copy list to an array of ints, for efficiency
+    return startIndexList.toArray();
+  }  
+  
+  public int[] OLDgetChainStartIndices(Coordinate[] pts)
+  {
+    // find the startpoint (and endpoints) of all monotone chains in this edge
+    int start = 0;
+    List startIndexList = new ArrayList();
+    startIndexList.add(start);
+    do {
+      int last = findChainEnd(pts, start);
+      startIndexList.add(last);
       start = last;
     } while (start < pts.length - 1);
     // copy list to an array of ints, for efficiency

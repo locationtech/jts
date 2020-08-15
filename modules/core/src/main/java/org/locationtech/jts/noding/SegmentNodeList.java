@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -112,7 +112,7 @@ public class SegmentNodeList
       Coordinate p2 = edge.getCoordinate(i + 2);
       if (p0.equals2D(p2)) {
         // add base of collapse as node
-        collapsedVertexIndexes.add(new Integer(i + 1));
+        collapsedVertexIndexes.add(i + 1);
       }
     }
   }
@@ -134,7 +134,7 @@ public class SegmentNodeList
       SegmentNode ei = (SegmentNode) it.next();
       boolean isCollapsed = findCollapseIndex(eiPrev, ei, collapsedVertexIndex);
       if (isCollapsed)
-        collapsedVertexIndexes.add(new Integer(collapsedVertexIndex[0]));
+        collapsedVertexIndexes.add(collapsedVertexIndex[0]);
 
       eiPrev = ei;
     }

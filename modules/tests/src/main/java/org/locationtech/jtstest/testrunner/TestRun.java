@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -29,7 +29,7 @@ public class TestRun implements Runnable
 	// default is to run all cases
 	private int testCaseIndexToRun = -1;
   private String description;
-  private List testCases = new ArrayList();
+  private List<TestCase> testCases = new ArrayList<TestCase>();
   private PrecisionModel precisionModel;
   private GeometryOperation geomOp = null;
   private ResultMatcher resultMatcher = null;
@@ -76,8 +76,7 @@ public class TestRun implements Runnable
 
   public int getTestCount() {
     int count = 0;
-    for (Iterator i = testCases.iterator(); i.hasNext(); ) {
-      TestCase testCase = (TestCase) i.next();
+    for (TestCase testCase : testCases) {
       count += testCase.getTestCount();
     }
     return count;
@@ -98,9 +97,9 @@ public class TestRun implements Runnable
   public GeometryOperation getGeometryOperation()
   {
   	// use the main one if it was user-specified or this run does not have an op specified
-  	if (TopologyTestApp.isGeometryOperationSpecified()
+  	if (JTSTestRunnerCmd.isGeometryOperationSpecified()
   			|| geomOp == null)
-  		return TopologyTestApp.getGeometryOperation();
+  		return JTSTestRunnerCmd.getGeometryOperation();
   	
   	return geomOp;
   }
@@ -108,14 +107,14 @@ public class TestRun implements Runnable
   public ResultMatcher getResultMatcher()
   {
   	// use the main one if it was user-specified or this run does not have an op specified
-  	if (TopologyTestApp.isResultMatcherSpecified()
+  	if (JTSTestRunnerCmd.isResultMatcherSpecified()
   			|| resultMatcher == null)
-  		return TopologyTestApp.getResultMatcher();
+  		return JTSTestRunnerCmd.getResultMatcher();
   	
   	return resultMatcher;
   }
   
-  public List getTestCases() {
+  public List<TestCase> getTestCases() {
     return Collections.unmodifiableList(testCases);
   }
 
@@ -123,13 +122,18 @@ public class TestRun implements Runnable
     return testFile;
   }
 
+  public String getTestFileName() {
+    if (testFile == null) 
+      return "";
+    return testFile.getName();
+  }
+
   public void addTestCase(TestCase testCase) {
     testCases.add(testCase);
   }
 
   public void run() {
-    for (Iterator j = testCases.iterator(); j.hasNext(); ) {
-      TestCase testCase = (TestCase) j.next();
+    for (TestCase testCase : testCases ) {
       if (testCaseIndexToRun < 0 || testCase.getCaseIndex() == testCaseIndexToRun)
       	testCase.run();
     }

@@ -5,9 +5,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -125,7 +125,7 @@ public class OffsetCurveSetBuilder {
    */
   private void addPoint(Point p)
   {
-    // a zero or negative width buffer of a line/point is empty
+    // a zero or negative width buffer of a point is empty
     if (distance <= 0.0) 
       return;
     Coordinate[] coord = p.getCoordinates();
@@ -135,18 +135,30 @@ public class OffsetCurveSetBuilder {
   
   private void addLineString(LineString line)
   {
-    // a zero or negative width buffer of a line/point is empty
-    if (distance <= 0.0 && ! curveBuilder.getBufferParameters().isSingleSided()) 
-      return;
+    if (curveBuilder.isLineOffsetEmpty(distance)) return;
+    
     Coordinate[] coord = CoordinateArrays.removeRepeatedPoints(line.getCoordinates());
-    Coordinate[] curve = curveBuilder.getLineCurve(coord, distance);
-    addCurve(curve, Location.EXTERIOR, Location.INTERIOR);
-
+    
+    /**
+     * Rings (closed lines) are generated with a continuous curve, 
+     * with no end arcs. This produces better quality linework, 
+     * and avoids noding issues with arcs around almost-parallel end segments.
+     * See JTS #523 and #518.
+     * 
+     * Singled-sided buffers currently treat rings as if they are lines.
+     */
+    if (CoordinateArrays.isRing(coord) && ! curveBuilder.getBufferParameters().isSingleSided()) {
+      addRingBothSides(coord, distance);
+    }
+    else {
+      Coordinate[] curve = curveBuilder.getLineCurve(coord, distance);
+      addCurve(curve, Location.EXTERIOR, Location.INTERIOR);
+    }
     // TESTING
     //Coordinate[] curveTrim = BufferCurveLoopPruner.prune(curve); 
     //addCurve(curveTrim, Location.EXTERIOR, Location.INTERIOR);
   }
-
+  
   private void addPolygon(Polygon p)
   {
     double offsetDistance = distance;
@@ -162,11 +174,11 @@ public class OffsetCurveSetBuilder {
     // if the polygon would be completely eroded
     if (distance < 0.0 && isErodedCompletely(shell, distance))
         return;
-    // don't attemtp to buffer a polygon with too few distinct vertices
+    // don't attempt to buffer a polygon with too few distinct vertices
     if (distance <= 0.0 && shellCoord.length < 3)
     	return;
 
-    addPolygonRing(
+    addRingSide(
             shellCoord,
             offsetDistance,
             offsetSide,
@@ -186,7 +198,7 @@ public class OffsetCurveSetBuilder {
       // Holes are topologically labelled opposite to the shell, since
       // the interior of the polygon lies on their opposite side
       // (on the left, if the hole is oriented CCW)
-      addPolygonRing(
+      addRingSide(
             holeCoord,
             offsetDistance,
             Position.opposite(offsetSide),
@@ -195,20 +207,33 @@ public class OffsetCurveSetBuilder {
     }
   }
   
+  private void addRingBothSides(Coordinate[] coord, double distance)
+  {
+    addRingSide(coord, distance,
+      Position.LEFT, 
+      Location.EXTERIOR, Location.INTERIOR);
+    /* Add the opposite side of the ring
+    */
+    addRingSide(coord, distance,
+      Position.RIGHT,
+      Location.INTERIOR, Location.EXTERIOR);
+  }
+  
   /**
-   * Adds an offset curve for a polygon ring.
+   * Adds an offset curve for one side of a ring.
    * The side and left and right topological location arguments
-   * assume that the ring is oriented CW.
-   * If the ring is in the opposite orientation,
-   * the left and right locations must be interchanged and the side flipped.
+   * are provided as if the ring is oriented CW.
+   * (If the ring is in the opposite orientation,
+   * this is detected and 
+   * the left and right locations are interchanged and the side is flipped.)
    *
    * @param coord the coordinates of the ring (must not contain repeated points)
-   * @param offsetDistance the distance at which to create the buffer
-   * @param side the side of the ring on which to construct the buffer line
+   * @param offsetDistance the positive distance at which to create the buffer
+   * @param side the side {@link Position} of the ring on which to construct the buffer line
    * @param cwLeftLoc the location on the L side of the ring (if it is CW)
    * @param cwRightLoc the location on the R side of the ring (if it is CW)
    */
-  private void addPolygonRing(Coordinate[] coord, double offsetDistance, int side, int cwLeftLoc, int cwRightLoc)
+  private void addRingSide(Coordinate[] coord, double offsetDistance, int side, int cwLeftLoc, int cwRightLoc)
   {
     // don't bother adding ring if it is "flat" and will disappear in the output
     if (offsetDistance == 0.0 && coord.length < LinearRing.MINIMUM_VALID_SIZE)

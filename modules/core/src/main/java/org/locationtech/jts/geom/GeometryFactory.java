@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -28,7 +28,8 @@ import org.locationtech.jts.util.Assert;
  * Note that the factory constructor methods do <b>not</b> change the input coordinates in any way.
  * In particular, they are not rounded to the supplied <tt>PrecisionModel</tt>.
  * It is assumed that input Coordinates meet the given precision.
- *
+ * <p>
+ * Instances of this class are thread-safe.
  *
  * @version 1.7
  */
@@ -252,6 +253,11 @@ public class GeometryFactory
     return precisionModel;
   }
 
+  /**
+   * Constructs an empty {@link Point} geometry.
+   * 
+   * @return an empty Point
+   */
   public Point createPoint() {
 	return createPoint(getCoordinateSequenceFactory().create(new Coordinate[]{}));
   }
@@ -278,6 +284,11 @@ public class GeometryFactory
   	return new Point(coordinates, this);
   }
   
+  /**
+   * Constructs an empty {@link MultiLineString} geometry.
+   * 
+   * @return an empty MultiLineString
+   */
   public MultiLineString createMultiLineString() {
     return new MultiLineString(null, this);
   }
@@ -293,6 +304,11 @@ public class GeometryFactory
   	return new MultiLineString(lineStrings, this);
   }
   
+  /**
+   * Constructs an empty {@link GeometryCollection} geometry.
+   * 
+   * @return an empty GeometryCollection
+   */
   public GeometryCollection createGeometryCollection() {
     return new GeometryCollection(null, this);
   }
@@ -308,6 +324,11 @@ public class GeometryFactory
   	return new GeometryCollection(geometries, this);
   }
   
+  /**
+   * Constructs an empty {@link MultiPolygon} geometry.
+   * 
+   * @return an empty MultiPolygon
+   */
   public MultiPolygon createMultiPolygon() {
     return new MultiPolygon(null, this);
   }
@@ -327,6 +348,11 @@ public class GeometryFactory
     return new MultiPolygon(polygons, this);
   }
   
+  /**
+   * Constructs an empty {@link LinearRing} geometry.
+   * 
+   * @return an empty LinearRing
+   */
   public LinearRing createLinearRing() {
     return createLinearRing(getCoordinateSequenceFactory().create(new Coordinate[]{}));
   }
@@ -356,6 +382,11 @@ public class GeometryFactory
     return new LinearRing(coordinates, this);
   }
   
+  /**
+   * Constructs an empty {@link MultiPoint} geometry.
+   * 
+   * @return an empty MultiPoint
+   */
   public MultiPoint createMultiPoint() {
     return new MultiPoint(null, this);
   }
@@ -477,6 +508,11 @@ public class GeometryFactory
     return createPolygon(shell, null);
   }
   
+  /**
+   * Constructs an empty {@link Polygon} geometry.
+   * 
+   * @return an empty polygon
+   */
   public Polygon createPolygon() {
     return createPolygon(null, null);
   }
@@ -559,6 +595,11 @@ public class GeometryFactory
     return geom0;
   }
   
+  /**
+   * Constructs an empty {@link LineString} geometry.
+   * 
+   * @return an empty LineString
+   */
   public LineString createLineString() {
     return createLineString(getCoordinateSequenceFactory().create(new Coordinate[]{}));
   }
@@ -582,6 +623,24 @@ public class GeometryFactory
 	return new LineString(coordinates, this);
   }
 
+  /**
+   * Creates an empty atomic geometry of the given dimension.
+   * If passed a dimension of -1 will create an empty {@link GeometryCollection}.
+   * 
+   * @param dimension the required dimension (-1, 0, 1 or 2)
+   * @return an empty atomic geometry of given dimension
+   */
+  public Geometry createEmpty(int dimension) {
+    switch (dimension) {
+    case -1: return createGeometryCollection();
+    case 0: return createPoint();
+    case 1: return createLineString();
+    case 2: return createPolygon();
+    default:
+      throw new IllegalArgumentException("Invalid dimension: " + dimension);
+    }
+  }
+  
   /**
    * Creates a deep copy of the input {@link Geometry}.
    * The {@link CoordinateSequenceFactory} defined for this factory

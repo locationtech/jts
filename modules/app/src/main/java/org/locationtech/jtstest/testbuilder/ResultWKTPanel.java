@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -63,11 +63,7 @@ extends JPanel
   GridLayout rButtonPanelLayout = new GridLayout();
   BorderLayout rPanelLayout = new BorderLayout();
   BorderLayout tabPanelLayout = new BorderLayout();
-	
-  private final ImageIcon copyIcon = new ImageIcon(this.getClass().getResource("Copy.png"));
-  private final ImageIcon copyToTestIcon = new ImageIcon(this.getClass().getResource("CopyToTest.png"));
-  private final ImageIcon clearIcon = new ImageIcon(this.getClass().getResource("Delete_small.png"));
-	
+		
 	public ResultWKTPanel() {
 		try {
 			jbInit();
@@ -82,19 +78,19 @@ extends JPanel
    
     jScrollPane1.setBorder(BorderFactory.createLoweredBevelBorder());
     
-    JButton copyButton = SwingUtil.createButton(copyIcon, "Copy Result (Ctl-click for formatted)", 
+    JButton copyButton = SwingUtil.createButton(AppIcons.COPY, "Copy Result (Ctl-click for formatted)", 
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         rCopyButton_actionPerformed(e);
       }
     });
-    JButton copyToTestButton = SwingUtil.createButton(copyToTestIcon, "Copy Result to new Test",
+    JButton copyToTestButton = SwingUtil.createButton(AppIcons.COPY_TO_TEST, "Copy Result to new Test",
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         JTSTestBuilderFrame.instance().copyResultToTest();
       }
     });
-    JButton btnClearResult = SwingUtil.createButton(clearIcon, "Clear Result",         
+    JButton btnClearResult = SwingUtil.createButton(AppIcons.CUT, "Clear Result",         
         new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         JTSTestBuilder.controller().clearResult();
@@ -140,7 +136,7 @@ extends JPanel
     memoryLabel.setToolTipText("JVM Memory Usage");
 
     //-------------------------------------
-    JButton btnInspect = SwingUtil.createButton(AppIcons.INSPECT_GEOM, "Inspect", new ActionListener() {
+    JButton btnInspect = SwingUtil.createButton(AppIcons.GEOM_INSPECT, "Inspect", new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         JTSTestBuilder.controller().inspectResult();
       }        

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -110,13 +110,19 @@ public class VoronoiDiagramBuilder
 		if (subdiv != null) return;
 		
 		Envelope siteEnv = DelaunayTriangulationBuilder.envelope(siteCoords);
-		diagramEnv = siteEnv;
-		// add a buffer around the final envelope
-		double expandBy = Math.max(diagramEnv.getWidth(), diagramEnv.getHeight());
-		diagramEnv.expandBy(expandBy);
-		if (clipEnv != null)
-			diagramEnv.expandToInclude(clipEnv);
-		
+		diagramEnv = clipEnv;
+		if (diagramEnv == null) {
+		  /** 
+		   * If no user-provided clip env, 
+		   * create one which encloses all the sites,
+		   * with a buffer around the edges.
+		   */
+  		diagramEnv = siteEnv;
+  		// add a buffer around the sites envelope
+  		double expandBy = diagramEnv.getDiameter();
+  		diagramEnv.expandBy(expandBy);
+		}
+
 		List vertices = DelaunayTriangulationBuilder.toVertices(siteCoords);
 		subdiv = new QuadEdgeSubdivision(siteEnv, tolerance);
 		IncrementalDelaunayTriangulator triangulator = new IncrementalDelaunayTriangulator(subdiv);

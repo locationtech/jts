@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -43,9 +43,37 @@ public class LineSegmentTest extends TestCase {
     
     LineSegment seg2 = new LineSegment(10, 0, 20, 0);
     assertTrue(seg2.projectionFactor(new Coordinate(11, 0)) == 0.1);
-    
   }
   
+  public void testLineIntersection() {
+    // simple case
+    checkLineIntersection(
+        0,0,  10,10,
+        0,10, 10,0,
+        5,5);
+
+    //Almost collinear - See JTS GitHub issue #464
+    checkLineIntersection(
+        35613471.6165017, 4257145.306132293, 35613477.7705378, 4257160.528222711,
+        35613477.77505724, 4257160.539653536, 35613479.85607389, 4257165.92369170,
+        35613477.772841461, 4257160.5339209242 );
+  }
+  
+  private static final double MAX_ABS_ERROR_INTERSECTION = 1e-5;
+  
+  private void checkLineIntersection(double p1x, double p1y, double p2x, double p2y, 
+      double q1x, double q1y, double q2x, double q2y, 
+      double expectedx, double expectedy) {
+    LineSegment seg1 = new LineSegment(p1x, p1y, p2x, p2y);
+    LineSegment seg2 = new LineSegment(q1x, q1y, q2x, q2y);
+    
+    Coordinate actual = seg1.lineIntersection(seg2);
+    Coordinate expected = new Coordinate( expectedx, expectedy );
+    double dist = actual.distance(expected);
+    //System.out.println("Expected: " + expected + "  Actual: " + actual + "  Dist = " + dist);
+    assertTrue(dist <= MAX_ABS_ERROR_INTERSECTION);
+  }
+
   public void testOffset() throws Exception
   {
     checkOffset(0, 0, 10, 10, 0.0, ROOT2, -1, 1);
@@ -79,6 +107,19 @@ public class LineSegmentTest extends TestCase {
   	if (Math.abs(p0.x - p1.x) > tolerance) return false;
   	if (Math.abs(p0.y - p1.y) > tolerance) return false;
   	return true;
+  }
+  
+  public void testReflect() {
+    checkReflect(0, 0, 10, 10, 1,2, 2 ,1 );
+    checkReflect(0, 1, 10, 1, 1, 2, 1, 0 );
+  }
+  
+  void checkReflect(double x0, double y0, double x1, double y1, double x, double y, 
+      double expectedX, double expectedY)
+  {
+    LineSegment seg = new LineSegment(x0, y0, x1, y1);
+    Coordinate p = seg.reflect(new Coordinate(x, y));
+    assertTrue(equalsTolerance(new Coordinate(expectedX, expectedY), p, 0.000001));
   }
   
   public void testOrientationIndexCoordinate()

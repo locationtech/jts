@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -44,9 +44,7 @@ import org.locationtech.jts.util.Assert;
  * by setting the third bit of the <tt>wkbType</tt> word.
  * EWKB format is upward compatible with the original SFS WKB format.
  * <p>
- * Empty Points cannot be represented in WKB; an
- * {@link IllegalArgumentException} will be thrown if one is
- * written. 
+ * Empty Points are output as a Point with <code>NaN</code> X and Y ordinate values. 
  * <p>
  * The WKB specification does not support representing {@link LinearRing}s;
  * they will be written as {@link LineString}s.
@@ -330,11 +328,13 @@ public class WKBWriter
 
   private void writePoint(Point pt, OutStream os) throws IOException
   {
-    if (pt.getCoordinateSequence().size() == 0)
-      throw new IllegalArgumentException("Empty Points cannot be represented in WKB");
     writeByteOrder(os);
     writeGeometryType(WKBConstants.wkbPoint, pt, os);
-    writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
+    if (pt.getCoordinateSequence().size() == 0) {
+      writeNaNs(2, os);
+    } else {
+      writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
+    }
   }
 
   private void writeLineString(LineString line, OutStream os)
@@ -421,6 +421,15 @@ public class WKBWriter
     	if (seq.getDimension() >= 3)
     		ordVal = seq.getOrdinate(index, 2);
       ByteOrderValues.putDouble(ordVal, buf, byteOrder);
+      os.write(buf, 8);
+    }
+  }
+  
+  private void writeNaNs(int numNaNs, OutStream os)
+      throws IOException
+  {
+    for (int i = 0; i < numNaNs; i++) {
+      ByteOrderValues.putDouble(Double.NaN, buf, byteOrder);
       os.write(buf, 8);
     }
   }

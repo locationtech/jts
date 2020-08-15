@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -20,7 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
-import org.locationtech.jts.algorithm.PointLocation;
+import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
+import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateList;
@@ -28,6 +29,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 import org.locationtech.jts.io.WKTWriter;
@@ -53,81 +55,47 @@ class EdgeRing {
    * This routine is only safe to use if the chosen point of the hole
    * is known to be properly contained in a shell
    * (which is guaranteed to be the case if the hole does not touch its shell)
-   *
+   * <p>
+   * To improve performance of this function the caller should 
+   * make the passed shellList as small as possible (e.g.
+   * by using a spatial index filter beforehand).
+   * 
    * @return containing EdgeRing, if there is one
    * or null if no containing EdgeRing is found
    */
-  public static EdgeRing findEdgeRingContaining(EdgeRing testEr, List shellList)
+  public static EdgeRing findEdgeRingContaining(EdgeRing testEr, List erList)
   {
     LinearRing testRing = testEr.getRing();
     Envelope testEnv = testRing.getEnvelopeInternal();
     Coordinate testPt = testRing.getCoordinateN(0);
 
-    EdgeRing minShell = null;
-    Envelope minShellEnv = null;
-    for (Iterator it = shellList.iterator(); it.hasNext(); ) {
-      EdgeRing tryShell = (EdgeRing) it.next();
-      LinearRing tryShellRing = tryShell.getRing();
-      Envelope tryShellEnv = tryShellRing.getEnvelopeInternal();
+    EdgeRing minRing = null;
+    Envelope minRingEnv = null;
+    for (Iterator it = erList.iterator(); it.hasNext(); ) {
+      EdgeRing tryEdgeRing = (EdgeRing) it.next();
+      LinearRing tryRing = tryEdgeRing.getRing();
+      Envelope tryShellEnv = tryRing.getEnvelopeInternal();
       // the hole envelope cannot equal the shell envelope
       // (also guards against testing rings against themselves)
       if (tryShellEnv.equals(testEnv)) continue;
+      
       // hole must be contained in shell
       if (! tryShellEnv.contains(testEnv)) continue;
       
-      testPt = CoordinateArrays.ptNotInList(testRing.getCoordinates(), tryShellRing.getCoordinates());
-      boolean isContained = false;
-      if (PointLocation.isInRing(testPt, tryShellRing.getCoordinates()) )
-        isContained = true;
+      testPt = CoordinateArrays.ptNotInList(testRing.getCoordinates(), tryEdgeRing.getCoordinates());
+ 
+      boolean isContained = tryEdgeRing.isInRing(testPt);
 
-      // check if this new containing ring is smaller than the current minimum ring
+      // check if the new containing ring is smaller than the current minimum ring
       if (isContained) {
-        if (minShell == null
-            || minShellEnv.contains(tryShellEnv)) {
-          minShell = tryShell;
-          minShellEnv = minShell.getRing().getEnvelopeInternal();
+        if (minRing == null
+            || minRingEnv.contains(tryShellEnv)) {
+          minRing = tryEdgeRing;
+          minRingEnv = minRing.getRing().getEnvelopeInternal();
         }
       }
     }
-    return minShell;
-  }
-
-  /**
-   * Finds a point in a list of points which is not contained in another list of points
-   * @param testPts the {@link Coordinate}s to test
-   * @param pts an array of {@link Coordinate}s to test the input points against
-   * @return a {@link Coordinate} from <code>testPts</code> which is not in <code>pts</code>,
-   * or null if there is no coordinate not in the list
-   * 
-   * @deprecated Use CoordinateArrays.ptNotInList instead
-   */
-  public static Coordinate ptNotInList(Coordinate[] testPts, Coordinate[] pts)
-  {
-    for (int i = 0; i < testPts.length; i++) {
-      Coordinate testPt = testPts[i];
-      if (! isInList(testPt, pts))
-          return testPt;
-    }
-    return null;
-  }
-
-  /**
-   * Tests whether a given point is in an array of points.
-   * Uses a value-based test.
-   *
-   * @param pt a {@link Coordinate} for the test point
-   * @param pts an array of {@link Coordinate}s to test
-   * @return <code>true</code> if the point is in the array
-   * 
-   * @deprecated
-   */
-  public static boolean isInList(Coordinate pt, Coordinate[] pts)
-  {
-    for (int i = 0; i < pts.length; i++) {
-        if (pt.equals(pts[i]))
-            return true;
-    }
-    return false;
+    return minRing;
   }
   
   /**
@@ -158,7 +126,8 @@ class EdgeRing {
   
   // cache the following data for efficiency
   private LinearRing ring = null;
-
+  private IndexedPointInAreaLocator locator;
+  
   private Coordinate[] ringPts = null;
   private List holes;
   private EdgeRing shell;
@@ -278,6 +247,21 @@ class EdgeRing {
     this.isIncludedSet = true;
   }
 
+  private PointOnGeometryLocator getLocator() {
+    if (locator == null) {
+      locator = new IndexedPointInAreaLocator(getRing());
+    }
+    return locator;
+  }
+  
+  public boolean isInRing(Coordinate pt) {
+    /**
+     * Use an indexed point-in-polygon for performance
+     */
+    return Location.EXTERIOR != getLocator().locate(pt);
+    //return PointLocation.isInRing(pt, getCoordinates());
+  }
+  
   /**
    * Computes the list of coordinates which are contained in this ring.
    * The coordinates are computed once only and cached.
@@ -391,8 +375,20 @@ class EdgeRing {
     return getOuterHole() != null;
   }
   
+  /**
+   * Gets the outer hole of a shell, if it has one.
+   * An outer hole is one that is not contained
+   * in any other shell.  
+   * Each disjoint connected group of shells
+   * is surrounded by an outer hole.
+   * 
+   * @return the outer hole edge ring, or null
+   */
   public EdgeRing getOuterHole()
   {
+    /*
+     * Only shells can have outer holes
+     */
     if (isHole()) return null;
     /*
      * A shell is an outer shell if any edge is also in an outer hole.

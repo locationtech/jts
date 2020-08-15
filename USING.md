@@ -2,12 +2,11 @@
 
 ## Project Structure
 
-JTS consists of several Java modules.
-Each one corresponds to a separate JAR file.
+JTS consists of several Java modules, each one corresponds to a separate JAR file.
 
 The core modules are:
 
-* `jts-core` - The JTS  core: geometry model, operations, algorithms, and spatial data structures
+* `jts-core` - geometry model, operations, algorithms, and spatial data structures
 * `jts-io-common` - I/O classes for open spatial formats
 
 The following modules depend on proprietary libraries, and are not built by default:
@@ -25,6 +24,9 @@ The following modules are applications and data for testing and working with JTS
 To include JTS in a Maven project, add a dependency block like the following:
 
 ```xml
+<properties>
+    <jts.version>1.16.1</jts.version>
+</properties>
 <dependency>
     <groupId>org.locationtech.jts</groupId>
     <artifactId>jts-core</artifactId>
@@ -32,20 +34,24 @@ To include JTS in a Maven project, add a dependency block like the following:
 </dependency>
 ```
 
-JTS snapshot artifacts are published to the LocationTech Maven repository. To include JTS in a project, add the following repositories to the pom.
+JTS artifacts are available on maven central.
+
+### Using JTS Snapshots
+
+Our [build server](https://ci.eclipse.org/jts/) publishes to the LocationTech Maven repository. To include JTS in a project, add the following repositories to the pom:
 
 ```xml
 <repositories>
   <repository>
     <id>locationtech-releases</id>
-    <url>https://repo.locationtech.org/content/groups/releases</url>
+    <url>https://repo.eclipse.org/content/groups/releases</url>
     <snapshots>
       <enabled>false</enabled>
     </snapshots>
   </repository>
   <repository>
     <id>jts-snapshots</id>
-    <url>https://repo.locationtech.org/content/repositories/jts-snapshots</url>
+    <url>https://repo.eclipse.org/content/repositories/jts-snapshots</url>
     <releases>
       <enabled>false</enabled>
     </releases>
@@ -55,11 +61,25 @@ JTS snapshot artifacts are published to the LocationTech Maven repository. To in
    </repository>
 </repositories>
 ```
-## Using older versions of JTS with Maven
 
-Older versions of JTS are available on Maven Central.
+The latest snapshot builds are now avaialble:
 
-### 1.14
+```xml
+<properties>
+    <jts.version>1.17.0-SNAPSHOT</jts.version>
+</properties>
+<dependency>
+    <groupId>org.locationtech.jts</groupId>
+    <artifactId>jts-core</artifactId>
+    <version>${jts.version}</version>
+</dependency>
+```
+
+### Using prior versions of JTS with Maven
+
+Older versions are available on Maven Central:
+
+JTS 1.14.0:
 
 ```xml
 <dependency>
@@ -73,7 +93,8 @@ Older versions of JTS are available on Maven Central.
     <version>1.14.0</version>
 </dependency>
 ```
-### 1.13
+
+JTS 1.13:
 
 ```xml
 <dependency>
@@ -83,7 +104,9 @@ Older versions of JTS are available on Maven Central.
 </dependency>
 ```
 
-## Using JTS with Jigsaw
+Prior releases can also be downloaded from [Source Forge](https://sourceforge.net/projects/jts-topo-suite/files/jts/).
+
+## Using JTS with Jigsaw Modules
 
 JTS uses [#ModuleNameInManifest](http://openjdk.java.net/projects/jigsaw/spec/issues/#ModuleNameInManifest) to export a module name for each of the JARs published for use as a library. In this way, you can depend on the various JTS modules in your `module-info.java` in the following way:
 
@@ -100,16 +123,5 @@ module org.foo.baz {
 
 ## JTS Tools
 
-JTS includes some application tools.
+JTS includes various application tools, which are documented [here](doc/TOOLS.md).
 
-### TestBuilder
-
-The TestBuilder is a GUI application which allows creating and visualizing geometry, and executing JTS functions.
-
-* Run from project root: 
-     
-       java -jar modules/app/target/JTSTestBuilder.jar
-     
-* Run with Metal L&F (useful for Mac)
-
-       java -Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel -jar modules/app/target/JTSTestBuilder.jar

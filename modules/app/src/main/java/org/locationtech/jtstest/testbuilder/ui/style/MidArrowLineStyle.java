@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -47,7 +47,7 @@ public class MidArrowLineStyle
     //      graphics.setStroke(1.0);
     Point2D mid = new Point2D.Float((float) ((p0.getX() + p1.getX()) / 2),
         (float) ((p0.getY() + p1.getY()) / 2));
-    GeneralPath arrowhead = ArrowEndpointStyle.arrowheadPath(p0, p1, mid,
+    GeneralPath arrowhead = ArrowLineEndStyle.arrowheadPath(p0, p1, mid,
     		HEAD_LENGTH, HEAD_ANGLE);
     graphics.draw(arrowhead);
   }

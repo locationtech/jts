@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -22,7 +22,7 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 
 /**
- * Extracts a single representative {@link Coordinate} 
+ * Extracts a representative {@link Coordinate} 
  * from each connected component of a {@link Geometry}.
  *
  * @version 1.9
@@ -32,13 +32,15 @@ public class ComponentCoordinateExtracter
 {
 
   /**
-   * Extracts the linear components from a single geometry.
+   * Extracts a representative {@link Coordinate}
+   * from each connected component in a geometry.
+   * <p>
    * If more than one geometry is to be processed, it is more
    * efficient to create a single {@link ComponentCoordinateExtracter} instance
-   * and pass it to multiple geometries.
+   * and pass it to each geometry.
    *
    * @param geom the Geometry from which to extract
-   * @return a list of Coordinates
+   * @return a list of representative Coordinates
    */
   public static List getCoordinates(Geometry geom)
   {

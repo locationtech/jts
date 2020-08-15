@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -46,16 +46,25 @@ public class PointLocatorTest extends TestCase {
 "POLYGON ((-40 80, -40 -80, 20 0, 20 -100, 40 40, 80 -80, 100 80, 140 -20, 120 140, 40 180,     60 40, 0 120, -20 -20, -40 80))");
   }
 
-  public void testPointLocatorLinearRingLineString() throws Exception
+  public void testLinearRingLineString() throws Exception
   {
     runPtLocator(Location.BOUNDARY, new Coordinate(0, 0),
                  "GEOMETRYCOLLECTION( LINESTRING(0 0, 10 10), LINEARRING(10 10, 10 20, 20 10, 10 10))");
   }
 
-  public void testPointLocatorPointInsideLinearRing() throws Exception
+  public void testPointInsideLinearRing() throws Exception
   {
     runPtLocator(Location.EXTERIOR, new Coordinate(11, 11),
                  "LINEARRING(10 10, 10 20, 20 10, 10 10)");
+  }
+
+  public void testPolygon() throws Exception {
+    PointLocator pointLocator = new PointLocator();
+    Geometry polygon = reader.read("POLYGON ((70 340, 430 50, 70 50, 70 340))");
+    assertEquals(Location.EXTERIOR, pointLocator.locate(new Coordinate(420, 340), polygon));
+    assertEquals(Location.BOUNDARY, pointLocator.locate(new Coordinate(350, 50), polygon));
+    assertEquals(Location.BOUNDARY, pointLocator.locate(new Coordinate(410, 50), polygon));
+    assertEquals(Location.INTERIOR, pointLocator.locate(new Coordinate(190, 150), polygon));
   }
 
    private void runPtLocator(int expected, Coordinate pt, String wkt)

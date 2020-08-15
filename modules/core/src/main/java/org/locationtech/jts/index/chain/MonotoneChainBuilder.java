@@ -1,12 +1,10 @@
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -27,63 +25,48 @@ import org.locationtech.jts.geomgraph.Quadrant;
  */
 public class MonotoneChainBuilder {
 
-  public static int[] toIntArray(List list)
-  {
-    int[] array = new int[list.size()];
-    for (int i = 0; i < array.length; i++) {
-      array[i] = ((Integer) list.get(i)).intValue();
-    }
-    return array;
-  }
-
+  /**
+   * Computes a list of the {@link MonotoneChain}s
+   * for a list of coordinates.
+   * 
+   * @param pts the list of points to compute chains for
+   * @return a list of the monotone chains for the points 
+   */
   public static List getChains(Coordinate[] pts)
   {
     return getChains(pts, null);
   }
 
   /**
-   * Return a list of the {@link MonotoneChain}s
-   * for the given list of coordinates.
+   * Computes a list of the {@link MonotoneChain}s
+   * for a list of coordinates, 
+   * attaching a context data object to each.
+   * 
+   * @param pts the list of points to compute chains for
+   * @param context a data object to attach to each chain
+   * @return a list of the monotone chains for the points 
    */
   public static List getChains(Coordinate[] pts, Object context)
   {
     List mcList = new ArrayList();
-    int[] startIndex = getChainStartIndices(pts);
-    for (int i = 0; i < startIndex.length - 1; i++) {
-      MonotoneChain mc = new MonotoneChain(pts, startIndex[i], startIndex[i + 1], context);
-      mcList.add(mc);
-    }
-    return mcList;
-  }
-
-  /**
-   * Return an array containing lists of start/end indexes of the monotone chains
-   * for the given list of coordinates.
-   * The last entry in the array points to the end point of the point array,
-   * for use as a sentinel.
-   */
-  public static int[] getChainStartIndices(Coordinate[] pts)
-  {
-    // find the startpoint (and endpoints) of all monotone chains in this edge
-    int start = 0;
-    List startIndexList = new ArrayList();
-    startIndexList.add(new Integer(start));
+    int chainStart = 0;
     do {
-      int last = findChainEnd(pts, start);
-      startIndexList.add(new Integer(last));
-      start = last;
-    } while (start < pts.length - 1);
-    // copy list to an array of ints, for efficiency
-    int[] startIndex = toIntArray(startIndexList);
-    return startIndex;
+      int chainEnd = findChainEnd(pts, chainStart);
+      MonotoneChain mc = new MonotoneChain(pts, chainStart, chainEnd, context);
+      mcList.add(mc);
+      chainStart = chainEnd;
+    } while (chainStart < pts.length -1);
+    return mcList;
   }
 
   /**
    * Finds the index of the last point in a monotone chain
    * starting at a given point.
-   * Any repeated points (0-length segments) will be included
+   * Repeated points (0-length segments) are included
    * in the monotone chain returned.
    * 
+   * @param pts the points to scan
+   * @param start the index of the start of this chain
    * @return the index of the last point in the monotone chain 
    * starting at <code>start</code>.
    */
@@ -114,7 +97,4 @@ public class MonotoneChainBuilder {
     return last - 1;
   }
 
-
-  public MonotoneChainBuilder() {
-  }
 }

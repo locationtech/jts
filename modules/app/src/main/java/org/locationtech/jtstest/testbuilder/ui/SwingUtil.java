@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -13,7 +13,10 @@
 package org.locationtech.jtstest.testbuilder.ui;
 
 import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 import java.util.Collection;
@@ -34,7 +37,10 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.text.JTextComponent;
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jtstest.util.ExceptionFormatter;
 import org.locationtech.jtstest.util.StringUtil;
+import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 
 public class SwingUtil {
@@ -128,7 +134,7 @@ public class SwingUtil {
       val = Integer.parseInt(str);
     } catch (NumberFormatException ex) {
     }
-    return new Integer(val);
+    return val;
   }
   
   public static Double convertDouble(String str) {
@@ -137,7 +143,7 @@ public class SwingUtil {
       val = Double.parseDouble(str);
     } catch (NumberFormatException ex) {
     }
-    return new Double(val);
+    return val;
   }
   
   public static Integer getInteger(JTextField txt, Integer defaultVal) {
@@ -150,7 +156,7 @@ public class SwingUtil {
       val = Integer.parseInt(str);
     } catch (NumberFormatException ex) {
     }
-    return new Integer(val);
+    return val;
   }
   
   public static Double getDouble(JTextField txt, Double defaultVal) {
@@ -163,7 +169,7 @@ public class SwingUtil {
       val = Double.parseDouble(str);
     } catch (NumberFormatException ex) {
     }
-    return new Double(val);
+    return val;
   }
   
   public static String value(JTextComponent txt) {
@@ -217,7 +223,7 @@ public class SwingUtil {
         return null;
     }
   }
-
+    
   public static void reportException(Component c, Exception e) {
     JOptionPane.showMessageDialog(c, StringUtil.wrap(e.toString(), 80), "Exception",
         JOptionPane.ERROR_MESSAGE);
@@ -268,8 +274,18 @@ public class SwingUtil {
     return (e.getModifiers() & InputEvent.CTRL_MASK) == InputEvent.CTRL_MASK;
   }
 
+  public static boolean isShiftKeyPressed(ActionEvent e) {
+    return (e.getModifiers() & InputEvent.SHIFT_MASK) == InputEvent.SHIFT_MASK;
+  }
+
   public static void showTab(JTabbedPane tabPane, String tabName)
   {
     tabPane.setSelectedIndex(tabPane.indexOfTab(tabName));
+  }
+  
+  public static void setAntiAlias(Graphics2D g, boolean isOn) {
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+        isOn ? RenderingHints.VALUE_ANTIALIAS_ON : RenderingHints.VALUE_ANTIALIAS_OFF);
+
   }
 }

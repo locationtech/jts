@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -27,6 +27,7 @@ import org.locationtech.jts.geom.Polygon;
  * (e.g. a polygon, linestring or point)
  * and returns them in a list. The elements of the list are 
  * {@link org.locationtech.jts.operation.distance.GeometryLocation}s.
+ * Empty geometries do not provide a location item.
  *
  * @version 1.7
  */
@@ -56,6 +57,8 @@ public class ConnectedElementLocationFilter
 
   public void filter(Geometry geom)
   {
+    // empty geometries do not provide a location
+    if (geom.isEmpty()) return;
     if (geom instanceof Point
       || geom instanceof LineString
       || geom instanceof Polygon )

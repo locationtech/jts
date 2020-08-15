@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -18,10 +18,10 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 
-import junit.framework.TestCase;
-import test.jts.junit.GeometryUtils;
+import test.jts.GeometryTestCase;
+import test.jts.util.IOUtil;
 
-public class UnaryUnionTest extends TestCase 
+public class UnaryUnionTest extends GeometryTestCase 
 {
 	GeometryFactory geomFact = new GeometryFactory();
 	
@@ -37,6 +37,18 @@ public class UnaryUnionTest extends TestCase
   throws Exception
   {
     doTest(new String[]{}, "GEOMETRYCOLLECTION EMPTY");
+  }
+
+  public void testEmptyPolygon()
+  throws Exception
+  {
+    doTest("POLYGON EMPTY", "POLYGON EMPTY");
+  }
+
+  public void testEmptyPointWithLine()
+  throws Exception
+  {
+    doTest(new String[]{ "POINT EMPTY", "LINESTRING (0 0, 1 1)"}, "LINESTRING (0 0, 1 1)");
   }
 
   public void testPoints()
@@ -61,14 +73,23 @@ public class UnaryUnionTest extends TestCase
   private void doTest(String[] inputWKT, String expectedWKT) 
   throws ParseException
   {
-  	Geometry result;
-  	Collection geoms = GeometryUtils.readWKT(inputWKT);
-  	if (geoms.size() == 0)
-  		result = UnaryUnionOp.union(geoms, geomFact);
-  	else
-  		result = UnaryUnionOp.union(geoms);
-  	
-  	assertTrue(GeometryUtils.isEqual(GeometryUtils.readWKT(expectedWKT), result));
+    Geometry result;
+    Collection geoms = readList(inputWKT);
+    if (geoms.size() == 0)
+      result = UnaryUnionOp.union(geoms, geomFact);
+    else
+      result = UnaryUnionOp.union(geoms);
+    
+    checkEqual(read(expectedWKT), result);
+  }
+
+  private void doTest(String inputWKT, String expectedWKT) 
+  throws ParseException
+  {
+    Geometry geom = read(inputWKT);
+    Geometry result = UnaryUnionOp.union(geom);
+    
+    checkEqual(read(expectedWKT), result);
   }
 
 }

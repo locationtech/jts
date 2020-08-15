@@ -5,9 +5,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -342,7 +342,6 @@ public class DirectedEdgeStar
   public void computeDepths(DirectedEdge de)
   {
     int edgeIndex = findIndex(de);
-    Label label = de.getLabel();
     int startDepth = de.getDepth(Position.LEFT);
     int targetLastDepth = de.getDepth(Position.RIGHT);
     // compute the depths from this edge up to the end of the edge array
@@ -366,7 +365,6 @@ public class DirectedEdgeStar
     int currDepth = startDepth;
     for (int i = startIndex; i < endIndex ; i++) {
       DirectedEdge nextDe = (DirectedEdge) edgeList.get(i);
-      Label label = nextDe.getLabel();
       nextDe.setEdgeDepths(Position.RIGHT, currDepth);
       currDepth = nextDe.getDepth(Position.LEFT);
     }

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -50,6 +50,26 @@ public class GeometryFactoryTest extends TestCase {
     checkCreateGeometryExact("GEOMETRYCOLLECTION (POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200)), LINESTRING (250 100, 350 200), POINT (350 150))");
   }
   
+  public void testCreateEmpty() {
+    checkEmpty( geometryFactory.createEmpty(0), Point.class);
+    checkEmpty( geometryFactory.createEmpty(1), LineString.class);
+    checkEmpty( geometryFactory.createEmpty(2), Polygon.class);
+    
+    checkEmpty( geometryFactory.createPoint(), Point.class);
+    checkEmpty( geometryFactory.createLineString(), LineString.class);
+    checkEmpty( geometryFactory.createPolygon(), Polygon.class);
+    
+    checkEmpty( geometryFactory.createMultiPoint(), MultiPoint.class);
+    checkEmpty( geometryFactory.createMultiLineString(), MultiLineString.class);
+    checkEmpty( geometryFactory.createMultiPolygon(), MultiPolygon.class);
+    checkEmpty( geometryFactory.createGeometryCollection(), GeometryCollection.class);
+  }
+  
+  private void checkEmpty(Geometry geom, Class clz) {
+    assertTrue(geom.isEmpty());
+    assertTrue( geom.getClass() == clz );
+  }
+
   public void testDeepCopy() throws ParseException
   {
     Point g = (Point) read("POINT ( 10 10) ");

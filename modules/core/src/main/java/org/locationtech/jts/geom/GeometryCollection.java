@@ -4,16 +4,18 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
 package org.locationtech.jts.geom;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.TreeSet;
 
 import org.locationtech.jts.util.Assert;
@@ -22,7 +24,7 @@ import org.locationtech.jts.util.Assert;
 /**
  * Models a collection of {@link Geometry}s of
  * arbitrary type and dimension.
- * 
+ *
  *
  *@version 1.7
  */
@@ -127,7 +129,7 @@ public class GeometryCollection extends Geometry {
   }
 
   public String getGeometryType() {
-    return "GeometryCollection";
+    return Geometry.TYPENAME_GEOMETRYCOLLECTION;
   }
 
   public Geometry getBoundary() {
@@ -218,7 +220,7 @@ public class GeometryCollection extends Geometry {
   public Object clone() {
     return copy();
   }
-  
+
   protected GeometryCollection copyInternal() {
     Geometry[] geometries = new Geometry[this.geometries.length];
     for (int i = 0; i < geometries.length; i++) {
@@ -267,25 +269,30 @@ public class GeometryCollection extends Geometry {
 
   }
   
-  protected int getSortIndex() {
-    return Geometry.SORTINDEX_GEOMETRYCOLLECTION;
+  protected int getTypeCode() {
+    return Geometry.TYPECODE_GEOMETRYCOLLECTION;
   }
-  
+
   /**
    * Creates a {@link GeometryCollection} with
    * every component reversed.
    * The order of the components in the collection are not reversed.
    *
    * @return a {@link GeometryCollection} in the reverse order
+   * @deprecated
    */
-  public Geometry reverse()
+  public Geometry reverse() {
+    return super.reverse();
+  }
+
+  protected Geometry reverseInternal()
   {
-    int n = geometries.length;
-    Geometry[] revGeoms = new Geometry[n];
-    for (int i = 0; i < geometries.length; i++) {
-      revGeoms[i] = geometries[i].reverse();
+    int numGeometries = geometries.length;
+    Collection<Geometry> reversed = new ArrayList<>(numGeometries);
+    for (int i = 0; i < numGeometries; i++) {
+      reversed.add(geometries[i].reverse());
     }
-    return getFactory().createGeometryCollection(revGeoms);
+    return getFactory().buildGeometry(reversed);
   }
 }
 

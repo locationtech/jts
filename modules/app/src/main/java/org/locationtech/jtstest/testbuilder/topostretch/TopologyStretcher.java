@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -29,7 +29,6 @@ public class TopologyStretcher
 	private double stretchDistance = 0.1;
 	
 	private Geometry[] inputGeoms;
-	private List linestrings;
 	private List[] modifiedCoords;
 	
 	public TopologyStretcher(Geometry g)
@@ -61,9 +60,10 @@ public class TopologyStretcher
   public Geometry[] stretch(double nearnessTol, double stretchDistance, Envelope mask)
   {
 		this.stretchDistance = stretchDistance;
-		linestrings = extractLineStrings(inputGeoms, mask);
+		Collection linestrings = extractLineStrings(inputGeoms, mask);
+		Coordinate[] pts = extractPoints(inputGeoms, mask);
 		
-		List nearVerts = StretchedVertexFinder.findNear(linestrings, nearnessTol, mask);
+		List nearVerts = StretchedVertexFinder.findNear(linestrings, nearnessTol, mask, pts);
 		
 		Map coordinateMoves = getCoordinateMoves(nearVerts);
 		
@@ -92,18 +92,18 @@ public class TopologyStretcher
 		return modifiedCoords;
 	}
 	
-	private List extractLineStrings(Geometry[] geom, Envelope mask)
-	{
-		List lines = new ArrayList();
-		LinearComponentExtracter lineExtracter = new LinearComponentExtracter(lines);
-		for (int i = 0; i < geom.length; i++ ) {
+  private List extractLineStrings(Geometry[] geom, Envelope mask)
+  {
+    List lines = new ArrayList();
+    LinearComponentExtracter lineExtracter = new LinearComponentExtracter(lines);
+    for (int i = 0; i < geom.length; i++ ) {
       if (geom[i] == null) continue;
       
       if (mask != null && ! mask.intersects(geom[i].getEnvelopeInternal()))
         continue;
       
-			geom[i].apply(lineExtracter);
-		}
+      geom[i].apply(lineExtracter);
+    }
     if (mask != null) {
       List masked = new ArrayList();
       for (Iterator i = lines.iterator(); i.hasNext(); ) {
@@ -113,9 +113,27 @@ public class TopologyStretcher
       }
       return masked;
     }
-		return lines;
-	}
-	
+    return lines;
+  }
+  
+  private Coordinate[] extractPoints(Geometry[] geom, Envelope mask)
+  {
+    List<Coordinate> ptsList = new ArrayList<Coordinate>();
+    for (int i = 0; i < geom.length; i++ ) {
+      if (geom[i] == null) continue;
+      if (mask != null && ! mask.intersects(geom[i].getEnvelopeInternal()))
+        continue;
+      
+      Coordinate[] geomPts = geom[i].getCoordinates();
+      for (int j = 0; j < geomPts.length; j++) {
+        Coordinate p = geomPts[j];
+        if (mask == null || mask.contains(p))
+          ptsList.add(p);
+      }
+    }
+    return CoordinateArrays.toCoordinateArray(ptsList);
+  }
+  
 	private Map getCoordinateMoves(List nearVerts)
 	{
 		Map moves = new TreeMap();

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -37,7 +37,7 @@ public abstract class GeometryTestCase extends TestCase{
 
   final GeometryFactory geomFactory;
   
-  final WKTReader reader;
+  final WKTReader readerWKT;
 
   protected GeometryTestCase(String name)
   {
@@ -47,13 +47,24 @@ public abstract class GeometryTestCase extends TestCase{
   protected GeometryTestCase(String name, CoordinateSequenceFactory coordinateSequenceFactory) {
     super(name);
     geomFactory = new GeometryFactory(coordinateSequenceFactory);
-    reader = new WKTReader(geomFactory);
+    readerWKT = new WKTReader(geomFactory);
   }
 
   protected void checkEqual(Geometry expected, Geometry actual) {
     Geometry actualNorm = actual.norm();
     Geometry expectedNorm = expected.norm();
     boolean equal = actualNorm.equalsExact(expectedNorm);
+    if (! equal) {
+      System.out.println("FAIL - Expected = " + expectedNorm
+          + " actual = " + actualNorm );
+    }
+    assertTrue(equal);
+  }
+
+  protected void checkEqual(Geometry expected, Geometry actual, double tolerance) {
+    Geometry actualNorm = actual.norm();
+    Geometry expectedNorm = expected.norm();
+    boolean equal = actualNorm.equalsExact(expectedNorm, tolerance);
     if (! equal) {
       System.out.println("FAIL - Expected = " + expectedNorm
           + " actual = " + actualNorm );
@@ -68,6 +79,27 @@ public abstract class GeometryTestCase extends TestCase{
   GeometryCollection toGeometryCollection(Collection geoms) {
     return geomFactory.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
   }
+  
+  protected void checkEqualXY(Coordinate expected, Coordinate actual) {
+    assertEquals("Coordinate X", expected.getX(), actual.getX() );
+    assertEquals("Coordinate Y", expected.getY(), actual.getY() );
+  }
+  
+  protected void checkEqualXY(String message, Coordinate expected, Coordinate actual) {
+    assertEquals(message + " X", expected.getX(), actual.getX() );
+    assertEquals(message + " Y", expected.getY(), actual.getY() );
+  }
+  
+  protected void checkEqualXY(Coordinate expected, Coordinate actual, double tolerance) {
+    assertEquals("Coordinate X", expected.getX(), actual.getX(), tolerance);
+    assertEquals("Coordinate Y", expected.getY(), actual.getY(), tolerance);
+  }
+  
+  protected void checkEqualXY(String message, Coordinate expected, Coordinate actual, double tolerance) {
+    assertEquals(message + " X", expected.getX(), actual.getX(), tolerance);
+    assertEquals(message + " Y", expected.getY(), actual.getY(), tolerance);
+  }
+ 
   
   /**
    * Reads a {@link Geometry} from a WKT string using a custom {@link GeometryFactory}.
@@ -86,7 +118,8 @@ public abstract class GeometryTestCase extends TestCase{
   }
 
   protected Geometry read(String wkt) {
-    return read(reader, wkt);
+    //return read(readerWKT, wkt);
+    return WKTorBReader.read(wkt, geomFactory);
   }
 
   public static Geometry read(WKTReader reader, String wkt) {

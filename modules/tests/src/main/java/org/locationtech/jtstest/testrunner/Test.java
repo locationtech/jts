@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -33,7 +33,7 @@ public class Test implements Runnable
   private Result expectedResult;
   private int testIndex;
   private String geometryIndex;
-  private ArrayList arguments;
+  private List<String> arguments;
   private TestCase testCase;
   private boolean passed;
   private double tolerance;
@@ -50,14 +50,14 @@ public class Test implements Runnable
    *  "equals") will be performed, the expected result of which is <tt>expectedResult</tt>.
    */
   public Test(TestCase testCase, int testIndex, String description, String operation, String geometryIndex,
-      List arguments, Result expectedResult, double tolerance) {
+      List<String> arguments, Result expectedResult, double tolerance) {
     this.tolerance = tolerance;
     this.description = description;
     this.operation = operation;
     this.expectedResult = expectedResult;
     this.testIndex = testIndex;
     this.geometryIndex = geometryIndex;
-    this.arguments = new ArrayList(arguments);
+    this.arguments = new ArrayList<String>(arguments);
     this.testCase = testCase;
   }
 
@@ -81,6 +81,10 @@ public class Test implements Runnable
     return expectedResult;
   }
 
+  public boolean hasExpectedResult() {
+    return expectedResult != null;
+  }
+  
   public String getOperation() {
     return operation;
   }
@@ -135,6 +139,11 @@ public class Test implements Runnable
       throws Exception
   {
     Result actualResult = getActualResult();
+    
+    // don't check expected if it wasn't provided
+    if (! hasExpectedResult())
+      return true;
+    
     ResultMatcher matcher = testCase.getTestRun().getResultMatcher();
     
     // check that provided expected result geometry is valid
@@ -193,8 +202,7 @@ public class Test implements Runnable
     xml += "  <op name=\"" + operation + "\"";
     xml += " arg1=\"" + geometryIndex + "\"";
     int j = 2;
-    for (Iterator i = arguments.iterator(); i.hasNext(); ) {
-      String argument = (String) i.next();
+    for (String argument : arguments ) {
       Assert.isTrue(argument != null);
       xml += " arg" + j + "=\"" + argument + "\"";
       j++;

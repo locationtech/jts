@@ -14,6 +14,8 @@ package org.locationtech.jts.geom;
 
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
+import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 
 /**
  * Unit tests for {@link CoordinateArrays}
@@ -29,7 +31,7 @@ public class CoordinateArraysTest extends TestCase {
 
   private static Coordinate[] COORDS_1 = new Coordinate[] { new Coordinate(1, 1), new Coordinate(2, 2), new Coordinate(3, 3) };
   private static Coordinate[] COORDS_EMPTY = new Coordinate[0];
-  
+
   public CoordinateArraysTest(String name) { super(name); }
 
   public void testPtNotInList1()
@@ -81,4 +83,80 @@ public class CoordinateArraysTest extends TestCase {
         CoordinateArrays.intersection(COORDS_1, new Envelope()), COORDS_EMPTY )
         );
   }
+
+  public void testScrollRing() {
+    // arrange
+    Coordinate[] sequence = createCircle(new Coordinate(10, 10), 9d);
+    Coordinate[] scrolled = createCircle(new Coordinate(10, 10), 9d);
+
+    // act
+    CoordinateArrays.scroll(scrolled, 12);
+
+    // assert
+    int io = 12;
+    for (int is = 0; is < scrolled.length - 1; is++) {
+      checkCoordinateAt(sequence, io, scrolled, is);
+      io++;
+      io%=scrolled.length-1;
+    }
+    checkCoordinateAt(scrolled, 0, scrolled, scrolled.length-1);  }
+
+  public void testScroll() {
+    // arrange
+    Coordinate[] sequence = createCircularString(new Coordinate(20, 20), 7d,
+      0.1, 22);
+    Coordinate[] scrolled = createCircularString(new Coordinate(20, 20), 7d,
+      0.1, 22);;
+
+    // act
+    CoordinateArrays.scroll(scrolled, 12);
+
+    // assert
+    int io = 12;
+    for (int is = 0; is < scrolled.length - 1; is++) {
+      checkCoordinateAt(sequence, io, scrolled, is);
+      io++;
+      io%=scrolled.length;
+    }
+  }
+
+  private static void checkCoordinateAt(Coordinate[] seq1, int pos1,
+                                        Coordinate[] seq2, int pos2) {
+    Coordinate c1 = seq1[pos1], c2 = seq2[pos2];
+
+    assertEquals("unexpected x-ordinate at pos " + pos2, c1.getX(), c2.getX());
+    assertEquals("unexpected y-ordinate at pos " + pos2, c1.getY(), c2.getY());
+  }
+
+  private static Coordinate[] createCircle(Coordinate center, double radius) {
+    // Get a complete circular string
+    Coordinate[] res = createCircularString(center, radius, 0d,49);
+
+    // ensure it is closed
+    res[48] = res[0].copy();
+
+    return res;
+  }
+  private static Coordinate[] createCircularString(Coordinate center, double radius, double startAngle,
+                                                   int numPoints) {
+    final int numSegmentsCircle = 48;
+    final double angleCircle = 2 * Math.PI;
+    final double angleStep = angleCircle / numSegmentsCircle;
+
+    Coordinate[] sequence = new Coordinate[numPoints];
+    PrecisionModel pm = new PrecisionModel(1000);
+    double angle = startAngle;
+    for (int i = 0; i < numPoints; i++)
+    {
+      double dx = Math.cos(angle) * radius;
+      double dy = Math.sin(angle) * radius;
+      sequence[i] = new CoordinateXY(pm.makePrecise(center.x +dx), pm.makePrecise(center.y +dy));
+
+      angle += angleStep;
+      angle %= angleCircle;
+    }
+
+    return sequence;
+  }
+
 }

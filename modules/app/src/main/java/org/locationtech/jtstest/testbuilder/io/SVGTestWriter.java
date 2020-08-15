@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -14,13 +14,8 @@ package org.locationtech.jtstest.testbuilder.io;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jtstest.test.TestCaseList;
 import org.locationtech.jtstest.test.Testable;
-import org.locationtech.jtstest.util.StringUtil;
 import org.locationtech.jtstest.util.io.SVGWriter;
-
-
 
 /**
  * @version 1.7
@@ -32,16 +27,25 @@ public class SVGTestWriter {
     return writer.write(test);
   }
 
+  public static String getSVG(Geometry ga, Geometry gb) {
+    SVGTestWriter writer = new SVGTestWriter();
+    return writer.write(ga, gb, null, null);
+  }
+
 
     private SVGWriter svgWriter = new SVGWriter();
 
     public SVGTestWriter() {}
 
     public String write(Testable testable) {
-        StringBuffer text = new StringBuffer();
-        
         Geometry ga = testable.getGeometry(0);
         Geometry gb = testable.getGeometry(1);
+        return write(ga, gb, testable.getName(), testable.getDescription() );
+    }
+    
+    public String write(Geometry ga, Geometry gb, String name, String description) {
+        StringBuffer text = new StringBuffer();
+        
         
         Envelope env = new Envelope();
         if (ga != null) env.expandToInclude(ga.getEnvelopeInternal());
@@ -57,10 +61,10 @@ public class SVGTestWriter {
         text.append("<?xml version='1.0' standalone='no'?>\n");
         text.append("<!DOCTYPE svg PUBLIC '-//W3C//DTD SVG 1.1//EN' 'http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>\n");
         text.append("<svg " + wh + " viewBox='" + viewBox + "'  version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'>\n");
-        String name = testable.getName() == null ? "" : testable.getName();
-        String description = testable.getDescription() == null ? "" : testable.getDescription();
+        String nameStr =name == null ? "" : name;
+        String descStr = description == null ? "" : description;
         //text.append("          \"" + name + "\",\n");
-        text.append("  <desc>" + description + "</desc>\n");
+        text.append("  <desc>" + descStr + "</desc>\n");
         text.append("  <g transform='" + trans + "'>\n\n");
 
         writeGeometryElement(ga, "#bbbbff", "#0000ff", text);

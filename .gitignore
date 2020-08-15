@@ -6,3 +6,12 @@ target
 .settings
 .externalToolBuilders
 build
+
+# standard ignores
+*.class
+*.log
+*.jar
+hs_err_pid*
+
+# operating system specific
+.DS_Store

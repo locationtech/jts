@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
 import junit.framework.TestCase;
-import test.jts.junit.GeometryUtils;
+import test.jts.util.IOUtil;
 
 /**
  * Large-scale tests of {@link CascadedPolygonUnion}
@@ -45,7 +45,7 @@ public class CascadedPolygonUnionTest extends TestCase
   public void testBoxes()
   throws Exception
   {
-  	runTest(GeometryUtils.readWKT(
+  	runTest(IOUtil.readWKT(
   			new String[] {
   				"POLYGON ((80 260, 200 260, 200 30, 80 30, 80 260))",
   				"POLYGON ((30 180, 300 180, 300 110, 30 110, 30 180))",

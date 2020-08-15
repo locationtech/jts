@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -89,17 +89,18 @@ public class JTSTestBuilderFrame extends JFrame
   private JTSTestBuilderToolBar tbToolBar = new JTSTestBuilderToolBar(this);
   //---------------------------------------------
   JPanel contentPane;
-  BorderLayout borderLayout1 = new BorderLayout();
+  BorderLayout contentLayout = new BorderLayout();
   Border border4;
   JSplitPane jSplitPane1 = new JSplitPane();
-  JPanel jPanel1 = new JPanel();
+  JPanel panelTop = new JPanel();
   BorderLayout borderLayout2 = new BorderLayout();
   TestCasePanel testCasePanel = new TestCasePanel();
-  JPanel jPanel2 = new JPanel();
+  JPanel panelBottom = new JPanel();
   JTabbedPane inputTabbedPane = new JTabbedPane();
   BorderLayout borderLayout3 = new BorderLayout();
   JPanel testPanel = new JPanel();
   WKTPanel wktPanel = new WKTPanel(this);
+  CommandPanel commandPanel = new CommandPanel();
   InspectorPanel inspectPanel = new InspectorPanel();
   TestListPanel testListPanel = new TestListPanel(this);
   //LayerListPanel layerListPanel = new LayerListPanel();
@@ -267,6 +268,14 @@ public class JTSTestBuilderFrame extends JFrame
     return resultValuePanel;
   }
   
+  public InfoPanel getLogPanel() {
+    return logPanel;
+  }
+  
+  public CommandPanel getCommandPanel() {
+    return commandPanel;
+  }
+  
   /**
    *  File | Exit action performed
    */
@@ -340,28 +349,6 @@ public class JTSTestBuilderFrame extends JFrame
     updateWktPanel();
   }
 
-  void createNewCase() {
-    tbModel.cases().createNew();
-    showGeomsTab();
-    updateTestCases();
-  }
-
-  void moveToPrevCase(boolean isZoom) {
-    tbModel.cases().prevCase();
-    updateTestCaseView();
-    if (isZoom) JTSTestBuilder.controller().zoomToInput();
-  }
-
-  void moveToNextCase(boolean isZoom) {
-    tbModel.cases().nextCase();
-    updateTestCaseView();
-    if (isZoom) JTSTestBuilder.controller().zoomToInput();
-  }
-
-  void copyCase() {
-    tbModel.cases().copyCase();
-    updateTestCases();
-  }
   TestCaseEdit currentCase() {
     return tbModel.cases().getCurrentCase();
   }
@@ -388,12 +375,6 @@ public class JTSTestBuilderFrame extends JFrame
     if (! (currResult instanceof Geometry))
       return;
     inspectGeometry((Geometry) currResult, 0, "R");
-  }
-  
-  void actionDeleteCase() {
-    tbModel.cases().deleteCase();
-    updateTestCaseView();
-    testListPanel.populateList();
   }
   
   void menuViewText_actionPerformed(ActionEvent e) {
@@ -556,79 +537,10 @@ public class JTSTestBuilderFrame extends JFrame
     }
   }
 
-  void setTool(Tool tool) {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(tool);
-  }
-  void modeDrawRectangle() {
-    setTool(RectangleTool.getInstance());
-  }
-
-  void modeDrawPolygon() {
-    setTool(StreamPolygonTool.getInstance());
-  }
-
-  void modeDrawLineString() {
-    setTool(LineStringTool.getInstance());
-  }
-
-  void modeDrawPoint() {
-    setTool(PointTool.getInstance());
-  }
-
-  void modeInfo() {
-    setTool(InfoTool.getInstance());
-  }
-
-  void modeExtractComponent() {
-    setTool(ExtractComponentTool.getInstance());
-  }
-
-  void modeDeleteVertex() {
-    setTool(DeleteVertexTool.getInstance());
-  }
-
-  void modeZoomIn() {
-    setTool(zoomTool);
-  }
-
-  void modePan() {
-    setTool(PanTool.getInstance());
-  }
-  
-  void zoomOneToOne() {
-    testCasePanel.getGeometryEditPanel().getViewport().zoomToInitialExtent();
-  }
-
-  void zoomToFullExtent() {
-    testCasePanel.getGeometryEditPanel().zoomToFullExtent();
-  }
-
-  void zoomToResult() {
-    testCasePanel.getGeometryEditPanel().zoomToResult();
-  }
-
-  void zoomToInput() {
-    testCasePanel.getGeometryEditPanel().zoomToInput();
-  }
-
-  void zoomToInputA() {
-    testCasePanel.getGeometryEditPanel().zoomToGeometry(0);
-  }
-
-  void zoomToInputB() {
-    testCasePanel.getGeometryEditPanel().zoomToGeometry(1);
-  }
-
-
   void actionDeleteAllTestCases() {
     tbModel.cases().init();
     updateTestCaseView();
     testListPanel.populateList();
-  }
-
-  public void setShowingGrid(boolean showGrid) {
-    testCasePanel.editPanel.setGridEnabled(showGrid);
-    JTSTestBuilder.controller().geometryViewChanged();
   }
 
   void actionLoadXmlTestFolder() {
@@ -675,6 +587,10 @@ public class JTSTestBuilderFrame extends JFrame
    *  Component initialization
    */
   private void jbInit() throws Exception {
+    this.setSize(new Dimension(800, 800));
+    this.setTitle("JTS TestBuilder");
+    this.setJMenuBar(tbMenuBar.getMenuBar());
+   
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     fileChooser.setMultiSelectionEnabled(false);
     fileAndDirectoryChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -685,49 +601,29 @@ public class JTSTestBuilderFrame extends JFrame
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
     
     //---------------------------------------------------
-    contentPane = (JPanel) this.getContentPane();
-    border4 = BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.white,
-        Color.white, new Color(93, 93, 93), new Color(134, 134, 134));
-    contentPane.setLayout(borderLayout1);
-    this.setSize(new Dimension(800, 800));
-    this.setTitle("JTS TestBuilder");
     
-    /*
-    testCasePanel.editPanel.addGeometryListener(
-      new com.vividsolutions.jtstest.testbuilder.model.GeometryListener() {
-
-        public void geometryChanged(GeometryEvent e) {
-          editPanel_geometryChanged(e);
-        }
-      });
-*/    
-    
-    jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
-    jSplitPane1.setPreferredSize(new Dimension(601, 690));
-    jPanel1.setLayout(borderLayout2);
-    jPanel1.setMinimumSize(new Dimension(431, 0));
-    contentPane.setPreferredSize(new Dimension(601, 690));
-    inputTabbedPane.setTabPlacement(JTabbedPane.LEFT);
-    jPanel2.setLayout(borderLayout3);
     wktPanel.setMinimumSize(new Dimension(111, 0));
     wktPanel.setPreferredSize(new Dimension(600, 100));
-    wktPanel.setToolTipText(AppStrings.TIP_TEXT_ENTRY);
     testPanel.setLayout(gridBagLayout2);
     gridLayout1.setRows(4);
     gridLayout1.setColumns(1);
     
-    contentPane.add(jSplitPane1, BorderLayout.CENTER);
-    jSplitPane1.add(jPanel1, JSplitPane.TOP);
-    jPanel1.add(testCasePanel, BorderLayout.CENTER);
-    jSplitPane1.add(jPanel2, JSplitPane.BOTTOM);
-    jPanel2.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
-    jPanel2.add(inputTabbedPane, BorderLayout.CENTER);
-    jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
-    jSplitPane1.setResizeWeight(0.5);
+    panelTop.setLayout(borderLayout2);
+    panelTop.setMinimumSize(new Dimension(431, 0));
+    panelTop.add(testCasePanel, BorderLayout.CENTER);
+    
+    panelBottom.setLayout(borderLayout3);
+    panelBottom.setMinimumSize(new Dimension(431, 0));
+    panelBottom.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
+    panelBottom.add(inputTabbedPane, BorderLayout.CENTER);
+      
+    //---- Input tabs
+    inputTabbedPane.setTabPlacement(JTabbedPane.LEFT);
     inputTabbedPane.add(testListPanel, AppStrings.TAB_LABEL_CASES);
     inputTabbedPane.add(wktPanel,  AppStrings.TAB_LABEL_INPUT);
     inputTabbedPane.add(resultWKTPanel, AppStrings.TAB_LABEL_RESULT);
     inputTabbedPane.add(resultValuePanel, AppStrings.TAB_LABEL_VALUE);
+    inputTabbedPane.add(commandPanel,  AppStrings.TAB_LABEL_COMMAND);
     inputTabbedPane.add(inspectPanel,  AppStrings.TAB_LABEL_INSPECT);
     inputTabbedPane.add(statsPanel, AppStrings.TAB_LABEL_STATS);
     inputTabbedPane.add(logPanel, AppStrings.TAB_LABEL_LOG);
@@ -738,11 +634,27 @@ public class JTSTestBuilderFrame extends JFrame
       {
         updateStatsPanelIfVisible();
         }
-    });
+    });   
     
+    //--- main frame
+  
+    jSplitPane1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+    jSplitPane1.setPreferredSize(new Dimension(601, 690));
+    jSplitPane1.setBorder(new EmptyBorder(2,2,2,2));
+    jSplitPane1.setResizeWeight(1);
     jSplitPane1.setDividerLocation(500);
-    this.setJMenuBar(tbMenuBar.getMenuBar());
-    //contentPane.add(tbToolBar.getToolBar(), BorderLayout.NORTH);
+    jSplitPane1.add(panelTop, JSplitPane.TOP);
+    jSplitPane1.add(panelBottom, JSplitPane.BOTTOM);
+    
+    /*
+    border4 = BorderFactory.createBevelBorder(BevelBorder.LOWERED, Color.white,
+        Color.white, new Color(93, 93, 93), new Color(134, 134, 134));
+        */
+    contentPane = (JPanel) this.getContentPane();
+    contentPane.setLayout(contentLayout);
+    contentPane.setPreferredSize(new Dimension(601, 690));
+    contentPane.add(jSplitPane1, BorderLayout.CENTER);
+
   }
 
   public JTSTestBuilderToolBar getToolbar()
@@ -784,22 +696,8 @@ public class JTSTestBuilderFrame extends JFrame
     updateStatsPanelIfVisible();
   }
 
-  public void displayInfo(Coordinate modelPt)
-  {
-    displayInfo(
-        testCasePanel.getGeometryEditPanel().getInfo(modelPt)
-        );
-  }
-  
-  public void displayInfo(String s)
-  {
-    displayInfo(s, true);
-  }
-  
-  public void displayInfo(String s, boolean showTab)
-  {
-    logPanel.addInfo(s);
-    if (showTab) showInfoTab();
+  public void updateLayerList() {
+    layerListPanel.updateList();
   }
   
   private void reportProblemsParsingXmlTestFile(List parsingProblems) {
@@ -827,10 +725,6 @@ public class JTSTestBuilderFrame extends JFrame
     Geometry cleanGeom = LinearComponentExtracter.getGeometry(tbModel.getGeometryEditModel().getGeometry(0));
     currentCase().setGeometry(0, cleanGeom);
     updateGeometry();
-  }
-
-  void modeEditVertex() {
-    testCasePanel.getGeometryEditPanel().setCurrentTool(EditVertexTool.getInstance());
   }
 
   private Coordinate pickOffset(Geometry a, Geometry b) {

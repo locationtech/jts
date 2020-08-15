@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -36,6 +36,18 @@ public class TriangleFunctions {
       public Geometry map(Geometry g) {
         Coordinate[] pts = trianglePts(g);
         Coordinate cc = Triangle.circumcentre(pts[0], pts[1], pts[2]);
+        GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
+        return geomFact.createPoint(cc);
+      }});
+  }
+  
+  public static Geometry circumcentreDD(Geometry g)
+  {
+    return GeometryMapper.map(g, 
+        new GeometryMapper.MapOp() {
+      public Geometry map(Geometry g) {
+        Coordinate[] pts = trianglePts(g);
+        Coordinate cc = Triangle.circumcentreDD(pts[0], pts[1], pts[2]);
         GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
         return geomFact.createPoint(cc);
       }});

@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -16,9 +16,8 @@ package org.locationtech.jts.geom;
 import java.io.Serializable;
 
 import org.locationtech.jts.algorithm.Distance;
-import org.locationtech.jts.algorithm.HCoordinate;
+import org.locationtech.jts.algorithm.Intersection;
 import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.NotRepresentableException;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 
@@ -445,6 +444,32 @@ public class LineSegment
 
     return new LineSegment(newp0, newp1);
   }
+  
+  /**
+   * Computes the reflection of a point in the line defined
+   * by this line segment.
+   * 
+   * @param p the point to reflect
+   * @return the reflected point
+   */
+  public Coordinate reflect(Coordinate p) {
+    // general line equation
+    double A = p1.getY() - p0.getY();
+    double B = p0.getX() - p1.getX();
+    double C = p0.getY() * (p1.getX() - p0.getX()) - p0.getX()*( p1.getY() - p0.getY() );
+    
+    // compute reflected point
+    double A2plusB2 = A*A + B*B;
+    double A2subB2 = A*A - B*B;
+    
+    double x = p.getX();
+    double y = p.getY();
+    double rx = ( -A2subB2*x - 2*A*B*y - 2*A*C ) / A2plusB2;
+    double ry = ( A2subB2*y - 2*A*B*x - 2*B*C ) / A2plusB2;
+    
+    return new Coordinate(rx, ry);
+  }
+  
   /**
    * Computes the closest point on this line segment to another point.
    * @param p the point to find the closest point to
@@ -558,14 +583,8 @@ public class LineSegment
    */
   public Coordinate lineIntersection(LineSegment line)
   {
-    try {
-      Coordinate intPt = HCoordinate.intersection(p0, p1, line.p0, line.p1);
-      return intPt;
-    }
-    catch (NotRepresentableException ex) {
-      // eat this exception, and return null;
-    }
-    return null;
+    Coordinate intPt = Intersection.intersection(p0, p1, line.p0, line.p1);
+    return intPt;
   }
 
   /**

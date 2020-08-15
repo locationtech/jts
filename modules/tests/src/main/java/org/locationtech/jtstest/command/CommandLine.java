@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -38,12 +38,13 @@ public class CommandLine {
     optionChar = optionCh;
   }
 
-  public void addOptionSpec(OptionSpec optSpec)
+  public CommandLine addOptionSpec(OptionSpec optSpec)
   {
     String name = optSpec.getName();
     // should check for duplicate option names here
     optSpecs.put(name.toLowerCase(), optSpec);
     optVec.add(optSpec);
+    return this;
   }
 
   OptionSpec getOptionSpec(String name)
@@ -58,6 +59,33 @@ public class CommandLine {
     OptionSpec spec = getOptionSpec(name);
     if (spec == null) return null;
     return spec.getOption(0);
+  }
+
+  public String getOptionArg(String name, int argIndex)
+  {
+    OptionSpec spec = getOptionSpec(name);
+    if (spec == null) return null;
+    Option opt = spec.getOption(0);
+    if (opt == null) return null;
+    return opt.getArg(0);
+  }
+
+  public int getOptionArgAsInt(String name, int argIndex)
+  {
+    OptionSpec spec = getOptionSpec(name);
+    if (spec == null) return 0;
+    Option opt = spec.getOption(0);
+    if (opt == null) return 0;
+    return opt.getArgAsInt(0);
+  }
+
+  public String[] getOptionArgs(String name)
+  {
+    OptionSpec spec = getOptionSpec(name);
+    if (spec == null) return null;
+    Option opt = spec.getOption(0);
+    if (opt == null) return null;
+    return opt.getArgs();
   }
 
   public Iterator getOptions(String name)

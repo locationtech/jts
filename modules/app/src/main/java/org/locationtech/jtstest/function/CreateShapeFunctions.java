@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -14,8 +14,10 @@ package org.locationtech.jtstest.function;
 
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.awt.*;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.*;
@@ -240,5 +242,95 @@ public class CreateShapeFunctions {
 	return geomFact.createPolygon(pts);
   }
   
+  public static Geometry pointFieldCentroidStar(Geometry ptsGeom)
+  {
+    Coordinate[] pts = ptsGeom.getCoordinates();
+    Geometry centroid = ptsGeom.getCentroid();
+    return pointFieldStar(ptsGeom, centroid);
+  }
+  
+  public static Geometry pointFieldStar(Geometry ptsGeom, Geometry centrePt)
+  {
+    Coordinate[] pts = ptsGeom.getCoordinates();
+    Coordinate centre = centrePt.getCoordinate();
+    
+    List<OrderedPoint> orderedPts = new ArrayList<OrderedPoint>();
+    for (Coordinate p : pts) {
+      double ang = Angle.angle(centre, p);
+      orderedPts.add(new OrderedPoint(p, ang));
+    }
+    Collections.sort(orderedPts);
+    int n = pts.length+1;
+    Coordinate[] ring = new Coordinate[n];
+    int i = 0;
+    for (OrderedPoint op : orderedPts) {
+      ring[i++] = op.pt;
+    }
+    // close ring
+    ring[n-1] = ring[0].copy();
+    return ptsGeom.getFactory().createPolygon(ring);
+  }
+  
+  private static class OrderedPoint implements Comparable {
+    Coordinate pt;
+    double index;
+    
+    public OrderedPoint(Coordinate p, double index) {
+      this.pt = p;
+      this.index = index;
+    }
+    
+    @Override
+    public int compareTo(Object o) {
+      OrderedPoint other = (OrderedPoint) o;
+      return Double.compare(index,  other.index);
+    }
+  }
+  
+  @Metadata(description="Construct a spiral")
+  public static Geometry spiral(Geometry geom, 
+      @Metadata(title="Num Cycles")
+      int nCycles, 
+      @Metadata(title="Quadrant Segs")
+      int quadrantSegs) {
+    Envelope env = FunctionsUtil.getEnvelopeOrDefault(geom);
+    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(geom);
 
+    double width = Math.min(env.getHeight(), env.getWidth())/2;
+    double pitch = width / nCycles;
+    
+    Coordinate centre = env.centre();
+    
+    CoordinateList inside = new CoordinateList();
+    CoordinateList outside = new CoordinateList();
+    for (int i = 1; i <= nCycles; i++) {
+      Coordinate[] inCycle = genSpiralCycle(centre, i * pitch - pitch/2, (i+1) * pitch - pitch/2, quadrantSegs);
+      inside.add(inCycle, false);
+      Coordinate[] outCycle = genSpiralCycle(centre, i * pitch, (i+1) * pitch, quadrantSegs);
+      outside.add(outCycle, false);
+    }
+    CoordinateList all = new CoordinateList();
+    all.add(inside.toCoordinateArray(), false);
+    Coordinate[] outsidePts = outside.toCoordinateArray();
+    CoordinateArrays.reverse(outsidePts);
+    all.add(outsidePts, false);
+    all.closeRing();
+    return geomFact.createPolygon(all.toCoordinateArray());
+  }
+
+  private static Coordinate[] genSpiralCycle(Coordinate centre, 
+      double radiusStart, double radiusEnd, int quadrantSegs) {
+    int nPts = quadrantSegs * 4 + 1;
+    Coordinate[] pts = new Coordinate[nPts];
+    double angInc = 2 * Math.PI / (nPts - 1);
+    double radiusInc = (radiusEnd - radiusStart) / (nPts - 1);
+    for (int i = 0; i < nPts; i++) {
+      double radius = radiusStart + i * radiusInc;
+      double x = radius * Math.cos(i *angInc);
+      double y = radius * Math.sin(i *angInc);
+      Coordinate pt = new Coordinate(centre.getX() + x, centre.getY() + y);
+      pts[i] = pt;
+    }
+    return pts;
+  }
 }

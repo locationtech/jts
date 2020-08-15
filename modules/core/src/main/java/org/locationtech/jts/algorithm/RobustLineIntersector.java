@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -197,7 +197,7 @@ public class RobustLineIntersector
   private Coordinate intersection(
     Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2)
   {
-    Coordinate intPt = intersectionWithNormalization(p1, p2, q1, q2);
+    Coordinate intPt = intersectionSafe(p1, p2, q1, q2);
     
     /*
     // TESTING ONLY
@@ -249,24 +249,6 @@ public class RobustLineIntersector
       System.out.println("Distance = " + intPt.distance(intPtDD));
     }
   }
-
-  private Coordinate intersectionWithNormalization(
-    Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2)
-    {
-      Coordinate n1 = new Coordinate(p1);
-      Coordinate n2 = new Coordinate(p2);
-      Coordinate n3 = new Coordinate(q1);
-      Coordinate n4 = new Coordinate(q2);
-      Coordinate normPt = new Coordinate();
-      normalizeToEnvCentre(n1, n2, n3, n4, normPt);
-
-      Coordinate intPt = safeHCoordinateIntersection(n1, n2, n3, n4);
-
-      intPt.x += normPt.x;
-      intPt.y += normPt.y;
-      
-      return intPt;
-  }
   
   /**
    * Computes a segment intersection using homogeneous coordinates.
@@ -280,120 +262,13 @@ public class RobustLineIntersector
    * @param q2 a segment endpoint
    * @return the computed intersection point
    */
-  private Coordinate safeHCoordinateIntersection(Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2)
+  private Coordinate intersectionSafe(Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2)
   {
-    Coordinate intPt = null;
-    try {
-      intPt = HCoordinate.intersection(p1, p2, q1, q2);
-    }
-    catch (NotRepresentableException e) {
-//    	System.out.println("Not calculable: " + this);
-      // compute an approximate result
-//      intPt = CentralEndpointIntersector.getIntersection(p1, p2, q1, q2);
+    Coordinate intPt = Intersection.intersection(p1, p2, q1, q2);
+    if (intPt == null)
       intPt = nearestEndpoint(p1, p2, q1, q2);
  //     System.out.println("Snapped to " + intPt);
-    }
     return intPt;
-  }
-
-  /**
-   * Normalize the supplied coordinates so that
-   * their minimum ordinate values lie at the origin.
-   * NOTE: this normalization technique appears to cause
-   * large errors in the position of the intersection point for some cases.
-   *
-   * @param n1
-   * @param n2
-   * @param n3
-   * @param n4
-   * @param normPt
-   */
-  private void normalizeToMinimum(
-    Coordinate n1,
-    Coordinate n2,
-    Coordinate n3,
-    Coordinate n4,
-    Coordinate normPt)
-  {
-    normPt.x = smallestInAbsValue(n1.x, n2.x, n3.x, n4.x);
-    normPt.y = smallestInAbsValue(n1.y, n2.y, n3.y, n4.y);
-    n1.x -= normPt.x;    n1.y -= normPt.y;
-    n2.x -= normPt.x;    n2.y -= normPt.y;
-    n3.x -= normPt.x;    n3.y -= normPt.y;
-    n4.x -= normPt.x;    n4.y -= normPt.y;
-  }
-
-  /**
-   * Normalize the supplied coordinates to
-   * so that the midpoint of their intersection envelope
-   * lies at the origin.
-   *
-   * @param n00
-   * @param n01
-   * @param n10
-   * @param n11
-   * @param normPt
-   */
-  private void normalizeToEnvCentre(
-    Coordinate n00,
-    Coordinate n01,
-    Coordinate n10,
-    Coordinate n11,
-    Coordinate normPt)
-  {
-    double minX0 = n00.x < n01.x ? n00.x : n01.x;
-    double minY0 = n00.y < n01.y ? n00.y : n01.y;
-    double maxX0 = n00.x > n01.x ? n00.x : n01.x;
-    double maxY0 = n00.y > n01.y ? n00.y : n01.y;
-
-    double minX1 = n10.x < n11.x ? n10.x : n11.x;
-    double minY1 = n10.y < n11.y ? n10.y : n11.y;
-    double maxX1 = n10.x > n11.x ? n10.x : n11.x;
-    double maxY1 = n10.y > n11.y ? n10.y : n11.y;
-
-    double intMinX = minX0 > minX1 ? minX0 : minX1;
-    double intMaxX = maxX0 < maxX1 ? maxX0 : maxX1;
-    double intMinY = minY0 > minY1 ? minY0 : minY1;
-    double intMaxY = maxY0 < maxY1 ? maxY0 : maxY1;
-
-    double intMidX = (intMinX + intMaxX) / 2.0;
-    double intMidY = (intMinY + intMaxY) / 2.0;
-    normPt.x = intMidX;
-    normPt.y = intMidY;
-
-    /*
-    // equilavalent code using more modular but slower method
-    Envelope env0 = new Envelope(n00, n01);
-    Envelope env1 = new Envelope(n10, n11);
-    Envelope intEnv = env0.intersection(env1);
-    Coordinate intMidPt = intEnv.centre();
-
-    normPt.x = intMidPt.x;
-    normPt.y = intMidPt.y;
-    */
-
-    n00.x -= normPt.x;    n00.y -= normPt.y;
-    n01.x -= normPt.x;    n01.y -= normPt.y;
-    n10.x -= normPt.x;    n10.y -= normPt.y;
-    n11.x -= normPt.x;    n11.y -= normPt.y;
-  }
-
-  private double smallestInAbsValue(double x1, double x2, double x3, double x4)
-  {
-    double x = x1;
-    double xabs = Math.abs(x);
-    if (Math.abs(x2) < xabs) {
-      x = x2;
-      xabs = Math.abs(x2);
-    }
-    if (Math.abs(x3) < xabs) {
-      x = x3;
-      xabs = Math.abs(x3);
-    }
-    if (Math.abs(x4) < xabs) {
-      x = x4;
-    }
-    return x;
   }
 
   /**

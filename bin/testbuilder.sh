@@ -15,4 +15,4 @@ fi
 #---------------------------#
 # run the program           #
 #---------------------------#
-java -jar ${JAVA_OPTS} ${JAVA_LOOKANDFEEL} -jar ${JTS_LIB_DIR}/JTSTestBuilder.jar ${APP_OPTS}
+java -jar ${JAVA_OPTS} ${JAVA_LOOKANDFEEL} -jar ${JTS_LIB_DIR}/JTSTestBuilder.jar ${APP_OPTS} "$@"

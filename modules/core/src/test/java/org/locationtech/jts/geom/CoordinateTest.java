@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -210,6 +210,19 @@ public class CoordinateTest extends TestCase
       xyzm = new CoordinateXYZM( coord ); // copy
       assertEquals( xyzm, coord );
       assertTrue( xyzm.equalInZ(coord,0.000001) ); 
+  }
+  
+  public void testCoordinateHash() {
+    doTestCoordinateHash(true, new Coordinate(1, 2), new Coordinate(1, 2));
+    doTestCoordinateHash(false, new Coordinate(1, 2), new Coordinate(3, 4));
+    doTestCoordinateHash(false, new Coordinate(1, 2), new Coordinate(1, 4));
+    doTestCoordinateHash(false, new Coordinate(1, 2), new Coordinate(3, 2));
+    doTestCoordinateHash(false, new Coordinate(1, 2), new Coordinate(2, 1));
+  }
+
+  private void doTestCoordinateHash(boolean equal, Coordinate a, Coordinate b) {
+    assertEquals(equal, a.equals(b));
+    assertEquals(equal, a.hashCode() == b.hashCode());
   }
   
   /**

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -151,9 +151,6 @@ public class CascadedPolygonUnion
 //    System.out.println(union);
     
     return union;
-//    return repeatedUnion(geoms);
-//    return buffer0Union(geoms);
-    
   }
 
   //========================================================
@@ -287,81 +284,7 @@ public class CascadedPolygonUnion
   	if (g1 == null)
   		return g0.copy();
   	
-  	return unionOptimized(g0, g1);
-  }
-  
-  private Geometry unionOptimized(Geometry g0, Geometry g1)
-  {
-  	Envelope g0Env = g0.getEnvelopeInternal();
-  	Envelope g1Env = g1.getEnvelopeInternal();
-  	//*
-  	if (! g0Env.intersects(g1Env))
-  	{
-  		Geometry combo = GeometryCombiner.combine(g0, g1);
-//   		System.out.println("Combined");
-//  		System.out.println(combo);
-  		return combo;
-  	}
-  	//*/
-//  	System.out.println(g0.getNumGeometries() + ", " + g1.getNumGeometries());
-  	
-  	if (g0.getNumGeometries() <= 1 && g1.getNumGeometries() <= 1)
-  		return unionActual(g0, g1);
-  	
-  	// for testing...
-//  	if (true) return g0.union(g1);
-  	
-  	Envelope commonEnv = g0Env.intersection(g1Env);
-  	return unionUsingEnvelopeIntersection(g0, g1, commonEnv);
-  	
-//  	return UnionInteracting.union(g0, g1);
-  }
-  
-  
-  
-  /**
-   * Unions two polygonal geometries, restricting computation 
-   * to the envelope intersection where possible.
-   * The case of MultiPolygons is optimized to union only 
-   * the polygons which lie in the intersection of the two geometry's envelopes.
-   * Polygons outside this region can simply be combined with the union result,
-   * which is potentially much faster.
-   * This case is likely to occur often during cascaded union, and may also
-   * occur in real world data (such as unioning data for parcels on different street blocks).
-   * 
-   * @param g0 a polygonal geometry
-   * @param g1 a polygonal geometry
-   * @param common the intersection of the envelopes of the inputs
-   * @return the union of the inputs
-   */
-  private Geometry unionUsingEnvelopeIntersection(Geometry g0, Geometry g1, Envelope common)
-  {
-  	List disjointPolys = new ArrayList();
-  	
-  	Geometry g0Int = extractByEnvelope(common, g0, disjointPolys);
-  	Geometry g1Int = extractByEnvelope(common, g1, disjointPolys);
-  	
-//  	System.out.println("# geoms in common: " + intersectingPolys.size());
-  	Geometry union = unionActual(g0Int, g1Int);
-  	
-  	disjointPolys.add(union);
-  	Geometry overallUnion = GeometryCombiner.combine(disjointPolys);
-  	
-  	return overallUnion;
-  }
-  
-  private Geometry extractByEnvelope(Envelope env, Geometry geom, 
-  		List disjointGeoms)
-  {
-  	List intersectingGeoms = new ArrayList();
-  	for (int i = 0; i < geom.getNumGeometries(); i++) { 
-  		Geometry elem = geom.getGeometryN(i);
-  		if (elem.getEnvelopeInternal().intersects(env))
-  			intersectingGeoms.add(elem);
-  		else
-  			disjointGeoms.add(elem);
-  	}
-  	return geomFactory.buildGeometry(intersectingGeoms);
+  	return unionActual( g0, g1 );
   }
   
   /**
@@ -373,17 +296,8 @@ public class CascadedPolygonUnion
    */
   private Geometry unionActual(Geometry g0, Geometry g1)
   {
-  	/*
-  	System.out.println(g0.getNumGeometries() + ", " + g1.getNumGeometries());
- 	
-  	if (g0.getNumGeometries() > 5) {
-  		System.out.println(g0);
-  		System.out.println(g1);
-  	}
-  	*/
-  	
-  	//return bufferUnion(g0, g1);
-  	return restrictToPolygons(g0.union(g1));
+    Geometry union = OverlapUnion.union(g0, g1);;
+  	return restrictToPolygons( union );
   }
   
   /**

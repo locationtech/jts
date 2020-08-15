@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -20,6 +20,27 @@ import org.locationtech.jts.geom.util.PolygonExtracter;
 
 public class ConversionFunctions 
 {
+  public static Geometry pointsToLine(Geometry g)
+  {
+    Coordinate[] pts = g.getCoordinates();
+    LineString line = g.getFactory().createLineString(pts);
+    return line;
+  }
+  
+  public static Geometry lineToPolygon(Geometry g)
+  {
+    if (g instanceof Polygonal) return g;
+    // TODO: ensure ring is valid
+    CoordinateList ringList = new CoordinateList();
+    Coordinate[] pts = g.getCoordinates();
+    for (Coordinate pt : pts) {
+      ringList.add(pt, true);
+    }
+    ringList.closeRing();
+    LinearRing ring = g.getFactory().createLinearRing(ringList.toCoordinateArray());
+    return g.getFactory().createPolygon(ring, null);
+  }
+  
   public static Geometry toPoints(Geometry g1, Geometry g2)
   {
     Geometry geoms = FunctionsUtil.buildGeometry(g1, g2);
