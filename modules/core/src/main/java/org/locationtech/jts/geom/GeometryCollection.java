@@ -279,20 +279,19 @@ public class GeometryCollection extends Geometry {
    * The order of the components in the collection are not reversed.
    *
    * @return a {@link GeometryCollection} in the reverse order
-   * @deprecated
    */
-  public Geometry reverse() {
-    return super.reverse();
+  public GeometryCollection reverse() {
+    return (GeometryCollection) super.reverse();
   }
 
-  protected Geometry reverseInternal()
+  protected GeometryCollection reverseInternal()
   {
     int numGeometries = geometries.length;
     Collection<Geometry> reversed = new ArrayList<>(numGeometries);
     for (int i = 0; i < numGeometries; i++) {
       reversed.add(geometries[i].reverse());
     }
-    return getFactory().buildGeometry(reversed);
+    return (GeometryCollection) getFactory().buildGeometry(reversed);
   }
 }
 

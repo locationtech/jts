@@ -417,12 +417,11 @@ public class Polygon
       CoordinateSequences.reverse(seq);
   }
 
-  /** @deprecated */
-  public Geometry reverse() {
-    return super.reverse();
+  public Polygon reverse() {
+    return (Polygon) super.reverse();
   }
 
-  protected Geometry reverseInternal()
+  protected Polygon reverseInternal()
   {
     LinearRing shell = (LinearRing) getExteriorRing().reverse();
     LinearRing[] holes = new LinearRing[getNumInteriorRing()];

@@ -76,6 +76,10 @@ public class MultiPoint
     return getFactory().createGeometryCollection();
   }
 
+  public MultiPoint reverse() {
+    return (MultiPoint) super.reverse();
+  }
+
   public boolean isValid() {
     return true;
   }
