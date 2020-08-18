@@ -15,14 +15,11 @@ package org.locationtech.jtstest.testbuilder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
-
-import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 
 public class JTSTestBuilderMenuBar 
 {
@@ -129,31 +126,6 @@ public class JTSTestBuilderMenuBar
         }
       });
 
-    final JMenuItem basicFillMenuItem = menuItemRadio("Basic Fill", true,
-        new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_BASIC);
-        }
-      });
-    final JMenuItem varyFillMenuItem = menuItemRadio("Varying Fill", false,
-        new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_VARY);
-        }
-      });
-    final JMenuItem rainbowFillMenuItem = menuItemRadio("Rainbow Fill", false,
-        new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_RAINBOW);
-        }
-      });
-    final JMenuItem rainbowRandomFillMenuItem = menuItemRadio("Random Rainbow Fill", false,
-        new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_RAINBOW_RANDOM);
-        }
-      });
-
     menuLoadXmlTestFolder.setText("Open XML Folder(s)...");
     menuLoadXmlTestFolder.addActionListener(
       new java.awt.event.ActionListener() {
@@ -184,13 +156,6 @@ public class JTSTestBuilderMenuBar
     //jMenuOptions.setText("Options");
     //jMenuTools.setText("Tools");
 
-    ButtonGroup fillGroup = new ButtonGroup();
-    fillGroup.add(basicFillMenuItem);
-    fillGroup.add(varyFillMenuItem);
-    fillGroup.add(rainbowFillMenuItem);
-    fillGroup.add(rainbowRandomFillMenuItem);
-    basicFillMenuItem.setSelected(true);
-
     jMenuFile.add(menuLoadXmlTestFile);
     jMenuFile.add(menuLoadXmlTestFolder);
     jMenuFile.add(saveAsXmlMenuItem);
@@ -206,12 +171,6 @@ public class JTSTestBuilderMenuBar
     //==========================
     jMenuView.setText("View");
 
-    jMenuView.add(basicFillMenuItem);
-    jMenuView.add(varyFillMenuItem);
-    jMenuView.add(rainbowFillMenuItem);
-    jMenuView.add(rainbowRandomFillMenuItem);
-    
-    jMenuView.addSeparator();
     jMenuView.add(menuViewText);
     jMenuView.add(menuViewGeometry);
     //==========================    

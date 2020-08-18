@@ -12,18 +12,16 @@
 
 package org.locationtech.jtstest.testbuilder.ui.render;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryContainer;
 import org.locationtech.jtstest.testbuilder.model.Layer;
-import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
 import org.locationtech.jtstest.testbuilder.ui.style.LayerStyle;
+import org.locationtech.jtstest.testbuilder.ui.style.Palette;
 import org.locationtech.jtstest.testbuilder.ui.style.Style;
 import org.locationtech.jtstest.util.HSBPalette;
 
@@ -79,7 +77,7 @@ public class LayerRenderer implements Renderer
     // for maximum rendering speed this needs to be checked for each component
     if (! viewport.intersectsInModel(geometry.getEnvelopeInternal())) 
       return;
-    if (DisplayParameters.FILL_BASIC == DisplayParameters.fillType()) {
+    if (Palette.TYPE_BASIC == layer.getLayerStyle().getFillType()) {
       renderGeom(g, viewport, geometry, layer.getLayerStyle());
     }
     else {
@@ -91,7 +89,9 @@ public class LayerRenderer implements Renderer
       Geometry gc, Layer layer )   throws Exception
   {
     int numGeom = gc.getNumGeometries();
-    HSBPalette pal = customPalette(layer.getGeometryStyle().getFillColor(), numGeom);
+    HSBPalette pal = Palette.customPalette(
+        layer.getLayerStyle().getFillType(),
+        layer.getGeometryStyle().getFillColor(), numGeom);
     /**
      * Render each element separately.
      * Otherwise it is not possible to render both filled and non-filled
@@ -100,7 +100,7 @@ public class LayerRenderer implements Renderer
      */
     for (int i = 0; i < numGeom; i++) {
       if (isCancelled) return;
-      BasicStyle customFill = paletteFill(i, pal, layer.getGeometryStyle());
+      BasicStyle customFill = Palette.paletteFill(i, pal, layer.getGeometryStyle());
       Style st = new LayerStyle(customFill, layer.getLayerStyle().getDecoratorStyle());
       renderGeom(g, viewport, gc.getGeometryN(i), st);
     }
@@ -121,36 +121,7 @@ public class LayerRenderer implements Renderer
     }  
   }
   
-  private static final HSBPalette PAL_RAINBOW_INCREMENTAL = HSBPalette.createRainbowIncremental(0.396f, 0.4f, 1);
-
-  private static HSBPalette customPalette(Color clrBase, int numHues) {
-    HSBPalette pal = null;
-    if (DisplayParameters.FILL_VARY == DisplayParameters.fillType()) {
-      float hue = ColorUtil.getHue(clrBase);
-      pal = new HSBPalette(5, hue, 0.1f,
-          3, 0.3f, 0.7f,
-          3, 0.8f, 0.9f
-          );
-    }
-    else if (DisplayParameters.FILL_RAINBOW == DisplayParameters.fillType()) {
-      return HSBPalette.createRainbow(numHues, 0.4f, 1);
-    }
-    else if (DisplayParameters.FILL_RAINBOW_RANDOM == DisplayParameters.fillType()) {
-      return PAL_RAINBOW_INCREMENTAL;
-    }
-    return pal;
-  }
-
-  private static BasicStyle paletteFill(int i, HSBPalette pal, BasicStyle style) {
-    Color clrBase = style.getFillColor();
-    int alpha = clrBase.getAlpha();
-    Color clr = pal.color(i, alpha);
-    BasicStyle st = style.copy();
-    st.setFillColor(clr);
-    return st;
-  }
-
-	public void cancel()
+  public void cancel()
 	{
 		isCancelled = true;
 	}

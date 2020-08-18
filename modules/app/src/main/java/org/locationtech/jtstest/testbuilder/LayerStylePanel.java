@@ -21,12 +21,12 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,6 +44,7 @@ import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
 import org.locationtech.jtstest.testbuilder.ui.style.LayerStyle;
+import org.locationtech.jtstest.testbuilder.ui.style.Palette;
 
 public class LayerStylePanel extends JPanel {
   private Layer layer;
@@ -78,6 +79,7 @@ public class LayerStylePanel extends JPanel {
   private JSpinner spinnerOffsetSize;
   private SpinnerNumberModel offsetSizeModel;
   private JCheckBox cbEndpoint;
+  private JComboBox comboPalette;
 
   
   public LayerStylePanel() {
@@ -112,6 +114,7 @@ public class LayerStylePanel extends JPanel {
     cbOrient.setSelected(layer.getLayerStyle().isOrientations());
     cbStructure.setSelected(layer.getLayerStyle().isOrientations());
     lineWidthModel.setValue(geomStyle().getStrokeWidth());
+    setPaletteType(comboPalette, layer.getLayerStyle().getFillType());
     updateStyleControls();
   }
   
@@ -425,6 +428,21 @@ public class LayerStylePanel extends JPanel {
 
     //=============================================
 
+    
+    comboPalette = new JComboBox(paletteNames);
+    comboPalette.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        JComboBox cb = (JComboBox)e.getSource();
+        int fillType = getPaletteType(cb);
+        layer.getLayerStyle().setFillType(fillType);
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+    addRow("", new JLabel("Palette"), comboPalette);
+    
+    //=============================================
+
+    
     cbLabel = new JCheckBox();
     //cbLabel.setToolTipText(AppStrings.TIP_STYLE_VERTEX_ENABLE);
     cbLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -468,6 +486,26 @@ public class LayerStylePanel extends JPanel {
     return containerPanel;
   }
 
+  static String[] paletteNames = { "Basic", "Varying", "Rainbow", "Rainbow Random" }; 
+
+  private static int getPaletteType(JComboBox comboPal) {
+    String palName = (String)comboPal.getSelectedItem();
+    
+    int paletteType = Palette.TYPE_BASIC;
+    if (palName.equalsIgnoreCase(paletteNames[1])) paletteType = Palette.TYPE_VARY;
+    if (palName.equalsIgnoreCase(paletteNames[2])) paletteType = Palette.TYPE_RAINBOW;
+    if (palName.equalsIgnoreCase(paletteNames[3])) paletteType = Palette.TYPE_RAINBOW_RANDOM;
+    return paletteType;
+  }
+  
+  private static void setPaletteType(JComboBox comboPal, int paletteType) {
+    int index = 0;
+    if (paletteType == Palette.TYPE_VARY) index = 1;
+    if (paletteType == Palette.TYPE_RAINBOW) index = 2;
+    if (paletteType == Palette.TYPE_RAINBOW_RANDOM) index = 3;
+    comboPal.setSelectedIndex(index);
+  }
+  
   protected static Color lineColorFromFill(Color clr) {
     return ColorUtil.saturate(clr,  1);
     //return clr.darker();
