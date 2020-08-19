@@ -12,6 +12,7 @@
 
 package org.locationtech.jtstest.testbuilder.ui.render;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 import org.locationtech.jts.geom.Geometry;
@@ -89,9 +90,15 @@ public class LayerRenderer implements Renderer
       Geometry gc, Layer layer )   throws Exception
   {
     int numGeom = gc.getNumGeometries();
+    boolean isLinear = gc.getDimension() == 1;
+    Color clrBase = layer.getGeometryStyle().getFillColor();
+    if (isLinear) {
+      clrBase = layer.getGeometryStyle().getLineColor();
+    }
+    
     HSBPalette pal = Palette.customPalette(
         layer.getLayerStyle().getFillType(),
-        layer.getGeometryStyle().getFillColor(), numGeom);
+        clrBase, numGeom);
     /**
      * Render each element separately.
      * Otherwise it is not possible to render both filled and non-filled
@@ -100,8 +107,17 @@ public class LayerRenderer implements Renderer
      */
     for (int i = 0; i < numGeom; i++) {
       if (isCancelled) return;
-      BasicStyle customFill = Palette.paletteFill(i, pal, layer.getGeometryStyle());
-      Style st = new LayerStyle(customFill, layer.getLayerStyle().getDecoratorStyle());
+      BasicStyle customStyle = layer.getGeometryStyle().copy();
+      if (isLinear) {
+        Color clr = Palette.paletteColor(i, pal, layer.getGeometryStyle().getLineColor()); 
+        customStyle.setLineColor(clr);
+      }
+      else {
+        Color clr = Palette.paletteColor(i, pal, layer.getGeometryStyle().getFillColor()); 
+        customStyle.setFillColor(clr);
+      }
+
+      Style st = new LayerStyle(customStyle, layer.getLayerStyle().getDecoratorStyle());
       renderGeom(g, viewport, gc.getGeometryN(i), st);
     }
   }

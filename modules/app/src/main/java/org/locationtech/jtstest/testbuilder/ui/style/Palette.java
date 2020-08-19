@@ -16,6 +16,8 @@ public class Palette {
 
   public static HSBPalette customPalette(int paletteType, Color clrBase, int numHues) {
     HSBPalette pal = null;
+    float sat = 0.6f; //ColorUtil.getSaturation(clrBase);
+    float bright = ColorUtil.getBrightness(clrBase);
     if (TYPE_VARY == paletteType) {
       float hue = ColorUtil.getHue(clrBase);
       pal = new HSBPalette(5, hue, 0.1f,
@@ -24,22 +26,18 @@ public class Palette {
           );
     }
     else if (TYPE_RAINBOW == paletteType) {
-      return HSBPalette.createRainbow(numHues, 0.4f, 1);
+      return HSBPalette.createRainbow(numHues, sat, bright);
     }
     else if (TYPE_RAINBOW_RANDOM == paletteType) {
-      return PAL_RAINBOW_INCREMENTAL;
+      return HSBPalette.createRainbowIncremental(0.396f, sat, bright);
     }
     return pal;
   }
 
-  public static BasicStyle paletteFill(int i, HSBPalette pal, BasicStyle style) {
-    Color clrBase = style.getFillColor();
+  public static Color paletteColor(int i, HSBPalette pal, Color clrBase) {
     int alpha = clrBase.getAlpha();
     Color clr = pal.color(i, alpha);
-    BasicStyle st = style.copy();
-    st.setFillColor(clr);
-    return st;
+    return clr;
   }
-
 
 }

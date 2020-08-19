@@ -268,7 +268,7 @@ public class LayerStylePanel extends JPanel {
           }
         }
        );
-    JButton btnVertexSynch = SwingUtil.createButton("^", "Synch Vertex Color", new ActionListener() {
+    JButton btnVertexSynch = createSynchButton("^", "Synch Vertex Color", new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
         if (layer == null) return;
         Color clr = ColorControl.getColor(btnLineColor);
@@ -306,7 +306,7 @@ public class LayerStylePanel extends JPanel {
         }
       }
     });
-    addRow("Line", cbStroked, btnLineColor, btnVertexSynch, spinnerLineWidth, sliderLineAlpha);
+    addRow("Line", cbStroked, btnLineColor, btnVertexSynch, sliderLineAlpha, spinnerLineWidth);
 
     //=============================================
     cbDashed = new JCheckBox();
@@ -415,7 +415,7 @@ public class LayerStylePanel extends JPanel {
           }
         }
        );
-    JButton btnLineSynch = SwingUtil.createButton("^", "Synch Line Color", new ActionListener() {
+    JButton btnLineSynch = createSynchButton("^", "Synch Line Color", new ActionListener() {
       public void actionPerformed(ActionEvent arg0) {
         Color clr = lineColorFromFill( ColorControl.getColor(btnFillColor));
         geomStyle().setLineColor(clr );
@@ -428,7 +428,6 @@ public class LayerStylePanel extends JPanel {
 
     //=============================================
 
-    
     comboPalette = new JComboBox(paletteNames);
     comboPalette.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -438,7 +437,8 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
-    addRow("", new JLabel("Palette"), comboPalette);
+    comboPalette.setToolTipText(AppStrings.TIP_STYLE_PALETTE);
+    addRow("Palette", comboPalette);
     
     //=============================================
 
@@ -511,8 +511,22 @@ public class LayerStylePanel extends JPanel {
     //return clr.darker();
   }
 
+  private JButton createSynchButton(String lbl, String tip, ActionListener actionListener) {
+    JButton btn = SwingUtil.createButton(lbl, tip, actionListener);
+    btn.setMargin(new Insets(0, 0, 0, 0));
+    Dimension dim = new Dimension(16, 20);
+    btn.setMinimumSize(dim);
+    btn.setPreferredSize(dim);
+    btn.setMaximumSize(dim);
+    return btn;
+  }
+  
   private JSlider createOpacitySlider(ChangeListener changeListener) {
     JSlider slide = new JSlider(JSlider.HORIZONTAL, 0, 255, 150);
+    Dimension dim = new Dimension(80, 20);
+    slide.setMinimumSize(dim);
+    slide.setPreferredSize(dim);
+    slide.setMaximumSize(dim);
     slide.addChangeListener(changeListener);
     slide.setMajorTickSpacing(32);
     slide.setPaintTicks(true);
