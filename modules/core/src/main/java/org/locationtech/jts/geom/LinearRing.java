@@ -132,7 +132,7 @@ public class LinearRing extends LineString
     return new LinearRing(points.copy(), factory);
   }
 
-  protected LinearRing reverse()
+  public LinearRing reverse()
   {
     return (LinearRing) super.reverse();
   }
