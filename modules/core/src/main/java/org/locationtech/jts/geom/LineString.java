@@ -179,13 +179,12 @@ public class LineString
    * order of this objects
    *
    * @return a {@link LineString} with coordinates in the reverse order
-   * @deprecated
    */
-  public Geometry reverse() {
-    return super.reverse();
+  public LineString reverse() {
+    return (LineString) super.reverse();
   }
 
-  protected Geometry reverseInternal()
+  protected LineString reverseInternal()
   {
     CoordinateSequence seq = points.copy();
     CoordinateSequences.reverse(seq);

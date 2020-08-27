@@ -20,7 +20,6 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.linearref.LengthIndexedLine;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
-import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
@@ -32,6 +31,7 @@ public class LayerStyle implements Style  {
   private StyleList decoratorStyle;
   private VertexStyle vertexStyle;
   private DataLabelStyle labelStyle;
+  private int fillType = Palette.TYPE_BASIC;
 
   private StyleGroup orientStyle;
   private StyleGroup structureStyle;
@@ -128,6 +128,13 @@ public class LayerStyle implements Style  {
     setEndpoints(layerStyle.isEndpoints());
   }
 
+  public int getFillType() {
+    return fillType;
+  }
+  public void setFillType(int fillType) {
+    this.fillType = fillType;
+  }
+  
   public void setColor(Color color) {
     segArrowStyle.setColor( ColorUtil.lighter(color,0.8) );
     lineArrowStyle.setColor( ColorUtil.lighter(color,0.5) );

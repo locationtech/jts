@@ -64,6 +64,16 @@ public class ColorUtil {
     return hsb[0];
   }
 
+  public static float getSaturation(Color clr) {
+    float[] hsb = Color.RGBtoHSB(clr.getRed(), clr.getGreen(), clr.getBlue(), null);
+    return hsb[1];
+  }
+
+  public static float getBrightness(Color clr) {
+    float[] hsb = Color.RGBtoHSB(clr.getRed(), clr.getGreen(), clr.getBlue(), null);
+    return hsb[2];
+  }
+
   public static Color setAlpha(Color clr, int alpha) {
     return new Color(clr.getRed(), clr.getGreen(), clr.getBlue(), alpha);
   }

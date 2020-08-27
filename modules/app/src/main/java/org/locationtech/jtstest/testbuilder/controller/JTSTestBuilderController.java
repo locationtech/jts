@@ -81,11 +81,6 @@ public class JTSTestBuilderController
     return JTSTestBuilder.model().getGeometryEditModel();
   }
   
-  public void setFillType(int fillType) {
-    DisplayParameters.setFillType(fillType);
-    geometryViewChanged();
-  }
-  
   public void geometryViewChanged()
   {
     getGeometryEditPanel().updateView();

@@ -154,7 +154,9 @@ public class LayerListPanel extends JPanel {
     //add(lyrStylePanel, BorderLayout.CENTER);    
 
     //tabFunctions.setBackground(jTabbedPane1.getBackground());
-    tabPane.add(lyrStylePanel,  LBL_LAYER);
+    JScrollPane scrollPane = new JScrollPane();
+    scrollPane.getViewport().add(lyrStylePanel, null);
+    tabPane.add(scrollPane,  LBL_LAYER);
     tabPane.add(viewStylePanel,   LBL_VIEW);
     add(tabPane, BorderLayout.CENTER);
   }

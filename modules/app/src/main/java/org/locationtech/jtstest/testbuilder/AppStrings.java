@@ -83,5 +83,7 @@ public class AppStrings {
 
   public static final String TIP_STYLE_VERTEX_LABEL_ENABLE = "Show vertex labels";
 
+  public static final String TIP_STYLE_PALETTE = "<html>Palette type used for Lines or Fills.<br>Layer color determines base hue and lightness</html>  ";
+
 
 }

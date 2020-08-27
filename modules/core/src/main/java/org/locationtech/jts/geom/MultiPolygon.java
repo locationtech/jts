@@ -119,10 +119,9 @@ public class MultiPolygon
    * The order of the components in the collection are not reversed.
    *
    * @return a MultiPolygon in the reverse order
-   * @deprecated
    */
-  public Geometry reverse() {
-    return super.reverse();
+  public MultiPolygon reverse() {
+    return (MultiPolygon) super.reverse();
   }
 
   protected MultiPolygon copyInternal() {

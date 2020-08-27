@@ -132,13 +132,12 @@ public class LinearRing extends LineString
     return new LinearRing(points.copy(), factory);
   }
 
-  /** @deprecated */
-  public Geometry reverse()
+  public LinearRing reverse()
   {
-    return super.reverse();
+    return (LinearRing) super.reverse();
   }
 
-  public Geometry reverseInternal() {
+  public LinearRing reverseInternal() {
     CoordinateSequence seq = points.copy();
     CoordinateSequences.reverse(seq);
     return getFactory().createLinearRing(seq);

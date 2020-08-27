@@ -190,12 +190,11 @@ public class Point
     return new Point(coordinates.copy(), factory);
   }
 
-  /** @deprecated */
-  public Geometry reverse() {
-    return super.reverse();
+  public Point reverse() {
+    return (Point) super.reverse();
   }
 
-  protected Geometry reverseInternal()
+  protected Point reverseInternal()
   {
     return getFactory().createPoint(coordinates.copy());
   }

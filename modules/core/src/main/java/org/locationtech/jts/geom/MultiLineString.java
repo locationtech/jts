@@ -102,10 +102,9 @@ public class MultiLineString
    * are reversed.
    *
    * @return a {@link MultiLineString} in the reverse order
-   * @deprecated
    */
-  public Geometry reverse() {
-    return super.reverse();
+  public MultiLineString reverse() {
+    return (MultiLineString) super.reverse();
   }
 
   protected MultiLineString copyInternal() {
