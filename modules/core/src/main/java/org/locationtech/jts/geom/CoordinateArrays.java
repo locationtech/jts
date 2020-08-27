@@ -13,6 +13,7 @@
  */
 package org.locationtech.jts.geom;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Comparator;
 
@@ -62,6 +63,104 @@ public class CoordinateArrays {
       measures = Math.max(measures, Coordinates.measures(coordinate));
     }
     return measures;
+  }
+
+
+  /**
+   * Utility method ensuring array contents are of consistent dimension and measures.
+   * <p>
+   * Array is modified in place if required, coordinates are replaced in the array as required
+   * to ensure all coordinates have the same dimension and measures. The final dimension and
+   * measures used are the maximum found when checking the array.
+   * </p>
+   *
+   * @param array Modified in place to coordinates of consistent dimension and measures.
+   */
+  public static void enforceConsistency(Coordinate[] array)
+  {
+    if (array == null) {
+      return;
+    }
+    // step one check
+    int maxDimension = -1;
+    int maxMeasures = -1;
+    boolean isConsistent = true;
+    for (int i = 0; i < array.length; i++) {
+      Coordinate coordinate = array[i];
+      if (coordinate != null) {
+        int d = Coordinates.dimension(coordinate);
+        int m = Coordinates.measures(coordinate);
+        if( maxDimension == -1){
+           maxDimension = d;
+           maxMeasures = m;
+           continue;
+        }
+        if( d != maxDimension || m != maxMeasures ){
+          isConsistent = false;
+          maxDimension = Math.max(maxDimension, d);
+          maxMeasures = Math.max(maxMeasures, m);
+        }
+      }
+    }
+    if (!isConsistent) {
+      // step two fix
+      Coordinate sample = Coordinates.create(maxDimension, maxMeasures);
+      Class<?> type = sample.getClass();
+
+      for (int i = 0; i < array.length; i++) {
+        Coordinate coordinate = array[i];
+        if (coordinate != null && !coordinate.getClass().equals(type)) {
+          Coordinate duplicate = Coordinates.create(maxDimension, maxMeasures);
+          duplicate.setCoordinate(coordinate);
+          array[i] = duplicate;
+        }
+      }
+    }
+  }
+
+  /**
+   * Utility method ensuring array contents are of the specified dimension and measures.
+   * <p>
+   * Array is returned unmodified if consistent, or a copy of the array is made with
+   * each inconsistent coordinate duplicated into an instance of the correct dimension and measures.
+   * </p></>
+   *
+   * @param array coordinate array
+   * @param dimension
+   * @param measures
+   * @return array returned, or copy created if required to enforce consistency.
+   */
+  public static Coordinate[] enforceConsistency(Coordinate[] array,int dimension, int measures)
+  {
+    Coordinate sample = Coordinates.create(dimension,measures);
+    Class<?> type = sample.getClass();
+    boolean isConsistent = true;
+    for (int i = 0; i < array.length; i++) {
+      Coordinate coordinate = array[i];
+      if (coordinate != null && !coordinate.getClass().equals(type)) {
+        isConsistent = false;
+        break;
+      }
+    }
+    if (isConsistent) {
+      return array;
+    }
+    else {
+      Class<? extends Coordinate> coordinateType = sample.getClass();
+      Coordinate copy[] = (Coordinate[]) Array.newInstance(coordinateType, array.length);
+      for (int i = 0; i < copy.length; i++) {
+        Coordinate coordinate = array[i];
+        if (coordinate != null && !coordinate.getClass().equals(type)) {
+          Coordinate duplicate = Coordinates.create(dimension,measures);
+          duplicate.setCoordinate(coordinate);
+          copy[i] = duplicate;
+        }
+        else {
+          copy[i] = coordinate;
+        }
+      }
+      return copy;
+    }
   }
 
   /**
