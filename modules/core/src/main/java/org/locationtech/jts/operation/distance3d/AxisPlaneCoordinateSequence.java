@@ -93,7 +93,10 @@ public class AxisPlaneCoordinateSequence implements CoordinateSequence {
 	public void getCoordinate(int index, Coordinate coord) {
 		coord.x = getOrdinate(index, X);
 		coord.y = getOrdinate(index, Y);
-		coord.setZ(getOrdinate(index, Z));
+		// coord maybe 2D only,
+		// getCoordinate being projected on a plane, third dimension
+		// is useless (and getOrdinate always return 0 for Z)
+		//coord.setZ(getOrdinate(index, Z));
 	}
 
 	public double getX(int index) {
