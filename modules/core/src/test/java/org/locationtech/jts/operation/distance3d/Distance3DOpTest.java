@@ -12,16 +12,15 @@
 
 package org.locationtech.jts.operation.distance3d;
 
-import static java.lang.Double.NaN;
-
+import junit.framework.TestCase;
+import junit.textui.TestRunner;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
-import junit.framework.TestCase;
-import junit.textui.TestRunner;
+import static java.lang.Double.NaN;
 
 
 public class Distance3DOpTest extends TestCase 
