@@ -35,6 +35,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Fix `IndexedPointInAreaLocator` thread-safety (#572)
 * Fix `WKTReader` to handle MultiPoints containing `EMPTY` (#575)
+* Fix compile regression by removing deprecation on geometry `reverse` methods (#582)
 
 ## JTS TestBuilder
 
