@@ -285,7 +285,7 @@ public abstract class PackedCoordinateSequence
      * @param dimension the total number of ordinates that make up a {@link Coordinate} in this sequence.
      */
     public Double(Coordinate[] coordinates, int dimension) {
-      this( coordinates, dimension, 0);
+      this( coordinates, dimension,  Math.max(0,dimension-3));
     }
     /**
      * Builds a new packed coordinate sequence out of a coordinate array
@@ -338,20 +338,20 @@ public abstract class PackedCoordinateSequence
       double x = coords[i * dimension];
       double y = coords[i * dimension + 1];
       if( dimension == 2 && measures == 0 ) {
-    return new CoordinateXY(x,y);  
+        return new CoordinateXY(x,y);
       }
       else if (dimension == 3 && measures == 0) {
-          double z = coords[i * dimension + 2];
-          return new Coordinate(x,y,z);
+        double z = coords[i * dimension + 2];
+        return new Coordinate(x,y,z);
       }
       else if (dimension == 3 && measures == 1) {
-    double m = coords[i * dimension + 2];     
-          return new CoordinateXYM(x,y,m);          
+        double m = coords[i * dimension + 2];
+        return new CoordinateXYM(x,y,m);
       }
       else if (dimension == 4 && measures == 1) {
-    double z = coords[i * dimension + 2];
-    double m = coords[i * dimension + 3];
-    return new CoordinateXYZM(x,y,z,m);
+        double z = coords[i * dimension + 2];
+        double m = coords[i * dimension + 3];
+        return new CoordinateXYZM(x,y,z,m);
       }
       return new Coordinate(x, y);
     }
@@ -469,7 +469,7 @@ public abstract class PackedCoordinateSequence
      * @param dimension the total number of ordinates that make up a {@link Coordinate} in this sequence.
      */
     public Float(Coordinate[] coordinates, int dimension) {
-      this( coordinates, dimension, 0);
+      this( coordinates, dimension, Math.max(0,dimension-3));
     }
     
     /**

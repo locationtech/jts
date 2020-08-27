@@ -157,7 +157,7 @@ public class PackedCoordinateSequenceFactory implements
    * @return a packed coordinate sequence of type {@link #FLOAT}
    */
   public CoordinateSequence create(float[] packedCoordinates, int dimension) {
-    return create( packedCoordinates, dimension, DEFAULT_MEASURES );
+    return create( packedCoordinates, dimension, Math.max(DEFAULT_MEASURES, dimension-3) );
   }
   
   /**
@@ -182,9 +182,9 @@ public class PackedCoordinateSequenceFactory implements
    */
   public CoordinateSequence create(int size, int dimension) {
     if (type == DOUBLE) {
-      return new PackedCoordinateSequence.Double(size, dimension , DEFAULT_MEASURES);
+      return new PackedCoordinateSequence.Double(size, dimension, Math.max(DEFAULT_MEASURES, dimension-3));
     } else {
-      return new PackedCoordinateSequence.Float(size, dimension, DEFAULT_MEASURES );
+      return new PackedCoordinateSequence.Float(size, dimension, Math.max(DEFAULT_MEASURES, dimension-3));
     }
   }
   
