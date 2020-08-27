@@ -82,8 +82,8 @@ public class RayCrossingCounter
   public static int locatePointInRing(Coordinate p, CoordinateSequence ring) {
     RayCrossingCounter counter = new RayCrossingCounter(p);
 
-    Coordinate p1 = new Coordinate();
-    Coordinate p2 = new Coordinate();
+    Coordinate p1 = ring.createCoordinate();
+    Coordinate p2 = ring.createCoordinate();
     for (int i = 1; i < ring.size(); i++) {
       ring.getCoordinate(i, p1);
       ring.getCoordinate(i - 1, p2);
