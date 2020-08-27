@@ -29,7 +29,7 @@ public class Palette {
       return HSBPalette.createRainbow(numHues, sat, bright);
     }
     else if (TYPE_RAINBOW_RANDOM == paletteType) {
-      return HSBPalette.createRainbowIncremental(0.396f, sat, bright);
+      return HSBPalette.createRainbowIncremental(0.23f, sat, bright);
     }
     return pal;
   }
