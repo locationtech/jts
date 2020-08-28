@@ -556,6 +556,19 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
+  /**
+   * Tests that overlay can handle polygons with flat topology collapse
+   * along top, courtesy of improved Orientation.isCCW algorithm.
+   * See also https://trac.osgeo.org/geos/ticket/1038
+   */
+  public void testPolygonFlatCollapseIntersection() {
+    Geometry a = read("POLYGON ((200 100, 150 200, 250 200, 150 200, 100 100, 200 100))");
+    Geometry b = read("POLYGON ((50 150, 250 150, 250 50, 50 50, 50 150))");
+    Geometry expected = read("POLYGON ((175 150, 200 100, 100 100, 125 150, 175 150))");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
   //============================================================
   
   
