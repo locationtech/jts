@@ -13,6 +13,7 @@ package org.locationtech.jts.algorithm;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 
 /**
  * Functions to compute the orientation of basic geometric structures
@@ -107,104 +108,45 @@ public class Orientation {
    * oriented counter-clockwise.
    * <ul>
    * <li>The list of points is assumed to have the first and last points equal.
-   * <li>This will handle coordinate lists which contain repeated points.
+   * <li>This handles coordinate lists which contain repeated points.
+   * <li>This handles rings which contain collapsed segments 
+   *     (in particular, along the top of the ring).
    * </ul>
-   * This algorithm is <b>only</b> guaranteed to work with valid rings. If the
-   * ring is invalid (e.g. self-crosses or touches), the computed result may not
-   * be correct.
+   * This algorithm is guaranteed to work with valid rings.
+   * It also works with "mildly invalid" rings 
+   * which contain collapsed (coincident) flat segments along the top of the ring.   
+   * If the ring is "more" invalid (e.g. self-crosses or touches), 
+   * the computed result may not be correct.
    * 
-   * @param ring
-   *          an array of Coordinates forming a ring
+   * @param ring an array of Coordinates forming a ring (with first and last point identical)
    * @return true if the ring is oriented counter-clockwise.
-   * @throws IllegalArgumentException
-   *           if there are too few points to determine orientation (&lt; 4)
+   * @throws IllegalArgumentException if there are too few points to determine orientation (&lt; 4)
    */
   public static boolean isCCW(Coordinate[] ring)
   {
-    // # of points without closing endpoint
-    int nPts = ring.length - 1;
-    // sanity check
-    if (nPts < 3)
-      throw new IllegalArgumentException(
-          "Ring has fewer than 4 points, so orientation cannot be determined");
-  
-    // find highest point
-    Coordinate hiPt = ring[0];
-    int hiIndex = 0;
-    for (int i = 1; i <= nPts; i++) {
-      Coordinate p = ring[i];
-      if (p.y > hiPt.y) {
-        hiPt = p;
-        hiIndex = i;
-      }
-    }
-  
-    // find distinct point before highest point
-    int iPrev = hiIndex;
-    do {
-      iPrev = iPrev - 1;
-      if (iPrev < 0)
-        iPrev = nPts;
-    } while (ring[iPrev].equals2D(hiPt) && iPrev != hiIndex);
-  
-    // find distinct point after highest point
-    int iNext = hiIndex;
-    do {
-      iNext = (iNext + 1) % nPts;
-    } while (ring[iNext].equals2D(hiPt) && iNext != hiIndex);
-  
-    Coordinate prev = ring[iPrev];
-    Coordinate next = ring[iNext];
-  
-    /*
-     * This check catches cases where the ring contains an A-B-A configuration
-     * of points. This can happen if the ring does not contain 3 distinct points
-     * (including the case where the input array has fewer than 4 elements), or
-     * it contains coincident line segments.
-     */
-    if (prev.equals2D(hiPt) || next.equals2D(hiPt) || prev.equals2D(next))
-      return false;
-  
-    int disc = Orientation.index(prev, hiPt, next);
-  
-    /*
-     * If disc is exactly 0, lines are collinear. There are two possible cases:
-     * (1) the lines lie along the x axis in opposite directions (2) the lines
-     * lie on top of one another
-     * 
-     * (1) is handled by checking if next is left of prev ==> CCW (2) will never
-     * happen if the ring is valid, so don't check for it (Might want to assert
-     * this)
-     */
-    boolean isCCW;
-    if (disc == 0) {
-      // poly is CCW if prev x is right of next x
-      isCCW = (prev.x > next.x);
-    }
-    else {
-      // if area is positive, points are ordered CCW
-      isCCW = (disc > 0);
-    }
-    return isCCW;
+    // wrap with an XY CoordinateSequence
+    return isCCW(new CoordinateArraySequence(ring, 2, 0));
   }
 
   /**
-   * Computes whether a ring defined by an {@link CoordinateSequence} is
+   * Computes whether a ring defined by a {@link CoordinateSequence} is
    * oriented counter-clockwise.
    * <ul>
    * <li>The list of points is assumed to have the first and last points equal.
-   * <li>This will handle coordinate lists which contain repeated points.
+   * <li>This handles coordinate lists which contain repeated points.
+   * <li>This handles rings which contain collapsed segments 
+   *     (in particular, along the top of the ring).
    * </ul>
-   * This algorithm is <b>only</b> guaranteed to work with valid rings. If the
-   * ring is invalid (e.g. self-crosses or touches), the computed result may not
-   * be correct.
-   *
-   * @param ring
-   *          a CoordinateSequence forming a ring
+   * This algorithm is guaranteed to work with valid rings.
+   * It also works with "mildly invalid" rings 
+   * which contain collapsed (coincident) flat segments along the top of the ring.   
+   * If the ring is "more" invalid (e.g. self-crosses or touches), 
+   * the computed result may not be correct.
+   * 
+   * @param ring a CoordinateSequence forming a ring (with first and last point identical)
    * @return true if the ring is oriented counter-clockwise.
-   * @throws IllegalArgumentException
-   *           if there are too few points to determine orientation (&lt; 4)
-   */
+   * @throws IllegalArgumentException if there are too few points to determine orientation (&lt; 4)
+   */ 
   public static boolean isCCW(CoordinateSequence ring)
   {
     // # of points without closing endpoint
@@ -212,67 +154,84 @@ public class Orientation {
     // sanity check
     if (nPts < 3)
       throw new IllegalArgumentException(
-              "Ring has fewer than 4 points, so orientation cannot be determined");
-
-    // find highest point
-    Coordinate hiPt = ring.getCoordinate(0);
-    int hiIndex = 0;
+          "Ring has fewer than 4 points, so orientation cannot be determined");
+  
+    /**
+     * Find first highest point after a lower point, if one exists
+     * (e.g. a rising segment)
+     * If one does not exist, hiIndex will remain 0
+     * and the ring must be flat.
+     * Note this relies on the convention that
+     * rings have the same start and end point. 
+     */
+    Coordinate upHiPt = ring.getCoordinate(0);
+    double prevY = upHiPt.y;
+    Coordinate upLowPt = null;
+    int iUpHi = 0;
     for (int i = 1; i <= nPts; i++) {
-      Coordinate p = ring.getCoordinate(i);
-      if (p.y > hiPt.y) {
-        hiPt = p;
-        hiIndex = i;
+      double py = ring.getOrdinate(i, Coordinate.Y);
+      /**
+       * If segment is upwards and endpoint is higher, record it
+       */
+      if (py > prevY && py >= upHiPt.y) {
+        upHiPt = ring.getCoordinate(i);
+        iUpHi = i;
+        upLowPt = ring.getCoordinate(i-1);
       }
+      prevY = py;
     }
-
-    // find distinct point before highest point
-    Coordinate prev;
-    int iPrev = hiIndex;
-    do {
-      iPrev = iPrev - 1;
-      if (iPrev < 0)
-        iPrev = nPts;
-      prev = ring.getCoordinate(iPrev);
-    } while (prev.equals2D(hiPt) && iPrev != hiIndex);
-
-    // find distinct point after highest point
-    Coordinate next;
-    int iNext = hiIndex;
-    do {
-      iNext = (iNext + 1) % nPts;
-      next = ring.getCoordinate(iNext);
-    } while (next.equals2D(hiPt) && iNext != hiIndex);
-
-    /*
-     * This check catches cases where the ring contains an A-B-A configuration
-     * of points. This can happen if the ring does not contain 3 distinct points
-     * (including the case where the input array has fewer than 4 elements), or
-     * it contains coincident line segments.
+    /**
+     * Check if ring is flat and return default value if so
      */
-    if (prev.equals2D(hiPt) || next.equals2D(hiPt) || prev.equals2D(next))
-      return false;
-
-    int disc = Orientation.index(prev, hiPt, next);
-
-    /*
-     * If disc is exactly 0, lines are collinear. There are two possible cases:
-     * (1) the lines lie along the x axis in opposite directions (2) the lines
-     * lie on top of one another
-     *
-     * (1) is handled by checking if next is left of prev ==> CCW (2) will never
-     * happen if the ring is valid, so don't check for it (Might want to assert
-     * this)
+    if (iUpHi == 0) return false;
+    
+    /**
+     * Find the next lower point after the high point
+     * (e.g. a falling segment).
+     * This must exist since ring is not flat.
      */
-    boolean isCCW;
-    if (disc == 0) {
-      // poly is CCW if prev x is right of next x
-      isCCW = (prev.x > next.x);
+    int iDownLow = iUpHi;
+    do {
+      iDownLow = (iDownLow + 1) % nPts;
+    } while (iDownLow != iUpHi && ring.getOrdinate(iDownLow, Coordinate.Y) == upHiPt.y );
+
+    Coordinate downLowPt = ring.getCoordinate(iDownLow);
+    int iDownHi = iDownLow > 0 ? iDownLow - 1 : nPts - 1;
+    Coordinate downHiPt = ring.getCoordinate(iDownHi);
+  
+    /**
+     * Two cases can occur:
+     * 1) the hiPt and the downPrevPt are the same.  
+     *    This is the general position case of a "pointed cap".
+     *    The ring orientation is determined by the orientation of the cap
+     * 2) The hiPt and the downPrevPt are different.
+     *    In this case the top of the cap is flat.
+     *    The ring orientation is given by the direction of the flat segment
+     */
+    if (upHiPt.equals2D(downHiPt)) {
+      /**
+       * Check for the case where the cap has configuration A-B-A. 
+       * This can happen if the ring does not contain 3 distinct points
+       * (including the case where the input array has fewer than 4 elements), or
+       * it contains coincident line segments.
+       */
+      if (upLowPt.equals2D(upHiPt) || downLowPt.equals2D(upHiPt) || upLowPt.equals2D(downLowPt))
+        return false;
+    
+      /**
+       * It can happen that the top segments are coincident.
+       * This is an invalid ring, which cannot be computed correctly.
+       * In this case the orientation is 0, and the result is false.
+       */
+      int index = index(upLowPt, upHiPt, downLowPt);
+      return index == COUNTERCLOCKWISE;
     }
     else {
-      // if area is positive, points are ordered CCW
-      isCCW = (disc > 0);
+      /**
+       * Flat cap - direction of flat top determines orientation
+       */
+      double delX = downHiPt.x - upHiPt.x;
+      return delX < 0;
     }
-    return isCCW;
   }
-
 }
