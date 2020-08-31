@@ -21,6 +21,16 @@ Distributions for older JTS versions can be obtained at the
 
 *Release Date:  TBD*
 
+### Functionality Improvements
+
+* Improve Orientation.isCCW to handle flat topology collapse (#588)
+
+<!-- ================================================================ -->
+
+# Version 1.17.1
+
+*Release Date:  August 27, 2020*
+
 *Java Version: 1.8*
 
 ### Functionality Improvements

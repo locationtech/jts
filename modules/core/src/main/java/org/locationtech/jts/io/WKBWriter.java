@@ -33,23 +33,36 @@ import org.locationtech.jts.util.Assert;
  * with arbitrary byte stream sinks.
  * <p>
  * The WKB format is specified in the 
- * OGC <A HREF="http://www.opengis.org/techno/specs.htm"><i>Simple Features for SQL</i></a>
- * specification.
- * This implementation also supports the <b>Extended WKB</b> 
- * standard. Extended WKB allows writing 3-dimensional coordinates
- * and including the geometry SRID value.  
- * The presence of 3D coordinates is signified
+ * OGC <A HREF="http://portal.opengeospatial.org/files/?artifact_id=829"><i>Simple Features for SQL
+ * specification</i></a> (section 3.3.2.6).
+ * <p>
+ * There are a few cases which are not specified in the standard.
+ * The implementation uses a representation which is compatible with
+ * other common spatial systems (notably, PostGIS).
+ * <ul>
+ * <li>{@link LinearRing}s are written as {@link LineString}s</li>
+ * <li>Empty geometries are output as follows:
+ * <ul>
+ * <li><b>Point</b>: a <code>WKBPoint</code> with <code>NaN</code> ordinate values</li> 
+ * <li><b>LineString</b>: a <code>WKBLineString</code> with zero points</li>
+ * <li><b>Polygon</b>: currently output as a <code>WKBPolygon</code> with one <code>LinearRing</code> with zero points.
+ * <i>Note: This is different to other systems.  It will change to a <code>WKBPolygon</code> with zero <code>LinearRing</code>s.</i>
+ * </li>
+ * <li><b>Multi geometries</b>: a <code>WKBMulti</code> geometry of appropriate type with zero elements</li>
+ * <li><b>GeometryCollections</b>: a <code>WKBGeometryCollection</code> with zero elements</li>
+ * </ul></li>
+ * </ul>
+ * <p>
+ * This implementation supports the <b>Extended WKB</b> standard. 
+ * Extended WKB allows writing 3-dimensional coordinates
+ * and the geometry SRID value.  
+ * The presence of 3D coordinates is indicated
  * by setting the high bit of the <tt>wkbType</tt> word.
- * The presence of an SRID is signified 
+ * The presence of a SRID is indicated
  * by setting the third bit of the <tt>wkbType</tt> word.
- * EWKB format is upward compatible with the original SFS WKB format.
+ * EWKB format is upward-compatible with the original SFS WKB format.
  * <p>
- * Empty Points are output as a Point with <code>NaN</code> X and Y ordinate values. 
- * <p>
- * The WKB specification does not support representing {@link LinearRing}s;
- * they will be written as {@link LineString}s.
- * <p>
- * This class is designed to support reuse of a single instance to read multiple
+ * This class supports reuse of a single instance to read multiple
  * geometries. This class is not thread-safe; each thread should create its own
  * instance.
  * 

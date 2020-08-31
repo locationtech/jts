@@ -120,6 +120,31 @@ public class CoordinateArraysTest extends TestCase {
     }
   }
 
+  public void testEnforceConsistency(){
+    Coordinate array[] = new Coordinate[]{
+        new Coordinate(1.0, 1.0, 0.0),
+        new CoordinateXYM(2.0,2.0,1.0)
+    };
+    Coordinate array2[] = new Coordinate[]{
+            new CoordinateXY(1.0, 1.0),
+            new CoordinateXY(2.0,2.0)
+    };
+    // process into array with dimension 4 and measures 1
+    CoordinateArrays.enforceConsistency(array);
+    assertEquals( 3, CoordinateArrays.dimension(array));
+    assertEquals( 1, CoordinateArrays.measures(array));
+
+    CoordinateArrays.enforceConsistency(array2);
+    
+    Coordinate fixed[] = CoordinateArrays.enforceConsistency(array2,2,0);
+    assertSame( fixed, array2); // no processing required
+
+    fixed = CoordinateArrays.enforceConsistency(array,3,0);
+    assertTrue( fixed != array); // copied into new array
+    assertTrue( array[0] != fixed[0] ); // processing needed to CoordinateXYZM
+    assertTrue( array[1] != fixed[1] ); // processing needed to CoordinateXYZM
+  }
+
   private static void checkCoordinateAt(Coordinate[] seq1, int pos1,
                                         Coordinate[] seq2, int pos2) {
     Coordinate c1 = seq1[pos1], c2 = seq2[pos2];

@@ -12,17 +12,18 @@ public class Palette {
   public static final int TYPE_RAINBOW = 3;
   public static final int TYPE_RAINBOW_RANDOM = 4;
   
-  private static final HSBPalette PAL_RAINBOW_INCREMENTAL = HSBPalette.createRainbowIncremental(0.396f, 0.4f, 1);
-
+  private static final float BRIGHT_RANGE = 0.1f;
+  private static final float SAT_RANGE = 0.2f;
+  
   public static HSBPalette customPalette(int paletteType, Color clrBase, int numHues) {
     HSBPalette pal = null;
-    float sat = 0.6f; //ColorUtil.getSaturation(clrBase);
+    float sat = ColorUtil.getSaturation(clrBase);
     float bright = ColorUtil.getBrightness(clrBase);
     if (TYPE_VARY == paletteType) {
       float hue = ColorUtil.getHue(clrBase);
-      pal = new HSBPalette(5, hue, 0.1f,
-          3, 0.3f, 0.7f,
-          3, 0.8f, 0.9f
+      pal = new HSBPalette(5, hue, HSBPalette.HUE_WIDTH / 2,
+          3, sat - SAT_RANGE/2, sat + SAT_RANGE/2,
+          3, bright - BRIGHT_RANGE/2, bright + BRIGHT_RANGE/2
           );
     }
     else if (TYPE_RAINBOW == paletteType) {

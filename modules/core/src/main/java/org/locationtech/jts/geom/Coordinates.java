@@ -46,7 +46,7 @@ public class Coordinates {
     }
     return new Coordinate();
   }
-    
+  
   /**
    * Determine dimension based on subclass of {@link Coordinate}.
    * 
