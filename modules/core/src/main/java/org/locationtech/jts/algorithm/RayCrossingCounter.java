@@ -85,8 +85,12 @@ public class RayCrossingCounter
     Coordinate p1 = new Coordinate();
     Coordinate p2 = new Coordinate();
     for (int i = 1; i < ring.size(); i++) {
-      ring.getCoordinate(i, p1);
-      ring.getCoordinate(i - 1, p2);
+      //ring.getCoordinate(i, p1);
+      p1.x = ring.getOrdinate(i, CoordinateSequence.X);
+      p1.y = ring.getOrdinate(i, CoordinateSequence.Y);
+      //ring.getCoordinate(i - 1, p2);
+      p2.x = ring.getOrdinate(i - 1, CoordinateSequence.X);
+      p2.y = ring.getOrdinate(i - 1, CoordinateSequence.Y);
       counter.countSegment(p1, p2);
       if (counter.isOnSegment())
         return counter.getLocation();
