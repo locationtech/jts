@@ -28,6 +28,7 @@ Distributions for older JTS versions can be obtained at the
 ### Bug Fixes
 
 * Fix `RayCrossingCounter` to handle XYZM coordinates (#589)
+* Fix `PackedCoordinateSequence` to always use XYZM coordinates when dimension is 4 (#591)
 
 <!-- ================================================================ -->
 
