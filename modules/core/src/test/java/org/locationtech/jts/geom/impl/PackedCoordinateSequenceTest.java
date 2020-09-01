@@ -59,6 +59,7 @@ public class PackedCoordinateSequenceTest
     checkDim3(factory);
     checkDim3_M1(factory);
     checkDim4_M1(factory);
+    checkDim4(factory);
     checkDimInvalid(factory);
   }
   
@@ -171,8 +172,36 @@ public class PackedCoordinateSequenceTest
     
     CoordinateSequence copy2 = factory.create(seq);
     assertTrue(isEqual(copy2, array));    
-  }  
-  
+  }
+
+  public void checkDim4(CoordinateSequenceFactory factory)
+  {
+    CoordinateSequence seq = factory.create(5, 4);
+    initProgression(seq);
+
+    assertEquals("Dimension should be 4", 4, seq.getDimension());
+    assertTrue("Z should be present", seq.hasZ());
+    assertTrue("M should be present", seq.hasM());
+
+    Coordinate coord = seq.getCoordinate(4);
+    assertTrue( coord instanceof CoordinateXYZM);
+    assertEquals( 4.0, coord.getX());
+    assertEquals( 4.0, coord.getY());
+    assertEquals( 4.0, coord.getZ());
+    assertEquals( 4.0, coord.getM());
+
+    Coordinate[] array = seq.toCoordinateArray();
+    assertEquals(coord, array[4]);
+    assertTrue(coord != array[4]);
+    assertTrue(isEqual(seq,array));
+
+    CoordinateSequence copy = factory.create(array);
+    assertTrue(isEqual(copy,array));
+
+    CoordinateSequence copy2 = factory.create(seq);
+    assertTrue(isEqual(copy2, array));
+  }
+
   /**
    * Disable for now until solution can be found.
    * See Issue 434.
