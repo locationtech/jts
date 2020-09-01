@@ -25,6 +25,10 @@ Distributions for older JTS versions can be obtained at the
 
 * Improve Orientation.isCCW to handle flat topology collapse (#588)
 
+### Bug Fixes
+
+* Fix `RayCrossingCounter` to handle XYZM coordinates (#589)
+
 <!-- ================================================================ -->
 
 # Version 1.17.1
