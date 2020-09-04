@@ -49,7 +49,9 @@ class OverlayLabeller {
    */
   public void computeLabelling() {
     Collection<OverlayEdge> nodes = graph.getNodeEdges();
+    
     labelAreaNodeEdges(nodes);
+    labelConnectedLinearEdges();
     
     //TODO: is there a way to avoid scanning all edges in these steps?
     /**
@@ -59,6 +61,7 @@ class OverlayLabeller {
      * The edges can be labeled based on their parent ring role (shell or hole).
      */
     labelCollapsedEdges();
+    labelConnectedLinearEdges();
     
     labelDisconnectedEdges();
   }
@@ -78,7 +81,6 @@ class OverlayLabeller {
         propagateAreaLocations(nodeEdge, 1);
       }
     }
-    labelConnectedLinearEdges();
   }
 
   /**
@@ -89,9 +91,14 @@ class OverlayLabeller {
    * 
    * @param geomIndex the geometry to propagate locations for
    */
-  public static void propagateAreaLocations(OverlayEdge nodeEdge, int geomIndex) {
+  public void propagateAreaLocations(OverlayEdge nodeEdge, int geomIndex) {
     /**
-     * This handles dangling edges created by overlap limiting
+     * Only propagate for area geometries
+     */
+    if (! inputGeometry.isArea(geomIndex)) return;
+    /**
+     * No need to propagate if node has only one edge.
+     * This handles dangling edges created by overlap limiting.
      */
     if (nodeEdge.degree() == 1) return;
     
@@ -144,7 +151,7 @@ class OverlayLabeller {
   }
 
   /**
-   * Finds a boundary edge for this geom, if one exists
+   * Finds a boundary edge for this geom, if one exists.
    * 
    * @param nodeEdge an edge for this node
    * @param geomIndex the parent geometry index
@@ -196,7 +203,6 @@ class OverlayLabeller {
         labelCollapsedEdge(edge, 1);
       }
     }
-    labelConnectedLinearEdges();
   }
 
   private void labelCollapsedEdge(OverlayEdge edge, int geomIndex) {
