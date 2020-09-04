@@ -104,7 +104,7 @@ public class OverlayNG
    * (for proper boundary touches only - 
    * touching along collapses are not output).
    */
-  static final boolean ALLOW_INT_MIXED_INT_RESULT = true;
+  static final boolean ALLOW_INT_MIXED_RESULT = true;
 
   /**
    * Tests whether a point with a given topological {@link Label}
@@ -516,24 +516,24 @@ public class OverlayNG
     List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
     PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
     List<Polygon> resultPolyList = polyBuilder.getPolygons();
-    boolean hasResultComponents = resultPolyList.size() > 0;
+    boolean hasResultAreaComponents = resultPolyList.size() > 0;
     
     //--- Build lines
     List<LineString> resultLineList = null;
-    boolean allowMixedIntResult = ! hasResultComponents || ALLOW_INT_MIXED_INT_RESULT;
-    if (opCode != INTERSECTION || allowMixedIntResult) {
-      LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultComponents, opCode, geomFact);
+    boolean allowResultLines = ! hasResultAreaComponents || ALLOW_INT_MIXED_RESULT;
+    if ( allowResultLines ) {
+      LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultAreaComponents, opCode, geomFact);
       resultLineList = lineBuilder.getLines();
     }
-    hasResultComponents = hasResultComponents || resultLineList.size() > 0;
+    boolean hasResultComponents = hasResultAreaComponents || resultLineList.size() > 0;
     /**
-     * Since operations with point inputs are handled elsewhere,
-     * this only handles the case where non-point inputs 
-     * intersect in points. 
+     * Operations with point inputs are handled elsewhere.
+     * Only an intersection op can produce point results
+     * from non-point inputs. 
      */
     List<Point> resultPointList = null;
-    allowMixedIntResult = ! hasResultComponents || ALLOW_INT_MIXED_INT_RESULT;
-    if (opCode == INTERSECTION && allowMixedIntResult) {
+    boolean allowResultPoints = ! hasResultComponents || ALLOW_INT_MIXED_RESULT;
+    if ( opCode == INTERSECTION && allowResultPoints ) {
     //if (opCode == INTERSECTION) {
       IntersectionPointBuilder pointBuilder = new IntersectionPointBuilder(graph, geomFact);
       resultPointList = pointBuilder.getPoints();
