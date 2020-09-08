@@ -105,11 +105,11 @@ class MaximalEdgeRing {
     OverlayEdge edge = startEdge;
     do {
       if (edge == null)
-        throw new TopologyException("Found null edge in ring");
+        throw new TopologyException("Ring edge is null");
       if (edge.getEdgeRingMax() == this)
-        throw new TopologyException("Edge visited twice during ring-building at " + edge.getCoordinate(), edge.getCoordinate());
+        throw new TopologyException("Ring edge visited twice at " + edge.getCoordinate(), edge.getCoordinate());
       if (edge.nextResultMax() == null) {
-        throw new TopologyException("Found null edge in ring", edge.dest());
+        throw new TopologyException("Ring edge missing at", edge.dest());
       }
       edge.setEdgeRingMax(this);
       edge = edge.nextResultMax();

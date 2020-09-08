@@ -433,7 +433,6 @@ class OverlayLabel {
         && getLocation(0, Position.RIGHT, true) != getLocation(1, Position.RIGHT, true);
   }
 
-  
   /**
    * Tests if a label is for an edge which is in the boundary of a source geometry.
    * 
@@ -445,6 +444,18 @@ class OverlayLabel {
       return aDim == DIM_BOUNDARY;
     }
     return bDim == DIM_BOUNDARY;
+  }
+  
+  /**
+   * Tests whether a label is for an edge which is a boundary of one geometry
+   * and not part of the other.
+   * 
+   * @return true if the edge is a boundary singleton
+   */
+  public boolean isBoundarySingleton() {
+    if (aDim == DIM_BOUNDARY && bDim == DIM_NOT_PART) return true;
+    if (bDim == DIM_BOUNDARY && aDim == DIM_NOT_PART) return true;
+    return false;
   }
   
   /**
@@ -655,5 +666,6 @@ class OverlayLabel {
     }
     return SYM_UNKNOWN;
   }
+
 
 }
