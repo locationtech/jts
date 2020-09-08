@@ -12,7 +12,7 @@
     </div>
     <div class="content">
       <h1>JTS Frequently Asked Questions</h1>
-      Last Update: September 4, 2018 <br>
+      Last Update: September 8, 2020 <br>
       <br>
       <ol type="A">
         <li><a href="#general">General</a></li>
@@ -80,7 +80,7 @@
       <br>
       <h2>A. General<a name="general"></a></h2>
       <h3> 1. What Java versions does JTS work with?<a name="A1"></a></h3>
-      JTS is developed using Java 1.4.2. It should work with all newer versions.
+      JTS is developed using Java 1.8. It should work with all newer versions.
       With a small amount of work the library can be made to work with almost
       all previous Java versions as well. <br>
       <h2>B. Design and Structure<a name="design"></a></h2>
@@ -207,7 +207,7 @@
         <li><strong>Invalid input geometry</strong>. If input geometry is
           invalid according to the JTS (and OGC SFS) model, the results of
           operations is undefined, and may produce exceptions. <a class="javadoc" href="./javadoc/org/locationtech/jts/geom/Geometry.html">Geometry</a>
-          validity can be checked by using the <a class="javadoc" href="./javadoc/org/locationtech/jts/geom/Geometry.html#isValid%28%29">isValid()</a>
+          validity can be checked by using the <a class="javadoc" href="./javadoc/org/locationtech/jts/geom/Geometry.html#isValid--">isValid()</a>
           method. </li>
         <li><strong>Robustness failure</strong> due to floating-point roundoff
           errors. Floating-point errors can cause incorrect results to be
@@ -482,7 +482,7 @@ and simplest if it is horizontal or vertical.
       <h3>1. How can I correct the topology of a Polygon that JTS is reporting
         as invalid?<a name="G1"></a></h3>
       <ul>
-        <li>Compute <a class="javadoc" href="./javadoc/org/locationtech/jts/geom/Geometry.html#buffer%28double%29">polygon.buffer(0)</a>.
+        <li>Compute <a class="javadoc" href="./javadoc/org/locationtech/jts/geom/Geometry.html#buffer-double-">polygon.buffer(0)</a>.
           The buffer operation is fairly insensitive to topological invalidity,
           and the act of computing the buffer can often resolve minor issues
           such as self-intersecting rings. However, in some situations the
