@@ -27,6 +27,16 @@ public class PrecisionReducerTest extends GeometryTestCase
     super(name);
   }
 
+  public void testPolygonBoxEmpty( ) {
+    checkReduce("POLYGON ((1 1.4, 7.3 1.4, 7.3 1.2, 1 1.2, 1 1.4))",
+        1, "POLYGON EMPTY");
+  }
+
+  public void testPolygonThinEmpty( ) {
+    checkReduce("POLYGON ((1 1.4, 3.05 1.4, 3 4.1, 6 5, 3.2 4, 3.2 1.4, 7.3 1.4, 7.3 1.2, 1 1.2, 1 1.4))",
+        1, "POLYGON EMPTY");
+  }
+
   public void testPolygonGore( ) {
     checkReduce("POLYGON ((2 1, 9 1, 9 5, 3 5, 9 5.3, 9 9, 2 9, 2 1))",
         1, "POLYGON ((9 1, 2 1, 2 9, 9 9, 9 5, 9 1))");

@@ -70,7 +70,7 @@ class OverlayLabeller {
   /**
    * Labels edges around nodes based on the arrangement
    * of incident area boundary edges.
-   * Also propagates the labelling to connected linear edges.
+   * Also propagates the labeling to connected linear edges.
    *  
    * @param nodes the nodes to label
    */
@@ -124,6 +124,7 @@ class OverlayLabeller {
         label.setLocationLine(geomIndex, currLoc);
       }
       else {
+        // must be a boundary edge
         Assert.isTrue(label.hasSides(geomIndex));
         /**
          *  This is a boundary edge for the input area geom.
@@ -151,7 +152,10 @@ class OverlayLabeller {
   }
 
   /**
-   * Finds a boundary edge for this geom, if one exists.
+   * Finds a boundary edge for this geom originating at the given
+   * node, if one exists.
+   * A boundary edge should exist if this is a node on the boundary
+   * of the parent area geometry.
    * 
    * @param nodeEdge an edge for this node
    * @param geomIndex the parent geometry index

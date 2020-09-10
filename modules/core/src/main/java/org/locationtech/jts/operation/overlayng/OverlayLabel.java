@@ -34,7 +34,7 @@ import org.locationtech.jts.geom.Position;
  * Accessors for orientation-sensitive information
  * are parameterized by the orientation of the containing edge.
  * <p>
- * For each input geometry, the label records
+ * For each input geometry (0 and 1), the label records
  * that an edge is in one of the following states
  * (identified by the <code>dim</code> field).
  * Each state has additional information about the edge topology.
@@ -45,17 +45,17 @@ import org.locationtech.jts.geom.Position;
  *   <li><code>locLeft, locRight</code> : the locations of the edge sides for the Area</li>
  *   <li><code>locLine</code> : INTERIOR</li>
  *   <li><code>isHole</code> : whether the 
- * edge was in a shell or a hole (the ring role)</li>
+ * edge is in a shell or a hole (the ring role)</li>
  *   </ul>
  * </li>
  * <li>A <b>Collapsed</b> edge of an input Area 
  * (formed by merging two or more parent edges)
  *   <ul>
  *   <li><code>dim</code> = DIM_COLLAPSE</li>
- *   <li><code>locLine</code> : the location of the edge relative to the Area</li>
- *   <li><code>isHole</code> : whether some 
- *       contributing edge was in a shell (<code>false</code>). 
- *       Otherwise all parent edges were in holes</li> (<code>true</code>)
+ *   <li><code>locLine</code> : the location of the edge relative to the effective input Area
+ *       (a collapsed spike is EXTERIOR, a collapsed gore or hole is INTERIOR)</li>
+ *   <li><code>isHole</code> : <code>true</code> if all parent edges are in holes;
+ *                             <code>false</code> if some parent edge is in a shell
  *   </ul>
  * </li>
  * <li>A <b>Line</b> edge from an input line
@@ -96,22 +96,25 @@ class OverlayLabel {
   public static final int DIM_UNKNOWN = -1;
   
   /**
-   * The dimension of an edge which is not part of a specified input geometry
+   * The dimension of an edge which is not part of a specified input geometry.
    */
   public static final int DIM_NOT_PART = DIM_UNKNOWN;
   
   /**
-   * The dimension of an edge which is a line
+   * The dimension of an edge which is a line.
    */
   public static final int DIM_LINE = 1;
   
   /**
-   * The dimension for an edge which is part of an input Area geometry boundary
+   * The dimension for an edge which is part of an input Area geometry boundary.
    */
   public static final int DIM_BOUNDARY = 2;
   
   /**
-   * The dimension for an edge which is a collapsed part of an input Area geometry boundary
+   * The dimension for an edge which is a collapsed part of an input Area geometry boundary.
+   * A collapsed edge represents two or more line segments which have the same endpoints.
+   * They usually are caused by edges in valid polygonal geometries
+   * having their endpoints become identical due to precision reduction.
    */
   public static final int DIM_COLLAPSE = 3;
   
@@ -230,6 +233,10 @@ class OverlayLabel {
   /**
    * Initializes the label for an edge which is the collapse of 
    * part of the boundary of an Area input geometry.
+   * The location of the collapsed edge relative to the
+   * parent area geometry is initially unknown.
+   * It must be determined from the topology of the overlay graph
+   * 
    * @param index the index of the parent input geometry
    * @param isHole whether the dominant edge role is a hole or a shell
    */
@@ -367,7 +374,7 @@ class OverlayLabel {
   }
 
   /**
-   * Tests whether a source is known.
+   * Tests whether a the source of a label is known.
    * 
    * @param index the index of the source geometry
    * @return true if the source is known
@@ -412,7 +419,7 @@ class OverlayLabel {
   }
   
   /**
-   * Tests if the label is for a collapsed area edge 
+   * Tests if the label is a collapsed edge of one area  
    * and is a (non-collapsed) boundary edge of the other area.
    * 
    * @return true if the label is for a collapse coincident with a boundary
@@ -435,6 +442,7 @@ class OverlayLabel {
 
   /**
    * Tests if a label is for an edge which is in the boundary of a source geometry.
+   * Collapses are not reported as being in the boundary.
    * 
    * @param index the index of the input geometry
    * @return true if the label is a boundary for the source
@@ -510,6 +518,30 @@ class OverlayLabel {
    */
   public boolean isCollapse(int index) {
     return dimension(index) == DIM_COLLAPSE;
+  }
+  
+  /**
+   * Tests if a label is a Collapse has location {@link Location#INTERIOR}, 
+   * to at least one source geometry.
+   * 
+   * @return true if the label is an Interior Collapse to a source geometry
+   */
+  public boolean isInteriorCollapse() {
+    if (aDim == DIM_COLLAPSE && aLocLine == Location.INTERIOR) return true;
+    if (bDim == DIM_COLLAPSE && bLocLine == Location.INTERIOR) return true;
+    return false;
+  }
+  
+  /**
+   * Tests if a label is a Collapse 
+   * and NotPart with location {@link Location#INTERIOR} for the other geometry.
+   * 
+   * @return true if the label is a Collapse and a NotPart with Location Interior
+   */
+  public boolean isCollapseAndNotPartInterior() {
+    if (aDim == DIM_COLLAPSE && bDim == DIM_NOT_PART && bLocLine == Location.INTERIOR) return true;
+    if (bDim == DIM_COLLAPSE && aDim == DIM_NOT_PART && aLocLine == Location.INTERIOR) return true;
+    return false;
   }
   
   /**
@@ -644,6 +676,7 @@ class OverlayLabel {
       buf.append( Location.toLocationSymbol( getLocation(index, Position.RIGHT, isForward) ) );
     }
     else {
+      // is a linear edge
       buf.append( Location.toLocationSymbol( index == 0 ? aLocLine : bLocLine ));
     }
     if (isKnown(index))
@@ -654,10 +687,22 @@ class OverlayLabel {
     return buf.toString();
   }
 
-  public static Object ringRoleSymbol(boolean isHole) {
+  /**
+   * Gets a symbol for the a ring role (Shell or Hole).
+   * 
+   * @param isHole true for a hole, false for a shell
+   * @return the ring role symbol character
+   */
+  public static char ringRoleSymbol(boolean isHole) {
     return isHole ? 'h' : 's';
   }
 
+  /**
+   * Gets the symbol for the dimension code of an edge.
+   * 
+   * @param dim the dimension code
+   * @return the dimension symbol character
+   */
   public static char dimensionSymbol(int dim) {
     switch (dim) {
     case DIM_LINE: return SYM_LINE;

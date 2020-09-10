@@ -79,7 +79,7 @@ class InputGeometry {
   }
   
   public boolean isLine(int geomIndex) {
-    return geom[geomIndex].getDimension() == 1;
+    return getDimension(geomIndex) == 1;
   }
 
   public boolean isAllPoints() {

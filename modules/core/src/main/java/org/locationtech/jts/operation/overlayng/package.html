@@ -60,11 +60,17 @@ The semantics of overlay output are:
 <li>Linear results include all nodes (endpoints) present in the input.
   In some cases more nodes will be present.
   (If merged lines are required see {@link LineMerger}.)</li>
-<li>Polygon edges which collapse completely due to rounding are not output.</li>
-<li>The <code>intersection</code> operation may produce a heterogenous result. 
-  The result contains all the dimensional components of the intersection.</li>
-<li>The <code>difference</code> operation produces a homogeneous result. 
-  The result dimension is that of the left-hand operand.</li>
+<li>Polygon edges which undergo topology collapse to lines 
+  (due to rounding or snapping) are included in the result.
+  This means that all operations may produce a heterogeneous result.
+  Generally this only occurs when using a fixed-precision model.
+  </li>
+<li>The <code>intersection</code> operation result includes. 
+  all the components of the intersection
+  for geometries which intersect in components of the same and/or lower dimension.</li>
+<li>The <code>difference</code> operation produces a homogeneous result 
+  if no topology collapses are present. 
+  In this case the result dimension is equal to that of the left-hand operand.</li>
 <li>The <code>union</code> and <code>symmetric difference</code> operations
   may produce a heterogeneous result if the inputs are of mixed dimension.</li>
 <li>Homogeneous results are output as <code>Multi</code> geometries.</li>

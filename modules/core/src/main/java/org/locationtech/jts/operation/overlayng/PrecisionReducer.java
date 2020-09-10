@@ -41,7 +41,9 @@ public class PrecisionReducer {
    * @return the precision-reduced geometry
    */
   public static Geometry reducePrecision(Geometry geom, PrecisionModel pm) {
-    Geometry reduced = OverlayNG.union(geom, pm);
+    OverlayNG ov = new OverlayNG(geom, pm);
+    ov.setAreaResultOnly(true);
+    Geometry reduced = ov.getResult();
     return reduced;
   }
 

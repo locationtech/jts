@@ -113,39 +113,67 @@ class LineBuilder {
    */
   private boolean isResultLine(OverlayLabel lbl) {
     /**
-     * An edge which is a boundary of a single geometry cannot form a line result.
-     * This is a short-circuit for area edges if no collapses or lines are present.
+     * Omit edge which is a boundary of a single geometry
+     * (i.e. not a collapse or line edge as well).
+     * These are only included if part of a result area.
+     * This is a short-circuit for the most common area edge case
      */
     if (lbl.isBoundarySingleton()) return false;
     
     /**
-     * Edges which are collapses along boundaries are not output.
+     * Omit edge which is a collapse along a boundary.
      * I.e a result line edge must be from a input line
-     * or two coincident area boundaries.
+     * OR two coincident area boundaries.
+     * 
+     * This logic is only used if not including collapse lines in result.
      */
-    if (lbl.isBoundaryCollapse()) return false;
+    if (! OverlayNG.ALLOW_COLLAPSE_LINES 
+        && lbl.isBoundaryCollapse()) return false;
+
+    /**
+     * Omit edge which is a collapse interior to its parent area.
+     * (E.g. a narrow gore, or spike off a hole)
+     */
+    if (lbl.isInteriorCollapse()) return false;
     
+    /**
+     * For ops other than Intersection, omit a line edge
+     * if it is interior to the other area.
+     * 
+     * For Intersection, a line edge interior to an area is included.
+     */
+    if (opCode != OverlayNG.INTERSECTION) {
+      /**
+       * Omit collapsed edge in other area interior.
+       */
+      if (lbl.isCollapseAndNotPartInterior()) return false;
+
+      /**
+       * If there is a result area, omit line edge inside it.
+       * It is sufficient to check against the input area rather 
+       * than the result area, 
+       * because if line edges are present then there is only one input area, 
+       * and the result area must be the same as the input area. 
+       */
+      if (hasResultArea && lbl.isLineInArea(inputAreaIndex)) 
+        return false;
+    }
+    
+    /**
+     * Include line edge formed by touching area boundaries,
+     * if enabled.
+     */
     if (OverlayNG.ALLOW_INT_MIXED_RESULT 
         && opCode == OverlayNG.INTERSECTION && lbl.isBoundaryTouch()) {
       return true;
     }
     
     /**
-     * Skip edges that are inside result area, if there is one.
-     * It is sufficient to check against an input area rather 
-     * than the result area, since 
-     * if lines are being included then the result area
-     * must be the same as the input area. 
-     * This logic relies on the semantic that if both inputs 
-     * are areas, lines are only output if there is no 
-     * result area.
+     * Finally, determine included line edge
+     * according to overlay op boolean logic.
      */
-    if (hasResultArea && lbl.isLineInArea(inputAreaIndex)) 
-      return false;
-    
     int aLoc = effectiveLocation(lbl, 0);
     int bLoc = effectiveLocation(lbl, 1);
-    
     boolean isInResult = OverlayNG.isResultOfOp(opCode, aLoc, bLoc);
     return isInResult;
   }

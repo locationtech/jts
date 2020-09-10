@@ -98,13 +98,26 @@ public class OverlayNG
   public static final int SYMDIFFERENCE = OverlayOp.SYMDIFFERENCE;
 
   /**
-   * Indicates whether intersections are allowed to produce
-   * heterogeneous results.
-   * True provides the classic JTS semantics
-   * (for proper boundary touches only - 
-   * touching along collapses are not output).
+   * Indicates whether the old overlay result semantics are used:
+   * - Intersection result can be mixed-dimension
+   * - Results can include lines caused by Area topology collapse
    */
-  static final boolean ALLOW_INT_MIXED_RESULT = true;
+  private static final boolean USE_OLD_RESULT_SEMANTICS = true;
+  
+  /**
+   * Indicates whether intersections are allowed to produce
+   * heterogeneous results including proper boundary touches. 
+   * This does not control inclusion of touches along collapses.
+   * True provides the original JTS semantics.
+   */
+  static final boolean ALLOW_INT_MIXED_RESULT = USE_OLD_RESULT_SEMANTICS;
+
+  /**
+   * Allow lines created by area topology collapses
+   * to appear in the result.
+   * True provides the original JTS semantics.
+   */
+  static final boolean ALLOW_COLLAPSE_LINES = USE_OLD_RESULT_SEMANTICS;
 
   /**
    * Tests whether a point with a given topological {@link Label}
@@ -326,6 +339,7 @@ public class OverlayNG
   private PrecisionModel pm;
   private Noder noder;
   private boolean isOptimized = true;
+  private boolean isAreaResultOnly = false;
   private boolean isOutputEdges = false;
   private boolean isOutputResultEdges = false;
   private boolean isOutputNodedEdges = false;
@@ -338,7 +352,7 @@ public class OverlayNG
    * The noding strategy is determined by the precision model.
    * 
    * @param geom0 the A operand geometry
-   * @param geom1 the B operand geometry
+   * @param geom1 the B operand geometry (may be null)
    * @param pm the precision model to use
    * @param opCode the overlay opcode
    */
@@ -364,18 +378,21 @@ public class OverlayNG
    * </ul>
    *  
    * @param geom0 the A operand geometry
-   * @param geom1 the B operand geometry
+   * @param geom1 the B operand geometry (may be null)
    * @param opCode the overlay opcode
    */
   public OverlayNG(Geometry geom0, Geometry geom1, int opCode) {
     this(geom0, geom1, geom0.getFactory().getPrecisionModel(), opCode);
   }  
   
-  private OverlayNG(Geometry geom0, PrecisionModel pm) {
-    this.pm = pm;
-    this.opCode = UNION;
-    geomFact = geom0.getFactory();
-    inputGeom = new InputGeometry( geom0, null );
+  /**
+   * Creates a union of a single geometry with a given precision model.
+   * 
+   * @param geom the geometry
+   * @param pm the precision model to use
+   */
+  OverlayNG(Geometry geom, PrecisionModel pm) {
+    this(geom, null, pm, UNION);
   }  
   
   /**
@@ -390,6 +407,15 @@ public class OverlayNG
     this.isOptimized = isOptimized;
   }
   
+  /**
+   * Sets whether the result can contain only {@link Polygon} components.
+   * This is used if it is known that the result must be an (possibly empty) area.
+   * 
+   * @param isAreaResultOnly true if the result should contain only area components
+   */
+  public void setAreaResultOnly(boolean isAreaResultOnly) {
+    this.isAreaResultOnly = isAreaResultOnly;
+  }
   public void setOutputEdges(boolean isOutputEdges ) {
     this.isOutputEdges = isOutputEdges;
   }
@@ -407,6 +433,11 @@ public class OverlayNG
     this.noder = noder;
   }
   
+  /**
+   * Gets the result of the overlay operation.
+   * 
+   * @return the result of the overlay operation.
+   */
   public Geometry getResult() {
     if (OverlayUtil.isEmptyResult(opCode, 
         inputGeom.getGeometry(0), 
@@ -518,25 +549,27 @@ public class OverlayNG
     List<Polygon> resultPolyList = polyBuilder.getPolygons();
     boolean hasResultAreaComponents = resultPolyList.size() > 0;
     
-    //--- Build lines
     List<LineString> resultLineList = null;
-    boolean allowResultLines = ! hasResultAreaComponents || ALLOW_INT_MIXED_RESULT;
-    if ( allowResultLines ) {
-      LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultAreaComponents, opCode, geomFact);
-      resultLineList = lineBuilder.getLines();
-    }
-    boolean hasResultComponents = hasResultAreaComponents || resultLineList.size() > 0;
-    /**
-     * Operations with point inputs are handled elsewhere.
-     * Only an intersection op can produce point results
-     * from non-point inputs. 
-     */
     List<Point> resultPointList = null;
-    boolean allowResultPoints = ! hasResultComponents || ALLOW_INT_MIXED_RESULT;
-    if ( opCode == INTERSECTION && allowResultPoints ) {
-    //if (opCode == INTERSECTION) {
-      IntersectionPointBuilder pointBuilder = new IntersectionPointBuilder(graph, geomFact);
-      resultPointList = pointBuilder.getPoints();
+    
+    if (! isAreaResultOnly) {
+      //--- Build lines
+      boolean allowResultLines = ! hasResultAreaComponents || ALLOW_INT_MIXED_RESULT;
+      if ( allowResultLines ) {
+        LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultAreaComponents, opCode, geomFact);
+        resultLineList = lineBuilder.getLines();
+      }
+      /**
+       * Operations with point inputs are handled elsewhere.
+       * Only an Intersection op can produce point results
+       * from non-point inputs. 
+       */
+      boolean hasResultComponents = hasResultAreaComponents || resultLineList.size() > 0;
+      boolean allowResultPoints = ! hasResultComponents || ALLOW_INT_MIXED_RESULT;
+      if ( opCode == INTERSECTION && allowResultPoints ) {
+        IntersectionPointBuilder pointBuilder = new IntersectionPointBuilder(graph, geomFact);
+        resultPointList = pointBuilder.getPoints();
+      }
     }
     
     if (isEmpty(resultPolyList) 

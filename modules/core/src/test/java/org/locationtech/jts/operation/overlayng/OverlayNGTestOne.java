@@ -28,6 +28,40 @@ public class OverlayNGTestOne extends GeometryTestCase {
 
   public OverlayNGTestOne(String name) { super(name); }
   
+  //======  Tests for semantic of including collapsed edges as lines in result
+  
+  public void xxtestCollapseTriBoxIntersection() {
+    Geometry a = read("POLYGON ((1 2, 1 1, 9 1, 1 2))");
+    Geometry b = read("POLYGON ((9 2, 9 1, 8 1, 8 2, 9 2))");
+    Geometry expected = read("LINESTRING (8 1, 9 1)");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void testCollapseTriBoxesIntersection() {
+    Geometry a = read("MULTIPOLYGON (((1 4, 1 1, 2 1, 2 4, 1 4)), ((9 4, 9 1, 10 1, 10 4, 9 4)))");
+    Geometry b = read("POLYGON ((0 2, 11 3, 11 2, 0 2))");
+    Geometry expected = read("GEOMETRYCOLLECTION (LINESTRING (1 2, 2 2), POLYGON ((9 2, 9 3, 10 3, 10 2, 9 2)))");
+    Geometry actual = intersection(a, b, 1);
+    checkEqual(expected, actual);
+  }
+  
+  public void xtestCollapseBoxCutByTriangleUnion() {
+    Geometry a = read("POLYGON ((100 10, 0 10, 100 11, 100 10))");
+    Geometry b = read("POLYGON ((20 20, 0 20, 0 0, 20 0, 20 20))");
+    Geometry expected = read("MULTIPOLYGON (((0 0, 0 10, 0 20, 20 20, 20 10, 20 0, 0 0)), ((20 10, 100 11, 100 10, 20 10)))");
+    checkEqual(expected, OverlayNGTest.union(a, b, 1));
+  }
+  
+  public void xtestCollapseBoxTriangleUnion() {
+    Geometry a = read("POLYGON ((10 10, 100 10, 10 11, 10 10))");
+    Geometry b = read("POLYGON ((90 0, 200 0, 200 200, 90 200, 90 0))");
+    Geometry expected = read("MULTIPOLYGON (((90 10, 10 10, 10 11, 90 10)), ((90 10, 90 200, 200 200, 200 0, 90 0, 90 10)))");
+    checkEqual(expected, OverlayNGTest.union(a, b, 1));
+  }
+  
+  //==============================================
+  
   public void xtestParallelSpikes() {
     Geometry a = read("POLYGON ((1 3.3, 1.3 1.4, 3.1 1.4, 3.1 0.9, 1.3 0.9, 1 -0.2, 0.8 1.3, 1 3.3))");
     Geometry b = read("POLYGON ((1 2.9, 2.9 2.9, 2.9 1.3, 1.7 1, 1.3 0.9, 1 0.4, 1 2.9))");
@@ -42,7 +76,7 @@ public class OverlayNGTestOne extends GeometryTestCase {
     checkEqual(expected, OverlayNGTest.difference(b, a, 1));
   }
   
-  public void testPolyPolyTouchIntersection() {
+  public void xtestPolyPolyTouchIntersection() {
     Geometry a = read("POLYGON ((300 0, 100 0, 100 100, 300 100, 300 0))");
     Geometry b = read("POLYGON ((100 200, 300 200, 300 100, 200 100, 200 0, 100 0, 100 200))");
     Geometry expected = read("GEOMETRYCOLLECTION (LINESTRING (200 100, 300 100), POLYGON ((200 0, 100 0, 100 100, 200 100, 200 0)))");
