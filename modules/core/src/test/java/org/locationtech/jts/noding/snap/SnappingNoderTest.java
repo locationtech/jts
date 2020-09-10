@@ -34,7 +34,7 @@ public class SnappingNoderTest extends GeometryTestCase {
     checkRounding(wkt1, null, 1, expected);
   }
   
-  public void testLineCondensePointsp() {
+  public void testLineCondensePoints() {
     String wkt1 = "LINESTRING (1 1, 1.3 1, 1.6 1, 1.9 1, 2.2 1, 2.5 1, 2.8 1, 3.1 1, 3.5 1, 4 1)";
     String expected = "LINESTRING (1 1, 2.2 1, 3.5 1)";
     checkRounding(wkt1, null, 1, expected);
@@ -59,7 +59,7 @@ public class SnappingNoderTest extends GeometryTestCase {
   /**
    * Extract from previous test
    */
-  public void testAlmostCoincidentines() {
+  public void testAlmostCoincidentLines() {
     String wkt1 = "MULTILINESTRING ((698413.5003455497 2388495.90071853, 698400.5682737827 2388494.3828697307), (698231.847335025 2388474.57994264, 698440.416211779 2388499.05985776))";
     String expected = "MULTILINESTRING ((698231.847335025 2388474.57994264, 698400.5682737827 2388494.3828697307), (698400.5682737827 2388494.3828697307, 698413.5003455497 2388495.90071853), (698400.5682737827 2388494.3828697307, 698413.5003455497 2388495.90071853), (698413.5003455497 2388495.90071853, 698440.416211779 2388499.05985776))";
     checkRounding(wkt1, null, 1, expected);
