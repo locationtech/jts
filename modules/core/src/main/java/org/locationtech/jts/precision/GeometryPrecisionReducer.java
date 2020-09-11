@@ -17,11 +17,28 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryEditor;
+import org.locationtech.jts.operation.overlayng.PrecisionReducer;
 
 /**
  * Reduces the precision of a {@link Geometry}
  * according to the supplied {@link PrecisionModel},
- * ensuring that the result is topologically valid.
+ * ensuring that the result is valid (unless specified otherwise).
+ * <p>
+ * By default the reduced result is topologically valid
+ * (i.e. {@link Geometry#isValid()} is true).
+ * To ensure this a polygonal geometry is reduced in a topologically valid fashion
+ * (technically, by using snap-rounding).
+ * It can be forced to be reduced pointwise by using {@link #setPointwise(boolean)}.
+ * Note that in this case the result geometry may be invalid.
+ * Linear and point geometry is always reduced pointwise (i.e. without further change to 
+ * its topology or stucture), since this does not change validity.
+ * <p>
+ * By default the geometry precision model is not changed.
+ * This can be overridden by using {@link #setChangePrecisionModel(boolean)}.
+ * <p>
+ * Normally collapsed components (e.g. lines collapsing to a point) 
+ * are not included in the result. 
+ * This behavior can be changed by using {@link #setRemoveCollapsedComponents(boolean)}.
  *
  * @version 1.12
  */
@@ -117,20 +134,19 @@ public class GeometryPrecisionReducer
 
   public Geometry reduce(Geometry geom)
   {
+    if (!isPointwise && geom instanceof Polygonal) {
+      Geometry reduced = PrecisionReducer.reducePrecision(geom, targetPM);
+      if (changePrecisionModel) {
+        return changePM(reduced, targetPM);
+      }
+      return reduced;
+    }
+    /**
+     * Process pointwise reduction
+     * (which is only strategy used for linear and point geoms)
+     */
     Geometry reducePW = reducePointwise(geom);
-    if (isPointwise)
-    	return reducePW;
-    
-    //TODO: handle GeometryCollections containing polys
-    if (! (reducePW instanceof Polygonal))
-    	return reducePW;
-    
-    // Geometry is polygonal - test if topology needs to be fixed
-    if (reducePW.isValid()) return reducePW;
-    
-    // hack to fix topology.  
-    // TODO: implement snap-rounding and use that.
-    return fixPolygonalTopology(reducePW);
+    return reducePW;
   }
 
   private Geometry reducePointwise(Geometry geom)
@@ -156,27 +172,6 @@ public class GeometryPrecisionReducer
     		new PrecisionReducerCoordinateOperation(targetPM, finalRemoveCollapsed));
     
     return reduceGeom;
-  }
-  
-  private Geometry fixPolygonalTopology(Geometry geom)
-  {
-  	/**
-  	 * If precision model was *not* changed, need to flip
-  	 * geometry to targetPM, buffer in that model, then flip back
-  	 */
-  	Geometry geomToBuffer = geom;
-  	if (! changePrecisionModel) {
-  		geomToBuffer = changePM(geom, targetPM);
-  	}
-  	
-  	Geometry bufGeom = geomToBuffer.buffer(0);
-  	
-  	Geometry finalGeom = bufGeom;
-  	if (! changePrecisionModel) {
-  	  // a slick way to copy the geometry with the original precision factory
-  		finalGeom = geom.getFactory().createGeometry(bufGeom);
-  	}
-  	return finalGeom;
   }
   
   /**
