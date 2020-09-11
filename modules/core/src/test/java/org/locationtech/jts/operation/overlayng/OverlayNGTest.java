@@ -314,7 +314,7 @@ public class OverlayNGTest extends GeometryTestCase {
   public void testCollapseTriBoxIntersection() {
     Geometry a = read("POLYGON ((1 2, 1 1, 9 1, 1 2))");
     Geometry b = read("POLYGON ((9 2, 9 1, 8 1, 8 2, 9 2))");
-    Geometry expected = read("POINT (8 1)");
+    Geometry expected = read("LINESTRING (8 1, 9 1)");
     Geometry actual = intersection(a, b, 1);
     checkEqual(expected, actual);
   }
@@ -338,7 +338,7 @@ public class OverlayNGTest extends GeometryTestCase {
   public void testCollapseAIncompleteRingUnion() {
     Geometry a = read("POLYGON ((0.9 1.7, 1.3 1.4, 2.1 1.4, 2.1 0.9, 1.3 0.9, 0.9 0, 0.9 1.7))");
     Geometry b = read("POLYGON ((1 3, 3 3, 3 1, 1.3 0.9, 1 0.4, 1 3))");
-    Geometry expected = read("POLYGON ((1 1, 1 2, 1 3, 3 3, 3 1, 2 1, 1 1))");
+    Geometry expected = read("GEOMETRYCOLLECTION (LINESTRING (1 0, 1 1), POLYGON ((1 1, 1 2, 1 3, 3 3, 3 1, 2 1, 1 1)))");
     Geometry actual = union(a, b, 1);
     checkEqual(expected, actual);
   }
@@ -352,7 +352,7 @@ public class OverlayNGTest extends GeometryTestCase {
   public void testCollapseResultShouldHavePolygonUnion() {
     Geometry a = read("POLYGON ((1 3.3, 1.3 1.4, 3.1 1.4, 3.1 0.9, 1.3 0.9, 1 -0.2, 0.8 1.3, 1 3.3))");
     Geometry b = read("POLYGON ((1 2.9, 2.9 2.9, 2.9 1.3, 1.7 1, 1.3 0.9, 1 0.4, 1 2.9))");
-    Geometry expected = read("POLYGON ((1 1, 1 3, 3 3, 3 1, 2 1, 1 1))");
+    Geometry expected = read("GEOMETRYCOLLECTION (LINESTRING (1 0, 1 1), POLYGON ((1 1, 1 3, 3 3, 3 1, 2 1, 1 1)))");
     Geometry actual = union(a, b, 1);
     checkEqual(expected, actual);
   }
@@ -412,7 +412,7 @@ public class OverlayNGTest extends GeometryTestCase {
   public void testBcollapseLocateIssue() {
     Geometry a = read("POLYGON ((2.3442078 48.9331054, 2.3435211 48.9337921, 2.3428345 48.9358521, 2.3428345 48.9372253, 2.3433495 48.9370537, 2.3440361 48.936367, 2.3442078 48.9358521, 2.3442078 48.9331054))");
     Geometry b = read("POLYGON ((2.3442078 48.9331054, 2.3435211 48.9337921, 2.3433494499999985 48.934307100000005, 2.3438644 48.9341354, 2.3442078 48.9331055, 2.3442078 48.9331054))");
-    Geometry expected = read("POLYGON EMPTY");
+    Geometry expected = read("MULTILINESTRING ((2.343 48.934, 2.344 48.934), (2.344 48.933, 2.344 48.934))");
     Geometry actual = intersection(a, b, 1000);
     checkEqual(expected, actual);
   }
@@ -449,7 +449,7 @@ public class OverlayNGTest extends GeometryTestCase {
   public void testBNearVertexSnappingCausesInversion() {
     Geometry a = read("POLYGON ((2.2494507 48.8864136, 2.2484207 48.8867569, 2.2477341 48.8874435, 2.2470474 48.8874435, 2.2463608 48.8853836, 2.2453308 48.8850403, 2.2439575 48.8850403, 2.2429276 48.8853836, 2.2422409 48.8860703, 2.2360611 48.8970566, 2.2504807 48.8956833, 2.2494507 48.8864136))");
     Geometry b = read("POLYGON ((2.247734099999997 48.8874435, 2.2467041 48.8877869, 2.2453308 48.8877869, 2.2443008 48.8881302, 2.243957512499544 48.888473487500455, 2.2443008 48.8888168, 2.2453308 48.8891602, 2.2463608 48.8888168, 2.247734099999997 48.8874435))");
-    Geometry expected = read("POLYGON EMPTY");
+    Geometry expected = read("LINESTRING (2.245 48.89, 2.25 48.885)");
     Geometry actual = intersection(a, b, 200);
     checkEqual(expected, actual);
   }
