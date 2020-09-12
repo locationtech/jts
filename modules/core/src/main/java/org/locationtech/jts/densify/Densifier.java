@@ -31,6 +31,10 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
  * The coordinates created during densification respect the input geometry's
  * {@link PrecisionModel}.
  * <p>
+ * By default polygonal results are processed to ensure they are valid.
+ * This processing is costly, and it is very rare for results to be invalid.
+ * Validation processing can be disabled by calling the {@link #setValidate(boolean)} method.
+ * <p>
  * <b>Note:</b> At some future point this class will
  * offer a variety of densification strategies.
  * 
@@ -87,6 +91,11 @@ public class Densifier {
 	private double distanceTolerance;
 
 	/**
+	 * Indicates whether areas should be topologically validated.
+	 */
+  private boolean isValidated = true;
+
+	/**
 	 * Creates a new densifier instance.
 	 * 
 	 * @param inputGeom
@@ -111,19 +120,30 @@ public class Densifier {
 	}
 
 	/**
+	 * Sets whether polygonal results are processed to ensure they are valid.
+	 * 
+	 * @param isValidated true if the results should be validated
+	 */
+	public void setValidate(boolean isValidated) {
+	  this.isValidated  = isValidated;
+	}
+	
+	/**
 	 * Gets the densified geometry.
 	 * 
 	 * @return the densified geometry
 	 */
 	public Geometry getResultGeometry() {
-		return (new DensifyTransformer(distanceTolerance)).transform(inputGeom);
+		return (new DensifyTransformer(distanceTolerance, isValidated)).transform(inputGeom);
 	}
 
 	static class DensifyTransformer extends GeometryTransformer {
 	  double distanceTolerance;
+    private boolean isValidated;
 	  
-	  DensifyTransformer(double distanceTolerance) {
+	  DensifyTransformer(double distanceTolerance, boolean isValidated) {
 	    this.distanceTolerance = distanceTolerance;
+	    this.isValidated = isValidated;
     }
 	  
 		protected CoordinateSequence transformCoordinates(
@@ -165,6 +185,7 @@ public class Densifier {
 		 * @return a valid area geometry
 		 */
 		private Geometry createValidArea(Geometry roughAreaGeom) {
+		  if (! isValidated) return roughAreaGeom;
 			return roughAreaGeom.buffer(0.0);
 		}
 	}
