@@ -24,6 +24,7 @@ Distributions for older JTS versions can be obtained at the
 ### Functionality Improvements
 
 * Improve Orientation.isCCW to handle flat topology collapse (#588)
+* Add `Densifier.setValidated` method to allow disabling expensive polygon validation (#595)
 
 ### Bug Fixes
 
