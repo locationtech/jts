@@ -130,11 +130,29 @@ public class OverlayNGSnapIfNeeded
     if (result != null)
       return result;
     
+    /**
+     * On failure retry using snap-rounding with a heuristic scale factor (grid size).
+     */
+    result = overlaySR(geom0, geom1, opCode);
+    if (result != null)
+      return result;
+    
+    /**
+     * Just can't get overlay to work, so throw original error.
+     */
     throw exOriginal;
   }
 
   private static final int NUM_SNAP_TRIES = 5;
 
+  /**
+   * Attempt overlay using snapping with repeated tries with increasing snap tolerances.
+   * 
+   * @param geom0
+   * @param geom1
+   * @param opCode
+   * @return the computed overlay result, or null if the overlay fails
+   */
   private static Geometry overlaySnapTries(Geometry geom0, Geometry geom1, int opCode) {
     Geometry result;
     double snapTol = snapTolerance(geom0, geom1);
@@ -158,12 +176,21 @@ public class OverlayNGSnapIfNeeded
     return null;
   }
 
+  /**
+   * Attempt overlay using a {@link SnappingNoder}.
+   * 
+   * @param geom0
+   * @param geom1
+   * @param opCode
+   * @param snapTol
+   * @return the computed overlay result, or null if the overlay fails
+   */
   private static Geometry overlaySnapping(Geometry geom0, Geometry geom1, int opCode, double snapTol) {
     try {
       return overlaySnapTol(geom0, geom1, opCode, snapTol);
     }
     catch (TopologyException ex) {
-      //---- ignore this exception, just return a null result
+      //---- ignore exception, return null result to indicate failure
       
       //System.out.println("Snapping with " + snapTol + " - FAILED");
       //log("Snapping with " + snapTol + " - FAILED", geom0, geom1);
@@ -171,6 +198,15 @@ public class OverlayNGSnapIfNeeded
     return null;
   }
 
+  /**
+   * Attempt overlay with first snapping each geometry individually.
+   * 
+   * @param geom0
+   * @param geom1
+   * @param opCode
+   * @param snapTol
+   * @return the computed overlay result, or null if the overlay fails
+   */
   private static Geometry overlaySnapBoth(Geometry geom0, Geometry geom1, int opCode, double snapTol) {
     try {
       Geometry snap0 = overlaySnapTol(geom0, null, OverlayNG.UNION, snapTol);
@@ -180,7 +216,7 @@ public class OverlayNGSnapIfNeeded
       return overlaySnapTol(snap0, snap1, opCode, snapTol);
     }
     catch (TopologyException ex) {
-      //---- ignore this exception, just return a null result
+      //---- ignore exception, return null result to indicate failure
     }
     return null;
   }
@@ -244,52 +280,28 @@ public class OverlayNGSnapIfNeeded
   }
   
   /**
-   * Creates a noder using simple floating noding 
-   * with no validation phase.
-   * This is twice as fast, but can cause
-   * invalid overlay results.
-   * 
-   * @return a floating noder with no validation
-   */
-  /*
-  private static Noder createFloatingNoValidNoder() {
-    MCIndexNoder noder = new MCIndexNoder();
-    LineIntersector li = new RobustLineIntersector();
-    noder.setSegmentIntersector(new IntersectionAdder(li));
-    return noder;
-  }
-  */
-  
-  /**
-   * Overlay using Snap-Rounding with an automatically-determined
+   * Attempt Overlay using Snap-Rounding with an automatically-determined
    * scale factor.
-   * <p>
-   * NOTE: currently this strategy is not used, since all known
-   * test cases work using one of the Snapping strategies.
    * 
    * @param geom0
    * @param geom1
    * @param opCode
-   * @return
+   * @return the computed overlay result, or null if the overlay fails
    */
   private static Geometry overlaySR(Geometry geom0, Geometry geom1, int opCode)
   {
     Geometry result;
     try {
-      // start with operation using floating PM
-      result = OverlayNG.overlay(geom0, geom1, opCode, PM_FLOAT); 
+      //System.out.println("OverlaySnapIfNeeded: trying snap-rounding");
+      double scaleSafe = PrecisionUtil.safeScale(geom0, geom1);
+      PrecisionModel pmSafe = new PrecisionModel(scaleSafe);
+      result = OverlayNG.overlay(geom0, geom1, opCode, pmSafe);
       return result;
     }
     catch (TopologyException ex) {
-      // ignore this exception, since the operation will be rerun
-      //System.out.println("Overlay failed");
+      //---- ignore exception, return null result to indicate failure
     }
-    // on failure retry with a "safe" fixed PM
-    // this should not throw an exception, but if it does just let it go
-    double scaleSafe = PrecisionUtil.safeScale(geom0, geom1);
-    PrecisionModel pmSafe = new PrecisionModel(scaleSafe);
-    result = OverlayNG.overlay(geom0, geom1, opCode, pmSafe);
-    return result;
+    return null;
   }
 
 }
