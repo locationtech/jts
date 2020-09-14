@@ -237,28 +237,6 @@ public class OverlayNG
   /**
    * Computes an overlay operation on 
    * the given geometry operands,
-   * using an automatically-determined fixed precision model
-   * which maximizes precision while ensuring robust computation.
-   * <p>
-   * WARNING: This is quite slow, so not recommended for production use.
-   * 
-   * @param geom0 the first geometry argument
-   * @param geom1 the second geometry argument
-   * @param opCode the code for the desired overlay operation
-   * @return the result of the overlay operation
-   */
-  public static Geometry overlayFixedPrecision(Geometry geom0, Geometry geom1, int opCode)
-  {
-    PrecisionModel pm = PrecisionUtil.robustPM(geom0, geom1);
-    //System.out.println("Precision Model: " + pm);
-    
-    OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
-    return ov.getResult();
-  }
-
-  /**
-   * Computes an overlay operation on 
-   * the given geometry operands,
    * using the precision model of the geometry.
    * and an appropriate noder.
    * <p>

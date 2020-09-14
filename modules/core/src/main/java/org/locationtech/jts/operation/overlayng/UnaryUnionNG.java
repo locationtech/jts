@@ -54,19 +54,6 @@ public class UnaryUnionNG {
     return op.union();
   }
   
-  /**
-   * Unions a collection of geometries
-   * using a precision model optimized to provide maximum
-   * precision while ensuring robust computation.
-   * 
-   * @param geom the geometry to union
-   * @return the union of the geometries
-   */
-  public static Geometry union(Geometry geom) {
-    PrecisionModel pm = PrecisionUtil.robustPM(geom);
-    return UnaryUnionNG.union(geom, pm);
-  }
-  
   private UnaryUnionNG() {
     // no instantiation for now
   }
