@@ -24,19 +24,22 @@ import org.locationtech.jts.operation.union.UnionStrategy;
 
 
 /**
- * Performs an overlay operation, increasing robustness by using a series of
- * increasingly aggressive (and slower) noding strategies.
+ * Performs an overlay operation using {@link OverlayNG}, 
+ * increasing robustness by using a series of
+ * increasingly robust (but slower) noding strategies.
  * <p>
  * The noding strategies used are:
  * <ol>
  * <li>A simple, fast noder using FLOATING precision.
  * <li>A {@link SnappingNoder} using an automatically-determined snap tolerance
  * <li>First snapping each geometry to itself, 
- * and then overlaying them using a SnappingNoder.
+ * and then overlaying them using a <code>SnappingNoder</code>.
  * <li>The above two strategies are repeated with increasing snap tolerance, up to a limit.
+ * <li>Finally a {@link SnapRoundngNoder} is used with a automatically-determined scale factor.
  * </ol>
- * If the above heuristics still fail to compute a valid overlay, 
+ * If all of the above heuristics fail to compute a valid overlay, 
  * the original {@link TopologyException} is thrown. 
+ * In practice this should be extremely unlikely to occur.
  * <p>
  * This algorithm relies on each overlay operation execution 
  * throwing a {@link TopologyException} if it is unable
@@ -48,7 +51,7 @@ import org.locationtech.jts.operation.union.UnionStrategy;
  * 
  * @author Martin Davis
  */
-public class OverlayNGSnapIfNeeded
+public class OverlayNGRobust
 {
 
   public static Geometry intersection(Geometry g0, Geometry g1)

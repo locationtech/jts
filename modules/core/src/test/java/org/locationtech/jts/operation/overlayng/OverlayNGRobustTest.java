@@ -23,13 +23,13 @@ import test.jts.GeometryTestCase;
  * @author mdavis
  *
  */
-public class OverlayNGSnapIfNeededTest extends GeometryTestCase {
+public class OverlayNGRobustTest extends GeometryTestCase {
 
   public static void main(String args[]) {
-    TestRunner.run(OverlayNGSnapIfNeededTest.class);
+    TestRunner.run(OverlayNGRobustTest.class);
   }
 
-  public OverlayNGSnapIfNeededTest(String name) { super(name); }
+  public OverlayNGRobustTest(String name) { super(name); }
   
   /**
    * Try a failure case to exercise all overlay heuristics
@@ -53,7 +53,7 @@ public class OverlayNGSnapIfNeededTest extends GeometryTestCase {
   
   public static boolean isUnionSuccess(Geometry a, Geometry b) {
     try {
-      OverlayNGSnapIfNeeded.union(a, b );
+      OverlayNGRobust.union(a, b );
       return true;
     }
     catch (TopologyException ex) {

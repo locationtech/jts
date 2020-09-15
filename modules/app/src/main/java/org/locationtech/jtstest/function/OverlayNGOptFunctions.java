@@ -19,7 +19,7 @@ import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
-import org.locationtech.jts.operation.overlayng.OverlayNGSnapIfNeeded;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 /**
@@ -105,14 +105,14 @@ public class OverlayNGOptFunctions {
     PreparedGeometry pg = cacheFetch(a);
     if (! pg.intersects(b)) return null;
     if (pg.covers(b)) return b.copy();
-    return OverlayNGSnapIfNeeded.intersection(a, b);
+    return OverlayNGRobust.intersection(a, b);
   }
   
   public static Geometry intersectionPrepNoCache(Geometry a, Geometry b) {
     PreparedGeometry pg = (new PreparedGeometryFactory()).create(a);
     if (! pg.intersects(b)) return null;
     if (pg.covers(b)) return b.copy();
-    return OverlayNGSnapIfNeeded.intersection(a, b);
+    return OverlayNGRobust.intersection(a, b);
   }
   
   private static Geometry cacheKey = null;

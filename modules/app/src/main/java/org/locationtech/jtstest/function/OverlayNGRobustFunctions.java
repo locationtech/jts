@@ -17,14 +17,14 @@ import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.operation.overlayng.OverlayNGSnapIfNeeded;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionStrategy;
 
-public class OverlayNGSnapIfNeededFunctions {
+public class OverlayNGRobustFunctions {
   
   private static Geometry overlay(Geometry a, Geometry b, int opcode) {
-    return OverlayNGSnapIfNeeded.overlay(a, b, opcode );
+    return OverlayNGRobust.overlay(a, b, opcode );
   }
   
   public static Geometry difference(Geometry a, Geometry b) {

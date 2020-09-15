@@ -26,7 +26,7 @@ import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.noding.snap.SnappingNoder;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
-import org.locationtech.jts.operation.overlayng.OverlayNGSnapIfNeeded;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 
 /**
  * Runs overlay operations on pairs of random polygonal geometries
@@ -44,7 +44,7 @@ public class RandomPolygonOverlayFuzzer {
     //overlayOrig(poly1, poly2);
     //overlayOrigNoSnap(poly1, poly2);
     //overlayNGFloat(poly1, poly2);
-    overlayNGSnapIfNeeded(poly1, poly2);
+    overlayNGRobust(poly1, poly2);
     //overlayNG(poly1, poly2);
     //overlayNGSnapping(poly1, poly2);
   }
@@ -168,8 +168,8 @@ public class RandomPolygonOverlayFuzzer {
     //Geometry union = inter.union(diff1).union(diff2);
   }
 
-  private void overlayNGSnapIfNeeded(Geometry poly1, Geometry poly2) {
-    OverlayNGSnapIfNeeded.intersection(poly1, poly2);
+  private void overlayNGRobust(Geometry poly1, Geometry poly2) {
+    OverlayNGRobust.intersection(poly1, poly2);
     poly1.intersection(poly2);
     //Geometry diff1 = poly1.difference(poly2);
     //Geometry diff2 = poly2.difference(poly1);

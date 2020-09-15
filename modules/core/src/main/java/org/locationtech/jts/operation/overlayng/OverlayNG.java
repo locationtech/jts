@@ -59,7 +59,7 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
  * For floating precision an {@link MCIndexNoder} is used. 
  * This is not fully robust, so can sometimes result in 
  * {@link TopologyException}s being thrown. 
- * For robust full-precision overlay see {@link OverlayNGSnapIfNeeded}.
+ * For robust full-precision overlay see {@link OverlayNGRobust}.
  * <p>
  * A custom {@link Noder} can be supplied.
  * This allows using a more performant noding strategy in specific cases, 
@@ -72,7 +72,7 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
  * 
  * @author mdavis
  * 
- * @see OverlayNGSnapIfNeeded
+ * @see OverlayNGRobust
  *
  */
 public class OverlayNG 
