@@ -25,6 +25,11 @@ import org.locationtech.jts.math.MathUtil;
  * In particular, these can be used to
  * automatically determine appropriate scale factors for operations 
  * using limited-precision noding (such as {@link OverlayNG}).
+ * <p>
+ * WARNING: the <code>inherentScale</code> and <code>robustScale</code> 
+ * functions can be very slow, due to the method used to determine
+ * number of decimal places of a number.  
+ * These are not recommended for production use.
  * 
  * @author Martin Davis
  *
@@ -48,7 +53,7 @@ public class PrecisionUtil
    * NOTE: this is a heuristic determination, so is not guaranteed to 
    * eliminate precision issues.
    * <p>
-   * WARNING: this is quite slow.
+   * WARNING: this is very slow.
    * 
    * @param a a geometry
    * @param b a geometry
@@ -59,70 +64,7 @@ public class PrecisionUtil
     return new PrecisionModel( scale );
   }
   
-  /**
-   * Determines a precision model to 
-   * use for robust overlay operations for one geometry.
-   * The precision scale factor is chosen to maximize 
-   * output precision while avoiding round-off issues.
-   * <p>
-   * NOTE: this is a heuristic determination, so is not guaranteed to 
-   * eliminate precision issues.
-   * <p>
-   * WARNING: this is quite slow.
-   * 
-   * @param a a geometry
-   * @return a suitable precision model for overlay
-   */
-  public static PrecisionModel robustPM(Geometry a) {
-    double scale = PrecisionUtil.robustScale(a);
-    return new PrecisionModel( scale );
-  }
-  
-  /**
-   * Determines a scale factor which maximizes 
-   * the digits of precision and is 
-   * safe to use for overlay operations.
-   * The robust scale is the minimum of the 
-   * inherent scale and the safe scale factors.
-   * 
-   * @param a a geometry 
-   * @param b a geometry
-   * @return a scale factor for use in overlay operations
-   */
-  public static double robustScale(Geometry a, Geometry b) {
-    double inherentScale = inherentScale(a, b);
-    double safeScale = safeScale(a, b);
-    return robustScale(inherentScale, safeScale);
-  }
-  
-  /**
-   * Determines a scale factor which maximizes 
-   * the digits of precision and is 
-   * safe to use for overlay operations.
-   * The robust scale is the minimum of the 
-   * inherent scale and the safe scale factors.
-   * 
-   * @param a a geometry 
-   * @return a scale factor for use in overlay operations
-   */
-  public static double robustScale(Geometry a) {
-    double inherentScale = inherentScale(a);
-    double safeScale = safeScale(a);
-    return robustScale(inherentScale, safeScale);
-  }
-  
-  private static double robustScale(double inherentScale, double safeScale) {
-    /**
-     * Use safe scale if lower, 
-     * since it is important to preserve some precision for robustness
-     */
-    if (inherentScale <= safeScale ) {
-      return inherentScale;
-    }
-    //System.out.println("Scale = " + scale);
-    return safeScale;
-  }
-  
+ 
   /**
    * Computes a safe scale factor for a numeric value.
    * A safe scale factor ensures that rounded 
@@ -249,6 +191,8 @@ public class PrecisionUtil
    * <p>
    * This is the maximum inherent scale
    * of all ordinate values in the geometry.
+   * <p>
+   * WARNING: this is very slow.
    *  
    * @param value a number
    * @return the inherent scale factor of the number
@@ -268,6 +212,8 @@ public class PrecisionUtil
    * <p>
    * This is the maximum inherent scale
    * of all ordinate values in the geometries.
+   * <p>
+   * WARNING: this is very slow.
    * 
    * @param a a geometry
    * @param b a geometry
@@ -327,6 +273,8 @@ public class PrecisionUtil
   /**
    * Applies the inherent scale calculation 
    * to every ordinate in a geometry.
+   * <p>
+   * WARNING: this is very slow.
    * 
    * @author Martin Davis
    *
@@ -353,4 +301,71 @@ public class PrecisionUtil
       }
     }
   }
+  
+  /**
+   * Determines a precision model to 
+   * use for robust overlay operations for one geometry.
+   * The precision scale factor is chosen to maximize 
+   * output precision while avoiding round-off issues.
+   * <p>
+   * NOTE: this is a heuristic determination, so is not guaranteed to 
+   * eliminate precision issues.
+   * <p>
+   * WARNING: this is very slow.
+   * 
+   * @param a a geometry
+   * @return a suitable precision model for overlay
+   */
+  public static PrecisionModel robustPM(Geometry a) {
+    double scale = PrecisionUtil.robustScale(a);
+    return new PrecisionModel( scale );
+  }
+  
+  /**
+   * Determines a scale factor which maximizes 
+   * the digits of precision and is 
+   * safe to use for overlay operations.
+   * The robust scale is the minimum of the 
+   * inherent scale and the safe scale factors.
+   * <p>
+   * WARNING: this is very slow.
+   * 
+   * @param a a geometry 
+   * @param b a geometry
+   * @return a scale factor for use in overlay operations
+   */
+  public static double robustScale(Geometry a, Geometry b) {
+    double inherentScale = inherentScale(a, b);
+    double safeScale = safeScale(a, b);
+    return robustScale(inherentScale, safeScale);
+  }
+  
+  /**
+   * Determines a scale factor which maximizes 
+   * the digits of precision and is 
+   * safe to use for overlay operations.
+   * The robust scale is the minimum of the 
+   * inherent scale and the safe scale factors.
+   * 
+   * @param a a geometry 
+   * @return a scale factor for use in overlay operations
+   */
+  public static double robustScale(Geometry a) {
+    double inherentScale = inherentScale(a);
+    double safeScale = safeScale(a);
+    return robustScale(inherentScale, safeScale);
+  }
+  
+  private static double robustScale(double inherentScale, double safeScale) {
+    /**
+     * Use safe scale if lower, 
+     * since it is important to preserve some precision for robustness
+     */
+    if (inherentScale <= safeScale ) {
+      return inherentScale;
+    }
+    //System.out.println("Scale = " + scale);
+    return safeScale;
+  }
+ 
 }
