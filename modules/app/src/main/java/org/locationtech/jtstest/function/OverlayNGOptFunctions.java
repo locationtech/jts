@@ -105,14 +105,14 @@ public class OverlayNGOptFunctions {
     PreparedGeometry pg = cacheFetch(a);
     if (! pg.intersects(b)) return null;
     if (pg.covers(b)) return b.copy();
-    return OverlayNGRobust.intersection(a, b);
+    return OverlayNGRobust.overlay(a, b, OverlayNG.INTERSECTION);
   }
   
   public static Geometry intersectionPrepNoCache(Geometry a, Geometry b) {
     PreparedGeometry pg = (new PreparedGeometryFactory()).create(a);
     if (! pg.intersects(b)) return null;
     if (pg.covers(b)) return b.copy();
-    return OverlayNGRobust.intersection(a, b);
+    return OverlayNGRobust.overlay(a, b, OverlayNG.INTERSECTION);
   }
   
   private static Geometry cacheKey = null;
