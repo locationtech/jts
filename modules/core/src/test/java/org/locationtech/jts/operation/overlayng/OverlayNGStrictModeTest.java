@@ -78,6 +78,14 @@ public class OverlayNGStrictModeTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
+  public void testPolygonLineUnion() {
+    Geometry a = read("POLYGON ((10 20, 20 20, 20 10, 10 10, 10 20))");
+    Geometry b = read("LINESTRING (15 15, 25 15)");
+    Geometry expected = read("GEOMETRYCOLLECTION (POLYGON ((20 20, 20 15, 20 10, 10 10, 10 20, 20 20)), LINESTRING (20 15, 25 15))");
+    Geometry actual = union(a, b);
+    checkEqual(expected, actual);
+  }
+  
   /**
    * Check that result does not include collapsed line intersection
    */
@@ -97,27 +105,33 @@ public class OverlayNGStrictModeTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
   
-  public static Geometry intersection(Geometry a, Geometry b) {
-    OverlayNG ov = new OverlayNG(a, b, INTERSECTION);
+  static Geometry intersection(Geometry a, Geometry b) {
+    return overlay(a, b, INTERSECTION);
+  }
+  
+  static Geometry symDifference(Geometry a, Geometry b) {
+    return overlay(a, b, SYMDIFFERENCE);
+  }
+  
+  static Geometry union(Geometry a, Geometry b) {
+    return overlay(a, b, UNION);
+  }
+  
+  static Geometry overlay(Geometry a, Geometry b, int opCode) {
+    OverlayNG ov = new OverlayNG(a, b, opCode);
     ov.setStrictMode(true);
     return ov.getResult();
   }
   
-  public static Geometry symDifference(Geometry a, Geometry b) {
-    OverlayNG ov = new OverlayNG(a, b, SYMDIFFERENCE);
-    ov.setStrictMode(true);
-    return ov.getResult();
+  static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
+    return overlay(a, b, scaleFactor, INTERSECTION);
   }
-  
-  public static Geometry intersection(Geometry a, Geometry b, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlayNG ov = new OverlayNG(a, b, pm, INTERSECTION);
-    ov.setStrictMode(true);
-    return ov.getResult();
+  static Geometry union(Geometry a, Geometry b, double scaleFactor) {
+    return overlay(a, b, scaleFactor, UNION);
   }
-  public static Geometry union(Geometry a, Geometry b, double scaleFactor) {
+  static Geometry overlay(Geometry a, Geometry b, double scaleFactor, int opCode) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
-    OverlayNG ov = new OverlayNG(a, b, pm, UNION);
+    OverlayNG ov = new OverlayNG(a, b, pm, opCode);
     ov.setStrictMode(true);
     return ov.getResult();
   }

@@ -70,17 +70,20 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
  * since the intersection clipping optimization can 
  * interact with the snapping to alter the result.
  * <p>
- * There is an option to set the overlay computation to work in strict mode.
- * In strict mode results have the following semantics:
+ * Optionally the overlay computation can process using strict mode
+ * (via {@link #setStrictMode(boolean)}.
+ * In strict mode result semantics are:
  * <ul>
- * <li>Result geometries are homogeneous (all components are of same dimension)
- * <li>Lines resulting from topology collapses are not included in the result
+ * <li>Result geometries are homogeneous (all components are of same dimension),
+ *     except for some cases of symmetricDifference.
+ * <li>Lines and Points resulting from topology collapses are not included in the result
  * </ul>
  * Strict mode has the following benefits:
  * <ul>
+ * <li>Results are simpler
  * <li>Overlay operations are easily chainable
  * </ul>
- * The original JTS overlay semantics correspons to non-strict mode.
+ * The original JTS overlay semantics corresponds to non-strict mode.
  * 
  * @author mdavis
  * 
@@ -557,7 +560,8 @@ public class OverlayNG
       //--- Build lines
       boolean allowResultLines = ! hasResultAreaComponents 
           || isAllowMixedIntResult
-          || opCode == SYMDIFFERENCE;
+          || opCode == SYMDIFFERENCE
+          || opCode == UNION;
       if ( allowResultLines ) {
         LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultAreaComponents, opCode, geomFact);
         lineBuilder.setStrictMode(isStrictMode);
