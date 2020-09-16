@@ -56,6 +56,23 @@ class LineBuilder {
   private int opCode;
   private int inputAreaIndex;
   private boolean hasResultArea;
+  
+  /**
+   * Indicates whether intersections are allowed to produce
+   * heterogeneous results including proper boundary touches. 
+   * This does not control inclusion of touches along collapses.
+   * True provides the original JTS semantics.
+   */
+  private boolean isAllowMixedResult = ! OverlayNG.STRICT_MODE_DEFAULT;
+  
+  /**
+   * Allow lines created by area topology collapses
+   * to appear in the result.
+   * True provides the original JTS semantics.
+   */
+  private boolean isAllowCollapseLines = ! OverlayNG.STRICT_MODE_DEFAULT;
+
+  
   private List<LineString> lines = new ArrayList<LineString>();
   
   /**
@@ -76,6 +93,11 @@ class LineBuilder {
     inputAreaIndex = inputGeom.getAreaIndex();
   }
 
+  public void setStrictMode(boolean isStrictResultMode) {
+    isAllowCollapseLines = ! isStrictResultMode;
+    isAllowMixedResult = ! isStrictResultMode;
+  }
+  
   public List<LineString> getLines() {
     markResultLines();
     addResultLines();
@@ -127,7 +149,7 @@ class LineBuilder {
      * 
      * This logic is only used if not including collapse lines in result.
      */
-    if (! OverlayNG.ALLOW_COLLAPSE_LINES 
+    if (! isAllowCollapseLines 
         && lbl.isBoundaryCollapse()) return false;
 
     /**
@@ -163,7 +185,7 @@ class LineBuilder {
      * Include line edge formed by touching area boundaries,
      * if enabled.
      */
-    if (OverlayNG.ALLOW_INT_MIXED_RESULT 
+    if (isAllowMixedResult 
         && opCode == OverlayNG.INTERSECTION && lbl.isBoundaryTouch()) {
       return true;
     }
@@ -351,6 +373,5 @@ class LineBuilder {
     } while (e != node);
     return degree;
   }
-  
 
 }

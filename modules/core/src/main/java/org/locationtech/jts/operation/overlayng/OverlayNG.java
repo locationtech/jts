@@ -69,6 +69,18 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
  * it is best to specify a fairly small snap tolerance,
  * since the intersection clipping optimization can 
  * interact with the snapping to alter the result.
+ * <p>
+ * There is an option to set the overlay computation to work in strict mode.
+ * In strict mode results have the following semantics:
+ * <ul>
+ * <li>Result geometries are homogeneous (all components are of same dimension)
+ * <li>Lines resulting from topology collapses are not included in the result
+ * </ul>
+ * Strict mode has the following benefits:
+ * <ul>
+ * <li>Overlay operations are easily chainable
+ * </ul>
+ * The original JTS overlay semantics correspons to non-strict mode.
  * 
  * @author mdavis
  * 
@@ -98,26 +110,15 @@ public class OverlayNG
   public static final int SYMDIFFERENCE = OverlayOp.SYMDIFFERENCE;
 
   /**
-   * Indicates whether the old overlay result semantics are used:
-   * - Intersection result can be mixed-dimension
+   * The default setting for Strict Mode.
+   * 
+   * The original JTS overlay semantics used non-strict result
+   * semantics, including;
+   * - An Intersection result can be mixed-dimension,
+   *   due to inclusion of intersection components of all dimensions
    * - Results can include lines caused by Area topology collapse
    */
-  private static final boolean USE_OLD_RESULT_SEMANTICS = true;
-  
-  /**
-   * Indicates whether intersections are allowed to produce
-   * heterogeneous results including proper boundary touches. 
-   * This does not control inclusion of touches along collapses.
-   * True provides the original JTS semantics.
-   */
-  static final boolean ALLOW_INT_MIXED_RESULT = USE_OLD_RESULT_SEMANTICS;
-
-  /**
-   * Allow lines created by area topology collapses
-   * to appear in the result.
-   * True provides the original JTS semantics.
-   */
-  static final boolean ALLOW_COLLAPSE_LINES = USE_OLD_RESULT_SEMANTICS;
+  static final boolean STRICT_MODE_DEFAULT = false;
 
   /**
    * Tests whether a point with a given topological {@link Label}
@@ -316,13 +317,12 @@ public class OverlayNG
   private GeometryFactory geomFact;
   private PrecisionModel pm;
   private Noder noder;
+  private boolean isStrictMode = STRICT_MODE_DEFAULT;
   private boolean isOptimized = true;
   private boolean isAreaResultOnly = false;
   private boolean isOutputEdges = false;
   private boolean isOutputResultEdges = false;
   private boolean isOutputNodedEdges = false;
-
-  //private Geometry outputEdges;
 
   /**
    * Creates an overlay operation on the given geometries,
@@ -374,6 +374,20 @@ public class OverlayNG
   }  
   
   /**
+   * Sets whether the overlay results are computed according to strict mode
+   * semantics.
+   * <ul>
+   * <li>Result geometry is always homogeneous (except for some SymmetricDifference cases)
+   * <li>Lines resulting from topology collapse are not included
+   * </ul>
+   * 
+   * @param isStrictMode true if strict mode is to be used
+   */
+  public void setStrictMode(boolean isStrictMode) {
+    this.isStrictMode = isStrictMode;
+  }
+  
+  /**
    * Sets whether overlay processing optimizations are enabled.
    * It may be useful to disable optimizations
    * for testing purposes.
@@ -391,9 +405,16 @@ public class OverlayNG
    * 
    * @param isAreaResultOnly true if the result should contain only area components
    */
-  public void setAreaResultOnly(boolean isAreaResultOnly) {
+  void setAreaResultOnly(boolean isAreaResultOnly) {
     this.isAreaResultOnly = isAreaResultOnly;
   }
+  
+  //------ Testing options -------
+  
+  /**
+   * 
+   * @param isOutputEdges
+   */
   public void setOutputEdges(boolean isOutputEdges ) {
     this.isOutputEdges = isOutputEdges;
   }
@@ -406,6 +427,7 @@ public class OverlayNG
   public void setOutputResultEdges(boolean isOutputResultEdges ) {
     this.isOutputResultEdges = isOutputResultEdges;
   }
+  //---------------------------------
   
   private void setNoder(Noder noder) {
     this.noder = noder;
@@ -520,6 +542,7 @@ public class OverlayNG
    * @return the result geometry
    */
   private Geometry extractResult(int opCode, OverlayGraph graph) {
+    boolean isAllowMixedIntResult = ! isStrictMode;
     
     //--- Build polygons
     List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
@@ -532,9 +555,12 @@ public class OverlayNG
     
     if (! isAreaResultOnly) {
       //--- Build lines
-      boolean allowResultLines = ! hasResultAreaComponents || ALLOW_INT_MIXED_RESULT;
+      boolean allowResultLines = ! hasResultAreaComponents 
+          || isAllowMixedIntResult
+          || opCode == SYMDIFFERENCE;
       if ( allowResultLines ) {
         LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultAreaComponents, opCode, geomFact);
+        lineBuilder.setStrictMode(isStrictMode);
         resultLineList = lineBuilder.getLines();
       }
       /**
@@ -543,9 +569,10 @@ public class OverlayNG
        * from non-point inputs. 
        */
       boolean hasResultComponents = hasResultAreaComponents || resultLineList.size() > 0;
-      boolean allowResultPoints = ! hasResultComponents || ALLOW_INT_MIXED_RESULT;
+      boolean allowResultPoints = ! hasResultComponents || isAllowMixedIntResult;
       if ( opCode == INTERSECTION && allowResultPoints ) {
         IntersectionPointBuilder pointBuilder = new IntersectionPointBuilder(graph, geomFact);
+        pointBuilder.setStrictMode(isStrictMode);
         resultPointList = pointBuilder.getPoints();
       }
     }

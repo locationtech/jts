@@ -41,12 +41,23 @@ class IntersectionPointBuilder {
   private OverlayGraph graph;
   private List<Point> points = new ArrayList<Point>();
   
+  /**
+   * Controls whether lines created by area topology collapses
+   * to participate in the result computation.
+   * True provides the original JTS semantics.
+   */
+  private boolean isAllowCollapseLines = ! OverlayNG.STRICT_MODE_DEFAULT;
+  
   public IntersectionPointBuilder(OverlayGraph graph,
       GeometryFactory geomFact) {
     this.graph = graph;
     this.geometryFactory = geomFact;
   }
 
+  public void setStrictMode(boolean isStrictMode) {
+    isAllowCollapseLines = ! isStrictMode;
+  }
+  
   public List<Point> getPoints() {
     addResultPoints();
     return points;
@@ -86,6 +97,8 @@ class IntersectionPointBuilder {
   }
 
   private boolean isEdgeOf(OverlayLabel label, int i) {
+    if (! isAllowCollapseLines && label.isBoundaryCollapse())
+      return false;
     return label.isBoundary(i) || label.isLine(i);
   }
 
