@@ -11,8 +11,6 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
-
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -22,10 +20,9 @@ import org.locationtech.jts.noding.snap.SnappingNoder;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionStrategy;
 
-
 /**
  * Performs an overlay operation using {@link OverlayNG}, 
- * increasing robustness by using a series of
+ * providing full robustness by using a series of
  * increasingly robust (but slower) noding strategies.
  * <p>
  * The noding strategies used are:
@@ -35,11 +32,12 @@ import org.locationtech.jts.operation.union.UnionStrategy;
  * <li>First snapping each geometry to itself, 
  * and then overlaying them using a <code>SnappingNoder</code>.
  * <li>The above two strategies are repeated with increasing snap tolerance, up to a limit.
- * <li>Finally a {@link SnapRoundngNoder} is used with a automatically-determined scale factor.
+ * <li>Finally a {@link SnapRoundngNoder} is used with a automatically-determined scale factor
+ *     intended to preserve input precision while still preventing robustness problems.
  * </ol>
- * If all of the above heuristics fail to compute a valid overlay, 
+ * If all of the above attempts fail to compute a valid overlay, 
  * the original {@link TopologyException} is thrown. 
- * In practice this should be extremely unlikely to occur.
+ * In practice this is extremely unlikely to occur.
  * <p>
  * This algorithm relies on each overlay operation execution 
  * throwing a {@link TopologyException} if it is unable
@@ -50,35 +48,18 @@ import org.locationtech.jts.operation.union.UnionStrategy;
  * in order to check the results of using a floating noder.
  * 
  * @author Martin Davis
+ * 
+ * @see OverlayNG
  */
 public class OverlayNGRobust
 {
-
-  public static Geometry intersection(Geometry g0, Geometry g1)
-  {
-     return overlay(g0, g1, OverlayNG.INTERSECTION);
-  }
-
-  public static Geometry union(Geometry g0, Geometry g1)
-  {
-     return overlay(g0, g1, OverlayNG.UNION);
-  }
-
-  public static Geometry difference(Geometry g0, Geometry g1)
-  {
-     return overlay(g0, g1, OverlayNG.DIFFERENCE);
-  }
-
-  public static Geometry symDifference(Geometry g0, Geometry g1)
-  {
-     return overlay(g0, g1, OverlayNG.SYMDIFFERENCE);
-  }
+  //--- The following function is provided to allow use in the TestRunner
   
   public static Geometry union(Geometry a) {
     UnionStrategy unionSRFun = new UnionStrategy() {
 
       public Geometry union(Geometry g0, Geometry g1) {
-         return overlay(g0, g1, UNION );
+         return overlay(g0, g1, OverlayNG.UNION );
       }
 
       @Override
@@ -92,28 +73,32 @@ public class OverlayNGRobust
     return op.union();
   }
   
-  private static PrecisionModel PM_FLOAT = new PrecisionModel();
-
+  /**
+   * Overlay two geometries, using heuristics to ensure
+   * computation completes correctly.
+   * In practice the heuristics are observed to be fully correct.
+   * 
+   * @param geom0 a geometry
+   * @param geom1 a geometry
+   * @param opCode the overlay operation code (from {@link OverlayNG}
+   * @return the overlay result geometry
+   * 
+   * @see OverlayNG
+   */
   public static Geometry overlay(Geometry geom0, Geometry geom1, int opCode)
   {
     Geometry result;
     RuntimeException exOriginal;
     
     /**
-     * First try overlay with a FLOAT noder, which is fastest and causes least
+     * First try overlay with a FLOAT noder, which is fast and causes least
      * change to geometry coordinates
      * By default the noder is validated, which is required in order
      * to detect certain invalid noding situations which otherwise
      * cause incorrect overlay output.
      */
     try {
-      result = OverlayNG.overlay(geom0, geom1, opCode, PM_FLOAT ); 
-      
-      // Simple noding with no validation
-      // There are cases where this succeeds with invalid noding (e.g. STMLF 1608).
-      // So currently it is NOT safe to run overlay without noding validation
-      //result = OverlayNG.overlay(geom0, geom1, opCode, createFloatingNoValidNoder()); 
-      
+      result = OverlayNG.overlay(geom0, geom1, opCode );       
       return result;
     }
     catch (RuntimeException ex) {
@@ -243,9 +228,9 @@ public class OverlayNGRobust
    * 
    * @param geom0
    * @param geom1
-   * @return
+   * @return the snap tolerance
    */
-  public static double snapTolerance(Geometry geom0, Geometry geom1) {
+  private static double snapTolerance(Geometry geom0, Geometry geom1) {
     double tol0 = snapTolerance(geom0);
     double tol1 = snapTolerance(geom1);
     double snapTol = Math.max(tol0,  tol1);
@@ -275,12 +260,13 @@ public class OverlayNGRobust
   }
   
   //===============================================
-  
+  /*
   private static void log(String msg, Geometry geom0, Geometry geom1) {
     System.out.println(msg);
     System.out.println(geom0);
     System.out.println(geom1);
   }
+  */
   
   /**
    * Attempt Overlay using Snap-Rounding with an automatically-determined

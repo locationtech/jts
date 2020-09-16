@@ -18,7 +18,7 @@ import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
 /**
- * Tests {@link OverlayNG} using the {@link SnappingNoder}.
+ * Tests {@link OverlayNGRobust}.
  * 
  * @author mdavis
  *
@@ -53,7 +53,7 @@ public class OverlayNGRobustTest extends GeometryTestCase {
   
   public static boolean isUnionSuccess(Geometry a, Geometry b) {
     try {
-      OverlayNGRobust.union(a, b );
+      OverlayNGRobust.overlay(a, b, OverlayNG.UNION );
       return true;
     }
     catch (TopologyException ex) {

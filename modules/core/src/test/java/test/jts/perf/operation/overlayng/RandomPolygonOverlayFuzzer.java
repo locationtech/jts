@@ -55,7 +55,7 @@ public class RandomPolygonOverlayFuzzer {
   
   static final int N_PTS = 100;
 
-  static final int N_TESTS = 10000;
+  static final int N_TESTS = 1000;
   
   static double SCALE = 100000000;
   
@@ -169,7 +169,7 @@ public class RandomPolygonOverlayFuzzer {
   }
 
   private void overlayNGRobust(Geometry poly1, Geometry poly2) {
-    OverlayNGRobust.intersection(poly1, poly2);
+    OverlayNGRobust.overlay(poly1, poly2, OverlayNG.INTERSECTION);
     poly1.intersection(poly2);
     //Geometry diff1 = poly1.difference(poly2);
     //Geometry diff2 = poly2.difference(poly1);
