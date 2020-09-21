@@ -229,5 +229,29 @@ GEOMETRYCOLLECTION (POLYGON ((300 300, 300 400, 400 400, 400 300, 300 300)), POL
   </op></test>
 </case>
 
+<case>
+  <desc>LmA - overlaps in lines</desc>
+  <a>
+LINESTRING (10 0, 90 0)
+  </a>
+  <b>
+MULTIPOLYGON (((20 10, 40 10, 40 -10, 20 -10, 20 10)), ((80 10, 80 -10, 60 -10, 60 10, 80 10)))
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+MULTILINESTRING ((60 0, 80 0), (20 0, 40 0))
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION (POLYGON ((40 -10, 20 -10, 20 0, 20 10, 40 10, 40 0, 40 -10)), POLYGON ((80 0, 80 -10, 60 -10, 60 0, 60 10, 80 10, 80 0)), LINESTRING (40 0, 60 0), LINESTRING (80 0, 90 0), LINESTRING (10 0, 20 0))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((40 0, 60 0), (80 0, 90 0), (10 0, 20 0))
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+MULTIPOLYGON (((40 -10, 20 -10, 20 0, 20 10, 40 10, 40 0, 40 -10)), ((80 0, 80 -10, 60 -10, 60 0, 60 10, 80 10, 80 0)))
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION (POLYGON ((40 -10, 20 -10, 20 0, 20 10, 40 10, 40 0, 40 -10)), POLYGON ((80 0, 80 -10, 60 -10, 60 0, 60 10, 80 10, 80 0)), LINESTRING (40 0, 60 0), LINESTRING (80 0, 90 0), LINESTRING (10 0, 20 0))
+  </op></test>
+</case>
 
 </run>

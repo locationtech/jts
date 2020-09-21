@@ -55,6 +55,18 @@ public class OverlayNGFloatingNoderTest extends GeometryTestCase {
   }
   
   /**
+   * GEOS failure case due to porting bug
+   * See https://lists.osgeo.org/pipermail/geos-devel/2020-September/009679.html
+   */
+  public void testNarrowBoxesLineIntersection() {
+    Geometry a = read("LINESTRING (832864.275023695 0, 835092.849076364 0)");
+    Geometry b = read("MULTIPOLYGON (((832864.275023695 0, 833978.556808034 -0.000110682755987, 833978.556808034 0, 833978.556808034 0.000110682755987, 832864.275023695 0, 832864.275023695 0)), ((835092.849076364 0, 833978.557030887 -0.000110682755987, 833978.557030887 0, 833978.557030887 0.000110682755987, 835092.849076364 0, 835092.849076364 0)))");
+    Geometry expected = read("MULTILINESTRING ((833978.557030887 0, 835092.849076364 0), (832864.275023695 0, 833978.556808034 0))");
+    Geometry actual = intersection(a, b);
+    checkEqual(expected, actual, 1e-10);
+  }
+  
+  /**
    * Tests a case where ring clipping causes an incorrect result.
    * <p>
    * The incorrect result occurs because:
