@@ -32,25 +32,68 @@ import org.locationtech.jts.util.Assert;
  */
 class OverlayUtil {
 
+  /**
+   * A null-handling wrapper for {@link PrecisionModel#isFloating()}
+   * 
+   * @param pm
+   * @return
+   */
   static boolean isFloating(PrecisionModel pm) {
     if (pm == null) return true;
     return pm.isFloating();
   }
+  
+  /**
+   * Computes a clipping envelope for overlay input geometries.
+   * The clipping envelope encloses all geometry line segments which 
+   * might participate in the overlay, with a buffer to
+   * account for numerical precision 
+   * (in particular, rounding due to a precision model.
+   * The clipping envelope is used in both the {@link RingClipper} 
+   * and in the {@link LineLimiter}.
+   * <p>
+   * Some overlay operations (i.e. {@link OverlayNG#UNION and OverlayNG#SYMDIFFERENCE}
+   * cannot use clipping as an optimization,
+   * since the result envelope is the full extent of the two input geometries.
+   * In this case the returned
+   * envelope is <code>null</code> to indicate this.
+   * 
+   * @param opCode the overlay op code
+   * @param inputGeom the input geometries
+   * @param pm the precision model being used
+   * @return an envelope for clipping and line limiting, or null if no clipping is performed
+   */
   static Envelope clippingEnvelope(int opCode, InputGeometry inputGeom, PrecisionModel pm) {   
-    Envelope overlapEnv = overlapEnvelope(opCode, inputGeom, pm);
-    if (overlapEnv == null) 
+    Envelope resultEnv = resultEnvelope(opCode, inputGeom, pm);
+    if (resultEnv == null) 
       return null;
     
     Envelope clipEnv = RobustClipEnvelopeComputer.getEnvelope(
         inputGeom.getGeometry(0), 
         inputGeom.getGeometry(1), 
-        overlapEnv);
+        resultEnv);
     
     Envelope safeEnv = safeEnv( clipEnv, pm );
     return safeEnv;
   }
 
-  private static Envelope overlapEnvelope(int opCode, InputGeometry inputGeom, PrecisionModel pm) {
+  /**
+   * Computes an envelope which covers the extent of the result of
+   * a given overlay operation for given inputs.
+   * The operations which have a result envelope smaller than the extent of the inputs
+   * are:
+   * <ul>
+   * <li>{@link OverlayNG#INTERSECTION}: result envelope is the intersection of the input envelopes
+   * <li>{@link OverlayNG#DIFERENCE}: result envelope is the envelope of the A input geometry
+   * </ul>
+   * Otherwise, <code>null</code> is returned to indicate full extent.
+   * 
+   * @param opCode
+   * @param inputGeom
+   * @param pm
+   * @return the result envelope, or null if the full extent
+   */
+  private static Envelope resultEnvelope(int opCode, InputGeometry inputGeom, PrecisionModel pm) {
     Envelope overlapEnv = null;
     switch (opCode) {
     case OverlayNG.INTERSECTION:

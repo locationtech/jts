@@ -490,6 +490,10 @@ public class OverlayNG
      */
     EdgeNodingBuilder nodingBuilder = new EdgeNodingBuilder(pm, noder);
     
+    /**
+     * Optimize Intersection and Difference by clipping to the 
+     * result extent, if enabled.
+     */
     if ( isOptimized ) {
       Envelope clipEnv = OverlayUtil.clippingEnvelope(opCode, inputGeom, pm);
       if (clipEnv != null)
