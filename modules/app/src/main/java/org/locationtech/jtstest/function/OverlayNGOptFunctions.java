@@ -12,6 +12,7 @@
 package org.locationtech.jtstest.function;
 
 import static org.locationtech.jts.operation.overlayng.OverlayNG.INTERSECTION;
+import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.IntersectionMatrix;
@@ -32,11 +33,23 @@ import org.locationtech.jtstest.geomfunction.Metadata;
  */
 public class OverlayNGOptFunctions {
   
-  private static Geometry fastIntersect(Geometry a, Geometry b) {
+  private static Geometry fastCoversIntersection(Geometry a, Geometry b) {
     IntersectionMatrix im = a.relate(b);
-    if (! im.isIntersects()) return a.getFactory().createEmpty(a.getDimension());
+    if (! im.isIntersects()) return createEmpty(a);
     if (im.isCovers()) return b.copy();
     if (im.isCoveredBy()) return a.copy();
+    // null indicates full overlay required
+    return null;
+  }
+
+  private static Geometry createEmpty(Geometry a) {
+    return a.getFactory().createEmpty(a.getDimension());
+  }
+  
+  private static Geometry fastCoversDifference(Geometry a, Geometry b) {
+    IntersectionMatrix im = a.relate(b);
+    if (! im.isIntersects()) return a.copy();
+    if (im.isCoveredBy()) return createEmpty(a);
     // null indicates full overlay required
     return null;
   }
@@ -50,7 +63,7 @@ public class OverlayNGOptFunctions {
    * @return the intersection of the geometries
    */
   public static Geometry intersectionOrigClassic(Geometry a, Geometry b) {
-    Geometry intFast = fastIntersect(a, b);
+    Geometry intFast = fastCoversIntersection(a, b);
     if (intFast != null) return intFast;
     return a.intersection(b);
   }
@@ -78,9 +91,9 @@ public class OverlayNGOptFunctions {
     return a.intersection(b);
   }
   
-  public static Geometry intersection(Geometry a, Geometry b, 
+  public static Geometry intersectionSR(Geometry a, Geometry b, 
       @Metadata(title="Grid Scale") double scaleFactor) {
-    Geometry intFast = fastIntersect(a, b);
+    Geometry intFast = fastCoversIntersection(a, b);
     if (intFast != null) return intFast;
     return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(scaleFactor));
   }
@@ -91,6 +104,18 @@ public class OverlayNGOptFunctions {
     if (! pg.intersects(b)) return null;
     if (pg.covers(b)) return b.copy();
     return OverlayNG.overlay(a, b, INTERSECTION, new PrecisionModel(scaleFactor));
+  }
+  
+  public static Geometry difference(Geometry a, Geometry b) {
+    Geometry intFast = fastCoversDifference(a, b);
+    if (intFast != null) return intFast;
+    return OverlayNGRobust.overlay(a, b, DIFFERENCE);
+  }
+  
+  public static Geometry intersection(Geometry a, Geometry b) {
+    Geometry intFast = fastCoversIntersection(a, b);
+    if (intFast != null) return intFast;
+    return OverlayNGRobust.overlay(a, b, INTERSECTION);
   }
   
   /**
