@@ -111,7 +111,7 @@ public class SnapRoundingTest  extends TestCase {
   }
 
   static final double SNAP_TOLERANCE = 1.0;
-  
+
   void runRounding(String[] wkt)
   {
     List geoms = fromWKT(wkt);
@@ -148,7 +148,7 @@ public class SnapRoundingTest  extends TestCase {
       for (int j = 0; j < line.getNumPoints(); j++) {
         Coordinate v = line.getCoordinateN(j);
           if (! isSnapped(v, lines)) return false;
-        
+
       }
     }
     return true;
@@ -176,6 +176,5 @@ public class SnapRoundingTest  extends TestCase {
     if (dist < SNAP_TOLERANCE / 2.05) return false;
     return true;
   }
-  
-  
+
 }

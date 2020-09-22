@@ -1,0 +1,624 @@
+<run>
+<desc>Tests for OverlayNG operations with all area inputs.
+Covers topological situations with no precision collapse.
+Uses a floating precision model.
+</desc>
+<case>
+  <desc>AA - simple overlapping</desc>
+  <a>
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </a>
+  <b>
+    POLYGON ((20 20, 20 40, 40 40, 40 20, 20 20))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 20 30, 20 40, 40 40, 40 20, 30 20, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 20 30, 20 20, 30 20, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((10 10, 10 30, 20 30, 20 20, 30 20, 30 10, 10 10)), ((20 30, 20 40, 40 40, 40 20, 30 20, 30 30, 20 30)))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AA - simple covered</desc>
+  <a>
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </a>
+  <b>
+    POLYGON ((15 25, 15 15, 25 15, 15 25))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    POLYGON ((25 15, 15 15, 15 25, 25 15))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10), (15 15, 25 15, 15 25, 15 15))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10), (15 15, 25 15, 15 25, 15 15))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AA - simple adjacent</desc>
+  <a>
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </a>
+  <b>
+    POLYGON ((50 30, 50 10, 30 10, 30 30, 50 30))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    LINESTRING (30 30, 30 10)
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((50 10, 30 10, 10 10, 10 30, 30 30, 50 30, 50 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    POLYGON ((50 10, 30 10, 10 10, 10 30, 30 30, 50 30, 50 10))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AA - simple touching in P</desc>
+  <a>
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </a>
+  <b>
+    POLYGON ((50 30, 30 20, 50 10, 50 30))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    POINT (30 20)
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((50 10, 30 20, 50 30, 50 10)), ((10 10, 10 30, 30 30, 30 20, 30 10, 10 10)))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 30 30, 30 20, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((50 10, 30 20, 50 30, 50 10)), ((10 10, 10 30, 30 30, 30 20, 30 10, 10 10)))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AA - simple touching in L and P</desc>
+  <a>
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </a>
+  <b>
+    POLYGON ((40 25, 30 25, 30 20, 35 20, 30 15, 40 15, 40 25))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION (LINESTRING (30 25, 30 20), 
+  POINT (30 15))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((30 30, 30 25, 40 25, 40 15, 30 15, 30 10, 10 10, 10 30, 30 30), (30 15, 35 20, 30 20, 30 15))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((30 25, 30 20, 30 15, 30 10, 10 10, 10 30, 30 30, 30 25))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    POLYGON ((30 30, 30 25, 40 25, 40 15, 30 15, 30 10, 10 10, 10 30, 30 30), (30 15, 35 20, 30 20, 30 15))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AA - simple overlapping and touching in L</desc>
+  <a>
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </a>
+  <b>
+    POLYGON ((40 25, 25 25, 35 15, 30 15, 30 10, 40 10, 40 25))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION (POLYGON ((25 25, 30 25, 30 20, 25 25)), 
+  LINESTRING (30 15, 30 10))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((40 10, 30 10, 10 10, 10 30, 30 30, 30 25, 40 25, 40 10), (35 15, 30 20, 30 15, 35 15))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((30 30, 30 25, 25 25, 30 20, 30 15, 30 10, 10 10, 10 30, 30 30))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    POLYGON ((30 25, 40 25, 40 10, 30 10, 10 10, 10 30, 30 30, 30 25), (35 15, 30 20, 30 15, 35 15), (30 20, 30 25, 25 25, 30 20))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AA - simple disjoint</desc>
+  <a>
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </a>
+  <b>
+    POLYGON ((40 30, 60 30, 60 10, 40 10, 40 30))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    POLYGON EMPTY
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((10 10, 10 30, 30 30, 30 10, 10 10)), ((40 10, 40 30, 60 30, 60 10, 40 10)))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((10 10, 10 30, 30 30, 30 10, 10 10)), ((40 10, 40 30, 60 30, 60 10, 40 10)))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AA - A with hole covered by B</desc>
+  <a>
+    POLYGON ((10 30, 30 30, 30 10, 10 10, 10 30), (13 27, 27 27, 27 13, 13 13, 13 27))
+  </a>
+  <b>
+    POLYGON ((12 28, 28 28, 28 12, 12 12, 12 28))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    POLYGON ((12 28, 28 28, 28 12, 12 12, 12 28), (27 13, 27 27, 13 27, 13 13, 27 13))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10), (28 28, 12 28, 12 12, 28 12, 28 28))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="B" arg2="A">
+    POLYGON ((27 27, 27 13, 13 13, 13 27, 27 27))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((27 27, 27 13, 13 13, 13 27, 27 27)), ((10 10, 10 30, 30 30, 30 10, 10 10), (28 28, 12 28, 12 12, 28 12, 28 28)))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AA - A with hole matching B</desc>
+  <a>
+    POLYGON ((10 30, 30 30, 30 10, 10 10, 10 30), (13 27, 27 27, 27 13, 13 13, 13 27))
+  </a>
+  <b>
+    POLYGON ((13 27, 27 27, 27 13, 13 13, 13 27))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    MULTILINESTRING ((27 27, 27 13), (27 13, 13 13), (13 27, 27 27), (13 13, 13 27))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10), (27 13, 27 27, 13 27, 13 13, 27 13))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="B" arg2="A">
+    POLYGON ((27 27, 27 13, 13 13, 13 27, 27 27))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AA - A with hole intersecting B</desc>
+  <a>
+POLYGON ((10 30, 30 30, 30 10, 10 10, 10 30), (13 27, 27 27, 27 13, 13 13, 13 27))
+  </a>
+  <b>
+POLYGON ((35 35, 35 20, 20 20, 20 35, 35 35))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    POLYGON ((27 20, 27 27, 20 27, 20 30, 30 30, 30 20, 27 20))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((20 35, 35 35, 35 20, 30 20, 30 10, 10 10, 10 30, 20 30, 20 35), (20 27, 13 27, 13 13, 27 13, 27 20, 20 20, 20 27))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((10 30, 20 30, 20 27, 13 27, 13 13, 27 13, 27 20, 30 20, 30 10, 10 10, 10 30))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="B" arg2="A">
+    MULTIPOLYGON (((20 35, 35 35, 35 20, 30 20, 30 30, 20 30, 20 35)), ((27 27, 27 20, 20 20, 20 27, 27 27)))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((20 35, 35 35, 35 20, 30 20, 30 30, 20 30, 20 35)), ((27 27, 27 20, 20 20, 20 27, 27 27)), ((10 30, 20 30, 20 27, 13 27, 13 13, 27 13, 27 20, 30 20, 30 10, 10 10, 10 30)))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AA - A with hole separated by B</desc>
+  <a>
+POLYGON ((200 200, 200 0, 0 0, 0 200, 200 200), (100 100, 50 100, 50 200, 100 100))
+  </a>
+  <b>
+POLYGON ((150 100, 100 100, 150 200, 150 100))
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+  POLYGON ((150 200, 150 100, 100 100, 150 200))
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+  POLYGON ((200 200, 200 0, 0 0, 0 200, 50 200, 150 200, 200 200), (50 200, 50 100, 100 100, 50 200))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+  MULTIPOLYGON (((200 200, 200 0, 0 0, 0 200, 50 200, 50 100, 100 100, 150 100, 150 200, 200 200)), ((100 100, 50 200, 150 200, 100 100)))
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+  POLYGON EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+  MULTIPOLYGON (((200 200, 200 0, 0 0, 0 200, 50 200, 50 100, 100 100, 150 100, 150 200, 200 200)), ((100 100, 50 200, 150 200, 100 100)))
+  </op></test>
+</case>
+
+<case>
+  <desc>mAA - A with nested component, covering B</desc>
+  <a>
+MULTIPOLYGON (((0 200, 200 200, 200 0, 0 0, 0 200), (50 50, 190 50, 50 200, 50 50)), ((60 100, 100 60, 50 50, 60 100)))
+  </a>
+  <b>
+POLYGON ((135 176, 180 176, 180 130, 135 130, 135 176))
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+  POLYGON ((135 176, 180 176, 180 130, 135 130, 135 176))
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((200 200, 200 0, 0 0, 0 200, 50 200, 200 200), (50 200, 50 50, 190 50, 50 200)), ((50 50, 60 100, 100 60, 50 50)))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+  MULTIPOLYGON (((200 200, 200 0, 0 0, 0 200, 50 200, 200 200), (50 200, 50 50, 190 50, 50 200), (135 176, 135 130, 180 130, 180 176, 135 176)), ((50 50, 60 100, 100 60, 50 50)))
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+  POLYGON EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+  MULTIPOLYGON (((200 200, 200 0, 0 0, 0 200, 50 200, 200 200), (50 200, 50 50, 190 50, 50 200), (135 176, 135 130, 180 130, 180 176, 135 176)), ((50 50, 60 100, 100 60, 50 50)))
+  </op></test>
+</case>
+
+<case>
+  <desc>AA - simple polygons #2</desc>
+  <a>
+    POLYGON(
+      (20 340, 330 380, 50 40, 20 340))
+  </a>
+  <b>
+    POLYGON(
+      (210 320, 140 270, 0 270, 140 220, 210 320))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    POLYGON(
+      (27 270, 140 270, 210 320, 140 220, 28 260, 27 270))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON(
+      (20 340, 330 380, 50 40, 28 260, 0 270, 27 270, 20 340))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON(
+      (20 340, 330 380, 50 40, 28 260, 140 220, 210 320, 140 270, 27 270, 20 340))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    MULTIPOLYGON(
+      (
+        (20 340, 330 380, 50 40, 28 260, 140 220, 210 320, 140 270, 27 270, 20 340)), 
+      (
+        (27 270, 28 260, 0 270, 27 270)))
+  </op>
+</test>
+</case>
+
+
+
+<case>
+  <desc>AA - Polygons which stress hole assignment</desc>
+  <a>
+POLYGON ((0 0, 4 0, 4 4, 0 4, 0 0), (1 1, 1 2, 2 1, 1 1), (1 2, 1 3, 2 3, 1 2), (2 3, 3 3, 3 2, 2 3))
+  </a>
+  <b>
+POLYGON ((2 1, 3 1, 3 2, 2 1))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+POLYGON ((3 2, 3 1, 2 1, 3 2))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+POLYGON ((0 0, 0 4, 4 4, 4 0, 0 0), (1 2, 1 1, 2 1, 1 2), (1 2, 2 3, 1 3, 1 2), (2 3, 3 2, 3 3, 2 3))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+MULTIPOLYGON (((0 0, 0 4, 4 4, 4 0, 0 0), (1 2, 1 1, 2 1, 3 1, 3 2, 3 3, 2 3, 1 3, 1 2)), ((2 1, 1 2, 2 3, 3 2, 2 1)))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTIPOLYGON (((0 0, 0 4, 4 4, 4 0, 0 0), (1 2, 1 1, 2 1, 3 1, 3 2, 3 3, 2 3, 1 3, 1 2)), ((2 1, 1 2, 2 3, 3 2, 2 1)))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>mAmA - rotated bow ties</desc>
+  <a>
+MULTIPOLYGON (((10 30, 20 20, 10 10, 10 30)), ((30 30, 20 20, 30 10, 30 30)))
+  </a>
+  <b>
+MULTIPOLYGON (((10 30, 30 30, 20 20, 10 30)), ((10 10, 20 20, 30 10, 10 10)))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+MULTILINESTRING ((10 30, 20 20), (30 30, 20 20), (20 20, 10 10), (20 20, 30 10))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+MULTIPOLYGON (((10 30, 20 20, 10 10, 10 30)), ((20 20, 30 30, 30 10, 20 20)))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>mAA - overlapping with adjacent and overlapping holes</desc>
+  <a>
+MULTIPOLYGON (((10 20, 20 20, 20 10, 10 10, 10 20), (12 12, 12 15, 15 15, 15 12, 12 12)), ((20 30, 30 30, 30 20, 20 20, 20 30), (27 27, 27 22, 22 22, 22 27, 27 27)))
+  </a>
+  <b>
+POLYGON ((13 27, 27 27, 27 13, 13 13, 13 27), (15 25, 20 25, 20 20, 15 20, 15 25), (25 15, 21 15, 21 19, 25 19, 25 15))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION (POLYGON ((22 22, 27 22, 27 20, 20 20, 20 25, 20 27, 22 27, 22 22)), 
+  POLYGON ((15 20, 20 20, 20 13, 15 13, 15 15, 13 15, 13 20, 15 20)), 
+  LINESTRING (22 27, 27 27), 
+  LINESTRING (27 27, 27 22))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+POLYGON ((13 20, 13 27, 20 27, 20 30, 30 30, 30 20, 27 20, 27 13, 20 13, 20 10, 10 10, 10 20, 13 20), (21 19, 21 15, 25 15, 25 19, 21 19), (13 13, 13 15, 12 15, 12 12, 15 12, 15 13, 13 13), (15 25, 15 20, 20 20, 20 25, 15 25))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+MULTIPOLYGON (((27 27, 22 27, 20 27, 20 30, 30 30, 30 20, 27 20, 27 22, 27 27)), ((12 15, 12 12, 15 12, 15 13, 20 13, 20 10, 10 10, 10 20, 13 20, 13 15, 12 15)))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="B" arg2="A">
+MULTIPOLYGON (((13 13, 13 15, 15 15, 15 13, 13 13)), ((27 22, 22 22, 22 27, 27 27, 27 22)), ((13 20, 13 27, 20 27, 20 25, 15 25, 15 20, 13 20)), ((27 13, 20 13, 20 20, 27 20, 27 13), (21 19, 21 15, 25 15, 25 19, 21 19)))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTIPOLYGON (((13 13, 13 15, 15 15, 15 13, 13 13)), ((27 22, 22 22, 22 27, 20 27, 20 30, 30 30, 30 20, 27 20, 27 22)), ((13 20, 13 27, 20 27, 20 25, 15 25, 15 20, 13 20)), ((12 15, 12 12, 15 12, 15 13, 20 13, 20 10, 10 10, 10 20, 13 20, 13 15, 12 15)), ((27 13, 20 13, 20 20, 27 20, 27 13), (21 19, 21 15, 25 15, 25 19, 21 19)))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>mAmA - overlapping with holes and nested components</desc>
+  <a>
+MULTIPOLYGON (((0 20, 20 20, 20 0, 0 0, 0 20), (5 15, 15 15, 15 5, 5 5, 5 15)), ((6 13, 12 13, 12 6, 6 6, 6 13)))
+  </a>
+  <b>
+MULTIPOLYGON (((30 0, 7 0, 7 20, 30 20, 30 0), (8 19, 21 19, 21 1, 8 1, 8 19)), ((9 13, 18 13, 18 6, 9 6, 9 13)))
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+MULTIPOLYGON (((20 0, 7 0, 7 5, 8 5, 8 1, 20 1, 20 0)), ((15 13, 18 13, 18 6, 15 6, 15 13)), ((7 6, 7 13, 8 13, 8 6, 7 6)), ((9 6, 9 13, 12 13, 12 6, 9 6)), ((20 20, 20 19, 8 19, 8 15, 7 15, 7 20, 20 20)))
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POLYGON ((20 20, 30 20, 30 0, 20 0, 7 0, 0 0, 0 20, 7 20, 20 20), (15 6, 12 6, 9 6, 8 6, 8 5, 15 5, 15 6), (15 13, 15 15, 8 15, 8 13, 9 13, 12 13, 15 13), (6 6, 6 13, 7 13, 7 15, 5 15, 5 5, 7 5, 7 6, 6 6), (20 1, 21 1, 21 19, 20 19, 20 1))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+MULTIPOLYGON (((15 13, 15 15, 8 15, 8 19, 20 19, 20 1, 8 1, 8 5, 15 5, 15 6, 18 6, 18 13, 15 13)), ((6 6, 6 13, 7 13, 7 6, 6 6)), ((0 0, 0 20, 7 20, 7 15, 5 15, 5 5, 7 5, 7 0, 0 0)), ((8 6, 8 13, 9 13, 9 6, 8 6)))
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+MULTIPOLYGON (((15 6, 12 6, 12 13, 15 13, 15 6)), ((20 20, 30 20, 30 0, 20 0, 20 1, 21 1, 21 19, 20 19, 20 20)), ((7 6, 8 6, 8 5, 7 5, 7 6)), ((7 15, 8 15, 8 13, 7 13, 7 15)))
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTIPOLYGON (((15 6, 12 6, 12 13, 15 13, 15 6)), ((20 20, 30 20, 30 0, 20 0, 20 1, 21 1, 21 19, 20 19, 20 20)), ((15 13, 15 15, 8 15, 8 19, 20 19, 20 1, 8 1, 8 5, 15 5, 15 6, 18 6, 18 13, 15 13)), ((6 6, 6 13, 7 13, 7 6, 6 6)), ((0 0, 0 20, 7 20, 7 15, 5 15, 5 5, 7 5, 7 0, 0 0)), ((7 6, 8 6, 8 5, 7 5, 7 6)), ((8 6, 8 13, 9 13, 9 6, 8 6)), ((7 15, 8 15, 8 13, 7 13, 7 15)))
+  </op></test>
+</case>
+
+<case>
+  <desc>AA - empty polygon</desc>
+  <a>
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </a>
+  <b>
+POLYGON EMPTY
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="B" arg2="A">
+POLYGON EMPTY
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>mAA - empty component</desc>
+  <a>
+    MULTIPOLYGON (((10 10, 10 30, 30 30, 30 10, 10 10)), EMPTY)
+  </a>
+  <b>
+    POLYGON ((20 20, 20 40, 40 40, 40 20, 20 20))
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+    POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20))
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 20 30, 20 40, 40 40, 40 20, 30 20, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 20 30, 20 20, 30 20, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((10 10, 10 30, 20 30, 20 20, 30 20, 30 10, 10 10)), ((20 30, 20 40, 40 40, 40 20, 30 20, 30 30, 20 30)))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AA - repeated points</desc>
+  <a>
+POLYGON ((100 200, 200 200, 200 100, 100 100, 100 151, 100 151, 100 151, 100 151, 100 200))
+  </a>
+  <b>
+POLYGON ((300 200, 300 100, 200 100, 200 200, 200 200, 300 200))
+  </b>
+<test> <op name="intersectionNG" arg1="A" arg2="B">
+    LINESTRING (200 200, 200 100)
+  </op></test>
+<test> <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((200 200, 300 200, 300 100, 200 100, 100 100, 100 151, 100 200, 200 200))
+  </op></test>
+<test> <op name="differenceNG" arg1="A" arg2="B">
+   POLYGON ((200 200, 200 100, 100 100, 100 151, 100 200, 200 200))
+  </op></test>
+<test> <op name="symdifferenceNG" arg1="A" arg2="B">
+    POLYGON ((200 200, 300 200, 300 100, 200 100, 100 100, 100 151, 100 200, 200 200))
+  </op></test>
+</case>
+
+</run>

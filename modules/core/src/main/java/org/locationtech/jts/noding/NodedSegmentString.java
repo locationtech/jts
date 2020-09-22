@@ -69,7 +69,7 @@ public class NodedSegmentString
   private Object data;
 
   /**
-   * Creates a new segment string from a list of vertices.
+   * Creates a instance from a list of vertices and optional data object.
    *
    * @param pts the vertices of the segment string
    * @param data the user-defined data of this segment string (may be null)
@@ -78,6 +78,17 @@ public class NodedSegmentString
   {
     this.pts = pts;
     this.data = data;
+  }
+
+  /**
+   * Creates a new instance from a {@link SegmentString}.
+   *
+   * @param segString the segment string to use
+   */
+  public NodedSegmentString(SegmentString ss)
+  {
+    this.pts = ss.getCoordinates();
+    this.data = ss.getData();
   }
 
   /**
@@ -99,6 +110,15 @@ public class NodedSegmentString
   public Coordinate getCoordinate(int i) { return pts[i]; }
   public Coordinate[] getCoordinates() { return pts; }
 
+  /**
+   * Gets a list of coordinates with all nodes included.
+   * 
+   * @return an array of coordinates include nodes
+   */
+  public Coordinate[] getNodedCoordinates() {
+    return nodeList.getSplitCoordinates();
+  }
+  
   public boolean isClosed()
   {
     return pts[0].equals(pts[pts.length - 1]);

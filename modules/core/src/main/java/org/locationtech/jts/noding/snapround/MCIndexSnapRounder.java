@@ -38,10 +38,10 @@ import org.locationtech.jts.noding.SegmentString;
  * <p>
  * This implementation uses a monotone chains and a spatial index to
  * speed up the intersection tests.
- * <p>
- * This implementation appears to be fully robust using an integer precision model.
- * It will function with non-integer precision models, but the
- * results are not 100% guaranteed to be correctly noded.
+ * 
+ * <h3>KNOWN BUGS</h3>
+ * This implementation is not fully robust.
+ * Use {@link SnapRoundingNoder} instead.
  *
  * @version 1.7
  */
@@ -119,7 +119,7 @@ public class MCIndexSnapRounder
   {
     for (Iterator it = snapPts.iterator(); it.hasNext(); ) {
       Coordinate snapPt = (Coordinate) it.next();
-      HotPixel hotPixel = new HotPixel(snapPt, scaleFactor, li);
+      HotPixel hotPixel = new HotPixel(snapPt, scaleFactor);
       pointSnapper.snap(hotPixel);
     }
   }
@@ -144,7 +144,7 @@ public class MCIndexSnapRounder
   {
     Coordinate[] pts0 = e.getCoordinates();
     for (int i = 0; i < pts0.length ; i++) {
-      HotPixel hotPixel = new HotPixel(pts0[i], scaleFactor, li);
+      HotPixel hotPixel = new HotPixel(pts0[i], scaleFactor);
       boolean isNodeAdded = pointSnapper.snap(hotPixel, e, i);
       // if a node is created for a vertex, that vertex must be noded too
       if (isNodeAdded) {

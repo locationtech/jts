@@ -17,15 +17,15 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.WKTReader;
 
-import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import test.jts.GeometryTestCase;
 
 
 /**
  * @version 1.12
  */
 public class GeometryPrecisionReducerTest
-    extends TestCase
+    extends GeometryTestCase
 {
   private PrecisionModel pmFloat = new PrecisionModel();
   private PrecisionModel pmFixed1 = new PrecisionModel(1);
@@ -49,70 +49,76 @@ public class GeometryPrecisionReducerTest
   public void testSquare()
       throws Exception
   {
-    Geometry g = reader.read("POLYGON (( 0 0, 0 1.4, 1.4 1.4, 1.4 0, 0 0 ))");
-    Geometry g2 = reader.read("POLYGON (( 0 0, 0 1, 1 1, 1 0, 0 0 ))");
-    Geometry gReduce = reducer.reduce(g);
-    assertEqualsExactAndHasSameFactory(gReduce, g2);
+    checkReduceSameFactory("POLYGON (( 0 0, 0 1.4, 1.4 1.4, 1.4 0, 0 0 ))",
+        "POLYGON (( 0 0, 0 1, 1 1, 1 0, 0 0 ))");
   }
   public void testTinySquareCollapse()
       throws Exception
   {
-    Geometry g = reader.read("POLYGON (( 0 0, 0 .4, .4 .4, .4 0, 0 0 ))");
-    Geometry g2 = reader.read("POLYGON EMPTY");
-    Geometry gReduce = reducer.reduce(g);
-    assertEqualsExactAndHasSameFactory(gReduce, g2);
+    checkReduceSameFactory("POLYGON (( 0 0, 0 .4, .4 .4, .4 0, 0 0 ))",
+        "POLYGON EMPTY");
   }
   
   public void testSquareCollapse()
       throws Exception
   {
-    Geometry g = reader.read("POLYGON (( 0 0, 0 1.4, .4 .4, .4 0, 0 0 ))");
-    Geometry g2 = reader.read("POLYGON EMPTY");
-    Geometry gReduce = reducer.reduce(g);
-    assertEqualsExactAndHasSameFactory(gReduce, g2);
+    checkReduceSameFactory("POLYGON (( 0 0, 0 1.4, .4 .4, .4 0, 0 0 ))",
+        "POLYGON EMPTY");
   }
   
   public void testSquareKeepCollapse()
       throws Exception
   {
-    Geometry g = reader.read("POLYGON (( 0 0, 0 1.4, .4 .4, .4 0, 0 0 ))");
-    Geometry g2 = reader.read("POLYGON EMPTY");
-    Geometry gReduce = reducerKeepCollapse.reduce(g);
-    assertEqualsExactAndHasSameFactory(gReduce, g2);
+    checkReduceSameFactory("POLYGON (( 0 0, 0 1.4, .4 .4, .4 0, 0 0 ))",
+        "POLYGON EMPTY");
   }
   
   public void testLine()
       throws Exception
   {
-    Geometry g = reader.read("LINESTRING ( 0 0, 0 1.4 )");
-    Geometry g2 = reader.read("LINESTRING (0 0, 0 1)");
-    Geometry gReduce = reducer.reduce(g);
-    assertEqualsExactAndHasSameFactory(gReduce, g2);
+    checkReduceExactSameFactory("LINESTRING ( 0 0, 0 1.4 )",
+        "LINESTRING (0 0, 0 1)");
+  }
+  
+  public void testLineNotNoded()
+      throws Exception
+  {
+    checkReduceExactSameFactory("LINESTRING(1 1, 3 3, 9 9, 5.1 5, 2.1 2)",
+        "LINESTRING(1 1, 3 3, 9 9, 5 5, 2 2)");
   }
   
   public void testLineRemoveCollapse()
       throws Exception
   {
-    Geometry g = reader.read("LINESTRING ( 0 0, 0 .4 )");
-    Geometry g2 = reader.read("LINESTRING EMPTY");
-    Geometry gReduce = reducer.reduce(g);
-    assertEqualsExactAndHasSameFactory(gReduce, g2);
+    checkReduceExactSameFactory("LINESTRING ( 0 0, 0 .4 )",
+        "LINESTRING EMPTY");
   }
   
   public void testLineKeepCollapse()
       throws Exception
   {
-    Geometry g = reader.read("LINESTRING ( 0 0, 0 .4 )");
-    Geometry g2 = reader.read("LINESTRING ( 0 0, 0 0 )");
-    Geometry gReduce = reducerKeepCollapse.reduce(g);
-    assertEqualsExactAndHasSameFactory(gReduce, g2);
+    checkReduceExactSameFactory(reducerKeepCollapse,
+        "LINESTRING ( 0 0, 0 .4 )",
+        "LINESTRING ( 0 0, 0 0 )");
   }
-  
+
+  public void testPoint()
+      throws Exception
+  {
+    checkReduceExactSameFactory("POINT(1.1 4.9)",
+        "POINT(1 5)");
+  }
+
+  public void testMultiPoint()
+      throws Exception
+  {
+    checkReduceExactSameFactory("MULTIPOINT( (1.1 4.9),(1.2 4.8), (3.3 6.6))",
+        "MULTIPOINT((1 5), (1 5), (3 7))");
+  }
+
   public void testPolgonWithCollapsedLine() throws Exception {
-		Geometry g  = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 10, 10 10))");
-		Geometry g2 = reader.read("POLYGON ((10 10, 100 100, 200 10, 10 10))");
-		Geometry gReduce = reducer.reduce(g);
-    assertEqualsExactAndHasSameFactory(gReduce, g2);
+    checkReduceSameFactory("POLYGON ((10 10, 100 100, 200 10.1, 300 10, 10 10))",
+        "POLYGON ((10 10, 100 100, 200 10, 10 10))");
 	}
   
   public void testPolgonWithCollapsedLinePointwise() throws Exception {
@@ -123,10 +129,8 @@ public class GeometryPrecisionReducerTest
 	}
   
   public void testPolgonWithCollapsedPoint() throws Exception {
-		Geometry g = reader.read("POLYGON ((10 10, 100 100, 200 10.1, 300 100, 400 10, 10 10))");
-		Geometry g2 = reader.read("MULTIPOLYGON (((10 10, 100 100, 200 10, 10 10)), ((200 10, 300 100, 400 10, 200 10)))");
-		Geometry gReduce = reducer.reduce(g);
-    assertEqualsExactAndHasSameFactory(gReduce, g2);
+    checkReduceSameFactory("POLYGON ((10 10, 100 100, 200 10.1, 300 100, 400 10, 10 10))",
+        "MULTIPOLYGON (((10 10, 100 100, 200 10, 10 10)), ((200 10, 300 100, 400 10, 200 10)))");
 	}
 
   public void testPolgonWithCollapsedPointPointwise() throws Exception {
@@ -142,5 +146,27 @@ public class GeometryPrecisionReducerTest
     assertTrue(a.getFactory() == b.getFactory());
   }
 
-
+  private void checkReduceExactSameFactory(String wkt, String wktExpected) {
+    checkReduceExactSameFactory(reducer, wkt, wktExpected);
+  }
+  
+  private void checkReduceExactSameFactory(GeometryPrecisionReducer reducer, 
+      String wkt,
+      String wktExpected) {
+    Geometry g = read(wkt);
+    Geometry expected = read(wktExpected);
+    Geometry actual = reducer.reduce(g);
+    assertTrue(actual.equalsExact(expected));
+    assertTrue(expected.getFactory() == expected.getFactory());
+  }
+  
+  private void checkReduceSameFactory( 
+      String wkt,
+      String wktExpected) {
+    Geometry g = read(wkt);
+    Geometry expected = read(wktExpected);
+    Geometry actual = reducer.reduce(g);
+    checkEqual(expected, actual);
+    assertTrue(expected.getFactory() == expected.getFactory());
+  }
 }

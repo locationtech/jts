@@ -136,6 +136,13 @@ public class KdTreeTest extends TestCase {
     
     boolean isMatch = CoordinateArrays.equals(result, expectedCoord);
     assertTrue("Expected result coordinates not found", isMatch);
+    
+    // test queries for points
+    for (int i = 0; i < expectedCoord.length; i++) {
+      Coordinate p = expectedCoord[i];
+      KdNode node = index.query(p);
+      assertEquals("Point query not found", node.getCoordinate(), p);
+    }
   }
 
   private KdTree build(String wktInput, double tolerance) {

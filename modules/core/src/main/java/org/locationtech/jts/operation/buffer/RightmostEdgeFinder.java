@@ -21,11 +21,11 @@ import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geomgraph.DirectedEdge;
 import org.locationtech.jts.geomgraph.DirectedEdgeStar;
 import org.locationtech.jts.geomgraph.Edge;
 import org.locationtech.jts.geomgraph.Node;
-import org.locationtech.jts.geomgraph.Position;
 import org.locationtech.jts.util.Assert;
 
 /**

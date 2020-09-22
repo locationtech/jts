@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geomgraph.Quadrant;
+import org.locationtech.jts.geom.Quadrant;
 
 /**
  * Represents a directed edge in a {@link PlanarGraph}. A DirectedEdge may or

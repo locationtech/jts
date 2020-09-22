@@ -22,11 +22,11 @@ import java.util.List;
 import org.locationtech.jts.algorithm.BoundaryNodeRule;
 import org.locationtech.jts.geom.IntersectionMatrix;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geomgraph.Edge;
 import org.locationtech.jts.geomgraph.EdgeEnd;
 import org.locationtech.jts.geomgraph.GeometryGraph;
 import org.locationtech.jts.geomgraph.Label;
-import org.locationtech.jts.geomgraph.Position;
 
 /**
  * A collection of {@link EdgeEnd}s which obey the following invariant:

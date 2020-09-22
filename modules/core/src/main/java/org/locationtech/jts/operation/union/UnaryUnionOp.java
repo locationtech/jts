@@ -23,8 +23,6 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Puntal;
 import org.locationtech.jts.operation.linemerge.LineMerger;
-import org.locationtech.jts.operation.overlay.OverlayOp;
-import org.locationtech.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
 
 /**
  * Unions a <code>Collection</code> of {@link Geometry}s or a single Geometry 
@@ -110,8 +108,10 @@ public class UnaryUnionOp
 	}
 	
 	private GeometryFactory geomFact = null;
+
   private InputExtracter extracter;
-	
+  private UnionStrategy unionFunction = CascadedPolygonUnion.CLASSIC_UNION;
+
 	/**
 	 * Constructs a unary union operation for a {@link Collection} 
 	 * of {@link Geometry}s.
@@ -145,6 +145,10 @@ public class UnaryUnionOp
 	public UnaryUnionOp(Geometry geom)
 	{
 		extract(geom);
+	}
+	
+	public void setUnionFunction(UnionStrategy unionFun) {
+	  this.unionFunction = unionFun;
 	}
 	
 	private void extract(Collection geoms)
@@ -212,7 +216,7 @@ public class UnaryUnionOp
 		
 		Geometry unionPolygons = null;
 		if (polygons.size() > 0) {
-			unionPolygons = CascadedPolygonUnion.union(polygons);
+			unionPolygons = CascadedPolygonUnion.union(polygons, unionFunction);
 		}
 		
     /**
@@ -271,7 +275,7 @@ public class UnaryUnionOp
 	private Geometry unionNoOpt(Geometry g0)
 	{
     Geometry empty = geomFact.createPoint();
-		return SnapIfNeededOverlayOp.overlayOp(g0, empty, OverlayOp.UNION);
+		return unionFunction.union(g0, empty);
 	}
 	
 }

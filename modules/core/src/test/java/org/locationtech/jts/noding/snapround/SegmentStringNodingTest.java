@@ -68,7 +68,7 @@ public class SegmentStringNodingTest  extends TestCase {
     Geometry g = new WKTReader().read(wkt);
     List<NodedSegmentString> strings = new ArrayList<>();
     strings.add(new NodedSegmentString(g.getCoordinates(), null));
-    new MCIndexSnapRounder(pm).computeNodes(strings);
+    new SnapRoundingNoder(pm).computeNodes(strings);
     
     @SuppressWarnings("unchecked")
     List<NodedSegmentString> noded = NodedSegmentString.getNodedSubstrings(strings);
