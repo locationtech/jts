@@ -98,32 +98,31 @@ public class GeoJsonReader {
    * @return The resulting JTS Geometry
    * 
    * @throws ParseException
-   *           throws a ParseException if the JSON string cannot be parsed
+   *           throws a ParseException if the JSON string cannot be parsed as a Geometry
    */
+  @SuppressWarnings("unchecked")
   public Geometry read(Reader reader) throws ParseException {
-
-    Geometry result = null;
-
+    Map<String, Object> geometryMap = null;
     JSONParser parser = new JSONParser();
     try {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> geometryMap = (Map<String, Object>) parser
-          .parse(reader);
-
-      GeometryFactory geometryFactory = null;
-      if (this.gf == null) {
-        geometryFactory = this.getGeometryFactory(geometryMap);
-      } else {
-        geometryFactory = this.gf;
-      }
-
-      result = create(geometryMap, geometryFactory);
-
-    } catch (org.json.simple.parser.ParseException e) {
+      Object obj =  parser.parse(reader);
+      geometryMap = (Map<String, Object>) obj;
+    } catch (ClassCastException e) {
+      throw new ParseException("Could not parse Geometry from Json string.");
+    }catch (org.json.simple.parser.ParseException e) {
       throw new ParseException(e);
     } catch (IOException e) {
       throw new ParseException(e);
     }
+    
+    GeometryFactory geometryFactory = null;
+    if (this.gf == null) {
+      geometryFactory = this.getGeometryFactory(geometryMap);
+    } else {
+      geometryFactory = this.gf;
+    }
+
+    Geometry result = create(geometryMap, geometryFactory);
 
     return result;
   }
