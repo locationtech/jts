@@ -33,6 +33,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `RayCrossingCounter` to handle XYZM coordinates (#589)
 * Fix `PackedCoordinateSequence` to always use XYZM coordinates when dimension is 4 (#591)
 * Fix `OrdinateFormat` to work around a JDK issue with the minus sign character in `Locale.NO` (#596)
+* Fix `GeoJsonReader` to throw a `ParseException` for empty arrays (#600)
 
 <!-- ================================================================ -->
 
