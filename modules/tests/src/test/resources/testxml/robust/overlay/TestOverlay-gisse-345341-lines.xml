@@ -1,0 +1,21 @@
+<run>
+<desc>
+https://gis.stackexchange.com/questions/345341/get-location-of-postgis-geos-topology-exception
+Union of line fails using simple noding
+</desc>
+<precisionModel type="FLOATING"/>
+
+<case>
+<desc> GISSE 345341 - Union of line fails using simple noding. </desc>
+  <a>
+0102000020110F000003000000DC874D65FCC25EC176032C6B350C5341B336429FFEC25EC1F962BBD9480C5341FC849518FFC25EC15BE20F5F500C5341
+   </a>
+   <b>
+0102000020110F000006000000FA9BBFD3FCC25EC1B978232F390C5341B336429FFEC25EC1F962BBD9480C5341A77E6BE5FEC25EC1357C21334D0C5341C3EBA27BFEC25EC11BE5A4C34A0C5341B61D8CACFCC25EC1BCF273143C0C5341FA9BBFD3FCC25EC1B978232F390C5341
+   </b>
+<test>
+    <op name="overlayAreaTest" arg1="A" arg2="B">true</op>
+</test>
+</case>
+
+</run>
