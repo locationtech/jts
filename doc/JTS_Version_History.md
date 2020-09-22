@@ -26,6 +26,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve Orientation.isCCW to handle flat topology collapse (#588)
 * Add `KMLReader` (#593)
 * Add `Densifier.setValidated` method to allow disabling expensive polygon validation (#595)
+* Add `OverlayNG` codebase (#599)
 
 ### Bug Fixes
 
