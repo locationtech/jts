@@ -253,14 +253,16 @@ public class KdTree {
       }
       leafNode = currentNode;
       if (isLessThan) {
+        //System.out.print("L");
         currentNode = currentNode.getLeft();
       } else {
+        //System.out.print("R");
         currentNode = currentNode.getRight();
       }
 
       isOddLevel = ! isOddLevel;
     }
-
+    //System.out.println("<<");
     // no node found, add new leaf node to tree
     numberOfNodes = numberOfNodes + 1;
     KdNode node = new KdNode(p, data);
@@ -383,4 +385,39 @@ public class KdTree {
     return queryNodePoint(root, queryPt, true);
   }
 
+  /**
+   * Computes the depth of the tree.
+   * 
+   * @return the depth of the tree
+   */
+  public int depth() {
+    return depthNode(root);
+  }
+  
+  private int depthNode(KdNode currentNode) {
+    if (currentNode == null)
+      return 0;
+
+    int dL = depthNode(currentNode.getLeft());
+    int dR = depthNode(currentNode.getRight());
+    return 1 + (dL > dR ? dL : dR);
+  }
+  
+  /**
+   * Computes the size (number of items) in the tree.
+   * 
+   * @return the size of the tree
+   */
+  public int size() {
+    return sizeNode(root);
+  }
+  
+  private int sizeNode(KdNode currentNode) {
+    if (currentNode == null)
+      return 0;
+
+    int sizeL = sizeNode(currentNode.getLeft());
+    int sizeR = sizeNode(currentNode.getRight());
+    return 1 + sizeL + sizeR;
+  }
 }
