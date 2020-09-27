@@ -44,47 +44,45 @@ public class HotPixel
   // testing only
 //  public static int nTests = 0;
   
-  private static double TOLERANCE = 0.5;
+  private static final double TOLERANCE = 0.5;
 
-  private Coordinate ptHot;
   private Coordinate originalPt;
+  private double scaleFactor;
+  
   /**
-   * Indicates if this hot pixel must be a node in the output
+   * The scaled ordinates of the hot pixel point
+   */
+  private double hpx;
+  private double hpy;
+  
+  /**
+   * Indicates if this hot pixel must be a node in the output.
    */
   private boolean isNode = false;
   
-  private double scaleFactor;
-
-  private double minx;
-  private double maxx;
-  private double miny;
-  private double maxy;
-
   /**
-   * Creates a new hot pixel, using a given scale factor.
+   * Creates a new hot pixel centered on a rounded point, using a given scale factor.
    * The scale factor must be strictly positive (non-zero).
    * 
-   * @param pt the coordinate at the centre of the pixel
+   * @param pt the coordinate at the centre of the pixel (already rounded)
    * @param scaleFactor the scaleFactor determining the pixel size.  Must be &gt; 0
    * @param li the intersector to use for testing intersection with line segments
    * 
    */
   public HotPixel(Coordinate pt, double scaleFactor) {
     originalPt = pt;
-    this.ptHot = pt;
     this.scaleFactor = scaleFactor;
     
     if (scaleFactor <= 0) 
       throw new IllegalArgumentException("Scale factor must be non-zero");
     if (scaleFactor != 1.0) {
-      this.ptHot = scaleRound(pt);
+      hpx = scaleRound(pt.getX());
+      hpy = scaleRound(pt.getY());
     }
-    
-    // extreme values for pixel
-    minx = ptHot.x - TOLERANCE;
-    maxx = ptHot.x + TOLERANCE;
-    miny = ptHot.y - TOLERANCE;
-    maxy = ptHot.y + TOLERANCE;
+    else {
+      hpx = pt.getX();
+      hpy = pt.getY();
+    }
   }
 
   /**
@@ -163,13 +161,13 @@ public class HotPixel
   public boolean intersects(Coordinate p) {
     double x = scale(p.x);
     double y = scale(p.y);
-    if (x >= maxx) return false;
+    if (x >= hpx + TOLERANCE) return false;
     // check Left side
-    if (x < minx) return false;
+    if (x < hpx - TOLERANCE) return false;
     // check Top side
-    if (y >= maxy) return false;
+    if (y >= hpy + TOLERANCE) return false;
     // check Bottom side
-    if (y < miny) return false;
+    if (y < hpy - TOLERANCE) return false;
     return true;
   }
 
@@ -212,15 +210,19 @@ public class HotPixel
      * are open (not part of the pixel).
      */   
     // check Right side
+    double maxx = hpx + TOLERANCE;
     double segMinx = Math.min(px, qx);
     if (segMinx >= maxx) return false;
     // check Left side
+    double minx = hpx - TOLERANCE;
     double segMaxx = Math.max(px, qx);
     if (segMaxx < minx) return false;
     // check Top side
+    double maxy = hpy + TOLERANCE;
     double segMiny = Math.min(py, qy);
     if (segMiny >= maxy) return false;
     // check Bottom side
+    double miny = hpy - TOLERANCE;
     double segMaxy = Math.max(py, qy);
     if (segMaxy < miny) return false;
 
@@ -314,6 +316,11 @@ public class HotPixel
    */
   private boolean intersectsPixelClosure(Coordinate p0, Coordinate p1)
   {
+    double minx = hpx - TOLERANCE;
+    double maxx = hpx + TOLERANCE;
+    double miny = hpy - TOLERANCE;
+    double maxy = hpy + TOLERANCE;
+    
     Coordinate[] corner = new Coordinate[4];
     corner[UPPER_RIGHT] = new Coordinate(maxx, maxy);
     corner[UPPER_LEFT] = new Coordinate(minx, maxy);
@@ -334,7 +341,7 @@ public class HotPixel
   }
   
   public String toString() {
-    return "HP(" + WKTWriter.format(ptHot) + ")";
+    return "HP(" + WKTWriter.format(originalPt) + ")";
   }
 
 }
