@@ -79,6 +79,7 @@ public class JTSOpRunner {
   private String hdrSave;
   private long totalTime;
   private int opCount = 0;
+  private boolean isTime;
   
   static class OpParams {
     String operation;
@@ -111,7 +112,9 @@ public class JTSOpRunner {
   public void setVerbose(boolean isVerbose) {
     this.isVerbose = isVerbose;
   }
-  
+  public void setTime(boolean isTime) {
+    this.isTime = isTime;
+  }
   public void captureOutput() {
     out = new CommandOutput(true);
     geomOut = new GeometryOutput(out);
@@ -205,8 +208,10 @@ public class JTSOpRunner {
     FunctionInvoker fun = new FunctionInvoker(func, argList);
     executeFunctionSpreadA(fun);
     
-    printlnInfo("\nOperations: " + opCount
+    if (isVerbose || isTime) {
+      out.println("\nOperations: " + opCount
         + "  Total Time: " + Stopwatch.getTimeString( totalTime ));
+    }
   }
   
   private void executeFunctionSpreadA(FunctionInvoker fun) {
@@ -501,6 +506,7 @@ public class JTSOpRunner {
   public static boolean isCustomSRID(int srid) {
     return srid > 0;
   }
+
 }
 
 class FunctionInvoker {

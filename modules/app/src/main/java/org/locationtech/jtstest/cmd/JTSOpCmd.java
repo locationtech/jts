@@ -96,6 +96,7 @@ public class JTSOpCmd {
   private static CommandLine createCmdLine() {
     CommandLine commandLine = new CommandLine('-');
     commandLine.addOptionSpec(new OptionSpec(CommandOptions.GEOMFUNC, OptionSpec.NARGS_ONE_OR_MORE))
+    .addOptionSpec(new OptionSpec(CommandOptions.TIME, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.VERBOSE, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.V, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.HELP, 0))
@@ -128,6 +129,7 @@ public class JTSOpCmd {
   "           [ -explode",
   "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
   "           [ -geomfunc <classname> ]",
+  "           [ -time ]",
   "           [ -v, -verbose ]",
   "           [ -help ]",
   "           [ -op ]",
@@ -146,6 +148,7 @@ public class JTSOpCmd {
   "  -explode        output atomic geometries",
   "  -f              output format to use.  If omitted output is silent",
   "  -geomfunc       specifies class providing geometry operations",
+  "  -time           display execution time",
   "  -v, -verbose    display information about execution",
   "  -help           print a list of available operations",
   "  -op             separator for op arguments"
@@ -327,8 +330,9 @@ public class JTSOpCmd {
       }
     }
     boolean isVerbose = commandLine.hasOption(CommandOptions.VERBOSE)
-                  || commandLine.hasOption(CommandOptions.V);
+        || commandLine.hasOption(CommandOptions.V);
     opRunner.setVerbose(isVerbose);
+    opRunner.setTime(commandLine.hasOption(CommandOptions.TIME));
     
     isHelpWithFunctions = commandLine.hasOption(CommandOptions.HELP);
 
