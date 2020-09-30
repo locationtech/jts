@@ -23,8 +23,11 @@ import org.locationtech.jts.index.kdtree.KdNodeVisitor;
 import org.locationtech.jts.index.kdtree.KdTree;
 
 /**
- * An index which creates {@link HotPixel}s for provided points,
- * and allows performing range queries on them.
+ * An index which creates unique {@link HotPixel}s for provided points,
+ * and performs range queries on them.
+ * The points passed to the index do not needed to be 
+ * rounded to the specified scale factor; this is done internally
+ * when creating the HotPixels for them.
  *
  * @author mdavis
  *
@@ -35,7 +38,7 @@ class HotPixelIndex {
 
   /**
    * Use a kd-tree to index the pixel centers for optimum performance.
-   * Since HotPixels have an extent, queries to the
+   * Since HotPixels have an extent, range queries to the
    * index must enlarge the query range by a suitable value
    * (using the pixel width is safest).
    */
@@ -91,7 +94,12 @@ class HotPixelIndex {
    * @param pts the points to add
    */
   public void add(Coordinate[] pts) {
-
+    /**
+     * Shuffle the points before adding.
+     * This avoids having long monontic runs of points
+     * causing an unbalanced KD-tree, which would create
+     * performance and robustness issues.
+     */
     Iterator<Coordinate> it = new CoordinateShuffler(pts);
     while (it.hasNext()) {
       add(it.next());
@@ -104,6 +112,11 @@ class HotPixelIndex {
    * @param pts the points to add
    */
   public void addNodes(List<Coordinate> pts) {
+    /**
+     * Node points are not shuffled, since they are
+     * added after the vertex points, and hence the KD-tree should 
+     * be reasonably balanced already.
+     */
     for (Coordinate pt : pts) {
       HotPixel hp = add(pt);
       hp.setToNode();
