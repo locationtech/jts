@@ -132,11 +132,6 @@ public class HotPixel
     return (double) Math.round(val * scaleFactor);
   }
 
-  private Coordinate scaleRound(Coordinate p)
-  {
-    return new Coordinate(scaleRound(p.x), scaleRound(p.y));
-  }
-
   /**
    * Scale without rounding. 
    * This ensures intersections are checked against original
@@ -254,23 +249,27 @@ public class HotPixel
     
     int orientUL = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, minx, maxy);
     if (orientUL == 0) {
+      // upward segment does not intersect pixel interior
       if (py < qy) return false;
+      // downward segment must intersect pixel interior
       return true;
     }
     
     int orientUR = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, maxx, maxy);
     if (orientUR == 0) {
+      // downward segment does not intersect pixel interior
       if (py > qy) return false;
+      // upward segment must intersect pixel interior
       return true;
     }
-    //--- check crossing Top side
+    //--- check crossing Top side 
     if (orientUL != orientUR) {
       return true;
     }
     
     int orientLL = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, minx, miny);
-    if (orientUL == 0) {
-      // LL corner is the only one in pixel interior
+    if (orientLL == 0) {
+      // segment crossed LL corner, which is the only one in pixel interior
       return true;
     }
     //--- check crossing Left side
@@ -280,7 +279,9 @@ public class HotPixel
     
     int orientLR = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, maxx, miny);
     if (orientLR == 0) {
+      // upward segment does not intersect pixel interior
       if (py < qy) return false;
+      // downward segment must intersect pixel interior
       return true;
     }
 

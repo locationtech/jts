@@ -139,7 +139,7 @@ public class HotPixelTest extends TestCase {
   }
   
   //-----------------------------
-  // Test segments entering through a corder and terminating inside pixel
+  // Test segments entering through a corner and terminating inside pixel
   
   public void testCornerULEndInside() {
     checkIntersects(true, 1, 1, 10, 
@@ -161,6 +161,43 @@ public class HotPixelTest extends TestCase {
         1.02, 0.98, 1.3, 0.7 );
   }
   
+  //-----------------------------
+  // Test segments tangent to a corner
+  
+  public void testCornerLLTangent() {
+    checkIntersects(true, 1, 1, 10, 
+        0.9, 1, 1, 0.9 );
+  }
+
+  public void testCornerLLTangentNoTouch() {
+    checkIntersects(false, 1, 1, 10, 
+        0.9, 0.9, 1, 0.9 );
+  }
+
+  public void testCornerULTangent() {
+    // does not intersect due to open top
+    checkIntersects(false, 1, 1, 10, 
+        0.9, 1, 1, 1.1 );
+  }
+
+  public void testCornerURTangent() {
+    // does not intersect due to open top
+    checkIntersects(false, 1, 1, 10, 
+        1, 1.1, 1.1, 1 );
+  }
+
+  public void testCornerLRTangent() {
+    // does not intersect due to open right side
+    checkIntersects(false, 1, 1, 10, 
+        1, 0.9, 1.1, 1 );
+  }
+
+  public void testCornerULTouchEnd() {
+    // does not intersect due to bounding box check for open top
+    checkIntersects(false, 1, 1, 10, 
+        0.9, 1.1, 0.95, 1.05 );
+  }
+
 
   //================================================
   
