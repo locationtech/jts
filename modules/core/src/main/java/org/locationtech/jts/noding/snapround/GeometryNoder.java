@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2020 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -31,17 +32,15 @@ import org.locationtech.jts.noding.SegmentString;
  * Nodes the linework in a list of {@link Geometry}s using Snap-Rounding
  * to a given {@link PrecisionModel}.
  * <p>
- * The input coordinates are expected to be rounded
- * to the given precision model.
- * This class does not perform that function.
- * <code>GeometryPrecisionReducer</code> may be used to do this.
+ * Input coordinates do not need to be rounded to the 
+ * precision model.  
+ * All output coordinates are rounded to the precision model.
  * <p>
  * This class does <b>not</b> dissolve the output linework,
  * so there may be duplicate linestrings in the output.  
  * Subsequent processing (e.g. polygonization) may require
  * the linework to be unique.  Using <code>UnaryUnion</code> is one way
  * to do this (although this is an inefficient approach).
- * 
  * 
  */
 public class GeometryNoder
@@ -83,8 +82,7 @@ public class GeometryNoder
     geomFact = geom0.getFactory();
 
     List segStrings = toSegmentStrings(extractLines(geoms));
-    //Noder sr = new SimpleSnapRounder(pm);
-    Noder sr = new MCIndexSnapRounder(pm);
+    Noder sr = new SnapRoundingNoder(pm);
     sr.computeNodes(segStrings);
     Collection nodedLines = sr.getNodedSubstrings();
 
