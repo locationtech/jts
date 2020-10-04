@@ -27,6 +27,10 @@ Distributions for older JTS versions can be obtained at the
 * Add `KMLReader` (#593)
 * Add `Densifier.setValidated` method to allow disabling expensive polygon validation (#595)
 * Add `OverlayNG` codebase (#599)
+* Add `SnapRoundingNoder` (#599)
+* Add `SnappingNoder` (#599)
+* Change `GeometryPrecisionReducer` to use OverlayNG with Snap-Rounding
+* Change `GeometryNoder` to use `SnapRoundingNoder`
 * Add `KdTree` `size` and `depth` methods (#603)
 
 ### Bug Fixes
