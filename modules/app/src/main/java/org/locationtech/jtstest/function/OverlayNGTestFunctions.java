@@ -124,6 +124,16 @@ public class OverlayNGTestFunctions {
     return ovr.getResult();
   }
   
+  public static Geometry edgesUnionAll(Geometry a, Geometry b, double scaleFactor) {
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    // force non-null inputs
+    a = sameOrEmpty(a, b);
+    b = sameOrEmpty(b, a);
+    OverlayNG ovr = new OverlayNG(a, b, pm, UNION);
+    ovr.setOutputEdges(true);
+    return ovr.getResult();
+  }
+  
   public static Geometry intersectionSRNoOpt(Geometry a, Geometry b, double scaleFactor) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     OverlayNG ovr = new OverlayNG(a, b, pm, INTERSECTION);
@@ -223,5 +233,11 @@ public class OverlayNGTestFunctions {
     }
     if (lines.length == 1) return lines[0];
     return factory.createMultiLineString(lines);
+  }
+  
+  public static Geometry edgesOverlayResult(Geometry a) {
+    OverlayNG ovr = new OverlayNG(a, null, UNION);
+    ovr.setOutputResultEdges(true);
+    return ovr.getResult();
   }
 }
