@@ -236,6 +236,7 @@
                             <packages>org.locationtech.jts.io.*</packages>
                         </group>
                     </groups>
+                    <doclint>none</doclint>
                 </configuration>
                 <executions>
                     <execution>

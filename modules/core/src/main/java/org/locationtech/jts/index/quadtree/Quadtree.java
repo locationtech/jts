@@ -239,4 +239,8 @@ public class Quadtree
       minExtent = delY;
   }
 
+  public Root getRoot()
+  {
+    return root;
+  }
 }

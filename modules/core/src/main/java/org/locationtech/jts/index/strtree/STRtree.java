@@ -591,5 +591,13 @@ implements SpatialIndex, Serializable
 	  }	
 	  return items;
   }
+  /**
+   * Return the bounds of leaf nodes
+   * @return
+   */
+  public List findLeafBounds()
+  {
+    return super.findLeafBounds();
+  }
 }
  
