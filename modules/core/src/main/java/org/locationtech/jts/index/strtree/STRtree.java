@@ -53,9 +53,9 @@ public class STRtree extends AbstractSTRtree
 implements SpatialIndex, Serializable 
 {
 
-  private static final class STRtreeNode extends AbstractNode
+  public static final class STRtreeNode extends AbstractNode
   {
-    private STRtreeNode(int level)
+    public STRtreeNode(int level)
     {
       super(level);
     }
