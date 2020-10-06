@@ -12,10 +12,9 @@
 
 package org.locationtech.jts.simplify;
 
+import org.junit.Assert;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
-
-import junit.framework.Assert;
 
 
 /**
@@ -59,7 +58,7 @@ public class GeometryOperationValidator
    * Tests if the result is valid.
    * Throws an exception if result is not valid.
    * This allows chaining multiple tests together.
-   * 
+   *
    * @throws Exception if the result is not valid.
    */
   public void test()

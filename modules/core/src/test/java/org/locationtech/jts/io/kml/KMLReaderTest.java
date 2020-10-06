@@ -12,9 +12,9 @@
 
 package org.locationtech.jts.io.kml;
 
-import junit.framework.Assert;
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
+import org.junit.Assert;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
