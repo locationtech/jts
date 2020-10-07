@@ -50,6 +50,13 @@ public abstract class GeometryTestCase extends TestCase{
     readerWKT = new WKTReader(geomFactory);
   }
 
+  /**
+   * Checks that the normalized values of the expected and actual
+   * geometries are exactly equals.
+   * 
+   * @param expected the expected value
+   * @param actual the actual value
+   */
   protected void checkEqual(Geometry expected, Geometry actual) {
     Geometry actualNorm = actual.norm();
     Geometry expectedNorm = expected.norm();
