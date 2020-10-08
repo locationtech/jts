@@ -61,10 +61,13 @@ public class JTSOpCmdTest extends TestCase {
         JTSOpRunner.ERR_REQUIRED_A );
   }
   
+  /*
+   // Missing B check is disabled for now
   public void testErrorMissingGeomBUnion() {
     runCmdError( args("-a", "POINT ( 1 1 )", "Overlay.union" ),
         JTSOpRunner.ERR_REQUIRED_B );
   }
+  */
   
   public void testErrorMissingGeomAUnion() {
     runCmdError( args("-b", "POINT ( 1 1 )", "Overlay.union" ),

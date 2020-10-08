@@ -470,20 +470,23 @@ public class JTSOpRunner {
     Class[] paramTypes = func.getParameterTypes();
     int nParam = paramTypes.length;
     
+    /*
+    // disable this check for now, since it does not handle functions where B is optional
     if (func.isBinary() && geomB == null)
       throw new CommandError(ERR_REQUIRED_B);
-    /**
-    // MD not sure whether to check this?
-    if (! func.isBinary() && geomB != null)
-      throw new CommandError(ERR_REQUIRED_B);
-      */
+     */
     
     /*
      * check count of supplied args.
      * Assumes B has been checked.
      */
     int argCount = 0;
-    if (func.isBinary() && geomB != null) argCount++;
+    if (func.isBinary()
+      // disable B check for now
+      //  && geomB != null
+        ) {
+      argCount++;
+    }
     if (argList != null) argCount++;
     if (nParam != argCount) {
       throw new CommandError(ERR_WRONG_ARG_COUNT, func.getName());
