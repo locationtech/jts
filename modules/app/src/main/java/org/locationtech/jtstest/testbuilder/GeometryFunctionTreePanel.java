@@ -53,8 +53,11 @@ public class GeometryFunctionTreePanel extends JPanel {
 	}
 
 	private class GeometryFunctionRenderer extends DefaultTreeCellRenderer {
-		private final ImageIcon binaryIcon = new ImageIcon(this.getClass()
-				.getResource("BinaryGeomFunction.png"));
+    private final ImageIcon binaryIcon = new ImageIcon(this.getClass()
+        .getResource("BinaryGeomFunction.png"));
+
+    private final ImageIcon binaryOptBIcon = new ImageIcon(this.getClass()
+        .getResource("BinaryGeomFunctionOptB.png"));
 
 		private final ImageIcon unaryIcon = new ImageIcon(this.getClass()
 				.getResource("UnaryGeomFunction.png"));
@@ -69,7 +72,7 @@ public class GeometryFunctionTreePanel extends JPanel {
 					hasFocus);
 			if (leaf) {
 				GeometryFunction func = getFunctionFromNode(value);
-				setIcon(func.isBinary() ? binaryIcon : unaryIcon);
+				setIcon( computeIcon(func) );
         //String name = StringUtil.capitalize(func.getName());
         String name = func.getName();
 				setText(name);
@@ -79,6 +82,14 @@ public class GeometryFunctionTreePanel extends JPanel {
 			}
 			return this;
 		}
+
+    private ImageIcon computeIcon(GeometryFunction func) {
+      ImageIcon icon = unaryIcon;
+      if (func.isBinary()) {
+        icon = func.isRequiredB() ? binaryIcon : binaryOptBIcon;
+      }
+      return icon;
+    }
 
 	}
 

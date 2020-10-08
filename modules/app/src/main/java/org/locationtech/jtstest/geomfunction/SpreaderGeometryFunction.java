@@ -52,7 +52,9 @@ public class SpreaderGeometryFunction implements GeometryFunction {
   public boolean isBinary() {
     return fun.isBinary();
   }
-  
+  public boolean isRequiredB() {
+    return fun.isRequiredB();
+  }
   public Object invoke(Geometry geom, Object[] args) {
     List<Geometry> result = new ArrayList<Geometry>();
     if (isEachA) {

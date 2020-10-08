@@ -50,6 +50,7 @@ implements GeometryFunction, Comparable
 	protected String[] parameterNames;
 	protected Class[] parameterTypes;
 	protected Class returnType;
+	protected boolean isRequiredB = true;
 	
 	public BaseGeometryFunction(
 			String category,
@@ -121,6 +122,10 @@ implements GeometryFunction, Comparable
     return parameterTypes.length > 0 && parameterTypes[0] == Geometry.class;
   }
 
+  public boolean isRequiredB() {
+    return isRequiredB;
+  }
+  
 	public String getSignature()
 	{
 		StringBuffer paramTypes = new StringBuffer();

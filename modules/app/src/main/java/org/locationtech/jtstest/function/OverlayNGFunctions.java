@@ -41,7 +41,9 @@ public class OverlayNGFunctions {
     return OverlayNG.overlay(a, b, SYMDIFFERENCE );
   }
 
-  public static Geometry union(Geometry a, Geometry b) {
+  public static Geometry union(Geometry a,
+      @Metadata(isRequired=false)
+      Geometry b) {
     return OverlayNG.overlay(a, b, UNION );
   }
 

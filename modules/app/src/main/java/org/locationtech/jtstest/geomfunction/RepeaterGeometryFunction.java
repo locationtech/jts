@@ -55,6 +55,10 @@ public class RepeaterGeometryFunction implements GeometryFunction {
     return fun.isBinary();
   }
   
+  public boolean isRequiredB() {
+    return fun.isRequiredB();
+  }
+  
   public Object invoke(Geometry geom, Object[] args) {
     
     if (! isRepeatable(fun)) {
