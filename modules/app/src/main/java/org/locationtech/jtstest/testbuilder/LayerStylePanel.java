@@ -306,9 +306,6 @@ public class LayerStylePanel extends JPanel {
         }
       }
     });
-    addRow("Line", cbStroked, btnLineColor, btnVertexSynch, sliderLineAlpha, spinnerLineWidth);
-
-    //=============================================
     cbDashed = new JCheckBox();
     cbDashed.setText("Dashed");
     //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
@@ -320,6 +317,10 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
+
+    addRow("Line", cbStroked, btnLineColor, btnVertexSynch, sliderLineAlpha, spinnerLineWidth, cbDashed);
+
+    //=============================================
     
     cbEndpoint = new JCheckBox();
     cbEndpoint.setText("Endpoints");
@@ -378,7 +379,7 @@ public class LayerStylePanel extends JPanel {
     });
     
    // Leave on separate line to allow room for dash style
-    addRow("", cbDashed, cbEndpoint, cbOrient, cbStructure, cbOffset, spinnerOffsetSize);
+    addRow("", cbEndpoint, cbOrient, cbStructure, cbOffset, spinnerOffsetSize);
     //=============================================
 
     cbFilled = new JCheckBox();
