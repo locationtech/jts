@@ -590,8 +590,8 @@ public abstract class Geometry
    *  <li>a point, returns a <code>Point</code>.
    *  <li>a line parallel to an axis, a two-vertex <code>LineString</code>
    *  <li>otherwise, returns a
-   *  <code>Polygon</code> whose vertices are (minx miny, maxx miny,
-   *  maxx maxy, minx maxy, minx miny).
+   *  <code>Polygon</code> whose vertices are (minx miny, minx maxy,
+   *  maxx maxy, maxx miny, minx miny).
    *  </ul>
    *
    *@return a Geometry representing the envelope of this Geometry
