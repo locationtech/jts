@@ -53,9 +53,15 @@ import org.locationtech.jts.operation.union.UnionStrategy;
  */
 public class OverlayNGRobust
 {
-  //--- The following function is provided to allow use in the TestRunner
-  
-  public static Geometry union(Geometry a) {
+  /**
+   * Computes unary union using robust computation.
+   * 
+   * @param geom the geometry to union
+   * @return the union result
+   * 
+   * @see UnaryUnionOp
+   */
+  public static Geometry union(Geometry geom) {
     UnionStrategy unionSRFun = new UnionStrategy() {
 
       public Geometry union(Geometry g0, Geometry g1) {
@@ -68,7 +74,7 @@ public class OverlayNGRobust
       }
       
     };
-    UnaryUnionOp op = new UnaryUnionOp(a);
+    UnaryUnionOp op = new UnaryUnionOp(geom);
     op.setUnionFunction(unionSRFun);
     return op.union();
   }
