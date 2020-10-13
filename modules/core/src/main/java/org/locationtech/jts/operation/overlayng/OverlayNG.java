@@ -442,6 +442,7 @@ public class OverlayNG
    * @return the result of the overlay operation.
    */
   public Geometry getResult() {
+    // handle empty inputs which determine result
     if (OverlayUtil.isEmptyResult(opCode, 
         inputGeom.getGeometry(0), 
         inputGeom.getGeometry(1),
@@ -449,18 +450,18 @@ public class OverlayNG
       return createEmptyResult();
     }
 
-    // special logic for Point-Point inputs
+    // handle Point-Point inputs
     if (inputGeom.isAllPoints()) {
       return OverlayPoints.overlay(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), pm);
     }
     
-    // special logic for Point-nonPoint inputs 
+    // handle Point-nonPoint inputs 
     if (! inputGeom.isSingle() &&  inputGeom.hasPoints()) {
       return OverlayMixedPoints.overlay(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), pm);
     }
     
+    // handle case where both inputs are formed of edges (Lines and Polygons)
     Geometry result = computeEdgeOverlay();
-    
     return result;
   }
   
