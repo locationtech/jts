@@ -42,9 +42,9 @@ class GeometryOverlay
   private static boolean isNG = false;
 
   static {
-    String debugValue = System.getProperty(OVERLAY_PROPERTY_NAME);
-    if (debugValue != null) {
-      if (debugValue.equalsIgnoreCase(OVERLAY_PROPERTY_VALUE_NG) )
+    String overlayValue = System.getProperty(OVERLAY_PROPERTY_NAME);
+    if (overlayValue != null) {
+      if (overlayValue.equalsIgnoreCase(OVERLAY_PROPERTY_VALUE_NG) )
         isNG = true;
     }
   }
