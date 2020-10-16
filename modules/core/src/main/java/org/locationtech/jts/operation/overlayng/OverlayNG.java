@@ -269,8 +269,6 @@ public class OverlayNG
   /**
    * Computes a union operation on 
    * the given geometry, with the supplied precision model.
-   * The primary use for this is to perform precision reduction
-   * (round the geometry to the supplied precision).
    * <p>
    * The input must be a valid geometry.
    * Collections must be homogeneous.
@@ -284,9 +282,6 @@ public class OverlayNG
    * @return the result of the union operation
    * 
    * @see OverlayMixedPoints
-   * @see PrecisionReducer
-   * @see UnaryUnionNG
-   * @see CoverageUnion
    */
   static Geometry union(Geometry geom, PrecisionModel pm)
   {    
@@ -299,6 +294,7 @@ public class OverlayNG
    * Computes a union of a single geometry using a custom noder.
    * <p>
    * The primary use of this is to support coverage union.
+   * Because of this the overlay is performed using strict mode.
    * 
    * @param geom the geometry to union
    * @param pm the precision model to use (maybe be null)
@@ -311,6 +307,7 @@ public class OverlayNG
   {    
     OverlayNG ov = new OverlayNG(geom, pm);
     ov.setNoder(noder);
+    ov.setStrictMode(true);
     Geometry geomOv = ov.getResult();
     return geomOv;
   }
