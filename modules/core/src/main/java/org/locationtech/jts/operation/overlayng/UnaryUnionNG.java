@@ -22,8 +22,14 @@ import org.locationtech.jts.operation.union.UnionStrategy;
  * Unions a collection of geometries in an
  * efficient way, using {@link OverlayNG}
  * to ensure robust computation.
+ * <p>
+ * This class is most useful for performing UnaryUnion using 
+ * a fixed-precision model. 
+ * For unary union using floating precision,  
+ * {@link OverlayNGRobust#union(Geometry) should be used.
  * 
  * @author Martin Davis
+ * @see OverlayNGRobust
  *
  */
 public class UnaryUnionNG {
