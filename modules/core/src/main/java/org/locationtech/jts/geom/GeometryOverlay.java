@@ -15,9 +15,49 @@ import org.locationtech.jts.geom.util.GeometryCollectionMapper;
 import org.locationtech.jts.geom.util.GeometryMapper;
 import org.locationtech.jts.operation.overlay.OverlayOp;
 import org.locationtech.jts.operation.overlay.snap.SnapIfNeededOverlayOp;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 
-class GeometryOverlay {
+/**
+ * Internal class which encapsulates the runtime switch to use OverlayNG,
+ * and some additional extensions for optimization and GeometryCollection handling.
+ * <p>
+ * This class allows the {@link Geometry} overlay methods to be 
+ * switched between the original algorithm and the modern OverlayNG codebase
+ * via a system property <code>jts.overlay</code>.
+ * <ul>
+ * <li><code>jts.overlay=old</code> - (default) use original overlay algorithm
+ * <li><code>jts.overlay=ng</code> - use OverlayNG
+ * </ul>
+ * 
+ * @author mdavis
+ *
+ */
+class GeometryOverlay 
+{
+  public static String OVERLAY_PROPERTY_NAME = "jts.overlay";
+  public static String OVERLAY_PROPERTY_VALUE_NG = "ng";
+  public static String OVERLAY_PROPERTY_VALUE_OLD = "old";
+  
+  private static boolean isNG = false;
+
+  static {
+    String debugValue = System.getProperty(OVERLAY_PROPERTY_NAME);
+    if (debugValue != null) {
+      if (debugValue.equalsIgnoreCase(OVERLAY_PROPERTY_VALUE_NG) )
+        isNG = true;
+    }
+  }
+  
+  private static Geometry overlay(Geometry a, Geometry b, int opCode) {
+    if (isNG) {
+      return OverlayNGRobust.overlay(a, b, opCode);
+    }
+    else {
+      return SnapIfNeededOverlayOp.overlayOp(a, b, opCode);
+    }  
+  }
+  
   static Geometry difference(Geometry a, Geometry b)
   {
     // special case: if A.isEmpty ==> empty; if B.isEmpty ==> A
@@ -26,9 +66,10 @@ class GeometryOverlay {
 
     Geometry.checkNotGeometryCollection(a);
     Geometry.checkNotGeometryCollection(b);
-    return SnapIfNeededOverlayOp.overlayOp(a, b, OverlayOp.DIFFERENCE);
+    
+    return overlay(a, b, OverlayOp.DIFFERENCE);
   }
-  
+
   static Geometry intersection(Geometry a, Geometry b)
   {
     /**
@@ -55,7 +96,8 @@ class GeometryOverlay {
     // No longer needed since GCs are handled by previous code
     //checkNotGeometryCollection(this);
     //checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(a, b, OverlayOp.INTERSECTION);
+    
+    return overlay(a, b, OverlayOp.INTERSECTION);
   }
 
   static Geometry symDifference(Geometry a, Geometry b)
@@ -73,7 +115,7 @@ class GeometryOverlay {
 
     Geometry.checkNotGeometryCollection(a);
     Geometry.checkNotGeometryCollection(b);
-    return SnapIfNeededOverlayOp.overlayOp(a, b, OverlayOp.SYMDIFFERENCE);
+    return overlay(a, b, OverlayOp.SYMDIFFERENCE);
   }
   
   static Geometry union(Geometry a, Geometry b)
@@ -92,10 +134,16 @@ class GeometryOverlay {
 
     Geometry.checkNotGeometryCollection(a);
     Geometry.checkNotGeometryCollection(b);
-    return SnapIfNeededOverlayOp.overlayOp(a, b, OverlayOp.UNION);
+
+    return overlay(a, b, OverlayOp.UNION);
   }
   
   static Geometry union(Geometry a) {
-    return UnaryUnionOp.union(a);
+    if (isNG) {
+      return OverlayNGRobust.union(a);
+    }
+    else {
+      return UnaryUnionOp.union(a);
+    }
   }
 }
