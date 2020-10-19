@@ -4,7 +4,7 @@
 
 * Execute JTS operations on geometry to produce the results, in various spatial formats
 * Chain together sequences of JTS operations to accomplish a spatial processing task
-* Extract and transform geometry from data files
+* Extract, subset, validate and transform geometry from data files
 * Convert geometry from one format into another
 * Generate geometry for testing or display purposes
 * Summarize the contents of geometry datafiles
@@ -19,12 +19,16 @@
   * standard input (WKT or WKB)
   * files in various formats (WKT, WKB, GeoJSON, GML, SHP)
   * a single input containing two geometries can supply both A and B (option `-ab`)
+* Apply a limit and/or offset when reading from some file formats:
+  * `-limit` specifies a limit
+  * `-offseet` specified an offset
+  * supported for WKT, WKB, SHP file formats
 * Execute any spatial or scalar function available in the JTS TestBuilder
 * "spread" execution over each geometry component from one or both inputs
   * `-each [ a | b | ab | aa ]`
   * the `-each aa` parameter uses the A input for both arguments for binary operations
   * the `-index` parameter uses a spatial index for binary operations
-* Run an operation multiple times using a sequence of different argument values
+* Run an operation multiple times using a set of different argument values
   * `-args v1,v2,v3 ...`
 * Repeat operation execution multiple times, to provide better timing results
   * `-repeat n`
@@ -36,8 +40,12 @@
   * `-explode`
 * Display information about the input geometries and function timing
   * `-v`
+* Display timing information
+  * `-time`
 * Load external spatial functions dynamically (as a Java class with static methods)
   * `-geomfunc classname` 
+* List all available functions
+  * `-help` 
 * chain operations together by writing/reading input from `stdin` and using shell piping
 
 ## Examples
@@ -85,6 +93,10 @@
  * Output a literal geometry as GeoJSON
     
        jtsop -a "POINT (10 10)" -f geojson
+       
+ * Validate geometries from a WKT file using limit and offset
+      
+       jtsop -a some-file-with-geom.wkt -limit 100 -offset 40 -f txt Geometry.isValid 
        
  * Compute an operation on a geometry and output only geometry metrics and timing
  
