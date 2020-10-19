@@ -76,6 +76,11 @@ Distributions for older JTS versions can be obtained at the
 * Enhance `-geomfunc` to load multiple function classes
 * Fix function registry to replace matching loaded functions (#569)
 
+## JtsOp 
+
+* Added `-limit` and `-offset` options for reading from file inputs (#617)
+
+
 <!-- ================================================================ -->
 
 # Version 1.17.0
