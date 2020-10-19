@@ -39,6 +39,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `PackedCoordinateSequence` to always use XYZM coordinates when dimension is 4 (#591)
 * Fix `OrdinateFormat` to work around a JDK issue with the minus sign character in `Locale.NO` (#596)
 * Fix `GeoJsonReader` to throw a `ParseException` for empty arrays (#600)
+* Fix `WKTFileReader` handling of files with large amount of whitespace (#616)
 
 <!-- ================================================================ -->
 
