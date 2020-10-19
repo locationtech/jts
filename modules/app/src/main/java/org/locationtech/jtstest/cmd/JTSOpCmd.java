@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTConstants;
+import org.locationtech.jtstest.cmd.JTSOpRunner.OpParams;
 import org.locationtech.jtstest.command.CommandLine;
 import org.locationtech.jtstest.command.Option;
 import org.locationtech.jtstest.command.OptionSpec;
@@ -36,6 +37,9 @@ import org.locationtech.jtstest.util.io.MultiFormatReader;
  * <pre>
  * --- Compute the area of a WKT geometry, output it
  * jtsop -a some-file-with-geom.wkt -f txt area 
+ * 
+ * --- Validate geometries from a WKT file using limit and offset
+ * jtsop -a some-file-with-geom.wkt -limit 100 -offset 40 -f txt isValid 
  * 
  * --- Compute the unary union of a WKT geometry, output as WKB
  * jtsop -a some-file-with-geom.wkt -f wkb Overlay.unaryUnion 
@@ -75,7 +79,7 @@ public class JTSOpCmd {
     JTSOpCmd cmd = new JTSOpCmd();
     int rc = 1;
     try {
-      JTSOpRunner.OpParams cmdArgs = cmd.parseArgs(args);
+      OpParams cmdArgs = cmd.parseArgs(args);
       cmd.execute(cmdArgs);
       rc = 0;
     } 
@@ -123,12 +127,14 @@ public class JTSOpCmd {
   "           [ -a  <wkt> | <wkb> | stdin | <filename.ext> ]",
   "           [ -b  <wkt> | <wkb> | stdin | <filename.ext> ]",
   "           [ -ab <wkt> | <wkb> | stdin | <filename.ext> ]",
-  "           [ -srid <SRID> ]",
+  "           [ -limit <n> ]",
+  "           [ -offset <n> ]",
   "           [ -each ( a | b | ab | aa ) ]",
   "           [ -index ]",
   "           [ -repeat <num> ]",
   "           [ -validate ]",
   "           [ -explode",
+  "           [ -srid <SRID> ]",
   "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
   "           [ -geomfunc <classname> ]",
   "           [ -time ]",
@@ -136,24 +142,30 @@ public class JTSOpCmd {
   "           [ -help ]",
   "           [ -op ]",
   "           [ op [ args... ]]",
-  "  op              name of the operation (Category.op)",
+  "  op              name of the operation (in format Category.op)",
   "  args            one or more scalar arguments to the operation",
   "                  - To run over multiple arguments use v1,v2,v3 OR val(v1,v2,v3,..)",
   "",
+  "===== Input options:",
   "  -a              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
   "  -b              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
-  "  -srid           Sets the SRID on output geometries",
+  "  -limit          Limits the number of geometries read from A, or B if specified",
+  "  -offset         Uses an offset to read geometries  from A, or B if specified",
+  "===== Operation options:",
   "  -each           execute op on each component of A, B, both A & B, or A & A",
   "  -index          index geometry B",
   "  -repeat         repeat the operation N times",
   "  -validate       validate the result of each operation",
+  "  -geomfunc       specifies class providing geometry operations",
+  "  -op             separator to delineate operation arguments",
+  "===== Output options:",
+  "  -srid           Sets the SRID on output geometries",
   "  -explode        output atomic geometries",
   "  -f              output format to use.  If omitted output is silent",
-  "  -geomfunc       specifies class providing geometry operations",
+  "===== Logging options:",
   "  -time           display execution time",
   "  -v, -verbose    display information about execution",
-  "  -help           print a list of available operations",
-  "  -op             separator for op arguments"
+  "  -help           print a list of available operations"
   };
   
   private void printHelp(boolean showFunctions) {
@@ -245,7 +257,7 @@ public class JTSOpCmd {
     if (arg.toUpperCase().endsWith(" " + WKTConstants.EMPTY)) return true;
     return false;
   }
-
+  
   void execute(JTSOpRunner.OpParams cmdArgs) {
     if (isHelp || isHelpWithFunctions) {
       printHelp(isHelpWithFunctions);
@@ -263,7 +275,7 @@ public class JTSOpCmd {
     }
     commandLine.parse(args);
 
-    JTSOpRunner.OpParams cmdArgs = new JTSOpRunner.OpParams();
+    OpParams cmdArgs = new JTSOpRunner.OpParams();
     
     String argA = commandLine.getOptionArg(CommandOptions.GEOMA, 0);
     if (argA != null) {
@@ -296,11 +308,11 @@ public class JTSOpCmd {
     
     cmdArgs.isExplode = commandLine.hasOption(CommandOptions.EXPLODE);
     
-    cmdArgs.limit = commandLine.hasOption(CommandOptions.LIMIT)
+    int paramLimit = commandLine.hasOption(CommandOptions.LIMIT)
         ? commandLine.getOptionArgAsInt(CommandOptions.LIMIT, 0)
             : -1; 
     
-    cmdArgs.offset = commandLine.hasOption(CommandOptions.OFFSET)
+    int paramOffset = commandLine.hasOption(CommandOptions.OFFSET)
         ? commandLine.getOptionArgAsInt(CommandOptions.OFFSET, 0)
             : 0; 
         
@@ -368,7 +380,26 @@ public class JTSOpCmd {
         cmdArgs.argList = parseOpArg(freeArgs[1]);
       }
     }
+    
+    /** 
+     * ======  Apply extra parameter logic
+     */
+    //--- apply limit to A if no B, or else to B
+    // This allows applying a binary op with a fixed LHS to a limited set of RHS geoms
+    if (OpParams.isGeometryInput(cmdArgs.fileB, cmdArgs.geomB)) {
+      cmdArgs.limitB = paramLimit;
+      cmdArgs.offsetB = paramOffset;
+    }
+    else {
+      cmdArgs.limitA = paramLimit;
+      cmdArgs.offsetA = paramOffset;
+    }
+    
     return cmdArgs;
+  }
+  
+  private void applyParameters() {
+  
   }
   
   private String[] parseOpArg(String arg) {
@@ -430,7 +461,4 @@ public class JTSOpCmd {
     String args = macroTerm.substring(indexLeft + 1, indexRight);
     return args.split(",");
   }
-
-
-
 }
