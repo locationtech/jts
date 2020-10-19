@@ -32,6 +32,7 @@ import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.util.io.IOUtil;
 import org.locationtech.jtstest.util.io.MultiFormatBufferedReader;
+import org.locationtech.jtstest.util.io.MultiFormatFileReader;
 import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 /**
@@ -98,6 +99,8 @@ public class JTSOpRunner {
     public boolean validate = false;
     public boolean isIndexed = false;
     public boolean isExplode = false;
+    public int limit = -1;
+    public int offset = 0;
     public int srid;
   }
 
@@ -387,7 +390,7 @@ public class JTSOpRunner {
     }
     
     try {
-      return IOUtil.readFile(filename,  geomFactory );
+      return MultiFormatFileReader.readFile(filename, param.limit, param.offset, geomFactory );
     }
     catch (FileNotFoundException ex) {
       throw new CommandError(ERR_FILE_NOT_FOUND, filename);

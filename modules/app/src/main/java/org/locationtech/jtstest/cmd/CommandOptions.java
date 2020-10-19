@@ -38,5 +38,7 @@ public class CommandOptions {
   public static final String FORMAT_GEOJSON = "geojson";
   public static final String FORMAT_SVG = "svg";
   public static final String TIME = "time";
+  public static final String LIMIT = "limit";
+  public static final String OFFSET = "offset";
 
 }

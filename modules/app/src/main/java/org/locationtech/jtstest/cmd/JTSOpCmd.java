@@ -104,12 +104,14 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMA, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMB, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMAB, 1))
-    .addOptionSpec(new OptionSpec(CommandOptions.SRID, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.EACH, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.INDEX, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.EXPLODE, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.FORMAT, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.LIMIT, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.OFFSET, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.REPEAT, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.SRID, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.VALIDATE, 0))
     .addOptionSpec(new OptionSpec(OptionSpec.OPTION_FREE_ARGS, OptionSpec.NARGS_ONE_OR_MORE));
     return commandLine;
@@ -294,6 +296,14 @@ public class JTSOpCmd {
     
     cmdArgs.isExplode = commandLine.hasOption(CommandOptions.EXPLODE);
     
+    cmdArgs.limit = commandLine.hasOption(CommandOptions.LIMIT)
+        ? commandLine.getOptionArgAsInt(CommandOptions.LIMIT, 0)
+            : -1; 
+    
+    cmdArgs.offset = commandLine.hasOption(CommandOptions.OFFSET)
+        ? commandLine.getOptionArgAsInt(CommandOptions.OFFSET, 0)
+            : 0; 
+        
     cmdArgs.format = commandLine.getOptionArg(CommandOptions.FORMAT, 0);
     
     cmdArgs.srid = commandLine.hasOption(CommandOptions.SRID)
