@@ -11,7 +11,9 @@
  */
 package org.locationtech.jtstest.util.io;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
@@ -21,6 +23,7 @@ import org.locationtech.jts.io.WKBHexFileReader;
 import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKTFileReader;
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jtstest.testbuilder.io.shapefile.Shapefile;
 import org.locationtech.jtstest.util.FileUtil;
 
 
@@ -80,9 +83,9 @@ public class MultiFormatFileReader
     String ext = FileUtil.extension(filename);
     if (ext.equalsIgnoreCase(".wkb"))
       return readWKBHexFile(filename);
-    
     if (ext.equalsIgnoreCase(".shp"))
-      return IOUtil.readFile(filename, geomFact);
+      return readShapefile(filename);
+    
     if (ext.equalsIgnoreCase(".gml"))
       return IOUtil.readFile(filename, geomFact);
     if (ext.equalsIgnoreCase(".geojson"))
@@ -96,7 +99,7 @@ public class MultiFormatFileReader
   {
     WKBReader reader = new WKBReader(geomFact);
     WKBHexFileReader fileReader = new WKBHexFileReader(filename, reader);
-    if (limit >= 0) fileReader.setLimit(limit);;
+    if (limit >= 0) fileReader.setLimit(limit);
     if (offset > 0) fileReader.setOffset(offset);
     List geomList = fileReader.read();
     return toGeometry(geomList);
@@ -107,9 +110,28 @@ public class MultiFormatFileReader
   {
     WKTReader reader = new WKTReader(geomFact);
     WKTFileReader fileReader = new WKTFileReader(filename, reader);
-    if (limit >= 0) fileReader.setLimit(limit);;
+    if (limit >= 0) fileReader.setLimit(limit);
     if (offset > 0) fileReader.setOffset(offset);
     List geomList = fileReader.read();
+    return toGeometry(geomList);
+  }
+  
+  private Geometry readShapefile(String filename)
+  throws Exception 
+  {
+    Shapefile shpfile = new Shapefile(new FileInputStream(filename));
+    shpfile.readStream(geomFact);
+    int count = 0;
+    List geomList = new ArrayList();
+    do {
+      Geometry geom = shpfile.next();
+      if (geom == null || geomList.size() > limit)
+        break;
+      if (count >= offset) {
+        geomList.add(geom);
+      }
+      count++;
+    } while (true);
     return toGeometry(geomList);
   }
   
