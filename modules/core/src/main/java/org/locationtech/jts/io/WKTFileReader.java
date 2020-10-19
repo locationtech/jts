@@ -170,24 +170,22 @@ public class WKTFileReader
 		if (geoms.size() < limit) return false;
 		return true;
 	}
-	
-  private static final int MAX_LOOKAHEAD = 1000;
-  
+ 
   /**
-	 * Tests if reader is at EOF.
+	 * Tests if reader is at EOF, and skips any leading whitespace
 	 */
-	private boolean isAtEndOfFile(BufferedReader bufferedReader)
-			throws IOException 
-			{
-		bufferedReader.mark(MAX_LOOKAHEAD);
-
-		StreamTokenizer tokenizer = new StreamTokenizer(bufferedReader);
-		int type = tokenizer.nextToken();
-
-		if (type == StreamTokenizer.TT_EOF) {
-			return true;
-		}
-		bufferedReader.reset();
-		return false;
-	}
+  private boolean isAtEndOfFile(BufferedReader bufferedReader) throws IOException {
+    // skip whitespace
+    int ch;
+    do {
+      bufferedReader.mark(1);
+      ch = bufferedReader.read();
+      // EOF reached
+      if (ch < 0) return true;
+    } while (Character.isWhitespace(ch));
+    bufferedReader.reset();
+    
+    return false;
+  }
+	 
 }
