@@ -36,17 +36,27 @@ import org.locationtech.jts.operation.union.UnaryUnionOp;
 class GeometryOverlay 
 {
   public static String OVERLAY_PROPERTY_NAME = "jts.overlay";
+  
   public static String OVERLAY_PROPERTY_VALUE_NG = "ng";
   public static String OVERLAY_PROPERTY_VALUE_OLD = "old";
   
   private static boolean isNG = false;
 
   static {
-    String overlayValue = System.getProperty(OVERLAY_PROPERTY_NAME);
-    if (overlayValue != null) {
-      if (overlayValue.equalsIgnoreCase(OVERLAY_PROPERTY_VALUE_NG) )
-        isNG = true;
-    }
+    setOverlayMethod(System.getProperty(OVERLAY_PROPERTY_NAME));
+  }
+  
+  /**
+   * This method is provided primarily for unit testing.
+   * It is not recommended to use it dynamically, since 
+   * that can result in inconsistent overlay behaviour.
+   * 
+   * @param overlayMethodCode the code for the overlay method
+   */
+  static void setOverlayMethod(String overlayMethodCode) {
+    isNG = false;
+    if (OVERLAY_PROPERTY_VALUE_NG.equalsIgnoreCase(overlayMethodCode) )
+      isNG = true;
   }
   
   private static Geometry overlay(Geometry a, Geometry b, int opCode) {
