@@ -17,6 +17,8 @@ import test.jts.GeometryTestCase;
 /**
  * Tests the behaviour of the {@link GeometryOverlay} class.
  * 
+ * Currently does not test the reading of the system property.
+ * 
  * @author mdavis
  *
  */
@@ -28,7 +30,7 @@ public class GeometryOverlayTest extends GeometryTestCase {
   public GeometryOverlayTest(String name) { super(name); }
   
   public void testOverlayNGFixed() {
-    GeometryOverlay.setOverlayMethod(GeometryOverlay.OVERLAY_PROPERTY_VALUE_NG);
+    GeometryOverlay.setOverlayImpl(GeometryOverlay.OVERLAY_PROPERTY_VALUE_NG);
     PrecisionModel pmFixed = new PrecisionModel(1);
     Geometry expected = read("POLYGON ((1 2, 4 1, 1 1, 1 2))");
     
@@ -36,7 +38,7 @@ public class GeometryOverlayTest extends GeometryTestCase {
   }
 
   public void testOverlayNGFloat() {
-    GeometryOverlay.setOverlayMethod(GeometryOverlay.OVERLAY_PROPERTY_VALUE_NG);
+    GeometryOverlay.setOverlayImpl(GeometryOverlay.OVERLAY_PROPERTY_VALUE_NG);
     PrecisionModel pmFloat = new PrecisionModel();
     Geometry expected = read("POLYGON ((1 1, 1 2, 4 1.25, 4 1, 1 1))");
     
@@ -53,12 +55,12 @@ public class GeometryOverlayTest extends GeometryTestCase {
   
   public void testOverlayOld() {
     // must set overlay method explicitly since order of tests is not deterministic
-    GeometryOverlay.setOverlayMethod(GeometryOverlay.OVERLAY_PROPERTY_VALUE_OLD);
+    GeometryOverlay.setOverlayImpl(GeometryOverlay.OVERLAY_PROPERTY_VALUE_OLD);
     checkIntersectionFails();
   }
 
   public void testOverlayNG() {
-    GeometryOverlay.setOverlayMethod(GeometryOverlay.OVERLAY_PROPERTY_VALUE_NG);
+    GeometryOverlay.setOverlayImpl(GeometryOverlay.OVERLAY_PROPERTY_VALUE_NG);
     checkIntersectionSucceeds();
   }
 

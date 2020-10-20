@@ -40,27 +40,36 @@ class GeometryOverlay
   public static String OVERLAY_PROPERTY_VALUE_NG = "ng";
   public static String OVERLAY_PROPERTY_VALUE_OLD = "old";
   
-  private static boolean isNG = false;
+  /**
+   * Currently the original JTS overlay implementation is the default
+   */
+  public static boolean OVERLAY_NG_DEFAULT = false;
+
+  private static boolean isOverlayNG = OVERLAY_NG_DEFAULT;
 
   static {
-    setOverlayMethod(System.getProperty(OVERLAY_PROPERTY_NAME));
+    setOverlayImpl(System.getProperty(OVERLAY_PROPERTY_NAME));
   }
   
   /**
-   * This method is provided primarily for unit testing.
+   * This function is provided primarily for unit testing.
    * It is not recommended to use it dynamically, since 
-   * that can result in inconsistent overlay behaviour.
+   * that may result in inconsistent overlay behaviour.
    * 
-   * @param overlayMethodCode the code for the overlay method
+   * @param overlayImplCode the code for the overlay method (may be null)
    */
-  static void setOverlayMethod(String overlayMethodCode) {
-    isNG = false;
-    if (OVERLAY_PROPERTY_VALUE_NG.equalsIgnoreCase(overlayMethodCode) )
-      isNG = true;
+  static void setOverlayImpl(String overlayImplCode) {
+    if (overlayImplCode == null) 
+      return;
+    // set flag explicitly since current value may not be default
+    isOverlayNG = OVERLAY_NG_DEFAULT;
+    
+    if (OVERLAY_PROPERTY_VALUE_NG.equalsIgnoreCase(overlayImplCode) )
+      isOverlayNG = true;
   }
   
   private static Geometry overlay(Geometry a, Geometry b, int opCode) {
-    if (isNG) {
+    if (isOverlayNG) {
       return OverlayNGRobust.overlay(a, b, opCode);
     }
     else {
@@ -149,7 +158,7 @@ class GeometryOverlay
   }
   
   static Geometry union(Geometry a) {
-    if (isNG) {
+    if (isOverlayNG) {
       return OverlayNGRobust.union(a);
     }
     else {
