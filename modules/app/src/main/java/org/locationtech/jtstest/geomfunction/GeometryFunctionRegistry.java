@@ -54,6 +54,7 @@ import org.locationtech.jtstest.function.OverlayNGStrictFunctions;
 import org.locationtech.jtstest.function.OverlayNGTestFunctions;
 import org.locationtech.jtstest.function.OverlayNoSnapFunctions;
 import org.locationtech.jtstest.function.PointLocationFunctions;
+import org.locationtech.jtstest.function.PolygonOverlayFunctions;
 import org.locationtech.jtstest.function.PolygonizeFunctions;
 import org.locationtech.jtstest.function.PrecisionFunctions;
 import org.locationtech.jtstest.function.PreparedGeometryFunctions;
@@ -122,10 +123,9 @@ public class GeometryFunctionRegistry
 
     funcRegistry.add(OverlayNGOptFunctions.class);
 
-
-    
     funcRegistry.add(OverlayNoSnapFunctions.class);
     funcRegistry.add(PointLocationFunctions.class);
+    funcRegistry.add(PolygonOverlayFunctions.class);
     //funcRegistry.add(OverlayEnhancedPrecisionFunctions.class);
     //funcRegistry.add(OverlayCommonBitsRemovedFunctions.class);
     funcRegistry.add(SnappingFunctions.class);
