@@ -203,15 +203,9 @@ public class OverlayNGRobust
    */
   private static Geometry overlaySnapBoth(Geometry geom0, Geometry geom1, int opCode, double snapTol) {
     try {
-      /*
-      Geometry snap0 = overlaySnapTol(geom0, null, OverlayNG.UNION, snapTol);
-      Geometry snap1 = overlaySnapTol(geom1, null, OverlayNG.UNION, snapTol); 
-      //*/
-      //*
       Geometry snap0 = snapSelf(geom0, snapTol);
       Geometry snap1 = snapSelf(geom1, snapTol); 
-      //*/
-      //log("Snapping BOTH with " + snapTol, geom0, geom1);
+       //log("Snapping BOTH with " + snapTol, geom0, geom1);
       
       return overlaySnapTol(snap0, snap1, opCode, snapTol);
     }
