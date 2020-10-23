@@ -42,8 +42,7 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
  * <li>{@link SYMDIFFERENCE} - all points which lie in one geometry but not both
  * </ul>
  * Input geometries may have different dimension.  
- * Collections must be homogeneous
- * (all elements must have the same dimension).
+ * Input collections must be homogeneous (all elements must have the same dimension).
  * <p>
  * The precision model used for the computation can be supplied 
  * independent of the precision model of the input geometry.
@@ -74,16 +73,25 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
  * (via {@link #setStrictMode(boolean)}.
  * In strict mode result semantics are:
  * <ul>
- * <li>Result geometries are homogeneous (all components are of same dimension),
- *     except for some cases of symmetricDifference.
- * <li>Lines and Points resulting from topology collapses are not included in the result
+ * <li>Lines and Points resulting from topology collapses are not included in the result</li>
+ * <li>Result geometry is homogeneous 
+ *     for the {@link #INTERSECTION} and {@link #DIFFERENCE} operations.
+ * <li>Result geometry is homogeneous
+ *     for the {@link #UNION} and {@link #SYMDIFFERENCE} operations
+ *     if the inputs have the same dimension</li>
  * </ul>
  * Strict mode has the following benefits:
  * <ul>
- * <li>Results are simpler
- * <li>Overlay operations are easily chainable
+ * <li>Results are simpler</li>
+ * <li>Overlay operations are chainable 
+ *     without needing to remove lower-dimension elements</li>
  * </ul>
  * The original JTS overlay semantics corresponds to non-strict mode.
+ * <p>
+ * If a robustness error occurs, a {@link TopologyException} is thrown.
+ * These are usually caused by numerical rounding causing the noding output
+ * to not be fully noded.
+ * For robust computation with full-precision {@link OverlayNGRobust} can be used.
  * 
  * @author mdavis
  * 
@@ -377,8 +385,12 @@ public class OverlayNG
    * Sets whether the overlay results are computed according to strict mode
    * semantics.
    * <ul>
-   * <li>Result geometry is always homogeneous (except for some SymmetricDifference cases)
    * <li>Lines resulting from topology collapse are not included
+   * <li>Result geometry is homogeneous 
+   *     for the {@link #INTERSECTION} and {@link #DIFFERENCE} operations.
+   * <li>Result geometry is homogeneous 
+   *     for the {@link #UNION} and {@link #SYMDIFFERENCE} operations
+   *     if the inputs have the same dimension
    * </ul>
    * 
    * @param isStrictMode true if strict mode is to be used
@@ -429,7 +441,7 @@ public class OverlayNG
   }
   //---------------------------------
   
-  private void setNoder(Noder noder) {
+  void setNoder(Noder noder) {
     this.noder = noder;
   }
   
@@ -437,6 +449,9 @@ public class OverlayNG
    * Gets the result of the overlay operation.
    * 
    * @return the result of the overlay operation.
+   * 
+   * @throws IllegalArgumentException if the input is not supported (e.g. a mixed-dimension geometry)
+   * @throws TopologyException if a robustness error occurs
    */
   public Geometry getResult() {
     // handle empty inputs which determine result
