@@ -16,20 +16,20 @@ import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 
 public class IteratedOverlayFunctions {
   
-  public static Geometry intersection(Geometry coll) {
-    return intersection(coll, false, null);
+  public static Geometry overlayOld(Geometry coll) {
+    return overlay(coll, false, null);
   }
 
-  public static Geometry intersectionNG(Geometry coll) {
-    return intersection(coll, true, null);
+  public static Geometry overlayNG(Geometry coll) {
+    return overlay(coll, true, null);
   }
   
-  public static Geometry intersectionSR(Geometry coll, double scale) {
+  public static Geometry overlaySR(Geometry coll, double scale) {
     PrecisionModel pm = new PrecisionModel(scale);
-    return intersection(coll, true, pm);
+    return overlay(coll, true, pm);
   }
   
-  private static Geometry intersection(Geometry coll, boolean useNG, PrecisionModel pm) {
+  private static Geometry overlay(Geometry coll, boolean useNG, PrecisionModel pm) {
     List<Geometry> result = new ArrayList<Geometry>();
     for (int i = 0; i < coll.getNumGeometries(); i++) {
       Geometry inGeom = coll.getGeometryN(i);
@@ -61,11 +61,11 @@ public class IteratedOverlayFunctions {
   }
 
 
-  public static Geometry intersectionQTNG(Geometry coll) {
-    return intersectionQT(coll, true, null);
+  public static Geometry overlayIndexedNG(Geometry coll) {
+    return overlayIndexed(coll, true, null);
   }
   
-  private static Geometry intersectionQT(Geometry coll, boolean useNG, PrecisionModel pm) {
+  private static Geometry overlayIndexed(Geometry coll, boolean useNG, PrecisionModel pm) {
     Quadtree tree = new Quadtree();
     for (int i = 0; i < coll.getNumGeometries(); i++) {
       
