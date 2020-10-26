@@ -148,7 +148,7 @@ public class NodingFunctions
   
   @Metadata(description="Nodes input using the SnappingNoder")
   public static Geometry snappingNoder(Geometry geom, Geometry geom2, 
-      @Metadata(description="Snapping distance")
+      @Metadata(title="Snap distance")
       double snapDistance)
   {
     List segs = createSegmentStrings(geom);
@@ -164,7 +164,7 @@ public class NodingFunctions
 
   @Metadata(description="Nodes input using the SnapRoundingNoder")
   public static Geometry snapRoundingNoder(Geometry geom, Geometry geom2, 
-      @Metadata(description="Scale factor")
+      @Metadata(title="Scale factor")
       double scaleFactor)
   {
     List segs = createSegmentStrings(geom);

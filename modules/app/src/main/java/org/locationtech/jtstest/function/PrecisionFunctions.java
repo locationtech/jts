@@ -14,18 +14,23 @@ package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.precision.*;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class PrecisionFunctions 
 {
 	
-	public static Geometry reducePrecisionPointwise(Geometry geom, double scaleFactor)
+	public static Geometry reducePrecisionPointwise(Geometry geom, 
+      @Metadata(title="Scale factor")
+	    double scaleFactor)
 	{
 		PrecisionModel pm = new PrecisionModel(scaleFactor);
 		Geometry reducedGeom = GeometryPrecisionReducer.reducePointwise(geom, pm);
 		return reducedGeom;
 	}
 	
-	public static Geometry reducePrecision(Geometry geom, double scaleFactor)
+	public static Geometry reducePrecision(Geometry geom, 
+      @Metadata(title="Scale factor")
+	    double scaleFactor)
 	{
 		PrecisionModel pm = new PrecisionModel(scaleFactor);
 		Geometry reducedGeom = GeometryPrecisionReducer.reduce(geom, pm);
