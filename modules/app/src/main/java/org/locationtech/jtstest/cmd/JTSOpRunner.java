@@ -257,7 +257,7 @@ public class JTSOpRunner {
   
   private void executeFunctionSpreadB(Geometry geomA, FunctionInvoker fun, String header) {
     int numGeom = 1;
-    if (fun.isBinaryGeom()) {
+    if ( fun.isBinaryGeom() && geomB != null ) {
       numGeom = geomB.getNumGeometries();
     }
     boolean isSpread = geomB != null 
