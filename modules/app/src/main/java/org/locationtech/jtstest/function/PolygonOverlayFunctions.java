@@ -23,13 +23,16 @@ import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class PolygonOverlayFunctions 
 {
 
-  public static Geometry overlaySR(Geometry g1, Geometry g2, double precisionTol)
+  public static Geometry overlaySR(Geometry g1, Geometry g2, 
+      @Metadata(title="Scale factor")
+      double scale)
   {
-    PrecisionModel pm = new PrecisionModel(precisionTol);
+    PrecisionModel pm = new PrecisionModel(scale);
     return overlay(g1, g2, pm);
   }
   public static Geometry overlay(Geometry g1, Geometry g2)
