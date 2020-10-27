@@ -33,6 +33,7 @@ Distributions for older JTS versions can be obtained at the
 * Change `GeometryPrecisionReducer` to use OverlayNG with Snap-Rounding
 * Change `GeometryNoder` to use `SnapRoundingNoder`
 * Add `KdTree` `size` and `depth` methods (#603)
+* Improve `WKBWriter` to write empty Polygons using a more compact representation (#623)
 
 ### Bug Fixes
 
@@ -41,6 +42,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `OrdinateFormat` to work around a JDK issue with the minus sign character in `Locale.NO` (#596)
 * Fix `GeoJsonReader` to throw a `ParseException` for empty arrays (#600)
 * Fix `WKTFileReader` handling of files with large amount of whitespace (#616)
+* Fix `WKBWriter` to output 3D empty Points with 3 ordinates (#622)
 
 ## JTS TestBuilder
 
