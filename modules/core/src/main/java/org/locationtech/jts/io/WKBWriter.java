@@ -344,7 +344,8 @@ public class WKBWriter
     writeByteOrder(os);
     writeGeometryType(WKBConstants.wkbPoint, pt, os);
     if (pt.getCoordinateSequence().size() == 0) {
-      writeNaNs(2, os);
+      // write empty point as NaNs (extension to OGC standard)
+      writeNaNs(outputDimension, os);
     } else {
       writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
     }
