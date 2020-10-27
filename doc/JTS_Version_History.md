@@ -42,6 +42,12 @@ Distributions for older JTS versions can be obtained at the
 * Fix `GeoJsonReader` to throw a `ParseException` for empty arrays (#600)
 * Fix `WKTFileReader` handling of files with large amount of whitespace (#616)
 
+## JTS TestBuilder
+
+### Functionality Improvements
+
+* Add Geometry Inspector sorting by Area or Length
+
 <!-- ================================================================ -->
 
 # Version 1.17.1
