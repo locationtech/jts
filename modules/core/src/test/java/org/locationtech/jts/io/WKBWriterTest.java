@@ -77,16 +77,40 @@ public class WKBWriterTest extends GeometryTestCase {
   }
     
   public void testPointEmpty2D() {
-    checkWKB("POINT EMPTY", 2, ByteOrderValues.LITTLE_ENDIAN, "0101000000000000000000F87F000000000000F87F" );    
+    checkWKB("POINT EMPTY", 2, "0101000000000000000000F87F000000000000F87F" );    
   }
   
   public void testPointEmpty3D() {
-    checkWKB("POINT EMPTY", 3, ByteOrderValues.LITTLE_ENDIAN, "0101000080000000000000F87F000000000000F87F000000000000F87F" );    
+    checkWKB("POINT EMPTY", 3, "0101000080000000000000F87F000000000000F87F000000000000F87F" );    
   }
   
-  void checkWKB(String wkt, int dimension, int byteOrder, String expectedWKBHex) {
+  public void testPolygonEmpty2DSRID() {
+    checkWKB("POLYGON EMPTY", 2, ByteOrderValues.LITTLE_ENDIAN, 4326, "0103000020E610000000000000" );    
+  }
+  
+  public void testPolygonEmpty2D() {
+    checkWKB("POLYGON EMPTY", 2, "010300000000000000" );    
+  }
+  
+  public void testPolygonEmpty3D() {
+    checkWKB("POLYGON EMPTY", 3, "010300008000000000" );    
+  }
+  
+  void checkWKB(String wkt, int dimension, String expectedWKBHex) {
+    checkWKB(wkt, dimension, ByteOrderValues.LITTLE_ENDIAN, -1, expectedWKBHex);
+  }
+    
+  void checkWKB(String wkt, int dimension, int byteOrder, int srid, String expectedWKBHex) {
     Geometry geom = read(wkt);
-    WKBWriter wkbWriter = new WKBWriter(dimension, byteOrder);
+    
+    // set SRID if not -1
+    boolean includeSRID = false;
+    if (srid >= 0) {
+      includeSRID = true;
+      geom.setSRID(srid);
+    }
+    
+    WKBWriter wkbWriter = new WKBWriter(dimension, byteOrder, includeSRID);
     byte[] wkb = wkbWriter.write(geom);
     String wkbHex = WKBWriter.toHex(wkb);
     
