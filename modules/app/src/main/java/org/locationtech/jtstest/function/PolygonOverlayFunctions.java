@@ -12,14 +12,19 @@
 
 package org.locationtech.jtstest.function;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.locate.SimplePointInAreaLocator;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
@@ -33,14 +38,45 @@ public class PolygonOverlayFunctions
       double scale)
   {
     PrecisionModel pm = new PrecisionModel(scale);
-    return overlay(g1, g2, pm);
-  }
-  public static Geometry overlay(Geometry g1, Geometry g2)
-  {
-    return overlay(g1, g2, null);
+    return computeOverlay(g1, g2, new Noder() {
+      public Geometry node(Geometry inputLines) {
+       return OverlayNG.overlay(inputLines, null, OverlayNG.UNION, pm);
+      }
+    });
   }
   
-  private static Geometry overlay(Geometry g1, Geometry g2, PrecisionModel pm)
+  public static Geometry overlay(Geometry g1, Geometry g2)
+  {
+    return computeOverlay(g1, g2, new Noder( ) {
+      public Geometry node(Geometry inputLines) {
+        return OverlayNGRobust.overlay(inputLines, null, OverlayNG.UNION);
+      }
+    });
+  }
+  
+  interface Noder {
+    Geometry node(Geometry inputLines);
+  }
+  
+  @Metadata(description="Nodes linework using Snapping iterated until noding is valid")
+  public static Geometry overlayIterSnap(Geometry g1, Geometry g2, double snapTol)
+  {
+    Geometry result = computeOverlay(g1, g2, new IteratedSnappingNoder( snapTol ) );
+    if (result == null) {
+      throw new RuntimeException("Unable to compute valid noding using iterated snapping");
+    }
+    return result;
+  }
+  
+  /**
+   * Input geometry may be lines or polygons.
+   * 
+   * @param g1
+   * @param g2 a geometry to overlay (may be null)
+   * @param noder
+   * @return Noded, polygonized dataset
+   */
+  private static Geometry computeOverlay(Geometry g1, Geometry g2, Noder noder)
   {
     GeometryFactory geomFact = g1.getFactory();
 
@@ -50,14 +86,15 @@ public class PolygonOverlayFunctions
       LinearComponentExtracter.getLines(g2, lines);
     Geometry inputLines = g1.getFactory().buildGeometry(lines);
     
-    Geometry nodedDedupedLinework = node(inputLines, pm);
+    Geometry nodedDedupedLinework = noder.node(inputLines);
 
     // polygonize the result
     Polygonizer polygonizer = new Polygonizer();
     polygonizer.add(nodedDedupedLinework);
-    Collection polys = polygonizer.getPolygons();
+    List<Polygon> resultants = (List<Polygon>) polygonizer.getPolygons();
 
-    // TODO: use PIP to remove hole polygons
+    // use PIP to find polygons which have a parent
+    List<Polygon> polys = ParentFinder.findParents(g1, g2, resultants);
     
     // convert to collection for return
     Polygon[] polyArray = GeometryFactory.toPolygonArray(polys);
@@ -70,5 +107,102 @@ public class PolygonOverlayFunctions
     }
     return OverlayNG.overlay(inputLines, null, OverlayNG.UNION, pm);
   }
+  
+  static class IteratedSnappingNoder implements Noder {
 
+    private double snapTol;
+
+    public IteratedSnappingNoder(double snapTol) {
+      this.snapTol = snapTol;
+    }
+    
+    @Override
+    public Geometry node(Geometry geom) {
+      double snapDist = snapTol;
+      int count = 0;
+      while (count < 10) {
+        Geometry noded = nodeSnapDedup(geom, snapDist);
+        if (noded != null)
+          return noded;
+        // try increasing distance
+        snapDist = 2 * snapDist;
+        count++;
+      }
+      // FAIL!
+      return null;
+    }
+    
+    private Geometry nodeSnapDedup(Geometry geom, double snapDist) {
+      Geometry noded = NodingFunctions.snappingNoder(geom, null, snapDist);
+      Geometry dedup = DissolveFunctions.dissolve(noded);
+      Geometry intNodes = NodingFunctions.findInteriorNodes(dedup);
+      
+      // not full noded at given snap distance
+      if (! intNodes.isEmpty())
+        return null;
+      
+      // success!
+      return dedup;
+    }
+  }
+  
+  /**
+   * Finds parentage of a set of overlay resultants.
+   * Currently just finds set of resultants which have at least one parent .
+   * This effectively removes holes from the result set.
+   * 
+   * @author mdavis
+   *
+   */
+  static class ParentFinder {
+    
+    public static List<Polygon> findParents(Geometry source1, Geometry source2, List<Polygon> resultants) {
+      ParentFinder hd = new ParentFinder();
+      hd.addSourcePolygons(source1);
+      hd.addSourcePolygons(source2);
+      return hd.findParents(resultants);
+    }
+    
+    /**
+     * Spatial index containing source polygons
+     */
+    private STRtree sourceIndex = new STRtree();
+    
+    public ParentFinder() {
+      
+    }
+    
+    public void addSourcePolygons(Geometry source) {
+      if (source == null || source.getDimension() < 2) return;
+      for (int i = 0; i < source.getNumGeometries(); i++) {
+        Geometry geom = source.getGeometryN(i);
+        if (geom instanceof Polygon) {
+          sourceIndex.insert(geom.getEnvelopeInternal(), geom);
+        }
+      }
+    }
+    
+    public List<Polygon> findParents(List<Polygon> resultants) {
+      List<Polygon> polys = new ArrayList<Polygon>();
+      for (Polygon res : resultants) {
+        Point intPt = res.getInteriorPoint();
+        Coordinate intCoord = intPt.getCoordinate();
+        
+        List<Polygon> candidates = sourceIndex.query(intPt.getEnvelopeInternal());
+        for (Polygon cand : candidates) {
+          
+          boolean isParent = SimplePointInAreaLocator.isContained(intCoord, cand);
+          if (isParent) {
+            /**
+             * For now, keep resultants which have at least one parent.
+             * This could be enhanced to record all parents of a resultant.
+             */
+            polys.add(res);
+            break;
+          }
+        }
+      }
+      return polys;
+    }
+  }
 }
