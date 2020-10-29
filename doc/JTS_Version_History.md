@@ -43,6 +43,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `GeoJsonReader` to throw a `ParseException` for empty arrays (#600)
 * Fix `WKTFileReader` handling of files with large amount of whitespace (#616)
 * Fix `WKBWriter` to output 3D empty Points with 3 ordinates (#622)
+* Fix `Geometry.reverse` to handle all geometry structures (#628)
 
 ## JTS TestBuilder
 
