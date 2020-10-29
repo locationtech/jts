@@ -68,6 +68,9 @@ public class GeometryReverseTest  extends GeometryTestCase {
             return false;
         }
       }
+      else if (gt1 instanceof GeometryCollection) {
+        checkSequences(gt1, gt2);
+      }
       else {
         return false;
       }
