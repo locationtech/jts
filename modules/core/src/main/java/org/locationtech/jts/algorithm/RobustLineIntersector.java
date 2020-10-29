@@ -73,7 +73,9 @@ public class RobustLineIntersector
     if ((Qp1>0 && Qp2>0) || (Qp1<0 && Qp2<0)) {
         return NO_INTERSECTION;
     }
-
+    /**
+     * Intersection is collinear if each endpoint lies on the other line.
+     */
     boolean collinear = Pq1 == 0
          && Pq2 == 0
          && Qp1 == 0
@@ -95,6 +97,8 @@ public class RobustLineIntersector
      *  the other line, since at this point we know that the inputLines must
      *  intersect.
      */
+    Coordinate p = null;
+    double z = Double.NaN;
     if (Pq1 == 0 || Pq2 == 0 || Qp1 == 0 || Qp2 == 0) {
       isProper = false;
       
@@ -114,76 +118,100 @@ public class RobustLineIntersector
        * which used to produce the INCORRECT result: (20.31970698357233, 46.76654261437082, NaN)
        * 
        */
-      if (p1.equals2D(q1) 
-      		|| p1.equals2D(q2)) {
-      	intPt[0] = p1;
+      if (p1.equals2D(q1)) {
+        p = p1;
+        z = zGet(p1, q1);
       }
-      else if (p2.equals2D(q1) 
-      		|| p2.equals2D(q2)) {
-      	intPt[0] = p2;
+      else if (p1.equals2D(q2)) {
+        p = p1;
+        z = zGet(p1, q2);
       }
-      
+      else if (p2.equals2D(q1)) {
+        p = p2;
+        z = zGet(p2, q1);        
+      }
+      else if (p2.equals2D(q2)) {
+        p = p2;
+        z = zGet(p2, q2); 
+      }
       /**
        * Now check to see if any endpoint lies on the interior of the other segment.
        */
       else if (Pq1 == 0) {
-        intPt[0] = new Coordinate(q1);
+        p = q1;
+        z = zGetOrInterpolate(q1, p1, p2);
       }
       else if (Pq2 == 0) {
-        intPt[0] = new Coordinate(q2);
+        p = q2;
+        z = zGetOrInterpolate(q2, p1, p2);
       }
       else if (Qp1 == 0) {
-        intPt[0] = new Coordinate(p1);
+        p = p1;
+        z = zGetOrInterpolate(p1, q1, q2);
       }
       else if (Qp2 == 0) {
-        intPt[0] = new Coordinate(p2);
+        p = p2;
+        z = zGetOrInterpolate(p2, q1, q2);
       }
     }
     else {
       isProper = true;
-      intPt[0] = intersection(p1, p2, q1, q2);
+      p = intersection(p1, p2, q1, q2);
+      z = zInterpolate(p, p1, p2, q1, q2);
     }
+    intPt[0] = new Coordinate(p.x, p.y, z);
     return POINT_INTERSECTION;
   }
 
   private int computeCollinearIntersection(Coordinate p1, Coordinate p2,
       Coordinate q1, Coordinate q2) {
-    boolean p1q1p2 = Envelope.intersects(p1, p2, q1);
-    boolean p1q2p2 = Envelope.intersects(p1, p2, q2);
-    boolean q1p1q2 = Envelope.intersects(q1, q2, p1);
-    boolean q1p2q2 = Envelope.intersects(q1, q2, p2);
+    boolean q1inP = Envelope.intersects(p1, p2, q1);
+    boolean q2inP = Envelope.intersects(p1, p2, q2);
+    boolean p1inQ = Envelope.intersects(q1, q2, p1);
+    boolean p2inQ = Envelope.intersects(q1, q2, p2);
 
-    if (p1q1p2 && p1q2p2) {
-      intPt[0] = q1;
-      intPt[1] = q2;
+    if (q1inP && q2inP) {
+      intPt[0] = zGetOrInterpolateCopy(q1, p1, p2);
+      intPt[1] = zGetOrInterpolateCopy(q2, p1, p2);
       return COLLINEAR_INTERSECTION;
     }
-    if (q1p1q2 && q1p2q2) {
-      intPt[0] = p1;
-      intPt[1] = p2;
+    if (p1inQ && p2inQ) {
+      intPt[0] = zGetOrInterpolateCopy(p1, q1, q2);
+      intPt[1] = zGetOrInterpolateCopy(p2, q1, q2);
       return COLLINEAR_INTERSECTION;
     }
-    if (p1q1p2 && q1p1q2) {
-      intPt[0] = q1;
-      intPt[1] = p1;
-      return q1.equals(p1) && !p1q2p2 && !q1p2q2 ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
+    if (q1inP && p1inQ) {
+      // if pts are equal Z is chosen arbitrarily
+      intPt[0] = zGetOrInterpolateCopy(q1, p1, p2);
+      intPt[1] = zGetOrInterpolateCopy(p1, q1, q2);
+      return q1.equals(p1) && !q2inP && !p2inQ ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
     }
-    if (p1q1p2 && q1p2q2) {
-      intPt[0] = q1;
-      intPt[1] = p2;
-      return q1.equals(p2) && !p1q2p2 && !q1p1q2 ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
+    if (q1inP && p2inQ) {
+      // if pts are equal Z is chosen arbitrarily
+      intPt[0] = zGetOrInterpolateCopy(q1, p1, p2);
+      intPt[1] = zGetOrInterpolateCopy(p2, q1, q2);
+      return q1.equals(p2) && !q2inP && !p1inQ ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
     }
-    if (p1q2p2 && q1p1q2) {
-      intPt[0] = q2;
-      intPt[1] = p1;
-      return q2.equals(p1) && !p1q1p2 && !q1p2q2 ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
+    if (q2inP && p1inQ) {
+      // if pts are equal Z is chosen arbitrarily
+      intPt[0] = zGetOrInterpolateCopy(q2, p1, p2);
+      intPt[1] = zGetOrInterpolateCopy(p1, q1, q2);
+      return q2.equals(p1) && !q1inP && !p2inQ ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
     }
-    if (p1q2p2 && q1p2q2) {
-      intPt[0] = q2;
-      intPt[1] = p2;
-      return q2.equals(p2) && !p1q1p2 && !q1p1q2 ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
+    if (q2inP && p2inQ) {
+      // if pts are equal Z is chosen arbitrarily
+      intPt[0] = zGetOrInterpolateCopy(q2, p1, p2);
+      intPt[1] = zGetOrInterpolateCopy(p2, q1, q2);
+      return q2.equals(p2) && !q1inP && !p1inQ ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
     }
     return NO_INTERSECTION;
+  }
+
+  private Coordinate zGetOrInterpolateCopy(Coordinate p, Coordinate p1, Coordinate p2) {
+    Coordinate pCopy = p.copy();
+    double z = zGetOrInterpolate(p, p1, p2);
+    pCopy.setZ( z );
+    return pCopy;
   }
 
   /**
@@ -330,5 +358,66 @@ public class RobustLineIntersector
     return nearestPt;
   }
 
+  private static double zGet(Coordinate p, Coordinate q) {
+    double z = p.getZ();
+    if (Double.isNaN(z)) {
+      z = q.getZ(); // may be NaN
+    }
+    return z;
+  }
+  
+  private static double zGetOrInterpolate(Coordinate p, Coordinate p1, Coordinate p2) {
+    double z = p.getZ();
+    if (! Double.isNaN(z)) 
+      return z;
+    return zInterpolate(p, p1, p2); // may be NaN
+  }
+
+  private static double zInterpolate(Coordinate p, Coordinate p1, Coordinate p2) {
+    double p1z = p1.getZ();
+    double p2z = p2.getZ();
+    if (Double.isNaN(p1z)) {
+      return p2z; // may be NaN
+    }
+    if (Double.isNaN(p2z)) {
+      return p1z; // may be NaN
+    }
+    if (p.equals2D(p1)) {
+      return p1z; // not NaN
+    }
+    if (p.equals2D(p2)) {
+      return p2z; // not NaN
+    }
+    double dz = p2z - p1z;
+    if (dz == 0.0) {
+      return p1z;
+    }
+    // interpolate Z from distance of p along p1-p2
+    double dx = (p2.x - p1.x);
+    double dy = (p2.y - p1.y);
+    // seg has non-zero length since p1 < p < p2 
+    double seglen = (dx * dx + dy * dy); 
+    double xoff = (p.x - p1.x);
+    double yoff = (p.y - p1.y);
+    double plen = (xoff * xoff + yoff * yoff);
+    double frac = Math.sqrt(plen / seglen);
+    double zoff = dz * frac;
+    double zInterpolated = p1z + zoff;
+    return zInterpolated;
+  }
+
+  private static double zInterpolate(Coordinate p, Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2) {
+    double zp = zInterpolate(p, p1, p2);
+    double zq = zInterpolate(p, q1, q2);
+    if (Double.isNaN(zp)) {
+      return zq; // may be NaN
+    }
+    if (Double.isNaN(zq)) {
+      return zp; // may be NaN
+    }
+    // both Zs have values, so average them
+    return (zp + zq) / 2.0;
+  }
+  
 
 }
