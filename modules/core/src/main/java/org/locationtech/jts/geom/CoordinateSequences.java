@@ -29,6 +29,8 @@ public class CoordinateSequences {
    */
   public static void reverse(CoordinateSequence seq)
   {
+    if (seq.size() <= 1) return;
+    
     int last = seq.size() - 1;
     int mid = last / 2;
     for (int i = 0; i <= mid; i++) {

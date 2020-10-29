@@ -286,12 +286,11 @@ public class GeometryCollection extends Geometry {
 
   protected GeometryCollection reverseInternal()
   {
-    int numGeometries = geometries.length;
-    Collection<Geometry> reversed = new ArrayList<>(numGeometries);
-    for (int i = 0; i < numGeometries; i++) {
-      reversed.add(geometries[i].reverse());
+    Geometry[] geometries = new Geometry[this.geometries.length];
+    for (int i = 0; i < geometries.length; i++) {
+      geometries[i] = this.geometries[i].reverse();
     }
-    return (GeometryCollection) getFactory().buildGeometry(reversed);
+    return new GeometryCollection(geometries, factory);
   }
 }
 
