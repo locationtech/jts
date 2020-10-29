@@ -92,6 +92,12 @@ public abstract class GeometryTestCase extends TestCase{
     assertEquals("Coordinate Y", expected.getY(), actual.getY() );
   }
   
+  protected void checkEqualXYZ(Coordinate expected, Coordinate actual) {
+    assertEquals("Coordinate X", expected.getX(), actual.getX() );
+    assertEquals("Coordinate Y", expected.getY(), actual.getY() );
+    assertEquals("Coordinate Z", expected.getZ(), actual.getZ() );
+  }
+  
   protected void checkEqualXY(String message, Coordinate expected, Coordinate actual) {
     assertEquals(message + " X", expected.getX(), actual.getX() );
     assertEquals(message + " Y", expected.getY(), actual.getY() );
