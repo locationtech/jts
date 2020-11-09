@@ -79,6 +79,35 @@ public abstract class GeometryTestCase extends TestCase{
     assertTrue(equal);
   }
 
+  protected void checkEqualXYZ(Geometry expected, Geometry actual) {
+    Geometry actualNorm = actual.norm();
+    Geometry expectedNorm = expected.norm();
+    boolean equal = equalsExactXYZ(actualNorm, expectedNorm);
+    if (! equal) {
+      System.out.format(CHECK_EQUAL_FAIL, expectedNorm, actualNorm );
+    }
+    assertTrue(equal);
+  }
+  
+  private boolean equalsExactXYZ(Geometry a, Geometry b) {
+    if (a.getClass() != b.getClass()) return false;
+    if (a.getNumGeometries() != b.getNumGeometries()) return false;
+    if (a instanceof Point) {
+      return isEqualDim(((Point) a).getCoordinateSequence(), ((Point) b).getCoordinateSequence(), 3);
+    }
+    else if (a instanceof LineString) {
+      return isEqualDim(((LineString) a).getCoordinateSequence(), ((LineString) b).getCoordinateSequence(), 3);
+    }
+    else if (a instanceof GeometryCollection) {
+      for (int i = 0; i < a.getNumGeometries(); i++) {
+        if (! equalsExactXYZ(a.getGeometryN(i), b.getGeometryN(i)))
+          return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
   protected void checkEqual(Collection expected, Collection actual) {
     checkEqual(toGeometryCollection(expected),toGeometryCollection(actual) );
   }
