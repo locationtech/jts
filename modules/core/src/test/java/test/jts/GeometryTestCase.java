@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.Ordinate;
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
 
 import junit.framework.TestCase;
 
@@ -40,6 +41,8 @@ public abstract class GeometryTestCase extends TestCase{
   final GeometryFactory geomFactory;
   
   final WKTReader readerWKT;
+  
+  final WKTWriter writerZ = new WKTWriter(3);
 
   protected GeometryTestCase(String name)
   {
@@ -84,7 +87,9 @@ public abstract class GeometryTestCase extends TestCase{
     Geometry expectedNorm = expected.norm();
     boolean equal = equalsExactXYZ(actualNorm, expectedNorm);
     if (! equal) {
-      System.out.format(CHECK_EQUAL_FAIL, expectedNorm, actualNorm );
+      System.out.format(CHECK_EQUAL_FAIL, 
+          writerZ.write(expectedNorm), 
+          writerZ.write(actualNorm) );
     }
     assertTrue(equal);
   }
