@@ -203,12 +203,23 @@ public class JTSTestBuilderFrame extends JFrame
     }
     return singleton;
   }
-
+  /**
+   * Tests if the TestBuilder is running.
+   * Useful to allow functions to decide whether to show indicators 
+   * (if functions are running under JtsOpCmd, they should not show indicators
+   * since that seriously impacts performance).
+   * 
+   * @return true if there is a TestBuilder instance running
+   */
+  public static boolean isRunning() {
+    return singleton != null;
+  }
+  
   public static GeometryEditPanel getGeometryEditPanel()
   {
     return instance().getTestCasePanel().getGeometryEditPanel();
   }
-  
+
   public TestBuilderModel getModel()
   {
     return tbModel;
