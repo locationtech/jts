@@ -49,8 +49,8 @@ public class FunctionsUtil {
     return JTSTestBuilder.getGeometryFactory(); 
   }
   
-  public static boolean isTestBuilderRunning() {
-    return JTSTestBuilderFrame.isRunning();
+  public static boolean isShowingIndicators() {
+    return JTSTestBuilderFrame.isShowingIndicators();
   }
   public static void showIndicator(Geometry geom, Color lineClr)
   {

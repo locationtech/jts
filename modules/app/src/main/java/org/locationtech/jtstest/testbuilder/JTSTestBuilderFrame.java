@@ -84,6 +84,8 @@ public class JTSTestBuilderFrame extends JFrame
 {
     
   private static JTSTestBuilderFrame singleton = null;
+  static boolean isShowingIndicators = true;
+  
   private ResultController resultController = new ResultController(this);
   private JTSTestBuilderMenuBar tbMenuBar = new JTSTestBuilderMenuBar(this);
   private JTSTestBuilderToolBar tbToolBar = new JTSTestBuilderToolBar(this);
@@ -213,6 +215,9 @@ public class JTSTestBuilderFrame extends JFrame
    */
   public static boolean isRunning() {
     return singleton != null;
+  }
+  public static boolean isShowingIndicators() {
+    return isRunning() && isShowingIndicators;
   }
   
   public static GeometryEditPanel getGeometryEditPanel()
