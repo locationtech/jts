@@ -108,12 +108,12 @@ public class LayerStylePanel extends JPanel {
     cbEndpoint.setSelected(layer.getLayerStyle().isEndpoints());
     cbDashed.setSelected(geomStyle().isDashed());
     cbOffset.setSelected(layer.getLayerStyle().isOffset());
-    offsetSizeModel.setValue( layer.getLayerStyle().getOffsetSize() );
+    offsetSizeModel.setValue(layer.getLayerStyle().getOffsetSize() );
     cbStroked.setSelected(geomStyle().isStroked());
     cbFilled.setSelected(geomStyle().isFilled());
     cbOrient.setSelected(layer.getLayerStyle().isOrientations());
     cbStructure.setSelected(layer.getLayerStyle().isOrientations());
-    lineWidthModel.setValue(geomStyle().getStrokeWidth());
+    lineWidthModel.setValue((double) geomStyle().getStrokeWidth());
     setPaletteType(comboPalette, layer.getLayerStyle().getFillType());
     updateStyleControls();
   }
@@ -219,7 +219,7 @@ public class LayerStylePanel extends JPanel {
         }
        );
     
-    vertexSizeModel = new SpinnerNumberModel(4.0, 0, 100.0, 1);
+    vertexSizeModel = new SpinnerNumberModel(4, 0, 100, 1);
     spinnerVertexSize = new JSpinner(vertexSizeModel);
     spinnerVertexSize.setMaximumSize(new Dimension(40,16));
     spinnerVertexSize.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -279,7 +279,7 @@ public class LayerStylePanel extends JPanel {
       }
     });
 
-    lineWidthModel = new SpinnerNumberModel(1.0, 0, 100.0, 0.2);
+    lineWidthModel = new SpinnerNumberModel(1.0, 0, 100, 0.2);
     spinnerLineWidth = new JSpinner(lineWidthModel);
     //widthSpinner.setMinimumSize(new Dimension(50,12));
     //widthSpinner.setPreferredSize(new Dimension(50,12));
@@ -366,7 +366,7 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
-    offsetSizeModel = new SpinnerNumberModel(LayerStyle.INIT_OFFSET_SIZE, -100, 100.0, 1);
+    offsetSizeModel = new SpinnerNumberModel(LayerStyle.INIT_OFFSET_SIZE, -100, 100, 1);
     spinnerOffsetSize = new JSpinner(offsetSizeModel);
     spinnerOffsetSize.setMaximumSize(new Dimension(40,16));
     spinnerOffsetSize.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -466,7 +466,7 @@ public class LayerStylePanel extends JPanel {
         }
        );
     
-    labelSizeModel = new SpinnerNumberModel(4.0, 0, 100.0, 1);
+    labelSizeModel = new SpinnerNumberModel(4, 0, 100, 1);
     spinnerLabelSize = new JSpinner(labelSizeModel);
     spinnerLabelSize.setMaximumSize(new Dimension(40,16));
     spinnerLabelSize.setAlignmentX(Component.LEFT_ALIGNMENT);
