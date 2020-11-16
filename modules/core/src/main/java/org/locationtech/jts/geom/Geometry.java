@@ -14,6 +14,7 @@ package org.locationtech.jts.geom;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 
 import org.locationtech.jts.algorithm.Centroid;
 import org.locationtech.jts.algorithm.ConvexHull;
@@ -1120,7 +1121,8 @@ public abstract class Geometry
   {
     if (! (o instanceof Geometry)) return false;
     Geometry g = (Geometry) o;
-    return equalsExact(g);
+    if (Objects.equals(this.userData, g.userData)) return equalsExact(g);
+    else return false;
   }
 
   /**
