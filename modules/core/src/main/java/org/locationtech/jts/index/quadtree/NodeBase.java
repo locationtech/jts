@@ -233,4 +233,13 @@ public abstract class NodeBase implements Serializable {
     return subSize + 1;
   }
 
+  public void setItems(List items)
+  {
+    this.items = items;
+  }
+
+  public Node[] getSubnode()
+  {
+    return subnode;
+  }
 }

@@ -128,4 +128,9 @@ public abstract class AbstractNode implements Boundable, Serializable {
     Assert.isTrue(bounds == null);
     childBoundables.add(childBoundable);
   }
+
+  public void setChildBoundables(ArrayList childBoundables)
+  {
+    this.childBoundables = childBoundables;
+  }
 }

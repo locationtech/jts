@@ -454,4 +454,28 @@ public abstract class AbstractSTRtree implements Serializable {
 
   protected abstract Comparator getComparator();
 
+  public void setRoot(AbstractNode root)
+  {
+    this.root = root;
+  }
+
+  public boolean isBuilt()
+  {
+    return built;
+  }
+
+  public void setBuilt(boolean built)
+  {
+    this.built = built;
+  }
+
+  public ArrayList getItemBoundables()
+  {
+    return itemBoundables;
+  }
+
+  public void setItemBoundables(ArrayList itemBoundables)
+  {
+    this.itemBoundables = itemBoundables;
+  }
 }
