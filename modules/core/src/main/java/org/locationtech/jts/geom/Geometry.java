@@ -199,7 +199,7 @@ public abstract class Geometry
    * An object reference which can be used to carry ancillary data defined
    * by the client.
    */
-  private Object userData = "";
+  private Object userData = null;
 
   /**
    * Creates a new <code>Geometry</code> via the specified GeometryFactory.
@@ -1052,7 +1052,6 @@ public abstract class Geometry
    */
   public boolean equals(Geometry g) {
     if (g == null) return false;
-    if(!userData.equals(g.getUserData())) return false;
     return equalsTopo(g);
   }
 
@@ -1121,7 +1120,6 @@ public abstract class Geometry
   {
     if (! (o instanceof Geometry)) return false;
     Geometry g = (Geometry) o;
-    if(!userData.equals(g.getUserData())) return false;
     return equalsExact(g);
   }
 
@@ -1136,7 +1134,6 @@ public abstract class Geometry
   }
 
   public String toString() {
-    if(this.userData!=null && this.userData!="") return toText()+"\t"+this.userData;
     return toText();
   }
 
