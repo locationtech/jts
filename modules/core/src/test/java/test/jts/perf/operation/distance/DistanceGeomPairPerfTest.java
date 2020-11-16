@@ -84,6 +84,11 @@ public class DistanceGeomPairPerfTest extends PerformanceTestCase
     double dist = IndexedFacetDistance.distance(geom1, pt2);
   }
 
+  public void runCachedLinePoint()
+  {
+    double dist = CachedFastDistance.getDistance(geom1, pt2);
+  }
+
   
   Geometry createSineStar(int nPts, double offset)
   {
