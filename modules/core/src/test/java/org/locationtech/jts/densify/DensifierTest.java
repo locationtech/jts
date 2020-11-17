@@ -51,7 +51,6 @@ public class DensifierTest extends GeometryTestCase {
       assertEquals(2, line.getCoordinateSequence().getDimension());
       
       line = (LineString) Densifier.densify(line, 0.1);
-      // the following assert fails
       assertEquals(2, line.getCoordinateSequence().getDimension());
   }
   
