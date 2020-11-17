@@ -282,7 +282,7 @@ public class LineSegment
    */
   public Coordinate pointAlong(double segmentLengthFraction)
   {
-    Coordinate coord = p0.createEmptyCopy();
+    Coordinate coord = p0.create();
     coord.x = p0.x + segmentLengthFraction * (p1.x - p0.x);
     coord.y = p0.y + segmentLengthFraction * (p1.y - p0.y);
     return coord;
@@ -328,7 +328,7 @@ public class LineSegment
     double offsetx = segx - uy;
     double offsety = segy + ux;
 
-    Coordinate coord = p0.createEmptyCopy();
+    Coordinate coord = p0.create();
     coord.setX(offsetx);
     coord.setY(offsety);
     return coord;

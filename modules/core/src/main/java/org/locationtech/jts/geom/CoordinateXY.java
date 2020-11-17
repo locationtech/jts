@@ -83,7 +83,7 @@ public class CoordinateXY extends Coordinate {
    * @return a new Coordinate
    */
   @Override
-  public Coordinate createEmptyCopy() {
+  public Coordinate create() {
       return new CoordinateXY();
   }
 
