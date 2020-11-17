@@ -68,6 +68,16 @@ public class CoordinateXYZM extends Coordinate {
   public CoordinateXYZM copy() {
     return new CoordinateXYZM(this);
   }
+  
+  /**
+   * Create a new Coordinate of the same type as this Coordinate, but with no values.
+   * 
+   * @return a new Coordinate
+   */
+  @Override
+  public Coordinate create() {
+      return new CoordinateXYZM();
+  }
 
   /** The m-measure. */
   private double m;

@@ -76,7 +76,17 @@ public class CoordinateXY extends Coordinate {
   public CoordinateXY copy() {
     return new CoordinateXY(this);
   }
-    
+  
+  /**
+   * Create a new Coordinate of the same type as this Coordinate, but with no values.
+   * 
+   * @return a new Coordinate
+   */
+  @Override
+  public Coordinate create() {
+      return new CoordinateXY();
+  }
+
   /** The z-ordinate is not supported */
   @Override
   public double getZ() {
