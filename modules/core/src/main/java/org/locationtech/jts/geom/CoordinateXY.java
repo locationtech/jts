@@ -78,7 +78,7 @@ public class CoordinateXY extends Coordinate {
   }
   
   /**
-   * Create a new Coordinate of the same type of this Coordinate, but with no values.
+   * Create a new Coordinate of the same type as this Coordinate, but with no values.
    * 
    * @return a new Coordinate
    */

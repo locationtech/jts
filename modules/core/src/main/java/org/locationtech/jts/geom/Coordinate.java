@@ -402,7 +402,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   }
   
   /**
-   * Create a new Coordinate of the same type of this Coordinate, but with no values.
+   * Create a new Coordinate of the same type as this Coordinate, but with no values.
    * 
    * @return a new Coordinate
    */
