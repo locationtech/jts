@@ -36,19 +36,48 @@ public class OverlyNGZTest extends GeometryTestCase
         "POINT(5 5 999)");
   }
 
-  public void testLineDifferenceLineInterpolated() {
+  public void testLineLineUnionOverlap() {
+    checkUnion("LINESTRING (0 0 0, 10 10 10)", "LINESTRING (5 5 990, 15 15 999)",
+        "MULTILINESTRING Z((0 0 0, 5 5 990), (5 5 990, 10 10 10), (10 10 10, 15 15 999))");
+  }
+
+  public void testLineLineXYDifferenceLineInterpolated() {
     checkDifference("LINESTRING (0 0 0, 10 10 10)", "LINESTRING (5 5, 6 6)",
         "MULTILINESTRING ((0 0 0, 5 5 5), (6 6 6, 10 10 10))");
   }
 
-  //=================================================
+  public void testLinePolygonIntersectionLine() {
+    checkIntersection("LINESTRING Z (0 0 0, 5 5 5)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
+        "LINESTRING Z (1 1 1, 5 5 5)");
+  }
+
+  public void testLinePolygonDifferenceLine() {
+    checkDifference("LINESTRING Z (0 5 0, 10 5 10)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
+        "MULTILINESTRING Z((0 5 0, 1 5 2), (9 5 8, 10 5 10))");
+  }
+
+  public void testLinePolygonXYDifferenceLine() {
+    checkDifference("LINESTRING Z (0 5 0, 10 5 10)", "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
+        "MULTILINESTRING Z((0 5 0, 1 5 1), (9 5 9, 10 5 10))");
+  }
   
+  // TODO: add Z population from model
+  public void xtestLineXYPolygonDifferenceLine() {
+    checkDifference("LINESTRING (0 5, 10 5)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
+        "MULTILINESTRING Z((0 5 0, 1 5 2), (9 5 8, 10 5 10))");
+  }
+
+  //=================================================
   
   private void checkIntersection(String wktA, String wktB, String wktExpected) {
     checkOverlay(OverlayNG.INTERSECTION, wktA, wktB, wktExpected);
   }
   private void checkDifference(String wktA, String wktB, String wktExpected) {
     checkOverlay(OverlayNG.DIFFERENCE, wktA, wktB, wktExpected);
+  }
+  
+  private void checkUnion(String wktA, String wktB, String wktExpected) {
+    checkOverlay(OverlayNG.UNION, wktA, wktB, wktExpected);
   }
   
   private void checkOverlay(int opCode, String wktA, String wktB, String wktExpected) {

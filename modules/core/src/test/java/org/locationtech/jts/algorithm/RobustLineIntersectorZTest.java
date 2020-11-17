@@ -12,6 +12,7 @@
 package org.locationtech.jts.algorithm;
 
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateXY;
 import org.locationtech.jts.geom.LineSegment;
 
 import junit.textui.TestRunner;
@@ -125,6 +126,22 @@ public class RobustLineIntersectorZTest extends GeometryTestCase {
         pt(3, 3, 3), pt(4, 4, 4));
   }
 
+  //----------------------------------
+  
+  public void testInteriorXY() {
+    checkIntersection( 
+        new LineSegment( new CoordinateXY(1, 1), new CoordinateXY(3, 3) ), 
+        new LineSegment( new CoordinateXY(1, 3), new CoordinateXY(3, 1) ), 
+        pt(2, 2));
+  }
+
+  public void testCollinearContainedXY() {
+    checkIntersection( 
+        new LineSegment( new CoordinateXY(1, 1), new CoordinateXY(5, 5) ), 
+        new LineSegment( new CoordinateXY(3, 3), new CoordinateXY(4, 4) ), 
+        pt(3, 3), pt(4, 4));
+  }
+  
   //======================================================
 
   private void checkIntersection(LineSegment line1, LineSegment line2, 
@@ -178,6 +195,10 @@ public class RobustLineIntersectorZTest extends GeometryTestCase {
 
   private static Coordinate pt(double x, double y, double z) {
     return new Coordinate(x, y, z);
+  }
+
+  private static Coordinate pt(double x, double y) {
+    return pt(x, y, Double.NaN);
   }
 
   private static LineSegment line(double x1, double y1, double z1,

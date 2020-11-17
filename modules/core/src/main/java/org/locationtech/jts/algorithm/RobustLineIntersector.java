@@ -1,7 +1,6 @@
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2020 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -159,7 +158,7 @@ public class RobustLineIntersector
       p = intersection(p1, p2, q1, q2);
       z = zInterpolate(p, p1, p2, q1, q2);
     }
-    intPt[0] = new Coordinate(p.x, p.y, z);
+    intPt[0] = copyWithZ(p, z);
     return POINT_INTERSECTION;
   }
 
@@ -171,49 +170,58 @@ public class RobustLineIntersector
     boolean p2inQ = Envelope.intersects(q1, q2, p2);
 
     if (q1inP && q2inP) {
-      intPt[0] = zGetOrInterpolateCopy(q1, p1, p2);
-      intPt[1] = zGetOrInterpolateCopy(q2, p1, p2);
+      intPt[0] = copyWithZInterpolate(q1, p1, p2);
+      intPt[1] = copyWithZInterpolate(q2, p1, p2);
       return COLLINEAR_INTERSECTION;
     }
     if (p1inQ && p2inQ) {
-      intPt[0] = zGetOrInterpolateCopy(p1, q1, q2);
-      intPt[1] = zGetOrInterpolateCopy(p2, q1, q2);
+      intPt[0] = copyWithZInterpolate(p1, q1, q2);
+      intPt[1] = copyWithZInterpolate(p2, q1, q2);
       return COLLINEAR_INTERSECTION;
     }
     if (q1inP && p1inQ) {
       // if pts are equal Z is chosen arbitrarily
-      intPt[0] = zGetOrInterpolateCopy(q1, p1, p2);
-      intPt[1] = zGetOrInterpolateCopy(p1, q1, q2);
+      intPt[0] = copyWithZInterpolate(q1, p1, p2);
+      intPt[1] = copyWithZInterpolate(p1, q1, q2);
       return q1.equals(p1) && !q2inP && !p2inQ ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
     }
     if (q1inP && p2inQ) {
       // if pts are equal Z is chosen arbitrarily
-      intPt[0] = zGetOrInterpolateCopy(q1, p1, p2);
-      intPt[1] = zGetOrInterpolateCopy(p2, q1, q2);
+      intPt[0] = copyWithZInterpolate(q1, p1, p2);
+      intPt[1] = copyWithZInterpolate(p2, q1, q2);
       return q1.equals(p2) && !q2inP && !p1inQ ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
     }
     if (q2inP && p1inQ) {
       // if pts are equal Z is chosen arbitrarily
-      intPt[0] = zGetOrInterpolateCopy(q2, p1, p2);
-      intPt[1] = zGetOrInterpolateCopy(p1, q1, q2);
+      intPt[0] = copyWithZInterpolate(q2, p1, p2);
+      intPt[1] = copyWithZInterpolate(p1, q1, q2);
       return q2.equals(p1) && !q1inP && !p2inQ ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
     }
     if (q2inP && p2inQ) {
       // if pts are equal Z is chosen arbitrarily
-      intPt[0] = zGetOrInterpolateCopy(q2, p1, p2);
-      intPt[1] = zGetOrInterpolateCopy(p2, q1, q2);
+      intPt[0] = copyWithZInterpolate(q2, p1, p2);
+      intPt[1] = copyWithZInterpolate(p2, q1, q2);
       return q2.equals(p2) && !q1inP && !p1inQ ? POINT_INTERSECTION : COLLINEAR_INTERSECTION;
     }
     return NO_INTERSECTION;
   }
 
-  private Coordinate zGetOrInterpolateCopy(Coordinate p, Coordinate p1, Coordinate p2) {
-    Coordinate pCopy = p.copy();
-    double z = zGetOrInterpolate(p, p1, p2);
-    pCopy.setZ( z );
-    return pCopy;
+  private static Coordinate copyWithZInterpolate(Coordinate p, Coordinate p1, Coordinate p2) {
+    return copyWithZ(p, zGetOrInterpolate(p, p1, p2));
   }
 
+  private static Coordinate copyWithZ(Coordinate p, double z) {
+    Coordinate pCopy = copy(p);
+    if (! Double.isNaN(z)) {
+      pCopy.setZ( z );
+    }
+    return pCopy;    
+  }
+  
+  private static Coordinate copy(Coordinate p) {
+    return new Coordinate(p);    
+  }
+  
   /**
    * This method computes the actual value of the intersection point.
    * To obtain the maximum precision from the intersection calculation,
@@ -254,7 +262,7 @@ public class RobustLineIntersector
       
       // compute a safer result
       // copy the coordinate, since it may be rounded later
-      intPt = new Coordinate(nearestEndpoint(p1, p2, q1, q2));
+      intPt = copy(nearestEndpoint(p1, p2, q1, q2));
 //    intPt = CentralEndpointIntersector.getIntersection(p1, p2, q1, q2);
       
 //      System.out.println("Segments: " + this);
@@ -358,6 +366,14 @@ public class RobustLineIntersector
     return nearestPt;
   }
 
+  /**
+   * Gets the Z value of the first argument if present, 
+   * otherwise the value of the second argument.
+   * 
+   * @param p a coordinate, possibly with Z
+   * @param q a coordinate, possibly with Z
+   * @return the Z value if present
+   */
   private static double zGet(Coordinate p, Coordinate q) {
     double z = p.getZ();
     if (Double.isNaN(z)) {
@@ -366,6 +382,17 @@ public class RobustLineIntersector
     return z;
   }
   
+  /**
+   * Gets the Z value of a coordinate if present, or
+   * interpolates it from the segment it lies on.
+   * If the segment Z values are not fully populate
+   * NaN is returned.
+   * 
+   * @param p a coordinate, possibly with Z 
+   * @param p1 a segment endpoint, possibly with Z
+   * @param p2 a segment endpoint, possibly with Z
+   * @return the extracted or interpolated Z value (may be NaN)
+   */
   private static double zGetOrInterpolate(Coordinate p, Coordinate p1, Coordinate p2) {
     double z = p.getZ();
     if (! Double.isNaN(z)) 
@@ -373,6 +400,18 @@ public class RobustLineIntersector
     return zInterpolate(p, p1, p2); // may be NaN
   }
 
+  /**
+   * Interpolates a Z value for a point along 
+   * a line segment between two points.
+   * The Z value of the interpolation point (if any) is ignored.
+   * If either segment point is missing Z, 
+   * returns NaN.
+   * 
+   * @param p a coordinate
+   * @param p1 a segment endpoint, possibly with Z
+   * @param p2 a segment endpoint, possibly with Z
+   * @return the interpolated Z value (may be NaN)
+   */
   private static double zInterpolate(Coordinate p, Coordinate p1, Coordinate p2) {
     double p1z = p1.getZ();
     double p2z = p2.getZ();
@@ -406,6 +445,20 @@ public class RobustLineIntersector
     return zInterpolated;
   }
 
+  /**
+   * Interpolates a Z value for a point along 
+   * two line segments and computes their average.
+   * The Z value of the interpolation point (if any) is ignored.
+   * If one segment point is missing Z that segment is ignored
+   * if both segments are missing Z, returns NaN.
+   * 
+   * @param p a coordinate
+   * @param p1 a segment endpoint, possibly with Z
+   * @param p2 a segment endpoint, possibly with Z
+   * @param q1 a segment endpoint, possibly with Z
+   * @param q2 a segment endpoint, possibly with Z
+   * @return the averaged interpolated Z value (may be NaN)
+   */
   private static double zInterpolate(Coordinate p, Coordinate p1, Coordinate p2, Coordinate q1, Coordinate q2) {
     double zp = zInterpolate(p, p1, p2);
     double zq = zInterpolate(p, q1, q2);
