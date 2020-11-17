@@ -406,7 +406,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
    * 
    * @return a new Coordinate
    */
-  public Coordinate createEmptyCopy() {
+  public Coordinate create() {
       return new Coordinate();
   }
 
