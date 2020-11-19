@@ -16,13 +16,13 @@ import org.locationtech.jts.geom.Geometry;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class OverlyNGZTest extends GeometryTestCase
+public class OverlayNGZTest extends GeometryTestCase
 {
   public static void main(String args[]) {
-    TestRunner.run(OverlyNGZTest.class);
+    TestRunner.run(OverlayNGZTest.class);
   }
 
-  public OverlyNGZTest(String name) {
+  public OverlayNGZTest(String name) {
     super(name);
   }
   
