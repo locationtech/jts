@@ -45,7 +45,7 @@ public class Node
   private Envelope env;
   private double centrex;
   private double centrey;
-  private int level;
+  int level;
 
   public Node(Envelope env, int level)
   {
@@ -176,8 +176,4 @@ public class Node
     return node;
   }
 
-  public int getLevel()
-  {
-    return level;
-  }
 }
