@@ -48,6 +48,28 @@ public class SortingFunctions
     return g.getFactory().buildGeometry(geoms);
   }
   
+  public static Geometry sortByMinX(Geometry g)
+  {
+    List<Geometry> geoms = components(g);
+    // annotate geometries with area
+    for (Geometry geom : geoms) {
+      geom.setUserData(geom.getEnvelopeInternal().getMinX());
+    }
+    Collections.sort(geoms, new UserDataDoubleComparator());
+    return g.getFactory().buildGeometry(geoms);
+  }
+  
+  public static Geometry sortByMinY(Geometry g)
+  {
+    List<Geometry> geoms = components(g);
+    // annotate geometries with area
+    for (Geometry geom : geoms) {
+      geom.setUserData(geom.getEnvelopeInternal().getMinY());
+    }
+    Collections.sort(geoms, new UserDataDoubleComparator());
+    return g.getFactory().buildGeometry(geoms);
+  }
+  
   private static List<Geometry> components(Geometry g)
   {
     List<Geometry> comp = new ArrayList<Geometry>();

@@ -14,6 +14,7 @@ package org.locationtech.jts.operation.overlayng;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.TopologyException;
 
 /**
  * Functions to reduce the precision of a geometry
@@ -45,6 +46,8 @@ public class PrecisionReducer {
    * @param geom the geometry to reduce
    * @param pm the precision model to use
    * @return the precision-reduced geometry
+   * 
+   * @throws IllegalArgumentException if the reduction fails due to invalid input geometry is invalid
    */
   public static Geometry reducePrecision(Geometry geom, PrecisionModel pm) {
     OverlayNG ov = new OverlayNG(geom, pm);
@@ -55,8 +58,13 @@ public class PrecisionReducer {
     if (geom.getDimension() == 2) {
       ov.setAreaResultOnly(true);
     }
-    Geometry reduced = ov.getResult();
-    return reduced;
+    try {
+      Geometry reduced = ov.getResult();
+      return reduced;
+    }
+    catch (TopologyException ex) {
+      throw new IllegalArgumentException("Reduction failed, possible invalid input");
+    }
   }
 
   private PrecisionReducer() {

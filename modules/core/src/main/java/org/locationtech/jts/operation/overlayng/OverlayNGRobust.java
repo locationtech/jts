@@ -53,9 +53,15 @@ import org.locationtech.jts.operation.union.UnionStrategy;
  */
 public class OverlayNGRobust
 {
-  //--- The following function is provided to allow use in the TestRunner
-  
-  public static Geometry union(Geometry a) {
+  /**
+   * Computes unary union using robust computation.
+   * 
+   * @param geom the geometry to union
+   * @return the union result
+   * 
+   * @see UnaryUnionOp
+   */
+  public static Geometry union(Geometry geom) {
     UnionStrategy unionSRFun = new UnionStrategy() {
 
       public Geometry union(Geometry g0, Geometry g1) {
@@ -68,7 +74,7 @@ public class OverlayNGRobust
       }
       
     };
-    UnaryUnionOp op = new UnaryUnionOp(a);
+    UnaryUnionOp op = new UnaryUnionOp(geom);
     op.setUnionFunction(unionSRFun);
     return op.union();
   }
@@ -197,9 +203,9 @@ public class OverlayNGRobust
    */
   private static Geometry overlaySnapBoth(Geometry geom0, Geometry geom1, int opCode, double snapTol) {
     try {
-      Geometry snap0 = overlaySnapTol(geom0, null, OverlayNG.UNION, snapTol);
-      Geometry snap1 = overlaySnapTol(geom1, null, OverlayNG.UNION, snapTol); 
-      //log("Snapping BOTH with " + snapTol, geom0, geom1);
+      Geometry snap0 = snapSelf(geom0, snapTol);
+      Geometry snap1 = snapSelf(geom1, snapTol); 
+       //log("Snapping BOTH with " + snapTol, geom0, geom1);
       
       return overlaySnapTol(snap0, snap1, opCode, snapTol);
     }
@@ -208,7 +214,31 @@ public class OverlayNGRobust
     }
     return null;
   }
-
+  
+  /**
+   * Self-snaps a geometry by running a union operation with it as the only input.
+   * This helps to remove narrow spike/gore artifacts to simplify the geometry,
+   * which improves robustness.
+   * Collapsed artifacts are removed from the result to allow using
+   * it in further overlay operations.
+   * 
+   * @param geom geometry to self-snap
+   * @param snapTol snap tolerance
+   * @return the snapped geometry (homogeneous)
+   */
+  private static Geometry snapSelf(Geometry geom, double snapTol) {
+    OverlayNG ov = new OverlayNG(geom, null);
+    SnappingNoder snapNoder = new SnappingNoder(snapTol);
+    ov.setNoder(snapNoder);
+    /**
+     * Ensure the result is not mixed-dimension,
+     * since it will be used in further overlay computation.
+     * It may however be lower dimension, if it collapses completely due to snapping.
+     */
+    ov.setStrictMode(true);
+    return ov.getResult();
+  }
+  
   private static Geometry overlaySnapTol(Geometry geom0, Geometry geom1, int opCode, double snapTol) {
     SnappingNoder snapNoder = new SnappingNoder(snapTol);
     return OverlayNG.overlay(geom0, geom1, opCode, snapNoder);

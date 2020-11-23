@@ -236,8 +236,6 @@ class MaximalEdgeRing {
     OverlayEdge edge = startEdge;
     do {
       coords.add(edge.orig());
-      if (edge == null)
-        break;
       if (edge.nextResultMax() == null) {
         break;
       }

@@ -13,14 +13,19 @@ package org.locationtech.jtstest.geomfunction;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.function.AffineTransformationFunctions;
 import org.locationtech.jtstest.function.BoundaryFunctions;
 import org.locationtech.jtstest.function.BufferByUnionFunctions;
 import org.locationtech.jtstest.function.BufferFunctions;
-import org.locationtech.jtstest.function.LineSegmentFunctions;
 import org.locationtech.jtstest.function.ConstructionFunctions;
 import org.locationtech.jtstest.function.ConversionFunctions;
 import org.locationtech.jtstest.function.CreateFractalShapeFunctions;
@@ -34,19 +39,20 @@ import org.locationtech.jtstest.function.EditFunctions;
 import org.locationtech.jtstest.function.GeometryFunctions;
 import org.locationtech.jtstest.function.JTSFunctions;
 import org.locationtech.jtstest.function.LineHandlingFunctions;
+import org.locationtech.jtstest.function.LineSegmentFunctions;
 import org.locationtech.jtstest.function.LinearReferencingFunctions;
 import org.locationtech.jtstest.function.NodingFunctions;
 import org.locationtech.jtstest.function.OffsetCurveFunctions;
 import org.locationtech.jtstest.function.OrientationFunctions;
 import org.locationtech.jtstest.function.OverlayFunctions;
 import org.locationtech.jtstest.function.OverlayNGFunctions;
-import org.locationtech.jtstest.function.OverlayNGRobustFunctions;
-import org.locationtech.jtstest.function.OverlayNoSnapFunctions;
-import org.locationtech.jtstest.function.OverlayNGSRFunctions;
 import org.locationtech.jtstest.function.OverlayNGOptFunctions;
+import org.locationtech.jtstest.function.OverlayNGRobustFunctions;
+import org.locationtech.jtstest.function.OverlayNGSRFunctions;
 import org.locationtech.jtstest.function.OverlayNGSnappingFunctions;
 import org.locationtech.jtstest.function.OverlayNGStrictFunctions;
 import org.locationtech.jtstest.function.OverlayNGTestFunctions;
+import org.locationtech.jtstest.function.OverlayNoSnapFunctions;
 import org.locationtech.jtstest.function.PointLocationFunctions;
 import org.locationtech.jtstest.function.PolygonOverlayFunctions;
 import org.locationtech.jtstest.function.PolygonizeFunctions;
@@ -87,7 +93,6 @@ public class GeometryFunctionRegistry
     funcRegistry.add(LineHandlingFunctions.class);
     funcRegistry.add(NodingFunctions.class);
     funcRegistry.add(PolygonizeFunctions.class);
-    funcRegistry.add(PolygonOverlayFunctions.class);
     funcRegistry.add(PrecisionFunctions.class);
     funcRegistry.add(PreparedGeometryFunctions.class);
     funcRegistry.add(SelectionFunctions.class);
@@ -118,10 +123,9 @@ public class GeometryFunctionRegistry
 
     funcRegistry.add(OverlayNGOptFunctions.class);
 
-
-    
     funcRegistry.add(OverlayNoSnapFunctions.class);
     funcRegistry.add(PointLocationFunctions.class);
+    funcRegistry.add(PolygonOverlayFunctions.class);
     //funcRegistry.add(OverlayEnhancedPrecisionFunctions.class);
     //funcRegistry.add(OverlayCommonBitsRemovedFunctions.class);
     funcRegistry.add(SnappingFunctions.class);

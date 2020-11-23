@@ -18,7 +18,7 @@ import org.locationtech.jtstest.geomfunction.Metadata;
 
 public class AffineTransformationFunctions 
 {
-  @Metadata(description="Transforms a geometry using one to three control vectors")
+  @Metadata(description="Transforms a geometry using 1, 2 or 3 control vectors")
 	public static Geometry transformByVectors(Geometry g, Geometry control)
 	{
 		int nControl = control.getNumGeometries();
@@ -85,7 +85,9 @@ public class AffineTransformationFunctions
     return trans;
   }
   
-  public static Geometry scale(Geometry g, double scale)
+  public static Geometry scale(Geometry g, 
+      @Metadata(title="Scale factor")
+      double scale)
   {
     Coordinate centre = envelopeCentre(g);
     AffineTransformation trans = AffineTransformation.scaleInstance(scale, scale, centre.x, centre.y);
@@ -168,6 +170,16 @@ public class AffineTransformationFunctions
   {
     Coordinate lowerLeft = envelopeLowerLeft(g);
     AffineTransformation trans = AffineTransformation.translationInstance(-lowerLeft.x, -lowerLeft.y);
+    return trans.transform(g);    
+  }
+  @Metadata(description="Translates a geometry by an offset (dx,dy)")
+  public static Geometry translate(Geometry g, 
+      @Metadata(title="dX")
+      double dx, 
+      @Metadata(title="dY")
+      double dy)
+  {
+    AffineTransformation trans = AffineTransformation.translationInstance(dx, dy);
     return trans.transform(g);    
   }
 }

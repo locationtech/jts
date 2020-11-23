@@ -120,6 +120,9 @@ module org.foo.baz {
   requires org.locationtech.jts.io.sde;     // jts-io-sde
 }
 ```
+## JTS System Properties
+
+* `-Djts.overlay=ng` enables the use of OverlayNG in `Geometry` overlay methods. (*Note: in a future release this will become the default behaviour*) 
 
 ## JTS Tools
 

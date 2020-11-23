@@ -37,4 +37,15 @@ public class MetadataUtil {
     return null;
   }
 
+  public static boolean isRequired(Annotation[] anno) {
+    for (int i = 0; i < anno.length; i++) {
+      if (anno[i] instanceof Metadata) {
+        Metadata doc = (Metadata) anno[i];
+        if (doc != null)
+          return doc.isRequired();
+      }
+    }
+    return true;
+  }
+
 }

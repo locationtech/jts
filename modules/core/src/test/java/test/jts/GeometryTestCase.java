@@ -35,6 +35,8 @@ import junit.framework.TestCase;
 
 public abstract class GeometryTestCase extends TestCase{
 
+  private static final String CHECK_EQUAL_FAIL = "FAIL - Expected = %s -- Actual = %s\n";
+
   final GeometryFactory geomFactory;
   
   final WKTReader readerWKT;
@@ -50,13 +52,19 @@ public abstract class GeometryTestCase extends TestCase{
     readerWKT = new WKTReader(geomFactory);
   }
 
+  /**
+   * Checks that the normalized values of the expected and actual
+   * geometries are exactly equals.
+   * 
+   * @param expected the expected value
+   * @param actual the actual value
+   */
   protected void checkEqual(Geometry expected, Geometry actual) {
     Geometry actualNorm = actual.norm();
     Geometry expectedNorm = expected.norm();
     boolean equal = actualNorm.equalsExact(expectedNorm);
     if (! equal) {
-      System.out.println("FAIL - Expected = " + expectedNorm
-          + " actual = " + actualNorm );
+      System.out.format(CHECK_EQUAL_FAIL, expectedNorm, actualNorm );
     }
     assertTrue(equal);
   }
@@ -66,8 +74,7 @@ public abstract class GeometryTestCase extends TestCase{
     Geometry expectedNorm = expected.norm();
     boolean equal = actualNorm.equalsExact(expectedNorm, tolerance);
     if (! equal) {
-      System.out.println("FAIL - Expected = " + expectedNorm
-          + " actual = " + actualNorm );
+      System.out.format(CHECK_EQUAL_FAIL, expectedNorm, actualNorm );
     }
     assertTrue(equal);
   }
@@ -201,7 +208,7 @@ public abstract class GeometryTestCase extends TestCase{
   }
 
   /**
-   * Checks two {@link CoordinateSequence}s for equality. The following items are checked:
+   * Tests two {@link CoordinateSequence}s for equality. The following items are checked:
    * <ul>
    *   <li>size</li><li>dimension</li><li>ordinate values</li>
    * </ul>
@@ -210,12 +217,12 @@ public abstract class GeometryTestCase extends TestCase{
    * @param seq2 another sequence
    * @return {@code true} if both sequences are equal
    */
-  public static boolean checkEqual(CoordinateSequence seq1, CoordinateSequence seq2) {
-    return checkEqual(seq1, seq2, 0d);
+  public static boolean isEqual(CoordinateSequence seq1, CoordinateSequence seq2) {
+    return isEqualTol(seq1, seq2, 0d);
   }
 
   /**
-   * Checks two {@link CoordinateSequence}s for equality. The following items are checked:
+   * Tests two {@link CoordinateSequence}s for equality. The following items are checked:
    * <ul>
    *   <li>size</li><li>dimension</li><li>ordinate values with {@code tolerance}</li>
    * </ul>
@@ -224,14 +231,14 @@ public abstract class GeometryTestCase extends TestCase{
    * @param seq2 another sequence
    * @return {@code true} if both sequences are equal
    */
-  public static boolean checkEqual(CoordinateSequence seq1, CoordinateSequence seq2, double tolerance) {
+  public static boolean isEqualTol(CoordinateSequence seq1, CoordinateSequence seq2, double tolerance) {
     if (seq1.getDimension() != seq2.getDimension())
       return false;
-    return checkEqual(seq1, seq2, seq1.getDimension(), tolerance);
+    return isEqual(seq1, seq2, seq1.getDimension(), tolerance);
   }
 
   /**
-   * Checks two {@link CoordinateSequence}s for equality. The following items are checked:
+   * Tests two {@link CoordinateSequence}s for equality. The following items are checked:
    * <ul>
    *   <li>size</li><li>dimension up to {@code dimension}</li><li>ordinate values</li>
    * </ul>
@@ -240,12 +247,12 @@ public abstract class GeometryTestCase extends TestCase{
    * @param seq2 another sequence
    * @return {@code true} if both sequences are equal
    */
-  public static boolean checkEqual(CoordinateSequence seq1, CoordinateSequence seq2, int dimension) {
-    return checkEqual(seq1, seq2, dimension, 0d);
+  public static boolean isEqualDim(CoordinateSequence seq1, CoordinateSequence seq2, int dimension) {
+    return isEqual(seq1, seq2, dimension, 0d);
   }
 
   /**
-   * Checks two {@link CoordinateSequence}s for equality. The following items are checked:
+   * Tests two {@link CoordinateSequence}s for equality. The following items are checked:
    * <ul>
    *   <li>size</li><li>dimension up to {@code dimension}</li><li>ordinate values with {@code tolerance}</li>
    * </ul>
@@ -254,7 +261,7 @@ public abstract class GeometryTestCase extends TestCase{
    * @param seq2 another sequence
    * @return {@code true} if both sequences are equal
    */
-  public static boolean checkEqual(CoordinateSequence seq1, CoordinateSequence seq2, int dimension, double tolerance) {
+  public static boolean isEqual(CoordinateSequence seq1, CoordinateSequence seq2, int dimension, double tolerance) {
     if (seq1 != null && seq2 == null) return false;
     if (seq1 == null && seq2 != null) return false;
 

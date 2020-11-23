@@ -46,6 +46,12 @@ public class NodingTestUtil {
     return nssList;
   }
   
+  public static List<NodedSegmentString> getNodedSubstrings(NodedSegmentString nss) {
+    List<NodedSegmentString> resultEdgelist = new ArrayList<NodedSegmentString>();
+    nss.getNodeList().addSplitEdges(resultEdgelist);
+    return resultEdgelist;
+  }
+  
   /**
    * Runs a noder on one or two sets of input geometries
    * and validates that the result is fully noded.
@@ -70,5 +76,18 @@ public class NodingTestUtil {
     
     Geometry result = toLines(nodedList, geom1.getFactory());
     return result;
+  }
+  
+  public NodedSegmentString createNSS(double... ords) {
+    if (ords.length % 2 != 0) {
+      throw new IllegalArgumentException("Must provide pairs of ordinates");
+    }
+    Coordinate[] pts = new Coordinate[ ords.length / 2 ];
+    for (int i = 0; i <= ords.length; i += 2) {
+      Coordinate p = new Coordinate(ords[i],ords[i+1]);
+      pts[i / 2] = p;
+    }
+    NodedSegmentString nss = new NodedSegmentString(pts, null);
+    return nss;
   }
 }

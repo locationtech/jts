@@ -226,7 +226,7 @@ class EdgeNodingBuilder {
     else if (g instanceof LineString)         addLine((LineString) g, geomIndex);
     else if (g instanceof MultiLineString)    addCollection((MultiLineString) g, geomIndex);
     else if (g instanceof MultiPolygon)       addCollection((MultiPolygon) g, geomIndex);
-    else if (g instanceof GeometryCollection) addCollection((GeometryCollection) g, geomIndex);
+    else if (g instanceof GeometryCollection) addGeometryCollection((GeometryCollection) g, geomIndex, g.getDimension());
     // ignore Point geometries - they are handled elsewhere
   }
   
@@ -234,6 +234,18 @@ class EdgeNodingBuilder {
   {
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       Geometry g = gc.getGeometryN(i);
+      add(g, geomIndex);
+    }
+  }
+
+  private void addGeometryCollection(GeometryCollection gc, int geomIndex, int expectedDim)
+  {
+    for (int i = 0; i < gc.getNumGeometries(); i++) {
+      Geometry g = gc.getGeometryN(i);
+      // check for mixed-dimension input, which is not supported
+      if (g.getDimension() != expectedDim) {
+        throw new IllegalArgumentException("Overlay input is mixed-dimension");
+      }
       add(g, geomIndex);
     }
   }

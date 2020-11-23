@@ -128,6 +128,18 @@ public class StaticMethodGeometryFunction
 		return types;
 	}
 
+	 
+  private static boolean extractRequiredB(Method method) {
+    Annotation[][] anno = method.getParameterAnnotations();
+    if (anno.length <= 1) return false;
+    Class[] methodParamTypes = method.getParameterTypes();
+    boolean isRequired = false;
+    if (methodParamTypes[1] == Geometry.class) {
+      isRequired = MetadataUtil.isRequired(anno[1]);
+    }
+    return isRequired;
+  }
+  
   private Method method;
 
 	public StaticMethodGeometryFunction(
@@ -141,8 +153,9 @@ public class StaticMethodGeometryFunction
 	{
 		super(category, name, description, parameterNames, parameterTypes, returnType);
     this.method = method;
+    isRequiredB = extractRequiredB(method);
 	}
-	
+
   public Object invoke(Geometry g, Object[] arg) 
   {
     return invoke(method, null, createFullArgs(g, arg));

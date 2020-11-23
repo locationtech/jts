@@ -84,6 +84,8 @@ public class JTSTestBuilderFrame extends JFrame
 {
     
   private static JTSTestBuilderFrame singleton = null;
+  static boolean isShowingIndicators = true;
+  
   private ResultController resultController = new ResultController(this);
   private JTSTestBuilderMenuBar tbMenuBar = new JTSTestBuilderMenuBar(this);
   private JTSTestBuilderToolBar tbToolBar = new JTSTestBuilderToolBar(this);
@@ -203,12 +205,26 @@ public class JTSTestBuilderFrame extends JFrame
     }
     return singleton;
   }
-
+  /**
+   * Tests if the TestBuilder is running.
+   * Useful to allow functions to decide whether to show indicators 
+   * (if functions are running under JtsOpCmd, they should not show indicators
+   * since that seriously impacts performance).
+   * 
+   * @return true if there is a TestBuilder instance running
+   */
+  public static boolean isRunning() {
+    return singleton != null;
+  }
+  public static boolean isShowingIndicators() {
+    return isRunning() && isShowingIndicators;
+  }
+  
   public static GeometryEditPanel getGeometryEditPanel()
   {
     return instance().getTestCasePanel().getGeometryEditPanel();
   }
-  
+
   public TestBuilderModel getModel()
   {
     return tbModel;

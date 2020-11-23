@@ -6,7 +6,7 @@ import test.jts.GeometryTestData;
 public class GeometryReverseTest  extends GeometryTestCase {
 
   public static void main(String[] args) throws Exception {
-    junit.textui.TestRunner.run(GeometryCopyTest.class);
+    junit.textui.TestRunner.run(GeometryReverseTest.class);
   }
 
   public GeometryReverseTest(String name) {
@@ -14,14 +14,9 @@ public class GeometryReverseTest  extends GeometryTestCase {
   }
 
   public void testReverse() {
-    checkReverse( read( GeometryTestData.WKT_POINT ));
-    checkReverse( read( GeometryTestData.WKT_LINESTRING ));
-    checkReverse( read( GeometryTestData.WKT_LINEARRING ));
-    checkReverse( read( GeometryTestData.WKT_POLY ));
-    checkReverse( read( GeometryTestData.WKT_MULTIPOINT ));
-    checkReverse( read( GeometryTestData.WKT_MULTILINESTRING ));
-    checkReverse( read( GeometryTestData.WKT_MULTIPOLYGON ));
-    checkReverse( read( GeometryTestData.WKT_GC ));
+    for (String wkt : GeometryTestData.WKT_ALL) {
+      checkReverse( read( wkt ));
+    }
   }
 
   private void checkReverse(final Geometry g) {
@@ -72,6 +67,9 @@ public class GeometryReverseTest  extends GeometryTestCase {
                               pt2.getInteriorRingN(k).getCoordinateSequence()))
             return false;
         }
+      }
+      else if (gt1 instanceof GeometryCollection) {
+        checkSequences(gt1, gt2);
       }
       else {
         return false;

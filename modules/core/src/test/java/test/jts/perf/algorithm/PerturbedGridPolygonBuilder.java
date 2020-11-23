@@ -10,7 +10,7 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
 
-package org.locationtech.jts.algorithm;
+package test.jts.perf.algorithm;
 
 import java.util.Random;
 

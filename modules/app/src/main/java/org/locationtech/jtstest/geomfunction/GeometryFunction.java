@@ -95,6 +95,8 @@ public interface GeometryFunction
 	 */
 	boolean equals(Object obj);
 
-  public abstract boolean isBinary();
+  boolean isBinary();
+  
+  boolean isRequiredB();
 	
 }

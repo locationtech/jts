@@ -30,8 +30,8 @@ import org.locationtech.jts.util.Stopwatch;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
-import org.locationtech.jtstest.util.io.IOUtil;
 import org.locationtech.jtstest.util.io.MultiFormatBufferedReader;
+import org.locationtech.jtstest.util.io.MultiFormatFileReader;
 import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 /**
@@ -82,23 +82,43 @@ public class JTSOpRunner {
   private boolean isTime;
   
   static class OpParams {
-    String operation;
+    static final int OFFSET_DEFAULT = 0;
+    static final int LIMIT_DEFAULT = -1;
+    
     public String fileA;
     String geomA;
+    public int limitA = LIMIT_DEFAULT;
+    public int offsetA = OFFSET_DEFAULT;
+    
     public String fileB;
     public String geomB;
+    public int limitB = LIMIT_DEFAULT;
+    public int offsetB = OFFSET_DEFAULT;
+    
     public boolean isGeomAB = false;
-    //public String[] arg1;
     String format = null;
     public Integer repeat;
     public boolean eachA = false;
     public boolean eachB = false;
     public boolean eachAA = false;
-    public String[] argList;
     public boolean validate = false;
     public boolean isIndexed = false;
     public boolean isExplode = false;
     public int srid;
+    
+    String operation;
+    public String[] argList;
+    
+    /**
+     * Tests whether an input geometry has been supplied.
+     * 
+     * @param file
+     * @param geom
+     * @return true if an input geometry is present
+     */
+    static boolean isGeometryInput(String file, String geom) {
+      return file != null || geom != null;
+    }
   }
 
   public JTSOpRunner() {
@@ -144,10 +164,10 @@ public class JTSOpRunner {
 
     loadGeometry();
     if (geomA != null) {
-      printGeometrySummary("A", geomA, param.fileA);
+      printGeometrySummary("A", geomA, fileInfo(param.fileA, param.limitA, param.offsetA) );
     }
     if (geomB != null) {
-      printGeometrySummary("B", geomB, param.fileB);
+      printGeometrySummary("B", geomB, fileInfo(param.fileB, param.limitB, param.offsetB) );
     }
     
     //--- If -each aa specified, use A for B
@@ -179,16 +199,17 @@ public class JTSOpRunner {
 
   private void loadGeometry() {
     if (param.isGeomAB) {
+      //--- limiting is not used for AB reading
       loadGeometryAB();
     }
     else {
-      geomA = readGeometry("A", param.fileA, param.geomA);
-      geomB = readGeometry("B", param.fileB, param.geomB);
+      geomA = readGeometry("A", param.fileA, param.geomA, param.limitA, param.offsetA);
+      geomB = readGeometry("B", param.fileB, param.geomB, param.limitB, param.offsetB);
     }
   }
 
   private void loadGeometryAB() {
-    Geometry geomAB = readGeometry("AB", param.fileA, param.geomA);
+    Geometry geomAB = readGeometry("AB", param.fileA, param.geomA, OpParams.LIMIT_DEFAULT, OpParams.OFFSET_DEFAULT);
     if (geomAB.getNumGeometries() < 2) {
       throw new CommandError(ERR_REQUIRED_B);
     }
@@ -236,7 +257,7 @@ public class JTSOpRunner {
   
   private void executeFunctionSpreadB(Geometry geomA, FunctionInvoker fun, String header) {
     int numGeom = 1;
-    if (fun.isBinaryGeom()) {
+    if ( fun.isBinaryGeom() && geomB != null ) {
       numGeom = geomB.getNumGeometries();
     }
     boolean isSpread = geomB != null 
@@ -351,19 +372,19 @@ public class JTSOpRunner {
       logError("Result is invalid");
     }
   }
-
+  
   /**
    * Reads a geometry from a literal or a filename.
    * If neither are provided this geometry is not present.
    * 
    * @param geomLabel label for geometry being read
-   * @param filename the filename to read from, if present
-   * @param geom the geometry literal, if present
+   * @param filename the filename to read from, if present, or <code>null</code>
+   * @param geom the geometry literal, if present, or <code>null</code>
    * @param geomA2 
    * @return the geometry read, or null
    * @throws Exception
    */
-  private Geometry readGeometry(String geomLabel, String filename, String geom) {
+  private Geometry readGeometry(String geomLabel, String filename, String geom, int limit, int offset) {
     String geomDesc = " " + geomLabel + " ";
     if (geom != null) {
       // read a literal from the argument
@@ -387,7 +408,7 @@ public class JTSOpRunner {
     }
     
     try {
-      return IOUtil.readFile(filename,  geomFactory );
+      return MultiFormatFileReader.readFile(filename, limit, offset, geomFactory );
     }
     catch (FileNotFoundException ex) {
       throw new CommandError(ERR_FILE_NOT_FOUND, filename);
@@ -466,24 +487,35 @@ public class JTSOpRunner {
     printlnInfo( GeometryOutput.writeGeometrySummary(label, geom) + srcname);
   }
   
+  private static String fileInfo(String filename, int limit, int offset) {
+    if (filename == null) return null;
+    String info = filename;
+    if (limit > OpParams.LIMIT_DEFAULT) info += " LIMIT " + limit;
+    if (offset > OpParams.OFFSET_DEFAULT) info += " OFFSET " + offset;
+    return info;
+  }
+  
   private void checkFunctionArgs(GeometryFunction func, Geometry geomB, String[] argList) {
     Class[] paramTypes = func.getParameterTypes();
     int nParam = paramTypes.length;
     
+    /*
+    // disable this check for now, since it does not handle functions where B is optional
     if (func.isBinary() && geomB == null)
       throw new CommandError(ERR_REQUIRED_B);
-    /**
-    // MD not sure whether to check this?
-    if (! func.isBinary() && geomB != null)
-      throw new CommandError(ERR_REQUIRED_B);
-      */
+     */
     
     /*
      * check count of supplied args.
      * Assumes B has been checked.
      */
     int argCount = 0;
-    if (func.isBinary() && geomB != null) argCount++;
+    if (func.isBinary()
+      // disable B check for now
+      //  && geomB != null
+        ) {
+      argCount++;
+    }
     if (argList != null) argCount++;
     if (nParam != argCount) {
       throw new CommandError(ERR_WRONG_ARG_COUNT, func.getName());

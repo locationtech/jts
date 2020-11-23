@@ -53,6 +53,11 @@ public class SnappingNoder
   private double snapTolerance;
   private List<NodedSegmentString> nodedResult;
 
+  /**
+   * Creates a snapping noder using the given snap distance tolerance.
+   * 
+   * @param snapTolerance points are snapped if within this distance
+   */
   public SnappingNoder(double snapTolerance) {
     this.snapTolerance = snapTolerance;
     snapIndex = new SnappingPointIndex(snapTolerance);

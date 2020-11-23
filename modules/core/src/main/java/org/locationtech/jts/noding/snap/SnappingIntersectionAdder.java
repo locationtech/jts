@@ -68,25 +68,25 @@ public class SnappingIntersectionAdder
     Coordinate p10 = seg1.getCoordinates()[segIndex1];
     Coordinate p11 = seg1.getCoordinates()[segIndex1 + 1];
 
-    li.computeIntersection(p00, p01, p10, p11);
-//if (li.hasIntersection() && li.isProper()) Debug.println(li);
-
     /**
-     * Process single point intersections only.
-     * Two-point (collinear) ones are handled by the near-vertex code
+     * Don't node intersections which are just 
+     * due to the shared vertex of adjacent segments.
      */
-    if (li.hasIntersection() && li.getIntersectionNum() == 1) {
+    if (! isAdjacent(seg0, segIndex0, seg1, segIndex1)) {
+      li.computeIntersection(p00, p01, p10, p11);
+  //if (li.hasIntersection() && li.isProper()) Debug.println(li);
+  
       /**
-       * Don't node intersections which are just 
-       * due to the shared vertex of adjacent segments.
+       * Process single point intersections only.
+       * Two-point (collinear) ones are handled by the near-vertex code
        */
-      if (! isAdjacent(seg0, segIndex0, seg1, segIndex1)) {
-        
-        Coordinate intPt = li.getIntersection(0);
-        Coordinate snapPt = snapPointIndex.snap(intPt);
-        
-        ((NodedSegmentString) seg0).addIntersection(snapPt, segIndex0);
-        ((NodedSegmentString) seg1).addIntersection(snapPt, segIndex1);
+      if (li.hasIntersection() && li.getIntersectionNum() == 1) {
+          
+          Coordinate intPt = li.getIntersection(0);
+          Coordinate snapPt = snapPointIndex.snap(intPt);
+          
+          ((NodedSegmentString) seg0).addIntersection(snapPt, segIndex0);
+          ((NodedSegmentString) seg1).addIntersection(snapPt, segIndex1);
       }
     }
     

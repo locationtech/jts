@@ -45,9 +45,7 @@ import org.locationtech.jts.util.Assert;
  * <ul>
  * <li><b>Point</b>: a <code>WKBPoint</code> with <code>NaN</code> ordinate values</li> 
  * <li><b>LineString</b>: a <code>WKBLineString</code> with zero points</li>
- * <li><b>Polygon</b>: currently output as a <code>WKBPolygon</code> with one <code>LinearRing</code> with zero points.
- * <i>Note: This is different to other systems.  It will change to a <code>WKBPolygon</code> with zero <code>LinearRing</code>s.</i>
- * </li>
+ * <li><b>Polygon</b>: a <code>WKBPolygon</code> with zero rings</li>
  * <li><b>Multi geometries</b>: a <code>WKBMulti</code> geometry of appropriate type with zero elements</li>
  * <li><b>GeometryCollections</b>: a <code>WKBGeometryCollection</code> with zero elements</li>
  * </ul></li>
@@ -344,7 +342,8 @@ public class WKBWriter
     writeByteOrder(os);
     writeGeometryType(WKBConstants.wkbPoint, pt, os);
     if (pt.getCoordinateSequence().size() == 0) {
-      writeNaNs(2, os);
+      // write empty point as NaNs (extension to OGC standard)
+      writeNaNs(outputDimension, os);
     } else {
       writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
     }
@@ -362,6 +361,11 @@ public class WKBWriter
   {
     writeByteOrder(os);
     writeGeometryType(WKBConstants.wkbPolygon, poly, os);
+    //--- write empty polygons with no rings (OCG extension)
+    if (poly.isEmpty()) {
+      writeInt(0, os);
+      return;
+    }
     writeInt(poly.getNumInteriorRing() + 1, os);
     writeCoordinateSequence(poly.getExteriorRing().getCoordinateSequence(), true, os);
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {

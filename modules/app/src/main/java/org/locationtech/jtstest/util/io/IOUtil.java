@@ -45,7 +45,7 @@ public class IOUtil
       return readWKBHexFile(filename, geomFact);
     if (ext.equalsIgnoreCase(".gml"))
       return readGMLFile(filename, geomFact);
-    if (ext.equalsIgnoreCase(".geojson"))
+    if (ext.equalsIgnoreCase(".geojson") || ext.equalsIgnoreCase(".json"))
       return readGeoJSONFile(filename, geomFact);
     return readWKTFile(filename, geomFact);
   }

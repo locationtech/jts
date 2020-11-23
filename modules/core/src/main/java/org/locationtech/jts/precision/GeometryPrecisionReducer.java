@@ -28,10 +28,18 @@ import org.locationtech.jts.operation.overlayng.PrecisionReducer;
  * (i.e. {@link Geometry#isValid()} is true).
  * To ensure this a polygonal geometry is reduced in a topologically valid fashion
  * (technically, by using snap-rounding).
- * It can be forced to be reduced pointwise by using {@link #setPointwise(boolean)}.
- * Note that in this case the result geometry may be invalid.
- * Linear and point geometry is always reduced pointwise (i.e. without further change to 
- * its topology or stucture), since this does not change validity.
+ * Note that this may change polygonal geometry structure
+ * (e.g. two polygons separated by a distance below the specified precision
+ * will be merged into a single polygon).
+ * <p>
+ * In general input must be valid geometry, or an {@link IllegalArgumentException} 
+ * will be thrown. However if the invalidity is "mild" or very small then it
+ * may be eliminated by precision reduction.
+ * <p> 
+ * Alternatively, geometry can be reduced pointwise by using {@link #setPointwise(boolean)}.
+ * In this case the result geometry topology may be invalid.
+ * Linear and point geometry are always reduced pointwise (i.e. without further change to 
+ * topology or structure), since this does not change validity.
  * <p>
  * By default the geometry precision model is not changed.
  * This can be overridden by using {@link #setChangePrecisionModel(boolean)}.
@@ -54,6 +62,7 @@ public class GeometryPrecisionReducer
 	 * @param g the geometry to reduce
 	 * @param precModel the precision model to use
 	 * @return the reduced geometry
+   * @throws IllegalArgumentException if the reduction fails due to invalid input geometry is invalid
 	 */
 	public static Geometry reduce(Geometry g, PrecisionModel precModel)
 	{
@@ -132,6 +141,14 @@ public class GeometryPrecisionReducer
     this.isPointwise = isPointwise;
   }
 
+  /**
+   * Reduces the precision of a geometry, 
+   * according to the specified strategy of this reducer.
+   * 
+   * @param geom the geometry to reduce
+   * @return the precision-reduced geometry
+   * @throws IllegalArgumentException if the reduction fails due to invalid input geometry is invalid
+   */
   public Geometry reduce(Geometry geom)
   {
     if (!isPointwise && geom instanceof Polygonal) {

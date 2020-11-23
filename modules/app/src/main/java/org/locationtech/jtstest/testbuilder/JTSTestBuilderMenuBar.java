@@ -83,6 +83,13 @@ public class JTSTestBuilderMenuBar
           tbFrame.actionInspectGeometry();
         }
       });
+    JMenuItem menuShowIndicators = menuItemCheck("ShowIndicators",
+      JTSTestBuilderFrame.isShowingIndicators,
+      new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          JTSTestBuilderFrame.isShowingIndicators = ! JTSTestBuilderFrame.isShowingIndicators;
+        }
+      });
     menuLoadXmlTestFile.setText("Open XML File(s)...");
     menuLoadXmlTestFile.addActionListener(
       new java.awt.event.ActionListener() {
@@ -173,10 +180,12 @@ public class JTSTestBuilderMenuBar
 
     jMenuView.add(menuViewText);
     jMenuView.add(menuViewGeometry);
+    jMenuEdit.addSeparator();
+    jMenuView.add(menuShowIndicators);
+    
     //==========================    
     jMenuEdit.setText("Edit");
     jMenuEdit.add(deleteAllTestCasesMenuItem);
-    jMenuEdit.addSeparator();
     jMenuEdit.add(precisionModelMenuItem);
     jMenuEdit.addSeparator();
     jMenuEdit.add(removeDuplicatePoints);

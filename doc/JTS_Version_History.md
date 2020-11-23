@@ -27,7 +27,13 @@ Distributions for older JTS versions can be obtained at the
 * Add `KMLReader` (#593)
 * Add `Densifier.setValidated` method to allow disabling expensive polygon validation (#595)
 * Add `OverlayNG` codebase (#599)
+* Add system property `jts.overlay=ng` to enable use of OverlayNG in `Geometry` methods (#615)
+* Add `SnapRoundingNoder` (#599)
+* Add `SnappingNoder` (#599)
+* Change `GeometryPrecisionReducer` to use OverlayNG with Snap-Rounding
+* Change `GeometryNoder` to use `SnapRoundingNoder`
 * Add `KdTree` `size` and `depth` methods (#603)
+* Improve `WKBWriter` to write empty Polygons using a more compact representation (#623)
 
 ### Bug Fixes
 
@@ -35,6 +41,15 @@ Distributions for older JTS versions can be obtained at the
 * Fix `PackedCoordinateSequence` to always use XYZM coordinates when dimension is 4 (#591)
 * Fix `OrdinateFormat` to work around a JDK issue with the minus sign character in `Locale.NO` (#596)
 * Fix `GeoJsonReader` to throw a `ParseException` for empty arrays (#600)
+* Fix `WKTFileReader` handling of files with large amount of whitespace (#616)
+* Fix `WKBWriter` to output 3D empty Points with 3 ordinates (#622)
+* Fix `Geometry.reverse` to handle all geometry structures (#628)
+
+## JTS TestBuilder
+
+### Functionality Improvements
+
+* Add Geometry Inspector sorting by Area or Length
 
 <!-- ================================================================ -->
 
@@ -70,6 +85,11 @@ Distributions for older JTS versions can be obtained at the
 
 * Enhance `-geomfunc` to load multiple function classes
 * Fix function registry to replace matching loaded functions (#569)
+
+## JtsOp 
+
+* Added `-limit` and `-offset` options for reading from file inputs (#617)
+
 
 <!-- ================================================================ -->
 
