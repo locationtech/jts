@@ -62,9 +62,9 @@ public class OverlayNGZTest extends GeometryTestCase
   }
   
   // TODO: add Z population from model
-  public void xtestLineXYPolygonDifferenceLine() {
+  public void testLineXYPolygonDifferenceLine() {
     checkDifference("LINESTRING (0 5, 10 5)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
-        "MULTILINESTRING Z((0 5 0, 1 5 2), (9 5 8, 10 5 10))");
+        "MULTILINESTRING Z((0 5 6.25, 1 5 3), (9 5 7, 10 5 6.25))");
   }
 
   //=================================================
