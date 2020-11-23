@@ -26,17 +26,23 @@ public class OverlayNGZTest extends GeometryTestCase
     super(name);
   }
   
-  public void testLineIntersectionPointInterpolated() {
+  // checks that Point Z is preserved
+  public void testPointPolygonIntersection() {
+    checkIntersection("POINT Z (5 5 99)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
+        "POINT Z(5 5 99)");
+  }
+
+  public void testLineIntersectionPointZInterpolated() {
     checkIntersection("LINESTRING (0 0 0, 10 10 10)", "LINESTRING (10 0 0, 0 10 10)",
         "POINT(5 5 5)");
   }
 
-  public void testLineIntersectionPoint() {
+  public void testLineIntersectionPointZValue() {
     checkIntersection("LINESTRING (0 0 0, 10 10 10)", "LINESTRING (10 0 0, 5 5 999, 0 10 10)",
         "POINT(5 5 999)");
   }
 
-  public void testLineLineUnionOverlap() {
+  public void testLineOverlapUnion() {
     checkUnion("LINESTRING (0 0 0, 10 10 10)", "LINESTRING (5 5 990, 15 15 999)",
         "MULTILINESTRING Z((0 0 0, 5 5 990), (5 5 990, 10 10 10), (10 10 10, 15 15 999))");
   }
@@ -46,29 +52,46 @@ public class OverlayNGZTest extends GeometryTestCase
         "MULTILINESTRING ((0 0 0, 5 5 5), (6 6 6, 10 10 10))");
   }
 
-  public void testLinePolygonIntersectionLine() {
+  public void testLinePolygonIntersection() {
     checkIntersection("LINESTRING Z (0 0 0, 5 5 5)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
         "LINESTRING Z (1 1 1, 5 5 5)");
   }
 
-  public void testLinePolygonDifferenceLine() {
+  public void testLinePolygonDifference() {
     checkDifference("LINESTRING Z (0 5 0, 10 5 10)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
         "MULTILINESTRING Z((0 5 0, 1 5 2), (9 5 8, 10 5 10))");
   }
 
-  public void testLinePolygonXYDifferenceLine() {
+  public void testPointXYPolygonIntersection() {
+    checkIntersection("POINT (5 5)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
+        "POINT Z(5 5 6.25)");
+  }
+
+  // XY Polygon gets Z value from Point
+  public void testPointPolygonXYUnionn() {
+    checkUnion("POINT Z (5 5 77)", "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
+        "POLYGON Z((1 1 77, 1 9 77, 9 9 77, 9 1 77, 1 1 77))");
+  }
+
+  public void testLinePolygonXYDifference() {
     checkDifference("LINESTRING Z (0 5 0, 10 5 10)", "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
         "MULTILINESTRING Z((0 5 0, 1 5 1), (9 5 9, 10 5 10))");
   }
   
-  public void testLineXYPolygonDifferenceLine() {
+  public void testLineXYPolygonDifference() {
     checkDifference("LINESTRING (0 5, 10 5)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
         "MULTILINESTRING Z((0 5 6.25, 1 5 3), (9 5 7, 10 5 6.25))");
   }
 
-  public void testPolygonIntersectionPointXY() {
-    checkIntersection("POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))", "POINT (5 5)",
-        "POINT Z(5 5 6.25)");
+  public void testPolygonXYPolygonIntersection() {
+    checkIntersection("POLYGON ((4 12, 2 6, 7 6, 11 4, 15 15, 4 12))", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
+        "POLYGON Z((2 6 10, 3 9 6, 9 9 9, 9 5 7, 7 6 9, 2 6 10))");
+  }
+
+  // Test that operation on XY geoms produces XY (Z = NaN)
+  public void testPolygonXYPolygonXYIntersection() {
+    checkIntersection("POLYGON ((4 12, 2 6, 7 6, 11 4, 15 15, 4 12))", "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
+        "POLYGON ((2 6, 3 9, 9 9, 9 5, 7 6, 2 6))");
   }
 
   //=================================================

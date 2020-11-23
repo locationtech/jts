@@ -103,6 +103,9 @@ public abstract class GeometryTestCase extends TestCase{
     else if (a instanceof LineString) {
       return isEqualDim(((LineString) a).getCoordinateSequence(), ((LineString) b).getCoordinateSequence(), 3);
     }
+    else if (a instanceof Polygon) {
+      return equalsExactXYZPolygon( (Polygon) a, (Polygon) b);
+    }
     else if (a instanceof GeometryCollection) {
       for (int i = 0; i < a.getNumGeometries(); i++) {
         if (! equalsExactXYZ(a.getGeometryN(i), b.getGeometryN(i)))
@@ -111,6 +114,22 @@ public abstract class GeometryTestCase extends TestCase{
       return true;
     }
     return false;
+  }
+
+  private boolean equalsExactXYZPolygon(Polygon a, Polygon b) {
+    LinearRing aShell = a.getExteriorRing();
+    LinearRing bShell = b.getExteriorRing();
+    if (! isEqualDim(aShell.getCoordinateSequence(), bShell.getCoordinateSequence(), 3))
+      return false;
+    if (a.getNumInteriorRing() != b.getNumInteriorRing())
+      return false;
+    for (int i = 0; i < a.getNumInteriorRing(); i++) {
+      LinearRing aHole = a.getInteriorRingN(i);
+      LinearRing bHole = b.getInteriorRingN(i);
+      if (! isEqualDim(aHole.getCoordinateSequence(), bHole.getCoordinateSequence(), 3))
+        return false;        
+    }
+    return true;
   }
 
   protected void checkEqual(Collection expected, Collection actual) {
