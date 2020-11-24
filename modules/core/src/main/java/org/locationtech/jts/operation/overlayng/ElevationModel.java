@@ -16,6 +16,7 @@ import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.math.MathUtil;
 
 /**
  * A simple elevation model used to populate missing Z values
@@ -24,16 +25,20 @@ import org.locationtech.jts.geom.Geometry;
  * The model divides the extent of the input geometry(s)
  * into an NxM grid.
  * The default grid size is 3x3.  
- * If the input has no extent in either X or Y dimension,
+ * If the input has no extent in the X or Y dimension,
  * that dimension is given grid size 1.
  * The elevation of each grid cell is computed as the average of the Z values
  * of the input vertices in that cell (if any). 
- * If a cell has not input vertices in it, it is assigned
+ * If a cell has no input vertices within it, it is assigned
  * the average elevation over all cells.
+ * <p>
  * If no input vertices have Z values, the model does not assign a Z value.
  * <p>
- * An overlay result geometry can have missing Z values populated 
- * according to the computed Z values in the model.
+ * The elevation of an arbitrary location is determined as the 
+ * Z value of the nearest grid cell.
+ * <p>
+ * An elevation model can be used to populate missing Z values
+ * in an overlay result geometry.
  *  
  * @author Martin Davis
  *
@@ -85,10 +90,10 @@ class ElevationModel {
     cellSizeX = extent.getWidth() / numCellX;
     cellSizeY = extent.getHeight() / numCellY;
     if(cellSizeX <= 0.0) {
-      numCellX = 1;
+      this.numCellX = 1;
     }
     if(cellSizeY <= 0.0) {
-      numCellY = 1;
+      this.numCellY = 1;
     }
     cells = new ElevationCell[numCellX][numCellY];
   }
@@ -152,7 +157,11 @@ class ElevationModel {
   }
   
   /**
-   * Gets the model Z value at a given location
+   * Gets the model Z value at a given location.
+   * If the location lies outside the model grid extent,
+   * this returns the Z value of the nearest grid cell.
+   * If the model has no elevation computed (i.e. due 
+   * to empty input), the value is returned as {@link Double#NaN}.
    * 
    * @param x the x ordinate of the location
    * @param y the y ordinate of the location
@@ -171,7 +180,7 @@ class ElevationModel {
    * Computes Z values for any missing Z values in a geometry,
    * using the computed model.
    * If the model has no Z value, or the geometry coordinate dimension
-   * does not include Z, no action is taken.
+   * does not include Z, the geometry is not updated.
    * 
    * @param geom the geometry to populate Z values for
    */
@@ -220,12 +229,12 @@ class ElevationModel {
     int ix = 0;
     if (numCellX > 1) {
       ix = (int) ((x - extent.getMinX()) / cellSizeX);
-      if (ix >= numCellX) ix = numCellX -1;
+      ix = MathUtil.clamp(ix, 0, numCellX - 1);
     }
     int iy = 0;
     if (numCellY > 1) {
       iy = (int) ((y - extent.getMinY()) / cellSizeY);
-      if (iy >= numCellY) iy = numCellY - 1;
+      iy = MathUtil.clamp(iy, 0, numCellY - 1);
     }
     ElevationCell cell = cells[ix][iy];
     if (isCreateIfMissing && cell == null) {
@@ -242,7 +251,7 @@ class ElevationModel {
     private double avgZ;
 
     public void add(double z) {
-      numZ = 1;
+      numZ++;
       sumZ += z;
     }
     

@@ -26,6 +26,11 @@ public class OverlayNGZTest extends GeometryTestCase
     super(name);
   }
   
+  public void testPointXYPointDifference() {
+    checkDifference("MULTIPOINT ((1 1), (5 5))", "POINT Z (5 5 99)",
+        "POINT Z(1 1 99)");
+  }
+
   // checks that Point Z is preserved
   public void testPointPolygonIntersection() {
     checkIntersection("POINT Z (5 5 99)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
@@ -63,8 +68,8 @@ public class OverlayNGZTest extends GeometryTestCase
   }
 
   public void testPointXYPolygonIntersection() {
-    checkIntersection("POINT (5 5)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
-        "POINT Z(5 5 6.25)");
+    checkIntersection("POINT (5 5)", "POLYGON Z ((1 9 50, 9 9 90, 9 1 50, 1 1 10, 1 9 50))",
+        "POINT Z(5 5 50)");
   }
 
   // XY Polygon gets Z value from Point
@@ -79,13 +84,18 @@ public class OverlayNGZTest extends GeometryTestCase
   }
   
   public void testLineXYPolygonDifference() {
-    checkDifference("LINESTRING (0 5, 10 5)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
-        "MULTILINESTRING Z((0 5 6.25, 1 5 3), (9 5 7, 10 5 6.25))");
+    checkDifference("LINESTRING (0 5, 10 5)", "POLYGON Z ((1 9 50, 9 9 90, 9 1 50, 1 1 10, 1 9 50))",
+        "MULTILINESTRING Z((0 5 50, 1 5 30), (9 5 70, 10 5 50))");
   }
 
   public void testPolygonXYPolygonIntersection() {
-    checkIntersection("POLYGON ((4 12, 2 6, 7 6, 11 4, 15 15, 4 12))", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
-        "POLYGON Z((2 6 10, 3 9 6, 9 9 9, 9 5 7, 7 6 9, 2 6 10))");
+    checkIntersection("POLYGON ((4 12, 2 6, 7 6, 11 4, 15 15, 4 12))", "POLYGON Z ((1 9 50, 9 9 90, 9 1 50, 1 1 10, 1 9 50))",
+        "POLYGON Z((2 6 50, 3 9 60, 9 9 90, 9 5 70, 7 6 90, 2 6 50))");
+  }
+
+  public void testPolygonXYPolygonUnion() {
+    checkUnion("POLYGON ((0 3, 3 3, 3 0, 0 0, 0 3))", "POLYGON Z ((1 9 50, 9 9 90, 9 1 50, 1 1 10, 1 9 50))",
+        "POLYGON Z((0 0 10, 0 3 50, 1 3 20, 1 9 50, 9 9 90, 9 1 50, 3 1 20, 3 0 50, 0 0 10))");
   }
 
   // Test that operation on XY geoms produces XY (Z = NaN)
