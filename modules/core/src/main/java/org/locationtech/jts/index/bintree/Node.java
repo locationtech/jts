@@ -19,31 +19,30 @@ import org.locationtech.jts.util.Assert;
  *
  * @version 1.7
  */
-public class Node
-  extends NodeBase
+public class Node<T>
+  extends NodeBase<T>
 {
-  public static Node createNode(Interval itemInterval)
+  public static<T> Node<T> createNode(Interval itemInterval)
   {
     Key key = new Key(itemInterval);
 
 //System.out.println("input: " + env + "  binaryEnv: " + key.getEnvelope());
-    Node node = new Node(key.getInterval(), key.getLevel());
-    return node;
+    return new Node<>(key.getInterval(), key.getLevel());
   }
 
-  public static Node createExpanded(Node node, Interval addInterval)
+  public static <T>Node<T> createExpanded(Node<T> node, Interval addInterval)
   {
     Interval expandInt = new Interval(addInterval);
     if (node != null) expandInt.expandToInclude(node.interval);
 
-    Node largerNode = createNode(expandInt);
+    Node<T> largerNode = createNode(expandInt);
     if (node != null) largerNode.insert(node);
     return largerNode;
   }
 
-  private Interval interval;
-  private double centre;
-  private int level;
+  private final Interval interval;
+  private final double centre;
+  private final int level;
 
   public Node(Interval interval, int level)
   {
@@ -66,13 +65,13 @@ public class Node
    * Creates the node if
    * it does not already exist.
    */
-  public Node getNode(Interval searchInterval)
+  public Node<T> getNode(Interval searchInterval)
   {
     int subnodeIndex = getSubnodeIndex(searchInterval, centre);
     // if index is -1 searchEnv is not contained in a subnode
     if (subnodeIndex != -1) {
       // create the node if it does not exist
-      Node node = getSubnode(subnodeIndex);
+      Node<T> node = getSubnode(subnodeIndex);
       // recursively search the found/created node
       return node.getNode(searchInterval);
     }
@@ -85,21 +84,21 @@ public class Node
    * Returns the smallest <i>existing</i>
    * node containing the envelope.
    */
-  public NodeBase find(Interval searchInterval)
+  public NodeBase<T> find(Interval searchInterval)
   {
     int subnodeIndex = getSubnodeIndex(searchInterval, centre);
     if (subnodeIndex == -1)
       return this;
     if (subnode[subnodeIndex] != null) {
       // query lies in subnode, so search it
-      Node node = subnode[subnodeIndex];
+      Node<T> node = subnode[subnodeIndex];
       return node.find(searchInterval);
     }
     // no existing subnode, so return this one anyway
     return this;
   }
 
-  void insert(Node node)
+  void insert(Node<T> node)
   {
     Assert.isTrue(interval == null || interval.contains(node.interval));
     int index = getSubnodeIndex(node.interval, centre);
@@ -109,7 +108,7 @@ public class Node
     else {
       // the node is not a direct child, so make a new child node to contain it
       // and recursively insert the node
-      Node childNode = createSubnode(index);
+      Node<T> childNode = createSubnode(index);
       childNode.insert(node);
       subnode[index] = childNode;
     }
@@ -119,7 +118,7 @@ public class Node
    * get the subnode for the index.
    * If it doesn't exist, create it
    */
-  private Node getSubnode(int index)
+  private Node<T> getSubnode(int index)
   {
     if (subnode[index] == null) {
       subnode[index] = createSubnode(index);
@@ -127,7 +126,7 @@ public class Node
     return subnode[index];
   }
 
-  private Node createSubnode(int index)
+  private Node<T> createSubnode(int index)
   {
         // create a new subnode in the appropriate interval
 
@@ -145,8 +144,7 @@ public class Node
         break;
       }
       Interval subInt = new Interval(min, max);
-      Node node = new Node(subInt, level - 1);
-    return node;
+    return new Node<>(subInt, level - 1);
   }
 
 }

@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.Geometry;
  * using to query a single index tree,
  * the distance metric is <i>anti-reflexive</i>.
  * That is, if the two arguments are the same Geometry object,
- * the distance returned is {@link Double.MAX_VALUE}.
+ * the distance returned is {@link Double#MAX_VALUE}.
  * 
  * @author Martin Davis
  *
@@ -38,12 +38,11 @@ implements ItemDistance
    * @param item1 an item which is a Geometry
    * @param item2 an item which is a Geometry
    * @return the distance between the geometries
-   * @throws ClassCastException if either item is not a Geometry
    */
-  public double distance(ItemBoundable item1, ItemBoundable item2) {
+  public double distance(ItemBoundable<? extends Geometry> item1, ItemBoundable<? extends Geometry> item2) {
     if (item1 == item2) return Double.MAX_VALUE;
-    Geometry g1 = (Geometry) item1.getItem();
-    Geometry g2 = (Geometry) item2.getItem();
+    Geometry g1 = item1.getItem();
+    Geometry g2 = item2.getItem();
     return g1.distance(g2);    
   }
 }

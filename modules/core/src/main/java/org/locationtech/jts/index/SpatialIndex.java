@@ -27,12 +27,12 @@ import org.locationtech.jts.geom.Envelope;
  *
  * @version 1.7
  */
-public interface SpatialIndex
+public interface SpatialIndex<T>
 {
   /**
    * Adds a spatial item with an extent specified by the given {@link Envelope} to the index
    */
-  void insert(Envelope itemEnv, Object item);
+  void insert(Envelope itemEnv, T item);
 
   /**
    * Queries the index for all items whose extents intersect the given search {@link Envelope}
@@ -42,7 +42,7 @@ public interface SpatialIndex
    * @param searchEnv the envelope to query for
    * @return a list of the items found by the query
    */
-  List query(Envelope searchEnv);
+  List<T> query(Envelope searchEnv);
 
   /**
    * Queries the index for all items whose extents intersect the given search {@link Envelope},
@@ -53,7 +53,7 @@ public interface SpatialIndex
    * @param searchEnv the envelope to query for
    * @param visitor a visitor object to apply to the items found
    */
-  void query(Envelope searchEnv, ItemVisitor visitor);
+  void query(Envelope searchEnv, ItemVisitor<T> visitor);
 
   /**
    * Removes a single item from the tree.
@@ -62,6 +62,6 @@ public interface SpatialIndex
    * @param item the item to remove
    * @return <code>true</code> if the item was found
    */
-  boolean remove(Envelope itemEnv, Object item);
+  boolean remove(Envelope itemEnv, T item);
 
 }

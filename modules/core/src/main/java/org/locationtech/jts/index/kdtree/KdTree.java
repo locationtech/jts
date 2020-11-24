@@ -51,7 +51,7 @@ import org.locationtech.jts.geom.Envelope;
  * @author David Skea
  * @author Martin Davis
  */
-public class KdTree {
+public class KdTree<T> {
 
   /**
    * Converts a collection of {@link KdNode}s to an array of {@link Coordinate}s.
@@ -75,10 +75,10 @@ public class KdTree {
    *   be included multiple times
    * @return an array of the coordinates represented by the nodes
    */
-  public static Coordinate[] toCoordinates(Collection kdnodes, boolean includeRepeated) {
+  public static <T>Coordinate[] toCoordinates(Collection<KdNode<T>> kdnodes, boolean includeRepeated) {
     CoordinateList coord = new CoordinateList();
-    for (Iterator it = kdnodes.iterator(); it.hasNext();) {
-      KdNode node = (KdNode) it.next();
+    for (Iterator<KdNode<T>> it = kdnodes.iterator(); it.hasNext();) {
+      KdNode<T> node = it.next();
       int count = includeRepeated ? node.getCount() : 1;
       for (int i = 0; i < count; i++) {
        coord.add(node.getCoordinate(), true);
@@ -87,7 +87,7 @@ public class KdTree {
     return coord.toCoordinateArray();
   }
 
-  private KdNode root = null;
+  private KdNode<T> root = null;
   private long numberOfNodes;
   private double tolerance;
 
@@ -129,7 +129,7 @@ public class KdTree {
    *          the point to insert
    * @return the kdnode containing the point
    */
-  public KdNode insert(Coordinate p) {
+  public KdNode<T> insert(Coordinate p) {
     return insert(p, null);
   }
 
@@ -144,9 +144,9 @@ public class KdTree {
    *         node is returned with its counter incremented. This can be checked
    *         by testing returnedNode.getCount() &gt; 1.
    */
-  public KdNode insert(Coordinate p, Object data) {
+  public KdNode<T> insert(Coordinate p, T data) {
     if (root == null) {
-      root = new KdNode(p, data);
+      root = new KdNode<>(p, data);
       return root;
     }
     
@@ -155,7 +155,7 @@ public class KdTree {
      * If tolerance is zero, this phase of the insertion can be skipped.
      */
     if ( tolerance > 0 ) {
-      KdNode matchNode = findBestMatchNode(p);
+      KdNode<T> matchNode = findBestMatchNode(p);
       if (matchNode != null) {
         // point already in index - increment counter
         matchNode.increment();
@@ -178,16 +178,16 @@ public class KdTree {
    * @return the best matching node
    * @return null if no match was found
    */
-  private KdNode findBestMatchNode(Coordinate p) {
-    BestMatchVisitor visitor = new BestMatchVisitor(p, tolerance);
+  private KdNode<T> findBestMatchNode(Coordinate p) {
+    BestMatchVisitor<T> visitor = new BestMatchVisitor<>(p, tolerance);
     query(visitor.queryEnvelope(), visitor);
     return visitor.getNode();
   }
 
-  static private class BestMatchVisitor implements KdNodeVisitor {
+  static private class BestMatchVisitor<T> implements KdNodeVisitor<T> {
 
     private double tolerance;
-    private KdNode matchNode = null;
+    private KdNode<T> matchNode = null;
     private double matchDist = 0.0;
     private Coordinate p;
     
@@ -202,20 +202,17 @@ public class KdTree {
       return queryEnv;
     }
 
-    public KdNode getNode() {
+    public KdNode<T> getNode() {
       return matchNode;
     }
 
-    public void visit(KdNode node) {
+    public void visit(KdNode<T> node) {
       double dist = p.distance(node.getCoordinate());
       boolean isInTolerance =  dist <= tolerance; 
       if (! isInTolerance) return;
       boolean update = false;
-      if (matchNode == null
-          || dist < matchDist
-          // if distances are the same, record the lesser coordinate
-          || (matchNode != null && dist == matchDist 
-          && node.getCoordinate().compareTo(matchNode.getCoordinate()) < 1))
+      // if distances are the same, record the lesser coordinate
+      if (matchNode == null || dist < matchDist || dist == matchDist && node.getCoordinate().compareTo(matchNode.getCoordinate()) < 1)
         update = true;
 
       if (update) {
@@ -234,9 +231,9 @@ public class KdTree {
    * @param data the data for the point
    * @return the created node
    */
-  private KdNode insertExact(Coordinate p, Object data) {
-    KdNode currentNode = root;
-    KdNode leafNode = root;
+  private KdNode<T> insertExact(Coordinate p, T data) {
+    KdNode<T> currentNode = root;
+    KdNode<T> leafNode = root;
     boolean isOddLevel = true;
     boolean isLessThan = true;
 
@@ -273,8 +270,9 @@ public class KdTree {
     //System.out.println("<<");
     // no node found, add new leaf node to tree
     numberOfNodes = numberOfNodes + 1;
-    KdNode node = new KdNode(p, data);
+    KdNode<T> node = new KdNode<>(p, data);
     if (isLessThan) {
+      assert leafNode != null;
       leafNode.setLeft(node);
     } else {
       leafNode.setRight(node);
@@ -282,8 +280,8 @@ public class KdTree {
     return node;
   }
 
-  private void queryNode(KdNode currentNode,
-      Envelope queryEnv, boolean odd, KdNodeVisitor visitor) {
+  private void queryNode(KdNode<T> currentNode,
+      Envelope queryEnv, boolean odd, KdNodeVisitor<T> visitor) {
     if (currentNode == null)
       return;
 
@@ -315,7 +313,7 @@ public class KdTree {
 
   }
 
-  private KdNode queryNodePoint(KdNode currentNode,
+  private KdNode<T> queryNodePoint(KdNode<T> currentNode,
       Coordinate queryPt, boolean odd) {
     if (currentNode == null)
       return null;
@@ -348,7 +346,7 @@ public class KdTree {
    *          the range rectangle to query
    * @param visitor a visitor to visit all nodes found by the search
    */
-  public void query(Envelope queryEnv, KdNodeVisitor visitor) {
+  public void query(Envelope queryEnv, KdNodeVisitor<T> visitor) {
     queryNode(root, queryEnv, true, visitor);
   }
   
@@ -359,8 +357,8 @@ public class KdTree {
    *          the range rectangle to query
    * @return a list of the KdNodes found
    */
-  public List query(Envelope queryEnv) {
-    final List result = new ArrayList();
+  public List<KdNode<T>> query(Envelope queryEnv) {
+    final List<KdNode<T>> result = new ArrayList<>();
     query(queryEnv, result);
     return result;
   }
@@ -373,10 +371,10 @@ public class KdTree {
    * @param result
    *          a list to accumulate the result nodes into
    */
-  public void query(Envelope queryEnv, final List result) {
-    queryNode(root, queryEnv, true, new KdNodeVisitor() {
+  public void query(Envelope queryEnv, final List<KdNode<T>> result) {
+    queryNode(root, queryEnv, true, new KdNodeVisitor<T>() {
 
-      public void visit(KdNode node) {
+      public void visit(KdNode<T> node) {
         result.add(node);
       }
       
@@ -389,7 +387,7 @@ public class KdTree {
    * @param queryPt the point to query
    * @return the point node, if it is found in the index, or null if not
    */
-  public KdNode query(Coordinate queryPt) {
+  public KdNode<T> query(Coordinate queryPt) {
     return queryNodePoint(root, queryPt, true);
   }
 
@@ -402,13 +400,13 @@ public class KdTree {
     return depthNode(root);
   }
   
-  private int depthNode(KdNode currentNode) {
+  private int depthNode(KdNode<T> currentNode) {
     if (currentNode == null)
       return 0;
 
     int dL = depthNode(currentNode.getLeft());
     int dR = depthNode(currentNode.getRight());
-    return 1 + (dL > dR ? dL : dR);
+    return 1 + Math.max(dL, dR);
   }
   
   /**
@@ -420,7 +418,7 @@ public class KdTree {
     return sizeNode(root);
   }
   
-  private int sizeNode(KdNode currentNode) {
+  private int sizeNode(KdNode<T> currentNode) {
     if (currentNode == null)
       return 0;
 

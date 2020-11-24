@@ -29,13 +29,13 @@ import java.util.List;
  *
  * @version 1.7
  */
-public class SIRtree extends AbstractSTRtree {
+public class SIRtree<T> extends AbstractSTRtree<T> {
 
-  private Comparator comparator = new Comparator() {
-    public int compare(Object o1, Object o2) {
+  private Comparator comparator = new Comparator<Boundable>() {
+    public int compare(Boundable o1, Boundable o2) {
       return compareDoubles(
-          ((Interval)((Boundable)o1).getBounds()).getCentre(),
-          ((Interval)((Boundable)o2).getBounds()).getCentre());
+          ((Interval) o1.getBounds()).getCentre(),
+          ((Interval) o2.getBounds()).getCentre());
     }
   };
 
@@ -62,7 +62,7 @@ public class SIRtree extends AbstractSTRtree {
     return new AbstractNode(level) {
       protected Object computeBounds() {
         Interval bounds = null;
-        for (Iterator i = getChildBoundables().iterator(); i.hasNext(); ) {
+        for (Iterator<Boundable> i = getChildBoundables().iterator(); i.hasNext(); ) {
           Boundable childBoundable = (Boundable) i.next();
           if (bounds == null) {
             bounds = new Interval((Interval)childBoundable.getBounds());
@@ -79,14 +79,14 @@ public class SIRtree extends AbstractSTRtree {
   /**
    * Inserts an item having the given bounds into the tree.
    */
-  public void insert(double x1, double x2, Object item) {
+  public void insert(double x1, double x2, T item) {
     super.insert(new Interval(Math.min(x1, x2), Math.max(x1, x2)), item);
   }
 
   /**
    * Returns items whose bounds intersect the given value.
    */
-  public List query(double x) {
+  public List<T> query(double x) {
     return query(x, x);
   }
 
@@ -94,7 +94,7 @@ public class SIRtree extends AbstractSTRtree {
    * Returns items whose bounds intersect the given bounds.
    * @param x1 possibly equal to x2
    */
-  public List query(double x1, double x2) {
+  public List<T> query(double x1, double x2) {
     return super.query(new Interval(Math.min(x1, x2), Math.max(x1, x2)));
   }
 

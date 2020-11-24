@@ -16,25 +16,25 @@ package org.locationtech.jts.index.sweepline;
 /**
  * @version 1.7
  */
-public class SweepLineInterval {
+public class SweepLineInterval<T> {
 
   private double min, max;
-  private Object item;
+  private T item;
 
   public SweepLineInterval(double min, double max)
   {
     this(min, max, null);
   }
 
-  public SweepLineInterval(double min, double max, Object item)
+  public SweepLineInterval(double min, double max, T item)
   {
-    this.min = min < max ? min : max;
-    this.max = max > min ? max : min;
+    this.min = Math.min(min, max);
+    this.max = Math.max(max, min);
     this.item = item;
   }
 
   public double getMin() { return min;  }
   public double getMax() { return max;  }
-  public Object getItem() { return item; }
+  public T getItem() { return item; }
 
 }
