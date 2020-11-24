@@ -152,7 +152,7 @@ import org.locationtech.jts.util.Assert;
  *@version 1.7
  */
 public abstract class Geometry
-    implements Cloneable, Comparable, Serializable
+    implements Cloneable, Comparable<Geometry>, Serializable
 {
   private static final long serialVersionUID = 8763622679187376702L;
     
@@ -1672,18 +1672,17 @@ public abstract class Geometry
    *      defined in "Normal Form For Geometry" in the JTS Technical
    *      Specifications
    */
-  public int compareTo(Object o) {
-    Geometry other = (Geometry) o;
-    if (getTypeCode() != other.getTypeCode()) {
-      return getTypeCode() - other.getTypeCode();
+  public int compareTo(Geometry o) {
+    if (getTypeCode() != o.getTypeCode()) {
+      return getTypeCode() - o.getTypeCode();
     }
-    if (isEmpty() && other.isEmpty()) {
+    if (isEmpty() && o.isEmpty()) {
       return 0;
     }
     if (isEmpty()) {
       return -1;
     }
-    if (other.isEmpty()) {
+    if (o.isEmpty()) {
       return 1;
     }
     return compareToSameClass(o);

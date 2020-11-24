@@ -32,7 +32,7 @@ import org.locationtech.jts.geom.Envelope;
  *
  */
 class BoundablePair
-  implements Comparable
+  implements Comparable<BoundablePair>
 {
   private Boundable boundable1;
   private Boundable boundable2;
@@ -110,9 +110,8 @@ class BoundablePair
   /**
    * Compares two pairs based on their minimum distances
    */
-  public int compareTo(Object o)
+  public int compareTo(BoundablePair nd)
   {
-    BoundablePair nd = (BoundablePair) o;
     if (distance < nd.distance) return -1;
     if (distance > nd.distance) return 1;
     return 0;

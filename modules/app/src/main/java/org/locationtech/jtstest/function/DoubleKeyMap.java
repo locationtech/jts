@@ -13,47 +13,47 @@ package org.locationtech.jtstest.function;
 
 import java.util.*;
 
-public class DoubleKeyMap 
+public class DoubleKeyMap <K extends Comparable<K>,L extends Comparable<L>,V>
 {
-	private Map topMap = new TreeMap();
+	private final Map<K,Map<L,V>> topMap = new TreeMap<>();
 	
-	public void put(Object key1, Object key2, Object value)
+	public void put(K key1, L key2, V value)
 	{
-		Map keyMap = (Map) topMap.get(key1);
+		Map<L,V> keyMap =  topMap.get(key1);
 		if (keyMap == null)
 			keyMap = createKeyMap(key1);
 		keyMap.put(key2, value);
 	}
 	
-	private Map createKeyMap(Object key1)
+	private Map<L,V> createKeyMap(K key1)
 	{
-		Map map = new TreeMap();
+		Map<L,V> map = new TreeMap<>();
 		topMap.put(key1, map);
 		return map;
 	}
 	
-	public Object get(Object key1, Object key2)
+	public V get(K key1, L key2)
 	{
-		Map keyMap = (Map) topMap.get(key1);
+		Map<L,V> keyMap =  topMap.get(key1);
 		if (keyMap == null) return null;
 		return keyMap.get(key2);
 	}
 	
-	public Set keySet()
+	public Set<K> keySet()
 	{
 		return topMap.keySet();
 	}
-	public Set keySet(Object key)
+	public Set<L> keySet(K key)
 	{
-		Map keyMap = (Map) topMap.get(key);
-		if (keyMap == null) return new TreeSet();
+		Map<L,V> keyMap =  topMap.get(key);
+		if (keyMap == null) return Collections.emptySet();
 		return keyMap.keySet();
 	}
 	
-	public Collection values(Object key1)
+	public Collection<V> values(K key1)
 	{
-		Map keyMap = (Map) topMap.get(key1);
-		if (keyMap == null) return new ArrayList();
+		Map<L,V> keyMap =  topMap.get(key1);
+		if (keyMap == null) return Collections.emptyList();
 		return keyMap.values();
 	}
 }

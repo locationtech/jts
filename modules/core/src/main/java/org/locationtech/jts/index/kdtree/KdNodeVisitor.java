@@ -17,13 +17,13 @@ package org.locationtech.jts.index.kdtree;
  *
  * @version 1.7
  */
-
-public interface KdNodeVisitor
+@FunctionalInterface
+public interface KdNodeVisitor<T>
 {
   /**
    * Visits a node.
    * 
    * @param node the node to visit
    */
-  void visit(KdNode node);
+  void visit(KdNode<T> node);
 }
