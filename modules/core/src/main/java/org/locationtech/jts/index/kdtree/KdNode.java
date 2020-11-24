@@ -19,12 +19,12 @@ import org.locationtech.jts.geom.Coordinate;
  * 
  * @author dskea
  */
-public class KdNode {
+public class KdNode<T> {
 
     private Coordinate p = null;
-    private Object     data;
-    private KdNode     left;
-    private KdNode     right;
+    private T     data;
+    private KdNode<T>     left;
+    private KdNode<T>     right;
     private int        count;
 
     /**
@@ -34,7 +34,7 @@ public class KdNode {
      * @param _y coordinate of point
      * @param data a data objects to associate with this node
      */
-    public KdNode(double _x, double _y, Object data) {
+    public KdNode(double _x, double _y, T data) {
         p = new Coordinate(_x, _y);
         left = null;
         right = null;
@@ -48,7 +48,7 @@ public class KdNode {
      * @param p point location of new node
      * @param data a data objects to associate with this node
      */
-    public KdNode(Coordinate p, Object data) {
+    public KdNode(Coordinate p, T data) {
         this.p = new Coordinate(p);
         left = null;
         right = null;
@@ -87,7 +87,7 @@ public class KdNode {
      * Gets the user data object associated with this node.
      * @return
      */
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
@@ -96,7 +96,7 @@ public class KdNode {
      * 
      * @return left node
      */
-    public KdNode getLeft() {
+    public KdNode<T> getLeft() {
         return left;
     }
 
@@ -105,7 +105,7 @@ public class KdNode {
      * 
      * @return right node
      */
-    public KdNode getRight() {
+    public KdNode<T> getRight() {
         return right;
     }
 
@@ -133,12 +133,12 @@ public class KdNode {
     }
 
     // Sets left node value
-    void setLeft(KdNode _left) {
+    void setLeft(KdNode<T> _left) {
         left = _left;
     }
 
     // Sets right node value
-    void setRight(KdNode _right) {
+    void setRight(KdNode<T> _right) {
         right = _right;
     }
 }

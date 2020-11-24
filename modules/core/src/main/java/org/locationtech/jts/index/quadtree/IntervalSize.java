@@ -23,7 +23,8 @@ package org.locationtech.jts.index.quadtree;
  *
  * @version 1.7
  */
-public class IntervalSize {
+public final class IntervalSize {
+  private IntervalSize(){}
 
   /**
    * This value is chosen to be a few powers of 2 less than the

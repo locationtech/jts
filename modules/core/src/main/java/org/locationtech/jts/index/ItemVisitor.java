@@ -18,12 +18,12 @@ package org.locationtech.jts.index;
  * @version 1.7
  */
 
-public interface ItemVisitor
+public interface ItemVisitor<T>
 {
   /**
    * Visits an item in the index.
    * 
    * @param item the index item to be visited
    */
-  void visitItem(Object item);
+  void visitItem(T item);
 }

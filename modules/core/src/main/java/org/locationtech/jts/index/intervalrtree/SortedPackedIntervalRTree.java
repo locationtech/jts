@@ -35,9 +35,9 @@ import org.locationtech.jts.io.WKTWriter;
  * 
  * @author Martin Davis
  */
-public class SortedPackedIntervalRTree 
+public class SortedPackedIntervalRTree <T>
 {
-  private List leaves = new ArrayList();
+  private final List<IntervalRTreeNode<T>> leaves = new ArrayList<>();
   
   /**
    * If root is null that indicates
@@ -45,7 +45,7 @@ public class SortedPackedIntervalRTree
    * OR nothing has been added to the tree.
    * In both cases, the tree is still open for insertions.
    */
-	private IntervalRTreeNode root = null;
+	private IntervalRTreeNode<T> root = null;
 	
 	public SortedPackedIntervalRTree()
 	{
@@ -61,11 +61,11 @@ public class SortedPackedIntervalRTree
    * 
    * @throws IllegalStateException if the index has already been queried
    */
-	public void insert(double min, double max, Object item)
+	public void insert(double min, double max, T item)
 	{
     if (root != null)
       throw new IllegalStateException("Index cannot be added to once it has been queried");
-    leaves.add(new IntervalRTreeLeafNode(min, max, item));
+    leaves.add(new IntervalRTreeLeafNode<>(min, max, item));
 	}
 	
   private void init()
@@ -88,21 +88,21 @@ public class SortedPackedIntervalRTree
     root = buildTree();
   }
   
-	private  IntervalRTreeNode buildTree()
+	private  IntervalRTreeNode<T> buildTree()
 	{
 	  
     // sort the leaf nodes
-    Collections.sort(leaves, new IntervalRTreeNode.NodeComparator());
+    leaves.sort(new IntervalRTreeNode.NodeComparator());
     
     // now group nodes into blocks of two and build tree up recursively
-		List src = leaves;
-		List temp = null;
-		List dest = new ArrayList();
+		List<IntervalRTreeNode<T>> src = leaves;
+		List<IntervalRTreeNode<T>> temp = null;
+		List<IntervalRTreeNode<T>> dest = new ArrayList<>();
 		
 		while (true) {
 			buildLevel(src, dest);
 			if (dest.size() == 1)
-				return (IntervalRTreeNode) dest.get(0);
+				return dest.get(0);
       
 			temp = src;
 			src = dest;
@@ -112,20 +112,20 @@ public class SortedPackedIntervalRTree
 	
   private int level = 0;
   
-	private void buildLevel(List src, List dest) 
+	private void buildLevel(List<IntervalRTreeNode<T>> src, List<IntervalRTreeNode<T>> dest)
   {
     level++;
 		dest.clear();
 		for (int i = 0; i < src.size(); i += 2) {
-			IntervalRTreeNode n1 = (IntervalRTreeNode) src.get(i);
-			IntervalRTreeNode n2 = (i + 1 < src.size()) 
-						? (IntervalRTreeNode) src.get(i) : null;
+			IntervalRTreeNode<T> n1 = src.get(i);
+			IntervalRTreeNode<T> n2 = (i + 1 < src.size())
+						? src.get(i) : null;
 			if (n2 == null) {
 				dest.add(n1);
 			} else {
-				IntervalRTreeNode node = new IntervalRTreeBranchNode(
-						(IntervalRTreeNode) src.get(i),
-						(IntervalRTreeNode) src.get(i + 1));
+				IntervalRTreeNode<T> node = new IntervalRTreeBranchNode<T>(
+						src.get(i),
+						src.get(i + 1));
 //        printNode(node);
 //				System.out.println(node);
 				dest.add(node);
@@ -133,7 +133,7 @@ public class SortedPackedIntervalRTree
 		}
 	}
 	
-  private void printNode(IntervalRTreeNode node)
+  private void printNode(IntervalRTreeNode<T> node)
   {
     System.out.println(WKTWriter.toLineString(new Coordinate(node.min, level), new Coordinate(node.max, level)));
   }
@@ -146,7 +146,7 @@ public class SortedPackedIntervalRTree
    * @param max the upper bound of the query interval
    * @param visitor the visitor to pass any matched items to
    */
-	public void query(double min, double max, ItemVisitor visitor)
+	public void query(double min, double max, ItemVisitor<T> visitor)
 	{
     init();
     

@@ -13,6 +13,8 @@
 package org.locationtech.jts.index.strtree;
 
 
+import org.locationtech.jts.geom.Geometry;
+
 /**
  * A function method which computes the distance
  * between two {@link ItemBoundable}s in an {@link STRtree}.
@@ -31,6 +33,7 @@ package org.locationtech.jts.index.strtree;
  * @author Martin Davis
  *
  */
+@FunctionalInterface
 public interface ItemDistance 
 {
   /**
@@ -42,6 +45,6 @@ public interface ItemDistance
    * 
    * @throws IllegalArgumentException if the metric is not applicable to the arguments
    */
-  double distance(ItemBoundable item1, ItemBoundable item2);
+  double distance(ItemBoundable<? extends Geometry> item1, ItemBoundable<? extends Geometry> item2);
 
 }
