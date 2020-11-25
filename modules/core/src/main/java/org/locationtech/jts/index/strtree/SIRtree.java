@@ -12,8 +12,6 @@
  */
 package org.locationtech.jts.index.strtree;
 
-import jdk.nashorn.internal.ir.IdentNode;
-
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
