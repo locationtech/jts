@@ -47,6 +47,13 @@ public class ElevationModelTest extends GeometryTestCase {
         );
   }
 
+  public void testPopulateZLine() {
+    checkElevationPopulateZ("LINESTRING Z (0 0 0, 10 10 10)",
+        "LINESTRING (1 1, 9 9)",
+        "LINESTRING (1 1 0, 9 9 10)"
+        );
+  }
+
   public void testMultiLine() {
     checkElevation("MULTILINESTRING Z ((0 0 0, 10 10 8), (1 2 2, 9 8 6))",
      -1,11, 4,                            11,11,  7,
@@ -136,5 +143,17 @@ public class ElevationModelTest extends GeometryTestCase {
       String msg = "Point ( "  + x + ", " + y + " ) : ";
       assertEquals(msg, expectedZ, actualZ, TOLERANCE);
     }
+  }
+  
+  private void checkElevationPopulateZ(String wkt, String wktNoZ, String wktZExpected) {
+    Geometry geom = read(wkt);
+    ElevationModel model = ElevationModel.create(geom, null);
+    
+    Geometry geomNoZ = read(wktNoZ);
+    model.populateZ(geomNoZ);
+    
+    Geometry geomZExpected = read(wktZExpected);
+    checkEqualXYZ(geomZExpected, geomNoZ);
+    
   }
 }
