@@ -29,14 +29,14 @@ import org.locationtech.jts.util.Assert;
  *
  * @version 1.7
  */
-public abstract class AbstractNode implements Boundable, Serializable {
+public abstract class AbstractNode<B extends Bounds> implements Boundable<B>, Serializable {
   /**
    * 
    */
   private static final long serialVersionUID = 6493722185909573708L;
   
-  private ArrayList childBoundables = new ArrayList();
-  private Object bounds = null;
+  private final List<Boundable<B>> childBoundables = new ArrayList<>();
+  private B bounds = null;
   private int level;
 
   /**
@@ -60,7 +60,7 @@ public abstract class AbstractNode implements Boundable, Serializable {
    * 
    * @return a list of the children
    */
-  public List getChildBoundables() {
+  public List<Boundable<B>> getChildBoundables() {
     return childBoundables;
   }
 
@@ -74,14 +74,14 @@ public abstract class AbstractNode implements Boundable, Serializable {
    *         object (for other subclasses of AbstractSTRtree)
    * @see AbstractSTRtree.IntersectsOp
    */
-  protected abstract Object computeBounds();
+  protected abstract B computeBounds();
 
   /**
    * Gets the bounds of this node
    * 
    * @return the object representing bounds in this index
    */
-  public Object getBounds() {
+  public B getBounds() {
     if (bounds == null) {
       bounds = computeBounds();
     }
@@ -124,7 +124,7 @@ public abstract class AbstractNode implements Boundable, Serializable {
    * 
    * @param childBoundable the child to add
    */
-  public void addChildBoundable(Boundable childBoundable) {
+  public void addChildBoundable(Boundable<B> childBoundable) {
     Assert.isTrue(bounds == null);
     childBoundables.add(childBoundable);
   }

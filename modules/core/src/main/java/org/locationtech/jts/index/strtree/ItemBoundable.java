@@ -20,16 +20,16 @@ import java.io.Serializable;
  *
  * @version 1.7
  */
-public class ItemBoundable<T> implements Boundable, Serializable {
-  private Object bounds;
+public class ItemBoundable<T,B extends Bounds> implements Boundable<B>, Serializable {
+  private B bounds;
   private T item;
 
-  public ItemBoundable(Object bounds, T item) {
+  public ItemBoundable(B bounds, T item) {
     this.bounds = bounds;
     this.item = item;
   }
 
-  public Object getBounds() {
+  public B getBounds() {
     return bounds;
   }
 
