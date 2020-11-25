@@ -55,7 +55,7 @@ implements SpatialIndex, Serializable
 
   static final class STRtreeNode extends AbstractNode
   {
-    public STRtreeNode(int level)
+    STRtreeNode(int level)
     {
       super(level);
     }

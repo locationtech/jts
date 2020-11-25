@@ -65,11 +65,11 @@ public abstract class AbstractSTRtree implements Serializable {
 
   protected AbstractNode root;
 
-  boolean built = false;
+  private boolean built = false;
   /**
    * Set to <tt>null</tt> when index is built, to avoid retaining memory.
    */
-  ArrayList itemBoundables = new ArrayList();
+  private ArrayList itemBoundables = new ArrayList();
   
   private int nodeCapacity;
 
@@ -94,6 +94,17 @@ public abstract class AbstractSTRtree implements Serializable {
     this.nodeCapacity = nodeCapacity;
   }
 
+  public AbstractSTRtree(int nodeCapacity, AbstractNode root) {
+    this(nodeCapacity);
+    built = true;
+    this.root = root;
+    this.itemBoundables = null;
+  }
+
+  public AbstractSTRtree(int nodeCapacity, ArrayList itemBoundables) {
+    this(nodeCapacity);
+    this.itemBoundables = itemBoundables;
+  }
   /**
    * Creates parent nodes, grandparent nodes, and so forth up to the root
    * node, for the data that has been inserted into the tree. Can only be
@@ -454,4 +465,8 @@ public abstract class AbstractSTRtree implements Serializable {
 
   protected abstract Comparator getComparator();
 
+  ArrayList getItemBoundables()
+  {
+    return itemBoundables;
+  }
 }

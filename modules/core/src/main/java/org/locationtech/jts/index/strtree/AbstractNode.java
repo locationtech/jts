@@ -35,7 +35,7 @@ public abstract class AbstractNode implements Boundable, Serializable {
    */
   private static final long serialVersionUID = 6493722185909573708L;
   
-  ArrayList childBoundables = new ArrayList();
+  private ArrayList childBoundables = new ArrayList();
   private Object bounds = null;
   private int level;
 
@@ -127,5 +127,10 @@ public abstract class AbstractNode implements Boundable, Serializable {
   public void addChildBoundable(Boundable childBoundable) {
     Assert.isTrue(bounds == null);
     childBoundables.add(childBoundable);
+  }
+
+  void setChildBoundables(ArrayList childBoundables)
+  {
+    this.childBoundables = childBoundables;
   }
 }
