@@ -32,7 +32,7 @@ public class MonotoneChainBuilder {
    * @param pts the list of points to compute chains for
    * @return a list of the monotone chains for the points 
    */
-  public static List getChains(Coordinate[] pts)
+  public static List<MonotoneChain<?>> getChains(Coordinate[] pts)
   {
     return getChains(pts, null);
   }
@@ -46,13 +46,13 @@ public class MonotoneChainBuilder {
    * @param context a data object to attach to each chain
    * @return a list of the monotone chains for the points 
    */
-  public static List getChains(Coordinate[] pts, Object context)
+  public static List<MonotoneChain<?>> getChains(Coordinate[] pts, Object context)
   {
-    List mcList = new ArrayList();
+    List<MonotoneChain<?>> mcList = new ArrayList<>();
     int chainStart = 0;
     do {
       int chainEnd = findChainEnd(pts, chainStart);
-      MonotoneChain mc = new MonotoneChain(pts, chainStart, chainEnd, context);
+      MonotoneChain<?> mc = new MonotoneChain<>(pts, chainStart, chainEnd, context);
       mcList.add(mc);
       chainStart = chainEnd;
     } while (chainStart < pts.length -1);

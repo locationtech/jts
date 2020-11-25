@@ -75,8 +75,9 @@ import org.locationtech.jts.geom.LineSegment;
  */
 public class MonotoneChain<T> {
 
-  private Coordinate[] pts;
-  private int start, end;
+  private final Coordinate[] pts;
+  private final int start;
+  private final int end;
   private Envelope env = null;
   private T context = null;// user-defined information
   private int id;// useful for optimizing chain comparisons
@@ -195,7 +196,7 @@ public class MonotoneChain<T> {
    */
   public Coordinate[] getCoordinates()
   {
-    Coordinate coord[] = new Coordinate[end - start + 1];
+    Coordinate[] coord = new Coordinate[end - start + 1];
     int index = 0;
     for (int i = start; i <= end; i++) {
       coord[index++] = pts[i];

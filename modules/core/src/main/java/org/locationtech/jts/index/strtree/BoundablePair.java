@@ -31,16 +31,16 @@ import org.locationtech.jts.geom.Envelope;
  * @author Martin Davis
  *
  */
-class BoundablePair
-  implements Comparable<BoundablePair>
+class BoundablePair<T,B extends Bounds>
+  implements Comparable<BoundablePair<?,?>>
 {
-  private Boundable boundable1;
-  private Boundable boundable2;
+  private final Boundable<B> boundable1;
+  private final Boundable<B> boundable2;
   private double distance;
-  private ItemDistance itemDistance;
+  private final ItemDistance<T,B> itemDistance;
   //private double maxDistance = -1.0;
   
-  public BoundablePair(Boundable boundable1, Boundable boundable2, ItemDistance itemDistance)
+  public BoundablePair(Boundable<B> boundable1, Boundable<B> boundable2, ItemDistance<T,B> itemDistance)
   {
     this.boundable1 = boundable1;
     this.boundable2 = boundable2;
@@ -55,7 +55,7 @@ class BoundablePair
    * @param i the index of the member to return (0 or 1)
    * @return the chosen member
    */
-  public Boundable getBoundable(int i)
+  public Boundable<B> getBoundable(int i)
   {
     if (i == 0) return boundable1;
     return boundable2;
@@ -79,7 +79,7 @@ class BoundablePair
    * The boundables are either composites or leaves.
    * If either is composite, the distance is computed as the minimum distance
    * between the bounds.  
-   * If both are leaves, the distance is computed by {@link #itemDistance(ItemBoundable, ItemBoundable)}.
+   * If both are leaves, the distance is computed by {@link ItemDistance(ItemBoundable, ItemBoundable)}.
    * 
    * @return
    */
@@ -87,8 +87,8 @@ class BoundablePair
   {
     // if items, compute exact distance
     if (isLeaves()) {
-      return itemDistance.distance((ItemBoundable) boundable1,
-          (ItemBoundable) boundable2);
+      return itemDistance.distance((ItemBoundable<T,B>) boundable1,
+          (ItemBoundable<T,B>) boundable2);
     }
     // otherwise compute distance between bounds of boundables
     return ((Envelope) boundable1.getBounds()).distance(
@@ -110,7 +110,7 @@ class BoundablePair
   /**
    * Compares two pairs based on their minimum distances
    */
-  public int compareTo(BoundablePair nd)
+  public int compareTo(BoundablePair<?,?> nd)
   {
     if (distance < nd.distance) return -1;
     if (distance > nd.distance) return 1;
@@ -132,7 +132,7 @@ class BoundablePair
     return (item instanceof AbstractNode); 
   }
   
-  private static double area(Boundable b)
+  private static double area(Boundable<?> b)
   {
     return ((Envelope) b.getBounds()).getArea();
   }
@@ -155,7 +155,7 @@ class BoundablePair
    * @param minDistance the limit on the distance between added pairs
    * 
    */
-  public void expandToQueue(PriorityQueue priQ, double minDistance)
+  public void expandToQueue(PriorityQueue<BoundablePair<T,B>> priQ, double minDistance)
   {
     boolean isComp1 = isComposite(boundable1);
     boolean isComp2 = isComposite(boundable2);
@@ -187,18 +187,18 @@ class BoundablePair
     throw new IllegalArgumentException("neither boundable is composite");
   }
   
-  private void expand(Boundable bndComposite, Boundable bndOther, boolean isFlipped,
-      PriorityQueue priQ, double minDistance)
+  private void expand(Boundable<B> bndComposite, Boundable<B> bndOther, boolean isFlipped,
+      PriorityQueue<BoundablePair<T,B>> priQ, double minDistance)
   {
-    List children = ((AbstractNode) bndComposite).getChildBoundables();
-    for (Iterator i = children.iterator(); i.hasNext(); ) {
-      Boundable child = (Boundable) i.next();
-      BoundablePair bp;
+    List<Boundable<B>> children = ((AbstractNode<B>) bndComposite).getChildBoundables();
+    for (Iterator<Boundable<B>> i = children.iterator(); i.hasNext(); ) {
+      Boundable <B>child =  i.next();
+      BoundablePair<T,B> bp;
       if (isFlipped) {
-        bp = new BoundablePair(bndOther, child, itemDistance);
+        bp = new BoundablePair<>(bndOther, child, itemDistance);
       }
       else {
-        bp = new BoundablePair(child, bndOther, itemDistance);        
+        bp = new BoundablePair<>(child, bndOther, itemDistance);
       }
       // only add to queue if this pair might contain the closest points
       // MD - it's actually faster to construct the object rather than called distance(child, bndOther)!

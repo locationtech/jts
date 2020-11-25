@@ -66,13 +66,13 @@ public class HPRtree  <T>
 
   private static final int HILBERT_LEVEL = 12;
 
-  private static int DEFAULT_NODE_CAPACITY = 16;
+  private static final int DEFAULT_NODE_CAPACITY = 16;
   
-  private List<Item<T>> items = new ArrayList<>();
+  private final List<Item<T>> items = new ArrayList<>();
   
   private int nodeCapacity = DEFAULT_NODE_CAPACITY;
 
-  private Envelope totalExtent = new Envelope();
+  private final Envelope totalExtent = new Envelope();
 
   private int[] layerStartIndex;
 

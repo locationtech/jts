@@ -28,8 +28,8 @@ import org.locationtech.jts.geom.Geometry;
  * @author Martin Davis
  *
  */
-public class GeometryItemDistance
-implements ItemDistance
+public class GeometryItemDistance<B extends Bounds>
+implements ItemDistance<Geometry,B>
 {
   /**
    * Computes the distance between two {@link Geometry} items,
@@ -39,7 +39,7 @@ implements ItemDistance
    * @param item2 an item which is a Geometry
    * @return the distance between the geometries
    */
-  public double distance(ItemBoundable<? extends Geometry> item1, ItemBoundable<? extends Geometry> item2) {
+  public double distance(ItemBoundable<Geometry,B> item1, ItemBoundable<Geometry,B> item2) {
     if (item1 == item2) return Double.MAX_VALUE;
     Geometry g1 = item1.getItem();
     Geometry g2 = item2.getItem();

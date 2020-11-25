@@ -61,6 +61,7 @@ public abstract class NodeBase<T> implements Serializable {
    *  0 | 1
    * </pre>
    */
+  @SuppressWarnings("unchecked")
   protected Node<T>[] subnode = new Node[4];
 
   public NodeBase() {

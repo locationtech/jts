@@ -49,26 +49,26 @@ import org.locationtech.jts.util.Assert;
  *
  * @version 1.7
  */
-public class STRtree extends AbstractSTRtree 
-implements SpatialIndex, Serializable 
+public class STRtree<T> extends AbstractSTRtree <T,Envelope>
+implements SpatialIndex<T>, Serializable
 {
 
-  private static final class STRtreeNode extends AbstractNode
+  private static final class STRtreeNode extends AbstractNode<Envelope>
   {
     private STRtreeNode(int level)
     {
       super(level);
     }
 
-    protected Object computeBounds() {
+    protected Envelope computeBounds() {
       Envelope bounds = null;
-      for (Iterator i = getChildBoundables().iterator(); i.hasNext(); ) {
-        Boundable childBoundable = (Boundable) i.next();
+      for (Iterator<Boundable<Envelope>> i = getChildBoundables().iterator(); i.hasNext(); ) {
+        Boundable<Envelope> childBoundable = i.next();
         if (bounds == null) {
-          bounds = new Envelope((Envelope)childBoundable.getBounds());
+          bounds = new Envelope(childBoundable.getBounds());
         }
         else {
-          bounds.expandToInclude((Envelope)childBoundable.getBounds());
+          bounds.expandToInclude(childBoundable.getBounds());
         }
       }
       return bounds;
@@ -80,20 +80,20 @@ implements SpatialIndex, Serializable
    */
   private static final long serialVersionUID = 259274702368956900L;
   
-  private static Comparator xComparator =
-    new Comparator() {
-      public int compare(Object o1, Object o2) {
+  private static final Comparator<Boundable<Envelope>> xComparator =
+    new Comparator<Boundable<Envelope>>() {
+      public int compare(Boundable<Envelope> o1, Boundable<Envelope> o2) {
         return compareDoubles(
-            centreX((Envelope)((Boundable)o1).getBounds()),
-            centreX((Envelope)((Boundable)o2).getBounds()));
+            centreX(o1.getBounds()),
+            centreX(o2.getBounds()));
       }
     };
-  private static Comparator yComparator =
-    new Comparator() {
-      public int compare(Object o1, Object o2) {
+  private static final Comparator<Boundable<Envelope>> yComparator =
+    new Comparator<Boundable<Envelope>>() {
+      public int compare(Boundable<Envelope> o1, Boundable<Envelope> o2) {
         return compareDoubles(
-            centreY((Envelope)((Boundable)o1).getBounds()),
-            centreY((Envelope)((Boundable)o2).getBounds()));
+            centreY((o1).getBounds()),
+            centreY((o2).getBounds()));
       }
     };
 
@@ -107,9 +107,9 @@ implements SpatialIndex, Serializable
 
   private static double avg(double a, double b) { return (a + b) / 2d; }
 
-  private static IntersectsOp intersectsOp = new IntersectsOp() {
-    public boolean intersects(Object aBounds, Object bBounds) {
-      return ((Envelope)aBounds).intersects((Envelope)bBounds);
+  private static final IntersectsOp<Envelope> intersectsOp = new IntersectsOp<Envelope>() {
+    public boolean intersects(Envelope aBounds, Envelope bBounds) {
+      return aBounds.intersects(bBounds);
     }
   };
 
@@ -120,19 +120,19 @@ implements SpatialIndex, Serializable
    * group them into runs of size M (the node capacity). For each run, creates
    * a new (parent) node.
    */
-  protected List createParentBoundables(List childBoundables, int newLevel) {
+  protected List<AbstractNode<Envelope>> createParentBoundables(List<?extends Boundable<Envelope>> childBoundables, int newLevel) {
     Assert.isTrue(!childBoundables.isEmpty());
     int minLeafCount = (int) Math.ceil((childBoundables.size() / (double) getNodeCapacity()));
-    ArrayList sortedChildBoundables = new ArrayList(childBoundables);
-    Collections.sort(sortedChildBoundables, xComparator);
-    List[] verticalSlices = verticalSlices(sortedChildBoundables,
+    List<Boundable<Envelope>> sortedChildBoundables = new ArrayList<>(childBoundables);
+    sortedChildBoundables.sort(xComparator);
+    List<Boundable<Envelope>>[] verticalSlices = verticalSlices(sortedChildBoundables,
         (int) Math.ceil(Math.sqrt(minLeafCount)));
     return createParentBoundablesFromVerticalSlices(verticalSlices, newLevel);
   }
 
-  private List createParentBoundablesFromVerticalSlices(List[] verticalSlices, int newLevel) {
+  private List<AbstractNode<Envelope>> createParentBoundablesFromVerticalSlices(List<? extends Boundable<Envelope>>[] verticalSlices, int newLevel) {
     Assert.isTrue(verticalSlices.length > 0);
-    List parentBoundables = new ArrayList();
+    List<AbstractNode<Envelope>> parentBoundables = new ArrayList<>();
     for (int i = 0; i < verticalSlices.length; i++) {
       parentBoundables.addAll(
             createParentBoundablesFromVerticalSlice(verticalSlices[i], newLevel));
@@ -140,22 +140,23 @@ implements SpatialIndex, Serializable
     return parentBoundables;
   }
 
-  protected List createParentBoundablesFromVerticalSlice(List childBoundables, int newLevel) {
+  protected List<AbstractNode<Envelope>> createParentBoundablesFromVerticalSlice(List<? extends Boundable<Envelope>> childBoundables, int newLevel) {
     return super.createParentBoundables(childBoundables, newLevel);
   }
 
   /**
    * @param childBoundables Must be sorted by the x-value of the envelope midpoints
    */
-  protected List[] verticalSlices(List childBoundables, int sliceCount) {
+  protected List<Boundable<Envelope>>[] verticalSlices(List<Boundable<Envelope>> childBoundables, int sliceCount) {
     int sliceCapacity = (int) Math.ceil(childBoundables.size() / (double) sliceCount);
-    List[] slices = new List[sliceCount];
-    Iterator i = childBoundables.iterator();
+    @SuppressWarnings("unchecked")
+    List<Boundable<Envelope>>[] slices = new List[sliceCount];
+    Iterator<Boundable<Envelope>> i = childBoundables.iterator();
     for (int j = 0; j < sliceCount; j++) {
-      slices[j] = new ArrayList();
+      slices[j] = new ArrayList<>();
       int boundablesAddedToSlice = 0;
       while (i.hasNext() && boundablesAddedToSlice < sliceCapacity) {
-        Boundable childBoundable = (Boundable) i.next();
+        Boundable<Envelope> childBoundable = i.next();
         slices[j].add(childBoundable);
         boundablesAddedToSlice++;
       }
@@ -184,18 +185,18 @@ implements SpatialIndex, Serializable
     super(nodeCapacity);
   }
 
-  protected AbstractNode createNode(int level) {
+  protected AbstractNode<Envelope> createNode(int level) {
     return new STRtreeNode(level);
   }
 
-  protected IntersectsOp getIntersectsOp() {
+  protected IntersectsOp<Envelope> getIntersectsOp() {
     return intersectsOp;
   }
 
   /**
    * Inserts an item having the given bounds into the tree.
    */
-  public void insert(Envelope itemEnv, Object item) {
+  public void insert(Envelope itemEnv, T item) {
     if (itemEnv.isNull()) { return; }
     super.insert(itemEnv, item);
   }
@@ -203,7 +204,7 @@ implements SpatialIndex, Serializable
   /**
    * Returns items whose bounds intersect the given envelope.
    */
-  public List query(Envelope searchEnv) {
+  public List<T> query(Envelope searchEnv) {
     //Yes this method does something. It specifies that the bounds is an
     //Envelope. super.query takes an Object, not an Envelope. [Jon Aquino 10/24/2003]
     return super.query(searchEnv);
@@ -212,7 +213,7 @@ implements SpatialIndex, Serializable
   /**
    * Returns items whose bounds intersect the given envelope.
    */
-  public void query(Envelope searchEnv, ItemVisitor visitor) {
+  public void query(Envelope searchEnv, ItemVisitor<T> visitor) {
     //Yes this method does something. It specifies that the bounds is an
     //Envelope. super.query takes an Object, not an Envelope. [Jon Aquino 10/24/2003]
     super.query(searchEnv, visitor);
@@ -225,7 +226,7 @@ implements SpatialIndex, Serializable
    * @param item the item to remove
    * @return <code>true</code> if the item was found
    */
-  public boolean remove(Envelope itemEnv, Object item) {
+  public boolean remove(Envelope itemEnv, T item) {
     return super.remove(itemEnv, item);
   }
 
@@ -249,7 +250,7 @@ implements SpatialIndex, Serializable
     return super.depth();
   }
 
-  protected Comparator getComparator() {
+  protected Comparator<Boundable<Envelope>> getComparator() {
     return yComparator;
   }
 
@@ -270,12 +271,12 @@ implements SpatialIndex, Serializable
    * @return the pair of the nearest items
    *    or <code>null</code> if the tree is empty
    */
-  public Object[] nearestNeighbour(ItemDistance itemDist)
+  public T[] nearestNeighbour(ItemDistance<T,Envelope> itemDist)
   {
     if (isEmpty()) return null;
     
     // if tree has only one item this will return null
-    BoundablePair bp = new BoundablePair(this.getRoot(), this.getRoot(), itemDist);
+    BoundablePair<T,Envelope> bp = new BoundablePair<>(this.getRoot(), this.getRoot(), itemDist);
     return nearestNeighbour(bp);
   }
 
@@ -296,10 +297,10 @@ implements SpatialIndex, Serializable
    * @return the nearest item in this tree
    *    or <code>null</code> if the tree is empty
    */
-  public Object nearestNeighbour(Envelope env, Object item, ItemDistance itemDist)
+  public T nearestNeighbour(Envelope env, T item, ItemDistance<T,Envelope> itemDist)
   {
-    Boundable bnd = new ItemBoundable(env, item);
-    BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
+    Boundable<Envelope> bnd = new ItemBoundable<>(env, item);
+    BoundablePair<T,Envelope> bp = new BoundablePair<>(this.getRoot(), bnd, itemDist);
     return nearestNeighbour(bp)[0];
   }
   
@@ -318,25 +319,26 @@ implements SpatialIndex, Serializable
    * @return the pair of the nearest items, one from each tree
    *    or <code>null</code> if no pair of distinct items can be found
    */
-  public Object[] nearestNeighbour(STRtree tree, ItemDistance itemDist)
+  public Object[] nearestNeighbour(STRtree<?> tree, ItemDistance<?,Envelope> itemDist)
   {
     if (isEmpty() || tree.isEmpty()) return null;
-    BoundablePair bp = new BoundablePair(this.getRoot(), tree.getRoot(), itemDist);
+    @SuppressWarnings("unchecked")
+    BoundablePair<T,Envelope> bp = new BoundablePair<>(this.getRoot(), tree.getRoot(),(ItemDistance<T, Envelope>) itemDist);
     return nearestNeighbour(bp);
   }
   
-  private Object[] nearestNeighbour(BoundablePair initBndPair) 
+  private T[] nearestNeighbour(BoundablePair<T,Envelope> initBndPair)
   {
     double distanceLowerBound = Double.POSITIVE_INFINITY;
-    BoundablePair minPair = null;
+    BoundablePair<T,Envelope> minPair = null;
     
     // initialize search queue
-    PriorityQueue priQ = new PriorityQueue();
+    PriorityQueue<BoundablePair<T,Envelope>> priQ = new PriorityQueue<>();
     priQ.add(initBndPair);
 
     while (! priQ.isEmpty() && distanceLowerBound > 0.0) {
       // pop head of queue and expand one side of pair
-      BoundablePair bndPair = (BoundablePair) priQ.poll();
+      BoundablePair<T,Envelope> bndPair =  priQ.poll();
       double pairDistance = bndPair.getDistance();
       
       /**
@@ -373,10 +375,12 @@ implements SpatialIndex, Serializable
     if (minPair == null) 
       return null;
     // done - return items with min distance
-    return new Object[] {    
-          ((ItemBoundable) minPair.getBoundable(0)).getItem(),
-          ((ItemBoundable) minPair.getBoundable(1)).getItem()
+    @SuppressWarnings("unchecked")
+    final T[] out = (T[]) new Object[] {
+          ((ItemBoundable<T,Envelope>) minPair.getBoundable(0)).getItem(),
+          ((ItemBoundable<T,Envelope>) minPair.getBoundable(1)).getItem()
       };
+    return out;
   }
   
   /**
@@ -391,9 +395,10 @@ implements SpatialIndex, Serializable
    * @param maxDistance the distance limit for the search
    * @return true if there are items within the distance
    */
-  public boolean isWithinDistance(STRtree tree, ItemDistance itemDist, double maxDistance)
+  public boolean isWithinDistance(STRtree<?> tree, ItemDistance<?,Envelope> itemDist, double maxDistance)
   {
-    BoundablePair bp = new BoundablePair(this.getRoot(), tree.getRoot(), itemDist);
+    @SuppressWarnings("unchecked")
+    BoundablePair<T,Envelope> bp = new BoundablePair<>(this.getRoot(), tree.getRoot(),(ItemDistance<T, Envelope>) itemDist);
     return isWithinDistance(bp, maxDistance);
   }
   
@@ -409,17 +414,17 @@ implements SpatialIndex, Serializable
    * @param maxDistance the maximum distance to search for
    * @return true if two items lie within the given distance
    */
-  private boolean isWithinDistance(BoundablePair initBndPair, double maxDistance) 
+  private boolean isWithinDistance(BoundablePair<T,Envelope> initBndPair, double maxDistance)
   {
     double distanceUpperBound = Double.POSITIVE_INFINITY;
     
     // initialize search queue
-    PriorityQueue priQ = new PriorityQueue();
+    PriorityQueue<BoundablePair<T,Envelope>> priQ = new PriorityQueue<>();
     priQ.add(initBndPair);
 
     while (! priQ.isEmpty()) {
       // pop head of queue and expand one side of pair
-      BoundablePair bndPair = (BoundablePair) priQ.poll();
+      BoundablePair<T,Envelope> bndPair = priQ.poll();
       double pairDistance = bndPair.getDistance();
       
       /**
@@ -494,33 +499,33 @@ implements SpatialIndex, Serializable
    * @param k the K nearest items in kNearestNeighbour
    * @return the K nearest items in this tree
    */
-  public Object[] nearestNeighbour(Envelope env, Object item, ItemDistance itemDist,int k)
+  public T[] nearestNeighbour(Envelope env, T item, ItemDistance<T,Envelope> itemDist,int k)
   {
-    Boundable bnd = new ItemBoundable(env, item);
-    BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
+    Boundable<Envelope> bnd = new ItemBoundable<>(env, item);
+    BoundablePair<T,Envelope> bp = new BoundablePair<>(this.getRoot(), bnd, itemDist);
     return nearestNeighbourK(bp,k);
   }
 
-  private Object[] nearestNeighbourK(BoundablePair initBndPair, int k) 
+  private T[] nearestNeighbourK(BoundablePair<T,Envelope> initBndPair, int k)
   {
     return nearestNeighbourK(initBndPair, Double.POSITIVE_INFINITY,k);
   }
   
-  private Object[] nearestNeighbourK(BoundablePair initBndPair, double maxDistance, int k) 
+  private T[] nearestNeighbourK(BoundablePair<T,Envelope> initBndPair, double maxDistance, int k)
   {
     double distanceLowerBound = maxDistance;
     
     // initialize internal structures
-    PriorityQueue priQ = new PriorityQueue();
+    PriorityQueue<BoundablePair<T,Envelope>> priQ = new PriorityQueue<>();
 
     // initialize queue
     priQ.add(initBndPair);
 
-    PriorityQueue kNearestNeighbors = new PriorityQueue();
+    PriorityQueue<BoundablePair<T,Envelope>> kNearestNeighbors = new PriorityQueue<>();
 
     while (! priQ.isEmpty() && distanceLowerBound >= 0.0) {
       // pop head of queue and expand one side of pair
-      BoundablePair bndPair = (BoundablePair) priQ.poll();
+      BoundablePair<T,Envelope> bndPair =  priQ.poll();
       double pairDistance = bndPair.getDistance();
       
       
@@ -550,7 +555,7 @@ implements SpatialIndex, Serializable
     	  else
     	  {
 
-          BoundablePair bp1 = (BoundablePair) kNearestNeighbors.peek();
+            BoundablePair<T,Envelope> bp1 =  kNearestNeighbors.peek();
           if(bp1.getDistance() > pairDistance) {
     			  kNearestNeighbors.poll();
     			  kNearestNeighbors.add(bndPair);
@@ -558,7 +563,7 @@ implements SpatialIndex, Serializable
     		  /*
     		   * minDistance should be the farthest point in the K nearest neighbor queue.
     		   */
-          BoundablePair bp2 = (BoundablePair) kNearestNeighbors.peek();
+            BoundablePair<T,Envelope> bp2 =  kNearestNeighbors.peek();
     		  distanceLowerBound = bp2.getDistance();
     	  }        
       }
@@ -575,18 +580,19 @@ implements SpatialIndex, Serializable
 
     return getItems(kNearestNeighbors);
   }
-  private static Object[] getItems(PriorityQueue kNearestNeighbors)
+  private static<T> T[] getItems(PriorityQueue<BoundablePair<T,Envelope>> kNearestNeighbors)
   {
 	  /** 
 	   * Iterate the K Nearest Neighbour Queue and retrieve the item from each BoundablePair
 	   * in this queue
 	   */
-	  Object[] items = new Object[kNearestNeighbors.size()];
+	  @SuppressWarnings("unchecked")
+	  T[] items = (T[]) new Object[kNearestNeighbors.size()];
 	  int count=0;
 	  while( ! kNearestNeighbors.isEmpty() )
 	  {
-      BoundablePair bp = (BoundablePair) kNearestNeighbors.poll(); 
-      items[count]=((ItemBoundable)bp.getBoundable(0)).getItem();
+        BoundablePair<T,Envelope> bp =  kNearestNeighbors.poll();
+      items[count]=((ItemBoundable<T,Envelope>)bp.getBoundable(0)).getItem();
       count++;
 	  }	
 	  return items;

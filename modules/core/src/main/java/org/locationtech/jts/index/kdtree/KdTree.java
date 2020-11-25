@@ -44,7 +44,7 @@ import org.locationtech.jts.geom.Envelope;
  * but an imbalanced tree may be much deeper.
  * This has a serious impact on query efficiency.  
  * Even worse, since recursion is used for querying the tree
- * an extremely deep tree may cause a {@link StackOverflowException}.
+ * an extremely deep tree may cause a {@link StackOverflowError}.
  * One solution to this is to randomize the order of points before insertion
  * (e.g. by using <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffling</a>).
  * 
@@ -60,7 +60,7 @@ public class KdTree<T> {
    *          a collection of nodes
    * @return an array of the coordinates represented by the nodes
    */
-  public static Coordinate[] toCoordinates(Collection kdnodes) {
+  public static Coordinate[] toCoordinates(Collection<KdNode<?>> kdnodes) {
     return toCoordinates(kdnodes, false);
   }
 
@@ -75,10 +75,10 @@ public class KdTree<T> {
    *   be included multiple times
    * @return an array of the coordinates represented by the nodes
    */
-  public static <T>Coordinate[] toCoordinates(Collection<KdNode<T>> kdnodes, boolean includeRepeated) {
+  public static Coordinate[] toCoordinates(Collection<KdNode<?>> kdnodes, boolean includeRepeated) {
     CoordinateList coord = new CoordinateList();
-    for (Iterator<KdNode<T>> it = kdnodes.iterator(); it.hasNext();) {
-      KdNode<T> node = it.next();
+    for (Iterator<KdNode<?>> it = kdnodes.iterator(); it.hasNext();) {
+      KdNode<?> node = it.next();
       int count = includeRepeated ? node.getCount() : 1;
       for (int i = 0; i < count; i++) {
        coord.add(node.getCoordinate(), true);
