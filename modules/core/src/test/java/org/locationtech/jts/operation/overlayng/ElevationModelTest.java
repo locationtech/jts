@@ -54,6 +54,13 @@ public class ElevationModelTest extends GeometryTestCase {
         );
   }
 
+  public void testPopulateZBox() {
+    checkElevationPopulateZ("LINESTRING Z (0 0 0, 10 10 10)",
+        "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))",
+        "POLYGON Z ((1 1 0, 1 9 5, 9 9 10, 9 1 5, 1 1 0))"
+        );
+  }
+
   public void testMultiLine() {
     checkElevation("MULTILINESTRING Z ((0 0 0, 10 10 8), (1 2 2, 9 8 6))",
      -1,11, 4,                            11,11,  7,
@@ -154,6 +161,5 @@ public class ElevationModelTest extends GeometryTestCase {
     
     Geometry geomZExpected = read(wktZExpected);
     checkEqualXYZ(geomZExpected, geomNoZ);
-    
   }
 }

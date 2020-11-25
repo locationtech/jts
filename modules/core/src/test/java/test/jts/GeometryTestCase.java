@@ -335,8 +335,8 @@ public abstract class GeometryTestCase extends TestCase{
       for (int j = 0; j < dimension; j++) {
         double val1 = seq1.getOrdinate(i, j);
         double val2 = seq2.getOrdinate(i, j);
-        if (Double.isNaN(val1)) {
-          if (!Double.isNaN(val2)) return false;
+        if (Double.isNaN(val1) || Double.isNaN(val2)) {
+          return Double.isNaN(val1) && Double.isNaN(val2);
         }
         else if (Math.abs(val1 - val2) > tolerance)
           return false;
