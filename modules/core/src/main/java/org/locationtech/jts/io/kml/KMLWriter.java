@@ -42,7 +42,7 @@ import org.locationtech.jts.util.StringUtil;
  * The <code>extrude</code> and <code>altitudeMode</code> modes can be set. 
  * If set, the corresponding sub-elements will be output.
  */
-public class KMLWriter 
+public class KMLWriter <T>
 {
   /**
    * The KML standard value <code>clampToGround</code> for use in {@link #setAltitudeMode(String)}.
@@ -65,8 +65,8 @@ public class KMLWriter
    * @param z the Z value to use
    * @return a string containing the KML geometry representation
    */
-  public static String writeGeometry(Geometry geometry, double z) {
-    KMLWriter writer = new KMLWriter();
+  public static <T>String writeGeometry(Geometry<T> geometry, double z) {
+    KMLWriter<T> writer = new KMLWriter<>();
     writer.setZ(z);
     return writer.write(geometry);
   }
@@ -83,9 +83,9 @@ public class KMLWriter
    * @param altitudeMode the altitude model code to write
    * @return a string containing the KML geometry representation
    */
-  public static String writeGeometry(Geometry geometry, double z, int precision,
+  public static <T>String writeGeometry(Geometry<T> geometry, double z, int precision,
       boolean extrude, String altitudeMode) {
-    KMLWriter writer = new KMLWriter();
+    KMLWriter<T> writer = new KMLWriter<>();
     writer.setZ(z);
     writer.setPrecision(precision);
     writer.setExtrude(extrude);
@@ -189,7 +189,7 @@ public class KMLWriter
    * @param geom the geometry to write
    * @return a string containing the KML geometry representation
    */
-  public String write(Geometry geom) {
+  public String write(Geometry<T> geom) {
     StringBuffer buf = new StringBuffer();
     write(geom, buf);
     return buf.toString();
@@ -202,7 +202,7 @@ public class KMLWriter
    * @param writer the Writer to write to
    * @throws IOException if an I/O error occurred
    */
-  public void write(Geometry geometry, Writer writer) throws IOException {
+  public void write(Geometry<T> geometry, Writer writer) throws IOException {
     writer.write(write(geometry));
   }
 
@@ -212,22 +212,22 @@ public class KMLWriter
    * @param geometry the geometry to write
    * @param buf the buffer to write into
    */
-  public void write(Geometry geometry, StringBuffer buf) {
+  public void write(Geometry<T> geometry, StringBuffer buf) {
     writeGeometry(geometry, 0, buf);
   }
 
-  private void writeGeometry(Geometry g, int level, StringBuffer buf) {
+  private void writeGeometry(Geometry<T> g, int level, StringBuffer buf) {
     String attributes = "";
     if (g instanceof Point) {
-      writePoint((Point) g, attributes, level, buf);
+      writePoint((Point<T>) g, attributes, level, buf);
     } else if (g instanceof LinearRing) {
-      writeLinearRing((LinearRing) g, attributes, true, level, buf);
+      writeLinearRing((LinearRing<T>) g, attributes, true, level, buf);
     } else if (g instanceof LineString) {
-      writeLineString((LineString) g, attributes, level, buf);
+      writeLineString((LineString<T>) g, attributes, level, buf);
     } else if (g instanceof Polygon) {
-      writePolygon((Polygon) g, attributes, level, buf);
+      writePolygon((Polygon<T>) g, attributes, level, buf);
     } else if (g instanceof GeometryCollection) {
-      writeGeometryCollection((GeometryCollection) g, attributes, level, buf);
+      writeGeometryCollection((GeometryCollection<T,?>) g, attributes, level, buf);
     }
     else 
       throw new IllegalArgumentException("Geometry type not supported: " + g.getGeometryType());
@@ -265,7 +265,7 @@ public class KMLWriter
     }
   }
   
-  private void writePoint(Point p, String attributes, int level,
+  private void writePoint(Point<T> p, String attributes, int level,
       StringBuffer buf) {
   // <Point><coordinates>...</coordinates></Point>
     startLine(geometryTag("Point", attributes) + "\n", level, buf);
@@ -274,7 +274,7 @@ public class KMLWriter
     startLine("</Point>\n", level, buf);
   }
 
-  private void writeLineString(LineString ls, String attributes, int level,
+  private void writeLineString(LineString<T> ls, String attributes, int level,
       StringBuffer buf) {
   // <LineString><coordinates>...</coordinates></LineString>
     startLine(geometryTag("LineString", attributes) + "\n", level, buf);
@@ -283,7 +283,7 @@ public class KMLWriter
     startLine("</LineString>\n", level, buf);
   }
 
-  private void writeLinearRing(LinearRing lr, String attributes, 
+  private void writeLinearRing(LinearRing<T> lr, String attributes,
       boolean writeModifiers, int level,
       StringBuffer buf) {
   // <LinearRing><coordinates>...</coordinates></LinearRing>
@@ -293,7 +293,7 @@ public class KMLWriter
     startLine("</LinearRing>\n", level, buf);
   }
 
-  private void writePolygon(Polygon p, String attributes, int level,
+  private void writePolygon(Polygon<T> p, String attributes, int level,
       StringBuffer buf) {
     startLine(geometryTag("Polygon", attributes) + "\n", level, buf);
     writeModifiers(level, buf);
@@ -311,7 +311,7 @@ public class KMLWriter
     startLine("</Polygon>\n", level, buf);
   }
 
-  private void writeGeometryCollection(GeometryCollection gc,
+  private void writeGeometryCollection(GeometryCollection<T,?> gc,
       String attributes, int level, StringBuffer buf) {
     startLine("<MultiGeometry>\n", level, buf);
     for (int t = 0; t < gc.getNumGeometries(); t++) {
@@ -324,7 +324,7 @@ public class KMLWriter
    * Takes a list of coordinates and converts it to KML.<br>
    * 2d and 3d aware. Terminates the coordinate output with a newline.
    * 
-   * @param cs array of coordinates
+   * @param coords array of coordinates
    */
   private void write(Coordinate[] coords, int level, StringBuffer buf) {
     startLine("<coordinates>", level, buf);
@@ -380,7 +380,7 @@ public class KMLWriter
    * Creates the <code>DecimalFormat</code> used to write <code>double</code>s
    * with a sufficient number of decimal places.
    * 
-   * @param precisionModel
+   * @param precision
    *          the <code>PrecisionModel</code> used to determine the number of
    *          decimal places to write.
    * @return a <code>DecimalFormat</code> that write <code>double</code> s

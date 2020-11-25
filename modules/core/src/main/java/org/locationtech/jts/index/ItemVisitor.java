@@ -14,16 +14,18 @@ package org.locationtech.jts.index;
 
 /**
  * A visitor for items in a {@link SpatialIndex}.
- *
+ * @param <T> the type of the item
  * @version 1.7
  */
 
-public interface ItemVisitor
+public interface ItemVisitor<T>
 {
   /**
    * Visits an item in the index.
    * 
    * @param item the index item to be visited
+   *
    */
-  void visitItem(Object item);
+  void visitItem(T item);
 }
+

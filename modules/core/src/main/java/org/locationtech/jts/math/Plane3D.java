@@ -29,8 +29,8 @@ public class Plane3D {
 	public static final int YZ_PLANE = 2;
 	public static final int XZ_PLANE = 3;
 	
-	private Vector3D normal;
-	private Coordinate basePt;
+	private final Vector3D normal;
+	private final Coordinate basePt;
 
 	public Plane3D(Vector3D normal, Coordinate basePt)
 	{

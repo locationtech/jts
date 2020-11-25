@@ -43,7 +43,7 @@ public class GeometryCombiner
 	 * @param geoms the geometries to combine
 	 * @return the combined geometry
 	 */
-	public static Geometry combine(Collection geoms)
+	public static Geometry combine(Collection<Geometry> geoms)
 	{
 		GeometryCombiner combiner = new GeometryCombiner(geoms);
 		return combiner.combine();
@@ -81,26 +81,28 @@ public class GeometryCombiner
 	 * 
 	 * @param obj0
 	 * @param obj1
+	 * @param <T> the type of the two items
 	 * @return a List containing the two items
 	 */
-  private static List createList(Object obj0, Object obj1)
+  private static <T> List<T> createList(T obj0, T obj1)
   {
-		List list = new ArrayList();
+		List<T> list = new ArrayList<>();
 		list.add(obj0);
 		list.add(obj1);
 		return list;
   }
   
 	/**
-	 * Creates a list from two items
+	 * Creates a list from three items
 	 * 
 	 * @param obj0
 	 * @param obj1
-	 * @return a List containing the two items
+	 * @param <T> the type of the three items
+	 * @return a List containing the three items
 	 */
-  private static List createList(Object obj0, Object obj1, Object obj2)
+  private static <T> List<T> createList(T obj0, T obj1, T obj2)
   {
-		List list = new ArrayList();
+		List<T> list = new ArrayList<>();
 		list.add(obj0);
 		list.add(obj1);
 		list.add(obj2);
@@ -109,14 +111,14 @@ public class GeometryCombiner
   
 	private GeometryFactory geomFactory;
 	private boolean skipEmpty = false;
-	private Collection inputGeoms;
+	private Collection<Geometry> inputGeoms;
 		
 	/**
 	 * Creates a new combiner for a collection of geometries
 	 * 
 	 * @param geoms the geometries to combine
 	 */
-	public GeometryCombiner(Collection geoms)
+	public GeometryCombiner(Collection<Geometry> geoms)
 	{
 		geomFactory = extractFactory(geoms);
 		this.inputGeoms = geoms;
@@ -128,10 +130,10 @@ public class GeometryCombiner
 	 * @param geoms
 	 * @return a GeometryFactory
 	 */
-	public static GeometryFactory extractFactory(Collection geoms) {
+	public static GeometryFactory extractFactory(Collection<Geometry> geoms) {
 		if (geoms.isEmpty())
 			return null;
-		return ((Geometry) geoms.iterator().next()).getFactory();
+		return geoms.iterator().next().getFactory();
 	}
 	
 	/**
@@ -142,9 +144,9 @@ public class GeometryCombiner
 	 */
   public Geometry combine()
   {
-  	List elems = new ArrayList();
-  	for (Iterator i = inputGeoms.iterator(); i.hasNext(); ) {
-  		Geometry g = (Geometry) i.next();
+  	List<Geometry> elems = new ArrayList<>();
+  	for (Iterator<Geometry> i = inputGeoms.iterator(); i.hasNext(); ) {
+  		Geometry g = i.next();
   		extractElements(g, elems);
   	}
     
@@ -159,7 +161,7 @@ public class GeometryCombiner
     return geomFactory.buildGeometry(elems);
   }
   
-  private void extractElements(Geometry geom, List elems)
+  private void extractElements(Geometry geom, List<Geometry> elems)
   {
     if (geom == null)
       return;

@@ -40,7 +40,7 @@ extends PerformanceTestCase
   static int N_ARMS = 20;
   static double ARM_RATIO = 0.3;
   
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     PerformanceTestRunner.run(InteriorPointAreaPerfTest.class);
   }
 

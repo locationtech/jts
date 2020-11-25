@@ -26,7 +26,7 @@ extends PerformanceTestCase {
   private static final int ITEM_ENV_SIZE = 10;
   private static final int QUERY_ENV_SIZE = 40;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     PerformanceTestRunner.run(HPRtreePerfTest.class);
   }
   

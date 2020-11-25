@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @version 1.7
  */
-public abstract class NodeBase {
+public abstract class NodeBase<T> {
 
   /**
    * Returns the index of the subnode that wholely contains the given interval.
@@ -37,25 +37,26 @@ public abstract class NodeBase {
     return subnodeIndex;
   }
 
-  protected List items = new ArrayList();
+  protected List<T> items = new ArrayList<>();
 
   /**
    * subnodes are numbered as follows:
    *
    *  0 | 1
    */
-  protected Node[] subnode = new Node[2];
+  @SuppressWarnings("unchecked")
+  protected Node<T>[] subnode = new Node[2];
 
   public NodeBase() {
   }
 
-  public List getItems() { return items; }
+  public List<T> getItems() { return items; }
 
-  public void add(Object item)
+  public void add(T item)
   {
     items.add(item);
   }
-  public List addAllItems(List items)
+  public List<T> addAllItems(List<T> items)
   {
     items.addAll(this.items);
     for (int i = 0; i < 2; i++) {
@@ -75,7 +76,7 @@ public abstract class NodeBase {
    * @param interval a query interval, or null
    * @param resultItems the candidate items found
    */
-  public void addAllItemsFromOverlapping(Interval interval, Collection resultItems)
+  public void addAllItemsFromOverlapping(Interval interval, Collection<T> resultItems)
   {
     if (interval != null && ! isSearchMatch(interval))
       return;
@@ -94,7 +95,7 @@ public abstract class NodeBase {
    * @param item the item to remove
    * @return <code>true</code> if the item was found and removed
    */
-  public boolean remove(Interval itemInterval, Object item)
+  public boolean remove(Interval itemInterval, T item)
   {
     // use interval to restrict nodes scanned
     if (! isSearchMatch(itemInterval))

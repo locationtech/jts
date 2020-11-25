@@ -49,7 +49,7 @@ public class WKTReaderTest extends GeometryTestCase {
   private final WKTReader readerXYM;
   private final WKTReader readerXYZM;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(suite());
   }
 

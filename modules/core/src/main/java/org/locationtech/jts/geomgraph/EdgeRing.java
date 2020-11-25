@@ -35,21 +35,21 @@ import org.locationtech.jts.util.Assert;
 /**
  * @version 1.7
  */
-public abstract class EdgeRing {
+public abstract class EdgeRing<T> {
 
   protected DirectedEdge startDe; // the directed edge which starts the list of edges for this EdgeRing
   private int maxNodeDegree = -1;
-  private List edges = new ArrayList(); // the DirectedEdges making up this EdgeRing
-  private List pts = new ArrayList();
+  private final List<DirectedEdge> edges = new ArrayList<>(); // the DirectedEdges making up this EdgeRing
+  private final List<Coordinate> pts = new ArrayList<>();
   private Label label = new Label(Location.NONE); // label stores the locations of each geometry on the face surrounded by this ring
-  private LinearRing ring;  // the ring created for this EdgeRing
+  private LinearRing<T> ring;  // the ring created for this EdgeRing
   private boolean isHole;
-  private EdgeRing shell;   // if non-null, the ring is a hole and this EdgeRing is its containing shell
-  private ArrayList holes = new ArrayList(); // a list of EdgeRings which are holes in this EdgeRing
+  private EdgeRing<T> shell;   // if non-null, the ring is a hole and this EdgeRing is its containing shell
+  private final List<EdgeRing<T>> holes = new ArrayList<>(); // a list of EdgeRings which are holes in this EdgeRing
 
-  protected GeometryFactory geometryFactory;
+  protected GeometryFactory<T> geometryFactory;
 
-  public EdgeRing(DirectedEdge start, GeometryFactory geometryFactory) {
+  public EdgeRing(DirectedEdge start, GeometryFactory<T> geometryFactory) {
     this.geometryFactory = geometryFactory;
     computePoints(start);
     computeRing();
@@ -65,25 +65,26 @@ public abstract class EdgeRing {
     return isHole;
   }
 
-  public Coordinate getCoordinate(int i) { return (Coordinate) pts.get(i);  }
-  public LinearRing getLinearRing() { return ring; }
+  public Coordinate getCoordinate(int i) { return pts.get(i);  }
+  public LinearRing<T> getLinearRing() { return ring; }
   public Label getLabel() { return label; }
   public boolean isShell() { return shell == null; }
-  public EdgeRing getShell() { return shell; }
-  public void setShell(EdgeRing shell)
+  public EdgeRing<T> getShell() { return shell; }
+  public void setShell(EdgeRing<T> shell)
   {
     this.shell = shell;
     if (shell != null) shell.addHole(this);
   }
-  public void addHole(EdgeRing ring) { holes.add(ring); }
+  public void addHole(EdgeRing<T> ring) { holes.add(ring); }
 
-  public Polygon toPolygon(GeometryFactory geometryFactory)
+  public Polygon<T> toPolygon(GeometryFactory<T> geometryFactory)
   {
-    LinearRing[] holeLR = new LinearRing[holes.size()];
+    @SuppressWarnings("unchecked")
+    LinearRing<T>[] holeLR = new LinearRing[holes.size()];
     for (int i = 0; i < holes.size(); i++) {
-      holeLR[i] = ((EdgeRing) holes.get(i)).getLinearRing();
+      holeLR[i] = holes.get(i).getLinearRing();
     }
-    Polygon poly = geometryFactory.createPolygon(getLinearRing(), holeLR);
+    Polygon<T> poly = geometryFactory.createPolygon(getLinearRing(), holeLR);
     return poly;
   }
   /**
@@ -96,19 +97,19 @@ public abstract class EdgeRing {
     if (ring != null) return;   // don't compute more than once
     Coordinate[] coord = new Coordinate[pts.size()];
     for (int i = 0; i < pts.size(); i++) {
-      coord[i] = (Coordinate) pts.get(i);
+      coord[i] = pts.get(i);
     }
     ring = geometryFactory.createLinearRing(coord);
     isHole = Orientation.isCCW(ring.getCoordinates());
 //Debug.println( (isHole ? "hole - " : "shell - ") + WKTWriter.toLineString(new CoordinateArraySequence(ring.getCoordinates())));
   }
   abstract public DirectedEdge getNext(DirectedEdge de);
-  abstract public void setEdgeRing(DirectedEdge de, EdgeRing er);
+  abstract public void setEdgeRing(DirectedEdge de, EdgeRing<T> er);
 
   /**
    * Returns the list of DirectedEdges that make up this EdgeRing
    */
-  public List getEdges() { return edges; }
+  public List<DirectedEdge> getEdges() { return edges; }
 
   /**
    * Collect all the points from the DirectedEdges of this ring into a contiguous list
@@ -216,14 +217,13 @@ public abstract class EdgeRing {
    */
   public boolean containsPoint(Coordinate p)
   {
-    LinearRing shell = getLinearRing();
+    LinearRing<T> shell = getLinearRing();
     Envelope env = shell.getEnvelopeInternal();
     if (! env.contains(p)) return false;
     if (! PointLocation.isInRing(p, shell.getCoordinates()) ) return false;
 
-    for (Iterator i = holes.iterator(); i.hasNext(); ) {
-      EdgeRing hole = (EdgeRing) i.next();
-      if (hole.containsPoint(p) )
+    for (EdgeRing<T> hole : holes) {
+      if (hole.containsPoint(p))
         return false;
     }
     return true;

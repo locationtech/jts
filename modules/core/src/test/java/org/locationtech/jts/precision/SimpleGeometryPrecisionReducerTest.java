@@ -37,7 +37,7 @@ public class SimpleGeometryPrecisionReducerTest
   private GeometryFactory gfFloat = new GeometryFactory(pmFloat, 0);
   WKTReader reader = new WKTReader(gfFloat);
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(SimpleGeometryPrecisionReducerTest.class);
   }
 

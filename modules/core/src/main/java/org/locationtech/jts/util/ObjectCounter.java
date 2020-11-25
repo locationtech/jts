@@ -13,63 +13,41 @@ package org.locationtech.jts.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Counts occurrences of objects.
- * 
+ * @deprecated
  * @author Martin Davis
  *
  */
-public class ObjectCounter 
+public class ObjectCounter <T>
 {
 
-  private Map counts = new HashMap();
+  private final Map<T, AtomicInteger> counts = new HashMap<>();
   
   public ObjectCounter() {
   }
 
-  public void add(Object o)
+  public void add(T o)
   {
-    Counter counter = (Counter) counts.get(o);
+    AtomicInteger counter = counts.get(o);
     if (counter == null)
-      counts.put(o, new Counter(1));
+      counts.put(o, new AtomicInteger(1));
     else
-      counter.increment();
+      counter.incrementAndGet();
   }
   
   // TODO: add remove(Object o)
   
-  public int count(Object o)
+  public int count(T o)
   {
-    Counter counter = (Counter) counts.get(o);
+    AtomicInteger counter = counts.get(o);
     if (counter == null)
       return 0;
     else
-      return counter.count();
+      return counter.get();
    
   }
-  private static class Counter
-  {
-    int count = 0;
-    
-    public Counter()
-    {
-      
-    }
-    
-    public Counter(int count)
-    {
-      this.count = count;
-    }
-    
-    public int count()
-    {
-      return count;
-    }
-    
-    public void increment()
-    {
-      count++;
-    }
-  }
+
 }

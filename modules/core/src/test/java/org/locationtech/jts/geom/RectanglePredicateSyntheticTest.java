@@ -44,7 +44,7 @@ public class RectanglePredicateSyntheticTest
   Envelope rectEnv = new Envelope(baseX, baseX + rectSize, baseY, baseY + rectSize);
   Geometry rect = fact.toGeometry(rectEnv);
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(RectanglePredicateSyntheticTest.class);
   }
 

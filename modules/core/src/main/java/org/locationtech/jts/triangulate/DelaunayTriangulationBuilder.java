@@ -38,14 +38,14 @@ import org.locationtech.jts.triangulate.quadedge.Vertex;
  * @author Martin Davis
  *
  */
-public class DelaunayTriangulationBuilder 
+public class DelaunayTriangulationBuilder <T>
 {
 	/**
 	 * Extracts the unique {@link Coordinate}s from the given {@link Geometry}.
 	 * @param geom the geometry to extract from
 	 * @return a List of the unique Coordinates
 	 */
-	public static CoordinateList extractUniqueCoordinates(Geometry geom)
+	public static CoordinateList extractUniqueCoordinates(Geometry<?> geom)
 	{
 		if (geom == null)
 			return new CoordinateList();
@@ -58,8 +58,7 @@ public class DelaunayTriangulationBuilder
 	{
 	  Coordinate[] coordsCopy = CoordinateArrays.copyDeep(coords);
 		Arrays.sort(coordsCopy);
-		CoordinateList coordList = new CoordinateList(coordsCopy, false);
-		return coordList;
+		return new CoordinateList(coordsCopy, false);
 	}
 	
 	/**
@@ -67,11 +66,10 @@ public class DelaunayTriangulationBuilder
 	 * @param coords the coordinates to convert
 	 * @return a List of Vertex objects
 	 */
-	public static List toVertices(Collection coords)
+	public static List<Vertex> toVertices(Collection<Coordinate> coords)
 	{
-		List verts = new ArrayList();
-		for (Iterator i = coords.iterator(); i.hasNext(); ) {
-			Coordinate coord = (Coordinate) i.next();
+		List<Vertex> verts = new ArrayList<>();
+		for (Coordinate coord : coords) {
 			verts.add(new Vertex(coord));
 		}
 		return verts;
@@ -83,17 +81,16 @@ public class DelaunayTriangulationBuilder
 	 * @param coords a List of Coordinates
 	 * @return the envelope of the set of coordinates
 	 */
-	public static Envelope envelope(Collection coords)
+	public static Envelope envelope(Collection<Coordinate> coords)
 	{
 		Envelope env = new Envelope();
-		for (Iterator i = coords.iterator(); i.hasNext(); ) {
-			Coordinate coord = (Coordinate) i.next();
+		for (Coordinate coord : coords) {
 			env.expandToInclude(coord);
 		}
 		return env;
 	}
 	
-	private Collection siteCoords;
+	private Collection<Coordinate> siteCoords;
 	private double tolerance = 0.0;
 	private QuadEdgeSubdivision subdiv = null;
 	
@@ -111,7 +108,7 @@ public class DelaunayTriangulationBuilder
 	 * 
 	 * @param geom the geometry from which the sites will be extracted.
 	 */
-	public void setSites(Geometry geom)
+	public void setSites(Geometry<T> geom)
 	{
 		// remove any duplicate points (they will cause the triangulation to fail)
 		siteCoords = extractUniqueCoordinates(geom);
@@ -123,7 +120,7 @@ public class DelaunayTriangulationBuilder
 	 * 
 	 * @param coords a collection of Coordinates.
 	 */
-	public void setSites(Collection coords)
+	public void setSites(Collection<Coordinate> coords)
 	{
 		// remove any duplicate points (they will cause the triangulation to fail)
 		siteCoords = unique(CoordinateArrays.toCoordinateArray(coords));
@@ -146,7 +143,7 @@ public class DelaunayTriangulationBuilder
 		if (subdiv != null) return;
 		
 		Envelope siteEnv = envelope(siteCoords);
-		List vertices = toVertices(siteCoords);
+		List<Vertex> vertices = toVertices(siteCoords);
 		subdiv = new QuadEdgeSubdivision(siteEnv, tolerance);
 		IncrementalDelaunayTriangulator triangulator = new IncrementalDelaunayTriangulator(subdiv);
 		triangulator.insertSites(vertices);
@@ -169,7 +166,7 @@ public class DelaunayTriangulationBuilder
 	 * @param geomFact the geometry factory to use to create the output
 	 * @return the edges of the triangulation
 	 */
-	public Geometry getEdges(GeometryFactory geomFact)
+	public Geometry<T> getEdges(GeometryFactory<T> geomFact)
 	{
 		create();
 		return subdiv.getEdges(geomFact);
@@ -182,7 +179,7 @@ public class DelaunayTriangulationBuilder
 	 * @param geomFact the geometry factory to use to create the output
 	 * @return the faces of the triangulation
 	 */
-	public Geometry getTriangles(GeometryFactory geomFact)
+	public Geometry<T> getTriangles(GeometryFactory<T> geomFact)
 	{
 		create();
 		return subdiv.getTriangles(geomFact);

@@ -138,7 +138,7 @@ public class NodingFunctions
   private static List createSegmentStrings(Geometry geom)
   {
     List segs = new ArrayList();
-    List lines = LinearComponentExtracter.getLines(geom);
+    Collection lines = LinearComponentExtracter.getLines(geom);
     for (Iterator i = lines.iterator(); i.hasNext(); ) {
       LineString line = (LineString) i.next();
       segs.add(new NodedSegmentString(line.getCoordinates(), null));

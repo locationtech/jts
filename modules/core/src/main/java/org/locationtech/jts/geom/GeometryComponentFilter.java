@@ -35,13 +35,13 @@ package org.locationtech.jts.geom;
  *
  *@version 1.7
  */
-public interface GeometryComponentFilter {
+public interface GeometryComponentFilter<T> {
 
   /**
    *  Performs an operation with or on <code>geom</code>.
    *
    *@param  geom  a <code>Geometry</code> to which the filter is applied.
    */
-  void filter(Geometry geom);
+  void filter(Geometry<T> geom);
 }
 

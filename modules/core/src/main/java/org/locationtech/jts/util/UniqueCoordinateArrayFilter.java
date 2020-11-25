@@ -40,15 +40,15 @@ public class UniqueCoordinateArrayFilter implements CoordinateFilter
   public static Coordinate[] filterCoordinates(Coordinate[] coords)
   {
     UniqueCoordinateArrayFilter filter = new UniqueCoordinateArrayFilter();
-    for (int i = 0; i < coords.length; i++) {
-      filter.filter(coords[i]);
+    for (Coordinate coord : coords) {
+      filter.filter(coord);
     }
     return filter.getCoordinates();
   }
   
-  private Set<Coordinate> coordSet = new HashSet<Coordinate>();
+  private final Set<Coordinate> coordSet = new HashSet<>();
   // Use an auxiliary list as well in order to preserve coordinate order
-  private List<Coordinate> list = new ArrayList<Coordinate>();
+  private final List<Coordinate> list = new ArrayList<>();
 
   public UniqueCoordinateArrayFilter() { }
 
@@ -59,7 +59,7 @@ public class UniqueCoordinateArrayFilter implements CoordinateFilter
    */
   public Coordinate[] getCoordinates() {
     Coordinate[] coordinates = new Coordinate[list.size()];
-    return (Coordinate[]) list.toArray(coordinates);
+    return list.toArray(coordinates);
   }
 
   /**

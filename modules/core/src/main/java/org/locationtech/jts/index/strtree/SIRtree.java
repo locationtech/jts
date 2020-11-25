@@ -29,19 +29,19 @@ import java.util.List;
  *
  * @version 1.7
  */
-public class SIRtree extends AbstractSTRtree {
+public class SIRtree<T> extends AbstractSTRtree<T,Interval> {
 
-  private Comparator comparator = new Comparator() {
-    public int compare(Object o1, Object o2) {
+  private final Comparator<Boundable<Interval>> comparator = new Comparator<Boundable<Interval>>() {
+    public int compare(Boundable<Interval> o1, Boundable<Interval> o2) {
       return compareDoubles(
-          ((Interval)((Boundable)o1).getBounds()).getCentre(),
-          ((Interval)((Boundable)o2).getBounds()).getCentre());
+          o1.getBounds().getCentre(),
+          o2.getBounds().getCentre());
     }
   };
 
-  private IntersectsOp intersectsOp = new IntersectsOp() {
-    public boolean intersects(Object aBounds, Object bBounds) {
-      return ((Interval)aBounds).intersects((Interval)bBounds);
+  private final IntersectsOp<Interval> intersectsOp = new IntersectsOp<Interval>() {
+    public boolean intersects(Interval aBounds, Interval bBounds) {
+      return aBounds.intersects(bBounds);
     }
   };
   
@@ -58,17 +58,17 @@ public class SIRtree extends AbstractSTRtree {
     super(nodeCapacity);
   }
 
-  protected AbstractNode createNode(int level) {
-    return new AbstractNode(level) {
-      protected Object computeBounds() {
+  protected AbstractNode<Interval> createNode(int level) {
+    return new AbstractNode<Interval>(level) {
+      protected Interval computeBounds() {
         Interval bounds = null;
-        for (Iterator i = getChildBoundables().iterator(); i.hasNext(); ) {
-          Boundable childBoundable = (Boundable) i.next();
+        for (Iterator<Boundable<Interval>> i = getChildBoundables().iterator(); i.hasNext(); ) {
+          Boundable<Interval> childBoundable = i.next();
           if (bounds == null) {
-            bounds = new Interval((Interval)childBoundable.getBounds());
+            bounds = new Interval(childBoundable.getBounds());
           }
           else {
-            bounds.expandToInclude((Interval)childBoundable.getBounds());
+            bounds.expandToInclude(childBoundable.getBounds());
           }
         }
         return bounds;
@@ -79,14 +79,14 @@ public class SIRtree extends AbstractSTRtree {
   /**
    * Inserts an item having the given bounds into the tree.
    */
-  public void insert(double x1, double x2, Object item) {
+  public void insert(double x1, double x2, T item) {
     super.insert(new Interval(Math.min(x1, x2), Math.max(x1, x2)), item);
   }
 
   /**
    * Returns items whose bounds intersect the given value.
    */
-  public List query(double x) {
+  public List<T> query(double x) {
     return query(x, x);
   }
 
@@ -94,15 +94,15 @@ public class SIRtree extends AbstractSTRtree {
    * Returns items whose bounds intersect the given bounds.
    * @param x1 possibly equal to x2
    */
-  public List query(double x1, double x2) {
+  public List<T> query(double x1, double x2) {
     return super.query(new Interval(Math.min(x1, x2), Math.max(x1, x2)));
   }
 
-  protected IntersectsOp getIntersectsOp() {
+  protected IntersectsOp<Interval> getIntersectsOp() {
     return intersectsOp;
   }
 
-  protected Comparator getComparator() {
+  protected Comparator<Boundable<Interval>> getComparator() {
     return comparator;
   }
 

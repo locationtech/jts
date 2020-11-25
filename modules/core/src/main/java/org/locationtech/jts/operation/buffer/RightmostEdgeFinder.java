@@ -159,7 +159,7 @@ class RightmostEdgeFinder {
   private int getRightmostSideOfSegment(DirectedEdge de, int i)
   {
     Edge e = de.getEdge();
-    Coordinate coord[] = e.getCoordinates();
+    Coordinate[] coord = e.getCoordinates();
 
     if (i < 0 || i + 1 >= coord.length) return -1;
     if (coord[i].y == coord[i + 1].y) return -1;    // indicates edge is parallel to x-axis

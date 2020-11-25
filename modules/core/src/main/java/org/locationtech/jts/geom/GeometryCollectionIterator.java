@@ -28,7 +28,7 @@ import java.util.NoSuchElementException;
  *
  *@version 1.7
  */
-public class GeometryCollectionIterator implements Iterator {
+public class GeometryCollectionIterator implements Iterator< Geometry> {
 
   /**
    *  The <code>Geometry</code> being iterated over.
@@ -94,7 +94,7 @@ public class GeometryCollectionIterator implements Iterator {
    * 
    * @return the next geometry in the iteration
    */
-  public Object next() {
+  public Geometry next() {
     // the parent GeometryCollection is the first object returned
     if (atStart) {
       atStart = false;
@@ -115,7 +115,7 @@ public class GeometryCollectionIterator implements Iterator {
     }
     Geometry obj = parent.getGeometryN(index++);
     if (obj instanceof GeometryCollection) {
-      subcollectionIterator = new GeometryCollectionIterator((GeometryCollection) obj);
+      subcollectionIterator = new GeometryCollectionIterator(obj);
       // there will always be at least one element in the sub-collection
       return subcollectionIterator.next();
     }

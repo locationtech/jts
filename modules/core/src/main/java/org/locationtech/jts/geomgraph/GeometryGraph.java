@@ -172,11 +172,10 @@ public class GeometryGraph
 
   public Coordinate[] getBoundaryPoints()
   {
-    Collection coll = getBoundaryNodes();
+    Collection<Node> coll = getBoundaryNodes();
     Coordinate[] pts = new Coordinate[coll.size()];
     int i = 0;
-    for (Iterator it = coll.iterator(); it.hasNext(); ) {
-      Node node = (Node) it.next();
+    for (Node node : coll) {
       pts[i++] = node.getCoordinate().copy();
     }
     return pts;

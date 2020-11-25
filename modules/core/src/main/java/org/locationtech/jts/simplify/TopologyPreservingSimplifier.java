@@ -153,8 +153,8 @@ public class TopologyPreservingSimplifier
    * @author Martin Davis
    *
    */
-  static class LineStringMapBuilderFilter
-      implements GeometryComponentFilter
+  static class LineStringMapBuilderFilter<T>
+      implements GeometryComponentFilter<T>
   {
     TopologyPreservingSimplifier tps;
     
@@ -167,15 +167,15 @@ public class TopologyPreservingSimplifier
      * 
      * geom a geometry of any type 
      */
-    public void filter(Geometry geom)
+    public void filter(Geometry<T> geom)
     {
       if (geom instanceof LineString) {
-        LineString line = (LineString) geom;
+        LineString<T> line = (LineString<T>) geom;
         // skip empty geometries
         if (line.isEmpty()) return;
         
-        int minSize = ((LineString) line).isClosed() ? 4 : 2;
-        TaggedLineString taggedLine = new TaggedLineString((LineString) line, minSize);
+        int minSize = line.isClosed() ? 4 : 2;
+        TaggedLineString taggedLine = new TaggedLineString(line, minSize);
         tps.linestringMap.put(line, taggedLine);
       }
     }

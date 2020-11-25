@@ -30,7 +30,7 @@ public class RectanglePredicateTest
   private WKTReader rdr = new WKTReader();
   private GeometryFactory fact = new GeometryFactory();
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(RectanglePredicateTest.class);
   }
 

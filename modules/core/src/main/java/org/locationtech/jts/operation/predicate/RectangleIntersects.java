@@ -12,6 +12,7 @@
 
 package org.locationtech.jts.operation.predicate;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -41,7 +42,7 @@ import org.locationtech.jts.geom.util.ShortCircuitedGeometryVisitor;
  * 
  * @version 1.7
  */
-public class RectangleIntersects
+public class RectangleIntersects<T>
 {
   /**
    * Tests whether a rectangle intersects a given geometry.
@@ -52,13 +53,13 @@ public class RectangleIntersects
    *          a Geometry of any type
    * @return true if the geometries intersect
    */
-  public static boolean intersects(Polygon rectangle, Geometry b)
+  public static <T>boolean intersects(Polygon<T> rectangle, Geometry<?> b)
   {
-    RectangleIntersects rp = new RectangleIntersects(rectangle);
+    RectangleIntersects<T> rp = new RectangleIntersects<>(rectangle);
     return rp.intersects(b);
   }
 
-  private Polygon rectangle;
+  private Polygon<T> rectangle;
 
   private Envelope rectEnv;
 
@@ -68,7 +69,7 @@ public class RectangleIntersects
    * @param rectangle
    *          a rectangular Polygon
    */
-  public RectangleIntersects(Polygon rectangle)
+  public RectangleIntersects(Polygon<T> rectangle)
   {
     this.rectangle = rectangle;
     rectEnv = rectangle.getEnvelopeInternal();
@@ -81,7 +82,7 @@ public class RectangleIntersects
    * @param geom the Geometry to test (may be of any type)
    * @return true if the geometry intersects the query rectangle
    */
-  public boolean intersects(Geometry geom)
+  public boolean intersects(Geometry<?> geom)
   {
     if (!rectEnv.intersects(geom.getEnvelopeInternal()))
       return false;
@@ -145,7 +146,7 @@ class EnvelopeIntersectsVisitor extends ShortCircuitedGeometryVisitor
     return intersects;
   }
 
-  protected void visit(Geometry element)
+  protected void visit(Geometry<?> element)
   {
     Envelope elementEnv = element.getEnvelopeInternal();
 
@@ -181,7 +182,7 @@ class EnvelopeIntersectsVisitor extends ShortCircuitedGeometryVisitor
 
   protected boolean isDone()
   {
-    return intersects == true;
+    return intersects;
   }
 }
 
@@ -201,7 +202,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
 
   private boolean containsPoint = false;
 
-  public GeometryContainsPointVisitor(Polygon rectangle)
+  public GeometryContainsPointVisitor(Polygon<?> rectangle)
   {
     this.rectSeq = rectangle.getExteriorRing().getCoordinateSequence();
     rectEnv = rectangle.getEnvelopeInternal();
@@ -219,7 +220,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
     return containsPoint;
   }
 
-  protected void visit(Geometry geom)
+  protected void visit(Geometry<?> geom)
   {
     // if test geometry is not polygonal this check is not needed
     if (!(geom instanceof Polygon))
@@ -239,7 +240,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
       // check rect point in poly (rect is known not to touch polygon at this
       // point)
       if (SimplePointInAreaLocator.containsPointInPolygon(rectPt,
-          (Polygon) geom)) {
+          (Polygon<?>) geom)) {
         containsPoint = true;
         return;
       }
@@ -248,7 +249,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
 
   protected boolean isDone()
   {
-    return containsPoint == true;
+    return containsPoint;
   }
 }
 
@@ -292,7 +293,7 @@ class RectangleIntersectsSegmentVisitor extends ShortCircuitedGeometryVisitor
     return hasIntersection;
   }
 
-  protected void visit(Geometry geom)
+  protected void visit(Geometry<?> geom)
   {
     /**
      * It may be the case that the rectangle and the 
@@ -306,21 +307,20 @@ class RectangleIntersectsSegmentVisitor extends ShortCircuitedGeometryVisitor
     // check segment intersections
     // get all lines from geometry component
     // (there may be more than one if it's a multi-ring polygon)
-    List lines = LinearComponentExtracter.getLines(geom);
+    Collection<? extends LineString<?>> lines = LinearComponentExtracter.getLines(geom);
     checkIntersectionWithLineStrings(lines);
   }
 
-  private void checkIntersectionWithLineStrings(List lines)
+  private void checkIntersectionWithLineStrings(Collection<? extends LineString<?>> lines)
   {
-    for (Iterator i = lines.iterator(); i.hasNext(); ) {
-      LineString testLine = (LineString) i.next();
-      checkIntersectionWithSegments(testLine);
+    for (LineString<?> line : lines) {
+      checkIntersectionWithSegments(line);
       if (hasIntersection)
         return;
     }
   }
 
-  private void checkIntersectionWithSegments(LineString testLine)
+  private void checkIntersectionWithSegments(LineString<?> testLine)
   {
     CoordinateSequence seq1 = testLine.getCoordinateSequence();
     for (int j = 1; j < seq1.size(); j++) {
@@ -336,6 +336,6 @@ class RectangleIntersectsSegmentVisitor extends ShortCircuitedGeometryVisitor
 
   protected boolean isDone()
   {
-    return hasIntersection == true;
+    return hasIntersection;
   }
 }

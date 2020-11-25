@@ -14,6 +14,7 @@
 package org.locationtech.jts.geom;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Models a collection of {@link Polygon}s.
@@ -27,8 +28,8 @@ import java.util.ArrayList;
  *
  *@version 1.7
  */
-public class MultiPolygon
-	extends GeometryCollection
+public class MultiPolygon<T,G extends Polygon<T>>
+	extends GeometryCollection<T,G>
 	implements Polygonal
 {
   private static final long serialVersionUID = -551033529766975875L;
@@ -47,8 +48,8 @@ public class MultiPolygon
    *      <code>MultiPolygon</code>
    * @deprecated Use GeometryFactory instead
    */
-  public MultiPolygon(Polygon[] polygons, PrecisionModel precisionModel, int SRID) {
-    this(polygons, new GeometryFactory(precisionModel, SRID));
+  public MultiPolygon(G[] polygons, PrecisionModel precisionModel, int SRID) {
+    this(polygons, new GeometryFactory<>(precisionModel, SRID));
   }
 
 
@@ -62,7 +63,7 @@ public class MultiPolygon
    *            HREF="http://www.opengis.org/techno/specs.htm">OpenGIS Simple
    *            Features Specification for SQL</A>.
    */
-  public MultiPolygon(Polygon[] polygons, GeometryFactory factory) {
+  public MultiPolygon(G[] polygons, GeometryFactory<T> factory) {
     super(polygons, factory);
   }
 
@@ -90,23 +91,24 @@ public class MultiPolygon
    * @return a lineal geometry (which may be empty)
    * @see Geometry#getBoundary
    */
-  public Geometry getBoundary() {
+  public Geometry<T> getBoundary() {
     if (isEmpty()) {
       return getFactory().createMultiLineString();
     }
-    ArrayList allRings = new ArrayList();
-    for (int i = 0; i < geometries.length; i++) {
-      Polygon polygon = (Polygon) geometries[i];
-      Geometry rings = polygon.getBoundary();
+    List<Geometry<T>> allRings = new ArrayList<>();
+    for (Geometry<T> geometry : geometries) {
+      Geometry<T> polygon = geometry;
+      Geometry<T> rings = polygon.getBoundary();
       for (int j = 0; j < rings.getNumGeometries(); j++) {
         allRings.add(rings.getGeometryN(j));
       }
     }
-    LineString[] allRingsArray = new LineString[allRings.size()];
-    return getFactory().createMultiLineString((LineString[]) allRings.toArray(allRingsArray));
+    @SuppressWarnings("unchecked")
+    LineString<T>[] allRingsArray = new LineString[allRings.size()];
+    return getFactory().createMultiLineString(allRings.toArray(allRingsArray));
   }
 
-  public boolean equalsExact(Geometry other, double tolerance) {
+  public boolean equalsExact(Geometry<?> other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
     }
@@ -120,24 +122,25 @@ public class MultiPolygon
    *
    * @return a MultiPolygon in the reverse order
    */
-  public MultiPolygon reverse() {
-    return (MultiPolygon) super.reverse();
+  public MultiPolygon<T,G> reverse() {
+    return (MultiPolygon<T,G>) super.reverse();
   }
+  @SuppressWarnings("unchecked")
+  protected MultiPolygon<T,G> reverseInternal() {
+    G[] polygons = (G[]) new Polygon[this.geometries.length];
+    for (int i = 0; i < polygons.length; i++) {
+      polygons[i] = (G) this.geometries[i].reverse();
+    }
+    return new MultiPolygon<>(polygons, factory);
+  }
+  @SuppressWarnings("unchecked")
 
-  protected MultiPolygon reverseInternal() {
-    Polygon[] polygons = new Polygon[this.geometries.length];
+  protected MultiPolygon<T,G> copyInternal() {
+    G[] polygons = (G[]) new Polygon[this.geometries.length];
     for (int i = 0; i < polygons.length; i++) {
-      polygons[i] = (Polygon) this.geometries[i].reverse();
+      polygons[i] = (G) this.geometries[i].copy();
     }
-    return new MultiPolygon(polygons, factory);
-  }
-  
-  protected MultiPolygon copyInternal() {
-    Polygon[] polygons = new Polygon[this.geometries.length];
-    for (int i = 0; i < polygons.length; i++) {
-      polygons[i] = (Polygon) this.geometries[i].copy();
-    }
-    return new MultiPolygon(polygons, factory);
+    return new MultiPolygon<>(polygons, factory);
   }
 
   protected int getTypeCode() {

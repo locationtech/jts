@@ -33,7 +33,7 @@ import org.locationtech.jts.geom.LineString;
 /**
  * Dissolves the linear components 
  * from a collection of {@link Geometry}s
- * into a set of maximal-length {@link Linestring}s
+ * into a set of maximal-length {@link LineString}s
  * in which every unique segment appears once only.
  * The output linestrings run between node vertices
  * of the input, which are vertices which have
@@ -71,7 +71,7 @@ public class LineDissolver
   private Geometry result;
   private GeometryFactory factory;
   private DissolveEdgeGraph graph;
-  private List lines = new ArrayList();
+  private List<LineString> lines = new ArrayList<>();
 
   public LineDissolver()
   {
@@ -102,10 +102,10 @@ public class LineDissolver
    * 
    * @param geometries the geometries to be line-merged
    */
-  public void add(Collection geometries) 
+  public void add(Collection<Geometry> geometries)
   {
-    for (Iterator i = geometries.iterator(); i.hasNext(); ) {
-      Geometry geometry = (Geometry) i.next();
+    for (Iterator<Geometry> i = geometries.iterator(); i.hasNext(); ) {
+      Geometry geometry = i.next();
       add(geometry);
     }
   }
@@ -144,16 +144,16 @@ public class LineDissolver
   }
 
   private void computeResult() {
-    Collection edges = graph.getVertexEdges();
-    for (Iterator i = edges.iterator(); i.hasNext(); ) {
-      HalfEdge e = (HalfEdge) i.next();
+    Collection<HalfEdge> edges = graph.getVertexEdges();
+    for (Iterator<HalfEdge> i = edges.iterator(); i.hasNext(); ) {
+      HalfEdge e = i.next();
       if (MarkHalfEdge.isMarked(e)) continue;
       process(e);
     }
     result = factory.buildGeometry(lines);
   }
 
-  private Stack nodeEdgeStack = new Stack();
+  private Stack<HalfEdge> nodeEdgeStack = new Stack<>();
   
   private void process(HalfEdge e) {
     HalfEdge eNode = e.prevNode();
@@ -172,7 +172,7 @@ public class LineDissolver
    */
   private void buildLines() {
     while (! nodeEdgeStack.empty()) {
-      HalfEdge e = (HalfEdge) nodeEdgeStack.pop();
+      HalfEdge e = nodeEdgeStack.pop();
       if (MarkHalfEdge.isMarked(e))
         continue;
       buildLine(e);
@@ -247,7 +247,7 @@ public class LineDissolver
       MarkHalfEdge.markBoth(e);
     }
     // add final node
-    line.add(e.dest().clone(), false);
+    line.add((Coordinate) e.dest().clone(), false);
     
     // queue up the final node edges
     stackEdges(e.sym());

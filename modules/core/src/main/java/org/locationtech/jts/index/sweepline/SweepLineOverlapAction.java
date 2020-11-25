@@ -19,7 +19,8 @@ package org.locationtech.jts.index.sweepline;
  *
  * @version 1.7
  */
+@FunctionalInterface
 public interface SweepLineOverlapAction {
 
-  void overlap(SweepLineInterval s0, SweepLineInterval s1);
+  void overlap(SweepLineInterval<?> s0, SweepLineInterval<?> s1);
 }

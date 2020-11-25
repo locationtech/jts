@@ -21,21 +21,21 @@ import org.locationtech.jts.geom.Coordinate;
  *
  * @version 1.7
  */
-public interface SegmentString
+public interface SegmentString<T>
 {
   /**
    * Gets the user-defined data for this segment string.
    *
    * @return the user-defined data
    */
-  public Object getData();
+  public T getData();
 
   /**
    * Sets the user-defined data for this segment string.
    *
    * @param data an Object containing user-defined data
    */
-  public void setData(Object data);
+  public void setData(T data);
 
   public int size();
   public Coordinate getCoordinate(int i);

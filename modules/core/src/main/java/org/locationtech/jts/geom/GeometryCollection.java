@@ -13,10 +13,7 @@
  */
 package org.locationtech.jts.geom;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.locationtech.jts.util.Assert;
 
@@ -28,17 +25,17 @@ import org.locationtech.jts.util.Assert;
  *
  *@version 1.7
  */
-public class GeometryCollection extends Geometry {
+public class GeometryCollection<T, G extends Geometry<T>> extends Geometry<T> {
 //  With contributions from Markus Schaber [schabios@logi-track.com] 2004-03-26
   private static final long serialVersionUID = -5694727726395021467L;
   /**
    *  Internal representation of this <code>GeometryCollection</code>.
    */
-  protected Geometry[] geometries;
+  protected Geometry<T>[] geometries;
 
   /** @deprecated Use GeometryFactory instead */
-  public GeometryCollection(Geometry[] geometries, PrecisionModel precisionModel, int SRID) {
-      this(geometries, new GeometryFactory(precisionModel, SRID));
+  public GeometryCollection(Geometry<T>[] geometries, PrecisionModel precisionModel, int SRID) {
+      this(geometries, new GeometryFactory<>(precisionModel, SRID));
   }
 
 
@@ -49,10 +46,11 @@ public class GeometryCollection extends Geometry {
    *            geometry. Elements may be empty <code>Geometry</code>s,
    *            but not <code>null</code>s.
    */
-  public GeometryCollection(Geometry[] geometries, GeometryFactory factory) {
+  @SuppressWarnings("unchecked")
+  public GeometryCollection(Geometry<T>[] geometries, GeometryFactory<T> factory) {
     super(factory);
     if (geometries == null) {
-      geometries = new Geometry[]{};
+      geometries = (G[]) new Geometry[]{};
     }
     if (hasNullElements(geometries)) {
       throw new IllegalArgumentException("geometries must not contain null elements");
@@ -77,19 +75,19 @@ public class GeometryCollection extends Geometry {
   public Coordinate[] getCoordinates() {
     Coordinate[] coordinates = new Coordinate[getNumPoints()];
     int k = -1;
-    for (int i = 0; i < geometries.length; i++) {
-      Coordinate[] childCoordinates = geometries[i].getCoordinates();
-      for (int j = 0; j < childCoordinates.length; j++) {
+    for (Geometry<T> geometry : geometries) {
+      Coordinate[] childCoordinates = geometry.getCoordinates();
+      for (Coordinate childCoordinate : childCoordinates) {
         k++;
-        coordinates[k] = childCoordinates[j];
+        coordinates[k] = childCoordinate;
       }
     }
     return coordinates;
   }
 
   public boolean isEmpty() {
-    for (int i = 0; i < geometries.length; i++) {
-      if (!geometries[i].isEmpty()) {
+    for (Geometry<T> geometry : geometries) {
+      if (!geometry.isEmpty()) {
         return false;
       }
     }
@@ -98,16 +96,16 @@ public class GeometryCollection extends Geometry {
 
   public int getDimension() {
     int dimension = Dimension.FALSE;
-    for (int i = 0; i < geometries.length; i++) {
-      dimension = Math.max(dimension, geometries[i].getDimension());
+    for (Geometry<T> geometry : geometries) {
+      dimension = Math.max(dimension, geometry.getDimension());
     }
     return dimension;
   }
 
   public int getBoundaryDimension() {
     int dimension = Dimension.FALSE;
-    for (int i = 0; i < geometries.length; i++) {
-      dimension = Math.max(dimension, ((Geometry) geometries[i]).getBoundaryDimension());
+    for (Geometry<T> geometry : geometries) {
+      dimension = Math.max(dimension, geometry.getBoundaryDimension());
     }
     return dimension;
   }
@@ -116,14 +114,14 @@ public class GeometryCollection extends Geometry {
     return geometries.length;
   }
 
-  public Geometry getGeometryN(int n) {
+  public Geometry<T> getGeometryN(int n) {
     return geometries[n];
   }
 
   public int getNumPoints() {
     int numPoints = 0;
-    for (int i = 0; i < geometries.length; i++) {
-      numPoints += ((Geometry) geometries[i]).getNumPoints();
+    for (Geometry<T> geometry : geometries) {
+      numPoints += geometry.getNumPoints();
     }
     return numPoints;
   }
@@ -132,7 +130,7 @@ public class GeometryCollection extends Geometry {
     return Geometry.TYPENAME_GEOMETRYCOLLECTION;
   }
 
-  public Geometry getBoundary() {
+  public Geometry<T> getBoundary() {
     checkNotGeometryCollection(this);
     Assert.shouldNeverReachHere();
     return null;
@@ -146,8 +144,8 @@ public class GeometryCollection extends Geometry {
   public double getArea()
   {
     double area = 0.0;
-    for (int i = 0; i < geometries.length; i++) {
-      area += geometries[i].getArea();
+    for (Geometry<T> geometry : geometries) {
+      area += geometry.getArea();
     }
     return area;
   }
@@ -155,22 +153,22 @@ public class GeometryCollection extends Geometry {
   public double getLength()
   {
     double sum = 0.0;
-    for (int i = 0; i < geometries.length; i++) {
-      sum += (geometries[i]).getLength();
+    for (Geometry<T> geometry : geometries) {
+      sum += geometry.getLength();
     }
     return sum;
   }
 
-  public boolean equalsExact(Geometry other, double tolerance) {
+  public boolean equalsExact(Geometry<?> other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
     }
-    GeometryCollection otherCollection = (GeometryCollection) other;
+    GeometryCollection<?,?> otherCollection = (GeometryCollection<?,?>) other;
     if (geometries.length != otherCollection.geometries.length) {
       return false;
     }
     for (int i = 0; i < geometries.length; i++) {
-      if (!((Geometry) geometries[i]).equalsExact(otherCollection.geometries[i], tolerance)) {
+      if (!geometries[i].equalsExact(otherCollection.geometries[i], tolerance)) {
         return false;
       }
     }
@@ -178,16 +176,16 @@ public class GeometryCollection extends Geometry {
   }
 
   public void apply(CoordinateFilter filter) {
-	    for (int i = 0; i < geometries.length; i++) {
-	      geometries[i].apply(filter);
-	    }
+    for (Geometry<T> geometry : geometries) {
+      geometry.apply(filter);
+    }
 	  }
 
   public void apply(CoordinateSequenceFilter filter) {
     if (geometries.length == 0)
       return;
-    for (int i = 0; i < geometries.length; i++) {
-      geometries[i].apply(filter);
+    for (Geometry<T> geometry : this) {
+      geometry.apply(filter);
       if (filter.isDone()) {
         break;
       }
@@ -196,17 +194,17 @@ public class GeometryCollection extends Geometry {
       geometryChanged();
   }
 
-  public void apply(GeometryFilter filter) {
+  public void apply(GeometryFilter<T> filter) {
     filter.filter(this);
-    for (int i = 0; i < geometries.length; i++) {
-      geometries[i].apply(filter);
+    for (Geometry<T> geometry : this) {
+      geometry.apply(filter);
     }
   }
 
-  public void apply(GeometryComponentFilter filter) {
+  public void apply(GeometryComponentFilter<T> filter) {
     filter.filter(this);
-    for (int i = 0; i < geometries.length; i++) {
-      geometries[i].apply(filter);
+    for (Geometry<T> geometry : this) {
+      geometry.apply(filter);
     }
   }
 
@@ -217,48 +215,48 @@ public class GeometryCollection extends Geometry {
    * @return a clone of this instance
    * @deprecated
    */
-  public Object clone() {
-    return copy();
+  public GeometryCollection<T,G> clone() {
+    return (GeometryCollection<T,G>) copy();
   }
-
-  protected GeometryCollection copyInternal() {
-    Geometry[] geometries = new Geometry[this.geometries.length];
+@SuppressWarnings("unchecked")
+  protected GeometryCollection<T,G> copyInternal() {
+  G[] geometries = (G[]) new Geometry[this.geometries.length];
     for (int i = 0; i < geometries.length; i++) {
-      geometries[i] = this.geometries[i].copy();
+      geometries[i] = (G) this.geometries[i].copy();
     }
-    return new GeometryCollection(geometries, factory);
+    return new GeometryCollection<>(geometries, factory);
   }
 
   public void normalize() {
-    for (int i = 0; i < geometries.length; i++) {
-      geometries[i].normalize();
+    for (Geometry<T> geometry : this) {
+      geometry.normalize();
     }
     Arrays.sort(geometries);
   }
 
   protected Envelope computeEnvelopeInternal() {
     Envelope envelope = new Envelope();
-    for (int i = 0; i < geometries.length; i++) {
-      envelope.expandToInclude(geometries[i].getEnvelopeInternal());
+    for (Geometry<T> geometry : this) {
+      envelope.expandToInclude(geometry.getEnvelopeInternal());
     }
     return envelope;
   }
 
   protected int compareToSameClass(Object o) {
-    TreeSet theseElements = new TreeSet(Arrays.asList(geometries));
-    TreeSet otherElements = new TreeSet(Arrays.asList(((GeometryCollection) o).geometries));
+    NavigableSet<Geometry<?>> theseElements = new TreeSet<>(Arrays.asList(geometries));
+    NavigableSet<Geometry<?>> otherElements = new TreeSet<>(Arrays.asList(((GeometryCollection<?,?>) o).geometries));
     return compare(theseElements, otherElements);
   }
 
   protected int compareToSameClass(Object o, CoordinateSequenceComparator comp) {
-    GeometryCollection gc = (GeometryCollection) o;
+    GeometryCollection<?,?> gc = (GeometryCollection<?,?>) o;
 
     int n1 = getNumGeometries();
     int n2 = gc.getNumGeometries();
     int i = 0;
     while (i < n1 && i < n2) {
-      Geometry thisGeom = getGeometryN(i);
-      Geometry otherGeom = gc.getGeometryN(i);
+      Geometry<T> thisGeom = getGeometryN(i);
+      Geometry<?> otherGeom = gc.getGeometryN(i);
       int holeComp = thisGeom.compareToSameClass(otherGeom, comp);
       if (holeComp != 0) return holeComp;
       i++;
@@ -280,17 +278,31 @@ public class GeometryCollection extends Geometry {
    *
    * @return a {@link GeometryCollection} in the reverse order
    */
-  public GeometryCollection reverse() {
-    return (GeometryCollection) super.reverse();
+  public GeometryCollection<T,G> reverse() {
+    return (GeometryCollection<T,G>) super.reverse();
   }
-
-  protected GeometryCollection reverseInternal()
+@SuppressWarnings("unchecked")//arrays can't be generic
+  protected GeometryCollection<T,G> reverseInternal()
   {
-    Geometry[] geometries = new Geometry[this.geometries.length];
+    G[] geometries = (G[]) new Geometry[this.geometries.length];
     for (int i = 0; i < geometries.length; i++) {
-      geometries[i] = this.geometries[i].reverse();
+      geometries[i] = (G) this.geometries[i].reverse();
     }
-    return new GeometryCollection(geometries, factory);
+    return new GeometryCollection<>(geometries, factory);
+  }
+  public Iterator<Geometry<T>> iterator(){
+    return new Iterator<Geometry<T>>() {
+      int i=0;
+      @Override
+      public boolean hasNext() {
+        return i < geometries.length;
+      }
+
+      @Override
+      public Geometry<T> next() {
+        return geometries[i++];
+      }
+    };
   }
 }
 

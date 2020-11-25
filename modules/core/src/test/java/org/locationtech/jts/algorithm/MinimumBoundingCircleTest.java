@@ -32,7 +32,7 @@ public class MinimumBoundingCircleTest extends GeometryTestCase {
   private GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
   WKTReader reader = new WKTReader(geometryFactory);
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(MinimumBoundingCircleTest.class);
   }
 

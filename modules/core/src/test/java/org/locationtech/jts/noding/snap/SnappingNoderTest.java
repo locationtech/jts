@@ -8,7 +8,7 @@ import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
 public class SnappingNoderTest extends GeometryTestCase {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(SnappingNoderTest.class);
   }
 

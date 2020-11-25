@@ -20,6 +20,7 @@ import java.io.StringReader;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.locationtech.jts.io.OrdinateFormat;
 
@@ -29,8 +30,9 @@ import org.locationtech.jts.io.OrdinateFormat;
  * @author Martin Davis
  *
  */
-public class StringUtil
+public final class StringUtil
 {
+    private StringUtil(){}
   /**
    * Mimics the the Java SE {@link String#split(String)} method.
    *
@@ -41,7 +43,7 @@ public class StringUtil
  public static String[] split(String s, String separator)
  {
    int separatorlen = separator.length();
-   ArrayList tokenList = new ArrayList();
+   List<String> tokenList = new ArrayList<>();
    String tmpString = "" + s;
    int pos = tmpString.indexOf(separator);
    while (pos >= 0) {
@@ -54,7 +56,7 @@ public class StringUtil
      tokenList.add(tmpString);
    String[] res = new String[tokenList.size()];
    for (int i = 0; i < res.length; i++) {
-     res[i] = (String) tokenList.get(i);
+     res[i] = tokenList.get(i);
    }
    return res;
  }
@@ -72,17 +74,17 @@ public class StringUtil
  }
 
  public static String getStackTrace(Throwable t, int depth) {
-     String stackTrace = "";
+     StringBuilder stackTrace = new StringBuilder();
      StringReader stringReader = new StringReader(getStackTrace(t));
      LineNumberReader lineNumberReader = new LineNumberReader(stringReader);
      for (int i = 0; i < depth; i++) {
          try {
-             stackTrace += lineNumberReader.readLine() + NEWLINE;
+             stackTrace.append(lineNumberReader.readLine()).append(NEWLINE);
          } catch (IOException e) {
              Assert.shouldNeverReachHere();
          }
      }
-     return stackTrace;
+     return stackTrace.toString();
  }
 
   /**

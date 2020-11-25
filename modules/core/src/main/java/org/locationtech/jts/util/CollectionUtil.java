@@ -14,20 +14,18 @@ package org.locationtech.jts.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Utilities for processing {@link Collection}s.
- *
+ * @deprecated
  * @version 1.7
  */
-public class CollectionUtil 
+public final class CollectionUtil
 {
+private CollectionUtil(){}
 
-  public interface Function {
-    Object execute(Object obj);
-  }
 
   /**
    * Executes a function on each item in a {@link Collection}
@@ -37,11 +35,11 @@ public class CollectionUtil
    * @param func the Function to execute
    * @return a list of the transformed objects
    */
-  public static List transform(Collection coll, Function func)
+  public static <T,S>List<T> transform(Collection<S> coll, Function<S,T> func)
   {
-    List result = new ArrayList();
-    for (Iterator i = coll.iterator(); i.hasNext(); ) {
-      result.add(func.execute(i.next()));
+    List<T> result = new ArrayList<>();
+    for (S s : coll) {
+      result.add(func.apply(s));
     }
     return result;
   }
@@ -53,10 +51,10 @@ public class CollectionUtil
    * @param coll the collection to process
    * @param func the Function to execute
    */
-  public static void apply(Collection coll, Function func)
+  public static <T,S>void apply(Collection<S> coll, Function<S,T> func)
   {
-    for (Iterator i = coll.iterator(); i.hasNext(); ) {
-      func.execute(i.next());
+    for (S s : coll) {
+      func.apply(s);
     }
   }
 
@@ -69,11 +67,10 @@ public class CollectionUtil
    * @param func the Function to execute
    * @return a list of objects for which the function was true
    */
-  public static List select(Collection collection, Function func) {
-    List result = new ArrayList();
-    for (Iterator i = collection.iterator(); i.hasNext();) {
-      Object item = i.next();
-      if (Boolean.TRUE.equals(func.execute(item))) {
+  public static <T>List<T> select(Collection<T> collection, Function<T,Boolean> func) {
+    List<T> result = new ArrayList<>();
+    for (T item : collection) {
+      if (Boolean.TRUE.equals(func.apply(item))) {
         result.add(item);
       }
     }

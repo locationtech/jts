@@ -28,7 +28,7 @@ import org.locationtech.jtstest.util.*;
  *
  */
 public abstract class BaseGeometryFunction 
-implements GeometryFunction, Comparable
+implements GeometryFunction
 {
   public static boolean isBinaryGeomFunction(GeometryFunction func)
   {
@@ -178,18 +178,5 @@ implements GeometryFunction, Comparable
 		return true;
 	}
 
-	public int compareTo(Object o)
-	{
-		GeometryFunction func = (GeometryFunction) o;
-		int cmp = name.compareTo(func.getName());
-    if (cmp != 0)
-      return cmp;
-		return compareTo(returnType, func.getReturnType());
-		//TODO: compare parameter lists as well
-	}
-	
-	private static int compareTo(Class c1, Class c2)
-	{
-		return c1.getName().compareTo(c2.getName());
-	}
+
 }

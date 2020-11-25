@@ -36,41 +36,40 @@ import org.locationtech.jts.geom.Geometry;
  * @see VoronoiDiagramBuilder
  *
  */
-public class VertexTaggedGeometryDataMapper 
+public class VertexTaggedGeometryDataMapper <T>
 {
-	private Map coordDataMap = new TreeMap();
+	private final Map<Coordinate,T> coordDataMap = new TreeMap<>();
 	
 	public VertexTaggedGeometryDataMapper()
 	{
 		
 	}
 	
-	public void loadSourceGeometries(Collection geoms)
+	public void loadSourceGeometries(Collection<Geometry<T>> geoms)
 	{
-		for (Iterator i = geoms.iterator(); i.hasNext(); ) {
-			Geometry geom = (Geometry) i.next();
+		for (Geometry<T> geom : geoms) {
 			loadVertices(geom.getCoordinates(), geom.getUserData());
 		}
 	}
 	
-	public void loadSourceGeometries(Geometry geomColl)
+	public void loadSourceGeometries(Geometry<T> geomColl)
 	{
 		for (int i = 0; i < geomColl.getNumGeometries(); i++) {
-			Geometry geom = geomColl.getGeometryN(i);
+			Geometry<T> geom = geomColl.getGeometryN(i);
 			loadVertices(geom.getCoordinates(), geom.getUserData());
 		}
 	}
 	
-	private void loadVertices(Coordinate[] pts, Object data)
+	private void loadVertices(Coordinate[] pts, T data)
 	{
-		for (int i = 0; i < pts.length; i++) {
-			coordDataMap.put(pts[i], data);
+		for (Coordinate pt : pts) {
+			coordDataMap.put(pt, data);
 		}
 	}
 	
-	public List getCoordinates()
+	public List<Coordinate> getCoordinates()
 	{
-		return new ArrayList(coordDataMap.keySet());
+		return new ArrayList<>(coordDataMap.keySet());
 	}
 	
 	/**
@@ -82,11 +81,11 @@ public class VertexTaggedGeometryDataMapper
 	 * 
 	 * @param targetGeom
 	 */
-	public void transferData(Geometry targetGeom)
+	public void transferData(Geometry<T> targetGeom)
 	{
 		for (int i = 0; i < targetGeom.getNumGeometries(); i++) {
-			Geometry geom = targetGeom.getGeometryN(i);
-			Coordinate vertexKey = (Coordinate) geom.getUserData();
+			Geometry<T> geom = targetGeom.getGeometryN(i);
+			Coordinate vertexKey = geom.getCoordinate();
 			if (vertexKey == null) continue;
 			geom.setUserData(coordDataMap.get(vertexKey));
 		}

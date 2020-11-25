@@ -42,19 +42,19 @@ public class ComponentCoordinateExtracter
    * @param geom the Geometry from which to extract
    * @return a list of representative Coordinates
    */
-  public static List getCoordinates(Geometry geom)
+  public static List<Coordinate> getCoordinates(Geometry geom)
   {
-    List coords = new ArrayList();
+    List<Coordinate> coords = new ArrayList<>();
     geom.apply(new ComponentCoordinateExtracter(coords));
     return coords;
   }
 
-  private List coords;
+  private List<Coordinate> coords;
 
   /**
    * Constructs a LineExtracterFilter with a list in which to store LineStrings found.
    */
-  public ComponentCoordinateExtracter(List coords)
+  public ComponentCoordinateExtracter(List<Coordinate> coords)
   {
     this.coords = coords;
   }

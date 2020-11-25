@@ -26,7 +26,7 @@ import org.locationtech.jts.io.WKTReader;
 
 public class TestRunBuilder 
 {
-  private static GeometryFactory geomFact = new GeometryFactory();
+  private static GeometryFactory<?> geomFact = new GeometryFactory<>();
   
   private Geometry a = null;
   private Geometry b = null;
@@ -87,10 +87,10 @@ public class TestRunBuilder
     throw new IllegalArgumentException("unrecognized file type: " + filename);
   }
 
-  private Geometry readWKTFile(String filename) throws IOException, ParseException {
+  private <T>Geometry<T> readWKTFile(String filename) throws IOException, ParseException {
     WKTReader wktReader = new WKTReader();
     WKTFileReader wktFileReader = new WKTFileReader(filename, wktReader);
-    List<Geometry> geoms = wktFileReader.read();
+    List<Geometry<T>> geoms = wktFileReader.read();
     return createGeometry(geoms);
   }
 
@@ -101,14 +101,14 @@ public class TestRunBuilder
     return createGeometry(geoms);
   }
   
-  private Geometry createGeometry(List<Geometry> geoms) {
+  private <T> Geometry<T> createGeometry(List<Geometry<T>> geoms) {
     if (geoms.size() == 0) {
       return null;
     }
     else if (geoms.size() == 1) {
       return geoms.get(0);
     }
-    return geomFact.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
+    return ((GeometryFactory<T>)geomFact).createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
   }
 
 

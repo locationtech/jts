@@ -41,7 +41,7 @@ extends PerformanceTestCase
 
   private PrecisionModel precisionModel;
   
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     PerformanceTestRunner.run(OverlayNGPerfTest.class);
   }
   

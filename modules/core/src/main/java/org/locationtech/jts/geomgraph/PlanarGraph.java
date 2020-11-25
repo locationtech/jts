@@ -59,9 +59,9 @@ public class PlanarGraph
     }
   }
 
-  protected List edges        = new ArrayList();
+  protected List<Edge> edges        = new ArrayList<>();
   protected NodeMap nodes;
-  protected List edgeEndList  = new ArrayList();
+  protected List<EdgeEnd> edgeEndList  = new ArrayList<>();
 
   public PlanarGraph(NodeFactory nodeFact) {
     nodes = new NodeMap(nodeFact);
@@ -71,8 +71,8 @@ public class PlanarGraph
     nodes = new NodeMap(new NodeFactory());
   }
 
-  public Iterator getEdgeIterator() { return edges.iterator(); }
-  public Collection getEdgeEnds() { return edgeEndList; }
+  public Iterator<Edge> getEdgeIterator() { return edges.iterator(); }
+  public Collection<EdgeEnd> getEdgeEnds() { return edgeEndList; }
 
   public boolean isBoundaryNode(int geomIndex, Coordinate coord)
   {
@@ -92,8 +92,8 @@ public class PlanarGraph
     edgeEndList.add(e);
   }
 
-  public Iterator getNodeIterator() { return nodes.iterator(); }
-  public Collection getNodes() { return nodes.values(); }
+  public Iterator<Node> getNodeIterator() { return nodes.iterator(); }
+  public Collection<Node> getNodes() { return nodes.values(); }
   public Node addNode(Node node) { return nodes.addNode(node); }
   public Node addNode(Coordinate coord) { return nodes.addNode(coord); }
   /**

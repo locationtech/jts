@@ -138,22 +138,22 @@ public class ConformingDelaunayTriangulationBuilder
 		}
 	}
 	
-	private static List createConstraintSegments(Geometry geom)
+	private static<T> List<Segment<T>> createConstraintSegments(Geometry<T> geom)
 	{
-		List lines = LinearComponentExtracter.getLines(geom);
-		List constraintSegs = new ArrayList();
-		for (Iterator i = lines.iterator(); i.hasNext(); ) {
-			LineString line = (LineString) i.next();
+		Collection<LineString<T>> lines = LinearComponentExtracter.getLines(geom);
+		List<Segment<T>> constraintSegs = new ArrayList<>();
+		for (LineString<T> tLineString : lines) {
+			LineString<T> line = tLineString;
 			createConstraintSegments(line, constraintSegs);
 		}
 		return constraintSegs;
 	}
 	
-	private static void createConstraintSegments(LineString line, List constraintSegs)
+	private static <T>void createConstraintSegments(LineString<T> line, List<Segment<T>> constraintSegs)
 	{
 		Coordinate[] coords = line.getCoordinates();
 		for (int i = 1; i < coords.length; i++) {
-			constraintSegs.add(new Segment(coords[i-1], coords[i]));
+			constraintSegs.add(new Segment<>(coords[i-1], coords[i]));
 		}
 	}
 

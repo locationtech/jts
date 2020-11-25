@@ -81,8 +81,8 @@ public class HSBPalette {
     int iS = iSB / numB;
     int iB = iSB - iS * numB;
     float h = (h1 + iH * hInc) % 1.0f;
-    float s = (float) MathUtil.clamp(sLo + iS * sInc, 0, 1);
-    float b = (float) MathUtil.clamp(bLo + iB * bInc, 0, 1);
+    float s = (float) MathUtil.clamp(sLo + iS * sInc, 0.f, 1.f);
+    float b = (float) MathUtil.clamp(bLo + iB * bInc, 0.f, 1.f);
     Color chsb = Color.getHSBColor(h, s, b);
     return ColorUtil.setAlpha(chsb, alpha);
   }

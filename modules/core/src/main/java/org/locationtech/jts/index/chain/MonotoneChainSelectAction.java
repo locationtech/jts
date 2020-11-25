@@ -36,7 +36,7 @@ public class MonotoneChainSelectAction
    * @param mc the parent chain
    * @param startIndex the index of the start vertex of the segment being processed
    */
-  public void select(MonotoneChain mc, int startIndex)
+  public void select(MonotoneChain<?> mc, int startIndex)
   {
     mc.getLineSegment(startIndex, selectedSegment);
     // call this routine in case select(segmenet) was overridden

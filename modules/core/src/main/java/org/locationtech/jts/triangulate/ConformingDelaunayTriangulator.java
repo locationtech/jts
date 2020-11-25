@@ -65,28 +65,27 @@ import org.locationtech.jts.util.Debug;
  * @author David Skea
  * @author Martin Davis
  */
-public class ConformingDelaunayTriangulator 
+public class ConformingDelaunayTriangulator <T>
 {
-	private static Envelope computeVertexEnvelope(Collection vertices) {
+	private static Envelope computeVertexEnvelope(Collection<?extends Vertex> vertices) {
 		Envelope env = new Envelope();
-		for (Iterator i = vertices.iterator(); i.hasNext();) {
-			Vertex v = (Vertex) i.next();
+		for (Vertex v : vertices) {
 			env.expandToInclude(v.getCoordinate());
 		}
 		return env;
 	}
 
-	private List initialVertices; // List<Vertex>
-	private List segVertices; // List<Vertex>
+	private List<ConstraintVertex> initialVertices; // List<Vertex>
+	private List<ConstraintVertex> segVertices; // List<Vertex>
 
 	// MD - using a Set doesn't seem to be much faster
 	// private Set segments = new HashSet();
-	private List segments = new ArrayList(); // List<Segment>
+	private List<Segment> segments = new ArrayList<>(); // List<Segment>
 	private QuadEdgeSubdivision subdiv = null;
 	private IncrementalDelaunayTriangulator incDel;
-	private Geometry convexHull;
+	private Geometry<T> convexHull;
 	private ConstraintSplitPointFinder splitFinder = new NonEncroachingSplitPointFinder();
-	private KdTree kdt = null;
+	private KdTree<ConstraintVertex> kdt = null;
 	private ConstraintVertexFactory vertexFactory = null;
 
 	// allPointsEnv expanded by a small buffer
@@ -106,11 +105,11 @@ public class ConformingDelaunayTriangulator
 	 * @param tolerance
 	 *          the distance tolerance below which points are considered identical
 	 */
-	public ConformingDelaunayTriangulator(Collection initialVertices,
+	public ConformingDelaunayTriangulator(Collection<ConstraintVertex> initialVertices,
 			double tolerance) {
-		this.initialVertices = new ArrayList(initialVertices);
+		this.initialVertices = new ArrayList<>(initialVertices);
 		this.tolerance = tolerance;
-		kdt = new KdTree(tolerance);
+		kdt = new KdTree<>(tolerance);
 	}
 
 	/**
@@ -125,7 +124,7 @@ public class ConformingDelaunayTriangulator
 	 * @param segments a list of the constraint {@link Segment}s
 	 * @param segVertices the set of unique {@link ConstraintVertex}es referenced by the segments
 	 */
-	public void setConstraints(List segments, List segVertices) {
+	public void setConstraints(List<Segment> segments, List<ConstraintVertex> segVertices) {
 		this.segments = segments;
 		this.segVertices = segVertices;
 	}
@@ -185,7 +184,7 @@ public class ConformingDelaunayTriangulator
 	 * 
 	 * @return a KdTree
 	 */
-	public KdTree getKDT() {
+	public KdTree<ConstraintVertex> getKDT() {
 		return kdt;
 	}
 
@@ -194,7 +193,7 @@ public class ConformingDelaunayTriangulator
 	 *  
 	 * @return a List of Vertex
 	 */
-	public List getInitialVertices() {
+	public List<ConstraintVertex> getInitialVertices() {
 		return initialVertices;
 	}
 
@@ -203,7 +202,7 @@ public class ConformingDelaunayTriangulator
 	 * 
 	 * @return a collection of Segments
 	 */
-	public Collection getConstraintSegments() {
+	public Collection<Segment> getConstraintSegments() {
 		return segments;
 	}
 
@@ -214,7 +213,7 @@ public class ConformingDelaunayTriangulator
 	 * 
 	 * @return the convex hull of the sites
 	 */
-	public Geometry getConvexHull() {
+	public Geometry<T> getConvexHull() {
 		return convexHull;
 	}
 
@@ -237,7 +236,7 @@ public class ConformingDelaunayTriangulator
 	}
 
 	private void computeConvexHull() {
-		GeometryFactory fact = new GeometryFactory();
+		GeometryFactory<T> fact = new GeometryFactory<>();
 		Coordinate[] coords = getPointArray();
 		ConvexHull hull = new ConvexHull(coords, fact);
 		convexHull = hull.getConvexHull();
@@ -332,11 +331,11 @@ public class ConformingDelaunayTriangulator
 	}
 
 	private ConstraintVertex insertSite(ConstraintVertex v) {
-		KdNode kdnode = kdt.insert(v.getCoordinate(), v);
+		KdNode<ConstraintVertex> kdnode = kdt.insert(v.getCoordinate(), v);
 		if (!kdnode.isRepeated()) {
 			incDel.insertSite(v);
 		} else {
-			ConstraintVertex snappedV = (ConstraintVertex) kdnode.getData();
+			ConstraintVertex snappedV = kdnode.getData();
 			snappedV.merge(v);
 			return snappedV;
 			// testing
@@ -417,10 +416,10 @@ public class ConformingDelaunayTriangulator
 	 * (q == null) missingSegs.add(s); } return missingSegs; }
 	 */
 
-	private int enforceGabriel(Collection segsToInsert) {
-		List newSegments = new ArrayList();
+	private int enforceGabriel(Collection<Segment> segsToInsert) {
+		List<Segment> newSegments = new ArrayList<>();
 		int splits = 0;
-		List segsToRemove = new ArrayList();
+		List<Segment> segsToRemove = new ArrayList<>();
 
 		/**
 		 * On each iteration must always scan all constraint (sub)segments, since
@@ -428,8 +427,8 @@ public class ConformingDelaunayTriangulator
 		 * insertion of another constraint. However, this process must converge
 		 * eventually, with no splits remaining to find.
 		 */
-		for (Iterator i = segsToInsert.iterator(); i.hasNext();) {
-			Segment seg = (Segment) i.next();
+		for (Iterator<Segment> i = segsToInsert.iterator(); i.hasNext();) {
+			Segment seg = i.next();
 			// System.out.println(seg);
 
 			Coordinate encroachPt = findNonGabrielPoint(seg);
@@ -497,10 +496,8 @@ public class ConformingDelaunayTriangulator
 	 * heuristic of finding the non-Gabriel point closest to the midpoint of the
 	 * segment.
 	 * 
-	 * @param p
-	 *          start of the line segment
-	 * @param q
-	 *          end of the line segment
+	 * @param seg
+	 *          the line segment
 	 * @return a point which is non-Gabriel
 	 * or null if no point is non-Gabriel
 	 */
@@ -515,14 +512,13 @@ public class ConformingDelaunayTriangulator
 		Envelope env = new Envelope(midPt);
 		env.expandBy(segRadius);
 		// Find all points in envelope
-		List result = kdt.query(env);
+		List<KdNode<ConstraintVertex>> result = kdt.query(env);
 
 		// For each point found, test if it falls strictly in the circle
 		// find closest point
 		Coordinate closestNonGabriel = null;
 		double minDist = Double.MAX_VALUE;
-		for (Iterator i = result.iterator(); i.hasNext();) {
-			KdNode nextNode = (KdNode) i.next();
+		for (KdNode nextNode : result) {
 			Coordinate testPt = nextNode.getCoordinate();
 			// ignore segment endpoints
 			if (testPt.equals2D(p) || testPt.equals2D(q))

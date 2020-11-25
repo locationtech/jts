@@ -27,7 +27,7 @@ public class LineSegmentTest extends TestCase {
 
   WKTReader rdr = new WKTReader();
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(LineSegmentTest.class);
   }
 

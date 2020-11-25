@@ -23,7 +23,7 @@ import java.util.Iterator;
  * @author Martin Davis
  */
 public class ShapeCollectionPathIterator implements PathIterator {
-    private Iterator shapeIterator;
+    private Iterator<Shape> shapeIterator;
     
     // initialize with a no-op iterator
     private PathIterator currentPathIterator = new PathIterator() {
@@ -56,7 +56,7 @@ public class ShapeCollectionPathIterator implements PathIterator {
      * @param shapes the Shapes in the collection
      * @param affineTransform a optional transformation to be applied to the coordinates in the path (may be null)
      */
-    public ShapeCollectionPathIterator(Collection shapes,
+    public ShapeCollectionPathIterator(Collection<Shape> shapes,
         AffineTransform affineTransform) {
         shapeIterator = shapes.iterator();
         this.affineTransform = affineTransform;
@@ -86,7 +86,7 @@ public class ShapeCollectionPathIterator implements PathIterator {
             return;
         }
         if (currentPathIterator.isDone()) {
-            currentPathIterator = ((Shape) shapeIterator.next()).getPathIterator(affineTransform);
+            currentPathIterator = shapeIterator.next().getPathIterator(affineTransform);
         }
     }
 

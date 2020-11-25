@@ -149,13 +149,28 @@ import org.locationtech.jts.util.Assert;
  * Since {@link #equals(Object)} and {@link #hashCode()} are overridden,
  * Geometries can be used effectively in Java collections.
  *
+ * <h4>Generics</h4>
+ *
+ * Geometries also allow for the specification of user data. The type of
+ * this data given by the type parameter <T>. Predominantly, Geometries are created by
+ * {@link GeometryFactory } and thus is also generified. This is used data is not
+ * used to calculate any metrics (such as overlaps, distances, etc.) and therefore
+ * methods assessing geometries should not be type specific to allow for the metrics
+ * of unlike-typed geometries to be compared. Note that this means that most transformations of Geometries
+ * usually {@code null} the user data (though this behaviour may change), but has the benefit of allowing
+ * the userdata type to remain correct.
+ *
+ *
+ *
+ *
+ *
  *@version 1.7
  */
-public abstract class Geometry
-    implements Cloneable, Comparable, Serializable
+public abstract class Geometry<T>
+    implements Cloneable, Comparable<Geometry<?>>, Serializable, Iterable<Geometry<T>>
 {
   private static final long serialVersionUID = 8763622679187376702L;
-    
+
   protected static final int TYPECODE_POINT = 0;
   protected static final int TYPECODE_MULTIPOINT = 1;
   protected static final int TYPECODE_LINESTRING = 2;
@@ -164,7 +179,7 @@ public abstract class Geometry
   protected static final int TYPECODE_POLYGON = 5;
   protected static final int TYPECODE_MULTIPOLYGON = 6;
   protected static final int TYPECODE_GEOMETRYCOLLECTION = 7;
-  
+
   public static final String TYPENAME_POINT = "Point";
   public static final String TYPENAME_MULTIPOINT = "MultiPoint";
   public static final String TYPENAME_LINESTRING = "LineString";
@@ -173,7 +188,7 @@ public abstract class Geometry
   public static final String TYPENAME_POLYGON = "Polygon";
   public static final String TYPENAME_MULTIPOLYGON = "MultiPolygon";
   public static final String TYPENAME_GEOMETRYCOLLECTION = "GeometryCollection";
-  
+
   private final static GeometryComponentFilter geometryChangedFilter = new GeometryComponentFilter() {
     public void filter(Geometry geom) {
       geom.geometryChangedAction();
@@ -188,7 +203,7 @@ public abstract class Geometry
   /**
    * The {@link GeometryFactory} used to create this Geometry
    */
-  protected final GeometryFactory factory;
+  protected final GeometryFactory<T> factory;
 
   /**
    *  The ID of the Spatial Reference System used by this <code>Geometry</code>
@@ -199,14 +214,14 @@ public abstract class Geometry
    * An object reference which can be used to carry ancillary data defined
    * by the client.
    */
-  private Object userData = null;
+  private T userData = null;
 
   /**
    * Creates a new <code>Geometry</code> via the specified GeometryFactory.
    *
    * @param factory
    */
-  public Geometry(GeometryFactory factory) {
+  public Geometry(GeometryFactory<T> factory) {
     this.factory = factory;
     this.SRID = factory.getSRID();
   }
@@ -226,9 +241,9 @@ public abstract class Geometry
    *@return             <code>true</code> if any of the <code>Geometry</code>s
    *      <code>isEmpty</code> methods return <code>false</code>
    */
-  protected static boolean hasNonEmptyElements(Geometry[] geometries) {
-    for (int i = 0; i < geometries.length; i++) {
-      if (!geometries[i].isEmpty()) {
+  protected static boolean hasNonEmptyElements(Geometry<?>[] geometries) {
+    for (Geometry<?> geometry : geometries) {
+      if (!geometry.isEmpty()) {
         return true;
       }
     }
@@ -243,8 +258,8 @@ public abstract class Geometry
    *      <code>null</code>
    */
   protected static boolean hasNullElements(Object[] array) {
-    for (int i = 0; i < array.length; i++) {
-      if (array[i] == null) {
+    for (Object o : array) {
+      if (o == null) {
         return true;
       }
     }
@@ -288,7 +303,7 @@ public abstract class Geometry
    *
    * @return the factory for this geometry
    */
-  public GeometryFactory getFactory() {
+  public GeometryFactory<T> getFactory() {
          return factory;
   }
 
@@ -297,7 +312,7 @@ public abstract class Geometry
    *
    * @return the user data object, or <code>null</code> if none set
    */
-  public Object getUserData() {
+  public T getUserData() {
         return userData;
   }
 
@@ -318,8 +333,8 @@ public abstract class Geometry
    * @param n the index of the geometry element
    * @return the n'th geometry contained in this geometry
    */
-  public Geometry getGeometryN(int n) {
-    return this;
+  public Geometry<T> getGeometryN(int n) {
+    return  this;
   }
 
 
@@ -333,7 +348,7 @@ public abstract class Geometry
    * @param userData an object, the semantics for which are defined by the
    * application using this Geometry
    */
-  public void setUserData(Object userData) {
+  public void setUserData(T userData) {
         this.userData = userData;
   }
 
@@ -450,7 +465,7 @@ public abstract class Geometry
    * @return 0 if either input geometry is empty
    * @throws IllegalArgumentException if g is null
    */
-  public double distance(Geometry g)
+  public double distance(Geometry<?> g)
   {
     return DistanceOp.distance(this, g);
   }
@@ -463,7 +478,7 @@ public abstract class Geometry
    * @param distance the distance value to compare
    * @return <code>true</code> if the geometries are less than <code>distance</code> apart.
    */
-  public boolean isWithinDistance(Geometry geom, double distance)
+  public boolean isWithinDistance(Geometry<?> geom, double distance)
   {
     return DistanceOp.isWithinDistance(this, geom, distance);
   }
@@ -517,7 +532,7 @@ public abstract class Geometry
    *
    * @return a {@link Point} which is the centroid of this Geometry
    */
-  public Point getCentroid()
+  public Point<T> getCentroid()
   {
     if (isEmpty())
       return factory.createPoint();
@@ -535,7 +550,7 @@ public abstract class Geometry
    *
    * @return a {@link Point} which is in the interior of this Geometry
    */
-  public Point getInteriorPoint()
+  public Point<T> getInteriorPoint()
   {
     if (isEmpty()) return factory.createPoint();
     Coordinate pt = InteriorPoint.getInteriorPoint(this);
@@ -569,7 +584,7 @@ public abstract class Geometry
    *
    *@return    the closure of the combinatorial boundary of this <code>Geometry</code>
    */
-  public abstract Geometry getBoundary();
+  public abstract Geometry<T> getBoundary();
 
   /**
    *  Returns the dimension of this <code>Geometry</code>s inherent boundary.
@@ -598,7 +613,7 @@ public abstract class Geometry
    *
    * @see GeometryFactory#toGeometry(Envelope)
    */
-  public Geometry getEnvelope() {
+  public Geometry<T> getEnvelope() {
     return getFactory().toGeometry(getEnvelopeInternal());
   }
 
@@ -663,7 +678,7 @@ public abstract class Geometry
    *
    * @see Geometry#intersects
    */
-  public boolean disjoint(Geometry g) {
+  public boolean disjoint(Geometry<?> g) {
     return ! intersects(g);
   }
 
@@ -692,7 +707,7 @@ public abstract class Geometry
    *@return        <code>true</code> if the two <code>Geometry</code>s touch;
    *      Returns <code>false</code> if both <code>Geometry</code>s are points
    */
-  public boolean touches(Geometry g) {
+  public boolean touches(Geometry<?> g) {
     // short-circuit test
     if (! getEnvelopeInternal().intersects(g.getEnvelopeInternal()))
       return false;
@@ -722,7 +737,7 @@ public abstract class Geometry
    *
    * @see Geometry#disjoint
    */
-  public boolean intersects(Geometry g) {
+  public <S>boolean intersects(Geometry<S> g) {
 
     // short-circuit envelope test
     if (! getEnvelopeInternal().intersects(g.getEnvelopeInternal()))
@@ -746,19 +761,20 @@ public abstract class Geometry
 
     // optimization for rectangle arguments
     if (isRectangle()) {
-      return RectangleIntersects.intersects((Polygon) this, g);
+      return RectangleIntersects.intersects((Polygon<?>) this, g);
     }
     if (g.isRectangle()) {
-      return RectangleIntersects.intersects((Polygon) g, this);
+      return RectangleIntersects.intersects((Polygon<?>) g, this);
     }
     if (isGeometryCollection() || g.isGeometryCollection()) {
-      for (int i = 0 ; i < getNumGeometries() ; i++) {
-        for (int j = 0 ; j < g.getNumGeometries() ; j++) {
-          if (getGeometryN(i).intersects(g.getGeometryN(j))) {
-            return true;
-          }
+        for(Geometry<T> i: this){
+            for(Geometry<S> j: g){
+                if (i.intersects(j)) {
+                    return true;
+                }
+            }
         }
-      }
+
       return false;
     }
     // general case
@@ -789,7 +805,7 @@ public abstract class Geometry
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        <code>true</code> if the two <code>Geometry</code>s cross.
    */
-  public boolean crosses(Geometry g) {
+  public boolean crosses(Geometry<?> g) {
     // short-circuit test
     if (! getEnvelopeInternal().intersects(g.getEnvelopeInternal()))
       return false;
@@ -824,7 +840,7 @@ public abstract class Geometry
    * @see Geometry#contains
    * @see Geometry#coveredBy
    */
-  public boolean within(Geometry g) {
+  public boolean within(Geometry<?> g) {
     return g.contains(this);
   }
 
@@ -855,7 +871,7 @@ public abstract class Geometry
    * @see Geometry#within
    * @see Geometry#covers
    */
-  public boolean contains(Geometry g) {
+  public boolean contains(Geometry<?> g) {
     // optimization - lower dimension cannot contain areas
     if (g.getDimension() == 2 && getDimension() < 2) {
       return false;
@@ -871,7 +887,7 @@ public abstract class Geometry
       return false;
     // optimization for rectangle arguments
     if (isRectangle()) {
-      return RectangleContains.contains((Polygon) this, g);
+      return RectangleContains.contains((Polygon<?>) this, g);
     }
     // general case
     return relate(g).isContains();
@@ -898,7 +914,7 @@ public abstract class Geometry
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        <code>true</code> if the two <code>Geometry</code>s overlap.
    */
-  public boolean overlaps(Geometry g) {
+  public boolean overlaps(Geometry<?> g) {
     // short-circuit test
     if (! getEnvelopeInternal().intersects(g.getEnvelopeInternal()))
       return false;
@@ -939,7 +955,7 @@ public abstract class Geometry
    * @see Geometry#contains
    * @see Geometry#coveredBy
    */
-  public boolean covers(Geometry g) {
+  public boolean covers(Geometry<?> g) {
     // optimization - lower dimension cannot cover areas
     if (g.getDimension() == 2 && getDimension() < 2) {
       return false;
@@ -989,7 +1005,7 @@ public abstract class Geometry
    * @see Geometry#within
    * @see Geometry#covers
    */
-  public boolean coveredBy(Geometry g) {
+  public boolean coveredBy(Geometry<?> g) {
     return g.covers(this);
   }
 
@@ -1016,7 +1032,7 @@ public abstract class Geometry
    *      matrix for the two <code>Geometry</code>s match <code>intersectionPattern</code>
    * @see IntersectionMatrix
    */
-  public boolean relate(Geometry g, String intersectionPattern) {
+  public boolean relate(Geometry<?> g, String intersectionPattern) {
     return relate(g).matches(intersectionPattern);
   }
 
@@ -1027,7 +1043,7 @@ public abstract class Geometry
    *@return        an {@link IntersectionMatrix} describing the intersections of the interiors,
    *      boundaries and exteriors of the two <code>Geometry</code>s
    */
-  public IntersectionMatrix relate(Geometry g) {
+  public IntersectionMatrix relate(Geometry<?> g) {
     checkNotGeometryCollection(this);
     checkNotGeometryCollection(g);
     return RelateOp.relate(this, g);
@@ -1050,7 +1066,7 @@ public abstract class Geometry
    *
    *@see #equalsTopo(Geometry)
    */
-  public boolean equals(Geometry g) {
+  public boolean equals(Geometry<?> g) {
     if (g == null) return false;
     return equalsTopo(g);
   }
@@ -1079,7 +1095,7 @@ public abstract class Geometry
    *
    *@see #equalsExact(Geometry)
    */
-  public boolean equalsTopo(Geometry g)
+  public boolean equalsTopo(Geometry<?> g)
   {
     // short-circuit test
     if (! getEnvelopeInternal().equals(g.getEnvelopeInternal()))
@@ -1119,8 +1135,7 @@ public abstract class Geometry
   public boolean equals(Object o)
   {
     if (! (o instanceof Geometry)) return false;
-    Geometry g = (Geometry) o;
-    return equalsExact(g);
+    return equalsExact((Geometry<?>) o);
   }
 
   /**
@@ -1290,9 +1305,9 @@ public abstract class Geometry
    *
    * @return a reversed geometry
    */
-  public Geometry reverse() {
+  public Geometry<T> reverse() {
 
-    Geometry res = reverseInternal();
+    Geometry<T> res = reverseInternal();
     if (this.envelope != null)
       res.envelope = this.envelope.copy();
     res.setSRID(getSRID());
@@ -1300,7 +1315,7 @@ public abstract class Geometry
     return res;
   }
 
-  protected abstract Geometry reverseInternal();
+  protected abstract Geometry<T> reverseInternal();
 
   /**
    * Computes a <code>Geometry</code> representing the point-set which is
@@ -1323,7 +1338,7 @@ public abstract class Geometry
    * @throws TopologyException if a robustness error occurs
    * @throws IllegalArgumentException if the argument is a non-empty heterogeneous <code>GeometryCollection</code>
    */
-  public Geometry intersection(Geometry other)
+  public Geometry<T> intersection(Geometry<?> other)
   {
     return GeometryOverlay.intersection(this, other);
   }
@@ -1464,7 +1479,7 @@ public abstract class Geometry
    * @see #normalize()
    * @see #norm()
    */
-  public abstract boolean equalsExact(Geometry other, double tolerance);
+  public abstract boolean equalsExact(Geometry<?> other, double tolerance);
 
   /**
    * Returns true if the two <code>Geometry</code>s are exactly equal.
@@ -1494,7 +1509,7 @@ public abstract class Geometry
    * @see #normalize()
    * @see #norm()
    */
-  public boolean equalsExact(Geometry other)
+  public boolean equalsExact(Geometry<?> other)
   {
     return this == other || equalsExact(other, 0);
   }
@@ -1514,7 +1529,7 @@ public abstract class Geometry
    * @param g a Geometry
    * @return true if the input geometries are exactly equal in their normalized form
    */
-  public boolean equalsNorm(Geometry g)
+  public boolean equalsNorm(Geometry<?> g)
   {
     if (g == null) return false;
     return norm().equalsExact(g.norm());
@@ -1555,7 +1570,7 @@ public abstract class Geometry
    *@param  filter  the filter to apply to this <code>Geometry</code> (and
    *      its children, if it is a <code>GeometryCollection</code>).
    */
-  public abstract void apply(GeometryFilter filter);
+  public abstract void apply(GeometryFilter<T> filter);
 
   /**
    *  Performs an operation with or on this Geometry and its
@@ -1565,7 +1580,7 @@ public abstract class Geometry
    *
    *@param  filter  the filter to apply to this <code>Geometry</code>.
    */
-  public abstract void apply(GeometryComponentFilter filter);
+  public abstract void apply(GeometryComponentFilter<T> filter);
 
   /**
    * Creates and returns a full copy of this {@link Geometry} object
@@ -1576,9 +1591,10 @@ public abstract class Geometry
    * @return a clone of this instance
    * @deprecated
    */
-  public Object clone() {
+  public Geometry<T> clone() {
     try {
-      Geometry clone = (Geometry) super.clone();
+        @SuppressWarnings("unchecked")
+        Geometry<T> clone = (Geometry<T>) super.clone();
       if (clone.envelope != null) { clone.envelope = new Envelope(clone.envelope); }
       return clone;
     }
@@ -1591,7 +1607,7 @@ public abstract class Geometry
   /**
    * Creates a deep copy of this {@link Geometry} object.
    * Coordinate sequences contained in it are copied.
-   * All instance fields are copied 
+   * All instance fields are copied
    * (i.e. <code>envelope</code>, <tt>SRID</tt> and <tt>userData</tt>).
    * <p>
    * <b>NOTE:</b> the userData object reference (if present) is copied,
@@ -1600,8 +1616,8 @@ public abstract class Geometry
    *
    * @return a deep copy of this geometry
    */
-  public Geometry copy() {
-    Geometry copy = copyInternal();
+  public Geometry<T> copy() {
+    Geometry<T> copy = copyInternal();
     copy.envelope = envelope == null ? null : envelope.copy();
     copy.SRID = this.SRID;
     copy.userData = this.userData;
@@ -1613,7 +1629,7 @@ public abstract class Geometry
    *
    * @return a copy of the target geometry object.
    */
-  protected abstract Geometry copyInternal();
+  protected abstract Geometry<T> copyInternal();
 
   /**
    *  Converts this <code>Geometry</code> to <b>normal form</b> (or <b>
@@ -1639,9 +1655,9 @@ public abstract class Geometry
    * @return a normalized copy of this geometry.
    * @see #normalize()
    */
-  public Geometry norm()
+  public Geometry<T> norm()
   {
-    Geometry copy = copy();
+    Geometry<T> copy = copy();
     copy.normalize();
     return copy;
   }
@@ -1666,14 +1682,13 @@ public abstract class Geometry
    *  elements are compared. If those are the same, the second elements are
    *  compared, etc.
    *
-   *@param  o  a <code>Geometry</code> with which to compare this <code>Geometry</code>
+   *@param  other  a <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return    a positive number, 0, or a negative number, depending on whether
    *      this object is greater than, equal to, or less than <code>o</code>, as
    *      defined in "Normal Form For Geometry" in the JTS Technical
    *      Specifications
    */
-  public int compareTo(Object o) {
-    Geometry other = (Geometry) o;
+  public int compareTo(Geometry other) {
     if (getTypeCode() != other.getTypeCode()) {
       return getTypeCode() - other.getTypeCode();
     }
@@ -1686,7 +1701,7 @@ public abstract class Geometry
     if (other.isEmpty()) {
       return 1;
     }
-    return compareToSameClass(o);
+    return compareToSameClass(other);
   }
 
   /**
@@ -1748,7 +1763,7 @@ public abstract class Geometry
    *@return        <code>true</code> if the classes of the two <code>Geometry</code>
    *      s are considered to be equal by the <code>equalsExact</code> method.
    */
-  protected boolean isEquivalentClass(Geometry other) {
+  protected boolean isEquivalentClass(Geometry<?> other) {
     return this.getClass().getName().equals(other.getClass().getName());
   }
 
@@ -1828,12 +1843,12 @@ public abstract class Geometry
    *@return    the first non-zero <code>compareTo</code> result, if any;
    *      otherwise, zero
    */
-  protected int compare(Collection a, Collection b) {
-    Iterator i = a.iterator();
-    Iterator j = b.iterator();
+  protected <E extends Comparable<E>>int compare(Collection<E> a, Collection<E> b) {
+    Iterator<E> i = a.iterator();
+    Iterator<E> j = b.iterator();
     while (i.hasNext() && j.hasNext()) {
-      Comparable aElement = (Comparable) i.next();
-      Comparable bElement = (Comparable) j.next();
+      E aElement = i.next();
+      E bElement = j.next();
       int comparison = aElement.compareTo(bElement);
       if (comparison != 0) {
         return comparison;
@@ -1855,12 +1870,26 @@ public abstract class Geometry
 
   abstract protected int getTypeCode();
 
-  private Point createPointFromInternalCoord(Coordinate coord, Geometry exemplar)
+  private Point<T> createPointFromInternalCoord(Coordinate coord, Geometry<T> exemplar)
   {
     exemplar.getPrecisionModel().makePrecise(coord);
     return exemplar.getFactory().createPoint(coord);
   }
+@Override
+  public Iterator<Geometry<T>> iterator(){
+    return new Iterator<Geometry<T>>() {
+      int i = 0;
+      @Override
+      public boolean hasNext() {
+        return i < getNumGeometries();
+      }
 
+      @Override
+      public Geometry<T> next() {
+        return getGeometryN(i++);
+      }
+    };
+  }
 
 }
 

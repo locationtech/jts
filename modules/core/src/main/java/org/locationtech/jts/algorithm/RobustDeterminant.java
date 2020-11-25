@@ -45,7 +45,8 @@ import org.locationtech.jts.geom.Coordinate;
  *
  * @version 1.7
  */
-public class RobustDeterminant {
+public final class RobustDeterminant {
+  private RobustDeterminant(){}
 
   //public static int callCount = 0; // debugging only
 

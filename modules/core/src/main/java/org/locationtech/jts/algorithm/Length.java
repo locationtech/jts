@@ -20,7 +20,10 @@ import org.locationtech.jts.geom.CoordinateSequence;
  * @author Martin Davis
  *
  */
-public class Length {
+public final class Length {
+  private Length(){
+
+  }
 
   /**
    * Computes the length of a linestring specified by a sequence of points.

@@ -42,7 +42,7 @@ public class PreparedPolygonIntersectsStressTest extends TestCase
   static WKTReader wktRdr = new WKTReader(fact);
   static WKTWriter wktWriter = new WKTWriter();
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(PreparedPolygonIntersectsStressTest.class);
   }
 

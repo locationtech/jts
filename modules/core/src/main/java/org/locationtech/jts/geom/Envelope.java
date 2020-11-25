@@ -28,7 +28,7 @@ import java.io.Serializable;
  *@version 1.7
  */
 public class Envelope
-    implements Comparable, Serializable
+    implements Comparable<Envelope>, Serializable
 {
     private static final long serialVersionUID = 5873921885273102420L;
 
@@ -794,10 +794,9 @@ public class Envelope
    * comparison between the sequence of ordinates.
    * Null envelopes are less than all non-null envelopes.
    * 
-   * @param o an Envelope object
+   * @param env an Envelope object
    */
-  public int compareTo(Object o) {
-    Envelope env = (Envelope) o;
+  public int compareTo(Envelope env) {
     // compare nulls if present
     if (isNull()) {
       if (env.isNull()) return 0;

@@ -20,24 +20,24 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.util.Assert;
 
-class PolygonBuilder {
+class PolygonBuilder<T> {
 
-  private GeometryFactory geometryFactory;
-  private List<OverlayEdgeRing> shellList = new ArrayList<OverlayEdgeRing>();
-  private List<OverlayEdgeRing> freeHoleList = new ArrayList<OverlayEdgeRing>();
+  private GeometryFactory<T> geometryFactory;
+  private List<OverlayEdgeRing> shellList = new ArrayList<>();
+  private List<OverlayEdgeRing> freeHoleList = new ArrayList<>();
   private boolean isEnforcePolygonal = true;
 
-  public PolygonBuilder(List<OverlayEdge> resultAreaEdges, GeometryFactory geomFact) {
+  public PolygonBuilder(List<OverlayEdge> resultAreaEdges, GeometryFactory<T> geomFact) {
     this(resultAreaEdges, geomFact, true);
   }
   
-  public PolygonBuilder(List<OverlayEdge> resultAreaEdges, GeometryFactory geomFact, boolean isEnforcePolygonal) {
+  public PolygonBuilder(List<OverlayEdge> resultAreaEdges, GeometryFactory<T> geomFact, boolean isEnforcePolygonal) {
     this.geometryFactory = geomFact;
     this.isEnforcePolygonal = isEnforcePolygonal;
     buildRings(resultAreaEdges);
   }
 
-  public List<Polygon> getPolygons() {
+  public List<Polygon<T>> getPolygons() {
     return computePolygons(shellList);  
   }
 
@@ -45,12 +45,12 @@ class PolygonBuilder {
     return shellList;  
   }
 
-  private List<Polygon> computePolygons(List<OverlayEdgeRing> shellList)
+  private List<Polygon<T>> computePolygons(List<OverlayEdgeRing> shellList)
   {
-    List<Polygon> resultPolyList = new ArrayList<Polygon>();
+    List<Polygon<T>> resultPolyList = new ArrayList<>();
     // add Polygons for all shells
     for (OverlayEdgeRing er : shellList ) {
-      Polygon poly = er.toPolygon(geometryFactory);
+      Polygon<T> poly = er.toPolygon(geometryFactory);
       resultPolyList.add(poly);
     }
     return resultPolyList;

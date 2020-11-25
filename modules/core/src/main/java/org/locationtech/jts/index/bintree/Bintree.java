@@ -47,7 +47,7 @@ import java.util.List;
  *
  * @version 1.7
  */
-public class Bintree
+public class Bintree<T> implements Iterable<T>
 {
   /**
    * Ensure that the Interval for the inserted item has non-zero extents.
@@ -68,7 +68,7 @@ public class Bintree
     return new Interval(min, max);
   }
 
-  private Root root;
+  private Root<T> root;
   /**
   *  Statistics
   *
@@ -83,7 +83,7 @@ public class Bintree
 
   public Bintree()
   {
-    root = new Root();
+    root = new Root<>();
   }
 
   public int depth()
@@ -107,7 +107,7 @@ public class Bintree
     return 0;
   }
 
-  public void insert(Interval itemInterval, Object item)
+  public void insert(Interval itemInterval, T item)
   {
     collectStats(itemInterval);
     Interval insertInterval = ensureExtent(itemInterval, minExtent);
@@ -127,24 +127,24 @@ if (newSize <= oldSize) {
   /**
    * Removes a single item from the tree.
    *
-   * @param itemEnv the Envelope of the item to be removed
+   * @param itemInterval the Envelope of the item to be removed
    * @param item the item to remove
    * @return <code>true</code> if the item was found (and thus removed)
    */
-  public boolean remove(Interval itemInterval, Object item)
+  public boolean remove(Interval itemInterval, T item)
   {
     Interval insertInterval = ensureExtent(itemInterval, minExtent);
     return root.remove(insertInterval, item);
   }
   
-  public Iterator iterator()
+  public Iterator<T> iterator()
   {
-    List foundItems = new ArrayList();
+    List<T> foundItems = new ArrayList<>();
     root.addAllItems(foundItems);
     return foundItems.iterator();
   }
 
-  public List query(double x)
+  public List<T> query(double x)
   {
     return query(new Interval(x, x));
   }
@@ -156,13 +156,13 @@ if (newSize <= oldSize) {
    * 
    * min and max may be the same value
    */
-  public List query(Interval interval)
+  public List<T> query(Interval interval)
   {
     /**
      * the items that are matched are all items in intervals
      * which overlap the query interval
      */
-    List foundItems = new ArrayList();
+    List<T> foundItems = new ArrayList<>();
     query(interval, foundItems);
     return foundItems;
   }
@@ -173,9 +173,9 @@ if (newSize <= oldSize) {
    * If the query interval is <tt>null</tt>, add all items in the tree.
    * 
    * @param interval a query interval, or null
-   * @param resultItems the candidate items found
+   * @param foundItems the candidate items found
    */
-  public void query(Interval interval, Collection foundItems)
+  public void query(Interval interval, Collection<T> foundItems)
   {
     root.addAllItemsFromOverlapping(interval, foundItems);
   }

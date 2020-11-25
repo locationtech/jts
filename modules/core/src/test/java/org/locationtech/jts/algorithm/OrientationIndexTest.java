@@ -30,7 +30,7 @@ public class OrientationIndexTest
   private static WKTReader reader = new WKTReader();
   //private CGAlgorithms rcga = new CGAlgorithms();
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(OrientationIndexTest.class);
   }
 

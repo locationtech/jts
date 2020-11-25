@@ -26,8 +26,8 @@ import org.locationtech.jts.geom.Polygon;
  * @version 1.7
  * @see GeometryExtracter
  */
-public class PolygonExtracter
-  implements GeometryFilter
+public class PolygonExtracter<T>
+  implements GeometryFilter<T>
 {
   /**
    * Extracts the {@link Polygon} elements from a single {@link Geometry}
@@ -36,13 +36,13 @@ public class PolygonExtracter
    * @param geom the geometry from which to extract
    * @param list the list to add the extracted elements to
    */
-  public static List getPolygons(Geometry geom, List list)
+  public static <T>List<Polygon<T>> getPolygons(Geometry<T> geom, List<Polygon<T>> list)
   {
   	if (geom instanceof Polygon) {
-  		list.add(geom);
+  		list.add((Polygon<T>) geom);
   	}
   	else if (geom instanceof GeometryCollection) {
-  		geom.apply(new PolygonExtracter(list));
+  		geom.apply(new PolygonExtracter<>(list));
   	}
   	// skip non-Polygonal elemental geometries
   	
@@ -55,23 +55,23 @@ public class PolygonExtracter
    * 
    * @param geom the geometry from which to extract
    */
-  public static List getPolygons(Geometry geom)
+  public static <T>List<Polygon<T>> getPolygons(Geometry<T> geom)
   {
-    return getPolygons(geom, new ArrayList());
+    return getPolygons(geom, new ArrayList<>());
   }
 
-  private List comps;
+  private final List<Polygon<T>> comps;
   /**
    * Constructs a PolygonExtracterFilter with a list in which to store Polygons found.
    */
-  public PolygonExtracter(List comps)
+  public PolygonExtracter(List<Polygon<T>> comps)
   {
     this.comps = comps;
   }
 
-  public void filter(Geometry geom)
+  public void filter(Geometry<T> geom)
   {
-    if (geom instanceof Polygon) comps.add(geom);
+    if (geom instanceof Polygon) comps.add((Polygon<T>)geom);
   }
 
 }

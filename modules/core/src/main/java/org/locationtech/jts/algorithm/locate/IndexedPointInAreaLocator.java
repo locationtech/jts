@@ -11,9 +11,7 @@
  */
 package org.locationtech.jts.algorithm.locate;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.locationtech.jts.algorithm.RayCrossingCounter;
 import org.locationtech.jts.geom.Coordinate;
@@ -37,7 +35,7 @@ import org.locationtech.jts.index.intervalrtree.SortedPackedIntervalRTree;
  * <p>
  * The Location is computed precisely, in that points
  * located on the geometry boundary or segments will 
- * return {@link Location.BOUNDARY}.
+ * return {@link Location#BOUNDARY}.
  * <p>
  * {@link Polygonal} and {@link LinearRing} geometries
  * are supported.
@@ -50,12 +48,12 @@ import org.locationtech.jts.index.intervalrtree.SortedPackedIntervalRTree;
  * @author Martin Davis
  *
  */
-public class IndexedPointInAreaLocator 
+public class IndexedPointInAreaLocator <T>
   implements PointOnGeometryLocator
 {
   
-  private Geometry geom;
-  private IntervalIndexedGeometry index = null;
+  private Geometry<T> geom;
+  private IntervalIndexedGeometry<T> index = null;
   
   /**
    * Creates a new locator for a given {@link Geometry}.
@@ -64,7 +62,7 @@ public class IndexedPointInAreaLocator
    * 
    * @param g the Geometry to locate in
    */
-  public IndexedPointInAreaLocator(Geometry g)
+  public IndexedPointInAreaLocator(Geometry<T> g)
   {
     if (! (g instanceof Polygonal  || g instanceof LinearRing))
       throw new IllegalArgumentException("Argument must be Polygonal or LinearRing");
@@ -101,14 +99,14 @@ public class IndexedPointInAreaLocator
    */
   private synchronized void createIndex() {
     if (index == null) {
-      index = new IntervalIndexedGeometry(geom);
+      index = new IntervalIndexedGeometry<>(geom);
       // no need to hold onto geom
       geom = null;
     }
   }
   
   private static class SegmentVisitor
-    implements ItemVisitor
+    implements ItemVisitor<LineSegment>
   {
     private RayCrossingCounter counter;
     
@@ -117,19 +115,18 @@ public class IndexedPointInAreaLocator
       this.counter = counter;
     }
     
-    public void visitItem(Object item)
+    public void visitItem(LineSegment seg)
     {
-      LineSegment seg = (LineSegment) item;
       counter.countSegment(seg.getCoordinate(0), seg.getCoordinate(1));
     }
   }
   
-  private static class IntervalIndexedGeometry
+  private static class IntervalIndexedGeometry<T>
   {
     private boolean isEmpty = false;
-    private SortedPackedIntervalRTree index= new SortedPackedIntervalRTree();
+    private SortedPackedIntervalRTree<LineSegment> index= new SortedPackedIntervalRTree<>();
 
-    public IntervalIndexedGeometry(Geometry geom)
+    public IntervalIndexedGeometry(Geometry<T> geom)
     {
       if (geom.isEmpty())
         isEmpty = true;
@@ -137,11 +134,10 @@ public class IndexedPointInAreaLocator
         init(geom);
     }
     
-    private void init(Geometry geom)
+    private void init(Geometry<T> geom)
     {
-      List lines = LinearComponentExtracter.getLines(geom);
-      for (Iterator i = lines.iterator(); i.hasNext(); ) {
-        LineString line = (LineString) i.next();
+      Collection<LineString<T>> lines = LinearComponentExtracter.getLines(geom);
+      for (LineString<T> line : lines) {
         Coordinate[] pts = line.getCoordinates();
         addLine(pts);
       }
@@ -157,17 +153,17 @@ public class IndexedPointInAreaLocator
       }
     }
     
-    public List query(double min, double max)
+    public List<LineSegment> query(double min, double max)
     {
      if (isEmpty) 
-        return new ArrayList();
+        return Collections.emptyList();
       
-      ArrayListVisitor visitor = new ArrayListVisitor();
+      ArrayListVisitor<LineSegment> visitor = new ArrayListVisitor<>();
       index.query(min, max, visitor);
       return visitor.getItems();
     }
     
-    public void query(double min, double max, ItemVisitor visitor)
+    public void query(double min, double max, ItemVisitor<LineSegment> visitor)
     {
       if (isEmpty) 
         return;

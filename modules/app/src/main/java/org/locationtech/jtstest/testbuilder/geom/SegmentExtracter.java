@@ -1,15 +1,10 @@
 package org.locationtech.jtstest.testbuilder.geom;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateList;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.CoordinateSequenceFilter;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.*;
 
 public class SegmentExtracter {
 
@@ -30,10 +25,10 @@ public class SegmentExtracter {
       this.aoi = aoi;
     }
 
-    public Geometry getGeometry(GeometryFactory factory) {
-      List<Geometry> lines = new ArrayList<Geometry>();
+    public <T>Geometry<T> getGeometry(GeometryFactory<T> factory) {
+      List<LineString<T>> lines = new ArrayList<>();
       for (Coordinate[] pts : segSeq) {
-        Geometry line = factory.createLineString(pts);
+        LineString<T> line = factory.createLineString(pts);
         lines.add(line);
       }
       if (lines.size() == 1) 

@@ -29,7 +29,7 @@ import junit.framework.TestSuite;
  */
 public class GeometryImplTest extends TestCase {
     PrecisionModel precisionModel = new PrecisionModel(1);
-    GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
+    GeometryFactory<String> geometryFactory = new GeometryFactory<>(precisionModel, 0);
     WKTReader reader = new WKTReader(geometryFactory);
     WKTReader readerFloat = new WKTReader();
 
@@ -200,8 +200,8 @@ public class GeometryImplTest extends TestCase {
                 });
         LinearRing sameClassButEmpty = geometryFactory.createLinearRing((CoordinateSequence)null);
         LinearRing anotherSameClassButEmpty = geometryFactory.createLinearRing((CoordinateSequence)null);
-        CollectionFactory collectionFactory = new CollectionFactory() {
-                public Geometry createCollection(Geometry[] geometries) {
+        CollectionFactory collectionFactory = new CollectionFactory<LineString<String>,MultiLineString<String>>() {
+                public MultiLineString<String> createCollection(LineString<String>[] geometries) {
                     return geometryFactory.createMultiLineString(GeometryFactory.toLineStringArray(
                             Arrays.asList(geometries)));
                 }
@@ -234,8 +234,8 @@ public class GeometryImplTest extends TestCase {
                 });
         LineString sameClassButEmpty = geometryFactory.createLineString((Coordinate[])null);
         LineString anotherSameClassButEmpty = geometryFactory.createLineString((Coordinate[])null);
-        CollectionFactory collectionFactory = new CollectionFactory() {
-                public Geometry createCollection(Geometry[] geometries) {
+        CollectionFactory collectionFactory = new CollectionFactory<LineString<String>,MultiLineString<String>>() {
+                public MultiLineString<String> createCollection(LineString<String>[] geometries) {
                     return geometryFactory.createMultiLineString(GeometryFactory.toLineStringArray(
                             Arrays.asList(geometries)));
                 }
@@ -245,8 +245,8 @@ public class GeometryImplTest extends TestCase {
             somethingNotEqualButSameClass, sameClassButEmpty,
             anotherSameClassButEmpty, collectionFactory);
 
-        CollectionFactory collectionFactory2 = new CollectionFactory() {
-                public Geometry createCollection(Geometry[] geometries) {
+        CollectionFactory collectionFactory2 = new CollectionFactory<LineString<String>,MultiLineString<String>>() {
+                public MultiLineString<String> createCollection(LineString<String>[] geometries) {
                     return geometryFactory.createMultiLineString(GeometryFactory.toLineStringArray(
                             Arrays.asList(geometries)));
                 }
@@ -265,8 +265,8 @@ public class GeometryImplTest extends TestCase {
                     999, 100));
         Point sameClassButEmpty = geometryFactory.createPoint((Coordinate)null);
         Point anotherSameClassButEmpty = geometryFactory.createPoint((Coordinate)null);
-        CollectionFactory collectionFactory = new CollectionFactory() {
-                public Geometry createCollection(Geometry[] geometries) {
+        CollectionFactory collectionFactory = new CollectionFactory<Point<String>,MultiPoint<String>>() {
+                public MultiPoint<String> createCollection(Point<String>[] geometries) {
                     return geometryFactory.createMultiPoint(GeometryFactory.toPointArray(
                             Arrays.asList(geometries)));
                 }
@@ -287,8 +287,8 @@ public class GeometryImplTest extends TestCase {
         Polygon sameClassButEmpty = (Polygon) reader.read("POLYGON EMPTY");
         Polygon anotherSameClassButEmpty = (Polygon) reader.read(
                 "POLYGON EMPTY");
-        CollectionFactory collectionFactory = new CollectionFactory() {
-                public Geometry createCollection(Geometry[] geometries) {
+        CollectionFactory collectionFactory = new CollectionFactory<Polygon<String>,MultiPolygon<String,?>>() {
+                public MultiPolygon<String,?> createCollection(Polygon<String>[] geometries) {
                     return geometryFactory.createMultiPolygon(GeometryFactory.toPolygonArray(
                             Arrays.asList(geometries)));
                 }
@@ -442,7 +442,7 @@ public class GeometryImplTest extends TestCase {
         junit.textui.TestRunner.run(suite());
     }
 
-    private interface CollectionFactory {
-        Geometry createCollection(Geometry[] geometries);
+    private interface CollectionFactory<IN_GEOM extends Geometry<String>, OUT_GEOM extends Geometry<String>> {
+        OUT_GEOM createCollection(IN_GEOM[] geometries);
     }
 }

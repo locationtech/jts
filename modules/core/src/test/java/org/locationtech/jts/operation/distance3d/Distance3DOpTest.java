@@ -29,7 +29,7 @@ public class Distance3DOpTest extends TestCase
 	static GeometryFactory geomFact = new GeometryFactory();
 	static WKTReader rdr = new WKTReader();
 	
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		TestRunner.run(Distance3DOpTest.class);
 	}
 

@@ -129,7 +129,7 @@ public class AxisPlaneCoordinateSequence implements CoordinateSequence {
 	public Envelope expandEnvelope(Envelope env) {
 		throw new UnsupportedOperationException();
 	}
-
+@Deprecated
 	public Object clone()
 	{
 		throw new UnsupportedOperationException();		

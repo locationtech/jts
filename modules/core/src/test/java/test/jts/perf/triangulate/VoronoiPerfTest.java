@@ -23,7 +23,7 @@ import org.locationtech.jts.util.Stopwatch;
 
 public class VoronoiPerfTest 
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
   	VoronoiPerfTest test = new VoronoiPerfTest();
   	test.run();
   }

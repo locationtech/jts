@@ -35,16 +35,16 @@ import org.locationtech.jts.operation.predicate.RectangleIntersects;
  * @author mbdavis
  *
  */
-public class PreparedPolygon
-  extends BasicPreparedGeometry
+public class PreparedPolygon<T>
+  extends BasicPreparedGeometry<T>
 {
 	private final boolean isRectangle;
 	// create these lazily, since they are expensive
 	private FastSegmentSetIntersectionFinder segIntFinder = null;
 	private PointOnGeometryLocator pia = null;
-
+@SuppressWarnings("unchecked")
   public PreparedPolygon(Polygonal poly) {
-    super((Geometry) poly);
+    super((Geometry<T>) poly);
     isRectangle = getGeometry().isRectangle();
   }
 
@@ -69,25 +69,25 @@ public class PreparedPolygon
   public synchronized PointOnGeometryLocator getPointLocator()
   {
   	if (pia == null)
-      pia = new IndexedPointInAreaLocator(getGeometry());
+      pia = new IndexedPointInAreaLocator<>(getGeometry());
  		
     return pia;
   }
   
-  public boolean intersects(Geometry g)
+  public boolean intersects(Geometry<?> g)
   {
   	// envelope test
   	if (! envelopesIntersect(g)) return false;
   	
     // optimization for rectangles
     if (isRectangle) {
-      return RectangleIntersects.intersects((Polygon) getGeometry(), g);
+      return RectangleIntersects.intersects(getGeometry(), g);
     }
     
     return PreparedPolygonIntersects.intersects(this, g);
   }
   
-  public boolean contains(Geometry g)
+  public boolean contains(Geometry<?> g)
   {
     // short-circuit test
     if (! envelopeCovers(g)) 
@@ -95,13 +95,13 @@ public class PreparedPolygon
   	
     // optimization for rectangles
     if (isRectangle) {
-      return RectangleContains.contains((Polygon) getGeometry(), g);
+      return RectangleContains.contains(getGeometry(), g);
     }
 
     return PreparedPolygonContains.contains(this, g);
   }
   
-  public boolean containsProperly(Geometry g)
+  public boolean containsProperly(Geometry<?> g)
   {
     // short-circuit test
     if (! envelopeCovers(g)) 
@@ -109,7 +109,7 @@ public class PreparedPolygon
     return PreparedPolygonContainsProperly.containsProperly(this, g);
   }
   
-  public boolean covers(Geometry g)
+  public boolean covers(Geometry<?> g)
   {
     // short-circuit test
     if (! envelopeCovers(g)) 
@@ -119,5 +119,8 @@ public class PreparedPolygon
       return true;
     }
     return PreparedPolygonCovers.covers(this, g);
+  }
+  public Polygon<T> getGeometry(){
+      return (Polygon<T>)super.getGeometry();
   }
 }

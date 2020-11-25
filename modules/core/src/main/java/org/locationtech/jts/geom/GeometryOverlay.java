@@ -89,7 +89,7 @@ class GeometryOverlay
     return overlay(a, b, OverlayOp.DIFFERENCE);
   }
 
-  static Geometry intersection(Geometry a, Geometry b)
+  static <T,S>Geometry<T> intersection(Geometry<T> a, Geometry<S> b)
   {
     /**
      * TODO: MD - add optimization for P-A case using Point-In-Polygon

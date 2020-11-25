@@ -29,7 +29,7 @@ import org.locationtech.jts.geom.Coordinate;
  * @version 1.7
  */
 public class EdgeIntersection
-    implements Comparable
+    implements Comparable<EdgeIntersection>
 {
 
   public Coordinate coord;   // the point of intersection
@@ -48,9 +48,8 @@ public class EdgeIntersection
 
   public double getDistance() { return dist; }
 
-  public int compareTo(Object obj)
+  public int compareTo(EdgeIntersection other)
   {
-    EdgeIntersection other = (EdgeIntersection) obj;
     return compare(other.segmentIndex, other.dist);
   }
   /**

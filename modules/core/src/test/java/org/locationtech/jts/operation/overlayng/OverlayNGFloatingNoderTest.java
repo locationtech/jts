@@ -15,7 +15,7 @@ import test.jts.GeometryTestCase;
  *
  */
 public class OverlayNGFloatingNoderTest extends GeometryTestCase {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(OverlayNGFloatingNoderTest.class);
   }
 

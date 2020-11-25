@@ -38,12 +38,12 @@ public class LineHandlingFunctions {
   
   public static Geometry extractLines(Geometry g)
   {
-    List lines = LinearComponentExtracter.getLines(g);
+    Collection lines = LinearComponentExtracter.getLines(g);
     return g.getFactory().buildGeometry(lines);
   }
   public static Geometry extractSegments(Geometry g)
   {
-    List lines = LinearComponentExtracter.getLines(g);
+    Collection lines = LinearComponentExtracter.getLines(g);
     List segments = new ArrayList();
     for (Iterator it = lines.iterator(); it.hasNext(); ) {
       LineString line = (LineString) it.next();
@@ -58,7 +58,7 @@ public class LineHandlingFunctions {
   }
   public static Geometry extractChains(Geometry g, int maxChainSize)
   {
-    List lines = LinearComponentExtracter.getLines(g);
+    Collection lines = LinearComponentExtracter.getLines(g);
     List chains = new ArrayList();
     for (Iterator it = lines.iterator(); it.hasNext(); ) {
       LineString line = (LineString) it.next();

@@ -15,6 +15,7 @@ package org.locationtech.jts.operation.polygonize;
 import java.util.Collection;
 import java.util.List;
 
+import org.locationtech.jts.geom.LineString;
 import test.jts.GeometryTestCase;
 
 /**
@@ -176,7 +177,7 @@ public class PolygonizeTest extends GeometryTestCase {
     Polygonizer polygonizer = new Polygonizer(extractOnlyPolygonal);
     polygonizer.add(readList(inputWKT));
     List expected = readList(expectedWKT);
-    Collection actual = polygonizer.getPolygons();
+    List actual = polygonizer.getPolygons();
     checkEqual(expected, actual);
   }
 

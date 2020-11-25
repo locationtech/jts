@@ -15,7 +15,7 @@ package org.locationtech.jts.geom;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.List;
 
 import org.locationtech.jts.geom.impl.CoordinateArraySequenceFactory;
 import org.locationtech.jts.geom.util.GeometryEditor;
@@ -33,7 +33,7 @@ import org.locationtech.jts.util.Assert;
  *
  * @version 1.7
  */
-public class GeometryFactory
+public class GeometryFactory<T>
     implements Serializable
 {
   private static final long serialVersionUID = -6820524753094095635L;
@@ -42,7 +42,7 @@ public class GeometryFactory
   private CoordinateSequenceFactory coordinateSequenceFactory;
 
 
-  public static Point createPointFromInternalCoord(Coordinate coord, Geometry exemplar)
+  public static <T>Point<T> createPointFromInternalCoord(Coordinate coord, Geometry<T> exemplar)
   {
     exemplar.getPrecisionModel().makePrecise(coord);
     return exemplar.getFactory().createPoint(coord);
@@ -110,21 +110,24 @@ public class GeometryFactory
    *@param  points  the <code>List</code> of Points to convert
    *@return         the <code>List</code> in array format
    */
-  public static Point[] toPointArray(Collection points) {
-    Point[] pointArray = new Point[points.size()];
-    return (Point[]) points.toArray(pointArray);
+  public static<T> Point<T>[] toPointArray(Collection<? extends Point<T>> points) {
+    @SuppressWarnings("unchecked")
+    Point<T>[] pointArray = new Point[points.size()];
+    return points.toArray(pointArray);
   }
 
   /**
    *  Converts the <code>List</code> to an array.
    *
-   *@param  geometries  the list of <code>Geometry's</code> to convert
    *@return            the <code>List</code> in array format
+   * @param  geometries  the list of <code>Geometry's</code> to convert
    */
-  public static Geometry[] toGeometryArray(Collection geometries) {
+
+  public static <T,G extends Geometry<T>> G[] toGeometryArray(Collection<? extends Geometry<T>> geometries) {
     if (geometries == null) return null;
-    Geometry[] geometryArray = new Geometry[geometries.size()];
-    return (Geometry[]) geometries.toArray(geometryArray);
+    @SuppressWarnings("unchecked")//can't create generic array
+    G[] geometryArray = (G[]) new Geometry[geometries.size()];
+    return geometries.toArray(geometryArray);
   }
 
   /**
@@ -133,9 +136,10 @@ public class GeometryFactory
    *@param  linearRings  the <code>List</code> of LinearRings to convert
    *@return              the <code>List</code> in array format
    */
-  public static LinearRing[] toLinearRingArray(Collection linearRings) {
-    LinearRing[] linearRingArray = new LinearRing[linearRings.size()];
-    return (LinearRing[]) linearRings.toArray(linearRingArray);
+  public static <T>LinearRing<T>[] toLinearRingArray(Collection<? extends LinearRing<T>> linearRings) {
+    @SuppressWarnings("unchecked")
+    LinearRing<T>[] linearRingArray = new LinearRing[linearRings.size()];
+    return linearRings.toArray(linearRingArray);
   }
 
   /**
@@ -144,9 +148,10 @@ public class GeometryFactory
    *@param  lineStrings  the <code>List</code> of LineStrings to convert
    *@return              the <code>List</code> in array format
    */
-  public static LineString[] toLineStringArray(Collection lineStrings) {
-    LineString[] lineStringArray = new LineString[lineStrings.size()];
-    return (LineString[]) lineStrings.toArray(lineStringArray);
+  public static <T> LineString<T>[] toLineStringArray(Collection<? extends LineString<T>> lineStrings) {
+    @SuppressWarnings("unchecked")//can't create generic arrays
+    LineString<T>[] lineStringArray = new LineString[lineStrings.size()];
+    return lineStrings.toArray(lineStringArray);
   }
 
   /**
@@ -155,9 +160,10 @@ public class GeometryFactory
    *@param  polygons  the <code>List</code> of Polygons to convert
    *@return           the <code>List</code> in array format
    */
-  public static Polygon[] toPolygonArray(Collection polygons) {
-    Polygon[] polygonArray = new Polygon[polygons.size()];
-    return (Polygon[]) polygons.toArray(polygonArray);
+  public static <T, P extends Polygon<T>> Polygon<T>[] toPolygonArray(Collection<? extends Polygon<T>> polygons) {
+    @SuppressWarnings("unchecked")//can't create generic arrays
+    Polygon<T>[] polygonArray = (P[]) new Polygon[polygons.size()];
+    return polygons.toArray(polygonArray);
   }
 
   /**
@@ -166,9 +172,10 @@ public class GeometryFactory
    *@param  multiPolygons  the <code>List</code> of MultiPolygons to convert
    *@return                the <code>List</code> in array format
    */
-  public static MultiPolygon[] toMultiPolygonArray(Collection multiPolygons) {
-    MultiPolygon[] multiPolygonArray = new MultiPolygon[multiPolygons.size()];
-    return (MultiPolygon[]) multiPolygons.toArray(multiPolygonArray);
+  public static <T,G extends Polygon<T>>MultiPolygon<T,G>[] toMultiPolygonArray(Collection<? extends MultiPolygon<T,G>> multiPolygons) {
+    @SuppressWarnings("unchecked")
+    MultiPolygon<T,G>[] multiPolygonArray = new MultiPolygon[multiPolygons.size()];
+    return multiPolygons.toArray(multiPolygonArray);
   }
 
   /**
@@ -177,9 +184,10 @@ public class GeometryFactory
    *@param  multiLineStrings  the <code>List</code> of MultiLineStrings to convert
    *@return                   the <code>List</code> in array format
    */
-  public static MultiLineString[] toMultiLineStringArray(Collection multiLineStrings) {
-    MultiLineString[] multiLineStringArray = new MultiLineString[multiLineStrings.size()];
-    return (MultiLineString[]) multiLineStrings.toArray(multiLineStringArray);
+  public static <T>MultiLineString<T>[] toMultiLineStringArray(Collection<? extends MultiLineString<T>> multiLineStrings) {
+    @SuppressWarnings("unchecked")//can't create generic arrays
+    MultiLineString<T>[] multiLineStringArray = new MultiLineString[multiLineStrings.size()];
+    return multiLineStrings.toArray(multiLineStringArray);
   }
 
   /**
@@ -188,9 +196,10 @@ public class GeometryFactory
    *@param  multiPoints  the <code>List</code> of MultiPoints to convert
    *@return              the <code>List</code> in array format
    */
-  public static MultiPoint[] toMultiPointArray(Collection multiPoints) {
-    MultiPoint[] multiPointArray = new MultiPoint[multiPoints.size()];
-    return (MultiPoint[]) multiPoints.toArray(multiPointArray);
+  public static <T>MultiPoint<T>[] toMultiPointArray(Collection<? extends MultiPoint<T>> multiPoints) {
+    @SuppressWarnings("unchecked")
+    MultiPoint<T>[] multiPointArray = new MultiPoint[multiPoints.size()];
+    return multiPoints.toArray(multiPointArray);
   }
 
   /**
@@ -212,7 +221,7 @@ public class GeometryFactory
    *	a <code>Point</code> (when min x = max x and min y = max y) or a
    *      <code>Polygon</code> (in all other cases)
    */
-  public Geometry toGeometry(Envelope envelope) 
+  public Geometry<T> toGeometry(Envelope envelope)
   {
   	// null envelope - return empty point geometry
     if (envelope.isNull()) {
@@ -258,7 +267,7 @@ public class GeometryFactory
    * 
    * @return an empty Point
    */
-  public Point createPoint() {
+  public Point<T> createPoint() {
 	return createPoint(getCoordinateSequenceFactory().create(new Coordinate[]{}));
   }
   
@@ -269,7 +278,7 @@ public class GeometryFactory
    * @param coordinate a Coordinate, or null
    * @return the created Point
    */
-  public Point createPoint(Coordinate coordinate) {
+  public Point<T> createPoint(Coordinate coordinate) {
     return createPoint(coordinate != null ? getCoordinateSequenceFactory().create(new Coordinate[]{coordinate}) : null);
   }
 
@@ -280,8 +289,8 @@ public class GeometryFactory
    * @param coordinates a CoordinateSequence (possibly empty), or null
    * @return the created Point
    */
-  public Point createPoint(CoordinateSequence coordinates) {
-  	return new Point(coordinates, this);
+  public Point<T> createPoint(CoordinateSequence coordinates) {
+  	return new Point<>(coordinates, this);
   }
   
   /**
@@ -289,8 +298,8 @@ public class GeometryFactory
    * 
    * @return an empty MultiLineString
    */
-  public MultiLineString createMultiLineString() {
-    return new MultiLineString(null, this);
+  public MultiLineString<T> createMultiLineString() {
+    return new MultiLineString<>(null, this);
   }
 
   /**
@@ -300,8 +309,8 @@ public class GeometryFactory
    * @param lineStrings LineStrings, each of which may be empty but not null
    * @return the created MultiLineString
    */
-  public MultiLineString createMultiLineString(LineString[] lineStrings) {
-  	return new MultiLineString(lineStrings, this);
+  public MultiLineString<T> createMultiLineString(LineString<T>[] lineStrings) {
+  	return new MultiLineString<>(lineStrings, this);
   }
   
   /**
@@ -309,8 +318,8 @@ public class GeometryFactory
    * 
    * @return an empty GeometryCollection
    */
-  public GeometryCollection createGeometryCollection() {
-    return new GeometryCollection(null, this);
+  public <G extends Geometry<T>>GeometryCollection<T,G> createGeometryCollection() {
+    return new GeometryCollection<>(null, this);
   }
 
   /**
@@ -320,8 +329,8 @@ public class GeometryFactory
    * @param geometries an array of Geometries, each of which may be empty but not null, or null
    * @return the created GeometryCollection
    */
-  public GeometryCollection createGeometryCollection(Geometry[] geometries) {
-  	return new GeometryCollection(geometries, this);
+  public <G extends Geometry<T>>GeometryCollection<T,G> createGeometryCollection(G[] geometries) {
+  	return new GeometryCollection<>(geometries, this);
   }
   
   /**
@@ -329,8 +338,8 @@ public class GeometryFactory
    * 
    * @return an empty MultiPolygon
    */
-  public MultiPolygon createMultiPolygon() {
-    return new MultiPolygon(null, this);
+  public MultiPolygon<T,?> createMultiPolygon() {
+    return new MultiPolygon<>(null, this);
   }
 
   /**
@@ -344,8 +353,8 @@ public class GeometryFactory
    *            Polygons, each of which may be empty but not null
    * @return the created MultiPolygon
    */
-  public MultiPolygon createMultiPolygon(Polygon[] polygons) {
-    return new MultiPolygon(polygons, this);
+  public <P extends Polygon<T>>MultiPolygon<T, P> createMultiPolygon(P[] polygons) {
+    return new MultiPolygon<>(polygons, this);
   }
   
   /**
@@ -353,7 +362,7 @@ public class GeometryFactory
    * 
    * @return an empty LinearRing
    */
-  public LinearRing createLinearRing() {
+  public LinearRing<T> createLinearRing() {
     return createLinearRing(getCoordinateSequenceFactory().create(new Coordinate[]{}));
   }
 
@@ -365,7 +374,7 @@ public class GeometryFactory
    * @return the created LinearRing
    * @throws IllegalArgumentException if the ring is not closed, or has too few points
    */
-  public LinearRing createLinearRing(Coordinate[] coordinates) {
+  public LinearRing<T> createLinearRing(Coordinate[] coordinates) {
     return createLinearRing(coordinates != null ? getCoordinateSequenceFactory().create(coordinates) : null);
   }
 
@@ -378,8 +387,8 @@ public class GeometryFactory
    * @return the created LinearRing
    * @throws IllegalArgumentException if the ring is not closed, or has too few points
    */
-  public LinearRing createLinearRing(CoordinateSequence coordinates) {
-    return new LinearRing(coordinates, this);
+  public LinearRing<T> createLinearRing(CoordinateSequence coordinates) {
+    return new LinearRing<>(coordinates, this);
   }
   
   /**
@@ -387,8 +396,8 @@ public class GeometryFactory
    * 
    * @return an empty MultiPoint
    */
-  public MultiPoint createMultiPoint() {
-    return new MultiPoint(null, this);
+  public MultiPoint<T> createMultiPoint() {
+    return new MultiPoint<>(null, this);
   }
 
   /**
@@ -398,8 +407,8 @@ public class GeometryFactory
    * @param point an array of Points (without null elements), or an empty array, or <code>null</code>
    * @return a MultiPoint object
    */
-  public MultiPoint createMultiPoint(Point[] point) {
-  	return new MultiPoint(point, this);
+  public MultiPoint<T> createMultiPoint(Point<T>[] point) {
+  	return new MultiPoint<>(point, this);
   }
 
   /**
@@ -410,7 +419,7 @@ public class GeometryFactory
    * @return a MultiPoint object
    * @deprecated Use {@link GeometryFactory#createMultiPointFromCoords} instead
    */
-  public MultiPoint createMultiPoint(Coordinate[] coordinates) {
+  public MultiPoint<T> createMultiPoint(Coordinate[] coordinates) {
       return createMultiPoint(coordinates != null
                               ? getCoordinateSequenceFactory().create(coordinates)
                               : null);
@@ -423,7 +432,7 @@ public class GeometryFactory
    * @param coordinates an array (without null elements), or an empty array, or <code>null</code>
    * @return a MultiPoint object
    */
-  public MultiPoint createMultiPointFromCoords(Coordinate[] coordinates) {
+  public MultiPoint<T> createMultiPointFromCoords(Coordinate[] coordinates) {
       return createMultiPoint(coordinates != null
                               ? getCoordinateSequenceFactory().create(coordinates)
                               : null);
@@ -437,11 +446,14 @@ public class GeometryFactory
    * @param coordinates a CoordinateSequence (possibly empty), or <code>null</code>
    * @return a MultiPoint geometry
    */
-  public MultiPoint createMultiPoint(CoordinateSequence coordinates) {
+  public MultiPoint<T> createMultiPoint(CoordinateSequence coordinates) {
     if (coordinates == null) {
-      return createMultiPoint(new Point[0]);
+      @SuppressWarnings("unchecked")
+      Point<T>[] emptyArr = new Point[0];
+      return createMultiPoint(emptyArr);
     }
-    Point[] points = new Point[coordinates.size()];
+    @SuppressWarnings("unchecked")
+    Point<T>[] points = new Point[coordinates.size()];
     for (int i = 0; i < coordinates.size(); i++) {
       CoordinateSequence ptSeq = getCoordinateSequenceFactory()
         .create(1, coordinates.getDimension(), coordinates.getMeasures());
@@ -465,8 +477,8 @@ public class GeometryFactory
    *            the empty geometry is to be created.
    * @throws IllegalArgumentException if a ring is invalid
    */
-  public Polygon createPolygon(LinearRing shell, LinearRing[] holes) {
-    return new Polygon(shell, holes, this);
+  public Polygon<T> createPolygon(LinearRing<T> shell, LinearRing<T>[] holes) {
+    return new Polygon<>(shell, holes, this);
   }
 
   /**
@@ -478,7 +490,7 @@ public class GeometryFactory
    *            the empty geometry is to be created.
    * @throws IllegalArgumentException if the boundary ring is invalid
    */
-  public Polygon createPolygon(CoordinateSequence shell) {
+  public Polygon<T> createPolygon(CoordinateSequence shell) {
     return createPolygon(createLinearRing(shell));
   }
 
@@ -491,7 +503,7 @@ public class GeometryFactory
    *            the empty geometry is to be created.
    * @throws IllegalArgumentException if the boundary ring is invalid
    */
-  public Polygon createPolygon(Coordinate[] shell) {
+  public Polygon<T> createPolygon(Coordinate[] shell) {
     return createPolygon(createLinearRing(shell));
   }
 
@@ -504,7 +516,7 @@ public class GeometryFactory
    *            the empty geometry is to be created.
    * @throws IllegalArgumentException if the boundary ring is invalid
    */
-  public Polygon createPolygon(LinearRing shell) {
+  public Polygon<T> createPolygon(LinearRing<T> shell) {
     return createPolygon(shell, null);
   }
   
@@ -513,7 +525,7 @@ public class GeometryFactory
    * 
    * @return an empty polygon
    */
-  public Polygon createPolygon() {
+  public Polygon<T> createPolygon() {
     return createPolygon(null, null);
   }
 
@@ -544,17 +556,17 @@ public class GeometryFactory
    *      type-specific" class that can contain the elements of <code>geomList</code>
    *      .
    */
-  public Geometry buildGeometry(Collection geomList) {
+  @SuppressWarnings("unchecked")
+  public <G extends Geometry<T>> Geometry<T> buildGeometry(Collection<? extends Geometry<T>> geomList) {
   	
   	/**
   	 * Determine some facts about the geometries in the list
   	 */
-    Class geomClass = null;
+    Class<?extends Geometry<T>> geomClass = null;
     boolean isHeterogeneous = false;
     boolean hasGeometryCollection = false;
-    for (Iterator i = geomList.iterator(); i.hasNext(); ) {
-      Geometry geom = (Geometry) i.next();
-      Class partClass = geom.getClass();
+    for (Geometry<T> geom : geomList) {
+      Class<? extends Geometry<T>> partClass = (Class<? extends Geometry<T>>) geom.getClass();
       if (geomClass == null) {
         geomClass = partClass;
       }
@@ -573,22 +585,22 @@ public class GeometryFactory
       return createGeometryCollection();
     }
     if (isHeterogeneous || hasGeometryCollection) {
-      return createGeometryCollection(toGeometryArray(geomList));
+      return createGeometryCollection(toGeometryArray( geomList));
     }
     // at this point we know the collection is hetereogenous.
     // Determine the type of the result from the first Geometry in the list
     // this should always return a geometry, since otherwise an empty collection would have already been returned
-    Geometry geom0 = (Geometry) geomList.iterator().next();
+    Geometry<T> geom0 =  geomList.iterator().next();
     boolean isCollection = geomList.size() > 1;
     if (isCollection) {
       if (geom0 instanceof Polygon) {
-        return createMultiPolygon(toPolygonArray(geomList));
+        return (Geometry<T>) createMultiPolygon(toPolygonArray((Collection<? extends Polygon<T>>) geomList));
       }
       else if (geom0 instanceof LineString) {
-        return createMultiLineString(toLineStringArray(geomList));
+        return (Geometry<T>) createMultiLineString(toLineStringArray((Collection<? extends LineString<T>>) geomList));
       }
       else if (geom0 instanceof Point) {
-        return createMultiPoint(toPointArray(geomList));
+        return createMultiPoint(toPointArray((Collection<? extends Point<T>>)geomList));
       }
       Assert.shouldNeverReachHere("Unhandled class: " + geom0.getClass().getName());
     }
@@ -600,7 +612,7 @@ public class GeometryFactory
    * 
    * @return an empty LineString
    */
-  public LineString createLineString() {
+  public LineString<T> createLineString() {
     return createLineString(getCoordinateSequenceFactory().create(new Coordinate[]{}));
   }
 
@@ -610,7 +622,7 @@ public class GeometryFactory
    * 
    * @param coordinates an array without null elements, or an empty array, or null
    */
-  public LineString createLineString(Coordinate[] coordinates) {
+  public LineString<T> createLineString(Coordinate[] coordinates) {
     return createLineString(coordinates != null ? getCoordinateSequenceFactory().create(coordinates) : null);
   }
   /**
@@ -619,8 +631,8 @@ public class GeometryFactory
    * 
    * @param coordinates a CoordinateSequence (possibly empty), or null
    */
-  public LineString createLineString(CoordinateSequence coordinates) {
-	return new LineString(coordinates, this);
+  public LineString<T> createLineString(CoordinateSequence coordinates) {
+	return new LineString<>(coordinates, this);
   }
 
   /**
@@ -630,7 +642,7 @@ public class GeometryFactory
    * @param dimension the required dimension (-1, 0, 1 or 2)
    * @return an empty atomic geometry of given dimension
    */
-  public Geometry createEmpty(int dimension) {
+  public Geometry<T> createEmpty(int dimension) {
     switch (dimension) {
     case -1: return createGeometryCollection();
     case 0: return createPoint();
@@ -658,7 +670,7 @@ public class GeometryFactory
    * 
    * @see Geometry#copy() 
    */
-  public Geometry createGeometry(Geometry g)
+  public Geometry<T> createGeometry(Geometry<T> g)
   {
     GeometryEditor editor = new GeometryEditor(this);
     return editor.edit(g, new CoordSeqCloneOp(coordinateSequenceFactory));

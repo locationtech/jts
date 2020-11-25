@@ -44,12 +44,12 @@ public class PolygonShape implements Shape
      * @param holeVerticesCollection a collection of Coordinate[] for each hole
      */
     public PolygonShape(Coordinate[] shellVertices,
-        Collection holeVerticesCollection) 
+        Collection<Coordinate[]> holeVerticesCollection)
     {
         polygonPath = toPath(shellVertices);
 
-        for (Iterator i = holeVerticesCollection.iterator(); i.hasNext();) {
-            Coordinate[] holeVertices = (Coordinate[]) i.next();
+        for (Iterator<Coordinate[]> i = holeVerticesCollection.iterator(); i.hasNext();) {
+            Coordinate[] holeVertices = i.next();
             polygonPath.append(toPath(holeVertices), false);
         }
     }

@@ -73,12 +73,12 @@ import org.locationtech.jts.geom.LineSegment;
  *
  * @version 1.7
  */
-public class MonotoneChain {
+public class MonotoneChain<T> {
 
   private Coordinate[] pts;
   private int start, end;
   private Envelope env = null;
-  private Object context = null;// user-defined information
+  private T context = null;// user-defined information
   private int id;// useful for optimizing chain comparisons
   //private double overlapDistance;
 
@@ -89,7 +89,7 @@ public class MonotoneChain {
    * @param end the index of the last coordinate in the chain 
    * @param context a user-defined data object
    */
-  public MonotoneChain(Coordinate[] pts, int start, int end, Object context)
+  public MonotoneChain(Coordinate[] pts, int start, int end, T context)
   {
     this.pts    = pts;
     this.start  = start;
@@ -128,7 +128,7 @@ public class MonotoneChain {
    * 
    * @return a data value
    */
-  public Object getContext() { return context; }
+  public T getContext() { return context; }
 
   /**
    * Gets the envelope of the chain.
@@ -195,7 +195,7 @@ public class MonotoneChain {
    */
   public Coordinate[] getCoordinates()
   {
-    Coordinate coord[] = new Coordinate[end - start + 1];
+    Coordinate[] coord = new Coordinate[end - start + 1];
     int index = 0;
     for (int i = start; i <= end; i++) {
       coord[index++] = pts[i];
@@ -270,7 +270,7 @@ public class MonotoneChain {
    * @param mc the chain to compare to
    * @param mco the overlap action to execute on overlapping segments
    */
-  public void computeOverlaps(MonotoneChain mc, MonotoneChainOverlapAction mco)
+  public void computeOverlaps(MonotoneChain<?> mc, MonotoneChainOverlapAction mco)
   {
     computeOverlaps(start, end, mc, mc.start, mc.end, 0.0, mco);
   }
@@ -284,7 +284,7 @@ public class MonotoneChain {
    * @param overlapTolerance the distance tolerance for the overlap test
    * @param mco the overlap action to execute on selected segments
    */
-  public void computeOverlaps(MonotoneChain mc, double overlapTolerance, MonotoneChainOverlapAction mco)
+  public void computeOverlaps(MonotoneChain<?> mc, double overlapTolerance, MonotoneChainOverlapAction mco)
   {
     computeOverlaps(start, end, mc, mc.start, mc.end, overlapTolerance, mco);
   }
@@ -304,7 +304,7 @@ public class MonotoneChain {
    */
   private void computeOverlaps(
     int start0, int end0,
-    MonotoneChain mc,
+    MonotoneChain<?> mc,
     int start1, int end1,
     double overlapTolerance,
     MonotoneChainOverlapAction mco)
@@ -352,7 +352,7 @@ public class MonotoneChain {
    */
   private boolean overlaps(
       int start0, int end0,
-      MonotoneChain mc,
+      MonotoneChain<?> mc,
       int start1, int end1, 
       double overlapTolerance)
   {

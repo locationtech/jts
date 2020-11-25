@@ -24,7 +24,7 @@ import junit.textui.TestRunner;
 public class RectangleLineIntersectorTest
 extends TestCase
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(RectangleLineIntersectorTest.class);
   }
 

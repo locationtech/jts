@@ -15,12 +15,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.io.ParseException;
@@ -44,7 +44,7 @@ public class OverlayCaseDumper {
   
   private static final int MAX_POINTS = 100;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     OverlayCaseDumper opd = new OverlayCaseDumper();
     
     opd.parseArgs(args);
@@ -56,7 +56,7 @@ public class OverlayCaseDumper {
     }
   }
 
-  private static GeometryFactory geomFact = new GeometryFactory();
+  private static GeometryFactory<?> geomFact = new GeometryFactory<>();
 
   private String inFilename = null;
   private String outputFilename = null;
@@ -67,8 +67,8 @@ public class OverlayCaseDumper {
   private int caseCount;
 
 
-  private Geometry prevGeom0;
-  private Geometry prevGeom1;
+  private Geometry<?> prevGeom0;
+  private Geometry<?> prevGeom1;
   
   private void parseArgs(String[] args) {
     if (args.length < 1)
@@ -81,16 +81,16 @@ public class OverlayCaseDumper {
       
   }
   
-  private void run() throws ParseException, IOException {
+  private <T>void run() throws ParseException, IOException {
     if (outputFilename  != null) {
       outStream = new PrintStream(new File(outputFilename));
     }
     
-    List<Geometry> geomsIn = readWKBFile(inFilename);
-    List<Geometry> geoms = flatten(geomsIn);
+    List geomsIn = readWKBFile(inFilename);
+    List geoms = flatten(geomsIn);
     System.out.println("Number of geoms read: " + geoms.size());
     
-    List<Geometry> geomsFilt = filter(geoms);
+    List geomsFilt = filter(geoms);
 
     logHeader();
     doIntersections(geomsFilt);
@@ -104,11 +104,11 @@ public class OverlayCaseDumper {
   }
 
 
-  private List<Geometry> flatten(List<Geometry> geoms) {
-    List<Geometry> flat = new ArrayList<Geometry>();
-    for (Geometry geom : geoms) {
+  private <T>List<Polygon<T>> flatten(List<Geometry<T>> geoms) {
+    List<Polygon<T>> flat = new ArrayList<>();
+    for (Geometry<T> geom : geoms) {
       if (geom.getNumGeometries() == 1) {
-        flat.add(geom);
+        flat.add((Polygon<T>) geom);
       }
       else {
         PolygonExtracter.getPolygons(geom, flat);
@@ -177,7 +177,7 @@ public class OverlayCaseDumper {
   }
 
   private List<Geometry> filter(List<Geometry> geoms) {
-    List<Geometry> filt = new ArrayList<Geometry>();
+    List<Geometry> filt = new ArrayList<>();
     for (Geometry geom : geoms) {
       if (geom.getNumPoints() > MAX_POINTS) continue;
       filt.add(geom);
@@ -185,11 +185,11 @@ public class OverlayCaseDumper {
     return filt;
   }
   
-  private static List<Geometry> readWKBFile(String filename) throws ParseException, IOException {
+  private static <T>List<Geometry<T>> readWKBFile(String filename) throws ParseException, IOException {
     File file = new File(filename);
     FileReader fileReader = new FileReader(file);
-    WKBReader wkbrdr = new WKBReader(geomFact);
-    WKBHexFileReader wkbhexReader = new WKBHexFileReader(fileReader, wkbrdr);
+    WKBReader<T> wkbrdr = new WKBReader<>((GeometryFactory<T>) geomFact);
+    WKBHexFileReader<T> wkbhexReader = new WKBHexFileReader<>(fileReader, wkbrdr);
     return wkbhexReader.read();
   }
 

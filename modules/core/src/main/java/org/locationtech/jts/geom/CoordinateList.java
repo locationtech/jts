@@ -69,7 +69,7 @@ public class CoordinateList
 	return super.add(coord);
   }
 
-  public Coordinate getCoordinate(int i) { return (Coordinate) get(i); }
+  public Coordinate getCoordinate(int i) { return get(i); }
 
 
   /** 
@@ -131,6 +131,7 @@ public class CoordinateList
    * @param obj The coordinate to add
    * @param allowRepeated if set to false, repeated coordinates are collapsed
    * @return true (as by general collection contract)
+   * @deprecated use {@link CoordinateList#add(Coordinate, boolean)} to prevent casting exceptions
    */
   public boolean add(Object obj, boolean allowRepeated)
   {
@@ -149,7 +150,7 @@ public class CoordinateList
     // don't add duplicate coordinates
     if (! allowRepeated) {
       if (size() >= 1) {
-        Coordinate last = (Coordinate) get(size() - 1);
+        Coordinate last = get(size() - 1);
         if (last.equals2D(coord)) return;
       }
     }
@@ -170,11 +171,11 @@ public class CoordinateList
       int size = size();
       if (size > 0) {
         if (i > 0) {
-          Coordinate prev = (Coordinate) get(i - 1);
+          Coordinate prev = get(i - 1);
           if (prev.equals2D(coord)) return;
         }
         if (i < size) {
-          Coordinate next = (Coordinate) get(i);
+          Coordinate next = get(i);
           if (next.equals2D(coord)) return;
         }
       }
@@ -214,20 +215,20 @@ public class CoordinateList
    */
   public Coordinate[] toCoordinateArray()
   {
-    return (Coordinate[]) toArray(coordArrayType);
+    return toArray(coordArrayType);
   }
 
   /**
    * Creates an array containing the coordinates in this list,
    * oriented in the given direction (forward or reverse).
    * 
-   * @param direction the direction value: true for forward, false for reverse
+   * @param isForward the direction value: true for forward, false for reverse
    * @return an oriented array of coordinates
    */
   public Coordinate[] toCoordinateArray(boolean isForward)
   {
     if (isForward) {
-      return (Coordinate[]) toArray(coordArrayType);
+      return toArray(coordArrayType);
     }
     // construct reversed array
     int size = size();

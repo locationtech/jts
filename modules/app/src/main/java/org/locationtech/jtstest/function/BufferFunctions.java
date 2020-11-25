@@ -203,7 +203,7 @@ public class BufferFunctions {
     if (line instanceof Polygon) {
       line = ((Polygon) line).getExteriorRing();
     }
-    return VariableBuffer.buffer(line, startDist, endDist);
+    return VariableBuffer.buffer((LineString) line, startDist, endDist);
   }
   
   @Metadata(description="Buffer a line by a distance varying along the line, with distances for start/end and the middle")
@@ -216,7 +216,7 @@ public class BufferFunctions {
     if (line instanceof Polygon) {
       line = ((Polygon) line).getExteriorRing();
     }
-    return VariableBuffer.buffer(line, startDist, midDist, startDist);
+    return VariableBuffer.buffer((LineString)line, startDist, midDist, startDist);
   }
   
   public static Geometry bufferRadius(Geometry radiusLine) {

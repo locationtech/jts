@@ -91,8 +91,9 @@ import java.io.Serializable;
  *
  */
 public strictfp final class DD 
-  implements Serializable, Comparable, Cloneable
+  implements Serializable, Comparable<DD>, Cloneable
 {
+
   /**
    * The value nearest to the constant Pi.
    */
@@ -250,19 +251,19 @@ public strictfp final class DD
     }
   }
   
-  private final void init(double x)
+  private void init(double x)
   {
     this.hi = x;
     this.lo = 0.0;
   }
   
-  private final void init(double hi, double lo)
+  private void init(double hi, double lo)
   {
     this.hi = hi;
     this.lo = lo;   
   }
   
-  private final void init(DD dd)
+  private void init(DD dd)
   {
     hi = dd.hi;
     lo = dd.lo;
@@ -1033,9 +1034,8 @@ public strictfp final class DD
    * @return -1,0 or 1 depending on whether this value is less than, equal to
    * or greater than the value of <tt>o</tt>
    */
-  public int compareTo(Object o) 
+  public int compareTo(DD other)
   {
-    DD other = (DD) o;
 
     if (hi < other.hi) return -1;
     if (hi > other.hi) return 1;

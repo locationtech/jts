@@ -18,6 +18,7 @@ import java.io.IOException;
  * This interface is similar to the Java <code>OutputStream</code>,
  * but with a narrower interface to make it easier to implement.
  */
+@FunctionalInterface
 public interface OutStream
 {
   void write(byte[] buf, int len) throws IOException;

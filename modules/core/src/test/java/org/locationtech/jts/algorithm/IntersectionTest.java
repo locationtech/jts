@@ -8,7 +8,7 @@ import junit.textui.TestRunner;
 public class IntersectionTest extends TestCase {
   private static final double MAX_ABS_ERROR = 1e-5;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(IntersectionTest.class);
   }
 

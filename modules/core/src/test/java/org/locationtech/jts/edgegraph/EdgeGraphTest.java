@@ -23,7 +23,7 @@ import test.jts.util.IOUtil;
 
 
 public class EdgeGraphTest extends TestCase {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(EdgeGraphTest.class);
   }
 

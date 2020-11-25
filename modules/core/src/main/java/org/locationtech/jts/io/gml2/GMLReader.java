@@ -67,7 +67,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * 
  * @see GMLHandler
  */
-public class GMLReader 
+public class GMLReader <T>
 {
 
 	/**
@@ -85,7 +85,7 @@ public class GMLReader
 	 *
 	 * @see #read(Reader, GeometryFactory)
 	 */
-	public Geometry read(String gml, GeometryFactory geometryFactory) throws SAXException, IOException, ParserConfigurationException{
+	public Geometry<T> read(String gml, GeometryFactory<T> geometryFactory) throws SAXException, IOException, ParserConfigurationException{
 		return read(new StringReader(gml),geometryFactory);
 	}
 
@@ -100,7 +100,7 @@ public class GMLReader
 	 * @throws SAXException
 	 * @throws IOException
 	 */
-	public Geometry read(Reader reader, GeometryFactory geometryFactory) throws SAXException, IOException, ParserConfigurationException{
+	public Geometry<T> read(Reader reader, GeometryFactory<T> geometryFactory) throws SAXException, IOException, ParserConfigurationException{
 		SAXParserFactory fact = SAXParserFactory.newInstance();
 
 		fact.setNamespaceAware(false);
@@ -109,10 +109,10 @@ public class GMLReader
 		SAXParser parser = fact.newSAXParser();
 
 		if(geometryFactory == null)
-			geometryFactory = new GeometryFactory();
+			geometryFactory = new GeometryFactory<>();
 
 		GMLHandler gh = new GMLHandler(geometryFactory,null);
-		parser.parse(new InputSource(reader), (DefaultHandler)gh);
+		parser.parse(new InputSource(reader), gh);
 
 		return gh.getGeometry();
 	}

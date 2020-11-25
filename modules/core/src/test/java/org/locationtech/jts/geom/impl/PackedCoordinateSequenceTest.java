@@ -30,7 +30,7 @@ import junit.textui.TestRunner;
 public class PackedCoordinateSequenceTest
     extends CoordinateSequenceTestBase
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(PackedCoordinateSequenceTest.class);
   }
 

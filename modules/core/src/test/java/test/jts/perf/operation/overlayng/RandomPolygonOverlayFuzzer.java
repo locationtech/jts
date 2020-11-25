@@ -76,7 +76,7 @@ public class RandomPolygonOverlayFuzzer {
     //return false;
   }
   
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     (new RandomPolygonOverlayFuzzer()).run();
   }
 

@@ -13,6 +13,7 @@
 package org.locationtech.jts.algorithm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
@@ -80,7 +81,7 @@ public class InteriorPointArea {
    * @return the computed interior point,
    * or <code>null</code> if the geometry has no polygonal components
    */
-  public static Coordinate getInteriorPoint(Geometry geom) {
+  public static Coordinate getInteriorPoint(Geometry<?> geom) {
     InteriorPointArea intPt = new InteriorPointArea(geom);
     return intPt.getInteriorPoint();
   }
@@ -208,15 +209,15 @@ public class InteriorPointArea {
        */
       interiorPoint = new Coordinate(polygon.getCoordinate());
       
-      List<Double> crossings = new ArrayList<Double>();
-      scanRing((LinearRing) polygon.getExteriorRing(), crossings);
+      List<Double> crossings = new ArrayList<>();
+      scanRing(polygon.getExteriorRing(), crossings);
       for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-        scanRing((LinearRing) polygon.getInteriorRingN(i), crossings);
+        scanRing(polygon.getInteriorRingN(i), crossings);
       }
       findBestMidpoint(crossings);
     }
 
-    private void scanRing(LinearRing ring, List<Double> crossings) {
+    private void scanRing(LinearRing ring, Collection<Double> crossings) {
       // skip rings which don't cross scan line
       if ( !intersectsHorizontalLine(ring.getEnvelopeInternal(), interiorPointY) )
         return;
@@ -229,7 +230,7 @@ public class InteriorPointArea {
       }
     }
 
-    private void addEdgeCrossing(Coordinate p0, Coordinate p1, double scanY, List<Double> crossings) {
+    private void addEdgeCrossing(Coordinate p0, Coordinate p1, double scanY, Collection<Double> crossings) {
       // skip non-crossing segments
       if ( !intersectsHorizontalLine(p0, p1, scanY) )
         return;

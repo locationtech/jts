@@ -34,7 +34,7 @@ public class IteratedBufferStressTest
   private GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
   WKTReader rdr = new WKTReader(geometryFactory);
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
   	try {
   		(new IteratedBufferStressTest()).run();
   	}

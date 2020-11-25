@@ -13,17 +13,18 @@
 package org.locationtech.jts.index;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Builds an array of all visited items.
  * 
  * @version 1.7
  */
-public class ArrayListVisitor
-    implements ItemVisitor
+public class ArrayListVisitor<T>
+    implements ItemVisitor<T>
 {
 
-  private ArrayList items = new ArrayList();
+  private final List<T> items = new ArrayList<>();
   
   /**
    * Creates a new instance.
@@ -36,7 +37,7 @@ public class ArrayListVisitor
    * 
    * @param item the item to visit
    */
-  public void visitItem(Object item)
+  public void visitItem(T item)
   {
     items.add(item);
   }
@@ -46,6 +47,6 @@ public class ArrayListVisitor
    * 
    * @return the array of items
    */
-  public ArrayList getItems() { return items; }
+  public List<T> getItems() { return items; }
 
 }

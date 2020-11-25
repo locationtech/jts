@@ -46,7 +46,7 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
  * 
  * @version 1.7
  */
-public class VWSimplifier
+public class VWSimplifier<T>
 {
 
   /**
@@ -56,14 +56,14 @@ public class VWSimplifier
    * @param distanceTolerance the tolerance to use
    * @return a simplified version of the geometry
    */
-  public static Geometry simplify(Geometry geom, double distanceTolerance)
+  public static <T>Geometry<T> simplify(Geometry<T> geom, double distanceTolerance)
   {
-    VWSimplifier simp = new VWSimplifier(geom);
+    VWSimplifier<T> simp = new VWSimplifier<T>(geom);
     simp.setDistanceTolerance(distanceTolerance);
     return simp.getResultGeometry();
   }
 
-  private Geometry inputGeom;
+  private Geometry<T> inputGeom;
   private double distanceTolerance;
   private boolean isEnsureValidTopology = true;
 
@@ -72,7 +72,7 @@ public class VWSimplifier
    * 
    * @param inputGeom the geometry to simplify
    */
-  public VWSimplifier(Geometry inputGeom)
+  public VWSimplifier(Geometry<T> inputGeom)
   {
     this.inputGeom = inputGeom;
   }
@@ -116,7 +116,7 @@ public class VWSimplifier
    * 
    * @return the simplified geometry
    */
-  public Geometry getResultGeometry()
+  public Geometry<T> getResultGeometry()
   {
     // empty input produces an empty result
     if (inputGeom.isEmpty())
