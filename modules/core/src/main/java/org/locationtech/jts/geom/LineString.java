@@ -31,8 +31,8 @@ import org.locationtech.jts.operation.BoundaryOp;
  *
  *@version 1.7
  */
-public class LineString
-	extends Geometry
+public class LineString<T>
+	extends Geometry<T>
 	implements Lineal
 {
   private static final long serialVersionUID = 3110669828065365560L;
@@ -54,9 +54,9 @@ public class LineString
    * @throws IllegalArgumentException if too few points are provided
    */
   /** @deprecated Use GeometryFactory instead */
-  public LineString(Coordinate points[], PrecisionModel precisionModel, int SRID)
+  public LineString(Coordinate[] points, PrecisionModel precisionModel, int SRID)
   {
-    super(new GeometryFactory(precisionModel, SRID));
+    super(new GeometryFactory<>(precisionModel, SRID));
     init(getFactory().getCoordinateSequenceFactory().create(points));
   }
 
@@ -67,7 +67,7 @@ public class LineString
    *      to create the empty geometry.
    * @throws IllegalArgumentException if too few points are provided
    */
-  public LineString(CoordinateSequence points, GeometryFactory factory) {
+  public LineString(CoordinateSequence points, GeometryFactory<T> factory) {
     super(factory);
     init(points);
   }
@@ -170,7 +170,7 @@ public class LineString
    * @return the boundary geometry
    * @see Geometry#getBoundary
    */
-  public Geometry getBoundary() {
+  public Geometry<T> getBoundary() {
     return (new BoundaryOp(this)).getBoundary();
   }
 
@@ -180,11 +180,11 @@ public class LineString
    *
    * @return a {@link LineString} with coordinates in the reverse order
    */
-  public LineString reverse() {
-    return (LineString) super.reverse();
+  public LineString<T> reverse() {
+    return (LineString<T>) super.reverse();
   }
 
-  protected LineString reverseInternal()
+  protected LineString<T> reverseInternal()
   {
     CoordinateSequence seq = points.copy();
     CoordinateSequences.reverse(seq);
@@ -214,11 +214,11 @@ public class LineString
     return points.expandEnvelope(new Envelope());
   }
 
-  public boolean equalsExact(Geometry other, double tolerance) {
+  public boolean equalsExact(Geometry<?> other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
     }
-    LineString otherLineString = (LineString) other;
+    LineString<?> otherLineString = (LineString<?>) other;
     if (points.size() != otherLineString.points.size()) {
       return false;
     }
@@ -249,11 +249,11 @@ public class LineString
       geometryChanged();
   }
 
-  public void apply(GeometryFilter filter) {
+  public void apply(GeometryFilter<T> filter) {
     filter.filter(this);
   }
 
-  public void apply(GeometryComponentFilter filter) {
+  public void apply(GeometryComponentFilter<T> filter) {
     filter.filter(this);
   }
 
@@ -264,12 +264,12 @@ public class LineString
    * @return a clone of this instance
    * @deprecated
    */
-  public Object clone() {
-    return copy();
+  public LineString<T> clone() {
+    return (LineString<T>) copy();
   }
 
-  protected LineString copyInternal() {
-    return new LineString(points.copy(), factory);
+  protected LineString<T> copyInternal() {
+    return new LineString<>(points.copy(), factory);
   }
 
   /**
@@ -293,13 +293,13 @@ public class LineString
       }
   }
 
-  protected boolean isEquivalentClass(Geometry other) {
+  protected boolean isEquivalentClass(Geometry<?> other) {
     return other instanceof LineString;
   }
 
   protected int compareToSameClass(Object o)
   {
-    LineString line = (LineString) o;
+    LineString<?> line = (LineString<?>) o;
     // MD - optimized implementation
     int i = 0;
     int j = 0;
@@ -322,8 +322,7 @@ public class LineString
 
   protected int compareToSameClass(Object o, CoordinateSequenceComparator comp)
   {
-    LineString line = (LineString) o;
-    return comp.compare(this.points, line.points);
+    return comp.compare(this.points, ((LineString<?>)o).points);
   }
   
   protected int getTypeCode() {

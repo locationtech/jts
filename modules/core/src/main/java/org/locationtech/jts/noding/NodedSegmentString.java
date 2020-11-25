@@ -34,8 +34,8 @@ import org.locationtech.jts.io.WKTWriter;
  *
  * @version 1.7
  */
-public class NodedSegmentString
-	implements NodableSegmentString
+public class NodedSegmentString<T>
+	implements NodableSegmentString<T>
 {
 	/**
 	 * Gets the {@link SegmentString}s which result from splitting this string at node points.
@@ -66,7 +66,7 @@ public class NodedSegmentString
 
   private SegmentNodeList nodeList = new SegmentNodeList(this);
   private Coordinate[] pts;
-  private Object data;
+  private T data;
 
   /**
    * Creates a instance from a list of vertices and optional data object.
@@ -74,7 +74,7 @@ public class NodedSegmentString
    * @param pts the vertices of the segment string
    * @param data the user-defined data of this segment string (may be null)
    */
-  public NodedSegmentString(Coordinate[] pts, Object data)
+  public NodedSegmentString(Coordinate[] pts, T data)
   {
     this.pts = pts;
     this.data = data;
@@ -83,9 +83,9 @@ public class NodedSegmentString
   /**
    * Creates a new instance from a {@link SegmentString}.
    *
-   * @param segString the segment string to use
+   * @param ss the segment string to use
    */
-  public NodedSegmentString(SegmentString ss)
+  public NodedSegmentString(SegmentString<T> ss)
   {
     this.pts = ss.getCoordinates();
     this.data = ss.getData();
@@ -96,14 +96,14 @@ public class NodedSegmentString
    *
    * @return the user-defined data
    */
-  public Object getData() { return data; }
+  public T getData() { return data; }
 
   /**
    * Sets the user-defined data for this segment string.
    *
    * @param data an Object containing user-defined data
    */
-  public void setData(Object data) { this.data = data; }
+  public void setData(T data) { this.data = data; }
 
   public SegmentNodeList getNodeList() { return nodeList; }
   public int size() { return pts.length; }

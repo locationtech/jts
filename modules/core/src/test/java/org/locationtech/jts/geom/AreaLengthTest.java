@@ -30,7 +30,7 @@ public class AreaLengthTest extends TestCase {
   
   private static final double TOLERANCE = 1E-5;
   
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(AreaLengthTest.class);
   }
 

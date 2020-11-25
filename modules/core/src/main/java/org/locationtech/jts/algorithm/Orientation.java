@@ -29,7 +29,10 @@ import org.locationtech.jts.geom.impl.CoordinateArraySequence;
  * @author Martin Davis
  *
  */
-public class Orientation {
+public final class Orientation {
+  private Orientation(){
+
+  }
   /**
    * A value that indicates an orientation of clockwise, or a right turn.
    */

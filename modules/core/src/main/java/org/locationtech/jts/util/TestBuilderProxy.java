@@ -60,7 +60,7 @@ public class TestBuilderProxy {
   // TODO: expose an option in the TestBuilder to make this inactive
   // This will avoid a huge performance hit if the visualization is not needed
 
-  public static void showIndicator(Geometry geom) {
+  public static void showIndicator(Geometry<?> geom) {
     init();
     if (methodShowIndicator == null) return;
     
@@ -71,7 +71,7 @@ public class TestBuilderProxy {
       // Or perhaps should fail noisy, since at this point the function should be working?
     }
   }
-  public static void showIndicator(Geometry geom, Color lineClr) {
+  public static void showIndicator(Geometry<?> geom, Color lineClr) {
     init();
     if (methodShowIndicatorLine == null) return;
     

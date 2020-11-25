@@ -5,7 +5,7 @@ import junit.textui.TestRunner;
 
 public class CGAlgorithmsDDTest
 extends TestCase {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(CGAlgorithmsDDTest.class);
   }
 

@@ -51,7 +51,7 @@ public class SweepLineIndex<T> {
     Collections.sort(events);
     for (int i = 0; i < events.size(); i++ )
     {
-      SweepLineEvent<T> ev = events.get(i);
+      SweepLineEvent<T> ev =  events.get(i);
       if (ev.isDelete()) {
         ev.getInsertEvent().setDeleteEventIndex(i);
       }
@@ -73,7 +73,7 @@ public class SweepLineIndex<T> {
     }
   }
 
-  private void processOverlaps(int start, int end, SweepLineInterval<T> s0, SweepLineOverlapAction action)
+  private void processOverlaps(int start, int end, SweepLineInterval<?> s0, SweepLineOverlapAction action)
   {
     /**
      * Since we might need to test for self-intersections,

@@ -80,8 +80,8 @@ public class Edge
     // compute envelope lazily
     if (env == null) {
       env = new Envelope();
-      for (int i = 0; i < pts.length; i++) {
-        env.expandToInclude(pts[i]);
+      for (Coordinate pt : pts) {
+        env.expandToInclude(pt);
       }
     }
     return env;
@@ -125,7 +125,7 @@ public class Edge
   }
   public Edge getCollapsedEdge()
   {
-    Coordinate newPts[] = new Coordinate[2];
+    Coordinate[] newPts = new Coordinate[2];
     newPts[0] = pts[0];
     newPts[1] = pts[1];
     Edge newe = new Edge(newPts, Label.toLineLabel(label));

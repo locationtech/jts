@@ -33,11 +33,11 @@ import org.locationtech.jts.geom.Geometry;
  * @author Martin Davis
  *
  */
-public class WKBHexFileReader 
+public class WKBHexFileReader <T>
 {
 	private File file = null;
   private Reader reader;
-	private WKBReader wkbReader;
+	private WKBReader<T> wkbReader;
 	private int count = 0;
 	private int limit = -1;
 	private int offset = 0;
@@ -49,7 +49,7 @@ public class WKBHexFileReader
    * @param file the <tt>File</tt> to read from
    * @param wkbReader the geometry reader to use
    */
-	public WKBHexFileReader(File file, WKBReader wkbReader)
+	public WKBHexFileReader(File file, WKBReader<T> wkbReader)
 	{
 		this.file = file;
     this.wkbReader = wkbReader;
@@ -61,7 +61,7 @@ public class WKBHexFileReader
    * @param filename the name of the file to read from
    * @param wkbReader the geometry reader to use
    */
-  public WKBHexFileReader(String filename, WKBReader wkbReader)
+  public WKBHexFileReader(String filename, WKBReader<T> wkbReader)
   {
     this(new File(filename), wkbReader);
   }
@@ -72,7 +72,7 @@ public class WKBHexFileReader
    * @param reader the reader to read from
    * @param wkbReader the geometry reader to use
    */
-  public WKBHexFileReader(Reader reader, WKBReader wkbReader)
+  public WKBHexFileReader(Reader reader, WKBReader<T> wkbReader)
   {
     this.reader = reader;
     this.wkbReader = wkbReader;
@@ -107,7 +107,7 @@ public class WKBHexFileReader
 	 * @throws IOException if an I/O exception was encountered
 	 * @throws ParseException if an error occurred reading a geometry
 	 */
-	public List read() 
+	public List<Geometry<T>> read()
 	throws IOException, ParseException 
 	{
     // do this here so that constructors don't throw exceptions
@@ -116,25 +116,22 @@ public class WKBHexFileReader
     
 		count = 0;
 		try {
-			BufferedReader bufferedReader = new BufferedReader(reader);
-			try {
+			try (BufferedReader bufferedReader = new BufferedReader(reader)) {
 				return read(bufferedReader);
-			} finally {
-				bufferedReader.close();
 			}
 		} finally {
 			reader.close();
 		}
 	}
 	
-	private List read(BufferedReader bufferedReader) throws IOException,
+	private List<Geometry<T>> read(BufferedReader bufferedReader) throws IOException,
 			ParseException {
-		List geoms = new ArrayList();
+		List<Geometry<T>> geoms = new ArrayList<>();
 		while (! isAtEndOfFile(bufferedReader) && ! isAtLimit(geoms)) {
 		  String line = bufferedReader.readLine().trim();
 		  if (line.length() == 0) 
 		    continue;
-			Geometry g = wkbReader.read(WKBReader.hexToBytes(line));
+			Geometry<T> g = wkbReader.read(WKBReader.hexToBytes(line));
 			if (count >= offset)
 				geoms.add(g);
 			count++;
@@ -142,7 +139,7 @@ public class WKBHexFileReader
 		return geoms;
 	}
 	
-	private boolean isAtLimit(List geoms)
+	private boolean isAtLimit(List<?> geoms)
 	{
 		if (limit < 0) return false;
 		if (geoms.size() < limit) return false;

@@ -34,7 +34,7 @@ import org.locationtech.jts.geom.Polygonal;
  * or exactly on the boundary of the Geometry. 
  * <p>
  * Instance methods are provided to implement
- * the interface {@link PointInAreaLocator}.
+ * the interface {@link PointOnGeometryLocator}.
  * However, they provide no performance
  * advantage over the class methods.
  * <p>
@@ -53,9 +53,9 @@ public class SimplePointInAreaLocator
    * Determines the {@link Location} of a point in an areal {@link Geometry}.
    * The return value is one of:
    * <ul>
-   * <li>{@link Location.INTERIOR} if the point is in the geometry interior
-   * <li>{@link Location.BOUNDARY} if the point lies exactly on the boundary 
-   * <li>{@link Location.EXTERIOR} if the point is outside the geometry
+   * <li>{@link Location#INTERIOR} if the point is in the geometry interior
+   * <li>{@link Location#BOUNDARY} if the point lies exactly on the boundary
+   * <li>{@link Location#EXTERIOR} if the point is outside the geometry
    * </ul>
    * 
    * @param p the point to test
@@ -97,9 +97,9 @@ public class SimplePointInAreaLocator
     }
     
     if (geom instanceof GeometryCollection) {
-      Iterator geomi = new GeometryCollectionIterator((GeometryCollection) geom);
+      Iterator<Geometry> geomi = new GeometryCollectionIterator(geom);
       while (geomi.hasNext()) {
-        Geometry g2 = (Geometry) geomi.next();
+        Geometry g2 = geomi.next();
         if (g2 != geom) {
           int loc = locateInGeometry(p, g2);
           if (loc != Location.EXTERIOR) return loc;
@@ -113,9 +113,9 @@ public class SimplePointInAreaLocator
    * Determines the {@link Location} of a point in a {@link Polygon}.
    * The return value is one of:
    * <ul>
-   * <li>{@link Location.INTERIOR} if the point is in the geometry interior
-   * <li>{@link Location.BOUNDARY} if the point lies exactly on the boundary 
-   * <li>{@link Location.EXTERIOR} if the point is outside the geometry
+   * <li>{@link Location#INTERIOR} if the point is in the geometry interior
+   * <li>{@link Location#BOUNDARY} if the point lies exactly on the boundary
+   * <li>{@link Location#EXTERIOR} if the point is outside the geometry
    * </ul>
    * 
    * This method is provided for backwards compatibility only.
@@ -190,9 +190,9 @@ public class SimplePointInAreaLocator
    * Determines the {@link Location} of a point in an areal {@link Geometry}.
    * The return value is one of:
    * <ul>
-   * <li>{@link Location.INTERIOR} if the point is in the geometry interior
-   * <li>{@link Location.BOUNDARY} if the point lies exactly on the boundary 
-   * <li>{@link Location.EXTERIOR} if the point is outside the geometry
+   * <li>{@link Location#INTERIOR} if the point is in the geometry interior
+   * <li>{@link Location#BOUNDARY} if the point lies exactly on the boundary
+   * <li>{@link Location#EXTERIOR} if the point is outside the geometry
    * </ul> 
    * 
    * @param p the point to test

@@ -18,6 +18,7 @@ import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.util.ComponentCoordinateExtracter;
+import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.SegmentStringUtil;
 
 
@@ -51,7 +52,7 @@ class PreparedLineStringIntersects
   /**
    * Creates an instance of this operation.
    * 
-   * @param prepPoly the target PreparedLineString
+   * @param prepLine the target PreparedLineString
    */
 	public PreparedLineStringIntersects(PreparedLineString prepLine)
 	{
@@ -69,7 +70,7 @@ class PreparedLineStringIntersects
 		/**
 		 * If any segments intersect, obviously intersects = true
 		 */
-    List lineSegStr = SegmentStringUtil.extractSegmentStrings(geom);
+    List<SegmentString> lineSegStr = SegmentStringUtil.extractSegmentStrings(geom);
     // only request intersection finder if there are segments (ie NOT for point inputs)
     if (lineSegStr.size() > 0) {
   		boolean segsIntersect = prepLine.getIntersectionFinder().intersects(lineSegStr);
@@ -103,7 +104,7 @@ class PreparedLineStringIntersects
    * the target geometry.
    * Only handles test geometries which are Puntal (dimension 0)
    * 
-   * @param geom a Puntal geometry to test
+   * @param testGeom a Puntal geometry to test
    * @return true if any point of the argument intersects the prepared geometry
    */
 	protected boolean isAnyTestPointInTarget(Geometry testGeom)
@@ -113,9 +114,9 @@ class PreparedLineStringIntersects
 		 * However, it seems like the L/P case would be pretty rare in practice.
 		 */
 		PointLocator locator = new PointLocator();
-    List coords = ComponentCoordinateExtracter.getCoordinates(testGeom);
-    for (Iterator i = coords.iterator(); i.hasNext(); ) {
-      Coordinate p = (Coordinate) i.next();
+    List<Coordinate> coords = ComponentCoordinateExtracter.getCoordinates(testGeom);
+    for (Iterator<Coordinate> i = coords.iterator(); i.hasNext(); ) {
+      Coordinate p = i.next();
       if (locator.intersects(p, prepLine.getGeometry()))
         return true;
     }

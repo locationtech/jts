@@ -43,7 +43,7 @@ public abstract class IntervalRTreeNode <T>
   
   public static class NodeComparator implements Comparator<IntervalRTreeNode<?>>
   {
-    public int compare(IntervalRTreeNode<?> n1, IntervalRTreeNode<?> n2)
+    public int compare(IntervalRTreeNode<?>  n1, IntervalRTreeNode<?> n2)
     {
 
       double mid1 = (n1.min + n1.max) / 2;

@@ -11,6 +11,7 @@
  */
 package test.jts.perf.algorithm;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -119,7 +120,7 @@ class MCIndexedGeometry
 	
 	private void init(Geometry geom)
 	{
-		List lines = LinearComponentExtracter.getLines(geom);
+		Collection lines = LinearComponentExtracter.getLines(geom);
 		for (Iterator i = lines.iterator(); i.hasNext(); ) {
 			LineString line = (LineString) i.next();
 			Coordinate[] pts = line.getCoordinates();

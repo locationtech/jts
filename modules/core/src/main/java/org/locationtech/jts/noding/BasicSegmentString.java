@@ -28,11 +28,11 @@ import org.locationtech.jts.io.WKTWriter;
  *
  * @version 1.7
  */
-public class BasicSegmentString
-	implements SegmentString 
+public class BasicSegmentString<T>
+	implements SegmentString <T>
 {
   private Coordinate[] pts;
-  private Object data;
+  private T data;
 
   /**
    * Creates a new segment string from a list of vertices.
@@ -40,7 +40,7 @@ public class BasicSegmentString
    * @param pts the vertices of the segment string
    * @param data the user-defined data of this segment string (may be null)
    */
-  public BasicSegmentString(Coordinate[] pts, Object data)
+  public BasicSegmentString(Coordinate[] pts, T data)
   {
     this.pts = pts;
     this.data = data;
@@ -51,14 +51,14 @@ public class BasicSegmentString
    *
    * @return the user-defined data
    */
-  public Object getData() { return data; }
+  public T getData() { return data; }
 
   /**
    * Sets the user-defined data for this segment string.
    *
    * @param data an Object containing user-defined data
    */
-  public void setData(Object data) { this.data = data; }
+  public void setData(T data) { this.data = data; }
 
   public int size() { return pts.length; }
   public Coordinate getCoordinate(int i) { return pts[i]; }

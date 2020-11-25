@@ -48,14 +48,14 @@ public class Root<T>
      * the item must be contained in one quadrant, so insert it into the
      * tree for that quadrant (which may not yet exist)
      */
-    Node node = subnode[index];
+    Node<T> node = subnode[index];
     /**
      *  If the subquad doesn't exist or this item is not contained in it,
      *  have to expand the tree upward to contain the item.
      */
 
     if (node == null || ! node.getEnvelope().contains(itemEnv)) {
-       Node largerNode = Node.createExpanded(node, itemEnv);
+       Node<T> largerNode = Node.createExpanded(node, itemEnv);
        subnode[index] = largerNode;
     }
     /**
@@ -72,7 +72,7 @@ public class Root<T>
    * the given QuadNode root.  Lower levels of the tree will be created
    * if necessary to hold the item.
    */
-  private void insertContained(Node tree, Envelope itemEnv, T item)
+  private void insertContained(Node<T> tree, Envelope itemEnv, T item)
   {
     Assert.isTrue(tree.getEnvelope().contains(itemEnv));
    /**
@@ -82,7 +82,7 @@ public class Root<T>
     */
     boolean isZeroX = IntervalSize.isZeroWidth(itemEnv.getMinX(), itemEnv.getMaxX());
     boolean isZeroY = IntervalSize.isZeroWidth(itemEnv.getMinY(), itemEnv.getMaxY());
-    NodeBase node;
+    NodeBase<T> node;
     if (isZeroX || isZeroY)
       node = tree.find(itemEnv);
     else

@@ -29,7 +29,7 @@ import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
  */
 public class WKBReaderTest  extends TestCase
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(WKBReaderTest.class);
   }
 

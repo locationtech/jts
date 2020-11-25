@@ -59,7 +59,7 @@ public class IntersectionStressTest {
 
   private boolean verbose = false;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     IntersectionStressTest test = new IntersectionStressTest();
     test.run();
   }

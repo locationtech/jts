@@ -13,11 +13,11 @@ package org.locationtech.jts.index.intervalrtree;
 
 import org.locationtech.jts.index.ItemVisitor;
 
-public class IntervalRTreeBranchNode<T>
+public class IntervalRTreeBranchNode <T>
 extends IntervalRTreeNode<T>
 {
-	private final IntervalRTreeNode<T> node1;
-	private final IntervalRTreeNode<T> node2;
+	private IntervalRTreeNode<T> node1;
+	private IntervalRTreeNode<T> node2;
 	
 	public IntervalRTreeBranchNode(IntervalRTreeNode<T> n1, IntervalRTreeNode<T> n2)
 	{

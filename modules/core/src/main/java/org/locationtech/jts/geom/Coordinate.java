@@ -241,7 +241,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
    * to a given value.
    * 
    * The base implementation supported values for the index are 
-   * {@link X}, {@link Y}, and {@link Z}.
+   * {@link Coordinate#X}, {@link Coordinate#Y}, and {@link Coordinate#Z}.
    * 
    * @param ordinateIndex the ordinate index
    * @param value the value to set
@@ -509,8 +509,8 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
      * Compares two {@link Coordinate}s along to the number of
      * dimensions specified.
      *
-     * @param o1 a {@link Coordinate}
-     * @param o2 a {link Coordinate}
+     * @param c1 a {@link Coordinate}
+     * @param c2 a {link Coordinate}
      * @return -1, 0, or 1 depending on whether o1 is less than,
      * equal to, or greater than 02
      *

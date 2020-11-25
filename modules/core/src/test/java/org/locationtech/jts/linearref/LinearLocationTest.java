@@ -33,7 +33,7 @@ public class LinearLocationTest
 {
   private WKTReader reader = new WKTReader();
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(LinearLocationTest.class);
   }
 

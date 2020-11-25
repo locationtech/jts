@@ -123,9 +123,9 @@ public class SortedPackedIntervalRTree <T>
 			if (n2 == null) {
 				dest.add(n1);
 			} else {
-				IntervalRTreeNode<T> node = new IntervalRTreeBranchNode<T>(
+				IntervalRTreeNode<T> node = new IntervalRTreeBranchNode<>(
 						src.get(i),
-						src.get(i + 1));
+						 src.get(i + 1));
 //        printNode(node);
 //				System.out.println(node);
 				dest.add(node);
@@ -133,7 +133,7 @@ public class SortedPackedIntervalRTree <T>
 		}
 	}
 	
-  private void printNode(IntervalRTreeNode<T> node)
+  private void printNode(IntervalRTreeNode<?> node)
   {
     System.out.println(WKTWriter.toLineString(new Coordinate(node.min, level), new Coordinate(node.max, level)));
   }

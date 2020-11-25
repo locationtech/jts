@@ -25,7 +25,7 @@ import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
  */
 public class CoordinateArraysTest extends TestCase {
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(CoordinateArraysTest.class);
   }
 
@@ -121,11 +121,11 @@ public class CoordinateArraysTest extends TestCase {
   }
 
   public void testEnforceConsistency(){
-    Coordinate array[] = new Coordinate[]{
+    Coordinate[] array = new Coordinate[]{
         new Coordinate(1.0, 1.0, 0.0),
         new CoordinateXYM(2.0,2.0,1.0)
     };
-    Coordinate array2[] = new Coordinate[]{
+    Coordinate[] array2 = new Coordinate[]{
             new CoordinateXY(1.0, 1.0),
             new CoordinateXY(2.0,2.0)
     };
@@ -136,7 +136,7 @@ public class CoordinateArraysTest extends TestCase {
 
     CoordinateArrays.enforceConsistency(array2);
     
-    Coordinate fixed[] = CoordinateArrays.enforceConsistency(array2,2,0);
+    Coordinate[] fixed = CoordinateArrays.enforceConsistency(array2,2,0);
     assertSame( fixed, array2); // no processing required
 
     fixed = CoordinateArrays.enforceConsistency(array,3,0);

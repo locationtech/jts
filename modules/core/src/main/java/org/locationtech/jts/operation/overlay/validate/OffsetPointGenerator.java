@@ -63,12 +63,12 @@ public class OffsetPointGenerator
    *
    * @return List&lt;Coordinate&gt;
    */
-  public List getPoints(double offsetDistance)
+  public List<Coordinate> getPoints(double offsetDistance)
   {
-    List offsetPts = new ArrayList();
-    List lines = LinearComponentExtracter.getLines(g);
-    for (Iterator i = lines.iterator(); i.hasNext(); ) {
-      LineString line = (LineString) i.next();
+    List<Coordinate> offsetPts = new ArrayList<>();
+    List<LineString<?>> lines = (List<LineString<?>>) LinearComponentExtracter.getLines(g);
+    for (LineString<?> lineString : lines) {
+      LineString<?> line = lineString;
       extractPoints(line, offsetDistance, offsetPts);
     }
     //System.out.println(toMultiPoint(offsetPts));
@@ -91,7 +91,7 @@ public class OffsetPointGenerator
    * @param p0 the first point of the segment to offset from
    * @param p1 the second point of the segment to offset from
    */
-  private void computeOffsetPoints(Coordinate p0, Coordinate p1, double offsetDistance, List offsetPts)
+  private void computeOffsetPoints(Coordinate p0, Coordinate p1, double offsetDistance, List<Coordinate> offsetPts)
   {
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;

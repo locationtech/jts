@@ -123,7 +123,7 @@ public class SnapOverlayOp
     cbr = new CommonBitsRemover();
     cbr.add(geom[0]);
     cbr.add(geom[1]);
-    Geometry remGeom[] = new Geometry[2];
+    Geometry[] remGeom = new Geometry[2];
     remGeom[0] = cbr.removeCommonBits(geom[0].copy());
     remGeom[1] = cbr.removeCommonBits(geom[1].copy());
     return remGeom;

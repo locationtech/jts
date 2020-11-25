@@ -13,7 +13,7 @@ import test.jts.GeometryTestCase;
 
 public class OverlayMiscTest extends GeometryTestCase 
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(OverlayMiscTest.class);
   }
 

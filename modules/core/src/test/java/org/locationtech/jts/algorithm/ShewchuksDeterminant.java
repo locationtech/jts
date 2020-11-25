@@ -337,7 +337,7 @@ public class ShewchuksDeterminant
     double detright = Two_Product_Head(acy, bcx);
     double detrighttail = Two_Product_Tail(acy, bcx, detright);
 
-    double B[] = new double[4];
+    double[] B = new double[4];
     B[2] = Two_Two_Diff__x2(detleft, detlefttail, detright, detrighttail);
     B[1] = Two_Two_Diff__x1(detleft, detlefttail, detright, detrighttail);
     B[0] = Two_Two_Diff__x0(detleft, detlefttail, detright, detrighttail);
@@ -373,13 +373,13 @@ public class ShewchuksDeterminant
     double t0 = Two_Product_Tail(acytail, bcx, t1);
 
     double u3 = Two_Two_Diff__x3(s1, s0, t1, t0);
-    double u[] = new double[4];
+    double[] u = new double[4];
     u[2] = Two_Two_Diff__x2(s1, s0, t1, t0);
     u[1] = Two_Two_Diff__x1(s1, s0, t1, t0);
     u[0] = Two_Two_Diff__x0(s1, s0, t1, t0);
 
     u[3] = u3;
-    double C1[] = new double[8];
+    double[] C1 = new double[8];
     int C1length = fast_expansion_sum_zeroelim(4, B, 4, u, C1);
 
     s1 = Two_Product_Head(acx, bcytail);
@@ -394,7 +394,7 @@ public class ShewchuksDeterminant
     u[0] = Two_Two_Diff__x0(s1, s0, t1, t0);
 
     u[3] = u3;
-    double C2[] = new double[12];
+    double[] C2 = new double[12];
     int C2length = fast_expansion_sum_zeroelim(C1length, C1, 4, u, C2);
 
     s1 = Two_Product_Head(acxtail, bcytail);
@@ -409,7 +409,7 @@ public class ShewchuksDeterminant
     u[0] = Two_Two_Diff__x0(s1, s0, t1, t0);
 
     u[3] = u3;
-    double D[] = new double[16];
+    double[] D = new double[16];
     int Dlength = fast_expansion_sum_zeroelim(C2length, C2, 4, u, D);
 
     return (D[Dlength - 1]);

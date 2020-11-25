@@ -28,7 +28,8 @@ public class Node<T>
   public static <T>Node<T> createNode(Envelope env)
   {
     Key key = new Key(env);
-    return new Node<>(key.getEnvelope(), key.getLevel());
+    Node<T> node = new Node<>(key.getEnvelope(), key.getLevel());
+    return node;
   }
 
   public static <T>Node<T> createExpanded(Node<T> node, Envelope addEnv)
@@ -171,7 +172,8 @@ public class Node<T>
         break;
       }
       Envelope sqEnv = new Envelope(minx, maxx, miny, maxy);
-    return new Node<>(sqEnv, level - 1);
+      Node<T> node = new Node<>(sqEnv, level - 1);
+    return node;
   }
 
 }

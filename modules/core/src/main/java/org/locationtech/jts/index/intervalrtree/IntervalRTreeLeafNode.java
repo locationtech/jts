@@ -16,7 +16,7 @@ import org.locationtech.jts.index.ItemVisitor;
 public class IntervalRTreeLeafNode <T>
 extends IntervalRTreeNode<T>
 {
-  private final T item;
+  private T item;
 	
 	public IntervalRTreeLeafNode(double min, double max, T item)
 	{

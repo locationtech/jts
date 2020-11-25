@@ -50,7 +50,7 @@ import test.jts.perf.PerformanceTestRunner;
 public class IntersectionPerfTest extends PerformanceTestCase {
   private static final int N_ITER = 1000000;
   
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     PerformanceTestRunner.run(IntersectionPerfTest.class);
   }
   

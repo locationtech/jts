@@ -12,6 +12,7 @@
 package org.locationtech.jts.geom.prep;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Puntal;
 
 
@@ -23,11 +24,12 @@ import org.locationtech.jts.geom.Puntal;
  * @author Martin Davis
  *
  */
-public class PreparedPoint
-  extends BasicPreparedGeometry
+public class PreparedPoint<T>
+  extends BasicPreparedGeometry<T>
 {
+    @SuppressWarnings("unchecked")
   public PreparedPoint(Puntal point) {
-    super((Geometry) point);
+    super((Geometry<T>) point);
   }
 
   /**
@@ -36,7 +38,7 @@ public class PreparedPoint
    * The optimization here is that computing topology for the test geometry
    * is avoided.  This can be significant for large geometries.
    */
-  public boolean intersects(Geometry g)
+  public boolean intersects(Geometry<?> g)
   {
   	if (! envelopesIntersect(g)) return false;
   	

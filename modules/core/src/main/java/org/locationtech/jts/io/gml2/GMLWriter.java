@@ -53,7 +53,7 @@ import org.locationtech.jts.util.Assert;
  * @author David Zwiers, Vivid Solutions 
  * @author Martin Davis 
  */
-public class GMLWriter {
+public class GMLWriter<T> {
 	private final String INDENT = "  ";
 
 	private int startingIndentIndex = 0;
@@ -178,7 +178,7 @@ public class GMLWriter {
 	 * @param geom
 	 * @return String GML2 Encoded Geometry
 	 */
-	public String write(Geometry geom) 
+	public String write(Geometry<T> geom) 
 	{
 		StringWriter writer = new StringWriter();
 		try {
@@ -197,28 +197,28 @@ public class GMLWriter {
 	 * @param writer Stream to encode to.
 	 * @throws IOException 
 	 */
-	public void write(Geometry geom, Writer writer) throws IOException {
+	public void write(Geometry<T> geom, Writer writer) throws IOException {
 		write(geom, writer, startingIndentIndex);
 	}
 
-	private void write(Geometry geom, Writer writer, int level)
+	private void write(Geometry<T> geom, Writer writer, int level)
 			throws IOException 
 			{
 		isRootTag = true;
 		if (geom instanceof Point) {
-			writePoint((Point) geom, writer, level);
+			writePoint((Point<T>) geom, writer, level);
 		} else if (geom instanceof LineString) {
-			writeLineString((LineString) geom, writer, level);
+			writeLineString((LineString<T>) geom, writer, level);
 		} else if (geom instanceof Polygon) {
-			writePolygon((Polygon) geom, writer, level);
+			writePolygon((Polygon<T>) geom, writer, level);
 		} else if (geom instanceof MultiPoint) {
-			writeMultiPoint((MultiPoint) geom, writer, level);
+			writeMultiPoint((MultiPoint<T>) geom, writer, level);
 		} else if (geom instanceof MultiLineString) {
-			writeMultiLineString((MultiLineString) geom, writer, level);
+			writeMultiLineString((MultiLineString<T>) geom, writer, level);
 		} else if (geom instanceof MultiPolygon) {
-			writeMultiPolygon((MultiPolygon) geom, writer, level);
+			writeMultiPolygon((MultiPolygon<T,?>) geom, writer, level);
 		} else if (geom instanceof GeometryCollection) {
-			writeGeometryCollection((GeometryCollection) geom, writer,
+			writeGeometryCollection((GeometryCollection<T,?>) geom, writer,
 					startingIndentIndex);
 		} else {
 			throw new IllegalArgumentException("Unhandled geometry type: "
@@ -228,7 +228,7 @@ public class GMLWriter {
 	}
 
 	// <gml:Point><gml:coordinates>1195156.78946687,382069.533723461</gml:coordinates></gml:Point>
-	private void writePoint(Point p, Writer writer, int level) throws IOException {
+	private void writePoint(Point<T> p, Writer writer, int level) throws IOException {
 		startLine(level, writer);
 		startGeomTag(GMLConstants.GML_POINT, p, writer);
 
@@ -239,7 +239,7 @@ public class GMLWriter {
 	}
 
 	//<gml:LineString><gml:coordinates>1195123.37289257,381985.763974674 1195120.22369473,381964.660533343 1195118.14929823,381942.597718511</gml:coordinates></gml:LineString>
-	private void writeLineString(LineString ls, Writer writer, int level)
+	private void writeLineString(LineString<T> ls, Writer writer, int level)
 			throws IOException {
 		startLine(level, writer);
 		startGeomTag(GMLConstants.GML_LINESTRING, ls, writer);
@@ -251,7 +251,7 @@ public class GMLWriter {
 	}
 
 	//<gml:LinearRing><gml:coordinates>1226890.26761027,1466433.47430292 1226880.59239079,1466427.03208053...></coordinates></gml:LinearRing>
-	private void writeLinearRing(LinearRing lr, Writer writer, int level)
+	private void writeLinearRing(LinearRing<T> lr, Writer writer, int level)
 			throws IOException {
 		startLine(level, writer);
 		startGeomTag(GMLConstants.GML_LINEARRING, lr, writer);
@@ -262,7 +262,7 @@ public class GMLWriter {
 		endGeomTag(GMLConstants.GML_LINEARRING, writer);
 	}
 
-	private void writePolygon(Polygon p, Writer writer, int level)
+	private void writePolygon(Polygon<T> p, Writer writer, int level)
 			throws IOException {
 		startLine(level, writer);
 		startGeomTag(GMLConstants.GML_POLYGON, p, writer);
@@ -289,7 +289,7 @@ public class GMLWriter {
 		endGeomTag(GMLConstants.GML_POLYGON, writer);
 	}
 
-	private void writeMultiPoint(MultiPoint mp, Writer writer, int level)
+	private void writeMultiPoint(MultiPoint<T> mp, Writer writer, int level)
 			throws IOException {
 		startLine(level, writer);
 		startGeomTag(GMLConstants.GML_MULTI_POINT, mp, writer);
@@ -298,7 +298,7 @@ public class GMLWriter {
 			startLine(level + 1, writer);
 			startGeomTag(GMLConstants.GML_POINT_MEMBER, null, writer);
 
-			writePoint((Point) mp.getGeometryN(t), writer, level + 2);
+			writePoint((Point<T>) mp.getGeometryN(t), writer, level + 2);
 
 			startLine(level + 1, writer);
 			endGeomTag(GMLConstants.GML_POINT_MEMBER, writer);
@@ -307,7 +307,7 @@ public class GMLWriter {
 		endGeomTag(GMLConstants.GML_MULTI_POINT, writer);
 	}
 
-	private void writeMultiLineString(MultiLineString mls, Writer writer,
+	private void writeMultiLineString(MultiLineString<T> mls, Writer writer,
 			int level) throws IOException {
 		startLine(level, writer);
 		startGeomTag(GMLConstants.GML_MULTI_LINESTRING, mls, writer);
@@ -316,7 +316,7 @@ public class GMLWriter {
 			startLine(level + 1, writer);
 			startGeomTag(GMLConstants.GML_LINESTRING_MEMBER, null, writer);
 
-			writeLineString((LineString) mls.getGeometryN(t), writer, level + 2);
+			writeLineString((LineString<T>) mls.getGeometryN(t), writer, level + 2);
 
 			startLine(level + 1, writer);
 			endGeomTag(GMLConstants.GML_LINESTRING_MEMBER, writer);
@@ -325,7 +325,7 @@ public class GMLWriter {
 		endGeomTag(GMLConstants.GML_MULTI_LINESTRING, writer);
 	}
 
-	private void writeMultiPolygon(MultiPolygon mp, Writer writer, int level)
+	private void writeMultiPolygon(MultiPolygon<T,?> mp, Writer writer, int level)
 			throws IOException {
 		startLine(level, writer);
 		startGeomTag(GMLConstants.GML_MULTI_POLYGON, mp, writer);
@@ -334,7 +334,7 @@ public class GMLWriter {
 			startLine(level + 1, writer);
 			startGeomTag(GMLConstants.GML_POLYGON_MEMBER, null, writer);
 
-			writePolygon((Polygon) mp.getGeometryN(t), writer, level + 2);
+			writePolygon((Polygon<T>) mp.getGeometryN(t), writer, level + 2);
 
 			startLine(level + 1, writer);
 			endGeomTag(GMLConstants.GML_POLYGON_MEMBER, writer);
@@ -343,7 +343,7 @@ public class GMLWriter {
 		endGeomTag(GMLConstants.GML_MULTI_POLYGON, writer);
 	}
 
-	private void writeGeometryCollection(GeometryCollection gc, Writer writer,
+	private void writeGeometryCollection(GeometryCollection<T,?> gc, Writer writer,
 			int level) throws IOException {
 		startLine(level, writer);
 		startGeomTag(GMLConstants.GML_MULTI_GEOMETRY, gc, writer);
@@ -421,7 +421,7 @@ public class GMLWriter {
 			writer.write(INDENT);
 	}
 
-	private void startGeomTag(String geometryName, Geometry g, Writer writer)
+	private void startGeomTag(String geometryName, Geometry<T> g, Writer writer)
 			throws IOException {
 		writer.write("<"
 				+ ((prefix == null || "".equals(prefix)) ? "" : prefix + ":"));
@@ -432,7 +432,7 @@ public class GMLWriter {
 		isRootTag = false;
 	}
 
-	private void writeAttributes(Geometry geom, Writer writer) throws IOException {
+	private void writeAttributes(Geometry<T> geom, Writer writer) throws IOException {
 		if (geom == null)
 			return;
 		if (! isRootTag)
@@ -450,7 +450,7 @@ public class GMLWriter {
 		}
 	}
 
-	private void writeCustomElements(Geometry geom, Writer writer) throws IOException {
+	private void writeCustomElements(Geometry<T> geom, Writer writer) throws IOException {
 		if (geom == null)			return;
 		if (! isRootTag)			return;
 		if (customElements == null) return;

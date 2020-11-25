@@ -42,15 +42,7 @@ public class STRtreeDemo {
     }
     public List boundablesAtLevel(int level) { return super.boundablesAtLevel(level); }
     public AbstractNode getRoot() { return root; }
-    public List createParentBoundables(List verticalSlice, int newLevel) {
-      return super.createParentBoundables(verticalSlice, newLevel);
-    }
-    public List[] verticalSlices(List childBoundables, int size) {
-      return super.verticalSlices(childBoundables, size);
-    }
-    public List createParentBoundablesFromVerticalSlice(List childBoundables, int newLevel) {
-      return super.createParentBoundablesFromVerticalSlice(childBoundables, newLevel);
-    }
+
   }
 
   private static void initTree(TestTree t, List sourceEnvelopes) {

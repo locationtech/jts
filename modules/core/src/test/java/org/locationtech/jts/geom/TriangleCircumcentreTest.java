@@ -17,7 +17,7 @@ import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
 public class TriangleCircumcentreTest extends GeometryTestCase {
-  public static void main(String args[])
+  public static void main(String[] args)
   {
     TestRunner.run(TriangleCircumcentreTest.class);
   }

@@ -45,8 +45,8 @@ import org.locationtech.jts.algorithm.Orientation;
  *
  *@version 1.7
  */
-public class Polygon
-	extends Geometry
+public class Polygon<T>
+	extends Geometry<T>
 	implements Polygonal
 {
   private static final long serialVersionUID = -3494792200821764533L;
@@ -56,14 +56,14 @@ public class Polygon
    * or <code>null</code> if this <code>Polygon</code>
    *  is empty.
    */
-  protected LinearRing shell = null;
+  protected LinearRing<T> shell = null;
 
   /**
    * The interior boundaries, if any.
    * This instance var is never null.
    * If there are no holes, the array is of zero length.
    */
-  protected LinearRing[] holes;
+  protected LinearRing<T>[] holes;
 
   /**
    *  Constructs a <code>Polygon</code> with the given exterior boundary.
@@ -77,8 +77,8 @@ public class Polygon
    *      <code>Polygon</code>
    * @deprecated Use GeometryFactory instead
    */
-  public Polygon(LinearRing shell, PrecisionModel precisionModel, int SRID) {
-    this(shell, new LinearRing[]{}, new GeometryFactory(precisionModel, SRID));
+  public Polygon(LinearRing<T> shell, PrecisionModel precisionModel, int SRID) {
+    this(shell, new LinearRing[0], new GeometryFactory<>(precisionModel, SRID));
   }
 
   /**
@@ -97,8 +97,8 @@ public class Polygon
    *      <code>Polygon</code>
    * @deprecated Use GeometryFactory instead
    */
-  public Polygon(LinearRing shell, LinearRing[] holes, PrecisionModel precisionModel, int SRID) {
-      this(shell, holes, new GeometryFactory(precisionModel, SRID));
+  public Polygon(LinearRing<T> shell, LinearRing<T>[] holes, PrecisionModel precisionModel, int SRID) {
+      this(shell, holes, new GeometryFactory<>(precisionModel, SRID));
   }
 
   /**
@@ -112,13 +112,13 @@ public class Polygon
    *      , or <code>null</code> or empty <code>LinearRing</code>s if the empty
    *      geometry is to be created.
    */
-  public Polygon(LinearRing shell, LinearRing[] holes, GeometryFactory factory) {
+  public Polygon(LinearRing<T> shell, LinearRing<T>[] holes, GeometryFactory<T> factory) {
     super(factory);
     if (shell == null) {
       shell = getFactory().createLinearRing();
     }
     if (holes == null) {
-      holes = new LinearRing[]{};
+      holes = new LinearRing[0];
     }
     if (hasNullElements(holes)) {
       throw new IllegalArgumentException("holes must not contain null elements");
@@ -141,15 +141,15 @@ public class Polygon
     Coordinate[] coordinates = new Coordinate[getNumPoints()];
     int k = -1;
     Coordinate[] shellCoordinates = shell.getCoordinates();
-    for (int x = 0; x < shellCoordinates.length; x++) {
+    for (Coordinate shellCoordinate : shellCoordinates) {
       k++;
-      coordinates[k] = shellCoordinates[x];
+      coordinates[k] = shellCoordinate;
     }
-    for (int i = 0; i < holes.length; i++) {
-      Coordinate[] childCoordinates = holes[i].getCoordinates();
-      for (int j = 0; j < childCoordinates.length; j++) {
+    for (LinearRing<T> hole : holes) {
+      Coordinate[] childCoordinates = hole.getCoordinates();
+      for (Coordinate childCoordinate : childCoordinates) {
         k++;
-        coordinates[k] = childCoordinates[j];
+        coordinates[k] = childCoordinate;
       }
     }
     return coordinates;
@@ -157,8 +157,8 @@ public class Polygon
 
   public int getNumPoints() {
     int numPoints = shell.getNumPoints();
-    for (int i = 0; i < holes.length; i++) {
-      numPoints += holes[i].getNumPoints();
+    for (LinearRing<T> hole : holes) {
+      numPoints += hole.getNumPoints();
     }
     return numPoints;
   }
@@ -208,7 +208,7 @@ public class Polygon
     return true;
   }
 
-  public LinearRing getExteriorRing() {
+  public LinearRing<T> getExteriorRing() {
     return shell;
   }
 
@@ -216,7 +216,7 @@ public class Polygon
     return holes.length;
   }
 
-  public LinearRing getInteriorRingN(int n) {
+  public LinearRing<T> getInteriorRingN(int n) {
     return holes[n];
   }
 
@@ -233,8 +233,8 @@ public class Polygon
   {
     double area = 0.0;
     area += Area.ofRing(shell.getCoordinateSequence());
-    for (int i = 0; i < holes.length; i++) {
-      area -= Area.ofRing(holes[i].getCoordinateSequence());
+    for (LinearRing<T> hole : holes) {
+      area -= Area.ofRing(hole.getCoordinateSequence());
     }
     return area;
   }
@@ -248,8 +248,8 @@ public class Polygon
   {
     double len = 0.0;
     len += shell.getLength();
-    for (int i = 0; i < holes.length; i++) {
-      len += holes[i].getLength();
+    for (LinearRing<T> hole : holes) {
+      len += hole.getLength();
     }
     return len;
   }
@@ -260,11 +260,11 @@ public class Polygon
    * @return a lineal geometry (which may be empty)
    * @see Geometry#getBoundary
    */
-  public Geometry getBoundary() {
+  public Geometry<T> getBoundary() {
     if (isEmpty()) {
       return getFactory().createMultiLineString();
     }
-    LinearRing[] rings = new LinearRing[holes.length + 1];
+    LinearRing<T>[] rings = new LinearRing[holes.length + 1];
     rings[0] = shell;
     for (int i = 0; i < holes.length; i++) {
       rings[i + 1] = holes[i];
@@ -279,13 +279,13 @@ public class Polygon
     return shell.getEnvelopeInternal();
   }
 
-  public boolean equalsExact(Geometry other, double tolerance) {
+  public boolean equalsExact(Geometry<?> other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
     }
-    Polygon otherPolygon = (Polygon) other;
-    Geometry thisShell = shell;
-    Geometry otherPolygonShell = otherPolygon.shell;
+    Polygon<?> otherPolygon = (Polygon<?>) other;
+    Geometry<T> thisShell = shell;
+    Geometry<?> otherPolygonShell = otherPolygon.shell;
     if (!thisShell.equalsExact(otherPolygonShell, tolerance)) {
       return false;
     }
@@ -293,7 +293,7 @@ public class Polygon
       return false;
     }
     for (int i = 0; i < holes.length; i++) {
-      if (!((Geometry) holes[i]).equalsExact(otherPolygon.holes[i], tolerance)) {
+      if (!((Geometry<T>) holes[i]).equalsExact(otherPolygon.holes[i], tolerance)) {
         return false;
       }
     }
@@ -302,17 +302,17 @@ public class Polygon
 
   public void apply(CoordinateFilter filter) {
 	    shell.apply(filter);
-	    for (int i = 0; i < holes.length; i++) {
-	      holes[i].apply(filter);
-	    }
+    for (LinearRing<T> hole : holes) {
+      hole.apply(filter);
+    }
 	  }
 
   public void apply(CoordinateSequenceFilter filter)
   {
 	    shell.apply(filter);
       if (! filter.isDone()) {
-        for (int i = 0; i < holes.length; i++) {
-          holes[i].apply(filter);
+        for (LinearRing<T> hole : holes) {
+          hole.apply(filter);
           if (filter.isDone())
             break;
         }
@@ -325,11 +325,11 @@ public class Polygon
     filter.filter(this);
   }
 
-  public void apply(GeometryComponentFilter filter) {
+  public void apply(GeometryComponentFilter<T> filter) {
     filter.filter(this);
     shell.apply(filter);
-    for (int i = 0; i < holes.length; i++) {
-      holes[i].apply(filter);
+    for (LinearRing<T> hole : holes) {
+      hole.apply(filter);
     }
   }
 
@@ -340,21 +340,22 @@ public class Polygon
    * @return a clone of this instance
    * @deprecated
    */
-  public Object clone() {
+  public Polygon<T> clone() {
 
-    return copy();
+    return (Polygon<T>) copy();
   }
+  @SuppressWarnings("unchecked")
 
-  protected Polygon copyInternal() {
-    LinearRing shellCopy = (LinearRing) shell.copy();
-    LinearRing[] holeCopies = new LinearRing[this.holes.length];
+  protected Polygon<T> copyInternal() {
+    LinearRing<T> shellCopy = (LinearRing<T>) shell.copy();
+    LinearRing<T>[] holeCopies = new LinearRing[this.holes.length];
     for (int i = 0; i < holes.length; i++) {
-    	holeCopies[i] = (LinearRing) holes[i].copy();
+    	holeCopies[i] = (LinearRing<T>) holes[i].copy();
     }
-    return new Polygon(shellCopy, holeCopies, factory);
+    return new Polygon<>(shellCopy, holeCopies, factory);
   }
-
-  public Geometry convexHull() {
+  @SuppressWarnings("unchecked")
+  public Geometry<T> convexHull() {
     return getExteriorRing().convexHull();
   }
 
@@ -367,16 +368,16 @@ public class Polygon
   }
 
   protected int compareToSameClass(Object o) {
-    LinearRing thisShell = shell;
-    LinearRing otherShell = ((Polygon) o).shell;
+    LinearRing<T> thisShell = shell;
+    LinearRing<T> otherShell = ((Polygon<T>) o).shell;
     return thisShell.compareToSameClass(otherShell);
   }
 
   protected int compareToSameClass(Object o, CoordinateSequenceComparator comp) {
-    Polygon poly = (Polygon) o;
+    Polygon<T> poly = (Polygon<T>) o;
 
-    LinearRing thisShell = shell;
-    LinearRing otherShell = poly.shell;
+    LinearRing<T> thisShell = shell;
+    LinearRing<T> otherShell = poly.shell;
     int shellComp = thisShell.compareToSameClass(otherShell, comp);
     if (shellComp != 0) return shellComp;
 
@@ -384,8 +385,8 @@ public class Polygon
     int nHole2 = poly.getNumInteriorRing();
     int i = 0;
     while (i < nHole1 && i < nHole2) {
-      LinearRing thisHole = (LinearRing) getInteriorRingN(i);
-      LinearRing otherHole = (LinearRing) poly.getInteriorRingN(i);
+      LinearRing<T> thisHole = getInteriorRingN(i);
+      LinearRing<T> otherHole = poly.getInteriorRingN(i);
       int holeComp = thisHole.compareToSameClass(otherHole, comp);
       if (holeComp != 0) return holeComp;
       i++;
@@ -399,13 +400,13 @@ public class Polygon
     return Geometry.TYPECODE_POLYGON;
   }
 
-  private LinearRing normalized(LinearRing ring, boolean clockwise) {
-    LinearRing res = (LinearRing) ring.copy();
+  private LinearRing<T> normalized(LinearRing<T> ring, boolean clockwise) {
+    LinearRing<T> res = (LinearRing<T>) ring.copy();
     normalize(res, clockwise);
     return res;
   }
 
-  private void normalize(LinearRing ring, boolean clockwise) {
+  private void normalize(LinearRing<T> ring, boolean clockwise) {
     if (ring.isEmpty()) {
       return;
     }
@@ -417,16 +418,17 @@ public class Polygon
       CoordinateSequences.reverse(seq);
   }
 
-  public Polygon reverse() {
-    return (Polygon) super.reverse();
+  public Polygon<T> reverse() {
+    return (Polygon<T>) super.reverse();
   }
+  @SuppressWarnings("unchecked")
 
-  protected Polygon reverseInternal()
+  protected Polygon<T> reverseInternal()
   {
-    LinearRing shell = (LinearRing) getExteriorRing().reverse();
-    LinearRing[] holes = new LinearRing[getNumInteriorRing()];
+    LinearRing<T> shell = getExteriorRing().reverse();
+    LinearRing<T>[] holes = new LinearRing[getNumInteriorRing()];
     for (int i = 0; i < holes.length; i++) {
-      holes[i] = (LinearRing) getInteriorRingN(i).reverse();
+      holes[i] = getInteriorRingN(i).reverse();
     }
 
     return getFactory().createPolygon(shell, holes);

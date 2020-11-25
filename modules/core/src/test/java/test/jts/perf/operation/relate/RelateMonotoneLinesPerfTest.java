@@ -42,7 +42,7 @@ public class RelateMonotoneLinesPerfTest  extends PerformanceTestCase
 {
   private static final int DENSIFY_FACTOR = 1000;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     PerformanceTestRunner.run(RelateMonotoneLinesPerfTest.class);
   }
 

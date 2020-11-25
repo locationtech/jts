@@ -21,7 +21,7 @@ import test.jts.perf.PerformanceTestRunner;
 public class STRtreePerfTest
 extends PerformanceTestCase {
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     PerformanceTestRunner.run(STRtreePerfTest.class);
   }
   

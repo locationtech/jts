@@ -46,7 +46,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author David Zwiers, Vivid Solutions. 
  */
-public class GMLHandler extends DefaultHandler {
+public class GMLHandler<T> extends DefaultHandler {
 
 	/**
 	 * This class is intended to log the SAX activity within a given element until its termination.
@@ -57,7 +57,7 @@ public class GMLHandler extends DefaultHandler {
 	 *
 	 * @author David Zwiers, Vivid Solutions.
 	 */
-	static class Handler {
+	static class Handler<T> {
 		protected Attributes attrs = null;
 
 		protected ParseStrategy strategy;
@@ -91,7 +91,7 @@ public class GMLHandler extends DefaultHandler {
 		 * 
 		 * @param obj
 		 */
-		public void keep(Object obj) {
+		public void keep(T obj) {
 			if (children == null)
 				children = new LinkedList();
 			children.add(obj);
@@ -108,7 +108,7 @@ public class GMLHandler extends DefaultHandler {
 		}
 	}
 
-	private Stack stack = new Stack();
+	private Stack<Handler> stack = new Stack<>();
 
 	private ErrorHandler delegate = null;
 
@@ -161,13 +161,13 @@ public class GMLHandler extends DefaultHandler {
 	 * @return the parsed Geometry, or a GeometryCollection if more than one geometry was parsed
 	 * @throws IllegalStateException if called before the parse is complete
 	 */
-	public Geometry getGeometry() {
+	public Geometry<T> getGeometry() {
 		if (stack.size() == 1) {
 			Handler h = (Handler) stack.peek();
 			if (h.children.size() == 1)
-				return (Geometry) h.children.get(0);
+				return (Geometry<T>) h.children.get(0);
 			return gf.createGeometryCollection(
-					(Geometry[]) h.children.toArray(new Geometry[stack.size()]));
+					(Geometry<T>[]) h.children.toArray(new Geometry[stack.size()]));
 		}
 		throw new IllegalStateException(
 				"Parse did not complete as expected, there are " + stack.size()

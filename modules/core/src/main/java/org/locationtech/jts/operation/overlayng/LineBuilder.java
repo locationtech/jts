@@ -49,9 +49,9 @@ import org.locationtech.jts.geom.Location;
  * @author Martin Davis
  *
  */
-class LineBuilder {
+class LineBuilder<T> {
   
-  private GeometryFactory geometryFactory;
+  private GeometryFactory<T> geometryFactory;
   private OverlayGraph graph;
   private int opCode;
   private int inputAreaIndex;
@@ -73,7 +73,7 @@ class LineBuilder {
   private boolean isAllowCollapseLines = ! OverlayNG.STRICT_MODE_DEFAULT;
 
   
-  private List<LineString> lines = new ArrayList<LineString>();
+  private List<LineString<T>> lines = new ArrayList<>();
   
   /**
    * Creates a builder for linear elements which may be present 
@@ -85,7 +85,7 @@ class LineBuilder {
    * @param opCode the overlay operation code
    * @param geomFact the output geometry factory
    */
-  public LineBuilder(InputGeometry inputGeom, OverlayGraph graph, boolean hasResultArea, int opCode, GeometryFactory geomFact) {
+  public LineBuilder(InputGeometry inputGeom, OverlayGraph graph, boolean hasResultArea, int opCode, GeometryFactory<T> geomFact) {
     this.graph = graph;
     this.opCode = opCode;
     this.geometryFactory = geomFact;
@@ -98,7 +98,7 @@ class LineBuilder {
     isAllowMixedResult = ! isStrictResultMode;
   }
   
-  public List<LineString> getLines() {
+  public List<LineString<T>> getLines() {
     markResultLines();
     addResultLines();
     return lines;
@@ -233,14 +233,14 @@ class LineBuilder {
     }
   }
   
-  private LineString toLine(OverlayEdge edge) {
+  private LineString<T> toLine(OverlayEdge edge) {
     boolean isForward = edge.isForward();
     CoordinateList pts = new CoordinateList();
     pts.add(edge.orig(), false);
     edge.addCoordinates(pts);
     
     Coordinate[] ptsOut = pts.toCoordinateArray(isForward);
-    LineString line = geometryFactory.createLineString(ptsOut);
+    LineString<T> line = geometryFactory.createLineString(ptsOut);
     return line;
   }
   
@@ -312,7 +312,7 @@ class LineBuilder {
    * @param node
    * @return 
    */
-  private LineString buildLine(OverlayEdge node) {
+  private LineString<T> buildLine(OverlayEdge node) {
     CoordinateList pts = new CoordinateList();
     pts.add(node.orig(), false);
     
@@ -334,7 +334,7 @@ class LineBuilder {
     
     Coordinate[] ptsOut = pts.toCoordinateArray(isForward);
     
-    LineString line = geometryFactory.createLineString(ptsOut);
+    LineString<T> line = geometryFactory.createLineString(ptsOut);
     return line;
   }
 

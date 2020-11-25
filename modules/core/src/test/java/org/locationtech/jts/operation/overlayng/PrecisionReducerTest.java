@@ -19,7 +19,7 @@ import test.jts.GeometryTestCase;
 
 public class PrecisionReducerTest extends GeometryTestCase
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(PrecisionReducerTest.class);
   }
   

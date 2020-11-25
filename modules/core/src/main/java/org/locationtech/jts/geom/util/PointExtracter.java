@@ -28,8 +28,8 @@ import org.locationtech.jts.geom.Point;
  * @version 1.7
  * @see GeometryExtracter
  */
-public class PointExtracter
-  implements GeometryFilter
+public class PointExtracter<T>
+  implements GeometryFilter<T>
 {
   /**
    * Extracts the {@link Point} elements from a single {@link Geometry}
@@ -38,13 +38,13 @@ public class PointExtracter
    * @param geom the geometry from which to extract
    * @param list the list to add the extracted elements to
    */
-  public static List getPoints(Geometry geom, List list)
+  public static <T>List<Point<T>> getPoints(Geometry<T> geom, List<Point<T>> list)
   {
   	if (geom instanceof Point) {
-  		list.add(geom);
+  		list.add((Point<T>) geom);
   	}
   	else if (geom instanceof GeometryCollection) {
-  		geom.apply(new PointExtracter(list));
+  		geom.apply(new PointExtracter<>(list));
   	}
   	// skip non-Polygonal elemental geometries
   	
@@ -57,25 +57,25 @@ public class PointExtracter
    * 
    * @param geom the geometry from which to extract
    */
-  public static List getPoints(Geometry geom) {
+  public static <T>List<Point<T>> getPoints(Geometry<T> geom) {
     if (geom instanceof Point) {
-      return Collections.singletonList(geom);
+      return Collections.singletonList((Point<T>) geom);
     }
-    return getPoints(geom, new ArrayList());
+    return getPoints(geom, new ArrayList<>());
   }
 
-  private List pts;
+  private List<Point<T>> pts;
   /**
    * Constructs a PointExtracterFilter with a list in which to store Points found.
    */
-  public PointExtracter(List pts)
+  public PointExtracter(List<Point<T>> pts)
   {
     this.pts = pts;
   }
 
-  public void filter(Geometry geom)
+  public void filter(Geometry<T> geom)
   {
-    if (geom instanceof Point) pts.add(geom);
+    if (geom instanceof Point) pts.add((Point<T>) geom);
   }
 
 }

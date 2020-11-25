@@ -77,15 +77,13 @@ public class Vector3D {
 		return v1.x * v2.x + v1.y * v2.y + v1.getZ() * v2.getZ();
 	}
 
-	private double x;
-	private double y;
-	private double z;
+	private double x, y, z;
 
   /**
    * Creates a new 3D vector from a {@link Coordinate}. The coordinate should have
    * the X,Y and Z ordinates specified.
    * 
-   * @param coord the Coordinate to copy
+   * @param v the Coordinate to copy
    * @return a new vector
    */
   public Vector3D(Coordinate v) {

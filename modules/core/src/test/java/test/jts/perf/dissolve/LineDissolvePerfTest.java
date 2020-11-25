@@ -33,7 +33,7 @@ import test.jts.util.IOUtil;
 
 public class LineDissolvePerfTest  extends PerformanceTestCase 
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     PerformanceTestRunner.run(LineDissolvePerfTest.class);
   }
 

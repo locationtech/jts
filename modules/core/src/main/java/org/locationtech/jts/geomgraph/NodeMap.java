@@ -29,11 +29,11 @@ import org.locationtech.jts.geom.Location;
  * A map of nodes, indexed by the coordinate of the node
  * @version 1.7
  */
-public class NodeMap
+public class NodeMap implements Iterable<Node>
 
 {
   //Map nodeMap = new HashMap();
-  Map nodeMap = new TreeMap();
+  Map<Coordinate,Node> nodeMap = new TreeMap<>();
   NodeFactory nodeFact;
 
   public NodeMap(NodeFactory nodeFact) {
@@ -54,7 +54,7 @@ public class NodeMap
    */
   public Node addNode(Coordinate coord)
   {
-    Node node = (Node) nodeMap.get(coord);
+    Node node = nodeMap.get(coord);
     if (node == null) {
       node = nodeFact.createNode(coord);
       nodeMap.put(coord, node);
@@ -64,7 +64,7 @@ public class NodeMap
 
   public Node addNode(Node n)
   {
-    Node node = (Node) nodeMap.get(n.getCoordinate());
+    Node node = nodeMap.get(n.getCoordinate());
     if (node == null) {
       nodeMap.put(n.getCoordinate(), n);
       return n;
@@ -87,22 +87,21 @@ public class NodeMap
   /**
    * @return the node if found; null otherwise
    */
-  public Node find(Coordinate coord)  {    return (Node) nodeMap.get(coord);  }
+  public Node find(Coordinate coord)  {    return nodeMap.get(coord);  }
 
-  public Iterator iterator()
+  public Iterator<Node> iterator()
   {
     return nodeMap.values().iterator();
   }
-  public Collection values()
+  public Collection<Node> values()
   {
     return nodeMap.values();
   }
 
-  public Collection getBoundaryNodes(int geomIndex)
+  public Collection<Node> getBoundaryNodes(int geomIndex)
   {
-    Collection bdyNodes = new ArrayList();
-    for (Iterator i = iterator(); i.hasNext(); ) {
-      Node node = (Node) i.next();
+    Collection<Node> bdyNodes = new ArrayList<>();
+    for (Node node : this) {
       if (node.getLabel().getLocation(geomIndex) == Location.BOUNDARY)
         bdyNodes.add(node);
     }
@@ -111,9 +110,7 @@ public class NodeMap
 
   public void print(PrintStream out)
   {
-    for (Iterator it = iterator(); it.hasNext(); )
-    {
-      Node n = (Node) it.next();
+    for (Node n : this) {
       n.print(out);
     }
   }

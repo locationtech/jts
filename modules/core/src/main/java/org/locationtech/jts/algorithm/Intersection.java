@@ -19,7 +19,8 @@ import org.locationtech.jts.geom.Coordinate;
  * @author Martin Davis
  *
  */
-public class Intersection {
+public final class Intersection {
+  private Intersection(){}
   
   /**
    * Computes the intersection point of two lines.

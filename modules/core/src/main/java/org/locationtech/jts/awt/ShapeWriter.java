@@ -120,7 +120,7 @@ public class ShapeWriter
 	 * <p>
 	 * The default is <tt>false</tt>.
 	 * 
-	 * @param doDecimation whether decimation is to be used
+	 * @param doRemoveDuplicatePoints whether decimation is to be used
 	 */
   public void setRemoveDuplicatePoints(boolean doRemoveDuplicatePoints)
   {

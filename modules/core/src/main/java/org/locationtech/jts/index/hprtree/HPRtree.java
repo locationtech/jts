@@ -68,7 +68,7 @@ public class HPRtree  <T>
 
   private static int DEFAULT_NODE_CAPACITY = 16;
   
-  private List<Item<T>> items = new ArrayList<>();
+  private final List<Item<T>> items = new ArrayList<>();
   
   private int nodeCapacity = DEFAULT_NODE_CAPACITY;
 
@@ -121,7 +121,7 @@ public class HPRtree  <T>
     build();
     
     if (! totalExtent.intersects(searchEnv)) 
-      return new ArrayList<>();
+      return Collections.emptyList();
     
     ArrayListVisitor<T> visitor = new ArrayListVisitor<>();
     query(searchEnv, visitor);
@@ -264,8 +264,8 @@ public class HPRtree  <T>
   }
 */
   
-  private static <T> void dumpItems(List<Item<T>> items) {
-    GeometryFactory fact = new GeometryFactory();
+  private static <T>void dumpItems(List<Item<T>> items) {
+    GeometryFactory<T> fact = new GeometryFactory<>();
     for (Item<T> item : items) {
       Envelope env = item.getEnvelope();
       System.out.println(fact.toGeometry(env));
@@ -288,9 +288,10 @@ public class HPRtree  <T>
     int layerStart = layerStartIndex[layerIndex];
     int childLayerStart = layerStartIndex[layerIndex - 1];
     int layerSize = layerSize(layerIndex);
+    int childLayerEnd = layerStart;
     for (int i = 0; i < layerSize; i += ENV_SIZE) {
       int childStart = childLayerStart + nodeCapacity * i;
-      computeNodeBounds(layerStart + i, childStart, layerStart);
+      computeNodeBounds(layerStart + i, childStart, childLayerEnd);
       //System.out.println("Layer: " + layerIndex + " node: " + i + " - " + getNodeEnvelope(layerStart + i));
     }
   }
@@ -330,7 +331,7 @@ public class HPRtree  <T>
   }
   
   private static int[] computeLayerIndices(int itemSize, int nodeCapacity) {
-    List<Integer> layerIndexList = new ArrayList<Integer>();
+    List<Integer> layerIndexList = new ArrayList<>();
     int layerSize = itemSize;
     int index = 0;
     do {

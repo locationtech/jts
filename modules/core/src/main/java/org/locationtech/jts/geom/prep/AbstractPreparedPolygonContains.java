@@ -17,6 +17,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.noding.SegmentIntersectionDetector;
+import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.SegmentStringUtil;
 
 
@@ -225,7 +226,7 @@ abstract class AbstractPreparedPolygonContains
 	
 	private void findAndClassifyIntersections(Geometry geom)
 	{
-    List lineSegStr = SegmentStringUtil.extractSegmentStrings(geom);
+    List<SegmentString> lineSegStr = SegmentStringUtil.extractSegmentStrings(geom);
     
 		SegmentIntersectionDetector intDetector = new SegmentIntersectionDetector();
 		intDetector.setFindAllIntersectionTypes(true);

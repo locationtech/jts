@@ -42,7 +42,7 @@ import org.locationtech.jts.geom.Position;
  */
 public class TopologyLocation {
 
-  int location[];
+  int[] location;
 
   public TopologyLocation(int[] location)
   {

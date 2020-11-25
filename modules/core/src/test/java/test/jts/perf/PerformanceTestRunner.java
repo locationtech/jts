@@ -87,7 +87,7 @@ public class PerformanceTestRunner
   private static Method[] findMethods(Class clz, String methodPrefix)
   {
     List runMeths = new ArrayList();
-    Method meth[] = clz.getDeclaredMethods();
+    Method[] meth = clz.getDeclaredMethods();
     for (int i = 0; i < meth.length; i++) {
       if (meth[i].getName().startsWith(RUN_PREFIX)) {
         runMeths.add(meth[i]);

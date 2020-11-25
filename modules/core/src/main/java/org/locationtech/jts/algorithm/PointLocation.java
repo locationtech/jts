@@ -14,6 +14,7 @@ package org.locationtech.jts.algorithm;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Point;
 
 /**
  * Functions for locating points within basic geometric
@@ -22,7 +23,8 @@ import org.locationtech.jts.geom.Location;
  * @author Martin Davis
  *
  */
-public class PointLocation {
+public final class PointLocation {
+  private PointLocation(){}
 
   /**
    * Tests whether a point lies on the line defined by a list of
@@ -88,7 +90,7 @@ public class PointLocation {
    *          first point identical to last point)
    * @return true if p is inside ring
    * 
-   * @see locatePointInRing
+   * @see PointLocation#locateInRing
    */
   public static boolean isInRing(Coordinate p, Coordinate[] ring)
   {

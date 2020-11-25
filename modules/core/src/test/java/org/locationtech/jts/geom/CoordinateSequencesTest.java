@@ -37,7 +37,7 @@ public class CoordinateSequencesTest extends TestCase {
           {63.76,77.35},{45.26,85.15},{51.71,50.38},{92.16,19.85},{64.18,27.7},{64.74,65.1},
           {80.07,13.55},{55.54,94.07}};
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(CoordinateSequencesTest.class);
   }
 

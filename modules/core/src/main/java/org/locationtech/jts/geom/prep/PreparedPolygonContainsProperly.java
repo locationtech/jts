@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.SegmentStringUtil;
 
 
@@ -83,7 +84,7 @@ class PreparedPolygonContainsProperly
 		/**
 		 * If any segments intersect, result is false.
 		 */
-    List lineSegStr = SegmentStringUtil.extractSegmentStrings(geom);
+    List<SegmentString> lineSegStr = SegmentStringUtil.extractSegmentStrings(geom);
 		boolean segsIntersect = prepPoly.getIntersectionFinder().intersects(lineSegStr);
 		if (segsIntersect) 
       return false;

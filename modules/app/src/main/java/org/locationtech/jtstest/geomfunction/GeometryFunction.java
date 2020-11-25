@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.*;
  * @author Martin Davis
  *
  */
-public interface GeometryFunction 
+public interface GeometryFunction extends Comparable<GeometryFunction>
 {
 
 	/**
@@ -58,14 +58,14 @@ public interface GeometryFunction
 	 * 
 	 * @return the types
 	 */
-	Class[] getParameterTypes();
+	Class<?>[] getParameterTypes();
 	
 	/**
 	 * Gets the return type of this function
 	 * 
 	 * @return the type of the value returned by this function
 	 */
-	Class getReturnType();
+	Class<?> getReturnType();
 	
 	/**
 	 * Gets a string representing the signature of this function.
@@ -84,7 +84,7 @@ public interface GeometryFunction
 	 * @return the value computed by the function
 	 * 
 	 */
-	Object invoke(Geometry geom, Object[] args);
+	Object invoke(Geometry<?> geom, Object[] args);
 	
 	/**
 	 * Two functions are the same if they have the 
@@ -98,5 +98,17 @@ public interface GeometryFunction
   boolean isBinary();
   
   boolean isRequiredB();
-	
+	public default int compareTo(GeometryFunction func)
+	{
+		int cmp = getName().compareTo(func.getName());
+		if (cmp != 0)
+			return cmp;
+		return compareTo(getReturnType(), func.getReturnType());
+		//TODO: compare parameter lists as well
+	}
+
+	default int compareTo(Class<?> c1, Class<?> c2)
+	{
+		return c1.getName().compareTo(c2.getName());
+	}
 }

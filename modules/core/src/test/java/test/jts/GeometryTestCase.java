@@ -33,13 +33,13 @@ import junit.framework.TestCase;
  *
  */
 
-public abstract class GeometryTestCase extends TestCase{
+public abstract class GeometryTestCase<T> extends TestCase{
 
   private static final String CHECK_EQUAL_FAIL = "FAIL - Expected = %s -- Actual = %s\n";
 
-  final GeometryFactory geomFactory;
+  final GeometryFactory<T> geomFactory;
   
-  final WKTReader readerWKT;
+  final WKTReader<T> readerWKT;
 
   protected GeometryTestCase(String name)
   {
@@ -48,8 +48,8 @@ public abstract class GeometryTestCase extends TestCase{
 
   protected GeometryTestCase(String name, CoordinateSequenceFactory coordinateSequenceFactory) {
     super(name);
-    geomFactory = new GeometryFactory(coordinateSequenceFactory);
-    readerWKT = new WKTReader(geomFactory);
+    geomFactory = new GeometryFactory<>(coordinateSequenceFactory);
+    readerWKT = new WKTReader<>(geomFactory);
   }
 
   /**
@@ -59,9 +59,9 @@ public abstract class GeometryTestCase extends TestCase{
    * @param expected the expected value
    * @param actual the actual value
    */
-  protected void checkEqual(Geometry expected, Geometry actual) {
-    Geometry actualNorm = actual.norm();
-    Geometry expectedNorm = expected.norm();
+  protected void checkEqual(Geometry<?> expected, Geometry<?> actual) {
+    Geometry<?> actualNorm = actual.norm();
+    Geometry<?> expectedNorm = expected.norm();
     boolean equal = actualNorm.equalsExact(expectedNorm);
     if (! equal) {
       System.out.format(CHECK_EQUAL_FAIL, expectedNorm, actualNorm );
@@ -69,9 +69,9 @@ public abstract class GeometryTestCase extends TestCase{
     assertTrue(equal);
   }
 
-  protected void checkEqual(Geometry expected, Geometry actual, double tolerance) {
-    Geometry actualNorm = actual.norm();
-    Geometry expectedNorm = expected.norm();
+  protected void checkEqual(Geometry<?> expected, Geometry<?> actual, double tolerance) {
+    Geometry<?> actualNorm = actual.norm();
+    Geometry<?> expectedNorm = expected.norm();
     boolean equal = actualNorm.equalsExact(expectedNorm, tolerance);
     if (! equal) {
       System.out.format(CHECK_EQUAL_FAIL, expectedNorm, actualNorm );
@@ -79,11 +79,11 @@ public abstract class GeometryTestCase extends TestCase{
     assertTrue(equal);
   }
 
-  protected void checkEqual(Collection expected, Collection actual) {
+  protected void checkEqual(List<Geometry<T>> expected, List<Geometry<T>> actual) {
     checkEqual(toGeometryCollection(expected),toGeometryCollection(actual) );
   }
 
-  GeometryCollection toGeometryCollection(Collection geoms) {
+  GeometryCollection<T,?> toGeometryCollection(List<Geometry<T>> geoms) {
     return geomFactory.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
   }
   

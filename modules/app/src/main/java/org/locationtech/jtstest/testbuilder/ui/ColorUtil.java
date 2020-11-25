@@ -46,7 +46,7 @@ public class ColorUtil {
   {
     float[] hsb = new float[3];
     Color.RGBtoHSB(clr.getRed(), clr.getGreen(), clr.getBlue(), hsb);
-    hsb[1] = (float) MathUtil.clamp(hsb[1] * saturationFraction, 0, 1);
+    hsb[1] = (float) MathUtil.clamp(hsb[1] * saturationFraction, 0.d, 1.d);
     Color chsb = Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
     return new Color(chsb.getRed(), chsb.getGreen(), chsb.getBlue(), clr.getAlpha());
   }
@@ -55,7 +55,7 @@ public class ColorUtil {
   {
     float[] hsb = new float[3];
     Color.RGBtoHSB(clr.getRed(), clr.getGreen(), clr.getBlue(), hsb);
-    hsb[1] = (float) MathUtil.clamp(saturation, 0, 1);;
+    hsb[1] = (float) MathUtil.clamp(saturation, 0.d, 1.d);;
     return Color.getHSBColor(hsb[0], hsb[1], hsb[2]);
   }
 

@@ -30,7 +30,7 @@ public class DistanceGeomPairPerfTest extends PerformanceTestCase
 
   static final int MAX_ITER = 100;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     PerformanceTestRunner.run(DistanceGeomPairPerfTest.class);
   }
 

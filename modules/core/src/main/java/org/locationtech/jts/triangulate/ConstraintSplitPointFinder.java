@@ -34,5 +34,5 @@ public interface ConstraintSplitPointFinder {
      * @param encroachPt the encroaching point
      * @return the point at which to split the encroached segment
      */
-    Coordinate findSplitPoint(Segment seg, Coordinate encroachPt);
+    Coordinate findSplitPoint(Segment<?> seg, Coordinate encroachPt);
 }

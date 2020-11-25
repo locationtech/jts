@@ -31,19 +31,19 @@ import org.locationtech.jts.geom.util.ComponentCoordinateExtracter;
  * @author Martin Davis
  *
  */
-class BasicPreparedGeometry 
-  implements PreparedGeometry
+class BasicPreparedGeometry <T>
+  implements PreparedGeometry<T>
 {
-  private final Geometry baseGeom;
-  private final List representativePts;  // List<Coordinate>
+  private final Geometry<T> baseGeom;
+  private final List<Coordinate> representativePts;
 
-  public BasicPreparedGeometry(Geometry geom) 
+  public BasicPreparedGeometry(Geometry<T> geom)
   {
     baseGeom = geom;
     representativePts = ComponentCoordinateExtracter.getCoordinates(geom);
   }
 
-  public Geometry getGeometry() { return baseGeom; }
+  public Geometry<T> getGeometry() { return baseGeom; }
 
   /**
    * Gets the list of representative points for this geometry.
@@ -54,7 +54,7 @@ class BasicPreparedGeometry
    * 
    * @return a List of Coordinate
    */
-  public List getRepresentativePoints()
+  public List<Coordinate> getRepresentativePoints()
   {
 	//TODO wrap in unmodifiable?
     return representativePts;
@@ -68,14 +68,13 @@ class BasicPreparedGeometry
 	 * @param testGeom the test geometry
 	 * @return true if any component intersects the areal test geometry
 	 */
-	public boolean isAnyTargetComponentInTest(Geometry testGeom)
+	public boolean isAnyTargetComponentInTest(Geometry<?> testGeom)
 	{
 		PointLocator locator = new PointLocator();
-    for (Iterator i = representativePts.iterator(); i.hasNext(); ) {
-      Coordinate p = (Coordinate) i.next();
-      if (locator.intersects(p, testGeom))
-        return true;
-    }
+      for (Coordinate p : representativePts) {
+        if (locator.intersects(p, testGeom))
+          return true;
+      }
 		return false;
 	}
 
@@ -86,7 +85,7 @@ class BasicPreparedGeometry
    * @param g a Geometry
    * @return true if the envelopes intersect
    */
-  protected boolean envelopesIntersect(Geometry g)
+  protected boolean envelopesIntersect(Geometry<?> g)
   {
     if (! baseGeom.getEnvelopeInternal().intersects(g.getEnvelopeInternal()))
       return false;
@@ -101,7 +100,7 @@ class BasicPreparedGeometry
    * @param g a Geometry
    * @return true if g is contained in this envelope
    */
-  protected boolean envelopeCovers(Geometry g)
+  protected boolean envelopeCovers(Geometry<?> g)
   {
     if (! baseGeom.getEnvelopeInternal().covers(g.getEnvelopeInternal()))
       return false;
@@ -111,7 +110,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
-  public boolean contains(Geometry g)
+  public boolean contains(Geometry<?> g)
   {
     return baseGeom.contains(g);
   }
@@ -119,7 +118,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
-  public boolean containsProperly(Geometry g)
+  public boolean containsProperly(Geometry<?> g)
   {
   	// since raw relate is used, provide some optimizations
   	
@@ -134,7 +133,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
-  public boolean coveredBy(Geometry g)
+  public boolean coveredBy(Geometry<?> g)
   {
     return baseGeom.coveredBy(g);
   }
@@ -142,7 +141,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
-  public boolean covers(Geometry g)
+  public boolean covers(Geometry<?> g)
   {
     return baseGeom.covers(g);
   }
@@ -150,7 +149,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
-  public boolean crosses(Geometry g)
+  public boolean crosses(Geometry<?> g)
   {
     return baseGeom.crosses(g);
   }
@@ -159,7 +158,7 @@ class BasicPreparedGeometry
    * Standard implementation for all geometries.
    * Supports {@link GeometryCollection}s as input.
    */
-  public boolean disjoint(Geometry g)
+  public boolean disjoint(Geometry<?> g)
   {
     return ! intersects(g);
   }
@@ -167,7 +166,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
-  public boolean intersects(Geometry g)
+  public boolean intersects(Geometry<?> g)
   {
     return baseGeom.intersects(g);
   }
@@ -175,7 +174,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
-  public boolean overlaps(Geometry g)
+  public boolean overlaps(Geometry<?> g)
   {
     return baseGeom.overlaps(g);
   }
@@ -183,7 +182,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
-  public boolean touches(Geometry g)
+  public boolean touches(Geometry<?> g)
   {
     return baseGeom.touches(g);
   }
@@ -191,7 +190,7 @@ class BasicPreparedGeometry
   /**
    * Default implementation.
    */
-  public boolean within(Geometry g)
+  public boolean within(Geometry<?> g)
   {
     return baseGeom.within(g);
   }

@@ -189,8 +189,7 @@ public class WKBWriter
   public static String toHex(byte[] bytes)
   {
     StringBuffer buf = new StringBuffer();
-    for (int i = 0; i < bytes.length; i++) {
-      byte b = bytes[i];
+    for (byte b : bytes) {
       buf.append(toHexDigit((b >> 4) & 0x0F));
       buf.append(toHexDigit(b & 0x0F));
     }
@@ -292,7 +291,7 @@ public class WKBWriter
    * @param geom the geometry to write
    * @return the byte array containing the WKB
    */
-  public byte[] write(Geometry geom)
+  public byte[] write(Geometry<?> geom)
   {
     try {
       byteArrayOS.reset();
@@ -311,27 +310,27 @@ public class WKBWriter
    * @param os the out stream to write to
    * @throws IOException if an I/O error occurs
    */
-  public void write(Geometry geom, OutStream os) throws IOException
+  public void write(Geometry<?> geom, OutStream os) throws IOException
   {
     if (geom instanceof Point)
       writePoint((Point) geom, os);
     // LinearRings will be written as LineStrings
     else if (geom instanceof LineString)
-      writeLineString((LineString) geom, os);
+      writeLineString((LineString<?>) geom, os);
     else if (geom instanceof Polygon)
-      writePolygon((Polygon) geom, os);
+      writePolygon((Polygon<?>) geom, os);
     else if (geom instanceof MultiPoint)
       writeGeometryCollection(WKBConstants.wkbMultiPoint, 
           (MultiPoint) geom, os);
     else if (geom instanceof MultiLineString)
       writeGeometryCollection(WKBConstants.wkbMultiLineString,
-          (MultiLineString) geom, os);
+          (MultiLineString<?>) geom, os);
     else if (geom instanceof MultiPolygon)
       writeGeometryCollection(WKBConstants.wkbMultiPolygon,
-          (MultiPolygon) geom, os);
+          (MultiPolygon<?,?>) geom, os);
     else if (geom instanceof GeometryCollection)
       writeGeometryCollection(WKBConstants.wkbGeometryCollection,
-          (GeometryCollection) geom, os);
+          (GeometryCollection<?,?>) geom, os);
     else {
       Assert.shouldNeverReachHere("Unknown Geometry type");
     }
@@ -349,7 +348,7 @@ public class WKBWriter
     }
   }
 
-  private void writeLineString(LineString line, OutStream os)
+  private void writeLineString(LineString<?> line, OutStream os)
       throws IOException
   {
     writeByteOrder(os);
@@ -357,7 +356,7 @@ public class WKBWriter
     writeCoordinateSequence(line.getCoordinateSequence(), true, os);
   }
 
-  private void writePolygon(Polygon poly, OutStream os) throws IOException
+  private void writePolygon(Polygon<?> poly, OutStream os) throws IOException
   {
     writeByteOrder(os);
     writeGeometryType(WKBConstants.wkbPolygon, poly, os);
@@ -374,7 +373,7 @@ public class WKBWriter
     }
   }
 
-  private void writeGeometryCollection(int geometryType, GeometryCollection gc,
+  private void writeGeometryCollection(int geometryType, GeometryCollection<?,?> gc,
       OutStream os) throws IOException
   {
     writeByteOrder(os);
@@ -394,7 +393,7 @@ public class WKBWriter
     os.write(buf, 1);
   }
 
-  private void writeGeometryType(int geometryType, Geometry g, OutStream os)
+  private void writeGeometryType(int geometryType, Geometry<?> g, OutStream os)
       throws IOException
   {
     int flag3D = (outputDimension == 3) ? 0x80000000 : 0;

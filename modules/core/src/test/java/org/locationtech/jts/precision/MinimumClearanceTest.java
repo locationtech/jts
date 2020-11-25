@@ -21,7 +21,7 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 public class MinimumClearanceTest extends TestCase {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(MinimumClearanceTest.class);
   }
   

@@ -35,7 +35,7 @@ import org.locationtech.jts.util.Stopwatch;
  */
 public class ValidStressTest  
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     (new ValidStressTest()).runComb();
     (new ValidStressTest()).runStarCrossPoly();
     (new ValidStressTest()).runStarCrossRing();

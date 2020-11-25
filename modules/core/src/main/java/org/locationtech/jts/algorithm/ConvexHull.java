@@ -13,11 +13,7 @@
  */
 package org.locationtech.jts.algorithm;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Stack;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
@@ -41,29 +37,29 @@ import org.locationtech.jts.util.UniqueCoordinateArrayFilter;
  *
  *@version 1.7
  */
-public class ConvexHull
+public class ConvexHull<T>
 {
-  private GeometryFactory geomFactory;
+  private GeometryFactory<T> geomFactory;
   private Coordinate[] inputPts;
 
   /**
    * Create a new convex hull construction for the input {@link Geometry}.
    */
-  public ConvexHull(Geometry geometry)
+  public ConvexHull(Geometry<T> geometry)
   {
     this(extractCoordinates(geometry), geometry.getFactory());
   }
   /**
    * Create a new convex hull construction for the input {@link Coordinate} array.
    */
-  public ConvexHull(Coordinate[] pts, GeometryFactory geomFactory)
+  public ConvexHull(Coordinate[] pts, GeometryFactory<T> geomFactory)
   {
     inputPts = UniqueCoordinateArrayFilter.filterCoordinates(pts);
     //inputPts = pts;
     this.geomFactory = geomFactory;
   }
 
-  private static Coordinate[] extractCoordinates(Geometry geom)
+  private static Coordinate[] extractCoordinates(Geometry<?> geom)
   {
     UniqueCoordinateArrayFilter filter = new UniqueCoordinateArrayFilter();
     geom.apply(filter);
@@ -82,7 +78,7 @@ public class ConvexHull
    * 1 point, a {@link Point};
    * 0 points, an empty {@link GeometryCollection}.
    */
-  public Geometry getConvexHull() {
+  public Geometry<T> getConvexHull() {
 
     if (inputPts.length == 0) {
       return geomFactory.createGeometryCollection();
@@ -103,7 +99,7 @@ public class ConvexHull
     Coordinate[] sortedPts = preSort(reducedPts);
 
     // Use Graham scan to find convex hull.
-    Stack cHS = grahamScan(sortedPts);
+    Stack<Coordinate> cHS = grahamScan(sortedPts);
 
     // Convert stack to an array.
     Coordinate[] cH = toCoordinateArray(cHS);
@@ -116,10 +112,10 @@ public class ConvexHull
    * An alternative to Stack.toArray, which is not present in earlier versions
    * of Java.
    */
-  protected Coordinate[] toCoordinateArray(Stack stack) {
+  protected Coordinate[] toCoordinateArray(Stack<Coordinate> stack) {
     Coordinate[] coordinates = new Coordinate[stack.size()];
     for (int i = 0; i < stack.size(); i++) {
-      Coordinate coordinate = (Coordinate) stack.get(i);
+      Coordinate coordinate = stack.get(i);
       coordinates[i] = coordinate;
     }
     return coordinates;
@@ -141,7 +137,7 @@ public class ConvexHull
    * To satisfy the requirements of the Graham Scan algorithm, 
    * the returned array has at least 3 entries.
    *
-   * @param pts the points to reduce
+   * @param inputPts the points to reduce
    * @return the reduced list of points (at least 3)
    */
   private Coordinate[] reduce(Coordinate[] inputPts)
@@ -158,7 +154,7 @@ public class ConvexHull
 //    System.out.println(ring);
 
     // add points defining polygon
-    TreeSet reducedSet = new TreeSet();
+    NavigableSet<Coordinate> reducedSet = new TreeSet<>();
     for (int i = 0; i < polyPts.length; i++) {
       reducedSet.add(polyPts[i]);
     }
@@ -168,9 +164,9 @@ public class ConvexHull
      * but this doesn't matter since the points of the interior polygon
      * are forced to be in the reduced set.
      */
-    for (int i = 0; i < inputPts.length; i++) {
-      if (! PointLocation.isInRing(inputPts[i], polyPts)) {
-        reducedSet.add(inputPts[i]);
+    for (Coordinate inputPt : inputPts) {
+      if (!PointLocation.isInRing(inputPt, polyPts)) {
+        reducedSet.add(inputPt);
       }
     }
     Coordinate[] reducedPts = CoordinateArrays.toCoordinateArray(reducedSet);
@@ -221,19 +217,19 @@ public class ConvexHull
    * @param c a list of points, with at least 3 entries
    * @return a Stack containing the ordered points of the convex hull ring
    */
-  private Stack grahamScan(Coordinate[] c) {
+  private Stack<Coordinate> grahamScan(Coordinate[] c) {
     Coordinate p;
-    Stack ps = new Stack();
+    Stack<Coordinate> ps = new Stack<>();
     ps.push(c[0]);
     ps.push(c[1]);
     ps.push(c[2]);
     for (int i = 3; i < c.length; i++) {
-      p = (Coordinate) ps.pop();
+      p = ps.pop();
       // check for empty stack to guard against robustness problems
       while (
           ! ps.empty() && 
-          Orientation.index((Coordinate) ps.peek(), p, c[i]) > 0) {
-        p = (Coordinate) ps.pop();
+          Orientation.index(ps.peek(), p, c[i]) > 0) {
+        p = ps.pop();
       }
       ps.push(p);
       ps.push(c[i]);
@@ -379,13 +375,13 @@ public class ConvexHull
   */
 
   /**
-   *@param  vertices  the vertices of a linear ring, which may or may not be
+   *@param  coordinates  the vertices of a linear ring, which may or may not be
    *      flattened (i.e. vertices collinear)
    *@return           a 2-vertex <code>LineString</code> if the vertices are
    *      collinear; otherwise, a <code>Polygon</code> with unnecessary
    *      (collinear) vertices removed
    */
-  private Geometry lineOrPolygon(Coordinate[] coordinates) {
+  private Geometry<T> lineOrPolygon(Coordinate[] coordinates) {
 
     coordinates = cleanRing(coordinates);
     if (coordinates.length == 3) {
@@ -393,19 +389,19 @@ public class ConvexHull
 //      return new LineString(new Coordinate[]{coordinates[0], coordinates[1]},
 //          geometry.getPrecisionModel(), geometry.getSRID());
     }
-    LinearRing linearRing = geomFactory.createLinearRing(coordinates);
+    LinearRing<T> linearRing = geomFactory.createLinearRing(coordinates);
     return geomFactory.createPolygon(linearRing);
   }
 
   /**
-   *@param  vertices  the vertices of a linear ring, which may or may not be
+   *@param  original  the vertices of a linear ring, which may or may not be
    *      flattened (i.e. vertices collinear)
    *@return           the coordinates with unnecessary (collinear) vertices
    *      removed
    */
   private Coordinate[] cleanRing(Coordinate[] original) {
     Assert.equals(original[0], original[original.length - 1]);
-    ArrayList cleanedRing = new ArrayList();
+    Collection<Coordinate> cleanedRing = new ArrayList<>();
     Coordinate previousDistinctCoordinate = null;
     for (int i = 0; i <= original.length - 2; i++) {
       Coordinate currentCoordinate = original[i];
@@ -422,7 +418,7 @@ public class ConvexHull
     }
     cleanedRing.add(original[original.length - 1]);
     Coordinate[] cleanedRingCoordinates = new Coordinate[cleanedRing.size()];
-    return (Coordinate[]) cleanedRing.toArray(cleanedRingCoordinates);
+    return cleanedRing.toArray(cleanedRingCoordinates);
   }
 
 
@@ -434,7 +430,7 @@ public class ConvexHull
    * @version 1.7
    */
   private static class RadialComparator
-      implements Comparator
+      implements Comparator<Coordinate>
   {
     private Coordinate origin;
 
@@ -442,10 +438,9 @@ public class ConvexHull
     {
       this.origin = origin;
     }
-    public int compare(Object o1, Object o2)
+    public int compare(Coordinate p1, Coordinate p2)
     {
-      Coordinate p1 = (Coordinate) o1;
-      Coordinate p2 = (Coordinate) o2;
+
       return polarCompare(origin, p1, p2);
     }
 

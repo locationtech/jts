@@ -28,7 +28,7 @@ public class KMLWriterTest extends TestCase
   GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
   WKTReader rdr = new WKTReader();
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(KMLWriterTest.class);
   }
 
