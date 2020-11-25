@@ -20,8 +20,8 @@ package org.locationtech.jts.geom;
  *
  *@version 1.7
  */
-public class MultiPoint
-  extends GeometryCollection
+public class MultiPoint<T>
+  extends GeometryCollection<T,Point<T>>
   implements Puntal
 {
 
@@ -39,8 +39,8 @@ public class MultiPoint
    *      <code>MultiPoint</code>
    * @deprecated Use GeometryFactory instead
    */
-  public MultiPoint(Point[] points, PrecisionModel precisionModel, int SRID) {
-    super(points, new GeometryFactory(precisionModel, SRID));
+  public MultiPoint(Point<T>[] points, PrecisionModel precisionModel, int SRID) {
+    super(points, new GeometryFactory<>(precisionModel, SRID));
   }
 
   /**
@@ -48,7 +48,7 @@ public class MultiPoint
    *      , or <code>null</code> or an empty array to create the empty geometry.
    *      Elements may be empty <code>Point</code>s, but not <code>null</code>s.
    */
-  public MultiPoint(Point[] points, GeometryFactory factory) {
+  public MultiPoint(Point<T>[] points, GeometryFactory<T> factory) {
     super(points, factory);
   }
 
@@ -72,27 +72,28 @@ public class MultiPoint
    * @return an empty GeometryCollection
    * @see Geometry#getBoundary
    */
-  public Geometry getBoundary() {
+  public Geometry<T> getBoundary() {
     return getFactory().createGeometryCollection();
   }
 
-  public MultiPoint reverse() {
-    return (MultiPoint) super.reverse();
+  public MultiPoint<T> reverse() {
+    return (MultiPoint<T>) super.reverse();
   }
   
-  protected MultiPoint reverseInternal() {
-    Point[] points = new Point[this.geometries.length];
+  protected MultiPoint<T> reverseInternal() {
+    @SuppressWarnings("unchecked")
+    Point<T>[] points = new Point[this.geometries.length];
     for (int i = 0; i < points.length; i++) {
-      points[i] = (Point) this.geometries[i].copy();
+      points[i] = (Point<T>) this.geometries[i].copy();
     }
-    return new MultiPoint(points, factory);
+    return new MultiPoint<>(points, factory);
   }
   
   public boolean isValid() {
     return true;
   }
 
-  public boolean equalsExact(Geometry other, double tolerance) {
+  public boolean equalsExact(Geometry<?> other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
     }
@@ -107,15 +108,16 @@ public class MultiPoint
    *@return    the <code>n</code>th <code>Coordinate</code>
    */
   protected Coordinate getCoordinate(int n) {
-    return ((Point) geometries[n]).getCoordinate();
+    return geometries[n].getCoordinate();
   }
   
-  protected MultiPoint copyInternal() {
-    Point[] points = new Point[this.geometries.length];
+  protected MultiPoint<T> copyInternal() {
+    @SuppressWarnings("unchecked")
+    Point<T>[] points = new Point[this.geometries.length];
     for (int i = 0; i < points.length; i++) {
-      points[i] = (Point) this.geometries[i].copy();
+      points[i] = (Point<T>) this.geometries[i].copy();
     }
-    return new MultiPoint(points, factory);
+    return new MultiPoint<>(points, factory);
   }
   
   protected int getTypeCode() {

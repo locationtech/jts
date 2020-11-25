@@ -23,7 +23,7 @@ import junit.textui.TestRunner;
 public class DistanceLineLineStressTest extends TestCase
 {
 
-  public static void main(String args[])
+  public static void main(String[] args)
   {
     TestRunner.run(DistanceLineLineStressTest.class);
   }

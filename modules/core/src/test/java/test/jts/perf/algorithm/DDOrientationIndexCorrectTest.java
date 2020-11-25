@@ -31,7 +31,7 @@ import test.jts.GeometryTestCase;
  */
 public class DDOrientationIndexCorrectTest extends GeometryTestCase {
 
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		TestRunner.run(DDOrientationIndexCorrectTest.class);
 	}
 

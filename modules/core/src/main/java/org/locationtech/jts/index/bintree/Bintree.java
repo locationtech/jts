@@ -68,7 +68,7 @@ public class Bintree<T> implements Iterable<T>
     return new Interval(min, max);
   }
 
-  private final Root<T> root;
+  private Root<T> root;
   /**
   *  Statistics
   *
@@ -88,11 +88,13 @@ public class Bintree<T> implements Iterable<T>
 
   public int depth()
   {
-    return root.depth();
+    if (root != null) return root.depth();
+    return 0;
   }
   public int size()
   {
-    return root.size();
+    if (root != null) return root.size();
+    return 0;
   }
   /**
    * Compute the total number of nodes in the tree
@@ -101,7 +103,8 @@ public class Bintree<T> implements Iterable<T>
    */
   public int nodeSize()
   {
-    return root.nodeSize();
+    if (root != null) return root.nodeSize();
+    return 0;
   }
 
   public void insert(Interval itemInterval, T item)
@@ -133,7 +136,7 @@ if (newSize <= oldSize) {
     Interval insertInterval = ensureExtent(itemInterval, minExtent);
     return root.remove(insertInterval, item);
   }
-  @Override
+  
   public Iterator<T> iterator()
   {
     List<T> foundItems = new ArrayList<>();

@@ -147,7 +147,7 @@ public class CoordinateArrays {
     }
     else {
       Class<? extends Coordinate> coordinateType = sample.getClass();
-      Coordinate copy[] = (Coordinate[]) Array.newInstance(coordinateType, array.length);
+      Coordinate[] copy = (Coordinate[]) Array.newInstance(coordinateType, array.length);
       for (int i = 0; i < copy.length; i++) {
         Coordinate coordinate = array[i];
         if (coordinate != null && !coordinate.getClass().equals(type)) {

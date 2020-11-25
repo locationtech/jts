@@ -18,7 +18,7 @@ import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
 public class LengthTest extends GeometryTestCase {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(LengthTest.class);
   }
 

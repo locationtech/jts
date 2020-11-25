@@ -36,7 +36,7 @@ import org.locationtech.jts.util.Assert;
  *
  * @version 1.7
  */
-abstract public class EdgeEndStar
+abstract public class EdgeEndStar<E extends EdgeEnd> implements Iterable<E>
 {
 
   /**
@@ -46,7 +46,7 @@ abstract public class EdgeEndStar
   /**
    * A list of all outgoing edges in the result, in CCW order
    */
-  protected List edgeList;
+  protected List<E> edgeList;
   /**
    * The location of the point for this star in Geometry i Areas
    */
@@ -60,13 +60,13 @@ abstract public class EdgeEndStar
   /**
    * Insert a EdgeEnd into this EdgeEndStar
    */
-  abstract public void insert(EdgeEnd e);
+  abstract public void insert(E e);
 
   /**
    * Insert an EdgeEnd into the map, and clear the edgeList cache,
    * since the list of edges has now changed
    */
-  protected void insertEdgeEnd(EdgeEnd e, Object obj)
+  protected void insertEdgeEnd(E e, Object obj)
   {
     edgeMap.put(e, obj);
     edgeList = null;  // edge list has changed - clear the cache
@@ -77,9 +77,9 @@ abstract public class EdgeEndStar
    */
   public Coordinate getCoordinate()
   {
-    Iterator it = iterator();
+    Iterator<E> it = iterator();
     if (! it.hasNext()) return null;
-    EdgeEnd e = (EdgeEnd) it.next();
+    EdgeEnd e = it.next();
     return e.getCoordinate();
   }
   public int getDegree()
@@ -93,25 +93,25 @@ abstract public class EdgeEndStar
    * once an iterator is requested, it is likely that insertion into
    * the map is complete).
    */
-  public Iterator iterator()
+  public Iterator<E> iterator()
   {
     return getEdges().iterator();
   }
-  public List getEdges()
+  public List<E> getEdges()
   {
     if (edgeList == null) {
-      edgeList = new ArrayList(edgeMap.values());
+      edgeList = new ArrayList<>(edgeMap.values());
     }
     return edgeList;
   }
-  public EdgeEnd getNextCW(EdgeEnd ee)
+  public E getNextCW(E ee)
   {
     getEdges();
     int i = edgeList.indexOf(ee);
     int iNextCW = i - 1;
     if (i == 0)
       iNextCW = edgeList.size() - 1;
-    return (EdgeEnd) edgeList.get(iNextCW);
+    return edgeList.get(iNextCW);
   }
 
   public void computeLabelling(GeometryGraph[] geomGraph)
@@ -157,8 +157,7 @@ abstract public class EdgeEndStar
      * area label propagation, symLabel merging, then finally null label resolution.
      */
     boolean[] hasDimensionalCollapseEdge = { false, false };
-    for (Iterator it = iterator(); it.hasNext(); ) {
-      EdgeEnd e = (EdgeEnd) it.next();
+    for (EdgeEnd e : this) {
       Label label = e.getLabel();
       for (int geomi = 0; geomi < 2; geomi++) {
         if (label.isLine(geomi) && label.getLocation(geomi) == Location.BOUNDARY)
@@ -166,8 +165,7 @@ abstract public class EdgeEndStar
       }
     }
 //Debug.print(this);
-    for (Iterator it = iterator(); it.hasNext(); ) {
-      EdgeEnd e = (EdgeEnd) it.next();
+    for (EdgeEnd e : this) {
       Label label = e.getLabel();
 //Debug.println(e);
       for (int geomi = 0; geomi < 2; geomi++) {
@@ -175,8 +173,7 @@ abstract public class EdgeEndStar
           int loc = Location.NONE;
           if (hasDimensionalCollapseEdge[geomi]) {
             loc = Location.EXTERIOR;
-          }
-          else {
+          } else {
             Coordinate p = e.getCoordinate();
             loc = getLocation(geomi, p, geomGraph);
           }
@@ -192,8 +189,7 @@ abstract public class EdgeEndStar
   private void computeEdgeEndLabels(BoundaryNodeRule boundaryNodeRule)
   {
     // Compute edge label for each EdgeEnd
-    for (Iterator it = iterator(); it.hasNext(); ) {
-      EdgeEnd ee = (EdgeEnd) it.next();
+    for (E ee : this) {
       ee.computeLabel(boundaryNodeRule);
     }
   }
@@ -217,7 +213,7 @@ abstract public class EdgeEndStar
   {
     // Since edges are stored in CCW order around the node,
     // As we move around the ring we move from the right to the left side of the edge
-    List edges = getEdges();
+    List<E> edges = getEdges();
     // if no edges, trivially consistent
     if (edges.size() <= 0)
       return true;
@@ -228,13 +224,12 @@ abstract public class EdgeEndStar
     Assert.isTrue(startLoc != Location.NONE, "Found unlabelled area edge");
 
     int currLoc = startLoc;
-    for (Iterator it = iterator(); it.hasNext(); ) {
-      EdgeEnd e = (EdgeEnd) it.next();
+    for (EdgeEnd e : this) {
       Label label = e.getLabel();
       // we assume that we are only checking a area
       Assert.isTrue(label.isArea(geomIndex), "Found non-area edge");
-      int leftLoc   = label.getLocation(geomIndex, Position.LEFT);
-      int rightLoc  = label.getLocation(geomIndex, Position.RIGHT);
+      int leftLoc = label.getLocation(geomIndex, Position.LEFT);
+      int rightLoc = label.getLocation(geomIndex, Position.RIGHT);
 //System.out.println(leftLoc + " " + rightLoc);
 //Debug.print(this);
       // check that edge is really a boundary between inside and outside!
@@ -259,8 +254,7 @@ abstract public class EdgeEndStar
     
     // initialize loc to location of last L side (if any)
 //System.out.println("finding start location");
-    for (Iterator it = iterator(); it.hasNext(); ) {
-      EdgeEnd e = (EdgeEnd) it.next();
+    for (E e : this) {
       Label label = e.getLabel();
       if (label.isArea(geomIndex) && label.getLocation(geomIndex, Position.LEFT) != Location.NONE)
         startLoc = label.getLocation(geomIndex, Position.LEFT);
@@ -270,16 +264,21 @@ abstract public class EdgeEndStar
     if (startLoc == Location.NONE) return;
 
     int currLoc = startLoc;
-    for (Iterator it = iterator(); it.hasNext(); ) {
-      EdgeEnd e = (EdgeEnd) it.next();
+    /** RHS is null - LHS must be null too.
+     *  This must be an edge from the other geometry, which has no location
+     *  labelling for this geometry.  This edge must lie wholly inside or outside
+     *  the other geometry (which is determined by the current location).
+     *  Assign both sides to be the current location.
+     */
+    for (E e : this) {
       Label label = e.getLabel();
       // set null ON values to be in current location
       if (label.getLocation(geomIndex, Position.ON) == Location.NONE)
-          label.setLocation(geomIndex, Position.ON, currLoc);
+        label.setLocation(geomIndex, Position.ON, currLoc);
       // set side labels (if any)
       if (label.isArea(geomIndex)) {
-        int leftLoc   = label.getLocation(geomIndex, Position.LEFT);
-        int rightLoc  = label.getLocation(geomIndex, Position.RIGHT);
+        int leftLoc = label.getLocation(geomIndex, Position.LEFT);
+        int rightLoc = label.getLocation(geomIndex, Position.RIGHT);
         // if there is a right location, that is the next location to propagate
         if (rightLoc != Location.NONE) {
 //Debug.print(rightLoc != currLoc, this);
@@ -289,8 +288,7 @@ abstract public class EdgeEndStar
             Assert.shouldNeverReachHere("found single null side (at " + e.getCoordinate() + ")");
           }
           currLoc = leftLoc;
-        }
-        else {
+        } else {
           /** RHS is null - LHS must be null too.
            *  This must be an edge from the other geometry, which has no location
            *  labelling for this geometry.  This edge must lie wholly inside or outside
@@ -309,7 +307,7 @@ abstract public class EdgeEndStar
   {
     iterator();   // force edgelist to be computed
     for (int i = 0; i < edgeList.size(); i++ ) {
-      EdgeEnd e = (EdgeEnd) edgeList.get(i);
+      EdgeEnd e = edgeList.get(i);
       if (e == eSearch) return i;
     }
     return -1;
@@ -318,8 +316,7 @@ abstract public class EdgeEndStar
   public void print(PrintStream out)
   {
     System.out.println("EdgeEndStar:   " + getCoordinate());
-    for (Iterator it = iterator(); it.hasNext(); ) {
-      EdgeEnd e = (EdgeEnd) it.next();
+    for (EdgeEnd e : this) {
       e.print(out);
     }
   }
@@ -329,8 +326,7 @@ abstract public class EdgeEndStar
     StringBuffer buf = new StringBuffer();
     buf.append("EdgeEndStar:   " + getCoordinate());
     buf.append("\n");
-    for (Iterator it = iterator(); it.hasNext(); ) {
-      EdgeEnd e = (EdgeEnd) it.next();
+    for (E e : this) {
       buf.append(e);
       buf.append("\n");
     }

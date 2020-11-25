@@ -16,7 +16,7 @@ public class GMLReaderTest extends GeometryTestCase {
   private static final int DEFAULT_SRID = 9876;
   private static final GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), DEFAULT_SRID);
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(GMLReaderTest.class);
   }
 

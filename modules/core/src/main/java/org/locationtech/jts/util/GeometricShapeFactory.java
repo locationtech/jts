@@ -39,9 +39,9 @@ import org.locationtech.jts.geom.util.AffineTransformation;
  *
  * @version 1.7
  */
-public class GeometricShapeFactory
+public class GeometricShapeFactory<T>
 {
-  protected GeometryFactory geomFact;
+  protected GeometryFactory<T> geomFact;
   protected PrecisionModel precModel = null;
   protected Dimensions dim = new Dimensions();
   protected int nPts = 100;
@@ -57,7 +57,7 @@ public class GeometricShapeFactory
    */
   public GeometricShapeFactory()
   {
-    this(new GeometryFactory());
+    this(new GeometryFactory<>());
   }
 
   /**
@@ -66,7 +66,7 @@ public class GeometricShapeFactory
    *
    * @param geomFact the factory to use
    */
-  public GeometricShapeFactory(GeometryFactory geomFact)
+  public GeometricShapeFactory(GeometryFactory<T> geomFact)
   {
     this.geomFact = geomFact;
     precModel = geomFact.getPrecisionModel();
@@ -132,7 +132,7 @@ public class GeometricShapeFactory
     rotationAngle = radians;
   }
   
-  protected Geometry rotate(Geometry geom)
+  protected Geometry<T> rotate(Geometry<T> geom)
   {
     if (rotationAngle != 0.0) {
       AffineTransformation trans = AffineTransformation.rotationInstance(rotationAngle, 
@@ -148,7 +148,7 @@ public class GeometricShapeFactory
    * @return a rectangular Polygon
    *
    */
-  public Polygon createRectangle()
+  public Polygon<T> createRectangle()
   {
     int i;
     int ipt = 0;
@@ -185,9 +185,9 @@ public class GeometricShapeFactory
     }
     pts[ipt++] = new Coordinate(pts[0]);
 
-    LinearRing ring = geomFact.createLinearRing(pts);
-    Polygon poly = geomFact.createPolygon(ring);
-    return (Polygon) rotate(poly);
+    LinearRing<T> ring = geomFact.createLinearRing(pts);
+    Polygon<T> poly = geomFact.createPolygon(ring);
+    return (Polygon<T>) rotate(poly);
   }
 
 //* @deprecated use {@link createEllipse} instead
@@ -196,7 +196,7 @@ public class GeometricShapeFactory
    *
    * @return a circle or ellipse
    */
-  public Polygon createCircle()
+  public Polygon<T> createCircle()
   {
     return createEllipse();
   }
@@ -208,7 +208,7 @@ public class GeometricShapeFactory
    *
    * @return an ellipse or circle
    */
-  public Polygon createEllipse()
+  public Polygon<T> createEllipse()
   {
 
     Envelope env = dim.getEnvelope();
@@ -228,16 +228,16 @@ public class GeometricShapeFactory
     }
     pts[iPt] = new Coordinate(pts[0]);
 
-    LinearRing ring = geomFact.createLinearRing(pts);
-    Polygon poly = geomFact.createPolygon(ring);
-    return (Polygon) rotate(poly);
+    LinearRing<T> ring = geomFact.createLinearRing(pts);
+    Polygon<T> poly = geomFact.createPolygon(ring);
+    return (Polygon<T>) rotate(poly);
   }
   /**
    * Creates a squircular {@link Polygon}.
    *
    * @return a squircle
    */
-  public Polygon createSquircle()
+  public Polygon<T> createSquircle()
   /**
    * Creates a squircular {@link Polygon}.
    *
@@ -253,7 +253,7 @@ public class GeometricShapeFactory
    *
    * @return a supercircle
    */
-  public Polygon createSupercircle(double power)
+  public Polygon<T> createSupercircle(double power)
   {
   	double recipPow = 1.0 / power;
   	
@@ -292,9 +292,9 @@ public class GeometricShapeFactory
     }
     pts[pts.length-1] = new Coordinate(pts[0]);
 
-    LinearRing ring = geomFact.createLinearRing(pts);
-    Polygon poly = geomFact.createPolygon(ring);
-    return (Polygon) rotate(poly);
+    LinearRing<T> ring = geomFact.createLinearRing(pts);
+    Polygon<T> poly = geomFact.createPolygon(ring);
+    return (Polygon<T>) rotate(poly);
   }
 
    /**
@@ -307,7 +307,7 @@ public class GeometricShapeFactory
     * @param angExtent size of angle in radians
     * @return an elliptical arc
     */
-  public LineString createArc(
+  public LineString<T> createArc(
      double startAng,
      double angExtent)
   {
@@ -331,8 +331,8 @@ public class GeometricShapeFactory
          double y = yRadius * Math.sin(ang) + centreY;
          pts[iPt++] = coord(x, y);
      }
-     LineString line = geomFact.createLineString(pts);
-     return (LineString) rotate(line);
+     LineString<T> line = geomFact.createLineString(pts);
+     return (LineString<T>) rotate(line);
    }
 
   /**
@@ -344,7 +344,7 @@ public class GeometricShapeFactory
    * @param angExtent size of angle in radians
    * @return an elliptical arc polygon
    */
-  public Polygon createArcPolygon(double startAng, double angExtent) {
+  public Polygon<T> createArcPolygon(double startAng, double angExtent) {
     Envelope env = dim.getEnvelope();
     double xRadius = env.getWidth() / 2.0;
     double yRadius = env.getHeight() / 2.0;
@@ -371,9 +371,9 @@ public class GeometricShapeFactory
       pts[iPt++] = coord(x, y);
     }
     pts[iPt++] = coord(centreX, centreY);
-    LinearRing ring = geomFact.createLinearRing(pts);
-    Polygon poly = geomFact.createPolygon(ring);
-    return (Polygon) rotate(poly);
+    LinearRing<T> ring = geomFact.createLinearRing(pts);
+    Polygon<T> poly = geomFact.createPolygon(ring);
+    return (Polygon<T>) rotate(poly);
   }
 
   protected Coordinate coord(double x, double y)

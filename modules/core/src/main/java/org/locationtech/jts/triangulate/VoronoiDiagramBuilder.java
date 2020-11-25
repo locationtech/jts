@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
+import org.locationtech.jts.triangulate.quadedge.Vertex;
 
 
 /**
@@ -42,9 +43,9 @@ import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
  * @author Martin Davis
  *
  */
-public class VoronoiDiagramBuilder 
+public class VoronoiDiagramBuilder
 {
-	private Collection siteCoords;
+	private Collection<Coordinate> siteCoords;
 	private double tolerance = 0.0;
 	private QuadEdgeSubdivision subdiv = null;
 	private Envelope clipEnv = null;
@@ -64,7 +65,7 @@ public class VoronoiDiagramBuilder
 	 * 
 	 * @param geom the geometry from which the sites will be extracted.
 	 */
-	public void setSites(Geometry geom)
+	public void setSites(Geometry<?> geom)
 	{
 		// remove any duplicate points (they will cause the triangulation to fail)
 		siteCoords = DelaunayTriangulationBuilder.extractUniqueCoordinates(geom);
@@ -76,7 +77,7 @@ public class VoronoiDiagramBuilder
 	 * 
 	 * @param coords a collection of Coordinates.
 	 */
-	public void setSites(Collection coords)
+	public void setSites(Collection<Coordinate> coords)
 	{
 		// remove any duplicate points (they will cause the triangulation to fail)
 		siteCoords = DelaunayTriangulationBuilder.unique(CoordinateArrays.toCoordinateArray(coords));
@@ -123,7 +124,7 @@ public class VoronoiDiagramBuilder
   		diagramEnv.expandBy(expandBy);
 		}
 
-		List vertices = DelaunayTriangulationBuilder.toVertices(siteCoords);
+		List<Vertex> vertices = DelaunayTriangulationBuilder.toVertices(siteCoords);
 		subdiv = new QuadEdgeSubdivision(siteEnv, tolerance);
 		IncrementalDelaunayTriangulator triangulator = new IncrementalDelaunayTriangulator(subdiv);
 		triangulator.insertSites(vertices);
@@ -151,22 +152,22 @@ public class VoronoiDiagramBuilder
 	 * @param geomFact the geometry factory to use to create the output
 	 * @return a <tt>GeometryCollection</tt> containing the face <tt>Polygon</tt>s of the diagram
 	 */
-	public Geometry getDiagram(GeometryFactory geomFact)
+	public Geometry<Coordinate> getDiagram(GeometryFactory<Coordinate> geomFact)
 	{
 		create();
-		Geometry polys = subdiv.getVoronoiDiagram(geomFact);
+		Geometry<Coordinate> polys = subdiv.getVoronoiDiagram(geomFact);
 		
 		// clip polys to diagramEnv
 		return clipGeometryCollection(polys, diagramEnv);
 	}
 	
-	private static Geometry clipGeometryCollection(Geometry geom, Envelope clipEnv)
+	private static <T>Geometry<T> clipGeometryCollection(Geometry<T> geom, Envelope clipEnv)
 	{
-		Geometry clipPoly = geom.getFactory().toGeometry(clipEnv);
-		List clipped = new ArrayList();
+		Geometry<T> clipPoly = geom.getFactory().toGeometry(clipEnv);
+		List<Geometry<T>> clipped = new ArrayList<>();
 		for (int i = 0; i < geom.getNumGeometries(); i++) {
-			Geometry g = geom.getGeometryN(i);
-			Geometry result = null;
+			Geometry<T> g = geom.getGeometryN(i);
+			Geometry<T> result = null;
 			// don't clip unless necessary
 			if (clipEnv.contains(g.getEnvelopeInternal()))
 					result = g;

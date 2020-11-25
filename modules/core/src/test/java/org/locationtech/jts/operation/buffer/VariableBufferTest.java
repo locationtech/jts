@@ -13,6 +13,7 @@ package org.locationtech.jts.operation.buffer;
 
 import org.locationtech.jts.geom.Geometry;
 
+import org.locationtech.jts.geom.LineString;
 import test.jts.GeometryTestCase;
 
 public class VariableBufferTest extends GeometryTestCase {
@@ -76,7 +77,7 @@ public class VariableBufferTest extends GeometryTestCase {
 
   private void checkBuffer(String wkt, double startDist, double endDist, 
       String wktExpected) {
-    Geometry geom = read(wkt);
+    LineString<?> geom = (LineString<?>) read(wkt);
     Geometry result = VariableBuffer.buffer(geom, startDist, endDist);
     //System.out.println(result);
     checkBuffer(result, wktExpected);

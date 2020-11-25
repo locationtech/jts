@@ -111,7 +111,7 @@ public class FontGlyphReader
     char[] chs = text.toCharArray();
     FontRenderContext fontContext = new FontRenderContext(null, false, true);
     GlyphVector gv = font.createGlyphVector(fontContext, chs);
-    List polys = new ArrayList();
+    List<Geometry> polys = new ArrayList<>();
     for (int i = 0; i < gv.getNumGlyphs(); i++) {
       Geometry geom = ShapeReader.read(gv.getGlyphOutline(i), flatness, geomFact);
       for (int j = 0; j < geom.getNumGeometries(); j++) {

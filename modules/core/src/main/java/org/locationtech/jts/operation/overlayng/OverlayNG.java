@@ -36,10 +36,10 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
  * The overlay can be used to determine any of the 
  * following set-theoretic operations (boolean combinations) of the geometries:
  * <ul>
- * <li>{@link INTERSECTION} - all points which lie in both geometries
- * <li>{@link UNION} - all points which lie in at least one geometry
- * <li>{@link DIFFERENCE} - all points which lie in the first geometry but not the second
- * <li>{@link SYMDIFFERENCE} - all points which lie in one geometry but not both
+ * <li>{@link OverlayNG#INTERSECTION} - all points which lie in both geometries
+ * <li>{@link OverlayNG#UNION} - all points which lie in at least one geometry
+ * <li>{@link OverlayNG#DIFFERENCE} - all points which lie in the first geometry but not the second
+ * <li>{@link OverlayNG#SYMDIFFERENCE} - all points which lie in one geometry but not both
  * </ul>
  * Input geometries may have different dimension.  
  * Input collections must be homogeneous (all elements must have the same dimension).
@@ -98,7 +98,7 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
  * @see OverlayNGRobust
  *
  */
-public class OverlayNG 
+public class OverlayNG <T>
 {
   /**
    * The code for the Intersection overlay operation.
@@ -199,11 +199,11 @@ public class OverlayNG
    * @param pm the precision model to use
    * @return the result of the overlay operation
    */
-  public static Geometry overlay(Geometry geom0, Geometry geom1, 
+  public static Geometry<String> overlay(Geometry<String> geom0, Geometry<String> geom1,
       int opCode, PrecisionModel pm)
   {
-    OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
-    Geometry geomOv = ov.getResult();
+    OverlayNG<String> ov = new OverlayNG<>(geom0, geom1, pm, opCode);
+    Geometry<String> geomOv = ov.getResult();
     return geomOv;
   }
 
@@ -218,12 +218,12 @@ public class OverlayNG
    * @param noder the noder to use
    * @return the result of the overlay operation
    */
-  public static Geometry overlay(Geometry geom0, Geometry geom1, 
+  public static Geometry<String> overlay(Geometry<String> geom0, Geometry<String> geom1,
       int opCode, PrecisionModel pm, Noder noder)
   {
-    OverlayNG ov = new OverlayNG(geom0, geom1, pm, opCode);
+    OverlayNG<String> ov = new OverlayNG<>(geom0, geom1, pm, opCode);
     ov.setNoder(noder);
-    Geometry geomOv = ov.getResult();
+    Geometry<String> geomOv = ov.getResult();
     return geomOv;
   }
 
@@ -237,12 +237,12 @@ public class OverlayNG
    * @param noder the noder to use
    * @return the result of the overlay operation
    */
-  public static Geometry overlay(Geometry geom0, Geometry geom1, 
-      int opCode, Noder noder)
+  public static Geometry<String> overlay(Geometry<String> geom0, Geometry<String> geom1,
+                                            int opCode, Noder noder)
   {
-    OverlayNG ov = new OverlayNG(geom0, geom1, null, opCode);
+    OverlayNG<String> ov = new OverlayNG<>(geom0, geom1, null, opCode);
     ov.setNoder(noder);
-    Geometry geomOv = ov.getResult();
+    Geometry<String> geomOv = ov.getResult();
     return geomOv;
   }
 
@@ -268,9 +268,9 @@ public class OverlayNG
    * @param opCode the code for the desired overlay operation
    * @return the result of the overlay operation
    */
-  public static Geometry overlay(Geometry geom0, Geometry geom1, int opCode)
+  public static Geometry<String> overlay(Geometry<String> geom0, Geometry<String> geom1, int opCode)
   {
-    OverlayNG ov = new OverlayNG(geom0, geom1, opCode);
+    OverlayNG<String> ov = new OverlayNG<>(geom0, geom1, opCode);
     return ov.getResult();
   }
 
@@ -285,16 +285,16 @@ public class OverlayNG
    * To union a polyonal coverage or linear network in a more performant way, 
    * use {@link CoverageUnion}.
    * 
-   * @param geom0 the geometry
+   * @param geom the geometry
    * @param pm the precision model to use
    * @return the result of the union operation
    * 
    * @see OverlayMixedPoints
    */
-  static Geometry union(Geometry geom, PrecisionModel pm)
+  static Geometry<String> union(Geometry<String> geom, PrecisionModel pm)
   {    
-    OverlayNG ov = new OverlayNG(geom, pm);
-    Geometry geomOv = ov.getResult();
+    OverlayNG<String> ov = new OverlayNG<>(geom, pm);
+    Geometry<String> geomOv = ov.getResult();
     return geomOv;
   }
 
@@ -311,18 +311,18 @@ public class OverlayNG
    * 
    * @see CoverageUnion
    */
-  static Geometry union(Geometry geom, PrecisionModel pm, Noder noder)
+  static Geometry<String> union(Geometry<String> geom, PrecisionModel pm, Noder noder)
   {    
-    OverlayNG ov = new OverlayNG(geom, pm);
+    OverlayNG<String> ov = new OverlayNG<>(geom, pm);
     ov.setNoder(noder);
     ov.setStrictMode(true);
-    Geometry geomOv = ov.getResult();
+    Geometry<String> geomOv = ov.getResult();
     return geomOv;
   }
   
   private int opCode;
   private InputGeometry inputGeom;
-  private GeometryFactory geomFact;
+  private GeometryFactory<String> geomFact;
   private PrecisionModel pm;
   private Noder noder;
   private boolean isStrictMode = STRICT_MODE_DEFAULT;
@@ -342,7 +342,7 @@ public class OverlayNG
    * @param pm the precision model to use
    * @param opCode the overlay opcode
    */
-  public OverlayNG(Geometry geom0, Geometry geom1, PrecisionModel pm, int opCode) {
+  public OverlayNG(Geometry<String> geom0, Geometry<String> geom1, PrecisionModel pm, int opCode) {
     this.pm = pm;
     this.opCode = opCode;
     geomFact = geom0.getFactory();
@@ -367,7 +367,7 @@ public class OverlayNG
    * @param geom1 the B operand geometry (may be null)
    * @param opCode the overlay opcode
    */
-  public OverlayNG(Geometry geom0, Geometry geom1, int opCode) {
+  public OverlayNG(Geometry<String> geom0, Geometry<String> geom1, int opCode) {
     this(geom0, geom1, geom0.getFactory().getPrecisionModel(), opCode);
   }  
   
@@ -377,7 +377,7 @@ public class OverlayNG
    * @param geom the geometry
    * @param pm the precision model to use
    */
-  OverlayNG(Geometry geom, PrecisionModel pm) {
+  OverlayNG(Geometry<String> geom, PrecisionModel pm) {
     this(geom, null, pm, UNION);
   }  
   
@@ -453,7 +453,7 @@ public class OverlayNG
    * @throws IllegalArgumentException if the input is not supported (e.g. a mixed-dimension geometry)
    * @throws TopologyException if a robustness error occurs
    */
-  public Geometry getResult() {
+  public Geometry<String> getResult() {
     // handle empty inputs which determine result
     if (OverlayUtil.isEmptyResult(opCode, 
         inputGeom.getGeometry(0), 
@@ -473,11 +473,11 @@ public class OverlayNG
     }
     
     // handle case where both inputs are formed of edges (Lines and Polygons)
-    Geometry result = computeEdgeOverlay();
+    Geometry<String> result = computeEdgeOverlay();
     return result;
   }
   
-  private Geometry computeEdgeOverlay() {
+  private Geometry<String> computeEdgeOverlay() {
     
     List<Edge> edges = nodeEdges();
     
@@ -561,17 +561,17 @@ public class OverlayNG
    * @param graph the topology graph
    * @return the result geometry
    */
-  private Geometry extractResult(int opCode, OverlayGraph graph) {
+  private Geometry<String> extractResult(int opCode, OverlayGraph graph) {
     boolean isAllowMixedIntResult = ! isStrictMode;
     
     //--- Build polygons
     List<OverlayEdge> resultAreaEdges = graph.getResultAreaEdges();
-    PolygonBuilder polyBuilder = new PolygonBuilder(resultAreaEdges, geomFact);
-    List<Polygon> resultPolyList = polyBuilder.getPolygons();
+    PolygonBuilder<String> polyBuilder = new PolygonBuilder<>(resultAreaEdges, geomFact);
+    List<Polygon<String>> resultPolyList = polyBuilder.getPolygons();
     boolean hasResultAreaComponents = resultPolyList.size() > 0;
     
-    List<LineString> resultLineList = null;
-    List<Point> resultPointList = null;
+    List<LineString<String>> resultLineList = null;
+    List<Point<String>> resultPointList = null;
     
     if (! isAreaResultOnly) {
       //--- Build lines
@@ -580,7 +580,7 @@ public class OverlayNG
           || opCode == SYMDIFFERENCE
           || opCode == UNION;
       if ( allowResultLines ) {
-        LineBuilder lineBuilder = new LineBuilder(inputGeom, graph, hasResultAreaComponents, opCode, geomFact);
+        LineBuilder<String> lineBuilder = new LineBuilder<>(inputGeom, graph, hasResultAreaComponents, opCode, geomFact);
         lineBuilder.setStrictMode(isStrictMode);
         resultLineList = lineBuilder.getLines();
       }
@@ -592,7 +592,7 @@ public class OverlayNG
       boolean hasResultComponents = hasResultAreaComponents || resultLineList.size() > 0;
       boolean allowResultPoints = ! hasResultComponents || isAllowMixedIntResult;
       if ( opCode == INTERSECTION && allowResultPoints ) {
-        IntersectionPointBuilder pointBuilder = new IntersectionPointBuilder(graph, geomFact);
+        IntersectionPointBuilder<String> pointBuilder = new IntersectionPointBuilder<>(graph, geomFact);
         pointBuilder.setStrictMode(isStrictMode);
         resultPointList = pointBuilder.getPoints();
       }
@@ -603,15 +603,15 @@ public class OverlayNG
         && isEmpty(resultPointList))
       return createEmptyResult();
     
-    Geometry resultGeom = OverlayUtil.createResultGeometry(resultPolyList, resultLineList, resultPointList, geomFact);
+    Geometry<String> resultGeom = OverlayUtil.createResultGeometry(resultPolyList, resultLineList, resultPointList, geomFact);
     return resultGeom;
   }
 
-  private static boolean isEmpty(List list) {
+  private static boolean isEmpty(List<?> list) {
     return list == null || list.size() == 0;
   }
   
-  private Geometry createEmptyResult() {
+  private Geometry<String> createEmptyResult() {
     return OverlayUtil.createEmptyResult(
         OverlayUtil.resultDimension(opCode, 
             inputGeom.getDimension(0), 

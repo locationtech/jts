@@ -26,7 +26,7 @@ public class DDTest
 {
   private static final double VALUE_DBL = 2.2;
   
-  public static void main(String args[]) {
+  public static void main(String[] args) {
       TestRunner.run(DDTest.class);
     }
 

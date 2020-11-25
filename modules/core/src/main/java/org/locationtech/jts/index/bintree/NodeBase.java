@@ -44,6 +44,7 @@ public abstract class NodeBase<T> {
    *
    *  0 | 1
    */
+  @SuppressWarnings("unchecked")
   protected Node<T>[] subnode = new Node[2];
 
   public NodeBase() {

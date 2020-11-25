@@ -29,7 +29,7 @@ import org.locationtech.jts.geom.LineString;
  */
 public class EdgeGraphBuilder 
 {
-  public static EdgeGraph build(Collection geoms) {
+  public static EdgeGraph build(Collection<Geometry> geoms) {
     EdgeGraphBuilder builder = new EdgeGraphBuilder();
     builder.add(geoms);
     return builder.getGraph();
@@ -71,10 +71,10 @@ public class EdgeGraphBuilder
    * 
    * @param geometries the geometries to be added
    */
-  public void add(Collection geometries) 
+  public void add(Collection<Geometry> geometries)
   {
-    for (Iterator i = geometries.iterator(); i.hasNext(); ) {
-      Geometry geometry = (Geometry) i.next();
+    for (Iterator<Geometry> i = geometries.iterator(); i.hasNext(); ) {
+      Geometry geometry = i.next();
       add(geometry);
     }
   }

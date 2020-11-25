@@ -84,7 +84,7 @@ public class Quadtree<T>
     return new Envelope(minx, maxx, miny, maxy);
   }
 
-  private Root<T> root;
+  private final Root<T> root;
   /**
 
   * minExtent is the minimum envelope extent of all items

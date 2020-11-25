@@ -68,14 +68,9 @@ public class Vector2D {
 	}
 
 	/**
-	 * The X component of this vector.
+	 * The X and y component of this vector.
 	 */
-	private double x;
-
-	/**
-	 * The Y component of this vector.
-	 */
-	private double y;
+	private double x, y;
 
 	public Vector2D() {
 		this(0.0, 0.0);
@@ -291,7 +286,7 @@ public class Vector2D {
    * 
    * @return a copy of this vector
    */
-  public Object clone()
+  public Vector2D clone()
   {
     return new Vector2D(this);
   }

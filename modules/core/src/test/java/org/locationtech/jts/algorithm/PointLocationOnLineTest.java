@@ -27,7 +27,7 @@ import test.jts.GeometryTestCase;
  * @version 1.15
  */
 public class PointLocationOnLineTest extends GeometryTestCase {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(PointLocationOnLineTest.class);
   }
 

@@ -18,7 +18,7 @@ package org.locationtech.jts.index.sweepline;
  * @version 1.7
  */
 public class SweepLineEvent<T>
-  implements Comparable<SweepLineEvent<T>>
+  implements Comparable<SweepLineEvent<?>>
 {
   public static final int INSERT = 1;
   public static final int DELETE = 2;
@@ -53,7 +53,7 @@ public class SweepLineEvent<T>
    * items whose Insert and Delete events occur at the same x-value will be
    * correctly handled.
    */
-  public int compareTo(SweepLineEvent pe) {
+  public int compareTo(SweepLineEvent<?> pe) {
     if (xValue < pe.xValue) return  -1;
     if (xValue > pe.xValue) return   1;
     if (eventType < pe.eventType) return  -1;

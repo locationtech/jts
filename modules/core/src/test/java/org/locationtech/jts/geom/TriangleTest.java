@@ -32,7 +32,7 @@ public class TriangleTest extends TestCase
 
   private static final double TOLERANCE = 1E-5;
 
-  public static void main(String args[])
+  public static void main(String[] args)
   {
     TestRunner.run(TriangleTest.class);
   }

@@ -51,14 +51,14 @@ abstract class PreparedPolygonPredicate
 	 * are contained in the target geometry.
    * Handles both linear and point components.
    * 
-   * @param geom a geometry to test
+   * @param testGeom a geometry to test
    * @return true if all components of the argument are contained in the target geometry
    */
 	protected boolean isAllTestComponentsInTarget(Geometry testGeom)
 	{
-    List coords = ComponentCoordinateExtracter.getCoordinates(testGeom);
-    for (Iterator i = coords.iterator(); i.hasNext(); ) {
-      Coordinate p = (Coordinate) i.next();
+    List<Coordinate> coords = ComponentCoordinateExtracter.getCoordinates(testGeom);
+    for (Iterator<Coordinate> i = coords.iterator(); i.hasNext(); ) {
+      Coordinate p = i.next();
       int loc = targetPointLocator.locate(p);
       if (loc == Location.EXTERIOR)
         return false;
@@ -71,14 +71,14 @@ abstract class PreparedPolygonPredicate
 	 * are contained in the interior of the target geometry.
    * Handles both linear and point components.
    * 
-   * @param geom a geometry to test
+   * @param testGeom a geometry to test
    * @return true if all components of the argument are contained in the target geometry interior
    */
 	protected boolean isAllTestComponentsInTargetInterior(Geometry testGeom)
 	{
-    List coords = ComponentCoordinateExtracter.getCoordinates(testGeom);
-    for (Iterator i = coords.iterator(); i.hasNext(); ) {
-      Coordinate p = (Coordinate) i.next();
+    List<Coordinate> coords = ComponentCoordinateExtracter.getCoordinates(testGeom);
+    for (Iterator<Coordinate> i = coords.iterator(); i.hasNext(); ) {
+      Coordinate p = i.next();
       int loc = targetPointLocator.locate(p);
       if (loc != Location.INTERIOR)
         return false;
@@ -91,14 +91,14 @@ abstract class PreparedPolygonPredicate
    * the area of the target geometry.
    * Handles test geometries with both linear and point components.
    * 
-   * @param geom a geometry to test
+   * @param testGeom a geometry to test
    * @return true if any component of the argument intersects the prepared area geometry
    */
 	protected boolean isAnyTestComponentInTarget(Geometry testGeom)
 	{
-    List coords = ComponentCoordinateExtracter.getCoordinates(testGeom);
-    for (Iterator i = coords.iterator(); i.hasNext(); ) {
-      Coordinate p = (Coordinate) i.next();
+    List<Coordinate> coords = ComponentCoordinateExtracter.getCoordinates(testGeom);
+    for (Iterator<Coordinate> i = coords.iterator(); i.hasNext(); ) {
+      Coordinate p = i.next();
       int loc = targetPointLocator.locate(p);
       if (loc != Location.EXTERIOR)
         return true;
@@ -110,7 +110,7 @@ abstract class PreparedPolygonPredicate
    * Tests whether all points of the test Pointal geometry 
    * are contained in the target geometry.
    * 
-   * @param geom a Pointal geometry to test
+   * @param testGeom a Pointal geometry to test
    * @return true if all points of the argument are contained in the target geometry
    */
   protected boolean isAllTestPointsInTarget(Geometry testGeom)
@@ -129,7 +129,7 @@ abstract class PreparedPolygonPredicate
    * Tests whether any point of the test Geometry intersects
    * the interior of the target geometry.
    * 
-   * @param geom a geometry to test
+   * @param testGeom a geometry to test
    * @return true if any point of the argument intersects the prepared area geometry interior
    */
 	protected boolean isAnyTestPointInTargetInterior(Geometry testGeom)
@@ -148,15 +148,15 @@ abstract class PreparedPolygonPredicate
 	 * Tests whether any component of the target geometry 
 	 * intersects the test geometry (which must be an areal geometry) 
 	 * 
-	 * @param geom the test geometry
-	 * @param repPts the representative points of the target geometry
+	 * @param testGeom the test geometry
+	 * @param targetRepPts the representative points of the target geometry
 	 * @return true if any component intersects the areal test geometry
 	 */
-	protected boolean isAnyTargetComponentInAreaTest(Geometry testGeom, List targetRepPts)
+	protected boolean isAnyTargetComponentInAreaTest(Geometry testGeom, List<Coordinate> targetRepPts)
 	{
 		PointOnGeometryLocator piaLoc = new SimplePointInAreaLocator(testGeom);
-    for (Iterator i = targetRepPts.iterator(); i.hasNext(); ) {
-      Coordinate p = (Coordinate) i.next();
+    for (Iterator<Coordinate> i = targetRepPts.iterator(); i.hasNext(); ) {
+      Coordinate p = i.next();
       int loc = piaLoc.locate(p);
       if (loc != Location.EXTERIOR)
         return true;

@@ -28,7 +28,7 @@ package org.locationtech.jts.geom;
  *
  * @version 1.7
  */
-public class LinearRing extends LineString
+public class LinearRing<T> extends LineString<T>
 {
   /**
    * The minimum number of vertices allowed in a valid non-empty ring (= 4).
@@ -53,9 +53,9 @@ public class LinearRing extends LineString
    *
    * @deprecated Use GeometryFactory instead
    */
-  public LinearRing(Coordinate points[], PrecisionModel precisionModel,
+  public LinearRing(Coordinate[] points, PrecisionModel precisionModel,
                     int SRID) {
-    this(points, new GeometryFactory(precisionModel, SRID));
+    this(points, new GeometryFactory<>(precisionModel, SRID));
     validateConstruction();
   }
 
@@ -65,7 +65,7 @@ public class LinearRing extends LineString
    * @param factory
    * @throws IllegalArgumentException if the ring is not closed, or has too few points
    */
-  private LinearRing(Coordinate points[], GeometryFactory factory) {
+  private LinearRing(Coordinate[] points, GeometryFactory<T> factory) {
     this(factory.getCoordinateSequenceFactory().create(points), factory);
   }
 
@@ -80,7 +80,7 @@ public class LinearRing extends LineString
    * @throws IllegalArgumentException if the ring is not closed, or has too few points
    *
    */
-  public LinearRing(CoordinateSequence points, GeometryFactory factory) {
+  public LinearRing(CoordinateSequence points, GeometryFactory<T> factory) {
     super(points, factory);
     validateConstruction();
   }
@@ -128,16 +128,16 @@ public class LinearRing extends LineString
     return Geometry.TYPECODE_LINEARRING;
   }
 
-  protected LinearRing copyInternal() {
-    return new LinearRing(points.copy(), factory);
+  protected LinearRing<T> copyInternal() {
+    return new LinearRing<>(points.copy(), factory);
   }
 
-  public LinearRing reverse()
+  public LinearRing<T> reverse()
   {
-    return (LinearRing) super.reverse();
+    return (LinearRing<T>) super.reverse();
   }
 
-  public LinearRing reverseInternal() {
+  public LinearRing<T> reverseInternal() {
     CoordinateSequence seq = points.copy();
     CoordinateSequences.reverse(seq);
     return getFactory().createLinearRing(seq);

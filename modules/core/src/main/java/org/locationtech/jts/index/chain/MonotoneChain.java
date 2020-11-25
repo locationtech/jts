@@ -195,7 +195,7 @@ public class MonotoneChain<T> {
    */
   public Coordinate[] getCoordinates()
   {
-    Coordinate coord[] = new Coordinate[end - start + 1];
+    Coordinate[] coord = new Coordinate[end - start + 1];
     int index = 0;
     for (int i = start; i <= end; i++) {
       coord[index++] = pts[i];

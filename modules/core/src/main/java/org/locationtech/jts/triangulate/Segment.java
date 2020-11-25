@@ -23,10 +23,10 @@ import org.locationtech.jts.geom.LineSegment;
  * @author David Skea
  * @author Martin Davis
  */
-public class Segment 
+public class Segment <T>
 {
     private LineSegment ls;
-    private Object data = null;
+    private T data = null;
 
     /** 
      * Creates a new instance for the given ordinates.
@@ -38,7 +38,7 @@ public class Segment
     /** 
      * Creates a new instance for the given ordinates,  with associated external data. 
      */
-    public Segment(double x1, double y1, double z1, double x2, double y2, double z2, Object data) {
+    public Segment(double x1, double y1, double z1, double x2, double y2, double z2, T data) {
       this(new Coordinate(x1, y1, z1), new Coordinate(x2, y2, z2), data);
     }
 
@@ -49,7 +49,7 @@ public class Segment
      * @param p1 the end point
      * @param data an external data object
      */
-    public Segment(Coordinate p0, Coordinate p1, Object data) {
+    public Segment(Coordinate p0, Coordinate p1, T data) {
         ls = new LineSegment(p0, p1);
         this.data = data;
     }
@@ -156,7 +156,7 @@ public class Segment
      * 
      * @return a data object
      */
-    public Object getData() {
+    public T getData() {
         return data;
     }
     
@@ -165,7 +165,7 @@ public class Segment
      * 
      * @param data a data object
      */
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 
@@ -176,7 +176,7 @@ public class Segment
      * @param s a segment
      * @return true if the segments are topologically equal
      */
-    public boolean equalsTopo(Segment s) {
+    public boolean equalsTopo(Segment<?> s) {
         return ls.equalsTopo(s.getLineSegment());
     }
 
@@ -186,7 +186,7 @@ public class Segment
      * @param s a segment
      * @return the intersection point, or <code>null</code> if there is none
      */
-    public Coordinate intersection(Segment s) {
+    public Coordinate intersection(Segment<?> s) {
         return ls.intersection(s.getLineSegment());
     }
 

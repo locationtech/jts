@@ -22,12 +22,13 @@ import org.locationtech.jts.util.Assert;
 public class Node<T>
   extends NodeBase<T>
 {
-  public static<T> Node<T> createNode(Interval itemInterval)
+  public static <T>Node<T> createNode(Interval itemInterval)
   {
     Key key = new Key(itemInterval);
 
 //System.out.println("input: " + env + "  binaryEnv: " + key.getEnvelope());
-    return new Node<>(key.getInterval(), key.getLevel());
+    Node<T> node = new Node<>(key.getInterval(), key.getLevel());
+    return node;
   }
 
   public static <T>Node<T> createExpanded(Node<T> node, Interval addInterval)
@@ -40,9 +41,9 @@ public class Node<T>
     return largerNode;
   }
 
-  private final Interval interval;
-  private final double centre;
-  private final int level;
+  private Interval interval;
+  private double centre;
+  private int level;
 
   public Node(Interval interval, int level)
   {
@@ -144,7 +145,8 @@ public class Node<T>
         break;
       }
       Interval subInt = new Interval(min, max);
-    return new Node<>(subInt, level - 1);
+      Node<T> node = new Node<>(subInt, level - 1);
+    return node;
   }
 
 }

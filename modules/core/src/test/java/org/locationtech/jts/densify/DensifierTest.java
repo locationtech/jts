@@ -19,7 +19,7 @@ import test.jts.GeometryTestCase;
 public class DensifierTest extends GeometryTestCase {
   private static final double TOLERANCE = 1e-6;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(DensifierTest.class);
   }
 

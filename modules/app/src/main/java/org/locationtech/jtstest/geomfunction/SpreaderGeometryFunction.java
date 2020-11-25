@@ -56,7 +56,7 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     return fun.isRequiredB();
   }
   public Object invoke(Geometry geom, Object[] args) {
-    List<Geometry> result = new ArrayList<Geometry>();
+    List<Geometry<Object>> result = new ArrayList<>();
     if (isEachA) {
       invokeEachA(geom, args, result);
     }
@@ -66,7 +66,7 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     return createResult(result, geom.getFactory());
   }
   
-  private Object createResult(List<Geometry> result, GeometryFactory geometryFactory) {
+  private Object createResult(List<Geometry<Object>> result, GeometryFactory geometryFactory) {
     if (result.size() == 1) {
       return result.get(0);
     }
@@ -74,7 +74,7 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     return geometryFactory.createGeometryCollection(resultGeoms);
   }
 
-  private void invokeEachA(Geometry geom, Object[] args, List<Geometry> result) {
+  private void invokeEachA(Geometry geom, Object[] args, List<Geometry<Object>> result) {
     int nElt = geom.getNumGeometries();
     for (int i = 0; i < nElt; i++) {
       Geometry geomN = geom.getGeometryN(i);
@@ -82,7 +82,7 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     }
   }
 
-  private void invokeB(Geometry geom, Object[] args, List<Geometry> result) {
+  private void invokeB(Geometry geom, Object[] args, List<Geometry<Object>> result) {
     if (hasBGeom(args) && isEachB) {
       invokeEachB(geom, args, result);
       return;
@@ -95,7 +95,7 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     return args[0] instanceof Geometry;
   }
 
-  private void invokeEachB(Geometry geom, Object[] args, List<Geometry> result) {
+  private void invokeEachB(Geometry geom, Object[] args, List<Geometry<Object>> result) {
     Object[] argsCopy = args.clone();
     Geometry geomB = (Geometry) args[0];
     int nElt = geomB.getNumGeometries();
@@ -106,7 +106,7 @@ public class SpreaderGeometryFunction implements GeometryFunction {
     }
   }
 
-  private void invokeFun(Geometry geom, Object[] args, List<Geometry> result) {
+  private void invokeFun(Geometry geom, Object[] args, List<Geometry<Object>> result) {
     Geometry resultGeom = (Geometry) fun.invoke(geom, args);
     // don't keep null / empty geoms
     if (resultGeom == null || resultGeom.isEmpty()) return;

@@ -14,7 +14,7 @@ import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
 
 public class IndexedPointInAreaPerfTest extends PerformanceTestCase {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     PerformanceTestRunner.run(IndexedPointInAreaPerfTest.class);
   }
   

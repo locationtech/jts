@@ -24,7 +24,7 @@ import junit.textui.TestRunner;
 import test.jts.util.IOUtil;
 
 public class KdTreeTest extends TestCase {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(KdTreeTest.class);
   }
 

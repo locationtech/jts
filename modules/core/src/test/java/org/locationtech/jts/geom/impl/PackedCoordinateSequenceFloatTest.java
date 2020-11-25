@@ -26,7 +26,7 @@ import junit.textui.TestRunner;
 public class PackedCoordinateSequenceFloatTest
     extends CoordinateSequenceTestBase
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(PackedCoordinateSequenceFloatTest.class);
   }
 

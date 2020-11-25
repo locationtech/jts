@@ -22,9 +22,9 @@ import org.locationtech.jts.triangulate.quadedge.Vertex;
  * 
  * @author Martin Davis
  */
-public class ConstraintVertex extends Vertex {
+public class ConstraintVertex<T> extends Vertex {
     private boolean isOnConstraint;
-    private Object  constraint = null;
+    private T  constraint = null;
 
     /**
      * Creates a new constraint vertex
@@ -58,7 +58,7 @@ public class ConstraintVertex extends Vertex {
      * 
      * @param constraint an object which carries information about the constraint this vertex lies on
      */
-    public void setConstraint(Object constraint) {
+    public void setConstraint(T constraint) {
         isOnConstraint = true;
         this.constraint = constraint;
     }
@@ -68,7 +68,7 @@ public class ConstraintVertex extends Vertex {
      * 
      * @return the external constraint object
      */
-    public Object getConstraint() {
+    public T getConstraint() {
         return constraint;
     }
 
@@ -79,7 +79,7 @@ public class ConstraintVertex extends Vertex {
      * 
      * @param other the constraint vertex to merge
      */
-    protected void merge(ConstraintVertex other) {
+    protected void merge(ConstraintVertex<T> other) {
         if (other.isOnConstraint) {
             isOnConstraint = true;
             constraint = other.constraint;

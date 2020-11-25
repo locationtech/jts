@@ -135,7 +135,7 @@ public class QuadEdge
 //    private int      visitedKey = 0;
 
     /**
-     * Quadedges must be made using {@link makeEdge}, 
+     * Quadedges must be made using {@link QuadEdge#makeEdge},
      * to ensure proper construction.
      */
     private QuadEdge()

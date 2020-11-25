@@ -36,7 +36,7 @@ import org.locationtech.jts.algorithm.RobustLineIntersector;
  *@version 1.7
  */
 public class LineSegment
-  implements Comparable, Serializable
+  implements Comparable<LineSegment>, Serializable
 {
   private static final long serialVersionUID = 3252005833466256227L;
 
@@ -636,13 +636,12 @@ public class LineSegment
    *  Compares this object with the specified object for order.
    *  Uses the standard lexicographic ordering for the points in the LineSegment.
    *
-   *@param  o  the <code>LineSegment</code> with which this <code>LineSegment</code>
+   *@param  other  the <code>LineSegment</code> with which this <code>LineSegment</code>
    *      is being compared
    *@return    a negative integer, zero, or a positive integer as this <code>LineSegment</code>
    *      is less than, equal to, or greater than the specified <code>LineSegment</code>
    */
-  public int compareTo(Object o) {
-    LineSegment other = (LineSegment) o;
+  public int compareTo(LineSegment other) {
     int comp0 = p0.compareTo(other.p0);
     if (comp0 != 0) return comp0;
     return p1.compareTo(other.p1);

@@ -35,11 +35,11 @@ import org.locationtech.jts.geom.Point;
  * @see OverlayPoints
  *
  */
-class IntersectionPointBuilder {
+class IntersectionPointBuilder<T> {
 
-  private GeometryFactory geometryFactory;
+  private GeometryFactory<T> geometryFactory;
   private OverlayGraph graph;
-  private List<Point> points = new ArrayList<Point>();
+  private List<Point<T>> points = new ArrayList<>();
   
   /**
    * Controls whether lines created by area topology collapses
@@ -49,7 +49,7 @@ class IntersectionPointBuilder {
   private boolean isAllowCollapseLines = ! OverlayNG.STRICT_MODE_DEFAULT;
   
   public IntersectionPointBuilder(OverlayGraph graph,
-      GeometryFactory geomFact) {
+      GeometryFactory<T> geomFact) {
     this.graph = graph;
     this.geometryFactory = geomFact;
   }
@@ -58,7 +58,7 @@ class IntersectionPointBuilder {
     isAllowCollapseLines = ! isStrictMode;
   }
   
-  public List<Point> getPoints() {
+  public List<Point<T>> getPoints() {
     addResultPoints();
     return points;
   }
@@ -66,7 +66,7 @@ class IntersectionPointBuilder {
   private void addResultPoints() {
     for (OverlayEdge nodeEdge : graph.getNodeEdges()) {
       if (isResultPoint(nodeEdge)) {
-        Point pt = geometryFactory.createPoint(nodeEdge.getCoordinate().copy());
+        Point<T> pt = geometryFactory.createPoint(nodeEdge.getCoordinate().copy());
         points.add(pt);
       }
     }

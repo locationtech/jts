@@ -26,8 +26,8 @@ import org.locationtech.jts.util.Assert;
  *
  *@version 1.7
  */
-public class Point
-	extends Geometry
+public class Point<T>
+	extends Geometry<T>
 	implements Puntal
 {
   private static final long serialVersionUID = 4902022702746614570L;
@@ -48,7 +48,7 @@ public class Point
    * @deprecated Use GeometryFactory instead
    */
   public Point(Coordinate coordinate, PrecisionModel precisionModel, int SRID) {
-    super(new GeometryFactory(precisionModel, SRID));
+    super(new GeometryFactory<>(precisionModel, SRID));
     init(getFactory().getCoordinateSequenceFactory().create(
           coordinate != null ? new Coordinate[]{coordinate} : new Coordinate[]{}));
   }
@@ -57,7 +57,7 @@ public class Point
    *@param  coordinates      contains the single coordinate on which to base this <code>Point</code>
    *      , or <code>null</code> to create the empty geometry.
    */
-  public Point(CoordinateSequence coordinates, GeometryFactory factory) {
+  public Point(CoordinateSequence coordinates, GeometryFactory<T> factory) {
     super(factory);
     init(coordinates);
   }
@@ -127,7 +127,7 @@ public class Point
    * @return an empty GeometryCollection
    * @see Geometry#getBoundary
    */
-  public Geometry getBoundary() {
+  public Geometry<T> getBoundary() {
     return getFactory().createGeometryCollection();
   }
 
@@ -140,7 +140,7 @@ public class Point
     return env;
   }
 
-  public boolean equalsExact(Geometry other, double tolerance) {
+  public boolean equalsExact(Geometry<?> other, double tolerance) {
     if (!isEquivalentClass(other)) {
       return false;
     }
@@ -150,7 +150,7 @@ public class Point
     if (isEmpty() != other.isEmpty()) {
       return false;
     }
-    return equal(((Point) other).getCoordinate(), this.getCoordinate(), tolerance);
+    return equal(other.getCoordinate(), this.getCoordinate(), tolerance);
   }
 
   public void apply(CoordinateFilter filter) {
@@ -171,7 +171,7 @@ public class Point
     filter.filter(this);
   }
 
-  public void apply(GeometryComponentFilter filter) {
+  public void apply(GeometryComponentFilter<T> filter) {
     filter.filter(this);
   }
 
@@ -182,20 +182,21 @@ public class Point
    * @return a clone of this instance
    * @deprecated
    */
-  public Object clone() {
-    return copy();
+  public Point<T> clone() {
+    return (Point<T>) copy();
   }
 
-  protected Point copyInternal() {
-    return new Point(coordinates.copy(), factory);
+  protected Point<T> copyInternal() {
+    return new Point<>(coordinates.copy(), factory);
   }
 
-  public Point reverse() {
-    return (Point) super.reverse();
+  public Point<T> reverse() {
+    return (Point<T>) super.reverse();
   }
 
-  protected Point reverseInternal()
+  protected Point<T> reverseInternal()
   {
+
     return getFactory().createPoint(coordinates.copy());
   }
 
@@ -205,13 +206,15 @@ public class Point
   }
 
   protected int compareToSameClass(Object other) {
-    Point point = (Point) other;
+    @SuppressWarnings("unchecked")
+    Point<T> point = (Point<T>) other;
     return getCoordinate().compareTo(point.getCoordinate());
   }
 
   protected int compareToSameClass(Object other, CoordinateSequenceComparator comp)
   {
-    Point point = (Point) other;
+    @SuppressWarnings("unchecked")
+    Point<T> point = (Point<T>) other;
     return comp.compare(this.coordinates, point.coordinates);
   }
   

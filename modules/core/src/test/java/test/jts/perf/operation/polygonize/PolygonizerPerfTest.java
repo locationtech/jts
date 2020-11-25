@@ -24,14 +24,14 @@ import test.jts.perf.PerformanceTestRunner;
  * @author mdavis
  *
  */
-public class PolygonizerPerfTest extends PerformanceTestCase {
+public class PolygonizerPerfTest<T> extends PerformanceTestCase {
 
   private static final int BUFFER_SEGS = 10;
   
-  GeometryFactory geomFact = new GeometryFactory();
-  private Geometry testCircles;
+  GeometryFactory<T> geomFact = new GeometryFactory<>();
+  private Geometry<T> testCircles;
   
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     PerformanceTestRunner.run(PolygonizerPerfTest.class);
   }
 
@@ -46,7 +46,7 @@ public class PolygonizerPerfTest extends PerformanceTestCase {
     System.out.println("Running with size " + num);
     
     double size = 100;
-    List<Polygon> polys = createCircleGrid(num, size, BUFFER_SEGS);
+    List<Polygon<T>> polys = createCircleGrid(num, size, BUFFER_SEGS);
     
     Polygon surround = createAnnulus(size/2, size/2, 2*size, size, 1000 * BUFFER_SEGS);
     polys.add(surround);
@@ -54,8 +54,8 @@ public class PolygonizerPerfTest extends PerformanceTestCase {
     //System.out.println(testCircles);
   }
   
-  private List<Polygon> createCircleGrid(int num, double size, int bufferSegs) {
-    List<Polygon> polys = new ArrayList<Polygon>();
+  private List<Polygon<T>> createCircleGrid(int num, double size, int bufferSegs) {
+    List<Polygon<T>> polys = new ArrayList<>();
 
     int nOnSide = (int) Math.sqrt(num) + 1; 
     double radius = size / nOnSide / 4;
@@ -67,7 +67,7 @@ public class PolygonizerPerfTest extends PerformanceTestCase {
       double x = ix * gap;
       double y = iy * gap;
       
-      Polygon poly = createAnnulus(x, y, radius, radius/2, bufferSegs);
+      Polygon<T> poly = createAnnulus(x, y, radius, radius/2, bufferSegs);
       polys.add( poly );
     }
     return polys;

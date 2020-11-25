@@ -34,7 +34,7 @@ import org.locationtech.jts.geom.Polygon;
  * @author Martin Davis
  *
  */
-public class VariableBuffer {
+public class VariableBuffer<T> {
 
   /**
    * Creates a buffer polygon along a line with the buffer distance interpolated
@@ -45,11 +45,11 @@ public class VariableBuffer {
    * @param endDistance the buffer width at the end of the line
    * @return the variable-distance buffer polygon
    */
-  public static Geometry buffer(Geometry line, double startDistance,
+  public static <T>Geometry<T> buffer(LineString<T> line, double startDistance,
       double endDistance) {
-    double[] distance = interpolate((LineString) line,
+    double[] distance = interpolate(line,
         startDistance, endDistance);
-    VariableBuffer vb = new VariableBuffer(line, distance);
+    VariableBuffer<T> vb = new VariableBuffer<>(line, distance);
     return vb.getResult();
   }
 
@@ -58,7 +58,7 @@ public class VariableBuffer {
    * between a start distance, a middle distance and an end distance.
    * The middle distance is attained at
    * the vertex at or just past the half-length of the line.
-   * For smooth buffering of a {@link LinearRing} (or the rings of a {@link Polygon})
+   * For smooth buffering of a {@link org.locationtech.jts.geom.LinearRing} (or the rings of a {@link Polygon})
    * the start distance and end distance should be equal.
    *  
    * @param line the line to buffer
@@ -67,12 +67,12 @@ public class VariableBuffer {
    * @param endDistance the buffer width at the end of the line
    * @return the variable-distance buffer polygon
    */
-  public static Geometry buffer(Geometry line, double startDistance,
+  public static <T>Geometry<T> buffer(LineString<T> line, double startDistance,
       double midDistance,
       double endDistance) {
-    double[] distance = interpolate((LineString) line,
+    double[] distance = interpolate(line,
         startDistance, midDistance, endDistance);
-    VariableBuffer vb = new VariableBuffer(line, distance);
+    VariableBuffer<T> vb = new VariableBuffer<>(line, distance);
     return vb.getResult();
   }
 
@@ -84,8 +84,8 @@ public class VariableBuffer {
    * @param distance the buffer distance for each vertex of the line
    * @return the variable-distance buffer polygon
    */
-  public static Geometry buffer(Geometry line, double[] distance) {
-    VariableBuffer vb = new VariableBuffer(line, distance);
+  public static <T>Geometry<T> buffer(LineString<T> line, double[] distance) {
+    VariableBuffer<T> vb = new VariableBuffer<>(line, distance);
     return vb.getResult();
   }
 
@@ -101,7 +101,7 @@ public class VariableBuffer {
    * @param endValue the end value
    * @return the array of interpolated values
    */
-  private static double[] interpolate(LineString line, 
+  private static  double[] interpolate(LineString<?> line,
       double startValue,
       double endValue) {
     startValue = Math.abs(startValue);
@@ -138,7 +138,7 @@ public class VariableBuffer {
    * @param endValue the end value
    * @return the array of interpolated values
    */
-  private static double[] interpolate(LineString line, 
+  private static double[] interpolate(LineString<?> line,
       double startValue,
       double midValue,
       double endValue) 
@@ -198,9 +198,9 @@ public class VariableBuffer {
     return len;
   }
 
-  private LineString line;
+  private LineString<T> line;
   private double[] distance;
-  private GeometryFactory geomFactory;
+  private GeometryFactory<T> geomFactory;
   private int quadrantSegs = BufferParameters.DEFAULT_QUADRANT_SEGMENTS;
 
   /**
@@ -209,8 +209,8 @@ public class VariableBuffer {
    * @param line the linestring to buffer
    * @param distance the buffer distance for each vertex of the line
    */
-  public VariableBuffer(Geometry line, double[] distance) {
-    this.line = (LineString) line;
+  public VariableBuffer(LineString<T> line, double[] distance) {
+    this.line = line;
     this.distance = distance;
     geomFactory = line.getFactory();
     
@@ -224,8 +224,8 @@ public class VariableBuffer {
    * 
    * @return a buffer polygon
    */
-  public Geometry getResult() {
-    List<Geometry> parts = new ArrayList<Geometry>();
+  public Geometry<T> getResult() {
+    List<Geometry<T>> parts = new ArrayList<>();
 
     Coordinate[] pts = line.getCoordinates();
     // construct segment buffers
@@ -233,15 +233,15 @@ public class VariableBuffer {
       double dist0 = distance[i - 1];
       double dist1 = distance[i];
       if (dist0 > 0 || dist1 > 0) {
-        Polygon poly = segmentBuffer(pts[i - 1], pts[i], dist0, dist1);
+        Polygon<T> poly = segmentBuffer(pts[i - 1], pts[i], dist0, dist1);
         if (poly != null)
           parts.add(poly);
       }
     }
 
-    GeometryCollection partsGeom = geomFactory
+    GeometryCollection<T,?> partsGeom = geomFactory
         .createGeometryCollection(GeometryFactory.toGeometryArray(parts));
-    Geometry buffer = partsGeom.union();
+    Geometry<T> buffer = partsGeom.union();
     
     // ensure an empty polygon is returned if needed
     if (buffer.isEmpty()) {

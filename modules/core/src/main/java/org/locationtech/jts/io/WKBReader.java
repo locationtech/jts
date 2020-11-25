@@ -62,7 +62,7 @@ import org.locationtech.jts.geom.PrecisionModel;
  * geometries
  * @see WKBWriter for a formal format specification
  */
-public class WKBReader
+public class WKBReader<T>
 {
   /**
    * Converts a hexadecimal string to a byte array.
@@ -100,7 +100,7 @@ public class WKBReader
   private static final String INVALID_GEOM_TYPE_MSG
   = "Invalid geometry type encountered in ";
 
-  private GeometryFactory factory;
+  private GeometryFactory<T> factory;
   private CoordinateSequenceFactory csFactory;
   private PrecisionModel precisionModel;
   // default dimension - will be set on read
@@ -116,10 +116,10 @@ public class WKBReader
   private double[] ordValues;
 
   public WKBReader() {
-    this(new GeometryFactory());
+    this(new GeometryFactory<>());
   }
 
-  public WKBReader(GeometryFactory geometryFactory) {
+  public WKBReader(GeometryFactory<T> geometryFactory) {
     this.factory = geometryFactory;
     precisionModel = factory.getPrecisionModel();
     csFactory = factory.getCoordinateSequenceFactory();
@@ -132,7 +132,7 @@ public class WKBReader
    * @return the geometry read
    * @throws ParseException if the WKB is ill-formed
    */
-  public Geometry read(byte[] bytes) throws ParseException
+  public Geometry<T> read(byte[] bytes) throws ParseException
   {
     // possibly reuse the ByteArrayInStream?
     // don't throw IOExceptions, since we are not doing any I/O
@@ -152,15 +152,15 @@ public class WKBReader
    * @throws IOException if the underlying stream creates an error
    * @throws ParseException if the WKB is ill-formed
    */
-  public Geometry read(InStream is)
+  public Geometry<T> read(InStream is)
   throws IOException, ParseException
   {
     dis.setInStream(is);
-    Geometry g = readGeometry();
+    Geometry<T> g = readGeometry();
     return g;
   }
 
-  private Geometry readGeometry()
+  private Geometry<T> readGeometry()
   throws IOException, ParseException
   {
 
@@ -211,7 +211,7 @@ public class WKBReader
     if (ordValues == null || ordValues.length < inputDimension)
       ordValues = new double[inputDimension];
 
-    Geometry geom = null;
+    Geometry<T> geom = null;
     switch (geometryType) {
       case WKBConstants.wkbPoint :
         geom = readPoint();
@@ -247,14 +247,14 @@ public class WKBReader
    * @param g the geometry to update
    * @return the geometry with an updated SRID value, if required
    */
-  private Geometry setSRID(Geometry g, int SRID)
+  private Geometry<T> setSRID(Geometry<T> g, int SRID)
   {
     if (SRID != 0)
       g.setSRID(SRID);
     return g;
   }
 
-  private Point readPoint() throws IOException
+  private Point<T> readPoint() throws IOException
   {
     CoordinateSequence pts = readCoordinateSequence(1);
     // If X and Y are NaN create a empty point
@@ -264,21 +264,21 @@ public class WKBReader
     return factory.createPoint(pts);
   }
 
-  private LineString readLineString() throws IOException
+  private LineString<T> readLineString() throws IOException
   {
     int size = dis.readInt();
     CoordinateSequence pts = readCoordinateSequenceLineString(size);
     return factory.createLineString(pts);
   }
 
-  private LinearRing readLinearRing() throws IOException
+  private LinearRing<T> readLinearRing() throws IOException
   {
     int size = dis.readInt();
     CoordinateSequence pts = readCoordinateSequenceRing(size);
     return factory.createLinearRing(pts);
   }
 
-  private Polygon readPolygon() throws IOException
+  private Polygon<T> readPolygon() throws IOException
   {
     int numRings = dis.readInt();
     LinearRing[] holes = null;
@@ -292,52 +292,55 @@ public class WKBReader
     return factory.createPolygon(shell, holes);
   }
 
-  private MultiPoint readMultiPoint() throws IOException, ParseException
+  private MultiPoint<T> readMultiPoint() throws IOException, ParseException
   {
     int numGeom = dis.readInt();
-    Point[] geoms = new Point[numGeom];
+    Point<T>[] geoms = new Point[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry();
+      Geometry<T> g = readGeometry();
       if (! (g instanceof Point))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiPoint");
-      geoms[i] = (Point) g;
+      geoms[i] = (Point<T>) g;
     }
     return factory.createMultiPoint(geoms);
   }
 
-  private MultiLineString readMultiLineString() throws IOException, ParseException
+  private MultiLineString<T> readMultiLineString() throws IOException, ParseException
   {
     int numGeom = dis.readInt();
-    LineString[] geoms = new LineString[numGeom];
+    @SuppressWarnings("unchecked")
+    LineString<T>[] geoms = new LineString[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry();
+      Geometry<T> g = readGeometry();
       if (! (g instanceof LineString))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiLineString");
-      geoms[i] = (LineString) g;
+      geoms[i] = (LineString<T>) g;
     }
     return factory.createMultiLineString(geoms);
   }
 
-  private MultiPolygon readMultiPolygon() throws IOException, ParseException
+  private <P extends Polygon<T>>MultiPolygon<T, P> readMultiPolygon() throws IOException, ParseException
   {
     int numGeom = dis.readInt();
-    Polygon[] geoms = new Polygon[numGeom];
+    @SuppressWarnings("unchecked")
+    P[] geoms = (P[]) new Polygon[numGeom];
 
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry();
+      Geometry<T> g = readGeometry();
       if (! (g instanceof Polygon))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiPolygon");
-      geoms[i] = (Polygon) g;
+      geoms[i] = (P) g;
     }
     return factory.createMultiPolygon(geoms);
   }
 
-  private GeometryCollection readGeometryCollection() throws IOException, ParseException
+  private <G extends Geometry<T>>GeometryCollection<T, G> readGeometryCollection() throws IOException, ParseException
   {
     int numGeom = dis.readInt();
-    Geometry[] geoms = new Geometry[numGeom];
+    @SuppressWarnings("unchecked")
+    G[] geoms = (G[]) new Geometry[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      geoms[i] = readGeometry();
+      geoms[i] = (G) readGeometry();
     }
     return factory.createGeometryCollection(geoms);
   }

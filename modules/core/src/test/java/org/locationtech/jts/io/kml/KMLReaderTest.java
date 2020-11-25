@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.Map;
 
 public class KMLReaderTest extends TestCase {
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         TestRunner.run(KMLWriterTest.class);
     }
 

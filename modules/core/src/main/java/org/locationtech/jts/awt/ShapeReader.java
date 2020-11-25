@@ -19,11 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateList;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.*;
 
 
 /**
@@ -42,7 +38,7 @@ import org.locationtech.jts.geom.LinearRing;
  * @author Martin Davis
  *
  */
-public class ShapeReader 
+public class ShapeReader <T>
 {
   private static final AffineTransform INVERT_Y = AffineTransform.getScaleInstance(1, -1);
 
@@ -53,9 +49,9 @@ public class ShapeReader
    * @param geomFact the GeometryFactory to use
    * @return a Geometry representing the path
    */
-  public static Geometry read(PathIterator pathIt, GeometryFactory geomFact)
+  public static <T>Geometry<T> read(PathIterator pathIt, GeometryFactory<T> geomFact)
   {
-    ShapeReader pc = new ShapeReader(geomFact);
+    ShapeReader<T> pc = new ShapeReader<>(geomFact);
     return pc.read(pathIt);
   }
   
@@ -67,15 +63,15 @@ public class ShapeReader
    * @param geomFact the GeometryFactory to use
    * @return a Geometry representing the shape
    */
-  public static Geometry read(Shape shp, double flatness, GeometryFactory geomFact)
+  public static <T>Geometry<T> read(Shape shp, double flatness, GeometryFactory<T> geomFact)
   {
     PathIterator pathIt = shp.getPathIterator(INVERT_Y, flatness);
     return ShapeReader.read(pathIt, geomFact);
   }
 
-  private GeometryFactory geometryFactory;
+  private GeometryFactory<T> geometryFactory;
   
-  public ShapeReader(GeometryFactory geometryFactory) {
+  public ShapeReader(GeometryFactory<T> geometryFactory) {
     this.geometryFactory = geometryFactory;
   }
 
@@ -85,28 +81,28 @@ public class ShapeReader
    * @param pathIt the path to convert
    * @return a Geometry representing the path
    */
-  public Geometry read(PathIterator pathIt)
+  public Geometry<T> read(PathIterator pathIt)
   {
-    List pathPtSeq = toCoordinates(pathIt);
+    List<Coordinate[]> pathPtSeq = toCoordinates(pathIt);
     
-    List polys = new ArrayList();
+    List<Polygon<T>> polys = new ArrayList<>();
     int seqIndex = 0;
     while (seqIndex < pathPtSeq.size()) {
       // assume next seq is shell 
       // TODO: test this
-      Coordinate[] pts = (Coordinate[]) pathPtSeq.get(seqIndex);
-      LinearRing shell = geometryFactory.createLinearRing(pts);
+      Coordinate[] pts = pathPtSeq.get(seqIndex);
+      LinearRing<T> shell = geometryFactory.createLinearRing(pts);
       seqIndex++;
       
-      List holes = new ArrayList();
+      List<LinearRing<T>> holes = new ArrayList<>();
       // add holes as long as rings are CCW
-      while (seqIndex < pathPtSeq.size() && isHole((Coordinate[]) pathPtSeq.get(seqIndex))) {
-        Coordinate[] holePts = (Coordinate[]) pathPtSeq.get(seqIndex);
-        LinearRing hole = geometryFactory.createLinearRing(holePts);
+      while (seqIndex < pathPtSeq.size() && isHole(pathPtSeq.get(seqIndex))) {
+        Coordinate[] holePts = pathPtSeq.get(seqIndex);
+        LinearRing<T> hole = geometryFactory.createLinearRing(holePts);
         holes.add(hole);
         seqIndex++;
       }
-      LinearRing[] holeArray = GeometryFactory.toLinearRingArray(holes);
+      LinearRing<T>[] holeArray = GeometryFactory.toLinearRingArray(holes);
       polys.add(geometryFactory.createPolygon(shell, holeArray));
     }
     return geometryFactory.buildGeometry(polys);
@@ -125,9 +121,9 @@ public class ShapeReader
    * @return a List of Coordinate arrays
    * @throws IllegalArgumentException if a non-linear segment type is encountered
    */
-  public static List toCoordinates(PathIterator pathIt)
+  public static List<Coordinate[]> toCoordinates(PathIterator pathIt)
   {
-    List coordArrays = new ArrayList();
+    List<Coordinate[]> coordArrays = new ArrayList<>();
     while (! pathIt.isDone()) {
       Coordinate[] pts = nextCoordinateArray(pathIt);
       if (pts == null)

@@ -31,8 +31,8 @@ import org.locationtech.jts.geom.Polygon;
  *
  * @version 1.7
  */
-public class ConnectedElementLocationFilter
-  implements GeometryFilter
+public class ConnectedElementLocationFilter<T>
+  implements GeometryFilter<T>
 {
 
   /**
@@ -41,21 +41,21 @@ public class ConnectedElementLocationFilter
    * not a GeometryCollection, an empty list will be returned. The elements of the list 
    * are {@link org.locationtech.jts.operation.distance.GeometryLocation}s.
    */  
-  public static List getLocations(Geometry geom)
+  public static <T>List getLocations(Geometry<T> geom)
   {
-    List locations = new ArrayList();
-    geom.apply(new ConnectedElementLocationFilter(locations));
+    List<GeometryLocation> locations = new ArrayList<>();
+    geom.apply(new ConnectedElementLocationFilter<>(locations));
     return locations;
   }
 
-  private List locations;
+  private List<GeometryLocation> locations;
 
-  ConnectedElementLocationFilter(List locations)
+  ConnectedElementLocationFilter(List<GeometryLocation> locations)
   {
     this.locations = locations;
   }
 
-  public void filter(Geometry geom)
+  public void filter(Geometry<T> geom)
   {
     // empty geometries do not provide a location
     if (geom.isEmpty()) return;

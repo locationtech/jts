@@ -37,7 +37,7 @@ import org.locationtech.jts.geom.Coordinate;
  */
 public class EdgeGraph 
 {
-  private Map vertexMap = new HashMap();
+  private Map<Coordinate, HalfEdge> vertexMap = new HashMap<>();
   
   public EdgeGraph() {
   }
@@ -82,7 +82,7 @@ public class EdgeGraph
      * Return it if found.
      * Otherwise, use a found edge with same origin (if any) to construct new edge. 
      */
-    HalfEdge eAdj = (HalfEdge) vertexMap.get(orig);
+    HalfEdge eAdj = vertexMap.get(orig);
     HalfEdge eSame = null;
     if (eAdj != null) {
       eSame = eAdj.find(dest);
@@ -126,7 +126,7 @@ public class EdgeGraph
       vertexMap.put(orig, e);
     }
     
-    HalfEdge eAdjDest = (HalfEdge) vertexMap.get(dest);
+    HalfEdge eAdjDest = vertexMap.get(dest);
     if (eAdjDest != null) {
       eAdjDest.insert(e.sym());
     }
@@ -136,7 +136,7 @@ public class EdgeGraph
     return e;
   }
 
-  public Collection getVertexEdges()
+  public Collection<HalfEdge> getVertexEdges()
   {
     return vertexMap.values();
   }
@@ -150,7 +150,7 @@ public class EdgeGraph
    * @return an edge with the given orig and dest, or null if none exists
    */
   public HalfEdge findEdge(Coordinate orig, Coordinate dest) {
-    HalfEdge e = (HalfEdge) vertexMap.get(orig);
+    HalfEdge e = vertexMap.get(orig);
     if (e == null) return null;
     return e.find(dest);
   }

@@ -8,7 +8,6 @@ import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.WKTFileReader;
 import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.Stopwatch;
 import org.locationtech.jtslab.clip.RectangleClipPolygon;
 
@@ -25,9 +24,9 @@ public class TestPerfRectangleClipPolygon {
       ex.printStackTrace();
     }
   }
-  public static List<Geometry> readWKTFile(String filename) throws Exception {
-    WKTFileReader fileRdr = new WKTFileReader(filename, new WKTReader());
-    return (List<Geometry>) fileRdr.read();
+  public static <T> List<Geometry<T>> readWKTFile(String filename) throws Exception {
+    WKTFileReader<T> fileRdr = new WKTFileReader<>(filename, new WKTReader<>());
+    return  fileRdr.read();
   }
   
   private void run() {
@@ -42,14 +41,14 @@ public class TestPerfRectangleClipPolygon {
     System.out.println("Time: " + sw.getTimeString());
   }
   
-  private GeometryCollection loadData() {
-    List<Geometry> data = null;
+  private <T>GeometryCollection<T,?> loadData() {
+    List<Geometry<T>> data = null;
     try {
        data = readWKTFile("testdata/world.wkt");
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return factory.createGeometryCollection(GeometryFactory.toGeometryArray(data));
+    return ((GeometryFactory<T>)factory).createGeometryCollection(GeometryFactory.toGeometryArray(data));
   }
   
   private void runClip(Geometry data) {

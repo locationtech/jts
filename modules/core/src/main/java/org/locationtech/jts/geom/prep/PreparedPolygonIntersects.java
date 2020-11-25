@@ -14,6 +14,7 @@ package org.locationtech.jts.geom.prep;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.noding.SegmentStringUtil;
 
 
@@ -77,7 +78,7 @@ class PreparedPolygonIntersects extends PreparedPolygonPredicate {
     /**
      * If any segments intersect, result is true
      */
-    List lineSegStr = SegmentStringUtil.extractSegmentStrings(geom);
+    List<SegmentString> lineSegStr = SegmentStringUtil.extractSegmentStrings(geom);
     // only request intersection finder if there are segments 
     // (i.e. NOT for point inputs)
     if (lineSegStr.size() > 0) {

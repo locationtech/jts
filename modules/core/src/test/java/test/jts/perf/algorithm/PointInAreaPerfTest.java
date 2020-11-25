@@ -21,7 +21,7 @@ import org.locationtech.jts.util.Stopwatch;
 
 public class PointInAreaPerfTest  {
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
   	PointInAreaPerfTest test = new PointInAreaPerfTest();
   	test.run();
   }

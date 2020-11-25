@@ -24,13 +24,13 @@ import org.locationtech.jts.noding.SegmentStringUtil;
  * @author mbdavis
  *
  */
-public class PreparedLineString
-  extends BasicPreparedGeometry
+public class PreparedLineString<T>
+  extends BasicPreparedGeometry<T>
 {
   private FastSegmentSetIntersectionFinder segIntFinder = null;
-
+@SuppressWarnings("unchecked")
   public PreparedLineString(Lineal line) {
-    super((Geometry) line);
+    super((Geometry<T>) line);
   }
 
   public synchronized FastSegmentSetIntersectionFinder getIntersectionFinder()
@@ -46,7 +46,7 @@ public class PreparedLineString
     return segIntFinder;
   }
   
-  public boolean intersects(Geometry g)
+  public boolean intersects(Geometry<?> g)
   {
   	if (! envelopesIntersect(g)) return false;
     return PreparedLineStringIntersects.intersects(this, g);

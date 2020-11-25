@@ -26,7 +26,7 @@ public class WithinDistance3DTest extends TestCase
 	static GeometryFactory geomFact = new GeometryFactory();
 	static WKTReader rdr = new WKTReader();
 	
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		TestRunner.run(WithinDistance3DTest.class);
 	}
 

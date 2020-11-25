@@ -18,7 +18,7 @@ import test.jts.GeometryTestCase;
 
 public class OverlayNGPointsTest extends GeometryTestCase {
   
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(OverlayNGPointsTest.class);
   }
 

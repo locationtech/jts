@@ -20,8 +20,8 @@ import org.locationtech.jts.geom.Coordinate;
  * 
  * @author Martin Davis
  */
-public interface NodableSegmentString
-	extends SegmentString
+public interface NodableSegmentString<T>
+	extends SegmentString<T>
 {
   /**
    * Adds an intersection node for a given point and segment to this segment string.

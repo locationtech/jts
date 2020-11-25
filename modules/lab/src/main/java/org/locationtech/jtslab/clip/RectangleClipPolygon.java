@@ -153,10 +153,10 @@ public class RectangleClipPolygon {
     return polyClip;
   }
   
-  private LinearRing[] clipHoles(Polygon poly) {
-    List<LinearRing> holesClip = new ArrayList<LinearRing>();
+  private<T> LinearRing<T>[] clipHoles(Polygon<T> poly) {
+    List<LinearRing<T>> holesClip = new ArrayList<>();
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      LinearRing holeClip = clipRing(poly.getInteriorRingN(i));
+      LinearRing<T> holeClip = clipRing(poly.getInteriorRingN(i));
       if (holeClip != null) {
         holesClip.add(holeClip);
       }

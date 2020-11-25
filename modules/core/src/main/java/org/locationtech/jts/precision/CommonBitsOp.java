@@ -155,7 +155,7 @@ public class CommonBitsOp {
     cbr = new CommonBitsRemover();
     cbr.add(geom0);
     cbr.add(geom1);
-    Geometry geom[] = new Geometry[2];
+    Geometry[] geom = new Geometry[2];
     geom[0] = cbr.removeCommonBits(geom0.copy());
     geom[1] = cbr.removeCommonBits(geom1.copy());
     return geom;

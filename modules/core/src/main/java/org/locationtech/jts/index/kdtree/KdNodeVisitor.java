@@ -17,7 +17,7 @@ package org.locationtech.jts.index.kdtree;
  *
  * @version 1.7
  */
-@FunctionalInterface
+
 public interface KdNodeVisitor<T>
 {
   /**

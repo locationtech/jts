@@ -19,6 +19,7 @@ import java.io.IOException;
  * but with a narrower interface to make it easier to implement.
  *
  */
+@FunctionalInterface
 public interface InStream
 {
   /**

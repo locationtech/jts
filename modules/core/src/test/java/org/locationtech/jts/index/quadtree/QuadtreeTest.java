@@ -23,7 +23,7 @@ import org.locationtech.jts.index.SpatialIndexTester;
 import test.jts.util.SerializationUtil;
 
 public class QuadtreeTest extends TestCase {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(QuadtreeTest.class);
   }
 

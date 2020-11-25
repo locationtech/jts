@@ -174,7 +174,7 @@ class OverlayUtil {
     return false;
   }
   
-  private static boolean isEmpty(Geometry geom) {
+  private static boolean isEmpty(Geometry<?> geom) {
     return geom == null || geom.isEmpty();
   }
 
@@ -188,7 +188,7 @@ class OverlayUtil {
    * @param pm the precision model being used
    * @return true if the geometry envelopes are disjoint or empty
    */
-  static boolean isEnvDisjoint(Geometry a, Geometry b, PrecisionModel pm) {
+  static boolean isEnvDisjoint(Geometry<?> a, Geometry<?> b, PrecisionModel pm) {
     if (isEmpty(a) || isEmpty(b)) return true;
     if (isFloating(pm)) {
       return a.getEnvelopeInternal().disjoint(b.getEnvelopeInternal());
@@ -225,9 +225,9 @@ class OverlayUtil {
    * @param geomFact the geometry factory being used for the operation
    * @return an empty atomic geometry of the appropriate dimension
    */
-  static Geometry createEmptyResult(int dim, GeometryFactory geomFact)
+  static <T>Geometry<T> createEmptyResult(int dim, GeometryFactory<T> geomFact)
   {
-    Geometry result = null;
+    Geometry<T> result = null;
     switch (dim) {
     case 0:
       result =  geomFact.createPoint();
@@ -303,8 +303,8 @@ class OverlayUtil {
    * @param geometryFactory the geometry factory to use
    * @return a geometry structured according to the overlay result semantics
    */
-  static Geometry createResultGeometry(List<Polygon> resultPolyList, List<LineString> resultLineList, List<Point> resultPointList, GeometryFactory geometryFactory) {
-    List<Geometry> geomList = new ArrayList<Geometry>();
+  static <T>Geometry<T> createResultGeometry(List<Polygon<T>> resultPolyList, List<LineString<T>> resultLineList, List<Point<T>> resultPointList, GeometryFactory<T> geometryFactory) {
+    List<Geometry<T>> geomList = new ArrayList<>();
     
     // TODO: for mixed dimension, return collection of Multigeom for each dimension (breaking change)
     
@@ -318,14 +318,14 @@ class OverlayUtil {
     return geometryFactory.buildGeometry(geomList);
   }
 
-  static Geometry toLines(OverlayGraph graph, boolean isOutputEdges, GeometryFactory geomFact) {
-    List<LineString> lines = new ArrayList<LineString>();
+  static Geometry<String> toLines(OverlayGraph graph, boolean isOutputEdges, GeometryFactory<String> geomFact) {
+    List<LineString<String>> lines = new ArrayList<>();
     for (OverlayEdge edge : graph.getEdges()) {
       boolean includeEdge = isOutputEdges || edge.isInResultArea();
       if (! includeEdge) continue;
       //Coordinate[] pts = getCoords(nss);
       Coordinate[] pts = edge.getCoordinatesOriented();
-      LineString line = geomFact.createLineString(pts);
+      LineString<String> line = geomFact.createLineString(pts);
       line.setUserData(labelForResult(edge) );
       lines.add(line);
     }

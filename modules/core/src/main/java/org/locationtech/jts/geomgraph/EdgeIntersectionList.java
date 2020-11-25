@@ -26,10 +26,9 @@ import org.locationtech.jts.geom.Coordinate;
  *
  * @version 1.7
  */
-public class EdgeIntersectionList
+public class EdgeIntersectionList implements Iterable<EdgeIntersection>
 {
-  // a Map <EdgeIntersection, EdgeIntersection>
-  private Map nodeMap = new TreeMap();
+  private final Map<EdgeIntersection,EdgeIntersection> nodeMap = new TreeMap<>();
   Edge edge;  // the parent edge
 
   public EdgeIntersectionList(Edge edge)
@@ -45,7 +44,7 @@ public class EdgeIntersectionList
   public EdgeIntersection add(Coordinate intPt, int segmentIndex, double dist)
   {
     EdgeIntersection eiNew = new EdgeIntersection(intPt, segmentIndex, dist);
-    EdgeIntersection ei = (EdgeIntersection) nodeMap.get(eiNew);
+    EdgeIntersection ei = nodeMap.get(eiNew);
     if (ei != null) {
       return ei;
     }
@@ -58,7 +57,7 @@ public class EdgeIntersectionList
    *
    * @return an Iterator of EdgeIntersections
    */
-  public Iterator iterator() { return nodeMap.values().iterator(); }
+  public Iterator<EdgeIntersection> iterator() { return nodeMap.values().iterator(); }
 
   /**
    * Tests if the given point is an edge intersection
@@ -68,10 +67,9 @@ public class EdgeIntersectionList
    */
   public boolean isIntersection(Coordinate pt)
   {
-    for (Iterator it = iterator(); it.hasNext(); ) {
-      EdgeIntersection ei = (EdgeIntersection) it.next();
+    for (EdgeIntersection ei : this) {
       if (ei.coord.equals(pt))
-       return true;
+        return true;
     }
     return false;
   }
@@ -94,16 +92,16 @@ public class EdgeIntersectionList
    *
    * @param edgeList a list of EdgeIntersections
    */
-  public void addSplitEdges(List edgeList)
+  public void addSplitEdges(List<Edge> edgeList)
   {
     // ensure that the list has entries for the first and last point of the edge
     addEndpoints();
 
-    Iterator it = iterator();
+    Iterator<EdgeIntersection> it = iterator();
     // there should always be at least two entries in the list
-    EdgeIntersection eiPrev = (EdgeIntersection) it.next();
+    EdgeIntersection eiPrev = it.next();
     while (it.hasNext()) {
-      EdgeIntersection ei = (EdgeIntersection) it.next();
+      EdgeIntersection ei = it.next();
       Edge newEdge = createSplitEdge(eiPrev, ei);
       edgeList.add(newEdge);
 
@@ -143,8 +141,7 @@ public class EdgeIntersectionList
   public void print(PrintStream out)
   {
     out.println("Intersections:");
-    for (Iterator it = iterator(); it.hasNext(); ) {
-      EdgeIntersection ei = (EdgeIntersection) it.next();
+    for (EdgeIntersection ei : this) {
       ei.print(out);
     }
   }

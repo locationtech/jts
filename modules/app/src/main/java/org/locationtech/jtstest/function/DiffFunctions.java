@@ -1,12 +1,6 @@
 package org.locationtech.jtstest.function;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
@@ -145,10 +139,10 @@ public class DiffFunctions {
     return factory.createMultiLineString( lines );
   }
 
-  private static List<LineSegment> extractSegmentsNorm(Geometry geom) {
-    List<LineSegment> segs = new ArrayList<LineSegment>();
-    List<LineString> lines = LinearComponentExtracter.getLines(geom);
-    for (LineString line : lines ) {
+  private static <T>List<LineSegment> extractSegmentsNorm(Geometry<T> geom) {
+    List<LineSegment> segs = new ArrayList<>();
+    Collection<LineString<T>> lines = LinearComponentExtracter.getLines(geom);
+    for (LineString<T> line : lines ) {
       Coordinate[] pts = line.getCoordinates();
       for (int i = 0; i < pts.length - 1; i++) {
         LineSegment seg = new LineSegment(pts[i], pts[i + 1]);

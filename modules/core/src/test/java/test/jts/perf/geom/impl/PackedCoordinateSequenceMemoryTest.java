@@ -23,7 +23,7 @@ import org.locationtech.jts.util.GeometricShapeFactory;
 public class PackedCoordinateSequenceMemoryTest 
 {
 
-	 public static void main(String args[]) {
+	 public static void main(String[] args) {
 		 PackedCoordinateSequenceMemoryTest test = new PackedCoordinateSequenceMemoryTest();
 	  	test.run();
 	  }

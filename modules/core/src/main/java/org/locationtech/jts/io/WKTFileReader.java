@@ -32,12 +32,12 @@ import org.locationtech.jts.geom.Geometry;
  * @author Martin Davis
  *
  */
-public class WKTFileReader 
+public class WKTFileReader <T>
 {
 	private File file = null;
   private Reader reader;
 //  private Reader fileReader = new FileReader(file);
-	private WKTReader wktReader;
+	private final WKTReader<T> wktReader;
 	private int count = 0;
 	private int limit = -1;
 	private int offset = 0;
@@ -50,7 +50,7 @@ public class WKTFileReader
    * @param file the <tt>File</tt> to read from
    * @param wktReader the geometry reader to use
    */
-	public WKTFileReader(File file, WKTReader wktReader)
+	public WKTFileReader(File file, WKTReader<T> wktReader)
 	{
 		this.file = file;
     this.wktReader = wktReader;
@@ -62,7 +62,7 @@ public class WKTFileReader
    * @param filename the name of the file to read from
    * @param wktReader the geometry reader to use
    */
-  public WKTFileReader(String filename, WKTReader wktReader)
+  public WKTFileReader(String filename, WKTReader<T> wktReader)
   {
     this(new File(filename), wktReader);
   }
@@ -73,7 +73,7 @@ public class WKTFileReader
    * @param reader the reader to read from
    * @param wktReader the geometry reader to use
    */
-  public WKTFileReader(Reader reader, WKTReader wktReader)
+  public WKTFileReader(Reader reader, WKTReader<T> wktReader)
   {
     this.reader = reader;
     this.wktReader = wktReader;
@@ -94,7 +94,7 @@ public class WKTFileReader
    * after at least one geometry has been read,
    * to return a partial result.
    * 
-   * @param isLenient whether to ignore parse errors
+   * @param isStrict whether to ignore parse errors
    */
   public void setStrictParsing(boolean isStrict)
   {
@@ -120,7 +120,7 @@ public class WKTFileReader
 	 * @throws IOException if an I/O exception was encountered
 	 * @throws ParseException if an error occurred reading a geometry
 	 */
-	public List read() 
+	public List<Geometry<T>>  read()
 	throws IOException, ParseException 
 	{
     // do this here so that constructors don't throw exceptions
@@ -129,20 +129,17 @@ public class WKTFileReader
     
 		count = 0;
 		try {
-			BufferedReader bufferedReader = new BufferedReader(reader);
-			try {
-				return read(bufferedReader);
-			} finally {
-				bufferedReader.close();
-			}
+            try (BufferedReader bufferedReader = new BufferedReader(reader)) {
+                return read(bufferedReader);
+            }
 		} finally {
 			reader.close();
 		}
 	}
 	
-  private List read(BufferedReader bufferedReader) 
+  private List<Geometry<T>> read(BufferedReader bufferedReader)
       throws IOException, ParseException {
-    List geoms = new ArrayList();
+    List<Geometry<T>> geoms = new ArrayList<>();
     try {
       read(bufferedReader, geoms);
     }
@@ -154,17 +151,17 @@ public class WKTFileReader
     return geoms;
   }
 
-  private void read(BufferedReader bufferedReader, List geoms) 
+  private void read(BufferedReader bufferedReader, List<Geometry<T>> geoms)
       throws IOException, ParseException {
     while (!isAtEndOfFile(bufferedReader) && !isAtLimit(geoms)) {
-      Geometry g = wktReader.read(bufferedReader);
+      Geometry<T> g = wktReader.read(bufferedReader);
       if ( count >= offset )
         geoms.add(g);
       count++;
     }
   }
 
-	private boolean isAtLimit(List geoms)
+	private boolean isAtLimit(List<?> geoms)
 	{
 		if (limit < 0) return false;
 		if (geoms.size() < limit) return false;

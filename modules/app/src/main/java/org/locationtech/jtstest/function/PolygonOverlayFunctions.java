@@ -17,12 +17,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.locate.SimplePointInAreaLocator;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
@@ -76,11 +71,11 @@ public class PolygonOverlayFunctions
    * @param noder
    * @return Noded, polygonized dataset
    */
-  private static Geometry computeOverlay(Geometry g1, Geometry g2, Noder noder)
+  private static <T>Geometry computeOverlay(Geometry<T> g1, Geometry<T> g2, Noder noder)
   {
     GeometryFactory geomFact = g1.getFactory();
 
-    List lines = LinearComponentExtracter.getLines(g1);
+    Collection<LineString<T>> lines = LinearComponentExtracter.getLines(g1);
     // add second input's linework, if any
     if (g2 != null)
       LinearComponentExtracter.getLines(g2, lines);
@@ -91,13 +86,13 @@ public class PolygonOverlayFunctions
     // polygonize the result
     Polygonizer polygonizer = new Polygonizer();
     polygonizer.add(nodedDedupedLinework);
-    List<Polygon> resultants = (List<Polygon>) polygonizer.getPolygons();
+    List<Polygon<T>> resultants = (List<Polygon<T>>) polygonizer.getPolygons();
 
     // use PIP to find polygons which have a parent
-    List<Polygon> polys = ParentFinder.findParents(g1, g2, resultants);
+    List<Polygon<T>> polys = ParentFinder.findParents(g1, g2, resultants);
     
     // convert to collection for return
-    Polygon[] polyArray = GeometryFactory.toPolygonArray(polys);
+    Polygon<T>[] polyArray = GeometryFactory.toPolygonArray(polys);
     return geomFact.createGeometryCollection(polyArray);
   }
   
@@ -156,7 +151,7 @@ public class PolygonOverlayFunctions
    */
   static class ParentFinder {
     
-    public static List<Polygon> findParents(Geometry source1, Geometry source2, List<Polygon> resultants) {
+    public static <T>List<Polygon<T>> findParents(Geometry<?> source1, Geometry<?> source2, List<Polygon<T>> resultants) {
       ParentFinder hd = new ParentFinder();
       hd.addSourcePolygons(source1);
       hd.addSourcePolygons(source2);
@@ -182,9 +177,9 @@ public class PolygonOverlayFunctions
       }
     }
     
-    public List<Polygon> findParents(List<Polygon> resultants) {
-      List<Polygon> polys = new ArrayList<Polygon>();
-      for (Polygon res : resultants) {
+    public <T>List<Polygon<T>> findParents(List<Polygon<T>> resultants) {
+      List<Polygon<T>> polys = new ArrayList<>();
+      for (Polygon<T> res : resultants) {
         Point intPt = res.getInteriorPoint();
         Coordinate intCoord = intPt.getCoordinate();
         

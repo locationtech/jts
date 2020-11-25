@@ -79,8 +79,8 @@ public class Polygonizer
   protected List cutEdges = new ArrayList();
   protected List invalidRingLines = new ArrayList();
 
-  protected List holeList = null;
-  protected List shellList = null;
+  protected List<EdgeRing> holeList = null;
+  protected List<EdgeRing> shellList = null;
   protected List polyList = null;
 
   private boolean isCheckingRingsValid = true;
@@ -170,7 +170,7 @@ public class Polygonizer
    * Gets the list of polygons formed by the polygonization.
    * @return a collection of {@link Polygon}s
    */
-  public Collection getPolygons()
+  public List getPolygons()
   {
     polygonize();
     return polyList;
@@ -278,12 +278,11 @@ public class Polygonizer
     }
   }
 
-  private void findShellsAndHoles(List edgeRingList)
+  private void findShellsAndHoles(List<EdgeRing> edgeRingList)
   {
-    holeList = new ArrayList();
-    shellList = new ArrayList();
-    for (Iterator i = edgeRingList.iterator(); i.hasNext(); ) {
-      EdgeRing er = (EdgeRing) i.next();
+    holeList = new ArrayList<>();
+    shellList = new ArrayList<>();
+    for (EdgeRing er : edgeRingList) {
       er.computeHole();
       if (er.isHole())
         holeList.add(er);
@@ -292,18 +291,17 @@ public class Polygonizer
     }
   }
 
-  private static void findDisjointShells(List shellList) {
+  private static void findDisjointShells(List<EdgeRing> shellList) {
     findOuterShells(shellList);
     
     boolean isMoreToScan;
     do {
       isMoreToScan = false;
-      for (Iterator i = shellList.iterator(); i.hasNext(); ) {
-        EdgeRing er = (EdgeRing) i.next();
-        if (er.isIncludedSet()) 
+      for (EdgeRing er : shellList) {
+        if (er.isIncludedSet())
           continue;
         er.updateIncluded();
-        if (! er.isIncludedSet()) {
+        if (!er.isIncludedSet()) {
           isMoreToScan = true;
         }
       }
@@ -316,24 +314,22 @@ public class Polygonizer
    *  
    * @param shellList the list of shell EdgeRings
    */
-  private static void findOuterShells(List shellList) {
+  private static void findOuterShells(List<EdgeRing> shellList) {
 
-    for (Iterator i = shellList.iterator(); i.hasNext();) {
-      EdgeRing er = (EdgeRing) i.next();
+    for (EdgeRing er : shellList) {
       EdgeRing outerHoleER = er.getOuterHole();
-      if (outerHoleER != null && ! outerHoleER.isProcessed()) {
+      if (outerHoleER != null && !outerHoleER.isProcessed()) {
         er.setIncluded(true);
         outerHoleER.setProcessed(true);
       }
     }
   }
   
-  private static List extractPolygons(List shellList, boolean includeAll) {
-    List polyList = new ArrayList();
-    for (Iterator i = shellList.iterator(); i.hasNext();) {
-      EdgeRing er = (EdgeRing) i.next();
-      if (includeAll || er.isIncluded()) {
-        polyList.add(er.getPolygon());
+  private static List<Polygon<?>> extractPolygons(List<EdgeRing> shellList, boolean includeAll) {
+    List<Polygon<?>> polyList = new ArrayList<>();
+    for (EdgeRing o : shellList) {
+      if (includeAll || o.isIncluded()) {
+        polyList.add(o.getPolygon());
       }
     }
     return polyList;

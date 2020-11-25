@@ -17,8 +17,9 @@ package org.locationtech.jts.util;
  * @author mbdavis
  *
  */
-public class Memory 
+public final class Memory
 {
+	private Memory(){}
 	public static long used()
 	{
 		Runtime runtime = Runtime.getRuntime ();

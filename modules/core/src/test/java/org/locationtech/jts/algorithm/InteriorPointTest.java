@@ -34,7 +34,7 @@ import test.jts.TestFiles;
 
 public class InteriorPointTest extends GeometryTestCase
 {
-  public static void main(String args[])
+  public static void main(String[] args)
   {
     TestRunner.run(InteriorPointTest.class);
   }

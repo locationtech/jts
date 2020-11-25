@@ -25,7 +25,7 @@ import junit.textui.TestRunner;
 public class PackedCoordinateSequenceDoubleTest
     extends CoordinateSequenceTestBase
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(PackedCoordinateSequenceDoubleTest.class);
   }
 

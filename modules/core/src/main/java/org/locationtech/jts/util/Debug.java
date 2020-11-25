@@ -75,26 +75,28 @@ public class Debug {
   }
 
   private static final Debug debug = new Debug();
-  private static final GeometryFactory fact = new GeometryFactory();
+  private static final GeometryFactory<?> fact = new GeometryFactory<>();
   private static final String DEBUG_LINE_TAG = "D! ";
 
   private PrintStream out;
-  private Class[] printArgs;
+  private Class<?>[] printArgs;
   private Object watchObj = null;
   private Object[] args = new Object[1];
 
   public static boolean isDebugging() { return debugOn; }
-
-  public static LineString toLine(Coordinate p0, Coordinate p1) {
-    return fact.createLineString(new Coordinate[] { p0, p1 });
+@SuppressWarnings("unchecked")
+  public static <T> LineString<T> toLine(Coordinate p0, Coordinate p1) {
+    return ((GeometryFactory<T>)fact).createLineString(new Coordinate[] { p0, p1 });
   }
+  @SuppressWarnings("unchecked")
 
-  public static LineString toLine(Coordinate p0, Coordinate p1, Coordinate p2) {
-    return fact.createLineString(new Coordinate[] { p0, p1, p2});
+  public static <T> LineString<T> toLine(Coordinate p0, Coordinate p1, Coordinate p2) {
+    return ((GeometryFactory<T>)fact).createLineString(new Coordinate[] { p0, p1, p2});
   }
+  @SuppressWarnings("unchecked")
 
-  public static LineString toLine(Coordinate p0, Coordinate p1, Coordinate p2, Coordinate p3) {
-    return fact.createLineString(new Coordinate[] { p0, p1, p2, p3});
+  public static<T> LineString<T> toLine(Coordinate p0, Coordinate p1, Coordinate p2, Coordinate p3) {
+    return ((GeometryFactory<T>)fact).createLineString(new Coordinate[] { p0, p1, p2, p3});
   }
 
   public static void print(String str) {
@@ -211,7 +213,7 @@ public class Debug {
     return; 
   }
   
-  public static boolean hasSegment(Geometry geom, Coordinate p0, Coordinate p1)
+  public static boolean hasSegment(Geometry<?> geom, Coordinate p0, Coordinate p1)
   {
     SegmentFindingFilter filter = new SegmentFindingFilter(p0, p1);
     geom.apply(filter);
@@ -275,19 +277,19 @@ public class Debug {
   public void instancePrint(Object obj)
   {
     if (obj instanceof Collection) {
-      instancePrint(((Collection) obj).iterator());
+      instancePrint(((Collection<?>) obj).iterator());
     }
     else if (obj instanceof Iterator) {
-      instancePrint((Iterator) obj);
+      instancePrint((Iterator<?>) obj);
     }
     else {
       instancePrintObject(obj);
     }
   }
 
-  public void instancePrint(Iterator it)
+  public void instancePrint(Iterator<?> it)
   {
-    for (; it.hasNext(); ) {
+    while (it.hasNext()) {
       Object obj = it.next();
       instancePrintObject(obj);
     }
@@ -296,7 +298,7 @@ public class Debug {
     //if (true) throw new RuntimeException("DEBUG TRAP!");
     Method printMethod = null;
     try {
-      Class cls = obj.getClass();
+      Class<?> cls = obj.getClass();
       try {
         printMethod = cls.getMethod("print", printArgs);
         args[0] = out;

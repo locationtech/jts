@@ -28,7 +28,7 @@ public class PointLocatorTest extends TestCase {
 
   private WKTReader reader = new WKTReader();
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(PointLocatorTest.class);
   }
 

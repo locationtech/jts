@@ -31,7 +31,7 @@ import junit.textui.TestRunner;
 public class RelateTest
     extends TestCase
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(RelateTest.class);
   }
 

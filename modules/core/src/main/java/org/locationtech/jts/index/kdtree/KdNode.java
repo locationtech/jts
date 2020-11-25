@@ -23,8 +23,8 @@ public class KdNode<T> {
 
     private Coordinate p = null;
     private T     data;
-    private KdNode<T>     left;
-    private KdNode<T>     right;
+    private KdNode <T>    left;
+    private KdNode <T>    right;
     private int        count;
 
     /**

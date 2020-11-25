@@ -20,8 +20,8 @@ import org.locationtech.jts.operation.BoundaryOp;
  *
  *@version 1.7
  */
-public class MultiLineString
-	extends GeometryCollection
+public class MultiLineString<T>
+	extends GeometryCollection<T,LineString<T>>
 	implements Lineal
 	{
   private static final long serialVersionUID = 8166665132445433741L;
@@ -38,8 +38,8 @@ public class MultiLineString
    *      <code>MultiLineString</code>
    * @deprecated Use GeometryFactory instead
    */
-  public MultiLineString(LineString[] lineStrings, PrecisionModel precisionModel, int SRID) {
-    super(lineStrings, new GeometryFactory(precisionModel, SRID));
+  public MultiLineString(LineString<T>[] lineStrings, PrecisionModel precisionModel, int SRID) {
+    super(lineStrings, new GeometryFactory<>(precisionModel, SRID));
   }
 
 

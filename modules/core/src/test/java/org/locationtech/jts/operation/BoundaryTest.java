@@ -32,7 +32,7 @@ public class BoundaryTest
 {
   private static final double TOLERANCE = 0.00005;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(BoundaryTest.class);
   }
 

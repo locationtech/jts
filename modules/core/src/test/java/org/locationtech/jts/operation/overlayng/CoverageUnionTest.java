@@ -7,7 +7,7 @@ import test.jts.GeometryTestCase;
 
 public class CoverageUnionTest extends GeometryTestCase
 {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(CoverageUnionTest.class);
   }
   

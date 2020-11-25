@@ -36,7 +36,7 @@ public class SnapRoundingNoderTestOne  extends GeometryTestCase {
   
   GeometryFactory geomFact = new GeometryFactory();
   
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     TestRunner.run(SnapRoundingNoderTestOne.class);
   }
 
