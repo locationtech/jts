@@ -21,8 +21,8 @@ import java.io.Serializable;
  * @version 1.7
  */
 public class ItemBoundable<T,B extends Bounds> implements Boundable<B>, Serializable {
-  private B bounds;
-  private T item;
+  private final B bounds;
+  private final T item;
 
   public ItemBoundable(B bounds, T item) {
     this.bounds = bounds;

@@ -35,7 +35,7 @@ public abstract class AbstractNode<B extends Bounds> implements Boundable<B>, Se
    */
   private static final long serialVersionUID = 6493722185909573708L;
   
-  private List<Boundable<B>> childBoundables = new ArrayList<>();
+  private final List<Boundable<B>> childBoundables = new ArrayList<>();
   private B bounds = null;
   private int level;
 

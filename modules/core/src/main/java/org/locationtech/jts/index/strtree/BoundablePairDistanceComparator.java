@@ -20,7 +20,7 @@ import java.util.Comparator;
  * The Class BoundablePairDistanceComparator. It implements Java comparator and is used 
  * as a parameter to sort the BoundablePair list.
  */
-public class BoundablePairDistanceComparator implements Comparator<BoundablePair>, Serializable{
+public class BoundablePairDistanceComparator implements Comparator<BoundablePair<?,?>>, Serializable{
 	
 	/** The normal order. */
 	boolean normalOrder;
@@ -39,7 +39,7 @@ public class BoundablePairDistanceComparator implements Comparator<BoundablePair
 	/* (non-Javadoc)
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
-	public int compare(BoundablePair p1, BoundablePair p2) {
+	public int compare(BoundablePair<?,?> p1, BoundablePair<?,?> p2) {
 		double distance1 = p1.getDistance();
 		double distance2 = p2.getDistance();
 		if(this.normalOrder)

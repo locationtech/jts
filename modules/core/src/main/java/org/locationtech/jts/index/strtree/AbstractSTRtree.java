@@ -117,7 +117,7 @@ public abstract class AbstractSTRtree<T, B extends Bounds> implements Serializab
    * Sorts the childBoundables then divides them into groups of size M, where
    * M is the node capacity.
    */
-  protected List<AbstractNode<B>> createParentBoundables(List childBoundables, int newLevel) {
+  protected List<AbstractNode<B>> createParentBoundables(List<? extends Boundable<B>> childBoundables, int newLevel) {
     Assert.isTrue(!childBoundables.isEmpty());
     List<AbstractNode<B>> parentBoundables = new ArrayList<>();
     parentBoundables.add(createNode(newLevel));
@@ -153,7 +153,7 @@ public abstract class AbstractSTRtree<T, B extends Bounds> implements Serializab
    *            boundables (that is, below level 0)
    * @return the root, which may be a ParentNode or a LeafNode
    */
-  private AbstractNode<B> createHigherLevels(List boundablesOfALevel, int level) {
+  private AbstractNode<B> createHigherLevels(List<? extends Boundable<B>> boundablesOfALevel, int level) {
     Assert.isTrue(!boundablesOfALevel.isEmpty());
     List<AbstractNode<B>> parentBoundables = createParentBoundables(boundablesOfALevel, level + 1);
     if (parentBoundables.size() == 1) {
@@ -418,8 +418,8 @@ public abstract class AbstractSTRtree<T, B extends Bounds> implements Serializab
     }
     return found;
   }
-  protected List boundablesAtLevel(int level) {
-    List boundables = new ArrayList<>();
+  protected List<Boundable<B>> boundablesAtLevel(int level) {
+    List<Boundable<B>> boundables = new ArrayList<>();
     boundablesAtLevel(level, root, boundables);
     return boundables;
   }

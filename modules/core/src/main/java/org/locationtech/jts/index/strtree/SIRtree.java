@@ -98,11 +98,11 @@ public class SIRtree<T> extends AbstractSTRtree<T,Interval> {
     return super.query(new Interval(Math.min(x1, x2), Math.max(x1, x2)));
   }
 
-  protected IntersectsOp getIntersectsOp() {
+  protected IntersectsOp<Interval> getIntersectsOp() {
     return intersectsOp;
   }
 
-  protected Comparator getComparator() {
+  protected Comparator<Boundable<Interval>> getComparator() {
     return comparator;
   }
 
