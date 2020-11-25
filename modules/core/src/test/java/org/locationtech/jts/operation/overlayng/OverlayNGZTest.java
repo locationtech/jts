@@ -57,6 +57,12 @@ public class OverlayNGZTest extends GeometryTestCase
         "MULTILINESTRING ((0 0 0, 5 5 5), (6 6 6, 10 10 10))");
   }
 
+  // from https://trac.osgeo.org/geos/ticket/435
+  public void testLineXYLineIntersection() {
+    checkIntersection("LINESTRING(0 0,0 10,10 10,10 0)", "LINESTRING(10 10 4,10 0 5,0 0 5)",
+        "GEOMETRYCOLLECTION Z(POINT Z(0 0 5), LINESTRING Z(10 0 5, 10 10 4))");
+  }
+
   public void testLinePolygonIntersection() {
     checkIntersection("LINESTRING Z (0 0 0, 5 5 5)", "POLYGON Z ((1 9 5, 9 9 9, 9 1 5, 1 1 1, 1 9 5))",
         "LINESTRING Z (1 1 1, 5 5 5)");
