@@ -28,8 +28,8 @@ public class SweepLineInterval<T> {
 
   public SweepLineInterval(double min, double max, T item)
   {
-    this.min = min < max ? min : max;
-    this.max = max > min ? max : min;
+    this.min = Math.min(min, max);
+    this.max = Math.max(max, min);
     this.item = item;
   }
 

@@ -211,11 +211,8 @@ public class KdTree<T> {
       boolean isInTolerance =  dist <= tolerance; 
       if (! isInTolerance) return;
       boolean update = false;
-      if (matchNode == null
-          || dist < matchDist
-          // if distances are the same, record the lesser coordinate
-          || (matchNode != null && dist == matchDist 
-          && node.getCoordinate().compareTo(matchNode.getCoordinate()) < 1))
+      // if distances are the same, record the lesser coordinate
+      if (matchNode == null || dist < matchDist || dist == matchDist && node.getCoordinate().compareTo(matchNode.getCoordinate()) < 1)
         update = true;
 
       if (update) {
@@ -275,6 +272,7 @@ public class KdTree<T> {
     numberOfNodes = numberOfNodes + 1;
     KdNode<T> node = new KdNode<>(p, data);
     if (isLessThan) {
+      assert leafNode != null;
       leafNode.setLeft(node);
     } else {
       leafNode.setRight(node);
@@ -408,7 +406,7 @@ public class KdTree<T> {
 
     int dL = depthNode(currentNode.getLeft());
     int dR = depthNode(currentNode.getRight());
-    return 1 + (dL > dR ? dL : dR);
+    return 1 + Math.max(dL, dR);
   }
   
   /**

@@ -28,7 +28,7 @@ public class Key {
   {
     double dx = env.getWidth();
     double dy = env.getHeight();
-    double dMax = dx > dy ? dx : dy;
+    double dMax = Math.max(dx, dy);
     int level = DoubleBits.exponent(dMax) + 1;
     return level;
   }
