@@ -20,7 +20,7 @@ import org.locationtech.jts.util.Assert;
  *
  * @version 1.7
  */
-public class Interval {
+public class Interval implements Bounds{
 
   public Interval(Interval other) {
     this(other.min, other.max);

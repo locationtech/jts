@@ -152,7 +152,7 @@ import org.locationtech.jts.util.Assert;
  *@version 1.7
  */
 public abstract class Geometry
-    implements Cloneable, Comparable, Serializable
+    implements Cloneable, Comparable<Geometry>, Serializable
 {
   private static final long serialVersionUID = 8763622679187376702L;
     
@@ -1666,14 +1666,13 @@ public abstract class Geometry
    *  elements are compared. If those are the same, the second elements are
    *  compared, etc.
    *
-   *@param  o  a <code>Geometry</code> with which to compare this <code>Geometry</code>
+   *@param  other  a <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return    a positive number, 0, or a negative number, depending on whether
    *      this object is greater than, equal to, or less than <code>o</code>, as
    *      defined in "Normal Form For Geometry" in the JTS Technical
    *      Specifications
    */
-  public int compareTo(Object o) {
-    Geometry other = (Geometry) o;
+  public int compareTo(Geometry other) {
     if (getTypeCode() != other.getTypeCode()) {
       return getTypeCode() - other.getTypeCode();
     }
@@ -1686,7 +1685,7 @@ public abstract class Geometry
     if (other.isEmpty()) {
       return 1;
     }
-    return compareToSameClass(o);
+    return compareToSameClass(other);
   }
 
   /**

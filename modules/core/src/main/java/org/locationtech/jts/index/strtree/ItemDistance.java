@@ -34,7 +34,7 @@ import org.locationtech.jts.geom.Geometry;
  *
  */
 @FunctionalInterface
-public interface ItemDistance 
+public interface ItemDistance <T, B extends Bounds>
 {
   /**
    * Computes the distance between two items.
@@ -45,6 +45,6 @@ public interface ItemDistance
    * 
    * @throws IllegalArgumentException if the metric is not applicable to the arguments
    */
-  double distance(ItemBoundable<? extends Geometry> item1, ItemBoundable<? extends Geometry> item2);
+  double distance(ItemBoundable<T,B> item1, ItemBoundable<T,B> item2);
 
 }

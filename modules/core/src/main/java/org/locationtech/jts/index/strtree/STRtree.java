@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 
+import com.sun.tools.doclint.Env;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.SpatialIndex;
@@ -49,26 +50,26 @@ import org.locationtech.jts.util.Assert;
  *
  * @version 1.7
  */
-public class STRtree extends AbstractSTRtree 
-implements SpatialIndex, Serializable 
+public class STRtree<T> extends AbstractSTRtree <T,Envelope>
+implements SpatialIndex<T>, Serializable
 {
 
-  private static final class STRtreeNode extends AbstractNode
+  private static final class STRtreeNode extends AbstractNode<Envelope>
   {
     private STRtreeNode(int level)
     {
       super(level);
     }
 
-    protected Object computeBounds() {
+    protected Envelope computeBounds() {
       Envelope bounds = null;
-      for (Iterator i = getChildBoundables().iterator(); i.hasNext(); ) {
-        Boundable childBoundable = (Boundable) i.next();
+      for (Iterator<Boundable<Envelope>> i = getChildBoundables().iterator(); i.hasNext(); ) {
+        Boundable<Envelope> childBoundable = i.next();
         if (bounds == null) {
-          bounds = new Envelope((Envelope)childBoundable.getBounds());
+          bounds = new Envelope(childBoundable.getBounds());
         }
         else {
-          bounds.expandToInclude((Envelope)childBoundable.getBounds());
+          bounds.expandToInclude(childBoundable.getBounds());
         }
       }
       return bounds;
@@ -80,20 +81,20 @@ implements SpatialIndex, Serializable
    */
   private static final long serialVersionUID = 259274702368956900L;
   
-  private static Comparator xComparator =
-    new Comparator() {
-      public int compare(Object o1, Object o2) {
+  private static final Comparator<Boundable<Envelope>> xComparator =
+    new Comparator<Boundable<Envelope>>() {
+      public int compare(Boundable<Envelope> o1, Boundable<Envelope> o2) {
         return compareDoubles(
-            centreX((Envelope)((Boundable)o1).getBounds()),
-            centreX((Envelope)((Boundable)o2).getBounds()));
+            centreX((o1).getBounds()),
+            centreX((o2).getBounds()));
       }
     };
-  private static Comparator yComparator =
-    new Comparator() {
-      public int compare(Object o1, Object o2) {
+  private static final Comparator<Boundable<Envelope>> yComparator =
+    new Comparator<Boundable<Envelope>>() {
+      public int compare(Boundable<Envelope> o1, Boundable<Envelope> o2) {
         return compareDoubles(
-            centreY((Envelope)((Boundable)o1).getBounds()),
-            centreY((Envelope)((Boundable)o2).getBounds()));
+            centreY((o1).getBounds()),
+            centreY((o2).getBounds()));
       }
     };
 
@@ -107,9 +108,9 @@ implements SpatialIndex, Serializable
 
   private static double avg(double a, double b) { return (a + b) / 2d; }
 
-  private static IntersectsOp intersectsOp = new IntersectsOp() {
-    public boolean intersects(Object aBounds, Object bBounds) {
-      return ((Envelope)aBounds).intersects((Envelope)bBounds);
+  private static IntersectsOp<Envelope> intersectsOp = new IntersectsOp<Envelope>() {
+    public boolean intersects(Envelope aBounds, Envelope bBounds) {
+      return aBounds.intersects(bBounds);
     }
   };
 
@@ -184,18 +185,18 @@ implements SpatialIndex, Serializable
     super(nodeCapacity);
   }
 
-  protected AbstractNode createNode(int level) {
+  protected AbstractNode<Envelope> createNode(int level) {
     return new STRtreeNode(level);
   }
 
-  protected IntersectsOp getIntersectsOp() {
+  protected IntersectsOp<Envelope> getIntersectsOp() {
     return intersectsOp;
   }
 
   /**
    * Inserts an item having the given bounds into the tree.
    */
-  public void insert(Envelope itemEnv, Object item) {
+  public void insert(Envelope itemEnv, T item) {
     if (itemEnv.isNull()) { return; }
     super.insert(itemEnv, item);
   }
@@ -203,7 +204,7 @@ implements SpatialIndex, Serializable
   /**
    * Returns items whose bounds intersect the given envelope.
    */
-  public List query(Envelope searchEnv) {
+  public List<T> query(Envelope searchEnv) {
     //Yes this method does something. It specifies that the bounds is an
     //Envelope. super.query takes an Object, not an Envelope. [Jon Aquino 10/24/2003]
     return super.query(searchEnv);
@@ -212,7 +213,7 @@ implements SpatialIndex, Serializable
   /**
    * Returns items whose bounds intersect the given envelope.
    */
-  public void query(Envelope searchEnv, ItemVisitor visitor) {
+  public void query(Envelope searchEnv, ItemVisitor<T> visitor) {
     //Yes this method does something. It specifies that the bounds is an
     //Envelope. super.query takes an Object, not an Envelope. [Jon Aquino 10/24/2003]
     super.query(searchEnv, visitor);
@@ -225,7 +226,7 @@ implements SpatialIndex, Serializable
    * @param item the item to remove
    * @return <code>true</code> if the item was found
    */
-  public boolean remove(Envelope itemEnv, Object item) {
+  public boolean remove(Envelope itemEnv, T item) {
     return super.remove(itemEnv, item);
   }
 
@@ -249,7 +250,7 @@ implements SpatialIndex, Serializable
     return super.depth();
   }
 
-  protected Comparator getComparator() {
+  protected Comparator<Boundable<Envelope>> getComparator() {
     return yComparator;
   }
 
@@ -270,7 +271,7 @@ implements SpatialIndex, Serializable
    * @return the pair of the nearest items
    *    or <code>null</code> if the tree is empty
    */
-  public Object[] nearestNeighbour(ItemDistance itemDist)
+  public T[] nearestNeighbour(ItemDistance itemDist)
   {
     if (isEmpty()) return null;
     
@@ -296,9 +297,9 @@ implements SpatialIndex, Serializable
    * @return the nearest item in this tree
    *    or <code>null</code> if the tree is empty
    */
-  public Object nearestNeighbour(Envelope env, Object item, ItemDistance itemDist)
+  public T nearestNeighbour(Envelope env, T item, ItemDistance itemDist)
   {
-    Boundable bnd = new ItemBoundable(env, item);
+    Boundable<Envelope> bnd = new ItemBoundable<>(env, item);
     BoundablePair bp = new BoundablePair(this.getRoot(), bnd, itemDist);
     return nearestNeighbour(bp)[0];
   }
@@ -318,25 +319,25 @@ implements SpatialIndex, Serializable
    * @return the pair of the nearest items, one from each tree
    *    or <code>null</code> if no pair of distinct items can be found
    */
-  public Object[] nearestNeighbour(STRtree tree, ItemDistance itemDist)
+  public <S> Object[] nearestNeighbour(STRtree<S> tree, ItemDistance itemDist)
   {
     if (isEmpty() || tree.isEmpty()) return null;
     BoundablePair bp = new BoundablePair(this.getRoot(), tree.getRoot(), itemDist);
     return nearestNeighbour(bp);
   }
   
-  private Object[] nearestNeighbour(BoundablePair initBndPair) 
+  private T[] nearestNeighbour(BoundablePair initBndPair)
   {
     double distanceLowerBound = Double.POSITIVE_INFINITY;
     BoundablePair minPair = null;
     
     // initialize search queue
-    PriorityQueue priQ = new PriorityQueue();
+    PriorityQueue<BoundablePair> priQ = new PriorityQueue<>();
     priQ.add(initBndPair);
 
     while (! priQ.isEmpty() && distanceLowerBound > 0.0) {
       // pop head of queue and expand one side of pair
-      BoundablePair bndPair = (BoundablePair) priQ.poll();
+      BoundablePair bndPair = priQ.poll();
       double pairDistance = bndPair.getDistance();
       
       /**
@@ -373,10 +374,12 @@ implements SpatialIndex, Serializable
     if (minPair == null) 
       return null;
     // done - return items with min distance
-    return new Object[] {    
-          ((ItemBoundable) minPair.getBoundable(0)).getItem(),
-          ((ItemBoundable) minPair.getBoundable(1)).getItem()
-      };
+    @SuppressWarnings("unchecked")
+    final T[] items = (T[])new Object[] {
+            ((ItemBoundable<T,Envelope>) minPair.getBoundable(0)).getItem(),
+            ((ItemBoundable<T,Envelope>) minPair.getBoundable(1)).getItem()
+    };
+    return items;
   }
   
   /**
