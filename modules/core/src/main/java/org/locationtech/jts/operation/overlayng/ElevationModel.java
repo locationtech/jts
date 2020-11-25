@@ -106,8 +106,14 @@ class ElevationModel {
   public void add(Geometry geom) {
     geom.apply(new CoordinateSequenceFilter() {
 
+      private boolean hasZ = true;
+
       @Override
       public void filter(CoordinateSequence seq, int i) {
+        if (! seq.hasZ()) {
+          hasZ = false;;
+          return;
+        }
         double z = seq.getOrdinate(i, Coordinate.Z);
         add(seq.getOrdinate(i, Coordinate.X),
             seq.getOrdinate(i, Coordinate.Y),
@@ -116,7 +122,8 @@ class ElevationModel {
 
       @Override
       public boolean isDone() {
-        return false;
+        // no need to scan if no Z present
+        return ! hasZ;
       }
 
       @Override

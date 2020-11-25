@@ -57,6 +57,28 @@ public class ElevationModelTest extends GeometryTestCase {
         );
   }
 
+  public void testTwoLines() {
+    checkElevation( "LINESTRING Z (0 0 0, 10 10 8)",
+                    "LINESTRING Z (1 2 2, 9 8 6))",
+     -1,11, 4,                            11,11,  7,
+        0,10, 4,    5,10, 4,    10,10,  7,
+        0,5, 4,     5,5,  4,    10,5,   4,
+        0,0, 1,     5,0,  4,    10,0,   4,
+     -1,-1, 1,      5,-1, 4,    11,-1,  4
+        );
+  }
+
+  /**
+   * Tests that XY geometries are scanned correctly (avoiding reading Z)
+   * and that they produce a model Z value of NaN
+   */
+  public void testLine2D() {
+    // LINESTRING (0 0, 10 10)
+    checkElevation( "0102000000020000000000000000000000000000000000000000000000000024400000000000002440",
+                    5, 5, Double.NaN
+        );
+  }
+  
   public void testLineHorizontal() {
     checkElevation("LINESTRING Z (0 5 0, 10 5 10)",
         0,10, 0,    5,10,  5,     10,10,  10,
@@ -91,9 +113,17 @@ public class ElevationModelTest extends GeometryTestCase {
         );
   }
 
+  private void checkElevation(String wkt1, String wkt2, double... ords) {
+    checkElevation(read(wkt1), read(wkt2), ords);
+  }
+  
   private void checkElevation(String wkt1, double... ords) {
-    Geometry geom = read(wkt1);
-    ElevationModel model = ElevationModel.create(geom, null);
+    checkElevation(read(wkt1), null, ords);
+  }
+  
+  
+  private void checkElevation(Geometry geom1, Geometry geom2, double[] ords) {
+    ElevationModel model = ElevationModel.create(geom1, geom2);
     int numPts = ords.length / 3;
     if (3 * numPts != ords.length) {
       throw new IllegalArgumentException("Incorrect number of ordinates");
