@@ -363,14 +363,7 @@ public class CascadedPolygonUnion
    */
   private Geometry unionActual(Geometry g0, Geometry g1)
   {
-    Geometry union;
-  
-    if (unionFun.isFloatingPrecision()) {
-      union = OverlapUnion.union(g0, g1, unionFun);
-    }
-    else { 
-      union = unionFun.union(g0, g1);
-    }
+    Geometry union = unionFun.union(g0, g1);
     Geometry unionPoly = restrictToPolygons( union );
   	return unionPoly;
   }
