@@ -289,7 +289,7 @@ public class JTSOpRunner {
       GeometryFunction func = fun.getFunction();
       String arg = fun.getValue(i);
       
-      String opDesc = "-- " + opSummary(func.getName(), arg) + "  ------------------------";
+      String opDesc = "-- " + opSummary(func, arg) + "  ------------------------";
       if (isVerbose) {
         out.println(opDesc);
       }
@@ -435,9 +435,9 @@ public class JTSOpRunner {
     return s.substring(0, n) + "...";
   }
   
-  private static String opSummary(String funcName, String arg) {
+  private static String opSummary(GeometryFunction func, String arg) {
     StringBuilder sb = new StringBuilder();
-    sb.append("Op: " + funcName );
+    sb.append("Op: " + func.getCategory() + "." + func.getName() );
     if (arg != null) {
       sb.append(" " + arg);
     }
