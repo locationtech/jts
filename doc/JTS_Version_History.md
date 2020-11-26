@@ -36,6 +36,10 @@ Distributions for older JTS versions can be obtained at the
 * Improve `WKBWriter` to write empty Polygons using a more compact representation (#623)
 * Support read and initialize internal structure of STRtree and Quadtree (#634)
 
+### Performance Improvements
+
+* Improve performance of `UnaryUnionOp` by removing OverlayUnion optimization (#644)
+
 ### Bug Fixes
 
 * Fix `RayCrossingCounter` to handle XYZM coordinates (#589)
