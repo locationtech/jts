@@ -82,6 +82,31 @@ public class STRtreeTest extends TestCase {
     assertTrue(tester.isSuccess());
   }
 
+  public void testSpatialIndexConstructorUsingLeafNodes()
+  {
+    SpatialIndexTester tester = new SpatialIndexTester();
+    tester.setSpatialIndex(new STRtree(4));
+    tester.init();
+    STRtree index_init = (STRtree) tester.getSpatialIndex();
+    STRtree index = new STRtree(index_init.getNodeCapacity(), index_init.getItemBoundables());
+    tester.setSpatialIndex(index);
+    tester.run();
+    assertTrue(tester.isSuccess());
+  }
+
+  public void testSpatialIndexConstructorUsingRoot()
+  {
+    SpatialIndexTester tester = new SpatialIndexTester();
+    tester.setSpatialIndex(new STRtree(4));
+    tester.init();
+    STRtree index_init = (STRtree) tester.getSpatialIndex();
+    index_init.build();
+    STRtree index = new STRtree(index_init.getNodeCapacity(), (STRtree.STRtreeNode) index_init.root);
+    tester.setSpatialIndex(index);
+    tester.run();
+    assertTrue(tester.isSuccess());
+  }
+
   public void testSerialization()
   throws Exception
   {
