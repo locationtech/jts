@@ -74,8 +74,14 @@ import org.locationtech.jts.geom.util.GeometryCombiner;
  * but it could happen due to snapping.  It has been observed 
  * in other APIs (e.g. GEOS) due to more aggressive snapping.
  * It is more likely to happen if a Snap-Rounding overlay is used.
+ * <p>
+ * <b>NOTE: Test has shown that using this heuristic impairs performance.
+ * It has been removed from use.</b>
+ * 
  * 
  * @author mbdavis
+ * 
+ * @deprecated due to impairing performance
  *
  */
 public class OverlapUnion 
