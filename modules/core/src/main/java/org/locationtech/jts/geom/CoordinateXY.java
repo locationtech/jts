@@ -103,7 +103,9 @@ public class CoordinateXY extends Coordinate {
       case X: return x;
       case Y: return y;
       }
-      throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
+      return Double.NaN;
+      // disable for now to avoid regression issues
+      //throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
   }
   
   @Override

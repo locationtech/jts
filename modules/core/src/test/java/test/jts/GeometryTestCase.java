@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.Ordinate;
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
 
 import junit.framework.TestCase;
 
@@ -40,6 +41,8 @@ public abstract class GeometryTestCase extends TestCase{
   final GeometryFactory geomFactory;
   
   final WKTReader readerWKT;
+  
+  final WKTWriter writerZ = new WKTWriter(3);
 
   protected GeometryTestCase(String name)
   {
@@ -79,6 +82,56 @@ public abstract class GeometryTestCase extends TestCase{
     assertTrue(equal);
   }
 
+  protected void checkEqualXYZ(Geometry expected, Geometry actual) {
+    Geometry actualNorm = actual.norm();
+    Geometry expectedNorm = expected.norm();
+    boolean equal = equalsExactXYZ(actualNorm, expectedNorm);
+    if (! equal) {
+      System.out.format(CHECK_EQUAL_FAIL, 
+          writerZ.write(expectedNorm), 
+          writerZ.write(actualNorm) );
+    }
+    assertTrue(equal);
+  }
+  
+  private boolean equalsExactXYZ(Geometry a, Geometry b) {
+    if (a.getClass() != b.getClass()) return false;
+    if (a.getNumGeometries() != b.getNumGeometries()) return false;
+    if (a instanceof Point) {
+      return isEqualDim(((Point) a).getCoordinateSequence(), ((Point) b).getCoordinateSequence(), 3);
+    }
+    else if (a instanceof LineString) {
+      return isEqualDim(((LineString) a).getCoordinateSequence(), ((LineString) b).getCoordinateSequence(), 3);
+    }
+    else if (a instanceof Polygon) {
+      return equalsExactXYZPolygon( (Polygon) a, (Polygon) b);
+    }
+    else if (a instanceof GeometryCollection) {
+      for (int i = 0; i < a.getNumGeometries(); i++) {
+        if (! equalsExactXYZ(a.getGeometryN(i), b.getGeometryN(i)))
+          return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  private boolean equalsExactXYZPolygon(Polygon a, Polygon b) {
+    LinearRing aShell = a.getExteriorRing();
+    LinearRing bShell = b.getExteriorRing();
+    if (! isEqualDim(aShell.getCoordinateSequence(), bShell.getCoordinateSequence(), 3))
+      return false;
+    if (a.getNumInteriorRing() != b.getNumInteriorRing())
+      return false;
+    for (int i = 0; i < a.getNumInteriorRing(); i++) {
+      LinearRing aHole = a.getInteriorRingN(i);
+      LinearRing bHole = b.getInteriorRingN(i);
+      if (! isEqualDim(aHole.getCoordinateSequence(), bHole.getCoordinateSequence(), 3))
+        return false;        
+    }
+    return true;
+  }
+
   protected void checkEqual(Collection expected, Collection actual) {
     checkEqual(toGeometryCollection(expected),toGeometryCollection(actual) );
   }
@@ -90,6 +143,12 @@ public abstract class GeometryTestCase extends TestCase{
   protected void checkEqualXY(Coordinate expected, Coordinate actual) {
     assertEquals("Coordinate X", expected.getX(), actual.getX() );
     assertEquals("Coordinate Y", expected.getY(), actual.getY() );
+  }
+  
+  protected void checkEqualXYZ(Coordinate expected, Coordinate actual) {
+    assertEquals("Coordinate X", expected.getX(), actual.getX() );
+    assertEquals("Coordinate Y", expected.getY(), actual.getY() );
+    assertEquals("Coordinate Z", expected.getZ(), actual.getZ() );
   }
   
   protected void checkEqualXY(String message, Coordinate expected, Coordinate actual) {
@@ -276,8 +335,8 @@ public abstract class GeometryTestCase extends TestCase{
       for (int j = 0; j < dimension; j++) {
         double val1 = seq1.getOrdinate(i, j);
         double val2 = seq2.getOrdinate(i, j);
-        if (Double.isNaN(val1)) {
-          if (!Double.isNaN(val2)) return false;
+        if (Double.isNaN(val1) || Double.isNaN(val2)) {
+          return Double.isNaN(val1) && Double.isNaN(val2);
         }
         else if (Math.abs(val1 - val2) > tolerance)
           return false;

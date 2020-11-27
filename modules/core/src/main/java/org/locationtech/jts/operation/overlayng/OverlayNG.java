@@ -462,18 +462,27 @@ public class OverlayNG
       return createEmptyResult();
     }
 
-    // handle Point-Point inputs
+    /**
+     * The elevation model is only computed if the input geometries have Z values.
+     */
+    ElevationModel elevModel = ElevationModel.create(inputGeom.getGeometry(0), inputGeom.getGeometry(1));
+    Geometry result;
     if (inputGeom.isAllPoints()) {
-      return OverlayPoints.overlay(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), pm);
+      // handle Point-Point inputs
+      result = OverlayPoints.overlay(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), pm);
     }
-    
-    // handle Point-nonPoint inputs 
-    if (! inputGeom.isSingle() &&  inputGeom.hasPoints()) {
-      return OverlayMixedPoints.overlay(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), pm);
+    else if (! inputGeom.isSingle() &&  inputGeom.hasPoints()) {
+      // handle Point-nonPoint inputs 
+      result = OverlayMixedPoints.overlay(opCode, inputGeom.getGeometry(0), inputGeom.getGeometry(1), pm);
     }
-    
-    // handle case where both inputs are formed of edges (Lines and Polygons)
-    Geometry result = computeEdgeOverlay();
+    else {
+      // handle case where both inputs are formed of edges (Lines and Polygons)
+      result = computeEdgeOverlay();
+    }
+    /**
+     * This is a no-op if the elevation model was not computed due to Z not present
+     */
+    elevModel.populateZ(result);
     return result;
   }
   
