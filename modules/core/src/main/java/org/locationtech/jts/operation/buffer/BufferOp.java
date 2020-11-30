@@ -23,6 +23,7 @@ import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ScaledNoder;
 import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
+import org.locationtech.jts.noding.snapround.SnapRoundingNoder;
 
 //import debug.*;
 
@@ -332,6 +333,15 @@ public class BufferOp
     throw saveException;
   }
 
+  private void bufferReducedPrecision(int precisionDigits)
+  {
+    double sizeBasedScaleFactor = precisionScaleFactor(argGeom, distance, precisionDigits);
+//    System.out.println("recomputing with precision scale factor = " + sizeBasedScaleFactor);
+
+    PrecisionModel fixedPM = new PrecisionModel(sizeBasedScaleFactor);
+    bufferFixedPrecision(fixedPM);
+  }
+  
   private void bufferOriginalPrecision()
   {
     try {
@@ -348,19 +358,23 @@ public class BufferOp
     }
   }
 
-  private void bufferReducedPrecision(int precisionDigits)
-  {
-    double sizeBasedScaleFactor = precisionScaleFactor(argGeom, distance, precisionDigits);
-//    System.out.println("recomputing with precision scale factor = " + sizeBasedScaleFactor);
-
-    PrecisionModel fixedPM = new PrecisionModel(sizeBasedScaleFactor);
-    bufferFixedPrecision(fixedPM);
-  }
-
   private void bufferFixedPrecision(PrecisionModel fixedPM)
   {
-    Noder noder = new ScaledNoder(new MCIndexSnapRounder(new PrecisionModel(1.0)),
-                                  fixedPM.getScale());
+    //System.out.println("recomputing with precision scale factor = " + fixedPM);
+
+    /*
+     * Snap-Rounding provides both robustness
+     * and a fixed output precision.
+     * 
+     * SnapRoundingNoder does not require rounded input, 
+     * so could be used by itself.
+     * But using ScaledNoder may be faster, since it avoids
+     * rounding within SnapRoundingNoder.
+     * (Note this only works for buffering, because
+     * ScaledNoder may invalidate topology.)
+     */
+    Noder snapNoder = new SnapRoundingNoder(new PrecisionModel(1.0));
+    Noder noder = new ScaledNoder(snapNoder, fixedPM.getScale());
 
     BufferBuilder bufBuilder = new BufferBuilder(bufParams);
     bufBuilder.setWorkingPrecisionModel(fixedPM);

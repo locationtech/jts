@@ -55,7 +55,7 @@ public class IteratedBufferStressTest
   	Stopwatch totalSW = new Stopwatch();
   	Geometry base = rdr.read(inputWKT);
   	double dist = 1.0;
-  	while (true) {
+  	while (! base.isEmpty()) {
   		Geometry b1 = doBuffer(base, dist);
   		Geometry b2 = doBuffer(b1, -dist);
   		dist += 1;
