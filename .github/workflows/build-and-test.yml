@@ -7,10 +7,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        java: [8, 8.0.192, 11, 11.0.9, 12, 13, 13.0.4, 14.0.2, 15]
+        java: [8, 11, 15]
         os: [ubuntu-latest, macOS-latest]
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 3
     name: Build and Test JDK ${{ matrix.java }}, ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
