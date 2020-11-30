@@ -1,14 +1,15 @@
 <run>
   <desc>
-    https://trac.osgeo.org/postgis/ticket/4538
-    Overlay Topology Exception
+    https://github.com/Toblerity/Shapely/issues/829
+    Overlay Topology Exception on union of polygons
   </desc>
   <precisionModel type="FLOATING" />
   <tolerance>0.01</tolerance>
 
 <case>
   <desc>
-    https://trac.osgeo.org/postgis/ticket/4538
+    https://github.com/Toblerity/Shapely/issues/829
+	Union of Polygons
   </desc>
   <a>
 GEOMETRYCOLLECTION (
