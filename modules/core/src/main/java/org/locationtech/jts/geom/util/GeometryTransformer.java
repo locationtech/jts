@@ -187,6 +187,9 @@ public class GeometryTransformer
       if (transformGeom.isEmpty()) continue;
       transGeomList.add(transformGeom);
     }
+    if (transGeomList.isEmpty()) {
+      return factory.createMultiPoint();
+    }
     return factory.buildGeometry(transGeomList);
   }
 
@@ -235,6 +238,9 @@ public class GeometryTransformer
       if (transformGeom.isEmpty()) continue;
       transGeomList.add(transformGeom);
     }
+    if (transGeomList.isEmpty()) {
+      return factory.createMultiLineString();
+    }
     return factory.buildGeometry(transGeomList);
   }
 
@@ -277,6 +283,9 @@ public class GeometryTransformer
       if (transformGeom == null) continue;
       if (transformGeom.isEmpty()) continue;
       transGeomList.add(transformGeom);
+    }
+    if (transGeomList.isEmpty()) {
+      return factory.createMultiPolygon();
     }
     return factory.buildGeometry(transGeomList);
   }
