@@ -36,6 +36,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `KdTree` `size` and `depth` methods (#603)
 * Improve `WKBWriter` to write empty Polygons using a more compact representation (#623)
 * Support read and initialize internal structure of `STRtree` and `Quadtree` (#634)
+* Improve `GeometryPrecisionReducer` to handle GeometryCollections (#648)
 
 ### Performance Improvements
 
