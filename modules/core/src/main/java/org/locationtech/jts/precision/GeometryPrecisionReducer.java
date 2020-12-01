@@ -14,10 +14,8 @@ package org.locationtech.jts.precision;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryEditor;
-import org.locationtech.jts.operation.overlayng.PrecisionReducer;
 
 /**
  * Reduces the precision of a {@link Geometry}
@@ -151,44 +149,13 @@ public class GeometryPrecisionReducer
    */
   public Geometry reduce(Geometry geom)
   {
-    if (!isPointwise && geom instanceof Polygonal) {
-      Geometry reduced = PrecisionReducer.reducePrecision(geom, targetPM);
-      if (changePrecisionModel) {
-        return changePM(reduced, targetPM);
-      }
-      return reduced;
-    }
-    /**
-     * Process pointwise reduction
-     * (which is only strategy used for linear and point geoms)
-     */
-    Geometry reducePW = reducePointwise(geom);
-    return reducePW;
-  }
-
-  private Geometry reducePointwise(Geometry geom)
-  {
-    GeometryEditor geomEdit;
+    Geometry reduced = PrecisionReducerTransformer.reduce(geom, targetPM, isPointwise);
+    
+    // TODO: incorporate this in the Transformer above
     if (changePrecisionModel) {
-    	GeometryFactory newFactory = createFactory(geom.getFactory(), targetPM);
-      geomEdit = new GeometryEditor(newFactory);
+      return changePM(reduced, targetPM);
     }
-    else
-      // don't change geometry factory
-      geomEdit = new GeometryEditor();
-
-    /**
-     * For polygonal geometries, collapses are always removed, in order
-     * to produce correct topology
-     */
-    boolean finalRemoveCollapsed = removeCollapsed;
-    if (geom.getDimension() >= 2)
-    	finalRemoveCollapsed = true;
-    
-    Geometry reduceGeom = geomEdit.edit(geom, 
-    		new PrecisionReducerCoordinateOperation(targetPM, finalRemoveCollapsed));
-    
-    return reduceGeom;
+    return reduced;
   }
   
   /**
