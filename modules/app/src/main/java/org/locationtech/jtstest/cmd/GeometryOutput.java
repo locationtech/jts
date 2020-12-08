@@ -36,7 +36,7 @@ public class GeometryOutput {
       txt = writeGeoJSON(geom);
     }
     else if (outputFormat.equalsIgnoreCase(CommandOptions.FORMAT_SVG)) {
-      txt = SVGTestWriter.getSVG(geom, null);
+      txt = SVGTestWriter.writeSVG(geom, null);
     }
     
     if (txt == null) return;

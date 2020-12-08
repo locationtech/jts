@@ -22,12 +22,12 @@ import org.locationtech.jtstest.util.io.SVGWriter;
  */
 public class SVGTestWriter {
 
-  public static String getTestSVG(Testable test) {
+  public static String writeTestSVG(Testable test) {
     SVGTestWriter writer = new SVGTestWriter();
     return writer.write(test);
   }
 
-  public static String getSVG(Geometry ga, Geometry gb) {
+  public static String writeSVG(Geometry ga, Geometry gb) {
     SVGTestWriter writer = new SVGTestWriter();
     return writer.write(ga, gb, null, null);
   }
@@ -50,6 +50,8 @@ public class SVGTestWriter {
         Envelope env = new Envelope();
         if (ga != null) env.expandToInclude(ga.getEnvelopeInternal());
         if (gb != null) env.expandToInclude(gb.getEnvelopeInternal());
+        double envDiam = env.getDiameter();
+        env.expandBy(envDiam * 0.02);
         Coordinate centre = env.centre();
         
         int DIM = 1000;

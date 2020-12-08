@@ -221,7 +221,7 @@ public class TestCaseTextDialog extends JDialog {
   }
     
     void rbSVG_actionPerformed(ActionEvent e) {
-      txtGeomView.setText(SVGTestWriter.getTestSVG(test));
+      txtGeomView.setText(SVGTestWriter.writeTestSVG(test));
   }
     
     void rbWKB_actionPerformed(ActionEvent e) {
