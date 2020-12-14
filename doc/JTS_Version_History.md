@@ -21,6 +21,10 @@ Distributions for older JTS versions can be obtained at the
 
 *Release Date:  TBD*
 
+### API Changes
+
+* `GeometryPrecisionReducer` is less tolerant of invalid input (but also avoids failing on some valid ones)
+
 ### Functionality Improvements
 
 * Improve Orientation.isCCW to handle flat topology collapse (#588)
@@ -51,6 +55,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `WKTFileReader` handling of files with large amount of whitespace (#616)
 * Fix `WKBWriter` to output 3D empty Points with 3 ordinates (#622)
 * Fix `Geometry.reverse` to handle all geometry structures (#628)
+* Fix `GeometryPrecisionReducer` to avoid silently mangling invalid input
 
 ## JTS TestBuilder
 
