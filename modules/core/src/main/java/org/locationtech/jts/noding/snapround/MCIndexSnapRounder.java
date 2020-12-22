@@ -41,10 +41,12 @@ import org.locationtech.jts.noding.SegmentString;
  * 
  * <h3>KNOWN BUGS</h3>
  * This implementation is not fully robust.
- * Use {@link SnapRoundingNoder} instead.
+ * 
+ * @deprecated Not robust. Use {@link SnapRoundingNoder} instead.
  *
  * @version 1.7
  */
+@Deprecated
 public class MCIndexSnapRounder
     implements Noder
 {
