@@ -41,6 +41,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve `WKBWriter` to write empty Polygons using a more compact representation (#623)
 * Support read and initialize internal structure of `STRtree` and `Quadtree` (#634)
 * Improve `GeometryPrecisionReducer` to handle GeometryCollections (#648)
+* Add `Orientation.isCCWArea` (#655)
 
 ### Performance Improvements
 
@@ -56,6 +57,9 @@ Distributions for older JTS versions can be obtained at the
 * Fix `WKBWriter` to output 3D empty Points with 3 ordinates (#622)
 * Fix `Geometry.reverse` to handle all geometry structures (#628)
 * Fix `GeometryPrecisionReducer` to avoid silently mangling input (#648)
+* Fix `Geometry.buffer` to avoid dropping large polygon areas in some situations (#655)
+  * also fixes `DouglasPeuckerSimplifier` (#498)
+
 
 ## JTS TestBuilder
 
