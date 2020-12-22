@@ -110,7 +110,7 @@ public class OrientationIsCCWTest extends GeometryTestCase {
    * Signed-area orientation returns orientation of largest enclosed area
    */
   public void testBowTieByArea() {
-    checkCCWArea(false, "POLYGON ((10 10, 50 10, 25 35, 35 35, 10 10))");
+    checkCCWArea(true, "POLYGON ((10 10, 50 10, 25 35, 35 35, 10 10))");
   }
   
   private void checkCCW(boolean expectedCCW, String wkt) {
@@ -122,7 +122,7 @@ public class OrientationIsCCWTest extends GeometryTestCase {
 
   private void checkCCWArea(boolean expectedCCW, String wkt) {
     Coordinate[] pts = getCoordinates(wkt);
-    assertEquals("Coordinate array isCCW: ", expectedCCW, Orientation.isCCW(pts) );
+    assertEquals("Coordinate array isCCW: ", expectedCCW, Orientation.isCCWArea(pts) );
   }
   
   private Coordinate[] getCoordinates(String wkt)
