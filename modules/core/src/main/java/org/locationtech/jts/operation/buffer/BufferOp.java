@@ -22,7 +22,6 @@ import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ScaledNoder;
-import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
 import org.locationtech.jts.noding.snapround.SnapRoundingNoder;
 
 //import debug.*;
@@ -63,13 +62,19 @@ import org.locationtech.jts.noding.snapround.SnapRoundingNoder;
  * <li>{@link BufferParameters#JOIN_BEVEL} - corners are beveled (clipped off).
  * </ul>
  * <p>
- * The buffer algorithm can perform simplification on the input to increase performance.
+ * The buffer algorithm may perform simplification on the input to increase performance.
  * The simplification is performed a way that always increases the buffer area 
  * (so that the simplified input covers the original input).
  * The degree of simplification can be {@link BufferParameters#setSimplifyFactor(double) specified},
  * with a {@link BufferParameters#DEFAULT_SIMPLIFY_FACTOR default} used otherwise.
  * Note that if the buffer distance is zero then so is the computed simplify tolerance, 
  * no matter what the simplify factor.
+ * <p>
+ * Buffer results are always valid geometry.
+ * Given this, computing a zero-width buffer of an invalid polygonal geometry is
+ * an effective way to "validify" the geometry.
+ * Note however that in the case of self-intersecting "bow-tie" geometries,
+ * only the largest enclosed area will be retained.
  *
  * @version 1.7
  */

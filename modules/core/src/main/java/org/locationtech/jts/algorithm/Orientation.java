@@ -21,7 +21,8 @@ import org.locationtech.jts.geom.impl.CoordinateArraySequence;
  * Orientation is a fundamental property of planar geometries 
  * (and more generally geometry on two-dimensional manifolds).
  * <p>
- * Orientation is notoriously subject to numerical precision errors
+ * Determining triangle orientation 
+ * is notoriously subject to numerical precision errors
  * in the case of collinear or nearly collinear points.  
  * JTS uses extended-precision arithmetic to increase
  * the robustness of the computation.
@@ -104,7 +105,7 @@ public class Orientation {
   }
 
   /**
-   * Computes whether a ring defined by an array of {@link Coordinate}s is
+   * Tests if a ring defined by an array of {@link Coordinate}s is
    * oriented counter-clockwise.
    * <ul>
    * <li>The list of points is assumed to have the first and last points equal.
@@ -129,7 +130,7 @@ public class Orientation {
   }
 
   /**
-   * Computes whether a ring defined by a {@link CoordinateSequence} is
+   * Tests if a ring defined by a {@link CoordinateSequence} is
    * oriented counter-clockwise.
    * <ul>
    * <li>The list of points is assumed to have the first and last points equal.
@@ -233,5 +234,33 @@ public class Orientation {
       double delX = downHiPt.x - upHiPt.x;
       return delX < 0;
     }
+  }
+  
+  /**
+   * Tests if a ring defined by an array of {@link Coordinate}s is
+   * oriented counter-clockwise, using the signed area of the ring.
+   * <ul>
+   * <li>The list of points is assumed to have the first and last points equal.
+   * <li>This handles coordinate lists which contain repeated points.
+   * <li>This handles rings which contain collapsed segments 
+   *     (in particular, along the top of the ring).
+   * <li>This handles rings which are invalid due to self-intersection
+   * </ul>
+   * This algorithm is guaranteed to work with valid rings.
+   * For invalid rings (containing self-intersections),   
+   * the algorithm determines the orientation of
+   * the largest enclosed area (including overlaps).
+   * This provides a more useful result in some situations, such as buffering.
+   * <p>
+   * However, this approach may be less accurate in the case of 
+   * rings with almost zero area.
+   * (Note that the orientation of rings with zero area is essentially
+   * undefined, and hence non-deterministic.)
+   * 
+   * @param ring an array of Coordinates forming a ring (with first and last point identical)
+   * @return true if the ring is oriented counter-clockwise.
+   */
+  public static boolean isCCWArea(Coordinate[] ring) {
+    return Area.ofRingSigned(ring) < 0;
   }
 }
