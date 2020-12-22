@@ -25,7 +25,8 @@ Distributions for older JTS versions can be obtained at the
 
 * `GeometryPrecisionReducer` is less tolerant of invalid input (but also avoids failing on some valid ones) (#648)
 * Moved `Position` and `Quadrant` to `org.locationtech.jts.geom` package
-* Removed `SimpleSnapRounder`
+* Removed `SimpleSnapRounder` - use `SnapRoundingNoder` instead
+* Deprecated `MCIndexSnapRounder` - use `SnapRoundingNoder` instead
 
 ### Functionality Improvements
 
