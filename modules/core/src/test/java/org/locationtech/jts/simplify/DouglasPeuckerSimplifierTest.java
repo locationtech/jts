@@ -155,6 +155,8 @@ public class DouglasPeuckerSimplifierTest
   }
   
   /**
+   * Test that a polygon made invalid by simplification
+   * is fixed in a sensible way.
    * Fixed by buffer(0) area-base orientation
    * See https://github.com/locationtech/jts/issues/498
    */
@@ -164,7 +166,6 @@ public class DouglasPeuckerSimplifierTest
         0.0036,
         "POLYGON ((21.32686 47.78723, 21.31486 47.81023, 21.32786 47.81123, 21.33986 47.80223, 21.328068201892744 47.823286782334385, 21.33886 47.82623, 21.34186 47.82123, 21.40686 47.81723, 21.32686 47.78723))"
         );
-    
   }
 
   private void checkDP(String wkt, double tolerance, String wktExpected) {
