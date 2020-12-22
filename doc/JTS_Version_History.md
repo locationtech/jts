@@ -24,7 +24,8 @@ Distributions for older JTS versions can be obtained at the
 ### API Changes
 
 * `GeometryPrecisionReducer` is less tolerant of invalid input (but also avoids failing on some valid ones) (#648)
-* `Position` and `Quadrant` moved to `org.locationtech.jts.geom` package
+* Moved `Position` and `Quadrant` to `org.locationtech.jts.geom` package
+* Removed `SimpleSnapRounder`
 
 ### Functionality Improvements
 
