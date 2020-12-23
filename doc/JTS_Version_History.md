@@ -17,9 +17,15 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
-# Version 1.18.0
+# Version 1.18.1
 
 *Release Date:  TBD*
+
+<!-- ================================================================ -->
+
+# Version 1.18.0
+
+*Release Date:  12/23/2020*
 
 ### API Changes
 
