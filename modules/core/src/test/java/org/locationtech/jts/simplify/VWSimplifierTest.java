@@ -55,7 +55,7 @@ public class VWSimplifierTest
         VWSimplifierResult.getResult(
       "POLYGON ((1721355.3 693015.146, 1721318.687 693046.251, 1721306.747 693063.038, 1721367.025 692978.29, 1721355.3 693015.146))",
         10.0))
-        .setExpectedResult("POLYGON ((1721355.3 693015.146, 1721367.025 692978.29, 1721318.687 693046.251, 1721355.3 693015.146))")
+        .setExpectedResult("POLYGON ((1721355.3 693015.146, 1721318.687 693046.251, 1721367.025 692978.29, 1721355.3 693015.146))")
         .test();
   }
   public void testPolygonSpikeInHole() throws Exception {

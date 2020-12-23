@@ -185,7 +185,8 @@ public class Densifier {
 		 * @return a valid area geometry
 		 */
 		private Geometry createValidArea(Geometry roughAreaGeom) {
-		  if (! isValidated) return roughAreaGeom;
+		  // if valid no need to process to make valid
+		  if (! isValidated || roughAreaGeom.isValid()) return roughAreaGeom;
 			return roughAreaGeom.buffer(0.0);
 		}
 	}
