@@ -2,20 +2,20 @@
 'UTF-8'
 -public
 -sourcepath
-'D:/proj/jts/git/jts-md/modules/core/src/main/java;D:/proj/jts/git/jts-md/modules/core/target/generated-sources/annotations;D:/proj/jts/git/jts-md/modules/core/src/main/javadoc'
+'/opt/devel/src/jts/modules/core/src/main/java:/opt/devel/src/jts/modules/core/target/generated-sources/annotations:/opt/devel/src/jts/modules/core/src/main/javadoc'
 -author
 -bottom
 'Copyright &#169; 2020. All rights reserved.'
 -charset
 'UTF-8'
 -d
-'D:/proj/jts/git/jts-md/modules/core/target/apidocs'
+'/opt/devel/src/jts/modules/core/target/apidocs'
 -docencoding
 'UTF-8'
 -doctitle
-'org.locationtech.jts:jts-core 1.17.0 API'
+'org.locationtech.jts:jts-core 1.18.0 API'
 -footer
-'org.locationtech.jts:jts-core 1.17.0'
+'org.locationtech.jts:jts-core 1.18.0'
 -group
 'Core - Geometry' 'org.locationtech.jts.geom:org.locationtech.jts.geom.*'
 -group
@@ -27,10 +27,10 @@
 -group
 'I/O - Common' 'org.locationtech.jts.io.*'
 -header
-'org.locationtech.jts:jts-core 1.17.0'
+'org.locationtech.jts:jts-core 1.18.0'
 -linkoffline
-'http://docs.oracle.com/javase/8/docs/api' 'D:/proj/jts/git/jts-md/modules/core/target/javadoc-bundle-options'
+'http://docs.oracle.com/javase/8/docs/api' '/opt/devel/src/jts/modules/core/target/javadoc-bundle-options'
 -use
 -version
 -windowtitle
-'org.locationtech.jts:jts-core 1.17.0 API'
+'org.locationtech.jts:jts-core 1.18.0 API'

@@ -29,6 +29,7 @@ org.locationtech.jts.io.kml
 org.locationtech.jts.linearref
 org.locationtech.jts.math
 org.locationtech.jts.noding
+org.locationtech.jts.noding.snap
 org.locationtech.jts.noding.snapround
 org.locationtech.jts.operation
 org.locationtech.jts.operation.buffer
@@ -39,6 +40,7 @@ org.locationtech.jts.operation.linemerge
 org.locationtech.jts.operation.overlay
 org.locationtech.jts.operation.overlay.snap
 org.locationtech.jts.operation.overlay.validate
+org.locationtech.jts.operation.overlayng
 org.locationtech.jts.operation.polygonize
 org.locationtech.jts.operation.predicate
 org.locationtech.jts.operation.relate
