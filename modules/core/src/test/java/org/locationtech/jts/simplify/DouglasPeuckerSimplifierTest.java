@@ -81,7 +81,7 @@ public class DouglasPeuckerSimplifierTest
         DPSimplifierResult.getResult(
       "POLYGON ((80 200, 240 200, 240 60, 80 60, 80 200), (120 120, 220 120, 180 199, 160 200, 140 199, 120 120))",
         10.0))
-        .setExpectedResult("POLYGON ((80 200, 160 200, 240 200, 240 60, 80 60, 80 200), (160 200, 140 199, 120 120, 220 120, 180 199, 160 200)))")
+        .setExpectedResult("POLYGON ((80 200, 240 200, 240 60, 80 60, 80 200), (120 120, 220 120, 180 199, 160 200, 140 199, 120 120))")
         .test();
   }
   public void testFlattishPolygon() throws Exception {
