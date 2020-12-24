@@ -21,6 +21,10 @@ Distributions for older JTS versions can be obtained at the
 
 *Release Date:  TBD*
 
+### Functionality Improvements
+
+* Check for invalid polygonal geometry before fixing in `DouglasPeuckerSimplifier`, `VWSimplifier`, `Densifier` (#656)
+
 <!-- ================================================================ -->
 
 # Version 1.18.0
