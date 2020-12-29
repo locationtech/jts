@@ -88,7 +88,7 @@
   
  * Compute the buffer of a WKT literal and output as WKB, with SRID set to 4326
  
-       jtsop -a  "POINT (10 10)" -srid 4326 -f wkt Buffer.buffer 10
+       jtsop -a  "POINT (10 10)" -srid 4326 -f wkb Buffer.buffer 10
   
  * Output a literal geometry as GeoJSON
     
