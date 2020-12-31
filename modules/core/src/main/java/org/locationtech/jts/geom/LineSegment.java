@@ -51,6 +51,10 @@ public class LineSegment
     this(new Coordinate(x0, y0), new Coordinate(x1, y1));
   }
 
+  public LineSegment(double x0, double y0, double z0, double x1, double y1, double z1) {
+    this(new Coordinate(x0, y0, z0), new Coordinate(x1, y1, z1));
+  }
+
   public LineSegment(LineSegment ls) {
     this(ls.p0, ls.p1);
   }
@@ -74,8 +78,10 @@ public class LineSegment
   {
     this.p0.x = p0.x;
     this.p0.y = p0.y;
+    this.p0.setZ(p0.getZ());
     this.p1.x = p1.x;
     this.p1.y = p1.y;
+    this.p1.setZ(p1.getZ());
   }
 
   /**
@@ -168,7 +174,7 @@ public class LineSegment
   
   /**
    * Determines the orientation index of a {@link Coordinate} relative to this segment.
-   * The orientation index is as defined in {@link Orientation#computeOrientation}.
+   * The orientation index is as defined in {@link Orientation#index}.
    *
    * @param p the coordinate to compare
    *
@@ -176,7 +182,7 @@ public class LineSegment
    * @return -1 (RIGHT) if <code>p</code> is to the right of this segment
    * @return 0 (COLLINEAR) if <code>p</code> is collinear with this segment
    * 
-   * @see Orientation#computeOrientation(Coordinate, Coordinate, Coordinate)
+   * @see Orientation#index(Coordinate, Coordinate, Coordinate)
    */
   public int orientationIndex(Coordinate p)
   {
@@ -234,8 +240,10 @@ public class LineSegment
    */
   public static Coordinate midPoint(Coordinate p0, Coordinate p1)
   {
-    return new Coordinate( (p0.x + p1.x) / 2,
-                           (p0.y + p1.y) / 2);
+      return new Coordinate(
+              (p0.x + p1.x) / 2,
+              (p0.y + p1.y) / 2,
+              (p0.getZ() + p1.getZ()) / 2);
   }
 
   /**
@@ -285,6 +293,7 @@ public class LineSegment
     Coordinate coord = new Coordinate();
     coord.x = p0.x + segmentLengthFraction * (p1.x - p0.x);
     coord.y = p0.y + segmentLengthFraction * (p1.y - p0.y);
+    coord.z = p0.z + segmentLengthFraction * (p1.z - p0.z);
     return coord;
   }
 
@@ -292,10 +301,14 @@ public class LineSegment
    * Computes the {@link Coordinate} that lies a given
    * fraction along the line defined by this segment and offset from 
    * the segment by a given distance.
+   * <p>
    * A fraction of <code>0.0</code> offsets from the start point of the segment;
    * a fraction of <code>1.0</code> offsets from the end point of the segment.
    * The computed point is offset to the left of the line if the offset distance is
    * positive, to the right if negative.
+   * </p>
+   * <p>If this LineSegment has valid z values, the z value of the returned
+   * Coordinate is interpolated along the LineSegment</p>
    *
    * @param segmentLengthFraction the fraction of the segment length along the line
    * @param offsetDistance the distance the point is offset from the segment
@@ -306,12 +319,14 @@ public class LineSegment
    */
   public Coordinate pointAlongOffset(double segmentLengthFraction, double offsetDistance)
   {
-  	// the point on the segment line
-    double segx = p0.x + segmentLengthFraction * (p1.x - p0.x);
-    double segy = p0.y + segmentLengthFraction * (p1.y - p0.y);
-    
     double dx = p1.x - p0.x;
     double dy = p1.y - p0.y;
+    double dz = p1.z - p0.z;
+  	// the point on the segment line
+    double segx = p0.x + segmentLengthFraction * dx;
+    double segy = p0.y + segmentLengthFraction * dy;
+    double segz = p0.z + segmentLengthFraction * dz;
+
     double len = Math.sqrt(dx * dx + dy * dy);
     double ux = 0.0;
     double uy = 0.0;
@@ -328,7 +343,7 @@ public class LineSegment
     double offsetx = segx - uy;
     double offsety = segy + ux;
 
-    Coordinate coord = new Coordinate(offsetx, offsety);
+    Coordinate coord = new Coordinate(offsetx, offsety, segz);
     return coord;
   }
 
@@ -412,6 +427,11 @@ public class LineSegment
     Coordinate coord = new Coordinate();
     coord.x = p0.x + r * (p1.x - p0.x);
     coord.y = p0.y + r * (p1.y - p0.y);
+    if (p0.hasZ() && p1.hasZ()) {
+      coord.z = p0.z + r * (p1.z - p0.z);
+    } else {
+      coord.z = p.z;
+    }
     return coord;
   }
   /**
@@ -422,6 +442,10 @@ public class LineSegment
    * <p>
    * Note that the returned line may have zero length (i.e. the same endpoints).
    * This can happen for instance if the lines are perpendicular to one another.
+   * </p>
+   * <p>
+   * If seg has significative z values, they are kept as is during projection
+   * </p>
    *
    * @param seg the line segment to project
    * @return the projected line segment, or <code>null</code> if there is no overlap
@@ -448,6 +472,7 @@ public class LineSegment
   /**
    * Computes the reflection of a point in the line defined
    * by this line segment.
+   * <p>If p has a significative z value, it is kept as is</p>
    * 
    * @param p the point to reflect
    * @return the reflected point
@@ -466,8 +491,17 @@ public class LineSegment
     double y = p.getY();
     double rx = ( -A2subB2*x - 2*A*B*y - 2*A*C ) / A2plusB2;
     double ry = ( A2subB2*y - 2*A*B*x - 2*B*C ) / A2plusB2;
-    
-    return new Coordinate(rx, ry);
+
+    if (p.hasZ()) {
+      if (this.p0.hasZ() && this.p1.hasZ()) {
+        Coordinate projection = this.project(p);
+        return new Coordinate(rx, ry, projection.z - (p.z-projection.z));
+      } else {
+        return new Coordinate(rx, ry, p.z);
+      }
+    } else {
+      return new Coordinate(rx, ry);
+    }
   }
   
   /**
@@ -484,9 +518,10 @@ public class LineSegment
     double dist0 = p0.distance(p);
     double dist1 = p1.distance(p);
     if (dist0 < dist1)
-      return p0;
-    return p1;
+      return new Coordinate(p0.x, p0.y, p0.z);
+    return new Coordinate(p1.x, p1.y, p1.z);
   }
+
   /**
    * Computes the closest points on two line segments.
    * 

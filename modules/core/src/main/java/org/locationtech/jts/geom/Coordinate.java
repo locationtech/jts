@@ -62,7 +62,8 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
    * Standard ordinate index value for, where Z is 2.
    *
    * <p>This constant assumes XYZM coordinate sequence definition, please check this assumption
-   * using {@link #getDimension()} and {@link #getMeasures()} before use.
+   * using {@link CoordinateSequence#getDimension()} and
+   * {@link CoordinateSequence#getMeasures()} before use.
    */
   public static final int Z = 2;
 
@@ -70,7 +71,8 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
    * Standard ordinate index value for, where M is 3.
    *
    * <p>This constant assumes XYZM coordinate sequence definition, please check this assumption
-   * using {@link #getDimension()} and {@link #getMeasures()} before use.
+   * using {@link CoordinateSequence#getDimension()} and
+   * {@link CoordinateSequence#getMeasures()} before use.
    */
   public static final int M = 3;
   
@@ -215,12 +217,20 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   public void setM(double m) {
     throw new IllegalArgumentException("Invalid ordinate index: " + M);
   }
-  
+
+  /**
+   * Returns true if this Coordinate has a valid z (different from NaN)
+   * @return true if this Coordinate has a valid z (different from NaN)
+   */
+  public boolean hasZ() {
+    return !Double.isNaN(z);
+  }
+
   /**
    * Gets the ordinate value for the given index.
    * 
    * The base implementation supports values for the index are 
-   * {@link X}, {@link Y}, and {@link Z}.
+   * {@link #X}, {@link #Y}, and {@link #Z}.
    * 
    * @param ordinateIndex the ordinate index
    * @return the value of the ordinate
@@ -241,7 +251,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
    * to a given value.
    * 
    * The base implementation supported values for the index are 
-   * {@link X}, {@link Y}, and {@link Z}.
+   * {@link #X}, {@link #Y}, and {@link #Z}.
    * 
    * @param ordinateIndex the ordinate index
    * @param value the value to set

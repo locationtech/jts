@@ -120,6 +120,14 @@ public class CoordinateXYZM extends Coordinate {
         throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
     }
   }
+
+  /**
+   * Returns true if this Coordinate has a valid z (different from NaN)
+   * @return true if this Coordinate has a valid z (different from NaN)
+   */
+  public boolean hasZ() {
+    return !Double.isNaN(z);
+  }
   
   public String toString() {
     return "(" + x + ", " + y + ", " + getZ() + " m="+getM()+")";
