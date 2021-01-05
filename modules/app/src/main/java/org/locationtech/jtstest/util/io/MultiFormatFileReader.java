@@ -125,7 +125,8 @@ public class MultiFormatFileReader
     List geomList = new ArrayList();
     do {
       Geometry geom = shpfile.next();
-      if (geom == null || geomList.size() > limit)
+      boolean isOverLimit = limit >= 0 && geomList.size() > limit;
+      if (geom == null || isOverLimit)
         break;
       if (count >= offset) {
         geomList.add(geom);
