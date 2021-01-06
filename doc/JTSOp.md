@@ -14,32 +14,37 @@
 
 `JtsOp` has the following functionality:
 
-* Read A and B geometries from:
-  * WKT or WKB literals on the command line
+### Input
+* Read A and B geometry lists from:
+  * literals on the command line (WKT or WKB)
   * standard input (WKT or WKB)
   * files in various formats (WKT, WKB, GeoJSON, GML, SHP)
   * a single input can supply both A and B (option `-ab`)
-* Apply a limit and/or offset when reading from some file formats:
+* Apply a limit and/or offset when reading:
   * `-limit` specifies a limit
   * `-offseet` specified an offset
   * supported for WKT, WKB, SHP file formats
-* Collect input A into a single collection for use with "aggregate" functions (such as `Overlay.unaryUnion`)
+* Collect input A into a single GeometryCollection for use with "aggregate" functions (such as `Overlay.unaryUnion`)
   * `-collect`
-* Execute any spatial or scalar function available in the JTS TestBuilder
-* "spread" execution over each geometry component from one or both inputs
+* Explode A and/or B inputs into separate geometry components
   * `-eacha`, `-eachb`
+
+### Operations
 * Use a spatial index for binary operations
   * `-index`
+* Execute any spatial or scalar function available in the JTS TestBuilder
 * Run an operation multiple times using a set of different argument values
   * `-args v1,v2,v3 ...`
 * Repeat operation execution multiple times, to provide better timing results
   * `-repeat n`
+  
+### Output
 * Set the SRID of the output geometries
   * `-srid <SRID>`
-* Output the result in the formats WKT, WKB, GeoJSON, GML, SVG
-  * `-f wkt | wkb | geojson | svg`
 * Explode output into a list of atomic geometries instead of a single geometry collection
   * `-explode`
+* Output the result in the formats WKT, WKB, GeoJSON, GML, SVG
+  * `-f wkt | wkb | geojson | svg`
 * Display information about the input geometries and function timing
   * `-v`
 * Display timing information
