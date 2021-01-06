@@ -36,11 +36,18 @@ import org.locationtech.jtstest.util.FileUtil;
  */
 public class MultiFormatFileReader
 {
-  public static Geometry readFile(String filename, int limit, int offset, GeometryFactory geomFactory) throws Exception {
+  public static Geometry readGeometry(String filename, int limit, int offset, GeometryFactory geomFactory) throws Exception {
     MultiFormatFileReader rdr = new MultiFormatFileReader(geomFactory);
     rdr.setLimit(limit);
     rdr.setOffset(offset);
     return rdr.read(filename);
+  }
+  
+  public static List<Geometry> read(String filename, int limit, int offset, GeometryFactory geomFactory) throws Exception {
+    MultiFormatFileReader rdr = new MultiFormatFileReader(geomFactory);
+    rdr.setLimit(limit);
+    rdr.setOffset(offset);
+    return rdr.readList(filename);
   }
   
   private GeometryFactory geomFact;
@@ -82,47 +89,64 @@ public class MultiFormatFileReader
   {
     String ext = FileUtil.extension(filename);
     if (ext.equalsIgnoreCase(".wkb"))
-      return readWKBHexFile(filename);
+      return toGeometry(readWKBHexFile(filename));
     if (ext.equalsIgnoreCase(".shp"))
-      return readShapefile(filename);
+      return toGeometry(readShapefile(filename));
     
     if (ext.equalsIgnoreCase(".gml"))
       return IOUtil.readFile(filename, geomFact);
     if (ext.equalsIgnoreCase(".geojson"))
       return IOUtil.readFile(filename, geomFact);
     
+    return toGeometry(readWKTFile(filename));
+  }
+  
+  public List<Geometry> readList(String filename)
+      throws Exception
+  {
+    String ext = FileUtil.extension(filename);
+    if (ext.equalsIgnoreCase(".wkb"))
+      return readWKBHexFile(filename);
+    if (ext.equalsIgnoreCase(".shp"))
+      return readShapefile(filename);
+    
+    /*
+    if (ext.equalsIgnoreCase(".gml"))
+      return IOUtil.readFile(filename, geomFact);
+    if (ext.equalsIgnoreCase(".geojson"))
+      return IOUtil.readFile(filename, geomFact);
+    */
+    
     return readWKTFile(filename);
   }
   
-  private Geometry readWKBHexFile(String filename)
+  private List<Geometry> readWKBHexFile(String filename)
   throws ParseException, IOException 
   {
     WKBReader reader = new WKBReader(geomFact);
     WKBHexFileReader fileReader = new WKBHexFileReader(filename, reader);
     if (limit >= 0) fileReader.setLimit(limit);
     if (offset > 0) fileReader.setOffset(offset);
-    List geomList = fileReader.read();
-    return toGeometry(geomList);
+    return fileReader.read();
   }
 
-  private Geometry readWKTFile(String filename)
+  private List<Geometry> readWKTFile(String filename)
   throws ParseException, IOException 
   {
     WKTReader reader = new WKTReader(geomFact);
     WKTFileReader fileReader = new WKTFileReader(filename, reader);
     if (limit >= 0) fileReader.setLimit(limit);
     if (offset > 0) fileReader.setOffset(offset);
-    List geomList = fileReader.read();
-    return toGeometry(geomList);
+    return fileReader.read();
   }
   
-  private Geometry readShapefile(String filename)
+  private List<Geometry> readShapefile(String filename)
   throws Exception 
   {
     Shapefile shpfile = new Shapefile(new FileInputStream(filename));
     shpfile.readStream(geomFact);
     int count = 0;
-    List geomList = new ArrayList();
+    List<Geometry> geomList = new ArrayList<Geometry>();
     do {
       Geometry geom = shpfile.next();
       boolean isOverLimit = limit >= 0 && geomList.size() > limit;
@@ -133,10 +157,10 @@ public class MultiFormatFileReader
       }
       count++;
     } while (true);
-    return toGeometry(geomList);
+    return geomList;
   }
   
-  private Geometry toGeometry(List geomList) {
+  private Geometry toGeometry(List<Geometry> geomList) {
     if (geomList.size() == 1)
       return (Geometry) geomList.get(0);
     

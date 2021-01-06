@@ -57,7 +57,7 @@ import org.locationtech.jtstest.util.io.MultiFormatReader;
  * jtsop -a "POINT (10 10)" -f wkt Buffer.buffer 1,10,100
  * 
  * --- Run op for each A 
- * jtsop -a "MULTIPOINT ((10 10), (20 20))" -each A -f wkt Buffer.buffer
+ * jtsop -a "MULTIPOINT ((10 10), (20 20))" -eacha -f wkt Buffer.buffer
  * 
  * --- Output a literal geometry as GeoJSON
  * jtsop -a "POINT (10 10)" -f geojson
@@ -108,7 +108,10 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMA, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMB, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.GEOMAB, 1))
-    .addOptionSpec(new OptionSpec(CommandOptions.EACH, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.COLLECT, 0))
+    //.addOptionSpec(new OptionSpec(CommandOptions.EACH, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.EACHA, 0))
+    .addOptionSpec(new OptionSpec(CommandOptions.EACHB, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.INDEX, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.EXPLODE, 0))
     .addOptionSpec(new OptionSpec(CommandOptions.FORMAT, 1))
@@ -129,7 +132,8 @@ public class JTSOpCmd {
   "           [ -ab <wkt> | <wkb> | stdin | <filename.ext> ]",
   "           [ -limit <n> ]",
   "           [ -offset <n> ]",
-  "           [ -each ( a | b | ab | aa ) ]",
+  "           [ -eacha ]",
+  "           [ -eachb ]",
   "           [ -index ]",
   "           [ -repeat <num> ]",
   "           [ -validate ]",
@@ -152,7 +156,8 @@ public class JTSOpCmd {
   "  -limit          Limits the number of geometries read from A, or B if specified",
   "  -offset         Uses an offset to read geometries  from A, or B if specified",
   "===== Operation options:",
-  "  -each           execute op on each component of A, B, both A & B, or A & A",
+  "  -eacha          execute op on each component of A",
+  "  -eachb          execute op on each component of B",
   "  -index          index geometry B",
   "  -repeat         repeat the operation N times",
   "  -validate       validate the result of each operation",
@@ -306,6 +311,7 @@ public class JTSOpCmd {
       }
     }
     
+    cmdArgs.isCollect = commandLine.hasOption(CommandOptions.COLLECT);
     cmdArgs.isExplode = commandLine.hasOption(CommandOptions.EXPLODE);
     
     int paramLimit = commandLine.hasOption(CommandOptions.LIMIT)
@@ -329,28 +335,9 @@ public class JTSOpCmd {
             : 1;
     cmdArgs.validate  = commandLine.hasOption(CommandOptions.VALIDATE);
 
-    if (commandLine.hasOption(CommandOptions.EACH)) {
-      String each = commandLine.getOptionArg(CommandOptions.EACH, 0);
-
-      if (each.equalsIgnoreCase("a")) {
-        cmdArgs.eachA = true;
-      }
-      else if (each.equalsIgnoreCase("b")) {
-        cmdArgs.eachB = true;
-      }
-      else if (each.equalsIgnoreCase("ab")) {
-        cmdArgs.eachA = true;
-        cmdArgs.eachB = true;
-      }
-      else if (each.equalsIgnoreCase("aa")) {
-        cmdArgs.eachA = true;
-        cmdArgs.eachB = true;
-        cmdArgs.eachAA = true;
-      }
-      else {
-        throw new CommandError(ERR_INVALID_ARG_PARAM, "-each " + each);
-      }
-    }
+    cmdArgs.eachA = commandLine.hasOption(CommandOptions.EACHA);
+    cmdArgs.eachB = commandLine.hasOption(CommandOptions.EACHB);
+    
     boolean isVerbose = commandLine.hasOption(CommandOptions.VERBOSE)
         || commandLine.hasOption(CommandOptions.V);
     opRunner.setVerbose(isVerbose);
@@ -396,10 +383,6 @@ public class JTSOpCmd {
     }
     
     return cmdArgs;
-  }
-  
-  private void applyParameters() {
-  
   }
   
   private String[] parseOpArg(String arg) {

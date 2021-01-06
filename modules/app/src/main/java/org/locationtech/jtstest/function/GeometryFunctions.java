@@ -47,8 +47,9 @@ public class GeometryFunctions
 		return true;	
 		}
 	
+  public static Geometry copy(Geometry g)       { return g.copy(); }
   public static Geometry envelope(Geometry g) 	{ return g.getEnvelope();  }
-  public static Geometry reverse(Geometry g) {      return g.reverse();  }
+  public static Geometry reverse(Geometry g)    { return g.reverse();  }
   public static Geometry normalize(Geometry g) 
   {      
   	Geometry gNorm = g.copy();

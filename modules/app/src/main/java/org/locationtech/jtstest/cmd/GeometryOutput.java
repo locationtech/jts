@@ -1,5 +1,7 @@
 package org.locationtech.jtstest.cmd;
 
+import java.util.List;
+
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBWriter;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
@@ -64,11 +66,29 @@ public class GeometryOutput {
       Geometry g)
   {
     if (g == null) return "";
-    StringBuilder buf = new StringBuilder();
-    buf.append(label + " : ");
-    buf.append(GeometryUtil.structureSummary(g));
-    buf.append("    " + GeometryUtil.metricsSummary(g));
-    return buf.toString();
+    return String.format("%s: %s (%d)", label, g.getGeometryType().toUpperCase(), g.getNumPoints());
+  }
+
+  public static String writeGeometrySummary(String label,
+      List<Geometry> g)
+  {
+    if (g == null) return "";
+    int nVert = getNumPoints(g);
+    return writeGeometrySummary(label, g.size(), nVert);
+  }
+
+  public static String writeGeometrySummary(String label,
+      int numGeoms, int numVert)
+  {
+    return String.format("%s : %d geometries, %d vertices", label, numGeoms, numVert);
+  }
+
+  private static int getNumPoints(List<Geometry> geoms) {
+    int n = 0;
+    for (Geometry g : geoms ) {
+      n += g.getNumPoints();
+    }
+    return n;
   }
 
 }
