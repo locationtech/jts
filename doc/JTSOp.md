@@ -18,16 +18,18 @@
   * WKT or WKB literals on the command line
   * standard input (WKT or WKB)
   * files in various formats (WKT, WKB, GeoJSON, GML, SHP)
-  * a single input containing two geometries can supply both A and B (option `-ab`)
+  * a single input can supply both A and B (option `-ab`)
 * Apply a limit and/or offset when reading from some file formats:
   * `-limit` specifies a limit
   * `-offseet` specified an offset
   * supported for WKT, WKB, SHP file formats
+* Collect input A into a single collection for use with "aggregate" functions (such as `Overlay.unaryUnion`)
+  * `-collect`
 * Execute any spatial or scalar function available in the JTS TestBuilder
 * "spread" execution over each geometry component from one or both inputs
-  * `-each [ a | b | ab | aa ]`
-  * the `-each aa` parameter uses the A input for both arguments for binary operations
-  * the `-index` parameter uses a spatial index for binary operations
+  * `-eacha`, `-eachb`
+* Use a spatial index for binary operations
+  * `-index`
 * Run an operation multiple times using a set of different argument values
   * `-args v1,v2,v3 ...`
 * Repeat operation execution multiple times, to provide better timing results
@@ -58,19 +60,19 @@
  
        jtsop -help
        
- * Compute the area of a WKT geometry and output it as text
+ * Compute the area of WKT geometries and output as text
       
-       jtsop -a some-geom.wkt -f txt area 
+       jtsop -a geoms.wkt -f txt area 
       
- * Compute the unary union of a WKT geometry and output as WKB
+ * Compute the unary union of WKT geometries and output as WKB
  
-       jtsop -a some-geom.wkt -f wkb Overlay.unaryUnion 
+       jtsop -a geoms.wkt -collect -f wkb Overlay.unaryUnion 
  
  * Compute the union of two geometries in WKT and WKB and output as WKT
       
        jtsop -a some-geom.wkt -b some-other-geom.wkb -f wkt Overlay.Union
  
- * Compute the buffer of distance 10 of a WKT geometry and output as GeoJSON
+ * Compute the buffer of distance 10 of a WKT geometries and output as GeoJSON
     
        jtsop -a some-geom.wkt -f geojson Buffer.buffer 10
  
@@ -96,15 +98,15 @@
        
  * Validate geometries from a WKT file using limit and offset
       
-       jtsop -a some-file-with-geom.wkt -limit 100 -offset 40 -f txt Geometry.isValid 
+       jtsop -a geoms.wkt -limit 100 -offset 40 -f txt Geometry.isValid 
        
- * Compute an operation on a geometry and output only geometry metrics and timing
+ * Compute an operation on a file of geometries and output only geometry metrics and timing
  
-       jtsop -v -a some-geom.wkt Buffer.buffer 10
+       jtsop -v -a geosm.wkt Buffer.buffer 10
        
  * Compute the intersection of all pairs of geometries from A and B, using a spatial index
  
-       jtsop -v -a geomA.wkt --b geomB.wkt -each ab -index Overlay.intersection 
+       jtsop -v -a geomsA.wkt --b geomsB.wkt -eacha -eachb -index Overlay.intersection 
  
  * Chain operations using a shell pipe
  
