@@ -78,7 +78,7 @@ public class GridGenerator extends GeometryGenerator {
 		double y = boundingBox.getMinY(); // base y
 		double dy = boundingBox.getMaxY()-y;
 		
-		int row = numberRows==1?0:index / numberRows;
+		int row = numberRows==1?0:index / numberColumns;
 		int col = numberColumns==1?0:index % numberColumns;
 		
 		double sx,sy; // size of a step
