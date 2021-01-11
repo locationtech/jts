@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.densify;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 
 import junit.textui.TestRunner;
@@ -38,6 +39,20 @@ public class DensifierTest extends GeometryTestCase {
   public void testBoxNoValidate() {
     checkDensifyNoValidate("POLYGON ((10 30, 30 30, 30 10, 10 10, 10 30))", 
         10, "POLYGON ((10 30, 16.666666666666668 30, 23.333333333333336 30, 30 30, 30 23.333333333333332, 30 16.666666666666664, 30 10, 23.333333333333332 10, 16.666666666666664 10, 10 10, 10 16.666666666666668, 10 23.333333333333336, 10 30))");
+  }
+
+  public void testDensify3D() {
+    Geometry line = read("LINESTRING (0 0 0, 30 40 60, 35 35 120)");
+    double distanceTolerance = 10.0;
+    Geometry densified = Densifier.densify(line, distanceTolerance);
+    Coordinate c0 = line.getCoordinates()[0];
+    Coordinate c1 = line.getCoordinates()[1];
+    Coordinate c2 = line.getCoordinates()[2];
+    // Number of segments in original first and second segments
+    int frac01 = (int) (c0.distance(c1)/distanceTolerance) + 1;
+    int frac12 = (int) (c1.distance(c2)/distanceTolerance) + 1;
+    assertEquals(densified.getCoordinates()[1].z, c0.z + (c1.z-c0.z)/frac01,1E-10);
+    assertEquals(densified.getCoordinates()[frac01+1].z, c1.z + (c2.z-c1.z)/frac12,1E-10);
   }
 
   private void checkDensify(String wkt, double distanceTolerance, String wktExpected) {

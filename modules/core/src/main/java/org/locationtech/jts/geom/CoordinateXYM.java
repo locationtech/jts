@@ -146,6 +146,14 @@ public class CoordinateXYM extends Coordinate {
         throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
     }
   }
+
+  /**
+   * Returns false because CoordinateXYM has no z
+   * @return false
+   */
+  public boolean hasZ() {
+    return false;
+  }
   
   public String toString() {
     return "(" + x + ", " + y + " m=" + getM() + ")";

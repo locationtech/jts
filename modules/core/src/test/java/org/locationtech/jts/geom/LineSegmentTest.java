@@ -74,6 +74,69 @@ public class LineSegmentTest extends TestCase {
     assertTrue(dist <= MAX_ABS_ERROR_INTERSECTION);
   }
 
+  public void testMidPoint3D() {
+    LineSegment segment = new LineSegment(0.0,0.0,1.0,10.0,0.0,2.0);
+    assertTrue(segment.midPoint().getZ() == 1.5);
+  }
+
+  public void testPointAlong3D() {
+    LineSegment segment = new LineSegment(0.0,0.0,1.0,10.0,0.0,2.0);
+    assertTrue(segment.pointAlong(0.5).getZ() == 1.5);
+  }
+
+  public void testPointAlongOffset3D() {
+    LineSegment segment = new LineSegment(0.0,0.0,1.0,10.0,0.0,2.0);
+    assertTrue(segment.pointAlongOffset(0.5,1.0).getZ() == 1.5);
+  }
+
+  public void testClosestPoint3D() {
+    LineSegment segment = new LineSegment(0.0,0.0,1.0,10.0,0.0,2.0);
+    Coordinate p = new Coordinate(5.0, 2.0, 3.14);
+    assertTrue(segment.closestPoint(p).equals3D(new Coordinate(5.0, 0.0, 1.5)));
+  }
+
+  public void testClosestPoint3Dext() {
+    LineSegment segment = new LineSegment(0.0,0.0,1.0,10.0,0.0,2.0);
+    Coordinate p = new Coordinate(-10.0, 2.0, 3.14);
+    assertTrue(segment.closestPoint(p).equals3D(new Coordinate(0.0, 0.0, 1.0)));
+  }
+
+  public void testProject3D() {
+    LineSegment segment = new LineSegment(0.0,0.0,1.0,10.0,0.0,2.0);
+    Coordinate p = new Coordinate(5.0, 2.0, 3.14);
+    assertTrue(segment.project(p).equals3D(new Coordinate(5.0, 0.0, 1.5)));
+  }
+
+  public void testProject3Da() {
+    LineSegment segment = new LineSegment(0.0,0.0,3.14, 10.0,0.0, Double.NaN);
+    Coordinate p = new Coordinate(5.0, 2.0, 3.14);
+    assertTrue(segment.project(p).equals3D(new Coordinate(5.0, 0.0, 3.14)));
+  }
+
+  public void testProject3Db() {
+    LineSegment segment = new LineSegment(0.0,0.0,1.0,10.0,0.0,2.0);
+    Coordinate p = new Coordinate(5.0, 2.0);
+    assertTrue(segment.project(p).equals3D(new Coordinate(5.0, 0.0, 1.5)));
+  }
+
+  public void testReflect3D() {
+    LineSegment segment = new LineSegment(0.0,0.0,1.0,10.0,0.0,2.0);
+    Coordinate p = new Coordinate(5.0, 2.0, 2.0);
+    assertTrue(segment.reflect(p).equals3D(new Coordinate(5.0, -2.0, 1.0)));
+  }
+
+  public void testReflect3Da() {
+    LineSegment segment = new LineSegment(0.0,0.0,1.0,10.0,0.0,Double.NaN);
+    Coordinate p = new Coordinate(5.0, 2.0, 3.14);
+    assertTrue(segment.reflect(p).equals3D(new Coordinate(5.0, -2.0, 3.14)));
+  }
+
+  public void testReflect3Db() {
+    LineSegment segment = new LineSegment(0.0,0.0,1.0,10.0,0.0,2.0);
+    Coordinate p = new Coordinate(5.0, 2.0);
+    assertTrue(segment.reflect(p).equals3D(new Coordinate(5.0, -2.0, Double.NaN)));
+  }
+
   public void testOffset() throws Exception
   {
     checkOffset(0, 0, 10, 10, 0.0, ROOT2, -1, 1);

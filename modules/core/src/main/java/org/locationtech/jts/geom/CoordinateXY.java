@@ -121,6 +121,14 @@ public class CoordinateXY extends Coordinate {
         throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
     }
   }
+
+  /**
+   * Returns false because CoordinateXY has no z
+   * @return false
+   */
+  public boolean hasZ() {
+    return false;
+  }
   
   public String toString() {
     return "(" + x + ", " + y + ")";
