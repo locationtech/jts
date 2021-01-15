@@ -202,7 +202,6 @@ public class WKBReader
 
     // determine if SRIDs are present
     hasSRID = (typeInt & 0x20000000) != 0;
-    int SRID = 0;
     if (hasSRID) {
       SRID = dis.readInt();
     }
