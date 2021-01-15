@@ -24,6 +24,11 @@ Distributions for older JTS versions can be obtained at the
 ### Functionality Improvements
 
 * Check for invalid polygonal geometry before fixing in `DouglasPeuckerSimplifier`, `VWSimplifier`, `Densifier` (#656)
+* Add `Coordinate` and subclasses `create()` methods (#637)
+
+### Bug Fixes
+
+* Ensure `Densifier` creates `Coordinate`s with same class as input (#637)
 
 <!-- ================================================================ -->
 
