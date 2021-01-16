@@ -12,13 +12,11 @@
 package org.locationtech.jts.operation.overlayng;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.locationtech.jts.util.Assert;
-import org.locationtech.jts.util.Debug;
 
 /**
  * Performs merging on the noded edges of the input geometries.
@@ -78,7 +76,6 @@ class EdgeMerger {
         //Debug.println(edge.toLineString());
       }
     }
-    //return new ArrayList<Edge>(edgeMap.values());
     return mergedEdges;
   }
 
