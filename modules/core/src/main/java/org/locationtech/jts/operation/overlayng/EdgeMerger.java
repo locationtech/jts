@@ -12,13 +12,11 @@
 package org.locationtech.jts.operation.overlayng;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.locationtech.jts.util.Assert;
-import org.locationtech.jts.util.Debug;
 
 /**
  * Performs merging on the noded edges of the input geometries.
@@ -39,25 +37,22 @@ import org.locationtech.jts.util.Debug;
  * no other coincident edge, or if all coincident edges have the same direction).
  * This ensures that the overlay output line direction will be as consistent
  * as possible with input lines.
+ * <p>
+ * The merger also preserves the order of the edges in the input.
+ * This means that for polygon-line overlay
+ * the result lines will be in the same order as in the input
+ * (possibly with multiple result lines for a single input line).
  * 
  * @author mdavis
  *
  */
 class EdgeMerger {
-
+ 
   public static List<Edge> merge(List<Edge> edges) {
-    EdgeMerger merger = new EdgeMerger(edges);
-    return merger.merge();
-  }
+    // use a list to collect the final edges, to preserve order
+    List<Edge> mergedEdges = new ArrayList<Edge>();
+    Map<EdgeKey, Edge> edgeMap = new HashMap<EdgeKey, Edge>();
 
-  private Collection<Edge> edges;
-  private Map<EdgeKey, Edge> edgeMap = new HashMap<EdgeKey, Edge>();
-  
-  public EdgeMerger(List<Edge> edges) {
-    this.edges = edges;
-  }
-  
-  public ArrayList<Edge> merge() {
     for (Edge edge : edges) {
       EdgeKey edgeKey = EdgeKey.create(edge);
       Edge baseEdge = edgeMap.get(edgeKey);
@@ -66,6 +61,7 @@ class EdgeMerger {
         edgeMap.put(edgeKey, edge);
         //Debug.println("edge added: " + edge);
         //Debug.println(edge.toLineString());
+        mergedEdges.add(edge);
       }
       else {
         // found an existing edge
@@ -80,7 +76,7 @@ class EdgeMerger {
         //Debug.println(edge.toLineString());
       }
     }
-    return new ArrayList<Edge>(edgeMap.values());
+    return mergedEdges;
   }
 
 }

@@ -57,7 +57,7 @@ public abstract class GeometryTestCase extends TestCase{
 
   /**
    * Checks that the normalized values of the expected and actual
-   * geometries are exactly equals.
+   * geometries are exactly equal.
    * 
    * @param expected the expected value
    * @param actual the actual value
@@ -68,6 +68,21 @@ public abstract class GeometryTestCase extends TestCase{
     boolean equal = actualNorm.equalsExact(expectedNorm);
     if (! equal) {
       System.out.format(CHECK_EQUAL_FAIL, expectedNorm, actualNorm );
+    }
+    assertTrue(equal);
+  }
+
+  /**
+   * Checks that the values of the expected and actual
+   * geometries are exactly equal.
+   * 
+   * @param expected the expected value
+   * @param actual the actual value
+   */
+  protected void checkEqualExact(Geometry expected, Geometry actual) {
+    boolean equal = actual.equalsExact(expected);
+    if (! equal) {
+      System.out.format(CHECK_EQUAL_FAIL, expected, actual );
     }
     assertTrue(equal);
   }
