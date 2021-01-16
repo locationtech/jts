@@ -305,6 +305,10 @@ class LineBuilder {
    * by the start edge direction. This implies
    * that if all edges are reversed, the created line
    * will be reversed to match.
+   * This ensures the orientation of linework is faithful to the input
+   * in the case of polygon-line overlay.
+   * However, this does not provide a consistent orientation 
+   * in the case of line-line intersection(where A and B might have different orientations).
    * (Other more complex strategies would be possible.
    * E.g. using the direction of the majority of segments,
    * or preferring the direction of the A edges.)
