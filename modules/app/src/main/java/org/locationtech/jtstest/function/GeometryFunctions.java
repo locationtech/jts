@@ -37,7 +37,8 @@ public class GeometryFunctions
   public static double area(Geometry g)         {   return g.getArea(); }
   public static double SRID(Geometry g)         {   return g.getSRID(); }
   
-	public static boolean isSimple(Geometry g)		{		return g.isSimple();	}
+  public static boolean isEmpty(Geometry g)    {   return g.isEmpty();  }
+  public static boolean isSimple(Geometry g)    {   return g.isSimple();  }
 	public static boolean isValid(Geometry g)			{		return g.isValid();	}
 	public static boolean isRectangle(Geometry g)	{		return g.isRectangle();	}
 	public static boolean isClosed(Geometry g)	{
