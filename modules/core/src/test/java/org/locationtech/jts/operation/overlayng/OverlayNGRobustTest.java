@@ -11,8 +11,9 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
+import java.util.List;
+
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.noding.SegmentNode;
 
 import junit.textui.TestRunner;
@@ -84,5 +85,45 @@ public class OverlayNGRobustTest extends GeometryTestCase {
     catch (Throwable ex) {
       // do nothing - expected result
     }
+  }
+  
+  public void testPolygonsOverlapping( ) {
+    checkUnaryUnion("GEOMETRYCOLLECTION (POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200)), POLYGON ((250 250, 250 150, 150 150, 150 250, 250 250)))", 
+        "POLYGON ((100 200, 150 200, 150 250, 250 250, 250 150, 200 150, 200 100, 100 100, 100 200))");
+  }
+
+  public void testCollection( ) {
+    checkUnaryUnion(new String[] {
+        "POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))",
+        "POLYGON ((300 100, 200 100, 200 200, 300 200, 300 100))",
+        "POLYGON ((100 300, 200 300, 200 200, 100 200, 100 300))",
+        "POLYGON ((300 300, 300 200, 200 200, 200 300, 300 300))"
+        },
+        "POLYGON ((100 100, 100 200, 100 300, 200 300, 300 300, 300 200, 300 100, 200 100, 100 100))");
+  }
+
+  public void testCollectionEmpty( ) {
+    checkUnaryUnion(new String[0],
+        "GEOMETRYCOLLECTION EMPTY");
+  }
+
+  private void checkUnaryUnion(String wkt, String wktExpected) {
+    Geometry geom = read(wkt);
+    Geometry expected = read(wktExpected);
+    Geometry result = OverlayNGRobust.union(geom);
+    checkEqual(expected, result);
+  }
+  
+  private void checkUnaryUnion(String[] wkt,String wktExpected) {
+    List geoms = readList(wkt);
+    Geometry expected = read(wktExpected);
+    Geometry result;
+    if (geoms.isEmpty()) {
+      result = OverlayNGRobust.union(geoms, getGeometryFactory());            
+    }
+    else {
+      result = OverlayNGRobust.union(geoms);      
+    }
+    checkEqual(expected, result);
   }
 }
