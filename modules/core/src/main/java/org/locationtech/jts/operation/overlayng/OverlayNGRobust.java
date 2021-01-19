@@ -11,8 +11,11 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
+import java.util.Collection;
+
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.noding.ValidatingNoder;
@@ -54,7 +57,7 @@ import org.locationtech.jts.operation.union.UnionStrategy;
 public class OverlayNGRobust
 {
   /**
-   * Computes unary union using robust computation.
+   * Computes the unary union of a geometry using robust computation.
    * 
    * @param geom the geometry to union
    * @return the union result
@@ -62,22 +65,49 @@ public class OverlayNGRobust
    * @see UnaryUnionOp
    */
   public static Geometry union(Geometry geom) {
-    UnionStrategy unionSRFun = new UnionStrategy() {
-
-      public Geometry union(Geometry g0, Geometry g1) {
-         return overlay(g0, g1, OverlayNG.UNION );
-      }
-
-      @Override
-      public boolean isFloatingPrecision() {
-        return true;
-      }
-      
-    };
     UnaryUnionOp op = new UnaryUnionOp(geom);
-    op.setUnionFunction(unionSRFun);
+    op.setUnionFunction(OVERLAY_UNION);
     return op.union();
   }
+  
+  /**
+   * Computes the unary union of a collection of geometries using robust computation.
+   * 
+   * @param geoms the collection of geometries to union
+   * @return the union result
+   * 
+   * @see UnaryUnionOp
+   */
+  public static Geometry union(Collection<Geometry> geoms) {
+    UnaryUnionOp op = new UnaryUnionOp(geoms);
+    op.setUnionFunction(OVERLAY_UNION);
+    return op.union();
+  }
+  
+  /**
+   * Computes the unary union of a collection of geometries using robust computation.
+   * 
+   * @param geoms the collection of geometries to union
+   * @param geomFact the geometry factory to use
+   * @return the union of the geometries
+   */
+  public static Geometry union(Collection<Geometry> geoms, GeometryFactory geomFact) {
+    UnaryUnionOp op = new UnaryUnionOp(geoms, geomFact);
+    op.setUnionFunction(OVERLAY_UNION);
+    return op.union();
+  }
+  
+  private static UnionStrategy OVERLAY_UNION = new UnionStrategy() {
+
+    public Geometry union(Geometry g0, Geometry g1) {
+       return overlay(g0, g1, OverlayNG.UNION );
+    }
+
+    @Override
+    public boolean isFloatingPrecision() {
+      return true;
+    }
+  };
   
   /**
    * Overlay two geometries, using heuristics to ensure
