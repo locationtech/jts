@@ -55,6 +55,10 @@ public abstract class GeometryTestCase extends TestCase{
     readerWKT = new WKTReader(geomFactory);
   }
 
+  protected GeometryFactory getGeometryFactory() {
+    return geomFactory;
+  }
+  
   /**
    * Checks that the normalized values of the expected and actual
    * geometries are exactly equal.

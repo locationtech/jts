@@ -13,13 +13,16 @@ package org.locationtech.jts.operation.overlayng;
 
 import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
+import java.util.Collection;
+
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.locationtech.jts.operation.union.UnionStrategy;
 
 /**
- * Unions a collection of geometries in an
+ * Unions a geometry or collection of geometries in an
  * efficient way, using {@link OverlayNG}
  * to ensure robust computation.
  * <p>
@@ -35,14 +38,49 @@ import org.locationtech.jts.operation.union.UnionStrategy;
 public class UnaryUnionNG {
   
   /**
-   * Unions a collection of geometries
+   * Unions a geometry (which is often a collection)
    * using a given precision model.
    * 
    * @param geom the geometry to union
    * @param pm the precision model to use
-   * @return the union of the geometries
+   * @return the union of the geometry
    */
   public static Geometry union(Geometry geom, PrecisionModel pm) {
+    UnaryUnionOp op = new UnaryUnionOp(geom);
+    op.setUnionFunction( createUnionStrategy(pm) );
+    return op.union();
+  }
+  
+  /**
+   * Unions a collection of geometries
+   * using a given precision model.
+   * 
+   * @param geoms the collection of geometries to union
+   * @param pm the precision model to use
+   * @return the union of the geometries
+   */
+  public static Geometry union(Collection<Geometry> geoms, PrecisionModel pm) {
+    UnaryUnionOp op = new UnaryUnionOp(geoms);
+    op.setUnionFunction( createUnionStrategy(pm) );
+    return op.union();
+  }
+  
+  /**
+   * Unions a collection of geometries
+   * using a given precision model.
+   * 
+   * @param geoms the collection of geometries to union
+   * @param geomFact the geometry factory to use
+   * @param pm the precision model to use
+   * @return the union of the geometries
+   */
+  public static Geometry union(Collection<Geometry> geoms, GeometryFactory geomFact, PrecisionModel pm) {
+    UnaryUnionOp op = new UnaryUnionOp(geoms, geomFact);
+    op.setUnionFunction( createUnionStrategy(pm) );
+    return op.union();
+  }
+  
+  private static UnionStrategy createUnionStrategy(PrecisionModel pm) {
     UnionStrategy unionSRFun = new UnionStrategy() {
 
       public Geometry union(Geometry g0, Geometry g1) {
@@ -55,9 +93,7 @@ public class UnaryUnionNG {
       }
       
     };
-    UnaryUnionOp op = new UnaryUnionOp(geom);
-    op.setUnionFunction( unionSRFun );
-    return op.union();
+    return unionSRFun;
   }
   
   private UnaryUnionNG() {

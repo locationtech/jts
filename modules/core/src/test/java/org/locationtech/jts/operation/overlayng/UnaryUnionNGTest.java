@@ -11,6 +11,8 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
+import java.util.List;
+
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 
@@ -45,11 +47,42 @@ public class UnaryUnionNGTest extends GeometryTestCase
         "POLYGON ((100 200, 150 200, 150 250, 250 250, 250 150, 200 150, 200 100, 100 100, 100 200))");
   }
 
+  public void testCollection( ) {
+    checkUnaryUnion(new String[] {
+        "POLYGON ((100 200, 200 200, 200 100, 100 100, 100 200))",
+        "POLYGON ((300 100, 200 100, 200 200, 300 200, 300 100))",
+        "POLYGON ((100 300, 200 300, 200 200, 100 200, 100 300))",
+        "POLYGON ((300 300, 300 200, 200 200, 200 300, 300 300))"
+        },
+        1, 
+        "POLYGON ((100 100, 100 200, 100 300, 200 300, 300 300, 300 200, 300 100, 200 100, 100 100))");
+  }
+
+  public void testCollectionEmpty( ) {
+    checkUnaryUnion(new String[0],
+        1, 
+        "GEOMETRYCOLLECTION EMPTY");
+  }
+
   private void checkUnaryUnion(String wkt, double scaleFactor, String wktExpected) {
     Geometry geom = read(wkt);
     Geometry expected = read(wktExpected);
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     Geometry result = UnaryUnionNG.union(geom, pm);
+    checkEqual(expected, result);
+  }
+  
+  private void checkUnaryUnion(String[] wkt, double scaleFactor, String wktExpected) {
+    List geoms = readList(wkt);
+    Geometry expected = read(wktExpected);
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    Geometry result;
+    if (geoms.isEmpty()) {
+      result = UnaryUnionNG.union(geoms, getGeometryFactory(), pm);            
+    }
+    else {
+      result = UnaryUnionNG.union(geoms, pm);      
+    }
     checkEqual(expected, result);
   }
 }
