@@ -21,6 +21,7 @@ import org.locationtech.jts.algorithm.BoundaryNodeRule;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -67,6 +68,37 @@ public class BoundaryOp
   {
     BoundaryOp bop = new BoundaryOp(g, bnRule);
     return bop.getBoundary();
+  }
+  
+  /**
+   * Tests if a geometry has a boundary (it is non-empty).
+   * The semantics are:
+   * <ul>
+   * <li>Empty geometries do not have boundaries. 
+   * <li>Points do not have boundaries.
+   * <li>For linear geometries the existence of the boundary 
+   * is determined by the {@link BoundaryNodeRule}.
+   * <li>Non-empty polygons always have a boundary.
+   * </ul>
+   * 
+   * @param geom the geometry providing the boundary
+   * @param boundaryNodeRule  the Boundary Node Rule to use
+   * @return true if the boundary exists
+   */
+  public static boolean hasBoundary(Geometry geom, BoundaryNodeRule boundaryNodeRule) {
+    // Note that this does not handle geometry collections with a non-empty linear element
+    if (geom.isEmpty()) return false;
+    switch (geom.getDimension()) {
+    case Dimension.P: return false;
+    /**
+     * Linear geometries might have an empty boundary due to boundary node rule.
+     */
+    case Dimension.L:
+      Geometry boundary = BoundaryOp.getBoundary(geom, boundaryNodeRule);
+      return ! boundary.isEmpty();
+    case Dimension.A: return true;
+    }
+    return true;
   }
   
   private Geometry geom;
