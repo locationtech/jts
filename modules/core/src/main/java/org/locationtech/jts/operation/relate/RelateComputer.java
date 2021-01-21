@@ -21,10 +21,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.locationtech.jts.algorithm.BoundaryNodeRule;
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.IntersectionMatrix;
 import org.locationtech.jts.geom.Location;
@@ -36,6 +38,7 @@ import org.locationtech.jts.geomgraph.Label;
 import org.locationtech.jts.geomgraph.Node;
 import org.locationtech.jts.geomgraph.NodeMap;
 import org.locationtech.jts.geomgraph.index.SegmentIntersector;
+import org.locationtech.jts.operation.BoundaryOp;
 import org.locationtech.jts.util.Assert;
 
 /**
@@ -79,7 +82,7 @@ public class RelateComputer
     // if the Geometries don't overlap there is nothing to do
     if (! arg[0].getGeometry().getEnvelopeInternal().intersects(
             arg[1].getGeometry().getEnvelopeInternal()) ) {
-      computeDisjointIM(im);
+      computeDisjointIM(im, arg[0].getBoundaryNodeRule());
       return im;
     }
     arg[0].computeSelfNodes(li, false);
@@ -268,21 +271,56 @@ public class RelateComputer
   /**
    * If the Geometries are disjoint, we need to enter their dimension and
    * boundary dimension in the Ext rows in the IM
+   * 
+   * @param boundaryNodeRule the Boundary Node Rule to use
    */
-  private void computeDisjointIM(IntersectionMatrix im)
+  private void computeDisjointIM(IntersectionMatrix im, BoundaryNodeRule boundaryNodeRule)
   {
     Geometry ga = arg[0].getGeometry();
     if (! ga.isEmpty()) {
       im.set(Location.INTERIOR, Location.EXTERIOR, ga.getDimension());
-      im.set(Location.BOUNDARY, Location.EXTERIOR, ga.getBoundaryDimension());
+      im.set(Location.BOUNDARY, Location.EXTERIOR, getBoundaryDim(ga, boundaryNodeRule));
     }
     Geometry gb = arg[1].getGeometry();
     if (! gb.isEmpty()) {
       im.set(Location.EXTERIOR, Location.INTERIOR, gb.getDimension());
-      im.set(Location.EXTERIOR, Location.BOUNDARY, gb.getBoundaryDimension());
+      im.set(Location.EXTERIOR, Location.BOUNDARY, getBoundaryDim(gb, boundaryNodeRule));
     }
   }
-
+  
+  /**
+   * Compute the IM entry for the intersection of the boundary 
+   * of a geometry with the Exterior.
+   * This is the nominal dimension of the boundary 
+   * unless the boundary is empty, in which case it is {@link Dimension#FALSE}.
+   * For linear geometries the Boundary Node Rule determines
+   * whether the boundary is empty.
+   * 
+   * @param geom the geometry providing the boundary
+   * @param boundaryNodeRule  the Boundary Node Rule to use
+   * @return the IM dimension entry
+   */
+  private static int getBoundaryDim(Geometry geom, BoundaryNodeRule boundaryNodeRule)
+  {
+    /**
+     * If the geometry has a non-empty boundary
+     * the intersection is the nominal dimension.
+     */
+    if (BoundaryOp.hasBoundary(geom, boundaryNodeRule)) {
+      /**
+       * special case for lines, since Geometry.getBoundaryDimension is not aware
+       * of Boundary Node Rule.
+       */
+      if (geom.getDimension() == 1)
+        return Dimension.P;
+      return geom.getBoundaryDimension();
+    }
+    /**
+     * Otherwise intersection is F
+     */
+    return Dimension.FALSE;
+  }
+  
   private void labelNodeEdges()
   {
     for (Iterator ni = nodes.iterator(); ni.hasNext(); ) {

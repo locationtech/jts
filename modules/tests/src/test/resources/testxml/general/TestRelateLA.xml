@@ -187,4 +187,30 @@
   </test>
 </case>
 
+<case>
+<desc>LA - closed line / empty polygon</desc>
+  <a>
+    LINESTRING(110 60, 20 150, 200 150, 110 60)
+  </a>
+  <b>
+    POLYGON EMPTY
+  </b>
+  <test>
+    <op name="relate" arg1="A" arg2="B" arg3="FF1FFFFF2">true</op>
+  </test>
+</case>
+
+<case>
+<desc>LA - closed multiline / empty polygon</desc>
+  <a>
+    MULTILINESTRING ((0 0, 0 1), (0 1, 1 1, 1 0, 0 0))
+  </a>
+  <b>
+    POLYGON EMPTY
+  </b>
+  <test>
+    <op name="relate" arg1="A" arg2="B" arg3="FF1FFFFF2">true</op>
+  </test>
+</case>
+
 </run>

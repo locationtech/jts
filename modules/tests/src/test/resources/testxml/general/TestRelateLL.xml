@@ -307,5 +307,17 @@
   </test>
 </case>
 
+<case>
+<desc>LA - closed multiline / empty line</desc>
+  <a>
+    MULTILINESTRING ((0 0, 0 1), (0 1, 1 1, 1 0, 0 0))
+  </a>
+  <b>
+    LINESTRING EMPTY
+  </b>
+  <test>
+    <op name="relate" arg1="A" arg2="B" arg3="FF1FFFFF2">true</op>
+  </test>
+</case>
 
 </run>
