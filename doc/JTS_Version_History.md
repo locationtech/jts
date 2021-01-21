@@ -31,6 +31,7 @@ Distributions for older JTS versions can be obtained at the
 ### Bug Fixes
 
 * Ensure `Densifier` creates `Coordinate`s with same class as input (#637)
+* Fix Relate for cases with closed linear geometry and empty geometry (#671)
 
 <!-- ================================================================ -->
 
