@@ -26,7 +26,7 @@ import org.locationtech.jtstest.testbuilder.ui.Viewport;
 public class ArrowSegmentStyle 
   extends SegmentStyle
 {
-  private final static double HEAD_ANGLE = 10;
+  private final static double HEAD_ANGLE = 15;
   private final static double HEAD_LENGTH = 10;
 
   private Color color = Color.RED;
@@ -122,7 +122,7 @@ public class ArrowSegmentStyle
     return arrowhead;
   }
   
-  private static double HALF_ARROW_LEN = 20;
+  private static double HALF_ARROW_LEN = 12;
   
   protected void paintMidArrowHalf(Point2D p0, Point2D p1, Viewport viewport,
       Graphics2D graphics) throws NoninvertibleTransformException 
