@@ -36,7 +36,11 @@ import org.locationtech.jts.geom.PrecisionModel;
  * This class reads the format describe in {@link WKBWriter}.  
  * It partially handles
  * the <b>Extended WKB</b> format used by PostGIS, 
- * by parsing and storing SRID values.
+ * by parsing and storing optional SRID values.
+ * If a SRID is not specified in an element geometry, it is inherited
+ * from the parent's SRID.
+ * The default SRID value is 0.
+ * <p>
  * Although not defined in the WKB spec, empty points
  * are handled if they are represented as a Point with <code>NaN</code> X and Y ordinates.
  * <p>

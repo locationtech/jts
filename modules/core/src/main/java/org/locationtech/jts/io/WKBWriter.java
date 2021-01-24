@@ -60,6 +60,11 @@ import org.locationtech.jts.util.Assert;
  * by setting the third bit of the <tt>wkbType</tt> word.
  * EWKB format is upward-compatible with the original SFS WKB format.
  * <p>
+ * SRID output is optimized, if specified. 
+ * Only the top-level geometry has the SRID included.
+ * This assumes that all geometries in a collection have the same SRID as 
+ * the collection (which is the JTS convention).
+ * <p>
  * This class supports reuse of a single instance to read multiple
  * geometries. This class is not thread-safe; each thread should create its own
  * instance.
