@@ -105,8 +105,6 @@ public class WKBReader
   private PrecisionModel precisionModel;
   // default dimension - will be set on read
   private int inputDimension = 2;
-  private boolean hasSRID = false;
-  private int SRID = 0;
   /**
    * true if structurally invalid input should be reported rather than repaired.
    * At some point this could be made client-controllable.
@@ -156,11 +154,10 @@ public class WKBReader
   throws IOException, ParseException
   {
     dis.setInStream(is);
-    Geometry g = readGeometry();
-    return g;
+    return readGeometry(0);
   }
 
-  private Geometry readGeometry()
+  private Geometry readGeometry(int SRID)
   throws IOException, ParseException
   {
 
@@ -201,8 +198,7 @@ public class WKBReader
     inputDimension = 2 + (hasZ?1:0) + (hasM?1:0);
 
     // determine if SRIDs are present
-    hasSRID = (typeInt & 0x20000000) != 0;
-    int SRID = 0;
+    boolean hasSRID = (typeInt & 0x20000000) != 0;
     if (hasSRID) {
       SRID = dis.readInt();
     }
@@ -223,16 +219,16 @@ public class WKBReader
        geom = readPolygon();
         break;
       case WKBConstants.wkbMultiPoint :
-        geom = readMultiPoint();
+        geom = readMultiPoint(SRID);
         break;
       case WKBConstants.wkbMultiLineString :
-        geom = readMultiLineString();
+        geom = readMultiLineString(SRID);
         break;
      case WKBConstants.wkbMultiPolygon :
-        geom = readMultiPolygon();
+        geom = readMultiPolygon(SRID);
         break;
       case WKBConstants.wkbGeometryCollection :
-        geom = readGeometryCollection();
+        geom = readGeometryCollection(SRID);
         break;
       default: 
         throw new ParseException("Unknown WKB type " + geometryType);
@@ -292,12 +288,12 @@ public class WKBReader
     return factory.createPolygon(shell, holes);
   }
 
-  private MultiPoint readMultiPoint() throws IOException, ParseException
+  private MultiPoint readMultiPoint(int SRID) throws IOException, ParseException
   {
     int numGeom = dis.readInt();
     Point[] geoms = new Point[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry();
+      Geometry g = readGeometry(SRID);
       if (! (g instanceof Point))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiPoint");
       geoms[i] = (Point) g;
@@ -305,12 +301,12 @@ public class WKBReader
     return factory.createMultiPoint(geoms);
   }
 
-  private MultiLineString readMultiLineString() throws IOException, ParseException
+  private MultiLineString readMultiLineString(int SRID) throws IOException, ParseException
   {
     int numGeom = dis.readInt();
     LineString[] geoms = new LineString[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry();
+      Geometry g = readGeometry(SRID);
       if (! (g instanceof LineString))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiLineString");
       geoms[i] = (LineString) g;
@@ -318,13 +314,13 @@ public class WKBReader
     return factory.createMultiLineString(geoms);
   }
 
-  private MultiPolygon readMultiPolygon() throws IOException, ParseException
+  private MultiPolygon readMultiPolygon(int SRID) throws IOException, ParseException
   {
     int numGeom = dis.readInt();
     Polygon[] geoms = new Polygon[numGeom];
 
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry();
+      Geometry g = readGeometry(SRID);
       if (! (g instanceof Polygon))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiPolygon");
       geoms[i] = (Polygon) g;
@@ -332,12 +328,12 @@ public class WKBReader
     return factory.createMultiPolygon(geoms);
   }
 
-  private GeometryCollection readGeometryCollection() throws IOException, ParseException
+  private GeometryCollection readGeometryCollection(int SRID) throws IOException, ParseException
   {
     int numGeom = dis.readInt();
     Geometry[] geoms = new Geometry[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      geoms[i] = readGeometry();
+      geoms[i] = readGeometry(SRID);
     }
     return factory.createGeometryCollection(geoms);
   }

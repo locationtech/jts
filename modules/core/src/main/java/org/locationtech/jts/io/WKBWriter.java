@@ -380,9 +380,12 @@ public class WKBWriter
     writeByteOrder(os);
     writeGeometryType(geometryType, gc, os);
     writeInt(gc.getNumGeometries(), os);
+    boolean originalIncludeSRID = this.includeSRID;
+    this.includeSRID = false;
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       write(gc.getGeometryN(i), os);
     }
+    this.includeSRID = originalIncludeSRID;
   }
 
   private void writeByteOrder(OutStream os) throws IOException
