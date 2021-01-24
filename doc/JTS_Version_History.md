@@ -27,6 +27,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `Coordinate` and subclasses `create()` methods (#637)
 * Ensure OverlayNG input line order is preserved (#665)
 * Add `UnaryUnionNG` functions that accept `Collection`s (#669 and #670)
+* Switch to using compact-SRID WKB format (#664)
 
 ### Bug Fixes
 
