@@ -41,7 +41,7 @@ import org.locationtech.jts.geom.PrecisionModel;
  * from the parent's SRID.
  * The default SRID value is 0.
  * <p>
- * Although not defined in the WKB spec, empty points
+ * Although not defined in the WKB specification, empty points
  * are handled if they are represented as a Point with <code>NaN</code> X and Y ordinates.
  * <p>
  * The reader repairs structurally-invalid input
@@ -54,12 +54,12 @@ import org.locationtech.jts.geom.PrecisionModel;
  * instance.
  * <p>
  * As of version 1.15, the reader can read geometries following OGC 06-103r4
- * speification used by Spatialite/Geopackage.
+ * specification used by Spatialite/Geopackage.
  * <p>
  * The difference between PostGIS EWKB format and the new OGC specification is
  * that Z and M coordinates are detected with a bit mask on the higher byte in
  * the former case (0x80 for Z and 0x40 for M) while new OGC specification use
- * specif int ranges for 2D gemetries, Z geometries (2D code+1000), M geometries
+ * specific int ranges for 2D geometries, Z geometries (2D code+1000), M geometries
  * (2D code+2000) and ZM geometries (2D code+3000).
  * <p>
  * Note that the {@link WKBWriter} is not changed and still write PostGIS WKB

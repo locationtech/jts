@@ -46,7 +46,7 @@ import org.locationtech.jts.util.Assert;
  * <li><b>Point</b>: a <code>WKBPoint</code> with <code>NaN</code> ordinate values</li> 
  * <li><b>LineString</b>: a <code>WKBLineString</code> with zero points</li>
  * <li><b>Polygon</b>: a <code>WKBPolygon</code> with zero rings</li>
- * <li><b>Multi geometries</b>: a <code>WKBMulti</code> geometry of appropriate type with zero elements</li>
+ * <li><b>Multigeometries</b>: a <code>WKBMulti</code> geometry of appropriate type with zero elements</li>
  * <li><b>GeometryCollections</b>: a <code>WKBGeometryCollection</code> with zero elements</li>
  * </ul></li>
  * </ul>
@@ -74,7 +74,7 @@ import org.locationtech.jts.util.Assert;
  * supported by JTS.
  * <p>
  * <i>The specification uses a syntax language similar to that used in
- * the C language.  Bitfields are specified from hi-order to lo-order bits.</i>
+ * the C language.  Bitfields are specified from high-order to low-order bits.</i>
  * <p>
  * <blockquote><pre>
  * 
