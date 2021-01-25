@@ -34,6 +34,10 @@ Distributions for older JTS versions can be obtained at the
 * Ensure `Densifier` creates `Coordinate`s with same class as input (#637)
 * Fix Relate for cases with closed linear geometry and empty geometry (#671)
 
+### WKBDump
+
+* Added utility to dump out formatted WKB (#673)
+
 <!-- ================================================================ -->
 
 # Version 1.18.0
