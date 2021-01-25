@@ -26,6 +26,9 @@ public class ByteOrderDataInStream
   private byte[] buf1 = new byte[1];
   private byte[] buf4 = new byte[4];
   private byte[] buf8 = new byte[8];
+  private byte[] bufLast = null;
+  
+  private long count = 0;
 
   public ByteOrderDataInStream()
   {
@@ -47,40 +50,92 @@ public class ByteOrderDataInStream
   {
     this.stream = stream;
   }
+  
+  /**
+   * Sets the ordering on the stream using the codes in {@link ByteOrderValues}.
+   * 
+   * @param byteOrder the byte order code
+   */
   public void setOrder(int byteOrder)
   {
     this.byteOrder = byteOrder;
   }
-
+  
   /**
-   * Reads a byte value
+   * Gets the number of bytes read from the stream.
+   * 
+   * @return the number of bytes read
+   */
+  public long getCount() {
+    return count;
+  }
+  
+  /**
+   * Gets the data item that was last read from the stream.
+   * 
+   * @return the data last read
+   */
+  public byte[] getData() {
+    return bufLast;
+  }
+  
+  /**
+   * Reads a byte value.
    *
-   * @return the byte read
+   * @return the value read
+   * @throws IOException
    */
   public byte readByte()
   	throws IOException
   {
     stream.read(buf1);
+    bufLast = buf1;
+    count += 1;
     return buf1[0];
   }
 
+  /**
+   * Reads an int value.
+   * 
+   * @return the value read
+   * @throws IOException
+   */
   public int readInt()
 	throws IOException
   {
     stream.read(buf4);
+    bufLast = buf4;
+    count += 4;
     return ByteOrderValues.getInt(buf4, byteOrder);
   }
+  
+  /**
+   * Reads a long value.
+   * 
+   * @return the value read
+   * @throws IOException
+   */
   public long readLong()
 	throws IOException
   {
     stream.read(buf8);
+    bufLast = buf8;
+    count += 8;
     return ByteOrderValues.getLong(buf8, byteOrder);
   }
 
+  /**
+   * Reads a double value.
+   * 
+   * @return the value read
+   * @throws IOException
+   */
   public double readDouble()
 	throws IOException
   {
     stream.read(buf8);
+    bufLast = buf8;
+    count += 8;
     return ByteOrderValues.getDouble(buf8, byteOrder);
   }
 
