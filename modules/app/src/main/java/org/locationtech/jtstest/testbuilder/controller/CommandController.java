@@ -31,15 +31,25 @@ public class CommandController {
     return JTSTestBuilder.frame().getCommandPanel();
   }
   
-  public static void execCommand(String name, String cmdIn) {
+  public static void execCommand(String name, String cmdIn, boolean useStdin, boolean isStdinWKT) {
     String cmd = expandCommand(cmdIn);
+    
+    String stdin = null;
+    if (useStdin) {
+      if (isStdinWKT) {
+        stdin = valueWKT(getGeometry(0));
+      }
+      else {
+        stdin = valueWKB(getGeometry(0));
+      }
+    }
     //System.out.println(cmd);
     int returnCode = -1;
     String errMsg = "";
     Geometry result = null;
     CommandRunner runner = new CommandRunner();
     try {
-       returnCode = runner.exec(cmd);
+       returnCode = runner.exec(cmd, stdin);
        errMsg = runner.getStderr();
     } catch (Exception e) {
       errMsg = e.getClass().getName() + " : " + e.getMessage();

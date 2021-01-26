@@ -21,9 +21,12 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
@@ -52,6 +55,9 @@ extends JPanel
   protected String commandSave;
   private boolean isCommandSavedOnUpdate;
   private JLabel lblCommand;
+  private JCheckBox cbSupplyStdin;
+  private JRadioButton rbWKT;
+  private JRadioButton rbWKB;
   
   public CommandPanel() {
 		try {
@@ -210,6 +216,21 @@ extends JPanel
         insertCmdText(CommandController.VAR_B_WKB);
       }
     });
+    JLabel lblStdin = new JLabel();
+    lblStdin.setText("Stdin ");
+    lblStdin.setBorder(new EmptyBorder(2,10,2,0));//top,left,bottom,right
+    
+    cbSupplyStdin = new JCheckBox();
+    cbSupplyStdin.setToolTipText("Send A to command standard input");
+    rbWKT = new JRadioButton();
+    rbWKT.setToolTipText("Send A to stdin in WKT");
+    rbWKT.setText("WKT");
+    rbWKB = new JRadioButton();
+    rbWKB.setToolTipText("Send A to stdin in WKB");
+    rbWKB.setText("WBT");
+    ButtonGroup btnGrpStdInFormat = new ButtonGroup();
+    btnGrpStdInFormat.add(rbWKT);
+    btnGrpStdInFormat.add(rbWKB);
     
     JPanel labelPanel = new JPanel();
     labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.X_AXIS));
@@ -221,6 +242,10 @@ extends JPanel
     labelPanel.add(btnAwkb);
     labelPanel.add(btnBwkt);
     labelPanel.add(btnBwkb);
+    labelPanel.add(lblStdin);
+    labelPanel.add(cbSupplyStdin);
+    labelPanel.add(rbWKT);
+    labelPanel.add(rbWKB);
     
 
     JPanel btnPanel = new JPanel();
@@ -268,9 +293,11 @@ extends JPanel
     txtOutput.setBackground(AppColors.BACKGROUND);
     txtOutput.repaint();
     String cmd = txtCmd.getText();
+    boolean isSupplyStdin =  cbSupplyStdin.isSelected();
+    boolean isStdInWKT = rbWKT.isSelected();
     // do not save on every run, only on success
     //log(cmd);
-    CommandController.execCommand( getCommandName(), cmd );
+    CommandController.execCommand( getCommandName(), cmd, isSupplyStdin, isStdInWKT );
   }
 
   private String getPaste() {
