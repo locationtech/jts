@@ -89,6 +89,7 @@ public class DouglasPeuckerSimplifierTest
         DPSimplifierResult.getResult(
       "POLYGON ((0 0, 50 0, 53 0, 55 0, 100 0, 70 1,  60 1, 50 1, 40 1, 0 0))",
         10.0))
+        .setExpectedResult("POLYGON EMPTY")
         .test();
   }
   public void testTinySquare() throws Exception {
