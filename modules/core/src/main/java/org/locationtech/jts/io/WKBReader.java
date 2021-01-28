@@ -50,8 +50,9 @@ import org.locationtech.jts.geom.PrecisionModel;
  * and non-closed rings are closed).
  * <p>
  * The reader handles most errors caused by malformed or malicious WKB data.
- * This includes negative or excessively large values stated for number of coordinates
- * in linestrings, and negative numbers of elements or rings.
+ * It checks for obviously excessive values of the fields 
+ * <code>numElems</code>, <code>numRings</code>, and <code>numCoords</code>.
+ * It also checks that the reader does not read beyond the end of the data supplied.
  * A {@link ParseException} is thrown if this situation is detected.
  * <p>
  * This class is designed to support reuse of a single instance to read multiple
@@ -109,6 +110,12 @@ public class WKBReader
   private static final String INVALID_GEOM_TYPE_MSG
   = "Invalid geometry type encountered in ";
 
+  private static final String FIELD_NUMCOORDS = "numCoords";
+
+  private static final String FIELD_NUMRINGS = null;
+
+  private static final String FIELD_NUMELEMS = null;
+
   private GeometryFactory factory;
   private CoordinateSequenceFactory csFactory;
   private PrecisionModel precisionModel;
@@ -122,7 +129,7 @@ public class WKBReader
   private ByteOrderDataInStream dis = new ByteOrderDataInStream();
   private double[] ordValues;
 
-  private int maxCoordNum;
+  private int maxNumFieldValue;
 
   public WKBReader() {
     this(new GeometryFactory());
@@ -164,7 +171,7 @@ public class WKBReader
   public Geometry read(InStream is)
   throws IOException, ParseException
   {
-    // can't tell size of InStream
+    // can't tell size of InStream, but MAX_VALUE should be safe
     return read(is, Integer.MAX_VALUE);
   }
 
@@ -176,9 +183,18 @@ public class WKBReader
      * in coordNum fields.
      * It avoids OOM exceptions due to malformed input.
      */
-    this.maxCoordNum = maxCoordNum;
+    this.maxNumFieldValue = maxCoordNum;
     dis.setInStream(is);
     return readGeometry(0);
+  }
+  
+  private int readNumField(String fieldName) throws IOException, ParseException {
+    // num field is unsigned int, but Java has only signed int
+    int num = dis.readInt();
+    if (num < 0 || num > maxNumFieldValue) {
+      throw new ParseException(fieldName + " value is too large");
+    }
+    return num;
   }
   
   private Geometry readGeometry(int SRID)
@@ -286,24 +302,21 @@ public class WKBReader
 
   private LineString readLineString() throws IOException, ParseException
   {
-    int size = dis.readInt();
+    int size = readNumField(FIELD_NUMCOORDS);
     CoordinateSequence pts = readCoordinateSequenceLineString(size);
     return factory.createLineString(pts);
   }
 
   private LinearRing readLinearRing() throws IOException, ParseException
   {
-    int size = dis.readInt();
+    int size = readNumField(FIELD_NUMCOORDS);
     CoordinateSequence pts = readCoordinateSequenceRing(size);
     return factory.createLinearRing(pts);
   }
 
   private Polygon readPolygon() throws IOException, ParseException
   {
-    int numRings = dis.readInt();
-    if (numRings < 0) {
-      throw new ParseException("numRings value is negative");
-    }
+    int numRings = readNumField(FIELD_NUMRINGS);
     LinearRing[] holes = null;
     if (numRings > 1)
       holes = new LinearRing[numRings - 1];
@@ -321,7 +334,7 @@ public class WKBReader
 
   private MultiPoint readMultiPoint(int SRID) throws IOException, ParseException
   {
-    int numGeom = readNumELem();
+    int numGeom = readNumField(FIELD_NUMELEMS);
     Point[] geoms = new Point[numGeom];
     for (int i = 0; i < numGeom; i++) {
       Geometry g = readGeometry(SRID);
@@ -334,7 +347,7 @@ public class WKBReader
 
   private MultiLineString readMultiLineString(int SRID) throws IOException, ParseException
   {
-    int numGeom = readNumELem();
+    int numGeom = readNumField(FIELD_NUMELEMS);
     LineString[] geoms = new LineString[numGeom];
     for (int i = 0; i < numGeom; i++) {
       Geometry g = readGeometry(SRID);
@@ -347,7 +360,7 @@ public class WKBReader
 
   private MultiPolygon readMultiPolygon(int SRID) throws IOException, ParseException
   {
-    int numGeom = readNumELem();
+    int numGeom = readNumField(FIELD_NUMELEMS);
     Polygon[] geoms = new Polygon[numGeom];
 
     for (int i = 0; i < numGeom; i++) {
@@ -361,7 +374,7 @@ public class WKBReader
 
   private GeometryCollection readGeometryCollection(int SRID) throws IOException, ParseException
   {
-    int numGeom = readNumELem();
+    int numGeom = readNumField(FIELD_NUMELEMS);
     Geometry[] geoms = new Geometry[numGeom];
     for (int i = 0; i < numGeom; i++) {
       geoms[i] = readGeometry(SRID);
@@ -369,24 +382,8 @@ public class WKBReader
     return factory.createGeometryCollection(geoms);
   }
 
-  private int readNumELem() throws IOException, ParseException {
-    int numGeom = dis.readInt();
-    if (numGeom < 0) {
-      throw new ParseException("numElems value is negative");
-    }
-    return numGeom;
-  }
-
   private CoordinateSequence readCoordinateSequence(int size) throws IOException, ParseException
   {
-    // Guard against NegativeArraySizeException exceptions
-    if (size < 0) {
-      throw new ParseException("numCoords value is negative");
-    }
-    // Guard against OOM errors
-    if (size > maxCoordNum) {
-      throw new ParseException("numCoords value exceeds size of WKB data");
-    }
     CoordinateSequence seq = csFactory.create(size, inputDimension);
     int targetDim = seq.getDimension();
     if (targetDim > inputDimension)
