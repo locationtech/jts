@@ -47,13 +47,13 @@ public class WKBDumper
     
   }
 
-  public String readString(byte[] bytes) {
+  private String readString(byte[] bytes) {
     writer = new StringWriter();
     read(bytes);
     return writer.toString();
   }
   
-  public void read(byte[] bytes, Writer writer) {
+  private void read(byte[] bytes, Writer writer) {
     this.writer = writer;
     read(bytes);
   }
@@ -63,6 +63,7 @@ public class WKBDumper
    *
    * @param bytes the byte array to read from
    * @return the geometry read
+   * @throws IOException 
    * @throws ParseException if the WKB is ill-formed
    */
   private void read(byte[] bytes)
@@ -72,8 +73,13 @@ public class WKBDumper
     try {
       read(new ByteArrayInStream(bytes));
     }
-    catch (IOException ex) {
-      throw new RuntimeException("Unexpected IOException caught: " + ex.getMessage());
+    catch (Exception ex) {
+      // TODO Auto-generated catch block
+      try {
+        writer.write("ParseException: " + ex.getMessage() + "\n");
+      } catch (IOException e) {
+        // Nothing we can do
+      }
     }
   }
 
@@ -85,15 +91,15 @@ public class WKBDumper
    * @throws IOException if the underlying stream creates an error
    * @throws ParseException if the WKB is ill-formed
    */
-  public void read(InStream is)
-  throws IOException
+  private void read(InStream is)
+  throws IOException, ParseException
   {
     dis.setInStream(is);
     readGeometry(0);
   }
 
   private void readGeometry(int SRID)
-  throws IOException
+  throws IOException, ParseException
   {
     // determine byte order
     byte byteOrderWKB = readEndian();
@@ -171,7 +177,7 @@ public class WKBDumper
     }
   }
 
-  private void readPoint() throws IOException
+  private void readPoint() throws IOException, ParseException
   {
     readCoordinateSequence(1);
     // If X and Y are NaN create a empty point
@@ -182,19 +188,19 @@ public class WKBDumper
     */
   }
 
-  private void readLineString() throws IOException
+  private void readLineString() throws IOException, ParseException
   {
     int size = readTaggedInt("Num Points");
     readCoordinateSequence(size);
   }
 
-  private void readLinearRing() throws IOException
+  private void readLinearRing() throws IOException, ParseException
   {
     int size = readTaggedInt("Num Points");
     readCoordinateSequence(size);
   }
 
-  private void readPolygon() throws IOException
+  private void readPolygon() throws IOException, ParseException
   {
     int numRings = readTaggedInt("Num Rings");
     readLinearRing();
@@ -203,7 +209,7 @@ public class WKBDumper
     }
   }
 
-  private void readGeometryCollection(int SRID) throws IOException
+  private void readGeometryCollection(int SRID) throws IOException, ParseException
   {
     int numGeom = readTaggedInt("Num Elements");
     for (int i = 0; i < numGeom; i++) {
@@ -212,7 +218,7 @@ public class WKBDumper
     }
   }
 
-  private void readCoordinateSequence(int size) throws IOException
+  private void readCoordinateSequence(int size) throws IOException, ParseException
   {
     for (int i = 0; i < size; i++) {
       readCoordinate(i);
@@ -223,8 +229,9 @@ public class WKBDumper
    * Reads a coordinate value with the specified dimensionality.
    * Makes the X and Y ordinates precise according to the precision model
    * in use.
+   * @throws ParseException 
    */
-  private void readCoordinate(int index) throws IOException
+  private void readCoordinate(int index) throws IOException, ParseException
   {
     writer.write(dis.getCount() + ": ");
     String hex = "";
@@ -237,13 +244,13 @@ public class WKBDumper
     writer.write(hex + " [" + index + "] " + nums + "\n");
   }
   
-  private int readTaggedInt(String tag) throws IOException {
+  private int readTaggedInt(String tag) throws IOException, ParseException {
     int size = readInt();
     writer.write(tag + " = " + size + "\n");
     return size;
   }
   
-  private int readInt() throws IOException {
+  private int readInt() throws IOException, ParseException {
     writer.write(dis.getCount() + ": ");
     int i = dis.readInt();
     
@@ -252,7 +259,7 @@ public class WKBDumper
     return i;
   }
 
-  private byte readEndian() throws IOException {
+  private byte readEndian() throws IOException, ParseException {
     writer.write(dis.getCount() + ": ");
     byte i = dis.readByte();
     String endian = i == WKBConstants.wkbNDR ? "NDR (Little endian)" :"XDR (Big endian)";

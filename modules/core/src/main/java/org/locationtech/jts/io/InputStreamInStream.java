@@ -27,8 +27,8 @@ public class InputStreamInStream
     this.is = is;
   }
 
-  public void read(byte[] buf) throws IOException
+  public int read(byte[] buf) throws IOException
   {
-    is.read(buf);
+    return is.read(buf);
   }
 }

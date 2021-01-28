@@ -212,16 +212,65 @@ public class WKBReaderTest  extends TestCase
   }
 
   /**
+   * Tests WKB that requests a huge number of points.
    * Not yet implemented satisfactorily.
    * 
    * @throws ParseException
    */
-  public void XXtestIllFormedWKB() throws ParseException
+  public void testHugeNumberOfPoints() throws ParseException
   {
-    // WKB is missing LinearRing entry
-    checkWKBGeometry("00000000030000000140590000000000004069000000000000", "POLYGON ((100 200, 100 200, 100 200, 100 200)");
+    /*
+     * 0: 00 - XDR (Big endian)
+     * 1: 00000003 - POLYGON ( 3 ) 
+     * 5: 00000001 - Num Rings = 1
+     * 9: 40590000 - Num Points = 1079574528
+     */
+    checkWKBParseException("00000000030000000140590000000000004069000000000000");
   }
 
+  public void testNumCoordsNegative() throws ParseException
+  {
+    /*
+     * 0: 01 - NDR (Little endian)
+     * 1: 02000000 - LINESTRING ( 2 ) 
+     * 5: 0000FFFF - Num Points = -65536     * 0: 00 - XDR (Big endian)
+     */
+    checkWKBParseException("01020000000000FFFF");
+  }
+  
+  public void testNumElementsNegative() throws ParseException
+  {
+    /*
+     * 0: 00 - XDR (Big endian)
+     * 1: 00000004 - MULTIPOINT ( 4 ) 
+     * 5: FFFFFFFF - Num Elements = -1     * 0: 01 - NDR (Little endian)
+     */
+    checkWKBParseException("0000000004FFFFFFFF000000000140590000000000004059000000000000000000000140690000000000004059000000000000");
+  }
+  
+  public void testNumRingsNegative() throws ParseException
+  {
+    /*
+     * 0: 00 - XDR (Big endian)
+     * 1: 00000004 - MULTIPOINT ( 4 ) 
+     * 5: FFFFFFFF - Num Elements = -1     * 0: 01 - NDR (Little endian)
+     */
+    checkWKBParseException("0000000003FFFFFFFF0000000440590000000000004069000000000000405900000000000040590000000000004069000000000000405900000000000040590000000000004069000000000000");
+  }
+  
+  //======================================
+  
+  private void checkWKBParseException(String wkbHex) 
+  {
+    try {
+      checkWKBGeometry(wkbHex, "");
+    } catch (ParseException e) {
+      // all good
+      return;
+    }
+    // expected ParseException did not occur
+    fail();
+  }
 
   private static CoordinateSequenceComparator comp2 = new CoordinateSequenceComparator(2);
 
