@@ -248,9 +248,13 @@ public class GeometryTransformer
     boolean isAllValidLinearRings = true;
     Geometry shell = transformLinearRing(geom.getExteriorRing(), geom);
 
-    if (shell == null
-        || ! (shell instanceof LinearRing)
-        || shell.isEmpty() )
+    // handle empty inputs, or inputs which are made empty
+    boolean shellIsNullOrEmpty = shell == null || shell.isEmpty();
+    if (geom.isEmpty() && shellIsNullOrEmpty ) {
+      return factory.createPolygon();
+    }
+    
+    if (shellIsNullOrEmpty || ! (shell instanceof LinearRing))
       isAllValidLinearRings = false;
 
     ArrayList holes = new ArrayList();

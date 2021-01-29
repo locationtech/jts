@@ -34,6 +34,31 @@ public class DensifierTest extends GeometryTestCase {
         10, "LINESTRING (0 0, 5 6.666666666666668, 10 13.333333333333336, 15 20, 20 26.66666666666667, 25 33.33333333333334, 30 40, 35 35)");
   }
 
+  public void testLineOfToleranceLength() {
+    checkDensify("LINESTRING (0 0, 10 0)", 
+        10, "LINESTRING (0 0, 10 0)");
+  }
+
+  public void testLineWithToleranceLengthSeg() {
+    checkDensify("LINESTRING (0 0, 12 0, 22 0, 34 0)", 
+        10, "LINESTRING (0 0, 6 0, 12 0, 22 0, 28 0, 34 0)");
+  }
+
+  public void testLineEmpty() {
+    checkDensify("LINESTRING EMPTY", 
+        10, "LINESTRING EMPTY");
+  }
+
+  public void testPointUnchanged() {
+    checkDensify("POINT (0 0)", 
+        10, "POINT (0 0)");
+  }
+
+  public void testPolygonEmpty() {
+    checkDensify("POLYGON EMPTY", 
+        10, "POLYGON EMPTY");
+  }
+
   public void testBox() {
     checkDensify("POLYGON ((10 30, 30 30, 30 10, 10 10, 10 30))", 
         10, "POLYGON ((10 30, 16.666666666666668 30, 23.333333333333336 30, 30 30, 30 23.333333333333332, 30 16.666666666666664, 30 10, 23.333333333333332 10, 16.666666666666664 10, 10 10, 10 16.666666666666668, 10 23.333333333333336, 10 30))");

@@ -25,9 +25,10 @@ import org.locationtech.jts.geom.util.GeometryTransformer;
 /**
  * Densifies a {@link Geometry} by inserting extra vertices along the line segments
  * contained in the geometry. 
- * All segments in the created densified geometry will be no longer than
- * than the given distance tolerance.
- * Densified polygonal geometries are guaranteed to be topologically correct.
+ * All segments in the created densified geometry will be <b>no longer</b>
+ * than the given distance tolerance
+ * (that is, all segments in the output will have length less than or equal to
+ * the distance tolerance).
  * The coordinates created during densification respect the input geometry's
  * {@link PrecisionModel}.
  * <p>
@@ -56,10 +57,10 @@ public class Densifier {
 	}
 
 	/**
-	 * Densifies a coordinate sequence.
+	 * Densifies a list of coordinates.
 	 * 
-	 * @param pts
-	 * @param distanceTolerance
+	 * @param pts the coordinate list
+	 * @param distanceTolerance the densify tolerance
 	 * @return the densified coordinate sequence
 	 */
 	private static Coordinate[] densifyPoints(Coordinate[] pts,
@@ -71,18 +72,24 @@ public class Densifier {
 			seg.p1 = pts[i + 1];
 			coordList.add(seg.p0, false);
 			double len = seg.getLength();
+			
+			// check if no densification is required
+			if (len <= distanceTolerance)
+			  continue;
+			
+			// densify the segment
 			int densifiedSegCount = (int) (len / distanceTolerance) + 1;
-			if (densifiedSegCount > 1) {
-				double densifiedSegLen = len / densifiedSegCount;
-				for (int j = 1; j < densifiedSegCount; j++) {
-					double segFract = (j * densifiedSegLen) / len;
-					Coordinate p = seg.pointAlong(segFract);
-          precModel.makePrecise(p);
-					coordList.add(p, false);
-				}
+			double densifiedSegLen = len / densifiedSegCount;
+			for (int j = 1; j < densifiedSegCount; j++) {
+				double segFract = (j * densifiedSegLen) / len;
+				Coordinate p = seg.pointAlong(segFract);
+        precModel.makePrecise(p);
+				coordList.add(p, false);
 			}
 		}
-		coordList.add(pts[pts.length - 1], false);
+		// this check handles empty sequences
+		if (pts.length > 0) 
+		  coordList.add(pts[pts.length - 1], false);
 		return coordList.toCoordinateArray();
 	}
 
@@ -107,7 +114,6 @@ public class Densifier {
 	/**
 	 * Sets the distance tolerance for the densification. All line segments
 	 * in the densified geometry will be no longer than the distance tolerance.
-	 * simplified geometry will be within this distance of the original geometry.
 	 * The distance tolerance must be positive.
 	 * 
 	 * @param distanceTolerance
