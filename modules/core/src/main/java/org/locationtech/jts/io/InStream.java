@@ -26,8 +26,9 @@ public interface InStream
    * and stores them in the supplied buffer.
    *
    * @param buf the buffer to receive the bytes
+   * @return the number of bytes read, or -1 if at end-of-file
    *
    * @throws IOException if an I/O error occurs
    */
-  void read(byte[] buf) throws IOException;
+  int read(byte[] buf) throws IOException;
 }

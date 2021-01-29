@@ -20,6 +20,7 @@ import java.io.IOException;
  */
 public class ByteOrderDataInStream
 {
+ 
   private int byteOrder = ByteOrderValues.BIG_ENDIAN;
   private InStream stream;
   // buffers to hold primitive datatypes
@@ -83,14 +84,13 @@ public class ByteOrderDataInStream
    * Reads a byte value.
    *
    * @return the value read
-   * @throws IOException
+   * @throws IOException if an I/O error occurred
+   * @throws ParseException if not enough data could be read
    */
   public byte readByte()
-  	throws IOException
+  	throws IOException, ParseException
   {
-    stream.read(buf1);
-    bufLast = buf1;
-    count += 1;
+    read(buf1);
     return buf1[0];
   }
 
@@ -98,14 +98,13 @@ public class ByteOrderDataInStream
    * Reads an int value.
    * 
    * @return the value read
-   * @throws IOException
+   * @throws IOException if an I/O error occurred
+   * @throws ParseException if not enough data could be read
    */
   public int readInt()
-	throws IOException
+	throws IOException, ParseException
   {
-    stream.read(buf4);
-    bufLast = buf4;
-    count += 4;
+    read(buf4);
     return ByteOrderValues.getInt(buf4, byteOrder);
   }
   
@@ -113,14 +112,13 @@ public class ByteOrderDataInStream
    * Reads a long value.
    * 
    * @return the value read
-   * @throws IOException
+   * @throws IOException if an I/O error occurred
+   * @throws ParseException if not enough data could be read
    */
   public long readLong()
-	throws IOException
+	throws IOException, ParseException
   {
-    stream.read(buf8);
-    bufLast = buf8;
-    count += 8;
+    read(buf8);
     return ByteOrderValues.getLong(buf8, byteOrder);
   }
 
@@ -128,15 +126,22 @@ public class ByteOrderDataInStream
    * Reads a double value.
    * 
    * @return the value read
-   * @throws IOException
+   * @throws IOException if an I/O error occurred
+   * @throws ParseException if not enough data could be read
    */
   public double readDouble()
-	throws IOException
+	throws IOException, ParseException
   {
-    stream.read(buf8);
-    bufLast = buf8;
-    count += 8;
+    read(buf8);
     return ByteOrderValues.getDouble(buf8, byteOrder);
   }
 
+  private void read(byte[] buf) throws IOException, ParseException {
+    int num = stream.read(buf);
+    if (num < buf.length) 
+      throw new ParseException("Attempt to read past end of input");
+    bufLast = buf;
+    count += num;
+  }
+  
 }
