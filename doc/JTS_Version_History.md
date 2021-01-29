@@ -34,6 +34,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Ensure `Densifier` creates `Coordinate`s with same class as input (#637)
 * Fix Relate for cases with closed linear geometry and empty geometry (#671)
+* Fix `Densifier` to avoid splitting segments with length equal to distance tolerance (#676)
 
 ### WKBDump
 
