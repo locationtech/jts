@@ -63,7 +63,7 @@
   <desc>L - linear ring</desc>
   <a>    LINEARRING (0 0, 0 6, 6 6, 0 0)  </a>
 <test><op name="densify" arg1='A'  arg2='3'>    
-  LINESTRING (0 0, 0 2, 0 4, 0 6)   
+  LINEARRING (0 0, 0 3, 0 6, 3 6, 6 6, 4 4, 2 2, 0 0)   
   </op></test>
 </case>
 
