@@ -29,6 +29,7 @@ Distributions for older JTS versions can be obtained at the
 * Add `UnaryUnionNG` functions that accept `Collection`s (#669 and #670)
 * Switch to using compact-SRID WKB format (#664)
 * Improve `WKBReader` error checking (#675)
+* Improve `Densifier` splitting algorithm to create longer segments (#677)
 
 ### Bug Fixes
 
