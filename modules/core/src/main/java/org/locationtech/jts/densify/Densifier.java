@@ -78,7 +78,7 @@ public class Densifier {
 			  continue;
 			
 			// densify the segment
-			int densifiedSegCount = (int) (len / distanceTolerance) + 1;
+			int densifiedSegCount = (int) Math.ceil(len / distanceTolerance);
 			double densifiedSegLen = len / densifiedSegCount;
 			for (int j = 1; j < densifiedSegCount; j++) {
 				double segFract = (j * densifiedSegLen) / len;
