@@ -80,6 +80,7 @@ public class LayerStylePanel extends JPanel {
   private SpinnerNumberModel offsetSizeModel;
   private JCheckBox cbEndpoint;
   private JComboBox comboPalette;
+  private JCheckBox cbSegIndex;
 
   
   public LayerStylePanel() {
@@ -112,7 +113,8 @@ public class LayerStylePanel extends JPanel {
     cbStroked.setSelected(geomStyle().isStroked());
     cbFilled.setSelected(geomStyle().isFilled());
     cbOrient.setSelected(layer.getLayerStyle().isOrientations());
-    cbStructure.setSelected(layer.getLayerStyle().isOrientations());
+    cbStructure.setSelected(layer.getLayerStyle().isStructure());
+    cbSegIndex.setSelected(layer.getLayerStyle().isSegIndex());
     lineWidthModel.setValue((double) geomStyle().getStrokeWidth());
     setPaletteType(comboPalette, layer.getLayerStyle().getFillType());
     updateStyleControls();
@@ -317,8 +319,31 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
+    cbOffset = new JCheckBox();
+    cbOffset.setText("Offset");
+    //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
+    cbOffset.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbOffset.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        layer.getLayerStyle().setOffset(cbOffset.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+    offsetSizeModel = new SpinnerNumberModel(LayerStyle.INIT_OFFSET_SIZE, -100, 100, 1);
+    spinnerOffsetSize = new JSpinner(offsetSizeModel);
+    spinnerOffsetSize.setMaximumSize(new Dimension(40,16));
+    spinnerOffsetSize.setAlignmentX(Component.LEFT_ALIGNMENT);
+    spinnerOffsetSize.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int size = offsetSizeModel.getNumber().intValue();
+        layer.getLayerStyle().setOffsetSize(size);
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
 
-    addRow("Line", cbStroked, btnLineColor, btnVertexSynch, sliderLineAlpha, spinnerLineWidth, cbDashed);
+    addRow("Line", cbStroked, btnLineColor, btnVertexSynch, sliderLineAlpha, spinnerLineWidth, 
+        cbDashed, cbOffset, spinnerOffsetSize);
 
     //=============================================
     
@@ -355,31 +380,20 @@ public class LayerStylePanel extends JPanel {
       }
     });
 
-    cbOffset = new JCheckBox();
-    cbOffset.setText("Offset");
-    //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
-    cbOffset.setAlignmentX(Component.LEFT_ALIGNMENT);
-    cbOffset.addActionListener(new java.awt.event.ActionListener() {
+    cbSegIndex = new JCheckBox();
+    cbSegIndex.setText("Index");
+    cbSegIndex.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbSegIndex.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
-        layer.getLayerStyle().setOffset(cbOffset.isSelected());
+        layer.getLayerStyle().setSegIndex(cbSegIndex.isSelected());
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
-    offsetSizeModel = new SpinnerNumberModel(LayerStyle.INIT_OFFSET_SIZE, -100, 100, 1);
-    spinnerOffsetSize = new JSpinner(offsetSizeModel);
-    spinnerOffsetSize.setMaximumSize(new Dimension(40,16));
-    spinnerOffsetSize.setAlignmentX(Component.LEFT_ALIGNMENT);
-    spinnerOffsetSize.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        int size = offsetSizeModel.getNumber().intValue();
-        layer.getLayerStyle().setOffsetSize(size);
-        JTSTestBuilder.controller().geometryViewChanged();
-      }
-    });
+
     
    // Leave on separate line to allow room for dash style
-    addRow("", cbEndpoint, cbOrient, cbStructure, cbOffset, spinnerOffsetSize);
+    addRow("", cbEndpoint, cbOrient, cbStructure, cbSegIndex);
     //=============================================
 
     cbFilled = new JCheckBox();

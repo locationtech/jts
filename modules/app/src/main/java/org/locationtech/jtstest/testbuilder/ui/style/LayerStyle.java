@@ -34,7 +34,7 @@ public class LayerStyle implements Style  {
   private int fillType = Palette.TYPE_BASIC;
 
   private StyleGroup orientStyle;
-  private StyleGroup structureStyle;
+  private PolygonStructureStyle structureStyle;
   private ArrowSegmentStyle segArrowStyle;
   private ArrowLineEndStyle lineArrowStyle;
   private CircleLineEndStyle lineCircleStyle;
@@ -47,6 +47,8 @@ public class LayerStyle implements Style  {
   private CircleLineEndStyle endPointStyle;
 
   private StyleGroup endPointsStyle;
+
+  private SegmentIndexStyle segIndexStyle;
 
   public LayerStyle(BasicStyle geomStyle) {
     this.geomStyle = geomStyle;
@@ -94,9 +96,8 @@ public class LayerStyle implements Style  {
     endPointStyle = new CircleLineEndStyle(style.getLineColor(), endPtSize, false, true);
     endPointsStyle = new StyleGroup(startPointStyle, endPointStyle);
         
-    PolygonStructureStyle polyStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
-    SegmentIndexStyle indexStyle = new SegmentIndexStyle(ColorUtil.opaque(style.getLineColor().darker()));
-    structureStyle = new StyleGroup(polyStyle, indexStyle);
+    structureStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
+    segIndexStyle = new SegmentIndexStyle(ColorUtil.opaque(style.getLineColor().darker()));
     
     // order is important here
     StyleList styleList = new StyleList();
@@ -105,12 +106,14 @@ public class LayerStyle implements Style  {
     styleList.add(endPointsStyle);
     styleList.add(orientStyle);
     styleList.add(structureStyle);
+    styleList.add(segIndexStyle);
     styleList.add(labelStyle);
     
     styleList.setEnabled(endPointsStyle, false);
     styleList.setEnabled(labelStyle, false);
     styleList.setEnabled(orientStyle, false);
     styleList.setEnabled(structureStyle, false);
+    styleList.setEnabled(segIndexStyle, false);
     styleList.setEnabled(vertexLabelStyle, false);
     
     decoratorStyle = styleList;
@@ -118,6 +121,7 @@ public class LayerStyle implements Style  {
 
   private void update(LayerStyle layerStyle) {
     setStructure(layerStyle.isStructure());
+    setSegIndex(layerStyle.isSegIndex());
     setOrientations(layerStyle.isOrientations());
     setLabel(layerStyle.isLabel());
     setLabelSize(layerStyle.getLabelSize());
@@ -253,6 +257,14 @@ public class LayerStyle implements Style  {
   
   public boolean isStructure() {
     return decoratorStyle.isEnabled(structureStyle);
+  }
+  
+  public void setSegIndex(boolean show) {
+    decoratorStyle.setEnabled(segIndexStyle, show);
+  }
+  
+  public boolean isSegIndex() {
+    return decoratorStyle.isEnabled(segIndexStyle);
   }
   
   static Geometry offsetLine(Geometry geom, double distance)
