@@ -41,16 +41,29 @@ public class OverlayNGInvalidTest extends GeometryTestCase {
     Geometry a = read("POLYGON ((10 40, 40 40, 40 10, 10 10, 10 40))");
     Geometry b = read("POLYGON ((50 30, 19 30, 50 30))");
     Geometry expected = read("LINESTRING (40 30, 19 30)");
-    Geometry actual = intersection(a, b);
-    checkEqualExact(expected, actual);    
+    checkEqualExact(expected, intersection(a, b));    
   }
   
   public void testPolygonAdjacentElementIntersection() {
     Geometry a = read("MULTIPOLYGON (((10 10, 10 40, 40 40, 40 10, 10 10)), ((70 10, 40 10, 40 40, 70 40, 70 10)))");
     Geometry b = read("POLYGON ((20 50, 60 50, 60 20, 20 20, 20 50))");
     Geometry expected = read("POLYGON ((40 40, 60 40, 60 20, 40 20, 20 20, 20 40, 40 40))");
-    Geometry actual = intersection(a, b);
-    checkEqualExact(expected, actual);    
+    checkEqualExact(expected, intersection(a, b));    
+  }
+  
+  public void testPolygonInvertedIntersection() {
+    Geometry a = read("POLYGON ((10 40, 70 40, 70 0, 40 0, 50 20, 30 20, 40 0, 10 0, 10 40))");
+    Geometry b = read("POLYGON ((20 50, 60 50, 60 10, 20 10, 20 50))");
+    Geometry expected = read("POLYGON ((60 40, 60 10, 45 10, 50 20, 30 20, 35 10, 20 10, 20 40, 60 40))");
+    checkEqualExact(expected, intersection(a, b));    
+  }
+  
+  // AKA self-touching polygon
+  public void testPolygonExvertedIntersection() {
+    Geometry a = read("POLYGON ((10 30, 70 30, 70 0, 40 30, 10 0, 10 30))");
+    Geometry b = read("POLYGON ((20 50, 60 50, 60 10, 20 10, 20 50))");
+    Geometry expected = read("MULTIPOLYGON (((40 30, 20 10, 20 30, 40 30)), ((60 30, 60 10, 40 30, 60 30)))");
+    checkEqualExact(expected, intersection(a, b));    
   }
   
   //============================================================
