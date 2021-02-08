@@ -30,7 +30,7 @@ Distributions for older JTS versions can be obtained at the
 * Switch to using compact-SRID WKB format (#664)
 * Improve `WKBReader` error checking (#675)
 * Improve `Densifier` splitting algorithm to create longer segments (#677)
-* Reduce `LinearRing` mimimum number of vertices to 3 (#682)
+* Allow representing invalid `Polygon`s and `LinearRing`s with only 3 vertices (#682, #683)
 
 ### Bug Fixes
 
