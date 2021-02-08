@@ -632,11 +632,9 @@ and `PerformanceTestCase`)
 ### Functionality Improvements
 
 * Added new names for methods for computing `Geometry` equality:
-* `equals(Object)` is a synonym for `equalsExact(Geometry)`
-* `equalsNorm(Geometry)` automatically normalizes the operands
-* `equalsTopo(Geometry)` computes topological equality,
-and is a synonym for the original `equals(Geometry)`
-
+  * `equals(Object)` is a synonym for `equalsExact(Geometry)`
+  * `equalsNorm(Geometry)` automatically normalizes the operands
+  * `equalsTopo(Geometry)` computes topological equality, and is a synonym for the original `equals(Geometry)`
 * Added `Geometry.norm()` to provide non-mutating normalization
 * Added `Geometry.hashCode()` to fulfill Java conventions
 * Added `LineIntersector.getEndpoint()` method
@@ -655,7 +653,7 @@ and is a synonym for the original `equals(Geometry)`
 * Added `MathUtil` containing mathematics and numerical utility functions
 * Added `Vector2D` class providing vector operations
 * Added `DirectedEdgeStar.getNextCWEdge()` method to `planargraph` API
-* `AffineTransformation` enhanced to avoid numeric precision issues in case of reflection in X=Y (coordinate flipping)
+* Improved `AffineTransformation` to avoid numeric precision issues in case of reflection in X=Y (coordinate flipping)
 * Added `LineSequencer.sequence()` static convenience method
 * Added error indicators to `BufferDistanceValidator` and `BufferResultValidator`
 * Added `MinimumClearance` class
