@@ -134,6 +134,10 @@ class OverlayUtil {
     if (isFloating(pm)) {
       // if PM is FLOAT then there is no scale factor, so add 10%
       double minSize = Math.min(env.getHeight(), env.getWidth());
+      // heuristic to ensure zero-width envelopes don't cause total clipping
+      if (minSize <= 0.0) {
+        minSize = Math.max(env.getHeight(), env.getWidth());
+      }
       envExpandDist = SAFE_ENV_BUFFER_FACTOR * minSize;
     }
     else {

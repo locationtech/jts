@@ -577,6 +577,22 @@ public class OverlayNGTest extends GeometryTestCase {
     checkEqualExact(expected, actual);    
   }
   
+  public void testPolygonLineVerticalntersection() {
+    Geometry a = read("POLYGON ((-200 -200, 200 -200, 200 200, -200 200, -200 -200))");
+    Geometry b = read("LINESTRING (-100 100, -100 -100)");
+    Geometry expected = read("LINESTRING (-100 100, -100 -100)");
+    Geometry actual = intersection(a, b);
+    checkEqual(expected, actual);    
+  }
+  
+  public void testPolygonLineHorizontalIntersection() {
+    Geometry a = read("POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90))");
+    Geometry b = read("LINESTRING (20 50, 80 50)");
+    Geometry expected = read("LINESTRING (20 50, 80 50)");
+    Geometry actual = intersection(a, b);
+    checkEqual(expected, actual);    
+  }
+  
   //============================================================
   
   
