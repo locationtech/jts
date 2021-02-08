@@ -18,23 +18,26 @@ package org.locationtech.jts.geom;
  * A <code>LinearRing</code> is a {@link LineString} which is both closed and simple.
  * In other words,
  * the first and last coordinate in the ring must be equal,
- * and the interior of the ring must not self-intersect.
+ * and the ring must not self-intersect.
  * Either orientation of the ring is allowed.
  * <p>
- * A ring must have either 0 or 4 or more points.
+ * A ring must have either 0 or 3 or more points.
  * The first and last points must be equal (in 2D).
  * If these conditions are not met, the constructors throw
- * an {@link IllegalArgumentException}
+ * an {@link IllegalArgumentException}.
+ * A ring with 3 points is invalid, because it is collapsed
+ * and thus has a self-intersection.  It is allowed to be constructed
+ * so that it can be represented, and repaired if needed.
  *
  * @version 1.7
  */
 public class LinearRing extends LineString
 {
   /**
-   * The minimum number of vertices allowed in a valid non-empty ring (= 4).
+   * The minimum number of vertices allowed in a valid non-empty ring.
    * Empty rings with 0 vertices are also valid.
    */
-  public static final int MINIMUM_VALID_SIZE = 4;
+  public static final int MINIMUM_VALID_SIZE = 3;
 
   private static final long serialVersionUID = -4261142084085851829L;
 
