@@ -1079,7 +1079,7 @@ causing failure if input contained all GeometryCollections of the same subclass
 ### Bug Fixes
 
 * Fixed bug in `CoordinateArrays.ptNotInList`.
-Changed `polygonize.EdgeRing` to used corrected code.
+  Changed `polygonize.EdgeRing` to used corrected code.
 * Fixed bug causing duplicate points in `ScaledNoder`
 * Fixed bug causing Null Pointer for empty geometries in `OraWriter`
 * Changed AssertFailure to TopologyException in `EdgeNode`
@@ -1101,9 +1101,9 @@ Changed `polygonize.EdgeRing` to used corrected code.
 * Fixed null point cloning bug in `TopologyValidationError` (*thanks to Markus Gebhard*)
 * Fixed bug in `PointLocator` fix for LinearRings
 * Fixed bug in `Geometry.isValid` and `IsValidOp` causing some valid polygons
-to be reported as having a Disconnected Interior (specifically, polygons containing
-holes touching at a single point, where the point is the highest point in the hole rings, and where the holes
-have a specific orientation)
+  to be reported as having a Disconnected Interior (specifically, polygons containing
+  holes touching at a single point, where the point is the highest point in the hole rings, and where the holes
+  have a specific orientation)
 * Fixed bug in `Polygon.isRectangle`, which reported some valid rectangles as false
 
 
