@@ -146,16 +146,13 @@ public class Orientation {
    * 
    * @param ring a CoordinateSequence forming a ring (with first and last point identical)
    * @return true if the ring is oriented counter-clockwise.
-   * @throws IllegalArgumentException if there are too few points to determine orientation (&lt; 4)
    */ 
   public static boolean isCCW(CoordinateSequence ring)
   {
     // # of points without closing endpoint
     int nPts = ring.size() - 1;
-    // sanity check
-    if (nPts < 3)
-      throw new IllegalArgumentException(
-          "Ring has fewer than 4 points, so orientation cannot be determined");
+    // return default value if ring is flat
+    if (nPts < 3) return false;
   
     /**
      * Find first highest point after a lower point, if one exists

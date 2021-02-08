@@ -37,14 +37,9 @@ public class OrientationIsCCWTest extends GeometryTestCase {
       new Coordinate(1, 1),
       new Coordinate(2, 2)
     };
-    boolean hasError = false;
-    try {
-      boolean isCCW = Orientation.isCCW(pts);
-    }
-    catch (IllegalArgumentException ex) {
-      hasError = true;
-    }
-    assertTrue(hasError);
+    boolean isCCW = Orientation.isCCW(pts);
+    // actual value is undefined.  This just confirms no exception
+    assertTrue(true);
   }
   
   public void testCCW() {
