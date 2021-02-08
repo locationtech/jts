@@ -205,6 +205,31 @@ MULTILINESTRING ((150 150, 200 200, 300 300, 400 200), (100 100, 150 150), (190 
 </case>
 
 <case>
+  <desc>LA - vertical Line</desc>
+  <a>
+    LINESTRING (50 50, 50 20)
+  </a>
+  <b>
+    POLYGON ((10 60, 90 60, 90 10, 10 10, 10 60))
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+LINESTRING (50 50, 50 20)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POLYGON ((90 60, 90 10, 10 10, 10 60, 90 60))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+POLYGON ((90 60, 90 10, 10 10, 10 60, 90 60))
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POLYGON ((90 60, 90 10, 10 10, 10 60, 90 60))
+  </op></test>
+</case>
+
+<case>
   <desc>mLmA - disjoint and overlaps in lines and points</desc>
   <a>
 MULTILINESTRING ((50 150, 150 150), (100 350, 200 350), (320 350, 350 350), (300 150, 400 150), (150 300, 400 300))
