@@ -39,6 +39,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix Relate for cases with closed linear geometry and empty geometry (#671)
 * Fix `Densifier` to avoid splitting segments with length equal to distance tolerance (#676)
 * Fix `Geometry.compareTo` to test polygon holes (#678) 
+* Fix OverlayNG handling of polygons with interior flat lines (#685)
 
 ### WKBDump
 
