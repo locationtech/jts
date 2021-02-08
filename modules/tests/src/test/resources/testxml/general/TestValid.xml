@@ -150,8 +150,16 @@ LINESTRING (40 180, 120 120, 140 200, 140 200, 200 140, 240 200)
    </case>
 
    <case>
-      <desc>A - polygon with too few points </desc>
+      <desc>A - zero-area polygon with multiple points </desc>
       <a>POLYGON ((0 0, 10 0, 20 0, 0 0, 0 0))</a>
+      <test>
+         <op name="isValid" arg1="A"> false </op>
+      </test>
+   </case>
+
+   <case>
+      <desc>A - polygon with too few points </desc>
+      <a>POLYGON ((0 0, 10 10, 0 0))</a>
       <test>
          <op name="isValid" arg1="A"> false </op>
       </test>
