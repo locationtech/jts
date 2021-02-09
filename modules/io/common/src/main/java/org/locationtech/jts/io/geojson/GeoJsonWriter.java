@@ -34,13 +34,24 @@ import org.locationtech.jts.util.Assert;
 
 
 /**
- * Writes {@link Geometry}s as JSON fragments in GeoJson format.
+ * Writes {@link Geometry}s as JSON fragments in GeoJSON format.
+ * <p>
+ * The current GeoJSON specification is 
+ * <a href='https://tools.ietf.org/html/rfc7946'>https://tools.ietf.org/html/rfc7946</a>.
+ * <p>
+ * The GeoJSON specification states that polygons should be emitted using
+ * the counter-clockwise shell orientation.  This is not enforced by this writer.
+ * <p>
+ * The GeoJSON specification does not state how to represent empty geometries of specific type.
+ * The writer emits empty typed geometries using an empty array for the <code>coordinates</code> property.
  * 
  * @author Martin Davis
  * @author Paul Howells, Vivid Solutions
  */
 public class GeoJsonWriter {
   
+  private static final String JSON_ARRAY_EMPTY = "[]";
+
   /**
    * The prefix for EPSG codes in the <code>crs</code> property.
    */
@@ -121,7 +132,7 @@ public class GeoJsonWriter {
 
       CoordinateSequence coordinateSequence = point.getCoordinateSequence();
       final String jsonString = coordinateSequence.size() == 0
-          ? "[]" : getJsonString(coordinateSequence);
+          ? JSON_ARRAY_EMPTY : getJsonString(coordinateSequence);
 
       result.put(GeoJsonConstants.NAME_COORDINATES, new JSONAware() {
 
@@ -135,7 +146,7 @@ public class GeoJsonWriter {
 
       CoordinateSequence coordinateSequence = lineString.getCoordinateSequence();
       final String jsonString = coordinateSequence.size() == 0
-          ? "[]" : getJsonString(coordinateSequence);
+          ? JSON_ARRAY_EMPTY : getJsonString(coordinateSequence);
 
       result.put(GeoJsonConstants.NAME_COORDINATES, new JSONAware() {
 

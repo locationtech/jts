@@ -32,10 +32,16 @@ import org.locationtech.jts.io.ParseException;
 
 
 /**
- * Reads a GeoJson Geometry from a JSON fragment into a {@link Geometry}.
+ * Reads a GeoJSON Geometry from a JSON fragment into a {@link Geometry}.
  * <p>
- * A specification of the GeoJson format can be found at the GeoJson web site:
+ * The current GeoJSON specification is 
+ * <a href='https://tools.ietf.org/html/rfc7946'>https://tools.ietf.org/html/rfc7946</a>.
+ * An older specification is on the GeoJSON web site:
  * <a href='http://geojson.org/geojson-spec.html'>http://geojson.org/geojson-spec.html</a>.
+ * <p>
+ * The reader does not require a particular orientation for polygon rings.
+ * <p>
+ * The reader reads empty or null coordinate arrays as empty geometries.
  * <p>
  * It is the caller's responsibility to ensure that the supplied
  * {@link PrecisionModel} matches the precision of the incoming data. If a lower
