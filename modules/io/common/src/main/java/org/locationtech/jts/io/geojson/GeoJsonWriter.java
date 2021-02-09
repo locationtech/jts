@@ -119,7 +119,9 @@ public class GeoJsonWriter {
     if (geometry instanceof Point) {
       Point point = (Point) geometry;
 
-      final String jsonString = getJsonString(point.getCoordinateSequence());
+      CoordinateSequence coordinateSequence = point.getCoordinateSequence();
+      final String jsonString = coordinateSequence.size() == 0
+          ? "[]" : getJsonString(coordinateSequence);
 
       result.put(GeoJsonConstants.NAME_COORDINATES, new JSONAware() {
 
@@ -131,8 +133,9 @@ public class GeoJsonWriter {
     } else if (geometry instanceof LineString) {
       LineString lineString = (LineString) geometry;
 
-      final String jsonString = getJsonString(lineString
-          .getCoordinateSequence());
+      CoordinateSequence coordinateSequence = lineString.getCoordinateSequence();
+      final String jsonString = coordinateSequence.size() == 0
+          ? "[]" : getJsonString(coordinateSequence);
 
       result.put(GeoJsonConstants.NAME_COORDINATES, new JSONAware() {
 
