@@ -32,6 +32,8 @@ Distributions for older JTS versions can be obtained at the
 * Improve `Densifier` splitting algorithm to create longer segments (#677)
 * Allow constructing invalid `Polygon`s and `LinearRing`s with only 3 vertices (#682)
 * Ensure invalid 3-point polygons and rings are handled correctly (#683)
+* Fix `GeoJSONReader` to parse null and empty coordinates as empty geometry (#687) 
+* Fix `GeoJSONWriter` to emit empty coordinates array for empty point and linestring (#688)
 
 ### Bug Fixes
 
