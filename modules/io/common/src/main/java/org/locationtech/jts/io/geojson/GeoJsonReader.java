@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -319,15 +320,15 @@ public class GeoJsonReader {
       List<List<List<Number>>> ringsList = (List<List<List<Number>>>) geometryMap
           .get(GeoJsonConstants.NAME_COORDINATES);
 
+      if (ringsList == null || ringsList.isEmpty()) {
+        return geometryFactory.createPolygon();
+      }
+
       List<CoordinateSequence> rings = new ArrayList<CoordinateSequence>();
 
       for (List<List<Number>> coordinates : ringsList) {
 
         rings.add(createCoordinateSequence(coordinates));
-      }
-
-      if (rings.isEmpty()) {
-        throw new IllegalArgumentException("Polygon specified with no rings.");
       }
 
       LinearRing outer = geometryFactory.createLinearRing(rings.get(0));
@@ -433,6 +434,9 @@ public class GeoJsonReader {
   private CoordinateSequence createCoordinateSequence(
       List<List<Number>> coordinates) {
     CoordinateSequence result = null;
+    if (coordinates == null) {
+      coordinates = Collections.EMPTY_LIST;
+    }
 
     result = new CoordinateArraySequence(coordinates.size());
 
@@ -455,6 +459,10 @@ public class GeoJsonReader {
   }
 
   private CoordinateSequence createCoordinate(List<Number> ordinates) {
+    if (ordinates == null || ordinates.size() == 0) {
+      return new CoordinateArraySequence(0);
+    }
+
     CoordinateSequence result = new CoordinateArraySequence(1);
 
     if (ordinates.size() > 0) {
