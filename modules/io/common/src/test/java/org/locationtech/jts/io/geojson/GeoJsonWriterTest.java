@@ -14,8 +14,6 @@ package org.locationtech.jts.io.geojson;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.geojson.GeoJsonWriter;
-
 
 import test.jts.GeometryTestCase;
 
@@ -45,14 +43,32 @@ public class GeoJsonWriterTest extends GeometryTestCase {
         );
   }
 
+  public void testPointEmpty() throws ParseException {
+    runTest("POINT EMPTY",
+        "{'type':'Point','coordinates':[]}"
+    );
+  }
+
   public void testLineString() throws ParseException {
     runTest("LINESTRING (1 2, 10 20, 100 200)",
         "{'type':'LineString','coordinates':[[1,2],[10,20],[100,200]]}");
   }
 
+  public void testLineStringEmpty() throws ParseException {
+    runTest("LINESTRING EMPTY",
+        "{'type':'LineString','coordinates':[]}"
+    );
+  }
+
   public void testPolygon() throws ParseException {
     runTest("POLYGON ((0 0, 100 0, 100 100, 0 100, 0 0))",
         "{'type':'Polygon','coordinates':[[[0.0,0.0],[100,0.0],[100,100],[0.0,100],[0.0,0.0]]]}");
+  }
+
+  public void testPolygonEmpty() throws ParseException {
+    runTest("POLYGON EMPTY",
+        "{'type':'Polygon','coordinates':[]}"
+    );
   }
 
   public void testPolygonWithHole() throws ParseException {
