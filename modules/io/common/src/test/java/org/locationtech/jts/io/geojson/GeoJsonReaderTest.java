@@ -19,7 +19,7 @@ import test.jts.GeometryTestCase;
 
 public class GeoJsonReaderTest extends GeometryTestCase {
 
-  public GeoJsonReader geoJsonRdr;
+  private GeoJsonReader geoJsonRdr;
 
   public GeoJsonReaderTest(String name) {
     super(name);
@@ -37,14 +37,49 @@ public class GeoJsonReaderTest extends GeometryTestCase {
   public void testEmptyObject() throws ParseException {
     runParseEx("{}");
   }
- 
+
+  public void testEmptyCoordinatesPoint() throws ParseException {
+    runTest("{\"type\":\"Point\",\"coordinates\":[]}", "POINT EMPTY");
+  }
+
+  public void testNullCoordinatesPoint() throws ParseException {
+    runTest("{\"type\":\"Point\",\"coordinates\":null}", "POINT EMPTY");
+  }
+
+  public void testEmptyCoordinatesLineString() throws ParseException {
+    runTest("{\"type\":\"LineString\",\"coordinates\":[]}", "LINESTRING EMPTY");
+  }
+
+  public void testNullCoordinatesLineString() throws ParseException {
+    runTest("{\"type\":\"LineString\",\"coordinates\":null}", "LINESTRING EMPTY");
+  }
+
+  public void testEmptyCoordinatesPolygon() throws ParseException {
+    runTest("{\"type\":\"Polygon\",\"coordinates\":[]}", "POLYGON EMPTY");
+  }
+
+  public void testNullCoordinatesPolygon() throws ParseException {
+    runTest("{\"type\":\"Polygon\",\"coordinates\":null}", "POLYGON EMPTY");
+  }
+
   private void runParseEx(String json) {
     try {
       Geometry geom = geoJsonRdr.read(json);
+      fail();
     }
     catch (ParseException ex) {
-      assertTrue(true);
     }
+  }
+
+  private void runTest(String geojson, String expectedWkt) throws ParseException {
+    runTest(geojson, expectedWkt, 0, false);
+  }
+
+  private void runTest(String geojson, String expectedWkt, int srid, boolean encodeCRS) throws ParseException {
+    Geometry expectedGeom = read(expectedWkt);
+    expectedGeom.setSRID(srid);
+    Geometry geom = geoJsonRdr.read(geojson);
+    assertEquals(expectedGeom, geom);
   }
 
 }
