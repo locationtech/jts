@@ -20,22 +20,22 @@ import test.jts.GeometryTestCase;
 /**
  * @version 1.7
  */
-public class PolygonizeTest extends GeometryTestCase {
+public class PolygonizerTest extends GeometryTestCase {
 
-  public PolygonizeTest(String name) {
+  public PolygonizerTest(String name) {
     super(name);
   }
 
   public static void main(String[] args) {
-    junit.textui.TestRunner.run(PolygonizeTest.class);
+    junit.textui.TestRunner.run(PolygonizerTest.class);
   }
 
-  public void test1() {
+  public void testEmptyInput() {
     checkPolygonize(new String[]{"LINESTRING EMPTY", "LINESTRING EMPTY"},
       new String[]{});
   }
 
-  public void test2() {
+  public void testPolygonWithTouchingHole() {
     checkPolygonize(new String[]{
 "LINESTRING (100 180, 20 20, 160 20, 100 180)",
 "LINESTRING (100 180, 80 60, 120 60, 100 180)",
@@ -46,7 +46,7 @@ public class PolygonizeTest extends GeometryTestCase {
     });
   }
 
-  public void test3() {
+  public void testPolygonWithTouchingHoleAndNotch() {
     checkPolygonize(new String[]{
         "LINESTRING (0 0, 4 0)",
         "LINESTRING (4 0, 5 3)",
@@ -150,6 +150,17 @@ public class PolygonizeTest extends GeometryTestCase {
     });
   }
 
+  /**
+   * Input is invalid (non-noded), but Polygonizer should still not fail.
+   * Output is undefined, however.
+   */
+  public void testNonNodedWithHoleNotAssignable() {
+    checkPolygonizeNoError(    
+        new String[]{
+        "MULTILINESTRING ((10 90, 30 90, 30 30, 70 30, 70 90, 90 90, 90 10, 10 10, 10 90), (30 90, 70 90, 70 30, 30 30, 30 90))"
+    });
+  }
+  
 /*
   public void test2() {
     doTest(new String[]{
@@ -180,4 +191,15 @@ public class PolygonizeTest extends GeometryTestCase {
     checkEqual(expected, actual);
   }
 
+  private void checkPolygonizeNoError(String[] inputWKT) {
+    Polygonizer polygonizer = new Polygonizer();
+    polygonizer.add(readList(inputWKT));
+    try {
+      Collection actual = polygonizer.getPolygons();
+    }
+    catch (Throwable ex) {
+      ex.printStackTrace();
+      fail("Polygonizer threw an unexpected error");
+    }
+  }
 }
