@@ -42,6 +42,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `Densifier` to avoid splitting segments with length equal to distance tolerance (#676)
 * Fix `Geometry.compareTo` to test polygon holes (#678) 
 * Fix OverlayNG handling of polygons with interior flat lines (#685)
+* Fix `Polygonizer` to avoid NPE on invalid input (#692)
 
 ### WKBDump
 
