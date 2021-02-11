@@ -234,7 +234,7 @@ public class GeoJsonWriter {
   }
 
   /**
-   * See <a href="https://tools.ietf.org/html/rfc7946#section-3.1.6">[RFC 7946]</a>
+   * See <a href="https://tools.ietf.org/html/rfc7946#section-3.1.6">[RFC 7946]</a> for more context.
    * A linear ring MUST follow the right-hand rule with respect to the
    * area it bounds, i.e., exterior rings are counterclockwise, and
    * holes are clockwise.
