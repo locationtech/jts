@@ -129,6 +129,7 @@ public class LayerStyle implements Style  {
     setVertexSize(layerStyle.getVertexSize());
     setVertexColor(layerStyle.getVertexColor());
     setVertexLabels(layerStyle.isVertexLabels());
+    setVertexSymbol(layerStyle.getVertexSymbol());
     setEndpoints(layerStyle.isEndpoints());
   }
 
@@ -139,11 +140,17 @@ public class LayerStyle implements Style  {
     this.fillType = fillType;
   }
   
+  public int getVertexSymbol() {
+    return vertexStyle.getSymbol();
+  }
+  public void setVertexSymbol(int sym) {
+    vertexStyle.setSymbol(sym);
+  }
+  
   public void setColor(Color color) {
     segArrowStyle.setColor( ColorUtil.lighter(color,0.8) );
     lineArrowStyle.setColor( ColorUtil.lighter(color,0.5) );
     lineCircleStyle.setColor( ColorUtil.lighter(color,0.5) );
-    
   }
   
   public void setVertices(boolean show) {
@@ -285,6 +292,8 @@ public class LayerStyle implements Style  {
     LengthIndexedLine indLine = new LengthIndexedLine(line);
     return indLine.extractLine(distance, len - distance);
   }
+
+
 
 
 
