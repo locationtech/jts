@@ -76,6 +76,16 @@ public class GeoJsonWriterTest extends GeometryTestCase {
         "{'type':'Polygon','coordinates':[[[0.0,0.0],[100,0.0],[100,100],[0.0,100],[0.0,0.0]],[[1,1],[1,10],[10,10],[10,1],[1,1]]]}");
   }
 
+  public void testPolygonRightHandRule() throws ParseException {
+    runTest("POLYGON ((0 0, 0 100, 100 100, 100 0, 0 0))",
+            "{'type':'Polygon','coordinates':[[[0.0,0.0],[100,0.0],[100,100],[0.0,100],[0.0,0.0]]]}");
+  }
+
+  public void testPolygonWithHoleRightHandRule() throws ParseException {
+    runTest("POLYGON ((0 0, 0 100, 100 100, 100 0, 0 0), (1 1, 10 1, 10 10, 1 10, 1 1) )",
+            "{'type':'Polygon','coordinates':[[[0.0,0.0],[100,0.0],[100,100],[0.0,100],[0.0,0.0]],[[1,1],[1,10],[10,10],[10,1],[1,1]]]}");
+  }
+
   public void testMultiPoint() throws ParseException {
     runTest("MULTIPOINT ((0 0), (1 4), (100 200))",
         "{'type':'MultiPoint','coordinates':[[0.0,0.0],[1,4],[100,200]]}");
