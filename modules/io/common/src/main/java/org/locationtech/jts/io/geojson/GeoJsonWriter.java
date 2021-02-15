@@ -21,10 +21,12 @@ import java.util.Map;
 
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
+import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -215,8 +217,9 @@ public class GeoJsonWriter {
     ArrayList<JSONAware> result = new ArrayList<JSONAware>();
 
     {
-      final String jsonString = getJsonString(poly.getExteriorRing()
-          .getCoordinateSequence());
+      final String jsonString = getJsonString(
+              getCoordinateSequenceWthRightHandRuleEnforcement(poly.getExteriorRing(), true)
+      );
       result.add(new JSONAware() {
 
         public String toJSONString() {
@@ -225,8 +228,9 @@ public class GeoJsonWriter {
       });
     }
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      final String jsonString = getJsonString(poly.getInteriorRingN(i)
-          .getCoordinateSequence());
+      final String jsonString = getJsonString(
+              getCoordinateSequenceWthRightHandRuleEnforcement(poly.getInteriorRingN(i), false)
+      );
       result.add(new JSONAware() {
 
         public String toJSONString() {
@@ -236,6 +240,24 @@ public class GeoJsonWriter {
     }
 
     return result;
+  }
+
+  /**
+   * See <a href="https://tools.ietf.org/html/rfc7946#section-3.1.6">[RFC 7946]</a> for more context.
+   * A linear ring MUST follow the right-hand rule with respect to the
+   * area it bounds, i.e., exterior rings are counterclockwise, and
+   * holes are clockwise.
+   * */
+  private CoordinateSequence getCoordinateSequenceWthRightHandRuleEnforcement(LinearRing ring, boolean isExteriorRing) {
+    final boolean isRingClockWise = !Orientation.isCCW(ring.getCoordinateSequence());
+
+    final LinearRing rightHandRuleRing;
+    if (isExteriorRing) {
+      rightHandRuleRing = isRingClockWise? ring.reverse() : ring;
+    } else {
+      rightHandRuleRing = isRingClockWise? ring : ring.reverse();
+    }
+    return rightHandRuleRing.getCoordinateSequence();
   }
 
   private List<Object> makeJsonAware(GeometryCollection geometryCollection) {
