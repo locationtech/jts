@@ -138,7 +138,7 @@ public class GeoJsonWriterTest extends GeometryTestCase {
     geoJsonWriter.setEncodeCRS(encodeCRS);
     String json = this.geoJsonWriter.write(geom);
     json = json.replace('"', '\'');
-    assertEquals(json, expectedGeojson);
+    assertEquals(expectedGeojson, json);
   }
 
 }
