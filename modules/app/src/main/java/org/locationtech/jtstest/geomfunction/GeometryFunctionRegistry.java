@@ -243,13 +243,19 @@ public class GeometryFunctionRegistry
 		Method[] method = functionClass.getMethods();
 		for (int i = 0; i < method.length; i++) {
 			int mod = method[i].getModifiers();
-			if (Modifier.isStatic(mod) && Modifier.isPublic(mod)) {
+			if (Modifier.isStatic(mod) 
+			    && Modifier.isPublic(mod)
+			    && isGeometryFunction(method[i])) {
 				funcs.add(StaticMethodGeometryFunction.createFunction(method[i]));
 			}
 		}
 		return funcs;
 	}
 
+  public static boolean isGeometryFunction(Method method)
+  {
+    return Geometry.class.isAssignableFrom((method.getParameterTypes())[0]);
+  }
 	
 	/**
 	 * Adds a function if it does not currently
