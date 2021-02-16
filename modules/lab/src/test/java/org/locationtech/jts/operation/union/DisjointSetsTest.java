@@ -1,5 +1,7 @@
 package org.locationtech.jts.operation.union;
 
+import org.locationtech.jts.operation.union.DisjointSets.Subsets;
+
 import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
@@ -50,22 +52,23 @@ public class DisjointSetsTest extends TestCase {
   }
 
   private String[] dumpSets(int[] nums, DisjointSets dset) {
-    int nSet = dset.getNumSets();
+    Subsets subsets = dset.subsets();
+    int nSet = subsets.getCount();
     //System.out.println("# Sets = " + nSet);
-    String[] sets = new String[nSet];
+    String[] setStr = new String[nSet];
     for (int s = 0; s < nSet; s++) {
       //System.out.println("---- Set " + s);
-      int size = dset.getSetSize(s);
-      String setStr = "";
+      int size = subsets.getSize(s);
+      String str = "";
       for (int si = 0; si < size; si++) {
-        int itemIndex = dset.getSetItem(s, si);
-        if (si > 0) setStr += ",";
-        setStr += nums[itemIndex];
+        int itemIndex = subsets.getItem(s, si);
+        if (si > 0) str += ",";
+        str += nums[itemIndex];
       }
-      sets[s] = setStr;
+      setStr[s] = str;
       
-      System.out.println(setStr);
+      //System.out.println(setStr);
     }
-    return sets;
+    return setStr;
   }
 }

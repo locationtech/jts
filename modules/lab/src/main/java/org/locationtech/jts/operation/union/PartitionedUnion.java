@@ -22,6 +22,7 @@ import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 
 public class PartitionedUnion {
+  
   public static Geometry union(Geometry geoms)
   {
     List polys = PolygonExtracter.getPolygons(geoms);
@@ -48,21 +49,21 @@ public class PartitionedUnion {
     SpatialPartition part = new SpatialPartition(inputPolys, new SpatialPartition.Relation() {
       
       @Override
-      public boolean isEquivalent(int i1, int i2) {
+      public boolean isEquivalent(int i, int j) {
          //return inputPolys[i1].intersects(inputPolys[i2]);
          /*
          return inputPolys[i1].getEnvelopeInternal()
              .intersects( inputPolys[i2].getEnvelopeInternal() );
          */
-         PreparedGeometry pg = PreparedGeometryFactory.prepare(inputPolys[i1]);
-         return pg.intersects(inputPolys[i2]);
+         PreparedGeometry pg = PreparedGeometryFactory.prepare(inputPolys[i]);
+         return pg.intersects(inputPolys[j]);
       }
     });
     
     //--- compute union of each set
     GeometryFactory geomFactory = inputPolys[0].getFactory();
     List<Geometry> unionGeoms = new ArrayList<Geometry>();
-    int numSets = part.getNumSets();
+    int numSets = part.getCount();
     for (int i = 0; i < numSets; i++) {
       Geometry geom = union(part, i);
       unionGeoms.add(geom);
@@ -72,14 +73,13 @@ public class PartitionedUnion {
 
   private Geometry union(SpatialPartition part, int s) {
     //--- one geom in partition, so just copy it
-    if (part.getSetSize(s) == 1) {
-      int i = part.getSetItem(s, 0);
-      return inputPolys[i].copy();
+    if (part.getSize(s) == 1) {
+      return part.getGeometry(s, 0).copy();
     }
 
     List<Geometry> setGeoms = new ArrayList<Geometry>();
-    for (int i = 0; i < part.getSetSize(s); i++) {
-      setGeoms.add(inputPolys[part.getSetItem(s, i)]);
+    for (int i = 0; i < part.getSize(s); i++) {
+      setGeoms.add( part.getGeometry(s, i) );
     }
     return CascadedPolygonUnion.union(setGeoms);
   }
