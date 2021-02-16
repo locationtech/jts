@@ -1,5 +1,5 @@
 <run>
-  <desc>Test cases for invalid polygonal geometry</desc>
+  <desc>Canonical examples of invalid polygonal geometry</desc>
   <precisionModel type="FLOATING"/>
 
 <case> <desc>Polygon - exverted shell, point touch at vertex</desc>
