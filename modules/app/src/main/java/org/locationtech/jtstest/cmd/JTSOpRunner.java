@@ -29,6 +29,7 @@ import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.util.Stopwatch;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
+import org.locationtech.jtstest.geomfunction.SelecterGeometryFunction;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.util.io.MultiFormatBufferedReader;
 import org.locationtech.jtstest.util.io.MultiFormatFileReader;
@@ -103,6 +104,9 @@ public class JTSOpRunner {
     public boolean isIndexed = false;
     public boolean isExplode = false;
     public int srid;
+    
+    public boolean isSelect = false;
+    public double selectVal = 0;
     
     String operation;
     public String[] argList;
@@ -249,7 +253,11 @@ public class JTSOpRunner {
 
 
   private void executeFunction() {
-    GeometryFunction func = getFunction(param.operation);
+    GeometryFunction baseFun = getFunction(param.operation);
+    GeometryFunction func = baseFun;
+    if (param.isSelect) {
+      func = new SelecterGeometryFunction(func, param.selectVal);
+    }
     
     if (func == null) {
       throw new CommandError(ERR_FUNCTION_NOT_FOUND, param.operation);
@@ -550,8 +558,6 @@ public class JTSOpRunner {
       throw new CommandError(ERR_WRONG_ARG_COUNT, func.getName());
     }
   }
-  
-
   
   private GeometryFunction getFunction(String operation) {
     // default category is Geometry

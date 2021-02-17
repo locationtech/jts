@@ -119,6 +119,7 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.OFFSET, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.REPEAT, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.SRID, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.WHERE, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.VALIDATE, 0))
     .addOptionSpec(new OptionSpec(OptionSpec.OPTION_FREE_ARGS, OptionSpec.NARGS_ONE_OR_MORE));
     return commandLine;
@@ -130,25 +131,27 @@ public class JTSOpCmd {
   "           [ -a  <wkt> | <wkb> | stdin | <filename.ext> ]",
   "           [ -b  <wkt> | <wkb> | stdin | <filename.ext> ]",
   "           [ -ab <wkt> | <wkb> | stdin | <filename.ext> ]",
-  "           [ -limit <n> ]",
-  "           [ -offset <n> ]",
+  "           [ -limit N ]",
+  "           [ -offset N ]",
+  "           [ -collect ]",
   "           [ -eacha ]",
   "           [ -eachb ]",
   "           [ -index ]",
-  "           [ -repeat <num> ]",
+  "           [ -repeat N ]",
+  "           [ -where D ]",
   "           [ -validate ]",
   "           [ -explode",
-  "           [ -srid <SRID> ]",
+  "           [ -srid SRID ]",
   "           [ -f ( txt | wkt | wkb | geojson | gml | svg ) ]",
   "           [ -time ]",
   "           [ -v, -verbose ]",
   "           [ -help ]",
-  "           [ -geomfunc <classname> ]",
+  "           [ -geomfunc classname ]",
   "           [ -op ]",
   "           [ op [ args... ]]",
-  "  op              name of the operation (in format Category.op)",
-  "  args            one or more scalar arguments to the operation",
-  "                  - To run over multiple arguments use v1,v2,v3 OR val(v1,v2,v3,..)",
+  "           op       name of the operation (in format Category.op)",
+  "           args     one or more scalar arguments to the operation",
+  "           - To run over multiple arguments use v1,v2,v3 OR val(v1,v2,v3,..)",
   "",
   "===== Input options:",
   "  -a              Geometry A: literal, stdin (WKT or WKB), or filename (extension: WKT, WKB, GeoJSON, GML, SHP)",
@@ -156,10 +159,12 @@ public class JTSOpCmd {
   "  -limit          Limits the number of geometries read from A, or B if specified",
   "  -offset         Uses an offset to read geometries  from A, or B if specified",
   "===== Operation options:",
-  "  -eacha          execute op on each component of A",
-  "  -eachb          execute op on each component of B",
-  "  -index          index geometry B",
+  "  -collect        execute op on collection of A geometries",
+  "  -eacha          execute op on each element of A",
+  "  -eachb          execute op on each element of B",
+  "  -index          index the B geometries",
   "  -repeat         repeat the operation N times",
+  "  -where          output geometry where operation result equals the value D (1=true, 0=false)",
   "  -validate       validate the result of each operation",
   "  -geomfunc       specifies class providing geometry operations",
   "  -op             separator to delineate operation arguments",
@@ -334,6 +339,11 @@ public class JTSOpCmd {
         ? commandLine.getOptionArgAsInt(CommandOptions.REPEAT, 0)
             : 1;
     cmdArgs.validate  = commandLine.hasOption(CommandOptions.VALIDATE);
+    cmdArgs.isSelect  = commandLine.hasOption(CommandOptions.WHERE);
+    cmdArgs.selectVal =  cmdArgs.isSelect ?
+        commandLine.getOptionArgAsNum(CommandOptions.WHERE, 0)
+        : 1;
+     
 
     cmdArgs.eachA = commandLine.hasOption(CommandOptions.EACHA);
     cmdArgs.eachB = commandLine.hasOption(CommandOptions.EACHB);

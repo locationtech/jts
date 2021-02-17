@@ -199,6 +199,28 @@ public class JTSOpCmdTest extends TestCase {
     assertEquals("Incorrect summary value for arg values",  computeArea(results), 93.6, 1);
   }
 
+  public void testWhereValid() {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))", 
+        "-f", "wkt", 
+        "-where", "1",
+        "isValid" ), 
+        null, null );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertTrue("Not enough results for arg values",  results.size() == 1 );
+  }
+
+  public void testWhereInvalid() {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "POLYGON ((1 9, 9 1, 9 9, 1 1, 1 9))", 
+        "-f", "wkt", 
+        "-where","0",
+        "isValid" ), 
+        null, null );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertTrue("Not enough results for arg values",  results.size() == 1 );
+  }
+
   //----------------------------------------------------------------
   
   public void testSRIDBuffer() throws ParseException {
