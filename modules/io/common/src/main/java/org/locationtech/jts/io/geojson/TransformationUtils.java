@@ -3,6 +3,9 @@ package org.locationtech.jts.io.geojson;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TransformationUtils {
 
     /**
@@ -18,13 +21,13 @@ public class TransformationUtils {
         if (geometry instanceof MultiPolygon) {
             MultiPolygon multiPolygon = (MultiPolygon) geometry;
 
-            Polygon[] polygons = new Polygon[0];
+            List<Polygon> polygons = new ArrayList<>();
             for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
                 final Geometry polygon = multiPolygon.getGeometryN(i);
-                polygons[i] = ((Polygon) enforceRightHandRuleOrientation(polygon));
+                polygons.add((Polygon) enforceRightHandRuleOrientation(polygon));
             }
 
-            return new GeometryFactory().createMultiPolygon(polygons);
+            return new GeometryFactory().createMultiPolygon(polygons.toArray(new Polygon[0]));
 
         } else if (geometry instanceof Polygon) {
             return enforceRightHandRuleOrientation((Polygon) geometry);
@@ -46,13 +49,13 @@ public class TransformationUtils {
         LinearRing exteriorRing = polygon.getExteriorRing();
         LinearRing exteriorRingEnforced = enforceRightHandRuleOrientation(exteriorRing, true);
 
-        LinearRing[] interiorRings = new LinearRing[0];
+        List<LinearRing> interiorRings = new ArrayList<>();
         for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-            interiorRings[i] = enforceRightHandRuleOrientation(polygon.getInteriorRingN(i), false);
+            interiorRings.add(enforceRightHandRuleOrientation(polygon.getInteriorRingN(i), false));
         }
 
         return new GeometryFactory(polygon.getPrecisionModel(), polygon.getSRID())
-                .createPolygon(exteriorRingEnforced, interiorRings);
+                .createPolygon(exteriorRingEnforced, interiorRings.toArray(new LinearRing[0]));
     }
 
     /**
