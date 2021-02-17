@@ -25,9 +25,11 @@ import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.strtree.STRtree;
 
 /**
- * Unions a sparse set of polygonal geometries.
+ * Unions a set of polygonal geometries by partitioning them
+ * into connected sets of polygons.
+ * This works best for a <i>sparse</i> set of polygons.
  * Sparse means that if the geometries are partioned
- * into a set of intersecting clusters, the number of clusters
+ * into connected sets, the number of sets
  * is a significant fraction of the total number of geometries.
  * The algorithm used provides performance and memory advantages
  * over the {@link CascadedPolygonUnion} algorithm.
