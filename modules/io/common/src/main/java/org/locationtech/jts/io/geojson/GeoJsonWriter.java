@@ -11,6 +11,19 @@
  */
 package org.locationtech.jts.io.geojson;
 
+import org.json.simple.JSONAware;
+import org.json.simple.JSONObject;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.util.Assert;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -18,21 +31,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.json.simple.JSONAware;
-import org.json.simple.JSONObject;
-import org.locationtech.jts.algorithm.Orientation;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.util.Assert;
 
 
 /**
@@ -61,6 +59,7 @@ public class GeoJsonWriter {
   
   private double scale;
   private boolean isEncodeCRS = true;
+  private boolean isRHREnforced = false;
 
   /**
    * Constructs a GeoJsonWriter instance.
@@ -90,6 +89,16 @@ public class GeoJsonWriter {
     this.isEncodeCRS  = isEncodeCRS;
   }
   
+  /**
+   * Sets whether the GeoJSON should be output following the RFC7946 Right Hand Rule.
+   * See <a href="https://tools.ietf.org/html/rfc7946#section-3.1.6">RFC 7946 Specification</a> for more context.
+   *
+   * @param isRHREnforced true if the GeoJSON should be output following the RFC7946 Right Hand Rule
+   */
+  public void setEnforceRightHandRule(boolean isRHREnforced) {
+    this.isRHREnforced = isRHREnforced;
+  }
+
   /**
    * Writes a {@link Geometry} in GeoJson format to a String.
    * 
@@ -160,6 +169,10 @@ public class GeoJsonWriter {
     } else if (geometry instanceof Polygon) {
       Polygon polygon = (Polygon) geometry;
 
+      if (isRHREnforced) {
+        polygon = (Polygon) TransformationUtils.enforceRightHandRuleOrientation(polygon);
+      }
+
       result.put(GeoJsonConstants.NAME_COORDINATES, makeJsonAware(polygon));
 
     } else if (geometry instanceof MultiPoint) {
@@ -174,6 +187,10 @@ public class GeoJsonWriter {
 
     } else if (geometry instanceof MultiPolygon) {
       MultiPolygon multiPolygon = (MultiPolygon) geometry;
+
+      if (isRHREnforced) {
+        multiPolygon = (MultiPolygon) TransformationUtils.enforceRightHandRuleOrientation(multiPolygon);
+      }
 
       result.put(GeoJsonConstants.NAME_COORDINATES, makeJsonAware(multiPolygon));
 
@@ -217,9 +234,8 @@ public class GeoJsonWriter {
     ArrayList<JSONAware> result = new ArrayList<JSONAware>();
 
     {
-      final String jsonString = getJsonString(
-              getCoordinateSequenceWthRightHandRuleEnforcement(poly.getExteriorRing(), true)
-      );
+      final String jsonString = getJsonString(poly.getExteriorRing()
+          .getCoordinateSequence());
       result.add(new JSONAware() {
 
         public String toJSONString() {
@@ -228,9 +244,8 @@ public class GeoJsonWriter {
       });
     }
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      final String jsonString = getJsonString(
-              getCoordinateSequenceWthRightHandRuleEnforcement(poly.getInteriorRingN(i), false)
-      );
+      final String jsonString = getJsonString(poly.getInteriorRingN(i)
+          .getCoordinateSequence());
       result.add(new JSONAware() {
 
         public String toJSONString() {
@@ -240,24 +255,6 @@ public class GeoJsonWriter {
     }
 
     return result;
-  }
-
-  /**
-   * See <a href="https://tools.ietf.org/html/rfc7946#section-3.1.6">[RFC 7946]</a> for more context.
-   * A linear ring MUST follow the right-hand rule with respect to the
-   * area it bounds, i.e., exterior rings are counterclockwise, and
-   * holes are clockwise.
-   * */
-  private CoordinateSequence getCoordinateSequenceWthRightHandRuleEnforcement(LinearRing ring, boolean isExteriorRing) {
-    final boolean isRingClockWise = !Orientation.isCCW(ring.getCoordinateSequence());
-
-    final LinearRing rightHandRuleRing;
-    if (isExteriorRing) {
-      rightHandRuleRing = isRingClockWise? ring.reverse() : ring;
-    } else {
-      rightHandRuleRing = isRingClockWise? ring : ring.reverse();
-    }
-    return rightHandRuleRing.getCoordinateSequence();
   }
 
   private List<Object> makeJsonAware(GeometryCollection geometryCollection) {
