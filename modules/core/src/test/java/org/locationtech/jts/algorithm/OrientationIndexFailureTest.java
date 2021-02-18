@@ -17,7 +17,10 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 /**
- * Tests failure cases of CGAlgorithms.computeOrientation
+ * Tests cases that cause failure in a simple double-precision
+ * implementation of orientation index, but
+ * which are fixed by the improved DD algorithm.
+ * 
  * @version 1.7
  */
 public class OrientationIndexFailureTest
@@ -122,7 +125,6 @@ public class OrientationIndexFailureTest
     checkOriginalJTS(pts, true);
   }
 
-
   public void testBadCCW6() throws Exception
   {
     // from JTS Convex Hull "Almost collinear" unit test
@@ -132,6 +134,26 @@ public class OrientationIndexFailureTest
         new Coordinate(-190.9188309203678, 190.91883092036784)
     };
     checkOrientation(pts);
+  }
+  
+  /**
+   * Tests a simple case in which a point exactly lies on a line, 
+   * but whose orientation can't be computed accurately in double precision or DD.
+   */
+  public void testSimpleFail() {
+    Coordinate p1 = new Coordinate(1, 1);
+    Coordinate p2 = new Coordinate(3, 3.5);
+    // 2.6 is not exactly representable in DD, or in double
+    Coordinate q = new Coordinate(2.6, 3);
+    
+    int indexDD = CGAlgorithmsDD.orientationIndex(p1, p2, q);
+    int index = NonRobustCGAlgorithms.orientationIndex(p1, p2, q);
+    
+    //System.out.println("indexDD = " + indexDD);
+    //System.out.println("index = " + index);
+    
+    assertTrue("orientationIndex DD is not expected to be correct", indexDD != 0);
+    assertTrue("orientationIndex in DP is not expected to be correct", index != 0);
   }
   
   /**
