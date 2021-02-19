@@ -6,6 +6,9 @@ import org.locationtech.jts.geom.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utilities to modify the ring orientation of polygonal geometries.
+ */
 public class OrientationTransformer {
 
     /**

@@ -90,10 +90,10 @@ public class GeoJsonWriter {
   }
   
   /**
-   * Sets whether the GeoJSON should be output following counter-clocked orientation aka Right Hand Rule defined in RFC7946
+   * Sets whether the GeoJSON should be output following counter-clockwise orientation aka Right Hand Rule defined in RFC7946
    * See <a href="https://tools.ietf.org/html/rfc7946#section-3.1.6">RFC 7946 Specification</a> for more context.
    *
-   * @param enforceCCW true if the GeoJSON should be output following the RFC7946 counter-clocked orientation aka Right Hand Rule
+   * @param enforceCCW true if the GeoJSON should be output following the RFC7946 counter-clockwise orientation aka Right Hand Rule
    */
   public void setEnforceCCW(boolean enforceCCW) {
     this.isEnforceCCW = enforceCCW;
