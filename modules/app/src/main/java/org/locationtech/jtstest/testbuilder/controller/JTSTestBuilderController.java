@@ -12,12 +12,16 @@
 
 package org.locationtech.jtstest.testbuilder.controller;
 
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jtstest.testbuilder.TestBuilderDialogs;
+import org.locationtech.jtstest.clean.CleanDuplicatePoints;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
@@ -148,7 +152,7 @@ public class JTSTestBuilderController
 
   public void inspectGeometry()
   {
-    JTSTestBuilderFrame.instance().actionInspectGeometry();
+    JTSTestBuilderFrame.instance().inspectGeometry();
   }
 
   public void inspectResult()
@@ -156,10 +160,13 @@ public class JTSTestBuilderController
     JTSTestBuilderFrame.instance().inspectResult();
   }
 
-  public void inspectGeometryDialog()
+  public void inspectGeometryDialogForCurrentCase()
   {
-    JTSTestBuilderFrame.instance().actionInspectGeometryDialog();
+    int geomIndex = JTSTestBuilder.model().getGeometryEditModel().getGeomIndex();
+    Geometry geometry = model().getCurrentCase().getGeometry(geomIndex);
+    TestBuilderDialogs.inspectGeometry(frame(), geomIndex, geometry);
   }
+  
   public void clearResult()
   {
     frame().getResultWKTPanel().clearResult();
@@ -312,4 +319,18 @@ public class JTSTestBuilderController
     geometryViewChanged();
   }
 
+  //=============================================
+  
+  public void removeDuplicatePoints() {
+    CleanDuplicatePoints clean = new CleanDuplicatePoints();
+    Geometry cleanGeom = clean.clean(model().getGeometryEditModel().getGeometry(0));
+    model().getCurrentCase().setGeometry(0, cleanGeom);
+    frame().geometryChanged();
+  }
+
+  public void changeToLines() {
+    Geometry cleanGeom = LinearComponentExtracter.getGeometry(model().getGeometryEditModel().getGeometry(0));
+    model().getCurrentCase().setGeometry(0, cleanGeom);
+    frame().geometryChanged();
+  }
 }

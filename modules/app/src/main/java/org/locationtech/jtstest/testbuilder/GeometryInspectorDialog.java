@@ -55,6 +55,11 @@ public class GeometryInspectorDialog extends JDialog
     getContentPane().add(inspectPanel);
   }
 
+  public void setGeometry(int geomIndex, Geometry geometry) {
+    String tag = geomIndex == 0 ? AppStrings.GEOM_LABEL_A : AppStrings.GEOM_LABEL_B;
+    inspectPanel.setGeometry(tag, geometry, 0);
+  }
+  
   public void setGeometry(String tag, Geometry geometry) {
     inspectPanel.setGeometry(tag, geometry, 0);
   }
