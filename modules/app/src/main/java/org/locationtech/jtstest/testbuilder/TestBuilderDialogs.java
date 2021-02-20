@@ -1,6 +1,5 @@
 package org.locationtech.jtstest.testbuilder;
 
-import java.awt.event.ActionEvent;
 import java.io.File;
 
 import javax.swing.JFileChooser;
@@ -9,11 +8,12 @@ import javax.swing.JOptionPane;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.util.Assert;
+import org.locationtech.jtstest.testbuilder.io.HtmlSvgTestWriter;
 import org.locationtech.jtstest.testbuilder.io.HtmlWriter;
 import org.locationtech.jtstest.testbuilder.io.JavaTestWriter;
+import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
 import org.locationtech.jtstest.testbuilder.io.XMLTestWriter;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
-import org.locationtech.jtstest.testbuilder.model.TestCaseEdit;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testrunner.GuiUtil;
 import org.locationtech.jtstest.util.FileUtil;
@@ -34,6 +34,35 @@ public class TestBuilderDialogs {
         FileUtil.setContents(fileChooser.getSelectedFile().getPath(), 
             XMLTestWriter.getRunXml(tbModel.getTestCaseList(), tbModel.getPrecisionModel()) );
       }
+    }
+    catch (Exception x) {
+      SwingUtil.reportException(tbFrame, x);
+    }
+  }
+
+  private static JFileChooser htmlFileChooser = null;
+
+  private static String chooseSVGFile(JTSTestBuilderFrame tbFrame) {
+    if (htmlFileChooser == null) {
+      htmlFileChooser = new JFileChooser();
+      htmlFileChooser.addChoosableFileFilter(SwingUtil.HTML_FILE_FILTER);
+      htmlFileChooser.setDialogTitle("Save HTML-SVG Test File");
+      htmlFileChooser.setSelectedFile(new File("geoms.html"));
+    }
+    if (JFileChooser.APPROVE_OPTION != htmlFileChooser.showSaveDialog(tbFrame)) 
+      return null;
+    File file = htmlFileChooser.getSelectedFile();
+    if (! SwingUtil.confirmOverwrite(tbFrame, file)) 
+      return null;
+    return htmlFileChooser.getSelectedFile().getPath();
+  }
+  
+  public static void saveAsSVG(JTSTestBuilderFrame tbFrame, TestBuilderModel tbModel) {
+    try {
+      String path = chooseSVGFile(tbFrame);
+      if (path == null) return;
+      FileUtil.setContents(path, 
+          HtmlSvgTestWriter.writeTestSVG(tbModel.getTestCaseList()) );
     }
     catch (Exception x) {
       SwingUtil.reportException(tbFrame, x);

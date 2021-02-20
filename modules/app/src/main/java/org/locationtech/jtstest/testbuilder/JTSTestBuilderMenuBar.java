@@ -111,6 +111,14 @@ public class JTSTestBuilderMenuBar
           TestBuilderDialogs.saveAsHtml(tbFrame, JTSTestBuilder.model());
         }
       });
+    JMenuItem saveAsSvgMenuItem = new JMenuItem();
+    saveAsSvgMenuItem.setText("Save As SVG...");
+    saveAsSvgMenuItem.addActionListener(
+      new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          TestBuilderDialogs.saveAsSVG(tbFrame, JTSTestBuilder.model());
+        }
+      });
     saveAsPNGMenuItem.setText("Save As PNG...");
     saveAsPNGMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
@@ -166,6 +174,8 @@ public class JTSTestBuilderMenuBar
     jMenuFile.add(menuLoadXmlTestFile);
     jMenuFile.add(menuLoadXmlTestFolder);
     jMenuFile.add(saveAsXmlMenuItem);
+    jMenuFile.add(saveAsSvgMenuItem);
+    //-----------------------
     jMenuFile.addSeparator();
     jMenuFile.add(saveAsPNGMenuItem);
     jMenuFile.add(saveToClipboardMenuItem);
@@ -180,6 +190,7 @@ public class JTSTestBuilderMenuBar
 
     jMenuView.add(menuViewText);
     jMenuView.add(menuViewGeometry);
+    //-----------------------
     jMenuEdit.addSeparator();
     jMenuView.add(menuShowIndicators);
     
@@ -187,6 +198,7 @@ public class JTSTestBuilderMenuBar
     jMenuEdit.setText("Edit");
     jMenuEdit.add(deleteAllTestCasesMenuItem);
     jMenuEdit.add(precisionModelMenuItem);
+    //-----------------------
     jMenuEdit.addSeparator();
     jMenuEdit.add(removeDuplicatePoints);
     jMenuEdit.add(changeToLines);
