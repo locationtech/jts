@@ -23,6 +23,7 @@ import org.locationtech.jts.geom.util.GeometryMapper;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.operation.IsSimpleOp;
 import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.distance.DistanceOp;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.overlay.OverlayOp;
@@ -1226,9 +1227,9 @@ public abstract class Geometry
    * The end cap style specifies the buffer geometry that will be
    * created at the ends of linestrings.  The styles provided are:
    * <ul>
-   * <li><code>BufferOp.CAP_ROUND</code> - (default) a semi-circle
-   * <li><code>BufferOp.CAP_BUTT</code> - a straight line perpendicular to the end segment
-   * <li><code>BufferOp.CAP_SQUARE</code> - a half-square
+   * <li>{@link BufferParameters#CAP_ROUND} - (default) a semi-circle
+   * <li>{@link BufferParameters#CAP_FLAT} - a straight line perpendicular to the end segment
+   * <li>{@link BufferParameters#CAP_SQUARE} - a half-square
    * </ul>
 	 * <p>
 	 * The buffer operation always returns a polygonal result. The negative or
@@ -1390,7 +1391,7 @@ public abstract class Geometry
   }
 
   /**
-   * Computes a <code>Geometry </code> representing the closure of the point-set
+   * Computes a <code>Geometry</code> representing the closure of the point-set
    * which is the union of the points in this <code>Geometry</code> which are not
    * contained in the <code>other</code> Geometry,
    * with the points in the <code>other</code> Geometry not contained in this
