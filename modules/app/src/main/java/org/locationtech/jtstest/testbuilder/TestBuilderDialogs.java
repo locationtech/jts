@@ -120,6 +120,19 @@ public class TestBuilderDialogs {
       JTSTestBuilderFrame.reportException(pe);
     }
   }
+
+  private static JFileChooser pngFileChooser;
+  
+  public static JFileChooser getSavePNGFileChooser() {
+    if (pngFileChooser == null) {
+      pngFileChooser = new JFileChooser();
+      pngFileChooser.addChoosableFileFilter(SwingUtil.PNG_FILE_FILTER);
+      pngFileChooser.setDialogTitle("Save PNG");
+      pngFileChooser.setSelectedFile(new File("geoms.png"));
+    }
+    return pngFileChooser;
+  }
+  
   private static GeometryInspectorDialog geomInspectorDlg;
 
   public static void inspectGeometry(JTSTestBuilderFrame tbFrame, int geomIndex, Geometry geometry) {

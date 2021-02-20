@@ -403,30 +403,6 @@ public class JTSTestBuilderFrame extends JFrame
   	return XMLTestWriter.getRunXml(tbModel.getTestCaseList(), tbModel.getPrecisionModel());
   }
 
-  public void actionSaveImageAsPNG() {
-    initFileChoosers();
-    try {
-      String fullFileName = SwingUtil.chooseFilenameWithConfirm(this, pngFileChooser);  
-      if (fullFileName == null) return;
-        ImageUtil.writeImage(testCasePanel.getGeometryEditPanel(), 
-            fullFileName,
-            ImageUtil.IMAGE_FORMAT_NAME_PNG);
-    }
-    catch (Exception x) {
-      reportException(x);
-    }
-  }
-
-  public void actionSaveImageToClipboard() {
-    try {
-        ImageUtil.saveImageToClipboard(testCasePanel.getGeometryEditPanel(), 
-        		ImageUtil.IMAGE_FORMAT_NAME_PNG);
-    }
-    catch (Exception x) {
-      reportException(x);
-    }
-  }
-
   void actionDeleteAllTestCases() {
     tbModel.cases().init();
     updateTestCaseView();
