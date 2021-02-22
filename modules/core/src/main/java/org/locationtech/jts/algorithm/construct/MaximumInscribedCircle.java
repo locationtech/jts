@@ -101,7 +101,8 @@ public class MaximumInscribedCircle {
    * Creates a new instance of a Maximum Inscribed Circle computation.
    * 
    * @param polygonal an areal geometry
-   * @param tolerance the distance tolerance for computing the centre point
+   * @param tolerance the distance tolerance for computing the centre point (must be positive)
+   * @throws IllegalArgumentException if the tolerance is non-positive, or the input geometry is non-polygonal or empty.
    */
   public MaximumInscribedCircle(Geometry polygonal, double tolerance) {
     if (tolerance <= 0) {
