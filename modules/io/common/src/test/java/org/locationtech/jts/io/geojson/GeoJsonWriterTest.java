@@ -150,7 +150,7 @@ public class GeoJsonWriterTest extends GeometryTestCase {
     Geometry geom = read(wkt);
     geom.setSRID(srid);
     geoJsonWriter.setEncodeCRS(encodeCRS);
-    geoJsonWriter.setEnforceCCW(enforceRHR);
+    geoJsonWriter.setForceCCW(enforceRHR);
     String json = this.geoJsonWriter.write(geom);
     json = json.replace('"', '\'');
     assertEquals(expectedGeojson, json);

@@ -59,7 +59,7 @@ public class GeoJsonWriter {
   
   private double scale;
   private boolean isEncodeCRS = true;
-  private boolean isEnforceCCW = false;
+  private boolean isForceCCW = false;
 
   /**
    * Constructs a GeoJsonWriter instance.
@@ -93,10 +93,10 @@ public class GeoJsonWriter {
    * Sets whether the GeoJSON should be output following counter-clockwise orientation aka Right Hand Rule defined in RFC7946
    * See <a href="https://tools.ietf.org/html/rfc7946#section-3.1.6">RFC 7946 Specification</a> for more context.
    *
-   * @param enforceCCW true if the GeoJSON should be output following the RFC7946 counter-clockwise orientation aka Right Hand Rule
+   * @param isForceCCW true if the GeoJSON should be output following the RFC7946 counter-clockwise orientation aka Right Hand Rule
    */
-  public void setEnforceCCW(boolean enforceCCW) {
-    this.isEnforceCCW = enforceCCW;
+  public void setForceCCW(boolean isForceCCW) {
+    this.isForceCCW = isForceCCW;
   }
 
   /**
@@ -169,7 +169,7 @@ public class GeoJsonWriter {
     } else if (geometry instanceof Polygon) {
       Polygon polygon = (Polygon) geometry;
 
-      if (isEnforceCCW) {
+      if (isForceCCW) {
         polygon = (Polygon) OrientationTransformer.transformCCW(polygon);
       }
 
@@ -188,7 +188,7 @@ public class GeoJsonWriter {
     } else if (geometry instanceof MultiPolygon) {
       MultiPolygon multiPolygon = (MultiPolygon) geometry;
 
-      if (isEnforceCCW) {
+      if (isForceCCW) {
         multiPolygon = (MultiPolygon) OrientationTransformer.transformCCW(multiPolygon);
       }
 
