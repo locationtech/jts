@@ -43,6 +43,7 @@ import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.geomfunction.RepeaterGeometryFunction;
 import org.locationtech.jtstest.geomfunction.SpreaderGeometryFunction;
+import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionEvent;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
@@ -372,7 +373,7 @@ extends JPanel implements FunctionPanel
   }
   
   void displayAAndBCheckBox_actionPerformed(ActionEvent e) {
-    JTSTestBuilder.controller().getGeometryEditPanel().setShowingInput(displayAAndBCheckBox.isSelected());
+    JTSTestBuilderController.editPanel().setShowingInput(displayAAndBCheckBox.isSelected());
   }
 
   private void setCurrentFunction(GeometryFunction func) {

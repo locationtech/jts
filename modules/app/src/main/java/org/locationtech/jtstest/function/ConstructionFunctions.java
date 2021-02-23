@@ -74,6 +74,14 @@ public class ConstructionFunctions {
     return mic.getRadiusLine(); 
   }
 
+  @Metadata(description="Computes the radius of the Maximum Inscribed Circle of a polygonal geometry")
+  public static double maximumInscribedCircleRadiusLen(Geometry g,
+      @Metadata(title="Distance tolerance")
+      double tolerance) { 
+    MaximumInscribedCircle mic = new MaximumInscribedCircle(g, tolerance); 
+    return mic.getRadiusLine().getLength(); 
+  }
+
   //--------------------------------------------
   
   @Metadata(description="Constructs the Largest Empty Circle in a set of obstacles")
