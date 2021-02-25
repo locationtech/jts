@@ -35,6 +35,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `GeoJSONReader` to parse null and empty coordinates as empty geometry (#687) 
 * Fix `GeoJSONWriter` to emit empty coordinates array for empty point and linestring (#688)
 * Add `MaximumInscribedCircle` check for invalid tolerance, to avoid infinite loops (#696)
+* Add `GeoJsonWriter.setForceCCW` method to emit polygons with CCW orientation, as per GeoJSON specification (#694)
 
 ### Bug Fixes
 
