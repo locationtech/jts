@@ -76,6 +76,16 @@ public class GeoJsonWriterTest extends GeometryTestCase {
         "{'type':'Polygon','coordinates':[[[0.0,0.0],[100,0.0],[100,100],[0.0,100],[0.0,0.0]],[[1,1],[1,10],[10,10],[10,1],[1,1]]]}");
   }
 
+  public void testPolygonRightHandRule() throws ParseException {
+    runTest("POLYGON ((0 0, 0 100, 100 100, 100 0, 0 0))", true,
+            "{'type':'Polygon','coordinates':[[[0.0,0.0],[100,0.0],[100,100],[0.0,100],[0.0,0.0]]]}");
+  }
+
+  public void testPolygonWithHoleRightHandRule() throws ParseException {
+    runTest("POLYGON ((0 0, 0 100, 100 100, 100 0, 0 0), (1 1, 10 1, 10 10, 1 10, 1 1) )", true,
+            "{'type':'Polygon','coordinates':[[[0.0,0.0],[100,0.0],[100,100],[0.0,100],[0.0,0.0]],[[1,1],[1,10],[10,10],[10,1],[1,1]]]}");
+  }
+
   public void testMultiPoint() throws ParseException {
     runTest("MULTIPOINT ((0 0), (1 4), (100 200))",
         "{'type':'MultiPoint','coordinates':[[0.0,0.0],[1,4],[100,200]]}");
@@ -125,20 +135,25 @@ public class GeoJsonWriterTest extends GeometryTestCase {
   }
  
   private void runTest(String wkt, String expectedGeojson) throws ParseException {
-    runTest(wkt, 0, false, expectedGeojson);
+    runTest(wkt, 0, false, false, expectedGeojson);
   }
 
   private void runTest(String wkt, int srid, String expectedGeojson) throws ParseException {
-    runTest(wkt, srid, true, expectedGeojson);
+    runTest(wkt, srid, true, false, expectedGeojson);
   }
 
-  private void runTest(String wkt, int srid, boolean encodeCRS, String expectedGeojson) throws ParseException {
+  private void runTest(String wkt, boolean enforceRHR, String expectedGeojson) throws ParseException {
+    runTest(wkt, 0, false, enforceRHR, expectedGeojson);
+  }
+
+  private void runTest(String wkt, int srid, boolean encodeCRS, boolean enforceRHR, String expectedGeojson) throws ParseException {
     Geometry geom = read(wkt);
     geom.setSRID(srid);
     geoJsonWriter.setEncodeCRS(encodeCRS);
+    geoJsonWriter.setForceCCW(enforceRHR);
     String json = this.geoJsonWriter.write(geom);
     json = json.replace('"', '\'');
-    assertEquals(json, expectedGeojson);
+    assertEquals(expectedGeojson, json);
   }
 
 }

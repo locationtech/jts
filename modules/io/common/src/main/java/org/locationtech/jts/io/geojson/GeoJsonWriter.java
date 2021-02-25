@@ -11,14 +11,6 @@
  */
 package org.locationtech.jts.io.geojson;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.json.simple.JSONAware;
 import org.json.simple.JSONObject;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -31,6 +23,14 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.util.Assert;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -59,6 +59,7 @@ public class GeoJsonWriter {
   
   private double scale;
   private boolean isEncodeCRS = true;
+  private boolean isForceCCW = false;
 
   /**
    * Constructs a GeoJsonWriter instance.
@@ -88,6 +89,16 @@ public class GeoJsonWriter {
     this.isEncodeCRS  = isEncodeCRS;
   }
   
+  /**
+   * Sets whether the GeoJSON should be output following counter-clockwise orientation aka Right Hand Rule defined in RFC7946
+   * See <a href="https://tools.ietf.org/html/rfc7946#section-3.1.6">RFC 7946 Specification</a> for more context.
+   *
+   * @param isForceCCW true if the GeoJSON should be output following the RFC7946 counter-clockwise orientation aka Right Hand Rule
+   */
+  public void setForceCCW(boolean isForceCCW) {
+    this.isForceCCW = isForceCCW;
+  }
+
   /**
    * Writes a {@link Geometry} in GeoJson format to a String.
    * 
@@ -158,6 +169,10 @@ public class GeoJsonWriter {
     } else if (geometry instanceof Polygon) {
       Polygon polygon = (Polygon) geometry;
 
+      if (isForceCCW) {
+        polygon = (Polygon) OrientationTransformer.transformCCW(polygon);
+      }
+
       result.put(GeoJsonConstants.NAME_COORDINATES, makeJsonAware(polygon));
 
     } else if (geometry instanceof MultiPoint) {
@@ -172,6 +187,10 @@ public class GeoJsonWriter {
 
     } else if (geometry instanceof MultiPolygon) {
       MultiPolygon multiPolygon = (MultiPolygon) geometry;
+
+      if (isForceCCW) {
+        multiPolygon = (MultiPolygon) OrientationTransformer.transformCCW(multiPolygon);
+      }
 
       result.put(GeoJsonConstants.NAME_COORDINATES, makeJsonAware(multiPolygon));
 
