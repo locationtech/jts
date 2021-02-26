@@ -57,7 +57,7 @@ public class TestBuilderDialogs {
     return htmlFileChooser.getSelectedFile().getPath();
   }
   
-  public static void saveAsSVG(JTSTestBuilderFrame tbFrame, TestBuilderModel tbModel) {
+  public static void saveAsHtmlSVG(JTSTestBuilderFrame tbFrame, TestBuilderModel tbModel) {
     try {
       String path = chooseSVGFile(tbFrame);
       if (path == null) return;

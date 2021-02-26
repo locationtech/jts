@@ -112,11 +112,11 @@ public class JTSTestBuilderMenuBar
         }
       });
     JMenuItem saveAsSvgMenuItem = new JMenuItem();
-    saveAsSvgMenuItem.setText("Save As SVG...");
+    saveAsSvgMenuItem.setText("Save As HTML+SVG...");
     saveAsSvgMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          TestBuilderDialogs.saveAsSVG(tbFrame, JTSTestBuilder.model());
+          TestBuilderDialogs.saveAsHtmlSVG(tbFrame, JTSTestBuilder.model());
         }
       });
     saveAsPNGMenuItem.setText("Save As PNG...");

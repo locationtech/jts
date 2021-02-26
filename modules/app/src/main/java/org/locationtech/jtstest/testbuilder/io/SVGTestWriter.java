@@ -15,6 +15,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.test.Testable;
+import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 import org.locationtech.jtstest.util.io.SVGWriter;
 
 /**
@@ -46,12 +47,7 @@ public class SVGTestWriter {
     public String write(Geometry ga, Geometry gb, String name, String description) {
         StringBuffer text = new StringBuffer();
         
-        
-        Envelope env = new Envelope();
-        if (ga != null) env.expandToInclude(ga.getEnvelopeInternal());
-        if (gb != null) env.expandToInclude(gb.getEnvelopeInternal());
-        double envDiam = env.getDiameter();
-        env.expandBy(envDiam * 0.02);
+        Envelope env = sceneEnv(ga, gb);
         Coordinate centre = env.centre();
         
         int DIM = 1000;
@@ -75,6 +71,15 @@ public class SVGTestWriter {
         text.append("  </g>\n");
         text.append("</svg>\n");
         return text.toString();
+    }
+
+    private static Envelope sceneEnv(Geometry ga, Geometry gb) {
+      Envelope env = new Envelope();
+      if (ga != null) env.expandToInclude(GeometryUtil.totalEnvelope(ga));
+      if (gb != null) env.expandToInclude(GeometryUtil.totalEnvelope(gb));
+      double envDiam = env.getDiameter();
+      env.expandBy(envDiam * 0.02);
+      return env;
     }
 
     private void writeGeometryElement(Geometry g, String fillClr, String strokeClr, StringBuffer text) {

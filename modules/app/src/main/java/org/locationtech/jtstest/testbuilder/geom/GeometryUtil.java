@@ -63,4 +63,23 @@ public class GeometryUtil {
     return area;
   }
 
+  /**
+   * Gets the envelope including all holes which might lie outside a polygon.
+   * 
+   * @param geom
+   * @return
+   */
+  public static Envelope totalEnvelope(Geometry geom) {
+    Envelope env = geom.getEnvelopeInternal();
+    geom.apply(new GeometryComponentFilter() {
+  
+      @Override
+      public void filter(Geometry comp) {
+        env.expandToInclude(comp.getEnvelopeInternal());
+      }
+      
+    });
+    return env;
+  }
+
 }
