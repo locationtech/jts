@@ -41,12 +41,12 @@ public class JTSVersion {
   /**
    * The patch version number.
    */
-  public static final int PATCH = 1;
+  public static final int PATCH = 2;
 
   /**
    * An optional string providing further release info (such as "alpha 1");
    */
-  private static final String RELEASE_INFO = "";
+  private static final String RELEASE_INFO = "SNAPSHOT";
 
   /**
    * Prints the current JTS version to stdout.
