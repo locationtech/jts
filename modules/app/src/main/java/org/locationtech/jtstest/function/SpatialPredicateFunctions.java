@@ -34,4 +34,7 @@ public class SpatialPredicateFunctions {
   public static boolean within(Geometry a, Geometry b) {    return a.within(b);    }
   public static boolean overlaps(Geometry a, Geometry b) {    return a.overlaps(b);    }
   public static boolean touches(Geometry a, Geometry b) {    return a.touches(b);    }
+  
+  public static boolean interiorIntersects(Geometry a, Geometry b) { return a.relate(b, "T********");    }
+  public static boolean adjacentTo(Geometry a, Geometry b) { return a.relate(b, "F***T****");    }
 }
