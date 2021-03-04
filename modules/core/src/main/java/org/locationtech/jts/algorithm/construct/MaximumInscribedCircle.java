@@ -13,6 +13,7 @@ package org.locationtech.jts.algorithm.construct;
 
 import java.util.PriorityQueue;
 
+import org.locationtech.jts.algorithm.Centroid;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -55,6 +56,9 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * </ul>
  * 
  * @author Martin Davis
+ * @see LargestEmptyCircle
+ * @see InteriorPoint
+ * @see Centroid
  *
  */
 public class MaximumInscribedCircle {

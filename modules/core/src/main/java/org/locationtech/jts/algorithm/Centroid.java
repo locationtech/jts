@@ -21,13 +21,9 @@ import org.locationtech.jts.geom.Polygon;
 
 /**
  * Computes the centroid of a {@link Geometry} of any dimension.
- * If the geometry is nominally of higher dimension, 
- * but has lower <i>effective</i> dimension 
- * (i.e. contains only components
- * having zero length or area), 
- * the centroid will be computed as for the equivalent lower-dimension geometry.
- * If the input geometry is empty, a
- * <code>null</code> Coordinate is returned.
+ * For collections the centroid is computed for the collection of 
+ * non-empty elements of highest dimension. 
+ * The centroid of an empty geometry is <code>null</code>.
  * 
  * <h2>Algorithm</h2>
  * <ul>
@@ -42,10 +38,14 @@ import org.locationtech.jts.geom.Polygon;
  * of all line segments weighted by the segment length.
  * Zero-length lines are treated as points.
  * 
- * <li><b>Dimension 0</b> - Compute the average coordinate for all points.
+ * <li><b>Dimension 0</b> - Compute the average coordinate over all points.
  * Repeated points are all included in the average.
  * </ul>
  * 
+ * @see InteriorPoint
+ * @see MaximumInscribedCircle
+ * @see LargestEmptyCircle
+ *  
  * @version 1.7
  */
 public class Centroid
