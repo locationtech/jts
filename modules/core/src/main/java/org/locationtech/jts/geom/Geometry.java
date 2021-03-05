@@ -780,10 +780,10 @@ public abstract class Geometry
    *    <li><code>[0********]</code> (for L/L situations)
    *   </ul>
    * </ul>
-   * For any other combination of dimensions this predicate returns <code>false</code>.
+   * For the A/A and P/P situations this predicate returns <code>false</code>.
    * <p>
    * The SFS defined this predicate only for P/L, P/A, L/L, and L/A situations.
-   * In order to make the relation symmetric,
+   * To make the relation symmetric
    * JTS extends the definition to apply to L/P, A/P and A/L situations as well.
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
@@ -1857,6 +1857,9 @@ public abstract class Geometry
 
   private Point createPointFromInternalCoord(Coordinate coord, Geometry exemplar)
   {
+    // create empty point for null input
+    if (coord == null) 
+      return exemplar.getFactory().createPoint();
     exemplar.getPrecisionModel().makePrecise(coord);
     return exemplar.getFactory().createPoint(coord);
   }

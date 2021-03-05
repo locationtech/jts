@@ -15,6 +15,9 @@ import org.locationtech.jts.algorithm.construct.LargestEmptyCircle;
 import org.locationtech.jts.algorithm.construct.MaximumInscribedCircle;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryComponentFilter;
+import org.locationtech.jts.geom.GeometryFilter;
 
 /**
  * Computes an interior point of a <code>{@link Geometry}</code>.
@@ -57,8 +60,12 @@ public class InteriorPoint {
       return null;
     
     Coordinate interiorPt = null;
-    //TODO: determine highest non-empty dimension
-    int dim = geom.getDimension();
+    //int dim = geom.getDimension();
+    int dim = effectiveDimension(geom);
+    // this should not happen, but just in case...
+    if (dim < 0) {
+      return null;
+    }
     if (dim == 0) {
       interiorPt = InteriorPointPoint.getInteriorPoint(geom);
     }
@@ -71,4 +78,27 @@ public class InteriorPoint {
     return interiorPt;
   }
 
+  private static int effectiveDimension(Geometry geom) {
+    EffectiveDimensionFilter dimFilter = new EffectiveDimensionFilter();
+    geom.apply(dimFilter);
+    return dimFilter.getDimension();
+  }
+  
+  private static class EffectiveDimensionFilter implements GeometryFilter
+  {
+    private int dim = -1;
+    
+    public int getDimension() {
+      return dim;
+    }
+    
+    public void filter(Geometry elem) {
+      if (elem instanceof GeometryCollection)
+        return;
+      if (! elem.isEmpty()) {
+        int elemDim = elem.getDimension();
+        if (elemDim > dim) dim = elemDim;
+      }
+    }
+  }
 }

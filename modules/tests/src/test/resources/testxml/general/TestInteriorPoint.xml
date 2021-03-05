@@ -21,9 +21,16 @@
 </case>
 
 <case>
+  <desc>L - empty</desc>
+  <a>    LINESTRING EMPTY
+  </a>
+<test><op name="getInteriorPoint" arg1="A" >   POINT EMPTY   </op></test>
+</case>
+
+<case>
   <desc>L - linestring with single segment</desc>
   <a>    LINESTRING (0 0, 7 14)
-	</a>
+  </a>
 <test><op name="getInteriorPoint" arg1="A" >   POINT (7 14)   </op></test>
 </case>
 
@@ -119,8 +126,35 @@
   <a>    GEOMETRYCOLLECTION (POLYGON ((10 10, 10 10, 10 10, 10 10)), 
   LINESTRING (20 20, 20 20),
   MULTIPOINT ((20 10), (10 20)) )
-	</a>
+  </a>
 <test><op name="getInteriorPoint" arg1="A" >    POINT (10 10)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection with empty polygon, line, and point</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON EMPTY, 
+  LINESTRING (20 20, 30 30, 40 40),
+  MULTIPOINT ((20 10), (10 20)) )
+  </a>
+<test><op name="getInteriorPoint" arg1="A" >    POINT (30 30)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection with empty polygon, empty line, and point</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON EMPTY, 
+  LINESTRING EMPTY,
+  POINT (10 10) )
+  </a>
+<test><op name="getInteriorPoint" arg1="A" >    POINT (10 10)   </op></test>
+</case>
+
+<case>
+  <desc>GC - collection with empty polygon, empty line, and empty point</desc>
+  <a>    GEOMETRYCOLLECTION (POLYGON EMPTY, 
+  LINESTRING EMPTY,
+  POINT EMPTY )
+  </a>
+<test><op name="getInteriorPoint" arg1="A" >    POINT EMPTY  </op></test>
 </case>
 
 
