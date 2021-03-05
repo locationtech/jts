@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -133,7 +133,6 @@ import org.locationtech.jts.util.AssertionFailedException;
  */
 public class WKTReader
 {
-  private static final String EMPTY = "EMPTY";
   private static final String COMMA = ",";
   private static final String L_PAREN = "(";
   private static final String R_PAREN = ")";
@@ -325,33 +324,38 @@ public class WKTReader
    */
   private CoordinateSequence getCoordinateSequence(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
           throws IOException, ParseException {
-    return getCoordinateSequence(tokenizer, ordinateFlags, false);
-  }
+    if (getNextEmptyOrOpener(tokenizer).equals(WKTConstants.EMPTY))
+      return this.csFactory.create(0, toDimension(ordinateFlags), ordinateFlags.contains(Ordinate.M) ? 1 : 0);
+    
+    ArrayList coordinates = new ArrayList();
+    do {
+      coordinates.add(getCoordinate(tokenizer, ordinateFlags, false));
+    } while (getNextCloserOrComma(tokenizer).equals(COMMA));
+
+    return mergeSequences(coordinates, ordinateFlags);  }
 
   /**
-   * Reads a <code>CoordinateSequence</Code> from a stream using the given {@link StreamTokenizer}.
+   * Reads a <code>CoordinateSequence</Code> from a stream using the given {@link StreamTokenizer}
+   * for an old-style JTS MultiPoint (Point coordinates not enclosed in parentheses).
    * <p>
-   *   All ordinate values are read, but -depending on the {@link CoordinateSequenceFactory} of the
-   *   underlying {@link GeometryFactory}- not necessarily all can be handled. Those are silently dropped.
+   * All ordinate values are read, but -depending on the {@link CoordinateSequenceFactory} of the
+   * underlying {@link GeometryFactory}- not necessarily all can be handled. Those are silently dropped.
    * </p>
    * @param tokenizer the tokenizer to use
    * @param ordinateFlags a bit-mask defining the ordinates to read.
    * @param tryParen a value indicating if a starting {@link #L_PAREN} should be probed for each coordinate.
+   * @param isReadEmptyOrOpener indicates if an opening paren or EMPTY should be scanned for
    * @return a {@link CoordinateSequence} of length 1 containing the read ordinate values
    *
-   *@throws  IOException     if an I/O error occurs
-   *@throws  ParseException  if an unexpected token was encountered
-S   */
-  private CoordinateSequence getCoordinateSequence(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags,
-                                                   boolean tryParen)
+   * @throws  IOException     if an I/O error occurs
+   * @throws  ParseException  if an unexpected token was encountered
+S  */
+  private CoordinateSequence getCoordinateSequenceOldMultiPoint(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
           throws IOException, ParseException {
-
-    if (getNextEmptyOrOpener(tokenizer).equals(EMPTY))
-      return this.csFactory.create(0, toDimension(ordinateFlags), ordinateFlags.contains(Ordinate.M) ? 1 : 0);
 
     ArrayList coordinates = new ArrayList();
     do {
-      coordinates.add(getCoordinate(tokenizer, ordinateFlags, tryParen));
+      coordinates.add(getCoordinate(tokenizer, ordinateFlags, true));
     } while (getNextCloserOrComma(tokenizer).equals(COMMA));
 
     return mergeSequences(coordinates, ordinateFlags);
@@ -441,7 +445,7 @@ S   */
    */
   private Coordinate[] getCoordinates(StreamTokenizer tokenizer) throws IOException, ParseException {
     String nextToken = getNextEmptyOrOpener(tokenizer);
-    if (nextToken.equals(EMPTY)) {
+    if (nextToken.equals(WKTConstants.EMPTY)) {
       return new Coordinate[] {};
     }
     ArrayList coordinates = new ArrayList();
@@ -578,23 +582,23 @@ S   */
    */
   private static String getNextEmptyOrOpener(StreamTokenizer tokenizer) throws IOException, ParseException {
     String nextWord = getNextWord(tokenizer);
-    if (nextWord.equalsIgnoreCase("Z")) {
+    if (nextWord.equalsIgnoreCase(WKTConstants.Z)) {
       //z = true;
       nextWord = getNextWord(tokenizer);
     }
-    else if (nextWord.equalsIgnoreCase("M")) {
+    else if (nextWord.equalsIgnoreCase(WKTConstants.M)) {
       //m = true;
       nextWord = getNextWord(tokenizer);
     }
-    else if (nextWord.equalsIgnoreCase("ZM")) {
+    else if (nextWord.equalsIgnoreCase(WKTConstants.ZM)) {
       //z = true;
       //m = true;
       nextWord = getNextWord(tokenizer);
     }
-    if (nextWord.equals(EMPTY) || nextWord.equals(L_PAREN)) {
+    if (nextWord.equals(WKTConstants.EMPTY) || nextWord.equals(L_PAREN)) {
       return nextWord;
     }
-    throw parseErrorExpected(tokenizer, EMPTY + " or " + L_PAREN);
+    throw parseErrorExpected(tokenizer, WKTConstants.EMPTY + " or " + L_PAREN);
   }
 
   /**
@@ -612,15 +616,15 @@ S   */
     EnumSet<Ordinate> result = EnumSet.of(Ordinate.X, Ordinate.Y);
 
     String nextWord = lookAheadWord(tokenizer).toUpperCase(Locale.ROOT);
-    if (nextWord.equalsIgnoreCase("Z")) {
+    if (nextWord.equalsIgnoreCase(WKTConstants.Z)) {
       tokenizer.nextToken();
       result.add(Ordinate.Z);
     }
-    else if (nextWord.equalsIgnoreCase("M")) {
+    else if (nextWord.equalsIgnoreCase(WKTConstants.M)) {
       tokenizer.nextToken();
       result.add(Ordinate.M);
     }
-    else if (nextWord.equalsIgnoreCase("ZM")) {
+    else if (nextWord.equalsIgnoreCase(WKTConstants.ZM)) {
       tokenizer.nextToken();
       result.add(Ordinate.Z);
       result.add(Ordinate.M);
@@ -690,8 +694,8 @@ S   */
     case StreamTokenizer.TT_WORD:
 
       String word = tokenizer.sval;
-      if (word.equalsIgnoreCase(EMPTY))
-          return EMPTY;
+      if (word.equalsIgnoreCase(WKTConstants.EMPTY))
+          return WKTConstants.EMPTY;
       return word;
 
     case '(': return L_PAREN;
@@ -767,12 +771,12 @@ S   */
     EnumSet<Ordinate> ordinateFlags = EnumSet.of(Ordinate.X, Ordinate.Y);
     try {
       type = getNextWord(tokenizer).toUpperCase(Locale.ROOT);
-      if (type.endsWith("ZM")) {
+      if (type.endsWith(WKTConstants.ZM)) {
         ordinateFlags.add(Ordinate.Z);
         ordinateFlags.add(Ordinate.M);
-      } else if (type.endsWith("Z")) {
+      } else if (type.endsWith(WKTConstants.Z)) {
         ordinateFlags.add(Ordinate.Z);
-      } else if (type.endsWith("M")) {
+      } else if (type.endsWith(WKTConstants.M)) {
         ordinateFlags.add(Ordinate.M);
       }
     } catch (IOException e) {
@@ -804,28 +808,28 @@ S   */
               geometryFactory.getSRID(), csFactoryXYZM);
     }
 
-    if (type.startsWith("POINT")) {
+    if (type.startsWith(WKTConstants.POINT)) {
       return readPointText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith("LINESTRING")) {
+    else if (type.startsWith(WKTConstants.LINESTRING)) {
       return readLineStringText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith("LINEARRING")) {
+    else if (type.startsWith(WKTConstants.LINEARRING)) {
       return readLinearRingText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith("POLYGON")) {
+    else if (type.startsWith(WKTConstants.POLYGON)) {
       return readPolygonText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith("MULTIPOINT")) {
+    else if (type.startsWith(WKTConstants.MULTIPOINT)) {
       return readMultiPointText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith("MULTILINESTRING")) {
+    else if (type.startsWith(WKTConstants.MULTILINESTRING)) {
       return readMultiLineStringText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith("MULTIPOLYGON")) {
+    else if (type.startsWith(WKTConstants.MULTIPOLYGON)) {
       return readMultiPolygonText(tokenizer, ordinateFlags);
     }
-    else if (type.startsWith("GEOMETRYCOLLECTION")) {
+    else if (type.startsWith(WKTConstants.GEOMETRYCOLLECTION)) {
       return readGeometryCollectionText(tokenizer, ordinateFlags);
     }
     throw parseErrorWithLine(tokenizer, "Unknown geometry type: " + type);
@@ -890,8 +894,32 @@ S   */
    */
   private MultiPoint readMultiPointText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException
   {
-    return geometryFactory.createMultiPoint(
-            getCoordinateSequence(tokenizer, ordinateFlags, this.isAllowOldJtsMultipointSyntax));
+    String nextToken = getNextEmptyOrOpener(tokenizer);
+    if (nextToken.equals(WKTConstants.EMPTY)) {
+      return geometryFactory.createMultiPoint(new Point[0]);
+    }
+    
+    // check for old-style JTS syntax (no parentheses surrounding Point coordinates) and parse it if present
+    // MD 2009-02-21 - this is only provided for backwards compatibility for a few versions
+    if (isAllowOldJtsMultipointSyntax) {
+      String nextWord = lookAheadWord(tokenizer);
+      if (nextWord != L_PAREN) {
+        return geometryFactory.createMultiPoint(
+            getCoordinateSequenceOldMultiPoint(tokenizer, ordinateFlags));
+      }
+    }
+    
+    ArrayList points = new ArrayList();
+    Point point = readPointText(tokenizer, ordinateFlags);
+    points.add(point);
+    nextToken = getNextCloserOrComma(tokenizer);
+    while (nextToken.equals(COMMA)) {
+      point = readPointText(tokenizer, ordinateFlags);
+      points.add(point);
+      nextToken = getNextCloserOrComma(tokenizer);
+    }
+    Point[] array = new Point[points.size()];
+    return geometryFactory.createMultiPoint((Point[]) points.toArray(array));
   }
 
 
@@ -909,7 +937,7 @@ S   */
    */
   private Polygon readPolygonText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
     String nextToken = getNextEmptyOrOpener(tokenizer);
-    if (nextToken.equals(EMPTY)) {
+    if (nextToken.equals(WKTConstants.EMPTY)) {
         return geometryFactory.createPolygon();
     }
     ArrayList holes = new ArrayList();
@@ -937,7 +965,7 @@ S   */
   private MultiLineString readMultiLineStringText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags)
           throws IOException, ParseException {
     String nextToken = getNextEmptyOrOpener(tokenizer);
-    if (nextToken.equals(EMPTY)) {
+    if (nextToken.equals(WKTConstants.EMPTY)) {
       return geometryFactory.createMultiLineString();
     }
 
@@ -965,7 +993,7 @@ S   */
    */
   private MultiPolygon readMultiPolygonText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
     String nextToken = getNextEmptyOrOpener(tokenizer);
-    if (nextToken.equals(EMPTY)) {
+    if (nextToken.equals(WKTConstants.EMPTY)) {
       return geometryFactory.createMultiPolygon();
     }
     ArrayList polygons = new ArrayList();
@@ -993,7 +1021,7 @@ S   */
    */
   private GeometryCollection readGeometryCollectionText(StreamTokenizer tokenizer, EnumSet<Ordinate> ordinateFlags) throws IOException, ParseException {
     String nextToken = getNextEmptyOrOpener(tokenizer);
-    if (nextToken.equals(EMPTY)) {
+    if (nextToken.equals(WKTConstants.EMPTY)) {
       return geometryFactory.createGeometryCollection();
     }
     ArrayList geometries = new ArrayList();

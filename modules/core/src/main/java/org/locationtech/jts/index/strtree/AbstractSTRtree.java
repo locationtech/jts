@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -94,6 +94,29 @@ public abstract class AbstractSTRtree implements Serializable {
     this.nodeCapacity = nodeCapacity;
   }
 
+  /**
+   * Constructs an AbstractSTRtree with the specified maximum number of child
+   * nodes that a node may have, and the root node
+   * @param nodeCapacity the maximum number of child nodes in a node
+   * @param root the root node that links to all other nodes in the tree
+   */
+  public AbstractSTRtree(int nodeCapacity, AbstractNode root) {
+    this(nodeCapacity);
+    built = true;
+    this.root = root;
+    this.itemBoundables = null;
+  }
+
+  /**
+   * Constructs an AbstractSTRtree with the specified maximum number of child
+   * nodes that a node may have, and all leaf nodes in the tree
+   * @param nodeCapacity the maximum number of child nodes in a node
+   * @param itemBoundables the list of leaf nodes in the tree
+   */
+  public AbstractSTRtree(int nodeCapacity, ArrayList itemBoundables) {
+    this(nodeCapacity);
+    this.itemBoundables = itemBoundables;
+  }
   /**
    * Creates parent nodes, grandparent nodes, and so forth up to the root
    * node, for the data that has been inserted into the tree. Can only be
@@ -454,4 +477,8 @@ public abstract class AbstractSTRtree implements Serializable {
 
   protected abstract Comparator getComparator();
 
+  ArrayList getItemBoundables()
+  {
+    return itemBoundables;
+  }
 }

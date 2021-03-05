@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -170,24 +170,22 @@ public class WKTFileReader
 		if (geoms.size() < limit) return false;
 		return true;
 	}
-	
-  private static final int MAX_LOOKAHEAD = 1000;
-  
+ 
   /**
-	 * Tests if reader is at EOF.
+	 * Tests if reader is at EOF, and skips any leading whitespace
 	 */
-	private boolean isAtEndOfFile(BufferedReader bufferedReader)
-			throws IOException 
-			{
-		bufferedReader.mark(MAX_LOOKAHEAD);
-
-		StreamTokenizer tokenizer = new StreamTokenizer(bufferedReader);
-		int type = tokenizer.nextToken();
-
-		if (type == StreamTokenizer.TT_EOF) {
-			return true;
-		}
-		bufferedReader.reset();
-		return false;
-	}
+  private boolean isAtEndOfFile(BufferedReader bufferedReader) throws IOException {
+    // skip whitespace
+    int ch;
+    do {
+      bufferedReader.mark(1);
+      ch = bufferedReader.read();
+      // EOF reached
+      if (ch < 0) return true;
+    } while (Character.isWhitespace(ch));
+    bufferedReader.reset();
+    
+    return false;
+  }
+	 
 }

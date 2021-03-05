@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -40,6 +40,7 @@ import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jtstest.testbuilder.io.IOUtil;
 import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.GeometryType;
@@ -435,10 +436,16 @@ public class WKTPanel extends JPanel
     
     void copy(ActionEvent e, int geomIndex)
     {
-      boolean isFormatted = 0 != (e.getModifiers() & ActionEvent.CTRL_MASK);
       Geometry g = tbModel.getCurrentCase().getGeometry(geomIndex);
-      if (g != null)
-        SwingUtil.copyToClipboard(g, isFormatted);
+      if (g == null) return;
+      
+      if (SwingUtil.isShiftKeyPressed(e)) {
+        String wkb = IOUtil.toWKBHex(g);
+        SwingUtil.copyToClipboard(wkb, false);
+        return;
+      }
+      boolean isFormatted = SwingUtil.isCtlKeyPressed(e);
+      SwingUtil.copyToClipboard(g, isFormatted);
     }
     
     void aPasteButton_actionPerformed(ActionEvent e)

@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -18,17 +18,17 @@ import java.util.ArrayList;
 /**
  * Models a collection of {@link Polygon}s.
  * <p>
- * As per the OGC SFS specification, 
- * the Polygons in a MultiPolygon may not overlap, 
+ * As per the OGC SFS specification,
+ * the Polygons in a MultiPolygon may not overlap,
  * and may only touch at single points.
  * This allows the topological point-set semantics
  * to be well-defined.
- *  
+ *
  *
  *@version 1.7
  */
-public class MultiPolygon 
-	extends GeometryCollection 
+public class MultiPolygon
+	extends GeometryCollection
 	implements Polygonal
 {
   private static final long serialVersionUID = -551033529766975875L;
@@ -75,7 +75,7 @@ public class MultiPolygon
   }
 
   public String getGeometryType() {
-    return "MultiPolygon";
+    return Geometry.TYPENAME_MULTIPOLYGON;
   }
 
   /*
@@ -83,7 +83,7 @@ public class MultiPolygon
     return true;
   }
 */
-  
+
   /**
    * Computes the boundary of this geometry
    *
@@ -112,7 +112,7 @@ public class MultiPolygon
     }
     return super.equalsExact(other, tolerance);
   }
-  
+
   /**
    * Creates a {@link MultiPolygon} with
    * every component reversed.
@@ -120,14 +120,16 @@ public class MultiPolygon
    *
    * @return a MultiPolygon in the reverse order
    */
-  public Geometry reverse()
-  {
-    int n = geometries.length;
-    Polygon[] revGeoms = new Polygon[n];
-    for (int i = 0; i < geometries.length; i++) {
-      revGeoms[i] = (Polygon) geometries[i].reverse();
+  public MultiPolygon reverse() {
+    return (MultiPolygon) super.reverse();
+  }
+
+  protected MultiPolygon reverseInternal() {
+    Polygon[] polygons = new Polygon[this.geometries.length];
+    for (int i = 0; i < polygons.length; i++) {
+      polygons[i] = (Polygon) this.geometries[i].reverse();
     }
-    return getFactory().createMultiPolygon(revGeoms);
+    return new MultiPolygon(polygons, factory);
   }
   
   protected MultiPolygon copyInternal() {
@@ -138,8 +140,8 @@ public class MultiPolygon
     return new MultiPolygon(polygons, factory);
   }
 
-  protected int getSortIndex() {
-    return Geometry.SORTINDEX_MULTIPOLYGON;
+  protected int getTypeCode() {
+    return Geometry.TYPECODE_MULTIPOLYGON;
   }
 }
 

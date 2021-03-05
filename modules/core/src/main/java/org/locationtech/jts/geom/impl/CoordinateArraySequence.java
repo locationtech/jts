@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -75,8 +75,11 @@ public class CoordinateArraySequence
   
   /**
    * Constructs a sequence based on the given array 
-   * of {@link Coordinate}s (the
-   * array is not copied).
+   * of {@link Coordinate}s (the array is not copied).
+   * <p>
+   * It is your responsibility to ensure the array contains Coordinates of the
+   * indicated dimension and measures (See 
+   * {@link CoordinateArrays#enforceConsistency(Coordinate[])} ).</p>
    *
    * @param coordinates the coordinate array that will be referenced.
    * @param dimension the dimension of the coordinates
@@ -89,7 +92,7 @@ public class CoordinateArraySequence
       this.coordinates = new Coordinate[0];
     }
     else {
-      this.coordinates = enforceArrayConsistency(coordinates);
+      this.coordinates = coordinates;
     }
   }
 
@@ -158,48 +161,6 @@ public class CoordinateArraySequence
     }
   }
 
-  /**
-   * Ensure array contents of the same type, making use of {@link #createCoordinate()} as needed.
-   * <p>
-   * A new array will be created if needed to return a consistent result.
-   * </p>
-   * 
-   * @param array array containing consistent coordinate instances
-   */
-  protected Coordinate[] enforceArrayConsistency(Coordinate[] array)
-  {
-     Coordinate sample = createCoordinate();
-     Class<?> type = sample.getClass();
-     boolean isConsistent=true;
-     for( int i = 0; i < array.length; i++) {
-       Coordinate coordinate = array[i];
-       if( coordinate != null && !coordinate.getClass().equals(type)) {
-         isConsistent = false;
-         break;
-       }
-     }
-     if( isConsistent ){
-       return array;
-     }
-     else {
-       Class<? extends Coordinate> coordinateType = sample.getClass();
-       Coordinate copy[] = (Coordinate[]) Array.newInstance(coordinateType, array.length);
-       for ( int i = 0; i < copy.length; i++){
-          Coordinate coordinate = array[i];
-          if( coordinate != null && !coordinate.getClass().equals(type)){
-            Coordinate duplicate = createCoordinate();
-            duplicate.setCoordinate(coordinate);
-            copy[i] = duplicate;
-          }
-          else {
-            copy[i] = coordinate;
-          }
-       }
-       return copy;
-     }
-  }
-
-  
   /**
    * @see org.locationtech.jts.geom.CoordinateSequence#getDimension()
    */

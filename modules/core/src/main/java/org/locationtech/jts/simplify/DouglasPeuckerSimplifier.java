@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -192,14 +192,18 @@ static class DPTransformer
    * topology.
    * Note this only works for area geometries, since buffer always returns
    * areas.  This also may return empty geometries, if the input
-   * has no actual area.
+   * has no actual area.  
+   * If the input is empty or is not polygonal, 
+   * this ensures that POLYGON EMPTY is returned.
    *
    * @param rawAreaGeom an area geometry possibly containing self-intersections
    * @return a valid area geometry
    */
   private Geometry createValidArea(Geometry rawAreaGeom)
   {
-  	if ( isEnsureValidTopology)
+    boolean isValidArea = rawAreaGeom.getDimension() == 2 && rawAreaGeom.isValid();
+    // if geometry is invalid then make it valid
+  	if (isEnsureValidTopology && ! isValidArea)
   		return rawAreaGeom.buffer(0.0);
   	return rawAreaGeom;
   }

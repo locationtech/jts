@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -12,22 +12,31 @@
 
 package org.locationtech.jtstest.testbuilder.model;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jtstest.test.TestCaseList;
 import org.locationtech.jtstest.test.Testable;
-import org.locationtech.jtstest.testbuilder.AppConstants;
 import org.locationtech.jtstest.testbuilder.GeometryDepiction;
-import org.locationtech.jtstest.testbuilder.ui.*;
+import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
 import org.locationtech.jtstest.testrunner.TestReader;
 import org.locationtech.jtstest.testrunner.TestRun;
-import org.locationtech.jtstest.util.*;
+import org.locationtech.jtstest.util.ExceptionFormatter;
+import org.locationtech.jtstest.util.StringUtil;
 import org.locationtech.jtstest.util.io.IOUtil;
 import org.locationtech.jtstest.util.io.MultiFormatReader;
 
@@ -84,6 +93,22 @@ public class TestBuilderModel
   
   public LayerList getLayersTop() { return layerListTop; }
   public LayerList getLayersBase() { return layerListBase; }
+  
+  public List<Layer> getLayersLegend() {
+    List<Layer> layers = new ArrayList<Layer>();
+    addLegendLayers(layerList, layers);
+    addLegendLayers(layerListTop, layers);
+    addLegendLayers(layerListBase, layers);
+    return layers;
+  }
+  
+  private void addLegendLayers(LayerList layerList, List<Layer> layers) {
+    for (int i = 0; i < layerList.size(); i++) {
+      if (layerList.getLayer(i).hasGeometry() 
+          && layerList.getLayer(i).isEnabled())
+        layers.add(layerList.getLayer(i));
+    }
+  }
   
   private void initLayers()
   {  	

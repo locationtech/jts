@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -39,6 +39,23 @@ public class BufferTest extends GeometryTestCase {
     testMultiLineString_separateBuffers_floatingSingle();
   }
   
+  /**
+   * This tests that the algorithm used to generate fillet curves
+   * does not suffer from numeric "slop-over".
+   * See GEOS PR #282.
+   */
+  public void testPointBufferSegmentCount() {
+    Geometry g = read("POINT ( 100 100 )");
+    checkPointBufferSegmentCount(g, 80, 53);
+    checkPointBufferSegmentCount(g, 80, 129);
+  }
+  
+  private void checkPointBufferSegmentCount(Geometry g, double dist, int quadSegs) {
+    Geometry buf = g.buffer(dist, quadSegs);
+    int segsExpected = 4 * quadSegs + 1;
+    assertEquals(segsExpected, buf.getNumPoints());
+  }
+
   public void testMultiLineString_depthFailure() throws Exception {
     new BufferValidator(
       15,
@@ -478,7 +495,7 @@ public class BufferTest extends GeometryTestCase {
       .test();
   }
 
-  public void testQuickPolygonUnion() throws Exception {
+  public void testQuickPolygonUnion() {
     Geometry a = read("POLYGON((0 0, 100 0, 100 100, 0 100, 0 0))");
     Geometry b = read("POLYGON((50 50, 150 50, 150 150, 50 150, 50 50))");
     Geometry[] polygons = new Geometry[] {a, b};
@@ -486,5 +503,25 @@ public class BufferTest extends GeometryTestCase {
     Geometry union = polygonCollection.buffer(0);
     //System.out.println(union);
     assertEquals("POLYGON ((0 0, 0 100, 50 100, 50 150, 150 150, 150 50, 100 50, 100 0, 0 0))", union.toString());
+  }
+  
+  /**
+   * This now works since buffer ring orientation is changed to use signed-area test.
+   */
+  public void testBowtiePolygonLargestAreaRetained() {
+    Geometry a = read("POLYGON ((10 10, 50 10, 25 35, 35 35, 10 10))");
+    Geometry result = a.buffer(0);
+    Geometry expected = read("POLYGON ((10 10, 30 30, 50 10, 10 10))");
+    checkEqual(expected, result);
+  }
+  
+  /**
+   * This now works since buffer ring orientation is changed to use signed-area test.
+   */
+  public void testBowtiePolygonHoleLargestAreaRetained() {
+    Geometry a = read("POLYGON ((0 40, 60 40, 60 0, 0 0, 0 40), (10 10, 50 10, 25 35, 35 35, 10 10))");
+    Geometry result = a.buffer(0);
+    Geometry expected = read("POLYGON ((0 40, 60 40, 60 0, 0 0, 0 40), (10 10, 50 10, 30 30, 10 10))");
+    checkEqual(expected, result);
   }
 }

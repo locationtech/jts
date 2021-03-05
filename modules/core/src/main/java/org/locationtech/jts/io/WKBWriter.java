@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -33,25 +33,39 @@ import org.locationtech.jts.util.Assert;
  * with arbitrary byte stream sinks.
  * <p>
  * The WKB format is specified in the 
- * OGC <A HREF="http://www.opengis.org/techno/specs.htm"><i>Simple Features for SQL</i></a>
- * specification.
- * This implementation also supports the <b>Extended WKB</b> 
- * standard. Extended WKB allows writing 3-dimensional coordinates
- * and including the geometry SRID value.  
- * The presence of 3D coordinates is signified
+ * OGC <A HREF="http://portal.opengeospatial.org/files/?artifact_id=829"><i>Simple Features for SQL
+ * specification</i></a> (section 3.3.2.6).
+ * <p>
+ * There are a few cases which are not specified in the standard.
+ * The implementation uses a representation which is compatible with
+ * other common spatial systems (notably, PostGIS).
+ * <ul>
+ * <li>{@link LinearRing}s are written as {@link LineString}s</li>
+ * <li>Empty geometries are output as follows:
+ * <ul>
+ * <li><b>Point</b>: a <code>WKBPoint</code> with <code>NaN</code> ordinate values</li> 
+ * <li><b>LineString</b>: a <code>WKBLineString</code> with zero points</li>
+ * <li><b>Polygon</b>: a <code>WKBPolygon</code> with zero rings</li>
+ * <li><b>Multigeometries</b>: a <code>WKBMulti</code> geometry of appropriate type with zero elements</li>
+ * <li><b>GeometryCollections</b>: a <code>WKBGeometryCollection</code> with zero elements</li>
+ * </ul></li>
+ * </ul>
+ * <p>
+ * This implementation supports the <b>Extended WKB</b> standard. 
+ * Extended WKB allows writing 3-dimensional coordinates
+ * and the geometry SRID value.  
+ * The presence of 3D coordinates is indicated
  * by setting the high bit of the <tt>wkbType</tt> word.
- * The presence of an SRID is signified 
+ * The presence of a SRID is indicated
  * by setting the third bit of the <tt>wkbType</tt> word.
- * EWKB format is upward compatible with the original SFS WKB format.
+ * EWKB format is upward-compatible with the original SFS WKB format.
  * <p>
- * Empty Points cannot be represented in WKB; an
- * {@link IllegalArgumentException} will be thrown if one is
- * written. 
+ * SRID output is optimized, if specified. 
+ * Only the top-level geometry has the SRID included.
+ * This assumes that all geometries in a collection have the same SRID as 
+ * the collection (which is the JTS convention).
  * <p>
- * The WKB specification does not support representing {@link LinearRing}s;
- * they will be written as {@link LineString}s.
- * <p>
- * This class is designed to support reuse of a single instance to read multiple
+ * This class supports reuse of a single instance to read multiple
  * geometries. This class is not thread-safe; each thread should create its own
  * instance.
  * 
@@ -60,7 +74,7 @@ import org.locationtech.jts.util.Assert;
  * supported by JTS.
  * <p>
  * <i>The specification uses a syntax language similar to that used in
- * the C language.  Bitfields are specified from hi-order to lo-order bits.</i>
+ * the C language.  Bitfields are specified from high-order to low-order bits.</i>
  * <p>
  * <blockquote><pre>
  * 
@@ -330,11 +344,14 @@ public class WKBWriter
 
   private void writePoint(Point pt, OutStream os) throws IOException
   {
-    if (pt.getCoordinateSequence().size() == 0)
-      throw new IllegalArgumentException("Empty Points cannot be represented in WKB");
     writeByteOrder(os);
     writeGeometryType(WKBConstants.wkbPoint, pt, os);
-    writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
+    if (pt.getCoordinateSequence().size() == 0) {
+      // write empty point as NaNs (extension to OGC standard)
+      writeNaNs(outputDimension, os);
+    } else {
+      writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
+    }
   }
 
   private void writeLineString(LineString line, OutStream os)
@@ -349,6 +366,11 @@ public class WKBWriter
   {
     writeByteOrder(os);
     writeGeometryType(WKBConstants.wkbPolygon, poly, os);
+    //--- write empty polygons with no rings (OCG extension)
+    if (poly.isEmpty()) {
+      writeInt(0, os);
+      return;
+    }
     writeInt(poly.getNumInteriorRing() + 1, os);
     writeCoordinateSequence(poly.getExteriorRing().getCoordinateSequence(), true, os);
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
@@ -363,9 +385,12 @@ public class WKBWriter
     writeByteOrder(os);
     writeGeometryType(geometryType, gc, os);
     writeInt(gc.getNumGeometries(), os);
+    boolean originalIncludeSRID = this.includeSRID;
+    this.includeSRID = false;
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       write(gc.getGeometryN(i), os);
     }
+    this.includeSRID = originalIncludeSRID;
   }
 
   private void writeByteOrder(OutStream os) throws IOException
@@ -421,6 +446,15 @@ public class WKBWriter
     	if (seq.getDimension() >= 3)
     		ordVal = seq.getOrdinate(index, 2);
       ByteOrderValues.putDouble(ordVal, buf, byteOrder);
+      os.write(buf, 8);
+    }
+  }
+  
+  private void writeNaNs(int numNaNs, OutStream os)
+      throws IOException
+  {
+    for (int i = 0; i < numNaNs; i++) {
+      ByteOrderValues.putDouble(Double.NaN, buf, byteOrder);
       os.write(buf, 8);
     }
   }

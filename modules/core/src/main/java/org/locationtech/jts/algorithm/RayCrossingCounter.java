@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -85,8 +85,12 @@ public class RayCrossingCounter
     Coordinate p1 = new Coordinate();
     Coordinate p2 = new Coordinate();
     for (int i = 1; i < ring.size(); i++) {
-      ring.getCoordinate(i, p1);
-      ring.getCoordinate(i - 1, p2);
+      //ring.getCoordinate(i, p1); // throws exception if ring contains M ordinate
+      p1.x = ring.getOrdinate(i, CoordinateSequence.X);
+      p1.y = ring.getOrdinate(i, CoordinateSequence.Y);
+      //ring.getCoordinate(i - 1, p2); // throws exception if ring contains M ordinate
+      p2.x = ring.getOrdinate(i - 1, CoordinateSequence.X);
+      p2.y = ring.getOrdinate(i - 1, CoordinateSequence.Y);
       counter.countSegment(p1, p2);
       if (counter.isOnSegment())
         return counter.getLocation();

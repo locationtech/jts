@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -56,7 +56,7 @@ public class JTSTestRunnerCmd {
   static final String[] help = new String[] {
   "",
   "Usage: java org.locationtech.jtstest.testrunner.JTSTestRunnerCmd",
-  "           [ -geomfunc <classname>]",
+  "           [ -geomfunc <classpath>...]",
   "           [ -geomop <GeometryOperation classname>]",
   "           [ -testIndex <number>]",
   "           [ -verbose]",
@@ -68,7 +68,7 @@ public class JTSTestRunnerCmd {
   "           [ <.xml file or dir> ... ]",
   "  -files          run a list of .xml files or directories containing .xml files",
   "  -properties     load .xml filenames from a .properties file",
-  "  -geomfunc       specifies the class providing the geometry operations",
+  "  -geomfunc       specifies class(es) with static methods overriding or adding geometry functions",
   "  -geomop         specifies the class providing the geometry operations",
   "  -testIndex      specfies the index of a single test to run",
   "  -verbose        display the results of successful tests"
@@ -86,6 +86,8 @@ public class JTSTestRunnerCmd {
   private static final String OPT_GEOMAFILE = "afile";
   private static final String OPT_GEOMBFILE = "bfile";
   private static final String OPT_ARG1 = "arg1";
+
+  private static final String FILENAME_EXTENSION = "xml";
   
   
 
@@ -219,9 +221,11 @@ public class JTSTestRunnerCmd {
     }
 
     if (commandLine.hasOption(OPT_GEOMFUNC)) {
-      String geomFuncClassname = commandLine.getOption(OPT_GEOMFUNC).getArg(0);
-      System.out.println("Adding Geometry Functions from: " + geomFuncClassname);
-      funcRegistry.add(geomFuncClassname);
+      String[] geomFuncClassnames = commandLine.getOption(OPT_GEOMFUNC).getArgs();
+      for (String cls : geomFuncClassnames) {
+        System.out.println("Adding Geometry Functions from: " + cls);
+        funcRegistry.add(cls);
+      }
     }
 
     if (commandLine.hasOption(OPT_TESTCASEINDEX)) {
@@ -259,11 +263,11 @@ public class JTSTestRunnerCmd {
     List<String> testFiles = new ArrayList<String>();
     
     if (commandLine.hasOption(OptionSpec.OPTION_FREE_ARGS)) {
-      testFiles.addAll(FilesUtil.expand(cmdOptionArgList(commandLine, OptionSpec.OPTION_FREE_ARGS)));
+      testFiles.addAll(FilesUtil.expand(cmdOptionArgList(commandLine, OptionSpec.OPTION_FREE_ARGS), FILENAME_EXTENSION));
     }
     
     if (commandLine.hasOption(OPT_FILES)) {
-      testFiles.addAll(FilesUtil.expand(cmdOptionArgList(commandLine, OPT_FILES)));
+      testFiles.addAll(FilesUtil.expand(cmdOptionArgList(commandLine, OPT_FILES), FILENAME_EXTENSION));
     }
     
     if (commandLine.hasOption(OPT_PROPERTIES)) {
@@ -291,7 +295,7 @@ public class JTSTestRunnerCmd {
     commandLine.addOptionSpec(new OptionSpec(OPT_PROPERTIES, 1));
 
     commandLine.addOptionSpec(new OptionSpec(OPT_GEOMOP, 1));
-    commandLine.addOptionSpec(new OptionSpec(OPT_GEOMFUNC, 1));
+    commandLine.addOptionSpec(new OptionSpec(OPT_GEOMFUNC, OptionSpec.NARGS_ONE_OR_MORE));
 
     commandLine.addOptionSpec(new OptionSpec(OPT_TESTCASEINDEX, 1));
     commandLine.addOptionSpec(new OptionSpec(OPT_VERBOSE, 0));

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -38,16 +38,38 @@ public class CGAlgorithmsDD
    */
   public static int orientationIndex(Coordinate p1, Coordinate p2, Coordinate q)
   {
+    return orientationIndex(p1.x, p1.y, p2.x, p2.y, q.x, q.y);
+  }
+  
+  /**
+   * Returns the index of the direction of the point <code>q</code> relative to
+   * a vector specified by <code>p1-p2</code>.
+   * 
+   * @param p1x the x ordinate of the vector origin point
+   * @param p1y the y ordinate of the vector origin point
+   * @param p2x the x ordinate of the vector final point
+   * @param p2y the y ordinate of the vector final point
+   * @param qx the x ordinate of the query point
+   * @param qy the y ordinate of the query point
+   * 
+   * @return 1 if q is counter-clockwise (left) from p1-p2
+   * @return -1 if q is clockwise (right) from p1-p2
+   * @return 0 if q is collinear with p1-p2
+   */
+  public static int orientationIndex(double p1x, double p1y,
+      double p2x, double p2y,
+      double qx, double qy)
+  {
     // fast filter for orientation index
     // avoids use of slow extended-precision arithmetic in many cases
-    int index = orientationIndexFilter(p1, p2, q);
+    int index = orientationIndexFilter(p1x, p1y, p2x, p2y, qx, qy);
     if (index <= 1) return index;
     
     // normalize coordinates
-    DD dx1 = DD.valueOf(p2.x).selfAdd(-p1.x);
-    DD dy1 = DD.valueOf(p2.y).selfAdd(-p1.y);
-    DD dx2 = DD.valueOf(q.x).selfAdd(-p2.x);
-    DD dy2 = DD.valueOf(q.y).selfAdd(-p2.y);
+    DD dx1 = DD.valueOf(p2x).selfAdd(-p1x);
+    DD dy1 = DD.valueOf(p2y).selfAdd(-p1y);
+    DD dx2 = DD.valueOf(qx).selfAdd(-p2x);
+    DD dy2 = DD.valueOf(qy).selfAdd(-p2y);
 
     // sign of determinant - unrolled for performance
     return dx1.selfMultiply(dy2).selfSubtract(dy1.selfMultiply(dx2)).signum();
@@ -112,12 +134,13 @@ public class CGAlgorithmsDD
    * @return the orientation index if it can be computed safely
    * @return i > 1 if the orientation index cannot be computed safely
    */
-  private static int orientationIndexFilter(Coordinate pa, Coordinate pb, Coordinate pc)
+  private static int orientationIndexFilter(double pax, double pay,
+      double pbx, double pby, double pcx, double pcy) 
   {
     double detsum;
 
-    double detleft = (pa.x - pc.x) * (pb.y - pc.y);
-    double detright = (pa.y - pc.y) * (pb.x - pc.x);
+    double detleft = (pax - pcx) * (pby - pcy);
+    double detright = (pay - pcy) * (pbx - pcx);
     double det = detleft - detright;
 
     if (detleft > 0.0) {

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -285,7 +285,7 @@ public abstract class PackedCoordinateSequence
      * @param dimension the total number of ordinates that make up a {@link Coordinate} in this sequence.
      */
     public Double(Coordinate[] coordinates, int dimension) {
-      this( coordinates, dimension, 0);
+      this( coordinates, dimension,  Math.max(0,dimension-3));
     }
     /**
      * Builds a new packed coordinate sequence out of a coordinate array
@@ -338,20 +338,20 @@ public abstract class PackedCoordinateSequence
       double x = coords[i * dimension];
       double y = coords[i * dimension + 1];
       if( dimension == 2 && measures == 0 ) {
-    return new CoordinateXY(x,y);  
+        return new CoordinateXY(x,y);
       }
       else if (dimension == 3 && measures == 0) {
-          double z = coords[i * dimension + 2];
-          return new Coordinate(x,y,z);
+        double z = coords[i * dimension + 2];
+        return new Coordinate(x,y,z);
       }
       else if (dimension == 3 && measures == 1) {
-    double m = coords[i * dimension + 2];     
-          return new CoordinateXYM(x,y,m);          
+        double m = coords[i * dimension + 2];
+        return new CoordinateXYM(x,y,m);
       }
-      else if (dimension == 4 && measures == 1) {
-    double z = coords[i * dimension + 2];
-    double m = coords[i * dimension + 3];
-    return new CoordinateXYZM(x,y,z,m);
+      else if (dimension == 4) {
+        double z = coords[i * dimension + 2];
+        double m = coords[i * dimension + 3];
+        return new CoordinateXYZM(x,y,z,m);
       }
       return new Coordinate(x, y);
     }
@@ -469,7 +469,7 @@ public abstract class PackedCoordinateSequence
      * @param dimension the total number of ordinates that make up a {@link Coordinate} in this sequence.
      */
     public Float(Coordinate[] coordinates, int dimension) {
-      this( coordinates, dimension, 0);
+      this( coordinates, dimension, Math.max(0,dimension-3));
     }
     
     /**
@@ -514,18 +514,21 @@ public abstract class PackedCoordinateSequence
     public Coordinate getCoordinateInternal(int i) {
       double x = coords[i * dimension];
       double y = coords[i * dimension + 1];
-      if (dimension == 2 && measures == 0) {
-        return new CoordinateXY(x, y);
-      } else if (dimension == 3 && measures == 0) {
+      if( dimension == 2 && measures == 0 ) {
+        return new CoordinateXY(x,y);
+      }
+      else if (dimension == 3 && measures == 0) {
         double z = coords[i * dimension + 2];
-        return new Coordinate(x, y, z);
-      } else if (dimension == 3 && measures == 1) {
+        return new Coordinate(x,y,z);
+      }
+      else if (dimension == 3 && measures == 1) {
         double m = coords[i * dimension + 2];
-        return new CoordinateXYM(x, y, m);
-      } else if (dimension == 4 && measures == 1) {
+        return new CoordinateXYM(x,y,m);
+      }
+      else if (dimension == 4) {
         double z = coords[i * dimension + 2];
-        double m = coords[i * dimension + 3];
-        return new CoordinateXYZM(x, y, z, m);
+        float m = coords[i * dimension + 3];
+        return new CoordinateXYZM(x,y,z,m);
       }
       return new Coordinate(x, y);
     }

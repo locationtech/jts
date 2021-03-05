@@ -1,0 +1,455 @@
+<run>
+<desc>Tests for OverlayNG operations with empty input.
+Covers topological situations with no precision collapse.
+Uses a floating precision model.
+</desc>
+
+<case>
+  <desc>AA - empty polygon</desc>
+  <a>
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </a>
+  <b>
+POLYGON EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op></test>
+</case>
+
+<case>
+  <desc>AA - empty polygons</desc>
+  <a>
+POLYGON EMPTY
+  </a>
+  <b>
+POLYGON EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+</case>
+
+<case>
+  <desc>mAA - empty area component</desc>
+  <a>
+    MULTIPOLYGON (((10 10, 10 30, 30 30, 30 10, 10 10)), EMPTY)
+  </a>
+  <b>
+    POLYGON ((20 20, 20 40, 40 40, 40 20, 20 20))
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+    POLYGON ((20 20, 20 30, 30 30, 30 20, 20 20))
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 20 30, 20 40, 40 40, 40 20, 30 20, 30 10, 10 10))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+    POLYGON ((10 10, 10 30, 20 30, 20 20, 30 20, 30 10, 10 10))
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+    MULTIPOLYGON (((10 10, 10 30, 20 30, 20 20, 30 20, 30 10, 10 10)), ((20 30, 20 40, 40 40, 40 20, 30 20, 30 30, 20 30)))
+  </op></test>
+</case>
+
+<case>
+  <desc>AL - empty linestring</desc>
+  <a>
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </a>
+  <b>
+LINESTRING EMPTY
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING EMPTY
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>AL - empty point</desc>
+  <a>
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </a>
+  <b>
+POINT EMPTY
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="B" arg2="A">
+POINT EMPTY
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+POLYGON ((10 10, 10 30, 30 30, 30 10, 10 10))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LL - empty line</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+LINESTRING EMPTY
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING EMPTY
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LL - empty lines</desc>
+  <a>
+LINESTRING EMPTY
+  </a>
+  <b>
+LINESTRING EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+</case>
+
+<case>
+  <desc>LP - empty point</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+POINT EMPTY
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="B" arg2="A">
+POINT EMPTY
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>mLP - empty line component, empty point</desc>
+  <a>
+MULTILINESTRING ((10 10, 20 20), EMPTY)
+  </a>
+  <b>
+POINT EMPTY
+  </b>
+<test>
+  <op name="intersectionNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op>
+</test>
+<test>
+  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op>
+</test>
+<test>
+  <op name="differenceNG" arg1="B" arg2="A">
+POINT EMPTY
+  </op>
+</test>
+<test>
+  <op name="symdifferenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>PL - empty linestring</desc>
+  <a>
+POINT (10 10)
+  </a>
+  <b>
+LINESTRING EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POINT (10 10)
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+POINT (10 10)
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POINT (10 10)
+  </op></test>
+</case>
+
+<case>
+  <desc>PP - empty point</desc>
+  <a>
+POINT (10 10)
+  </a>
+  <b>
+POINT EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POINT (10 10)
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+POINT (10 10)
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+POINT EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POINT (10 10)
+  </op></test>
+</case>
+
+<case>
+  <desc>PP - empty points</desc>
+  <a>
+POINT EMPTY
+  </a>
+  <b>
+POINT EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+POINT EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+</case>
+
+
+<case>
+  <desc>CC - empty geometry collections are handled</desc>
+  <a>
+GEOMETRYCOLLECTION EMPTY
+  </a>
+  <b>
+GEOMETRYCOLLECTION EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+</case>
+
+<case>
+  <desc>PC - empty point and empty GC</desc>
+  <a>
+POINT EMPTY
+  </a>
+  <b>
+GEOMETRYCOLLECTION EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POINT EMPTY
+  </op></test>
+</case>
+
+<case>
+  <desc>LC - empty line and empty GC</desc>
+  <a>
+LINESTRING EMPTY
+  </a>
+  <b>
+GEOMETRYCOLLECTION EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+</case>
+
+<case>
+  <desc>AC - empty polygon and empty GC</desc>
+  <a>
+POLYGON EMPTY
+  </a>
+  <b>
+GEOMETRYCOLLECTION EMPTY
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+GEOMETRYCOLLECTION EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POLYGON EMPTY
+  </op></test>
+</case>
+
+</run>

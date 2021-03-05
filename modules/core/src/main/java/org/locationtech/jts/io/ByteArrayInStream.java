@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -50,8 +50,9 @@ public class ByteArrayInStream
 	 * into the given byte buffer.
 	 * 
 	 * @param buf the buffer to place the read bytes into
+   * @return the number of bytes read
 	 */
-	public void read(final byte[] buf) {
+	public int read(final byte[] buf) {
 		int numToRead = buf.length;
 		// don't try and copy past the end of the input
 		if ((position + numToRead) > buffer.length) {
@@ -66,5 +67,6 @@ public class ByteArrayInStream
 			System.arraycopy(buffer, position, buf, 0, numToRead);			
 		}
 		position += numToRead;
+		return numToRead;
 	}
 }

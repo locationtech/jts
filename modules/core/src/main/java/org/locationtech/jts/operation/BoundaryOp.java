@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -21,6 +21,7 @@ import org.locationtech.jts.algorithm.BoundaryNodeRule;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -67,6 +68,37 @@ public class BoundaryOp
   {
     BoundaryOp bop = new BoundaryOp(g, bnRule);
     return bop.getBoundary();
+  }
+  
+  /**
+   * Tests if a geometry has a boundary (it is non-empty).
+   * The semantics are:
+   * <ul>
+   * <li>Empty geometries do not have boundaries. 
+   * <li>Points do not have boundaries.
+   * <li>For linear geometries the existence of the boundary 
+   * is determined by the {@link BoundaryNodeRule}.
+   * <li>Non-empty polygons always have a boundary.
+   * </ul>
+   * 
+   * @param geom the geometry providing the boundary
+   * @param boundaryNodeRule  the Boundary Node Rule to use
+   * @return true if the boundary exists
+   */
+  public static boolean hasBoundary(Geometry geom, BoundaryNodeRule boundaryNodeRule) {
+    // Note that this does not handle geometry collections with a non-empty linear element
+    if (geom.isEmpty()) return false;
+    switch (geom.getDimension()) {
+    case Dimension.P: return false;
+    /**
+     * Linear geometries might have an empty boundary due to boundary node rule.
+     */
+    case Dimension.L:
+      Geometry boundary = BoundaryOp.getBoundary(geom, boundaryNodeRule);
+      return ! boundary.isEmpty();
+    case Dimension.A: return true;
+    }
+    return true;
   }
   
   private Geometry geom;

@@ -3,6 +3,8 @@ package org.locationtech.jtstest.testbuilder;
 import javax.swing.ImageIcon;
 
 public class AppIcons {
+  public final static ImageIcon APP = IconLoader.icon("app-icon.gif");
+  
   public final static ImageIcon ADD = IconLoader.icon("Plus.png");
   public final static ImageIcon ADD_SMALL = IconLoader.icon("Plus_small.png");
   public final static ImageIcon DELETE = IconLoader.icon("Delete.png");
@@ -14,8 +16,12 @@ public class AppIcons {
   public final static ImageIcon CLEAR = IconLoader.icon("Delete_small.png");
   public final static ImageIcon GEOM_INSPECT = IconLoader.icon("InspectGeometry.png");
   public final static ImageIcon GEOM_EXCHANGE = IconLoader.icon("ExchangeGeoms.png");
+  
   public final static ImageIcon DOWN = IconLoader.icon("Down.png");
   public final static ImageIcon UP = IconLoader.icon("Up.png");
+  public final static ImageIcon LEFT = IconLoader.icon("Left.png");
+  public final static ImageIcon RIGHT = IconLoader.icon("Right.png");
+  
   public final static ImageIcon ZOOM = IconLoader.icon("MagnifyCursor.gif");
   public final static ImageIcon COPY_TO_TEST = IconLoader.icon("CopyToTest.png");
   public final static ImageIcon COPY = IconLoader.icon("Copy.png");

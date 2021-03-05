@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -15,6 +15,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.test.Testable;
+import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 import org.locationtech.jtstest.util.io.SVGWriter;
 
 /**
@@ -22,12 +23,12 @@ import org.locationtech.jtstest.util.io.SVGWriter;
  */
 public class SVGTestWriter {
 
-  public static String getTestSVG(Testable test) {
+  public static String writeTestSVG(Testable test) {
     SVGTestWriter writer = new SVGTestWriter();
     return writer.write(test);
   }
 
-  public static String getSVG(Geometry ga, Geometry gb) {
+  public static String writeSVG(Geometry ga, Geometry gb) {
     SVGTestWriter writer = new SVGTestWriter();
     return writer.write(ga, gb, null, null);
   }
@@ -46,10 +47,7 @@ public class SVGTestWriter {
     public String write(Geometry ga, Geometry gb, String name, String description) {
         StringBuffer text = new StringBuffer();
         
-        
-        Envelope env = new Envelope();
-        if (ga != null) env.expandToInclude(ga.getEnvelopeInternal());
-        if (gb != null) env.expandToInclude(gb.getEnvelopeInternal());
+        Envelope env = sceneEnv(ga, gb);
         Coordinate centre = env.centre();
         
         int DIM = 1000;
@@ -73,6 +71,15 @@ public class SVGTestWriter {
         text.append("  </g>\n");
         text.append("</svg>\n");
         return text.toString();
+    }
+
+    private static Envelope sceneEnv(Geometry ga, Geometry gb) {
+      Envelope env = new Envelope();
+      if (ga != null) env.expandToInclude(GeometryUtil.totalEnvelope(ga));
+      if (gb != null) env.expandToInclude(GeometryUtil.totalEnvelope(gb));
+      double envDiam = env.getDiameter();
+      env.expandBy(envDiam * 0.02);
+      return env;
     }
 
     private void writeGeometryElement(Geometry g, String fillClr, String strokeClr, StringBuffer text) {

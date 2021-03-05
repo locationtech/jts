@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -15,14 +15,11 @@ package org.locationtech.jtstest.testbuilder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
-
-import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 
 public class JTSTestBuilderMenuBar 
 {
@@ -61,7 +58,7 @@ public class JTSTestBuilderMenuBar
     jMenuAbout.addActionListener(
       new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.jMenuHelpAbout_actionPerformed(e);
+          TestBuilderDialogs.showAbout(tbFrame);
         }
       });
 
@@ -76,14 +73,21 @@ public class JTSTestBuilderMenuBar
     menuViewText.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.menuViewText_actionPerformed(e);
+          TestBuilderDialogs.viewCaseText(tbFrame);
         }
       });
     menuViewGeometry.setText("Geometry Inspector...");
     menuViewGeometry.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.actionInspectGeometry();
+          JTSTestBuilder.controller().inspectGeometryDialogForCurrentCase();
+        }
+      });
+    JMenuItem menuShowIndicators = menuItemCheck("ShowIndicators",
+      JTSTestBuilderFrame.isShowingIndicators,
+      new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          JTSTestBuilderFrame.isShowingIndicators = ! JTSTestBuilderFrame.isShowingIndicators;
         }
       });
     menuLoadXmlTestFile.setText("Open XML File(s)...");
@@ -97,28 +101,36 @@ public class JTSTestBuilderMenuBar
     saveAsXmlMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.menuSaveAsXml_actionPerformed(e);
+          TestBuilderDialogs.saveAsXML(tbFrame, JTSTestBuilder.model());
         }
       });
     saveAsHtmlMenuItem.setText("Save As HTML...");
     saveAsHtmlMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.menuSaveAsHtml_actionPerformed(e);
+          TestBuilderDialogs.saveAsHtml(tbFrame, JTSTestBuilder.model());
+        }
+      });
+    JMenuItem saveAsSvgMenuItem = new JMenuItem();
+    saveAsSvgMenuItem.setText("Save As HTML+SVG...");
+    saveAsSvgMenuItem.addActionListener(
+      new java.awt.event.ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          TestBuilderDialogs.saveAsHtmlSVG(tbFrame, JTSTestBuilder.model());
         }
       });
     saveAsPNGMenuItem.setText("Save As PNG...");
     saveAsPNGMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.actionSaveImageAsPNG();
+          JTSTestBuilder.controller().saveImageAsPNG();
         }
       });
     saveToClipboardMenuItem.setText("Save Screen To Clipboard");
     saveToClipboardMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.actionSaveImageToClipboard();
+          JTSTestBuilder.controller().saveImageToClipboard();
         }
       });
     deleteAllTestCasesMenuItem.setText("Delete All Test Cases");
@@ -126,31 +138,6 @@ public class JTSTestBuilderMenuBar
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
           tbFrame.actionDeleteAllTestCases();
-        }
-      });
-
-    final JMenuItem basicFillMenuItem = menuItemRadio("Basic Fill", true,
-        new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_BASIC);
-        }
-      });
-    final JMenuItem varyFillMenuItem = menuItemRadio("Varying Fill", false,
-        new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_VARY);
-        }
-      });
-    final JMenuItem rainbowFillMenuItem = menuItemRadio("Rainbow Fill", false,
-        new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_RAINBOW);
-        }
-      });
-    final JMenuItem rainbowRandomFillMenuItem = menuItemRadio("Random Rainbow Fill", false,
-        new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          JTSTestBuilder.controller().setFillType(DisplayParameters.FILL_RAINBOW_RANDOM);
         }
       });
 
@@ -165,35 +152,30 @@ public class JTSTestBuilderMenuBar
     precisionModelMenuItem.addActionListener(
       new java.awt.event.ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          tbFrame.precisionModelMenuItem_actionPerformed();
+          TestBuilderDialogs.precisionModel(tbFrame);
         }
       });
     removeDuplicatePoints.setText("Remove Duplicate Points");
     removeDuplicatePoints.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        tbFrame.menuRemoveDuplicatePoints_actionPerformed(e);
+        JTSTestBuilder.controller().removeDuplicatePoints();
       }
     });
     changeToLines.setText("Change to Lines");
     changeToLines.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        tbFrame.menuChangeToLines_actionPerformed(e);
+        JTSTestBuilder.controller().changeToLines();
       }
     });
     jMenuFile.setText("File");
     //jMenuOptions.setText("Options");
     //jMenuTools.setText("Tools");
 
-    ButtonGroup fillGroup = new ButtonGroup();
-    fillGroup.add(basicFillMenuItem);
-    fillGroup.add(varyFillMenuItem);
-    fillGroup.add(rainbowFillMenuItem);
-    fillGroup.add(rainbowRandomFillMenuItem);
-    basicFillMenuItem.setSelected(true);
-
     jMenuFile.add(menuLoadXmlTestFile);
     jMenuFile.add(menuLoadXmlTestFolder);
     jMenuFile.add(saveAsXmlMenuItem);
+    jMenuFile.add(saveAsSvgMenuItem);
+    //-----------------------
     jMenuFile.addSeparator();
     jMenuFile.add(saveAsPNGMenuItem);
     jMenuFile.add(saveToClipboardMenuItem);
@@ -206,19 +188,17 @@ public class JTSTestBuilderMenuBar
     //==========================
     jMenuView.setText("View");
 
-    jMenuView.add(basicFillMenuItem);
-    jMenuView.add(varyFillMenuItem);
-    jMenuView.add(rainbowFillMenuItem);
-    jMenuView.add(rainbowRandomFillMenuItem);
-    
-    jMenuView.addSeparator();
     jMenuView.add(menuViewText);
     jMenuView.add(menuViewGeometry);
+    //-----------------------
+    jMenuEdit.addSeparator();
+    jMenuView.add(menuShowIndicators);
+    
     //==========================    
     jMenuEdit.setText("Edit");
     jMenuEdit.add(deleteAllTestCasesMenuItem);
-    jMenuEdit.addSeparator();
     jMenuEdit.add(precisionModelMenuItem);
+    //-----------------------
     jMenuEdit.addSeparator();
     jMenuEdit.add(removeDuplicatePoints);
     jMenuEdit.add(changeToLines);

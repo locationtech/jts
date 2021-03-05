@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -19,6 +19,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import junit.textui.TestRunner;
+import test.jts.GeometryTestCase;
 
 
 /**
@@ -26,7 +27,7 @@ import junit.textui.TestRunner;
  *
  * @version 1.7
  */
-public class LineStringImplTest extends TestCase {
+public class LineStringImplTest extends GeometryTestCase {
 
   PrecisionModel precisionModel = new PrecisionModel(1000);
   GeometryFactory geometryFactory = new GeometryFactory(precisionModel, 0);
@@ -169,17 +170,14 @@ public class LineStringImplTest extends TestCase {
   }
 
   public void testLinearRingConstructor() throws Exception {
-    try {
       LinearRing ring =
         new GeometryFactory().createLinearRing(
           new Coordinate[] {
             new Coordinate(0, 0),
             new Coordinate(10, 10),
             new Coordinate(0, 0)});
-      assertTrue(false);
-    } catch (IllegalArgumentException e) {
-      assertTrue(true);
-    }
+      Geometry ringFromWKT = read("LINEARRING (0 0, 10 10, 0 0)");
+      checkEqual(ring, ringFromWKT);
   }
 
 }

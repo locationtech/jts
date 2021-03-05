@@ -2,9 +2,9 @@
  * Copyright (c) 2019 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -14,6 +14,8 @@ package org.locationtech.jts.io;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 /**
  * Formats numeric values for ordinates
@@ -34,6 +36,8 @@ import java.text.DecimalFormatSymbols;
  */
 public class OrdinateFormat
 {
+  private static final String DECIMAL_PATTERN = "0";
+
   /**
    * The output representation of {@link Double#POSITIVE_INFINITY}
    */
@@ -91,14 +95,21 @@ public class OrdinateFormat
   }
 
   private static DecimalFormat createFormat(int maximumFractionDigits) {
-    // specify decimal separator explicitly to work in all locales
-    DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-    symbols.setDecimalSeparator('.');
-    DecimalFormat format = new DecimalFormat("0", symbols);
+    // ensure format uses standard WKY number format
+    NumberFormat nf = NumberFormat.getInstance(Locale.US);
+    // This is expected to succeed for Locale.US
+    DecimalFormat format;
+    try {
+      format = (DecimalFormat) nf;
+    }
+    catch (ClassCastException ex) {
+      throw new RuntimeException("Unable to create DecimalFormat for Locale.US");
+    }
+    format.applyPattern(DECIMAL_PATTERN);
     format.setMaximumFractionDigits(maximumFractionDigits);
     return format;
   }
-
+  
   /**
    * Returns a string representation of the given ordinate numeric value.
    * 

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -76,6 +76,10 @@ abstract class AbstractPreparedPolygonContains
 	 */
 	protected boolean eval(Geometry geom)
 	{
+	  if (geom.getDimension() == 0) {
+	    return evalPoints(geom);
+	  }
+
 		/**
 		 * Do point-in-poly tests first, since they are cheaper and may result
 		 * in a quick negative result.
@@ -84,20 +88,6 @@ abstract class AbstractPreparedPolygonContains
 		 */
 		boolean isAllInTargetArea = isAllTestComponentsInTarget(geom);
 		if (! isAllInTargetArea) return false;
-		
-		/**
-		 * If the test geometry consists of only Points, 
-		 * then it is now sufficient to test if any of those
-		 * points lie in the interior of the target geometry.
-		 * If so, the test is contained.
-		 * If not, all points are on the boundary of the area,
-		 * which implies not contained.
-		 */
-		if (requireSomePointInInterior
-				&& geom.getDimension() == 0) {
-			boolean isAnyInTargetInterior = isAnyTestComponentInTargetInterior(geom);
-			return isAnyInTargetInterior;
-		}
 		
 		/**
 		 * Check if there is any intersection between the line segments
@@ -164,7 +154,39 @@ abstract class AbstractPreparedPolygonContains
 		return true;
 	}
 	
-	private boolean isProperIntersectionImpliesNotContainedSituation(Geometry testGeom)
+	/**
+	 * Evaluation optimized for Point geometries.
+	 * This provides about a 2x performance increase, and less memory usage.
+	 * 
+	 * @param geom a Point or MultiPoint geometry
+	 * @return the value of the predicate being evaluated
+	 */
+	private boolean evalPoints(Geometry geom) {
+    /**
+     * Do point-in-poly tests first, since they are cheaper and may result
+     * in a quick negative result.
+     * 
+     * If a point of any test components does not lie in target, result is false
+     */
+    boolean isAllInTargetArea = isAllTestPointsInTarget(geom);
+    if (! isAllInTargetArea) return false;
+    
+    /**
+     * If the test geometry consists of only Points, 
+     * then it is now sufficient to test if any of those
+     * points lie in the interior of the target geometry.
+     * If so, the test is contained.
+     * If not, all points are on the boundary of the area,
+     * which implies not contained.
+     */
+    if (requireSomePointInInterior) {
+      boolean isAnyInTargetInterior = isAnyTestPointInTargetInterior(geom);
+      return isAnyInTargetInterior;
+    }
+    return true;
+  }
+
+  private boolean isProperIntersectionImpliesNotContainedSituation(Geometry testGeom)
 	{
     /**
      * If the test geometry is polygonal we have the A/A situation.

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -212,6 +212,33 @@ public class CreateRandomShapeFunctions {
         lines.add(geomFact.createLineString(new Coordinate[] {
             new Coordinate(x0, y0), new Coordinate(x1, y1) }));
       }
+    }
+    return geomFact.buildGeometry(lines);
+  }
+
+  public static Geometry randomSegmentsRectilinear(Geometry g, int nPts) {
+    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
+    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
+    double xLen = env.getWidth();
+    double yLen = env.getHeight();
+
+    List lines = new ArrayList();
+
+    for (int i = 0; i < nPts; i++) {
+      double x0 = env.getMinX() + xLen * Math.random();
+      double x1 = env.getMinY() + yLen * Math.random();
+      double v = env.getMinX() + xLen * Math.random();
+      double y0 = v;
+      double y1 = v;
+      boolean isXFixed = Math.random() < 0.5;
+      if (isXFixed) {
+        y0 = x0;
+        y1 = x1;
+        x0 = v;
+        x1 = v;
+      }
+      lines.add(geomFact.createLineString(new Coordinate[] {
+          new Coordinate(x0, y0), new Coordinate(x1, y1) }));
     }
     return geomFact.buildGeometry(lines);
   }

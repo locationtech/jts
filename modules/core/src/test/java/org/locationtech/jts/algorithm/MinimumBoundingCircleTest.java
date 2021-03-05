@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -75,17 +75,19 @@ public class MinimumBoundingCircleTest extends GeometryTestCase {
         new Coordinate(26284.84180271327, 65267.114509082545), 247.4360455914027 );
   }
 
-  public void testMinDiameterLine() {
-    doMinDiameterTest("LINESTRING (100 200, 300 100)", "LINESTRING (100 200, 300 100)");
+  public void testMaxDiameterLine() {
+    doMaxDiameterTest("LINESTRING (100 200, 300 100)", "LINESTRING (100 200, 300 100)");
   }
   
-  public void testMinDiameterPolygon() {
-    doMinDiameterTest("POLYGON ((100 200, 300 150, 110 100, 100 200))", "LINESTRING (300 150, 100 200)");
+  public void testMaxDiameterPolygon() {
+    doMaxDiameterTest("POLYGON ((100 200, 300 150, 110 100, 100 200))", "LINESTRING (300 150, 100 200)");
+    doMaxDiameterTest("POLYGON ((110 200, 300 150, 100 100, 110 200))", "LINESTRING (300 150, 100 100)");
+    doMaxDiameterTest("POLYGON ((0 0, 6 0, 5 5, 0 0))", "LINESTRING (5 5, 0 0)");
   }
   
   static final double TOLERANCE = 1.0e-5;
   
-  private void doMinDiameterTest(String wkt, String expectedWKT) {
+  private void doMaxDiameterTest(String wkt, String expectedWKT) {
     MinimumBoundingCircle mbc = new MinimumBoundingCircle(read(wkt));
     Geometry diamActual = mbc.getMaximumDiameter();
     Geometry expected = read(expectedWKT);

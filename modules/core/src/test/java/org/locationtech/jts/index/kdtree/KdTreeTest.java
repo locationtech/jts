@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -92,6 +92,17 @@ public class KdTreeTest extends TestCase {
         "MULTIPOINT ( (10 60), (20 60), (20 60))");
   }
   
+  public void testSizeDepth() {
+    KdTree index = build("MULTIPOINT ( (10 60), (20 60), (16 60), (1 1), (23 400))", 
+        0);
+    int size = index.size();
+    assertEquals(5, size);
+    int depth = index.depth();
+    // these are weak conditions, but depth varies depending on data and algorithm
+    assertTrue( depth > 1 );
+    assertTrue( depth <= size );
+  }
+  
   private void testQuery(String wktInput, double tolerance,
       Envelope queryEnv, String wktExpected) {
     KdTree index = build(wktInput, tolerance);
@@ -136,6 +147,13 @@ public class KdTreeTest extends TestCase {
     
     boolean isMatch = CoordinateArrays.equals(result, expectedCoord);
     assertTrue("Expected result coordinates not found", isMatch);
+    
+    // test queries for points
+    for (int i = 0; i < expectedCoord.length; i++) {
+      Coordinate p = expectedCoord[i];
+      KdNode node = index.query(p);
+      assertEquals("Point query not found", node.getCoordinate(), p);
+    }
   }
 
   private KdTree build(String wktInput, double tolerance) {

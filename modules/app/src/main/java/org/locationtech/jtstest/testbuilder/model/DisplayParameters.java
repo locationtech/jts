@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -46,19 +46,6 @@ public class DisplayParameters {
 
   public static int MAX_DISPLAY_POINTS = 2000;
 
-  public static final int FILL_BASIC = 1;
-  public static final int FILL_VARY = 2;
-  public static final int FILL_RAINBOW = 3;
-  public static final int FILL_RAINBOW_RANDOM = 4;
 
-  private static int fillType = FILL_BASIC;
-
-  public static int fillType() {
-    return fillType;
-  }
-
-  public static void setFillType(int type) {
-    fillType = type;  
-  }
 
 }

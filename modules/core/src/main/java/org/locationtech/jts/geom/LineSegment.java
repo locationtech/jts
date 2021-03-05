@@ -4,9 +4,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -282,7 +282,7 @@ public class LineSegment
    */
   public Coordinate pointAlong(double segmentLengthFraction)
   {
-    Coordinate coord = new Coordinate();
+    Coordinate coord = p0.create();
     coord.x = p0.x + segmentLengthFraction * (p1.x - p0.x);
     coord.y = p0.y + segmentLengthFraction * (p1.y - p0.y);
     return coord;
@@ -328,7 +328,9 @@ public class LineSegment
     double offsetx = segx - uy;
     double offsety = segy + ux;
 
-    Coordinate coord = new Coordinate(offsetx, offsety);
+    Coordinate coord = p0.create();
+    coord.setX(offsetx);
+    coord.setY(offsety);
     return coord;
   }
 
@@ -406,10 +408,10 @@ public class LineSegment
    */
   public Coordinate project(Coordinate p)
   {
-    if (p.equals(p0) || p.equals(p1)) return new Coordinate(p);
+    if (p.equals(p0) || p.equals(p1)) return p.copy();
 
     double r = projectionFactor(p);
-    Coordinate coord = new Coordinate();
+    Coordinate coord = p.copy();
     coord.x = p0.x + r * (p1.x - p0.x);
     coord.y = p0.y + r * (p1.y - p0.y);
     return coord;
@@ -467,7 +469,10 @@ public class LineSegment
     double rx = ( -A2subB2*x - 2*A*B*y - 2*A*C ) / A2plusB2;
     double ry = ( A2subB2*y - 2*A*B*x - 2*B*C ) / A2plusB2;
     
-    return new Coordinate(rx, ry);
+    Coordinate coord = p.copy();
+    coord.setX(rx);
+    coord.setY(ry);
+    return coord;
   }
   
   /**

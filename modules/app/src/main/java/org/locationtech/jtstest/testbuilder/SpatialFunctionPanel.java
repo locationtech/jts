@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -43,6 +43,7 @@ import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.geomfunction.RepeaterGeometryFunction;
 import org.locationtech.jtstest.geomfunction.SpreaderGeometryFunction;
+import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionEvent;
 import org.locationtech.jtstest.testbuilder.event.GeometryFunctionListener;
 import org.locationtech.jtstest.testbuilder.event.SpatialFunctionPanelEvent;
@@ -372,7 +373,7 @@ extends JPanel implements FunctionPanel
   }
   
   void displayAAndBCheckBox_actionPerformed(ActionEvent e) {
-    JTSTestBuilder.controller().getGeometryEditPanel().setShowingInput(displayAAndBCheckBox.isSelected());
+    JTSTestBuilderController.editPanel().setShowingInput(displayAAndBCheckBox.isSelected());
   }
 
   private void setCurrentFunction(GeometryFunction func) {

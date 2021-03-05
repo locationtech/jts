@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -20,8 +20,8 @@ import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.geomgraph.Position;
 
 /**
  * Generates segments which form an offset curve.
@@ -598,23 +598,17 @@ class OffsetSegmentGenerator
 
     if (nSegs < 1) return;    // no segments because angle is less than increment - nothing to do!
 
-    double initAngle, currAngleInc;
+     // choose angle increment so that each segment has equal length
+    double angleInc = totalAngle / nSegs;
 
-    // choose angle increment so that each segment has equal length
-    initAngle = 0.0;
-    currAngleInc = totalAngle / nSegs;
-
-    double currAngle = initAngle;
     Coordinate pt = new Coordinate();
-    while (currAngle < totalAngle) {
-      double angle = startAngle + directionFactor * currAngle;
+    for (int i = 0; i < nSegs; i++) {
+      double angle = startAngle + directionFactor * i * angleInc;
       pt.x = p.x + radius * Math.cos(angle);
       pt.y = p.y + radius * Math.sin(angle);
       segList.addPt(pt);
-      currAngle += currAngleInc;
     }
   }
-
 
   /**
    * Creates a CW circle around a point

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -24,7 +24,10 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.GeometryFilter;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.index.SpatialIndex;
+import org.locationtech.jts.index.chain.MonotoneChain;
+import org.locationtech.jts.index.chain.MonotoneChainBuilder;
 import org.locationtech.jts.index.hprtree.HPRtree;
 import org.locationtech.jts.index.kdtree.KdTree;
 import org.locationtech.jts.index.quadtree.Quadtree;
@@ -233,5 +236,17 @@ public class SpatialIndexFunctions
       
     });
     return index;
+  }
+  
+  public static Geometry monotoneChains(Geometry geom) {
+    Coordinate[] pts = geom.getCoordinates();
+    List<MonotoneChain> chains = MonotoneChainBuilder.getChains(pts);
+    List<LineString> lines = new ArrayList<LineString>();
+    for (MonotoneChain mc : chains) {
+      Coordinate[] mcPts = mc.getCoordinates();
+      LineString line = geom.getFactory().createLineString(mcPts);
+      lines.add(line);
+    }
+    return geom.getFactory().buildGeometry(lines);
   }
 }

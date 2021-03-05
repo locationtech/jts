@@ -285,7 +285,14 @@
 </test>
 </case>
 
-
+<case>
+   <desc>A - polygon with too few points </desc>
+   <a>POLYGON ((0 0, 10 10, 0 0))</a>
+   <test>
+      <op name="isSimple" arg1="A"> false </op>
+   </test>
+</case>
+  
 <case>
   <desc>A - empty</desc>
   <a>

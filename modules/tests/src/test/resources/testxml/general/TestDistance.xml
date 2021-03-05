@@ -57,4 +57,11 @@
 <test><op name="distance" arg1="A" arg2="B" >    0.0   </op></test>
 </case>
 
+<case>
+  <desc>mAmA - multipolygon with empty component</desc>
+  <a> MULTIPOLYGON (EMPTY, ((98 200, 200 200, 200 99, 98 99, 98 200))) </a>
+  <b> POLYGON ((300 200, 400 200, 400 100, 300 100, 300 200)) </b>
+<test><op name="distance" arg1="A" arg2="B" >    100.0   </op></test>
+</case>
+
 </run>

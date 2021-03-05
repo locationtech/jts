@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -105,6 +105,32 @@ public class RelateBoundaryNodeRuleTest
     runRelateTest(a, b,  BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  "F01FF0102"    );
   }
 
+  public void testPolygonEmptyRing()
+      throws Exception
+  {
+    String a = "POLYGON EMPTY";
+    String b = "LINESTRING (20 100, 20 220, 120 100, 20 100)";
+
+    // closed line has no boundary under SFS rule
+    runRelateTest(a, b,  BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE,   "FFFFFF1F2"    );
+    
+    // closed line has boundary under ENDPOINT rule
+    runRelateTest(a, b,  BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  "FFFFFF102"    );
+  }
+
+  public void testPolygonEmptyMultiLineStringClosed()
+      throws Exception
+  {
+    String a = "POLYGON EMPTY";
+    String b = "MULTILINESTRING ((0 0, 0 1), (0 1, 1 1, 1 0, 0 0))";
+
+    // closed line has no boundary under SFS rule
+    runRelateTest(a, b,  BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE,   "FFFFFF1F2"    );
+    
+    // closed line has boundary under ENDPOINT rule
+    runRelateTest(a, b,  BoundaryNodeRule.ENDPOINT_BOUNDARY_RULE,  "FFFFFF102"    );
+  }
+
   void runRelateTest(String wkt1, String wkt2, BoundaryNodeRule bnRule, String expectedIM)
       throws ParseException
   {
@@ -113,6 +139,6 @@ public class RelateBoundaryNodeRuleTest
     IntersectionMatrix im = RelateOp.relate(g1, g2, bnRule);
     String imStr = im.toString();
     //System.out.println(imStr);
-    assertTrue(im.matches(expectedIM));
+    assertTrue("Expected " + expectedIM + ", found " + im, im.matches(expectedIM));
   }
 }

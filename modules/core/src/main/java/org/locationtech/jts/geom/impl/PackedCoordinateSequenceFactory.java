@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -157,7 +157,7 @@ public class PackedCoordinateSequenceFactory implements
    * @return a packed coordinate sequence of type {@link #FLOAT}
    */
   public CoordinateSequence create(float[] packedCoordinates, int dimension) {
-    return create( packedCoordinates, dimension, DEFAULT_MEASURES );
+    return create( packedCoordinates, dimension, Math.max(DEFAULT_MEASURES, dimension-3) );
   }
   
   /**
@@ -182,9 +182,11 @@ public class PackedCoordinateSequenceFactory implements
    */
   public CoordinateSequence create(int size, int dimension) {
     if (type == DOUBLE) {
-      return new PackedCoordinateSequence.Double(size, dimension , DEFAULT_MEASURES);
+      return new PackedCoordinateSequence.Double(
+              size, dimension, Math.max(DEFAULT_MEASURES, dimension-3));
     } else {
-      return new PackedCoordinateSequence.Float(size, dimension, DEFAULT_MEASURES );
+      return new PackedCoordinateSequence.Float(
+              size, dimension, Math.max(DEFAULT_MEASURES, dimension-3));
     }
   }
   

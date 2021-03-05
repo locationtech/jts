@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -16,6 +16,7 @@ import java.util.List;
 import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.algorithm.PointLocator;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
@@ -37,6 +38,8 @@ import org.locationtech.jts.geom.util.PolygonExtracter;
  * If a point lies in the interior of a line segment,
  * the coordinate computed is a close
  * approximation to the exact point.
+ * <p>
+ * Empty geometry collection components are ignored.
  * <p>
  * The algorithms used are straightforward O(n^2)
  * comparisons.  This worst-case performance could be improved on
@@ -381,7 +384,19 @@ public class DistanceOp
     Coordinate[] coord1 = line1.getCoordinates();
       // brute force approach!
     for (int i = 0; i < coord0.length - 1; i++) {
+      
+      // short-circuit if line segment is far from line
+      Envelope segEnv0 = new Envelope(coord0[i], coord0[i + 1]);
+      if (segEnv0.distance(line1.getEnvelopeInternal()) > minDistance)
+        continue;
+      
       for (int j = 0; j < coord1.length - 1; j++) {
+        
+        // short-circuit if line segments are far apart
+        Envelope segEnv1 = new Envelope(coord1[j], coord1[j + 1]);
+        if (segEnv0.distance(segEnv1) > minDistance)
+          continue;
+
         double dist = Distance.segmentToSegment(
                                         coord0[i], coord0[i + 1],
                                         coord1[j], coord1[j + 1] );

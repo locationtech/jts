@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -23,8 +23,8 @@ import org.locationtech.jts.geom.Envelope;
 
 
 /**
- * An implementation of a 2-D KD-Tree. KD-trees provide fast range searching on
- * point data.
+ * An implementation of a 2-D KD-Tree. KD-trees provide fast range searching 
+ * and fast lookup for point data.
  * <p>
  * This implementation supports detecting and snapping points which are closer
  * than a given distance tolerance. 
@@ -36,6 +36,17 @@ import org.locationtech.jts.geom.Envelope;
  * is incremented.  
  * If more than one node in the tree is within tolerance of an inserted point, 
  * the closest and then lowest node is snapped to.
+ * <p>
+ * Note that the structure of a KD-Tree depends on the order of insertion of the points.
+ * A tree may become imbalanced if the inserted points are coherent 
+ * (e.g. monotonic in one or both dimensions).
+ * A perfectly balanced tree has depth of only log2(N), 
+ * but an imbalanced tree may be much deeper.
+ * This has a serious impact on query efficiency.  
+ * Even worse, since recursion is used for querying the tree
+ * an extremely deep tree may cause a {@link StackOverflowException}.
+ * One solution to this is to randomize the order of points before insertion
+ * (e.g. by using <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffling</a>).
  * 
  * @author David Skea
  * @author Martin Davis
@@ -234,16 +245,13 @@ public class KdTree {
      * then top-bottom (by Y ordinate)
      */
     while (currentNode != null) {
-      // test if point is already a node (not strictly necessary)
-      if (currentNode != null) {
-        boolean isInTolerance = p.distance(currentNode.getCoordinate()) <= tolerance;
+      boolean isInTolerance = p.distance(currentNode.getCoordinate()) <= tolerance;
 
-        // check if point is already in tree (up to tolerance) and if so simply
-        // return existing node
-        if (isInTolerance) {
-          currentNode.increment();
-          return currentNode;
-        }
+      // check if point is already in tree (up to tolerance) and if so simply
+      // return existing node
+      if (isInTolerance) {
+        currentNode.increment();
+        return currentNode;
       }
 
       if (isOddLevel) {
@@ -253,14 +261,16 @@ public class KdTree {
       }
       leafNode = currentNode;
       if (isLessThan) {
+        //System.out.print("L");
         currentNode = currentNode.getLeft();
       } else {
+        //System.out.print("R");
         currentNode = currentNode.getRight();
       }
 
       isOddLevel = ! isOddLevel;
     }
-
+    //System.out.println("<<");
     // no node found, add new leaf node to tree
     numberOfNodes = numberOfNodes + 1;
     KdNode node = new KdNode(p, data);
@@ -305,6 +315,32 @@ public class KdTree {
 
   }
 
+  private KdNode queryNodePoint(KdNode currentNode,
+      Coordinate queryPt, boolean odd) {
+    if (currentNode == null)
+      return null;
+    if (currentNode.getCoordinate().equals2D(queryPt))
+      return currentNode;
+    
+    double ord;
+    double discriminant;
+    if (odd) {
+      ord = queryPt.getX();
+      discriminant = currentNode.getX();
+    } else {
+      ord = queryPt.getY();
+      discriminant = currentNode.getY();
+    }
+    boolean searchLeft = ord < discriminant;
+
+    if (searchLeft) {
+      return queryNodePoint(currentNode.getLeft(), queryPt, !odd);
+    }
+    else {
+      return queryNodePoint(currentNode.getRight(), queryPt, !odd);
+    }
+  }
+
   /**
    * Performs a range search of the points in the index and visits all nodes found.
    * 
@@ -345,5 +381,51 @@ public class KdTree {
       }
       
     });
+  }
+
+  /**
+   * Searches for a given point in the index and returns its node if found.
+   * 
+   * @param queryPt the point to query
+   * @return the point node, if it is found in the index, or null if not
+   */
+  public KdNode query(Coordinate queryPt) {
+    return queryNodePoint(root, queryPt, true);
+  }
+
+  /**
+   * Computes the depth of the tree.
+   * 
+   * @return the depth of the tree
+   */
+  public int depth() {
+    return depthNode(root);
+  }
+  
+  private int depthNode(KdNode currentNode) {
+    if (currentNode == null)
+      return 0;
+
+    int dL = depthNode(currentNode.getLeft());
+    int dR = depthNode(currentNode.getRight());
+    return 1 + (dL > dR ? dL : dR);
+  }
+  
+  /**
+   * Computes the size (number of items) in the tree.
+   * 
+   * @return the size of the tree
+   */
+  public int size() {
+    return sizeNode(root);
+  }
+  
+  private int sizeNode(KdNode currentNode) {
+    if (currentNode == null)
+      return 0;
+
+    int sizeL = sizeNode(currentNode.getLeft());
+    int sizeR = sizeNode(currentNode.getRight());
+    return 1 + sizeL + sizeR;
   }
 }

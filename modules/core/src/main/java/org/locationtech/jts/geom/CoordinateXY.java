@@ -2,9 +2,9 @@
  * Copyright (c) 2018 Vivid Solutions
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -76,7 +76,17 @@ public class CoordinateXY extends Coordinate {
   public CoordinateXY copy() {
     return new CoordinateXY(this);
   }
-    
+  
+  /**
+   * Create a new Coordinate of the same type as this Coordinate, but with no values.
+   * 
+   * @return a new Coordinate
+   */
+  @Override
+  public Coordinate create() {
+      return new CoordinateXY();
+  }
+
   /** The z-ordinate is not supported */
   @Override
   public double getZ() {
@@ -103,7 +113,9 @@ public class CoordinateXY extends Coordinate {
       case X: return x;
       case Y: return y;
       }
-      throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
+      return Double.NaN;
+      // disable for now to avoid regression issues
+      //throw new IllegalArgumentException("Invalid ordinate index: " + ordinateIndex);
   }
   
   @Override

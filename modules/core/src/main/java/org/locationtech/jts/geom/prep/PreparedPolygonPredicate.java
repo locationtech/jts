@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -20,6 +20,7 @@ import org.locationtech.jts.algorithm.locate.SimplePointInAreaLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.util.ComponentCoordinateExtracter;
 
 
@@ -64,7 +65,7 @@ abstract class PreparedPolygonPredicate
     }
 		return true;
 	}
-	
+	 
   /**
    * Tests whether all components of the test Geometry 
 	 * are contained in the interior of the target geometry.
@@ -84,7 +85,7 @@ abstract class PreparedPolygonPredicate
     }
 		return true;
 	}
-	
+	 
   /**
    * Tests whether any component of the test Geometry intersects
    * the area of the target geometry.
@@ -104,27 +105,44 @@ abstract class PreparedPolygonPredicate
     }
 		return false;
 	}
-
+	 
   /**
-   * Tests whether any component of the test Geometry intersects
+   * Tests whether all points of the test Pointal geometry 
+   * are contained in the target geometry.
+   * 
+   * @param geom a Pointal geometry to test
+   * @return true if all points of the argument are contained in the target geometry
+   */
+  protected boolean isAllTestPointsInTarget(Geometry testGeom)
+  {
+    for (int i = 0; i < testGeom.getNumGeometries(); i++) {
+      Point pt = (Point) testGeom.getGeometryN(i);
+      Coordinate p = pt.getCoordinate();
+      int loc = targetPointLocator.locate(p);
+      if (loc == Location.EXTERIOR)
+        return false;
+    }
+    return true;
+  }
+	 
+  /**
+   * Tests whether any point of the test Geometry intersects
    * the interior of the target geometry.
-   * Handles test geometries with both linear and point components.
    * 
    * @param geom a geometry to test
-   * @return true if any component of the argument intersects the prepared area geometry interior
+   * @return true if any point of the argument intersects the prepared area geometry interior
    */
-	protected boolean isAnyTestComponentInTargetInterior(Geometry testGeom)
+	protected boolean isAnyTestPointInTargetInterior(Geometry testGeom)
 	{
-    List coords = ComponentCoordinateExtracter.getCoordinates(testGeom);
-    for (Iterator i = coords.iterator(); i.hasNext(); ) {
-      Coordinate p = (Coordinate) i.next();
+    for (int i = 0; i < testGeom.getNumGeometries(); i++) {
+      Point pt = (Point) testGeom.getGeometryN(i);
+      Coordinate p = pt.getCoordinate();
       int loc = targetPointLocator.locate(p);
       if (loc == Location.INTERIOR)
         return true;
     }
-		return false;
+    return false;
 	}
-
 
 	/**
 	 * Tests whether any component of the target geometry 

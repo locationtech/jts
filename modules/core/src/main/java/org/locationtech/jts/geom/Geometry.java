@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -49,7 +49,7 @@ import org.locationtech.jts.util.Assert;
  *
  * <H3>Overlay Methods</H3>
  *
- * The overlay methods 
+ * The overlay methods
  * return the most specific class possible to represent the result. If the
  * result is homogeneous, a <code>Point</code>, <code>LineString</code>, or
  * <code>Polygon</code> will be returned if the result contains a single
@@ -109,44 +109,44 @@ import org.locationtech.jts.util.Assert;
  *  report the location of the collapse. <P>
  *
  * <h3>Geometry Equality</h3>
- * 
- * There are two ways of comparing geometries for equality: 
+ *
+ * There are two ways of comparing geometries for equality:
  * <b>structural equality</b> and <b>topological equality</b>.
- * 
+ *
  * <h4>Structural Equality</h4>
  *
- * Structural Equality is provided by the 
- * {@link #equalsExact(Geometry)} method.  
+ * Structural Equality is provided by the
+ * {@link #equalsExact(Geometry)} method.
  * This implements a comparison based on exact, structural pointwise
- * equality. 
- * The {@link #equals(Object)} is a synonym for this method, 
+ * equality.
+ * The {@link #equals(Object)} is a synonym for this method,
  * to provide structural equality semantics for
  * use in Java collections.
  * It is important to note that structural pointwise equality
  * is easily affected by things like
  * ring order and component order.  In many situations
  * it will be desirable to normalize geometries before
- * comparing them (using the {@link #norm()} 
+ * comparing them (using the {@link #norm()}
  * or {@link #normalize()} methods).
  * {@link #equalsNorm(Geometry)} is provided
  * as a convenience method to compute equality over
  * normalized geometries, but it is expensive to use.
  * Finally, {@link #equalsExact(Geometry, double)}
  * allows using a tolerance value for point comparison.
- * 
- * 
+ *
+ *
  * <h4>Topological Equality</h4>
- * 
- * Topological Equality is provided by the 
- * {@link #equalsTopo(Geometry)} method. 
+ *
+ * Topological Equality is provided by the
+ * {@link #equalsTopo(Geometry)} method.
  * It implements the SFS definition of point-set equality
  * defined in terms of the DE-9IM matrix.
  * To support the SFS naming convention, the method
- * {@link #equals(Geometry)} is also provided as a synonym.  
+ * {@link #equals(Geometry)} is also provided as a synonym.
  * However, due to the potential for confusion with {@link #equals(Object)}
  * its use is discouraged.
  * <p>
- * Since {@link #equals(Object)} and {@link #hashCode()} are overridden, 
+ * Since {@link #equals(Object)} and {@link #hashCode()} are overridden,
  * Geometries can be used effectively in Java collections.
  *
  *@version 1.7
@@ -156,14 +156,23 @@ public abstract class Geometry
 {
   private static final long serialVersionUID = 8763622679187376702L;
     
-  static final int SORTINDEX_POINT = 0;
-  static final int SORTINDEX_MULTIPOINT = 1;
-  static final int SORTINDEX_LINESTRING = 2;
-  static final int SORTINDEX_LINEARRING = 3;
-  static final int SORTINDEX_MULTILINESTRING = 4;
-  static final int SORTINDEX_POLYGON = 5;
-  static final int SORTINDEX_MULTIPOLYGON = 6;
-  static final int SORTINDEX_GEOMETRYCOLLECTION = 7;
+  protected static final int TYPECODE_POINT = 0;
+  protected static final int TYPECODE_MULTIPOINT = 1;
+  protected static final int TYPECODE_LINESTRING = 2;
+  protected static final int TYPECODE_LINEARRING = 3;
+  protected static final int TYPECODE_MULTILINESTRING = 4;
+  protected static final int TYPECODE_POLYGON = 5;
+  protected static final int TYPECODE_MULTIPOLYGON = 6;
+  protected static final int TYPECODE_GEOMETRYCOLLECTION = 7;
+  
+  public static final String TYPENAME_POINT = "Point";
+  public static final String TYPENAME_MULTIPOINT = "MultiPoint";
+  public static final String TYPENAME_LINESTRING = "LineString";
+  public static final String TYPENAME_LINEARRING = "LinearRing";
+  public static final String TYPENAME_MULTILINESTRING = "MultiLineString";
+  public static final String TYPENAME_POLYGON = "Polygon";
+  public static final String TYPENAME_MULTIPOLYGON = "MultiPolygon";
+  public static final String TYPENAME_GEOMETRYCOLLECTION = "GeometryCollection";
   
   private final static GeometryComponentFilter geometryChangedFilter = new GeometryComponentFilter() {
     public void filter(Geometry geom) {
@@ -262,12 +271,12 @@ public abstract class Geometry
     /**
    *  Sets the ID of the Spatial Reference System used by the <code>Geometry</code>.
    *  <p>
-   *  <b>NOTE:</b> This method should only be used for exceptional circumstances or 
-   *  for backwards compatibility.  Normally the SRID should be set on the 
+   *  <b>NOTE:</b> This method should only be used for exceptional circumstances or
+   *  for backwards compatibility.  Normally the SRID should be set on the
    *  {@link GeometryFactory} used to create the geometry.
-   *  SRIDs set using this method will <i>not</i> be propagated to 
+   *  SRIDs set using this method will <i>not</i> be propagated to
    *  geometries returned by constructive methods.
-   *  
+   *
    *  @see GeometryFactory
    */
   public void setSRID(int SRID) {
@@ -350,19 +359,19 @@ public abstract class Geometry
    *@return null if this Geometry is empty
    */
   public abstract Coordinate getCoordinate();
-  
+
   /**
-   *  Returns an array containing the values of all the vertices for 
+   *  Returns an array containing the values of all the vertices for
    *  this geometry.
    *  If the geometry is a composite, the array will contain all the vertices
    *  for the components, in the order in which the components occur in the geometry.
    *  <p>
-   *  In general, the array cannot be assumed to be the actual internal 
+   *  In general, the array cannot be assumed to be the actual internal
    *  storage for the vertices.  Thus modifying the array
-   *  may not modify the geometry itself. 
+   *  may not modify the geometry itself.
    *  Use the {@link CoordinateSequence#setOrdinate} method
    *  (possibly on the components) to modify the underlying data.
-   *  If the coordinates are modified, 
+   *  If the coordinates are modified,
    *  {@link #geometryChanged} must be called afterwards.
    *
    *@return    the vertices of this <code>Geometry</code>
@@ -461,7 +470,7 @@ public abstract class Geometry
 
   /**
    * Tests whether this is a rectangular {@link Polygon}.
-   * 
+   *
    * @return true if the geometry is a rectangle.
    */
   public boolean isRectangle()
@@ -510,7 +519,7 @@ public abstract class Geometry
    */
   public Point getCentroid()
   {
-    if (isEmpty()) 
+    if (isEmpty())
       return factory.createPoint();
     Coordinate centPt = Centroid.getCentroid(this);
     return createPointFromInternalCoord(centPt, this);
@@ -535,15 +544,15 @@ public abstract class Geometry
 
   /**
    * Returns the dimension of this geometry.
-   * The dimension of a geometry is is the topological 
+   * The dimension of a geometry is is the topological
    * dimension of its embedding in the 2-D Euclidean plane.
    * In the JTS spatial model, dimension values are in the set {0,1,2}.
    * <p>
-   * Note that this is a different concept to the dimension of 
-   * the vertex {@link Coordinate}s.  
+   * Note that this is a different concept to the dimension of
+   * the vertex {@link Coordinate}s.
    * The geometry dimension can never be greater than the coordinate dimension.
-   * For example, a 0-dimensional geometry (e.g. a Point) 
-   * may have a coordinate dimension of 3 (X,Y,Z). 
+   * For example, a 0-dimensional geometry (e.g. a Point)
+   * may have a coordinate dimension of 3 (X,Y,Z).
    *
    *@return the topological dimension of this geometry.
    */
@@ -572,35 +581,35 @@ public abstract class Geometry
   public abstract int getBoundaryDimension();
 
   /**
-   *  Gets a Geometry representing the envelope (bounding box) of 
-   *  this <code>Geometry</code>. 
+   *  Gets a Geometry representing the envelope (bounding box) of
+   *  this <code>Geometry</code>.
    *  <p>
    *  If this <code>Geometry</code> is:
    *  <ul>
-   *  <li>empty, returns an empty <code>Point</code>. 
+   *  <li>empty, returns an empty <code>Point</code>.
    *  <li>a point, returns a <code>Point</code>.
-   *  <li>a line parallel to an axis, a two-vertex <code>LineString</code> 
+   *  <li>a line parallel to an axis, a two-vertex <code>LineString</code>
    *  <li>otherwise, returns a
-   *  <code>Polygon</code> whose vertices are (minx miny, maxx miny, 
-   *  maxx maxy, minx maxy, minx miny).
+   *  <code>Polygon</code> whose vertices are (minx miny, minx maxy,
+   *  maxx maxy, maxx miny, minx miny).
    *  </ul>
    *
    *@return a Geometry representing the envelope of this Geometry
-   *      
-   * @see GeometryFactory#toGeometry(Envelope) 
+   *
+   * @see GeometryFactory#toGeometry(Envelope)
    */
   public Geometry getEnvelope() {
     return getFactory().toGeometry(getEnvelopeInternal());
   }
 
   /**
-   * Gets an {@link Envelope} containing 
+   * Gets an {@link Envelope} containing
    * the minimum and maximum x and y values in this <code>Geometry</code>.
-   * If the geometry is empty, an empty <code>Envelope</code> 
+   * If the geometry is empty, an empty <code>Envelope</code>
    * is returned.
    * <p>
    * The returned object is a copy of the one maintained internally,
-   * to avoid aliasing issues.  
+   * to avoid aliasing issues.
    * For best performance, clients which access this
    * envelope frequently should cache the return value.
    *
@@ -616,7 +625,7 @@ public abstract class Geometry
 
   /**
    * Notifies this geometry that its coordinates have been changed by an external
-   * party (for example, via a {@link CoordinateFilter}). 
+   * party (for example, via a {@link CoordinateFilter}).
    * When this method is called the geometry will flush
    * and/or update any derived information it has cached (such as its {@link Envelope} ).
    * The operation is applied to all component Geometries.
@@ -629,7 +638,7 @@ public abstract class Geometry
    * Notifies this Geometry that its Coordinates have been changed by an external
    * party. When #geometryChanged is called, this method will be called for
    * this Geometry and its component Geometries.
-   * 
+   *
    * @see #apply(GeometryComponentFilter)
    */
   protected void geometryChangedAction() {
@@ -642,7 +651,7 @@ public abstract class Geometry
    * The <code>disjoint</code> predicate has the following equivalent definitions:
    * <ul>
    * <li>The two geometries have no point in common
-   * <li>The DE-9IM Intersection Matrix for the two geometries matches 
+   * <li>The DE-9IM Intersection Matrix for the two geometries matches
    * <code>[FF*FF****]</code>
    * <li><code>! g.intersects(this) = true</code>
    * <br>(<code>disjoint</code> is the inverse of <code>intersects</code>)
@@ -664,7 +673,7 @@ public abstract class Geometry
    * <p>
    * The <code>touches</code> predicate has the following equivalent definitions:
    * <ul>
-   * <li>The geometries have at least one point in common, 
+   * <li>The geometries have at least one point in common,
    * but their interiors do not intersect.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
    * at least one of the following patterns
@@ -677,7 +686,7 @@ public abstract class Geometry
    * If both geometries have dimension 0, the predicate returns <code>false</code>,
    * since points have only interiors.
    * This predicate is symmetric.
-   * 
+   *
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return        <code>true</code> if the two <code>Geometry</code>s touch;
@@ -795,7 +804,7 @@ public abstract class Geometry
    * <ul>
    * <li>Every point of this geometry is a point of the other geometry,
    * and the interiors of the two geometries have at least one point in common.
-   * <li>The DE-9IM Intersection Matrix for the two geometries matches 
+   * <li>The DE-9IM Intersection Matrix for the two geometries matches
    * <code>[T*F**F***]</code>
    * <li><code>g.contains(this) = true</code>
    * <br>(<code>within</code> is the converse of {@link #contains})
@@ -805,7 +814,7 @@ public abstract class Geometry
    * In other words, if a geometry A is a subset of
    * the points in the boundary of a geometry B, <code>A.within(B) = false</code>
    * (As a concrete example, take A to be a LineString which lies in the boundary of a Polygon B.)
-   * For a predicate with similar behaviour but avoiding 
+   * For a predicate with similar behaviour but avoiding
    * this subtle limitation, see {@link #coveredBy}.
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
@@ -827,7 +836,7 @@ public abstract class Geometry
    * <ul>
    * <li>Every point of the other geometry is a point of this geometry,
    * and the interiors of the two geometries have at least one point in common.
-   * <li>The DE-9IM Intersection Matrix for the two geometries matches 
+   * <li>The DE-9IM Intersection Matrix for the two geometries matches
    * the pattern
    * <code>[T*****FF*]</code>
    * <li><code>g.within(this) = true</code>
@@ -837,7 +846,7 @@ public abstract class Geometry
    * contain their boundary".  In other words, if a geometry A is a subset of
    * the points in the boundary of a geometry B, <code>B.contains(A) = false</code>.
    * (As a concrete example, take A to be a LineString which lies in the boundary of a Polygon B.)
-   * For a predicate with similar behaviour but avoiding 
+   * For a predicate with similar behaviour but avoiding
    * this subtle limitation, see {@link #covers}.
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
@@ -852,7 +861,7 @@ public abstract class Geometry
       return false;
     }
     // optimization - P cannot contain a non-zero-length L
-    // Note that a point can contain a zero-length lineal geometry, 
+    // Note that a point can contain a zero-length lineal geometry,
     // since the line has no boundary due to Mod-2 Boundary Rule
     if (g.getDimension() == 1 && getDimension() < 1 && g.getLength() > 0.0) {
       return false;
@@ -905,7 +914,7 @@ public abstract class Geometry
    * <li>Every point of the other geometry is a point of this geometry.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
    * at least one of the following patterns:
-   *  <ul> 
+   *  <ul>
    *   <li><code>[T*****FF*]</code>
    *   <li><code>[*T****FF*]</code>
    *   <li><code>[***T**FF*]</code>
@@ -1025,15 +1034,15 @@ public abstract class Geometry
   }
 
   /**
-  * Tests whether this geometry is 
+  * Tests whether this geometry is
   * topologically equal to the argument geometry.
    * <p>
    * This method is included for backward compatibility reasons.
    * It has been superseded by the {@link #equalsTopo(Geometry)} method,
    * which has been named to clearly denote its functionality.
    * <p>
-   * This method should NOT be confused with the method 
-   * {@link #equals(Object)}, which implements 
+   * This method should NOT be confused with the method
+   * {@link #equals(Object)}, which implements
    * an exact equality comparison.
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
@@ -1055,20 +1064,20 @@ public abstract class Geometry
    * <li>The two geometries have at least one point in common,
    * and no point of either geometry lies in the exterior of the other geometry.
    * <li>The DE-9IM Intersection Matrix for the two geometries matches
-   * the pattern <code>T*F**FFF*</code> 
+   * the pattern <code>T*F**FFF*</code>
    * <pre>
    * T*F
    * **F
    * FF*
    * </pre>
    * </ul>
-   * <b>Note</b> that this method computes <b>topologically equality</b>. 
+   * <b>Note</b> that this method computes <b>topologically equality</b>.
    * For structural equality, see {@link #equalsExact(Geometry)}.
    *
    *@param g the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return <code>true</code> if the two <code>Geometry</code>s are topologically equal
    *
-   *@see #equalsExact(Geometry) 
+   *@see #equalsExact(Geometry)
    */
   public boolean equalsTopo(Geometry g)
   {
@@ -1077,31 +1086,31 @@ public abstract class Geometry
       return false;
     return relate(g).isEquals(getDimension(), g.getDimension());
   }
-  
+
   /**
    * Tests whether this geometry is structurally and numerically equal
    * to a given <code>Object</code>.
-   * If the argument <code>Object</code> is not a <code>Geometry</code>, 
+   * If the argument <code>Object</code> is not a <code>Geometry</code>,
    * the result is <code>false</code>.
    * Otherwise, the result is computed using
    * {@link #equalsExact(Geometry)}.
    * <p>
    * This method is provided to fulfill the Java contract
-   * for value-based object equality. 
-   * In conjunction with {@link #hashCode()} 
-   * it provides semantics which are most useful 
+   * for value-based object equality.
+   * In conjunction with {@link #hashCode()}
+   * it provides semantics which are most useful
    * for using
    * <code>Geometry</code>s as keys and values in Java collections.
    * <p>
    * Note that to produce the expected result the input geometries
-   * should be in normal form.  It is the caller's 
+   * should be in normal form.  It is the caller's
    * responsibility to perform this where required
    * (using {@link Geometry#norm()}
    * or {@link #normalize()} as appropriate).
-   * 
+   *
    * @param o the Object to compare
-   * @return true if this geometry is exactly equal to the argument 
-   * 
+   * @return true if this geometry is exactly equal to the argument
+   *
    * @see #equalsExact(Geometry)
    * @see #hashCode()
    * @see #norm()
@@ -1113,17 +1122,17 @@ public abstract class Geometry
     Geometry g = (Geometry) o;
     return equalsExact(g);
   }
-  
+
   /**
    * Gets a hash code for the Geometry.
-   * 
+   *
    * @return an integer value suitable for use as a hashcode
    */
   public int hashCode()
   {
     return getEnvelopeInternal().hashCode();
   }
-  
+
   public String toString() {
     return toText();
   }
@@ -1144,25 +1153,25 @@ public abstract class Geometry
 	 * Computes a buffer area around this geometry having the given width. The
 	 * buffer of a Geometry is the Minkowski sum or difference of the geometry
 	 * with a disc of radius <code>abs(distance)</code>.
-	 * <p> 
-	 * Mathematically-exact buffer area boundaries can contain circular arcs. 
+	 * <p>
+	 * Mathematically-exact buffer area boundaries can contain circular arcs.
 	 * To represent these arcs using linear geometry they must be approximated with line segments.
-	 * The buffer geometry is constructed using 8 segments per quadrant to approximate 
+	 * The buffer geometry is constructed using 8 segments per quadrant to approximate
 	 * the circular arcs.
 	 * The end cap style is <code>CAP_ROUND</code>.
 	 * <p>
 	 * The buffer operation always returns a polygonal result. The negative or
 	 * zero-distance buffer of lines and points is always an empty {@link Polygon}.
 	 * This is also the result for the buffers of degenerate (zero-area) polygons.
-	 * 
+	 *
 	 * @param distance
 	 *          the width of the buffer (may be positive, negative or 0)
 	 * @return a polygonal geometry representing the buffer region (which may be
 	 *         empty)
-	 * 
+	 *
 	 * @throws TopologyException
 	 *           if a robustness error occurs
-	 * 
+	 *
 	 * @see #buffer(double, int)
 	 * @see #buffer(double, int, int)
 	 */
@@ -1174,7 +1183,7 @@ public abstract class Geometry
 	 * Computes a buffer area around this geometry having the given width and with
 	 * a specified accuracy of approximation for circular arcs.
 	 * <p>
-	 * Mathematically-exact buffer area boundaries can contain circular arcs. 
+	 * Mathematically-exact buffer area boundaries can contain circular arcs.
 	 * To represent these arcs
 	 * using linear geometry they must be approximated with line segments. The
 	 * <code>quadrantSegments</code> argument allows controlling the accuracy of
@@ -1184,7 +1193,7 @@ public abstract class Geometry
 	 * The buffer operation always returns a polygonal result. The negative or
 	 * zero-distance buffer of lines and points is always an empty {@link Polygon}.
 	 * This is also the result for the buffers of degenerate (zero-area) polygons.
-	 * 
+	 *
 	 * @param distance
 	 *          the width of the buffer (may be positive, negative or 0)
 	 * @param quadrantSegments
@@ -1192,10 +1201,10 @@ public abstract class Geometry
 	 *          circle
 	 * @return a polygonal geometry representing the buffer region (which may be
 	 *         empty)
-	 * 
+	 *
 	 * @throws TopologyException
 	 *           if a robustness error occurs
-	 * 
+	 *
 	 * @see #buffer(double)
 	 * @see #buffer(double, int, int)
 	 */
@@ -1278,24 +1287,34 @@ public abstract class Geometry
   /**
    * Computes a new geometry which has all component coordinate sequences
    * in reverse order (opposite orientation) to this one.
-   * 
+   *
    * @return a reversed geometry
    */
-  public abstract Geometry reverse();
-  
+  public Geometry reverse() {
+
+    Geometry res = reverseInternal();
+    if (this.envelope != null)
+      res.envelope = this.envelope.copy();
+    res.setSRID(getSRID());
+
+    return res;
+  }
+
+  protected abstract Geometry reverseInternal();
+
   /**
    * Computes a <code>Geometry</code> representing the point-set which is
    * common to both this <code>Geometry</code> and the <code>other</code> Geometry.
    * <p>
    * The intersection of two geometries of different dimension produces a result
    * geometry of dimension less than or equal to the minimum dimension of the input
-   * geometries. 
+   * geometries.
    * The result geometry may be a heterogeneous {@link GeometryCollection}.
    * If the result is empty, it is an atomic geometry
    * with the dimension of the lowest input dimension.
    * <p>
    * Intersection of {@link GeometryCollection}s is supported
-   * only for homogeneous collection types. 
+   * only for homogeneous collection types.
    * <p>
    * Non-empty heterogeneous {@link GeometryCollection} arguments are not supported.
    *
@@ -1306,41 +1325,17 @@ public abstract class Geometry
    */
   public Geometry intersection(Geometry other)
   {
-  	/**
-  	 * TODO: MD - add optimization for P-A case using Point-In-Polygon
-  	 */
-    // special case: if one input is empty ==> empty
-    if (this.isEmpty() || other.isEmpty()) 
-      return OverlayOp.createEmptyResult(OverlayOp.INTERSECTION, this, other, factory);
-
-    // compute for GCs
-    // (An inefficient algorithm, but will work)
-    // TODO: improve efficiency of computation for GCs
-    if (this.isGeometryCollection()) {
-      final Geometry g2 = other;
-      return GeometryCollectionMapper.map(
-          (GeometryCollection) this,
-          new GeometryMapper.MapOp() {
-            public Geometry map(Geometry g) {
-              return g.intersection(g2);
-            }
-      });
-    }
-
-    // No longer needed since GCs are handled by previous code
-    //checkNotGeometryCollection(this);
-    //checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.INTERSECTION);
+    return GeometryOverlay.intersection(this, other);
   }
 
   /**
-   * Computes a <code>Geometry</code> representing the point-set 
+   * Computes a <code>Geometry</code> representing the point-set
    * which is contained in both this
    * <code>Geometry</code> and the <code>other</code> Geometry.
    * <p>
    * The union of two geometries of different dimension produces a result
    * geometry of dimension equal to the maximum dimension of the input
-   * geometries. 
+   * geometries.
    * The result geometry may be a heterogeneous
    * {@link GeometryCollection}.
    * If the result is empty, it is an atomic geometry
@@ -1351,12 +1346,12 @@ public abstract class Geometry
    * "noding" means that there will be a node or endpoint in the result for
    * every endpoint or line segment crossing in the input. "Dissolving" means
    * that any duplicate (i.e. coincident) line segments or portions of line
-   * segments will be reduced to a single line segment in the result. 
+   * segments will be reduced to a single line segment in the result.
    * If <b>merged</b> linework is required, the {@link LineMerger}
    * class can be used.
    * <p>
    * Non-empty {@link GeometryCollection} arguments are not supported.
-   * 
+   *
    * @param other
    *          the <code>Geometry</code> with which to compute the union
    * @return a point-set combining the points of this <code>Geometry</code> and the
@@ -1369,27 +1364,13 @@ public abstract class Geometry
    */
   public Geometry union(Geometry other)
   {
-    // handle empty geometry cases
-    if (this.isEmpty() || other.isEmpty()) {
-      if (this.isEmpty() && other.isEmpty())
-        return OverlayOp.createEmptyResult(OverlayOp.UNION, this, other, factory);
-        
-    // special case: if either input is empty ==> other input
-      if (this.isEmpty()) return other.copy();
-      if (other.isEmpty()) return copy();
-    }
-    
-    // TODO: optimize if envelopes of geometries do not intersect
-    
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.UNION);
+    return GeometryOverlay.union(this, other);
   }
 
   /**
    * Computes a <code>Geometry</code> representing the closure of the point-set
-   * of the points contained in this <code>Geometry</code> that are not contained in 
-   * the <code>other</code> Geometry. 
+   * of the points contained in this <code>Geometry</code> that are not contained in
+   * the <code>other</code> Geometry.
    * <p>
    * If the result is empty, it is an atomic geometry
    * with the dimension of the left-hand input.
@@ -1405,21 +1386,15 @@ public abstract class Geometry
    */
   public Geometry difference(Geometry other)
   {
-    // special case: if A.isEmpty ==> empty; if B.isEmpty ==> A
-    if (this.isEmpty()) return OverlayOp.createEmptyResult(OverlayOp.DIFFERENCE, this, other, factory);
-    if (other.isEmpty()) return copy();
-
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.DIFFERENCE);
+    return GeometryOverlay.difference(this, other);
   }
 
   /**
    * Computes a <code>Geometry </code> representing the closure of the point-set
-   * which is the union of the points in this <code>Geometry</code> which are not 
+   * which is the union of the points in this <code>Geometry</code> which are not
    * contained in the <code>other</code> Geometry,
    * with the points in the <code>other</code> Geometry not contained in this
-   * <code>Geometry</code>. 
+   * <code>Geometry</code>.
    * If the result is empty, it is an atomic geometry
    * with the dimension of the highest input dimension.
    * <p>
@@ -1434,47 +1409,34 @@ public abstract class Geometry
    */
   public Geometry symDifference(Geometry other)
   {
-    // handle empty geometry cases
-    if (this.isEmpty() || other.isEmpty()) {
-      // both empty - check dimensions
-      if (this.isEmpty() && other.isEmpty())
-        return OverlayOp.createEmptyResult(OverlayOp.SYMDIFFERENCE, this, other, factory);
-        
-    // special case: if either input is empty ==> result = other arg
-      if (this.isEmpty()) return other.copy();
-      if (other.isEmpty()) return copy();
-    }
-
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.SYMDIFFERENCE);
+    return GeometryOverlay.symDifference(this, other);
   }
 
 	/**
-	 * Computes the union of all the elements of this geometry. 
+	 * Computes the union of all the elements of this geometry.
 	 * <p>
 	 * This method supports
-	 * {@link GeometryCollection}s 
+	 * {@link GeometryCollection}s
 	 * (which the other overlay operations currently do not).
 	 * <p>
 	 * The result obeys the following contract:
 	 * <ul>
 	 * <li>Unioning a set of {@link LineString}s has the effect of fully noding
 	 * and dissolving the linework.
-	 * <li>Unioning a set of {@link Polygon}s always 
+	 * <li>Unioning a set of {@link Polygon}s always
 	 * returns a {@link Polygonal} geometry (unlike {@link #union(Geometry)},
 	 * which may return geometries of lower dimension if a topology collapse occurred).
 	 * </ul>
-	 * 
+	 *
 	 * @return the union geometry
      * @throws TopologyException if a robustness error occurs
-	 * 
+	 *
 	 * @see UnaryUnionOp
 	 */
 	public Geometry union() {
-		return UnaryUnionOp.union(this);
+    return GeometryOverlay.union(this);
 	}
-  
+
   /**
    * Returns true if the two <code>Geometry</code>s are exactly equal,
    * up to a specified distance tolerance.
@@ -1486,7 +1448,7 @@ public abstract class Geometry
    * within the given tolerance distance, in exactly the same order.
    * </ul>
    * This method does <i>not</i>
-   * test the values of the <code>GeometryFactory</code>, the <code>SRID</code>, 
+   * test the values of the <code>GeometryFactory</code>, the <code>SRID</code>,
    * or the <code>userData</code> fields.
    * <p>
    * To properly test equality between different geometries,
@@ -1497,7 +1459,7 @@ public abstract class Geometry
    *   are considered equal
    * @return <code>true</code> if this and the other <code>Geometry</code>
    *   have identical structure and point values, up to the distance tolerance.
-   *   
+   *
    * @see #equalsExact(Geometry)
    * @see #normalize()
    * @see #norm()
@@ -1518,7 +1480,7 @@ public abstract class Geometry
    * (such as using geometries as keys in collections).
    * <p>
    * This method does <i>not</i>
-   * test the values of the <code>GeometryFactory</code>, the <code>SRID</code>, 
+   * test the values of the <code>GeometryFactory</code>, the <code>SRID</code>,
    * or the <code>userData</code> fields.
    * <p>
    * To properly test equality between different geometries,
@@ -1527,13 +1489,13 @@ public abstract class Geometry
    *@param  other  the <code>Geometry</code> with which to compare this <code>Geometry</code>
    *@return <code>true</code> if this and the other <code>Geometry</code>
    *      have identical structure and point values.
-   *      
+   *
    * @see #equalsExact(Geometry, double)
    * @see #normalize()
    * @see #norm()
    */
-  public boolean equalsExact(Geometry other) 
-  { 
+  public boolean equalsExact(Geometry other)
+  {
     return this == other || equalsExact(other, 0);
   }
 
@@ -1544,11 +1506,11 @@ public abstract class Geometry
    * versions of both geometries before computing
    * {@link #equalsExact(Geometry)}.
    * <p>
-   * This method is relatively expensive to compute.  
-   * For maximum performance, the client 
+   * This method is relatively expensive to compute.
+   * For maximum performance, the client
    * should instead perform normalization on the individual geometries
    * at an appropriate point during processing.
-   * 
+   *
    * @param g a Geometry
    * @return true if the input geometries are exactly equal in their normalized form
    */
@@ -1557,13 +1519,13 @@ public abstract class Geometry
     if (g == null) return false;
     return norm().equalsExact(g.norm());
   }
-  
+
 
   /**
    *  Performs an operation with or on this <code>Geometry</code>'s
-   *  coordinates. 
+   *  coordinates.
    *  If this method modifies any coordinate values,
-   *  {@link #geometryChanged} must be called to update the geometry state. 
+   *  {@link #geometryChanged} must be called to update the geometry state.
    *  Note that you cannot use this method to
    *  modify this Geometry if its underlying CoordinateSequence's #get method
    *  returns a copy of the Coordinate, rather than the actual Coordinate stored
@@ -1576,8 +1538,8 @@ public abstract class Geometry
 
   /**
    *  Performs an operation on the coordinates in this <code>Geometry</code>'s
-   *  {@link CoordinateSequence}s. 
-   *  If the filter reports that a coordinate value has been changed, 
+   *  {@link CoordinateSequence}s.
+   *  If the filter reports that a coordinate value has been changed,
    *  {@link #geometryChanged} will be called automatically.
    *
    *@param  filter  the filter to apply
@@ -1625,32 +1587,34 @@ public abstract class Geometry
       return null;
     }
   }
-  
+
   /**
    * Creates a deep copy of this {@link Geometry} object.
    * Coordinate sequences contained in it are copied.
-   * All instance fields are copied (i.e. the <tt>SRID</tt> and <tt>userData</tt>).
+   * All instance fields are copied 
+   * (i.e. <code>envelope</code>, <tt>SRID</tt> and <tt>userData</tt>).
    * <p>
    * <b>NOTE:</b> the userData object reference (if present) is copied,
    * but the value itself is not copied.
-   * If a deep copy is required this must be performed by the caller. 
+   * If a deep copy is required this must be performed by the caller.
    *
    * @return a deep copy of this geometry
    */
   public Geometry copy() {
     Geometry copy = copyInternal();
+    copy.envelope = envelope == null ? null : envelope.copy();
     copy.SRID = this.SRID;
-    copy.userData = this.userData; 
+    copy.userData = this.userData;
     return copy;
   }
-  
+
   /**
    * An internal method to copy subclass-specific geometry data.
-   * 
+   *
    * @return a copy of the target geometry object.
    */
   protected abstract Geometry copyInternal();
-  
+
   /**
    *  Converts this <code>Geometry</code> to <b>normal form</b> (or <b>
    *  canonical form</b> ). Normal form is a unique representation for <code>Geometry</code>
@@ -1670,8 +1634,8 @@ public abstract class Geometry
 
   /**
    * Creates a new Geometry which is a normalized
-   * copy of this Geometry. 
-   * 
+   * copy of this Geometry.
+   *
    * @return a normalized copy of this geometry.
    * @see #normalize()
    */
@@ -1681,7 +1645,7 @@ public abstract class Geometry
     copy.normalize();
     return copy;
   }
-  
+
   /**
    *  Returns whether this <code>Geometry</code> is greater than, equal to,
    *  or less than another <code>Geometry</code>. <P>
@@ -1710,8 +1674,8 @@ public abstract class Geometry
    */
   public int compareTo(Object o) {
     Geometry other = (Geometry) o;
-    if (getSortIndex() != other.getSortIndex()) {
-      return getSortIndex() - other.getSortIndex();
+    if (getTypeCode() != other.getTypeCode()) {
+      return getTypeCode() - other.getTypeCode();
     }
     if (isEmpty() && other.isEmpty()) {
       return 0;
@@ -1757,8 +1721,8 @@ public abstract class Geometry
    */
   public int compareTo(Object o, CoordinateSequenceComparator comp) {
     Geometry other = (Geometry) o;
-    if (getSortIndex() != other.getSortIndex()) {
-      return getSortIndex() - other.getSortIndex();
+    if (getTypeCode() != other.getTypeCode()) {
+      return getTypeCode() - other.getTypeCode();
     }
     if (isEmpty() && other.isEmpty()) {
       return 0;
@@ -1796,7 +1760,7 @@ public abstract class Geometry
    *@throws  IllegalArgumentException  if <code>g</code> is a <code>GeometryCollection</code>
    *      but not one of its subclasses
    */
-  protected static void checkNotGeometryCollection(Geometry g) {
+  static void checkNotGeometryCollection(Geometry g) {
     if (g.isGeometryCollection()) {
       throw new IllegalArgumentException("Operation does not support GeometryCollection arguments");
     }
@@ -1805,12 +1769,12 @@ public abstract class Geometry
   /**
    * Tests whether this is an instance of a general {@link GeometryCollection},
    * rather than a homogeneous subclass.
-   * 
+   *
    * @return true if this is a heterogeneous GeometryCollection
    */
   protected boolean isGeometryCollection()
   {
-    return getSortIndex() == SORTINDEX_GEOMETRYCOLLECTION;
+    return getTypeCode() == TYPECODE_GEOMETRYCOLLECTION;
   }
 
   /**
@@ -1888,8 +1852,8 @@ public abstract class Geometry
     if (tolerance == 0) { return a.equals(b); }
     return a.distance(b) <= tolerance;
   }
-  
-  abstract protected int getSortIndex();
+
+  abstract protected int getTypeCode();
 
   private Point createPointFromInternalCoord(Coordinate coord, Geometry exemplar)
   {

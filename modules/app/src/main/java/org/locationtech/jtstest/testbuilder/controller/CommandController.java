@@ -2,9 +2,9 @@
  * Copyright (c) 2019 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -20,21 +20,36 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBWriter;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionInvocation;
+import org.locationtech.jtstest.testbuilder.CommandPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.util.CommandRunner;
 import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 public class CommandController {
 
-  public static void execCommand(String cmdIn) {
+  public static CommandPanel ui() {
+    return JTSTestBuilder.frame().getCommandPanel();
+  }
+  
+  public static void execCommand(String name, String cmdIn, boolean useStdin, boolean isStdinWKT) {
     String cmd = expandCommand(cmdIn);
+    
+    String stdin = null;
+    if (useStdin) {
+      if (isStdinWKT) {
+        stdin = valueWKT(getGeometry(0));
+      }
+      else {
+        stdin = valueWKB(getGeometry(0));
+      }
+    }
     //System.out.println(cmd);
     int returnCode = -1;
     String errMsg = "";
     Geometry result = null;
     CommandRunner runner = new CommandRunner();
     try {
-       returnCode = runner.exec(cmd);
+       returnCode = runner.exec(cmd, stdin);
        errMsg = runner.getStderr();
     } catch (Exception e) {
       errMsg = e.getClass().getName() + " : " + e.getMessage();
@@ -43,19 +58,26 @@ public class CommandController {
     boolean isSuccess = returnCode == 0 && errMsg.length() == 0;
     
     if (isSuccess) {
-      result = loadResult( runner.getStdout() );
+      /**
+       * Save successful command in history
+       * (although the result parsing may still fail)
+       */
+      ui().saveCommand(cmdIn);
+      String resultStr = runner.getStdout();
+      ui().setOutput(limitLength(resultStr, 200));
+      result = loadResult( name, resultStr );
     }
     else {
       if (errMsg.length() == 0)
         errMsg = "Return code = " + returnCode;
       //JTSTestBuilder.controller().clearResult();
-      JTSTestBuilder.frame().getCommandPanel().setError(errMsg);
+      ui().setError(errMsg);
     }
-    logCommand(cmdIn, result, errMsg);
+    logCommand(name, cmdIn, result, errMsg);
 
   }
-  private static void logCommand(String cmd, Geometry geom, String errMsg) {
-    String cmdLog = "Command: " + limitLength( cmd, 200);
+  private static void logCommand(String name, String cmd, Geometry geom, String errMsg) {
+    String cmdLog = name + ": " + limitLength( cmd, 200);
     if (geom != null) {
       String geomLog = GeometryFunctionInvocation.toString(geom);
       cmdLog += "\n ==> " + geomLog;
@@ -116,23 +138,23 @@ public class CommandController {
     return s.substring(0, n) + "...";
   }
   
-  private static Geometry loadResult(String output) {
+  private static Geometry loadResult(String name, String output) {
     JTSTestBuilder.frame().showResultWKTTab();
     MultiFormatReader reader = new MultiFormatReader(new GeometryFactory());
     reader.setStrict(false);
     Geometry result = null;
     try {
       result = reader.read(output);
-      JTSTestBuilder.controller().setResult(result);
+      JTSTestBuilder.controller().setResult(name, result);
     } catch (ParseException | IOException e) {
-      showError(e);
+      showError(name, e);
     }
     return result;
   }
   
-  private static void showError(Exception e) {
+  private static void showError(String name, Exception e) {
     //String msg = e.getClass().getName() + " : " + e.getMessage();
-    JTSTestBuilder.controller().setResult(e);
+    JTSTestBuilder.controller().setResult(name, e);
   }
   
   // NOT USED

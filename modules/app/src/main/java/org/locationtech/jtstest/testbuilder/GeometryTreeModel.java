@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -15,6 +15,7 @@ package org.locationtech.jtstest.testbuilder;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 
@@ -37,13 +38,18 @@ import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 
 public class GeometryTreeModel implements TreeModel
 {
+  public static Comparator SORT_AREA_ASC = new AreaComparator(false);
+  public static Comparator SORT_AREA_DESC = new AreaComparator(true);
+  public static Comparator SORT_LEN_ASC = new LengthComparator(false);
+  public static Comparator SORT_LEN_DESC = new LengthComparator(true);
+  
   private Vector<TreeModelListener> treeModelListeners = new Vector<TreeModelListener>();
 
   private GeometricObjectNode rootGeom;
 
-  public GeometryTreeModel(Geometry geom, int source)
+  public GeometryTreeModel(Geometry geom, int source, Comparator comp)
   {
-    rootGeom = GeometryNode.create(geom, new GeometryContext(source));
+    rootGeom = GeometryNode.create(geom, new GeometryContext(source, comp));
   }
 
   // ////////////// TreeModel interface implementation ///////////////////////
@@ -117,6 +123,37 @@ public class GeometryTreeModel implements TreeModel
     System.out
         .println("*** valueForPathChanged : " + path + " --> " + newValue);
   }
+  
+  public static class AreaComparator implements Comparator {
+
+    private int dirFactor;
+
+    public AreaComparator(boolean direction) {
+      this.dirFactor = direction ? 1 : -1;
+    }
+    
+    @Override
+    public int compare(Object o1, Object o2) {
+      double area1 = ((GeometricObjectNode) o1).getGeometry().getArea();
+      double area2 = ((GeometricObjectNode) o2).getGeometry().getArea();
+      return dirFactor * Double.compare(area1, area2);
+    }
+  }
+  public static class LengthComparator implements Comparator {
+
+    private int dirFactor;
+
+    public LengthComparator(boolean direction) {
+      this.dirFactor = direction ? 1 : -1;
+    }
+    
+    @Override
+    public int compare(Object o1, Object o2) {
+      double area1 = ((GeometricObjectNode) o1).getGeometry().getLength();
+      double area2 = ((GeometricObjectNode) o2).getGeometry().getLength();
+      return dirFactor * Double.compare(area1, area2);
+    }
+  }
 }
 
 abstract class GeometricObjectNode
@@ -169,9 +206,23 @@ abstract class GeometricObjectNode
 
 class GeometryContext {
   int source = 0;
+  private Comparator comp;
   
   GeometryContext(int source) {
     this.source = source;
+  }
+
+  public GeometryContext(int source, Comparator comp) {
+    this.source = source;
+    this.comp = comp;
+  }
+  
+  public Comparator getComparator() {
+    return comp;
+  }
+
+  public boolean isSorted() {
+    return comp != null;
   }
 }
 
@@ -307,12 +358,15 @@ class PolygonNode extends GeometryNode
 
   protected void fillChildren()
   {
-    children.add(new LinearRingNode((LinearRing) poly.getExteriorRing(),
-        "Shell", context));
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       children.add(new LinearRingNode((LinearRing) poly.getInteriorRingN(i),
           "Hole " + i, context));
     }
+    if (context.isSorted()) {
+      children.sort(context.getComparator());
+    }
+    children.add(0, new LinearRingNode((LinearRing) poly.getExteriorRing(),
+        "Shell", context));
   }
 
 }
@@ -425,6 +479,9 @@ class GeometryCollectionNode extends GeometryNode
       GeometryNode node = create(coll.getGeometryN(i), context);
       node.setIndex(i);
       children.add(node);
+    }
+    if (context.isSorted()) {
+      children.sort(context.getComparator());
     }
   }
   

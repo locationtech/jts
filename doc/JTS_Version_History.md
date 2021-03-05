@@ -17,9 +17,147 @@ Distributions for older JTS versions can be obtained at the
 
 <!-- ================================================================ -->
 
+# Version 1.18.2
+
+*Release Date:  02/26/2021*
+
+<!-- ================================================================ -->
+
+# Version 1.18.1
+
+*Release Date:  02/26/2021*
+
+### Functionality Improvements
+
+* Check for invalid polygonal geometry before fixing in `DouglasPeuckerSimplifier`, `VWSimplifier`, `Densifier` (#656)
+* Add `Coordinate` and subclasses `create()` methods (#637)
+* Ensure OverlayNG input line order is preserved (#665)
+* Add `UnaryUnionNG` functions that accept `Collection`s (#669 and #670)
+* Switch to using compact-SRID WKB format (#664)
+* Improve `WKBReader` error checking (#675)
+* Improve `Densifier` splitting algorithm to create longer segments (#677)
+* Allow constructing invalid `Polygon`s and `LinearRing`s with only 3 vertices (#682)
+* Ensure invalid 3-point polygons and rings are handled correctly (#683)
+* Fix `GeoJSONReader` to parse null and empty coordinates as empty geometry (#687) 
+* Fix `GeoJSONWriter` to emit empty coordinates array for empty point and linestring (#688)
+* Add `MaximumInscribedCircle` check for invalid tolerance, to avoid infinite loops (#696)
+* Add `GeoJsonWriter.setForceCCW` method to emit polygons with CCW orientation, as per GeoJSON specification (#694)
+
+### Bug Fixes
+
+* Ensure `Densifier` creates `Coordinate`s with same class as input (#637)
+* Fix Relate for cases with closed linear geometry and empty geometry (#671)
+* Fix `Densifier` to avoid splitting segments with length equal to distance tolerance (#676)
+* Fix `Geometry.compareTo` to test polygon holes (#678) 
+* Fix OverlayNG handling of polygons with interior flat lines (#685)
+* Fix `Polygonizer` to avoid NPE on invalid input (#692)
+
+### WKBDump
+
+* Added utility to dump out formatted WKB (#673)
+
+<!-- ================================================================ -->
+
+# Version 1.18.0
+
+*Release Date:  12/23/2020*
+
+### API Changes
+
+* `GeometryPrecisionReducer` is less tolerant of invalid input (but also avoids failing on some valid ones) (#648)
+* Moved `Position` and `Quadrant` to `org.locationtech.jts.geom` package
+* Removed `SimpleSnapRounder` - use `SnapRoundingNoder` instead
+* Deprecated `MCIndexSnapRounder` - use `SnapRoundingNoder` instead
+
+### Functionality Improvements
+
+* Improve Orientation.isCCW to handle flat topology collapse (#588)
+* Add `KMLReader` (#593)
+* Add `Densifier.setValidated` method to allow disabling expensive polygon validation (#595)
+* Add `OverlayNG` codebase (#599)
+* Add Z support in OverlayNG (#645)
+* Add system property `jts.overlay=ng` to enable use of OverlayNG in `Geometry` methods (#615)
+* Add `SnapRoundingNoder` (#599)
+* Add `SnappingNoder` (#599)
+* Change `GeometryPrecisionReducer` to use OverlayNG with Snap-Rounding
+* Change `GeometryNoder` to use `SnapRoundingNoder`
+* Add `KdTree` `size` and `depth` methods (#603)
+* Improve `WKBWriter` to write empty Polygons using a more compact representation (#623)
+* Support read and initialize internal structure of `STRtree` and `Quadtree` (#634)
+* Improve `GeometryPrecisionReducer` to handle GeometryCollections (#648)
+* Add `Orientation.isCCWArea` (#655)
+
+### Performance Improvements
+
+* Improve performance of `UnaryUnionOp` by removing OverlayUnion optimization (#644)
+
+### Bug Fixes
+
+* Fix `RayCrossingCounter` to handle XYZM coordinates (#589)
+* Fix `PackedCoordinateSequence` to always use XYZM coordinates when dimension is 4 (#591)
+* Fix `OrdinateFormat` to work around a JDK issue with the minus sign character in `Locale.NO` (#596)
+* Fix `GeoJsonReader` to throw a `ParseException` for empty arrays (#600)
+* Fix `WKTFileReader` handling of files with large amount of whitespace (#616)
+* Fix `WKBWriter` to output 3D empty Points with 3 ordinates (#622)
+* Fix `Geometry.reverse` to handle all geometry structures (#628)
+* Fix `GeometryPrecisionReducer` to avoid silently mangling input (#648)
+* Fix `Geometry.buffer` to avoid dropping large polygon areas in some situations (#655)
+  * also fixes `DouglasPeuckerSimplifier` (#498)
+
+
+## JTS TestBuilder
+
+### Functionality Improvements
+
+* Add Geometry Inspector sorting by Area or Length
+
+<!-- ================================================================ -->
+
+# Version 1.17.1
+
+*Release Date:  August 27, 2020*
+
+*Java Version: 1.8*
+
+### Functionality Improvements
+
+* Add `WKBReader` and `WKBWriter` support for `POINT EMPTY` (#567)
+
+### Performance Improvements
+
+* Improve performance of `PreparedPolygon` `covers` and `contains` for point inputs (#577)
+
+### Bug Fixes
+
+* Fix `IndexedPointInAreaLocator` thread-safety (#572)
+* Fix `WKTReader` to handle MultiPoints containing `EMPTY` (#575)
+* Fix API compile regression by removing deprecation on geometry `reverse` methods (#582)
+
+## JTS TestBuilder
+
+### Functionality Improvements
+
+* Add per-Layer palette control for Strokes and Fills
+
+## JTS TestRunner
+
+### Functionality Improvements
+
+* Enhance `-geomfunc` to load multiple function classes
+* Fix function registry to replace matching loaded functions (#569)
+
+## JtsOp 
+
+* Added `-limit` and `-offset` options for reading from file inputs (#617)
+
+
+<!-- ================================================================ -->
+
 # Version 1.17.0
 
-*Release Date:  TBD*
+*Release Date:  July 1, 2020*
+
+*Java Version: 1.8*
 
 ### API Changes
 
@@ -39,13 +177,16 @@ Distributions for older JTS versions can be obtained at the
 * Added `CoordinateList.toCoordinateArray(isForward)` (#482)
 * Addded `HPRtree` Hilbert Packed R-tree (#494)
 * Added `VariableBuffer` class for computing varying-distance buffers (#495)
-^ Added `LineSegment.reflect` method (#495)
+* Added `LineSegment.reflect` method (#495)
+* Added `MaximumInscribedCircle` algorithm (#530)
+* Added `LargestEmptyCircle` algorithm (#530)
 
 ### Performance Improvements
 
 * Improve performance of `UniqueCoordinateFilter` (#422)
 * Improve performance of `Polygonizer` (#431)
 * Avoid use of `ArrayList` in MonotoneChain builders
+* Add DistanceOp line-line envelope short-circuit optimizations (#534)
 
 ### Bug Fixes
 
@@ -61,19 +202,27 @@ Distributions for older JTS versions can be obtained at the
 * Fix WKT parsing in Turkish locale (#456)
 * Improve accuracy of `LineSegment.lineIntersection` (#468)
 * Fix `Distance3DOp` coordinate ordering (#480) 
+* Fix `Geometry.reverse()` to have consistent behaviour and to copy all fields (#513)
+* Fix `MinimumBoundingCircle.farthestPoints` to work correctly (#522 and #533)
+* Fix `DistanceOp` handling of geometry collections with empty components (#524)
+* Fix GML parsing of coordinates and SRS name (#553)
 
 ## JTS TestBuilder
 
 ### Functionality Improvements
 
+* Add a UI to run external commands
 * Allow creating additional view layers
+* Add map view title, legend and border options
 * Support points in Reveal Topology mode
+* Add WKT panel **Copy as WKB** via Ctl-click
 
 ## JTS TestRunner
 
 ### Functionality Improvements
 
 * Allow test files/dirs to be specified as free args
+* Only load `.xml` files from directories
 
 ## JtsOp 
 
@@ -495,11 +644,9 @@ and `PerformanceTestCase`)
 ### Functionality Improvements
 
 * Added new names for methods for computing `Geometry` equality:
-* `equals(Object)` is a synonym for `equalsExact(Geometry)`
-* `equalsNorm(Geometry)` automatically normalizes the operands
-* `equalsTopo(Geometry)` computes topological equality,
-and is a synonym for the original `equals(Geometry)`
-
+  * `equals(Object)` is a synonym for `equalsExact(Geometry)`
+  * `equalsNorm(Geometry)` automatically normalizes the operands
+  * `equalsTopo(Geometry)` computes topological equality, and is a synonym for the original `equals(Geometry)`
 * Added `Geometry.norm()` to provide non-mutating normalization
 * Added `Geometry.hashCode()` to fulfill Java conventions
 * Added `LineIntersector.getEndpoint()` method
@@ -518,7 +665,7 @@ and is a synonym for the original `equals(Geometry)`
 * Added `MathUtil` containing mathematics and numerical utility functions
 * Added `Vector2D` class providing vector operations
 * Added `DirectedEdgeStar.getNextCWEdge()` method to `planargraph` API
-* `AffineTransformation` enhanced to avoid numeric precision issues in case of reflection in X=Y (coordinate flipping)
+* Improved `AffineTransformation` to avoid numeric precision issues in case of reflection in X=Y (coordinate flipping)
 * Added `LineSequencer.sequence()` static convenience method
 * Added error indicators to `BufferDistanceValidator` and `BufferResultValidator`
 * Added `MinimumClearance` class
@@ -942,7 +1089,7 @@ causing failure if input contained all GeometryCollections of the same subclass
 ### Bug Fixes
 
 * Fixed bug in `CoordinateArrays.ptNotInList`.
-Changed `polygonize.EdgeRing` to used corrected code.
+  Changed `polygonize.EdgeRing` to used corrected code.
 * Fixed bug causing duplicate points in `ScaledNoder`
 * Fixed bug causing Null Pointer for empty geometries in `OraWriter`
 * Changed AssertFailure to TopologyException in `EdgeNode`
@@ -964,9 +1111,9 @@ Changed `polygonize.EdgeRing` to used corrected code.
 * Fixed null point cloning bug in `TopologyValidationError` (*thanks to Markus Gebhard*)
 * Fixed bug in `PointLocator` fix for LinearRings
 * Fixed bug in `Geometry.isValid` and `IsValidOp` causing some valid polygons
-to be reported as having a Disconnected Interior (specifically, polygons containing
-holes touching at a single point, where the point is the highest point in the hole rings, and where the holes
-have a specific orientation)
+  to be reported as having a Disconnected Interior (specifically, polygons containing
+  holes touching at a single point, where the point is the highest point in the hole rings, and where the holes
+  have a specific orientation)
 * Fixed bug in `Polygon.isRectangle`, which reported some valid rectangles as false
 
 

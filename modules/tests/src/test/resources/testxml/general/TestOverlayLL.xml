@@ -1,0 +1,239 @@
+<run>
+
+<case>
+  <desc>LL - A crosses B</desc>
+  <a>
+    LINESTRING(0 0, 100 100)
+  </a>
+  <b>
+    LINESTRING(0 100, 100 0)
+  </b>
+<test>
+  <op name="intersection" arg1="A" arg2="B">
+    POINT(50 50)
+  </op>
+</test>
+<test>
+  <op name="union" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (0 0, 50 50), 
+      (0 100, 50 50), 
+      (50 50, 100 100), 
+      (50 50, 100 0))
+  </op>
+</test>
+<test>
+  <op name="difference" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (0 0, 50 50), 
+      (50 50, 100 100))
+  </op>
+</test>
+<test>
+  <op name="symdifference" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (0 0, 50 50), 
+      (0 100, 50 50), 
+      (50 50, 100 100), 
+      (50 50, 100 0))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LL - A shares one segment with B</desc>
+  <a>
+    LINESTRING(0 0, 100 100, 200 0)
+  </a>
+  <b>
+    LINESTRING(0 0, 100 100, 200 200)
+  </b>
+<test>
+  <op name="intersection" arg1="A" arg2="B">
+    LINESTRING(0 0, 100 100)
+  </op>
+</test>
+<test>
+  <op name="union" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (0 0, 100 100), 
+      (100 100, 200 200), 
+      (100 100, 200 0))
+  </op>
+</test>
+<test>
+  <op name="difference" arg1="A" arg2="B">
+    LINESTRING(100 100, 200 0)
+  </op>
+</test>
+<test>
+  <op name="symdifference" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (100 100, 200 200), 
+      (100 100, 200 0))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LL - A and B disjoint</desc>
+  <a>
+    LINESTRING(40 360, 40 220, 120 360)
+  </a>
+  <b>
+    LINESTRING(120 340, 60 220, 140 220, 140 360)
+  </b>
+<test>
+  <op name="intersection" arg1="A" arg2="B">
+    LINESTRING EMPTY
+  </op>
+</test>
+<test>
+  <op name="union" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (40 360, 40 220, 120 360), 
+      (120 340, 60 220, 140 220, 140 360))
+  </op>
+</test>
+<test>
+  <op name="difference" arg1="A" arg2="B">
+    LINESTRING(40 360, 40 220, 120 360)
+  </op>
+</test>
+<test>
+  <op name="symdifference" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (40 360, 40 220, 120 360), 
+      (120 340, 60 220, 140 220, 140 360))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LL - A and B equal</desc>
+  <a>
+    LINESTRING(80 320, 220 320, 220 160, 80 300)
+  </a>
+  <b>
+    LINESTRING(80 320, 220 320, 220 160, 80 300)
+  </b>
+<test>
+  <op name="intersection" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (220 160, 80 300), 
+      (80 320, 220 320), 
+      (220 320, 220 160))
+  </op>
+</test>
+<test>
+  <op name="union" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (220 160, 80 300), 
+      (80 320, 220 320), 
+      (220 320, 220 160))
+  </op>
+</test>
+<test>
+  <op name="difference" arg1="A" arg2="B">
+    LINESTRING EMPTY
+  </op>
+</test>
+<test>
+  <op name="symdifference" arg1="A" arg2="B">
+    LINESTRING EMPTY
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LL - A and B touch ends</desc>
+  <a>
+    LINESTRING(60 200, 60 260, 140 200)
+  </a>
+  <b>
+    LINESTRING(60 200, 60 140, 140 200)
+  </b>
+<test>
+  <op name="intersection" arg1="A" arg2="B">
+    MULTIPOINT((60 200), (140 200))
+  </op>
+</test>
+<test>
+  <op name="union" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (60 200, 60 260, 140 200), 
+      (60 200, 60 140, 140 200))
+  </op>
+</test>
+<test>
+  <op name="difference" arg1="A" arg2="B">
+    LINESTRING(60 200, 60 260, 140 200)
+  </op>
+</test>
+<test>
+  <op name="symdifference" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (60 200, 60 260, 140 200), 
+      (60 200, 60 140, 140 200))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LL - intersecting rings</desc>
+  <a>
+    LINESTRING(180 200, 100 280, 20 200, 100 120, 180 200)
+  </a>
+  <b>
+    LINESTRING(100 200, 220 200, 220 80, 100 80, 100 200)
+  </b>
+<test>
+  <op name="intersection" arg1="A" arg2="B">
+    MULTIPOINT((100 120), (180 200))
+  </op>
+</test>
+<test>
+  <op name="union" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (100 120, 180 200), 
+      (100 120, 100 200), 
+      (180 200, 100 280, 20 200, 100 120), 
+      (180 200, 220 200, 220 80, 100 80, 100 120), 
+      (100 200, 180 200))
+  </op>
+</test>
+<test>
+  <op name="difference" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (100 120, 180 200), 
+      (180 200, 100 280, 20 200, 100 120))
+  </op>
+</test>
+<test>
+  <op name="symdifference" arg1="A" arg2="B">
+    MULTILINESTRING(
+      (100 120, 180 200), 
+      (100 120, 100 200), 
+      (180 200, 100 280, 20 200, 100 120), 
+      (180 200, 220 200, 220 80, 100 80, 100 120), 
+      (100 200, 180 200))
+  </op>
+</test>
+</case>
+
+<case>
+  <desc>LrL - LinearRing bug</desc>
+  <a>
+    LINEARRING(0 0, 0 5, 5 5, 5 0, 0 0)
+  </a>
+  <b>
+    LINESTRING( 2 2, 5 5)
+  </b>
+<test>
+  <op name="intersection" arg1="A" arg2="B">
+    POINT (5 5)
+  </op>
+</test>
+</case>
+
+</run>

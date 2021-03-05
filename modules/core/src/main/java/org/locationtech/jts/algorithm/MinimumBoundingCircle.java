@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -161,11 +161,15 @@ public class MinimumBoundingCircle
    */
   private static Coordinate[] farthestPoints(Coordinate[] pts) {
     double dist01 = pts[0].distance(pts[1]);
-    double dist12 = pts[0].distance(pts[1]);
-    if (dist12 > dist01) {
+    double dist12 = pts[1].distance(pts[2]);
+    double dist20 = pts[2].distance(pts[0]);
+    if (dist01 >= dist12 && dist01 >= dist20) {
       return new Coordinate[] { pts[0], pts[1] };
     }
-    return new Coordinate[] { pts[1], pts[2] };
+    if (dist12 >= dist01 && dist12 >= dist20) {
+      return new Coordinate[] { pts[1], pts[2] };
+    }
+    return new Coordinate[] { pts[2], pts[0] };
   }
 
   /**

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -29,7 +29,8 @@ public class AppStrings {
   static final String TAB_LABEL_CASES = "Cases";
   public static final Object TAB_LABEL_COMMAND = "Command";
 
-  public static final String TIP_TEXT_ENTRY = "Enter WKT, WKB GeoJSON, or GML, or drag-n-drop a WKT, WKB, GeoJSON, GML or SHP file";
+  public static final String TIP_TEXT_ENTRY = "<html>Enter WKT, WKB, GeoJSON, or GML"
+      + "<br>Drop a WKT, WKB, GeoJSON, GML or SHP file</html>";
   public static final String TIP_WKT_PANEL_LOAD_GEOMETRY = "Load geometries";
   public static final String TIP_INSPECT_GEOMETRY = "Inspect Geometry";
 
@@ -66,7 +67,9 @@ public class AppStrings {
 
   static final String TIP_PASTE_DATA = "Paste from WKT, WKB, or GML";
 
-  static final String TIP_COPY_DATA = "Copy as WKT (Ctl-click for formatted)";
+  static final String TIP_COPY_DATA = "<html>Copy as WKT"
+      + "<br>Formatted WKT = Ctl-click"
+      + "<br>WKB = Shift-click</html>";
 
   static final String TIP_EXECUTE = "Compute the result of the function";
 
@@ -79,6 +82,10 @@ public class AppStrings {
   public static final String TIP_LAYER_CLEAR = "<html>Clear Layer<br>Remove Layer = Ctl-Click</html>";
 
   public static final String TIP_STYLE_VERTEX_LABEL_ENABLE = "Show vertex labels";
+
+  public static final String TIP_STYLE_PALETTE = "<html>Palette type used for Lines or Fills.<br>Layer color determines base hue and lightness</html>  ";
+
+  public static final String TIP_STYLE_SYMBOL = "Vertex Symbol";
 
 
 }

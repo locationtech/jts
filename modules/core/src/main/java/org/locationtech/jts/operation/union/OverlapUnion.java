@@ -2,9 +2,9 @@
  * Copyright (c) 2019 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -29,16 +29,20 @@ import org.locationtech.jts.geom.util.GeometryCombiner;
 
 /**
  * Unions MultiPolygons efficiently by
- * using full topological union only for polygons which may overlap
- * by virtue of intersecting the common area of the inputs.
- * Other polygons are simply combined with the union result,
+ * using full topological union only for polygons which may overlap,
+ * and combining with the remaining polygons.
+ * Polygons which may overlap are those which intersect the common extent of the inputs.
+ * Polygons wholly outside this extent must be disjoint to the computed union.
+ * They can thus be simply combined with the union result,
  * which is much more performant.
+ * (There is one caveat to this, which is discussed below).
  * <p>
  * This situation is likely to occur during cascaded polygon union,
  * since the partitioning of polygons is done heuristically
  * and thus may group disjoint polygons which can lie far apart.
  * It may also occur in real world data which contains many disjoint polygons
  * (e.g. polygons representing parcels on different street blocks).
+ * 
  * <h2>Algorithm</h2>
  * The overlap region is determined as the common envelope of intersection.
  * The input polygons are partitioned into two sets:
@@ -53,14 +57,14 @@ import org.locationtech.jts.geom.util.GeometryCombiner;
  * They also do not interact with the Overlapping polygons, 
  * since they are outside their envelope.
  * 
- * <h2>Verification</h2>
- * In the general case the Overlapping set of polygons will 
+ * <h2>Discussion</h2>
+ * In general the Overlapping set of polygons will 
  * extend beyond the overlap envelope.  This means that the union result
  * will extend beyond the overlap region.
  * There is a small chance that the topological 
  * union of the overlap region will shift the result linework enough
  * that the result geometry intersects one of the Disjoint geometries.
- * This case is detected and if it occurs 
+ * This situation is detected and if it occurs 
  * is remedied by falling back to performing a full union of the original inputs.
  * Detection is done by a fairly efficient comparison of edge segments which
  * extend beyond the overlap region.  If any segments have changed
@@ -69,9 +73,15 @@ import org.locationtech.jts.geom.util.GeometryCombiner;
  * This situation has not been observed in JTS using floating precision, 
  * but it could happen due to snapping.  It has been observed 
  * in other APIs (e.g. GEOS) due to more aggressive snapping.
- * And it will be more likely to happen if a snap-rounding overlay is used.
+ * It is more likely to happen if a Snap-Rounding overlay is used.
+ * <p>
+ * <b>NOTE: Test has shown that using this heuristic impairs performance.
+ * It has been removed from use.</b>
+ * 
  * 
  * @author mbdavis
+ * 
+ * @deprecated due to impairing performance
  *
  */
 public class OverlapUnion 
@@ -82,20 +92,23 @@ public class OverlapUnion
    * 
    * @param g0 a geometry to union
    * @param g1 a geometry to union
+   * @param unionFun 
    * @return the union of the inputs
    */
-	public static Geometry union(Geometry g0, Geometry g1)
+	public static Geometry union(Geometry g0, Geometry g1, UnionStrategy unionFun)
 	{
-		OverlapUnion union = new OverlapUnion(g0, g1);
+		OverlapUnion union = new OverlapUnion(g0, g1, unionFun);
 		return union.union();
 	}
-
+	
 	private GeometryFactory geomFactory;
 	
 	private Geometry g0;
 	private Geometry g1;
 
   private boolean isUnionSafe;
+
+  private UnionStrategy unionFun;
 
 	
   /**
@@ -106,12 +119,17 @@ public class OverlapUnion
    */
 	public OverlapUnion(Geometry g0, Geometry g1)
 	{
-		this.g0 = g0;
-		this.g1 = g1;
-		geomFactory = g0.getFactory();
+		this(g0, g1, CascadedPolygonUnion.CLASSIC_UNION);
 	}
 	
-	/**
+	public OverlapUnion(Geometry g0, Geometry g1, UnionStrategy unionFun) {
+    this.g0 = g0;
+    this.g1 = g1;
+    geomFactory = g0.getFactory();
+    this.unionFun = unionFun;
+  }
+
+  /**
    * Unions the input geometries,
    * using the more performant overlap union algorithm if possible.	 
    * 
@@ -197,16 +215,14 @@ public class OverlapUnion
   }
   
   private Geometry unionFull(Geometry geom0, Geometry geom1) {
-    try {
-      return geom0.union(geom1);
-    } 
-    catch (TopologyException ex) {
-      /**
-       * If the overlay union fails,
-       * try a buffer union, which often succeeds
-       */
-      return unionBuffer(geom0, geom1);
-    }
+    // if both are empty collections, just return a copy of one of them
+    if (geom0.getNumGeometries() == 0 
+        && geom1.getNumGeometries() == 0)
+      return geom0.copy();
+    
+    Geometry union = unionFun.union(geom0, geom1);
+    //Geometry union = geom0.union(geom1);
+    return union;
   }
 
   /**

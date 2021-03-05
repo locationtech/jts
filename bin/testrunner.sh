@@ -7,4 +7,4 @@ fi
 #---------------------------#
 # run the program           #
 #---------------------------#
-java -jar ${JTS_LIB_DIR}/JTSTestRunner.jar $@
+java -jar ${JTS_LIB_DIR}/JTSTestRunner.jar "$@"

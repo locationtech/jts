@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -14,14 +14,37 @@ package org.locationtech.jts.precision;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.GeometryEditor;
 
 /**
  * Reduces the precision of a {@link Geometry}
  * according to the supplied {@link PrecisionModel},
- * ensuring that the result is topologically valid.
+ * ensuring that the result is valid (unless specified otherwise).
+ * <p>
+ * By default the reduced result is topologically valid
+ * (i.e. {@link Geometry#isValid()} is true).
+ * To ensure this a polygonal geometry is reduced in a topologically valid fashion
+ * (technically, by using snap-rounding).
+ * Note that this may change polygonal geometry structure
+ * (e.g. two polygons separated by a distance below the specified precision
+ * will be merged into a single polygon).
+ * <p>
+ * In general input must be valid geometry, or an {@link IllegalArgumentException} 
+ * will be thrown. However if the invalidity is "mild" or very small then it
+ * may be eliminated by precision reduction.
+ * <p> 
+ * Alternatively, geometry can be reduced pointwise by using {@link #setPointwise(boolean)}.
+ * In this case the result geometry topology may be invalid.
+ * Linear and point geometry are always reduced pointwise (i.e. without further change to 
+ * topology or structure), since this does not change validity.
+ * <p>
+ * By default the geometry precision model is not changed.
+ * This can be overridden by using {@link #setChangePrecisionModel(boolean)}.
+ * <p>
+ * Normally collapsed components (e.g. lines collapsing to a point) 
+ * are not included in the result. 
+ * This behavior can be changed by using {@link #setRemoveCollapsedComponents(boolean)}.
  *
  * @version 1.12
  */
@@ -37,6 +60,7 @@ public class GeometryPrecisionReducer
 	 * @param g the geometry to reduce
 	 * @param precModel the precision model to use
 	 * @return the reduced geometry
+   * @throws IllegalArgumentException if the reduction fails due to invalid input geometry is invalid
 	 */
 	public static Geometry reduce(Geometry g, PrecisionModel precModel)
 	{
@@ -115,68 +139,23 @@ public class GeometryPrecisionReducer
     this.isPointwise = isPointwise;
   }
 
+  /**
+   * Reduces the precision of a geometry, 
+   * according to the specified strategy of this reducer.
+   * 
+   * @param geom the geometry to reduce
+   * @return the precision-reduced geometry
+   * @throws IllegalArgumentException if the reduction fails due to invalid input geometry is invalid
+   */
   public Geometry reduce(Geometry geom)
   {
-    Geometry reducePW = reducePointwise(geom);
-    if (isPointwise)
-    	return reducePW;
+    Geometry reduced = PrecisionReducerTransformer.reduce(geom, targetPM, isPointwise);
     
-    //TODO: handle GeometryCollections containing polys
-    if (! (reducePW instanceof Polygonal))
-    	return reducePW;
-    
-    // Geometry is polygonal - test if topology needs to be fixed
-    if (reducePW.isValid()) return reducePW;
-    
-    // hack to fix topology.  
-    // TODO: implement snap-rounding and use that.
-    return fixPolygonalTopology(reducePW);
-  }
-
-  private Geometry reducePointwise(Geometry geom)
-  {
-    GeometryEditor geomEdit;
+    // TODO: incorporate this in the Transformer above
     if (changePrecisionModel) {
-    	GeometryFactory newFactory = createFactory(geom.getFactory(), targetPM);
-      geomEdit = new GeometryEditor(newFactory);
+      return changePM(reduced, targetPM);
     }
-    else
-      // don't change geometry factory
-      geomEdit = new GeometryEditor();
-
-    /**
-     * For polygonal geometries, collapses are always removed, in order
-     * to produce correct topology
-     */
-    boolean finalRemoveCollapsed = removeCollapsed;
-    if (geom.getDimension() >= 2)
-    	finalRemoveCollapsed = true;
-    
-    Geometry reduceGeom = geomEdit.edit(geom, 
-    		new PrecisionReducerCoordinateOperation(targetPM, finalRemoveCollapsed));
-    
-    return reduceGeom;
-  }
-  
-  private Geometry fixPolygonalTopology(Geometry geom)
-  {
-  	/**
-  	 * If precision model was *not* changed, need to flip
-  	 * geometry to targetPM, buffer in that model, then flip back
-  	 */
-  	Geometry geomToBuffer = geom;
-  	if (! changePrecisionModel) {
-  		geomToBuffer = changePM(geom, targetPM);
-  	}
-  	
-  	Geometry bufGeom = geomToBuffer.buffer(0);
-  	
-  	Geometry finalGeom = bufGeom;
-  	if (! changePrecisionModel) {
-  	  // a slick way to copy the geometry with the original precision factory
-  		finalGeom = geom.getFactory().createGeometry(bufGeom);
-  	}
-  	return finalGeom;
+    return reduced;
   }
   
   /**

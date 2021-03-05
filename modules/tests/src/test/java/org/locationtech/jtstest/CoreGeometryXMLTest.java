@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -18,6 +18,8 @@ import org.locationtech.jtstest.testrunner.SimpleReportWriter;
 import org.locationtech.jtstest.testrunner.TestEngine;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,6 +28,10 @@ public class CoreGeometryXMLTest extends TestCase {
         super(name);
     }
 
+    public void testUnit() {
+        testFiles("src/test/resources/testxml/general", "src/test/resources/testxml/validate");
+    }
+    
 //    public void testExternal() {
 //        testFiles("../core/src/test/resources/testxml/external");
 //    }
@@ -34,9 +40,6 @@ public class CoreGeometryXMLTest extends TestCase {
 //        testFiles("../core/src/test/resources/testxml/failure");
 //    }
 
-    public void testGeneral() {
-        testFiles("src/test/resources/testxml/general");
-    }
 
 //    public void testRobust() {
 //        testFiles("../core/src/test/resources/testxml/robust");
@@ -46,14 +49,12 @@ public class CoreGeometryXMLTest extends TestCase {
 //        testFiles("../core/src/test/resources/testxml/stmlf");
 //    }
 
-    public void testValidate() {
-        testFiles("src/test/resources/testxml/validate");
-    }
-
-    private void testFiles(String directoryName) {
+    private void testFiles(String... directoryName) {
         TestEngine engine = new TestEngine();
-        List testFiles = filenames(new File(directoryName));
-
+        List testFiles = new ArrayList();
+        for (String dirName : directoryName) {
+          testFiles.addAll( filenames(new File(dirName)) );
+        }
         engine.setTestFiles(testFiles);
         engine.run();
         SimpleReportWriter reportWriter = new SimpleReportWriter(false);
@@ -64,9 +65,16 @@ public class CoreGeometryXMLTest extends TestCase {
         assertEquals(failures, false);
     }
 
+    static FilenameFilter XML_FILTER = new FilenameFilter() {
+      @Override
+      public boolean accept(File dir, String name) {
+        return name.endsWith(".xml");
+      }
+    };
+    
     private static List<File> filenames(File directory) {
         Assert.isTrue(directory.isDirectory());
-        File[] files = directory.listFiles();
+        File[] files = directory.listFiles(XML_FILTER);
 
         return Arrays.asList(files);
     }

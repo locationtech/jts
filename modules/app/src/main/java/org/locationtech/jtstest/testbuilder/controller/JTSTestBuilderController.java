@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -12,12 +12,18 @@
 
 package org.locationtech.jtstest.testbuilder.controller;
 
+import java.awt.event.ActionEvent;
 import java.io.IOException;
+
+import javax.swing.JFileChooser;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jtstest.testbuilder.TestBuilderDialogs;
+import org.locationtech.jtstest.clean.CleanDuplicatePoints;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
@@ -26,7 +32,9 @@ import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
+import org.locationtech.jtstest.testbuilder.ui.ImageUtil;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
+import org.locationtech.jtstest.testbuilder.ui.render.ViewStyle;
 import org.locationtech.jtstest.testbuilder.ui.tools.DeleteVertexTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.EditVertexTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.ExtractComponentTool;
@@ -70,24 +78,18 @@ public class JTSTestBuilderController
   public static JTSTestBuilderFrame frame() {
     return JTSTestBuilderFrame.instance();
   }
-  
-  public GeometryEditPanel getGeometryEditPanel()
-  {
-    return JTSTestBuilderFrame.getGeometryEditPanel();
-  }
 
   public GeometryEditModel geomEditModel() {
     return JTSTestBuilder.model().getGeometryEditModel();
   }
   
-  public void setFillType(int fillType) {
-    DisplayParameters.setFillType(fillType);
-    geometryViewChanged();
+  public void reportException(Exception e) {
+    SwingUtil.reportException(frame(), e);
   }
   
   public void geometryViewChanged()
   {
-    getGeometryEditPanel().updateView();
+    editPanel().updateView();
     //TODO: provide autoZoom checkbox on Edit tab to control autozooming (default = on)
   }
   
@@ -112,7 +114,7 @@ public class JTSTestBuilderController
   
   public void extractComponentsToTestCase(Coordinate pt)
   {
-    double toleranceInModel = getGeometryEditPanel().getToleranceInModel();
+    double toleranceInModel = editPanel().getToleranceInModel();
     LayerList lyrList = model().getLayers();
     Geometry comp = lyrList.getComponent(pt, toleranceInModel);
     if (comp == null) 
@@ -137,7 +139,7 @@ public class JTSTestBuilderController
 
   public void copyComponentToClipboard(Coordinate pt)
   {
-    double toleranceInModel = getGeometryEditPanel().getToleranceInModel();
+    double toleranceInModel = editPanel().getToleranceInModel();
     LayerList lyrList = model().getLayers();
     Geometry comp = lyrList.getComponent(pt, toleranceInModel);
     if (comp == null) 
@@ -152,7 +154,7 @@ public class JTSTestBuilderController
 
   public void inspectGeometry()
   {
-    JTSTestBuilderFrame.instance().actionInspectGeometry();
+    JTSTestBuilderFrame.instance().inspectGeometry();
   }
 
   public void inspectResult()
@@ -160,10 +162,13 @@ public class JTSTestBuilderController
     JTSTestBuilderFrame.instance().inspectResult();
   }
 
-  public void inspectGeometryDialog()
+  public void inspectGeometryDialogForCurrentCase()
   {
-    JTSTestBuilderFrame.instance().actionInspectGeometryDialog();
+    int geomIndex = JTSTestBuilder.model().getGeometryEditModel().getGeomIndex();
+    Geometry geometry = model().getCurrentCase().getGeometry(geomIndex);
+    TestBuilderDialogs.inspectGeometry(frame(), geomIndex, geometry);
   }
+  
   public void clearResult()
   {
     frame().getResultWKTPanel().clearResult();
@@ -171,8 +176,10 @@ public class JTSTestBuilderController
     editPanel().updateView();
   }
   
-  public void setResult(Object result) {
+  public void setResult(String opName, Object result) {
     model().setResult(result);
+    model().setOpName(opName);
+    frame().getResultWKTPanel().setOpName(opName);
     frame().getResultWKTPanel().setExecutedTime("");
     frame().getResultWKTPanel().setResult(result);
     geometryViewChanged();
@@ -183,15 +190,34 @@ public class JTSTestBuilderController
   }
   
   public void saveImageAsPNG() {
-    JTSTestBuilderFrame.instance().actionSaveImageAsPNG();
+    //JTSTestBuilderFrame.instance().actionSaveImageAsPNG();
+    JFileChooser pngFileChooser = TestBuilderDialogs.getSavePNGFileChooser();
+    try {
+      String fullFileName = SwingUtil.chooseFilenameWithConfirm(frame(), pngFileChooser);  
+      if (fullFileName == null) return;
+        ImageUtil.writeImage(editPanel(), 
+            fullFileName,
+            ImageUtil.IMAGE_FORMAT_NAME_PNG);
+    }
+    catch (Exception x) {
+      reportException(x);
+    }
   }
+  
   public void saveImageToClipboard() {
-    JTSTestBuilderFrame.instance().actionSaveImageToClipboard();
+    try {
+      ImageUtil.saveImageToClipboard(editPanel(), 
+          ImageUtil.IMAGE_FORMAT_NAME_PNG);
+    }
+    catch (Exception x) {
+      reportException(x);
+    }
   }
   
   public void updateLayerList() {
     JTSTestBuilderFrame.instance().updateLayerList();
   }
+  
   
   //================================
       
@@ -305,5 +331,27 @@ public class JTSTestBuilderController
   {
     frame().getLogPanel().addInfo(s);
     if (showTab) frame().showInfoTab();
+  }
+  
+  //========================================
+  
+  public void setViewStyle(ViewStyle viewStyle) {
+    editPanel().setViewStyle(viewStyle);
+    geometryViewChanged();
+  }
+
+  //=============================================
+  
+  public void removeDuplicatePoints() {
+    CleanDuplicatePoints clean = new CleanDuplicatePoints();
+    Geometry cleanGeom = clean.clean(model().getGeometryEditModel().getGeometry(0));
+    model().getCurrentCase().setGeometry(0, cleanGeom);
+    frame().geometryChanged();
+  }
+
+  public void changeToLines() {
+    Geometry cleanGeom = LinearComponentExtracter.getGeometry(model().getGeometryEditModel().getGeometry(0));
+    model().getCurrentCase().setGeometry(0, cleanGeom);
+    frame().geometryChanged();
   }
 }

@@ -1,11 +1,12 @@
 
 /*
  * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2020 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -17,6 +18,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.chain.MonotoneChain;
 import org.locationtech.jts.index.chain.MonotoneChainBuilder;
@@ -29,6 +31,10 @@ import org.locationtech.jts.index.strtree.STRtree;
  * The {@link SpatialIndex} used should be something that supports
  * envelope (range) queries efficiently (such as a <code>Quadtree</code>}
  * or {@link STRtree} (which is the default index provided).
+ * <p>
+ * The noder supports using an overlap tolerance distance .
+ * This allows determining segment intersection using a buffer for uses
+ * involving snapping with a distance tolerance.
  *
  * @version 1.7
  */
@@ -41,13 +47,28 @@ public class MCIndexNoder
   private Collection nodedSegStrings;
   // statistics
   private int nOverlaps = 0;
+  private double overlapTolerance = 0;
 
   public MCIndexNoder()
   {
   }
+  
   public MCIndexNoder(SegmentIntersector si)
   {
     super(si);
+  }
+
+  /**
+   * Creates a new noder with a given {@link SegmentIntersector}
+   * and an overlap tolerance distance to expand intersection tests with.
+   * 
+   * @param si the segment intersector
+   * @param overlapTolerance the expansion distance for overlap tests
+   */
+  public MCIndexNoder(SegmentIntersector si, double overlapTolerance)
+  {
+    super(si);
+    this.overlapTolerance = overlapTolerance;
   }
 
   public List getMonotoneChains() { return monoChains; }
@@ -75,7 +96,8 @@ public class MCIndexNoder
 
     for (Iterator i = monoChains.iterator(); i.hasNext(); ) {
       MonotoneChain queryChain = (MonotoneChain) i.next();
-      List overlapChains = index.query(queryChain.getEnvelope());
+      Envelope queryEnv = queryChain.getEnvelope(overlapTolerance);
+      List overlapChains = index.query(queryEnv);
       for (Iterator j = overlapChains.iterator(); j.hasNext(); ) {
         MonotoneChain testChain = (MonotoneChain) j.next();
         /**
@@ -83,7 +105,7 @@ public class MCIndexNoder
          * and that we don't compare a chain to itself
          */
         if (testChain.getId() > queryChain.getId()) {
-          queryChain.computeOverlaps(testChain, overlapAction);
+          queryChain.computeOverlaps(testChain, overlapTolerance, overlapAction);
           nOverlaps++;
         }
         // short-circuit if possible
@@ -99,7 +121,8 @@ public class MCIndexNoder
     for (Iterator i = segChains.iterator(); i.hasNext(); ) {
       MonotoneChain mc = (MonotoneChain) i.next();
       mc.setId(idCounter++);
-      index.insert(mc.getEnvelope(), mc);
+      //mc.setOverlapDistance(overlapDistance);
+      index.insert(mc.getEnvelope(overlapTolerance), mc);
       monoChains.add(mc);
     }
   }

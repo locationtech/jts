@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -84,7 +84,16 @@ class EdgeRing {
       
       testPt = CoordinateArrays.ptNotInList(testRing.getCoordinates(), tryEdgeRing.getCoordinates());
  
-      boolean isContained = tryEdgeRing.isInRing(testPt);
+      /**
+       * If testPt is null it indicates that the hole is exactly surrounded by the tryShell.
+       * This should not happen for fully noded/dissolved linework.
+       * For now just ignore this hole and continue - this should produce
+       * "best effort" output.
+       * In futher could flag this as an error (invalid ring).
+       */
+      if (testPt == null) continue;
+      
+      boolean isContained =  tryEdgeRing.isInRing(testPt);
 
       // check if the new containing ring is smaller than the current minimum ring
       if (isContained) {

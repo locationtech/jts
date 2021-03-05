@@ -3,9 +3,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -38,13 +38,15 @@ import org.locationtech.jts.noding.SegmentString;
  * <p>
  * This implementation uses a monotone chains and a spatial index to
  * speed up the intersection tests.
- * <p>
- * This implementation appears to be fully robust using an integer precision model.
- * It will function with non-integer precision models, but the
- * results are not 100% guaranteed to be correctly noded.
+ * 
+ * <h3>KNOWN BUGS</h3>
+ * This implementation is not fully robust.
+ * 
+ * @deprecated Not robust. Use {@link SnapRoundingNoder} instead.
  *
  * @version 1.7
  */
+@Deprecated
 public class MCIndexSnapRounder
     implements Noder
 {
@@ -119,7 +121,7 @@ public class MCIndexSnapRounder
   {
     for (Iterator it = snapPts.iterator(); it.hasNext(); ) {
       Coordinate snapPt = (Coordinate) it.next();
-      HotPixel hotPixel = new HotPixel(snapPt, scaleFactor, li);
+      HotPixel hotPixel = new HotPixel(snapPt, scaleFactor);
       pointSnapper.snap(hotPixel);
     }
   }
@@ -144,7 +146,7 @@ public class MCIndexSnapRounder
   {
     Coordinate[] pts0 = e.getCoordinates();
     for (int i = 0; i < pts0.length ; i++) {
-      HotPixel hotPixel = new HotPixel(pts0[i], scaleFactor, li);
+      HotPixel hotPixel = new HotPixel(pts0[i], scaleFactor);
       boolean isNodeAdded = pointSnapper.snap(hotPixel, e, i);
       // if a node is created for a vertex, that vertex must be noded too
       if (isNodeAdded) {

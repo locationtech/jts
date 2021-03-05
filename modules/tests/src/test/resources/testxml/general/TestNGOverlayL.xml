@@ -1,0 +1,282 @@
+<run>
+<desc>Tests for OverlayNG operations with line inputs.
+Covers topological situations with no precision collapse.
+Uses a floating precision model.
+</desc>
+
+<case>
+  <desc>LL - same line</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+LINESTRING (10 10, 20 20)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - crossing</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+LINESTRING (10 20, 20 10)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POINT (15 15)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+MULTILINESTRING ((10 10, 15 15), (15 15, 20 20), (10 20, 15 15), (15 15, 20 10))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((10 10, 15 15), (15 15, 20 20))
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+MULTILINESTRING ((10 20, 15 15), (15 15, 20 10))
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((10 10, 15 15), (15 15, 20 20), (10 20, 15 15), (15 15, 20 10))
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - touching</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+LINESTRING (20 20, 30 30)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POINT (20 20)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+MULTILINESTRING ((20 20, 30 30), (10 10, 20 20))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 20 20)
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING (20 20, 30 30)
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((20 20, 30 30), (10 10, 20 20))
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - overlapping</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+LINESTRING (15 15, 30 30)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+LINESTRING (15 15, 20 20)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+MULTILINESTRING ((10 10, 15 15), (15 15, 20 20), (20 20, 30 30))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING (10 10, 15 15)
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING (20 20, 30 30)
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((10 10, 15 15), (20 20, 30 30))
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - loop overlapping at vertices</desc>
+  <a>
+LINESTRING (10 10, 20 20)
+  </a>
+  <b>
+LINESTRING (13 13, 10 10, 10 20, 20 20, 17 17)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+MULTILINESTRING ((17 17, 20 20), (10 10, 13 13))
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+MULTILINESTRING ((17 17, 20 20), (10 10, 10 20, 20 20), (13 13, 17 17), (10 10, 13 13))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING (13 13, 17 17)
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+LINESTRING (10 10, 10 20, 20 20)
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((10 10, 10 20, 20 20), (13 13, 17 17))
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - overlapping at vertex and interior</desc>
+  <a>
+LINESTRING (0 10, 10 10, 30 30, 40 30)
+  </a>
+  <b>
+LINESTRING (20 0, 20 20, 30 30, 30 40)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+LINESTRING (20 20, 30 30)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+MULTILINESTRING ((0 10, 10 10, 20 20), (20 20, 30 30), (20 0, 20 20), (30 30, 30 40), (30 30, 40 30))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((0 10, 10 10, 20 20), (30 30, 40 30))
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+MULTILINESTRING ((20 0, 20 20), (30 30, 30 40))
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((0 10, 10 10, 20 20), (20 0, 20 20), (30 30, 30 40), (30 30, 40 30))
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - overlapping and crossing</desc>
+  <a>
+LINESTRING (0 0, 10 10)
+  </a>
+  <b>
+LINESTRING (0 0, 3 3, 8 2, 1 9)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION (LINESTRING (0 0, 3 3), POINT (5 5))
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+MULTILINESTRING ((5 5, 1 9), (0 0, 3 3), (5 5, 10 10), (3 3, 8 2, 5 5), (3 3, 5 5))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((5 5, 10 10), (3 3, 5 5))
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+MULTILINESTRING ((5 5, 1 9), (3 3, 8 2, 5 5))
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((5 5, 1 9), (5 5, 10 10), (3 3, 8 2, 5 5), (3 3, 5 5))
+  </op></test>
+</case>
+
+<case>
+  <desc>LL - Line with repeated points</desc>
+  <a>
+    LINESTRING (100 100, 200 200, 200 200, 200 200, 200 200, 300 300, 400 200)
+  </a>
+  <b>
+    LINESTRING (190 110, 120 180)
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+POINT (150 150)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+MULTILINESTRING ((150 150, 200 200, 300 300, 400 200), (100 100, 150 150), (190 110, 150 150), (150 150, 120 180))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((150 150, 200 200, 300 300, 400 200), (100 100, 150 150))
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+MULTILINESTRING ((190 110, 150 150), (150 150, 120 180))
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((150 150, 200 200, 300 300, 400 200), (100 100, 150 150), (190 110, 150 150), (150 150, 120 180))
+  </op></test>
+</case>
+
+<case>
+  <desc>LA - vertical Line</desc>
+  <a>
+    LINESTRING (50 50, 50 20)
+  </a>
+  <b>
+    POLYGON ((10 60, 90 60, 90 10, 10 10, 10 60))
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+LINESTRING (50 50, 50 20)
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+POLYGON ((90 60, 90 10, 10 10, 10 60, 90 60))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+LINESTRING EMPTY
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+POLYGON ((90 60, 90 10, 10 10, 10 60, 90 60))
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+POLYGON ((90 60, 90 10, 10 10, 10 60, 90 60))
+  </op></test>
+</case>
+
+<case>
+  <desc>mLmA - disjoint and overlaps in lines and points</desc>
+  <a>
+MULTILINESTRING ((50 150, 150 150), (100 350, 200 350), (320 350, 350 350), (300 150, 400 150), (150 300, 400 300))
+  </a>
+  <b>
+MULTIPOLYGON (((100 200, 200 200, 200 100, 100 100, 100 200)), ((100 400, 200 400, 200 300, 100 300, 100 400)), ((300 400, 400 400, 400 300, 300 300, 300 400)))
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+MULTILINESTRING ((320 350, 350 350), (150 300, 200 300), (300 300, 400 300), (100 150, 150 150), (100 350, 200 350))
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION (POLYGON ((300 300, 300 400, 400 400, 400 300, 300 300)), POLYGON ((100 100, 100 150, 100 200, 200 200, 200 100, 100 100)), POLYGON ((200 300, 150 300, 100 300, 100 350, 100 400, 200 400, 200 350, 200 300)), LINESTRING (300 150, 400 150), LINESTRING (200 300, 300 300), LINESTRING (50 150, 100 150))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((300 150, 400 150), (200 300, 300 300), (50 150, 100 150))
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+MULTIPOLYGON (((300 300, 300 400, 400 400, 400 300, 300 300)), ((100 100, 100 150, 100 200, 200 200, 200 100, 100 100)), ((200 300, 150 300, 100 300, 100 350, 100 400, 200 400, 200 350, 200 300)))
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION (POLYGON ((300 300, 300 400, 400 400, 400 300, 300 300)), POLYGON ((100 100, 100 150, 100 200, 200 200, 200 100, 100 100)), POLYGON ((200 300, 150 300, 100 300, 100 350, 100 400, 200 400, 200 350, 200 300)), LINESTRING (300 150, 400 150), LINESTRING (200 300, 300 300), LINESTRING (50 150, 100 150))
+  </op></test>
+</case>
+
+<case>
+  <desc>LmA - overlaps in lines</desc>
+  <a>
+LINESTRING (10 0, 90 0)
+  </a>
+  <b>
+MULTIPOLYGON (((20 10, 40 10, 40 -10, 20 -10, 20 10)), ((80 10, 80 -10, 60 -10, 60 10, 80 10)))
+  </b>
+<test>  <op name="intersectionNG" arg1="A" arg2="B">
+MULTILINESTRING ((60 0, 80 0), (20 0, 40 0))
+  </op></test>
+<test>  <op name="unionNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION (POLYGON ((40 -10, 20 -10, 20 0, 20 10, 40 10, 40 0, 40 -10)), POLYGON ((80 0, 80 -10, 60 -10, 60 0, 60 10, 80 10, 80 0)), LINESTRING (40 0, 60 0), LINESTRING (80 0, 90 0), LINESTRING (10 0, 20 0))
+  </op></test>
+<test>  <op name="differenceNG" arg1="A" arg2="B">
+MULTILINESTRING ((40 0, 60 0), (80 0, 90 0), (10 0, 20 0))
+  </op></test>
+<test>  <op name="differenceNG" arg1="B" arg2="A">
+MULTIPOLYGON (((40 -10, 20 -10, 20 0, 20 10, 40 10, 40 0, 40 -10)), ((80 0, 80 -10, 60 -10, 60 0, 60 10, 80 10, 80 0)))
+  </op></test>
+<test>  <op name="symdifferenceNG" arg1="A" arg2="B">
+GEOMETRYCOLLECTION (POLYGON ((40 -10, 20 -10, 20 0, 20 10, 40 10, 40 0, 40 -10)), POLYGON ((80 0, 80 -10, 60 -10, 60 0, 60 10, 80 10, 80 0)), LINESTRING (40 0, 60 0), LINESTRING (80 0, 90 0), LINESTRING (10 0, 20 0))
+  </op></test>
+</case>
+
+</run>

@@ -2,9 +2,9 @@
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
@@ -14,12 +14,9 @@ package org.locationtech.jtstest.testbuilder;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.util.Iterator;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -29,7 +26,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jtstest.test.Testable;
 import org.locationtech.jtstest.testbuilder.model.TestCaseEdit;
 
@@ -46,12 +44,19 @@ public class TestListPanel extends JPanel {
     BorderLayout borderLayout2 = new BorderLayout();
 
     private class TestListCellRenderer extends JLabel implements ListCellRenderer {
+      
+        private static final String INDEX_SEP = " - ";
+        private static final String GEOM_SEP = " / ";
+        private static final String DESC_SEP = " -- ";
+        
+        /*
         private final ImageIcon tickIcon =
             new ImageIcon(this.getClass().getResource("tickShaded.gif"));
         private final ImageIcon crossIcon =
             new ImageIcon(this.getClass().getResource("crossShaded.gif"));
         private final ImageIcon clearIcon = new ImageIcon(this.getClass().getResource("clear.gif"));
-
+         */
+        
         public Component getListCellRendererComponent(
             JList list,
             Object value,
@@ -83,24 +88,27 @@ public class TestListPanel extends JPanel {
               name = "";
           }
           int testSkey = 1 + JTSTestBuilderFrame.instance().getModel().getCases().indexOf(testCase);
-          String nameFinal = "# " + testSkey + " - " + testCaseSignatureHTML(testCase);
+          String nameFinal = "# " + testSkey + INDEX_SEP + testCaseSignatureHTML(testCase);
           if (name != "")
-          	nameFinal = nameFinal + " --- " + name;
+          	nameFinal = nameFinal + DESC_SEP + name;
           return "<html>" + nameFinal + "<html>";
         }
         
         private String testCaseSignatureHTML(Testable testCase)
         {
-        	return "<font color='blue'>" + geometrySignature(testCase.getGeometry(0)) + "</font>" 
-        	+ " :: "
-        	+ "<font color='red'>" + geometrySignature(testCase.getGeometry(1)) + "</font>";
+          String sig0 = geometrySignature(testCase.getGeometry(0));
+          String sig1 = geometrySignature(testCase.getGeometry(1));
+          Object sep = sig0.length() > 0 && sig1.length() > 0 ? GEOM_SEP : "";
+        	return "<font color='blue'>" + sig0 + "</font>" 
+        	      + sep
+        	      + "<font color='red'>" + sig1 + "</font>";
         }
         
         private String geometrySignature(Geometry geom)
         {
           // visual indication of null geometry
         	if (geom == null) 
-        		return "_"; 
+        		return ""; 
         	
         	String sig = geom.getGeometryType();
         	if (geom instanceof GeometryCollection) {
