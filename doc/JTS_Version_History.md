@@ -19,7 +19,7 @@ Distributions for older JTS versions can be obtained at the
 
 # Version 1.18.2
 
-*Release Date:  02/26/2021*
+*Release Date: TBD* 
 
 <!-- ================================================================ -->
 
