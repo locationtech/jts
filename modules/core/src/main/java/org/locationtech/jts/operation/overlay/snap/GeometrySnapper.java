@@ -19,6 +19,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.PrecisionModel;
@@ -76,6 +77,23 @@ public class GeometrySnapper
   }
 
   public static double computeSizeBasedSnapTolerance(Geometry g)
+  {
+    if (g instanceof GeometryCollection) {
+      // If the geometry is a collection type then we compute the tolerance for each part and take the max.
+      // Otherwise a collection that spans a large area, but only contains much smaller parts would have an
+      // much larger tolerance than it should.
+      GeometryCollection gc = (GeometryCollection)g;
+      double snapTol = 0;
+      for (int i = 0; i < gc.getNumGeometries(); i++)
+      {
+        snapTol = Math.max(snapTol, doComputeSizeBasedSnapTolerance(g.getGeometryN(i)));
+      }
+      return snapTol;
+    }
+    return doComputeSizeBasedSnapTolerance(g);
+  }
+
+  static double doComputeSizeBasedSnapTolerance(Geometry g)
   {
     Envelope env = g.getEnvelopeInternal();
     double minDimension = Math.min(env.getHeight(), env.getWidth());
