@@ -113,13 +113,19 @@ public class MultiFormatFileReader
     /*
     if (ext.equalsIgnoreCase(".gml"))
       return IOUtil.readFile(filename, geomFact);
+      */
     if (ext.equalsIgnoreCase(".geojson"))
-      return IOUtil.readFile(filename, geomFact);
-    */
+      return readGeoJSONFile(filename);
     
     return readWKTFile(filename);
   }
   
+  private List<Geometry> readGeoJSONFile(String filename) throws ParseException, IOException {
+    GeoJsonMultiReader reader = new GeoJsonMultiReader(geomFact);
+    List<Geometry> geoms = reader.readList(FileUtil.readText(filename));
+    return geoms;
+  }
+
   private List<Geometry> readWKBHexFile(String filename)
   throws ParseException, IOException 
   {

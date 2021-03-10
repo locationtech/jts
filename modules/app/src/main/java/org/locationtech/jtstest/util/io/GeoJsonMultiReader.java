@@ -34,6 +34,13 @@ public class GeoJsonMultiReader {
     rdr = new GeoJsonReader(geomFact);
   }
   
+  public List<Geometry> readList(String s) throws ParseException {
+    if (isFeatureCollection(s)) {
+      return readFeatureCollectionList(s);
+    }
+    return readGeometryList(s);
+  }
+
   public Geometry read(String s) throws ParseException {
     if (isFeatureCollection(s)) {
       return readFeatureCollection(s);
@@ -46,15 +53,18 @@ public class GeoJsonMultiReader {
     return rdr.read(s);
   }
 
-  /**
-   * Extracts all Geometry object substrings and reads them
-   * @param s
-   * @throws ParseException 
-   */
-  private Geometry readFeatureCollection(String s) throws ParseException {
+  private List<Geometry> readGeometryList(String s) throws ParseException {
+    // TODO: trim string to include only Geometry object
+    Geometry geom = rdr.read(s);
+    List<Geometry> geomList = new ArrayList<Geometry>();
+    geomList.add(geom);
+    return geomList;
+  }
+
+  private List<Geometry> readFeatureCollectionList(String s) throws ParseException {
     Pattern p = Pattern.compile("\\{[^\\{\\}]+?\\}");
     Matcher m = p.matcher(s);
-    List geoms = new ArrayList();
+    List<Geometry> geoms = new ArrayList<Geometry>();
     while (true) {
       boolean isFound = m.find();
       if (! isFound) break;
@@ -64,6 +74,16 @@ public class GeoJsonMultiReader {
       }
       //System.out.println(sgeom);
     }
+    return geoms;
+  }
+  
+  /**
+   * Extracts all Geometry object substrings and reads them
+   * @param s
+   * @throws ParseException 
+   */
+  private Geometry readFeatureCollection(String s) throws ParseException {
+    List<Geometry> geoms = readFeatureCollectionList(s);
     return geomFact.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
   }
 
