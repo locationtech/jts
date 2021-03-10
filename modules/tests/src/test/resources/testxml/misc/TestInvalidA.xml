@@ -4,91 +4,91 @@
 
 <!--  ======  Formally invalid ====== -->
 
-<case> <desc>Polygon - exverted shell, point touch</desc>
+<case> <desc>Polygon - Exverted shell, point touch</desc>
 <a>
 POLYGON ((10 90, 50 70, 90 90, 90 10, 50 70, 10 10, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - exverted shell, point-line touch</desc>
+<case> <desc>Polygon - Exverted shell, point-line touch</desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 50 90, 10 10, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - exverted shell, line touch</desc>
+<case> <desc>Polygon - Exverted shell, line touch</desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 60 90, 40 90, 10 10, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - inverted shell, point touch</desc>
+<case> <desc>Polygon - Inverted shell, point touch</desc>
 <a>
 POLYGON ((10 90, 50 90, 30 50, 70 50, 50 90, 90 90, 90 10, 10 10, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - inverted shell, point-line touch</desc>
+<case> <desc>Polygon - Inverted shell, point-line touch</desc>
 <a>
 POLYGON ((10 90, 40 90, 40 30, 80 30, 40 70, 90 70, 90 10, 10 10, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - inverted shell, line touch, exterior</desc>
+<case> <desc>Polygon - Inverted shell, line touch, exterior</desc>
 <a>
 POLYGON ((10 90, 70 90, 40 90, 40 60, 70 60, 70 90, 90 90, 90 10, 10 10, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - inverted shell, line touch, interior</desc>
+<case> <desc>Polygon - Inverted shell, line touch, interior</desc>
 <a>
 POLYGON ((10 90, 50 90, 50 70, 30 40, 70 40, 50 70, 50 90, 90 90, 90 10, 10 10, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon/Hole - exverted hole, point touch</desc>
+<case> <desc>Polygon/Hole - Exverted hole, point touch</desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 50 60, 80 80, 80 20, 50 60, 20 20, 20 80))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon/Hole - exverted hole, point-line touch</desc>
+<case> <desc>Polygon/Hole - Exverted hole, point-line touch</desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 80 80, 80 20, 50 80, 20 20, 20 80))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon/Hole - exverted hole, line touch </desc>
+<case> <desc>Polygon/Hole - Exverted hole, line touch </desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 80, 60 50, 40 50, 20 80, 20 20, 40 50, 60 50, 80 20, 80 80))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon/Hole - inverted hole, point touch</desc>
+<case> <desc>Polygon/Hole - Inverted hole, point touch</desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 50 80, 30 50, 70 50, 50 80, 80 80, 80 20, 20 20, 20 80))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon/Hole - inverted hole, point-line touch</desc>
+<case> <desc>Polygon/Hole - Inverted hole, point-line touch</desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 40 80, 40 40, 70 40, 40 70, 80 70, 80 20, 20 20, 20 80))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon/Hole - inverted hole, line touch, interior </desc>
+<case> <desc>Polygon/Hole - Inverted hole, line touch, interior </desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 60 80, 40 80, 40 40, 60 40, 60 80, 80 80, 80 20, 20 20, 20 80))
 </a>
@@ -137,49 +137,56 @@ POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (30 70, 50 70, 50 30, 30 30, 30 70
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon/Holes - exverted holes crossing at point </desc>
+<case> <desc>Polygon/Holes - Exverted holes crossing at point </desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 60, 50 50, 20 60, 20 40, 50 50, 80 40, 80 60), (60 80, 40 80, 50 50, 40 20, 60 20, 50 50, 60 80))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - zero area </desc>
+<case> <desc>Polygon/Holes - Exverted holes crossing at line </desc>
+<a>
+POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 60, 60 50, 50 50, 40 50, 20 60, 20 40, 40 50, 50 50, 60 50, 80 40, 80 60), (60 80, 40 80, 50 60, 50 50, 50 40, 40 20, 60 20, 50 40, 50 50, 50 60, 60 80))
+</a>
+<test><op name="isValid" arg1="A" > false </op></test>
+</case>
+
+<case> <desc>Polygon - Zero area </desc>
 <a>
 POLYGON ((10 90, 90 90, 90 90, 10 90, 10 10, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - zero-width gore </desc>
+<case> <desc>Polygon - Zero-width gore </desc>
 <a>
 POLYGON ((10 90, 90 90, 50 50, 90 90, 90 10, 10 10, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - zero-width gore splitting </desc>
+<case> <desc>Polygon - Zero-width gore splitting </desc>
 <a>
 POLYGON ((10 90, 90 90, 10 10, 90 90, 90 10, 10 10, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - zero-width spike </desc>
+<case> <desc>Polygon - Zero-width spike </desc>
 <a>
 POLYGON ((10 50, 50 50, 90 90, 50 50, 50 10, 10 10, 10 50))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon/Hole - zero-width spike splitting hole</desc>
+<case> <desc>Polygon/Hole - Zero-width spike splitting hole</desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 80, 20 80, 20 50, 50 20, 20 50, 20 20, 80 20, 80 80))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - zero-width spike enclosing area </desc>
+<case> <desc>Polygon - Zero-width spike enclosing area </desc>
 <a>
 POLYGON ((10 10, 10 90, 60 90, 90 50, 60 10, 90 50, 60 90, 60 10, 10 10))
 </a>
@@ -193,9 +200,16 @@ MULTIPOLYGON (((10 90, 50 90, 50 10, 10 10, 10 90)), ((90 70, 90 30, 50 30, 50 7
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>MultiPolygon - exverted crossing at point </desc>
+<case> <desc>MultiPolygon - Exverted crossing at point </desc>
 <a>
 MULTIPOLYGON (((10 80, 50 50, 90 80, 90 20, 50 50, 10 20, 10 80)), ((20 90, 80 90, 50 50, 80 10, 20 10, 50 50, 20 90)))
+</a>
+<test><op name="isValid" arg1="A" > false </op></test>
+</case>
+
+<case> <desc>MultiPolygon - Exverted crossing at line </desc>
+<a>
+MULTIPOLYGON (((10 80, 40 50, 50 50, 60 50, 90 80, 90 20, 60 50, 50 50, 40 50, 10 20, 10 80)), ((20 90, 80 90, 50 60, 50 50, 50 40, 80 10, 20 10, 50 40, 50 50, 50 60, 20 90)))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
@@ -230,14 +244,14 @@ POLYGON ((10 50, 80 50, 80 70, 40 70, 40 30, 30 30, 30 80, 90 80, 90 40, 20 40, 
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - Self-intersect; Pos and Neg winding</desc>
+<case> <desc>Polygon - Self-overlap; Pos and Neg winding</desc>
 <a>
 POLYGON ((10 90, 50 90, 50 30, 70 30, 70 50, 30 50, 30 70, 90 70, 90 10, 10 10, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - Self-intersect; double Pos and single Neg winding </desc>
+<case> <desc>Polygon - Self-overlap; double Pos and single Neg winding </desc>
 <a>
 POLYGON ((10 90, 70 90, 70 10, 20 10, 20 80, 60 80, 60 20, 30 20, 30 70, 51 70, 50 30, 90 30, 90 60, 10 60, 10 90))
 </a>
@@ -251,21 +265,21 @@ POLYGON ((10 90, 90 90, 90 10, 60 10, 40 30, 70 60, 60 80, 40 60, 60 60, 40 80, 
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon - Self-intersect; Spiral with Pos winding  </desc>
+<case> <desc>Polygon - Self-overlap; Spiral with Pos winding  </desc>
 <a>
 POLYGON ((60 10, 10 10, 10 90, 90 90, 90 20, 20 20, 20 80, 80 80, 80 30, 30 30, 30 70, 70 70, 70 40, 40 40, 40 60, 60 60, 60 10))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon/Hole - Hole Self-intersect  </desc>
+<case> <desc>Polygon/Hole - Hole Self-overlap  </desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 70, 20 70, 20 20, 70 20, 70 80, 50 80, 50 30, 30 30, 30 50, 80 50, 80 70))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon/Hole - Hole Self-intersect - Spiral with Neg winding  </desc>
+<case> <desc>Polygon/Hole - Hole Self-overlap - Spiral with Neg winding  </desc>
 <a>
 POLYGON ((0 100, 100 100, 100 0, 0 0, 0 100), (60 10, 60 60, 40 60, 40 40, 70 40, 70 70, 30 70, 30 30, 80 30, 80 80, 20 80, 20 20, 90 20, 90 90, 10 90, 10 10, 60 10))
 </a>
@@ -300,6 +314,13 @@ POLYGON ((30 70, 70 70, 70 30, 30 30, 30 70), (10 90, 90 90, 90 10, 10 10, 10 90
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
+<case> <desc>Polygon/Hole - Disconnected interior </desc>
+<a>
+POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (30 30, 50 90, 90 50, 30 30))
+</a>
+<test><op name="isValid" arg1="A" > false </op></test>
+</case>
+
 <case> <desc>Polygon/Holes - Overlap  </desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 80, 80 30, 30 30, 30 80, 80 80), (20 20, 20 70, 70 70, 70 20, 20 20))
@@ -321,13 +342,6 @@ POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (30 70, 70 70, 70 30, 30 30, 30 70
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
-<case> <desc>Polygon/Hole - Disconnected interior </desc>
-<a>
-POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (30 30, 50 90, 90 50, 30 30))
-</a>
-<test><op name="isValid" arg1="A" > false </op></test>
-</case>
-
 <case> <desc>Polygon/Holes - Disconnected interior, point touch</desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (30 60, 70 60, 50 81, 30 60), (20 50, 30 60, 50 20, 20 50), (80 50, 70 60, 50 20, 80 50))
@@ -345,13 +359,6 @@ POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 60, 70 60, 70 80, 20 60), (30 
 <case> <desc>Polygon/Holes - Disconnected interior, line touch </desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 70, 30 60, 70 60, 80 70, 50 80, 20 70), (20 20, 20 70, 50 40, 50 20, 20 20), (80 20, 80 70, 50 40, 50 20, 80 20))
-</a>
-<test><op name="isValid" arg1="A" > false </op></test>
-</case>
-
-<case> <desc>Polygon/Holes - Holes cover shell </desc>
-<a>
-POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (50 50, 10 50, 10 90, 50 90, 50 50), (50 50, 50 90, 90 90, 90 50, 50 50), (50 50, 50 10, 10 10, 10 50, 50 50), (50 50, 90 50, 90 10, 50 10, 50 50))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
