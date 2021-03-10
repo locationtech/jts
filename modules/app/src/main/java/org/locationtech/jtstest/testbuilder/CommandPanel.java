@@ -224,10 +224,11 @@ extends JPanel
     cbSupplyStdin.setToolTipText("Send A to command standard input");
     rbWKT = new JRadioButton();
     rbWKT.setToolTipText("Send A to stdin in WKT");
+    rbWKT.setSelected(true);
     rbWKT.setText("WKT");
     rbWKB = new JRadioButton();
     rbWKB.setToolTipText("Send A to stdin in WKB");
-    rbWKB.setText("WBT");
+    rbWKB.setText("WKB");
     ButtonGroup btnGrpStdInFormat = new ButtonGroup();
     btnGrpStdInFormat.add(rbWKT);
     btnGrpStdInFormat.add(rbWKB);
