@@ -295,7 +295,7 @@ POLYGON ((10 10, 90 10, 10 90, 90 90, 10 10), (70 80, 30 80, 70 20, 30 20, 70 80
 
 <case> <desc>Polygon/Hole - Bowties, overlap  </desc>
 <a>
-POLYGON ((20 10, 90 10, 30 90, 80 90, 20 10), (60 80, 20 80, 60 20, 10 20, 60 80))
+POLYGON ((10 10, 90 10, 10 90, 90 90, 10 10), (50 70, 10 70, 50 30, 10 30, 50 70))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
