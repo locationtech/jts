@@ -232,7 +232,7 @@ POLYGON ((40 90, 60 90, 10 40, 10 60, 60 10, 40 10, 90 60, 90 40, 40 90))
 
 <case> <desc>Polygon - Bowtie, self-overlap</desc>
 <a>
-POLYGON ((10 90, 70 90, 70 50, 40 50, 40 30, 70 30, 70 20, 10 20, 10 90))
+POLYGON ((10 90, 70 90, 70 10, 90 10, 90 50, 40 50, 40 30, 80 30, 80 20, 10 20, 10 90))
 </a>
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
