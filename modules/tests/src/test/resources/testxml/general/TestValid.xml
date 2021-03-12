@@ -60,12 +60,22 @@
    </case>
 
    <case>
-      <desc>P - repeated points</desc>
+      <desc>mP - repeated points</desc>
       <a>
     MULTIPOINT((10 10), (20 20), (30 30), (10 10))
   </a>
       <test>
          <op name="isValid" arg1="A">    true  </op>
+      </test>
+   </case>
+
+   <case>
+      <desc>mP - invalid point</desc>
+      <a>
+    MULTIPOINT((10 10), (20 20), (30 30), (10 NaN))
+  </a>
+      <test>
+         <op name="isValid" arg1="A">    false  </op>
       </test>
    </case>
 
@@ -138,6 +148,14 @@ LINESTRING (40 180, 120 120, 140 200, 140 200, 200 140, 240 200)
       <a>MULTILINESTRING((1 1, 0 0), EMPTY)</a>
       <test>
          <op name="isValid" arg1="A">      true      </op>
+      </test>
+   </case>
+
+   <case>
+      <desc>mL - MultiLinestring with invalid point</desc>
+      <a>MULTILINESTRING((1 1, 2 NaN, 0 0))</a>
+      <test>
+         <op name="isValid" arg1="A">      false      </op>
       </test>
    </case>
 

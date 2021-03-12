@@ -87,10 +87,6 @@ public class MultiPoint
     }
     return new MultiPoint(points, factory);
   }
-  
-  public boolean isValid() {
-    return true;
-  }
 
   public boolean equalsExact(Geometry other, double tolerance) {
     if (!isEquivalentClass(other)) {
