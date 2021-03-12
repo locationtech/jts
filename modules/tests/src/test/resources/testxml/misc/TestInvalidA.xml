@@ -398,6 +398,27 @@ POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 70, 30 60, 70 60, 80 70, 50 80
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
+<case> <desc>Polygon/Holes - Disconnected interior, overlapping bowtie holes </desc>
+<a>
+POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (70 80, 20 80, 70 20, 20 20, 70 80), (80 70, 40 70, 80 30, 40 30, 80 70))
+</a>
+<test><op name="isValid" arg1="A" > false </op></test>
+</case>
+
+<case> <desc>Polygon/Holes - Disconnected interior, overlapping zero-area holes </desc>
+<a>
+POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 70, 30 70, 30 20, 30 70, 80 70), (70 80, 70 30, 20 30, 70 30, 70 80))
+</a>
+<test><op name="isValid" arg1="A" > false </op></test>
+</case>
+
+<case> <desc>Polygon/Holes - Disconnected interior, overlapping holes </desc>
+<a>
+POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 70, 30 70, 30 20, 40 20, 40 60, 80 60, 80 70), (70 80, 60 80, 60 40, 20 40, 20 30, 70 30, 70 80))
+</a>
+<test><op name="isValid" arg1="A" > false </op></test>
+</case>
+
 <case> <desc>MultiPolygon - Nested Polygons  </desc>
 <a>
 MULTIPOLYGON (((30 70, 70 70, 70 30, 30 30, 30 70)), ((10 90, 90 90, 90 10, 10 10, 10 90)))
