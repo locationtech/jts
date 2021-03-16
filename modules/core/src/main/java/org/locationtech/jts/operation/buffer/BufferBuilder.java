@@ -83,6 +83,8 @@ class BufferBuilder
   private PlanarGraph graph;
   private EdgeList edgeList     = new EdgeList();
 
+  private boolean isInverseOrientation = false;
+
   /**
    * Creates a new BufferBuilder,
    * using the given parameters.
@@ -116,6 +118,9 @@ class BufferBuilder
    */
   public void setNoder(Noder noder) { workingNoder = noder; }
 
+  void setInverseOrientation(boolean isInverseOrientation) {
+    this.isInverseOrientation = isInverseOrientation;
+  }
 
   public Geometry buffer(Geometry g, double distance)
   {
@@ -129,7 +134,8 @@ class BufferBuilder
     OffsetCurveBuilder curveBuilder = new OffsetCurveBuilder(precisionModel, bufParams);
     
     OffsetCurveSetBuilder curveSetBuilder = new OffsetCurveSetBuilder(g, distance, curveBuilder);
-
+    curveSetBuilder.setInverseOrientation(isInverseOrientation);
+    
     List bufferSegStrList = curveSetBuilder.getCurves();
 
     // short-circuit test

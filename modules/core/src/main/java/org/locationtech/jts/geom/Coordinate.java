@@ -265,6 +265,19 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   }
 
   /**
+   * Tests if the coordinate has valid X and Y ordinate values.
+   * An ordinate value is valid iff it is finite.
+   * 
+   * @return true if the coordinate is valid
+   * @see Double#isFinite(double)
+   */
+  public boolean isValid() {
+    if (! Double.isFinite(x)) return false;
+    if (! Double.isFinite(y)) return false;
+    return true;
+  }
+  
+  /**
    *  Returns whether the planar projections of the two <code>Coordinate</code>s
    *  are equal.
    *

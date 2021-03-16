@@ -371,8 +371,11 @@ public class CoordinateArrays {
   }
 
   /**
-   * Returns whether #equals returns true for any two consecutive Coordinates
+   * Tests whether {@link Coordinate#equals(Object) returns true for any two consecutive Coordinates
    * in the given array.
+   * 
+   * @param coord an array of coordinates
+   * @return true if the array has repeated points
    */
   public static boolean hasRepeatedPoints(Coordinate[] coord) {
     for (int i = 1; i < coord.length; i++) {
@@ -382,7 +385,7 @@ public class CoordinateArrays {
     }
     return false;
   }
-
+  
   /**
    * Returns either the given coordinate array if its length is greater than the
    * given amount, or an empty coordinate array.
@@ -396,6 +399,8 @@ public class CoordinateArrays {
    * constructs a new array containing no repeated points.
    * Otherwise, returns the argument.
    *
+   * @param coord an array of coordinates
+   * @return the array with repeated coordinates removed
    * @see #hasRepeatedPoints(Coordinate[])
    */
   public static Coordinate[] removeRepeatedPoints(Coordinate[] coord) {
@@ -404,6 +409,44 @@ public class CoordinateArrays {
     return coordList.toCoordinateArray();
   }
 
+  /**
+   * Tests whether an array has any repeated or invalid coordinates.
+   * 
+   * @param coord an array of coordinates
+   * @return true if the array contains repeated or invalid coordinates
+   * @see Coordinate#isValid()
+   */
+  public static boolean hasRepeatedOrInvalid(Coordinate[] coord) {
+    for (int i = 1; i < coord.length; i++) {
+      if (! coord[i].isValid())
+        return true;
+      if (coord[i - 1].equals(coord[i])) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  /**
+   * If the coordinate array argument has repeated or invalid points,
+   * constructs a new array containing no repeated points.
+   * Otherwise, returns the argument.
+   * 
+   * @param coord an array of coordinates
+   * @return the array with repeated and invalid coordinates removed
+   * @see #hasRepeatedOrInvalid(Coordinate[])
+   * @see Coordinate#isValid() 
+   */
+  public static Coordinate[] removeRepeatedAndInvalidPoints(Coordinate[] coord) {
+    if (!hasRepeatedOrInvalid(coord)) return coord;
+    CoordinateList coordList = new CoordinateList();
+    for (int i = 0; i < coord.length; i++) {
+      if (! coord[i].isValid()) continue;
+      coordList.add(coord[i], false);
+    }
+    return coordList.toCoordinateArray();
+  }
+  
   /**
    * Collapses a coordinate array to remove all null elements.
    *

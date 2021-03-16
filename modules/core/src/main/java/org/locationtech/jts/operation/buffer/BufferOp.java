@@ -11,11 +11,15 @@
  */
 package org.locationtech.jts.operation.buffer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @version 1.7
  */
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
@@ -243,6 +247,49 @@ public class BufferOp
     return geomBuf;
   }
 
+  /**
+   * Fixes a polygonal geometry to be valid (with no self-intersections).
+   * The interior is determined from the orientation implied by the signed area,
+   * or by both orientations.
+   * <p>
+   * This function is for INTERNAL use only.
+   *  
+   * @param geom the polygonal geometry to fix
+   * @param isBothOrientations true if both orientations of the input rings should be included
+   * @return the fixed polygonal geometry
+   */
+  public static Geometry fixPolygonal(Geometry geom, boolean isBothOrientations) {
+    Geometry buf0 = geom.buffer(0);
+    if (! isBothOrientations) return buf0;
+    
+    //-- compute buffer using min-area orientation
+    BufferOp op = new BufferOp(geom);
+    op.isInverseOrientation = true;
+    Geometry buf1 = op.getResultGeometry(0);
+    
+    if (buf1.isEmpty())
+      return buf0;
+    //-- the buffer results should be non-adjacent, so combining is safe
+    return combine(buf0, buf1);
+  }
+  
+  private static Geometry combine(Geometry poly0, Geometry poly1) {
+    // short-circuit - handles case where geometry is valid
+    if (poly1.isEmpty()) return poly0;
+    
+    List<Polygon> polys = new ArrayList<Polygon>();
+    extractPolygons(poly0, polys);
+    extractPolygons(poly1, polys);
+    if (polys.size() == 1) return polys.get(0);
+    return poly0.getFactory().createMultiPolygon(GeometryFactory.toPolygonArray(polys));
+  }
+
+  private static void extractPolygons(Geometry poly0, List<Polygon> polys) {
+    for (int i = 0; i < poly0.getNumGeometries(); i++) {
+      polys.add((Polygon) poly0.getGeometryN(i));
+    }
+  }
+
   private Geometry argGeom;
   private double distance;
   
@@ -250,6 +297,7 @@ public class BufferOp
 
   private Geometry resultGeometry = null;
   private RuntimeException saveException;   // debugging only
+  private boolean isInverseOrientation = false;
 
   /**
    * Initializes a buffer computation for the given geometry
@@ -293,7 +341,7 @@ public class BufferOp
   {
     bufParams.setQuadrantSegments(quadrantSegments);
   }
-
+  
   /**
    * Returns the buffer computed for a geometry for a given buffer distance.
    *
@@ -351,7 +399,7 @@ public class BufferOp
   {
     try {
       // use fast noding by default
-      BufferBuilder bufBuilder = new BufferBuilder(bufParams);
+      BufferBuilder bufBuilder = createBufferBullder();
       resultGeometry = bufBuilder.buffer(argGeom, distance);
     }
     catch (RuntimeException ex) {
@@ -361,6 +409,12 @@ public class BufferOp
       // testing ONLY - propagate exception
       //throw ex;
     }
+  }
+
+  private BufferBuilder createBufferBullder() {
+    BufferBuilder bufBuilder = new BufferBuilder(bufParams);
+    bufBuilder.setInverseOrientation(isInverseOrientation);
+    return bufBuilder;
   }
 
   private void bufferFixedPrecision(PrecisionModel fixedPM)
@@ -381,7 +435,7 @@ public class BufferOp
     Noder snapNoder = new SnapRoundingNoder(new PrecisionModel(1.0));
     Noder noder = new ScaledNoder(snapNoder, fixedPM.getScale());
 
-    BufferBuilder bufBuilder = new BufferBuilder(bufParams);
+    BufferBuilder bufBuilder = createBufferBullder();
     bufBuilder.setWorkingPrecisionModel(fixedPM);
     bufBuilder.setNoder(noder);
     // this may throw an exception, if robustness errors are encountered
