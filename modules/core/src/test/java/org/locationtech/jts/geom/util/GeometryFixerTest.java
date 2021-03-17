@@ -36,6 +36,10 @@ public class GeometryFixerTest extends GeometryTestCase {
     checkFix("POINT (0 Nan)", "POINT EMPTY");
   }
 
+  public void testPointEmpty() {
+    checkFix("POINT EMPTY", "POINT EMPTY");
+  }
+
   public void testPointPosInf() {
     checkFix( createPoint(0, Double.POSITIVE_INFINITY), "POINT EMPTY");
   }
@@ -50,6 +54,8 @@ public class GeometryFixerTest extends GeometryTestCase {
     return pt;
   }
   
+  //----------------------------------------
+
   public void testMultiPointNaN() {
     checkFix("MULTIPOINT ((0 Nan))",
         "MULTIPOINT EMPTY");
@@ -65,6 +71,8 @@ public class GeometryFixerTest extends GeometryTestCase {
         "MULTIPOINT ((0 0))");
   }
 
+  //----------------------------------------
+
   public void testLineStringCollapse() {
     checkFix("LINESTRING (0 0, 1 NaN, 0 0)",
         "LINESTRING EMPTY");
@@ -73,6 +81,11 @@ public class GeometryFixerTest extends GeometryTestCase {
   public void testLineStringCollapseMultipleRepeated() {
     checkFix("LINESTRING (0 0, 0 0, 0 0)",
         "LINESTRING EMPTY");
+  }
+
+  public void testLineStringKeepCollapse() {
+    checkFixKeepCollapse("LINESTRING (0 0, 0 0, 0 0)",
+        "POINT (0 0)");
   }
 
   public void testLineStringRepeated() {
@@ -87,11 +100,30 @@ public class GeometryFixerTest extends GeometryTestCase {
     checkFix("LINESTRING (0 0, 9 9, 9 5, 0 5)",
         "LINESTRING (0 0, 9 9, 9 5, 0 5)");
   }
+  
+  //----------------------------------------
 
   public void testMultiLineStringSelfCross() {
     checkFix("MULTILINESTRING ((10 90, 90 10, 90 90), (90 50, 10 50))",
         "MULTILINESTRING ((10 90, 90 10, 90 90), (90 50, 10 50))");
   }
+  
+  public void testMultiLineStringWithCollapse() {
+    checkFix("MULTILINESTRING ((10 10, 90 90), (10 10, 10 10, 10 10))",
+        "LINESTRING (10 10, 90 90))");
+  }
+  
+  public void testMultiLineStringKeepCollapse() {
+    checkFixKeepCollapse("MULTILINESTRING ((10 10, 90 90), (10 10, 10 10, 10 10))",
+        "GEOMETRYCOLLECTION (POINT (10 10), LINESTRING (10 10, 90 90))");
+  }
+  
+  public void testMultiLineStringWithEmpty() {
+    checkFix("MULTILINESTRING ((10 10, 90 90), EMPTY)",
+        "LINESTRING (10 10, 90 90))");
+  }
+  
+  //----------------------------------------
   
   public void testPolygonBowtie() {
     checkFix("POLYGON ((10 90, 90 10, 90 90, 10 10, 10 90))",
@@ -113,17 +145,51 @@ public class GeometryFixerTest extends GeometryTestCase {
         "POLYGON ((10 10, 10 90, 90 10, 10 10))");
   }
 
-  private void checkFix(String wkt, String wktExpected) {
-    Geometry geom = read(wkt);
-    checkFix(geom, wktExpected);
+  public void testPolygonShellCollapse() {
+    checkFix("POLYGON ((10 10, 10 90, 90 90, 10 90, 10 10), (20 80, 60 80, 60 40, 20 40, 20 80))",
+        "POLYGON EMPTY");
   }
 
-  private void checkFix(Geometry geom, String wktExpected) {
-    Geometry actual = GeometryFixer.fix(geom);
+  public void testPolygonHoleCollapse() {
+    checkFix("POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 80, 20 80, 20 20, 20 80, 80 80))",
+        "POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10))");
+  }
+
+  //================================================
+  
+  
+  private void checkFix(String wkt, String wktExpected) {
+    Geometry geom = read(wkt);
+    checkFix(geom, false, wktExpected);
+  }
+  
+  private void checkFixKeepCollapse(String wkt, String wktExpected) {
+    Geometry geom = read(wkt);
+    checkFix(geom, true, wktExpected);
+  }
+  
+  private void checkFix(Geometry input, String wktExpected) {
+    checkFix(input, false, wktExpected);
+  }
+  
+  private void checkFixKeepCollapse(Geometry input, String wktExpected) {
+    checkFix(input, true, wktExpected);
+  }
+  
+  private void checkFix(Geometry input, boolean keepCollapse, String wktExpected) {
+    Geometry actual;
+    if (keepCollapse) {
+      GeometryFixer fixer = new GeometryFixer(input);
+      fixer.setKeepCollapsed(true);
+      actual = fixer.getResult();
+    }
+    else {
+      actual= GeometryFixer.fix(input);
+    }
     
     assertTrue("Result is invalid", actual.isValid());
-    assertTrue("Input geometry was not copied", geom != actual);
-    assertTrue("Result has aliased coordinates", checkDeepCopy(geom, actual));
+    assertTrue("Input geometry was not copied", input != actual);
+    assertTrue("Result has aliased coordinates", checkDeepCopy(input, actual));
     
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);

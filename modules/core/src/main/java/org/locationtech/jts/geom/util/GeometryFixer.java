@@ -56,10 +56,15 @@ public class GeometryFixer {
   
   private Geometry geom;
   private GeometryFactory factory;
+  private boolean isKeepCollapsed = false;
 
   public GeometryFixer(Geometry geom) {
     this.geom = geom;
     this.factory = geom.getFactory();
+  }
+  
+  public void setKeepCollapsed(boolean isKeepCollapsed) {
+    this.isKeepCollapsed  = isKeepCollapsed;
   }
   
   public Geometry getResult() {
@@ -84,8 +89,15 @@ public class GeometryFixer {
   }
 
   private Point fixPoint(Point geom) {
-    if (! isValidPoint(geom)) {
+    Geometry pt = fixPointElement(geom);
+    if (pt == null)
       return factory.createPoint();
+    return (Point) pt;
+  }
+
+  private Point fixPointElement(Point geom) {
+    if (geom.isEmpty() || ! isValidPoint(geom)) {
+      return null;
     }
     return (Point) geom.copy();
   }
@@ -100,8 +112,10 @@ public class GeometryFixer {
     for (int i = 0; i < geom.getNumGeometries(); i++) {
       Point pt = (Point) geom.getGeometryN(i);
       if (pt.isEmpty()) continue;
-      if (! isValidPoint(pt)) continue;
-      pts.add(fixPoint(pt));
+      Point fixPt = fixPointElement(pt);
+      if (fixPt != null) {
+        pts.add(fixPt);
+      }
     }
     return factory.createMultiPoint(GeometryFactory.toPointArray(pts));
   }
@@ -117,10 +131,21 @@ public class GeometryFixer {
   }
 
   private Geometry fixLineString(LineString geom) {
+    Geometry fix = fixLineStringElement(geom);
+    if (fix == null)
+      return factory.createLineString();
+    return fix;
+  }
+  
+  private Geometry fixLineStringElement(LineString geom) {
+    if (geom.isEmpty()) return null;
     Coordinate[] pts = geom.getCoordinates();
     Coordinate[] ptsFix = fixCoordinates(pts);
+    if (isKeepCollapsed && ptsFix.length == 1) {
+      return factory.createPoint(ptsFix[0]);
+    }
     if (ptsFix.length <= 1) {
-      return factory.createLineString();
+      return null;
     }
     return factory.createLineString(ptsFix);
   }
@@ -131,25 +156,52 @@ public class GeometryFixer {
   }
   
   private Geometry fixMultiLineString(MultiLineString geom) {
-    List<LineString> lines = new ArrayList<LineString>();
+    List<Geometry> fixed = new ArrayList<Geometry>();
+    boolean isMixed = false;
     for (int i = 0; i < geom.getNumGeometries(); i++) {
       LineString line = (LineString) geom.getGeometryN(i);
       if (line.isEmpty()) continue;
-      Geometry fix = fixLineString(line);
-      if (fix instanceof LineString) {
-        lines.add((LineString) fix);
+      
+      Geometry fix = fixLineStringElement(line);
+      if (fix == null) continue;
+      
+      if (! (fix instanceof LineString)) {
+        isMixed = true;
       }
+      fixed.add(fix);
     }
-    return factory.createMultiLineString(GeometryFactory.toLineStringArray(lines));
+    if (fixed.size() == 1) {
+      return fixed.get(0);
+    }
+    if (isMixed) {
+      return factory.createGeometryCollection(GeometryFactory.toGeometryArray(fixed));
+    }
+    return factory.createMultiLineString(GeometryFactory.toLineStringArray(fixed));
   }
 
   private Geometry fixPolygon(Polygon geom) {
-    Geometry shell = fixRing(geom.getExteriorRing());
-    if (geom.getNumInteriorRing() == 0) {
-      return shell;
+    Geometry fix = fixPolygonElement(geom);
+    if (fix == null)
+      return factory.createPolygon();
+    return fix;
+  }
+  
+  private Geometry fixPolygonElement(Polygon geom) {
+    LinearRing shell = geom.getExteriorRing();
+    Geometry fixShell = fixRing(shell);
+    if (fixShell.isEmpty()) {
+      if (isKeepCollapsed) {
+        return fixLineString(shell);
+      }
+      //-- if not allowing collapses then return empty polygon
+      return null;      
     }
-    Geometry holes = fixHoles(geom);
-    Geometry result = removeHoles(shell, holes);
+    // if no holes then done
+    if (geom.getNumInteriorRing() == 0) {
+      return fixShell;
+    }
+    Geometry fixHoles = fixHoles(geom);
+    Geometry result = removeHoles(fixShell, fixHoles);
     return result;
   }
 
@@ -186,9 +238,9 @@ public class GeometryFixer {
     List<Geometry> polys = new ArrayList<Geometry>();
     for (int i = 0; i < geom.getNumGeometries(); i++) {
       Polygon poly = (Polygon) geom.getGeometryN(i);
-      Geometry polyRep = fixPolygon(poly);
-      if (polyRep != null) {
-        polys.add(polyRep);
+      Geometry polyFix = fixPolygonElement(poly);
+      if (polyFix != null && ! polyFix.isEmpty()) {
+        polys.add(polyFix);
       }
     }
     Geometry result = OverlayNGRobust.union(polys);
