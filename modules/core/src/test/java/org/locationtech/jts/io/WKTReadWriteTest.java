@@ -1,15 +1,12 @@
 package org.locationtech.jts.io;
 
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-import junit.textui.TestRunner;
-
-import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFactory;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
 
-import java.util.EnumSet;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 public class WKTReadWriteTest extends TestCase {
 
@@ -70,16 +67,19 @@ public class WKTReadWriteTest extends TestCase {
   public void testReadMultiPoint() throws Exception {
     assertEquals("MULTIPOINT ((10 10), (20 20))", writer.write(reader.read("MULTIPOINT ((10 10), (20 20))")));
     assertEquals("MULTIPOINT EMPTY", writer.write(reader.read("MULTIPOINT EMPTY")));
+    assertEquals("MULTIPOINT (EMPTY, EMPTY)", writer.write(reader.read("MULTIPOINT (EMPTY, EMPTY)")));
   }
 
   public void testReadMultiLineString() throws Exception {
     assertEquals("MULTILINESTRING ((10 10, 20 20), (15 15, 30 15))", writer.write(reader.read("MULTILINESTRING ((10 10, 20 20), (15 15, 30 15))")));
     assertEquals("MULTILINESTRING EMPTY", writer.write(reader.read("MULTILINESTRING EMPTY")));
+    assertEquals("MULTILINESTRING (EMPTY, EMPTY)", writer.write(reader.read("MULTILINESTRING (EMPTY, EMPTY)")));
   }
 
   public void testReadMultiPolygon() throws Exception {
     assertEquals("MULTIPOLYGON (((10 10, 10 20, 20 20, 20 15, 10 10)), ((60 60, 70 70, 80 60, 60 60)))", writer.write(reader.read("MULTIPOLYGON (((10 10, 10 20, 20 20, 20 15, 10 10)), ((60 60, 70 70, 80 60, 60 60)))")));
     assertEquals("MULTIPOLYGON EMPTY", writer.write(reader.read("MULTIPOLYGON EMPTY")));
+    assertEquals("MULTIPOLYGON (EMPTY, EMPTY)", writer.write(reader.read("MULTIPOLYGON (EMPTY, EMPTY)")));
   }
 
   public void testReadGeometryCollection() throws Exception {
@@ -87,5 +87,10 @@ public class WKTReadWriteTest extends TestCase {
     assertEquals("GEOMETRYCOLLECTION (POINT (10 10), LINEARRING EMPTY, LINESTRING (15 15, 20 20))", writer.write(reader.read("GEOMETRYCOLLECTION (POINT (10 10), LINEARRING EMPTY, LINESTRING (15 15, 20 20))")));
     assertEquals("GEOMETRYCOLLECTION (POINT (10 10), LINEARRING (10 10, 20 20, 30 40, 10 10), LINESTRING (15 15, 20 20))", writer.write(reader.read("GEOMETRYCOLLECTION (POINT (10 10), LINEARRING (10 10, 20 20, 30 40, 10 10), LINESTRING (15 15, 20 20))")));
     assertEquals("GEOMETRYCOLLECTION EMPTY", writer.write(reader.read("GEOMETRYCOLLECTION EMPTY")));
+  }
+  
+  public void testReadGeometryCollectionEmptyWithElements() throws Exception {
+    assertEquals("GEOMETRYCOLLECTION (POINT EMPTY)", writer.write(reader.read("GEOMETRYCOLLECTION ( POINT EMPTY )")));
+    assertEquals("GEOMETRYCOLLECTION (POINT EMPTY, LINESTRING EMPTY)", writer.write(reader.read("GEOMETRYCOLLECTION ( POINT EMPTY, LINESTRING EMPTY )")));
   }
 }
