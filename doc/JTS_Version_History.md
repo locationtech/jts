@@ -25,6 +25,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Fix `InteriorPoint` to handle partially-empty collections (#698)
 * Fix `MultiPoint.isValid` to check validity correctly (#700)
+* Fix `WKTReader` and `WKTWriter` handling of collections with all empty elements (#702)
 
 <!-- ================================================================ -->
 
