@@ -71,6 +71,11 @@ public class GeometryFixerTest extends GeometryTestCase {
         "MULTIPOINT ((0 0))");
   }
 
+  public void testMultiPointWithMultiEmpty() {
+    checkFix("MULTIPOINT (EMPTY, EMPTY)",
+        "MULTIPOINT EMPTY");
+  }
+
   //----------------------------------------
 
   public void testLineStringCollapse() {
@@ -123,6 +128,11 @@ public class GeometryFixerTest extends GeometryTestCase {
         "LINESTRING (10 10, 90 90))");
   }
   
+  public void testMultiLineStringWithMultiEmpty() {
+    checkFix("MULTILINESTRING (EMPTY, EMPTY)",
+        "MULTILINESTRING EMPTY");
+  }
+  
   //----------------------------------------
   
   public void testPolygonBowtie() {
@@ -169,6 +179,11 @@ public class GeometryFixerTest extends GeometryTestCase {
 
   public void testMultiPolygonEmpty() {
     checkFix("MULTIPOLYGON EMPTY",
+        "MULTIPOLYGON EMPTY");
+  }
+
+  public void testMultiPolygonMultiEmpty() {
+    checkFix("MULTIPOLYGON (EMPTY, EMPTY)",
         "MULTIPOLYGON EMPTY");
   }
 

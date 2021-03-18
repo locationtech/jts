@@ -243,6 +243,9 @@ public class GeometryFixer {
         polys.add(polyFix);
       }
     }
+    if (polys.size() == 0) {
+      return factory.createMultiPolygon();
+    }
     Geometry result = OverlayNGRobust.union(polys);
     return result;    
   }
