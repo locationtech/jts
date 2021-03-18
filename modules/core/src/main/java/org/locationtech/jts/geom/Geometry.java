@@ -436,14 +436,19 @@ public abstract class Geometry
   /**
    * Tests whether the set of points covered by this <code>Geometry</code> is
    * empty.
+   * <p>
+   * Note this test is for topological emptiness,
+   * not structural emptiness. 
+   * A collection containing only empty elements is reported as empty.
+   * To check structural emptiness use {@link #getNumGeometries()}.
    *
    *@return <code>true</code> if this <code>Geometry</code> does not cover any points
    */
   public abstract boolean isEmpty();
 
   /**
-   *  Returns the minimum distance between this <code>Geometry</code>
-   *  and another <code>Geometry</code>.
+   * Returns the minimum distance between this <code>Geometry</code>
+   * and another <code>Geometry</code>.
    *
    * @param  g the <code>Geometry</code> from which to compute the distance
    * @return the distance between the geometries

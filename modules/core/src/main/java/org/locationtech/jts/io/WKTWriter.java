@@ -870,7 +870,7 @@ public class WKTWriter
           int level, Writer writer, OrdinateFormat formatter)
     throws IOException
   {
-    if (multiPoint.isEmpty()) {
+    if (multiPoint.getNumGeometries() == 0) {
       writer.write(WKTConstants.EMPTY);
     }
     else {
@@ -903,7 +903,7 @@ public class WKTWriter
            boolean useFormatting, int level, /*boolean indentFirst, */Writer writer, OrdinateFormat formatter)
     throws IOException
   {
-    if (multiLineString.isEmpty()) {
+    if (multiLineString.getNumGeometries() == 0) {
       writer.write(WKTConstants.EMPTY);
     }
     else {
@@ -938,7 +938,7 @@ public class WKTWriter
           int level, Writer writer, OrdinateFormat formatter)
     throws IOException
   {
-    if (multiPolygon.isEmpty()) {
+    if (multiPolygon.getNumGeometries() == 0) {
       writer.write(WKTConstants.EMPTY);
     }
     else {
@@ -973,7 +973,7 @@ public class WKTWriter
           int level, Writer writer, OrdinateFormat formatter)
     throws IOException
   {
-    if (geometryCollection.isEmpty()) {
+    if (geometryCollection.getNumGeometries() == 0) {
       writer.write(WKTConstants.EMPTY);
     }
     else {

@@ -903,7 +903,7 @@ S  */
     // MD 2009-02-21 - this is only provided for backwards compatibility for a few versions
     if (isAllowOldJtsMultipointSyntax) {
       String nextWord = lookAheadWord(tokenizer);
-      if (nextWord != L_PAREN) {
+      if (nextWord != L_PAREN && nextWord != WKTConstants.EMPTY) {
         return geometryFactory.createMultiPoint(
             getCoordinateSequenceOldMultiPoint(tokenizer, ordinateFlags));
       }
