@@ -160,6 +160,16 @@ public class GeometryFixerTest extends GeometryTestCase {
         "POLYGON EMPTY");
   }
 
+  public void testPolygonShellCollapseNaN() {
+    checkFix("POLYGON ((10 10, 10 NaN, 90 NaN, 10 NaN, 10 10))",
+        "POLYGON EMPTY");
+  }
+
+  public void testPolygonShellKeepCollapseNaN() {
+    checkFixKeepCollapse("POLYGON ((10 10, 10 NaN, 90 NaN, 10 NaN, 10 10))",
+        "POINT (10 10)");
+  }
+
   public void testPolygonShellKeepCollapse() {
     checkFixKeepCollapse("POLYGON ((10 10, 10 90, 90 90, 10 90, 10 10), (20 80, 60 80, 60 40, 20 40, 20 80))",
         "LINESTRING (10 10, 10 90, 90 90, 10 90, 10 10)");

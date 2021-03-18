@@ -61,7 +61,8 @@ import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
  * </li>
  * </ol>
  * 
- * @author mdavis
+ * @author Martin Davis
+ * 
  * @see Geometry#isValid()
  */
 public class GeometryFixer {
