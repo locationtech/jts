@@ -34,21 +34,44 @@ import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
  * Fixes a geometry to be a valid geometry, while preserving as much as 
  * possible of the shape and location of the input.
  * Validity is determined according to {@link Geometry#isValid()}.
+ * <p>
+ * Input geometries are always processed, so even valid inputs may 
+ * have some minor alterations.  The output is always a new geometry object.
  * 
- * <h2>Rules</h2>
+ * <h2>Semantic Rules</h2>
  * <ol>
  * <li>Vertices with non-finite X or Y ordinates are removed 
  * (as per {@link Coordinate#isValid()}.</li>
  * <li>Repeated points are removed</li>
+ * <li>Empty atomic geometries are valid and are returned unchanged</li>
  * <li>Empty elements are removed from collections</li>
- * 
- * 
+ * <li><code>Point</code>: keep valid coordinate, or EMPTY</li>
+ * <li><code>LineString</code>: fix coordinate list</li>
+ * <li><code>Polygon</code>: transform into a valid polygon, 
+ * preserving as much of the extent and vertices as possible</li>
+ * <li><code>MultiPolygon</code>: fix each element, 
+ * then ensure collection is non-overlapping (via union)</li>
+ * <li><code>GeometryCollection</code>: fix each element</li>
+ * <li>Collapsed lines and polygons are handled as follows,
+ * depending on the <code>keepCollapsed</code> setting:
+ * <ul>
+ * <li><code>false</code>: (default) collapses are converted to empty geometries</li>
+ * <li><code>true</code>: collapses are converted to a valid geometry of lower dimension</li>
+ * </ul>
+ * </li>
+ * </ol>
  * 
  * @author mdavis
- *
+ * @see Geometry#isValid()
  */
 public class GeometryFixer {
 
+  /**
+   * Fixes a geometry to be valid.
+   * 
+   * @param geom the geometry to be fixed
+   * @return the valid fixed geometry
+   */
   public static Geometry fix(Geometry geom) {
     GeometryFixer ri = new GeometryFixer(geom);
     return ri.getResult();
@@ -58,15 +81,33 @@ public class GeometryFixer {
   private GeometryFactory factory;
   private boolean isKeepCollapsed = false;
 
+  /**
+   * Creates a new instance to fix a given geometry.
+   * 
+   * @param geom the geometry to be fixed
+   */
   public GeometryFixer(Geometry geom) {
     this.geom = geom;
     this.factory = geom.getFactory();
   }
   
+  /**
+   * Sets whether collapsed geometries are converted to empty,
+   * (which will be removed from collections),
+   * or to a valid geometry of lower dimension.
+   * The default is to convert collapses to empty geometries.
+   * 
+   * @param isKeepCollapsed whether collapses should be converted to a lower dimension geometry
+   */
   public void setKeepCollapsed(boolean isKeepCollapsed) {
     this.isKeepCollapsed  = isKeepCollapsed;
   }
   
+  /**
+   * Gets the fixed geometry.
+   * 
+   * @return the fixed geometry
+   */
   public Geometry getResult() {
     /**
      *  Truly empty geometries are simply copied.
