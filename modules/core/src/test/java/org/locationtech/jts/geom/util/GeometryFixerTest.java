@@ -150,9 +150,53 @@ public class GeometryFixerTest extends GeometryTestCase {
         "POLYGON EMPTY");
   }
 
+  public void testPolygonShellKeepCollapse() {
+    checkFixKeepCollapse("POLYGON ((10 10, 10 90, 90 90, 10 90, 10 10), (20 80, 60 80, 60 40, 20 40, 20 80))",
+        "LINESTRING (10 10, 10 90, 90 90, 10 90, 10 10)");
+  }
+
   public void testPolygonHoleCollapse() {
     checkFix("POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 80, 20 80, 20 20, 20 80, 80 80))",
         "POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10))");
+  }
+
+  public void testPolygonHoleKeepCollapse() {
+    checkFixKeepCollapse("POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 80, 20 80, 20 20, 20 80, 80 80))",
+        "POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10))");
+  }
+  
+  //----------------------------------------
+
+  public void testMultiPolygonEmpty() {
+    checkFix("MULTIPOLYGON EMPTY",
+        "MULTIPOLYGON EMPTY");
+  }
+
+  public void testMultiPolygonWithEmpty() {
+    checkFix("MULTIPOLYGON (((10 40, 40 40, 40 10, 10 10, 10 40)), EMPTY, ((50 40, 80 40, 80 10, 50 10, 50 40)))",
+        "MULTIPOLYGON (((10 40, 40 40, 40 10, 10 10, 10 40)), ((50 40, 80 40, 80 10, 50 10, 50 40)))");
+  }
+
+  public void testMultiPolygonWithCollapse() {
+    checkFix("MULTIPOLYGON (((10 40, 40 40, 40 10, 10 10, 10 40)), ((50 40, 50 40, 50 40, 50 40, 50 40)))",
+        "POLYGON ((10 10, 10 40, 40 40, 40 10, 10 10))");
+  }
+
+  public void testMultiPolygonKeepCollapse() {
+    checkFixKeepCollapse("MULTIPOLYGON (((10 40, 40 40, 40 10, 10 10, 10 40)), ((50 40, 50 40, 50 40, 50 40, 50 40)))",
+        "GEOMETRYCOLLECTION (POINT (50 40), POLYGON ((10 10, 10 40, 40 40, 40 10, 10 10)))");
+  }
+
+  //----------------------------------------
+
+  public void testGCEmpty() {
+    checkFix("GEOMETRYCOLLECTION EMPTY",
+        "GEOMETRYCOLLECTION EMPTY");
+  }
+
+  public void testGCWithAllEmpty() {
+    checkFix("GEOMETRYCOLLECTION (POINT EMPTY, LINESTRING EMPTY, POLYGON EMPTY)",
+        "GEOMETRYCOLLECTION (POINT EMPTY, LINESTRING EMPTY, POLYGON EMPTY)");
   }
 
   //================================================
