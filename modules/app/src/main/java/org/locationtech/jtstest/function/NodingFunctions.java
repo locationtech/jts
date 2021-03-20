@@ -48,7 +48,7 @@ public class NodingFunctions
 
   public static boolean isNodingValid(Geometry geom) {
     FastNodingValidator nv = new FastNodingValidator(
-        SegmentStringUtil.extractNodedSegmentStrings(geom));
+        SegmentStringUtil.extractBasicSegmentStrings(geom));
     return nv.isValid();
   }
 
@@ -61,7 +61,7 @@ public class NodingFunctions
 
   public static Geometry findOneNode(Geometry geom) {
     FastNodingValidator nv = new FastNodingValidator(
-        SegmentStringUtil.extractNodedSegmentStrings(geom));
+        SegmentStringUtil.extractBasicSegmentStrings(geom));
     nv.isValid();
     List intPts = nv.getIntersections();
     if (intPts.size() == 0) return FunctionsUtil.getFactoryOrDefault(geom).createPoint();
@@ -72,7 +72,7 @@ public class NodingFunctions
   public static Geometry findNodes(Geometry geom)
   {
     List<Coordinate> intPtsList = FastNodingValidator.computeIntersections( 
-        SegmentStringUtil.extractNodedSegmentStrings(geom) );
+        SegmentStringUtil.extractBasicSegmentStrings(geom) );
     return FunctionsUtil.getFactoryOrDefault(null)
         .createMultiPointFromCoords( dedup(intPtsList) );
   }
@@ -113,7 +113,7 @@ public class NodingFunctions
 
   private static void processNodes(Geometry geom, NodingIntersectionFinder intFinder) {
     Noder noder = new MCIndexNoder( intFinder );
-    noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
+    noder.computeNodes( SegmentStringUtil.extractBasicSegmentStrings(geom) );
   }
 
   public static Geometry MCIndexNodingWithPrecision(Geometry geom, double scaleFactor)
@@ -134,26 +134,15 @@ public class NodingFunctions
     noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
     return SegmentStringUtil.toGeometry(noder.getNodedSubstrings(), FunctionsUtil.getFactoryOrDefault(geom));
   }
-
-  private static List createSegmentStrings(Geometry geom)
-  {
-    List segs = new ArrayList();
-    List lines = LinearComponentExtracter.getLines(geom);
-    for (Iterator i = lines.iterator(); i.hasNext(); ) {
-      LineString line = (LineString) i.next();
-      segs.add(new NodedSegmentString(line.getCoordinates(), null));
-    }
-    return segs;
-  }
   
   @Metadata(description="Nodes input using the SnappingNoder")
   public static Geometry snappingNoder(Geometry geom, Geometry geom2, 
       @Metadata(title="Snap distance")
       double snapDistance)
   {
-    List segs = createSegmentStrings(geom);
+    List segs = SegmentStringUtil.extractNodedSegmentStrings(geom);
     if (geom2 != null) {
-      List segs2 = createSegmentStrings(geom2);
+      List segs2 = SegmentStringUtil.extractNodedSegmentStrings(geom2);
       segs.addAll(segs2);
     }
     Noder noder = new SnappingNoder(snapDistance);
@@ -167,9 +156,9 @@ public class NodingFunctions
       @Metadata(title="Scale factor")
       double scaleFactor)
   {
-    List segs = createSegmentStrings(geom);
+    List segs = SegmentStringUtil.extractNodedSegmentStrings(geom);
     if (geom2 != null) {
-      List segs2 = createSegmentStrings(geom2);
+      List segs2 = SegmentStringUtil.extractNodedSegmentStrings(geom2);
       segs.addAll(segs2);
     }
     PrecisionModel pm = new PrecisionModel(scaleFactor);
