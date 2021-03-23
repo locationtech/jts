@@ -13,6 +13,7 @@ package org.locationtech.jts.algorithm.construct;
 
 import java.util.PriorityQueue;
 
+import org.locationtech.jts.algorithm.Centroid;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -55,6 +56,9 @@ import org.locationtech.jts.operation.distance.IndexedFacetDistance;
  * </ul>
  * 
  * @author Martin Davis
+ * @see LargestEmptyCircle
+ * @see InteriorPoint
+ * @see Centroid
  *
  */
 public class MaximumInscribedCircle {
@@ -101,9 +105,13 @@ public class MaximumInscribedCircle {
    * Creates a new instance of a Maximum Inscribed Circle computation.
    * 
    * @param polygonal an areal geometry
-   * @param tolerance the distance tolerance for computing the centre point
+   * @param tolerance the distance tolerance for computing the centre point (must be positive)
+   * @throws IllegalArgumentException if the tolerance is non-positive, or the input geometry is non-polygonal or empty.
    */
   public MaximumInscribedCircle(Geometry polygonal, double tolerance) {
+    if (tolerance <= 0) {
+      throw new IllegalArgumentException("Tolerance must be positive");
+    }
     if (! (polygonal instanceof Polygon || polygonal instanceof MultiPolygon)) {
       throw new IllegalArgumentException("Input geometry must be a Polygon or MultiPolygon");
     }

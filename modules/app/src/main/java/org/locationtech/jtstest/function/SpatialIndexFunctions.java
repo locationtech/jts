@@ -24,7 +24,10 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.GeometryFilter;
+import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.index.SpatialIndex;
+import org.locationtech.jts.index.chain.MonotoneChain;
+import org.locationtech.jts.index.chain.MonotoneChainBuilder;
 import org.locationtech.jts.index.hprtree.HPRtree;
 import org.locationtech.jts.index.kdtree.KdTree;
 import org.locationtech.jts.index.quadtree.Quadtree;
@@ -233,5 +236,17 @@ public class SpatialIndexFunctions
       
     });
     return index;
+  }
+  
+  public static Geometry monotoneChains(Geometry geom) {
+    Coordinate[] pts = geom.getCoordinates();
+    List<MonotoneChain> chains = MonotoneChainBuilder.getChains(pts);
+    List<LineString> lines = new ArrayList<LineString>();
+    for (MonotoneChain mc : chains) {
+      Coordinate[] mcPts = mc.getCoordinates();
+      LineString line = geom.getFactory().createLineString(mcPts);
+      lines.add(line);
+    }
+    return geom.getFactory().buildGeometry(lines);
   }
 }

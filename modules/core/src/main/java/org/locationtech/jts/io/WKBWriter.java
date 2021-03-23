@@ -45,10 +45,8 @@ import org.locationtech.jts.util.Assert;
  * <ul>
  * <li><b>Point</b>: a <code>WKBPoint</code> with <code>NaN</code> ordinate values</li> 
  * <li><b>LineString</b>: a <code>WKBLineString</code> with zero points</li>
- * <li><b>Polygon</b>: currently output as a <code>WKBPolygon</code> with one <code>LinearRing</code> with zero points.
- * <i>Note: This is different to other systems.  It will change to a <code>WKBPolygon</code> with zero <code>LinearRing</code>s.</i>
- * </li>
- * <li><b>Multi geometries</b>: a <code>WKBMulti</code> geometry of appropriate type with zero elements</li>
+ * <li><b>Polygon</b>: a <code>WKBPolygon</code> with zero rings</li>
+ * <li><b>Multigeometries</b>: a <code>WKBMulti</code> geometry of appropriate type with zero elements</li>
  * <li><b>GeometryCollections</b>: a <code>WKBGeometryCollection</code> with zero elements</li>
  * </ul></li>
  * </ul>
@@ -62,6 +60,11 @@ import org.locationtech.jts.util.Assert;
  * by setting the third bit of the <tt>wkbType</tt> word.
  * EWKB format is upward-compatible with the original SFS WKB format.
  * <p>
+ * SRID output is optimized, if specified. 
+ * Only the top-level geometry has the SRID included.
+ * This assumes that all geometries in a collection have the same SRID as 
+ * the collection (which is the JTS convention).
+ * <p>
  * This class supports reuse of a single instance to read multiple
  * geometries. This class is not thread-safe; each thread should create its own
  * instance.
@@ -71,7 +74,7 @@ import org.locationtech.jts.util.Assert;
  * supported by JTS.
  * <p>
  * <i>The specification uses a syntax language similar to that used in
- * the C language.  Bitfields are specified from hi-order to lo-order bits.</i>
+ * the C language.  Bitfields are specified from high-order to low-order bits.</i>
  * <p>
  * <blockquote><pre>
  * 
@@ -344,7 +347,8 @@ public class WKBWriter
     writeByteOrder(os);
     writeGeometryType(WKBConstants.wkbPoint, pt, os);
     if (pt.getCoordinateSequence().size() == 0) {
-      writeNaNs(2, os);
+      // write empty point as NaNs (extension to OGC standard)
+      writeNaNs(outputDimension, os);
     } else {
       writeCoordinateSequence(pt.getCoordinateSequence(), false, os);
     }
@@ -362,6 +366,11 @@ public class WKBWriter
   {
     writeByteOrder(os);
     writeGeometryType(WKBConstants.wkbPolygon, poly, os);
+    //--- write empty polygons with no rings (OCG extension)
+    if (poly.isEmpty()) {
+      writeInt(0, os);
+      return;
+    }
     writeInt(poly.getNumInteriorRing() + 1, os);
     writeCoordinateSequence(poly.getExteriorRing().getCoordinateSequence(), true, os);
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
@@ -376,9 +385,12 @@ public class WKBWriter
     writeByteOrder(os);
     writeGeometryType(geometryType, gc, os);
     writeInt(gc.getNumGeometries(), os);
+    boolean originalIncludeSRID = this.includeSRID;
+    this.includeSRID = false;
     for (int i = 0; i < gc.getNumGeometries(); i++) {
       write(gc.getGeometryN(i), os);
     }
+    this.includeSRID = originalIncludeSRID;
   }
 
   private void writeByteOrder(OutStream os) throws IOException

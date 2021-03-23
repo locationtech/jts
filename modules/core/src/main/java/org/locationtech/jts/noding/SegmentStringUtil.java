@@ -48,11 +48,11 @@ public class SegmentStringUtil
 
   /**
    * Extracts all linear components from a given {@link Geometry}
-   * to {@link SegmentString}s.
+   * to {@link NodedSegmentString}s.
    * The SegmentString data item is set to be the source Geometry.
    * 
    * @param geom the geometry to extract from
-   * @return a List of SegmentStrings
+   * @return a List of NodedSegmentStrings
    */
   public static List extractNodedSegmentStrings(Geometry geom)
   {
@@ -65,6 +65,27 @@ public class SegmentStringUtil
     }
     return segStr;
   }
+  
+  /**
+   * Extracts all linear components from a given {@link Geometry}
+   * to {@link BasicSegmentString}s.
+   * The SegmentString data item is set to be the source Geometry.
+   * 
+   * @param geom the geometry to extract from
+   * @return a List of BasicSegmentStrings
+   */
+  public static List extractBasicSegmentStrings(Geometry geom)
+  {
+    List segStr = new ArrayList();
+    List lines = LinearComponentExtracter.getLines(geom);
+    for (Iterator i = lines.iterator(); i.hasNext(); ) {
+      LineString line = (LineString) i.next();
+      Coordinate[] pts = line.getCoordinates();
+      segStr.add(new BasicSegmentString(pts, geom));
+    }
+    return segStr;
+  }
+  
 
   /**
    * Converts a collection of {@link SegmentString}s into a {@link Geometry}.

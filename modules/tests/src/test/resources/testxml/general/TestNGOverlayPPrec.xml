@@ -1,0 +1,111 @@
+<run>
+<desc>Tests for OverlayNG operations with point inputs.
+Covers topological situations with precision collapse,
+Uses snap-rounding.
+</desc>
+<!--  Precision must be specified for each operation.
+      rather than a global precision model, 
+      since that rounds input coordinates --> 
+  
+<case>
+  <desc>PP - same point</desc>
+  <a>
+POINT (10.1 10)
+  </a>
+  <b>
+POINT (10 10.1)
+  </b>
+<test>  <op name="intersectionSR" arg1="A" arg2="B" arg3="1">
+POINT (10 10)
+  </op></test>
+<test>  <op name="unionSR" arg1="A" arg2="B" arg3="1">
+POINT (10 10)
+  </op></test>
+<test>  <op name="differenceSR" arg1="A" arg2="B" arg3="1">
+POINT EMPTY
+  </op></test>
+<test>  <op name="differenceSR" arg1="B" arg2="A" arg3="1">
+POINT EMPTY
+  </op></test>
+<test>  <op name="symdifferenceSR" arg1="A" arg2="B" arg3="1">
+POINT EMPTY
+  </op></test>
+</case>
+
+<case>
+  <desc>PP - different point</desc>
+  <a>
+POINT (10.1 10.4)
+  </a>
+  <b>
+POINT (10.5 10.6)
+  </b>
+<test>  <op name="intersectionSR" arg1="A" arg2="B" arg3="1">
+POINT EMPTY
+  </op></test>
+<test>  <op name="unionSR" arg1="A" arg2="B" arg3="1">
+MULTIPOINT ((10 10), (11 11))
+  </op></test>
+<test>  <op name="differenceSR" arg1="A" arg2="B" arg3="1">
+POINT (10 10)
+  </op></test>
+<test>  <op name="differenceSR" arg1="B" arg2="A" arg3="1">
+POINT (11 11)
+  </op></test>
+<test>  <op name="symdifferenceSR" arg1="A" arg2="B" arg3="1">
+MULTIPOINT ((10 10), (11 11))
+  </op></test>
+</case>
+
+<case>
+  <desc>PL - disjoint (line is not rounded)</desc>
+  <a>
+POINT (10.1 10.4)
+  </a>
+  <b>
+LINESTRING (9.6 10, 20.1 19.6)
+  </b>
+<test>  <op name="intersectionSR" arg1="A" arg2="B" arg3="1">
+POINT EMPTY
+  </op></test>
+<test>  <op name="unionSR" arg1="A" arg2="B" arg3="1">
+LINESTRING (10 10, 20 20)
+  </op></test>
+<test>  <op name="differenceSR" arg1="A" arg2="B" arg3="1">
+POINT (10 10)
+  </op></test>
+<test>  <op name="differenceSR" arg1="B" arg2="A" arg3="1">
+LINESTRING (10 10, 20 20)
+  </op></test>
+<test>  <op name="symdifferenceSR" arg1="A" arg2="B" arg3="1">
+LINESTRING (10 10, 20 20)
+  </op></test>
+</case>
+
+<case>
+  <desc>PA - overlapping in interior</desc>
+  <a>
+POINT (3.2 1.5)
+  </a>
+  <b>
+POLYGON ((1 4, 1 1, 3 1, 3.6 3.6, 1 4))
+  </b>
+<test>  <op name="intersectionSR" arg1="A" arg2="B" arg3="1">
+POINT (3 2)
+  </op></test>
+<test>  <op name="unionSR" arg1="A" arg2="B" arg3="1">
+POLYGON ((1 1, 1 4, 4 4, 3 1, 1 1))
+  </op></test>
+<test>  <op name="differenceSR" arg1="A" arg2="B" arg3="1">
+POINT EMPTY
+  </op></test>
+<test>  <op name="differenceSR" arg1="B" arg2="A" arg3="1">
+POLYGON ((1 1, 1 4, 4 4, 3 1, 1 1))
+  </op></test>
+<test>  <op name="symdifferenceSR" arg1="A" arg2="B" arg3="1">
+POLYGON ((1 1, 1 4, 4 4, 3 1, 1 1))
+  </op></test>
+</case>
+
+
+</run>

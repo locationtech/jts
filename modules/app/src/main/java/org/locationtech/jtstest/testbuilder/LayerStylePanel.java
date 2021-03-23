@@ -45,6 +45,7 @@ import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
 import org.locationtech.jtstest.testbuilder.ui.style.LayerStyle;
 import org.locationtech.jtstest.testbuilder.ui.style.Palette;
+import org.locationtech.jtstest.testbuilder.ui.style.VertexStyle;
 
 public class LayerStylePanel extends JPanel {
   private Layer layer;
@@ -62,12 +63,12 @@ public class LayerStylePanel extends JPanel {
   
   private JCheckBox cbVertex;
   private JPanel btnVertexColor;
-  private JSpinner spinnerVertexSize;
+  private JSpinner spinVertexSize;
   private SpinnerNumberModel vertexSizeModel;
   
   private JCheckBox cbLabel;
   private JPanel btnLabelColor;
-  private JSpinner spinnerLabelSize;
+  private JSpinner spinLabelSize;
   private SpinnerNumberModel labelSizeModel;
   
   private JCheckBox cbStroked;
@@ -76,10 +77,12 @@ public class LayerStylePanel extends JPanel {
   private JCheckBox cbStructure;
   private JCheckBox cbVertexLabel;
   private JCheckBox cbOffset;
-  private JSpinner spinnerOffsetSize;
+  private JSpinner spinOffsetSize;
   private SpinnerNumberModel offsetSizeModel;
   private JCheckBox cbEndpoint;
   private JComboBox comboPalette;
+  private JCheckBox cbSegIndex;
+  private JComboBox comboVertexSymbol;
 
   
   public LayerStylePanel() {
@@ -102,18 +105,20 @@ public class LayerStylePanel extends JPanel {
 
     cbVertex.setSelected(layer.getLayerStyle().isVertices());
     cbVertexLabel.setSelected(layer.getLayerStyle().isVertexLabels());
+    setVertexSymbol(comboVertexSymbol, layer.getLayerStyle().getVertexSymbol());
     vertexSizeModel.setValue(layer.getLayerStyle().getVertexSize());
     cbLabel.setSelected(layer.getLayerStyle().isLabel());
     labelSizeModel.setValue(layer.getLayerStyle().getLabelSize());
     cbEndpoint.setSelected(layer.getLayerStyle().isEndpoints());
     cbDashed.setSelected(geomStyle().isDashed());
     cbOffset.setSelected(layer.getLayerStyle().isOffset());
-    offsetSizeModel.setValue( layer.getLayerStyle().getOffsetSize() );
+    offsetSizeModel.setValue(layer.getLayerStyle().getOffsetSize() );
     cbStroked.setSelected(geomStyle().isStroked());
     cbFilled.setSelected(geomStyle().isFilled());
     cbOrient.setSelected(layer.getLayerStyle().isOrientations());
-    cbStructure.setSelected(layer.getLayerStyle().isOrientations());
-    lineWidthModel.setValue(geomStyle().getStrokeWidth());
+    cbStructure.setSelected(layer.getLayerStyle().isStructure());
+    cbSegIndex.setSelected(layer.getLayerStyle().isSegIndex());
+    lineWidthModel.setValue((double) geomStyle().getStrokeWidth());
     setPaletteType(comboPalette, layer.getLayerStyle().getFillType());
     updateStyleControls();
   }
@@ -219,11 +224,11 @@ public class LayerStylePanel extends JPanel {
         }
        );
     
-    vertexSizeModel = new SpinnerNumberModel(4.0, 0, 100.0, 1);
-    spinnerVertexSize = new JSpinner(vertexSizeModel);
-    spinnerVertexSize.setMaximumSize(new Dimension(40,16));
-    spinnerVertexSize.setAlignmentX(Component.LEFT_ALIGNMENT);
-    spinnerVertexSize.addChangeListener(new ChangeListener() {
+    vertexSizeModel = new SpinnerNumberModel(4, 0, 100, 1);
+    spinVertexSize = new JSpinner(vertexSizeModel);
+    spinVertexSize.setMaximumSize(new Dimension(40,16));
+    spinVertexSize.setAlignmentX(Component.LEFT_ALIGNMENT);
+    spinVertexSize.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int size = vertexSizeModel.getNumber().intValue();
         layer.getLayerStyle().setVertexSize(size);
@@ -242,8 +247,19 @@ public class LayerStylePanel extends JPanel {
       }
     });
 
+    comboVertexSymbol = new JComboBox(vertexSymbolNames);
+    comboVertexSymbol.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        JComboBox cb = (JComboBox)e.getSource();
+        int symType = getVertexSymbol(cb);
+        layer.getLayerStyle().setVertexSymbol(symType);
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
     
-    addRow("Vertices", cbVertex, btnVertexColor, spinnerVertexSize, cbVertexLabel);
+    comboVertexSymbol.setToolTipText(AppStrings.TIP_STYLE_SYMBOL);
+   
+    addRow("Vertices", cbVertex, btnVertexColor, spinVertexSize, comboVertexSymbol, cbVertexLabel);
     //=============================================
 
     cbStroked = new JCheckBox();
@@ -279,7 +295,7 @@ public class LayerStylePanel extends JPanel {
       }
     });
 
-    lineWidthModel = new SpinnerNumberModel(1.0, 0, 100.0, 0.2);
+    lineWidthModel = new SpinnerNumberModel(1.0, 0, 100, 0.2);
     spinnerLineWidth = new JSpinner(lineWidthModel);
     //widthSpinner.setMinimumSize(new Dimension(50,12));
     //widthSpinner.setPreferredSize(new Dimension(50,12));
@@ -306,9 +322,6 @@ public class LayerStylePanel extends JPanel {
         }
       }
     });
-    addRow("Line", cbStroked, btnLineColor, btnVertexSynch, sliderLineAlpha, spinnerLineWidth);
-
-    //=============================================
     cbDashed = new JCheckBox();
     cbDashed.setText("Dashed");
     //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
@@ -320,6 +333,33 @@ public class LayerStylePanel extends JPanel {
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
+    cbOffset = new JCheckBox();
+    cbOffset.setText("Offset");
+    //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
+    cbOffset.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbOffset.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        layer.getLayerStyle().setOffset(cbOffset.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+    offsetSizeModel = new SpinnerNumberModel(LayerStyle.INIT_OFFSET_SIZE, -100, 100, 1);
+    spinOffsetSize = new JSpinner(offsetSizeModel);
+    spinOffsetSize.setMaximumSize(new Dimension(40,16));
+    spinOffsetSize.setAlignmentX(Component.LEFT_ALIGNMENT);
+    spinOffsetSize.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int size = offsetSizeModel.getNumber().intValue();
+        layer.getLayerStyle().setOffsetSize(size);
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+
+    addRow("Line", cbStroked, btnLineColor, btnVertexSynch, sliderLineAlpha, spinnerLineWidth, 
+        cbDashed, cbOffset, spinOffsetSize);
+
+    //=============================================
     
     cbEndpoint = new JCheckBox();
     cbEndpoint.setText("Endpoints");
@@ -354,31 +394,20 @@ public class LayerStylePanel extends JPanel {
       }
     });
 
-    cbOffset = new JCheckBox();
-    cbOffset.setText("Offset");
-    //cbDashed.setToolTipText(AppStrings.STYLE_VERTEX_ENABLE);
-    cbOffset.setAlignmentX(Component.LEFT_ALIGNMENT);
-    cbOffset.addActionListener(new java.awt.event.ActionListener() {
+    cbSegIndex = new JCheckBox();
+    cbSegIndex.setText("Index");
+    cbSegIndex.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbSegIndex.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (layer == null) return;
-        layer.getLayerStyle().setOffset(cbOffset.isSelected());
+        layer.getLayerStyle().setSegIndex(cbSegIndex.isSelected());
         JTSTestBuilder.controller().geometryViewChanged();
       }
     });
-    offsetSizeModel = new SpinnerNumberModel(LayerStyle.INIT_OFFSET_SIZE, -100, 100.0, 1);
-    spinnerOffsetSize = new JSpinner(offsetSizeModel);
-    spinnerOffsetSize.setMaximumSize(new Dimension(40,16));
-    spinnerOffsetSize.setAlignmentX(Component.LEFT_ALIGNMENT);
-    spinnerOffsetSize.addChangeListener(new ChangeListener() {
-      public void stateChanged(ChangeEvent e) {
-        int size = offsetSizeModel.getNumber().intValue();
-        layer.getLayerStyle().setOffsetSize(size);
-        JTSTestBuilder.controller().geometryViewChanged();
-      }
-    });
+
     
    // Leave on separate line to allow room for dash style
-    addRow("", cbDashed, cbEndpoint, cbOrient, cbStructure, cbOffset, spinnerOffsetSize);
+    addRow("", cbEndpoint, cbOrient, cbStructure, cbSegIndex);
     //=============================================
 
     cbFilled = new JCheckBox();
@@ -465,11 +494,11 @@ public class LayerStylePanel extends JPanel {
         }
        );
     
-    labelSizeModel = new SpinnerNumberModel(4.0, 0, 100.0, 1);
-    spinnerLabelSize = new JSpinner(labelSizeModel);
-    spinnerLabelSize.setMaximumSize(new Dimension(40,16));
-    spinnerLabelSize.setAlignmentX(Component.LEFT_ALIGNMENT);
-    spinnerLabelSize.addChangeListener(new ChangeListener() {
+    labelSizeModel = new SpinnerNumberModel(4, 0, 100, 1);
+    spinLabelSize = new JSpinner(labelSizeModel);
+    spinLabelSize.setMaximumSize(new Dimension(40,16));
+    spinLabelSize.setAlignmentX(Component.LEFT_ALIGNMENT);
+    spinLabelSize.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int size = labelSizeModel.getNumber().intValue();
         layer.getLayerStyle().setLabelSize(size);
@@ -479,13 +508,14 @@ public class LayerStylePanel extends JPanel {
 
 
     
-    addRow("Label", cbLabel, btnLabelColor, spinnerLabelSize);
+    addRow("Label", cbLabel, btnLabelColor, spinLabelSize);
     
     //=============================================
     
     return containerPanel;
   }
 
+  //-----------------------------------------
   static String[] paletteNames = { "Basic", "Varying", "Rainbow", "Rainbow Random" }; 
 
   private static int getPaletteType(JComboBox comboPal) {
@@ -504,6 +534,22 @@ public class LayerStylePanel extends JPanel {
     if (paletteType == Palette.TYPE_RAINBOW) index = 2;
     if (paletteType == Palette.TYPE_RAINBOW_RANDOM) index = 3;
     comboPal.setSelectedIndex(index);
+  }
+  
+  //-----------------------------------------
+  static String[] vertexSymbolNames = { "Square", "Square Hollow", "Circle", "Circle Hollow" }; 
+
+  private static int getVertexSymbol(JComboBox combo) {
+    String name = (String)combo.getSelectedItem();
+    
+    for (int i = 0; i < vertexSymbolNames.length; i++) {
+      if (name.equalsIgnoreCase(vertexSymbolNames[i])) return i;
+    }
+    return VertexStyle.SYM_SQUARE_SOLID;
+  }
+  
+  private static void setVertexSymbol(JComboBox combo, int symbolType) {
+    combo.setSelectedIndex(symbolType);
   }
   
   protected static Color lineColorFromFill(Color clr) {

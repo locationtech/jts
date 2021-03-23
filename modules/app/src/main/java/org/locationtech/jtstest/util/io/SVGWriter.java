@@ -21,31 +21,13 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.util.*;
 
 /**
- * Writes the Well-Known Text representation of a {@link Geometry}.
- * The Well-Known Text format is defined in the
- * OGC <A HREF="http://www.opengis.org/techno/specs.htm">
- * <i>Simple Features Specification for SQL</i></A>.
- * See {@link WKTReader} for a formal specification of the format syntax.
- * <p>
- * The <code>WKTWriter</code> outputs coordinates rounded to the precision
- * model. Only the maximum number of decimal places 
- * necessary to represent the ordinates to the required precision will be
- * output.
- * <p>
- * The SFS WKT spec does not define a special tag for {@link LinearRing}s.
- * Under the spec, rings are output as <code>LINESTRING</code>s.
- * In order to allow precisely specifying constructed geometries, 
- * JTS also supports a non-standard <code>LINEARRING</code> tag which is used 
- * to output LinearRings.
+ * Writes the SVG representation of a {@link Geometry}.
  *
  * @version 1.7
  * @see WKTReader
  */
 public class SVGWriter
 {
-
-  private static final int INDENT = 2;
-
   /**
    *  Creates the <code>DecimalFormat</code> used to write <code>double</code>s
    *  with a sufficient number of decimal places.
@@ -82,11 +64,9 @@ public class SVGWriter
     return buf.toString();
   }
 
-  private int outputDimension = 2;
   private DecimalFormat formatter;
   private boolean isFormatted = false;
   private boolean useFormatting = false;
-  private int level = 0;
   private int coordsPerLine = -1;
   private String indentTabStr = "  ";
 
@@ -168,7 +148,7 @@ public class SVGWriter
     this.useFormatting = useFormatting;
     formatter = createFormatter(geometry.getPrecisionModel());
     //writer.write("<g>\n");
-    appendGeometryTaggedText(geometry, 0, writer);
+    appendGeometry(geometry, 0, writer);
     //writer.write("</g>\n");
   }
 
@@ -180,84 +160,38 @@ public class SVGWriter
    *@param  geometry  the <code>Geometry</code> to process
    *@param  writer    the output writer to append to
    */
-  private void appendGeometryTaggedText(Geometry geometry, int level, Writer writer)
+  private void appendGeometry(Geometry geometry, int level, Writer writer)
     throws IOException
   {
     indent(level, writer);
 
     if (geometry instanceof Point) {
       Point point = (Point) geometry;
-      appendPointTaggedText(point.getCoordinate(), level, writer, point.getPrecisionModel());
+      appendPoint(point.getCoordinate(), level, writer, point.getPrecisionModel());
     }
-    else if (geometry instanceof LinearRing) {
-      appendLinearRingTaggedText((LinearRing) geometry, level, writer);
-    }
-    else if (geometry instanceof LineString) {
-      appendLineStringTaggedText((LineString) geometry, level, writer);
+    else if ((geometry instanceof LinearRing) 
+      || (geometry instanceof LineString)) {
+      appendLineString((LineString) geometry, level, false, writer);
     }
     else if (geometry instanceof Polygon) {
       appendPolygon((Polygon) geometry, level, writer);
     }
     else if (geometry instanceof MultiPoint) {
-      appendMultiPointTaggedText((MultiPoint) geometry, level, writer);
+      appendMultiPoint((MultiPoint) geometry, level, writer);
     }
     else if (geometry instanceof MultiLineString) {
-      appendMultiLineStringTaggedText((MultiLineString) geometry, level, writer);
+      appendMultiLineString((MultiLineString) geometry, level, false, writer);
     }
     else if (geometry instanceof MultiPolygon) {
-      appendMultiPolygonTaggedText((MultiPolygon) geometry, level, writer);
+      appendMultiPolygon((MultiPolygon) geometry, level, writer);
     }
     else if (geometry instanceof GeometryCollection) {
-      appendGeometryCollectionTaggedText((GeometryCollection) geometry, level, writer);
+      appendGeometryCollection((GeometryCollection) geometry, level, writer);
     }
     else {
       Assert.shouldNeverReachHere("Unsupported Geometry implementation:"
            + geometry.getClass());
     }
-
-
-  }
-
-  /**
-   *  Converts a <code>Coordinate</code> to &lt;Point Tagged Text&gt; format,
-   *  then appends it to the writer.
-   *
-   *@param  coordinate      the <code>Coordinate</code> to process
-   *@param  writer          the output writer to append to
-   *@param  precisionModel  the <code>PrecisionModel</code> to use to convert
-   *      from a precise coordinate to an external coordinate
-   */
-  private void appendPointTaggedText(Coordinate coordinate, int level, Writer writer,
-      PrecisionModel precisionModel)
-    throws IOException
-  {
-    appendPoint(coordinate, level, writer, precisionModel);
-  }
-
-  /**
-   *  Converts a <code>LineString</code> to &lt;LineString Tagged Text&gt;
-   *  format, then appends it to the writer.
-   *
-   *@param  lineString  the <code>LineString</code> to process
-   *@param  writer      the output writer to append to
-   */
-  private void appendLineStringTaggedText(LineString lineString, int level, Writer writer)
-    throws IOException
-  {
-    appendLineString(lineString, level, false, writer);
-  }
-
-  /**
-   *  Converts a <code>LinearRing</code> to &lt;LinearRing Tagged Text&gt;
-   *  format, then appends it to the writer.
-   *
-   *@param  linearRing  the <code>LinearRing</code> to process
-   *@param  writer      the output writer to append to
-   */
-  private void appendLinearRingTaggedText(LinearRing linearRing, int level, Writer writer)
-    throws IOException
-  {
-    appendLineString(linearRing, level, false, writer);
   }
 
   /**
@@ -276,60 +210,6 @@ public class SVGWriter
     else {
       appendPolygonPath(polygon, level, false, writer);
     }
-  }
-
-  /**
-   *  Converts a <code>MultiPoint</code> to &lt;MultiPoint Tagged Text&gt;
-   *  format, then appends it to the writer.
-   *
-   *@param  multipoint  the <code>MultiPoint</code> to process
-   *@param  writer      the output writer to append to
-   */
-  private void appendMultiPointTaggedText(MultiPoint multipoint, int level, Writer writer)
-    throws IOException
-  {
-    appendMultiPointText(multipoint, level, writer);
-  }
-
-  /**
-   *  Converts a <code>MultiLineString</code> to &lt;MultiLineString Tagged
-   *  Text&gt; format, then appends it to the writer.
-   *
-   *@param  multiLineString  the <code>MultiLineString</code> to process
-   *@param  writer           the output writer to append to
-   */
-  private void appendMultiLineStringTaggedText(MultiLineString multiLineString, int level,
-      Writer writer)
-    throws IOException
-  {
-    appendMultiLineStringText(multiLineString, level, false, writer);
-  }
-
-  /**
-   *  Converts a <code>MultiPolygon</code> to &lt;MultiPolygon Tagged Text&gt;
-   *  format, then appends it to the writer.
-   *
-   *@param  multiPolygon  the <code>MultiPolygon</code> to process
-   *@param  writer        the output writer to append to
-   */
-  private void appendMultiPolygonTaggedText(MultiPolygon multiPolygon, int level, Writer writer)
-    throws IOException
-  {
-    appendMultiPolygonText(multiPolygon, level, writer);
-  }
-
-  /**
-   *  Converts a <code>GeometryCollection</code> to &lt;GeometryCollection
-   *  Tagged Text&gt; format, then appends it to the writer.
-   *
-   *@param  geometryCollection  the <code>GeometryCollection</code> to process
-   *@param  writer              the output writer to append to
-   */
-  private void appendGeometryCollectionTaggedText(GeometryCollection geometryCollection, int level,
-      Writer writer)
-    throws IOException
-  {
-    appendGeometryCollectionText(geometryCollection, level, writer);
   }
 
   /**
@@ -359,23 +239,6 @@ public class SVGWriter
       throws IOException
   {
     writer.write(writeNumber(seq.getX(i)) + "," + writeNumber(seq.getY(i)));
-  }
-
-  /**
-   *  Converts a <code>Coordinate</code> to <code>&lt;Point&gt;</code> format,
-   *  then appends it to the writer.
-   *
-   *@param  coordinate      the <code>Coordinate</code> to process
-   *@param  writer          the output writer to append to
-   */
-  private void appendCoordinate(Coordinate coordinate, Writer writer)
-    throws IOException
-  {
-    writer.write(writeNumber(coordinate.x) + " " + writeNumber(coordinate.y));
-    if (outputDimension >= 3 && ! Double.isNaN(coordinate.getZ())) {
-      writer.write(" ");
-      writer.write(writeNumber(coordinate.getZ()));
-    }
   }
 
   /**
@@ -483,14 +346,6 @@ public class SVGWriter
         writer.write("' />\n");
     }
 
-  private void appendPathStart(boolean useFillRule, Writer writer) throws IOException {
-    String fillRule = useFillRule ? "fill-rule='evenodd' " :  "";
-    writer.write("<path " + fillRule + "d='");
-  }
-  private void appendPathEnd(Writer writer) throws IOException {
-    writer.write("' />\n");
-  }
-
 
   /**
    *  Converts a <code>MultiPoint</code> to &lt;MultiPoint Text&gt; format, then
@@ -499,7 +354,7 @@ public class SVGWriter
    *@param  multiPoint  the <code>MultiPoint</code> to process
    *@param  writer      the output writer to append to
    */
-  private void appendMultiPointText(MultiPoint multiPoint, int level, Writer writer)
+  private void appendMultiPoint(MultiPoint multiPoint, int level, Writer writer)
     throws IOException
   {
     if (multiPoint.isEmpty()) {
@@ -523,7 +378,7 @@ public class SVGWriter
    *@param  multiLineString  the <code>MultiLineString</code> to process
    *@param  writer           the output writer to append to
    */
-  private void appendMultiLineStringText(MultiLineString multiLineString, int level, boolean indentFirst,
+  private void appendMultiLineString(MultiLineString multiLineString, int level, boolean indentFirst,
       Writer writer)
     throws IOException
   {
@@ -545,15 +400,13 @@ public class SVGWriter
    *@param  multiPolygon  the <code>MultiPolygon</code> to process
    *@param  writer        the output writer to append to
    */
-  private void appendMultiPolygonText(MultiPolygon multiPolygon, int level, Writer writer)
+  private void appendMultiPolygon(MultiPolygon multiPolygon, int level, Writer writer)
     throws IOException
   {
       int level2 = level;
-      boolean doIndent = false;
       for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
         if (i > 0) {
           level2 = level + 1;
-          doIndent = true;
         }
         appendPolygon((Polygon) multiPolygon.getGeometryN(i), level2, writer);
       }
@@ -566,7 +419,7 @@ public class SVGWriter
    *@param  geometryCollection  the <code>GeometryCollection</code> to process
    *@param  writer              the output writer to append to
    */
-  private void appendGeometryCollectionText(GeometryCollection geometryCollection, int level,
+  private void appendGeometryCollection(GeometryCollection geometryCollection, int level,
       Writer writer)
     throws IOException
   {
@@ -575,17 +428,8 @@ public class SVGWriter
         if (i > 0) {
           level2 = level + 1;
         }
-        appendGeometryTaggedText(geometryCollection.getGeometryN(i), level2, writer);
+        appendGeometry(geometryCollection.getGeometryN(i), level2, writer);
       }
-  }
-
-  private void indentCoords(int coordIndex,  int level, Writer writer)
-    throws IOException
-  {
-    if (coordsPerLine <= 0
-        || coordIndex % coordsPerLine != 0)
-      return;
-    indent(level, writer);
   }
 
   private void indent(int level, Writer writer)

@@ -12,6 +12,7 @@
 
 package org.locationtech.jts.noding.snapround;
 
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.SpatialIndex;
@@ -50,7 +51,7 @@ public class MCIndexPointSnapper
    */
   public boolean snap(HotPixel hotPixel, SegmentString parentEdge, int hotPixelVertexIndex)
   {
-    final Envelope pixelEnv = hotPixel.getSafeEnvelope();
+    final Envelope pixelEnv = getSafeEnvelope(hotPixel);
     final HotPixelSnapAction hotPixelSnapAction = new HotPixelSnapAction(hotPixel, parentEdge, hotPixelVertexIndex);
 
     index.query(pixelEnv, new ItemVisitor() {
@@ -68,6 +69,23 @@ public class MCIndexPointSnapper
     return snap(hotPixel, null, -1);
   }
 
+  private static final double SAFE_ENV_EXPANSION_FACTOR = 0.75;
+  
+  /**
+   * Returns a "safe" envelope that is guaranteed to contain the hot pixel.
+   * The envelope returned is larger than the exact envelope of the 
+   * pixel by a safe margin.
+   * 
+   * @return an envelope which contains the hot pixel
+   */
+  public Envelope getSafeEnvelope(HotPixel hp)
+  {
+    double safeTolerance = SAFE_ENV_EXPANSION_FACTOR / hp.getScaleFactor();
+    Envelope safeEnv = new Envelope(hp.getCoordinate());
+    safeEnv.expandBy(safeTolerance);
+    return safeEnv;
+  }
+  
   public static class HotPixelSnapAction
       extends MonotoneChainSelectAction
   {
@@ -85,46 +103,65 @@ public class MCIndexPointSnapper
     }
 
     /**
-     * Reports whether the HotPixel caused a node to be added in any target
-     * segmentString (including its own). If so, the HotPixel must be added as a
-     * node as well.
-     * 
+     * Reports whether the HotPixel caused a
+     * node to be added in any target segmentString (including its own).
+     * If so, the HotPixel must be added as a node as well.
      * @return true if a node was added in any target segmentString.
      */
-    public boolean isNodeAdded() {
-      return isNodeAdded;
-    }
+    public boolean isNodeAdded() { return isNodeAdded; }
 
     /**
      * Check if a segment of the monotone chain intersects
      * the hot pixel vertex and introduce a snap node if so.
      * Optimized to avoid noding segments which
-     * contain the vertex (which otherwise 
+     * contain the vertex (which otherwise
      * would cause every vertex to be noded).
      */
     public void select(MonotoneChain mc, int startIndex)
     {
     	NodedSegmentString ss = (NodedSegmentString) mc.getContext();
       /**
-       * Check to avoid snapping a hotPixel vertex to the same vertex.
-       * This method is called for segments which intersects the 
-       * hot pixel,
-       * so need to check if either end of the segment is equal to the hot pixel
-       * and if so, do not snap.
-       * 
-       * Sep 22 2012 - MD - currently do need to snap to every vertex,
-       * since otherwise the testCollapse1 test in SnapRoundingTest fails.
+       * Check to avoid snapping a hotPixel vertex to the its orginal vertex.
+       * This method is called on segments which intersect the
+       * hot pixel.
+       * If either end of the segment is equal to the hot pixel
+       * do not snap.
        */
-      if (parentEdge == ss) {
-        // exit if hotpixel is equal to endpoint of target segment
+      if (parentEdge != null && ss == parentEdge) {
         if (startIndex == hotPixelVertexIndex
-            || startIndex + 1 == hotPixelVertexIndex)
+              || startIndex + 1 == hotPixelVertexIndex
+            )
           return;
       }
-      // snap and record if a node was created
-      isNodeAdded |= hotPixel.addSnappedNode(ss, startIndex);
+      // records if this HotPixel caused any node to be added
+      isNodeAdded |= addSnappedNode(hotPixel, ss, startIndex);
     }
 
+    /**
+     * Adds a new node (equal to the snap pt) to the specified segment
+     * if the segment passes through the hot pixel
+     *
+     * @param segStr
+     * @param segIndex
+     * @return true if a node was added to the segment
+     */
+    public boolean addSnappedNode(HotPixel hotPixel, 
+        NodedSegmentString segStr,
+        int segIndex
+        )
+    {
+      Coordinate p0 = segStr.getCoordinate(segIndex);
+      Coordinate p1 = segStr.getCoordinate(segIndex + 1);
+
+      if (hotPixel.intersects(p0, p1)) {
+        //System.out.println("snapped: " + snapPt);
+        //System.out.println("POINT (" + snapPt.x + " " + snapPt.y + ")");
+        segStr.addIntersection(hotPixel.getCoordinate(), segIndex);
+
+        return true;
+      }
+      return false;
+    }
   }
 
 }

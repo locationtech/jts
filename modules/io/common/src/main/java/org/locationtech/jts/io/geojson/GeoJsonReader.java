@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,10 +32,16 @@ import org.locationtech.jts.io.ParseException;
 
 
 /**
- * Reads a GeoJson Geometry from a JSON fragment into a {@link Geometry}.
+ * Reads a GeoJSON Geometry from a JSON fragment into a {@link Geometry}.
  * <p>
- * A specification of the GeoJson format can be found at the GeoJson web site:
+ * The current GeoJSON specification is 
+ * <a href='https://tools.ietf.org/html/rfc7946'>https://tools.ietf.org/html/rfc7946</a>.
+ * An older specification is on the GeoJSON web site:
  * <a href='http://geojson.org/geojson-spec.html'>http://geojson.org/geojson-spec.html</a>.
+ * <p>
+ * The reader does not require a particular orientation for polygon rings.
+ * <p>
+ * The reader reads empty or null coordinate arrays as empty geometries.
  * <p>
  * It is the caller's responsibility to ensure that the supplied
  * {@link PrecisionModel} matches the precision of the incoming data. If a lower
@@ -98,32 +105,31 @@ public class GeoJsonReader {
    * @return The resulting JTS Geometry
    * 
    * @throws ParseException
-   *           throws a ParseException if the JSON string cannot be parsed
+   *           throws a ParseException if the JSON string cannot be parsed as a Geometry
    */
+  @SuppressWarnings("unchecked")
   public Geometry read(Reader reader) throws ParseException {
-
-    Geometry result = null;
-
+    Map<String, Object> geometryMap = null;
     JSONParser parser = new JSONParser();
     try {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> geometryMap = (Map<String, Object>) parser
-          .parse(reader);
-
-      GeometryFactory geometryFactory = null;
-      if (this.gf == null) {
-        geometryFactory = this.getGeometryFactory(geometryMap);
-      } else {
-        geometryFactory = this.gf;
-      }
-
-      result = create(geometryMap, geometryFactory);
-
-    } catch (org.json.simple.parser.ParseException e) {
+      Object obj =  parser.parse(reader);
+      geometryMap = (Map<String, Object>) obj;
+    } catch (ClassCastException e) {
+      throw new ParseException("Could not parse Geometry from Json string.");
+    }catch (org.json.simple.parser.ParseException e) {
       throw new ParseException(e);
     } catch (IOException e) {
       throw new ParseException(e);
     }
+    
+    GeometryFactory geometryFactory = null;
+    if (this.gf == null) {
+      geometryFactory = this.getGeometryFactory(geometryMap);
+    } else {
+      geometryFactory = this.gf;
+    }
+
+    Geometry result = create(geometryMap, geometryFactory);
 
     return result;
   }
@@ -320,15 +326,15 @@ public class GeoJsonReader {
       List<List<List<Number>>> ringsList = (List<List<List<Number>>>) geometryMap
           .get(GeoJsonConstants.NAME_COORDINATES);
 
+      if (ringsList == null || ringsList.isEmpty()) {
+        return geometryFactory.createPolygon();
+      }
+
       List<CoordinateSequence> rings = new ArrayList<CoordinateSequence>();
 
       for (List<List<Number>> coordinates : ringsList) {
 
         rings.add(createCoordinateSequence(coordinates));
-      }
-
-      if (rings.isEmpty()) {
-        throw new IllegalArgumentException("Polygon specified with no rings.");
       }
 
       LinearRing outer = geometryFactory.createLinearRing(rings.get(0));
@@ -434,6 +440,9 @@ public class GeoJsonReader {
   private CoordinateSequence createCoordinateSequence(
       List<List<Number>> coordinates) {
     CoordinateSequence result = null;
+    if (coordinates == null) {
+      coordinates = Collections.EMPTY_LIST;
+    }
 
     result = new CoordinateArraySequence(coordinates.size());
 
@@ -456,6 +465,10 @@ public class GeoJsonReader {
   }
 
   private CoordinateSequence createCoordinate(List<Number> ordinates) {
+    if (ordinates == null || ordinates.size() == 0) {
+      return new CoordinateArraySequence(0);
+    }
+
     CoordinateSequence result = new CoordinateArraySequence(1);
 
     if (ordinates.size() > 0) {

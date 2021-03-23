@@ -12,20 +12,30 @@
 
 package org.locationtech.jts.noding.snapround;
 
+import org.locationtech.jts.algorithm.CGAlgorithmsDD;
 import org.locationtech.jts.algorithm.LineIntersector;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.noding.NodedSegmentString;
-import org.locationtech.jts.util.Assert;
+import org.locationtech.jts.io.WKTWriter;
 
 /**
  * Implements a "hot pixel" as used in the Snap Rounding algorithm.
- * A hot pixel contains the interior of the tolerance square and
+ * A hot pixel is a square region centred 
+ * on the rounded valud of the coordinate given,
+ * and of width equal to the size of the scale factor.
+ * It is a partially open region, which contains 
+ * the interior of the tolerance square and
  * the boundary
  * <b>minus</b> the top and right segments.
+ * This ensures that every point of the space lies in a unique hot pixel.
+ * It also matches the rounding semantics for numbers.
  * <p>
  * The hot pixel operations are all computed in the integer domain
  * to avoid rounding problems.
+ * <p>
+ * Hot Pixels support being marked as nodes.
+ * This is used to prevent introducing nodes at line vertices
+ * which do not have other lines snapped to them.
  *
  * @version 1.7
  */
@@ -33,55 +43,46 @@ public class HotPixel
 {
   // testing only
 //  public static int nTests = 0;
+  
+  private static final double TOLERANCE = 0.5;
 
-  private LineIntersector li;
-
-  private Coordinate pt;
   private Coordinate originalPt;
-  private Coordinate ptScaled;
-
-  private Coordinate p0Scaled;
-  private Coordinate p1Scaled;
-
   private double scaleFactor;
-
-  private double minx;
-  private double maxx;
-  private double miny;
-  private double maxy;
   
   /**
-   * The corners of the hot pixel, in the order:
-   *  10
-   *  23
+   * The scaled ordinates of the hot pixel point
    */
-  private Coordinate[] corner = new Coordinate[4];
-
-  private Envelope safeEnv = null;
-
+  private double hpx;
+  private double hpy;
+  
   /**
-   * Creates a new hot pixel, using a given scale factor.
+   * Indicates if this hot pixel must be a node in the output.
+   */
+  private boolean isNode = false;
+  
+  /**
+   * Creates a new hot pixel centered on a rounded point, using a given scale factor.
    * The scale factor must be strictly positive (non-zero).
    * 
-   * @param pt the coordinate at the centre of the pixel
+   * @param pt the coordinate at the centre of the pixel (already rounded)
    * @param scaleFactor the scaleFactor determining the pixel size.  Must be &gt; 0
    * @param li the intersector to use for testing intersection with line segments
    * 
    */
-  public HotPixel(Coordinate pt, double scaleFactor, LineIntersector li) {
+  public HotPixel(Coordinate pt, double scaleFactor) {
     originalPt = pt;
-    this.pt = pt;
     this.scaleFactor = scaleFactor;
-    this.li = li;
-    //tolerance = 0.5;
+    
     if (scaleFactor <= 0) 
       throw new IllegalArgumentException("Scale factor must be non-zero");
     if (scaleFactor != 1.0) {
-      this.pt = new Coordinate(scale(pt.x), scale(pt.y));
-      p0Scaled = new Coordinate();
-      p1Scaled = new Coordinate();
+      hpx = scaleRound(pt.getX());
+      hpy = scaleRound(pt.getY());
     }
-    initCorners(this.pt);
+    else {
+      hpx = pt.getX();
+      hpy = pt.getY();
+    }
   }
 
   /**
@@ -91,45 +92,78 @@ public class HotPixel
    */
   public Coordinate getCoordinate() { return originalPt; }
 
-  private static final double SAFE_ENV_EXPANSION_FACTOR = 0.75;
+  /**
+   * Gets the scale factor for the precision grid for this pixel.
+   * 
+   * @return the pixel scale factor
+   */
+  public double getScaleFactor() {
+    return scaleFactor;
+  }
+
+  /**
+   * Gets the width of the hot pixel in the original coordinate system.
+   * 
+   * @return the width of the hot pixel tolerance square
+   */
+  public double getWidth() {
+    return 1.0 / scaleFactor;
+  }
   
   /**
-   * Returns a "safe" envelope that is guaranteed to contain the hot pixel.
-   * The envelope returned will be larger than the exact envelope of the 
-   * pixel.
+   * Tests whether this pixel has been marked as a node.
    * 
-   * @return an envelope which contains the hot pixel
+   * @return true if the pixel is marked as a node
    */
-  public Envelope getSafeEnvelope()
-  {
-    if (safeEnv == null) {
-      double safeTolerance = SAFE_ENV_EXPANSION_FACTOR / scaleFactor;
-      safeEnv = new Envelope(originalPt.x - safeTolerance,
-                             originalPt.x + safeTolerance,
-                             originalPt.y - safeTolerance,
-                             originalPt.y + safeTolerance
-                             );
-    }
-    return safeEnv;
+  public boolean isNode() {
+    return isNode;
   }
-
-  private void initCorners(Coordinate pt)
-  {
-    double tolerance = 0.5;
-    minx = pt.x - tolerance;
-    maxx = pt.x + tolerance;
-    miny = pt.y - tolerance;
-    maxy = pt.y + tolerance;
-
-    corner[0] = new Coordinate(maxx, maxy);
-    corner[1] = new Coordinate(minx, maxy);
-    corner[2] = new Coordinate(minx, miny);
-    corner[3] = new Coordinate(maxx, miny);
+  
+  /**
+   * Sets this pixel to be a node.
+   */
+  public void setToNode() {
+    //System.out.println(this + " set to Node");
+    isNode = true;
   }
-
-  private double scale(double val)
+  
+  private double scaleRound(double val)
   {
     return (double) Math.round(val * scaleFactor);
+  }
+
+  /**
+   * Scale without rounding. 
+   * This ensures intersections are checked against original
+   * linework.
+   * This is required to ensure that intersections are not missed
+   * because the segment is moved by snapping.
+   * 
+   * @param val
+   * @return
+   */
+  private double scale(double val)
+  {
+    return val * scaleFactor;
+  }
+
+  /**
+   * Tests whether a coordinate lies in (intersects) this hot pixel.
+   * 
+   * @param p the coordinate to test
+   * @return true if the coordinate intersects this hot pixel
+   */
+  public boolean intersects(Coordinate p) {
+    double x = scale(p.x);
+    double y = scale(p.y);
+    if (x >= hpx + TOLERANCE) return false;
+    // check Left side
+    if (x < hpx - TOLERANCE) return false;
+    // check Top side
+    if (y >= hpy + TOLERANCE) return false;
+    // check Bottom side
+    if (y < hpy - TOLERANCE) return false;
+    return true;
   }
 
   /**
@@ -143,115 +177,139 @@ public class HotPixel
   public boolean intersects(Coordinate p0, Coordinate p1)
   {
     if (scaleFactor == 1.0)
-      return intersectsScaled(p0, p1);
+      return intersectsScaled(p0.x, p0.y, p1.x, p1.y);
 
-    copyScaled(p0, p0Scaled);
-    copyScaled(p1, p1Scaled);
-    return intersectsScaled(p0Scaled, p1Scaled);
+    double sp0x = scale(p0.x);
+    double sp0y = scale(p0.y);
+    double sp1x = scale(p1.x);
+    double sp1y = scale(p1.y);
+    return intersectsScaled(sp0x, sp0y, sp1x, sp1y);
   }
 
-  private void copyScaled(Coordinate p, Coordinate pScaled)
-  {
-    pScaled.x = scale(p.x);
-    pScaled.y = scale(p.y);
-  }
+  private boolean intersectsScaled(double p0x, double p0y,
+      double p1x, double p1y) {
+    // determine oriented segment pointing in positive X direction
+    double px = p0x;
+    double py = p0y;
+    double qx = p1x;
+    double qy = p1y;
+    if (px > qx) {
+      px = p1x;
+      py = p1y;
+      qx = p0x;
+      qy = p0y;
+    }  
+     /**
+     * Report false if segment env does not intersect pixel env.
+     * This check reflects the fact that the pixel Top and Right sides
+     * are open (not part of the pixel).
+     */   
+    // check Right side
+    double maxx = hpx + TOLERANCE;
+    double segMinx = Math.min(px, qx);
+    if (segMinx >= maxx) return false;
+    // check Left side
+    double minx = hpx - TOLERANCE;
+    double segMaxx = Math.max(px, qx);
+    if (segMaxx < minx) return false;
+    // check Top side
+    double maxy = hpy + TOLERANCE;
+    double segMiny = Math.min(py, qy);
+    if (segMiny >= maxy) return false;
+    // check Bottom side
+    double miny = hpy - TOLERANCE;
+    double segMaxy = Math.max(py, qy);
+    if (segMaxy < miny) return false;
 
-  private boolean intersectsScaled(Coordinate p0, Coordinate p1)
-  {
-    double segMinx = Math.min(p0.x, p1.x);
-    double segMaxx = Math.max(p0.x, p1.x);
-    double segMiny = Math.min(p0.y, p1.y);
-    double segMaxy = Math.max(p0.y, p1.y);
-
-    boolean isOutsidePixelEnv =  maxx < segMinx
-                         || minx > segMaxx
-                         || maxy < segMiny
-                         || miny > segMaxy;
-    if (isOutsidePixelEnv)
-      return false;
-    boolean intersects = intersectsToleranceSquare(p0, p1);
-//    boolean intersectsPixelClosure = intersectsPixelClosure(p0, p1);
-
-//    if (intersectsPixel != intersects) {
-//      Debug.println("Found hot pixel intersection mismatch at " + pt);
-//      Debug.println("Test segment: " + p0 + " " + p1);
-//    }
-
-/*
-    if (scaleFactor != 1.0) {
-      boolean intersectsScaled = intersectsScaledTest(p0, p1);
-      if (intersectsScaled != intersects) {
-        intersectsScaledTest(p0, p1);
-//        Debug.println("Found hot pixel scaled intersection mismatch at " + pt);
-//        Debug.println("Test segment: " + p0 + " " + p1);
-      }
-      return intersectsScaled;
+    /**
+     * Vertical or horizontal segments must now intersect
+     * the segment interior or Left or Bottom sides.
+     */
+    //---- check vertical segment
+    if (px == qx) {
+      return true;
     }
-*/
+    //---- check horizontal segment
+    if (py == qy) {
+      return true;
+    }
 
-    Assert.isTrue(! (isOutsidePixelEnv && intersects), "Found bad envelope test");
-//    if (isOutsideEnv && intersects) {
-//      Debug.println("Found bad envelope test");
-//    }
-
-    return intersects;
-    //return intersectsPixelClosure;
-  }
-
-  /**
-   * Tests whether the segment p0-p1 intersects the hot pixel tolerance square.
-   * Because the tolerance square point set is partially open (along the
-   * top and right) the test needs to be more sophisticated than
-   * simply checking for any intersection.  
-   * However, it can take advantage of the fact that the hot pixel edges
-   * do not lie on the coordinate grid.  
-   * It is sufficient to check if any of the following occur:
-   * <ul>
-   * <li>a proper intersection between the segment and any hot pixel edge
-   * <li>an intersection between the segment and <b>both</b> the left and bottom hot pixel edges
-   * (which detects the case where the segment intersects the bottom left hot pixel corner)
-   * <li>an intersection between a segment endpoint and the hot pixel coordinate
-   * </ul>
-   *
-   * @param p0
-   * @param p1
-   * @return
-   */
-  private boolean intersectsToleranceSquare(Coordinate p0, Coordinate p1)
-  {
-    boolean intersectsLeft = false;
-    boolean intersectsBottom = false;
-    //System.out.println("Hot Pixel: " + WKTWriter.toLineString(corner));
-    //System.out.println("Line: " + WKTWriter.toLineString(p0, p1));
+    /**
+     * Now know segment is not horizontal or vertical.
+     * 
+     * Compute orientation WRT each pixel corner.
+     * If corner orientation == 0, 
+     * segment intersects the corner.  
+     * From the corner and whether segment is heading up or down,
+     * can determine intersection or not.
+     * 
+     * Otherwise, check whether segment crosses interior of pixel side
+     * This is the case if the orientations for each corner of the side are different.
+     */
     
-    li.computeIntersection(p0, p1, corner[0], corner[1]);
-    if (li.isProper()) return true;
+    int orientUL = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, minx, maxy);
+    if (orientUL == 0) {
+      // upward segment does not intersect pixel interior
+      if (py < qy) return false;
+      // downward segment must intersect pixel interior
+      return true;
+    }
+    
+    int orientUR = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, maxx, maxy);
+    if (orientUR == 0) {
+      // downward segment does not intersect pixel interior
+      if (py > qy) return false;
+      // upward segment must intersect pixel interior
+      return true;
+    }
+    //--- check crossing Top side 
+    if (orientUL != orientUR) {
+      return true;
+    }
+    
+    int orientLL = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, minx, miny);
+    if (orientLL == 0) {
+      // segment crossed LL corner, which is the only one in pixel interior
+      return true;
+    }
+    //--- check crossing Left side
+    if (orientLL != orientUL) {
+      return true;
+    }
+    
+    int orientLR = CGAlgorithmsDD.orientationIndex(px, py, qx, qy, maxx, miny);
+    if (orientLR == 0) {
+      // upward segment does not intersect pixel interior
+      if (py < qy) return false;
+      // downward segment must intersect pixel interior
+      return true;
+    }
 
-    li.computeIntersection(p0, p1, corner[1], corner[2]);
-    if (li.isProper()) return true;
-    if (li.hasIntersection()) intersectsLeft = true;
+    //--- check crossing Bottom side
+    if (orientLL != orientLR) {
+      return true;
+    }
+    //--- check crossing Right side
+    if (orientLR != orientUR) {
+      return true;
+    }
 
-    li.computeIntersection(p0, p1, corner[2], corner[3]);
-    if (li.isProper()) return true;
-    if (li.hasIntersection()) intersectsBottom = true;
-
-    li.computeIntersection(p0, p1, corner[3], corner[0]);
-    if (li.isProper()) return true;
-
-    if (intersectsLeft && intersectsBottom) return true;
-
-    if (p0.equals(pt)) return true;
-    if (p1.equals(pt)) return true;
-
+    // segment does not intersect pixel
     return false;
   }
+  
+  private static final int UPPER_RIGHT = 0;
+  private static final int UPPER_LEFT = 1;
+  private static final int LOWER_LEFT = 2;
+  private static final int LOWER_RIGHT = 3;
+
   /**
-   * Test whether the given segment intersects
+   * Test whether a segment intersects
    * the closure of this hot pixel.
    * This is NOT the test used in the standard snap-rounding
-   * algorithm, which uses the partially closed tolerance square
+   * algorithm, which uses the partially-open tolerance square
    * instead.
-   * This routine is provided for testing purposes only.
+   * This method is provided for testing purposes only.
    *
    * @param p0 the start point of a line segment
    * @param p1 the end point of a line segment
@@ -259,6 +317,18 @@ public class HotPixel
    */
   private boolean intersectsPixelClosure(Coordinate p0, Coordinate p1)
   {
+    double minx = hpx - TOLERANCE;
+    double maxx = hpx + TOLERANCE;
+    double miny = hpy - TOLERANCE;
+    double maxy = hpy + TOLERANCE;
+    
+    Coordinate[] corner = new Coordinate[4];
+    corner[UPPER_RIGHT] = new Coordinate(maxx, maxy);
+    corner[UPPER_LEFT] = new Coordinate(minx, maxy);
+    corner[LOWER_LEFT] = new Coordinate(minx, miny);
+    corner[LOWER_RIGHT] = new Coordinate(maxx, miny);
+    
+    LineIntersector li = new RobustLineIntersector();
     li.computeIntersection(p0, p1, corner[0], corner[1]);
     if (li.hasIntersection()) return true;
     li.computeIntersection(p0, p1, corner[1], corner[2]);
@@ -271,30 +341,8 @@ public class HotPixel
     return false;
   }
   
-  /**
-   * Adds a new node (equal to the snap pt) to the specified segment
-   * if the segment passes through the hot pixel
-   *
-   * @param segStr
-   * @param segIndex
-   * @return true if a node was added to the segment
-   */
-  public boolean addSnappedNode(
-      NodedSegmentString segStr,
-      int segIndex
-      )
-  {
-    Coordinate p0 = segStr.getCoordinate(segIndex);
-    Coordinate p1 = segStr.getCoordinate(segIndex + 1);
-
-    if (intersects(p0, p1)) {
-      //System.out.println("snapped: " + snapPt);
-      //System.out.println("POINT (" + snapPt.x + " " + snapPt.y + ")");
-      segStr.addIntersection(getCoordinate(), segIndex);
-
-      return true;
-    }
-    return false;
+  public String toString() {
+    return "HP(" + WKTWriter.format(originalPt) + ")";
   }
 
 }

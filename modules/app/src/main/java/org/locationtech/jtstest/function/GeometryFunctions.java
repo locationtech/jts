@@ -37,7 +37,8 @@ public class GeometryFunctions
   public static double area(Geometry g)         {   return g.getArea(); }
   public static double SRID(Geometry g)         {   return g.getSRID(); }
   
-	public static boolean isSimple(Geometry g)		{		return g.isSimple();	}
+  public static boolean isEmpty(Geometry g)    {   return g.isEmpty();  }
+  public static boolean isSimple(Geometry g)    {   return g.isSimple();  }
 	public static boolean isValid(Geometry g)			{		return g.isValid();	}
 	public static boolean isRectangle(Geometry g)	{		return g.isRectangle();	}
 	public static boolean isClosed(Geometry g)	{
@@ -47,8 +48,9 @@ public class GeometryFunctions
 		return true;	
 		}
 	
+  public static Geometry copy(Geometry g)       { return g.copy(); }
   public static Geometry envelope(Geometry g) 	{ return g.getEnvelope();  }
-  public static Geometry reverse(Geometry g) {      return g.reverse();  }
+  public static Geometry reverse(Geometry g)    { return g.reverse();  }
   public static Geometry normalize(Geometry g) 
   {      
   	Geometry gNorm = g.copy();

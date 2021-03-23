@@ -95,6 +95,29 @@ public abstract class AbstractSTRtree implements Serializable {
   }
 
   /**
+   * Constructs an AbstractSTRtree with the specified maximum number of child
+   * nodes that a node may have, and the root node
+   * @param nodeCapacity the maximum number of child nodes in a node
+   * @param root the root node that links to all other nodes in the tree
+   */
+  public AbstractSTRtree(int nodeCapacity, AbstractNode root) {
+    this(nodeCapacity);
+    built = true;
+    this.root = root;
+    this.itemBoundables = null;
+  }
+
+  /**
+   * Constructs an AbstractSTRtree with the specified maximum number of child
+   * nodes that a node may have, and all leaf nodes in the tree
+   * @param nodeCapacity the maximum number of child nodes in a node
+   * @param itemBoundables the list of leaf nodes in the tree
+   */
+  public AbstractSTRtree(int nodeCapacity, ArrayList itemBoundables) {
+    this(nodeCapacity);
+    this.itemBoundables = itemBoundables;
+  }
+  /**
    * Creates parent nodes, grandparent nodes, and so forth up to the root
    * node, for the data that has been inserted into the tree. Can only be
    * called once, and thus can be called only after all of the data has been
@@ -454,4 +477,8 @@ public abstract class AbstractSTRtree implements Serializable {
 
   protected abstract Comparator getComparator();
 
+  ArrayList getItemBoundables()
+  {
+    return itemBoundables;
+  }
 }

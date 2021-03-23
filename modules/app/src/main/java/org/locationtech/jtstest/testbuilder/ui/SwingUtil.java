@@ -46,6 +46,7 @@ import org.locationtech.jtstest.util.io.MultiFormatReader;
 public class SwingUtil {
 
   public static FileFilter XML_FILE_FILTER = createFileFilter("JTS Test XML File (*.xml)", ".xml");
+  public static FileFilter HTML_FILE_FILTER = createFileFilter("HTML File (*.html)", ".html");
   public static  FileFilter JAVA_FILE_FILTER = createFileFilter("Java File (*.java)", ".java");
   public static  FileFilter PNG_FILE_FILTER = createFileFilter("PNG File (*.png)", ".png");
 

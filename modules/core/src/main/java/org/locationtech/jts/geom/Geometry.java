@@ -436,14 +436,19 @@ public abstract class Geometry
   /**
    * Tests whether the set of points covered by this <code>Geometry</code> is
    * empty.
+   * <p>
+   * Note this test is for topological emptiness,
+   * not structural emptiness. 
+   * A collection containing only empty elements is reported as empty.
+   * To check structural emptiness use {@link #getNumGeometries()}.
    *
    *@return <code>true</code> if this <code>Geometry</code> does not cover any points
    */
   public abstract boolean isEmpty();
 
   /**
-   *  Returns the minimum distance between this <code>Geometry</code>
-   *  and another <code>Geometry</code>.
+   * Returns the minimum distance between this <code>Geometry</code>
+   * and another <code>Geometry</code>.
    *
    * @param  g the <code>Geometry</code> from which to compute the distance
    * @return the distance between the geometries
@@ -590,8 +595,8 @@ public abstract class Geometry
    *  <li>a point, returns a <code>Point</code>.
    *  <li>a line parallel to an axis, a two-vertex <code>LineString</code>
    *  <li>otherwise, returns a
-   *  <code>Polygon</code> whose vertices are (minx miny, maxx miny,
-   *  maxx maxy, minx maxy, minx miny).
+   *  <code>Polygon</code> whose vertices are (minx miny, minx maxy,
+   *  maxx maxy, maxx miny, minx miny).
    *  </ul>
    *
    *@return a Geometry representing the envelope of this Geometry
@@ -780,10 +785,10 @@ public abstract class Geometry
    *    <li><code>[0********]</code> (for L/L situations)
    *   </ul>
    * </ul>
-   * For any other combination of dimensions this predicate returns <code>false</code>.
+   * For the A/A and P/P situations this predicate returns <code>false</code>.
    * <p>
    * The SFS defined this predicate only for P/L, P/A, L/L, and L/A situations.
-   * In order to make the relation symmetric,
+   * To make the relation symmetric
    * JTS extends the definition to apply to L/P, A/P and A/L situations as well.
    *
    *@param  g  the <code>Geometry</code> with which to compare this <code>Geometry</code>
@@ -1325,31 +1330,7 @@ public abstract class Geometry
    */
   public Geometry intersection(Geometry other)
   {
-  	/**
-  	 * TODO: MD - add optimization for P-A case using Point-In-Polygon
-  	 */
-    // special case: if one input is empty ==> empty
-    if (this.isEmpty() || other.isEmpty())
-      return OverlayOp.createEmptyResult(OverlayOp.INTERSECTION, this, other, factory);
-
-    // compute for GCs
-    // (An inefficient algorithm, but will work)
-    // TODO: improve efficiency of computation for GCs
-    if (this.isGeometryCollection()) {
-      final Geometry g2 = other;
-      return GeometryCollectionMapper.map(
-          (GeometryCollection) this,
-          new GeometryMapper.MapOp() {
-            public Geometry map(Geometry g) {
-              return g.intersection(g2);
-            }
-      });
-    }
-
-    // No longer needed since GCs are handled by previous code
-    //checkNotGeometryCollection(this);
-    //checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.INTERSECTION);
+    return GeometryOverlay.intersection(this, other);
   }
 
   /**
@@ -1388,21 +1369,7 @@ public abstract class Geometry
    */
   public Geometry union(Geometry other)
   {
-    // handle empty geometry cases
-    if (this.isEmpty() || other.isEmpty()) {
-      if (this.isEmpty() && other.isEmpty())
-        return OverlayOp.createEmptyResult(OverlayOp.UNION, this, other, factory);
-
-    // special case: if either input is empty ==> other input
-      if (this.isEmpty()) return other.copy();
-      if (other.isEmpty()) return copy();
-    }
-
-    // TODO: optimize if envelopes of geometries do not intersect
-
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.UNION);
+    return GeometryOverlay.union(this, other);
   }
 
   /**
@@ -1424,13 +1391,7 @@ public abstract class Geometry
    */
   public Geometry difference(Geometry other)
   {
-    // special case: if A.isEmpty ==> empty; if B.isEmpty ==> A
-    if (this.isEmpty()) return OverlayOp.createEmptyResult(OverlayOp.DIFFERENCE, this, other, factory);
-    if (other.isEmpty()) return copy();
-
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.DIFFERENCE);
+    return GeometryOverlay.difference(this, other);
   }
 
   /**
@@ -1453,20 +1414,7 @@ public abstract class Geometry
    */
   public Geometry symDifference(Geometry other)
   {
-    // handle empty geometry cases
-    if (this.isEmpty() || other.isEmpty()) {
-      // both empty - check dimensions
-      if (this.isEmpty() && other.isEmpty())
-        return OverlayOp.createEmptyResult(OverlayOp.SYMDIFFERENCE, this, other, factory);
-
-    // special case: if either input is empty ==> result = other arg
-      if (this.isEmpty()) return other.copy();
-      if (other.isEmpty()) return copy();
-    }
-
-    checkNotGeometryCollection(this);
-    checkNotGeometryCollection(other);
-    return SnapIfNeededOverlayOp.overlayOp(this, other, OverlayOp.SYMDIFFERENCE);
+    return GeometryOverlay.symDifference(this, other);
   }
 
 	/**
@@ -1491,7 +1439,7 @@ public abstract class Geometry
 	 * @see UnaryUnionOp
 	 */
 	public Geometry union() {
-		return UnaryUnionOp.union(this);
+    return GeometryOverlay.union(this);
 	}
 
   /**
@@ -1817,7 +1765,7 @@ public abstract class Geometry
    *@throws  IllegalArgumentException  if <code>g</code> is a <code>GeometryCollection</code>
    *      but not one of its subclasses
    */
-  protected static void checkNotGeometryCollection(Geometry g) {
+  static void checkNotGeometryCollection(Geometry g) {
     if (g.isGeometryCollection()) {
       throw new IllegalArgumentException("Operation does not support GeometryCollection arguments");
     }
@@ -1914,6 +1862,9 @@ public abstract class Geometry
 
   private Point createPointFromInternalCoord(Coordinate coord, Geometry exemplar)
   {
+    // create empty point for null input
+    if (coord == null) 
+      return exemplar.getFactory().createPoint();
     exemplar.getPrecisionModel().makePrecise(coord);
     return exemplar.getFactory().createPoint(coord);
   }

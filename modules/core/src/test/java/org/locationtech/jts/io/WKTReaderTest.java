@@ -88,11 +88,11 @@ public class WKTReaderTest extends GeometryTestCase {
     Point pt3DM = (Point) readerXYZM.read("POINT ZM(10 10 10 11)");
 
     // assert
-    assertTrue(checkEqual(seqPt2D, pt2D.getCoordinateSequence()));
-    assertTrue(checkEqual(seqPt2DE, pt2DE.getCoordinateSequence()));
-    assertTrue(checkEqual(seqPt3D, pt3D.getCoordinateSequence()));
-    assertTrue(checkEqual(seqPt2DM, pt2DM.getCoordinateSequence()));
-    assertTrue(checkEqual(seqPt3DM, pt3DM.getCoordinateSequence()));
+    assertTrue(isEqual(seqPt2D, pt2D.getCoordinateSequence()));
+    assertTrue(isEqual(seqPt2DE, pt2DE.getCoordinateSequence()));
+    assertTrue(isEqual(seqPt3D, pt3D.getCoordinateSequence()));
+    assertTrue(isEqual(seqPt2DM, pt2DM.getCoordinateSequence()));
+    assertTrue(isEqual(seqPt3DM, pt3DM.getCoordinateSequence()));
   }
 
   public void testLineString() throws Exception {
@@ -118,11 +118,11 @@ public class WKTReaderTest extends GeometryTestCase {
             .read("LINESTRING ZM(10 10 10 11, 20 20 10 11, 30 40 10 11)");
 
     // assert
-    assertTrue(checkEqual(seqLs2D, ls2D.getCoordinateSequence()));
-    assertTrue(checkEqual(seqLs2DE, ls2DE.getCoordinateSequence()));
-    assertTrue(checkEqual(seqLs3D, ls3D.getCoordinateSequence()));
-    assertTrue(checkEqual(seqLs2DM, ls2DM.getCoordinateSequence()));
-    assertTrue(checkEqual(seqLs3DM, ls3DM.getCoordinateSequence()));
+    assertTrue(isEqual(seqLs2D, ls2D.getCoordinateSequence()));
+    assertTrue(isEqual(seqLs2DE, ls2DE.getCoordinateSequence()));
+    assertTrue(isEqual(seqLs3D, ls3D.getCoordinateSequence()));
+    assertTrue(isEqual(seqLs2DM, ls2DM.getCoordinateSequence()));
+    assertTrue(isEqual(seqLs3DM, ls3DM.getCoordinateSequence()));
   }
 
   public void testLinearRing() throws Exception {
@@ -147,11 +147,11 @@ public class WKTReaderTest extends GeometryTestCase {
             .read("LINEARRING ZM(10 10 10 11, 20 20 10 11, 30 40 10 11, 10 10 10 11)");
 
     // assert
-    assertTrue(checkEqual(seqLs2D, ls2D.getCoordinateSequence()));
-    assertTrue(checkEqual(seqLs2DE, ls2DE.getCoordinateSequence()));
-    assertTrue(checkEqual(seqLs3D, ls3D.getCoordinateSequence()));
-    assertTrue(checkEqual(seqLs2DM, ls2DM.getCoordinateSequence()));
-    assertTrue(checkEqual(seqLs3DM, ls3DM.getCoordinateSequence()));
+    assertTrue(isEqual(seqLs2D, ls2D.getCoordinateSequence()));
+    assertTrue(isEqual(seqLs2DE, ls2DE.getCoordinateSequence()));
+    assertTrue(isEqual(seqLs3D, ls3D.getCoordinateSequence()));
+    assertTrue(isEqual(seqLs2DM, ls2DM.getCoordinateSequence()));
+    assertTrue(isEqual(seqLs3DM, ls3DM.getCoordinateSequence()));
   }
 
   public void testLinearRingNotClosed() {
@@ -214,20 +214,20 @@ public class WKTReaderTest extends GeometryTestCase {
             (Polygon) rdr.read("POLYGON ZM((10 10 10 11, 10 20 10 11, 20 20 10 11, 20 15 10 11, 10 10 10 11), (11 11 10 11, 12 11 10 11, 12 12 10 11, 12 11 10 11, 11 11 10 11), (11 19 10 11, 11 18 10 11, 12 18 10 11, 12 19 10 11, 11 19 10 11))")
     };
     // assert
-    assertTrue(checkEqual(csPoly2D[0], poly2D[2].getExteriorRing().getCoordinateSequence()));
-    assertTrue(checkEqual(csPoly2D[1], poly2D[2].getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(checkEqual(csPoly2D[2], poly2D[2].getInteriorRingN(1).getCoordinateSequence()));
-    assertTrue(checkEqual(csPoly2DE, poly2DE.getExteriorRing().getCoordinateSequence(), 2));
+    assertTrue(isEqual(csPoly2D[0], poly2D[2].getExteriorRing().getCoordinateSequence()));
+    assertTrue(isEqual(csPoly2D[1], poly2D[2].getInteriorRingN(0).getCoordinateSequence()));
+    assertTrue(isEqual(csPoly2D[2], poly2D[2].getInteriorRingN(1).getCoordinateSequence()));
+    assertTrue(isEqualDim(csPoly2DE, poly2DE.getExteriorRing().getCoordinateSequence(), 2));
 
-    assertTrue(checkEqual(csPoly3D[0], poly3D[2].getExteriorRing().getCoordinateSequence()));
-    assertTrue(checkEqual(csPoly3D[1], poly3D[2].getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(checkEqual(csPoly3D[2], poly3D[2].getInteriorRingN(1).getCoordinateSequence()));
-    assertTrue(checkEqual(csPoly2DM[0], poly2DM[2].getExteriorRing().getCoordinateSequence()));
-    assertTrue(checkEqual(csPoly2DM[1], poly2DM[2].getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(checkEqual(csPoly2DM[2], poly2DM[2].getInteriorRingN(1).getCoordinateSequence()));
-    assertTrue(checkEqual(csPoly3DM[0], poly3DM[2].getExteriorRing().getCoordinateSequence()));
-    assertTrue(checkEqual(csPoly3DM[1], poly3DM[2].getInteriorRingN(0).getCoordinateSequence()));
-    assertTrue(checkEqual(csPoly3DM[2], poly3DM[2].getInteriorRingN(1).getCoordinateSequence()));
+    assertTrue(isEqual(csPoly3D[0], poly3D[2].getExteriorRing().getCoordinateSequence()));
+    assertTrue(isEqual(csPoly3D[1], poly3D[2].getInteriorRingN(0).getCoordinateSequence()));
+    assertTrue(isEqual(csPoly3D[2], poly3D[2].getInteriorRingN(1).getCoordinateSequence()));
+    assertTrue(isEqual(csPoly2DM[0], poly2DM[2].getExteriorRing().getCoordinateSequence()));
+    assertTrue(isEqual(csPoly2DM[1], poly2DM[2].getInteriorRingN(0).getCoordinateSequence()));
+    assertTrue(isEqual(csPoly2DM[2], poly2DM[2].getInteriorRingN(1).getCoordinateSequence()));
+    assertTrue(isEqual(csPoly3DM[0], poly3DM[2].getExteriorRing().getCoordinateSequence()));
+    assertTrue(isEqual(csPoly3DM[1], poly3DM[2].getInteriorRingN(0).getCoordinateSequence()));
+    assertTrue(isEqual(csPoly3DM[2], poly3DM[2].getInteriorRingN(1).getCoordinateSequence()));
   }
 
   static double[][] mpCoords = new double[][] { 
@@ -406,15 +406,15 @@ public class WKTReaderTest extends GeometryTestCase {
     GeometryCollection gc3 = (GeometryCollection)rdr.read("GEOMETRYCOLLECTION EMPTY");
 
     // assert
-    assertTrue(checkEqual(css[0], ((Point)gc0.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(checkEqual(css[1], ((Point)gc0.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(checkEqual(css[2], ((LineString)gc0.getGeometryN(2)).getCoordinateSequence()));
-    assertTrue(checkEqual(css[0], ((Point)gc1.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(checkEqual(css[3], ((LinearRing)gc1.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(checkEqual(css[2], ((LineString)gc1.getGeometryN(2)).getCoordinateSequence()));
-    assertTrue(checkEqual(css[0], ((Point)gc2.getGeometryN(0)).getCoordinateSequence()));
-    assertTrue(checkEqual(css[4], ((LinearRing)gc2.getGeometryN(1)).getCoordinateSequence()));
-    assertTrue(checkEqual(css[2], ((LineString)gc2.getGeometryN(2)).getCoordinateSequence()));
+    assertTrue(isEqual(css[0], ((Point)gc0.getGeometryN(0)).getCoordinateSequence()));
+    assertTrue(isEqual(css[1], ((Point)gc0.getGeometryN(1)).getCoordinateSequence()));
+    assertTrue(isEqual(css[2], ((LineString)gc0.getGeometryN(2)).getCoordinateSequence()));
+    assertTrue(isEqual(css[0], ((Point)gc1.getGeometryN(0)).getCoordinateSequence()));
+    assertTrue(isEqual(css[3], ((LinearRing)gc1.getGeometryN(1)).getCoordinateSequence()));
+    assertTrue(isEqual(css[2], ((LineString)gc1.getGeometryN(2)).getCoordinateSequence()));
+    assertTrue(isEqual(css[0], ((Point)gc2.getGeometryN(0)).getCoordinateSequence()));
+    assertTrue(isEqual(css[4], ((LinearRing)gc2.getGeometryN(1)).getCoordinateSequence()));
+    assertTrue(isEqual(css[2], ((LineString)gc2.getGeometryN(2)).getCoordinateSequence()));
     assertTrue(gc3.isEmpty());
   }
 
@@ -430,9 +430,9 @@ public class WKTReaderTest extends GeometryTestCase {
     Point pt3 = (Point)readerXYOld.read("POINT (10 10 NAN)");
 
     // assert
-    assertTrue(checkEqual(seq, pt1.getCoordinateSequence()));
-    assertTrue(checkEqual(seq, pt2.getCoordinateSequence()));
-    assertTrue(checkEqual(seq, pt3.getCoordinateSequence()));
+    assertTrue(isEqual(seq, pt1.getCoordinateSequence()));
+    assertTrue(isEqual(seq, pt2.getCoordinateSequence()));
+    assertTrue(isEqual(seq, pt3.getCoordinateSequence()));
   }
 
   public void testLargeNumbers() throws Exception {
@@ -459,7 +459,7 @@ public class WKTReaderTest extends GeometryTestCase {
   
 
   private void checkCS(CoordinateSequence cs, Geometry geom) {
-    assertTrue( checkEqual( cs, extractCS(geom)));
+    assertTrue( isEqual( cs, extractCS(geom)));
   }
 
   private CoordinateSequence extractCS(Geometry geom) {

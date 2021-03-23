@@ -3,6 +3,8 @@ package org.locationtech.jtstest.testbuilder;
 import javax.swing.ImageIcon;
 
 public class AppIcons {
+  public final static ImageIcon APP = IconLoader.icon("app-icon.gif");
+  
   public final static ImageIcon ADD = IconLoader.icon("Plus.png");
   public final static ImageIcon ADD_SMALL = IconLoader.icon("Plus_small.png");
   public final static ImageIcon DELETE = IconLoader.icon("Delete.png");

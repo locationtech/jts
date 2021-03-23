@@ -107,6 +107,14 @@ public class MultiLineString
     return (MultiLineString) super.reverse();
   }
 
+  protected MultiLineString reverseInternal() {
+    LineString[] lineStrings = new LineString[this.geometries.length];
+    for (int i = 0; i < lineStrings.length; i++) {
+      lineStrings[i] = (LineString) this.geometries[i].reverse();
+    }
+    return new MultiLineString(lineStrings, factory);
+  }
+  
   protected MultiLineString copyInternal() {
     LineString[] lineStrings = new LineString[this.geometries.length];
     for (int i = 0; i < lineStrings.length; i++) {

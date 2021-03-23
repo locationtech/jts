@@ -23,8 +23,8 @@ import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geomgraph.DirectedEdge;
-import org.locationtech.jts.geomgraph.Position;
 
 /**
  * Locates a subgraph inside a set of subgraphs,

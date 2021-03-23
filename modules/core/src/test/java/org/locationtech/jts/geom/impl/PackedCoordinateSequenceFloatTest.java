@@ -12,6 +12,7 @@
 
 package org.locationtech.jts.geom.impl;
 
+import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFactory;
 
 import junit.textui.TestRunner;
@@ -39,4 +40,10 @@ public class PackedCoordinateSequenceFloatTest
     return PackedCoordinateSequenceFactory.FLOAT_FACTORY;
   }
 
+  public void test4dCoordinateSequence() {
+    CoordinateSequence cs = new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.FLOAT)
+            .create(new float[]{0.0f,1.0f,2.0f,3.0f,4.0f,5.0f,6.0f,7.0f}, 4);
+    assertEquals(2.0, cs.getCoordinate(0).getZ());
+    assertEquals(3.0, cs.getCoordinate(0).getM());
+  }
 }

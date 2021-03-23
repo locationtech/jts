@@ -216,6 +216,33 @@ public class CreateRandomShapeFunctions {
     return geomFact.buildGeometry(lines);
   }
 
+  public static Geometry randomSegmentsRectilinear(Geometry g, int nPts) {
+    Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
+    GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);
+    double xLen = env.getWidth();
+    double yLen = env.getHeight();
+
+    List lines = new ArrayList();
+
+    for (int i = 0; i < nPts; i++) {
+      double x0 = env.getMinX() + xLen * Math.random();
+      double x1 = env.getMinY() + yLen * Math.random();
+      double v = env.getMinX() + xLen * Math.random();
+      double y0 = v;
+      double y1 = v;
+      boolean isXFixed = Math.random() < 0.5;
+      if (isXFixed) {
+        y0 = x0;
+        y1 = x1;
+        x0 = v;
+        x1 = v;
+      }
+      lines.add(geomFact.createLineString(new Coordinate[] {
+          new Coordinate(x0, y0), new Coordinate(x1, y1) }));
+    }
+    return geomFact.buildGeometry(lines);
+  }
+
   public static Geometry randomLineString(Geometry g, int nPts) {
     Envelope env = FunctionsUtil.getEnvelopeOrDefault(g);
     GeometryFactory geomFact = FunctionsUtil.getFactoryOrDefault(g);

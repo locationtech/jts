@@ -20,7 +20,9 @@ import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.locationtech.jts.io.gml2.GMLWriter;
 import org.locationtech.jts.io.kml.KMLWriter;
 import org.locationtech.jtstest.geomfunction.Metadata;
+import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
 import org.locationtech.jtstest.util.ClassUtil;
+import org.locationtech.jtstest.util.io.WKBDumper;
 
 
 public class WriterFunctions 
@@ -56,6 +58,13 @@ public class WriterFunctions
     return WKBWriter.toHex((new WKBWriter().write(g)));
   }
   
+  public static String dumpWKB(Geometry g)
+  {
+    if (g == null) return "";
+    byte[] wkb = (new WKBWriter().write(g));
+    return WKBDumper.dump(wkb);
+  }
+  
   public static String writeGeoJSON(Geometry g)
   {
     if (g == null) return "";
@@ -70,4 +79,7 @@ public class WriterFunctions
     return (new GeoJsonWriter(numDecimals).write(g));
   }
 
+  public static String writeSVG(Geometry a, Geometry b) {
+    return SVGTestWriter.writeSVG(a, b);
+  }
 }

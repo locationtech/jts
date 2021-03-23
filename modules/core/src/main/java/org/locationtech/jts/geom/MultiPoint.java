@@ -79,9 +79,13 @@ public class MultiPoint
   public MultiPoint reverse() {
     return (MultiPoint) super.reverse();
   }
-
-  public boolean isValid() {
-    return true;
+  
+  protected MultiPoint reverseInternal() {
+    Point[] points = new Point[this.geometries.length];
+    for (int i = 0; i < points.length; i++) {
+      points[i] = (Point) this.geometries[i].copy();
+    }
+    return new MultiPoint(points, factory);
   }
 
   public boolean equalsExact(Geometry other, double tolerance) {

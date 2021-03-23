@@ -14,16 +14,15 @@ package org.locationtech.jtstest.util.io;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
-import java.nio.CharBuffer;
 import java.util.List;
 
-import javax.xml.parsers.*;
-
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.io.geojson.GeoJsonReader;
-import org.locationtech.jts.io.gml2.*;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBHexFileReader;
+import org.locationtech.jts.io.WKBReader;
+import org.locationtech.jts.io.WKTFileReader;
+import org.locationtech.jts.io.WKTReader;
 
 
 /**
@@ -35,7 +34,16 @@ import org.locationtech.jts.io.gml2.*;
  */
 public class MultiFormatBufferedReader
 {
+  public static List<Geometry> read(Reader reader, int limit, int offset, GeometryFactory geomFactory) throws Exception {
+    MultiFormatBufferedReader rdr = new MultiFormatBufferedReader(geomFactory);
+    rdr.setLimit(limit);
+    rdr.setOffset(offset);
+    return rdr.read(reader);
+  }
+  
   private GeometryFactory geomFactory;
+  private int limit = -1;
+  private int offset = 0;
 
   public MultiFormatBufferedReader()
   {
@@ -47,7 +55,27 @@ public class MultiFormatBufferedReader
     this.geomFactory = geomFactory;
   }
 
-  public Geometry read(Reader reader)
+  /**
+   * Sets the maximum number of geometries to read.
+   * 
+   * @param limit the maximum number of geometries to read
+   */
+  public void setLimit(int limit)
+  {
+    this.limit = limit;
+  }
+  
+  /**
+   * Sets the number of geometries to skip before storing.
+   * 
+   * @param offset the number of geometries to skip
+   */
+  public void setOffset(int offset)
+  {
+    this.offset = offset;
+  }
+  
+  public List<Geometry> read(Reader reader)
       throws ParseException, IOException
   {
     BufferedReader bufRdr = new BufferedReader(reader);
@@ -67,30 +95,24 @@ public class MultiFormatBufferedReader
     throw new ParseException("Unknown format of data: " + laStr);
   }
   
-  private static Geometry readWKBHex(Reader rdr, GeometryFactory geomFact)
+  private List<Geometry> readWKBHex(Reader rdr, GeometryFactory geomFact)
   throws ParseException, IOException 
   {
     WKBReader reader = new WKBReader(geomFact);
     WKBHexFileReader fileReader = new WKBHexFileReader(rdr, reader);
-    List geomList = fileReader.read();
-    
-    if (geomList.size() == 1)
-      return (Geometry) geomList.get(0);
-    
-    return geomFact.createGeometryCollection(GeometryFactory.toGeometryArray(geomList));
+    if (limit >= 0) fileReader.setLimit(limit);
+    if (offset > 0) fileReader.setOffset(offset);
+    return fileReader.read();
   }
 
-  public static Geometry readWKT(Reader rdr, GeometryFactory geomFact)
+  public List<Geometry> readWKT(Reader rdr, GeometryFactory geomFact)
   throws ParseException, IOException 
   {
     WKTReader reader = new WKTReader(geomFact);
     WKTFileReader fileReader = new WKTFileReader(rdr, reader);
-    List geomList = fileReader.read();
-    
-    if (geomList.size() == 1)
-      return (Geometry) geomList.get(0);
-    
-    return geomFact.createGeometryCollection(GeometryFactory.toGeometryArray(geomList));
+    if (limit >= 0) fileReader.setLimit(limit);
+    if (offset > 0) fileReader.setOffset(offset);
+    return fileReader.read();
   }
 
 }

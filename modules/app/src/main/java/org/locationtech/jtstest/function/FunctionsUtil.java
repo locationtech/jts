@@ -12,6 +12,7 @@
 
 package org.locationtech.jtstest.function;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.List;
 
@@ -48,14 +49,25 @@ public class FunctionsUtil {
     return JTSTestBuilder.getGeometryFactory(); 
   }
   
+  public static boolean isShowingIndicators() {
+    return JTSTestBuilderFrame.isShowingIndicators();
+  }
+  
   public static void showIndicator(Geometry geom)
   {
+    showIndicator(geom, AppConstants.INDICATOR_LINE_CLR);
+  }
+  
+  public static void showIndicator(Geometry geom, Color lineClr)
+  {
+    if (! isShowingIndicators()) return;
+    
     GeometryEditPanel panel = JTSTestBuilderFrame
     .instance().getTestCasePanel()
     .getGeometryEditPanel();
     Graphics2D gr = (Graphics2D) panel.getGraphics();
     GeometryPainter.paint(geom, panel.getViewport(), gr, 
-        AppConstants.INDICATOR_LINE_CLR, 
+        lineClr, 
         AppConstants.INDICATOR_FILL_CLR);
   }
   

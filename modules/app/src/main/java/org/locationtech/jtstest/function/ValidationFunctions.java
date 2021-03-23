@@ -16,6 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.locationtech.jts.operation.valid.IsValidOp;
 import org.locationtech.jts.operation.valid.TopologyValidationError;
 
@@ -63,4 +69,21 @@ public class ValidationFunctions
     return validOp.isValid();     
   }
 
+  public static Geometry makeValid(Geometry geom) {
+    if (geom.getDimension() < 2) return geom;
+    //TODO: handle MultiPolygons
+    //TODO: handle GeometryCollections
+    
+    if (! ((geom instanceof Polygonal) || geom.getNumGeometries() > 1)) {
+      throw new IllegalArgumentException("Only single polygons are handled - for now");
+    }
+    // get single polygon (hack)
+    Geometry poly = geom.getGeometryN(0);
+    List lines = LinearComponentExtracter.getLines(geom);
+    Geometry lineGeom = geom.getFactory().buildGeometry(lines);
+    Geometry nodedLines = OverlayNGRobust.overlay(lineGeom, null, OverlayNG.UNION);
+    Polygonizer polygonizer = new Polygonizer(true);
+    polygonizer.add(nodedLines);
+    return polygonizer.getGeometry();
+  }
 }

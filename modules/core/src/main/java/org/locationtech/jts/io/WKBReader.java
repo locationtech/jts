@@ -36,8 +36,12 @@ import org.locationtech.jts.geom.PrecisionModel;
  * This class reads the format describe in {@link WKBWriter}.  
  * It partially handles
  * the <b>Extended WKB</b> format used by PostGIS, 
- * by parsing and storing SRID values.
- * Although not defined in the WKB spec, empty points
+ * by parsing and storing optional SRID values.
+ * If a SRID is not specified in an element geometry, it is inherited
+ * from the parent's SRID.
+ * The default SRID value is 0.
+ * <p>
+ * Although not defined in the WKB specification, empty points
  * are handled if they are represented as a Point with <code>NaN</code> X and Y ordinates.
  * <p>
  * The reader repairs structurally-invalid input
@@ -45,17 +49,23 @@ import org.locationtech.jts.geom.PrecisionModel;
  * too few points have vertices added,
  * and non-closed rings are closed).
  * <p>
+ * The reader handles most errors caused by malformed or malicious WKB data.
+ * It checks for obviously excessive values of the fields 
+ * <code>numElems</code>, <code>numRings</code>, and <code>numCoords</code>.
+ * It also checks that the reader does not read beyond the end of the data supplied.
+ * A {@link ParseException} is thrown if this situation is detected.
+ * <p>
  * This class is designed to support reuse of a single instance to read multiple
  * geometries. This class is not thread-safe; each thread should create its own
  * instance.
  * <p>
  * As of version 1.15, the reader can read geometries following OGC 06-103r4
- * speification used by Spatialite/Geopackage.
+ * specification used by Spatialite/Geopackage.
  * <p>
  * The difference between PostGIS EWKB format and the new OGC specification is
  * that Z and M coordinates are detected with a bit mask on the higher byte in
  * the former case (0x80 for Z and 0x40 for M) while new OGC specification use
- * specif int ranges for 2D gemetries, Z geometries (2D code+1000), M geometries
+ * specific int ranges for 2D geometries, Z geometries (2D code+1000), M geometries
  * (2D code+2000) and ZM geometries (2D code+3000).
  * <p>
  * Note that the {@link WKBWriter} is not changed and still write PostGIS WKB
@@ -100,13 +110,17 @@ public class WKBReader
   private static final String INVALID_GEOM_TYPE_MSG
   = "Invalid geometry type encountered in ";
 
+  private static final String FIELD_NUMCOORDS = "numCoords";
+
+  private static final String FIELD_NUMRINGS = null;
+
+  private static final String FIELD_NUMELEMS = null;
+
   private GeometryFactory factory;
   private CoordinateSequenceFactory csFactory;
   private PrecisionModel precisionModel;
   // default dimension - will be set on read
   private int inputDimension = 2;
-  private boolean hasSRID = false;
-  private int SRID = 0;
   /**
    * true if structurally invalid input should be reported rather than repaired.
    * At some point this could be made client-controllable.
@@ -114,6 +128,8 @@ public class WKBReader
   private boolean isStrict = false;
   private ByteOrderDataInStream dis = new ByteOrderDataInStream();
   private double[] ordValues;
+
+  private int maxNumFieldValue;
 
   public WKBReader() {
     this(new GeometryFactory());
@@ -133,11 +149,11 @@ public class WKBReader
    * @throws ParseException if the WKB is ill-formed
    */
   public Geometry read(byte[] bytes) throws ParseException
-  {
+  {  
     // possibly reuse the ByteArrayInStream?
     // don't throw IOExceptions, since we are not doing any I/O
     try {
-      return read(new ByteArrayInStream(bytes));
+      return read(new ByteArrayInStream(bytes), bytes.length / 16);
     }
     catch (IOException ex) {
       throw new RuntimeException("Unexpected IOException caught: " + ex.getMessage());
@@ -155,12 +171,33 @@ public class WKBReader
   public Geometry read(InStream is)
   throws IOException, ParseException
   {
-    dis.setInStream(is);
-    Geometry g = readGeometry();
-    return g;
+    // can't tell size of InStream, but MAX_VALUE should be safe
+    return read(is, Integer.MAX_VALUE);
   }
 
-  private Geometry readGeometry()
+  private Geometry read(InStream is, int maxCoordNum)
+  throws IOException, ParseException
+  {
+    /**
+     * This puts an upper bound on the allowed value
+     * in coordNum fields.
+     * It avoids OOM exceptions due to malformed input.
+     */
+    this.maxNumFieldValue = maxCoordNum;
+    dis.setInStream(is);
+    return readGeometry(0);
+  }
+  
+  private int readNumField(String fieldName) throws IOException, ParseException {
+    // num field is unsigned int, but Java has only signed int
+    int num = dis.readInt();
+    if (num < 0 || num > maxNumFieldValue) {
+      throw new ParseException(fieldName + " value is too large");
+    }
+    return num;
+  }
+  
+  private Geometry readGeometry(int SRID)
   throws IOException, ParseException
   {
 
@@ -201,8 +238,7 @@ public class WKBReader
     inputDimension = 2 + (hasZ?1:0) + (hasM?1:0);
 
     // determine if SRIDs are present
-    hasSRID = (typeInt & 0x20000000) != 0;
-    int SRID = 0;
+    boolean hasSRID = (typeInt & 0x20000000) != 0;
     if (hasSRID) {
       SRID = dis.readInt();
     }
@@ -223,16 +259,16 @@ public class WKBReader
        geom = readPolygon();
         break;
       case WKBConstants.wkbMultiPoint :
-        geom = readMultiPoint();
+        geom = readMultiPoint(SRID);
         break;
       case WKBConstants.wkbMultiLineString :
-        geom = readMultiLineString();
+        geom = readMultiLineString(SRID);
         break;
      case WKBConstants.wkbMultiPolygon :
-        geom = readMultiPolygon();
+        geom = readMultiPolygon(SRID);
         break;
       case WKBConstants.wkbGeometryCollection :
-        geom = readGeometryCollection();
+        geom = readGeometryCollection(SRID);
         break;
       default: 
         throw new ParseException("Unknown WKB type " + geometryType);
@@ -254,7 +290,7 @@ public class WKBReader
     return g;
   }
 
-  private Point readPoint() throws IOException
+  private Point readPoint() throws IOException, ParseException
   {
     CoordinateSequence pts = readCoordinateSequence(1);
     // If X and Y are NaN create a empty point
@@ -264,27 +300,31 @@ public class WKBReader
     return factory.createPoint(pts);
   }
 
-  private LineString readLineString() throws IOException
+  private LineString readLineString() throws IOException, ParseException
   {
-    int size = dis.readInt();
+    int size = readNumField(FIELD_NUMCOORDS);
     CoordinateSequence pts = readCoordinateSequenceLineString(size);
     return factory.createLineString(pts);
   }
 
-  private LinearRing readLinearRing() throws IOException
+  private LinearRing readLinearRing() throws IOException, ParseException
   {
-    int size = dis.readInt();
+    int size = readNumField(FIELD_NUMCOORDS);
     CoordinateSequence pts = readCoordinateSequenceRing(size);
     return factory.createLinearRing(pts);
   }
 
-  private Polygon readPolygon() throws IOException
+  private Polygon readPolygon() throws IOException, ParseException
   {
-    int numRings = dis.readInt();
+    int numRings = readNumField(FIELD_NUMRINGS);
     LinearRing[] holes = null;
     if (numRings > 1)
       holes = new LinearRing[numRings - 1];
 
+    // empty polygon
+    if (numRings <= 0)
+      return factory.createPolygon();
+    
     LinearRing shell = readLinearRing();
     for (int i = 0; i < numRings - 1; i++) {
       holes[i] = readLinearRing();
@@ -292,12 +332,12 @@ public class WKBReader
     return factory.createPolygon(shell, holes);
   }
 
-  private MultiPoint readMultiPoint() throws IOException, ParseException
+  private MultiPoint readMultiPoint(int SRID) throws IOException, ParseException
   {
-    int numGeom = dis.readInt();
+    int numGeom = readNumField(FIELD_NUMELEMS);
     Point[] geoms = new Point[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry();
+      Geometry g = readGeometry(SRID);
       if (! (g instanceof Point))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiPoint");
       geoms[i] = (Point) g;
@@ -305,12 +345,12 @@ public class WKBReader
     return factory.createMultiPoint(geoms);
   }
 
-  private MultiLineString readMultiLineString() throws IOException, ParseException
+  private MultiLineString readMultiLineString(int SRID) throws IOException, ParseException
   {
-    int numGeom = dis.readInt();
+    int numGeom = readNumField(FIELD_NUMELEMS);
     LineString[] geoms = new LineString[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry();
+      Geometry g = readGeometry(SRID);
       if (! (g instanceof LineString))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiLineString");
       geoms[i] = (LineString) g;
@@ -318,13 +358,13 @@ public class WKBReader
     return factory.createMultiLineString(geoms);
   }
 
-  private MultiPolygon readMultiPolygon() throws IOException, ParseException
+  private MultiPolygon readMultiPolygon(int SRID) throws IOException, ParseException
   {
-    int numGeom = dis.readInt();
+    int numGeom = readNumField(FIELD_NUMELEMS);
     Polygon[] geoms = new Polygon[numGeom];
 
     for (int i = 0; i < numGeom; i++) {
-      Geometry g = readGeometry();
+      Geometry g = readGeometry(SRID);
       if (! (g instanceof Polygon))
         throw new ParseException(INVALID_GEOM_TYPE_MSG + "MultiPolygon");
       geoms[i] = (Polygon) g;
@@ -332,17 +372,17 @@ public class WKBReader
     return factory.createMultiPolygon(geoms);
   }
 
-  private GeometryCollection readGeometryCollection() throws IOException, ParseException
+  private GeometryCollection readGeometryCollection(int SRID) throws IOException, ParseException
   {
-    int numGeom = dis.readInt();
+    int numGeom = readNumField(FIELD_NUMELEMS);
     Geometry[] geoms = new Geometry[numGeom];
     for (int i = 0; i < numGeom; i++) {
-      geoms[i] = readGeometry();
+      geoms[i] = readGeometry(SRID);
     }
     return factory.createGeometryCollection(geoms);
   }
 
-  private CoordinateSequence readCoordinateSequence(int size) throws IOException
+  private CoordinateSequence readCoordinateSequence(int size) throws IOException, ParseException
   {
     CoordinateSequence seq = csFactory.create(size, inputDimension);
     int targetDim = seq.getDimension();
@@ -357,7 +397,7 @@ public class WKBReader
     return seq;
   }
 
-  private CoordinateSequence readCoordinateSequenceLineString(int size) throws IOException
+  private CoordinateSequence readCoordinateSequenceLineString(int size) throws IOException, ParseException
   {
     CoordinateSequence seq = readCoordinateSequence(size);
     if (isStrict) return seq;
@@ -365,7 +405,7 @@ public class WKBReader
     return CoordinateSequences.extend(csFactory, seq, 2);
   }
   
-  private CoordinateSequence readCoordinateSequenceRing(int size) throws IOException
+  private CoordinateSequence readCoordinateSequenceRing(int size) throws IOException, ParseException
   {
     CoordinateSequence seq = readCoordinateSequence(size);
     if (isStrict) return seq;
@@ -377,8 +417,9 @@ public class WKBReader
    * Reads a coordinate value with the specified dimensionality.
    * Makes the X and Y ordinates precise according to the precision model
    * in use.
+   * @throws ParseException 
    */
-  private void readCoordinate() throws IOException
+  private void readCoordinate() throws IOException, ParseException
   {
     for (int i = 0; i < inputDimension; i++) {
       if (i <= 1) {

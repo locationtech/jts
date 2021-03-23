@@ -11,7 +11,6 @@
  */
 package test.jts.perf.algorithm;
 
-import org.locationtech.jts.algorithm.PerturbedGridPolygonBuilder;
 import org.locationtech.jts.algorithm.RayCrossingCounter;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;

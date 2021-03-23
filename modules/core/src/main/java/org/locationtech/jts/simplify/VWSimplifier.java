@@ -204,7 +204,8 @@ public class VWSimplifier
      */
     private Geometry createValidArea(Geometry rawAreaGeom)
     {
-      if (isEnsureValidTopology)
+      // if geometry is invalid then make it valid
+      if (isEnsureValidTopology && ! rawAreaGeom.isValid())
         return rawAreaGeom.buffer(0.0);
       return rawAreaGeom;
     }

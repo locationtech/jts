@@ -12,6 +12,7 @@
 package org.locationtech.jtstest.util;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Runs an OS command, capturing stdout and stderr
@@ -24,22 +25,39 @@ public class CommandRunner {
   private String stdout;
   private String stderr;
 
+  public int exec(String cmd) throws IOException, InterruptedException {
+    return exec(cmd, null);
+  }
+  
   /**
    * Executes a command and returns the contents of stdout as a string.
    * The command should be a single line, otherwise things seem to hang.
    * 
    * @param cmd command to execute (should be a single line)
+   * @param stdin 
    * @return text of stdout
    * @throws IOException
    * @throws InterruptedException
    */
-  public int exec(String cmd) throws IOException, InterruptedException {
+  public int exec(String cmd, String stdinData) throws IOException, InterruptedException {
     // ensure cmd is single line (seems to hang otherwise
     
     String[] osCmd = cmdArray(cmd);
     
     Process process = Runtime.getRuntime().exec( osCmd );
-
+    
+    /**
+     * Always write something to stdin, otherwise process might hang
+     */
+    byte[] stdinBytes = new byte[0];
+    if (stdinData != null) {
+      stdinBytes = stdinData.getBytes();
+    }
+    OutputStream stdinOS = process.getOutputStream();
+    stdinOS.write(stdinBytes);
+    stdinOS.flush();
+    stdinOS.close();
+    
     StreamGrabber stdoutReader = 
         new StreamGrabber(process.getInputStream());
     Thread ot = new Thread(stdoutReader);

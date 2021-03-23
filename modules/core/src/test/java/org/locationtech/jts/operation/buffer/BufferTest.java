@@ -495,7 +495,7 @@ public class BufferTest extends GeometryTestCase {
       .test();
   }
 
-  public void testQuickPolygonUnion() throws Exception {
+  public void testQuickPolygonUnion() {
     Geometry a = read("POLYGON((0 0, 100 0, 100 100, 0 100, 0 0))");
     Geometry b = read("POLYGON((50 50, 150 50, 150 150, 50 150, 50 50))");
     Geometry[] polygons = new Geometry[] {a, b};
@@ -503,5 +503,25 @@ public class BufferTest extends GeometryTestCase {
     Geometry union = polygonCollection.buffer(0);
     //System.out.println(union);
     assertEquals("POLYGON ((0 0, 0 100, 50 100, 50 150, 150 150, 150 50, 100 50, 100 0, 0 0))", union.toString());
+  }
+  
+  /**
+   * This now works since buffer ring orientation is changed to use signed-area test.
+   */
+  public void testBowtiePolygonLargestAreaRetained() {
+    Geometry a = read("POLYGON ((10 10, 50 10, 25 35, 35 35, 10 10))");
+    Geometry result = a.buffer(0);
+    Geometry expected = read("POLYGON ((10 10, 30 30, 50 10, 10 10))");
+    checkEqual(expected, result);
+  }
+  
+  /**
+   * This now works since buffer ring orientation is changed to use signed-area test.
+   */
+  public void testBowtiePolygonHoleLargestAreaRetained() {
+    Geometry a = read("POLYGON ((0 40, 60 40, 60 0, 0 0, 0 40), (10 10, 50 10, 25 35, 35 35, 10 10))");
+    Geometry result = a.buffer(0);
+    Geometry expected = read("POLYGON ((0 40, 60 40, 60 0, 0 0, 0 40), (10 10, 50 10, 30 30, 10 10))");
+    checkEqual(expected, result);
   }
 }

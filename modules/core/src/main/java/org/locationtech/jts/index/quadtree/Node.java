@@ -176,4 +176,8 @@ public class Node
     return node;
   }
 
+  int getLevel()
+  {
+    return level;
+  }
 }

@@ -367,9 +367,26 @@ public class Polygon
   }
 
   protected int compareToSameClass(Object o) {
+    Polygon poly = (Polygon) o;
+
     LinearRing thisShell = shell;
-    LinearRing otherShell = ((Polygon) o).shell;
-    return thisShell.compareToSameClass(otherShell);
+    LinearRing otherShell = poly.shell;
+    int shellComp = thisShell.compareToSameClass(otherShell);
+    if (shellComp != 0) return shellComp;
+
+    int nHole1 = getNumInteriorRing();
+    int nHole2 = ((Polygon) o).getNumInteriorRing();
+    int i = 0;
+    while (i < nHole1 && i < nHole2) {
+      LinearRing thisHole = (LinearRing) getInteriorRingN(i);
+      LinearRing otherHole = (LinearRing) poly.getInteriorRingN(i);
+      int holeComp = thisHole.compareToSameClass(otherHole);
+      if (holeComp != 0) return holeComp;
+      i++;
+    }
+    if (i < nHole1) return 1;
+    if (i < nHole2) return -1;
+    return 0;
   }
 
   protected int compareToSameClass(Object o, CoordinateSequenceComparator comp) {

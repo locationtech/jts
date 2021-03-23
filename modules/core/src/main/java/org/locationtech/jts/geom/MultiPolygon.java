@@ -124,6 +124,14 @@ public class MultiPolygon
     return (MultiPolygon) super.reverse();
   }
 
+  protected MultiPolygon reverseInternal() {
+    Polygon[] polygons = new Polygon[this.geometries.length];
+    for (int i = 0; i < polygons.length; i++) {
+      polygons[i] = (Polygon) this.geometries[i].reverse();
+    }
+    return new MultiPolygon(polygons, factory);
+  }
+  
   protected MultiPolygon copyInternal() {
     Polygon[] polygons = new Polygon[this.geometries.length];
     for (int i = 0; i < polygons.length; i++) {

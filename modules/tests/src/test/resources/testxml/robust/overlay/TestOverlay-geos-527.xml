@@ -1,0 +1,26 @@
+
+<run>
+  <precisionModel type="FLOATING" />
+  <tolerance>.01</tolerance>
+
+  <case>
+    <desc>
+Bogus noding
+http://trac.osgeo.org/geos/ticket/527
+    </desc>
+    <a>
+LINESTRING(
+ 1725063 4819121,
+ 1725064.14183882 4819094.70208557,
+ 1725064.13656044 4819094.70235069,
+ 1725064.14210362 4819094.70227252,
+ 1725064.13656043 4819094.70235069,
+ 1725063 4819121
+)
+    </a>
+    <test>
+      <op name='unionLength' arg1='A' > 52.6557  </op>
+    </test>
+  </case>
+
+</run>

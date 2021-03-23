@@ -19,4 +19,5 @@ public @interface Metadata
   String name() default "";
   String title() default "";
   String description() default "";
+  boolean isRequired() default true;
 }

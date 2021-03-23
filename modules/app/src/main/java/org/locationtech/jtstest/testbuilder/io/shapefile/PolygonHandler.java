@@ -194,7 +194,10 @@ public class PolygonHandler implements ShapeHandler{
                 offset++;
             }
             LinearRing ring = geometryFactory.createLinearRing(points);
-            if(Orientation.isCCW(points)){
+            /**
+             * Allow reading a 3-point ring, and treat it as a shell.
+             */
+            if(points.length >= 4 && Orientation.isCCW(points)){
                 holes.add(ring);
             }
             else{

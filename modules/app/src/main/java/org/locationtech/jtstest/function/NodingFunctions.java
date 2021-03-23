@@ -31,11 +31,14 @@ import org.locationtech.jts.noding.FastNodingValidator;
 import org.locationtech.jts.noding.NodingIntersectionFinder;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.ScaledNoder;
 import org.locationtech.jts.noding.SegmentStringUtil;
+import org.locationtech.jts.noding.snap.SnappingNoder;
 import org.locationtech.jts.noding.snapround.GeometryNoder;
 import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
+import org.locationtech.jts.noding.snapround.SnapRoundingNoder;
 import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
@@ -45,7 +48,7 @@ public class NodingFunctions
 
   public static boolean isNodingValid(Geometry geom) {
     FastNodingValidator nv = new FastNodingValidator(
-        SegmentStringUtil.extractNodedSegmentStrings(geom));
+        SegmentStringUtil.extractBasicSegmentStrings(geom));
     return nv.isValid();
   }
 
@@ -58,10 +61,10 @@ public class NodingFunctions
 
   public static Geometry findOneNode(Geometry geom) {
     FastNodingValidator nv = new FastNodingValidator(
-        SegmentStringUtil.extractNodedSegmentStrings(geom));
+        SegmentStringUtil.extractBasicSegmentStrings(geom));
     nv.isValid();
     List intPts = nv.getIntersections();
-    if (intPts.size() == 0) return null;
+    if (intPts.size() == 0) return FunctionsUtil.getFactoryOrDefault(geom).createPoint();
     return FunctionsUtil.getFactoryOrDefault(geom).createPoint((Coordinate) intPts.get(0));
   }
   
@@ -69,7 +72,7 @@ public class NodingFunctions
   public static Geometry findNodes(Geometry geom)
   {
     List<Coordinate> intPtsList = FastNodingValidator.computeIntersections( 
-        SegmentStringUtil.extractNodedSegmentStrings(geom) );
+        SegmentStringUtil.extractBasicSegmentStrings(geom) );
     return FunctionsUtil.getFactoryOrDefault(null)
         .createMultiPointFromCoords( dedup(intPtsList) );
   }
@@ -110,7 +113,7 @@ public class NodingFunctions
 
   private static void processNodes(Geometry geom, NodingIntersectionFinder intFinder) {
     Noder noder = new MCIndexNoder( intFinder );
-    noder.computeNodes( SegmentStringUtil.extractNodedSegmentStrings(geom) );
+    noder.computeNodes( SegmentStringUtil.extractBasicSegmentStrings(geom) );
   }
 
   public static Geometry MCIndexNodingWithPrecision(Geometry geom, double scaleFactor)
@@ -132,61 +135,37 @@ public class NodingFunctions
     return SegmentStringUtil.toGeometry(noder.getNodedSubstrings(), FunctionsUtil.getFactoryOrDefault(geom));
   }
   
-  /**
-   * Reduces precision pointwise, then snap-rounds.
-   * Note that output set may not contain non-unique linework
-   * (and thus cannot be used as input to Polygonizer directly).
-   * UnaryUnion is one way to make the linework unique.
-   * 
-   * @param geom a geometry containing linework to node
-   * @param scaleFactor the precision model scale factor to use
-   * @return the noded, snap-rounded linework
-   */
-  public static Geometry snapRoundWithPrecision(
-      Geometry geom, double scaleFactor) {
-    PrecisionModel pm = new PrecisionModel(scaleFactor);
-
-    Geometry roundedGeom = GeometryPrecisionReducer.reducePointwise(geom, pm);
-
-    List geomList = new ArrayList();
-    geomList.add(roundedGeom);
-
-    GeometryNoder noder = new GeometryNoder(pm);
-    List lines = noder.node(geomList);
-
-    return FunctionsUtil.getFactoryOrDefault(geom).buildGeometry(lines);
-  }
-  
-  /**
-   * Runs a ScaledNoder on input.
-   * Input vertices should be rounded to precision model.
-   * 
-   * @param geom
-   * @param scaleFactor
-   * @return the noded geometry
-   */
-  public static Geometry scaledNoding(Geometry geom, double scaleFactor)
+  @Metadata(description="Nodes input using the SnappingNoder")
+  public static Geometry snappingNoder(Geometry geom, Geometry geom2, 
+      @Metadata(title="Snap distance")
+      double snapDistance)
   {
-    List segs = createSegmentStrings(geom);
-    PrecisionModel fixedPM = new PrecisionModel(scaleFactor);
-    Noder noder = new ScaledNoder(new MCIndexSnapRounder(new PrecisionModel(1.0)),
-        fixedPM.getScale());
+    List segs = SegmentStringUtil.extractNodedSegmentStrings(geom);
+    if (geom2 != null) {
+      List segs2 = SegmentStringUtil.extractNodedSegmentStrings(geom2);
+      segs.addAll(segs2);
+    }
+    Noder noder = new SnappingNoder(snapDistance);
     noder.computeNodes(segs);
     Collection nodedSegStrings = noder.getNodedSubstrings();
     return SegmentStringUtil.toGeometry(nodedSegStrings, FunctionsUtil.getFactoryOrDefault(geom));
   }
 
-  private static List createSegmentStrings(Geometry geom)
+  @Metadata(description="Nodes input using the SnapRoundingNoder")
+  public static Geometry snapRoundingNoder(Geometry geom, Geometry geom2, 
+      @Metadata(title="Scale factor")
+      double scaleFactor)
   {
-    List segs = new ArrayList();
-    List lines = LinearComponentExtracter.getLines(geom);
-    for (Iterator i = lines.iterator(); i.hasNext(); ) {
-      LineString line = (LineString) i.next();
-      segs.add(new BasicSegmentString(line.getCoordinates(), null));
+    List segs = SegmentStringUtil.extractNodedSegmentStrings(geom);
+    if (geom2 != null) {
+      List segs2 = SegmentStringUtil.extractNodedSegmentStrings(geom2);
+      segs.addAll(segs2);
     }
-    return segs;
+    PrecisionModel pm = new PrecisionModel(scaleFactor);
+    Noder noder = new SnapRoundingNoder(pm);
+    noder.computeNodes(segs);
+    Collection nodedSegStrings = noder.getNodedSubstrings();
+    return SegmentStringUtil.toGeometry(nodedSegStrings, FunctionsUtil.getFactoryOrDefault(geom));
   }
-  
-  
 
 }

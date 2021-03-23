@@ -40,5 +40,9 @@ public class Option {
   {
     return Integer.parseInt(args[i]);
   }
+  public double getArgAsNum(int i)
+  {
+    return Double.parseDouble(args[i]);
+  }
 
 }

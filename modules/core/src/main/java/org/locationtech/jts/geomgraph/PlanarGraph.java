@@ -23,6 +23,7 @@ import java.util.List;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Location;
+import org.locationtech.jts.geom.Quadrant;
 
 /**
  * The computation of the <code>IntersectionMatrix</code> relies on the use of a structure

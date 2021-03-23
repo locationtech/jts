@@ -15,11 +15,12 @@ package test.jts.util;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBHexFileReader;
+import org.locationtech.jts.io.WKBReader;
 import org.locationtech.jts.io.WKTFileReader;
 import org.locationtech.jts.io.WKTReader;
 
@@ -35,10 +36,10 @@ public class IOUtil {
 	    }
 	  }
 
-    public static List readWKT(String[] inputWKT)
+    public static List<Geometry> readWKT(String[] inputWKT)
     throws ParseException
     {
-      ArrayList geometries = new ArrayList();
+      List<Geometry> geometries = new ArrayList<Geometry>();
       for (int i = 0; i < inputWKT.length; i++) {
           geometries.add(IOUtil.reader.read(inputWKT[i]));
       }
@@ -51,22 +52,42 @@ public class IOUtil {
     	return IOUtil.reader.read(inputWKT);
     }
 
-    public static Collection readWKTFile(String filename) 
+    public static List<Geometry> readWKTFile(String filename) 
     throws IOException, ParseException
     {
       WKTFileReader fileRdr = new WKTFileReader(filename, IOUtil.reader);
-      List geoms = fileRdr.read();
+      @SuppressWarnings("unchecked")
+      List<Geometry> geoms = fileRdr.read();
       return geoms;
     }
 
-    public static Collection readWKTFile(Reader rdr) 
+    public static List<Geometry> readWKTFile(Reader rdr) 
     throws IOException, ParseException
     {
       WKTFileReader fileRdr = new WKTFileReader(rdr, IOUtil.reader);
-      List geoms = fileRdr.read();
+      @SuppressWarnings("unchecked")
+      List<Geometry> geoms = fileRdr.read();
       return geoms;
     }
 
     public static WKTReader reader = new WKTReader();
+    
+  @SuppressWarnings("unchecked")
+  public static List<Geometry> readWKBHexFile(String filename) 
+      throws ParseException, IOException 
+  {
+    WKBReader reader = new WKBReader();
+    WKBHexFileReader fileReader = new WKBHexFileReader(filename, reader);
+    return (List<Geometry>) fileReader.read();
+  }
+
+  public static List<Geometry> readFile(String filename)
+      throws Exception
+  {
+    if (filename.endsWith(".wkb"))
+      return readWKBHexFile(filename);
+    
+    return readWKTFile(filename);
+  }
 
 }

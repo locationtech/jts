@@ -53,9 +53,9 @@ public class STRtree extends AbstractSTRtree
 implements SpatialIndex, Serializable 
 {
 
-  private static final class STRtreeNode extends AbstractNode
+  static final class STRtreeNode extends AbstractNode
   {
-    private STRtreeNode(int level)
+    STRtreeNode(int level)
     {
       super(level);
     }
@@ -182,6 +182,28 @@ implements SpatialIndex, Serializable
    */
   public STRtree(int nodeCapacity) {
     super(nodeCapacity);
+  }
+
+  /**
+   * Constructs an STRtree with the given maximum number of child nodes that
+   * a node may have, and the root that links to all other nodes
+   * <p>
+   * The minimum recommended capacity setting is 4.
+   *
+   */
+  public STRtree(int nodeCapacity, STRtreeNode root) {
+    super(nodeCapacity, root);
+  }
+
+  /**
+   * Constructs an STRtree with the given maximum number of child nodes that
+   * a node may have, and all leaf nodes in the tree
+   * <p>
+   * The minimum recommended capacity setting is 4.
+   *
+   */
+  public STRtree(int nodeCapacity, ArrayList itemBoundables) {
+    super(nodeCapacity, itemBoundables);
   }
 
   protected AbstractNode createNode(int level) {

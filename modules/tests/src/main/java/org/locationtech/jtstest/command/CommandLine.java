@@ -79,6 +79,15 @@ public class CommandLine {
     return opt.getArgAsInt(0);
   }
 
+  public double getOptionArgAsNum(String name, int argIndex)
+  {
+    OptionSpec spec = getOptionSpec(name);
+    if (spec == null) return 0;
+    Option opt = spec.getOption(0);
+    if (opt == null) return 0;
+    return opt.getArgAsNum(0);
+  }
+
   public String[] getOptionArgs(String name)
   {
     OptionSpec spec = getOptionSpec(name);

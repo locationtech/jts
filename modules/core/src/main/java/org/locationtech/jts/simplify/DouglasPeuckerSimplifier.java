@@ -192,14 +192,18 @@ static class DPTransformer
    * topology.
    * Note this only works for area geometries, since buffer always returns
    * areas.  This also may return empty geometries, if the input
-   * has no actual area.
+   * has no actual area.  
+   * If the input is empty or is not polygonal, 
+   * this ensures that POLYGON EMPTY is returned.
    *
    * @param rawAreaGeom an area geometry possibly containing self-intersections
    * @return a valid area geometry
    */
   private Geometry createValidArea(Geometry rawAreaGeom)
   {
-  	if ( isEnsureValidTopology)
+    boolean isValidArea = rawAreaGeom.getDimension() == 2 && rawAreaGeom.isValid();
+    // if geometry is invalid then make it valid
+  	if (isEnsureValidTopology && ! isValidArea)
   		return rawAreaGeom.buffer(0.0);
   	return rawAreaGeom;
   }
