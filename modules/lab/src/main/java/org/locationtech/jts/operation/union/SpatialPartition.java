@@ -18,7 +18,7 @@ import org.locationtech.jts.operation.union.DisjointSets.Subsets;
 
 /**
  * Computes a partition of a set of geometries into disjoint subsets, 
- * based on a provided equivalence relation.
+ * based on a provided equivalence {@link Relation}.
  * Uses a spatial index for efficient processing.
  * 
  * @author mdavis
@@ -46,12 +46,8 @@ public class SpatialPartition {
     return sets.getSize(s);
   }
   
-  public int getItem(int s, int i) {
-    return sets.getItem(s, i);
-  }
-  
   public Geometry getGeometry(int s, int i) {
-    return geoms[getItem(s, i)];
+    return geoms[ sets.getItem(s, i) ];
   }
   
   private Subsets build(Geometry[] geoms, Relation rel) {

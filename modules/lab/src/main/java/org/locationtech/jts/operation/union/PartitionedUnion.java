@@ -21,6 +21,23 @@ import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 
+/**
+ * Unions a set of polygonal geometries by partitioning them
+ * into connected sets of polygons.
+ * This works best for a <i>sparse</i> set of polygons.
+ * Sparse means that if the geometries are partioned
+ * into connected sets, the number of sets
+ * is a significant fraction of the total number of geometries.
+ * The algorithm used provides performance and memory advantages
+ * over the {@link CascadedPolygonUnion} algorithm.
+ * It also has the advantage that it does not alter input geometries
+ * which do not intersect any other input geometry.
+ * <p>
+ * Non-sparse sets will work, but may be slower than using cascaded union.
+ * 
+ * @author mdavis
+ *
+ */
 public class PartitionedUnion {
   
   public static Geometry union(Geometry geoms)

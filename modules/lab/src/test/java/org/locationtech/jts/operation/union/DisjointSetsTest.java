@@ -14,6 +14,20 @@ public class DisjointSetsTest extends TestCase {
     super(name);
   }
   
+  public void testEmpty() {
+    int[] nums = new int[] { };
+    checkIntsModulo(nums, 3, new String[] { });
+  }
+  
+  public void testSingleItem() {
+    int[] nums = new int[] {
+        11
+    };
+    checkIntsModulo(nums, 3, new String[] {
+        "11",
+    });
+  }
+  
   public void testIntsModulo3() {
     int[] nums = new int[] {
         11,22,3,45,5,62,7
