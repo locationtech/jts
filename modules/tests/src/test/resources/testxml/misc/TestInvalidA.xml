@@ -179,6 +179,13 @@ POLYGON ((10 50, 50 50, 90 90, 50 50, 50 10, 10 10, 10 50))
 <test><op name="isValid" arg1="A" > false </op></test>
 </case>
 
+<case> <desc>Polygon - Zero-width spike along boundary </desc>
+<a>
+POLYGON ((10 90, 80 90, 20 90, 90 90, 90 10, 10 10, 10 90))
+</a>
+<test><op name="isValid" arg1="A" > false </op></test>
+</case>
+
 <case> <desc>Polygon/Hole - Zero-width spike splitting hole</desc>
 <a>
 POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (80 80, 20 80, 20 50, 50 20, 20 50, 20 20, 80 20, 80 80))
