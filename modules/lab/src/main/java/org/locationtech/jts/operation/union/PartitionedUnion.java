@@ -33,9 +33,9 @@ import org.locationtech.jts.geom.util.PolygonExtracter;
  * It also has the advantage that it does not alter input geometries
  * which do not intersect any other input geometry.
  * <p>
- * Non-sparse sets will work, but may be slower than using cascaded union.
+ * Non-sparse sets are computed correctly, but may be slower than using cascaded union.
  * 
- * @author mdavis
+ * @author Martin Davis
  *
  */
 public class PartitionedUnion {
@@ -63,17 +63,15 @@ public class PartitionedUnion {
     if (inputPolys.length == 0)
       return null;
     
-    SpatialPartition part = new SpatialPartition(inputPolys, new SpatialPartition.Relation() {
+    SpatialPartition part = new SpatialPartition(inputPolys, new SpatialPartition.EquivalenceRelation() {
       
       @Override
       public boolean isEquivalent(int i, int j) {
-         //return inputPolys[i1].intersects(inputPolys[i2]);
-         /*
-         return inputPolys[i1].getEnvelopeInternal()
-             .intersects( inputPolys[i2].getEnvelopeInternal() );
-         */
+         //return inputPolys[i].intersects(inputPolys[j]);
+        //*
          PreparedGeometry pg = PreparedGeometryFactory.prepare(inputPolys[i]);
          return pg.intersects(inputPolys[j]);
+         //*/
       }
     });
     

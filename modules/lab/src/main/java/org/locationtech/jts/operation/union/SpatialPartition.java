@@ -18,7 +18,7 @@ import org.locationtech.jts.operation.union.DisjointSets.Subsets;
 
 /**
  * Computes a partition of a set of geometries into disjoint subsets, 
- * based on a provided equivalence {@link Relation}.
+ * based on a provided equivalence {@link EquivalenceRelation}.
  * Uses a spatial index for efficient processing.
  * 
  * @author mdavis
@@ -26,35 +26,74 @@ import org.locationtech.jts.operation.union.DisjointSets.Subsets;
  */
 public class SpatialPartition {
   
-  public interface Relation {
+  /**
+   * An interface for a function to compute an equivalence relation.
+   * An equivalence relation must be symmetric, reflexive and transitive.
+   * Examples are <code>intersects</code> or <code>withinDistance</code>.
+   *
+   */
+  public interface EquivalenceRelation {
+    /**
+     * Tests whether two geometry items are equivalent to each other under the relation.
+     * 
+     * @param i the index of a geometry
+     * @param j the index of another geometry
+     * @return true if the geometry items are equivalent
+     */
     boolean isEquivalent(int i, int j);
   }
   
   private Subsets sets;
   private Geometry[] geoms;
 
-  public SpatialPartition(Geometry[] geoms, Relation rel) {
+  public SpatialPartition(Geometry[] geoms, EquivalenceRelation rel) {
     this.geoms = geoms;
     sets = build(geoms, rel);
   }
 
+  /**
+   * Gets the number of partitions
+   * @return the number of partitions
+   */
   public int getCount() {
     return sets.getCount();
   }
   
+  /**
+   * Gets the number of geometries in a given partition.
+   * 
+   * @param s the partition index
+   * @return the size of the partition
+   */
   public int getSize(int s) {
     return sets.getSize(s);
   }
   
-  public Geometry getGeometry(int s, int i) {
-    return geoms[ sets.getItem(s, i) ];
+  /**
+   * Gets the index of a geometry in a partition
+   * @param s the partition index
+   * @param i the item index
+   * @return the item in the partition
+   */
+  public int getItem(int s, int i) {
+    return sets.getItem(s, i);
   }
   
-  private Subsets build(Geometry[] geoms, Relation rel) {
+  /**
+   * Gets a geometry in a given partition
+   * @param s the partition index
+   * @param i the item index
+   * @return the geometry for the given partition and item index
+   */
+  public Geometry getGeometry(int s, int i) {
+    return geoms[ getItem(s, i) ];
+  }
+  
+  private Subsets build(Geometry[] geoms, EquivalenceRelation rel) {
     STRtree index = createIndex(geoms);
     
     DisjointSets dset = new DisjointSets(geoms.length);
-    //--- cluster the geometries
+    //--- partition the geometries
     for (int i = 0; i < geoms.length; i++) {
       
       final int queryIndex = i;
@@ -70,7 +109,7 @@ public class SpatialPartition {
           if (itemIndex <= queryIndex) return;
           
           // already in same partition
-          if (dset.isSameSubset(queryIndex,  itemIndex)) return;
+          if (dset.isInSameSubset(queryIndex,  itemIndex)) return;
           
           if (rel.isEquivalent(queryIndex, itemIndex)) {
             // geometries are in same partition

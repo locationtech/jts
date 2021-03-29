@@ -57,7 +57,7 @@ public class DisjointSets
    * @param j another item index
    * @return true if items are in the same subset
    */
-  public boolean isSameSubset(int i, int j) {
+  public boolean isInSameSubset(int i, int j) {
     return findRoot(i) == findRoot(j);
   }
   
