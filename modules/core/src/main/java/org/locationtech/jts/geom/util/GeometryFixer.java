@@ -37,20 +37,20 @@ import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
  * <p>
  * Input geometries are always processed, so even valid inputs may 
  * have some minor alterations.  The output is always a new geometry object.
- * 
  * <h2>Semantic Rules</h2>
  * <ol>
  * <li>Vertices with non-finite X or Y ordinates are removed 
  * (as per {@link Coordinate#isValid()}.</li>
- * <li>Repeated points are removed</li>
+ * <li>Repeated points are reduced to a single point</li>
  * <li>Empty atomic geometries are valid and are returned unchanged</li>
  * <li>Empty elements are removed from collections</li>
  * <li><code>Point</code>: keep valid coordinate, or EMPTY</li>
  * <li><code>LineString</code>: fix coordinate list</li>
+ * <li><code>LinearRing</code>: fix coordinate list, return as valid ring or else <code>LineString</code></li>
  * <li><code>Polygon</code>: transform into a valid polygon, 
  * preserving as much of the extent and vertices as possible</li>
- * <li><code>MultiPolygon</code>: fix each element, 
- * then ensure collection is non-overlapping (via union)</li>
+ * <li><code>MultiPolygon</code>: fix each polygon, 
+ * then ensure result is non-overlapping (via union)</li>
  * <li><code>GeometryCollection</code>: fix each element</li>
  * <li>Collapsed lines and polygons are handled as follows,
  * depending on the <code>keepCollapsed</code> setting:
@@ -74,8 +74,8 @@ public class GeometryFixer {
    * @return the valid fixed geometry
    */
   public static Geometry fix(Geometry geom) {
-    GeometryFixer ri = new GeometryFixer(geom);
-    return ri.getResult();
+    GeometryFixer fix = new GeometryFixer(geom);
+    return fix.getResult();
   }
   
   private Geometry geom;
@@ -161,15 +161,37 @@ public class GeometryFixer {
     }
     return factory.createMultiPoint(GeometryFactory.toPointArray(pts));
   }
-
+  
   private Geometry fixLinearRing(LinearRing geom) {
+    Geometry fix = fixLinearRingElement(geom);
+    if (fix == null)
+      return factory.createLinearRing();
+    return fix;
+  }
+  
+  private Geometry fixLinearRingElement(LinearRing geom) {
+    if (geom.isEmpty()) return null;
     Coordinate[] pts = geom.getCoordinates();
     Coordinate[] ptsFix = fixCoordinates(pts);
-    if (ptsFix.length <= 3) {
-      return factory.createLinearRing();
+    if (isKeepCollapsed) {
+      if (ptsFix.length == 1) {
+        return factory.createPoint(ptsFix[0]);
+      }
+      if (ptsFix.length > 1 && ptsFix.length <= 3) {
+        return factory.createLineString(ptsFix);
+      }
     }
-    // TODO: check for flat ring -> EMPTY ?
-    return factory.createLinearRing(ptsFix);
+    //--- too short to be a valid ring
+    if (ptsFix.length <= 3) {
+      return null;
+    }
+
+    LinearRing ring = factory.createLinearRing(ptsFix);
+    //--- convert invalid ring to LineString
+    if (! ring.isValid()) {
+      return factory.createLineString(ptsFix);
+    }
+    return ring;
   }
 
   private Geometry fixLineString(LineString geom) {
@@ -192,6 +214,12 @@ public class GeometryFixer {
     return factory.createLineString(ptsFix);
   }
 
+  /**
+   * Returns a clean copy of the input coordinate array.
+   * 
+   * @param pts coordinates to clean
+   * @return an array of clean coordinates
+   */
   private static Coordinate[] fixCoordinates(Coordinate[] pts) {
     Coordinate[] ptsClean = CoordinateArrays.removeRepeatedAndInvalidPoints(pts);
     return CoordinateArrays.copyDeep(ptsClean);

@@ -78,6 +78,11 @@ public class GeometryFixerTest extends GeometryTestCase {
 
   //----------------------------------------
 
+  public void testLineStringEmpty() {
+    checkFix("LINESTRING EMPTY",
+        "LINESTRING EMPTY");
+  }
+
   public void testLineStringCollapse() {
     checkFix("LINESTRING (0 0, 1 NaN, 0 0)",
         "LINESTRING EMPTY");
@@ -104,6 +109,51 @@ public class GeometryFixerTest extends GeometryTestCase {
   public void testLineStringSelfCross() {
     checkFix("LINESTRING (0 0, 9 9, 9 5, 0 5)",
         "LINESTRING (0 0, 9 9, 9 5, 0 5)");
+  }
+  
+  //----------------------------------------
+
+  public void testLinearRingEmpty() {
+    checkFix("LINEARRING EMPTY",
+        "LINEARRING EMPTY");
+  }
+
+  public void testLinearRingCollapsePoint() {
+    checkFix("LINEARRING (0 0, 1 NaN, 0 0)",
+        "LINEARRING EMPTY");
+  }
+
+  public void testLinearRingCollapseLine() {
+    checkFix("LINEARRING (0 0, 1 NaN, 1 0, 0 0)",
+        "LINEARRING EMPTY");
+  }
+
+  public void testLinearRingKeepCollapsePoint() {
+    checkFixKeepCollapse("LINEARRING (0 0, 1 NaN, 0 0)",
+        "POINT (0 0)");
+  }
+
+  public void testLinearRingKeepCollapseLine() {
+    checkFixKeepCollapse("LINEARRING (0 0, 1 NaN, 1 0, 0 0)",
+        "LINESTRING (0 0, 1 0, 0 0)");
+  }
+
+  public void testLinearRingValid() {
+    checkFix("LINEARRING (10 10, 10 90, 90 90, 90 10, 10 10)",
+        "LINEARRING (10 10, 10 90, 90 90, 90 10, 10 10)");
+  }
+
+  public void testLinearRingFlat() {
+    checkFix("LINEARRING (10 10, 10 90, 90 90, 10 90, 10 10)",
+        "LINESTRING (10 10, 10 90, 90 90, 10 90, 10 10)");
+  }
+
+  /**
+   * Checks that invalid self-crossing ring is returned as a LineString
+   */
+  public void testLinearRingSelfCross() {
+    checkFix("LINEARRING (10 10, 10 90, 90 10, 90 90, 10 10)",
+        "LINESTRING (10 10, 10 90, 90 10, 90 90, 10 10)");
   }
   
   //----------------------------------------
@@ -135,6 +185,11 @@ public class GeometryFixerTest extends GeometryTestCase {
   
   //----------------------------------------
   
+  public void testPolygonEmpty() {
+    checkFix("POLYGON EMPTY",
+        "POLYGON EMPTY");
+  }
+
   public void testPolygonBowtie() {
     checkFix("POLYGON ((10 90, 90 10, 90 90, 10 10, 10 90))",
         "MULTIPOLYGON (((10 90, 50 50, 10 10, 10 90)), ((50 50, 90 90, 90 10, 50 50)))");
