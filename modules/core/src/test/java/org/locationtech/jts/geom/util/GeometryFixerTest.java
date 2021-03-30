@@ -145,6 +145,16 @@ public class GeometryFixerTest extends GeometryTestCase {
         "POLYGON ((90 90, 90 10, 10 10, 10 90, 90 90))");
   }
 
+  public void testPolygonPosAndNegOverlap() {
+    checkFix("POLYGON ((10 90, 50 90, 50 30, 70 30, 70 50, 30 50, 30 70, 90 70, 90 10, 10 10, 10 90))",
+        "POLYGON ((10 90, 50 90, 50 70, 90 70, 90 10, 10 10, 10 90), (50 50, 50 30, 70 30, 70 50, 50 50))");
+  }
+
+  public void testHolesTouching() {
+    checkFix("POLYGON ((0 0, 0 5, 6 5, 6 0, 0 0), (3 1, 4 1, 4 2, 3 2, 3 1), (3 2, 1 4, 5 4, 4 2, 4 3, 3 2, 2 3, 3 2))",
+        "MULTIPOLYGON (((0 0, 0 5, 6 5, 6 0, 0 0), (1 4, 2 3, 3 2, 3 1, 4 1, 4 2, 5 4, 1 4)), ((3 2, 4 3, 4 2, 3 2)))");
+  }
+
   public void testPolygonNaN() {
     checkFix("POLYGON ((10 90, 90 NaN, 90 10, 10 10, 10 90))",
         "POLYGON ((10 10, 10 90, 90 10, 10 10))");
