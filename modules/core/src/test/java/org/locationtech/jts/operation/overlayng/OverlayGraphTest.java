@@ -75,9 +75,9 @@ public class OverlayGraphTest extends GeometryTestCase {
     checkNext( e2, e2.symOE() );
     checkNext( e3, e3.symOE() );
     
-    checkPrev( e1, e3.symOE() );
-    checkPrev( e2, e1.symOE() );
-    checkPrev( e3, e2.symOE() );
+    checkPrev( e1, e2.symOE() );
+    checkPrev( e2, e3.symOE() );
+    checkPrev( e3, e1.symOE() );
   }
   
   /**

@@ -54,6 +54,13 @@ public class EdgeGraph
     return new HalfEdge(orig);
   }
 
+  /**
+   * Creates a HalfEge pair, using the HalfEdge type of the graph subclass.
+   * 
+   * @param p0
+   * @param p1
+   * @return
+   */
   private HalfEdge create(Coordinate p0, Coordinate p1)
   {
     HalfEdge e0 = createEdge(p0);
@@ -136,6 +143,12 @@ public class EdgeGraph
     return e;
   }
 
+  /**
+   * Gets all {@link HalfEdge}s in the graph.
+   * Both edges of edge pairs are included.
+   * 
+   * @return a collection of the graph edges
+   */
   public Collection getVertexEdges()
   {
     return vertexMap.values();

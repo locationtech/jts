@@ -182,17 +182,30 @@ public class HalfEdge {
    * Gets the previous edge CW around the origin
    * vertex of this edge, 
    * with that vertex being its destination.
+   * <p>
+   * It is always true that <code>e.next().prev() == e</code>
+   * <p>
+   * Note that this requires a scan of the origin edges, 
+   * so may not be efficient for some uses.
    * 
    * @return the previous edge CW around the origin vertex
    */
   public HalfEdge prev() {
-    return sym.next().sym;
+    HalfEdge curr = this;
+    HalfEdge prev = this;
+    do {
+      prev = curr;
+      curr = curr.oNext();
+    } while (curr != this);
+    return prev.sym;
   }
 
   /**
    * Gets the next edge CCW around the origin of this edge,
    * with the same origin.
    * If the origin vertex has degree 1 then this is the edge itself.
+   * <p>
+   * <code>e.oNext()</code> is equal to <code>e.sym().next()</code>
    * 
    * @return the next edge around the origin
    */
@@ -467,6 +480,7 @@ public class HalfEdge {
 
   /**
    * Finds the first node previous to this edge, if any.
+   * A node has degree <> 2.
    * If no such node exists (i.e. the edge is part of a ring)
    * then null is returned.
    * 
