@@ -40,7 +40,6 @@ import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.geomgraph.Label;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.SegmentString;
-import org.locationtech.jts.operation.valid.IsValidOp;
 
 /**
  * Creates all the raw offset curves for a buffer of a {@link Geometry}.
@@ -163,7 +162,7 @@ public class OffsetCurveSetBuilder {
       return;
     Coordinate[] coord = p.getCoordinates();
     // skip if coordinate is invalid
-    if (coord.length >= 1 && ! IsValidOp.isValid(coord[0]))
+    if (coord.length >= 1 && ! coord[0].isValid())
       return;
     Coordinate[] curve = curveBuilder.getLineCurve(coord, distance);
     addCurve(curve, Location.EXTERIOR, Location.INTERIOR);
