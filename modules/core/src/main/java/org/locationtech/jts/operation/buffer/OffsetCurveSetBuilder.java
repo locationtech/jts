@@ -55,7 +55,7 @@ public class OffsetCurveSetBuilder {
 
   private List curveList = new ArrayList();
 
-  private boolean isInverseOrientation = false;
+  private boolean isInvertOrientation = false;
 
   public OffsetCurveSetBuilder(
       Geometry inputGeom,
@@ -68,24 +68,25 @@ public class OffsetCurveSetBuilder {
   }
 
   /**
-   * Set whether the computed ring orientation should be inverted.
-   * This is done to generate a polygon from the "inverted" lobes
-   * of the linework, if any.
+   * Sets whether the curve should be generated 
+   * using the inverted orientation of input rings.
+   * This allows generating a buffer(0) polygon from the smaller lobes
+   * of self-crossing rings.
    * 
-   * @param isInverseOrientation true if ring orientation should be inverted
+   * @param isInvertOrientation true if generated curve orientation should be inverted
    */
-  void setInverseOrientation(boolean isInverseOrientation) {
-    this.isInverseOrientation = isInverseOrientation;
+  void setInvertOrientation(boolean isInvertOrientation) {
+    this.isInvertOrientation = isInvertOrientation;
   }
   
   /**
    * Computes orientation of a ring using a signed-area orientation test. 
-   * This ensures that for invalid rings the largest enclosed area
-   * is used to determine orientation.
+   * For invalid (self-crossing) rings this ensures the largest enclosed area
+   * is taken to be the interior of the ring.
    * This produces a more sensible result when
-   * used for validifying polygonal geometry via buffer-by-zero.
-   * For buffering use, the lower robustness of ccw-by-area
-   * doesn't matter, since very narrow or flat rings
+   * used for repairing polygonal geometry via buffer-by-zero.
+   * For buffer  use the lower robustness of orientation-by-area
+   * doesn't matter, since narrow or flat rings
    * produce an acceptable offset curve for either orientation.
    * 
    * @param coord the ring coordinates
@@ -93,8 +94,8 @@ public class OffsetCurveSetBuilder {
    */
   private boolean isRingCCW(Coordinate[] coord) {
     boolean isCCW = Orientation.isCCWArea(coord);
-    // invert orientation if required
-    if (isInverseOrientation) return ! isCCW;
+    //--- invert orientation if required
+    if (isInvertOrientation) return ! isCCW;
     return isCCW;
   }
   

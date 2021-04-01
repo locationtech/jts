@@ -301,7 +301,7 @@ public class GeometryFixer {
     //-- always execute fix, since it may remove repeated coords etc
     Geometry poly = factory.createPolygon(ring);
     // TOD: check if buffer removes invalid coordinates
-    return BufferOp.fixPolygonal(poly, true);
+    return BufferOp.bufferByZero(poly, true);
   }
 
   private Geometry fixMultiPolygon(MultiPolygon geom) {

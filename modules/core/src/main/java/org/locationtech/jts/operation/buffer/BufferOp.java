@@ -13,10 +13,6 @@ package org.locationtech.jts.operation.buffer;
 
 import java.util.ArrayList;
 import java.util.List;
-
-/**
- * @version 1.7
- */
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -248,34 +244,40 @@ public class BufferOp
   }
 
   /**
-   * Fixes a polygonal geometry to be valid (with no self-intersections).
-   * The interior is determined from the orientation implied by the signed area,
-   * or by both orientations.
+   * Buffers a geometry with distance zero.
+   * The result can be computed using the maximum-signed-area orientation,
+   * or by combining both orientations.
+   * <p>
+   * This can be used to fix an invalid polygonal geometry to be valid 
+   * (i.e. with no self-intersections).
+   * For some uses (e.g. fixing the result of a simplification) 
+   * a better result is produced by using only the max-area orientation.
+   * Other uses (e.g. fixing geometry) require both orientations to be used.
    * <p>
    * This function is for INTERNAL use only.
    *  
-   * @param geom the polygonal geometry to fix
-   * @param isBothOrientations true if both orientations of the input rings should be included
-   * @return the fixed polygonal geometry
+   * @param geom the polygonal geometry to buffer by zero
+   * @param isBothOrientations true if both orientations of input rings should be used
+   * @return the buffered polygonal geometry
    */
-  public static Geometry fixPolygonal(Geometry geom, boolean isBothOrientations) {
+  public static Geometry bufferByZero(Geometry geom, boolean isBothOrientations) {
+    //--- compute buffer using maximum signed-area orientation
     Geometry buf0 = geom.buffer(0);
     if (! isBothOrientations) return buf0;
     
-    //-- compute buffer using min-area orientation
+    //-- compute buffer using minimum signed-area orientation
     BufferOp op = new BufferOp(geom);
-    op.isInverseOrientation = true;
-    Geometry buf1 = op.getResultGeometry(0);
+    op.isInvertOrientation = true;
+    Geometry buf0Inv = op.getResultGeometry(0);
     
-    if (buf1.isEmpty())
-      return buf0;
     //-- the buffer results should be non-adjacent, so combining is safe
-    return combine(buf0, buf1);
+    return combine(buf0, buf0Inv);
   }
   
   private static Geometry combine(Geometry poly0, Geometry poly1) {
     // short-circuit - handles case where geometry is valid
     if (poly1.isEmpty()) return poly0;
+    if (poly0.isEmpty()) return poly1;
     
     List<Polygon> polys = new ArrayList<Polygon>();
     extractPolygons(poly0, polys);
@@ -297,7 +299,7 @@ public class BufferOp
 
   private Geometry resultGeometry = null;
   private RuntimeException saveException;   // debugging only
-  private boolean isInverseOrientation = false;
+  private boolean isInvertOrientation = false;
 
   /**
    * Initializes a buffer computation for the given geometry
@@ -413,7 +415,7 @@ public class BufferOp
 
   private BufferBuilder createBufferBullder() {
     BufferBuilder bufBuilder = new BufferBuilder(bufParams);
-    bufBuilder.setInverseOrientation(isInverseOrientation);
+    bufBuilder.setInvertOrientation(isInvertOrientation);
     return bufBuilder;
   }
 
