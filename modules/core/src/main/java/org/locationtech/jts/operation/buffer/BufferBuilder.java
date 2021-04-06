@@ -119,12 +119,12 @@ class BufferBuilder
   public void setNoder(Noder noder) { workingNoder = noder; }
 
   /**
-   * Sets whether the buffer should be generated 
+   * Sets whether the offset curve is generated 
    * using the inverted orientation of input rings.
    * This allows generating a buffer(0) polygon from the smaller lobes
    * of self-crossing rings.
    * 
-   * @param isInvertOrientation true if generated curve orientation should be inverted
+   * @param isInvertOrientation true if input ring orientation should be inverted
    */
   void setInvertOrientation(boolean isInvertOrientation) {
     this.isInvertOrientation = isInvertOrientation;

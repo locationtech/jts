@@ -68,12 +68,12 @@ public class OffsetCurveSetBuilder {
   }
 
   /**
-   * Sets whether the curve should be generated 
+   * Sets whether the offset curve is generated 
    * using the inverted orientation of input rings.
    * This allows generating a buffer(0) polygon from the smaller lobes
    * of self-crossing rings.
    * 
-   * @param isInvertOrientation true if generated curve orientation should be inverted
+   * @param isInvertOrientation true if input ring orientation should be inverted
    */
   void setInvertOrientation(boolean isInvertOrientation) {
     this.isInvertOrientation = isInvertOrientation;
@@ -196,7 +196,7 @@ public class OffsetCurveSetBuilder {
   }
   
   /**
-   * Keeps only valid coordinates, and removes repeated point.
+   * Keeps only valid coordinates, and removes repeated points.
    * 
    * @param coordinates the coordinates to clean
    * @return an array of clean coordinates

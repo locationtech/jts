@@ -274,6 +274,15 @@ public class BufferOp
     return combine(buf0, buf0Inv);
   }
   
+  /**
+   * Combines the elements of two polygonal geometries together.
+   * The input geometries must be non-adjacent, to avoid
+   * creating an invalid result.
+   * 
+   * @param poly0 a polygonal geometry (which may be empty)
+   * @param poly1 a polygonal geometry (which may be empty)
+   * @return a combined polygonal geometry
+   */
   private static Geometry combine(Geometry poly0, Geometry poly1) {
     // short-circuit - handles case where geometry is valid
     if (poly1.isEmpty()) return poly0;
