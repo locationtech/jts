@@ -48,13 +48,14 @@ import org.locationtech.jts.noding.SegmentString;
  * @version 1.7
  */
 public class OffsetCurveSetBuilder {
-
-
+  
   private Geometry inputGeom;
   private double distance;
   private OffsetCurveBuilder curveBuilder;
 
   private List curveList = new ArrayList();
+
+  private boolean isInvertOrientation = false;
 
   public OffsetCurveSetBuilder(
       Geometry inputGeom,
@@ -66,6 +67,38 @@ public class OffsetCurveSetBuilder {
     this.curveBuilder = curveBuilder;
   }
 
+  /**
+   * Sets whether the offset curve is generated 
+   * using the inverted orientation of input rings.
+   * This allows generating a buffer(0) polygon from the smaller lobes
+   * of self-crossing rings.
+   * 
+   * @param isInvertOrientation true if input ring orientation should be inverted
+   */
+  void setInvertOrientation(boolean isInvertOrientation) {
+    this.isInvertOrientation = isInvertOrientation;
+  }
+  
+  /**
+   * Computes orientation of a ring using a signed-area orientation test. 
+   * For invalid (self-crossing) rings this ensures the largest enclosed area
+   * is taken to be the interior of the ring.
+   * This produces a more sensible result when
+   * used for repairing polygonal geometry via buffer-by-zero.
+   * For buffer  use the lower robustness of orientation-by-area
+   * doesn't matter, since narrow or flat rings
+   * produce an acceptable offset curve for either orientation.
+   * 
+   * @param coord the ring coordinates
+   * @return true if the ring is CCW
+   */
+  private boolean isRingCCW(Coordinate[] coord) {
+    boolean isCCW = Orientation.isCCWArea(coord);
+    //--- invert orientation if required
+    if (isInvertOrientation) return ! isCCW;
+    return isCCW;
+  }
+  
   /**
    * Computes the set of raw offset curves for the buffer.
    * Each offset curve has an attached {@link Label} indicating
@@ -129,6 +162,9 @@ public class OffsetCurveSetBuilder {
     if (distance <= 0.0) 
       return;
     Coordinate[] coord = p.getCoordinates();
+    // skip if coordinate is invalid
+    if (coord.length >= 1 && ! coord[0].isValid())
+      return;
     Coordinate[] curve = curveBuilder.getLineCurve(coord, distance);
     addCurve(curve, Location.EXTERIOR, Location.INTERIOR);
   }
@@ -137,7 +173,7 @@ public class OffsetCurveSetBuilder {
   {
     if (curveBuilder.isLineOffsetEmpty(distance)) return;
     
-    Coordinate[] coord = CoordinateArrays.removeRepeatedPoints(line.getCoordinates());
+    Coordinate[] coord = clean(line.getCoordinates());
     
     /**
      * Rings (closed lines) are generated with a continuous curve, 
@@ -159,6 +195,16 @@ public class OffsetCurveSetBuilder {
     //addCurve(curveTrim, Location.EXTERIOR, Location.INTERIOR);
   }
   
+  /**
+   * Keeps only valid coordinates, and removes repeated points.
+   * 
+   * @param coordinates the coordinates to clean
+   * @return an array of clean coordinates
+   */
+  private static Coordinate[] clean(Coordinate[] coords) {
+    return CoordinateArrays.removeRepeatedAndInvalidPoints(coords);
+  }
+
   private void addPolygon(Polygon p)
   {
     double offsetDistance = distance;
@@ -169,7 +215,7 @@ public class OffsetCurveSetBuilder {
     }
 
     LinearRing shell = p.getExteriorRing();
-    Coordinate[] shellCoord = CoordinateArrays.removeRepeatedPoints(shell.getCoordinates());
+    Coordinate[] shellCoord = clean(shell.getCoordinates());
     // optimization - don't bother computing buffer
     // if the polygon would be completely eroded
     if (distance < 0.0 && isErodedCompletely(shell, distance))
@@ -188,7 +234,7 @@ public class OffsetCurveSetBuilder {
     for (int i = 0; i < p.getNumInteriorRing(); i++) {
 
       LinearRing hole = p.getInteriorRingN(i);
-      Coordinate[] holeCoord = CoordinateArrays.removeRepeatedPoints(hole.getCoordinates());
+      Coordinate[] holeCoord = clean(hole.getCoordinates());
 
       // optimization - don't bother computing buffer for this hole
       // if the hole would be completely covered
@@ -241,18 +287,9 @@ public class OffsetCurveSetBuilder {
     
     int leftLoc  = cwLeftLoc;
     int rightLoc = cwRightLoc;
-    /*
-     * Use area-based orientation test, 
-     * to ensure that for invalid rings the largest enclosed area
-     * is used to determine orientation.
-     * This produces a more sensible result especially when
-     * used for validifying polygonal geometry via buffer-by-zero.
-     * For buffering use, the lower robustness of ccw-by-area
-     * doesn't matter, since very narrow or flat rings
-     * produce an acceptable offset curve for either orientation.
-     */
+    boolean isCCW = isRingCCW(coord);
     if (coord.length >= LinearRing.MINIMUM_VALID_SIZE 
-      && Orientation.isCCWArea(coord)) {
+      && isCCW) {
       leftLoc = cwRightLoc;
       rightLoc = cwLeftLoc;
       side = Position.opposite(side);

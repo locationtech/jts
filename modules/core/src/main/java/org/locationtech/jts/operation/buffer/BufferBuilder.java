@@ -83,6 +83,8 @@ class BufferBuilder
   private PlanarGraph graph;
   private EdgeList edgeList     = new EdgeList();
 
+  private boolean isInvertOrientation = false;
+
   /**
    * Creates a new BufferBuilder,
    * using the given parameters.
@@ -116,6 +118,17 @@ class BufferBuilder
    */
   public void setNoder(Noder noder) { workingNoder = noder; }
 
+  /**
+   * Sets whether the offset curve is generated 
+   * using the inverted orientation of input rings.
+   * This allows generating a buffer(0) polygon from the smaller lobes
+   * of self-crossing rings.
+   * 
+   * @param isInvertOrientation true if input ring orientation should be inverted
+   */
+  void setInvertOrientation(boolean isInvertOrientation) {
+    this.isInvertOrientation = isInvertOrientation;
+  }
 
   public Geometry buffer(Geometry g, double distance)
   {
@@ -129,7 +142,8 @@ class BufferBuilder
     OffsetCurveBuilder curveBuilder = new OffsetCurveBuilder(precisionModel, bufParams);
     
     OffsetCurveSetBuilder curveSetBuilder = new OffsetCurveSetBuilder(g, distance, curveBuilder);
-
+    curveSetBuilder.setInvertOrientation(isInvertOrientation);
+    
     List bufferSegStrList = curveSetBuilder.getCurves();
 
     // short-circuit test

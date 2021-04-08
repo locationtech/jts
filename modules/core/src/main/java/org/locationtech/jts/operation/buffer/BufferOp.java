@@ -11,11 +11,11 @@
  */
 package org.locationtech.jts.operation.buffer;
 
-/**
- * @version 1.7
- */
+import java.util.ArrayList;
+import java.util.List;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
@@ -243,6 +243,64 @@ public class BufferOp
     return geomBuf;
   }
 
+  /**
+   * Buffers a geometry with distance zero.
+   * The result can be computed using the maximum-signed-area orientation,
+   * or by combining both orientations.
+   * <p>
+   * This can be used to fix an invalid polygonal geometry to be valid 
+   * (i.e. with no self-intersections).
+   * For some uses (e.g. fixing the result of a simplification) 
+   * a better result is produced by using only the max-area orientation.
+   * Other uses (e.g. fixing geometry) require both orientations to be used.
+   * <p>
+   * This function is for INTERNAL use only.
+   *  
+   * @param geom the polygonal geometry to buffer by zero
+   * @param isBothOrientations true if both orientations of input rings should be used
+   * @return the buffered polygonal geometry
+   */
+  public static Geometry bufferByZero(Geometry geom, boolean isBothOrientations) {
+    //--- compute buffer using maximum signed-area orientation
+    Geometry buf0 = geom.buffer(0);
+    if (! isBothOrientations) return buf0;
+    
+    //-- compute buffer using minimum signed-area orientation
+    BufferOp op = new BufferOp(geom);
+    op.isInvertOrientation = true;
+    Geometry buf0Inv = op.getResultGeometry(0);
+    
+    //-- the buffer results should be non-adjacent, so combining is safe
+    return combine(buf0, buf0Inv);
+  }
+  
+  /**
+   * Combines the elements of two polygonal geometries together.
+   * The input geometries must be non-adjacent, to avoid
+   * creating an invalid result.
+   * 
+   * @param poly0 a polygonal geometry (which may be empty)
+   * @param poly1 a polygonal geometry (which may be empty)
+   * @return a combined polygonal geometry
+   */
+  private static Geometry combine(Geometry poly0, Geometry poly1) {
+    // short-circuit - handles case where geometry is valid
+    if (poly1.isEmpty()) return poly0;
+    if (poly0.isEmpty()) return poly1;
+    
+    List<Polygon> polys = new ArrayList<Polygon>();
+    extractPolygons(poly0, polys);
+    extractPolygons(poly1, polys);
+    if (polys.size() == 1) return polys.get(0);
+    return poly0.getFactory().createMultiPolygon(GeometryFactory.toPolygonArray(polys));
+  }
+
+  private static void extractPolygons(Geometry poly0, List<Polygon> polys) {
+    for (int i = 0; i < poly0.getNumGeometries(); i++) {
+      polys.add((Polygon) poly0.getGeometryN(i));
+    }
+  }
+
   private Geometry argGeom;
   private double distance;
   
@@ -250,6 +308,7 @@ public class BufferOp
 
   private Geometry resultGeometry = null;
   private RuntimeException saveException;   // debugging only
+  private boolean isInvertOrientation = false;
 
   /**
    * Initializes a buffer computation for the given geometry
@@ -293,7 +352,7 @@ public class BufferOp
   {
     bufParams.setQuadrantSegments(quadrantSegments);
   }
-
+  
   /**
    * Returns the buffer computed for a geometry for a given buffer distance.
    *
@@ -351,7 +410,7 @@ public class BufferOp
   {
     try {
       // use fast noding by default
-      BufferBuilder bufBuilder = new BufferBuilder(bufParams);
+      BufferBuilder bufBuilder = createBufferBullder();
       resultGeometry = bufBuilder.buffer(argGeom, distance);
     }
     catch (RuntimeException ex) {
@@ -361,6 +420,12 @@ public class BufferOp
       // testing ONLY - propagate exception
       //throw ex;
     }
+  }
+
+  private BufferBuilder createBufferBullder() {
+    BufferBuilder bufBuilder = new BufferBuilder(bufParams);
+    bufBuilder.setInvertOrientation(isInvertOrientation);
+    return bufBuilder;
   }
 
   private void bufferFixedPrecision(PrecisionModel fixedPM)
@@ -381,7 +446,7 @@ public class BufferOp
     Noder snapNoder = new SnapRoundingNoder(new PrecisionModel(1.0));
     Noder noder = new ScaledNoder(snapNoder, fixedPM.getScale());
 
-    BufferBuilder bufBuilder = new BufferBuilder(bufParams);
+    BufferBuilder bufBuilder = createBufferBullder();
     bufBuilder.setWorkingPrecisionModel(fixedPM);
     bufBuilder.setNoder(noder);
     // this may throw an exception, if robustness errors are encountered
