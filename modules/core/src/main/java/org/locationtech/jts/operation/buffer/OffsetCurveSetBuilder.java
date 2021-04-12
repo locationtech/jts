@@ -295,10 +295,94 @@ public class OffsetCurveSetBuilder {
       side = Position.opposite(side);
     }
     Coordinate[] curve = curveBuilder.getRingCurve(coord, side, offsetDistance);
+    
+    /**
+     * If the offset curve has inverted completely it will produce
+     * an unwanted artifact in the result, so skip it. 
+     */
+    if (isRingCurveInverted(coord, offsetDistance, curve)) {
+      return;
+    }
+
     addCurve(curve, leftLoc, rightLoc);
   }
 
+  private static final int MAX_INVERTED_RING_SIZE = 9;
+  private static final double NEARNESS_FACTOR = 0.99;
+
   /**
+   * Tests whether the offset curve for a ring is fully inverted. 
+   * An inverted ("inside-out") curve occurs in some specific situations 
+   * involving a buffer distance which should result in a fully-eroded (empty) buffer.
+   * It can happen that the sides of a small, convex polygon 
+   * produce offset segments which all cross one another to form
+   * a curve with inverted orientation.
+   * This happens at buffer distances slightly greater than the distance at 
+   * which the buffer should disappear.
+   * The inverted curve will produce an incorrect non-empty buffer (for a shell)
+   * or an incorrect hole (for a hole).
+   * It must be discarded from the set of offset curves used in the buffer.
+   * Heuristics are used to reduce the number of cases which area checked,
+   * for efficiency and correctness.
+   * <p>
+   * See https://github.com/locationtech/jts/issues/472
+   * 
+   * @param inputPts the input ring
+   * @param distance the buffer distance
+   * @param curvePts the generated offset curve
+   * @return true if the offset curve is inverted
+   */
+  private static boolean isRingCurveInverted(Coordinate[] inputPts, double distance, Coordinate[] curvePts) {
+    if (distance == 0.0) return false;
+    /**
+     * Only proper rings can invert.
+     */
+    if (inputPts.length <= 3) return false;
+   /**
+     * Heuristic based on low chance that a ring with many vertices will invert.
+     * This low limit ensures this test is fairly efficient.
+     */
+    if (inputPts.length >= MAX_INVERTED_RING_SIZE) return false;
+    
+    /**
+     * An inverted curve has no more points than the input ring.
+     * This also eliminates concave inputs (which will produce fillet arcs)
+     */
+    if (curvePts.length > inputPts.length) return false;
+    
+    /**
+     * Check if the curve vertices are all closer to the input ring
+     * than the buffer distance.
+     * If so, the curve is NOT a valid buffer curve.
+     */
+    double distTol = NEARNESS_FACTOR * Math.abs(distance);
+    double maxDist = maxDistance(curvePts, inputPts);
+    boolean isCurveTooClose = maxDist < distTol;
+    return isCurveTooClose;
+  }
+
+  /**
+   * Computes the maximum distance out of a set of points to a linestring.
+   * 
+   * @param pts the points
+   * @param line the linestring vertices
+   * @return the maximum distance
+   */
+  private static double maxDistance(Coordinate[] pts, Coordinate[] line) {
+    double maxDistance = 0;
+    for (Coordinate p : pts) {
+      double dist = Distance.pointToSegmentString(p, line);
+      if (dist > maxDistance) {
+        maxDistance = dist;
+      }
+    }
+    return maxDistance;
+  }
+
+  /**
+   * Tests whether a ring buffer is eroded completely (is empty)
+   * based on simple heuristics.
+   * 
    * The ringCoord is assumed to contain no repeated points.
    * It may be degenerate (i.e. contain only 1, 2, or 3 points).
    * In this case it has no area, and hence has a minimum diameter of 0.
@@ -307,7 +391,7 @@ public class OffsetCurveSetBuilder {
    * @param offsetDistance
    * @return
    */
-  private boolean isErodedCompletely(LinearRing ring, double bufferDistance)
+  private static boolean isErodedCompletely(LinearRing ring, double bufferDistance)
   {
     Coordinate[] ringCoord = ring.getCoordinates();
     // degenerate ring has no area
@@ -327,24 +411,6 @@ public class OffsetCurveSetBuilder {
       return true;
 
     return false;
-    /**
-     * The following is a heuristic test to determine whether an
-     * inside buffer will be eroded completely.
-     * It is based on the fact that the minimum diameter of the ring pointset
-     * provides an upper bound on the buffer distance which would erode the
-     * ring.
-     * If the buffer distance is less than the minimum diameter, the ring
-     * may still be eroded, but this will be determined by
-     * a full topological computation.
-     *
-     */
-//System.out.println(ring);
-/* MD  7 Feb 2005 - there's an unknown bug in the MD code, so disable this for now
-    MinimumDiameter md = new MinimumDiameter(ring);
-    minDiam = md.getLength();
-    //System.out.println(md.getDiameter());
-    return minDiam < 2 * Math.abs(bufferDistance);
-    */
   }
 
   /**
@@ -364,7 +430,7 @@ public class OffsetCurveSetBuilder {
    * @param bufferDistance
    * @return
    */
-  private boolean isTriangleErodedCompletely(
+  private static boolean isTriangleErodedCompletely(
       Coordinate[] triangleCoord,
       double bufferDistance)
   {
