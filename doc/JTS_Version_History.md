@@ -27,6 +27,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `MultiPoint.isValid` to check validity correctly (#700)
 * Fix `WKTReader` and `WKTWriter` handling of collections with all empty elements (#702)
 * Fix `HalfEdge.prev()` method (#703)
+* Fix `BufferOp` to remove invalid elements caused by inverted ring curves (#706) 
 
 <!-- ================================================================ -->
 
