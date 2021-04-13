@@ -202,7 +202,7 @@ public class OffsetCurveSetBuilder {
    * @return an array of clean coordinates
    */
   private static Coordinate[] clean(Coordinate[] coords) {
-    return CoordinateArrays.removeRepeatedAndInvalidPoints(coords);
+    return CoordinateArrays.removeRepeatedOrInvalidPoints(coords);
   }
 
   private void addPolygon(Polygon p)

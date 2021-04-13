@@ -416,7 +416,7 @@ public class CoordinateArrays {
    * @return true if the array contains repeated or invalid coordinates
    * @see Coordinate#isValid()
    */
-  public static boolean hasRepeatedOrInvalid(Coordinate[] coord) {
+  public static boolean hasRepeatedOrInvalidPoints(Coordinate[] coord) {
     for (int i = 1; i < coord.length; i++) {
       if (! coord[i].isValid())
         return true;
@@ -434,11 +434,11 @@ public class CoordinateArrays {
    * 
    * @param coord an array of coordinates
    * @return the array with repeated and invalid coordinates removed
-   * @see #hasRepeatedOrInvalid(Coordinate[])
+   * @see #hasRepeatedOrInvalidPoints(Coordinate[])
    * @see Coordinate#isValid() 
    */
-  public static Coordinate[] removeRepeatedAndInvalidPoints(Coordinate[] coord) {
-    if (!hasRepeatedOrInvalid(coord)) return coord;
+  public static Coordinate[] removeRepeatedOrInvalidPoints(Coordinate[] coord) {
+    if (!hasRepeatedOrInvalidPoints(coord)) return coord;
     CoordinateList coordList = new CoordinateList();
     for (int i = 0; i < coord.length; i++) {
       if (! coord[i].isValid()) continue;

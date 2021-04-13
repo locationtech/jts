@@ -221,7 +221,7 @@ public class GeometryFixer {
    * @return an array of clean coordinates
    */
   private static Coordinate[] fixCoordinates(Coordinate[] pts) {
-    Coordinate[] ptsClean = CoordinateArrays.removeRepeatedAndInvalidPoints(pts);
+    Coordinate[] ptsClean = CoordinateArrays.removeRepeatedOrInvalidPoints(pts);
     return CoordinateArrays.copyDeep(ptsClean);
   }
   
