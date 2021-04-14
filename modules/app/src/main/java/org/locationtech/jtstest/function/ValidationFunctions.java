@@ -18,6 +18,7 @@ import java.util.List;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Polygonal;
+import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
@@ -85,5 +86,9 @@ public class ValidationFunctions
     Polygonizer polygonizer = new Polygonizer(true);
     polygonizer.add(nodedLines);
     return polygonizer.getGeometry();
+  }
+  
+  public static Geometry fixInvalid(Geometry geom) {
+    return GeometryFixer.fix(geom);
   }
 }
