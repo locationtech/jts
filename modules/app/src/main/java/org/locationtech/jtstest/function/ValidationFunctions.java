@@ -91,4 +91,9 @@ public class ValidationFunctions
   public static Geometry fixInvalid(Geometry geom) {
     return GeometryFixer.fix(geom);
   }
+  public static Geometry fixInvalidKeepCollapse(Geometry geom) {
+    GeometryFixer fixer = new GeometryFixer(geom);
+    fixer.setKeepCollapsed(true);
+    return fixer.getResult();
+  }
 }
