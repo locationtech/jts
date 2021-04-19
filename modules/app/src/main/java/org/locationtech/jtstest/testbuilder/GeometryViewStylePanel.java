@@ -16,6 +16,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
   
   JTSTestBuilderFrame tbFrame;
   private JCheckBox cbGrid;
+  private JCheckBox cbOffsetResult;
   private JCheckBox cbLegend;
   private JCheckBox cbTitle;
   private JTextField txtTitle;
@@ -112,6 +113,17 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
        );
     addRow("Border", cbViewBorder, ctlBorderClr);
 
+    //--------------------------------------------------
+    cbOffsetResult = new JCheckBox();
+    cbOffsetResult.setSelected(viewStyle.isOffsetResult());
+    cbOffsetResult.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbOffsetResult.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        updateView();      }
+    });
+    addRow("Offset Result", cbOffsetResult);
+    
+    //--------------------------------------------------
     cbGrid = new JCheckBox();
     cbGrid.setSelected(viewStyle.isGridEnabled());
     cbGrid.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -135,6 +147,7 @@ public class GeometryViewStylePanel extends LabelComponentsPanel {
   private void updateView() {
     ViewStyle viewStyle = new ViewStyle();
     viewStyle.setGridEnabled(cbGrid.isSelected());
+    viewStyle.setOffsetResult(cbOffsetResult.isSelected());
     viewStyle.setBorderEnabled(cbViewBorder.isSelected());
     viewStyle.setBorderColor(ctlBorderClr.getBackground());
     viewStyle.setBackground(ctlBackgroundClr.getBackground());

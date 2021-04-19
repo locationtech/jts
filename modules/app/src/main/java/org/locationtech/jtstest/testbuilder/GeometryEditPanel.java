@@ -40,6 +40,7 @@ import javax.swing.SwingUtilities;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.AffineTransformation;
 import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.GeometryStretcherView;
@@ -567,6 +568,7 @@ public class GeometryEditPanel extends JPanel
   
   class GeometryEditPanelRenderer implements Renderer
   {
+    private static final double RESULT_OFFSET_GUTTER_FACTOR = 0.3;
     private GeometryStretcherView stretchView = null;
   	private Renderer currentRenderer = null;
     private boolean isRevealingTopology = false; 
@@ -608,7 +610,7 @@ public class GeometryEditPanel extends JPanel
       }
       
       renderLayersTheme(tbModel.getLayersBase(), g2);
-      renderLayers(getLayerList(), true, g2);
+      renderLayersCore(getLayerList(), g2);
       renderLayersTheme(tbModel.getLayersTop(), g2);
       
       if (isRevealingTopology && isRenderingStretchVertices) {
@@ -637,12 +639,12 @@ public class GeometryEditPanel extends JPanel
       
     }
     
-    private void renderLayers(LayerList layerList, boolean allowRevealTopo, Graphics2D g)
+    private void renderLayersCore(LayerList layerList, Graphics2D g)
     {
       int n = layerList.size();
       for (int i = 0; i < n; i++) {
         Layer layer = layerList.getLayer(i);
-        currentRenderer = createRenderer(layer, i, allowRevealTopo);
+        currentRenderer = createRendererCore(layer, i);
         currentRenderer.render(g);
       }
       currentRenderer = null;
@@ -653,23 +655,52 @@ public class GeometryEditPanel extends JPanel
       int n = layerList.size();
       for (int i = n - 1; i >= 0; i--) {
         Layer layer = layerList.getLayer(i);
-        currentRenderer = createRenderer(layer, i, false);
+        currentRenderer = createRenderer(layer);
         currentRenderer.render(g);
       }
       currentRenderer = null;
     }
 
-    private Renderer createRenderer(Layer layer, int i, boolean isAllowRevealTopo) {
-      if (isAllowRevealTopo && isRevealingTopology && isRenderingStretchVertices
+    private Renderer createRendererCore(Layer layer, int i) {
+      if (isRevealingTopology && isRenderingStretchVertices
           && stretchView != null && i < 2) {
         //System.out.println("rendering stretch verts");
-      	return new LayerRenderer(layer,
-      			new StaticGeometryContainer(stretchView.getStretchedGeometry(i)),
-      			viewport);
+        return new LayerRenderer(layer,
+            new StaticGeometryContainer(stretchView.getStretchedGeometry(i)),
+            viewport);
       }
-      else {
-      	return new LayerRenderer(layer, viewport);
+      if (viewStyle.isOffsetResult() 
+          && i == LayerList.LYR_RESULT) {
+        double resultOffset = computeResultOffset();
+        return new LayerRenderer(layer,
+            new StaticGeometryContainer(offsetGeometry(layer.getGeometry(), resultOffset)),
+            viewport);
       }
+      return createRenderer(layer);
+    }
+    
+    private double computeResultOffset() {
+      LayerList lyrList = getLayerList();
+      Envelope envAB = layerEnvelope(lyrList.getLayer(LayerList.LYR_A));
+      envAB.expandToInclude(layerEnvelope(lyrList.getLayer(LayerList.LYR_A)));
+      Envelope envResult = layerEnvelope(lyrList.getLayer(LayerList.LYR_RESULT));
+      double offsetX = envAB.getMaxX() - envResult.getMinX();
+      return (1 + RESULT_OFFSET_GUTTER_FACTOR) * offsetX;
+    }
+
+    private Envelope layerEnvelope(Layer lyr) {
+      if (lyr.hasGeometry()) return lyr.getGeometry().getEnvelopeInternal();
+      return new Envelope();
+    }
+
+    private Geometry offsetGeometry(Geometry geom, double offsetX) {
+      if (geom == null) return null;
+      AffineTransformation trans = AffineTransformation.translationInstance(offsetX, 0);
+      return trans.transform(geom); 
+    }
+
+    private Renderer createRenderer(Layer layer) {
+      return new LayerRenderer(layer, viewport);
     }
     
     public void renderMagnifiedVertices(Graphics2D g)
