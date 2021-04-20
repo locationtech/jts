@@ -158,6 +158,9 @@ public class GeometryFixerTest extends GeometryTestCase {
   
   //----------------------------------------
 
+  /**
+   * Self-crossing LineStrings are valid, so are unchanged
+   */
   public void testMultiLineStringSelfCross() {
     checkFix("MULTILINESTRING ((10 90, 90 10, 90 90), (90 50, 10 50))",
         "MULTILINESTRING ((10 90, 90 10, 90 90), (90 50, 10 50))");
@@ -289,6 +292,23 @@ public class GeometryFixerTest extends GeometryTestCase {
         "GEOMETRYCOLLECTION (POINT EMPTY, LINESTRING EMPTY, POLYGON EMPTY)");
   }
 
+  //----------------------------------------
+
+  public void testPolygonZBowtie() {
+    checkFixZ("POLYGON Z ((10 90 1, 90 10 9, 90 90 9, 10 10 1, 10 90 1))",
+        "MULTIPOLYGON Z(((10 10 1, 10 90 1, 50 50 5, 10 10 1)), ((50 50 5, 90 90 9, 90 10 9, 50 50 5)))");
+  }
+
+  public void testPolygonZHoleOverlap() {
+    checkFixZ("POLYGON Z ((10 90 1, 60 90 6, 60 10 6, 10 10 1, 10 90 1), (20 80 2, 90 80 9, 90 20 9, 20 20 2, 20 80 2))",
+        "POLYGON Z((10 10 1, 10 90 1, 60 90 6, 60 80 6, 20 80 2, 20 20 2, 60 20 6, 60 10 6, 10 10 1))");
+  }
+
+  public void testMultiLineStringZKeepCollapse() {
+    checkFixZKeepCollapse("MULTILINESTRING Z ((10 10 1, 90 90 9), (10 10 1, 10 10 2, 10 10 3))",
+        "GEOMETRYCOLLECTION Z (POINT (10 10 1), LINESTRING (10 10 1, 90 90 9))");
+  }
+
   //================================================
   
   
@@ -346,5 +366,33 @@ public class GeometryFixerTest extends GeometryTestCase {
     }
     return false;
   }
+
+  private void checkFixZ(String wkt, String wktExpected) {
+    Geometry geom = read(wkt);
+    checkFixZ(geom, false, wktExpected);
+  }
+  
+  private void checkFixZKeepCollapse(String wkt, String wktExpected) {
+    Geometry geom = read(wkt);
+    checkFixZ(geom, true, wktExpected);
+  }
+  
+  private void checkFixZ(Geometry input, boolean keepCollapse, String wktExpected) {
+    Geometry actual;
+    if (keepCollapse) {
+      GeometryFixer fixer = new GeometryFixer(input);
+      fixer.setKeepCollapsed(true);
+      actual = fixer.getResult();
+    }
+    else {
+      actual= GeometryFixer.fix(input);
+    }
+    
+    assertTrue("Result is invalid", actual.isValid());
+    
+    Geometry expected = read(wktExpected);
+    checkEqualXYZ(expected, actual);
+  }
+  
 
 }

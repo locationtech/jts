@@ -293,6 +293,7 @@ public class GeometryFixer {
     if (holes.size() == 1) {
       return holes.get(0);
     }
+    // TODO: replace with holes.union() once OverlayNG is the default
     Geometry holesUnion = OverlayNGRobust.union(holes);
     return holesUnion;
   }
@@ -316,6 +317,7 @@ public class GeometryFixer {
     if (polys.size() == 0) {
       return factory.createMultiPolygon();
     }
+    // TODO: replace with polys.union() once OverlayNG is the default
     Geometry result = OverlayNGRobust.union(polys);
     return result;    
   }
