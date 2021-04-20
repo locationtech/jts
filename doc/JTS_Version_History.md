@@ -21,6 +21,10 @@ Distributions for older JTS versions can be obtained at the
 
 *Release Date: TBD* 
 
+### Functionality Improvements
+
+* Add `GeometryFixer` class (#704)
+
 ### Bug Fixes
 
 * Fix `InteriorPoint` to handle partially-empty collections (#698)
