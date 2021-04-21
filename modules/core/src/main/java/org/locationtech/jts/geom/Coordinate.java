@@ -17,6 +17,8 @@ import java.util.Comparator;
 import org.locationtech.jts.util.Assert;
 import org.locationtech.jts.util.NumberUtil;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 
 /**
  * A lightweight class used to store coordinates on the 2-dimensional Cartesian plane.
@@ -77,11 +79,13 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
   /**
    * The x-ordinate.
    */
+  @XmlTransient
   public double x;
   
   /**
    * The y-ordinate.
    */
+  @XmlTransient
   public double y;
   
   /**
@@ -89,6 +93,7 @@ public class Coordinate implements Comparable<Coordinate>, Cloneable, Serializab
    * <p>
    * Direct access to this field is discouraged; use {@link #getZ()}.
    */
+  @XmlTransient
   public double z;
 
   /**
