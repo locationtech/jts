@@ -59,17 +59,20 @@ import org.locationtech.jts.geom.PrecisionModel;
  * geometries. This class is not thread-safe; each thread should create its own
  * instance.
  * <p>
- * As of version 1.15, the reader can read geometries following OGC 06-103r4
- * specification used by Spatialite/Geopackage.
+ * As of version 1.15, the reader can read geometries following the OGC 06-103r4 
+ * Simple Features Access 1.2.1 specification,
+ * which aligns with the ISO 19125 standard.
+ * This format is used by Spatialite and Geopackage.
  * <p>
- * The difference between PostGIS EWKB format and the new OGC specification is
+ * The difference between PostGIS EWKB format and the new ISO/OGC specification is
  * that Z and M coordinates are detected with a bit mask on the higher byte in
  * the former case (0x80 for Z and 0x40 for M) while new OGC specification use
  * specific int ranges for 2D geometries, Z geometries (2D code+1000), M geometries
  * (2D code+2000) and ZM geometries (2D code+3000).
  * <p>
- * Note that the {@link WKBWriter} is not changed and still write PostGIS WKB
- * geometries
+ * Note that the {@link WKBWriter} is not changed and still writes the PostGIS EWKB
+ * geometry format.
+ * 
  * @see WKBWriter for a formal format specification
  */
 public class WKBReader
