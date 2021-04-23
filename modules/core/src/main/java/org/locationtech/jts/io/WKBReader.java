@@ -227,20 +227,25 @@ public class WKBReader
 
 
     int typeInt = dis.readInt();
-    // Adds %1000 to make it compatible with OGC 06-103r4
-    int geometryType = (typeInt & 0xffff)%1000;
+    
+    /**
+     * To get geometry type mask out EWKB flag bits, 
+     * and use only low 3 digits of type word.
+     * This supports both EWKB and ISO/OGC.
+     */
+    int geometryType = (typeInt & 0xffff) % 1000;
 
     // handle 3D and 4D WKB geometries
     // geometries with Z coordinates have the 0x80 flag (postgis EWKB)
-    // or are in the 1000 range (Z) or in the 3000 range (ZM) of geometry type (OGC 06-103r4)
+    // or are in the 1000 range (Z) or in the 3000 range (ZM) of geometry type (ISO/OGC 06-103r4)
     boolean hasZ = ((typeInt & 0x80000000) != 0 || (typeInt & 0xffff)/1000 == 1 || (typeInt & 0xffff)/1000 == 3);
     // geometries with M coordinates have the 0x40 flag (postgis EWKB)
-    // or are in the 1000 range (M) or in the 3000 range (ZM) of geometry type (OGC 06-103r4)
+    // or are in the 1000 range (M) or in the 3000 range (ZM) of geometry type (ISO/OGC 06-103r4)
     boolean hasM = ((typeInt & 0x40000000) != 0 || (typeInt & 0xffff)/1000 == 2 || (typeInt & 0xffff)/1000 == 3);
     //System.out.println(typeInt + " - " + geometryType + " - hasZ:" + hasZ);
-    inputDimension = 2 + (hasZ?1:0) + (hasM?1:0);
+    inputDimension = 2 + (hasZ ? 1 : 0) + (hasM ? 1 : 0);
 
-    // determine if SRIDs are present
+    // determine if SRIDs are present (EWKB only)
     boolean hasSRID = (typeInt & 0x20000000) != 0;
     if (hasSRID) {
       SRID = dis.readInt();
