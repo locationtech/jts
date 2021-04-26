@@ -169,6 +169,20 @@ public class DouglasPeuckerSimplifierTest
         );
   }
 
+  /**
+   * Test that a collapsed polygon is removed.
+   * Not an error in JTS, but included to avoid regression errors in future.
+   * 
+   * See https://trac.osgeo.org/geos/ticket/1115
+   */
+  public void testPolygonCollapseRemoved() {
+    checkDP(
+        "MULTIPOLYGON (((-76.02716827 36.55671692, -75.99866486 36.55665207, -75.91191864 36.54253006, -75.92480469 36.47397614, -75.97727966 36.4780159, -75.97628784 36.51792526, -76.02716827 36.55671692)), ((-75.90198517 36.55619812, -75.8781662 36.55587387, -75.77315521 36.22925568, -75.78317261 36.22519302, -75.90198517 36.55619812)))", 
+        0.05,
+        "POLYGON ((-76.02716827 36.55671692, -75.91191864 36.54253006, -75.92480469 36.47397614, -76.02716827 36.55671692))"
+        );
+  }
+  
   private void checkDP(String wkt, double tolerance, String wktExpected) {
     Geometry geom = read(wkt);
     Geometry result = DouglasPeuckerSimplifier.simplify(geom, tolerance);

@@ -167,14 +167,16 @@ static class DPTransformer
    * 
    * @return null if the simplification results in a degenerate ring
    */
+  //*
   protected Geometry transformLinearRing(LinearRing geom, Geometry parent) 
   {
   	boolean removeDegenerateRings = parent instanceof Polygon;
   	Geometry simpResult = super.transformLinearRing(geom, parent);
   	if (removeDegenerateRings && ! (simpResult instanceof LinearRing))
-  		return null;;
+  		return null;
   	return simpResult;
   }
+  //*/
   
   /**
    * Simplifies a MultiPolygon, fixing it if required.
