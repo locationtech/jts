@@ -11,6 +11,7 @@
  */
 package org.locationtech.jts.operation.overlayng;
 
+import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Geometry;
 
 import junit.textui.TestRunner;
@@ -24,6 +25,16 @@ public class OverlayNGZTest extends GeometryTestCase
 
   public OverlayNGZTest(String name) {
     super(name);
+  }
+
+  @Override
+  protected void setUp() throws Exception {
+    RobustLineIntersector.setInterpolate("true");
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+    RobustLineIntersector.setInterpolate("false");
   }
   
   public void testPointXYPointDifference() {
