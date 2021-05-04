@@ -12,6 +12,7 @@
 package org.locationtech.jts.operation.overlayng;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.ZInterpolating;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
@@ -22,6 +23,16 @@ public class ElevationModelTest extends GeometryTestCase {
 
   public static void main(String args[]) {
     TestRunner.run(ElevationModelTest.class);
+  }
+
+  @Override
+  protected void setUp() throws Exception {
+    ZInterpolating.setZInterpolating(true);
+  }
+
+  @Override
+  protected void tearDown() throws Exception {
+    ZInterpolating.setZInterpolating(false);
   }
 
   public ElevationModelTest(String name) {
