@@ -21,15 +21,16 @@ public class GeometryUtil {
   {
     String structure = "";
     if (g instanceof Polygon) {
-      structure = ((Polygon) g).getNumInteriorRing() + " holes" ;
+      int nHoles = ((Polygon) g).getNumInteriorRing();
+      if (nHoles > 0) structure = nHoles + " holes, " ;
     }
-    else if (g instanceof GeometryCollection)
-      structure = g.getNumGeometries() + " elements";
+    String size = "";
+    if (g instanceof GeometryCollection)
+      size = " [ " + g.getNumGeometries() + " ]";
 
     return
     g.getGeometryType().toUpperCase() 
-    +  " - " + structure
-    + (structure.length() > 0 ? ", " : "")
+    +  size + " - " + structure
     + g.getNumPoints() + " pts";
   }
 

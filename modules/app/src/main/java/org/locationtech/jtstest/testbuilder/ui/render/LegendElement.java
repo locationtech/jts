@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.locationtech.jts.awt.FontGlyphReader;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 import org.locationtech.jtstest.testbuilder.model.Layer;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
@@ -41,6 +42,7 @@ public class LegendElement {
   private int borderSize = 1;
 
   private boolean isBorderEnabled;
+  private boolean isStatsEnabled = false;
 
   private Color borderColor;
 
@@ -52,6 +54,10 @@ public class LegendElement {
   
   public void setBorderEnabled(boolean isBorderEnabled) {
     this.isBorderEnabled = isBorderEnabled;
+  }
+  
+  public void setStatsEnabled(boolean isEnabled) {
+    this.isStatsEnabled = isEnabled;
   }
   
   public void setBorder(int borderSize) {
@@ -85,15 +91,26 @@ public class LegendElement {
     for (int i = 0; i < n; i++) {
       // draw layer name
       int nameY = baseY + (i + 1) * lineHeight;
-      Layer layer = layerList.get(i);
-      String name = layer.getName();
-      g.setPaint(NAME_CLR);
-      g.drawString(name, nameX, nameY);
-      
-      int swatchX = nameX - SWATCH_SIZE - SWATCH_MARGIN;
-      int swatchY = nameY - DEFAULT_FONT_SIZE + 2;
-      drawSwatch(layer, swatchX, swatchY, g);
+      drawEntry(layerList.get(i), nameX, nameY, g);
     }
+  }
+
+  private void drawEntry(Layer layer, int nameX, int nameY, Graphics2D g) {
+    String name = getDescription(layer);
+    g.setPaint(NAME_CLR);
+    g.drawString(name, nameX, nameY);
+    
+    int swatchX = nameX - SWATCH_SIZE - SWATCH_MARGIN;
+    int swatchY = nameY - DEFAULT_FONT_SIZE + 2;
+    drawSwatch(layer, swatchX, swatchY, g);
+  }
+
+  private String getDescription(Layer layer) {
+    String desc = layer.getName();
+    if (isStatsEnabled) {
+      desc += " -- " + GeometryUtil.structureSummary(layer.getGeometry());
+    }
+    return desc;
   }
 
   private void drawSwatch(Layer layer, int x, int y, Graphics2D g) {
@@ -215,7 +232,7 @@ public class LegendElement {
   private int entryWidth(List<Layer> layerList, Graphics2D g2) {
     int width = 0;
     for (Layer layer : layerList) {
-      String s = layer.getName();
+      String s = getDescription(layer);
       int nameWidth = (int) g2.getFontMetrics().getStringBounds(s, g2).getWidth();
       if (nameWidth > width) 
         width = nameWidth;
