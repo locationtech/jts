@@ -15,14 +15,16 @@ package org.locationtech.jtstest.function;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.operation.valid.IsSimpleOp;
 import org.locationtech.jts.operation.valid.IsValidOp;
 import org.locationtech.jts.operation.valid.TopologyValidationError;
 
@@ -91,9 +93,27 @@ public class ValidationFunctions
   public static Geometry fixInvalid(Geometry geom) {
     return GeometryFixer.fix(geom);
   }
+  
   public static Geometry fixInvalidKeepCollapse(Geometry geom) {
     GeometryFixer fixer = new GeometryFixer(geom);
     fixer.setKeepCollapsed(true);
     return fixer.getResult();
+  }
+  
+  public static boolean isSimple(Geometry geom) {
+    return IsSimpleOp.isSimple(geom);
+  }
+  
+  public static Geometry nonSimpleAllPoints(Geometry geom) {
+    IsSimpleOp op = new IsSimpleOp(geom);
+    op.setFindAllLocations(true);
+    List<Coordinate> pts = op.getNonSimpleLocations();
+    return geom.getFactory().createMultiPointFromCoords(CoordinateArrays.toCoordinateArray(pts));
+  }
+  
+  public static Geometry nonSimplePoint(Geometry geom) {
+    IsSimpleOp op = new IsSimpleOp(geom);
+    Coordinate pt = op.getNonSimpleLocation();
+    return geom.getFactory().createPoint(pt);
   }
 }

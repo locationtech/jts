@@ -79,6 +79,8 @@ import org.locationtech.jts.geomgraph.index.SegmentIntersector;
  * @see BoundaryNodeRule
  *
  * @version 1.7
+ * 
+ * @deprecated Replaced by org.locationtech.jts.operation.valid.IsSimpleOp
  */
 public class IsSimpleOp
 {
