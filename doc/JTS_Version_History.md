@@ -21,9 +21,14 @@ Distributions for older JTS versions can be obtained at the
 
 *Release Date: TBD* 
 
+### API Changes
+
+* Move `IsSimpleOp` to `org.locationtech.jts.operation.valid` package (#717)
+
 ### Functionality Improvements
 
 * Add `GeometryFixer` class (#704)
+* Improve design and performance of `IsSimpleOp` (#717)
 
 ### Bug Fixes
 
@@ -32,6 +37,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `WKTReader` and `WKTWriter` handling of collections with all empty elements (#702)
 * Fix `HalfEdge.prev()` method (#703)
 * Fix `BufferOp` to remove invalid elements caused by inverted ring curves (#706) 
+* Fix `IsSimpleOp` duplicate lines bug (#716)
 
 <!-- ================================================================ -->
 
