@@ -18,7 +18,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.util.Vector;
 
@@ -31,8 +30,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.io.*;
-import org.locationtech.jts.operation.*;
+import org.locationtech.jts.io.WKTWriter;
+import org.locationtech.jts.operation.valid.IsSimpleOp;
 import org.locationtech.jts.operation.valid.IsValidOp;
 import org.locationtech.jts.operation.valid.TopologyValidationError;
 import org.locationtech.jtstest.testbuilder.event.ValidPanelEvent;
@@ -200,7 +199,7 @@ public class ValidPanel extends JPanel {
     }
     String msg = isSimple ?
     		""
-    		: "Self-intersection at " + WKTWriter.toPoint(nonSimpleLoc);
+    		: "Non-simple intersection at " + WKTWriter.toPoint(nonSimpleLoc);
     taInvalidMsg.setText(msg);
     txtIsValid.setText(isSimple ? "Y" : "N");
     setMarkPoint(nonSimpleLoc);
