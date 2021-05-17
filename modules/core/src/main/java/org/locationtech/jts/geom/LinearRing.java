@@ -94,7 +94,7 @@ public class LinearRing extends LineString
     }
     if (getCoordinateSequence().size() >= 1 && getCoordinateSequence().size() < MINIMUM_VALID_SIZE) {
       throw new IllegalArgumentException("Invalid number of points in LinearRing (found "
-      		+ getCoordinateSequence().size() + " - must be 0 or >= 4)");
+      		+ getCoordinateSequence().size() + " - must be 0 or >= " + MINIMUM_VALID_SIZE + ")");
     }
   }
 
