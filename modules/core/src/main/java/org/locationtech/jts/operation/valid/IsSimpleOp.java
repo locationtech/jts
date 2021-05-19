@@ -313,13 +313,7 @@ public class IsSimpleOp
       boolean isSameSegment = isSameSegString && segIndex0 == segIndex1;
       if (isSameSegment) return;
       
-      Coordinate p00 = ss0.getCoordinate(segIndex0);
-      Coordinate p01 = ss0.getCoordinate(segIndex0 + 1);
-      Coordinate p10 = ss1.getCoordinate(segIndex1);
-      Coordinate p11 = ss1.getCoordinate(segIndex1 + 1);
-      
-      boolean hasInt = findIntersection(ss0, segIndex0, ss1, segIndex1,
-          p00, p01, p10, p11);
+      boolean hasInt = findIntersection(ss0, segIndex0, ss1, segIndex1);
       
       if (hasInt) {
         // found an intersection!
@@ -328,8 +322,12 @@ public class IsSimpleOp
     }
 
     private boolean findIntersection(SegmentString ss0, int segIndex0, 
-        SegmentString ss1, int segIndex1, 
-        Coordinate p00, Coordinate p01, Coordinate p10, Coordinate p11) {
+        SegmentString ss1, int segIndex1) {
+      
+      Coordinate p00 = ss0.getCoordinate(segIndex0);
+      Coordinate p01 = ss0.getCoordinate(segIndex0 + 1);
+      Coordinate p10 = ss1.getCoordinate(segIndex1);
+      Coordinate p11 = ss1.getCoordinate(segIndex1 + 1);
       
       li.computeIntersection(p00, p01, p10, p11);
       if (! li.hasIntersection()) return false;
