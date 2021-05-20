@@ -12,11 +12,9 @@
 package org.locationtech.jtstest.testbuilder.ui.tools;
 
 import java.awt.Cursor;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
-import org.locationtech.jtstest.*;
 import org.locationtech.jtstest.testbuilder.AppCursors;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 

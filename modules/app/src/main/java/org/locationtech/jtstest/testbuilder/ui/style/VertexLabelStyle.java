@@ -21,7 +21,6 @@ import org.locationtech.jts.awt.FontGlyphReader;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.OrdinateFormat;
-import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jtstest.testbuilder.ui.GraphicsUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 

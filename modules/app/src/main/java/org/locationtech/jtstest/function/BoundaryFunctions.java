@@ -12,11 +12,7 @@
 package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.algorithm.BoundaryNodeRule;
-import org.locationtech.jts.algorithm.MinimumBoundingCircle;
-import org.locationtech.jts.algorithm.MinimumDiameter;
-import org.locationtech.jts.densify.Densifier;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.OctagonalEnvelope;
 import org.locationtech.jts.operation.BoundaryOp;
 
 public class BoundaryFunctions {  

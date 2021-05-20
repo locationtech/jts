@@ -15,7 +15,6 @@ package org.locationtech.jtstest.testbuilder;
 import java.awt.Cursor;
 import java.awt.Toolkit;
 
-import javax.swing.ImageIcon;
 
 public class AppCursors
 {

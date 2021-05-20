@@ -13,7 +13,6 @@ package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.precision.CommonBitsOp;
-import org.locationtech.jts.precision.EnhancedPrecisionOp;
 
 public class OverlayCommonBitsRemovedFunctions {
 	public static Geometry intersection(Geometry a, Geometry b)		{		return op().intersection(a, b);	}

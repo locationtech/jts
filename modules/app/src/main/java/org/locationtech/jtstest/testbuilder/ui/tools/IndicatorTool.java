@@ -14,15 +14,9 @@ package org.locationtech.jtstest.testbuilder.ui.tools;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.geom.Point2D;
 
 import org.locationtech.jts.awt.FontGlyphReader;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jtstest.*;
 import org.locationtech.jtstest.testbuilder.AppConstants;
-import org.locationtech.jtstest.testbuilder.model.*;
 
 
 public abstract class IndicatorTool extends BasicTool

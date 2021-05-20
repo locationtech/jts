@@ -22,7 +22,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.LineStringExtracter;
 import org.locationtech.jts.geom.util.PolygonExtracter;
-import org.locationtech.jts.operation.overlayng.CoverageUnion;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.PrecisionReducer;
 import org.locationtech.jts.operation.overlayng.UnaryUnionNG;

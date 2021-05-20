@@ -12,7 +12,6 @@
 package org.locationtech.jts.geom;
 
 import org.locationtech.jts.io.OrdinateFormat;
-import org.locationtech.jts.util.NumberUtil;
 
 
 /**

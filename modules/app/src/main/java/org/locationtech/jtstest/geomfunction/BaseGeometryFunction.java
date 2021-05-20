@@ -11,7 +11,6 @@
  */
 package org.locationtech.jtstest.geomfunction;
 
-import java.lang.reflect.Method;
 
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.util.*;

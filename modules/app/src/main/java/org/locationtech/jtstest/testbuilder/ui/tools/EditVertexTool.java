@@ -20,7 +20,6 @@ import javax.swing.SwingUtilities;
 import org.locationtech.jts.awt.GeometryCollectionShape;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jtstest.testbuilder.AppCursors;
-import org.locationtech.jtstest.testbuilder.IconLoader;
 import org.locationtech.jtstest.testbuilder.geom.*;
 
 

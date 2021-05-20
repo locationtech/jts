@@ -13,7 +13,6 @@
 package org.locationtech.jtstest.geomop;
 
 import org.locationtech.jts.geom.*;
-import org.locationtech.jtstest.testrunner.GeometryResult;
 
 
 public class NormalizedGeometryMatcher

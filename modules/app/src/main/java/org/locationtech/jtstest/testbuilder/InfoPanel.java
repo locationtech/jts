@@ -13,16 +13,12 @@ package org.locationtech.jtstest.testbuilder;
 
 
 import java.awt.*;
-import java.awt.event.*;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jtstest.testbuilder.geom.*;
 import org.locationtech.jtstest.testbuilder.model.*;
 
 

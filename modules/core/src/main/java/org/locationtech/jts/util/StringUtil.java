@@ -17,8 +17,6 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintStream;
 import java.io.StringReader;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import org.locationtech.jts.io.OrdinateFormat;

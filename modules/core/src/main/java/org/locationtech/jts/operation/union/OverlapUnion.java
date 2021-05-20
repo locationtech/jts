@@ -24,7 +24,6 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.geom.util.GeometryCombiner;
 
 /**

@@ -12,7 +12,6 @@
 package org.locationtech.jts.util;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * An extendable array of primitive <code>int</code> values.

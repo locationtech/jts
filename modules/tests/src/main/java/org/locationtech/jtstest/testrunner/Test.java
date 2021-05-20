@@ -12,7 +12,6 @@
 package org.locationtech.jtstest.testrunner;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
