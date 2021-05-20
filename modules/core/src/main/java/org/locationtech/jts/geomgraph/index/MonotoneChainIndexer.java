@@ -26,7 +26,7 @@ import org.locationtech.jts.util.IntArrayList;
  * MonotoneChains are a way of partitioning the segments of an edge to
  * allow for fast searching of intersections.
  * Specifically, a sequence of contiguous line segments
- * is a monotone chain iff all the vectors defined by the oriented segments
+ * is a monotone chain if all the vectors defined by the oriented segments
  * lies in the same quadrant.
  * <p>
  * Monotone Chains have the following useful properties:

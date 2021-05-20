@@ -403,9 +403,9 @@ public abstract class Geometry
    * tests for this condition and reports <code>false</code> if it is not met.
    * (This is a looser test than checking for validity).
    * <li>Linear rings have the same semantics.
-   * <li>Linear geometries are simple iff they do not self-intersect at points
+   * <li>Linear geometries are simple if they do not self-intersect at points
    * other than boundary points.
-   * <li>Zero-dimensional geometries (points) are simple iff they have no
+   * <li>Zero-dimensional geometries (points) are simple if they have no
    * repeated points.
    * <li>Empty <code>Geometry</code>s are always simple.
    * </ul>

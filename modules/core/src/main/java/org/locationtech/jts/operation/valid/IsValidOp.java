@@ -60,7 +60,7 @@ public class IsValidOp
 	
   /**
    * Checks whether a coordinate is valid for processing.
-   * Coordinates are valid iff their x and y ordinates are in the
+   * Coordinates are valid if their x and y ordinates are in the
    * range of the floating point representation.
    *
    * @param coord the coordinate to validate
