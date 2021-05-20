@@ -11,7 +11,6 @@ import org.locationtech.jts.util.Assert;
 import org.locationtech.jtstest.testbuilder.io.HtmlSvgTestWriter;
 import org.locationtech.jtstest.testbuilder.io.HtmlWriter;
 import org.locationtech.jtstest.testbuilder.io.JavaTestWriter;
-import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
 import org.locationtech.jtstest.testbuilder.io.XMLTestWriter;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;

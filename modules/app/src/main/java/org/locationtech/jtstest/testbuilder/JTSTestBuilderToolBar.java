@@ -27,7 +27,6 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.locationtech.jtstest.testbuilder.controller.JTSTestBuilderController;
-import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 
 public class JTSTestBuilderToolBar {
 

@@ -12,7 +12,6 @@
 package org.locationtech.jts.operation.overlayng;
 
 import java.util.Comparator;
-import java.util.List;
 
 import org.locationtech.jts.edgegraph.HalfEdge;
 import org.locationtech.jts.geom.Coordinate;

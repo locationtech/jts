@@ -16,7 +16,6 @@ import static org.locationtech.jts.operation.overlayng.OverlayNG.UNION;
 
 import java.util.List;
 
-import static org.locationtech.jts.operation.overlayng.OverlayNG.DIFFERENCE;
 import static org.locationtech.jts.operation.overlayng.OverlayNG.SYMDIFFERENCE;
 
 import org.locationtech.jts.algorithm.LineIntersector;
@@ -26,7 +25,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.noding.IntersectionAdder;
@@ -36,9 +34,6 @@ import org.locationtech.jts.noding.ValidatingNoder;
 import org.locationtech.jts.operation.overlayng.RingClipper;
 import org.locationtech.jts.operation.overlayng.LineLimiter;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
-import org.locationtech.jts.operation.overlayng.PrecisionUtil;
-import org.locationtech.jts.operation.union.UnaryUnionOp;
-import org.locationtech.jts.operation.union.UnionStrategy;
 
 public class OverlayNGTestFunctions {
   

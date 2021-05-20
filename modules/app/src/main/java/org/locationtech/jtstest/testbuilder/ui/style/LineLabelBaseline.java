@@ -4,7 +4,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jtstest.testbuilder.geom.EnvelopeClipper;
 import org.locationtech.jtstest.testbuilder.geom.SegmentClipper;
 
 /**

@@ -15,19 +15,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryCollectionIterator;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.util.LinearComponentExtracter;
-import org.locationtech.jts.noding.SegmentString;
-import org.locationtech.jts.operation.buffer.BufferInputLineSimplifier;
-import org.locationtech.jts.operation.buffer.BufferOp;
-import org.locationtech.jts.operation.buffer.BufferParameters;
-import org.locationtech.jts.operation.buffer.OffsetCurveSetBuilder;
-import org.locationtech.jts.operation.buffer.validate.BufferResultValidator;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 

@@ -12,23 +12,18 @@
 
 package org.locationtech.jtstest.testbuilder.controller;
 
-import java.awt.event.ActionEvent;
-import java.io.IOException;
 
 import javax.swing.JFileChooser;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
-import org.locationtech.jts.io.ParseException;
 import org.locationtech.jtstest.testbuilder.TestBuilderDialogs;
 import org.locationtech.jtstest.clean.CleanDuplicatePoints;
 import org.locationtech.jtstest.testbuilder.GeometryEditPanel;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilderToolBar;
-import org.locationtech.jtstest.testbuilder.model.DisplayParameters;
 import org.locationtech.jtstest.testbuilder.model.GeometryEditModel;
 import org.locationtech.jtstest.testbuilder.model.LayerList;
 import org.locationtech.jtstest.testbuilder.model.TestBuilderModel;
@@ -46,7 +41,6 @@ import org.locationtech.jtstest.testbuilder.ui.tools.RectangleTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.StreamPolygonTool;
 import org.locationtech.jtstest.testbuilder.ui.tools.Tool;
 import org.locationtech.jtstest.testbuilder.ui.tools.ZoomTool;
-import org.locationtech.jtstest.util.io.MultiFormatReader;
 
 
 public class JTSTestBuilderController 

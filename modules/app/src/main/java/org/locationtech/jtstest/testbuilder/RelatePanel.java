@@ -14,7 +14,6 @@
 package org.locationtech.jtstest.testbuilder;
 
 
-import java.awt.event.ActionEvent;
 
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;

@@ -17,7 +17,6 @@ import java.awt.geom.*;
 
 import org.locationtech.jts.awt.FontGlyphReader;
 import org.locationtech.jts.geom.Quadrant;
-import org.locationtech.jts.noding.Octant;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 
 

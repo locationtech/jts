@@ -13,12 +13,7 @@
 package org.locationtech.jtstest.testbuilder.ui.style;
 
 import java.awt.*;
-import java.awt.geom.*;
-
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jtstest.testbuilder.ui.ColorUtil;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 import org.locationtech.jtstest.testbuilder.ui.render.GeometryPainter;
 

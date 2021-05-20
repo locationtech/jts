@@ -17,7 +17,6 @@ import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jtstest.test.TestCase;
 import org.locationtech.jtstest.test.Testable;
-import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
 
 
 

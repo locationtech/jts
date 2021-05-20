@@ -14,7 +14,6 @@ package org.locationtech.jtstest.testbuilder.geom;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.WKTWriter;
-import org.locationtech.jts.util.NumberUtil;
 
 /**
  * Models the location of a point on a Geometry

@@ -13,9 +13,7 @@
  */
 package org.locationtech.jts.geom;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.TreeSet;
 
 import org.locationtech.jts.util.Assert;

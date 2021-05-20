@@ -15,7 +15,6 @@ package org.locationtech.jtstest.function;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.LineIntersector;
@@ -23,23 +22,15 @@ import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.locationtech.jts.geom.util.LinearComponentExtracter;
-import org.locationtech.jts.noding.BasicSegmentString;
 import org.locationtech.jts.noding.FastNodingValidator;
 import org.locationtech.jts.noding.NodingIntersectionFinder;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
-import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.Noder;
-import org.locationtech.jts.noding.ScaledNoder;
 import org.locationtech.jts.noding.SegmentStringUtil;
 import org.locationtech.jts.noding.snap.SnappingNoder;
-import org.locationtech.jts.noding.snapround.GeometryNoder;
-import org.locationtech.jts.noding.snapround.MCIndexSnapRounder;
 import org.locationtech.jts.noding.snapround.SnapRoundingNoder;
-import org.locationtech.jts.precision.GeometryPrecisionReducer;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 

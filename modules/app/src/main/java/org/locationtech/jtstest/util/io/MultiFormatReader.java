@@ -13,11 +13,9 @@ package org.locationtech.jtstest.util.io;
 
 import java.io.IOException;
 
-import javax.xml.parsers.*;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.*;
-import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.locationtech.jts.io.gml2.*;
 
 

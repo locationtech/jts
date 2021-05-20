@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.util.GeometryMapper;
-import org.locationtech.jts.geom.util.GeometryMapper.MapOp;
 import org.locationtech.jtstest.function.FunctionsUtil;
 import org.locationtech.jtstest.util.ClassUtil;
 
