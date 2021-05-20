@@ -227,7 +227,7 @@ public class GMLHandler extends DefaultHandler {
 	 */
 	public void setDocumentLocator(Locator locator) {
 		this.locator = locator;
-		if (delegate != null && delegate instanceof ContentHandler)
+		if (delegate instanceof ContentHandler)
 			((ContentHandler) delegate).setDocumentLocator(locator);
 
 	}
