@@ -229,7 +229,7 @@ public class StringUtil
         ArrayList result = new ArrayList();
         StringTokenizer tokenizer = new StringTokenizer(s, ",");
         while (tokenizer.hasMoreTokens()) {
-            result.add(tokenizer.nextToken().toString().trim());
+            result.add(tokenizer.nextToken().trim());
         }
         return result;
     }
