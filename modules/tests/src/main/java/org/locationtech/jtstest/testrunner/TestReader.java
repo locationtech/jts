@@ -587,11 +587,12 @@ public class TestReader
     public static List getContents(String textFileName) throws FileNotFoundException, IOException {
         List contents = new Vector();
         FileReader fileReader = new FileReader(textFileName);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        String line = bufferedReader.readLine();
-        while (line != null) {
-            contents.add(line);
-            line = bufferedReader.readLine();
+        try(BufferedReader bufferedReader = new BufferedReader(fileReader)){
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                contents.add(line);
+                line = bufferedReader.readLine();
+            }
         }
         return contents;
     }

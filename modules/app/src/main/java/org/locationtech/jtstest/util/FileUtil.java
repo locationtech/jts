@@ -62,11 +62,12 @@ public class FileUtil
     public static List getContents(String textFileName) throws FileNotFoundException, IOException {
         List contents = new Vector();
         FileReader fileReader = new FileReader(textFileName);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        String line = bufferedReader.readLine();
-        while (line != null) {
-            contents.add(line);
-            line = bufferedReader.readLine();
+        try(BufferedReader bufferedReader = new BufferedReader(fileReader)){
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                contents.add(line);
+                line = bufferedReader.readLine();
+            }
         }
         return contents;
     }
@@ -89,11 +90,12 @@ public class FileUtil
 		String thisLine;
 		StringBuffer strb = new StringBuffer("");
 
-		FileInputStream fin = new FileInputStream(file);
-		BufferedReader br = new BufferedReader(new InputStreamReader(fin));
-		while ((thisLine = br.readLine()) != null) {
-			strb.append(thisLine + "\r\n");
-		}
+		try(FileInputStream fin = new FileInputStream(file)){
+            BufferedReader br = new BufferedReader(new InputStreamReader(fin));
+            while ((thisLine = br.readLine()) != null) {
+        		strb.append(thisLine + "\r\n");
+    		}
+        }
 		String result = strb.toString();
 		return result;
 	}
@@ -102,12 +104,12 @@ public class FileUtil
 		 * Saves the String with the given filename
 		 */
     public static void setContents(String textFileName, String contents) throws IOException {
-        FileWriter fileWriter = new FileWriter(textFileName, false);
-        BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-        bufferedWriter.write(contents);
-        bufferedWriter.flush();
-        bufferedWriter.close();
-        fileWriter.close();
+        try(FileWriter fileWriter = new FileWriter(textFileName, false)){
+            try(BufferedWriter bufferedWriter = new BufferedWriter(fileWriter)){
+                bufferedWriter.write(contents);
+                bufferedWriter.flush();
+            }
+        }
     }
 
     /**
@@ -115,19 +117,19 @@ public class FileUtil
      * Posted by Mark Thornton <mthorn@cix.compulink.co.uk> on Usenet.
      */
     public static void copyFile(File source, File destination) throws IOException {
-        RandomAccessFile out = new RandomAccessFile(destination, "rw");
-        //Tell the OS in advance how big the file will be. This may reduce fragmentation
-        out.setLength(source.length());
-        //copy the content
-        FileInputStream in = new FileInputStream(source);
-        byte[] buffer = new byte[16384];
-        while (true) {
-            int n = in.read(buffer);
-            if (n == -1)
-                break;
-            out.write(buffer, 0, n);
+        try(RandomAccessFile out = new RandomAccessFile(destination, "rw")){
+            //Tell the OS in advance how big the file will be. This may reduce fragmentation
+            out.setLength(source.length());
+            //copy the content
+            try(FileInputStream in = new FileInputStream(source)){
+                byte[] buffer = new byte[16384];
+                while (true) {
+                    int n = in.read(buffer);
+                    if (n == -1)
+                        break;
+                    out.write(buffer, 0, n);
+                }
+            }
         }
-        in.close();
-        out.close();
     }
 }
