@@ -140,8 +140,8 @@ class GeometryOverlay
   static Geometry union(Geometry a, Geometry b)
   {
     // handle empty geometry cases
-    if (a.isEmpty() || a.isEmpty()) {
-      if (b.isEmpty() && b.isEmpty())
+    if (a.isEmpty() || b.isEmpty()) {
+      if (a.isEmpty() && b.isEmpty())
         return OverlayOp.createEmptyResult(OverlayOp.UNION, a, b, a.getFactory());
 
     // special case: if either input is empty ==> other input
