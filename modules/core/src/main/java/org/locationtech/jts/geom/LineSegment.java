@@ -168,7 +168,7 @@ public class LineSegment
   
   /**
    * Determines the orientation index of a {@link Coordinate} relative to this segment.
-   * The orientation index is as defined in {@link Orientation#computeOrientation}.
+   * The orientation index is as defined in {@link Orientation#index(Coordinate, Coordinate, Coordinate)}.
    *
    * @param p the coordinate to compare
    *
@@ -176,7 +176,7 @@ public class LineSegment
    * @return -1 (RIGHT) if <code>p</code> is to the right of this segment
    * @return 0 (COLLINEAR) if <code>p</code> is collinear with this segment
    * 
-   * @see Orientation#computeOrientation(Coordinate, Coordinate, Coordinate)
+   * @see Orientation#index(Coordinate, Coordinate, Coordinate)
    */
   public int orientationIndex(Coordinate p)
   {

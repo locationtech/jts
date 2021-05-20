@@ -56,7 +56,7 @@ import org.locationtech.jts.geomgraph.index.SegmentIntersector;
  * for (invalid) self-intersections in <tt>Polygon</tt>s.  
  * In order to check if a <tt>Polygonal</tt> geometry has self-intersections,
  * use {@link Geometry#isValid()}).
- * <li><b>Linear</b> geometries are simple iff they do <i>not</i> self-intersect at interior points
+ * <li><b>Linear</b> geometries are simple if they do <i>not</i> self-intersect at interior points
  * (i.e. points other than boundary points).
  * This is equivalent to saying that no two linear components satisfy the SFS {@link Geometry#touches(Geometry)}
  * predicate. 
@@ -180,7 +180,7 @@ public class IsSimpleOp
   }
 
   /**
-   * A MultiPoint is simple iff it has no repeated points
+   * A MultiPoint is simple if it has no repeated points
    * @deprecated use isSimple()
    */
   public boolean isSimple(MultiPoint mp)
@@ -225,7 +225,7 @@ public class IsSimpleOp
   
   /**
    * Semantics for GeometryCollection is 
-   * simple iff all components are simple.
+   * simple if all components are simple.
    * 
    * @param geom
    * @return true if the geometry is simple

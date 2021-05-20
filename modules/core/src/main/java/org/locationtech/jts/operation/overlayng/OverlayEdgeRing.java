@@ -135,7 +135,7 @@ class OverlayEdgeRing {
    * The innermost enclosing ring is the <i>smallest</i> enclosing ring.
    * The algorithm used depends on the fact that:
    * <br>
-   *  ring A contains ring B iff envelope(ring A) contains envelope(ring B)
+   *  ring A contains ring B if envelope(ring A) contains envelope(ring B)
    * <br>
    * This routine is only safe to use if the chosen point of the hole
    * is known to be properly contained in a shell

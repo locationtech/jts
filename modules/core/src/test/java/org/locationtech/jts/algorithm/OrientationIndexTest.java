@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 import junit.textui.TestRunner;
 
 /**
- * Tests CGAlgorithms.computeOrientation
+ * Tests Orientation.index
  * @version 1.7
  */
 public class OrientationIndexTest

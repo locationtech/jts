@@ -68,7 +68,7 @@ public class PolygonHandler implements ShapeHandler{
         {
             p = pointList[t];
             if ( (testPoint.x == p.x) && (testPoint.y == p.y) &&
-                    ((testPoint.getZ() == p.getZ()) || (!(testPoint.getZ() == testPoint.getZ()))  )  //nan test; x!=x iff x is nan
+                    ((testPoint.getZ() == p.getZ()) || (!(testPoint.getZ() == testPoint.getZ()))  )  //nan test; x!=x if x is nan
                     )
             {
                 return true;

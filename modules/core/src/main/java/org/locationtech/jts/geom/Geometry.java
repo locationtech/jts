@@ -20,6 +20,7 @@ import org.locationtech.jts.algorithm.ConvexHull;
 import org.locationtech.jts.algorithm.InteriorPoint;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.distance.DistanceOp;
 import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.locationtech.jts.operation.predicate.RectangleContains;
@@ -398,9 +399,9 @@ public abstract class Geometry
    * tests for this condition and reports <code>false</code> if it is not met.
    * (This is a looser test than checking for validity).
    * <li>Linear rings have the same semantics.
-   * <li>Linear geometries are simple iff they do not self-intersect at points
+   * <li>Linear geometries are simple if they do not self-intersect at points
    * other than boundary points.
-   * <li>Zero-dimensional geometries (points) are simple iff they have no
+   * <li>Zero-dimensional geometries (points) are simple if they have no
    * repeated points.
    * <li>Empty <code>Geometry</code>s are always simple.
    * </ul>
@@ -1227,9 +1228,9 @@ public abstract class Geometry
    * The end cap style specifies the buffer geometry that will be
    * created at the ends of linestrings.  The styles provided are:
    * <ul>
-   * <li><code>BufferOp.CAP_ROUND</code> - (default) a semi-circle
-   * <li><code>BufferOp.CAP_BUTT</code> - a straight line perpendicular to the end segment
-   * <li><code>BufferOp.CAP_SQUARE</code> - a half-square
+   * <li>{@link BufferParameters#CAP_ROUND} - (default) a semi-circle
+   * <li>{@link BufferParameters#CAP_FLAT} - a straight line perpendicular to the end segment
+   * <li>{@link BufferParameters#CAP_SQUARE} - a half-square
    * </ul>
 	 * <p>
 	 * The buffer operation always returns a polygonal result. The negative or
@@ -1391,7 +1392,7 @@ public abstract class Geometry
   }
 
   /**
-   * Computes a <code>Geometry </code> representing the closure of the point-set
+   * Computes a <code>Geometry</code> representing the closure of the point-set
    * which is the union of the points in this <code>Geometry</code> which are not
    * contained in the <code>other</code> Geometry,
    * with the points in the <code>other</code> Geometry not contained in this

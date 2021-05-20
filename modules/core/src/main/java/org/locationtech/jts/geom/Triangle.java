@@ -26,9 +26,9 @@ public class Triangle
 {
 
   /**
-   * Tests whether a triangle is acute. A triangle is acute iff all interior
+   * Tests whether a triangle is acute. A triangle is acute if all interior
    * angles are acute. This is a strict test - right triangles will return
-   * <tt>false</tt> A triangle which is not acute is either right or obtuse.
+   * <tt>false</tt>. A triangle which is not acute is either right or obtuse.
    * <p>
    * Note: this implementation is not robust for angles very close to 90
    * degrees.
@@ -476,9 +476,9 @@ public class Triangle
   }
 
   /**
-   * Tests whether this triangle is acute. A triangle is acute iff all interior
+   * Tests whether this triangle is acute. A triangle is acute if all interior
    * angles are acute. This is a strict test - right triangles will return
-   * <tt>false</tt> A triangle which is not acute is either right or obtuse.
+   * <tt>false</tt>. A triangle which is not acute is either right or obtuse.
    * <p>
    * Note: this implementation is not robust for angles very close to 90
    * degrees.

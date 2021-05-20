@@ -104,7 +104,7 @@ public class Angle
    */
   public static boolean isAcute(Coordinate p0, Coordinate p1, Coordinate p2)
   {
-    // relies on fact that A dot B is positive iff A ang B is acute
+    // relies on fact that A dot B is positive if A ang B is acute
     double dx0 = p0.x - p1.x;
     double dy0 = p0.y - p1.y;
     double dx1 = p2.x - p1.x;
@@ -126,7 +126,7 @@ public class Angle
    */
   public static boolean isObtuse(Coordinate p0, Coordinate p1, Coordinate p2)
   {
-    // relies on fact that A dot B is negative iff A ang B is obtuse
+    // relies on fact that A dot B is negative if A ang B is obtuse
     double dx0 = p0.x - p1.x;
     double dy0 = p0.y - p1.y;
     double dx1 = p2.x - p1.x;
