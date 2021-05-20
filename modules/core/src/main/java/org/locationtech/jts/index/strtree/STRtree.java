@@ -27,14 +27,16 @@ import org.locationtech.jts.util.Assert;
 
 
 /**
- *  A query-only R-tree created using the Sort-Tile-Recursive (STR) algorithm.
- *  For two-dimensional spatial data.
+ * A query-only R-tree created using the Sort-Tile-Recursive (STR) algorithm.
+ * For two-dimensional spatial data.
  * <P>
- *  The STR packed R-tree is simple to implement and maximizes space
- *  utilization; that is, as many leaves as possible are filled to capacity.
- *  Overlap between nodes is far less than in a basic R-tree. However, once the
- *  tree has been built (explicitly or on the first call to #query), items may
- *  not be added or removed.
+ * The STR packed R-tree is simple to implement and maximizes space
+ * utilization; that is, as many leaves as possible are filled to capacity.
+ * Overlap between nodes is far less than in a basic R-tree. 
+ * However, the index is semi-static; once the tree has been built 
+ * (which happens automatically upon the first query), items may
+ * not be added.
+ * Items may be removed from the tree using {@link #remove(Envelope, Object)}.
  * <P>
  * Described in: P. Rigaux, Michel Scholl and Agnes Voisard.
  * <i>Spatial Databases With Application To GIS</i>.
