@@ -380,11 +380,11 @@ public class LineSequencer
 
       // test end edge before start edge, to make result stable
       // (ie. if both are good starts, pick the actual start
-      if (endEdge.getToNode().getDegree() == 1 && endEdge.getEdgeDirection() == false) {
+      if (endEdge.getToNode().getDegree() == 1 && !endEdge.getEdgeDirection()) {
         hasObviousStartNode = true;
         flipSeq = true;
       }
-      if (startEdge.getFromNode().getDegree() == 1 && startEdge.getEdgeDirection() == true) {
+      if (startEdge.getFromNode().getDegree() == 1 && startEdge.getEdgeDirection()) {
         hasObviousStartNode = true;
         flipSeq = false;
       }
