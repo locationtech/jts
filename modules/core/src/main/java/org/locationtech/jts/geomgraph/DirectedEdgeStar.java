@@ -166,8 +166,8 @@ public class DirectedEdgeStar
     return resultAreaEdgeList;
   }
 
-  private final int SCANNING_FOR_INCOMING = 1;
-  private final int LINKING_TO_OUTGOING = 2;
+  private static final int SCANNING_FOR_INCOMING = 1;
+  private static final int LINKING_TO_OUTGOING = 2;
   /**
    * Traverse the star of DirectedEdges, linking the included edges together.
    * To link two dirEdges, the <code>next</code> pointer for an incoming dirEdge

@@ -33,10 +33,10 @@ public class InspectorPanel extends TestBuilderPanel  {
   
   private static final int BOX_SPACER = 5;
 
-  private final ImageIcon downIcon = AppIcons.DOWN;
-  private final ImageIcon upIcon = AppIcons.UP;
-  private final ImageIcon zoomIcon = AppIcons.ZOOM;
-  private final ImageIcon copyIcon = AppIcons.COPY;
+  private static final ImageIcon downIcon = AppIcons.DOWN;
+  private static final ImageIcon upIcon = AppIcons.UP;
+  private static final ImageIcon zoomIcon = AppIcons.ZOOM;
+  private static final ImageIcon copyIcon = AppIcons.COPY;
 
   GeometryTreePanel geomTreePanel;
   
