@@ -115,7 +115,7 @@ public class ResultController
     String funTimeLine = function.getSignature() + " : " + timeString;
     String entry = funTimeLine;
     String resultDesc = GeometryFunctionInvocation.toString(result);
-    if (resultDesc != null & resultDesc.length() < 40) entry += "\n ==> " + resultDesc;
+    if (resultDesc != null && resultDesc.length() < 40) entry += "\n ==> " + resultDesc;
     JTSTestBuilder.controller().displayInfo(entry, false);
   }
   
