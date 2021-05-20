@@ -93,7 +93,7 @@ public class KMLWriter
     return writer.write(geometry);
   }
 
-  private final int INDENT_SIZE = 2;
+  private static final int INDENT_SIZE = 2;
   private static final String COORDINATE_SEPARATOR = ",";
   private static final String TUPLE_SEPARATOR = " ";
 

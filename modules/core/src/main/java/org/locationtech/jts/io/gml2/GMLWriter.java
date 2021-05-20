@@ -54,7 +54,7 @@ import org.locationtech.jts.util.Assert;
  * @author Martin Davis 
  */
 public class GMLWriter {
-	private final String INDENT = "  ";
+	private static final String INDENT = "  ";
 
 	private int startingIndentIndex = 0;
 
