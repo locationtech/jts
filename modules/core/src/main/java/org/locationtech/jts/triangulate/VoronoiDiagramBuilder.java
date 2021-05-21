@@ -117,14 +117,14 @@ public class VoronoiDiagramBuilder
 		   * create one which encloses all the sites,
 		   * with a buffer around the edges.
 		   */
-  		diagramEnv = siteEnv;
-  		// add a buffer around the sites envelope
-  		double expandBy = diagramEnv.getDiameter();
-  		diagramEnv.expandBy(expandBy);
+			diagramEnv = siteEnv;
+			// add a buffer around the sites envelope
+			double expandBy = diagramEnv.getDiameter();
+			diagramEnv.expandBy(expandBy);
 		}
 
 		List vertices = DelaunayTriangulationBuilder.toVertices(siteCoords);
-		subdiv = new QuadEdgeSubdivision(siteEnv, tolerance);
+		subdiv = new QuadEdgeSubdivision(diagramEnv, tolerance);
 		IncrementalDelaunayTriangulator triangulator = new IncrementalDelaunayTriangulator(subdiv);
 		triangulator.insertSites(vertices);
 	}
