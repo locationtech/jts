@@ -109,7 +109,7 @@ class Edge {
       throw new IllegalStateException("Edge direction cannot be determined because endpoints are equal");
     }
     
-    return cmp == -1 ? true : false;
+    return cmp == -1;
   }
 
   /**

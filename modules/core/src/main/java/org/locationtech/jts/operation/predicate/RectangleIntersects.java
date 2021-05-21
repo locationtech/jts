@@ -181,7 +181,7 @@ class EnvelopeIntersectsVisitor extends ShortCircuitedGeometryVisitor
 
   protected boolean isDone()
   {
-    return intersects == true;
+    return intersects;
   }
 }
 
@@ -248,7 +248,7 @@ class GeometryContainsPointVisitor extends ShortCircuitedGeometryVisitor
 
   protected boolean isDone()
   {
-    return containsPoint == true;
+    return containsPoint;
   }
 }
 
@@ -336,6 +336,6 @@ class RectangleIntersectsSegmentVisitor extends ShortCircuitedGeometryVisitor
 
   protected boolean isDone()
   {
-    return hasIntersection == true;
+    return hasIntersection;
   }
 }
