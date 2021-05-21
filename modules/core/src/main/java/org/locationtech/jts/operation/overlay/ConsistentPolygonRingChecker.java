@@ -91,8 +91,8 @@ public class ConsistentPolygonRingChecker
       return false;
     }
 
-  private final int SCANNING_FOR_INCOMING = 1;
-  private final int LINKING_TO_OUTGOING = 2;
+  private static final int SCANNING_FOR_INCOMING = 1;
+  private static final int LINKING_TO_OUTGOING = 2;
 
   private void testLinkResultDirectedEdges(DirectedEdgeStar deStar, int opCode)
   {
