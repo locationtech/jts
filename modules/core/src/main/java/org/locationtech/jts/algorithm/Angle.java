@@ -198,7 +198,7 @@ public class Angle
   {
     double anglePrev = Angle.angle(p1, p0);
     double angleNext = Angle.angle(p1, p2);
-    return Math.abs(angleNext - anglePrev);
+    return normalizePositive(angleNext - anglePrev);
   }
 
   /**

@@ -38,6 +38,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `HalfEdge.prev()` method (#703)
 * Fix `BufferOp` to remove invalid elements caused by inverted ring curves (#706) 
 * Fix `IsSimpleOp` duplicate lines bug (#716)
+* Fix `Angle.interiorAngle` to produce interior angle correctly (#721)
 
 <!-- ================================================================ -->
 
