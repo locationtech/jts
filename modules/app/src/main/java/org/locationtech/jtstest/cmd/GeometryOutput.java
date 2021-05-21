@@ -6,7 +6,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKBWriter;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.locationtech.jts.io.gml2.GMLWriter;
-import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 import org.locationtech.jtstest.testbuilder.io.SVGTestWriter;
 
 /**

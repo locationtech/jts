@@ -13,9 +13,7 @@ package org.locationtech.jtstest.testbuilder.ui.tools;
 
 import java.awt.event.MouseEvent;
 
-import org.locationtech.jtstest.*;
 import org.locationtech.jtstest.testbuilder.JTSTestBuilder;
-import org.locationtech.jtstest.testbuilder.JTSTestBuilderFrame;
 
 
 /**

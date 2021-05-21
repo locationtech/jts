@@ -4,7 +4,6 @@ package org.locationtech.jtslab;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;

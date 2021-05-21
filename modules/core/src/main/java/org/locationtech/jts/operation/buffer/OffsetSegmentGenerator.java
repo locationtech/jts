@@ -12,10 +12,8 @@
 package org.locationtech.jts.operation.buffer;
 
 import org.locationtech.jts.algorithm.Angle;
-import org.locationtech.jts.algorithm.HCoordinate;
 import org.locationtech.jts.algorithm.Intersection;
 import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.NotRepresentableException;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;

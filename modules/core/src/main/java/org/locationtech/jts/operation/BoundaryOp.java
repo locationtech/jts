@@ -20,7 +20,6 @@ import java.util.TreeMap;
 import org.locationtech.jts.algorithm.BoundaryNodeRule;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
-import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.Dimension;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;

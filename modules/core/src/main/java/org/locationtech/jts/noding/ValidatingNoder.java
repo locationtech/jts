@@ -2,8 +2,6 @@ package org.locationtech.jts.noding;
 
 import java.util.Collection;
 
-import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
 
 /**
  * A wrapper for {@link Noder}s which validates

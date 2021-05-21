@@ -35,7 +35,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.controller.CommandController;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 

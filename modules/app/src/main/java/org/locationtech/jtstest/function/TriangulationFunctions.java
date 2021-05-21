@@ -14,7 +14,6 @@ package org.locationtech.jtstest.function;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.triangulate.*;
 import org.locationtech.jts.triangulate.quadedge.LocateFailureException;
-import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import org.locationtech.jtstest.util.*;
 
 
