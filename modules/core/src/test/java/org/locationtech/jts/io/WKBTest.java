@@ -12,6 +12,7 @@
 package org.locationtech.jts.io;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateFilter;
@@ -150,6 +151,31 @@ public class WKBTest
       throws IOException, ParseException
   {
     runWKBTest("GEOMETRYCOLLECTION EMPTY");
+  }
+  
+  public void testWriteAndRead() throws ParseException {
+    String wkt = "MULTILINESTRING M((1 1 1, 2 2 2))";
+    WKTReader wktReader = new WKTReader();
+    Geometry geometryBefore = wktReader.read(wkt);
+
+    WKBWriter wkbWriter = new WKBWriter(3);
+    byte[] write = wkbWriter.write(geometryBefore);
+
+    WKBReader wkbReader = new WKBReader();
+    Geometry geometryAfter = wkbReader.read(write);
+    
+    System.out.println(Arrays.asList(geometryBefore.getCoordinates()));
+    System.out.println(Arrays.asList(geometryAfter.getCoordinates()));
+
+    assertEquals(geometryBefore.getCoordinates()[0].getX(), geometryAfter.getCoordinates()[0].getX());
+    assertEquals(geometryBefore.getCoordinates()[0].getY(), geometryAfter.getCoordinates()[0].getY());
+    assertEquals(geometryBefore.getCoordinates()[0].getZ(), geometryAfter.getCoordinates()[0].getZ());
+    assertEquals(geometryBefore.getCoordinates()[0].getM(), geometryAfter.getCoordinates()[0].getM());
+    
+    assertEquals(geometryBefore.getCoordinates()[1].getX(), geometryAfter.getCoordinates()[1].getX());
+    assertEquals(geometryBefore.getCoordinates()[1].getY(), geometryAfter.getCoordinates()[1].getY());
+    assertEquals(geometryBefore.getCoordinates()[1].getZ(), geometryAfter.getCoordinates()[1].getZ());
+    assertEquals(geometryBefore.getCoordinates()[1].getM(), geometryAfter.getCoordinates()[1].getM());
   }
 
   private void runWKBTest(String wkt) throws IOException, ParseException 
