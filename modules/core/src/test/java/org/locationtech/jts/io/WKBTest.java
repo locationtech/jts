@@ -12,7 +12,7 @@
 package org.locationtech.jts.io;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.EnumSet;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateFilter;
@@ -152,9 +152,35 @@ public class WKBTest
   {
     runWKBTest("GEOMETRYCOLLECTION EMPTY");
   }
-  
-  public void testWriteAndRead() throws ParseException {
+
+  /**
+   * Tests if a previously written WKB with M-coordinates can be read as expected.
+   */
+  public void testWriteAndReadM() throws ParseException
+  {
     String wkt = "MULTILINESTRING M((1 1 1, 2 2 2))";
+    WKTReader wktReader = new WKTReader();
+    Geometry geometryBefore = wktReader.read(wkt);
+
+    WKBWriter wkbWriter = new WKBWriter(3);
+    wkbWriter.setOutputOrdinates(EnumSet.of(Ordinate.X, Ordinate.Y, Ordinate.M));
+    byte[] write = wkbWriter.write(geometryBefore);
+
+    WKBReader wkbReader = new WKBReader();
+    Geometry geometryAfter = wkbReader.read(write);
+    
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getX());
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getY());
+    assertEquals(Double.NaN, geometryAfter.getCoordinates()[0].getZ());
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getM());
+  }
+
+  /**
+   * Tests if a previously written WKB with Z-coordinates can be read as expected.
+   */
+  public void testWriteAndReadZ() throws ParseException
+  {
+    String wkt = "MULTILINESTRING ((1 1 1, 2 2 2))";
     WKTReader wktReader = new WKTReader();
     Geometry geometryBefore = wktReader.read(wkt);
 
@@ -164,18 +190,10 @@ public class WKBTest
     WKBReader wkbReader = new WKBReader();
     Geometry geometryAfter = wkbReader.read(write);
     
-    System.out.println(Arrays.asList(geometryBefore.getCoordinates()));
-    System.out.println(Arrays.asList(geometryAfter.getCoordinates()));
-
-    assertEquals(geometryBefore.getCoordinates()[0].getX(), geometryAfter.getCoordinates()[0].getX());
-    assertEquals(geometryBefore.getCoordinates()[0].getY(), geometryAfter.getCoordinates()[0].getY());
-    assertEquals(geometryBefore.getCoordinates()[0].getZ(), geometryAfter.getCoordinates()[0].getZ());
-    assertEquals(geometryBefore.getCoordinates()[0].getM(), geometryAfter.getCoordinates()[0].getM());
-    
-    assertEquals(geometryBefore.getCoordinates()[1].getX(), geometryAfter.getCoordinates()[1].getX());
-    assertEquals(geometryBefore.getCoordinates()[1].getY(), geometryAfter.getCoordinates()[1].getY());
-    assertEquals(geometryBefore.getCoordinates()[1].getZ(), geometryAfter.getCoordinates()[1].getZ());
-    assertEquals(geometryBefore.getCoordinates()[1].getM(), geometryAfter.getCoordinates()[1].getM());
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getX());
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getY());
+    assertEquals(1.0, geometryAfter.getCoordinates()[0].getZ());
+    assertEquals(Double.NaN, geometryAfter.getCoordinates()[0].getM());
   }
 
   private void runWKBTest(String wkt) throws IOException, ParseException 
