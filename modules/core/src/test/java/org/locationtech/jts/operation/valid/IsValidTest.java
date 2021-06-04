@@ -65,5 +65,23 @@ public class IsValidTest extends TestCase {
     g.isValid();
     assertTrue(true); //No exception thrown [Jon Aquino]
   }
+  
+  public void testLinearRingTriangle() throws Exception {
+    Geometry g = reader.read(
+          "LINEARRING (100 100, 150 200, 200 100, 100 100)");
+    assertTrue(g.isValid());
+  }
+
+  public void testLinearRingSelfCrossing() throws Exception {
+    Geometry g = reader.read(
+          "LINEARRING (150 100, 300 300, 100 300, 350 100, 150 100)");
+    assertTrue(! g.isValid());
+  }
+
+  public void testLinearRingSelfCrossing2() throws Exception {
+    Geometry g = reader.read(
+          "LINEARRING (0 0, 100 100, 100 0, 0 100, 0 0)");
+    assertTrue(! g.isValid());
+  }
 
 }
