@@ -19,6 +19,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryCollectionIterator;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.operation.overlayng.OverlayNG;
+import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
 import org.locationtech.jtstest.geomfunction.Metadata;
 
 
@@ -59,17 +61,29 @@ public class BufferByUnionFunctions {
     return g.union(segBuf);
   }
   
-  public static Geometry bufferByChains(Geometry g, double distance,
-      @Metadata(title="Max Chain Size")
+  public static Geometry bufferBySections(Geometry g, double distance,
+      @Metadata(title="Section Size")
       int maxChainSize)
   {
     if (maxChainSize <= 0)
-      throw new IllegalArgumentException("Maximum Chain Size must be specified as an input parameter");
+      throw new IllegalArgumentException("Section Size must be specified as an input parameter");
     Geometry segs = LineHandlingFunctions.extractChains(g, maxChainSize);
     double posDist = Math.abs(distance);
     Geometry segBuf = bufferByComponents(segs, posDist);
     if (distance < 0.0) 
-      return g.difference(segBuf);
-    return g.union(segBuf);
+      return OverlayNGRobust.overlay(g, segBuf, OverlayNG.DIFFERENCE);
+    return OverlayNGRobust.overlay(g, segBuf, OverlayNG.UNION);
+  }
+  
+  public static Geometry sectionBuffers(Geometry g, double distance,
+      @Metadata(title="Section Size")
+      int maxChainSize)
+  {
+    if (maxChainSize <= 0)
+      throw new IllegalArgumentException("Section Size must be specified as an input parameter");
+    Geometry segs = LineHandlingFunctions.extractChains(g, maxChainSize);
+    double posDist = Math.abs(distance);
+    Geometry segBuf = componentBuffers(segs, posDist);
+    return segBuf;
   }
 }
