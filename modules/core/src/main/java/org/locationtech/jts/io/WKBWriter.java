@@ -274,7 +274,7 @@ public class WKBWriter
   
   /**
    * Creates a writer that writes {@link Geometry}s with
-   * the given dimension (2 or 4) for output coordinates
+   * the given dimension (2 to 4) for output coordinates
    * and byte order. This constructor also takes a flag to 
    * control whether srid information will be written.
    * If the input geometry has a small coordinate dimension,
@@ -294,7 +294,7 @@ public class WKBWriter
    * </ul>
    * See also {@link #setOutputOrdinates(EnumSet)}
    *
-   * @param outputDimension the coordinate dimension to output (2 or 4)
+   * @param outputDimension the coordinate dimension to output (2 to 4)
    * @param byteOrder the byte ordering to use
    * @param includeSRID indicates whether SRID should be written
    */
@@ -304,7 +304,7 @@ public class WKBWriter
       this.includeSRID = includeSRID;
       
       if (outputDimension < 2 || outputDimension > 4)
-        throw new IllegalArgumentException("Output dimension must be 2 or 4");
+        throw new IllegalArgumentException("Output dimension must be 2 to 4");
 
       this.outputOrdinates = EnumSet.of(Ordinate.X, Ordinate.Y);
       if (outputDimension > 2)
