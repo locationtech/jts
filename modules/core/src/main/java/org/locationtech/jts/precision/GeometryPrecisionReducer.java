@@ -20,7 +20,7 @@ import org.locationtech.jts.geom.util.GeometryEditor;
 /**
  * Reduces the precision of a {@link Geometry}
  * according to the supplied {@link PrecisionModel},
- * ensuring that the result is valid (unless specified otherwise).
+ * ensuring that the result is valid, unless specified otherwise.
  * <p>
  * By default the reduced result is topologically valid
  * (i.e. {@link Geometry#isValid()} is true).
@@ -42,7 +42,7 @@ import org.locationtech.jts.geom.util.GeometryEditor;
  * By default the geometry precision model is not changed.
  * This can be overridden by using {@link #setChangePrecisionModel(boolean)}.
  * <p>
- * Normally collapsed components (e.g. lines collapsing to a point) 
+ * Normally, collapsed components (e.g. lines collapsing to a point) 
  * are not included in the result. 
  * This behavior can be changed by using {@link #setRemoveCollapsedComponents(boolean)}.
  *
@@ -149,7 +149,13 @@ public class GeometryPrecisionReducer
    */
   public Geometry reduce(Geometry geom)
   {
-    Geometry reduced = PrecisionReducerTransformer.reduce(geom, targetPM, isPointwise);
+    Geometry reduced;
+    if (isPointwise) {
+      reduced = PointwisePrecisionReducerTransformer.reduce(geom, targetPM);
+    }
+    else {
+      reduced = PrecisionReducerTransformer.reduce(geom, targetPM, removeCollapsed);
+    }
     
     // TODO: incorporate this in the Transformer above
     if (changePrecisionModel) {
