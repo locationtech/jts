@@ -29,9 +29,6 @@ public class GeometryPrecisionReducerTest
 {
   private PrecisionModel pmFloat = new PrecisionModel();
   private PrecisionModel pmFixed1 = new PrecisionModel(1);
-  private GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(pmFixed1);
-  private GeometryPrecisionReducer reducerKeepCollapse
-  = new GeometryPrecisionReducer(pmFixed1);
 
   private GeometryFactory gfFloat = new GeometryFactory(pmFloat, 0);
   WKTReader reader = new WKTReader(gfFloat);
@@ -43,7 +40,6 @@ public class GeometryPrecisionReducerTest
   public GeometryPrecisionReducerTest(String name)
   {
     super(name);
-    reducerKeepCollapse.setRemoveCollapsedComponents(false);
   }
 
   public void testSquare()
@@ -93,21 +89,21 @@ public class GeometryPrecisionReducerTest
   public void testLine()
       throws Exception
   {
-    checkReduceExact("LINESTRING ( 0 0, 0 1.4 )",
+    checkReduce("LINESTRING ( 0 0, 0 1.4 )",
         "LINESTRING (0 0, 0 1)");
   }
   
   public void testLineNotNoded()
       throws Exception
   {
-    checkReduceExact("LINESTRING(1 1, 3 3, 9 9, 5.1 5, 2.1 2)",
+    checkReduce("LINESTRING(1 1, 3 3, 9 9, 5.1 5, 2.1 2)",
         "LINESTRING(1 1, 3 3, 9 9, 5 5, 2 2)");
   }
   
   public void testLineRemoveCollapse()
       throws Exception
   {
-    checkReduceExact("LINESTRING ( 0 0, 0 .4 )",
+    checkReduce("LINESTRING ( 0 0, 0 .4 )",
         "LINESTRING EMPTY");
   }
   
@@ -115,10 +111,10 @@ public class GeometryPrecisionReducerTest
    * Disabled for now.
    * @throws Exception
    */
-  public void xtestLineKeepCollapse()
+  public void testLineKeepCollapse()
       throws Exception
   {
-    checkReduceExactSameFactory(reducerKeepCollapse,
+    checkReduceKeepCollapse(1,
         "LINESTRING ( 0 0, 0 .4 )",
         "LINESTRING ( 0 0, 0 0 )");
   }
@@ -126,14 +122,14 @@ public class GeometryPrecisionReducerTest
   public void testPoint()
       throws Exception
   {
-    checkReduceExact("POINT(1.1 4.9)",
+    checkReduce("POINT(1.1 4.9)",
         "POINT(1 5)");
   }
 
   public void testMultiPoint()
       throws Exception
   {
-    checkReduceExact("MULTIPOINT( (1.1 4.9),(1.2 4.8), (3.3 6.6))",
+    checkReduce("MULTIPOINT( (1.1 4.9),(1.2 4.8), (3.3 6.6))",
         "MULTIPOINT((1 5), (1 5), (3 7))");
   }
 
@@ -185,8 +181,6 @@ public class GeometryPrecisionReducerTest
 
   //=======================================
   
-
-  
   private void checkReducePointwise(String wkt, String wktExpected) {
     Geometry g  =        read(wkt);
     Geometry gExpected = read(wktExpected);
@@ -194,33 +188,26 @@ public class GeometryPrecisionReducerTest
     assertEqualsExactAndHasSameFactory(gExpected, gReduce);
   }
   
-
   private void assertEqualsExactAndHasSameFactory(Geometry expected, Geometry actual)
   {
     checkEqual(expected, actual);
     assertTrue("Factories are not the same", expected.getFactory() == actual.getFactory());
   }
-
-
   
-  private void checkReduceExact(String wkt, String wktExpected) {
-    checkReduceExactSameFactory(reducer, wkt, wktExpected);
-  }
-  
-  private void checkReduceExactSameFactory(GeometryPrecisionReducer reducer, 
+  private void checkReduceKeepCollapse( 
+      double scaleFactor, 
       String wkt,
       String wktExpected) {
-    Geometry g = read(wkt);
-    Geometry expected = read(wktExpected);
-    Geometry actual = reducer.reduce(g);
-    assertTrue(actual.equalsExact(expected));
-    assertTrue(expected.getFactory() == expected.getFactory());
-  }
-  
-  private void checkReduceExact(double scaleFactor, String wkt, String wktExpected) {
     PrecisionModel pm = new PrecisionModel(scaleFactor);
     GeometryPrecisionReducer reducer = new GeometryPrecisionReducer(pm);
-    checkReduceExactSameFactory(reducer, wkt, wktExpected);
+    reducer.setRemoveCollapsedComponents(false);
+    checkReduce(reducer, wkt, wktExpected);
+  }
+  
+  private void checkReduce( 
+      String wkt,
+      String wktExpected) {
+    checkReduce(1, wkt, wktExpected);
   }
   
   private void checkReduce(double scaleFactor, String wkt, String wktExpected) {
@@ -229,11 +216,6 @@ public class GeometryPrecisionReducerTest
     checkReduce(reducer, wkt, wktExpected);
   }
   
-  private void checkReduce( 
-      String wkt,
-      String wktExpected) {
-    checkReduce(reducer, wkt, wktExpected);
-  }
   private void checkReduce( 
       GeometryPrecisionReducer reducer,
       String wkt,
