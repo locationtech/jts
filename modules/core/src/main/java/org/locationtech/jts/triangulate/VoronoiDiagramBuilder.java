@@ -109,22 +109,21 @@ public class VoronoiDiagramBuilder
 	{
 		if (subdiv != null) return;
 		
-		Envelope siteEnv = DelaunayTriangulationBuilder.envelope(siteCoords);
 		diagramEnv = clipEnv;
 		if (diagramEnv == null) {
 		  /** 
-		   * If no user-provided clip env, 
-		   * create one which encloses all the sites,
-		   * with a buffer around the edges.
+		   * If no user-provided clip envelope, 
+		   * use one which encloses all the sites,
+		   * with a 50% buffer around the edges.
 		   */
-  		diagramEnv = siteEnv;
-  		// add a buffer around the sites envelope
+  		diagramEnv = DelaunayTriangulationBuilder.envelope(siteCoords);
+  		// add a 50% buffer around the sites envelope
   		double expandBy = diagramEnv.getDiameter();
   		diagramEnv.expandBy(expandBy);
 		}
 
 		List vertices = DelaunayTriangulationBuilder.toVertices(siteCoords);
-		subdiv = new QuadEdgeSubdivision(siteEnv, tolerance);
+		subdiv = new QuadEdgeSubdivision(diagramEnv, tolerance);
 		IncrementalDelaunayTriangulator triangulator = new IncrementalDelaunayTriangulator(subdiv);
 		triangulator.insertSites(vertices);
 	}

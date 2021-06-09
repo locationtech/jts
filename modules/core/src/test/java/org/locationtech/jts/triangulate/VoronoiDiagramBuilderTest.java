@@ -19,6 +19,13 @@ public class VoronoiDiagramBuilderTest extends GeometryTestCase {
     assertTrue(voronoi.getEnvelopeInternal().equals(clip.getEnvelopeInternal()));
   }
   
+  public void testClipEnvelopeBig() {
+    Geometry sites = read("MULTIPOINT ((50 100), (50 50), (100 50), (100 100))");
+    Geometry clip = read("POLYGON ((-1000 1000, 1000 1000, 1000 -1000, -1000 -1000, -1000 1000))");
+    Geometry voronoi = voronoiDiagram(sites, clip);
+    assertTrue(voronoi.getEnvelopeInternal().equals(clip.getEnvelopeInternal()));
+  }
+  
   private static final double TRIANGULATION_TOLERANCE = 0.0;
 
   public static Geometry voronoiDiagram(Geometry sitesGeom, Geometry clipGeom)
