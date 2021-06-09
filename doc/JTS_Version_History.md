@@ -40,6 +40,7 @@ Distributions for older JTS versions can be obtained at the
 * Fix `IsSimpleOp` duplicate lines bug (#716)
 * Fix `Angle.interiorAngle` to produce interior angle correctly (#721)
 * Fix `IsValidOp` to correctly report invalidity for certain kinds of LinearRings (#737)
+* Fix `GeometryPrecisionReducer` to support the "keep collapsed components" semantics (#738)
 
 <!-- ================================================================ -->
 
