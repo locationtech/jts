@@ -269,8 +269,8 @@ public class JTSOpRunner {
     executeFunctionOverA(fun);
     
     if (isVerbose || isTime) {
-      out.println("\nOperations: " + opCount
-        + "  Total Time: " + Stopwatch.getTimeString( totalTime ));
+      out.println("\nOperation " + func.getCategory() + "." + func.getName() + ": " + opCount
+        + " invocations - Total Time: " + Stopwatch.getTimeString( totalTime ));
     }
   }
   

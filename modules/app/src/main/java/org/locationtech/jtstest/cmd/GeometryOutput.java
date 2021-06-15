@@ -3,6 +3,13 @@ package org.locationtech.jtstest.cmd;
 import java.util.List;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKBWriter;
 import org.locationtech.jts.io.geojson.GeoJsonWriter;
 import org.locationtech.jts.io.gml2.GMLWriter;
@@ -69,17 +76,18 @@ public class GeometryOutput {
   }
 
   public static String writeGeometrySummary(String label,
-      List<Geometry> g)
+      List<Geometry> geoms)
   {
-    if (g == null) return "";
-    int nVert = getNumPoints(g);
-    return writeGeometrySummary(label, g.size(), nVert);
+    if (geoms == null) return "";
+    int nVert = getNumPoints(geoms);
+    String geomTypes = getTypesSummary(geoms);
+    return writeGeometrySummary(label, geoms.size(), geomTypes, nVert);
   }
 
   public static String writeGeometrySummary(String label,
-      int numGeoms, int numVert)
+      int numGeoms, String geomTypes, int numVert)
   {
-    return String.format("%s : %d geometries, %d vertices", label, numGeoms, numVert);
+    return String.format("%s : %d %s, %d vertices", label, numGeoms, geomTypes, numVert);
   }
 
   private static int getNumPoints(List<Geometry> geoms) {
@@ -90,4 +98,40 @@ public class GeometryOutput {
     return n;
   }
 
+  private static String getTypesSummary(List<Geometry> geoms) {
+    
+    int numPoint = 0;
+    int numMultiPoint = 0;
+    int numLineString = 0;
+    int numMultiLineString = 0;
+    int numPolygon = 0;
+    int numMultiPolygon = 0;
+    int numGeometryCollection = 0;
+    
+    for (Geometry g : geoms ) {
+      if (g instanceof Point) numPoint++;
+      else if (g instanceof MultiPoint) numMultiPoint++;
+      else if (g instanceof LineString) numLineString++;
+      else if (g instanceof MultiLineString) numMultiLineString++;
+      else if (g instanceof Polygon) numPolygon++;
+      else if (g instanceof MultiPolygon) numMultiPolygon++;
+      else if (g instanceof GeometryCollection) numGeometryCollection++;
+    }
+    StringBuilder sb = new StringBuilder();
+    addName("Point", numPoint, sb);
+    addName("MultiPoint", numMultiPoint, sb);
+    addName("LineString", numLineString, sb);
+    addName("MultiLineString", numMultiLineString, sb);
+    addName("Polygon", numPolygon, sb);
+    addName("MultiPolygon", numMultiPolygon, sb);
+    addName("GeometryCollection", numGeometryCollection, sb);
+    return sb.toString();
+  }
+  
+  private static void addName(String name, int num, StringBuilder sb) {
+    if (num <= 0) return;
+    if (sb.length() > 0) sb.append("/");
+    sb.append(name);
+    if (num > 1) sb.append("s");
+  }
 }
