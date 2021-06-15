@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 
+import org.locationtech.jts.JTSVersion;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTConstants;
 import org.locationtech.jtstest.cmd.JTSOpRunner.OpParams;
@@ -179,6 +180,7 @@ public class JTSOpCmd {
   };
   
   private void printHelp(boolean showFunctions) {
+    System.out.println("JTSOp  --  Version " + JTSVersion.CURRENT_VERSION);
     for (String s : helpDoc) {
       System.out.println(s);
     }
