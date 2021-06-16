@@ -52,6 +52,8 @@ public class LayerStyle implements Style  {
 
   private boolean isShift;
 
+  //private TintBandStyle tintBandStyle;
+
   public LayerStyle(BasicStyle geomStyle) {
     this.geomStyle = geomStyle;
     initDecorators(geomStyle);
@@ -101,8 +103,11 @@ public class LayerStyle implements Style  {
     structureStyle = new PolygonStructureStyle(ColorUtil.opaque(style.getLineColor()));
     segIndexStyle = new SegmentIndexStyle(ColorUtil.opaque(style.getLineColor().darker()));
     
+    //tintBandStyle = new TintBandStyle();
+    
     // order is important here
     StyleList styleList = new StyleList();
+    //styleList.add(tintBandStyle);
     styleList.add(vertexLabelStyle);
     styleList.add(vertexStyle);
     styleList.add(endPointsStyle);

@@ -12,13 +12,11 @@
 
 package org.locationtech.jtstest.testbuilder.ui.render;
 
-//import java.awt.*;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.geom.GeneralPath;
 
 import org.locationtech.jts.awt.PointShapeFactory;
 import org.locationtech.jts.awt.ShapeWriter;
@@ -26,7 +24,6 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jtstest.*;
 import org.locationtech.jtstest.testbuilder.AppConstants;
 import org.locationtech.jtstest.testbuilder.ui.Viewport;
 import org.locationtech.jtstest.testbuilder.ui.style.Style;
