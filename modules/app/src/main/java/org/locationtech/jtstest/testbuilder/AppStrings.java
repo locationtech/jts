@@ -87,5 +87,7 @@ public class AppStrings {
 
   public static final String TIP_STYLE_SYMBOL = "Vertex Symbol";
 
+  public static final String TIP_STYLE_SHIFT = "Shift layer display";
+
 
 }

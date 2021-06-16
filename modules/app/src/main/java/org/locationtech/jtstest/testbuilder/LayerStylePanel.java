@@ -50,6 +50,7 @@ import org.locationtech.jtstest.testbuilder.ui.style.VertexStyle;
 public class LayerStylePanel extends JPanel {
   private Layer layer;
   private JLabel title;
+  private JCheckBox cbShift;
   private JPanel stylePanel;
   private int rowIndex;
   private JCheckBox cbDashed;
@@ -103,6 +104,7 @@ public class LayerStylePanel extends JPanel {
     txtName.setEditable(isModifiable);
     txtName.setFocusable(isModifiable);
 
+    cbShift.setSelected(layer.getLayerStyle().isShifted());
     cbVertex.setSelected(layer.getLayerStyle().isVertices());
     cbVertexLabel.setSelected(layer.getLayerStyle().isVertexLabels());
     setVertexSymbol(comboVertexSymbol, layer.getLayerStyle().getVertexSymbol());
@@ -180,7 +182,20 @@ public class LayerStylePanel extends JPanel {
     txtName.setMaximumSize(new Dimension(100,20));
     txtName.setPreferredSize(new Dimension(100,20));
     txtName.setMinimumSize(new Dimension(100,20));
-    addRow("Name", txtName);
+    
+    cbShift = new JCheckBox();
+    cbShift.setToolTipText(AppStrings.TIP_STYLE_SHIFT);
+    cbShift.setAlignmentX(Component.LEFT_ALIGNMENT);
+    cbShift.setText("Shift");
+    cbShift.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        if (layer == null) return;
+        layer.getLayerStyle().setShift(cbShift.isSelected());
+        JTSTestBuilder.controller().geometryViewChanged();
+      }
+    });
+
+    addRow("Name", txtName, cbShift);
     
     txtName.getDocument().addDocumentListener(new DocumentListener() {
       public void changedUpdate(DocumentEvent e) {

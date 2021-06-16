@@ -50,6 +50,8 @@ public class LayerStyle implements Style  {
 
   private SegmentIndexStyle segIndexStyle;
 
+  private boolean isShift;
+
   public LayerStyle(BasicStyle geomStyle) {
     this.geomStyle = geomStyle;
     initDecorators(geomStyle);
@@ -272,6 +274,14 @@ public class LayerStyle implements Style  {
   
   public boolean isSegIndex() {
     return decoratorStyle.isEnabled(segIndexStyle);
+  }
+  
+  public void setShift(boolean isShift) {
+    this.isShift = isShift;
+  }
+  
+  public boolean isShifted() {
+    return isShift;
   }
   
   static Geometry offsetLine(Geometry geom, double distance)

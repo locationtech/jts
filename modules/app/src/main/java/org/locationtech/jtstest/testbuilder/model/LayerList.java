@@ -26,9 +26,17 @@ import org.locationtech.jtstest.testbuilder.geom.SegmentExtracter;
 
 public class LayerList 
 {
-  public static LayerList createInternal() {
+  public static LayerList createFixed() {
     LayerList list = new LayerList();
     list.initFixed();
+    return list;
+  }
+  
+  public static LayerList create(LayerList l1, LayerList l2, LayerList l3) {
+    LayerList list = new LayerList();
+    list.add(l1);
+    list.add(l2);
+    list.add(l3);
     return list;
   }
   
@@ -46,8 +54,8 @@ public class LayerList
     layer.add(new Layer("A"));
     layer.add(new Layer("B"));
     layer.add(new Layer("Result"));
-
   }
+  
   public int size() { return layer.size(); }
   
   public Layer getLayer(int i)
@@ -151,6 +159,10 @@ public class LayerList
   
   public void addBottom(Layer lyr) {
     layer.add(lyr);
+  }
+  
+  public void add(LayerList lyrList) {
+    layer.addAll(lyrList.layer);
   }
   
   public void moveUp(Layer lyr) {

@@ -42,10 +42,6 @@ public class ViewStyle {
   private boolean isBorderEnabled;
   private Color borderClr = Color.GRAY;
 
-  private boolean isOffsetResult = false;
-
-
-
   public ViewStyle() {
     
   }
@@ -131,14 +127,6 @@ public class ViewStyle {
   }
   public Color getBorderColor() {
     return borderClr;
-  }
-
-  public void setOffsetResult(boolean isOffsetResult) {
-    this.isOffsetResult = isOffsetResult;
-  }
-  
-  public boolean isOffsetResult() {
-    return isOffsetResult;
   }
 
   public void setLegendStatsEnabled(boolean isEabled) {

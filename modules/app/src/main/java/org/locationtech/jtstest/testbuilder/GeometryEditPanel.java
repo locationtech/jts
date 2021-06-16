@@ -567,11 +567,12 @@ public class GeometryEditPanel extends JPanel
   
   class GeometryEditPanelRenderer implements Renderer
   {
-    private static final double RESULT_OFFSET_GUTTER_FACTOR = 0.3;
+    private static final double LAYER_SHIFT_GUTTER_FACTOR = 0.3;
     private GeometryStretcherView stretchView = null;
   	private Renderer currentRenderer = null;
     private boolean isRevealingTopology = false; 
-    private boolean isRenderingStretchVertices = false; 
+    private boolean isRenderingStretchVertices = false;
+    private double layerShiftX; 
     
   	public GeometryEditPanelRenderer()
   	{
@@ -607,6 +608,7 @@ public class GeometryEditPanel extends JPanel
       if (viewStyle.isBorderEnabled()) {
         drawBorder(g2, viewStyle.getBorderColor());
       }
+      layerShiftX = computeLayerShift(tbModel.getLayersAll());
       
       renderLayersTheme(tbModel.getLayersBase(), g2);
       renderLayersCore(getLayerList(), g2);
@@ -636,7 +638,27 @@ public class GeometryEditPanel extends JPanel
         titleElement.setTitle(viewStyle.getTitle());
         titleElement.paint(g2);
       }
-      
+    }
+    
+    private double computeLayerShift(LayerList lyrList) {
+      Envelope envBase = new Envelope();
+      Envelope envShifted = new Envelope();
+      boolean hasShifted = false;
+      int n = lyrList.size();
+      for (int i = 0; i < n; i++) {
+        Layer layer = lyrList.getLayer(i);
+        if (layer.getLayerStyle().isShifted()) {
+          envShifted.expandToInclude(layerEnvelope(layer));
+          hasShifted = true;
+        }
+        else {
+          envBase.expandToInclude(layerEnvelope(layer));
+        }
+      }
+      if (! hasShifted) 
+        return 0;
+      double offsetX = envBase.getMaxX() - envShifted.getMinX();
+      return (1 + LAYER_SHIFT_GUTTER_FACTOR) * offsetX;
     }
     
     private void renderLayersCore(LayerList layerList, Graphics2D g)
@@ -669,23 +691,7 @@ public class GeometryEditPanel extends JPanel
             new StaticGeometryContainer(stretchView.getStretchedGeometry(i)),
             viewport);
       }
-      if (viewStyle.isOffsetResult() 
-          && i == LayerList.LYR_RESULT) {
-        double resultOffset = computeResultOffset();
-        return new LayerRenderer(layer,
-            new StaticGeometryContainer(offsetGeometry(layer.getGeometry(), resultOffset)),
-            viewport);
-      }
       return createRenderer(layer);
-    }
-    
-    private double computeResultOffset() {
-      LayerList lyrList = getLayerList();
-      Envelope envAB = layerEnvelope(lyrList.getLayer(LayerList.LYR_A));
-      envAB.expandToInclude(layerEnvelope(lyrList.getLayer(LayerList.LYR_A)));
-      Envelope envResult = layerEnvelope(lyrList.getLayer(LayerList.LYR_RESULT));
-      double offsetX = envAB.getMaxX() - envResult.getMinX();
-      return (1 + RESULT_OFFSET_GUTTER_FACTOR) * offsetX;
     }
 
     private Envelope layerEnvelope(Layer lyr) {
@@ -700,6 +706,12 @@ public class GeometryEditPanel extends JPanel
     }
 
     private Renderer createRenderer(Layer layer) {
+      if (layerShiftX > 0 
+          && layer.getLayerStyle().isShifted()) {
+        return new LayerRenderer(layer,
+            new StaticGeometryContainer(offsetGeometry(layer.getGeometry(), layerShiftX)),
+            viewport);
+      }
       return new LayerRenderer(layer, viewport);
     }
     

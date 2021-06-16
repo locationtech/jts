@@ -47,7 +47,7 @@ public class TestBuilderModel
   private GeometryFactory geometryFactory = null;
 	private GeometryEditModel geomEditModel;
 	
-  private LayerList layerList = LayerList.createInternal();
+  private LayerList layerList = LayerList.createFixed();
   private LayerList layerListTop = new LayerList();
   private LayerList layerListBase = new LayerList();
   
@@ -90,9 +90,11 @@ public class TestBuilderModel
 	}
 	
   public LayerList getLayers() { return layerList; }
+  public LayerList getLayersAll() { return LayerList.create(layerListTop,layerList,layerListBase) ; }
   
   public LayerList getLayersTop() { return layerListTop; }
   public LayerList getLayersBase() { return layerListBase; }
+  
   
   public List<Layer> getLayersLegend() {
     List<Layer> layers = new ArrayList<Layer>();
