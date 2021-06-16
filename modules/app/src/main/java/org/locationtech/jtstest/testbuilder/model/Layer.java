@@ -12,6 +12,7 @@
 
 package org.locationtech.jtstest.testbuilder.model;
 
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.testbuilder.geom.GeometryUtil;
 import org.locationtech.jtstest.testbuilder.ui.style.BasicStyle;
@@ -90,6 +91,11 @@ public class Layer
     return geomCont.getGeometry();
   }
 
+  public Envelope getEnvelope() {
+    if (hasGeometry()) return getGeometry().getEnvelopeInternal();
+    return new Envelope();
+  }
+  
   public boolean hasGeometry() {
     if (geomCont == null) return false;
     return null != geomCont.getGeometry();

@@ -641,24 +641,24 @@ public class GeometryEditPanel extends JPanel
     }
     
     private double computeLayerShift(LayerList lyrList) {
-      Envelope envBase = new Envelope();
-      Envelope envShifted = new Envelope();
-      boolean hasShifted = false;
-      int n = lyrList.size();
-      for (int i = 0; i < n; i++) {
-        Layer layer = lyrList.getLayer(i);
-        if (layer.getLayerStyle().isShifted()) {
-          envShifted.expandToInclude(layerEnvelope(layer));
-          hasShifted = true;
-        }
-        else {
-          envBase.expandToInclude(layerEnvelope(layer));
-        }
-      }
-      if (! hasShifted) 
+      Envelope envBase = computeLayersEnv(lyrList, false);
+      Envelope envShifted = computeLayersEnv(lyrList, true);
+      if (envShifted.isNull()) 
         return 0;
       double offsetX = envBase.getMaxX() - envShifted.getMinX();
       return (1 + LAYER_SHIFT_GUTTER_FACTOR) * offsetX;
+    }
+    
+    private Envelope computeLayersEnv(LayerList lyrList, boolean isShifted) {
+      Envelope env = new Envelope();
+      int n = lyrList.size();
+      for (int i = 0; i < n; i++) {
+        Layer layer = lyrList.getLayer(i);
+        if (isShifted == layer.getLayerStyle().isShifted()) {
+          env.expandToInclude(layer.getEnvelope());
+        }
+      }
+      return env;
     }
     
     private void renderLayersCore(LayerList layerList, Graphics2D g)
@@ -692,11 +692,6 @@ public class GeometryEditPanel extends JPanel
             viewport);
       }
       return createRenderer(layer);
-    }
-
-    private Envelope layerEnvelope(Layer lyr) {
-      if (lyr.hasGeometry()) return lyr.getGeometry().getEnvelopeInternal();
-      return new Envelope();
     }
 
     private Geometry offsetGeometry(Geometry geom, double offsetX) {
