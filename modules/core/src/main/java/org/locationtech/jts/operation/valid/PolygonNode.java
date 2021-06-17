@@ -17,12 +17,12 @@ import org.locationtech.jts.geom.Quadrant;
 
 /**
  * Functions to compute topological information 
- * about nodes (ring intersections) in areal geometry.
+ * about nodes (ring intersections) in polygonal geometry.
  * 
  * @author mdavis
  *
  */
-class AreaNode 
+class PolygonNode 
 {
   /**
    * Check if the edges at a node between two rings (or one ring) cross.

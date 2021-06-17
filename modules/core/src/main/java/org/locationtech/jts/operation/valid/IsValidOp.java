@@ -238,7 +238,7 @@ public class IsValidOp
     checkRingsTooFewPoints(g);
     if (hasInvalidError()) return false;
 
-    AreaTopologyAnalyzer areaAnalyzer = new AreaTopologyAnalyzer(g, isInvertedRingValid);
+    PolygonTopologyAnalyzer areaAnalyzer = new PolygonTopologyAnalyzer(g, isInvertedRingValid);
 
     checkAreaIntersections(areaAnalyzer);
     if (hasInvalidError()) return false;
@@ -274,7 +274,7 @@ public class IsValidOp
       if (hasInvalidError()) return false;
     }
 
-    AreaTopologyAnalyzer areaAnalyzer = new AreaTopologyAnalyzer(g, isInvertedRingValid);
+    PolygonTopologyAnalyzer areaAnalyzer = new PolygonTopologyAnalyzer(g, isInvertedRingValid);
     
     checkAreaIntersections(areaAnalyzer);
     if (hasInvalidError()) return false;
@@ -402,7 +402,7 @@ public class IsValidOp
     return numPts >= minSize;
   }
 
-  private void checkAreaIntersections(AreaTopologyAnalyzer areaAnalyzer) {
+  private void checkAreaIntersections(PolygonTopologyAnalyzer areaAnalyzer) {
     if (areaAnalyzer.hasIntersection()) {
       logInvalid(TopologyValidationError.SELF_INTERSECTION,
                  areaAnalyzer.getIntersectionLocation());
@@ -428,7 +428,7 @@ public class IsValidOp
    */
   private void checkSelfIntersectingRing(LinearRing ring)
   {
-    Coordinate intPt = AreaTopologyAnalyzer.findSelfIntersection(ring);
+    Coordinate intPt = PolygonTopologyAnalyzer.findSelfIntersection(ring);
     if (intPt != null) {
       logInvalid(TopologyValidationError.RING_SELF_INTERSECTION,
           intPt);
@@ -529,7 +529,7 @@ public class IsValidOp
    * <li>shells do not touch along an edge
    * <li>no duplicate rings exist
    * </ul>
-   * These have been confirmed by the {@link AreaTopologyAnalyzer}.
+   * These have been confirmed by the {@link PolygonTopologyAnalyzer}.
    */
   private void checkShellsNotNested(MultiPolygon mp)
   {
@@ -572,7 +572,7 @@ public class IsValidOp
     Coordinate shell0 = shell.getCoordinateN(0);
     Coordinate shell1 = shell.getCoordinateN(1);
     
-    if (! AreaTopologyAnalyzer.isSegmentInRing(shell0, shell1, polyShell))
+    if (! PolygonTopologyAnalyzer.isSegmentInRing(shell0, shell1, polyShell))
       return null;
 
     /**
@@ -582,7 +582,7 @@ public class IsValidOp
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       LinearRing hole = poly.getInteriorRingN(i);
       if (hole.getEnvelopeInternal().covers(shell.getEnvelopeInternal())
-          && AreaTopologyAnalyzer.isSegmentInRing(shell0, shell1, hole)) {
+          && PolygonTopologyAnalyzer.isSegmentInRing(shell0, shell1, hole)) {
         return null;
       }
     }
@@ -594,7 +594,7 @@ public class IsValidOp
     return shell0;
   } 
  
-  private void checkInteriorDisconnected(AreaTopologyAnalyzer areaAnalyzer) {
+  private void checkInteriorDisconnected(PolygonTopologyAnalyzer areaAnalyzer) {
     if (areaAnalyzer.isInteriorDisconnectedByRingCycle())
       logInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
           areaAnalyzer.getDisconnectionLocation());

@@ -444,7 +444,7 @@ class PolygonRingSelfNode {
      * Note that either corner and either of the other edges could be used to test.
      * The situation is fully symmetrical.
      */
-    boolean isInteriorSeg = AreaNode.isInteriorSegment(nodePt, e00, e01, e10);
+    boolean isInteriorSeg = PolygonNode.isInteriorSegment(nodePt, e00, e01, e10);
     boolean isExterior = isInteriorOnRight ? ! isInteriorSeg : isInteriorSeg;
     return isExterior;
   }

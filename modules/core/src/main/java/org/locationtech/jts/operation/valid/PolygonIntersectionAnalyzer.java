@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021 Martin Davis.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package org.locationtech.jts.operation.valid;
 
 import java.util.ArrayList;
@@ -9,7 +20,18 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.noding.SegmentIntersector;
 import org.locationtech.jts.noding.SegmentString;
 
-class InvalidIntersectionFinder 
+/**
+ * Finds and analyzes intersections in and between polygons,
+ * to determine if they are valid.
+ * <p>
+ * The {@link SegmentString}s which are analyzed can have {@link PolygonRing}s
+ * attached.  If so they will be updated with intersection information
+ * to support further validity analysis which must be done after 
+ * basic intersection validity has been confirmed.
+ *
+ * @author mdavis
+ */
+class PolygonIntersectionAnalyzer 
 implements SegmentIntersector
 {
   LineIntersector li = new RobustLineIntersector();
@@ -20,7 +42,12 @@ implements SegmentIntersector
   private boolean hasDoubleTouch = false;
   private boolean isInvertedRingValid;
 
-  InvalidIntersectionFinder(boolean isInvertedRingValid) {
+  /**
+   * Creates a new finder, allowing for the mode where inverted rings are valid.
+   * 
+   * @param isInvertedRingValid true if inverted rings are valid.
+   */
+  PolygonIntersectionAnalyzer(boolean isInvertedRingValid) {
     this.isInvertedRingValid = isInvertedRingValid;
   }
   
@@ -42,6 +69,7 @@ implements SegmentIntersector
     return intersectionPts.size() > 0; 
   }
   
+
   @Override
   public void processIntersections(SegmentString ss0, int segIndex0, SegmentString ss1, int segIndex1) {
     // don't test a segment with itself
@@ -134,7 +162,7 @@ implements SegmentIntersector
       e10 = prevCoordinateInRing(ss1, segIndex1);
       e11 = p11;
     }
-    hasCrossing = AreaNode.isCrossing(intPt, e00, e01, e10, e11); 
+    hasCrossing = PolygonNode.isCrossing(intPt, e00, e01, e10, e11); 
     if (hasCrossing) 
       return true;
     
@@ -153,7 +181,7 @@ implements SegmentIntersector
      * Also check for an invalid double-touch situation,
      * if the rings are different.
      */
-    boolean isDoubleTouch = PolygonRing.addTouch((PolygonRing) ss0.getData(), (PolygonRing) ss1.getData(), intPt);
+    boolean isDoubleTouch = addDoubleTouch(ss0, ss1, intPt);
     if (isDoubleTouch && ! isSameSegString) {
       hasDoubleTouch = true;
       return true;
@@ -162,11 +190,15 @@ implements SegmentIntersector
     return false;
   }
 
+  private boolean addDoubleTouch(SegmentString ss0, SegmentString ss1, Coordinate intPt) {
+    return PolygonRing.addTouch((PolygonRing) ss0.getData(), (PolygonRing) ss1.getData(), intPt);
+  }
+
   private void addSelfTouch(SegmentString ss, Coordinate intPt, Coordinate e00, Coordinate e01, Coordinate e10,
       Coordinate e11) {
     PolygonRing polyRing = (PolygonRing) ss.getData();
     if (polyRing == null) {
-      throw new IllegalStateException("SegmentString missing PolygonRing data when checking valid self-touches");
+      throw new IllegalStateException("SegmentString missing PolygonRing data when checking self-touches");
     }
     polyRing.addSelfTouch(intPt, e00, e01, e10, e11);
   }

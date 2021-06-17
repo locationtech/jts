@@ -29,13 +29,13 @@ import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.SegmentString;
 
 /**
- * Analyzes the topology of areal geometry
+ * Analyzes the topology of polygonal geometry
  * to determine whether it is valid.
  * 
  * @author mdavis
  *
  */
-class AreaTopologyAnalyzer {
+class PolygonTopologyAnalyzer {
   
   /**
    * Finds a self-intersection (if any) in a {@link LinearRing}.
@@ -44,7 +44,7 @@ class AreaTopologyAnalyzer {
    * @return a self-intersection point if one exists, or null
    */
   public static Coordinate findSelfIntersection(LinearRing ring) {
-    AreaTopologyAnalyzer ata = new AreaTopologyAnalyzer(ring, false);
+    PolygonTopologyAnalyzer ata = new PolygonTopologyAnalyzer(ring, false);
     if (ata.hasIntersection())
       return ata.getIntersectionLocation();
     return null;
@@ -115,7 +115,7 @@ class AreaTopologyAnalyzer {
       rPrev = rNext;
       rNext = temp;
     }
-    return AreaNode.isInteriorSegment(p0, rPrev, rNext, p1);
+    return PolygonNode.isInteriorSegment(p0, rPrev, rNext, p1);
   }
   
   /**
@@ -148,14 +148,18 @@ class AreaTopologyAnalyzer {
   private Geometry inputGeom;
   private boolean isInvertedRingValid;
   
-  private InvalidIntersectionFinder intFinder;
+  private PolygonIntersectionAnalyzer intFinder;
   private List<PolygonRing> polyRings = null;
   private Coordinate disconnectionPt = null;
 
-  public AreaTopologyAnalyzer(Geometry geom, boolean isInvertedRingValid) {
+  public PolygonTopologyAnalyzer(Geometry geom, boolean isInvertedRingValid) {
     inputGeom = geom;
     this.isInvertedRingValid = isInvertedRingValid;
-    analyze();
+    if (! geom.isEmpty()) {
+      List<SegmentString> segStrings = createSegmentStrings(geom, isInvertedRingValid);
+      polyRings = getPolygonRings(segStrings);
+      intFinder = analyzeIntersections(segStrings);
+    }
   }
   
   public boolean hasIntersection() {
@@ -178,7 +182,7 @@ class AreaTopologyAnalyzer {
    * the touching graph of all holes in a polygon.
    * <p>
    * If inverted rings disconnect the interior
-   * via a self-touch, this is checked by the {@link InvalidIntersectionFinder}.
+   * via a self-touch, this is checked by the {@link PolygonIntersectionAnalyzer}.
    * If inverted rings are part of a disconnected ring chain
    * this is detected here.  
    * 
@@ -213,22 +217,16 @@ class AreaTopologyAnalyzer {
     return disconnectionPt != null;
   }
   
-  private void analyze() {
-    if (inputGeom.isEmpty()) return;
-    intFinder = computeIntersections(inputGeom);
-  }
-  
-  private InvalidIntersectionFinder computeIntersections(Geometry geom)
+  private PolygonIntersectionAnalyzer analyzeIntersections(List<SegmentString> segStrings)
   {
-    List<SegmentString> segStrings = extractSegmentStrings(geom);
-    InvalidIntersectionFinder segInt = new InvalidIntersectionFinder(isInvertedRingValid);
+    PolygonIntersectionAnalyzer segInt = new PolygonIntersectionAnalyzer(isInvertedRingValid);
     MCIndexNoder noder = new MCIndexNoder();
     noder.setSegmentIntersector(segInt);
     noder.computeNodes(segStrings);
     return segInt;
   }
 
-  private List<SegmentString> extractSegmentStrings(Geometry geom) {
+  private static List<SegmentString> createSegmentStrings(Geometry geom, boolean isInvertedRingValid) {
     List<SegmentString> segStrings = new ArrayList<SegmentString>();
     if (geom instanceof LinearRing) {
       LinearRing ring = (LinearRing) geom;
@@ -244,7 +242,6 @@ class AreaTopologyAnalyzer {
       PolygonRing shellRing = null;
       if (hasHoles || isInvertedRingValid) {
         shellRing = new PolygonRing(poly.getExteriorRing());
-        addPolygonRing(shellRing);
       }
       segStrings.add( createSegString(poly.getExteriorRing(), shellRing));
       
@@ -252,18 +249,24 @@ class AreaTopologyAnalyzer {
         LinearRing hole = poly.getInteriorRingN(j);
         if (hole.isEmpty()) continue;
         PolygonRing holeRing = new PolygonRing(hole, j, shellRing);
-        addPolygonRing(holeRing);
         segStrings.add( createSegString(hole, holeRing));
       }
     }
     return segStrings;
   }
   
-  private void addPolygonRing(PolygonRing polyRing) {
-    if (polyRings == null) {
-      polyRings = new ArrayList<PolygonRing>();
+  private static List<PolygonRing> getPolygonRings(List<SegmentString> segStrings) {
+    List<PolygonRing> polyRings = null;
+    for (SegmentString ss : segStrings) {
+      PolygonRing polyRing = (PolygonRing) ss.getData();
+      if (polyRing != null) {
+        if (polyRings == null) {
+          polyRings = new ArrayList<PolygonRing>();
+        }
+        polyRings.add(polyRing);
+      }
     }
-    polyRings.add(polyRing);
+    return polyRings;
   }
 
   private static SegmentString createSegString(LinearRing ring, PolygonRing polyRing) {

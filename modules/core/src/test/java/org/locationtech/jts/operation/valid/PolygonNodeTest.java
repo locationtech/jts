@@ -6,13 +6,13 @@ import org.locationtech.jts.geom.LineString;
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class AreaNodeTest extends GeometryTestCase {
+public class PolygonNodeTest extends GeometryTestCase {
   
   public static void main(String args[]) {
-    TestRunner.run(AreaNodeTest.class);
+    TestRunner.run(PolygonNodeTest.class);
   }
 
-  public AreaNodeTest(String name) { super(name); }
+  public PolygonNodeTest(String name) { super(name); }
   
   public void testCrossing() {
     checkValid("LINESTRING (500 1000, 1000 1000, 1000 1500)",
@@ -37,7 +37,7 @@ public class AreaNodeTest extends GeometryTestCase {
     Coordinate[] a = readPts(wktA);
     Coordinate[] b = readPts(wktB);
     // assert: a[1] = b[1]
-    boolean isValid = ! AreaNode.isCrossing(a[1], a[0], a[2], b[0], b[2]);
+    boolean isValid = ! PolygonNode.isCrossing(a[1], a[0], a[2], b[0], b[2]);
     assertTrue(isValid == isExpectedValid);
   }
 
