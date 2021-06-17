@@ -63,10 +63,10 @@ public class SnappingIntersectionAdder
     // don't bother intersecting a segment with itself
     if (seg0 == seg1 && segIndex0 == segIndex1) return;
 
-    Coordinate p00 = seg0.getCoordinates()[segIndex0];
-    Coordinate p01 = seg0.getCoordinates()[segIndex0 + 1];
-    Coordinate p10 = seg1.getCoordinates()[segIndex1];
-    Coordinate p11 = seg1.getCoordinates()[segIndex1 + 1];
+    Coordinate p00 = seg0.getCoordinate(segIndex0);
+    Coordinate p01 = seg0.getCoordinate(segIndex0 + 1);
+    Coordinate p10 = seg1.getCoordinate(segIndex1);
+    Coordinate p11 = seg1.getCoordinate(segIndex1 + 1);
 
     /**
      * Don't node intersections which are just 

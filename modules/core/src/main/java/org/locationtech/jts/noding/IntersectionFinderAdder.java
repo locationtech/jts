@@ -65,10 +65,10 @@ public class IntersectionFinderAdder
     // don't bother intersecting a segment with itself
     if (e0 == e1 && segIndex0 == segIndex1) return;
 
-    Coordinate p00 = e0.getCoordinates()[segIndex0];
-    Coordinate p01 = e0.getCoordinates()[segIndex0 + 1];
-    Coordinate p10 = e1.getCoordinates()[segIndex1];
-    Coordinate p11 = e1.getCoordinates()[segIndex1 + 1];
+    Coordinate p00 = e0.getCoordinate(segIndex0);
+    Coordinate p01 = e0.getCoordinate(segIndex0 + 1);
+    Coordinate p10 = e1.getCoordinate(segIndex1);
+    Coordinate p11 = e1.getCoordinate(segIndex1 + 1);
 
     li.computeIntersection(p00, p01, p10, p11);
 //if (li.hasIntersection() && li.isProper()) Debug.println(li);
