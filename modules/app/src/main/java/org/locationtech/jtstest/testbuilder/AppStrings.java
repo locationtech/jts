@@ -89,5 +89,7 @@ public class AppStrings {
 
   public static final String TIP_STYLE_SHIFT = "Shift layer display";
 
+  public static final String TIP_ALLOW_INVERTED_RINGS = "Allow valid inverted shells and exverted holes";
+
 
 }
