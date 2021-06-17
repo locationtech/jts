@@ -1,7 +1,5 @@
-
-
 /*
- * Copyright (c) 2016 Vivid Solutions.
+ * Copyright (c) 2021 Martin Davis.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
@@ -13,13 +11,6 @@
  */
 package org.locationtech.jts.operation.valid;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.PointLocation;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
 import org.locationtech.jts.geom.Coordinate;
@@ -32,11 +23,6 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geomgraph.Edge;
-import org.locationtech.jts.geomgraph.EdgeIntersection;
-import org.locationtech.jts.geomgraph.EdgeIntersectionList;
-import org.locationtech.jts.geomgraph.GeometryGraph;
-import org.locationtech.jts.util.Assert;
 
 /**
  * Implements the algorithms required to compute the <code>isValid()</code> method
@@ -47,17 +33,20 @@ import org.locationtech.jts.util.Assert;
  */
 public class IsValidOp
 {
-	/**
-	 * Tests whether a {@link Geometry} is valid.
-	 * @param geom the Geometry to test
-	 * @return true if the geometry is valid
-	 */
-	public static boolean isValid(Geometry geom)
-	{
+  private static final int MIN_SIZE_LINESTRING = 2;
+  private static final int MIN_SIZE_RING = 4;
+
+  /**
+   * Tests whether a {@link Geometry} is valid.
+   * @param geom the Geometry to test
+   * @return true if the geometry is valid
+   */
+  public static boolean isValid(Geometry geom)
+  {
     IsValidOp isValidOp = new IsValidOp(geom);
     return isValidOp.isValid();
-	}
-	
+  }
+  
   /**
    * Checks whether a coordinate is valid for processing.
    * Coordinates are valid if their x and y ordinates are in the
@@ -74,41 +63,27 @@ public class IsValidOp
     if (Double.isInfinite(coord.y)) return false;
     return true;
   }
+  
   /**
-   * Find a point from the list of testCoords
-   * that is NOT a node in the edge for the list of searchCoords
-   *
-   * @return the point found, or <code>null</code> if none found
+   * The geometry being validated
    */
-  public static Coordinate findPtNotNode(
-                          Coordinate[] testCoords,
-                          LinearRing searchRing,
-                          GeometryGraph graph)
-  {
-    // find edge corresponding to searchRing.
-    Edge searchEdge = graph.findEdge(searchRing);
-    // find a point in the testCoords which is not a node of the searchRing
-    EdgeIntersectionList eiList = searchEdge.getEdgeIntersectionList();
-    // somewhat inefficient - is there a better way? (Use a node map, for instance?)
-    for (int i = 0 ; i < testCoords.length; i++) {
-      Coordinate pt = testCoords[i];
-      if (! eiList.isIntersection(pt))
-        return pt;
-    }
-    return null;
-  }
-
-  private Geometry parentGeometry;  // the base Geometry to be validated
+  private Geometry inputGeometry;  
   /**
    * If the following condition is TRUE JTS will validate inverted shells and exverted holes
    * (the ESRI SDE model)
    */
-  private boolean isSelfTouchingRingFormingHoleValid = false;
+  private boolean isInvertedRingValid = false;
+  
   private TopologyValidationError validErr;
 
-  public IsValidOp(Geometry parentGeometry)
+  /**
+   * Creates a new validator for a geometry.
+   * 
+   * @param inputGeometry the geometry to validate
+   */
+  public IsValidOp(Geometry inputGeometry)
   {
-    this.parentGeometry = parentGeometry;
+    this.inputGeometry = inputGeometry;
   }
 
   /**
@@ -124,32 +99,35 @@ public class IsValidOp
    * The default (following the OGC SFS standard)
    * is that this condition is <b>not</b> valid (<code>false</code>).
    * <p>
-   * This does not affect whether Self-Touching Rings
-   * disconnecting the polygon interior are considered valid
-   * (these are considered to be <b>invalid</b> under the SFS, and many other
+   * Self-Touching Rings which disconnect the 
+   * the polygon interior are still considered to be invalid
+   * (these are <b>invalid</b> under the SFS, and many other
    * spatial models as well).
-   * This includes "bow-tie" shells,
-   * which self-touch at a single point causing the interior to
-   * be disconnected,
-   * and "C-shaped" holes which self-touch at a single point causing an island to be formed.
+   * This includes:
+   * <ul>
+   * <li>exverted ("bow-tie") shells which self-touch at a single point
+   * <li>inverted shells with the inversion touching the shell at another point
+   * <li>exverted holes with exversion touching the hole at another point
+   * <li>inverted ("C-shaped") holes which self-touch at a single point causing an island to be formed
+   * <li>inverted shells or exverted holes which form part of a chain of touching rings
+   * (which disconnect the interior)
+   * </ul>
    *
    * @param isValid states whether geometry with this condition is valid
    */
   public void setSelfTouchingRingFormingHoleValid(boolean isValid)
   {
-    isSelfTouchingRingFormingHoleValid = isValid;
+    isInvertedRingValid = isValid;
   }
 
   /**
-   * Computes the validity of the geometry,
-   * and returns <tt>true</tt> if it is valid.
+   * Tests the validity of the input geometry.
    * 
    * @return true if the geometry is valid
    */
   public boolean isValid()
   {
-    checkValid(parentGeometry);
-    return validErr == null;
+    return isValidGeometry(inputGeometry);
   }
 
   /**
@@ -162,359 +140,388 @@ public class IsValidOp
    */
   public TopologyValidationError getValidationError()
   {
-    checkValid(parentGeometry);
+    isValidGeometry(inputGeometry);
     return validErr;
   }
-
-  private void checkValid(Geometry g)
+  
+  private void logInvalid(int code, Coordinate pt) {
+    validErr = new TopologyValidationError(code, pt);   
+  }
+  
+  private boolean hasInvalidError() {
+    return validErr != null;
+    
+  }
+  
+  private boolean isValidGeometry(Geometry g)
   {
     validErr = null;
 
-    // empty geometries are always valid!
-    if (g.isEmpty()) return;
+    // empty geometries are always valid
+    if (g.isEmpty()) return true;
 
-    if (g instanceof Point)                   checkValid((Point) g);
-    else if (g instanceof MultiPoint)         checkValid((MultiPoint) g);
-                        // LineString also handles LinearRings
-    else if (g instanceof LinearRing)         checkValid( (LinearRing) g);
-    else if (g instanceof LineString)         checkValid( (LineString) g);
-    else if (g instanceof Polygon)            checkValid( (Polygon) g);
-    else if (g instanceof MultiPolygon)       checkValid( (MultiPolygon) g);
-    else if (g instanceof GeometryCollection) checkValid( (GeometryCollection) g);
-    else  throw new UnsupportedOperationException(g.getClass().getName());
-  }
-
-  /**
-   * Checks validity of a Point.
-   */
-  private void checkValid(Point g)
-  {
-    checkInvalidCoordinates(g.getCoordinates());
-  }
-  /**
-   * Checks validity of a MultiPoint.
-   */
-  private void checkValid(MultiPoint g)
-  {
-    checkInvalidCoordinates(g.getCoordinates());
-  }
-
-  /**
-   * Checks validity of a LineString.  Almost anything goes for linestrings!
-   */
-  private void checkValid(LineString g)
-  {
-    checkInvalidCoordinates(g.getCoordinates());
-    if (validErr != null) return;
-    GeometryGraph graph = new GeometryGraph(0, g);
-    checkTooFewPoints(graph);
-  }
-  /**
-   * Checks validity of a LinearRing.
-   */
-  private void checkValid(LinearRing g)
-  {
-    checkInvalidCoordinates(g.getCoordinates());
-    if (validErr != null) return;
-    checkClosedRing(g);
-    if (validErr != null) return;
-
-    GeometryGraph graph = new GeometryGraph(0, g);
-    checkTooFewPoints(graph);
-    if (validErr != null) return;
+    if (g instanceof Point)              return isValid( (Point) g);
+    if (g instanceof MultiPoint)         return isValid( (MultiPoint) g);
+    if (g instanceof LinearRing)         return isValid( (LinearRing) g);
+    if (g instanceof LineString)         return isValid( (LineString) g);
+    if (g instanceof Polygon)            return isValid( (Polygon) g);
+    if (g instanceof MultiPolygon)       return isValid( (MultiPolygon) g);
+    if (g instanceof GeometryCollection) return isValid( (GeometryCollection) g);
     
-    LineIntersector li = new RobustLineIntersector();
-    graph.computeSelfNodes(li, true, true);
-    checkNoSelfIntersectingRings(graph);
+    // geometry type not known
+    throw new UnsupportedOperationException(g.getClass().getName());
   }
 
   /**
-   * Checks the validity of a polygon.
+   * Tests validity of a Point.
+   */
+  private boolean isValid(Point g)
+  {
+    checkCoordinateInvalid(g.getCoordinates());
+    if (hasInvalidError()) return false;
+    return true;
+  }
+  
+  /**
+   * Tests validity of a MultiPoint.
+   */
+  private boolean isValid(MultiPoint g)
+  {
+    checkCoordinateInvalid(g.getCoordinates());
+    if (hasInvalidError()) return false;
+    return true;
+  }
+
+  /**
+   * Tests validity of a LineString.  
+   * Almost anything goes for linestrings!
+   */
+  private boolean isValid(LineString g)
+  {
+    checkCoordinateInvalid(g.getCoordinates());
+    if (hasInvalidError()) return false;
+    checkTooFewPoints(g, MIN_SIZE_LINESTRING);
+    if (hasInvalidError()) return false;
+    return true;
+  }
+  
+  /**
+   * Tests validity of a LinearRing.
+   */
+  private boolean isValid(LinearRing g)
+  {
+    checkCoordinateInvalid(g.getCoordinates());
+    if (hasInvalidError()) return false;
+    
+    checkRingNotClosed(g);
+    if (hasInvalidError()) return false;
+
+    checkRingTooFewPoints(g);
+    if (hasInvalidError()) return false;
+
+    checkSelfIntersectingRing(g);
+    return validErr == null;
+  }
+
+  /**
+   * Tests the validity of a polygon.
    * Sets the validErr flag.
    */
-  private void checkValid(Polygon g)
+  private boolean isValid(Polygon g)
   {
-    checkInvalidCoordinates(g);
-    if (validErr != null) return;
-    checkClosedRings(g);
-    if (validErr != null) return;
+    checkCoordinateInvalid(g);
+    if (hasInvalidError()) return false;
+    
+    checkRingsNotClosed(g);
+    if (hasInvalidError()) return false;
 
-    GeometryGraph graph = new GeometryGraph(0, g);
+    checkRingsTooFewPoints(g);
+    if (hasInvalidError()) return false;
 
-    checkTooFewPoints(graph);
-    if (validErr != null) return;
-    checkConsistentArea(graph);
-    if (validErr != null) return;
+    AreaTopologyAnalyzer areaAnalyzer = new AreaTopologyAnalyzer(g, isInvertedRingValid);
 
-    if (! isSelfTouchingRingFormingHoleValid) {
-      checkNoSelfIntersectingRings(graph);
-      if (validErr != null) return;
-    }
-    checkHolesInShell(g, graph);
-    if (validErr != null) return;
-    //SLOWcheckHolesNotNested(g);
-    checkHolesNotNested(g, graph);
-    if (validErr != null) return;
-    checkConnectedInteriors(graph);
+    checkAreaIntersections(areaAnalyzer);
+    if (hasInvalidError()) return false;
+
+    checkHolesOutsideShell(g);
+    if (hasInvalidError()) return false;
+    
+    checkHolesNotNested(g);
+    if (hasInvalidError()) return false;
+    
+    checkInteriorDisconnected(areaAnalyzer);
+    if (hasInvalidError()) return false;
+    
+    return true;
   }
 
-  private void checkValid(MultiPolygon g)
+  /**
+   * Tests validity of a MultiPolygon.
+   * 
+   * @param g
+   * @return
+   */
+  private boolean isValid(MultiPolygon g)
   {
     for (int i = 0; i < g.getNumGeometries(); i++) {
       Polygon p = (Polygon) g.getGeometryN(i);
-      checkInvalidCoordinates(p);
-      if (validErr != null) return;
-      checkClosedRings(p);
-      if (validErr != null) return;
+      checkCoordinateInvalid(p);
+      if (hasInvalidError()) return false;
+      
+      checkRingsNotClosed(p);
+      if (hasInvalidError()) return false;
+      checkRingsTooFewPoints(p);
+      if (hasInvalidError()) return false;
     }
 
-    GeometryGraph graph = new GeometryGraph(0, g);
-
-    checkTooFewPoints(graph);
-    if (validErr != null) return;
-    checkConsistentArea(graph);
-    if (validErr != null) return;
-    if (! isSelfTouchingRingFormingHoleValid) {
-      checkNoSelfIntersectingRings(graph);
-      if (validErr != null) return;
+    AreaTopologyAnalyzer areaAnalyzer = new AreaTopologyAnalyzer(g, isInvertedRingValid);
+    
+    checkAreaIntersections(areaAnalyzer);
+    if (hasInvalidError()) return false;
+    
+    for (int i = 0; i < g.getNumGeometries(); i++) {
+      Polygon p = (Polygon) g.getGeometryN(i);
+      checkHolesOutsideShell(p);
+      if (hasInvalidError()) return false;
     }
     for (int i = 0; i < g.getNumGeometries(); i++) {
       Polygon p = (Polygon) g.getGeometryN(i);
-      checkHolesInShell(p, graph);
-      if (validErr != null) return;
+      checkHolesNotNested(p);
+      if (hasInvalidError()) return false;
     }
-    for (int i = 0; i < g.getNumGeometries(); i++) {
-      Polygon p = (Polygon) g.getGeometryN(i);
-      checkHolesNotNested(p, graph);
-      if (validErr != null) return;
-    }
-    checkShellsNotNested(g, graph);
-    if (validErr != null) return;
-    checkConnectedInteriors(graph);
+    checkShellsNotNested(g);
+    if (hasInvalidError()) return false;
+    
+    checkInteriorDisconnected(areaAnalyzer);
+    if (hasInvalidError()) return false;
+
+    return true;
   }
 
-  private void checkValid(GeometryCollection gc)
+  /**
+   * Tests validity of a GeometryCollection.
+   * 
+   * @param gc
+   * @return
+   */
+  private boolean isValid(GeometryCollection gc)
   {
     for (int i = 0; i < gc.getNumGeometries(); i++) {
-      Geometry g = gc.getGeometryN(i);
-      checkValid(g);
-      if (validErr != null) return;
+      if (! isValidGeometry( gc.getGeometryN(i) )) 
+        return false;
     }
+    return true;
   }
 
-  private void checkInvalidCoordinates(Coordinate[] coords)
+  private void checkCoordinateInvalid(Coordinate[] coords)
   {
     for (int i = 0; i < coords.length; i++) {
       if (! isValid(coords[i])) {
-        validErr = new TopologyValidationError(
-                          TopologyValidationError.INVALID_COORDINATE,
-                          coords[i]);
+        logInvalid(TopologyValidationError.INVALID_COORDINATE, coords[i]);
         return;
       }
     }
   }
 
-  private void checkInvalidCoordinates(Polygon poly)
+  private void checkCoordinateInvalid(Polygon poly)
   {
-    checkInvalidCoordinates(poly.getExteriorRing().getCoordinates());
-    if (validErr != null) return;
+    checkCoordinateInvalid(poly.getExteriorRing().getCoordinates());
+    if (hasInvalidError()) return;
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      checkInvalidCoordinates(poly.getInteriorRingN(i).getCoordinates());
-      if (validErr != null) return;
+      checkCoordinateInvalid(poly.getInteriorRingN(i).getCoordinates());
+      if (hasInvalidError()) return;
     }
   }
 
-  private void checkClosedRings(Polygon poly)
-  {
-    checkClosedRing(poly.getExteriorRing());
-    if (validErr != null) return;
-    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      checkClosedRing(poly.getInteriorRingN(i));
-      if (validErr != null) return;
-    }
-  }
-
-  private void checkClosedRing(LinearRing ring)
+  private void checkRingNotClosed(LinearRing ring)
   {
     if (ring.isEmpty()) return;
     if (! ring.isClosed() ) {
-    	Coordinate pt = null;
-    	if (ring.getNumPoints() >= 1)
-    		pt = ring.getCoordinateN(0);
-      validErr = new TopologyValidationError(
-                        TopologyValidationError.RING_NOT_CLOSED,
-                        pt);
-    }
-  }
-
-  private void checkTooFewPoints(GeometryGraph graph)
-  {
-    if (graph.hasTooFewPoints()) {
-      validErr = new TopologyValidationError(
-                        TopologyValidationError.TOO_FEW_POINTS,
-                        graph.getInvalidPoint());
+      Coordinate pt = ring.getNumPoints() >= 1 ? ring.getCoordinateN(0) : null;
+      logInvalid( TopologyValidationError.RING_NOT_CLOSED, pt);
       return;
     }
   }
+  
+  private void checkRingsNotClosed(Polygon poly)
+  {
+    checkRingNotClosed(poly.getExteriorRing());
+    if (hasInvalidError()) return;
+    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+      checkRingNotClosed(poly.getInteriorRingN(i));
+      if (hasInvalidError()) return;
+    }
+  }
+
+  private void checkRingsTooFewPoints(Polygon poly)
+  {
+    checkRingTooFewPoints(poly.getExteriorRing());
+    if (hasInvalidError()) return;
+    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+      checkRingTooFewPoints(poly.getInteriorRingN(i));
+      if (hasInvalidError()) return;
+    }
+  }
+
+  private void checkRingTooFewPoints(LinearRing ring) {
+    if (ring.isEmpty()) return;
+    checkTooFewPoints(ring, MIN_SIZE_RING);
+  }
 
   /**
-   * Checks that the arrangement of edges in a polygonal geometry graph
-   * forms a consistent area.
-   *
-   * @param graph
-   *
-   * @see ConsistentAreaTester
+   * Check the number of non-repeated points is at least a given size.
+   * 
+   * @param line
+   * @param minSize
    */
-  private void checkConsistentArea(GeometryGraph graph)
-  {
-    ConsistentAreaTester cat = new ConsistentAreaTester(graph);
-    boolean isValidArea = cat.isNodeConsistentArea();
-    if (! isValidArea) {
-      validErr = new TopologyValidationError(
-                        TopologyValidationError.SELF_INTERSECTION,
-                        cat.getInvalidPoint());
+  private void checkTooFewPoints(LineString line, int minSize) {
+    if (! isNonRepeatedSizeAtLeast(line, minSize) ) {
+      Coordinate pt = line.getNumPoints() >= 1 ? line.getCoordinateN(0) : null;
+      logInvalid(TopologyValidationError.TOO_FEW_POINTS, pt);
+    }
+  }
+
+  /**
+   * Test if the number of non-repeated points in a line 
+   * is at least a given minimum size.
+   * 
+   * @param line the line to test
+   * @param minSize the minimum line size
+   * @return true if the line has the required number of non-repeated points
+   */
+  private boolean isNonRepeatedSizeAtLeast(LineString line, int minSize) {
+    int numPts = 0;
+    Coordinate prevPt = null;
+    for (int i = 0; i < line.getNumPoints(); i++) {
+      if (numPts >= minSize) return true;
+      Coordinate pt = line.getCoordinateN(i);
+      if (prevPt == null || ! pt.equals2D(prevPt))
+        numPts++;
+      prevPt = pt; 
+    }
+    return numPts >= minSize;
+  }
+
+  private void checkAreaIntersections(AreaTopologyAnalyzer areaAnalyzer) {
+    if (areaAnalyzer.hasIntersection()) {
+      logInvalid(TopologyValidationError.SELF_INTERSECTION,
+                 areaAnalyzer.getIntersectionLocation());
       return;
     }
-    if (cat.hasDuplicateRings()) {
-      validErr = new TopologyValidationError(
-                        TopologyValidationError.DUPLICATE_RINGS,
-                        cat.getInvalidPoint());
+    if (areaAnalyzer.hasDoubleTouch()) {
+      logInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
+                 areaAnalyzer.getIntersectionLocation());
+      return;
     }
+    if (areaAnalyzer.isInteriorDisconnectedBySelfTouch()) {
+      logInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
+                 areaAnalyzer.getDisconnectionLocation());
+      return;
+    }
+
   }
 
   /**
-   * Check that there is no ring which self-intersects (except of course at its endpoints).
-   * This is required by OGC topology rules (but not by other models
-   * such as ESRI SDE, which allow inverted shells and exverted holes).
+   * Check whether a ring self-intersects (except at its endpoints).
    *
-   * @param graph the topology graph of the geometry
+   * @param ring the linear ring to check
    */
-  private void checkNoSelfIntersectingRings(GeometryGraph graph)
+  private void checkSelfIntersectingRing(LinearRing ring)
   {
-    for (Iterator i = graph.getEdgeIterator(); i.hasNext(); ) {
-      Edge e = (Edge) i.next();
-      checkNoSelfIntersectingRing(e.getEdgeIntersectionList());
-      if (validErr != null)
-        return;
+    Coordinate intPt = AreaTopologyAnalyzer.findSelfIntersection(ring);
+    if (intPt != null) {
+      logInvalid(TopologyValidationError.RING_SELF_INTERSECTION,
+          intPt);
     }
   }
-
-  /**
-   * Check that a ring does not self-intersect, except at its endpoints.
-   * Algorithm is to count the number of times each node along edge occurs.
-   * If any occur more than once, that must be a self-intersection.
-   */
-  private void checkNoSelfIntersectingRing(EdgeIntersectionList eiList)
-  {
-    Set nodeSet = new TreeSet();
-    for (Iterator i = eiList.iterator(); i.hasNext(); ) {
-      EdgeIntersection ei = (EdgeIntersection) i.next();
-      /**
-       * Do not count start point, so start/end node is not counted as a self-intersection.
-       * Another segment with a node in same location will still trigger an invalid error.
-       * (Note that the edgeIntersectionList may not contain the start/end node, 
-       * due to noding short-circuiting.)
-       */
-      if (isStartNode(ei)) {
-        continue;
-      }
-      if (nodeSet.contains(ei.coord)) {
-        validErr = new TopologyValidationError(
-                          TopologyValidationError.RING_SELF_INTERSECTION,
-                          ei.coord);
-        return;
-      }
-      else {
-        nodeSet.add(ei.coord);
-      }
-    }
-  }
-
-  private static boolean isStartNode(EdgeIntersection ei) {
-    return ei.getSegmentIndex() == 0 && ei.getDistance() == 0.0;
-  }
-
+  
   /**
    * Tests that each hole is inside the polygon shell.
    * This routine assumes that the holes have previously been tested
    * to ensure that all vertices lie on the shell or on the same side of it
    * (i.e. that the hole rings do not cross the shell ring).
-   * In other words, this test is only correct if the ConsistentArea test is passed first.
    * Given this, a simple point-in-polygon test of a single point in the hole can be used,
    * provided the point is chosen such that it does not lie on the shell.
    *
-   * @param p the polygon to be tested for hole inclusion
-   * @param graph a GeometryGraph incorporating the polygon
+   * @param poly the polygon to be tested for hole inclusion
    */
-  private void checkHolesInShell(Polygon p, GeometryGraph graph)
+  private void checkHolesOutsideShell(Polygon poly)
   {
     // skip test if no holes are present
-    if (p.getNumInteriorRing() <= 0) return;
+    if (poly.getNumInteriorRing() <= 0) return;
     
-    LinearRing shell = p.getExteriorRing();
+    LinearRing shell = poly.getExteriorRing();
     boolean isShellEmpty = shell.isEmpty();
-    //PointInRing pir = new SimplePointInRing(shell); // testing only
     PointOnGeometryLocator pir = new IndexedPointInAreaLocator(shell);
     
-    for (int i = 0; i < p.getNumInteriorRing(); i++) {
-
-      LinearRing hole = p.getInteriorRingN(i);
-      Coordinate holePt = null;
+    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+      LinearRing hole = poly.getInteriorRingN(i);
       if (hole.isEmpty()) continue;
-      holePt = findPtNotNode(hole.getCoordinates(), shell, graph);
-      /**
-       * If no non-node hole vertex can be found, the hole must
-       * split the polygon into disconnected interiors.
-       * This will be caught by a subsequent check.
-       */
-      if (holePt == null) return;
-
-      boolean outside = isShellEmpty || (Location.EXTERIOR == pir.locate(holePt));
-      if ( outside ) {
-        validErr = new TopologyValidationError(
-                          TopologyValidationError.HOLE_OUTSIDE_SHELL,
-                          holePt);
+      
+      Coordinate invalidPt = null;
+      if (isShellEmpty) {
+        invalidPt = hole.getCoordinate();
+      }
+      else {
+        invalidPt = findHoleOutsideShellPoint(pir, hole);
+      }
+      if (invalidPt != null) {
+        logInvalid(TopologyValidationError.HOLE_OUTSIDE_SHELL,
+            invalidPt);
         return;
       }
     }
   }
 
   /**
-   * Tests that no hole is nested inside another hole.
-   * This routine assumes that the holes are disjoint.
-   * To ensure this, holes have previously been tested
-   * to ensure that:
-   * <ul>
-   * <li>they do not partially overlap
-   *      (checked by <code>checkRelateConsistency</code>)
-   * <li>they are not identical
-   *      (checked by <code>checkRelateConsistency</code>)
-   * </ul>
+   * Checks if a polygon hole lies inside its shell
+   * and if not returns the point indicating this.
+   * The hole is known to be wholly inside or outside the shell, 
+   * so it suffices to find a single point which is interior or exterior.
+   * A valid hole may only have a single point touching the shell
+   * (since otherwise it creates a disconnected interior).
+   * So there should be at least one point which is interior or exterior,
+   * and this should be the first or second point tested.
+   * 
+   * @param shellLocator
+   * @param hole
+   * @return a hole point outside the shell, or null if valid
    */
-  private void checkHolesNotNested(Polygon p, GeometryGraph graph)
+  private Coordinate findHoleOutsideShellPoint(PointOnGeometryLocator shellLocator, LinearRing hole) {
+    for (int i = 0; i < hole.getNumPoints() - 1; i++) {
+      Coordinate holePt = hole.getCoordinateN(i);
+      int loc = shellLocator.locate(holePt);
+      if (loc== Location.BOUNDARY) continue;
+      if (loc== Location.INTERIOR) return null;
+      /**
+       * Location is EXTERIOR, so hole is outside shell
+       */
+      return holePt;
+    }
+    return null;
+  }
+
+  /**
+   * Tests if any polygon hole is nested inside another.
+   * Assumes that holes do not cross (overlap),
+   * This is checked earlier.
+   * 
+   * @param poly the polygon with holes to test
+   */
+  private void checkHolesNotNested(Polygon poly)
   {
     // skip test if no holes are present
-    if (p.getNumInteriorRing() <= 0) return;
+    if (poly.getNumInteriorRing() <= 0) return;
     
-    IndexedNestedRingTester nestedTester = new IndexedNestedRingTester(graph);
-    //SimpleNestedRingTester nestedTester = new SimpleNestedRingTester(arg[0]);
-    //SweeplineNestedRingTester nestedTester = new SweeplineNestedRingTester(arg[0]);
-
-    for (int i = 0; i < p.getNumInteriorRing(); i++) {
-      LinearRing innerHole = p.getInteriorRingN(i);
-      if (innerHole.isEmpty()) continue;
-      nestedTester.add(innerHole);
-    }
-    boolean isNonNested = nestedTester.isNonNested();
-    if ( ! isNonNested ) {
-      validErr = new TopologyValidationError(
-                            TopologyValidationError.NESTED_HOLES,
+    IndexedNestedHoleTester nestedTester = new IndexedNestedHoleTester(poly);
+    if ( nestedTester.isNested() ) {
+      logInvalid(TopologyValidationError.NESTED_HOLES,
                             nestedTester.getNestedPoint());
     }
   }
 
   /**
-   * Tests that no element polygon is wholly in the interior of another element polygon.
+   * Tests that no element polygon is in the interior of another element polygon.
    * <p>
    * Preconditions:
    * <ul>
@@ -522,114 +529,74 @@ public class IsValidOp
    * <li>shells do not touch along an edge
    * <li>no duplicate rings exist
    * </ul>
-   * This routine relies on the fact that while polygon shells may touch at one or
-   * more vertices, they cannot touch at ALL vertices.
+   * These have been confirmed by the {@link AreaTopologyAnalyzer}.
    */
-  private void checkShellsNotNested(MultiPolygon mp, GeometryGraph graph)
+  private void checkShellsNotNested(MultiPolygon mp)
   {
     for (int i = 0; i < mp.getNumGeometries(); i++) {
       Polygon p = (Polygon) mp.getGeometryN(i);
+      if (p.isEmpty())
+        continue;
       LinearRing shell = p.getExteriorRing();
       for (int j = 0; j < mp.getNumGeometries(); j++) {
         if (i == j) continue;
         Polygon p2 = (Polygon) mp.getGeometryN(j);
-        checkShellNotNested(shell, p2, graph);
-        if (validErr != null) return;
+        Coordinate invalidPt = findShellSegmentInPolygon(shell, p2);
+        if (invalidPt != null) {
+          logInvalid(TopologyValidationError.NESTED_SHELLS,
+              invalidPt);
+          return;
+        }
       }
     }
   }
 
   /**
-   * Check if a shell is incorrectly nested within a polygon.  This is the case
-   * if the shell is inside the polygon shell, but not inside a polygon hole.
-   * (If the shell is inside a polygon hole, the nesting is valid.)
-   * <p>
-   * The algorithm used relies on the fact that the rings must be properly contained.
-   * E.g. they cannot partially overlap (this has been previously checked by
-   * <code>checkRelateConsistency</code> )
+   * Finds a point of a shell segment which lies inside a polygon, if any.
+   * The shell is assume to touch the polyon only at shell vertices, 
+   * and does not cross the polygon.
+   * 
+   * @param the shell to test
+   * @param the polygon to test against
+   * @return an interior segment point, or null if the shell is nested correctly
    */
-  private void checkShellNotNested(LinearRing shell, Polygon p, GeometryGraph graph)
+  private Coordinate findShellSegmentInPolygon(LinearRing shell, Polygon poly)
   {
-    Coordinate[] shellPts = shell.getCoordinates();
-    // test if shell is inside polygon shell
-    LinearRing polyShell = p.getExteriorRing();
-    if (polyShell.isEmpty()) return;
-    Coordinate[] polyPts = polyShell.getCoordinates();
-    Coordinate shellPt = findPtNotNode(shellPts, polyShell, graph);
-    // if no point could be found, we can assume that the shell is outside the polygon
-    if (shellPt == null)
-      return;
-    boolean insidePolyShell = PointLocation.isInRing(shellPt, polyPts);
-    if (! insidePolyShell) return;
-
-    // if no holes, this is an error!
-    if (p.getNumInteriorRing() <= 0) {
-      validErr = new TopologyValidationError(
-                            TopologyValidationError.NESTED_SHELLS,
-                            shellPt);
-      return;
-    }
+    LinearRing polyShell = poly.getExteriorRing();
+    if (polyShell.isEmpty()) return null;
+    
+    //--- if envelope is not covered --> not nested
+    if (! poly.getEnvelopeInternal().covers(shell.getEnvelopeInternal()))
+      return null;
+    
+    Coordinate shell0 = shell.getCoordinateN(0);
+    Coordinate shell1 = shell.getCoordinateN(1);
+    
+    if (! AreaTopologyAnalyzer.isSegmentInRing(shell0, shell1, polyShell))
+      return null;
 
     /**
-     * Check if the shell is inside one of the holes.
-     * This is the case if one of the calls to checkShellInsideHole
-     * returns a null coordinate.
-     * Otherwise, the shell is not properly contained in a hole, which is an error.
+     * Check if the shell is inside a hole (if there are any). 
+     * If so this is valid.
      */
-    Coordinate badNestedPt = null;
-    for (int i = 0; i < p.getNumInteriorRing(); i++) {
-      LinearRing hole = p.getInteriorRingN(i);
-      badNestedPt = checkShellInsideHole(shell, hole, graph);
-      if (badNestedPt == null)
-        return;
-    }
-    validErr = new TopologyValidationError(
-                          TopologyValidationError.NESTED_SHELLS,
-                          badNestedPt);
-  }
-
-  /**
-   * This routine checks to see if a shell is properly contained in a hole.
-   * It assumes that the edges of the shell and hole do not
-   * properly intersect.
-   *
-   * @return <code>null</code> if the shell is properly contained, or
-   *   a Coordinate which is not inside the hole if it is not
-   *
-   */
-  private Coordinate checkShellInsideHole(LinearRing shell, LinearRing hole, GeometryGraph graph)
-  {
-    Coordinate[] shellPts = shell.getCoordinates();
-    Coordinate[] holePts = hole.getCoordinates();
-    // TODO: improve performance of this - by sorting pointlists for instance?
-    Coordinate shellPt = findPtNotNode(shellPts, hole, graph);
-    // if point is on shell but not hole, check that the shell is inside the hole
-    if (shellPt != null) {
-      boolean insideHole = PointLocation.isInRing(shellPt, holePts);
-      if (! insideHole) {
-        return shellPt;
+    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
+      LinearRing hole = poly.getInteriorRingN(i);
+      if (hole.getEnvelopeInternal().covers(shell.getEnvelopeInternal())
+          && AreaTopologyAnalyzer.isSegmentInRing(shell0, shell1, hole)) {
+        return null;
       }
     }
-    Coordinate holePt = findPtNotNode(holePts, shell, graph);
-    // if point is on hole but not shell, check that the hole is outside the shell
-    if (holePt != null) {
-      boolean insideShell = PointLocation.isInRing(holePt, shellPts);
-      if (insideShell) {
-        return holePt;
-      }
-      return null;
-    }
-    Assert.shouldNeverReachHere("points in shell and hole appear to be equal");
-    return null;
+    
+    /**
+     * The shell is contained in the polygon, but is not contained in a hole.
+     * This is invalid.
+     */
+    return shell0;
+  } 
+ 
+  private void checkInteriorDisconnected(AreaTopologyAnalyzer areaAnalyzer) {
+    if (areaAnalyzer.isInteriorDisconnectedByRingCycle())
+      logInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
+          areaAnalyzer.getDisconnectionLocation());
   }
-
-  private void checkConnectedInteriors(GeometryGraph graph)
-  {
-    ConnectedInteriorTester cit = new ConnectedInteriorTester(graph);
-    if (! cit.isInteriorsConnected())
-      validErr = new TopologyValidationError(
-                        TopologyValidationError.DISCONNECTED_INTERIOR,
-                        cit.getCoordinate());
-  }
-
 }
