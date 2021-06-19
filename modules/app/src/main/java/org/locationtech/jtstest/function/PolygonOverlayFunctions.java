@@ -21,6 +21,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygonal;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.index.strtree.STRtree;
@@ -175,7 +176,7 @@ public class PolygonOverlayFunctions
       if (source == null || source.getDimension() < 2) return;
       for (int i = 0; i < source.getNumGeometries(); i++) {
         Geometry geom = source.getGeometryN(i);
-        if (geom instanceof Polygon) {
+        if (geom instanceof Polygonal) {
           sourceIndex.insert(geom.getEnvelopeInternal(), geom);
         }
       }
@@ -187,8 +188,8 @@ public class PolygonOverlayFunctions
         Point intPt = res.getInteriorPoint();
         Coordinate intCoord = intPt.getCoordinate();
         
-        List<Polygon> candidates = sourceIndex.query(intPt.getEnvelopeInternal());
-        for (Polygon cand : candidates) {
+        List<Geometry> candidates = sourceIndex.query(intPt.getEnvelopeInternal());
+        for (Geometry cand : candidates) {
           
           boolean isParent = SimplePointInAreaLocator.isContained(intCoord, cand);
           if (isParent) {
