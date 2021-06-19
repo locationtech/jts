@@ -31,6 +31,11 @@ import org.locationtech.jts.noding.SegmentString;
 /**
  * Analyzes the topology of polygonal geometry
  * to determine whether it is valid.
+ * <p>
+ * Analyzing polygons with inverted rings (shells or exverted holes)
+ * is performed if specified.
+ * Inverted rings may cause a disconnected interior due to a self-touch;
+ * this is reported by {@link #isInteriorDisconnectedBySelfTouch()}.
  * 
  * @author mdavis
  *
@@ -152,6 +157,12 @@ class PolygonTopologyAnalyzer {
   private List<PolygonRing> polyRings = null;
   private Coordinate disconnectionPt = null;
 
+  /**
+   * Creates a new analyzer for a {@link Polygon} or {@link MultiPolygon}.
+   * 
+   * @param geom a Polygon or MultiPolygon
+   * @param isInvertedRingValid a flag indicating whether inverted rings are allowed
+   */
   public PolygonTopologyAnalyzer(Geometry geom, boolean isInvertedRingValid) {
     inputGeom = geom;
     this.isInvertedRingValid = isInvertedRingValid;
