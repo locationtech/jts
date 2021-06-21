@@ -54,7 +54,7 @@ public class IndexedPointInAreaLocator
   implements PointOnGeometryLocator
 {
   
-  private final Geometry geom;
+  private Geometry geom;
   private volatile IntervalIndexedGeometry index = null;
   
   /**
@@ -102,6 +102,7 @@ public class IndexedPointInAreaLocator
   private synchronized void createIndex() {
     if (index == null) {
       index = new IntervalIndexedGeometry(geom);
+      geom = null;
     }
   }
   
