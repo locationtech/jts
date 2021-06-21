@@ -102,6 +102,7 @@ public class IndexedPointInAreaLocator
   private synchronized void createIndex() {
     if (index == null) {
       index = new IntervalIndexedGeometry(geom);
+      // no need to hold onto geom
       geom = null;
     }
   }
