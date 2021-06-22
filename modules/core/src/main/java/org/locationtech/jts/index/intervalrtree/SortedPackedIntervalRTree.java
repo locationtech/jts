@@ -108,8 +108,11 @@ public class SortedPackedIntervalRTree
 		}
 	}
 
+  //private int level = 0;
+
 	private void buildLevel(List src, List dest) 
   {
+    //level++;
 		dest.clear();
 		for (int i = 0; i < src.size(); i += 2) {
 			IntervalRTreeNode n1 = (IntervalRTreeNode) src.get(i);
@@ -127,6 +130,11 @@ public class SortedPackedIntervalRTree
 			}
 		}
 	}
+
+  // private void printNode(IntervalRTreeNode node)
+  // {
+  //   System.out.println(WKTWriter.toLineString(new Coordinate(node.min, level), new Coordinate(node.max, level)));
+  // }
 
   /**
    * Search for intervals in the index which intersect the given closed interval
