@@ -93,8 +93,17 @@ public class PolygonOverlayFunctions
     polygonizer.add(nodedDedupedLinework);
     List<Polygon> resultants = (List<Polygon>) polygonizer.getPolygons();
 
-    // use PIP to find polygons which have a parent
-    List<Polygon> polys = ParentFinder.findParents(g1, g2, resultants);
+    /**
+     * If the input contained polygons,
+     * use PIP to find polygons which have a parent.
+     * Otherwise just return all resultants
+     * (to support providing just lines as input)
+     */
+    boolean hasPolys = g1.getDimension() >= 2;
+    List<Polygon> polys = resultants;
+    if (hasPolys) {
+      polys = ParentFinder.findParents(g1, g2, resultants);
+    }
     
     // convert to collection for return
     Polygon[] polyArray = GeometryFactory.toPolygonArray(polys);
