@@ -1,4 +1,4 @@
-package org.locationtech.jts.geom.prep;
+package test.jts.perf.geom.prep;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -14,6 +14,8 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.io.WKTReader;
 
 /**
