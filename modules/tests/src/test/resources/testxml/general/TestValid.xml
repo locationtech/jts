@@ -617,7 +617,7 @@ MULTIPOLYGON (((80 260, 240 260, 240 100, 80 100, 80 260)),
    </case>
 
    <case>
-      <desc>mA - nested overlapping shells, all vertices touch </desc>
+      <desc>mA - nested shells, all vertices touch hole, partial overlap </desc>
       <a>
 MULTIPOLYGON (((20 380, 420 380, 420 20, 20 20, 20 380), 
   (220 340, 180 240, 60 200, 140 100, 340 60, 300 240, 220 340)), 
@@ -627,7 +627,7 @@ MULTIPOLYGON (((20 380, 420 380, 420 20, 20 20, 20 380),
    </case>
 
    <case>
-      <desc>mA - nested overlapping shells, all vertices touch </desc>
+      <desc>mA - nested shells, all vertices touch hole, full overlap</desc>
       <a>
 MULTIPOLYGON (((20 380, 420 380, 420 20, 20 20, 20 380), 
   (220 340, 180 240, 60 200, 200 180, 340 60, 240 220, 220 340)), 

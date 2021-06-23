@@ -156,6 +156,7 @@ class PolygonTopologyAnalyzer {
   private PolygonIntersectionAnalyzer intFinder;
   private List<PolygonRing> polyRings = null;
   private Coordinate disconnectionPt = null;
+  private Coordinate intersectionPt = null;
 
   /**
    * Creates a new analyzer for a {@link Polygon} or {@link MultiPolygon}.
@@ -166,24 +167,40 @@ class PolygonTopologyAnalyzer {
   public PolygonTopologyAnalyzer(Geometry geom, boolean isInvertedRingValid) {
     inputGeom = geom;
     this.isInvertedRingValid = isInvertedRingValid;
-    if (! geom.isEmpty()) {
-      List<SegmentString> segStrings = createSegmentStrings(geom, isInvertedRingValid);
-      polyRings = getPolygonRings(segStrings);
-      intFinder = analyzeIntersections(segStrings);
+    analyze(geom);
+  }
+
+  private void analyze(Geometry geom) {
+    if (geom.isEmpty()) 
+      return;
+    List<SegmentString> segStrings = createSegmentStrings(geom, isInvertedRingValid);
+    polyRings = getPolygonRings(segStrings);
+    intFinder = analyzeIntersections(segStrings);
+    
+    if (intFinder.hasDoubleTouch()) {
+      disconnectionPt = intFinder.getIntersectionLocation();
+      return;
+    }
+    if (intFinder.hasIntersection()) {
+      intersectionPt  = intFinder.getIntersectionLocation();
     }
   }
   
   public boolean hasIntersection() {
-    return intFinder.hasIntersection();
+    return intersectionPt != null;
   }
 
   public boolean hasDoubleTouch() {
-    return intFinder.hasDoubleTouch();
+    return disconnectionPt != null;
   }
   
   public Coordinate getIntersectionLocation() {
     return intFinder.getIntersectionLocation();
   }
+  
+  public Coordinate getDisconnectionLocation() {
+    return disconnectionPt;
+  } 
   
   /**
    * Tests whether any polygon with holes has a disconnected interior
@@ -207,10 +224,6 @@ class PolygonTopologyAnalyzer {
       disconnectionPt = PolygonRing.findTouchCycleLocation(polyRings);
     }
     return disconnectionPt != null;
-  }
-
-  public Coordinate getDisconnectionLocation() {
-    return disconnectionPt;
   }
   
   /**

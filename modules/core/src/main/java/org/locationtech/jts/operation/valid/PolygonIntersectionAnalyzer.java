@@ -66,10 +66,9 @@ implements SegmentIntersector
   }
   
   public boolean hasIntersection() {
-    return intersectionPts.size() > 0; 
+    return hasIntersection;
   }
   
-
   @Override
   public void processIntersections(SegmentString ss0, int segIndex0, SegmentString ss1, int segIndex1) {
     // don't test a segment with itself
@@ -77,12 +76,11 @@ implements SegmentIntersector
     boolean isSameSegment = isSameSegString && segIndex0 == segIndex1;
     if (isSameSegment) return;
     
-    hasIntersection = findInvalidIntersection(ss0, segIndex0, ss1, segIndex1);
-    
-    if (hasIntersection) {
-      // found an intersection!
+    boolean hasInt = findInvalidIntersection(ss0, segIndex0, ss1, segIndex1);
+    if (hasInt) {
+      hasIntersection = true;
       intersectionPts.add(li.getIntersection(0));
-    }    
+    }   
   }
 
   private boolean findInvalidIntersection(SegmentString ss0, int segIndex0, 
@@ -163,8 +161,9 @@ implements SegmentIntersector
       e11 = p11;
     }
     hasCrossing = PolygonNode.isCrossing(intPt, e00, e01, e10, e11); 
-    if (hasCrossing) 
+    if (hasCrossing) {
       return true;
+    }
     
     /**
      * If allowing inverted rings, record a self-touch to support later checking

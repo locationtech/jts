@@ -246,7 +246,7 @@ public class IsValidOp
     checkHolesOutsideShell(g);
     if (hasInvalidError()) return false;
     
-    checkHolesNotNested(g);
+    checkHolesNested(g);
     if (hasInvalidError()) return false;
     
     checkInteriorDisconnected(areaAnalyzer);
@@ -286,7 +286,7 @@ public class IsValidOp
     }
     for (int i = 0; i < g.getNumGeometries(); i++) {
       Polygon p = (Polygon) g.getGeometryN(i);
-      checkHolesNotNested(p);
+      checkHolesNested(p);
       if (hasInvalidError()) return false;
     }
     checkShellsNotNested(g);
@@ -408,17 +408,6 @@ public class IsValidOp
                  areaAnalyzer.getIntersectionLocation());
       return;
     }
-    if (areaAnalyzer.hasDoubleTouch()) {
-      logInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
-                 areaAnalyzer.getIntersectionLocation());
-      return;
-    }
-    if (areaAnalyzer.isInteriorDisconnectedBySelfTouch()) {
-      logInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
-                 areaAnalyzer.getDisconnectionLocation());
-      return;
-    }
-
   }
 
   /**
@@ -508,7 +497,7 @@ public class IsValidOp
    * 
    * @param poly the polygon with holes to test
    */
-  private void checkHolesNotNested(Polygon poly)
+  private void checkHolesNested(Polygon poly)
   {
     // skip test if no holes are present
     if (poly.getNumInteriorRing() <= 0) return;
@@ -595,8 +584,21 @@ public class IsValidOp
   } 
  
   private void checkInteriorDisconnected(PolygonTopologyAnalyzer areaAnalyzer) {
-    if (areaAnalyzer.isInteriorDisconnectedByRingCycle())
+    
+    Coordinate invalidPt = null;
+    if (areaAnalyzer.hasDoubleTouch()) {
+      invalidPt = areaAnalyzer.getDisconnectionLocation();
+    }
+    else if (areaAnalyzer.isInteriorDisconnectedBySelfTouch()) {
+      invalidPt = areaAnalyzer.getDisconnectionLocation();
+
+    }
+    else if (areaAnalyzer.isInteriorDisconnectedByRingCycle()) {
+      invalidPt = areaAnalyzer.getDisconnectionLocation();
+    }
+    if (invalidPt != null) {
       logInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
-          areaAnalyzer.getDisconnectionLocation());
+          invalidPt);
+    }
   }
 }

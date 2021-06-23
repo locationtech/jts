@@ -77,6 +77,11 @@ public class IsValidTest extends GeometryTestCase {
           "POLYGON ((240 260, 40 260, 40 80, 240 80, 240 260), (140 180, 40 260, 140 240, 140 180))");
   }
 
+  public void testPolygonDoubleTouchHoleOutsideShell() throws Exception {
+    checkInvalid(
+          "POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 80 80, 80 20, 20 20, 20 80), (90 70, 150 50, 90 20, 110 40, 90 70))");
+  }
+
   public void testInvalidPolygonHoleProperIntersection() throws Exception {
     checkInvalid( 
         "POLYGON ((10 90, 50 50, 10 10, 10 90), (20 50, 60 70, 60 30, 20 50))");
@@ -90,6 +95,11 @@ public class IsValidTest extends GeometryTestCase {
   public void testValidMultiPolygonTouchAtVertices() throws Exception {
     checkValid(
           "MULTIPOLYGON (((10 10, 10 90, 90 90, 90 10, 80 80, 50 20, 20 80, 10 10)), ((90 10, 10 10, 50 20, 90 10)))");
+  }
+
+  public void testInvalidMultiPolygonHoleOverlapCrossing() throws Exception {
+    checkInvalid( 
+        "MULTIPOLYGON (((20 380, 420 380, 420 20, 20 20, 20 380), (220 340, 180 240, 60 200, 140 100, 340 60, 300 240, 220 340)), ((60 200, 340 60, 220 340, 60 200)))");
   }
 
   public void testValidMultiPolygonTouchAtVerticesSegments() throws Exception {
@@ -106,9 +116,9 @@ public class IsValidTest extends GeometryTestCase {
     checkValid(
           "MULTIPOLYGON (((20 380, 420 380, 420 20, 20 20, 20 380), (220 340, 80 320, 60 200, 140 100, 340 60, 300 240, 220 340)), ((60 200, 340 60, 220 340, 60 200)))");
   }
-
-  public void testLineString() throws Exception {
-    Geometry g = reader.read(
+  
+  public void testLineString() {
+    Geometry g = read(
           "LINESTRING(0 0, 0 0)");
     g.isValid();
     assertTrue(true); //No exception thrown [Jon Aquino]

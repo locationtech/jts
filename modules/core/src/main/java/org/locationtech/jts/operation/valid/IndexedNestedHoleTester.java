@@ -27,10 +27,12 @@ import org.locationtech.jts.index.strtree.STRtree;
  * nested inside another hole, using a spatial
  * index to speed up the comparisons.
  * <p>
- * Assumes that the holes and polygon shell do not cross
- * (are properly nested).
- * Does not check the case where every vertex of a hole touches another
- * hole; this is invalid, and must be checked elsewhere. 
+ * Assumes that the holes do not cross and have no collinear segments
+ * (so they are properly nested, and there are no duplicate holes).
+ * This class does not handle the situation 
+ * where every vertex of a hole touches another hole surrounding it.  
+ * This is invalid because it disconnects the polygon interior.
+ * The disconnected interior condition must be checked elsewhere. 
  *
  * @version 1.7
  */
@@ -57,46 +59,64 @@ class IndexedNestedHoleTester
     }
   }
 
+  /**
+   * Gets a point on a nested hole, if one exists.
+   * 
+   * @return a point on a nested hole, or null if none are nested
+   */
   public Coordinate getNestedPoint() { return nestedPt; }
 
+  /**
+   * Tests if any hole is nested (contained) within another hole.
+   * This is invalid.
+   * The nested point will be set to reflect this.
+   * @return true if some hole is nested
+   */
   public boolean isNested()
   {
     for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
       LinearRing hole = (LinearRing) polygon.getInteriorRingN(i);
 
-      List results = index.query(hole.getEnvelopeInternal());
-      for (int j = 0; j < results.size(); j++) {
-        LinearRing testHole = (LinearRing) results.get(j);
+      List<LinearRing> results = index.query(hole.getEnvelopeInternal());
+      for (LinearRing testHole : results) {
         if (hole == testHole)
           continue;
 
         /**
-         * Hole is not covered by in test hole,
-         * so cannot be inside
+         * Hole is not covered by test hole, so cannot be nested
          */
         if (! testHole.getEnvelopeInternal().covers( hole.getEnvelopeInternal()) )
           continue;
 
-        if (isHoleInsideHole(hole, testHole))
+        if (isHoleNested(hole, testHole))
           return true;
       }
     }
     return false;
   }
 
-  private boolean isHoleInsideHole(LinearRing hole, LinearRing testHole) {
+  private boolean isHoleNested(LinearRing hole, LinearRing testHole) {
     Coordinate[] testPts = testHole.getCoordinates();
     for (int i = 0; i < hole.getNumPoints(); i++) {
       Coordinate holePt = hole.getCoordinateN(i);
-      int loc = PointLocation.locateInRing(holePt, testPts);
-      switch (loc) {
-      case Location.EXTERIOR: return false;
+      int holeLoc = PointLocation.locateInRing(holePt, testPts);
+      switch (holeLoc) {
+      case Location.EXTERIOR: 
+        return false;
       case Location.INTERIOR:
         nestedPt = holePt;
         return true;
       }
-      // location is BOUNDARY, so keep trying points
+      /**
+       * The holePt is on the boundary of the test hole,
+       * so keep trying points until a non-boundary point is found.
+       */
     }
+    /**
+     * No non-boundary point has been found, so this result may be incorrect.
+     * This indicates an invalid disconnected interior situation,
+     * which must be checked elsewhere.
+     */
     return false;
   }
 
