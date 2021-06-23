@@ -15,9 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.index.ItemVisitor;
-import org.locationtech.jts.io.WKTWriter;
 
 
 /**
@@ -37,7 +35,7 @@ import org.locationtech.jts.io.WKTWriter;
  */
 public class SortedPackedIntervalRTree 
 {
-  private List leaves = new ArrayList();
+  private final List leaves = new ArrayList();
   
   /**
    * If root is null that indicates
@@ -45,8 +43,8 @@ public class SortedPackedIntervalRTree
    * OR nothing has been added to the tree.
    * In both cases, the tree is still open for insertions.
    */
-	private IntervalRTreeNode root = null;
-	
+	private volatile IntervalRTreeNode root = null;
+
 	public SortedPackedIntervalRTree()
 	{
 		
@@ -68,7 +66,7 @@ public class SortedPackedIntervalRTree
     leaves.add(new IntervalRTreeLeafNode(min, max, item));
 	}
 	
-  private void init()
+  private synchronized void init()
   {
     // already built
     if (root != null) return;
@@ -82,7 +80,7 @@ public class SortedPackedIntervalRTree
     buildRoot();
   }
   
-  private synchronized void buildRoot() 
+  private void buildRoot()
   {
     if (root != null) return;
     root = buildTree();
@@ -109,12 +107,12 @@ public class SortedPackedIntervalRTree
 			dest = temp;
 		}
 	}
-	
-  private int level = 0;
-  
+
+  //private int level = 0;
+
 	private void buildLevel(List src, List dest) 
   {
-    level++;
+    //level++;
 		dest.clear();
 		for (int i = 0; i < src.size(); i += 2) {
 			IntervalRTreeNode n1 = (IntervalRTreeNode) src.get(i);
@@ -132,12 +130,12 @@ public class SortedPackedIntervalRTree
 			}
 		}
 	}
-	
-  private void printNode(IntervalRTreeNode node)
-  {
-    System.out.println(WKTWriter.toLineString(new Coordinate(node.min, level), new Coordinate(node.max, level)));
-  }
-  
+
+  // private void printNode(IntervalRTreeNode node)
+  // {
+  //   System.out.println(WKTWriter.toLineString(new Coordinate(node.min, level), new Coordinate(node.max, level)));
+  // }
+
   /**
    * Search for intervals in the index which intersect the given closed interval
    * and apply the visitor to them.

@@ -55,7 +55,7 @@ public class IndexedPointInAreaLocator
 {
   
   private Geometry geom;
-  private IntervalIndexedGeometry index = null;
+  private volatile IntervalIndexedGeometry index = null;
   
   /**
    * Creates a new locator for a given {@link Geometry}.
@@ -110,7 +110,7 @@ public class IndexedPointInAreaLocator
   private static class SegmentVisitor
     implements ItemVisitor
   {
-    private RayCrossingCounter counter;
+    private final RayCrossingCounter counter;
     
     public SegmentVisitor(RayCrossingCounter counter)
     {
@@ -126,15 +126,17 @@ public class IndexedPointInAreaLocator
   
   private static class IntervalIndexedGeometry
   {
-    private boolean isEmpty = false;
-    private SortedPackedIntervalRTree index= new SortedPackedIntervalRTree();
+    private final boolean isEmpty;
+    private final SortedPackedIntervalRTree index= new SortedPackedIntervalRTree();
 
     public IntervalIndexedGeometry(Geometry geom)
     {
       if (geom.isEmpty())
         isEmpty = true;
-      else
+      else {
+        isEmpty = false;
         init(geom);
+      }
     }
     
     private void init(Geometry geom)
