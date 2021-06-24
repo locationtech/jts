@@ -441,7 +441,6 @@ public class IsValidOp
     
     LinearRing shell = poly.getExteriorRing();
     boolean isShellEmpty = shell.isEmpty();
-    PointOnGeometryLocator pir = new IndexedPointInAreaLocator(shell);
     
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       LinearRing hole = poly.getInteriorRingN(i);
@@ -452,7 +451,7 @@ public class IsValidOp
         invalidPt = hole.getCoordinate();
       }
       else {
-        invalidPt = findHoleOutsideShellPoint(pir, hole);
+        invalidPt = findHoleOutsideShellPoint(hole, shell);
       }
       if (invalidPt != null) {
         logInvalid(TopologyValidationError.HOLE_OUTSIDE_SHELL,
@@ -464,32 +463,29 @@ public class IsValidOp
 
   /**
    * Checks if a polygon hole lies inside its shell
-   * and if not returns the point indicating this.
+   * and if not returns a point indicating this.
    * The hole is known to be wholly inside or outside the shell, 
-   * so it suffices to find a single point which is interior or exterior.
-   * A valid hole may only have a single point touching the shell
-   * (since otherwise it creates a disconnected interior).
-   * So there should be at least one point which is interior or exterior,
-   * and this should be the first or second point tested.
+   * so it suffices to find a single point which is interior or exterior,
+   * or check the edge topology at a point on the boundary of the shell.
    * 
-   * @param shellLocator
-   * @param hole
-   * @return a hole point outside the shell, or null if valid
+   * @param hole the hole to test
+   * @param shell the polygon shell to test against
+   * @return a hole point outside the shell, or null if it is inside
    */
-  private Coordinate findHoleOutsideShellPoint(PointOnGeometryLocator shellLocator, LinearRing hole) {
-    for (int i = 0; i < hole.getNumPoints() - 1; i++) {
-      Coordinate holePt = hole.getCoordinateN(i);
-      int loc = shellLocator.locate(holePt);
-      if (loc== Location.BOUNDARY) continue;
-      if (loc== Location.INTERIOR) return null;
-      /**
-       * Location is EXTERIOR, so hole is outside shell
-       */
-      return holePt;
-    }
-    return null;
+  private Coordinate findHoleOutsideShellPoint(LinearRing hole, LinearRing shell) {
+    Coordinate holePt0 = hole.getCoordinateN(0);
+    Coordinate holePt1 = hole.getCoordinateN(1);
+    /**
+     * If hole envelope is not covered by shell, it must be outside
+     */
+    if (! shell.getEnvelopeInternal().covers( hole.getEnvelopeInternal() ))
+        return holePt0;
+    
+    if (PolygonTopologyAnalyzer.isSegmentInRing(holePt0, holePt1, shell))
+      return null;    
+    return holePt0;
   }
-
+  
   /**
    * Checks if any polygon hole is nested inside another.
    * Assumes that holes do not cross (overlap),

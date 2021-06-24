@@ -62,7 +62,7 @@ class PolygonTopologyAnalyzer {
    * <ul>
    * <li>The segment does not cross the ring
    * <li>One or both of the segment endpoints may lie on the ring
-   * <li>The ring is valid
+   * <li>The ring has no self-crossings
    * </ul>  
    *  
    * @param p0 a segment vertex

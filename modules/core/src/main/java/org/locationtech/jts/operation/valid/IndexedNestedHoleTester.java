@@ -13,11 +13,9 @@ package org.locationtech.jts.operation.valid;
 
 import java.util.List;
 
-import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.index.SpatialIndex;
 import org.locationtech.jts.index.strtree.STRtree;
@@ -30,10 +28,11 @@ import org.locationtech.jts.index.strtree.STRtree;
  * The logic assumes that the holes do not overlap and have no collinear segments
  * (so they are properly nested, and there are no duplicate holes).
  * <p>
- * This class does not handle the situation 
- * where every vertex of a hole touches another hole surrounding it.  
- * This is invalid because it disconnects the polygon interior.
- * The disconnected interior condition must be checked elsewhere. 
+ * The situation where every vertex of a hole touches another hole
+ * is invalid because either the hole is nested, 
+ * or else it disconnects the polygon interior.
+ * This class detects the nested situation.
+ * The disconnected interior situation must be checked elsewhere. 
  *
  * @version 1.7
  */
@@ -84,7 +83,7 @@ class IndexedNestedHoleTester
           continue;
 
         /**
-         * Hole is not covered by test hole, so cannot be nested
+         * Hole is not fully covered by test hole, so cannot be nested
          */
         if (! testHole.getEnvelopeInternal().covers( hole.getEnvelopeInternal()) )
           continue;
@@ -96,30 +95,22 @@ class IndexedNestedHoleTester
     return false;
   }
 
+  /**
+   * Checks nesting via a point-in-polygon test, 
+   * or if the point lies on the boundary via 
+   * the topology of the incident edges.
+   * 
+   * @param hole the hole to check
+   * @param testHole the hole to test against
+   * @return true if the hole is nested
+   */
   private boolean isHoleNested(LinearRing hole, LinearRing testHole) {
-    Coordinate[] testPts = testHole.getCoordinates();
-    for (int i = 0; i < hole.getNumPoints(); i++) {
-      Coordinate holePt = hole.getCoordinateN(i);
-      int holeLoc = PointLocation.locateInRing(holePt, testPts);
-      switch (holeLoc) {
-      case Location.EXTERIOR: 
-        return false;
-      case Location.INTERIOR:
-        nestedPt = holePt;
-        return true;
-      }
-      /**
-       * The holePt is on the boundary of the test hole,
-       * so keep trying points until a non-boundary point is found.
-       */
+    Coordinate holePt0 = hole.getCoordinateN(0);
+    Coordinate holePt1 = hole.getCoordinateN(1);
+    if (PolygonTopologyAnalyzer.isSegmentInRing(holePt0, holePt1, testHole)) {
+      nestedPt = holePt0;
+      return true;  
     }
-    /**
-     * No non-boundary point has been found, so this result may be incorrect.
-     * This indicates an invalid disconnected interior situation,
-     * which must be checked elsewhere.
-     */
     return false;
   }
-
-
 }

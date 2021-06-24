@@ -77,18 +77,33 @@ public class IsValidTest extends GeometryTestCase {
           "POLYGON ((240 260, 40 260, 40 80, 240 80, 240 260), (140 180, 40 260, 140 240, 140 180))");
   }
 
-  public void testPolygonDoubleTouchHoleOutsideShell() throws Exception {
-    checkInvalid(
+  public void testPolygonMultipleHolesTouchAtSamePoint() throws Exception {
+    checkValid(
+          "POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (40 80, 60 80, 50 50, 40 80), (20 60, 20 40, 50 50, 20 60), (40 20, 60 20, 50 50, 40 20))");
+  }
+
+  public void testPolygonHoleOutsideShellAllTouch() throws Exception {
+    checkInvalid(TopologyValidationError.HOLE_OUTSIDE_SHELL,
+          "POLYGON ((10 10, 30 10, 30 50, 70 50, 70 10, 90 10, 90 90, 10 90, 10 10), (50 50, 30 10, 70 10, 50 50))");
+  }
+
+  public void testPolygonHoleOutsideShellDoubleTouch() throws Exception {
+    checkInvalid(TopologyValidationError.HOLE_OUTSIDE_SHELL,
           "POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 80 80, 80 20, 20 20, 20 80), (90 70, 150 50, 90 20, 110 40, 90 70))");
   }
 
+  public void testPolygonNestedHolesAllTouch() throws Exception {
+    checkInvalid(TopologyValidationError.NESTED_HOLES,
+          "POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 80 80, 80 20, 20 20, 20 80), (50 80, 80 50, 50 20, 20 50, 50 80))");
+  }
+
   public void testInvalidPolygonHoleProperIntersection() throws Exception {
-    checkInvalid( 
+    checkInvalid(TopologyValidationError.SELF_INTERSECTION, 
         "POLYGON ((10 90, 50 50, 10 10, 10 90), (20 50, 60 70, 60 30, 20 50))");
   }
 
   public void testInvalidPolygonDisconnectedInterior() throws Exception {
-    checkInvalid(
+    checkInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
           "POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 30 80, 20 20, 20 80), (80 30, 20 20, 80 20, 80 30), (80 80, 30 80, 80 30, 80 80))");
   }
 
@@ -147,10 +162,7 @@ public class IsValidTest extends GeometryTestCase {
   private void checkValid(String wkt) {
     checkValid(true, wkt);
   }
-  
-  private void checkInvalid(String wkt) {
-    checkValid(false, wkt);
-  }
+ 
   
   private void checkValid(boolean isExpectedValid, String wkt) {
     Geometry geom = read(wkt);
@@ -158,4 +170,14 @@ public class IsValidTest extends GeometryTestCase {
     assertEquals( isExpectedValid, isValid );
   }
 
+  private void checkInvalid(String wkt) {
+    checkValid(false, wkt);
+  }
+  
+  private void checkInvalid(int exepctedErrType, String wkt) {
+    Geometry geom = read(wkt);
+    IsValidOp validOp = new IsValidOp(geom);
+    TopologyValidationError err = validOp.getValidationError();
+    assertEquals( exepctedErrType, err.getErrorType() );
+  }
 }
