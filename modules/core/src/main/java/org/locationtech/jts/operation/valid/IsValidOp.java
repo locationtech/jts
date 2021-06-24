@@ -289,7 +289,7 @@ public class IsValidOp
       checkHolesNested(p);
       if (hasInvalidError()) return false;
     }
-    checkShellsNotNested(g);
+    checkShellsNested(g);
     if (hasInvalidError()) return false;
     
     checkInteriorDisconnected(areaAnalyzer);
@@ -403,9 +403,9 @@ public class IsValidOp
   }
 
   private void checkAreaIntersections(PolygonTopologyAnalyzer areaAnalyzer) {
-    if (areaAnalyzer.hasIntersection()) {
-      logInvalid(TopologyValidationError.SELF_INTERSECTION,
-                 areaAnalyzer.getIntersectionLocation());
+    if (areaAnalyzer.hasInvalidIntersection()) {
+      logInvalid(areaAnalyzer.getInvalidCode(),
+                 areaAnalyzer.getInvalidLocation());
       return;
     }
   }
@@ -491,7 +491,7 @@ public class IsValidOp
   }
 
   /**
-   * Tests if any polygon hole is nested inside another.
+   * Checks if any polygon hole is nested inside another.
    * Assumes that holes do not cross (overlap),
    * This is checked earlier.
    * 
@@ -510,7 +510,7 @@ public class IsValidOp
   }
 
   /**
-   * Tests that no element polygon is in the interior of another element polygon.
+   * Checks that no element polygon is in the interior of another element polygon.
    * <p>
    * Preconditions:
    * <ul>
@@ -520,7 +520,7 @@ public class IsValidOp
    * </ul>
    * These have been confirmed by the {@link PolygonTopologyAnalyzer}.
    */
-  private void checkShellsNotNested(MultiPolygon mp)
+  private void checkShellsNested(MultiPolygon mp)
   {
     for (int i = 0; i < mp.getNumGeometries(); i++) {
       Polygon p = (Polygon) mp.getGeometryN(i);
@@ -583,22 +583,11 @@ public class IsValidOp
     return shell0;
   } 
  
-  private void checkInteriorDisconnected(PolygonTopologyAnalyzer areaAnalyzer) {
-    
-    Coordinate invalidPt = null;
-    if (areaAnalyzer.hasDoubleTouch()) {
-      invalidPt = areaAnalyzer.getDisconnectionLocation();
-    }
-    else if (areaAnalyzer.isInteriorDisconnectedBySelfTouch()) {
-      invalidPt = areaAnalyzer.getDisconnectionLocation();
-
-    }
-    else if (areaAnalyzer.isInteriorDisconnectedByRingCycle()) {
-      invalidPt = areaAnalyzer.getDisconnectionLocation();
-    }
-    if (invalidPt != null) {
+  private void checkInteriorDisconnected(PolygonTopologyAnalyzer analyzer) {
+    if (analyzer.isInteriorDisconnected()) {
       logInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
-          invalidPt);
+          analyzer.getDisconnectionLocation());
     }
   }
+
 }

@@ -50,8 +50,8 @@ class PolygonTopologyAnalyzer {
    */
   public static Coordinate findSelfIntersection(LinearRing ring) {
     PolygonTopologyAnalyzer ata = new PolygonTopologyAnalyzer(ring, false);
-    if (ata.hasIntersection())
-      return ata.getIntersectionLocation();
+    if (ata.hasInvalidIntersection())
+      return ata.getInvalidLocation();
     return null;
   }
   
@@ -150,13 +150,11 @@ class PolygonTopologyAnalyzer {
     return iPrev;
   }
   
-  private Geometry inputGeom;
   private boolean isInvertedRingValid;
   
   private PolygonIntersectionAnalyzer intFinder;
   private List<PolygonRing> polyRings = null;
   private Coordinate disconnectionPt = null;
-  private Coordinate intersectionPt = null;
 
   /**
    * Creates a new analyzer for a {@link Polygon} or {@link MultiPolygon}.
@@ -165,39 +163,56 @@ class PolygonTopologyAnalyzer {
    * @param isInvertedRingValid a flag indicating whether inverted rings are allowed
    */
   public PolygonTopologyAnalyzer(Geometry geom, boolean isInvertedRingValid) {
-    inputGeom = geom;
     this.isInvertedRingValid = isInvertedRingValid;
     analyze(geom);
   }
 
-  private void analyze(Geometry geom) {
-    if (geom.isEmpty()) 
-      return;
-    List<SegmentString> segStrings = createSegmentStrings(geom, isInvertedRingValid);
-    polyRings = getPolygonRings(segStrings);
-    intFinder = analyzeIntersections(segStrings);
-    
-    if (intFinder.hasDoubleTouch()) {
-      disconnectionPt = intFinder.getIntersectionLocation();
-      return;
-    }
-    if (intFinder.hasIntersection()) {
-      intersectionPt  = intFinder.getIntersectionLocation();
-    }
-  }
-  
-  public boolean hasIntersection() {
-    return intersectionPt != null;
+  public boolean hasInvalidIntersection() {
+    return intFinder.isInvalid();
   }
 
-  public boolean hasDoubleTouch() {
-    return disconnectionPt != null;
+  public int getInvalidCode() {
+    return intFinder.getInvalidCode();
   }
   
-  public Coordinate getIntersectionLocation() {
-    return intFinder.getIntersectionLocation();
+  public Coordinate getInvalidLocation() {
+    return intFinder.getInvalidLocation();
   }
   
+  /**
+   * Tests whether the interior of the polygonal geometry is
+   * disconnected.
+   * If true, the disconnection location is available from 
+   * {@link #getDisconnectionLocation()}.
+   * 
+   * @return true if the interior is disconnected
+   */
+  public boolean isInteriorDisconnected() {
+    /**
+     * May already be set by a double-touching hole
+     */
+    if (disconnectionPt != null) {
+      return true;
+    }
+    if (isInvertedRingValid) {
+      checkInteriorDisconnectedBySelfTouch();
+      if (disconnectionPt != null) {
+        return true;
+      }
+    }
+    checkInteriorDisconnectedByRingCycle();
+    if (disconnectionPt != null) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Gets a location where the polyonal interior is disconnected.
+   * {@link #isInteriorDisconnected()} must be called first.
+   * 
+   * @return the location of an interior disconnection, or null
+   */
   public Coordinate getDisconnectionLocation() {
     return disconnectionPt;
   } 
@@ -213,17 +228,14 @@ class PolygonTopologyAnalyzer {
    * via a self-touch, this is checked by the {@link PolygonIntersectionAnalyzer}.
    * If inverted rings are part of a disconnected ring chain
    * this is detected here.  
-   * 
-   * @return true if a polygon has a disconnected interior.
    */
-  public boolean isInteriorDisconnectedByRingCycle() {
+  public void checkInteriorDisconnectedByRingCycle() {
     /**
      * PolyRings will be null for empty, no hole or LinearRing inputs
      */
     if (polyRings != null) {
       disconnectionPt = PolygonRing.findTouchCycleLocation(polyRings);
     }
-    return disconnectionPt != null;
   }
   
   /**
@@ -231,14 +243,27 @@ class PolygonTopologyAnalyzer {
    * This must be evaluated after other self-intersections have been analyzed
    * and determined to not exist, since the logic relies on 
    * the rings not self-crossing (winding).
-   * 
-   * @return true if an area interior is disconnected by a self-touch
+   * <p>
+   * If self-touching rings are not allowed, 
+   * then the self-touch will previously trigger a self-intersection error.
    */
-  public boolean isInteriorDisconnectedBySelfTouch() {
+  public void checkInteriorDisconnectedBySelfTouch() {
     if (polyRings != null) {
       disconnectionPt = PolygonRing.findInteriorSelfNode(polyRings);
     }
-    return disconnectionPt != null;
+  }
+  
+  private void analyze(Geometry geom) {
+    if (geom.isEmpty()) 
+      return;
+    List<SegmentString> segStrings = createSegmentStrings(geom, isInvertedRingValid);
+    polyRings = getPolygonRings(segStrings);
+    intFinder = analyzeIntersections(segStrings);
+    
+    if (intFinder.hasDoubleTouch()) {
+      disconnectionPt = intFinder.getDoubleTouchLocation();
+      return;
+    }
   }
   
   private PolygonIntersectionAnalyzer analyzeIntersections(List<SegmentString> segStrings)

@@ -27,8 +27,9 @@ import org.locationtech.jts.index.strtree.STRtree;
  * nested inside another hole, using a spatial
  * index to speed up the comparisons.
  * <p>
- * Assumes that the holes do not cross and have no collinear segments
+ * The logic assumes that the holes do not overlap and have no collinear segments
  * (so they are properly nested, and there are no duplicate holes).
+ * <p>
  * This class does not handle the situation 
  * where every vertex of a hole touches another hole surrounding it.  
  * This is invalid because it disconnects the polygon interior.
