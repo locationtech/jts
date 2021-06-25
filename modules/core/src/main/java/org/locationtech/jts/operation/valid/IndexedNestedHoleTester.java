@@ -88,29 +88,20 @@ class IndexedNestedHoleTester
         if (! testHole.getEnvelopeInternal().covers( hole.getEnvelopeInternal()) )
           continue;
 
-        if (isHoleNested(hole, testHole))
-          return true;
+        /**
+         * Checks nesting via a point-in-polygon test, 
+         * or if the point lies on the boundary via 
+         * the topology of the incident edges.
+         */
+        Coordinate holePt0 = hole.getCoordinateN(0);
+        Coordinate holePt1 = hole.getCoordinateN(1);
+        if (PolygonTopologyAnalyzer.isSegmentInRing(holePt0, holePt1, testHole)) {
+          nestedPt = holePt0;
+          return true;  
+        }
       }
     }
     return false;
   }
 
-  /**
-   * Checks nesting via a point-in-polygon test, 
-   * or if the point lies on the boundary via 
-   * the topology of the incident edges.
-   * 
-   * @param hole the hole to check
-   * @param testHole the hole to test against
-   * @return true if the hole is nested
-   */
-  private boolean isHoleNested(LinearRing hole, LinearRing testHole) {
-    Coordinate holePt0 = hole.getCoordinateN(0);
-    Coordinate holePt1 = hole.getCoordinateN(1);
-    if (PolygonTopologyAnalyzer.isSegmentInRing(holePt0, holePt1, testHole)) {
-      nestedPt = holePt0;
-      return true;  
-    }
-    return false;
-  }
 }
