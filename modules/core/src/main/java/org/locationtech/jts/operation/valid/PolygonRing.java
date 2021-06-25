@@ -31,6 +31,7 @@ import org.locationtech.jts.geom.LinearRing;
  * This is the case if there is no "chain" of touching rings
  * (which would partition off part of the interior).
  * This is equivalent to the touch graph having no cycles.
+ * Thus the touch graph of a valid polygon is a forest - a set of disjoint trees.
  * <p>
  * Also, in a valid polygon two rings can touch only at a single location,
  * since otherwise they disconnect a portion of the interior between them.
@@ -38,14 +39,11 @@ import org.locationtech.jts.geom.LinearRing;
  * (so the touch relation representation for a polygon ring does not need to support
  * more than one touch location for each adjacent ring).
  * <p>
- * Thus the touch graph of a valid polygon is a forest - a set of disjoint trees.
- * <p>
  * The cycle detection algorithm works for polygon rings which also contain self-touches
  * (inverted shells and exverted holes).
  * <p>
  * Polygons with no holes do not need to be checked for
- * a connected interior (unless self-touches are allowed).
- * <p>
+ * a connected interior, unless self-touches are allowed.
  * The class also records the topology at self-touch nodes,
  * to support checking if an invalid self-touch disconnects the polygon.
  *
@@ -91,18 +89,19 @@ class PolygonRing {
   }
   
   /**
-   * Finds a location (if any) where a chain of rings forms a cycle
+   * Finds a location (if any) where a chain of holes forms a cycle
    * in the ring touch graph.
+   * The shell may form part of the chain as well.
    * This indicates that a set of holes disconnects the interior of a polygon.
    * 
    * @param polyRings the list of rings to check
    * @return a vertex contained in a ring cycle, or null if none is found
    */
-  public static Coordinate findTouchCycleLocation(List<PolygonRing> polyRings) {
+  public static Coordinate findHoleCycleLocation(List<PolygonRing> polyRings) {
     for (PolygonRing polyRing : polyRings) {
       if (! polyRing.isInTouchSet()) {
-        Coordinate touchCycleLoc = polyRing.findTouchCycleLocation();
-        if (touchCycleLoc != null) return touchCycleLoc;
+        Coordinate holeCycleLoc = polyRing.findHoleCycleLocation();
+        if (holeCycleLoc != null) return holeCycleLoc;
       }
     }
     return null;
@@ -136,11 +135,6 @@ class PolygonRing {
    * Serves as the id for the graph partition induced by the touch relation.
    */
   private PolygonRing touchSetRoot = null;
-  
-  /**
-   * The parent of this ring in the touch tree graph.
-   */
-  private PolygonRing touchTreeParent = null;
   
   // lazily created
   /**
@@ -204,14 +198,6 @@ class PolygonRing {
   private PolygonRing getTouchSetRoot() {
     return touchSetRoot;
   }
-  
-  private void setParent(PolygonRing ring) {
-    touchTreeParent = ring;
-  }
-  
-  private boolean isChildOf(PolygonRing ring) {
-    return touchTreeParent == ring;
-  }
 
   private boolean hasTouches() {
     return touches != null && ! touches.isEmpty();
@@ -257,77 +243,91 @@ class PolygonRing {
   }
   
   /**
-   * Detects whether the subgraph of rings linked by touch to this ring
-   * contains a touch cycle.
-   * If no cycles are detected, the subgraph of touching rings is a tree.
-   * The subgraph is marked using this ring as the root.
+   * Detects whether the subgraph of holes linked by touch to this ring
+   * contains a hole cycle.
+   * If no cycles are detected, the set of touching rings is a tree.
+   * The set is marked using this ring as the root.
    * 
-   * @return a vertex in a ring cycle, or null if no cycle found
+   * @return a vertex in a hole cycle, or null if no cycle found
    */
-  private Coordinate findTouchCycleLocation() {
+  private Coordinate findHoleCycleLocation() {
     //--- the touch set including this ring is already processed
     if (isInTouchSet()) return null;
     
     //--- scan the touch set tree rooted at this ring
     // Assert: this.touchSetRoot is null
     PolygonRing root = this;
-    root.setParent(root);
     root.setTouchSetRoot(root);
     
-    Deque<PolygonRing> ringStack = new ArrayDeque<PolygonRing>();
-    ringStack.add(root);
+    if (! hasTouches()) 
+      return null;
     
-    while (! ringStack.isEmpty()) {
-     PolygonRing ring = ringStack.removeFirst();
-     Coordinate touchCyclePt = scanForTouchCycle(root, ring, ringStack);
-      if (touchCyclePt != null) {
-        return touchCyclePt;
+    Deque<PolygonRingTouch> touchStack = new ArrayDeque<PolygonRingTouch>();
+    init(root, touchStack);
+    
+    while (! touchStack.isEmpty()) {
+      PolygonRingTouch touch = touchStack.pop();
+      Coordinate holeCyclePt = scanForHoleCycle(touch, root, touchStack);
+      if (holeCyclePt != null) {
+        return holeCyclePt;
       }
     }
     return null;
   }
 
+  private static void init(PolygonRing root, 
+      Deque<PolygonRingTouch> touchStack)
+  {
+    for (PolygonRingTouch touch : root.getTouches()) {
+      touch.getRing().setTouchSetRoot(root);
+      touchStack.push(touch);
+    }
+  }
+
   /**
-   * Scans the rings touching a given ring, 
-   * and checks if they are already part of its ring subgraph set.
-   * If so, a ring cycle has been detected.
-   * Otherwise, each touched ring is added to the current subgraph set, 
-   * and queued to be scanned in turn.
+   * Scans for a hole cycle starting at a given touch. 
    *  
+   * @param currentTouch the touch to investigate
    * @param root the root of the touch subgraph
-   * @param ring the ring being processed
-   * @param ringStack the stack of rings to scan
-   * @return a vertex in a ring cycle if found, or null
+   * @param touchStack the stack of touches to scan
+   * @return a vertex in a hole cycle if found, or null
    */
-  private Coordinate scanForTouchCycle(PolygonRing root, PolygonRing ring, Deque<PolygonRing> ringStack) {
-    if (! ring.hasTouches()) 
-      return null;
+  private Coordinate scanForHoleCycle(PolygonRingTouch currentTouch, 
+      PolygonRing root, 
+      Deque<PolygonRingTouch> touchStack) {
+    PolygonRing ring = currentTouch.getRing();
+    Coordinate currentPt = currentTouch.getCoordinate();
     
-    //-- check the touched rings
-    //--- either they form a touch cycle, or they are pushed on stack for processing
+    /**
+     * Scan the touched rings
+     * Either they form a hole cycle, or they are added to the touch set
+     * and pushed on the stack for scanning
+     */
     for (PolygonRingTouch touch : ring.getTouches()) {
-      PolygonRing touchRing = touch.getRing();
       /**
-       * There is always a link back to the touch-tree parent of the ring, 
-       * so don't include it.
-       * (I.e. the ring touches the parent ring which originally 
-       * added this ring to the stack)
+       * Don't check touches at the entry point
+       * to avoid trivial cycles.
+       * They will already be processed or on the stack
+       * from the previous ring (which touched
+       * all the rings at that point as well)
        */
-      if (ring.isChildOf(touchRing))
+      if (currentPt.equals2D( touch.getCoordinate()))
         continue;
       
       /**
        * Test if the touched ring has already been 
-       * reached via a different path in the tree.
-       * This indicates a touching ring cycle has been found. 
-       * This is invalid.
+       * reached via a different touch path.
+       * This is indicated by it already being marked as
+       * part of the touch set.
+       * This indicates a hole cycle has been found. 
        */
+      PolygonRing touchRing = touch.getRing();
       if (touchRing.getTouchSetRoot() == root)
         return touch.getCoordinate();
-
-      touchRing.setParent(ring);
+      
       touchRing.setTouchSetRoot(root);
-      ringStack.add(touchRing);
+
+      touchStack.push(touch);
     }
     return null;
   }

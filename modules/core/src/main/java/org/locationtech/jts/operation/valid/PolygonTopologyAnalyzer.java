@@ -200,7 +200,7 @@ class PolygonTopologyAnalyzer {
         return true;
       }
     }
-    checkInteriorDisconnectedByRingCycle();
+    checkInteriorDisconnectedByHoleCycle();
     if (disconnectionPt != null) {
       return true;
     }
@@ -219,22 +219,22 @@ class PolygonTopologyAnalyzer {
   
   /**
    * Tests whether any polygon with holes has a disconnected interior
-   * by virtue of the holes (and possibly shell) forming a touch cycle.
+   * by virtue of the holes (and possibly shell) forming a hole cycle.
    * <p>
    * This is a global check, which relies on determining
    * the touching graph of all holes in a polygon.
    * <p>
    * If inverted rings disconnect the interior
    * via a self-touch, this is checked by the {@link PolygonIntersectionAnalyzer}.
-   * If inverted rings are part of a disconnected ring chain
-   * this is detected here.  
+   * If inverted rings are part of a hole cycle
+   * this is detected here as well.  
    */
-  public void checkInteriorDisconnectedByRingCycle() {
+  public void checkInteriorDisconnectedByHoleCycle() {
     /**
      * PolyRings will be null for empty, no hole or LinearRing inputs
      */
     if (polyRings != null) {
-      disconnectionPt = PolygonRing.findTouchCycleLocation(polyRings);
+      disconnectionPt = PolygonRing.findHoleCycleLocation(polyRings);
     }
   }
   
