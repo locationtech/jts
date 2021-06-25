@@ -60,9 +60,9 @@ class PolygonTopologyAnalyzer {
    * <p>
    * Preconditions:
    * <ul>
-   * <li>The segment does not cross the ring
-   * <li>One or both of the segment endpoints may lie on the ring
-   * <li>The ring has no self-crossings
+   * <li>The segment intersects the ring only at the endpoints
+   * <li>One, none or both of the segment endpoints may lie on the ring
+   * <li>The ring does not self-cross, but it may self-touch
    * </ul>  
    *  
    * @param p0 a segment vertex
@@ -89,9 +89,9 @@ class PolygonTopologyAnalyzer {
    * <p>
    * Preconditions:
    * <ul>
-   * <li>The segment does not cross the ring
+   * <li>The segment does not intersect the ring other than at the endpoints
    * <li>The segment vertex p0 lies on the ring
-   * <li>The ring is valid
+   * <li>The ring does not self-cross, but it may self-touch
    * </ul>
    * This works for both shells and holes, but the caller must know
    * the ring role.
