@@ -11,9 +11,6 @@
  */
 package org.locationtech.jts.operation.valid;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.locationtech.jts.algorithm.LineIntersector;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
@@ -34,13 +31,16 @@ import org.locationtech.jts.noding.SegmentString;
 class PolygonIntersectionAnalyzer 
 implements SegmentIntersector
 {
-  LineIntersector li = new RobustLineIntersector();
-  private List<Coordinate> intersectionPts = new ArrayList<Coordinate>();
-  private boolean hasProperInt = false;
-  private boolean hasIntersection = false;
-  private boolean hasCrossing= false;
-  private boolean hasDoubleTouch = false;
+  private static final int NO_INVALID_INTERSECTION = -1;
+  
   private boolean isInvertedRingValid;
+  
+  private LineIntersector li = new RobustLineIntersector();
+  private int invalidCode = NO_INVALID_INTERSECTION;
+  private Coordinate invalidLocation = null;
+  
+  private boolean hasDoubleTouch = false;
+  private Coordinate doubleTouchLocation;
 
   /**
    * Creates a new finder, allowing for the mode where inverted rings are valid.
@@ -53,22 +53,28 @@ implements SegmentIntersector
   
   @Override
   public boolean isDone() {
-    return hasIntersection || hasDoubleTouch;
+    return isInvalid() || hasDoubleTouch;
   }
   
-  public Coordinate getIntersectionLocation() {
-    if (intersectionPts.size() == 0) return null;
-    return intersectionPts.get(0);
+  public boolean isInvalid() {
+    return invalidCode >= 0;
+  }
+  
+  public int getInvalidCode() {
+    return invalidCode;
+  }
+  
+  public Coordinate getInvalidLocation() {
+    return invalidLocation;
   }
 
   public boolean hasDoubleTouch() {
     return hasDoubleTouch;
   }
   
-  public boolean hasIntersection() {
-    return intersectionPts.size() > 0; 
+  public Coordinate getDoubleTouchLocation() {
+    return doubleTouchLocation;
   }
-  
 
   @Override
   public void processIntersections(SegmentString ss0, int segIndex0, SegmentString ss1, int segIndex1) {
@@ -77,15 +83,19 @@ implements SegmentIntersector
     boolean isSameSegment = isSameSegString && segIndex0 == segIndex1;
     if (isSameSegment) return;
     
-    hasIntersection = findInvalidIntersection(ss0, segIndex0, ss1, segIndex1);
-    
-    if (hasIntersection) {
-      // found an intersection!
-      intersectionPts.add(li.getIntersection(0));
-    }    
+    int code = findInvalidIntersection(ss0, segIndex0, ss1, segIndex1); 
+    /**
+     * Ensure that invalidCode is only set once, 
+     * since the short-circuiting in {@link SegmentIntersector} is not guaranteed
+     * to happen immediately.
+     */
+    if (code != NO_INVALID_INTERSECTION) {
+      invalidCode = code;
+      invalidLocation = li.getIntersection(0);
+    }
   }
 
-  private boolean findInvalidIntersection(SegmentString ss0, int segIndex0, 
+  private int findInvalidIntersection(SegmentString ss0, int segIndex0, 
       SegmentString ss1, int segIndex1) {
     Coordinate p00 = ss0.getCoordinate(segIndex0);
     Coordinate p01 = ss0.getCoordinate(segIndex0 + 1);
@@ -94,22 +104,19 @@ implements SegmentIntersector
 
     li.computeIntersection(p00, p01, p10, p11);
     
-    if (! li.hasIntersection()) return false;
+    if (! li.hasIntersection()) {
+      return NO_INVALID_INTERSECTION;
+    }
     
     /**
      * Check for an intersection in the interior of both segments.
-     */
-    hasProperInt = li.isProper();
-    if (hasProperInt) 
-      return true;
-    
-    /**
-     * Check for collinear segments (which produces two intersection points).
-     * This is invalid - either a zero-width spike or gore,
+     * Collinear intersections by definition contain an interior intersection.
+     * They occur in either a zero-width spike or gore,
      * or adjacent rings.
      */
-    hasProperInt = li.getIntersectionNum() >= 2;
-    if (hasProperInt) return true;
+    if (li.isProper() || li.getIntersectionNum() >= 2) {
+      return TopologyValidationError.SELF_INTERSECTION;
+    }
     
     /**
      * Now know there is exactly one intersection, 
@@ -125,16 +132,14 @@ implements SegmentIntersector
     boolean isSameSegString = ss0 == ss1;
     boolean isAdjacentSegments = isSameSegString && isAdjacentInRing(ss0, segIndex0, segIndex1);
     // Assert: intersection is an endpoint of both segs
-    if (isAdjacentSegments) return false;      
+    if (isAdjacentSegments) return NO_INVALID_INTERSECTION;      
 
-    // TODO: allow ring self-intersection - if NOT using OGC semantics
-    
     /**
      * Under OGC semantics, rings cannot self-intersect.
      * So the intersection is invalid.
      */
     if (isSameSegString && ! isInvertedRingValid) {
-      return true;
+      return TopologyValidationError.SELF_INTERSECTION;
     }
     
     /**
@@ -144,7 +149,7 @@ implements SegmentIntersector
      * This simplifies following logic, by removing the segment endpoint case.
      */
     if (intPt.equals2D(p01) || intPt.equals2D(p11))
-      return false;
+      return NO_INVALID_INTERSECTION;
     
     /**
      * Check topology of a vertex intersection.
@@ -162,9 +167,10 @@ implements SegmentIntersector
       e10 = prevCoordinateInRing(ss1, segIndex1);
       e11 = p11;
     }
-    hasCrossing = PolygonNode.isCrossing(intPt, e00, e01, e10, e11); 
-    if (hasCrossing) 
-      return true;
+    boolean hasCrossing = PolygonNode.isCrossing(intPt, e00, e01, e10, e11); 
+    if (hasCrossing) {
+      return TopologyValidationError.SELF_INTERSECTION;
+    }
     
     /**
      * If allowing inverted rings, record a self-touch to support later checking
@@ -184,10 +190,11 @@ implements SegmentIntersector
     boolean isDoubleTouch = addDoubleTouch(ss0, ss1, intPt);
     if (isDoubleTouch && ! isSameSegString) {
       hasDoubleTouch = true;
-      return true;
+      doubleTouchLocation = intPt;
+      // TODO: for poly-hole or hole-hole touch, check if it has bad topology.  If so return invalid code
     }
     
-    return false;
+    return NO_INVALID_INTERSECTION;
   }
 
   private boolean addDoubleTouch(SegmentString ss0, SegmentString ss1, Coordinate intPt) {

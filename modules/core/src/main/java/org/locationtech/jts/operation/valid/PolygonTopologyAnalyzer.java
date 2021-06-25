@@ -50,8 +50,8 @@ class PolygonTopologyAnalyzer {
    */
   public static Coordinate findSelfIntersection(LinearRing ring) {
     PolygonTopologyAnalyzer ata = new PolygonTopologyAnalyzer(ring, false);
-    if (ata.hasIntersection())
-      return ata.getIntersectionLocation();
+    if (ata.hasInvalidIntersection())
+      return ata.getInvalidLocation();
     return null;
   }
   
@@ -60,9 +60,9 @@ class PolygonTopologyAnalyzer {
    * <p>
    * Preconditions:
    * <ul>
-   * <li>The segment does not cross the ring
-   * <li>One or both of the segment endpoints may lie on the ring
-   * <li>The ring is valid
+   * <li>The segment intersects the ring only at the endpoints
+   * <li>One, none or both of the segment endpoints may lie on the ring
+   * <li>The ring does not self-cross, but it may self-touch
    * </ul>  
    *  
    * @param p0 a segment vertex
@@ -89,9 +89,9 @@ class PolygonTopologyAnalyzer {
    * <p>
    * Preconditions:
    * <ul>
-   * <li>The segment does not cross the ring
+   * <li>The segment does not intersect the ring other than at the endpoints
    * <li>The segment vertex p0 lies on the ring
-   * <li>The ring is valid
+   * <li>The ring does not self-cross, but it may self-touch
    * </ul>
    * This works for both shells and holes, but the caller must know
    * the ring role.
@@ -150,7 +150,6 @@ class PolygonTopologyAnalyzer {
     return iPrev;
   }
   
-  private Geometry inputGeom;
   private boolean isInvertedRingValid;
   
   private PolygonIntersectionAnalyzer intFinder;
@@ -164,53 +163,79 @@ class PolygonTopologyAnalyzer {
    * @param isInvertedRingValid a flag indicating whether inverted rings are allowed
    */
   public PolygonTopologyAnalyzer(Geometry geom, boolean isInvertedRingValid) {
-    inputGeom = geom;
     this.isInvertedRingValid = isInvertedRingValid;
-    if (! geom.isEmpty()) {
-      List<SegmentString> segStrings = createSegmentStrings(geom, isInvertedRingValid);
-      polyRings = getPolygonRings(segStrings);
-      intFinder = analyzeIntersections(segStrings);
-    }
-  }
-  
-  public boolean hasIntersection() {
-    return intFinder.hasIntersection();
+    analyze(geom);
   }
 
-  public boolean hasDoubleTouch() {
-    return intFinder.hasDoubleTouch();
+  public boolean hasInvalidIntersection() {
+    return intFinder.isInvalid();
+  }
+
+  public int getInvalidCode() {
+    return intFinder.getInvalidCode();
   }
   
-  public Coordinate getIntersectionLocation() {
-    return intFinder.getIntersectionLocation();
+  public Coordinate getInvalidLocation() {
+    return intFinder.getInvalidLocation();
   }
   
   /**
+   * Tests whether the interior of the polygonal geometry is
+   * disconnected.
+   * If true, the disconnection location is available from 
+   * {@link #getDisconnectionLocation()}.
+   * 
+   * @return true if the interior is disconnected
+   */
+  public boolean isInteriorDisconnected() {
+    /**
+     * May already be set by a double-touching hole
+     */
+    if (disconnectionPt != null) {
+      return true;
+    }
+    if (isInvertedRingValid) {
+      checkInteriorDisconnectedBySelfTouch();
+      if (disconnectionPt != null) {
+        return true;
+      }
+    }
+    checkInteriorDisconnectedByHoleCycle();
+    if (disconnectionPt != null) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Gets a location where the polyonal interior is disconnected.
+   * {@link #isInteriorDisconnected()} must be called first.
+   * 
+   * @return the location of an interior disconnection, or null
+   */
+  public Coordinate getDisconnectionLocation() {
+    return disconnectionPt;
+  } 
+  
+  /**
    * Tests whether any polygon with holes has a disconnected interior
-   * by virtue of the holes (and possibly shell) forming a touch cycle.
+   * by virtue of the holes (and possibly shell) forming a hole cycle.
    * <p>
    * This is a global check, which relies on determining
    * the touching graph of all holes in a polygon.
    * <p>
    * If inverted rings disconnect the interior
    * via a self-touch, this is checked by the {@link PolygonIntersectionAnalyzer}.
-   * If inverted rings are part of a disconnected ring chain
-   * this is detected here.  
-   * 
-   * @return true if a polygon has a disconnected interior.
+   * If inverted rings are part of a hole cycle
+   * this is detected here as well.  
    */
-  public boolean isInteriorDisconnectedByRingCycle() {
+  public void checkInteriorDisconnectedByHoleCycle() {
     /**
      * PolyRings will be null for empty, no hole or LinearRing inputs
      */
     if (polyRings != null) {
-      disconnectionPt = PolygonRing.findTouchCycleLocation(polyRings);
+      disconnectionPt = PolygonRing.findHoleCycleLocation(polyRings);
     }
-    return disconnectionPt != null;
-  }
-
-  public Coordinate getDisconnectionLocation() {
-    return disconnectionPt;
   }
   
   /**
@@ -218,14 +243,27 @@ class PolygonTopologyAnalyzer {
    * This must be evaluated after other self-intersections have been analyzed
    * and determined to not exist, since the logic relies on 
    * the rings not self-crossing (winding).
-   * 
-   * @return true if an area interior is disconnected by a self-touch
+   * <p>
+   * If self-touching rings are not allowed, 
+   * then the self-touch will previously trigger a self-intersection error.
    */
-  public boolean isInteriorDisconnectedBySelfTouch() {
+  public void checkInteriorDisconnectedBySelfTouch() {
     if (polyRings != null) {
       disconnectionPt = PolygonRing.findInteriorSelfNode(polyRings);
     }
-    return disconnectionPt != null;
+  }
+  
+  private void analyze(Geometry geom) {
+    if (geom.isEmpty()) 
+      return;
+    List<SegmentString> segStrings = createSegmentStrings(geom, isInvertedRingValid);
+    polyRings = getPolygonRings(segStrings);
+    intFinder = analyzeIntersections(segStrings);
+    
+    if (intFinder.hasDoubleTouch()) {
+      disconnectionPt = intFinder.getDoubleTouchLocation();
+      return;
+    }
   }
   
   private PolygonIntersectionAnalyzer analyzeIntersections(List<SegmentString> segStrings)

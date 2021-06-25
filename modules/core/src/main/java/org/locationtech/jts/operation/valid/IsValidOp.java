@@ -246,7 +246,7 @@ public class IsValidOp
     checkHolesOutsideShell(g);
     if (hasInvalidError()) return false;
     
-    checkHolesNotNested(g);
+    checkHolesNested(g);
     if (hasInvalidError()) return false;
     
     checkInteriorDisconnected(areaAnalyzer);
@@ -286,10 +286,10 @@ public class IsValidOp
     }
     for (int i = 0; i < g.getNumGeometries(); i++) {
       Polygon p = (Polygon) g.getGeometryN(i);
-      checkHolesNotNested(p);
+      checkHolesNested(p);
       if (hasInvalidError()) return false;
     }
-    checkShellsNotNested(g);
+    checkShellsNested(g);
     if (hasInvalidError()) return false;
     
     checkInteriorDisconnected(areaAnalyzer);
@@ -403,22 +403,11 @@ public class IsValidOp
   }
 
   private void checkAreaIntersections(PolygonTopologyAnalyzer areaAnalyzer) {
-    if (areaAnalyzer.hasIntersection()) {
-      logInvalid(TopologyValidationError.SELF_INTERSECTION,
-                 areaAnalyzer.getIntersectionLocation());
+    if (areaAnalyzer.hasInvalidIntersection()) {
+      logInvalid(areaAnalyzer.getInvalidCode(),
+                 areaAnalyzer.getInvalidLocation());
       return;
     }
-    if (areaAnalyzer.hasDoubleTouch()) {
-      logInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
-                 areaAnalyzer.getIntersectionLocation());
-      return;
-    }
-    if (areaAnalyzer.isInteriorDisconnectedBySelfTouch()) {
-      logInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
-                 areaAnalyzer.getDisconnectionLocation());
-      return;
-    }
-
   }
 
   /**
@@ -452,7 +441,6 @@ public class IsValidOp
     
     LinearRing shell = poly.getExteriorRing();
     boolean isShellEmpty = shell.isEmpty();
-    PointOnGeometryLocator pir = new IndexedPointInAreaLocator(shell);
     
     for (int i = 0; i < poly.getNumInteriorRing(); i++) {
       LinearRing hole = poly.getInteriorRingN(i);
@@ -463,7 +451,7 @@ public class IsValidOp
         invalidPt = hole.getCoordinate();
       }
       else {
-        invalidPt = findHoleOutsideShellPoint(pir, hole);
+        invalidPt = findHoleOutsideShellPoint(hole, shell);
       }
       if (invalidPt != null) {
         logInvalid(TopologyValidationError.HOLE_OUTSIDE_SHELL,
@@ -475,40 +463,37 @@ public class IsValidOp
 
   /**
    * Checks if a polygon hole lies inside its shell
-   * and if not returns the point indicating this.
+   * and if not returns a point indicating this.
    * The hole is known to be wholly inside or outside the shell, 
-   * so it suffices to find a single point which is interior or exterior.
-   * A valid hole may only have a single point touching the shell
-   * (since otherwise it creates a disconnected interior).
-   * So there should be at least one point which is interior or exterior,
-   * and this should be the first or second point tested.
+   * so it suffices to find a single point which is interior or exterior,
+   * or check the edge topology at a point on the boundary of the shell.
    * 
-   * @param shellLocator
-   * @param hole
-   * @return a hole point outside the shell, or null if valid
+   * @param hole the hole to test
+   * @param shell the polygon shell to test against
+   * @return a hole point outside the shell, or null if it is inside
    */
-  private Coordinate findHoleOutsideShellPoint(PointOnGeometryLocator shellLocator, LinearRing hole) {
-    for (int i = 0; i < hole.getNumPoints() - 1; i++) {
-      Coordinate holePt = hole.getCoordinateN(i);
-      int loc = shellLocator.locate(holePt);
-      if (loc== Location.BOUNDARY) continue;
-      if (loc== Location.INTERIOR) return null;
-      /**
-       * Location is EXTERIOR, so hole is outside shell
-       */
-      return holePt;
-    }
-    return null;
+  private Coordinate findHoleOutsideShellPoint(LinearRing hole, LinearRing shell) {
+    Coordinate holePt0 = hole.getCoordinateN(0);
+    Coordinate holePt1 = hole.getCoordinateN(1);
+    /**
+     * If hole envelope is not covered by shell, it must be outside
+     */
+    if (! shell.getEnvelopeInternal().covers( hole.getEnvelopeInternal() ))
+        return holePt0;
+    
+    if (PolygonTopologyAnalyzer.isSegmentInRing(holePt0, holePt1, shell))
+      return null;    
+    return holePt0;
   }
-
+  
   /**
-   * Tests if any polygon hole is nested inside another.
+   * Checks if any polygon hole is nested inside another.
    * Assumes that holes do not cross (overlap),
    * This is checked earlier.
    * 
    * @param poly the polygon with holes to test
    */
-  private void checkHolesNotNested(Polygon poly)
+  private void checkHolesNested(Polygon poly)
   {
     // skip test if no holes are present
     if (poly.getNumInteriorRing() <= 0) return;
@@ -521,7 +506,7 @@ public class IsValidOp
   }
 
   /**
-   * Tests that no element polygon is in the interior of another element polygon.
+   * Checks that no element polygon is in the interior of another element polygon.
    * <p>
    * Preconditions:
    * <ul>
@@ -531,7 +516,7 @@ public class IsValidOp
    * </ul>
    * These have been confirmed by the {@link PolygonTopologyAnalyzer}.
    */
-  private void checkShellsNotNested(MultiPolygon mp)
+  private void checkShellsNested(MultiPolygon mp)
   {
     for (int i = 0; i < mp.getNumGeometries(); i++) {
       Polygon p = (Polygon) mp.getGeometryN(i);
@@ -594,9 +579,11 @@ public class IsValidOp
     return shell0;
   } 
  
-  private void checkInteriorDisconnected(PolygonTopologyAnalyzer areaAnalyzer) {
-    if (areaAnalyzer.isInteriorDisconnectedByRingCycle())
+  private void checkInteriorDisconnected(PolygonTopologyAnalyzer analyzer) {
+    if (analyzer.isInteriorDisconnected()) {
       logInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
-          areaAnalyzer.getDisconnectionLocation());
+          analyzer.getDisconnectionLocation());
+    }
   }
+
 }
