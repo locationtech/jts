@@ -29,7 +29,7 @@ Distributions for older JTS versions can be obtained at the
 
 * Add `GeometryFixer` class (#704)
 * Improve design and performance of `IsSimpleOp` (#717)
-* Improve design and perforance of `IsValidOp` (#743)
+* Improve design and perforance of `IsValidOp` (#743 & #748)
 * Fix `SortedPackedIntervalRtree` to be thread-safe (fixes `PreparedPolygon` too) (#746)
 
 ### Bug Fixes
