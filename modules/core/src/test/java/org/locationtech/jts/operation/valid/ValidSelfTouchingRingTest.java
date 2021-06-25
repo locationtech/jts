@@ -139,9 +139,31 @@ public class ValidSelfTouchingRingTest
     checkIsValidOGC(wkt, false);
   }
 
+  public void testExvertedHoleStarTouchHoleCycle()
+  {
+    String wkt = "POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 50 30, 80 80, 80 30, 20 30, 20 80), (40 70, 50 70, 50 30, 40 70), (40 20, 60 20, 50 30, 40 20), (40 80, 20 80, 40 70, 40 80))";
+    checkInvalidSTR(wkt, TopologyValidationError.DISCONNECTED_INTERIOR);
+    //checkIsValidOGC(wkt, false);
+  }
+
+  public void testExvertedHoleStarTouch()
+  {
+    String wkt = "POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 50 30, 80 80, 80 30, 20 30, 20 80), (40 70, 50 70, 50 30, 40 70), (40 20, 60 20, 50 30, 40 20))";
+    checkIsValidSTR(wkt, true);
+    checkIsValidOGC(wkt, false);
+  }
+
+  private void checkInvalidSTR(String wkt, int exepctedErrType) {
+    Geometry geom = read(wkt);
+    IsValidOp validOp = new IsValidOp(geom);
+    validOp.setSelfTouchingRingFormingHoleValid(true);
+    TopologyValidationError err = validOp.getValidationError();
+    assertEquals( exepctedErrType, err.getErrorType() );
+  }
+
   private void checkIsValidOGC(String wkt, boolean expected)
   {
-    Geometry geom = fromWKT(wkt);
+    Geometry geom = read(wkt);
     IsValidOp validator = new IsValidOp(geom);
     boolean isValid = validator.isValid();
     assertTrue(isValid == expected);
@@ -149,23 +171,12 @@ public class ValidSelfTouchingRingTest
 
   private void checkIsValidSTR(String wkt, boolean expected)
   {
-    Geometry geom = fromWKT(wkt);
+    Geometry geom = read(wkt);
     IsValidOp validator = new IsValidOp(geom);
     validator.setSelfTouchingRingFormingHoleValid(true);
     boolean isValid = validator.isValid();
     assertTrue(isValid == expected);
   }
 
-  Geometry fromWKT(String wkt)
-  {
-    Geometry geom = null;
-    try {
-      geom = read(wkt);
-    }
-    catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    return geom;
-  }
 
 }

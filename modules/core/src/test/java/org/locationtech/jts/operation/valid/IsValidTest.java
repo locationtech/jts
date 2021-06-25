@@ -63,7 +63,7 @@ public class IsValidTest extends GeometryTestCase {
   }
 
   public void testInvalidSimplePolygonRingSelfIntersection() throws Exception {
-    checkInvalid( 
+    checkInvalid( TopologyValidationError.SELF_INTERSECTION,
         "POLYGON ((10 90, 90 10, 90 90, 10 10, 10 90))");
   }
 
@@ -98,12 +98,12 @@ public class IsValidTest extends GeometryTestCase {
   }
 
   public void testInvalidPolygonHoleProperIntersection() throws Exception {
-    checkInvalid(TopologyValidationError.SELF_INTERSECTION, 
+    checkInvalid( TopologyValidationError.SELF_INTERSECTION, 
         "POLYGON ((10 90, 50 50, 10 10, 10 90), (20 50, 60 70, 60 30, 20 50))");
   }
 
   public void testInvalidPolygonDisconnectedInterior() throws Exception {
-    checkInvalid(TopologyValidationError.DISCONNECTED_INTERIOR,
+    checkInvalid( TopologyValidationError.DISCONNECTED_INTERIOR,
           "POLYGON ((10 90, 90 90, 90 10, 10 10, 10 90), (20 80, 30 80, 20 20, 20 80), (80 30, 20 20, 80 20, 80 30), (80 80, 30 80, 80 30, 80 80))");
   }
 
@@ -113,7 +113,7 @@ public class IsValidTest extends GeometryTestCase {
   }
 
   public void testInvalidMultiPolygonHoleOverlapCrossing() throws Exception {
-    checkInvalid( 
+    checkInvalid( TopologyValidationError.SELF_INTERSECTION,
         "MULTIPOLYGON (((20 380, 420 380, 420 20, 20 20, 20 380), (220 340, 180 240, 60 200, 140 100, 340 60, 300 240, 220 340)), ((60 200, 340 60, 220 340, 60 200)))");
   }
 
@@ -122,8 +122,8 @@ public class IsValidTest extends GeometryTestCase {
           "MULTIPOLYGON (((60 40, 90 10, 90 90, 10 90, 10 10, 40 40, 60 40)), ((50 40, 20 20, 80 20, 50 40)))");
   }
 
-  public void testInvalidMultiPolygonTouchVertices() throws Exception {
-    checkInvalid(
+  public void testInvalidMultiPolygonNestedAllTouchAtVertices() throws Exception {
+    checkInvalid( TopologyValidationError.NESTED_SHELLS,
           "MULTIPOLYGON (((10 10, 20 30, 10 90, 90 90, 80 30, 90 10, 50 20, 10 10)), ((80 30, 20 30, 50 20, 80 30)))");
   }
 
