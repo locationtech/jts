@@ -246,12 +246,17 @@ public class IsSimpleOp
    */
   private boolean isSimpleGeometryCollection(Geometry geom)
   {
+    boolean res = true;
     for (int i = 0; i < geom.getNumGeometries(); i++ ) {
       Geometry comp = geom.getGeometryN(i);
       if (! computeSimple(comp))
-        return false;
+      {
+        res = false;
+        if (!isFindAllLocations)
+          break;
+      }
     }
-    return true;
+    return res;
   }
 
   private boolean isSimpleLinearGeometry(Geometry geom)
