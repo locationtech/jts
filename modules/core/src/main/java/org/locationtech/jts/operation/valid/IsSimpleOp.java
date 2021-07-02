@@ -229,12 +229,17 @@ public class IsSimpleOp
    */
   private boolean isSimplePolygonal(Geometry geom)
   {
+    boolean res = true;
     List<Geometry> rings = LinearComponentExtracter.getLines(geom);
     for (Geometry ring : rings) {
       if (! isSimpleLinearGeometry(ring))
-        return false;
+      {
+        res = false;
+        if (!isFindAllLocations)
+          break;
+      }
     }
-    return true;
+    return res;
   }
 
   /**
