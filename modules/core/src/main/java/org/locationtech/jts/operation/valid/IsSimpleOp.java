@@ -214,7 +214,8 @@ public class IsSimpleOp
         if (!isFindAllLocations)
           break;
       }
-      points.add(p);
+      else
+        points.add(p);
     }
     return res;
   }
