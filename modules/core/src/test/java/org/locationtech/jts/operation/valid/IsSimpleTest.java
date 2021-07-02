@@ -55,7 +55,7 @@ public class IsSimpleTest
 
   /**
    * 3 LineStrings touching at an endpoint.
-   * 
+   *
    * @throws Exception
    */
   public void test3TouchAtEndpoint() throws Exception {
@@ -102,6 +102,22 @@ public class IsSimpleTest
     checkIsSimpleAll("MULTILINESTRING ((10 20, 90 20), (10 30, 90 30), (50 40, 50 10))",
         BoundaryNodeRule.MOD2_BOUNDARY_RULE,
         "MULTIPOINT((50 20), (50 30))");
+  }
+
+  public void testMultiPointWithFindAllLocations() {
+    Coordinate[] coords = new Coordinate[] {
+      new Coordinate(1, 1),
+      new Coordinate(2, 2), new Coordinate(2, 2),
+      new Coordinate(3, 3), new Coordinate(3, 3),
+      new Coordinate(4, 4),
+      new Coordinate(5, 5), new Coordinate(5, 5)
+    };
+    Geometry mp = this.getGeometryFactory().createMultiPointFromCoords(coords);
+    IsSimpleOp isSimpleOp = new IsSimpleOp(mp);
+    isSimpleOp.setFindAllLocations(true);
+
+    assertFalse(isSimpleOp.isSimple());
+    assertEquals(3, isSimpleOp.getNonSimpleLocations().size());
   }
 
   private void checkIsSimple(String wkt, BoundaryNodeRule bnRule, boolean expectedResult)
