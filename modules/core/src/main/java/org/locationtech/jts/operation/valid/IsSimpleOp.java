@@ -203,21 +203,21 @@ public class IsSimpleOp
   private boolean isSimpleMultiPoint(MultiPoint mp)
   {
     if (mp.isEmpty()) return true;
-    boolean res = true;
+    boolean isSimple = true;
     Set<Coordinate> points = new HashSet<Coordinate>();
     for (int i = 0; i < mp.getNumGeometries(); i++) {
       Point pt = (Point) mp.getGeometryN(i);
       Coordinate p = pt.getCoordinate();
       if (points.contains(p)) {
         nonSimplePts.add(p);
-        res = false;
+        isSimple = false;
         if (!isFindAllLocations)
           break;
       }
       else
         points.add(p);
     }
-    return res;
+    return isSimple;
   }
 
   /**
@@ -230,17 +230,17 @@ public class IsSimpleOp
    */
   private boolean isSimplePolygonal(Geometry geom)
   {
-    boolean res = true;
+    boolean isSimple = true;
     List<Geometry> rings = LinearComponentExtracter.getLines(geom);
     for (Geometry ring : rings) {
       if (! isSimpleLinearGeometry(ring))
       {
-        res = false;
+        isSimple = false;
         if (!isFindAllLocations)
           break;
       }
     }
-    return res;
+    return isSimple;
   }
 
   /**
@@ -252,17 +252,17 @@ public class IsSimpleOp
    */
   private boolean isSimpleGeometryCollection(Geometry geom)
   {
-    boolean res = true;
+    boolean isSimple = true;
     for (int i = 0; i < geom.getNumGeometries(); i++ ) {
       Geometry comp = geom.getGeometryN(i);
       if (! computeSimple(comp))
       {
-        res = false;
+        isSimple = false;
         if (!isFindAllLocations)
           break;
       }
     }
-    return res;
+    return isSimple;
   }
 
   private boolean isSimpleLinearGeometry(Geometry geom)
