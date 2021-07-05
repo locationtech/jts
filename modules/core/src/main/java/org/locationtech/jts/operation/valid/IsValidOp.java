@@ -515,66 +515,15 @@ public class IsValidOp
    */
   private void checkShellsNested(MultiPolygon mp)
   {
-    for (int i = 0; i < mp.getNumGeometries(); i++) {
-      Polygon p = (Polygon) mp.getGeometryN(i);
-      if (p.isEmpty())
-        continue;
-      LinearRing shell = p.getExteriorRing();
-      for (int j = 0; j < mp.getNumGeometries(); j++) {
-        if (i == j) continue;
-        Polygon p2 = (Polygon) mp.getGeometryN(j);
-        Coordinate invalidPt = findShellSegmentInPolygon(shell, p2);
-        if (invalidPt != null) {
-          logInvalid(TopologyValidationError.NESTED_SHELLS,
-              invalidPt);
-          return;
-        }
-      }
+    // skip test if only one shell present
+    if (mp.getNumGeometries() <= 1) return;
+    
+    IndexedNestedPolygonTester nestedTester = new IndexedNestedPolygonTester(mp);
+    if ( nestedTester.isNested() ) {
+      logInvalid(TopologyValidationError.NESTED_SHELLS,
+                            nestedTester.getNestedPoint());
     }
-  }
-
-  /**
-   * Finds a point of a shell segment which lies inside a polygon, if any.
-   * The shell is assume to touch the polyon only at shell vertices, 
-   * and does not cross the polygon.
-   * 
-   * @param the shell to test
-   * @param the polygon to test against
-   * @return an interior segment point, or null if the shell is nested correctly
-   */
-  private Coordinate findShellSegmentInPolygon(LinearRing shell, Polygon poly)
-  {
-    LinearRing polyShell = poly.getExteriorRing();
-    if (polyShell.isEmpty()) return null;
-    
-    //--- if envelope is not covered --> not nested
-    if (! poly.getEnvelopeInternal().covers(shell.getEnvelopeInternal()))
-      return null;
-    
-    Coordinate shell0 = shell.getCoordinateN(0);
-    Coordinate shell1 = shell.getCoordinateN(1);
-    
-    if (! PolygonTopologyAnalyzer.isSegmentInRing(shell0, shell1, polyShell))
-      return null;
-
-    /**
-     * Check if the shell is inside a hole (if there are any). 
-     * If so this is valid.
-     */
-    for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-      LinearRing hole = poly.getInteriorRingN(i);
-      if (hole.getEnvelopeInternal().covers(shell.getEnvelopeInternal())
-          && PolygonTopologyAnalyzer.isSegmentInRing(shell0, shell1, hole)) {
-        return null;
-      }
-    }
-    
-    /**
-     * The shell is contained in the polygon, but is not contained in a hole.
-     * This is invalid.
-     */
-    return shell0;
-  } 
+  }  
  
   private void checkInteriorDisconnected(PolygonTopologyAnalyzer analyzer) {
     if (analyzer.isInteriorDisconnected()) {
