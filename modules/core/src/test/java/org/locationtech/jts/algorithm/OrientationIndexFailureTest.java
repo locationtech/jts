@@ -53,6 +53,19 @@ public class OrientationIndexFailureTest
     checkOrientation(pts);
   }
 
+  // disabled beause it is a failure in the DD algorithm
+  /*
+  public void testJTS750() throws Exception
+  {
+    Coordinate[] pts = {
+      new Coordinate(0, 100),
+      new Coordinate(1, 102.1082),
+      new Coordinate(3, 106.3246),
+    };
+    checkOrientation(pts);
+  }
+*/
+  
   public void testBadCCW2() throws Exception
   {
     // this case fails because subtraction of small from large loses precision
