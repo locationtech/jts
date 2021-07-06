@@ -298,11 +298,6 @@ public class IsSimpleOp
     LineIntersector li = new RobustLineIntersector();
     private final List<Coordinate> intersectionPts;
 
-    //private boolean hasInteriorInt;
-    //private boolean hasInteriorVertexInt;
-    //private boolean hasEqualSegments;
-    //private boolean hasInteriorEndpointInt;
-
     public NonSimpleIntersectionFinder(boolean isClosedEndpointsInInterior, boolean isFindAll, List<Coordinate> intersectionPts) {
       this.isClosedEndpointsInInterior =isClosedEndpointsInInterior;
       this.isFindAll = isFindAll;
