@@ -36,7 +36,7 @@ public class HtmlSvgTestWriter {
 
   public String write(TestCaseList tcList) {
     StringBuilder sb = new StringBuilder();
-    appendln(sb, "<head>");
+    appendln(sb, "<html>");
     writeStyles(sb);
     appendln(sb, "<body>");
     sb.append(defsMarkers());
