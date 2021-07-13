@@ -108,6 +108,8 @@ implements SegmentIntersector
       return NO_INVALID_INTERSECTION;
     }
     
+    boolean isSameSegString = ss0 == ss1;
+    
     /**
      * Check for an intersection in the interior of both segments.
      * Collinear intersections by definition contain an interior intersection.
@@ -115,7 +117,7 @@ implements SegmentIntersector
      * or adjacent rings.
      */
     if (li.isProper() || li.getIntersectionNum() >= 2) {
-      return TopologyValidationError.SELF_INTERSECTION;
+      return selfIntersectionCode(isSameSegString);
     }
     
     /**
@@ -129,7 +131,6 @@ implements SegmentIntersector
      * (since they are not collinear).
      * This is valid.
      */
-    boolean isSameSegString = ss0 == ss1;
     boolean isAdjacentSegments = isSameSegString && isAdjacentInRing(ss0, segIndex0, segIndex1);
     // Assert: intersection is an endpoint of both segs
     if (isAdjacentSegments) return NO_INVALID_INTERSECTION;      
@@ -139,7 +140,7 @@ implements SegmentIntersector
      * So the intersection is invalid.
      */
     if (isSameSegString && ! isInvertedRingValid) {
-      return TopologyValidationError.SELF_INTERSECTION;
+      return TopologyValidationError.RING_SELF_INTERSECTION;
     }
     
     /**
@@ -169,7 +170,7 @@ implements SegmentIntersector
     }
     boolean hasCrossing = PolygonNode.isCrossing(intPt, e00, e01, e10, e11); 
     if (hasCrossing) {
-      return TopologyValidationError.SELF_INTERSECTION;
+      return selfIntersectionCode(isSameSegString);
     }
     
     /**
@@ -195,6 +196,11 @@ implements SegmentIntersector
     }
     
     return NO_INVALID_INTERSECTION;
+  }
+
+  private static int selfIntersectionCode(boolean isSameRing) {
+    return isSameRing ? TopologyValidationError.RING_SELF_INTERSECTION 
+        : TopologyValidationError.SELF_INTERSECTION;
   }
 
   private boolean addDoubleTouch(SegmentString ss0, SegmentString ss1, Coordinate intPt) {
