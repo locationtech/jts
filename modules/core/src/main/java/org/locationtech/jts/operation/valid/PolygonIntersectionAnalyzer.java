@@ -113,8 +113,6 @@ implements SegmentIntersector
     /**
      * Check for an intersection in the interior of both segments.
      * Collinear intersections by definition contain an interior intersection.
-     * They occur in either a zero-width spike or gore,
-     * or adjacent rings.
      */
     if (li.isProper() || li.getIntersectionNum() >= 2) {
       return TopologyValidationError.SELF_INTERSECTION;
@@ -138,6 +136,8 @@ implements SegmentIntersector
     /**
      * Under OGC semantics, rings cannot self-intersect.
      * So the intersection is invalid.
+     * 
+     * The return of RING_SELF_INTERSECTION is to match the previous IsValid semantics.
      */
     if (isSameSegString && ! isInvertedRingValid) {
       return TopologyValidationError.RING_SELF_INTERSECTION;
