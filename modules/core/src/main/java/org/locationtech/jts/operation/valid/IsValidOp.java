@@ -89,8 +89,8 @@ public class IsValidOp
    * If this flag is set, the following Self-Touching conditions
    * are treated as being valid:
    * <ul>
-   * <li>the shell ring self-touches to create a hole touching the shell
-   * <li>a hole ring self-touches to create two holes touching at a point
+   * <li><b>inverted shell</b> - the shell ring self-touches to create a hole touching the shell
+   * <li><b>exverted hole</b> - a hole ring self-touches to create two holes touching at a point
    * </ul>
    * <p>
    * The default (following the OGC SFS standard)
