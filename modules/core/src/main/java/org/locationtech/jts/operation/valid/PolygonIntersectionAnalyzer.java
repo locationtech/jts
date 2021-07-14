@@ -113,11 +113,9 @@ implements SegmentIntersector
     /**
      * Check for an intersection in the interior of both segments.
      * Collinear intersections by definition contain an interior intersection.
-     * They occur in either a zero-width spike or gore,
-     * or adjacent rings.
      */
     if (li.isProper() || li.getIntersectionNum() >= 2) {
-      return selfIntersectionCode(isSameSegString);
+      return TopologyValidationError.SELF_INTERSECTION;
     }
     
     /**
@@ -138,6 +136,8 @@ implements SegmentIntersector
     /**
      * Under OGC semantics, rings cannot self-intersect.
      * So the intersection is invalid.
+     * 
+     * The return of RING_SELF_INTERSECTION is to match the previous IsValid semantics.
      */
     if (isSameSegString && ! isInvertedRingValid) {
       return TopologyValidationError.RING_SELF_INTERSECTION;
@@ -170,7 +170,7 @@ implements SegmentIntersector
     }
     boolean hasCrossing = PolygonNode.isCrossing(intPt, e00, e01, e10, e11); 
     if (hasCrossing) {
-      return selfIntersectionCode(isSameSegString);
+      return TopologyValidationError.SELF_INTERSECTION;
     }
     
     /**
@@ -196,11 +196,6 @@ implements SegmentIntersector
     }
     
     return NO_INVALID_INTERSECTION;
-  }
-
-  private static int selfIntersectionCode(boolean isSameRing) {
-    return isSameRing ? TopologyValidationError.RING_SELF_INTERSECTION 
-        : TopologyValidationError.SELF_INTERSECTION;
   }
 
   private boolean addDoubleTouch(SegmentString ss0, SegmentString ss1, Coordinate intPt) {

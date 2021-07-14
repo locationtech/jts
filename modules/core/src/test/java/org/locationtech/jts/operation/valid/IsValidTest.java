@@ -59,13 +59,18 @@ public class IsValidTest extends GeometryTestCase {
   }
 
   public void testInvalidSimplePolygonRingSelfIntersection() {
-    checkInvalid( TopologyValidationError.RING_SELF_INTERSECTION,
+    checkInvalid( TopologyValidationError.SELF_INTERSECTION,
         "POLYGON ((10 90, 90 10, 90 90, 10 10, 10 90))");
   }
 
   public void testInvalidPolygonInverted() {
     checkInvalid( TopologyValidationError.RING_SELF_INTERSECTION,
         "POLYGON ((70 250, 40 500, 100 400, 70 250, 80 350, 60 350, 70 250))");
+  }
+
+  public void testInvalidPolygonSelfCrossing() {
+    checkInvalid( TopologyValidationError.SELF_INTERSECTION,
+        "POLYGON ((70 250, 70 500, 80 400, 40 400, 70 250))");
   }
 
   public void testSimplePolygonHole() {
