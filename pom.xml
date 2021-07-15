@@ -15,8 +15,14 @@
     Build JTS Topology Suite and install in local repository:
        mvn install
 
-    Build everything and skip tests:
+    Build and skip tests:
        mvn clean install -DskipTests
+
+    Build and generate javadocs jars:
+       mvn clean install -Pjavadoc
+
+    Build only javadoc jars:
+       mvn javadoc:javadoc -Pjavadoc
 
     Setup for eclipse development:
        mvn eclipse:eclipse
@@ -179,6 +185,63 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>javadoc</id>
+            <activation>
+                <property>
+                    <name>release</name> <!-- include javadocs in release -->
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <!-- javadoc build configuration generates "attached" javadoc bundles for mvn deploy -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.0.0-M1</version>
+                        <configuration>
+                            <show>public</show>
+                            <header>${project.name} ${project.version}</header>
+                            <footer>${project.name} ${project.version}</footer>
+                            <overview>${basedir}/modules/core/src/main/javadoc/overview.html</overview>
+
+                            <excludePackageNames>org.locationtech.jtsexample.*,org.locationtech.jtstest,org.locationtech.jtstest.*</excludePackageNames>
+                            <!--failOnError>false</failOnError--> <!-- javadocs do not build right now -->
+                            <groups>
+                                <group>
+                                    <title>Core - Geometry</title>
+                                    <packages>org.locationtech.jts.geom:org.locationtech.jts.geom.*</packages>
+                                </group>
+                                <group>
+                                    <title>Core - I/O</title>
+                                    <packages>org.locationtech.jts.io</packages>
+                                </group>
+                                <group>
+                                    <title>Core - Algorithms</title>
+                                    <packages>org.locationtech.jts.algorithm:org.locationtech.jts.algorithm.*:org.locationtech.jts.densify:org.locationtech.jts.dissolve:org.locationtech.jts.linearref:org.locationtech.jts.operation.*:org.locationtech.jts.simplify:org.locationtech.jts.triangulate</packages>
+                                </group>
+                                <group>
+                                    <title>Core - Other</title>
+                                    <packages>org.locationtech.jts:org.locationtech.jts.*</packages>
+                                </group>
+                                <group>
+                                    <title>I/O - Common</title>
+                                    <packages>org.locationtech.jts.io.*</packages>
+                                </group>
+                            </groups>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 
     <!-- =========================================================== -->
@@ -201,50 +264,6 @@
                         <exclude>**/jts/perf/**/*.java</exclude>
                     </excludes>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0-M1</version>
-                <configuration>
-                    <show>public</show>
-                    <header>${project.name} ${project.version}</header>
-                    <footer>${project.name} ${project.version}</footer>
-                    <overview>${basedir}/modules/core/src/main/javadoc/overview.html</overview>
-
-                    <excludePackageNames>org.locationtech.jtsexample.*,org.locationtech.jtstest,org.locationtech.jtstest.*</excludePackageNames>
-                    <failOnError>false</failOnError>
-                    <groups>
-                        <group>
-                            <title>Core - Geometry</title>
-                            <packages>org.locationtech.jts.geom:org.locationtech.jts.geom.*</packages>
-                        </group>
-                        <group>
-                            <title>Core - I/O</title>
-                            <packages>org.locationtech.jts.io</packages>
-                        </group>
-                        <group>
-                            <title>Core - Algorithms</title>
-                            <packages>org.locationtech.jts.algorithm:org.locationtech.jts.algorithm.*:org.locationtech.jts.densify:org.locationtech.jts.dissolve:org.locationtech.jts.linearref:org.locationtech.jts.operation.*:org.locationtech.jts.simplify:org.locationtech.jts.triangulate</packages>
-                        </group>
-                        <group>
-                            <title>Core - Other</title>
-                            <packages>org.locationtech.jts:org.locationtech.jts.*</packages>
-                        </group>
-                        <group>
-                            <title>I/O - Common</title>
-                            <packages>org.locationtech.jts.io.*</packages>
-                        </group>
-                    </groups>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
