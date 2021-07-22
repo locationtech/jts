@@ -55,7 +55,7 @@ public class PolygonTriangulatorTest extends GeometryTestCase {
   
   private void checkTri(String wkt, String wktExpected) {
     Geometry geom = read(wkt);
-    Geometry actual = PolygonTriangulator.triangulate(geom);
+    Geometry actual = PolygonTriangulator.constrainedDelaunay(geom);
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
   }
@@ -66,7 +66,7 @@ public class PolygonTriangulatorTest extends GeometryTestCase {
    */
   private void checkTri(String wkt) {
     Geometry geom = read(wkt);
-    Geometry actual = PolygonTriangulator.triangulate(geom);
+    Geometry actual = PolygonTriangulator.constrainedDelaunay(geom);
     Geometry actualUnion = actual.union();
     checkEqual(geom, actualUnion);
   }

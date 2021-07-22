@@ -23,39 +23,39 @@ import org.locationtech.jts.triangulatepoly.tri.Tri;
 
 public class PolygonTriangulator {
 
+  public static Geometry constrainedDelaunay(Geometry geom) {
+    PolygonTriangulator clipper = new PolygonTriangulator(geom);
+    clipper.setConstrainedDelaunay(true);
+    return clipper.compute();
+  }
+  
   public static Geometry triangulate(Geometry geom) {
     PolygonTriangulator clipper = new PolygonTriangulator(geom);
     return clipper.compute();
   }
   
-  public static Geometry triangulateRaw(Geometry geom) {
-    PolygonTriangulator clipper = new PolygonTriangulator(geom);
-    clipper.setImprove(false);
-    return clipper.compute();
-  }
-  
-  private final GeometryFactory gf;
+  private final GeometryFactory geomFact;
   private final Geometry inputGeom;
-  private boolean isImprove = true;
+  private boolean isConstrainedDelaunay = false;
 
   /**
-   * Constructs a new polygon triangulator.
+   * Constructs a new triangulator.
    * 
    * @param inputGeom the input geometry
    */
   public PolygonTriangulator(Geometry inputGeom) {
-    gf = new GeometryFactory();
+    geomFact = new GeometryFactory();
     this.inputGeom = inputGeom;
   }
 
   /**
-   * Sets whether the triangulation quality should be improved
-   * after computation.
+   * Sets whether the triangulation should be 
+   * turned into a Constrained Delaunay triangulation.
    * 
    * @param isImproved true if the triangulation quality is improved
    */
-  public void setImprove(boolean isImproved) {
-    this.isImprove = isImproved;
+  public void setConstrainedDelaunay(boolean isCDT) {
+    this.isConstrainedDelaunay = isCDT;
   }
 
   private Geometry compute() {
@@ -64,10 +64,10 @@ public class PolygonTriangulator {
     for (Polygon poly : polys) {
       List<Tri> triList = triangulatePolygon(poly);
       for (Tri tri: triList) {
-        triPolys.add(tri.toPolygon(gf));
+        triPolys.add(tri.toPolygon(geomFact));
       }
     }
-    return gf.createGeometryCollection(GeometryFactory.toGeometryArray(triPolys));
+    return geomFact.createGeometryCollection(GeometryFactory.toGeometryArray(triPolys));
   }
  
   /**
@@ -87,7 +87,7 @@ public class PolygonTriangulator {
     List<Tri> triList = EarClipper.clip(polyShell);
     //Tri.validate(triList);
     
-    if ( isImprove ) {
+    if ( isConstrainedDelaunay ) {
       //long start = System.currentTimeMillis();
       DelaunayImprover improver = new DelaunayImprover();
       improver.improve(triList);

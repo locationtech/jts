@@ -19,12 +19,12 @@ public class TriangulatePolyFunctions
 {
   public static Geometry triangulate(Geometry geom)
   {
-    return PolygonTriangulator.triangulateRaw(geom);
+    return PolygonTriangulator.triangulate(geom);
   }
 
   public static Geometry constrainedDelaunay(Geometry geom)
   {
-    return PolygonTriangulator.triangulate(geom);
+    return PolygonTriangulator.constrainedDelaunay(geom);
   }
 
 
