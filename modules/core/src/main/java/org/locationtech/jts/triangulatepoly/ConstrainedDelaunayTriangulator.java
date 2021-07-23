@@ -21,23 +21,30 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
 import org.locationtech.jts.triangulatepoly.tri.TriDelaunaySwapper;
+import org.locationtech.jts.triangulatepoly.tri.TriangulationBuilder;
 
-public class PolygonTriangulator {
+public class ConstrainedDelaunayTriangulator {
   
+  /**
+   * Triangulates the polgons in a geometry.
+   * 
+   * @param geom the input geometry
+   * @return a collection of the compute triangles
+   */
   public static Geometry triangulate(Geometry geom) {
-    PolygonTriangulator clipper = new PolygonTriangulator(geom);
-    return clipper.compute();
+    ConstrainedDelaunayTriangulator cdt = new ConstrainedDelaunayTriangulator(geom);
+    return cdt.compute();
   }
   
   private final GeometryFactory geomFact;
   private final Geometry inputGeom;
 
   /**
-   * Constructs a new triangulator.
+   * Constructs a new Constrained Delaunay triangulator.
    * 
    * @param inputGeom the input geometry
    */
-  public PolygonTriangulator(Geometry inputGeom) {
+  public ConstrainedDelaunayTriangulator(Geometry inputGeom) {
     geomFact = new GeometryFactory();
     this.inputGeom = inputGeom;
   }
@@ -59,7 +66,7 @@ public class PolygonTriangulator {
    * 
    * @return GeometryCollection of triangular polygons
    */
-  private List<Tri> triangulatePolygon(Polygon poly) {
+  List<Tri> triangulatePolygon(Polygon poly) {
     /**
      * Normalize to ensure that shell and holes have canonical orientation.
      * 
@@ -67,9 +74,12 @@ public class PolygonTriangulator {
      */
     Polygon polyNorm = (Polygon) poly.norm();
     List<Coordinate> polyShell = PolygonHoleJoiner.joinPoints(polyNorm);
-    
     List<Tri> triList = PolygonEarClipper.clip(polyShell);
-    //Tri.validate(triList);
+    
+    //long start = System.currentTimeMillis();
+    TriangulationBuilder.build(triList);
+    TriDelaunaySwapper.swap(triList);
+    //System.out.println("swap used: " + (System.currentTimeMillis() - start) + " milliseconds");
 
     return triList;
   }

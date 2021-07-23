@@ -12,18 +12,17 @@
 package org.locationtech.jts.triangulatepoly;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.triangulatepoly.PolygonTriangulator;
 
 import junit.textui.TestRunner;
 import test.jts.GeometryTestCase;
 
-public class PolygonTriangulatorTest extends GeometryTestCase {
+public class ConstrainedDelaunayTriangulatorTest extends GeometryTestCase {
 
   public static void main(String args[]) {
-    TestRunner.run(PolygonTriangulatorTest.class);
+    TestRunner.run(ConstrainedDelaunayTriangulatorTest.class);
   }
   
-  public PolygonTriangulatorTest(String name) {
+  public ConstrainedDelaunayTriangulatorTest(String name) {
     super(name);
   }
 
@@ -55,7 +54,7 @@ public class PolygonTriangulatorTest extends GeometryTestCase {
   
   private void checkTri(String wkt, String wktExpected) {
     Geometry geom = read(wkt);
-    Geometry actual = PolygonTriangulator.constrainedDelaunay(geom);
+    Geometry actual = ConstrainedDelaunayTriangulator.triangulate(geom);
     Geometry expected = read(wktExpected);
     checkEqual(expected, actual);
   }
@@ -66,7 +65,7 @@ public class PolygonTriangulatorTest extends GeometryTestCase {
    */
   private void checkTri(String wkt) {
     Geometry geom = read(wkt);
-    Geometry actual = PolygonTriangulator.constrainedDelaunay(geom);
+    Geometry actual = ConstrainedDelaunayTriangulator.triangulate(geom);
     Geometry actualUnion = actual.union();
     checkEqual(geom, actualUnion);
   }

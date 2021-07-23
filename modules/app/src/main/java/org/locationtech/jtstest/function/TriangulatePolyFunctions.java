@@ -12,6 +12,7 @@
 package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.triangulatepoly.ConstrainedDelaunayTriangulator;
 import org.locationtech.jts.triangulatepoly.PolygonTriangulator;
 
 
@@ -24,7 +25,7 @@ public class TriangulatePolyFunctions
 
   public static Geometry constrainedDelaunay(Geometry geom)
   {
-    return PolygonTriangulator.constrainedDelaunay(geom);
+    return ConstrainedDelaunayTriangulator.triangulate(geom);
   }
 
 

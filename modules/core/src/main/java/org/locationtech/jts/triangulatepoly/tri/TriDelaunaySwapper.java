@@ -40,7 +40,6 @@ public class TriDelaunaySwapper {
   }
 
   private void swap() {
-    TriangulationBuilder.build(triList);
     for (int i = 0; i < MAX_ITERATION; i++) {
       int improveCount = swapAll(triList);
       //System.out.println("improve #" + i + " - count = " + improveCount);

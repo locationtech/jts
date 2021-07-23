@@ -39,8 +39,8 @@ public class ApproximateMedialAxis {
   }
   
   private Geometry compute() {
-    PolygonTriangulator polyTri = new PolygonTriangulator(inputPolygon);
-    List<Tri> tris = polyTri.triangulatePolygon(inputPolygon);
+    ConstrainedDelaunayTriangulator cdt = new ConstrainedDelaunayTriangulator(inputPolygon);
+    List<Tri> tris = cdt.triangulatePolygon(inputPolygon);
     
     for (Tri tri : tris) {
       if (tri.numAdjacent() == 1) {
