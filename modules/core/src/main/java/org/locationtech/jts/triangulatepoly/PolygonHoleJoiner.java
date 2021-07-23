@@ -12,7 +12,6 @@
 package org.locationtech.jts.triangulatepoly;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -40,8 +39,7 @@ import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 public class PolygonHoleJoiner {
   
   public static Polygon joinGeometry(Polygon inputPolygon) {
-    PolygonHoleJoiner joiner = new PolygonHoleJoiner(inputPolygon);
-    List<Coordinate> pts = joiner.compute();
+    List<Coordinate> pts = joinPoints(inputPolygon);
     Coordinate[] coords = CoordinateArrays.toCoordinateArray(pts);
     return inputPolygon.getFactory().createPolygon(coords);
   }
@@ -85,9 +83,9 @@ public class PolygonHoleJoiner {
     return shellCoords;
   }
 
-  private List<Coordinate> ringCoordinates(LinearRing ring) {
+  private static List<Coordinate> ringCoordinates(LinearRing ring) {
     Coordinate[] coords = ring.getCoordinates();
-    List<Coordinate> coordList = new ArrayList();
+    List<Coordinate> coordList = new ArrayList<Coordinate>();
     for (Coordinate p : coords) {
       coordList.add(p);
     }
