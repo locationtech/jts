@@ -92,7 +92,7 @@ public class DelaunayImprover {
     if ( ! isDelaunay(opp0, adj0, adj1, opp1) ) {
       //tri0.flip(tri1);
       //-- already have index and vertex data so use it
-      tri0.flip(tri1, index0, index1, adj0, adj1, opp0, opp1);
+      tri0.swap(tri1, index0, index1, adj0, adj1, opp0, opp1);
       return true;
     }
     return false;

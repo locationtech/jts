@@ -35,29 +35,6 @@ public class Triangulation {
     TriEdge e = new TriEdge(p0, p1);
     return triMap.get(e);
   }
-
-  /**
-   * Add triangle represented by coords to TriMap and update its neighbors
-   * 
-   * @param pts
-   * @return
-   */
-  /*
-  public Tri add(Coordinate[] pts) {
-    Tri tri = new Tri(pts[0], pts[1], pts[2]);
-    // get adjacent triangles, if any
-    Tri n0 = find(pts[0], pts[1]);
-    Tri n1 = find(pts[1], pts[2]);
-    Tri n2 = find(pts[2], pts[0]);
-    
-    tri.setAdjacent(n0, n1, n2);
-    addAdjacent(n0, tri, pts[0], pts[1]);
-    addAdjacent(n1, tri, pts[1], pts[2]);
-    addAdjacent(n2, tri, pts[2], pts[0]);
-
-    return tri;
-  }
-  */
   
   private void add(Tri tri) {
     Coordinate p0 = tri.getCoordinate(0);

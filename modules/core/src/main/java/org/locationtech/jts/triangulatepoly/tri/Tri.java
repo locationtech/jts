@@ -80,7 +80,7 @@ public class Tri {
     Assert.shouldNeverReachHere();
   }
 
-  private void setCoordinate(Coordinate p0, Coordinate p1, Coordinate p2) {
+  private void setCoordinates(Coordinate p0, Coordinate p1, Coordinate p2) {
     this.p0 = p0;
     this.p1 = p1;
     this.p2 = p2;
@@ -99,7 +99,7 @@ public class Tri {
    * @param triOld
    * @param triNew
    */
-  public void updateAdjacent(Tri triOld, Tri triNew) {
+  private void replace(Tri triOld, Tri triNew) {
     if ( tri0 != null && tri0 == triOld ) {
       tri0 = triNew;
     } else if ( tri1 != null && tri1 == triOld ) {
@@ -126,7 +126,7 @@ public class Tri {
     return tt0;
   }
   
-  public void flip(Tri tri) {
+  public void swap(Tri tri) {
     int index0 = getIndex(tri);
     int index1 = tri.getIndex(this);
 
@@ -135,29 +135,30 @@ public class Tri {
     Coordinate opp0 = getCoordinate(opp(index0));
     Coordinate opp1 = tri.getCoordinate(opp(index1));
     
-    flip(tri, index0, index1, adj0, adj1, opp0, opp1);
+    swap(tri, index0, index1, adj0, adj1, opp0, opp1);
   }
   
-  public void flip(Tri tri, int index0, int index1, Coordinate adj0, Coordinate adj1, Coordinate opp0, Coordinate opp1) {
-    //System.out.println("Flipping: " + this + " -> " + tri);
+  public void swap(Tri tri, int index0, int index1, Coordinate adj0, Coordinate adj1, Coordinate opp0, Coordinate opp1) {
+    //System.out.println("Swapping: " + this + " -> " + tri);
     
     //validate();
     //tri.validate();
     
-    this.setCoordinate(opp1, opp0, adj0);
-    tri.setCoordinate(opp0, opp1, adj1);
+    this.setCoordinates(opp1, opp0, adj0);
+    tri.setCoordinates(opp0, opp1, adj1);
     /**
      *  Order: 0: opp0-adj0 edge, 1: opp0-adj1 edge, 
      *  2: opp1-adj0 edge, 3: opp1-adj1 edge
      */
     Tri[] adjacent = getAdjacentTris(tri, index0, index1);
     this.setAdjacent(tri, adjacent[0], adjacent[2]);
+    //--- update the adjacent triangles with new adjacency
     if ( adjacent[2] != null ) {
-      adjacent[2].updateAdjacent(tri, this);
+      adjacent[2].replace(tri, this);
     }
     tri.setAdjacent(this, adjacent[3], adjacent[1]);
     if ( adjacent[1] != null ) {
-      adjacent[1].updateAdjacent(this, tri);
+      adjacent[1].replace(this, tri);
     }
     //validate();
     //tri.validate();

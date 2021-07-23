@@ -22,8 +22,19 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
-import org.locationtech.jts.triangulatepoly.tri.Triangulation;
 
+/**
+ * Triangulates a polygon via the classic Ear Clipping technique.
+ * The polygon is provided as a closed list of vertices
+ * defining its boundary.
+ * 
+ * It must not self-cross, but may self-touch and have coincident edges.
+ * Polygons with holes may be triangulated by preparing them 
+ * with {@link HoleJoiner}.
+ * 
+ * @author mdavis
+ *
+ */
 class EarClipper {
   
   public static List<Tri> clip(List<Coordinate> polyBoundary) {
@@ -32,45 +43,52 @@ class EarClipper {
   }
   
   /**
-   * The polygon coordinates are maintain in CW order. This means that for convex
+   * The polygon vertices are maintain in CW order. This means that for convex
    * interior angles, the vertices forming the angle are in CW orientation.
    */
-  private final List<Coordinate> polyVertex;
+  private final List<Coordinate> vertex;
+  
   private final int[] vertexNext;
   private int vertexSize;
-  // index for current candidate corner
+  // first available vertex index
+  private int vertexFirst;
+  
+  // indices for current candidate corner
   public int[] cornerCandidate;
-  // first available coordinate index
-  private int firstAvailable;
 
   public EarClipper(List<Coordinate> polyVertex) {
-    this.polyVertex = polyVertex;
+    this.vertex = polyVertex;
     
     // init working storage
-    vertexSize = polyVertex.size() - 1;
-    vertexNext = new int[vertexSize];
-    for (int i = 0; i < vertexSize; i++) {
-      vertexNext[i] = i + 1;
-    }
-    vertexNext[vertexSize - 1] = 0;
+    vertexSize = this.vertex.size() - 1;
+    vertexNext = createNextList(vertexSize);
+    vertexFirst = 0;
+    
     cornerCandidate = new int[3];
     cornerCandidate[0] = 0;
     cornerCandidate[1] = 1;
     cornerCandidate[2] = 2;
-    firstAvailable = 0;
+  }
+
+  private static int[] createNextList(int size) {
+    int[] next = new int[size];
+    for (int i = 0; i < size; i++) {
+      next[i] = i + 1;
+    }
+    next[size - 1] = 0;
+    return next;
   }
 
   public List<Tri> compute() {
     List<Tri> triList = new ArrayList<Tri>();
 
     int cornerCount = 0;
-    //--- find next convex corner (which is the next candidate ear)
     Coordinate[] corner = new Coordinate[3];
     nextCorner(false, corner);
     while (true) {
-      // foundEar = false;
+      //--- find next convex corner, which is the next candidate ear
       while (! isCW(corner)) {
-        // delete the "corner" if three points are in the same line
+        // delete the corner if it is flat
         if ( isCollinear(corner) ) {
           removeCorner();
           if ( vertexSize < 3 ) {
@@ -92,29 +110,36 @@ class EarClipper {
         cornerCount = 0;
       }
       /**
-       * Always skip to next corner - produces fewer skinny triangles.
+       * Always skip to next corner - creates fewer skinny triangles.
        */
       nextCorner(true, corner);
     }
   }
   
   /**
-   * Tests if the current corner triangle candidate is valid.
+   * Tests if a corner triangle is a valid ear.
+   * This is the case if:
+   * <ol>
+   * <li></li>
+   * <li></li>
+   * </ol>
    * 
    * @param corner the corner triangle to check
    * @return true if the corner is valid
    */
   private boolean isValidEar(Coordinate[] corner) {
     double angle = Angle.angleBetweenOriented(corner[0], corner[1], corner[2]);
-    int currIndex = nextIndex(firstAvailable);
-    int prevIndex = firstAvailable;
-    Coordinate prevV = polyVertex.get(prevIndex);
+    int currIndex = nextIndex(vertexFirst);
+    int prevIndex = vertexFirst;
+    Coordinate prevV = vertex.get(prevIndex);
     for (int i = 0; i < vertexSize; i++) {
-      Coordinate v = polyVertex.get(currIndex);
-      // when corner[1] occurs, cannot simply skip. It might occur
-      // multiple times and is connected with a hole
+      Coordinate v = vertex.get(currIndex);
+      /**
+       * when corner[1] occurs, cannot simply skip. It might occur
+       * multiple times and is connected with a hole
+       */
       if ( v.equals2D(corner[1]) ) {
-        Coordinate nextTmp = polyVertex.get(nextIndex(currIndex));
+        Coordinate nextTmp = vertex.get(nextIndex(currIndex));
         double aOut = Angle.angleBetweenOriented(corner[0], corner[1], nextTmp);
         double aIn = Angle.angleBetweenOriented(corner[0], corner[1], prevV);
         if ( aOut > 0 && aOut < angle ) {
@@ -149,8 +174,8 @@ class EarClipper {
    * Remove the corner apex and update the candidate corner location.
    */
   private void removeCorner() {
-    if ( firstAvailable == cornerCandidate[1] ) {
-      firstAvailable = vertexNext[cornerCandidate[1]];
+    if ( vertexFirst == cornerCandidate[1] ) {
+      vertexFirst = vertexNext[cornerCandidate[1]];
     }
     vertexNext[cornerCandidate[0]] = vertexNext[cornerCandidate[1]];
     vertexNext[cornerCandidate[1]] = -1;
@@ -176,9 +201,9 @@ class EarClipper {
     cornerCandidate[2] = nextIndex(cornerCandidate[1]);
     
     if (corner != null) {
-      corner[0] = polyVertex.get(cornerCandidate[0]); 
-      corner[1] = polyVertex.get(cornerCandidate[1]); 
-      corner[2] = polyVertex.get(cornerCandidate[2]); 
+      corner[0] = vertex.get(cornerCandidate[0]); 
+      corner[1] = vertex.get(cornerCandidate[1]); 
+      corner[2] = vertex.get(cornerCandidate[2]); 
     }
   }
 
@@ -204,14 +229,14 @@ class EarClipper {
   public Polygon toGeometry() {
     GeometryFactory fact = new GeometryFactory();
     CoordinateList coordList = new CoordinateList();
-    int availIndex = firstAvailable;
+    int index = vertexFirst;
     for (int i = 0; i < vertexSize; i++) {
-      Coordinate v = polyVertex.get(availIndex);
-      availIndex = nextIndex(availIndex);
+      Coordinate v = vertex.get(index);
+      index = nextIndex(index);
       // if (i < shellCoordAvailable.length && shellCoordAvailable.get(i))
       coordList.add(v, true);
     }
     coordList.closeRing();
-    return fact.createPolygon(fact.createLinearRing(coordList.toCoordinateArray()), null);
+    return fact.createPolygon(fact.createLinearRing(coordList.toCoordinateArray()));
   }
 }
