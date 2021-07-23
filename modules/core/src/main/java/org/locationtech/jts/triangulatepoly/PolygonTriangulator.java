@@ -55,7 +55,7 @@ public class PolygonTriangulator {
   }
  
   /**
-   * Performs the ear-clipping triangulation
+   * Computes the triangulation of a single polygon
    * 
    * @return GeometryCollection of triangular polygons
    */
