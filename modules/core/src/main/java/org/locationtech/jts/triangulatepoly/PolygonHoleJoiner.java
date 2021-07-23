@@ -25,6 +25,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
@@ -73,23 +74,30 @@ public class PolygonHoleJoiner {
    * @return the points in the joined ring
    */
   public List<Coordinate> compute() {
-    // defensively copy the input polygon
-    List<Coordinate> polyShellCoords = new ArrayList<Coordinate>();
-    Coordinate[] coords = inputPolygon.getExteriorRing().getCoordinates();
-    polyShellCoords.addAll(Arrays.asList(coords));
-    if ( inputPolygon.getNumInteriorRing() > 0 ) {
-      PreparedGeometryFactory pgFact = new PreparedGeometryFactory();
-      inputPrepGeom = pgFact.create(inputPolygon);
-      joinHoles(polyShellCoords);
+    //--- copy the input polygon shell coords
+    shellCoords = ringCoordinates(inputPolygon.getExteriorRing());
+    if ( inputPolygon.getNumInteriorRing() == 0 ) 
+      return shellCoords;
+    
+    PreparedGeometryFactory pgFact = new PreparedGeometryFactory();
+    inputPrepGeom = pgFact.create(inputPolygon);
+    joinHoles();
+    return shellCoords;
+  }
+
+  private List<Coordinate> ringCoordinates(LinearRing ring) {
+    Coordinate[] coords = ring.getCoordinates();
+    List<Coordinate> coordList = new ArrayList();
+    for (Coordinate p : coords) {
+      coordList.add(p);
     }
-    return polyShellCoords;
+    return coordList;
   }
   
   /**
    * @param shellCoords Shell Coordinates of the polygon.
    */
-  private void joinHoles(List<Coordinate> shellCoords) {
-    this.shellCoords = shellCoords;
+  private void joinHoles() {
     orderedCoords = new TreeSet<Coordinate>();
     orderedCoords.addAll(shellCoords);
     cutMap = new HashMap<Coordinate, ArrayList<Coordinate>>();
