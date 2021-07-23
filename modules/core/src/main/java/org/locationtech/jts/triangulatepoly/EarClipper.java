@@ -62,49 +62,43 @@ class EarClipper {
 
   public List<Tri> compute() {
     List<Tri> triList = new ArrayList<Tri>();
-    Triangulation triBuilder = new Triangulation();
 
-    boolean finished = false;
-    // boolean foundEar = false;
     int cornerCount = 0;
+    //--- find next convex corner (which is the next candidate ear)
+    Coordinate[] corner = new Coordinate[3];
     nextCorner(false);
-    // find next convex corner (which is the next candidate ear)
-    Coordinate[] cornerVert = getCornerCandidateVertices();
-    do {
+    readCorner(corner);
+    while (true) {
       // foundEar = false;
-      while (! isCW(cornerVert)) {
+      while (! isCW(corner)) {
         // delete the "corner" if three points are in the same line
-        if ( isCollinear(cornerVert) ) {
+        if ( isCollinear(corner) ) {
           removeCorner();
           if ( vertexSize < 3 ) {
             return triList;
           }
         }
         nextCorner(true);
-        cornerVert = getCornerCandidateVertices();
+        readCorner(corner);
       }
       cornerCount++;
       if ( cornerCount > 2 * vertexSize ) {
         throw new IllegalStateException("Unable to find a convex corner which is a valid ear");
       }
-      if ( isValidEar(cornerVert) ) {
-        // foundEar = true;
-        triList.add(triBuilder.add(cornerVert));
+      if ( isValidEar(corner) ) {
+        triList.add(Tri.create(corner));
         removeCorner();
         if ( vertexSize < 3 ) {
           return triList;
         }
         cornerCount = 0;
-        /**
-         * Skipping to next corner tends to produce fewer skinny triangles
-         */
-        nextCorner(true);
-      } else {
-        nextCorner(true);
       }
-      cornerVert = getCornerCandidateVertices();
-    } while (!finished);
-    return triList;
+      /**
+       * Always skip to next corner - produces fewer skinny triangles.
+       */
+      nextCorner(true);
+      readCorner(corner);
+    }
   }
 
   private boolean isCW(Coordinate[] pts) {
@@ -163,7 +157,7 @@ class EarClipper {
   }
 
   /**
-   * Remove corner[1] and update the candidate corner.
+   * Remove the corner apex and update the candidate corner location.
    */
   private void removeCorner() {
     if ( firstAvailable == cornerCandidate[1] ) {
@@ -176,14 +170,12 @@ class EarClipper {
   }
 
   /**
-   * Get the corner candidate coordinates based on current candidate index
-   * 
-   * @return
+   * Read the corner candidate coordinates based on current candidate index
    */
-  private Coordinate[] getCornerCandidateVertices() {
-    Coordinate[] coord = new Coordinate[] { polyVertex.get(cornerCandidate[0]), polyVertex.get(cornerCandidate[1]),
-        polyVertex.get(cornerCandidate[2]) };
-    return coord;
+  private void readCorner(Coordinate[] corner) {
+    corner[0] = polyVertex.get(cornerCandidate[0]); 
+    corner[1] = polyVertex.get(cornerCandidate[1]); 
+    corner[2] = polyVertex.get(cornerCandidate[2]); 
   }
 
   /**

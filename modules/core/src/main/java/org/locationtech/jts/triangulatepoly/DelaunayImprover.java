@@ -18,6 +18,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulate.quadedge.TrianglePredicate;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
+import org.locationtech.jts.triangulatepoly.tri.Triangulation;
 
 public class DelaunayImprover {
   private static int MAX_IMPROVE_SCAN = 20;
@@ -26,6 +27,7 @@ public class DelaunayImprover {
   }
 
   public void improve(List<Tri> triList) {
+    Triangulation triangulation = new Triangulation(triList);
     for (int i = 0; i < MAX_IMPROVE_SCAN; i++) {
       int improveCount = improveOnce(triList);
       //System.out.println("improve #" + i + " - count = " + improveCount);

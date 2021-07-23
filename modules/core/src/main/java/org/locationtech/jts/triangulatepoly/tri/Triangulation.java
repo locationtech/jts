@@ -12,6 +12,7 @@
 package org.locationtech.jts.triangulatepoly.tri;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 
@@ -21,6 +22,13 @@ public class Triangulation {
 
   public Triangulation() {
     triMap = new HashMap<TriEdge, Tri>();
+  }
+
+  public Triangulation(List<Tri> triList) {
+    triMap = new HashMap<TriEdge, Tri>();
+    for (Tri tri : triList) {
+      add(tri);
+    }
   }
 
   public Tri find(Coordinate p0, Coordinate p1) {
@@ -34,6 +42,7 @@ public class Triangulation {
    * @param pts
    * @return
    */
+  /*
   public Tri add(Coordinate[] pts) {
     Tri tri = new Tri(pts[0], pts[1], pts[2]);
     // get adjacent triangles, if any
@@ -47,6 +56,23 @@ public class Triangulation {
     addAdjacent(n2, tri, pts[2], pts[0]);
 
     return tri;
+  }
+  */
+  
+  private void add(Tri tri) {
+    Coordinate p0 = tri.getCoordinate(0);
+    Coordinate p1 = tri.getCoordinate(1);
+    Coordinate p2 = tri.getCoordinate(2);
+    
+    // get adjacent triangles, if any
+    Tri n0 = find(p0, p1);
+    Tri n1 = find(p1, p2);
+    Tri n2 = find(p2, p0);
+    
+    tri.setAdjacent(n0, n1, n2);
+    addAdjacent(n0, tri, p0, p1);
+    addAdjacent(n1, tri, p1, p2);
+    addAdjacent(n2, tri, p2, p0);
   }
   
   private void addAdjacent(Tri adj, Tri tri, Coordinate p0, Coordinate p1) {

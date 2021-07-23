@@ -24,6 +24,14 @@ import org.locationtech.jts.util.Assert;
 
 public class Tri {
 
+  public static Tri create(Coordinate p0, Coordinate p1, Coordinate p2) {
+    return new Tri(p0, p1, p2);
+  }
+  
+  public static Tri create(Coordinate[] pts) {
+    return new Tri(pts[0], pts[1], pts[2]);
+  }
+  
   public static Geometry toGeometry(List<Tri> triList, GeometryFactory geomFact) {
     Geometry[] geoms = new Geometry[triList.size()];
     for (int i = 0; i < triList.size(); i++) {
