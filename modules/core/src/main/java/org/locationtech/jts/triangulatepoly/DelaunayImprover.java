@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulate.quadedge.TrianglePredicate;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
 
@@ -116,13 +117,10 @@ public class DelaunayImprover {
   }
 
   private static boolean isInCircle(Coordinate a, Coordinate b, Coordinate c, Coordinate p) {
-    if ( isCCW(a, b, c) ) {
+    if ( Triangle.isCCW(a, b, c) ) {
       return TrianglePredicate.isInCircleRobust(a, b, c, p);
     }
     return TrianglePredicate.isInCircleRobust(a, c, b, p);
   }
 
-  private static boolean isCCW(Coordinate a, Coordinate b, Coordinate c) {
-    return Orientation.index(a, b, c) == Orientation.COUNTERCLOCKWISE;
-  }
 }

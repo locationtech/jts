@@ -16,11 +16,11 @@ import java.util.List;
 
 import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.Orientation;
-import org.locationtech.jts.algorithm.PointLocation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
 import org.locationtech.jts.triangulatepoly.tri.Triangulation;
 
@@ -75,7 +75,7 @@ class EarClipper {
       while (! isCW(cornerVert)) {
         // delete the "corner" if three points are in the same line
         if ( isCollinear(cornerVert) ) {
-          remove();
+          removeCorner();
           if ( vertexSize < 3 ) {
             return triList;
           }
@@ -90,7 +90,7 @@ class EarClipper {
       if ( isValidEar(cornerVert) ) {
         // foundEar = true;
         triList.add(triBuilder.add(cornerVert));
-        remove();
+        removeCorner();
         if ( vertexSize < 3 ) {
           return triList;
         }
@@ -123,8 +123,6 @@ class EarClipper {
    */
   private boolean isValidEar(Coordinate[] corner) {
     double angle = Angle.angleBetweenOriented(corner[0], corner[1], corner[2]);
-    Coordinate[] triRing = new Coordinate[] { corner[0], corner[1], corner[2],
-        corner[0] };
     int currIndex = nextIndex(firstAvailable);
     int prevIndex = firstAvailable;
     Coordinate prevV = polyVertex.get(prevIndex);
@@ -132,7 +130,7 @@ class EarClipper {
       Coordinate v = polyVertex.get(currIndex);
       // when corner[1] occurs, cannot simply skip. It might occur
       // multiple times and is connected with a hole
-      if ( v.equals2D(triRing[1]) ) {
+      if ( v.equals2D(corner[1]) ) {
         Coordinate nextTmp = polyVertex.get(nextIndex(currIndex));
         double aOut = Angle.angleBetweenOriented(corner[0], corner[1], nextTmp);
         double aIn = Angle.angleBetweenOriented(corner[0], corner[1], prevV);
@@ -153,11 +151,11 @@ class EarClipper {
       prevV = v;
       prevIndex = currIndex;
       currIndex = nextIndex(currIndex);
-      if ( v.equals2D(triRing[0]) || v.equals2D(triRing[2]) ) {
+      if ( v.equals2D(corner[0]) || v.equals2D(corner[2]) ) {
         continue;
       }
       // not valid if vertex is contained in tri
-      if ( PointLocation.isInRing(v, triRing) ) {
+      if ( Triangle.intersects(corner[0], corner[1], corner[2], v) ) {
         return false;
       }
     }
@@ -167,7 +165,7 @@ class EarClipper {
   /**
    * Remove corner[1] and update the candidate corner.
    */
-  private void remove() {
+  private void removeCorner() {
     if ( firstAvailable == cornerCandidate[1] ) {
       firstAvailable = vertexNext[cornerCandidate[1]];
     }
@@ -206,13 +204,13 @@ class EarClipper {
 
   /**
    * Get the index of the next available shell coordinate starting from the given
-   * candidate position.
+   * index.
    * 
-   * @param pos candidate position
+   * @param index candidate position
    * @return index of the next available shell coordinate
    */
-  private int nextIndex(int pos) {
-    return vertexNext[pos];
+  private int nextIndex(int index) {
+    return vertexNext[index];
   }
 
   public Polygon toGeometry() {
