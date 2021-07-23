@@ -66,8 +66,7 @@ class EarClipper {
     int cornerCount = 0;
     //--- find next convex corner (which is the next candidate ear)
     Coordinate[] corner = new Coordinate[3];
-    nextCorner(false);
-    readCorner(corner);
+    nextCorner(false, corner);
     while (true) {
       // foundEar = false;
       while (! isCW(corner)) {
@@ -78,8 +77,7 @@ class EarClipper {
             return triList;
           }
         }
-        nextCorner(true);
-        readCorner(corner);
+        nextCorner(true, corner);
       }
       cornerCount++;
       if ( cornerCount > 2 * vertexSize ) {
@@ -96,24 +94,15 @@ class EarClipper {
       /**
        * Always skip to next corner - produces fewer skinny triangles.
        */
-      nextCorner(true);
-      readCorner(corner);
+      nextCorner(true, corner);
     }
-  }
-
-  private boolean isCW(Coordinate[] pts) {
-    return Orientation.CLOCKWISE == Orientation.index(pts[0], pts[1], pts[2]);
-  }
-  
-  private static boolean isCollinear(Coordinate[] pts) {
-    return Orientation.COLLINEAR == Orientation.index(pts[0], pts[1], pts[2]);
   }
   
   /**
-   * Check if the current corner candidate is valid without using cover()
-   * @param corner 
+   * Tests if the current corner triangle candidate is valid.
    * 
-   * @return
+   * @param corner the corner triangle to check
+   * @return true if the corner is valid
    */
   private boolean isValidEar(Coordinate[] corner) {
     double angle = Angle.angleBetweenOriented(corner[0], corner[1], corner[2]);
@@ -148,7 +137,7 @@ class EarClipper {
       if ( v.equals2D(corner[0]) || v.equals2D(corner[2]) ) {
         continue;
       }
-      // not valid if vertex is contained in tri
+      // not valid if vertex is contained in corner triangle
       if ( Triangle.intersects(corner[0], corner[1], corner[2], v) ) {
         return false;
       }
@@ -166,24 +155,17 @@ class EarClipper {
     vertexNext[cornerCandidate[0]] = vertexNext[cornerCandidate[1]];
     vertexNext[cornerCandidate[1]] = -1;
     vertexSize--;
-    nextCorner(false);
-  }
-
-  /**
-   * Read the corner candidate coordinates based on current candidate index
-   */
-  private void readCorner(Coordinate[] corner) {
-    corner[0] = polyVertex.get(cornerCandidate[0]); 
-    corner[1] = polyVertex.get(cornerCandidate[1]); 
-    corner[2] = polyVertex.get(cornerCandidate[2]); 
+    nextCorner(false, null);
   }
 
   /**
    * Set to next corner candidate.
+   * Read the corner vertices if required.
    * 
    * @param moveFirst if corner[0] should be moved to next available coordinates.
+   * @param corner an array for the corner vertices
    */
-  private void nextCorner(boolean moveFirst) {
+  private void nextCorner(boolean moveFirst, Coordinate[] corner) {
     if ( vertexSize < 3 ) {
       return;
     }
@@ -192,6 +174,12 @@ class EarClipper {
     }
     cornerCandidate[1] = nextIndex(cornerCandidate[0]);
     cornerCandidate[2] = nextIndex(cornerCandidate[1]);
+    
+    if (corner != null) {
+      corner[0] = polyVertex.get(cornerCandidate[0]); 
+      corner[1] = polyVertex.get(cornerCandidate[1]); 
+      corner[2] = polyVertex.get(cornerCandidate[2]); 
+    }
   }
 
   /**
@@ -205,6 +193,14 @@ class EarClipper {
     return vertexNext[index];
   }
 
+  private static boolean isCW(Coordinate[] pts) {
+    return Orientation.CLOCKWISE == Orientation.index(pts[0], pts[1], pts[2]);
+  }
+  
+  private static boolean isCollinear(Coordinate[] pts) {
+    return Orientation.COLLINEAR == Orientation.index(pts[0], pts[1], pts[2]);
+  }
+  
   public Polygon toGeometry() {
     GeometryFactory fact = new GeometryFactory();
     CoordinateList coordList = new CoordinateList();
