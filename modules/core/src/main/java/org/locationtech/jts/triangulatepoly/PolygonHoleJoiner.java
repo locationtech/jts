@@ -35,17 +35,17 @@ import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
  * upwards. As the resulting shell develops, a hole might be added to what was
  * originally another hole.
  */
-public class HoleJoiner {
+public class PolygonHoleJoiner {
   
   public static Polygon joinHoles(Polygon inputPolygon) {
-    HoleJoiner joiner = new HoleJoiner(inputPolygon);
+    PolygonHoleJoiner joiner = new PolygonHoleJoiner(inputPolygon);
     List<Coordinate> pts = joiner.compute();
     Coordinate[] coords = CoordinateArrays.toCoordinateArray(pts);
     return inputPolygon.getFactory().createPolygon(coords);
   }
   
   public static List<Coordinate> computePoints(Polygon inputPolygon) {
-    HoleJoiner joiner = new HoleJoiner(inputPolygon);
+    PolygonHoleJoiner joiner = new PolygonHoleJoiner(inputPolygon);
     return joiner.compute();
   }
   
@@ -61,7 +61,7 @@ public class HoleJoiner {
 
   private Polygon inputPolygon;
 
-  public HoleJoiner(Polygon inputPolygon) {
+  public PolygonHoleJoiner(Polygon inputPolygon) {
     this.inputPolygon = inputPolygon;
     gf = inputPolygon.getFactory();
     orderedCoords = new TreeSet<Coordinate>();

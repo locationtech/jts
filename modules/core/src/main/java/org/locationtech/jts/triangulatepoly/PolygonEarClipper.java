@@ -30,15 +30,15 @@ import org.locationtech.jts.triangulatepoly.tri.Tri;
  * 
  * It must not self-cross, but may self-touch and have coincident edges.
  * Polygons with holes may be triangulated by preparing them 
- * with {@link HoleJoiner}.
+ * with {@link PolygonHoleJoiner}.
  * 
  * @author mdavis
  *
  */
-class EarClipper {
+class PolygonEarClipper {
   
   public static List<Tri> clip(List<Coordinate> polyBoundary) {
-    EarClipper clipper = new EarClipper(polyBoundary);
+    PolygonEarClipper clipper = new PolygonEarClipper(polyBoundary);
     return clipper.compute();
   }
   
@@ -56,7 +56,7 @@ class EarClipper {
   // indices for current candidate corner
   public int[] cornerCandidate;
 
-  public EarClipper(List<Coordinate> polyVertex) {
+  public PolygonEarClipper(List<Coordinate> polyVertex) {
     this.vertex = polyVertex;
     
     // init working storage

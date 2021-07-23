@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.triangulatepoly;
+package org.locationtech.jts.triangulatepoly.tri;
 
 import java.util.List;
 
@@ -17,19 +17,17 @@ import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulate.quadedge.TrianglePredicate;
-import org.locationtech.jts.triangulatepoly.tri.Tri;
-import org.locationtech.jts.triangulatepoly.tri.Triangulation;
 
-public class DelaunayImprover {
-  private static int MAX_IMPROVE_SCAN = 20;
+public class TriDelaunaySwapper {
+  private static int MAX_ITERATION = 200;
 
-  public DelaunayImprover() {
+  public TriDelaunaySwapper() {
   }
 
-  public void improve(List<Tri> triList) {
-    Triangulation triangulation = new Triangulation(triList);
-    for (int i = 0; i < MAX_IMPROVE_SCAN; i++) {
-      int improveCount = improveOnce(triList);
+  public void swap(List<Tri> triList) {
+    TriangulationBuilder.build(triList);
+    for (int i = 0; i < MAX_ITERATION; i++) {
+      int improveCount = swapAll(triList);
       //System.out.println("improve #" + i + " - count = " + improveCount);
       if ( improveCount == 0 ) {
         return;
@@ -43,24 +41,31 @@ public class DelaunayImprover {
    * the quadrilateral would produce two new triangles with larger minimum
    * interior angles.
    * 
-   * @return the number of improvement flips that were made
+   * @return the number of swaps that were made
    */
-  private int improveOnce(List<Tri> triList) {
-    int improveCount = 0;
+  private int swapAll(List<Tri> triList) {
+    int swapCount = 0;
     for (int i = 0; i < triList.size() - 1; i++) {
       Tri tri = triList.get(i);
       for (int j = 0; j < 3; j++) {
         Tri neighb = tri.getAdjacent(j);
         tri.validateAdjacent(j);
-        if ( improve(tri, neighb) ) {
-          improveCount++;
+        if ( doSwap(tri, neighb) ) {
+          swapCount++;
         }
       }
     }
-    return improveCount;
+    return swapCount;
   }
 
-  private boolean improve(Tri tri0, Tri tri1) {
+  /**
+   * Does a swap of two Tris if the Delaunay condition is not met.
+   * 
+   * @param tri0 a Tri
+   * @param tri1 a Tri
+   * @return true if the triangles were swapped
+   */
+  private boolean doSwap(Tri tri0, Tri tri1) {
     if ( tri0 == null || tri1 == null ) {
       return false;
     }

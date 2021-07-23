@@ -16,15 +16,15 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 
-public class Triangulation {
+public class TriangulationBuilder {
 
+  public static void build(List<Tri> triList) {
+    new TriangulationBuilder(triList);
+  }
+  
   private HashMap<TriEdge, Tri> triMap;
 
-  public Triangulation() {
-    triMap = new HashMap<TriEdge, Tri>();
-  }
-
-  public Triangulation(List<Tri> triList) {
+  public TriangulationBuilder(List<Tri> triList) {
     triMap = new HashMap<TriEdge, Tri>();
     for (Tri tri : triList) {
       add(tri);
@@ -47,14 +47,14 @@ public class Triangulation {
     Tri n2 = find(p2, p0);
     
     tri.setAdjacent(n0, n1, n2);
-    addAdjacent(n0, tri, p0, p1);
-    addAdjacent(n1, tri, p1, p2);
-    addAdjacent(n2, tri, p2, p0);
+    addAdjacent(tri, n0, p0, p1);
+    addAdjacent(tri, n1, p1, p2);
+    addAdjacent(tri, n2, p2, p0);
   }
   
-  private void addAdjacent(Tri adj, Tri tri, Coordinate p0, Coordinate p1) {
+  private void addAdjacent(Tri tri, Tri adj, Coordinate p0, Coordinate p1) {
     /**
-     * If adjacent is null, this tri is first one to be recorded in map
+     * If adjacent is null, this tri is first one to be recorded for edge
      */
     if (adj == null) {
       triMap.put(new TriEdge(p0, p1), tri);

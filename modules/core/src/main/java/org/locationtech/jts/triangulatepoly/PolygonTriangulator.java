@@ -20,6 +20,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
+import org.locationtech.jts.triangulatepoly.tri.TriDelaunaySwapper;
 
 public class PolygonTriangulator {
 
@@ -82,15 +83,15 @@ public class PolygonTriangulator {
      * TODO: perhaps better to just correct orientation of rings?
      */
     Polygon polyNorm = (Polygon) poly.norm();
-    List<Coordinate> polyShell = HoleJoiner.computePoints(polyNorm);
+    List<Coordinate> polyShell = PolygonHoleJoiner.computePoints(polyNorm);
     
-    List<Tri> triList = EarClipper.clip(polyShell);
+    List<Tri> triList = PolygonEarClipper.clip(polyShell);
     //Tri.validate(triList);
     
     if ( isConstrainedDelaunay ) {
       //long start = System.currentTimeMillis();
-      DelaunayImprover improver = new DelaunayImprover();
-      improver.improve(triList);
+      TriDelaunaySwapper improver = new TriDelaunaySwapper();
+      improver.swap(triList);
       //System.out.println("improve used: " + (System.currentTimeMillis() - start) + " milliseconds");
     }
     return triList;

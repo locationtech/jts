@@ -14,6 +14,16 @@ package org.locationtech.jts.triangulatepoly.tri;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.io.WKTWriter;
 
+/**
+ * Represents an edge in a {@link Tri}, 
+ * to be used as a key for looking up Tris
+ * while building a triangulation.
+ * The edge value is normalized to allow lookup
+ * of adjacent triangles.
+ * 
+ * @author mdavis
+ *
+ */
 class TriEdge {
   public Coordinate p0;
   public Coordinate p1;
