@@ -18,17 +18,18 @@ import org.locationtech.jts.algorithm.Angle;
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateList;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
 
 /**
- * Triangulates a polygon via the classic Ear Clipping technique.
+ * Triangulates a polygon via the classic Ear-Clipping technique.
  * The polygon is provided as a closed list of vertices
  * defining its boundary.
- * 
- * It must not self-cross, but may self-touch and have coincident edges.
+ * <p>
+ * The polygon boundary must not self-cross, but may self-touch and have coincident edges.
  * Polygons with holes may be triangulated by preparing them 
  * with {@link PolygonHoleJoiner}.
  * 
@@ -118,37 +119,43 @@ class PolygonEarClipper {
   
   /**
    * Tests if a corner triangle is a valid ear.
-   * This is the case if:
-   * <ol>
-   * <li></li>
-   * <li></li>
-   * </ol>
+   * This is the case if the triangle cut line lies in the interior
+   * of the polygon.
+   * This is equivalent to checking that no reflex (concave) vertex
+   * of the polygon lies within the triangle.
    * 
    * @param corner the corner triangle to check
-   * @return true if the corner is valid
+   * @return true if the corner is a valid ear
    */
   private boolean isValidEar(Coordinate[] corner) {
-    double angle = Angle.angleBetweenOriented(corner[0], corner[1], corner[2]);
+    double cornerAngle = Angle.angleBetweenOriented(corner[0], corner[1], corner[2]);
+    
+    //--- compute triangle envelope for a fast intersects check
+    Envelope cornerEnv = new Envelope(corner[0], corner[1]);
+    cornerEnv.expandToInclude(corner[2]);
+    
     int currIndex = nextIndex(vertexFirst);
     int prevIndex = vertexFirst;
     Coordinate prevV = vertex.get(prevIndex);
     for (int i = 0; i < vertexSize; i++) {
       Coordinate v = vertex.get(currIndex);
       /**
-       * when corner[1] occurs, cannot simply skip. It might occur
-       * multiple times and is connected with a hole
+       * If vertex is same as corner[1], cannot simply skip. 
+       * Because of hole joining vertices can occur more than once.
+       * Then check whether adjacent edges lie inside
+       * corner, which is invalid.
        */
       if ( v.equals2D(corner[1]) ) {
         Coordinate nextTmp = vertex.get(nextIndex(currIndex));
         double aOut = Angle.angleBetweenOriented(corner[0], corner[1], nextTmp);
         double aIn = Angle.angleBetweenOriented(corner[0], corner[1], prevV);
-        if ( aOut > 0 && aOut < angle ) {
+        if ( aOut > 0 && aOut < cornerAngle ) {
           return false;
         }
-        if ( aIn > 0 && aIn < angle ) {
+        if ( aIn > 0 && aIn < cornerAngle ) {
           return false;
         }
-        if ( aOut == 0 && aIn == angle ) {
+        if ( aOut == 0 && aIn == cornerAngle ) {
           return false;
         }
         prevV = v;
@@ -159,11 +166,15 @@ class PolygonEarClipper {
       prevV = v;
       prevIndex = currIndex;
       currIndex = nextIndex(currIndex);
+      //--- don't check other triangle vertices
       if ( v.equals2D(corner[0]) || v.equals2D(corner[2]) ) {
         continue;
       }
-      // not valid if vertex is contained in corner triangle
-      if ( Triangle.intersects(corner[0], corner[1], corner[2], v) ) {
+      /**
+       * Corner is not valid if vertex is contained in its triangle
+       */
+      if ( cornerEnv.contains(v) 
+          && Triangle.intersects(corner[0], corner[1], corner[2], v) ) {
         return false;
       }
     }
