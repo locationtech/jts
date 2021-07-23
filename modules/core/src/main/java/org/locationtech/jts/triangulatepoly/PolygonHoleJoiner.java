@@ -30,28 +30,29 @@ import org.locationtech.jts.geom.prep.PreparedGeometry;
 import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 
 /**
- * Transforms a polygon into a single, possible self-intersecting shell
- * by connecting holes to the exterior ring, The holes are added from the lowest
- * upwards. As the resulting shell develops, a hole might be added to what was
+ * Transforms a polygon into a single self-touching ring
+ * by connecting holes to the exterior shell, 
+ * The holes are added from the lowest upwards. 
+ * As the resulting shell develops, a hole might be added to what was
  * originally another hole.
  */
 public class PolygonHoleJoiner {
   
-  public static Polygon joinHoles(Polygon inputPolygon) {
+  public static Polygon joinGeometry(Polygon inputPolygon) {
     PolygonHoleJoiner joiner = new PolygonHoleJoiner(inputPolygon);
     List<Coordinate> pts = joiner.compute();
     Coordinate[] coords = CoordinateArrays.toCoordinateArray(pts);
     return inputPolygon.getFactory().createPolygon(coords);
   }
   
-  public static List<Coordinate> computePoints(Polygon inputPolygon) {
+  public static List<Coordinate> joinPoints(Polygon inputPolygon) {
     PolygonHoleJoiner joiner = new PolygonHoleJoiner(inputPolygon);
     return joiner.compute();
   }
   
   private static final double EPS = 1.0E-4;
   
-  private final GeometryFactory gf;
+  private final GeometryFactory geomFact;
   private PreparedGeometry inputPrepGeom;
   private List<Coordinate> shellCoords;
   // orderedCoords a copy of shellCoords for sort purpose
@@ -63,17 +64,13 @@ public class PolygonHoleJoiner {
 
   public PolygonHoleJoiner(Polygon inputPolygon) {
     this.inputPolygon = inputPolygon;
-    gf = inputPolygon.getFactory();
-    orderedCoords = new TreeSet<Coordinate>();
-    cutMap = new HashMap<Coordinate, ArrayList<Coordinate>>();
+    geomFact = inputPolygon.getFactory();
   }
 
   /**
-   * Transforms the input polygon into a single, possible self-intersecting shell
-   * by connecting holes to the exterior ring, The holes are added from the lowest
-   * upwards. As the resulting shell develops, a hole might be added to what was
-   * originally another hole.
-   * @return 
+   * Computes the joined ring.
+   * 
+   * @return the points in the joined ring
    */
   public List<Coordinate> compute() {
     // defensively copy the input polygon
@@ -93,10 +90,12 @@ public class PolygonHoleJoiner {
    */
   private void joinHoles(List<Coordinate> shellCoords) {
     this.shellCoords = shellCoords;
+    orderedCoords = new TreeSet<Coordinate>();
     orderedCoords.addAll(shellCoords);
-    List<Geometry> orderedHoles = getOrderedHoles((Polygon) inputPrepGeom.getGeometry());
+    cutMap = new HashMap<Coordinate, ArrayList<Coordinate>>();
+    List<Geometry> orderedHoles = getOrderedHoles(inputPolygon);
     for (int i = 0; i < orderedHoles.size(); i++) {
-      joinHoleToShell(orderedHoles.get(i));
+      joinHole(orderedHoles.get(i));
     }
   }
 
@@ -111,7 +110,7 @@ public class PolygonHoleJoiner {
    * 
    * @param hole
    */
-  private void joinHoleToShell(Geometry hole) {
+  private void joinHole(Geometry hole) {
     final Coordinate[] holeCoords = hole.getCoordinates();
     ArrayList<Integer> holeLeftVerticesIndex = getLeftMostVertex(hole);
     Coordinate holeCoord = holeCoords[holeLeftVerticesIndex.get(0)];
@@ -146,13 +145,13 @@ public class PolygonHoleJoiner {
    * @return the ith shellvertex
    */
   private int getShellCoordIndex(Coordinate shellVertex, Coordinate holeVertex) {
-    int ith = 1;
+    int numSkip = 0;
     ArrayList<Coordinate> newValueList = new ArrayList<Coordinate>();
     newValueList.add(holeVertex);
     if ( cutMap.containsKey(shellVertex) ) {
       for (Coordinate coord : cutMap.get(shellVertex)) {
         if ( coord.y < holeVertex.y ) {
-          ith++;
+          numSkip++;
         }
       }
       cutMap.get(shellVertex).add(holeVertex);
@@ -162,24 +161,25 @@ public class PolygonHoleJoiner {
     if ( !cutMap.containsKey(holeVertex) ) {
       cutMap.put(holeVertex, new ArrayList<Coordinate>(newValueList));
     }
-    return getIthShellCoordIndex(shellVertex, ith);
+    return getShellCoordIndexSkip(shellVertex, numSkip);
   }
 
   /**
-   * Find the index of the coordinate in ShellCoords ArrayList
+   * Find the index of the coordinate in ShellCoords ArrayList,
+   * skipping over some number of matches
    * 
    * @param coord
    * @return
    */
-  private int getIthShellCoordIndex(Coordinate coord, int ith) {
+  private int getShellCoordIndexSkip(Coordinate coord, int numSkip) {
     for (int i = 0; i < shellCoords.size(); i++) {
       if ( shellCoords.get(i).equals2D(coord, EPS) ) {
-        --ith;
-        if ( ith == 0 )
+        if ( numSkip == 0 )
           return i;
+        numSkip--;
       }
     }
-    throw new IllegalStateException("Request vertex is not in sheelcoords");
+    throw new IllegalStateException("Vertex is not in shellcoords");
   }
 
   /**
@@ -221,7 +221,7 @@ public class PolygonHoleJoiner {
    * @return
    */
   private boolean isJoinable(Coordinate holeCoord, Coordinate shellCoord) {
-    LineString join = gf.createLineString(new Coordinate[] { holeCoord, shellCoord });
+    LineString join = geomFact.createLineString(new Coordinate[] { holeCoord, shellCoord });
     if ( inputPrepGeom.covers(join) ) {
       return true;
     }

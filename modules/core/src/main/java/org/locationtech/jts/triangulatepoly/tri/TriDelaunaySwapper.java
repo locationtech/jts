@@ -18,13 +18,28 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulate.quadedge.TrianglePredicate;
 
+/**
+ * Improves a triangulation of {@link Tri}s via
+ * iterated Delaunay swapping.
+ * 
+ * @author mdavis
+ *
+ */
 public class TriDelaunaySwapper {
+  
+  public static void swap(List<Tri> triList) {
+    TriDelaunaySwapper swapper = new TriDelaunaySwapper(triList);
+    swapper.swap();
+  }
+  
   private static int MAX_ITERATION = 200;
+  private List<Tri> triList;
 
-  public TriDelaunaySwapper() {
+  private TriDelaunaySwapper(List<Tri> triList) {
+    this.triList = triList;
   }
 
-  public void swap(List<Tri> triList) {
+  private void swap() {
     TriangulationBuilder.build(triList);
     for (int i = 0; i < MAX_ITERATION; i++) {
       int improveCount = swapAll(triList);

@@ -83,15 +83,14 @@ public class PolygonTriangulator {
      * TODO: perhaps better to just correct orientation of rings?
      */
     Polygon polyNorm = (Polygon) poly.norm();
-    List<Coordinate> polyShell = PolygonHoleJoiner.computePoints(polyNorm);
+    List<Coordinate> polyShell = PolygonHoleJoiner.joinPoints(polyNorm);
     
     List<Tri> triList = PolygonEarClipper.clip(polyShell);
     //Tri.validate(triList);
     
     if ( isConstrainedDelaunay ) {
       //long start = System.currentTimeMillis();
-      TriDelaunaySwapper improver = new TriDelaunaySwapper();
-      improver.swap(triList);
+      TriDelaunaySwapper.swap(triList);
       //System.out.println("improve used: " + (System.currentTimeMillis() - start) + " milliseconds");
     }
     return triList;
