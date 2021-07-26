@@ -63,8 +63,9 @@ public class TriDelaunaySwapper {
       Tri tri = triList.get(i);
       for (int j = 0; j < 3; j++) {
         Tri neighb = tri.getAdjacent(j);
-        tri.validateAdjacent(j);
+        //tri.validateAdjacent(j);
         if ( doSwap(tri, neighb) ) {
+          // TODO: improve performance by only rescanning tris adjacent to swaps?
           swapCount++;
         }
       }
@@ -83,8 +84,8 @@ public class TriDelaunaySwapper {
     if ( tri0 == null || tri1 == null ) {
       return false;
     }
-    tri0.validate();
-    tri1.validate();
+    //tri0.validate();
+    //tri1.validate();
 
     int index0 = tri0.getIndex(tri1);
     int index1 = tri1.getIndex(tri0);
