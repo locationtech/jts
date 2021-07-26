@@ -16,22 +16,38 @@ import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
 
+/**
+ * Builds a triangulation from a set of {@link Tri}s.
+ * 
+ * @author mdavis
+ *
+ */
 public class TriangulationBuilder {
 
+  /**
+   * Builds the triangulation of a set of {@link Tri}s.
+   * 
+   * @param triList the list of Tris
+   */
   public static void build(List<Tri> triList) {
     new TriangulationBuilder(triList);
   }
   
   private HashMap<TriEdge, Tri> triMap;
 
-  public TriangulationBuilder(List<Tri> triList) {
+  /**
+   * Builds the triangulation of a set of {@link Tri}s.
+   * 
+   * @param triList the list of Tris
+   */
+  private TriangulationBuilder(List<Tri> triList) {
     triMap = new HashMap<TriEdge, Tri>();
     for (Tri tri : triList) {
       add(tri);
     }
   }
 
-  public Tri find(Coordinate p0, Coordinate p1) {
+  private Tri find(Coordinate p0, Coordinate p1) {
     TriEdge e = new TriEdge(p0, p1);
     return triMap.get(e);
   }

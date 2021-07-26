@@ -22,6 +22,15 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
 
+/**
+ * A memory-efficient representation of a triangle in a triangulation.
+ * Contains three vertices, and links to adjacent Tris for each edge.
+ * Tris are constructed independently, and if needed linked
+ * into a triangulation using {@link TriangulationBuilder}.
+ * 
+ * @author mdavis
+ *
+ */
 public class Tri {
 
   public static Tri create(Coordinate p0, Coordinate p1, Coordinate p2) {

@@ -19,14 +19,24 @@ import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulate.quadedge.TrianglePredicate;
 
 /**
- * Improves a triangulation of {@link Tri}s via
+ * Improves the quality of a triangulation of {@link Tri}s via
  * iterated Delaunay swapping.
+ * This produces the Constrained Delaunay Triangulation
+ * with the constraints being the boundary of the input triangulation.
  * 
  * @author mdavis
  *
  */
 public class TriDelaunaySwapper {
   
+  /**
+   * Improves the quality of a triangulation of {@link Tri}s via
+   * iterated Delaunay swapping.
+   * The Tris are assumed to be linked into a Triangulation
+   * (e.g. via {@link TriangulationBuilder}).
+   * 
+   * @param triList the list of Tris to swap.
+   */
   public static void swap(List<Tri> triList) {
     TriDelaunaySwapper swapper = new TriDelaunaySwapper(triList);
     swapper.swap();
