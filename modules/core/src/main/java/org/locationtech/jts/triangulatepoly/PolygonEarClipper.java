@@ -30,7 +30,7 @@ import org.locationtech.jts.triangulatepoly.tri.Tri;
  * defining its boundary.
  * <p>
  * The polygon boundary must not self-cross, but may self-touch and have coincident edges.
- * Polygons with holes may be triangulated by preparing them 
+ * Polygons with holes can be triangulated by preparing them 
  * with {@link PolygonHoleJoiner}.
  * 
  * @author mdavis
@@ -46,8 +46,9 @@ class PolygonEarClipper {
   }
   
   /**
-   * The polygon vertices are maintain in CW order. This means that for convex
-   * interior angles, the vertices forming the angle are in CW orientation.
+   * The polygon vertices are maintain in CW order. 
+   * Thus for convex
+   * interior angles the vertices forming the angle are in CW orientation.
    */
   private final Coordinate[] vertex;
   
@@ -59,6 +60,10 @@ class PolygonEarClipper {
   // indices for current candidate corner
   private int[] cornerCandidate;
   
+  /**
+   * Indexing vertices improves ear intersection testing performance a lot.
+   * The polyShell vertices are contiguous, so are suitable for an SPRtree.
+   */
   private SequencePackedRtree vertexCoordIndex;
 
   public PolygonEarClipper(Coordinate[] polyShell) {
@@ -66,7 +71,7 @@ class PolygonEarClipper {
     
     // init working storage
     vertexSize = vertex.length - 1;
-    vertexNext = createNextList(vertexSize);
+    vertexNext = createNextLinks(vertexSize);
     vertexFirst = 0;
     
     cornerCandidate = new int[3];
@@ -77,7 +82,7 @@ class PolygonEarClipper {
     vertexCoordIndex = new SequencePackedRtree(vertex);
   }
 
-  private static int[] createNextList(int size) {
+  private static int[] createNextLinks(int size) {
     int[] next = new int[size];
     for (int i = 0; i < size; i++) {
       next[i] = i + 1;
@@ -95,9 +100,9 @@ class PolygonEarClipper {
     while (true) {
       //--- find next convex corner, which is the next candidate ear
       //Polygon remainder = toGeometry();
-      while (! isCW(corner)) {
+      while (! isConvex(corner)) {
         // delete the corner if it is flat
-        if ( isCollinear(corner) ) {
+        if ( isFlat(corner) ) {
           removeCorner();
           if ( vertexSize < 3 ) {
             return triList;
@@ -131,8 +136,10 @@ class PolygonEarClipper {
   
   private boolean isValidEar(int cornerIndex, Coordinate[] corner) {
     int badIndex = findIntersectingVertex(cornerIndex, corner);
+    //--- no intersections found
     if (badIndex < 0)
       return true;
+    //--- duplicate vertex
     if ( vertex[badIndex].equals2D(corner[1]) ) {
       return isValidEarScanApex(cornerIndex, corner);
     }
@@ -191,6 +198,7 @@ class PolygonEarClipper {
       if ( currIndex != cornerIndex 
           && v.equals2D(corner[1]) ) {
         Coordinate vNext = vertex[nextIndex(currIndex)];
+        
         //TODO: for robustness use segment orientation instead
         double aOut = Angle.angleBetweenOriented(corner[0], corner[1], vNext);
         double aIn = Angle.angleBetweenOriented(corner[0], corner[1], vPrev);
@@ -339,11 +347,11 @@ class PolygonEarClipper {
     return vertexNext[index];
   }
 
-  private static boolean isCW(Coordinate[] pts) {
+  private static boolean isConvex(Coordinate[] pts) {
     return Orientation.CLOCKWISE == Orientation.index(pts[0], pts[1], pts[2]);
   }
   
-  private static boolean isCollinear(Coordinate[] pts) {
+  private static boolean isFlat(Coordinate[] pts) {
     return Orientation.COLLINEAR == Orientation.index(pts[0], pts[1], pts[2]);
   }
   
