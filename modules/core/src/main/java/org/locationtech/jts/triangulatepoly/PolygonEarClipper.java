@@ -38,8 +38,10 @@ import org.locationtech.jts.triangulatepoly.tri.Tri;
  */
 class PolygonEarClipper {
   
-  public static List<Tri> clip(List<Coordinate> polyBoundary) {
-    PolygonEarClipper clipper = new PolygonEarClipper(polyBoundary);
+  private static final int VERTEX_REMOVED_INDEX = -1;
+
+  public static List<Tri> clip(Coordinate[] polyShell) {
+    PolygonEarClipper clipper = new PolygonEarClipper(polyShell);
     return clipper.compute();
   }
   
@@ -47,7 +49,7 @@ class PolygonEarClipper {
    * The polygon vertices are maintain in CW order. This means that for convex
    * interior angles, the vertices forming the angle are in CW orientation.
    */
-  private final List<Coordinate> vertex;
+  private final Coordinate[] vertex;
   
   private final int[] vertexNext;
   private int vertexSize;
@@ -55,13 +57,15 @@ class PolygonEarClipper {
   private int vertexFirst;
   
   // indices for current candidate corner
-  public int[] cornerCandidate;
+  private int[] cornerCandidate;
+  
+  private SequencePackedRtree vertexCoordIndex;
 
-  public PolygonEarClipper(List<Coordinate> polyVertex) {
-    this.vertex = polyVertex;
+  public PolygonEarClipper(Coordinate[] polyShell) {
+    this.vertex = polyShell;
     
     // init working storage
-    vertexSize = this.vertex.size() - 1;
+    vertexSize = vertex.length - 1;
     vertexNext = createNextList(vertexSize);
     vertexFirst = 0;
     
@@ -69,6 +73,8 @@ class PolygonEarClipper {
     cornerCandidate[0] = 0;
     cornerCandidate[1] = 1;
     cornerCandidate[2] = 2;
+    
+    vertexCoordIndex = new SequencePackedRtree(vertex);
   }
 
   private static int[] createNextList(int size) {
@@ -88,6 +94,7 @@ class PolygonEarClipper {
     nextCorner(false, corner);
     while (true) {
       //--- find next convex corner, which is the next candidate ear
+      //Polygon remainder = toGeometry();
       while (! isCW(corner)) {
         // delete the corner if it is flat
         if ( isCollinear(corner) ) {
@@ -97,12 +104,17 @@ class PolygonEarClipper {
           }
         }
         nextCorner(true, corner);
+        if ( cornerCount > 2 * vertexSize ) {
+          throw new IllegalStateException("Unable to find a convex corner");
+        }
       }
       cornerCount++;
       if ( cornerCount > 2 * vertexSize ) {
-        throw new IllegalStateException("Unable to find a convex corner which is a valid ear");
+        throw new IllegalStateException("Unable to find a valid ear");
+        //System.out.println(WKTWriter.toLineString(corner));
+        //return triList;
       }
-      if ( isValidEar(corner) ) {
+      if ( isValidEar(cornerCandidate[1], corner) ) {
         triList.add(Tri.create(corner));
         removeCorner();
         if ( vertexSize < 3 ) {
@@ -117,38 +129,71 @@ class PolygonEarClipper {
     }
   }
   
-  /**
-   * Tests if a corner triangle is a valid ear.
-   * This is the case if the triangle cut line lies in the interior
-   * of the polygon.
-   * This is equivalent to checking that no reflex (concave) vertex
-   * of the polygon lies within the triangle.
-   * 
-   * @param corner the corner triangle to check
-   * @return true if the corner is a valid ear
-   */
-  private boolean isValidEar(Coordinate[] corner) {
-    double cornerAngle = Angle.angleBetweenOriented(corner[0], corner[1], corner[2]);
+  private boolean isValidEar(int cornerIndex, Coordinate[] corner) {
+    int badIndex = findIntersectingVertex(cornerIndex, corner);
+    if (badIndex < 0)
+      return true;
+    if ( vertex[badIndex].equals2D(corner[1]) ) {
+      return isValidEarScanApex(cornerIndex, corner);
+    }
+    return false;
+  }
+
+  private int findIntersectingVertex(int cornerIndex, Coordinate[] corner) {
+    Envelope cornerEnv = envelope(corner);
+    int[] result = vertexCoordIndex.query(cornerEnv);
     
-    //--- compute triangle envelope for a fast intersects check
-    Envelope cornerEnv = new Envelope(corner[0], corner[1]);
-    cornerEnv.expandToInclude(corner[2]);
+    int dupApexIndex = VERTEX_REMOVED_INDEX;
+    for (int i = 0; i < result.length; i++) {
+      int vertIndex = result[i];
+      
+      if (vertIndex == cornerIndex 
+          || vertIndex == vertex.length - 1
+          || isRemoved(vertIndex)) 
+        continue;
+      
+      Coordinate v = vertex[vertIndex];
+      /**
+       * If another vertex at the corner is found,
+       * need to do a full scan to check the incident segments.
+       * But only report this if no properly intersecting vertex is found.
+       */
+      if ( vertIndex != cornerIndex && v.equals2D(corner[1]) ) {
+        dupApexIndex = vertIndex;
+      }
+      else if ( v.equals2D(corner[0]) || v.equals2D(corner[2]) ) {
+        //--- don't need to check other corner vertices 
+        continue;
+      }
+      else if (Triangle.intersects(corner[0], corner[1], corner[2], v) )
+        return vertIndex;
+    }
+    if (dupApexIndex != VERTEX_REMOVED_INDEX) {
+      return dupApexIndex;
+    }
+    return VERTEX_REMOVED_INDEX;
+  }
+
+  private boolean isValidEarScanApex(int cornerIndex, Coordinate[] corner) {
+    double cornerAngle = Angle.angleBetweenOriented(corner[0], corner[1], corner[2]);
     
     int currIndex = nextIndex(vertexFirst);
     int prevIndex = vertexFirst;
-    Coordinate prevV = vertex.get(prevIndex);
+    Coordinate vPrev = vertex[prevIndex];
     for (int i = 0; i < vertexSize; i++) {
-      Coordinate v = vertex.get(currIndex);
+      Coordinate v = vertex[currIndex];
       /**
-       * If vertex is same as corner[1], cannot simply skip. 
        * Because of hole joining vertices can occur more than once.
-       * Then check whether adjacent edges lie inside
-       * corner, which is invalid.
+       * If vertex is same as corner[1],
+       * must check whether adjacent edges lie inside the ear corner.
+       * If so this makes the ear invalid.
        */
-      if ( v.equals2D(corner[1]) ) {
-        Coordinate nextTmp = vertex.get(nextIndex(currIndex));
-        double aOut = Angle.angleBetweenOriented(corner[0], corner[1], nextTmp);
-        double aIn = Angle.angleBetweenOriented(corner[0], corner[1], prevV);
+      if ( currIndex != cornerIndex 
+          && v.equals2D(corner[1]) ) {
+        Coordinate vNext = vertex[nextIndex(currIndex)];
+        //TODO: for robustness use segment orientation instead
+        double aOut = Angle.angleBetweenOriented(corner[0], corner[1], vNext);
+        double aIn = Angle.angleBetweenOriented(corner[0], corner[1], vPrev);
         if ( aOut > 0 && aOut < cornerAngle ) {
           return false;
         }
@@ -158,42 +203,107 @@ class PolygonEarClipper {
         if ( aOut == 0 && aIn == cornerAngle ) {
           return false;
         }
-        prevV = v;
-        prevIndex = currIndex;
-        currIndex = nextIndex(currIndex);
-        continue;
       }
-      prevV = v;
+
+      //--- move to next vertex
+      vPrev = v;
       prevIndex = currIndex;
       currIndex = nextIndex(currIndex);
-      //--- don't check other triangle vertices
-      if ( v.equals2D(corner[0]) || v.equals2D(corner[2]) ) {
-        continue;
+    }
+    return true;
+  }
+  
+  /**
+   * Tests if a corner triangle is a valid ear.
+   * This is the case if the triangle cut line lies in the interior
+   * of the polygon.
+   * This is equivalent to checking that no reflex (concave) vertex
+   * of the polygon lies within the triangle.
+   * Also, because of hole-joining vertices may occur more than once (a self-touch).
+   * In this case the test corner segments are checked to see if they lie
+   * inside the ear corner.
+   * 
+   * @param corner the corner triangle to check
+   * @return true if the corner is a valid ear
+   */
+  private boolean isValidEarFullScan(Coordinate[] corner) {
+    double cornerAngle = Angle.angleBetweenOriented(corner[0], corner[1], corner[2]);
+    
+    //--- compute triangle envelope for a fast intersects check
+    Envelope cornerEnv = envelope(corner);
+    
+    /**
+     * Scan all vertices to see if they make ear invalid
+     */
+    int currIndex = nextIndex(vertexFirst);
+    int prevIndex = vertexFirst;
+    Coordinate vPrev = vertex[prevIndex];
+    for (int i = 0; i < vertexSize; i++) {
+      Coordinate v = vertex[currIndex];
+      /**
+       * Because of hole joining vertices can occur more than once.
+       * If vertex is same as corner[1],
+       * must check whether adjacent edges lie inside the ear corner.
+       * If so this makes the ear invalid.
+       */
+      if ( v.equals2D(corner[1]) ) {
+        Coordinate vNext = vertex[nextIndex(currIndex)];
+        //TODO: for robustness use segment orientation instead
+        double aOut = Angle.angleBetweenOriented(corner[0], corner[1], vNext);
+        double aIn = Angle.angleBetweenOriented(corner[0], corner[1], vPrev);
+        if ( aOut > 0 && aOut < cornerAngle ) {
+          return false;
+        }
+        if ( aIn > 0 && aIn < cornerAngle ) {
+          return false;
+        }
+        if ( aOut == 0 && aIn == cornerAngle ) {
+          return false;
+        }
+      }
+      else if ( v.equals2D(corner[0]) || v.equals2D(corner[2]) ) {
+        //--- don't need to check other corner vertices 
       }
       /**
        * Corner is not valid if vertex is contained in its triangle
        */
-      if ( cornerEnv.contains(v) 
+      else if ( cornerEnv.contains(v) 
           && Triangle.intersects(corner[0], corner[1], corner[2], v) ) {
         return false;
       }
+      //--- move to next vertex
+      vPrev = v;
+      prevIndex = currIndex;
+      currIndex = nextIndex(currIndex);
     }
     return true;
+  }
+
+  private static Envelope envelope(Coordinate[] corner) {
+    Envelope cornerEnv = new Envelope(corner[0], corner[1]);
+    cornerEnv.expandToInclude(corner[2]);
+    return cornerEnv;
   }
 
   /**
    * Remove the corner apex and update the candidate corner location.
    */
   private void removeCorner() {
-    if ( vertexFirst == cornerCandidate[1] ) {
-      vertexFirst = vertexNext[cornerCandidate[1]];
+    int cornerIndex = cornerCandidate[1];
+    if ( vertexFirst ==  cornerIndex) {
+      vertexFirst = vertexNext[cornerIndex];
     }
-    vertexNext[cornerCandidate[0]] = vertexNext[cornerCandidate[1]];
-    vertexNext[cornerCandidate[1]] = -1;
+    vertexNext[cornerCandidate[0]] = vertexNext[cornerIndex];
+    vertexCoordIndex.remove(cornerIndex);
+    vertexNext[cornerIndex] = VERTEX_REMOVED_INDEX;
     vertexSize--;
     nextCorner(false, null);
   }
 
+  private boolean isRemoved(int vertexIndex) {
+    return VERTEX_REMOVED_INDEX == vertexNext[vertexIndex];
+  }
+  
   /**
    * Set to next corner candidate.
    * Read the corner vertices if required.
@@ -212,9 +322,9 @@ class PolygonEarClipper {
     cornerCandidate[2] = nextIndex(cornerCandidate[1]);
     
     if (corner != null) {
-      corner[0] = vertex.get(cornerCandidate[0]); 
-      corner[1] = vertex.get(cornerCandidate[1]); 
-      corner[2] = vertex.get(cornerCandidate[2]); 
+      corner[0] = vertex[cornerCandidate[0]]; 
+      corner[1] = vertex[cornerCandidate[1]]; 
+      corner[2] = vertex[cornerCandidate[2]]; 
     }
   }
 
@@ -242,7 +352,7 @@ class PolygonEarClipper {
     CoordinateList coordList = new CoordinateList();
     int index = vertexFirst;
     for (int i = 0; i < vertexSize; i++) {
-      Coordinate v = vertex.get(index);
+      Coordinate v = vertex[index];
       index = nextIndex(index);
       // if (i < shellCoordAvailable.length && shellCoordAvailable.get(i))
       coordList.add(v, true);

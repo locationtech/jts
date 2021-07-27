@@ -39,12 +39,10 @@ import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 public class PolygonHoleJoiner {
   
   public static Polygon joinGeometry(Polygon inputPolygon) {
-    List<Coordinate> pts = joinPoints(inputPolygon);
-    Coordinate[] coords = CoordinateArrays.toCoordinateArray(pts);
-    return inputPolygon.getFactory().createPolygon(coords);
+    return inputPolygon.getFactory().createPolygon(joinPoints(inputPolygon));
   }
   
-  public static List<Coordinate> joinPoints(Polygon inputPolygon) {
+  public static Coordinate[] joinPoints(Polygon inputPolygon) {
     PolygonHoleJoiner joiner = new PolygonHoleJoiner(inputPolygon);
     return joiner.compute();
   }
@@ -71,16 +69,15 @@ public class PolygonHoleJoiner {
    * 
    * @return the points in the joined ring
    */
-  public List<Coordinate> compute() {
+  public Coordinate[] compute() {
     //--- copy the input polygon shell coords
     shellCoords = ringCoordinates(inputPolygon.getExteriorRing());
-    if ( inputPolygon.getNumInteriorRing() == 0 ) 
-      return shellCoords;
-    
-    PreparedGeometryFactory pgFact = new PreparedGeometryFactory();
-    inputPrepGeom = pgFact.create(inputPolygon);
-    joinHoles();
-    return shellCoords;
+    if ( inputPolygon.getNumInteriorRing() != 0 ) {
+      PreparedGeometryFactory pgFact = new PreparedGeometryFactory();
+      inputPrepGeom = pgFact.create(inputPolygon);
+      joinHoles();
+    }
+    return shellCoords.toArray(new Coordinate[0]);
   }
 
   private static List<Coordinate> ringCoordinates(LinearRing ring) {

@@ -66,7 +66,7 @@ public class PolygonTriangulator {
      * TODO: perhaps better to just correct orientation of rings?
      */
     Polygon polyNorm = (Polygon) poly.norm();
-    List<Coordinate> polyShell = PolygonHoleJoiner.joinPoints(polyNorm);
+    Coordinate[] polyShell = PolygonHoleJoiner.joinPoints(polyNorm);
     
     List<Tri> triList = PolygonEarClipper.clip(polyShell);
     //Tri.validate(triList);
