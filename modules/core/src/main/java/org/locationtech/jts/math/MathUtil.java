@@ -47,6 +47,31 @@ public class MathUtil
     return x;
   }
   
+  /**
+   * Clamps an integer to a given maximum limit.
+   * 
+   * @param x the value to clamp
+   * @param max the maximum value
+   * @return the clamped value
+   */
+  public static int clampMax(int x, int max)
+  {
+    if (x > max) return max;
+    return x;
+  }
+  
+  /**
+   * Computes the ceiling function of the dividend of two integers.
+   * 
+   * @param num the numerator
+   * @param denom the denominator
+   * @return the ceiling of num / denom
+   */
+  public static int ceil(int num, int denom) {
+    int div = num / denom;
+    return div * denom >= num ? div : div + 1;
+  }
+  
   private static final double LOG_10 = Math.log(10);
   
   /**

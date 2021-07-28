@@ -51,9 +51,11 @@ public class ApproximateMedialAxis {
       }
       else if (tri.numAdjacent() == 3) {
         LineString[] line3 = generateLineAdj3(tri);
-        lines.add(line3[0]);
-        lines.add(line3[1]);
-        lines.add(line3[2]);
+        if (line3!= null) {
+          lines.add(line3[0]);
+          lines.add(line3[1]);
+          lines.add(line3[2]);
+        }
       }
 
     }
@@ -86,6 +88,10 @@ public class ApproximateMedialAxis {
      */
     Coordinate cc = Triangle.circumcentre(tri.getCoordinate(0), 
         tri.getCoordinate(1), tri.getCoordinate(2));
+    if (! Triangle.intersects(tri.getCoordinate(0), 
+        tri.getCoordinate(1), tri.getCoordinate(2), cc)) {
+      return null;
+    }
     Coordinate v0 = tri.midpoint(0);
     Coordinate v1 = tri.midpoint(1);
     Coordinate v2 = tri.midpoint(2);
