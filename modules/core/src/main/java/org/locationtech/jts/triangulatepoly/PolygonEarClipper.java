@@ -64,7 +64,7 @@ class PolygonEarClipper {
    * Indexing vertices improves ear intersection testing performance a lot.
    * The polyShell vertices are contiguous, so are suitable for an SPRtree.
    */
-  private SequencePackedRtree vertexCoordIndex;
+  private VertexSequencePackedRtree vertexCoordIndex;
 
   public PolygonEarClipper(Coordinate[] polyShell) {
     this.vertex = polyShell;
@@ -79,7 +79,7 @@ class PolygonEarClipper {
     cornerCandidate[1] = 1;
     cornerCandidate[2] = 2;
     
-    vertexCoordIndex = new SequencePackedRtree(vertex);
+    vertexCoordIndex = new VertexSequencePackedRtree(vertex);
   }
 
   private static int[] createNextLinks(int size) {

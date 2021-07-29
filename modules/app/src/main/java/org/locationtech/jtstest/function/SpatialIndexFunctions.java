@@ -35,7 +35,7 @@ import org.locationtech.jts.index.strtree.AbstractNode;
 import org.locationtech.jts.index.strtree.Boundable;
 import org.locationtech.jts.index.strtree.GeometryItemDistance;
 import org.locationtech.jts.index.strtree.STRtree;
-import org.locationtech.jts.triangulatepoly.SequencePackedRtree;
+import org.locationtech.jts.triangulatepoly.VertexSequencePackedRtree;
 
 
 public class SpatialIndexFunctions
@@ -254,7 +254,7 @@ public class SpatialIndexFunctions
   public static Geometry sprTreeBounds(Geometry geom)
   {
     Coordinate[] pts = geom.getCoordinates();
-    SequencePackedRtree index = new SequencePackedRtree(pts);
+    VertexSequencePackedRtree index = new VertexSequencePackedRtree(pts);
     Envelope[] bounds = index.getBounds();
     Geometry[] polys = new Geometry[bounds.length];
     int i = 0;

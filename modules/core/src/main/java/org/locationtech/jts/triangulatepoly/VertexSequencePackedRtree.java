@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2021 Martin Davis.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package org.locationtech.jts.triangulatepoly;
 
 import java.util.ArrayList;
@@ -8,9 +19,23 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.util.IntArrayList;
 
-public class SequencePackedRtree {
+/**
+ * A semi-static spatial index for points which occur in a spatially-coherent sequence.
+ * In particular, this is suitable for indexing the vertices
+ * of a LineString or Polygon ring.
+ * <p>
+ * The index is constructed in a batch fashion on a given sequence of coordinates.
+ * Coordinates can be removed via the {@link #remove(int)} method.
+ * <p>
+ * Note that this index does <b>not</b> index the line segments 
+ * implied by the input coordinate sequence.
+ * 
+ * @author mdavis
+ *
+ */
+public class VertexSequencePackedRtree {
   /**
-   * Number of items/nodes in a node.
+   * Number of items/nodes in a parent node.
    * Determined empirically.  Performance is not too sensitive to this.
    */
   private static final int NODE_CAPACITY = 16;
@@ -20,7 +45,7 @@ public class SequencePackedRtree {
   private int nodeCapacity  = NODE_CAPACITY;
   private Envelope[] bounds;
 
-  public SequencePackedRtree(Coordinate[] pts) {
+  public VertexSequencePackedRtree(Coordinate[] pts) {
     this.items = pts;
     build();
   }
