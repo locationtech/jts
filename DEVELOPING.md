@@ -22,7 +22,26 @@ The JTS build chain uses Maven.  Build commands are executed at the project root
 
 * Build everything:
 
-        mvn install -Pall
+        mvn install -Dall=true
+
+* Limit build to release artifacts:
+
+        mvn install -Drelease=true
+
+## Quality Assurance
+
+JTS build verify stage includes pmd, checkstyle and more:
+
+        mvn verify
+
+To skip QA checks:
+
+        mvn verify -Dpmd.skip=true -Pcheckstyle.skip=true
+
+Errors are logged, to browse errors use:
+       
+        mvn site:site
+        open modules/core/target/site/index.html
 
 ## Quality Assurance
 
