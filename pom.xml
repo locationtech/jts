@@ -112,9 +112,9 @@
                 <version>3.7</version>
             </dependency>
             <dependency>
-                <groupId>com.oracle</groupId>
-                <artifactId>ojdbc7</artifactId>
-                <version>11.1.0.7.0</version>
+                <groupId>com.oracle.database.jdbc</groupId>
+                <artifactId>ojdbc8</artifactId>
+                <version>19.10.0.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -283,6 +283,7 @@ public class StaticPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSinglePolygonManyPointsHolesRoundTrip() throws SQLException{
+		if( this.getConnection() == null ) return;
 		PolygonGenerator pg = new PolygonGenerator();
 		pg.setGeometryFactory(geometryFactory);
 		pg.setBoundingBox(new Envelope(0,10,0,10));

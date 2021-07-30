@@ -60,12 +60,12 @@ public class ConnectedTestCase extends TestCase {
 		super.setUp();
 		
 		Properties props = new Properties();
-		URL path = ClassLoader.getSystemResource("com/vividsolutions/jts/io/oracle/connection.properties");
+		URL path = ClassLoader.getSystemResource("org/locationtech/jts/io/oracle/connection.properties");
 		props.load(path.openStream());
-		
+
 		connection = getOracleConnection(
-		    props.getProperty("test.server"),
-		    props.getProperty("test.port"),
+			props.getProperty("test.server"),
+			props.getProperty("test.port"),
 				props.getProperty("test.sid"),
 				props.getProperty("test.user"),
 				props.getProperty("test.pwd"));
