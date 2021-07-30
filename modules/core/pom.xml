@@ -13,7 +13,6 @@
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
                 <configuration>
                   <archive>
                     <manifestEntries>
@@ -41,7 +40,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>3.3.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <unpackBundle>true</unpackBundle>

@@ -82,7 +82,7 @@ public class HalfEdge {
    * Links this edge with its sym (opposite) edge.
    * This must be done for each pair of edges created.
    * 
-   * @param e the sym edge to link.
+   * @param sym the sym edge to link.
    */
   public void link(HalfEdge sym)
   {

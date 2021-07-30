@@ -24,6 +24,12 @@ The JTS build chain uses Maven.  Build commands are executed at the project root
 
         mvn install -Pall
 
+## Quality Assurance
+
+JTS build verify stage uses pmd, to skip:
+
+        mvn verify -Dpmd.skip=true
+
 ## Javadoc
 
 * Build Javadoc for core modules

@@ -39,9 +39,11 @@
         <json-simple-version>1.1.1</json-simple-version>
         <sde-version>9.1</sde-version>
 
-        <!-- maven compiler target versions -->
+        <!-- build enviornment target versions -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <pmd.version>6.36.0</pmd.version>
+        <checkstyle.version>8.44</checkstyle.version>
     </properties>
 
     <!-- PROJECT INFORMATION -->
@@ -87,6 +89,10 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
+        <site>
+          <id>jts</id>
+          <url>http://locationtech.github.io/jts</url>
+        </site>
     </distributionManagement>
 
     <dependencyManagement>
@@ -179,18 +185,71 @@
                 </plugins>
             </build>
         </profile>
+        
     </profiles>
 
     <!-- =========================================================== -->
     <!--     Build Configuration                                     -->
     <!-- =========================================================== -->
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>2.6</version> <!-- 3.3.0 -->
+                </plugin>
+                <plugin>
+                  <artifactId>maven-checkstyle-plugin</artifactId>
+                  <version>3.1.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.0.0-M1</version> <!--3.3.0 -->
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jxr-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <plugin>
+                  <artifactId>maven-pmd-plugin</artifactId>
+                  <version>3.14.0</version>
+                </plugin>
+                <plugin>
+                  <artifactId>maven-project-info-reports-plugin</artifactId>
+                  <version>3.1.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.5.3</version> <!-- 3.0.0-M4 -->
+                </plugin>
+                <plugin>
+                  <artifactId>maven-site-plugin</artifactId>
+                  <version>3.9.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.2.1</version> <!-- 3.2.0 -->
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.15</version> <!-- 3.0.0-M5 -->
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <!-- test configuration -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.15</version>
                 <configuration>
                     <includes>
                         <include>**/*Test.java</include>
@@ -205,7 +264,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.0.0-M1</version>
                 <configuration>
                     <show>public</show>
                     <header>${project.name} ${project.version}</header>
@@ -236,6 +294,8 @@
                             <packages>org.locationtech.jts.io.*</packages>
                         </group>
                     </groups>
+                    <!-- shush javadoc 8 docklint errors -->
+                    <doclint>none</doclint>
                 </configuration>
                 <executions>
                     <execution>
@@ -249,7 +309,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -262,16 +321,141 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.9.1</version>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-pmd-plugin</artifactId>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>check</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <dependencies>
+                <!-- shared pmd ruleset -->
+                <dependency>
+                  <groupId>org.locationtech.jts</groupId>
+                  <artifactId>build-tools</artifactId>
+                  <version>${project.version}</version>
+                </dependency>
+                <!-- user newer version of pmd -->
+                <dependency>
+                  <groupId>net.sourceforge.pmd</groupId>
+                  <artifactId>pmd-core</artifactId>
+                  <version>${pmd.version}</version>
+                </dependency>
+                <dependency>
+                  <groupId>net.sourceforge.pmd</groupId>
+                  <artifactId>pmd-java</artifactId>
+                  <version>${pmd.version}</version>
+                </dependency>
+                <dependency>
+                  <groupId>net.sourceforge.pmd</groupId>
+                  <artifactId>pmd-javascript</artifactId>
+                  <version>${pmd.version}</version>
+                </dependency>
+                <dependency>
+                  <groupId>net.sourceforge.pmd</groupId>
+                  <artifactId>pmd-jsp</artifactId>
+                  <version>${pmd.version}</version>
+                </dependency>
+              </dependencies>
+              <configuration>
+                <rulesets>
+                  <ruleset>jts/pmd-ruleset.xml</ruleset>
+                </rulesets>
+                <failurePriority>1</failurePriority>
+                <verbose>false</verbose>
+                <printFailingErrors>false</printFailingErrors>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-checkstyle-plugin</artifactId>
+              <dependencies>
+                <!-- shared checkstlye config -->
+                <dependency>
+                  <groupId>org.locationtech.jts</groupId>
+                  <artifactId>build-tools</artifactId>
+                  <version>${project.version}</version>
+                </dependency>
+                <!-- user newer checkstyle -->
+                <dependency>
+                  <groupId>com.puppycrawl.tools</groupId>
+                  <artifactId>checkstyle</artifactId>
+                  <version>${checkstyle.version}</version>
+                </dependency>
+              </dependencies>
+              <configuration>
+                <logViolationsToConsole>true</logViolationsToConsole>
+                <configLocation>jts/checkstyle.xml</configLocation>
+                <headerLocation>jts/header.txt</headerLocation>
+              </configuration>
+            </plugin>
         </plugins>
     </build>
 
+    <reporting>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <reportSets>
+              <reportSet>
+                  <reports>
+                      <report>index</report>
+                      <report>licenses</report>
+                      <report>dependency-info</report>
+                  </reports>
+              </reportSet>
+          </reportSets>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <configuration>
+            <configLocation>jts/checkstyle.xml</configLocation>
+            <headerLocation>jts/header.txt</headerLocation>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-jxr-plugin</artifactId>
+          <reportSets>
+            <reportSet>
+              <reports>
+                <report>jxr</report>
+              </reports>
+            </reportSet>
+          </reportSets>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-pmd-plugin</artifactId>
+          <configuration>
+            <rulesets>
+              <ruleset>jts/pmd-ruleset.xml</ruleset>
+            </rulesets>
+          </configuration>
+        </plugin>
+      </plugins>
+    </reporting>
+          
     <!-- Modules to build in appropriate dependency order -->
     <modules>
+        <module>build-tools</module>
         <module>modules</module>
     </modules>
 
