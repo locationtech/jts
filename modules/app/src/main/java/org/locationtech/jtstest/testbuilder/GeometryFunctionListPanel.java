@@ -20,7 +20,6 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.border.*;
 
-import org.locationtech.jtstest.function.*;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.util.*;
 

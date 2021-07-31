@@ -12,7 +12,6 @@
 package org.locationtech.jts.geom.impl;
 
 import java.io.Serializable;
-import java.lang.reflect.Array;
 
 import org.locationtech.jts.geom.*;
 
