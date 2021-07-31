@@ -1,5 +1,3 @@
-
-
 /*
  * Copyright (c) 2021 Martin Davis.
  *

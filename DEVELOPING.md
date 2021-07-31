@@ -36,18 +36,12 @@ JTS build verify stage includes pmd, checkstyle and more:
 
 To skip QA checks:
 
-        mvn verify -Dpmd.skip=true -Pcheckstyle.skip=true
+        mvn verify -Dpmd.skip=true -Dcheckstyle.skip=true
 
 Errors are logged, to browse errors use:
        
         mvn site:site
         open modules/core/target/site/index.html
-
-## Quality Assurance
-
-JTS build verify stage uses pmd, to skip:
-
-        mvn verify -Dpmd.skip=true
 
 ## Javadoc
 

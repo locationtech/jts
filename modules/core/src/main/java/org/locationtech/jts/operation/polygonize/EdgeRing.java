@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -10,8 +9,6 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-
-
 package org.locationtech.jts.operation.polygonize;
 
 import java.util.ArrayList;
@@ -202,7 +199,7 @@ class EdgeRing {
 
   /**
    * Adds a hole to the polygon formed by this ring.
-   * @param hole the {@link LinearRing} forming the hole.
+   * @param holeER the {@link LinearRing} forming the hole.
    */
   public void addHole(EdgeRing holeER) {
     holeER.setShell(this);

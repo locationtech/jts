@@ -1,12 +1,4 @@
 /*
- * Copyright (c) 2003 Open Source Geospatial Foundation, All rights reserved.
- * 
- * This program and the accompanying materials are made available under the terms
- * of the OSGeo BSD License v1.0 available at:
- *
- * https://www.osgeo.org/sites/osgeo.org/files/Page/osgeo-bsd-license.txt
- */
-/*
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
@@ -17,18 +9,27 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-
+/*
+ * Copyright (c) 2003 Open Source Geospatial Foundation, All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the terms
+ * of the OSGeo BSD License v1.0 available at:
+ *
+ * https://www.osgeo.org/sites/osgeo.org/files/Page/osgeo-bsd-license.txt
+ */
 package org.locationtech.jtstest.testbuilder.io.shapefile;
 
 import java.io.IOException;
 
 import org.locationtech.jts.geom.*;
-
+import org.locationtech.jtstest.testbuilder.io.shapefile.EndianDataInputStream;
+import org.locationtech.jtstest.testbuilder.io.shapefile.InvalidShapefileException;
+import org.locationtech.jtstest.testbuilder.io.shapefile.ShapeHandler;
 
 /**
  * Wrapper for a Shapefile arc.
  */
-public class MultiLineHandler implements ShapeHandler{
+public class MultiLineHandler implements ShapeHandler {
 
     int myShapeType = -1;
     private PrecisionModel precisionModel = new PrecisionModel();
@@ -49,7 +50,7 @@ public class MultiLineHandler implements ShapeHandler{
     }
     
     
-    public Geometry read( EndianDataInputStream file , GeometryFactory geometryFactory, int contentLength) throws IOException,InvalidShapefileException 
+    public Geometry read( EndianDataInputStream file , GeometryFactory geometryFactory, int contentLength) throws IOException,InvalidShapefileException
     {
         
         double junk;

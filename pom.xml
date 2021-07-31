@@ -39,7 +39,7 @@
         <json-simple-version>1.1.1</json-simple-version>
         <sde-version>9.1</sde-version>
 
-        <!-- build enviornment target versions -->
+        <!-- build environment target versions -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <pmd.version>6.36.0</pmd.version>
@@ -62,13 +62,13 @@
             <name>Martin Davis</name>
             <email>mbdavis@VividSolutions.com</email>
             <organization>Vivid Solutions Inc.</organization>
-            <organizationUrl>http://www.vividsolutions.com/</organizationUrl>
+            <organizationUrl>https://www.vividsolutions.com/</organizationUrl>
         </developer>
         <developer>
             <name>Martin Davis</name>
             <email>mtnclimb@gmail.com</email>
             <organization>Individual</organization>
-            <organizationUrl>http://tsusiatsoftware.net</organizationUrl>
+            <organizationUrl>https://tsusiatsoftware.net</organizationUrl>
         </developer>
     </developers>
 
@@ -91,7 +91,7 @@
         </repository>
         <site>
           <id>jts</id>
-          <url>http://locationtech.github.io/jts</url>
+          <url>https://locationtech.github.io/jts</url>
         </site>
     </distributionManagement>
 
@@ -203,6 +203,10 @@
                   <version>3.1.2</version>
                 </plugin>
                 <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                </plugin>
+                <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>3.0.2</version>
                 </plugin>
@@ -211,6 +215,7 @@
                     <version>3.0.0-M1</version> <!--3.3.0 -->
                 </plugin>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jxr-plugin</artifactId>
                     <version>3.1.1</version>
                 </plugin>
@@ -246,9 +251,14 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                </configuration>
+            </plugin>
             <!-- test configuration -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <includes>
@@ -262,9 +272,10 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
+                    <quiet>true</quiet>
+                    <!--failOnWarnings>true</failOnWarnings-->
                     <show>public</show>
                     <header>${project.name} ${project.version}</header>
                     <footer>${project.name} ${project.version}</footer>
@@ -307,7 +318,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
                 <executions>
                     <execution>
@@ -319,19 +329,16 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.9.1</version>
             </plugin>
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-pmd-plugin</artifactId>
               <executions>
                 <execution>
@@ -379,7 +386,6 @@
               </configuration>
             </plugin>
             <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-checkstyle-plugin</artifactId>
               <dependencies>
                 <!-- shared checkstlye config -->
@@ -400,6 +406,15 @@
                 <configLocation>jts/checkstyle.xml</configLocation>
                 <headerLocation>jts/header.txt</headerLocation>
               </configuration>
+              <executions>
+                  <execution>
+                      <id>validate</id>
+                      <phase>validate</phase>
+                      <goals>
+                          <goal>check</goal>
+                      </goals>
+                  </execution>
+              </executions>
             </plugin>
         </plugins>
     </build>
@@ -432,6 +447,7 @@
           </configuration>
         </plugin>
         <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jxr-plugin</artifactId>
           <reportSets>
             <reportSet>

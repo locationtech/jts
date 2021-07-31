@@ -9,7 +9,7 @@
   </module>
   <!--module name="JavadocPackage"/-->
   <module name="TreeWalker">
-    <module name="AvoidStarImport"/>
+    <!--module name="AvoidStarImport"/-->
     <!--module name="JavadocMethod">
       <property name="allowMissingParamTags" value="true"/>
       <property name="allowMissingReturnTag" value="true"/>

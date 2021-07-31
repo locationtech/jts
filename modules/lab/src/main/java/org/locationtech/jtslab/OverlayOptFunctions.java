@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Martin Davis.
+ * Copyright (c) 2019 Martin Davis, and others.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
