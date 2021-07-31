@@ -412,7 +412,7 @@ public class GeometryStrategies{
 						}
 					}
 						// fill remaining dim
-					for(;dimIndex<dim;)cs.setOrdinate(i,dimIndex++,Double.NaN);
+					while(dimIndex<dim)cs.setOrdinate(i,dimIndex++,Double.NaN);
 				}
 				
 				return cs;
