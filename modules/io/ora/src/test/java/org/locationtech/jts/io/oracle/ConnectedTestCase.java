@@ -53,22 +53,29 @@ public class ConnectedTestCase extends TestCase {
 		return connection;
 	}
 
+
+
 	/**
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		
+
 		Properties props = new Properties();
 		URL path = ClassLoader.getSystemResource("org/locationtech/jts/io/oracle/connection.properties");
+		if( path == null ) {
+			return;
+		}
 		props.load(path.openStream());
-
+		if( "TRUE".equalsIgnoreCase(props.getProperty("test.skip"))) {
+			return;
+		}
 		connection = getOracleConnection(
 			props.getProperty("test.server"),
 			props.getProperty("test.port"),
-				props.getProperty("test.sid"),
-				props.getProperty("test.user"),
-				props.getProperty("test.pwd"));
+			props.getProperty("test.sid"),
+			props.getProperty("test.user"),
+			props.getProperty("test.pwd"));
 	}
 
   private static OracleConnection getOracleConnection(String server, String port, String sid, String userid, String pwd) throws SQLException {

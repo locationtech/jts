@@ -47,6 +47,9 @@ public class StaticMultiLineStringTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSingleMultiLineStringRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		LineStringGenerator pgc = new LineStringGenerator();
 		pgc.setGeometryFactory(geometryFactory);
 		pgc.setNumberPoints(10);
@@ -73,6 +76,9 @@ public class StaticMultiLineStringTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testGridMultiLineStringsRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));
@@ -116,6 +122,9 @@ public class StaticMultiLineStringTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testOverlappingMultiLineStringsRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));
@@ -163,7 +172,9 @@ public class StaticMultiLineStringTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSingleMultiLineStringManyPointRoundTrip() throws SQLException{
-
+		if(getConnection()==null){
+			return; // skip
+		}
 		LineStringGenerator pgc = new LineStringGenerator();
 		pgc.setGeometryFactory(geometryFactory);
 		pgc.setNumberPoints(1000);

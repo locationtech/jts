@@ -49,6 +49,9 @@ public class StaticPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSinglePolygonNoHoleRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		PolygonGenerator pg = new PolygonGenerator();
 		pg.setGeometryFactory(geometryFactory);
 		pg.setBoundingBox(new Envelope(0,10,0,10));
@@ -72,6 +75,9 @@ public class StaticPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testGridPolygonsNoHoleRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));
@@ -110,6 +116,9 @@ public class StaticPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testOverlappingPolygonsNoHoleRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));
@@ -152,6 +161,9 @@ public class StaticPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSinglePolygonManyPointsNoHoleRoundTrip() throws SQLException{
+		if(getConnection()==null){
+			return; // skip
+		}
 		PolygonGenerator pg = new PolygonGenerator();
 		pg.setGeometryFactory(geometryFactory);
 		pg.setBoundingBox(new Envelope(0,10,0,10));
@@ -177,6 +189,9 @@ public class StaticPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSinglePolygonHolesRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		PolygonGenerator pg = new PolygonGenerator();
 		pg.setGeometryFactory(geometryFactory);
 		pg.setBoundingBox(new Envelope(0,10,0,10));
@@ -201,6 +216,9 @@ public class StaticPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testGridPolygonsHolesRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));
@@ -240,6 +258,9 @@ public class StaticPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testOverlappingPolygonsHolesRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));
@@ -310,6 +331,9 @@ public class StaticPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSinglePolygonManyPointsManyHolesRoundTrip() throws SQLException{
+		if(getConnection()==null){
+			return; // skip
+		}
 		PolygonGenerator pg = new PolygonGenerator();
 		pg.setGeometryFactory(geometryFactory);
 		pg.setBoundingBox(new Envelope(0,10,0,10));
