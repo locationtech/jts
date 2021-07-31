@@ -285,7 +285,7 @@ public class Debug {
 
   public void instancePrint(Iterator it)
   {
-    for (; it.hasNext(); ) {
+    while (it.hasNext()) {
       Object obj = it.next();
       instancePrintObject(obj);
     }

@@ -63,10 +63,6 @@ public class CoordinateList
     add(coord, allowRepeated);
   }
 
-  public boolean add(Coordinate coord) {
-	return super.add(coord);
-  }
-
   public Coordinate getCoordinate(int i) { return (Coordinate) get(i); }
 
 
