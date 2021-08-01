@@ -141,8 +141,8 @@ public class Tri {
 
     Coordinate adj0 = getCoordinate(index0);
     Coordinate adj1 = getCoordinate(next(index0));
-    Coordinate opp0 = getCoordinate(opp(index0));
-    Coordinate opp1 = tri.getCoordinate(opp(index1));
+    Coordinate opp0 = getCoordinate(oppVertex(index0));
+    Coordinate opp1 = tri.getCoordinate(oppVertex(index1));
     
     swap(tri, index0, index1, adj0, adj1, opp0, opp1);
   }
@@ -321,15 +321,6 @@ public class Tri {
     return -1;
   }
 
-  public static int opp(int i) {
-    switch (i) {
-    case 0: return 2;
-    case 1: return 0;
-    case 2: return 1;
-    }
-    return -1;
-  }
-
   public static int prev(int i) {
     switch (i) {
     case 0: return 2;
@@ -339,9 +330,18 @@ public class Tri {
     return -1;
   }
 
-  public Coordinate midpoint(int index) {
-    Coordinate p0 = getCoordinate(index);
-    Coordinate p1 = getCoordinate(next(index));
+  public static int oppVertex(int edgeIndex) {
+    return prev(edgeIndex);
+  }
+
+  public static int oppEdge(int vertexIndex) {
+    return next(vertexIndex);
+  }
+
+
+  public Coordinate midpoint(int edgeIndex) {
+    Coordinate p0 = getCoordinate(edgeIndex);
+    Coordinate p1 = getCoordinate(next(edgeIndex));
     double midX = (p0.getX() + p1.getX()) / 2;
     double midY = (p0.getY() + p1.getY()) / 2;
     return new Coordinate(midX, midY);

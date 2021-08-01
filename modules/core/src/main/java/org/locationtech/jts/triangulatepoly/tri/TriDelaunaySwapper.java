@@ -102,8 +102,8 @@ public class TriDelaunaySwapper {
 
     Coordinate adj0 = tri0.getCoordinate(index0);
     Coordinate adj1 = tri0.getCoordinate(Tri.next(index0));
-    Coordinate opp0 = tri0.getCoordinate(Tri.opp(index0));
-    Coordinate opp1 = tri1.getCoordinate(Tri.opp(index1));
+    Coordinate opp0 = tri0.getCoordinate(Tri.oppVertex(index0));
+    Coordinate opp1 = tri1.getCoordinate(Tri.oppVertex(index1));
     
     /**
      * The candidate new edge is opp0 - opp1. 
