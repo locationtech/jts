@@ -17,21 +17,33 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-<ruleset name="Default Maven PMD Plugin Ruleset"
+<ruleset name="JTS PMD Plugin Ruleset"
     xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
 
     <description>
-        The default ruleset used by the Maven PMD Plugin, when no other ruleset is specified.
-        It contains the rules of the old (pre PMD 6.0.0) rulesets java-basic, java-empty, java-imports,
-        java-unnecessary, java-unusedcode.
+        JTS Topology Suite rulset used in conjunction with maven build to improve library quality.
 
-        This ruleset might be used as a starting point for an own customized ruleset [0].
+        Maven build configured handle priority High (1) as failure.
+        Individual rulsets may be configured to reflect JTS library conventions.
 
-        [0] https://pmd.github.io/latest/pmd_userdocs_making_rulesets.html
+        For more information https://pmd.github.io/latest/pmd_userdocs_making_rulesets.html
     </description>
 
+    <!-- Priority: High (1) -->
+
+    <!-- Priority: Medium High (2) -->
+    <rule ref="category/java/errorprone.xml/AvoidBranchingStatementAsLastInLoop" />
+
+    <!-- Priority: Medium (3) -->
+    <!-- Priority: Medium Low (4) -->
+    <!-- Priority: Low (5) -->
+
+    <!-- pending -->
+    <rule ref="category/java/codestyle.xml/UnnecessaryModifier" />
+    <rule ref="category/java/codestyle.xml/UnnecessaryReturn" />
+    <rule ref="category/java/design.xml/CollapsibleIfStatements" />
     <rule ref="category/java/bestpractices.xml/AvoidUsingHardCodedIP" />
     <rule ref="category/java/bestpractices.xml/CheckResultSet" />
     <rule ref="category/java/bestpractices.xml/UnusedFormalParameter" />
@@ -44,16 +56,14 @@ under the License.
     <rule ref="category/java/codestyle.xml/TooManyStaticImports" />
     <rule ref="category/java/codestyle.xml/UnnecessaryFullyQualifiedName" />
     <rule ref="category/java/codestyle.xml/UnnecessaryImport" />
-    <rule ref="category/java/codestyle.xml/UnnecessaryModifier" />
-    <rule ref="category/java/codestyle.xml/UnnecessaryReturn" />
     <rule ref="category/java/codestyle.xml/UselessParentheses" />
     <rule ref="category/java/codestyle.xml/UselessQualifiedThis" />
 
-    <rule ref="category/java/design.xml/CollapsibleIfStatements" />
+
     <rule ref="category/java/design.xml/SimplifiedTernary" />
     <rule ref="category/java/design.xml/UselessOverridingMethod" />
 
-    <rule ref="category/java/errorprone.xml/AvoidBranchingStatementAsLastInLoop" />
+
     <rule ref="category/java/errorprone.xml/AvoidDecimalLiteralsInBigDecimalConstructor" />
     <rule ref="category/java/errorprone.xml/AvoidMultipleUnaryOperators" />
     <rule ref="category/java/errorprone.xml/AvoidUsingOctalValues" />
@@ -86,5 +96,4 @@ under the License.
 
     <rule ref="category/java/performance.xml/BigIntegerInstantiation" />
     <rule ref="category/java/performance.xml/BooleanInstantiation" />
-
 </ruleset>
