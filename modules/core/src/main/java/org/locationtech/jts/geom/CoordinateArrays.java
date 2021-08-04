@@ -369,7 +369,7 @@ public class CoordinateArrays {
   }
 
   /**
-   * Tests whether {@link Coordinate#equals(Object) returns true for any two consecutive Coordinates
+   * Tests whether {@link Coordinate#equals(Object)} returns true for any two consecutive Coordinates
    * in the given array.
    * 
    * @param coord an array of coordinates

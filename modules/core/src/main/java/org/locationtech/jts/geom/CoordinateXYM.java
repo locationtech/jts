@@ -36,7 +36,7 @@ public class CoordinateXYM extends Coordinate {
    * Standard ordinate index value for M in XYM sequences.
    *
    * <p>This constant assumes XYM coordinate sequence definition.  Check this assumption using
-   * {@link #getDimension()} and {@link #getMeasures()} before use.
+   * {@link CoordinateSequence#getDimension()} and {@link CoordinateSequence#getMeasures()} before use.
    */
   public static final int M = 2;
 

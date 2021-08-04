@@ -177,7 +177,7 @@ public class Polygonizer
 
   /**
    * Gets a geometry representing the polygons formed by the polygonization.
-   * If a valid polygonal geometry was extracted the result is a {@link Polygonal} geometry.
+   * If a valid polygonal geometry was extracted the result is a {@link org.locationtech.jts.geom.Polygonal} geometry.
    * 
    * @return a geometry containing the polygons
    */

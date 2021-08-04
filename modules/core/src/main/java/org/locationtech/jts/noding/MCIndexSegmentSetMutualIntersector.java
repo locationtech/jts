@@ -83,8 +83,8 @@ public class MCIndexSegmentSetMutualIntersector implements SegmentSetMutualInter
    * for all <i>candidate</i> intersections between
    * the given collection of SegmentStrings and the set of indexed segments. 
    * 
-   * @param a set of segments to intersect
-   * @param the segment intersector to use
+   * @param segStrings set of segments to intersect
+   * @param segInt segment intersector to use
    */
   public void process(Collection segStrings, SegmentIntersector segInt)
   {

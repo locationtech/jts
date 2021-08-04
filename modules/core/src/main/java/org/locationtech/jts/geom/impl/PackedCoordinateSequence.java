@@ -250,7 +250,7 @@ public abstract class PackedCoordinateSequence
     /**
      * Builds a new packed coordinate sequence
      *
-     * @param coords  an array of <c>double</c> values that contains the ordinate values of the sequence
+     * @param coords  an array of <code>double</code> values that contains the ordinate values of the sequence
      * @param dimension the total number of ordinates that make up a {@link Coordinate} in this sequence.
      * @param measures the number of measure-ordinates each {@link Coordinate} in this sequence has.
      */
@@ -266,7 +266,7 @@ public abstract class PackedCoordinateSequence
     /**
      * Builds a new packed coordinate sequence out of a float coordinate array
      *
-     * @param coords  an array of <c>float</c> values that contains the ordinate values of the sequence
+     * @param coords  an array of <code>float</code> values that contains the ordinate values of the sequence
      * @param dimension the total number of ordinates that make up a {@link Coordinate} in this sequence.
      * @param measures the number of measure-ordinates each {@link Coordinate} in this sequence has.
      */
@@ -433,7 +433,7 @@ public abstract class PackedCoordinateSequence
     /**
      * Constructs a packed coordinate sequence from an array of <code>float</code>s
      *
-     * @param coords  an array of <c>float</c> values that contains the ordinate values of the sequence
+     * @param coords  an array of <code>float</code> values that contains the ordinate values of the sequence
      * @param dimension the total number of ordinates that make up a {@link Coordinate} in this sequence.
      * @param measures the number of measure-ordinates each {@link Coordinate} in this sequence has.
      */
@@ -449,7 +449,7 @@ public abstract class PackedCoordinateSequence
     /**
      * Constructs a packed coordinate sequence from an array of <code>double</code>s
      *
-     * @param coords  an array of <c>double</c> values that contains the ordinate values of the sequence
+     * @param coords  an array of <code>double</code> values that contains the ordinate values of the sequence
      * @param dimension the total number of ordinates that make up a {@link Coordinate} in this sequence.
      * @param measures the number of measure-ordinates each {@link Coordinate} in this sequence has.
      */

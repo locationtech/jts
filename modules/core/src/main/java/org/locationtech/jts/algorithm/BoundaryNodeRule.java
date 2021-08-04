@@ -16,7 +16,7 @@ import org.locationtech.jts.geom.Lineal;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.MultiLineString;
 import org.locationtech.jts.operation.BoundaryOp;
-import org.locationtech.jts.operation.IsSimpleOp;
+import org.locationtech.jts.operation.valid.IsSimpleOp;
 import org.locationtech.jts.operation.relate.RelateOp;
 
 /**

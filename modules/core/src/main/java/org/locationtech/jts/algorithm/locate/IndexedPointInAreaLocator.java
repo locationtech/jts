@@ -37,7 +37,7 @@ import org.locationtech.jts.index.intervalrtree.SortedPackedIntervalRTree;
  * <p>
  * The Location is computed precisely, in that points
  * located on the geometry boundary or segments will 
- * return {@link Location.BOUNDARY}.
+ * return {@link Location#BOUNDARY}.
  * <p>
  * {@link Polygonal} and {@link LinearRing} geometries
  * are supported.

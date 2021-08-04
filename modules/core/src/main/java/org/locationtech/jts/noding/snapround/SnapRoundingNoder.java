@@ -50,7 +50,7 @@ import org.locationtech.jts.noding.SegmentString;
  * each of the segment vertices will be noded.
  * This still provides fully-noded output.
  * This is the same behaviour provided by other noders,
- * such as {@link MCIndexNoder} and {@link SnappingNoder}.
+ * such as {@link MCIndexNoder} and {@link org.locationtech.jts.noding.snap.SnappingNoder}.
  * 
  * @version 1.7
  */
@@ -58,7 +58,7 @@ public class SnapRoundingNoder
     implements Noder
 {
   private final PrecisionModel pm;
-  private HotPixelIndex pixelIndex;
+  private final HotPixelIndex pixelIndex;
   
   private List<NodedSegmentString> snappedResult;
 

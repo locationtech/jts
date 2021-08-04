@@ -65,7 +65,9 @@ public class Node
    */
   protected void computeIM(IntersectionMatrix im) {}
   /**
-   * Add the edge to the list of edges at this node
+   * Add the edge to the list of edges at this node.
+   *
+   * @param e EdgeEnd
    */
   public void add(EdgeEnd e)
   {
@@ -84,8 +86,9 @@ public class Node
    * the merged location for each LabelElement is computed.
    * The location for the corresponding node LabelElement is set to the result,
    * as long as the location is non-null.
+   *
+   * @param label2 Label to merge
    */
-
   public void mergeLabel(Label label2)
   {
     for (int i = 0; i < 2; i++) {

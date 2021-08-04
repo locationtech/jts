@@ -42,8 +42,8 @@ import org.locationtech.jts.geom.Polygon;
  * </ul>
  * 
  * @see InteriorPoint
- * @see MaximumInscribedCircle
- * @see LargestEmptyCircle
+ * @see org.locationtech.jts.algorithm.construct.MaximumInscribedCircle
+ * @see org.locationtech.jts.algorithm.construct.LargestEmptyCircle
  *  
  * @version 1.7
  */

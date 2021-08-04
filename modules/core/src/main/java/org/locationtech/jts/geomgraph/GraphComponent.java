@@ -57,7 +57,9 @@ abstract public class GraphComponent {
    */
   abstract public Coordinate getCoordinate();
   /**
-   * compute the contribution to an IM for this component
+   * Compute the contribution to an IM for this component.
+   *
+   * @param im Intersection matrix
    */
   abstract protected void computeIM(IntersectionMatrix im);
   /**
@@ -71,6 +73,7 @@ abstract public class GraphComponent {
   /**
    * Update the IM with the contribution for this component.
    * A component only contributes if it has a labelling for both parent geometries
+   * @param im Intersection matrix
    */
   public void updateIM(IntersectionMatrix im)
   {

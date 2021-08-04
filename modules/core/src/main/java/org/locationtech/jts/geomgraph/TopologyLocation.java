@@ -51,6 +51,9 @@ public class TopologyLocation {
    * parameters are Location.NULL, Location.EXTERIOR, Location.BOUNDARY,
    * and Location.INTERIOR.
    * @see Location
+   * @param on on position
+   * @param left left position
+   * @param right right position
    */
   public TopologyLocation(int on, int left, int right) {
    init(3);
@@ -155,6 +158,8 @@ public class TopologyLocation {
   /**
    * merge updates only the NULL attributes of this object
    * with the attributes of another.
+   *
+   * @param gl Topology location
    */
   public void merge(TopologyLocation gl)
   {

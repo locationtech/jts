@@ -50,10 +50,10 @@ public class SnapRoundingIntersectionAdder
    */
   private static final int NEARNESS_FACTOR = 100;
   
-  private LineIntersector li;
+  private final LineIntersector li;
   private final List<Coordinate> intersections;
-  private PrecisionModel precModel;
-  private double nearnessTol;
+  private final PrecisionModel precModel;
+  private final double nearnessTol;
 
 
   /**

@@ -30,10 +30,10 @@ import org.locationtech.jts.geom.Coordinate;
  * (with a segment string endpoint or with another interior vertex)
  * </ul>
  * The finder can be limited to finding only interior intersections 
- * by setting {@link #setInteriorIntersectionsOnly(boolean).
+ * by setting {@link #setInteriorIntersectionsOnly(boolean)}.
  * <p>
  * By default only the first intersection is found, 
- * but all can be found by setting {@link #setFindAllIntersections(boolean)
+ * but all can be found by setting {@link #setFindAllIntersections(boolean)}
  * 
  * @version 1.7
  */

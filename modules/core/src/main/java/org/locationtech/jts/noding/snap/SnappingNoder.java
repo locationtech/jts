@@ -42,7 +42,7 @@ import org.locationtech.jts.noding.SegmentString;
  * given a small enough snap tolerance.
  * <p>
  * The correctness of the output is not verified by this noder. 
- * If required this can be done by {@link ValidatingNoder}. 
+ * If required this can be done by {@link org.locationtech.jts.noding.ValidatingNoder}.
  * 
  * @version 1.17
  */

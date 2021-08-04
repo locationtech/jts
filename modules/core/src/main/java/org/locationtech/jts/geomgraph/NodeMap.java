@@ -48,6 +48,8 @@ public class NodeMap
   */
   /**
    * This method expects that a node has a coordinate value.
+   * @param coord Coordinate
+   * @return node for the provided coord
    */
   public Node addNode(Coordinate coord)
   {
@@ -74,6 +76,8 @@ public class NodeMap
    * Adds a node for the start point of this EdgeEnd
    * (if one does not already exist in this map).
    * Adds the EdgeEnd to the (possibly new) node.
+   *
+   * @param e EdgeEnd
    */
   public void add(EdgeEnd e)
   {
@@ -82,6 +86,9 @@ public class NodeMap
     n.add(e);
   }
   /**
+   * Find coordinate.
+   *
+   * @param coord Coordinate to find
    * @return the node if found; null otherwise
    */
   public Node find(Coordinate coord)  {    return (Node) nodeMap.get(coord);  }

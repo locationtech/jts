@@ -93,7 +93,7 @@ public class WKTFileReader
    * after at least one geometry has been read,
    * to return a partial result.
    * 
-   * @param isLenient whether to ignore parse errors
+   * @param isStrict whether to ignore parse errors
    */
   public void setStrictParsing(boolean isStrict)
   {

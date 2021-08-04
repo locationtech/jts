@@ -34,7 +34,7 @@ public class FastOverlayFilter {
    * 
    * @param geom
    * @param overlayOpCode
-   * @return
+   * @return overlay of the input geometries
    */
   public Geometry overlay(Geometry geom, int overlayOpCode) {
     // for now only INTERSECTION is handled

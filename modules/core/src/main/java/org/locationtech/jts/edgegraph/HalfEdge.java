@@ -480,7 +480,7 @@ public class HalfEdge {
 
   /**
    * Finds the first node previous to this edge, if any.
-   * A node has degree <> 2.
+   * A node has degree {@code <> 2}.
    * If no such node exists (i.e. the edge is part of a ring)
    * then null is returned.
    * 

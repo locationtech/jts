@@ -23,7 +23,7 @@ import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
 
 /**
- * An example of the usage of the {@PerformanceTestRunner}.
+ * An example of the usage of the {@link PerformanceTestRunner}.
  * 
  * @author Martin Davis
  *

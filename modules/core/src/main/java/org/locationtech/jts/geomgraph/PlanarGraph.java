@@ -50,6 +50,8 @@ public class PlanarGraph
    * For nodes in the Collection, link the DirectedEdges at the node that are in the result.
    * This allows clients to link only a subset of nodes in the graph, for
    * efficiency (because they know that only a subset is of interest).
+   *
+   * @param nodes Collection of nodes
    */
   public static void linkResultDirectedEdges(Collection nodes)
   {
@@ -97,6 +99,9 @@ public class PlanarGraph
   public Node addNode(Node node) { return nodes.addNode(node); }
   public Node addNode(Coordinate coord) { return nodes.addNode(coord); }
   /**
+   * Find coordinate.
+   *
+   * @param coord Coordinate to find
    * @return the node if found; null otherwise
    */
   public Node find(Coordinate coord) { return nodes.find(coord); }
@@ -104,6 +109,8 @@ public class PlanarGraph
   /**
    * Add a set of edges to the graph.  For each edge two DirectedEdges
    * will be created.  DirectedEdges are NOT linked by this method.
+   *
+   * @param edgesToAdd Set of edges to add to the graph
    */
   public void addEdges(List edgesToAdd)
   {
@@ -150,6 +157,7 @@ public class PlanarGraph
    * Returns the EdgeEnd which has edge e as its base edge
    * (MD 18 Feb 2002 - this should return a pair of edges)
    *
+   * @param e Edge
    * @return the edge, if found
    *    <code>null</code> if the edge was not found
    */
@@ -166,6 +174,8 @@ public class PlanarGraph
   /**
    * Returns the edge whose first two coordinates are p0 and p1
    *
+   * @param p0 first coordinate to match
+   * @param p1 second coordinate to match
    * @return the edge, if found
    *    <code>null</code> if the edge was not found
    */
@@ -183,7 +193,9 @@ public class PlanarGraph
    * Returns the edge which starts at p0 and whose first segment is
    * parallel to p1
    *
-   * @return the edge, if found
+   * @param p0 Starting coordinate
+   * @param p1 Coordinate used to establish direction
+   * @return matching edge, if found
    *    <code>null</code> if the edge was not found
    */
   public Edge findEdgeInSameDirection(Coordinate p0, Coordinate p1)

@@ -42,6 +42,8 @@ public class EdgeList
 
   /**
    * Insert an edge unless it is already in the list
+   *
+   * @param e Edge
    */
   public void add(Edge e)
   {
@@ -62,6 +64,7 @@ public class EdgeList
   /**
    * If there is an edge equal to e already in the list, return it.
    * Otherwise return null.
+   * @param e Edge
    * @return  equal edge, if there is one already in the list
    *          null otherwise
    */
@@ -79,6 +82,7 @@ public class EdgeList
 
   /**
    * If the edge e is already in the list, return its index.
+   * @param e Edge
    * @return  index, if e is already in the list
    *          -1 otherwise
    */

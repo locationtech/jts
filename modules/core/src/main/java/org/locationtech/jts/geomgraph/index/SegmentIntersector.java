@@ -93,11 +93,15 @@ public class SegmentIntersector
    * in the interior of the entire Geometry, since another edge may have
    * an endpoint equal to the intersection, which according to SFS semantics
    * can result in the point being on the Boundary of the Geometry.
+   *
+   * @return indicates a proper intersection with an interior to at least two line segments
    */
   public boolean hasProperIntersection() { return hasProper; }
   /**
    * A proper interior intersection is a proper intersection which is <b>not</b>
    * contained in the set of boundary nodes set for this SegmentIntersector.
+   *
+   * @return indicates a proper interior intersection
    */
   public boolean hasProperInteriorIntersection() { return hasProperInterior; }
 
@@ -107,6 +111,12 @@ public class SegmentIntersector
    * is simply the point shared by adjacent line segments.
    * Note that closed edges require a special check for the point shared by the beginning
    * and end segments.
+   *
+   * @oaram e0 edge 0
+   * @param segIndex0 segment index 0
+   * @param e1 edge 1
+   * @param segIndex1 segment index 1
+   * @return indicates a trivial intersection, a point shared by adjacent line segments
    */
   private boolean isTrivialIntersection(Edge e0, int segIndex0, Edge e1, int segIndex1)
   {

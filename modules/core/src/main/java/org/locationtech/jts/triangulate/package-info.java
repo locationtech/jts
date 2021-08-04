@@ -11,6 +11,6 @@
  */
 
 /**
- * Contains classes that implement a Quadtree spatial index
+ * Classes to compute Delaunay triangulations.
  */
-package org.locationtech.jts.index.quadtree;
+package org.locationtech.jts.triangulate;

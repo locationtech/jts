@@ -88,7 +88,7 @@ public class PointLocation {
    *          first point identical to last point)
    * @return true if p is inside ring
    * 
-   * @see locatePointInRing
+   * @see PointLocation#locateInRing(Coordinate, Coordinate[])
    */
   public static boolean isInRing(Coordinate p, Coordinate[] ring)
   {

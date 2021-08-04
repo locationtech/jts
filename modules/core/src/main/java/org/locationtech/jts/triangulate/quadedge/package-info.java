@@ -11,6 +11,7 @@
  */
 
 /**
- * Contains classes that implement a Quadtree spatial index
+ * Classes to implement a topological subdivision of quadeges, to support creating triangulations
+ * and Voronoi diagrams.
  */
-package org.locationtech.jts.index.quadtree;
+package org.locationtech.jts.triangulate.quadedge;

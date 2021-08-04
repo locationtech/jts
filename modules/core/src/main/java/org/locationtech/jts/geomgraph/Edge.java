@@ -31,6 +31,8 @@ public class Edge
   /**
    * Updates an IM from the label for an edge.
    * Handles edges from both L and A geometries.
+   * @param label Label defining position
+   * @param im intersection matrix
    */
   public static void updateIM(Label label, IntersectionMatrix im)
   {
@@ -112,6 +114,8 @@ public class Edge
   /**
    * An Edge is collapsed if it is an Area edge and it consists of
    * two segments which are equal and opposite (eg a zero-width V).
+   *
+   * @return zero-width V area edge, consisting of two segments which are equal and of oppose orientation
    */
   public boolean isCollapsed()
   {
@@ -141,6 +145,9 @@ public class Edge
   /**
    * Adds EdgeIntersections for one or both
    * intersections found for a segment of an edge to the edge intersection list.
+   * @param li Determining number of intersections to add
+   * @param segmentIndex Segment index to add
+   * @param geomIndex Geometry index to add
    */
   public void addIntersections(LineIntersector li, int segmentIndex, int geomIndex)
   {
@@ -152,6 +159,11 @@ public class Edge
    * Add an EdgeIntersection for intersection intIndex.
    * An intersection that falls exactly on a vertex of the edge is normalized
    * to use the higher of the two possible segmentIndexes
+   *
+   * @param li Determining number of intersections to add
+   * @param segmentIndex Segment index to add
+   * @param geomIndex Geometry index to add
+   * @param intIndex intIndex is 0 or 1
    */
   public void addIntersection(LineIntersector li, int segmentIndex, int geomIndex, int intIndex)
   {
@@ -220,6 +232,9 @@ public class Edge
   }
 
   /**
+   * Check if coordinate sequences of the Edges are identical.
+   *
+   * @param e Edge
    * @return true if the coordinate sequences of the Edges are identical
    */
   public boolean isPointwiseEqual(Edge e)

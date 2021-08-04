@@ -40,7 +40,7 @@ public class MultiPointImplTest extends TestCase {
 
   public static Test suite() { return new TestSuite(MultiPointImplTest.class); }
 
-/**
+/*
  * @todo Enable when #isSimple implemented
  */
 //  public void testIsSimple1() throws Exception {
@@ -48,7 +48,7 @@ public class MultiPointImplTest extends TestCase {
 //    assertTrue(m.isSimple());
 //  }
 
-/**
+/*
  * @todo Enable when #isSimple implemented
  */
 //  public void testIsSimple2() throws Exception {

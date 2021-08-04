@@ -104,6 +104,8 @@ public abstract class EdgeRing {
 
   /**
    * Returns the list of DirectedEdges that make up this EdgeRing
+   *
+   * @return List of DirectedEdges
    */
   public List getEdges() { return edges; }
 
@@ -210,6 +212,9 @@ public abstract class EdgeRing {
   /**
    * This method will cause the ring to be computed.
    * It will also check any holes, if they have been assigned.
+   *
+   * @param p point
+   * @return true of ring contains point
    */
   public boolean containsPoint(Coordinate p)
   {

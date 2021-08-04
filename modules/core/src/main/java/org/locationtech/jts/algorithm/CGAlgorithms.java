@@ -136,7 +136,7 @@ public class CGAlgorithms
    *          first point identical to last point)
    * @return true if p is inside ring
    * 
-   * @see locatePointInRing
+   * @see #locatePointInRing(Coordinate, Coordinate[])  
    * @deprecated Use {@link PointLocation#isInRing(Coordinate, Coordinate[])}
    *             instead.
    */
