@@ -44,6 +44,10 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <pmd.version>6.36.0</pmd.version>
         <checkstyle.version>8.44</checkstyle.version>
+        <!--cast, deprecation, divzero, empty, fallthrough, finally, overrides, path, serial, and unchecked -->
+        <lint>unchecked</lint> 
+        <!-- none, accessibility, html, missing, reference, syntax, all -->
+        <doclint>none</doclint>
     </properties>
 
     <!-- PROJECT INFORMATION -->
@@ -158,7 +162,6 @@
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.7</version>
                         <extensions>true</extensions>
                         <configuration>
                             <serverId>ossrh</serverId>
@@ -168,9 +171,7 @@
                     </plugin>
 
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -205,6 +206,11 @@
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.5</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-jar-plugin</artifactId>
@@ -248,13 +254,22 @@
                     <artifactId>maven-bundle-plugin</artifactId>
                     <version>3.3.0</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.7</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <compilerArgument>-Xlint:unchecked</compilerArgument>
+                    <showWarnings>true</showWarnings>
+                    <compilerArgs>
+                        <arg>-Xlint:${lint}</arg>
+                        <!--arg>-Werror</arg-->
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <!-- test configuration -->
@@ -275,14 +290,13 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <quiet>true</quiet>
-                    <!--failOnWarnings>true</failOnWarnings-->
+                    <failOnWarnings>true</failOnWarnings>
                     <show>public</show>
                     <header>${project.name} ${project.version}</header>
                     <footer>${project.name} ${project.version}</footer>
                     <overview>${basedir}/modules/core/src/main/javadoc/overview.html</overview>
 
                     <excludePackageNames>org.locationtech.jtsexample.*,org.locationtech.jtstest,org.locationtech.jtstest.*</excludePackageNames>
-                    <failOnError>false</failOnError>
                     <groups>
                         <group>
                             <title>Core - Geometry</title>
@@ -305,8 +319,8 @@
                             <packages>org.locationtech.jts.io.*</packages>
                         </group>
                     </groups>
-                    <!-- shush javadoc 8 docklint errors -->
-                    <doclint>none</doclint>
+                    <doclint>${docklint}</doclint>
+                    <failOnError>false</failOnError>
                 </configuration>
                 <executions>
                     <execution>
@@ -382,7 +396,7 @@
                 </rulesets>
                 <failurePriority>1</failurePriority>
                 <verbose>false</verbose>
-                <printFailingErrors>false</printFailingErrors>
+                <printFailingErrors>true</printFailingErrors>
               </configuration>
             </plugin>
             <plugin>
