@@ -16,17 +16,28 @@ import org.locationtech.jts.geom.Geometry;
 import java.util.HashMap;
 
 /**
- * The Fréchet distance between two curves in a metric space is a measure of the
- * similarity between the curves.
+ * The Fréchet distance is a measure of similarity between curves. Thus it can
+ * be used like the Hausdorff distance.
  * <p/>
  * An analogy for the Fréchet distance taken from
- * <a href="http://www.kr.tuwien.ac.at/staff/eiter/et-archive/cdtr9464.pdf">Computing Discrete Fréchet Distance</a>
+ * <a href="http://www.kr.tuwien.ac.at/staff/eiter/et-archive/cdtr9464.pdf">
+ *   Computing Discrete Fréchet Distance</a>
  * <pre>
  * A man is walking a dog on a leash: the man can move
  * on one curve, the dog on the other; both may vary their
  * speed, but backtracking is not allowed.
  * </pre>
- * @see <a href="http://www.kr.tuwien.ac.at/staff/eiter/et-archive/cdtr9464.pdf">Computing Discrete Fréchet Distance</a>
+ * <p/>
+ * Its metric is better than Hausdorff's because it takes the flow of the curves
+ * into account. It is possible that two curves have a small Hausdorff but a large
+ * Fréchet distance.
+ * <p/>
+ * This implementation attempts to compute only relevant coordinate distances for
+ * performance and uses a HashMap as sparse matrix to reduce memory consumption.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Fr%C3%A9chet_distance">Fréchet distance</a>
+ * @see <a href="http://www.kr.tuwien.ac.at/staff/eiter/et-archive/cdtr9464.pdf">
+ *   Computing Discrete Fréchet Distance</a>
  */
 public class DiscreteFrechetDistance {
 

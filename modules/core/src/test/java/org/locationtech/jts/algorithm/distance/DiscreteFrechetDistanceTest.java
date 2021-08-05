@@ -14,6 +14,7 @@ package org.locationtech.jts.algorithm.distance;
 
 import junit.framework.TestCase;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.util.Assert;
@@ -48,16 +49,34 @@ public class DiscreteFrechetDistanceTest extends GeometryTestCase {
       "LINESTRING (10 10, 10 150, 130 10)", 191.049731745428);
   }
 
+  @Test
+  public void testFromDHDScaled() {
+    runTest(
+      "LINESTRING (130 0, 0 0, 0 150)",
+      "LINESTRING (10 10, 10 150, 130 10)", new ScaledCartesianDistance(), 1910.49731745428);
+  }
   private static final double TOLERANCE = 0.00001;
 
-  private void runTest(String wkt1, String wkt2, double expectedDistance)
+  private void runTest(String wkt1, String wkt2, double expectedDistance) {
+    runTest(wkt1, wkt2, CartesianDistance.getInstance(), expectedDistance);
+  }
+  private void runTest(String wkt1, String wkt2, DistanceFunction distanceFunction, double expectedDistance)
   {
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
 
-    double distance1 = DiscreteFrechetDistance.distance(g1, g2);
+    double distance1 = DiscreteFrechetDistance.distance(g1, g2, distanceFunction);
     assertEquals(expectedDistance, distance1, TOLERANCE);
-    double distance2 = DiscreteFrechetDistance.distance(g2, g1);
+    double distance2 = DiscreteFrechetDistance.distance(g2, g1, distanceFunction);
     assertEquals(distance1, distance2);
   }
+
+  private class ScaledCartesianDistance implements DistanceFunction {
+
+    @Override
+    public double distance(Coordinate p0, Coordinate p1) {
+      return 10d * CartesianDistance.getInstance().distance(p0, p1);
+    }
+  }
+
 }
