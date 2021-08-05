@@ -33,7 +33,7 @@ public class HausdorffSimilarityMeasureTest extends GeometryTestCase {
     assertEquals("POLYGON", 1d, new HausdorffSimilarityMeasure().measure(g1, g2));
   }
 
-  public void testGreaterFrechetDistanceReturnsPoorerSimilarity()
+  public void testGreaterHausdorffDistanceReturnsPoorerSimilarity()
   {
     Geometry g1 = read("LINESTRING(1 1, 2 1.0, 3 1)");
     Geometry g2 = read("LINESTRING(1 1, 2 1.1, 3 1)");
