@@ -10,8 +10,8 @@
     <packaging>bundle</packaging>
     
     <properties>
-        <lint>unchecked</lint> 
-        <doclint>html</doclint>
+        <lint>unchecked</lint>
+        <doclint>none</doclint>
     </properties>
     
     <build>
