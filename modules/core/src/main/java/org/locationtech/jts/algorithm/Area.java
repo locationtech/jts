@@ -58,7 +58,7 @@ public class Area {
     if (ring.length < 3)
       return 0.0;
     double sum = 0.0;
-    /**
+    /*
      * Based on the Shoelace formula.
      * http://en.wikipedia.org/wiki/Shoelace_formula
      */
@@ -89,7 +89,7 @@ public class Area {
     int n = ring.size();
     if (n < 3)
       return 0.0;
-    /**
+    /*
      * Based on the Shoelace formula.
      * http://en.wikipedia.org/wiki/Shoelace_formula
      */

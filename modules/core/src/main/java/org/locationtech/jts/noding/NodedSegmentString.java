@@ -13,7 +13,6 @@ package org.locationtech.jts.noding;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.locationtech.jts.algorithm.LineIntersector;
@@ -57,8 +56,8 @@ public class NodedSegmentString
 	 */
  public static void getNodedSubstrings(Collection segStrings, Collection resultEdgelist)
   {
-    for (Iterator i = segStrings.iterator(); i.hasNext(); ) {
-      NodedSegmentString ss = (NodedSegmentString) i.next();
+    for (Object segString : segStrings) {
+      NodedSegmentString ss = (NodedSegmentString) segString;
       ss.getNodeList().addSplitEdges(resultEdgelist);
     }
   }
@@ -82,7 +81,7 @@ public class NodedSegmentString
   /**
    * Creates a new instance from a {@link SegmentString}.
    *
-   * @param segString the segment string to use
+   * @param ss the segment string to use
    */
   public NodedSegmentString(SegmentString ss)
   {
@@ -124,7 +123,7 @@ public class NodedSegmentString
   }
 
   /**
-   * Gets the octant of the segment starting at vertex <code>index</code>.
+   * Gets the octant of the segment starting at vertex {@code index}.
    *
    * @param index the index of the vertex starting the segment.  Must not be
    * the last index in the vertex list
@@ -200,8 +199,8 @@ public class NodedSegmentString
 				normalizedSegmentIndex = nextSegIndex;
 			}
 		}
-		/**
-		 * Add the intersection point to edge intersection list.
+		/*
+		  Add the intersection point to edge intersection list.
 		 */
 		SegmentNode ei = nodeList.add(intPt, normalizedSegmentIndex);
 		return ei;

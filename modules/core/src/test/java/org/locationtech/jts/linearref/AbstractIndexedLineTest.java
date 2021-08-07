@@ -221,8 +221,8 @@ public abstract class AbstractIndexedLineTest extends TestCase {
    * (This should be the case for all except pathological cases, 
    * such as the input test point being beyond the end of the line). 
    * 
-   * @param input
-   * @param testPt
+   * @param input geometry
+   * @param testPt test point
    * @return true if the result of indexOfAfter is the same as the input point
    */
   protected abstract boolean indexOfAfterCheck(Geometry input, Coordinate testPt);

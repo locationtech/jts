@@ -110,6 +110,7 @@ public class Node
   /**
    * Updates the label of a node to BOUNDARY,
    * obeying the mod-2 boundaryDetermination rule.
+   * @param argIndex location index
    */
   public void setLabelBoundary(int argIndex)
   {

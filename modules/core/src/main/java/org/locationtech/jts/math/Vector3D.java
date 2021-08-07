@@ -85,7 +85,7 @@ public class Vector3D {
    * Creates a new 3D vector from a {@link Coordinate}. The coordinate should have
    * the X,Y and Z ordinates specified.
    * 
-   * @param coord the Coordinate to copy
+   * @param v the Coordinate to copy
    */
   public Vector3D(Coordinate v) {
     x = v.x;

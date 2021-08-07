@@ -93,18 +93,18 @@ public class CGAlgorithms3D
 	public static double distanceSegmentSegment(
 			Coordinate A, Coordinate B, Coordinate C, Coordinate D) 
 	{
-		/**
-		 * This calculation is susceptible to roundoff errors when 
-		 * passed large ordinate values.
-		 * It may be possible to improve this by using {@link DD} arithmetic.
+		/*
+		  This calculation is susceptible to round off errors when
+		  passed large ordinate values.
+		  It may be possible to improve this by using {@link DD} arithmetic.
 		 */
 	    if (A.equals3D(B))
 		      return distancePointSegment(A, C, D);
 	    if (C.equals3D(B))
 		      return distancePointSegment(C, A, B);
 	    
-	    /**
-	     * Algorithm derived from http://softsurfer.com/Archive/algorithm_0106/algorithm_0106.htm
+	    /*
+	      Algorithm derived from http://softsurfer.com/Archive/algorithm_0106/algorithm_0106.htm
 	     */
 		double a = Vector3D.dot(A, B, A, B);
 		double b = Vector3D.dot(A, B, C, D);
@@ -119,9 +119,9 @@ public class CGAlgorithms3D
 		double s;
 		double t;
 		if (denom <= 0.0) {
-			/**
-			 * The lines are parallel. 
-			 * In this case solve for the parameters s and t by assuming s is 0.
+			/*
+			  The lines are parallel.
+			  In this case solve for the parameters s and t by assuming s is 0.
 			 */
 			s = 0;
 			// choose largest denominator for optimal numeric conditioning
@@ -143,9 +143,9 @@ public class CGAlgorithms3D
 		else if(t > 1) {
 			return distancePointSegment(D, A, B);
 		}
-		/**
-		 * The closest points are in interiors of segments,
-		 * so compute them directly
+		/*
+		  The closest points are in interiors of segments,
+		  so compute them directly
 		 */
 		double x1 = A.x + s * (B.x - A.x);
 		double y1 = A.y + s * (B.y - A.y);
