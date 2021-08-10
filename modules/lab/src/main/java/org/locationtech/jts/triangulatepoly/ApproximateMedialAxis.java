@@ -18,10 +18,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.locationtech.jts.algorithm.Distance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineSegment;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
@@ -77,7 +79,6 @@ public class ApproximateMedialAxis {
       int exitEdge = node.exitEdge();
       Coordinate exitPt = tri.midpoint(exitEdge);
       
-      // TODO: improve this - use circumcentre if acute?
       node.addInternalLinesToExit(geomFact, lines);
       
       Tri triNext = tri.getAdjacent(exitEdge);
@@ -117,7 +118,7 @@ public class ApproximateMedialAxis {
     return geomFact.createLineString(CoordinateArrays.toCoordinateArray(pts));
   }
   
-  private void extendLine(Tri tri, int edge, List<Coordinate> pts) {
+  private void extendLine(Tri tri, int edgeEntry, List<Coordinate> pts) {
     //if (pts.size() > 100) return;
     /**
      * 3 cases:
@@ -127,32 +128,98 @@ public class ApproximateMedialAxis {
      */
     int numAdj = tri.numAdjacent();
     if (numAdj == 3) {
-      addNodeEntry(tri, edge, pts.get(pts.size() - 1));
+      addNodeEntry(tri, edgeEntry, pts.get(pts.size() - 1));
       return;
     }
     if (numAdj < 2) 
       return;
     
     //--- now are only dealing with 2-Adj triangles
-    int eOpp = indexOfAdjacentOther(tri, edge);
-    if (isCorridor(tri, eOpp)) {
-      Tri triN = tri.getAdjacent(eOpp);
+    int eAdj = indexOfAdjacentOther(tri, edgeEntry);
+    if (isCorridor(tri, eAdj)) {
+      Tri triN = tri.getAdjacent(eAdj);
       int eAdjN = triN.getIndex(tri);
       int eOppN = indexOfAdjacentOther(triN, eAdjN);
-      Coordinate p = triN.midpoint(eOppN);
+      Coordinate p = corridorExitPoint(tri, triN);
       pts.add(p);
       Tri triNN = triN.getAdjacent(eOppN);
       int eOppNN = triNN.getIndex(triN);
       extendLine(triNN, eOppNN, pts);
     }
     else {
-      Coordinate p = tri.midpoint(eOpp);
+      //TODO: compute medial axis point along edge
+      Coordinate p = tri.midpoint(eAdj);
       pts.add(p);
-      Tri triNN = tri.getAdjacent(eOpp);
+      Tri triNN = tri.getAdjacent(eAdj);
       int eAdjNN = triNN.getIndex(tri);
       extendLine(triNN, eAdjNN, pts);
     }
   }
+
+  /**
+   * Computes medial axis point on exit edge of boundary (free/non-adjacent) edges.
+   * 
+   * @param tri1
+   * @param tri2
+   * @return medial axis corridor exit point
+   */
+  private Coordinate corridorExitPoint(Tri tri1, Tri tri2) {
+    
+    
+    int eBdy1 = indexOfNonAdjacent(tri1);
+    int eBdy2 = indexOfNonAdjacent(tri2);
+    //--- Case eBdy1 is eEntry.next
+    Coordinate p00 = tri1.getCoordinate(eBdy1);
+    Coordinate p01 = tri1.getCoordinate(Tri.next(eBdy1));
+    Coordinate p10 = tri2.getCoordinate(Tri.next(eBdy2));
+    Coordinate p11 = tri2.getCoordinate(eBdy2);
+    
+    int eAdj1 = tri1.getIndex(tri2);
+    if (Tri.next(eBdy1) != eAdj1) {
+      p00 = tri1.getCoordinate(Tri.next(eBdy1));
+      p01 = tri1.getCoordinate(eBdy1);
+      p10 = tri2.getCoordinate(eBdy2);
+      p11 = tri2.getCoordinate(Tri.next(eBdy2));
+    }
+    Coordinate axisPoint = medialAxisPoint(p00, p01, p10, p11);
+    return axisPoint;
+  }
+
+  /**
+   * Computes the medial axis point along line p01-p11
+   * between boundary segments p00-p01 and p10-p11.
+   * 
+   * @param p00
+   * @param p01
+   * @param p10
+   * @param p11
+   * @return
+   */
+  private static Coordinate medialAxisPoint(
+      Coordinate p00, Coordinate p01, 
+      Coordinate p10, Coordinate p11) {
+    double endFrac0 = 0;
+    double endFrac1 = 1;
+    double delta = 0.0;
+    LineSegment edgeExit = new LineSegment(p01, p11);
+    Coordinate axisPt = null;
+    do {
+      double midFrac = (endFrac0 + endFrac1) / 2;
+      axisPt = edgeExit.pointAlong(midFrac);
+      double dist0 = Distance.pointToSegment(axisPt, p00, p01);
+      double dist1 = Distance.pointToSegment(axisPt, p10, p11);
+      if (dist0 > dist1) {
+        endFrac1 = midFrac;
+       }
+      else {
+        endFrac0 = midFrac;       
+      }
+      delta = Math.abs(endFrac0 - endFrac1);
+    }
+    while (delta > .01);
+    return axisPt;
+  }
+
 
   private static boolean isCorridor(Tri tri, int eCommon) {
     int eFree = indexOfNonAdjacent(tri);
@@ -182,6 +249,7 @@ public class ApproximateMedialAxis {
     }
   }
   
+  /*
   private LineString generateLineAdj1(Tri triStart) {
     int iAdj = indexOfAdjacent(triStart);
     int iOpp = Tri.prev(iAdj);
@@ -205,6 +273,7 @@ public class ApproximateMedialAxis {
      * Centroid is too affected by a side of very different length.
      * Maybe some centre which is biased towards sides with most similar length?
      */
+  /*
     Coordinate cc = Triangle.circumcentre(tri.getCoordinate(0), 
         tri.getCoordinate(1), tri.getCoordinate(2));
     if (! Triangle.intersects(tri.getCoordinate(0), 
@@ -219,6 +288,7 @@ public class ApproximateMedialAxis {
     LineString line2 = line(v2, cc.copy());
     return new LineString[] { line0, line1, line2 };
   }
+*/
 
   private LineString line(Coordinate p0, Coordinate p1) {
     return geomFact.createLineString(new Coordinate[] { p0, p1 });
