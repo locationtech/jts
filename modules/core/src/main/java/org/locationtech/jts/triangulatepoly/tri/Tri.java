@@ -80,8 +80,8 @@ public class Tri {
     this.tri2 = tri2;
   }
 
-  public void setNeighbor(int i, Tri tri) {
-    switch (i) {
+  public void setTri(int edgeIndex, Tri tri) {
+    switch (edgeIndex) {
     case 0: tri0 = tri; return;
     case 1: tri1 = tri; return;
     case 2: tri2 = tri; return;
@@ -98,7 +98,7 @@ public class Tri {
 
   public void setAdjacent(Coordinate pt, Tri tri) {
     int index = getIndex(pt);
-    setNeighbor(index, tri);
+    setTri(index, tri);
     // TODO: validate that tri is adjacent at the edge specified
   }
   

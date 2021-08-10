@@ -36,6 +36,13 @@ public class ApproximateMedialAxis {
     return tt.compute();
   }
   
+  public static Geometry axisPointSegment(Geometry pt, Geometry seg) {
+    Coordinate p = pt.getCoordinate();
+    Coordinate[] pts = seg.getCoordinates();
+    Coordinate axisPt = medialAxisPoint(p, pts[0], pts[1]);
+    return pt.getFactory().createPoint(axisPt);
+  }
+  
   private Polygon inputPolygon;
   private GeometryFactory geomFact;
   private List<LineString> lines = new ArrayList<LineString>();
@@ -59,59 +66,72 @@ public class ApproximateMedialAxis {
   {
     for (Tri tri : tris) {
       if (tri.numAdjacent() == 1) {
-        lines.add(constructLeafLine(tri));
+        lines.add( constructLeafLine(tri) );
       }
     }
     while (! nodeQue.isEmpty()) {
       AxisNode node = nodeQue.pop();
-      lines.addAll(constructNodeLines(node));
+      lines.addAll( constructNodeLines(node) );
     }
   }
 
+  private LineString constructLeafLine(Tri triStart) {
+    int eAdj = indexOfAdjacent(triStart);
+    
+    int vOpp = Tri.oppVertex(eAdj);
+    Coordinate startPt = triStart.getCoordinate(vOpp);
+    Coordinate edgePt = angleBisector(triStart, vOpp);
+
+    return constructPathLine(triStart, eAdj, startPt, edgePt);
+  }
+  
   private List<LineString> constructNodeLines(AxisNode node) {
     List<LineString> lines = new ArrayList<LineString>();
     if (node.numAdjacent() == 3) {
-      // TODO: add lines joining edge pts to circumcentre or centre
-      node.addInternalLines(geomFact, lines);
+      node.addInternalLines(lines, geomFact);
     }
     else if (node.numAdjacent() == 2) {
       Tri tri = node.getTri();
       int exitEdge = node.exitEdge();
       Coordinate exitPt = tri.midpoint(exitEdge);
       
-      node.addInternalLinesToExit(geomFact, lines);
+      node.addInternalLinesToExit(lines, geomFact);
       
       Tri triNext = tri.getAdjacent(exitEdge);
+      /**
+       * If next tri is a node as well, queue it
+       */
       if (triNext.numAdjacent() == 3) {
         int adjNext = triNext.getIndex(tri);
-        addNodeEntry(triNext, adjNext, exitPt);
+        createNodeEntryPoint(triNext, adjNext, exitPt);
         return lines;
       }
       //TODO: make this better
-      lines.add( constructPathLine(tri, exitEdge, exitPt, null)) ;
+      lines.add( constructPathLine(tri, exitEdge, exitPt)) ;
     }
     //TODO: handle 1-adj nodes - these occur around holes
     return lines;
   }
-
-  private LineString constructLeafLine(Tri triStart) {
-    List<Coordinate> pts = new ArrayList<Coordinate>();
-    int eAdj = indexOfAdjacent(triStart);
-    
-    int vOpp = Tri.oppVertex(eAdj);
-    Coordinate startPt = triStart.getCoordinate(vOpp);
-    Coordinate edgePt = angleBisector(triStart, vOpp);
-    pts.add(startPt);
-
-    return constructPathLine(triStart, eAdj, edgePt, pts);
+  
+  private LineString constructPathLine(Tri triStart, int eStart, 
+      Coordinate p0, Coordinate p1)
+  {
+    ArrayList<Coordinate> pts = new ArrayList<Coordinate>();
+    pts.add(p0);
+    pts.add(p1);
+    return constructPathLine(triStart, eStart, pts);
   }
-
-  private LineString constructPathLine(Tri triStart, int eStart, Coordinate pt,
+  
+  private LineString constructPathLine(Tri triStart, int eStart, 
+      Coordinate p0)
+  {
+    ArrayList<Coordinate> pts = new ArrayList<Coordinate>();
+    pts.add(p0);
+    return constructPathLine(triStart, eStart, pts);
+  }
+  
+  private LineString constructPathLine(Tri triStart, int eStart,
       List<Coordinate> pts) {
-    if (pts == null) {
-      pts = new ArrayList<Coordinate>();
-    }
-    pts.add(pt);
     Tri triNext = triStart.getAdjacent(eStart);
     int eAdjNext = triNext.getIndex(triStart);
     extendLine(triNext, eAdjNext, pts);
@@ -128,17 +148,22 @@ public class ApproximateMedialAxis {
      */
     int numAdj = tri.numAdjacent();
     if (numAdj == 3) {
-      addNodeEntry(tri, edgeEntry, pts.get(pts.size() - 1));
+      createNodeEntryPoint(tri, edgeEntry, pts.get(pts.size() - 1));
       return;
     }
-    if (numAdj < 2) 
+    if (numAdj < 2) {
       return;
+    }
     
     //--- now are only dealing with 2-Adj triangles
     int eAdj = indexOfAdjacentOther(tri, edgeEntry);
-    if (isCorridor(tri, eAdj)) {
-      Tri tri2 = tri.getAdjacent(eAdj);
-      Coordinate p = corridorExitPoint(tri, tri2);
+    if (isTube(tri, eAdj)) {
+     /**
+      * If this triangle and the next one form a "tube"
+      * then optimize the medial axis line construction.
+      */
+     Tri tri2 = tri.getAdjacent(eAdj);
+      Coordinate p = exitPointTube(tri, tri2);
       pts.add(p);
       
       int eAdj2 = tri2.getIndex(tri);
@@ -148,8 +173,8 @@ public class ApproximateMedialAxis {
       extendLine(triN, eOppN, pts);
     }
     else {
-      //TODO: compute medial axis point along edge
-      Coordinate p = wedgeExitPoint(tri, eAdj);
+      //--- A "wedge" triangle with one boundary edge
+      Coordinate p = exitPointWedge(tri, eAdj);
       pts.add(p);
       Tri triN = tri.getAdjacent(eAdj);
       int eAdjN = triN.getIndex(tri);
@@ -157,7 +182,7 @@ public class ApproximateMedialAxis {
     }
   }
 
-  private Coordinate wedgeExitPoint(Tri tri, int eExit) {
+  private Coordinate exitPointWedge(Tri tri, int eExit) {
     int eBdy = indexOfNonAdjacent(tri);
     Coordinate pt = tri.getCoordinate(Tri.oppVertex(eBdy));
     Coordinate p0 = tri.getCoordinate(eBdy);
@@ -166,17 +191,17 @@ public class ApproximateMedialAxis {
       p0 = tri.getCoordinate(Tri.next(eBdy));
       p1 = tri.getCoordinate(eBdy);
     }
-    return medialAxis(pt, p0, p1);
+    return medialAxisPoint(pt, p0, p1);
   }
 
   /**
-   * Computes medial axis point on exit edge of boundary (free/non-adjacent) edges.
+   * Computes medial axis point on exit edge of a "tube".
    * 
-   * @param tri1
-   * @param tri2
-   * @return medial axis corridor exit point
+   * @param tri1 the first triangle in the tube 
+   * @param tri2 the second triangle in the tube
+   * @return medial axis exit point of tube
    */
-  private Coordinate corridorExitPoint(Tri tri1, Tri tri2) {
+  private Coordinate exitPointTube(Tri tri1, Tri tri2) {
     
     int eBdy1 = indexOfNonAdjacent(tri1);
     int eBdy2 = indexOfNonAdjacent(tri2);
@@ -197,23 +222,27 @@ public class ApproximateMedialAxis {
     return axisPoint;
   }
 
+  private static final double MEDIAL_AXIS_EPS = .01;
+
   /**
-   * Computes the medial axis point along line p01-p11
-   * between boundary segments p00-p01 and p10-p11.
+   * Computes the approximate point where the medial axis  
+   * between two line segments
+   * intersects the line between the ends of the segments.
    * 
-   * @param p00
-   * @param p01
-   * @param p10
-   * @param p11
-   * @return
+   * @param p00 the start vertex of segment 0
+   * @param p01 the end vertex of segment 0
+   * @param p10 the start vertex of segment 1
+   * @param p11 the end vertex of segment 1
+   * @return the approximate medial axis point
    */
   private static Coordinate medialAxisPoint(
       Coordinate p00, Coordinate p01, 
       Coordinate p10, Coordinate p11) {
     double endFrac0 = 0;
     double endFrac1 = 1;
-    double delta = 0.0;
+    double eps = 0.0;
     LineSegment edgeExit = new LineSegment(p01, p11);
+    double edgeLen = edgeExit.getLength();
     Coordinate axisPt = null;
     do {
       double midFrac = (endFrac0 + endFrac1) / 2;
@@ -226,59 +255,78 @@ public class ApproximateMedialAxis {
       else {
         endFrac0 = midFrac;       
       }
-      delta = Math.abs(endFrac0 - endFrac1);
+      eps = Math.abs(dist0 - dist1) / edgeLen;
     }
-    while (delta > .01);
+    while (eps > MEDIAL_AXIS_EPS);
     return axisPt;
   }
 
-  private Coordinate medialAxis(Coordinate p, Coordinate p0, Coordinate p1) {
+  /**
+   * Computes the approximate point where the medial axis 
+   * between a point and a line segment
+   * intersects the line between the point and the segment endpoint
+   * 
+   * @param p the point
+   * @param p0 the first vertex of the segment
+   * @param p1 the second vertex of the segment
+   * @return
+   */
+  private static Coordinate medialAxisPoint(Coordinate p, Coordinate p0, Coordinate p1) {
     double endFrac0 = 0;
     double endFrac1 = 1;
-    double delta = 0.0;
+    double eps = 0.0;
     LineSegment edgeExit = new LineSegment(p, p1);
+    double edgeLen = edgeExit.getLength();
     Coordinate axisPt = null;
     do {
       double midFrac = (endFrac0 + endFrac1) / 2;
       axisPt = edgeExit.pointAlong(midFrac);
-      double dist = p.distance(axisPt);
-      double dist01 = Distance.pointToSegment(axisPt, p0, p1);
-      if (dist > dist01) {
+      double distPt = p.distance(axisPt);
+      double distSeg = Distance.pointToSegment(axisPt, p0, p1);
+      if (distPt > distSeg) {
         endFrac1 = midFrac;
        }
       else {
         endFrac0 = midFrac;       
       }
-      delta = Math.abs(endFrac0 - endFrac1);
+      eps = Math.abs(distSeg - distPt) / edgeLen;
     }
-    while (delta > .01);
+    while (eps > MEDIAL_AXIS_EPS);
     return axisPt;
   }
 
-  private static boolean isCorridor(Tri tri, int eCommon) {
-    int eFree = indexOfNonAdjacent(tri);
-    int vOppFree = Tri.oppVertex(eFree);
-    Coordinate pFreeOpp = tri.getCoordinate(vOppFree);
-    
-    Tri triNext = tri.getAdjacent(eCommon);
+  /**
+   * Tests if a triangle and its adjacent tri form a "tube",
+   * where the opposite edges of the triangles are on the boundary.
+   * 
+   * @param tri the triangle to test
+   * @param eAdj the edge adjacent to the next triangle
+   * @return true if the two triangles form a tube
+   */
+  private static boolean isTube(Tri tri, int eAdj) {
+    Tri triNext = tri.getAdjacent(eAdj);
     if (triNext.numAdjacent() != 2)
       return false;
 
-    int eFreeN = indexOfNonAdjacent(triNext);
-    int vOppFreeN = Tri.oppVertex(eFreeN);
-    Coordinate pFreeOppN = triNext.getCoordinate(vOppFreeN);
+    int eBdy = indexOfNonAdjacent(tri);
+    int vOppBdy = Tri.oppVertex(eBdy);
+    Coordinate pOppBdy = tri.getCoordinate(vOppBdy);
     
-    return ! pFreeOpp.equals2D(pFreeOppN);
+    int eBdyN = indexOfNonAdjacent(triNext);
+    int vOppBdyN = Tri.oppVertex(eBdyN);
+    Coordinate pOppBdyN = triNext.getCoordinate(vOppBdyN);
+    
+    return ! pOppBdy.equals2D(pOppBdyN);
   }
 
-  private void addNodeEntry(Tri tri, int edge, Coordinate pt) {
+  private void createNodeEntryPoint(Tri tri, int edgeEntry, Coordinate pt) {
     AxisNode node = nodeMap.get(tri);
     if (node == null) {
       node = new AxisNode(tri);
       nodeMap.put(tri, node);
     }
-    node.addEntry(edge, pt);
-    if (node.has2Adjacent()) {
+    node.addEntryPoint(edgeEntry, pt);
+    if (node.isPathStart()) {
       nodeQue.add(node);
     }
   }
@@ -322,12 +370,13 @@ public class ApproximateMedialAxis {
     LineString line2 = line(v2, cc.copy());
     return new LineString[] { line0, line1, line2 };
   }
-*/
+
 
   private LineString line(Coordinate p0, Coordinate p1) {
     return geomFact.createLineString(new Coordinate[] { p0, p1 });
   }
-
+*/
+  
   private static int indexOfAdjacent(Tri tri) {
     for (int i = 0; i < 3; i++) {
       if (tri.hasAdjacent(i))
@@ -373,7 +422,7 @@ class AxisNode {
     this.tri = tri;
   }
   
-  public void addInternalLines(GeometryFactory geomFact, List<LineString> lines) {
+  public void addInternalLines(List<LineString> lines, GeometryFactory geomFact) {
     Coordinate cc = circumcentre();
     if (! intersects(cc)) {
       cc = tri.midpoint(longestEdge());
@@ -397,7 +446,7 @@ class AxisNode {
     if (p2 != null) lines.add(createLine(p2, p, geomFact, lines));
   }
   
-  public void addInternalLinesToExit(GeometryFactory geomFact, List<LineString> lines) {
+  public void addInternalLinesToExit(List<LineString> lines, GeometryFactory geomFact) {
     int exitEdge = exitEdge();
     Coordinate exitPt = tri.midpoint(exitEdge);
     Coordinate adjEndpoint = exitPt;
@@ -453,7 +502,7 @@ class AxisNode {
     return tri;
   }
 
-  public void addEntry(int eAdj, Coordinate pt) {
+  public void addEntryPoint(int eAdj, Coordinate pt) {
     setEntryPoint(eAdj, pt);
   }
   
@@ -465,7 +514,7 @@ class AxisNode {
     }
   }
   
-  public boolean has2Adjacent() {
+  public boolean isPathStart() {
     return numAdjacent() >= 2;
   }
 
