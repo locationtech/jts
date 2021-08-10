@@ -185,12 +185,16 @@ public class CoordinateSequences {
       for (int d = 0; d < dim; d++) {
         double v1 = cs1.getOrdinate(i, d);
         double v2 = cs2.getOrdinate(i, d);
-        if (cs1.getOrdinate(i, d) == cs2.getOrdinate(i, d))
+        if (cs1.getOrdinate(i, d) == cs2.getOrdinate(i, d)) {
           continue;
-        // special check for NaNs
-        if (Double.isNaN(v1) && Double.isNaN(v2))
+        }
+        else if (Double.isNaN(v1) && Double.isNaN(v2)) {
+          // special check for NaNs
           continue;
-        return false;
+        }
+        else {
+          return false;
+        }
       }
     }
     return true;

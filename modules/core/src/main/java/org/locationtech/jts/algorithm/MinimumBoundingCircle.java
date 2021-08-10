@@ -318,24 +318,26 @@ public class MinimumBoundingCircle
 		for (int i = 0; i < pts.length; i++) {
 			Coordinate R = pointWithMinAngleWithSegment(pts, P, Q);
 			
-			// if PRQ is obtuse, then MBC is determined by P and Q
 			if (Angle.isObtuse(P, R, Q)) {
+				// if PRQ is obtuse, then MBC is determined by P and Q
 				extremalPts = new Coordinate[] { new Coordinate(P), new Coordinate(Q) };
 				return;
 			}
-			// if RPQ is obtuse, update baseline and iterate
-			if (Angle.isObtuse(R, P, Q)) {
+			else if (Angle.isObtuse(R, P, Q)) {
+				// if RPQ is obtuse, update baseline and iterate
 				P = R;
 				continue;
 			}
-			// if RQP is obtuse, update baseline and iterate
-			if (Angle.isObtuse(R, Q, P)) {
+			else if (Angle.isObtuse(R, Q, P)) {
+				// if RQP is obtuse, update baseline and iterate
 				Q = R;
 				continue;
 			}
-			// otherwise all angles are acute, and the MBC is determined by the triangle PQR
-			extremalPts = new Coordinate[] { new Coordinate(P), new Coordinate(Q), new Coordinate(R) };
-			return;
+			else {
+				// otherwise all angles are acute, and the MBC is determined by the triangle PQR
+				extremalPts = new Coordinate[] { new Coordinate(P), new Coordinate(Q), new Coordinate(R) };
+				return;
+			}
 		}
 		Assert.shouldNeverReachHere("Logic failure in Minimum Bounding Circle algorithm!"); 
 	}

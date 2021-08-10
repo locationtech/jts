@@ -394,7 +394,7 @@
                 <rulesets>
                   <ruleset>jts/pmd-ruleset.xml</ruleset>
                 </rulesets>
-                <failurePriority>1</failurePriority>
+                <failurePriority>2</failurePriority>
                 <verbose>false</verbose>
                 <printFailingErrors>true</printFailingErrors>
               </configuration>
