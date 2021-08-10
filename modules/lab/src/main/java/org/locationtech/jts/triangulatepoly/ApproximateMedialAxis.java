@@ -137,23 +137,36 @@ public class ApproximateMedialAxis {
     //--- now are only dealing with 2-Adj triangles
     int eAdj = indexOfAdjacentOther(tri, edgeEntry);
     if (isCorridor(tri, eAdj)) {
-      Tri triN = tri.getAdjacent(eAdj);
-      int eAdjN = triN.getIndex(tri);
-      int eOppN = indexOfAdjacentOther(triN, eAdjN);
-      Coordinate p = corridorExitPoint(tri, triN);
+      Tri tri2 = tri.getAdjacent(eAdj);
+      Coordinate p = corridorExitPoint(tri, tri2);
       pts.add(p);
-      Tri triNN = triN.getAdjacent(eOppN);
-      int eOppNN = triNN.getIndex(triN);
-      extendLine(triNN, eOppNN, pts);
+      
+      int eAdj2 = tri2.getIndex(tri);
+      int eOpp2 = indexOfAdjacentOther(tri2, eAdj2);
+      Tri triN = tri2.getAdjacent(eOpp2);
+      int eOppN = triN.getIndex(tri2);
+      extendLine(triN, eOppN, pts);
     }
     else {
       //TODO: compute medial axis point along edge
-      Coordinate p = tri.midpoint(eAdj);
+      Coordinate p = wedgeExitPoint(tri, eAdj);
       pts.add(p);
-      Tri triNN = tri.getAdjacent(eAdj);
-      int eAdjNN = triNN.getIndex(tri);
-      extendLine(triNN, eAdjNN, pts);
+      Tri triN = tri.getAdjacent(eAdj);
+      int eAdjN = triN.getIndex(tri);
+      extendLine(triN, eAdjN, pts);
     }
+  }
+
+  private Coordinate wedgeExitPoint(Tri tri, int eExit) {
+    int eBdy = indexOfNonAdjacent(tri);
+    Coordinate pt = tri.getCoordinate(Tri.oppVertex(eBdy));
+    Coordinate p0 = tri.getCoordinate(eBdy);
+    Coordinate p1 = tri.getCoordinate(Tri.next(eBdy));
+    if (Tri.next(eBdy) != eExit) {
+      p0 = tri.getCoordinate(Tri.next(eBdy));
+      p1 = tri.getCoordinate(eBdy);
+    }
+    return medialAxis(pt, p0, p1);
   }
 
   /**
@@ -164,7 +177,6 @@ public class ApproximateMedialAxis {
    * @return medial axis corridor exit point
    */
   private Coordinate corridorExitPoint(Tri tri1, Tri tri2) {
-    
     
     int eBdy1 = indexOfNonAdjacent(tri1);
     int eBdy2 = indexOfNonAdjacent(tri2);
@@ -220,6 +232,28 @@ public class ApproximateMedialAxis {
     return axisPt;
   }
 
+  private Coordinate medialAxis(Coordinate p, Coordinate p0, Coordinate p1) {
+    double endFrac0 = 0;
+    double endFrac1 = 1;
+    double delta = 0.0;
+    LineSegment edgeExit = new LineSegment(p, p1);
+    Coordinate axisPt = null;
+    do {
+      double midFrac = (endFrac0 + endFrac1) / 2;
+      axisPt = edgeExit.pointAlong(midFrac);
+      double dist = p.distance(axisPt);
+      double dist01 = Distance.pointToSegment(axisPt, p0, p1);
+      if (dist > dist01) {
+        endFrac1 = midFrac;
+       }
+      else {
+        endFrac0 = midFrac;       
+      }
+      delta = Math.abs(endFrac0 - endFrac1);
+    }
+    while (delta > .01);
+    return axisPt;
+  }
 
   private static boolean isCorridor(Tri tri, int eCommon) {
     int eFree = indexOfNonAdjacent(tri);
