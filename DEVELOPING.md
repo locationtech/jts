@@ -90,7 +90,7 @@ Project:
 
 3. Once imported eclipse will build the project using built-in maven support.
   
-   tip: During initial build *Setup Maven plugin connectors* will offer to install *maven-checkstyle-plugin* connector integrating these QA checks with the IDE.
+   tip: During initial build *Setup Maven plugin connectors* will offer to install *maven-checkstyle-plugin* connector integrating these QA checks with the IDE. You can do this later after installing the checkstyle plugin below.
 
 Run Configurations:
 

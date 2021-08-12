@@ -34,13 +34,25 @@ under the License.
     <!-- Priority: High (1) -->
 
     <!-- Priority: Medium High (2) -->
+    <!-- 
+    <rule ref="category/java/bestpractices.xml/AvoidReassigningParameters" />
+    <rule ref="category/java/bestpractices.xml/SystemPrintln" />
+    -->
+    
     <rule ref="category/java/errorprone.xml/AvoidBranchingStatementAsLastInLoop" />
-
+    <rule ref="category/java/performance.xml/BooleanInstantiation" />
+    <!--
+    <rule ref="category/java/performance.xml/ByteInstantiation" />
+    <rule ref="category/java/performance.xml/IntegerInstantiation" />
+    <rule ref="category/java/performance.xml/LongInstantiation" />
+    <rule ref="category/java/performance.xml/ShortInstantiation" />
+    -->
     <!-- Priority: Medium (3) -->
     <!-- Priority: Medium Low (4) -->
     <!-- Priority: Low (5) -->
 
     <!-- pending -->
+    <!-- 
     <rule ref="category/java/codestyle.xml/UnnecessaryModifier" />
     <rule ref="category/java/codestyle.xml/UnnecessaryReturn" />
     <rule ref="category/java/design.xml/CollapsibleIfStatements" />
@@ -95,5 +107,5 @@ under the License.
     <rule ref="category/java/multithreading.xml/DoubleCheckedLocking" />
 
     <rule ref="category/java/performance.xml/BigIntegerInstantiation" />
-    <rule ref="category/java/performance.xml/BooleanInstantiation" />
+    -->
 </ruleset>
