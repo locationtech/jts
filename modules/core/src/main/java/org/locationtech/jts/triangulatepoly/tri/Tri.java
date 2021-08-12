@@ -246,6 +246,14 @@ public class Tri {
     return new Coordinate[] { getCoordinate(index), getCoordinate(next) };
   }
 
+  public Coordinate getEdgeStart(int i) {
+    return getCoordinate(i);
+  }
+  
+  public Coordinate getEdgeEnd(int i) {
+    return getCoordinate(next(i));
+  }
+  
   public boolean hasCoordinate(Coordinate v) {
     if ( p0.equals(v) || p1.equals(v) || p2.equals(v) ) {
       return true;
