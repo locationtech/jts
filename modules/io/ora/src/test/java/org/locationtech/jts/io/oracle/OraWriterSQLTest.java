@@ -44,7 +44,7 @@ public class OraWriterSQLTest extends TestCase {
 
 	public void testXYZ_LineString() throws Exception {
 	  checkValue("LINESTRING (0 0 0, 50 50 100)",
-	    "SDO_GEOMETRY(2002,0,NULL,SDO_ELEM_INFO_ARRAY(1,2,1),SDO_ORDINATE_ARRAY(0,0,  50,50))");
+	    "SDO_GEOMETRY(3002,0,NULL,SDO_ELEM_INFO_ARRAY(1,2,1),SDO_ORDINATE_ARRAY(0,0,0,  50,50,100))");
 	}
 
 	//============================================================

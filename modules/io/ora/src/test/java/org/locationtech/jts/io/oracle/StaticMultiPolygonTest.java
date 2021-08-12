@@ -49,6 +49,9 @@ public class StaticMultiPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSingleMultiPolygonNoHoleRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		PolygonGenerator pgc = new PolygonGenerator();
 		pgc.setGeometryFactory(geometryFactory);
 		pgc.setNumberPoints(10);
@@ -75,6 +78,9 @@ public class StaticMultiPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testGridMultiPolygonsNoHoleRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));
@@ -118,6 +124,9 @@ public class StaticMultiPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testOverlappingMultiPolygonsNoHoleRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));
@@ -165,7 +174,9 @@ public class StaticMultiPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSingleMultiPolygonManyPointsNoHoleRoundTrip() throws SQLException{
-
+		if( getConnection() == null) {
+			return; // skip
+		}
 		PolygonGenerator pgc = new PolygonGenerator();
 		pgc.setGeometryFactory(geometryFactory);
 		pgc.setGenerationAlgorithm(PolygonGenerator.BOX);
@@ -194,7 +205,9 @@ public class StaticMultiPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSingleMultiPolygonHolesRoundTrip() throws SQLException{
-
+		if( getConnection() == null) {
+			return; // skip
+		}
 		PolygonGenerator pgc = new PolygonGenerator();
 		pgc.setGeometryFactory(geometryFactory);
 		pgc.setGenerationAlgorithm(PolygonGenerator.BOX);
@@ -223,6 +236,9 @@ public class StaticMultiPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testGridMultiPolygonsHolesRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));
@@ -269,6 +285,9 @@ public class StaticMultiPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testOverlappingMultiPolygonsHolesRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));
@@ -319,7 +338,9 @@ public class StaticMultiPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSingleMultiPolygonManyPointsHolesRoundTrip() throws SQLException{
-
+		if( getConnection() == null) {
+			return; // skip
+		}
 		PolygonGenerator pgc = new PolygonGenerator();
 		pgc.setGeometryFactory(geometryFactory);
 		pgc.setGenerationAlgorithm(PolygonGenerator.BOX);
@@ -349,7 +370,9 @@ public class StaticMultiPolygonTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSingleMultiPolygonManyPointsManyHolesRoundTrip() throws SQLException{
-
+		if( getConnection() == null) {
+			return; // skip
+		}
 		PolygonGenerator pgc = new PolygonGenerator();
 		pgc.setGeometryFactory(geometryFactory);
 		pgc.setGenerationAlgorithm(PolygonGenerator.BOX);

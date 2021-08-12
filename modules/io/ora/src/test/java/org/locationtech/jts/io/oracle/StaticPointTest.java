@@ -44,6 +44,9 @@ public class StaticPointTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testSinglePointRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		PointGenerator pg = new PointGenerator();
 		pg.setGeometryFactory(geometryFactory);
 		pg.setBoundingBox(new Envelope(0,10,0,10));
@@ -66,6 +69,9 @@ public class StaticPointTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testGridPointsRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));
@@ -103,6 +109,9 @@ public class StaticPointTest extends ConnectedTestCase {
 	 * @throws SQLException 
 	 */
 	public void testOverlappingPointsRoundTrip() throws SQLException{
+		if( getConnection() == null) {
+			return; // skip
+		}
 		GridGenerator grid = new GridGenerator();
 		grid.setGeometryFactory(geometryFactory);
 		grid.setBoundingBox(new Envelope(0,10,0,10));

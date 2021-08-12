@@ -63,12 +63,12 @@ public class OraWriterCreateTest extends BaseOraTestCase
 
   public void testXYZM_Point() throws Exception {
       OraGeom oraGeom = MDSYS.SDO_GEOMETRY(4001,0,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1),MDSYS.SDO_ORDINATE_ARRAY(50,50,DNULL,DNULL));
-      checkValue(oraGeom, 4, "POINT (50 50)");
+      checkValue(oraGeom, 4, "POINT ZM(50 50 NaN NaN)");
 }
 
   public void testXYZM_Point_SetDim() throws Exception {
       OraGeom oraGeom = MDSYS.SDO_GEOMETRY(4001,0,NULL,MDSYS.SDO_ELEM_INFO_ARRAY(1,1,1),MDSYS.SDO_ORDINATE_ARRAY(50,50,DNULL,DNULL));
-      checkValue(oraGeom, false, false, 4, "POINT (50 50)");
+      checkValue(oraGeom, false, false, 4, "POINT ZM(50 50 NaN NaN)");
 }
 
   public void testXYZ_PointType() throws Exception {
