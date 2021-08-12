@@ -419,6 +419,8 @@
                 <logViolationsToConsole>true</logViolationsToConsole>
                 <configLocation>jts/checkstyle.xml</configLocation>
                 <headerLocation>jts/header.txt</headerLocation>
+                <suppressionsLocation>jts/suppressions.xml</suppressionsLocation>
+                <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
               </configuration>
               <executions>
                   <execution>

@@ -89,9 +89,53 @@ Project:
    Select top-level `jts` folder as the Root directory.
 
 3. Once imported eclipse will build the project using built-in maven support.
-  
-   tip: During initial build *Setup Maven plugin connectors* will offer to install *maven-checkstyle-plugin* connector integrating these QA checks with the IDE. You can do this later after installing the checkstyle plugin below.
+   
+4. During initial build warning is shown for maven lifecycle mapping for `checkstyle:check`. Use the quickfix to **ignore** this lifecycle mapping.
+   
+   Do not try the *maven-checkstyle-plugin* connector as it fails to install.
 
+Plugins:
+
+* Install *Eclipse-CS* from the market place.
+
+  1. Select *jts-core* project properties and navigate to *Checkstyle* preference page.
+
+  2. From the *Local check configuration* tab use *new* to create a check configuration.
+
+  3. Setup a *Project Relative Configuration* named `jts`, selecting ``build-tools/src/main/resources/jts/checkstyle.xml``
+     
+  4. Press *Additional properties* to open the *Additional Checkstyle configuration file properties* dialog.
+  
+  5. Press *Find unresolved properties* to define:
+     
+     * property `checkstyle.header.file` value: Absolute path to `src/main/resources/jts/header.txt`
+     * property `checkstyle.header.file`value: Absolute path to `src/main/resources/jts/suppressions.xml`
+
+  6. From the *Main* tab:
+     
+     * Enable *Checkstyle active for this project*.
+     * Select ``jts`` configuration
+     
+  7. You can *jts-core* as a blueprint to copy the Checkstyle configuration to other modules.
+  
+  Checkstyle is integrated into the build cycle updating warnings each time you save.
+
+* Install *eclipse-pmd* following directions for [offline install](https://acanda.github.io/eclipse-pmd/getting-started.html) to download a [recent release](https://github.com/eclipse-pmd/eclipse-pmd/releases/).
+  
+  1. Select *jts-core* project properties and navigate to *PMD* preference page.
+  2. Use *add* button to add a workspace ruleset using `build-tools/src/main/resources/jts/pmd-ruleset.xml`
+  3. Name the ruleset `jts`
+  
+  PMD is integrated into the build cycle updating warnings each time you save, and providing some quickfixes.
+
+* Alternative: Install *pmd-eclipse-plugin* from the market place.
+
+  1. Select *jts-core* project properties and navigate to *PMD* preference page.
+  2. Enable PMD
+  3. Use a the ruleset configured in a project file, selecting `build-tools/src/main/resources/jts/pmd-ruleset.xml`
+  
+  You can use *PMD > Check code* to list errors and warnings. The results are shown in their own view, and quickfixes are not available.
+  
 Run Configurations:
 
 * **JTS TestRunner** - for executing XML tests:
@@ -115,31 +159,3 @@ Run Configurations:
   VM args | `-Xmx1000M`
   VM args (optional, for Mac) | `-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel`
   Working directory | Default
-
-Plugins:
-
-* Install *Eclipse-CS* from the market place.
-
-  1. Select *jts-core* project properties and navigate to *Checkstyle* preference page.
-  2. Enable checkstyle active for this project
-  3. Use a Local check configuration, creating a new check configuration called `jts`
-  4. Setup an external configuration file ``build-tools/src/main/resources/jts/checkstyle.xml`
-  * Define and additional property `checkstyle.header.file` with complete path to `build-tools/src/main/resources/jts/header.txt`
-  
-  Checkstyle is integrated into the build cycle updating warnings each time you save.
-
-* Install *eclipse-pmd* following directions for [offline install](https://acanda.github.io/eclipse-pmd/getting-started.html) to download a [recent release](https://github.com/eclipse-pmd/eclipse-pmd/releases/).
-  
-  1. Select *jts-core* project properties and navigate to *PMD* preference page.
-  2. Use *add* button to add a workspace ruleset using `build-tools/src/main/resources/jts/pmd-ruleset.xml`
-  3. Name the ruleset `jts`
-  
-  PMD is integrated into the build cycle updating warnings each time you save, and providing some quickfixes.
-
-* Alternative: Install *pmd-eclipse-plugin* from the market place.
-
-  1. Select *jts-core* project properties and navigate to *PMD* preference page.
-  2. Enable PMD
-  3. Use a the ruleset configured in a project file, selecting `build-tools/src/main/resources/jts/pmd-ruleset.xml`
-  
-  You can use *PMD > Check code* to list errors and warnings. The results are shown in their own view, and quickfixes are not available.
