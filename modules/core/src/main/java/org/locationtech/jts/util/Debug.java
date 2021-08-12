@@ -1,5 +1,3 @@
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -287,7 +285,7 @@ public class Debug {
 
   public void instancePrint(Iterator it)
   {
-    for (; it.hasNext(); ) {
+    while (it.hasNext()) {
       Object obj = it.next();
       instancePrintObject(obj);
     }

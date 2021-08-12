@@ -23,7 +23,6 @@ import org.locationtech.jts.geom.Position;
 import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.io.WKTWriter;
 import org.locationtech.jts.util.Assert;
-import org.locationtech.jts.util.Debug;
 
 /**
  * Implements the logic to compute the full labeling

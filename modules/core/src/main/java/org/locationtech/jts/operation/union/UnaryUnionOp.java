@@ -26,7 +26,7 @@ import org.locationtech.jts.operation.linemerge.LineMerger;
 
 /**
  * Unions a <code>Collection</code> of {@link Geometry}s or a single Geometry 
- * (which may be a {@link GeoometryCollection}) together.
+ * (which may be a {@link GeometryCollection}) together.
  * By using this special-purpose operation over a collection of geometries
  * it is possible to take advantage of various optimizations to improve performance.
  * Heterogeneous {@link GeometryCollection}s are fully supported.

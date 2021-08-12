@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -10,8 +9,6 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-
-
 package org.locationtech.jts.planargraph;
 
 import java.util.ArrayList;
@@ -33,7 +30,7 @@ public class DirectedEdgeStar
   /**
    * The underlying list of outgoing DirectedEdges
    */
-  protected List outEdges = new ArrayList();
+  protected List<DirectedEdge> outEdges = new ArrayList<>();
   private boolean sorted = false;
 
   /**
@@ -59,7 +56,7 @@ public class DirectedEdgeStar
   /**
    * Returns an Iterator over the DirectedEdges, in ascending order by angle with the positive x-axis.
    */
-  public Iterator iterator()
+  public Iterator<DirectedEdge> iterator()
   {
     sortEdges();
     return outEdges.iterator();
@@ -75,7 +72,7 @@ public class DirectedEdgeStar
    */
   public Coordinate getCoordinate()
   {
-    Iterator it = iterator();
+    Iterator<DirectedEdge> it = iterator();
     if (! it.hasNext()) return null;
     DirectedEdge e = (DirectedEdge) it.next();
     return e.getCoordinate();
@@ -84,7 +81,7 @@ public class DirectedEdgeStar
   /**
    * Returns the DirectedEdges, in ascending order by angle with the positive x-axis.
    */
-  public List getEdges()
+  public List<DirectedEdge> getEdges()
   {
     sortEdges();
     return outEdges;

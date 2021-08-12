@@ -1,5 +1,3 @@
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -63,6 +61,8 @@ public class Depth {
   }
   /**
    * A Depth object is null (has never been initialized) if all depths are null.
+   * 
+   * @return True if depth is null (has never been initialized)
    */
   public boolean isNull()
   {

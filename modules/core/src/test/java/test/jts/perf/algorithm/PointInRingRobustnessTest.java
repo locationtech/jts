@@ -23,10 +23,10 @@ import test.jts.GeometryTestCase;
  * <p>
  * The stress test reveals that the original {@link RayCrossingCounter}
  * has inconsistencies with the 
- * {@link CGAlgorithmsDD#index(Coordinate, Coordinate, Coordinate)}
+ * {@link org.locationtech.jts.algorithm.CGAlgorithmsDD#orientationIndex(Coordinate, Coordinate, Coordinate)}
  * orientation index computation
  * (which is now the standard in JTS, due to its improved robustness).
- * The {@link RayCrossingCounterDD} implementation is consistent,
+ * The {@link RayCrossingCounter} implementation is consistent,
  * as expected.
  * <p>
  * Note that the inconsistency does not indicate which algorithm is 

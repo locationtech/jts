@@ -1,6 +1,3 @@
-
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -94,6 +91,9 @@ public class EdgeEnd
    * are different, it it trivial to determine which vector is "greater".
    * - if the vectors lie in the same quadrant, the computeOrientation function
    * can be used to decide the relative orientation of the vectors.
+   *
+   * @param e EdgeEnd
+   * @return direction comparison
    */
   public int compareDirection(EdgeEnd e)
   {

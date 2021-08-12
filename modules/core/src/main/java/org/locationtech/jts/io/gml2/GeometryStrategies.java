@@ -412,7 +412,7 @@ public class GeometryStrategies{
 						}
 					}
 						// fill remaining dim
-					for(;dimIndex<dim;)cs.setOrdinate(i,dimIndex++,Double.NaN);
+					while(dimIndex<dim)cs.setOrdinate(i,dimIndex++,Double.NaN);
 				}
 				
 				return cs;
@@ -531,11 +531,11 @@ public class GeometryStrategies{
 	}
 	
 	/**
+	 * The ParseStrategy which should be employed.
+	 *
 	 * @param uri Not currently used, included for future work
 	 * @param localName Used to look up an appropriate parse strategy
 	 * @return The ParseStrategy which should be employed
-	 * 
-	 * @see ParseStrategy
 	 */
 	public static ParseStrategy findStrategy(String uri,String localName){
 		return localName == null?null:(ParseStrategy) strategies.get(localName.toLowerCase());

@@ -19,7 +19,7 @@ import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.io.WKTReader;
 
 /**
- * Tests race condition in {@link SortedPackedIntervalRTree}.
+ * Tests race condition in {@link org.locationtech.jts.index.intervalrtree.SortedPackedIntervalRTree}.
  * See https://github.com/locationtech/jts/pull/746
  * 
  * To achieve maximum reproducibility

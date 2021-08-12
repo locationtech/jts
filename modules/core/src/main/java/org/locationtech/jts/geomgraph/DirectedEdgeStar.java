@@ -1,6 +1,3 @@
-
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -141,7 +138,9 @@ public class DirectedEdgeStar
   }
 
   /**
-   * Update incomplete dirEdge labels from the labelling for the node
+   * Update incomplete dirEdge labels from the labelling for the node.
+   *
+   * @param nodeLabel Label to apply
    */
   public void updateLabelling(Label nodeLabel)
   {

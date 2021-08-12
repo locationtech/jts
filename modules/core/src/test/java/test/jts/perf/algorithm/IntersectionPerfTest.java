@@ -24,9 +24,9 @@ import test.jts.perf.PerformanceTestRunner;
  * <ul>
  * <li>DP - a basic double-precision (DP) implementation, with no attempt at reducing the effects of numerical round-off
  * <li>DP-Cond - a DP implementation in which the inputs are conditioned by translating them to around the origin
- * <li>DP-CB - a DP implementation using the {@link CommonBitsRemover} functionality
- * <li>DD - an implementation using extended-precision {@link DoubleDouble} arithmetic
- * <li>DDFilter - an experimental implementation using extended-precision {@link DoubleDouble} arithmetic
+ * <li>DP-CB - a DP implementation using the {@link org.locationtech.jts.precision.CommonBitsRemover} functionality
+ * <li>DD - an implementation using extended-precision {@link org.locationtech.jts.math.DD} arithmetic
+ * <li>DDFilter - an experimental implementation using extended-precision {@link org.locationtech.jts.math.DD} arithmetic
  * along with a filter that uses DP if the accuracy is sufficient
  * </ul>
  * <h2>Results</h2>
@@ -43,9 +43,6 @@ import test.jts.perf.PerformanceTestRunner;
  * is provided by DP-Cond.
  * 
  * @author Martin Davis
- * 
- * @see IntersectionStressTest
- *
  */
 public class IntersectionPerfTest extends PerformanceTestCase {
   private static final int N_ITER = 1000000;

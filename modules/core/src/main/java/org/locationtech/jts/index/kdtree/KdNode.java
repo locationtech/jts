@@ -85,7 +85,7 @@ public class KdNode {
 
     /**
      * Gets the user data object associated with this node.
-     * @return
+     * @return user data
      */
     public Object getData() {
         return data;

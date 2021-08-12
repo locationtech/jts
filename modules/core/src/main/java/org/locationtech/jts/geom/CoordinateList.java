@@ -1,5 +1,3 @@
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -63,10 +61,6 @@ public class CoordinateList
   {
   	ensureCapacity(coord.length);
     add(coord, allowRepeated);
-  }
-
-  public boolean add(Coordinate coord) {
-	return super.add(coord);
   }
 
   public Coordinate getCoordinate(int i) { return (Coordinate) get(i); }
@@ -221,7 +215,7 @@ public class CoordinateList
    * Creates an array containing the coordinates in this list,
    * oriented in the given direction (forward or reverse).
    * 
-   * @param direction the direction value: true for forward, false for reverse
+   * @param isForward true if the direction is forward, false for reverse
    * @return an oriented array of coordinates
    */
   public Coordinate[] toCoordinateArray(boolean isForward)

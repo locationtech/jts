@@ -22,7 +22,7 @@ import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
 
 /**
- * Stress tests {@link DepthSegment} to determine if the compare contract is maintained.
+ * Stress tests DepthSegment to determine if the compare contract is maintained.
  * 
  * @author Martin Davis
  *

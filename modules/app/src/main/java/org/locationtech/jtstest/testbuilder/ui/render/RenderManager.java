@@ -141,7 +141,7 @@ class RendererSwingWorker extends SwingWorker
 		Graphics2D gr = (Graphics2D) image.getGraphics();
     renderer.render(gr);
   	isRendering = false;
-    return new Boolean(true);
+    return Boolean.TRUE;
   }
   
   public boolean isRendering()

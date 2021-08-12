@@ -19,7 +19,7 @@ import org.locationtech.jts.noding.SegmentExtractingNoder;
  * Unions a valid coverage of polygons or lines
  * in an efficient way.   
  * <p>
- * A valid polygonal coverage is a collection of {@link Polygon}s
+ * A valid polygonal coverage is a collection of {@link org.locationtech.jts.geom.Polygon}s
  * which satisfy the following conditions:
  * <ol>
  * <li><b>Vector-clean</b> - Line segments within the collection 
@@ -28,7 +28,7 @@ import org.locationtech.jts.noding.SegmentExtractingNoder;
  * may overlap. Equivalently, polygons must be interior-disjoint.
  * </ol>
  * <p>
- * A valid linear coverage is a collection of {@link LineString}s
+ * A valid linear coverage is a collection of {@link org.locationtech.jts.geom.LineString}s
  * which satisfies the <b>Vector-clean</b> condition.
  * Note that this does not require the LineStrings to be fully noded
  * - i.e. they may contain coincident linework.  
@@ -40,7 +40,7 @@ import org.locationtech.jts.noding.SegmentExtractingNoder;
  * which is much more expensive than the union phase.
  * If the input is not a valid coverage 
  * then in some cases this will be detected during processing 
- * and a {@link TopologyException} is thrown.
+ * and a {@link org.locationtech.jts.geom.TopologyException} is thrown.
  * Otherwise, the computation will produce output, but it will be invalid.
  * <p>
  * Unioning a valid coverage implies that no new vertices are created.

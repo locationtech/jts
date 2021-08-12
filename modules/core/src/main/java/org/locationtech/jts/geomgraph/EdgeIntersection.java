@@ -1,6 +1,3 @@
-
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -32,10 +29,22 @@ public class EdgeIntersection
     implements Comparable
 {
 
-  public Coordinate coord;   // the point of intersection
-  public int segmentIndex;   // the index of the containing line segment in the parent edge
-  public double dist;        // the edge distance of this point along the containing line segment
+  /** Point of intersection */
+  public Coordinate coord;
 
+  /** Index of the containing line segment in the parent edge */
+  public int segmentIndex;
+
+  /** Edge distance of this point along the containing line segment */
+  public double dist;
+
+  /**
+   * EdgeIntersection.
+   *
+   * @param coord Point of intersection
+   * @param segmentIndex Index of the containing line segment in the parent edge
+   * @param dist Edge distance of this point along the containing line segment
+   */
   public EdgeIntersection(Coordinate coord, int segmentIndex, double dist) {
     this.coord = new Coordinate(coord);
     this.segmentIndex = segmentIndex;
@@ -54,9 +63,13 @@ public class EdgeIntersection
     return compare(other.segmentIndex, other.dist);
   }
   /**
-   * @return -1 this EdgeIntersection is located before the argument location
-   * @return 0 this EdgeIntersection is at the argument location
-   * @return 1 this EdgeIntersection is located after the argument location
+   * Comparison with segment and distance.
+   *
+   * @param segmentIndex index of the containing line segment
+   * @param dist dge distance of this point along the containing line segment
+   * @return {@code 1} this EdgeIntersection is located before the argument location,
+   *         {@code 0} this EdgeIntersection is at the argument location,
+   *         {@code 1} this EdgeIntersection is located after the argument location
    */
   public int compare(int segmentIndex, double dist)
   {

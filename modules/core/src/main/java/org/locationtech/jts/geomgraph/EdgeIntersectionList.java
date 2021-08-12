@@ -40,6 +40,11 @@ public class EdgeIntersectionList
   /**
    * Adds an intersection into the list, if it isn't already there.
    * The input segmentIndex and dist are expected to be normalized.
+   *
+   * @param intPt Point of intersection
+   * @param segmentIndex Index of the containing line segment in the parent edge
+   * @param dist Edge distance of this point along the containing line segment
+   *
    * @return the EdgeIntersection found or added
    */
   public EdgeIntersection add(Coordinate intPt, int segmentIndex, double dist)

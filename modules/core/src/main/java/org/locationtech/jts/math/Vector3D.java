@@ -85,8 +85,7 @@ public class Vector3D {
    * Creates a new 3D vector from a {@link Coordinate}. The coordinate should have
    * the X,Y and Z ordinates specified.
    * 
-   * @param coord the Coordinate to copy
-   * @return a new vector
+   * @param v the Coordinate to copy
    */
   public Vector3D(Coordinate v) {
     x = v.x;
@@ -95,13 +94,12 @@ public class Vector3D {
   }
 
   /**
-   * Creates a vector with the direction and magnitude
+   * Creates a new vector with the direction and magnitude
    * of the difference between the 
    * <tt>to</tt> and <tt>from</tt> {@link Coordinate}s.
    * 
    * @param from the origin Coordinate
    * @param to the destination Coordinate
-   * @return a new vector
    */
 	public Vector3D(Coordinate from, Coordinate to) {
 		x = to.x - from.x;

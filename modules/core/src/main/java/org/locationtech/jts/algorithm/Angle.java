@@ -17,7 +17,7 @@ import org.locationtech.jts.geom.Coordinate;
  * Utility functions for working with angles.
  * Unless otherwise noted, methods in this class express angles in radians.
  */
-public class Angle
+@SuppressWarnings("DuplicatedCode") public class Angle
 {
   /**
    * The value of 2*Pi
@@ -192,7 +192,7 @@ public class Angle
 	 *          the next point of the ring
 	 * @param p2
 	 *          the next point of the ring
-	 * @return the interior angle based at <code>p1</code>
+	 * @return the interior angle based at {@code p1}
 	 */
   public static double interiorAngle(Coordinate p0, Coordinate p1, Coordinate p2)
   {

@@ -33,12 +33,10 @@ import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
  * The new Geometries
  * will use the custom CoordinateSequence implementation.
  * <p>
- * For an example, see the code for
- * {@link ExtendedCoordinateExample}.
+ * For an example, see the code for ExtendedCoordinateExample.
  *
  * @see CoordinateArraySequenceFactory
  * @see PackedCoordinateSequenceFactory
- * @see ExtendedCoordinateExample
  *
  * @version 1.7
  */
@@ -108,7 +106,7 @@ public interface CoordinateSequence
 
   /**
    * Tests whether the coordinates in the sequence have measures associated with them. Returns true
-   * if {@link #getMeasures()} > 0. See {@link #getMeasures()} to determine the number of measures
+   * if {@link #getMeasures()} {@code > 0}. See {@link #getMeasures()} to determine the number of measures
    * present.
    *
    * @return true if {@link #getM(int)} is supported.
@@ -170,7 +168,7 @@ public interface CoordinateSequence
   /**
    * Returns ordinate X (0) of the specified coordinate.
    *
-   * @param index
+   * @param index  the coordinate index in the sequence
    * @return the value of the X ordinate in the index'th coordinate
    */
   double getX(int index);
@@ -178,15 +176,15 @@ public interface CoordinateSequence
   /**
    * Returns ordinate Y (1) of the specified coordinate.
    *
-   * @param index
+   * @param index  the coordinate index in the sequence
    * @return the value of the Y ordinate in the index'th coordinate
    */
   double getY(int index);
 
   /**
    * Returns ordinate Z of the specified coordinate if available.
-   * 
-   * @param index
+   *
+   @param index  the coordinate index in the sequence
    * @return the value of the Z ordinate in the index'th coordinate, or Double.NaN if not defined.
    */
   default double getZ(int index)
@@ -201,7 +199,7 @@ public interface CoordinateSequence
   /**
    * Returns ordinate M of the specified coordinate if available.
    * 
-   * @param index
+   * @param index  the coordinate index in the sequence
    * @return the value of the M ordinate in the index'th coordinate, or Double.NaN if not defined.
    */
   default double getM(int index)
@@ -225,6 +223,7 @@ public interface CoordinateSequence
    *
    * @param index  the coordinate index in the sequence
    * @param ordinateIndex the ordinate index in the coordinate (in range [0, dimension-1])
+   * @return ordinate value
    */
   double getOrdinate(int index, int ordinateIndex);
 

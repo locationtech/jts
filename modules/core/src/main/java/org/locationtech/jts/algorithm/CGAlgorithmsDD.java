@@ -25,16 +25,16 @@ public class CGAlgorithmsDD
   private CGAlgorithmsDD() {}
 
   /**
-   * Returns the index of the direction of the point <code>q</code> relative to
-   * a vector specified by <code>p1-p2</code>.
+   * Returns the index of the direction of the point {@code q} relative to
+   * a vector specified by {@code p1-p2}.
    * 
    * @param p1 the origin point of the vector
    * @param p2 the final point of the vector
    * @param q the point to compute the direction to
    * 
-   * @return 1 if q is counter-clockwise (left) from p1-p2
-   * @return -1 if q is clockwise (right) from p1-p2
-   * @return 0 if q is collinear with p1-p2
+   * @return {@code 1} if q is counter-clockwise (left) from p1-p2
+   *         {@code -1} if q is clockwise (right) from p1-p2
+   *         {@code 0} if q is collinear with p1-p2
    */
   public static int orientationIndex(Coordinate p1, Coordinate p2, Coordinate q)
   {
@@ -42,8 +42,8 @@ public class CGAlgorithmsDD
   }
   
   /**
-   * Returns the index of the direction of the point <code>q</code> relative to
-   * a vector specified by <code>p1-p2</code>.
+   * Returns the index of the direction of the point {@code q} relative to
+   * a vector specified by {@code p1-p2}.
    * 
    * @param p1x the x ordinate of the vector origin point
    * @param p1y the y ordinate of the vector origin point
@@ -53,8 +53,8 @@ public class CGAlgorithmsDD
    * @param qy the y ordinate of the query point
    * 
    * @return 1 if q is counter-clockwise (left) from p1-p2
-   * @return -1 if q is clockwise (right) from p1-p2
-   * @return 0 if q is collinear with p1-p2
+   *        -1 if q is clockwise (right) from p1-p2
+   *         0 if q is collinear with p1-p2
    */
   public static int orientationIndex(double p1x, double p1y,
       double p2x, double p2y,
@@ -80,8 +80,8 @@ public class CGAlgorithmsDD
    * with the given entries.
    * 
    * @return -1 if the determinant is negative,
-   * @return  1 if the determinant is positive,
-   * @return  0 if the determinant is 0.
+   *          1 if the determinant is positive,
+   *          0 if the determinant is 0.
    */
   public static int signOfDet2x2(DD x1, DD y1, DD x2, DD y2)
   {
@@ -94,8 +94,8 @@ public class CGAlgorithmsDD
    * with the given entries.
    * 
    * @return -1 if the determinant is negative,
-   * @return  1 if the determinant is positive,
-   * @return  0 if the determinant is 0.
+   *          1 if the determinant is positive,
+   *          0 if the determinant is 0.
    */
   public static int signOfDet2x2(double dx1, double dy1, double dx2, double dy2)
   {
@@ -128,9 +128,12 @@ public class CGAlgorithmsDD
    * <p>
    * Uses an approach due to Jonathan Shewchuk, which is in the public domain.
    * 
-   * @param pa a coordinate
-   * @param pb a coordinate
-   * @param pc a coordinate
+   * @param pax A coordinate
+   * @param pay A coordinate
+   * @param pbx B coordinate
+   * @param pby B coordinate
+   * @param pcx C coordinate
+   * @param pcy C coordinate
    * @return the orientation index if it can be computed safely
    * @return i > 1 if the orientation index cannot be computed safely
    */

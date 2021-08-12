@@ -46,7 +46,7 @@ public class GeometryInspectorDialog extends JDialog
 
   public GeometryInspectorDialog(Frame frame)
   {
-    this(null, "Geometry Inspector", false);
+    this(frame, "Geometry Inspector", false);
   }
   
   void initUI() throws Exception

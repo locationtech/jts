@@ -1,5 +1,3 @@
-
-
 /*
  * Copyright (c) 2021 Martin Davis.
  *
@@ -73,8 +71,8 @@ import org.locationtech.jts.noding.SegmentString;
  * <P>
  * By default this class finds a single non-simple location.
  * To find all non-simple locations, set {@link #setFindAllLocations(boolean)}
- * before calling {@link #isSimple(), and retrieve the locations
- * via {@link #getNonSimpleLocations().
+ * before calling {@link #isSimple()}, and retrieve the locations
+ * via {@link #getNonSimpleLocations()}.
  * This can be used to find all intersection points in a linear network.
  *
  * @see BoundaryNodeRule

@@ -22,8 +22,8 @@ import test.jts.perf.PerformanceTestCase;
 import test.jts.perf.PerformanceTestRunner;
 
 /**
- * This test revealed a scaling issue with the {@link SnapRoundingNoder}:
- * the {@link HotPixelIndex} could not handle very large numbers
+ * This test revealed a scaling issue with the {@link org.locationtech.jts.noding.snapround.SnapRoundingNoder}:
+ * the {@link org.locationtech.jts.noding.snapround.HotPixelIndex} could not handle very large numbers
  * of points due to kdTree becoming unbalanced.
  * 
  * @author Martin Davis

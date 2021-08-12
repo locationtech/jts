@@ -1,12 +1,4 @@
 /*
- * Copyright (c) 2003 Open Source Geospatial Foundation, All rights reserved.
- * 
- * This program and the accompanying materials are made available under the terms
- * of the OSGeo BSD License v1.0 available at:
- *
- * https://www.osgeo.org/sites/osgeo.org/files/Page/osgeo-bsd-license.txt
- */
-/*
  * Copyright (c) 2016 Vivid Solutions.
  *
  * All rights reserved. This program and the accompanying materials
@@ -17,13 +9,19 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-
+/*
+ * Copyright (c) 2003 Open Source Geospatial Foundation, All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the terms
+ * of the OSGeo BSD License v1.0 available at:
+ *
+ * https://www.osgeo.org/sites/osgeo.org/files/Page/osgeo-bsd-license.txt
+ */
 /*
  * MultiPointHandler.java
  *
  * Created on July 17, 2002, 4:13 PM
  */
-
 package org.locationtech.jtstest.testbuilder.io.shapefile;
 
 import java.io.IOException;

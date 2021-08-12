@@ -34,10 +34,10 @@ import org.locationtech.jts.util.Assert;
  * which are modifications of existing ones,
  * maintaining the same type structure.
  * Geometry objects are intended to be treated as immutable.
- * This class "modifies" Geometrys
+ * This class "modifies" Geometry instances
  * by traversing them, applying a user-defined
  * {@link GeometryEditorOperation}, {@link CoordinateSequenceOperation} or {@link CoordinateOperation}  
- * and creating new Geometrys with the same structure but
+ * and creating new Geometry instances with the same structure but
  * (possibly) modified components.
  * <p>
  * Examples of the kinds of modifications which can be made are:
@@ -58,7 +58,7 @@ import org.locationtech.jts.util.Assert;
  * If changing the structure is required, use a {@link GeometryTransformer}.
  * <p>
  * This class supports creating an edited Geometry
- * using a different <code>GeometryFactory</code> via the {@link #GeometryEditor(GeometryFactory)}
+ * using a different <code>GeometryFactory</code> via the {@link org.locationtech.jts.geom.util.GeometryEditor#GeometryEditor(GeometryFactory)}
  * constructor.  
  * Examples of situations where this is required is if the geometry is 
  * transformed to a new SRID and/or a new PrecisionModel.
@@ -99,7 +99,7 @@ public class GeometryEditorEx
    * Creates a new GeometryEditor object which will create
    * edited {@link Geometry}s with the given {@link GeometryFactory}.
    *
-   * @param targetFactory the GeometryFactory to create  edited Geometrys with
+   * @param targetFactory the GeometryFactory to create edited Geometries with
    */
   public GeometryEditorEx(GeometryFactory targetFactory)
   {
@@ -108,7 +108,7 @@ public class GeometryEditorEx
 
   /**
    * Creates a GeometryEditor which edits geometries using
-   * a given {@link GeometryOperation}
+   * a given {@link  GeometryOperation}
    * and the same {@link GeometryFactory} as the input Geometry.
    * 
    * @param operation the edit operation to use
@@ -249,7 +249,7 @@ public class GeometryEditorEx
       return targetFactory.createPolygon(null, null);
     }
 
-    ArrayList holes = new ArrayList();
+    ArrayList<LinearRing> holes = new ArrayList<>();
     for (int i = 0; i < newPolygon.getNumInteriorRing(); i++) {
       LinearRing hole = (LinearRing) edit(newPolygon.getInteriorRingN(i));
       if (hole == null || hole.isEmpty()) {
@@ -274,7 +274,7 @@ public class GeometryEditorEx
     }
     
     // edit the component geometries
-    ArrayList geometries = new ArrayList();
+    ArrayList<Geometry> geometries = new ArrayList<>();
     for (int i = 0; i < collectionForType.getNumGeometries(); i++) {
       Geometry geometry = edit(collectionForType.getGeometryN(i));
       if (geometry == null || geometry.isEmpty()) {
@@ -288,14 +288,14 @@ public class GeometryEditorEx
             new Point[] {  }));
     }
     if (collectionForType.getClass() == MultiLineString.class) {
-      return targetFactory.createMultiLineString((LineString[]) geometries.toArray(
+      return targetFactory.createMultiLineString(geometries.toArray(
             new LineString[] {  }));
     }
     if (collectionForType.getClass() == MultiPolygon.class) {
-      return targetFactory.createMultiPolygon((Polygon[]) geometries.toArray(
+      return targetFactory.createMultiPolygon(geometries.toArray(
             new Polygon[] {  }));
     }
-    return targetFactory.createGeometryCollection((Geometry[]) geometries.toArray(
+    return targetFactory.createGeometryCollection(geometries.toArray(
           new Geometry[] {  }));
   }
 
@@ -315,7 +315,7 @@ public class GeometryEditorEx
      * It may be <code>null</code> if the geometry is to be deleted.
      *
      * @param geometry the Geometry to modify
-     * @param factory the factory with which to construct the modified Geometry
+     * @param targetFactory the factory with which to construct the modified Geometry
      * (may be different to the factory of the input geometry)
      * @return a new Geometry which is a modification of the input Geometry
      * @return null if the Geometry is to be deleted completely
@@ -373,7 +373,7 @@ public class GeometryEditorEx
     /**
      * Edits the array of {@link Coordinate}s from a {@link Geometry}.
      * <p>
-     * If it is desired to preserve the immutability of Geometrys,
+     * If it is desired to preserve the immutability of Geometry instances,
      * if the coordinates are changed a new array should be created
      * and returned.
      *
@@ -418,7 +418,7 @@ public class GeometryEditorEx
     /**
      * Edits a {@link CoordinateSequence} from a {@link Geometry}.
      *
-     * @param coordseq the coordinate array to operate on
+     * @param coordSeq the coordinate array to operate on
      * @param geometry the geometry containing the coordinate list
      * @return an edited coordinate sequence (which may be the same as the input)
      */

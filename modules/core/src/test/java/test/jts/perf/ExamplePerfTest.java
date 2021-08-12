@@ -13,7 +13,7 @@
 package test.jts.perf;
 
 /**
- * An example of the usage of the {@PerformanceTestRunner}.
+ * An example of the usage of the {@link PerformanceTestRunner}.
  * 
  * @author Martin Davis
  *

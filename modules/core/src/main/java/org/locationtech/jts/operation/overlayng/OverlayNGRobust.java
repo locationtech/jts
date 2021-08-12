@@ -35,7 +35,7 @@ import org.locationtech.jts.operation.union.UnionStrategy;
  * <li>First snapping each geometry to itself, 
  * and then overlaying them using a <code>SnappingNoder</code>.
  * <li>The above two strategies are repeated with increasing snap tolerance, up to a limit.
- * <li>Finally a {@link SnapRoundngNoder} is used with a automatically-determined scale factor
+ * <li>Finally a {@link org.locationtech.jts.noding.snapround.SnapRoundingNoder} is used with a automatically-determined scale factor
  *     intended to preserve input precision while still preventing robustness problems.
  * </ol>
  * If all of the above attempts fail to compute a valid overlay, 

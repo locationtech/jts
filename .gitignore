@@ -1,11 +1,17 @@
 .idea
 *.iml
 target
+build
+
+# eclipse ignores
 .classpath
 .project
 .settings
 .externalToolBuilders
-build
+.checkstyle
+.eclipse-pmd
+.pmd
+.ruleset
 
 # standard ignores
 *.class

@@ -22,8 +22,6 @@ import javax.swing.border.*;
 import javax.swing.tree.*;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jtstest.function.*;
-import org.locationtech.jtstest.util.*;
 
 
 /**

@@ -1,6 +1,3 @@
-
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -76,6 +73,13 @@ public class GeometryGraph
   }
 */
 
+  /**
+   * Determine boundary
+   *
+   * @param boundaryNodeRule Boundary node rule
+   * @param boundaryCount the number of component boundaries that this point occurs in
+   * @return boundary or interior
+   */
   public static int determineBoundary(BoundaryNodeRule boundaryNodeRule, int boundaryCount)
   {
     return boundaryNodeRule.isInBoundary(boundaryCount)
@@ -139,7 +143,7 @@ public class GeometryGraph
     }
   }
 
-  /**
+  /*
    * This constructor is used by clients that wish to add Edges explicitly,
    * rather than adding a Geometry.  (An example is BufferOp).
    */
@@ -301,7 +305,7 @@ public class GeometryGraph
     Edge e = new Edge(coord, new Label(argIndex, Location.INTERIOR));
     lineEdgeMap.put(line, e);
     insertEdge(e);
-    /**
+    /*
      * Add the boundary points of the LineString, if any.
      * Even if the LineString is closed, add both points as if they were endpoints.
      * This allows for the case that the node already exists and is a boundary point.
@@ -309,12 +313,13 @@ public class GeometryGraph
     Assert.isTrue(coord.length >= 2, "found LineString with single point");
     insertBoundaryPoint(argIndex, coord[0]);
     insertBoundaryPoint(argIndex, coord[coord.length - 1]);
-
   }
 
   /**
    * Add an Edge computed externally.  The label on the Edge is assumed
    * to be correct.
+   *
+   * @param e Edge
    */
   public void addEdge(Edge e)
   {
@@ -328,6 +333,8 @@ public class GeometryGraph
   /**
    * Add a point computed externally.  The point is assumed to be a
    * Point Geometry part, which has a location of INTERIOR.
+   *
+   * @param pt Coordinate
    */
   public void addPoint(Coordinate pt)
   {

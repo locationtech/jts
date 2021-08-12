@@ -24,7 +24,7 @@ public interface UnionStrategy {
 
   /**
    * Computes the union of two geometries.
-   * This method may throw a {@link Toppology Exception}
+   * This method may throw a {@link org.locationtech.jts.geom.TopologyException}
    * if one is encountered.
    * 
    * @param g0 a geometry

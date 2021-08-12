@@ -1,6 +1,3 @@
-
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -49,6 +46,9 @@ public abstract class EdgeSetIntersector
 
   /**
    * Computes all mutual intersections between two sets of edges.
+   * @param edges0 set of edges
+   * @param edges1 set of edges
+   * @param si segment intersector
    */
   abstract public void computeIntersections(List edges0, List edges1, SegmentIntersector si);
 

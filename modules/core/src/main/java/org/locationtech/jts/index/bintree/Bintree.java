@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -127,7 +126,7 @@ if (newSize <= oldSize) {
   /**
    * Removes a single item from the tree.
    *
-   * @param itemEnv the Envelope of the item to be removed
+   * @param itemInterval the interval of the item to be removed
    * @param item the item to remove
    * @return <code>true</code> if the item was found (and thus removed)
    */
@@ -173,7 +172,7 @@ if (newSize <= oldSize) {
    * If the query interval is <tt>null</tt>, add all items in the tree.
    * 
    * @param interval a query interval, or null
-   * @param resultItems the candidate items found
+   * @param foundItems the candidate items found
    */
   public void query(Interval interval, Collection foundItems)
   {

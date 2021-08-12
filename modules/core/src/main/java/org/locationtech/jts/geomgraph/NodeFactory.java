@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -21,6 +20,8 @@ import org.locationtech.jts.geom.Coordinate;
 public class NodeFactory {
 /**
  * The basic node constructor does not allow for incident edges
+ * @param coord Coordinate
+ * @return created node
  */
   public Node createNode(Coordinate coord)
   {

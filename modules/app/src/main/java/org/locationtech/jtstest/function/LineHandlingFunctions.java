@@ -13,13 +13,10 @@ package org.locationtech.jtstest.function;
 
 import java.util.*;
 
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.densify.*;
 import org.locationtech.jts.dissolve.LineDissolver;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.*;
 import org.locationtech.jts.operation.linemerge.*;
-import org.locationtech.jts.operation.polygonize.*;
 
 public class LineHandlingFunctions {
 	

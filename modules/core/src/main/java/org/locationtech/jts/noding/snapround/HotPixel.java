@@ -66,8 +66,6 @@ public class HotPixel
    * 
    * @param pt the coordinate at the centre of the pixel (already rounded)
    * @param scaleFactor the scaleFactor determining the pixel size.  Must be &gt; 0
-   * @param li the intersector to use for testing intersection with line segments
-   * 
    */
   public HotPixel(Coordinate pt, double scaleFactor) {
     originalPt = pt;

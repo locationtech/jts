@@ -33,7 +33,7 @@ import org.locationtech.jts.geom.LineString;
 /**
  * Dissolves the linear components 
  * from a collection of {@link Geometry}s
- * into a set of maximal-length {@link Linestring}s
+ * into a set of maximal-length {@link LineString}s
  * in which every unique segment appears once only.
  * The output linestrings run between node vertices
  * of the input, which are vertices which have
@@ -70,8 +70,8 @@ public class LineDissolver
   
   private Geometry result;
   private GeometryFactory factory;
-  private DissolveEdgeGraph graph;
-  private List lines = new ArrayList();
+  private final DissolveEdgeGraph graph;
+  private final List lines = new ArrayList();
 
   public LineDissolver()
   {
@@ -153,7 +153,7 @@ public class LineDissolver
     result = factory.buildGeometry(lines);
   }
 
-  private Stack nodeEdgeStack = new Stack();
+  private final Stack nodeEdgeStack = new Stack();
   
   private void process(HalfEdge e) {
     HalfEdge eNode = e.prevNode();

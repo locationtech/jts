@@ -55,7 +55,7 @@ import org.locationtech.jts.operation.distance.FacetSequenceTreeBuilder;
  * The following image shows an example of the Minimum Clearance
  * of a simple polygon.
  * <p>
- * <center><img src='doc-files/minClearance.png'></center>
+ * <center><img src='doc-files/minClearance.png' alt='minimum clearance'></center>
  * <p>
  * If G has only a single vertex (i.e. is a
  * {@link Point}), the value of the minimum clearance 

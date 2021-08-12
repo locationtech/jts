@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -10,8 +9,6 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-
-
 package org.locationtech.jts.planargraph;
 
 import java.util.Collection;

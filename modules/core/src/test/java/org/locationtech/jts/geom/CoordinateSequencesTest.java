@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -118,16 +117,16 @@ public class CoordinateSequencesTest extends TestCase {
   }
 
   /**
-   * Method used to create a {@link this.ordinateValues}.
+   * Method used to create a {@link #ordinateValues}.
    * Usage: remove first 't' and run as unit test.
    * Note: When parameters are changed, some unit tests may need to be
    * changed, too. <p>
-   * This is especially true for the (@link testMinCoordinateIndex) test,
+   * This is especially true for the {@link #testMinCoordinateIndex()} test,
    * which assumes that the coordinates in the sequence are all within an
    * envelope of [Env(10, 100, 10, 100)].
    * </p>.
    *
-   * @deprecated only use to update {@link this.ordinateValues}
+   * @deprecated only use to update {@link #ordinateValues}
    */
   public void ttestCreateRandomOrdinates() {
     CoordinateSequence sequence = createRandomTestSequence(CoordinateArraySequenceFactory.instance(), 20,

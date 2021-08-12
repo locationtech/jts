@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -230,7 +229,7 @@ implements SpatialIndex, Serializable
   public List query(Envelope searchEnv) {
     //Yes this method does something. It specifies that the bounds is an
     //Envelope. super.query takes an Object, not an Envelope. [Jon Aquino 10/24/2003]
-    return super.query(searchEnv);
+    return super.query((Object)searchEnv);
   }
 
   /**

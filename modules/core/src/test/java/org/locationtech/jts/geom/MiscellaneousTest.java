@@ -267,7 +267,7 @@ public class MiscellaneousTest extends TestCase {
     assertTrue(g.getBoundary().isEmpty());
   }
 
-/**
+/*
  * @todo Enable when #isSimple implemented
  */
 //  public void testMultiPointIsSimple1() throws Exception {
@@ -280,7 +280,7 @@ public class MiscellaneousTest extends TestCase {
     assertTrue(g.getBoundary().isEmpty());
   }
 
-/**
+/*
  * @todo Enable when #isSimple implemented
  */
 //  public void testMultiPointIsSimple2() throws Exception {
@@ -288,7 +288,7 @@ public class MiscellaneousTest extends TestCase {
 //    assertTrue(! g.isSimple());
 //  }
 
-/**
+/*
  * @todo Enable when #isSimple implemented
  */
 //  public void testLineStringIsSimple1() throws Exception {
@@ -309,7 +309,7 @@ public class MiscellaneousTest extends TestCase {
     assertTrue(g.getBoundary().isEmpty());
   }
 
-/**
+/*
  * @todo Enable when #isSimple implemented
  */
 //  public void testLineStringIsSimple2() throws Exception {
@@ -375,7 +375,7 @@ public class MiscellaneousTest extends TestCase {
 //    assertTrue(! g.isSimple());
 //  }
 
-/**
+/*
  * @todo Enable when #isSimple implemented
  */
 //  public void testMultiLineStringIsSimple1() throws Exception {
@@ -385,7 +385,7 @@ public class MiscellaneousTest extends TestCase {
 //    assertTrue(g.isSimple());
 //  }
 
-/**
+/*
  * @todo Enable when #isSimple implemented
  */
 //  public void testMultiLineStringIsSimple2() throws Exception {

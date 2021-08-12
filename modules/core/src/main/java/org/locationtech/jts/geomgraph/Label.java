@@ -1,6 +1,3 @@
-
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -58,6 +55,8 @@ public class Label {
   /**
    * Construct a Label with a single location for both Geometries.
    * Initialize the locations to Null
+   *
+   * @param onLoc On location
    */
   public Label(int onLoc)
   {
@@ -67,6 +66,9 @@ public class Label {
   /**
    * Construct a Label with a single location for both Geometries.
    * Initialize the location for the Geometry index.
+   *
+   * @param geomIndex Geometry index
+   * @param onLoc On location
    */
   public Label(int geomIndex, int onLoc)
   {
@@ -77,6 +79,10 @@ public class Label {
   /**
    * Construct a Label with On, Left and Right locations for both Geometries.
    * Initialize the locations for both Geometries to the given values.
+   *
+   * @param onLoc On location
+   * @param rightLoc Right location
+   * @param leftLoc Left location
    */
   public Label(int onLoc, int leftLoc, int rightLoc)
   {
@@ -86,6 +92,11 @@ public class Label {
   /**
    * Construct a Label with On, Left and Right locations for both Geometries.
    * Initialize the locations for the given Geometry index.
+   *
+   * @param geomIndex Geometry index
+   * @param onLoc On location
+   * @param rightLoc Right location
+   * @param leftLoc Left location
    */
   public Label(int geomIndex, int onLoc, int leftLoc, int rightLoc)
   {
@@ -95,6 +106,8 @@ public class Label {
   }
   /**
    * Construct a Label with the same values as the argument Label.
+   *
+   * @param lbl Label
    */
   public Label(Label lbl)
   {
@@ -133,8 +146,10 @@ public class Label {
   }
   /**
    * Merge this label with another one.
-   * Merging updates any null attributes of this label with the attributes from lbl
-   */
+   * Merging updates any null attributes of this label with the attributes from lbl.
+   *
+   * @param lbl Label to merge
+s   */
   public void merge(Label lbl)
   {
     for (int i = 0; i < 2; i++) {
@@ -180,6 +195,7 @@ public class Label {
   }
   /**
    * Converts one GeometryLocation to a Line location
+   * @param geomIndex geometry location
    */
   public void toLine(int geomIndex)
   {

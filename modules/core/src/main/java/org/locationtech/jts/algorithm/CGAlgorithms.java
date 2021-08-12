@@ -72,42 +72,43 @@ public class CGAlgorithms
   public static final int STRAIGHT = COLLINEAR;
 
   /**
-   * Returns the index of the direction of the point <code>q</code> relative to
-   * a vector specified by <code>p1-p2</code>.
+   * Returns the index of the direction of the point {@code q} relative to
+   * a vector specified by {@code p1-p2}.
    * 
    * @param p1 the origin point of the vector
    * @param p2 the final point of the vector
    * @param q the point to compute the direction to
    * 
-   * @return 1 if q is counter-clockwise (left) from p1-p2
-   * @return -1 if q is clockwise (right) from p1-p2
-   * @return 0 if q is collinear with p1-p2
+   * @return {@code 1} if q is counter-clockwise (left) from p1-p2
+   *        {@code -1} if q is clockwise (right) from p1-p2
+   *         {@code 0} if q is collinear with p1-p2
+   *
    * @deprecated Use {@link Orientation#index(Coordinate, Coordinate, Coordinate)}
    *             instead.
    */
   public static int orientationIndex(Coordinate p1, Coordinate p2, Coordinate q)
   {
-    /**
-     * MD - 9 Aug 2010 It seems that the basic algorithm is slightly orientation
-     * dependent, when computing the orientation of a point very close to a
-     * line. This is possibly due to the arithmetic in the translation to the
-     * origin.
-     * 
-     * For instance, the following situation produces identical results in spite
-     * of the inverse orientation of the line segment:
-     * 
-     * Coordinate p0 = new Coordinate(219.3649559090992, 140.84159161824724);
-     * Coordinate p1 = new Coordinate(168.9018919682399, -5.713787599646864);
-     * 
-     * Coordinate p = new Coordinate(186.80814046338352, 46.28973405831556); int
-     * orient = orientationIndex(p0, p1, p); int orientInv =
-     * orientationIndex(p1, p0, p);
-     * 
-     * A way to force consistent results is to normalize the orientation of the
-     * vector using the following code. However, this may make the results of
-     * orientationIndex inconsistent through the triangle of points, so it's not
-     * clear this is an appropriate patch.
-     * 
+    /*
+      MD - 9 Aug 2010 It seems that the basic algorithm is slightly orientation
+      dependent, when computing the orientation of a point very close to a
+      line. This is possibly due to the arithmetic in the translation to the
+      origin.
+
+      For instance, the following situation produces identical results in spite
+      of the inverse orientation of the line segment:
+
+      Coordinate p0 = new Coordinate(219.3649559090992, 140.84159161824724);
+      Coordinate p1 = new Coordinate(168.9018919682399, -5.713787599646864);
+
+      Coordinate p = new Coordinate(186.80814046338352, 46.28973405831556); int
+      orient = orientationIndex(p0, p1, p); int orientInv =
+      orientationIndex(p1, p0, p);
+
+      A way to force consistent results is to normalize the orientation of the
+      vector using the following code. However, this may make the results of
+      orientationIndex inconsistent through the triangle of points, so it's not
+      clear this is an appropriate patch.
+
      */
     return CGAlgorithmsDD.orientationIndex(p1, p2, q);
     // testing only
@@ -136,7 +137,7 @@ public class CGAlgorithms
    *          first point identical to last point)
    * @return true if p is inside ring
    * 
-   * @see locatePointInRing
+   * @see #locatePointInRing(Coordinate, Coordinate[])  
    * @deprecated Use {@link PointLocation#isInRing(Coordinate, Coordinate[])}
    *             instead.
    */
@@ -245,25 +246,25 @@ public class CGAlgorithms
     Coordinate prev = ring[iPrev];
     Coordinate next = ring[iNext];
 
-    /**
-     * This check catches cases where the ring contains an A-B-A configuration
-     * of points. This can happen if the ring does not contain 3 distinct points
-     * (including the case where the input array has fewer than 4 elements), or
-     * it contains coincident line segments.
+    /*
+      This check catches cases where the ring contains an A-B-A configuration
+      of points. This can happen if the ring does not contain 3 distinct points
+      (including the case where the input array has fewer than 4 elements), or
+      it contains coincident line segments.
      */
     if (prev.equals2D(hiPt) || next.equals2D(hiPt) || prev.equals2D(next))
       return false;
 
     int disc = computeOrientation(prev, hiPt, next);
 
-    /**
-     * If disc is exactly 0, lines are collinear. There are two possible cases:
-     * (1) the lines lie along the x axis in opposite directions (2) the lines
-     * lie on top of one another
-     * 
-     * (1) is handled by checking if next is left of prev ==> CCW (2) will never
-     * happen if the ring is valid, so don't check for it (Might want to assert
-     * this)
+    /*
+      If disc is exactly 0, lines are collinear. There are two possible cases:
+      (1) the lines lie along the x axis in opposite directions (2) the lines
+      lie on top of one another
+
+      (1) is handled by checking if next is left of prev ==> CCW (2) will never
+      happen if the ring is valid, so don't check for it (Might want to assert
+      this)
      */
     boolean isCCW;
     if (disc == 0) {
@@ -521,9 +522,9 @@ public class CGAlgorithms
     if (ring.length < 3)
       return 0.0;
     double sum = 0.0;
-    /**
-     * Based on the Shoelace formula.
-     * http://en.wikipedia.org/wiki/Shoelace_formula
+    /*
+      Based on the Shoelace formula.
+      http://en.wikipedia.org/wiki/Shoelace_formula
      */
     double x0 = ring[0].x;
     for (int i = 1; i < ring.length - 1; i++) {
@@ -554,9 +555,9 @@ public class CGAlgorithms
     int n = ring.size();
     if (n < 3)
       return 0.0;
-    /**
-     * Based on the Shoelace formula.
-     * http://en.wikipedia.org/wiki/Shoelace_formula
+    /*
+      Based on the Shoelace formula.
+      http://en.wikipedia.org/wiki/Shoelace_formula
      */
     Coordinate p0 = new Coordinate();
     Coordinate p1 = new Coordinate();

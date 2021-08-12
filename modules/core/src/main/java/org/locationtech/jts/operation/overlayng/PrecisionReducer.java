@@ -15,17 +15,17 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.geom.TopologyException;
+import org.locationtech.jts.precision.GeometryPrecisionReducer;
 
 /**
  * Functions to reduce the precision of a geometry
  * by rounding it to a given precision model.
  * <p>
  * This class handles only polygonal and linear inputs.
- * For full functionality see {@link GeometryPrecisionReducer}.
+ * For full functionality see {@link org.locationtech.jts.precision.GeometryPrecisionReducer}.
  * 
- * @see GeometryPrecisionReducer
+ * @see org.locationtech.jts.precision.GeometryPrecisionReducer
  * @author Martin Davis
- *
  */
 public class PrecisionReducer {
 

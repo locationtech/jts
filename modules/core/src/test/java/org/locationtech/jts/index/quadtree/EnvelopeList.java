@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -25,7 +24,7 @@ import org.locationtech.jts.geom.Envelope;
  */
 public class EnvelopeList
 {
-  List envList = new ArrayList();
+  List<Envelope> envList = new ArrayList<>();
 
   public EnvelopeList() {
   }
@@ -35,9 +34,9 @@ public class EnvelopeList
     envList.add(env);
   }
 
-  public List query(Envelope searchEnv)
+  public List<Envelope> query(Envelope searchEnv)
   {
-    List result = new ArrayList();
+    List<Envelope> result = new ArrayList<>();
     for (Iterator i = envList.iterator(); i.hasNext(); ) {
       Envelope env = (Envelope) i.next();
       if (env.intersects(searchEnv))

@@ -1,6 +1,3 @@
-
-
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -59,12 +56,15 @@ abstract public class EdgeEndStar
 
   /**
    * Insert a EdgeEnd into this EdgeEndStar
+   * @param e EdgeEnd
    */
   abstract public void insert(EdgeEnd e);
 
   /**
    * Insert an EdgeEnd into the map, and clear the edgeList cache,
    * since the list of edges has now changed
+   * @param e EdgeEnd
+   * @param obj Object
    */
   protected void insertEdgeEnd(EdgeEnd e, Object obj)
   {
@@ -92,6 +92,8 @@ abstract public class EdgeEndStar
    * copying the map collection to a list.  (This assumes that
    * once an iterator is requested, it is likely that insertion into
    * the map is complete).
+   *
+   * @return access to ordered list of edges
    */
   public Iterator iterator()
   {

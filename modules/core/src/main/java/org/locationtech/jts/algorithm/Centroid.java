@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Vivid Solutions.
  *
@@ -23,15 +22,16 @@ import org.locationtech.jts.geom.Polygon;
  * Computes the centroid of a {@link Geometry} of any dimension.
  * For collections the centroid is computed for the collection of 
  * non-empty elements of highest dimension. 
- * The centroid of an empty geometry is <code>null</code>.
+ * The centroid of an empty geometry is {@code null}.
  * 
- * <h2>Algorithm</h2>
+ * <h3>Algorithm</h3>
+ *
  * <ul>
  * <li><b>Dimension 2</b> - the centroid is computed 
  * as the weighted sum of the centroids
  * of a decomposition of the area into (possibly overlapping) triangles.
  * Holes and multipolygons are handled correctly.
- * See <code>http://www.faqs.org/faqs/graphics/algorithms-faq/</code>
+ * See http://www.faqs.org/faqs/graphics/algorithms-faq/
  * for further details of the basic approach.
  * 
  * <li><b>Dimension 1</b> - Computes the average of the midpoints
@@ -43,8 +43,8 @@ import org.locationtech.jts.geom.Polygon;
  * </ul>
  * 
  * @see InteriorPoint
- * @see MaximumInscribedCircle
- * @see LargestEmptyCircle
+ * @see org.locationtech.jts.algorithm.construct.MaximumInscribedCircle
+ * @see org.locationtech.jts.algorithm.construct.LargestEmptyCircle
  *  
  * @version 1.7
  */
@@ -117,7 +117,7 @@ public class Centroid
    */
   public Coordinate getCentroid()
   {
-    /**
+    /*
      * The centroid is computed from the highest dimension components present in the input.
      * I.e. areas dominate lineal geometry, which dominates points.
      * Degenerate geometry are computed using their effective dimension
@@ -125,21 +125,21 @@ public class Centroid
      */
     Coordinate cent = new Coordinate();
     if (Math.abs(areasum2) > 0.0) {
-      /**
+      /*
        * Input contains areal geometry
        */
     	cent.x = cg3.x / 3 / areasum2;
     	cent.y = cg3.y / 3 / areasum2;
     }
     else if (totalLength > 0.0) {
-      /**
+      /*
        * Input contains lineal geometry
        */
       cent.x = lineCentSum.x / totalLength;
       cent.y = lineCentSum.y / totalLength;   	
     }
     else if (ptCount > 0){
-      /**
+      /*
        * Input contains puntal geometry only
        */
       cent.x = ptCentSum.x / ptCount;

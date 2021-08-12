@@ -72,9 +72,8 @@ public class RingClipper {
   /**
    * Clips a list of points to the clipping rectangle box.
    * 
-   * @param ring
-   * @param env
-   * @return
+   * @param pts
+   * @return clipped pts array
    */
   public Coordinate[] clip(Coordinate[] pts) {
     for (int edgeIndex = 0; edgeIndex < 4; edgeIndex++) {

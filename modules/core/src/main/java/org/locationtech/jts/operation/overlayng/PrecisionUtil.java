@@ -68,7 +68,7 @@ public class PrecisionUtil
   /**
    * Computes a safe scale factor for a numeric value.
    * A safe scale factor ensures that rounded 
-   * number has no more than {@link MAX_PRECISION_DIGITS} 
+   * number has no more than {@link #MAX_ROBUST_DP_DIGITS}
    * digits of precision.
    * 
    * @param value a numeric value
@@ -82,7 +82,7 @@ public class PrecisionUtil
   /**
    * Computes a safe scale factor for a geometry.
    * A safe scale factor ensures that the rounded 
-   * ordinates have no more than {@link MAX_PRECISION_DIGITS} 
+   * ordinates have no more than {@link #MAX_ROBUST_DP_DIGITS}
    * digits of precision.
    * 
    * @param geom a geometry
@@ -96,7 +96,7 @@ public class PrecisionUtil
   /**
    * Computes a safe scale factor for two geometries.
    * A safe scale factor ensures that the rounded 
-   * ordinates have no more than {@link MAX_PRECISION_DIGITS} 
+   * ordinates have no more than {@link #MAX_ROBUST_DP_DIGITS}
    * digits of precision.
    * 
    * @param a a geometry
@@ -194,8 +194,8 @@ public class PrecisionUtil
    * <p>
    * WARNING: this is very slow.
    *  
-   * @param value a number
-   * @return the inherent scale factor of the number
+   * @param geom geometry
+   * @return inherent scale of a geometry
    */
   public static double inherentScale(Geometry geom) { 
     InherentScaleFilter scaleFilter = new InherentScaleFilter();

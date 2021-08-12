@@ -32,14 +32,15 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
 
 /**
  * Computes the geometric overlay of two {@link Geometry}s, 
- * using an explicit precision model to allow robust computation. 
+ * using an explicit precision model to allow robust computation.
+ * <p>
  * The overlay can be used to determine any of the 
- * following set-theoretic operations (boolean combinations) of the geometries:
+ * following set-theoretic operations (boolean combinations) of the geometries:</p>
  * <ul>
- * <li>{@link INTERSECTION} - all points which lie in both geometries
- * <li>{@link UNION} - all points which lie in at least one geometry
- * <li>{@link DIFFERENCE} - all points which lie in the first geometry but not the second
- * <li>{@link SYMDIFFERENCE} - all points which lie in one geometry but not both
+ * <li>{@link #INTERSECTION} - all points which lie in both geometries</li>
+ * <li>{@link #UNION} - all points which lie in at least one geometry</li>
+ * <li>{@link #DIFFERENCE} - all points which lie in the first geometry but not the second</li>
+ * <li>{@link #SYMDIFFERENCE} - all points which lie in one geometry but not both</li>
  * </ul>
  * Input geometries may have different dimension.  
  * Input collections must be homogeneous (all elements must have the same dimension).
@@ -49,49 +50,51 @@ import org.locationtech.jts.operation.overlay.OverlayOp;
  * The main use for this is to allow using a fixed precision 
  * for geometry with a floating precision model.
  * This does two things: ensures robust computation;
- * and forces the output to be validly rounded to the precision model. 
+ * and forces the output to be validly rounded to the precision model.</p>
  * <p>
  * For fixed precision models noding is performed using a {@link SnapRoundingNoder}.
  * This provides robust computation (as long as precision is limited to
- * around 13 decimal digits).
+ * around 13 decimal digits).</p>
  * <p>
  * For floating precision an {@link MCIndexNoder} is used. 
  * This is not fully robust, so can sometimes result in 
  * {@link TopologyException}s being thrown. 
- * For robust full-precision overlay see {@link OverlayNGRobust}.
+ * For robust full-precision overlay see {@link OverlayNGRobust}.</p>
  * <p>
  * A custom {@link Noder} can be supplied.
  * This allows using a more performant noding strategy in specific cases, 
- * for instance in {@link CoverageUnion}.
+ * for instance in {@link CoverageUnion}.</p>
  * <p>
  * <b>Note:</b If a {@link SnappingNoder} is used 
  * it is best to specify a fairly small snap tolerance,
  * since the intersection clipping optimization can 
- * interact with the snapping to alter the result.
+ * interact with the snapping to alter the result.</p>
  * <p>
  * Optionally the overlay computation can process using strict mode
  * (via {@link #setStrictMode(boolean)}.
- * In strict mode result semantics are:
+ * In strict mode result semantics are:</p>
  * <ul>
  * <li>Lines and Points resulting from topology collapses are not included in the result</li>
  * <li>Result geometry is homogeneous 
- *     for the {@link #INTERSECTION} and {@link #DIFFERENCE} operations.
+ *     for the {@link #INTERSECTION} and {@link #DIFFERENCE} operations.</li>
  * <li>Result geometry is homogeneous
  *     for the {@link #UNION} and {@link #SYMDIFFERENCE} operations
  *     if the inputs have the same dimension</li>
  * </ul>
- * Strict mode has the following benefits:
+ * <p>
+ * Strict mode has the following benefits:</p>
  * <ul>
  * <li>Results are simpler</li>
  * <li>Overlay operations are chainable 
  *     without needing to remove lower-dimension elements</li>
  * </ul>
- * The original JTS overlay semantics corresponds to non-strict mode.
+ * <p>
+ * The original JTS overlay semantics corresponds to non-strict mode.</p>
  * <p>
  * If a robustness error occurs, a {@link TopologyException} is thrown.
  * These are usually caused by numerical rounding causing the noding output
  * to not be fully noded.
- * For robust computation with full-precision {@link OverlayNGRobust} can be used.
+ * For robust computation with full-precision {@link OverlayNGRobust} can be used.</p>
  * 
  * @author mdavis
  * 

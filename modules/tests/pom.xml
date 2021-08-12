@@ -30,7 +30,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
                 <configuration>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -41,8 +40,8 @@
                         </manifest>
                     </archive>
                     <finalName>JTSTestRunner</finalName>
- 		    		<appendAssemblyId>false</appendAssemblyId>
- 		        </configuration>
+                    <appendAssemblyId>false</appendAssemblyId>
+                </configuration>
                 <executions>
                     <execution>
                         <id>make-assembly</id>

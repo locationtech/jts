@@ -44,10 +44,10 @@ public class ArgumentConverter
   {
     if (destClass == Boolean.class || destClass == boolean.class) {
       if (src.equals("true")) {
-        return new Boolean(true);
+        return Boolean.TRUE;
       }
       else if (src.equals("false")) {
-        return new Boolean(false);
+        return Boolean.FALSE;
       }
       throwInvalidConversion(destClass, src);
     }

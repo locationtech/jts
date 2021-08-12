@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2020 Martin Davis, and others
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
+ * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
+ * and the Eclipse Distribution License is available at
+ *
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ */
 package org.locationtech.jts.noding;
 
 import java.util.Collection;
@@ -9,7 +20,7 @@ import java.util.Collection;
  * An arrangement of line segments is fully noded if 
  * there is no line segment 
  * which has another segment intersecting its interior.
- * If the noding is not correct, a {@link TopologyException} is thrown
+ * If the noding is not correct, a {@link org.locationtech.jts.geom.TopologyException} is thrown
  * with details of the first invalid location found.
  * 
  * @author mdavis
@@ -19,7 +30,7 @@ import java.util.Collection;
  */
 public class ValidatingNoder implements Noder {
 
-  private Noder noder;
+  private final Noder noder;
   private Collection<SegmentString> nodedSS;
   
   /**
@@ -35,7 +46,7 @@ public class ValidatingNoder implements Noder {
    * Checks whether the output of the wrapped noder is fully noded.
    * Throws an exception if it is not.
    * 
-   * @throws TopologyException
+   * @throws org.locationtech.jts.geom.TopologyException
    */
   @SuppressWarnings("unchecked")
   @Override

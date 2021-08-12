@@ -19,7 +19,7 @@
           <module>ora</module>
         </modules>
       </profile>
-      <profile>
+      <!--profile>
         <id>arcsde</id>
         <activation>
            <property><name>all</name></property>
@@ -27,7 +27,7 @@
         <modules>
           <module>sde</module>
         </modules>
-      </profile>
+      </profile-->
     </profiles>
     
     <dependencies>

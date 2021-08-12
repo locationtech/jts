@@ -44,7 +44,7 @@ import org.locationtech.jts.geom.Envelope;
  * but an imbalanced tree may be much deeper.
  * This has a serious impact on query efficiency.  
  * Even worse, since recursion is used for querying the tree
- * an extremely deep tree may cause a {@link StackOverflowException}.
+ * an extremely deep tree may cause a {@link StackOverflowError}.
  * One solution to this is to randomize the order of points before insertion
  * (e.g. by using <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates shuffling</a>).
  * 
