@@ -150,11 +150,11 @@ public class GeometryMethodOperation
     convArg[0] = null;
     if (destClass == Boolean.class || destClass == boolean.class) {
       if (srcStr.equals("true")) {
-        convArg[0] = new Boolean(true);
+        convArg[0] = Boolean.TRUE;
         return true;
       }
       else if (srcStr.equals("false")) {
-        convArg[0] =  new Boolean(false);
+        convArg[0] =  Boolean.FALSE;
         return true;
       }
       return false;

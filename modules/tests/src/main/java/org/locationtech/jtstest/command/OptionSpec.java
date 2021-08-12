@@ -109,7 +109,7 @@ public class OptionSpec {
     throws ParseException
   {
     if (nAllowedArgs == NARGS_ZERO_OR_MORE) {
-        // args must be ok
+        return; // args must be ok
     }
     else if (nAllowedArgs == NARGS_ONE_OR_MORE) {
       if (args.length <= 0)
