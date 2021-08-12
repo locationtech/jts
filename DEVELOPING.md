@@ -43,58 +43,14 @@ Errors are logged, to browse errors use:
         mvn site:site
         open modules/core/target/site/index.html
 
-## Javadoc
-
-* Build Javadoc for core modules
-
-        mvn javadoc:aggregate
-
-## Eclipse Configuration
-
-* Generate Eclipse configuration using `mvn eclipse:eclipse`
-* Import the generated projects into an Eclipse workspace
-
-### Run Configurations
-
-It is convenient to define the following Run Configurations:
-
-
-* **JTS TestRunner** - for executing XML tests:
-
-Field | Value
-------|------
-Type | Java Application
-Project | `jts-tests`
-Main class | `org.locationtech.jtstest.testrunner.JTSTestRunnerCmd`
-Program arguments | `validate general`
-Working directory | `${workspace_loc:jts-tests/src/test/resources/testxml}`
-
-* **JTS TestBuilder** - for viewing and processing geometry with JTS
-
-Field | Value
-------|------
-Type | Java Application
-Project | `jts-app`
-Main class | `org.locationtech.jtstest.testbuilder.JTSTestBuilder`
-Program arguments (optional) | `-geomfunc <classname> ...`
-VM args | `-Xmx1000M`
-VM args (optional, for Mac) | `-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel`
-Working directory | Default
-
-## Testing
+### JUnit tests
 
 JTS aims for 100% code coverage for unit tests.
 
-There are two kinds of unit tests:
+Unit tests are written in Java and are used for verifying API code, internal data structures, and ancillary algorithms.
 
-### JUnit tests
-
-Used for verifying API code, internal data structures, and ancillary algorithms.
-These tests are written in Java.
-This allows testing all parts of the codebase,
-and can provide richer error detection and reporting.
-However, the tests are not as readable or portable
-as the XML tests.
+This allows testing all parts of the codebase, and can provide richer error detection and reporting.
+However, the tests are not as readable or portable as the XML tests.
 
 * To run the unit tests in a module (`jts-core`):
 
@@ -103,6 +59,7 @@ as the XML tests.
 ### XML Tests
 
 JTS provides a code-independent, declarative XML-based format for expressing geometric functional tests.
+
 This format has the following advantages:
 
 * allows encoding large geometries
@@ -115,4 +72,74 @@ express fundamental geometric semantics of the JTS library.
 
 The XML test format can be executed using the JTS TestRunner, or imported into the JTS TestBuilder.
 
+## Javadoc
 
+* Build Javadoc for core modules
+
+        mvn javadoc:aggregate
+
+## Eclipse Configuration
+
+Project:
+
+1. Startup eclipse, creating a new `jts-workspace` location. This folder is used by eclipse to keep track of settings alongside your jts source code.
+   
+2. Use *File > Import*, and the wizard *Maven > Existing Maven Project*.
+   
+   Select top-level `jts` folder as the Root directory.
+
+3. Once imported eclipse will build the project using built-in maven support.
+  
+   tip: During initial build *Setup Maven plugin connectors* will offer to install *maven-checkstyle-plugin* connector integrating these QA checks with the IDE.
+
+Run Configurations:
+
+* **JTS TestRunner** - for executing XML tests:
+
+  Field | Value
+  ------|------
+  Type | Java Application
+  Project | `jts-tests`
+  Main class | `org.locationtech.jtstest.testrunner.JTSTestRunnerCmd`
+  Program arguments | `validate general`
+  Working directory | `${workspace_loc:jts-tests/src/test/resources/testxml}`
+
+* **JTS TestBuilder** - for viewing and processing geometry with JTS
+
+  Field | Value
+  ------|------
+  Type | Java Application
+  Project | `jts-app`
+  Main class | `org.locationtech.jtstest.testbuilder.JTSTestBuilder`
+  Program arguments (optional) | `-geomfunc <classname> ...`
+  VM args | `-Xmx1000M`
+  VM args (optional, for Mac) | `-Dswing.defaultlaf=javax.swing.plaf.metal.MetalLookAndFeel`
+  Working directory | Default
+
+Plugins:
+
+* Install *Eclipse-CS* from the market place.
+
+  1. Select *jts-core* project properties and navigate to *Checkstyle* preference page.
+  2. Enable checkstyle active for this project
+  3. Use a Local check configuration, creating a new check configuration called `jts`
+  4. Setup an external configuration file ``build-tools/src/main/resources/jts/checkstyle.xml`
+  * Define and additional property `checkstyle.header.file` with complete path to `build-tools/src/main/resources/jts/header.txt`
+  
+  Checkstyle is integrated into the build cycle updating warnings each time you save.
+
+* Install *eclipse-pmd* following directions for [offline install](https://acanda.github.io/eclipse-pmd/getting-started.html) to download a [recent release](https://github.com/eclipse-pmd/eclipse-pmd/releases/).
+  
+  1. Select *jts-core* project properties and navigate to *PMD* preference page.
+  2. Use *add* button to add a workspace ruleset using `build-tools/src/main/resources/jts/pmd-ruleset.xml`
+  3. Name the ruleset `jts`
+  
+  PMD is integrated into the build cycle updating warnings each time you save, and providing some quickfixes.
+
+* Alternative: Install *pmd-eclipse-plugin* from the market place.
+
+  1. Select *jts-core* project properties and navigate to *PMD* preference page.
+  2. Enable PMD
+  3. Use a the ruleset configured in a project file, selecting `build-tools/src/main/resources/jts/pmd-ruleset.xml`
+  
+  You can use *PMD > Check code* to list errors and warnings. The results are shown in their own view, and quickfixes are not available.
