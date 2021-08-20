@@ -443,8 +443,9 @@ public class WKBWriter
     if (outputDimension >= 3) {
       // if 3rd dim is requested, only write it if the CoordinateSequence provides it
     	double ordVal = Coordinate.NULL_ORDINATE;
-    	if (seq.getDimension() >= 3)
+    	if (seq.getDimension() >= 3) {
     		ordVal = seq.getOrdinate(index, 2);
+    	}
       ByteOrderValues.putDouble(ordVal, buf, byteOrder);
       os.write(buf, 8);
     }
