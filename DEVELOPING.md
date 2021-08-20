@@ -72,6 +72,13 @@ express fundamental geometric semantics of the JTS library.
 
 The XML test format can be executed using the JTS TestRunner, or imported into the JTS TestBuilder.
 
+### External QA tools
+
+* LGTM CodeQL analysis: 
+  * [Alerts report](https://lgtm.com/projects/g/locationtech/jts/alerts/?mode=tree)
+  * [![Total alerts](https://img.shields.io/lgtm/alerts/g/locationtech/jts.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/locationtech/jts/alerts/) 
+  * [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/locationtech/jts.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/locationtech/jts/context:java)
+
 ## Javadoc
 
 * Build Javadoc for core modules
