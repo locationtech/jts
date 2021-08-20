@@ -139,8 +139,8 @@ class IndexedNestedPolygonTester
    * The shell is assume to touch the polyon only at shell vertices, 
    * and does not cross the polygon.
    * 
-   * @param the shell to test
-   * @param the polygon to test against
+   * @param shell the shell to test
+   * @param poly the polygon to test against
    * @return an interior segment point, or null if the shell is nested correctly
    */
   private static Coordinate findSegmentInPolygon(LinearRing shell, Polygon poly)
