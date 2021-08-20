@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateList;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineSegment;
@@ -27,9 +26,7 @@ import org.locationtech.jts.shape.GeometricShapeBuilder;
 
 public class SierpinskiCarpetBuilder 
 extends GeometricShapeBuilder
-{
-	private CoordinateList coordList = new CoordinateList();
-	
+{	
 	public SierpinskiCarpetBuilder(GeometryFactory geomFactory)
 	{
 		super(geomFactory);
