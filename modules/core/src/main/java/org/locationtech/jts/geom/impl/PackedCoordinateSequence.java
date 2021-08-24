@@ -414,7 +414,10 @@ public abstract class PackedCoordinateSequence
     public Envelope expandEnvelope(Envelope env)
     {
       for (int i = 0; i < coords.length; i += dimension ) {
-        env.expandToInclude(coords[i], coords[i + 1]);
+        // added to make static code analysis happy
+        if (i + 1 < coords.length) {
+          env.expandToInclude(coords[i], coords[i + 1]);
+        }
       }
       return env;
     }
@@ -591,7 +594,10 @@ public abstract class PackedCoordinateSequence
     public Envelope expandEnvelope(Envelope env)
     {
       for (int i = 0; i < coords.length; i += dimension ) {
-        env.expandToInclude(coords[i], coords[i + 1]);
+        // added to make static code analysis happy
+        if (i + 1 < coords.length) {
+          env.expandToInclude(coords[i], coords[i + 1]);
+        }
       }
       return env;
     }
