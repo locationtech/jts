@@ -231,6 +231,27 @@ public class Edge
     return true;
   }
 
+  /* (non-Javadoc)
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + pts.length;
+    if (pts.length > 0) {
+      Coordinate p0 = pts[0];
+      Coordinate p1 = pts[pts.length - 1];
+      if (1 == p0.compareTo(p1)) {
+        p0 = pts[pts.length - 1];
+        p1 = pts[0];
+      }
+      result = prime * result + p0.hashCode();
+      result = prime * result + p1.hashCode();
+    }
+    return result;
+  }
+  
   /**
    * Check if coordinate sequences of the Edges are identical.
    *

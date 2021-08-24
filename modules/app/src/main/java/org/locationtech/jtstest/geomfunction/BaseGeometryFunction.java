@@ -12,6 +12,8 @@
 package org.locationtech.jtstest.geomfunction;
 
 
+import java.util.Arrays;
+
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jtstest.util.*;
 
@@ -177,6 +179,20 @@ implements GeometryFunction, Comparable
 		return true;
 	}
 
+	 /* (non-Javadoc)
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + Arrays.hashCode(parameterNames);
+    result = prime * result + Arrays.hashCode(parameterTypes);
+    result = prime * result + ((returnType == null) ? 0 : returnType.hashCode());
+    return result;
+  }
+  
 	public int compareTo(Object o)
 	{
 		GeometryFunction func = (GeometryFunction) o;

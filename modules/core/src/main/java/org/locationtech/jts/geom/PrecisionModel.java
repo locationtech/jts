@@ -426,6 +426,21 @@ public class PrecisionModel implements Serializable, Comparable
     return modelType == otherPrecisionModel.modelType
         && scale == otherPrecisionModel.scale;
   }
+  
+  /* (non-Javadoc)
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((modelType == null) ? 0 : modelType.hashCode());
+    long temp;
+    temp = Double.doubleToLongBits(scale);
+    result = prime * result + (int) (temp ^ (temp >>> 32));
+    return result;
+  }
+  
   /**
    *  Compares this {@link PrecisionModel} object with the specified object for order.
    * A PrecisionModel is greater than another if it provides greater precision.
