@@ -109,7 +109,7 @@ Plugins:
 
   2. From the *Local check configuration* tab use *new* to create a check configuration.
 
-  3. Setup a *Project Relative Configuration* named `jts`, selecting ``build-tools/src/main/resources/jts/checkstyle.xml``
+  3. Setup a *Project Relative Configuration* named `jts`, selecting ``build/checkstyle.xml``
      
   4. Press *Additional properties* to open the *Additional Checkstyle configuration file properties* dialog.
   
@@ -130,7 +130,7 @@ Plugins:
 * Install *eclipse-pmd* following directions for [offline install](https://acanda.github.io/eclipse-pmd/getting-started.html) to download a [recent release](https://github.com/eclipse-pmd/eclipse-pmd/releases/).
   
   1. Select *jts-core* project properties and navigate to *PMD* preference page.
-  2. Use *add* button to add a workspace ruleset using `build-tools/src/main/resources/jts/pmd-ruleset.xml`
+  2. Use *add* button to add a workspace ruleset using `build/pmd-ruleset.xml`
   3. Name the ruleset `jts`
   
   PMD is integrated into the build cycle updating warnings each time you save, and providing some quickfixes.
@@ -139,7 +139,7 @@ Plugins:
 
   1. Select *jts-core* project properties and navigate to *PMD* preference page.
   2. Enable PMD
-  3. Use a the ruleset configured in a project file, selecting `build-tools/src/main/resources/jts/pmd-ruleset.xml`
+  3. Use a the ruleset configured in a project file, selecting `build/pmd-ruleset.xml`
   
   You can use *PMD > Check code* to list errors and warnings. The results are shown in their own view, and quickfixes are not available.
   

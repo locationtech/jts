@@ -196,6 +196,11 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.commonjava.maven.plugins</groupId>
+                    <artifactId>directory-maven-plugin</artifactId>
+                    <version>0.3.1</version>
+                </plugin>
+                <plugin>
                     <artifactId>maven-assembly-plugin</artifactId>
                     <version>2.6</version> <!-- 3.3.0 -->
                 </plugin>
@@ -262,6 +267,23 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>0.3.1</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <configuration>
+                            <property>jtsBaseDir</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
@@ -362,12 +384,6 @@
                 </execution>
               </executions>
               <dependencies>
-                <!-- shared pmd ruleset -->
-                <dependency>
-                  <groupId>org.locationtech.jts</groupId>
-                  <artifactId>build-tools</artifactId>
-                  <version>${project.version}</version>
-                </dependency>
                 <!-- user newer version of pmd -->
                 <dependency>
                   <groupId>net.sourceforge.pmd</groupId>
@@ -392,7 +408,7 @@
               </dependencies>
               <configuration>
                 <rulesets>
-                  <ruleset>jts/pmd-ruleset.xml</ruleset>
+                  <ruleset>${jtsBaseDir}/build/pmd-ruleset.xml</ruleset>
                 </rulesets>
                 <failurePriority>2</failurePriority>
                 <verbose>false</verbose>
@@ -402,12 +418,6 @@
             <plugin>
               <artifactId>maven-checkstyle-plugin</artifactId>
               <dependencies>
-                <!-- shared checkstlye config -->
-                <dependency>
-                  <groupId>org.locationtech.jts</groupId>
-                  <artifactId>build-tools</artifactId>
-                  <version>${project.version}</version>
-                </dependency>
                 <!-- user newer checkstyle -->
                 <dependency>
                   <groupId>com.puppycrawl.tools</groupId>
@@ -417,15 +427,14 @@
               </dependencies>
               <configuration>
                 <logViolationsToConsole>true</logViolationsToConsole>
-                <configLocation>jts/checkstyle.xml</configLocation>
-                <headerLocation>jts/header.txt</headerLocation>
-                <suppressionsLocation>jts/suppressions.xml</suppressionsLocation>
+                <configLocation>${jtsBaseDir}/build/checkstyle.xml</configLocation>
+                <headerLocation>${jtsBaseDir}/build/header.txt</headerLocation>
+                <suppressionsLocation>${jtsBaseDir}/build/suppressions.xml</suppressionsLocation>
                 <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
               </configuration>
               <executions>
                   <execution>
-                      <id>validate</id>
-                      <phase>validate</phase>
+                      <id>validateQA</id>
                       <goals>
                           <goal>check</goal>
                       </goals>
@@ -458,8 +467,8 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-checkstyle-plugin</artifactId>
           <configuration>
-            <configLocation>jts/checkstyle.xml</configLocation>
-            <headerLocation>jts/header.txt</headerLocation>
+            <configLocation>${jtsBaseDir}/build/checkstyle.xml</configLocation>
+            <headerLocation>${jtsBaseDir}/build/header.txt</headerLocation>
           </configuration>
         </plugin>
         <plugin>
@@ -478,7 +487,7 @@
           <artifactId>maven-pmd-plugin</artifactId>
           <configuration>
             <rulesets>
-              <ruleset>jts/pmd-ruleset.xml</ruleset>
+              <ruleset>${jtsBaseDir}/build/pmd-ruleset.xml</ruleset>
             </rulesets>
           </configuration>
         </plugin>
@@ -487,7 +496,6 @@
           
     <!-- Modules to build in appropriate dependency order -->
     <modules>
-        <module>build-tools</module>
         <module>modules</module>
     </modules>
 
