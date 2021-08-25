@@ -168,6 +168,18 @@ class PolygonEarClipper {
     return false;
   }
 
+  /**
+   * Finds another vertex intersecting the corner triangle, if any.
+   * Uses the vertex spatial index for efficiency.
+   * <p>
+   * Also finds any vertex which is a duplicate of the corner apex vertex,
+   * which then requires a full scan of the vertices to confirm ear is valid. 
+   * This is usually a rare situation, so has little impact on performance.
+   * 
+   * @param cornerIndex the index of the corner apex vertex
+   * @param corner the corner vertices
+   * @return the index of an intersecting or duplicate vertex, or {@link #NO_VERTEX_INDEX} if none
+   */
   private int findIntersectingVertex(int cornerIndex, Coordinate[] corner) {
     Envelope cornerEnv = envelope(corner);
     int[] result = vertexCoordIndex.query(cornerEnv);
@@ -191,7 +203,7 @@ class PolygonEarClipper {
        * But only report this if no properly intersecting vertex is found,
        * for efficiency.
        */
-      if ( vertIndex != cornerIndex && v.equals2D(corner[1]) ) {
+      if ( v.equals2D(corner[1]) ) {
         dupApexIndex = vertIndex;
       }
       //--- don't need to check other corner vertices 
@@ -217,10 +229,10 @@ class PolygonEarClipper {
     for (int i = 0; i < vertexSize; i++) {
       Coordinate v = vertex[currIndex];
       /**
-       * Because of hole joining vertices can occur more than once.
+       * Because of hole-joining vertices can occur more than once.
        * If vertex is same as corner[1],
        * must check whether adjacent edges lie inside the ear corner.
-       * If so this makes the ear invalid.
+       * If so the ear is invalid.
        */
       if ( currIndex != cornerIndex 
           && v.equals2D(corner[1]) ) {
@@ -255,7 +267,7 @@ class PolygonEarClipper {
   }
 
   /**
-   * Remove the corner apex and update the candidate corner location.
+   * Remove the corner apex vertex and update the candidate corner location.
    */
   private void removeCorner() {
     int cornerIndex = cornerCandidate[1];
@@ -274,8 +286,8 @@ class PolygonEarClipper {
   }
   
   /**
-   * Set to next corner candidate.
-   * Read the corner vertices if required.
+   * Move to next corner candidate.
+   * Load the corner vertices if required.
    * 
    * @param moveFirst if corner[0] should be moved to next available coordinates.
    * @param corner an array for the corner vertices
