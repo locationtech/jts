@@ -74,7 +74,7 @@ public class ConstrainedDelaunayTriangulator {
      * TODO: perhaps better to just correct orientation of rings?
      */
     Polygon polyNorm = (Polygon) poly.norm();
-    Coordinate[] polyShell = PolygonHoleJoiner.joinPoints(polyNorm);
+    Coordinate[] polyShell = PolygonHoleJoiner.join(polyNorm);
     List<Tri> triList = PolygonEarClipper.clip(polyShell);
     
     //long start = System.currentTimeMillis();

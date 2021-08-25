@@ -20,7 +20,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
-import org.locationtech.jts.triangulatepoly.tri.TriDelaunaySwapper;
 
 public class PolygonTriangulator {
   
@@ -43,6 +42,7 @@ public class PolygonTriangulator {
   }
 
   private Geometry compute() {
+    @SuppressWarnings("unchecked")
     List<Polygon> polys = PolygonExtracter.getPolygons(inputGeom);
     List<Polygon> triPolys = new ArrayList<Polygon>();
     for (Polygon poly : polys) {
@@ -66,7 +66,7 @@ public class PolygonTriangulator {
      * TODO: perhaps better to just correct orientation of rings?
      */
     Polygon polyNorm = (Polygon) poly.norm();
-    Coordinate[] polyShell = PolygonHoleJoiner.joinPoints(polyNorm);
+    Coordinate[] polyShell = PolygonHoleJoiner.join(polyNorm);
     
     List<Tri> triList = PolygonEarClipper.clip(polyShell);
     //Tri.validate(triList);

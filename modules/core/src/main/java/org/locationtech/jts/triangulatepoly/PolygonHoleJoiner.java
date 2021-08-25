@@ -37,11 +37,11 @@ import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
  */
 public class PolygonHoleJoiner {
   
-  public static Polygon joinGeometry(Polygon inputPolygon) {
-    return inputPolygon.getFactory().createPolygon(joinPoints(inputPolygon));
+  public static Polygon joinAsPolygon(Polygon inputPolygon) {
+    return inputPolygon.getFactory().createPolygon(join(inputPolygon));
   }
   
-  public static Coordinate[] joinPoints(Polygon inputPolygon) {
+  public static Coordinate[] join(Polygon inputPolygon) {
     PolygonHoleJoiner joiner = new PolygonHoleJoiner(inputPolygon);
     return joiner.compute();
   }
