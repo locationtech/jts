@@ -220,6 +220,15 @@ class PolygonEarClipper {
     return NO_VERTEX_INDEX;
   }
 
+  /**
+   * Scan all vertices in current ring to check if any are duplicates
+   * of the corner apex vertex, and if so whether the corner ear
+   * intersects the adjacent segments and thus is invalid.
+   * 
+   * @param cornerIndex the index of the corner apex
+   * @param corner the corner vertices
+   * @return true if the corner ia a valid ear
+   */
   private boolean isValidEarScanApex(int cornerIndex, Coordinate[] corner) {
     double cornerAngle = Angle.angleBetweenOriented(corner[0], corner[1], corner[2]);
     
@@ -231,7 +240,7 @@ class PolygonEarClipper {
       /**
        * Because of hole-joining vertices can occur more than once.
        * If vertex is same as corner[1],
-       * must check whether adjacent edges lie inside the ear corner.
+       * check whether either adjacent edge lies inside the ear corner.
        * If so the ear is invalid.
        */
       if ( currIndex != cornerIndex 
