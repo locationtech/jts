@@ -29,8 +29,6 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
 
-import junit.framework.Assert;
-
 public class ApproximateMedialAxis {
 
   public static Geometry computeAxis(Geometry geom) {
