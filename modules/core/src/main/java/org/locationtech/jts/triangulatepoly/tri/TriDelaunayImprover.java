@@ -59,15 +59,15 @@ public class TriDelaunayImprover {
   }
 
   /**
-   * Improves a triangulation by examining pairs of triangles with a
-   * common edge, forming a quadrilateral, and testing if swapping the diagonal of
+   * Improves a triangulation by examining pairs of adjacent triangles
+   * (forming a quadrilateral) and testing if swapping the diagonal of
    * the quadrilateral would produce two new triangles with larger minimum
    * interior angles.
    * 
    * @return the number of swaps that were made
    */
   private int improveScan(List<Tri> triList) {
-    int swapCount = 0;
+    int improveCount = 0;
     for (int i = 0; i < triList.size() - 1; i++) {
       Tri tri = triList.get(i);
       for (int j = 0; j < 3; j++) {
@@ -75,11 +75,11 @@ public class TriDelaunayImprover {
         //tri.validateAdjacent(j);
         if ( improveNonDelaunay(tri, neighb) ) {
           // TODO: improve performance by only rescanning tris adjacent to swaps?
-          swapCount++;
+          improveCount++;
         }
       }
     }
-    return swapCount;
+    return improveCount;
   }
 
   /**
