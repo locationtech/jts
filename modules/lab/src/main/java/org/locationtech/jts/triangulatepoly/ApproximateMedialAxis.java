@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.locationtech.jts.algorithm.Distance;
-import org.locationtech.jts.algorithm.LineIntersector;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateArrays;
 import org.locationtech.jts.geom.Geometry;
@@ -30,6 +28,8 @@ import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
+
+import junit.framework.Assert;
 
 public class ApproximateMedialAxis {
 
@@ -47,7 +47,7 @@ public class ApproximateMedialAxis {
   
   private Polygon inputPolygon;
   private GeometryFactory geomFact;
-  private List<LineString> lines = new ArrayList<LineString>();
+
   private Map<Tri, AxisNode> nodeMap = new HashMap<Tri, AxisNode>();
   private Deque<AxisNode> nodeQue = new ArrayDeque<AxisNode>();
 
@@ -60,21 +60,33 @@ public class ApproximateMedialAxis {
     ConstrainedDelaunayTriangulator cdt = new ConstrainedDelaunayTriangulator(inputPolygon);
     List<Tri> tris = cdt.triangulatePolygon(inputPolygon);
     
-    constructLines(tris);
+    List<LineString> lines = constructLines(tris);
     return geomFact.createMultiLineString(GeometryFactory.toLineStringArray(lines));
   }
   
-  private void constructLines(List<Tri> tris)
+  private List<LineString> constructLines(List<Tri> tris)
   {
+    List<LineString> lines = new ArrayList<LineString>();
     for (Tri tri : tris) {
       if (tri.numAdjacent() == 1) {
         lines.add( constructLeafLine(tri) );
       }
     }
     while (! nodeQue.isEmpty()) {
-      AxisNode node = nodeQue.pop();
-      lines.addAll( constructNodeLines(node) );
+      AxisNode node = nodeQue.peek();
+      if (node.isPathComplete()) {
+        nodeQue.pop();
+        node.addInternalLines(lines, geomFact);
+        //--- done with this node
+      }
+      else {
+        LineString path = constructPath(node);
+         if (path != null)
+           lines.add( path );
+        //-- node is left in queue for further processing
+      }
     }
+    return lines;
   }
 
   private LineString constructLeafLine(Tri triStart) {
@@ -86,76 +98,53 @@ public class ApproximateMedialAxis {
 
     return constructPath(triStart, eAdj, startPt, edgePt);
   }
-  
-  private List<LineString> constructNodeLines(AxisNode node) {
-    List<LineString> lines = new ArrayList<LineString>();
-    if (node.numEntryPoints() == 3) {
-      /**
-       * Paths to this node have been created already.
-       */
-      node.addInternalLines(lines, geomFact);
+
+  private LineString constructPath(AxisNode node) {
+    Tri tri = node.getTri();
+    int freeEdge = node.getNonPathEdge();      
+    //Coordinate exitPt = node.getPathPoint(freeEdge);
+    Coordinate startPt = node.createPathPoint(freeEdge);
+    
+    Tri triNext = tri.getAdjacent(freeEdge);
+    /**
+     * If next tri is a node as well, queue it.
+     * No path is constructed, since node internal lines connect
+     */
+    if (triNext.numAdjacent() == 3) {
+      int adjNext = triNext.getIndex(tri);
+      addNodePathPoint(triNext, adjNext, startPt);
+      return null;
     }
-    else if (node.numEntryPoints() == 2) {
-      Tri tri = node.getTri();
-      int freeEdge = node.nonEntryEdge();      
-      node.addInternalLines(lines, geomFact);
-      Coordinate exitPt = node.getEntryPoint(freeEdge);
-      
-      Tri triNext = tri.getAdjacent(freeEdge);
-      /**
-       * If next tri is a node as well, queue it
-       */
-      if (triNext.numAdjacent() == 3) {
-        int adjNext = triNext.getIndex(tri);
-        addNodeEntryPoint(triNext, adjNext, exitPt);
-        return lines;
-      }
-      //TODO: make this better
-      lines.add( constructPath(tri, freeEdge, exitPt)) ;
-    }
-    //TODO: handle 1-adj nodes - these occur around holes
-    return lines;
+    return constructPath(tri, freeEdge, startPt, null);
   }
   
   private LineString constructPath(Tri triStart, int eStart, 
       Coordinate p0, Coordinate p1)
   {
     ArrayList<Coordinate> pts = new ArrayList<Coordinate>();
-    pts.add(p0);
-    pts.add(p1);
-    return constructPath(triStart, eStart, pts);
-  }
-  
-  private LineString constructPath(Tri triStart, int eStart, 
-      Coordinate p0)
-  {
-    ArrayList<Coordinate> pts = new ArrayList<Coordinate>();
-    pts.add(p0);
-    return constructPath(triStart, eStart, pts);
-  }
-  
-  private LineString constructPath(Tri triStart, int eStart,
-      List<Coordinate> pts) {
+    if (p0 != null) pts.add(p0);
+    if (p1 != null) pts.add(p1);
+    
     Tri triNext = triStart.getAdjacent(eStart);
     int eAdjNext = triNext.getIndex(triStart);
-    extendLine(triNext, eAdjNext, pts);
+    extendPath(triNext, eAdjNext, pts);
+    
     return geomFact.createLineString(CoordinateArrays.toCoordinateArray(pts));
   }
   
-  private void extendLine(Tri tri, int edgeEntry, List<Coordinate> pts) {
+  private void extendPath(Tri tri, int edgeEntry, List<Coordinate> pts) {
     //if (pts.size() > 100) return;
-    /**
-     * 3 cases:
-     * - next has no free edges -> queue for processing
-     * - next is 2-adj, next-next has free edge on same side -> add midpoint
-     * - next is 2-adj, next-next has free edge on opp side -> add midpoint of next-next
-     */
+    
+    //TODO: make this iterative instead of recursive
+    
     int numAdj = tri.numAdjacent();
     if (numAdj == 3) {
-      addNodeEntryPoint(tri, edgeEntry, pts.get(pts.size() - 1));
+      addNodePathPoint(tri, edgeEntry, pts.get(pts.size() - 1));
+      //--- path terminates at a node (3-adj tri)
       return;
     }
     if (numAdj < 2) {
+      //-- leaf node - should never happen, has already been processed
       return;
     }
     
@@ -174,7 +163,7 @@ public class ApproximateMedialAxis {
       int eOpp2 = indexOfAdjacentOther(tri2, eAdj2);
       Tri triN = tri2.getAdjacent(eOpp2);
       int eOppN = triN.getIndex(tri2);
-      extendLine(triN, eOppN, pts);
+      extendPath(triN, eOppN, pts);
     }
     else {
       /**
@@ -184,10 +173,20 @@ public class ApproximateMedialAxis {
       pts.add(p);
       Tri triN = tri.getAdjacent(eAdj);
       int eAdjN = triN.getIndex(tri);
-      extendLine(triN, eAdjN, pts);
+      extendPath(triN, eAdjN, pts);
     }
   }
 
+  private void addNodePathPoint(Tri tri, int edgeEntry, Coordinate pt) {
+    AxisNode node = nodeMap.get(tri);
+    if (node == null) {
+      node = new AxisNode(tri);
+      nodeMap.put(tri, node);
+    }
+    node.addPathPoint(edgeEntry, pt);
+    nodeQue.add(node);
+  }
+  
   private Coordinate exitPointWedge(Tri tri, int eExit) {
     int eBdy = indexOfNonAdjacent(tri);
     Coordinate pt = tri.getCoordinate(Tri.oppVertex(eBdy));
@@ -324,64 +323,6 @@ public class ApproximateMedialAxis {
     
     return ! pOppBdy.equals2D(pOppBdyN);
   }
-
-  private void addNodeEntryPoint(Tri tri, int edgeEntry, Coordinate pt) {
-    AxisNode node = nodeMap.get(tri);
-    if (node == null) {
-      node = new AxisNode(tri);
-      nodeMap.put(tri, node);
-    }
-    node.addEntryPoint(edgeEntry, pt);
-    if (node.isPathReady()) {
-      nodeQue.add(node);
-    }
-  }
-  
-  /*
-  private LineString generateLineAdj1(Tri triStart) {
-    int iAdj = indexOfAdjacent(triStart);
-    int iOpp = Tri.prev(iAdj);
-    Coordinate v0 = triStart.getCoordinate(iOpp);
-    Coordinate midOpp = triStart.midpoint(iAdj);
-    return line(v0, midOpp);
-  }
-
-  private LineString generateLineAdj2(Tri tri) {
-    int iNoAdj = indexOfNonAdjacent(tri);
-    int iOpp1 = Tri.prev(iNoAdj);
-    int iOpp2 = Tri.next(iNoAdj);
-    Coordinate v0 = tri.midpoint(iOpp1);
-    Coordinate v1 = tri.midpoint(iOpp2);
-    return line(v0, v1);
-  }
-
-  private LineString[] generateLineAdj3(Tri tri) {
-    /**
-     * Circumcentre doesn't work because it lies outside obtuse triangles.
-     * Centroid is too affected by a side of very different length.
-     * Maybe some centre which is biased towards sides with most similar length?
-     */
-  /*
-    Coordinate cc = Triangle.circumcentre(tri.getCoordinate(0), 
-        tri.getCoordinate(1), tri.getCoordinate(2));
-    if (! Triangle.intersects(tri.getCoordinate(0), 
-        tri.getCoordinate(1), tri.getCoordinate(2), cc)) {
-      return null;
-    }
-    Coordinate v0 = tri.midpoint(0);
-    Coordinate v1 = tri.midpoint(1);
-    Coordinate v2 = tri.midpoint(2);
-    LineString line0 = line(v0, cc.copy());
-    LineString line1 = line(v1, cc.copy());
-    LineString line2 = line(v2, cc.copy());
-    return new LineString[] { line0, line1, line2 };
-  }
-
-
-  private LineString line(Coordinate p0, Coordinate p1) {
-    return geomFact.createLineString(new Coordinate[] { p0, p1 });
-  }
-*/
   
   private static int indexOfAdjacent(Tri tri) {
     for (int i = 0; i < 3; i++) {
@@ -420,7 +361,7 @@ class AxisNode {
   
   private Tri tri;
   /**
-   * Axis points along edges
+   * Axis path points along tri edges
    */
   private Coordinate p0;
   private Coordinate p1;
@@ -434,16 +375,22 @@ class AxisNode {
     return tri;
   }
 
-  public void addEntryPoint(int eAdj, Coordinate p) {
-    switch (eAdj) {
+  public void addPathPoint(int edgeIndex, Coordinate p) {
+    switch (edgeIndex) {
     case 0: p0 = p; return;
     case 1: p1 = p; return;
     case 2: p2 = p; return;
     }
   }
   
-  public Coordinate getEntryPoint(int eAdj) {
-    switch (eAdj) {
+  public Coordinate createPathPoint(int edgeIndex) {
+    Coordinate pt = tri.midpoint(edgeIndex);
+    addPathPoint(edgeIndex, pt);
+    return pt;
+  }
+  
+  public Coordinate getPathPoint(int edgeIndex) {
+    switch (edgeIndex) {
     case 0: return p0;
     case 1: return p1;
     case 2: return p2;
@@ -451,11 +398,11 @@ class AxisNode {
     return null;
   }
   
-  public boolean isPathReady() {
-    return numEntryPoints() >= 2;
+  public boolean isPathComplete() {
+    return numPaths() == 3;
   }
 
-  public int numEntryPoints() {
+  public int numPaths() {
     int num = 0;
     if (p0 != null) num++;
     if (p1 != null) num++;
@@ -463,7 +410,7 @@ class AxisNode {
     return num;
   }
   
-  public int nonEntryEdge() {
+  public int getNonPathEdge() {
     if (p0 == null) return 0;
     if (p1 == null) return 1;
     if (p2 == null) return 2;
@@ -471,7 +418,7 @@ class AxisNode {
   }
   
   public void addInternalLines(List<LineString> lines, GeometryFactory geomFact) {
-    fillMidPoints();
+    //Assert.assertTrue( isPathComplete() );
     Coordinate cc = circumcentre();
     if (intersects(cc)) {
       addInternalLines(cc, -1, lines, geomFact);
@@ -479,12 +426,6 @@ class AxisNode {
     else {
       addInternalLinesToEdge(lines, geomFact);
     }
-  }
-
-  private void fillMidPoints() {
-    if (p0 == null) p0 = tri.midpoint(0);
-    if (p1 == null) p1 = tri.midpoint(1);
-    if (p2 == null) p2 = tri.midpoint(2);
   }
   
   /*
@@ -494,7 +435,6 @@ class AxisNode {
     if (p1 == null) p1 = medialPoint(1, longEdge, cc);
     if (p2 == null) p2 = medialPoint(2, longEdge, cc);
   }
-  
   
   private Coordinate medialPoint(int edge, int longEdge, Coordinate cc) {
     if (edge != longEdge) {
@@ -514,7 +454,7 @@ class AxisNode {
   
   private void addInternalLinesToEdge(List<LineString> lines, GeometryFactory geomFact) {
     int exitEdge = longEdge();
-    Coordinate exitPt = getEntryPoint(exitEdge);
+    Coordinate exitPt = getPathPoint(exitEdge);
     addInternalLines(exitPt, exitEdge, lines, geomFact);
   }
   
