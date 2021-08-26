@@ -20,7 +20,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
-import org.locationtech.jts.triangulatepoly.tri.TriDelaunaySwapper;
+import org.locationtech.jts.triangulatepoly.tri.TriDelaunayImprover;
 import org.locationtech.jts.triangulatepoly.tri.TriangulationBuilder;
 
 public class ConstrainedDelaunayTriangulator {
@@ -79,7 +79,7 @@ public class ConstrainedDelaunayTriangulator {
     
     //long start = System.currentTimeMillis();
     TriangulationBuilder.build(triList);
-    TriDelaunaySwapper.swap(triList);
+    TriDelaunayImprover.improve(triList);
     //System.out.println("swap used: " + (System.currentTimeMillis() - start) + " milliseconds");
 
     return triList;

@@ -27,7 +27,7 @@ import org.locationtech.jts.triangulate.quadedge.TrianglePredicate;
  * @author mdavis
  *
  */
-public class TriDelaunaySwapper {
+public class TriDelaunayImprover {
   
   /**
    * Improves the quality of a triangulation of {@link Tri}s via
@@ -37,21 +37,21 @@ public class TriDelaunaySwapper {
    * 
    * @param triList the list of Tris to swap.
    */
-  public static void swap(List<Tri> triList) {
-    TriDelaunaySwapper swapper = new TriDelaunaySwapper(triList);
-    swapper.swap();
+  public static void improve(List<Tri> triList) {
+    TriDelaunayImprover swapper = new TriDelaunayImprover(triList);
+    swapper.improve();
   }
   
   private static int MAX_ITERATION = 200;
   private List<Tri> triList;
 
-  private TriDelaunaySwapper(List<Tri> triList) {
+  private TriDelaunayImprover(List<Tri> triList) {
     this.triList = triList;
   }
 
-  private void swap() {
+  private void improve() {
     for (int i = 0; i < MAX_ITERATION; i++) {
-      int improveCount = swapAll(triList);
+      int improveCount = improveScan(triList);
       //System.out.println("improve #" + i + " - count = " + improveCount);
       if ( improveCount == 0 ) {
         return;
@@ -67,14 +67,14 @@ public class TriDelaunaySwapper {
    * 
    * @return the number of swaps that were made
    */
-  private int swapAll(List<Tri> triList) {
+  private int improveScan(List<Tri> triList) {
     int swapCount = 0;
     for (int i = 0; i < triList.size() - 1; i++) {
       Tri tri = triList.get(i);
       for (int j = 0; j < 3; j++) {
         Tri neighb = tri.getAdjacent(j);
         //tri.validateAdjacent(j);
-        if ( doSwap(tri, neighb) ) {
+        if ( improveNonDelaunay(tri, neighb) ) {
           // TODO: improve performance by only rescanning tris adjacent to swaps?
           swapCount++;
         }
@@ -90,7 +90,7 @@ public class TriDelaunaySwapper {
    * @param tri1 a Tri
    * @return true if the triangles were swapped
    */
-  private boolean doSwap(Tri tri0, Tri tri1) {
+  private boolean improveNonDelaunay(Tri tri0, Tri tri1) {
     if ( tri0 == null || tri1 == null ) {
       return false;
     }
@@ -108,18 +108,19 @@ public class TriDelaunaySwapper {
     /**
      * The candidate new edge is opp0 - opp1. 
      * Check if it is inside the quadrilateral formed by the two triangles. 
-     * This is the case iff the quadrilateral is convex.
+     * This is the case if the quadrilateral is convex.
      */
-    if ( ! isConvex(adj0, opp1, adj1, opp0) ) {
+    if ( ! isConvex(adj0, adj1, opp0, opp1) ) {
       return false;
     }
+    
     /**
      * The candidate edge is inside the quadrilateral. Check to see if the flipping
-     * criteria is met. The flipping criteria is to flip iff the two triangles are
+     * criteria is met. The flipping criteria is to flip if the two triangles are
      * not Delaunay (i.e. one of the opposite vertices is in the circumcircle of the
      * other triangle).
      */
-    if ( ! isDelaunay(opp0, adj0, adj1, opp1) ) {
+    if ( ! isDelaunay(adj0, adj1, opp0, opp1) ) {
       //tri0.flip(tri1);
       //-- already have index and vertex data so use it
       tri0.swap(tri1, index0, index1, adj0, adj1, opp0, opp1);
@@ -129,29 +130,54 @@ public class TriDelaunaySwapper {
   }
 
   /**
-   * Tests if a quadrilateral is convex.
+   * Tests if the quadrilateral formed by two adjacent triangles is convex.
+   * opp0-adj0-adj1 and opp1-adj1-adj0 are the triangle corners 
+   * and hence are known to be convex.
+   * The quadrilateral is convex if the other corners opp0-adj0-opp1
+   * and opp1-adj1-opp0 have the same orientation (since at least one must be convex).
    * 
-   * @param p0 a vertex of the quadrilateral
-   * @param p1 a vertex of the quadrilateral
-   * @param p2 a vertex of the quadrilateral
-   * @param p3 a vertex of the quadrilateral
+   * @param adj0 adjacent edge vertex 0
+   * @param adj1 adjacent edge vertex 1
+   * @param opp0 corner vertex of triangle 0
+   * @param opp1 corner vertex of triangle 1
    * @return true if the quadrilateral is convex
    */
-  private static boolean isConvex(Coordinate p0, Coordinate p1, Coordinate p2, Coordinate p3) {
-    int dir0 = Orientation.index(p0, p1, p2);
-    int dir1 = Orientation.index(p1, p2, p3);
+  private static boolean isConvex(Coordinate adj0, Coordinate adj1, Coordinate opp0, Coordinate opp1) {
+    int dir0 = Orientation.index(opp0, adj0, opp1);
+    int dir1 = Orientation.index(opp1, adj1, opp0);
     boolean isConvex = dir0 == dir1;
     return isConvex;
   }  
 
-  private static boolean isDelaunay(Coordinate c0, Coordinate a0, Coordinate a1, Coordinate c1) {
-    return ! (isInCircle(c0, a0, a1, c1) || isInCircle(c1, a1, a0, c0));
+  /**
+   * Tests if either of a pair of adjacent triangles satisfy the Delaunay condition.
+   * The triangles are opp0-adj0-adj1 and opp1-adj1-adj0.
+   * The Delaunay condition is not met if one opposite vertex 
+   * lies is in the circumcircle of the other triangle.
+   * 
+   * @param adj0 adjacent edge vertex 0
+   * @param adj1 adjacent edge vertex 1
+   * @param opp0 corner vertex of triangle 0
+   * @param opp1 corner vertex of triangle 1
+   * @return true if the triangles are Delaunay
+   */
+  private static boolean isDelaunay(Coordinate adj0, Coordinate adj1, Coordinate opp0, Coordinate opp1) {
+    if (isInCircle(adj0, adj1, opp0, opp1)) return false; 
+    if (isInCircle(adj1, adj0, opp1, opp0)) return false;
+    return true;
   }
 
+  /**
+   * Tests whether a point p is in the circumcircle of a triangle abc
+   * (oriented clockwise).
+   * @param a a vertex of the triangle
+   * @param b a vertex of the triangle
+   * @param c a vertex of the triangle
+   * @param p the point
+   * 
+   * @return true if the point is in the circumcircle
+   */
   private static boolean isInCircle(Coordinate a, Coordinate b, Coordinate c, Coordinate p) {
-    if ( Triangle.isCCW(a, b, c) ) {
-      return TrianglePredicate.isInCircleRobust(a, b, c, p);
-    }
     return TrianglePredicate.isInCircleRobust(a, c, b, p);
   }
 
