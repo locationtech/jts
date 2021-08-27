@@ -51,18 +51,16 @@ public class ConstrainedDelaunayTriangulator {
 
   private Geometry compute() {
     List<Polygon> polys = PolygonExtracter.getPolygons(inputGeom);
-    List<Polygon> triPolys = new ArrayList<Polygon>();
+    List<Tri> triList = new ArrayList<Tri>();
     for (Polygon poly : polys) {
-      List<Tri> triList = triangulatePolygon(poly);
-      for (Tri tri: triList) {
-        triPolys.add(tri.toPolygon(geomFact));
-      }
+      List<Tri> polyTriList = triangulatePolygon(poly);
+      triList.addAll(polyTriList);
     }
-    return geomFact.createGeometryCollection(GeometryFactory.toGeometryArray(triPolys));
+    return Tri.toGeometry(triList, geomFact);
   }
  
   /**
-   * Computes the triangulation of a single polygon
+   * Computes the triangulation of a single polygon.
    * 
    * @param poly the input polygon
    * @return GeometryCollection of triangular polygons

@@ -32,15 +32,15 @@ import org.locationtech.jts.util.Assert;
  *
  */
 public class Tri {
-
-  public static Tri create(Coordinate p0, Coordinate p1, Coordinate p2) {
-    return new Tri(p0, p1, p2);
-  }
   
-  public static Tri create(Coordinate[] pts) {
-    return new Tri(pts[0], pts[1], pts[2]);
-  }
-  
+  /**
+   * Creates a {@link GeometryCollection} of {@link Polygon}s
+   * representing the triangles in a list.
+   * 
+   * @param triList a list of Tris
+   * @param geomFact the GeometryFactory to use
+   * @return the polygons for the triangles
+   */
   public static Geometry toGeometry(List<Tri> triList, GeometryFactory geomFact) {
     Geometry[] geoms = new Geometry[triList.size()];
     for (int i = 0; i < triList.size(); i++) {
@@ -53,6 +53,14 @@ public class Tri {
     for (Tri tri : triList) {
       tri.validate();
     }
+  }
+  
+  public static Tri create(Coordinate p0, Coordinate p1, Coordinate p2) {
+    return new Tri(p0, p1, p2);
+  }
+  
+  public static Tri create(Coordinate[] pts) {
+    return new Tri(pts[0], pts[1], pts[2]);
   }
   
   private Coordinate p0;

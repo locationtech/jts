@@ -44,14 +44,12 @@ public class PolygonTriangulator {
   private Geometry compute() {
     @SuppressWarnings("unchecked")
     List<Polygon> polys = PolygonExtracter.getPolygons(inputGeom);
-    List<Polygon> triPolys = new ArrayList<Polygon>();
+    List<Tri> triList = new ArrayList<Tri>();
     for (Polygon poly : polys) {
-      List<Tri> triList = triangulatePolygon(poly);
-      for (Tri tri: triList) {
-        triPolys.add(tri.toPolygon(geomFact));
-      }
+      List<Tri> polyTriList = triangulatePolygon(poly);
+      triList.addAll(polyTriList);
     }
-    return geomFact.createGeometryCollection(GeometryFactory.toGeometryArray(triPolys));
+    return Tri.toGeometry(triList, geomFact);
   }
  
   /**

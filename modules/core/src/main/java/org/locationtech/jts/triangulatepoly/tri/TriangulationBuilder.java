@@ -17,7 +17,8 @@ import java.util.List;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * Builds a triangulation from a set of {@link Tri}s.
+ * Builds a triangulation from a set of {@link Tri}s
+ * by linking adjacent Tris.
  * 
  * @author mdavis
  *
