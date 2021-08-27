@@ -37,7 +37,7 @@ public class ApproximateMedialAxisTest extends GeometryTestCase {
   
   private void checkTree(String wkt, String wktExpected) {
     Geometry geom = read(wkt);
-    Geometry actual = ApproximateMedialAxis.computeAxis(geom);
+    Geometry actual = ApproximateMedialAxis.medialAxis(geom);
     Geometry expected = read(wktExpected);
     //checkEqual(expected, actual);
   }

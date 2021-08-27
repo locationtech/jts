@@ -29,19 +29,29 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
 
+/**
+ * Constructs an approximation to the medial axis of a Polygon, 
+ * as a set of linestrings representing the medial axis graph.
+ * 
+ * @author mdavis
+ *
+ */
 public class ApproximateMedialAxis {
 
-  public static Geometry computeAxis(Geometry geom) {
+  public static Geometry medialAxis(Geometry geom) {
     ApproximateMedialAxis tt = new ApproximateMedialAxis((Polygon) geom);
     return tt.compute();
   }
   
+  /*
+   //-- Testing only
   public static Geometry axisPointSegment(Geometry pt, Geometry seg) {
     Coordinate p = pt.getCoordinate();
     Coordinate[] pts = seg.getCoordinates();
     Coordinate axisPt = medialAxisPoint(p, pts[0], pts[1]);
     return pt.getFactory().createPoint(axisPt);
   }
+  */
   
   private Polygon inputPolygon;
   private GeometryFactory geomFact;
@@ -364,6 +374,7 @@ class AxisNode {
   private Coordinate p0;
   private Coordinate p1;
   private Coordinate p2;
+  private boolean isLinesAdded = false;
   
   public AxisNode(Tri tri) {
     this.tri = tri;
@@ -417,6 +428,7 @@ class AxisNode {
   
   public void addInternalLines(List<LineString> lines, GeometryFactory geomFact) {
     //Assert.assertTrue( isPathComplete() );
+    if (isLinesAdded) return;
     Coordinate cc = circumcentre();
     if (intersects(cc)) {
       addInternalLines(cc, -1, lines, geomFact);
@@ -424,6 +436,7 @@ class AxisNode {
     else {
       addInternalLinesToEdge(lines, geomFact);
     }
+    isLinesAdded = true;
   }
   
   /*
@@ -451,9 +464,9 @@ class AxisNode {
 */
   
   private void addInternalLinesToEdge(List<LineString> lines, GeometryFactory geomFact) {
-    int exitEdge = longEdge();
-    Coordinate exitPt = getPathPoint(exitEdge);
-    addInternalLines(exitPt, exitEdge, lines, geomFact);
+    int nodeEdge = longEdge();
+    Coordinate nodePt = getPathPoint(nodeEdge);
+    addInternalLines(nodePt, nodeEdge, lines, geomFact);
   }
   
   private void addInternalLines(Coordinate p, int skipEdge, List<LineString> lines, GeometryFactory geomFact) {
