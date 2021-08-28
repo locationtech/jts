@@ -26,10 +26,10 @@ import org.locationtech.jts.triangulatepoly.tri.TriangulationBuilder;
 public class ConstrainedDelaunayTriangulator {
   
   /**
-   * Computes a Constrained Triangulation of the polygon elements in a geometry.
+   * Computes a Constrained Delaunay Triangulation of the polygon elements in a geometry.
    * 
    * @param geom the input geometry
-   * @return a collection of the computed triangles
+   * @return a GeometryCollection of the computed triangle polygons
    */
   public static Geometry triangulate(Geometry geom) {
     ConstrainedDelaunayTriangulator cdt = new ConstrainedDelaunayTriangulator(geom);
