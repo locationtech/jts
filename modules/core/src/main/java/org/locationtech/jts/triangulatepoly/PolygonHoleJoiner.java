@@ -22,11 +22,14 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.prep.PreparedGeometry;
-import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
+import org.locationtech.jts.noding.BasicSegmentString;
+import org.locationtech.jts.noding.MCIndexSegmentSetMutualIntersector;
+import org.locationtech.jts.noding.SegmentIntersectionDetector;
+import org.locationtech.jts.noding.SegmentSetMutualIntersector;
+import org.locationtech.jts.noding.SegmentString;
+import org.locationtech.jts.noding.SegmentStringUtil;
 
 /**
  * Transforms a polygon with holes into a single self-touching ring
@@ -49,17 +52,18 @@ public class PolygonHoleJoiner {
   private static final double EPS = 1.0E-4;
   
   private final GeometryFactory geomFact;
-  private PreparedGeometry inputPrepGeom;
   private List<Coordinate> shellCoords;
   // orderedCoords a copy of shellCoords for sort purpose
   private TreeSet<Coordinate> orderedCoords;
   // Key: starting end of the cut; Value: list of the other end of the cut
   private HashMap<Coordinate, ArrayList<Coordinate>> cutMap;
+  private SegmentSetMutualIntersector polygonIntersector;
 
   private Polygon inputPolygon;
 
   public PolygonHoleJoiner(Polygon inputPolygon) {
     this.inputPolygon = inputPolygon;
+    polygonIntersector = createPolygonIntersector(inputPolygon);
     geomFact = inputPolygon.getFactory();
   }
 
@@ -72,8 +76,6 @@ public class PolygonHoleJoiner {
     //--- copy the input polygon shell coords
     shellCoords = ringCoordinates(inputPolygon.getExteriorRing());
     if ( inputPolygon.getNumInteriorRing() != 0 ) {
-      PreparedGeometryFactory pgFact = new PreparedGeometryFactory();
-      inputPrepGeom = pgFact.create(inputPolygon);
       joinHoles();
     }
     return shellCoords.toArray(new Coordinate[0]);
@@ -224,13 +226,31 @@ public class PolygonHoleJoiner {
    * @return true if the line lies inside the polygon
    */
   private boolean isJoinable(Coordinate holeCoord, Coordinate shellCoord) {
+    boolean isJoinable = isInsidePolyogn(holeCoord, shellCoord);
+    /*
     LineString join = geomFact.createLineString(new Coordinate[] { holeCoord, shellCoord });
-    if ( inputPrepGeom.covers(join) ) {
-      return true;
+    boolean isJoinableSlow = inputPolygon.covers(join)
+    if (isJoinableSlow != isJoinable) {
+      System.out.println(WKTWriter.toLineString(holeCoord, shellCoord));
     }
-    return false;
+    //Assert.isTrue(isJoinableSlow == isJoinable);
+    */
+    return isJoinable;
   }
-
+  
+  public boolean isInsidePolyogn(Coordinate p0, Coordinate p1) {
+    SegmentString segString = new BasicSegmentString(
+        new Coordinate[] { p0, p1 }, null);
+    List<SegmentString> segStrings = new ArrayList<SegmentString>();
+    segStrings.add(segString);
+    
+    SegmentIntersectionDetector segInt = new SegmentIntersectionDetector();
+    segInt.setFindProper(true);
+    polygonIntersector.process(segStrings, segInt);
+    
+    return ! segInt.hasProperIntersection();
+  }
+  
   /**
    * Add hole at proper position in shell coordinate list.
    * Also adds hole points to ordered coordinates.
@@ -285,6 +305,11 @@ public class PolygonHoleJoiner {
     }
     return list;
   }
+    
+  private SegmentSetMutualIntersector createPolygonIntersector(Polygon polygon) {
+    List<SegmentString> polySegStrings = SegmentStringUtil.extractSegmentStrings(polygon);
+    return new MCIndexSegmentSetMutualIntersector(polySegStrings);
+  }
   
   /**
    * 
@@ -298,4 +323,5 @@ public class PolygonHoleJoiner {
       return e1.compareTo(e2);
     }
   }
+      
 }
