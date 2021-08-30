@@ -111,7 +111,7 @@ public class Tri {
   }
   
   /**
-   * Swap triOld with triNew
+   * Replace triOld with triNew
    * 
    * @param triOld
    * @param triNew
@@ -143,7 +143,7 @@ public class Tri {
     return tt0;
   }
   
-  public void swap(Tri tri) {
+  public void flip(Tri tri) {
     int index0 = getIndex(tri);
     int index1 = tri.getIndex(this);
 
@@ -152,11 +152,11 @@ public class Tri {
     Coordinate opp0 = getCoordinate(oppVertex(index0));
     Coordinate opp1 = tri.getCoordinate(oppVertex(index1));
     
-    swap(tri, index0, index1, adj0, adj1, opp0, opp1);
+    flip(tri, index0, index1, adj0, adj1, opp0, opp1);
   }
   
-  public void swap(Tri tri, int index0, int index1, Coordinate adj0, Coordinate adj1, Coordinate opp0, Coordinate opp1) {
-    //System.out.println("Swapping: " + this + " -> " + tri);
+  public void flip(Tri tri, int index0, int index1, Coordinate adj0, Coordinate adj1, Coordinate opp0, Coordinate opp1) {
+    //System.out.println("Flipping: " + this + " -> " + tri);
     
     //validate();
     //tri.validate();

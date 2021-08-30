@@ -19,7 +19,7 @@ import org.locationtech.jts.triangulate.quadedge.TrianglePredicate;
 
 /**
  * Improves the quality of a triangulation of {@link Tri}s via
- * iterated Delaunay swapping.
+ * iterated Delaunay flipping.
  * This produces the Constrained Delaunay Triangulation
  * with the constraints being the boundary of the input triangulation.
  * 
@@ -30,15 +30,15 @@ public class TriDelaunayImprover {
   
   /**
    * Improves the quality of a triangulation of {@link Tri}s via
-   * iterated Delaunay swapping.
+   * iterated Delaunay flipping.
    * The Tris are assumed to be linked into a Triangulation
    * (e.g. via {@link TriangulationBuilder}).
    * 
-   * @param triList the list of Tris to swap.
+   * @param triList the list of Tris to flip.
    */
   public static void improve(List<Tri> triList) {
-    TriDelaunayImprover swapper = new TriDelaunayImprover(triList);
-    swapper.improve();
+    TriDelaunayImprover improver = new TriDelaunayImprover(triList);
+    improver.improve();
   }
   
   private static int MAX_ITERATION = 200;
@@ -60,11 +60,11 @@ public class TriDelaunayImprover {
 
   /**
    * Improves a triangulation by examining pairs of adjacent triangles
-   * (forming a quadrilateral) and testing if swapping the diagonal of
+   * (forming a quadrilateral) and testing if flipping the diagonal of
    * the quadrilateral would produce two new triangles with larger minimum
    * interior angles.
    * 
-   * @return the number of swaps that were made
+   * @return the number of flips that were made
    */
   private int improveScan(List<Tri> triList) {
     int improveCount = 0;
@@ -74,7 +74,7 @@ public class TriDelaunayImprover {
         Tri neighb = tri.getAdjacent(j);
         //tri.validateAdjacent(j);
         if ( improveNonDelaunay(tri, neighb) ) {
-          // TODO: improve performance by only rescanning tris adjacent to swaps?
+          // TODO: improve performance by only rescanning tris adjacent to flips?
           improveCount++;
         }
       }
@@ -83,11 +83,11 @@ public class TriDelaunayImprover {
   }
 
   /**
-   * Does a swap of two Tris if the Delaunay condition is not met.
+   * Does a flip of the common edge of two Tris if the Delaunay condition is not met.
    * 
    * @param tri0 a Tri
    * @param tri1 a Tri
-   * @return true if the triangles were swapped
+   * @return true if the triangles were flipped
    */
   private boolean improveNonDelaunay(Tri tri0, Tri tri1) {
     if ( tri0 == null || tri1 == null ) {
@@ -120,9 +120,9 @@ public class TriDelaunayImprover {
      * other triangle).
      */
     if ( ! isDelaunay(adj0, adj1, opp0, opp1) ) {
-      //tri0.flip(tri1);
+      tri0.flip(tri1);
       //-- already have index and vertex data so use it
-      tri0.swap(tri1, index0, index1, adj0, adj1, opp0, opp1);
+      //tri0.flip(tri1, index0, index1, adj0, adj1, opp0, opp1);
       return true;
     }
     return false;
