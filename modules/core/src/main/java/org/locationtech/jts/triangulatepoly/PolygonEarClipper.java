@@ -137,9 +137,8 @@ class PolygonEarClipper {
       }
       cornerCount++;
       if ( cornerCount > 2 * vertexSize ) {
+        //System.out.println(toGeometry());
         throw new IllegalStateException("Unable to find a valid ear");
-        //System.out.println(WKTWriter.toLineString(corner));
-        //return triList;
       }
       if ( isValidEar(cornerCandidate[1], corner) ) {
         triList.add(Tri.create(corner));

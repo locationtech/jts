@@ -158,7 +158,7 @@ public class ApproximateMedialAxis {
     
     //--- now are only dealing with 2-Adj triangles
     int eAdj = indexOfAdjacentOther(tri, edgeEntry);
-    if (isTube(tri, eAdj)) {
+    if (false && isTube(tri, eAdj)) {
      /**
       * This triangle and the next one form a "tube"
       * so use both to construct the medial line.
@@ -204,7 +204,13 @@ public class ApproximateMedialAxis {
       p0 = tri.getCoordinate(Tri.next(eBdy));
       p1 = tri.getCoordinate(eBdy);
     }
-    return medialAxisPoint(pt, p0, p1);
+    /**
+     * Midpoint produces a straighter line in nearly-parallel corridors, 
+     * but is more see-sawed elsewhere. 
+     */
+    
+    return tri.midpoint(eExit);
+    //return medialAxisPoint(pt, p0, p1);
   }
 
   /**
