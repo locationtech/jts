@@ -74,10 +74,15 @@ The XML test format can be executed using the JTS TestRunner, or imported into t
 
 ### External QA tools
 
-* LGTM CodeQL analysis: 
-  * [Alerts report](https://lgtm.com/projects/g/locationtech/jts/alerts/?mode=tree)
-  * [![Total alerts](https://img.shields.io/lgtm/alerts/g/locationtech/jts.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/locationtech/jts/alerts/) 
-  * [![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/locationtech/jts.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/locationtech/jts/context:java)
+#### LGTM CodeQL analysis
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/locationtech/jts.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/locationtech/jts/alerts/) 
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/locationtech/jts.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/locationtech/jts/context:java)
+* [Alerts report](https://lgtm.com/projects/g/locationtech/jts/alerts/?mode=tree)
+
+
+#### ABI Laboratory Tracker
+* [Binary compatibility report for JTS core](https://abi-laboratory.pro/?view=timeline&lang=java&l=jts-core)
+* [Binary compatibility for JTS 1.15 and before](https://abi-laboratory.pro/index.php?view=timeline&lang=java&l=jts)
 
 ## Javadoc
 
