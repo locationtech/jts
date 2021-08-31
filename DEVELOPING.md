@@ -38,7 +38,7 @@ To skip QA checks:
 
         mvn verify -Dpmd.skip=true -Dcheckstyle.skip=true
 
-Errors are logged, to browse errors use:
+To browse QA errors:
        
         mvn site:site
         open modules/core/target/site/index.html
@@ -46,31 +46,32 @@ Errors are logged, to browse errors use:
 ### JUnit tests
 
 JTS aims for 100% code coverage for unit tests.
-
-Unit tests are written in Java and are used for verifying API code, internal data structures, and ancillary algorithms.
+Unit tests are written in Java using JUnit.
+They are used for verifying API code, internal data structures, and ancillary algorithms.
 
 This allows testing all parts of the codebase, and can provide richer error detection and reporting.
 However, the tests are not as readable or portable as the XML tests.
 
-* To run the unit tests in a module (`jts-core`):
+* Run the unit tests in a module (e.g. `jts-core`):
 
         mvn test -pl modules/core
 
 ### XML Tests
 
-JTS provides a code-independent, declarative XML-based format for expressing geometric functional tests.
+JTS provides a simple language-independent, declarative XML-based format for expressing geometric functional tests.
 
 This format has the following advantages:
 
-* allows encoding large geometries
-* provides geometric test cases in a reusable way
-* easily consumed by tools such as the JTS TestBuilder or by other geometry libraries (e.g. GEOS)
+* allows encoding large geometries more easily
+* provides geometric test cases in a reusable, language-independent way
+* easily consumed by tools such as the **JTS TestBuilder** 
+* easily used by JTS ports (e.g. [GEOS](https://trac.osgeo.org/geos)) or other geometry libraries 
 * allows geometric tests to be used with other operation implementations, for testing or comparison purposes
 
-This format should be used for tests which involve large geometries, or which
+This format should be used for tests which
 express fundamental geometric semantics of the JTS library.
 
-The XML test format can be executed using the JTS TestRunner, or imported into the JTS TestBuilder.
+The XML test format can be executed using the **JTS TestRunner**, or imported into the **JTS TestBuilder**.
 
 ### External QA tools
 
