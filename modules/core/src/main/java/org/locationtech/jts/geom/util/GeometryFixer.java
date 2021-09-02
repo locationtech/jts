@@ -26,6 +26,8 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.prep.PreparedGeometry;
+import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.overlayng.OverlayNG;
 import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
@@ -45,18 +47,23 @@ import org.locationtech.jts.operation.overlayng.OverlayNGRobust;
  * <li>Empty atomic geometries are valid and are returned unchanged</li>
  * <li>Empty elements are removed from collections</li>
  * <li><code>Point</code>: keep valid coordinate, or EMPTY</li>
- * <li><code>LineString</code>: fix coordinate list</li>
- * <li><code>LinearRing</code>: fix coordinate list, return as valid ring or else <code>LineString</code></li>
+ * <li><code>LineString</code>: coordinates are fixed</li>
+ * <li><code>LinearRing</code>: coordinates are fixed.  Keep valid ring, or else convert into <code>LineString</code></li>
  * <li><code>Polygon</code>: transform into a valid polygon, 
- * preserving as much of the extent and vertices as possible</li>
- * <li><code>MultiPolygon</code>: fix each polygon, 
- * then ensure result is non-overlapping (via union)</li>
- * <li><code>GeometryCollection</code>: fix each element</li>
+ * preserving as much of the extent and vertices as possible.
+ * <ul>
+ *   <li>Rings are fixed to ensure they are valid</li>  
+ *   <li>Holes intersecting the shell are subtracted from the shell</li>
+ *   <li>Holes outside the shell are converted into polygons</li>
+ * </ul></li>
+ * <li><code>MultiPolygon</code>: each polygon is fixed, 
+ * then result made non-overlapping (via union)</li>
+ * <li><code>GeometryCollection</code>: each element is fixed</li>
  * <li>Collapsed lines and polygons are handled as follows,
  * depending on the <code>keepCollapsed</code> setting:
  * <ul>
- * <li><code>false</code>: (default) collapses are converted to empty geometries</li>
- * <li><code>true</code>: collapses are converted to a valid geometry of lower dimension</li>
+ *   <li><code>false</code>: (default) collapses are converted to empty geometries</li>
+ *   <li><code>true</code>: collapses are converted to a valid geometry of lower dimension</li>
  * </ul>
  * </li>
  * </ol>
@@ -263,25 +270,85 @@ public class GeometryFixer {
       if (isKeepCollapsed) {
         return fixLineString(shell);
       }
-      //-- if not allowing collapses then return empty polygon
+      //--- if not allowing collapses then return empty polygon
       return null;      
     }
-    // if no holes then done
+    //--- if no holes then done
     if (geom.getNumInteriorRing() == 0) {
       return fixShell;
     }
-    Geometry fixHoles = fixHoles(geom);
-    Geometry result = removeHoles(fixShell, fixHoles);
+    
+    //--- fix holes, classify, and construct shell-true holes
+    List<Geometry> holesFixed = fixHoles(geom);
+    List<Geometry> holes = new ArrayList<Geometry>();
+    List<Geometry> shells = new ArrayList<Geometry>();
+    classifyHoles(fixShell, holesFixed, holes, shells);
+    Geometry polyWithHoles = difference(fixShell, holes);
+    if (shells.size() == 0) {
+      return polyWithHoles;
+    }
+    
+    //--- if some holes converted to shells, union all shells
+    shells.add(polyWithHoles);
+    Geometry result = union(shells);
     return result;
   }
 
-  private Geometry removeHoles(Geometry shell, Geometry holes) {
-    if (holes == null) 
-      return shell;
-    return OverlayNGRobust.overlay(shell, holes, OverlayNG.DIFFERENCE);
+  private List<Geometry> fixHoles(Polygon geom) {
+    List<Geometry> holes = new ArrayList<Geometry>();
+    for (int i = 0; i < geom.getNumInteriorRing(); i++) {
+      Geometry holeRep = fixRing(geom.getInteriorRingN(i));
+      if (holeRep != null) {
+        holes.add(holeRep);
+      }
+    }
+    return holes;
+  }
+  
+  private void classifyHoles(Geometry shell, List<Geometry> holesFixed, List<Geometry> holes, List<Geometry> shells) {
+    PreparedGeometry shellPrep = PreparedGeometryFactory.prepare(shell);
+    for (Geometry hole : holesFixed) {
+      if (shellPrep.intersects(hole)) {
+        holes.add(hole);
+      }
+      else {
+        shells.add(hole);
+      }
+    }
   }
 
-  private Geometry fixHoles(Polygon geom) {
+  /**
+   * Subtracts a list of polygonal geometries from a polygonal geometry.
+   * 
+   * @param shell polygonal geometry for shell
+   * @param holes polygonal geometries to subtract
+   * @return the result geometry
+   */
+  private Geometry difference(Geometry shell, List<Geometry> holes) {
+    if (holes == null || holes.size() == 0) 
+      return shell;
+    Geometry holesUnion = union(holes);
+    return OverlayNGRobust.overlay(shell, holesUnion, OverlayNG.DIFFERENCE);
+  }
+
+  /**
+   * Unions a list of polygonal geometries.
+   * Optimizes case of zero or one input geometries.
+   * Requires that the inputs are net new objects.
+   * 
+   * @param polys the polygonal geometries to union
+   * @return the union of the inputs
+   */
+  private Geometry union(List<Geometry> polys) {
+    if (polys.size() == 0) return factory.createPolygon();
+    if (polys.size() == 1) {
+      return polys.get(0);
+    }
+    // TODO: replace with holes.union() once OverlayNG is the default
+    return OverlayNGRobust.union(polys);
+  }
+
+  private Geometry OLDfixHoles(Polygon geom) {
     List<Geometry> holes = new ArrayList<Geometry>();
     for (int i = 0; i < geom.getNumInteriorRing(); i++) {
       Geometry holeRep = fixRing(geom.getInteriorRingN(i));
@@ -300,6 +367,7 @@ public class GeometryFixer {
 
   private Geometry fixRing(LinearRing ring) {
     //-- always execute fix, since it may remove repeated/invalid coords etc
+    // TODO: would it be faster to check ring validity first?
     Geometry poly = factory.createPolygon(ring);
     return BufferOp.bufferByZero(poly, true);
   }
@@ -317,7 +385,7 @@ public class GeometryFixer {
       return factory.createMultiPolygon();
     }
     // TODO: replace with polys.union() once OverlayNG is the default
-    Geometry result = OverlayNGRobust.union(polys);
+    Geometry result = union(polys);
     return result;    
   }
 
