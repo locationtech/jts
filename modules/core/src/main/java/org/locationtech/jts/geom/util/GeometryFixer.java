@@ -299,9 +299,8 @@ public class GeometryFixer {
   }
 
   private Geometry fixRing(LinearRing ring) {
-    //-- always execute fix, since it may remove repeated coords etc
+    //-- always execute fix, since it may remove repeated/invalid coords etc
     Geometry poly = factory.createPolygon(ring);
-    // TOD: check if buffer removes invalid coordinates
     return BufferOp.bufferByZero(poly, true);
   }
 
