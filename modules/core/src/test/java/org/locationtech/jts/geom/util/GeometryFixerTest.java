@@ -253,6 +253,11 @@ public class GeometryFixerTest extends GeometryTestCase {
         "POLYGON ((10 10, 10 90, 90 90, 90 10, 10 10))");
   }
   
+  public void testPolygonHoleOverlapAndOutsideOverlap() {
+    checkFix("POLYGON ((50 90, 80 90, 80 10, 50 10, 50 90), (70 80, 90 80, 90 20, 70 20, 70 80), (40 80, 40 50, 0 50, 0 80, 40 80), (30 40, 10 40, 10 60, 30 60, 30 40), (60 70, 80 70, 80 30, 60 30, 60 70))",
+        "MULTIPOLYGON (((10 40, 10 50, 0 50, 0 80, 40 80, 40 50, 30 50, 30 40, 10 40)), ((70 80, 70 70, 60 70, 60 30, 70 30, 70 20, 80 20, 80 10, 50 10, 50 90, 80 90, 80 80, 70 80)))");
+  }
+  
   //----------------------------------------
 
   public void testMultiPolygonEmpty() {
