@@ -29,7 +29,13 @@ import org.locationtech.jts.triangulatepoly.tri.Tri;
  * The polygon is provided as a closed list of vertices
  * defining its boundary.
  * <p>
- * The polygon boundary must not self-cross, but may self-touch and have coincident edges.
+ * The polygon boundary must not self-cross, 
+ * but may self-touch at points or along an edge.
+ * It may also contain repeated points, which are treated as a single vertex.
+ * By default every vertex is triangulated, 
+ * including ones which are "flat" (the adjacent segments are collinear).  
+ * These can be removed by setting {@link #setSkipFlatCorners(boolean)}
+ * <p>
  * Polygons with holes can be triangulated by preparing them 
  * with {@link PolygonHoleJoiner}.
  * 
@@ -45,6 +51,8 @@ class PolygonEarClipper {
     return clipper.compute();
   }
   
+  private boolean isFlatCornersSkipped = false;
+
   /**
    * The polygon vertices are maintain in CW order. 
    * Thus for convex
@@ -65,8 +73,6 @@ class PolygonEarClipper {
    * The polyShell vertices are contiguous, so are suitable for an SPRtree.
    */
   private VertexSequencePackedRtree vertexCoordIndex;
-
-  private boolean isCollinearVerticesSkipped = false;
 
   public PolygonEarClipper(Coordinate[] polyShell) {
     this.vertex = polyShell;
@@ -94,21 +100,23 @@ class PolygonEarClipper {
   }
 
   /**
-   * Sets whether flat ears formed by collinear adjacent line segments
-   * are skipped in the triangulation.
-   * This reduces the number of triangles in the output.
+   * Sets whether flat corners formed by collinear adjacent line segments
+   * are included in the triangulation.
+   * Skipping flat corners reduces the number of triangles in the output.
    * However, it produces a triangulation which does not include
-   * all input vertices.  This may be an issue for client processes
+   * all input vertices.  This may be undesirable for downstream processes
    * (such as computing a Constrained Delaunay Triangulation for 
    * purposes of computing the medial axis).
    * <p>
    * The default is to include all vertices in the result triangulation.  
    * This still produces a valid triangulation, with no zero-area triangles.
+   * <p>
+   * Note that repeated vertices are always skipped.
    * 
-   * @param isSkipFlatEars whether to skip collinear vertices
+   * @param isFlatCornersSkipped whether to skip collinear vertices
    */
-  public void setSkipCollinearVertices(boolean isCollinearVerticesSkipped) {
-    this.isCollinearVerticesSkipped  = isCollinearVerticesSkipped;
+  public void setSkipFlatCorners(boolean isFlatCornersSkipped) {
+    this.isFlatCornersSkipped  = isFlatCornersSkipped;
   }
   
   public List<Tri> compute() {
@@ -121,13 +129,13 @@ class PolygonEarClipper {
       //--- find next convex corner, which is the next candidate ear
       //Polygon remainder = toGeometry();
       while (! isConvex(corner)) {
-        // delete the corner if it is flat
-        if (isCollinearVerticesSkipped) {
-          if (isFlat(corner) ) {
-            removeCorner();
-            if ( vertexSize < 3 ) {
-              return triList;
-            }
+        // remove the corner if it is flat or a repeated point        
+        boolean isCornerRemoved = hasRepeatedPoint(corner)
+            || (isFlatCornersSkipped && isFlat(corner));
+        if (isCornerRemoved) {
+          removeCorner();
+          if ( vertexSize < 3 ) {
+            return triList;
           }
         }
         nextCorner(true, corner);
@@ -155,6 +163,8 @@ class PolygonEarClipper {
     }
   }
   
+
+
   private boolean isValidEar(int cornerIndex, Coordinate[] corner) {
     int dupApexIndex = findIntersectingVertex(cornerIndex, corner);
     //--- no intersections found
@@ -334,6 +344,10 @@ class PolygonEarClipper {
   
   private static boolean isFlat(Coordinate[] pts) {
     return Orientation.COLLINEAR == Orientation.index(pts[0], pts[1], pts[2]);
+  }
+  
+  private static boolean hasRepeatedPoint(Coordinate[] pts) {
+    return pts[1].equals2D(pts[0]) || pts[1].equals2D(pts[2]);
   }
   
   public Polygon toGeometry() {
