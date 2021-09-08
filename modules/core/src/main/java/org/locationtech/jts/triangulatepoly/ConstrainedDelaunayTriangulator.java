@@ -23,10 +23,19 @@ import org.locationtech.jts.triangulatepoly.tri.Tri;
 import org.locationtech.jts.triangulatepoly.tri.TriDelaunayImprover;
 import org.locationtech.jts.triangulatepoly.tri.TriangulationBuilder;
 
+/**
+ * Computes the Constrained Delaunay Triangulation of polygons.
+ * The Constrained Delaunay Triangulation of a polygon is a set of triangles
+ * covering the polygon, with the maximum total interior angle over all 
+ * possible triangulations.  It provides the "best quality" triangulation
+ * of the polygon.
+ * <p>
+ * Holes are supported.
+ */
 public class ConstrainedDelaunayTriangulator {
   
   /**
-   * Computes a Constrained Delaunay Triangulation of the polygon elements in a geometry.
+   * Computes the Constrained Delaunay Triangulation of each polygon element in a geometry.
    * 
    * @param geom the input geometry
    * @return a GeometryCollection of the computed triangle polygons
@@ -60,10 +69,11 @@ public class ConstrainedDelaunayTriangulator {
   }
  
   /**
-   * Computes the triangulation of a single polygon.
+   * Computes the triangulation of a single polygon
+   * and returns it as a list of {@link Tri}s.
    * 
    * @param poly the input polygon
-   * @return GeometryCollection of triangular polygons
+   * @return list of Tris forming the triangulation
    */
   List<Tri> triangulatePolygon(Polygon poly) {
     /**

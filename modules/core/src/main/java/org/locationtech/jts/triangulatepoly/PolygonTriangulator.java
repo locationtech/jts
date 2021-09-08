@@ -21,8 +21,28 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
 
+/**
+ * Computes a triangulation of each polygon in a {@link Geometry}.
+ * A polygon triangulation is a non-overlapping set of triangles which
+ * cover the polygon and have the same vertices as the polygon.
+ * The priority is on performance rather than triangulation quality,
+ * so that the output may contain many narrow triangles.
+ * <p>
+ * Holes are handled by joining them to the shell to form a 
+ * (invalid) polygon shell with no holes.
+ * <P>
+ * For better-quality triangulation use {@link ConstrainedDelaunayTriangulator}.
+ * @author mdavis
+ *
+ */
 public class PolygonTriangulator {
   
+  /**
+   * Computes a triangulation of each polygon in a geometry.
+   * 
+   * @param geom a geometry containing polygons
+   * @return a GeometryCollection containing the triangle polygons
+   */
   public static Geometry triangulate(Geometry geom) {
     PolygonTriangulator clipper = new PolygonTriangulator(geom);
     return clipper.compute();
