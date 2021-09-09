@@ -11,29 +11,29 @@
  */
 package org.locationtech.jts.triangulatepoly;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.math.MathUtil;
 import org.locationtech.jts.util.IntArrayList;
 
 /**
- * A semi-static spatial index for points which occur in a spatially-coherent sequence.
+ * A semi-static spatial index for points which occur 
+ * in a spatially-coherent sequence.
  * In particular, this is suitable for indexing the vertices
- * of a LineString or Polygon ring.
+ * of a {@link LineString} or {@link Polygon} ring.
  * <p>
  * The index is constructed in a batch fashion on a given sequence of coordinates.
  * Coordinates can be removed via the {@link #remove(int)} method.
  * <p>
- * Note that this index does <b>not</b> index the line segments 
- * implied by the input coordinate sequence.
+ * Note that this index queries only the individual points
+ * of the input coordinate sequence, 
+ * <b>not</b> any line segments which might be lie between them.
  * 
- * @author mdavis
+ * @author Martin Davis
  *
  */
-public class VertexSequencePackedRtree {
+class VertexSequencePackedRtree {
+  
   /**
    * Number of items/nodes in a parent node.
    * Determined empirically.  Performance is not too sensitive to this.
@@ -45,6 +45,12 @@ public class VertexSequencePackedRtree {
   private int nodeCapacity  = NODE_CAPACITY;
   private Envelope[] bounds;
 
+  /**
+   * Creates a new tree over the given sequence of coordinates.
+   * The sequence should be spatially coherent to provide query performance.
+   * 
+   * @param pts a sequence of points
+   */
   public VertexSequencePackedRtree(Coordinate[] pts) {
     this.items = pts;
     build();
@@ -139,18 +145,18 @@ public class VertexSequencePackedRtree {
   
   //------------------------
 
+  /**
+   * Queries the index to find all items which intersect an extent.
+   * The query result is a list of the indices of input coordinates
+   * which intersect the extent.
+   * 
+   * @param queryEnv the query extent
+   * @return an array of the indices of the input coordinates
+   */
   public int[] query(Envelope queryEnv) {
     IntArrayList resultList = new IntArrayList();
     int level = levelOffset.length - 1;
     queryNode(queryEnv, level, 0, resultList);
-    /*
-    boolean isOK = checkResult(queryEnv, resultList);
-    if (! isOK) {
-      List<Integer> testList = new ArrayList<Integer>();
-      queryNode(queryEnv, level, 0, testList);
-      throw new IllegalStateException("SPTtree FAIL!");
-    }
-    //*/
     int[] result = resultList.toArray();
     return result;
   }
@@ -201,6 +207,11 @@ public class VertexSequencePackedRtree {
 
   //------------------------
   
+  /**
+   * Removes the input item at the given index from the spatial index.
+   * 
+   * @param index the index of the item in the input
+   */
   public void remove(int index) {
     items[index] = null;
     
@@ -242,25 +253,4 @@ public class VertexSequencePackedRtree {
     return true;
   }
 
-  //--------------------------------
-  
-  private boolean checkResult(Envelope queryEnv, List<Integer> actual) {
-    for (int iRes : actual) {
-      if (! queryEnv.contains( items[iRes] )) return false;
-    }
-    
-    List<Integer> res = slowQuery(queryEnv);
-    if (res.size() != actual.size())
-      return false;
-    return true;
-  }
-
-  private List<Integer> slowQuery(Envelope queryEnv) {
-    List<Integer> res = new ArrayList<Integer>();
-    for (int i = 0; i < items.length; i++) {
-      if (queryEnv.contains(items[i]))
-        res.add(i);
-    }
-    return res;
-  }
 }

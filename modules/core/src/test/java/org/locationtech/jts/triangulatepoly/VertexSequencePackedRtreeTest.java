@@ -26,12 +26,12 @@ public class VertexSequencePackedRtreeTest extends TestCase {
     super(name);
   }
   
-  public void testOne() {
+  public void test1() {
     VertexSequencePackedRtree tree = createSPRtree(1,1);
     checkQuery(tree, 1,1,4,4,   result( 0 ));
   }
 
-  public void testTwo() {
+  public void test2() {
     VertexSequencePackedRtree tree = createSPRtree(0,0, 1,1);
     checkQuery(tree, 1,1,4,4,   result( 1 ));
   }
@@ -49,7 +49,7 @@ public class VertexSequencePackedRtreeTest extends TestCase {
     checkQuery(tree, 0,0,0,0,   result( 0 ));
   }
   
-  public void test5U() {
+  public void test6WithDups() {
     VertexSequencePackedRtree tree = createSPRtree(0,0, 1,1,  2,2,  3,3,  4,4,  5,5, 4,4,  3,3,  2,2, 1,1,  0,0);
     checkQuery(tree, 2,2,4,4,   result( 2,3,4, 6, 7, 8 ));
     checkQuery(tree, 0,0,0,0,   result( 0, 10 ));

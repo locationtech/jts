@@ -35,7 +35,7 @@ import org.locationtech.jts.index.strtree.AbstractNode;
 import org.locationtech.jts.index.strtree.Boundable;
 import org.locationtech.jts.index.strtree.GeometryItemDistance;
 import org.locationtech.jts.index.strtree.STRtree;
-import org.locationtech.jts.triangulatepoly.VertexSequencePackedRtree;
+//import org.locationtech.jts.triangulatepoly.VertexSequencePackedRtree;
 
 
 public class SpatialIndexFunctions
@@ -251,6 +251,7 @@ public class SpatialIndexFunctions
     return geom.getFactory().buildGeometry(lines);
   }
   
+  /*
   public static Geometry sprTreeBounds(Geometry geom)
   {
     Coordinate[] pts = geom.getCoordinates();
@@ -263,6 +264,6 @@ public class SpatialIndexFunctions
     }
     return geom.getFactory().createGeometryCollection(polys);
   }
-  
+  */
 
 }
