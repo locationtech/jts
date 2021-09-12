@@ -66,7 +66,7 @@ class PolygonEarClipper {
   private int vertexFirst;
   
   // indices for current candidate corner
-  private int[] cornerCandidate;
+  private int[] cornerIndex;
   
   /**
    * Indexing vertices improves ear intersection testing performance a lot.
@@ -81,11 +81,6 @@ class PolygonEarClipper {
     vertexSize = vertex.length - 1;
     vertexNext = createNextLinks(vertexSize);
     vertexFirst = 0;
-    
-    cornerCandidate = new int[3];
-    cornerCandidate[0] = 0;
-    cornerCandidate[1] = 1;
-    cornerCandidate[2] = 2;
     
     vertexCoordIndex = new VertexSequencePackedRtree(vertex);
   }
@@ -123,8 +118,9 @@ class PolygonEarClipper {
     List<Tri> triList = new ArrayList<Tri>();
 
     int cornerCount = 0;
+    initCornerIndex();
     Coordinate[] corner = new Coordinate[3];
-    nextCorner(false, corner);
+    loadCorner(corner);
     while (true) {
       //--- find next convex corner, which is the next candidate ear
       //Polygon remainder = toGeometry();
@@ -138,7 +134,7 @@ class PolygonEarClipper {
             return triList;
           }
         }
-        nextCorner(true, corner);
+        nextCorner(corner);
         if ( cornerCount > 2 * vertexSize ) {
           throw new IllegalStateException("Unable to find a convex corner");
         }
@@ -148,7 +144,7 @@ class PolygonEarClipper {
         //System.out.println(toGeometry());
         throw new IllegalStateException("Unable to find a valid ear");
       }
-      if ( isValidEar(cornerCandidate[1], corner) ) {
+      if ( isValidEar(cornerIndex[1], corner) ) {
         triList.add(Tri.create(corner));
         removeCorner();
         if ( vertexSize < 3 ) {
@@ -159,12 +155,10 @@ class PolygonEarClipper {
       /**
        * Always skip to next corner - creates fewer skinny triangles.
        */
-      nextCorner(true, corner);
+      nextCorner(corner);
     }
   }
   
-
-
   private boolean isValidEar(int cornerIndex, Coordinate[] corner) {
     int dupApexIndex = findIntersectingVertex(cornerIndex, corner);
     //--- no intersections found
@@ -288,45 +282,54 @@ class PolygonEarClipper {
    * Remove the corner apex vertex and update the candidate corner location.
    */
   private void removeCorner() {
-    int cornerIndex = cornerCandidate[1];
-    if ( vertexFirst ==  cornerIndex) {
-      vertexFirst = vertexNext[cornerIndex];
+    int cornerApexIndex = cornerIndex[1];
+    if ( vertexFirst ==  cornerApexIndex) {
+      vertexFirst = vertexNext[cornerApexIndex];
     }
-    vertexNext[cornerCandidate[0]] = vertexNext[cornerIndex];
-    vertexCoordIndex.remove(cornerIndex);
-    vertexNext[cornerIndex] = NO_VERTEX_INDEX;
+    vertexNext[cornerIndex[0]] = vertexNext[cornerApexIndex];
+    vertexCoordIndex.remove(cornerApexIndex);
+    vertexNext[cornerApexIndex] = NO_VERTEX_INDEX;
     vertexSize--;
-    nextCorner(false, null);
+    //-- adjust following corner indexes
+    cornerIndex[1] = nextIndex(cornerIndex[0]);
+    cornerIndex[2] = nextIndex(cornerIndex[1]);
   }
 
   private boolean isRemoved(int vertexIndex) {
     return NO_VERTEX_INDEX == vertexNext[vertexIndex];
   }
   
+  private void initCornerIndex() {
+    cornerIndex = new int[3];
+    cornerIndex[0] = 0;
+    cornerIndex[1] = 1;
+    cornerIndex[2] = 2;
+  }
+  
   /**
-   * Move to next corner candidate.
-   * Load the corner vertices if required.
+   * Load the corner vertices.
    * 
-   * @param moveFirst if corner[0] should be moved to next available coordinates.
    * @param corner an array for the corner vertices
    */
-  private void nextCorner(boolean moveFirst, Coordinate[] corner) {
+  private void loadCorner(Coordinate[] cornerVertex) {
+    cornerVertex[0] = vertex[cornerIndex[0]]; 
+    cornerVertex[1] = vertex[cornerIndex[1]]; 
+    cornerVertex[2] = vertex[cornerIndex[2]]; 
+  }
+
+  /**
+   * Move to next corner candidate.
+   */
+  private void nextCorner(Coordinate[] cornerVertex) {
     if ( vertexSize < 3 ) {
       return;
     }
-    if ( moveFirst ) {
-      cornerCandidate[0] = nextIndex(cornerCandidate[0]);
-    }
-    cornerCandidate[1] = nextIndex(cornerCandidate[0]);
-    cornerCandidate[2] = nextIndex(cornerCandidate[1]);
-    
-    if (corner != null) {
-      corner[0] = vertex[cornerCandidate[0]]; 
-      corner[1] = vertex[cornerCandidate[1]]; 
-      corner[2] = vertex[cornerCandidate[2]]; 
-    }
+    cornerIndex[0] = nextIndex(cornerIndex[0]);
+    cornerIndex[1] = nextIndex(cornerIndex[0]);
+    cornerIndex[2] = nextIndex(cornerIndex[1]);
+    loadCorner(cornerVertex);
   }
-
+  
   /**
    * Get the index of the next available shell coordinate starting from the given
    * index.
