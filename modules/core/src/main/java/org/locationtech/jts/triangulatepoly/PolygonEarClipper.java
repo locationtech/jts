@@ -160,13 +160,14 @@ class PolygonEarClipper {
   }
   
   private boolean isValidEar(int cornerIndex, Coordinate[] corner) {
-    int dupApexIndex = findIntersectingVertex(cornerIndex, corner);
+    int intApexIndex = findIntersectingVertex(cornerIndex, corner);
     //--- no intersections found
-    if (dupApexIndex < 0)
+    if (intApexIndex == NO_VERTEX_INDEX)
       return true;
-    //--- found duplicate corner apex vertex
-    if ( vertex[dupApexIndex].equals2D(corner[1]) ) {
-      return isValidEarScanApex(cornerIndex, corner);
+    //--- check for duplicate corner apex vertex
+    if ( vertex[intApexIndex].equals2D(corner[1]) ) {
+      //--- a duplicate corner vertex requires a full scan
+      return isValidEarScan(cornerIndex, corner);
     }
     return false;
   }
@@ -232,7 +233,7 @@ class PolygonEarClipper {
    * @param corner the corner vertices
    * @return true if the corner ia a valid ear
    */
-  private boolean isValidEarScanApex(int cornerIndex, Coordinate[] corner) {
+  private boolean isValidEarScan(int cornerIndex, Coordinate[] corner) {
     double cornerAngle = Angle.angleBetweenOriented(corner[0], corner[1], corner[2]);
     
     int currIndex = nextIndex(vertexFirst);
