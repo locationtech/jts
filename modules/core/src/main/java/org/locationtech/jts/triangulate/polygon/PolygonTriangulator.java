@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.triangulatepoly;
+package org.locationtech.jts.triangulate.polygon;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
-import org.locationtech.jts.triangulatepoly.tri.Tri;
+import org.locationtech.jts.triangulate.tri.Tri;
 
 /**
  * Computes a triangulation of each polygon in a {@link Geometry}.

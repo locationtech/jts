@@ -12,8 +12,8 @@
 package org.locationtech.jtstest.function;
 
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.triangulatepoly.ConstrainedDelaunayTriangulator;
-import org.locationtech.jts.triangulatepoly.PolygonTriangulator;
+import org.locationtech.jts.triangulate.polygon.ConstrainedDelaunayTriangulator;
+import org.locationtech.jts.triangulate.polygon.PolygonTriangulator;
 
 
 public class TriangulatePolyFunctions 

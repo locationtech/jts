@@ -9,7 +9,7 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.triangulatepoly.tri;
+package org.locationtech.jts.triangulate.tri;
 
 import java.util.HashMap;
 import java.util.List;
