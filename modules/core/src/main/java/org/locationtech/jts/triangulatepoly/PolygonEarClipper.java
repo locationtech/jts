@@ -25,28 +25,36 @@ import org.locationtech.jts.geom.Triangle;
 import org.locationtech.jts.triangulatepoly.tri.Tri;
 
 /**
- * Triangulates a polygon via the classic Ear-Clipping technique.
- * The polygon is provided as a closed list of vertices
+ * Triangulates a polygon using the Ear-Clipping technique.
+ * The polygon is provided as a closed list of contiguous vertices
  * defining its boundary.
+ * The vertices must have clockwise orientation.
  * <p>
  * The polygon boundary must not self-cross, 
  * but may self-touch at points or along an edge.
- * It may also contain repeated points, which are treated as a single vertex.
+ * It may contain repeated points, which are treated as a single vertex.
  * By default every vertex is triangulated, 
  * including ones which are "flat" (the adjacent segments are collinear).  
  * These can be removed by setting {@link #setSkipFlatCorners(boolean)}
  * <p>
+ * The polygon representation does not allow holes.
  * Polygons with holes can be triangulated by preparing them 
  * with {@link PolygonHoleJoiner}.
  * 
- * @author mdavis
+ * @author Martin Davis
  *
  */
 class PolygonEarClipper {
   
   private static final int NO_VERTEX_INDEX = -1;
 
-  public static List<Tri> clip(Coordinate[] polyShell) {
+  /**
+   * Triangulates a polygon via ear-clipping.
+   * 
+   * @param polyShell the vertices of the polygon
+   * @return a list of the Tris
+   */
+  public static List<Tri> triangulate(Coordinate[] polyShell) {
     PolygonEarClipper clipper = new PolygonEarClipper(polyShell);
     return clipper.compute();
   }
@@ -54,9 +62,9 @@ class PolygonEarClipper {
   private boolean isFlatCornersSkipped = false;
 
   /**
-   * The polygon vertices are maintain in CW order. 
-   * Thus for convex
-   * interior angles the vertices forming the angle are in CW orientation.
+   * The polygon vertices are provided in CW orientation. 
+   * Thus for convex interior angles 
+   * the vertices forming the angle are in CW orientation.
    */
   private final Coordinate[] vertex;
   
@@ -65,7 +73,7 @@ class PolygonEarClipper {
   // first available vertex index
   private int vertexFirst;
   
-  // indices for current candidate corner
+  // indices for current corner
   private int[] cornerIndex;
   
   /**
@@ -74,6 +82,11 @@ class PolygonEarClipper {
    */
   private VertexSequencePackedRtree vertexCoordIndex;
 
+  /**
+   * Creates a new ear-clipper instance.
+   * 
+   * @param polyShell the polygon vertices to process
+   */
   public PolygonEarClipper(Coordinate[] polyShell) {
     this.vertex = polyShell;
     
@@ -117,43 +130,60 @@ class PolygonEarClipper {
   public List<Tri> compute() {
     List<Tri> triList = new ArrayList<Tri>();
 
-    int cornerCount = 0;
+    /**
+     * Count scanned corners, to catch infinite loops
+     * (which indicate an algorithm bug)
+     */
+    int cornerScanCount = 0;
+    
     initCornerIndex();
     Coordinate[] corner = new Coordinate[3];
-    loadCorner(corner);
+    fetchCorner(corner);
+    
+    /**
+     * Scan continuously around vertex ring, 
+     * until all ears have been found.
+     */
     while (true) {
-      //--- find next convex corner, which is the next candidate ear
-      //Polygon remainder = toGeometry();
-      while (! isConvex(corner)) {
+      /**
+       * Non-convex corner- remove if flat, or skip
+       * (a concave corner will turn into a convex corner
+       * after enough ears are removed)
+       */
+      if (! isConvex(corner)) {
         // remove the corner if it is flat or a repeated point        
         boolean isCornerRemoved = hasRepeatedPoint(corner)
             || (isFlatCornersSkipped && isFlat(corner));
         if (isCornerRemoved) {
           removeCorner();
-          if ( vertexSize < 3 ) {
-            return triList;
-          }
         }
-        nextCorner(corner);
-        if ( cornerCount > 2 * vertexSize ) {
+        cornerScanCount++;
+        if ( cornerScanCount > 2 * vertexSize ) {
           throw new IllegalStateException("Unable to find a convex corner");
         }
       }
-      cornerCount++;
-      if ( cornerCount > 2 * vertexSize ) {
+      /**
+       * Convex corner - check if it is a valid ear
+       */
+      else if ( isValidEar(cornerIndex[1], corner) ) {
+        triList.add(Tri.create(corner));
+        removeCorner();
+        cornerScanCount = 0;
+      }
+      if ( cornerScanCount > 2 * vertexSize ) {
         //System.out.println(toGeometry());
         throw new IllegalStateException("Unable to find a valid ear");
       }
-      if ( isValidEar(cornerIndex[1], corner) ) {
-        triList.add(Tri.create(corner));
-        removeCorner();
-        if ( vertexSize < 3 ) {
-          return triList;
-        }
-        cornerCount = 0;
+
+      //--- done when all corners are processed and removed
+      if ( vertexSize < 3 ) {
+        return triList;
       }
+      
       /**
-       * Always skip to next corner - creates fewer skinny triangles.
+       * Skip to next corner.
+       * This is done even after an ear is removed, 
+       * since that creates fewer skinny triangles.
        */
       nextCorner(corner);
     }
@@ -308,18 +338,18 @@ class PolygonEarClipper {
   }
   
   /**
-   * Load the corner vertices.
+   * Fetch the corner vertices from the indices.
    * 
    * @param corner an array for the corner vertices
    */
-  private void loadCorner(Coordinate[] cornerVertex) {
+  private void fetchCorner(Coordinate[] cornerVertex) {
     cornerVertex[0] = vertex[cornerIndex[0]]; 
     cornerVertex[1] = vertex[cornerIndex[1]]; 
     cornerVertex[2] = vertex[cornerIndex[2]]; 
   }
 
   /**
-   * Move to next corner candidate.
+   * Move to next corner.
    */
   private void nextCorner(Coordinate[] cornerVertex) {
     if ( vertexSize < 3 ) {
@@ -328,7 +358,7 @@ class PolygonEarClipper {
     cornerIndex[0] = nextIndex(cornerIndex[0]);
     cornerIndex[1] = nextIndex(cornerIndex[0]);
     cornerIndex[2] = nextIndex(cornerIndex[1]);
-    loadCorner(cornerVertex);
+    fetchCorner(cornerVertex);
   }
   
   /**

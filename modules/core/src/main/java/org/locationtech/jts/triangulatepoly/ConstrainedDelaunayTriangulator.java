@@ -83,7 +83,7 @@ public class ConstrainedDelaunayTriangulator {
      */
     Polygon polyNorm = (Polygon) poly.norm();
     Coordinate[] polyShell = PolygonHoleJoiner.join(polyNorm);
-    List<Tri> triList = PolygonEarClipper.clip(polyShell);
+    List<Tri> triList = PolygonEarClipper.triangulate(polyShell);
     
     //long start = System.currentTimeMillis();
     TriangulationBuilder.build(triList);

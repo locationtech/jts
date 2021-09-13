@@ -86,7 +86,7 @@ public class PolygonTriangulator {
     Polygon polyNorm = (Polygon) poly.norm();
     Coordinate[] polyShell = PolygonHoleJoiner.join(polyNorm);
     
-    List<Tri> triList = PolygonEarClipper.clip(polyShell);
+    List<Tri> triList = PolygonEarClipper.triangulate(polyShell);
     //Tri.validate(triList);
 
     return triList;
