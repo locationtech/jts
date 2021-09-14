@@ -29,10 +29,14 @@ import org.locationtech.jts.triangulate.tri.Tri;
  * so that the output may contain many narrow triangles.
  * <p>
  * Holes are handled by joining them to the shell to form a 
- * (invalid) polygon shell with no holes.
+ * (self-touching) polygon shell with no holes.
+ * Although invalid, this can be triangulated effectively.
  * <P>
  * For better-quality triangulation use {@link ConstrainedDelaunayTriangulator}.
- * @author mdavis
+ * 
+ * @see ConstrainedDelaunayTriangulator
+ * 
+ * @author Martin Davis
  *
  */
 public class PolygonTriangulator {
