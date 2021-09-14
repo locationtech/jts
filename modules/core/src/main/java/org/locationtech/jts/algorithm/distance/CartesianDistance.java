@@ -16,11 +16,11 @@ import org.locationtech.jts.geom.Coordinate;
 /**
  * Implementation of a cartesian distance function
  */
-public final class CartesianDistance implements DistanceFunction {
+public final class CartesianDistance implements DistanceMetric {
 
   private static final CartesianDistance _instance = new CartesianDistance();
 
-  public static DistanceFunction getInstance() { return _instance;}
+  public static DistanceMetric getInstance() { return _instance;}
 
   /**
    * Creation of this class is private to prevent creation of other objects
@@ -35,6 +35,7 @@ public final class CartesianDistance implements DistanceFunction {
    */
   @Override
   public double distance(Coordinate p0, Coordinate p1) {
+
     return p0.distance(p1);
   }
 }

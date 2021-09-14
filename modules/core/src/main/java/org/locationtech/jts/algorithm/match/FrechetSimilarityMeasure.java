@@ -13,7 +13,7 @@ package org.locationtech.jts.algorithm.match;
 
 import org.locationtech.jts.algorithm.distance.CartesianDistance;
 import org.locationtech.jts.algorithm.distance.DiscreteFrechetDistance;
-import org.locationtech.jts.algorithm.distance.DistanceFunction;
+import org.locationtech.jts.algorithm.distance.DistanceMetric;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -40,7 +40,7 @@ import org.locationtech.jts.geom.MultiPoint;
  */
 public class FrechetSimilarityMeasure implements SimilarityMeasure {
 
-  private final DistanceFunction distanceFunction;
+  private final DistanceMetric distanceMetric;
 
   /**
    * Creates an instance of this class using the {@link CartesianDistance}
@@ -51,16 +51,16 @@ public class FrechetSimilarityMeasure implements SimilarityMeasure {
   }
 
   /**
-   * Creates an instance of this class using the provided {@link DistanceFunction}
+   * Creates an instance of this class using the provided {@link DistanceMetric}
    * for the {@link DiscreteFrechetDistance} computation.
    *
-   * @param distanceFunction an object to compute distances between {@code Coordinate}s.
+   * @param distanceMetric an object to compute distances between {@code Coordinate}s.
    */
-  public FrechetSimilarityMeasure(DistanceFunction distanceFunction)
+  public FrechetSimilarityMeasure(DistanceMetric distanceMetric)
   {
-    if (distanceFunction == null)
-      distanceFunction = CartesianDistance.getInstance();
-    this.distanceFunction = distanceFunction;
+    if (distanceMetric == null)
+      distanceMetric = CartesianDistance.getInstance();
+    this.distanceMetric = distanceMetric;
   }
 
   @Override
@@ -71,7 +71,7 @@ public class FrechetSimilarityMeasure implements SimilarityMeasure {
       throw new IllegalArgumentException("g1 and g2 are of different type");
 
     // Compute the distance
-    double frechetDistance = DiscreteFrechetDistance.distance(g1, g2, this.distanceFunction);
+    double frechetDistance = DiscreteFrechetDistance.distance(g1, g2, this.distanceMetric);
     if (frechetDistance == 0d) return 1;
 
     // Compute envelope diagonal size

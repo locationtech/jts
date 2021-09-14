@@ -18,7 +18,7 @@ import org.locationtech.jts.geom.Coordinate;
  *
  * @author Felix Obermaier
  */
-public interface DistanceFunction {
+public interface DistanceMetric {
   /**
    * Computes the distance between the two coordinates {@code p0} and {@code p1}.
    * @param p0 The first coordinate

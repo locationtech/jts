@@ -12,14 +12,10 @@
 
 package org.locationtech.jts.algorithm.distance;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.util.Assert;
 import test.jts.GeometryTestCase;
-import test.jts.util.IOUtil;
 
 public class DiscreteFrechetDistanceTest extends GeometryTestCase {
 
@@ -55,23 +51,35 @@ public class DiscreteFrechetDistanceTest extends GeometryTestCase {
       "LINESTRING (130 0, 0 0, 0 150)",
       "LINESTRING (10 10, 10 150, 130 10)", new ScaledCartesianDistance(), 1910.49731745428);
   }
+
+  // https://github.com/joaofig/discrete-frechet/blob/master/recursive-vs-linear.ipynb
+  public void test2() {
+    runTest("LINESTRING(0.2 2.0, 1.5 2.8, 2.3 1.6, 2.9 1.8, 4.1 3.1, 5.6 2.9, 7.2 1.3, 8.2 1.1)",
+      "LINESTRING(0.3 1.6, 3.2 3.0, 3.8 1.8, 5.2 3.1, 6.5 2.8, 7.0 0.8, 8.9 0.6)", 1.697056);
+  }
+
   private static final double TOLERANCE = 0.00001;
 
   private void runTest(String wkt1, String wkt2, double expectedDistance) {
     runTest(wkt1, wkt2, CartesianDistance.getInstance(), expectedDistance);
   }
-  private void runTest(String wkt1, String wkt2, DistanceFunction distanceFunction, double expectedDistance)
+  private void runTest(String wkt1, String wkt2, DistanceMetric distanceMetric, double expectedDistance)
   {
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
 
-    double distance1 = DiscreteFrechetDistance.distance(g1, g2, distanceFunction);
+    double distance0 = DiscreteFrechetDistanceLinear.distance(g1, g2, distanceMetric);
+    assertEquals(expectedDistance, distance0, TOLERANCE);
+
+    double distance1 = DiscreteFrechetDistance.distance(g1, g2, distanceMetric);
     assertEquals(expectedDistance, distance1, TOLERANCE);
-    double distance2 = DiscreteFrechetDistance.distance(g2, g1, distanceFunction);
+    double distance2 = DiscreteFrechetDistance.distance(g2, g1, distanceMetric);
     assertEquals(distance1, distance2);
+
+
   }
 
-  private class ScaledCartesianDistance implements DistanceFunction {
+  private class ScaledCartesianDistance implements DistanceMetric {
 
     @Override
     public double distance(Coordinate p0, Coordinate p1) {

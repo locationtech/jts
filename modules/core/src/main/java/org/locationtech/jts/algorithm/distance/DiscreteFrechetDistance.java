@@ -13,6 +13,7 @@ package org.locationtech.jts.algorithm.distance;
 
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import java.util.Map;
 import java.util.HashMap;
 
 /**
@@ -61,32 +62,33 @@ public class DiscreteFrechetDistance {
    * @param g1 the 2nd geometry
    * @return the Discrete Fréchet Distance between the two geometries
    */
-  public static double distance(Geometry g0, Geometry g1, DistanceFunction distanceFunction)
+  public static double distance(Geometry g0, Geometry g1, DistanceMetric distanceMetric)
   {
-    if (distanceFunction == null)
+    if (distanceMetric == null)
       throw new NullPointerException("distanceFunction");
 
-    DiscreteFrechetDistance dist = new DiscreteFrechetDistance(g0, g1, distanceFunction);
+    DiscreteFrechetDistance dist = new DiscreteFrechetDistance(g0, g1, distanceMetric);
     return dist.distance();
   }
 
   private final Geometry g0;
   private final Geometry g1;
-  private final DistanceFunction distanceFunction;
+  private final DistanceMetric distanceMetric;
+  private PointPairDistance ptDist;
 
   /**
    * Creates an instance of this class using the provided geometries and
-   * the provided {@link DistanceFunction} to compute distances between
+   * the provided {@link DistanceMetric} to compute distances between
    * {@link Coordinate}s.
    *
    * @param g0 a geometry
    * @param g1 a geometry
-   * @param distanceFunction an object to perform distance calculations.
+   * @param distanceMetric an object to perform distance calculations.
    */
-  private DiscreteFrechetDistance(Geometry g0, Geometry g1, DistanceFunction distanceFunction) {
+  private DiscreteFrechetDistance(Geometry g0, Geometry g1, DistanceMetric distanceMetric) {
     this.g0 = g0;
     this.g1 = g1;
-    this.distanceFunction = distanceFunction;
+    this.distanceMetric = distanceMetric;
   }
 
   /**
@@ -99,49 +101,72 @@ public class DiscreteFrechetDistance {
     Coordinate[] coords1 = g1.getCoordinates();
 
     long[] diagonal = bresenhamLine(coords0.length, coords1.length);
-    HashMap<Long, Double> distances = computeCoordinateDistances(coords0, coords1, diagonal);
-    computeFrechet(distances, diagonal, coords0.length, coords1.length);
-    long key = (long)(coords0.length - 1) << 32 | (coords1.length - 1);
+    HashMap<Long, Double> distances = new HashMap<>();
+    HashMap<Double, Long> distanceToPair = new HashMap<>();
+    computeCoordinateDistances(coords0, coords1, diagonal, distances, distanceToPair);
+    ptDist = computeFrechet(coords0, coords1, diagonal, distances, distanceToPair);
 
-    return distances.get(key);
+    return ptDist.getDistance();
+  }
+
+  public Coordinate[] getCoordinates() {
+    if (ptDist == null)
+      distance();
+
+    return ptDist.getCoordinates();
   }
 
   /**
    * Compute the Fréchet Distance for the given distance matrix.
    *
-   * @param distances a sparse matrix
+   * @param distances a sparse distance matrix
+   * @param distanceToPair a lookup for distance and a coordinate pair
    * @param diagonal an array of encoded row/col index values for the diagonal of the distance matrix
-   * @param numPoints0 the number of {@code Coordinate}s in the 1st {@code Geometry}
-   * @param numPoints1 the number of {@code Coordinate}s in the 2nd {@code Geometry}
+   * @param coords0 an array of {@code Coordinate}s.
+   * @param coords1 an array of {@code Coordinate}s.
    *
    */
-  private static void computeFrechet(HashMap<Long, Double> distances,
-                                     long[] diagonal, int numPoints0, int numPoints1) {
+  private static PointPairDistance computeFrechet(Coordinate[] coords0, Coordinate[] coords1, long[] diagonal,
+                                                  HashMap<Long, Double> distances, HashMap<Double, Long> distanceToPair) {
     for (long key : diagonal) {
       int i0 = (int)(key >> 32);
       int j0 = (int)key & 0x7FFFFFFF;
 
-      for (int i = i0; i < numPoints0; i++) {
+      for (int i = i0; i < coords0.length; i++) {
         key = (long)i << 32 | j0;
         if (distances.containsKey(key)) {
           double dist = getMinDistanceAtCorner(distances, i, j0);
           if (dist > distances.get(key))
             distances.put(key, dist);
-          else
-            break;
+        }
+        else {
+          break;
         }
       }
-      for (int j = j0 + 1; j < numPoints1; j++) {
+      for (int j = j0 + 1; j < coords1.length; j++) {
         key = (long)i0 << 32 | j;
         if (distances.containsKey(key)) {
-          double dist = getMinDistanceAtCorner(distances, j, j0);
+          double dist = getMinDistanceAtCorner(distances, i0, j);
           if (dist > distances.get(key))
             distances.put(key, dist);
-          else
-            break;
+        }
+        else {
+          break;
         }
       }
     }
+
+    //System.out.println(toString(coords0.length, coords1.length, distances));
+    long key = (long)(coords0.length - 1) << 32 | (coords1.length - 1);
+
+    PointPairDistance result = new PointPairDistance();
+    double distance = distances.get(key);
+    key = distanceToPair.get(distance);
+    Coordinate c0 = coords0[(int)(key >> 32)];
+    Coordinate c1 = coords1[(int)(key & 0x7fffffff)];
+    result.initialize(c0, c1, distance);
+
+    return result;
   }
 
   /**
@@ -154,19 +179,19 @@ public class DiscreteFrechetDistance {
    */
   private static double getMinDistanceAtCorner(HashMap<Long, Double> matrix, int i, int j) {
     if (i > 0 && j > 0) {
-      double d0 = getDistance(matrix, i-1, j-1);
-      double d1 = getDistance(matrix, i-1, j);
-      double d2 = getDistance(matrix, i, j-1);
+      double d0 = getDistance(matrix, i - 1, j - 1);
+      double d1 = getDistance(matrix, i - 1, j);
+      double d2 = getDistance(matrix, i, j - 1);
       return Math.min(Math.min(d0, d1), d2);
     }
-    if (i == 0 && j == 0) {
+    if (i == 0 && j == 0)
       return matrix.get(0L);
-    }
-    if (i == 0) {
-      return matrix.getOrDefault((long)j, Double.POSITIVE_INFINITY);
-    }
+
+    if (i == 0)
+      return matrix.getOrDefault((long)(j - 1), Double.POSITIVE_INFINITY);
+
     // j == 0
-    return matrix.getOrDefault((long) i<< 32, Double.POSITIVE_INFINITY);
+    return matrix.getOrDefault((long)(i - 1)<< 32, Double.POSITIVE_INFINITY);
   }
 
   /**
@@ -179,11 +204,9 @@ public class DiscreteFrechetDistance {
    * @return the distance computed for the given matrix index ({@code i, j}). If not computed,
    *  the result is {@link Double#POSITIVE_INFINITY}.
    */
-  private static double getDistance(HashMap<Long, Double> matrix, int i, int j) {
+  private static double getDistance(Map<Long, Double> matrix, int i, int j) {
     long key = (long)i << 32 | j;
-    if (matrix.containsKey(key))
-      return matrix.get(key);
-    return Double.POSITIVE_INFINITY;
+    return matrix.getOrDefault(key, Double.POSITIVE_INFINITY);
   }
 
   /**
@@ -193,9 +216,11 @@ public class DiscreteFrechetDistance {
    * @param coords0 an array of {@code Coordinate}s.
    * @param coords1 an array of {@code Coordinate}s.
    * @param diagonal an array of encoded row/col index values for the diagonal of the distance matrix
-   * @return A sparse matrix of the relevant {@code Coordinate} pair distances.
+   * @param distances the sparse distance matrix
+   * @param distanceToPair a lookup for coordinate pairs based on a distance.
    */
-  private HashMap<Long, Double> computeCoordinateDistances(Coordinate[] coords0, Coordinate[] coords1, long[] diagonal) {
+  private void computeCoordinateDistances(Coordinate[] coords0, Coordinate[] coords1, long[] diagonal,
+                                          HashMap<Long, Double> distances, HashMap<Double, Long> distanceToPair) {
     int numDiag = diagonal.length;
     double maxDistOnDiag = 0d;
     int imin = 0, jmin = 0;
@@ -204,16 +229,17 @@ public class DiscreteFrechetDistance {
 
     // First compute all the distances along the diagonal.
     // Record the maximum distance.
-    HashMap<Long, Double> distances = new HashMap<>(numDiag);
+
     for (long l : diagonal) {
       int i0 = (int) (l >> 32);
       int j0 = (int) l & 0x7FFFFFFF;
-      double diagDist = this.distanceFunction.distance(coords0[i0], coords1[j0]);
+      double diagDist = this.distanceMetric.distance(coords0[i0], coords1[j0]);
       if (diagDist > maxDistOnDiag) maxDistOnDiag = diagDist;
       distances.put(l, diagDist);
+      distanceToPair.putIfAbsent(diagDist, l);
     }
 
-    // Check for shorter distances along the diagonal
+    // Check for distances shorter than maxDistOnDiag along the diagonal
     for (int k = 0; k < numDiag - 1; k++) {
       // Decode index
       int i0 = (int)(diagonal[k] >> 32);
@@ -228,9 +254,12 @@ public class DiscreteFrechetDistance {
       for (; i < numCoords0; i++) {
         long key = ((long)i << 32) | j0;
         if (!distances.containsKey(key)) {
-          double dist = this.distanceFunction.distance(coords0[i], coord1);
+          double dist = this.distanceMetric.distance(coords0[i], coord1);
           if (dist < maxDistOnDiag || i < imin)
+          {
             distances.put(key, dist);
+            distanceToPair.putIfAbsent(dist, key);
+          }
           else
             break;
         }
@@ -244,9 +273,12 @@ public class DiscreteFrechetDistance {
       for (; j < numCoords1; j++) {
         long key = ((long)i0 << 32) | j;
         if (!distances.containsKey(key)) {
-          double dist = this.distanceFunction.distance(coord0, coords1[j]);
+          double dist = this.distanceMetric.distance(coord0, coords1[j]);
           if (dist < maxDistOnDiag || j < jmin)
+          {
             distances.put(key, dist);
+            distanceToPair.putIfAbsent(dist, key);
+          }
           else
             break;
         }
@@ -256,7 +288,7 @@ public class DiscreteFrechetDistance {
       jmin = j;
     }
 
-    return distances;
+    //System.out.println(toString(numCoords0, numCoords1, distances));
   }
 
   /**
@@ -303,4 +335,27 @@ public class DiscreteFrechetDistance {
     return pairs;
   }
 
+  /*
+  // For debugging purposes only!
+  private static String toString(int numRows, int numCols,
+                                 Map<Long, Double> sparse) {
+
+    StringBuilder sb = new StringBuilder("[");
+    for (int i = 0; i < numRows; i++)
+    {
+      sb.append('[');
+      for(int j = 0; j < numCols; j++)
+      {
+        if (j > 0)
+          sb.append(", ");
+        sb.append(String.format("%8.4f", getDistance(sparse, i, j)));
+      }
+      sb.append(']');
+      if (i < numRows - 1) sb.append(",\n");
+    }
+    sb.append(']');
+    return sb.toString();
+
+  }
+   */
 }
