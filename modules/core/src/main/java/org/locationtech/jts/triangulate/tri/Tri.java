@@ -49,16 +49,37 @@ public class Tri {
     return geomFact.createGeometryCollection(geoms);
   }
 
+  /**
+   * Validates a list of Tris.
+   * 
+   * @param triList the tris to validate
+   */
   public static void validate(List<Tri> triList) {
     for (Tri tri : triList) {
       tri.validate();
     }
   }
   
+  /**
+   * Creates a triangle with the given vertices.
+   * The vertices should be oriented clockwise.
+   * 
+   * @param p0 the first triangle vertex
+   * @param p1 the second triangle vertex
+   * @param p2 the third triangle vertex
+   * @return the created triangle
+   */
   public static Tri create(Coordinate p0, Coordinate p1, Coordinate p2) {
     return new Tri(p0, p1, p2);
   }
   
+  /**
+   * Creates a triangle from an array with three vertex coordinates.
+   * The vertices should be oriented clockwise.
+   * 
+   * @param pts the array of vertex coordinates
+   * @return the created triangle
+   */
   public static Tri create(Coordinate[] pts) {
     return new Tri(pts[0], pts[1], pts[2]);
   }
@@ -75,6 +96,14 @@ public class Tri {
   private Tri tri1;
   private Tri tri2;
 
+  /**
+   * Creates a triangle with the given vertices.
+   * The vertices should be oriented clockwise.
+   * 
+   * @param p0 the first triangle vertex
+   * @param p1 the second triangle vertex
+   * @param p2 the third triangle vertex
+   */
   public Tri(Coordinate p0, Coordinate p1, Coordinate p2) {
     this.p0 = p0;
     this.p1 = p1;
@@ -82,12 +111,44 @@ public class Tri {
     //Assert.isTrue( Orientation.CLOCKWISE != Orientation.index(p0, p1, p2), "Tri is not oriented correctly");
   }
 
+  /**
+   * Sets the adjacent triangles.
+   * The vertices of the adjacent triangles are
+   * assumed to match the appropriate vertices in this triangle.
+   * 
+   * @param tri0 the triangle adjacent to edge 0
+   * @param tri1 the triangle adjacent to edge 1
+   * @param tri2 the triangle adjacent to edge 2
+   */
   public void setAdjacent(Tri tri0, Tri tri1, Tri tri2) {
     this.tri0 = tri0;
     this.tri1 = tri1;
     this.tri2 = tri2;
   }
 
+  /**
+   * Sets the triangle adjacent to the edge originating
+   * at a given vertex.
+   * The vertices of the adjacent triangles are
+   * assumed to match the appropriate vertices in this triangle.
+   * 
+   * @param pt the edge start point
+   * @param tri the adjacent triangle
+   */
+  public void setAdjacent(Coordinate pt, Tri tri) {
+    int index = getIndex(pt);
+    setTri(index, tri);
+    // TODO: validate that tri is adjacent at the edge specified
+  }
+  
+  /**
+   * Sets the triangle adjacent to an edge.
+   * The vertices of the adjacent triangle are
+   * assumed to match the appropriate vertices in this triangle.
+   * 
+   * @param edgeIndex the edge triangle is adjacent to
+   * @param tri the adjacent triangle
+   */
   public void setTri(int edgeIndex, Tri tri) {
     switch (edgeIndex) {
     case 0: tri0 = tri; return;
@@ -102,12 +163,6 @@ public class Tri {
     this.p1 = p1;
     this.p2 = p2;
     //Assert.isTrue( Orientation.CLOCKWISE != Orientation.index(p0, p1, p2), "Tri is not oriented correctly");
-  }
-
-  public void setAdjacent(Coordinate pt, Tri tri) {
-    int index = getIndex(pt);
-    setTri(index, tri);
-    // TODO: validate that tri is adjacent at the edge specified
   }
 
   /**
@@ -176,7 +231,7 @@ public class Tri {
   }
   
   /**
-   * Replace an adjacent triangle with a different one.
+   * Replaces an adjacent triangle with a different one.
    * 
    * @param triOld an adjacent triangle
    * @param triNew the triangle to replace it with
@@ -192,24 +247,33 @@ public class Tri {
   }
   
   /**
-   * 
+   * Gets the triangles adjacent to the quadrilateral
+   * formed by this triangle and an adjacent one.
+   * The triangles are returned in the following order:
+   * <p>
    * Order: 0: opp0-adj0 edge, 1: opp0-adj1 edge, 
    *  2: opp1-adj0 edge, 3: opp1-adj1 edge
    *  
-   * @param tri
-   * @param index0
-   * @param index1
+   * @param tri1 an adjacent triangle
+   * @param index the index of the common edge in this triangle
+   * @param index1 the index of the common edge in the adjacent triangle
    * @return
    */
-  private Tri[] getAdjacentTris(Tri tri, int index0, int index1) {
+  private Tri[] getAdjacentTris(Tri triAdj, int index, int indexAdj) {
     Tri[] adj = new Tri[4];
-    adj[0] = getAdjacent(prev(index0));
-    adj[1] = getAdjacent(next(index0));
-    adj[2] = tri.getAdjacent(next(index1));
-    adj[3] = tri.getAdjacent(prev(index1));
+    adj[0] = getAdjacent(prev(index));
+    adj[1] = getAdjacent(next(index));
+    adj[2] = triAdj.getAdjacent(next(indexAdj));
+    adj[3] = triAdj.getAdjacent(prev(indexAdj));
     return adj;
   }
 
+  /**
+   * Validates that a tri is correct.
+   * Currently just checks that orientation is CW.
+   * 
+   * @throw IllegalArgumentException if tri is not valid
+   */
   public void validate() {
     if ( Orientation.CLOCKWISE != Orientation.index(p0, p1, p2) ) {
       throw new IllegalArgumentException("Tri is not oriented correctly");
@@ -220,6 +284,11 @@ public class Tri {
     validateAdjacent(2);
   }
   
+  /**
+   * Validates that the vertices of an adjacent linked triangle are correct.
+   * 
+   * @param index the index of the adjacent triangle
+   */
   public void validateAdjacent(int index) {
     Tri tri = getAdjacent(index);
     if (tri == null) return;
@@ -249,6 +318,14 @@ public class Tri {
     }
   }
 
+  /**
+   * Gets the start and end vertex of the edge adjacent to another triangle.
+   * 
+   * @param neighbor
+   * @return
+   */
+  /*
+  //TODO: define when needed 
   public Coordinate[] getEdge(Tri neighbor) {
     int index = getIndex(neighbor);
     int next = next(index);
@@ -278,17 +355,32 @@ public class Tri {
     }
     return false;
   }
-
-  public Coordinate getCoordinate(int i) {
-    if ( i == 0 ) {
+   */
+  
+  /**
+   * Gets the coordinate for a vertex.
+   * This is the start vertex of the edge.
+   * 
+   * @param index the vertex (edge) index
+   * @return the vertex coordinate
+   */
+  public Coordinate getCoordinate(int index) {
+    if ( index == 0 ) {
       return p0;
     }
-    if ( i == 1 ) {
+    if ( index == 1 ) {
       return p1;
     }
     return p2;
   }
 
+  /**
+   * Gets the index of the triangle vertex which has a given coordinate (if any).
+   * This is also the index of the edge which originates at the vertex.
+   * 
+   * @param p the coordinate to find
+   * @return the vertex index, or -1 if it is not in the triangle
+   */
   public int getIndex(Coordinate p) {
     if ( p0.equals2D(p) )
       return 0;
@@ -299,6 +391,13 @@ public class Tri {
     return -1;
   }
 
+  /**
+   * Gets the edge index which a triangle is adjacent to (if any),
+   * based on the adjacent triangle link.
+   * 
+   * @param tri the tri to find
+   * @return the index of the edge adjacent to the triangle, or -1 if not found
+   */
   public int getIndex(Tri tri) {
     if ( tri0 == tri )
       return 0;
@@ -309,8 +408,14 @@ public class Tri {
     return -1;
   }
   
-  public Tri getAdjacent(int i) {
-    switch(i) {
+  /**
+   * Gets the triangle adjacent to an edge.
+   * 
+   * @param index the edge index
+   * @return the adjacent triangle (may be null)
+   */
+  public Tri getAdjacent(int index) {
+    switch(index) {
     case 0: return tri0;
     case 1: return tri1;
     case 2: return tri2;
@@ -319,14 +424,33 @@ public class Tri {
     return null;
   }
 
-  public boolean hasAdjacent(int i) {
-    return null != getAdjacent(i);
+  /**
+   * Tests if there is an adjacent triangle to an edge.
+   * 
+   * @param index the edge index
+   * @return true if there is a triangle adjacent to edge
+   */
+  public boolean hasAdjacent(int index) {
+    return null != getAdjacent(index);
   }
 
+  /**
+   * Tests if a triangle is adjacent to some edge of this triangle.
+   * 
+   * @param tri the triangle to test
+   * @return true if the triangle is adjacent
+   * @see getIndex(Tri)
+   */
   public boolean isAdjacent(Tri tri) {
     return getIndex(tri) >= 0;
   }
 
+  /**
+   * Computes the number of triangle adjacent to this triangle.
+   * This is a number in the range [0,2].
+   * 
+   * @return the number of adjacent triangles
+   */
   public int numAdjacent() {
     int num = 0;
     if ( tri0 != null )
@@ -338,8 +462,15 @@ public class Tri {
     return num;
   }
 
-  public static int next(int i) {
-    switch (i) {
+  /**
+   * Computes the vertex or edge index which is the next one
+   * (clockwise) around the triangle.
+   * 
+   * @param index the index
+   * @return the next index value
+   */
+  public static int next(int index) {
+    switch (index) {
     case 0: return 1;
     case 1: return 2;
     case 2: return 0;
@@ -347,8 +478,15 @@ public class Tri {
     return -1;
   }
 
-  public static int prev(int i) {
-    switch (i) {
+  /**
+   * Computes the vertex or edge index which is the previous one
+   * (counter-clockwise) around the triangle.
+   * 
+   * @param index the index
+   * @return the previous index value
+   */
+  public static int prev(int index) {
+    switch (index) {
     case 0: return 2;
     case 1: return 0;
     case 2: return 1;
@@ -356,15 +494,32 @@ public class Tri {
     return -1;
   }
 
+  /**
+   * Gets the index of the vertex opposite an edge.
+   * 
+   * @param edgeIndex the edge index
+   * @return the index of the opposite vertex
+   */
   public static int oppVertex(int edgeIndex) {
     return prev(edgeIndex);
   }
 
+  /**
+   * Gets the index of the edge opposite a vertex.
+   * 
+   * @param vertexIndex the index of the vertex
+   * @return the index of the opposite edge
+   */
   public static int oppEdge(int vertexIndex) {
     return next(vertexIndex);
   }
 
-
+  /**
+   * Computes a coordinate for the midpoint of a triangle edge.
+   * 
+   * @param edgeIndex the edge index
+   * @return the midpoint of the triangle edge
+   */
   public Coordinate midpoint(int edgeIndex) {
     Coordinate p0 = getCoordinate(edgeIndex);
     Coordinate p1 = getCoordinate(next(edgeIndex));
@@ -373,6 +528,12 @@ public class Tri {
     return new Coordinate(midX, midY);
   }
   
+  /**
+   * Creates a {@link Polygon} representing this triangle.
+   * 
+   * @param geomFact the geometry factory
+   * @return a polygon
+   */
   public Polygon toPolygon(GeometryFactory geomFact) {
     return geomFact.createPolygon(
         geomFact.createLinearRing(new Coordinate[] { p0.copy(), p1.copy(), p2.copy(), p0.copy() }), null);
