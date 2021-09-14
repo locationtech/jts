@@ -18,7 +18,7 @@ import org.locationtech.jts.geom.Coordinate;
 
 /**
  * Builds a triangulation from a set of {@link Tri}s
- * by linking adjacent Tris.
+ * by populating the links to adjacent triangles.
  * 
  * @author mdavis
  *
@@ -26,7 +26,7 @@ import org.locationtech.jts.geom.Coordinate;
 public class TriangulationBuilder {
 
   /**
-   * Builds the triangulation of a set of {@link Tri}s.
+   * Computes the triangulation of a set of {@link Tri}s.
    * 
    * @param triList the list of Tris
    */
@@ -37,7 +37,7 @@ public class TriangulationBuilder {
   private HashMap<TriEdge, Tri> triMap;
 
   /**
-   * Builds the triangulation of a set of {@link Tri}s.
+   * Computes the triangulation of a set of {@link Tri}s.
    * 
    * @param triList the list of Tris
    */

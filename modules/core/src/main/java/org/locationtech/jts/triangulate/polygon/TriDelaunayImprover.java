@@ -9,24 +9,25 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-package org.locationtech.jts.triangulate.tri;
+package org.locationtech.jts.triangulate.polygon;
 
 import java.util.List;
 
 import org.locationtech.jts.algorithm.Orientation;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.triangulate.quadedge.TrianglePredicate;
+import org.locationtech.jts.triangulate.tri.Tri;
+import org.locationtech.jts.triangulate.tri.TriangulationBuilder;
 
 /**
  * Improves the quality of a triangulation of {@link Tri}s via
  * iterated Delaunay flipping.
- * This produces the Constrained Delaunay Triangulation
+ * This produces a Constrained Delaunay Triangulation
  * with the constraints being the boundary of the input triangulation.
  * 
  * @author mdavis
- *
  */
-public class TriDelaunayImprover {
+class TriDelaunayImprover {
   
   /**
    * Improves the quality of a triangulation of {@link Tri}s via

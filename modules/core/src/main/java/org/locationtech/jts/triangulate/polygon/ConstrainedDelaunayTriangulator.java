@@ -20,7 +20,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.triangulate.tri.Tri;
-import org.locationtech.jts.triangulate.tri.TriDelaunayImprover;
 import org.locationtech.jts.triangulate.tri.TriangulationBuilder;
 
 /**
