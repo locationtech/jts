@@ -65,6 +65,7 @@ import org.locationtech.jtstest.function.SortingFunctions;
 import org.locationtech.jtstest.function.SpatialIndexFunctions;
 import org.locationtech.jtstest.function.SpatialPredicateFunctions;
 import org.locationtech.jtstest.function.TriangleFunctions;
+import org.locationtech.jtstest.function.TriangulatePolyFunctions;
 import org.locationtech.jtstest.function.TriangulationFunctions;
 import org.locationtech.jtstest.function.ValidationFunctions;
 import org.locationtech.jtstest.function.WriterFunctions;
@@ -131,6 +132,7 @@ public class GeometryFunctionRegistry
     funcRegistry.add(SnappingFunctions.class);
     funcRegistry.add(SortingFunctions.class);
     funcRegistry.add(TriangulationFunctions.class);
+    funcRegistry.add(TriangulatePolyFunctions.class);
     funcRegistry.add(TriangleFunctions.class);
     funcRegistry.add(ValidationFunctions.class);
     funcRegistry.add(WriterFunctions.class);
