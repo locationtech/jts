@@ -38,7 +38,7 @@ import org.locationtech.jts.noding.SegmentStringUtil;
  * As the resulting shell develops, a hole might be added to what was
  * originally another hole.
  */
-public class PolygonHoleJoiner {
+class PolygonHoleJoiner {
   
   public static Polygon joinAsPolygon(Polygon inputPolygon) {
     return inputPolygon.getFactory().createPolygon(join(inputPolygon));
@@ -51,7 +51,6 @@ public class PolygonHoleJoiner {
   
   private static final double EPS = 1.0E-4;
   
-  private final GeometryFactory geomFact;
   private List<Coordinate> shellCoords;
   // orderedCoords a copy of shellCoords for sort purpose
   private TreeSet<Coordinate> orderedCoords;
@@ -64,7 +63,6 @@ public class PolygonHoleJoiner {
   public PolygonHoleJoiner(Polygon inputPolygon) {
     this.inputPolygon = inputPolygon;
     polygonIntersector = createPolygonIntersector(inputPolygon);
-    geomFact = inputPolygon.getFactory();
   }
 
   /**
