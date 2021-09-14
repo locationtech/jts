@@ -11,9 +11,7 @@
  */
 package org.locationtech.jts.algorithm.match;
 
-import org.locationtech.jts.algorithm.distance.CartesianDistance;
 import org.locationtech.jts.algorithm.distance.DiscreteFrechetDistance;
-import org.locationtech.jts.algorithm.distance.DistanceMetric;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -40,28 +38,11 @@ import org.locationtech.jts.geom.MultiPoint;
  */
 public class FrechetSimilarityMeasure implements SimilarityMeasure {
 
-  private final DistanceMetric distanceMetric;
-
   /**
-   * Creates an instance of this class using the {@link CartesianDistance}
-   * for the {@link DiscreteFrechetDistance} computation.
+   * Creates an instance of this class.
    */
-  public FrechetSimilarityMeasure() {
-    this(CartesianDistance.getInstance());
-  }
-
-  /**
-   * Creates an instance of this class using the provided {@link DistanceMetric}
-   * for the {@link DiscreteFrechetDistance} computation.
-   *
-   * @param distanceMetric an object to compute distances between {@code Coordinate}s.
-   */
-  public FrechetSimilarityMeasure(DistanceMetric distanceMetric)
-  {
-    if (distanceMetric == null)
-      distanceMetric = CartesianDistance.getInstance();
-    this.distanceMetric = distanceMetric;
-  }
+  public FrechetSimilarityMeasure()
+  { }
 
   @Override
   public double measure(Geometry g1, Geometry g2) {
@@ -71,7 +52,7 @@ public class FrechetSimilarityMeasure implements SimilarityMeasure {
       throw new IllegalArgumentException("g1 and g2 are of different type");
 
     // Compute the distance
-    double frechetDistance = DiscreteFrechetDistance.distance(g1, g2, this.distanceMetric);
+    double frechetDistance = DiscreteFrechetDistance.distance(g1, g2);
     if (frechetDistance == 0d) return 1;
 
     // Compute envelope diagonal size

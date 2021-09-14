@@ -51,44 +51,24 @@ public class DiscreteFrechetDistance {
    * @return the cartesian distance between {#g0} and {#g1}
    */
   public static double distance(Geometry g0, Geometry g1) {
-    return distance(g0, g1, CartesianDistance.getInstance());
-  }
 
-  /**
-   * Computes the discrete Fréchet distance between two {@link Geometry}s
-   * using the provided distance computation function.
-   *
-   * @param g0 the 1st geometry
-   * @param g1 the 2nd geometry
-   * @return the Discrete Fréchet Distance between the two geometries
-   */
-  public static double distance(Geometry g0, Geometry g1, DistanceMetric distanceMetric)
-  {
-    if (distanceMetric == null)
-      throw new NullPointerException("distanceFunction");
-
-    DiscreteFrechetDistance dist = new DiscreteFrechetDistance(g0, g1, distanceMetric);
+    DiscreteFrechetDistance dist = new DiscreteFrechetDistance(g0, g1);
     return dist.distance();
   }
 
   private final Geometry g0;
   private final Geometry g1;
-  private final DistanceMetric distanceMetric;
   private PointPairDistance ptDist;
 
   /**
-   * Creates an instance of this class using the provided geometries and
-   * the provided {@link DistanceMetric} to compute distances between
-   * {@link Coordinate}s.
+   * Creates an instance of this class using the provided geometries.
    *
    * @param g0 a geometry
    * @param g1 a geometry
-   * @param distanceMetric an object to perform distance calculations.
    */
-  private DiscreteFrechetDistance(Geometry g0, Geometry g1, DistanceMetric distanceMetric) {
+  private DiscreteFrechetDistance(Geometry g0, Geometry g1) {
     this.g0 = g0;
     this.g1 = g1;
-    this.distanceMetric = distanceMetric;
   }
 
   /**
@@ -233,7 +213,7 @@ public class DiscreteFrechetDistance {
     for (long l : diagonal) {
       int i0 = (int) (l >> 32);
       int j0 = (int) l & 0x7FFFFFFF;
-      double diagDist = this.distanceMetric.distance(coords0[i0], coords1[j0]);
+      double diagDist = coords0[i0].distance(coords1[j0]);
       if (diagDist > maxDistOnDiag) maxDistOnDiag = diagDist;
       distances.put(l, diagDist);
       distanceToPair.putIfAbsent(diagDist, l);
@@ -254,7 +234,7 @@ public class DiscreteFrechetDistance {
       for (; i < numCoords0; i++) {
         long key = ((long)i << 32) | j0;
         if (!distances.containsKey(key)) {
-          double dist = this.distanceMetric.distance(coords0[i], coord1);
+          double dist = coords0[i].distance(coord1);
           if (dist < maxDistOnDiag || i < imin)
           {
             distances.put(key, dist);
@@ -273,7 +253,7 @@ public class DiscreteFrechetDistance {
       for (; j < numCoords1; j++) {
         long key = ((long)i0 << 32) | j;
         if (!distances.containsKey(key)) {
-          double dist = this.distanceMetric.distance(coord0, coords1[j]);
+          double dist = coord0.distance(coords1[j]);
           if (dist < maxDistOnDiag || j < jmin)
           {
             distances.put(key, dist);
