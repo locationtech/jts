@@ -71,9 +71,9 @@ public class TriDelaunayImprover {
     for (int i = 0; i < triList.size() - 1; i++) {
       Tri tri = triList.get(i);
       for (int j = 0; j < 3; j++) {
-        Tri neighb = tri.getAdjacent(j);
+        //Tri neighb = tri.getAdjacent(j);
         //tri.validateAdjacent(j);
-        if ( improveNonDelaunay(tri, neighb) ) {
+        if ( improveNonDelaunay(tri, j) ) {
           // TODO: improve performance by only rescanning tris adjacent to flips?
           improveCount++;
         }
@@ -89,19 +89,23 @@ public class TriDelaunayImprover {
    * @param tri1 a Tri
    * @return true if the triangles were flipped
    */
-  private boolean improveNonDelaunay(Tri tri0, Tri tri1) {
-    if ( tri0 == null || tri1 == null ) {
+  private boolean improveNonDelaunay(Tri tri, int index) {
+    if ( tri == null ) {
+      return false;
+    }
+    Tri tri1 = tri.getAdjacent(index);
+    if ( tri1 == null ) {
       return false;
     }
     //tri0.validate();
     //tri1.validate();
 
-    int index0 = tri0.getIndex(tri1);
-    int index1 = tri1.getIndex(tri0);
+    
+    int index1 = tri1.getIndex(tri);
 
-    Coordinate adj0 = tri0.getCoordinate(index0);
-    Coordinate adj1 = tri0.getCoordinate(Tri.next(index0));
-    Coordinate opp0 = tri0.getCoordinate(Tri.oppVertex(index0));
+    Coordinate adj0 = tri.getCoordinate(index);
+    Coordinate adj1 = tri.getCoordinate(Tri.next(index));
+    Coordinate opp0 = tri.getCoordinate(Tri.oppVertex(index));
     Coordinate opp1 = tri1.getCoordinate(Tri.oppVertex(index1));
     
     /**
@@ -120,9 +124,7 @@ public class TriDelaunayImprover {
      * other triangle).
      */
     if ( ! isDelaunay(adj0, adj1, opp0, opp1) ) {
-      tri0.flip(tri1);
-      //-- already have index and vertex data so use it
-      //tri0.flip(tri1, index0, index1, adj0, adj1, opp0, opp1);
+      tri.flip(index);
       return true;
     }
     return false;

@@ -109,29 +109,15 @@ public class Tri {
     setTri(index, tri);
     // TODO: validate that tri is adjacent at the edge specified
   }
-  
-  /**
-   * Replace triOld with triNew
-   * 
-   * @param triOld
-   * @param triNew
-   */
-  private void replace(Tri triOld, Tri triNew) {
-    if ( tri0 != null && tri0 == triOld ) {
-      tri0 = triNew;
-    } else if ( tri1 != null && tri1 == triOld ) {
-      tri1 = triNew;
-    } else if ( tri2 != null && tri2 == triOld ) {
-      tri2 = triNew;
-    }
-  }
 
   /**
-   * Spits a triangle by a point located inside the triangle. Returns a new
-   * triangle whose 0'th vertex is p
+   * Spits a triangle by a point located inside the triangle. 
+   * Creates the three new resulting triangles with adjacent links
+   * set correctly.  
+   * Returns the new triangle whose 0'th vertex is the splitting point.
    * 
    * @param p the point to insert
-   * @return a new triangle whose 0'th vertex is p
+   * @return the new triangle whose 0'th vertex is p
    */
   public Tri split(Coordinate p) {
     Tri tt0 = new Tri(p, p0, p1);
@@ -143,19 +129,27 @@ public class Tri {
     return tt0;
   }
   
-  public void flip(Tri tri) {
-    int index0 = getIndex(tri);
+  /**
+   * Interchanges the vertices of this triangle and a neighbor 
+   * so that their common edge
+   * becomes the the other diagonal of the quadrilateral they form.
+   * Neighbour triangle links are modified accordingly.
+   * 
+   * @param index the index of the adjacent tri to flip with
+   */
+  public void flip(int index) {
+    Tri tri = getAdjacent(index);
     int index1 = tri.getIndex(this);
 
-    Coordinate adj0 = getCoordinate(index0);
-    Coordinate adj1 = getCoordinate(next(index0));
-    Coordinate opp0 = getCoordinate(oppVertex(index0));
+    Coordinate adj0 = getCoordinate(index);
+    Coordinate adj1 = getCoordinate(next(index));
+    Coordinate opp0 = getCoordinate(oppVertex(index));
     Coordinate opp1 = tri.getCoordinate(oppVertex(index1));
     
-    flip(tri, index0, index1, adj0, adj1, opp0, opp1);
+    flip(tri, index, index1, adj0, adj1, opp0, opp1);
   }
   
-  public void flip(Tri tri, int index0, int index1, Coordinate adj0, Coordinate adj1, Coordinate opp0, Coordinate opp1) {
+  private void flip(Tri tri, int index0, int index1, Coordinate adj0, Coordinate adj1, Coordinate opp0, Coordinate opp1) {
     //System.out.println("Flipping: " + this + " -> " + tri);
     
     //validate();
@@ -179,6 +173,22 @@ public class Tri {
     }
     //validate();
     //tri.validate();
+  }
+  
+  /**
+   * Replace an adjacent triangle with a different one.
+   * 
+   * @param triOld an adjacent triangle
+   * @param triNew the triangle to replace it with
+   */
+  private void replace(Tri triOld, Tri triNew) {
+    if ( tri0 != null && tri0 == triOld ) {
+      tri0 = triNew;
+    } else if ( tri1 != null && tri1 == triOld ) {
+      tri1 = triNew;
+    } else if ( tri2 != null && tri2 == triOld ) {
+      tri2 = triNew;
+    }
   }
   
   /**
