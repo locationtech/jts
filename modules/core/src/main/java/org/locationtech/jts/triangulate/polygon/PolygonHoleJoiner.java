@@ -51,7 +51,7 @@ class PolygonHoleJoiner {
   private static final double EPS = 1.0E-4;
   
   private List<Coordinate> shellCoords;
-  // orderedCoords a copy of shellCoords for sort purpose
+  // orderedCoords is a copy of shellCoords for sort purposes
   private TreeSet<Coordinate> orderedCoords;
   // Key: starting end of the cut; Value: list of the other end of the cut
   private HashMap<Coordinate, ArrayList<Coordinate>> cutMap;
@@ -87,9 +87,6 @@ class PolygonHoleJoiner {
     return coordList;
   }
   
-  /**
-   * @param shellCoords Shell Coordinates of the polygon.
-   */
   private void joinHoles() {
     orderedCoords = new TreeSet<Coordinate>();
     orderedCoords.addAll(shellCoords);
@@ -101,25 +98,26 @@ class PolygonHoleJoiner {
   }
 
   /**
-   * 1) Get a list of HoleVertex Index. 
-   * 2) Get a list of ShellVertex. 
-   * 3) Get the
-   * pair that outputs the shortest distance between. This pair is the two ending
-   * points of the cut 
-   * 4) selected ShellVertex may occurs multiple times in
-   * shellCoords[], find the proper one and add the hole behind.
+   * Joins a single hole to the current shellRing.
    * 
-   * @param hole
+   * @param hole the hole to join
    */
   private void joinHole(LinearRing hole) {
+    /**
+     * 1) Get a list of HoleVertex Index. 
+     * 2) Get a list of ShellVertex. 
+     * 3) Get the pair that has the shortest distance between them. 
+     * This pair is the endpoints of the cut 
+     * 4) The selected ShellVertex may occurs multiple times in
+     * shellCoords[], so find the proper one and add the hole after it.
+     */
     final Coordinate[] holeCoords = hole.getCoordinates();
     List<Integer> holeLeftVerticesIndex = getLeftMostVertex(hole);
     Coordinate holeCoord = holeCoords[holeLeftVerticesIndex.get(0)];
     List<Coordinate> shellCoordsList = getLeftShellVertex(holeCoord);
     Coordinate shellCoord = shellCoordsList.get(0);
     int shortestHoleVertexIndex = 0;
-    // pick the shellvertex holevertex pair that gives the shortest
-    // distance
+    //--- pick the shell-hole vertex pair that gives the shortest distance
     if ( Math.abs(shellCoord.x - holeCoord.x) < EPS ) {
       double shortest = Double.MAX_VALUE;
       for (int i = 0; i < holeLeftVerticesIndex.size(); i++) {
@@ -184,11 +182,11 @@ class PolygonHoleJoiner {
   }
 
   /**
-   * Return a list of shell vertices that could be used to join with holeCoord.
+   * Gets a list of shell vertices that could be used to join with the hole.
    * This list contains only one item if the chosen vertex does not share the same
    * x value with holeCoord
    * 
-   * @param holeCoord
+   * @param holeCoord the hole coordinates
    * @return a list of candidate join vertices
    */
   private List<Coordinate> getLeftShellVertex(Coordinate holeCoord) {
@@ -215,16 +213,21 @@ class PolygonHoleJoiner {
   }
 
   /**
-   * Determine if a line segment between two coordinates 
-   * lies inside the input polygon.
+   * Determine if a line segment between a hole vertex
+   * and a shell vertex lies inside the input polygon.
    * 
-   * @param holeCoord
-   * @param shellCoord
+   * @param holeCoord a hole coordinate
+   * @param shellCoord a shell coordinate
    * @return true if the line lies inside the polygon
    */
   private boolean isJoinable(Coordinate holeCoord, Coordinate shellCoord) {
-    boolean isJoinable = isInsidePolyogn(holeCoord, shellCoord);
+    /**
+     * Since the line runs between a hole and the shell,
+     * it is inside the polygon if it does not cross the polygon boundary.
+     */
+    boolean isJoinable = ! crossesPolygon(holeCoord, shellCoord);
     /*
+    //--- slow code for testing only
     LineString join = geomFact.createLineString(new Coordinate[] { holeCoord, shellCoord });
     boolean isJoinableSlow = inputPolygon.covers(join)
     if (isJoinableSlow != isJoinable) {
@@ -235,7 +238,14 @@ class PolygonHoleJoiner {
     return isJoinable;
   }
   
-  public boolean isInsidePolyogn(Coordinate p0, Coordinate p1) {
+  /**
+   * Tests whether a line segment crosses the polygon boundary.
+   * 
+   * @param p0 a vertex
+   * @param p1 a vertex
+   * @return true if the line segment crosses the polygon boundary
+   */
+  private boolean crossesPolygon(Coordinate p0, Coordinate p1) {
     SegmentString segString = new BasicSegmentString(
         new Coordinate[] { p0, p1 }, null);
     List<SegmentString> segStrings = new ArrayList<SegmentString>();
@@ -245,7 +255,7 @@ class PolygonHoleJoiner {
     segInt.setFindProper(true);
     polygonIntersector.process(segStrings, segInt);
     
-    return ! segInt.hasProperIntersection();
+    return segInt.hasProperIntersection();
   }
   
   /**
