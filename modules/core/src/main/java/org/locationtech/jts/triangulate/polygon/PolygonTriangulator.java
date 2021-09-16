@@ -48,12 +48,13 @@ public class PolygonTriangulator {
    * @return a GeometryCollection containing the triangle polygons
    */
   public static Geometry triangulate(Geometry geom) {
-    PolygonTriangulator clipper = new PolygonTriangulator(geom);
-    return clipper.compute();
+    PolygonTriangulator triangulator = new PolygonTriangulator(geom);
+    return triangulator.getResult();
   }
   
   private final GeometryFactory geomFact;
   private final Geometry inputGeom;
+  private List<Tri> triList;
 
   /**
    * Constructs a new triangulator.
@@ -65,15 +66,34 @@ public class PolygonTriangulator {
     this.inputGeom = inputGeom;
   }
 
-  private Geometry compute() {
+  /**
+   * Gets the triangulation as a {@link GeometryCollection} of triangular {@link Polygon}s.
+   * 
+   * @return a collection of the result triangle polygons
+   */
+  public Geometry getResult() {
+    compute();
+    return Tri.toGeometry(triList, geomFact);
+  }
+  
+  /**
+   * Gets the triangulation as a list of {@link Tri}s.
+   * 
+   * @return the list of Tris in the triangulation
+   */
+  public List<Tri> getTriangles() {
+    compute();
+    return triList;
+  }
+  
+  private void compute() {
     @SuppressWarnings("unchecked")
     List<Polygon> polys = PolygonExtracter.getPolygons(inputGeom);
-    List<Tri> triList = new ArrayList<Tri>();
+    triList = new ArrayList<Tri>();
     for (Polygon poly : polys) {
       List<Tri> polyTriList = triangulatePolygon(poly);
       triList.addAll(polyTriList);
     }
-    return Tri.toGeometry(triList, geomFact);
   }
  
   /**
