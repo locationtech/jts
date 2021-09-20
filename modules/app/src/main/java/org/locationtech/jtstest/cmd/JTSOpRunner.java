@@ -29,7 +29,7 @@ import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.util.Stopwatch;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
-import org.locationtech.jtstest.geomfunction.SelecterGeometryFunction;
+import org.locationtech.jtstest.geomfunction.FilterGeometryFunction;
 import org.locationtech.jtstest.testbuilder.ui.SwingUtil;
 import org.locationtech.jtstest.util.io.MultiFormatBufferedReader;
 import org.locationtech.jtstest.util.io.MultiFormatFileReader;
@@ -105,8 +105,9 @@ public class JTSOpRunner {
     public boolean isExplode = false;
     public int srid;
     
-    public boolean isSelect = false;
-    public double selectVal = 0;
+    public boolean isFilter = false;
+    public int filterOp;
+    public double filterVal = 0;
     
     String operation;
     public String[] argList;
@@ -250,13 +251,11 @@ public class JTSOpRunner {
     geomB = toList(geomAB.get(1));
   }
 
-
-
   private void executeFunction() {
     GeometryFunction baseFun = getFunction(param.operation);
     GeometryFunction func = baseFun;
-    if (param.isSelect) {
-      func = new SelecterGeometryFunction(func, param.selectVal);
+    if (param.isFilter) {
+      func = new FilterGeometryFunction(func, param.filterOp, param.filterVal);
     }
     
     if (func == null) {

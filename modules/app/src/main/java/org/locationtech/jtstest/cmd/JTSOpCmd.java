@@ -25,6 +25,7 @@ import org.locationtech.jtstest.command.OptionSpec;
 import org.locationtech.jtstest.command.ParseException;
 import org.locationtech.jtstest.function.DoubleKeyMap;
 import org.locationtech.jtstest.geomfunction.BaseGeometryFunction;
+import org.locationtech.jtstest.geomfunction.FilterGeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunction;
 import org.locationtech.jtstest.geomfunction.GeometryFunctionRegistry;
 import org.locationtech.jtstest.util.io.MultiFormatReader;
@@ -120,7 +121,7 @@ public class JTSOpCmd {
     .addOptionSpec(new OptionSpec(CommandOptions.OFFSET, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.REPEAT, 1))
     .addOptionSpec(new OptionSpec(CommandOptions.SRID, 1))
-    .addOptionSpec(new OptionSpec(CommandOptions.WHERE, 1))
+    .addOptionSpec(new OptionSpec(CommandOptions.WHERE, 2))
     .addOptionSpec(new OptionSpec(CommandOptions.VALIDATE, 0))
     .addOptionSpec(new OptionSpec(OptionSpec.OPTION_FREE_ARGS, OptionSpec.NARGS_ONE_OR_MORE));
     return commandLine;
@@ -139,7 +140,7 @@ public class JTSOpCmd {
   "           [ -eachb ]",
   "           [ -index ]",
   "           [ -repeat N ]",
-  "           [ -where D ]",
+  "           [ -where (eq | ne | ge | gt | le | lt) N ]",
   "           [ -validate ]",
   "           [ -explode",
   "           [ -srid SRID ]",
@@ -165,7 +166,8 @@ public class JTSOpCmd {
   "  -eachb          execute op on each element of B",
   "  -index          index the B geometries",
   "  -repeat         repeat the operation N times",
-  "  -where          output geometry where operation result equals the value D (1=true, 0=false)",
+  "  -where op v     output geometry where operation result matches predicate op and value.",
+  "                     Predicates ops are: eq,ne,ge,gt,le,lt",
   "  -validate       validate the result of each operation",
   "  -geomfunc       specifies class providing geometry operations",
   "  -op             separator to delineate operation arguments",
@@ -340,13 +342,16 @@ public class JTSOpCmd {
     cmdArgs.repeat = commandLine.hasOption(CommandOptions.REPEAT)
         ? commandLine.getOptionArgAsInt(CommandOptions.REPEAT, 0)
             : 1;
-    cmdArgs.validate  = commandLine.hasOption(CommandOptions.VALIDATE);
-    cmdArgs.isSelect  = commandLine.hasOption(CommandOptions.WHERE);
-    cmdArgs.selectVal =  cmdArgs.isSelect ?
-        commandLine.getOptionArgAsNum(CommandOptions.WHERE, 0)
-        : 1;
+    cmdArgs.validate = commandLine.hasOption(CommandOptions.VALIDATE);
+    
+    cmdArgs.isFilter = commandLine.hasOption(CommandOptions.WHERE);
+    cmdArgs.filterOp =  cmdArgs.isFilter ?
+        parseFilterOp(commandLine.getOptionArg(CommandOptions.WHERE, 0))
+        : 0;
+    cmdArgs.filterVal =  cmdArgs.isFilter ?
+        commandLine.getOptionArgAsNum(CommandOptions.WHERE, 1)
+        : 0;
      
-
     cmdArgs.eachA = commandLine.hasOption(CommandOptions.EACHA);
     cmdArgs.eachB = commandLine.hasOption(CommandOptions.EACHB);
     
@@ -396,7 +401,7 @@ public class JTSOpCmd {
     
     return cmdArgs;
   }
-  
+
   private String[] parseOpArg(String arg) {
     if (isArgMultiValues(arg)) {
       return parseValues(arg);
@@ -455,5 +460,15 @@ public class JTSOpCmd {
     // TODO: error if no R paren
     String args = macroTerm.substring(indexLeft + 1, indexRight);
     return args.split(",");
+  }
+  
+  private int parseFilterOp(String opStr) {
+    if ("eq".equalsIgnoreCase(opStr)) return FilterGeometryFunction.OP_EQ;
+    if ("ne".equalsIgnoreCase(opStr)) return FilterGeometryFunction.OP_NE;
+    if ("ge".equalsIgnoreCase(opStr)) return FilterGeometryFunction.OP_GE;
+    if ("gt".equalsIgnoreCase(opStr)) return FilterGeometryFunction.OP_GT;
+    if ("le".equalsIgnoreCase(opStr)) return FilterGeometryFunction.OP_LE;
+    if ("lt".equalsIgnoreCase(opStr)) return FilterGeometryFunction.OP_LT;
+    throw new CommandError(ERR_INVALID_ARG_PARAM, opStr);
   }
 }

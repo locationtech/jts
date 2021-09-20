@@ -13,13 +13,29 @@ package org.locationtech.jtstest.geomfunction;
 
 import org.locationtech.jts.geom.Geometry;
 
-public class SelecterGeometryFunction implements GeometryFunction {
-  private GeometryFunction fun;
-  private double selectVal;
+public class FilterGeometryFunction implements GeometryFunction {
   
-  public SelecterGeometryFunction(GeometryFunction fun, double selectVal) {
+  public static int OP_EQ = 1;
+  public static int OP_NE = 2;
+  public static int OP_GE = 3;
+  public static int OP_GT = 4;
+  public static int OP_LE = 5;
+  public static int OP_LT = 6;
+  
+  private GeometryFunction fun;
+  private double filterVal;
+  private int filterOp;
+  
+  public FilterGeometryFunction(GeometryFunction fun, double filterVal) {
     this.fun = fun;
-    this.selectVal = selectVal;
+    this.filterVal = filterVal;
+    filterOp = OP_EQ;
+  }
+  
+  public FilterGeometryFunction(GeometryFunction fun, int op, double val) {
+    this.fun = fun;
+    this.filterOp = op;
+    this.filterVal = val;
   }
   
   public String getCategory() {
@@ -61,12 +77,26 @@ public class SelecterGeometryFunction implements GeometryFunction {
   @Override
   public Object invoke(Geometry geom, Object[] args) {
     Object result = fun.invoke(geom, args);
-    double val = 0;
-    if (result instanceof Boolean) {
-      val = ((Boolean) result) ? 1 : 0;
-    }
-    if (selectVal == val) return geom;
+    double val = toDouble(result);
+    if (isMatch(val)) return geom;
     return null;
+  }
+
+  private double toDouble(Object result) {
+    if (result instanceof Boolean) return ((Boolean) result) ? 1 : 0;
+    if (result instanceof Number) 
+      return ((Number) result).doubleValue();
+    return 0;
+  }
+
+  private boolean isMatch(double val) {
+    if (OP_EQ == filterOp) return val == filterVal;
+    if (OP_NE == filterOp) return val != filterVal;
+    if (OP_GE == filterOp) return val >= filterVal;
+    if (OP_GT == filterOp) return val > filterVal;
+    if (OP_LE == filterOp) return val <= filterVal;
+    if (OP_LT == filterOp) return val < filterVal;
+    return false;
   }
 
 
