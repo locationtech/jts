@@ -99,10 +99,9 @@ public class JTSOpCmdTest extends TestCase {
     runCmd( args("-a", "stdin", 
                 "-collect", 
                 "-f", "wkt", "Overlay.unaryUnion"), 
-        stdin(new String[] {
-            "POLYGON ((1 3, 3 3, 3 1, 1 1, 1 3))",
-            "POLYGON ((5 3, 5 1, 3 1, 3 3, 5 3))"
-        }),
+        stdin(  "POLYGON ((1 3, 3 3, 3 1, 1 1, 1 3))",
+                "POLYGON ((5 3, 5 1, 3 1, 3 3, 5 3))"
+        ),
         "POLYGON ((1 3, 3 3, 5 3, 5 1, 3 1, 1 1, 1 3))" );
     
   }
@@ -112,11 +111,10 @@ public class JTSOpCmdTest extends TestCase {
                 "-collect", 
                 "-limit", "2",
                 "-f", "wkt", "Overlay.unaryUnion"), 
-        stdin(new String[] {
-            "POLYGON ((1 3, 3 3, 3 1, 1 1, 1 3))",
-            "POLYGON ((5 3, 5 1, 3 1, 3 3, 5 3))",
-            "POLYGON ((1 5, 5 5, 5 3, 1 3, 1 5))"
-        }),
+        stdin(  "POLYGON ((1 3, 3 3, 3 1, 1 1, 1 3))",
+                "POLYGON ((5 3, 5 1, 3 1, 3 3, 5 3))",
+                "POLYGON ((1 5, 5 5, 5 3, 1 3, 1 5))"
+        ),
         "POLYGON ((1 3, 3 3, 5 3, 5 1, 3 1, 1 1, 1 3))" );
     
   }
@@ -199,13 +197,14 @@ public class JTSOpCmdTest extends TestCase {
     assertEquals("Incorrect summary value for arg values",  computeArea(results), 93.6, 1);
   }
 
+  //----------------------------------------------------------------
+
   public void testWhereValid() {
     JTSOpCmd cmd = runCmd( args(
         "-a", "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))", 
         "-f", "wkt", 
         "-where", "eq", "1",
-        "isValid" ), 
-        null, null );
+        "isValid" ) );
     List<Geometry> results = cmd.getResultGeometry();
     assertTrue("Not enough results for arg values",  results.size() == 1 );
   }
@@ -215,10 +214,25 @@ public class JTSOpCmdTest extends TestCase {
         "-a", "POLYGON ((1 9, 9 1, 9 9, 1 1, 1 9))", 
         "-f", "wkt", 
         "-where","eq", "0",
-        "isValid" ), 
-        null, null );
+        "isValid" ) );
     List<Geometry> results = cmd.getResultGeometry();
     assertTrue("Not enough results for arg values",  results.size() == 1 );
+  }
+
+  public void testWhereLength() {
+    JTSOpCmd cmd = runCmd( args(
+        "-a", "stdin", 
+        "-f", "wkt", 
+        "-where","gt", "1",
+        "Geometry.length" ), 
+        stdin(
+            "LINESTRING ( 0 1, 0 1)",
+            "LINESTRING ( 0 1, 0 2)",
+            "LINESTRING ( 0 1, 0 3)",
+            "LINESTRING ( 0 1, 0 4)"
+            ) );
+    List<Geometry> results = cmd.getResultGeometry();
+    assertTrue("Not enough results for arg values",  results.size() == 2 );
   }
 
   //----------------------------------------------------------------
@@ -373,7 +387,7 @@ public class JTSOpCmdTest extends TestCase {
     return instr;
   }
   
-  private static InputStream stdin(String[] dataArr) {
+  private static InputStream stdin(String... dataArr) {
     String data = String.join("\n", dataArr);
     return stdin(data);
   }
@@ -392,6 +406,14 @@ public class JTSOpCmdTest extends TestCase {
     runCmd(args, null, expected);
   }
 
+  private JTSOpCmd runCmd(String[] args, InputStream stdin) {
+    return runCmd(args, stdin, null);
+  }
+  
+  private JTSOpCmd runCmd(String[] args) {
+    return runCmd(args, null, null);
+  }
+  
   private JTSOpCmd runCmd(String[] args, InputStream stdin, String expected) {
     JTSOpCmd cmd = new JTSOpCmd();
     cmd.captureOutput();
