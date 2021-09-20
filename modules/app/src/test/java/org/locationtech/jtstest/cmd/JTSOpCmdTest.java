@@ -203,7 +203,7 @@ public class JTSOpCmdTest extends TestCase {
     JTSOpCmd cmd = runCmd( args(
         "-a", "POLYGON ((1 9, 9 9, 9 1, 1 1, 1 9))", 
         "-f", "wkt", 
-        "-where", "1",
+        "-where", "eq", "1",
         "isValid" ), 
         null, null );
     List<Geometry> results = cmd.getResultGeometry();
@@ -214,7 +214,7 @@ public class JTSOpCmdTest extends TestCase {
     JTSOpCmd cmd = runCmd( args(
         "-a", "POLYGON ((1 9, 9 1, 9 9, 1 1, 1 9))", 
         "-f", "wkt", 
-        "-where","0",
+        "-where","eq", "0",
         "isValid" ), 
         null, null );
     List<Geometry> results = cmd.getResultGeometry();
