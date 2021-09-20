@@ -54,7 +54,7 @@ public class ConstrainedDelaunayTriangulator {
    * @param inputGeom the input geometry
    */
   public ConstrainedDelaunayTriangulator(Geometry inputGeom) {
-    geomFact = new GeometryFactory();
+    geomFact = inputGeom.getFactory();
     this.inputGeom = inputGeom;
   }
 

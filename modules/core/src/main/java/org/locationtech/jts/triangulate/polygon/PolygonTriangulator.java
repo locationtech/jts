@@ -62,7 +62,7 @@ public class PolygonTriangulator {
    * @param inputGeom the input geometry
    */
   public PolygonTriangulator(Geometry inputGeom) {
-    geomFact = new GeometryFactory();
+    geomFact = inputGeom.getFactory();
     this.inputGeom = inputGeom;
   }
 
