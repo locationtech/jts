@@ -17,16 +17,30 @@ public class DiscreteFrechetDistanceLinear {
    * @return the cartesian distance between {#g0} and {#g1}
    */
   public static double distance(Geometry g0, Geometry g1) {
-    DiscreteFrechetDistanceLinear dist = new DiscreteFrechetDistanceLinear(g0, g1);
+    DiscreteFrechetDistanceLinear dist = new DiscreteFrechetDistanceLinear(g0, g1, false);
     return dist.distance();
   }
 
+  /**
+   * Computes the Discrete Fréchet Distance between two {@link Geometry}s
+   * using a {@code cartesian} distance computation function.
+   *
+   * @param g0 the 1st geometry
+   * @param g1 the 2nd geometry
+   * @return the cartesian distance between {#g0} and {#g1}
+   */
+  public static double distance(Geometry g0, Geometry g1, boolean getCoordinates) {
+    DiscreteFrechetDistanceLinear dist = new DiscreteFrechetDistanceLinear(g0, g1, getCoordinates);
+    return dist.distance();
+  }
   private final Geometry g0;
   private final Geometry g1;
+  private final boolean getCoordinates;
 
-  public DiscreteFrechetDistanceLinear(Geometry g0, Geometry g1) {
+  private DiscreteFrechetDistanceLinear(Geometry g0, Geometry g1, boolean getCoordinates) {
     this.g0 = g0;
     this.g1 = g1;
+    this.getCoordinates = getCoordinates;
   }
 
   public double distance() {
