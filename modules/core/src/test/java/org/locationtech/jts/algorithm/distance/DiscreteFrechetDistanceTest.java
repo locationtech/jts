@@ -2,7 +2,7 @@
  * Copyright (c) 2021 Felix Obermaier.
  *
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v2.0
+ * are made available under the terms of the Eclipse Public License 2.0
  * and Eclipse Distribution License v. 1.0 which accompanies this distribution.
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v20.html
  * and the Eclipse Distribution License is available at
@@ -77,11 +77,11 @@ public class DiscreteFrechetDistanceTest extends GeometryTestCase {
     System.out.println(String.format("DiscreteFrechetDistanceLinear %dms.%n", sw.getTime()));
     assertEquals(expectedDistance, distance0, TOLERANCE);
 
-    double distance1 = DiscreteFrechetDistance.distance(g1, g2, true);
+    double distance1 = DiscreteFrechetDistance.distance(g1, g2);
     assertEquals(expectedDistance, distance1, TOLERANCE);
     sw.reset();
     sw.start();
-    double distance2 = DiscreteFrechetDistance.distance(g2, g1, true);
+    double distance2 = DiscreteFrechetDistance.distance(g2, g1);
     sw.stop();
     System.out.println(String.format("DiscreteFrechetDistance %dms.%n", sw.getTime()));
     assertEquals(distance1, distance2);
