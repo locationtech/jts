@@ -77,8 +77,10 @@ class PolygonEarClipper {
   private int[] cornerIndex;
   
   /**
-   * Indexing vertices improves ear intersection testing performance a lot.
+   * Indexing vertices improves ear intersection testing performance.
    * The polyShell vertices are contiguous, so are suitable for an SPRtree.
+   * Note that a KDtree cannot be used because the vertex indices must be stored
+   * and duplicates must be stored.
    */
   private VertexSequencePackedRtree vertexCoordIndex;
 
@@ -199,15 +201,16 @@ class PolygonEarClipper {
       //--- a duplicate corner vertex requires a full scan
       return isValidEarScan(cornerIndex, corner);
     }
+    //-- vertex is contained in corner, so it is not a valid ear
     return false;
   }
 
   /**
-   * Finds another vertex intersecting the corner triangle, if any.
+   * Finds a vertex contained in the corner triangle, if any.
    * Uses the vertex spatial index for efficiency.
    * <p>
-   * Also finds any vertex which is a duplicate of the corner apex vertex,
-   * which then requires a full scan of the vertices to confirm ear is valid. 
+   * Also finds any vertex which is a duplicate of the corner apex vertex.
+   * This requires a full scan of the vertices to confirm ear is valid. 
    * This is usually a rare situation, so has little impact on performance.
    * 
    * @param cornerIndex the index of the corner apex vertex
@@ -230,11 +233,11 @@ class PolygonEarClipper {
       
       Coordinate v = vertex[vertIndex];
       /**
-       * If another vertex at the corner is found,
-       * need to do a full scan to check the incident segments.
-       * This happens when the polygon ring self-intersects,
-       * usually due to hold joining.
-       * But only report this if no properly intersecting vertex is found,
+       * If the vertex is equal to the corner apex, record it.
+       * This can happen where the polygon ring self-touches,
+       * usually due to hole joining.
+       * This will require a full scan to check the incident segments.
+       * So only report this if no properly intersecting vertex is found,
        * for efficiency.
        */
       if ( v.equals2D(corner[1]) ) {
