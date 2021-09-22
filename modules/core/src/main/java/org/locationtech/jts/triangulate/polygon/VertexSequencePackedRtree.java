@@ -32,7 +32,7 @@ import org.locationtech.jts.util.IntArrayList;
  * @author Martin Davis
  *
  */
-class VertexSequencePackedRtree {
+public class VertexSequencePackedRtree {
   
   /**
    * Number of items/nodes in a parent node.
