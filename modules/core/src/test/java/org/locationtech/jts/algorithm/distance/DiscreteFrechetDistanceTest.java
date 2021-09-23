@@ -13,7 +13,6 @@
 package org.locationtech.jts.algorithm.distance;
 
 import org.junit.Test;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.util.Stopwatch;
 import test.jts.GeometryTestCase;
@@ -46,8 +45,7 @@ public class DiscreteFrechetDistanceTest extends GeometryTestCase {
       "LINESTRING (10 10, 10 150, 130 10)", 191.049731745428);
   }
 
-  // https://github.com/joaofig/discrete-frechet/blob/master/recursive-vs-linear.ipynb
-  public void test2() {
+  public void testDevogeleEtAlPaper() {
     runTest("LINESTRING(0.2 2.0, 1.5 2.8, 2.3 1.6, 2.9 1.8, 4.1 3.1, 5.6 2.9, 7.2 1.3, 8.2 1.1)",
       "LINESTRING(0.3 1.6, 3.2 3.0, 3.8 1.8, 5.2 3.1, 6.5 2.8, 7.0 0.8, 8.9 0.6)", 1.697056);
   }
@@ -60,7 +58,7 @@ public class DiscreteFrechetDistanceTest extends GeometryTestCase {
     );
   }
 
-  public void test3() {
+  public void testShort() {
     runTest("LINESTRING (1 1, 2 2)",
       "LINESTRING (1 4, 2 3)", 3d);
   }
@@ -70,6 +68,7 @@ public class DiscreteFrechetDistanceTest extends GeometryTestCase {
     Geometry g1 = read(wkt1);
     Geometry g2 = read(wkt2);
 
+    DiscreteFrechetDistanceLinear.distance(g1, g2);
     Stopwatch sw = new Stopwatch();
     sw.start();
     double distance0 = DiscreteFrechetDistanceLinear.distance(g1, g2);
@@ -77,13 +76,12 @@ public class DiscreteFrechetDistanceTest extends GeometryTestCase {
     System.out.println(String.format("DiscreteFrechetDistanceLinear %dms.%n", sw.getTime()));
     assertEquals(expectedDistance, distance0, TOLERANCE);
 
-    double distance1 = DiscreteFrechetDistance.distance(g1, g2);
-    assertEquals(expectedDistance, distance1, TOLERANCE);
+    DiscreteFrechetDistance.distance(g1, g2);
     sw.reset();
     sw.start();
-    double distance2 = DiscreteFrechetDistance.distance(g2, g1);
+    double distance1 = DiscreteFrechetDistance.distance(g1, g2);
     sw.stop();
     System.out.println(String.format("DiscreteFrechetDistance %dms.%n", sw.getTime()));
-    assertEquals(distance1, distance2);
+    assertEquals(expectedDistance, distance1, TOLERANCE);
   }
 }

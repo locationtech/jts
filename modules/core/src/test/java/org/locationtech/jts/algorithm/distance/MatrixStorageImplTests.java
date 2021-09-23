@@ -30,7 +30,6 @@ public class MatrixStorageImplTests extends TestCase {
     runOrderedTest(mat);
     mat = new CsrMatrix(4, 6, 0d, 8);
     runUnorderedTest(mat);
-    System.out.println(mat);
   }
   @Test
   public void testHashMapMatrix()
@@ -39,7 +38,6 @@ public class MatrixStorageImplTests extends TestCase {
     runOrderedTest(mat);
     mat = new HashMapMatrix(4, 6, 0d);
     runUnorderedTest(mat);
-    System.out.println(mat);
   }
   @Test
   public void testRectMatrix()
@@ -48,7 +46,6 @@ public class MatrixStorageImplTests extends TestCase {
     runOrderedTest(mat);
     mat = new RectMatrix(4, 6, 0d);
     runUnorderedTest(mat);
-    System.out.println(mat);
   }
 
   private static void runOrderedTest(MatrixStorage mat) {

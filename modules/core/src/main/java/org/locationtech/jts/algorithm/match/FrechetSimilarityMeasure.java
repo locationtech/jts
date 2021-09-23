@@ -23,7 +23,7 @@ import org.locationtech.jts.geom.MultiPoint;
  * The measure is normalized to lie in the range [0, 1].
  * Higher measures indicate a great degree of similarity.
  * <p/>
- * The measure is computed by computing the Freéchet distance
+ * The measure is computed by computing the Fréchet distance
  * between the input geometries, and then normalizing
  * this by dividing it by the diagonal distance across
  * the envelope of the combined geometries.

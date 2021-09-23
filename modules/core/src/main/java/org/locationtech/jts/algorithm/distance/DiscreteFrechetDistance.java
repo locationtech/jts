@@ -36,12 +36,18 @@ import java.util.Locale;
  * into account. It is possible that two curves have a small Hausdorff but a large
  * Fréchet distance.
  * <p/>
- * This implementation attempts to compute only relevant coordinate distances for
- * performance and uses a HashMap as sparse matrix to reduce memory consumption.
+ * This implementation is base on the following optimized Fréchet distance algorithm:
+ * <pre>Thomas Devogele, Maxence Esnault, Laurent Etienne. Distance discrète de Fréchet optimisée. Spatial
+ * Analysis and Geomatics (SAGEO), Nov 2016, Nice, France. hal-02110055</pre>
+ * <p/>
+ * Several matrix storage implementations are provided
  *
  * @see <a href="https://en.wikipedia.org/wiki/Fr%C3%A9chet_distance">Fréchet distance</a>
  * @see <a href="http://www.kr.tuwien.ac.at/staff/eiter/et-archive/cdtr9464.pdf">
  *   Computing Discrete Fréchet Distance</a>
+ * @see <a href="https://hal.archives-ouvertes.fr/hal-02110055/document">Distance discrète de Fréchet optimisée</a>
+ * @see <a href="https://towardsdatascience.com/fast-discrete-fr%C3%A9chet-distance-d6b422a8fb77">
+ *   Fast Discrete Fréchet Distance</a>
  */
 public class DiscreteFrechetDistance {
 
@@ -93,14 +99,29 @@ public class DiscreteFrechetDistance {
     return ptDist.getDistance();
   }
 
+  /**
+   * Creates a matrix storage
+   * @param rows the number of rows
+   * @param cols the number of columns
+   * @return a matrix storage
+   */
   private MatrixStorage createMatrixStorage(int rows, int cols) {
+
     int max = Math.max(rows, cols);
-    if (max < 24)
+    // NOTE: these constraints need to be verified
+    if (max < 64)
       return new HashMapMatrix(rows, cols, Double.POSITIVE_INFINITY);
+    if (max < 1024)
+      return new RectMatrix(rows, cols, Double.POSITIVE_INFINITY);
+
     return new CsrMatrix(rows, cols, Double.POSITIVE_INFINITY);
-    //return new RectMatrix(rows, cols, Double.POSITIVE_INFINITY);
   }
 
+  /**
+   * Gets the pair of <c>Coordinate</c>s that are {@link #distance()} apart.
+   *
+   * @return the pair of <c>Coordinate</c>s that are {@link #distance()} apart
+   */
   public Coordinate[] getCoordinates() {
     if (ptDist == null)
       distance();
@@ -382,10 +403,10 @@ public class DiscreteFrechetDistance {
     @Override
     public String toString() {
       StringBuilder sb = new StringBuilder("[");
-      for (int i = 0; i < Math.min(10, this.numRows); i++)
+      for (int i = 0; i < this.numRows; i++)
       {
         sb.append('[');
-        for(int j = 0; j < Math.min(10, this.numCols); j++)
+        for(int j = 0; j < this.numCols; j++)
         {
           if (j > 0)
             sb.append(", ");
@@ -404,7 +425,7 @@ public class DiscreteFrechetDistance {
    */
   private static class RectMatrix extends MatrixStorage {
 
-    private final double[][] matrix;
+    private final double[] matrix;
 
     /**
      * Creates an instance of this matrix using the given number of rows and columns.
@@ -417,17 +438,14 @@ public class DiscreteFrechetDistance {
     public RectMatrix(int numRows, int numCols, double defaultValue)
     {
       super(numRows, numCols, defaultValue);
-      this.matrix = new double[numRows][];
-      for (int i = 0; i < numRows; i++) {
-        this.matrix[i] = new double[numCols];
-        Arrays.fill(this.matrix[i], defaultValue);
-      }
+      this.matrix = new double[numRows * numCols];
+      Arrays.fill(this.matrix, defaultValue);
     }
 
-    public double get(int i, int j) { return this.matrix[i][j]; }
+    public double get(int i, int j) { return this.matrix[i * numCols + j]; }
 
     public void set(int i, int j, double value) {
-      this.matrix[i][j] = value;
+      this.matrix[i * numCols + j] = value;
     }
 
     public boolean isValueSet(int i, int j) {
