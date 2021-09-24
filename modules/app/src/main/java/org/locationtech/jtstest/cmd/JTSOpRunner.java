@@ -368,6 +368,10 @@ public class JTSOpRunner {
   private String errorMsg(Throwable ex) {
     String msg = "ERROR excuting function: " + ex.getMessage() + "\n";
     msg += toStackString(ex);
+    if (ex.getCause() != null) {
+      msg += "Caused by:\n";
+      msg += toStackString(ex.getCause());
+    }
     return msg;
   }
 
