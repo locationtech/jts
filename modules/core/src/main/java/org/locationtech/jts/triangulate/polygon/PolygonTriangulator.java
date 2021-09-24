@@ -91,6 +91,7 @@ public class PolygonTriangulator {
     List<Polygon> polys = PolygonExtracter.getPolygons(inputGeom);
     triList = new ArrayList<Tri>();
     for (Polygon poly : polys) {
+      if (poly.isEmpty()) continue;
       List<Tri> polyTriList = triangulatePolygon(poly);
       triList.addAll(polyTriList);
     }
