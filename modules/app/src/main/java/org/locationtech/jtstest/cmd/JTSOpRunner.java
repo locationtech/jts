@@ -493,7 +493,7 @@ public class JTSOpRunner {
     if (outputFormat == null) return;
 
     for (Geometry geom : geoms) {
-      printGeometry(geom, param.srid, outputFormat);
+      outputResult(geom, param.isExplode, outputFormat);
     }
   }
   
