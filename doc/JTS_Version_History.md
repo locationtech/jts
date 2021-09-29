@@ -26,6 +26,7 @@ Distributions for older JTS versions can be obtained at the
 * Improve `GeometryFixer` behaviour for holes outside polygons (#772)
 * Add `ConstrainedDelaunayTriangulator` and `PolygonTriangulator` (#775)
 * Add `Tri` data structure for representing triangulations (#775)
+* Simplify and fix logic of `BufferParameters.setQuadSegs` (#778)
 
 # Version 1.18.2
 
