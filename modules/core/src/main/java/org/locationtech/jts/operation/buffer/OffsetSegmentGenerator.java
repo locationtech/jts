@@ -107,7 +107,10 @@ class OffsetSegmentGenerator
     // compute intersections in full precision, to provide accuracy
     // the points are rounded as they are inserted into the curve line
     li = new RobustLineIntersector();
-    filletAngleQuantum = Math.PI / 2.0 / bufParams.getQuadrantSegments();
+    
+    int quadSegs = bufParams.getQuadrantSegments();
+    if (quadSegs < 1) quadSegs = 1;
+    filletAngleQuantum = Math.PI / 2.0 / quadSegs;
 
     /**
      * Non-round joins cause issues with short closing segments, so don't use
