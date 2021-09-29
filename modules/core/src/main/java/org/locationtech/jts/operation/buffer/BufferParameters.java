@@ -137,6 +137,7 @@ public class BufferParameters
 
   /**
    * Gets the number of quadrant segments which will be used
+   * to approximate angle fillets in round endcaps and joins.
    * 
    * @return the number of quadrant segments
    */
@@ -146,60 +147,24 @@ public class BufferParameters
   }
   
   /**
-   * Sets the number of line segments used to approximate an angle fillet.
-   * <ul>
-   * <li>If <tt>quadSegs</tt> &gt;= 1, joins are round, and <tt>quadSegs</tt> indicates the number of
-   * segments to use to approximate a quarter-circle.
-   * <li>If <tt>quadSegs</tt> = 0, joins are bevelled (flat)
-   * <li>If <tt>quadSegs</tt> &lt; 0, joins are mitred, and the value of qs
-   * indicates the mitre ration limit as
-   * <pre>
-   * mitreLimit = |<tt>quadSegs</tt>|
-   * </pre>
-   * </ul>
-   * For round joins, <tt>quadSegs</tt> determines the maximum
+   * Sets the number of line segments in a quarter-circle
+   * used to approximate angle fillets in round endcaps and joins.
+   * The value should be at least 1.
+   * <p>
+   * This determines the
    * error in the approximation to the true buffer curve.
-   * The default value of 8 gives less than 2% max error in the buffer distance.
-   * For a max error of &lt; 1%, use QS = 12.
-   * For a max error of &lt; 0.1%, use QS = 18.
+   * The default value of 8 gives less than 2% error in the buffer distance.
+   * For a error of &lt; 1%, use QS = 12.
+   * For a error of &lt; 0.1%, use QS = 18.
    * The error is always less than the buffer distance 
    * (in other words, the computed buffer curve is always inside the true
    * curve).
    * 
-   * @param quadSegs the number of segments in a fillet for a quadrant
+   * @param quadSegs the number of segments in a fillet for a circle quadrant
    */
   public void setQuadrantSegments(int quadSegs)
   {
     quadrantSegments = quadSegs;
-    
-    /** 
-     * Indicates how to construct fillets.
-     * If qs >= 1, fillet is round, and qs indicates number of 
-     * segments to use to approximate a quarter-circle.
-     * If qs = 0, fillet is bevelled flat (i.e. no filleting is performed)
-     * If qs < 0, fillet is mitred, and absolute value of qs
-     * indicates maximum length of mitre according to
-     * 
-     * mitreLimit = |qs|
-     */
-    if (quadrantSegments == 0)
-      joinStyle = JOIN_BEVEL;
-    if (quadrantSegments < 0) {
-      joinStyle = JOIN_MITRE;
-      mitreLimit = Math.abs(quadrantSegments);
-    }
-    
-    if (quadSegs <= 0) {
-      quadrantSegments = 1;
-    }
-    
-    /**
-     * If join style was set by the quadSegs value,
-     * use the default for the actual quadrantSegments value.
-     */
-    if (joinStyle != JOIN_ROUND) {
-      quadrantSegments = DEFAULT_QUADRANT_SEGMENTS;
-    }
   }
 
   /**
@@ -218,7 +183,7 @@ public class BufferParameters
   /**
    * Gets the end cap style.
    * 
-   * @return the end cap style
+   * @return the end cap style code
    */
   public int getEndCapStyle()
   {
@@ -228,9 +193,9 @@ public class BufferParameters
   /**
    * Specifies the end cap style of the generated buffer.
    * The styles supported are {@link #CAP_ROUND}, {@link #CAP_FLAT}, and {@link #CAP_SQUARE}.
-   * The default is CAP_ROUND.
+   * The default is {@link #CAP_ROUND}.
    *
-   * @param endCapStyle the end cap style to specify
+   * @param endCapStyle the code for the end cap style
    */
   public void setEndCapStyle(int endCapStyle)
   {
@@ -238,7 +203,7 @@ public class BufferParameters
   }
   
   /**
-   * Gets the join style
+   * Gets the join style.
    * 
    * @return the join style code
    */
@@ -249,8 +214,9 @@ public class BufferParameters
   
   /**
    * Sets the join style for outside (reflex) corners between line segments.
-   * Allowable values are {@link #JOIN_ROUND} (which is the default),
+   * The styles supported are {@link #JOIN_ROUND},
    * {@link #JOIN_MITRE} and {link JOIN_BEVEL}.
+   * The default is {@link #JOIN_ROUND}.
    * 
    * @param joinStyle the code for the join style
    */

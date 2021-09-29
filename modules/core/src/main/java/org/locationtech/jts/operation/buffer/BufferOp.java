@@ -344,7 +344,8 @@ public class BufferOp
   }
 
   /**
-   * Sets the number of segments used to approximate a angle fillet
+   * Sets the number of line segments in a quarter-circle 
+   * used to approximate angle fillets for round end caps and joins.
    *
    * @param quadrantSegments the number of segments in a fillet for a quadrant
    */
